@@ -2,7 +2,7 @@ buildscript {
     repositories {
         mavenLocal()
         maven {
-            name = 'forge'
+            name = 'MinecraftForge'
             url = 'https://maven.minecraftforge.net/'
         }
         mavenCentral()
@@ -17,12 +17,16 @@ buildscript {
     }
 }
 
+import com.cleanroommc.gradle.helpers.tasks.*
+
 import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
 import net.minecraftforge.gradle.common.tasks.ApplyBinPatches
 import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
 import net.minecraftforge.gradle.common.tasks.ExtractInheritance
 import net.minecraftforge.gradle.common.tasks.ExtractMCPData
 import net.minecraftforge.gradle.patcher.tasks.GenerateBinPatches
+import net.minecraftforge.gradle.patcher.tasks.ReobfuscateJar
 import net.minecraftforge.srgutils.IMappingFile
 import org.apache.commons.compress.compressors.lzma.LZMACompressorOutputStream
 import org.objectweb.asm.ClassReader
@@ -31,7 +35,6 @@ import org.objectweb.asm.FieldVisitor
 import org.objectweb.asm.MethodVisitor
 
 import java.nio.file.Files
-
 import java.util.zip.ZipFile;
 
 plugins {
@@ -46,6 +49,9 @@ version props.major_version << '.' << props.minor_version << '.' << props.patch_
 
 println "Running Cleanroom $version"
 println "Java: ${ -> sysProps['java.version']} | JVM: ${ -> sysProps['java.vm.version']} | Vendor: ${ -> sysProps['java.vendor']} | Architecture: ${ -> sysProps['os.arch']}"
+
+// Initialize buildSrc
+Util.init()
 
 // Post-Processing
 def post_processor = [
@@ -210,7 +216,7 @@ project(':cleanroom') {
                 environment 'MCP_MAPPINGS', '{mcp_mappings}'
                 environment 'MCP_TO_SRG', createSrg2Mcp.getOutput().get().getAsFile().getAbsolutePath()
                 environment 'FORGE_GROUP', project.group
-                environment 'FORGE_VERSION', project.version.substring(props.minecraft_version.length() + 1)
+                environment 'FORGE_VERSION', project.version
 
                 jvmArgs '-Djava.library.path=' + project.file('build/natives')
 
@@ -634,7 +640,7 @@ project(':cleanroom') {
         ext {
             output = file('build/version.json')
             vanilla = project(':mcp').file('build/mcp/downloadJson/version.json')
-            // timestamp = iso8601Now() TODO
+            timestamp = Util.iso8601Now()
             comment = [
                     'Please do not automate the download and installation of Cleanroom.',
                     'Our efforts are supported by ads from the download page.'
@@ -683,7 +689,7 @@ project(':cleanroom') {
                             ]
                     ]
             ]
-            def artifacts = getArtifacts(project, project.configurations.installer, false)
+            def artifacts = Util.getArtifacts(project, project.configurations.installer, false)
             artifacts.each { key, lib ->
                 json.libraries.add(lib)
             }
@@ -779,7 +785,7 @@ project(':cleanroom') {
         }
         doFirst {
             def classpath = new StringBuilder()
-            def artifacts = getArtifacts(project, project.configurations.installer, false)
+            def artifacts = Util.getArtifacts(project, project.configurations.installer, false)
             artifacts.each { key, lib ->
                 classpath.append("libraries/${lib.downloads.artifact.path} ")
             }
@@ -847,7 +853,66 @@ project(':cleanroom') {
 
     // TODO: MDK Task
 
-    // TODO: Investigate UserDev
+    userdevConfig {
+        def artifacts = Util.getArtifacts(project, project.configurations.installer, true)
+        artifacts.each { key, lib ->
+            libraries.add(lib.name)
+        }
+        libraries.add('net.minecraftforge:legacydev:0.2.3.+:fatjar')
+        universalFilters.add('^(?!binpatches\\.pack\\.lzma$).*$')
+
+        runs {
+            client {
+                main 'com.cleanroommc.boot.MainClient'
+
+                environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLTweaker'
+                environment 'mainClass', 'net.minecraft.launchwrapper.Launch'
+                environment 'assetIndex', '{asset_index}'
+                environment 'assetDirectory', '{assets_root}'
+                environment 'nativesDirectory', '{natives}'
+                environment 'MC_VERSION', props.minecraft_version
+                environment 'MCP_MAPPINGS', '{mcp_mappings}'
+                environment 'MCP_TO_SRG', '{mcp_to_srg}'
+                environment 'FORGE_GROUP', project.group
+                environment 'FORGE_VERSION', project.version
+            }
+
+            server {
+                main 'com.cleanroommc.boot.MainServer'
+
+                environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLServerTweaker'
+                environment 'mainClass', 'net.minecraft.launchwrapper.Launch'
+                environment 'MC_VERSION', props.minecraft_version
+                environment 'MCP_MAPPINGS', '{mcp_mappings}'
+                environment 'MCP_TO_SRG', '{mcp_to_srg}'
+                environment 'FORGE_GROUP', project.group
+                environment 'FORGE_VERSION', project.version
+            }
+        }
+    }
+
+    task userdevExtras(type: Jar) {
+        dependsOn classes
+        from sourceSets.userdev.output
+        classifier 'userdev-temp'
+    }
+
+    task userdevExtrasReobf(type: ReobfuscateJar) {
+        dependsOn userdevExtras, createMcp2Srg
+        input = tasks.userdevExtras.archivePath
+        srg = tasks.createMcp2Srg.output
+    }
+
+    userdevJar {
+        dependsOn userdevExtrasReobf
+        from(zipTree(tasks.userdevExtrasReobf.output)) {
+            into '/inject/'
+        }
+        from(sourceSets.userdev.output.resourcesDir) {
+            into '/inject/'
+        }
+        classifier 'userdev3' // Should be 'userdev' but FG5 hardcoded pre1.13 versions to userdev3
+    }
 
     if (project.hasProperty('UPDATE_MAPPINGS')) {
         extractRangeMap {
@@ -869,3 +934,4 @@ task setup() {
     dependsOn ':minecraft:extractMapped'
     dependsOn ':cleanroom:extractMapped'
 }
+
