@@ -1,0 +1,10 @@
+rootProject.name = 'Cleanroom'
+
+include ':mcp'
+include ':minecraft'
+include ':cleanroom'
+
+project(":mcp").projectDir = file("projects/mcp")
+project(":minecraft").projectDir = file("projects/minecraft")
+project(":cleanroom").projectDir = file("projects/cleanroom")
+
