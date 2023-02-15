@@ -9,18 +9,12 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:5.1.+'
-        classpath 'org.ow2.asm:asm:9.4'
-        classpath 'org.ow2.asm:asm-commons:9.4'
-        classpath 'org.ow2.asm:asm-tree:9.4'
-        classpath 'org.ow2.asm:asm-util:9.4'
-        classpath 'org.ow2.asm:asm-analysis:9.4'
     }
 }
 
 import com.cleanroommc.gradle.helpers.tasks.*
 
 import groovy.json.JsonBuilder
-import groovy.json.JsonSlurper
 import net.minecraftforge.gradle.common.tasks.ApplyBinPatches
 import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
 import net.minecraftforge.gradle.common.tasks.ExtractInheritance
@@ -137,8 +131,8 @@ project(':cleanroom') {
     apply plugin: 'net.minecraftforge.gradle.patcher'
 
     java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-    // group = 'net.minecraftforge'
-    group = 'com.cleanroommc'
+    group = 'net.minecraftforge'
+    // group = 'com.cleanroommc'
 
     sourceSets {
         main {
