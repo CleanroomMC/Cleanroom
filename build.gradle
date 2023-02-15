@@ -864,6 +864,7 @@ project(':cleanroom') {
 }
 
 task setup() {
+    group 'setup'
     // These must be strings so that we can do lazy resolution. Else we need evaluationDependsOnChildren above
     dependsOn ':clean:extractMapped'
     dependsOn ':cleanroom:extractMapped'
