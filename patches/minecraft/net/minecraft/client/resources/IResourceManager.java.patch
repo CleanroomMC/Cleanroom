@@ -1,0 +1,11 @@
+--- ../src-base/minecraft/net/minecraft/client/resources/IResourceManager.java
++++ ../src-work/minecraft/net/minecraft/client/resources/IResourceManager.java
+@@ -10,7 +10,7 @@
+ @SideOnly(Side.CLIENT)
+ public interface IResourceManager
+ {
+-    Set<String> func_135055_a();
++    Set<String> getNamespaces();
+ 
+     IResource func_110536_a(ResourceLocation p_110536_1_) throws IOException;
+ 

@@ -1,0 +1,42 @@
+--- ../src-base/minecraft/net/minecraft/init/Bootstrap.java
++++ ../src-work/minecraft/net/minecraft/init/Bootstrap.java
+@@ -264,9 +264,12 @@
+         };
+         BlockDispenser.field_149943_a.func_82595_a(Items.field_151129_at, ibehaviordispenseitem);
+         BlockDispenser.field_149943_a.func_82595_a(Items.field_151131_as, ibehaviordispenseitem);
++        BlockDispenser.field_149943_a.func_82595_a(Items.field_151117_aB, net.minecraftforge.fluids.DispenseFluidContainer.getInstance());
++        BlockDispenser.field_149943_a.func_82595_a(Items.field_151133_ar, net.minecraftforge.fluids.DispenseFluidContainer.getInstance());
++        if (false)
+         BlockDispenser.field_149943_a.func_82595_a(Items.field_151133_ar, new BehaviorDefaultDispenseItem()
+         {
+-            private final BehaviorDefaultDispenseItem field_150840_b = new BehaviorDefaultDispenseItem();
++            private final BehaviorDefaultDispenseItem dispenseBehavior = new BehaviorDefaultDispenseItem();
+             public ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
+             {
+                 World world = p_82487_1_.func_82618_k();
+@@ -301,7 +304,7 @@
+                 {
+                     if (((TileEntityDispenser)p_82487_1_.func_150835_j()).func_146019_a(new ItemStack(item)) < 0)
+                     {
+-                        this.field_150840_b.func_82482_a(p_82487_1_, new ItemStack(item));
++                        this.dispenseBehavior.func_82482_a(p_82487_1_, new ItemStack(item));
+                     }
+ 
+                     return p_82487_2_;
+@@ -489,6 +492,7 @@
+         if (!field_151355_a)
+         {
+             field_151355_a = true;
++            if (false) // skip redirectOutputToLog, Forge already redirects stdout and stderr output to log so that they print with more context
+             func_179868_d();
+             SoundEvent.func_187504_b();
+             Block.func_149671_p();
+@@ -524,6 +528,8 @@
+                     field_179871_c.error("Errors with built-in loot tables");
+                 }
+             }
++
++            net.minecraftforge.registries.GameData.vanillaSnapshot();
+         }
+     }
+ 

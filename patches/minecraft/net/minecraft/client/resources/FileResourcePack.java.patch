@@ -1,0 +1,11 @@
+--- ../src-base/minecraft/net/minecraft/client/resources/FileResourcePack.java
++++ ../src-work/minecraft/net/minecraft/client/resources/FileResourcePack.java
+@@ -64,7 +64,7 @@
+         }
+     }
+ 
+-    public Set<String> func_110587_b()
++    public Set<String> getNamespaces()
+     {
+         ZipFile zipfile;
+ 
