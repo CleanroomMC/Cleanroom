@@ -1,25 +1,3 @@
-import groovy.json.JsonBuilder
-import net.minecraftforge.gradle.common.tasks.ApplyBinPatches
-import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
-import net.minecraftforge.gradle.common.tasks.ExtractInheritance
-import net.minecraftforge.gradle.common.tasks.ExtractMCPData
-import net.minecraftforge.gradle.common.tasks.SignJar
-import net.minecraftforge.gradle.patcher.tasks.GenerateBinPatches
-import net.minecraftforge.srgutils.IMappingFile
-import org.apache.commons.compress.compressors.lzma.LZMACompressorOutputStream
-
-import java.nio.file.Files
-
-/*
-import org.objectweb.asm.ClassReader
-import org.objectweb.asm.ClassVisitor
-import org.objectweb.asm.FieldVisitor
-import org.objectweb.asm.MethodVisitor
- */
-
-
-import java.util.zip.ZipFile;
-
 buildscript {
     repositories {
         mavenLocal()
@@ -31,8 +9,30 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:5.1.+'
+        classpath 'org.ow2.asm:asm:9.4'
+        classpath 'org.ow2.asm:asm-commons:9.4'
+        classpath 'org.ow2.asm:asm-tree:9.4'
+        classpath 'org.ow2.asm:asm-util:9.4'
+        classpath 'org.ow2.asm:asm-analysis:9.4'
     }
 }
+
+import groovy.json.JsonBuilder
+import net.minecraftforge.gradle.common.tasks.ApplyBinPatches
+import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
+import net.minecraftforge.gradle.common.tasks.ExtractInheritance
+import net.minecraftforge.gradle.common.tasks.ExtractMCPData
+import net.minecraftforge.gradle.patcher.tasks.GenerateBinPatches
+import net.minecraftforge.srgutils.IMappingFile
+import org.apache.commons.compress.compressors.lzma.LZMACompressorOutputStream
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.ClassVisitor
+import org.objectweb.asm.FieldVisitor
+import org.objectweb.asm.MethodVisitor
+
+import java.nio.file.Files
+
+import java.util.zip.ZipFile;
 
 plugins {
     id 'java'
@@ -46,18 +46,6 @@ version props.major_version << '.' << props.minor_version << '.' << props.patch_
 
 println "Running Cleanroom $version"
 println "Java: ${ -> sysProps['java.version']} | JVM: ${ -> sysProps['java.vm.version']} | Vendor: ${ -> sysProps['java.vendor']} | Architecture: ${ -> sysProps['os.arch']}"
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation 'org.ow2.asm:asm:9.4'
-    implementation 'org.ow2.asm:asm-commons:9.4'
-    implementation 'org.ow2.asm:asm-tree:9.4'
-    implementation 'org.ow2.asm:asm-util:9.4'
-    implementation 'org.ow2.asm:asm-analysis:9.4'
-}
 
 // Post-Processing
 def post_processor = [
@@ -544,7 +532,6 @@ project(':cleanroom') {
         inputs.files patcher.accessTransformers
         doLast {
             // TODO: Fix ASM not being imported in buildscript
-            /*
             def vanilla = [:]
             def zip = new ZipFile(genJoinedBinPatches.cleanJar)
             zip.entries().findAll {
@@ -571,7 +558,6 @@ project(':cleanroom') {
 
                 }, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES)
             }
-             */
             patcher.accessTransformers.each { f ->
                 TreeMap lines = [:]
                 f.eachLine { line ->
