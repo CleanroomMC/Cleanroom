@@ -1,11 +1,11 @@
 buildscript {
     repositories {
         mavenLocal()
+        mavenCentral()
         maven {
             name = 'MinecraftForge'
             url = 'https://maven.minecraftforge.net/'
         }
-        mavenCentral()
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:5.1.+'
@@ -15,6 +15,10 @@ buildscript {
 import com.cleanroommc.gradle.helpers.tasks.*
 
 import groovy.json.JsonBuilder
+
+import java.nio.file.Files
+import java.util.zip.ZipFile;
+
 import net.minecraftforge.gradle.common.tasks.ApplyBinPatches
 import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
 import net.minecraftforge.gradle.common.tasks.ExtractInheritance
@@ -22,14 +26,12 @@ import net.minecraftforge.gradle.common.tasks.ExtractMCPData
 import net.minecraftforge.gradle.patcher.tasks.GenerateBinPatches
 import net.minecraftforge.gradle.patcher.tasks.ReobfuscateJar
 import net.minecraftforge.srgutils.IMappingFile
+
 import org.apache.commons.compress.compressors.lzma.LZMACompressorOutputStream
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.FieldVisitor
 import org.objectweb.asm.MethodVisitor
-
-import java.nio.file.Files
-import java.util.zip.ZipFile;
 
 plugins {
     id 'java'
@@ -126,13 +128,13 @@ project(':minecraft') {
 project(':cleanroom') {
     evaluationDependsOn(':minecraft')
     apply plugin: 'java-library'
-    apply plugin: 'maven-publish'
-    apply plugin: 'eclipse'
+    // apply plugin: 'maven-publish'
     apply plugin: 'net.minecraftforge.gradle.patcher'
 
     java.toolchain.languageVersion = JavaLanguageVersion.of(17)
     group = 'net.minecraftforge'
     // group = 'com.cleanroommc'
+    version = props.new_forge_version
 
     sourceSets {
         main {
@@ -157,7 +159,7 @@ project(':cleanroom') {
             compileClasspath += sourceSets.main.runtimeClasspath
             runtimeClasspath += sourceSets.main.runtimeClasspath
         }
-        userdev_test {
+        userdevTest {
             compileClasspath += sourceSets.userdev.runtimeClasspath
             runtimeClasspath += sourceSets.userdev.runtimeClasspath
             compileClasspath += sourceSets.test.runtimeClasspath
@@ -210,7 +212,7 @@ project(':cleanroom') {
                 environment 'MCP_MAPPINGS', '{mcp_mappings}'
                 environment 'MCP_TO_SRG', createSrg2Mcp.getOutput().get().getAsFile().getAbsolutePath()
                 environment 'FORGE_GROUP', project.group
-                environment 'FORGE_VERSION', project.version
+                environment 'FORGE_VERSION', props.new_forge_version
 
                 jvmArgs '-Djava.library.path=' + project.file('build/natives')
 
@@ -220,14 +222,58 @@ project(':cleanroom') {
                 }
 
                 mods {
-                    forge {
+                    cleanroom {
                         source sourceSets.main
                     }
                 }
             }
 
-            // TODO: cleanroomClientTest, cleanroomServer, cleanroomServerTest
+            cleanroomServer {
+                client false
+                taskName 'cleanroomServer'
+                ideaModule "${rootProject.name}.${project.name}.main"
+                main 'com.cleanroommc.boot.MainServer'
+                workingDirectory project.file('run')
 
+                environment 'target', 'fmldevserver'
+                environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLServerTweaker'
+                environment 'mainClass', 'net.minecraft.launchwrapper.Launch'
+                environment 'MC_VERSION', props.minecraft_version
+                environment 'MCP_VERSION', props.mcp_version
+                environment 'MCP_MAPPINGS', '{mcp_mappings}'
+                environment 'MCP_TO_SRG', createSrg2Mcp.getOutput().get().getAsFile().getAbsolutePath()
+                environment 'FORGE_GROUP', project.group
+                environment 'FORGE_VERSION', props.new_forge_version
+
+                // Lazily supply the Mappings target, createSrg2Mcp.getMappings() doesn't get populated until later
+                lazyToken 'mcp_mappings', { ->
+                    createSrg2Mcp.getMappings().get()
+                }
+
+                mods {
+                    cleanroom {
+                        source sourceSets.main
+                    }
+                }
+            }
+
+            cleanroomTestServer {
+                parent runs.cleanroomServer
+                taskName 'cleanroomTestServer'
+
+                environment 'MOD_CLASSES', 'dummy' // Needed to work around FG limitation, FG will replace this!
+
+                ideaModule "${rootProject.name}.${project.name}.userdev_test"
+
+                mods {
+                    cleanroom {
+                        source sourceSets.main
+                    }
+                    tests {
+                        sources sourceSets.test
+                    }
+                }
+            }
         }
 
     }
@@ -531,7 +577,6 @@ project(':cleanroom') {
         }
         inputs.files patcher.accessTransformers
         doLast {
-            // TODO: Fix ASM not being imported in buildscript
             def vanilla = [:]
             def zip = new ZipFile(genJoinedBinPatches.cleanJar)
             zip.entries().findAll {
@@ -868,7 +913,7 @@ project(':cleanroom') {
                 environment 'MCP_MAPPINGS', '{mcp_mappings}'
                 environment 'MCP_TO_SRG', '{mcp_to_srg}'
                 environment 'FORGE_GROUP', project.group
-                environment 'FORGE_VERSION', project.version
+                environment 'FORGE_VERSION', props.new_forge_version
             }
 
             server {
@@ -880,7 +925,7 @@ project(':cleanroom') {
                 environment 'MCP_MAPPINGS', '{mcp_mappings}'
                 environment 'MCP_TO_SRG', '{mcp_to_srg}'
                 environment 'FORGE_GROUP', project.group
-                environment 'FORGE_VERSION', project.version
+                environment 'FORGE_VERSION', props.new_forge_version
             }
         }
     }

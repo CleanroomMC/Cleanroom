@@ -9,7 +9,7 @@ import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.TaskAction
 import org.objectweb.asm.Opcodes
 
-public class CheckATs extends DefaultTask {
+public class CheckAccessTransformers extends DefaultTask {
 	@InputFile File inheritance
 	@InputFiles File[] ats
 	
