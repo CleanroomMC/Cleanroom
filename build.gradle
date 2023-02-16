@@ -37,6 +37,8 @@ plugins {
     id 'java'
 }
 
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
 def props = project.properties
 def sysProps = System.getProperties()
 
@@ -228,6 +230,24 @@ project(':cleanroom') {
                 }
             }
 
+            cleanroomTestClient {
+                parent runs.cleanroomClient
+                taskName 'cleanroomTestClient'
+
+                environment 'MOD_CLASSES', 'dummy' // Needed to work around FG limitation, FG will replace this!
+
+                ideaModule "${rootProject.name}.${project.name}.userdevTest"
+
+                mods {
+                    cleanroom {
+                        source sourceSets.main
+                    }
+                    tests {
+                        sources sourceSets.test
+                    }
+                }
+            }
+
             cleanroomServer {
                 client false
                 taskName 'cleanroomServer'
@@ -263,7 +283,7 @@ project(':cleanroom') {
 
                 environment 'MOD_CLASSES', 'dummy' // Needed to work around FG limitation, FG will replace this!
 
-                ideaModule "${rootProject.name}.${project.name}.userdev_test"
+                ideaModule "${rootProject.name}.${project.name}.userdevTest"
 
                 mods {
                     cleanroom {
