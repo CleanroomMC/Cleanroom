@@ -245,7 +245,7 @@ public class FMLDeobfuscatingRemapper extends Remapper {
 
     private void parseMethod(String[] parts, String cl)
     {
-        String oldName = parts[0].substring(1);
+        String oldName = parts[0];
         String sig = parts[1];
         String newName = parts[2];
         if (!rawMethodMaps.containsKey(cl))
