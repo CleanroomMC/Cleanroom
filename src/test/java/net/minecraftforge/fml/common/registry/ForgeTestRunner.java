@@ -27,8 +27,13 @@ import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.JUnit4;
 import org.junit.runners.model.InitializationError;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -50,6 +55,19 @@ import java.util.Set;
  */
 public class ForgeTestRunner extends Runner
 {
+    private static List<URL> getClassPathURLs() {
+        String[] classpaths = System.getProperty("java.class.path").split(File.pathSeparator);
+        List<URL> urls = new ArrayList<>();
+        try {
+            for (String classpath : classpaths) {
+                urls.add(new File(classpath).toURI().toURL());
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        return urls;
+    }
+
     private final Object innerRunner;
     private final Class<?> innerRunnerClass;
 
@@ -117,8 +135,7 @@ public class ForgeTestRunner extends Runner
          */
         public ResettingClassLoader(String... quarantinedClassNames)
         {
-            super(((URLClassLoader) getSystemClassLoader()).getURLs());
-
+            super(getClassPathURLs().toArray(new URL[0]));
             this.quarantinedClassNames = Sets.newHashSet();
             Collections.addAll(this.quarantinedClassNames, quarantinedClassNames);
             Collections.addAll(this.quarantinedClassNames, "net.minecraft", "net.minecraftforge");
