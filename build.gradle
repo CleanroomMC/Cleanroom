@@ -33,12 +33,6 @@ import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.FieldVisitor
 import org.objectweb.asm.MethodVisitor
 
-plugins {
-    id 'java'
-}
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
 def props = project.properties
 def sysProps = System.getProperties()
 
