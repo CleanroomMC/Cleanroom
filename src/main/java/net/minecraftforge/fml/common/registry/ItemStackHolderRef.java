@@ -49,21 +49,30 @@ class ItemStackHolderRef {
     }
 
     private static Field modifiersField;
-    private static Object reflectionFactory;
-    private static Method newFieldAccessor;
-    private static Method fieldAccessorSet;
     private static void makeWritable(Field f)
     {
         try
         {
+            f.setAccessible(true);
             if (modifiersField == null)
             {
-                Method getReflectionFactory = Class.forName("sun.reflect.ReflectionFactory").getDeclaredMethod("getReflectionFactory");
-                reflectionFactory = getReflectionFactory.invoke(null);
-                newFieldAccessor = Class.forName("sun.reflect.ReflectionFactory").getDeclaredMethod("newFieldAccessor", Field.class, boolean.class);
-                fieldAccessorSet = Class.forName("sun.reflect.FieldAccessor").getDeclaredMethod("set", Object.class, Object.class);
-                modifiersField = Field.class.getDeclaredField("modifiers");
-                modifiersField.setAccessible(true);
+                try
+                {
+                    Method getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
+                    getDeclaredFields0.setAccessible(true);
+                    for (Field field : (Field[]) getDeclaredFields0.invoke(Field.class, false))
+                    {
+                        if ("modifiers".equals(field.getName()))
+                        {
+                            modifiersField = field;
+                            modifiersField.setAccessible(true);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
             modifiersField.setInt(f, f.getModifiers() & ~Modifier.FINAL);
         }
@@ -86,8 +95,7 @@ class ItemStackHolderRef {
         }
         try
         {
-            Object fieldAccessor = newFieldAccessor.invoke(reflectionFactory, field, false);
-            fieldAccessorSet.invoke(fieldAccessor, null, is);
+            field.set(null, is);
         }
         catch (Exception e)
         {
