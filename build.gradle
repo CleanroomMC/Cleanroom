@@ -199,7 +199,7 @@ project(':cleanroom') {
 
                 environment 'target', 'fmldevclient'
                 environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLTweaker'
-                environment 'mainClass', 'net.minecraft.launchwrapper.Launch'
+                environment 'mainClass', 'com.cleanroommc.bouncepad.Bouncepad'
                 environment 'assetIndex', '{asset_index}'
                 environment 'assetDirectory', downloadAssets.output
                 environment 'nativesDirectory', extractNatives.output.get().asFile
@@ -251,7 +251,7 @@ project(':cleanroom') {
 
                 environment 'target', 'fmldevserver'
                 environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLServerTweaker'
-                environment 'mainClass', 'net.minecraft.launchwrapper.Launch'
+                environment 'mainClass', 'com.cleanroommc.bouncepad.Bouncepad'
                 environment 'MC_VERSION', props.minecraft_version
                 environment 'MCP_VERSION', props.mcp_version
                 environment 'MCP_MAPPINGS', '{mcp_mappings}'
@@ -711,7 +711,7 @@ project(':cleanroom') {
                     time: timestamp,
                     releaseTime: timestamp,
                     type: 'release',
-                    mainClass: 'net.minecraft.launchwrapper.Launch',
+                    mainClass: 'com.cleanroommc.bouncepad.Bouncepad',
                     inheritsFrom: props.minecraft_version,
                     logging: { },
                     arguments: [
@@ -919,7 +919,7 @@ project(':cleanroom') {
                 main 'com.cleanroommc.boot.MainClient'
 
                 environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLTweaker'
-                environment 'mainClass', 'net.minecraft.launchwrapper.Launch'
+                environment 'mainClass', 'com.cleanroommc.bouncepad.Bouncepad'
                 environment 'assetIndex', '{asset_index}'
                 environment 'assetDirectory', '{assets_root}'
                 environment 'nativesDirectory', '{natives}'
@@ -934,7 +934,7 @@ project(':cleanroom') {
                 main 'com.cleanroommc.boot.MainServer'
 
                 environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLServerTweaker'
-                environment 'mainClass', 'net.minecraft.launchwrapper.Launch'
+                environment 'mainClass', 'com.cleanroommc.bouncepad.Bouncepad'
                 environment 'MC_VERSION', props.minecraft_version
                 environment 'MCP_MAPPINGS', '{mcp_mappings}'
                 environment 'MCP_TO_SRG', '{mcp_to_srg}'
