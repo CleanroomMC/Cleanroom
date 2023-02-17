@@ -211,6 +211,7 @@ project(':cleanroom') {
                 environment 'FORGE_VERSION', props.new_forge_version
 
                 jvmArgs '-Djava.library.path=' + project.file('build/natives')
+                jvmArgs '--add-opens', 'java.base/jdk.internal.loader=ALL-UNNAMED'
 
                 // Lazily supply the Mappings target, createSrg2Mcp.getMappings() doesn't get populated until later
                 lazyToken 'mcp_mappings', { ->
