@@ -212,6 +212,8 @@ project(':cleanroom') {
 
                 jvmArgs '-Djava.library.path=' + project.file('build/natives')
                 jvmArgs '--add-opens', 'java.base/jdk.internal.loader=ALL-UNNAMED'
+                jvmArgs '--add-opens', 'java.base/java.lang=ALL-UNNAMED'
+                jvmArgs '--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED'
 
                 // Lazily supply the Mappings target, createSrg2Mcp.getMappings() doesn't get populated until later
                 lazyToken 'mcp_mappings', { ->
