@@ -64,7 +64,7 @@ public class ForgeBlockStatesLoaderTest
     {
         event.getRegistry().registerAll(
                 new BlockWall(Blocks.COBBLESTONE)
-                        .setUnlocalizedName(MODID + ".customWall")
+                        .setTranslationKey(MODID + ".customWall")
                         .setRegistryName(MODID, "custom_wall")
         );
     }
@@ -75,7 +75,7 @@ public class ForgeBlockStatesLoaderTest
         event.getRegistry().registerAll(
                 new ItemMultiTexture(
                         BLOCKS.custom_wall, BLOCKS.custom_wall,
-                        stack -> BlockWall.EnumType.byMetadata(stack.getMetadata()).getUnlocalizedName()
+                        stack -> BlockWall.EnumType.byMetadata(stack.getMetadata()).getTranslationKey()
                 ).setRegistryName(BLOCKS.custom_wall.getRegistryName())
         );
     }
@@ -123,7 +123,7 @@ public class ForgeBlockStatesLoaderTest
         protected CustomMappedBlock() {
             super(Material.rock);
 
-            this.setUnlocalizedName(MODID + ".customMappedBlock");
+            this.setTranslationKey(MODID + ".customMappedBlock");
         }
 
         @Override

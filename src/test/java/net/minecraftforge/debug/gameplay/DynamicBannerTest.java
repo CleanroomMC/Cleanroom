@@ -152,13 +152,7 @@ public class DynamicBannerTest
         }
 
         @Override
-        public ItemStack getTabIconItem()
-        {
-            return this.getIconItemStack();
-        }
-
-        @Override
-        public ItemStack getIconItemStack()
+        public ItemStack createIcon()
         {
             if (DISPLAY == null)
                 DISPLAY = ItemBanner.makeBanner(EnumDyeColor.WHITE, makePatternNBTList(BannerPattern.CREEPER, EnumDyeColor.GREEN));

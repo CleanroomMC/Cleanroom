@@ -102,7 +102,7 @@ public class RecipeMatchingTest
                {
                    return true;
                }
-            }.setRegistryName(MODID, "tool").setMaxDamage(10).setCreativeTab(CreativeTabs.MISC).setUnlocalizedName("recipetest.tool").setMaxStackSize(1);
+            }.setRegistryName(MODID, "tool").setMaxDamage(10).setCreativeTab(CreativeTabs.MISC).setTranslationKey("recipetest.tool").setMaxStackSize(1);
             event.getRegistry().register(TOOL);
         }
     }

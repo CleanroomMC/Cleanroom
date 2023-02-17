@@ -352,11 +352,10 @@ project(':cleanroom') {
         installer 'org.apache.logging.log4j:log4j-api:2.15.0'
         installer 'org.apache.logging.log4j:log4j-core:2.15.0'
 
-        // TODO: Reactivate Tests
-        // testImplementation 'org.junit.jupiter:junit-jupiter-api:5.0.0'
-        // testImplementation 'org.junit.vintage:junit-vintage-engine:5.+'
-        // testImplementation 'org.opentest4j:opentest4j:1.0.0' // Needed for junit 5
-        // testImplementation 'org.hamcrest:hamcrest-all:1.3' // Needs advanced matching for list order
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.0.0'
+        testImplementation 'org.junit.vintage:junit-vintage-engine:5.+'
+        testImplementation 'org.opentest4j:opentest4j:1.0.0' // Needed for junit 5
+        testImplementation 'org.hamcrest:hamcrest-all:1.3' // Needs advanced matching for list order
 
         /*
         forgeGradleMcDeps

@@ -36,8 +36,9 @@ public class SearchableCreativeTabTest
 
     public static final CreativeTabs SEARCH_TAB = !ENABLED ? null : new CreativeTabs(1, "searchtab")
     {
+        @Override
         @SideOnly(Side.CLIENT)
-        public ItemStack getTabIconItem()
+        public ItemStack createIcon()
         {
             return new ItemStack(Items.TOTEM_OF_UNDYING);
         }
@@ -47,7 +48,7 @@ public class SearchableCreativeTabTest
         {
         	return true;
         }
-        
+
         @Override
         @SideOnly(Side.CLIENT)
         public void displayAllRelevantItems(NonNullList<ItemStack> items)

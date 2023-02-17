@@ -47,7 +47,7 @@ public class CustomRarityTest
     {
         event.getRegistry().register(new TestItem()
                 .setRegistryName(MOD_ID, "test_item")
-                .setUnlocalizedName(MOD_ID + ".test_item")
+                .setTranslationKey(MOD_ID + ".test_item")
                 .setCreativeTab(CreativeTabs.MISC)
         );
     }
