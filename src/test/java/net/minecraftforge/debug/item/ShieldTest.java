@@ -57,7 +57,7 @@ public class ShieldTest
             @Override
             public String getItemStackDisplayName(ItemStack stack)
             {
-                return I18n.translateToLocal(this.getTranslationKeyInefficiently(stack) + ".name").trim();
+                return I18n.translateToLocal(this.getTranslationKey(stack) + ".name").trim();
             }
             
             @Override
