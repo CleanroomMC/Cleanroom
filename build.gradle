@@ -39,6 +39,8 @@ def sysProps = System.getProperties()
 group 'com.cleanroommc'
 version props.major_version << '.' << props.minor_version << '.' << props.patch_version
 
+def spec_version = props.new_forge_version.substring(props.new_forge_version.indexOf('.') + 1, props.new_forge_version.lastIndexOf('.'))
+
 println "Running Cleanroom $version"
 println "Java: ${ -> sysProps['java.version']} | JVM: ${ -> sysProps['java.vm.version']} | Vendor: ${ -> sysProps['java.vendor']} | Architecture: ${ -> sysProps['os.arch']}"
 
@@ -173,7 +175,6 @@ project(':cleanroom') {
     }
 
     ext {
-        mcp_artifact = project(':mcp').mcp.config
         version_json = project(':mcp').file('build/mcp/downloadJson/version.json')
     }
 
@@ -541,13 +542,13 @@ project(':cleanroom') {
                     '--output', '{output}',
                     '--patches', '{patches}',
                     '--srg', '{srg}',
-                    '--legacy',
+                    // '--legacy',
                     '--clean', '{clean}',
                     '--dirty', '{dirty}',
                     '--prefix', 'binpatch/client',
                     '--clean', genServerBinPatches.cleanJar.get().asFile.path,
                     '--dirty', genServerBinPatches.dirtyJar.get().asFile.path,
-                    '--prefix', 'binpatch/server'
+                    '--prefix', 'binpatch/server',
             ])
         }
     }
@@ -688,9 +689,9 @@ project(':cleanroom') {
         }
     }
 
-    task launcherJson(dependsOn: ['signUniversalJar']) {
+    task launcherJson(/*dependsOn: ['signUniversalJar']*/) {
         inputs.file {
-            universalJar.archiveFile
+            universalJar.archivePath
         }
         ext {
             output = file('build/version.json')
@@ -737,8 +738,8 @@ project(':cleanroom') {
                                                     path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
                                                     // Do not include the URL so that the installer/launcher won't grab it. This is also why we don't have the universal classifier
                                                     url: '',
-                                                    sha1: sha1(universalJar.archiveFile),
-                                                    size: universalJar.archiveFile.length()
+                                                    sha1: Util.sha1(universalJar.archivePath),
+                                                    size: universalJar.archivePath.length()
                                             ]
                                     ]
                             ]
@@ -757,7 +758,7 @@ project(':cleanroom') {
             output = file('build/install_profile.json')
             installer_tools = 'net.minecraftforge:installertools:1.1.4' // TODO: Why replace with older version?
         }
-        inputs.file universalJar.archiveFile
+        inputs.file universalJar.archivePath
         inputs.file genClientBinPatches.toolJar
         inputs.file launcherJson.output
         outputs.file output
@@ -770,8 +771,8 @@ project(':cleanroom') {
                                             path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
                                             // Do not include the URL so that the installer/launcher won't grab it. This is also why we don't have the universal classifier
                                             url: '',
-                                            sha1: sha1(universalJar.archiveFile),
-                                            size: universalJar.archiveFile.length()
+                                            sha1: Util.sha1(universalJar.archivePath),
+                                            size: universalJar.archivePath.length()
                                     ]
                             ]
                     ]
@@ -785,12 +786,12 @@ project(':cleanroom') {
                     json: '/version.json',
                     path: "${project.group}:${project.name}:${project.version}",
                     logo: '/big_logo.png',
-                    minecraft: MC_VERSION,
+                    minecraft: props.minecraft_version,
                     welcome: "Welcome to the simple ${project.name.capitalize()} installer.",
                     data: [ ] as Map,
                     processors: [ ]
             ]
-            getClasspath(project, libs, MCP_ARTIFACT.get().descriptor) //Tell it to download mcp_config
+            Util.getClasspath(project, libs, project(':mcp').mcp.config.get().descriptor) // Tell it to download mcp_config
             json.libraries = libs.values().sort { a, b -> a.name.compareTo(b.name) }
 
             output.text = new JsonBuilder(json).toPrettyString()
@@ -845,17 +846,19 @@ project(':cleanroom') {
                 classpath.append("libraries/${lib.downloads.artifact.path} ")
             }
             classpath += "minecraft_server.${props.minecraft_version}.jar"
-            MANIFESTS.each { pkg, values ->
-                if (pkg == '/') {
-                    manifest.attributes(values += [
-                            'Main-Class': 'net.minecraftforge.fml.relauncher.ServerLaunchWrapper',
-                            'Class-Path': classpath.toString(),
-                            'Tweak-Class': 'net.minecraftforge.fml.common.launcher.FMLTweaker'
-                    ])
-                } else {
-                    manifest.attributes(values, pkg)
-                }
-            }
+            manifest.attributes([
+                    'Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                    'Class-Path': classpath.toString(),
+                    'Tweak-Class': 'net.minecraftforge.fml.common.launcher.FMLTweaker'
+            ])
+            manifest.attributes([
+                    'Specification-Title': props.title,
+                    'Specification-Vendor': props.vendor,
+                    'Specification-Version': spec_version,
+                    'Implementation-Title': project.group,
+                    'Implementation-Version': props.new_forge_version,
+                    'Implementation-Vendor': props.vendor
+            ], 'net/minecraftforge/common/')
         }
     }
 
@@ -864,7 +867,7 @@ project(':cleanroom') {
         changing = true
     }
 
-    task installerJar(type: Zip, dependsOn: [downloadInstaller, installerJson, launcherJson, genClientBinPatches, genServerBinPatches, 'signUniversalJar']) {
+    task installerJar(type: Zip, dependsOn: [downloadInstaller, installerJson, launcherJson, genClientBinPatches, genServerBinPatches/*, 'signUniversalJar'*/]) {
         classifier = 'installer'
         extension = 'jar' //Needs to be Zip task to not override Manifest, so set extension
         destinationDir = file('build/libs')
