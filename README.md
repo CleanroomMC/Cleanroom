@@ -13,5 +13,6 @@
 1. Clone this repository
 2. Import the `build.gradle` into your IDE (most preferably IntelliJ IDEA)
 3. Once the import has finished, run `gradlew setup`
+4. Build with `gradlew build -x test` for now as tests aren't working yet.
 
 
