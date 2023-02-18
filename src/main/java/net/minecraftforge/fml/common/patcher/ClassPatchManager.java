@@ -185,7 +185,6 @@ public class ClassPatchManager {
                     ByteArrayOutputStream jarBytes = new ByteArrayOutputStream();
                     try (JarOutputStream jos = new JarOutputStream(jarBytes))
                     {
-                        //Pack200.newUnpacker().unpack(binpatchesDecompressed, jos);
                         jis = new JarInputStream(new ByteArrayInputStream(jarBytes.toByteArray()));
                     }
                 }
@@ -248,9 +247,10 @@ public class ClassPatchManager {
             FMLLog.log.warn(FMLLog.log.getMessageFactory().newMessage("Unable to read binpatch file {} - ignoring", patchEntry.getName()), e);
             return null;
         }
+        int version = input.readByte(); // Default 1
         String name = input.readUTF();
-        String sourceClassName = input.readUTF();
-        String targetClassName = input.readUTF();
+        String sourceClassName = name.replace('/', '.');
+        String targetClassName = input.readUTF().replace('/', '.');
         boolean exists = input.readBoolean();
         int inputChecksum = 0;
         if (exists)
