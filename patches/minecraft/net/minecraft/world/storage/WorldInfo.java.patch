@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/storage/WorldInfo.java
-+++ ../src-work/minecraft/net/minecraft/world/storage/WorldInfo.java
+--- before/net/minecraft/world/storage/WorldInfo.java
++++ after/net/minecraft/world/storage/WorldInfo.java
 @@ -63,8 +63,9 @@
      private double field_176153_H = 0.2D;
      private int field_176154_I = 5;

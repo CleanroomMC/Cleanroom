@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockCrops.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockCrops.java
+--- before/net/minecraft/block/BlockCrops.java
++++ after/net/minecraft/block/BlockCrops.java
 @@ -70,6 +70,7 @@
      {
          super.func_180650_b(p_180650_1_, p_180650_2_, p_180650_3_, p_180650_4_);

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/passive/EntityOcelot.java
-+++ ../src-work/minecraft/net/minecraft/entity/passive/EntityOcelot.java
+--- before/net/minecraft/entity/passive/EntityOcelot.java
++++ after/net/minecraft/entity/passive/EntityOcelot.java
 @@ -222,7 +222,7 @@
  
              if (!this.field_70170_p.field_72995_K)

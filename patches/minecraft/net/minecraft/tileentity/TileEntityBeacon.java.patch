@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/tileentity/TileEntityBeacon.java
-+++ ../src-work/minecraft/net/minecraft/tileentity/TileEntityBeacon.java
+--- before/net/minecraft/tileentity/TileEntityBeacon.java
++++ after/net/minecraft/tileentity/TileEntityBeacon.java
 @@ -130,17 +130,21 @@
              {
                  if (iblockstate.func_177230_c() != Blocks.field_150397_co)

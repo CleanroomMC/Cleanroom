@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/entity/RenderLivingBase.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/entity/RenderLivingBase.java
+--- before/net/minecraft/client/renderer/entity/RenderLivingBase.java
++++ after/net/minecraft/client/renderer/entity/RenderLivingBase.java
 @@ -32,6 +32,9 @@
      protected List<LayerRenderer<T>> field_177097_h = Lists.<LayerRenderer<T>>newArrayList();
      protected boolean field_188323_j;

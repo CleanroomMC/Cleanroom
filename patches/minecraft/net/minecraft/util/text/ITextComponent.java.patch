@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/util/text/ITextComponent.java
-+++ ../src-work/minecraft/net/minecraft/util/text/ITextComponent.java
+--- before/net/minecraft/util/text/ITextComponent.java
++++ after/net/minecraft/util/text/ITextComponent.java
 @@ -34,7 +34,6 @@
  
      String func_150260_c();

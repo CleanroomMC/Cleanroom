@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/texture/TextureMap.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/texture/TextureMap.java
+--- before/net/minecraft/client/renderer/texture/TextureMap.java
++++ after/net/minecraft/client/renderer/texture/TextureMap.java
 @@ -45,6 +45,16 @@
  
      public TextureMap(String p_i46100_1_, @Nullable ITextureMapPopulator p_i46100_2_)

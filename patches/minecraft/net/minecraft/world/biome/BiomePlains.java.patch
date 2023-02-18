@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/biome/BiomePlains.java
-+++ ../src-work/minecraft/net/minecraft/world/biome/BiomePlains.java
+--- before/net/minecraft/world/biome/BiomePlains.java
++++ after/net/minecraft/world/biome/BiomePlains.java
 @@ -80,6 +80,7 @@
              this.field_76760_I.field_76803_B = 10;
              field_180280_ag.func_180710_a(BlockDoublePlant.EnumPlantType.GRASS);

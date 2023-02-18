@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/texture/TextureManager.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/texture/TextureManager.java
+--- before/net/minecraft/client/renderer/texture/TextureManager.java
++++ after/net/minecraft/client/renderer/texture/TextureManager.java
 @@ -81,7 +81,7 @@
          }
          catch (Throwable throwable)

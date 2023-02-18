@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/stats/StatList.java
-+++ ../src-work/minecraft/net/minecraft/stats/StatList.java
+--- before/net/minecraft/stats/StatList.java
++++ after/net/minecraft/stats/StatList.java
 @@ -162,7 +162,7 @@
              }
          }

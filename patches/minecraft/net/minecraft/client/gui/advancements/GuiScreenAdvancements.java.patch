@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/advancements/GuiScreenAdvancements.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/advancements/GuiScreenAdvancements.java
+--- before/net/minecraft/client/gui/advancements/GuiScreenAdvancements.java
++++ after/net/minecraft/client/gui/advancements/GuiScreenAdvancements.java
 @@ -29,6 +29,7 @@
      private int field_191941_t;
      private int field_191942_u;

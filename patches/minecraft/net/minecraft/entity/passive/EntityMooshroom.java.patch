@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/passive/EntityMooshroom.java
-+++ ../src-work/minecraft/net/minecraft/entity/passive/EntityMooshroom.java
+--- before/net/minecraft/entity/passive/EntityMooshroom.java
++++ after/net/minecraft/entity/passive/EntityMooshroom.java
 @@ -16,7 +16,7 @@
  import net.minecraft.world.World;
  import net.minecraft.world.storage.loot.LootTableList;

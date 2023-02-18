@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/tileentity/TileEntityRendererDispatcher.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/tileentity/TileEntityRendererDispatcher.java
+--- before/net/minecraft/client/renderer/tileentity/TileEntityRendererDispatcher.java
++++ after/net/minecraft/client/renderer/tileentity/TileEntityRendererDispatcher.java
 @@ -92,7 +92,7 @@
      @Nullable
      public <T extends TileEntity> TileEntitySpecialRenderer<T> func_147547_b(@Nullable TileEntity p_147547_1_)

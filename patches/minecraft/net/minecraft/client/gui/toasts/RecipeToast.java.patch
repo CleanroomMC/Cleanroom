@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/toasts/RecipeToast.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/toasts/RecipeToast.java
+--- before/net/minecraft/client/gui/toasts/RecipeToast.java
++++ after/net/minecraft/client/gui/toasts/RecipeToast.java
 @@ -43,7 +43,7 @@
              p_193653_1_.func_192989_b().field_71466_p.func_78276_b(I18n.func_135052_a("recipe.toast.title"), 30, 7, -11534256);
              p_193653_1_.func_192989_b().field_71466_p.func_78276_b(I18n.func_135052_a("recipe.toast.description"), 30, 18, -16777216);

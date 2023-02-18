@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/resources/IResourceManagerReloadListener.java
-+++ ../src-work/minecraft/net/minecraft/client/resources/IResourceManagerReloadListener.java
+--- before/net/minecraft/client/resources/IResourceManagerReloadListener.java
++++ after/net/minecraft/client/resources/IResourceManagerReloadListener.java
 @@ -3,6 +3,11 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;

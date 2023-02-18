@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/player/EntityPlayerMP.java
-+++ ../src-work/minecraft/net/minecraft/entity/player/EntityPlayerMP.java
+--- before/net/minecraft/entity/player/EntityPlayerMP.java
++++ after/net/minecraft/entity/player/EntityPlayerMP.java
 @@ -158,9 +158,9 @@
          super(p_i45285_2_, p_i45285_3_);
          p_i45285_4_.field_73090_b = this;

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/FontRenderer.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/FontRenderer.java
+--- before/net/minecraft/client/gui/FontRenderer.java
++++ after/net/minecraft/client/gui/FontRenderer.java
 @@ -57,7 +57,7 @@
          this.field_111273_g = p_i1035_2_;
          this.field_78298_i = p_i1035_3_;

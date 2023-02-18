@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/tileentity/TileEntityItemStackRenderer.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/tileentity/TileEntityItemStackRenderer.java
+--- before/net/minecraft/client/renderer/tileentity/TileEntityItemStackRenderer.java
++++ after/net/minecraft/client/renderer/tileentity/TileEntityItemStackRenderer.java
 @@ -118,6 +118,7 @@
          {
              TileEntityRendererDispatcher.field_147556_a.func_192855_a(field_191274_b[BlockShulkerBox.func_190955_b(item).func_176765_a()], 0.0D, 0.0D, 0.0D, 0.0F, p_192838_2_);

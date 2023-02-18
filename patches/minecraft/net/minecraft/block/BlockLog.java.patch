@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockLog.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockLog.java
+--- before/net/minecraft/block/BlockLog.java
++++ after/net/minecraft/block/BlockLog.java
 @@ -34,9 +34,9 @@
              {
                  IBlockState iblockstate = p_180663_1_.func_180495_p(blockpos);

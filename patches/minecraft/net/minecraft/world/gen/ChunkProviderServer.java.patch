@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/ChunkProviderServer.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/ChunkProviderServer.java
+--- before/net/minecraft/world/gen/ChunkProviderServer.java
++++ after/net/minecraft/world/gen/ChunkProviderServer.java
 @@ -35,6 +35,7 @@
      public final IChunkLoader field_73247_e;
      public final Long2ObjectMap<Chunk> field_73244_f = new Long2ObjectOpenHashMap<Chunk>(8192);

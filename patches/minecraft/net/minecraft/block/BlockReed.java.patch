@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockReed.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockReed.java
+--- before/net/minecraft/block/BlockReed.java
++++ after/net/minecraft/block/BlockReed.java
 @@ -21,7 +21,7 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;

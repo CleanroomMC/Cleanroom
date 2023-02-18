@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/monster/EntityCreeper.java
-+++ ../src-work/minecraft/net/minecraft/entity/monster/EntityCreeper.java
+--- before/net/minecraft/entity/monster/EntityCreeper.java
++++ after/net/minecraft/entity/monster/EntityCreeper.java
 @@ -265,7 +265,7 @@
      {
          if (!this.field_70170_p.field_72995_K)

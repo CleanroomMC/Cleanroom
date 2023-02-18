@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/nbt/NBTTagList.java
-+++ ../src-work/minecraft/net/minecraft/nbt/NBTTagList.java
+--- before/net/minecraft/nbt/NBTTagList.java
++++ after/net/minecraft/nbt/NBTTagList.java
 @@ -9,7 +9,7 @@
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;

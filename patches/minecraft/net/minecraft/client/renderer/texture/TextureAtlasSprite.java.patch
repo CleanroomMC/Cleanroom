@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/texture/TextureAtlasSprite.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/texture/TextureAtlasSprite.java
+--- before/net/minecraft/client/renderer/texture/TextureAtlasSprite.java
++++ after/net/minecraft/client/renderer/texture/TextureAtlasSprite.java
 @@ -50,12 +50,10 @@
          this.field_110975_c = p_110971_3_;
          this.field_110974_d = p_110971_4_;

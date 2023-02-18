@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/item/EntityBoat.java
-+++ ../src-work/minecraft/net/minecraft/entity/item/EntityBoat.java
+--- before/net/minecraft/entity/item/EntityBoat.java
++++ after/net/minecraft/entity/item/EntityBoat.java
 @@ -449,6 +449,12 @@
                          blockpos$pooledmutableblockpos.func_181079_c(l1, k1, i2);
                          IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos$pooledmutableblockpos);

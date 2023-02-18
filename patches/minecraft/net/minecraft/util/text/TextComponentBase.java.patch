@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/util/text/TextComponentBase.java
-+++ ../src-work/minecraft/net/minecraft/util/text/TextComponentBase.java
+--- before/net/minecraft/util/text/TextComponentBase.java
++++ after/net/minecraft/util/text/TextComponentBase.java
 @@ -75,7 +75,6 @@
          return stringbuilder.toString();
      }

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockChest.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockChest.java
+--- before/net/minecraft/block/BlockChest.java
++++ after/net/minecraft/block/BlockChest.java
 @@ -470,7 +470,7 @@
  
                      if (block == this)

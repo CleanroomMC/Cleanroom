@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenCanopyTree.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenCanopyTree.java
+--- before/net/minecraft/world/gen/feature/WorldGenCanopyTree.java
++++ after/net/minecraft/world/gen/feature/WorldGenCanopyTree.java
 @@ -33,9 +33,10 @@
          if (k >= 1 && k + i + 1 < 256)
          {

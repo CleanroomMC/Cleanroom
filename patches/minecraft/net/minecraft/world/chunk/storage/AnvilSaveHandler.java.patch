@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/chunk/storage/AnvilSaveHandler.java
-+++ ../src-work/minecraft/net/minecraft/world/chunk/storage/AnvilSaveHandler.java
+--- before/net/minecraft/world/chunk/storage/AnvilSaveHandler.java
++++ after/net/minecraft/world/chunk/storage/AnvilSaveHandler.java
 @@ -22,17 +22,11 @@
      {
          File file1 = this.func_75765_b();

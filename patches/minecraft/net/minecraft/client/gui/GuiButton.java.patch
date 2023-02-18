@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/GuiButton.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/GuiButton.java
+--- before/net/minecraft/client/gui/GuiButton.java
++++ after/net/minecraft/client/gui/GuiButton.java
 @@ -22,6 +22,7 @@
      public boolean field_146124_l;
      public boolean field_146125_m;

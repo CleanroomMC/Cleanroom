@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/EntitySpawnPlacementRegistry.java
-+++ ../src-work/minecraft/net/minecraft/entity/EntitySpawnPlacementRegistry.java
+--- before/net/minecraft/entity/EntitySpawnPlacementRegistry.java
++++ after/net/minecraft/entity/EntitySpawnPlacementRegistry.java
 @@ -50,7 +50,12 @@
  
      public static EntityLiving.SpawnPlacementType func_180109_a(Class<?> p_180109_0_)

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/BlockRendererDispatcher.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/BlockRendererDispatcher.java
+--- before/net/minecraft/client/renderer/BlockRendererDispatcher.java
++++ after/net/minecraft/client/renderer/BlockRendererDispatcher.java
 @@ -28,7 +28,7 @@
      public BlockRendererDispatcher(BlockModelShapes p_i46577_1_, BlockColors p_i46577_2_)
      {

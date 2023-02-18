@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/entity/EntityOtherPlayerMP.java
-+++ ../src-work/minecraft/net/minecraft/client/entity/EntityOtherPlayerMP.java
+--- before/net/minecraft/client/entity/EntityOtherPlayerMP.java
++++ after/net/minecraft/client/entity/EntityOtherPlayerMP.java
 @@ -43,6 +43,7 @@
  
      public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)

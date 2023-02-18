@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/ChunkCache.java
-+++ ../src-work/minecraft/net/minecraft/world/ChunkCache.java
+--- before/net/minecraft/world/ChunkCache.java
++++ after/net/minecraft/world/ChunkCache.java
 @@ -61,7 +61,7 @@
      @Nullable
      public TileEntity func_175625_s(BlockPos p_175625_1_)

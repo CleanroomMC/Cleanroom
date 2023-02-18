@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/GuiMainMenu.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/GuiMainMenu.java
+--- before/net/minecraft/client/gui/GuiMainMenu.java
++++ after/net/minecraft/client/gui/GuiMainMenu.java
 @@ -70,6 +70,8 @@
      private GuiScreen field_183503_M;
      private int field_193978_M;

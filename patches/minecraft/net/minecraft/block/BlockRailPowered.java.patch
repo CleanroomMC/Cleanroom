@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockRailPowered.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockRailPowered.java
+--- before/net/minecraft/block/BlockRailPowered.java
++++ after/net/minecraft/block/BlockRailPowered.java
 @@ -23,9 +23,17 @@
      });
      public static final PropertyBool field_176569_M = PropertyBool.func_177716_a("powered");

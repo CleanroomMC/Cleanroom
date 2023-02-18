@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/ChestRenderer.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/ChestRenderer.java
+--- before/net/minecraft/client/renderer/ChestRenderer.java
++++ after/net/minecraft/client/renderer/ChestRenderer.java
 @@ -13,6 +13,7 @@
      {
          GlStateManager.func_179131_c(p_178175_2_, p_178175_2_, p_178175_2_, 1.0F);

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/biome/BiomeForest.java
-+++ ../src-work/minecraft/net/minecraft/world/biome/BiomeForest.java
+--- before/net/minecraft/world/biome/BiomeForest.java
++++ after/net/minecraft/world/biome/BiomeForest.java
 @@ -46,6 +46,17 @@
          {
              this.field_76760_I.field_76832_z = -999;

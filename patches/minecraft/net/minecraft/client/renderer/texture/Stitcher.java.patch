@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/texture/Stitcher.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/texture/Stitcher.java
+--- before/net/minecraft/client/renderer/texture/Stitcher.java
++++ after/net/minecraft/client/renderer/texture/Stitcher.java
 @@ -56,18 +56,24 @@
      {
          Stitcher.Holder[] astitcher$holder = (Stitcher.Holder[])this.field_94319_a.toArray(new Stitcher.Holder[this.field_94319_a.size()]);

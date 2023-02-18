@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemFlintAndSteel.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemFlintAndSteel.java
+--- before/net/minecraft/item/ItemFlintAndSteel.java
++++ after/net/minecraft/item/ItemFlintAndSteel.java
 @@ -34,7 +34,7 @@
          }
          else

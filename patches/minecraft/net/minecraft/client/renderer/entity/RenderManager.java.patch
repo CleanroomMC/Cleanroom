@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/entity/RenderManager.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/entity/RenderManager.java
+--- before/net/minecraft/client/renderer/entity/RenderManager.java
++++ after/net/minecraft/client/renderer/entity/RenderManager.java
 @@ -227,6 +227,11 @@
          this.field_178637_m = new RenderPlayer(this);
          this.field_178636_l.put("default", this.field_178637_m);

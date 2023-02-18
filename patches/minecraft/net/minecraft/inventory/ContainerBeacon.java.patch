@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/inventory/ContainerBeacon.java
-+++ ../src-work/minecraft/net/minecraft/inventory/ContainerBeacon.java
+--- before/net/minecraft/inventory/ContainerBeacon.java
++++ after/net/minecraft/inventory/ContainerBeacon.java
 @@ -90,12 +90,9 @@
  
                  slot.func_75220_a(itemstack1, itemstack);

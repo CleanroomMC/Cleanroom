@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/structure/StructureStart.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/structure/StructureStart.java
+--- before/net/minecraft/world/gen/structure/StructureStart.java
++++ after/net/minecraft/world/gen/structure/StructureStart.java
 @@ -63,6 +63,10 @@
  
      public NBTTagCompound func_143021_a(int p_143021_1_, int p_143021_2_)

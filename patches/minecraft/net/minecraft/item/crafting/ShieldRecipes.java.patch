@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/crafting/ShieldRecipes.java
-+++ ../src-work/minecraft/net/minecraft/item/crafting/ShieldRecipes.java
+--- before/net/minecraft/item/crafting/ShieldRecipes.java
++++ after/net/minecraft/item/crafting/ShieldRecipes.java
 @@ -6,12 +6,10 @@
  import net.minecraft.nbt.NBTTagCompound;
  import net.minecraft.util.NonNullList;

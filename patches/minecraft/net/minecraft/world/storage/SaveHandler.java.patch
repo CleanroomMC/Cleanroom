@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/storage/SaveHandler.java
-+++ ../src-work/minecraft/net/minecraft/world/storage/SaveHandler.java
+--- before/net/minecraft/world/storage/SaveHandler.java
++++ after/net/minecraft/world/storage/SaveHandler.java
 @@ -119,7 +119,7 @@
  
          if (file1.exists())

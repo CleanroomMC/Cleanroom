@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/potion/PotionType.java
-+++ ../src-work/minecraft/net/minecraft/potion/PotionType.java
+--- before/net/minecraft/potion/PotionType.java
++++ after/net/minecraft/potion/PotionType.java
 @@ -8,10 +8,11 @@
  import net.minecraft.util.ResourceLocation;
  import net.minecraft.util.registry.RegistryNamespacedDefaultedByKey;

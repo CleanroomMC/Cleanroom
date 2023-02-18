@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/crafting/CraftingManager.java
-+++ ../src-work/minecraft/net/minecraft/item/crafting/CraftingManager.java
+--- before/net/minecraft/item/crafting/CraftingManager.java
++++ after/net/minecraft/item/crafting/CraftingManager.java
 @@ -36,7 +36,7 @@
  {
      private static final Logger field_192422_a = LogManager.getLogger();

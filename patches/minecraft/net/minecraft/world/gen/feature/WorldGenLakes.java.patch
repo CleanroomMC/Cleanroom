@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenLakes.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenLakes.java
+--- before/net/minecraft/world/gen/feature/WorldGenLakes.java
++++ after/net/minecraft/world/gen/feature/WorldGenLakes.java
 @@ -161,7 +161,8 @@
  
                          if (p_180709_1_.func_175675_v(p_180709_3_.func_177982_a(k2, 4, l3)))

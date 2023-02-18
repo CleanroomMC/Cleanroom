@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemAxe.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemAxe.java
+--- before/net/minecraft/item/ItemAxe.java
++++ after/net/minecraft/item/ItemAxe.java
 @@ -20,6 +20,13 @@
          this.field_185065_c = field_185067_n[p_i45327_1_.ordinal()];
      }

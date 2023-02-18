@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/tileentity/TileEntityFurnace.java
-+++ ../src-work/minecraft/net/minecraft/tileentity/TileEntityFurnace.java
+--- before/net/minecraft/tileentity/TileEntityFurnace.java
++++ after/net/minecraft/tileentity/TileEntityFurnace.java
 @@ -121,9 +121,9 @@
          super.func_145839_a(p_145839_1_);
          this.field_145957_n = NonNullList.<ItemStack>func_191197_a(this.func_70302_i_(), ItemStack.field_190927_a);

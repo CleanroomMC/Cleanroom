@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/enchantment/Enchantment.java
-+++ ../src-work/minecraft/net/minecraft/enchantment/Enchantment.java
+--- before/net/minecraft/enchantment/Enchantment.java
++++ after/net/minecraft/enchantment/Enchantment.java
 @@ -14,9 +14,9 @@
  import net.minecraft.util.text.TextFormatting;
  import net.minecraft.util.text.translation.I18n;

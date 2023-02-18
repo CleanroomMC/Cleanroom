@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemSkull.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemSkull.java
+--- before/net/minecraft/item/ItemSkull.java
++++ after/net/minecraft/item/ItemSkull.java
 @@ -43,13 +43,18 @@
          }
          else

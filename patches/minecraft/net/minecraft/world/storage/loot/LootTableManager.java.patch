@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/storage/loot/LootTableManager.java
-+++ ../src-work/minecraft/net/minecraft/world/storage/loot/LootTableManager.java
+--- before/net/minecraft/world/storage/loot/LootTableManager.java
++++ after/net/minecraft/world/storage/loot/LootTableManager.java
 @@ -111,7 +111,7 @@
  
                          try

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockQuartz.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockQuartz.java
+--- before/net/minecraft/block/BlockQuartz.java
++++ after/net/minecraft/block/BlockQuartz.java
 @@ -108,6 +108,26 @@
          return new BlockStateContainer(this, new IProperty[] {field_176335_a});
      }

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/util/text/translation/LanguageMap.java
-+++ ../src-work/minecraft/net/minecraft/util/text/translation/LanguageMap.java
+--- before/net/minecraft/util/text/translation/LanguageMap.java
++++ after/net/minecraft/util/text/translation/LanguageMap.java
 @@ -23,9 +23,36 @@
  
      public LanguageMap()

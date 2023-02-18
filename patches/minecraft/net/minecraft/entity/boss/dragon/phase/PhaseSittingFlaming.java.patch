@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/boss/dragon/phase/PhaseSittingFlaming.java
-+++ ../src-work/minecraft/net/minecraft/entity/boss/dragon/phase/PhaseSittingFlaming.java
+--- before/net/minecraft/entity/boss/dragon/phase/PhaseSittingFlaming.java
++++ after/net/minecraft/entity/boss/dragon/phase/PhaseSittingFlaming.java
 @@ -72,7 +72,7 @@
              double d2 = this.field_188661_a.field_70986_h.field_70163_u + (double)(this.field_188661_a.field_70986_h.field_70131_O / 2.0F);
              BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(MathHelper.func_76128_c(d0), MathHelper.func_76128_c(d2), MathHelper.func_76128_c(d1));

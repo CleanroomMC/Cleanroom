@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockVine.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockVine.java
+--- before/net/minecraft/block/BlockVine.java
++++ after/net/minecraft/block/BlockVine.java
 @@ -28,7 +28,7 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;

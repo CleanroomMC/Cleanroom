@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/border/WorldBorder.java
-+++ ../src-work/minecraft/net/minecraft/world/border/WorldBorder.java
+--- before/net/minecraft/world/border/WorldBorder.java
++++ after/net/minecraft/world/border/WorldBorder.java
 @@ -284,4 +284,9 @@
              iborderlistener.func_177690_b(this, p_177747_1_);
          }

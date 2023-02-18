@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/ChunkGeneratorHell.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/ChunkGeneratorHell.java
+--- before/net/minecraft/world/gen/ChunkGeneratorHell.java
++++ after/net/minecraft/world/gen/ChunkGeneratorHell.java
 @@ -77,6 +77,19 @@
          this.field_185946_g = new NoiseGeneratorOctaves(this.field_185954_p, 10);
          this.field_185947_h = new NoiseGeneratorOctaves(this.field_185954_p, 16);

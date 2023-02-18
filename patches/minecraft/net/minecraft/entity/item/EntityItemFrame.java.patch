@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/item/EntityItemFrame.java
-+++ ../src-work/minecraft/net/minecraft/entity/item/EntityItemFrame.java
+--- before/net/minecraft/entity/item/EntityItemFrame.java
++++ after/net/minecraft/entity/item/EntityItemFrame.java
 @@ -140,13 +140,14 @@
      {
          if (!p_110131_1_.func_190926_b())

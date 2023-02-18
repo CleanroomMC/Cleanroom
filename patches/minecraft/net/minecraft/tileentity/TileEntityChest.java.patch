@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/tileentity/TileEntityChest.java
-+++ ../src-work/minecraft/net/minecraft/tileentity/TileEntityChest.java
+--- before/net/minecraft/tileentity/TileEntityChest.java
++++ after/net/minecraft/tileentity/TileEntityChest.java
 @@ -116,6 +116,7 @@
      {
          super.func_145836_u();

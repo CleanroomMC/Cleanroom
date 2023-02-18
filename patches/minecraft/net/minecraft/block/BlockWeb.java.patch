@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockWeb.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockWeb.java
+--- before/net/minecraft/block/BlockWeb.java
++++ after/net/minecraft/block/BlockWeb.java
 @@ -22,7 +22,7 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;

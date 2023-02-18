@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/GuiScreenDemo.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/GuiScreenDemo.java
+--- before/net/minecraft/client/gui/GuiScreenDemo.java
++++ after/net/minecraft/client/gui/GuiScreenDemo.java
 @@ -68,10 +68,10 @@
          this.field_146289_q.func_78276_b(I18n.func_135052_a("demo.help.title"), i, j, 2039583);
          j = j + 12;

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/recipebook/GuiRecipeOverlay.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/recipebook/GuiRecipeOverlay.java
+--- before/net/minecraft/client/gui/recipebook/GuiRecipeOverlay.java
++++ after/net/minecraft/client/gui/recipebook/GuiRecipeOverlay.java
 @@ -230,11 +230,11 @@
              int k = 3;
              int l = 3;

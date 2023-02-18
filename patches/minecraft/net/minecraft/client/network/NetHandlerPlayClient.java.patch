@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/network/NetHandlerPlayClient.java
-+++ ../src-work/minecraft/net/minecraft/client/network/NetHandlerPlayClient.java
+--- before/net/minecraft/client/network/NetHandlerPlayClient.java
++++ after/net/minecraft/client/network/NetHandlerPlayClient.java
 @@ -295,7 +295,7 @@
      {
          PacketThreadUtil.func_180031_a(p_147282_1_, this, this.field_147299_f);

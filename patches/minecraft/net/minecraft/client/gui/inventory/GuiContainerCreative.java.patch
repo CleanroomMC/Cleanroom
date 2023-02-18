@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/inventory/GuiContainerCreative.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/inventory/GuiContainerCreative.java
+--- before/net/minecraft/client/gui/inventory/GuiContainerCreative.java
++++ after/net/minecraft/client/gui/inventory/GuiContainerCreative.java
 @@ -57,6 +57,8 @@
      private Slot field_147064_C;
      private boolean field_147057_D;

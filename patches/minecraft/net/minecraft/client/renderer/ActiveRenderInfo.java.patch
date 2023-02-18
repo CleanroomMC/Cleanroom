@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/ActiveRenderInfo.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/ActiveRenderInfo.java
+--- before/net/minecraft/client/renderer/ActiveRenderInfo.java
++++ after/net/minecraft/client/renderer/ActiveRenderInfo.java
 @@ -30,6 +30,11 @@
  
      public static void func_74583_a(EntityPlayer p_74583_0_, boolean p_74583_1_)

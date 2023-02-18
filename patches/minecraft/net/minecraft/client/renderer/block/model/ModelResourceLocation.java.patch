@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/block/model/ModelResourceLocation.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/block/model/ModelResourceLocation.java
+--- before/net/minecraft/client/renderer/block/model/ModelResourceLocation.java
++++ after/net/minecraft/client/renderer/block/model/ModelResourceLocation.java
 @@ -2,11 +2,8 @@
  
  import java.util.Locale;

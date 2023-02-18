@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/WorldProviderEnd.java
-+++ ../src-work/minecraft/net/minecraft/world/WorldProviderEnd.java
+--- before/net/minecraft/world/WorldProviderEnd.java
++++ after/net/minecraft/world/WorldProviderEnd.java
 @@ -20,7 +20,7 @@
      public void func_76572_b()
      {

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/entity/RenderVillager.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/entity/RenderVillager.java
+--- before/net/minecraft/client/renderer/entity/RenderVillager.java
++++ after/net/minecraft/client/renderer/entity/RenderVillager.java
 @@ -31,22 +31,7 @@
  
      protected ResourceLocation func_110775_a(EntityVillager p_110775_1_)

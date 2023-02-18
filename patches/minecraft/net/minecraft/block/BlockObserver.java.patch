@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockObserver.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockObserver.java
+--- before/net/minecraft/block/BlockObserver.java
++++ after/net/minecraft/block/BlockObserver.java
 @@ -145,4 +145,12 @@
      {
          return this.func_176223_P().func_177226_a(field_176387_N, EnumFacing.func_82600_a(p_176203_1_ & 7));

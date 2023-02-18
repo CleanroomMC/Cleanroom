@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/WorldProviderSurface.java
-+++ ../src-work/minecraft/net/minecraft/world/WorldProviderSurface.java
+--- before/net/minecraft/world/WorldProviderSurface.java
++++ after/net/minecraft/world/WorldProviderSurface.java
 @@ -9,6 +9,6 @@
  
      public boolean func_186056_c(int p_186056_1_, int p_186056_2_)

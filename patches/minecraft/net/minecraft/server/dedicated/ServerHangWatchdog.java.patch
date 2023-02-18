@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/server/dedicated/ServerHangWatchdog.java
-+++ ../src-work/minecraft/net/minecraft/server/dedicated/ServerHangWatchdog.java
+--- before/net/minecraft/server/dedicated/ServerHangWatchdog.java
++++ after/net/minecraft/server/dedicated/ServerHangWatchdog.java
 @@ -44,7 +44,7 @@
                  ThreadMXBean threadmxbean = ManagementFactory.getThreadMXBean();
                  ThreadInfo[] athreadinfo = threadmxbean.dumpAllThreads(true, true);

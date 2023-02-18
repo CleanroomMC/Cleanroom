@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/block/model/ModelRotation.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/block/model/ModelRotation.java
+--- before/net/minecraft/client/renderer/block/model/ModelRotation.java
++++ after/net/minecraft/client/renderer/block/model/ModelRotation.java
 @@ -10,7 +10,7 @@
  import org.lwjgl.util.vector.Vector3f;
  

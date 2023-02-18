@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/resources/ResourcePackRepository.java
-+++ ../src-work/minecraft/net/minecraft/client/resources/ResourcePackRepository.java
+--- before/net/minecraft/client/resources/ResourcePackRepository.java
++++ after/net/minecraft/client/resources/ResourcePackRepository.java
 @@ -310,9 +310,10 @@
  
      private boolean func_190113_a(String p_190113_1_, File p_190113_2_)

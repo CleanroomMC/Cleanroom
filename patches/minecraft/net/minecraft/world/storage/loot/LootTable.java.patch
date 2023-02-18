@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/storage/loot/LootTable.java
-+++ ../src-work/minecraft/net/minecraft/world/storage/loot/LootTable.java
+--- before/net/minecraft/world/storage/loot/LootTable.java
++++ after/net/minecraft/world/storage/loot/LootTable.java
 @@ -24,11 +24,11 @@
  {
      private static final Logger field_186465_b = LogManager.getLogger();

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemHoe.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemHoe.java
+--- before/net/minecraft/item/ItemHoe.java
++++ after/net/minecraft/item/ItemHoe.java
 @@ -47,10 +47,13 @@
          }
          else

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/layer/GenLayer.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/layer/GenLayer.java
+--- before/net/minecraft/world/gen/layer/GenLayer.java
++++ after/net/minecraft/world/gen/layer/GenLayer.java
 @@ -47,11 +47,11 @@
              i = 6;
          }

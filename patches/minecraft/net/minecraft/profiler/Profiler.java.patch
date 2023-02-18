@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/profiler/Profiler.java
-+++ ../src-work/minecraft/net/minecraft/profiler/Profiler.java
+--- before/net/minecraft/profiler/Profiler.java
++++ after/net/minecraft/profiler/Profiler.java
 @@ -193,4 +193,16 @@
                  return (this.field_76331_c.hashCode() & 11184810) + 4473924;
              }

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/multiplayer/GuiConnecting.java
-+++ ../src-work/minecraft/net/minecraft/client/multiplayer/GuiConnecting.java
+--- before/net/minecraft/client/multiplayer/GuiConnecting.java
++++ after/net/minecraft/client/multiplayer/GuiConnecting.java
 @@ -67,7 +67,7 @@
                      inetaddress = InetAddress.getByName(p_146367_1_);
                      GuiConnecting.this.field_146371_g = NetworkManager.func_181124_a(inetaddress, p_146367_2_, GuiConnecting.this.field_146297_k.field_71474_y.func_181148_f());

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/stats/RecipeBook.java
-+++ ../src-work/minecraft/net/minecraft/stats/RecipeBook.java
+--- before/net/minecraft/stats/RecipeBook.java
++++ after/net/minecraft/stats/RecipeBook.java
 @@ -42,9 +42,17 @@
          this.field_194078_b.clear(i);
      }

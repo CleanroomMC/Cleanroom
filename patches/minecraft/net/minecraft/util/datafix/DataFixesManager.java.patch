@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/util/datafix/DataFixesManager.java
-+++ ../src-work/minecraft/net/minecraft/util/datafix/DataFixesManager.java
+--- before/net/minecraft/util/datafix/DataFixesManager.java
++++ after/net/minecraft/util/datafix/DataFixesManager.java
 @@ -165,6 +165,7 @@
      public static DataFixer func_188279_a()
      {

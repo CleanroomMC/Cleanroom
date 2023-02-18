@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/ai/EntityAIRunAroundLikeCrazy.java
-+++ ../src-work/minecraft/net/minecraft/entity/ai/EntityAIRunAroundLikeCrazy.java
+--- before/net/minecraft/entity/ai/EntityAIRunAroundLikeCrazy.java
++++ after/net/minecraft/entity/ai/EntityAIRunAroundLikeCrazy.java
 @@ -70,7 +70,7 @@
                  int i = this.field_111180_a.func_110252_cg();
                  int j = this.field_111180_a.func_190676_dC();

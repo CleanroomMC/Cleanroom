@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/block/model/FaceBakery.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/block/model/FaceBakery.java
+--- before/net/minecraft/client/renderer/block/model/FaceBakery.java
++++ after/net/minecraft/client/renderer/block/model/FaceBakery.java
 @@ -49,14 +49,19 @@
  
      public BakedQuad func_178414_a(Vector3f p_178414_1_, Vector3f p_178414_2_, BlockPartFace p_178414_3_, TextureAtlasSprite p_178414_4_, EnumFacing p_178414_5_, ModelRotation p_178414_6_, @Nullable BlockPartRotation p_178414_7_, boolean p_178414_8_, boolean p_178414_9_)

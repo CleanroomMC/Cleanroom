@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/inventory/SlotFurnaceOutput.java
-+++ ../src-work/minecraft/net/minecraft/inventory/SlotFurnaceOutput.java
+--- before/net/minecraft/inventory/SlotFurnaceOutput.java
++++ after/net/minecraft/inventory/SlotFurnaceOutput.java
 @@ -79,5 +79,6 @@
          }
  

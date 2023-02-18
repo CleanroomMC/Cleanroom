@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/GuiUtilRenderComponents.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/GuiUtilRenderComponents.java
+--- before/net/minecraft/client/gui/GuiUtilRenderComponents.java
++++ after/net/minecraft/client/gui/GuiUtilRenderComponents.java
 @@ -73,6 +73,8 @@
                          s3 = s4;
                      }

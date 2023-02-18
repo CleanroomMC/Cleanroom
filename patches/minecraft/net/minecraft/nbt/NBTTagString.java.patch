@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/nbt/NBTTagString.java
-+++ ../src-work/minecraft/net/minecraft/nbt/NBTTagString.java
+--- before/net/minecraft/nbt/NBTTagString.java
++++ after/net/minecraft/nbt/NBTTagString.java
 @@ -29,7 +29,7 @@
      {
          p_152446_3_.func_152450_a(288L);

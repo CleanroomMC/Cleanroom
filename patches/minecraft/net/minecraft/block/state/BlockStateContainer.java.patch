@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/state/BlockStateContainer.java
-+++ ../src-work/minecraft/net/minecraft/block/state/BlockStateContainer.java
+--- before/net/minecraft/block/state/BlockStateContainer.java
++++ after/net/minecraft/block/state/BlockStateContainer.java
 @@ -59,12 +59,22 @@
  
      public BlockStateContainer(Block p_i45663_1_, IProperty<?>... p_i45663_2_)

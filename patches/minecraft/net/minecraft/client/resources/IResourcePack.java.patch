@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/resources/IResourcePack.java
-+++ ../src-work/minecraft/net/minecraft/client/resources/IResourcePack.java
+--- before/net/minecraft/client/resources/IResourcePack.java
++++ after/net/minecraft/client/resources/IResourcePack.java
 @@ -18,7 +18,7 @@
  
      boolean func_110589_b(ResourceLocation p_110589_1_);

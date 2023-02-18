@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockLadder.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockLadder.java
+--- before/net/minecraft/block/BlockLadder.java
++++ after/net/minecraft/block/BlockLadder.java
 @@ -158,6 +158,8 @@
          return new BlockStateContainer(this, new IProperty[] {field_176382_a});
      }

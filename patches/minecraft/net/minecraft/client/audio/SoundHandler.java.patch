@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/audio/SoundHandler.java
-+++ ../src-work/minecraft/net/minecraft/client/audio/SoundHandler.java
+--- before/net/minecraft/client/audio/SoundHandler.java
++++ after/net/minecraft/client/audio/SoundHandler.java
 @@ -67,7 +67,8 @@
      {
          this.field_147697_e.func_148763_c();

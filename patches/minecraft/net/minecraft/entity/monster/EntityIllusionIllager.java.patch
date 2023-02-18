@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/monster/EntityIllusionIllager.java
-+++ ../src-work/minecraft/net/minecraft/entity/monster/EntityIllusionIllager.java
+--- before/net/minecraft/entity/monster/EntityIllusionIllager.java
++++ after/net/minecraft/entity/monster/EntityIllusionIllager.java
 @@ -214,6 +214,8 @@
      public void func_82196_d(EntityLivingBase p_82196_1_, float p_82196_2_)
      {

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/BossInfo.java
-+++ ../src-work/minecraft/net/minecraft/world/BossInfo.java
+--- before/net/minecraft/world/BossInfo.java
++++ after/net/minecraft/world/BossInfo.java
 @@ -2,8 +2,6 @@
  
  import java.util.UUID;

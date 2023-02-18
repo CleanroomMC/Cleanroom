@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/tileentity/TileEntity.java
-+++ ../src-work/minecraft/net/minecraft/tileentity/TileEntity.java
+--- before/net/minecraft/tileentity/TileEntity.java
++++ after/net/minecraft/tileentity/TileEntity.java
 @@ -21,7 +21,7 @@
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;

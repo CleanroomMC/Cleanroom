@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenBigMushroom.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenBigMushroom.java
+--- before/net/minecraft/world/gen/feature/WorldGenBigMushroom.java
++++ after/net/minecraft/world/gen/feature/WorldGenBigMushroom.java
 @@ -62,9 +62,9 @@
                      {
                          if (j >= 0 && j < 256)

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/WorldType.java
-+++ ../src-work/minecraft/net/minecraft/world/WorldType.java
+--- before/net/minecraft/world/WorldType.java
++++ after/net/minecraft/world/WorldType.java
 @@ -27,6 +27,7 @@
  
      private WorldType(int p_i1960_1_, String p_i1960_2_, int p_i1960_3_)

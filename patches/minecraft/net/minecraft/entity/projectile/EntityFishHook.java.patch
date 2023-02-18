@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/projectile/EntityFishHook.java
-+++ ../src-work/minecraft/net/minecraft/entity/projectile/EntityFishHook.java
+--- before/net/minecraft/entity/projectile/EntityFishHook.java
++++ after/net/minecraft/entity/projectile/EntityFishHook.java
 @@ -269,8 +269,8 @@
      {
          ItemStack itemstack = this.field_146042_b.func_184614_ca();

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockBush.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockBush.java
+--- before/net/minecraft/block/BlockBush.java
++++ after/net/minecraft/block/BlockBush.java
 @@ -17,7 +17,7 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;

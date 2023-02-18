@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/util/RecipeBookClient.java
-+++ ../src-work/minecraft/net/minecraft/client/util/RecipeBookClient.java
+--- before/net/minecraft/client/util/RecipeBookClient.java
++++ after/net/minecraft/client/util/RecipeBookClient.java
 @@ -54,6 +54,14 @@
  
      static

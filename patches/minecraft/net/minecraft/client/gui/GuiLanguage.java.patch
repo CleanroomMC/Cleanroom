@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/GuiLanguage.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/GuiLanguage.java
+--- before/net/minecraft/client/gui/GuiLanguage.java
++++ after/net/minecraft/client/gui/GuiLanguage.java
 @@ -108,7 +108,7 @@
              Language language = this.field_148177_m.get(this.field_148176_l.get(p_148144_1_));
              GuiLanguage.this.field_146454_h.func_135045_a(language);

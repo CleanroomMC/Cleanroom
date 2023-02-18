@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/storage/loot/LootEntryItem.java
-+++ ../src-work/minecraft/net/minecraft/world/storage/loot/LootEntryItem.java
+--- before/net/minecraft/world/storage/loot/LootEntryItem.java
++++ after/net/minecraft/world/storage/loot/LootEntryItem.java
 @@ -18,9 +18,9 @@
      protected final Item field_186368_a;
      protected final LootFunction[] field_186369_b;

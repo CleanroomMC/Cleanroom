@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/inventory/SlotCrafting.java
-+++ ../src-work/minecraft/net/minecraft/inventory/SlotCrafting.java
+--- before/net/minecraft/inventory/SlotCrafting.java
++++ after/net/minecraft/inventory/SlotCrafting.java
 @@ -51,6 +51,7 @@
          if (this.field_75237_g > 0)
          {

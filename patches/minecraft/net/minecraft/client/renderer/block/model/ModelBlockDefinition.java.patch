@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/block/model/ModelBlockDefinition.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/block/model/ModelBlockDefinition.java
+--- before/net/minecraft/client/renderer/block/model/ModelBlockDefinition.java
++++ after/net/minecraft/client/renderer/block/model/ModelBlockDefinition.java
 @@ -32,9 +32,14 @@
      private final Map<String, VariantList> field_178332_b = Maps.<String, VariantList>newHashMap();
      private Multipart field_188005_c;

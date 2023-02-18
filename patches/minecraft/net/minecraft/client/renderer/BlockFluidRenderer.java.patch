@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/BlockFluidRenderer.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/BlockFluidRenderer.java
+--- before/net/minecraft/client/renderer/BlockFluidRenderer.java
++++ after/net/minecraft/client/renderer/BlockFluidRenderer.java
 @@ -184,9 +184,9 @@
  
                  if (!flag)

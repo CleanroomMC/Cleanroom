@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenTaiga2.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenTaiga2.java
+--- before/net/minecraft/world/gen/feature/WorldGenTaiga2.java
++++ after/net/minecraft/world/gen/feature/WorldGenTaiga2.java
 @@ -30,7 +30,7 @@
          int l = 2 + p_180709_2_.nextInt(2);
          boolean flag = true;

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/storage/SaveFormatOld.java
-+++ ../src-work/minecraft/net/minecraft/world/storage/SaveFormatOld.java
+--- before/net/minecraft/world/storage/SaveFormatOld.java
++++ after/net/minecraft/world/storage/SaveFormatOld.java
 @@ -109,6 +109,24 @@
          }
      }

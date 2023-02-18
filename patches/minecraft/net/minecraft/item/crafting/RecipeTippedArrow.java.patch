@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/crafting/RecipeTippedArrow.java
-+++ ../src-work/minecraft/net/minecraft/item/crafting/RecipeTippedArrow.java
+--- before/net/minecraft/item/crafting/RecipeTippedArrow.java
++++ after/net/minecraft/item/crafting/RecipeTippedArrow.java
 @@ -7,10 +7,8 @@
  import net.minecraft.potion.PotionUtils;
  import net.minecraft.util.NonNullList;

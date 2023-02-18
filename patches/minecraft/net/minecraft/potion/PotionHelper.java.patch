@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/potion/PotionHelper.java
-+++ ../src-work/minecraft/net/minecraft/potion/PotionHelper.java
+--- before/net/minecraft/potion/PotionHelper.java
++++ after/net/minecraft/potion/PotionHelper.java
 @@ -88,7 +88,7 @@
          {
              PotionHelper.MixPredicate<Item> mixpredicate = (PotionHelper.MixPredicate)field_185214_b.get(i);

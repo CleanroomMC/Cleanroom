@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemBucket.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemBucket.java
+--- before/net/minecraft/item/ItemBucket.java
++++ after/net/minecraft/item/ItemBucket.java
 @@ -40,6 +40,8 @@
          boolean flag = this.field_77876_a == Blocks.field_150350_a;
          ItemStack itemstack = p_77659_2_.func_184586_b(p_77659_3_);

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/chunk/storage/ExtendedBlockStorage.java
-+++ ../src-work/minecraft/net/minecraft/world/chunk/storage/ExtendedBlockStorage.java
+--- before/net/minecraft/world/chunk/storage/ExtendedBlockStorage.java
++++ after/net/minecraft/world/chunk/storage/ExtendedBlockStorage.java
 @@ -34,6 +34,8 @@
  
      public void func_177484_a(int p_177484_1_, int p_177484_2_, int p_177484_3_, IBlockState p_177484_4_)

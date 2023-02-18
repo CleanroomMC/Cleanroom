@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/inventory/Slot.java
-+++ ../src-work/minecraft/net/minecraft/inventory/Slot.java
+--- before/net/minecraft/inventory/Slot.java
++++ after/net/minecraft/inventory/Slot.java
 @@ -90,7 +90,7 @@
      @SideOnly(Side.CLIENT)
      public String func_178171_c()

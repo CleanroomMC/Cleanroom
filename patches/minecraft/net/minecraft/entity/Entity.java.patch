@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/Entity.java
-+++ ../src-work/minecraft/net/minecraft/entity/Entity.java
+--- before/net/minecraft/entity/Entity.java
++++ after/net/minecraft/entity/Entity.java
 @@ -85,7 +85,7 @@
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;

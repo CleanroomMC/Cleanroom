@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/IBlockAccess.java
-+++ ../src-work/minecraft/net/minecraft/world/IBlockAccess.java
+--- before/net/minecraft/world/IBlockAccess.java
++++ after/net/minecraft/world/IBlockAccess.java
 @@ -28,4 +28,14 @@
  
      @SideOnly(Side.CLIENT)

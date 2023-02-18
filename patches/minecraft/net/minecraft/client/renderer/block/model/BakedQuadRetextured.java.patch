@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/block/model/BakedQuadRetextured.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/block/model/BakedQuadRetextured.java
+--- before/net/minecraft/client/renderer/block/model/BakedQuadRetextured.java
++++ after/net/minecraft/client/renderer/block/model/BakedQuadRetextured.java
 @@ -12,7 +12,7 @@
  
      public BakedQuadRetextured(BakedQuad p_i46217_1_, TextureAtlasSprite p_i46217_2_)

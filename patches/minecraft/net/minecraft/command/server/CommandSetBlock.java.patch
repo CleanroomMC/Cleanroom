@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/command/server/CommandSetBlock.java
-+++ ../src-work/minecraft/net/minecraft/command/server/CommandSetBlock.java
+--- before/net/minecraft/command/server/CommandSetBlock.java
++++ after/net/minecraft/command/server/CommandSetBlock.java
 @@ -70,7 +70,7 @@
                  NBTTagCompound nbttagcompound = new NBTTagCompound();
                  boolean flag = false;

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemBlock.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemBlock.java
+--- before/net/minecraft/item/ItemBlock.java
++++ after/net/minecraft/item/ItemBlock.java
 @@ -46,27 +46,15 @@
  
          ItemStack itemstack = p_180614_1_.func_184586_b(p_180614_4_);

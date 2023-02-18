@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemBucketMilk.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemBucketMilk.java
+--- before/net/minecraft/item/ItemBucketMilk.java
++++ after/net/minecraft/item/ItemBucketMilk.java
 @@ -22,6 +22,7 @@
  
      public ItemStack func_77654_b(ItemStack p_77654_1_, World p_77654_2_, EntityLivingBase p_77654_3_)

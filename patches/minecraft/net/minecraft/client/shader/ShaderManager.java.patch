@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/shader/ShaderManager.java
-+++ ../src-work/minecraft/net/minecraft/client/shader/ShaderManager.java
+--- before/net/minecraft/client/shader/ShaderManager.java
++++ after/net/minecraft/client/shader/ShaderManager.java
 @@ -54,7 +54,8 @@
      public ShaderManager(IResourceManager p_i45087_1_, String p_i45087_2_) throws JsonException, IOException
      {

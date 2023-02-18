@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockButton.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockButton.java
+--- before/net/minecraft/block/BlockButton.java
++++ after/net/minecraft/block/BlockButton.java
 @@ -98,7 +98,7 @@
  
          if (p_181088_2_ == EnumFacing.UP)

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/entity/layers/LayerHeldItem.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/entity/layers/LayerHeldItem.java
+--- before/net/minecraft/client/renderer/entity/layers/LayerHeldItem.java
++++ after/net/minecraft/client/renderer/entity/layers/LayerHeldItem.java
 @@ -49,13 +49,13 @@
          if (!p_188358_2_.func_190926_b())
          {

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/resources/Locale.java
-+++ ../src-work/minecraft/net/minecraft/client/resources/Locale.java
+--- before/net/minecraft/client/resources/Locale.java
++++ after/net/minecraft/client/resources/Locale.java
 @@ -31,7 +31,7 @@
          {
              String s1 = String.format("lang/%s.lang", s);

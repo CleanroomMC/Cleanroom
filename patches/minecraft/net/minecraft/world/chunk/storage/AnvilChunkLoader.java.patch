@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/chunk/storage/AnvilChunkLoader.java
-+++ ../src-work/minecraft/net/minecraft/world/chunk/storage/AnvilChunkLoader.java
+--- before/net/minecraft/world/chunk/storage/AnvilChunkLoader.java
++++ after/net/minecraft/world/chunk/storage/AnvilChunkLoader.java
 @@ -49,9 +49,31 @@
          this.field_193416_e = p_i46673_2_;
      }

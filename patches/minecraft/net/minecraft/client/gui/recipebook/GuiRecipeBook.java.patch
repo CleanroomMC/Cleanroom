@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/recipebook/GuiRecipeBook.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/recipebook/GuiRecipeBook.java
+--- before/net/minecraft/client/gui/recipebook/GuiRecipeBook.java
++++ after/net/minecraft/client/gui/recipebook/GuiRecipeBook.java
 @@ -448,7 +448,7 @@
  
              languagemanager.func_135045_a(language);

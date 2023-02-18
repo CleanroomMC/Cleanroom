@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/structure/MapGenStructure.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/structure/MapGenStructure.java
+--- before/net/minecraft/world/gen/structure/MapGenStructure.java
++++ after/net/minecraft/world/gen/structure/MapGenStructure.java
 @@ -175,12 +175,12 @@
      {
          if (this.field_143029_e == null && p_143027_1_ != null)

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/block/model/ModelBakery.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/block/model/ModelBakery.java
+--- before/net/minecraft/client/renderer/block/model/ModelBakery.java
++++ after/net/minecraft/client/renderer/block/model/ModelBakery.java
 @@ -103,6 +103,21 @@
              {
                  try

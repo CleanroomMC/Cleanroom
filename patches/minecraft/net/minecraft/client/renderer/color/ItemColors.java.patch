@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/color/ItemColors.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/color/ItemColors.java
+--- before/net/minecraft/client/renderer/color/ItemColors.java
++++ after/net/minecraft/client/renderer/color/ItemColors.java
 @@ -26,7 +26,8 @@
  @SideOnly(Side.CLIENT)
  public class ItemColors

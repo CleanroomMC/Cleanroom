@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenMegaJungle.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenMegaJungle.java
+--- before/net/minecraft/world/gen/feature/WorldGenMegaJungle.java
++++ after/net/minecraft/world/gen/feature/WorldGenMegaJungle.java
 @@ -55,7 +55,7 @@
              {
                  BlockPos blockpos = p_180709_3_.func_177981_b(i2);

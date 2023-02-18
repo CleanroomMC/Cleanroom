@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/entity/layers/LayerHeldItemWitch.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/entity/layers/LayerHeldItemWitch.java
+--- before/net/minecraft/client/renderer/entity/layers/LayerHeldItemWitch.java
++++ after/net/minecraft/client/renderer/entity/layers/LayerHeldItemWitch.java
 @@ -53,7 +53,7 @@
                  float f1 = 0.375F;
                  GlStateManager.func_179152_a(0.375F, -0.375F, 0.375F);

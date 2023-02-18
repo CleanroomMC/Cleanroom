@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockChorusFlower.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockChorusFlower.java
+--- before/net/minecraft/block/BlockChorusFlower.java
++++ after/net/minecraft/block/BlockChorusFlower.java
 @@ -55,7 +55,7 @@
              {
                  int i = ((Integer)p_180650_3_.func_177229_b(field_185607_a)).intValue();

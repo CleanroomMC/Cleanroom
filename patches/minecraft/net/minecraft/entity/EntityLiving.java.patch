@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/EntityLiving.java
-+++ ../src-work/minecraft/net/minecraft/entity/EntityLiving.java
+--- before/net/minecraft/entity/EntityLiving.java
++++ after/net/minecraft/entity/EntityLiving.java
 @@ -170,6 +170,7 @@
      public void func_70624_b(@Nullable EntityLivingBase p_70624_1_)
      {

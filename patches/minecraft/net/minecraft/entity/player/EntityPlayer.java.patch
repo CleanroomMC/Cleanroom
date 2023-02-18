@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/player/EntityPlayer.java
-+++ ../src-work/minecraft/net/minecraft/entity/player/EntityPlayer.java
+--- before/net/minecraft/entity/player/EntityPlayer.java
++++ after/net/minecraft/entity/player/EntityPlayer.java
 @@ -96,6 +96,12 @@
  @SuppressWarnings("incomplete-switch")
  public abstract class EntityPlayer extends EntityLivingBase

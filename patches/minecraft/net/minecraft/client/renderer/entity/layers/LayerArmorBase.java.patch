@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/entity/layers/LayerArmorBase.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/entity/layers/LayerArmorBase.java
+--- before/net/minecraft/client/renderer/entity/layers/LayerArmorBase.java
++++ after/net/minecraft/client/renderer/entity/layers/LayerArmorBase.java
 @@ -58,31 +58,29 @@
              if (itemarmor.func_185083_B_() == p_188361_9_)
              {

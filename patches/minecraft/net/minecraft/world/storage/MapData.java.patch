@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/storage/MapData.java
-+++ ../src-work/minecraft/net/minecraft/world/storage/MapData.java
+--- before/net/minecraft/world/storage/MapData.java
++++ after/net/minecraft/world/storage/MapData.java
 @@ -20,7 +20,7 @@
  {
      public int field_76201_a;

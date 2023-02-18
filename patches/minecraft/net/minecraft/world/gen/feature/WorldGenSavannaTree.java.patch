@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenSavannaTree.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenSavannaTree.java
+--- before/net/minecraft/world/gen/feature/WorldGenSavannaTree.java
++++ after/net/minecraft/world/gen/feature/WorldGenSavannaTree.java
 @@ -52,7 +52,7 @@
                      {
                          if (j >= 0 && j < 256)

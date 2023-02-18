@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/server/management/PlayerList.java
-+++ ../src-work/minecraft/net/minecraft/server/management/PlayerList.java
+--- before/net/minecraft/server/management/PlayerList.java
++++ after/net/minecraft/server/management/PlayerList.java
 @@ -106,7 +106,7 @@
          this.field_72405_c = 8;
      }

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/monster/EntityZombieVillager.java
-+++ ../src-work/minecraft/net/minecraft/entity/monster/EntityZombieVillager.java
+--- before/net/minecraft/entity/monster/EntityZombieVillager.java
++++ after/net/minecraft/entity/monster/EntityZombieVillager.java
 @@ -53,11 +53,14 @@
      public void func_190733_a(int p_190733_1_)
      {

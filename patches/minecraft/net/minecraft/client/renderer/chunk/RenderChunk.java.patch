@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/chunk/RenderChunk.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/chunk/RenderChunk.java
+--- before/net/minecraft/client/renderer/chunk/RenderChunk.java
++++ after/net/minecraft/client/renderer/chunk/RenderChunk.java
 @@ -162,7 +162,7 @@
                      lvt_9_1_.func_178606_a(blockpos$mutableblockpos);
                  }

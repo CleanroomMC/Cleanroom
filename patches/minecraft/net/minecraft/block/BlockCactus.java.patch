@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockCactus.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockCactus.java
+--- before/net/minecraft/block/BlockCactus.java
++++ after/net/minecraft/block/BlockCactus.java
 @@ -20,7 +20,7 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;

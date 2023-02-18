@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/network/PacketBuffer.java
-+++ ../src-work/minecraft/net/minecraft/network/PacketBuffer.java
+--- before/net/minecraft/network/PacketBuffer.java
++++ after/net/minecraft/network/PacketBuffer.java
 @@ -336,7 +336,7 @@
  
              if (p_150788_1_.func_77973_b().func_77645_m() || p_150788_1_.func_77973_b().func_77651_p())

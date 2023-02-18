@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockFire.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockFire.java
+--- before/net/minecraft/block/BlockFire.java
++++ after/net/minecraft/block/BlockFire.java
 @@ -39,7 +39,15 @@
  
      public IBlockState func_176221_a(IBlockState p_176221_1_, IBlockAccess p_176221_2_, BlockPos p_176221_3_)

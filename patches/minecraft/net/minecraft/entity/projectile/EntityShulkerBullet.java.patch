@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/projectile/EntityShulkerBullet.java
-+++ ../src-work/minecraft/net/minecraft/entity/projectile/EntityShulkerBullet.java
+--- before/net/minecraft/entity/projectile/EntityShulkerBullet.java
++++ after/net/minecraft/entity/projectile/EntityShulkerBullet.java
 @@ -310,7 +310,7 @@
  
                  RayTraceResult raytraceresult = ProjectileHelper.func_188802_a(this, true, false, this.field_184570_a);

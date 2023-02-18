@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/MapGenCaves.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/MapGenCaves.java
+--- before/net/minecraft/world/gen/MapGenCaves.java
++++ after/net/minecraft/world/gen/MapGenCaves.java
 @@ -140,9 +140,7 @@
                              {
                                  if (l1 >= 0 && l1 < 256)

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenDungeons.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenDungeons.java
+--- before/net/minecraft/world/gen/feature/WorldGenDungeons.java
++++ after/net/minecraft/world/gen/feature/WorldGenDungeons.java
 @@ -159,6 +159,6 @@
  
      private ResourceLocation func_76543_b(Random p_76543_1_)

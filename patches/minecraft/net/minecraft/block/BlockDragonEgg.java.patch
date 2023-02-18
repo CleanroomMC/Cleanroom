@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockDragonEgg.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockDragonEgg.java
+--- before/net/minecraft/block/BlockDragonEgg.java
++++ after/net/minecraft/block/BlockDragonEgg.java
 @@ -48,7 +48,7 @@
  
      private void func_180683_d(World p_180683_1_, BlockPos p_180683_2_)

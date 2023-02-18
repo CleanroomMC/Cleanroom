@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/Teleporter.java
-+++ ../src-work/minecraft/net/minecraft/world/Teleporter.java
+--- before/net/minecraft/world/Teleporter.java
++++ after/net/minecraft/world/Teleporter.java
 @@ -15,7 +15,7 @@
  import net.minecraft.util.math.ChunkPos;
  import net.minecraft.util.math.MathHelper;

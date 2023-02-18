@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/GuiScreen.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/GuiScreen.java
+--- before/net/minecraft/client/gui/GuiScreen.java
++++ after/net/minecraft/client/gui/GuiScreen.java
 @@ -61,6 +61,7 @@
      private int field_146298_h;
      private URI field_175286_t;

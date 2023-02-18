@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/GuiControls.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/GuiControls.java
+--- before/net/minecraft/client/gui/GuiControls.java
++++ after/net/minecraft/client/gui/GuiControls.java
 @@ -65,7 +65,7 @@
          {
              for (KeyBinding keybinding : this.field_146297_k.field_71474_y.field_74324_K)

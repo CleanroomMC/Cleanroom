@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/ServerListEntryNormal.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/ServerListEntryNormal.java
+--- before/net/minecraft/client/gui/ServerListEntryNormal.java
++++ after/net/minecraft/client/gui/ServerListEntryNormal.java
 @@ -83,7 +83,7 @@
          boolean flag1 = this.field_148301_e.field_82821_f < 340;
          boolean flag2 = flag || flag1;

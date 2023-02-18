@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemTool.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemTool.java
+--- before/net/minecraft/item/ItemTool.java
++++ after/net/minecraft/item/ItemTool.java
 @@ -33,6 +33,18 @@
          this.field_77865_bY = p_i46745_1_ + p_i46745_3_.func_78000_c();
          this.field_185065_c = p_i46745_2_;

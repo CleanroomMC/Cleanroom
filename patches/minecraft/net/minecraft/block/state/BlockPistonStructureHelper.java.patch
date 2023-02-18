@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/state/BlockPistonStructureHelper.java
-+++ ../src-work/minecraft/net/minecraft/block/state/BlockPistonStructureHelper.java
+--- before/net/minecraft/block/state/BlockPistonStructureHelper.java
++++ after/net/minecraft/block/state/BlockPistonStructureHelper.java
 @@ -65,7 +65,7 @@
              {
                  BlockPos blockpos = this.field_177258_e.get(i);

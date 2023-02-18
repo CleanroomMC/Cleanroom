@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/tileentity/TileEntityNote.java
-+++ ../src-work/minecraft/net/minecraft/tileentity/TileEntityNote.java
+--- before/net/minecraft/tileentity/TileEntityNote.java
++++ after/net/minecraft/tileentity/TileEntityNote.java
 @@ -32,7 +32,9 @@
  
      public void func_145877_a()

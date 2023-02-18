@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/EntityAgeable.java
-+++ ../src-work/minecraft/net/minecraft/entity/EntityAgeable.java
+--- before/net/minecraft/entity/EntityAgeable.java
++++ after/net/minecraft/entity/EntityAgeable.java
 @@ -38,7 +38,7 @@
          {
              if (!this.field_70170_p.field_72995_K)

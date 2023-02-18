@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockDeadBush.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockDeadBush.java
+--- before/net/minecraft/block/BlockDeadBush.java
++++ after/net/minecraft/block/BlockDeadBush.java
 @@ -17,7 +17,7 @@
  import net.minecraft.world.IBlockAccess;
  import net.minecraft.world.World;

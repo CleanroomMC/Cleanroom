@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemMap.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemMap.java
+--- before/net/minecraft/item/ItemMap.java
++++ after/net/minecraft/item/ItemMap.java
 @@ -42,7 +42,7 @@
          p_190906_0_.func_72823_a(s, mapdata);
          mapdata.field_76197_d = p_190906_5_;

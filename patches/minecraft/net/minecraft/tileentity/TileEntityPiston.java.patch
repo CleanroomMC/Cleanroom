@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/tileentity/TileEntityPiston.java
-+++ ../src-work/minecraft/net/minecraft/tileentity/TileEntityPiston.java
+--- before/net/minecraft/tileentity/TileEntityPiston.java
++++ after/net/minecraft/tileentity/TileEntityPiston.java
 @@ -145,7 +145,7 @@
  
              if (!list1.isEmpty())

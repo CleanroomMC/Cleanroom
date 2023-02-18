@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/inventory/GuiContainer.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/inventory/GuiContainer.java
+--- before/net/minecraft/client/gui/inventory/GuiContainer.java
++++ after/net/minecraft/client/gui/inventory/GuiContainer.java
 @@ -116,6 +116,7 @@
          RenderHelper.func_74518_a();
          this.func_146979_b(p_73863_1_, p_73863_2_);

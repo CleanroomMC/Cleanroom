@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/entity/RenderItemFrame.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/entity/RenderItemFrame.java
+--- before/net/minecraft/client/renderer/entity/RenderItemFrame.java
++++ after/net/minecraft/client/renderer/entity/RenderItemFrame.java
 @@ -49,7 +49,7 @@
          ModelManager modelmanager = blockrendererdispatcher.func_175023_a().func_178126_b();
          IBakedModel ibakedmodel;

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockDoor.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockDoor.java
+--- before/net/minecraft/block/BlockDoor.java
++++ after/net/minecraft/block/BlockDoor.java
 @@ -203,7 +203,7 @@
                  flag1 = true;
              }

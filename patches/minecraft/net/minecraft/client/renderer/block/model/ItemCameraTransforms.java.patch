@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/block/model/ItemCameraTransforms.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/block/model/ItemCameraTransforms.java
+--- before/net/minecraft/client/renderer/block/model/ItemCameraTransforms.java
++++ after/net/minecraft/client/renderer/block/model/ItemCameraTransforms.java
 @@ -12,6 +12,9 @@
  import net.minecraftforge.fml.relauncher.SideOnly;
  import org.lwjgl.util.vector.Quaternion;

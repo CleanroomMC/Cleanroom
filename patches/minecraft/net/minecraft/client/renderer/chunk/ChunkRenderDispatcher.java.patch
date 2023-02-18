@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/chunk/ChunkRenderDispatcher.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/chunk/ChunkRenderDispatcher.java
+--- before/net/minecraft/client/renderer/chunk/ChunkRenderDispatcher.java
++++ after/net/minecraft/client/renderer/chunk/ChunkRenderDispatcher.java
 @@ -44,9 +44,15 @@
  
      public ChunkRenderDispatcher()

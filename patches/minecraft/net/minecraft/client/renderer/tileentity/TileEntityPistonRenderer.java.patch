@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/tileentity/TileEntityPistonRenderer.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/tileentity/TileEntityPistonRenderer.java
+--- before/net/minecraft/client/renderer/tileentity/TileEntityPistonRenderer.java
++++ after/net/minecraft/client/renderer/tileentity/TileEntityPistonRenderer.java
 @@ -23,10 +23,11 @@
  @SideOnly(Side.CLIENT)
  public class TileEntityPistonRenderer extends TileEntitySpecialRenderer<TileEntityPiston>

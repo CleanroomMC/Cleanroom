@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/item/EntityXPOrb.java
-+++ ../src-work/minecraft/net/minecraft/entity/item/EntityXPOrb.java
+--- before/net/minecraft/entity/item/EntityXPOrb.java
++++ after/net/minecraft/entity/item/EntityXPOrb.java
 @@ -137,7 +137,9 @@
  
          if (this.field_70122_E)

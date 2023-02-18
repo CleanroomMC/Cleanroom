@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/resources/FileResourcePack.java
-+++ ../src-work/minecraft/net/minecraft/client/resources/FileResourcePack.java
+--- before/net/minecraft/client/resources/FileResourcePack.java
++++ after/net/minecraft/client/resources/FileResourcePack.java
 @@ -64,7 +64,7 @@
          }
      }

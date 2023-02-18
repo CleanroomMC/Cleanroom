@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/network/NettyPacketEncoder.java
-+++ ../src-work/minecraft/net/minecraft/network/NettyPacketEncoder.java
+--- before/net/minecraft/network/NettyPacketEncoder.java
++++ after/net/minecraft/network/NettyPacketEncoder.java
 @@ -52,7 +52,7 @@
                  }
                  catch (Throwable throwable)

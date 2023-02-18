@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/crash/CrashReport.java
-+++ ../src-work/minecraft/net/minecraft/crash/CrashReport.java
+--- before/net/minecraft/crash/CrashReport.java
++++ after/net/minecraft/crash/CrashReport.java
 @@ -116,6 +116,7 @@
                  return IntCache.func_85144_b();
              }

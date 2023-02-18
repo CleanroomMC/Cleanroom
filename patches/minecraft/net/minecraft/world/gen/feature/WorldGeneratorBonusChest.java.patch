@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGeneratorBonusChest.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGeneratorBonusChest.java
+--- before/net/minecraft/world/gen/feature/WorldGeneratorBonusChest.java
++++ after/net/minecraft/world/gen/feature/WorldGeneratorBonusChest.java
 @@ -14,7 +14,7 @@
  {
      public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)

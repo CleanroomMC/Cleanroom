@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/item/EntityItem.java
-+++ ../src-work/minecraft/net/minecraft/entity/item/EntityItem.java
+--- before/net/minecraft/entity/item/EntityItem.java
++++ after/net/minecraft/entity/item/EntityItem.java
 @@ -38,6 +38,11 @@
      private String field_145802_g;
      public float field_70290_d;

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockSlab.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockSlab.java
+--- before/net/minecraft/block/BlockSlab.java
++++ after/net/minecraft/block/BlockSlab.java
 @@ -80,6 +80,19 @@
          return this.func_176552_j();
      }

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/enchantment/EnchantmentFrostWalker.java
-+++ ../src-work/minecraft/net/minecraft/enchantment/EnchantmentFrostWalker.java
+--- before/net/minecraft/enchantment/EnchantmentFrostWalker.java
++++ after/net/minecraft/enchantment/EnchantmentFrostWalker.java
 @@ -59,7 +59,7 @@
                      {
                          IBlockState iblockstate1 = p_185266_1_.func_180495_p(blockpos$mutableblockpos1);

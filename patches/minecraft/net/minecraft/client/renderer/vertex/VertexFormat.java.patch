@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/vertex/VertexFormat.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/vertex/VertexFormat.java
+--- before/net/minecraft/client/renderer/vertex/VertexFormat.java
++++ after/net/minecraft/client/renderer/vertex/VertexFormat.java
 @@ -17,6 +17,7 @@
      private int field_177354_e;
      private final List<Integer> field_177351_f;

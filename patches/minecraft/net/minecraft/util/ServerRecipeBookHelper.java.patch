@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/util/ServerRecipeBookHelper.java
-+++ ../src-work/minecraft/net/minecraft/util/ServerRecipeBookHelper.java
+--- before/net/minecraft/util/ServerRecipeBookHelper.java
++++ after/net/minecraft/util/ServerRecipeBookHelper.java
 @@ -55,6 +55,11 @@
                  this.field_194335_f = ((ContainerPlayer)container).field_75179_f;
                  this.field_194336_g = ((ContainerPlayer)container).field_75181_e;

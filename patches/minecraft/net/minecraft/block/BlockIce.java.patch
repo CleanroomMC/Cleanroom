@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockIce.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockIce.java
+--- before/net/minecraft/block/BlockIce.java
++++ after/net/minecraft/block/BlockIce.java
 @@ -41,9 +41,14 @@
          p_180657_2_.func_71029_a(StatList.func_188055_a(this));
          p_180657_2_.func_71020_j(0.005F);

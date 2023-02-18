@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/block/model/WeightedBakedModel.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/block/model/WeightedBakedModel.java
+--- before/net/minecraft/client/renderer/block/model/WeightedBakedModel.java
++++ after/net/minecraft/client/renderer/block/model/WeightedBakedModel.java
 @@ -41,6 +41,8 @@
          return this.field_177566_c.func_177555_b();
      }

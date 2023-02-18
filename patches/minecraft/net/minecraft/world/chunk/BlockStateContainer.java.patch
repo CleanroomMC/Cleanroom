@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/chunk/BlockStateContainer.java
-+++ ../src-work/minecraft/net/minecraft/world/chunk/BlockStateContainer.java
+--- before/net/minecraft/world/chunk/BlockStateContainer.java
++++ after/net/minecraft/world/chunk/BlockStateContainer.java
 @@ -30,6 +30,10 @@
  
      private void func_186012_b(int p_186012_1_)

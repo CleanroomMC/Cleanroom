@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/block/model/Variant.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/block/model/Variant.java
+--- before/net/minecraft/client/renderer/block/model/Variant.java
++++ after/net/minecraft/client/renderer/block/model/Variant.java
 @@ -12,7 +12,7 @@
  import net.minecraftforge.fml.relauncher.SideOnly;
  

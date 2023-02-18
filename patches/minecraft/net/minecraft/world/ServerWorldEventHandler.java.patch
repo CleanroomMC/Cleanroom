@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/ServerWorldEventHandler.java
-+++ ../src-work/minecraft/net/minecraft/world/ServerWorldEventHandler.java
+--- before/net/minecraft/world/ServerWorldEventHandler.java
++++ after/net/minecraft/world/ServerWorldEventHandler.java
 @@ -55,7 +55,7 @@
  
      public void func_184375_a(@Nullable EntityPlayer p_184375_1_, SoundEvent p_184375_2_, SoundCategory p_184375_3_, double p_184375_4_, double p_184375_6_, double p_184375_8_, float p_184375_10_, float p_184375_11_)

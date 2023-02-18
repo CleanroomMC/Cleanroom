@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/biome/BiomeDecorator.java
-+++ ../src-work/minecraft/net/minecraft/world/biome/BiomeDecorator.java
+--- before/net/minecraft/world/biome/BiomeDecorator.java
++++ after/net/minecraft/world/biome/BiomeDecorator.java
 @@ -92,8 +92,11 @@
  
      protected void func_150513_a(Biome p_150513_1_, World p_150513_2_, Random p_150513_3_)

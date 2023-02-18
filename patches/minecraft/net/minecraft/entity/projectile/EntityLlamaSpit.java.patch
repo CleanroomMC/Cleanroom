@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/projectile/EntityLlamaSpit.java
-+++ ../src-work/minecraft/net/minecraft/entity/projectile/EntityLlamaSpit.java
+--- before/net/minecraft/entity/projectile/EntityLlamaSpit.java
++++ after/net/minecraft/entity/projectile/EntityLlamaSpit.java
 @@ -80,7 +80,7 @@
              raytraceresult = new RayTraceResult(entity);
          }

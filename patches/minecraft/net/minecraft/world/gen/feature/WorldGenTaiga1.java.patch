@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenTaiga1.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenTaiga1.java
+--- before/net/minecraft/world/gen/feature/WorldGenTaiga1.java
++++ after/net/minecraft/world/gen/feature/WorldGenTaiga1.java
 @@ -54,7 +54,7 @@
                      {
                          if (i1 >= 0 && i1 < 256)

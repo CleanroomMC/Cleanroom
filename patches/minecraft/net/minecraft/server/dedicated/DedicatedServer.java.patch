@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/server/dedicated/DedicatedServer.java
-+++ ../src-work/minecraft/net/minecraft/server/dedicated/DedicatedServer.java
+--- before/net/minecraft/server/dedicated/DedicatedServer.java
++++ after/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -62,6 +62,7 @@
      private boolean field_71338_p;
      private GameType field_71337_q;

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemShears.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemShears.java
+--- before/net/minecraft/item/ItemShears.java
++++ after/net/minecraft/item/ItemShears.java
 @@ -26,6 +26,7 @@
          }
  

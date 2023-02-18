@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockMobSpawner.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockMobSpawner.java
+--- before/net/minecraft/block/BlockMobSpawner.java
++++ after/net/minecraft/block/BlockMobSpawner.java
 @@ -40,8 +40,12 @@
      public void func_180653_a(World p_180653_1_, BlockPos p_180653_2_, IBlockState p_180653_3_, float p_180653_4_, int p_180653_5_)
      {

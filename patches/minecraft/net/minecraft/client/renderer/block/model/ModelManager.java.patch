@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/block/model/ModelManager.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/block/model/ModelManager.java
+--- before/net/minecraft/client/renderer/block/model/ModelManager.java
++++ after/net/minecraft/client/renderer/block/model/ModelManager.java
 @@ -24,9 +24,10 @@
  
      public void func_110549_a(IResourceManager p_110549_1_)

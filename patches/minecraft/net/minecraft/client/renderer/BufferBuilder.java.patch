@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/BufferBuilder.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/BufferBuilder.java
+--- before/net/minecraft/client/renderer/BufferBuilder.java
++++ after/net/minecraft/client/renderer/BufferBuilder.java
 @@ -123,6 +123,8 @@
  
              bitset.set(i1);

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/server/integrated/IntegratedServer.java
-+++ ../src-work/minecraft/net/minecraft/server/integrated/IntegratedServer.java
+--- before/net/minecraft/server/integrated/IntegratedServer.java
++++ after/net/minecraft/server/integrated/IntegratedServer.java
 @@ -68,8 +68,6 @@
      public void func_71247_a(String p_71247_1_, String p_71247_2_, long p_71247_3_, WorldType p_71247_5_, String p_71247_6_)
      {

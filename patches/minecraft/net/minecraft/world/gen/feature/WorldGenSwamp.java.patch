@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenSwamp.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenSwamp.java
+--- before/net/minecraft/world/gen/feature/WorldGenSwamp.java
++++ after/net/minecraft/world/gen/feature/WorldGenSwamp.java
 @@ -61,7 +61,7 @@
                              IBlockState iblockstate = p_180709_1_.func_180495_p(blockpos$mutableblockpos.func_181079_c(l, j, i1));
                              Block block = iblockstate.func_177230_c();

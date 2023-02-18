@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockPistonBase.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockPistonBase.java
+--- before/net/minecraft/block/BlockPistonBase.java
++++ after/net/minecraft/block/BlockPistonBase.java
 @@ -241,7 +241,7 @@
                      }
                  }

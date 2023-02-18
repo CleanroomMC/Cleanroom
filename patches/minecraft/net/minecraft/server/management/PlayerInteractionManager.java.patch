@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/server/management/PlayerInteractionManager.java
-+++ ../src-work/minecraft/net/minecraft/server/management/PlayerInteractionManager.java
+--- before/net/minecraft/server/management/PlayerInteractionManager.java
++++ after/net/minecraft/server/management/PlayerInteractionManager.java
 @@ -88,7 +88,7 @@
              int i = this.field_73100_i - this.field_73093_n;
              IBlockState iblockstate = this.field_73092_a.func_180495_p(this.field_180241_i);

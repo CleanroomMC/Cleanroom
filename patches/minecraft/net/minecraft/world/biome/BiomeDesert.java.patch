@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/biome/BiomeDesert.java
-+++ ../src-work/minecraft/net/minecraft/world/biome/BiomeDesert.java
+--- before/net/minecraft/world/biome/BiomeDesert.java
++++ after/net/minecraft/world/biome/BiomeDesert.java
 @@ -47,6 +47,7 @@
      {
          super.func_180624_a(p_180624_1_, p_180624_2_, p_180624_3_);

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/texture/LayeredColorMaskTexture.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/texture/LayeredColorMaskTexture.java
+--- before/net/minecraft/client/renderer/texture/LayeredColorMaskTexture.java
++++ after/net/minecraft/client/renderer/texture/LayeredColorMaskTexture.java
 @@ -71,9 +71,7 @@
  
                          if (s != null)

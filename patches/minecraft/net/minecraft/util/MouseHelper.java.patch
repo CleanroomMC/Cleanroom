@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/util/MouseHelper.java
-+++ ../src-work/minecraft/net/minecraft/util/MouseHelper.java
+--- before/net/minecraft/util/MouseHelper.java
++++ after/net/minecraft/util/MouseHelper.java
 @@ -13,6 +13,7 @@
  
      public void func_74372_a()

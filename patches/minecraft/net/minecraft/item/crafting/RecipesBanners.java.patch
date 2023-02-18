@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/crafting/RecipesBanners.java
-+++ ../src-work/minecraft/net/minecraft/item/crafting/RecipesBanners.java
+--- before/net/minecraft/item/crafting/RecipesBanners.java
++++ after/net/minecraft/item/crafting/RecipesBanners.java
 @@ -12,12 +12,10 @@
  import net.minecraft.tileentity.TileEntityBanner;
  import net.minecraft.util.NonNullList;

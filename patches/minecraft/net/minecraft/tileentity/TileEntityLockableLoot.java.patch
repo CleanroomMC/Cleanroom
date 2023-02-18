@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/tileentity/TileEntityLockableLoot.java
-+++ ../src-work/minecraft/net/minecraft/tileentity/TileEntityLockableLoot.java
+--- before/net/minecraft/tileentity/TileEntityLockableLoot.java
++++ after/net/minecraft/tileentity/TileEntityLockableLoot.java
 @@ -73,7 +73,7 @@
  
              if (p_184281_1_ != null)

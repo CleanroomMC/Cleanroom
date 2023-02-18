@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/stats/RecipeBookServer.java
-+++ ../src-work/minecraft/net/minecraft/stats/RecipeBookServer.java
+--- before/net/minecraft/stats/RecipeBookServer.java
++++ after/net/minecraft/stats/RecipeBookServer.java
 @@ -55,7 +55,7 @@
  
      private void func_194081_a(SPacketRecipeBook.State p_194081_1_, EntityPlayerMP p_194081_2_, List<IRecipe> p_194081_3_)

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockRedstoneWire.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockRedstoneWire.java
+--- before/net/minecraft/block/BlockRedstoneWire.java
++++ after/net/minecraft/block/BlockRedstoneWire.java
 @@ -99,15 +99,15 @@
          BlockPos blockpos = p_176341_2_.func_177972_a(p_176341_3_);
          IBlockState iblockstate = p_176341_1_.func_180495_p(p_176341_2_.func_177972_a(p_176341_3_));

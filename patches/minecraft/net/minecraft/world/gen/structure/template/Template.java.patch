@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/structure/template/Template.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/structure/template/Template.java
+--- before/net/minecraft/world/gen/structure/template/Template.java
++++ after/net/minecraft/world/gen/structure/template/Template.java
 @@ -211,6 +211,8 @@
              for (Template.BlockInfo template$blockinfo : this.field_186270_a)
              {

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/GuiScreenBook.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/GuiScreenBook.java
+--- before/net/minecraft/client/gui/GuiScreenBook.java
++++ after/net/minecraft/client/gui/GuiScreenBook.java
 @@ -69,6 +69,7 @@
  
              if (this.field_146476_w < 1)

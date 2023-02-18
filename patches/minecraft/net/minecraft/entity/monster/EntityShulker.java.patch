@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/monster/EntityShulker.java
-+++ ../src-work/minecraft/net/minecraft/entity/monster/EntityShulker.java
+--- before/net/minecraft/entity/monster/EntityShulker.java
++++ after/net/minecraft/entity/monster/EntityShulker.java
 @@ -311,6 +311,7 @@
              this.field_70165_t = (double)blockpos.func_177958_n() + 0.5D;
              this.field_70163_u = (double)blockpos.func_177956_o();

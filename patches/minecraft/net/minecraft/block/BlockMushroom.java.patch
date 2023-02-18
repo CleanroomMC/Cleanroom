@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockMushroom.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockMushroom.java
+--- before/net/minecraft/block/BlockMushroom.java
++++ after/net/minecraft/block/BlockMushroom.java
 @@ -89,7 +89,7 @@
              }
              else

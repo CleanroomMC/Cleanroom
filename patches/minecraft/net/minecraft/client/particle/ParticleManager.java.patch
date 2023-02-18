@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/particle/ParticleManager.java
-+++ ../src-work/minecraft/net/minecraft/client/particle/ParticleManager.java
+--- before/net/minecraft/client/particle/ParticleManager.java
++++ after/net/minecraft/client/particle/ParticleManager.java
 @@ -153,6 +153,7 @@
  
      public void func_78873_a(Particle p_78873_1_)

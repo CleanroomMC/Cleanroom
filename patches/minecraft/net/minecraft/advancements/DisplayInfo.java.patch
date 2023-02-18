@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/advancements/DisplayInfo.java
-+++ ../src-work/minecraft/net/minecraft/advancements/DisplayInfo.java
+--- before/net/minecraft/advancements/DisplayInfo.java
++++ after/net/minecraft/advancements/DisplayInfo.java
 @@ -132,7 +132,9 @@
          {
              Item item = JsonUtils.func_188180_i(p_193221_0_, "item");

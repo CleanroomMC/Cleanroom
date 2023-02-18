@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/GuiBossOverlay.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/GuiBossOverlay.java
+--- before/net/minecraft/client/gui/GuiBossOverlay.java
++++ after/net/minecraft/client/gui/GuiBossOverlay.java
 @@ -34,13 +34,18 @@
              for (BossInfoClient bossinfoclient : this.field_184060_g.values())
              {

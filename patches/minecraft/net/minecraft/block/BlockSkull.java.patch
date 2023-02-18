@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockSkull.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockSkull.java
+--- before/net/minecraft/block/BlockSkull.java
++++ after/net/minecraft/block/BlockSkull.java
 @@ -128,10 +128,6 @@
          return new ItemStack(Items.field_151144_bL, 1, i);
      }

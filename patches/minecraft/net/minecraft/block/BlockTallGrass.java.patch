@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockTallGrass.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockTallGrass.java
+--- before/net/minecraft/block/BlockTallGrass.java
++++ after/net/minecraft/block/BlockTallGrass.java
 @@ -22,7 +22,7 @@
  import net.minecraft.world.IBlockAccess;
  import net.minecraft.world.World;

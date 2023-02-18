@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/GuiMultiplayer.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/GuiMultiplayer.java
+--- before/net/minecraft/client/gui/GuiMultiplayer.java
++++ after/net/minecraft/client/gui/GuiMultiplayer.java
 @@ -41,6 +41,7 @@
      public GuiMultiplayer(GuiScreen p_i1040_1_)
      {

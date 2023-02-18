@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/projectile/EntityLargeFireball.java
-+++ ../src-work/minecraft/net/minecraft/entity/projectile/EntityLargeFireball.java
+--- before/net/minecraft/entity/projectile/EntityLargeFireball.java
++++ after/net/minecraft/entity/projectile/EntityLargeFireball.java
 @@ -40,7 +40,7 @@
                  this.func_174815_a(this.field_70235_a, p_70227_1_.field_72308_g);
              }

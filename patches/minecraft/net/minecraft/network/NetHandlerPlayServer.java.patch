@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/network/NetHandlerPlayServer.java
-+++ ../src-work/minecraft/net/minecraft/network/NetHandlerPlayServer.java
+--- before/net/minecraft/network/NetHandlerPlayServer.java
++++ after/net/minecraft/network/NetHandlerPlayServer.java
 @@ -377,11 +377,13 @@
                  }
  

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/RenderGlobal.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/RenderGlobal.java
+--- before/net/minecraft/client/renderer/RenderGlobal.java
++++ after/net/minecraft/client/renderer/RenderGlobal.java
 @@ -553,8 +553,10 @@
  
      public void func_180446_a(Entity p_180446_1_, ICamera p_180446_2_, float p_180446_3_)

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/boss/EntityWither.java
-+++ ../src-work/minecraft/net/minecraft/entity/boss/EntityWither.java
+--- before/net/minecraft/entity/boss/EntityWither.java
++++ after/net/minecraft/entity/boss/EntityWither.java
 @@ -255,7 +255,7 @@
  
              if (j1 <= 0)

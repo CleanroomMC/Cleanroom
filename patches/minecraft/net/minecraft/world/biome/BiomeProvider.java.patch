@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/biome/BiomeProvider.java
-+++ ../src-work/minecraft/net/minecraft/world/biome/BiomeProvider.java
+--- before/net/minecraft/world/biome/BiomeProvider.java
++++ after/net/minecraft/world/biome/BiomeProvider.java
 @@ -22,11 +22,12 @@
      private GenLayer field_76945_e;
      private final BiomeCache field_76942_f;

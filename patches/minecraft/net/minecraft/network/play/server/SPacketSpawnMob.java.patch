@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/network/play/server/SPacketSpawnMob.java
-+++ ../src-work/minecraft/net/minecraft/network/play/server/SPacketSpawnMob.java
+--- before/net/minecraft/network/play/server/SPacketSpawnMob.java
++++ after/net/minecraft/network/play/server/SPacketSpawnMob.java
 @@ -38,7 +38,7 @@
      {
          this.field_149042_a = p_i46973_1_.func_145782_y();

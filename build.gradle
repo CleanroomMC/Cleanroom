@@ -298,16 +298,14 @@ project(':cleanroom') {
 
     // Patches
     applyPatches {
-        originalPrefix = '../src-base/minecraft/'
-        modifiedPrefix = '../src-work/minecraft/'
+        originalPrefix = 'before/'
+        modifiedPrefix = 'after/'
     }
 
     genPatches {
-        originalPrefix = '../src-base/minecraft/'
-        modifiedPrefix = '../src-work/minecraft/'
+        originalPrefix = 'before/'
+        modifiedPrefix = 'after/'
     }
-
-    // TODO: more properties to be allocated? Timestamps, git commits, branches, META-INF info?
 
     // Dependencies
     configurations {

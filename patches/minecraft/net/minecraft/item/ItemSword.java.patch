@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemSword.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemSword.java
+--- before/net/minecraft/item/ItemSword.java
++++ after/net/minecraft/item/ItemSword.java
 @@ -88,7 +88,9 @@
  
      public boolean func_82789_a(ItemStack p_82789_1_, ItemStack p_82789_2_)

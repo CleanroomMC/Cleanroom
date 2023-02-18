@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/inventory/ContainerBrewingStand.java
-+++ ../src-work/minecraft/net/minecraft/inventory/ContainerBrewingStand.java
+--- before/net/minecraft/inventory/ContainerBrewingStand.java
++++ after/net/minecraft/inventory/ContainerBrewingStand.java
 @@ -197,7 +197,7 @@
  
              public boolean func_75214_a(ItemStack p_75214_1_)

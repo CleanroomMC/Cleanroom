@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/network/NetHandlerHandshakeMemory.java
-+++ ../src-work/minecraft/net/minecraft/client/network/NetHandlerHandshakeMemory.java
+--- before/net/minecraft/client/network/NetHandlerHandshakeMemory.java
++++ after/net/minecraft/client/network/NetHandlerHandshakeMemory.java
 @@ -23,6 +23,7 @@
  
      public void func_147383_a(C00Handshake p_147383_1_)

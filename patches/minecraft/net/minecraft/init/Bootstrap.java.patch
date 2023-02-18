@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/init/Bootstrap.java
-+++ ../src-work/minecraft/net/minecraft/init/Bootstrap.java
+--- before/net/minecraft/init/Bootstrap.java
++++ after/net/minecraft/init/Bootstrap.java
 @@ -264,9 +264,12 @@
          };
          BlockDispenser.field_149943_a.func_82595_a(Items.field_151129_at, ibehaviordispenseitem);

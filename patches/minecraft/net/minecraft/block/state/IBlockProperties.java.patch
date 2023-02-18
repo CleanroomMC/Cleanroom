@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/state/IBlockProperties.java
-+++ ../src-work/minecraft/net/minecraft/block/state/IBlockProperties.java
+--- before/net/minecraft/block/state/IBlockProperties.java
++++ after/net/minecraft/block/state/IBlockProperties.java
 @@ -28,9 +28,13 @@
  
      boolean func_189884_a(Entity p_189884_1_);

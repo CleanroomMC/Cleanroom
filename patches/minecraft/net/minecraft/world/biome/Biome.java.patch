@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/biome/Biome.java
-+++ ../src-work/minecraft/net/minecraft/world/biome/Biome.java
+--- before/net/minecraft/world/biome/Biome.java
++++ after/net/minecraft/world/biome/Biome.java
 @@ -50,7 +50,7 @@
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;

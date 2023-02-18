@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockStairs.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockStairs.java
+--- before/net/minecraft/block/BlockStairs.java
++++ after/net/minecraft/block/BlockStairs.java
 @@ -483,6 +483,29 @@
          return new BlockStateContainer(this, new IProperty[] {field_176309_a, field_176308_b, field_176310_M});
      }

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/Explosion.java
-+++ ../src-work/minecraft/net/minecraft/world/Explosion.java
+--- before/net/minecraft/world/Explosion.java
++++ after/net/minecraft/world/Explosion.java
 @@ -41,6 +41,7 @@
      private final float field_77280_f;
      private final List<BlockPos> field_77281_g;

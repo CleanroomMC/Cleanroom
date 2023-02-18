@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/inventory/ContainerEnchantment.java
-+++ ../src-work/minecraft/net/minecraft/inventory/ContainerEnchantment.java
+--- before/net/minecraft/inventory/ContainerEnchantment.java
++++ after/net/minecraft/inventory/ContainerEnchantment.java
 @@ -73,9 +73,12 @@
          });
          this.func_75146_a(new Slot(this.field_75168_e, 1, 35, 47)

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemSnow.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemSnow.java
+--- before/net/minecraft/item/ItemSnow.java
++++ after/net/minecraft/item/ItemSnow.java
 @@ -51,7 +51,7 @@
  
                      if (axisalignedbb != Block.field_185506_k && p_180614_2_.func_72855_b(axisalignedbb.func_186670_a(blockpos)) && p_180614_2_.func_180501_a(blockpos, iblockstate1, 10))

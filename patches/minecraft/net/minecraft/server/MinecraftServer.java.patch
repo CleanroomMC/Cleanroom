@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/server/MinecraftServer.java
-+++ ../src-work/minecraft/net/minecraft/server/MinecraftServer.java
+--- before/net/minecraft/server/MinecraftServer.java
++++ after/net/minecraft/server/MinecraftServer.java
 @@ -105,7 +105,7 @@
      @SideOnly(Side.SERVER)
      private String field_71320_r;

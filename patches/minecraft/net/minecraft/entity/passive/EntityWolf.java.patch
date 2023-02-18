@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/passive/EntityWolf.java
-+++ ../src-work/minecraft/net/minecraft/entity/passive/EntityWolf.java
+--- before/net/minecraft/entity/passive/EntityWolf.java
++++ after/net/minecraft/entity/passive/EntityWolf.java
 @@ -434,7 +434,7 @@
  
              if (!this.field_70170_p.field_72995_K)

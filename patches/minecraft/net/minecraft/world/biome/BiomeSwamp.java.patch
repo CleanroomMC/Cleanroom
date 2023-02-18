@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/biome/BiomeSwamp.java
-+++ ../src-work/minecraft/net/minecraft/world/biome/BiomeSwamp.java
+--- before/net/minecraft/world/biome/BiomeSwamp.java
++++ after/net/minecraft/world/biome/BiomeSwamp.java
 @@ -79,6 +79,7 @@
      {
          super.func_180624_a(p_180624_1_, p_180624_2_, p_180624_3_);

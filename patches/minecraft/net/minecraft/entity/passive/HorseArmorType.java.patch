@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/passive/HorseArmorType.java
-+++ ../src-work/minecraft/net/minecraft/entity/passive/HorseArmorType.java
+--- before/net/minecraft/entity/passive/HorseArmorType.java
++++ after/net/minecraft/entity/passive/HorseArmorType.java
 @@ -55,6 +55,7 @@
          return this.field_188586_e;
      }

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/projectile/EntitySmallFireball.java
-+++ ../src-work/minecraft/net/minecraft/entity/projectile/EntitySmallFireball.java
+--- before/net/minecraft/entity/projectile/EntitySmallFireball.java
++++ after/net/minecraft/entity/projectile/EntitySmallFireball.java
 @@ -57,7 +57,7 @@
  
                  if (this.field_70235_a != null && this.field_70235_a instanceof EntityLiving)

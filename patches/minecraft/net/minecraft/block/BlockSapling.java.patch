@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockSapling.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockSapling.java
+--- before/net/minecraft/block/BlockSapling.java
++++ after/net/minecraft/block/BlockSapling.java
 @@ -53,6 +53,7 @@
          {
              super.func_180650_b(p_180650_1_, p_180650_2_, p_180650_3_, p_180650_4_);

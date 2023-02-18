@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenMegaPineTree.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenMegaPineTree.java
+--- before/net/minecraft/world/gen/feature/WorldGenMegaPineTree.java
++++ after/net/minecraft/world/gen/feature/WorldGenMegaPineTree.java
 @@ -41,32 +41,25 @@
  
              for (int j = 0; j < i; ++j)

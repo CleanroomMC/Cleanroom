@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/multiplayer/PlayerControllerMP.java
-+++ ../src-work/minecraft/net/minecraft/client/multiplayer/PlayerControllerMP.java
+--- before/net/minecraft/client/multiplayer/PlayerControllerMP.java
++++ after/net/minecraft/client/multiplayer/PlayerControllerMP.java
 @@ -126,7 +126,13 @@
              }
          }

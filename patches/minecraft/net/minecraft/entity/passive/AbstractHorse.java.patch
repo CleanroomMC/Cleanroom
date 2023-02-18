@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/passive/AbstractHorse.java
-+++ ../src-work/minecraft/net/minecraft/entity/passive/AbstractHorse.java
+--- before/net/minecraft/entity/passive/AbstractHorse.java
++++ after/net/minecraft/entity/passive/AbstractHorse.java
 @@ -312,6 +312,7 @@
  
          this.field_110296_bG.func_110134_a(this);

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/vertex/VertexFormatElement.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/vertex/VertexFormatElement.java
+--- before/net/minecraft/client/renderer/vertex/VertexFormatElement.java
++++ after/net/minecraft/client/renderer/vertex/VertexFormatElement.java
 @@ -158,9 +158,16 @@
          NORMAL("Normal"),
          COLOR("Vertex Color"),

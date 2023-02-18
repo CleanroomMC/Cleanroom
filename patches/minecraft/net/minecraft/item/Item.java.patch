@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/Item.java
-+++ ../src-work/minecraft/net/minecraft/item/Item.java
+--- before/net/minecraft/item/Item.java
++++ after/net/minecraft/item/Item.java
 @@ -58,10 +58,10 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;

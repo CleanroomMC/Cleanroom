@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/inventory/Container.java
-+++ ../src-work/minecraft/net/minecraft/inventory/Container.java
+--- before/net/minecraft/inventory/Container.java
++++ after/net/minecraft/inventory/Container.java
 @@ -81,9 +81,11 @@
  
              if (!ItemStack.func_77989_b(itemstack1, itemstack))

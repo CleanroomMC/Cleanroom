@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/EntityLeashKnot.java
-+++ ../src-work/minecraft/net/minecraft/entity/EntityLeashKnot.java
+--- before/net/minecraft/entity/EntityLeashKnot.java
++++ after/net/minecraft/entity/EntityLeashKnot.java
 @@ -43,6 +43,7 @@
          this.field_70165_t = (double)this.field_174861_a.func_177958_n() + 0.5D;
          this.field_70163_u = (double)this.field_174861_a.func_177956_o() + 0.5D;

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/util/ChatAllowedCharacters.java
-+++ ../src-work/minecraft/net/minecraft/util/ChatAllowedCharacters.java
+--- before/net/minecraft/util/ChatAllowedCharacters.java
++++ after/net/minecraft/util/ChatAllowedCharacters.java
 @@ -31,6 +31,7 @@
  
      static

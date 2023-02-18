@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/EntityTrackerEntry.java
-+++ ../src-work/minecraft/net/minecraft/entity/EntityTrackerEntry.java
+--- before/net/minecraft/entity/EntityTrackerEntry.java
++++ after/net/minecraft/entity/EntityTrackerEntry.java
 @@ -158,13 +158,13 @@
  
              if (itemstack.func_77973_b() instanceof ItemMap)

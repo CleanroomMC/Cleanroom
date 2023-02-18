@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/block/model/BakedQuad.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/block/model/BakedQuad.java
+--- before/net/minecraft/client/renderer/block/model/BakedQuad.java
++++ after/net/minecraft/client/renderer/block/model/BakedQuad.java
 @@ -6,15 +6,26 @@
  import net.minecraftforge.fml.relauncher.SideOnly;
  

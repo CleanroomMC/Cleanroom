@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/resources/IResourceManager.java
-+++ ../src-work/minecraft/net/minecraft/client/resources/IResourceManager.java
+--- before/net/minecraft/client/resources/IResourceManager.java
++++ after/net/minecraft/client/resources/IResourceManager.java
 @@ -10,7 +10,7 @@
  @SideOnly(Side.CLIENT)
  public interface IResourceManager

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockTorch.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockTorch.java
+--- before/net/minecraft/block/BlockTorch.java
++++ after/net/minecraft/block/BlockTorch.java
 @@ -82,18 +82,8 @@
  
      private boolean func_176594_d(World p_176594_1_, BlockPos p_176594_2_)

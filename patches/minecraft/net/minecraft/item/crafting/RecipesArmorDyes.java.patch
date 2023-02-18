@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/crafting/RecipesArmorDyes.java
-+++ ../src-work/minecraft/net/minecraft/item/crafting/RecipesArmorDyes.java
+--- before/net/minecraft/item/crafting/RecipesArmorDyes.java
++++ after/net/minecraft/item/crafting/RecipesArmorDyes.java
 @@ -9,10 +9,8 @@
  import net.minecraft.item.ItemStack;
  import net.minecraft.util.NonNullList;

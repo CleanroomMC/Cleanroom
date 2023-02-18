@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/GuiIngame.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/GuiIngame.java
+--- before/net/minecraft/client/gui/GuiIngame.java
++++ after/net/minecraft/client/gui/GuiIngame.java
 @@ -379,7 +379,8 @@
  
                  BlockPos blockpos = raytraceresult.func_178782_a();

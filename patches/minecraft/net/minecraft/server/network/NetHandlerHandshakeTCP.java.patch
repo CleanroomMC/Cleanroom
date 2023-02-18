@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/server/network/NetHandlerHandshakeTCP.java
-+++ ../src-work/minecraft/net/minecraft/server/network/NetHandlerHandshakeTCP.java
+--- before/net/minecraft/server/network/NetHandlerHandshakeTCP.java
++++ after/net/minecraft/server/network/NetHandlerHandshakeTCP.java
 @@ -22,6 +22,8 @@
  
      public void func_147383_a(C00Handshake p_147383_1_)

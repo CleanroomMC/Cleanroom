@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/tileentity/TileEntityShulkerBox.java
-+++ ../src-work/minecraft/net/minecraft/tileentity/TileEntityShulkerBox.java
+--- before/net/minecraft/tileentity/TileEntityShulkerBox.java
++++ after/net/minecraft/tileentity/TileEntityShulkerBox.java
 @@ -422,4 +422,9 @@
          OPENED,
          CLOSING;

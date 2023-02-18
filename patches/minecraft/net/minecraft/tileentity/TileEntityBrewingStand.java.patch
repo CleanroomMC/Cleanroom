@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/tileentity/TileEntityBrewingStand.java
-+++ ../src-work/minecraft/net/minecraft/tileentity/TileEntityBrewingStand.java
+--- before/net/minecraft/tileentity/TileEntityBrewingStand.java
++++ after/net/minecraft/tileentity/TileEntityBrewingStand.java
 @@ -153,6 +153,7 @@
  
      private boolean func_145934_k()

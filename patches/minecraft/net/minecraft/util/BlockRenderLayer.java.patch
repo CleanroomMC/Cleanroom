@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/util/BlockRenderLayer.java
-+++ ../src-work/minecraft/net/minecraft/util/BlockRenderLayer.java
+--- before/net/minecraft/util/BlockRenderLayer.java
++++ after/net/minecraft/util/BlockRenderLayer.java
 @@ -1,9 +1,5 @@
  package net.minecraft.util;
  

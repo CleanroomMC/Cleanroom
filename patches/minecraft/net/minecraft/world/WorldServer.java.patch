@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/WorldServer.java
-+++ ../src-work/minecraft/net/minecraft/world/WorldServer.java
+--- before/net/minecraft/world/WorldServer.java
++++ after/net/minecraft/world/WorldServer.java
 @@ -101,30 +101,39 @@
      private int field_147489_T;
      private final List<NextTickListEntry> field_94579_S = Lists.<NextTickListEntry>newArrayList();

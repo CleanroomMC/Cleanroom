@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/audio/SoundManager.java
-+++ ../src-work/minecraft/net/minecraft/client/audio/SoundManager.java
+--- before/net/minecraft/client/audio/SoundManager.java
++++ after/net/minecraft/client/audio/SoundManager.java
 @@ -76,6 +76,7 @@
          {
              SoundSystemConfig.addLibrary(LibraryLWJGLOpenAL.class);

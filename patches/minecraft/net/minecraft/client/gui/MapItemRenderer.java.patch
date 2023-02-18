@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/MapItemRenderer.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/MapItemRenderer.java
+--- before/net/minecraft/client/gui/MapItemRenderer.java
++++ after/net/minecraft/client/gui/MapItemRenderer.java
 @@ -139,6 +139,8 @@
              {
                  if (!p_148237_1_ || mapdecoration.func_191180_f())

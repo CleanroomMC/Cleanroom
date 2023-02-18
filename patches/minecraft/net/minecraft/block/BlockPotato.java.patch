@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockPotato.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockPotato.java
+--- before/net/minecraft/block/BlockPotato.java
++++ after/net/minecraft/block/BlockPotato.java
 @@ -27,7 +27,7 @@
      {
          super.func_180653_a(p_180653_1_, p_180653_2_, p_180653_3_, p_180653_4_, p_180653_5_);

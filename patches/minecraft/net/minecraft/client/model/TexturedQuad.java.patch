@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/model/TexturedQuad.java
-+++ ../src-work/minecraft/net/minecraft/client/model/TexturedQuad.java
+--- before/net/minecraft/client/model/TexturedQuad.java
++++ after/net/minecraft/client/model/TexturedQuad.java
 @@ -7,7 +7,6 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;

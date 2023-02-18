@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/model/ModelBox.java
-+++ ../src-work/minecraft/net/minecraft/client/model/ModelBox.java
+--- before/net/minecraft/client/model/ModelBox.java
++++ after/net/minecraft/client/model/ModelBox.java
 @@ -4,7 +4,6 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;

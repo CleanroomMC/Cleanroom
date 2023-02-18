@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockOldLeaf.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockOldLeaf.java
+--- before/net/minecraft/block/BlockOldLeaf.java
++++ after/net/minecraft/block/BlockOldLeaf.java
 @@ -101,11 +101,16 @@
          if (!p_180657_1_.field_72995_K && p_180657_6_.func_77973_b() == Items.field_151097_aZ)
          {

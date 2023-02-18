@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/storage/loot/conditions/RandomChanceWithLooting.java
-+++ ../src-work/minecraft/net/minecraft/world/storage/loot/conditions/RandomChanceWithLooting.java
+--- before/net/minecraft/world/storage/loot/conditions/RandomChanceWithLooting.java
++++ after/net/minecraft/world/storage/loot/conditions/RandomChanceWithLooting.java
 @@ -23,12 +23,7 @@
  
      public boolean func_186618_a(Random p_186618_1_, LootContext p_186618_2_)

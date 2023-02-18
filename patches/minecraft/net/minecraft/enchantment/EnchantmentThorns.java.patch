@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/enchantment/EnchantmentThorns.java
-+++ ../src-work/minecraft/net/minecraft/enchantment/EnchantmentThorns.java
+--- before/net/minecraft/enchantment/EnchantmentThorns.java
++++ after/net/minecraft/enchantment/EnchantmentThorns.java
 @@ -51,12 +51,12 @@
  
              if (!itemstack.func_190926_b())

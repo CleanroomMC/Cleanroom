@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/storage/loot/LootEntryEmpty.java
-+++ ../src-work/minecraft/net/minecraft/world/storage/loot/LootEntryEmpty.java
+--- before/net/minecraft/world/storage/loot/LootEntryEmpty.java
++++ after/net/minecraft/world/storage/loot/LootEntryEmpty.java
 @@ -10,9 +10,9 @@
  
  public class LootEntryEmpty extends LootEntry

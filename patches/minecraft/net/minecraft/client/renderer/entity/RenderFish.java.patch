@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/entity/RenderFish.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/entity/RenderFish.java
+--- before/net/minecraft/client/renderer/entity/RenderFish.java
++++ after/net/minecraft/client/renderer/entity/RenderFish.java
 @@ -75,7 +75,7 @@
              int k = entityplayer.func_184591_cq() == EnumHandSide.RIGHT ? 1 : -1;
              ItemStack itemstack = entityplayer.func_184614_ca();

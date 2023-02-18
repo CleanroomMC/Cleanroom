@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemBow.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemBow.java
+--- before/net/minecraft/item/ItemBow.java
++++ after/net/minecraft/item/ItemBow.java
 @@ -37,7 +37,7 @@
                  }
                  else

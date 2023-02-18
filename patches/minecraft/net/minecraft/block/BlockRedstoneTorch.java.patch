@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockRedstoneTorch.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockRedstoneTorch.java
+--- before/net/minecraft/block/BlockRedstoneTorch.java
++++ after/net/minecraft/block/BlockRedstoneTorch.java
 @@ -23,7 +23,7 @@
  
  public class BlockRedstoneTorch extends BlockTorch

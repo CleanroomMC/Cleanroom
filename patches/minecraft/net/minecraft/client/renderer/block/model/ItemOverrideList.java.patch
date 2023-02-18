@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/block/model/ItemOverrideList.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/block/model/ItemOverrideList.java
+--- before/net/minecraft/client/renderer/block/model/ItemOverrideList.java
++++ after/net/minecraft/client/renderer/block/model/ItemOverrideList.java
 @@ -29,6 +29,7 @@
      }
  

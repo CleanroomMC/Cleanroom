@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/item/EntityMinecartContainer.java
-+++ ../src-work/minecraft/net/minecraft/entity/item/EntityMinecartContainer.java
+--- before/net/minecraft/entity/item/EntityMinecartContainer.java
++++ after/net/minecraft/entity/item/EntityMinecartContainer.java
 @@ -138,10 +138,10 @@
      }
  

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/ItemRenderer.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/ItemRenderer.java
+--- before/net/minecraft/client/renderer/ItemRenderer.java
++++ after/net/minecraft/client/renderer/ItemRenderer.java
 @@ -216,7 +216,7 @@
          bufferbuilder.func_181662_b(135.0D, -7.0D, 0.0D).func_187315_a(1.0D, 0.0D).func_181675_d();
          bufferbuilder.func_181662_b(-7.0D, -7.0D, 0.0D).func_187315_a(0.0D, 0.0D).func_181675_d();

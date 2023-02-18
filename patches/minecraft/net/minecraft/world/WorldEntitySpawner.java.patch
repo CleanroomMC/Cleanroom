@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/WorldEntitySpawner.java
-+++ ../src-work/minecraft/net/minecraft/world/WorldEntitySpawner.java
+--- before/net/minecraft/world/WorldEntitySpawner.java
++++ after/net/minecraft/world/WorldEntitySpawner.java
 @@ -79,15 +79,17 @@
              {
                  if ((!enumcreaturetype.func_75599_d() || p_77192_3_) && (enumcreaturetype.func_75599_d() || p_77192_2_) && (!enumcreaturetype.func_82705_e() || p_77192_4_))

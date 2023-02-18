@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockRailDetector.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockRailDetector.java
+--- before/net/minecraft/block/BlockRailDetector.java
++++ after/net/minecraft/block/BlockRailDetector.java
 @@ -163,6 +163,8 @@
      {
          if (((Boolean)p_180641_1_.func_177229_b(field_176574_M)).booleanValue())

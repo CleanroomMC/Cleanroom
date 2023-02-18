@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/RenderItem.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/RenderItem.java
+--- before/net/minecraft/client/renderer/RenderItem.java
++++ after/net/minecraft/client/renderer/RenderItem.java
 @@ -71,7 +71,7 @@
      public RenderItem(TextureManager p_i46552_1_, ModelManager p_i46552_2_, ItemColors p_i46552_3_)
      {

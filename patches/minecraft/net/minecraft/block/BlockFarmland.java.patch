@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockFarmland.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockFarmland.java
+--- before/net/minecraft/block/BlockFarmland.java
++++ after/net/minecraft/block/BlockFarmland.java
 @@ -72,7 +72,7 @@
  
      public void func_180658_a(World p_180658_1_, BlockPos p_180658_2_, Entity p_180658_3_, float p_180658_4_)

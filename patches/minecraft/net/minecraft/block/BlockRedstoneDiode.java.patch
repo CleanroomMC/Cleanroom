@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockRedstoneDiode.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockRedstoneDiode.java
+--- before/net/minecraft/block/BlockRedstoneDiode.java
++++ after/net/minecraft/block/BlockRedstoneDiode.java
 @@ -39,12 +39,14 @@
  
      public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)

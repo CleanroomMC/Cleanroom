@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/Block.java
-+++ ../src-work/minecraft/net/minecraft/block/Block.java
+--- before/net/minecraft/block/Block.java
++++ after/net/minecraft/block/Block.java
 @@ -52,11 +52,12 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;

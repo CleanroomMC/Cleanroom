@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/network/NetHandlerLoginClient.java
-+++ ../src-work/minecraft/net/minecraft/client/network/NetHandlerLoginClient.java
+--- before/net/minecraft/client/network/NetHandlerLoginClient.java
++++ after/net/minecraft/client/network/NetHandlerLoginClient.java
 @@ -108,7 +108,10 @@
      {
          this.field_175091_e = p_147390_1_.func_179730_a();

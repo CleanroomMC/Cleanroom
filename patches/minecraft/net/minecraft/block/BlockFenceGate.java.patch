@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockFenceGate.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockFenceGate.java
+--- before/net/minecraft/block/BlockFenceGate.java
++++ after/net/minecraft/block/BlockFenceGate.java
 @@ -59,7 +59,7 @@
      {
          EnumFacing.Axis enumfacing$axis = ((EnumFacing)p_176221_1_.func_177229_b(field_185512_D)).func_176740_k();

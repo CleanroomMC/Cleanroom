@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/ChunkGeneratorFlat.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/ChunkGeneratorFlat.java
+--- before/net/minecraft/world/gen/ChunkGeneratorFlat.java
++++ after/net/minecraft/world/gen/ChunkGeneratorFlat.java
 @@ -162,6 +162,7 @@
  
      public void func_185931_b(int p_185931_1_, int p_185931_2_)

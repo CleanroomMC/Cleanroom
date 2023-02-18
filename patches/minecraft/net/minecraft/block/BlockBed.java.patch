@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockBed.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockBed.java
+--- before/net/minecraft/block/BlockBed.java
++++ after/net/minecraft/block/BlockBed.java
 @@ -84,8 +84,10 @@
                  }
              }

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/multiplayer/ChunkProviderClient.java
-+++ ../src-work/minecraft/net/minecraft/client/multiplayer/ChunkProviderClient.java
+--- before/net/minecraft/client/multiplayer/ChunkProviderClient.java
++++ after/net/minecraft/client/multiplayer/ChunkProviderClient.java
 @@ -60,6 +60,7 @@
      {
          Chunk chunk = new Chunk(this.field_73235_d, p_73158_1_, p_73158_2_);

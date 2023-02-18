@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/item/EntityMinecart.java
-+++ ../src-work/minecraft/net/minecraft/entity/item/EntityMinecart.java
+--- before/net/minecraft/entity/item/EntityMinecart.java
++++ after/net/minecraft/entity/item/EntityMinecart.java
 @@ -59,6 +59,20 @@
      @SideOnly(Side.CLIENT)
      private double field_70506_as;

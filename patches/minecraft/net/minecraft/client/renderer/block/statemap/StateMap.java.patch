@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/block/statemap/StateMap.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/block/statemap/StateMap.java
+--- before/net/minecraft/client/renderer/block/statemap/StateMap.java
++++ after/net/minecraft/client/renderer/block/statemap/StateMap.java
 @@ -39,7 +39,7 @@
          }
          else

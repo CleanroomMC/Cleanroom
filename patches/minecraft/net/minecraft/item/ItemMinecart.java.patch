@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemMinecart.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemMinecart.java
+--- before/net/minecraft/item/ItemMinecart.java
++++ after/net/minecraft/item/ItemMinecart.java
 @@ -30,7 +30,7 @@
              double d2 = p_82487_1_.func_82616_c() + (double)enumfacing.func_82599_e() * 1.125D;
              BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a(enumfacing);

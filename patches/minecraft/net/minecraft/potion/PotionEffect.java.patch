@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/potion/PotionEffect.java
-+++ ../src-work/minecraft/net/minecraft/potion/PotionEffect.java
+--- before/net/minecraft/potion/PotionEffect.java
++++ after/net/minecraft/potion/PotionEffect.java
 @@ -19,6 +19,8 @@
      @SideOnly(Side.CLIENT)
      private boolean field_100013_f;

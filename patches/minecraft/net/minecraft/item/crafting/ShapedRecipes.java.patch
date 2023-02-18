@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/crafting/ShapedRecipes.java
-+++ ../src-work/minecraft/net/minecraft/item/crafting/ShapedRecipes.java
+--- before/net/minecraft/item/crafting/ShapedRecipes.java
++++ after/net/minecraft/item/crafting/ShapedRecipes.java
 @@ -19,10 +19,8 @@
  import net.minecraft.util.NonNullList;
  import net.minecraft.util.ResourceLocation;

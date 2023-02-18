@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/layer/GenLayerBiome.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/layer/GenLayerBiome.java
+--- before/net/minecraft/world/gen/layer/GenLayerBiome.java
++++ after/net/minecraft/world/gen/layer/GenLayerBiome.java
 @@ -7,10 +7,8 @@
  
  public class GenLayerBiome extends GenLayer

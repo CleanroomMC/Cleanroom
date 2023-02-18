@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockLeaves.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockLeaves.java
+--- before/net/minecraft/block/BlockLeaves.java
++++ after/net/minecraft/block/BlockLeaves.java
 @@ -17,7 +17,7 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/tileentity/TileEntityHopper.java
-+++ ../src-work/minecraft/net/minecraft/tileentity/TileEntityHopper.java
+--- before/net/minecraft/tileentity/TileEntityHopper.java
++++ after/net/minecraft/tileentity/TileEntityHopper.java
 @@ -191,6 +191,7 @@
  
      private boolean func_145883_k()

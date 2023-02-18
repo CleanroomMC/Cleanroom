@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/shader/Framebuffer.java
-+++ ../src-work/minecraft/net/minecraft/client/shader/Framebuffer.java
+--- before/net/minecraft/client/shader/Framebuffer.java
++++ after/net/minecraft/client/shader/Framebuffer.java
 @@ -118,8 +118,17 @@
              if (this.field_147619_e)
              {

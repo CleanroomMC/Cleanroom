@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/EntityList.java
-+++ ../src-work/minecraft/net/minecraft/entity/EntityList.java
+--- before/net/minecraft/entity/EntityList.java
++++ after/net/minecraft/entity/EntityList.java
 @@ -107,10 +107,8 @@
      public static final ResourceLocation field_191307_a = new ResourceLocation("lightning_bolt");
      private static final ResourceLocation field_191310_e = new ResourceLocation("player");

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/util/SoundEvent.java
-+++ ../src-work/minecraft/net/minecraft/util/SoundEvent.java
+--- before/net/minecraft/util/SoundEvent.java
++++ after/net/minecraft/util/SoundEvent.java
 @@ -4,9 +4,9 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;

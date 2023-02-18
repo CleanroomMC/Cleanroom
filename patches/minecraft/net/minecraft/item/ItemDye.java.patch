@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemDye.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemDye.java
+--- before/net/minecraft/item/ItemDye.java
++++ after/net/minecraft/item/ItemDye.java
 @@ -52,7 +52,7 @@
  
              if (enumdyecolor == EnumDyeColor.WHITE)

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemDoor.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemDoor.java
+--- before/net/minecraft/item/ItemDoor.java
++++ after/net/minecraft/item/ItemDoor.java
 @@ -48,7 +48,7 @@
                  int j = enumfacing.func_82599_e();
                  boolean flag = i < 0 && p_180614_8_ < 0.5F || i > 0 && p_180614_8_ > 0.5F || j < 0 && p_180614_6_ > 0.5F || j > 0 && p_180614_6_ < 0.5F;

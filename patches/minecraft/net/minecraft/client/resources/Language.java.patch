@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/resources/Language.java
-+++ ../src-work/minecraft/net/minecraft/client/resources/Language.java
+--- before/net/minecraft/client/resources/Language.java
++++ after/net/minecraft/client/resources/Language.java
 @@ -17,6 +17,12 @@
          this.field_135037_b = p_i1303_2_;
          this.field_135038_c = p_i1303_3_;

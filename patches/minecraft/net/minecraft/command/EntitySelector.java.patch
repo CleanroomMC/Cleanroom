@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/command/EntitySelector.java
-+++ ../src-work/minecraft/net/minecraft/command/EntitySelector.java
+--- before/net/minecraft/command/EntitySelector.java
++++ after/net/minecraft/command/EntitySelector.java
 @@ -121,6 +121,11 @@
  
      public static <T extends Entity> List<T> func_179656_b(ICommandSender p_179656_0_, String p_179656_1_, Class <? extends T > p_179656_2_) throws CommandException

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/state/BlockStateBase.java
-+++ ../src-work/minecraft/net/minecraft/block/state/BlockStateBase.java
+--- before/net/minecraft/block/state/BlockStateBase.java
++++ after/net/minecraft/block/state/BlockStateBase.java
 @@ -73,4 +73,10 @@
  
          return stringbuilder.toString();

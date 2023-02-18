@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockSnow.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockSnow.java
+--- before/net/minecraft/block/BlockSnow.java
++++ after/net/minecraft/block/BlockSnow.java
 @@ -85,7 +85,7 @@
          if (block != Blocks.field_150432_aD && block != Blocks.field_150403_cj && block != Blocks.field_180401_cv)
          {

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockPortal.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockPortal.java
+--- before/net/minecraft/block/BlockPortal.java
++++ after/net/minecraft/block/BlockPortal.java
 @@ -111,7 +111,7 @@
      {
          BlockPortal.Size blockportal$size = new BlockPortal.Size(p_176548_1_, p_176548_2_, EnumFacing.Axis.X);

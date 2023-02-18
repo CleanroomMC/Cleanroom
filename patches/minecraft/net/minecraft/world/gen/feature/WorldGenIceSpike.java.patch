@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenIceSpike.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenIceSpike.java
+--- before/net/minecraft/world/gen/feature/WorldGenIceSpike.java
++++ after/net/minecraft/world/gen/feature/WorldGenIceSpike.java
 @@ -51,7 +51,7 @@
                              IBlockState iblockstate = p_180709_1_.func_180495_p(p_180709_3_.func_177982_a(i1, k, j1));
                              Block block = iblockstate.func_177230_c();

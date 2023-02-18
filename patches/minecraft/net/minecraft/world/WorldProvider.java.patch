@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/WorldProvider.java
-+++ ../src-work/minecraft/net/minecraft/world/WorldProvider.java
+--- before/net/minecraft/world/WorldProvider.java
++++ after/net/minecraft/world/WorldProvider.java
 @@ -55,37 +55,12 @@
      protected void func_76572_b()
      {

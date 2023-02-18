@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/storage/loot/LootEntryTable.java
-+++ ../src-work/minecraft/net/minecraft/world/storage/loot/LootEntryTable.java
+--- before/net/minecraft/world/storage/loot/LootEntryTable.java
++++ after/net/minecraft/world/storage/loot/LootEntryTable.java
 @@ -14,9 +14,9 @@
  {
      protected final ResourceLocation field_186371_a;

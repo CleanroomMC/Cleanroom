@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/storage/MapDecoration.java
-+++ ../src-work/minecraft/net/minecraft/world/storage/MapDecoration.java
+--- before/net/minecraft/world/storage/MapDecoration.java
++++ after/net/minecraft/world/storage/MapDecoration.java
 @@ -92,6 +92,17 @@
          return i;
      }

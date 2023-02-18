@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/texture/TextureUtil.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/texture/TextureUtil.java
+--- before/net/minecraft/client/renderer/texture/TextureUtil.java
++++ after/net/minecraft/client/renderer/texture/TextureUtil.java
 @@ -63,7 +63,7 @@
          {
              boolean flag = false;

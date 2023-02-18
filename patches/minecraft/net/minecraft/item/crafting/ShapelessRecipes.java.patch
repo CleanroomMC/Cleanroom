@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/crafting/ShapelessRecipes.java
-+++ ../src-work/minecraft/net/minecraft/item/crafting/ShapelessRecipes.java
+--- before/net/minecraft/item/crafting/ShapelessRecipes.java
++++ after/net/minecraft/item/crafting/ShapelessRecipes.java
 @@ -10,23 +10,25 @@
  import net.minecraft.util.JsonUtils;
  import net.minecraft.util.NonNullList;

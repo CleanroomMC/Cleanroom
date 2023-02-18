@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/item/EntityEnderPearl.java
-+++ ../src-work/minecraft/net/minecraft/entity/item/EntityEnderPearl.java
+--- before/net/minecraft/entity/item/EntityEnderPearl.java
++++ after/net/minecraft/entity/item/EntityEnderPearl.java
 @@ -98,6 +98,9 @@
  
                  if (entityplayermp.field_71135_a.func_147362_b().func_150724_d() && entityplayermp.field_70170_p == this.field_70170_p && !entityplayermp.func_70608_bn())

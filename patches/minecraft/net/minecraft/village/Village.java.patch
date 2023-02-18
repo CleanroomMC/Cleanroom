@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/village/Village.java
-+++ ../src-work/minecraft/net/minecraft/village/Village.java
+--- before/net/minecraft/village/Village.java
++++ after/net/minecraft/village/Village.java
 @@ -26,7 +26,7 @@
  import net.minecraft.util.math.Vec3d;
  import net.minecraft.world.World;

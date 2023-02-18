@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/advancements/GuiAdvancementTab.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/advancements/GuiAdvancementTab.java
+--- before/net/minecraft/client/gui/advancements/GuiAdvancementTab.java
++++ after/net/minecraft/client/gui/advancements/GuiAdvancementTab.java
 @@ -37,6 +37,7 @@
      private int field_191814_q = Integer.MIN_VALUE;
      private float field_191815_r;

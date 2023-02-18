@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/server/management/PlayerChunkMapEntry.java
-+++ ../src-work/minecraft/net/minecraft/server/management/PlayerChunkMapEntry.java
+--- before/net/minecraft/server/management/PlayerChunkMapEntry.java
++++ after/net/minecraft/server/management/PlayerChunkMapEntry.java
 @@ -32,12 +32,21 @@
      private int field_187288_h;
      private long field_187289_i;

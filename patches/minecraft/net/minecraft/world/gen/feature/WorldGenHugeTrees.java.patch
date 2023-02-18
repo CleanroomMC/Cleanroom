@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenHugeTrees.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenHugeTrees.java
+--- before/net/minecraft/world/gen/feature/WorldGenHugeTrees.java
++++ after/net/minecraft/world/gen/feature/WorldGenHugeTrees.java
 @@ -59,7 +59,7 @@
                  {
                      for (int l = -j; l <= j && flag; ++l)

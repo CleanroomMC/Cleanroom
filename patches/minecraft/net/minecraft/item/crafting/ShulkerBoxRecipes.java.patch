@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/crafting/ShulkerBoxRecipes.java
-+++ ../src-work/minecraft/net/minecraft/item/crafting/ShulkerBoxRecipes.java
+--- before/net/minecraft/item/crafting/ShulkerBoxRecipes.java
++++ after/net/minecraft/item/crafting/ShulkerBoxRecipes.java
 @@ -8,12 +8,10 @@
  import net.minecraft.item.ItemStack;
  import net.minecraft.util.NonNullList;

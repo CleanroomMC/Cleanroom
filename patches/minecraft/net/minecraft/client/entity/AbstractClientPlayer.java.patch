@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/entity/AbstractClientPlayer.java
-+++ ../src-work/minecraft/net/minecraft/client/entity/AbstractClientPlayer.java
+--- before/net/minecraft/client/entity/AbstractClientPlayer.java
++++ after/net/minecraft/client/entity/AbstractClientPlayer.java
 @@ -135,7 +135,7 @@
              f = 1.0F;
          }

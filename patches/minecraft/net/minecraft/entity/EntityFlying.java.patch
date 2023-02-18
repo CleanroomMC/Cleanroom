@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/EntityFlying.java
-+++ ../src-work/minecraft/net/minecraft/entity/EntityFlying.java
+--- before/net/minecraft/entity/EntityFlying.java
++++ after/net/minecraft/entity/EntityFlying.java
 @@ -44,7 +44,9 @@
  
              if (this.field_70122_E)

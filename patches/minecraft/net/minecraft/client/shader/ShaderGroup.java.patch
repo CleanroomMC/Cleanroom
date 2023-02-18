@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/shader/ShaderGroup.java
-+++ ../src-work/minecraft/net/minecraft/client/shader/ShaderGroup.java
+--- before/net/minecraft/client/shader/ShaderGroup.java
++++ after/net/minecraft/client/shader/ShaderGroup.java
 @@ -179,7 +179,8 @@
  
                          if (framebuffer2 == null)

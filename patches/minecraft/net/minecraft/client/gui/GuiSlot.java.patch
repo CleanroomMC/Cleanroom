@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/GuiSlot.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/GuiSlot.java
+--- before/net/minecraft/client/gui/GuiSlot.java
++++ after/net/minecraft/client/gui/GuiSlot.java
 @@ -181,15 +181,8 @@
              GlStateManager.func_179106_n();
              Tessellator tessellator = Tessellator.func_178181_a();

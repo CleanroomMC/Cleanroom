@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/BlockModelRenderer.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/BlockModelRenderer.java
+--- before/net/minecraft/client/renderer/BlockModelRenderer.java
++++ after/net/minecraft/client/renderer/BlockModelRenderer.java
 @@ -40,7 +40,7 @@
  
      public boolean func_187493_a(IBlockAccess p_187493_1_, IBakedModel p_187493_2_, IBlockState p_187493_3_, BlockPos p_187493_4_, BufferBuilder p_187493_5_, boolean p_187493_6_, long p_187493_7_)

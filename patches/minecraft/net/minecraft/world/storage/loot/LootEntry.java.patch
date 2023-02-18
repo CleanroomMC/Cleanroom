@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/storage/loot/LootEntry.java
-+++ ../src-work/minecraft/net/minecraft/world/storage/loot/LootEntry.java
+--- before/net/minecraft/world/storage/loot/LootEntry.java
++++ after/net/minecraft/world/storage/loot/LootEntry.java
 @@ -18,15 +18,17 @@
  
  public abstract class LootEntry

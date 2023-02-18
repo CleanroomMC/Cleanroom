@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/storage/DerivedWorldInfo.java
-+++ ../src-work/minecraft/net/minecraft/world/storage/DerivedWorldInfo.java
+--- before/net/minecraft/world/storage/DerivedWorldInfo.java
++++ after/net/minecraft/world/storage/DerivedWorldInfo.java
 @@ -218,13 +218,25 @@
      {
      }

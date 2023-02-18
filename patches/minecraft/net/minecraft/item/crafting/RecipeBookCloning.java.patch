@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/crafting/RecipeBookCloning.java
-+++ ../src-work/minecraft/net/minecraft/item/crafting/RecipeBookCloning.java
+--- before/net/minecraft/item/crafting/RecipeBookCloning.java
++++ after/net/minecraft/item/crafting/RecipeBookCloning.java
 @@ -6,10 +6,8 @@
  import net.minecraft.item.ItemWrittenBook;
  import net.minecraft.util.NonNullList;

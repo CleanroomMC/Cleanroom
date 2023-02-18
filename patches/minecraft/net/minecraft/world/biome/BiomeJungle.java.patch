@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/biome/BiomeJungle.java
-+++ ../src-work/minecraft/net/minecraft/world/biome/BiomeJungle.java
+--- before/net/minecraft/world/biome/BiomeJungle.java
++++ after/net/minecraft/world/biome/BiomeJungle.java
 @@ -81,10 +81,14 @@
          super.func_180624_a(p_180624_1_, p_180624_2_, p_180624_3_);
          int i = p_180624_2_.nextInt(16) + 8;

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/enchantment/EnchantmentHelper.java
-+++ ../src-work/minecraft/net/minecraft/enchantment/EnchantmentHelper.java
+--- before/net/minecraft/enchantment/EnchantmentHelper.java
++++ after/net/minecraft/enchantment/EnchantmentHelper.java
 @@ -140,6 +140,7 @@
          field_77520_b.field_77497_a = 0;
          field_77520_b.field_77496_b = p_77508_1_;

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemArrow.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemArrow.java
+--- before/net/minecraft/item/ItemArrow.java
++++ after/net/minecraft/item/ItemArrow.java
 @@ -19,4 +19,10 @@
          entitytippedarrow.func_184555_a(p_185052_2_);
          return entitytippedarrow;

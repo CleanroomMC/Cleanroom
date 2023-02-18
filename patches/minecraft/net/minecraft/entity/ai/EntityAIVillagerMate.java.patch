@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/ai/EntityAIVillagerMate.java
-+++ ../src-work/minecraft/net/minecraft/entity/ai/EntityAIVillagerMate.java
+--- before/net/minecraft/entity/ai/EntityAIVillagerMate.java
++++ after/net/minecraft/entity/ai/EntityAIVillagerMate.java
 @@ -113,11 +113,15 @@
  
      private void func_75447_i()

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/WorldServerMulti.java
-+++ ../src-work/minecraft/net/minecraft/world/WorldServerMulti.java
+--- before/net/minecraft/world/WorldServerMulti.java
++++ after/net/minecraft/world/WorldServerMulti.java
 @@ -11,12 +11,13 @@
  public class WorldServerMulti extends WorldServer
  {

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/EntityRenderer.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/EntityRenderer.java
+--- before/net/minecraft/client/renderer/EntityRenderer.java
++++ after/net/minecraft/client/renderer/EntityRenderer.java
 @@ -211,6 +211,7 @@
              {
                  this.func_175069_a(new ResourceLocation("shaders/post/invert.json"));

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/model/ModelSkeleton.java
-+++ ../src-work/minecraft/net/minecraft/client/model/ModelSkeleton.java
+--- before/net/minecraft/client/model/ModelSkeleton.java
++++ after/net/minecraft/client/model/ModelSkeleton.java
 @@ -48,7 +48,7 @@
          this.field_187075_l = ModelBiped.ArmPose.EMPTY;
          ItemStack itemstack = p_78086_1_.func_184586_b(EnumHand.MAIN_HAND);

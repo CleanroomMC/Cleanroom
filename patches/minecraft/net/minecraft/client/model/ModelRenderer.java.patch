@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/model/ModelRenderer.java
-+++ ../src-work/minecraft/net/minecraft/client/model/ModelRenderer.java
+--- before/net/minecraft/client/model/ModelRenderer.java
++++ after/net/minecraft/client/model/ModelRenderer.java
 @@ -9,7 +9,6 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;

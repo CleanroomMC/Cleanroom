@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/potion/Potion.java
-+++ ../src-work/minecraft/net/minecraft/potion/Potion.java
+--- before/net/minecraft/potion/Potion.java
++++ after/net/minecraft/potion/Potion.java
 @@ -22,9 +22,9 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;

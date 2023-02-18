@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/structure/MapGenStronghold.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/structure/MapGenStronghold.java
+--- before/net/minecraft/world/gen/structure/MapGenStronghold.java
++++ after/net/minecraft/world/gen/structure/MapGenStronghold.java
 @@ -29,7 +29,15 @@
  
          for (Biome biome : Biome.field_185377_q)

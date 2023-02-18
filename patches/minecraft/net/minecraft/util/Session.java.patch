@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/util/Session.java
-+++ ../src-work/minecraft/net/minecraft/util/Session.java
+--- before/net/minecraft/util/Session.java
++++ after/net/minecraft/util/Session.java
 @@ -17,9 +17,25 @@
      private final String field_148257_b;
      private final String field_148258_c;

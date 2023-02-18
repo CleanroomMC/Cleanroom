@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/entity/RenderEntityItem.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/entity/RenderEntityItem.java
+--- before/net/minecraft/client/renderer/entity/RenderEntityItem.java
++++ after/net/minecraft/client/renderer/entity/RenderEntityItem.java
 @@ -44,7 +44,7 @@
              boolean flag = p_177077_9_.func_177556_c();
              int i = this.func_177078_a(itemstack);

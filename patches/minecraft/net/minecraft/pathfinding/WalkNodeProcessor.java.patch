@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/pathfinding/WalkNodeProcessor.java
-+++ ../src-work/minecraft/net/minecraft/pathfinding/WalkNodeProcessor.java
+--- before/net/minecraft/pathfinding/WalkNodeProcessor.java
++++ after/net/minecraft/pathfinding/WalkNodeProcessor.java
 @@ -23,6 +23,7 @@
  public class WalkNodeProcessor extends NodeProcessor
  {

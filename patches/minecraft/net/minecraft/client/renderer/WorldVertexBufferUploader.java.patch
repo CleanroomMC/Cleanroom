@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/WorldVertexBufferUploader.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/WorldVertexBufferUploader.java
+--- before/net/minecraft/client/renderer/WorldVertexBufferUploader.java
++++ after/net/minecraft/client/renderer/WorldVertexBufferUploader.java
 @@ -27,26 +27,8 @@
                  int l = vertexformatelement.func_177369_e();
                  bytebuffer.position(vertexformat.func_181720_d(j));

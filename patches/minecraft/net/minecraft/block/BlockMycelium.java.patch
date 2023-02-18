@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockMycelium.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockMycelium.java
+--- before/net/minecraft/block/BlockMycelium.java
++++ after/net/minecraft/block/BlockMycelium.java
 @@ -39,7 +39,8 @@
      {
          if (!p_180650_1_.field_72995_K)

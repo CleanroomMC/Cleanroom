@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/realms/RealmsConnect.java
-+++ ../src-work/minecraft/net/minecraft/realms/RealmsConnect.java
+--- before/net/minecraft/realms/RealmsConnect.java
++++ after/net/minecraft/realms/RealmsConnect.java
 @@ -38,6 +38,7 @@
  
                  try

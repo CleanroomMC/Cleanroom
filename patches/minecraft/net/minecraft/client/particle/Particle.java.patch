@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/particle/Particle.java
-+++ ../src-work/minecraft/net/minecraft/client/particle/Particle.java
+--- before/net/minecraft/client/particle/Particle.java
++++ after/net/minecraft/client/particle/Particle.java
 @@ -265,8 +265,8 @@
          {
              this.field_187134_n = p_187115_1_;

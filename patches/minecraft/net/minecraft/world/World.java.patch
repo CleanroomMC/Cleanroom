@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/World.java
-+++ ../src-work/minecraft/net/minecraft/world/World.java
+--- before/net/minecraft/world/World.java
++++ after/net/minecraft/world/World.java
 @@ -11,6 +11,7 @@
  import java.util.Random;
  import java.util.UUID;

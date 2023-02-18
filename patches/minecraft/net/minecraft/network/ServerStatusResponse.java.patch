@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/network/ServerStatusResponse.java
-+++ ../src-work/minecraft/net/minecraft/network/ServerStatusResponse.java
+--- before/net/minecraft/network/ServerStatusResponse.java
++++ after/net/minecraft/network/ServerStatusResponse.java
 @@ -29,6 +29,7 @@
      public void func_151315_a(ITextComponent p_151315_1_)
      {

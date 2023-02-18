@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockNetherWart.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockNetherWart.java
+--- before/net/minecraft/block/BlockNetherWart.java
++++ after/net/minecraft/block/BlockNetherWart.java
 @@ -42,25 +42,28 @@
  
      public boolean func_180671_f(World p_180671_1_, BlockPos p_180671_2_, IBlockState p_180671_3_)

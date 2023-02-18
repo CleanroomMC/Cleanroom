@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/passive/EntityRabbit.java
-+++ ../src-work/minecraft/net/minecraft/entity/passive/EntityRabbit.java
+--- before/net/minecraft/entity/passive/EntityRabbit.java
++++ after/net/minecraft/entity/passive/EntityRabbit.java
 @@ -551,7 +551,7 @@
              {
                  if (this.field_179496_a <= 0)

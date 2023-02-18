@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/resources/SimpleReloadableResourceManager.java
-+++ ../src-work/minecraft/net/minecraft/client/resources/SimpleReloadableResourceManager.java
+--- before/net/minecraft/client/resources/SimpleReloadableResourceManager.java
++++ after/net/minecraft/client/resources/SimpleReloadableResourceManager.java
 @@ -36,7 +36,7 @@
  
      public void func_110545_a(IResourcePack p_110545_1_)

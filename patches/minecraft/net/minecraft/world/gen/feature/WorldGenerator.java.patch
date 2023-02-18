@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenerator.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenerator.java
+--- before/net/minecraft/world/gen/feature/WorldGenerator.java
++++ after/net/minecraft/world/gen/feature/WorldGenerator.java
 @@ -33,7 +33,8 @@
          }
          else

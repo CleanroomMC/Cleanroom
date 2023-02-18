@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/ChunkGeneratorEnd.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/ChunkGeneratorEnd.java
+--- before/net/minecraft/world/gen/ChunkGeneratorEnd.java
++++ after/net/minecraft/world/gen/ChunkGeneratorEnd.java
 @@ -43,6 +43,9 @@
      double[] field_185967_f;
      double[] field_185968_g;

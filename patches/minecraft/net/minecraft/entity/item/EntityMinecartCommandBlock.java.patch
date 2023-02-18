@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/item/EntityMinecartCommandBlock.java
-+++ ../src-work/minecraft/net/minecraft/entity/item/EntityMinecartCommandBlock.java
+--- before/net/minecraft/entity/item/EntityMinecartCommandBlock.java
++++ after/net/minecraft/entity/item/EntityMinecartCommandBlock.java
 @@ -147,6 +147,7 @@
  
      public boolean func_184230_a(EntityPlayer p_184230_1_, EnumHand p_184230_2_)

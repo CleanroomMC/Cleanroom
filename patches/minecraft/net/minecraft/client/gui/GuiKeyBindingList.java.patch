@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/GuiKeyBindingList.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/GuiKeyBindingList.java
+--- before/net/minecraft/client/gui/GuiKeyBindingList.java
++++ after/net/minecraft/client/gui/GuiKeyBindingList.java
 @@ -62,7 +62,7 @@
  
      protected int func_148137_d()

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/chunk/storage/RegionFile.java
-+++ ../src-work/minecraft/net/minecraft/world/chunk/storage/RegionFile.java
+--- before/net/minecraft/world/chunk/storage/RegionFile.java
++++ after/net/minecraft/world/chunk/storage/RegionFile.java
 @@ -19,6 +19,9 @@
  
  public class RegionFile

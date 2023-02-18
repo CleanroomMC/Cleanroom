@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/nbt/CompressedStreamTools.java
-+++ ../src-work/minecraft/net/minecraft/nbt/CompressedStreamTools.java
+--- before/net/minecraft/nbt/CompressedStreamTools.java
++++ after/net/minecraft/nbt/CompressedStreamTools.java
 @@ -18,8 +18,6 @@
  import net.minecraft.crash.CrashReport;
  import net.minecraft.crash.CrashReportCategory;

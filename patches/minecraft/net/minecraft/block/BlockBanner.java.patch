@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockBanner.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockBanner.java
+--- before/net/minecraft/block/BlockBanner.java
++++ after/net/minecraft/block/BlockBanner.java
 @@ -90,16 +90,9 @@
  
      public void func_180653_a(World p_180653_1_, BlockPos p_180653_2_, IBlockState p_180653_3_, float p_180653_4_, int p_180653_5_)

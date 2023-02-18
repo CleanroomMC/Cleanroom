@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenBirchTree.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenBirchTree.java
+--- before/net/minecraft/world/gen/feature/WorldGenBirchTree.java
++++ after/net/minecraft/world/gen/feature/WorldGenBirchTree.java
 @@ -56,9 +56,9 @@
                  {
                      for (int i1 = p_180709_3_.func_177952_p() - k; i1 <= p_180709_3_.func_177952_p() + k && flag; ++i1)

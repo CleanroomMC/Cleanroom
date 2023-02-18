@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/InventoryEffectRenderer.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/InventoryEffectRenderer.java
+--- before/net/minecraft/client/renderer/InventoryEffectRenderer.java
++++ after/net/minecraft/client/renderer/InventoryEffectRenderer.java
 @@ -28,13 +28,19 @@
  
      protected void func_175378_g()

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/inventory/ContainerRepair.java
-+++ ../src-work/minecraft/net/minecraft/inventory/ContainerRepair.java
+--- before/net/minecraft/inventory/ContainerRepair.java
++++ after/net/minecraft/inventory/ContainerRepair.java
 @@ -70,6 +70,8 @@
                      p_190901_1_.func_82242_a(-ContainerRepair.this.field_82854_e);
                  }

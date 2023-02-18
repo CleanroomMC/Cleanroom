@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/pathfinding/FlyingNodeProcessor.java
-+++ ../src-work/minecraft/net/minecraft/pathfinding/FlyingNodeProcessor.java
+--- before/net/minecraft/pathfinding/FlyingNodeProcessor.java
++++ after/net/minecraft/pathfinding/FlyingNodeProcessor.java
 @@ -272,7 +272,9 @@
          EnumSet<PathNodeType> enumset = EnumSet.<PathNodeType>noneOf(PathNodeType.class);
          PathNodeType pathnodetype = PathNodeType.BLOCKED;

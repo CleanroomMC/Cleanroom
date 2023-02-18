@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/SharedMonsterAttributes.java
-+++ ../src-work/minecraft/net/minecraft/entity/SharedMonsterAttributes.java
+--- before/net/minecraft/entity/SharedMonsterAttributes.java
++++ after/net/minecraft/entity/SharedMonsterAttributes.java
 @@ -16,7 +16,7 @@
  public class SharedMonsterAttributes
  {

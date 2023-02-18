@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/DimensionType.java
-+++ ../src-work/minecraft/net/minecraft/world/DimensionType.java
+--- before/net/minecraft/world/DimensionType.java
++++ after/net/minecraft/world/DimensionType.java
 @@ -13,6 +13,7 @@
      private final String field_186075_e;
      private final String field_186076_f;

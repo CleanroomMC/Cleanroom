@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockCocoa.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockCocoa.java
+--- before/net/minecraft/block/BlockCocoa.java
++++ after/net/minecraft/block/BlockCocoa.java
 @@ -44,13 +44,14 @@
          {
              this.func_176500_f(p_180650_1_, p_180650_2_, p_180650_3_);

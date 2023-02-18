@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/GuiIngameMenu.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/GuiIngameMenu.java
+--- before/net/minecraft/client/gui/GuiIngameMenu.java
++++ after/net/minecraft/client/gui/GuiIngameMenu.java
 @@ -30,7 +30,8 @@
  
          this.field_146292_n.add(new GuiButton(4, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + 24 + -16, I18n.func_135052_a("menu.returnToGame")));

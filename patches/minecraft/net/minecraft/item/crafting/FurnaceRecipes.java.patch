@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/crafting/FurnaceRecipes.java
-+++ ../src-work/minecraft/net/minecraft/item/crafting/FurnaceRecipes.java
+--- before/net/minecraft/item/crafting/FurnaceRecipes.java
++++ after/net/minecraft/item/crafting/FurnaceRecipes.java
 @@ -113,6 +113,7 @@
  
      public void func_151394_a(ItemStack p_151394_1_, ItemStack p_151394_2_, float p_151394_3_)

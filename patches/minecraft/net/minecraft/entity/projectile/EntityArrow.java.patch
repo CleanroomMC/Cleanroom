@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/projectile/EntityArrow.java
-+++ ../src-work/minecraft/net/minecraft/entity/projectile/EntityArrow.java
+--- before/net/minecraft/entity/projectile/EntityArrow.java
++++ after/net/minecraft/entity/projectile/EntityArrow.java
 @@ -262,7 +262,7 @@
                  }
              }

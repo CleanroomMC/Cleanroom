@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/crash/CrashReportCategory.java
-+++ ../src-work/minecraft/net/minecraft/crash/CrashReportCategory.java
+--- before/net/minecraft/crash/CrashReportCategory.java
++++ after/net/minecraft/crash/CrashReportCategory.java
 @@ -121,8 +121,11 @@
          }
          else

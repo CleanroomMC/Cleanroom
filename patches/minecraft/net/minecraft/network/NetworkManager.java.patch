@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/network/NetworkManager.java
-+++ ../src-work/minecraft/net/minecraft/network/NetworkManager.java
+--- before/net/minecraft/network/NetworkManager.java
++++ after/net/minecraft/network/NetworkManager.java
 @@ -88,6 +88,11 @@
          this.field_179294_g = p_i46004_1_;
      }

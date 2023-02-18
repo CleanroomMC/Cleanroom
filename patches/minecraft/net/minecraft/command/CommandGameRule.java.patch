@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/command/CommandGameRule.java
-+++ ../src-work/minecraft/net/minecraft/command/CommandGameRule.java
+--- before/net/minecraft/command/CommandGameRule.java
++++ after/net/minecraft/command/CommandGameRule.java
 @@ -73,6 +73,7 @@
                  entityplayermp.field_71135_a.func_147359_a(new SPacketEntityStatus(entityplayermp, b0));
              }

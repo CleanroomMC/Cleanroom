@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockRailBase.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockRailBase.java
+--- before/net/minecraft/block/BlockRailBase.java
++++ after/net/minecraft/block/BlockRailBase.java
 @@ -34,7 +34,7 @@
      public static boolean func_176563_d(IBlockState p_176563_0_)
      {

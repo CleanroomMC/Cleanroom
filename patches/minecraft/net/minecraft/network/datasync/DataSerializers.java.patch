@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/network/datasync/DataSerializers.java
-+++ ../src-work/minecraft/net/minecraft/network/datasync/DataSerializers.java
+--- before/net/minecraft/network/datasync/DataSerializers.java
++++ after/net/minecraft/network/datasync/DataSerializers.java
 @@ -305,20 +305,21 @@
          }
      };

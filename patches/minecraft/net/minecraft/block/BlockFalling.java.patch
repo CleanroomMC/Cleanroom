@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockFalling.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockFalling.java
+--- before/net/minecraft/block/BlockFalling.java
++++ after/net/minecraft/block/BlockFalling.java
 @@ -47,7 +47,7 @@
  
      private void func_176503_e(World p_176503_1_, BlockPos p_176503_2_)

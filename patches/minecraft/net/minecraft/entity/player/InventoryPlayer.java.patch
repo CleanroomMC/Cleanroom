@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/player/InventoryPlayer.java
-+++ ../src-work/minecraft/net/minecraft/entity/player/InventoryPlayer.java
+--- before/net/minecraft/entity/player/InventoryPlayer.java
++++ after/net/minecraft/entity/player/InventoryPlayer.java
 @@ -292,7 +292,8 @@
  
          if (itemstack.func_190926_b())

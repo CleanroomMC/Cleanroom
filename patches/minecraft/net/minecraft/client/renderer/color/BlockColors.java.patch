@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/renderer/color/BlockColors.java
-+++ ../src-work/minecraft/net/minecraft/client/renderer/color/BlockColors.java
+--- before/net/minecraft/client/renderer/color/BlockColors.java
++++ after/net/minecraft/client/renderer/color/BlockColors.java
 @@ -27,7 +27,8 @@
  @SideOnly(Side.CLIENT)
  public class BlockColors

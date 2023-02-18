@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/enchantment/EnumEnchantmentType.java
-+++ ../src-work/minecraft/net/minecraft/enchantment/EnumEnchantmentType.java
+--- before/net/minecraft/enchantment/EnumEnchantmentType.java
++++ after/net/minecraft/enchantment/EnumEnchantmentType.java
 @@ -100,5 +100,13 @@
      {
      }

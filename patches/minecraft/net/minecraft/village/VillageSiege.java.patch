@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/village/VillageSiege.java
-+++ ../src-work/minecraft/net/minecraft/village/VillageSiege.java
+--- before/net/minecraft/village/VillageSiege.java
++++ after/net/minecraft/village/VillageSiege.java
 @@ -146,6 +146,7 @@
  
                      if (vec3d != null)

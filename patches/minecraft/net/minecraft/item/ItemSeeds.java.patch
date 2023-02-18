@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemSeeds.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemSeeds.java
+--- before/net/minecraft/item/ItemSeeds.java
++++ after/net/minecraft/item/ItemSeeds.java
 @@ -11,7 +11,7 @@
  import net.minecraft.util.math.BlockPos;
  import net.minecraft.world.World;

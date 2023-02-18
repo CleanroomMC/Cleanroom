@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/chunk/Chunk.java
-+++ ../src-work/minecraft/net/minecraft/world/chunk/Chunk.java
+--- before/net/minecraft/world/chunk/Chunk.java
++++ after/net/minecraft/world/chunk/Chunk.java
 @@ -41,7 +41,7 @@
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;

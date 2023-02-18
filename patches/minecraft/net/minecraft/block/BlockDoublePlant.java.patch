@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockDoublePlant.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockDoublePlant.java
+--- before/net/minecraft/block/BlockDoublePlant.java
++++ after/net/minecraft/block/BlockDoublePlant.java
 @@ -24,7 +24,7 @@
  import net.minecraft.world.IBlockAccess;
  import net.minecraft.world.World;

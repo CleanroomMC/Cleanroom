@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/util/TabCompleter.java
-+++ ../src-work/minecraft/net/minecraft/util/TabCompleter.java
+--- before/net/minecraft/util/TabCompleter.java
++++ after/net/minecraft/util/TabCompleter.java
 @@ -55,13 +55,14 @@
              this.field_186844_a.func_146175_b(i - this.field_186844_a.func_146198_h());
          }

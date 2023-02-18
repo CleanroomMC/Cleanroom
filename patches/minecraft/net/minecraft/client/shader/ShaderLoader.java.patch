@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/shader/ShaderLoader.java
-+++ ../src-work/minecraft/net/minecraft/client/shader/ShaderLoader.java
+--- before/net/minecraft/client/shader/ShaderLoader.java
++++ after/net/minecraft/client/shader/ShaderLoader.java
 @@ -60,7 +60,8 @@
  
          if (shaderloader == null)

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/LoadingScreenRenderer.java
-+++ ../src-work/minecraft/net/minecraft/client/LoadingScreenRenderer.java
+--- before/net/minecraft/client/LoadingScreenRenderer.java
++++ after/net/minecraft/client/LoadingScreenRenderer.java
 @@ -139,6 +139,10 @@
                      GlStateManager.func_179086_m(16640);
                  }

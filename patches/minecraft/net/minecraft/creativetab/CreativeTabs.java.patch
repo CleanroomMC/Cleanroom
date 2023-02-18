@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/creativetab/CreativeTabs.java
-+++ ../src-work/minecraft/net/minecraft/creativetab/CreativeTabs.java
+--- before/net/minecraft/creativetab/CreativeTabs.java
++++ after/net/minecraft/creativetab/CreativeTabs.java
 @@ -131,8 +131,22 @@
      private EnumEnchantmentType[] field_111230_s = new EnumEnchantmentType[0];
      private ItemStack field_151245_t;

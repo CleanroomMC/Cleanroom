@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/command/CommandFill.java
-+++ ../src-work/minecraft/net/minecraft/command/CommandFill.java
+--- before/net/minecraft/command/CommandFill.java
++++ after/net/minecraft/command/CommandFill.java
 @@ -82,7 +82,7 @@
                  NBTTagCompound nbttagcompound = new NBTTagCompound();
                  boolean flag = false;

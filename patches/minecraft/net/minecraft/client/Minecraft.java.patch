@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/Minecraft.java
-+++ ../src-work/minecraft/net/minecraft/client/Minecraft.java
+--- before/net/minecraft/client/Minecraft.java
++++ after/net/minecraft/client/Minecraft.java
 @@ -332,6 +332,7 @@
      public Minecraft(GameConfiguration p_i45547_1_)
      {

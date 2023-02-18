@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockEnderChest.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockEnderChest.java
+--- before/net/minecraft/block/BlockEnderChest.java
++++ after/net/minecraft/block/BlockEnderChest.java
 @@ -100,7 +100,7 @@
  
          if (inventoryenderchest != null && tileentity instanceof TileEntityEnderChest)

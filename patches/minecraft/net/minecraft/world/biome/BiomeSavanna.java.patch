@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/biome/BiomeSavanna.java
-+++ ../src-work/minecraft/net/minecraft/world/biome/BiomeSavanna.java
+--- before/net/minecraft/world/biome/BiomeSavanna.java
++++ after/net/minecraft/world/biome/BiomeSavanna.java
 @@ -39,6 +39,7 @@
      {
          field_180280_ag.func_180710_a(BlockDoublePlant.EnumPlantType.GRASS);

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/village/VillageCollection.java
-+++ ../src-work/minecraft/net/minecraft/village/VillageCollection.java
+--- before/net/minecraft/village/VillageCollection.java
++++ after/net/minecraft/village/VillageCollection.java
 @@ -151,6 +151,7 @@
  
      private void func_180609_b(BlockPos p_180609_1_)

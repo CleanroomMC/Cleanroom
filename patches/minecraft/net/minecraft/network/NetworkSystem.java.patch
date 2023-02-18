@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/network/NetworkSystem.java
-+++ ../src-work/minecraft/net/minecraft/network/NetworkSystem.java
+--- before/net/minecraft/network/NetworkSystem.java
++++ after/net/minecraft/network/NetworkSystem.java
 @@ -49,21 +49,21 @@
      {
          protected NioEventLoopGroup func_179280_b()

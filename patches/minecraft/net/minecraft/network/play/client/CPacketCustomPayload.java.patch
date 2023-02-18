@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/network/play/client/CPacketCustomPayload.java
-+++ ../src-work/minecraft/net/minecraft/network/play/client/CPacketCustomPayload.java
+--- before/net/minecraft/network/play/client/CPacketCustomPayload.java
++++ after/net/minecraft/network/play/client/CPacketCustomPayload.java
 @@ -47,7 +47,11 @@
      public void func_148840_b(PacketBuffer p_148840_1_) throws IOException
      {

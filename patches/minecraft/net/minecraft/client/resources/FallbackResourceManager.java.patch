@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/resources/FallbackResourceManager.java
-+++ ../src-work/minecraft/net/minecraft/client/resources/FallbackResourceManager.java
+--- before/net/minecraft/client/resources/FallbackResourceManager.java
++++ after/net/minecraft/client/resources/FallbackResourceManager.java
 @@ -33,7 +33,7 @@
          this.field_110540_a.add(p_110538_1_);
      }

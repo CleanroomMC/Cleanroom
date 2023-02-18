@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/monster/EntitySpider.java
-+++ ../src-work/minecraft/net/minecraft/entity/monster/EntitySpider.java
+--- before/net/minecraft/entity/monster/EntitySpider.java
++++ after/net/minecraft/entity/monster/EntitySpider.java
 @@ -139,7 +139,13 @@
  
      public boolean func_70687_e(PotionEffect p_70687_1_)

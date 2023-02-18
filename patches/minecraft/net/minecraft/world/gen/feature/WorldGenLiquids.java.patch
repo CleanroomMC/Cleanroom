@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenLiquids.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenLiquids.java
+--- before/net/minecraft/world/gen/feature/WorldGenLiquids.java
++++ after/net/minecraft/world/gen/feature/WorldGenLiquids.java
 @@ -31,7 +31,7 @@
          {
              IBlockState iblockstate = p_180709_1_.func_180495_p(p_180709_3_);

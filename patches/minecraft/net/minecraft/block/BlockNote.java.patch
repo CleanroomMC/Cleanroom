@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockNote.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockNote.java
+--- before/net/minecraft/block/BlockNote.java
++++ after/net/minecraft/block/BlockNote.java
 @@ -63,7 +63,9 @@
              if (tileentity instanceof TileEntityNote)
              {

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/crafting/RecipeFireworks.java
-+++ ../src-work/minecraft/net/minecraft/item/crafting/RecipeFireworks.java
+--- before/net/minecraft/item/crafting/RecipeFireworks.java
++++ after/net/minecraft/item/crafting/RecipeFireworks.java
 @@ -10,10 +10,8 @@
  import net.minecraft.nbt.NBTTagList;
  import net.minecraft.util.NonNullList;

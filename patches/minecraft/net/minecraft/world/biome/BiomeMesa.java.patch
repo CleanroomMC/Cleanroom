@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/biome/BiomeMesa.java
-+++ ../src-work/minecraft/net/minecraft/world/biome/BiomeMesa.java
+--- before/net/minecraft/world/biome/BiomeMesa.java
++++ after/net/minecraft/world/biome/BiomeMesa.java
 @@ -318,13 +318,13 @@
      @SideOnly(Side.CLIENT)
      public int func_180625_c(BlockPos p_180625_1_)

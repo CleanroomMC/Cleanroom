@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/monster/EntityZombie.java
-+++ ../src-work/minecraft/net/minecraft/entity/monster/EntityZombie.java
+--- before/net/minecraft/entity/monster/EntityZombie.java
++++ after/net/minecraft/entity/monster/EntityZombie.java
 @@ -98,7 +98,7 @@
          this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.23000000417232513D);
          this.func_110148_a(SharedMonsterAttributes.field_111264_e).func_111128_a(3.0D);

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/ClientBrandRetriever.java
-+++ ../src-work/minecraft/net/minecraft/client/ClientBrandRetriever.java
+--- before/net/minecraft/client/ClientBrandRetriever.java
++++ after/net/minecraft/client/ClientBrandRetriever.java
 @@ -8,6 +8,6 @@
  {
      public static String getClientModName()

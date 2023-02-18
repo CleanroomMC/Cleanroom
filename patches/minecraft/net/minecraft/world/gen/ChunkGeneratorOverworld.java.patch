@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/ChunkGeneratorOverworld.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/ChunkGeneratorOverworld.java
+--- before/net/minecraft/world/gen/ChunkGeneratorOverworld.java
++++ after/net/minecraft/world/gen/ChunkGeneratorOverworld.java
 @@ -61,6 +61,16 @@
  
      public ChunkGeneratorOverworld(World p_i46668_1_, long p_i46668_2_, boolean p_i46668_4_, String p_i46668_5_)

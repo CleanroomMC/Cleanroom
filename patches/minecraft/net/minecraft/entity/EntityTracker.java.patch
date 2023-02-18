@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/entity/EntityTracker.java
-+++ ../src-work/minecraft/net/minecraft/entity/EntityTracker.java
+--- before/net/minecraft/entity/EntityTracker.java
++++ after/net/minecraft/entity/EntityTracker.java
 @@ -77,6 +77,8 @@
  
      public void func_72786_a(Entity p_72786_1_)

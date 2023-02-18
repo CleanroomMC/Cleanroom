@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemStack.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemStack.java
+--- before/net/minecraft/item/ItemStack.java
++++ after/net/minecraft/item/ItemStack.java
 @@ -50,7 +50,7 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;

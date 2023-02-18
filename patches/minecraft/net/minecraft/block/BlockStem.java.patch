@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockStem.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockStem.java
+--- before/net/minecraft/block/BlockStem.java
++++ after/net/minecraft/block/BlockStem.java
 @@ -66,18 +66,19 @@
      {
          super.func_180650_b(p_180650_1_, p_180650_2_, p_180650_3_, p_180650_4_);

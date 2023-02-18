@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/gui/GuiEnchantment.java
-+++ ../src-work/minecraft/net/minecraft/client/gui/GuiEnchantment.java
+--- before/net/minecraft/client/gui/GuiEnchantment.java
++++ after/net/minecraft/client/gui/GuiEnchantment.java
 @@ -171,7 +171,7 @@
                  FontRenderer fontrenderer = this.field_146297_k.field_71464_q;
                  int i2 = 6839882;

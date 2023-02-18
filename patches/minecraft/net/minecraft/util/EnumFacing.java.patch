@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/util/EnumFacing.java
-+++ ../src-work/minecraft/net/minecraft/util/EnumFacing.java
+--- before/net/minecraft/util/EnumFacing.java
++++ after/net/minecraft/util/EnumFacing.java
 @@ -12,8 +12,6 @@
  import net.minecraft.util.math.BlockPos;
  import net.minecraft.util.math.MathHelper;

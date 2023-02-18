@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/crafting/RecipeRepairItem.java
-+++ ../src-work/minecraft/net/minecraft/item/crafting/RecipeRepairItem.java
+--- before/net/minecraft/item/crafting/RecipeRepairItem.java
++++ after/net/minecraft/item/crafting/RecipeRepairItem.java
 @@ -7,10 +7,8 @@
  import net.minecraft.item.ItemStack;
  import net.minecraft.util.NonNullList;

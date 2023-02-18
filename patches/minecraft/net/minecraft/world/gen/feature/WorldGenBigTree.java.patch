@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenBigTree.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenBigTree.java
+--- before/net/minecraft/world/gen/feature/WorldGenBigTree.java
++++ after/net/minecraft/world/gen/feature/WorldGenBigTree.java
 @@ -99,9 +99,9 @@
                  if (Math.pow((double)Math.abs(j) + 0.5D, 2.0D) + Math.pow((double)Math.abs(k) + 0.5D, 2.0D) <= (double)(p_181631_2_ * p_181631_2_))
                  {

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockFlowerPot.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockFlowerPot.java
+--- before/net/minecraft/block/BlockFlowerPot.java
++++ after/net/minecraft/block/BlockFlowerPot.java
 @@ -152,12 +152,14 @@
  
      public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)

@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/network/play/client/CPacketCreativeInventoryAction.java
-+++ ../src-work/minecraft/net/minecraft/network/play/client/CPacketCreativeInventoryAction.java
+--- before/net/minecraft/network/play/client/CPacketCreativeInventoryAction.java
++++ after/net/minecraft/network/play/client/CPacketCreativeInventoryAction.java
 @@ -38,7 +38,7 @@
      public void func_148840_b(PacketBuffer p_148840_1_) throws IOException
      {

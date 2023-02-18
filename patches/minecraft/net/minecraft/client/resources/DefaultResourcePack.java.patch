@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/resources/DefaultResourcePack.java
-+++ ../src-work/minecraft/net/minecraft/client/resources/DefaultResourcePack.java
+--- before/net/minecraft/client/resources/DefaultResourcePack.java
++++ after/net/minecraft/client/resources/DefaultResourcePack.java
 @@ -79,7 +79,7 @@
          return this.func_110605_c(p_110589_1_) != null || this.field_188549_b.func_188545_b(p_110589_1_);
      }

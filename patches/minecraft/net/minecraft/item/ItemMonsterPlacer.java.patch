@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/item/ItemMonsterPlacer.java
-+++ ../src-work/minecraft/net/minecraft/item/ItemMonsterPlacer.java
+--- before/net/minecraft/item/ItemMonsterPlacer.java
++++ after/net/minecraft/item/ItemMonsterPlacer.java
 @@ -234,6 +234,7 @@
                      entity.func_70012_b(p_77840_2_, p_77840_4_, p_77840_6_, MathHelper.func_76142_g(p_77840_0_.field_73012_v.nextFloat() * 360.0F), 0.0F);
                      entityliving.field_70759_as = entityliving.field_70177_z;

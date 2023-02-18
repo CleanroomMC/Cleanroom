@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/block/BlockStaticLiquid.java
-+++ ../src-work/minecraft/net/minecraft/block/BlockStaticLiquid.java
+--- before/net/minecraft/block/BlockStaticLiquid.java
++++ after/net/minecraft/block/BlockStaticLiquid.java
 @@ -52,22 +52,22 @@
                      {
                          blockpos = blockpos.func_177982_a(p_180650_4_.nextInt(3) - 1, 1, p_180650_4_.nextInt(3) - 1);

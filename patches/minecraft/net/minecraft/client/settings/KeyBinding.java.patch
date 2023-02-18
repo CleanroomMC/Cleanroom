@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/client/settings/KeyBinding.java
-+++ ../src-work/minecraft/net/minecraft/client/settings/KeyBinding.java
+--- before/net/minecraft/client/settings/KeyBinding.java
++++ after/net/minecraft/client/settings/KeyBinding.java
 @@ -15,7 +15,7 @@
  public class KeyBinding implements Comparable<KeyBinding>
  {

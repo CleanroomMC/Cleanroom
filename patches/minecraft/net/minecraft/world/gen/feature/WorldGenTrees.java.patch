@@ -1,5 +1,5 @@
---- ../src-base/minecraft/net/minecraft/world/gen/feature/WorldGenTrees.java
-+++ ../src-work/minecraft/net/minecraft/world/gen/feature/WorldGenTrees.java
+--- before/net/minecraft/world/gen/feature/WorldGenTrees.java
++++ after/net/minecraft/world/gen/feature/WorldGenTrees.java
 @@ -44,7 +44,7 @@
          int i = p_180709_2_.nextInt(3) + this.field_76533_a;
          boolean flag = true;
