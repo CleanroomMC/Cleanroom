@@ -130,8 +130,8 @@ project(':cleanroom') {
     apply plugin: 'net.minecraftforge.gradle.patcher'
 
     java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-    group = 'net.minecraftforge'
-    // group = 'com.cleanroommc'
+    //  = 'net.minecraftforge'
+    group = 'com.cleanroommc'
     version = props.new_forge_version
 
     sourceSets {
