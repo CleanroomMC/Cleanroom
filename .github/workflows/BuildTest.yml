@@ -27,6 +27,9 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+    
+    - name: Fix Gradle permission
+      run: chmod +x ./gradlew
         
     - name: Setup Forge env
       run: ./gradlew setup
