@@ -1,5 +1,16 @@
 --- before/net/minecraft/client/renderer/RenderGlobal.java
 +++ after/net/minecraft/client/renderer/RenderGlobal.java
+@@ -88,8 +88,8 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+-import org.lwjgl.util.vector.Vector3f;
+-import org.lwjgl.util.vector.Vector4f;
++import org.lwjglx.util.vector.Vector3f;
++import org.lwjglx.util.vector.Vector4f;
+ 
+ @SideOnly(Side.CLIENT)
+ public class RenderGlobal implements IWorldEventListener, IResourceManagerReloadListener
 @@ -553,8 +553,10 @@
  
      public void func_180446_a(Entity p_180446_1_, ICamera p_180446_2_, float p_180446_3_)
@@ -84,6 +95,15 @@
  
              this.func_180443_s();
  
+@@ -860,7 +875,7 @@
+ 
+                 if (set1.size() == 1)
+                 {
+-                    Vector3f vector3f = this.func_174962_a(p_174970_1_, p_174970_2_);
++                    Vector3f vector3f = this.getViewVector(p_174970_1_, p_174970_2_);
+                     EnumFacing enumfacing = EnumFacing.func_176737_a(vector3f.x, vector3f.y, vector3f.z).func_176734_d();
+                     set1.remove(enumfacing);
+                 }
 @@ -895,7 +910,7 @@
                      {
                          RenderChunk renderchunk1 = this.field_175008_n.func_178161_a(new BlockPos((j << 4) + 8, i, (k << 4) + 8));
@@ -102,6 +122,20 @@
                  {
                      this.field_175009_l.add(renderchunk4);
                  }
+@@ -1038,10 +1053,10 @@
+         }
+     }
+ 
+-    protected Vector3f func_174962_a(Entity p_174962_1_, double p_174962_2_)
++    protected Vector3f getViewVector(Entity entityIn, double partialTicks)
+     {
+-        float f = (float)((double)p_174962_1_.field_70127_C + (double)(p_174962_1_.field_70125_A - p_174962_1_.field_70127_C) * p_174962_2_);
+-        float f1 = (float)((double)p_174962_1_.field_70126_B + (double)(p_174962_1_.field_70177_z - p_174962_1_.field_70126_B) * p_174962_2_);
++        float f = (float)((double)entityIn.field_70127_C + (double)(entityIn.field_70125_A - entityIn.field_70127_C) * partialTicks);
++        float f1 = (float)((double)entityIn.field_70126_B + (double)(entityIn.field_70177_z - entityIn.field_70126_B) * partialTicks);
+ 
+         if (Minecraft.func_71410_x().field_71474_y.field_74320_O == 2)
+         {
 @@ -1253,6 +1268,13 @@
  
      public void func_174976_a(float p_174976_1_, int p_174976_2_)

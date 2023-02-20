@@ -1,5 +1,34 @@
 --- before/net/minecraft/client/Minecraft.java
 +++ after/net/minecraft/client/Minecraft.java
+@@ -208,17 +208,17 @@
+ import org.apache.commons.lang3.Validate;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+-import org.lwjgl.LWJGLException;
+-import org.lwjgl.Sys;
+-import org.lwjgl.input.Keyboard;
+-import org.lwjgl.input.Mouse;
+-import org.lwjgl.opengl.ContextCapabilities;
+-import org.lwjgl.opengl.Display;
+-import org.lwjgl.opengl.DisplayMode;
+-import org.lwjgl.opengl.GLContext;
+-import org.lwjgl.opengl.OpenGLException;
+-import org.lwjgl.opengl.PixelFormat;
+-import org.lwjgl.util.glu.GLU;
++import org.lwjglx.LWJGLException;
++import org.lwjglx.Sys;
++import org.lwjglx.input.Keyboard;
++import org.lwjglx.input.Mouse;
++import org.lwjglx.opengl.ContextCapabilities;
++import org.lwjglx.opengl.Display;
++import org.lwjglx.opengl.DisplayMode;
++import org.lwjglx.opengl.GLContext;
++import org.lwjglx.opengl.OpenGLException;
++import org.lwjglx.opengl.PixelFormat;
++import org.lwjglx.util.glu.GLU;
+ 
+ @SideOnly(Side.CLIENT)
+ public class Minecraft implements IThreadListener, ISnooperInfo
 @@ -332,6 +332,7 @@
      public Minecraft(GameConfiguration p_i45547_1_)
      {
@@ -94,7 +123,42 @@
          if (this.field_71474_y.field_74353_u && !this.field_71431_Q)
          {
              this.func_71352_k();
-@@ -748,21 +759,23 @@
+@@ -609,30 +620,10 @@
+         Display.setResizable(true);
+         Display.setTitle("Minecraft 1.12.2");
+ 
+-        try
+-        {
+-            Display.create((new PixelFormat()).withDepthBits(24));
+-        }
+-        catch (LWJGLException lwjglexception)
+-        {
+-            field_147123_G.error("Couldn't set pixel format", (Throwable)lwjglexception);
+-
+-            try
+-            {
+-                Thread.sleep(1000L);
+-            }
+-            catch (InterruptedException var3)
+-            {
+-                ;
+-            }
+-
+-            if (this.field_71431_Q)
+-            {
+-                this.func_110441_Q();
+-            }
+-
+-            Display.create();
+-        }
++
++        Display.create((new PixelFormat()).withDepthBits(24));
++
++
+     }
+ 
+     private void func_175605_an() throws LWJGLException
+@@ -748,21 +739,23 @@
          File file2 = new File(file1, "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-client.txt");
          Bootstrap.func_179870_a(p_71377_1_.func_71502_e());
  
@@ -121,7 +185,7 @@
      }
  
      public boolean func_152349_b()
-@@ -770,6 +783,7 @@
+@@ -770,6 +763,7 @@
          return this.field_135017_as.func_135042_a() || this.field_71474_y.field_151455_aw;
      }
  
@@ -129,7 +193,7 @@
      public void func_110436_a()
      {
          List<IResourcePack> list = Lists.newArrayList(this.field_110449_ao);
-@@ -955,11 +969,6 @@
+@@ -955,11 +949,6 @@
  
      public void func_147108_a(@Nullable GuiScreen p_147108_1_)
      {
@@ -141,7 +205,7 @@
          if (p_147108_1_ == null && this.field_71441_e == null)
          {
              p_147108_1_ = new GuiMainMenu();
-@@ -969,6 +978,17 @@
+@@ -969,6 +958,17 @@
              p_147108_1_ = new GuiGameOver((ITextComponent)null);
          }
  
@@ -159,7 +223,7 @@
          if (p_147108_1_ instanceof GuiMainMenu || p_147108_1_ instanceof GuiMultiplayer)
          {
              this.field_71474_y.field_74330_P = false;
-@@ -1082,7 +1102,7 @@
+@@ -1082,7 +1082,7 @@
          long i1 = System.nanoTime() - l;
          this.func_71361_d("Pre render");
          this.field_71424_I.func_76318_c("sound");
@@ -168,7 +232,7 @@
          this.field_71424_I.func_76319_b();
          this.field_71424_I.func_76320_a("render");
          GlStateManager.func_179094_E();
-@@ -1094,11 +1114,13 @@
+@@ -1094,11 +1094,13 @@
  
          if (!this.field_71454_w)
          {
@@ -182,7 +246,7 @@
          }
  
          this.field_71424_I.func_76319_b();
-@@ -1455,9 +1477,9 @@
+@@ -1455,9 +1457,9 @@
              {
                  BlockPos blockpos = this.field_71476_x.func_178782_a();
  
@@ -194,7 +258,7 @@
                      this.field_71439_g.func_184609_a(EnumHand.MAIN_HAND);
                  }
              }
-@@ -1491,7 +1513,7 @@
+@@ -1491,7 +1493,7 @@
                      case BLOCK:
                          BlockPos blockpos = this.field_71476_x.func_178782_a();
  
@@ -203,7 +267,7 @@
                          {
                              this.field_71442_b.func_180511_b(blockpos, this.field_71476_x.field_178784_b);
                              break;
-@@ -1505,6 +1527,7 @@
+@@ -1505,6 +1507,7 @@
                          }
  
                          this.field_71439_g.func_184821_cY();
@@ -211,7 +275,7 @@
                  }
  
                  this.field_71439_g.func_184609_a(EnumHand.MAIN_HAND);
-@@ -1570,6 +1593,7 @@
+@@ -1570,6 +1573,7 @@
                          }
                      }
  
@@ -219,7 +283,7 @@
                      if (!itemstack.func_190926_b() && this.field_71442_b.func_187101_a(this.field_71439_g, this.field_71441_e, enumhand) == EnumActionResult.SUCCESS)
                      {
                          this.field_71460_t.field_78516_c.func_187460_a(enumhand);
-@@ -1630,6 +1654,11 @@
+@@ -1630,6 +1634,11 @@
              }
  
              Display.setFullscreen(this.field_71431_Q);
@@ -231,7 +295,7 @@
              Display.setVSyncEnabled(this.field_71474_y.field_74352_v);
              this.func_175601_h();
          }
-@@ -1676,6 +1705,8 @@
+@@ -1676,6 +1685,8 @@
              --this.field_71467_ac;
          }
  
@@ -240,7 +304,7 @@
          this.field_71424_I.func_76320_a("gui");
  
          if (!this.field_71445_n)
-@@ -1877,6 +1908,7 @@
+@@ -1877,6 +1888,7 @@
          }
  
          this.field_71424_I.func_76319_b();
@@ -248,7 +312,7 @@
          this.field_71423_H = func_71386_F();
      }
  
-@@ -1982,6 +2014,7 @@
+@@ -1982,6 +1994,7 @@
                      }
                  }
              }
@@ -256,7 +320,7 @@
          }
  
          this.func_184117_aA();
-@@ -2239,6 +2272,8 @@
+@@ -2239,6 +2252,8 @@
      {
          while (Mouse.next())
          {
@@ -265,7 +329,7 @@
              int i = Mouse.getEventButton();
              KeyBinding.func_74510_a(i - 100, Mouse.getEventButtonState());
  
-@@ -2294,6 +2329,7 @@
+@@ -2294,6 +2309,7 @@
                      this.field_71462_r.func_146274_d();
                  }
              }
@@ -273,7 +337,7 @@
          }
      }
  
-@@ -2304,6 +2340,7 @@
+@@ -2304,6 +2320,7 @@
  
      public void func_71371_a(String p_71371_1_, String p_71371_2_, @Nullable WorldSettings p_71371_3_)
      {
@@ -281,7 +345,7 @@
          this.func_71403_a((WorldClient)null);
          System.gc();
          ISaveHandler isavehandler = this.field_71469_aa.func_75804_a(p_71371_1_, false);
-@@ -2346,6 +2383,12 @@
+@@ -2346,6 +2363,12 @@
  
          while (!this.field_71437_Z.func_71200_ad())
          {
@@ -294,7 +358,7 @@
              String s = this.field_71437_Z.func_71195_b_();
  
              if (s != null)
-@@ -2371,8 +2414,14 @@
+@@ -2371,8 +2394,14 @@
          SocketAddress socketaddress = this.field_71437_Z.func_147137_ag().func_151270_a();
          NetworkManager networkmanager = NetworkManager.func_150722_a(socketaddress);
          networkmanager.func_150719_a(new NetHandlerLoginClient(networkmanager, this, (GuiScreen)null));
@@ -311,7 +375,7 @@
          this.field_71453_ak = networkmanager;
      }
  
-@@ -2383,6 +2432,8 @@
+@@ -2383,6 +2412,8 @@
  
      public void func_71353_a(@Nullable WorldClient p_71353_1_, String p_71353_2_)
      {
@@ -320,7 +384,7 @@
          if (p_71353_1_ == null)
          {
              NetHandlerPlayClient nethandlerplayclient = this.func_147114_u();
-@@ -2395,6 +2446,18 @@
+@@ -2395,6 +2426,18 @@
              if (this.field_71437_Z != null && this.field_71437_Z.func_175578_N())
              {
                  this.field_71437_Z.func_71263_m();
@@ -339,7 +403,7 @@
              }
  
              this.field_71437_Z = null;
-@@ -2418,6 +2481,7 @@
+@@ -2418,6 +2461,7 @@
              this.field_71456_v.func_181029_i();
              this.func_71351_a((ServerData)null);
              this.field_71455_al = false;
@@ -347,7 +411,7 @@
          }
  
          this.field_147127_av.func_147690_c();
-@@ -2434,6 +2498,7 @@
+@@ -2434,6 +2478,7 @@
          }
  
          TileEntityRendererDispatcher.field_147556_a.func_147543_a(p_71353_1_);
@@ -355,7 +419,7 @@
  
          if (p_71353_1_ != null)
          {
-@@ -2488,6 +2553,7 @@
+@@ -2488,6 +2533,7 @@
          EntityPlayerSP entityplayersp = this.field_71439_g;
          this.field_71439_g = this.field_71442_b.func_192830_a(this.field_71441_e, this.field_71439_g == null ? new StatisticsManager() : this.field_71439_g.func_146107_m(), this.field_71439_g == null ? new RecipeBook() : this.field_71439_g.func_192035_E());
          this.field_71439_g.func_184212_Q().func_187218_a(entityplayersp.func_184212_Q().func_187231_c());
@@ -363,7 +427,7 @@
          this.field_71439_g.field_71093_bK = p_71354_1_;
          this.field_175622_Z = this.field_71439_g;
          this.field_71439_g.func_70065_x();
-@@ -2535,159 +2601,8 @@
+@@ -2535,159 +2581,8 @@
      {
          if (this.field_71476_x != null && this.field_71476_x.field_72313_a != RayTraceResult.Type.MISS)
          {
@@ -525,7 +589,7 @@
          }
      }
  
-@@ -2834,6 +2749,7 @@
+@@ -2834,6 +2729,7 @@
          return field_71432_P;
      }
  
@@ -533,7 +597,7 @@
      public ListenableFuture<Object> func_175603_A()
      {
          return this.func_152344_a(new Runnable()
-@@ -3009,18 +2925,8 @@
+@@ -3009,18 +2905,8 @@
  
      public static int func_71369_N()
      {
@@ -554,7 +618,7 @@
      }
  
      public boolean func_70002_Q()
-@@ -3152,6 +3058,9 @@
+@@ -3152,6 +3038,9 @@
          }
          else if (this.field_71439_g != null)
          {
@@ -564,7 +628,7 @@
              if (this.field_71439_g.field_70170_p.field_73011_w instanceof WorldProviderHell)
              {
                  return MusicTicker.MusicType.NETHER;
-@@ -3181,11 +3090,11 @@
+@@ -3181,11 +3070,11 @@
              {
                  if (Keyboard.getEventKeyState())
                  {
@@ -578,7 +642,7 @@
                      {
                          this.field_71456_v.func_146158_b().func_146227_a(ScreenShotHelper.func_148260_a(this.field_71412_D, this.field_71443_c, this.field_71440_d, this.field_147124_at));
                      }
-@@ -3199,6 +3108,7 @@
+@@ -3199,6 +3088,7 @@
                          }
                      }
                  }
@@ -586,7 +650,7 @@
              }
          }
      }
-@@ -3328,6 +3238,12 @@
+@@ -3328,6 +3218,12 @@
          return this.field_184127_aH;
      }
  
@@ -599,7 +663,7 @@
      public boolean func_189648_am()
      {
          return this.field_71439_g != null && this.field_71439_g.func_175140_cp() || this.field_71474_y.field_178879_v;
-@@ -3341,5 +3257,10 @@
+@@ -3341,5 +3237,10 @@
      public Tutorial func_193032_ao()
      {
          return this.field_193035_aW;

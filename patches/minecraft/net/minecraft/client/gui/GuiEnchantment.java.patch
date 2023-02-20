@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/gui/GuiEnchantment.java
 +++ after/net/minecraft/client/gui/GuiEnchantment.java
+@@ -22,7 +22,7 @@
+ import net.minecraft.world.World;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.util.glu.Project;
++import org.lwjglx.util.glu.Project;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiEnchantment extends GuiContainer
 @@ -171,7 +171,7 @@
                  FontRenderer fontrenderer = this.field_146297_k.field_71464_q;
                  int i2 = 6839882;

@@ -1,5 +1,18 @@
 --- before/net/minecraft/client/gui/GuiMainMenu.java
 +++ after/net/minecraft/client/gui/GuiMainMenu.java
+@@ -35,9 +35,9 @@
+ import org.apache.commons.io.IOUtils;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+-import org.lwjgl.input.Mouse;
+-import org.lwjgl.opengl.GLContext;
+-import org.lwjgl.util.glu.Project;
++import org.lwjglx.input.Mouse;
++import org.lwjglx.opengl.GLContext;
++import org.lwjglx.util.glu.Project;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiMainMenu extends GuiScreen
 @@ -70,6 +70,8 @@
      private GuiScreen field_183503_M;
      private int field_193978_M;
@@ -9,9 +22,14 @@
  
      public GuiMainMenu()
      {
-@@ -212,13 +214,15 @@
-             this.field_183503_M.func_183500_a(this.field_146294_l, this.field_146295_m);
-             this.field_183503_M.func_73866_w_();
+@@ -209,16 +211,18 @@
+ 
+         if (this.func_183501_a())
+         {
+-            this.field_183503_M.func_183500_a(this.field_146294_l, this.field_146295_m);
+-            this.field_183503_M.func_73866_w_();
++            //this.realmsNotification.setGuiSize(this.width, this.height);
++            //this.realmsNotification.initGui();
          }
 +        modUpdateNotification = net.minecraftforge.client.gui.NotificationModUpdateScreen.init(this, modButton);
      }
