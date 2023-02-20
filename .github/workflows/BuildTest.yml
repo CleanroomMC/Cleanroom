@@ -1,0 +1,54 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: Build and Upload Test Artifact
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3.10.0
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Setup Forge env
+      run: |
+        .\gradlew setup
+        echo Shutdown
+        .\gradlew --stop
+        
+    - name: Build Forge Jar File
+      run: .\gradlew universalJar
+    - name: Build Forge Installer
+      run: .\gradlew installerJar
+      
+    - name: Upload Forge Universal
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: universal
+        path: projects/cleanroom/build/libs/*-universal.jar
+        
+    - name: Upload Forge Installer
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: installer
+        path: projects/cleanroom/build/libs/*-installer.jar
