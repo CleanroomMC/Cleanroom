@@ -29,15 +29,15 @@ jobs:
         distribution: 'temurin'
         
     - name: Setup Forge env
-      run: .\gradlew setup
+      run: ./gradlew setup
       
     - name: Shutdown Gradle # FG3+ dumb stuff hahahaha
-      run: .\gradlew --stop
+      run: ./gradlew --stop
         
     - name: Build Forge Jar File
-      run: .\gradlew universalJar
+      run: ./gradlew universalJar
     - name: Build Forge Installer
-      run: .\gradlew installerJar
+      run: ./gradlew installerJar
       
     - name: Upload Forge Universal
       uses: actions/upload-artifact@v3.1.2
