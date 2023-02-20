@@ -9,9 +9,7 @@ name: Build and Upload Test Artifact
 
 on:
   push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
   workflow_dispatch:
 
 permissions:
@@ -19,7 +17,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
@@ -31,10 +29,10 @@ jobs:
         distribution: 'temurin'
         
     - name: Setup Forge env
-      run: |
-        .\gradlew setup
-        echo Shutdown
-        .\gradlew --stop
+      run: .\gradlew setup
+      
+    - name: Shutdown Gradle # FG3+ dumb stuff hahahaha
+      run: .\gradlew --stop
         
     - name: Build Forge Jar File
       run: .\gradlew universalJar
