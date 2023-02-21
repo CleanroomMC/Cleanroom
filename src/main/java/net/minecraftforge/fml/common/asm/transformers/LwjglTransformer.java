@@ -1,27 +1,24 @@
 package net.minecraftforge.fml.common.asm.transformers;
 
+import me.eigenraven.lwjgl3ify.api.Lwjgl3Aware;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraftforge.fml.common.FMLLog;
 import org.objectweb.asm.*;
 import org.objectweb.asm.commons.ClassRemapper;
 import org.objectweb.asm.commons.Remapper;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 public class LwjglTransformer extends Remapper implements IClassTransformer {
 
     public static LwjglTransformer instance = null;
-    LwjglTransformer() {
+    public LwjglTransformer() {
         instance = this;
     }
-    int remaps = 0, calls = 0;
+    public int remaps = 0, calls = 0;
     @Override
     public byte[] transform(String s, String s1, byte[] bytes) {
         if(bytes == null)return null;
         if(instance != this)return bytes;
+        if (s.contains("lwjgl3ify") || s.contains("lwjglx")) return bytes;
         ClassReader reader = new ClassReader(bytes);
         ClassWriter writer = new ClassWriter(0);
         ClassVisitor visitor = new EscapingClassRemapper(writer);
@@ -39,9 +36,9 @@ public class LwjglTransformer extends Remapper implements IClassTransformer {
     }
 
 
-    final String[] fromPrefixes = new String[] { "org/lwjgl/", "paulscode/sound/libraries/", "javax/xml/bind/", };
+    public final String[] fromPrefixes = new String[] { "org/lwjgl/", "paulscode/sound/libraries/", "javax/xml/bind/", };
 
-    final String[] toPrefixes = new String[] { "org/lwjglx/", "me/eigenraven/lwjgl3ify/paulscode/sound/libraries/",
+    public final String[] toPrefixes = new String[] { "org/lwjglx/", "me/eigenraven/lwjgl3ify/paulscode/sound/libraries/",
             "jakarta/xml/bind/", };
 
     @Override
@@ -75,8 +72,4 @@ public class LwjglTransformer extends Remapper implements IClassTransformer {
             return super.visitAnnotation(desc, visible);
         }
     }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.TYPE)
-    public @interface Lwjgl3Aware {}
 }

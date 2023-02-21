@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/renderer/GLAllocation.java
++++ after/net/minecraft/client/renderer/GLAllocation.java
+@@ -6,7 +6,7 @@
+ import java.nio.IntBuffer;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.util.glu.GLU;
++import org.lwjglx.util.glu.GLU;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GLAllocation
