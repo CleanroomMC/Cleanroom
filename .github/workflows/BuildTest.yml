@@ -17,6 +17,7 @@ permissions:
 
 jobs:
   build:
+    name: Build and Upload Artifact
     runs-on: ubuntu-latest
 
     steps:
