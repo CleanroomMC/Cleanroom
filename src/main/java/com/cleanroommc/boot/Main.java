@@ -28,12 +28,6 @@ public class Main {
     }
 
     protected void start(String[] args) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        String natives = getenv("nativesDirectory");
-        if (natives != null ) {
-            LOGGER.info("Natives: " + natives);
-            handleNatives(natives);
-        }
-
         String mainClass = getenv("mainClass");
         if (mainClass == null)
             throw new IllegalArgumentException("Must specify mainClass environment variable");
@@ -45,36 +39,36 @@ public class Main {
             System.setProperty("net.minecraftforge.gradle.GradleStart.srg.srg-mcp", srg2mcp);
         }
 
-        String[] cleanArgs = parseArgs(args);
+        List<String> cleanArgs = parseArgs(args);
+
+        GradleHacks.searchCoremods(cleanArgs);
 
         StringBuilder b = new StringBuilder();
         b.append('[');
-        for (int x = 0; x < cleanArgs.length; x++) {
-            b.append(cleanArgs[x]);
-            if ("--accessToken".equalsIgnoreCase(cleanArgs[x])) {
+        int size = cleanArgs.size();
+        for (int x = 0; x < size; x++) {
+            b.append(cleanArgs.get(x));
+            if ("--accessToken".equalsIgnoreCase(cleanArgs.get(x))) {
                 b.append(", {REDACTED}");
                 x++;
             }
 
-            if (x < cleanArgs.length - 1)
+            if (x < size - 1)
                 b.append(", ");
         }
         b.append(']');
-        LOGGER.info("Running with arguments: " + b.toString());
-
+        LOGGER.info("Running with arguments: " + b);
 
         Class<?> cls = Class.forName(mainClass);
         Method main = cls.getDeclaredMethod("main", String[].class);
-        main.invoke(null, new Object[] { cleanArgs });
+        main.invoke(null, new Object[] { cleanArgs.toArray(new String[0]) });
     }
-
-    protected void handleNatives(String path) { }
 
     protected Map<String, String> getDefaultArguments() {
         return new LinkedHashMap<>();
     }
 
-    private String[] parseArgs(String[] args) {
+    private List<String> parseArgs(String[] args) {
         final Map<String, String> defaults = getDefaultArguments();
 
         final OptionParser parser = new OptionParser();
@@ -99,12 +93,12 @@ public class Main {
         LOGGER.info("Extra: " + extras);
 
         List<String> lst = new ArrayList<>();
-        defaults.forEach((k,v) -> {
-            if (!nullOrEmpty(v)) {
-                lst.add("--" + k);
-                lst.add(v);
+        for (Map.Entry<String, String> entry : defaults.entrySet()) {
+            if (!nullOrEmpty(entry.getValue())) {
+                lst.add("--" + entry.getKey());
+                lst.add(entry.getValue());
             }
-        });
+        }
 
         String tweak = getenv("tweakClass");
         if (!nullOrEmpty(tweak)) {
@@ -114,7 +108,7 @@ public class Main {
 
         lst.addAll(extras);
 
-        return lst.toArray(new String[lst.size()]);
+        return lst;
     }
 
     protected String getenv(String name) {
@@ -125,6 +119,5 @@ public class Main {
     protected boolean nullOrEmpty(String value) {
         return value == null || value.isEmpty();
     }
-
 
 }
