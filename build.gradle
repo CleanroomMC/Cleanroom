@@ -177,9 +177,6 @@ project(':cleanroom') {
             name 'Cleanroom Maven'
             url 'https://maven.cleanroommc.com/'
         }
-        flatDir {
-            dirs '../../lib'
-        }
     }
 
     ext {
@@ -350,8 +347,6 @@ project(':cleanroom') {
     }
 
     dependencies {
-
-        installer name: 'lwjgl3w2'
 
         installer 'org.lwjgl:lwjgl:3.3.1'
         installer 'org.lwjgl:lwjgl-glfw:3.3.1'

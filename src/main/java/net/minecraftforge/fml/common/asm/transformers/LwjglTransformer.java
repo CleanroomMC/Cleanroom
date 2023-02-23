@@ -1,6 +1,6 @@
 package net.minecraftforge.fml.common.asm.transformers;
 
-import me.eigenraven.lwjgl3ify.api.Lwjgl3Aware;
+import org.lwjglx.lwjgl3ify.api.Lwjgl3Aware;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraftforge.fml.common.FMLLog;
 import org.objectweb.asm.*;
@@ -18,7 +18,7 @@ public class LwjglTransformer extends Remapper implements IClassTransformer {
     public byte[] transform(String s, String s1, byte[] bytes) {
         if(bytes == null)return null;
         if(instance != this)return bytes;
-        if (s.contains("lwjgl3ify") || s.contains("lwjglx")) return bytes;
+        if (s.contains("lwjglx")) return bytes;
         ClassReader reader = new ClassReader(bytes);
         ClassWriter writer = new ClassWriter(0);
         ClassVisitor visitor = new EscapingClassRemapper(writer);
@@ -38,7 +38,7 @@ public class LwjglTransformer extends Remapper implements IClassTransformer {
 
     public final String[] fromPrefixes = new String[] { "org/lwjgl/", "paulscode/sound/libraries/", "javax/xml/bind/", };
 
-    public final String[] toPrefixes = new String[] { "org/lwjglx/", "me/eigenraven/lwjgl3ify/paulscode/sound/libraries/",
+    public final String[] toPrefixes = new String[] { "org/lwjglx/", "org/lwjglx/lwjgl3ify/paulscode/sound/libraries/",
             "jakarta/xml/bind/", };
 
     @Override
