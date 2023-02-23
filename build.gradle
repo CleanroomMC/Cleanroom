@@ -57,7 +57,9 @@ def post_processor = [
 def jvm_arguments = [
         '--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED',
         '--add-opens=java.base/java.lang=ALL-UNNAMED',
-        '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED'
+        '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED',
+        '-Dmixin.checks.interfaces=true',
+        '-Dfml.coreMods.load=com.cleanroommc.bogosorter.core.BogoSorterCore'
 ]
 // Projects
 
@@ -176,6 +178,10 @@ project(':cleanroom') {
         maven {
             name 'Cleanroom Maven'
             url 'https://maven.cleanroommc.com/'
+        }
+        maven {
+            name 'FabricMC'
+            url 'https://maven.fabricmc.net'
         }
     }
 
@@ -353,6 +359,19 @@ project(':cleanroom') {
         // TODO: Unpin in 1.18.1 or when Mojang bumps the Log4J version
         installer 'org.apache.logging.log4j:log4j-api:2.15.0'
         installer 'org.apache.logging.log4j:log4j-core:2.15.0'
+
+        installer ("net.fabricmc:sponge-mixin:0.12.3+mixin.0.8.5") {
+            exclude module: 'asm-commons'
+            exclude module: 'asm-tree'
+            exclude module: 'launchwrapper'
+            exclude module: 'guava'
+            exclude module: 'log4j-core'
+            exclude module: 'gson'
+            exclude module: 'commons-io'
+        }
+
+        annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+        testAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.0.0'
         testImplementation 'org.junit.vintage:junit-vintage-engine:5.+'

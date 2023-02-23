@@ -72,7 +72,10 @@ import org.apache.logging.log4j.core.LoggerContext;
 public class CoreModManager {
     private static final Attributes.Name COREMODCONTAINSFMLMOD = new Attributes.Name("FMLCorePluginContainsFMLMod");
     private static final Attributes.Name MODTYPE = new Attributes.Name("ModType");
-    private static String[] rootPlugins = { "net.minecraftforge.fml.relauncher.FMLCorePlugin", "net.minecraftforge.classloading.FMLForgePlugin" };
+    private static String[] rootPlugins = {
+        "net.minecraftforge.fml.relauncher.FMLCorePlugin",
+        "net.minecraftforge.classloading.FMLForgePlugin",
+        "zone.rong.mixinbooter.MixinBooterPlugin"};
     private static List<String> ignoredModFiles = Lists.newArrayList();
     private static Map<String, List<String>> transformers = Maps.newHashMap();
     private static List<FMLPluginWrapper> loadPlugins;
@@ -241,7 +244,9 @@ public class CoreModManager {
         loadPlugins = new ArrayList<FMLPluginWrapper>();
         for (String rootPluginName : rootPlugins)
         {
-            loadCoreMod(classLoader, rootPluginName, new File(FMLTweaker.getJarLocation()));
+            loadCoreMod(classLoader, rootPluginName,
+                !rootPluginName.contains("MixinBooterPlugin") ? new File(FMLTweaker.getJarLocation()) : null);
+            // TODO: Special case
         }
 
         if (loadPlugins.isEmpty())
@@ -631,6 +636,8 @@ public class CoreModManager {
         Launch.blackboard.put("fml.deobfuscatedEnvironment", deobfuscatedEnvironment);
         tweaker.injectCascadingTweak("net.minecraftforge.fml.common.launcher.FMLDeobfTweaker");
         tweakSorting.put("net.minecraftforge.fml.common.launcher.FMLDeobfTweaker", 1000);
+        tweaker.injectCascadingTweak("org.spongepowered.asm.launch.MixinTweaker");
+        tweakSorting.put("net.minecraftforge.fml.common.launcher.FMLDeobfTweaker", 0);
     }
 
     public static void injectCoreModTweaks(FMLInjectionAndSortingTweaker fmlInjectionAndSortingTweaker)
