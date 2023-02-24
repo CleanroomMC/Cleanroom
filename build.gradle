@@ -56,6 +56,11 @@ def post_processor = [
         args: ['--input', '{input}', '--output', '{output}']
 ]
 
+def jvm_arguments = [
+        '--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED',
+        '--add-opens=java.base/java.lang=ALL-UNNAMED',
+        '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED'
+]
 // Projects
 
 // MCP
@@ -217,9 +222,7 @@ project(':cleanroom') {
                 environment 'FORGE_VERSION', props.new_forge_version
 
                 jvmArgs '-Djava.library.path=' + project.file('build/natives')
-                jvmArgs '--add-opens', 'java.base/jdk.internal.loader=ALL-UNNAMED'
-                jvmArgs '--add-opens', 'java.base/java.lang=ALL-UNNAMED'
-                jvmArgs '--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED'
+                jvmArgs jvm_arguments
 
                 // Lazily supply the Mappings target, createSrg2Mcp.getMappings() doesn't get populated until later
                 lazyToken 'mcp_mappings', { ->
@@ -1029,6 +1032,10 @@ project(':cleanroom') {
 
     // TODO: Publishing
 
+    test {
+        jvmArgs jvm_arguments
+    }
+
 }
 
 task setup() {
@@ -1037,4 +1044,3 @@ task setup() {
     dependsOn ':minecraft:extractMapped'
     dependsOn ':cleanroom:extractMapped'
 }
-
