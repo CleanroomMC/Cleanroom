@@ -1,7 +1,13 @@
 --- before/net/minecraft/client/renderer/block/model/ModelRotation.java
 +++ after/net/minecraft/client/renderer/block/model/ModelRotation.java
-@@ -10,7 +10,7 @@
- import org.lwjgl.util.vector.Vector3f;
+@@ -6,11 +6,11 @@
+ import net.minecraft.util.math.MathHelper;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.util.vector.Matrix4f;
+-import org.lwjgl.util.vector.Vector3f;
++import org.lwjglx.util.vector.Matrix4f;
++import org.lwjglx.util.vector.Vector3f;
  
  @SideOnly(Side.CLIENT)
 -public enum ModelRotation
@@ -9,6 +15,15 @@
  {
      X0_Y0(0, 0),
      X0_Y90(0, 90),
+@@ -55,7 +55,7 @@
+         Matrix4f.mul(matrix4f1, matrix4f, this.field_177544_s);
+     }
+ 
+-    public Matrix4f func_177525_a()
++    public Matrix4f matrix()
+     {
+         return this.field_177544_s;
+     }
 @@ -116,4 +116,9 @@
              field_177546_q.put(Integer.valueOf(modelrotation.field_177545_r), modelrotation);
          }

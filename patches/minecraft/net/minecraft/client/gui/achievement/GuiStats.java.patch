@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/gui/achievement/GuiStats.java
++++ after/net/minecraft/client/gui/achievement/GuiStats.java
+@@ -29,7 +29,7 @@
+ import net.minecraft.stats.StatisticsManager;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.input.Mouse;
++import org.lwjglx.input.Mouse;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiStats extends GuiScreen implements IProgressMeter

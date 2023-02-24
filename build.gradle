@@ -33,6 +33,8 @@ import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.FieldVisitor
 import org.objectweb.asm.MethodVisitor
 
+import org.gradle.internal.os.OperatingSystem
+
 def props = project.properties
 def sysProps = System.getProperties()
 
@@ -82,13 +84,16 @@ project(':minecraft') {
         mavenLocal()
         mavenCentral()
     }
-
+    configurations.all {
+        exclude group: 'org.lwjgl.lwjgl'
+    }
     dependencies {
         implementation ('net.minecraftforge:mergetool:0.2.3.3:forge') {
             exclude group: 'org.ow2.asm', module: 'asm-tree'
             exclude group: 'org.ow2.asm', module: 'asm-util'
             exclude group: 'org.ow2.asm', module: 'asm'
         }
+        //implementation fileTree(dir: 'libs', include: '*.jar')
     }
 
     patcher {
@@ -319,7 +324,49 @@ project(':cleanroom') {
         api.extendsFrom(installer)
     }
 
+    configurations.all {
+        exclude group: 'org.lwjgl.lwjgl'
+    }
+
+
+    project.ext.lwjglVersion = "3.3.1"
+
+    switch (OperatingSystem.current()) {
+        case OperatingSystem.LINUX:
+            def osArch = System.getProperty("os.arch")
+            project.ext.lwjglNatives = osArch.startsWith("arm") || osArch.startsWith("aarch64")
+                    ? "natives-linux-${osArch.contains("64") || osArch.startsWith("armv8") ? "arm64" : "arm32"}"
+                    : "natives-linux"
+            break
+        case OperatingSystem.MAC_OS:
+            project.ext.lwjglNatives = System.getProperty("os.arch").startsWith("aarch64") ? "natives-macos-arm64" : "natives-macos"
+            break
+        case OperatingSystem.WINDOWS:
+            def osArch = System.getProperty("os.arch")
+            project.ext.lwjglNatives = osArch.contains("64")
+                    ? "natives-windows${osArch.startsWith("aarch64") ? "-arm64" : ""}"
+                    : "natives-windows-x86"
+            break
+    }
+
     dependencies {
+
+        installer 'org.lwjgl:lwjgl:3.3.1'
+        installer 'org.lwjgl:lwjgl-glfw:3.3.1'
+        installer 'org.lwjgl:lwjgl-jemalloc:3.3.1'
+        installer 'org.lwjgl:lwjgl-openal:3.3.1'
+        installer 'org.lwjgl:lwjgl-opengl:3.3.1'
+        installer 'org.lwjgl:lwjgl-stb:3.3.1'
+        installer 'org.lwjgl:lwjgl-tinyfd:3.3.1'
+
+
+        runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+        runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
+        runtimeOnly "org.lwjgl:lwjgl-jemalloc::$lwjglNatives"
+        runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
+        runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
+        runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
+        runtimeOnly "org.lwjgl:lwjgl-tinyfd::$lwjglNatives"
 
         // TODO: ASM 9.4 required, breaks current Event System when creating classes on-the-fly
         installer 'org.ow2.asm:asm:9.4'
@@ -868,7 +915,7 @@ project(':cleanroom') {
         changing = true
     }
 
-    task installerJar(type: Zip, dependsOn: [downloadInstaller, installerJson, launcherJson, genClientBinPatches, genServerBinPatches/*, 'signUniversalJar'*/]) {
+    task installerJar(type: Zip, dependsOn: [downloadInstaller, installerJson, launcherJson, genClientBinPatches, genServerBinPatches, universalJar/*, 'signUniversalJar'*/]) {
         classifier = 'installer'
         extension = 'jar' //Needs to be Zip task to not override Manifest, so set extension
         destinationDir = file('build/libs')

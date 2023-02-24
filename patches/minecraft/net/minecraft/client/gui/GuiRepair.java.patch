@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/gui/GuiRepair.java
++++ after/net/minecraft/client/gui/GuiRepair.java
+@@ -20,7 +20,7 @@
+ import net.minecraft.world.World;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.input.Keyboard;
++import org.lwjglx.input.Keyboard;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiRepair extends GuiContainer implements IContainerListener

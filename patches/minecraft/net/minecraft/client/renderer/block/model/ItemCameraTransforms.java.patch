@@ -1,8 +1,11 @@
 --- before/net/minecraft/client/renderer/block/model/ItemCameraTransforms.java
 +++ after/net/minecraft/client/renderer/block/model/ItemCameraTransforms.java
-@@ -12,6 +12,9 @@
+@@ -10,8 +10,11 @@
+ import net.minecraft.util.math.MathHelper;
+ import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
- import org.lwjgl.util.vector.Quaternion;
+-import org.lwjgl.util.vector.Quaternion;
++import org.lwjglx.util.vector.Quaternion;
  
 +/*
 + * @deprecated use {@link net.minecraftforge.client.model.IPerspectiveAwareModel} instead
@@ -26,6 +29,21 @@
      public ItemCameraTransforms(ItemTransformVec3f p_i46569_1_, ItemTransformVec3f p_i46569_2_, ItemTransformVec3f p_i46569_3_, ItemTransformVec3f p_i46569_4_, ItemTransformVec3f p_i46569_5_, ItemTransformVec3f p_i46569_6_, ItemTransformVec3f p_i46569_7_, ItemTransformVec3f p_i46569_8_)
      {
          this.field_188036_k = p_i46569_1_;
+@@ -84,12 +89,12 @@
+                 f2 = -f2;
+             }
+ 
+-            GlStateManager.func_187444_a(func_188035_a(f, f1, f2));
++            GlStateManager.rotate(makeQuaternion(f, f1, f2));
+             GlStateManager.func_179152_a(field_181696_h + p_188034_0_.field_178363_d.x, field_181697_i + p_188034_0_.field_178363_d.y, field_181698_j + p_188034_0_.field_178363_d.z);
+         }
+     }
+ 
+-    private static Quaternion func_188035_a(float p_188035_0_, float p_188035_1_, float p_188035_2_)
++    private static Quaternion makeQuaternion(float p_188035_0_, float p_188035_1_, float p_188035_2_)
+     {
+         float f = p_188035_0_ * 0.017453292F;
+         float f1 = p_188035_1_ * 0.017453292F;
 @@ -103,6 +108,7 @@
          return new Quaternion(f3 * f6 * f8 + f4 * f5 * f7, f4 * f5 * f8 - f3 * f6 * f7, f3 * f5 * f8 + f4 * f6 * f7, f4 * f6 * f8 - f3 * f5 * f7);
      }
