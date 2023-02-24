@@ -84,9 +84,9 @@ project(':minecraft') {
         mavenLocal()
         mavenCentral()
     }
-    configurations.all {
-        exclude group: 'org.lwjgl.lwjgl'
-    }
+//    configurations.all {
+//        exclude group: 'org.lwjgl.lwjgl'
+//    }
     dependencies {
         implementation ('net.minecraftforge:mergetool:0.2.3.3:forge') {
             exclude group: 'org.ow2.asm', module: 'asm-tree'
@@ -915,7 +915,7 @@ project(':cleanroom') {
         changing = true
     }
 
-    task installerJar(type: Zip, dependsOn: [downloadInstaller, installerJson, launcherJson, genClientBinPatches, genServerBinPatches, universalJar/*, 'signUniversalJar'*/]) {
+    task installerJar(type: Zip, dependsOn: [downloadInstaller, installerJson, launcherJson, genClientBinPatches, genServerBinPatches/*, 'signUniversalJar'*/]) {
         classifier = 'installer'
         extension = 'jar' //Needs to be Zip task to not override Manifest, so set extension
         destinationDir = file('build/libs')
