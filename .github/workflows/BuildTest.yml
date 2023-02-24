@@ -38,8 +38,9 @@ jobs:
     - name: Shutdown Gradle # FG3+ dumb stuff hahahaha
       run: ./gradlew --stop
         
-    - name: Build Forge Jar File
-      run: ./gradlew universalJar
+    - name: Apply patch before moving on
+      run: ./gradlew applyPatches
+      
     - name: Build Forge Installer
       run: ./gradlew installerJar
       
