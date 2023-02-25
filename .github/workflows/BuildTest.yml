@@ -37,8 +37,6 @@ jobs:
       - name: Stop Gradle daemon
         run: ./gradlew --stop
 
-      - name: Build Forge Universal Jar
-        run: ./gradlew universalJar
       - name: Build Forge Installer Jar
         run: ./gradlew installerJar
 
