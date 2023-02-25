@@ -186,6 +186,8 @@ project(':cleanroom') {
 
     ext {
         version_json = project(':mcp').file('build/mcp/downloadJson/version.json')
+        archNative = Util.getCurrentArch()
+        lwjglVersion = '3.3.1'
     }
 
     patcher {
@@ -317,55 +319,30 @@ project(':cleanroom') {
 
     // Dependencies
     configurations {
+        all { // LWJGL2 isn't friendly with us, so pye pye
+            exclude group: 'org.lwjgl.lwjgl'
+        }
+
+        // Don't pull all libraries, if we're missing something, add it to the installer list so the installer knows to download it.
         installer {
-            // Don't pull all libraries, if we're missing something, add it to the installer list so the installer knows to download it.
             transitive = false
         }
         api.extendsFrom(installer)
-    }
 
-    configurations.all {
-        exclude group: 'org.lwjgl.lwjgl'
-    }
-
-
-    project.ext.lwjglVersion = "3.3.1"
-
-    switch (OperatingSystem.current()) {
-        case OperatingSystem.LINUX:
-            def osArch = System.getProperty("os.arch")
-            project.ext.lwjglNatives = osArch.startsWith("arm") || osArch.startsWith("aarch64")
-                    ? "natives-linux-${osArch.contains("64") || osArch.startsWith("armv8") ? "arm64" : "arm32"}"
-                    : "natives-linux"
-            break
-        case OperatingSystem.MAC_OS:
-            project.ext.lwjglNatives = System.getProperty("os.arch").startsWith("aarch64") ? "natives-macos-arm64" : "natives-macos"
-            break
-        case OperatingSystem.WINDOWS:
-            def osArch = System.getProperty("os.arch")
-            project.ext.lwjglNatives = osArch.contains("64")
-                    ? "natives-windows${osArch.startsWith("aarch64") ? "-arm64" : ""}"
-                    : "natives-windows-x86"
-            break
+        lwjglNatives {
+            transitive = false
+        }
+        compileOnly.extendsFrom(lwjglNatives)
     }
 
     dependencies {
-
-        installer 'org.lwjgl:lwjgl:3.3.1'
-        installer 'org.lwjgl:lwjgl-glfw:3.3.1'
-        installer 'org.lwjgl:lwjgl-jemalloc:3.3.1'
-        installer 'org.lwjgl:lwjgl-openal:3.3.1'
-        installer 'org.lwjgl:lwjgl-opengl:3.3.1'
-        installer 'org.lwjgl:lwjgl-stb:3.3.1'
-        installer 'org.lwjgl:lwjgl-tinyfd:3.3.1'
-
-        runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
-        runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
-        runtimeOnly "org.lwjgl:lwjgl-jemalloc::$lwjglNatives"
-        runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
-        runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
-        runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
-        runtimeOnly "org.lwjgl:lwjgl-tinyfd::$lwjglNatives"
+        installer "org.lwjgl:lwjgl:$lwjglVersion"
+        installer "org.lwjgl:lwjgl-glfw:$lwjglVersion"
+        installer "org.lwjgl:lwjgl-jemalloc:$lwjglVersion"
+        installer "org.lwjgl:lwjgl-openal:$lwjglVersion"
+        installer "org.lwjgl:lwjgl-opengl:$lwjglVersion"
+        installer "org.lwjgl:lwjgl-stb:$lwjglVersion"
+        installer "org.lwjgl:lwjgl-tinyfd:$lwjglVersion"
 
         // TODO: ASM 9.4 required, breaks current Event System when creating classes on-the-fly
         installer 'org.ow2.asm:asm:9.4'
@@ -796,6 +773,10 @@ project(':cleanroom') {
             artifacts.each { key, lib ->
                 json.libraries.add(lib)
             }
+            def lwjglNatives = Util.getLWJGLNatives(project.configurations.lwjglNatives)
+            lwjglNatives.each { key, lib ->
+                json.libraries.add(lib)
+            }
             output.text = new JsonBuilder(json).toPrettyString()
         }
     }
@@ -1036,6 +1017,31 @@ project(':cleanroom') {
         jvmArgs jvm_arguments
     }
 
+    dependencies {
+        runtimeOnly "org.lwjgl:lwjgl::$archNative"
+        runtimeOnly "org.lwjgl:lwjgl-glfw::$archNative"
+        runtimeOnly "org.lwjgl:lwjgl-jemalloc::$archNative"
+        runtimeOnly "org.lwjgl:lwjgl-openal::$archNative"
+        runtimeOnly "org.lwjgl:lwjgl-opengl::$archNative"
+        runtimeOnly "org.lwjgl:lwjgl-stb::$archNative"
+        runtimeOnly "org.lwjgl:lwjgl-tinyfd::$archNative"
+
+        def arch = [
+            'natives-linux-arm64', 'natives-linux-arm32', 'natives-linux',
+            'natives-macos-arm64', 'natives-macos',
+            'natives-windows-arm64', 'natives-windows', 'natives-windows-x86'
+        ]
+
+        arch.each {
+            lwjglNatives "org.lwjgl:lwjgl:$lwjglVersion:$it"
+            lwjglNatives "org.lwjgl:lwjgl-glfw:$lwjglVersion:$it"
+            lwjglNatives "org.lwjgl:lwjgl-jemalloc:$lwjglVersion:$it"
+            lwjglNatives "org.lwjgl:lwjgl-openal:$lwjglVersion:$it"
+            lwjglNatives "org.lwjgl:lwjgl-opengl:$lwjglVersion:$it"
+            lwjglNatives "org.lwjgl:lwjgl-stb:$lwjglVersion:$it"
+            lwjglNatives "org.lwjgl:lwjgl-tinyfd:$lwjglVersion:$it"
+        }
+    }
 }
 
 task setup() {

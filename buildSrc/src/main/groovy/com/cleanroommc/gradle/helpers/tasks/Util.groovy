@@ -1,6 +1,7 @@
 package com.cleanroommc.gradle.helpers.tasks
 
 import groovy.json.JsonSlurper
+import org.gradle.internal.os.OperatingSystem
 
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
@@ -93,6 +94,81 @@ class Util {
 			]
 		}
 		return ret
+	}
+
+	static def getLWJGLNatives(config) {
+		def ret = [:]
+		config.resolvedConfiguration.resolvedArtifacts.each {
+			def art = [
+					group: it.moduleVersion.id.group,
+					name: it.moduleVersion.id.name,
+					version: it.moduleVersion.id.version,
+					classifier: it.classifier,
+					extension: it.extension,
+					file: it.file
+			]
+			def key = art.group + ':' + art.name
+			def folder = "${art.group.replace('.', '/')}/${art.name}/${art.version}/"
+			def filename = "${art.name}-${art.version}"
+			if (art.classifier != null)
+				filename += "-${art.classifier}"
+			filename += ".${art.extension}"
+			def path = "${folder}${filename}"
+			def url = "https://libraries.minecraft.net/${path}"
+			if (!checkExists(url)) {
+				url = "https://maven.minecraftforge.net/${path}"
+			}
+			ret[key] = [
+					name     : "${art.group}:${art.name}:${art.version}:${art.classifier}",
+					downloads: [
+							artifact: [
+									path: path,
+									url : url,
+									sha1: sha1(art.file),
+									size: art.file.length()
+							]
+					],
+					rules    : [
+							[
+									action: "allow",
+									os    : [
+											name: getOSName(art.classifier)
+									]
+							]
+					]
+			]
+		}
+		return ret
+	}
+
+	static def getOSName(nativeName) {
+		if (nativeName.contains('natives-linux')) {
+			return 'linus'
+		} else if (nativeName.contains('natives-macos')) {
+			return 'osx'
+		}	else if (nativeName.contains('natives-windows')) {
+			return 'windows'
+		}
+	}
+
+	static def getCurrentArch() {
+		switch (OperatingSystem.current()) {
+			case OperatingSystem.LINUX:
+				def osArch = System.getProperty("os.arch")
+				return osArch.startsWith("arm") || osArch.startsWith("aarch64")
+						? "natives-linux-${osArch.contains("64") || osArch.startsWith("armv8") ? "arm64" : "arm32"}"
+						: "natives-linux"
+				break
+			case OperatingSystem.MAC_OS:
+				return System.getProperty("os.arch").startsWith("aarch64") ? "natives-macos-arm64" : "natives-macos"
+				break
+			case OperatingSystem.WINDOWS:
+				def osArch = System.getProperty("os.arch")
+				return osArch.contains("64")
+						? "natives-windows${osArch.startsWith("aarch64") ? "-arm64" : ""}"
+						: "natives-windows-x86"
+				break
+		}
 	}
 
 	static def iso8601Now() {
