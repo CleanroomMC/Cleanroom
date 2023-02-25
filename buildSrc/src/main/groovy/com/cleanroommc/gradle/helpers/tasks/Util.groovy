@@ -78,6 +78,7 @@ class Util {
 				art.version = "${art.version}-${art.classifier}"
 				art.classifier = null
 				art.extension = 'jar'
+				path = "${art.group.replace('.', '/')}/${art.name}/${art.version}/${art.name}-${art.version}.jar"
 			}
 			ret[key] = [
 				name: "${art.group}:${art.name}:${art.version}" + (art.classifier == null ? '' : ":${art.classifier}") + (art.extension == 'jar' ? '' : "@${art.extension}"),
