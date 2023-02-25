@@ -359,7 +359,6 @@ project(':cleanroom') {
         installer 'org.lwjgl:lwjgl-stb:3.3.1'
         installer 'org.lwjgl:lwjgl-tinyfd:3.3.1'
 
-
         runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
         runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
         runtimeOnly "org.lwjgl:lwjgl-jemalloc::$lwjglNatives"
@@ -737,7 +736,7 @@ project(':cleanroom') {
         }
     }
 
-    task launcherJson(/*dependsOn: ['signUniversalJar']*/) {
+    task launcherJson(dependsOn: universalJar /*['signUniversalJar']*/) {
         inputs.file {
             universalJar.archivePath
         }
