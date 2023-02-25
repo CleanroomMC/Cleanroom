@@ -803,7 +803,7 @@ project(':cleanroom') {
     task installerJson(dependsOn: [launcherJson, genClientBinPatches/*, createClientSRG, createServerSRG*/]) {
         ext {
             output = file('build/install_profile.json')
-            installer_tools = 'net.minecraftforge:installertools:1.1.4' // TODO: Why replace with older version?
+            installer_tools = 'net.minecraftforge:installertools:1.3.0' // TODO: Why replace with older version?
         }
         inputs.file universalJar.archivePath
         inputs.file genClientBinPatches.toolJar
@@ -910,7 +910,7 @@ project(':cleanroom') {
     }
 
     task downloadInstaller(type: DownloadMavenArtifact) {
-        artifact = 'net.minecraftforge:installer:2.0.+:shrunk'
+        artifact = 'net.minecraftforge:installer:2.1.+:shrunk'
         changing = true
     }
 
