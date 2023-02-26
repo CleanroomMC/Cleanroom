@@ -23,6 +23,8 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.BiPredicate;
 
+import com.cleanroommc.hackery.ReflectionHackery;
+import com.cleanroommc.hackery.enums.EnumHackery;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 
@@ -81,62 +83,70 @@ public class EnumHelper
     @Nullable
     public static EnumAction addAction(String name)
     {
-        return addEnum(EnumAction.class, name);
+        return EnumHackery.addEnumEntry(EnumAction.class, name);
     }
     @Nullable
     public static ArmorMaterial addArmorMaterial(String name, String textureName, int durability, int[] reductionAmounts, int enchantability, SoundEvent soundOnEquip, float toughness)
     {
-        return addEnum(ArmorMaterial.class, name, textureName, durability, reductionAmounts, enchantability, soundOnEquip, toughness);
+        return EnumHackery.addEnumEntry(ArmorMaterial.class, name,
+                new Class<?>[] { String.class, int.class, int[].class, int.class, SoundEvent.class, float.class },
+                new Object[] { textureName, durability, reductionAmounts, enchantability, soundOnEquip, toughness });
     }
     @Nullable
     public static EnumArt addArt(String name, String tile, int sizeX, int sizeY, int offsetX, int offsetY)
     {
-        return addEnum(EnumArt.class, name, tile, sizeX, sizeY, offsetX, offsetY);
+        return EnumHackery.addEnumEntry(EnumArt.class, name,
+                new Class<?>[] { String.class, int.class, int.class, int.class, int.class },
+                new Object[] { tile, sizeX, sizeY, offsetX, offsetY });
     }
     @Nullable
     public static EnumCreatureAttribute addCreatureAttribute(String name)
     {
-        return addEnum(EnumCreatureAttribute.class, name);
+        return EnumHackery.addEnumEntry(EnumCreatureAttribute.class, name);
     }
     @Nullable
     public static EnumCreatureType addCreatureType(String name, Class<? extends IAnimals> typeClass, int maxNumber, Material material, boolean peaceful, boolean animal)
     {
-        return addEnum(EnumCreatureType.class, name, typeClass, maxNumber, material, peaceful, animal);
+        return EnumHackery.addEnumEntry(EnumCreatureType.class, name,
+                new Class<?>[] { Class.class, int.class, Material.class, boolean.class, boolean.class },
+                new Object[] { typeClass, maxNumber, material, peaceful, animal });
     }
     @Nullable
     public static Door addDoor(String name)
     {
-        return addEnum(Door.class, name);
+        return EnumHackery.addEnumEntry(Door.class, name);
     }
     @Nullable
     public static EnumEnchantmentType addEnchantmentType(String name, Predicate<Item> delegate)
     {
-        return addEnum(EnumEnchantmentType.class, name, delegate);
+        return EnumHackery.addEnumEntry(EnumEnchantmentType.class, name, new Class<?>[] { Predicate.class }, new Object[] { delegate });
     }
     @Nullable
     public static Sensitivity addSensitivity(String name)
     {
-        return addEnum(Sensitivity.class, name);
+        return EnumHackery.addEnumEntry(Sensitivity.class, name);
     }
     @Nullable
     public static RayTraceResult.Type addMovingObjectType(String name)
     {
-        return addEnum(RayTraceResult.Type.class, name);
+        return EnumHackery.addEnumEntry(RayTraceResult.Type.class, name);
     }
     @Nullable
     public static EnumSkyBlock addSkyBlock(String name, int lightValue)
     {
-        return addEnum(EnumSkyBlock.class, name, lightValue);
+        return EnumHackery.addEnumEntry(EnumSkyBlock.class, name, new Class<?>[] { int.class }, new Object[] { lightValue });
     }
     @Nullable
     public static SleepResult addStatus(String name)
     {
-        return addEnum(SleepResult.class, name);
+        return EnumHackery.addEnumEntry(SleepResult.class, name);
     }
     @Nullable
     public static ToolMaterial addToolMaterial(String name, int harvestLevel, int maxUses, float efficiency, float damage, int enchantability)
     {
-        return addEnum(ToolMaterial.class, name, harvestLevel, maxUses, efficiency, damage, enchantability);
+        return EnumHackery.addEnumEntry(ToolMaterial.class, name,
+                new Class<?>[] { int.class, int.class, float.class, float.class, int.class },
+                new Object[] { harvestLevel, maxUses, efficiency, damage, enchantability });
     }
 
     /** @deprecated use {@link net.minecraftforge.common.IRarity} instead */
@@ -144,13 +154,13 @@ public class EnumHelper
     @Deprecated
     public static EnumRarity addRarity(String name, TextFormatting color, String displayName)
     {
-        return addEnum(EnumRarity.class, name, color, displayName);
+        return EnumHackery.addEnumEntry(EnumRarity.class, name, new Class<?>[] { TextFormatting.class, String.class }, new Object[] { color, displayName });
     }
 
     @Nullable
     public static EntityLiving.SpawnPlacementType addSpawnPlacementType(String name, BiPredicate<IBlockAccess, BlockPos> predicate)
     {
-        return addEnum(EntityLiving.SpawnPlacementType.class, name, predicate);
+        return EnumHackery.addEnumEntry(EntityLiving.SpawnPlacementType.class, name, new Class<?>[] { BiPredicate.class }, new Object[] { predicate });
     }
 
     /**
@@ -163,122 +173,18 @@ public class EnumHelper
     @Nullable 
     public static HorseArmorType addHorseArmor(String name, String textureLocation, int armorStrength)
     {
-        return addEnum(HorseArmorType.class, name, textureLocation, armorStrength);
-    }
-
-    private static < T extends Enum<? >> T makeEnum(Class<T> enumClass, @Nullable String value, int ordinal, Class<?>[] additionalTypes, @Nullable Object[] additionalValues) throws Exception
-    {
-        int additionalParamsCount = additionalValues == null ? 0 : additionalValues.length;
-        Object[] params = new Object[additionalParamsCount + 2];
-        params[0] = value;
-        params[1] = ordinal;
-        if (additionalValues != null)
-        {
-            System.arraycopy(additionalValues, 0, params, 2, additionalValues.length);
-        }
-        Constructor<?> ctor = enumClass.getDeclaredConstructor(additionalTypes);
-        ctor.setAccessible(true);
-        Object ret = ctor.newInstance(new Object[] {params});
-        return enumClass.cast(ret);
+        return EnumHackery.addEnumEntry(HorseArmorType.class, name, new Class<?>[] { String.class, int.class }, new Object[] { textureLocation, armorStrength });
     }
 
     public static void setFailsafeFieldValue(Field field, @Nullable Object target, @Nullable Object value) throws Exception
     {
         field.setAccessible(true);
-        try
-        {
-            Method getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
-            getDeclaredFields0.setAccessible(true);
-            for (Field declaredField : (Field[]) getDeclaredFields0.invoke(Field.class, false))
-            {
-                if ("modifiers".equals(declaredField.getName()))
-                {
-                    declaredField.setAccessible(true);
-                    declaredField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+        ReflectionHackery.stripFieldOfFinalModifier(field);
         field.set(target, value);
-    }
-
-    private static void blankField(Class<?> enumClass, String fieldName) throws Exception
-    {
-        for (Field field : Class.class.getDeclaredFields())
-        {
-            if (field.getName().contains(fieldName))
-            {
-                field.setAccessible(true);
-                setFailsafeFieldValue(field, enumClass, null);
-                break;
-            }
-        }
-        try
-        {
-            Method getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
-            getDeclaredFields0.setAccessible(true);
-            for (Field declaredField : (Field[]) getDeclaredFields0.invoke(Field.class, false))
-            {
-                declaredField.setAccessible(true);
-                setFailsafeFieldValue(declaredField, enumClass, null);
-                break;
-            }
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    private static void cleanEnumCache(Class<?> enumClass) throws Exception
-    {
-        blankField(enumClass, "enumConstantDirectory");
-        blankField(enumClass, "enumConstants");
-        //Open J9
-        blankField(enumClass, "enumVars");
-    }
-
-    @Nullable
-    private static <T extends Enum<? >> T addEnum(Class<T> enumType, String enumName, Object... paramValues)
-    {
-        return addEnum(commonTypes, enumType, enumName, paramValues);
-    }
-
-    @Nullable
-    protected static <T extends Enum<? >> T addEnum(Class<?>[][] map, Class<T> enumType, String enumName, Object... paramValues)
-    {
-        for (Class<?>[] lookup : map)
-        {
-            if (lookup[0] == enumType)
-            {
-                Class<?>[] paramTypes = new Class<?>[lookup.length - 1];
-                if (paramTypes.length > 0)
-                {
-                    System.arraycopy(lookup, 1, paramTypes, 0, paramTypes.length);
-                }
-                return addEnum(enumType, enumName, paramTypes, paramValues);
-            }
-        }
-        return null;
     }
 
     //Tests an enum is compatible with these args, throws an error if not.
     public static void testEnum(Class<? extends Enum<?>> enumType, Class<?>[] paramTypes)
-    {
-        addEnum(true, enumType, null, paramTypes, (Object[])null);
-    }
-
-    @Nullable
-    public static <T extends Enum<? >> T addEnum(Class<T> enumType, String enumName, Class<?>[] paramTypes, Object... paramValues)
-    {
-        return addEnum(false, enumType, enumName, paramTypes, paramValues);
-    }
-
-    @SuppressWarnings({ "unchecked", "serial" })
-    @Nullable
-    private static <T extends Enum<? >> T addEnum(boolean test, final Class<T> enumType, @Nullable String enumName, final Class<?>[] paramTypes, @Nullable Object[] paramValues)
     {
         Field valuesField = null;
         Field[] fields = enumType.getDeclaredFields();
@@ -301,7 +207,7 @@ public class EnumHelper
             for (Field field : fields)
             {
                 if ((field.getModifiers() & flags) == flags &&
-                     field.getType().getName().replace('.', '/').equals(valueType)) //Apparently some JVMs return .'s and some don't..
+                        field.getType().getName().replace('.', '/').equals(valueType)) //Apparently some JVMs return .'s and some don't..
                 {
                     valuesField = field;
                     break;
@@ -325,81 +231,63 @@ public class EnumHelper
             for (String line : lines)
                 FMLLog.log.fatal(line);
 
-            if (test)
+            throw new EnhancedRuntimeException("Could not find $VALUES field for enum: " + enumType.getName())
             {
-                throw new EnhancedRuntimeException("Could not find $VALUES field for enum: " + enumType.getName())
+                @Override
+                protected void printStackTrace(WrappedPrintStream stream)
                 {
-                    @Override
-                    protected void printStackTrace(WrappedPrintStream stream)
-                    {
-                        for (String line : lines)
-                            stream.println(line);
-                    }
-                };
-            }
-            return null;
+                    for (String line : lines)
+                        stream.println(line);
+                }
+            };
         }
 
-        if (test)
-        {
-            Object ctr = null;
-            Exception ex = null;
-            try
-            {
-                Class<?>[] prefixedParamTypes = { String.class, int.class };
-                ctr = enumType.getDeclaredConstructor(ArrayUtils.addAll(prefixedParamTypes, paramTypes));
-            }
-            catch (Exception e)
-            {
-                ex = e;
-            }
-            if (ctr == null || ex != null)
-            {
-                throw new EnhancedRuntimeException(String.format("Could not find constructor for Enum %s", enumType.getName()), ex)
-                {
-                    private String toString(Class<?>[] cls)
-                    {
-                        StringBuilder b = new StringBuilder();
-                        for (int x = 0; x < cls.length; x++)
-                        {
-                            b.append(cls[x].getName());
-                            if (x != cls.length - 1)
-                                b.append(", ");
-                        }
-                        return b.toString();
-                    }
-                    @Override
-                    protected void printStackTrace(WrappedPrintStream stream)
-                    {
-                        stream.println("Target Arguments:");
-                        stream.println("    java.lang.String, int, " + toString(paramTypes));
-                        stream.println("Found Constructors:");
-                        for (Constructor<?> ctr : enumType.getDeclaredConstructors())
-                        {
-                            stream.println("    " + toString(ctr.getParameterTypes()));
-                        }
-                    }
-                };
-            }
-            return null;
-        }
-
-        valuesField.setAccessible(true);
-
+        Object ctr = null;
+        Exception ex = null;
         try
         {
-            T[] previousValues = (T[])valuesField.get(enumType);
-            T newValue = makeEnum(enumType, enumName, previousValues.length, paramTypes, paramValues);
-            setFailsafeFieldValue(valuesField, null, ArrayUtils.add(previousValues, newValue));
-            cleanEnumCache(enumType);
-
-            return newValue;
+            Class<?>[] prefixedParamTypes = { String.class, int.class };
+            ctr = enumType.getDeclaredConstructor(ArrayUtils.addAll(prefixedParamTypes, paramTypes));
         }
         catch (Exception e)
         {
-            FMLLog.log.error("Error adding enum with EnumHelper.", e);
-            throw new RuntimeException(e);
+            ex = e;
+        }
+        if (ctr == null || ex != null)
+        {
+            throw new EnhancedRuntimeException(String.format("Could not find constructor for Enum %s", enumType.getName()), ex)
+            {
+                private String toString(Class<?>[] cls)
+                {
+                    StringBuilder b = new StringBuilder();
+                    for (int x = 0; x < cls.length; x++)
+                    {
+                        b.append(cls[x].getName());
+                        if (x != cls.length - 1)
+                            b.append(", ");
+                    }
+                    return b.toString();
+                }
+                @Override
+                protected void printStackTrace(WrappedPrintStream stream)
+                {
+                    stream.println("Target Arguments:");
+                    stream.println("    java.lang.String, int, " + toString(paramTypes));
+                    stream.println("Found Constructors:");
+                    for (Constructor<?> ctr : enumType.getDeclaredConstructors())
+                    {
+                        stream.println("    " + toString(ctr.getParameterTypes()));
+                    }
+                }
+            };
         }
     }
+
+    @Nullable
+    public static <T extends Enum<? >> T addEnum(Class<T> enumType, String enumName, Class<?>[] paramTypes, Object... paramValues)
+    {
+        return (T) EnumHackery.addEnumEntry((Class<? extends Enum>) enumType, enumName, paramTypes, paramValues);
+    }
+
 
 }

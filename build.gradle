@@ -57,6 +57,7 @@ def post_processor = [
 
 def jvm_arguments = [
         '--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED',
+        '--add-opens=java.base/jdk.internal.reflect=ALL-UNNAMED',
         '--add-opens=java.base/java.lang=ALL-UNNAMED',
         '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED'
 ]
