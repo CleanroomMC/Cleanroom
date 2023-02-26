@@ -209,7 +209,7 @@ public class ClassPatchManager {
                     if (binpatchMatcher.matcher(entry.getName()).matches())
                     {
                         ClassPatch cp = readPatch(entry, jis);
-                        if (cp != null)
+                        if (cp != null && cp.patch.length > 0)
                         {
                             patches.put(cp.sourceClassName, cp);
                         }
