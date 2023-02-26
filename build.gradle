@@ -188,6 +188,14 @@ project(':cleanroom') {
         version_json = project(':mcp').file('build/mcp/downloadJson/version.json')
         archNative = Util.getCurrentArch()
         lwjglVersion = '3.3.1'
+        natives = [
+             'lwjgl-glfw', 'lwjgl-jemalloc', 'lwjgl-openal', 'lwjgl-opengl', 'lwjgl-stb', 'lwjgl-tinyfd', 'lwjgl'
+        ]
+        arch = [
+            'natives-linux-arm64', 'natives-linux-arm32', 'natives-linux',
+            'natives-macos-arm64', 'natives-macos',
+            'natives-windows-arm64', 'natives-windows', 'natives-windows-x86'
+        ]
     }
 
     patcher {
@@ -332,7 +340,7 @@ project(':cleanroom') {
         lwjglNatives {
             transitive = false
         }
-        compileOnly.extendsFrom(lwjglNatives)
+        testCompile.extendsFrom(lwjglNatives)
     }
 
     dependencies {
@@ -773,7 +781,8 @@ project(':cleanroom') {
             artifacts.each { key, lib ->
                 json.libraries.add(lib)
             }
-            def lwjglNatives = Util.getLWJGLNatives(project.configurations.lwjglNatives)
+            def lwjglNatives = Util.getLWJGLNatives(project.configurations.lwjglNatives,
+                project.configurations.testCompile, natives, arch)
             lwjglNatives.each { key, lib ->
                 json.libraries.add(lib)
             }
@@ -1026,20 +1035,10 @@ project(':cleanroom') {
         runtimeOnly "org.lwjgl:lwjgl-stb::$archNative"
         runtimeOnly "org.lwjgl:lwjgl-tinyfd::$archNative"
 
-        def arch = [
-            'natives-linux-arm64', 'natives-linux-arm32', 'natives-linux',
-            'natives-macos-arm64', 'natives-macos',
-            'natives-windows-arm64', 'natives-windows', 'natives-windows-x86'
-        ]
-
         arch.each {
-            lwjglNatives "org.lwjgl:lwjgl:$lwjglVersion:$it"
-            lwjglNatives "org.lwjgl:lwjgl-glfw:$lwjglVersion:$it"
-            lwjglNatives "org.lwjgl:lwjgl-jemalloc:$lwjglVersion:$it"
-            lwjglNatives "org.lwjgl:lwjgl-openal:$lwjglVersion:$it"
-            lwjglNatives "org.lwjgl:lwjgl-opengl:$lwjglVersion:$it"
-            lwjglNatives "org.lwjgl:lwjgl-stb:$lwjglVersion:$it"
-            lwjglNatives "org.lwjgl:lwjgl-tinyfd:$lwjglVersion:$it"
+            natives.each { it1 ->
+                lwjglNatives "org.lwjgl:$it1:$lwjglVersion:$it"
+            }
         }
     }
 }

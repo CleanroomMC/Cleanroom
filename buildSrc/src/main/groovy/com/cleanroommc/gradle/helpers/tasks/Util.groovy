@@ -96,57 +96,65 @@ class Util {
 		return ret
 	}
 
-	static def getLWJGLNatives(config) {
+	static def getLWJGLNatives(nativeConfig, compileConfig, natives, arch) {
 		def ret = [:]
-		config.resolvedConfiguration.resolvedArtifacts.each {
-			def art = [
-					group: it.moduleVersion.id.group,
-					name: it.moduleVersion.id.name,
-					version: it.moduleVersion.id.version,
-					classifier: it.classifier,
+		def data = [ '' : [:]]
+		nativeConfig.resolvedConfiguration.resolvedArtifacts.each {
+			data.putIfAbsent(it.moduleVersion.id.name, [
+					group    : it.moduleVersion.id.group,
+					version  : it.moduleVersion.id.version,
 					extension: it.extension,
-					file: it.file
-			]
-			def key = art.group + ':' + art.name
-			def folder = "${art.group.replace('.', '/')}/${art.name}/${art.version}/"
-			def filename = "${art.name}-${art.version}"
-			if (art.classifier != null)
-				filename += "-${art.classifier}"
-			filename += ".${art.extension}"
-			def path = "${folder}${filename}"
-			def url = "https://libraries.minecraft.net/${path}"
-			if (!checkExists(url)) {
-				url = "https://maven.minecraftforge.net/${path}"
-			}
-			ret[key] = [
-					name     : "${art.group}:${art.name}:${art.version}:${art.classifier}",
-					downloads: [
-							artifact: [
-									path: path,
-									url : url,
-									sha1: sha1(art.file),
-									size: art.file.length()
-							]
-					],
-					rules    : [
-							[
-									action: "allow",
-									os    : [
-											name: getOSName(art.classifier)
-									]
-							]
-					]
-			]
+			])
+		}
+		compileConfig.files.each {file ->
+			try {
+				def name = natives.stream().filter(it -> file.getName().contains(it)).findFirst().get()
+				def classifier = arch.stream().filter(it -> file.getName().contains(it)).findFirst().get()
+				def art = [
+						name		  : name,
+						group     : data.get(name).get("group"),
+						version   : data.get(name).get("version"),
+						extension : data.get(name).get("extension"),
+						classifier: classifier
+				]
+				def key = art.group + ':' + art.name + ':' + art.classifier
+				def folder = "${art.group.replace('.', '/')}/${art.name}/${art.version}/"
+				def filename = "${art.name}-${art.version}"
+				if (art.classifier != null)
+					filename += "-${art.classifier}"
+				filename += ".${art.extension}"
+				def path = "${folder}${filename}"
+				def url = "https://libraries.minecraft.net/${path}"
+				ret[key] = [
+						name: "${art.group}:${art.name}:${art.version}" + ":${art.classifier}" + (art.extension == 'jar' ? '' : "@${art.extension}"),
+						downloads: [
+								artifact: [
+										path: path,
+										url : url,
+										sha1: sha1(file),
+										size: file.length()
+								]
+						],
+						rules    : [
+								[
+										action: "allow",
+										os    : [
+												name: getOSName(art.classifier)
+										]
+								]
+						]
+				]
+			} catch (ignored) {}
 		}
 		return ret
 	}
 
-	static def getOSName(nativeName) {
-		if (nativeName.contains('natives-linux')) {
+	static def getOSName(nativeClassifier) {
+		if (nativeClassifier.contains('natives-linux')) {
 			return 'linus'
-		} else if (nativeName.contains('natives-macos')) {
+		} else if (nativeClassifier.contains('natives-macos')) {
 			return 'osx'
-		}	else if (nativeName.contains('natives-windows')) {
+		}	else if (nativeClassifier.contains('natives-windows')) {
 			return 'windows'
 		}
 	}
@@ -158,16 +166,13 @@ class Util {
 				return osArch.startsWith("arm") || osArch.startsWith("aarch64")
 						? "natives-linux-${osArch.contains("64") || osArch.startsWith("armv8") ? "arm64" : "arm32"}"
 						: "natives-linux"
-				break
 			case OperatingSystem.MAC_OS:
 				return System.getProperty("os.arch").startsWith("aarch64") ? "natives-macos-arm64" : "natives-macos"
-				break
 			case OperatingSystem.WINDOWS:
 				def osArch = System.getProperty("os.arch")
 				return osArch.contains("64")
 						? "natives-windows${osArch.startsWith("aarch64") ? "-arm64" : ""}"
 						: "natives-windows-x86"
-				break
 		}
 	}
 

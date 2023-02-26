@@ -19,7 +19,9 @@
 
 package net.minecraftforge.fml.relauncher;
 
-import java.io.File;
+import java.io.*;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
@@ -94,6 +96,9 @@ public class FMLLaunchHandler
         FMLLog.log.info("Forge Mod Loader version {}.{}.{}.{} for Minecraft {} loading", FMLInjectionData.major, FMLInjectionData.minor,
                 FMLInjectionData.rev, FMLInjectionData.build, FMLInjectionData.mccversion);
         FMLLog.log.info("Java is {}, version {}, running on {}:{}:{}, installed at {}", System.getProperty("java.vm.name"), System.getProperty("java.version"), System.getProperty("os.name"), System.getProperty("os.arch"), System.getProperty("os.version"), System.getProperty("java.home"));
+        FMLLog.log.debug("Removing LWJGL2 from Java classpath");
+        System.setProperty("java.class.path", Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
+            .filter(it -> !it.contains("2.9.4-nightly-20150209")).collect(Collectors.joining(File.pathSeparator)));
         FMLLog.log.debug("Java classpath at launch is:");
         for (String path : System.getProperty("java.class.path").split(File.pathSeparator))
             FMLLog.log.debug("    {}", path);
