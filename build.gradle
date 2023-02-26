@@ -32,8 +32,7 @@ import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.FieldVisitor
 import org.objectweb.asm.MethodVisitor
-
-import org.gradle.internal.os.OperatingSystem
+import org.objectweb.asm.Opcodes
 
 def props = project.properties
 def sysProps = System.getProperties()
@@ -628,7 +627,7 @@ project(':cleanroom') {
         inputs.files patcher.accessTransformers
         doLast {
             def vanilla = [:]
-            def zip = new ZipFile(genJoinedBinPatches.cleanJar)
+            def zip = new ZipFile(genJoinedBinPatches.cleanJar.get().asFile)
             zip.entries().findAll {
                 !it.directory && it.name.endsWith('.class')
             }.each { entry ->
@@ -865,10 +864,10 @@ project(':cleanroom') {
 
     universalJar {
         from(extra_files)
-        dependsOn(deobfDataLzma)
-        from(deobfDataLzma.output) {
+        dependsOn(extractObf2Srg)
+        from(extractObf2Srg.output) {
             rename {
-                "deobfuscation_data-${props.minecraft_version }.lzma" // TODO: Spacing?
+                "deobf_data-${props.minecraft_version}.tsrg" // TODO: Spacing?
             }
         }
         dependsOn(genRuntimeBinPatches)

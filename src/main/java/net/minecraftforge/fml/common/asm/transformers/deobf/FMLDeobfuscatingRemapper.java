@@ -19,10 +19,7 @@
 
 package net.minecraftforge.fml.common.asm.transformers.deobf;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -33,6 +30,7 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.patcher.ClassPatchManager;
 
+import org.apache.commons.io.IOUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.commons.Remapper;
 import org.objectweb.asm.tree.ClassNode;
@@ -119,7 +117,7 @@ public class FMLDeobfuscatingRemapper extends Remapper {
         fieldNameMaps = Maps.newHashMapWithExpectedSize(rawFieldMaps.size());
 
     }
-    public void setup(File mcDir, LaunchClassLoader classLoader, String deobfFileName)
+    public void setup(File mcDir, LaunchClassLoader classLoader, String deobfFileName, boolean liveEnv)
     {
         this.classLoader = classLoader;
         try
@@ -127,16 +125,13 @@ public class FMLDeobfuscatingRemapper extends Remapper {
             List<String> srgList;
             final String gradleStartProp = System.getProperty("net.minecraftforge.gradle.GradleStart.srg.srg-mcp");
 
-            if (Strings.isNullOrEmpty(gradleStartProp))
+            if (liveEnv && Strings.isNullOrEmpty(gradleStartProp))
             {
-                // get as a resource
-                InputStream classData = getClass().getResourceAsStream(deobfFileName);
-                LZMAInputSupplier zis = new LZMAInputSupplier(classData);
-                CharSource srgSource = zis.asCharSource(StandardCharsets.UTF_8);
-                srgList = srgSource.readLines();
+                try (InputStream inputStream = getClass().getResourceAsStream(deobfFileName)) {
+                    srgList = IOUtils.readLines(inputStream, StandardCharsets.UTF_8);
+                }
                 FMLLog.log.debug("Loading deobfuscation resource {} with {} records", deobfFileName, srgList.size());
-            }
-            else
+            } else
             {
                 srgList = Files.readLines(new File(gradleStartProp), StandardCharsets.UTF_8);
                 FMLLog.log.debug("Loading deobfuscation resource {} with {} records", gradleStartProp, srgList.size());
@@ -166,7 +161,7 @@ public class FMLDeobfuscatingRemapper extends Remapper {
             }
             classNameBiMap = builder.build();
         }
-        catch (IOException ioe)
+        catch (IOException | NullPointerException ioe)
         {
             FMLLog.log.error("An error occurred loading the deobfuscation map data", ioe);
         }

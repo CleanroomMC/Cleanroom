@@ -231,7 +231,7 @@ public class FMLCommonHandler
             Builder<String> brd = ImmutableList.builder();
             brd.add(Loader.instance().getMCVersionString());
             brd.add(Loader.instance().getMCPVersionString());
-            brd.add("Powered by Forge " + ForgeVersion.getVersion());
+            brd.add("Powered by Cleanroom " + ForgeVersion.getVersion());
             if (sidedDelegate!=null)
             {
                 brd.addAll(sidedDelegate.getAdditionalBrandingInformation());

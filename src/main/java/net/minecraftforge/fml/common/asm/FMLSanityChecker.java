@@ -184,7 +184,7 @@ public class FMLSanityChecker implements IFMLCallHook
         File mcDir = (File)data.get("mcLocation");
         fmlLocation = (File)data.get("coremodLocation");
         ClassPatchManager.INSTANCE.setup(FMLLaunchHandler.side());
-        FMLDeobfuscatingRemapper.INSTANCE.setup(mcDir, cl, (String) data.get("deobfuscationFileName"));
+        FMLDeobfuscatingRemapper.INSTANCE.setup(mcDir, cl, (String) data.get("deobfuscationFileName"), liveEnv);
     }
 
 }

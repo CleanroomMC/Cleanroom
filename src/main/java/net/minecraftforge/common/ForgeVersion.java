@@ -182,7 +182,7 @@ public class ForgeVersion
 
     public static void startVersionCheck()
     {
-        new Thread("Forge Version Check")
+        new Thread("Cleanroom Version Check")
         {
             @Override
             public void run()

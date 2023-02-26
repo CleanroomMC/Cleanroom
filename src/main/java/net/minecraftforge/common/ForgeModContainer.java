@@ -500,10 +500,11 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
         ForgeChunkManager.captureConfig(evt.getModConfigurationDirectory());
         MinecraftForge.EVENT_BUS.register(this);
 
-        if (!ForgeModContainer.disableVersionCheck)
-        {
-            ForgeVersion.startVersionCheck();
-        }
+        // TODO: Create own version checker instead
+//        if (!ForgeModContainer.disableVersionCheck)
+//        {
+//            ForgeVersion.startVersionCheck();
+//        }
     }
 
     @SubscribeEvent

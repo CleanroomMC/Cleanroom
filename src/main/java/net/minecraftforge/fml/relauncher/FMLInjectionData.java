@@ -51,7 +51,7 @@ public class FMLInjectionData
 
     static String debfuscationDataName()
     {
-        return "/deobfuscation_data-"+mccversion+".lzma";
+        return "/deobf_data-"+mccversion+".tsrg";
     }
     public static Object[] data()
     {
