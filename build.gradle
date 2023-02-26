@@ -188,13 +188,14 @@ project(':cleanroom') {
         version_json = project(':mcp').file('build/mcp/downloadJson/version.json')
         archNative = Util.getCurrentArch()
         lwjglVersion = '3.3.1'
+        // Do not change the array order unless it is required so
         natives = [
              'lwjgl-glfw', 'lwjgl-jemalloc', 'lwjgl-openal', 'lwjgl-opengl', 'lwjgl-stb', 'lwjgl-tinyfd', 'lwjgl'
         ]
         arch = [
             'natives-linux-arm64', 'natives-linux-arm32', 'natives-linux',
             'natives-macos-arm64', 'natives-macos',
-            'natives-windows-arm64', 'natives-windows', 'natives-windows-x86'
+            'natives-windows-arm64', 'natives-windows-x86', 'natives-windows'
         ]
     }
 

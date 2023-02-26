@@ -124,9 +124,10 @@ class Util {
 					filename += "-${art.classifier}"
 				filename += ".${art.extension}"
 				def path = "${folder}${filename}"
-				def url = "https://libraries.minecraft.net/${path}"
+				def url = "https://repo.maven.apache.org/maven2/${path}"
 				if (!checkExists(url)) {
-					return
+					url = "https://maven.minecraftforge.net/${path}"
+					if (!checkExists(url)) return
 				}
 				ret[key] = [
 						name: "${art.group}:${art.name}:${art.version}" + ":${art.classifier}" + (art.extension == 'jar' ? '' : "@${art.extension}"),
