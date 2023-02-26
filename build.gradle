@@ -33,6 +33,8 @@ import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.FieldVisitor
 import org.objectweb.asm.MethodVisitor
 
+import org.gradle.internal.os.OperatingSystem
+
 def props = project.properties
 def sysProps = System.getProperties()
 
@@ -83,13 +85,16 @@ project(':minecraft') {
         mavenLocal()
         mavenCentral()
     }
-
+//    configurations.all {
+//        exclude group: 'org.lwjgl.lwjgl'
+//    }
     dependencies {
         implementation ('net.minecraftforge:mergetool:0.2.3.3:forge') {
             exclude group: 'org.ow2.asm', module: 'asm-tree'
             exclude group: 'org.ow2.asm', module: 'asm-util'
             exclude group: 'org.ow2.asm', module: 'asm'
         }
+        //implementation fileTree(dir: 'libs', include: '*.jar')
     }
 
     patcher {
@@ -182,6 +187,16 @@ project(':cleanroom') {
 
     ext {
         version_json = project(':mcp').file('build/mcp/downloadJson/version.json')
+        archNative = Util.getCurrentArch()
+        lwjglVersion = '3.3.1'
+        natives = [
+             'lwjgl-glfw', 'lwjgl-jemalloc', 'lwjgl-openal', 'lwjgl-opengl', 'lwjgl-stb', 'lwjgl-tinyfd', 'lwjgl'
+        ]
+        arch = [
+            'natives-linux-arm64', 'natives-linux-arm32', 'natives-linux',
+            'natives-macos-arm64', 'natives-macos',
+            'natives-windows-arm64', 'natives-windows', 'natives-windows-x86'
+        ]
     }
 
     patcher {
@@ -313,14 +328,30 @@ project(':cleanroom') {
 
     // Dependencies
     configurations {
+        all { // LWJGL2 isn't friendly with us, so pye pye
+            exclude group: 'org.lwjgl.lwjgl'
+        }
+
+        // Don't pull all libraries, if we're missing something, add it to the installer list so the installer knows to download it.
         installer {
-            // Don't pull all libraries, if we're missing something, add it to the installer list so the installer knows to download it.
             transitive = false
         }
         api.extendsFrom(installer)
+
+        lwjglNatives {
+            transitive = false
+        }
+        testCompile.extendsFrom(lwjglNatives)
     }
 
     dependencies {
+        installer "org.lwjgl:lwjgl:$lwjglVersion"
+        installer "org.lwjgl:lwjgl-glfw:$lwjglVersion"
+        installer "org.lwjgl:lwjgl-jemalloc:$lwjglVersion"
+        installer "org.lwjgl:lwjgl-openal:$lwjglVersion"
+        installer "org.lwjgl:lwjgl-opengl:$lwjglVersion"
+        installer "org.lwjgl:lwjgl-stb:$lwjglVersion"
+        installer "org.lwjgl:lwjgl-tinyfd:$lwjglVersion"
 
         // TODO: ASM 9.4 required, breaks current Event System when creating classes on-the-fly
         installer 'org.ow2.asm:asm:9.4'
@@ -691,7 +722,7 @@ project(':cleanroom') {
         }
     }
 
-    task launcherJson(/*dependsOn: ['signUniversalJar']*/) {
+    task launcherJson(dependsOn: universalJar /*['signUniversalJar']*/) {
         inputs.file {
             universalJar.archivePath
         }
@@ -704,51 +735,56 @@ project(':cleanroom') {
                     'Our efforts are supported by ads from the download page.'
                     // TODO: Donation Page? (Was LexManos')
             ]
-            id = "${props.minecraft_version}-${project.name}${project.version}"
+            id = "${project.name}-${project.version}"
         }
         inputs.file vanilla
         outputs.file output
         doLast {
             def json_vanilla = vanilla.json()
             def json = [
-                    _comment_: comment,
-                    id: id,
-                    time: timestamp,
-                    releaseTime: timestamp,
-                    type: 'release',
-                    mainClass: 'com.cleanroommc.bouncepad.Bouncepad',
-                    inheritsFrom: props.minecraft_version,
-                    logging: { },
-                    arguments: [
-                            '--username', '${auth_player_name}',
-                            '--version', '${version_name}',
-                            '--gameDir', '${game_directory}',
-                            '--assetsDir', '${assets_root}',
-                            '--assetIndex', '${assets_index_name}',
-                            '--uuid', '${auth_uuid}',
-                            '--accessToken', '${auth_access_token}',
-                            '--userType', '${user_type}',
-                            '--tweakClass', 'net.minecraftforge.fml.common.launcher.FMLTweaker',
-                            '--versionType', 'Forge'
-                    ],
-                    libraries: [
-                            [
-                                    // Package our universal jar as the 'main' jar Mojang's launcher loads. It will in turn load Forge's regular jars itself.
-                                    name: "${project.group}:${project.name}:${project.version}",
-                                    downloads: [
-                                            artifact: [
-                                                    path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
-                                                    // Do not include the URL so that the installer/launcher won't grab it. This is also why we don't have the universal classifier
-                                                    url: '',
-                                                    sha1: Util.sha1(universalJar.archivePath),
-                                                    size: universalJar.archivePath.length()
-                                            ]
-                                    ]
+                _comment_: comment,
+                id: id,
+                time: timestamp,
+                releaseTime: timestamp,
+                type: 'release',
+                mainClass: 'com.cleanroommc.bouncepad.Bouncepad',
+                inheritsFrom: props.minecraft_version,
+                logging: { },
+                minecraftArguments: [
+                    '--username', '${auth_player_name}',
+                    '--version', '${version_name}',
+                    '--gameDir', '${game_directory}',
+                    '--assetsDir', '${assets_root}',
+                    '--assetIndex', '${assets_index_name}',
+                    '--uuid', '${auth_uuid}',
+                    '--accessToken', '${auth_access_token}',
+                    '--userType', '${user_type}',
+                    '--tweakClass', 'net.minecraftforge.fml.common.launcher.FMLTweaker',
+                    '--versionType', 'Forge'
+                ].join(' '),
+                libraries: [
+                    [
+                        // Package our universal jar as the 'main' jar Mojang's launcher loads. It will in turn load Forge's regular jars itself.
+                        name: "${project.group}:${project.name}:${project.version}",
+                        downloads: [
+                            artifact: [
+                                path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
+                                // Do not include the URL so that the installer/launcher won't grab it. This is also why we don't have the universal classifier
+                                url: '',
+                                sha1: Util.sha1(universalJar.archivePath),
+                                size: universalJar.archivePath.length()
                             ]
+                        ]
                     ]
+                ]
             ]
             def artifacts = Util.getArtifacts(project, project.configurations.installer, false)
             artifacts.each { key, lib ->
+                json.libraries.add(lib)
+            }
+            def lwjglNatives = Util.getLWJGLNatives(project.configurations.lwjglNatives,
+                project.configurations.testCompile, natives, arch)
+            lwjglNatives.each { key, lib ->
                 json.libraries.add(lib)
             }
             output.text = new JsonBuilder(json).toPrettyString()
@@ -766,32 +802,32 @@ project(':cleanroom') {
         outputs.file output
         doLast {
             def libs = [
-                    "${project.group}:${project.name}:${project.version}": [
-                            name: "${project.group}:${project.name}:${project.version}",
-                            downloads: [
-                                    artifact: [
-                                            path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
-                                            // Do not include the URL so that the installer/launcher won't grab it. This is also why we don't have the universal classifier
-                                            url: '',
-                                            sha1: Util.sha1(universalJar.archivePath),
-                                            size: universalJar.archivePath.length()
-                                    ]
-                            ]
+                "${project.group}:${project.name}:${project.version}": [
+                    name: "${project.group}:${project.name}:${project.version}",
+                    downloads: [
+                        artifact: [
+                                path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
+                                // Do not include the URL so that the installer/launcher won't grab it. This is also why we don't have the universal classifier
+                                url: '',
+                                sha1: Util.sha1(universalJar.archivePath),
+                                size: universalJar.archivePath.length()
+                        ]
                     ]
+                ]
             ]
             def json = [
-                    _comment_: launcherJson.comment,
-                    spec: 0,
-                    profile: project.name,
-                    version: launcherJson.id,
-                    icon: 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon.ico').toPath()))),
-                    json: '/version.json',
-                    path: "${project.group}:${project.name}:${project.version}",
-                    logo: '/big_logo.png',
-                    minecraft: props.minecraft_version,
-                    welcome: "Welcome to the simple ${project.name.capitalize()} installer.",
-                    data: [ ] as Map,
-                    processors: [ ]
+                _comment_: launcherJson.comment,
+                spec: 0,
+                profile: project.name,
+                version: launcherJson.id,
+                icon: 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon.ico').toPath()))),
+                json: '/version.json',
+                path: "${project.group}:${project.name}:${project.version}",
+                logo: '/big_logo.png',
+                minecraft: props.minecraft_version,
+                welcome: "Welcome to the simple ${project.name.capitalize()} installer.",
+                data: [ ] as Map,
+                processors: [ ]
             ]
             Util.getClasspath(project, libs, project(':mcp').mcp.config.get().descriptor) // Tell it to download mcp_config
             json.libraries = libs.values().sort { a, b -> a.name.compareTo(b.name) }
@@ -850,6 +886,7 @@ project(':cleanroom') {
             classpath += "minecraft_server.${props.minecraft_version}.jar"
             manifest.attributes([
                     'Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                    'Main-Class': 'net.minecraftforge.fml.relauncher.ServerLaunchWrapper',
                     'Class-Path': classpath.toString(),
                     'Tweak-Class': 'net.minecraftforge.fml.common.launcher.FMLTweaker'
             ])
@@ -865,7 +902,7 @@ project(':cleanroom') {
     }
 
     task downloadInstaller(type: DownloadMavenArtifact) {
-        artifact = 'net.minecraftforge:installer:2.0.+:shrunk'
+        artifact = 'net.minecraftforge:installer:2.1.+:shrunk'
         changing = true
     }
 
@@ -990,6 +1027,21 @@ project(':cleanroom') {
         jvmArgs jvm_arguments
     }
 
+    dependencies {
+        runtimeOnly "org.lwjgl:lwjgl::$archNative"
+        runtimeOnly "org.lwjgl:lwjgl-glfw::$archNative"
+        runtimeOnly "org.lwjgl:lwjgl-jemalloc::$archNative"
+        runtimeOnly "org.lwjgl:lwjgl-openal::$archNative"
+        runtimeOnly "org.lwjgl:lwjgl-opengl::$archNative"
+        runtimeOnly "org.lwjgl:lwjgl-stb::$archNative"
+        runtimeOnly "org.lwjgl:lwjgl-tinyfd::$archNative"
+
+        arch.each {
+            natives.each { it1 ->
+                lwjglNatives "org.lwjgl:$it1:$lwjglVersion:$it"
+            }
+        }
+    }
 }
 
 task setup() {

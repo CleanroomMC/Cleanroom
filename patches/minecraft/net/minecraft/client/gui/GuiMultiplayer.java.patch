@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/gui/GuiMultiplayer.java
 +++ after/net/minecraft/client/gui/GuiMultiplayer.java
+@@ -15,7 +15,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+-import org.lwjgl.input.Keyboard;
++import org.lwjglx.input.Keyboard;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiMultiplayer extends GuiScreen
 @@ -41,6 +41,7 @@
      public GuiMultiplayer(GuiScreen p_i1040_1_)
      {

@@ -177,15 +177,16 @@ public class ClassPatchManager {
                     if (!FMLLaunchHandler.isDeobfuscatedEnvironment())
                     {
                         FMLLog.log.fatal("The binary patch set is missing, things are not going to work!");
+                    } else {
+                        FMLLog.log.error("The binary patch set is missing, because you are in a development environment!");
                     }
                     return;
                 }
-                try (LzmaInputStream binpatchesDecompressed = new LzmaInputStream(binpatchesCompressed))
+                try (LzmaInputStream binpatchesDecompressedLzma = new LzmaInputStream(binpatchesCompressed))
                 {
-                    ByteArrayOutputStream jarBytes = new ByteArrayOutputStream();
-                    try (JarOutputStream jos = new JarOutputStream(jarBytes))
-                    {
-                        jis = new JarInputStream(new ByteArrayInputStream(jarBytes.toByteArray()));
+                    byte[] decompressed = ByteStreams.toByteArray(binpatchesDecompressedLzma);
+                    try (ByteArrayInputStream binpatchesDecompressed = new ByteArrayInputStream(decompressed)){
+                        jis = new JarInputStream(binpatchesDecompressed);
                     }
                 }
             }

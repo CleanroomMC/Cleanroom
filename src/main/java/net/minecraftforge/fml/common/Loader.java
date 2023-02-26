@@ -270,7 +270,7 @@ public class Loader
                     if (required || modVersions.containsKey(acceptedVersion.getLabel()))
                     {
                         ArtifactVersion currentVersion = modVersions.get(acceptedVersion.getLabel());
-                        if (currentVersion == null || !acceptedVersion.containsVersion(currentVersion))
+                        if (currentVersion == null || !acceptedVersion.containsVersion(currentVersion) && !acceptedVersion.getLabel().contains("forge"))
                         {
                             missingModsException.addMissingMod(acceptedVersion, currentVersion, required);
                         }

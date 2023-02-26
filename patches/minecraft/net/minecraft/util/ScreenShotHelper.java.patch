@@ -1,5 +1,14 @@
 --- before/net/minecraft/util/ScreenShotHelper.java
 +++ after/net/minecraft/util/ScreenShotHelper.java
+@@ -20,7 +20,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+-import org.lwjgl.BufferUtils;
++import org.lwjglx.BufferUtils;
+ 
+ @SideOnly(Side.CLIENT)
+ public class ScreenShotHelper
 @@ -53,10 +53,14 @@
                  file2 = new File(file1, p_148259_1_);
              }

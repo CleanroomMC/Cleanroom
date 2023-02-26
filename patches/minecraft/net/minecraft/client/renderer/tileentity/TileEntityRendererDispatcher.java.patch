@@ -56,7 +56,7 @@
 +     */
 +    public void preDrawBatch()
 +    {
-+        batchBuffer.func_178180_c().func_181668_a(org.lwjgl.opengl.GL11.GL_QUADS, net.minecraft.client.renderer.vertex.DefaultVertexFormats.field_176600_a);
++        batchBuffer.func_178180_c().func_181668_a(org.lwjglx.opengl.GL11.GL_QUADS, net.minecraft.client.renderer.vertex.DefaultVertexFormats.field_176600_a);
 +        drawingBatch = true;
 +    }
 +
@@ -68,17 +68,17 @@
 +    {
 +        field_147553_e.func_110577_a(net.minecraft.client.renderer.texture.TextureMap.field_110575_b);
 +        net.minecraft.client.renderer.RenderHelper.func_74518_a();
-+        GlStateManager.func_179112_b(org.lwjgl.opengl.GL11.GL_SRC_ALPHA, org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA);
++        GlStateManager.func_179112_b(org.lwjglx.opengl.GL11.GL_SRC_ALPHA, org.lwjglx.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA);
 +        GlStateManager.func_179147_l();
 +        GlStateManager.func_179129_p();
 +
 +        if (net.minecraft.client.Minecraft.func_71379_u())
 +        {
-+            GlStateManager.func_179103_j(org.lwjgl.opengl.GL11.GL_SMOOTH);
++            GlStateManager.func_179103_j(org.lwjglx.opengl.GL11.GL_SMOOTH);
 +        }
 +        else
 +        {
-+            GlStateManager.func_179103_j(org.lwjgl.opengl.GL11.GL_FLAT);
++            GlStateManager.func_179103_j(org.lwjglx.opengl.GL11.GL_FLAT);
 +        }
 +
 +        if(pass > 0)

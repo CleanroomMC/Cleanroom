@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/gui/GuiFlatPresets.java
++++ after/net/minecraft/client/gui/GuiFlatPresets.java
+@@ -23,7 +23,7 @@
+ import net.minecraft.world.gen.FlatLayerInfo;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.input.Keyboard;
++import org.lwjglx.input.Keyboard;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiFlatPresets extends GuiScreen

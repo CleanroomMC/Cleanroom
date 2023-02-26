@@ -149,9 +149,9 @@ import net.minecraftforge.fml.common.FMLLog;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.core.async.ThreadNameCachingStrategy;
 import org.apache.logging.log4j.core.impl.ReusableLogEventFactory;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
+import org.lwjglx.BufferUtils;
+import org.lwjglx.opengl.GL11;
+import org.lwjglx.opengl.GL20;
 
 import java.util.function.Predicate;
 
@@ -528,7 +528,7 @@ public class ForgeHooksClient
         }
     }
 
-    public static void transform(org.lwjgl.util.vector.Vector3f vec, Matrix4f m)
+    public static void transform(org.lwjglx.util.vector.Vector3f vec, Matrix4f m)
     {
         Vector4f tmp = new Vector4f(vec.x, vec.y, vec.z, 1f);
         m.transform(tmp);

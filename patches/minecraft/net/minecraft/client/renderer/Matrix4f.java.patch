@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/renderer/Matrix4f.java
++++ after/net/minecraft/client/renderer/Matrix4f.java
+@@ -4,7 +4,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+ @SideOnly(Side.CLIENT)
+-public class Matrix4f extends org.lwjgl.util.vector.Matrix4f
++public class Matrix4f extends org.lwjglx.util.vector.Matrix4f
+ {
+     public Matrix4f(float[] p_i46413_1_)
+     {

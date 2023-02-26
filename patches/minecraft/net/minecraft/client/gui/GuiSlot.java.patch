@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/gui/GuiSlot.java
 +++ after/net/minecraft/client/gui/GuiSlot.java
+@@ -8,7 +8,7 @@
+ import net.minecraft.util.math.MathHelper;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.input.Mouse;
++import org.lwjglx.input.Mouse;
+ 
+ @SideOnly(Side.CLIENT)
+ public abstract class GuiSlot
 @@ -181,15 +181,8 @@
              GlStateManager.func_179106_n();
              Tessellator tessellator = Tessellator.func_178181_a();

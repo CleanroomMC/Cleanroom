@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/shader/ShaderGroup.java
 +++ after/net/minecraft/client/shader/ShaderGroup.java
+@@ -24,7 +24,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.commons.io.IOUtils;
+-import org.lwjgl.util.vector.Matrix4f;
++import org.lwjglx.util.vector.Matrix4f;
+ 
+ @SideOnly(Side.CLIENT)
+ public class ShaderGroup
 @@ -179,7 +179,8 @@
  
                          if (framebuffer2 == null)
@@ -10,3 +19,12 @@
                              IResource iresource = null;
  
                              try
+@@ -366,7 +367,7 @@
+ 
+         for (Shader shader : this.field_148031_d)
+         {
+-            shader.func_148045_a(this.field_148030_g);
++            shader.setProjectionMatrix(this.field_148030_g);
+         }
+ 
+         for (Framebuffer framebuffer : this.field_148029_f)
