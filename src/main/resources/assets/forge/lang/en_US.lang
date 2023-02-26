@@ -37,8 +37,8 @@ commands.tree_base.invalid_cmd.list_subcommands=Invalid subcommand '%s'! Availab
 commands.tree_base.available_subcommands=Available SubCommands: %s
 forge.texture.preload.warning=Warning: Texture %s not preloaded, will cause render glitches!
 forge.client.shutdown.internal=Shutting down internal server...
-forge.update.newversion=New Forge version available: %s
-forge.update.beta.1=%sWARNING: %sForge Beta
+forge.update.newversion=New Cleanroom version available: %s
+forge.update.beta.1=%sWARNING: %sCleanroom Beta
 forge.update.beta.2=Major issues may arise, verify before reporting.
 
 forge.configgui.forgeConfigTitle=Minecraft Forge Configuration
