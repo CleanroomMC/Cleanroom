@@ -125,6 +125,9 @@ class Util {
 				filename += ".${art.extension}"
 				def path = "${folder}${filename}"
 				def url = "https://libraries.minecraft.net/${path}"
+				if (!checkExists(url)) {
+					return
+				}
 				ret[key] = [
 						name: "${art.group}:${art.name}:${art.version}" + ":${art.classifier}" + (art.extension == 'jar' ? '' : "@${art.extension}"),
 						downloads: [
