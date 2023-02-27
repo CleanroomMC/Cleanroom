@@ -72,7 +72,6 @@ public class ForgeTimings<T>
     /**
      * Returns a copy of the raw timings data collected by the tracker
      * @return The raw timing data
-     * @deprecated Added for compatibility, remove in 1.13
      */
     public int[] getRawTimingData(){
         return Arrays.copyOfRange(rawTimingData, 0, rawTimingData.length);

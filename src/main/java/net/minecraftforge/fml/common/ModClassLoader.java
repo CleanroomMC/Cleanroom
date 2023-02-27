@@ -110,6 +110,13 @@ public class ModClassLoader extends URLClassLoader
         if (!name.endsWith(".jar")) return false;
         String[] prefixes =
         {
+            "asm-",
+            "bouncepad-",
+            "maven-artifact-",
+            "patchy-",
+            "text2speech-",
+            "cleanroom-",
+            "mixin-",
             "launchwrapper-",
             "asm-all-",
             "akka-actor_2.11-",

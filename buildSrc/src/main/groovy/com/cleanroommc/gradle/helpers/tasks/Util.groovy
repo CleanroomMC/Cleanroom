@@ -155,7 +155,7 @@ class Util {
 
 	static def getOSName(nativeClassifier) {
 		if (nativeClassifier.contains('natives-linux')) {
-			return 'linus'
+			return 'linux'
 		} else if (nativeClassifier.contains('natives-macos')) {
 			return 'osx'
 		}	else if (nativeClassifier.contains('natives-windows')) {

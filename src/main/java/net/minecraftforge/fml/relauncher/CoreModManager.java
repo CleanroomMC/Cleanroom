@@ -263,7 +263,6 @@ public class CoreModManager {
             loadCoreMod(classLoader, coreModClassName, null);
         }
         discoverCoreMods(mcDir, classLoader);
-
     }
 
     private static void findDerpMods(LaunchClassLoader classLoader, File modDir, File modDirVer)
