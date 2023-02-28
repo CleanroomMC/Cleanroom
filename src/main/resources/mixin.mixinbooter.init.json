@@ -1,0 +1,12 @@
+{
+  "package": "zone.rong.mixinbooter.mixin",
+  "required": true,
+  "refmap": "mixins.mixinbooter.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "CrashReportMixin",
+    "LoadControllerMixin"
+  ]
+}

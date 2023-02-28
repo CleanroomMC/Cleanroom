@@ -72,7 +72,7 @@ import org.apache.logging.log4j.core.LoggerContext;
 public class CoreModManager {
     private static final Attributes.Name COREMODCONTAINSFMLMOD = new Attributes.Name("FMLCorePluginContainsFMLMod");
     private static final Attributes.Name MODTYPE = new Attributes.Name("ModType");
-    private static String[] rootPlugins = { "net.minecraftforge.fml.relauncher.FMLCorePlugin", "net.minecraftforge.classloading.FMLForgePlugin" };
+    private static String[] rootPlugins = { "net.minecraftforge.fml.relauncher.FMLCorePlugin", "net.minecraftforge.classloading.FMLForgePlugin", "zone.rong.mixinbooter.MixinBooterPlugin" };
     private static List<String> ignoredModFiles = Lists.newArrayList();
     private static Map<String, List<String>> transformers = Maps.newHashMap();
     private static List<FMLPluginWrapper> loadPlugins;
@@ -229,6 +229,7 @@ public class CoreModManager {
         }
 
         tweaker.injectCascadingTweak("net.minecraftforge.fml.common.launcher.FMLInjectionAndSortingTweaker");
+        tweaker.injectCascadingTweak("org.spongepowered.asm.launch.MixinTweaker");
         try
         {
             classLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.PatchingTransformer");

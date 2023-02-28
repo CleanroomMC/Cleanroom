@@ -35,7 +35,7 @@ public abstract class BytecodeFinder extends DefaultTask {
                 ZipEntry zein
                 while ((zein = zin.nextEntry) != null) {
                     if (zein.name.endsWith('.class')) {
-                        def node = new ClassNode(Opcodes.ASM7)
+                        def node = new ClassNode(Opcodes.ASM9)
                         new ClassReader(zin).accept(node, 0)
                         process(node)
                     }

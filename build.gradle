@@ -182,6 +182,9 @@ project(':cleanroom') {
             name 'Cleanroom Maven'
             url 'https://maven.cleanroommc.com/'
         }
+        flatDir {
+            dirs '../../lib'
+        }
     }
 
     ext {
@@ -233,6 +236,7 @@ project(':cleanroom') {
                 environment 'FORGE_VERSION', props.new_forge_version
 
                 jvmArgs '-Djava.library.path=' + project.file('build/natives')
+                jvmArgs '-Dmixin.debug=true'
                 jvmArgs jvm_arguments
 
                 // Lazily supply the Mappings target, createSrg2Mcp.getMappings() doesn't get populated until later
@@ -352,6 +356,8 @@ project(':cleanroom') {
         installer "org.lwjgl:lwjgl-opengl:$lwjglVersion"
         installer "org.lwjgl:lwjgl-stb:$lwjglVersion"
         installer "org.lwjgl:lwjgl-tinyfd:$lwjglVersion"
+
+        installer ':mixin'
 
         // TODO: ASM 9.4 required, breaks current Event System when creating classes on-the-fly
         installer 'org.ow2.asm:asm:9.4'
@@ -632,7 +638,7 @@ project(':cleanroom') {
             zip.entries().findAll {
                 !it.directory && it.name.endsWith('.class')
             }.each { entry ->
-                new ClassReader(zip.getInputStream(entry)).accept(new ClassVisitor(Opcodes.ASM7) {
+                new ClassReader(zip.getInputStream(entry)).accept(new ClassVisitor(Opcodes.ASM9) {
 
                     String name
 
