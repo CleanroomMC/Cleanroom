@@ -1,14 +1,5 @@
 --- before/net/minecraft/client/resources/Locale.java
 +++ after/net/minecraft/client/resources/Locale.java
-@@ -31,7 +31,7 @@
-         {
-             String s1 = String.format("lang/%s.lang", s);
- 
--            for (String s2 : p_135022_1_.func_135055_a())
-+            for (String s2 : p_135022_1_.getNamespaces())
-             {
-                 try
-                 {
 @@ -95,6 +95,8 @@
  
      private void func_135021_a(InputStream p_135021_1_) throws IOException
