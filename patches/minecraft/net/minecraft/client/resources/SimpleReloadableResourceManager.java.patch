@@ -1,23 +1,5 @@
 --- before/net/minecraft/client/resources/SimpleReloadableResourceManager.java
 +++ after/net/minecraft/client/resources/SimpleReloadableResourceManager.java
-@@ -36,7 +36,7 @@
- 
-     public void func_110545_a(IResourcePack p_110545_1_)
-     {
--        for (String s : p_110545_1_.func_110587_b())
-+        for (String s : p_110545_1_.getNamespaces())
-         {
-             this.field_135057_d.add(s);
-             FallbackResourceManager fallbackresourcemanager = this.field_110548_a.get(s);
-@@ -51,7 +51,7 @@
-         }
-     }
- 
--    public Set<String> func_135055_a()
-+    public Set<String> getNamespaces()
-     {
-         return this.field_135057_d;
-     }
 @@ -92,6 +92,7 @@
  
      public void func_110541_a(List<IResourcePack> p_110541_1_)

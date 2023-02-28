@@ -1,14 +1,5 @@
 --- before/net/minecraft/client/resources/FallbackResourceManager.java
 +++ after/net/minecraft/client/resources/FallbackResourceManager.java
-@@ -33,7 +33,7 @@
-         this.field_110540_a.add(p_110538_1_);
-     }
- 
--    public Set<String> func_135055_a()
-+    public Set<String> getNamespaces()
-     {
-         return Collections.<String>emptySet();
-     }
 @@ -69,6 +69,7 @@
          throw new FileNotFoundException(p_110536_1_.toString());
      }

@@ -1,15 +1,13 @@
 --- before/net/minecraft/client/audio/SoundHandler.java
 +++ after/net/minecraft/client/audio/SoundHandler.java
-@@ -67,7 +67,8 @@
+@@ -67,6 +67,7 @@
      {
          this.field_147697_e.func_148763_c();
  
--        for (String s : p_110549_1_.func_135055_a())
 +        java.util.List<net.minecraft.util.Tuple<ResourceLocation, SoundList>> resources = new java.util.LinkedList<>();
-+        for (String s : p_110549_1_.getNamespaces())
+         for (String s : p_110549_1_.func_135055_a())
          {
              try
-             {
 @@ -79,7 +80,7 @@
  
                          for (Entry<String, SoundList> entry : map.entrySet())
