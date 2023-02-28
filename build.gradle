@@ -59,7 +59,8 @@ def jvm_arguments = [
         '--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED',
         '--add-opens=java.base/jdk.internal.reflect=ALL-UNNAMED',
         '--add-opens=java.base/java.lang=ALL-UNNAMED',
-        '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED'
+        '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED',
+        '-Dmixin.debug=true'
 ]
 // Projects
 
@@ -182,23 +183,26 @@ project(':cleanroom') {
             name 'Cleanroom Maven'
             url 'https://maven.cleanroommc.com/'
         }
-        flatDir {
-            dirs '../../lib'
+        maven {
+            name 'Jitpack'
+            url 'https://jitpack.io'
         }
     }
 
     ext {
         version_json = project(':mcp').file('build/mcp/downloadJson/version.json')
-        archNative = Util.getCurrentArch()
-        lwjglVersion = '3.3.1'
+        lwjglArch = Util.getCurrentArch()
         // Do not change the array order unless it is required so
-        natives = [
-             'lwjgl-glfw', 'lwjgl-jemalloc', 'lwjgl-openal', 'lwjgl-opengl', 'lwjgl-stb', 'lwjgl-tinyfd', 'lwjgl'
-        ]
-        arch = [
-            'natives-linux-arm64', 'natives-linux-arm32', 'natives-linux',
-            'natives-macos-arm64', 'natives-macos',
-            'natives-windows-arm64', 'natives-windows-x86', 'natives-windows'
+        lwjglLibraries = [
+            [
+                'lwjgl-glfw', 'lwjgl-jemalloc', 'lwjgl-openal',
+                'lwjgl-opengl', 'lwjgl-stb', 'lwjgl-tinyfd', 'lwjgl'
+            ],
+            [
+                'natives-linux-arm64', 'natives-linux-arm32', 'natives-linux',
+                'natives-macos-arm64', 'natives-macos',
+                'natives-windows-arm64', 'natives-windows-x86', 'natives-windows'
+            ]
         ]
     }
 
@@ -236,7 +240,6 @@ project(':cleanroom') {
                 environment 'FORGE_VERSION', props.new_forge_version
 
                 jvmArgs '-Djava.library.path=' + project.file('build/natives')
-                jvmArgs '-Dmixin.debug=true'
                 jvmArgs jvm_arguments
 
                 // Lazily supply the Mappings target, createSrg2Mcp.getMappings() doesn't get populated until later
@@ -349,24 +352,28 @@ project(':cleanroom') {
     }
 
     dependencies {
-        installer "org.lwjgl:lwjgl:$lwjglVersion"
-        installer "org.lwjgl:lwjgl-glfw:$lwjglVersion"
-        installer "org.lwjgl:lwjgl-jemalloc:$lwjglVersion"
-        installer "org.lwjgl:lwjgl-openal:$lwjglVersion"
-        installer "org.lwjgl:lwjgl-opengl:$lwjglVersion"
-        installer "org.lwjgl:lwjgl-stb:$lwjglVersion"
-        installer "org.lwjgl:lwjgl-tinyfd:$lwjglVersion"
+        lwjglLibraries[0].each {
+            installer "org.lwjgl:$it:$props.lwjgl_version"
 
-        installer ':mixin'
+            runtimeOnly "org.lwjgl:$it::$lwjglArch"
+
+            lwjglLibraries[1].each { it1 ->
+                lwjglNatives "org.lwjgl:$it:$props.lwjgl_version:$it1"
+            }
+        }
 
         // TODO: ASM 9.4 required, breaks current Event System when creating classes on-the-fly
-        installer 'org.ow2.asm:asm:9.4'
-        installer 'org.ow2.asm:asm-commons:9.4'
-        installer 'org.ow2.asm:asm-tree:9.4'
-        installer 'org.ow2.asm:asm-util:9.4'
-        installer 'org.ow2.asm:asm-analysis:9.4'
+        installer "org.ow2.asm:asm:$props.asm_version"
+        installer "org.ow2.asm:asm-commons:$props.asm_version"
+        installer "org.ow2.asm:asm-tree:$props.asm_version"
+        installer "org.ow2.asm:asm-util:$props.asm_version"
+        installer "org.ow2.asm:asm-analysis:$props.asm_version"
+        // Added back deprecated features for mods to load up properly
+        installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
 
-        installer 'com.cleanroommc:bouncepad:1.0'
+        installer "com.cleanroommc:bouncepad:$props.bouncepad_version"
+
+        installer "com.github.CleanroomMC:Mixin:$props.mixin_version"
 
         installer 'org.jline:jline:3.5.1'
         installer 'com.typesafe.akka:akka-actor_2.11:2.3.3'
@@ -543,10 +550,10 @@ project(':cleanroom') {
 
     // TODO: Include?
     def extra_files = [
-            rootProject.file('CREDITS.txt'),
-            rootProject.file('LICENSE.txt'),
-            rootProject.file('LICENSE-Paulscode IBXM Library.txt'),
-            rootProject.file('LICENSE-Paulscode SoundSystem CodecIBXM.txt')
+        rootProject.file('CREDITS.txt'),
+        rootProject.file('LICENSE.txt'),
+        rootProject.file('LICENSE-Paulscode IBXM Library.txt'),
+        rootProject.file('LICENSE-Paulscode SoundSystem CodecIBXM.txt')
     ]
 
     def changelog = rootProject.file('build/changelog.txt')
@@ -578,16 +585,16 @@ project(':cleanroom') {
             srg = genClientBinPatches.srg
             patchSets.setFrom(genClientBinPatches.patchSets)
             getArgs().set([
-                    '--output', '{output}',
-                    '--patches', '{patches}',
-                    '--srg', '{srg}',
-                    // '--legacy',
-                    '--clean', '{clean}',
-                    '--dirty', '{dirty}',
-                    '--prefix', 'binpatch/client',
-                    '--clean', genServerBinPatches.cleanJar.get().asFile.path,
-                    '--dirty', genServerBinPatches.dirtyJar.get().asFile.path,
-                    '--prefix', 'binpatch/server',
+                '--output', '{output}',
+                '--patches', '{patches}',
+                '--srg', '{srg}',
+                // '--legacy',
+                '--clean', '{clean}',
+                '--dirty', '{dirty}',
+                '--prefix', 'binpatch/client',
+                '--clean', genServerBinPatches.cleanJar.get().asFile.path,
+                '--dirty', genServerBinPatches.dirtyJar.get().asFile.path,
+                '--prefix', 'binpatch/server',
             ])
         }
     }
@@ -597,7 +604,7 @@ project(':cleanroom') {
         doLast {
             def json = version_json.json()
             json.libraries.each { lib ->
-                def artifacts = [lib.downloads.artifact] + lib.downloads.get('classifiers', [: ]).values()
+                def artifacts = [lib.downloads.artifact] + lib.downloads.get('classifiers', [:]).values()
                 artifacts.each { art ->
                     def target = file('build/libraries/' + art.path)
                     if (!target.exists()) {
@@ -616,7 +623,7 @@ project(':cleanroom') {
         doFirst {
             def json = version_json.json()
             json.libraries.each { lib ->
-                def artifacts = [lib.downloads.artifact] + lib.downloads.get('classifiers', [: ]).values()
+                def artifacts = [lib.downloads.artifact] + lib.downloads.get('classifiers', [:]).values()
                 artifacts.each { art ->
                     def target = file('build/libraries/' + art.path)
                     if (target.exists()) {
@@ -710,7 +717,7 @@ project(':cleanroom') {
                     def comment = idx == -1 ? null : line.substring(idx)
                     if (idx != -1) line = line.substring(0, idx - 1)
 
-                    def(cls, desc) = (line.trim() + '    ').split(' ', -1)
+                    def (cls, desc) = (line.trim() + '    ').split(' ', -1)
                     cls = cls.replaceAll('\\.', '/')
                     desc = desc.replace('(', ' (')
                     if (desc.isEmpty() || json[cls] == null || json[cls]['methods'] == null || json[cls]['methods'][desc] == null) {
@@ -720,7 +727,7 @@ project(':cleanroom') {
                     def mtd = json[cls]['methods'][desc]
                     lines.add(cls + ' ' + desc.replace(' ', '') + (comment == null ? '' : ' ' + comment))
                     def children = json.values().findAll { it.methods != null && it.methods[desc] != null && it.methods[desc].override == cls }
-                            .collect { it.name + ' ' + desc.replace(' ', '') } as TreeSet
+                        .collect { it.name + ' ' + desc.replace(' ', '') } as TreeSet
                     children.each { lines.add('\t' + it) }
                 }
                 f.text = lines.join('\n')
@@ -737,9 +744,9 @@ project(':cleanroom') {
             vanilla = project(':mcp').file('build/mcp/downloadJson/version.json')
             timestamp = Util.iso8601Now()
             comment = [
-                    'Please do not automate the download and installation of Cleanroom.',
-                    'Our efforts are supported by ads from the download page.'
-                    // TODO: Donation Page? (Was LexManos')
+                'Please do not automate the download and installation of Cleanroom.',
+                'Our efforts are supported by ads from the download page.'
+                // TODO: Donation Page? (Was LexManos')
             ]
             id = "${project.name}-${project.version}"
         }
@@ -748,14 +755,14 @@ project(':cleanroom') {
         doLast {
             def json_vanilla = vanilla.json()
             def json = [
-                _comment_: comment,
-                id: id,
-                time: timestamp,
-                releaseTime: timestamp,
-                type: 'release',
-                mainClass: 'com.cleanroommc.bouncepad.Bouncepad',
-                inheritsFrom: props.minecraft_version,
-                logging: { },
+                _comment_         : comment,
+                id                : id,
+                time              : timestamp,
+                releaseTime       : timestamp,
+                type              : 'release',
+                mainClass         : 'com.cleanroommc.bouncepad.Bouncepad',
+                inheritsFrom      : props.minecraft_version,
+                logging           : {},
                 minecraftArguments: [
                     '--username', '${auth_player_name}',
                     '--version', '${version_name}',
@@ -768,15 +775,15 @@ project(':cleanroom') {
                     '--tweakClass', 'net.minecraftforge.fml.common.launcher.FMLTweaker',
                     '--versionType', 'Forge'
                 ].join(' '),
-                libraries: [
+                libraries         : [
                     [
                         // Package our universal jar as the 'main' jar Mojang's launcher loads. It will in turn load Forge's regular jars itself.
-                        name: "${project.group}:${project.name}:${project.version}",
+                        name     : "${project.group}:${project.name}:${project.version}",
                         downloads: [
                             artifact: [
                                 path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
                                 // Do not include the URL so that the installer/launcher won't grab it. This is also why we don't have the universal classifier
-                                url: '',
+                                url : '',
                                 sha1: Util.sha1(universalJar.archivePath),
                                 size: universalJar.archivePath.length()
                             ]
@@ -784,15 +791,14 @@ project(':cleanroom') {
                     ]
                 ]
             ]
-            def artifacts = Util.getArtifacts(project, project.configurations.installer, false)
-            artifacts.each { key, lib ->
-                json.libraries.add(lib)
-            }
-            def lwjglNatives = Util.getLWJGLNatives(project.configurations.lwjglNatives,
-                project.configurations.testCompile, natives, arch)
-            lwjglNatives.each { key, lib ->
-                json.libraries.add(lib)
-            }
+            Util.getArtifacts(project, project.configurations.installer, false)
+                .each { key, lib ->
+                    json.libraries.add(lib)
+                }
+            Util.getLWJGLNatives(project.configurations.lwjglNatives, project.configurations.testCompile, lwjglLibraries[0], lwjglLibraries[1])
+                .each { key, lib ->
+                    json.libraries.add(lib)
+                }
             output.text = new JsonBuilder(json).toPrettyString()
         }
     }
@@ -800,7 +806,7 @@ project(':cleanroom') {
     task installerJson(dependsOn: [launcherJson, genClientBinPatches/*, createClientSRG, createServerSRG*/]) {
         ext {
             output = file('build/install_profile.json')
-            installer_tools = 'net.minecraftforge:installertools:1.1.4' // TODO: Why replace with older version?
+            installer_tools = "net.minecraftforge:installertools:$props.installer_tools_version"
         }
         inputs.file universalJar.archivePath
         inputs.file genClientBinPatches.toolJar
@@ -809,33 +815,34 @@ project(':cleanroom') {
         doLast {
             def libs = [
                 "${project.group}:${project.name}:${project.version}": [
-                    name: "${project.group}:${project.name}:${project.version}",
+                    name     : "${project.group}:${project.name}:${project.version}",
                     downloads: [
                         artifact: [
-                                path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
-                                // Do not include the URL so that the installer/launcher won't grab it. This is also why we don't have the universal classifier
-                                url: '',
-                                sha1: Util.sha1(universalJar.archivePath),
-                                size: universalJar.archivePath.length()
+                            path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
+                            // Do not include the URL so that the installer/launcher won't grab it. This is also why we don't have the universal classifier
+                            url : '',
+                            sha1: Util.sha1(universalJar.archivePath),
+                            size: universalJar.archivePath.length()
                         ]
                     ]
                 ]
             ]
             def json = [
-                _comment_: launcherJson.comment,
-                spec: 0,
-                profile: project.name,
-                version: launcherJson.id,
-                icon: 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon.ico').toPath()))),
-                json: '/version.json',
-                path: "${project.group}:${project.name}:${project.version}",
-                logo: '/big_logo.png',
-                minecraft: props.minecraft_version,
-                welcome: "Welcome to the simple ${project.name.capitalize()} installer.",
-                data: [ ] as Map,
-                processors: [ ]
+                _comment_ : launcherJson.comment,
+                spec      : 0,
+                profile   : project.name,
+                version   : launcherJson.id,
+                icon      : 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon.ico').toPath()))),
+                json      : '/version.json',
+                path      : "${project.group}:${project.name}:${project.version}",
+                logo      : '/big_logo.png',
+                minecraft : props.minecraft_version,
+                welcome   : "Welcome to the simple ${project.name.capitalize()} installer.",
+                data      : [] as Map,
+                processors: []
             ]
-            Util.getClasspath(project, libs, project(':mcp').mcp.config.get().descriptor) // Tell it to download mcp_config
+            Util.getClasspath(project, libs, project(':mcp').mcp.config.get().descriptor)
+            // Tell it to download mcp_config
             json.libraries = libs.values().sort { a, b -> a.name.compareTo(b.name) }
 
             output.text = new JsonBuilder(json).toPrettyString()
@@ -891,18 +898,18 @@ project(':cleanroom') {
             }
             classpath += "minecraft_server.${props.minecraft_version}.jar"
             manifest.attributes([
-                    'Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                    'Main-Class': 'net.minecraftforge.fml.relauncher.ServerLaunchWrapper',
-                    'Class-Path': classpath.toString(),
-                    'Tweak-Class': 'net.minecraftforge.fml.common.launcher.FMLTweaker'
+                'Timestamp'  : new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                'Main-Class' : 'net.minecraftforge.fml.relauncher.ServerLaunchWrapper',
+                'Class-Path' : classpath.toString(),
+                'Tweak-Class': 'net.minecraftforge.fml.common.launcher.FMLTweaker'
             ])
             manifest.attributes([
-                    'Specification-Title': props.title,
-                    'Specification-Vendor': props.vendor,
-                    'Specification-Version': spec_version,
-                    'Implementation-Title': project.group,
-                    'Implementation-Version': props.new_forge_version,
-                    'Implementation-Vendor': props.vendor
+                'Specification-Title'   : props.title,
+                'Specification-Vendor'  : props.vendor,
+                'Specification-Version' : spec_version,
+                'Implementation-Title'  : project.group,
+                'Implementation-Version': props.new_forge_version,
+                'Implementation-Vendor' : props.vendor
             ], 'net/minecraftforge/common/')
         }
     }
@@ -923,7 +930,7 @@ project(':cleanroom') {
         from(rootProject.file('/src/main/resources/url.png'))
         from(universalJar) {
             into("/maven/${project.group.replace('.', '/')}/${project.name}/${project.version}/")
-            rename { "${project.name }-${project.version }.jar" }
+            rename { "${project.name}-${project.version}.jar" }
         }
         from(installerJson.output)
         from(launcherJson.output)
@@ -1031,22 +1038,6 @@ project(':cleanroom') {
 
     test {
         jvmArgs jvm_arguments
-    }
-
-    dependencies {
-        runtimeOnly "org.lwjgl:lwjgl::$archNative"
-        runtimeOnly "org.lwjgl:lwjgl-glfw::$archNative"
-        runtimeOnly "org.lwjgl:lwjgl-jemalloc::$archNative"
-        runtimeOnly "org.lwjgl:lwjgl-openal::$archNative"
-        runtimeOnly "org.lwjgl:lwjgl-opengl::$archNative"
-        runtimeOnly "org.lwjgl:lwjgl-stb::$archNative"
-        runtimeOnly "org.lwjgl:lwjgl-tinyfd::$archNative"
-
-        arch.each {
-            natives.each { it1 ->
-                lwjglNatives "org.lwjgl:$it1:$lwjglVersion:$it"
-            }
-        }
     }
 }
 

@@ -665,7 +665,7 @@ public class FMLCommonHandler
      * unless debugging is enabled
      *
      * @param exitCode The exit code
-     * @param hardExit Perform a halt instead of an exit (only use when the world is unsavable) - read the warnings at {@link Runtime#halt(int)}
+     * @param hardExit Perform a halt instead of an exit (only use when the world isn't savable) - read the warnings at {@link Runtime#halt(int)}
      */
     public void exitJava(int exitCode, boolean hardExit)
     {

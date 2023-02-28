@@ -70,6 +70,12 @@ class Util {
 				url = "https://maven.cleanroommc.com/${path}" // TODO: this is awful.
 				if (!checkExists(url)) {
 					url = "https://maven.minecraftforge.net/${path}"
+					if (!checkExists(url)) {
+						url = "https://repo1.maven.org/maven2/${path}"
+						if (!checkExists(url)) {
+							url = "https://jitpack.io/${path}"
+						}
+					}
 				}
 			}
 			//TODO remove when Mojang launcher is updated
