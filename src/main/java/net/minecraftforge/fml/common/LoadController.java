@@ -21,10 +21,7 @@ package net.minecraftforge.fml.common;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -348,16 +345,16 @@ public class LoadController
     @Nullable
     private ModContainer findActiveContainerFromStack()
     {
-        return StackWalker
-            .getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
-            .walk(frames -> frames.map(StackWalker.StackFrame::getClassName)
-                .filter(name -> name.lastIndexOf('.') != -1)
-                .map(name -> name.substring(0, name.lastIndexOf('.')))
-                .filter(pkg -> packageOwners.containsKey(pkg))
-                .findFirst()
-                .map(pkg -> packageOwners.get(pkg).get(0))
-                .orElse(null)
-            );
+        return StackWalker.getInstance()
+                .walk(frames -> frames.map(StackWalker.StackFrame::getClassName)
+                        .filter(name -> name.lastIndexOf('.') != -1)
+                        .map(name -> name.substring(0, name.lastIndexOf('.')))
+                        .map(pkg -> packageOwners.get(pkg))
+                        .filter(l -> l != null && !l.isEmpty())
+                        .findFirst()
+                        .map(l -> l.get(0))
+                        .orElse(null)
+                );
     }
 
     LoaderState getState()
