@@ -21,10 +21,7 @@ package net.minecraftforge.fml.common;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -348,36 +345,16 @@ public class LoadController
     @Nullable
     private ModContainer findActiveContainerFromStack()
     {
-        for (Class<?> c : getCallingStack())
-        {
-            int idx = c.getName().lastIndexOf('.');
-            if (idx == -1)
-            {
-                continue;
-            }
-            String pkg = c.getName().substring(0, idx);
-            if (packageOwners.containsKey(pkg))
-            {
-                return packageOwners.get(pkg).get(0);
-            }
-        }
-
-        return null;
-    }
-
-    private FMLSecurityManager accessibleManager = new FMLSecurityManager();
-
-    class FMLSecurityManager extends SecurityManager
-    {
-        Class<?>[] getStackClasses()
-        {
-            return getClassContext();
-        }
-    }
-
-    Class<?>[] getCallingStack()
-    {
-        return accessibleManager.getStackClasses();
+        return StackWalker.getInstance()
+                .walk(frames -> frames.map(StackWalker.StackFrame::getClassName)
+                        .filter(name -> name.lastIndexOf('.') != -1)
+                        .map(name -> name.substring(0, name.lastIndexOf('.')))
+                        .map(pkg -> packageOwners.get(pkg))
+                        .filter(l -> l != null && !l.isEmpty())
+                        .findFirst()
+                        .map(l -> l.get(0))
+                        .orElse(null)
+                );
     }
 
     LoaderState getState()
