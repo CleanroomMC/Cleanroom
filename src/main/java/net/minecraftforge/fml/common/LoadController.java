@@ -348,36 +348,16 @@ public class LoadController
     @Nullable
     private ModContainer findActiveContainerFromStack()
     {
-        for (Class<?> c : getCallingStack())
-        {
-            int idx = c.getName().lastIndexOf('.');
-            if (idx == -1)
-            {
-                continue;
-            }
-            String pkg = c.getName().substring(0, idx);
-            if (packageOwners.containsKey(pkg))
-            {
-                return packageOwners.get(pkg).get(0);
-            }
-        }
-
-        return null;
-    }
-
-    private FMLSecurityManager accessibleManager = new FMLSecurityManager();
-
-    class FMLSecurityManager extends SecurityManager
-    {
-        Class<?>[] getStackClasses()
-        {
-            return getClassContext();
-        }
-    }
-
-    Class<?>[] getCallingStack()
-    {
-        return accessibleManager.getStackClasses();
+        return StackWalker
+            .getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
+            .walk(frames -> frames.map(StackWalker.StackFrame::getClassName)
+                .filter(name -> name.lastIndexOf('.') != -1)
+                .map(name -> name.substring(0, name.lastIndexOf('.')))
+                .filter(pkg -> packageOwners.containsKey(pkg))
+                .findFirst()
+                .map(pkg -> packageOwners.get(pkg).get(0))
+                .orElse(null)
+            );
     }
 
     LoaderState getState()
