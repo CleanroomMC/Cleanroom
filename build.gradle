@@ -233,7 +233,7 @@ project(':cleanroom') {
                 environment 'FORGE_VERSION', props.new_forge_version
 
                 jvmArgs '-Djava.library.path=' + project.file('build/natives')
-                jvmArgs jvm_arguments
+                // jvmArgs jvm_arguments
 
                 // Lazily supply the Mappings target, createSrg2Mcp.getMappings() doesn't get populated until later
                 lazyToken 'mcp_mappings', { ->
@@ -360,7 +360,7 @@ project(':cleanroom') {
         installer 'org.ow2.asm:asm-util:9.4'
         installer 'org.ow2.asm:asm-analysis:9.4'
 
-        installer 'com.cleanroommc:bouncepad:1.0'
+        installer 'com.cleanroommc:bouncepad:0.3'
 
         installer 'org.jline:jline:3.5.1'
         installer 'com.typesafe.akka:akka-actor_2.11:2.3.3'
