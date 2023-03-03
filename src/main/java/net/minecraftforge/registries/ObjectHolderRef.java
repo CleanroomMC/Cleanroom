@@ -158,25 +158,9 @@ class ObjectHolderRef
         static Field makeWritable(Field f) throws ReflectiveOperationException
         {
             f.setAccessible(true);
-            if (modifiersField == null)
-            {
-                try
-                {
-                    Method getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
-                    getDeclaredFields0.setAccessible(true);
-                    for (Field field : (Field[]) getDeclaredFields0.invoke(Field.class, false))
-                    {
-                        if ("modifiers".equals(field.getName()))
-                        {
-                            modifiersField = field;
-                            modifiersField.setAccessible(true);
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
+            if (modifiersField == null) {
+                modifiersField = Field.class.getDeclaredField("modifiers");
+                modifiersField.setAccessible(true);
             }
             modifiersField.setInt(f, f.getModifiers() & ~Modifier.FINAL);
             return f;
