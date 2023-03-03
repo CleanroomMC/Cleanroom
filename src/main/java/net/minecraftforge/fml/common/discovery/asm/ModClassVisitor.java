@@ -31,7 +31,7 @@ public class ModClassVisitor extends ClassVisitor
 
     public ModClassVisitor(ASMModParser discoverer)
     {
-        super(Opcodes.ASM5);
+        super(Opcodes.ASM9);
         this.discoverer = discoverer;
     }
 
