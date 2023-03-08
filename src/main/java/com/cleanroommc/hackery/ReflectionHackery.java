@@ -13,11 +13,16 @@ public final class ReflectionHackery {
     static {
         Field modifiers;
         try {
-            modifiers = deepSearchForField(Field.class, field -> "modifiers".equals(field.getName()), true);
+            modifiers = Field.class.getDeclaredField("modifiers"); // Try the standard way, this should always work with ImagineBreaker
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            try {
+                modifiers = deepSearchForField(Field.class, field -> "modifiers".equals(field.getName()), false); // Reliable Fallback
+            } catch (ReflectiveOperationException ex) {
+                throw new RuntimeException(ex);
+            }
         }
         field$modifiers = modifiers;
+        field$modifiers.setAccessible(true);
     }
 
     // Sensitive fields such as "modifiers" are only query-able via the native getDeclaredFields0 call
@@ -36,7 +41,11 @@ public final class ReflectionHackery {
     }
 
     public static void stripFieldOfFinalModifier(Field field) throws IllegalAccessException {
-        field$modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+        stripFieldOfModifier(field, Modifier.FINAL);
+    }
+
+    public static void stripFieldOfModifier(Field field, int modifierFlag) throws IllegalAccessException {
+        field$modifiers.setInt(field, field.getModifiers() & ~modifierFlag);
     }
 
 }

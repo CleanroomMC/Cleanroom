@@ -51,7 +51,7 @@ public class FMLInjectionAndSortingTweaker implements ITweaker {
             CoreModManager.sortTweakList();
             @SuppressWarnings("unchecked")
             List<String> newTweaks = (List<String>) Launch.blackboard.get("TweakClasses");
-            newTweaks.add("net.minecraftforge.fml.common.launcher.TerminalTweaker");
+//            newTweaks.add("net.minecraftforge.fml.common.launcher.TerminalTweaker");
         }
         run = true;
     }

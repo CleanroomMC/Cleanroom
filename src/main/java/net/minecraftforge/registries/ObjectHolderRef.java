@@ -20,12 +20,11 @@
 package net.minecraftforge.registries;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import com.cleanroommc.hackery.ReflectionHackery;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.common.FMLLog;
@@ -153,32 +152,10 @@ class ObjectHolderRef
 
     private static class FinalFieldHelper
     {
-        private static Field modifiersField;
-
         static Field makeWritable(Field f) throws ReflectiveOperationException
         {
             f.setAccessible(true);
-            if (modifiersField == null)
-            {
-                try
-                {
-                    Method getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
-                    getDeclaredFields0.setAccessible(true);
-                    for (Field field : (Field[]) getDeclaredFields0.invoke(Field.class, false))
-                    {
-                        if ("modifiers".equals(field.getName()))
-                        {
-                            modifiersField = field;
-                            modifiersField.setAccessible(true);
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-            modifiersField.setInt(f, f.getModifiers() & ~Modifier.FINAL);
+            ReflectionHackery.stripFieldOfFinalModifier(f);
             return f;
         }
 
