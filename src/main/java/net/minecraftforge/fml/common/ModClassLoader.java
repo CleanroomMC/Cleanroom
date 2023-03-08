@@ -115,7 +115,6 @@ public class ModClassLoader extends URLClassLoader
             "maven-artifact-",
             "patchy-",
             "text2speech-",
-            "cleanroom-",
             "mixin-",
             "launchwrapper-",
             "asm-all-",
