@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.cleanroommc.client.ime.IMEHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjglx.LWJGLException;
@@ -259,7 +260,8 @@ public class Keyboard {
     public static void create() throws LWJGLException {}
 
     public static boolean isKeyDown(int key) {
-        return GLFW.glfwGetKey(Display.getWindow(), KeyCodes.toGlfwKey(key)) == GLFW.GLFW_PRESS;
+        return GLFW.glfwGetKey(Display.getWindow(), KeyCodes.toGlfwKey(key)) == GLFW.GLFW_PRESS
+                || IMEHelper.pressingMap[key];
     }
 
     public static void poll() {
@@ -329,4 +331,8 @@ public class Keyboard {
     }
 
     public static void destroy() {}
+
+    public static char getCharFromCode(int code) {
+        return keyEventChars[code];
+    }
 }

@@ -1,5 +1,6 @@
 package org.lwjglx.opengl;
 
+import com.cleanroommc.client.ime.IMEWrapper;
 import org.lwjglx.lwjgl3ify.core.Config;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.*;
@@ -222,6 +223,7 @@ public class Display {
             public void invoke(long window, int xpos, int ypos) {
                 displayX = xpos;
                 displayY = ypos;
+                IMEWrapper.setWrapperLocation(xpos, ypos + displayHeight);
             }
         };
 
