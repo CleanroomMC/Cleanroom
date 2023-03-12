@@ -10,12 +10,6 @@ import java.awt.event.KeyEvent;
 public class IMEHelper {
     public static boolean[] pressingMap = new boolean[256];
 
-    public static ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-
-    public static int getFactor() {
-        return scaledResolution.getScaleFactor();
-    }
-
     /**
      * Copied from <a href="https://www.jpct.net/forum2/index.php?topic=749.0">a post on lwjgl forum</a>
      */

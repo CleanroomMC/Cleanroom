@@ -16,7 +16,9 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-// General IMEWrapper class
+/**
+ * General IMEWrapper class
+ */
 @SideOnly(Side.CLIENT)
 public final class IMEWrapper extends JDialog{
     private static final IMEWrapper instance = new IMEWrapper();
@@ -76,7 +78,7 @@ public final class IMEWrapper extends JDialog{
                     }
                 }
                 insertAndClear(keyEvent);
-                FMLLog.log.info("TYPED: " + KeyEvent.getKeyText(keyEvent.getKeyCode()) + keyEvent.getKeyCode());
+                //FMLLog.log.info("TYPED: " + KeyEvent.getKeyText(keyEvent.getKeyCode()) + keyEvent.getKeyCode());
             }
 
             @Override
@@ -92,7 +94,7 @@ public final class IMEWrapper extends JDialog{
                     }
                 }
                 insertAndClear(keyEvent);
-                FMLLog.log.info("PRESSED: " + KeyEvent.getKeyText(keyEvent.getKeyCode()) + keyEvent.getKeyCode());
+                //FMLLog.log.info("PRESSED: " + KeyEvent.getKeyText(keyEvent.getKeyCode()) + keyEvent.getKeyCode());
             }
 
             @Override
@@ -106,7 +108,7 @@ public final class IMEWrapper extends JDialog{
                     }
                 }
                 insertAndClear(keyEvent);
-                FMLLog.log.info("RELEASED: " + KeyEvent.getKeyText(keyEvent.getKeyCode()) + keyEvent.getKeyCode());
+                //jjjjFMLLog.log.info("RELEASED: " + KeyEvent.getKeyText(keyEvent.getKeyCode()) + keyEvent.getKeyCode());
             }
 
             /**
