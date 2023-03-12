@@ -8,7 +8,55 @@
      }
  
      public String func_71501_a()
-@@ -205,6 +206,7 @@
+@@ -198,6 +199,47 @@
+             IOUtils.closeQuietly((Writer)printwriter);
+         }
+ 
++        StackTraceElement[] stacktrace = throwable.getStackTrace();
++        if (stacktrace.length > 0) {
++            try {
++                StringBuilder mixinMetadataBuilder = null;
++                java.util.Set<String> classes = new it.unimi.dsi.fastutil.objects.ObjectOpenHashSet<>();
++                for (StackTraceElement stackTraceElement : stacktrace) {
++                    classes.add(stackTraceElement.getClassName());
++                }
++                java.lang.reflect.Field classInfo$mixins;
++                try {
++                    classInfo$mixins = com.cleanroommc.hackery.ReflectionHackery.deepSearchForField(org.spongepowered.asm.mixin.transformer.ClassInfo.class, field -> "mixins".equals(field.getName()), true);
++                    for (String className : classes) {
++                        org.spongepowered.asm.mixin.transformer.ClassInfo classInfo = org.spongepowered.asm.mixin.transformer.ClassInfo.fromCache(className);
++                        if (classInfo != null) {
++                            @SuppressWarnings("unchecked")
++                            java.util.Set<org.spongepowered.asm.mixin.extensibility.IMixinInfo> mixinInfos = (java.util.Set<org.spongepowered.asm.mixin.extensibility.IMixinInfo>) classInfo$mixins.get(classInfo);
++                            if (!mixinInfos.isEmpty()) {
++                                if (mixinMetadataBuilder == null) {
++                                    mixinMetadataBuilder = new StringBuilder("\n(MixinBooter) Mixins in Stacktrace:");
++                                }
++                                mixinMetadataBuilder.append("\n\t");
++                                mixinMetadataBuilder.append(className);
++                                mixinMetadataBuilder.append(":");
++                                for (org.spongepowered.asm.mixin.extensibility.IMixinInfo mixinInfo : mixinInfos) {
++                                    mixinMetadataBuilder.append("\n\t\t");
++                                    mixinMetadataBuilder.append(mixinInfo.getClassName());
++                                    mixinMetadataBuilder.append(" (");
++                                    mixinMetadataBuilder.append(mixinInfo.getConfig().getName());
++                                    mixinMetadataBuilder.append(")");
++                                }
++                            }
++                        }
++                    }
++                } catch (ReflectiveOperationException | NullPointerException e) {
++                    zone.rong.mixinbooter.MixinBooterPlugin.LOGGER.warn("Not able to reflect ClassInfo#mixins");
++                }
++                s += mixinMetadataBuilder == null ? "\nNo Mixin Metadata is found in the Stacktrace.\n" : mixinMetadataBuilder;
++            } catch (Throwable t) {
++                s += "\nFailed to find Mixin Metadata in Stacktrace:\n" + t;
++            }
++        }
+         return s;
+     }
+ 
+@@ -205,6 +247,7 @@
      {
          StringBuilder stringbuilder = new StringBuilder();
          stringbuilder.append("---- Minecraft Crash Report ----\n");

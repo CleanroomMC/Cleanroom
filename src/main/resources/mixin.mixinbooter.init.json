@@ -1,0 +1,10 @@
+{
+  "package": "zone.rong.mixinbooter.mixin",
+  "required": true,
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "LoadControllerMixin"
+  ]
+}

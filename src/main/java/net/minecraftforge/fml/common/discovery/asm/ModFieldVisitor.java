@@ -31,7 +31,7 @@ public class ModFieldVisitor extends FieldVisitor
 
     public ModFieldVisitor(String name, ASMModParser discoverer)
     {
-        super(Opcodes.ASM5);
+        super(Opcodes.ASM9);
         this.fieldName = name;
         this.discoverer = discoverer;
     }

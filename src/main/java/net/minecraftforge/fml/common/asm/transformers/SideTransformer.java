@@ -162,7 +162,7 @@ public class SideTransformer implements IClassTransformer
         private final List<Handle> dynamicLambdaHandles = new ArrayList<Handle>();
 
         public LambdaGatherer() {
-            super(Opcodes.ASM5);
+            super(Opcodes.ASM9);
         }
 
         public void accept(MethodNode method) {
