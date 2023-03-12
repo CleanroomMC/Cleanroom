@@ -380,7 +380,7 @@ project(':cleanroom') {
         // Added back deprecated features for mods to load up properly
         installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
 
-        installer 'com.cleanroommc:bouncepad:0.3'
+        installer 'com.cleanroommc:bouncepad:0.4'
 
         installer "com.github.CleanroomMC:Mixin:$props.mixin_version"
 
