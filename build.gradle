@@ -63,8 +63,7 @@ def jvm_arguments = [
         '--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED',
         '--add-opens=java.base/jdk.internal.reflect=ALL-UNNAMED',
         '--add-opens=java.base/java.lang=ALL-UNNAMED',
-        '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED',
-        '-Dmixin.debug=true'
+        '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED'
 ]
 
 def compiler_jvm_arguments = [
@@ -249,6 +248,7 @@ project(':cleanroom') {
                 environment 'FORGE_VERSION', props.new_forge_version
 
                 jvmArgs '-Djava.library.path=' + project.file('build/natives')
+                jvmArgs '-Dmixin.debug=true'
                 // jvmArgs jvm_arguments
 
                 // Lazily supply the Mappings target, createSrg2Mcp.getMappings() doesn't get populated until later

@@ -72,10 +72,16 @@ import org.apache.logging.log4j.core.LoggerContext;
 public class CoreModManager {
     private static final Attributes.Name COREMODCONTAINSFMLMOD = new Attributes.Name("FMLCorePluginContainsFMLMod");
     private static final Attributes.Name MODTYPE = new Attributes.Name("ModType");
+    private static Method ADDURL;
     private static String[] rootPlugins = {
         "net.minecraftforge.fml.relauncher.FMLCorePlugin",
         "net.minecraftforge.classloading.FMLForgePlugin",
         "zone.rong.mixinbooter.MixinBooterPlugin" };
+    private static String[] trustedClasses = {
+        "cpw.mods.fml.common.asm.", "net.minecraftforge.",
+        "codechicken.core.asm.", "codechicken.lib.asm.",
+        "org.spongepowered.asm."
+    };
     private static List<String> ignoredModFiles = Lists.newArrayList();
     private static Map<String, List<String>> transformers = Maps.newHashMap();
     private static List<FMLPluginWrapper> loadPlugins;
@@ -231,8 +237,11 @@ public class CoreModManager {
             }
         }
 
+        Launch.blackboard.put("TrustedClasses", Arrays.asList(trustedClasses));
+
         tweaker.injectCascadingTweak("net.minecraftforge.fml.common.launcher.FMLInjectionAndSortingTweaker");
         tweaker.injectCascadingTweak("org.spongepowered.asm.launch.MixinTweaker");
+
         try
         {
             classLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.PatchingTransformer");
@@ -459,6 +468,12 @@ public class CoreModManager {
     {
         try
         {
+            if (ADDURL == null)
+            {
+                ADDURL = classLoader.getClass().getClassLoader().getClass().getSuperclass().getDeclaredMethod("appendClassPath", String.class);
+                ADDURL.setAccessible(true);
+            }
+            ADDURL.invoke(classLoader.getClass().getClassLoader(), coreMod.getAbsolutePath());
             classLoader.addURL(coreMod.toURI().toURL());
             CoreModManager.tweaker.injectCascadingTweak(cascadedTweaker);
             tweakSorting.put(cascadedTweaker,sortingOrder);
@@ -633,10 +648,7 @@ public class CoreModManager {
         List<ITweaker> tweakers = (List<ITweaker>) Launch.blackboard.get("Tweaks");
         // Add the sorting tweaker first- it'll appear twice in the list
         tweakers.add(0, fmlInjectionAndSortingTweaker);
-        for (FMLPluginWrapper wrapper : loadPlugins)
-        {
-            tweakers.add(wrapper);
-        }
+        tweakers.addAll(loadPlugins);
     }
 
     private static Map<String,Integer> tweakSorting = Maps.newHashMap();
