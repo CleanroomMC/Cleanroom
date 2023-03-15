@@ -5,6 +5,8 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
@@ -158,8 +160,7 @@ public class Keyboard {
     public static final int KEY_SLEEP = 0xDF;
 
     public static final int keyCount;
-
-    private static EventQueue queue = new EventQueue(128);
+    private static final Queue<KeyEvent> queue = new ArrayBlockingQueue<>(128);
 
     private enum KeyState {
 
@@ -175,16 +176,6 @@ public class Keyboard {
     }
 
     private static boolean doRepeatEvents = true;
-
-    private static int[] keyEvents = new int[queue.getMaxEvents()];
-    private static KeyState[] keyEventStates = new KeyState[queue.getMaxEvents()];
-
-    static {
-        Arrays.fill(keyEventStates, KeyState.RELEASE);
-    }
-
-    private static long[] nanoTimeEvents = new long[queue.getMaxEvents()];
-    private static char[] keyEventChars = new char[Short.MAX_VALUE];
 
     public static final int KEYBOARD_SIZE = Short.MAX_VALUE;
 
@@ -217,10 +208,7 @@ public class Keyboard {
             }
             keyMap.put(keyName[i], i);
         }
-        for (int key = 32; key < 128; key++) {
-            keyEventChars[KeyCodes.toLwjglKey(key)] = (char) key;
-        }
-        keyEventChars[KEY_NONE] = '\0';
+        queue.add(new KeyEvent(0, '\0', KeyState.RELEASE, Sys.getNanoTime()));
     }
 
     public static void addGlfwKeyEvent(long window, int key, int scancode, int action, int mods) {
@@ -236,24 +224,21 @@ public class Keyboard {
             }
             default -> state = KeyState.RELEASE;
         }
-        keyEvents[queue.getNextPos()] = KeyCodes.toLwjglKey(key);
-        keyEventStates[queue.getNextPos()] = state;
-        nanoTimeEvents[queue.getNextPos()] = Sys.getNanoTime();
-
-        queue.add();
+        try {
+            queue.add(new KeyEvent(KeyCodes.toLwjglKey(key), '\0', state, Sys.getNanoTime()));
+        } catch (IllegalStateException ignored) {}
     }
 
     public static void addKeyEvent(int key, boolean pressed) {
-        keyEvents[queue.getNextPos()] = KeyCodes.toLwjglKey(key);
-        keyEventStates[queue.getNextPos()] = pressed ? KeyState.PRESS : KeyState.RELEASE;
-        nanoTimeEvents[queue.getNextPos()] = Sys.getNanoTime();
-
-        queue.add();
+        try {
+            queue.add(new KeyEvent(key, '\0', pressed ? KeyState.PRESS : KeyState.RELEASE, Sys.getNanoTime()));
+        } catch (IllegalStateException ignored) {}
     }
 
     public static void addCharEvent(int key, char c) {
-        int index = KeyCodes.toLwjglKey(key);
-        keyEventChars[index] = c;
+        try {
+            queue.add(new KeyEvent(KEY_NONE, c, KeyState.PRESS, Sys.getNanoTime()));
+        } catch (IllegalStateException ignored) {}
     }
 
     public static void create() throws LWJGLException {}
@@ -279,31 +264,35 @@ public class Keyboard {
     }
 
     public static int getNumKeyboardEvents() {
-        return queue.getEventCount();
+        return queue.size();
     }
 
     public static boolean isRepeatEvent() {
-        return keyEventStates[queue.getCurrentPos()] == KeyState.REPEAT;
+        return queue.peek().state == KeyState.REPEAT;
     }
 
     public static boolean next() {
-        return queue.next();
+        boolean next = queue.size() > 1;
+        if (next) {
+            queue.remove();
+        }
+        return next;
     }
 
     public static int getEventKey() {
-        return keyEvents[queue.getCurrentPos()];
+        return queue.peek().key;
     }
 
     public static char getEventCharacter() {
-        return keyEventChars[getEventKey()];
+        return queue.peek().aChar;
     }
 
     public static boolean getEventKeyState() {
-        return keyEventStates[queue.getCurrentPos()].isPressed;
+        return queue.peek().state.isPressed;
     }
 
     public static long getEventNanoseconds() {
-        return nanoTimeEvents[queue.getCurrentPos()];
+        return queue.peek().nano;
     }
 
     public static String getKeyName(int key) {
@@ -329,4 +318,19 @@ public class Keyboard {
     }
 
     public static void destroy() {}
+
+    private static class KeyEvent {
+
+        public int key;
+        public char aChar;
+        public KeyState state;
+        public long nano;
+
+        KeyEvent(int key, char c, KeyState state, long nano) {
+            this.key = key;
+            this.aChar = c;
+            this.state = state;
+            this.nano = nano;
+        }
+    }
 }

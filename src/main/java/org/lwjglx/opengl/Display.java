@@ -139,15 +139,7 @@ public class Display {
 
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
-
-                latestEventKey = key;
-
                 Keyboard.addGlfwKeyEvent(window, key, scancode, action, mods);
-                // Ctrl should generate ASCII modifier keys (0x01-0x1F), glfw does not give use char events for this
-                if ((mods & GLFW_MOD_CONTROL) != 0 && key >= GLFW_KEY_A && key <= GLFW_KEY_Z) {
-                    int codepoint = key & 0x1F;
-                    Keyboard.addCharEvent(key, (char) codepoint);
-                }
             }
         };
 
@@ -155,7 +147,6 @@ public class Display {
 
             @Override
             public void invoke(long window, int codepoint) {
-
                 Keyboard.addCharEvent(latestEventKey, (char) codepoint);
             }
         };
