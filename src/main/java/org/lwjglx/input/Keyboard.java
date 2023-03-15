@@ -224,16 +224,21 @@ public class Keyboard {
             }
             default -> state = KeyState.RELEASE;
         }
-
-        queue.add(new KeyEvent(KeyCodes.toGlfwKey(key), '\0', state, Sys.getNanoTime()));
+        try {
+            queue.add(new KeyEvent(KeyCodes.toLwjglKey(key), '\0', state, Sys.getNanoTime()));
+        } catch (IllegalStateException ignored) {}
     }
 
     public static void addKeyEvent(int key, boolean pressed) {
-        queue.add(new KeyEvent(key, '\0', pressed ? KeyState.PRESS : KeyState.RELEASE, Sys.getNanoTime()));
+        try {
+            queue.add(new KeyEvent(key, '\0', pressed ? KeyState.PRESS : KeyState.RELEASE, Sys.getNanoTime()));
+        } catch (IllegalStateException ignored) {}
     }
 
     public static void addCharEvent(int key, char c) {
-        queue.add(new KeyEvent(KEY_NONE, c, KeyState.PRESS, Sys.getNanoTime()));
+        try {
+            queue.add(new KeyEvent(KEY_NONE, c, KeyState.PRESS, Sys.getNanoTime()));
+        } catch (IllegalStateException ignored) {}
     }
 
     public static void create() throws LWJGLException {}
