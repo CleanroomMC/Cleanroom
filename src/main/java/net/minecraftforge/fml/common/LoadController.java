@@ -67,6 +67,7 @@ public class LoadController
     private ModContainer activeContainer;
     private BiMap<ModContainer, Object> modObjectList;
     private ListMultimap<String, ModContainer> packageOwners;
+    private boolean closeRequested = false;
 
     public LoadController(Loader loader)
     {
@@ -136,10 +137,13 @@ public class LoadController
 
     public void transition(LoaderState desiredState, boolean forceState)
     {
-        if (FMLCommonHandler.instance().isDisplayCloseRequested())
+        if (!closeRequested && FMLCommonHandler.instance().isDisplayCloseRequested())
         {
+            closeRequested = true;
             FMLLog.log.info("The game window is being closed by the player, exiting.");
-            FMLCommonHandler.instance().exitJava(0, false);
+            if (state.ordinal() <= LoaderState.AVAILABLE.ordinal()) {
+                FMLCommonHandler.instance().exitJava(0, false);
+            }
         }
 
         LoaderState oldState = state;
