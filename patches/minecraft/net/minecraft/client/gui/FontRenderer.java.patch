@@ -1,5 +1,27 @@
 --- before/net/minecraft/client/gui/FontRenderer.java
 +++ after/net/minecraft/client/gui/FontRenderer.java
+@@ -6,10 +6,9 @@
+ import java.awt.image.BufferedImage;
+ import java.io.Closeable;
+ import java.io.IOException;
+-import java.util.Arrays;
+-import java.util.List;
+-import java.util.Locale;
+-import java.util.Random;
++import java.util.*;
++
++import com.ibm.icu.text.BreakIterator;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.renderer.BufferBuilder;
+ import net.minecraft.client.renderer.GlStateManager;
+@@ -30,6 +29,7 @@
+ public class FontRenderer implements IResourceManagerReloadListener
+ {
+     private static final ResourceLocation[] field_111274_c = new ResourceLocation[256];
++    private static final BreakIterator BREAK_ITERATOR = BreakIterator.getLineInstance();
+     protected final int[] field_78286_d = new int[256];
+     public int field_78288_b = 9;
+     public Random field_78289_c = new Random();
 @@ -57,7 +57,7 @@
          this.field_111273_g = p_i1035_2_;
          this.field_78298_i = p_i1035_3_;
@@ -122,7 +144,191 @@
          if (p_78263_1_ == 167)
          {
              return -1;
-@@ -847,6 +858,26 @@
+@@ -723,9 +734,94 @@
+ 
+     public List<String> func_78271_c(String p_78271_1_, int p_78271_2_)
+     {
+-        return Arrays.<String>asList(this.func_78280_d(p_78271_1_, p_78271_2_).split("\n"));
++        // They don't render and should not be feed into iterator
++        String cleanStr = p_78271_1_.replaceAll("§.", "").replaceAll("§", "");
++        if (cleanStr.length() == 0) return Collections.singletonList(p_78271_1_);
++        BREAK_ITERATOR.setText(cleanStr);
++        List<String> list = new ArrayList<>();
++        String format = ""; // For last line's format since it should use format of previous line
++        StringBuilder nextFormat = new StringBuilder();
++        int i = 0, j = 0, k, l;
++        record Reset(int i, int ri) {}
++        Stack<Reset> lastReset = new Stack<>();
++        lastReset.push(new Reset(0, 0));
++        int strWidth = 0;
++        int prevBreak = 0;
++        boolean bold = false;
++        char c, f, back;
++        int prevCandidate;
++        do {
++            switch (c = p_78271_1_.charAt(i)) {
++                case '\n' -> {
++                    list.add(nextFormat.substring(lastReset.peek().ri()) + p_78271_1_.substring(prevBreak, i));
++                    format = nextFormat.toString();
++                    prevBreak = i + 1;
++                    strWidth = 0;
++                }
++                case '§' -> { // format start
++                    if (i + 1 < p_78271_1_.length()) { // Prevent out of bound
++                        f = p_78271_1_.charAt(++i);
++                        nextFormat.append('§').append(f); // Add to current format code
++                        if (f != 'l' && f != 'L') { // Check start of bold style
++                            if (f == 'r' || f == 'R' || func_78272_b(f)) { // Not Bold, check end of style
++                                bold = false;
++                                lastReset.push(new Reset(i - 1, nextFormat.length())); // push reset location in str and format to stack
++                            }
++                        } else {
++                            bold = true;
++                        }
++                    }
++                }
++                default -> {
++                    strWidth += func_78263_a(c);
++                    if (bold) {
++                        // Bold style is fat
++                        strWidth += 1;
++                    }
++                }
++            }
++            if (strWidth > p_78271_2_) {
++                BREAK_ITERATOR.following(j); // The legal break right after j
++                prevCandidate = BREAK_ITERATOR.previous(); // Find the nearest legit break
++                k = i;
++                l = j;
++                if (prevCandidate > -1) {
++                    while (l > prevCandidate && k > 0) { // Backward searching to get actual format at break
++                        k--;
++                        l--;
++                        back = p_78271_1_.charAt(k);
++                        if (back == '§') {
++                            if (k == lastReset.peek().i()) {
++                                lastReset.pop(); // Remove reset
++                            }
++                            nextFormat.delete(nextFormat.length() - 2, nextFormat.length()); // Remove format
++                            l++;
++                        }
++                    }
++                }
++                if (k <= prevBreak) {
++                    k = i; // Break in previous line, not usable, set it to current i
++                }
++                if (p_78271_1_.charAt(k - 1) == '§') {
++                    k--; // Make sure not to break in format code. Can't figure out how to put it in while(), so
++                }
++                list.add(nextFormat.substring(lastReset.peek().ri()) + p_78271_1_.substring(prevBreak, k));
++                format = nextFormat.toString();
++                if (k != i) {
++                    j = prevCandidate; // k!=i means usable break point found, j should back to corresponding location
++                }
++                prevBreak = k;
++                i = k;
++                strWidth = func_78263_a(c); // Width of first char of new line.
++            }
++            i++;
++            j++;
++        } while (i < p_78271_1_.length());
++        list.add(format + p_78271_1_.substring(prevBreak));
++        return list;
+     }
+ 
++    @Deprecated
+     String func_78280_d(String p_78280_1_, int p_78280_2_)
+     {
+         int i = this.func_78259_e(p_78280_1_, p_78280_2_);
+@@ -743,59 +839,46 @@
+             return s + "\n" + this.func_78280_d(s1, p_78280_2_);
+         }
+     }
+-
++    @Deprecated
+     private int func_78259_e(String p_78259_1_, int p_78259_2_)
+     {
+         int i = p_78259_1_.length();
+         int j = 0;
+         int k = 0;
+-        int l = -1;
+-
+-        for (boolean flag = false; k < i; ++k)
++        int m = 0;
++        BREAK_ITERATOR.setText(p_78259_1_.replaceAll("§.", "").replaceAll("§", ""));
++        for (boolean flag = false; k < i; ++k, ++m)
+         {
+             char c0 = p_78259_1_.charAt(k);
+ 
+-            switch (c0)
+-            {
+-                case '\n':
+-                    --k;
+-                    break;
+-                case ' ':
+-                    l = k;
+-                default:
++            switch (c0) {
++                case '\n' -> --k;
++                default -> {
+                     j += this.func_78263_a(c0);
+-
+-                    if (flag)
+-                    {
++                    if (flag) {
+                         ++j;
+                     }
+-
+-                    break;
+-                case '\u00a7':
+-
+-                    if (k < i - 1)
+-                    {
++                }
++                case '\u00a7' -> {
++                    if (k < i - 1) {
+                         ++k;
++                        --m;
+                         char c1 = p_78259_1_.charAt(k);
+ 
+-                        if (c1 != 'l' && c1 != 'L')
+-                        {
+-                            if (c1 == 'r' || c1 == 'R' || func_78272_b(c1))
+-                            {
++                        if (c1 != 'l' && c1 != 'L') {
++                            if (c1 == 'r' || c1 == 'R' || func_78272_b(c1)) {
+                                 flag = false;
+                             }
+-                        }
+-                        else
+-                        {
++                        } else {
+                             flag = true;
+                         }
+                     }
++                }
+             }
+ 
+             if (c0 == '\n')
+             {
+                 ++k;
+-                l = k;
+                 break;
+             }
+ 
+@@ -804,8 +887,9 @@
+                 break;
+             }
+         }
+-
+-        return k != i && l != -1 && l < k ? l : k;
++        BREAK_ITERATOR.following(m);
++        int breakLine = BREAK_ITERATOR.previous();
++        return breakLine < 0 ? k : breakLine;
+     }
+ 
+     private static boolean func_78272_b(char p_78272_0_)
+@@ -847,6 +931,26 @@
      public boolean func_78260_a()
      {
          return this.field_78294_m;

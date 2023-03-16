@@ -339,6 +339,7 @@ project(':cleanroom') {
     configurations {
         all { // LWJGL2 isn't friendly with us, so pye pye
             exclude group: 'org.lwjgl.lwjgl'
+            exclude group: 'com.ibm.icu', module: 'icu4j-core-mojang'
         }
 
         // Don't pull all libraries, if we're missing something, add it to the installer list so the installer knows to download it.
@@ -368,6 +369,8 @@ project(':cleanroom') {
         installer 'org.ow2.asm:asm-tree:9.4'
         installer 'org.ow2.asm:asm-util:9.4'
         installer 'org.ow2.asm:asm-analysis:9.4'
+
+        installer 'com.ibm.icu:icu4j:72.1'
 
         installer 'com.cleanroommc:bouncepad:0.4'
 
