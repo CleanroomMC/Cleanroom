@@ -1,13 +1,13 @@
 --- before/net/minecraft/client/gui/GuiUtilRenderComponents.java
 +++ after/net/minecraft/client/gui/GuiUtilRenderComponents.java
-@@ -20,74 +20,76 @@
+@@ -19,90 +19,39 @@
+ 
      public static List<ITextComponent> func_178908_a(ITextComponent p_178908_0_, int p_178908_1_, FontRenderer p_178908_2_, boolean p_178908_3_, boolean p_178908_4_)
      {
-         int i = 0;
+-        int i = 0;
 -        ITextComponent itextcomponent = new TextComponentString("");
 -        List<ITextComponent> list = Lists.<ITextComponent>newArrayList();
 -        List<ITextComponent> list1 = Lists.newArrayList(p_178908_0_);
-+        ITextComponent text = new TextComponentString("");
 +        List<ITextComponent> resultList = Lists.newArrayList();
 +        List<ITextComponent> sourceList = Lists.newArrayList(p_178908_0_);
  
@@ -16,11 +16,11 @@
          {
 -            ITextComponent itextcomponent1 = list1.get(j);
 -            String s = itextcomponent1.func_150261_e();
-+            ITextComponent current = sourceList.get(j);
-+            String currentStr = current.func_150261_e();
-             boolean flag = false;
+-            boolean flag = false;
 -
 -            if (s.contains("\n"))
++            ITextComponent current = sourceList.get(j);
++            String currentStr = current.func_150261_e();
 +            // Handle existed new line before line breaking
 +            if (currentStr.contains("\n"))
              {
@@ -30,13 +30,13 @@
 -                ITextComponent itextcomponent2 = new TextComponentString(s1);
 -                itextcomponent2.func_150255_a(itextcomponent1.func_150256_b().func_150232_l());
 -                list1.add(j + 1, itextcomponent2);
+-                flag = true;
 +                int k = currentStr.indexOf('\n');
 +                String postNewLine = currentStr.substring(k + 1);
 +                currentStr = currentStr.substring(0, k + 1);
 +                ITextComponent remainText = new TextComponentString(postNewLine);
 +                remainText.func_150255_a(current.func_150256_b().func_150232_l());
 +                sourceList.add(j + 1, remainText);
-                 flag = true;
              }
 -
 -            String s4 = func_178909_a(itextcomponent1.func_150256_b().func_150218_j() + s, p_178908_4_);
@@ -44,91 +44,76 @@
 -            int i1 = p_178908_2_.func_78256_a(s5);
 -            TextComponentString textcomponentstring = new TextComponentString(s5);
 -            textcomponentstring.func_150255_a(itextcomponent1.func_150256_b().func_150232_l());
+-
+-            if (i + i1 > p_178908_1_)
 +            // Process current string
 +            String formattedCurrentStr = func_178909_a(current.func_150256_b().func_150218_j() + currentStr, p_178908_4_);
 +            String cleanStr = formattedCurrentStr.endsWith("\n") ? formattedCurrentStr.substring(0, formattedCurrentStr.length() - 1) : formattedCurrentStr;
-+            int i1 = p_178908_2_.func_78256_a(cleanStr);
++            int currentWidth = p_178908_2_.func_78256_a(cleanStr);
 +            TextComponentString cleanText = new TextComponentString(cleanStr);
 +            cleanText.func_150255_a(current.func_150256_b().func_150232_l());
- 
-             if (i + i1 > p_178908_1_)
++
++            if (currentWidth > p_178908_1_)
              {
 -                String s2 = p_178908_2_.func_78262_a(s4, p_178908_1_ - i, false);
 -                String s3 = s2.length() < s4.length() ? s4.substring(s2.length()) : null;
-+                String trimmedString = p_178908_2_.func_78262_a(formattedCurrentStr, p_178908_1_ - i, false);
-+                String remainStr = trimmedString.length() < formattedCurrentStr.length() ? formattedCurrentStr.substring(trimmedString.length()) : null;
- 
+-
 -                if (s3 != null && !s3.isEmpty())
-+                if (remainStr != null)
-                 {
+-                {
 -                    int l = s2.lastIndexOf(32);
-+                    int l = trimmedString.lastIndexOf(' ');
- 
+-
 -                    if (l >= 0 && p_178908_2_.func_78256_a(s4.substring(0, l)) > 0)
-+                    if (l >= 0 && p_178908_2_.func_78256_a(formattedCurrentStr.substring(0, l)) > 0)
-                     {
+-                    {
 -                        s2 = s4.substring(0, l);
-+                        trimmedString = formattedCurrentStr.substring(0, l);
- 
-                         if (p_178908_3_)
-                         {
-                             ++l;
-                         }
- 
+-
+-                        if (p_178908_3_)
+-                        {
+-                            ++l;
+-                        }
+-
 -                        s3 = s4.substring(l);
-+                        remainStr = formattedCurrentStr.substring(l);
-                     }
+-                    }
 -                    else if (i > 0 && !s4.contains(" "))
-+                    else if (i > 0 && !formattedCurrentStr.contains(" "))
-                     {
+-                    {
 -                        s2 = "";
 -                        s3 = s4;
-+                        trimmedString = "";
-+                        remainStr = formattedCurrentStr;
-                     }
- 
+-                    }
+-
 -                    TextComponentString textcomponentstring1 = new TextComponentString(s3);
 -                    textcomponentstring1.func_150255_a(itextcomponent1.func_150256_b().func_150232_l());
 -                    list1.add(j + 1, textcomponentstring1);
-+                    remainStr = FontRenderer.func_78282_e(trimmedString) + remainStr; //Forge: Fix chat formatting not surviving line wrapping.
-+
-+                    TextComponentString remainText = new TextComponentString(remainStr);
-+                    remainText.func_150255_a(current.func_150256_b().func_150232_l());
-+                    sourceList.add(j + 1, remainText);
++                for (String str : p_178908_2_.func_78271_c(formattedCurrentStr, p_178908_1_)) {
++                    resultList.add(new TextComponentString(str).func_150255_a(current.func_150256_b().func_150232_l()));
                  }
- 
+-
 -                i1 = p_178908_2_.func_78256_a(s2);
 -                textcomponentstring = new TextComponentString(s2);
 -                textcomponentstring.func_150255_a(itextcomponent1.func_150256_b().func_150232_l());
-+                i1 = p_178908_2_.func_78256_a(trimmedString);
-+                cleanText = new TextComponentString(trimmedString);
-+                cleanText.func_150255_a(current.func_150256_b().func_150232_l());
-                 flag = true;
-             }
- 
-             if (i + i1 <= p_178908_1_)
-             {
-                 i += i1;
+-                flag = true;
+-            }
+-
+-            if (i + i1 <= p_178908_1_)
+-            {
+-                i += i1;
 -                itextcomponent.func_150257_a(textcomponentstring);
-+                text.func_150257_a(cleanText);
-             }
-             else
-             {
-@@ -96,13 +98,13 @@
- 
-             if (flag)
-             {
+-            }
+-            else
+-            {
+-                flag = true;
+-            }
+-
+-            if (flag)
+-            {
 -                list.add(itextcomponent);
-+                resultList.add(text);
-                 i = 0;
+-                i = 0;
 -                itextcomponent = new TextComponentString("");
-+                text = new TextComponentString("");
++            } else {
++                resultList.add(new TextComponentString(formattedCurrentStr).func_150255_a(current.func_150256_b().func_150232_l()));
              }
          }
- 
+-
 -        list.add(itextcomponent);
 -        return list;
-+        resultList.add(text);
 +        return resultList;
      }
  }
