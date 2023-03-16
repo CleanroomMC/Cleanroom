@@ -1,5 +1,6 @@
 package org.lwjglx.opengl;
 
+import org.lwjglx.input.*;
 import org.lwjglx.lwjgl3ify.core.Config;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.*;
@@ -7,8 +8,6 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjglx.BufferUtils;
 import org.lwjglx.Sys;
-import org.lwjglx.input.Keyboard;
-import org.lwjglx.input.Mouse;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -45,7 +44,8 @@ public class Display {
     private static int latestWidth = 0;
     private static int latestHeight = 0;
     private static ByteBuffer[] savedIcons;
-
+    private static boolean cancelNextChar = false;
+    private static KeyEvent ingredientKeyEvent;
     static {
         Sys.initialize(); // init using dummy sys method
 
@@ -139,7 +139,25 @@ public class Display {
 
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
-                Keyboard.addGlfwKeyEvent(window, key, scancode, action, mods);
+                cancelNextChar = false;
+                if (key > GLFW_KEY_SPACE && key <= GLFW_KEY_GRAVE_ACCENT) { // Handle keys have a char. Exclude space to
+                    // avoid extra input when switching IME
+                    if ((GLFW_MOD_CONTROL & mods) != 0) { // Handle ctrl + x/c/v.
+                        Keyboard.addGlfwKeyEvent(window, key, scancode, action, mods, (char) (key & 0x1f));
+                        cancelNextChar = true; // Cancel char event from ctrl key since its already handled here
+                    } else if (action > 0) { // Delay press and repeat key event to actual char input. There is ALWAYS a
+                        // char after them
+                        ingredientKeyEvent = new KeyEvent(
+                                KeyCodes.toLwjglKey(key),
+                                '\0',
+                                action > 1 ? KeyState.REPEAT : KeyState.PRESS,
+                                Sys.getNanoTime());
+                    } else { // Release event
+                        Keyboard.addGlfwKeyEvent(window, key, scancode, action, mods, '\0');
+                    }
+                } else { // Other key with no char associated
+                    Keyboard.addGlfwKeyEvent(window, key, scancode, action, mods, '\0');
+                }
             }
         };
 
@@ -147,7 +165,15 @@ public class Display {
 
             @Override
             public void invoke(long window, int codepoint) {
-                Keyboard.addCharEvent(latestEventKey, (char) codepoint);
+                if (cancelNextChar) { // Char event being cancelled
+                    cancelNextChar = false;
+                } else if (ingredientKeyEvent != null) {
+                    ingredientKeyEvent.aChar = (char) codepoint; // Send char with ASCII key event here
+                    Keyboard.addKeyEvent(ingredientKeyEvent);
+                    ingredientKeyEvent = null;
+                } else {
+                    Keyboard.addCharEvent(0, (char) codepoint); // Non-ASCII chars
+                }
             }
         };
 

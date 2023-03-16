@@ -162,18 +162,6 @@ public class Keyboard {
     public static final int keyCount;
     private static final Queue<KeyEvent> queue = new ArrayBlockingQueue<>(128);
 
-    private enum KeyState {
-
-        PRESS(true),
-        RELEASE(false),
-        REPEAT(true);
-
-        public final boolean isPressed;
-
-        KeyState(boolean isPressed) {
-            this.isPressed = isPressed;
-        }
-    }
 
     private static boolean doRepeatEvents = true;
 
@@ -211,7 +199,7 @@ public class Keyboard {
         queue.add(new KeyEvent(0, '\0', KeyState.RELEASE, Sys.getNanoTime()));
     }
 
-    public static void addGlfwKeyEvent(long window, int key, int scancode, int action, int mods) {
+    public static void addGlfwKeyEvent(long window, int key, int scancode, int action, int mods, char c) {
         final KeyState state;
         switch (action) {
             case GLFW.GLFW_PRESS -> state = KeyState.PRESS;
@@ -225,13 +213,18 @@ public class Keyboard {
             default -> state = KeyState.RELEASE;
         }
         try {
-            queue.add(new KeyEvent(KeyCodes.toLwjglKey(key), '\0', state, Sys.getNanoTime()));
+            queue.add(new KeyEvent(KeyCodes.toLwjglKey(key), c, state, Sys.getNanoTime()));
         } catch (IllegalStateException ignored) {}
     }
 
     public static void addKeyEvent(int key, boolean pressed) {
         try {
             queue.add(new KeyEvent(key, '\0', pressed ? KeyState.PRESS : KeyState.RELEASE, Sys.getNanoTime()));
+        } catch (IllegalStateException ignored) {}
+    }
+    public static void addKeyEvent(KeyEvent event) {
+        try {
+            queue.add(event);
         } catch (IllegalStateException ignored) {}
     }
 
@@ -318,19 +311,4 @@ public class Keyboard {
     }
 
     public static void destroy() {}
-
-    private static class KeyEvent {
-
-        public int key;
-        public char aChar;
-        public KeyState state;
-        public long nano;
-
-        KeyEvent(int key, char c, KeyState state, long nano) {
-            this.key = key;
-            this.aChar = c;
-            this.state = state;
-            this.nano = nano;
-        }
-    }
 }
