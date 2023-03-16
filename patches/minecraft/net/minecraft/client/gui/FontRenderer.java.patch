@@ -18,7 +18,7 @@
  public class FontRenderer implements IResourceManagerReloadListener
  {
      private static final ResourceLocation[] field_111274_c = new ResourceLocation[256];
-+    private static final BreakIterator BREAK_ITERATOR = BreakIterator.getLineInstance();
++    public static final BreakIterator BREAK_ITERATOR = BreakIterator.getLineInstance();
      protected final int[] field_78286_d = new int[256];
      public int field_78288_b = 9;
      public Random field_78289_c = new Random();
@@ -144,6 +144,15 @@
          if (p_78263_1_ == 167)
          {
              return -1;
+@@ -676,7 +687,7 @@
+ 
+     private String func_78273_d(String p_78273_1_)
+     {
+-        while (p_78273_1_ != null && p_78273_1_.endsWith("\n"))
++        while (p_78273_1_.endsWith("\n"))
+         {
+             p_78273_1_ = p_78273_1_.substring(0, p_78273_1_.length() - 1);
+         }
 @@ -723,9 +734,94 @@
  
      public List<String> func_78271_c(String p_78271_1_, int p_78271_2_)
