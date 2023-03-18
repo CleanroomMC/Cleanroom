@@ -159,7 +159,7 @@
      {
 -        return Arrays.<String>asList(this.func_78280_d(p_78271_1_, p_78271_2_).split("\n"));
 +        // They don't render and should not be feed into iterator
-+        String cleanStr = p_78271_1_.replaceAll("§.", "").replaceAll("§", "");
++        String cleanStr = p_78271_1_.replaceAll("\u00a7.", "").replaceAll("\u00a7", "");
 +        if (cleanStr.length() == 0) return Collections.singletonList(p_78271_1_);
 +        BREAK_ITERATOR.setText(cleanStr);
 +        List<String> list = new ArrayList<>();
@@ -182,10 +182,10 @@
 +                    prevBreak = i + 1;
 +                    strWidth = 0;
 +                }
-+                case '§' -> { // format start
++                case '\u00a7' -> { // format start
 +                    if (i + 1 < p_78271_1_.length()) { // Prevent out of bound
 +                        f = p_78271_1_.charAt(++i);
-+                        nextFormat.append('§').append(f); // Add to current format code
++                        nextFormat.append('\u00a7').append(f); // Add to current format code
 +                        if (f != 'l' && f != 'L') { // Check start of bold style
 +                            if (f == 'r' || f == 'R' || func_78272_b(f)) { // Not Bold, check end of style
 +                                bold = false;
@@ -214,7 +214,7 @@
 +                        k--;
 +                        l--;
 +                        back = p_78271_1_.charAt(k);
-+                        if (back == '§') {
++                        if (back == '\u00a7') {
 +                            if (k == lastReset.peek().i()) {
 +                                lastReset.pop(); // Remove reset
 +                            }
@@ -226,7 +226,7 @@
 +                if (k <= prevBreak) {
 +                    k = i; // Break in previous line, not usable, set it to current i
 +                }
-+                if (p_78271_1_.charAt(k - 1) == '§') {
++                if (p_78271_1_.charAt(k - 1) == '\u00a7') {
 +                    k--; // Make sure not to break in format code. Can't figure out how to put it in while(), so
 +                }
 +                list.add(nextFormat.substring(lastReset.peek().ri()) + p_78271_1_.substring(prevBreak, k));
@@ -264,7 +264,7 @@
 -
 -        for (boolean flag = false; k < i; ++k)
 +        int m = 0;
-+        BREAK_ITERATOR.setText(p_78259_1_.replaceAll("§.", "").replaceAll("§", ""));
++        BREAK_ITERATOR.setText(p_78259_1_.replaceAll("\u00a7.", "").replaceAll("\u00a7", ""));
 +        for (boolean flag = false; k < i; ++k, ++m)
          {
              char c0 = p_78259_1_.charAt(k);
