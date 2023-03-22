@@ -66,17 +66,7 @@ class Util {
 				filename += "-${art.classifier}"
 			filename += ".${art.extension}"
 			def path = "${folder}${filename}"
-			def url = "https://libraries.minecraft.net/${path}"
-			if (!checkExists(url)) {
-				url = "https://maven.cleanroommc.com/${path}" // TODO: this is awful.
-				if (!checkExists(url)) {
-					url = "https://maven.minecraftforge.net/${path}"
-					if (!checkExists(url)) {
-						url = "https://maven.outlands.top/snapshots/${path}"
-						if (!checkExists(url)) throw new GradleException("Artifact was not found: " + filename) // if artifact not exist, then something is wrong
-					}
-				}
-			}
+			def url = getNativeURL(path, filename)
 			//TODO remove when Mojang launcher is updated
 			if (!classifiers && art.classifier != null) { 
 				// Mojang launcher doesn't currently support classifiers, so... move it to part of the version, and force the extension to 'jar'
@@ -129,14 +119,7 @@ class Util {
 					filename += "-${art.classifier}"
 				filename += ".${art.extension}"
 				def path = "${folder}${filename}"
-				def url = "https://repo.maven.apache.org/maven2/${path}"
-				if (!checkExists(url)) {
-					url = "https://maven.outlands.top/snapshots/${path}"
-					if (!checkExists(url)) {
-						url = "https://maven.minecraftforge.net/${path}"
-						if (!checkExists(url)) throw new GradleException("Artifact was not found: " + filename) // if artifact not exist, then something is wrong
-					}
-				}
+				def url = getNativeURL(path, filename)
 				ret[key] = [
 						name: "${art.group}:${art.name}:${art.version}" + ":${art.classifier}" + (art.extension == 'jar' ? '' : "@${art.extension}"),
 						downloads: [
@@ -159,6 +142,27 @@ class Util {
 			} catch (ignored) {}
 		}
 		return ret
+	}
+
+	// author: KorewaLidesu
+	// thought: wtf im writing here???
+	static def getNativeURL(path, filename) {
+		def url = "https://libraries.minecraft.net/${path}"
+		if (!checkExists(url)) {
+			url = "https://maven.cleanroommc.com/${path}" // TODO: this is awful.
+			if (!checkExists(url)) {
+				url = "https://maven.outlands.top/snapshots/${path}"
+				if (!checkExists(url)) {
+					url = "https://maven.minecraftforge.net/${path}"
+					if (!checkExists(url)) {
+						url = "https://repo.maven.apache.org/maven2/${path}"
+						if (!checkExists(url)) throw new GradleException("Artifact was not found: " + filename)
+						// if artifact not exist, then something is wrong
+					}
+				}
+			}
+		}
+		return url
 	}
 
 	static def getOSName(nativeClassifier) {
