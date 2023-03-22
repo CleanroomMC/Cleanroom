@@ -1,13 +1,6 @@
 --- before/net/minecraft/client/settings/KeyBinding.java
 +++ after/net/minecraft/client/settings/KeyBinding.java
-@@ -9,13 +9,13 @@
- import net.minecraft.util.IntHashMap;
- import net.minecraftforge.fml.relauncher.Side;
- import net.minecraftforge.fml.relauncher.SideOnly;
--import org.lwjgl.input.Keyboard;
-+import org.lwjglx.input.Keyboard;
- 
- @SideOnly(Side.CLIENT)
+@@ -15,7 +15,7 @@
  public class KeyBinding implements Comparable<KeyBinding>
  {
      private static final Map<String, KeyBinding> field_74516_a = Maps.<String, KeyBinding>newHashMap();

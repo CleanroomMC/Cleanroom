@@ -1,16 +1,5 @@
 --- before/net/minecraft/client/gui/GuiScreen.java
 +++ after/net/minecraft/client/gui/GuiScreen.java
-@@ -38,8 +38,8 @@
- import org.apache.commons.lang3.StringUtils;
- import org.apache.logging.log4j.LogManager;
- import org.apache.logging.log4j.Logger;
--import org.lwjgl.input.Keyboard;
--import org.lwjgl.input.Mouse;
-+import org.lwjglx.input.Keyboard;
-+import org.lwjglx.input.Mouse;
- 
- @SideOnly(Side.CLIENT)
- public abstract class GuiScreen extends Gui implements GuiYesNoCallback
 @@ -61,6 +61,7 @@
      private int field_146298_h;
      private URI field_175286_t;

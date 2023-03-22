@@ -39,7 +39,7 @@ import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 
-import org.lwjglx.input.Keyboard;
+import org.lwjgl.input.Keyboard;
 
 /**
  * This class implements the scrolling list functionality of the config GUI screens. It also provides all the default control handlers

@@ -1,16 +1,5 @@
 --- before/net/minecraft/util/MouseHelper.java
 +++ after/net/minecraft/util/MouseHelper.java
-@@ -2,8 +2,8 @@
- 
- import net.minecraftforge.fml.relauncher.Side;
- import net.minecraftforge.fml.relauncher.SideOnly;
--import org.lwjgl.input.Mouse;
--import org.lwjgl.opengl.Display;
-+import org.lwjglx.input.Mouse;
-+import org.lwjglx.opengl.Display;
- 
- @SideOnly(Side.CLIENT)
- public class MouseHelper
 @@ -13,6 +13,7 @@
  
      public void func_74372_a()

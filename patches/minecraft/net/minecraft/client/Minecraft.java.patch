@@ -1,34 +1,5 @@
 --- before/net/minecraft/client/Minecraft.java
 +++ after/net/minecraft/client/Minecraft.java
-@@ -208,17 +208,17 @@
- import org.apache.commons.lang3.Validate;
- import org.apache.logging.log4j.LogManager;
- import org.apache.logging.log4j.Logger;
--import org.lwjgl.LWJGLException;
--import org.lwjgl.Sys;
--import org.lwjgl.input.Keyboard;
--import org.lwjgl.input.Mouse;
--import org.lwjgl.opengl.ContextCapabilities;
--import org.lwjgl.opengl.Display;
--import org.lwjgl.opengl.DisplayMode;
--import org.lwjgl.opengl.GLContext;
--import org.lwjgl.opengl.OpenGLException;
--import org.lwjgl.opengl.PixelFormat;
--import org.lwjgl.util.glu.GLU;
-+import org.lwjglx.LWJGLException;
-+import org.lwjglx.Sys;
-+import org.lwjglx.input.Keyboard;
-+import org.lwjglx.input.Mouse;
-+import org.lwjglx.opengl.ContextCapabilities;
-+import org.lwjglx.opengl.Display;
-+import org.lwjglx.opengl.DisplayMode;
-+import org.lwjglx.opengl.GLContext;
-+import org.lwjglx.opengl.OpenGLException;
-+import org.lwjglx.opengl.PixelFormat;
-+import org.lwjglx.util.glu.GLU;
- 
- @SideOnly(Side.CLIENT)
- public class Minecraft implements IThreadListener, ISnooperInfo
 @@ -332,6 +332,7 @@
      public Minecraft(GameConfiguration p_i45547_1_)
      {

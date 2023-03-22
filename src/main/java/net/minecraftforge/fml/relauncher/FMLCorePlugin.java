@@ -30,8 +30,7 @@ public class FMLCorePlugin implements IFMLLoadingPlugin
                              "net.minecraftforge.fml.common.asm.transformers.SideTransformer",
                              "net.minecraftforge.fml.common.asm.transformers.EventSubscriptionTransformer",
                              "net.minecraftforge.fml.common.asm.transformers.EventSubscriberTransformer",
-                             "net.minecraftforge.fml.common.asm.transformers.SoundEngineFixTransformer",
-                             "net.minecraftforge.fml.common.asm.transformers.LwjglTransformer"
+                             "net.minecraftforge.fml.common.asm.transformers.SoundEngineFixTransformer"
                             };
     }
 
