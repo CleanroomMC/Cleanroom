@@ -1,6 +1,7 @@
 package com.cleanroommc.gradle.helpers.tasks
 
 import groovy.json.JsonSlurper
+import org.gradle.api.GradleException
 import org.gradle.internal.os.OperatingSystem
 
 import java.security.MessageDigest
@@ -70,6 +71,10 @@ class Util {
 				url = "https://maven.cleanroommc.com/${path}" // TODO: this is awful.
 				if (!checkExists(url)) {
 					url = "https://maven.minecraftforge.net/${path}"
+					if (!checkExists(url)) {
+						url = "https://maven.outlands.top/snapshots/${path}"
+						if (!checkExists(url)) throw new GradleException("Artifact was not found: " + filename) // if artifact not exist, then something is wrong
+					}
 				}
 			}
 			//TODO remove when Mojang launcher is updated
@@ -126,8 +131,11 @@ class Util {
 				def path = "${folder}${filename}"
 				def url = "https://repo.maven.apache.org/maven2/${path}"
 				if (!checkExists(url)) {
-					url = "https://maven.minecraftforge.net/${path}"
-					if (!checkExists(url)) return
+					url = "https://maven.outlands.top/snapshots/${path}"
+					if (!checkExists(url)) {
+						url = "https://maven.minecraftforge.net/${path}"
+						if (!checkExists(url)) throw new GradleException("Artifact was not found: " + filename) // if artifact not exist, then something is wrong
+					}
 				}
 				ret[key] = [
 						name: "${art.group}:${art.name}:${art.version}" + ":${art.classifier}" + (art.extension == 'jar' ? '' : "@${art.extension}"),
