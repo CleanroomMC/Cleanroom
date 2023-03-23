@@ -1,6 +1,15 @@
 --- before/net/minecraft/client/gui/GuiUtilRenderComponents.java
 +++ after/net/minecraft/client/gui/GuiUtilRenderComponents.java
-@@ -19,90 +19,39 @@
+@@ -1,6 +1,8 @@
+ package net.minecraft.client.gui;
+ 
+ import com.google.common.collect.Lists;
++
++import java.util.ArrayList;
+ import java.util.List;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.util.text.ITextComponent;
+@@ -19,90 +21,15 @@
  
      public static List<ITextComponent> func_178908_a(ITextComponent p_178908_0_, int p_178908_1_, FontRenderer p_178908_2_, boolean p_178908_3_, boolean p_178908_4_)
      {
@@ -8,22 +17,15 @@
 -        ITextComponent itextcomponent = new TextComponentString("");
 -        List<ITextComponent> list = Lists.<ITextComponent>newArrayList();
 -        List<ITextComponent> list1 = Lists.newArrayList(p_178908_0_);
-+        List<ITextComponent> resultList = Lists.newArrayList();
-+        List<ITextComponent> sourceList = Lists.newArrayList(p_178908_0_);
- 
+-
 -        for (int j = 0; j < list1.size(); ++j)
-+        for (int j = 0; j < sourceList.size(); ++j)
-         {
+-        {
 -            ITextComponent itextcomponent1 = list1.get(j);
 -            String s = itextcomponent1.func_150261_e();
 -            boolean flag = false;
 -
 -            if (s.contains("\n"))
-+            ITextComponent current = sourceList.get(j);
-+            String currentStr = current.func_150261_e();
-+            // Handle existed new line before line breaking
-+            if (currentStr.contains("\n"))
-             {
+-            {
 -                int k = s.indexOf(10);
 -                String s1 = s.substring(k + 1);
 -                s = s.substring(0, k + 1);
@@ -31,13 +33,7 @@
 -                itextcomponent2.func_150255_a(itextcomponent1.func_150256_b().func_150232_l());
 -                list1.add(j + 1, itextcomponent2);
 -                flag = true;
-+                int k = currentStr.indexOf('\n');
-+                String postNewLine = currentStr.substring(k + 1);
-+                currentStr = currentStr.substring(0, k + 1);
-+                ITextComponent remainText = new TextComponentString(postNewLine);
-+                remainText.func_150255_a(current.func_150256_b().func_150232_l());
-+                sourceList.add(j + 1, remainText);
-             }
+-            }
 -
 -            String s4 = func_178909_a(itextcomponent1.func_150256_b().func_150218_j() + s, p_178908_4_);
 -            String s5 = s4.endsWith("\n") ? s4.substring(0, s4.length() - 1) : s4;
@@ -46,15 +42,7 @@
 -            textcomponentstring.func_150255_a(itextcomponent1.func_150256_b().func_150232_l());
 -
 -            if (i + i1 > p_178908_1_)
-+            // Process current string
-+            String formattedCurrentStr = func_178909_a(current.func_150256_b().func_150218_j() + currentStr, p_178908_4_);
-+            String cleanStr = formattedCurrentStr.endsWith("\n") ? formattedCurrentStr.substring(0, formattedCurrentStr.length() - 1) : formattedCurrentStr;
-+            int currentWidth = p_178908_2_.func_78256_a(cleanStr);
-+            TextComponentString cleanText = new TextComponentString(cleanStr);
-+            cleanText.func_150255_a(current.func_150256_b().func_150232_l());
-+
-+            if (currentWidth > p_178908_1_)
-             {
+-            {
 -                String s2 = p_178908_2_.func_78262_a(s4, p_178908_1_ - i, false);
 -                String s3 = s2.length() < s4.length() ? s4.substring(s2.length()) : null;
 -
@@ -82,9 +70,7 @@
 -                    TextComponentString textcomponentstring1 = new TextComponentString(s3);
 -                    textcomponentstring1.func_150255_a(itextcomponent1.func_150256_b().func_150232_l());
 -                    list1.add(j + 1, textcomponentstring1);
-+                for (String str : p_178908_2_.func_78271_c(formattedCurrentStr, p_178908_1_)) {
-+                    resultList.add(new TextComponentString(str).func_150255_a(current.func_150256_b().func_150232_l()));
-                 }
+-                }
 -
 -                i1 = p_178908_2_.func_78256_a(s2);
 -                textcomponentstring = new TextComponentString(s2);
@@ -107,9 +93,15 @@
 -                list.add(itextcomponent);
 -                i = 0;
 -                itextcomponent = new TextComponentString("");
-+            } else {
-+                resultList.add(new TextComponentString(formattedCurrentStr).func_150255_a(current.func_150256_b().func_150232_l()));
-             }
+-            }
++        List<ITextComponent> resultList = new ArrayList<>();
++
++        for (String str : p_178908_2_.func_78271_c(p_178908_0_.func_150254_d(), p_178908_1_)) {
++            if (p_178908_3_ && str.charAt(str.length() - 1) == ' ') {
++                str = str.substring(0, str.length() - 1);
++            }
++            str = GuiUtilRenderComponents.func_178909_a(str, p_178908_4_);
++            resultList.add(new TextComponentString(str).func_150255_a(p_178908_0_.func_150256_b().func_150232_l()));
          }
 -
 -        list.add(itextcomponent);
