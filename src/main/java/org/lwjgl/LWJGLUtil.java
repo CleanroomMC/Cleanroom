@@ -15,18 +15,14 @@
  */
 package org.lwjgl;
 
+import org.lwjgl3.system.Platform;
+
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.*;
-
-import org.lwjgl3.system.Platform;
 
 /**
  * <p>
@@ -364,7 +360,7 @@ public class LWJGLUtil {
     }
 
     private static String getPrivilegedProperty(final String property_name) {
-        return AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty(property_name));
+        return System.getProperty(property_name);
     }
 
     /**
@@ -382,17 +378,10 @@ public class LWJGLUtil {
             Class<?> c = classloader.getClass();
             while (c != null) {
                 final Class<?> clazz = c;
-                try {
-                    return AccessController.doPrivileged((PrivilegedExceptionAction<String>) () -> {
-                        Method findLibrary = clazz.getDeclaredMethod("findLibrary", String.class);
-                        findLibrary.setAccessible(true);
-                        String path = (String) findLibrary.invoke(classloader, libname);
-                        return path;
-                    });
-                } catch (PrivilegedActionException e) {
-                    log("Failed to locate findLibrary method: " + e.getCause());
-                    c = c.getSuperclass();
-                }
+                Method findLibrary = clazz.getDeclaredMethod("findLibrary", String.class);
+                findLibrary.setAccessible(true);
+                String path = (String) findLibrary.invoke(classloader, libname);
+                return path;
             }
         } catch (Exception e) {
             log("Failure locating " + e + " using classloader:" + e);
@@ -404,7 +393,7 @@ public class LWJGLUtil {
      * Gets a boolean property as a privileged action.
      */
     public static boolean getPrivilegedBoolean(final String property_name) {
-        return AccessController.doPrivileged((PrivilegedAction<Boolean>) () -> Boolean.getBoolean(property_name));
+        return Boolean.getBoolean(property_name);
     }
 
     /**
@@ -415,7 +404,7 @@ public class LWJGLUtil {
      * @return the property value
      */
     public static Integer getPrivilegedInteger(final String property_name) {
-        return AccessController.doPrivileged((PrivilegedAction<Integer>) () -> Integer.getInteger(property_name));
+        return Integer.getInteger(property_name);
     }
 
     /**
@@ -427,8 +416,7 @@ public class LWJGLUtil {
      * @return the property value
      */
     public static Integer getPrivilegedInteger(final String property_name, final int default_val) {
-        return AccessController
-                .doPrivileged((PrivilegedAction<Integer>) () -> Integer.getInteger(property_name, default_val));
+        return Integer.getInteger(property_name, default_val);
     }
 
     /**
