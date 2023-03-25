@@ -1,6 +1,7 @@
 package com.cleanroommc.gradle.helpers.tasks
 
 import groovy.json.JsonSlurper
+import org.gradle.api.GradleException
 import org.gradle.internal.os.OperatingSystem
 
 import java.security.MessageDigest
@@ -65,13 +66,7 @@ class Util {
 				filename += "-${art.classifier}"
 			filename += ".${art.extension}"
 			def path = "${folder}${filename}"
-			def url = "https://libraries.minecraft.net/${path}"
-			if (!checkExists(url)) {
-				url = "https://maven.cleanroommc.com/${path}" // TODO: this is awful.
-				if (!checkExists(url)) {
-					url = "https://maven.minecraftforge.net/${path}"
-				}
-			}
+			def url = getNativeURL(path, filename)
 			//TODO remove when Mojang launcher is updated
 			if (!classifiers && art.classifier != null) { 
 				// Mojang launcher doesn't currently support classifiers, so... move it to part of the version, and force the extension to 'jar'
@@ -124,11 +119,7 @@ class Util {
 					filename += "-${art.classifier}"
 				filename += ".${art.extension}"
 				def path = "${folder}${filename}"
-				def url = "https://repo.maven.apache.org/maven2/${path}"
-				if (!checkExists(url)) {
-					url = "https://maven.minecraftforge.net/${path}"
-					if (!checkExists(url)) return
-				}
+				def url = getNativeURL(path, filename)
 				ret[key] = [
 						name: "${art.group}:${art.name}:${art.version}" + ":${art.classifier}" + (art.extension == 'jar' ? '' : "@${art.extension}"),
 						downloads: [
@@ -151,6 +142,27 @@ class Util {
 			} catch (ignored) {}
 		}
 		return ret
+	}
+
+	// TODO: Change to standard maven
+	static def getNativeURL(String path, String filename) {
+		def urlList = [
+				"https://repo.cleanroommc.com/releases/",
+				"https://repo.cleanroommc.com/snapshots/", // In case we use snapshot/forked version of dependency
+				"https://maven.minecraftforge.net/",
+				"https://repo.maven.apache.org/maven2/",
+				"https://libraries.minecraft.net/",
+		]
+		try {
+			return urlList.stream().map(original -> original + path)
+					.filter(it -> this::checkExists(it)).findFirst().get()
+		} catch (NoSuchElementException ignored) {
+			throw new GradleException("Can't find " + filename + " from defined repositories.\n"
+					+ "Please check and make sure all repositories are setup properly.\n"
+					+ "At: com.cleanroommc.gradle.helpers.tasks.Util#getNativeURL(String, String)\n"
+					+ "Current defined repositories: (Sort by order)\n"
+					+ String.join("\n" , urlList))
+		}
 	}
 
 	static def getOSName(nativeClassifier) {
