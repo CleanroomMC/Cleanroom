@@ -364,8 +364,8 @@ project(':cleanroom') {
             installer "org.lwjgl:$it:$props.lwjgl_version"
             runtimeOnly "org.lwjgl:$it::$lwjglArch"
 
-            lwjglLibraries[1].each { it1 ->
-                lwjglNatives "org.lwjgl:$it:$props.lwjgl_version:$it1"
+            lwjglLibraries[1].each { arch ->
+                lwjglNatives "org.lwjgl:$it:$props.lwjgl_version:$arch"
             }
         }
 
