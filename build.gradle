@@ -21,7 +21,7 @@ import com.cleanroommc.gradle.helpers.tasks.*
 import groovy.json.JsonBuilder
 
 import java.nio.file.Files
-import java.util.zip.ZipFile;
+import java.util.zip.ZipFile
 
 import net.minecraftforge.gradle.common.tasks.ApplyBinPatches
 import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
@@ -54,16 +54,16 @@ Util.init()
 
 // Post-Processing
 def post_processor = [
-        tool: 'net.minecraftforge:mcpcleanup:2.3.2:fatjar',
-        repo: 'https://maven.minecraftforge.net/',
-        args: ['--input', '{input}', '--output', '{output}']
+    tool: 'net.minecraftforge:mcpcleanup:2.3.2:fatjar',
+    repo: 'https://maven.minecraftforge.net/',
+    args: ['--input', '{input}', '--output', '{output}']
 ]
 
 def jvm_arguments = [
-        '--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED',
-        '--add-opens=java.base/jdk.internal.reflect=ALL-UNNAMED',
-        '--add-opens=java.base/java.lang=ALL-UNNAMED',
-        '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED'
+    '--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED',
+    '--add-opens=java.base/jdk.internal.reflect=ALL-UNNAMED',
+    '--add-opens=java.base/java.lang=ALL-UNNAMED',
+    '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED'
 ]
 
 def compiler_jvm_arguments = [
@@ -198,16 +198,18 @@ project(':cleanroom') {
 
     ext {
         version_json = project(':mcp').file('build/mcp/downloadJson/version.json')
-        archNative = Util.getCurrentArch()
-        lwjglVersion = '3.3.2-CLEANROOM'
-        // Do not change the array order unless it is required so
-        natives = [
-             'lwjgl3-glfw', 'lwjgl3-jemalloc', 'lwjgl3-openal', 'lwjgl3-opengl', 'lwjgl3-stb', 'lwjgl3-tinyfd', 'lwjgl3'
-        ]
-        arch = [
-            'natives-linux-arm64', 'natives-linux-arm32', 'natives-linux',
-            'natives-macos-arm64', 'natives-macos',
-            'natives-windows-arm64', 'natives-windows-x86', 'natives-windows'
+        lwjglArch = Util.getCurrentArch()
+        // Do not change the order unless it is required so
+        lwjglLibraries = [
+            [
+                'lwjgl-glfw', 'lwjgl-jemalloc', 'lwjgl-openal',
+                'lwjgl-opengl', 'lwjgl-stb', 'lwjgl-tinyfd', 'lwjgl'
+            ],
+            [
+                'natives-linux-arm64', 'natives-linux-arm32', 'natives-linux',
+                'natives-macos-arm64', 'natives-macos',
+                'natives-windows-arm64', 'natives-windows-x86', 'natives-windows'
+            ]
         ]
     }
 
@@ -358,24 +360,27 @@ project(':cleanroom') {
     }
 
     dependencies {
-        installer "org.lwjgl3:lwjgl3:$lwjglVersion"
-        installer "org.lwjgl3:lwjgl3-glfw:$lwjglVersion"
-        installer "org.lwjgl3:lwjgl3-jemalloc:$lwjglVersion"
-        installer "org.lwjgl3:lwjgl3-openal:$lwjglVersion"
-        installer "org.lwjgl3:lwjgl3-opengl:$lwjglVersion"
-        installer "org.lwjgl3:lwjgl3-stb:$lwjglVersion"
-        installer "org.lwjgl3:lwjgl3-tinyfd:$lwjglVersion"
+        lwjglLibraries[0].each {
+            installer "org.lwjgl:$it:$props.lwjgl_version"
+            runtimeOnly "org.lwjgl:$it::$lwjglArch"
+
+            lwjglLibraries[1].each { it1 ->
+                lwjglNatives "org.lwjgl:$it:$props.lwjgl_version:$it1"
+            }
+        }
 
         // TODO: ASM 9.4 required, breaks current Event System when creating classes on-the-fly
-        installer 'org.ow2.asm:asm:9.4'
-        installer 'org.ow2.asm:asm-commons:9.4'
-        installer 'org.ow2.asm:asm-tree:9.4'
-        installer 'org.ow2.asm:asm-util:9.4'
-        installer 'org.ow2.asm:asm-analysis:9.4'
+        installer "org.ow2.asm:asm:$props.asm_version"
+        installer "org.ow2.asm:asm-commons:$props.asm_version"
+        installer "org.ow2.asm:asm-tree:$props.asm_version"
+        installer "org.ow2.asm:asm-util:$props.asm_version"
+        installer "org.ow2.asm:asm-analysis:$props.asm_version"
+        // Added back deprecated features for mods to load up properly
+        installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
+
+        installer "com.cleanroommc:bouncepad:$props.bouncepad_version"
 
         installer 'com.ibm.icu:icu4j:72.1'
-
-        installer 'com.cleanroommc:bouncepad:0.4'
 
         installer 'org.jline:jline:3.5.1'
         installer 'com.typesafe.akka:akka-actor_2.11:2.3.3'
@@ -400,6 +405,8 @@ project(':cleanroom') {
         // TODO: Unpin in 1.18.1 or when Mojang bumps the Log4J version
         installer 'org.apache.logging.log4j:log4j-api:2.15.0'
         installer 'org.apache.logging.log4j:log4j-core:2.15.0'
+        installer 'javax.annotation:javax.annotation-api:1.3.2'
+        installer 'jakarta.xml.bind:jakarta.xml.bind-api:3.0.1'
 
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.0.0'
         testImplementation 'org.junit.vintage:junit-vintage-engine:5.+'
@@ -587,16 +594,16 @@ project(':cleanroom') {
             srg = genClientBinPatches.srg
             patchSets.setFrom(genClientBinPatches.patchSets)
             getArgs().set([
-                    '--output', '{output}',
-                    '--patches', '{patches}',
-                    '--srg', '{srg}',
-                    // '--legacy',
-                    '--clean', '{clean}',
-                    '--dirty', '{dirty}',
-                    '--prefix', 'binpatch/client',
-                    '--clean', genServerBinPatches.cleanJar.get().asFile.path,
-                    '--dirty', genServerBinPatches.dirtyJar.get().asFile.path,
-                    '--prefix', 'binpatch/server',
+                '--output', '{output}',
+                '--patches', '{patches}',
+                '--srg', '{srg}',
+                // '--legacy',
+                '--clean', '{clean}',
+                '--dirty', '{dirty}',
+                '--prefix', 'binpatch/client',
+                '--clean', genServerBinPatches.cleanJar.get().asFile.path,
+                '--dirty', genServerBinPatches.dirtyJar.get().asFile.path,
+                '--prefix', 'binpatch/server',
             ])
         }
     }
@@ -746,9 +753,9 @@ project(':cleanroom') {
             vanilla = project(':mcp').file('build/mcp/downloadJson/version.json')
             timestamp = Util.iso8601Now()
             comment = [
-                    'Please do not automate the download and installation of Cleanroom.',
-                    'Our efforts are supported by ads from the download page.'
-                    // TODO: Donation Page? (Was LexManos')
+                'Please do not automate the download and installation of Cleanroom.',
+                'Our efforts are supported by ads from the download page.'
+                // TODO: Donation Page? (Was LexManos')
             ]
             id = "${project.name}-${project.version}"
         }
@@ -793,15 +800,14 @@ project(':cleanroom') {
                     ]
                 ]
             ]
-            def artifacts = Util.getArtifacts(project, project.configurations.installer, false)
-            artifacts.each { key, lib ->
-                json.libraries.add(lib)
-            }
-            def lwjglNatives = Util.getLWJGLNatives(project.configurations.lwjglNatives,
-                project.configurations.testCompile, natives, arch)
-            lwjglNatives.each { key, lib ->
-                json.libraries.add(lib)
-            }
+            Util.getArtifacts(project, project.configurations.installer, false)
+                .each { key, lib ->
+                    json.libraries.add(lib)
+                }
+            Util.getLWJGLNatives(project.configurations.lwjglNatives, project.configurations.testCompile, lwjglLibraries[0], lwjglLibraries[1])
+                .each { key, lib ->
+                    json.libraries.add(lib)
+                }
             output.text = new JsonBuilder(json).toPrettyString()
         }
     }
@@ -809,7 +815,7 @@ project(':cleanroom') {
     task installerJson(dependsOn: [launcherJson, genClientBinPatches/*, createClientSRG, createServerSRG*/]) {
         ext {
             output = file('build/install_profile.json')
-            installer_tools = 'net.minecraftforge:installertools:1.1.4' // TODO: Why replace with older version?
+            installer_tools = "net.minecraftforge:installertools:$props.installer_tools_version"
         }
         inputs.file universalJar.archivePath
         inputs.file genClientBinPatches.toolJar
@@ -900,18 +906,18 @@ project(':cleanroom') {
             }
             classpath += "minecraft_server.${props.minecraft_version}.jar"
             manifest.attributes([
-                    'Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                    'Main-Class': 'net.minecraftforge.fml.relauncher.ServerLaunchWrapper',
-                    'Class-Path': classpath.toString(),
-                    'Tweak-Class': 'net.minecraftforge.fml.common.launcher.FMLTweaker'
+                'Timestamp'  : new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                'Main-Class' : 'net.minecraftforge.fml.relauncher.ServerLaunchWrapper',
+                'Class-Path' : classpath.toString(),
+                'Tweak-Class': 'net.minecraftforge.fml.common.launcher.FMLTweaker'
             ])
             manifest.attributes([
-                    'Specification-Title': props.title,
-                    'Specification-Vendor': props.vendor,
-                    'Specification-Version': spec_version,
-                    'Implementation-Title': project.group,
-                    'Implementation-Version': props.new_forge_version,
-                    'Implementation-Vendor': props.vendor
+                'Specification-Title'   : props.title,
+                'Specification-Vendor'  : props.vendor,
+                'Specification-Version' : spec_version,
+                'Implementation-Title'  : project.group,
+                'Implementation-Version': props.new_forge_version,
+                'Implementation-Vendor' : props.vendor
             ], 'net/minecraftforge/common/')
         }
     }
@@ -1040,22 +1046,6 @@ project(':cleanroom') {
 
     test {
         jvmArgs jvm_arguments
-    }
-
-    dependencies {
-        runtimeOnly "org.lwjgl3:lwjgl3::$archNative"
-        runtimeOnly "org.lwjgl3:lwjgl3-glfw::$archNative"
-        runtimeOnly "org.lwjgl3:lwjgl3-jemalloc::$archNative"
-        runtimeOnly "org.lwjgl3:lwjgl3-openal::$archNative"
-        runtimeOnly "org.lwjgl3:lwjgl3-opengl::$archNative"
-        runtimeOnly "org.lwjgl3:lwjgl3-stb::$archNative"
-        runtimeOnly "org.lwjgl3:lwjgl3-tinyfd::$archNative"
-
-        arch.each {
-            natives.each { it1 ->
-                lwjglNatives "org.lwjgl3:$it1:$lwjglVersion:$it"
-            }
-        }
     }
 }
 
