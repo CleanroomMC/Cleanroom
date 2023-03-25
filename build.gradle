@@ -192,7 +192,7 @@ project(':cleanroom') {
             url 'https://maven.cleanroommc.com/'
         }
         maven {
-            url "https://maven.outlands.top/snapshots"
+            url "https://repo.cleanroommc.com/snapshots"
         }
     }
 

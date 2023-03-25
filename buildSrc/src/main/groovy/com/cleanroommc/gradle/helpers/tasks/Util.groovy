@@ -151,7 +151,7 @@ class Util {
 		if (!checkExists(url)) {
 			url = "https://maven.cleanroommc.com/${path}" // TODO: this is awful.
 			if (!checkExists(url)) {
-				url = "https://maven.outlands.top/snapshots/${path}"
+				url = "https://repo.cleanroommc.com/snapshots/${path}"
 				if (!checkExists(url)) {
 					url = "https://maven.minecraftforge.net/${path}"
 					if (!checkExists(url)) {
