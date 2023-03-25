@@ -15,4 +15,18 @@
 3. Once the import has finished, run `gradlew setup`
 4. Build with `gradlew build -x test` for now as tests aren't working yet.
 
+### Roadmap flow chart
 
+
+```mermaid
+graph TD;
+    A(Mixin integration)-->D(Milestone 1);
+    B(LWJGL incompat)-->D;
+    C(Newer Java incompat)-->D;
+    D-->E(New config system);
+    D-->G(Minor improvement and fixes)
+    E-->F(Greater improvement needs configs)
+    X(Cleanroom Gradle)-->Y(MDK or template)
+    Y-->Z(New APIs can be used by mods)
+    D-->Z
+```
