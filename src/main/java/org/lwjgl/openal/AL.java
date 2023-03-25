@@ -20,23 +20,31 @@ public class AL {
     }
 
     public static void create() throws LWJGLException {
+        create(org.lwjgl3.openal.ALC10.alcGetString(0, ALC10.ALC_DEFAULT_DEVICE_SPECIFIER), 44100, 60, false);
+    }
+
+    public static void create(String deviceArguments, int contextFrequency, int contextRefresh, boolean contextSynchronized)
+            throws LWJGLException {
+        create(deviceArguments, contextFrequency, contextRefresh, contextSynchronized, true);
+    }
+
+    public static void create(String deviceArguments, int contextFrequency, int contextRefresh, boolean contextSynchronized, boolean openDevice)
+            throws LWJGLException {
         IntBuffer attribs = BufferUtils.createIntBuffer(16);
 
         attribs.put(org.lwjgl3.openal.ALC10.ALC_FREQUENCY);
-        attribs.put(44100);
+        attribs.put(contextFrequency);
 
         attribs.put(org.lwjgl3.openal.ALC10.ALC_REFRESH);
-        attribs.put(60);
+        attribs.put(contextRefresh);
 
         attribs.put(org.lwjgl3.openal.ALC10.ALC_SYNC);
-        attribs.put(org.lwjgl3.openal.ALC10.ALC_FALSE);
+        attribs.put(contextSynchronized ? org.lwjgl3.openal.ALC10.ALC_TRUE : org.lwjgl3.openal.ALC10.ALC_FALSE);
 
         attribs.put(0);
         attribs.flip();
 
-        String defaultDevice = org.lwjgl3.openal.ALC10.alcGetString(0, ALC10.ALC_DEFAULT_DEVICE_SPECIFIER);
-
-        long deviceHandle = org.lwjgl3.openal.ALC10.alcOpenDevice(defaultDevice);
+        long deviceHandle = org.lwjgl3.openal.ALC10.alcOpenDevice(deviceArguments);
 
         alcDevice = new ALCdevice(deviceHandle);
 
