@@ -15,7 +15,7 @@ buildscript {
 plugins {
     id 'java'
     id 'org.jetbrains.gradle.plugin.idea-ext' version '1.1.7'
-    id 'io.github.srdjan-v.local-git-dependency' version '0.2.0'
+    id 'io.github.srdjan-v.local-git-dependency' version '0.3.0'
 }
 
 import com.cleanroommc.gradle.helpers.tasks.*
@@ -51,9 +51,33 @@ def spec_version = props.new_forge_version.substring(props.new_forge_version.ind
 println "Running Cleanroom $version"
 println "Java: ${ -> sysProps['java.version']} | JVM: ${ -> sysProps['java.vm.version']} | Vendor: ${ -> sysProps['java.vendor']} | Architecture: ${ -> sysProps['os.arch']}"
 
+// Currently localGitDependency cant add repositories of dependencies automatically
+// This is need for the configuration of the mixinConfiguration classpath, to enable proper ide support
+repositories {
+    mavenCentral()
+    maven {
+        name = 'minecraft'
+        url = 'https://libraries.minecraft.net/'
+    }
+    maven {
+        name = 'Fabric'
+        url = 'https://maven.fabricmc.net/'
+    }
+    maven {
+        name 'Cleanroom Maven'
+        url 'https://maven.cleanroommc.com/'
+    }
+}
+
+configurations {
+    // A configuration for CleanroomMC Mixin jars
+    mixinConfiguration
+}
+
 // Initialize local git repos
 localGitDependency {
-    add("https://github.com/CleanroomMC/Mixin.git", {
+    add("mixinConfiguration", "https://github.com/CleanroomMC/Mixin.git", {
+        enableIdeSupport true // currently the default is false
         branch 'main'
     })
 }
