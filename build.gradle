@@ -13,7 +13,9 @@ buildscript {
 }
 
 plugins {
+    id 'java'
     id 'org.jetbrains.gradle.plugin.idea-ext' version '1.1.7'
+    id 'io.github.srdjan-v.local-git-dependency' version '0.2.0'
 }
 
 import com.cleanroommc.gradle.helpers.tasks.*
@@ -48,6 +50,13 @@ def spec_version = props.new_forge_version.substring(props.new_forge_version.ind
 
 println "Running Cleanroom $version"
 println "Java: ${ -> sysProps['java.version']} | JVM: ${ -> sysProps['java.vm.version']} | Vendor: ${ -> sysProps['java.vendor']} | Architecture: ${ -> sysProps['os.arch']}"
+
+// Initialize local git repos
+localGitDependency {
+    add("https://github.com/CleanroomMC/Mixin.git", {
+        branch 'main'
+    })
+}
 
 // Initialize buildSrc
 Util.init()
