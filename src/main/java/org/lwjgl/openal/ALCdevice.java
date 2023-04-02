@@ -50,7 +50,11 @@ public final class ALCdevice {
         this.valid = true;
     }
 
-    /*
+    public static long alcOpenDevice(String deviceSpecifier) {
+        return org.lwjgl3.openal.ALC10.alcOpenDevice(deviceSpecifier);
+    }
+
+        /*
      * @see java.lang.Object#equals(java.lang.Object)
      */
     public boolean equals(Object device) {
