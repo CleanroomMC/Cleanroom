@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import net.minecraftforge.common.util.TextTable;
 import net.minecraftforge.fml.common.LoaderState.ModState;
 import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
+import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLEvent;
 import net.minecraftforge.fml.common.event.FMLLoadEvent;
 import net.minecraftforge.fml.common.event.FMLModDisabledEvent;
@@ -36,6 +37,7 @@ import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.eventhandler.FMLThrowingEventBus;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 
+import net.minecraftforge.fml.relauncher.MixinBooterPlugin;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.message.FormattedMessage;
 
@@ -53,6 +55,10 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.spongepowered.asm.mixin.MixinEnvironment;
+import org.spongepowered.asm.mixin.Mixins;
+import org.spongepowered.asm.mixin.transformer.Proxy;
+import zone.rong.mixinbooter.ILateMixinLoader;
 
 import javax.annotation.Nullable;
 
@@ -129,8 +135,41 @@ public class LoadController
 
     public void distributeStateMessage(LoaderState state, Object... eventData)
     {
+
         if (state.hasEvent())
         {
+            if (state == LoaderState.CONSTRUCTING) { // This state is where Forge adds mod files to ModClassLoader
+
+                ModClassLoader modClassLoader = (ModClassLoader) eventData[0];
+                ASMDataTable asmDataTable = (ASMDataTable) eventData[1];
+
+                try {
+
+                    MixinBooterPlugin.LOGGER.info("Instantiating all ILateMixinLoader implemented classes...");
+
+                    for (ASMDataTable.ASMData asmData : asmDataTable.getAll(ILateMixinLoader.class.getName().replace('.', '/'))) {
+                        modClassLoader.addFile(asmData.getCandidate().getModContainer()); // Add to path before `newInstance`
+                        Class<?> clazz = Class.forName(asmData.getClassName().replace('/', '.'));
+                        MixinBooterPlugin.LOGGER.info("Instantiating {} for its mixins.", clazz);
+                        ILateMixinLoader loader = (ILateMixinLoader) clazz.newInstance();
+                        for (String mixinConfig : loader.getMixinConfigs()) {
+                            if (loader.shouldMixinConfigQueue(mixinConfig)) {
+                                MixinBooterPlugin.LOGGER.info("Adding {} mixin configuration.", mixinConfig);
+                                Mixins.addConfiguration(mixinConfig);
+                                loader.onMixinConfigQueued(mixinConfig);
+                            }
+                        }
+                    }
+
+                    for (ModContainer container : this.loader.getActiveModList()) {
+                        modClassLoader.addFile(container.getSource());
+                    }
+                } catch (Throwable ignored) {}
+                MixinEnvironment current = MixinEnvironment.getCurrentEnvironment();
+                Proxy.transformer.processor.selectConfigs(current);
+                Proxy.transformer.processor.prepareConfigs(current, Proxy.transformer.processor.extensions);
+
+            }
             masterChannel.post(state.getEvent(eventData));
         }
     }

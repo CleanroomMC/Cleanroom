@@ -91,6 +91,33 @@
  
              if (potion != null)
              {
+@@ -1687,7 +1698,7 @@
+                     if (file2.isFile())
+                     {
+                         this.field_147302_e.func_179290_a(new CPacketResourcePackStatus(CPacketResourcePackStatus.Action.ACCEPTED));
+-                        Futures.addCallback(this.field_147299_f.func_110438_M().func_177319_a(file2), this.func_189686_f());
++                        Futures.addCallback(this.field_147299_f.func_110438_M().func_177319_a(file2), this.func_189686_f(), Runnable::run);
+                         return;
+                     }
+                 }
+@@ -1705,7 +1716,7 @@
+                 if (serverdata != null && serverdata.func_152586_b() == ServerData.ServerResourceMode.ENABLED)
+                 {
+                     this.field_147302_e.func_179290_a(new CPacketResourcePackStatus(CPacketResourcePackStatus.Action.ACCEPTED));
+-                    Futures.addCallback(this.field_147299_f.func_110438_M().func_180601_a(s, s1), this.func_189686_f());
++                    Futures.addCallback(this.field_147299_f.func_110438_M().func_180601_a(s, s1), this.func_189686_f(), Runnable::run);
+                 }
+                 else if (serverdata != null && serverdata.func_152586_b() != ServerData.ServerResourceMode.PROMPT)
+                 {
+@@ -1732,7 +1743,7 @@
+                                         }
+ 
+                                         NetHandlerPlayClient.this.field_147302_e.func_179290_a(new CPacketResourcePackStatus(CPacketResourcePackStatus.Action.ACCEPTED));
+-                                        Futures.addCallback(NetHandlerPlayClient.this.field_147299_f.func_110438_M().func_180601_a(s, s1), NetHandlerPlayClient.this.func_189686_f());
++                                        Futures.addCallback(NetHandlerPlayClient.this.field_147299_f.func_110438_M().func_180601_a(s, s1), NetHandlerPlayClient.this.func_189686_f(), Runnable::run);
+                                     }
+                                     else
+                                     {
 @@ -1856,6 +1867,7 @@
              }
              finally

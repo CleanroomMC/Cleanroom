@@ -1,6 +1,14 @@
 --- before/net/minecraft/client/renderer/OpenGlHelper.java
 +++ after/net/minecraft/client/renderer/OpenGlHelper.java
-@@ -93,6 +93,10 @@
+@@ -32,6 +32,7 @@
+ import org.lwjgl.opengl.GL30;
+ import org.lwjgl.opengl.GLContext;
+ import oshi.SystemInfo;
++import oshi.hardware.CentralProcessor;
+ import oshi.hardware.Processor;
+ 
+ @SideOnly(Side.CLIENT)
+@@ -93,6 +94,10 @@
      public static int field_176089_P;
      public static int field_148826_e;
  
@@ -11,7 +19,18 @@
      public static void func_77474_a()
      {
          ContextCapabilities contextcapabilities = GLContext.getCapabilities();
-@@ -852,6 +856,12 @@
+@@ -294,8 +299,8 @@
+ 
+         try
+         {
+-            Processor[] aprocessor = (new SystemInfo()).getHardware().getProcessors();
+-            field_183030_aa = String.format("%dx %s", aprocessor.length, aprocessor[0]).replaceAll("\\s+", " ");
++            CentralProcessor aprocessor = (new SystemInfo()).getHardware().getProcessor();
++            field_183030_aa = String.format("%dx %s", aprocessor.getLogicalProcessorCount(), aprocessor.getProcessorIdentifier().getName()).replaceAll("\\s+", " ");
+         }
+         catch (Throwable var3)
+         {
+@@ -852,6 +857,12 @@
          else
          {
              GL13.glMultiTexCoord2f(p_77475_0_, p_77475_1_, p_77475_2_);

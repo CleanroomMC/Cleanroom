@@ -210,7 +210,7 @@ public class ASMTransformerWrapper
 
         public WrapperVisitor(ClassVisitor cv, String name, String parentClass)
         {
-            super(Opcodes.ASM5, cv);
+            super(Opcodes.ASM9, cv);
             this.name = name.replace('.', '/');
             this.parentClass = parentClass;
         }

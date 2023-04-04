@@ -1,6 +1,32 @@
 --- before/net/minecraft/crash/CrashReport.java
 +++ after/net/minecraft/crash/CrashReport.java
-@@ -116,6 +116,7 @@
+@@ -9,18 +9,25 @@
+ import java.io.Writer;
+ import java.lang.management.ManagementFactory;
+ import java.lang.management.RuntimeMXBean;
++import java.lang.reflect.Method;
+ import java.nio.charset.StandardCharsets;
+ import java.text.SimpleDateFormat;
+ import java.util.Date;
+ import java.util.List;
++import java.util.Set;
++
++import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+ import net.minecraft.util.ReportedException;
+ import net.minecraft.world.gen.layer.IntCache;
++import net.minecraftforge.fml.relauncher.MixinBooterPlugin;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.commons.io.IOUtils;
+ import org.apache.commons.lang3.ArrayUtils;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
++import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
++import org.spongepowered.asm.mixin.transformer.ClassInfo;
+ 
+ public class CrashReport
+ {
+@@ -116,6 +123,7 @@
                  return IntCache.func_85144_b();
              }
          });
@@ -8,7 +34,60 @@
      }
  
      public String func_71501_a()
-@@ -205,6 +206,7 @@
+@@ -198,6 +206,52 @@
+             IOUtils.closeQuietly((Writer)printwriter);
+         }
+ 
++        StackTraceElement[] stacktrace = throwable.getStackTrace();
++        if (stacktrace.length > 0) {
++            try {
++                StringBuilder mixinMetadataBuilder = null;
++                Set<String> classes = new ObjectOpenHashSet<>();
++                for (StackTraceElement stackTraceElement : stacktrace) {
++                    classes.add(stackTraceElement.getClassName());
++                }
++                Method classInfo$getMixins;
++                try {
++                    classInfo$getMixins = ClassInfo.class.getDeclaredMethod("getMixins");
++                    classInfo$getMixins.setAccessible(true);
++                    for (String className : classes) {
++                        ClassInfo classInfo = ClassInfo.fromCache(className);
++                        if (classInfo != null) {
++                            @SuppressWarnings("unchecked")
++                            Set<IMixinInfo> mixinInfos = (Set<IMixinInfo>) classInfo$getMixins.invoke(classInfo);
++                            if (!mixinInfos.isEmpty()) {
++                                if (mixinMetadataBuilder == null) {
++                                    mixinMetadataBuilder = new StringBuilder("\n(MixinBooter) Mixins in Stacktrace:");
++                                }
++                                mixinMetadataBuilder.append("\n\t");
++                                mixinMetadataBuilder.append(className);
++                                mixinMetadataBuilder.append(":");
++                                for (IMixinInfo mixinInfo : mixinInfos) {
++                                    mixinMetadataBuilder.append("\n\t\t");
++                                    mixinMetadataBuilder.append(mixinInfo.getClassName());
++                                    mixinMetadataBuilder.append(" (");
++                                    mixinMetadataBuilder.append(mixinInfo.getConfig().getName());
++                                    mixinMetadataBuilder.append(")");
++                                }
++                            }
++                        }
++                    }
++                } catch (ReflectiveOperationException e) {
++                    MixinBooterPlugin.LOGGER.warn("Not able to reflect ClassInfo#getMixins");
++                }
++                if (mixinMetadataBuilder == null) {
++                    return s + "\nNo Mixin Metadata is found in the Stacktrace.\n";
++                } else {
++                    return s + mixinMetadataBuilder;
++                }
++            } catch (Throwable t) {
++                return s + "\nFailed to find Mixin Metadata in Stacktrace:\n" + t;
++            }
++        }
+         return s;
+     }
+ 
+@@ -205,6 +259,7 @@
      {
          StringBuilder stringbuilder = new StringBuilder();
          stringbuilder.append("---- Minecraft Crash Report ----\n");

@@ -627,6 +627,15 @@
              }
          }
      }
+@@ -3237,7 +3125,7 @@
+             }
+             catch (Exception exception)
+             {
+-                return Futures.immediateFailedCheckedFuture(exception);
++                return Futures.immediateFailedFuture(exception);
+             }
+         }
+         else
 @@ -3328,6 +3216,12 @@
          return this.field_184127_aH;
      }

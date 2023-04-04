@@ -278,6 +278,15 @@
      }
  
      public CrashReport func_71230_b(CrashReport p_71230_1_)
+@@ -1338,7 +1384,7 @@
+             }
+             catch (Exception exception)
+             {
+-                return Futures.immediateFailedCheckedFuture(exception);
++                return Futures.immediateFailedFuture(exception);
+             }
+         }
+     }
 @@ -1411,6 +1457,16 @@
      @SideOnly(Side.SERVER)
      public static void main(String[] p_main_0_)

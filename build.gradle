@@ -75,6 +75,12 @@ def compiler_jvm_arguments = [
 // MCP
 project(':mcp') {
     apply plugin: 'net.minecraftforge.gradle.mcp'
+    repositories {
+        maven {
+            name "outlandsReleases"
+            url "https://maven.outlands.top/releases"
+        }
+    }
     mcp {
         config = props.minecraft_version + '-' + props.mcp_version
         pipeline = 'joined'
@@ -87,11 +93,14 @@ project(':minecraft') {
     apply plugin: 'eclipse'
     apply plugin: 'net.minecraftforge.gradle.patcher'
 
-    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
     repositories {
         mavenLocal()
         mavenCentral()
+        maven {
+            name "outlandsReleases"
+            url "https://maven.outlands.top/releases"
+        }
+
     }
 //    configurations.all {
 //        exclude group: 'org.lwjgl.lwjgl'
@@ -145,10 +154,9 @@ project(':minecraft') {
 project(':cleanroom') {
     evaluationDependsOn(':minecraft')
     apply plugin: 'java-library'
-    // apply plugin: 'maven-publish'
+    apply plugin: 'maven-publish'
     apply plugin: 'net.minecraftforge.gradle.patcher'
 
-    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
     //  = 'net.minecraftforge'
     group = 'com.cleanroommc'
     version = props.new_forge_version
@@ -194,6 +202,13 @@ project(':cleanroom') {
         maven {
             url "https://repo.cleanroommc.com/snapshots"
         }
+        maven {
+            url "https://maven.outlands.top/releases/"
+        }
+        maven {
+            url "https://jitpack.io/"
+        }
+
     }
 
     ext {
@@ -334,6 +349,7 @@ project(':cleanroom') {
     applyPatches {
         originalPrefix = 'before/'
         modifiedPrefix = 'after/'
+        printSummary = true
     }
 
     genPatches {
@@ -346,6 +362,16 @@ project(':cleanroom') {
         all { // LWJGL2 isn't friendly with us, so pye pye
             exclude group: 'org.lwjgl.lwjgl'
             exclude group: 'com.ibm.icu', module: 'icu4j-core-mojang'
+            /*exclude group: 'org.apache.commons'
+            exclude group: 'org.apache.httpcomponents'
+            exclude group: 'it.unimi.dsi'
+            exclude group: 'oshi-project'
+            exclude group: 'commons-codec'
+            exclude group: 'commons-io'
+            exclude group: 'commons-logging'
+            exclude group: 'com.google.code.findbugs'
+            exclude group: 'com.google.code.gson'
+            exclude group: 'com.google.guava'*/
         }
 
         // Don't pull all libraries, if we're missing something, add it to the installer list so the installer knows to download it.
@@ -403,11 +429,31 @@ project(':cleanroom') {
         installer 'net.sf.trove4j:trove4j:3.0.3'
         installer 'org.apache.maven:maven-artifact:3.5.3'
         installer 'net.sf.jopt-simple:jopt-simple:5.0.3'
+        installer 'org.apache.commons:commons-lang3:3.12.0'
+        installer 'org.apache.commons:commons-compress:1.23.0'
+        installer 'org.apache.httpcomponents:httpclient:4.5.14'
+        installer 'org.apache.httpcomponents:httpcore:4.4.16'
+        installer 'com.github.oshi:oshi-core:6.4.1'
+        installer 'it.unimi.dsi:fastutil:8.5.12'
+        installer 'commons-codec:commons-codec:1.15'
+        installer 'commons-io:commons-io:2.11.0'
+        installer 'commons-logging:commons-logging:1.2'
+        installer 'com.google.guava:guava:31.1-jre'
+        installer 'com.google.guava:failureaccess:1.0.1'
+        installer 'com.google.code.gson:gson:2.10.1'
+        installer 'com.google.code.findbugs:jsr305:3.0.2'
+
         // TODO: Unpin in 1.18.1 or when Mojang bumps the Log4J version
-        installer 'org.apache.logging.log4j:log4j-api:2.15.0'
-        installer 'org.apache.logging.log4j:log4j-core:2.15.0'
+        installer 'org.apache.logging.log4j:log4j-api:2.20.0'
+        installer 'org.apache.logging.log4j:log4j-core:2.20.0'
         installer 'javax.annotation:javax.annotation-api:1.3.2'
-        installer 'jakarta.xml.bind:jakarta.xml.bind-api:3.0.1'
+        installer 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
+        installer 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
+        installer 'org.glassfish.corba:glassfish-corba-omgapi:4.2.4'
+
+        // Mixin
+        installer 'com.cleanroommc:sponge-mixin:0.12.7+mixin.0.8.5'
+        installer annotationProcessor('com.github.llamalad7.mixinextras:mixinextras-common:0.2.0-beta.6')
 
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.0.0'
         testImplementation 'org.junit.vintage:junit-vintage-engine:5.+'
@@ -556,6 +602,30 @@ project(':cleanroom') {
 
         // implementation 'net.minecraftforge:legacydev:0.2.3.+:fatjar' TODO: Not Needed
 
+    }
+
+    publishing {
+        repositories {
+            maven {
+                name = "outlandsSnapshots"
+                url = "https://maven.outlands.top/snapshots"
+                credentials(PasswordCredentials)
+                authentication {
+                    basic(BasicAuthentication)
+                }
+            }
+        }
+        publications {
+            maven(MavenPublication) {
+                groupId = "com.cleanroommc"
+                artifactId = "cleanroom"
+                version = "15.24.0.3000"
+                from components.java
+                artifact userdevJar
+                artifact universalJar
+                artifact sourcesJar
+            }
+        }
     }
 
     // TODO: Include?
@@ -921,6 +991,8 @@ project(':cleanroom') {
                 'Implementation-Vendor' : props.vendor
             ], 'net/minecraftforge/common/')
         }
+
+        classifier 'universal'
     }
 
     task downloadInstaller(type: DownloadMavenArtifact) {
@@ -1030,7 +1102,7 @@ project(':cleanroom') {
         from(sourceSets.userdev.output.resourcesDir) {
             into '/inject/'
         }
-        classifier 'userdev3' // Should be 'userdev' but FG5 hardcoded pre1.13 versions to userdev3
+        classifier 'userdev' // Should be 'userdev' but FG5 hardcoded pre1.13 versions to userdev3
     }
 
     if (project.hasProperty('UPDATE_MAPPINGS')) {
@@ -1061,4 +1133,10 @@ task setup() {
     // These must be strings so that we can do lazy resolution. Else we need evaluationDependsOnChildren above
     dependsOn ':minecraft:extractMapped'
     dependsOn ':cleanroom:extractMapped'
+}
+
+subprojects {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs += compiler_jvm_arguments
+    }
 }

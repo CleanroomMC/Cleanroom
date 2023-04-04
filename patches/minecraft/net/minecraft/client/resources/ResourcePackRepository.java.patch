@@ -1,6 +1,54 @@
 --- before/net/minecraft/client/resources/ResourcePackRepository.java
 +++ after/net/minecraft/client/resources/ResourcePackRepository.java
-@@ -310,9 +310,10 @@
+@@ -19,6 +19,7 @@
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Map;
++import java.util.concurrent.Executor;
+ import java.util.concurrent.locks.ReentrantLock;
+ import java.util.regex.Pattern;
+ import javax.annotation.Nullable;
+@@ -278,29 +279,23 @@
+             }));
+             final SettableFuture<Object> settablefuture = SettableFuture.<Object>create();
+             this.field_177322_i = HttpUtil.func_180192_a(file1, p_180601_1_, map, 52428800, guiscreenworking, minecraft.func_110437_J());
+-            Futures.addCallback(this.field_177322_i, new FutureCallback<Object>()
+-            {
+-                public void onSuccess(@Nullable Object p_onSuccess_1_)
+-                {
+-                    if (ResourcePackRepository.this.func_190113_a(s1, file1))
+-                    {
++            Futures.addCallback(this.field_177322_i, new FutureCallback<Object>() {
++                public void onSuccess(@Nullable Object p_onSuccess_1_) {
++                    if (ResourcePackRepository.this.func_190113_a(s1, file1)) {
+                         ResourcePackRepository.this.func_177319_a(file1);
+-                        settablefuture.set((Object)null);
+-                    }
+-                    else
+-                    {
+-                        ResourcePackRepository.field_177320_c.warn("Deleting file {}", (Object)file1);
++                        settablefuture.set((Object) null);
++                    } else {
++                        ResourcePackRepository.field_177320_c.warn("Deleting file {}", (Object) file1);
+                         FileUtils.deleteQuietly(file1);
+                     }
+                 }
+-                public void onFailure(Throwable p_onFailure_1_)
+-                {
++
++                public void onFailure(Throwable p_onFailure_1_) {
+                     FileUtils.deleteQuietly(file1);
+                     settablefuture.setException(p_onFailure_1_);
+                 }
+-            });
+-            ListenableFuture listenablefuture = this.field_177322_i;
+-            return listenablefuture;
++            }, Runnable::run);
++            return this.field_177322_i;
+         }
+         finally
+         {
+@@ -310,9 +305,10 @@
  
      private boolean func_190113_a(String p_190113_1_, File p_190113_2_)
      {
@@ -12,7 +60,7 @@
  
              if (p_190113_1_.isEmpty())
              {
-@@ -332,6 +333,7 @@
+@@ -332,6 +328,7 @@
          {
              field_177320_c.warn("File {} couldn't be hashed.", p_190113_2_, ioexception);
          }

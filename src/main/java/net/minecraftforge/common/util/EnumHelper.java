@@ -178,9 +178,12 @@ public class EnumHelper
 
     public static void setFailsafeFieldValue(Field field, @Nullable Object target, @Nullable Object value) throws Exception
     {
+
+        ReflectionHackery.unsafe.putObject(ReflectionHackery.unsafe.staticFieldBase(field), ReflectionHackery.unsafe.staticFieldOffset(field), value);
+        /*
         field.setAccessible(true);
         ReflectionHackery.stripFieldOfFinalModifier(field);
-        field.set(target, value);
+        field.set(target, value);*/
     }
 
     //Tests an enum is compatible with these args, throws an error if not.

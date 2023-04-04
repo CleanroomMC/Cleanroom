@@ -1,5 +1,7 @@
 package com.cleanroommc.hackery;
 
+import jdk.internal.misc.Unsafe;
+
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -9,6 +11,7 @@ import java.util.function.Predicate;
 public final class ReflectionHackery {
 
     private static final Field field$modifiers;
+    public static Unsafe unsafe;
 
     static {
         Field modifiers;
@@ -23,6 +26,11 @@ public final class ReflectionHackery {
         }
         field$modifiers = modifiers;
         field$modifiers.setAccessible(true);
+        try {
+            final Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
+            unsafeField.setAccessible(true);
+            unsafe = (Unsafe) unsafeField.get(null);
+        } catch (Exception e) {}
     }
 
     // Sensitive fields such as "modifiers" are only query-able via the native getDeclaredFields0 call
