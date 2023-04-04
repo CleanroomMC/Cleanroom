@@ -1,14 +1,5 @@
 --- before/net/minecraft/client/renderer/ActiveRenderInfo.java
 +++ after/net/minecraft/client/renderer/ActiveRenderInfo.java
-@@ -12,7 +12,7 @@
- import net.minecraft.world.World;
- import net.minecraftforge.fml.relauncher.Side;
- import net.minecraftforge.fml.relauncher.SideOnly;
--import org.lwjgl.util.glu.GLU;
-+import org.lwjglx.util.glu.GLU;
- 
- @SideOnly(Side.CLIENT)
- public class ActiveRenderInfo
 @@ -30,6 +30,11 @@
  
      public static void func_74583_a(EntityPlayer p_74583_0_, boolean p_74583_1_)

@@ -1,20 +1,5 @@
 --- before/net/minecraft/client/renderer/EntityRenderer.java
 +++ after/net/minecraft/client/renderer/EntityRenderer.java
-@@ -71,10 +71,10 @@
- import net.minecraftforge.fml.relauncher.SideOnly;
- import org.apache.logging.log4j.LogManager;
- import org.apache.logging.log4j.Logger;
--import org.lwjgl.input.Mouse;
--import org.lwjgl.opengl.Display;
--import org.lwjgl.opengl.GLContext;
--import org.lwjgl.util.glu.Project;
-+import org.lwjglx.input.Mouse;
-+import org.lwjglx.opengl.Display;
-+import org.lwjglx.opengl.GLContext;
-+import org.lwjglx.util.glu.Project;
- 
- @SideOnly(Side.CLIENT)
- public class EntityRenderer implements IResourceManagerReloadListener
 @@ -211,6 +211,7 @@
              {
                  this.func_175069_a(new ResourceLocation("shaders/post/invert.json"));

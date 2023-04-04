@@ -19,8 +19,8 @@
 
 package net.minecraftforge.fml.client;
 
-import static org.lwjglx.opengl.GL11.*;
-import static org.lwjglx.opengl.GL12.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL12.*;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -70,12 +70,12 @@ import net.minecraftforge.fml.common.asm.FMLSanityChecker;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.lwjglx.BufferUtils;
-import org.lwjglx.LWJGLException;
-import org.lwjglx.opengl.Display;
-import org.lwjglx.opengl.Drawable;
-import org.lwjglx.opengl.SharedDrawable;
-import org.lwjglx.util.glu.GLU;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.Drawable;
+import org.lwjgl.opengl.SharedDrawable;
+import org.lwjgl.util.glu.GLU;
 
 /**
  * Not a fully fleshed out API, may change in future MC versions.

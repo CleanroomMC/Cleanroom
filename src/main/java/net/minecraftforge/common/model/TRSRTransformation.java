@@ -738,19 +738,19 @@ public final class TRSRTransformation implements IModelState, ITransformation
     }
 
     @SideOnly(Side.CLIENT)
-    public static Vector3f toVecmath(org.lwjglx.util.vector.Vector3f vec)
+    public static Vector3f toVecmath(org.lwjgl.util.vector.Vector3f vec)
     {
         return new Vector3f(vec.x, vec.y, vec.z);
     }
 
     @SideOnly(Side.CLIENT)
-    public static Vector4f toVecmath(org.lwjglx.util.vector.Vector4f vec)
+    public static Vector4f toVecmath(org.lwjgl.util.vector.Vector4f vec)
     {
         return new Vector4f(vec.x, vec.y, vec.z, vec.w);
     }
 
     @SideOnly(Side.CLIENT)
-    public static Matrix4f toVecmath(org.lwjglx.util.vector.Matrix4f m)
+    public static Matrix4f toVecmath(org.lwjgl.util.vector.Matrix4f m)
     {
         return new Matrix4f(
             m.m00, m.m10, m.m20, m.m30,
@@ -760,21 +760,21 @@ public final class TRSRTransformation implements IModelState, ITransformation
     }
 
     @SideOnly(Side.CLIENT)
-    public static org.lwjglx.util.vector.Vector3f toLwjgl(Vector3f vec)
+    public static org.lwjgl.util.vector.Vector3f toLwjgl(Vector3f vec)
     {
-        return new org.lwjglx.util.vector.Vector3f(vec.x, vec.y, vec.z);
+        return new org.lwjgl.util.vector.Vector3f(vec.x, vec.y, vec.z);
     }
 
     @SideOnly(Side.CLIENT)
-    public static org.lwjglx.util.vector.Vector4f toLwjgl(Vector4f vec)
+    public static org.lwjgl.util.vector.Vector4f toLwjgl(Vector4f vec)
     {
-        return new org.lwjglx.util.vector.Vector4f(vec.x, vec.y, vec.z, vec.w);
+        return new org.lwjgl.util.vector.Vector4f(vec.x, vec.y, vec.z, vec.w);
     }
 
     @SideOnly(Side.CLIENT)
-    public static org.lwjglx.util.vector.Matrix4f toLwjgl(Matrix4f m)
+    public static org.lwjgl.util.vector.Matrix4f toLwjgl(Matrix4f m)
     {
-        org.lwjglx.util.vector.Matrix4f r = new org.lwjglx.util.vector.Matrix4f();
+        org.lwjgl.util.vector.Matrix4f r = new org.lwjgl.util.vector.Matrix4f();
         r.m00 = m.m00;
         r.m01 = m.m10;
         r.m02 = m.m20;

@@ -191,17 +191,21 @@ project(':cleanroom') {
             name 'Cleanroom Maven'
             url 'https://maven.cleanroommc.com/'
         }
+        maven {
+            url "https://repo.cleanroommc.com/snapshots"
+        }
     }
 
     ext {
         version_json = project(':mcp').file('build/mcp/downloadJson/version.json')
         lwjglArch = Util.getCurrentArch()
-        // Do not change the array order unless it is required so
+        // Do not change the order unless it is required so
         lwjglLibraries = [
             [
-                'lwjgl-glfw', 'lwjgl-jemalloc', 'lwjgl-openal',
-                'lwjgl-opengl', 'lwjgl-stb', 'lwjgl-tinyfd', 'lwjgl'
+                'lwjgl3-glfw', 'lwjgl3-jemalloc', 'lwjgl3-openal',
+                'lwjgl3-opengl', 'lwjgl3-stb', 'lwjgl3-tinyfd', 'lwjgl3'
             ],
+
             [
                 'natives-linux-arm64', 'natives-linux-arm32', 'natives-linux',
                 'natives-macos-arm64', 'natives-macos',
@@ -358,11 +362,11 @@ project(':cleanroom') {
 
     dependencies {
         lwjglLibraries[0].each {
-            installer "org.lwjgl:$it:$props.lwjgl_version"
-            runtimeOnly "org.lwjgl:$it::$lwjglArch"
+            installer "org.lwjgl3:$it:$props.lwjgl_version"
+            runtimeOnly "org.lwjgl3:$it::$lwjglArch"
 
-            lwjglLibraries[1].each { it1 ->
-                lwjglNatives "org.lwjgl:$it:$props.lwjgl_version:$it1"
+            lwjglLibraries[1].each { arch ->
+                lwjglNatives "org.lwjgl3:$it:$props.lwjgl_version:$arch"
             }
         }
 

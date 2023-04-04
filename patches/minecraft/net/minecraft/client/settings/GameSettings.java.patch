@@ -1,18 +1,5 @@
 --- before/net/minecraft/client/settings/GameSettings.java
 +++ after/net/minecraft/client/settings/GameSettings.java
-@@ -41,9 +41,9 @@
- import org.apache.commons.lang3.ArrayUtils;
- import org.apache.logging.log4j.LogManager;
- import org.apache.logging.log4j.Logger;
--import org.lwjgl.input.Keyboard;
--import org.lwjgl.input.Mouse;
--import org.lwjgl.opengl.Display;
-+import org.lwjglx.input.Keyboard;
-+import org.lwjglx.input.Mouse;
-+import org.lwjglx.opengl.Display;
- 
- @SideOnly(Side.CLIENT)
- public class GameSettings
 @@ -165,6 +165,7 @@
  
      public GameSettings(Minecraft p_i46326_1_, File p_i46326_2_)

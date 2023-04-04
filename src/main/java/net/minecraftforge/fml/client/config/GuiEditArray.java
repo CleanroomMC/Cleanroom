@@ -34,7 +34,7 @@ import static net.minecraftforge.fml.client.config.GuiUtils.RESET_CHAR;
 import static net.minecraftforge.fml.client.config.GuiUtils.UNDO_CHAR;
 
 import net.minecraftforge.fml.common.FMLLog;
-import org.lwjglx.input.Keyboard;
+import org.lwjgl.input.Keyboard;
 
 /**
  * This class is the base screen used for editing an array-type property. It provides a list of array entries for the user to edit.

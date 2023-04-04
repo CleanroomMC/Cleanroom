@@ -30,6 +30,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
+import sun.misc.Unsafe;
 
 import javax.annotation.Nullable;
 
@@ -152,16 +153,28 @@ class ObjectHolderRef
 
     private static class FinalFieldHelper
     {
+        private static final Unsafe unsafe;
+        static {
+            Field f;
+            try {
+                f = Unsafe.class.getDeclaredField("theUnsafe");
+            f.setAccessible(true);
+            unsafe = (Unsafe) f.get(null);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
         static Field makeWritable(Field f) throws ReflectiveOperationException
         {
             f.setAccessible(true);
-            ReflectionHackery.stripFieldOfFinalModifier(f);
+            //ReflectionHackery.stripFieldOfFinalModifier(f);
             return f;
         }
 
         static void setField(Field field, @Nullable Object instance, Object thing) throws ReflectiveOperationException
         {
-            field.set(instance, thing);
+            //field.set(instance, thing);
+            unsafe.putObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), thing);
         }
     }
 }

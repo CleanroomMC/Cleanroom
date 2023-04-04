@@ -1,15 +1,13 @@
 --- before/net/minecraft/client/gui/GuiOverlayDebug.java
 +++ after/net/minecraft/client/gui/GuiOverlayDebug.java
-@@ -26,7 +26,8 @@
+@@ -26,6 +26,7 @@
  import net.minecraft.world.chunk.Chunk;
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
--import org.lwjgl.opengl.Display;
-+import org.lwjglx.Sys;
-+import org.lwjglx.opengl.Display;
++import org.lwjgl.Sys;
+ import org.lwjgl.opengl.Display;
  
  @SideOnly(Side.CLIENT)
- public class GuiOverlayDebug extends Gui
 @@ -187,7 +188,10 @@
          long j = Runtime.getRuntime().totalMemory();
          long k = Runtime.getRuntime().freeMemory();
