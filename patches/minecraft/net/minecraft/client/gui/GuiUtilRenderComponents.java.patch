@@ -1,21 +1,13 @@
 --- before/net/minecraft/client/gui/GuiUtilRenderComponents.java
 +++ after/net/minecraft/client/gui/GuiUtilRenderComponents.java
 @@ -49,18 +49,20 @@
- package net.minecraft.client.gui;
- 
- import com.google.common.collect.Lists;
-+
-+import java.util.ArrayList;
- import java.util.List;
- import net.minecraft.client.Minecraft;
- import net.minecraft.util.text.ITextComponent;
-@@ -19,90 +21,15 @@
  
              if (i + i1 > p_178908_1_)
              {
 +                FontRenderer.BREAK_ITERATOR.setText(s4);
                  String s2 = p_178908_2_.func_78262_a(s4, p_178908_1_ - i, false);
                  String s3 = s2.length() < s4.length() ? s4.substring(s2.length()) : null;
+ 
                  if (s3 != null && !s3.isEmpty())
                  {
 -                    int l = s2.lastIndexOf(32);
@@ -27,13 +19,7 @@
                          s2 = s4.substring(0, l);
  
 -                        if (p_178908_3_)
-+                        if (s4.charAt(l) == ' ' && p_178908_3_)
++                        if (p_178908_3_ && s4.charAt(l) == ' ')
                          {
                              ++l;
-+        for (String str : p_178908_2_.func_78271_c(p_178908_0_.func_150254_d(), p_178908_1_)) {
-+            if (p_178908_3_ && str.charAt(str.length() - 1) == ' ') {
-+                str = str.substring(0, str.length() - 1);
-+            }
-+            str = GuiUtilRenderComponents.func_178909_a(str, p_178908_4_);
-+            resultList.add(new TextComponentString(str).func_150255_a(p_178908_0_.func_150256_b().func_150232_l()));
                          }
