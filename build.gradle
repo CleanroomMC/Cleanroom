@@ -206,6 +206,7 @@ project(':cleanroom') {
                 'lwjgl3-opengl', 'lwjgl3-stb', 'lwjgl3-tinyfd', 'lwjgl3'
             ],
             [
+            [
                 'natives-linux-arm64', 'natives-linux-arm32', 'natives-linux',
                 'natives-macos-arm64', 'natives-macos',
                 'natives-windows-arm64', 'natives-windows-x86', 'natives-windows'
