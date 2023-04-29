@@ -1,0 +1,35 @@
+--- before/net/minecraft/client/particle/ParticleNote.java
++++ after/net/minecraft/client/particle/ParticleNote.java
+@@ -20,9 +20,9 @@
+     protected ParticleNote(World p_i1217_1_, double p_i1217_2_, double p_i1217_4_, double p_i1217_6_, double p_i1217_8_, double p_i1217_10_, double p_i1217_12_, float p_i1217_14_)
+     {
+         super(p_i1217_1_, p_i1217_2_, p_i1217_4_, p_i1217_6_, 0.0D, 0.0D, 0.0D);
+-        this.field_187129_i *= (double)0.01F;
+-        this.field_187130_j *= (double)0.01F;
+-        this.field_187131_k *= (double)0.01F;
++        this.field_187129_i *= 0.009999999776482582D;
++        this.field_187130_j *= 0.009999999776482582D;
++        this.field_187131_k *= 0.009999999776482582D;
+         this.field_187130_j += 0.2D;
+         this.field_70552_h = MathHelper.func_76126_a(((float)p_i1217_8_ + 0.0F) * ((float)Math.PI * 2F)) * 0.65F + 0.35F;
+         this.field_70553_i = MathHelper.func_76126_a(((float)p_i1217_8_ + 0.33333334F) * ((float)Math.PI * 2F)) * 0.65F + 0.35F;
+@@ -61,14 +61,14 @@
+             this.field_187131_k *= 1.1D;
+         }
+ 
+-        this.field_187129_i *= (double)0.66F;
+-        this.field_187130_j *= (double)0.66F;
+-        this.field_187131_k *= (double)0.66F;
++        this.field_187129_i *= 0.6600000262260437D;
++        this.field_187130_j *= 0.6600000262260437D;
++        this.field_187131_k *= 0.6600000262260437D;
+ 
+         if (this.field_187132_l)
+         {
+-            this.field_187129_i *= (double)0.7F;
+-            this.field_187131_k *= (double)0.7F;
++            this.field_187129_i *= 0.699999988079071D;
++            this.field_187131_k *= 0.699999988079071D;
+         }
+     }
+ 

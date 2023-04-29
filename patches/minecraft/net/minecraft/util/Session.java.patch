@@ -35,7 +35,8 @@
 +            if (properties != null) ret.getProperties().putAll(properties); // Helps to cut down on calls to the session service,
 +            return ret;                                                     // which helps to fix MC-52974.
          }
-         catch (IllegalArgumentException var2)
+-        catch (IllegalArgumentException illegalargumentexception)
++        catch (IllegalArgumentException var2)
          {
 -            return new GameProfile((UUID)null, this.func_111285_a());
 +            return new GameProfile(net.minecraft.entity.player.EntityPlayer.func_146094_a(new GameProfile((UUID)null, this.func_111285_a())), this.func_111285_a());
@@ -57,3 +58,12 @@
  
      @SideOnly(Side.CLIENT)
      public static enum Type
+@@ -65,7 +96,7 @@
+         LEGACY("legacy"),
+         MOJANG("mojang");
+ 
+-        private static final Map<String, Session.Type> field_152425_c = Maps.newHashMap();
++        private static final Map<String, Session.Type> field_152425_c = Maps.<String, Session.Type>newHashMap();
+         private final String field_152426_d;
+ 
+         private Type(String p_i1096_3_)

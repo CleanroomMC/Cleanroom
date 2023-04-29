@@ -1,0 +1,48 @@
+--- before/net/minecraft/world/storage/loot/conditions/EntityHasScore.java
++++ after/net/minecraft/world/storage/loot/conditions/EntityHasScore.java
+@@ -8,6 +8,7 @@
+ import java.util.Map;
+ import java.util.Random;
+ import java.util.Set;
++import java.util.Map.Entry;
+ import net.minecraft.entity.Entity;
+ import net.minecraft.entity.player.EntityPlayerMP;
+ import net.minecraft.scoreboard.ScoreObjective;
+@@ -40,7 +41,7 @@
+         {
+             Scoreboard scoreboard = entity.field_70170_p.func_96441_U();
+ 
+-            for (Map.Entry<String, RandomValueRange> entry : this.field_186634_a.entrySet())
++            for (Entry<String, RandomValueRange> entry : this.field_186634_a.entrySet())
+             {
+                 if (!this.func_186631_a(entity, scoreboard, entry.getKey(), entry.getValue()))
+                 {
+@@ -78,7 +79,7 @@
+             {
+                 JsonObject jsonobject = new JsonObject();
+ 
+-                for (Map.Entry<String, RandomValueRange> entry : p_186605_2_.field_186634_a.entrySet())
++                for (Entry<String, RandomValueRange> entry : p_186605_2_.field_186634_a.entrySet())
+                 {
+                     jsonobject.add(entry.getKey(), p_186605_3_.serialize(entry.getValue()));
+                 }
+@@ -89,15 +90,15 @@
+ 
+             public EntityHasScore func_186603_b(JsonObject p_186603_1_, JsonDeserializationContext p_186603_2_)
+             {
+-                Set<Map.Entry<String, JsonElement>> set = JsonUtils.func_152754_s(p_186603_1_, "scores").entrySet();
+-                Map<String, RandomValueRange> map = Maps.newLinkedHashMap();
++                Set<Entry<String, JsonElement>> set = JsonUtils.func_152754_s(p_186603_1_, "scores").entrySet();
++                Map<String, RandomValueRange> map = Maps.<String, RandomValueRange>newLinkedHashMap();
+ 
+-                for (Map.Entry<String, JsonElement> entry : set)
++                for (Entry<String, JsonElement> entry : set)
+                 {
+                     map.put(entry.getKey(), JsonUtils.func_188179_a(entry.getValue(), "score", p_186603_2_, RandomValueRange.class));
+                 }
+ 
+-                return new EntityHasScore(map, JsonUtils.func_188174_a(p_186603_1_, "entity", p_186603_2_, LootContext.EntityTarget.class));
++                return new EntityHasScore(map, (LootContext.EntityTarget)JsonUtils.func_188174_a(p_186603_1_, "entity", p_186603_2_, LootContext.EntityTarget.class));
+             }
+         }
+ }

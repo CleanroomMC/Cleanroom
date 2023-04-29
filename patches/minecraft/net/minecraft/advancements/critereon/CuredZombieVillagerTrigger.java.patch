@@ -1,0 +1,34 @@
+--- before/net/minecraft/advancements/critereon/CuredZombieVillagerTrigger.java
++++ after/net/minecraft/advancements/critereon/CuredZombieVillagerTrigger.java
+@@ -18,7 +18,7 @@
+ public class CuredZombieVillagerTrigger implements ICriterionTrigger<CuredZombieVillagerTrigger.Instance>
+ {
+     private static final ResourceLocation field_192186_a = new ResourceLocation("cured_zombie_villager");
+-    private final Map<PlayerAdvancements, CuredZombieVillagerTrigger.Listeners> field_192187_b = Maps.newHashMap();
++    private final Map<PlayerAdvancements, CuredZombieVillagerTrigger.Listeners> field_192187_b = Maps.<PlayerAdvancements, CuredZombieVillagerTrigger.Listeners>newHashMap();
+ 
+     public ResourceLocation func_192163_a()
+     {
+@@ -103,7 +103,7 @@
+     static class Listeners
+         {
+             private final PlayerAdvancements field_192362_a;
+-            private final Set<ICriterionTrigger.Listener<CuredZombieVillagerTrigger.Instance>> field_192363_b = Sets.newHashSet();
++            private final Set<ICriterionTrigger.Listener<CuredZombieVillagerTrigger.Instance>> field_192363_b = Sets.<ICriterionTrigger.Listener<CuredZombieVillagerTrigger.Instance>>newHashSet();
+ 
+             public Listeners(PlayerAdvancements p_i47460_1_)
+             {
+@@ -131,11 +131,11 @@
+ 
+                 for (ICriterionTrigger.Listener<CuredZombieVillagerTrigger.Instance> listener : this.field_192363_b)
+                 {
+-                    if (listener.func_192158_a().func_192254_a(p_192361_1_, p_192361_2_, p_192361_3_))
++                    if (((CuredZombieVillagerTrigger.Instance)listener.func_192158_a()).func_192254_a(p_192361_1_, p_192361_2_, p_192361_3_))
+                     {
+                         if (list == null)
+                         {
+-                            list = Lists.newArrayList();
++                            list = Lists.<ICriterionTrigger.Listener<CuredZombieVillagerTrigger.Instance>>newArrayList();
+                         }
+ 
+                         list.add(listener);

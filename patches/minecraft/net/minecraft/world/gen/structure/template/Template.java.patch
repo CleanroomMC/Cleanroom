@@ -1,5 +1,47 @@
 --- before/net/minecraft/world/gen/structure/template/Template.java
 +++ after/net/minecraft/world/gen/structure/template/Template.java
+@@ -38,8 +38,8 @@
+ 
+ public class Template
+ {
+-    private final List<Template.BlockInfo> field_186270_a = Lists.newArrayList();
+-    private final List<Template.EntityInfo> field_186271_b = Lists.newArrayList();
++    private final List<Template.BlockInfo> field_186270_a = Lists.<Template.BlockInfo>newArrayList();
++    private final List<Template.EntityInfo> field_186271_b = Lists.<Template.EntityInfo>newArrayList();
+     private BlockPos field_186272_c = BlockPos.field_177992_a;
+     private String field_186273_d = "?";
+ 
+@@ -63,9 +63,9 @@
+         if (p_186254_3_.func_177958_n() >= 1 && p_186254_3_.func_177956_o() >= 1 && p_186254_3_.func_177952_p() >= 1)
+         {
+             BlockPos blockpos = p_186254_2_.func_177971_a(p_186254_3_).func_177982_a(-1, -1, -1);
+-            List<Template.BlockInfo> list = Lists.newArrayList();
+-            List<Template.BlockInfo> list1 = Lists.newArrayList();
+-            List<Template.BlockInfo> list2 = Lists.newArrayList();
++            List<Template.BlockInfo> list = Lists.<Template.BlockInfo>newArrayList();
++            List<Template.BlockInfo> list1 = Lists.<Template.BlockInfo>newArrayList();
++            List<Template.BlockInfo> list2 = Lists.<Template.BlockInfo>newArrayList();
+             BlockPos blockpos1 = new BlockPos(Math.min(p_186254_2_.func_177958_n(), blockpos.func_177958_n()), Math.min(p_186254_2_.func_177956_o(), blockpos.func_177956_o()), Math.min(p_186254_2_.func_177952_p(), blockpos.func_177952_p()));
+             BlockPos blockpos2 = new BlockPos(Math.max(p_186254_2_.func_177958_n(), blockpos.func_177958_n()), Math.max(p_186254_2_.func_177956_o(), blockpos.func_177956_o()), Math.max(p_186254_2_.func_177952_p(), blockpos.func_177952_p()));
+             this.field_186272_c = p_186254_3_;
+@@ -116,7 +116,7 @@
+ 
+     private void func_186255_a(World p_186255_1_, BlockPos p_186255_2_, BlockPos p_186255_3_)
+     {
+-        List<Entity> list = p_186255_1_.func_175647_a(Entity.class, new AxisAlignedBB(p_186255_2_, p_186255_3_), new Predicate<Entity>()
++        List<Entity> list = p_186255_1_.<Entity>func_175647_a(Entity.class, new AxisAlignedBB(p_186255_2_, p_186255_3_), new Predicate<Entity>()
+         {
+             public boolean apply(@Nullable Entity p_apply_1_)
+             {
+@@ -147,7 +147,7 @@
+ 
+     public Map<BlockPos, String> func_186258_a(BlockPos p_186258_1_, PlacementSettings p_186258_2_)
+     {
+-        Map<BlockPos, String> map = Maps.newHashMap();
++        Map<BlockPos, String> map = Maps.<BlockPos, String>newHashMap();
+         StructureBoundingBox structureboundingbox = p_186258_2_.func_186213_g();
+ 
+         for (Template.BlockInfo template$blockinfo : this.field_186270_a)
 @@ -211,6 +211,8 @@
              for (Template.BlockInfo template$blockinfo : this.field_186270_a)
              {
@@ -9,6 +51,24 @@
                  Template.BlockInfo template$blockinfo1 = p_189960_3_ != null ? p_189960_3_.func_189943_a(p_189960_1_, blockpos, template$blockinfo) : template$blockinfo;
  
                  if (template$blockinfo1 != null)
+@@ -308,7 +310,7 @@
+                 {
+                     entity = EntityList.func_75615_a(nbttagcompound, p_186263_1_);
+                 }
+-                catch (Exception exception)
++                catch (Exception var15)
+                 {
+                     entity = null;
+                 }
+@@ -316,7 +318,7 @@
+                 if (entity != null)
+                 {
+                     float f = entity.func_184217_a(p_186263_3_);
+-                    f += entity.field_70177_z - entity.func_184229_a(p_186263_4_);
++                    f = f + (entity.field_70177_z - entity.func_184229_a(p_186263_4_));
+                     entity.func_70012_b(vec3d1.field_72450_a, vec3d1.field_72448_b, vec3d1.field_72449_c, f, entity.field_70125_A);
+                     p_186263_1_.func_72838_d(entity);
+                 }
 @@ -514,6 +516,7 @@
              nbttaglist2.func_74742_a(NBTUtil.func_190009_a(new NBTTagCompound(), iblockstate));
          }
@@ -17,3 +77,17 @@
          p_189552_1_.func_74782_a("palette", nbttaglist2);
          p_189552_1_.func_74782_a("blocks", nbttaglist);
          p_189552_1_.func_74782_a("entities", nbttaglist1);
+@@ -605,11 +608,12 @@
+     static class BasicPalette implements Iterable<IBlockState>
+         {
+             public static final IBlockState field_189957_a = Blocks.field_150350_a.func_176223_P();
+-            final ObjectIntIdentityMap<IBlockState> field_189958_b = new ObjectIntIdentityMap<>(16);
++            final ObjectIntIdentityMap<IBlockState> field_189958_b;
+             private int field_189959_c;
+ 
+             private BasicPalette()
+             {
++                this.field_189958_b = new ObjectIntIdentityMap<IBlockState>(16);
+             }
+ 
+             public int func_189954_a(IBlockState p_189954_1_)

@@ -1,0 +1,11 @@
+--- before/net/minecraft/pathfinding/PathWorldListener.java
++++ after/net/minecraft/pathfinding/PathWorldListener.java
+@@ -16,7 +16,7 @@
+ 
+ public class PathWorldListener implements IWorldEventListener
+ {
+-    private final List<PathNavigate> field_189519_a = Lists.newArrayList();
++    private final List<PathNavigate> field_189519_a = Lists.<PathNavigate>newArrayList();
+ 
+     public void func_184376_a(World p_184376_1_, BlockPos p_184376_2_, IBlockState p_184376_3_, IBlockState p_184376_4_, int p_184376_5_)
+     {

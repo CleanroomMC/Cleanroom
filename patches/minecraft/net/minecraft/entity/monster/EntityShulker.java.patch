@@ -1,5 +1,91 @@
 --- before/net/minecraft/entity/monster/EntityShulker.java
 +++ after/net/minecraft/entity/monster/EntityShulker.java
+@@ -52,10 +52,10 @@
+ {
+     private static final UUID field_184703_bv = UUID.fromString("7E0292F2-9434-48D5-A29F-9583AF7DF27F");
+     private static final AttributeModifier field_184704_bw = (new AttributeModifier(field_184703_bv, "Covered armor bonus", 20.0D, 0)).func_111168_a(false);
+-    protected static final DataParameter<EnumFacing> field_184700_a = EntityDataManager.func_187226_a(EntityShulker.class, DataSerializers.field_187202_l);
+-    protected static final DataParameter<Optional<BlockPos>> field_184701_b = EntityDataManager.func_187226_a(EntityShulker.class, DataSerializers.field_187201_k);
+-    protected static final DataParameter<Byte> field_184702_c = EntityDataManager.func_187226_a(EntityShulker.class, DataSerializers.field_187191_a);
+-    protected static final DataParameter<Byte> field_190770_bw = EntityDataManager.func_187226_a(EntityShulker.class, DataSerializers.field_187191_a);
++    protected static final DataParameter<EnumFacing> field_184700_a = EntityDataManager.<EnumFacing>func_187226_a(EntityShulker.class, DataSerializers.field_187202_l);
++    protected static final DataParameter<Optional<BlockPos>> field_184701_b = EntityDataManager.<Optional<BlockPos>>func_187226_a(EntityShulker.class, DataSerializers.field_187201_k);
++    protected static final DataParameter<Byte> field_184702_c = EntityDataManager.<Byte>func_187226_a(EntityShulker.class, DataSerializers.field_187191_a);
++    protected static final DataParameter<Byte> field_190770_bw = EntityDataManager.<Byte>func_187226_a(EntityShulker.class, DataSerializers.field_187191_a);
+     public static final EnumDyeColor field_190771_bx = EnumDyeColor.PURPLE;
+     private float field_184705_bx;
+     private float field_184706_by;
+@@ -91,7 +91,7 @@
+         this.field_70714_bg.func_75776_a(4, new EntityShulker.AIAttack());
+         this.field_70714_bg.func_75776_a(7, new EntityShulker.AIPeek());
+         this.field_70714_bg.func_75776_a(8, new EntityAILookIdle(this));
+-        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, true));
++        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, true, new Class[0]));
+         this.field_70715_bh.func_75776_a(2, new EntityShulker.AIAttackNearest(this));
+         this.field_70715_bh.func_75776_a(3, new EntityShulker.AIDefenseAttack(this));
+     }
+@@ -134,8 +134,8 @@
+         super.func_70088_a();
+         this.field_70180_af.func_187214_a(field_184700_a, EnumFacing.DOWN);
+         this.field_70180_af.func_187214_a(field_184701_b, Optional.absent());
+-        this.field_70180_af.func_187214_a(field_184702_c, (byte)0);
+-        this.field_70180_af.func_187214_a(field_190770_bw, (byte)field_190771_bx.func_176765_a());
++        this.field_70180_af.func_187214_a(field_184702_c, Byte.valueOf((byte)0));
++        this.field_70180_af.func_187214_a(field_190770_bw, Byte.valueOf((byte)field_190771_bx.func_176765_a()));
+     }
+ 
+     protected void func_110147_ax()
+@@ -158,8 +158,8 @@
+     {
+         super.func_70037_a(p_70037_1_);
+         this.field_70180_af.func_187227_b(field_184700_a, EnumFacing.func_82600_a(p_70037_1_.func_74771_c("AttachFace")));
+-        this.field_70180_af.func_187227_b(field_184702_c, p_70037_1_.func_74771_c("Peek"));
+-        this.field_70180_af.func_187227_b(field_190770_bw, p_70037_1_.func_74771_c("Color"));
++        this.field_70180_af.func_187227_b(field_184702_c, Byte.valueOf(p_70037_1_.func_74771_c("Peek")));
++        this.field_70180_af.func_187227_b(field_190770_bw, Byte.valueOf(p_70037_1_.func_74771_c("Color")));
+ 
+         if (p_70037_1_.func_74764_b("APX"))
+         {
+@@ -177,9 +177,9 @@
+     public void func_70014_b(NBTTagCompound p_70014_1_)
+     {
+         super.func_70014_b(p_70014_1_);
+-        p_70014_1_.func_74774_a("AttachFace", (byte)this.field_70180_af.func_187225_a(field_184700_a).func_176745_a());
+-        p_70014_1_.func_74774_a("Peek", this.field_70180_af.func_187225_a(field_184702_c));
+-        p_70014_1_.func_74774_a("Color", this.field_70180_af.func_187225_a(field_190770_bw));
++        p_70014_1_.func_74774_a("AttachFace", (byte)((EnumFacing)this.field_70180_af.func_187225_a(field_184700_a)).func_176745_a());
++        p_70014_1_.func_74774_a("Peek", ((Byte)this.field_70180_af.func_187225_a(field_184702_c)).byteValue());
++        p_70014_1_.func_74774_a("Color", ((Byte)this.field_70180_af.func_187225_a(field_190770_bw)).byteValue());
+         BlockPos blockpos = this.func_184699_da();
+ 
+         if (blockpos != null)
+@@ -193,7 +193,7 @@
+     public void func_70071_h_()
+     {
+         super.func_70071_h_();
+-        BlockPos blockpos = this.field_70180_af.func_187225_a(field_184701_b).orNull();
++        BlockPos blockpos = (BlockPos)((Optional)this.field_70180_af.func_187225_a(field_184701_b)).orNull();
+ 
+         if (blockpos == null && !this.field_70170_p.field_72995_K)
+         {
+@@ -218,7 +218,7 @@
+             {
+                 if (iblockstate.func_177230_c() == Blocks.field_180384_M)
+                 {
+-                    EnumFacing enumfacing = iblockstate.func_177229_b(BlockPistonBase.field_176387_N);
++                    EnumFacing enumfacing = (EnumFacing)iblockstate.func_177229_b(BlockPistonBase.field_176387_N);
+ 
+                     if (this.field_70170_p.func_175623_d(blockpos.func_177972_a(enumfacing)))
+                     {
+@@ -232,7 +232,7 @@
+                 }
+                 else if (iblockstate.func_177230_c() == Blocks.field_150332_K)
+                 {
+-                    EnumFacing enumfacing3 = iblockstate.func_177229_b(BlockPistonExtension.field_176387_N);
++                    EnumFacing enumfacing3 = (EnumFacing)iblockstate.func_177229_b(BlockPistonExtension.field_176387_N);
+ 
+                     if (this.field_70170_p.func_175623_d(blockpos.func_177972_a(enumfacing3)))
+                     {
 @@ -311,6 +311,7 @@
              this.field_70165_t = (double)blockpos.func_177958_n() + 0.5D;
              this.field_70163_u = (double)blockpos.func_177956_o();
@@ -8,17 +94,81 @@
              this.field_70169_q = this.field_70165_t;
              this.field_70167_r = this.field_70163_u;
              this.field_70166_s = this.field_70161_v;
-@@ -422,6 +423,13 @@
-                             flag = true;
-                             break;
-                         }
+@@ -388,13 +389,13 @@
+ 
+         if (this.field_70180_af != null && this.field_70173_aa != 0)
+         {
+-            Optional<BlockPos> optional = this.field_70180_af.func_187225_a(field_184701_b);
+-            Optional<BlockPos> optional1 = Optional.of(new BlockPos(p_70107_1_, p_70107_3_, p_70107_5_));
++            Optional<BlockPos> optional = (Optional)this.field_70180_af.func_187225_a(field_184701_b);
++            Optional<BlockPos> optional1 = Optional.<BlockPos>of(new BlockPos(p_70107_1_, p_70107_3_, p_70107_5_));
+ 
+             if (!optional1.equals(optional))
+             {
+                 this.field_70180_af.func_187227_b(field_184701_b, optional1);
+-                this.field_70180_af.func_187227_b(field_184702_c, (byte)0);
++                this.field_70180_af.func_187227_b(field_184702_c, Byte.valueOf((byte)0));
+                 this.field_70160_al = true;
+             }
+         }
+@@ -426,9 +427,16 @@
+ 
+                     if (flag)
+                     {
++                        net.minecraftforge.event.entity.living.EnderTeleportEvent event = new net.minecraftforge.event.entity.living.EnderTeleportEvent(this, blockpos1.func_177958_n(), blockpos1.func_177956_o(), blockpos1.func_177952_p(), 0);
++                        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) flag = false;
++                        blockpos1 = new BlockPos(event.getTargetX(), event.getTargetY(), event.getTargetZ());
 +                    }
 +
 +                    if (flag)
 +                    {
-+                        net.minecraftforge.event.entity.living.EnderTeleportEvent event = new net.minecraftforge.event.entity.living.EnderTeleportEvent(this, blockpos1.func_177958_n(), blockpos1.func_177956_o(), blockpos1.func_177952_p(), 0);
-+                        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) flag = false;
-+                        blockpos1 = new BlockPos(event.getTargetX(), event.getTargetY(), event.getTargetZ());
+                         this.func_184185_a(SoundEvents.field_187791_eX, 1.0F, 1.0F);
+                         this.field_70180_af.func_187227_b(field_184701_b, Optional.of(blockpos1));
+-                        this.field_70180_af.func_187227_b(field_184702_c, (byte)0);
++                        this.field_70180_af.func_187227_b(field_184702_c, Byte.valueOf((byte)0));
+                         this.func_70624_b((EntityLivingBase)null);
+                         return true;
                      }
+@@ -532,13 +540,13 @@
  
-                     if (flag)
+     public EnumFacing func_184696_cZ()
+     {
+-        return this.field_70180_af.func_187225_a(field_184700_a);
++        return (EnumFacing)this.field_70180_af.func_187225_a(field_184700_a);
+     }
+ 
+     @Nullable
+     public BlockPos func_184699_da()
+     {
+-        return this.field_70180_af.func_187225_a(field_184701_b).orNull();
++        return (BlockPos)((Optional)this.field_70180_af.func_187225_a(field_184701_b)).orNull();
+     }
+ 
+     public void func_184694_g(@Nullable BlockPos p_184694_1_)
+@@ -548,7 +556,7 @@
+ 
+     public int func_184684_db()
+     {
+-        return this.field_70180_af.func_187225_a(field_184702_c);
++        return ((Byte)this.field_70180_af.func_187225_a(field_184702_c)).byteValue();
+     }
+ 
+     public void func_184691_a(int p_184691_1_)
+@@ -568,7 +576,7 @@
+             }
+         }
+ 
+-        this.field_70180_af.func_187227_b(field_184702_c, (byte)p_184691_1_);
++        this.field_70180_af.func_187227_b(field_184702_c, Byte.valueOf((byte)p_184691_1_));
+     }
+ 
+     @SideOnly(Side.CLIENT)
+@@ -628,7 +636,7 @@
+     @SideOnly(Side.CLIENT)
+     public EnumDyeColor func_190769_dn()
+     {
+-        return EnumDyeColor.func_176764_b(this.field_70180_af.func_187225_a(field_190770_bw));
++        return EnumDyeColor.func_176764_b(((Byte)this.field_70180_af.func_187225_a(field_190770_bw)).byteValue());
+     }
+ 
+     class AIAttack extends EntityAIBase

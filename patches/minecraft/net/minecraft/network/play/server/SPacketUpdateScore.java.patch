@@ -1,0 +1,11 @@
+--- before/net/minecraft/network/play/server/SPacketUpdateScore.java
++++ after/net/minecraft/network/play/server/SPacketUpdateScore.java
+@@ -47,7 +47,7 @@
+     public void func_148837_a(PacketBuffer p_148837_1_) throws IOException
+     {
+         this.field_149329_a = p_148837_1_.func_150789_c(40);
+-        this.field_149326_d = p_148837_1_.func_179257_a(SPacketUpdateScore.Action.class);
++        this.field_149326_d = (SPacketUpdateScore.Action)p_148837_1_.func_179257_a(SPacketUpdateScore.Action.class);
+         this.field_149327_b = p_148837_1_.func_150789_c(16);
+ 
+         if (this.field_149326_d != SPacketUpdateScore.Action.REMOVE)

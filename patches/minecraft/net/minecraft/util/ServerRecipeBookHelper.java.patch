@@ -1,6 +1,14 @@
 --- before/net/minecraft/util/ServerRecipeBookHelper.java
 +++ after/net/minecraft/util/ServerRecipeBookHelper.java
-@@ -55,6 +55,11 @@
+@@ -2,6 +2,7 @@
+ 
+ import it.unimi.dsi.fastutil.ints.IntArrayList;
+ import it.unimi.dsi.fastutil.ints.IntList;
++import it.unimi.dsi.fastutil.ints.IntListIterator;
+ import java.util.Iterator;
+ import java.util.List;
+ import javax.annotation.Nullable;
+@@ -54,6 +55,11 @@
                  this.field_194335_f = ((ContainerPlayer)container).field_75179_f;
                  this.field_194336_g = ((ContainerPlayer)container).field_75181_e;
              }
@@ -12,7 +20,20 @@
  
              if (this.field_194335_f != null && this.field_194336_g != null)
              {
-@@ -199,11 +204,11 @@
+@@ -141,9 +147,11 @@
+         if (this.field_194331_b.func_194118_a(this.field_194333_d, intlist, i1))
+         {
+             int j1 = i1;
++            IntListIterator intlistiterator = intlist.iterator();
+ 
+-            for (int k : intlist)
++            while (intlistiterator.hasNext())
+             {
++                int k = ((Integer)intlistiterator.next()).intValue();
+                 int l = RecipeItemHelper.func_194115_b(k).func_77976_d();
+ 
+                 if (l < j1)
+@@ -196,11 +204,11 @@
          int i = this.field_194336_g.func_174922_i();
          int j = this.field_194336_g.func_174923_h();
  
@@ -28,3 +49,12 @@
          }
  
          int j1 = 1;
+@@ -217,7 +225,7 @@
+                 }
+ 
+                 Slot slot = this.field_194337_h.get(j1);
+-                ItemStack itemstack = RecipeItemHelper.func_194115_b(iterator.next());
++                ItemStack itemstack = RecipeItemHelper.func_194115_b(((Integer)iterator.next()).intValue());
+ 
+                 if (itemstack.func_190926_b())
+                 {

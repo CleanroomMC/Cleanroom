@@ -1,0 +1,35 @@
+--- before/net/minecraft/command/server/CommandMessage.java
++++ after/net/minecraft/command/server/CommandMessage.java
+@@ -19,7 +19,7 @@
+ {
+     public List<String> func_71514_a()
+     {
+-        return Arrays.asList("w", "msg");
++        return Arrays.<String>asList("w", "msg");
+     }
+ 
+     public String func_71517_b()
+@@ -41,7 +41,7 @@
+     {
+         if (p_184881_3_.length < 2)
+         {
+-            throw new WrongUsageException("commands.message.usage");
++            throw new WrongUsageException("commands.message.usage", new Object[0]);
+         }
+         else
+         {
+@@ -54,10 +54,10 @@
+             else
+             {
+                 ITextComponent itextcomponent = func_147176_a(p_184881_2_, p_184881_3_, 1, !(p_184881_2_ instanceof EntityPlayer));
+-                TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("commands.message.display.incoming", p_184881_2_.func_145748_c_(), itextcomponent.func_150259_f());
+-                TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.message.display.outgoing", entityplayer.func_145748_c_(), itextcomponent.func_150259_f());
+-                textcomponenttranslation.func_150256_b().func_150238_a(TextFormatting.GRAY).func_150217_b(true);
+-                textcomponenttranslation1.func_150256_b().func_150238_a(TextFormatting.GRAY).func_150217_b(true);
++                TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("commands.message.display.incoming", new Object[] {p_184881_2_.func_145748_c_(), itextcomponent.func_150259_f()});
++                TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.message.display.outgoing", new Object[] {entityplayer.func_145748_c_(), itextcomponent.func_150259_f()});
++                textcomponenttranslation.func_150256_b().func_150238_a(TextFormatting.GRAY).func_150217_b(Boolean.valueOf(true));
++                textcomponenttranslation1.func_150256_b().func_150238_a(TextFormatting.GRAY).func_150217_b(Boolean.valueOf(true));
+                 entityplayer.func_145747_a(textcomponenttranslation);
+                 p_184881_2_.func_145747_a(textcomponenttranslation1);
+             }

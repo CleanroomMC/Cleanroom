@@ -1,15 +1,35 @@
 --- before/net/minecraft/block/BlockChorusFlower.java
 +++ after/net/minecraft/block/BlockChorusFlower.java
-@@ -55,7 +55,7 @@
+@@ -4,6 +4,7 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.block.material.MapColor;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyInteger;
+ import net.minecraft.block.state.BlockFaceShape;
+ import net.minecraft.block.state.BlockStateContainer;
+@@ -30,7 +31,7 @@
+     protected BlockChorusFlower()
+     {
+         super(Material.field_151585_k, MapColor.field_151678_z);
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_185607_a, 0));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_185607_a, Integer.valueOf(0)));
+         this.func_149647_a(CreativeTabs.field_78031_c);
+         this.func_149675_a(true);
+     }
+@@ -52,9 +53,9 @@
+ 
+             if (p_180650_1_.func_175623_d(blockpos) && blockpos.func_177956_o() < 256)
              {
-                 int i = ((Integer)p_180650_3_.func_177229_b(field_185607_a)).intValue();
+-                int i = p_180650_3_.func_177229_b(field_185607_a);
++                int i = ((Integer)p_180650_3_.func_177229_b(field_185607_a)).intValue();
  
 -                if (i < 5 && p_180650_4_.nextInt(1) == 0)
 +                if (i < 5 &&  net.minecraftforge.common.ForgeHooks.onCropsGrowPre(p_180650_1_, blockpos, p_180650_3_, p_180650_4_.nextInt(1) == 0))
                  {
                      boolean flag = false;
                      boolean flag1 = false;
-@@ -144,6 +144,7 @@
+@@ -143,6 +144,7 @@
                      {
                          this.func_185605_c(p_180650_1_, p_180650_2_);
                      }
@@ -17,3 +37,49 @@
                  }
              }
          }
+@@ -150,13 +152,13 @@
+ 
+     private void func_185602_a(World p_185602_1_, BlockPos p_185602_2_, int p_185602_3_)
+     {
+-        p_185602_1_.func_180501_a(p_185602_2_, this.func_176223_P().func_177226_a(field_185607_a, p_185602_3_), 2);
++        p_185602_1_.func_180501_a(p_185602_2_, this.func_176223_P().func_177226_a(field_185607_a, Integer.valueOf(p_185602_3_)), 2);
+         p_185602_1_.func_175718_b(1033, p_185602_2_, 0);
+     }
+ 
+     private void func_185605_c(World p_185605_1_, BlockPos p_185605_2_)
+     {
+-        p_185605_1_.func_180501_a(p_185605_2_, this.func_176223_P().func_177226_a(field_185607_a, 5), 2);
++        p_185605_1_.func_180501_a(p_185605_2_, this.func_176223_P().func_177226_a(field_185607_a, Integer.valueOf(5)), 2);
+         p_185605_1_.func_175718_b(1034, p_185605_2_, 0);
+     }
+ 
+@@ -254,17 +256,17 @@
+ 
+     public IBlockState func_176203_a(int p_176203_1_)
+     {
+-        return this.func_176223_P().func_177226_a(field_185607_a, p_176203_1_);
++        return this.func_176223_P().func_177226_a(field_185607_a, Integer.valueOf(p_176203_1_));
+     }
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(field_185607_a);
++        return ((Integer)p_176201_1_.func_177229_b(field_185607_a)).intValue();
+     }
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_185607_a);
++        return new BlockStateContainer(this, new IProperty[] {field_185607_a});
+     }
+ 
+     public static void func_185603_a(World p_185603_0_, BlockPos p_185603_1_, Random p_185603_2_, int p_185603_3_)
+@@ -321,7 +323,7 @@
+ 
+         if (!flag)
+         {
+-            p_185601_0_.func_180501_a(p_185601_1_.func_177981_b(i), Blocks.field_185766_cS.func_176223_P().func_177226_a(field_185607_a, 5), 2);
++            p_185601_0_.func_180501_a(p_185601_1_.func_177981_b(i), Blocks.field_185766_cS.func_176223_P().func_177226_a(field_185607_a, Integer.valueOf(5)), 2);
+         }
+     }
+ 

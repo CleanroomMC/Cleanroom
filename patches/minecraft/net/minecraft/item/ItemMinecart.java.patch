@@ -1,10 +1,18 @@
 --- before/net/minecraft/item/ItemMinecart.java
 +++ after/net/minecraft/item/ItemMinecart.java
-@@ -30,7 +30,7 @@
+@@ -23,14 +23,14 @@
+         private final BehaviorDefaultDispenseItem field_96465_b = new BehaviorDefaultDispenseItem();
+         public ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
+         {
+-            EnumFacing enumfacing = p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
++            EnumFacing enumfacing = (EnumFacing)p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
+             World world = p_82487_1_.func_82618_k();
+             double d0 = p_82487_1_.func_82615_a() + (double)enumfacing.func_82601_c() * 1.125D;
+             double d1 = Math.floor(p_82487_1_.func_82617_b()) + (double)enumfacing.func_96559_d();
              double d2 = p_82487_1_.func_82616_c() + (double)enumfacing.func_82599_e() * 1.125D;
              BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a(enumfacing);
              IBlockState iblockstate = world.func_180495_p(blockpos);
--            BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.func_177230_c() instanceof BlockRailBase ? (BlockRailBase.EnumRailDirection)iblockstate.func_177229_b(((BlockRailBase)iblockstate.func_177230_c()).func_176560_l()) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
+-            BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.func_177230_c() instanceof BlockRailBase ? iblockstate.func_177229_b(((BlockRailBase)iblockstate.func_177230_c()).func_176560_l()) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
 +            BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.func_177230_c() instanceof BlockRailBase ? ((BlockRailBase)iblockstate.func_177230_c()).getRailDirection(world, blockpos, iblockstate, null) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
              double d3;
  
@@ -13,7 +21,7 @@
                  }
  
                  IBlockState iblockstate1 = world.func_180495_p(blockpos.func_177977_b());
--                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection1 = iblockstate1.func_177230_c() instanceof BlockRailBase ? (BlockRailBase.EnumRailDirection)iblockstate1.func_177229_b(((BlockRailBase)iblockstate1.func_177230_c()).func_176560_l()) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
+-                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection1 = iblockstate1.func_177230_c() instanceof BlockRailBase ? iblockstate1.func_177229_b(((BlockRailBase)iblockstate1.func_177230_c()).func_176560_l()) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
 +                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection1 = iblockstate1.func_177230_c() instanceof BlockRailBase ? ((BlockRailBase)iblockstate1.func_177230_c()).getRailDirection(world, blockpos.func_177977_b(), iblockstate1, null) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
  
                  if (enumfacing != EnumFacing.DOWN && blockrailbase$enumraildirection1.func_177018_c())
@@ -22,7 +30,7 @@
  
              if (!p_180614_2_.field_72995_K)
              {
--                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.func_177230_c() instanceof BlockRailBase ? (BlockRailBase.EnumRailDirection)iblockstate.func_177229_b(((BlockRailBase)iblockstate.func_177230_c()).func_176560_l()) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
+-                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.func_177230_c() instanceof BlockRailBase ? iblockstate.func_177229_b(((BlockRailBase)iblockstate.func_177230_c()).func_176560_l()) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
 +                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.func_177230_c() instanceof BlockRailBase ? ((BlockRailBase)iblockstate.func_177230_c()).getRailDirection(p_180614_2_, p_180614_3_, iblockstate, null) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
                  double d0 = 0.0D;
  

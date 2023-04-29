@@ -1,0 +1,20 @@
+--- before/net/minecraft/entity/ai/EntityAINearestAttackableTarget.java
++++ after/net/minecraft/entity/ai/EntityAINearestAttackableTarget.java
+@@ -35,7 +35,7 @@
+ 
+     public EntityAINearestAttackableTarget(EntityCreature p_i45879_1_, Class<T> p_i45879_2_, boolean p_i45879_3_, boolean p_i45879_4_)
+     {
+-        this(p_i45879_1_, p_i45879_2_, 10, p_i45879_3_, p_i45879_4_, (Predicate <? super T >)null);
++        this(p_i45879_1_, p_i45879_2_, 10, p_i45879_3_, p_i45879_4_, (Predicate)null);
+     }
+ 
+     public EntityAINearestAttackableTarget(EntityCreature p_i45880_1_, Class<T> p_i45880_2_, int p_i45880_3_, boolean p_i45880_4_, boolean p_i45880_5_, @Nullable final Predicate <? super T > p_i45880_6_)
+@@ -73,7 +73,7 @@
+         }
+         else if (this.field_75307_b != EntityPlayer.class && this.field_75307_b != EntityPlayerMP.class)
+         {
+-            List<T> list = this.field_75299_d.field_70170_p.func_175647_a(this.field_75307_b, this.func_188511_a(this.func_111175_f()), this.field_82643_g);
++            List<T> list = this.field_75299_d.field_70170_p.<T>func_175647_a(this.field_75307_b, this.func_188511_a(this.func_111175_f()), this.field_82643_g);
+ 
+             if (list.isEmpty())
+             {

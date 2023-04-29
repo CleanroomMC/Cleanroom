@@ -6,9 +6,13 @@ buildscript {
             name 'MinecraftForge'
             url 'https://maven.minecraftforge.net/'
         }
+        maven {
+            name 'Outlands'
+            url 'https://maven.outlands.top/releases/'
+        }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:5.1.+'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:5.2.13'
     }
 }
 
@@ -604,30 +608,6 @@ project(':cleanroom') {
 
     }
 
-    publishing {
-        repositories {
-            maven {
-                name = "outlandsSnapshots"
-                url = "https://maven.outlands.top/snapshots"
-                credentials(PasswordCredentials)
-                authentication {
-                    basic(BasicAuthentication)
-                }
-            }
-        }
-        publications {
-            maven(MavenPublication) {
-                groupId = "com.cleanroommc"
-                artifactId = "cleanroom"
-                version = "15.24.0.3000"
-                from components.java
-                artifact userdevJar
-                artifact universalJar
-                artifact sourcesJar
-            }
-        }
-    }
-
     // TODO: Include?
     def extra_files = [
             rootProject.file('CREDITS.txt'),
@@ -1115,7 +1095,30 @@ project(':cleanroom') {
         sourceSets.test.java.srcDirs.each { extractMappedNew.addTarget it }
     }
 
-    // TODO: Publishing
+
+    publishing {
+        repositories {
+            maven {
+                name = "outlandsReleases"
+                url = "https://maven.outlands.top/releases"
+                credentials(PasswordCredentials)
+                authentication {
+                    basic(BasicAuthentication)
+                }
+            }
+        }
+        publications {
+            maven(MavenPublication) {
+                groupId = "com.cleanroommc"
+                artifactId = "cleanroom"
+                version = "15.24.0.3001"
+                from components.java
+                artifact userdevJar
+                artifact universalJar
+                artifact sourcesJar
+            }
+        }
+    }
 
     test {
         jvmArgs jvm_arguments

@@ -1,0 +1,34 @@
+--- before/net/minecraft/command/CommandClearInventory.java
++++ after/net/minecraft/command/CommandClearInventory.java
+@@ -45,13 +45,13 @@
+             }
+             catch (NBTException nbtexception)
+             {
+-                throw new CommandException("commands.clear.tagError", nbtexception.getMessage());
++                throw new CommandException("commands.clear.tagError", new Object[] {nbtexception.getMessage()});
+             }
+         }
+ 
+         if (p_184881_3_.length >= 2 && item == null)
+         {
+-            throw new CommandException("commands.clear.failure", entityplayermp.func_70005_c_());
++            throw new CommandException("commands.clear.failure", new Object[] {entityplayermp.func_70005_c_()});
+         }
+         else
+         {
+@@ -67,13 +67,13 @@
+ 
+             if (k == 0)
+             {
+-                throw new CommandException("commands.clear.failure", entityplayermp.func_70005_c_());
++                throw new CommandException("commands.clear.failure", new Object[] {entityplayermp.func_70005_c_()});
+             }
+             else
+             {
+                 if (j == 0)
+                 {
+-                    p_184881_2_.func_145747_a(new TextComponentTranslation("commands.clear.testing", entityplayermp.func_70005_c_(), k));
++                    p_184881_2_.func_145747_a(new TextComponentTranslation("commands.clear.testing", new Object[] {entityplayermp.func_70005_c_(), k}));
+                 }
+                 else
+                 {

@@ -1,0 +1,32 @@
+--- before/net/minecraft/command/CommandParticle.java
++++ after/net/minecraft/command/CommandParticle.java
+@@ -32,7 +32,7 @@
+     {
+         if (p_184881_3_.length < 8)
+         {
+-            throw new WrongUsageException("commands.particle.usage");
++            throw new WrongUsageException("commands.particle.usage", new Object[0]);
+         }
+         else
+         {
+@@ -41,7 +41,7 @@
+ 
+             if (enumparticletypes == null)
+             {
+-                throw new CommandException("commands.particle.notFound", p_184881_3_[0]);
++                throw new CommandException("commands.particle.notFound", new Object[] {p_184881_3_[0]});
+             }
+             else
+             {
+@@ -89,9 +89,9 @@
+                         {
+                             aint[j] = Integer.parseInt(p_184881_3_[11 + j]);
+                         }
+-                        catch (NumberFormatException numberformatexception)
++                        catch (NumberFormatException var28)
+                         {
+-                            throw new CommandException("commands.particle.invalidParam", p_184881_3_[11 + j]);
++                            throw new CommandException("commands.particle.invalidParam", new Object[] {p_184881_3_[11 + j]});
+                         }
+                     }
+                 }

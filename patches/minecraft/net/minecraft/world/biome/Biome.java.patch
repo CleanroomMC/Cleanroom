@@ -9,19 +9,35 @@
  {
      private static final Logger field_150586_aC = LogManager.getLogger();
      protected static final IBlockState field_185365_a = Blocks.field_150348_b.func_176223_P();
-@@ -68,7 +68,7 @@
+@@ -61,14 +61,14 @@
+     protected static final IBlockState field_185370_f = Blocks.field_150322_A.func_176223_P();
+     protected static final IBlockState field_185371_g = Blocks.field_150432_aD.func_176223_P();
+     protected static final IBlockState field_185372_h = Blocks.field_150355_j.func_176223_P();
+-    public static final ObjectIntIdentityMap<Biome> field_185373_j = new ObjectIntIdentityMap<>();
++    public static final ObjectIntIdentityMap<Biome> field_185373_j = new ObjectIntIdentityMap<Biome>();
+     protected static final NoiseGeneratorPerlin field_150605_ac = new NoiseGeneratorPerlin(new Random(1234L), 1);
+     protected static final NoiseGeneratorPerlin field_180281_af = new NoiseGeneratorPerlin(new Random(2345L), 1);
+     protected static final WorldGenDoublePlant field_180280_ag = new WorldGenDoublePlant();
      protected static final WorldGenTrees field_76757_N = new WorldGenTrees(false);
      protected static final WorldGenBigTree field_76758_O = new WorldGenBigTree(false);
      protected static final WorldGenSwamp field_76763_Q = new WorldGenSwamp();
--    public static final RegistryNamespaced<ResourceLocation, Biome> field_185377_q = new RegistryNamespaced<ResourceLocation, Biome>();
+-    public static final RegistryNamespaced<ResourceLocation, Biome> field_185377_q = new RegistryNamespaced<>();
 +    public static final RegistryNamespaced<ResourceLocation, Biome> field_185377_q = net.minecraftforge.registries.GameData.getWrapper(Biome.class);
      private final String field_76791_y;
      private final float field_76748_D;
      private final float field_76749_E;
-@@ -86,6 +86,8 @@
-     protected List<Biome.SpawnListEntry> field_76762_K = Lists.<Biome.SpawnListEntry>newArrayList();
-     protected List<Biome.SpawnListEntry> field_76755_L = Lists.<Biome.SpawnListEntry>newArrayList();
-     protected List<Biome.SpawnListEntry> field_82914_M = Lists.<Biome.SpawnListEntry>newArrayList();
+@@ -82,10 +82,12 @@
+     public IBlockState field_76752_A = Blocks.field_150349_c.func_176223_P();
+     public IBlockState field_76753_B = Blocks.field_150346_d.func_176223_P();
+     public BiomeDecorator field_76760_I;
+-    protected List<Biome.SpawnListEntry> field_76761_J = Lists.newArrayList();
+-    protected List<Biome.SpawnListEntry> field_76762_K = Lists.newArrayList();
+-    protected List<Biome.SpawnListEntry> field_76755_L = Lists.newArrayList();
+-    protected List<Biome.SpawnListEntry> field_82914_M = Lists.newArrayList();
++    protected List<Biome.SpawnListEntry> field_76761_J = Lists.<Biome.SpawnListEntry>newArrayList();
++    protected List<Biome.SpawnListEntry> field_76762_K = Lists.<Biome.SpawnListEntry>newArrayList();
++    protected List<Biome.SpawnListEntry> field_76755_L = Lists.<Biome.SpawnListEntry>newArrayList();
++    protected List<Biome.SpawnListEntry> field_82914_M = Lists.<Biome.SpawnListEntry>newArrayList();
 +    // Forge: Stores the spawnable lists for non-vanilla EnumCreatureTypes. Can't be an EnumMap as that doesn't handle new enum values being added after it's created.
 +    protected java.util.Map<EnumCreatureType, List<Biome.SpawnListEntry>> modSpawnableLists = com.google.common.collect.Maps.newHashMap();
  
@@ -41,11 +57,20 @@
      }
  
      public boolean func_185363_b()
+@@ -160,7 +163,7 @@
+     @SideOnly(Side.CLIENT)
+     public int func_76731_a(float p_76731_1_)
+     {
+-        p_76731_1_ /= 3.0F;
++        p_76731_1_ = p_76731_1_ / 3.0F;
+         p_76731_1_ = MathHelper.func_76131_a(p_76731_1_, -1.0F, 1.0F);
+         return MathHelper.func_181758_c(0.62222224F - p_76731_1_ * 0.05F, 0.5F + p_76731_1_ * 0.1F, 1.0F);
+     }
 @@ -178,7 +181,9 @@
              case AMBIENT:
                  return this.field_82914_M;
              default:
--                return Collections.<Biome.SpawnListEntry>emptyList();
+-                return Collections.emptyList();
 +                // Forge: Return a non-empty list for non-vanilla EnumCreatureTypes
 +                if (!this.modSpawnableLists.containsKey(p_76747_1_)) this.modSpawnableLists.put(p_76747_1_, Lists.<Biome.SpawnListEntry>newArrayList());
 +                return this.modSpawnableLists.get(p_76747_1_);

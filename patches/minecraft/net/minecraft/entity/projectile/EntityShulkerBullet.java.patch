@@ -1,5 +1,14 @@
 --- before/net/minecraft/entity/projectile/EntityShulkerBullet.java
 +++ after/net/minecraft/entity/projectile/EntityShulkerBullet.java
+@@ -171,7 +171,7 @@
+         if (blockpos.func_177957_d(this.field_70165_t, this.field_70163_u, this.field_70161_v) >= 4.0D)
+         {
+             BlockPos blockpos1 = new BlockPos(this);
+-            List<EnumFacing> list = Lists.newArrayList();
++            List<EnumFacing> list = Lists.<EnumFacing>newArrayList();
+ 
+             if (p_184569_1_ != EnumFacing.Axis.X)
+             {
 @@ -310,7 +310,7 @@
  
                  RayTraceResult raytraceresult = ProjectileHelper.func_188802_a(this, true, false, this.field_184570_a);

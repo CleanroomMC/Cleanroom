@@ -1,11 +1,49 @@
 --- before/net/minecraft/block/BlockLadder.java
 +++ after/net/minecraft/block/BlockLadder.java
-@@ -158,6 +158,8 @@
-         return new BlockStateContainer(this, new IProperty[] {field_176382_a});
+@@ -1,6 +1,7 @@
+ package net.minecraft.block;
+ 
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyDirection;
+ import net.minecraft.block.state.BlockFaceShape;
+ import net.minecraft.block.state.BlockStateContainer;
+@@ -108,7 +109,7 @@
+ 
+     public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
+     {
+-        EnumFacing enumfacing = p_189540_1_.func_177229_b(field_176382_a);
++        EnumFacing enumfacing = (EnumFacing)p_189540_1_.func_177229_b(field_176382_a);
+ 
+         if (!this.func_193392_c(p_189540_2_, p_189540_3_.func_177972_a(enumfacing.func_176734_d()), enumfacing))
+         {
+@@ -139,23 +140,25 @@
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(field_176382_a).func_176745_a();
++        return ((EnumFacing)p_176201_1_.func_177229_b(field_176382_a)).func_176745_a();
      }
  
-+    @Override public boolean isLadder(IBlockState state, IBlockAccess world, BlockPos pos, EntityLivingBase entity) { return true; }
+     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
+     {
+-        return p_185499_1_.func_177226_a(field_176382_a, p_185499_2_.func_185831_a(p_185499_1_.func_177229_b(field_176382_a)));
++        return p_185499_1_.func_177226_a(field_176382_a, p_185499_2_.func_185831_a((EnumFacing)p_185499_1_.func_177229_b(field_176382_a)));
+     }
+ 
+     public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
+     {
+-        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a(p_185471_1_.func_177229_b(field_176382_a)));
++        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a((EnumFacing)p_185471_1_.func_177229_b(field_176382_a)));
+     }
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176382_a);
++        return new BlockStateContainer(this, new IProperty[] {field_176382_a});
+     }
 +
++    @Override public boolean isLadder(IBlockState state, IBlockAccess world, BlockPos pos, EntityLivingBase entity) { return true; }
+ 
      public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
      {
-         return BlockFaceShape.UNDEFINED;

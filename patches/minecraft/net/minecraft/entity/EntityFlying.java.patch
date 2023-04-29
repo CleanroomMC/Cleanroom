@@ -1,5 +1,18 @@
 --- before/net/minecraft/entity/EntityFlying.java
 +++ after/net/minecraft/entity/EntityFlying.java
+@@ -26,9 +26,9 @@
+         {
+             this.func_191958_b(p_191986_1_, p_191986_2_, p_191986_3_, 0.02F);
+             this.func_70091_d(MoverType.SELF, this.field_70159_w, this.field_70181_x, this.field_70179_y);
+-            this.field_70159_w *= (double)0.8F;
+-            this.field_70181_x *= (double)0.8F;
+-            this.field_70179_y *= (double)0.8F;
++            this.field_70159_w *= 0.800000011920929D;
++            this.field_70181_x *= 0.800000011920929D;
++            this.field_70179_y *= 0.800000011920929D;
+         }
+         else if (this.func_180799_ab())
+         {
 @@ -44,7 +44,9 @@
  
              if (this.field_70122_E)

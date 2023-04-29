@@ -1,11 +1,142 @@
 --- before/net/minecraft/block/BlockRailDetector.java
 +++ after/net/minecraft/block/BlockRailDetector.java
-@@ -163,6 +163,8 @@
+@@ -25,7 +25,7 @@
+ 
+ public class BlockRailDetector extends BlockRailBase
+ {
+-    public static final PropertyEnum<BlockRailBase.EnumRailDirection> field_176573_b = PropertyEnum.func_177708_a("shape", BlockRailBase.EnumRailDirection.class, new Predicate<BlockRailBase.EnumRailDirection>()
++    public static final PropertyEnum<BlockRailBase.EnumRailDirection> field_176573_b = PropertyEnum.<BlockRailBase.EnumRailDirection>func_177708_a("shape", BlockRailBase.EnumRailDirection.class, new Predicate<BlockRailBase.EnumRailDirection>()
      {
-         if (((Boolean)p_180641_1_.func_177229_b(field_176574_M)).booleanValue())
+         public boolean apply(@Nullable BlockRailBase.EnumRailDirection p_apply_1_)
          {
+@@ -37,7 +37,7 @@
+     public BlockRailDetector()
+     {
+         super(true);
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176574_M, false).func_177226_a(field_176573_b, BlockRailBase.EnumRailDirection.NORTH_SOUTH));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176574_M, Boolean.valueOf(false)).func_177226_a(field_176573_b, BlockRailBase.EnumRailDirection.NORTH_SOUTH));
+         this.func_149675_a(true);
+     }
+ 
+@@ -55,7 +55,7 @@
+     {
+         if (!p_180634_1_.field_72995_K)
+         {
+-            if (!p_180634_3_.func_177229_b(field_176574_M))
++            if (!((Boolean)p_180634_3_.func_177229_b(field_176574_M)).booleanValue())
+             {
+                 this.func_176570_e(p_180634_1_, p_180634_2_, p_180634_3_);
+             }
+@@ -68,7 +68,7 @@
+ 
+     public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
+     {
+-        if (!p_180650_1_.field_72995_K && p_180650_3_.func_177229_b(field_176574_M))
++        if (!p_180650_1_.field_72995_K && ((Boolean)p_180650_3_.func_177229_b(field_176574_M)).booleanValue())
+         {
+             this.func_176570_e(p_180650_1_, p_180650_2_, p_180650_3_);
+         }
+@@ -76,12 +76,12 @@
+ 
+     public int func_180656_a(IBlockState p_180656_1_, IBlockAccess p_180656_2_, BlockPos p_180656_3_, EnumFacing p_180656_4_)
+     {
+-        return p_180656_1_.func_177229_b(field_176574_M) ? 15 : 0;
++        return ((Boolean)p_180656_1_.func_177229_b(field_176574_M)).booleanValue() ? 15 : 0;
+     }
+ 
+     public int func_176211_b(IBlockState p_176211_1_, IBlockAccess p_176211_2_, BlockPos p_176211_3_, EnumFacing p_176211_4_)
+     {
+-        if (!p_176211_1_.func_177229_b(field_176574_M))
++        if (!((Boolean)p_176211_1_.func_177229_b(field_176574_M)).booleanValue())
+         {
+             return 0;
+         }
+@@ -93,9 +93,9 @@
+ 
+     private void func_176570_e(World p_176570_1_, BlockPos p_176570_2_, IBlockState p_176570_3_)
+     {
+-        boolean flag = p_176570_3_.func_177229_b(field_176574_M);
++        boolean flag = ((Boolean)p_176570_3_.func_177229_b(field_176574_M)).booleanValue();
+         boolean flag1 = false;
+-        List<EntityMinecart> list = this.func_176571_a(p_176570_1_, p_176570_2_, EntityMinecart.class);
++        List<EntityMinecart> list = this.<EntityMinecart>func_176571_a(p_176570_1_, p_176570_2_, EntityMinecart.class);
+ 
+         if (!list.isEmpty())
+         {
+@@ -104,7 +104,7 @@
+ 
+         if (flag1 && !flag)
+         {
+-            p_176570_1_.func_180501_a(p_176570_2_, p_176570_3_.func_177226_a(field_176574_M, true), 3);
++            p_176570_1_.func_180501_a(p_176570_2_, p_176570_3_.func_177226_a(field_176574_M, Boolean.valueOf(true)), 3);
+             this.func_185592_b(p_176570_1_, p_176570_2_, p_176570_3_, true);
+             p_176570_1_.func_175685_c(p_176570_2_, this, false);
+             p_176570_1_.func_175685_c(p_176570_2_.func_177977_b(), this, false);
+@@ -113,7 +113,7 @@
+ 
+         if (!flag1 && flag)
+         {
+-            p_176570_1_.func_180501_a(p_176570_2_, p_176570_3_.func_177226_a(field_176574_M, false), 3);
++            p_176570_1_.func_180501_a(p_176570_2_, p_176570_3_.func_177226_a(field_176574_M, Boolean.valueOf(false)), 3);
+             this.func_185592_b(p_176570_1_, p_176570_2_, p_176570_3_, false);
+             p_176570_1_.func_175685_c(p_176570_2_, this, false);
+             p_176570_1_.func_175685_c(p_176570_2_.func_177977_b(), this, false);
+@@ -161,16 +161,18 @@
+ 
+     public int func_180641_l(IBlockState p_180641_1_, World p_180641_2_, BlockPos p_180641_3_)
+     {
+-        if (p_180641_1_.func_177229_b(field_176574_M))
++        if (((Boolean)p_180641_1_.func_177229_b(field_176574_M)).booleanValue())
+         {
+-            List<EntityMinecartCommandBlock> list = this.func_176571_a(p_180641_2_, p_180641_3_, EntityMinecartCommandBlock.class);
 +            List<EntityMinecart> carts = this.func_176571_a(p_180641_2_, p_180641_3_, EntityMinecart.class);
 +            if (!carts.isEmpty() && carts.get(0).getComparatorLevel() > -1) return carts.get(0).getComparatorLevel();
-             List<EntityMinecartCommandBlock> list = this.<EntityMinecartCommandBlock>func_176571_a(p_180641_2_, p_180641_3_, EntityMinecartCommandBlock.class);
++            List<EntityMinecartCommandBlock> list = this.<EntityMinecartCommandBlock>func_176571_a(p_180641_2_, p_180641_3_, EntityMinecartCommandBlock.class);
  
              if (!list.isEmpty())
+             {
+-                return list.get(0).func_145822_e().func_145760_g();
++                return ((EntityMinecartCommandBlock)list.get(0)).func_145822_e().func_145760_g();
+             }
+ 
+-            List<EntityMinecart> list1 = this.func_176571_a(p_180641_2_, p_180641_3_, EntityMinecart.class, EntitySelectors.field_96566_b);
++            List<EntityMinecart> list1 = this.<EntityMinecart>func_176571_a(p_180641_2_, p_180641_3_, EntityMinecart.class, EntitySelectors.field_96566_b);
+ 
+             if (!list1.isEmpty())
+             {
+@@ -195,15 +197,15 @@
+ 
+     public IBlockState func_176203_a(int p_176203_1_)
+     {
+-        return this.func_176223_P().func_177226_a(field_176573_b, BlockRailBase.EnumRailDirection.func_177016_a(p_176203_1_ & 7)).func_177226_a(field_176574_M, (p_176203_1_ & 8) > 0);
++        return this.func_176223_P().func_177226_a(field_176573_b, BlockRailBase.EnumRailDirection.func_177016_a(p_176203_1_ & 7)).func_177226_a(field_176574_M, Boolean.valueOf((p_176203_1_ & 8) > 0));
+     }
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+         int i = 0;
+-        i |= p_176201_1_.func_177229_b(field_176573_b).func_177015_a();
++        i = i | ((BlockRailBase.EnumRailDirection)p_176201_1_.func_177229_b(field_176573_b)).func_177015_a();
+ 
+-        if (p_176201_1_.func_177229_b(field_176574_M))
++        if (((Boolean)p_176201_1_.func_177229_b(field_176574_M)).booleanValue())
+         {
+             i |= 8;
+         }
+@@ -298,7 +300,7 @@
+     @SuppressWarnings("incomplete-switch")
+     public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
+     {
+-        BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = p_185471_1_.func_177229_b(field_176573_b);
++        BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = (BlockRailBase.EnumRailDirection)p_185471_1_.func_177229_b(field_176573_b);
+ 
+         switch (p_185471_2_)
+         {
+@@ -350,6 +352,6 @@
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176573_b, field_176574_M);
++        return new BlockStateContainer(this, new IProperty[] {field_176573_b, field_176574_M});
+     }
+ }

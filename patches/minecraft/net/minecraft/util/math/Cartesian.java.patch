@@ -1,0 +1,68 @@
+--- before/net/minecraft/util/math/Cartesian.java
++++ after/net/minecraft/util/math/Cartesian.java
+@@ -16,7 +16,7 @@
+ {
+     public static <T> Iterable<T[]> func_179318_a(Class<T> p_179318_0_, Iterable <? extends Iterable <? extends T >> p_179318_1_)
+     {
+-        return new Cartesian.Product<>(p_179318_0_, func_179322_b(Iterable.class, p_179318_1_));
++        return new Cartesian.Product(p_179318_0_, (Iterable[])func_179322_b(Iterable.class, p_179318_1_));
+     }
+ 
+     public static <T> Iterable<List<T>> func_179321_a(Iterable <? extends Iterable <? extends T >> p_179321_0_)
+@@ -26,12 +26,12 @@
+ 
+     private static <T> Iterable<List<T>> func_179323_b(Iterable<Object[]> p_179323_0_)
+     {
+-        return Iterables.transform(p_179323_0_, new Cartesian.GetList<>());
++        return Iterables.transform(p_179323_0_, new Cartesian.GetList());
+     }
+ 
+     private static <T> T[] func_179322_b(Class <? super T > p_179322_0_, Iterable <? extends T > p_179322_1_)
+     {
+-        List<T> list = Lists.newArrayList();
++        List<T> list = Lists.<T>newArrayList();
+ 
+         for (T t : p_179322_1_)
+         {
+@@ -54,7 +54,7 @@
+ 
+             public List<T> apply(@Nullable Object[] p_apply_1_)
+             {
+-                return Arrays.asList((T[])(p_apply_1_));
++                return Arrays.<T>asList((T[])p_apply_1_);
+             }
+         }
+ 
+@@ -71,27 +71,28 @@
+ 
+             public Iterator<T[]> iterator()
+             {
+-                return (Iterator<T[]>)(this.field_179428_b.length <= 0 ? Collections.singletonList(Cartesian.func_179319_b(this.field_179429_a, 0)).iterator() : new Cartesian.Product.ProductIterator<>(this.field_179429_a, this.field_179428_b));
++                return (Iterator<T[]>)(this.field_179428_b.length <= 0 ? Collections.singletonList(Cartesian.func_179319_b(this.field_179429_a, 0)).iterator() : new Cartesian.Product.ProductIterator(this.field_179429_a, this.field_179428_b));
+             }
+ 
+             static class ProductIterator<T> extends UnmodifiableIterator<T[]>
+                 {
+-                    private int field_179426_a = -2;
++                    private int field_179426_a;
+                     private final Iterable <? extends T > [] field_179424_b;
+                     private final Iterator <? extends T > [] field_179425_c;
+                     private final T[] field_179423_d;
+ 
+                     private ProductIterator(Class<T> p_i46018_1_, Iterable <? extends T > [] p_i46018_2_)
+                     {
++                        this.field_179426_a = -2;
+                         this.field_179424_b = p_i46018_2_;
+-                        this.field_179425_c = Cartesian.func_179319_b(Iterator.class, this.field_179424_b.length);
++                        this.field_179425_c = (Iterator[])Cartesian.func_179319_b(Iterator.class, this.field_179424_b.length);
+ 
+                         for (int i = 0; i < this.field_179424_b.length; ++i)
+                         {
+                             this.field_179425_c[i] = p_i46018_2_[i].iterator();
+                         }
+ 
+-                        this.field_179423_d = Cartesian.func_179319_b(p_i46018_1_, this.field_179425_c.length);
++                        this.field_179423_d = (T[])Cartesian.func_179319_b(p_i46018_1_, this.field_179425_c.length);
+                     }
+ 
+                     private void func_179422_b()

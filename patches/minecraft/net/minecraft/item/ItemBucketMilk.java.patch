@@ -20,15 +20,19 @@
          return p_77654_1_.func_190926_b() ? new ItemStack(Items.field_151133_ar) : p_77654_1_;
      }
  
-@@ -50,6 +46,11 @@
-     public EnumAction func_77661_b(ItemStack p_77661_1_)
-     {
+@@ -52,9 +48,14 @@
          return EnumAction.DRINK;
-+    }
-+
+     }
+ 
 +    @Override
 +    public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, net.minecraft.nbt.NBTTagCompound nbt) {
 +        return new net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper(stack);
-     }
- 
++    }
++
      public ActionResult<ItemStack> func_77659_a(World p_77659_1_, EntityPlayer p_77659_2_, EnumHand p_77659_3_)
+     {
+         p_77659_2_.func_184598_c(p_77659_3_);
+-        return new ActionResult<>(EnumActionResult.SUCCESS, p_77659_2_.func_184586_b(p_77659_3_));
++        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, p_77659_2_.func_184586_b(p_77659_3_));
+     }
+ }

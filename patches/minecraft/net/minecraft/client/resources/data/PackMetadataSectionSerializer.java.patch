@@ -1,0 +1,20 @@
+--- before/net/minecraft/client/resources/data/PackMetadataSectionSerializer.java
++++ after/net/minecraft/client/resources/data/PackMetadataSectionSerializer.java
+@@ -18,7 +18,7 @@
+     public PackMetadataSection deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_) throws JsonParseException
+     {
+         JsonObject jsonobject = p_deserialize_1_.getAsJsonObject();
+-        ITextComponent itextcomponent = p_deserialize_3_.deserialize(jsonobject.get("description"), ITextComponent.class);
++        ITextComponent itextcomponent = (ITextComponent)p_deserialize_3_.deserialize(jsonobject.get("description"), ITextComponent.class);
+ 
+         if (itextcomponent == null)
+         {
+@@ -34,7 +34,7 @@
+     public JsonElement serialize(PackMetadataSection p_serialize_1_, Type p_serialize_2_, JsonSerializationContext p_serialize_3_)
+     {
+         JsonObject jsonobject = new JsonObject();
+-        jsonobject.addProperty("pack_format", p_serialize_1_.func_110462_b());
++        jsonobject.addProperty("pack_format", Integer.valueOf(p_serialize_1_.func_110462_b()));
+         jsonobject.add("description", p_serialize_3_.serialize(p_serialize_1_.func_152805_a()));
+         return jsonobject;
+     }

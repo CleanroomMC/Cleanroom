@@ -1,9 +1,19 @@
 --- before/net/minecraft/entity/ai/EntityAIMate.java
 +++ after/net/minecraft/entity/ai/EntityAIMate.java
-@@ -92,6 +92,18 @@
+@@ -72,7 +72,7 @@
+ 
+     private EntityAnimal func_75389_f()
+     {
+-        List<EntityAnimal> list = this.field_75394_a.func_72872_a(this.field_190857_e, this.field_75390_d.func_174813_aQ().func_186662_g(8.0D));
++        List<EntityAnimal> list = this.field_75394_a.<EntityAnimal>func_72872_a(this.field_190857_e, this.field_75390_d.func_174813_aQ().func_186662_g(8.0D));
+         double d0 = Double.MAX_VALUE;
+         EntityAnimal entityanimal = null;
+ 
+@@ -91,6 +91,18 @@
+     private void func_75388_i()
      {
          EntityAgeable entityageable = this.field_75390_d.func_90011_a(this.field_75391_e);
- 
++
 +        final net.minecraftforge.event.entity.living.BabyEntitySpawnEvent event = new net.minecraftforge.event.entity.living.BabyEntitySpawnEvent(field_75390_d, field_75391_e, entityageable);
 +        final boolean cancelled = net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
 +        entityageable = event.getChild();
@@ -15,7 +25,6 @@
 +            this.field_75391_e.func_70875_t();
 +            return;
 +        }
-+
+ 
          if (entityageable != null)
          {
-             EntityPlayerMP entityplayermp = this.field_75390_d.func_191993_do();

@@ -1,5 +1,14 @@
 --- before/net/minecraft/server/management/PlayerInteractionManager.java
 +++ after/net/minecraft/server/management/PlayerInteractionManager.java
+@@ -50,7 +50,7 @@
+         this.field_73091_c = p_73076_1_;
+         p_73076_1_.func_77147_a(this.field_73090_b.field_71075_bZ);
+         this.field_73090_b.func_71016_p();
+-        this.field_73090_b.field_71133_b.func_184103_al().func_148540_a(new SPacketPlayerListItem(SPacketPlayerListItem.Action.UPDATE_GAME_MODE, this.field_73090_b));
++        this.field_73090_b.field_71133_b.func_184103_al().func_148540_a(new SPacketPlayerListItem(SPacketPlayerListItem.Action.UPDATE_GAME_MODE, new EntityPlayerMP[] {this.field_73090_b}));
+         this.field_73092_a.func_72854_c();
+     }
+ 
 @@ -88,7 +88,7 @@
              int i = this.field_73100_i - this.field_73093_n;
              IBlockState iblockstate = this.field_73092_a.func_180495_p(this.field_180241_i);

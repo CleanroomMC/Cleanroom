@@ -30,6 +30,38 @@
      }
  
      public String func_151316_d()
+@@ -125,8 +129,8 @@
+                     public JsonElement serialize(ServerStatusResponse.Players p_serialize_1_, Type p_serialize_2_, JsonSerializationContext p_serialize_3_)
+                     {
+                         JsonObject jsonobject = new JsonObject();
+-                        jsonobject.addProperty("max", p_serialize_1_.func_151332_a());
+-                        jsonobject.addProperty("online", p_serialize_1_.func_151333_b());
++                        jsonobject.addProperty("max", Integer.valueOf(p_serialize_1_.func_151332_a()));
++                        jsonobject.addProperty("online", Integer.valueOf(p_serialize_1_.func_151333_b()));
+ 
+                         if (p_serialize_1_.func_151331_c() != null && p_serialize_1_.func_151331_c().length > 0)
+                         {
+@@ -158,17 +162,17 @@
+ 
+                 if (jsonobject.has("description"))
+                 {
+-                    serverstatusresponse.func_151315_a(p_deserialize_3_.deserialize(jsonobject.get("description"), ITextComponent.class));
++                    serverstatusresponse.func_151315_a((ITextComponent)p_deserialize_3_.deserialize(jsonobject.get("description"), ITextComponent.class));
+                 }
+ 
+                 if (jsonobject.has("players"))
+                 {
+-                    serverstatusresponse.func_151319_a(p_deserialize_3_.deserialize(jsonobject.get("players"), ServerStatusResponse.Players.class));
++                    serverstatusresponse.func_151319_a((ServerStatusResponse.Players)p_deserialize_3_.deserialize(jsonobject.get("players"), ServerStatusResponse.Players.class));
+                 }
+ 
+                 if (jsonobject.has("version"))
+                 {
+-                    serverstatusresponse.func_151321_a(p_deserialize_3_.deserialize(jsonobject.get("version"), ServerStatusResponse.Version.class));
++                    serverstatusresponse.func_151321_a((ServerStatusResponse.Version)p_deserialize_3_.deserialize(jsonobject.get("version"), ServerStatusResponse.Version.class));
+                 }
+ 
+                 if (jsonobject.has("favicon"))
 @@ -176,6 +180,7 @@
                      serverstatusresponse.func_151320_a(JsonUtils.func_151200_h(jsonobject, "favicon"));
                  }
@@ -38,7 +70,7 @@
                  return serverstatusresponse;
              }
  
-@@ -203,9 +208,49 @@
+@@ -203,10 +208,50 @@
                      jsonobject.addProperty("favicon", p_serialize_1_.func_151316_d());
                  }
  
@@ -46,7 +78,7 @@
                  return jsonobject;
              }
          }
-+
+ 
 +    private java.util.concurrent.Semaphore mutex = new java.util.concurrent.Semaphore(1);
 +    private String json = null;
 +    /**
@@ -85,6 +117,16 @@
 +    {
 +        this.json = null;
 +    }
- 
++
      public static class Version
          {
+             private final String field_151306_a;
+@@ -240,7 +285,7 @@
+                     {
+                         JsonObject jsonobject = new JsonObject();
+                         jsonobject.addProperty("name", p_serialize_1_.func_151303_a());
+-                        jsonobject.addProperty("protocol", p_serialize_1_.func_151304_b());
++                        jsonobject.addProperty("protocol", Integer.valueOf(p_serialize_1_.func_151304_b()));
+                         return jsonobject;
+                     }
+                 }

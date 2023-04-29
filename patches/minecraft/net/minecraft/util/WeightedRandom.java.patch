@@ -1,0 +1,20 @@
+--- before/net/minecraft/util/WeightedRandom.java
++++ after/net/minecraft/util/WeightedRandom.java
+@@ -28,7 +28,7 @@
+         else
+         {
+             int i = p_76273_0_.nextInt(p_76273_2_);
+-            return func_180166_a(p_76273_1_, i);
++            return (T)func_180166_a(p_76273_1_, i);
+         }
+     }
+ 
+@@ -52,7 +52,7 @@
+ 
+     public static <T extends WeightedRandom.Item> T func_76271_a(Random p_76271_0_, List<T> p_76271_1_)
+     {
+-        return func_76273_a(p_76271_0_, p_76271_1_, func_76272_a(p_76271_1_));
++        return (T)func_76273_a(p_76271_0_, p_76271_1_, func_76272_a(p_76271_1_));
+     }
+ 
+     public static class Item

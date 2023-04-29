@@ -9,16 +9,18 @@
          {
              int i = 32;
  
-@@ -61,7 +61,7 @@
+@@ -61,8 +61,9 @@
                  p_180683_1_.func_175698_g(p_180683_2_);
                  BlockPos blockpos;
  
 -                for (blockpos = p_180683_2_; BlockFalling.func_185759_i(p_180683_1_.func_180495_p(blockpos)) && blockpos.func_177956_o() > 0; blockpos = blockpos.func_177977_b())
 +                for (blockpos = p_180683_2_; p_180683_1_.func_175623_d(blockpos) && BlockFalling.func_185759_i(p_180683_1_.func_180495_p(blockpos)) && blockpos.func_177956_o() > 0; blockpos = blockpos.func_177977_b())
                  {
-                     ;
++                    ;
                  }
-@@ -95,7 +95,7 @@
+ 
+                 if (blockpos.func_177956_o() > 0)
+@@ -94,7 +95,7 @@
              {
                  BlockPos blockpos = p_180684_2_.func_177982_a(p_180684_1_.field_73012_v.nextInt(16) - p_180684_1_.field_73012_v.nextInt(16), p_180684_1_.field_73012_v.nextInt(8) - p_180684_1_.field_73012_v.nextInt(8), p_180684_1_.field_73012_v.nextInt(16) - p_180684_1_.field_73012_v.nextInt(16));
  

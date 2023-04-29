@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/renderer/block/model/BuiltInModel.java
++++ after/net/minecraft/client/renderer/block/model/BuiltInModel.java
+@@ -23,7 +23,7 @@
+ 
+     public List<BakedQuad> func_188616_a(@Nullable IBlockState p_188616_1_, @Nullable EnumFacing p_188616_2_, long p_188616_3_)
+     {
+-        return Collections.emptyList();
++        return Collections.<BakedQuad>emptyList();
+     }
+ 
+     public boolean func_177555_b()

@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/multiplayer/ServerList.java
++++ after/net/minecraft/client/multiplayer/ServerList.java
+@@ -17,7 +17,7 @@
+ {
+     private static final Logger field_147415_a = LogManager.getLogger();
+     private final Minecraft field_78859_a;
+-    private final List<ServerData> field_78858_b = Lists.newArrayList();
++    private final List<ServerData> field_78858_b = Lists.<ServerData>newArrayList();
+ 
+     public ServerList(Minecraft p_i1194_1_)
+     {

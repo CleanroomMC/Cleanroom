@@ -1,0 +1,29 @@
+--- before/net/minecraft/inventory/InventoryCrafting.java
++++ after/net/minecraft/inventory/InventoryCrafting.java
+@@ -17,7 +17,7 @@
+ 
+     public InventoryCrafting(Container p_i1807_1_, int p_i1807_2_, int p_i1807_3_)
+     {
+-        this.field_70466_a = NonNullList.func_191197_a(p_i1807_2_ * p_i1807_3_, ItemStack.field_190927_a);
++        this.field_70466_a = NonNullList.<ItemStack>func_191197_a(p_i1807_2_ * p_i1807_3_, ItemStack.field_190927_a);
+         this.field_70465_c = p_i1807_1_;
+         this.field_70464_b = p_i1807_2_;
+         this.field_174924_c = p_i1807_3_;
+@@ -43,7 +43,7 @@
+ 
+     public ItemStack func_70301_a(int p_70301_1_)
+     {
+-        return p_70301_1_ >= this.func_70302_i_() ? ItemStack.field_190927_a : this.field_70466_a.get(p_70301_1_);
++        return p_70301_1_ >= this.func_70302_i_() ? ItemStack.field_190927_a : (ItemStack)this.field_70466_a.get(p_70301_1_);
+     }
+ 
+     public ItemStack func_70463_b(int p_70463_1_, int p_70463_2_)
+@@ -63,7 +63,7 @@
+ 
+     public ITextComponent func_145748_c_()
+     {
+-        return (ITextComponent)(this.func_145818_k_() ? new TextComponentString(this.func_70005_c_()) : new TextComponentTranslation(this.func_70005_c_()));
++        return (ITextComponent)(this.func_145818_k_() ? new TextComponentString(this.func_70005_c_()) : new TextComponentTranslation(this.func_70005_c_(), new Object[0]));
+     }
+ 
+     public ItemStack func_70304_b(int p_70304_1_)

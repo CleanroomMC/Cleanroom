@@ -1,0 +1,28 @@
+--- before/net/minecraft/util/ObjectIntIdentityMap.java
++++ after/net/minecraft/util/ObjectIntIdentityMap.java
+@@ -20,13 +20,13 @@
+ 
+     public ObjectIntIdentityMap(int p_i46984_1_)
+     {
+-        this.field_148748_b = Lists.newArrayListWithExpectedSize(p_i46984_1_);
+-        this.field_148749_a = new IdentityHashMap<>(p_i46984_1_);
++        this.field_148748_b = Lists.<T>newArrayListWithExpectedSize(p_i46984_1_);
++        this.field_148749_a = new IdentityHashMap<T, Integer>(p_i46984_1_);
+     }
+ 
+     public void func_148746_a(T p_148746_1_, int p_148746_2_)
+     {
+-        this.field_148749_a.put(p_148746_1_, p_148746_2_);
++        this.field_148749_a.put(p_148746_1_, Integer.valueOf(p_148746_2_));
+ 
+         while (this.field_148748_b.size() <= p_148746_2_)
+         {
+@@ -39,7 +39,7 @@
+     public int func_148747_b(T p_148747_1_)
+     {
+         Integer integer = this.field_148749_a.get(p_148747_1_);
+-        return integer == null ? -1 : integer;
++        return integer == null ? -1 : integer.intValue();
+     }
+ 
+     @Nullable

@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/gui/GuiCommandBlock.java
++++ after/net/minecraft/client/gui/GuiCommandBlock.java
+@@ -205,7 +205,7 @@
+ 
+         if (!this.field_146486_g.func_146179_b().isEmpty())
+         {
+-            i += j * this.field_146289_q.field_78288_b + 1;
++            i = i + j * this.field_146289_q.field_78288_b + 1;
+             this.func_73731_b(this.field_146289_q, I18n.func_135052_a("advMode.previousOutput"), this.field_146294_l / 2 - 150, i + 4, 10526880);
+             this.field_146486_g.func_146194_f();
+         }

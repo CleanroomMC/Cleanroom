@@ -1,5 +1,65 @@
 --- before/net/minecraft/entity/monster/EntityEnderman.java
 +++ after/net/minecraft/entity/monster/EntityEnderman.java
+@@ -51,10 +51,10 @@
+ public class EntityEnderman extends EntityMob
+ {
+     private static final UUID field_110192_bp = UUID.fromString("020E0DFB-87AE-4653-9556-831010E291A0");
+-    private static final AttributeModifier field_110193_bq = (new AttributeModifier(field_110192_bp, "Attacking speed boost", (double)0.15F, 0)).func_111168_a(false);
+-    private static final Set<Block> field_70827_d = Sets.newIdentityHashSet();
+-    private static final DataParameter<Optional<IBlockState>> field_184718_bv = EntityDataManager.func_187226_a(EntityEnderman.class, DataSerializers.field_187197_g);
+-    private static final DataParameter<Boolean> field_184719_bw = EntityDataManager.func_187226_a(EntityEnderman.class, DataSerializers.field_187198_h);
++    private static final AttributeModifier field_110193_bq = (new AttributeModifier(field_110192_bp, "Attacking speed boost", 0.15000000596046448D, 0)).func_111168_a(false);
++    private static final Set<Block> field_70827_d = Sets.<Block>newIdentityHashSet();
++    private static final DataParameter<Optional<IBlockState>> field_184718_bv = EntityDataManager.<Optional<IBlockState>>func_187226_a(EntityEnderman.class, DataSerializers.field_187197_g);
++    private static final DataParameter<Boolean> field_184719_bw = EntityDataManager.<Boolean>func_187226_a(EntityEnderman.class, DataSerializers.field_187198_h);
+     private int field_184720_bx;
+     private int field_184721_by;
+ 
+@@ -76,8 +76,8 @@
+         this.field_70714_bg.func_75776_a(10, new EntityEnderman.AIPlaceBlock(this));
+         this.field_70714_bg.func_75776_a(11, new EntityEnderman.AITakeBlock(this));
+         this.field_70715_bh.func_75776_a(1, new EntityEnderman.AIFindPlayer(this));
+-        this.field_70715_bh.func_75776_a(2, new EntityAIHurtByTarget(this, false));
+-        this.field_70715_bh.func_75776_a(3, new EntityAINearestAttackableTarget<>(this, EntityEndermite.class, 10, true, false, new Predicate<EntityEndermite>()
++        this.field_70715_bh.func_75776_a(2, new EntityAIHurtByTarget(this, false, new Class[0]));
++        this.field_70715_bh.func_75776_a(3, new EntityAINearestAttackableTarget(this, EntityEndermite.class, 10, true, false, new Predicate<EntityEndermite>()
+         {
+             public boolean apply(@Nullable EntityEndermite p_apply_1_)
+             {
+@@ -90,7 +90,7 @@
+     {
+         super.func_110147_ax();
+         this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(40.0D);
+-        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a((double)0.3F);
++        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.30000001192092896D);
+         this.func_110148_a(SharedMonsterAttributes.field_111264_e).func_111128_a(7.0D);
+         this.func_110148_a(SharedMonsterAttributes.field_111265_b).func_111128_a(64.0D);
+     }
+@@ -103,13 +103,13 @@
+         if (p_70624_1_ == null)
+         {
+             this.field_184721_by = 0;
+-            this.field_70180_af.func_187227_b(field_184719_bw, false);
++            this.field_70180_af.func_187227_b(field_184719_bw, Boolean.valueOf(false));
+             iattributeinstance.func_111124_b(field_110193_bq);
+         }
+         else
+         {
+             this.field_184721_by = this.field_70173_aa;
+-            this.field_70180_af.func_187227_b(field_184719_bw, true);
++            this.field_70180_af.func_187227_b(field_184719_bw, Boolean.valueOf(true));
+ 
+             if (!iattributeinstance.func_180374_a(field_110193_bq))
+             {
+@@ -122,7 +122,7 @@
+     {
+         super.func_70088_a();
+         this.field_70180_af.func_187214_a(field_184718_bv, Optional.absent());
+-        this.field_70180_af.func_187214_a(field_184719_bw, false);
++        this.field_70180_af.func_187214_a(field_184719_bw, Boolean.valueOf(false));
+     }
+ 
+     public void func_184716_o()
 @@ -267,7 +267,9 @@
  
      private boolean func_70825_j(double p_70825_1_, double p_70825_3_, double p_70825_5_)
@@ -11,7 +71,16 @@
  
          if (flag)
          {
-@@ -354,6 +356,18 @@
+@@ -320,7 +322,7 @@
+     @Nullable
+     public IBlockState func_175489_ck()
+     {
+-        return this.field_70180_af.func_187225_a(field_184718_bv).orNull();
++        return (IBlockState)((Optional)this.field_70180_af.func_187225_a(field_184718_bv)).orNull();
+     }
+ 
+     public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
+@@ -354,9 +356,21 @@
          }
      }
  
@@ -29,7 +98,49 @@
 +
      public boolean func_70823_r()
      {
-         return ((Boolean)this.field_70180_af.func_187225_a(field_184719_bw)).booleanValue();
+-        return this.field_70180_af.func_187225_a(field_184719_bw);
++        return ((Boolean)this.field_70180_af.func_187225_a(field_184719_bw)).booleanValue();
+     }
+ 
+     static
+@@ -394,7 +408,7 @@
+             public boolean func_75250_a()
+             {
+                 double d0 = this.func_111175_f();
+-                this.field_179448_g = this.field_179449_j.field_70170_p.func_184150_a(this.field_179449_j.field_70165_t, this.field_179449_j.field_70163_u, this.field_179449_j.field_70161_v, d0, d0, (Function<EntityPlayer, Double>)null, new Predicate<EntityPlayer>()
++                this.field_179448_g = this.field_179449_j.field_70170_p.func_184150_a(this.field_179449_j.field_70165_t, this.field_179449_j.field_70163_u, this.field_179449_j.field_70161_v, d0, d0, (Function)null, new Predicate<EntityPlayer>()
+                 {
+                     public boolean apply(@Nullable EntityPlayer p_apply_1_)
+                     {
+@@ -432,7 +446,7 @@
+                 }
+                 else
+                 {
+-                    return this.field_75309_a != null && this.field_75309_a.func_70089_S() ? true : super.func_75253_b();
++                    return this.field_75309_a != null && ((EntityPlayer)this.field_75309_a).func_70089_S() ? true : super.func_75253_b();
+                 }
+             }
+ 
+@@ -451,16 +465,16 @@
+                 {
+                     if (this.field_75309_a != null)
+                     {
+-                        if (this.field_179449_j.func_70821_d(this.field_75309_a))
++                        if (this.field_179449_j.func_70821_d((EntityPlayer)this.field_75309_a))
+                         {
+-                            if (this.field_75309_a.func_70068_e(this.field_179449_j) < 16.0D)
++                            if (((EntityPlayer)this.field_75309_a).func_70068_e(this.field_179449_j) < 16.0D)
+                             {
+                                 this.field_179449_j.func_70820_n();
+                             }
+ 
+                             this.field_179451_i = 0;
+                         }
+-                        else if (this.field_75309_a.func_70068_e(this.field_179449_j) > 256.0D && this.field_179451_i++ >= 30 && this.field_179449_j.func_70816_c(this.field_75309_a))
++                        else if (((EntityPlayer)this.field_75309_a).func_70068_e(this.field_179449_j) > 256.0D && this.field_179451_i++ >= 30 && this.field_179449_j.func_70816_c(this.field_75309_a))
+                         {
+                             this.field_179451_i = 0;
+                         }
 @@ -486,7 +500,7 @@
                  {
                      return false;

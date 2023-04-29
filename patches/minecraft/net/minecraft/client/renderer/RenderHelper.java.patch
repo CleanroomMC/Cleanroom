@@ -1,0 +1,32 @@
+--- before/net/minecraft/client/renderer/RenderHelper.java
++++ after/net/minecraft/client/renderer/RenderHelper.java
+@@ -1,6 +1,5 @@
+ package net.minecraft.client.renderer;
+ 
+-import java.nio.Buffer;
+ import java.nio.FloatBuffer;
+ import net.minecraft.util.math.Vec3d;
+ import net.minecraftforge.fml.relauncher.Side;
+@@ -10,8 +9,8 @@
+ public class RenderHelper
+ {
+     private static final FloatBuffer field_74522_a = GLAllocation.func_74529_h(4);
+-    private static final Vec3d field_82884_b = (new Vec3d((double)0.2F, 1.0D, (double) - 0.7F)).func_72432_b();
+-    private static final Vec3d field_82885_c = (new Vec3d((double) - 0.2F, 1.0D, (double)0.7F)).func_72432_b();
++    private static final Vec3d field_82884_b = (new Vec3d(0.20000000298023224D, 1.0D, -0.699999988079071D)).func_72432_b();
++    private static final Vec3d field_82885_c = (new Vec3d(-0.20000000298023224D, 1.0D, 0.699999988079071D)).func_72432_b();
+ 
+     public static void func_74518_a()
+     {
+@@ -49,9 +48,9 @@
+ 
+     public static FloatBuffer func_74521_a(float p_74521_0_, float p_74521_1_, float p_74521_2_, float p_74521_3_)
+     {
+-        ((Buffer)field_74522_a).clear();
++        field_74522_a.clear();
+         field_74522_a.put(p_74521_0_).put(p_74521_1_).put(p_74521_2_).put(p_74521_3_);
+-        ((Buffer)field_74522_a).flip();
++        field_74522_a.flip();
+         return field_74522_a;
+     }
+ 

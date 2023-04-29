@@ -1,5 +1,16 @@
 --- before/net/minecraft/entity/item/EntityMinecartCommandBlock.java
 +++ after/net/minecraft/entity/item/EntityMinecartCommandBlock.java
+@@ -29,8 +29,8 @@
+ 
+ public class EntityMinecartCommandBlock extends EntityMinecart
+ {
+-    private static final DataParameter<String> field_184273_a = EntityDataManager.func_187226_a(EntityMinecartCommandBlock.class, DataSerializers.field_187194_d);
+-    private static final DataParameter<ITextComponent> field_184274_b = EntityDataManager.func_187226_a(EntityMinecartCommandBlock.class, DataSerializers.field_187195_e);
++    private static final DataParameter<String> field_184273_a = EntityDataManager.<String>func_187226_a(EntityMinecartCommandBlock.class, DataSerializers.field_187194_d);
++    private static final DataParameter<ITextComponent> field_184274_b = EntityDataManager.<ITextComponent>func_187226_a(EntityMinecartCommandBlock.class, DataSerializers.field_187195_e);
+     private final CommandBlockBaseLogic field_145824_a = new CommandBlockBaseLogic()
+     {
+         public void func_145756_e()
 @@ -147,6 +147,7 @@
  
      public boolean func_184230_a(EntityPlayer p_184230_1_, EnumHand p_184230_2_)
@@ -8,3 +19,23 @@
          this.field_145824_a.func_175574_a(p_184230_1_);
          return false;
      }
+@@ -159,15 +160,16 @@
+         {
+             try
+             {
+-                this.field_145824_a.func_145750_b(this.func_184212_Q().func_187225_a(field_184274_b));
++                this.field_145824_a.func_145750_b((ITextComponent)this.func_184212_Q().func_187225_a(field_184274_b));
+             }
+-            catch (Throwable throwable)
++            catch (Throwable var3)
+             {
++                ;
+             }
+         }
+         else if (field_184273_a.equals(p_184206_1_))
+         {
+-            this.field_145824_a.func_145752_a(this.func_184212_Q().func_187225_a(field_184273_a));
++            this.field_145824_a.func_145752_a((String)this.func_184212_Q().func_187225_a(field_184273_a));
+         }
+     }
+ 

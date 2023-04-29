@@ -1,5 +1,23 @@
 --- before/net/minecraft/command/CommandGameRule.java
 +++ after/net/minecraft/command/CommandGameRule.java
+@@ -42,7 +42,7 @@
+ 
+                 if (!gamerules.func_82765_e(s))
+                 {
+-                    throw new CommandException("commands.gamerule.norule", s);
++                    throw new CommandException("commands.gamerule.norule", new Object[] {s});
+                 }
+ 
+                 String s2 = gamerules.func_82767_a(s);
+@@ -53,7 +53,7 @@
+ 
+                 if (gamerules.func_180264_a(s, GameRules.ValueType.BOOLEAN_VALUE) && !"true".equals(s1) && !"false".equals(s1))
+                 {
+-                    throw new CommandException("commands.generic.boolean.invalid", s1);
++                    throw new CommandException("commands.generic.boolean.invalid", new Object[] {s1});
+                 }
+ 
+                 gamerules.func_82764_b(s, s1);
 @@ -73,6 +73,7 @@
                  entityplayermp.field_71135_a.func_147359_a(new SPacketEntityStatus(entityplayermp, b0));
              }
@@ -8,3 +26,12 @@
      }
  
      public List<String> func_184883_a(MinecraftServer p_184883_1_, ICommandSender p_184883_2_, String[] p_184883_3_, @Nullable BlockPos p_184883_4_)
+@@ -98,7 +99,7 @@
+                 }
+             }
+ 
+-            return Collections.emptyList();
++            return Collections.<String>emptyList();
+         }
+     }
+ 

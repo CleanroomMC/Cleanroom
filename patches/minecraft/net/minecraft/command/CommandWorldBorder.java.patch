@@ -1,0 +1,105 @@
+--- before/net/minecraft/command/CommandWorldBorder.java
++++ after/net/minecraft/command/CommandWorldBorder.java
+@@ -30,7 +30,7 @@
+     {
+         if (p_184881_3_.length < 1)
+         {
+-            throw new WrongUsageException("commands.worldborder.usage");
++            throw new WrongUsageException("commands.worldborder.usage", new Object[0]);
+         }
+         else
+         {
+@@ -40,7 +40,7 @@
+             {
+                 if (p_184881_3_.length != 2 && p_184881_3_.length != 3)
+                 {
+-                    throw new WrongUsageException("commands.worldborder.set.usage");
++                    throw new WrongUsageException("commands.worldborder.set.usage", new Object[0]);
+                 }
+ 
+                 double d0 = worldborder.func_177751_j();
+@@ -70,7 +70,7 @@
+             {
+                 if (p_184881_3_.length != 2 && p_184881_3_.length != 3)
+                 {
+-                    throw new WrongUsageException("commands.worldborder.add.usage");
++                    throw new WrongUsageException("commands.worldborder.add.usage", new Object[0]);
+                 }
+ 
+                 double d4 = worldborder.func_177741_h();
+@@ -100,7 +100,7 @@
+             {
+                 if (p_184881_3_.length != 3)
+                 {
+-                    throw new WrongUsageException("commands.worldborder.center.usage");
++                    throw new WrongUsageException("commands.worldborder.center.usage", new Object[0]);
+                 }
+ 
+                 BlockPos blockpos = p_184881_2_.func_180425_c();
+@@ -113,14 +113,14 @@
+             {
+                 if (p_184881_3_.length < 2)
+                 {
+-                    throw new WrongUsageException("commands.worldborder.damage.usage");
++                    throw new WrongUsageException("commands.worldborder.damage.usage", new Object[0]);
+                 }
+ 
+                 if ("buffer".equals(p_184881_3_[1]))
+                 {
+                     if (p_184881_3_.length != 3)
+                     {
+-                        throw new WrongUsageException("commands.worldborder.damage.buffer.usage");
++                        throw new WrongUsageException("commands.worldborder.damage.buffer.usage", new Object[0]);
+                     }
+ 
+                     double d5 = func_180526_a(p_184881_3_[2], 0.0D);
+@@ -132,7 +132,7 @@
+                 {
+                     if (p_184881_3_.length != 3)
+                     {
+-                        throw new WrongUsageException("commands.worldborder.damage.amount.usage");
++                        throw new WrongUsageException("commands.worldborder.damage.amount.usage", new Object[0]);
+                     }
+ 
+                     double d6 = func_180526_a(p_184881_3_[2], 0.0D);
+@@ -145,14 +145,14 @@
+             {
+                 if (p_184881_3_.length < 2)
+                 {
+-                    throw new WrongUsageException("commands.worldborder.warning.usage");
++                    throw new WrongUsageException("commands.worldborder.warning.usage", new Object[0]);
+                 }
+ 
+                 if ("time".equals(p_184881_3_[1]))
+                 {
+                     if (p_184881_3_.length != 3)
+                     {
+-                        throw new WrongUsageException("commands.worldborder.warning.time.usage");
++                        throw new WrongUsageException("commands.worldborder.warning.time.usage", new Object[0]);
+                     }
+ 
+                     int j = func_180528_a(p_184881_3_[2], 0);
+@@ -164,7 +164,7 @@
+                 {
+                     if (p_184881_3_.length != 3)
+                     {
+-                        throw new WrongUsageException("commands.worldborder.warning.distance.usage");
++                        throw new WrongUsageException("commands.worldborder.warning.distance.usage", new Object[0]);
+                     }
+ 
+                     int k = func_180528_a(p_184881_3_[2], 0);
+@@ -177,12 +177,12 @@
+             {
+                 if (!"get".equals(p_184881_3_[0]))
+                 {
+-                    throw new WrongUsageException("commands.worldborder.usage");
++                    throw new WrongUsageException("commands.worldborder.usage", new Object[0]);
+                 }
+ 
+                 double d7 = worldborder.func_177741_h();
+                 p_184881_2_.func_174794_a(CommandResultStats.Type.QUERY_RESULT, MathHelper.func_76128_c(d7 + 0.5D));
+-                p_184881_2_.func_145747_a(new TextComponentTranslation("commands.worldborder.get.success", String.format("%.0f", d7)));
++                p_184881_2_.func_145747_a(new TextComponentTranslation("commands.worldborder.get.success", new Object[] {String.format("%.0f", d7)}));
+             }
+         }
+     }

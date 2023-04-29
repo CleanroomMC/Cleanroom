@@ -1,12 +1,51 @@
 --- before/net/minecraft/util/ClassInheritanceMultiMap.java
 +++ after/net/minecraft/util/ClassInheritanceMultiMap.java
-@@ -13,7 +13,8 @@
+@@ -13,11 +13,12 @@
  
  public class ClassInheritanceMultiMap<T> extends AbstractSet<T>
  {
--    private static final Set < Class<? >> field_181158_a = Sets. < Class<? >> newHashSet();
+-    private static final Set < Class<? >> field_181158_a = Sets.newHashSet();
+-    private final Map < Class<?>, List<T >> field_180218_a = Maps.newHashMap();
+-    private final Set < Class<? >> field_180216_b = Sets.newIdentityHashSet();
 +    // Forge: Use concurrent collection to allow creating chunks from multiple threads safely
 +    private static final Set < Class<? >> field_181158_a = java.util.Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<Class<?>, Boolean>());
-     private final Map < Class<?>, List<T >> field_180218_a = Maps. < Class<?>, List<T >> newHashMap();
-     private final Set < Class<? >> field_180216_b = Sets. < Class<? >> newIdentityHashSet();
++    private final Map < Class<?>, List<T >> field_180218_a = Maps. < Class<?>, List<T >> newHashMap();
++    private final Set < Class<? >> field_180216_b = Sets. < Class<? >> newIdentityHashSet();
      private final Class<T> field_180217_c;
+-    private final List<T> field_181745_e = Lists.newArrayList();
++    private final List<T> field_181745_e = Lists.<T>newArrayList();
+ 
+     public ClassInheritanceMultiMap(Class<T> p_i45909_1_)
+     {
+@@ -78,7 +79,7 @@
+ 
+     private void func_181743_a(T p_181743_1_, Class<?> p_181743_2_)
+     {
+-        List<T> list = this.field_180218_a.get(p_181743_2_);
++        List<T> list = (List)this.field_180218_a.get(p_181743_2_);
+ 
+         if (list == null)
+         {
+@@ -99,7 +100,7 @@
+         {
+             if (oclass.isAssignableFrom(t.getClass()))
+             {
+-                List<T> list = this.field_180218_a.get(oclass);
++                List<T> list = (List)this.field_180218_a.get(oclass);
+ 
+                 if (list != null && list.remove(t))
+                 {
+@@ -122,11 +123,11 @@
+         {
+             public Iterator<S> iterator()
+             {
+-                List<T> list = ClassInheritanceMultiMap.this.field_180218_a.get(ClassInheritanceMultiMap.this.func_181157_b(p_180215_1_));
++                List<T> list = (List)ClassInheritanceMultiMap.this.field_180218_a.get(ClassInheritanceMultiMap.this.func_181157_b(p_180215_1_));
+ 
+                 if (list == null)
+                 {
+-                    return Collections.emptyIterator();
++                    return Collections.<S>emptyIterator();
+                 }
+                 else
+                 {

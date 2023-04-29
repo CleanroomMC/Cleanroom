@@ -1,5 +1,14 @@
 --- before/net/minecraft/util/ChatAllowedCharacters.java
 +++ after/net/minecraft/util/ChatAllowedCharacters.java
+@@ -5,7 +5,7 @@
+ 
+ public class ChatAllowedCharacters
+ {
+-    public static final ResourceLeakDetector.Level field_184877_a = Level.DISABLED;
++    public static final Level field_184877_a = Level.DISABLED;
+     public static final char[] field_189861_b = new char[] {'.', '\n', '\r', '\t', '\u0000', '\f', '`', '?', '*', '\\', '<', '>', '|', '"'};
+     public static final char[] field_71567_b = new char[] {'/', '\n', '\r', '\t', '\u0000', '\f', '`', '?', '*', '\\', '<', '>', '|', '"', ':'};
+ 
 @@ -31,6 +31,7 @@
  
      static

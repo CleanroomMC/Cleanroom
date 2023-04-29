@@ -1,0 +1,20 @@
+--- before/net/minecraft/command/server/CommandPardonPlayer.java
++++ after/net/minecraft/command/server/CommandPardonPlayer.java
+@@ -41,7 +41,7 @@
+ 
+             if (gameprofile == null)
+             {
+-                throw new CommandException("commands.unban.failed", p_184881_3_[0]);
++                throw new CommandException("commands.unban.failed", new Object[] {p_184881_3_[0]});
+             }
+             else
+             {
+@@ -51,7 +51,7 @@
+         }
+         else
+         {
+-            throw new WrongUsageException("commands.unban.usage");
++            throw new WrongUsageException("commands.unban.usage", new Object[0]);
+         }
+     }
+ 

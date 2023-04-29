@@ -1,5 +1,23 @@
 --- before/net/minecraft/util/text/TextComponentBase.java
 +++ after/net/minecraft/util/text/TextComponentBase.java
+@@ -11,7 +11,7 @@
+ 
+ public abstract class TextComponentBase implements ITextComponent
+ {
+-    protected List<ITextComponent> field_150264_a = Lists.newArrayList();
++    protected List<ITextComponent> field_150264_a = Lists.<ITextComponent>newArrayList();
+     private Style field_150263_b;
+ 
+     public ITextComponent func_150257_a(ITextComponent p_150257_1_)
+@@ -60,7 +60,7 @@
+ 
+     public Iterator<ITextComponent> iterator()
+     {
+-        return Iterators.concat(Iterators.forArray(this), func_150262_a(this.field_150264_a));
++        return Iterators.<ITextComponent>concat(Iterators.forArray(this), func_150262_a(this.field_150264_a));
+     }
+ 
+     public final String func_150260_c()
 @@ -75,7 +75,6 @@
          return stringbuilder.toString();
      }
@@ -8,3 +26,20 @@
      public final String func_150254_d()
      {
          StringBuilder stringbuilder = new StringBuilder();
+@@ -104,7 +103,7 @@
+                 return p_apply_1_.iterator();
+             }
+         }));
+-        return Iterators.transform(iterator, new Function<ITextComponent, ITextComponent>()
++        iterator = Iterators.transform(iterator, new Function<ITextComponent, ITextComponent>()
+         {
+             public ITextComponent apply(@Nullable ITextComponent p_apply_1_)
+             {
+@@ -113,6 +112,7 @@
+                 return itextcomponent;
+             }
+         });
++        return iterator;
+     }
+ 
+     public boolean equals(Object p_equals_1_)

@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/renderer/block/model/ItemOverrideList.java
 +++ after/net/minecraft/client/renderer/block/model/ItemOverrideList.java
+@@ -14,7 +14,7 @@
+ public class ItemOverrideList
+ {
+     public static final ItemOverrideList field_188022_a = new ItemOverrideList();
+-    private final List<ItemOverride> field_188023_b = Lists.newArrayList();
++    private final List<ItemOverride> field_188023_b = Lists.<ItemOverride>newArrayList();
+ 
+     private ItemOverrideList()
+     {
 @@ -29,6 +29,7 @@
      }
  

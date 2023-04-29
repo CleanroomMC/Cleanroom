@@ -1,6 +1,90 @@
 --- before/net/minecraft/client/renderer/BlockModelShapes.java
 +++ after/net/minecraft/client/renderer/BlockModelShapes.java
-@@ -391,5 +391,6 @@
+@@ -2,6 +2,7 @@
+ 
+ import com.google.common.collect.Maps;
+ import java.util.Map;
++import java.util.Map.Entry;
+ import net.minecraft.block.Block;
+ import net.minecraft.block.BlockCactus;
+ import net.minecraft.block.BlockColored;
+@@ -57,7 +58,7 @@
+ @SideOnly(Side.CLIENT)
+ public class BlockModelShapes
+ {
+-    private final Map<IBlockState, IBakedModel> field_178129_a = Maps.newIdentityHashMap();
++    private final Map<IBlockState, IBakedModel> field_178129_a = Maps.<IBlockState, IBakedModel>newIdentityHashMap();
+     private final BlockStateMapper field_178127_b = new BlockStateMapper();
+     private final ModelManager field_178128_c;
+ 
+@@ -224,7 +225,7 @@
+     {
+         this.field_178129_a.clear();
+ 
+-        for (Map.Entry<IBlockState, ModelResourceLocation> entry : this.field_178127_b.func_178446_a().entrySet())
++        for (Entry<IBlockState, ModelResourceLocation> entry : this.field_178127_b.func_178446_a().entrySet())
+         {
+             this.field_178129_a.put(entry.getKey(), this.field_178128_c.func_174953_a(entry.getValue()));
+         }
+@@ -300,7 +301,7 @@
+         {
+             protected ModelResourceLocation func_178132_a(IBlockState p_178132_1_)
+             {
+-                BlockQuartz.EnumType blockquartz$enumtype = p_178132_1_.func_177229_b(BlockQuartz.field_176335_a);
++                BlockQuartz.EnumType blockquartz$enumtype = (BlockQuartz.EnumType)p_178132_1_.func_177229_b(BlockQuartz.field_176335_a);
+ 
+                 switch (blockquartz$enumtype)
+                 {
+@@ -329,7 +330,7 @@
+         {
+             protected ModelResourceLocation func_178132_a(IBlockState p_178132_1_)
+             {
+-                Map < IProperty<?>, Comparable<? >> map = Maps.newLinkedHashMap(p_178132_1_.func_177228_b());
++                Map < IProperty<?>, Comparable<? >> map = Maps. < IProperty<?>, Comparable<? >> newLinkedHashMap(p_178132_1_.func_177228_b());
+ 
+                 if (p_178132_1_.func_177229_b(BlockStem.field_176483_b) != EnumFacing.UP)
+                 {
+@@ -343,7 +344,7 @@
+         {
+             protected ModelResourceLocation func_178132_a(IBlockState p_178132_1_)
+             {
+-                Map < IProperty<?>, Comparable<? >> map = Maps.newLinkedHashMap(p_178132_1_.func_177228_b());
++                Map < IProperty<?>, Comparable<? >> map = Maps. < IProperty<?>, Comparable<? >> newLinkedHashMap(p_178132_1_.func_177228_b());
+ 
+                 if (p_178132_1_.func_177229_b(BlockStem.field_176483_b) != EnumFacing.UP)
+                 {
+@@ -357,7 +358,7 @@
+         {
+             protected ModelResourceLocation func_178132_a(IBlockState p_178132_1_)
+             {
+-                Map < IProperty<?>, Comparable<? >> map = Maps.newLinkedHashMap(p_178132_1_.func_177228_b());
++                Map < IProperty<?>, Comparable<? >> map = Maps. < IProperty<?>, Comparable<? >> newLinkedHashMap(p_178132_1_.func_177228_b());
+                 String s = BlockDirt.field_176386_a.func_177702_a((BlockDirt.DirtType)map.remove(BlockDirt.field_176386_a));
+ 
+                 if (BlockDirt.DirtType.PODZOL != p_178132_1_.func_177229_b(BlockDirt.field_176386_a))
+@@ -372,10 +373,10 @@
+         {
+             protected ModelResourceLocation func_178132_a(IBlockState p_178132_1_)
+             {
+-                Map < IProperty<?>, Comparable<? >> map = Maps.newLinkedHashMap(p_178132_1_.func_177228_b());
++                Map < IProperty<?>, Comparable<? >> map = Maps. < IProperty<?>, Comparable<? >> newLinkedHashMap(p_178132_1_.func_177228_b());
+                 String s = BlockStoneSlab.field_176556_M.func_177702_a((BlockStoneSlab.EnumType)map.remove(BlockStoneSlab.field_176556_M));
+                 map.remove(BlockStoneSlab.field_176555_b);
+-                String s1 = p_178132_1_.func_177229_b(BlockStoneSlab.field_176555_b) ? "all" : "normal";
++                String s1 = ((Boolean)p_178132_1_.func_177229_b(BlockStoneSlab.field_176555_b)).booleanValue() ? "all" : "normal";
+                 return new ModelResourceLocation(s + "_double_slab", s1);
+             }
+         });
+@@ -383,12 +384,13 @@
+         {
+             protected ModelResourceLocation func_178132_a(IBlockState p_178132_1_)
+             {
+-                Map < IProperty<?>, Comparable<? >> map = Maps.newLinkedHashMap(p_178132_1_.func_177228_b());
++                Map < IProperty<?>, Comparable<? >> map = Maps. < IProperty<?>, Comparable<? >> newLinkedHashMap(p_178132_1_.func_177228_b());
+                 String s = BlockStoneSlabNew.field_176559_M.func_177702_a((BlockStoneSlabNew.EnumType)map.remove(BlockStoneSlabNew.field_176559_M));
+                 map.remove(BlockStoneSlab.field_176555_b);
+-                String s1 = p_178132_1_.func_177229_b(BlockStoneSlabNew.field_176558_b) ? "all" : "normal";
++                String s1 = ((Boolean)p_178132_1_.func_177229_b(BlockStoneSlabNew.field_176558_b)).booleanValue() ? "all" : "normal";
                  return new ModelResourceLocation(s + "_double_slab", s1);
              }
          });

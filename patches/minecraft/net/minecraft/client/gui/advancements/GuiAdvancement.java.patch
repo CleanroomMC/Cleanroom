@@ -1,0 +1,50 @@
+--- before/net/minecraft/client/gui/advancements/GuiAdvancement.java
++++ after/net/minecraft/client/gui/advancements/GuiAdvancement.java
+@@ -32,7 +32,7 @@
+     private final List<String> field_192997_l;
+     private final Minecraft field_191833_k;
+     private GuiAdvancement field_191834_l;
+-    private final List<GuiAdvancement> field_191835_m = Lists.newArrayList();
++    private final List<GuiAdvancement> field_191835_m = Lists.<GuiAdvancement>newArrayList();
+     private AdvancementProgress field_191836_n;
+     private final int field_191837_o;
+     private final int field_191826_p;
+@@ -65,7 +65,7 @@
+     {
+         if (p_192995_1_.isEmpty())
+         {
+-            return Collections.emptyList();
++            return Collections.<String>emptyList();
+         }
+         else
+         {
+@@ -108,13 +108,24 @@
+     @Nullable
+     private GuiAdvancement func_191818_a(Advancement p_191818_1_)
+     {
+-        do
++        while (true)
+         {
+             p_191818_1_ = p_191818_1_.func_192070_b();
+-        }
+-        while (p_191818_1_ != null && p_191818_1_.func_192068_c() == null);
+-
+-        return p_191818_1_ != null && p_191818_1_.func_192068_c() != null ? this.field_191828_f.func_191794_b(p_191818_1_) : null;
++
++            if (p_191818_1_ == null || p_191818_1_.func_192068_c() != null)
++            {
++                break;
++            }
++        }
++
++        if (p_191818_1_ != null && p_191818_1_.func_192068_c() != null)
++        {
++            return this.field_191828_f.func_191794_b(p_191818_1_);
++        }
++        else
++        {
++            return null;
++        }
+     }
+ 
+     public void func_191819_a(int p_191819_1_, int p_191819_2_, boolean p_191819_3_)

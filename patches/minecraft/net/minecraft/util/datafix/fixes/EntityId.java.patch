@@ -1,0 +1,11 @@
+--- before/net/minecraft/util/datafix/fixes/EntityId.java
++++ after/net/minecraft/util/datafix/fixes/EntityId.java
+@@ -7,7 +7,7 @@
+ 
+ public class EntityId implements IFixableData
+ {
+-    private static final Map<String, String> field_191276_a = Maps.newHashMap();
++    private static final Map<String, String> field_191276_a = Maps.<String, String>newHashMap();
+ 
+     public int func_188216_a()
+     {

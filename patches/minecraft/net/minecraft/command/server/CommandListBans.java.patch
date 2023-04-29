@@ -1,0 +1,17 @@
+--- before/net/minecraft/command/server/CommandListBans.java
++++ after/net/minecraft/command/server/CommandListBans.java
+@@ -37,12 +37,12 @@
+     {
+         if (p_184881_3_.length >= 1 && "ips".equalsIgnoreCase(p_184881_3_[0]))
+         {
+-            p_184881_2_.func_145747_a(new TextComponentTranslation("commands.banlist.ips", p_184881_1_.func_184103_al().func_72363_f().func_152685_a().length));
++            p_184881_2_.func_145747_a(new TextComponentTranslation("commands.banlist.ips", new Object[] {p_184881_1_.func_184103_al().func_72363_f().func_152685_a().length}));
+             p_184881_2_.func_145747_a(new TextComponentString(func_71527_a(p_184881_1_.func_184103_al().func_72363_f().func_152685_a())));
+         }
+         else
+         {
+-            p_184881_2_.func_145747_a(new TextComponentTranslation("commands.banlist.players", p_184881_1_.func_184103_al().func_152608_h().func_152685_a().length));
++            p_184881_2_.func_145747_a(new TextComponentTranslation("commands.banlist.players", new Object[] {p_184881_1_.func_184103_al().func_152608_h().func_152685_a().length}));
+             p_184881_2_.func_145747_a(new TextComponentString(func_71527_a(p_184881_1_.func_184103_al().func_152608_h().func_152685_a())));
+         }
+     }

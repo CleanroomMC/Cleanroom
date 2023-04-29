@@ -17,15 +17,61 @@
      }
  
      public void func_180645_a(World p_180645_1_, BlockPos p_180645_2_, IBlockState p_180645_3_, Random p_180645_4_)
-@@ -227,6 +229,8 @@
+@@ -155,7 +157,7 @@
+ 
+     protected int func_176397_f(World p_176397_1_, BlockPos p_176397_2_, IBlockState p_176397_3_)
      {
-         EnumFacing enumfacing = (EnumFacing)p_176400_3_.func_177229_b(field_185512_D);
+-        EnumFacing enumfacing = p_176397_3_.func_177229_b(field_185512_D);
++        EnumFacing enumfacing = (EnumFacing)p_176397_3_.func_177229_b(field_185512_D);
+         BlockPos blockpos = p_176397_2_.func_177972_a(enumfacing);
+         int i = p_176397_1_.func_175651_c(blockpos, enumfacing);
+ 
+@@ -166,13 +168,13 @@
+         else
+         {
+             IBlockState iblockstate = p_176397_1_.func_180495_p(blockpos);
+-            return Math.max(i, iblockstate.func_177230_c() == Blocks.field_150488_af ? iblockstate.func_177229_b(BlockRedstoneWire.field_176351_O) : 0);
++            return Math.max(i, iblockstate.func_177230_c() == Blocks.field_150488_af ? ((Integer)iblockstate.func_177229_b(BlockRedstoneWire.field_176351_O)).intValue() : 0);
+         }
+     }
+ 
+     protected int func_176407_c(IBlockAccess p_176407_1_, BlockPos p_176407_2_, IBlockState p_176407_3_)
+     {
+-        EnumFacing enumfacing = p_176407_3_.func_177229_b(field_185512_D);
++        EnumFacing enumfacing = (EnumFacing)p_176407_3_.func_177229_b(field_185512_D);
+         EnumFacing enumfacing1 = enumfacing.func_176746_e();
+         EnumFacing enumfacing2 = enumfacing.func_176735_f();
+         return Math.max(this.func_176401_c(p_176407_1_, p_176407_2_.func_177972_a(enumfacing1), enumfacing1), this.func_176401_c(p_176407_1_, p_176407_2_.func_177972_a(enumfacing2), enumfacing2));
+@@ -191,7 +193,7 @@
+             }
+             else
+             {
+-                return block == Blocks.field_150488_af ? iblockstate.func_177229_b(BlockRedstoneWire.field_176351_O) : p_176401_1_.func_175627_a(p_176401_2_, p_176401_3_);
++                return block == Blocks.field_150488_af ? ((Integer)iblockstate.func_177229_b(BlockRedstoneWire.field_176351_O)).intValue() : p_176401_1_.func_175627_a(p_176401_2_, p_176401_3_);
+             }
+         }
+         else
+@@ -225,8 +227,10 @@
+ 
+     protected void func_176400_h(World p_176400_1_, BlockPos p_176400_2_, IBlockState p_176400_3_)
+     {
+-        EnumFacing enumfacing = p_176400_3_.func_177229_b(field_185512_D);
++        EnumFacing enumfacing = (EnumFacing)p_176400_3_.func_177229_b(field_185512_D);
          BlockPos blockpos = p_176400_2_.func_177972_a(enumfacing.func_176734_d());
 +        if(net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(p_176400_1_, p_176400_2_, p_176400_1_.func_180495_p(p_176400_2_), java.util.EnumSet.of(enumfacing.func_176734_d()), false).isCanceled())
 +            return;
          p_176400_1_.func_190524_a(blockpos, this, p_176400_2_);
          p_176400_1_.func_175695_a(blockpos, this, enumfacing);
      }
+@@ -272,7 +276,7 @@
+ 
+     public boolean func_176402_i(World p_176402_1_, BlockPos p_176402_2_, IBlockState p_176402_3_)
+     {
+-        EnumFacing enumfacing = p_176402_3_.func_177229_b(field_185512_D).func_176734_d();
++        EnumFacing enumfacing = ((EnumFacing)p_176402_3_.func_177229_b(field_185512_D)).func_176734_d();
+         BlockPos blockpos = p_176402_2_.func_177972_a(enumfacing);
+ 
+         if (func_185546_B(p_176402_1_.func_180495_p(blockpos)))
 @@ -305,6 +309,25 @@
      public BlockRenderLayer func_180664_k()
      {

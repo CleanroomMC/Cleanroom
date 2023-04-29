@@ -9,3 +9,21 @@
              }
  
              loottable.func_186460_a(this, random, lootcontext$builder.func_186471_a());
+@@ -104,7 +104,7 @@
+     public ItemStack func_70301_a(int p_70301_1_)
+     {
+         this.func_184281_d((EntityPlayer)null);
+-        return this.func_190576_q().get(p_70301_1_);
++        return (ItemStack)this.func_190576_q().get(p_70301_1_);
+     }
+ 
+     public ItemStack func_70298_a(int p_70298_1_, int p_70298_2_)
+@@ -147,7 +147,7 @@
+         }
+         else
+         {
+-            return !(p_70300_1_.func_70092_e((double)this.field_174879_c.func_177958_n() + 0.5D, (double)this.field_174879_c.func_177956_o() + 0.5D, (double)this.field_174879_c.func_177952_p() + 0.5D) > 64.0D);
++            return p_70300_1_.func_70092_e((double)this.field_174879_c.func_177958_n() + 0.5D, (double)this.field_174879_c.func_177956_o() + 0.5D, (double)this.field_174879_c.func_177952_p() + 0.5D) <= 64.0D;
+         }
+     }
+ 

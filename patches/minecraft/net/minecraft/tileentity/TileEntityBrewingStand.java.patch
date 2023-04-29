@@ -1,5 +1,32 @@
 --- before/net/minecraft/tileentity/TileEntityBrewingStand.java
 +++ after/net/minecraft/tileentity/TileEntityBrewingStand.java
+@@ -28,7 +28,7 @@
+     private static final int[] field_145941_a = new int[] {3};
+     private static final int[] field_184277_f = new int[] {0, 1, 2, 3};
+     private static final int[] field_145947_i = new int[] {0, 1, 2, 4};
+-    private NonNullList<ItemStack> field_145945_j = NonNullList.func_191197_a(5, ItemStack.field_190927_a);
++    private NonNullList<ItemStack> field_145945_j = NonNullList.<ItemStack>func_191197_a(5, ItemStack.field_190927_a);
+     private int field_145946_k;
+     private boolean[] field_145943_l;
+     private Item field_145944_m;
+@@ -128,7 +128,7 @@
+ 
+                 for (int i = 0; i < BlockBrewingStand.field_176451_a.length; ++i)
+                 {
+-                    iblockstate = iblockstate.func_177226_a(BlockBrewingStand.field_176451_a[i], aboolean[i]);
++                    iblockstate = iblockstate.func_177226_a(BlockBrewingStand.field_176451_a[i], Boolean.valueOf(aboolean[i]));
+                 }
+ 
+                 this.field_145850_b.func_180501_a(this.field_174879_c, iblockstate, 2);
+@@ -142,7 +142,7 @@
+ 
+         for (int i = 0; i < 3; ++i)
+         {
+-            if (!this.field_145945_j.get(i).func_190926_b())
++            if (!((ItemStack)this.field_145945_j.get(i)).func_190926_b())
+             {
+                 aboolean[i] = true;
+             }
 @@ -153,6 +153,7 @@
  
      private boolean func_145934_k()
@@ -32,7 +59,7 @@
  
              if (itemstack.func_190926_b())
              {
-@@ -207,6 +206,7 @@
+@@ -207,17 +206,18 @@
  
          this.field_145945_j.set(3, itemstack);
          this.field_145850_b.func_175718_b(1035, blockpos, 0);
@@ -40,6 +67,37 @@
      }
  
      public static void func_189675_a(DataFixer p_189675_0_)
+     {
+-        p_189675_0_.func_188258_a(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityBrewingStand.class, "Items"));
++        p_189675_0_.func_188258_a(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityBrewingStand.class, new String[] {"Items"}));
+     }
+ 
+     public void func_145839_a(NBTTagCompound p_145839_1_)
+     {
+         super.func_145839_a(p_145839_1_);
+-        this.field_145945_j = NonNullList.func_191197_a(this.func_70302_i_(), ItemStack.field_190927_a);
++        this.field_145945_j = NonNullList.<ItemStack>func_191197_a(this.func_70302_i_(), ItemStack.field_190927_a);
+         ItemStackHelper.func_191283_b(p_145839_1_, this.field_145945_j);
+         this.field_145946_k = p_145839_1_.func_74765_d("BrewTime");
+ 
+@@ -246,7 +246,7 @@
+ 
+     public ItemStack func_70301_a(int p_70301_1_)
+     {
+-        return p_70301_1_ >= 0 && p_70301_1_ < this.field_145945_j.size() ? this.field_145945_j.get(p_70301_1_) : ItemStack.field_190927_a;
++        return p_70301_1_ >= 0 && p_70301_1_ < this.field_145945_j.size() ? (ItemStack)this.field_145945_j.get(p_70301_1_) : ItemStack.field_190927_a;
+     }
+ 
+     public ItemStack func_70298_a(int p_70298_1_, int p_70298_2_)
+@@ -280,7 +280,7 @@
+         }
+         else
+         {
+-            return !(p_70300_1_.func_70092_e((double)this.field_174879_c.func_177958_n() + 0.5D, (double)this.field_174879_c.func_177956_o() + 0.5D, (double)this.field_174879_c.func_177952_p() + 0.5D) > 64.0D);
++            return p_70300_1_.func_70092_e((double)this.field_174879_c.func_177958_n() + 0.5D, (double)this.field_174879_c.func_177956_o() + 0.5D, (double)this.field_174879_c.func_177952_p() + 0.5D) <= 64.0D;
+         }
+     }
+ 
 @@ -296,7 +296,7 @@
      {
          if (p_94041_1_ == 3)

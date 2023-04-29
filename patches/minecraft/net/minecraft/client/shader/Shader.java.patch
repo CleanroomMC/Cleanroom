@@ -1,0 +1,37 @@
+--- before/net/minecraft/client/shader/Shader.java
++++ after/net/minecraft/client/shader/Shader.java
+@@ -20,10 +20,10 @@
+     private final ShaderManager field_148051_c;
+     public final Framebuffer field_148052_a;
+     public final Framebuffer field_148050_b;
+-    private final List<Object> field_148048_d = Lists.newArrayList();
+-    private final List<String> field_148049_e = Lists.newArrayList();
+-    private final List<Integer> field_148046_f = Lists.newArrayList();
+-    private final List<Integer> field_148047_g = Lists.newArrayList();
++    private final List<Object> field_148048_d = Lists.<Object>newArrayList();
++    private final List<String> field_148049_e = Lists.<String>newArrayList();
++    private final List<Integer> field_148046_f = Lists.<Integer>newArrayList();
++    private final List<Integer> field_148047_g = Lists.<Integer>newArrayList();
+     private Matrix4f field_148053_h;
+ 
+     public Shader(IResourceManager p_i45089_1_, String p_i45089_2_, Framebuffer p_i45089_3_, Framebuffer p_i45089_4_) throws JsonException, IOException
+@@ -42,8 +42,8 @@
+     {
+         this.field_148049_e.add(this.field_148049_e.size(), p_148041_1_);
+         this.field_148048_d.add(this.field_148048_d.size(), p_148041_2_);
+-        this.field_148046_f.add(this.field_148046_f.size(), p_148041_3_);
+-        this.field_148047_g.add(this.field_148047_g.size(), p_148041_4_);
++        this.field_148046_f.add(this.field_148046_f.size(), Integer.valueOf(p_148041_3_));
++        this.field_148047_g.add(this.field_148047_g.size(), Integer.valueOf(p_148041_4_));
+     }
+ 
+     private void func_148040_d()
+@@ -76,7 +76,7 @@
+         for (int i = 0; i < this.field_148048_d.size(); ++i)
+         {
+             this.field_148051_c.func_147992_a(this.field_148049_e.get(i), this.field_148048_d.get(i));
+-            this.field_148051_c.func_147984_b("AuxSize" + i).func_148087_a((float)this.field_148046_f.get(i).intValue(), (float)this.field_148047_g.get(i).intValue());
++            this.field_148051_c.func_147984_b("AuxSize" + i).func_148087_a((float)((Integer)this.field_148046_f.get(i)).intValue(), (float)((Integer)this.field_148047_g.get(i)).intValue());
+         }
+ 
+         this.field_148051_c.func_147984_b("ProjMat").func_148088_a(this.field_148053_h);

@@ -1,0 +1,68 @@
+--- before/net/minecraft/block/BlockDaylightDetector.java
++++ after/net/minecraft/block/BlockDaylightDetector.java
+@@ -2,6 +2,7 @@
+ 
+ import java.util.Random;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyInteger;
+ import net.minecraft.block.state.BlockFaceShape;
+ import net.minecraft.block.state.BlockStateContainer;
+@@ -34,7 +35,7 @@
+     {
+         super(Material.field_151575_d);
+         this.field_176435_b = p_i45729_1_;
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176436_a, 0));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176436_a, Integer.valueOf(0)));
+         this.func_149647_a(CreativeTabs.field_78028_d);
+         this.func_149711_c(0.2F);
+         this.func_149672_a(SoundType.field_185848_a);
+@@ -48,7 +49,7 @@
+ 
+     public int func_180656_a(IBlockState p_180656_1_, IBlockAccess p_180656_2_, BlockPos p_180656_3_, EnumFacing p_180656_4_)
+     {
+-        return p_180656_1_.func_177229_b(field_176436_a);
++        return ((Integer)p_180656_1_.func_177229_b(field_176436_a)).intValue();
+     }
+ 
+     public void func_180677_d(World p_180677_1_, BlockPos p_180677_2_)
+@@ -67,15 +68,15 @@
+             if (i > 0 && !this.field_176435_b)
+             {
+                 float f1 = f < (float)Math.PI ? 0.0F : ((float)Math.PI * 2F);
+-                f += (f1 - f) * 0.2F;
++                f = f + (f1 - f) * 0.2F;
+                 i = Math.round((float)i * MathHelper.func_76134_b(f));
+             }
+ 
+             i = MathHelper.func_76125_a(i, 0, 15);
+ 
+-            if (iblockstate.func_177229_b(field_176436_a) != i)
++            if (((Integer)iblockstate.func_177229_b(field_176436_a)).intValue() != i)
+             {
+-                p_180677_1_.func_180501_a(p_180677_2_, iblockstate.func_177226_a(field_176436_a, i), 3);
++                p_180677_1_.func_180501_a(p_180677_2_, iblockstate.func_177226_a(field_176436_a, Integer.valueOf(i)), 3);
+             }
+         }
+     }
+@@ -147,17 +148,17 @@
+ 
+     public IBlockState func_176203_a(int p_176203_1_)
+     {
+-        return this.func_176223_P().func_177226_a(field_176436_a, p_176203_1_);
++        return this.func_176223_P().func_177226_a(field_176436_a, Integer.valueOf(p_176203_1_));
+     }
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(field_176436_a);
++        return ((Integer)p_176201_1_.func_177229_b(field_176436_a)).intValue();
+     }
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176436_a);
++        return new BlockStateContainer(this, new IProperty[] {field_176436_a});
+     }
+ 
+     public void func_149666_a(CreativeTabs p_149666_1_, NonNullList<ItemStack> p_149666_2_)

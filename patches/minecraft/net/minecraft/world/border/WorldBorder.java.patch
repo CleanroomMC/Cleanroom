@@ -1,12 +1,58 @@
 --- before/net/minecraft/world/border/WorldBorder.java
 +++ after/net/minecraft/world/border/WorldBorder.java
-@@ -284,4 +284,9 @@
+@@ -11,18 +11,28 @@
+ 
+ public class WorldBorder
+ {
+-    private final List<IBorderListener> field_177758_a = Lists.newArrayList();
++    private final List<IBorderListener> field_177758_a = Lists.<IBorderListener>newArrayList();
+     private double field_177756_b;
+     private double field_177757_c;
+     private double field_177754_d = 6.0E7D;
+-    private double field_177755_e = this.field_177754_d;
++    private double field_177755_e;
+     private long field_177752_f;
+     private long field_177753_g;
+-    private int field_177762_h = 29999984;
+-    private double field_177763_i = 0.2D;
+-    private double field_177760_j = 5.0D;
+-    private int field_177761_k = 15;
+-    private int field_177759_l = 5;
++    private int field_177762_h;
++    private double field_177763_i;
++    private double field_177760_j;
++    private int field_177761_k;
++    private int field_177759_l;
++
++    public WorldBorder()
++    {
++        this.field_177755_e = this.field_177754_d;
++        this.field_177762_h = 29999984;
++        this.field_177763_i = 0.2D;
++        this.field_177760_j = 5.0D;
++        this.field_177761_k = 15;
++        this.field_177759_l = 5;
++    }
+ 
+     public boolean func_177746_a(BlockPos p_177746_1_)
+     {
+@@ -142,7 +152,7 @@
+         {
+             double d0 = (double)((float)(System.currentTimeMillis() - this.field_177753_g) / (float)(this.field_177752_f - this.field_177753_g));
+ 
+-            if (!(d0 >= 1.0D))
++            if (d0 < 1.0D)
+             {
+                 return this.field_177754_d + (this.field_177755_e - this.field_177754_d) * d0;
+             }
+@@ -273,5 +283,10 @@
+         {
              iborderlistener.func_177690_b(this, p_177747_1_);
          }
-     }
++    }
 +
 +    public void removeListener(IBorderListener listener)
 +    {
 +        this.field_177758_a.remove(listener);
-+    }
+     }
  }

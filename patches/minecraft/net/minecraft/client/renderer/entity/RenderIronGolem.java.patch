@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/renderer/entity/RenderIronGolem.java
++++ after/net/minecraft/client/renderer/entity/RenderIronGolem.java
+@@ -28,7 +28,7 @@
+     {
+         super.func_77043_a(p_77043_1_, p_77043_2_, p_77043_3_, p_77043_4_);
+ 
+-        if (!((double)p_77043_1_.field_70721_aZ < 0.01D))
++        if ((double)p_77043_1_.field_70721_aZ >= 0.01D)
+         {
+             float f = 13.0F;
+             float f1 = p_77043_1_.field_184619_aG - p_77043_1_.field_70721_aZ * (1.0F - p_77043_4_) + 6.0F;

@@ -1,0 +1,25 @@
+--- before/net/minecraft/client/model/ModelBook.java
++++ after/net/minecraft/client/model/ModelBook.java
+@@ -10,18 +10,14 @@
+ {
+     public ModelRenderer field_78102_a = (new ModelRenderer(this)).func_78784_a(0, 0).func_78789_a(-6.0F, -5.0F, 0.0F, 6, 10, 0);
+     public ModelRenderer field_78100_b = (new ModelRenderer(this)).func_78784_a(16, 0).func_78789_a(0.0F, -5.0F, 0.0F, 6, 10, 0);
+-    public ModelRenderer field_78101_c;
+-    public ModelRenderer field_78098_d;
+-    public ModelRenderer field_78099_e;
+-    public ModelRenderer field_78096_f;
++    public ModelRenderer field_78101_c = (new ModelRenderer(this)).func_78784_a(0, 10).func_78789_a(0.0F, -4.0F, -0.99F, 5, 8, 1);
++    public ModelRenderer field_78098_d = (new ModelRenderer(this)).func_78784_a(12, 10).func_78789_a(0.0F, -4.0F, -0.01F, 5, 8, 1);
++    public ModelRenderer field_78099_e = (new ModelRenderer(this)).func_78784_a(24, 10).func_78789_a(0.0F, -4.0F, 0.0F, 5, 8, 0);
++    public ModelRenderer field_78096_f = (new ModelRenderer(this)).func_78784_a(24, 10).func_78789_a(0.0F, -4.0F, 0.0F, 5, 8, 0);
+     public ModelRenderer field_78097_g = (new ModelRenderer(this)).func_78784_a(12, 0).func_78789_a(-1.0F, -5.0F, 0.0F, 2, 10, 0);
+ 
+     public ModelBook()
+     {
+-        this.field_78101_c = (new ModelRenderer(this)).func_78784_a(0, 10).func_78789_a(0.0F, -4.0F, -0.99F, 5, 8, 1);
+-        this.field_78098_d = (new ModelRenderer(this)).func_78784_a(12, 10).func_78789_a(0.0F, -4.0F, -0.01F, 5, 8, 1);
+-        this.field_78099_e = (new ModelRenderer(this)).func_78784_a(24, 10).func_78789_a(0.0F, -4.0F, 0.0F, 5, 8, 0);
+-        this.field_78096_f = (new ModelRenderer(this)).func_78784_a(24, 10).func_78789_a(0.0F, -4.0F, 0.0F, 5, 8, 0);
+         this.field_78102_a.func_78793_a(0.0F, 0.0F, -1.0F);
+         this.field_78100_b.func_78793_a(0.0F, 0.0F, 1.0F);
+         this.field_78097_g.field_78796_g = ((float)Math.PI / 2F);

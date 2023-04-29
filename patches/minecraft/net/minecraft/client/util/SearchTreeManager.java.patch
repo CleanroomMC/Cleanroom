@@ -1,0 +1,24 @@
+--- before/net/minecraft/client/util/SearchTreeManager.java
++++ after/net/minecraft/client/util/SearchTreeManager.java
+@@ -12,9 +12,9 @@
+ @SideOnly(Side.CLIENT)
+ public class SearchTreeManager implements IResourceManagerReloadListener
+ {
+-    public static final SearchTreeManager.Key<ItemStack> field_194011_a = new SearchTreeManager.Key<>();
+-    public static final SearchTreeManager.Key<RecipeList> field_194012_b = new SearchTreeManager.Key<>();
+-    private final Map < SearchTreeManager.Key<?>, SearchTree<? >> field_194013_c = Maps.newHashMap();
++    public static final SearchTreeManager.Key<ItemStack> field_194011_a = new SearchTreeManager.Key<ItemStack>();
++    public static final SearchTreeManager.Key<RecipeList> field_194012_b = new SearchTreeManager.Key<RecipeList>();
++    private final Map < SearchTreeManager.Key<?>, SearchTree<? >> field_194013_c = Maps. < SearchTreeManager.Key<?>, SearchTree<? >> newHashMap();
+ 
+     public void func_110549_a(IResourceManager p_110549_1_)
+     {
+@@ -31,7 +31,7 @@
+ 
+     public <T> ISearchTree<T> func_194010_a(SearchTreeManager.Key<T> p_194010_1_)
+     {
+-        return (ISearchTree<T>) this.field_194013_c.get(p_194010_1_);
++        return (ISearchTree)this.field_194013_c.get(p_194010_1_);
+     }
+ 
+     @SideOnly(Side.CLIENT)

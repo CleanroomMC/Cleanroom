@@ -1,8 +1,58 @@
 --- before/net/minecraft/block/BlockLiquid.java
 +++ after/net/minecraft/block/BlockLiquid.java
-@@ -284,14 +284,14 @@
+@@ -3,6 +3,7 @@
+ import java.util.Random;
+ import javax.annotation.Nullable;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyInteger;
+ import net.minecraft.block.state.BlockFaceShape;
+ import net.minecraft.block.state.BlockStateContainer;
+@@ -34,7 +35,7 @@
+     protected BlockLiquid(Material p_i45413_1_)
+     {
+         super(p_i45413_1_);
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176367_b, 0));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176367_b, Integer.valueOf(0)));
+         this.func_149675_a(true);
+     }
  
-                 if (integer.intValue() == 0)
+@@ -66,7 +67,7 @@
+ 
+     protected int func_189542_i(IBlockState p_189542_1_)
+     {
+-        return p_189542_1_.func_185904_a() == this.field_149764_J ? p_189542_1_.func_177229_b(field_176367_b) : -1;
++        return p_189542_1_.func_185904_a() == this.field_149764_J ? ((Integer)p_189542_1_.func_177229_b(field_176367_b)).intValue() : -1;
+     }
+ 
+     protected int func_189545_x(IBlockState p_189545_1_)
+@@ -87,7 +88,7 @@
+ 
+     public boolean func_176209_a(IBlockState p_176209_1_, boolean p_176209_2_)
+     {
+-        return p_176209_2_ && p_176209_1_.func_177229_b(field_176367_b) == 0;
++        return p_176209_2_ && ((Integer)p_176209_1_.func_177229_b(field_176367_b)).intValue() == 0;
+     }
+ 
+     private boolean func_176212_b(IBlockAccess p_176212_1_, BlockPos p_176212_2_, EnumFacing p_176212_3_)
+@@ -182,7 +183,7 @@
+ 
+         Vec3d vec3d = new Vec3d(d0, d1, d2);
+ 
+-        if (p_189543_3_.func_177229_b(field_176367_b) >= 8)
++        if (((Integer)p_189543_3_.func_177229_b(field_176367_b)).intValue() >= 8)
+         {
+             for (EnumFacing enumfacing1 : EnumFacing.Plane.HORIZONTAL)
+             {
+@@ -279,18 +280,18 @@
+ 
+             if (flag)
+             {
+-                Integer integer = p_176365_3_.func_177229_b(field_176367_b);
++                Integer integer = (Integer)p_176365_3_.func_177229_b(field_176367_b);
+ 
+-                if (integer == 0)
++                if (integer.intValue() == 0)
                  {
 -                    p_176365_1_.func_175656_a(p_176365_2_, Blocks.field_150343_Z.func_176223_P());
 +                    p_176365_1_.func_175656_a(p_176365_2_, net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(p_176365_1_, p_176365_2_, p_176365_2_, Blocks.field_150343_Z.func_176223_P()));
@@ -10,14 +60,54 @@
                      return true;
                  }
  
-                 if (integer.intValue() <= 4)
+-                if (integer <= 4)
++                if (integer.intValue() <= 4)
                  {
 -                    p_176365_1_.func_175656_a(p_176365_2_, Blocks.field_150347_e.func_176223_P());
 +                    p_176365_1_.func_175656_a(p_176365_2_, net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(p_176365_1_, p_176365_2_, p_176365_2_, Blocks.field_150347_e.func_176223_P()));
                      this.func_180688_d(p_176365_1_, p_176365_2_);
                      return true;
                  }
-@@ -448,8 +448,39 @@
+@@ -315,7 +316,7 @@
+ 
+         if (this.field_149764_J == Material.field_151586_h)
+         {
+-            int i = p_180655_1_.func_177229_b(field_176367_b);
++            int i = ((Integer)p_180655_1_.func_177229_b(field_176367_b)).intValue();
+ 
+             if (i > 0 && i < 8)
+             {
+@@ -391,17 +392,17 @@
+ 
+     public IBlockState func_176203_a(int p_176203_1_)
+     {
+-        return this.func_176223_P().func_177226_a(field_176367_b, p_176203_1_);
++        return this.func_176223_P().func_177226_a(field_176367_b, Integer.valueOf(p_176203_1_));
+     }
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(field_176367_b);
++        return ((Integer)p_176201_1_.func_177229_b(field_176367_b)).intValue();
+     }
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176367_b);
++        return new BlockStateContainer(this, new IProperty[] {field_176367_b});
+     }
+ 
+     public static BlockDynamicLiquid func_176361_a(Material p_176361_0_)
+@@ -438,7 +439,7 @@
+ 
+     public static float func_190973_f(IBlockState p_190973_0_, IBlockAccess p_190973_1_, BlockPos p_190973_2_)
+     {
+-        int i = p_190973_0_.func_177229_b(field_176367_b);
++        int i = ((Integer)p_190973_0_.func_177229_b(field_176367_b)).intValue();
+         return (i & 7) == 0 && p_190973_1_.func_180495_p(p_190973_2_.func_177984_a()).func_185904_a() == Material.field_151586_h ? 1.0F : 1.0F - func_149801_b(i);
+     }
+ 
+@@ -447,8 +448,39 @@
          return (float)p_190972_2_.func_177956_o() + func_190973_f(p_190972_0_, p_190972_1_, p_190972_2_);
      }
  

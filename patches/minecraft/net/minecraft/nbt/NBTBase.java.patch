@@ -1,0 +1,13 @@
+--- before/net/minecraft/nbt/NBTBase.java
++++ after/net/minecraft/nbt/NBTBase.java
+@@ -16,10 +16,6 @@
+ 
+     public abstract byte func_74732_a();
+ 
+-    protected NBTBase()
+-    {
+-    }
+-
+     protected static NBTBase func_150284_a(byte p_150284_0_)
+     {
+         switch (p_150284_0_)

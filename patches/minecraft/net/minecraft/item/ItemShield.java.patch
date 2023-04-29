@@ -1,0 +1,11 @@
+--- before/net/minecraft/item/ItemShield.java
++++ after/net/minecraft/item/ItemShield.java
+@@ -69,7 +69,7 @@
+     {
+         ItemStack itemstack = p_77659_2_.func_184586_b(p_77659_3_);
+         p_77659_2_.func_184598_c(p_77659_3_);
+-        return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
++        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+     }
+ 
+     public boolean func_82789_a(ItemStack p_82789_1_, ItemStack p_82789_2_)

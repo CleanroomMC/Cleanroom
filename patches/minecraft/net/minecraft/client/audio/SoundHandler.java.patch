@@ -1,6 +1,14 @@
 --- before/net/minecraft/client/audio/SoundHandler.java
 +++ after/net/minecraft/client/audio/SoundHandler.java
-@@ -67,6 +67,7 @@
+@@ -11,6 +11,7 @@
+ import java.lang.reflect.Type;
+ import java.nio.charset.StandardCharsets;
+ import java.util.Map;
++import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+ import net.minecraft.client.resources.I18n;
+ import net.minecraft.client.resources.IResource;
+@@ -66,6 +67,7 @@
      {
          this.field_147697_e.func_148763_c();
  
@@ -8,16 +16,26 @@
          for (String s : p_110549_1_.func_135055_a())
          {
              try
-@@ -79,7 +80,7 @@
+@@ -76,9 +78,9 @@
+                     {
+                         Map<String, SoundList> map = this.func_175085_a(iresource.func_110527_b());
  
-                         for (Entry<String, SoundList> entry : map.entrySet())
+-                        for (Map.Entry<String, SoundList> entry : map.entrySet())
++                        for (Entry<String, SoundList> entry : map.entrySet())
                          {
 -                            this.func_147693_a(new ResourceLocation(s, entry.getKey()), entry.getValue());
 +                            resources.add(new net.minecraft.util.Tuple<>(new ResourceLocation(s, entry.getKey()), entry.getValue()));
                          }
                      }
                      catch (RuntimeException runtimeexception)
-@@ -94,6 +95,20 @@
+@@ -87,14 +89,29 @@
+                     }
+                 }
+             }
+-            catch (IOException ioexception)
++            catch (IOException var11)
+             {
++                ;
              }
          }
  
@@ -37,8 +55,73 @@
 +        net.minecraftforge.fml.common.ProgressManager.pop(resourcesBar);
          for (ResourceLocation resourcelocation : this.field_147697_e.func_148742_b())
          {
-             SoundEventAccessor soundeventaccessor = (SoundEventAccessor)this.field_147697_e.func_82594_a(resourcelocation);
-@@ -251,6 +266,11 @@
+-            SoundEventAccessor soundeventaccessor = this.field_147697_e.func_82594_a(resourcelocation);
++            SoundEventAccessor soundeventaccessor = (SoundEventAccessor)this.field_147697_e.func_82594_a(resourcelocation);
+ 
+             if (soundeventaccessor.func_188712_c() instanceof TextComponentTranslation)
+             {
+@@ -125,7 +142,7 @@
+ 
+         try
+         {
+-            map = JsonUtils.func_193841_a(field_147699_c, new InputStreamReader(p_175085_1_, StandardCharsets.UTF_8), field_147696_d);
++            map = (Map)JsonUtils.func_193841_a(field_147699_c, new InputStreamReader(p_175085_1_, StandardCharsets.UTF_8), field_147696_d);
+         }
+         finally
+         {
+@@ -137,7 +154,7 @@
+ 
+     private void func_147693_a(ResourceLocation p_147693_1_, SoundList p_147693_2_)
+     {
+-        SoundEventAccessor soundeventaccessor = this.field_147697_e.func_82594_a(p_147693_1_);
++        SoundEventAccessor soundeventaccessor = (SoundEventAccessor)this.field_147697_e.func_82594_a(p_147693_1_);
+         boolean flag = soundeventaccessor == null;
+ 
+         if (flag || p_147693_2_.func_148574_b())
+@@ -172,12 +189,12 @@
+                     {
+                         public int func_148721_a()
+                         {
+-                            SoundEventAccessor soundeventaccessor1 = SoundHandler.this.field_147697_e.func_82594_a(resourcelocation);
++                            SoundEventAccessor soundeventaccessor1 = (SoundEventAccessor)SoundHandler.this.field_147697_e.func_82594_a(resourcelocation);
+                             return soundeventaccessor1 == null ? 0 : soundeventaccessor1.func_148721_a();
+                         }
+                         public Sound func_148720_g()
+                         {
+-                            SoundEventAccessor soundeventaccessor1 = SoundHandler.this.field_147697_e.func_82594_a(resourcelocation);
++                            SoundEventAccessor soundeventaccessor1 = (SoundEventAccessor)SoundHandler.this.field_147697_e.func_82594_a(resourcelocation);
+ 
+                             if (soundeventaccessor1 == null)
+                             {
+@@ -211,7 +228,7 @@
+             iresource.func_110527_b();
+             return true;
+         }
+-        catch (FileNotFoundException filenotfoundexception)
++        catch (FileNotFoundException var11)
+         {
+             field_147698_b.warn("File {} does not exist, cannot add it to event {}", resourcelocation, p_184401_2_);
+             flag = false;
+@@ -219,7 +236,8 @@
+         catch (IOException ioexception)
+         {
+             field_147698_b.warn("Could not load sound file {}, cannot add it to event {}", resourcelocation, p_184401_2_, ioexception);
+-            return false;
++            flag = false;
++            return flag;
+         }
+         finally
+         {
+@@ -232,7 +250,7 @@
+     @Nullable
+     public SoundEventAccessor func_184398_a(ResourceLocation p_184398_1_)
+     {
+-        return this.field_147697_e.func_82594_a(p_184398_1_);
++        return (SoundEventAccessor)this.field_147697_e.func_82594_a(p_184398_1_);
+     }
+ 
+     public void func_147682_a(ISound p_147682_1_)
+@@ -248,6 +266,11 @@
      public void func_147691_a(EntityPlayer p_147691_1_, float p_147691_2_)
      {
          this.field_147694_f.func_148615_a(p_147691_1_, p_147691_2_);

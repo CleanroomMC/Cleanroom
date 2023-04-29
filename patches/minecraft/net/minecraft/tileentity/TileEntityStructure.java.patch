@@ -1,0 +1,65 @@
+--- before/net/minecraft/tileentity/TileEntityStructure.java
++++ after/net/minecraft/tileentity/TileEntityStructure.java
+@@ -94,7 +94,7 @@
+         {
+             this.field_184426_k = Rotation.valueOf(p_145839_1_.func_74779_i("rotation"));
+         }
+-        catch (IllegalArgumentException illegalargumentexception2)
++        catch (IllegalArgumentException var11)
+         {
+             this.field_184426_k = Rotation.NONE;
+         }
+@@ -103,7 +103,7 @@
+         {
+             this.field_184425_j = Mirror.valueOf(p_145839_1_.func_74779_i("mirror"));
+         }
+-        catch (IllegalArgumentException illegalargumentexception1)
++        catch (IllegalArgumentException var10)
+         {
+             this.field_184425_j = Mirror.NONE;
+         }
+@@ -112,7 +112,7 @@
+         {
+             this.field_184427_l = TileEntityStructure.Mode.valueOf(p_145839_1_.func_74779_i("mode"));
+         }
+-        catch (IllegalArgumentException illegalargumentexception)
++        catch (IllegalArgumentException var9)
+         {
+             this.field_184427_l = TileEntityStructure.Mode.DATA;
+         }
+@@ -379,7 +379,7 @@
+ 
+     private List<TileEntityStructure> func_184418_a(BlockPos p_184418_1_, BlockPos p_184418_2_)
+     {
+-        List<TileEntityStructure> list = Lists.newArrayList();
++        List<TileEntityStructure> list = Lists.<TileEntityStructure>newArrayList();
+ 
+         for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.func_177975_b(p_184418_1_, p_184418_2_))
+         {
+@@ -405,7 +405,7 @@
+ 
+         if (p_184416_2_.size() > 1)
+         {
+-            BlockPos blockpos = p_184416_2_.get(0).func_174877_v();
++            BlockPos blockpos = ((TileEntityStructure)p_184416_2_.get(0)).func_174877_v();
+             structureboundingbox = new StructureBoundingBox(blockpos, blockpos);
+         }
+         else
+@@ -528,7 +528,7 @@
+ 
+                     if (this.field_189730_q < 1.0F)
+                     {
+-                        placementsettings.func_189946_a(MathHelper.func_76131_a(this.field_189730_q, 0.0F, 1.0F)).func_189949_a(this.field_189731_r);
++                        placementsettings.func_189946_a(MathHelper.func_76131_a(this.field_189730_q, 0.0F, 1.0F)).func_189949_a(Long.valueOf(this.field_189731_r));
+                     }
+ 
+                     template.func_186260_a(this.field_145850_b, blockpos1, placementsettings);
+@@ -599,7 +599,7 @@
+     @Nullable
+     public ITextComponent func_145748_c_()
+     {
+-        return new TextComponentTranslation("structure_block.hover." + this.field_184427_l.field_185116_f, this.field_184427_l == TileEntityStructure.Mode.DATA ? this.field_184422_g : this.field_184420_a);
++        return new TextComponentTranslation("structure_block.hover." + this.field_184427_l.field_185116_f, new Object[] {this.field_184427_l == TileEntityStructure.Mode.DATA ? this.field_184422_g : this.field_184420_a});
+     }
+ 
+     public static enum Mode implements IStringSerializable

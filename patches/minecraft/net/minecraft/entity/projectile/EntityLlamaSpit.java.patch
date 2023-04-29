@@ -1,5 +1,14 @@
 --- before/net/minecraft/entity/projectile/EntityLlamaSpit.java
 +++ after/net/minecraft/entity/projectile/EntityLlamaSpit.java
+@@ -32,7 +32,7 @@
+     {
+         super(p_i47273_1_);
+         this.field_190539_a = p_i47273_2_;
+-        this.func_70107_b(p_i47273_2_.field_70165_t - (double)(p_i47273_2_.field_70130_N + 1.0F) * 0.5D * (double)MathHelper.func_76126_a(p_i47273_2_.field_70761_aq * ((float)Math.PI / 180F)), p_i47273_2_.field_70163_u + (double)p_i47273_2_.func_70047_e() - (double)0.1F, p_i47273_2_.field_70161_v + (double)(p_i47273_2_.field_70130_N + 1.0F) * 0.5D * (double)MathHelper.func_76134_b(p_i47273_2_.field_70761_aq * ((float)Math.PI / 180F)));
++        this.func_70107_b(p_i47273_2_.field_70165_t - (double)(p_i47273_2_.field_70130_N + 1.0F) * 0.5D * (double)MathHelper.func_76126_a(p_i47273_2_.field_70761_aq * 0.017453292F), p_i47273_2_.field_70163_u + (double)p_i47273_2_.func_70047_e() - 0.10000000149011612D, p_i47273_2_.field_70161_v + (double)(p_i47273_2_.field_70130_N + 1.0F) * 0.5D * (double)MathHelper.func_76134_b(p_i47273_2_.field_70761_aq * 0.017453292F));
+         this.func_70105_a(0.25F, 0.25F);
+     }
+ 
 @@ -80,7 +80,7 @@
              raytraceresult = new RayTraceResult(entity);
          }
@@ -9,3 +18,88 @@
          {
              this.func_190536_a(raytraceresult);
          }
+@@ -89,10 +89,11 @@
+         this.field_70163_u += this.field_70181_x;
+         this.field_70161_v += this.field_70179_y;
+         float f = MathHelper.func_76133_a(this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y);
+-        this.field_70177_z = (float)(MathHelper.func_181159_b(this.field_70159_w, this.field_70179_y) * (double)(180F / (float)Math.PI));
++        this.field_70177_z = (float)(MathHelper.func_181159_b(this.field_70159_w, this.field_70179_y) * (180D / Math.PI));
+ 
+-        for (this.field_70125_A = (float)(MathHelper.func_181159_b(this.field_70181_x, (double)f) * (double)(180F / (float)Math.PI)); this.field_70125_A - this.field_70127_C < -180.0F; this.field_70127_C -= 360.0F)
++        for (this.field_70125_A = (float)(MathHelper.func_181159_b(this.field_70181_x, (double)f) * (180D / Math.PI)); this.field_70125_A - this.field_70127_C < -180.0F; this.field_70127_C -= 360.0F)
+         {
++            ;
+         }
+ 
+         while (this.field_70125_A - this.field_70127_C >= 180.0F)
+@@ -125,13 +126,13 @@
+         }
+         else
+         {
+-            this.field_70159_w *= (double)0.99F;
+-            this.field_70181_x *= (double)0.99F;
+-            this.field_70179_y *= (double)0.99F;
++            this.field_70159_w *= 0.9900000095367432D;
++            this.field_70181_x *= 0.9900000095367432D;
++            this.field_70179_y *= 0.9900000095367432D;
+ 
+             if (!this.func_189652_ae())
+             {
+-                this.field_70181_x -= (double)0.06F;
++                this.field_70181_x -= 0.05999999865889549D;
+             }
+ 
+             this.func_70107_b(this.field_70165_t, this.field_70163_u, this.field_70161_v);
+@@ -148,8 +149,8 @@
+         if (this.field_70127_C == 0.0F && this.field_70126_B == 0.0F)
+         {
+             float f = MathHelper.func_76133_a(p_70016_1_ * p_70016_1_ + p_70016_5_ * p_70016_5_);
+-            this.field_70125_A = (float)(MathHelper.func_181159_b(p_70016_3_, (double)f) * (double)(180F / (float)Math.PI));
+-            this.field_70177_z = (float)(MathHelper.func_181159_b(p_70016_1_, p_70016_5_) * (double)(180F / (float)Math.PI));
++            this.field_70125_A = (float)(MathHelper.func_181159_b(p_70016_3_, (double)f) * (180D / Math.PI));
++            this.field_70177_z = (float)(MathHelper.func_181159_b(p_70016_1_, p_70016_5_) * (180D / Math.PI));
+             this.field_70127_C = this.field_70125_A;
+             this.field_70126_B = this.field_70177_z;
+             this.func_70012_b(this.field_70165_t, this.field_70163_u, this.field_70161_v, this.field_70177_z, this.field_70125_A);
+@@ -167,7 +168,7 @@
+         {
+             if (entity1 != this.field_190539_a)
+             {
+-                AxisAlignedBB axisalignedbb = entity1.func_174813_aQ().func_186662_g((double)0.3F);
++                AxisAlignedBB axisalignedbb = entity1.func_174813_aQ().func_186662_g(0.30000001192092896D);
+                 RayTraceResult raytraceresult = axisalignedbb.func_72327_a(p_190538_1_, p_190538_2_);
+ 
+                 if (raytraceresult != null)
+@@ -189,21 +190,21 @@
+     public void func_70186_c(double p_70186_1_, double p_70186_3_, double p_70186_5_, float p_70186_7_, float p_70186_8_)
+     {
+         float f = MathHelper.func_76133_a(p_70186_1_ * p_70186_1_ + p_70186_3_ * p_70186_3_ + p_70186_5_ * p_70186_5_);
+-        p_70186_1_ /= (double)f;
+-        p_70186_3_ /= (double)f;
+-        p_70186_5_ /= (double)f;
+-        p_70186_1_ += this.field_70146_Z.nextGaussian() * (double)0.0075F * (double)p_70186_8_;
+-        p_70186_3_ += this.field_70146_Z.nextGaussian() * (double)0.0075F * (double)p_70186_8_;
+-        p_70186_5_ += this.field_70146_Z.nextGaussian() * (double)0.0075F * (double)p_70186_8_;
+-        p_70186_1_ *= (double)p_70186_7_;
+-        p_70186_3_ *= (double)p_70186_7_;
+-        p_70186_5_ *= (double)p_70186_7_;
++        p_70186_1_ = p_70186_1_ / (double)f;
++        p_70186_3_ = p_70186_3_ / (double)f;
++        p_70186_5_ = p_70186_5_ / (double)f;
++        p_70186_1_ = p_70186_1_ + this.field_70146_Z.nextGaussian() * 0.007499999832361937D * (double)p_70186_8_;
++        p_70186_3_ = p_70186_3_ + this.field_70146_Z.nextGaussian() * 0.007499999832361937D * (double)p_70186_8_;
++        p_70186_5_ = p_70186_5_ + this.field_70146_Z.nextGaussian() * 0.007499999832361937D * (double)p_70186_8_;
++        p_70186_1_ = p_70186_1_ * (double)p_70186_7_;
++        p_70186_3_ = p_70186_3_ * (double)p_70186_7_;
++        p_70186_5_ = p_70186_5_ * (double)p_70186_7_;
+         this.field_70159_w = p_70186_1_;
+         this.field_70181_x = p_70186_3_;
+         this.field_70179_y = p_70186_5_;
+         float f1 = MathHelper.func_76133_a(p_70186_1_ * p_70186_1_ + p_70186_5_ * p_70186_5_);
+-        this.field_70177_z = (float)(MathHelper.func_181159_b(p_70186_1_, p_70186_5_) * (double)(180F / (float)Math.PI));
+-        this.field_70125_A = (float)(MathHelper.func_181159_b(p_70186_3_, (double)f1) * (double)(180F / (float)Math.PI));
++        this.field_70177_z = (float)(MathHelper.func_181159_b(p_70186_1_, p_70186_5_) * (180D / Math.PI));
++        this.field_70125_A = (float)(MathHelper.func_181159_b(p_70186_3_, (double)f1) * (180D / Math.PI));
+         this.field_70126_B = this.field_70177_z;
+         this.field_70127_C = this.field_70125_A;
+     }

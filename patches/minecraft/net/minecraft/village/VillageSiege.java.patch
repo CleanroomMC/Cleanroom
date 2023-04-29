@@ -1,10 +1,51 @@
 --- before/net/minecraft/village/VillageSiege.java
 +++ after/net/minecraft/village/VillageSiege.java
-@@ -146,6 +146,7 @@
+@@ -1,5 +1,7 @@
+ package net.minecraft.village;
+ 
++import java.util.Iterator;
++import java.util.List;
+ import javax.annotation.Nullable;
+ import net.minecraft.entity.EntityLiving;
+ import net.minecraft.entity.IEntityLivingData;
+@@ -90,8 +92,18 @@
+ 
+     private boolean func_75529_b()
+     {
+-        for (EntityPlayer entityplayer : this.field_75537_a.field_73010_i)
++        List<EntityPlayer> list = this.field_75537_a.field_73010_i;
++        Iterator iterator = list.iterator();
++
++        while (true)
+         {
++            if (!iterator.hasNext())
++            {
++                return false;
++            }
++
++            EntityPlayer entityplayer = (EntityPlayer)iterator.next();
++
+             if (!entityplayer.func_175149_v())
+             {
+                 this.field_75531_f = this.field_75537_a.func_175714_ae().func_176056_a(new BlockPos(entityplayer), 1);
+@@ -134,15 +146,16 @@
  
                      if (vec3d != null)
                      {
+-                        this.field_75534_e = 0;
+-                        this.field_75533_d = 20;
+-                        return true;
 +                        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.village.VillageSiegeEvent(this, field_75537_a, entityplayer, field_75531_f, vec3d))) return false;
-                         break;
++                        break;
                      }
                  }
+             }
+         }
+ 
+-        return false;
++        this.field_75534_e = 0;
++        this.field_75533_d = 20;
++        return true;
+     }
+ 
+     private boolean func_75530_c()

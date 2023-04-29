@@ -1,0 +1,22 @@
+--- before/net/minecraft/client/resources/FolderResourcePack.java
++++ after/net/minecraft/client/resources/FolderResourcePack.java
+@@ -69,8 +69,9 @@
+                 return file1;
+             }
+         }
+-        catch (IOException ioexception)
++        catch (IOException var3)
+         {
++            ;
+         }
+ 
+         return null;
+@@ -78,7 +79,7 @@
+ 
+     public Set<String> func_110587_b()
+     {
+-        Set<String> set = Sets.newHashSet();
++        Set<String> set = Sets.<String>newHashSet();
+         File file1 = new File(this.field_110597_b, "assets/");
+ 
+         if (file1.isDirectory())

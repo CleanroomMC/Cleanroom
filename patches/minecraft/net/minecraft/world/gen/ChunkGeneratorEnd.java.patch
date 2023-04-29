@@ -44,6 +44,15 @@
          this.field_73220_k.setSeed((long)p_185932_1_ * 341873128712L + (long)p_185932_2_ * 132897987541L);
          ChunkPrimer chunkprimer = new ChunkPrimer();
          this.field_73231_z = this.field_73230_p.func_72959_q().func_76933_b(this.field_73231_z, p_185932_1_ * 16, p_185932_2_ * 16, 16, 16);
+@@ -219,7 +235,7 @@
+                 long k = (long)(p_185960_1_ + i);
+                 long l = (long)(p_185960_2_ + j);
+ 
+-                if (k * k + l * l > 4096L && this.field_185973_o.func_151605_a((double)k, (double)l) < (double) - 0.9F)
++                if (k * k + l * l > 4096L && this.field_185973_o.func_151605_a((double)k, (double)l) < -0.8999999761581421D)
+                 {
+                     float f3 = (MathHelper.func_76135_e((float)k) * 3439.0F + MathHelper.func_76135_e((float)l) * 147.0F) % 13.0F + 9.0F;
+                     f = (float)(p_185960_3_ - i * 2);
 @@ -254,6 +270,10 @@
  
      private double[] func_185963_a(double[] p_185963_1_, int p_185963_2_, int p_185963_3_, int p_185963_4_, int p_185963_5_, int p_185963_6_, int p_185963_7_)
@@ -55,6 +64,26 @@
          if (p_185963_1_ == null)
          {
              p_185963_1_ = new double[p_185963_5_ * p_185963_6_ * p_185963_7_];
+@@ -261,7 +281,7 @@
+ 
+         double d0 = 684.412D;
+         double d1 = 684.412D;
+-        d0 *= 2.0D;
++        d0 = d0 * 2.0D;
+         this.field_185966_e = this.field_185971_k.func_76304_a(this.field_185966_e, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_, d0 / 80.0D, 4.277575000000001D, d0 / 80.0D);
+         this.field_185967_f = this.field_185969_i.func_76304_a(this.field_185967_f, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_, d0, 684.412D, d0);
+         this.field_185968_g = this.field_185970_j.func_76304_a(this.field_185968_g, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_, d0, 684.412D, d0);
+@@ -295,8 +315,8 @@
+                         d4 = d2 + (d3 - d2) * d5;
+                     }
+ 
+-                    d4 -= 8.0D;
+-                    d4 += (double)f;
++                    d4 = d4 - 8.0D;
++                    d4 = d4 + (double)f;
+                     int k1 = 2;
+ 
+                     if (j1 > p_185963_6_ / 2 - k1)
 @@ -326,6 +346,7 @@
      public void func_185931_b(int p_185931_1_, int p_185931_2_)
      {

@@ -1,6 +1,108 @@
 --- before/net/minecraft/entity/player/InventoryPlayer.java
 +++ after/net/minecraft/entity/player/InventoryPlayer.java
-@@ -292,7 +292,8 @@
+@@ -1,6 +1,7 @@
+ package net.minecraft.entity.player;
+ 
+ import java.util.Arrays;
++import java.util.Iterator;
+ import java.util.List;
+ import javax.annotation.Nullable;
+ import net.minecraft.block.state.IBlockState;
+@@ -28,23 +29,25 @@
+ 
+ public class InventoryPlayer implements IInventory
+ {
+-    public final NonNullList<ItemStack> field_70462_a = NonNullList.func_191197_a(36, ItemStack.field_190927_a);
+-    public final NonNullList<ItemStack> field_70460_b = NonNullList.func_191197_a(4, ItemStack.field_190927_a);
+-    public final NonNullList<ItemStack> field_184439_c = NonNullList.func_191197_a(1, ItemStack.field_190927_a);
+-    private final List<NonNullList<ItemStack>> field_184440_g = Arrays.asList(this.field_70462_a, this.field_70460_b, this.field_184439_c);
++    public final NonNullList<ItemStack> field_70462_a = NonNullList.<ItemStack>func_191197_a(36, ItemStack.field_190927_a);
++    public final NonNullList<ItemStack> field_70460_b = NonNullList.<ItemStack>func_191197_a(4, ItemStack.field_190927_a);
++    public final NonNullList<ItemStack> field_184439_c = NonNullList.<ItemStack>func_191197_a(1, ItemStack.field_190927_a);
++    private final List<NonNullList<ItemStack>> field_184440_g;
+     public int field_70461_c;
+     public EntityPlayer field_70458_d;
+-    private ItemStack field_70457_g = ItemStack.field_190927_a;
++    private ItemStack field_70457_g;
+     private int field_194017_h;
+ 
+     public InventoryPlayer(EntityPlayer p_i1750_1_)
+     {
++        this.field_184440_g = Arrays.<NonNullList<ItemStack>>asList(this.field_70462_a, this.field_70460_b, this.field_184439_c);
++        this.field_70457_g = ItemStack.field_190927_a;
+         this.field_70458_d = p_i1750_1_;
+     }
+ 
+     public ItemStack func_70448_g()
+     {
+-        return func_184435_e(this.field_70461_c) ? this.field_70462_a.get(this.field_70461_c) : ItemStack.field_190927_a;
++        return func_184435_e(this.field_70461_c) ? (ItemStack)this.field_70462_a.get(this.field_70461_c) : ItemStack.field_190927_a;
+     }
+ 
+     public static int func_70451_h()
+@@ -66,7 +69,7 @@
+     {
+         for (int i = 0; i < this.field_70462_a.size(); ++i)
+         {
+-            if (this.field_70462_a.get(i).func_190926_b())
++            if (((ItemStack)this.field_70462_a.get(i)).func_190926_b())
+             {
+                 return i;
+             }
+@@ -90,7 +93,7 @@
+             {
+                 this.field_70461_c = this.func_184433_k();
+ 
+-                if (!this.field_70462_a.get(this.field_70461_c).func_190926_b())
++                if (!((ItemStack)this.field_70462_a.get(this.field_70461_c)).func_190926_b())
+                 {
+                     int j = this.func_70447_i();
+ 
+@@ -127,7 +130,7 @@
+     {
+         for (int i = 0; i < this.field_70462_a.size(); ++i)
+         {
+-            if (!this.field_70462_a.get(i).func_190926_b() && this.func_184431_b(p_184429_1_, this.field_70462_a.get(i)))
++            if (!((ItemStack)this.field_70462_a.get(i)).func_190926_b() && this.func_184431_b(p_184429_1_, this.field_70462_a.get(i)))
+             {
+                 return i;
+             }
+@@ -142,7 +145,7 @@
+         {
+             ItemStack itemstack = this.field_70462_a.get(i);
+ 
+-            if (!this.field_70462_a.get(i).func_190926_b() && this.func_184431_b(p_194014_1_, this.field_70462_a.get(i)) && !this.field_70462_a.get(i).func_77951_h() && !itemstack.func_77948_v() && !itemstack.func_82837_s())
++            if (!((ItemStack)this.field_70462_a.get(i)).func_190926_b() && this.func_184431_b(p_194014_1_, this.field_70462_a.get(i)) && !((ItemStack)this.field_70462_a.get(i)).func_77951_h() && !itemstack.func_77948_v() && !itemstack.func_82837_s())
+             {
+                 return i;
+             }
+@@ -157,7 +160,7 @@
+         {
+             int j = (this.field_70461_c + i) % 9;
+ 
+-            if (this.field_70462_a.get(j).func_190926_b())
++            if (((ItemStack)this.field_70462_a.get(j)).func_190926_b())
+             {
+                 return j;
+             }
+@@ -167,7 +170,7 @@
+         {
+             int l = (this.field_70461_c + k) % 9;
+ 
+-            if (!this.field_70462_a.get(l).func_77948_v())
++            if (!((ItemStack)this.field_70462_a.get(l)).func_77948_v())
+             {
+                 return l;
+             }
+@@ -191,6 +194,7 @@
+ 
+         for (this.field_70461_c -= p_70453_1_; this.field_70461_c < 0; this.field_70461_c += 9)
+         {
++            ;
+         }
+ 
+         while (this.field_70461_c >= 9)
+@@ -288,7 +292,8 @@
  
          if (itemstack.func_190926_b())
          {
@@ -10,26 +112,212 @@
  
              if (p_191973_2_.func_77942_o())
              {
-@@ -363,6 +364,13 @@
-                 }
-             }
+@@ -316,7 +321,7 @@
          }
+         else
+         {
+-            i -= j;
++            i = i - j;
+             itemstack.func_190917_f(j);
+             itemstack.func_190915_d(5);
+             return i;
+@@ -353,10 +358,17 @@
+         {
+             for (int i = 0; i < nonnulllist.size(); ++i)
+             {
+-                if (!nonnulllist.get(i).func_190926_b())
++                if (!((ItemStack)nonnulllist.get(i)).func_190926_b())
+                 {
+-                    nonnulllist.get(i).func_77945_a(this.field_70458_d.field_70170_p, this.field_70458_d, i, this.field_70461_c == i);
++                    ((ItemStack)nonnulllist.get(i)).func_77945_a(this.field_70458_d.field_70170_p, this.field_70458_d, i, this.field_70461_c == i);
+                 }
++            }
++        }
 +        for (ItemStack is : field_70460_b) // FORGE: Tick armor on animation ticks
 +        {
 +            if (!is.func_190926_b())
 +            {
 +                is.func_77973_b().onArmorTick(field_70458_d.field_70170_p, field_70458_d, is);
-+            }
-+        }
+             }
+         }
      }
+@@ -386,7 +398,7 @@
+                     if (p_191971_1_ >= 0)
+                     {
+                         this.field_70462_a.set(p_191971_1_, p_191971_2_.func_77946_l());
+-                        this.field_70462_a.get(p_191971_1_).func_190915_d(5);
++                        ((ItemStack)this.field_70462_a.get(p_191971_1_)).func_190915_d(5);
+                         p_191971_2_.func_190920_e(0);
+                         return true;
+                     }
+@@ -404,7 +416,7 @@
+                 {
+                     int i;
  
-     public boolean func_70441_a(ItemStack p_70441_1_)
-@@ -444,6 +452,8 @@
+-                    do
++                    while (true)
+                     {
+                         i = p_191971_2_.func_190916_E();
+ 
+@@ -416,8 +428,12 @@
+                         {
+                             p_191971_2_.func_190920_e(this.func_191973_d(p_191971_1_, p_191971_2_));
+                         }
++
++                        if (p_191971_2_.func_190926_b() || p_191971_2_.func_190916_E() >= i)
++                        {
++                            break;
++                        }
+                     }
+-                    while (!p_191971_2_.func_190926_b() && p_191971_2_.func_190916_E() < i);
+ 
+                     if (p_191971_2_.func_190916_E() == i && this.field_70458_d.field_71075_bZ.field_75098_d)
+                     {
+@@ -434,8 +450,10 @@
+             {
+                 CrashReport crashreport = CrashReport.func_85055_a(throwable, "Adding item to inventory");
                  CrashReportCategory crashreportcategory = crashreport.func_85058_a("Item being added");
-                 crashreportcategory.func_71507_a("Item ID", Integer.valueOf(Item.func_150891_b(p_191971_2_.func_77973_b())));
-                 crashreportcategory.func_71507_a("Item data", Integer.valueOf(p_191971_2_.func_77960_j()));
+-                crashreportcategory.func_71507_a("Item ID", Item.func_150891_b(p_191971_2_.func_77973_b()));
+-                crashreportcategory.func_71507_a("Item data", p_191971_2_.func_77960_j());
++                crashreportcategory.func_71507_a("Item ID", Integer.valueOf(Item.func_150891_b(p_191971_2_.func_77973_b())));
++                crashreportcategory.func_71507_a("Item data", Integer.valueOf(p_191971_2_.func_77960_j()));
 +                crashreportcategory.func_189529_a("Registry Name", () -> String.valueOf(p_191971_2_.func_77973_b().getRegistryName()));
 +                crashreportcategory.func_189529_a("Item Class", () -> p_191971_2_.func_77973_b().getClass().getName());
                  crashreportcategory.func_189529_a("Item name", new ICrashReportDetail<String>()
                  {
                      public String call() throws Exception
+@@ -492,7 +510,7 @@
+             p_70298_1_ -= nonnulllist.size();
+         }
+ 
+-        return list != null && !list.get(p_70298_1_).func_190926_b() ? ItemStackHelper.func_188382_a(list, p_70298_1_, p_70298_2_) : ItemStack.field_190927_a;
++        return list != null && !((ItemStack)list.get(p_70298_1_)).func_190926_b() ? ItemStackHelper.func_188382_a(list, p_70298_1_, p_70298_2_) : ItemStack.field_190927_a;
+     }
+ 
+     public void func_184437_d(ItemStack p_184437_1_)
+@@ -525,7 +543,7 @@
+             p_70304_1_ -= nonnulllist1.size();
+         }
+ 
+-        if (nonnulllist != null && !nonnulllist.get(p_70304_1_).func_190926_b())
++        if (nonnulllist != null && !((ItemStack)nonnulllist.get(p_70304_1_)).func_190926_b())
+         {
+             ItemStack itemstack = nonnulllist.get(p_70304_1_);
+             nonnulllist.set(p_70304_1_, ItemStack.field_190927_a);
+@@ -562,9 +580,9 @@
+     {
+         float f = 1.0F;
+ 
+-        if (!this.field_70462_a.get(this.field_70461_c).func_190926_b())
++        if (!((ItemStack)this.field_70462_a.get(this.field_70461_c)).func_190926_b())
+         {
+-            f *= this.field_70462_a.get(this.field_70461_c).func_150997_a(p_184438_1_);
++            f *= ((ItemStack)this.field_70462_a.get(this.field_70461_c)).func_150997_a(p_184438_1_);
+         }
+ 
+         return f;
+@@ -574,33 +592,33 @@
+     {
+         for (int i = 0; i < this.field_70462_a.size(); ++i)
+         {
+-            if (!this.field_70462_a.get(i).func_190926_b())
++            if (!((ItemStack)this.field_70462_a.get(i)).func_190926_b())
+             {
+                 NBTTagCompound nbttagcompound = new NBTTagCompound();
+                 nbttagcompound.func_74774_a("Slot", (byte)i);
+-                this.field_70462_a.get(i).func_77955_b(nbttagcompound);
++                ((ItemStack)this.field_70462_a.get(i)).func_77955_b(nbttagcompound);
+                 p_70442_1_.func_74742_a(nbttagcompound);
+             }
+         }
+ 
+         for (int j = 0; j < this.field_70460_b.size(); ++j)
+         {
+-            if (!this.field_70460_b.get(j).func_190926_b())
++            if (!((ItemStack)this.field_70460_b.get(j)).func_190926_b())
+             {
+                 NBTTagCompound nbttagcompound1 = new NBTTagCompound();
+                 nbttagcompound1.func_74774_a("Slot", (byte)(j + 100));
+-                this.field_70460_b.get(j).func_77955_b(nbttagcompound1);
++                ((ItemStack)this.field_70460_b.get(j)).func_77955_b(nbttagcompound1);
+                 p_70442_1_.func_74742_a(nbttagcompound1);
+             }
+         }
+ 
+         for (int k = 0; k < this.field_184439_c.size(); ++k)
+         {
+-            if (!this.field_184439_c.get(k).func_190926_b())
++            if (!((ItemStack)this.field_184439_c.get(k)).func_190926_b())
+             {
+                 NBTTagCompound nbttagcompound2 = new NBTTagCompound();
+                 nbttagcompound2.func_74774_a("Slot", (byte)(k + 150));
+-                this.field_184439_c.get(k).func_77955_b(nbttagcompound2);
++                ((ItemStack)this.field_184439_c.get(k)).func_77955_b(nbttagcompound2);
+                 p_70442_1_.func_74742_a(nbttagcompound2);
+             }
+         }
+@@ -687,7 +705,7 @@
+             p_70301_1_ -= nonnulllist.size();
+         }
+ 
+-        return list == null ? ItemStack.field_190927_a : list.get(p_70301_1_);
++        return list == null ? ItemStack.field_190927_a : (ItemStack)list.get(p_70301_1_);
+     }
+ 
+     public String func_70005_c_()
+@@ -702,7 +720,7 @@
+ 
+     public ITextComponent func_145748_c_()
+     {
+-        return (ITextComponent)(this.func_145818_k_() ? new TextComponentString(this.func_70005_c_()) : new TextComponentTranslation(this.func_70005_c_()));
++        return (ITextComponent)(this.func_145818_k_() ? new TextComponentString(this.func_70005_c_()) : new TextComponentTranslation(this.func_70005_c_(), new Object[0]));
+     }
+ 
+     public int func_70297_j_()
+@@ -731,7 +749,7 @@
+ 
+     public void func_70449_g(float p_70449_1_)
+     {
+-        p_70449_1_ /= 4.0F;
++        p_70449_1_ = p_70449_1_ / 4.0F;
+ 
+         if (p_70449_1_ < 1.0F)
+         {
+@@ -795,21 +813,34 @@
+         }
+         else
+         {
+-            return !(p_70300_1_.func_70068_e(this.field_70458_d) > 64.0D);
++            return p_70300_1_.func_70068_e(this.field_70458_d) <= 64.0D;
+         }
+     }
+ 
+     public boolean func_70431_c(ItemStack p_70431_1_)
+     {
++        label23:
++
+         for (List<ItemStack> list : this.field_184440_g)
+         {
+-            for (ItemStack itemstack : list)
++            Iterator iterator = list.iterator();
++
++            while (true)
+             {
++                if (!iterator.hasNext())
++                {
++                    continue label23;
++                }
++
++                ItemStack itemstack = (ItemStack)iterator.next();
++
+                 if (!itemstack.func_190926_b() && itemstack.func_77969_a(p_70431_1_))
+                 {
+-                    return true;
++                    break;
+                 }
+             }
++
++            return true;
+         }
+ 
+         return false;

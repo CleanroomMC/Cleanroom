@@ -1,6 +1,39 @@
 --- before/net/minecraft/tileentity/TileEntityHopper.java
 +++ after/net/minecraft/tileentity/TileEntityHopper.java
-@@ -191,6 +191,7 @@
+@@ -30,19 +30,19 @@
+ 
+ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper, ITickable
+ {
+-    private NonNullList<ItemStack> field_145900_a = NonNullList.func_191197_a(5, ItemStack.field_190927_a);
++    private NonNullList<ItemStack> field_145900_a = NonNullList.<ItemStack>func_191197_a(5, ItemStack.field_190927_a);
+     private int field_145901_j = -1;
+     private long field_190578_g;
+ 
+     public static void func_189683_a(DataFixer p_189683_0_)
+     {
+-        p_189683_0_.func_188258_a(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityHopper.class, "Items"));
++        p_189683_0_.func_188258_a(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityHopper.class, new String[] {"Items"}));
+     }
+ 
+     public void func_145839_a(NBTTagCompound p_145839_1_)
+     {
+         super.func_145839_a(p_145839_1_);
+-        this.field_145900_a = NonNullList.func_191197_a(this.func_70302_i_(), ItemStack.field_190927_a);
++        this.field_145900_a = NonNullList.<ItemStack>func_191197_a(this.func_70302_i_(), ItemStack.field_190927_a);
+ 
+         if (!this.func_184283_b(p_145839_1_))
+         {
+@@ -84,7 +84,8 @@
+     public ItemStack func_70298_a(int p_70298_1_, int p_70298_2_)
+     {
+         this.func_184281_d((EntityPlayer)null);
+-        return ItemStackHelper.func_188382_a(this.func_190576_q(), p_70298_1_, p_70298_2_);
++        ItemStack itemstack = ItemStackHelper.func_188382_a(this.func_190576_q(), p_70298_1_, p_70298_2_);
++        return itemstack;
+     }
+ 
+     public void func_70299_a(int p_70299_1_, ItemStack p_70299_2_)
+@@ -190,6 +191,7 @@
  
      private boolean func_145883_k()
      {
@@ -8,7 +41,7 @@
          IInventory iinventory = this.func_145895_l();
  
          if (iinventory == null)
-@@ -297,6 +298,8 @@
+@@ -296,6 +298,8 @@
  
      public static boolean func_145891_a(IHopper p_145891_0_)
      {
@@ -17,7 +50,7 @@
          IInventory iinventory = func_145884_b(p_145891_0_);
  
          if (iinventory != null)
-@@ -396,6 +399,12 @@
+@@ -395,6 +399,12 @@
          }
      }
  
@@ -30,7 +63,16 @@
      public static ItemStack func_174918_a(IInventory p_174918_0_, IInventory p_174918_1_, ItemStack p_174918_2_, @Nullable EnumFacing p_174918_3_)
      {
          if (p_174918_1_ instanceof ISidedInventory && p_174918_3_ != null)
-@@ -516,9 +525,10 @@
+@@ -505,7 +515,7 @@
+ 
+     public static List<EntityItem> func_184292_a(World p_184292_0_, double p_184292_1_, double p_184292_3_, double p_184292_5_)
+     {
+-        return p_184292_0_.func_175647_a(EntityItem.class, new AxisAlignedBB(p_184292_1_ - 0.5D, p_184292_3_, p_184292_5_ - 0.5D, p_184292_1_ + 0.5D, p_184292_3_ + 1.5D, p_184292_5_ + 0.5D), EntitySelectors.field_94557_a);
++        return p_184292_0_.<EntityItem>func_175647_a(EntityItem.class, new AxisAlignedBB(p_184292_1_ - 0.5D, p_184292_3_, p_184292_5_ - 0.5D, p_184292_1_ + 0.5D, p_184292_3_ + 1.5D, p_184292_5_ + 0.5D), EntitySelectors.field_94557_a);
+     }
+ 
+     public static IInventory func_145893_b(World p_145893_0_, double p_145893_1_, double p_145893_3_, double p_145893_5_)
+@@ -515,9 +525,10 @@
          int j = MathHelper.func_76128_c(p_145893_3_);
          int k = MathHelper.func_76128_c(p_145893_5_);
          BlockPos blockpos = new BlockPos(i, j, k);
@@ -43,7 +85,7 @@
          {
              TileEntity tileentity = p_145893_0_.func_175625_s(blockpos);
  
-@@ -611,4 +621,6 @@
+@@ -610,4 +621,6 @@
      {
          return this.field_145900_a;
      }

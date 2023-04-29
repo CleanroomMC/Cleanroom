@@ -1,6 +1,14 @@
 --- before/net/minecraft/block/BlockBanner.java
 +++ after/net/minecraft/block/BlockBanner.java
-@@ -90,16 +90,9 @@
+@@ -3,6 +3,7 @@
+ import java.util.Random;
+ import javax.annotation.Nullable;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyDirection;
+ import net.minecraft.block.properties.PropertyInteger;
+ import net.minecraft.block.state.BlockFaceShape;
+@@ -89,16 +90,9 @@
  
      public void func_180653_a(World p_180653_1_, BlockPos p_180653_2_, IBlockState p_180653_3_, float p_180653_4_, int p_180653_5_)
      {
@@ -17,12 +25,10 @@
      }
  
      public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)
-@@ -124,6 +117,23 @@
-     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
-     {
+@@ -125,6 +119,23 @@
          return BlockFaceShape.UNDEFINED;
-+    }
-+
+     }
+ 
 +    @Override
 +    public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
 +    {
@@ -38,6 +44,92 @@
 +        {
 +            drops.add(new ItemStack(Items.field_179564_cE, 1, 0));
 +        }
-     }
- 
++    }
++
      public static class BlockBannerHanging extends BlockBanner
+         {
+             protected static final AxisAlignedBB field_185551_d = new AxisAlignedBB(0.0D, 0.0D, 0.875D, 1.0D, 0.78125D, 1.0D);
+@@ -139,12 +150,12 @@
+ 
+             public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
+             {
+-                return p_185499_1_.func_177226_a(field_176449_a, p_185499_2_.func_185831_a(p_185499_1_.func_177229_b(field_176449_a)));
++                return p_185499_1_.func_177226_a(field_176449_a, p_185499_2_.func_185831_a((EnumFacing)p_185499_1_.func_177229_b(field_176449_a)));
+             }
+ 
+             public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
+             {
+-                return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a(p_185471_1_.func_177229_b(field_176449_a)));
++                return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a((EnumFacing)p_185471_1_.func_177229_b(field_176449_a)));
+             }
+ 
+             public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
+@@ -165,7 +176,7 @@
+ 
+             public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
+             {
+-                EnumFacing enumfacing = p_189540_1_.func_177229_b(field_176449_a);
++                EnumFacing enumfacing = (EnumFacing)p_189540_1_.func_177229_b(field_176449_a);
+ 
+                 if (!p_189540_2_.func_180495_p(p_189540_3_.func_177972_a(enumfacing.func_176734_d())).func_185904_a().func_76220_a())
+                 {
+@@ -190,12 +201,12 @@
+ 
+             public int func_176201_c(IBlockState p_176201_1_)
+             {
+-                return p_176201_1_.func_177229_b(field_176449_a).func_176745_a();
++                return ((EnumFacing)p_176201_1_.func_177229_b(field_176449_a)).func_176745_a();
+             }
+ 
+             protected BlockStateContainer func_180661_e()
+             {
+-                return new BlockStateContainer(this, field_176449_a);
++                return new BlockStateContainer(this, new IProperty[] {field_176449_a});
+             }
+         }
+ 
+@@ -203,7 +214,7 @@
+         {
+             public BlockBannerStanding()
+             {
+-                this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176448_b, 0));
++                this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176448_b, Integer.valueOf(0)));
+             }
+ 
+             public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
+@@ -213,12 +224,12 @@
+ 
+             public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
+             {
+-                return p_185499_1_.func_177226_a(field_176448_b, p_185499_2_.func_185833_a(p_185499_1_.func_177229_b(field_176448_b), 16));
++                return p_185499_1_.func_177226_a(field_176448_b, Integer.valueOf(p_185499_2_.func_185833_a(((Integer)p_185499_1_.func_177229_b(field_176448_b)).intValue(), 16)));
+             }
+ 
+             public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
+             {
+-                return p_185471_1_.func_177226_a(field_176448_b, p_185471_2_.func_185802_a(p_185471_1_.func_177229_b(field_176448_b), 16));
++                return p_185471_1_.func_177226_a(field_176448_b, Integer.valueOf(p_185471_2_.func_185802_a(((Integer)p_185471_1_.func_177229_b(field_176448_b)).intValue(), 16)));
+             }
+ 
+             public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
+@@ -234,17 +245,17 @@
+ 
+             public IBlockState func_176203_a(int p_176203_1_)
+             {
+-                return this.func_176223_P().func_177226_a(field_176448_b, p_176203_1_);
++                return this.func_176223_P().func_177226_a(field_176448_b, Integer.valueOf(p_176203_1_));
+             }
+ 
+             public int func_176201_c(IBlockState p_176201_1_)
+             {
+-                return p_176201_1_.func_177229_b(field_176448_b);
++                return ((Integer)p_176201_1_.func_177229_b(field_176448_b)).intValue();
+             }
+ 
+             protected BlockStateContainer func_180661_e()
+             {
+-                return new BlockStateContainer(this, field_176448_b);
++                return new BlockStateContainer(this, new IProperty[] {field_176448_b});
+             }
+         }
+ }

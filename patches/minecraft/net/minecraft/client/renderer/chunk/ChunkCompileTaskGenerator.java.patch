@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/renderer/chunk/ChunkCompileTaskGenerator.java
++++ after/net/minecraft/client/renderer/chunk/ChunkCompileTaskGenerator.java
+@@ -13,7 +13,7 @@
+ {
+     private final RenderChunk field_178553_a;
+     private final ReentrantLock field_178551_b = new ReentrantLock();
+-    private final List<Runnable> field_178552_c = Lists.newArrayList();
++    private final List<Runnable> field_178552_c = Lists.<Runnable>newArrayList();
+     private final ChunkCompileTaskGenerator.Type field_178549_d;
+     private final double field_188229_e;
+     private RegionRenderCacheBuilder field_178550_e;

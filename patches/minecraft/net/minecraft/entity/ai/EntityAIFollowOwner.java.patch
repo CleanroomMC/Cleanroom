@@ -1,0 +1,11 @@
+--- before/net/minecraft/entity/ai/EntityAIFollowOwner.java
++++ after/net/minecraft/entity/ai/EntityAIFollowOwner.java
+@@ -102,7 +102,7 @@
+                 {
+                     if (!this.field_75338_d.func_110167_bD() && !this.field_75338_d.func_184218_aH())
+                     {
+-                        if (!(this.field_75338_d.func_70068_e(this.field_75339_e) < 144.0D))
++                        if (this.field_75338_d.func_70068_e(this.field_75339_e) >= 144.0D)
+                         {
+                             int i = MathHelper.func_76128_c(this.field_75339_e.field_70165_t) - 2;
+                             int j = MathHelper.func_76128_c(this.field_75339_e.field_70161_v) - 2;

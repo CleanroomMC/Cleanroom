@@ -9,6 +9,19 @@
          this.field_186064_g = this.field_76579_a instanceof WorldServer ? new DragonFightManager((WorldServer)this.field_76579_a, nbttagcompound.func_74775_l("DragonFight")) : null;
      }
  
+@@ -50,9 +50,9 @@
+         float f1 = 0.627451F;
+         float f2 = 0.5019608F;
+         float f3 = 0.627451F;
+-        f1 *= f * 0.0F + 0.15F;
+-        f2 *= f * 0.0F + 0.15F;
+-        f3 *= f * 0.0F + 0.15F;
++        f1 = f1 * (f * 0.0F + 0.15F);
++        f2 = f2 * (f * 0.0F + 0.15F);
++        f3 = f3 * (f * 0.0F + 0.15F);
+         return new Vec3d((double)f1, (double)f2, (double)f3);
+     }
+ 
 @@ -113,7 +113,7 @@
              nbttagcompound.func_74782_a("DragonFight", this.field_186064_g.func_186088_a());
          }

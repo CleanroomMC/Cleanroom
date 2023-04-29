@@ -1,0 +1,65 @@
+--- before/net/minecraft/network/EnumConnectionState.java
++++ after/net/minecraft/network/EnumConnectionState.java
+@@ -272,22 +272,23 @@
+     };
+ 
+     private static final EnumConnectionState[] field_150764_e = new EnumConnectionState[4];
+-    private static final Map < Class <? extends Packet<? >> , EnumConnectionState > field_150761_f = Maps.newHashMap();
++    private static final Map < Class <? extends Packet<? >> , EnumConnectionState > field_150761_f = Maps. < Class <? extends Packet<? >> , EnumConnectionState > newHashMap();
+     private final int field_150762_g;
+-    private final Map < EnumPacketDirection, BiMap < Integer, Class <? extends Packet<? >>> > field_179247_h = Maps.newEnumMap(EnumPacketDirection.class);
++    private final Map < EnumPacketDirection, BiMap < Integer, Class <? extends Packet<? >>> > field_179247_h;
+ 
+     private EnumConnectionState(int p_i45152_3_)
+     {
++        this.field_179247_h = Maps.newEnumMap(EnumPacketDirection.class);
+         this.field_150762_g = p_i45152_3_;
+     }
+ 
+     protected EnumConnectionState func_179245_a(EnumPacketDirection p_179245_1_, Class <? extends Packet<? >> p_179245_2_)
+     {
+-        BiMap < Integer, Class <? extends Packet<? >>> bimap = this.field_179247_h.get(p_179245_1_);
++        BiMap < Integer, Class <? extends Packet<? >>> bimap = (BiMap)this.field_179247_h.get(p_179245_1_);
+ 
+         if (bimap == null)
+         {
+-            bimap = HashBiMap.create();
++            bimap = HashBiMap. < Integer, Class <? extends Packet<? >>> create();
+             this.field_179247_h.put(p_179245_1_, bimap);
+         }
+ 
+@@ -299,21 +300,21 @@
+         }
+         else
+         {
+-            bimap.put(bimap.size(), p_179245_2_);
++            bimap.put(Integer.valueOf(bimap.size()), p_179245_2_);
+             return this;
+         }
+     }
+ 
+     public Integer func_179246_a(EnumPacketDirection p_179246_1_, Packet<?> p_179246_2_) throws Exception
+     {
+-        return this.field_179247_h.get(p_179246_1_).inverse().get(p_179246_2_.getClass());
++        return (Integer)((BiMap)this.field_179247_h.get(p_179246_1_)).inverse().get(p_179246_2_.getClass());
+     }
+ 
+     @Nullable
+     public Packet<?> func_179244_a(EnumPacketDirection p_179244_1_, int p_179244_2_) throws InstantiationException, IllegalAccessException
+     {
+-        Class <? extends Packet<? >> oclass = this.field_179247_h.get(p_179244_1_).get(Integer.valueOf(p_179244_2_));
+-        return oclass == null ? null : oclass.newInstance();
++        Class <? extends Packet<? >> oclass = (Class)((BiMap)this.field_179247_h.get(p_179244_1_)).get(Integer.valueOf(p_179244_2_));
++        return oclass == null ? null : (Packet)oclass.newInstance();
+     }
+ 
+     public int func_150759_c()
+@@ -357,7 +358,7 @@
+                     {
+                         oclass.newInstance();
+                     }
+-                    catch (Throwable throwable)
++                    catch (Throwable var10)
+                     {
+                         throw new Error("Packet " + oclass + " fails instantiation checks! " + oclass);
+                     }

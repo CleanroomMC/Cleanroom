@@ -1,6 +1,32 @@
 --- before/net/minecraft/block/BlockSkull.java
 +++ after/net/minecraft/block/BlockSkull.java
-@@ -128,10 +128,6 @@
+@@ -5,6 +5,7 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.advancements.CriteriaTriggers;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyBool;
+ import net.minecraft.block.properties.PropertyDirection;
+ import net.minecraft.block.state.BlockFaceShape;
+@@ -62,7 +63,7 @@
+     protected BlockSkull()
+     {
+         super(Material.field_151594_q);
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176418_a, EnumFacing.NORTH).func_177226_a(field_176417_b, false));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176418_a, EnumFacing.NORTH).func_177226_a(field_176417_b, Boolean.valueOf(false)));
+     }
+ 
+     public String func_149732_F()
+@@ -106,7 +107,7 @@
+ 
+     public IBlockState func_180642_a(World p_180642_1_, BlockPos p_180642_2_, EnumFacing p_180642_3_, float p_180642_4_, float p_180642_5_, float p_180642_6_, int p_180642_7_, EntityLivingBase p_180642_8_)
+     {
+-        return this.func_176223_P().func_177226_a(field_176418_a, p_180642_8_.func_174811_aO()).func_177226_a(field_176417_b, false);
++        return this.func_176223_P().func_177226_a(field_176418_a, p_180642_8_.func_174811_aO()).func_177226_a(field_176417_b, Boolean.valueOf(false));
+     }
+ 
+     public TileEntity func_149915_a(World p_149915_1_, int p_149915_2_)
+@@ -127,33 +128,33 @@
          return new ItemStack(Items.field_151144_bL, 1, i);
      }
  
@@ -11,8 +37,9 @@
      public void func_176208_a(World p_176208_1_, BlockPos p_176208_2_, IBlockState p_176208_3_, EntityPlayer p_176208_4_)
      {
          if (p_176208_4_.field_71075_bZ.field_75098_d)
-@@ -139,13 +135,17 @@
-             p_176208_3_ = p_176208_3_.func_177226_a(field_176417_b, Boolean.valueOf(true));
+         {
+-            p_176208_3_ = p_176208_3_.func_177226_a(field_176417_b, true);
++            p_176208_3_ = p_176208_3_.func_177226_a(field_176417_b, Boolean.valueOf(true));
              p_176208_1_.func_180501_a(p_176208_2_, p_176208_3_, 4);
          }
 +        this.func_176226_b(p_176208_1_, p_176208_2_, p_176208_3_, 0);
@@ -28,9 +55,11 @@
 +    public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess p_180663_1_, BlockPos p_180663_2_, IBlockState p_180663_3_, int fortune)
 +    {
          {
-             if (!((Boolean)p_180663_3_.func_177229_b(field_176417_b)).booleanValue())
+-            if (!p_180663_3_.func_177229_b(field_176417_b))
++            if (!((Boolean)p_180663_3_.func_177229_b(field_176417_b)).booleanValue())
              {
-@@ -154,7 +154,7 @@
+                 TileEntity tileentity = p_180663_1_.func_175625_s(p_180663_2_);
+ 
                  if (tileentity instanceof TileEntitySkull)
                  {
                      TileEntitySkull tileentityskull = (TileEntitySkull)tileentity;
@@ -39,7 +68,7 @@
  
                      if (tileentityskull.func_145904_a() == 3 && tileentityskull.func_152108_a() != null)
                      {
-@@ -164,11 +164,9 @@
+@@ -163,11 +164,9 @@
                          itemstack.func_77978_p().func_74782_a("SkullOwner", nbttagcompound);
                      }
  
@@ -52,3 +81,52 @@
          }
      }
  
+@@ -200,7 +199,7 @@
+                 for (int i = 0; i < 3; ++i)
+                 {
+                     BlockWorldState blockworldstate = blockpattern$patternhelper.func_177670_a(i, 0, 0);
+-                    p_180679_1_.func_180501_a(blockworldstate.func_177508_d(), blockworldstate.func_177509_a().func_177226_a(field_176417_b, true), 2);
++                    p_180679_1_.func_180501_a(blockworldstate.func_177508_d(), blockworldstate.func_177509_a().func_177226_a(field_176417_b, Boolean.valueOf(true)), 2);
+                 }
+ 
+                 for (int j = 0; j < blockpattern.func_177684_c(); ++j)
+@@ -245,15 +244,15 @@
+ 
+     public IBlockState func_176203_a(int p_176203_1_)
+     {
+-        return this.func_176223_P().func_177226_a(field_176418_a, EnumFacing.func_82600_a(p_176203_1_ & 7)).func_177226_a(field_176417_b, (p_176203_1_ & 8) > 0);
++        return this.func_176223_P().func_177226_a(field_176418_a, EnumFacing.func_82600_a(p_176203_1_ & 7)).func_177226_a(field_176417_b, Boolean.valueOf((p_176203_1_ & 8) > 0));
+     }
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+         int i = 0;
+-        i |= p_176201_1_.func_177229_b(field_176418_a).func_176745_a();
++        i = i | ((EnumFacing)p_176201_1_.func_177229_b(field_176418_a)).func_176745_a();
+ 
+-        if (p_176201_1_.func_177229_b(field_176417_b))
++        if (((Boolean)p_176201_1_.func_177229_b(field_176417_b)).booleanValue())
+         {
+             i |= 8;
+         }
+@@ -263,17 +262,17 @@
+ 
+     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
+     {
+-        return p_185499_1_.func_177226_a(field_176418_a, p_185499_2_.func_185831_a(p_185499_1_.func_177229_b(field_176418_a)));
++        return p_185499_1_.func_177226_a(field_176418_a, p_185499_2_.func_185831_a((EnumFacing)p_185499_1_.func_177229_b(field_176418_a)));
+     }
+ 
+     public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
+     {
+-        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a(p_185471_1_.func_177229_b(field_176418_a)));
++        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a((EnumFacing)p_185471_1_.func_177229_b(field_176418_a)));
+     }
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176418_a, field_176417_b);
++        return new BlockStateContainer(this, new IProperty[] {field_176418_a, field_176417_b});
+     }
+ 
+     protected BlockPattern func_176414_j()

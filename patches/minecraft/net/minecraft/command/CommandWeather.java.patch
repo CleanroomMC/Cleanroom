@@ -1,0 +1,20 @@
+--- before/net/minecraft/command/CommandWeather.java
++++ after/net/minecraft/command/CommandWeather.java
+@@ -62,7 +62,7 @@
+             {
+                 if (!"thunder".equalsIgnoreCase(p_184881_3_[0]))
+                 {
+-                    throw new WrongUsageException("commands.weather.usage");
++                    throw new WrongUsageException("commands.weather.usage", new Object[0]);
+                 }
+ 
+                 worldinfo.func_176142_i(0);
+@@ -75,7 +75,7 @@
+         }
+         else
+         {
+-            throw new WrongUsageException("commands.weather.usage");
++            throw new WrongUsageException("commands.weather.usage", new Object[0]);
+         }
+     }
+ 

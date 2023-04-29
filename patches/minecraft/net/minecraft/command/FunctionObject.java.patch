@@ -1,0 +1,20 @@
+--- before/net/minecraft/command/FunctionObject.java
++++ after/net/minecraft/command/FunctionObject.java
+@@ -23,7 +23,7 @@
+ 
+     public static FunctionObject func_193527_a(FunctionManager p_193527_0_, List<String> p_193527_1_)
+     {
+-        List<FunctionObject.Entry> list = Lists.newArrayListWithCapacity(p_193527_1_.size());
++        List<FunctionObject.Entry> list = Lists.<FunctionObject.Entry>newArrayListWithCapacity(p_193527_1_.size());
+ 
+         for (String s : p_193527_1_)
+         {
+@@ -53,7 +53,7 @@
+             }
+         }
+ 
+-        return new FunctionObject(list.toArray(new FunctionObject.Entry[list.size()]));
++        return new FunctionObject((FunctionObject.Entry[])list.toArray(new FunctionObject.Entry[list.size()]));
+     }
+ 
+     public static class CacheableFunction

@@ -1,0 +1,13 @@
+--- before/net/minecraft/util/EnumHandSide.java
++++ after/net/minecraft/util/EnumHandSide.java
+@@ -7,8 +7,8 @@
+ 
+ public enum EnumHandSide
+ {
+-    LEFT(new TextComponentTranslation("options.mainHand.left")),
+-    RIGHT(new TextComponentTranslation("options.mainHand.right"));
++    LEFT(new TextComponentTranslation("options.mainHand.left", new Object[0])),
++    RIGHT(new TextComponentTranslation("options.mainHand.right", new Object[0]));
+ 
+     private final ITextComponent field_188471_c;
+ 

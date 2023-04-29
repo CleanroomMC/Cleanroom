@@ -1,0 +1,46 @@
+--- before/net/minecraft/command/CommandFunction.java
++++ after/net/minecraft/command/CommandFunction.java
+@@ -28,7 +28,7 @@
+     {
+         if (p_184881_3_.length != 1 && p_184881_3_.length != 3)
+         {
+-            throw new WrongUsageException("commands.function.usage");
++            throw new WrongUsageException("commands.function.usage", new Object[0]);
+         }
+         else
+         {
+@@ -37,7 +37,7 @@
+ 
+             if (functionobject == null)
+             {
+-                throw new CommandException("commands.function.unknown", resourcelocation);
++                throw new CommandException("commands.function.unknown", new Object[] {resourcelocation});
+             }
+             else
+             {
+@@ -54,7 +54,7 @@
+                     {
+                         if (!"unless".equals(s))
+                         {
+-                            throw new WrongUsageException("commands.function.usage");
++                            throw new WrongUsageException("commands.function.usage", new Object[0]);
+                         }
+ 
+                         flag = false;
+@@ -66,13 +66,14 @@
+                     {
+                         flag1 = !func_184890_c(p_184881_1_, p_184881_2_, p_184881_3_[2]).isEmpty();
+                     }
+-                    catch (EntityNotFoundException entitynotfoundexception)
++                    catch (EntityNotFoundException var10)
+                     {
++                        ;
+                     }
+ 
+                     if (flag != flag1)
+                     {
+-                        throw new CommandException("commands.function.skipped", resourcelocation);
++                        throw new CommandException("commands.function.skipped", new Object[] {resourcelocation});
+                     }
+                 }
+ 

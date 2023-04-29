@@ -1,0 +1,58 @@
+--- before/net/minecraft/network/LegacyPingHandler.java
++++ after/net/minecraft/network/LegacyPingHandler.java
+@@ -38,7 +38,7 @@
+                 switch (i)
+                 {
+                     case 0:
+-                        field_151258_a.debug("Ping: (<1.3.x) from {}:{}", inetsocketaddress.getAddress(), inetsocketaddress.getPort());
++                        field_151258_a.debug("Ping: (<1.3.x) from {}:{}", inetsocketaddress.getAddress(), Integer.valueOf(inetsocketaddress.getPort()));
+                         String s2 = String.format("%s\u00a7%d\u00a7%d", minecraftserver.func_71273_Y(), minecraftserver.func_71233_x(), minecraftserver.func_71275_y());
+                         this.func_151256_a(p_channelRead_1_, this.func_151255_a(s2));
+                         break;
+@@ -49,27 +49,27 @@
+                             return;
+                         }
+ 
+-                        field_151258_a.debug("Ping: (1.4-1.5.x) from {}:{}", inetsocketaddress.getAddress(), inetsocketaddress.getPort());
+-                        String s = String.format("\u00a71\u0000%d\u0000%s\u0000%s\u0000%d\u0000%d", 127, minecraftserver.func_71249_w(), minecraftserver.func_71273_Y(), minecraftserver.func_71233_x(), minecraftserver.func_71275_y());
++                        field_151258_a.debug("Ping: (1.4-1.5.x) from {}:{}", inetsocketaddress.getAddress(), Integer.valueOf(inetsocketaddress.getPort()));
++                        String s = String.format("\u00a71\u0000%d\u0000%s\u0000%s\u0000%d\u0000%d", Integer.valueOf(127), minecraftserver.func_71249_w(), minecraftserver.func_71273_Y(), minecraftserver.func_71233_x(), minecraftserver.func_71275_y());
+                         this.func_151256_a(p_channelRead_1_, this.func_151255_a(s));
+                         break;
+                     default:
+                         boolean flag1 = bytebuf.readUnsignedByte() == 1;
+-                        flag1 &= bytebuf.readUnsignedByte() == 250;
+-                        flag1 &= "MC|PingHost".equals(new String(bytebuf.readBytes(bytebuf.readShort() * 2).array(), StandardCharsets.UTF_16BE));
++                        flag1 = flag1 & bytebuf.readUnsignedByte() == 250;
++                        flag1 = flag1 & "MC|PingHost".equals(new String(bytebuf.readBytes(bytebuf.readShort() * 2).array(), StandardCharsets.UTF_16BE));
+                         int j = bytebuf.readUnsignedShort();
+-                        flag1 &= bytebuf.readUnsignedByte() >= 73;
+-                        flag1 &= 3 + bytebuf.readBytes(bytebuf.readShort() * 2).array().length + 4 == j;
+-                        flag1 &= bytebuf.readInt() <= 65535;
+-                        flag1 &= bytebuf.readableBytes() == 0;
++                        flag1 = flag1 & bytebuf.readUnsignedByte() >= 73;
++                        flag1 = flag1 & 3 + bytebuf.readBytes(bytebuf.readShort() * 2).array().length + 4 == j;
++                        flag1 = flag1 & bytebuf.readInt() <= 65535;
++                        flag1 = flag1 & bytebuf.readableBytes() == 0;
+ 
+                         if (!flag1)
+                         {
+                             return;
+                         }
+ 
+-                        field_151258_a.debug("Ping: (1.6) from {}:{}", inetsocketaddress.getAddress(), inetsocketaddress.getPort());
+-                        String s1 = String.format("\u00a71\u0000%d\u0000%s\u0000%s\u0000%d\u0000%d", 127, minecraftserver.func_71249_w(), minecraftserver.func_71273_Y(), minecraftserver.func_71233_x(), minecraftserver.func_71275_y());
++                        field_151258_a.debug("Ping: (1.6) from {}:{}", inetsocketaddress.getAddress(), Integer.valueOf(inetsocketaddress.getPort()));
++                        String s1 = String.format("\u00a71\u0000%d\u0000%s\u0000%s\u0000%d\u0000%d", Integer.valueOf(127), minecraftserver.func_71249_w(), minecraftserver.func_71273_Y(), minecraftserver.func_71233_x(), minecraftserver.func_71275_y());
+                         ByteBuf bytebuf1 = this.func_151255_a(s1);
+ 
+                         try
+@@ -87,7 +87,7 @@
+                 return;
+             }
+         }
+-        catch (RuntimeException runtimeexception)
++        catch (RuntimeException var21)
+         {
+             return;
+         }

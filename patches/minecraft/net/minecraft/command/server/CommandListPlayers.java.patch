@@ -1,0 +1,11 @@
+--- before/net/minecraft/command/server/CommandListPlayers.java
++++ after/net/minecraft/command/server/CommandListPlayers.java
+@@ -28,7 +28,7 @@
+     public void func_184881_a(MinecraftServer p_184881_1_, ICommandSender p_184881_2_, String[] p_184881_3_) throws CommandException
+     {
+         int i = p_184881_1_.func_71233_x();
+-        p_184881_2_.func_145747_a(new TextComponentTranslation("commands.players.list", i, p_184881_1_.func_71275_y()));
++        p_184881_2_.func_145747_a(new TextComponentTranslation("commands.players.list", new Object[] {i, p_184881_1_.func_71275_y()}));
+         p_184881_2_.func_145747_a(new TextComponentString(p_184881_1_.func_184103_al().func_181058_b(p_184881_3_.length > 0 && "uuids".equalsIgnoreCase(p_184881_3_[0]))));
+         p_184881_2_.func_174794_a(CommandResultStats.Type.QUERY_RESULT, i);
+     }

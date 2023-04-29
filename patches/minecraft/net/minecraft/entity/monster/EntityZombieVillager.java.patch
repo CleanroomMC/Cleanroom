@@ -1,9 +1,30 @@
 --- before/net/minecraft/entity/monster/EntityZombieVillager.java
 +++ after/net/minecraft/entity/monster/EntityZombieVillager.java
-@@ -53,11 +53,14 @@
+@@ -33,8 +33,8 @@
+ 
+ public class EntityZombieVillager extends EntityZombie
+ {
+-    private static final DataParameter<Boolean> field_184739_bx = EntityDataManager.func_187226_a(EntityZombieVillager.class, DataSerializers.field_187198_h);
+-    private static final DataParameter<Integer> field_190739_c = EntityDataManager.func_187226_a(EntityZombieVillager.class, DataSerializers.field_187192_b);
++    private static final DataParameter<Boolean> field_184739_bx = EntityDataManager.<Boolean>func_187226_a(EntityZombieVillager.class, DataSerializers.field_187198_h);
++    private static final DataParameter<Integer> field_190739_c = EntityDataManager.<Integer>func_187226_a(EntityZombieVillager.class, DataSerializers.field_187192_b);
+     private int field_82234_d;
+     private UUID field_191992_by;
+ 
+@@ -46,18 +46,21 @@
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+-        this.field_70180_af.func_187214_a(field_184739_bx, false);
+-        this.field_70180_af.func_187214_a(field_190739_c, 0);
++        this.field_70180_af.func_187214_a(field_184739_bx, Boolean.valueOf(false));
++        this.field_70180_af.func_187214_a(field_190739_c, Integer.valueOf(0));
+     }
+ 
      public void func_190733_a(int p_190733_1_)
      {
-         this.field_70180_af.func_187227_b(field_190739_c, Integer.valueOf(p_190733_1_));
+-        this.field_70180_af.func_187227_b(field_190739_c, p_190733_1_);
++        this.field_70180_af.func_187227_b(field_190739_c, Integer.valueOf(p_190733_1_));
 +        net.minecraftforge.fml.common.registry.VillagerRegistry.onSetProfession(this, p_190733_1_);
      }
  
@@ -11,7 +32,7 @@
 +    @Deprecated
      public int func_190736_dl()
      {
--        return Math.max(((Integer)this.field_70180_af.func_187225_a(field_190739_c)).intValue() % 6, 0);
+-        return Math.max(this.field_70180_af.func_187225_a(field_190739_c) % 6, 0);
 +        return Math.max(((Integer)this.field_70180_af.func_187225_a(field_190739_c)).intValue(), 0);
      }
  
@@ -46,6 +67,23 @@
          return super.func_180482_a(p_180482_1_, p_180482_2_);
      }
  
+@@ -142,14 +152,14 @@
+ 
+     public boolean func_82230_o()
+     {
+-        return this.func_184212_Q().func_187225_a(field_184739_bx);
++        return ((Boolean)this.func_184212_Q().func_187225_a(field_184739_bx)).booleanValue();
+     }
+ 
+     protected void func_191991_a(@Nullable UUID p_191991_1_, int p_191991_2_)
+     {
+         this.field_191992_by = p_191991_1_;
+         this.field_82234_d = p_191991_2_;
+-        this.func_184212_Q().func_187227_b(field_184739_bx, true);
++        this.func_184212_Q().func_187227_b(field_184739_bx, Boolean.valueOf(true));
+         this.func_184589_d(MobEffects.field_76437_t);
+         this.func_70690_d(new PotionEffect(MobEffects.field_76420_g, p_191991_2_, Math.min(this.field_70170_p.func_175659_aa().func_151525_a() - 1, 0)));
+         this.field_70170_p.func_72960_a(this, (byte)16);
 @@ -175,7 +185,7 @@
      {
          EntityVillager entityvillager = new EntityVillager(this.field_70170_p);

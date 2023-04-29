@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/gui/inventory/GuiContainer.java
 +++ after/net/minecraft/client/gui/inventory/GuiContainer.java
+@@ -42,7 +42,7 @@
+     private ItemStack field_146991_C = ItemStack.field_190927_a;
+     private Slot field_146985_D;
+     private long field_146986_E;
+-    protected final Set<Slot> field_147008_s = Sets.newHashSet();
++    protected final Set<Slot> field_147008_s = Sets.<Slot>newHashSet();
+     protected boolean field_147007_t;
+     private int field_146987_F;
+     private int field_146988_G;
 @@ -116,6 +116,7 @@
          RenderHelper.func_74518_a();
          this.func_146979_b(p_73863_1_, p_73863_2_);
@@ -103,6 +112,17 @@
                  {
                      this.func_184098_a(slot, k, p_146286_3_, ClickType.CLONE);
                  }
+@@ -618,8 +623,8 @@
+     {
+         int i = this.field_147003_i;
+         int j = this.field_147009_r;
+-        p_146978_5_ -= i;
+-        p_146978_6_ -= j;
++        p_146978_5_ = p_146978_5_ - i;
++        p_146978_6_ = p_146978_6_ - j;
+         return p_146978_5_ >= p_146978_1_ - 1 && p_146978_5_ < p_146978_1_ + p_146978_3_ + 1 && p_146978_6_ >= p_146978_2_ - 1 && p_146978_6_ < p_146978_2_ + p_146978_4_ + 1;
+     }
+ 
 @@ -635,7 +640,7 @@
  
      protected void func_73869_a(char p_73869_1_, int p_73869_2_) throws IOException

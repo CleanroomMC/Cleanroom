@@ -1,0 +1,27 @@
+--- before/net/minecraft/world/biome/BiomeCache.java
++++ after/net/minecraft/world/biome/BiomeCache.java
+@@ -10,8 +10,8 @@
+ {
+     private final BiomeProvider field_76844_a;
+     private long field_76842_b;
+-    private final Long2ObjectMap<BiomeCache.Block> field_76843_c = new Long2ObjectOpenHashMap<>(4096);
+-    private final List<BiomeCache.Block> field_76841_d = Lists.newArrayList();
++    private final Long2ObjectMap<BiomeCache.Block> field_76843_c = new Long2ObjectOpenHashMap<BiomeCache.Block>(4096);
++    private final List<BiomeCache.Block> field_76841_d = Lists.<BiomeCache.Block>newArrayList();
+ 
+     public BiomeCache(BiomeProvider p_i1973_1_)
+     {
+@@ -20,10 +20,10 @@
+ 
+     public BiomeCache.Block func_76840_a(int p_76840_1_, int p_76840_2_)
+     {
+-        p_76840_1_ >>= 4;
+-        p_76840_2_ >>= 4;
++        p_76840_1_ = p_76840_1_ >> 4;
++        p_76840_2_ = p_76840_2_ >> 4;
+         long i = (long)p_76840_1_ & 4294967295L | ((long)p_76840_2_ & 4294967295L) << 32;
+-        BiomeCache.Block biomecache$block = this.field_76843_c.get(i);
++        BiomeCache.Block biomecache$block = (BiomeCache.Block)this.field_76843_c.get(i);
+ 
+         if (biomecache$block == null)
+         {

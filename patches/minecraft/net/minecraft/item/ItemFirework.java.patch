@@ -1,0 +1,25 @@
+--- before/net/minecraft/item/ItemFirework.java
++++ after/net/minecraft/item/ItemFirework.java
+@@ -54,11 +54,11 @@
+                 }
+             }
+ 
+-            return new ActionResult<>(EnumActionResult.SUCCESS, p_77659_2_.func_184586_b(p_77659_3_));
++            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, p_77659_2_.func_184586_b(p_77659_3_));
+         }
+         else
+         {
+-            return new ActionResult<>(EnumActionResult.PASS, p_77659_2_.func_184586_b(p_77659_3_));
++            return new ActionResult<ItemStack>(EnumActionResult.PASS, p_77659_2_.func_184586_b(p_77659_3_));
+         }
+     }
+ 
+@@ -81,7 +81,7 @@
+                 for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+                 {
+                     NBTTagCompound nbttagcompound1 = nbttaglist.func_150305_b(i);
+-                    List<String> list = Lists.newArrayList();
++                    List<String> list = Lists.<String>newArrayList();
+                     ItemFireworkCharge.func_150902_a(nbttagcompound1, list);
+ 
+                     if (!list.isEmpty())

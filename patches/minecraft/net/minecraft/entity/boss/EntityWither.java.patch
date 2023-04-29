@@ -1,5 +1,114 @@
 --- before/net/minecraft/entity/boss/EntityWither.java
 +++ after/net/minecraft/entity/boss/EntityWither.java
+@@ -52,11 +52,11 @@
+ 
+ public class EntityWither extends EntityMob implements IRangedAttackMob
+ {
+-    private static final DataParameter<Integer> field_184741_a = EntityDataManager.func_187226_a(EntityWither.class, DataSerializers.field_187192_b);
+-    private static final DataParameter<Integer> field_184742_b = EntityDataManager.func_187226_a(EntityWither.class, DataSerializers.field_187192_b);
+-    private static final DataParameter<Integer> field_184743_c = EntityDataManager.func_187226_a(EntityWither.class, DataSerializers.field_187192_b);
++    private static final DataParameter<Integer> field_184741_a = EntityDataManager.<Integer>func_187226_a(EntityWither.class, DataSerializers.field_187192_b);
++    private static final DataParameter<Integer> field_184742_b = EntityDataManager.<Integer>func_187226_a(EntityWither.class, DataSerializers.field_187192_b);
++    private static final DataParameter<Integer> field_184743_c = EntityDataManager.<Integer>func_187226_a(EntityWither.class, DataSerializers.field_187192_b);
+     private static final DataParameter<Integer>[] field_184745_bv = new DataParameter[] {field_184741_a, field_184742_b, field_184743_c};
+-    private static final DataParameter<Integer> field_184746_bw = EntityDataManager.func_187226_a(EntityWither.class, DataSerializers.field_187192_b);
++    private static final DataParameter<Integer> field_184746_bw = EntityDataManager.<Integer>func_187226_a(EntityWither.class, DataSerializers.field_187192_b);
+     private final float[] field_82220_d = new float[2];
+     private final float[] field_82221_e = new float[2];
+     private final float[] field_82217_f = new float[2];
+@@ -91,17 +91,17 @@
+         this.field_70714_bg.func_75776_a(5, new EntityAIWanderAvoidWater(this, 1.0D));
+         this.field_70714_bg.func_75776_a(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+         this.field_70714_bg.func_75776_a(7, new EntityAILookIdle(this));
+-        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, false));
+-        this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget<>(this, EntityLiving.class, 0, false, false, field_82219_bJ));
++        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, false, new Class[0]));
++        this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget(this, EntityLiving.class, 0, false, false, field_82219_bJ));
+     }
+ 
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+-        this.field_70180_af.func_187214_a(field_184741_a, 0);
+-        this.field_70180_af.func_187214_a(field_184742_b, 0);
+-        this.field_70180_af.func_187214_a(field_184743_c, 0);
+-        this.field_70180_af.func_187214_a(field_184746_bw, 0);
++        this.field_70180_af.func_187214_a(field_184741_a, Integer.valueOf(0));
++        this.field_70180_af.func_187214_a(field_184742_b, Integer.valueOf(0));
++        this.field_70180_af.func_187214_a(field_184743_c, Integer.valueOf(0));
++        this.field_70180_af.func_187214_a(field_184746_bw, Integer.valueOf(0));
+     }
+ 
+     public static void func_189782_b(DataFixer p_189782_0_)
+@@ -149,7 +149,7 @@
+ 
+     public void func_70636_d()
+     {
+-        this.field_70181_x *= (double)0.6F;
++        this.field_70181_x *= 0.6000000238418579D;
+ 
+         if (!this.field_70170_p.field_72995_K && this.func_82203_t(0) > 0)
+         {
+@@ -164,7 +164,7 @@
+                         this.field_70181_x = 0.0D;
+                     }
+ 
+-                    this.field_70181_x += (0.5D - this.field_70181_x) * (double)0.6F;
++                    this.field_70181_x += (0.5D - this.field_70181_x) * 0.6000000238418579D;
+                 }
+ 
+                 double d0 = entity.field_70165_t - this.field_70165_t;
+@@ -174,13 +174,13 @@
+                 if (d3 > 9.0D)
+                 {
+                     double d5 = (double)MathHelper.func_76133_a(d3);
+-                    this.field_70159_w += (d0 / d5 * 0.5D - this.field_70159_w) * (double)0.6F;
+-                    this.field_70179_y += (d1 / d5 * 0.5D - this.field_70179_y) * (double)0.6F;
++                    this.field_70159_w += (d0 / d5 * 0.5D - this.field_70159_w) * 0.6000000238418579D;
++                    this.field_70179_y += (d1 / d5 * 0.5D - this.field_70179_y) * 0.6000000238418579D;
+                 }
+             }
+         }
+ 
+-        if (this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y > (double)0.05F)
++        if (this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y > 0.05000000074505806D)
+         {
+             this.field_70177_z = (float)MathHelper.func_181159_b(this.field_70179_y, this.field_70159_w) * (180F / (float)Math.PI) - 90.0F;
+         }
+@@ -212,8 +212,8 @@
+                 double d7 = entity1.field_70163_u + (double)entity1.func_70047_e() - d12;
+                 double d8 = entity1.field_70161_v - d13;
+                 double d9 = (double)MathHelper.func_76133_a(d6 * d6 + d8 * d8);
+-                float f = (float)(MathHelper.func_181159_b(d8, d6) * (double)(180F / (float)Math.PI)) - 90.0F;
+-                float f1 = (float)(-(MathHelper.func_181159_b(d7, d9) * (double)(180F / (float)Math.PI)));
++                float f = (float)(MathHelper.func_181159_b(d8, d6) * (180D / Math.PI)) - 90.0F;
++                float f1 = (float)(-(MathHelper.func_181159_b(d7, d9) * (180D / Math.PI)));
+                 this.field_82220_d[j] = this.func_82204_b(this.field_82220_d[j], f1, 40.0F);
+                 this.field_82221_e[j] = this.func_82204_b(this.field_82221_e[j], f, 10.0F);
+             }
+@@ -230,11 +230,11 @@
+             double d10 = this.func_82214_u(l);
+             double d2 = this.func_82208_v(l);
+             double d4 = this.func_82213_w(l);
+-            this.field_70170_p.func_175688_a(EnumParticleTypes.SMOKE_NORMAL, d10 + this.field_70146_Z.nextGaussian() * (double)0.3F, d2 + this.field_70146_Z.nextGaussian() * (double)0.3F, d4 + this.field_70146_Z.nextGaussian() * (double)0.3F, 0.0D, 0.0D, 0.0D);
++            this.field_70170_p.func_175688_a(EnumParticleTypes.SMOKE_NORMAL, d10 + this.field_70146_Z.nextGaussian() * 0.30000001192092896D, d2 + this.field_70146_Z.nextGaussian() * 0.30000001192092896D, d4 + this.field_70146_Z.nextGaussian() * 0.30000001192092896D, 0.0D, 0.0D, 0.0D);
+ 
+             if (flag && this.field_70170_p.field_73012_v.nextInt(4) == 0)
+             {
+-                this.field_70170_p.func_175688_a(EnumParticleTypes.SPELL_MOB, d10 + this.field_70146_Z.nextGaussian() * (double)0.3F, d2 + this.field_70146_Z.nextGaussian() * (double)0.3F, d4 + this.field_70146_Z.nextGaussian() * (double)0.3F, (double)0.7F, (double)0.7F, 0.5D);
++                this.field_70170_p.func_175688_a(EnumParticleTypes.SPELL_MOB, d10 + this.field_70146_Z.nextGaussian() * 0.30000001192092896D, d2 + this.field_70146_Z.nextGaussian() * 0.30000001192092896D, d4 + this.field_70146_Z.nextGaussian() * 0.30000001192092896D, 0.699999988079071D, 0.699999988079071D, 0.5D);
+             }
+         }
+ 
+@@ -242,7 +242,7 @@
+         {
+             for (int i1 = 0; i1 < 3; ++i1)
+             {
+-                this.field_70170_p.func_175688_a(EnumParticleTypes.SPELL_MOB, this.field_70165_t + this.field_70146_Z.nextGaussian(), this.field_70163_u + (double)(this.field_70146_Z.nextFloat() * 3.3F), this.field_70161_v + this.field_70146_Z.nextGaussian(), (double)0.7F, (double)0.7F, (double)0.9F);
++                this.field_70170_p.func_175688_a(EnumParticleTypes.SPELL_MOB, this.field_70165_t + this.field_70146_Z.nextGaussian(), this.field_70163_u + (double)(this.field_70146_Z.nextFloat() * 3.3F), this.field_70161_v + this.field_70146_Z.nextGaussian(), 0.699999988079071D, 0.699999988079071D, 0.8999999761581421D);
+             }
+         }
+     }
 @@ -255,7 +255,7 @@
  
              if (j1 <= 0)
@@ -9,6 +118,24 @@
                  this.field_70170_p.func_175669_a(1023, new BlockPos(this), 0);
              }
  
+@@ -300,7 +300,7 @@
+                     {
+                         Entity entity = this.field_70170_p.func_73045_a(k1);
+ 
+-                        if (entity != null && entity.func_70089_S() && !(this.func_70068_e(entity) > 900.0D) && this.func_70685_l(entity))
++                        if (entity != null && entity.func_70089_S() && this.func_70068_e(entity) <= 900.0D && this.func_70685_l(entity))
+                         {
+                             if (entity instanceof EntityPlayer && ((EntityPlayer)entity).field_71075_bZ.field_75102_a)
+                             {
+@@ -320,7 +320,7 @@
+                     }
+                     else
+                     {
+-                        List<EntityLivingBase> list = this.field_70170_p.func_175647_a(EntityLivingBase.class, this.func_174813_aQ().func_72314_b(20.0D, 8.0D, 20.0D), Predicates.and(field_82219_bJ, EntitySelectors.field_180132_d));
++                        List<EntityLivingBase> list = this.field_70170_p.<EntityLivingBase>func_175647_a(EntityLivingBase.class, this.func_174813_aQ().func_72314_b(20.0D, 8.0D, 20.0D), Predicates.and(field_82219_bJ, EntitySelectors.field_180132_d));
+ 
+                         for (int j2 = 0; j2 < 10 && !list.isEmpty(); ++j2)
+                         {
 @@ -362,7 +362,7 @@
              {
                  --this.field_82222_j;
@@ -27,3 +154,57 @@
                                  {
                                      flag = this.field_70170_p.func_175655_b(blockpos, true) || flag;
                                  }
+@@ -441,7 +441,7 @@
+         }
+         else
+         {
+-            float f = (this.field_70761_aq + (float)(180 * (p_82214_1_ - 1))) * ((float)Math.PI / 180F);
++            float f = (this.field_70761_aq + (float)(180 * (p_82214_1_ - 1))) * 0.017453292F;
+             float f1 = MathHelper.func_76134_b(f);
+             return this.field_70165_t + (double)f1 * 1.3D;
+         }
+@@ -460,7 +460,7 @@
+         }
+         else
+         {
+-            float f = (this.field_70761_aq + (float)(180 * (p_82213_1_ - 1))) * ((float)Math.PI / 180F);
++            float f = (this.field_70761_aq + (float)(180 * (p_82213_1_ - 1))) * 0.017453292F;
+             float f1 = MathHelper.func_76126_a(f);
+             return this.field_70161_v + (double)f1 * 1.3D;
+         }
+@@ -600,7 +600,7 @@
+     {
+         super.func_110147_ax();
+         this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(300.0D);
+-        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a((double)0.6F);
++        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.6000000238418579D);
+         this.func_110148_a(SharedMonsterAttributes.field_111265_b).func_111128_a(40.0D);
+         this.func_110148_a(SharedMonsterAttributes.field_188791_g).func_111128_a(4.0D);
+     }
+@@ -619,22 +619,22 @@
+ 
+     public int func_82212_n()
+     {
+-        return this.field_70180_af.func_187225_a(field_184746_bw);
++        return ((Integer)this.field_70180_af.func_187225_a(field_184746_bw)).intValue();
+     }
+ 
+     public void func_82215_s(int p_82215_1_)
+     {
+-        this.field_70180_af.func_187227_b(field_184746_bw, p_82215_1_);
++        this.field_70180_af.func_187227_b(field_184746_bw, Integer.valueOf(p_82215_1_));
+     }
+ 
+     public int func_82203_t(int p_82203_1_)
+     {
+-        return this.field_70180_af.func_187225_a(field_184745_bv[p_82203_1_]);
++        return ((Integer)this.field_70180_af.func_187225_a(field_184745_bv[p_82203_1_])).intValue();
+     }
+ 
+     public void func_82211_c(int p_82211_1_, int p_82211_2_)
+     {
+-        this.field_70180_af.func_187227_b(field_184745_bv[p_82211_1_], p_82211_2_);
++        this.field_70180_af.func_187227_b(field_184745_bv[p_82211_1_], Integer.valueOf(p_82211_2_));
+     }
+ 
+     public boolean func_82205_o()

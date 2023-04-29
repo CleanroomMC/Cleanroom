@@ -1,0 +1,23 @@
+--- before/net/minecraft/server/management/UserListWhitelist.java
++++ after/net/minecraft/server/management/UserListWhitelist.java
+@@ -25,7 +25,7 @@
+ 
+         for (UserListWhitelistEntry userlistwhitelistentry : this.func_152688_e().values())
+         {
+-            astring[i++] = userlistwhitelistentry.func_152640_f().getName();
++            astring[i++] = ((GameProfile)userlistwhitelistentry.func_152640_f()).getName();
+         }
+ 
+         return astring;
+@@ -46,9 +46,9 @@
+     {
+         for (UserListWhitelistEntry userlistwhitelistentry : this.func_152688_e().values())
+         {
+-            if (p_152706_1_.equalsIgnoreCase(userlistwhitelistentry.func_152640_f().getName()))
++            if (p_152706_1_.equalsIgnoreCase(((GameProfile)userlistwhitelistentry.func_152640_f()).getName()))
+             {
+-                return userlistwhitelistentry.func_152640_f();
++                return (GameProfile)userlistwhitelistentry.func_152640_f();
+             }
+         }
+ 

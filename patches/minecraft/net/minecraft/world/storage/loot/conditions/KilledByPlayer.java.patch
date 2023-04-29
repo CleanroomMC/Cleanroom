@@ -1,0 +1,11 @@
+--- before/net/minecraft/world/storage/loot/conditions/KilledByPlayer.java
++++ after/net/minecraft/world/storage/loot/conditions/KilledByPlayer.java
+@@ -32,7 +32,7 @@
+ 
+             public void func_186605_a(JsonObject p_186605_1_, KilledByPlayer p_186605_2_, JsonSerializationContext p_186605_3_)
+             {
+-                p_186605_1_.addProperty("inverse", p_186605_2_.field_186620_a);
++                p_186605_1_.addProperty("inverse", Boolean.valueOf(p_186605_2_.field_186620_a));
+             }
+ 
+             public KilledByPlayer func_186603_b(JsonObject p_186603_1_, JsonDeserializationContext p_186603_2_)

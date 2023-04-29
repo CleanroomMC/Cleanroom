@@ -1,6 +1,12 @@
 --- before/net/minecraft/client/gui/advancements/GuiScreenAdvancements.java
 +++ after/net/minecraft/client/gui/advancements/GuiScreenAdvancements.java
-@@ -29,6 +29,7 @@
+@@ -24,11 +24,12 @@
+     private static final ResourceLocation field_191943_f = new ResourceLocation("textures/gui/advancements/window.png");
+     private static final ResourceLocation field_191945_g = new ResourceLocation("textures/gui/advancements/tabs.png");
+     private final ClientAdvancementManager field_191946_h;
+-    private final Map<Advancement, GuiAdvancementTab> field_191947_i = Maps.newLinkedHashMap();
++    private final Map<Advancement, GuiAdvancementTab> field_191947_i = Maps.<Advancement, GuiAdvancementTab>newLinkedHashMap();
+     private GuiAdvancementTab field_191940_s;
      private int field_191941_t;
      private int field_191942_u;
      private boolean field_191944_v;
@@ -8,7 +14,14 @@
  
      public GuiScreenAdvancements(ClientAdvancementManager p_i47383_1_)
      {
-@@ -49,6 +50,14 @@
+@@ -43,12 +44,20 @@
+ 
+         if (this.field_191940_s == null && !this.field_191947_i.isEmpty())
+         {
+-            this.field_191946_h.func_194230_a(this.field_191947_i.values().iterator().next().func_193935_c(), true);
++            this.field_191946_h.func_194230_a(((GuiAdvancementTab)this.field_191947_i.values().iterator().next()).func_193935_c(), true);
+         }
+         else
          {
              this.field_191946_h.func_194230_a(this.field_191940_s == null ? null : this.field_191940_s.func_193935_c(), true);
          }

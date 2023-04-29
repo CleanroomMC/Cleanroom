@@ -1,0 +1,111 @@
+--- before/net/minecraft/entity/passive/EntityLlama.java
++++ after/net/minecraft/entity/passive/EntityLlama.java
+@@ -51,9 +51,9 @@
+ 
+ public class EntityLlama extends AbstractChestHorse implements IRangedAttackMob
+ {
+-    private static final DataParameter<Integer> field_190720_bG = EntityDataManager.func_187226_a(EntityLlama.class, DataSerializers.field_187192_b);
+-    private static final DataParameter<Integer> field_190721_bH = EntityDataManager.func_187226_a(EntityLlama.class, DataSerializers.field_187192_b);
+-    private static final DataParameter<Integer> field_190722_bI = EntityDataManager.func_187226_a(EntityLlama.class, DataSerializers.field_187192_b);
++    private static final DataParameter<Integer> field_190720_bG = EntityDataManager.<Integer>func_187226_a(EntityLlama.class, DataSerializers.field_187192_b);
++    private static final DataParameter<Integer> field_190721_bH = EntityDataManager.<Integer>func_187226_a(EntityLlama.class, DataSerializers.field_187192_b);
++    private static final DataParameter<Integer> field_190722_bI = EntityDataManager.<Integer>func_187226_a(EntityLlama.class, DataSerializers.field_187192_b);
+     private boolean field_190723_bJ;
+     @Nullable
+     private EntityLlama field_190724_bK;
+@@ -68,7 +68,7 @@
+ 
+     private void func_190706_p(int p_190706_1_)
+     {
+-        this.field_70180_af.func_187227_b(field_190720_bG, Math.max(1, Math.min(5, p_190706_1_)));
++        this.field_70180_af.func_187227_b(field_190720_bG, Integer.valueOf(Math.max(1, Math.min(5, p_190706_1_))));
+     }
+ 
+     private void func_190705_dT()
+@@ -79,7 +79,7 @@
+ 
+     public int func_190707_dL()
+     {
+-        return this.field_70180_af.func_187225_a(field_190720_bG);
++        return ((Integer)this.field_70180_af.func_187225_a(field_190720_bG)).intValue();
+     }
+ 
+     public void func_70014_b(NBTTagCompound p_70014_1_)
+@@ -112,7 +112,7 @@
+     {
+         this.field_70714_bg.func_75776_a(0, new EntityAISwimming(this));
+         this.field_70714_bg.func_75776_a(1, new EntityAIRunAroundLikeCrazy(this, 1.2D));
+-        this.field_70714_bg.func_75776_a(2, new EntityAILlamaFollowCaravan(this, (double)2.1F));
++        this.field_70714_bg.func_75776_a(2, new EntityAILlamaFollowCaravan(this, 2.0999999046325684D));
+         this.field_70714_bg.func_75776_a(3, new EntityAIAttackRanged(this, 1.25D, 40, 20.0F));
+         this.field_70714_bg.func_75776_a(3, new EntityAIPanic(this, 1.2D));
+         this.field_70714_bg.func_75776_a(4, new EntityAIMate(this, 1.0D));
+@@ -133,19 +133,19 @@
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+-        this.field_70180_af.func_187214_a(field_190720_bG, 0);
+-        this.field_70180_af.func_187214_a(field_190721_bH, -1);
+-        this.field_70180_af.func_187214_a(field_190722_bI, 0);
++        this.field_70180_af.func_187214_a(field_190720_bG, Integer.valueOf(0));
++        this.field_70180_af.func_187214_a(field_190721_bH, Integer.valueOf(-1));
++        this.field_70180_af.func_187214_a(field_190722_bI, Integer.valueOf(0));
+     }
+ 
+     public int func_190719_dM()
+     {
+-        return MathHelper.func_76125_a(this.field_70180_af.func_187225_a(field_190722_bI), 0, 3);
++        return MathHelper.func_76125_a(((Integer)this.field_70180_af.func_187225_a(field_190722_bI)).intValue(), 0, 3);
+     }
+ 
+     public void func_190710_o(int p_190710_1_)
+     {
+-        this.field_70180_af.func_187227_b(field_190722_bI, p_190710_1_);
++        this.field_70180_af.func_187227_b(field_190722_bI, Integer.valueOf(p_190710_1_));
+     }
+ 
+     protected int func_190686_di()
+@@ -157,8 +157,8 @@
+     {
+         if (this.func_184196_w(p_184232_1_))
+         {
+-            float f = MathHelper.func_76134_b(this.field_70761_aq * ((float)Math.PI / 180F));
+-            float f1 = MathHelper.func_76126_a(this.field_70761_aq * ((float)Math.PI / 180F));
++            float f = MathHelper.func_76134_b(this.field_70761_aq * 0.017453292F);
++            float f1 = MathHelper.func_76126_a(this.field_70761_aq * 0.017453292F);
+             float f2 = 0.3F;
+             p_184232_1_.func_70107_b(this.field_70165_t + (double)(0.3F * f1), this.field_70163_u + this.func_70042_X() + p_184232_1_.func_70033_W(), this.field_70161_v - (double)(0.3F * f));
+         }
+@@ -358,7 +358,7 @@
+ 
+     private void func_190711_a(@Nullable EnumDyeColor p_190711_1_)
+     {
+-        this.field_70180_af.func_187227_b(field_190721_bH, p_190711_1_ == null ? -1 : p_190711_1_.func_176765_a());
++        this.field_70180_af.func_187227_b(field_190721_bH, Integer.valueOf(p_190711_1_ == null ? -1 : p_190711_1_.func_176765_a()));
+     }
+ 
+     private void func_190702_g(ItemStack p_190702_1_)
+@@ -376,7 +376,7 @@
+     @Nullable
+     public EnumDyeColor func_190704_dO()
+     {
+-        int i = this.field_70180_af.func_187225_a(field_190721_bH);
++        int i = ((Integer)this.field_70180_af.func_187225_a(field_190721_bH)).intValue();
+         return i == -1 ? null : EnumDyeColor.func_176764_b(i);
+     }
+ 
+@@ -518,12 +518,12 @@
+         {
+             public AIDefendTarget(EntityLlama p_i47285_1_)
+             {
+-                super(p_i47285_1_, EntityWolf.class, 16, false, true, (Predicate <? super EntityWolf >)null);
++                super(p_i47285_1_, EntityWolf.class, 16, false, true, (Predicate)null);
+             }
+ 
+             public boolean func_75250_a()
+             {
+-                if (super.func_75250_a() && this.field_75309_a != null && !this.field_75309_a.func_70909_n())
++                if (super.func_75250_a() && this.field_75309_a != null && !((EntityWolf)this.field_75309_a).func_70909_n())
+                 {
+                     return true;
+                 }

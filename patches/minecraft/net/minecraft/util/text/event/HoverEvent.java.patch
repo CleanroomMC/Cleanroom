@@ -1,0 +1,21 @@
+--- before/net/minecraft/util/text/event/HoverEvent.java
++++ after/net/minecraft/util/text/event/HoverEvent.java
+@@ -70,7 +70,8 @@
+     public int hashCode()
+     {
+         int i = this.field_150704_a.hashCode();
+-        return 31 * i + (this.field_150703_b != null ? this.field_150703_b.hashCode() : 0);
++        i = 31 * i + (this.field_150703_b != null ? this.field_150703_b.hashCode() : 0);
++        return i;
+     }
+ 
+     public static enum Action
+@@ -79,7 +80,7 @@
+         SHOW_ITEM("show_item", true),
+         SHOW_ENTITY("show_entity", true);
+ 
+-        private static final Map<String, HoverEvent.Action> field_150690_d = Maps.newHashMap();
++        private static final Map<String, HoverEvent.Action> field_150690_d = Maps.<String, HoverEvent.Action>newHashMap();
+         private final boolean field_150691_e;
+         private final String field_150688_f;
+ 

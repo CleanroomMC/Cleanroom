@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/BossInfoServer.java
 +++ after/net/minecraft/world/BossInfoServer.java
-@@ -9,8 +9,6 @@
+@@ -9,18 +9,18 @@
  import net.minecraft.network.play.server.SPacketUpdateBossInfo;
  import net.minecraft.util.math.MathHelper;
  import net.minecraft.util.text.ITextComponent;
@@ -9,7 +9,22 @@
  
  public class BossInfoServer extends BossInfo
  {
-@@ -34,7 +32,6 @@
+-    private final Set<EntityPlayerMP> field_186762_h = Sets.newHashSet();
+-    private final Set<EntityPlayerMP> field_186763_i = Collections.unmodifiableSet(this.field_186762_h);
+-    private boolean field_186764_j = true;
++    private final Set<EntityPlayerMP> field_186762_h = Sets.<EntityPlayerMP>newHashSet();
++    private final Set<EntityPlayerMP> field_186763_i;
++    private boolean field_186764_j;
+ 
+     public BossInfoServer(ITextComponent p_i46839_1_, BossInfo.Color p_i46839_2_, BossInfo.Overlay p_i46839_3_)
+     {
+         super(MathHelper.func_188210_a(), p_i46839_1_, p_i46839_2_, p_i46839_3_);
++        this.field_186763_i = Collections.<EntityPlayerMP>unmodifiableSet(this.field_186762_h);
++        this.field_186764_j = true;
+     }
+ 
+     public void func_186735_a(float p_186735_1_)
+@@ -32,7 +32,6 @@
          }
      }
  
@@ -17,7 +32,7 @@
      public void func_186745_a(BossInfo.Color p_186745_1_)
      {
          if (p_186745_1_ != this.field_186751_c)
-@@ -44,7 +41,6 @@
+@@ -42,7 +41,6 @@
          }
      }
  

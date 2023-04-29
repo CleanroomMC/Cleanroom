@@ -1,5 +1,24 @@
 --- before/net/minecraft/client/shader/ShaderManager.java
 +++ after/net/minecraft/client/shader/ShaderManager.java
+@@ -35,12 +35,12 @@
+     private static ShaderManager field_148002_c;
+     private static int field_147999_d = -1;
+     private static boolean field_148000_e = true;
+-    private final Map<String, Object> field_147997_f = Maps.newHashMap();
+-    private final List<String> field_147998_g = Lists.newArrayList();
+-    private final List<Integer> field_148010_h = Lists.newArrayList();
+-    private final List<ShaderUniform> field_148011_i = Lists.newArrayList();
+-    private final List<Integer> field_148008_j = Lists.newArrayList();
+-    private final Map<String, ShaderUniform> field_148009_k = Maps.newHashMap();
++    private final Map<String, Object> field_147997_f = Maps.<String, Object>newHashMap();
++    private final List<String> field_147998_g = Lists.<String>newArrayList();
++    private final List<Integer> field_148010_h = Lists.<Integer>newArrayList();
++    private final List<ShaderUniform> field_148011_i = Lists.<ShaderUniform>newArrayList();
++    private final List<Integer> field_148008_j = Lists.<Integer>newArrayList();
++    private final Map<String, ShaderUniform> field_148009_k = Maps.<String, ShaderUniform>newHashMap();
+     private final int field_148006_l;
+     private final String field_148007_m;
+     private final boolean field_148004_n;
 @@ -54,7 +54,8 @@
      public ShaderManager(IResourceManager p_i45087_1_, String p_i45087_2_) throws JsonException, IOException
      {
@@ -10,3 +29,50 @@
          this.field_148007_m = p_i45087_2_;
          IResource iresource = null;
  
+@@ -92,8 +93,8 @@
+             if (jsonarray1 != null)
+             {
+                 int j = 0;
+-                this.field_148015_q = Lists.newArrayListWithCapacity(jsonarray1.size());
+-                this.field_148014_r = Lists.newArrayListWithCapacity(jsonarray1.size());
++                this.field_148015_q = Lists.<Integer>newArrayListWithCapacity(jsonarray1.size());
++                this.field_148014_r = Lists.<String>newArrayListWithCapacity(jsonarray1.size());
+ 
+                 for (JsonElement jsonelement1 : jsonarray1)
+                 {
+@@ -153,7 +154,7 @@
+                 for (String s2 : this.field_148014_r)
+                 {
+                     int l = OpenGlHelper.func_153164_b(this.field_148006_l, s2);
+-                    this.field_148015_q.add(l);
++                    this.field_148015_q.add(Integer.valueOf(l));
+                 }
+             }
+         }
+@@ -233,7 +234,7 @@
+                 }
+                 else if (object instanceof Integer)
+                 {
+-                    j = (Integer)object;
++                    j = ((Integer)object).intValue();
+                 }
+ 
+                 if (j != -1)
+@@ -285,7 +286,7 @@
+             }
+             else
+             {
+-                this.field_148010_h.add(k);
++                this.field_148010_h.add(Integer.valueOf(k));
+             }
+ 
+             ++i;
+@@ -302,7 +303,7 @@
+             }
+             else
+             {
+-                this.field_148008_j.add(l);
++                this.field_148008_j.add(Integer.valueOf(l));
+                 shaderuniform.func_148084_b(l);
+                 this.field_148009_k.put(s1, shaderuniform);
+             }

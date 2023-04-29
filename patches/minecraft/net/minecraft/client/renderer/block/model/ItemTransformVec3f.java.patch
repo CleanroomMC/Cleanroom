@@ -16,3 +16,13 @@
      public static final ItemTransformVec3f field_178366_a = new ItemTransformVec3f(new Vector3f(), new Vector3f(), new Vector3f(1.0F, 1.0F, 1.0F));
      public final Vector3f field_178364_b;
      public final Vector3f field_178365_c;
+@@ -49,7 +54,8 @@
+     {
+         int i = this.field_178364_b.hashCode();
+         i = 31 * i + this.field_178365_c.hashCode();
+-        return 31 * i + this.field_178363_d.hashCode();
++        i = 31 * i + this.field_178363_d.hashCode();
++        return i;
+     }
+ 
+     @SideOnly(Side.CLIENT)

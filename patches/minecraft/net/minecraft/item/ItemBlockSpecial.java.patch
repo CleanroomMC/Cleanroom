@@ -1,5 +1,14 @@
 --- before/net/minecraft/item/ItemBlockSpecial.java
 +++ after/net/minecraft/item/ItemBlockSpecial.java
+@@ -30,7 +30,7 @@
+         IBlockState iblockstate = p_180614_2_.func_180495_p(p_180614_3_);
+         Block block = iblockstate.func_177230_c();
+ 
+-        if (block == Blocks.field_150431_aC && iblockstate.func_177229_b(BlockSnow.field_176315_a) < 1)
++        if (block == Blocks.field_150431_aC && ((Integer)iblockstate.func_177229_b(BlockSnow.field_176315_a)).intValue() < 1)
+         {
+             p_180614_5_ = EnumFacing.UP;
+         }
 @@ -41,9 +41,9 @@
  
          ItemStack itemstack = p_180614_1_.func_184586_b(p_180614_4_);

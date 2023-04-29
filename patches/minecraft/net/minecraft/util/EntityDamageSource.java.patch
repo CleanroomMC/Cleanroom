@@ -1,0 +1,11 @@
+--- before/net/minecraft/util/EntityDamageSource.java
++++ after/net/minecraft/util/EntityDamageSource.java
+@@ -44,7 +44,7 @@
+         ItemStack itemstack = this.field_76386_o instanceof EntityLivingBase ? ((EntityLivingBase)this.field_76386_o).func_184614_ca() : ItemStack.field_190927_a;
+         String s = "death.attack." + this.field_76373_n;
+         String s1 = s + ".item";
+-        return !itemstack.func_190926_b() && itemstack.func_82837_s() && I18n.func_94522_b(s1) ? new TextComponentTranslation(s1, p_151519_1_.func_145748_c_(), this.field_76386_o.func_145748_c_(), itemstack.func_151000_E()) : new TextComponentTranslation(s, p_151519_1_.func_145748_c_(), this.field_76386_o.func_145748_c_());
++        return !itemstack.func_190926_b() && itemstack.func_82837_s() && I18n.func_94522_b(s1) ? new TextComponentTranslation(s1, new Object[] {p_151519_1_.func_145748_c_(), this.field_76386_o.func_145748_c_(), itemstack.func_151000_E()}) : new TextComponentTranslation(s, new Object[] {p_151519_1_.func_145748_c_(), this.field_76386_o.func_145748_c_()});
+     }
+ 
+     public boolean func_76350_n()

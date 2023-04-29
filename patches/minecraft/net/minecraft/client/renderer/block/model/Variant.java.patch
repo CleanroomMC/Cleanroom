@@ -27,7 +27,27 @@
      public boolean func_188049_c()
      {
          return this.field_188052_c;
-@@ -138,4 +144,9 @@
+@@ -74,7 +80,8 @@
+         int i = this.field_188050_a.hashCode();
+         i = 31 * i + this.field_188051_b.hashCode();
+         i = 31 * i + Boolean.valueOf(this.field_188052_c).hashCode();
+-        return 31 * i + this.field_188053_d;
++        i = 31 * i + this.field_188053_d;
++        return i;
+     }
+ 
+     @SideOnly(Side.CLIENT)
+@@ -93,7 +100,8 @@
+             private ResourceLocation func_188041_a(String p_188041_1_)
+             {
+                 ResourceLocation resourcelocation = new ResourceLocation(p_188041_1_);
+-                return new ResourceLocation(resourcelocation.func_110624_b(), "block/" + resourcelocation.func_110623_a());
++                resourcelocation = new ResourceLocation(resourcelocation.func_110624_b(), "block/" + resourcelocation.func_110623_a());
++                return resourcelocation;
+             }
+ 
+             private boolean func_188044_d(JsonObject p_188044_1_)
+@@ -136,4 +144,9 @@
                  }
              }
          }

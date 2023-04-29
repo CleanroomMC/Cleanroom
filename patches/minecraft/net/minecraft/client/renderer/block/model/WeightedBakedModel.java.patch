@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/renderer/block/model/WeightedBakedModel.java
 +++ after/net/minecraft/client/renderer/block/model/WeightedBakedModel.java
+@@ -28,7 +28,7 @@
+ 
+     private IBakedModel func_188627_a(long p_188627_1_)
+     {
+-        return (WeightedRandom.func_180166_a(this.field_177565_b, Math.abs((int)p_188627_1_ >> 16) % this.field_177567_a)).field_185281_b;
++        return ((WeightedBakedModel.WeightedModel)WeightedRandom.func_180166_a(this.field_177565_b, Math.abs((int)p_188627_1_ >> 16) % this.field_177567_a)).field_185281_b;
+     }
+ 
+     public List<BakedQuad> func_188616_a(@Nullable IBlockState p_188616_1_, @Nullable EnumFacing p_188616_2_, long p_188616_3_)
 @@ -41,6 +41,8 @@
          return this.field_177566_c.func_177555_b();
      }
@@ -9,3 +18,12 @@
      public boolean func_177556_c()
      {
          return this.field_177566_c.func_177556_c();
+@@ -69,7 +71,7 @@
+     @SideOnly(Side.CLIENT)
+     public static class Builder
+         {
+-            private final List<WeightedBakedModel.WeightedModel> field_177678_a = Lists.newArrayList();
++            private final List<WeightedBakedModel.WeightedModel> field_177678_a = Lists.<WeightedBakedModel.WeightedModel>newArrayList();
+ 
+             public WeightedBakedModel.Builder func_177677_a(IBakedModel p_177677_1_, int p_177677_2_)
+             {

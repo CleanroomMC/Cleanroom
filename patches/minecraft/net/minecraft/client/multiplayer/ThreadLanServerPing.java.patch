@@ -1,0 +1,13 @@
+--- before/net/minecraft/client/multiplayer/ThreadLanServerPing.java
++++ after/net/minecraft/client/multiplayer/ThreadLanServerPing.java
+@@ -53,8 +53,9 @@
+             {
+                 sleep(1500L);
+             }
+-            catch (InterruptedException interruptedexception)
++            catch (InterruptedException var5)
+             {
++                ;
+             }
+         }
+     }

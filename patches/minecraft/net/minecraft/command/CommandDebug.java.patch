@@ -1,0 +1,50 @@
+--- before/net/minecraft/command/CommandDebug.java
++++ after/net/minecraft/command/CommandDebug.java
+@@ -42,7 +42,7 @@
+     {
+         if (p_184881_3_.length < 1)
+         {
+-            throw new WrongUsageException("commands.debug.usage");
++            throw new WrongUsageException("commands.debug.usage", new Object[0]);
+         }
+         else
+         {
+@@ -50,7 +50,7 @@
+             {
+                 if (p_184881_3_.length != 1)
+                 {
+-                    throw new WrongUsageException("commands.debug.usage");
++                    throw new WrongUsageException("commands.debug.usage", new Object[0]);
+                 }
+ 
+                 func_152373_a(p_184881_2_, this, "commands.debug.start", new Object[0]);
+@@ -62,17 +62,17 @@
+             {
+                 if (!"stop".equals(p_184881_3_[0]))
+                 {
+-                    throw new WrongUsageException("commands.debug.usage");
++                    throw new WrongUsageException("commands.debug.usage", new Object[0]);
+                 }
+ 
+                 if (p_184881_3_.length != 1)
+                 {
+-                    throw new WrongUsageException("commands.debug.usage");
++                    throw new WrongUsageException("commands.debug.usage", new Object[0]);
+                 }
+ 
+                 if (!p_184881_1_.field_71304_b.field_76327_a)
+                 {
+-                    throw new CommandException("commands.debug.notStarted");
++                    throw new CommandException("commands.debug.notStarted", new Object[0]);
+                 }
+ 
+                 long i = MinecraftServer.func_130071_aq();
+@@ -164,7 +164,7 @@
+         {
+             return astring[(int)(System.nanoTime() % (long)astring.length)];
+         }
+-        catch (Throwable throwable)
++        catch (Throwable var2)
+         {
+             return "Witty comment unavailable :(";
+         }

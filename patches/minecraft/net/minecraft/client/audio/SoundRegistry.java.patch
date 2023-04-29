@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/audio/SoundRegistry.java
++++ after/net/minecraft/client/audio/SoundRegistry.java
+@@ -14,7 +14,7 @@
+ 
+     protected Map<ResourceLocation, SoundEventAccessor> func_148740_a()
+     {
+-        this.field_148764_a = Maps.newHashMap();
++        this.field_148764_a = Maps.<ResourceLocation, SoundEventAccessor>newHashMap();
+         return this.field_148764_a;
+     }
+ 

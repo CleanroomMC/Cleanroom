@@ -1,5 +1,14 @@
 --- before/net/minecraft/world/gen/feature/WorldGenTaiga1.java
 +++ after/net/minecraft/world/gen/feature/WorldGenTaiga1.java
+@@ -15,7 +15,7 @@
+ public class WorldGenTaiga1 extends WorldGenAbstractTree
+ {
+     private static final IBlockState field_181636_a = Blocks.field_150364_r.func_176223_P().func_177226_a(BlockOldLog.field_176301_b, BlockPlanks.EnumType.SPRUCE);
+-    private static final IBlockState field_181637_b = Blocks.field_150362_t.func_176223_P().func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.SPRUCE).func_177226_a(BlockLeaves.field_176236_b, false);
++    private static final IBlockState field_181637_b = Blocks.field_150362_t.func_176223_P().func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.SPRUCE).func_177226_a(BlockLeaves.field_176236_b, Boolean.valueOf(false));
+ 
+     public WorldGenTaiga1()
+     {
 @@ -54,7 +54,7 @@
                      {
                          if (i1 >= 0 && i1 < 256)

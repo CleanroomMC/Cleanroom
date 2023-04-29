@@ -1,0 +1,101 @@
+--- before/net/minecraft/advancements/AdvancementProgress.java
++++ after/net/minecraft/advancements/AdvancementProgress.java
+@@ -16,6 +16,7 @@
+ import java.util.List;
+ import java.util.Map;
+ import java.util.Set;
++import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+ import net.minecraft.network.PacketBuffer;
+ import net.minecraft.util.JsonUtils;
+@@ -24,17 +25,17 @@
+ 
+ public class AdvancementProgress implements Comparable<AdvancementProgress>
+ {
+-    private final Map<String, CriterionProgress> field_192110_a = Maps.newHashMap();
++    private final Map<String, CriterionProgress> field_192110_a = Maps.<String, CriterionProgress>newHashMap();
+     private String[][] field_192111_b = new String[0][];
+ 
+     public void func_192099_a(Map<String, Criterion> p_192099_1_, String[][] p_192099_2_)
+     {
+         Set<String> set = p_192099_1_.keySet();
+-        Iterator<Map.Entry<String, CriterionProgress>> iterator = this.field_192110_a.entrySet().iterator();
++        Iterator<Entry<String, CriterionProgress>> iterator = this.field_192110_a.entrySet().iterator();
+ 
+         while (iterator.hasNext())
+         {
+-            Map.Entry<String, CriterionProgress> entry = iterator.next();
++            Entry<String, CriterionProgress> entry = (Entry)iterator.next();
+ 
+             if (!set.contains(entry.getKey()))
+             {
+@@ -138,10 +139,10 @@
+     {
+         p_192104_1_.func_150787_b(this.field_192110_a.size());
+ 
+-        for (Map.Entry<String, CriterionProgress> entry : this.field_192110_a.entrySet())
++        for (Entry<String, CriterionProgress> entry : this.field_192110_a.entrySet())
+         {
+             p_192104_1_.func_180714_a(entry.getKey());
+-            entry.getValue().func_192150_a(p_192104_1_);
++            ((CriterionProgress)entry.getValue()).func_192150_a(p_192104_1_);
+         }
+     }
+ 
+@@ -234,11 +235,11 @@
+ 
+     public Iterable<String> func_192107_d()
+     {
+-        List<String> list = Lists.newArrayList();
++        List<String> list = Lists.<String>newArrayList();
+ 
+-        for (Map.Entry<String, CriterionProgress> entry : this.field_192110_a.entrySet())
++        for (Entry<String, CriterionProgress> entry : this.field_192110_a.entrySet())
+         {
+-            if (!entry.getValue().func_192151_a())
++            if (!((CriterionProgress)entry.getValue()).func_192151_a())
+             {
+                 list.add(entry.getKey());
+             }
+@@ -249,11 +250,11 @@
+ 
+     public Iterable<String> func_192102_e()
+     {
+-        List<String> list = Lists.newArrayList();
++        List<String> list = Lists.<String>newArrayList();
+ 
+-        for (Map.Entry<String, CriterionProgress> entry : this.field_192110_a.entrySet())
++        for (Entry<String, CriterionProgress> entry : this.field_192110_a.entrySet())
+         {
+-            if (entry.getValue().func_192151_a())
++            if (((CriterionProgress)entry.getValue()).func_192151_a())
+             {
+                 list.add(entry.getKey());
+             }
+@@ -304,7 +305,7 @@
+                 JsonObject jsonobject = new JsonObject();
+                 JsonObject jsonobject1 = new JsonObject();
+ 
+-                for (Map.Entry<String, CriterionProgress> entry : p_serialize_1_.field_192110_a.entrySet())
++                for (Entry<String, CriterionProgress> entry : p_serialize_1_.field_192110_a.entrySet())
+                 {
+                     CriterionProgress criterionprogress = entry.getValue();
+ 
+@@ -319,7 +320,7 @@
+                     jsonobject.add("criteria", jsonobject1);
+                 }
+ 
+-                jsonobject.addProperty("done", p_serialize_1_.func_192105_a());
++                jsonobject.addProperty("done", Boolean.valueOf(p_serialize_1_.func_192105_a()));
+                 return jsonobject;
+             }
+ 
+@@ -329,7 +330,7 @@
+                 JsonObject jsonobject1 = JsonUtils.func_151218_a(jsonobject, "criteria", new JsonObject());
+                 AdvancementProgress advancementprogress = new AdvancementProgress();
+ 
+-                for (Map.Entry<String, JsonElement> entry : jsonobject1.entrySet())
++                for (Entry<String, JsonElement> entry : jsonobject1.entrySet())
+                 {
+                     String s = entry.getKey();
+                     advancementprogress.field_192110_a.put(s, CriterionProgress.func_192152_a(advancementprogress, JsonUtils.func_151206_a(entry.getValue(), s)));

@@ -1,5 +1,20 @@
 --- before/net/minecraft/client/gui/ServerListEntryNormal.java
 +++ after/net/minecraft/client/gui/ServerListEntryNormal.java
+@@ -65,12 +65,12 @@
+                     {
+                         ServerListEntryNormal.this.field_148303_c.func_146789_i().func_147224_a(ServerListEntryNormal.this.field_148301_e);
+                     }
+-                    catch (UnknownHostException unknownhostexception)
++                    catch (UnknownHostException var2)
+                     {
+                         ServerListEntryNormal.this.field_148301_e.field_78844_e = -1L;
+                         ServerListEntryNormal.this.field_148301_e.field_78843_d = TextFormatting.DARK_RED + I18n.func_135052_a("multiplayer.status.cannot_resolve");
+                     }
+-                    catch (Exception exception)
++                    catch (Exception var3)
+                     {
+                         ServerListEntryNormal.this.field_148301_e.field_78844_e = -1L;
+                         ServerListEntryNormal.this.field_148301_e.field_78843_d = TextFormatting.DARK_RED + I18n.func_135052_a("multiplayer.status.cannot_connect");
 @@ -83,7 +83,7 @@
          boolean flag1 = this.field_148301_e.field_82821_f < 340;
          boolean flag2 = flag || flag1;

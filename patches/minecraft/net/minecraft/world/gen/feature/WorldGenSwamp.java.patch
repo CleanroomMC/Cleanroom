@@ -1,6 +1,23 @@
 --- before/net/minecraft/world/gen/feature/WorldGenSwamp.java
 +++ after/net/minecraft/world/gen/feature/WorldGenSwamp.java
-@@ -61,7 +61,7 @@
+@@ -16,7 +16,7 @@
+ public class WorldGenSwamp extends WorldGenAbstractTree
+ {
+     private static final IBlockState field_181648_a = Blocks.field_150364_r.func_176223_P().func_177226_a(BlockOldLog.field_176301_b, BlockPlanks.EnumType.OAK);
+-    private static final IBlockState field_181649_b = Blocks.field_150362_t.func_176223_P().func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.OAK).func_177226_a(BlockOldLeaf.field_176236_b, false);
++    private static final IBlockState field_181649_b = Blocks.field_150362_t.func_176223_P().func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.OAK).func_177226_a(BlockOldLeaf.field_176236_b, Boolean.valueOf(false));
+ 
+     public WorldGenSwamp()
+     {
+@@ -29,6 +29,7 @@
+ 
+         for (i = p_180709_2_.nextInt(4) + 5; p_180709_1_.func_180495_p(p_180709_3_.func_177977_b()).func_185904_a() == Material.field_151586_h; p_180709_3_ = p_180709_3_.func_177977_b())
+         {
++            ;
+         }
+ 
+         boolean flag = true;
+@@ -60,7 +61,7 @@
                              IBlockState iblockstate = p_180709_1_.func_180495_p(blockpos$mutableblockpos.func_181079_c(l, j, i1));
                              Block block = iblockstate.func_177230_c();
  
@@ -9,7 +26,7 @@
                              {
                                  if (block != Blocks.field_150355_j && block != Blocks.field_150358_i)
                                  {
-@@ -87,11 +87,13 @@
+@@ -86,11 +87,13 @@
              }
              else
              {
@@ -26,7 +43,7 @@
  
                      for (int k1 = p_180709_3_.func_177956_o() - 3 + i; k1 <= p_180709_3_.func_177956_o() + i; ++k1)
                      {
-@@ -109,8 +111,9 @@
+@@ -108,8 +111,9 @@
                                  if (Math.abs(k3) != l2 || Math.abs(j1) != l2 || p_180709_2_.nextInt(2) != 0 && j2 != 0)
                                  {
                                      BlockPos blockpos = new BlockPos(j3, k1, i4);
@@ -37,7 +54,7 @@
                                      {
                                          this.func_175903_a(p_180709_1_, blockpos, field_181649_b);
                                      }
-@@ -121,10 +124,11 @@
+@@ -120,10 +124,11 @@
  
                      for (int l1 = 0; l1 < i; ++l1)
                      {
@@ -51,7 +68,7 @@
                          {
                              this.func_175903_a(p_180709_1_, p_180709_3_.func_177981_b(l1), field_181648_a);
                          }
-@@ -149,22 +153,22 @@
+@@ -148,22 +153,22 @@
                                      BlockPos blockpos1 = blockpos$mutableblockpos1.func_177978_c();
                                      BlockPos blockpos2 = blockpos$mutableblockpos1.func_177968_d();
  
@@ -78,7 +95,12 @@
                                      {
                                          this.func_181647_a(p_180709_1_, blockpos2, BlockVine.field_176273_b);
                                      }
-@@ -193,7 +197,7 @@
+@@ -188,11 +193,11 @@
+ 
+     private void func_181647_a(World p_181647_1_, BlockPos p_181647_2_, PropertyBool p_181647_3_)
+     {
+-        IBlockState iblockstate = Blocks.field_150395_bd.func_176223_P().func_177226_a(p_181647_3_, true);
++        IBlockState iblockstate = Blocks.field_150395_bd.func_176223_P().func_177226_a(p_181647_3_, Boolean.valueOf(true));
          this.func_175903_a(p_181647_1_, p_181647_2_, iblockstate);
          int i = 4;
  

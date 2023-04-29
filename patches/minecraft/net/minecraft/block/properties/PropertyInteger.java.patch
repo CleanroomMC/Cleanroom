@@ -1,0 +1,28 @@
+--- before/net/minecraft/block/properties/PropertyInteger.java
++++ after/net/minecraft/block/properties/PropertyInteger.java
+@@ -24,11 +24,11 @@
+         }
+         else
+         {
+-            Set<Integer> set = Sets.newHashSet();
++            Set<Integer> set = Sets.<Integer>newHashSet();
+ 
+             for (int i = p_i45648_2_; i <= p_i45648_3_; ++i)
+             {
+-                set.add(i);
++                set.add(Integer.valueOf(i));
+             }
+ 
+             this.field_177720_a = ImmutableSet.copyOf(set);
+@@ -74,9 +74,9 @@
+             Integer integer = Integer.valueOf(p_185929_1_);
+             return this.field_177720_a.contains(integer) ? Optional.of(integer) : Optional.absent();
+         }
+-        catch (NumberFormatException numberformatexception)
++        catch (NumberFormatException var3)
+         {
+-            return Optional.absent();
++            return Optional.<Integer>absent();
+         }
+     }
+ 

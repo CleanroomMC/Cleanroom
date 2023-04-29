@@ -1,5 +1,14 @@
 --- before/net/minecraft/item/ItemSlab.java
 +++ after/net/minecraft/item/ItemSlab.java
+@@ -55,7 +55,7 @@
+             {
+                 IProperty<?> iproperty = this.field_150949_c.func_176551_l();
+                 Comparable<?> comparable1 = iblockstate.func_177229_b(iproperty);
+-                BlockSlab.EnumBlockHalf blockslab$enumblockhalf = iblockstate.func_177229_b(BlockSlab.field_176554_a);
++                BlockSlab.EnumBlockHalf blockslab$enumblockhalf = (BlockSlab.EnumBlockHalf)iblockstate.func_177229_b(BlockSlab.field_176554_a);
+ 
+                 if ((p_180614_5_ == EnumFacing.UP && blockslab$enumblockhalf == BlockSlab.EnumBlockHalf.BOTTOM || p_180614_5_ == EnumFacing.DOWN && blockslab$enumblockhalf == BlockSlab.EnumBlockHalf.TOP) && comparable1 == comparable)
+                 {
 @@ -64,7 +64,7 @@
  
                      if (axisalignedbb != Block.field_185506_k && p_180614_2_.func_72855_b(axisalignedbb.func_186670_a(p_180614_3_)) && p_180614_2_.func_180501_a(p_180614_3_, iblockstate1, 11))
@@ -9,7 +18,28 @@
                          p_180614_2_.func_184133_a(p_180614_1_, p_180614_3_, soundtype.func_185841_e(), SoundCategory.BLOCKS, (soundtype.func_185843_a() + 1.0F) / 2.0F, soundtype.func_185847_b() * 0.8F);
                          itemstack.func_190918_g(1);
  
-@@ -124,7 +124,7 @@
+@@ -89,6 +89,7 @@
+     @SideOnly(Side.CLIENT)
+     public boolean func_179222_a(World p_179222_1_, BlockPos p_179222_2_, EnumFacing p_179222_3_, EntityPlayer p_179222_4_, ItemStack p_179222_5_)
+     {
++        BlockPos blockpos = p_179222_2_;
+         IProperty<?> iproperty = this.field_150949_c.func_176551_l();
+         Comparable<?> comparable = this.field_150949_c.func_185674_a(p_179222_5_);
+         IBlockState iblockstate = p_179222_1_.func_180495_p(p_179222_2_);
+@@ -103,9 +104,9 @@
+             }
+         }
+ 
+-        BlockPos blockpos = p_179222_2_.func_177972_a(p_179222_3_);
+-        IBlockState iblockstate1 = p_179222_1_.func_180495_p(blockpos);
+-        return iblockstate1.func_177230_c() == this.field_150949_c && comparable == iblockstate1.func_177229_b(iproperty) ? true : super.func_179222_a(p_179222_1_, p_179222_2_, p_179222_3_, p_179222_4_, p_179222_5_);
++        p_179222_2_ = p_179222_2_.func_177972_a(p_179222_3_);
++        IBlockState iblockstate1 = p_179222_1_.func_180495_p(p_179222_2_);
++        return iblockstate1.func_177230_c() == this.field_150949_c && comparable == iblockstate1.func_177229_b(iproperty) ? true : super.func_179222_a(p_179222_1_, blockpos, p_179222_3_, p_179222_4_, p_179222_5_);
+     }
+ 
+     private boolean func_180615_a(EntityPlayer p_180615_1_, ItemStack p_180615_2_, World p_180615_3_, BlockPos p_180615_4_, Object p_180615_5_)
+@@ -123,7 +124,7 @@
  
                  if (axisalignedbb != Block.field_185506_k && p_180615_3_.func_72855_b(axisalignedbb.func_186670_a(p_180615_4_)) && p_180615_3_.func_180501_a(p_180615_4_, iblockstate1, 11))
                  {

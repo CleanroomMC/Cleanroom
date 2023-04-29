@@ -1,6 +1,40 @@
 --- before/net/minecraft/init/Bootstrap.java
 +++ after/net/minecraft/init/Bootstrap.java
-@@ -264,9 +264,12 @@
+@@ -189,7 +189,7 @@
+         {
+             public ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
+             {
+-                EnumFacing enumfacing = p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
++                EnumFacing enumfacing = (EnumFacing)p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
+                 double d0 = p_82487_1_.func_82615_a() + (double)enumfacing.func_82601_c();
+                 double d1 = (double)((float)(p_82487_1_.func_180699_d().func_177956_o() + enumfacing.func_96559_d()) + 0.2F);
+                 double d2 = p_82487_1_.func_82616_c() + (double)enumfacing.func_82599_e();
+@@ -209,7 +209,7 @@
+         {
+             public ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
+             {
+-                EnumFacing enumfacing = p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
++                EnumFacing enumfacing = (EnumFacing)p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
+                 double d0 = p_82487_1_.func_82615_a() + (double)enumfacing.func_82601_c();
+                 double d1 = (double)((float)p_82487_1_.func_180699_d().func_177956_o() + 0.2F);
+                 double d2 = p_82487_1_.func_82616_c() + (double)enumfacing.func_82599_e();
+@@ -227,7 +227,7 @@
+         {
+             public ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
+             {
+-                EnumFacing enumfacing = p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
++                EnumFacing enumfacing = (EnumFacing)p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
+                 IPosition iposition = BlockDispenser.func_149939_a(p_82487_1_);
+                 double d0 = iposition.func_82615_a() + (double)((float)enumfacing.func_82601_c() * 0.3F);
+                 double d1 = iposition.func_82617_b() + (double)((float)enumfacing.func_96559_d() * 0.3F);
+@@ -258,31 +258,34 @@
+             public ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
+             {
+                 ItemBucket itembucket = (ItemBucket)p_82487_2_.func_77973_b();
+-                BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a(p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
++                BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a((EnumFacing)p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
+                 return itembucket.func_180616_a((EntityPlayer)null, p_82487_1_.func_82618_k(), blockpos) ? new ItemStack(Items.field_151133_ar) : this.field_150841_b.func_82482_a(p_82487_1_, p_82487_2_);
+             }
          };
          BlockDispenser.field_149943_a.func_82595_a(Items.field_151129_at, ibehaviordispenseitem);
          BlockDispenser.field_149943_a.func_82595_a(Items.field_151131_as, ibehaviordispenseitem);
@@ -14,15 +48,91 @@
              public ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
              {
                  World world = p_82487_1_.func_82618_k();
-@@ -301,7 +304,7 @@
+-                BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a(p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
++                BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a((EnumFacing)p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
+                 IBlockState iblockstate = world.func_180495_p(blockpos);
+                 Block block = iblockstate.func_177230_c();
+                 Material material = iblockstate.func_185904_a();
+                 Item item;
+ 
+-                if (Material.field_151586_h.equals(material) && block instanceof BlockLiquid && iblockstate.func_177229_b(BlockLiquid.field_176367_b) == 0)
++                if (Material.field_151586_h.equals(material) && block instanceof BlockLiquid && ((Integer)iblockstate.func_177229_b(BlockLiquid.field_176367_b)).intValue() == 0)
                  {
-                     if (((TileEntityDispenser)p_82487_1_.func_150835_j()).func_146019_a(new ItemStack(item)) < 0)
+                     item = Items.field_151131_as;
+                 }
+                 else
+                 {
+-                    if (!Material.field_151587_i.equals(material) || !(block instanceof BlockLiquid) || iblockstate.func_177229_b(BlockLiquid.field_176367_b) != 0)
++                    if (!Material.field_151587_i.equals(material) || !(block instanceof BlockLiquid) || ((Integer)iblockstate.func_177229_b(BlockLiquid.field_176367_b)).intValue() != 0)
+                     {
+                         return super.func_82487_b(p_82487_1_, p_82487_2_);
+                     }
+@@ -299,9 +302,9 @@
+                 }
+                 else
+                 {
+-                    if (p_82487_1_.<TileEntityDispenser>func_150835_j().func_146019_a(new ItemStack(item)) < 0)
++                    if (((TileEntityDispenser)p_82487_1_.func_150835_j()).func_146019_a(new ItemStack(item)) < 0)
                      {
 -                        this.field_150840_b.func_82482_a(p_82487_1_, new ItemStack(item));
 +                        this.dispenseBehavior.func_82482_a(p_82487_1_, new ItemStack(item));
                      }
  
                      return p_82487_2_;
+@@ -314,7 +317,7 @@
+             {
+                 World world = p_82487_1_.func_82618_k();
+                 this.field_190911_b = true;
+-                BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a(p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
++                BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a((EnumFacing)p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
+ 
+                 if (world.func_175623_d(blockpos))
+                 {
+@@ -327,7 +330,7 @@
+                 }
+                 else if (world.func_180495_p(blockpos).func_177230_c() == Blocks.field_150335_W)
+                 {
+-                    Blocks.field_150335_W.func_176206_d(world, blockpos, Blocks.field_150335_W.func_176223_P().func_177226_a(BlockTNT.field_176246_a, true));
++                    Blocks.field_150335_W.func_176206_d(world, blockpos, Blocks.field_150335_W.func_176223_P().func_177226_a(BlockTNT.field_176246_a, Boolean.valueOf(true)));
+                     world.func_175698_g(blockpos);
+                 }
+                 else
+@@ -347,7 +350,7 @@
+                 if (EnumDyeColor.WHITE == EnumDyeColor.func_176766_a(p_82487_2_.func_77960_j()))
+                 {
+                     World world = p_82487_1_.func_82618_k();
+-                    BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a(p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
++                    BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a((EnumFacing)p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
+ 
+                     if (ItemDye.func_179234_a(p_82487_2_, world, blockpos))
+                     {
+@@ -374,7 +377,7 @@
+             protected ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
+             {
+                 World world = p_82487_1_.func_82618_k();
+-                BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a(p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
++                BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a((EnumFacing)p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
+                 EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double)blockpos.func_177958_n() + 0.5D, (double)blockpos.func_177956_o(), (double)blockpos.func_177952_p() + 0.5D, (EntityLivingBase)null);
+                 world.func_72838_d(entitytntprimed);
+                 world.func_184148_a((EntityPlayer)null, entitytntprimed.field_70165_t, entitytntprimed.field_70163_u, entitytntprimed.field_70161_v, SoundEvents.field_187904_gd, SoundCategory.BLOCKS, 1.0F, 1.0F);
+@@ -387,7 +390,7 @@
+             protected ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
+             {
+                 World world = p_82487_1_.func_82618_k();
+-                EnumFacing enumfacing = p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
++                EnumFacing enumfacing = (EnumFacing)p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
+                 BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a(enumfacing);
+                 BlockSkull blockskull = Blocks.field_150465_bP;
+                 this.field_190911_b = true;
+@@ -451,7 +454,7 @@
+             protected ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
+             {
+                 World world = p_82487_1_.func_82618_k();
+-                BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a(p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
++                BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a((EnumFacing)p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
+                 BlockPumpkin blockpumpkin = (BlockPumpkin)Blocks.field_150423_aK;
+                 this.field_190911_b = true;
+ 
 @@ -489,6 +492,7 @@
          if (!field_151355_a)
          {
@@ -39,4 +149,22 @@
 +            net.minecraftforge.registries.GameData.vanillaSnapshot();
          }
      }
+ 
+@@ -559,7 +565,7 @@
+ 
+             public ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
+             {
+-                EnumFacing enumfacing = p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
++                EnumFacing enumfacing = (EnumFacing)p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
+                 World world = p_82487_1_.func_82618_k();
+                 double d0 = p_82487_1_.func_82615_a() + (double)((float)enumfacing.func_82601_c() * 1.125F);
+                 double d1 = p_82487_1_.func_82617_b() + (double)((float)enumfacing.func_96559_d() * 1.125F);
+@@ -616,7 +622,7 @@
+             {
+                 Block block = Block.func_149634_a(p_82487_2_.func_77973_b());
+                 World world = p_82487_1_.func_82618_k();
+-                EnumFacing enumfacing = p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
++                EnumFacing enumfacing = (EnumFacing)p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
+                 BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a(enumfacing);
+                 this.field_190911_b = world.func_190527_a(block, blockpos, false, EnumFacing.DOWN, (Entity)null);
  

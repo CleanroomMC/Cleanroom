@@ -40,7 +40,39 @@
      }
  
      public boolean func_76566_a(int p_76566_1_, int p_76566_2_)
-@@ -179,7 +154,7 @@
+@@ -118,7 +93,8 @@
+         }
+ 
+         float f1 = 1.0F - (float)((Math.cos((double)f * Math.PI) + 1.0D) / 2.0D);
+-        return f + (f1 - f) / 3.0F;
++        f = f + (f1 - f) / 3.0F;
++        return f;
+     }
+ 
+     public int func_76559_b(long p_76559_1_)
+@@ -143,7 +119,7 @@
+         {
+             float f3 = (f1 - -0.0F) / 0.4F * 0.5F + 0.5F;
+             float f4 = 1.0F - (1.0F - MathHelper.func_76126_a(f3 * (float)Math.PI)) * 0.99F;
+-            f4 *= f4;
++            f4 = f4 * f4;
+             this.field_76580_h[0] = f3 * 0.3F + 0.7F;
+             this.field_76580_h[1] = f3 * f3 * 0.7F + 0.2F;
+             this.field_76580_h[2] = f3 * f3 * 0.0F + 0.2F;
+@@ -164,9 +140,9 @@
+         float f1 = 0.7529412F;
+         float f2 = 0.84705883F;
+         float f3 = 1.0F;
+-        f1 *= f * 0.94F + 0.06F;
+-        f2 *= f * 0.94F + 0.06F;
+-        f3 *= f * 0.91F + 0.09F;
++        f1 = f1 * (f * 0.94F + 0.06F);
++        f2 = f2 * (f * 0.94F + 0.06F);
++        f3 = f3 * (f * 0.91F + 0.09F);
+         return new Vec3d((double)f1, (double)f2, (double)f3);
+     }
+ 
+@@ -178,7 +154,7 @@
      @SideOnly(Side.CLIENT)
      public float func_76571_f()
      {
@@ -49,7 +81,7 @@
      }
  
      @SideOnly(Side.CLIENT)
-@@ -196,13 +171,13 @@
+@@ -195,13 +171,13 @@
  
      public int func_76557_i()
      {
@@ -65,7 +97,7 @@
      }
  
      @SideOnly(Side.CLIENT)
-@@ -239,6 +214,371 @@
+@@ -238,6 +214,371 @@
      public WorldBorder func_177501_r()
      {
          return new WorldBorder();

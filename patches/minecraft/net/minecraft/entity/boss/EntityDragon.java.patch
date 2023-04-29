@@ -1,6 +1,151 @@
 --- before/net/minecraft/entity/boss/EntityDragon.java
 +++ after/net/minecraft/entity/boss/EntityDragon.java
-@@ -499,13 +499,13 @@
+@@ -53,18 +53,18 @@
+ public class EntityDragon extends EntityLiving implements IEntityMultiPart, IMob
+ {
+     private static final Logger field_184675_bH = LogManager.getLogger();
+-    public static final DataParameter<Integer> field_184674_a = EntityDataManager.func_187226_a(EntityDragon.class, DataSerializers.field_187192_b);
++    public static final DataParameter<Integer> field_184674_a = EntityDataManager.<Integer>func_187226_a(EntityDragon.class, DataSerializers.field_187192_b);
+     public double[][] field_70979_e = new double[64][3];
+     public int field_70976_f = -1;
+     public MultiPartEntityPart[] field_70977_g;
+-    public MultiPartEntityPart field_70986_h;
+-    public MultiPartEntityPart field_184673_bv;
+-    public MultiPartEntityPart field_70987_i;
+-    public MultiPartEntityPart field_70985_j;
+-    public MultiPartEntityPart field_70984_by;
+-    public MultiPartEntityPart field_70982_bz;
+-    public MultiPartEntityPart field_70983_bA;
+-    public MultiPartEntityPart field_70990_bB;
++    public MultiPartEntityPart field_70986_h = new MultiPartEntityPart(this, "head", 6.0F, 6.0F);
++    public MultiPartEntityPart field_184673_bv = new MultiPartEntityPart(this, "neck", 6.0F, 6.0F);
++    public MultiPartEntityPart field_70987_i = new MultiPartEntityPart(this, "body", 8.0F, 8.0F);
++    public MultiPartEntityPart field_70985_j = new MultiPartEntityPart(this, "tail", 4.0F, 4.0F);
++    public MultiPartEntityPart field_70984_by = new MultiPartEntityPart(this, "tail", 4.0F, 4.0F);
++    public MultiPartEntityPart field_70982_bz = new MultiPartEntityPart(this, "tail", 4.0F, 4.0F);
++    public MultiPartEntityPart field_70983_bA = new MultiPartEntityPart(this, "wing", 4.0F, 4.0F);
++    public MultiPartEntityPart field_70990_bB = new MultiPartEntityPart(this, "wing", 4.0F, 4.0F);
+     public float field_70991_bC;
+     public float field_70988_bD;
+     public boolean field_70994_bF;
+@@ -81,14 +81,6 @@
+     public EntityDragon(World p_i1700_1_)
+     {
+         super(p_i1700_1_);
+-        this.field_70986_h = new MultiPartEntityPart(this, "head", 6.0F, 6.0F);
+-        this.field_184673_bv = new MultiPartEntityPart(this, "neck", 6.0F, 6.0F);
+-        this.field_70987_i = new MultiPartEntityPart(this, "body", 8.0F, 8.0F);
+-        this.field_70985_j = new MultiPartEntityPart(this, "tail", 4.0F, 4.0F);
+-        this.field_70984_by = new MultiPartEntityPart(this, "tail", 4.0F, 4.0F);
+-        this.field_70982_bz = new MultiPartEntityPart(this, "tail", 4.0F, 4.0F);
+-        this.field_70983_bA = new MultiPartEntityPart(this, "wing", 4.0F, 4.0F);
+-        this.field_70990_bB = new MultiPartEntityPart(this, "wing", 4.0F, 4.0F);
+         this.field_70977_g = new MultiPartEntityPart[] {this.field_70986_h, this.field_184673_bv, this.field_70987_i, this.field_70985_j, this.field_70984_by, this.field_70982_bz, this.field_70983_bA, this.field_70990_bB};
+         this.func_70606_j(this.func_110138_aP());
+         this.func_70105_a(16.0F, 8.0F);
+@@ -118,7 +110,7 @@
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+-        this.func_184212_Q().func_187214_a(field_184674_a, PhaseList.field_188751_k.func_188740_b());
++        this.func_184212_Q().func_187214_a(field_184674_a, Integer.valueOf(PhaseList.field_188751_k.func_188740_b()));
+     }
+ 
+     public double[] func_70974_a(int p_70974_1_, float p_70974_2_)
+@@ -179,7 +171,7 @@
+         {
+             this.func_70969_j();
+             float f11 = 0.2F / (MathHelper.func_76133_a(this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y) * 10.0F + 1.0F);
+-            f11 *= (float)Math.pow(2.0D, this.field_70181_x);
++            f11 = f11 * (float)Math.pow(2.0D, this.field_70181_x);
+ 
+             if (this.field_184677_bJ.func_188756_a().func_188654_a())
+             {
+@@ -257,11 +249,11 @@
+                         double d3 = d6 * d6 + d7 * d7 + d8 * d8;
+                         float f5 = iphase.func_188651_f();
+                         d7 = MathHelper.func_151237_a(d7 / (double)MathHelper.func_76133_a(d6 * d6 + d8 * d8), (double)(-f5), (double)f5);
+-                        this.field_70181_x += d7 * (double)0.1F;
++                        this.field_70181_x += d7 * 0.10000000149011612D;
+                         this.field_70177_z = MathHelper.func_76142_g(this.field_70177_z);
+-                        double d4 = MathHelper.func_151237_a(MathHelper.func_76138_g(180.0D - MathHelper.func_181159_b(d6, d8) * (double)(180F / (float)Math.PI) - (double)this.field_70177_z), -50.0D, 50.0D);
++                        double d4 = MathHelper.func_151237_a(MathHelper.func_76138_g(180.0D - MathHelper.func_181159_b(d6, d8) * (180D / Math.PI) - (double)this.field_70177_z), -50.0D, 50.0D);
+                         Vec3d vec3d1 = (new Vec3d(vec3d.field_72450_a - this.field_70165_t, vec3d.field_72448_b - this.field_70163_u, vec3d.field_72449_c - this.field_70161_v)).func_72432_b();
+-                        Vec3d vec3d2 = (new Vec3d((double)MathHelper.func_76126_a(this.field_70177_z * ((float)Math.PI / 180F)), this.field_70181_x, (double)(-MathHelper.func_76134_b(this.field_70177_z * ((float)Math.PI / 180F))))).func_72432_b();
++                        Vec3d vec3d2 = (new Vec3d((double)MathHelper.func_76126_a(this.field_70177_z * 0.017453292F), this.field_70181_x, (double)(-MathHelper.func_76134_b(this.field_70177_z * 0.017453292F)))).func_72432_b();
+                         float f7 = Math.max(((float)vec3d2.func_72430_b(vec3d1) + 0.5F) / 1.5F, 0.0F);
+                         this.field_70704_bt *= 0.8F;
+                         this.field_70704_bt = (float)((double)this.field_70704_bt + d4 * (double)iphase.func_188653_h());
+@@ -272,7 +264,7 @@
+ 
+                         if (this.field_70994_bF)
+                         {
+-                            this.func_70091_d(MoverType.SELF, this.field_70159_w * (double)0.8F, this.field_70181_x * (double)0.8F, this.field_70179_y * (double)0.8F);
++                            this.func_70091_d(MoverType.SELF, this.field_70159_w * 0.800000011920929D, this.field_70181_x * 0.800000011920929D, this.field_70179_y * 0.800000011920929D);
+                         }
+                         else
+                         {
+@@ -284,7 +276,7 @@
+                         f10 = 0.8F + 0.15F * f10;
+                         this.field_70159_w *= (double)f10;
+                         this.field_70179_y *= (double)f10;
+-                        this.field_70181_x *= (double)0.91F;
++                        this.field_70181_x *= 0.9100000262260437D;
+                     }
+                 }
+ 
+@@ -312,10 +304,10 @@
+                     avec3d[j] = new Vec3d(this.field_70977_g[j].field_70165_t, this.field_70977_g[j].field_70163_u, this.field_70977_g[j].field_70161_v);
+                 }
+ 
+-                float f14 = (float)(this.func_70974_a(5, 1.0F)[1] - this.func_70974_a(10, 1.0F)[1]) * 10.0F * ((float)Math.PI / 180F);
++                float f14 = (float)(this.func_70974_a(5, 1.0F)[1] - this.func_70974_a(10, 1.0F)[1]) * 10.0F * 0.017453292F;
+                 float f16 = MathHelper.func_76134_b(f14);
+                 float f2 = MathHelper.func_76126_a(f14);
+-                float f17 = this.field_70177_z * ((float)Math.PI / 180F);
++                float f17 = this.field_70177_z * 0.017453292F;
+                 float f3 = MathHelper.func_76126_a(f17);
+                 float f18 = MathHelper.func_76134_b(f17);
+                 this.field_70987_i.func_70071_h_();
+@@ -334,8 +326,8 @@
+                 }
+ 
+                 double[] adouble = this.func_70974_a(5, 1.0F);
+-                float f19 = MathHelper.func_76126_a(this.field_70177_z * ((float)Math.PI / 180F) - this.field_70704_bt * 0.01F);
+-                float f4 = MathHelper.func_76134_b(this.field_70177_z * ((float)Math.PI / 180F) - this.field_70704_bt * 0.01F);
++                float f19 = MathHelper.func_76126_a(this.field_70177_z * 0.017453292F - this.field_70704_bt * 0.01F);
++                float f4 = MathHelper.func_76134_b(this.field_70177_z * 0.017453292F - this.field_70704_bt * 0.01F);
+                 this.field_70986_h.func_70071_h_();
+                 this.field_184673_bv.func_70071_h_();
+                 float f20 = this.func_184662_q(1.0F);
+@@ -362,7 +354,7 @@
+                     }
+ 
+                     double[] adouble1 = this.func_70974_a(12 + k * 2, 1.0F);
+-                    float f21 = this.field_70177_z * ((float)Math.PI / 180F) + this.func_70973_b(adouble1[0] - adouble[0]) * ((float)Math.PI / 180F);
++                    float f21 = this.field_70177_z * 0.017453292F + this.func_70973_b(adouble1[0] - adouble[0]) * 0.017453292F;
+                     float f6 = MathHelper.func_76126_a(f21);
+                     float f22 = MathHelper.func_76134_b(f21);
+                     float f23 = 1.5F;
+@@ -425,7 +417,7 @@
+ 
+         if (this.field_70146_Z.nextInt(10) == 0)
+         {
+-            List<EntityEnderCrystal> list = this.field_70170_p.func_72872_a(EntityEnderCrystal.class, this.func_174813_aQ().func_186662_g(32.0D));
++            List<EntityEnderCrystal> list = this.field_70170_p.<EntityEnderCrystal>func_72872_a(EntityEnderCrystal.class, this.func_174813_aQ().func_186662_g(32.0D));
+             EntityEnderCrystal entityendercrystal = null;
+             double d0 = Double.MAX_VALUE;
+ 
+@@ -456,7 +448,7 @@
+                 double d2 = entity.field_70165_t - d0;
+                 double d3 = entity.field_70161_v - d1;
+                 double d4 = d2 * d2 + d3 * d3;
+-                entity.func_70024_g(d2 / d4 * 4.0D, (double)0.2F, d3 / d4 * 4.0D);
++                entity.func_70024_g(d2 / d4 * 4.0D, 0.20000000298023224D, d3 / d4 * 4.0D);
+ 
+                 if (!this.field_184677_bJ.func_188756_a().func_188654_a() && ((EntityLivingBase)entity).func_142015_aE() < entity.field_70173_aa - 2)
+                 {
+@@ -507,13 +499,13 @@
                      IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos);
                      Block block = iblockstate.func_177230_c();
  
@@ -17,3 +162,41 @@
                          {
                              if (block != Blocks.field_150483_bI && block != Blocks.field_185776_dc && block != Blocks.field_185777_dd && block != Blocks.field_150411_aY && block != Blocks.field_185775_db)
                              {
+@@ -650,7 +642,7 @@
+             }
+         }
+ 
+-        this.func_70091_d(MoverType.SELF, 0.0D, (double)0.1F, 0.0D);
++        this.func_70091_d(MoverType.SELF, 0.0D, 0.10000000149011612D, 0.0D);
+         this.field_70177_z += 20.0F;
+         this.field_70761_aq = this.field_70177_z;
+ 
+@@ -698,8 +690,8 @@
+                 else if (i < 20)
+                 {
+                     int lvt_3_1_ = i - 12;
+-                    l = (int)(40.0F * MathHelper.func_76134_b(2.0F * (-(float)Math.PI + ((float)Math.PI / 8F) * (float)lvt_3_1_)));
+-                    i1 = (int)(40.0F * MathHelper.func_76126_a(2.0F * (-(float)Math.PI + ((float)Math.PI / 8F) * (float)lvt_3_1_)));
++                    l = (int)(40.0F * MathHelper.func_76134_b(2.0F * (-(float)Math.PI + 0.3926991F * (float)lvt_3_1_)));
++                    i1 = (int)(40.0F * MathHelper.func_76126_a(2.0F * (-(float)Math.PI + 0.3926991F * (float)lvt_3_1_)));
+                     j += 10;
+                 }
+                 else
+@@ -869,7 +861,7 @@
+         }
+         else
+         {
+-            field_184675_bH.debug("Failed to find path from {} to {}", p_184666_1_, p_184666_2_);
++            field_184675_bH.debug("Failed to find path from {} to {}", Integer.valueOf(p_184666_1_), Integer.valueOf(p_184666_2_));
+ 
+             if (p_184666_3_ != null)
+             {
+@@ -1062,7 +1054,7 @@
+     {
+         if (field_184674_a.equals(p_184206_1_) && this.field_70170_p.field_72995_K)
+         {
+-            this.field_184677_bJ.func_188758_a(PhaseList.func_188738_a(this.func_184212_Q().func_187225_a(field_184674_a)));
++            this.field_184677_bJ.func_188758_a(PhaseList.func_188738_a(((Integer)this.func_184212_Q().func_187225_a(field_184674_a)).intValue()));
+         }
+ 
+         super.func_184206_a(p_184206_1_);

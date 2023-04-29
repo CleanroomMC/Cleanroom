@@ -1,6 +1,46 @@
 --- before/net/minecraft/entity/monster/EntitySpider.java
 +++ after/net/minecraft/entity/monster/EntitySpider.java
-@@ -139,7 +139,13 @@
+@@ -38,7 +38,7 @@
+ 
+ public class EntitySpider extends EntityMob
+ {
+-    private static final DataParameter<Byte> field_184729_a = EntityDataManager.func_187226_a(EntitySpider.class, DataSerializers.field_187191_a);
++    private static final DataParameter<Byte> field_184729_a = EntityDataManager.<Byte>func_187226_a(EntitySpider.class, DataSerializers.field_187191_a);
+ 
+     public EntitySpider(World p_i1743_1_)
+     {
+@@ -59,9 +59,9 @@
+         this.field_70714_bg.func_75776_a(5, new EntityAIWanderAvoidWater(this, 0.8D));
+         this.field_70714_bg.func_75776_a(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+         this.field_70714_bg.func_75776_a(6, new EntityAILookIdle(this));
+-        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, false));
+-        this.field_70715_bh.func_75776_a(2, new EntitySpider.AISpiderTarget<>(this, EntityPlayer.class));
+-        this.field_70715_bh.func_75776_a(3, new EntitySpider.AISpiderTarget<>(this, EntityIronGolem.class));
++        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, false, new Class[0]));
++        this.field_70715_bh.func_75776_a(2, new EntitySpider.AISpiderTarget(this, EntityPlayer.class));
++        this.field_70715_bh.func_75776_a(3, new EntitySpider.AISpiderTarget(this, EntityIronGolem.class));
+     }
+ 
+     public double func_70042_X()
+@@ -77,7 +77,7 @@
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+-        this.field_70180_af.func_187214_a(field_184729_a, (byte)0);
++        this.field_70180_af.func_187214_a(field_184729_a, Byte.valueOf((byte)0));
+     }
+ 
+     public void func_70071_h_()
+@@ -94,7 +94,7 @@
+     {
+         super.func_110147_ax();
+         this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(16.0D);
+-        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a((double)0.3F);
++        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.30000001192092896D);
+     }
+ 
+     protected SoundEvent func_184639_G()
+@@ -139,17 +139,23 @@
  
      public boolean func_70687_e(PotionEffect p_70687_1_)
      {
@@ -15,3 +55,24 @@
      }
  
      public boolean func_70841_p()
+     {
+-        return (this.field_70180_af.func_187225_a(field_184729_a) & 1) != 0;
++        return (((Byte)this.field_70180_af.func_187225_a(field_184729_a)).byteValue() & 1) != 0;
+     }
+ 
+     public void func_70839_e(boolean p_70839_1_)
+     {
+-        byte b0 = this.field_70180_af.func_187225_a(field_184729_a);
++        byte b0 = ((Byte)this.field_70180_af.func_187225_a(field_184729_a)).byteValue();
+ 
+         if (p_70839_1_)
+         {
+@@ -160,7 +166,7 @@
+             b0 = (byte)(b0 & -2);
+         }
+ 
+-        this.field_70180_af.func_187227_b(field_184729_a, b0);
++        this.field_70180_af.func_187227_b(field_184729_a, Byte.valueOf(b0));
+     }
+ 
+     @Nullable

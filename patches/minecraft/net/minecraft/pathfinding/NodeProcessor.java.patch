@@ -1,0 +1,11 @@
+--- before/net/minecraft/pathfinding/NodeProcessor.java
++++ after/net/minecraft/pathfinding/NodeProcessor.java
+@@ -9,7 +9,7 @@
+ {
+     protected IBlockAccess field_176169_a;
+     protected EntityLiving field_186326_b;
+-    protected final IntHashMap<PathPoint> field_176167_b = new IntHashMap<>();
++    protected final IntHashMap<PathPoint> field_176167_b = new IntHashMap<PathPoint>();
+     protected int field_176168_c;
+     protected int field_176165_d;
+     protected int field_176166_e;

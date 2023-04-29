@@ -1,0 +1,11 @@
+--- before/net/minecraft/world/chunk/storage/ChunkLoader.java
++++ after/net/minecraft/world/chunk/storage/ChunkLoader.java
+@@ -29,7 +29,7 @@
+         {
+             chunkloader$anvilconverterdata.field_76698_a = p_76691_0_.func_74763_f("LastUpdate");
+         }
+-        catch (ClassCastException classcastexception)
++        catch (ClassCastException var5)
+         {
+             chunkloader$anvilconverterdata.field_76698_a = (long)p_76691_0_.func_74762_e("LastUpdate");
+         }

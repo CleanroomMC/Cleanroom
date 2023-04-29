@@ -1,5 +1,27 @@
 --- before/net/minecraft/entity/projectile/EntityFireball.java
 +++ after/net/minecraft/entity/projectile/EntityFireball.java
+@@ -44,7 +44,7 @@
+             d0 = 4.0D;
+         }
+ 
+-        d0 *= 64.0D;
++        d0 = d0 * 64.0D;
+         return p_70112_1_ < d0 * d0;
+     }
+ 
+@@ -70,9 +70,9 @@
+         this.field_70159_w = 0.0D;
+         this.field_70181_x = 0.0D;
+         this.field_70179_y = 0.0D;
+-        p_i1761_3_ += this.field_70146_Z.nextGaussian() * 0.4D;
+-        p_i1761_5_ += this.field_70146_Z.nextGaussian() * 0.4D;
+-        p_i1761_7_ += this.field_70146_Z.nextGaussian() * 0.4D;
++        p_i1761_3_ = p_i1761_3_ + this.field_70146_Z.nextGaussian() * 0.4D;
++        p_i1761_5_ = p_i1761_5_ + this.field_70146_Z.nextGaussian() * 0.4D;
++        p_i1761_7_ = p_i1761_7_ + this.field_70146_Z.nextGaussian() * 0.4D;
+         double d0 = (double)MathHelper.func_76133_a(p_i1761_3_ * p_i1761_3_ + p_i1761_5_ * p_i1761_5_ + p_i1761_7_ * p_i1761_7_);
+         this.field_70232_b = p_i1761_3_ / d0 * 0.1D;
+         this.field_70233_c = p_i1761_5_ / d0 * 0.1D;
 @@ -93,7 +93,7 @@
              ++this.field_70234_an;
              RayTraceResult raytraceresult = ProjectileHelper.func_188802_a(this, true, this.field_70234_an >= 25, this.field_70235_a);

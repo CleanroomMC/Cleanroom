@@ -9,3 +9,12 @@
      }
  
      public void func_70930_a(@Nullable MerchantRecipeList p_70930_1_)
+@@ -60,7 +60,7 @@
+ 
+     public ITextComponent func_145748_c_()
+     {
+-        return (ITextComponent)(this.field_175548_d != null ? this.field_175548_d : new TextComponentTranslation("entity.Villager.name"));
++        return (ITextComponent)(this.field_175548_d != null ? this.field_175548_d : new TextComponentTranslation("entity.Villager.name", new Object[0]));
+     }
+ 
+     public World func_190670_t_()

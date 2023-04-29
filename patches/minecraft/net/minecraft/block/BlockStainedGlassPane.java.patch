@@ -1,0 +1,59 @@
+--- before/net/minecraft/block/BlockStainedGlassPane.java
++++ after/net/minecraft/block/BlockStainedGlassPane.java
+@@ -2,6 +2,7 @@
+ 
+ import net.minecraft.block.material.MapColor;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyEnum;
+ import net.minecraft.block.state.BlockStateContainer;
+ import net.minecraft.block.state.IBlockState;
+@@ -20,18 +21,18 @@
+ 
+ public class BlockStainedGlassPane extends BlockPane
+ {
+-    public static final PropertyEnum<EnumDyeColor> field_176245_a = PropertyEnum.func_177709_a("color", EnumDyeColor.class);
++    public static final PropertyEnum<EnumDyeColor> field_176245_a = PropertyEnum.<EnumDyeColor>func_177709_a("color", EnumDyeColor.class);
+ 
+     public BlockStainedGlassPane()
+     {
+         super(Material.field_151592_s, false);
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176241_b, false).func_177226_a(field_176242_M, false).func_177226_a(field_176243_N, false).func_177226_a(field_176244_O, false).func_177226_a(field_176245_a, EnumDyeColor.WHITE));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176241_b, Boolean.valueOf(false)).func_177226_a(field_176242_M, Boolean.valueOf(false)).func_177226_a(field_176243_N, Boolean.valueOf(false)).func_177226_a(field_176244_O, Boolean.valueOf(false)).func_177226_a(field_176245_a, EnumDyeColor.WHITE));
+         this.func_149647_a(CreativeTabs.field_78031_c);
+     }
+ 
+     public int func_180651_a(IBlockState p_180651_1_)
+     {
+-        return p_180651_1_.func_177229_b(field_176245_a).func_176765_a();
++        return ((EnumDyeColor)p_180651_1_.func_177229_b(field_176245_a)).func_176765_a();
+     }
+ 
+     public void func_149666_a(CreativeTabs p_149666_1_, NonNullList<ItemStack> p_149666_2_)
+@@ -44,7 +45,7 @@
+ 
+     public MapColor func_180659_g(IBlockState p_180659_1_, IBlockAccess p_180659_2_, BlockPos p_180659_3_)
+     {
+-        return MapColor.func_193558_a(p_180659_1_.func_177229_b(field_176245_a));
++        return MapColor.func_193558_a((EnumDyeColor)p_180659_1_.func_177229_b(field_176245_a));
+     }
+ 
+     @SideOnly(Side.CLIENT)
+@@ -60,7 +61,7 @@
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(field_176245_a).func_176765_a();
++        return ((EnumDyeColor)p_176201_1_.func_177229_b(field_176245_a)).func_176765_a();
+     }
+ 
+     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
+@@ -93,7 +94,7 @@
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176241_b, field_176242_M, field_176244_O, field_176243_N, field_176245_a);
++        return new BlockStateContainer(this, new IProperty[] {field_176241_b, field_176242_M, field_176244_O, field_176243_N, field_176245_a});
+     }
+ 
+     public void func_176213_c(World p_176213_1_, BlockPos p_176213_2_, IBlockState p_176213_3_)

@@ -1,0 +1,11 @@
+--- before/net/minecraft/server/management/UserListIPBans.java
++++ after/net/minecraft/server/management/UserListIPBans.java
+@@ -25,7 +25,7 @@
+     public UserListIPBansEntry func_152709_b(SocketAddress p_152709_1_)
+     {
+         String s = this.func_152707_c(p_152709_1_);
+-        return this.func_152683_b(s);
++        return (UserListIPBansEntry)this.func_152683_b(s);
+     }
+ 
+     private String func_152707_c(SocketAddress p_152707_1_)

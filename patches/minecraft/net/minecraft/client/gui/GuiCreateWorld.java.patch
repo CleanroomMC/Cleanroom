@@ -1,6 +1,13 @@
 --- before/net/minecraft/client/gui/GuiCreateWorld.java
 +++ after/net/minecraft/client/gui/GuiCreateWorld.java
-@@ -206,6 +206,8 @@
+@@ -200,12 +200,14 @@
+                             i = j;
+                         }
+                     }
+-                    catch (NumberFormatException numberformatexception)
++                    catch (NumberFormatException var7)
+                     {
+                         i = (long)s.hashCode();
                      }
                  }
  

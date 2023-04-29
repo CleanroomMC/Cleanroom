@@ -1,0 +1,48 @@
+--- before/net/minecraft/client/particle/ParticleRain.java
++++ after/net/minecraft/client/particle/ParticleRain.java
+@@ -15,9 +15,9 @@
+     protected ParticleRain(World p_i1235_1_, double p_i1235_2_, double p_i1235_4_, double p_i1235_6_)
+     {
+         super(p_i1235_1_, p_i1235_2_, p_i1235_4_, p_i1235_6_, 0.0D, 0.0D, 0.0D);
+-        this.field_187129_i *= (double)0.3F;
+-        this.field_187130_j = Math.random() * (double)0.2F + (double)0.1F;
+-        this.field_187131_k *= (double)0.3F;
++        this.field_187129_i *= 0.30000001192092896D;
++        this.field_187130_j = Math.random() * 0.20000000298023224D + 0.10000000149011612D;
++        this.field_187131_k *= 0.30000001192092896D;
+         this.field_70552_h = 1.0F;
+         this.field_70553_i = 1.0F;
+         this.field_70551_j = 1.0F;
+@@ -34,9 +34,9 @@
+         this.field_187125_e = this.field_187128_h;
+         this.field_187130_j -= (double)this.field_70545_g;
+         this.func_187110_a(this.field_187129_i, this.field_187130_j, this.field_187131_k);
+-        this.field_187129_i *= (double)0.98F;
+-        this.field_187130_j *= (double)0.98F;
+-        this.field_187131_k *= (double)0.98F;
++        this.field_187129_i *= 0.9800000190734863D;
++        this.field_187130_j *= 0.9800000190734863D;
++        this.field_187131_k *= 0.9800000190734863D;
+ 
+         if (this.field_70547_e-- <= 0)
+         {
+@@ -50,8 +50,8 @@
+                 this.func_187112_i();
+             }
+ 
+-            this.field_187129_i *= (double)0.7F;
+-            this.field_187131_k *= (double)0.7F;
++            this.field_187129_i *= 0.699999988079071D;
++            this.field_187131_k *= 0.699999988079071D;
+         }
+ 
+         BlockPos blockpos = new BlockPos(this.field_187126_f, this.field_187127_g, this.field_187128_h);
+@@ -64,7 +64,7 @@
+ 
+             if (iblockstate.func_177230_c() instanceof BlockLiquid)
+             {
+-                d0 = (double)(1.0F - BlockLiquid.func_149801_b(iblockstate.func_177229_b(BlockLiquid.field_176367_b)));
++                d0 = (double)(1.0F - BlockLiquid.func_149801_b(((Integer)iblockstate.func_177229_b(BlockLiquid.field_176367_b)).intValue()));
+             }
+             else
+             {

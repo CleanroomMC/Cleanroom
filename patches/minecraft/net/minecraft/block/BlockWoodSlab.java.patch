@@ -1,0 +1,52 @@
+--- before/net/minecraft/block/BlockWoodSlab.java
++++ after/net/minecraft/block/BlockWoodSlab.java
+@@ -18,7 +18,7 @@
+ 
+ public abstract class BlockWoodSlab extends BlockSlab
+ {
+-    public static final PropertyEnum<BlockPlanks.EnumType> field_176557_b = PropertyEnum.func_177709_a("variant", BlockPlanks.EnumType.class);
++    public static final PropertyEnum<BlockPlanks.EnumType> field_176557_b = PropertyEnum.<BlockPlanks.EnumType>func_177709_a("variant", BlockPlanks.EnumType.class);
+ 
+     public BlockWoodSlab()
+     {
+@@ -36,7 +36,7 @@
+ 
+     public MapColor func_180659_g(IBlockState p_180659_1_, IBlockAccess p_180659_2_, BlockPos p_180659_3_)
+     {
+-        return p_180659_1_.func_177229_b(field_176557_b).func_181070_c();
++        return ((BlockPlanks.EnumType)p_180659_1_.func_177229_b(field_176557_b)).func_181070_c();
+     }
+ 
+     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
+@@ -46,7 +46,7 @@
+ 
+     public ItemStack func_185473_a(World p_185473_1_, BlockPos p_185473_2_, IBlockState p_185473_3_)
+     {
+-        return new ItemStack(Blocks.field_150376_bx, 1, p_185473_3_.func_177229_b(field_176557_b).func_176839_a());
++        return new ItemStack(Blocks.field_150376_bx, 1, ((BlockPlanks.EnumType)p_185473_3_.func_177229_b(field_176557_b)).func_176839_a());
+     }
+ 
+     public String func_150002_b(int p_150002_1_)
+@@ -87,7 +87,7 @@
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+         int i = 0;
+-        i |= p_176201_1_.func_177229_b(field_176557_b).func_176839_a();
++        i = i | ((BlockPlanks.EnumType)p_176201_1_.func_177229_b(field_176557_b)).func_176839_a();
+ 
+         if (!this.func_176552_j() && p_176201_1_.func_177229_b(field_176554_a) == BlockSlab.EnumBlockHalf.TOP)
+         {
+@@ -99,11 +99,11 @@
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return this.func_176552_j() ? new BlockStateContainer(this, field_176557_b) : new BlockStateContainer(this, field_176554_a, field_176557_b);
++        return this.func_176552_j() ? new BlockStateContainer(this, new IProperty[] {field_176557_b}) : new BlockStateContainer(this, new IProperty[] {field_176554_a, field_176557_b});
+     }
+ 
+     public int func_180651_a(IBlockState p_180651_1_)
+     {
+-        return p_180651_1_.func_177229_b(field_176557_b).func_176839_a();
++        return ((BlockPlanks.EnumType)p_180651_1_.func_177229_b(field_176557_b)).func_176839_a();
+     }
+ }

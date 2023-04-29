@@ -1,14 +1,17 @@
 --- before/net/minecraft/block/BlockBush.java
 +++ after/net/minecraft/block/BlockBush.java
-@@ -17,7 +17,7 @@
+@@ -17,9 +17,9 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  
 -public class BlockBush extends Block
 +public class BlockBush extends Block implements net.minecraftforge.common.IPlantable
  {
-     protected static final AxisAlignedBB field_185515_b = new AxisAlignedBB(0.30000001192092896D, 0.0D, 0.30000001192092896D, 0.699999988079071D, 0.6000000238418579D, 0.699999988079071D);
+-    protected static final AxisAlignedBB field_185515_b = new AxisAlignedBB((double)0.3F, 0.0D, (double)0.3F, (double)0.7F, (double)0.6F, (double)0.7F);
++    protected static final AxisAlignedBB field_185515_b = new AxisAlignedBB(0.30000001192092896D, 0.0D, 0.30000001192092896D, 0.699999988079071D, 0.6000000238418579D, 0.699999988079071D);
  
+     protected BlockBush()
+     {
 @@ -40,7 +40,8 @@
  
      public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)

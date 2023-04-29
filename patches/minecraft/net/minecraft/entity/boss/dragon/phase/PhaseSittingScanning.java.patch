@@ -1,0 +1,30 @@
+--- before/net/minecraft/entity/boss/dragon/phase/PhaseSittingScanning.java
++++ after/net/minecraft/entity/boss/dragon/phase/PhaseSittingScanning.java
+@@ -28,15 +28,15 @@
+             else
+             {
+                 Vec3d vec3d = (new Vec3d(entitylivingbase.field_70165_t - this.field_188661_a.field_70165_t, 0.0D, entitylivingbase.field_70161_v - this.field_188661_a.field_70161_v)).func_72432_b();
+-                Vec3d vec3d1 = (new Vec3d((double)MathHelper.func_76126_a(this.field_188661_a.field_70177_z * ((float)Math.PI / 180F)), 0.0D, (double)(-MathHelper.func_76134_b(this.field_188661_a.field_70177_z * ((float)Math.PI / 180F))))).func_72432_b();
++                Vec3d vec3d1 = (new Vec3d((double)MathHelper.func_76126_a(this.field_188661_a.field_70177_z * 0.017453292F), 0.0D, (double)(-MathHelper.func_76134_b(this.field_188661_a.field_70177_z * 0.017453292F)))).func_72432_b();
+                 float f = (float)vec3d1.func_72430_b(vec3d);
+-                float f1 = (float)(Math.acos((double)f) * (double)(180F / (float)Math.PI)) + 0.5F;
++                float f1 = (float)(Math.acos((double)f) * (180D / Math.PI)) + 0.5F;
+ 
+                 if (f1 < 0.0F || f1 > 10.0F)
+                 {
+                     double d0 = entitylivingbase.field_70165_t - this.field_188661_a.field_70986_h.field_70165_t;
+                     double d1 = entitylivingbase.field_70161_v - this.field_188661_a.field_70986_h.field_70161_v;
+-                    double d2 = MathHelper.func_151237_a(MathHelper.func_76138_g(180.0D - MathHelper.func_181159_b(d0, d1) * (double)(180F / (float)Math.PI) - (double)this.field_188661_a.field_70177_z), -100.0D, 100.0D);
++                    double d2 = MathHelper.func_151237_a(MathHelper.func_76138_g(180.0D - MathHelper.func_181159_b(d0, d1) * (180D / Math.PI) - (double)this.field_188661_a.field_70177_z), -100.0D, 100.0D);
+                     this.field_188661_a.field_70704_bt *= 0.8F;
+                     float f2 = MathHelper.func_76133_a(d0 * d0 + d1 * d1) + 1.0F;
+                     float f3 = f2;
+@@ -59,7 +59,7 @@
+             if (entitylivingbase != null)
+             {
+                 this.field_188661_a.func_184670_cT().func_188758_a(PhaseList.field_188749_i);
+-                this.field_188661_a.func_184670_cT().func_188757_b(PhaseList.field_188749_i).func_188668_a(new Vec3d(entitylivingbase.field_70165_t, entitylivingbase.field_70163_u, entitylivingbase.field_70161_v));
++                ((PhaseChargingPlayer)this.field_188661_a.func_184670_cT().func_188757_b(PhaseList.field_188749_i)).func_188668_a(new Vec3d(entitylivingbase.field_70165_t, entitylivingbase.field_70163_u, entitylivingbase.field_70161_v));
+             }
+         }
+     }

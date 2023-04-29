@@ -1,0 +1,11 @@
+--- before/net/minecraft/nbt/NBTTagByteArray.java
++++ after/net/minecraft/nbt/NBTTagByteArray.java
+@@ -31,7 +31,7 @@
+         for (int i = 0; i < p_193589_0_.size(); ++i)
+         {
+             Byte obyte = p_193589_0_.get(i);
+-            abyte[i] = obyte == null ? 0 : obyte;
++            abyte[i] = obyte == null ? 0 : obyte.byteValue();
+         }
+ 
+         return abyte;

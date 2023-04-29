@@ -1,10 +1,19 @@
 --- before/net/minecraft/world/storage/loot/LootTableManager.java
 +++ after/net/minecraft/world/storage/loot/LootTableManager.java
+@@ -26,7 +26,7 @@
+ {
+     private static final Logger field_186525_a = LogManager.getLogger();
+     private static final Gson field_186526_b = (new GsonBuilder()).registerTypeAdapter(RandomValueRange.class, new RandomValueRange.Serializer()).registerTypeAdapter(LootPool.class, new LootPool.Serializer()).registerTypeAdapter(LootTable.class, new LootTable.Serializer()).registerTypeHierarchyAdapter(LootEntry.class, new LootEntry.Serializer()).registerTypeHierarchyAdapter(LootFunction.class, new LootFunctionManager.Serializer()).registerTypeHierarchyAdapter(LootCondition.class, new LootConditionManager.Serializer()).registerTypeHierarchyAdapter(LootContext.EntityTarget.class, new LootContext.EntityTarget.Serializer()).create();
+-    private final LoadingCache<ResourceLocation, LootTable> field_186527_c = CacheBuilder.newBuilder().build(new LootTableManager.Loader());
++    private final LoadingCache<ResourceLocation, LootTable> field_186527_c = CacheBuilder.newBuilder().<ResourceLocation, LootTable>build(new LootTableManager.Loader());
+     private final File field_186528_d;
+ 
+     public LootTableManager(@Nullable File p_i46632_1_)
 @@ -111,7 +111,7 @@
  
                          try
                          {
--                            return (LootTable)JsonUtils.func_188178_a(LootTableManager.field_186526_b, s, LootTable.class);
+-                            return JsonUtils.func_188178_a(LootTableManager.field_186526_b, s, LootTable.class);
 +                            return net.minecraftforge.common.ForgeHooks.loadLootTable(LootTableManager.field_186526_b, p_186517_1_, s, true, LootTableManager.this);
                          }
                          catch (IllegalArgumentException | JsonParseException jsonparseexception)
@@ -13,7 +22,7 @@
  
                  try
                  {
--                    return (LootTable)JsonUtils.func_188178_a(LootTableManager.field_186526_b, s, LootTable.class);
+-                    return JsonUtils.func_188178_a(LootTableManager.field_186526_b, s, LootTable.class);
 +                    return net.minecraftforge.common.ForgeHooks.loadLootTable(LootTableManager.field_186526_b, p_186518_1_, s, false, LootTableManager.this);
                  }
                  catch (JsonParseException jsonparseexception)

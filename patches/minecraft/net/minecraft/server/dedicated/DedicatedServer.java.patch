@@ -1,5 +1,14 @@
 --- before/net/minecraft/server/dedicated/DedicatedServer.java
 +++ after/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -53,7 +53,7 @@
+ {
+     private static final Logger field_155771_h = LogManager.getLogger();
+     private static final Pattern field_189647_l = Pattern.compile("^[a-fA-F0-9]{40}$");
+-    public final List<PendingCommand> field_71341_l = Collections.synchronizedList(Lists.newArrayList());
++    public final List<PendingCommand> field_71341_l = Collections.<PendingCommand>synchronizedList(Lists.newArrayList());
+     private RConThreadQuery field_71342_m;
+     private final RConConsoleSource field_184115_n = new RConConsoleSource(this);
+     private RConThreadMain field_71339_n;
 @@ -62,6 +62,7 @@
      private boolean field_71338_p;
      private GameType field_71337_q;
@@ -8,7 +17,18 @@
  
      public DedicatedServer(File p_i47086_1_, DataFixer p_i47086_2_, YggdrasilAuthenticationService p_i47086_3_, MinecraftSessionService p_i47086_4_, GameProfileRepository p_i47086_5_, PlayerProfileCache p_i47086_6_)
      {
-@@ -95,6 +96,7 @@
+@@ -80,8 +81,9 @@
+                     {
+                         Thread.sleep(2147483647L);
+                     }
+-                    catch (InterruptedException interruptedexception)
++                    catch (InterruptedException var2)
+                     {
++                        ;
+                     }
+                 }
+             }
+@@ -94,6 +96,7 @@
          {
              public void run()
              {
@@ -16,7 +36,7 @@
                  BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
                  String s4;
  
-@@ -120,6 +122,8 @@
+@@ -119,6 +122,8 @@
              field_155771_h.warn("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
          }
  
@@ -25,7 +45,30 @@
          field_155771_h.info("Loading properties");
          this.field_71340_o = new PropertyManager(new File("server.properties"));
          this.field_154332_n = new ServerEula(new File("eula.txt"));
-@@ -212,6 +216,7 @@
+@@ -153,11 +158,11 @@
+ 
+             if (this.field_71340_o.func_73669_a("difficulty", 1) < 0)
+             {
+-                this.field_71340_o.func_73667_a("difficulty", 0);
++                this.field_71340_o.func_73667_a("difficulty", Integer.valueOf(0));
+             }
+             else if (this.field_71340_o.func_73669_a("difficulty", 1) > 3)
+             {
+-                this.field_71340_o.func_73667_a("difficulty", 3);
++                this.field_71340_o.func_73667_a("difficulty", Integer.valueOf(3));
+             }
+ 
+             this.field_71338_p = this.field_71340_o.func_73670_a("generate-structures", true);
+@@ -178,7 +183,7 @@
+ 
+             field_155771_h.info("Generating keypair");
+             this.func_71253_a(CryptManager.func_75891_b());
+-            field_155771_h.info("Starting Minecraft server on {}:{}", this.func_71211_k().isEmpty() ? "*" : this.func_71211_k(), this.func_71215_F());
++            field_155771_h.info("Starting Minecraft server on {}:{}", this.func_71211_k().isEmpty() ? "*" : this.func_71211_k(), Integer.valueOf(this.func_71215_F()));
+ 
+             try
+             {
+@@ -211,6 +216,7 @@
              }
              else
              {
@@ -33,7 +76,21 @@
                  this.func_184105_a(new DedicatedPlayerList(this));
                  long j = System.nanoTime();
  
-@@ -260,11 +265,13 @@
+@@ -235,7 +241,7 @@
+                             k = l;
+                         }
+                     }
+-                    catch (NumberFormatException numberformatexception)
++                    catch (NumberFormatException var16)
+                     {
+                         k = (long)s.hashCode();
+                     }
+@@ -255,15 +261,17 @@
+                 this.func_71191_d(this.field_71340_o.func_73669_a("max-build-height", 256));
+                 this.func_71191_d((this.func_71207_Z() + 8) / 16 * 16);
+                 this.func_71191_d(MathHelper.func_76125_a(this.func_71207_Z(), 64, 256));
+-                this.field_71340_o.func_73667_a("max-build-height", this.func_71207_Z());
++                this.field_71340_o.func_73667_a("max-build-height", Integer.valueOf(this.func_71207_Z()));
                  TileEntitySkull.func_184293_a(this.func_152358_ax());
                  TileEntitySkull.func_184294_a(this.func_147130_as());
                  PlayerProfileCache.func_187320_a(this.func_71266_T());
@@ -47,7 +104,7 @@
  
                  if (this.field_71340_o.func_187239_a("announce-player-achievements"))
                  {
-@@ -296,7 +303,8 @@
+@@ -295,7 +303,8 @@
                  }
  
                  Items.field_190931_a.func_150895_a(CreativeTabs.field_78027_g, NonNullList.func_191196_a());
@@ -57,7 +114,18 @@
              }
          }
      }
-@@ -515,7 +523,7 @@
+@@ -401,8 +410,8 @@
+ 
+     public void func_70000_a(Snooper p_70000_1_)
+     {
+-        p_70000_1_.func_152768_a("whitelist_enabled", this.func_184103_al().func_72383_n());
+-        p_70000_1_.func_152768_a("whitelist_count", this.func_184103_al().func_152598_l().length);
++        p_70000_1_.func_152768_a("whitelist_enabled", Boolean.valueOf(this.func_184103_al().func_72383_n()));
++        p_70000_1_.func_152768_a("whitelist_count", Integer.valueOf(this.func_184103_al().func_152598_l().length));
+         super.func_70000_a(p_70000_1_);
+     }
+ 
+@@ -514,7 +523,7 @@
  
      public boolean func_175579_a(World p_175579_1_, BlockPos p_175579_2_, EntityPlayer p_175579_3_)
      {
@@ -66,13 +134,33 @@
          {
              return false;
          }
-@@ -583,6 +591,9 @@
+@@ -548,7 +557,7 @@
+     public void func_143006_e(int p_143006_1_)
      {
+         super.func_143006_e(p_143006_1_);
+-        this.field_71340_o.func_73667_a("player-idle-timeout", p_143006_1_);
++        this.field_71340_o.func_73667_a("player-idle-timeout", Integer.valueOf(p_143006_1_));
+         this.func_71326_a();
+     }
+ 
+@@ -583,6 +592,9 @@
          return this.field_71340_o.func_73669_a("network-compression-threshold", super.func_175577_aI());
      }
-+
+ 
 +    //Forge: Enable formated text for colors in console.
 +    @Override public void func_145747_a(net.minecraft.util.text.ITextComponent message) { field_155771_h.info(message.func_150254_d()); }
- 
++
      protected boolean func_152368_aE() throws IOException
      {
+         boolean flag = false;
+@@ -659,8 +671,9 @@
+         {
+             Thread.sleep(5000L);
+         }
+-        catch (InterruptedException interruptedexception)
++        catch (InterruptedException var2)
+         {
++            ;
+         }
+     }
+ 

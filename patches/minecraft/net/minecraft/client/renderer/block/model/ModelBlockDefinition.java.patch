@@ -1,13 +1,25 @@
 --- before/net/minecraft/client/renderer/block/model/ModelBlockDefinition.java
 +++ after/net/minecraft/client/renderer/block/model/ModelBlockDefinition.java
-@@ -32,9 +32,14 @@
-     private final Map<String, VariantList> field_178332_b = Maps.<String, VariantList>newHashMap();
+@@ -16,6 +16,7 @@
+ import java.util.List;
+ import java.util.Map;
+ import java.util.Set;
++import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+ import net.minecraft.client.renderer.block.model.multipart.Multipart;
+ import net.minecraft.client.renderer.block.model.multipart.Selector;
+@@ -28,12 +29,17 @@
+ {
+     @VisibleForTesting
+     static final Gson field_178333_a = (new GsonBuilder()).registerTypeAdapter(ModelBlockDefinition.class, new ModelBlockDefinition.Deserializer()).registerTypeAdapter(Variant.class, new Variant.Deserializer()).registerTypeAdapter(VariantList.class, new VariantList.Deserializer()).registerTypeAdapter(Multipart.class, new Multipart.Deserializer()).registerTypeAdapter(Selector.class, new Selector.Deserializer()).create();
+-    private final Map<String, VariantList> field_178332_b = Maps.newHashMap();
++    private final Map<String, VariantList> field_178332_b = Maps.<String, VariantList>newHashMap();
      private Multipart field_188005_c;
  
 +    @Deprecated
      public static ModelBlockDefinition func_178331_a(Reader p_178331_0_)
      {
--        return (ModelBlockDefinition)JsonUtils.func_193839_a(field_178333_a, p_178331_0_, ModelBlockDefinition.class);
+-        return JsonUtils.func_193839_a(field_178333_a, p_178331_0_, ModelBlockDefinition.class);
 +        return parseFromReader(p_178331_0_, null);
 +    }
 +
@@ -16,3 +28,40 @@
      }
  
      public ModelBlockDefinition(Map<String, VariantList> p_i46572_1_, Multipart p_i46572_2_)
+@@ -152,15 +158,15 @@
+ 
+             protected Map<String, VariantList> func_187999_a(JsonDeserializationContext p_187999_1_, JsonObject p_187999_2_)
+             {
+-                Map<String, VariantList> map = Maps.newHashMap();
++                Map<String, VariantList> map = Maps.<String, VariantList>newHashMap();
+ 
+                 if (p_187999_2_.has("variants"))
+                 {
+                     JsonObject jsonobject = JsonUtils.func_152754_s(p_187999_2_, "variants");
+ 
+-                    for (Map.Entry<String, JsonElement> entry : jsonobject.entrySet())
++                    for (Entry<String, JsonElement> entry : jsonobject.entrySet())
+                     {
+-                        map.put(entry.getKey(), p_187999_1_.deserialize(entry.getValue(), VariantList.class));
++                        map.put(entry.getKey(), (VariantList)p_187999_1_.deserialize(entry.getValue(), VariantList.class));
+                     }
+                 }
+ 
+@@ -177,7 +183,7 @@
+                 else
+                 {
+                     JsonArray jsonarray = JsonUtils.func_151214_t(p_187998_2_, "multipart");
+-                    return p_187998_1_.deserialize(jsonarray, Multipart.class);
++                    return (Multipart)p_187998_1_.deserialize(jsonarray, Multipart.class);
+                 }
+             }
+         }
+@@ -185,8 +191,5 @@
+     @SideOnly(Side.CLIENT)
+     public class MissingVariantException extends RuntimeException
+     {
+-        protected MissingVariantException()
+-        {
+-        }
+     }
+ }

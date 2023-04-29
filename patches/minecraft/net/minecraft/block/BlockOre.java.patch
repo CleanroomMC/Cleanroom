@@ -1,5 +1,14 @@
 --- before/net/minecraft/block/BlockOre.java
 +++ after/net/minecraft/block/BlockOre.java
+@@ -58,7 +58,7 @@
+ 
+     public int func_149679_a(int p_149679_1_, Random p_149679_2_)
+     {
+-        if (p_149679_1_ > 0 && Item.func_150898_a(this) != this.func_180660_a(this.func_176194_O().func_177619_a().iterator().next(), p_149679_2_, p_149679_1_))
++        if (p_149679_1_ > 0 && Item.func_150898_a(this) != this.func_180660_a((IBlockState)this.func_176194_O().func_177619_a().iterator().next(), p_149679_2_, p_149679_1_))
+         {
+             int i = p_149679_2_.nextInt(p_149679_1_ + 2) - 1;
+ 
 @@ -78,34 +78,39 @@
      public void func_180653_a(World p_180653_1_, BlockPos p_180653_2_, IBlockState p_180653_3_, float p_180653_4_, int p_180653_5_)
      {

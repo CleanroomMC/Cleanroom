@@ -1,5 +1,103 @@
 --- before/net/minecraft/entity/passive/EntityRabbit.java
 +++ after/net/minecraft/entity/passive/EntityRabbit.java
+@@ -55,7 +55,7 @@
+ 
+ public class EntityRabbit extends EntityAnimal
+ {
+-    private static final DataParameter<Integer> field_184773_bv = EntityDataManager.func_187226_a(EntityRabbit.class, DataSerializers.field_187192_b);
++    private static final DataParameter<Integer> field_184773_bv = EntityDataManager.<Integer>func_187226_a(EntityRabbit.class, DataSerializers.field_187192_b);
+     private int field_175540_bm;
+     private int field_175535_bn;
+     private boolean field_175537_bp;
+@@ -79,9 +79,9 @@
+         this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.0D, Items.field_151172_bF, false));
+         this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.0D, Items.field_151150_bK, false));
+         this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.0D, Item.func_150898_a(Blocks.field_150327_N), false));
+-        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity<>(this, EntityPlayer.class, 8.0F, 2.2D, 2.2D));
+-        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity<>(this, EntityWolf.class, 10.0F, 2.2D, 2.2D));
+-        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity<>(this, EntityMob.class, 4.0F, 2.2D, 2.2D));
++        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity(this, EntityPlayer.class, 8.0F, 2.2D, 2.2D));
++        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity(this, EntityWolf.class, 10.0F, 2.2D, 2.2D));
++        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity(this, EntityMob.class, 4.0F, 2.2D, 2.2D));
+         this.field_70714_bg.func_75776_a(5, new EntityRabbit.AIRaidFarm(this));
+         this.field_70714_bg.func_75776_a(6, new EntityAIWanderAvoidWater(this, 0.6D));
+         this.field_70714_bg.func_75776_a(11, new EntityAIWatchClosest(this, EntityPlayer.class, 10.0F));
+@@ -89,7 +89,7 @@
+ 
+     protected float func_175134_bD()
+     {
+-        if (!this.field_70123_F && (!this.field_70765_h.func_75640_a() || !(this.field_70765_h.func_179919_e() > this.field_70163_u + 0.5D)))
++        if (!this.field_70123_F && (!this.field_70765_h.func_75640_a() || this.field_70765_h.func_179919_e() <= this.field_70163_u + 0.5D))
+         {
+             Path path = this.field_70699_by.func_75505_d();
+ 
+@@ -164,7 +164,7 @@
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+-        this.field_70180_af.func_187214_a(field_184773_bv, 0);
++        this.field_70180_af.func_187214_a(field_184773_bv, Integer.valueOf(0));
+     }
+ 
+     public void func_70619_bc()
+@@ -238,7 +238,7 @@
+ 
+     private void func_175533_a(double p_175533_1_, double p_175533_3_)
+     {
+-        this.field_70177_z = (float)(MathHelper.func_181159_b(p_175533_3_ - this.field_70161_v, p_175533_1_ - this.field_70165_t) * (double)(180F / (float)Math.PI)) - 90.0F;
++        this.field_70177_z = (float)(MathHelper.func_181159_b(p_175533_3_ - this.field_70161_v, p_175533_1_ - this.field_70165_t) * (180D / Math.PI)) - 90.0F;
+     }
+ 
+     private void func_175518_cr()
+@@ -289,7 +289,7 @@
+     {
+         super.func_110147_ax();
+         this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(3.0D);
+-        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a((double)0.3F);
++        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.30000001192092896D);
+     }
+ 
+     public static void func_189801_b(DataFixer p_189801_0_)
+@@ -393,7 +393,7 @@
+ 
+     public int func_175531_cl()
+     {
+-        return this.field_70180_af.func_187225_a(field_184773_bv);
++        return ((Integer)this.field_70180_af.func_187225_a(field_184773_bv)).intValue();
+     }
+ 
+     public void func_175529_r(int p_175529_1_)
+@@ -402,9 +402,9 @@
+         {
+             this.func_110148_a(SharedMonsterAttributes.field_188791_g).func_111128_a(8.0D);
+             this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIEvilAttack(this));
+-            this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, false));
+-            this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
+-            this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget<>(this, EntityWolf.class, true));
++            this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, false, new Class[0]));
++            this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
++            this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget(this, EntityWolf.class, true));
+ 
+             if (!this.func_145818_k_())
+             {
+@@ -412,7 +412,7 @@
+             }
+         }
+ 
+-        this.field_70180_af.func_187227_b(field_184773_bv, p_175529_1_);
++        this.field_70180_af.func_187227_b(field_184773_bv, Integer.valueOf(p_175529_1_));
+     }
+ 
+     @Nullable
+@@ -543,7 +543,7 @@
+ 
+             public AIRaidFarm(EntityRabbit p_i45860_1_)
+             {
+-                super(p_i45860_1_, (double)0.7F, 16);
++                super(p_i45860_1_, 0.699999988079071D, 16);
+                 this.field_179500_c = p_i45860_1_;
+             }
+ 
 @@ -551,7 +551,7 @@
              {
                  if (this.field_179496_a <= 0)
@@ -9,3 +107,23 @@
                      {
                          return false;
                      }
+@@ -583,16 +583,16 @@
+ 
+                     if (this.field_179499_e && block instanceof BlockCarrot)
+                     {
+-                        Integer integer = iblockstate.func_177229_b(BlockCarrot.field_176488_a);
++                        Integer integer = (Integer)iblockstate.func_177229_b(BlockCarrot.field_176488_a);
+ 
+-                        if (integer == 0)
++                        if (integer.intValue() == 0)
+                         {
+                             world.func_180501_a(blockpos, Blocks.field_150350_a.func_176223_P(), 2);
+                             world.func_175655_b(blockpos, true);
+                         }
+                         else
+                         {
+-                            world.func_180501_a(blockpos, iblockstate.func_177226_a(BlockCarrot.field_176488_a, integer - 1), 2);
++                            world.func_180501_a(blockpos, iblockstate.func_177226_a(BlockCarrot.field_176488_a, Integer.valueOf(integer.intValue() - 1)), 2);
+                             world.func_175718_b(2001, blockpos, Block.func_176210_f(iblockstate));
+                         }
+ 

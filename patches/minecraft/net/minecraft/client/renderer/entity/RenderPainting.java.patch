@@ -1,0 +1,25 @@
+--- before/net/minecraft/client/renderer/entity/RenderPainting.java
++++ after/net/minecraft/client/renderer/entity/RenderPainting.java
+@@ -108,14 +108,14 @@
+                 bufferbuilder.func_181662_b((double)f16, (double)f18, 0.5D).func_187315_a(0.8125D, 0.001953125D).func_181663_c(0.0F, -1.0F, 0.0F).func_181675_d();
+                 bufferbuilder.func_181662_b((double)f16, (double)f18, -0.5D).func_187315_a(0.8125D, 0.001953125D).func_181663_c(0.0F, -1.0F, 0.0F).func_181675_d();
+                 bufferbuilder.func_181662_b((double)f15, (double)f18, -0.5D).func_187315_a(0.75D, 0.001953125D).func_181663_c(0.0F, -1.0F, 0.0F).func_181675_d();
+-                bufferbuilder.func_181662_b((double)f15, (double)f17, 0.5D).func_187315_a((double)0.7519531F, 0.0D).func_181663_c(-1.0F, 0.0F, 0.0F).func_181675_d();
+-                bufferbuilder.func_181662_b((double)f15, (double)f18, 0.5D).func_187315_a((double)0.7519531F, 0.0625D).func_181663_c(-1.0F, 0.0F, 0.0F).func_181675_d();
+-                bufferbuilder.func_181662_b((double)f15, (double)f18, -0.5D).func_187315_a((double)0.7519531F, 0.0625D).func_181663_c(-1.0F, 0.0F, 0.0F).func_181675_d();
+-                bufferbuilder.func_181662_b((double)f15, (double)f17, -0.5D).func_187315_a((double)0.7519531F, 0.0D).func_181663_c(-1.0F, 0.0F, 0.0F).func_181675_d();
+-                bufferbuilder.func_181662_b((double)f16, (double)f17, -0.5D).func_187315_a((double)0.7519531F, 0.0D).func_181663_c(1.0F, 0.0F, 0.0F).func_181675_d();
+-                bufferbuilder.func_181662_b((double)f16, (double)f18, -0.5D).func_187315_a((double)0.7519531F, 0.0625D).func_181663_c(1.0F, 0.0F, 0.0F).func_181675_d();
+-                bufferbuilder.func_181662_b((double)f16, (double)f18, 0.5D).func_187315_a((double)0.7519531F, 0.0625D).func_181663_c(1.0F, 0.0F, 0.0F).func_181675_d();
+-                bufferbuilder.func_181662_b((double)f16, (double)f17, 0.5D).func_187315_a((double)0.7519531F, 0.0D).func_181663_c(1.0F, 0.0F, 0.0F).func_181675_d();
++                bufferbuilder.func_181662_b((double)f15, (double)f17, 0.5D).func_187315_a(0.751953125D, 0.0D).func_181663_c(-1.0F, 0.0F, 0.0F).func_181675_d();
++                bufferbuilder.func_181662_b((double)f15, (double)f18, 0.5D).func_187315_a(0.751953125D, 0.0625D).func_181663_c(-1.0F, 0.0F, 0.0F).func_181675_d();
++                bufferbuilder.func_181662_b((double)f15, (double)f18, -0.5D).func_187315_a(0.751953125D, 0.0625D).func_181663_c(-1.0F, 0.0F, 0.0F).func_181675_d();
++                bufferbuilder.func_181662_b((double)f15, (double)f17, -0.5D).func_187315_a(0.751953125D, 0.0D).func_181663_c(-1.0F, 0.0F, 0.0F).func_181675_d();
++                bufferbuilder.func_181662_b((double)f16, (double)f17, -0.5D).func_187315_a(0.751953125D, 0.0D).func_181663_c(1.0F, 0.0F, 0.0F).func_181675_d();
++                bufferbuilder.func_181662_b((double)f16, (double)f18, -0.5D).func_187315_a(0.751953125D, 0.0625D).func_181663_c(1.0F, 0.0F, 0.0F).func_181675_d();
++                bufferbuilder.func_181662_b((double)f16, (double)f18, 0.5D).func_187315_a(0.751953125D, 0.0625D).func_181663_c(1.0F, 0.0F, 0.0F).func_181675_d();
++                bufferbuilder.func_181662_b((double)f16, (double)f17, 0.5D).func_187315_a(0.751953125D, 0.0D).func_181663_c(1.0F, 0.0F, 0.0F).func_181675_d();
+                 tessellator.func_78381_a();
+             }
+         }

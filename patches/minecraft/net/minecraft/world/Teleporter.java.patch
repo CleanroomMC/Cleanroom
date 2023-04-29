@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/Teleporter.java
 +++ after/net/minecraft/world/Teleporter.java
-@@ -15,7 +15,7 @@
+@@ -15,11 +15,11 @@
  import net.minecraft.util.math.ChunkPos;
  import net.minecraft.util.math.MathHelper;
  
@@ -9,6 +9,65 @@
  {
      protected final WorldServer field_85192_a;
      protected final Random field_77187_a;
+-    protected final Long2ObjectMap<Teleporter.PortalPosition> field_85191_c = new Long2ObjectOpenHashMap<>(4096);
++    protected final Long2ObjectMap<Teleporter.PortalPosition> field_85191_c = new Long2ObjectOpenHashMap<Teleporter.PortalPosition>(4096);
+ 
+     public Teleporter(WorldServer p_i1963_1_)
+     {
+@@ -79,7 +79,7 @@
+ 
+         if (this.field_85191_c.containsKey(l))
+         {
+-            Teleporter.PortalPosition teleporter$portalposition = this.field_85191_c.get(l);
++            Teleporter.PortalPosition teleporter$portalposition = (Teleporter.PortalPosition)this.field_85191_c.get(l);
+             d0 = 0.0D;
+             blockpos = teleporter$portalposition;
+             teleporter$portalposition.field_85087_d = this.field_85192_a.func_82737_E();
+@@ -217,7 +217,7 @@
+             for (int l2 = l - 16; l2 <= l + 16; ++l2)
+             {
+                 double d2 = (double)l2 + 0.5D - p_85188_1_.field_70161_v;
+-                label296:
++                label293:
+ 
+                 for (int j3 = this.field_85192_a.func_72940_L() - 1; j3 >= 0; --j3)
+                 {
+@@ -252,7 +252,7 @@
+ 
+                                         if (l4 < 0 && !this.field_85192_a.func_180495_p(blockpos$mutableblockpos).func_185904_a().func_76220_a() || l4 >= 0 && !this.field_85192_a.func_175623_d(blockpos$mutableblockpos))
+                                         {
+-                                            continue label296;
++                                            continue label293;
+                                         }
+                                     }
+                                 }
+@@ -284,7 +284,7 @@
+                 for (int j6 = l - 16; j6 <= l + 16; ++j6)
+                 {
+                     double d4 = (double)j6 + 0.5D - p_85188_1_.field_70161_v;
+-                    label233:
++                    label231:
+ 
+                     for (int i7 = this.field_85192_a.func_72940_L() - 1; i7 >= 0; --i7)
+                     {
+@@ -311,7 +311,7 @@
+ 
+                                         if (j11 < 0 && !this.field_85192_a.func_180495_p(blockpos$mutableblockpos).func_185904_a().func_76220_a() || j11 >= 0 && !this.field_85192_a.func_175623_d(blockpos$mutableblockpos))
+                                         {
+-                                            continue label233;
++                                            continue label231;
+                                         }
+                                     }
+                                 }
+@@ -408,7 +408,7 @@
+ 
+             while (objectiterator.hasNext())
+             {
+-                Teleporter.PortalPosition teleporter$portalposition = objectiterator.next();
++                Teleporter.PortalPosition teleporter$portalposition = (Teleporter.PortalPosition)objectiterator.next();
+ 
+                 if (teleporter$portalposition == null || teleporter$portalposition.field_85087_d < i)
+                 {
 @@ -427,5 +427,14 @@
              super(p_i45747_2_.func_177958_n(), p_i45747_2_.func_177956_o(), p_i45747_2_.func_177952_p());
              this.field_85087_d = p_i45747_3_;

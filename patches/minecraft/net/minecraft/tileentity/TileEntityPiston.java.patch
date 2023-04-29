@@ -1,5 +1,14 @@
 --- before/net/minecraft/tileentity/TileEntityPiston.java
 +++ after/net/minecraft/tileentity/TileEntityPiston.java
+@@ -135,7 +135,7 @@
+     {
+         EnumFacing enumfacing = this.field_145875_k ? this.field_174931_f : this.field_174931_f.func_176734_d();
+         double d0 = (double)(p_184322_1_ - this.field_145873_m);
+-        List<AxisAlignedBB> list = Lists.newArrayList();
++        List<AxisAlignedBB> list = Lists.<AxisAlignedBB>newArrayList();
+         this.func_190606_j().func_185908_a(this.field_145850_b, BlockPos.field_177992_a, new AxisAlignedBB(BlockPos.field_177992_a), list, (Entity)null, true);
+ 
+         if (!list.isEmpty())
 @@ -145,7 +145,7 @@
  
              if (!list1.isEmpty())
@@ -9,3 +18,44 @@
  
                  for (int i = 0; i < list1.size(); ++i)
                  {
+@@ -186,7 +186,7 @@
+                             }
+                         }
+ 
+-                        if (!(d1 <= 0.0D))
++                        if (d1 > 0.0D)
+                         {
+                             d1 = Math.min(d1, d0) + 0.01D;
+                             field_190613_i.set(enumfacing);
+@@ -382,19 +382,19 @@
+     {
+         if (!this.field_145875_k && this.field_145872_l)
+         {
+-            this.field_174932_a.func_177226_a(BlockPistonBase.field_176320_b, true).func_185908_a(p_190609_1_, p_190609_2_, p_190609_3_, p_190609_4_, p_190609_5_, false);
++            this.field_174932_a.func_177226_a(BlockPistonBase.field_176320_b, Boolean.valueOf(true)).func_185908_a(p_190609_1_, p_190609_2_, p_190609_3_, p_190609_4_, p_190609_5_, false);
+         }
+ 
+         EnumFacing enumfacing = field_190613_i.get();
+ 
+-        if (!((double)this.field_145873_m < 1.0D) || enumfacing != (this.field_145875_k ? this.field_174931_f : this.field_174931_f.func_176734_d()))
++        if ((double)this.field_145873_m >= 1.0D || enumfacing != (this.field_145875_k ? this.field_174931_f : this.field_174931_f.func_176734_d()))
+         {
+             int i = p_190609_4_.size();
+             IBlockState iblockstate;
+ 
+             if (this.func_145867_d())
+             {
+-                iblockstate = Blocks.field_150332_K.func_176223_P().func_177226_a(BlockPistonExtension.field_176387_N, this.field_174931_f).func_177226_a(BlockPistonExtension.field_176327_M, this.field_145875_k != 1.0F - this.field_145873_m < 0.25F);
++                iblockstate = Blocks.field_150332_K.func_176223_P().func_177226_a(BlockPistonExtension.field_176387_N, this.field_174931_f).func_177226_a(BlockPistonExtension.field_176327_M, Boolean.valueOf(this.field_145875_k != 1.0F - this.field_145873_m < 0.25F));
+             }
+             else
+             {
+@@ -409,7 +409,7 @@
+ 
+             for (int j = i; j < p_190609_4_.size(); ++j)
+             {
+-                p_190609_4_.set(j, p_190609_4_.get(j).func_72317_d(d0, d1, d2));
++                p_190609_4_.set(j, ((AxisAlignedBB)p_190609_4_.get(j)).func_72317_d(d0, d1, d2));
+             }
+         }
+     }

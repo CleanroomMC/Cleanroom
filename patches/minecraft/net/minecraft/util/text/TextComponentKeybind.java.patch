@@ -1,0 +1,25 @@
+--- before/net/minecraft/util/text/TextComponentKeybind.java
++++ after/net/minecraft/util/text/TextComponentKeybind.java
+@@ -5,7 +5,12 @@
+ 
+ public class TextComponentKeybind extends TextComponentBase
+ {
+-    public static Function<String, Supplier<String>> field_193637_b = (p_193635_0_) -> () -> p_193635_0_;
++    public static Function<String, Supplier<String>> field_193637_b = (p_193635_0_) ->
++    {
++        return () -> {
++            return p_193635_0_;
++        };
++    };
+     private final String field_193638_c;
+     private Supplier<String> field_193639_d;
+ 
+@@ -18,7 +23,7 @@
+     {
+         if (this.field_193639_d == null)
+         {
+-            this.field_193639_d = field_193637_b.apply(this.field_193638_c);
++            this.field_193639_d = (Supplier)field_193637_b.apply(this.field_193638_c);
+         }
+ 
+         return this.field_193639_d.get();

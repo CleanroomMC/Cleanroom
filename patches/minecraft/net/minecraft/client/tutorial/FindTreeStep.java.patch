@@ -1,0 +1,13 @@
+--- before/net/minecraft/client/tutorial/FindTreeStep.java
++++ after/net/minecraft/client/tutorial/FindTreeStep.java
+@@ -23,8 +23,8 @@
+ public class FindTreeStep implements ITutorialStep
+ {
+     private static final Set<Block> field_193268_a = Sets.newHashSet(Blocks.field_150364_r, Blocks.field_150363_s, Blocks.field_150362_t, Blocks.field_150361_u);
+-    private static final ITextComponent field_193269_b = new TextComponentTranslation("tutorial.find_tree.title");
+-    private static final ITextComponent field_193270_c = new TextComponentTranslation("tutorial.find_tree.description");
++    private static final ITextComponent field_193269_b = new TextComponentTranslation("tutorial.find_tree.title", new Object[0]);
++    private static final ITextComponent field_193270_c = new TextComponentTranslation("tutorial.find_tree.description", new Object[0]);
+     private final Tutorial field_193271_d;
+     private TutorialToast field_193272_e;
+     private int field_193273_f;

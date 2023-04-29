@@ -1,0 +1,20 @@
+--- before/net/minecraft/client/audio/SoundEventAccessor.java
++++ after/net/minecraft/client/audio/SoundEventAccessor.java
+@@ -13,7 +13,7 @@
+ @SideOnly(Side.CLIENT)
+ public class SoundEventAccessor implements ISoundEventAccessor<Sound>
+ {
+-    private final List<ISoundEventAccessor<Sound>> field_188716_a = Lists.newArrayList();
++    private final List<ISoundEventAccessor<Sound>> field_188716_a = Lists.<ISoundEventAccessor<Sound>>newArrayList();
+     private final Random field_148734_b = new Random();
+     private final ResourceLocation field_188717_c;
+     private final ITextComponent field_188718_d;
+@@ -21,7 +21,7 @@
+     public SoundEventAccessor(ResourceLocation p_i46521_1_, @Nullable String p_i46521_2_)
+     {
+         this.field_188717_c = p_i46521_1_;
+-        this.field_188718_d = p_i46521_2_ == null ? null : new TextComponentTranslation(p_i46521_2_);
++        this.field_188718_d = p_i46521_2_ == null ? null : new TextComponentTranslation(p_i46521_2_, new Object[0]);
+     }
+ 
+     public int func_148721_a()

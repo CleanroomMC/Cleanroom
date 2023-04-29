@@ -1,5 +1,16 @@
 --- before/net/minecraft/block/state/BlockPistonStructureHelper.java
 +++ after/net/minecraft/block/state/BlockPistonStructureHelper.java
+@@ -17,8 +17,8 @@
+     private final BlockPos field_177259_b;
+     private final BlockPos field_177260_c;
+     private final EnumFacing field_177257_d;
+-    private final List<BlockPos> field_177258_e = Lists.newArrayList();
+-    private final List<BlockPos> field_177256_f = Lists.newArrayList();
++    private final List<BlockPos> field_177258_e = Lists.<BlockPos>newArrayList();
++    private final List<BlockPos> field_177256_f = Lists.<BlockPos>newArrayList();
+ 
+     public BlockPistonStructureHelper(World p_i45664_1_, BlockPos p_i45664_2_, EnumFacing p_i45664_3_, boolean p_i45664_4_)
+     {
 @@ -65,7 +65,7 @@
              {
                  BlockPos blockpos = this.field_177258_e.get(i);
@@ -52,3 +63,16 @@
                      {
                          return true;
                      }
+@@ -190,9 +190,9 @@
+ 
+     private void func_177255_a(int p_177255_1_, int p_177255_2_)
+     {
+-        List<BlockPos> list = Lists.newArrayList();
+-        List<BlockPos> list1 = Lists.newArrayList();
+-        List<BlockPos> list2 = Lists.newArrayList();
++        List<BlockPos> list = Lists.<BlockPos>newArrayList();
++        List<BlockPos> list1 = Lists.<BlockPos>newArrayList();
++        List<BlockPos> list2 = Lists.<BlockPos>newArrayList();
+         list.addAll(this.field_177258_e.subList(0, p_177255_2_));
+         list1.addAll(this.field_177258_e.subList(this.field_177258_e.size() - p_177255_1_, this.field_177258_e.size()));
+         list2.addAll(this.field_177258_e.subList(p_177255_2_, this.field_177258_e.size() - p_177255_1_));

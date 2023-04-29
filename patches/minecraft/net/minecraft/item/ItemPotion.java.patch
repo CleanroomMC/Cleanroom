@@ -1,0 +1,11 @@
+--- before/net/minecraft/item/ItemPotion.java
++++ after/net/minecraft/item/ItemPotion.java
+@@ -100,7 +100,7 @@
+     public ActionResult<ItemStack> func_77659_a(World p_77659_1_, EntityPlayer p_77659_2_, EnumHand p_77659_3_)
+     {
+         p_77659_2_.func_184598_c(p_77659_3_);
+-        return new ActionResult<>(EnumActionResult.SUCCESS, p_77659_2_.func_184586_b(p_77659_3_));
++        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, p_77659_2_.func_184586_b(p_77659_3_));
+     }
+ 
+     public String func_77653_i(ItemStack p_77653_1_)

@@ -1,5 +1,32 @@
 --- before/net/minecraft/command/CommandFill.java
 +++ after/net/minecraft/command/CommandFill.java
+@@ -37,7 +37,7 @@
+     {
+         if (p_184881_3_.length < 7)
+         {
+-            throw new WrongUsageException("commands.fill.usage");
++            throw new WrongUsageException("commands.fill.usage", new Object[0]);
+         }
+         else
+         {
+@@ -62,7 +62,7 @@
+ 
+             if (i > 32768)
+             {
+-                throw new CommandException("commands.fill.tooManyBlocks", i, 32768);
++                throw new CommandException("commands.fill.tooManyBlocks", new Object[] {i, Integer.valueOf(32768)});
+             }
+             else if (blockpos2.func_177956_o() >= 0 && blockpos3.func_177956_o() < 256)
+             {
+@@ -74,7 +74,7 @@
+                     {
+                         if (!world.func_175667_e(new BlockPos(k, blockpos3.func_177956_o() - blockpos2.func_177956_o(), j)))
+                         {
+-                            throw new CommandException("commands.fill.outOfWorld");
++                            throw new CommandException("commands.fill.outOfWorld", new Object[0]);
+                         }
+                     }
+                 }
 @@ -82,7 +82,7 @@
                  NBTTagCompound nbttagcompound = new NBTTagCompound();
                  boolean flag = false;
@@ -9,6 +36,20 @@
                  {
                      String s = func_180529_a(p_184881_3_, 9);
  
+@@ -93,11 +93,11 @@
+                     }
+                     catch (NBTException nbtexception)
+                     {
+-                        throw new CommandException("commands.fill.tagError", nbtexception.getMessage());
++                        throw new CommandException("commands.fill.tagError", new Object[] {nbtexception.getMessage()});
+                     }
+                 }
+ 
+-                List<BlockPos> list = Lists.newArrayList();
++                List<BlockPos> list = Lists.<BlockPos>newArrayList();
+                 i = 0;
+ 
+                 for (int l = blockpos2.func_177952_p(); l <= blockpos3.func_177952_p(); ++l)
 @@ -123,7 +123,7 @@
                                              continue;
                                          }
@@ -18,3 +59,21 @@
                                      {
                                          Block block1 = CommandBase.func_147180_g(p_184881_2_, p_184881_3_[9]);
  
+@@ -182,7 +182,7 @@
+ 
+                 if (i <= 0)
+                 {
+-                    throw new CommandException("commands.fill.failed");
++                    throw new CommandException("commands.fill.failed", new Object[0]);
+                 }
+                 else
+                 {
+@@ -192,7 +192,7 @@
+             }
+             else
+             {
+-                throw new CommandException("commands.fill.outOfWorld");
++                throw new CommandException("commands.fill.outOfWorld", new Object[0]);
+             }
+         }
+     }

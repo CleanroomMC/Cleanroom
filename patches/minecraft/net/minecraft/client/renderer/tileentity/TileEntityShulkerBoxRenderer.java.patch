@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/renderer/tileentity/TileEntityShulkerBoxRenderer.java
++++ after/net/minecraft/client/renderer/tileentity/TileEntityShulkerBoxRenderer.java
+@@ -30,7 +30,7 @@
+ 
+             if (iblockstate.func_177230_c() instanceof BlockShulkerBox)
+             {
+-                enumfacing = iblockstate.func_177229_b(BlockShulkerBox.field_190957_a);
++                enumfacing = (EnumFacing)iblockstate.func_177229_b(BlockShulkerBox.field_190957_a);
+             }
+         }
+ 

@@ -1,0 +1,22 @@
+--- before/net/minecraft/server/management/UserListWhitelistEntry.java
++++ after/net/minecraft/server/management/UserListWhitelistEntry.java
+@@ -20,8 +20,8 @@
+     {
+         if (this.func_152640_f() != null)
+         {
+-            p_152641_1_.addProperty("uuid", this.func_152640_f().getId() == null ? "" : this.func_152640_f().getId().toString());
+-            p_152641_1_.addProperty("name", this.func_152640_f().getName());
++            p_152641_1_.addProperty("uuid", ((GameProfile)this.func_152640_f()).getId() == null ? "" : ((GameProfile)this.func_152640_f()).getId().toString());
++            p_152641_1_.addProperty("name", ((GameProfile)this.func_152640_f()).getName());
+             super.func_152641_a(p_152641_1_);
+         }
+     }
+@@ -37,7 +37,7 @@
+             {
+                 uuid = UUID.fromString(s);
+             }
+-            catch (Throwable throwable)
++            catch (Throwable var4)
+             {
+                 return null;
+             }

@@ -1,5 +1,178 @@
 --- before/net/minecraft/network/datasync/DataSerializers.java
 +++ after/net/minecraft/network/datasync/DataSerializers.java
+@@ -17,12 +17,12 @@
+ 
+ public class DataSerializers
+ {
+-    private static final IntIdentityHashBiMap < DataSerializer<? >> field_187204_n = new IntIdentityHashBiMap<>(16);
++    private static final IntIdentityHashBiMap < DataSerializer<? >> field_187204_n = new IntIdentityHashBiMap < DataSerializer<? >> (16);
+     public static final DataSerializer<Byte> field_187191_a = new DataSerializer<Byte>()
+     {
+         public void func_187160_a(PacketBuffer p_187160_1_, Byte p_187160_2_)
+         {
+-            p_187160_1_.writeByte(p_187160_2_);
++            p_187160_1_.writeByte(p_187160_2_.byteValue());
+         }
+         public Byte func_187159_a(PacketBuffer p_187159_1_) throws IOException
+         {
+@@ -30,7 +30,7 @@
+         }
+         public DataParameter<Byte> func_187161_a(int p_187161_1_)
+         {
+-            return new DataParameter<>(p_187161_1_, this);
++            return new DataParameter<Byte>(p_187161_1_, this);
+         }
+         public Byte func_192717_a(Byte p_192717_1_)
+         {
+@@ -41,7 +41,7 @@
+     {
+         public void func_187160_a(PacketBuffer p_187160_1_, Integer p_187160_2_)
+         {
+-            p_187160_1_.func_150787_b(p_187160_2_);
++            p_187160_1_.func_150787_b(p_187160_2_.intValue());
+         }
+         public Integer func_187159_a(PacketBuffer p_187159_1_) throws IOException
+         {
+@@ -49,7 +49,7 @@
+         }
+         public DataParameter<Integer> func_187161_a(int p_187161_1_)
+         {
+-            return new DataParameter<>(p_187161_1_, this);
++            return new DataParameter<Integer>(p_187161_1_, this);
+         }
+         public Integer func_192717_a(Integer p_192717_1_)
+         {
+@@ -60,7 +60,7 @@
+     {
+         public void func_187160_a(PacketBuffer p_187160_1_, Float p_187160_2_)
+         {
+-            p_187160_1_.writeFloat(p_187160_2_);
++            p_187160_1_.writeFloat(p_187160_2_.floatValue());
+         }
+         public Float func_187159_a(PacketBuffer p_187159_1_) throws IOException
+         {
+@@ -68,7 +68,7 @@
+         }
+         public DataParameter<Float> func_187161_a(int p_187161_1_)
+         {
+-            return new DataParameter<>(p_187161_1_, this);
++            return new DataParameter<Float>(p_187161_1_, this);
+         }
+         public Float func_192717_a(Float p_192717_1_)
+         {
+@@ -87,7 +87,7 @@
+         }
+         public DataParameter<String> func_187161_a(int p_187161_1_)
+         {
+-            return new DataParameter<>(p_187161_1_, this);
++            return new DataParameter<String>(p_187161_1_, this);
+         }
+         public String func_192717_a(String p_192717_1_)
+         {
+@@ -106,7 +106,7 @@
+         }
+         public DataParameter<ITextComponent> func_187161_a(int p_187161_1_)
+         {
+-            return new DataParameter<>(p_187161_1_, this);
++            return new DataParameter<ITextComponent>(p_187161_1_, this);
+         }
+         public ITextComponent func_192717_a(ITextComponent p_192717_1_)
+         {
+@@ -125,7 +125,7 @@
+         }
+         public DataParameter<ItemStack> func_187161_a(int p_187161_1_)
+         {
+-            return new DataParameter<>(p_187161_1_, this);
++            return new DataParameter<ItemStack>(p_187161_1_, this);
+         }
+         public ItemStack func_192717_a(ItemStack p_192717_1_)
+         {
+@@ -152,7 +152,7 @@
+         }
+         public DataParameter<Optional<IBlockState>> func_187161_a(int p_187161_1_)
+         {
+-            return new DataParameter<>(p_187161_1_, this);
++            return new DataParameter<Optional<IBlockState>>(p_187161_1_, this);
+         }
+         public Optional<IBlockState> func_192717_a(Optional<IBlockState> p_192717_1_)
+         {
+@@ -163,7 +163,7 @@
+     {
+         public void func_187160_a(PacketBuffer p_187160_1_, Boolean p_187160_2_)
+         {
+-            p_187160_1_.writeBoolean(p_187160_2_);
++            p_187160_1_.writeBoolean(p_187160_2_.booleanValue());
+         }
+         public Boolean func_187159_a(PacketBuffer p_187159_1_) throws IOException
+         {
+@@ -171,7 +171,7 @@
+         }
+         public DataParameter<Boolean> func_187161_a(int p_187161_1_)
+         {
+-            return new DataParameter<>(p_187161_1_, this);
++            return new DataParameter<Boolean>(p_187161_1_, this);
+         }
+         public Boolean func_192717_a(Boolean p_192717_1_)
+         {
+@@ -192,7 +192,7 @@
+         }
+         public DataParameter<Rotations> func_187161_a(int p_187161_1_)
+         {
+-            return new DataParameter<>(p_187161_1_, this);
++            return new DataParameter<Rotations>(p_187161_1_, this);
+         }
+         public Rotations func_192717_a(Rotations p_192717_1_)
+         {
+@@ -211,7 +211,7 @@
+         }
+         public DataParameter<BlockPos> func_187161_a(int p_187161_1_)
+         {
+-            return new DataParameter<>(p_187161_1_, this);
++            return new DataParameter<BlockPos>(p_187161_1_, this);
+         }
+         public BlockPos func_192717_a(BlockPos p_192717_1_)
+         {
+@@ -235,7 +235,7 @@
+         }
+         public DataParameter<Optional<BlockPos>> func_187161_a(int p_187161_1_)
+         {
+-            return new DataParameter<>(p_187161_1_, this);
++            return new DataParameter<Optional<BlockPos>>(p_187161_1_, this);
+         }
+         public Optional<BlockPos> func_192717_a(Optional<BlockPos> p_192717_1_)
+         {
+@@ -250,11 +250,11 @@
+         }
+         public EnumFacing func_187159_a(PacketBuffer p_187159_1_) throws IOException
+         {
+-            return p_187159_1_.func_179257_a(EnumFacing.class);
++            return (EnumFacing)p_187159_1_.func_179257_a(EnumFacing.class);
+         }
+         public DataParameter<EnumFacing> func_187161_a(int p_187161_1_)
+         {
+-            return new DataParameter<>(p_187161_1_, this);
++            return new DataParameter<EnumFacing>(p_187161_1_, this);
+         }
+         public EnumFacing func_192717_a(EnumFacing p_192717_1_)
+         {
+@@ -278,7 +278,7 @@
+         }
+         public DataParameter<Optional<UUID>> func_187161_a(int p_187161_1_)
+         {
+-            return new DataParameter<>(p_187161_1_, this);
++            return new DataParameter<Optional<UUID>>(p_187161_1_, this);
+         }
+         public Optional<UUID> func_192717_a(Optional<UUID> p_192717_1_)
+         {
+@@ -297,7 +297,7 @@
+         }
+         public DataParameter<NBTTagCompound> func_187161_a(int p_187161_1_)
+         {
+-            return new DataParameter<>(p_187161_1_, this);
++            return new DataParameter<NBTTagCompound>(p_187161_1_, this);
+         }
+         public NBTTagCompound func_192717_a(NBTTagCompound p_192717_1_)
+         {
 @@ -305,20 +305,21 @@
          }
      };
@@ -14,7 +187,7 @@
      @Nullable
      public static DataSerializer<?> func_187190_a(int p_187190_0_)
      {
--        return (DataSerializer)field_187204_n.func_186813_a(p_187190_0_);
+-        return field_187204_n.func_186813_a(p_187190_0_);
 +        return net.minecraftforge.common.ForgeHooks.getSerializer(p_187190_0_, field_187204_n);
      }
  

@@ -1,0 +1,38 @@
+--- before/net/minecraft/client/gui/spectator/categories/TeleportToPlayer.java
++++ after/net/minecraft/client/gui/spectator/categories/TeleportToPlayer.java
+@@ -30,7 +30,7 @@
+             return ComparisonChain.start().compare(p_compare_1_.func_178845_a().getId(), p_compare_2_.func_178845_a().getId()).result();
+         }
+     });
+-    private final List<ISpectatorMenuObject> field_178673_b = Lists.newArrayList();
++    private final List<ISpectatorMenuObject> field_178673_b;
+ 
+     public TeleportToPlayer()
+     {
+@@ -39,6 +39,8 @@
+ 
+     public TeleportToPlayer(Collection<NetworkPlayerInfo> p_i45493_1_)
+     {
++        this.field_178673_b = Lists.<ISpectatorMenuObject>newArrayList();
++
+         for (NetworkPlayerInfo networkplayerinfo : field_178674_a.sortedCopy(p_i45493_1_))
+         {
+             if (networkplayerinfo.func_178848_b() != GameType.SPECTATOR)
+@@ -55,7 +57,7 @@
+ 
+     public ITextComponent func_178670_b()
+     {
+-        return new TextComponentTranslation("spectatorMenu.teleport.prompt");
++        return new TextComponentTranslation("spectatorMenu.teleport.prompt", new Object[0]);
+     }
+ 
+     public void func_178661_a(SpectatorMenu p_178661_1_)
+@@ -65,7 +67,7 @@
+ 
+     public ITextComponent func_178664_z_()
+     {
+-        return new TextComponentTranslation("spectatorMenu.teleport");
++        return new TextComponentTranslation("spectatorMenu.teleport", new Object[0]);
+     }
+ 
+     public void func_178663_a(float p_178663_1_, int p_178663_2_)

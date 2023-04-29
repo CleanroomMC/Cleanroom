@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/renderer/entity/RenderHorse.java
++++ after/net/minecraft/client/renderer/entity/RenderHorse.java
+@@ -13,7 +13,7 @@
+ @SideOnly(Side.CLIENT)
+ public class RenderHorse extends RenderLiving<EntityHorse>
+ {
+-    private static final Map<String, ResourceLocation> field_110852_a = Maps.newHashMap();
++    private static final Map<String, ResourceLocation> field_110852_a = Maps.<String, ResourceLocation>newHashMap();
+ 
+     public RenderHorse(RenderManager p_i47205_1_)
+     {

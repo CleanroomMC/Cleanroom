@@ -1,0 +1,35 @@
+--- before/net/minecraft/world/gen/structure/MapGenStructureIO.java
++++ after/net/minecraft/world/gen/structure/MapGenStructureIO.java
+@@ -11,10 +11,10 @@
+ public class MapGenStructureIO
+ {
+     private static final Logger field_151687_a = LogManager.getLogger();
+-    private static final Map < String, Class <? extends StructureStart >> field_143040_a = Maps.newHashMap();
+-    private static final Map < Class <? extends StructureStart > , String > field_143038_b = Maps.newHashMap();
+-    private static final Map < String, Class <? extends StructureComponent >> field_143039_c = Maps.newHashMap();
+-    private static final Map < Class <? extends StructureComponent > , String > field_143037_d = Maps.newHashMap();
++    private static final Map < String, Class <? extends StructureStart >> field_143040_a = Maps. < String, Class <? extends StructureStart >> newHashMap();
++    private static final Map < Class <? extends StructureStart > , String > field_143038_b = Maps. < Class <? extends StructureStart > , String > newHashMap();
++    private static final Map < String, Class <? extends StructureComponent >> field_143039_c = Maps. < String, Class <? extends StructureComponent >> newHashMap();
++    private static final Map < Class <? extends StructureComponent > , String > field_143037_d = Maps. < Class <? extends StructureComponent > , String > newHashMap();
+ 
+     public static void func_143034_b(Class <? extends StructureStart > p_143034_0_, String p_143034_1_)
+     {
+@@ -45,7 +45,7 @@
+ 
+         try
+         {
+-            Class <? extends StructureStart > oclass = field_143040_a.get(p_143035_0_.func_74779_i("id"));
++            Class <? extends StructureStart > oclass = (Class)field_143040_a.get(p_143035_0_.func_74779_i("id"));
+ 
+             if (oclass != null)
+             {
+@@ -76,7 +76,7 @@
+ 
+         try
+         {
+-            Class <? extends StructureComponent > oclass = field_143039_c.get(p_143032_0_.func_74779_i("id"));
++            Class <? extends StructureComponent > oclass = (Class)field_143039_c.get(p_143032_0_.func_74779_i("id"));
+ 
+             if (oclass != null)
+             {

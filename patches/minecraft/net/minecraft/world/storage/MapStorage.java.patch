@@ -1,0 +1,64 @@
+--- before/net/minecraft/world/storage/MapStorage.java
++++ after/net/minecraft/world/storage/MapStorage.java
+@@ -18,9 +18,9 @@
+ public class MapStorage
+ {
+     private final ISaveHandler field_75751_a;
+-    protected Map<String, WorldSavedData> field_75749_b = Maps.newHashMap();
+-    private final List<WorldSavedData> field_75750_c = Lists.newArrayList();
+-    private final Map<String, Short> field_75748_d = Maps.newHashMap();
++    protected Map<String, WorldSavedData> field_75749_b = Maps.<String, WorldSavedData>newHashMap();
++    private final List<WorldSavedData> field_75750_c = Lists.<WorldSavedData>newArrayList();
++    private final Map<String, Short> field_75748_d = Maps.<String, Short>newHashMap();
+ 
+     public MapStorage(ISaveHandler p_i2162_1_)
+     {
+@@ -154,7 +154,7 @@
+                     {
+                         NBTTagShort nbttagshort = (NBTTagShort)nbtbase;
+                         short short1 = nbttagshort.func_150289_e();
+-                        this.field_75748_d.put(s, short1);
++                        this.field_75748_d.put(s, Short.valueOf(short1));
+                     }
+                 }
+             }
+@@ -171,18 +171,18 @@
+ 
+         if (oshort == null)
+         {
+-            oshort = (short)0;
++            oshort = 0;
+         }
+         else
+         {
+-            oshort = (short)(oshort + 1);
++            oshort = (short)(oshort.shortValue() + 1);
+         }
+ 
+         this.field_75748_d.put(p_75743_1_, oshort);
+ 
+         if (this.field_75751_a == null)
+         {
+-            return oshort;
++            return oshort.shortValue();
+         }
+         else
+         {
+@@ -196,7 +196,7 @@
+ 
+                     for (String s : this.field_75748_d.keySet())
+                     {
+-                        nbttagcompound.func_74777_a(s, this.field_75748_d.get(s));
++                        nbttagcompound.func_74777_a(s, ((Short)this.field_75748_d.get(s)).shortValue());
+                     }
+ 
+                     DataOutputStream dataoutputstream = new DataOutputStream(new FileOutputStream(file1));
+@@ -209,7 +209,7 @@
+                 exception.printStackTrace();
+             }
+ 
+-            return oshort;
++            return oshort.shortValue();
+         }
+     }
+ }

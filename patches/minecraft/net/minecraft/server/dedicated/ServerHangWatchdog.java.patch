@@ -9,3 +9,23 @@
  
                  for (ThreadInfo threadinfo : athreadinfo)
                  {
+@@ -79,8 +79,9 @@
+             {
+                 Thread.sleep(i + this.field_180250_c - j);
+             }
+-            catch (InterruptedException interruptedexception)
++            catch (InterruptedException var15)
+             {
++                ;
+             }
+         }
+     }
+@@ -99,7 +100,7 @@
+             }, 10000L);
+             System.exit(1);
+         }
+-        catch (Throwable throwable)
++        catch (Throwable var2)
+         {
+             Runtime.getRuntime().halt(1);
+         }

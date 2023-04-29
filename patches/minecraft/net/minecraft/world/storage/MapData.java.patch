@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/storage/MapData.java
 +++ after/net/minecraft/world/storage/MapData.java
-@@ -20,7 +20,7 @@
+@@ -20,14 +20,14 @@
  {
      public int field_76201_a;
      public int field_76199_b;
@@ -9,6 +9,16 @@
      public boolean field_186210_e;
      public boolean field_191096_f;
      public byte field_76197_d;
+     public byte[] field_76198_e = new byte[16384];
+-    public List<MapData.MapInfo> field_76196_g = Lists.newArrayList();
+-    private final Map<EntityPlayer, MapData.MapInfo> field_76202_j = Maps.newHashMap();
+-    public Map<String, MapDecoration> field_76203_h = Maps.newLinkedHashMap();
++    public List<MapData.MapInfo> field_76196_g = Lists.<MapData.MapInfo>newArrayList();
++    private final Map<EntityPlayer, MapData.MapInfo> field_76202_j = Maps.<EntityPlayer, MapData.MapInfo>newHashMap();
++    public Map<String, MapDecoration> field_76203_h = Maps.<String, MapDecoration>newLinkedHashMap();
+ 
+     public MapData(String p_i2140_1_)
+     {
 @@ -45,7 +45,7 @@
  
      public void func_76184_a(NBTTagCompound p_76184_1_)
@@ -27,8 +37,12 @@
          p_189551_1_.func_74768_a("xCenter", this.field_76201_a);
          p_189551_1_.func_74768_a("zCenter", this.field_76199_b);
          p_189551_1_.func_74774_a("scale", this.field_76197_d);
-@@ -208,9 +208,9 @@
-             p_191095_8_ = p_191095_8_ + (p_191095_8_ < 0.0D ? -8.0D : 8.0D);
+@@ -205,12 +205,12 @@
+ 
+         if (f >= -63.0F && f1 >= -63.0F && f <= 63.0F && f1 <= 63.0F)
+         {
+-            p_191095_8_ += p_191095_8_ < 0.0D ? -8.0D : 8.0D;
++            p_191095_8_ = p_191095_8_ + (p_191095_8_ < 0.0D ? -8.0D : 8.0D);
              b2 = (byte)((int)(p_191095_8_ * 16.0D / 360.0D));
  
 -            if (this.field_76200_c < 0)

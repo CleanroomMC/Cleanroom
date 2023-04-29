@@ -1,5 +1,39 @@
 --- before/net/minecraft/village/VillageCollection.java
 +++ after/net/minecraft/village/VillageCollection.java
+@@ -19,9 +19,9 @@
+ public class VillageCollection extends WorldSavedData
+ {
+     private World field_75556_a;
+-    private final List<BlockPos> field_75554_b = Lists.newArrayList();
+-    private final List<VillageDoorInfo> field_75555_c = Lists.newArrayList();
+-    private final List<Village> field_75552_d = Lists.newArrayList();
++    private final List<BlockPos> field_75554_b = Lists.<BlockPos>newArrayList();
++    private final List<VillageDoorInfo> field_75555_c = Lists.<VillageDoorInfo>newArrayList();
++    private final List<Village> field_75552_d = Lists.<Village>newArrayList();
+     private int field_75553_e;
+ 
+     public VillageCollection(String p_i1677_1_)
+@@ -100,17 +100,17 @@
+     public Village func_176056_a(BlockPos p_176056_1_, int p_176056_2_)
+     {
+         Village village = null;
+-        double d0 = (double)Float.MAX_VALUE;
++        double d0 = 3.4028234663852886E38D;
+ 
+         for (Village village1 : this.field_75552_d)
+         {
+             double d1 = village1.func_180608_a().func_177951_i(p_176056_1_);
+ 
+-            if (!(d1 >= d0))
++            if (d1 < d0)
+             {
+                 float f = (float)(p_176056_2_ + village1.func_75568_b());
+ 
+-                if (!(d1 > (double)(f * f)))
++                if (d1 <= (double)(f * f))
+                 {
+                     village = village1;
+                     d0 = d1;
 @@ -151,6 +151,7 @@
  
      private void func_180609_b(BlockPos p_180609_1_)

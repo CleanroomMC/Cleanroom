@@ -1,6 +1,32 @@
 --- before/net/minecraft/command/CommandHandler.java
 +++ after/net/minecraft/command/CommandHandler.java
-@@ -50,6 +50,17 @@
+@@ -7,6 +7,7 @@
+ import java.util.List;
+ import java.util.Map;
+ import java.util.Set;
++import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+ import net.minecraft.entity.Entity;
+ import net.minecraft.server.MinecraftServer;
+@@ -19,8 +20,8 @@
+ public abstract class CommandHandler implements ICommandManager
+ {
+     private static final Logger field_147175_a = LogManager.getLogger();
+-    private final Map<String, ICommand> field_71562_a = Maps.newHashMap();
+-    private final Set<ICommand> field_71561_b = Sets.newHashSet();
++    private final Map<String, ICommand> field_71562_a = Maps.<String, ICommand>newHashMap();
++    private final Set<ICommand> field_71561_b = Sets.<ICommand>newHashSet();
+ 
+     public int func_71556_a(ICommandSender p_71556_1_, String p_71556_2_)
+     {
+@@ -43,21 +44,32 @@
+ 
+             if (icommand == null)
+             {
+-                TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.generic.notFound");
++                TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.generic.notFound", new Object[0]);
+                 textcomponenttranslation1.func_150256_b().func_150238_a(TextFormatting.RED);
+                 p_71556_1_.func_145747_a(textcomponenttranslation1);
              }
              else if (icommand.func_184882_a(this.func_184879_a(), p_71556_1_))
              {
@@ -17,4 +43,73 @@
 +
                  if (j > -1)
                  {
-                     List<Entity> list = EntitySelector.<Entity>func_179656_b(p_71556_1_, astring[j], Entity.class);
+-                    List<Entity> list = EntitySelector.func_179656_b(p_71556_1_, astring[j], Entity.class);
++                    List<Entity> list = EntitySelector.<Entity>func_179656_b(p_71556_1_, astring[j], Entity.class);
+                     String s1 = astring[j];
+                     p_71556_1_.func_174794_a(CommandResultStats.Type.AFFECTED_ENTITIES, list.size());
+ 
+                     if (list.isEmpty())
+                     {
+-                        throw new PlayerNotFoundException("commands.generic.selector.notFound", astring[j]);
++                        throw new PlayerNotFoundException("commands.generic.selector.notFound", new Object[] {astring[j]});
+                     }
+ 
+                     for (Entity entity : list)
+@@ -84,7 +96,7 @@
+             }
+             else
+             {
+-                TextComponentTranslation textcomponenttranslation2 = new TextComponentTranslation("commands.generic.permission");
++                TextComponentTranslation textcomponenttranslation2 = new TextComponentTranslation("commands.generic.permission", new Object[0]);
+                 textcomponenttranslation2.func_150256_b().func_150238_a(TextFormatting.RED);
+                 p_71556_1_.func_145747_a(textcomponenttranslation2);
+             }
+@@ -109,7 +121,7 @@
+         }
+         catch (WrongUsageException wrongusageexception)
+         {
+-            TextComponentTranslation textcomponenttranslation2 = new TextComponentTranslation("commands.generic.usage", new TextComponentTranslation(wrongusageexception.getMessage(), wrongusageexception.func_74844_a()));
++            TextComponentTranslation textcomponenttranslation2 = new TextComponentTranslation("commands.generic.usage", new Object[] {new TextComponentTranslation(wrongusageexception.getMessage(), wrongusageexception.func_74844_a())});
+             textcomponenttranslation2.func_150256_b().func_150238_a(TextFormatting.RED);
+             p_175786_1_.func_145747_a(textcomponenttranslation2);
+         }
+@@ -121,7 +133,7 @@
+         }
+         catch (Throwable throwable)
+         {
+-            TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("commands.generic.exception");
++            TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("commands.generic.exception", new Object[0]);
+             textcomponenttranslation.func_150256_b().func_150238_a(TextFormatting.RED);
+             p_175786_1_.func_145747_a(textcomponenttranslation);
+             field_147175_a.warn("Couldn't process command: " + p_175786_4_, throwable);
+@@ -164,11 +176,11 @@
+ 
+         if (astring.length == 1)
+         {
+-            List<String> list = Lists.newArrayList();
++            List<String> list = Lists.<String>newArrayList();
+ 
+-            for (Map.Entry<String, ICommand> entry : this.field_71562_a.entrySet())
++            for (Entry<String, ICommand> entry : this.field_71562_a.entrySet())
+             {
+-                if (CommandBase.func_71523_a(s, entry.getKey()) && entry.getValue().func_184882_a(this.func_184879_a(), p_180524_1_))
++                if (CommandBase.func_71523_a(s, entry.getKey()) && ((ICommand)entry.getValue()).func_184882_a(this.func_184879_a(), p_180524_1_))
+                 {
+                     list.add(entry.getKey());
+                 }
+@@ -188,13 +200,13 @@
+                 }
+             }
+ 
+-            return Collections.emptyList();
++            return Collections.<String>emptyList();
+         }
+     }
+ 
+     public List<ICommand> func_71557_a(ICommandSender p_71557_1_)
+     {
+-        List<ICommand> list = Lists.newArrayList();
++        List<ICommand> list = Lists.<ICommand>newArrayList();
+ 
+         for (ICommand icommand : this.field_71561_b)
+         {

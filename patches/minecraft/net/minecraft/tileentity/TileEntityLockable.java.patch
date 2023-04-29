@@ -1,9 +1,12 @@
 --- before/net/minecraft/tileentity/TileEntityLockable.java
 +++ after/net/minecraft/tileentity/TileEntityLockable.java
-@@ -48,4 +48,27 @@
+@@ -46,6 +46,29 @@
+ 
+     public ITextComponent func_145748_c_()
      {
-         return (ITextComponent)(this.func_145818_k_() ? new TextComponentString(this.func_70005_c_()) : new TextComponentTranslation(this.func_70005_c_(), new Object[0]));
-     }
+-        return (ITextComponent)(this.func_145818_k_() ? new TextComponentString(this.func_70005_c_()) : new TextComponentTranslation(this.func_70005_c_()));
++        return (ITextComponent)(this.func_145818_k_() ? new TextComponentString(this.func_70005_c_()) : new TextComponentTranslation(this.func_70005_c_(), new Object[0]));
++    }
 +
 +    private net.minecraftforge.items.IItemHandler itemHandler;
 +
@@ -26,5 +29,5 @@
 +    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @javax.annotation.Nullable net.minecraft.util.EnumFacing facing)
 +    {
 +        return capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
-+    }
+     }
  }

@@ -1,5 +1,19 @@
 --- before/net/minecraft/entity/EntityTrackerEntry.java
 +++ after/net/minecraft/entity/EntityTrackerEntry.java
+@@ -90,11 +90,11 @@
+     private boolean field_73144_s;
+     private final boolean field_73143_t;
+     private int field_73142_u;
+-    private List<Entity> field_187263_w = Collections.emptyList();
++    private List<Entity> field_187263_w = Collections.<Entity>emptyList();
+     private boolean field_73141_v;
+     private boolean field_180234_y;
+     public boolean field_73133_n;
+-    public final Set<EntityPlayerMP> field_73134_o = Sets.newHashSet();
++    public final Set<EntityPlayerMP> field_73134_o = Sets.<EntityPlayerMP>newHashSet();
+ 
+     public EntityTrackerEntry(Entity p_i46837_1_, int p_i46837_2_, int p_i46837_3_, int p_i46837_4_, boolean p_i46837_5_)
+     {
 @@ -158,13 +158,13 @@
  
              if (itemstack.func_77973_b() instanceof ItemMap)

@@ -1,0 +1,42 @@
+--- before/net/minecraft/world/storage/loot/conditions/EntityHasProperty.java
++++ after/net/minecraft/world/storage/loot/conditions/EntityHasProperty.java
+@@ -4,9 +4,9 @@
+ import com.google.gson.JsonElement;
+ import com.google.gson.JsonObject;
+ import com.google.gson.JsonSerializationContext;
+-import java.util.Map;
+ import java.util.Random;
+ import java.util.Set;
++import java.util.Map.Entry;
+ import net.minecraft.entity.Entity;
+ import net.minecraft.util.JsonUtils;
+ import net.minecraft.util.ResourceLocation;
+@@ -60,7 +60,7 @@
+ 
+                 for (EntityProperty entityproperty : p_186605_2_.field_186623_a)
+                 {
+-                    EntityProperty.Serializer<EntityProperty> serializer = EntityPropertyManager.func_186645_a(entityproperty);
++                    EntityProperty.Serializer<EntityProperty> serializer = EntityPropertyManager.<EntityProperty>func_186645_a(entityproperty);
+                     jsonobject.add(serializer.func_186649_a().toString(), serializer.func_186650_a(entityproperty, p_186605_3_));
+                 }
+ 
+@@ -70,16 +70,16 @@
+ 
+             public EntityHasProperty func_186603_b(JsonObject p_186603_1_, JsonDeserializationContext p_186603_2_)
+             {
+-                Set<Map.Entry<String, JsonElement>> set = JsonUtils.func_152754_s(p_186603_1_, "properties").entrySet();
++                Set<Entry<String, JsonElement>> set = JsonUtils.func_152754_s(p_186603_1_, "properties").entrySet();
+                 EntityProperty[] aentityproperty = new EntityProperty[set.size()];
+                 int i = 0;
+ 
+-                for (Map.Entry<String, JsonElement> entry : set)
++                for (Entry<String, JsonElement> entry : set)
+                 {
+                     aentityproperty[i++] = EntityPropertyManager.func_186646_a(new ResourceLocation(entry.getKey())).func_186652_a(entry.getValue(), p_186603_2_);
+                 }
+ 
+-                return new EntityHasProperty(aentityproperty, JsonUtils.func_188174_a(p_186603_1_, "entity", p_186603_2_, LootContext.EntityTarget.class));
++                return new EntityHasProperty(aentityproperty, (LootContext.EntityTarget)JsonUtils.func_188174_a(p_186603_1_, "entity", p_186603_2_, LootContext.EntityTarget.class));
+             }
+         }
+ }

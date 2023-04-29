@@ -1,0 +1,20 @@
+--- before/net/minecraft/client/renderer/BannerTextures.java
++++ after/net/minecraft/client/renderer/BannerTextures.java
+@@ -25,7 +25,7 @@
+     @SideOnly(Side.CLIENT)
+     public static class Cache
+         {
+-            private final Map<String, BannerTextures.CacheEntry> field_187479_a = Maps.newLinkedHashMap();
++            private final Map<String, BannerTextures.CacheEntry> field_187479_a = Maps.<String, BannerTextures.CacheEntry>newLinkedHashMap();
+             private final ResourceLocation field_187480_b;
+             private final String field_187481_c;
+             private final String field_187482_d;
+@@ -56,7 +56,7 @@
+                             return BannerTextures.field_187487_d;
+                         }
+ 
+-                        List<String> list = Lists.newArrayList();
++                        List<String> list = Lists.<String>newArrayList();
+ 
+                         for (BannerPattern bannerpattern : p_187478_2_)
+                         {

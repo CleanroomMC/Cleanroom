@@ -18,7 +18,17 @@
              this.field_175027_c.func_178267_a(p_175020_4_, ibakedmodel1, p_175020_1_, p_175020_2_, Tessellator.func_178181_a().func_178180_c(), true);
          }
      }
-@@ -75,7 +75,9 @@
+@@ -66,15 +66,18 @@
+                     {
+                         p_175018_1_ = p_175018_1_.func_185899_b(p_175018_3_, p_175018_2_);
+                     }
+-                    catch (Exception exception)
++                    catch (Exception var8)
+                     {
++                        ;
+                     }
+                 }
+ 
                  switch (enumblockrendertype)
                  {
                      case MODEL:

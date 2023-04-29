@@ -1,0 +1,11 @@
+--- before/net/minecraft/entity/passive/EntitySquid.java
++++ after/net/minecraft/entity/passive/EntitySquid.java
+@@ -177,7 +177,7 @@
+                     this.field_70181_x -= 0.08D;
+                 }
+ 
+-                this.field_70181_x *= (double)0.98F;
++                this.field_70181_x *= 0.9800000190734863D;
+             }
+ 
+             this.field_70861_d = (float)((double)this.field_70861_d + (double)(-90.0F - this.field_70861_d) * 0.02D);

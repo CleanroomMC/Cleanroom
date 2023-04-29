@@ -1,5 +1,14 @@
 --- before/net/minecraft/world/WorldEntitySpawner.java
 +++ after/net/minecraft/world/WorldEntitySpawner.java
+@@ -25,7 +25,7 @@
+ public final class WorldEntitySpawner
+ {
+     private static final int field_180268_a = (int)Math.pow(17.0D, 2.0D);
+-    private final Set<ChunkPos> field_77193_b = Sets.newHashSet();
++    private final Set<ChunkPos> field_77193_b = Sets.<ChunkPos>newHashSet();
+ 
+     public int func_77192_a(WorldServer p_77192_1_, boolean p_77192_2_, boolean p_77192_3_, boolean p_77192_4_)
+     {
 @@ -79,15 +79,17 @@
              {
                  if ((!enumcreaturetype.func_75599_d() || p_77192_3_) && (enumcreaturetype.func_75599_d() || p_77192_2_) && (!enumcreaturetype.func_82705_e() || p_77192_4_))
@@ -20,6 +29,15 @@
                          {
                              BlockPos blockpos = func_180621_a(p_77192_1_, chunkpos1.field_77276_a, chunkpos1.field_77275_b);
                              int k1 = blockpos.func_177958_n();
+@@ -118,7 +120,7 @@
+                                         float f = (float)l2 + 0.5F;
+                                         float f1 = (float)j3 + 0.5F;
+ 
+-                                        if (!p_77192_1_.func_175636_b((double)f, (double)i3, (double)f1, 24.0D) && !(blockpos1.func_177954_c((double)f, (double)i3, (double)f1) < 576.0D))
++                                        if (!p_77192_1_.func_175636_b((double)f, (double)i3, (double)f1, 24.0D) && blockpos1.func_177954_c((double)f, (double)i3, (double)f1) >= 576.0D)
+                                         {
+                                             if (biome$spawnlistentry == null)
+                                             {
 @@ -136,7 +138,7 @@
  
                                                  try
@@ -75,6 +93,15 @@
                  {
                      return false;
                  }
+@@ -251,7 +263,7 @@
+         {
+             while (p_77191_6_.nextFloat() < p_77191_1_.func_76741_f())
+             {
+-                Biome.SpawnListEntry biome$spawnlistentry = WeightedRandom.func_76271_a(p_77191_0_.field_73012_v, list);
++                Biome.SpawnListEntry biome$spawnlistentry = (Biome.SpawnListEntry)WeightedRandom.func_76271_a(p_77191_0_.field_73012_v, list);
+                 int i = biome$spawnlistentry.field_76301_c + p_77191_6_.nextInt(1 + biome$spawnlistentry.field_76299_d - biome$spawnlistentry.field_76301_c);
+                 IEntityLivingData ientitylivingdata = null;
+                 int j = p_77191_2_ + p_77191_6_.nextInt(p_77191_4_);
 @@ -273,7 +285,7 @@
  
                              try

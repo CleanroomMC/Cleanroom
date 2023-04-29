@@ -1,6 +1,6 @@
 --- before/net/minecraft/item/crafting/RecipeRepairItem.java
 +++ after/net/minecraft/item/crafting/RecipeRepairItem.java
-@@ -7,10 +7,8 @@
+@@ -7,14 +7,12 @@
  import net.minecraft.item.ItemStack;
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
@@ -12,6 +12,11 @@
  {
      public boolean func_77569_a(InventoryCrafting p_77569_1_, World p_77569_2_)
      {
+-        List<ItemStack> list = Lists.newArrayList();
++        List<ItemStack> list = Lists.<ItemStack>newArrayList();
+ 
+         for (int i = 0; i < p_77569_1_.func_70302_i_(); ++i)
+         {
 @@ -28,7 +26,7 @@
                  {
                      ItemStack itemstack1 = list.get(0);
@@ -21,6 +26,15 @@
                      {
                          return false;
                      }
+@@ -41,7 +39,7 @@
+ 
+     public ItemStack func_77572_b(InventoryCrafting p_77572_1_)
+     {
+-        List<ItemStack> list = Lists.newArrayList();
++        List<ItemStack> list = Lists.<ItemStack>newArrayList();
+ 
+         for (int i = 0; i < p_77572_1_.func_70302_i_(); ++i)
+         {
 @@ -55,7 +53,7 @@
                  {
                      ItemStack itemstack1 = list.get(0);
@@ -50,7 +64,13 @@
  
                  if (i1 < 0)
                  {
-@@ -100,11 +98,7 @@
+@@ -95,16 +93,12 @@
+ 
+     public NonNullList<ItemStack> func_179532_b(InventoryCrafting p_179532_1_)
+     {
+-        NonNullList<ItemStack> nonnulllist = NonNullList.func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
++        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
+ 
          for (int i = 0; i < nonnulllist.size(); ++i)
          {
              ItemStack itemstack = p_179532_1_.func_70301_a(i);

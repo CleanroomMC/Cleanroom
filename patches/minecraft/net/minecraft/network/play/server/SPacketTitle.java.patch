@@ -1,0 +1,11 @@
+--- before/net/minecraft/network/play/server/SPacketTitle.java
++++ after/net/minecraft/network/play/server/SPacketTitle.java
+@@ -43,7 +43,7 @@
+ 
+     public void func_148837_a(PacketBuffer p_148837_1_) throws IOException
+     {
+-        this.field_179812_a = p_148837_1_.func_179257_a(SPacketTitle.Type.class);
++        this.field_179812_a = (SPacketTitle.Type)p_148837_1_.func_179257_a(SPacketTitle.Type.class);
+ 
+         if (this.field_179812_a == SPacketTitle.Type.TITLE || this.field_179812_a == SPacketTitle.Type.SUBTITLE || this.field_179812_a == SPacketTitle.Type.ACTIONBAR)
+         {

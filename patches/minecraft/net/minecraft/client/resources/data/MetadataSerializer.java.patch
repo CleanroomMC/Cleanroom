@@ -1,0 +1,38 @@
+--- before/net/minecraft/client/resources/data/MetadataSerializer.java
++++ after/net/minecraft/client/resources/data/MetadataSerializer.java
+@@ -14,7 +14,7 @@
+ @SideOnly(Side.CLIENT)
+ public class MetadataSerializer
+ {
+-    private final IRegistry < String, MetadataSerializer.Registration <? extends IMetadataSection >> field_110508_a = new RegistrySimple<>();
++    private final IRegistry < String, MetadataSerializer.Registration <? extends IMetadataSection >> field_110508_a = new RegistrySimple < String, MetadataSerializer.Registration <? extends IMetadataSection >> ();
+     private final GsonBuilder field_110506_b = new GsonBuilder();
+     private Gson field_110507_c;
+ 
+@@ -27,7 +27,7 @@
+ 
+     public <T extends IMetadataSection> void func_110504_a(IMetadataSectionSerializer<T> p_110504_1_, Class<T> p_110504_2_)
+     {
+-        this.field_110508_a.func_82595_a(p_110504_1_.func_110483_a(), new MetadataSerializer.Registration<>(p_110504_1_, p_110504_2_));
++        this.field_110508_a.func_82595_a(p_110504_1_.func_110483_a(), new MetadataSerializer.Registration(p_110504_1_, p_110504_2_));
+         this.field_110506_b.registerTypeAdapter(p_110504_2_, p_110504_1_);
+         this.field_110507_c = null;
+     }
+@@ -48,7 +48,7 @@
+         }
+         else
+         {
+-            MetadataSerializer.Registration<?> registration = this.field_110508_a.func_82594_a(p_110503_1_);
++            MetadataSerializer.Registration<?> registration = (MetadataSerializer.Registration)this.field_110508_a.func_82594_a(p_110503_1_);
+ 
+             if (registration == null)
+             {
+@@ -56,7 +56,7 @@
+             }
+             else
+             {
+-                return (T) this.func_110505_a().fromJson(p_110503_2_.getAsJsonObject(p_110503_1_), registration.field_110500_b);
++                return (T)(this.func_110505_a().fromJson(p_110503_2_.getAsJsonObject(p_110503_1_), registration.field_110500_b));
+             }
+         }
+     }

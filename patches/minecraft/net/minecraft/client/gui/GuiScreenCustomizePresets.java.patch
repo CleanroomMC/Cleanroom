@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/gui/GuiScreenCustomizePresets.java
++++ after/net/minecraft/client/gui/GuiScreenCustomizePresets.java
+@@ -17,7 +17,7 @@
+ @SideOnly(Side.CLIENT)
+ public class GuiScreenCustomizePresets extends GuiScreen
+ {
+-    private static final List<GuiScreenCustomizePresets.Info> field_175310_f = Lists.newArrayList();
++    private static final List<GuiScreenCustomizePresets.Info> field_175310_f = Lists.<GuiScreenCustomizePresets.Info>newArrayList();
+     private GuiScreenCustomizePresets.ListPreset field_175311_g;
+     private GuiButton field_175316_h;
+     private GuiTextField field_175317_i;

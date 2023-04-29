@@ -1,14 +1,20 @@
 --- before/net/minecraft/client/settings/KeyBinding.java
 +++ after/net/minecraft/client/settings/KeyBinding.java
-@@ -15,7 +15,7 @@
+@@ -14,10 +14,10 @@
+ @SideOnly(Side.CLIENT)
  public class KeyBinding implements Comparable<KeyBinding>
  {
-     private static final Map<String, KeyBinding> field_74516_a = Maps.<String, KeyBinding>newHashMap();
--    private static final IntHashMap<KeyBinding> field_74514_b = new IntHashMap<KeyBinding>();
+-    private static final Map<String, KeyBinding> field_74516_a = Maps.newHashMap();
+-    private static final IntHashMap<KeyBinding> field_74514_b = new IntHashMap<>();
+-    private static final Set<String> field_151473_c = Sets.newHashSet();
+-    private static final Map<String, Integer> field_193627_d = Maps.newHashMap();
++    private static final Map<String, KeyBinding> field_74516_a = Maps.<String, KeyBinding>newHashMap();
 +    private static final net.minecraftforge.client.settings.KeyBindingMap field_74514_b = new net.minecraftforge.client.settings.KeyBindingMap();
-     private static final Set<String> field_151473_c = Sets.<String>newHashSet();
-     private static final Map<String, Integer> field_193627_d = Maps.<String, Integer>newHashMap();
++    private static final Set<String> field_151473_c = Sets.<String>newHashSet();
++    private static final Map<String, Integer> field_193627_d = Maps.<String, Integer>newHashMap();
      private final String field_74515_c;
+     private final int field_151472_e;
+     private final String field_151471_f;
 @@ -29,7 +29,7 @@
      {
          if (p_74507_0_ != 0)
@@ -27,7 +33,18 @@
  
              if (keybinding != null)
              {
-@@ -76,11 +76,11 @@
+@@ -59,8 +59,9 @@
+             {
+                 func_74510_a(keybinding.field_74512_d, keybinding.field_74512_d < 256 && Keyboard.isKeyDown(keybinding.field_74512_d));
+             }
+-            catch (IndexOutOfBoundsException indexoutofboundsexception)
++            catch (IndexOutOfBoundsException var3)
+             {
++                ;
+             }
+         }
+     }
+@@ -75,11 +76,11 @@
  
      public static void func_74508_b()
      {
@@ -41,7 +58,7 @@
          }
      }
  
-@@ -96,13 +96,13 @@
+@@ -95,13 +96,13 @@
          this.field_151472_e = p_i45001_2_;
          this.field_151471_f = p_i45001_3_;
          field_74516_a.put(p_i45001_1_, this);
@@ -57,11 +74,11 @@
      }
  
      public String func_151466_e()
-@@ -151,8 +151,145 @@
+@@ -150,23 +151,166 @@
  
      public int compareTo(KeyBinding p_compareTo_1_)
      {
--        return this.field_151471_f.equals(p_compareTo_1_.field_151471_f) ? I18n.func_135052_a(this.field_74515_c).compareTo(I18n.func_135052_a(p_compareTo_1_.field_74515_c)) : ((Integer)field_193627_d.get(this.field_151471_f)).compareTo(field_193627_d.get(p_compareTo_1_.field_151471_f));
+-        return this.field_151471_f.equals(p_compareTo_1_.field_151471_f) ? I18n.func_135052_a(this.field_74515_c).compareTo(I18n.func_135052_a(p_compareTo_1_.field_74515_c)) : field_193627_d.get(this.field_151471_f).compareTo(field_193627_d.get(p_compareTo_1_.field_151471_f));
 -    }
 +        if (this.field_151471_f.equals(p_compareTo_1_.field_151471_f)) return I18n.func_135052_a(this.field_74515_c).compareTo(I18n.func_135052_a(p_compareTo_1_.field_74515_c));
 +        Integer tCat = field_193627_d.get(this.field_151471_f);
@@ -205,12 +222,32 @@
  
      public static Supplier<String> func_193626_b(String p_193626_0_)
      {
-@@ -162,7 +299,7 @@
-             return p_193626_0_;
-         } : () ->
-         {
--            return GameSettings.func_74298_c(keybinding.func_151463_i());
+         KeyBinding keybinding = field_74516_a.get(p_193626_0_);
+-        return keybinding == null ? () -> p_193626_0_ : () -> GameSettings.func_74298_c(keybinding.func_151463_i());
++        return keybinding == null ? () ->
++        {
++            return p_193626_0_;
++        } : () ->
++        {
 +            return keybinding.getDisplayName();
-         };
++        };
      }
  
+     static
+     {
+-        field_193627_d.put("key.categories.movement", 1);
+-        field_193627_d.put("key.categories.gameplay", 2);
+-        field_193627_d.put("key.categories.inventory", 3);
+-        field_193627_d.put("key.categories.creative", 4);
+-        field_193627_d.put("key.categories.multiplayer", 5);
+-        field_193627_d.put("key.categories.ui", 6);
+-        field_193627_d.put("key.categories.misc", 7);
++        field_193627_d.put("key.categories.movement", Integer.valueOf(1));
++        field_193627_d.put("key.categories.gameplay", Integer.valueOf(2));
++        field_193627_d.put("key.categories.inventory", Integer.valueOf(3));
++        field_193627_d.put("key.categories.creative", Integer.valueOf(4));
++        field_193627_d.put("key.categories.multiplayer", Integer.valueOf(5));
++        field_193627_d.put("key.categories.ui", Integer.valueOf(6));
++        field_193627_d.put("key.categories.misc", Integer.valueOf(7));
+     }
+ }

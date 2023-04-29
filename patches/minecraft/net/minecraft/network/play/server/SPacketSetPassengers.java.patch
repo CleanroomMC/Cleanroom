@@ -1,0 +1,11 @@
+--- before/net/minecraft/network/play/server/SPacketSetPassengers.java
++++ after/net/minecraft/network/play/server/SPacketSetPassengers.java
+@@ -26,7 +26,7 @@
+ 
+         for (int i = 0; i < list.size(); ++i)
+         {
+-            this.field_186974_b[i] = list.get(i).func_145782_y();
++            this.field_186974_b[i] = ((Entity)list.get(i)).func_145782_y();
+         }
+     }
+ 

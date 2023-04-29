@@ -1,6 +1,33 @@
 --- before/net/minecraft/tileentity/TileEntityBeacon.java
 +++ after/net/minecraft/tileentity/TileEntityBeacon.java
-@@ -130,17 +130,21 @@
+@@ -37,8 +37,8 @@
+ public class TileEntityBeacon extends TileEntityLockable implements ITickable, ISidedInventory
+ {
+     public static final Potion[][] field_146009_a = new Potion[][] {{MobEffects.field_76424_c, MobEffects.field_76422_e}, {MobEffects.field_76429_m, MobEffects.field_76430_j}, {MobEffects.field_76420_g}, {MobEffects.field_76428_l}};
+-    private static final Set<Potion> field_184280_f = Sets.newHashSet();
+-    private final List<TileEntityBeacon.BeamSegment> field_174909_f = Lists.newArrayList();
++    private static final Set<Potion> field_184280_f = Sets.<Potion>newHashSet();
++    private final List<TileEntityBeacon.BeamSegment> field_174909_f = Lists.<TileEntityBeacon.BeamSegment>newArrayList();
+     @SideOnly(Side.CLIENT)
+     private long field_146016_i;
+     @SideOnly(Side.CLIENT)
+@@ -86,7 +86,7 @@
+             int l = this.field_174879_c.func_177956_o();
+             int i1 = this.field_174879_c.func_177952_p();
+             AxisAlignedBB axisalignedbb = (new AxisAlignedBB((double)k, (double)l, (double)i1, (double)(k + 1), (double)(l + 1), (double)(i1 + 1))).func_186662_g(d0).func_72321_a(0.0D, (double)this.field_145850_b.func_72800_K(), 0.0D);
+-            List<EntityPlayer> list = this.field_145850_b.func_72872_a(EntityPlayer.class, axisalignedbb);
++            List<EntityPlayer> list = this.field_145850_b.<EntityPlayer>func_72872_a(EntityPlayer.class, axisalignedbb);
+ 
+             for (EntityPlayer entityplayer : list)
+             {
+@@ -124,24 +124,28 @@
+ 
+             if (iblockstate.func_177230_c() == Blocks.field_150399_cn)
+             {
+-                afloat = iblockstate.func_177229_b(BlockStainedGlass.field_176547_a).func_193349_f();
++                afloat = ((EnumDyeColor)iblockstate.func_177229_b(BlockStainedGlass.field_176547_a)).func_193349_f();
+             }
+             else
              {
                  if (iblockstate.func_177230_c() != Blocks.field_150397_co)
                  {
@@ -21,10 +48,12 @@
 +                    }
                  }
 -
+-                afloat = iblockstate.func_177229_b(BlockStainedGlassPane.field_176245_a).func_193349_f();
 +                else
-                 afloat = ((EnumDyeColor)iblockstate.func_177229_b(BlockStainedGlassPane.field_176245_a)).func_193349_f();
++                afloat = ((EnumDyeColor)iblockstate.func_177229_b(BlockStainedGlassPane.field_176245_a)).func_193349_f();
              }
  
+             if (!flag)
 @@ -181,7 +185,7 @@
                      {
                          Block block = this.field_145850_b.func_180495_p(new BlockPos(j1, i2, k1)).func_177230_c();
@@ -34,6 +63,15 @@
                          {
                              flag1 = false;
                              break;
+@@ -381,7 +385,7 @@
+         }
+         else
+         {
+-            return !(p_70300_1_.func_70092_e((double)this.field_174879_c.func_177958_n() + 0.5D, (double)this.field_174879_c.func_177956_o() + 0.5D, (double)this.field_174879_c.func_177952_p() + 0.5D) > 64.0D);
++            return p_70300_1_.func_70092_e((double)this.field_174879_c.func_177958_n() + 0.5D, (double)this.field_174879_c.func_177956_o() + 0.5D, (double)this.field_174879_c.func_177952_p() + 0.5D) <= 64.0D;
+         }
+     }
+ 
 @@ -395,7 +399,7 @@
  
      public boolean func_94041_b(int p_94041_1_, ItemStack p_94041_2_)

@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/gui/GuiChat.java
++++ after/net/minecraft/client/gui/GuiChat.java
+@@ -187,7 +187,7 @@
+                     this.field_146410_g = this.field_146415_a.func_146179_b();
+                 }
+ 
+-                this.field_146415_a.func_146180_a(this.field_146297_k.field_71456_v.func_146158_b().func_146238_c().get(i));
++                this.field_146415_a.func_146180_a((String)this.field_146297_k.field_71456_v.func_146158_b().func_146238_c().get(i));
+                 this.field_146416_h = i;
+             }
+         }

@@ -1,0 +1,99 @@
+--- before/net/minecraft/block/BlockPistonExtension.java
++++ after/net/minecraft/block/BlockPistonExtension.java
+@@ -4,6 +4,7 @@
+ import java.util.Random;
+ import javax.annotation.Nullable;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyBool;
+ import net.minecraft.block.properties.PropertyEnum;
+ import net.minecraft.block.state.BlockFaceShape;
+@@ -26,7 +27,7 @@
+ 
+ public class BlockPistonExtension extends BlockDirectional
+ {
+-    public static final PropertyEnum<BlockPistonExtension.EnumPistonType> field_176325_b = PropertyEnum.func_177709_a("type", BlockPistonExtension.EnumPistonType.class);
++    public static final PropertyEnum<BlockPistonExtension.EnumPistonType> field_176325_b = PropertyEnum.<BlockPistonExtension.EnumPistonType>func_177709_a("type", BlockPistonExtension.EnumPistonType.class);
+     public static final PropertyBool field_176327_M = PropertyBool.func_177716_a("short");
+     protected static final AxisAlignedBB field_185635_c = new AxisAlignedBB(0.75D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
+     protected static final AxisAlignedBB field_185637_d = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.25D, 1.0D, 1.0D);
+@@ -50,7 +51,7 @@
+     public BlockPistonExtension()
+     {
+         super(Material.field_76233_E);
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176387_N, EnumFacing.NORTH).func_177226_a(field_176325_b, BlockPistonExtension.EnumPistonType.DEFAULT).func_177226_a(field_176327_M, false));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176387_N, EnumFacing.NORTH).func_177226_a(field_176325_b, BlockPistonExtension.EnumPistonType.DEFAULT).func_177226_a(field_176327_M, Boolean.valueOf(false)));
+         this.func_149672_a(SoundType.field_185851_d);
+         this.func_149711_c(0.5F);
+     }
+@@ -83,7 +84,7 @@
+ 
+     private AxisAlignedBB func_185633_i(IBlockState p_185633_1_)
+     {
+-        boolean flag = p_185633_1_.func_177229_b(field_176327_M);
++        boolean flag = ((Boolean)p_185633_1_.func_177229_b(field_176327_M)).booleanValue();
+ 
+         switch ((EnumFacing)p_185633_1_.func_177229_b(field_176387_N))
+         {
+@@ -112,7 +113,7 @@
+     {
+         if (p_176208_4_.field_71075_bZ.field_75098_d)
+         {
+-            BlockPos blockpos = p_176208_2_.func_177972_a(p_176208_3_.func_177229_b(field_176387_N).func_176734_d());
++            BlockPos blockpos = p_176208_2_.func_177972_a(((EnumFacing)p_176208_3_.func_177229_b(field_176387_N)).func_176734_d());
+             Block block = p_176208_1_.func_180495_p(blockpos).func_177230_c();
+ 
+             if (block == Blocks.field_150331_J || block == Blocks.field_150320_F)
+@@ -127,11 +128,11 @@
+     public void func_180663_b(World p_180663_1_, BlockPos p_180663_2_, IBlockState p_180663_3_)
+     {
+         super.func_180663_b(p_180663_1_, p_180663_2_, p_180663_3_);
+-        EnumFacing enumfacing = p_180663_3_.func_177229_b(field_176387_N).func_176734_d();
++        EnumFacing enumfacing = ((EnumFacing)p_180663_3_.func_177229_b(field_176387_N)).func_176734_d();
+         p_180663_2_ = p_180663_2_.func_177972_a(enumfacing);
+         IBlockState iblockstate = p_180663_1_.func_180495_p(p_180663_2_);
+ 
+-        if ((iblockstate.func_177230_c() == Blocks.field_150331_J || iblockstate.func_177230_c() == Blocks.field_150320_F) && iblockstate.func_177229_b(BlockPistonBase.field_176320_b))
++        if ((iblockstate.func_177230_c() == Blocks.field_150331_J || iblockstate.func_177230_c() == Blocks.field_150320_F) && ((Boolean)iblockstate.func_177229_b(BlockPistonBase.field_176320_b)).booleanValue())
+         {
+             iblockstate.func_177230_c().func_176226_b(p_180663_1_, p_180663_2_, iblockstate, 0);
+             p_180663_1_.func_175698_g(p_180663_2_);
+@@ -165,7 +166,7 @@
+ 
+     public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
+     {
+-        EnumFacing enumfacing = p_189540_1_.func_177229_b(field_176387_N);
++        EnumFacing enumfacing = (EnumFacing)p_189540_1_.func_177229_b(field_176387_N);
+         BlockPos blockpos = p_189540_3_.func_177972_a(enumfacing.func_176734_d());
+         IBlockState iblockstate = p_189540_2_.func_180495_p(blockpos);
+ 
+@@ -205,7 +206,7 @@
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+         int i = 0;
+-        i |= p_176201_1_.func_177229_b(field_176387_N).func_176745_a();
++        i = i | ((EnumFacing)p_176201_1_.func_177229_b(field_176387_N)).func_176745_a();
+ 
+         if (p_176201_1_.func_177229_b(field_176325_b) == BlockPistonExtension.EnumPistonType.STICKY)
+         {
+@@ -217,17 +218,17 @@
+ 
+     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
+     {
+-        return p_185499_1_.func_177226_a(field_176387_N, p_185499_2_.func_185831_a(p_185499_1_.func_177229_b(field_176387_N)));
++        return p_185499_1_.func_177226_a(field_176387_N, p_185499_2_.func_185831_a((EnumFacing)p_185499_1_.func_177229_b(field_176387_N)));
+     }
+ 
+     public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
+     {
+-        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a(p_185471_1_.func_177229_b(field_176387_N)));
++        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a((EnumFacing)p_185471_1_.func_177229_b(field_176387_N)));
+     }
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176387_N, field_176325_b, field_176327_M);
++        return new BlockStateContainer(this, new IProperty[] {field_176387_N, field_176325_b, field_176327_M});
+     }
+ 
+     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)

@@ -1,0 +1,53 @@
+--- before/net/minecraft/command/CommandTitle.java
++++ after/net/minecraft/command/CommandTitle.java
+@@ -36,7 +36,7 @@
+     {
+         if (p_184881_3_.length < 2)
+         {
+-            throw new WrongUsageException("commands.title.usage");
++            throw new WrongUsageException("commands.title.usage", new Object[0]);
+         }
+         else
+         {
+@@ -44,12 +44,12 @@
+             {
+                 if ("title".equals(p_184881_3_[1]) || "subtitle".equals(p_184881_3_[1]) || "actionbar".equals(p_184881_3_[1]))
+                 {
+-                    throw new WrongUsageException("commands.title.usage.title");
++                    throw new WrongUsageException("commands.title.usage.title", new Object[0]);
+                 }
+ 
+                 if ("times".equals(p_184881_3_[1]))
+                 {
+-                    throw new WrongUsageException("commands.title.usage.times");
++                    throw new WrongUsageException("commands.title.usage.times", new Object[0]);
+                 }
+             }
+ 
+@@ -62,7 +62,7 @@
+                 {
+                     if (p_184881_3_.length != 5)
+                     {
+-                        throw new WrongUsageException("commands.title.usage");
++                        throw new WrongUsageException("commands.title.usage", new Object[0]);
+                     }
+                     else
+                     {
+@@ -76,7 +76,7 @@
+                 }
+                 else if (p_184881_3_.length < 3)
+                 {
+-                    throw new WrongUsageException("commands.title.usage");
++                    throw new WrongUsageException("commands.title.usage", new Object[0]);
+                 }
+                 else
+                 {
+@@ -99,7 +99,7 @@
+             }
+             else if (p_184881_3_.length != 2)
+             {
+-                throw new WrongUsageException("commands.title.usage");
++                throw new WrongUsageException("commands.title.usage", new Object[0]);
+             }
+             else
+             {

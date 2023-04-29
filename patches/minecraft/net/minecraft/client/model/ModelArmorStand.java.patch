@@ -1,0 +1,30 @@
+--- before/net/minecraft/client/model/ModelArmorStand.java
++++ after/net/minecraft/client/model/ModelArmorStand.java
+@@ -71,17 +71,17 @@
+             this.field_178737_d.field_78806_j = !entityarmorstand.func_175414_r();
+             this.field_178722_k.func_78793_a(1.9F, 12.0F, 0.0F);
+             this.field_178721_j.func_78793_a(-1.9F, 12.0F, 0.0F);
+-            this.field_178740_a.field_78795_f = ((float)Math.PI / 180F) * entityarmorstand.func_175408_t().func_179415_b();
+-            this.field_178740_a.field_78796_g = ((float)Math.PI / 180F) * entityarmorstand.func_175408_t().func_179416_c();
+-            this.field_178740_a.field_78808_h = ((float)Math.PI / 180F) * entityarmorstand.func_175408_t().func_179413_d();
+-            this.field_178738_b.field_78795_f = ((float)Math.PI / 180F) * entityarmorstand.func_175408_t().func_179415_b();
+-            this.field_178738_b.field_78796_g = ((float)Math.PI / 180F) * entityarmorstand.func_175408_t().func_179416_c();
+-            this.field_178738_b.field_78808_h = ((float)Math.PI / 180F) * entityarmorstand.func_175408_t().func_179413_d();
+-            this.field_178739_c.field_78795_f = ((float)Math.PI / 180F) * entityarmorstand.func_175408_t().func_179415_b();
+-            this.field_178739_c.field_78796_g = ((float)Math.PI / 180F) * entityarmorstand.func_175408_t().func_179416_c();
+-            this.field_178739_c.field_78808_h = ((float)Math.PI / 180F) * entityarmorstand.func_175408_t().func_179413_d();
++            this.field_178740_a.field_78795_f = 0.017453292F * entityarmorstand.func_175408_t().func_179415_b();
++            this.field_178740_a.field_78796_g = 0.017453292F * entityarmorstand.func_175408_t().func_179416_c();
++            this.field_178740_a.field_78808_h = 0.017453292F * entityarmorstand.func_175408_t().func_179413_d();
++            this.field_178738_b.field_78795_f = 0.017453292F * entityarmorstand.func_175408_t().func_179415_b();
++            this.field_178738_b.field_78796_g = 0.017453292F * entityarmorstand.func_175408_t().func_179416_c();
++            this.field_178738_b.field_78808_h = 0.017453292F * entityarmorstand.func_175408_t().func_179413_d();
++            this.field_178739_c.field_78795_f = 0.017453292F * entityarmorstand.func_175408_t().func_179415_b();
++            this.field_178739_c.field_78796_g = 0.017453292F * entityarmorstand.func_175408_t().func_179416_c();
++            this.field_178739_c.field_78808_h = 0.017453292F * entityarmorstand.func_175408_t().func_179413_d();
+             this.field_178737_d.field_78795_f = 0.0F;
+-            this.field_178737_d.field_78796_g = ((float)Math.PI / 180F) * -p_78087_7_.field_70177_z;
++            this.field_178737_d.field_78796_g = 0.017453292F * -p_78087_7_.field_70177_z;
+             this.field_178737_d.field_78808_h = 0.0F;
+         }
+     }

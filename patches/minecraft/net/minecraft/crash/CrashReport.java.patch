@@ -26,6 +26,15 @@
  
  public class CrashReport
  {
+@@ -28,7 +35,7 @@
+     private final String field_71513_a;
+     private final Throwable field_71511_b;
+     private final CrashReportCategory field_85061_c = new CrashReportCategory(this, "System Details");
+-    private final List<CrashReportCategory> field_71512_c = Lists.newArrayList();
++    private final List<CrashReportCategory> field_71512_c = Lists.<CrashReportCategory>newArrayList();
+     private File field_71510_d;
+     private boolean field_85059_f = true;
+     private StackTraceElement[] field_85060_g = new StackTraceElement[0];
 @@ -116,6 +123,7 @@
                  return IntCache.func_85144_b();
              }
@@ -34,6 +43,15 @@
      }
  
      public String func_71501_a()
+@@ -132,7 +140,7 @@
+     {
+         if ((this.field_85060_g == null || this.field_85060_g.length <= 0) && !this.field_71512_c.isEmpty())
+         {
+-            this.field_85060_g = ArrayUtils.subarray(this.field_71512_c.get(0).func_147152_a(), 0, 1);
++            this.field_85060_g = (StackTraceElement[])ArrayUtils.subarray(((CrashReportCategory)this.field_71512_c.get(0)).func_147152_a(), 0, 1);
+         }
+ 
+         if (this.field_85060_g != null && this.field_85060_g.length > 0)
 @@ -198,6 +206,52 @@
              IOUtils.closeQuietly((Writer)printwriter);
          }
@@ -95,3 +113,44 @@
          stringbuilder.append("// ");
          stringbuilder.append(func_71503_h());
          stringbuilder.append("\n\n");
+@@ -247,26 +302,27 @@
+             }
+ 
+             Writer writer = null;
+-            boolean flag;
++            boolean flag1;
+ 
+             try
+             {
+                 writer = new OutputStreamWriter(new FileOutputStream(p_147149_1_), StandardCharsets.UTF_8);
+                 writer.write(this.func_71502_e());
+                 this.field_71510_d = p_147149_1_;
+-                return true;
++                boolean lvt_3_1_ = true;
++                return lvt_3_1_;
+             }
+             catch (Throwable throwable)
+             {
+                 field_147150_a.error("Could not save crash report to {}", p_147149_1_, throwable);
+-                flag = false;
++                flag1 = false;
+             }
+             finally
+             {
+                 IOUtils.closeQuietly(writer);
+             }
+ 
+-            return flag;
++            return flag1;
+         }
+     }
+ 
+@@ -337,7 +393,7 @@
+         {
+             return astring[(int)(System.nanoTime() % (long)astring.length)];
+         }
+-        catch (Throwable throwable)
++        catch (Throwable var2)
+         {
+             return "Witty comment unavailable :(";
+         }

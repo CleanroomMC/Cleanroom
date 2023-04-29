@@ -12,6 +12,32 @@
          GlStateManager.func_179111_a(2982, field_178812_b);
          GlStateManager.func_179111_a(2983, field_178813_c);
          GlStateManager.func_187445_a(2978, field_178814_a);
+@@ -40,11 +45,11 @@
+         int i = p_74583_1_ ? 1 : 0;
+         float f2 = p_74583_0_.field_70125_A;
+         float f3 = p_74583_0_.field_70177_z;
+-        field_74588_d = MathHelper.func_76134_b(f3 * ((float)Math.PI / 180F)) * (float)(1 - i * 2);
+-        field_74586_f = MathHelper.func_76126_a(f3 * ((float)Math.PI / 180F)) * (float)(1 - i * 2);
+-        field_74587_g = -field_74586_f * MathHelper.func_76126_a(f2 * ((float)Math.PI / 180F)) * (float)(1 - i * 2);
+-        field_74596_h = field_74588_d * MathHelper.func_76126_a(f2 * ((float)Math.PI / 180F)) * (float)(1 - i * 2);
+-        field_74589_e = MathHelper.func_76134_b(f2 * ((float)Math.PI / 180F));
++        field_74588_d = MathHelper.func_76134_b(f3 * 0.017453292F) * (float)(1 - i * 2);
++        field_74586_f = MathHelper.func_76126_a(f3 * 0.017453292F) * (float)(1 - i * 2);
++        field_74587_g = -field_74586_f * MathHelper.func_76126_a(f2 * 0.017453292F) * (float)(1 - i * 2);
++        field_74596_h = field_74588_d * MathHelper.func_76126_a(f2 * 0.017453292F) * (float)(1 - i * 2);
++        field_74589_e = MathHelper.func_76134_b(f2 * 0.017453292F);
+     }
+ 
+     public static Vec3d func_178806_a(Entity p_178806_0_, double p_178806_1_)
+@@ -70,7 +75,7 @@
+ 
+             if (iblockstate.func_177230_c() instanceof BlockLiquid)
+             {
+-                f = BlockLiquid.func_149801_b(iblockstate.func_177229_b(BlockLiquid.field_176367_b)) - 0.11111111F;
++                f = BlockLiquid.func_149801_b(((Integer)iblockstate.func_177229_b(BlockLiquid.field_176367_b)).intValue()) - 0.11111111F;
+             }
+ 
+             float f1 = (float)(blockpos.func_177956_o() + 1) - f;
 @@ -81,7 +86,7 @@
              }
          }

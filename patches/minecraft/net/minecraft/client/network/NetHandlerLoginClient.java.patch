@@ -1,5 +1,39 @@
 --- before/net/minecraft/client/network/NetHandlerLoginClient.java
 +++ after/net/minecraft/client/network/NetHandlerLoginClient.java
+@@ -62,7 +62,7 @@
+             {
+                 this.func_147391_c().joinServer(this.field_147394_b.func_110432_I().func_148256_e(), this.field_147394_b.func_110432_I().func_148254_d(), s1);
+             }
+-            catch (AuthenticationException authenticationexception1)
++            catch (AuthenticationException var10)
+             {
+                 field_147396_a.warn("Couldn't connect to auth servers but will continue to join LAN");
+             }
+@@ -73,19 +73,19 @@
+             {
+                 this.func_147391_c().joinServer(this.field_147394_b.func_110432_I().func_148256_e(), this.field_147394_b.func_110432_I().func_148254_d(), s1);
+             }
+-            catch (AuthenticationUnavailableException authenticationunavailableexception)
++            catch (AuthenticationUnavailableException var7)
+             {
+-                this.field_147393_d.func_150718_a(new TextComponentTranslation("disconnect.loginFailedInfo", new TextComponentTranslation("disconnect.loginFailedInfo.serversUnavailable")));
++                this.field_147393_d.func_150718_a(new TextComponentTranslation("disconnect.loginFailedInfo", new Object[] {new TextComponentTranslation("disconnect.loginFailedInfo.serversUnavailable", new Object[0])}));
+                 return;
+             }
+-            catch (InvalidCredentialsException invalidcredentialsexception)
++            catch (InvalidCredentialsException var8)
+             {
+-                this.field_147393_d.func_150718_a(new TextComponentTranslation("disconnect.loginFailedInfo", new TextComponentTranslation("disconnect.loginFailedInfo.invalidSession")));
++                this.field_147393_d.func_150718_a(new TextComponentTranslation("disconnect.loginFailedInfo", new Object[] {new TextComponentTranslation("disconnect.loginFailedInfo.invalidSession", new Object[0])}));
+                 return;
+             }
+             catch (AuthenticationException authenticationexception)
+             {
+-                this.field_147393_d.func_150718_a(new TextComponentTranslation("disconnect.loginFailedInfo", authenticationexception.getMessage()));
++                this.field_147393_d.func_150718_a(new TextComponentTranslation("disconnect.loginFailedInfo", new Object[] {authenticationexception.getMessage()}));
+                 return;
+             }
+         }
 @@ -108,7 +108,10 @@
      {
          this.field_175091_e = p_147390_1_.func_179730_a();

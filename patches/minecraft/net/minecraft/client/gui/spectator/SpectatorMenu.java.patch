@@ -1,0 +1,53 @@
+--- before/net/minecraft/client/gui/spectator/SpectatorMenu.java
++++ after/net/minecraft/client/gui/spectator/SpectatorMenu.java
+@@ -38,14 +38,13 @@
+         }
+     };
+     private final ISpectatorMenuRecipient field_178651_f;
+-    private final List<SpectatorDetails> field_178652_g = Lists.newArrayList();
+-    private ISpectatorMenuView field_178659_h;
++    private final List<SpectatorDetails> field_178652_g = Lists.<SpectatorDetails>newArrayList();
++    private ISpectatorMenuView field_178659_h = new BaseSpectatorGroup();
+     private int field_178660_i = -1;
+     private int field_178658_j;
+ 
+     public SpectatorMenu(ISpectatorMenuRecipient p_i45497_1_)
+     {
+-        this.field_178659_h = new BaseSpectatorGroup();
+         this.field_178651_f = p_i45497_1_;
+     }
+ 
+@@ -67,13 +66,13 @@
+         }
+         else
+         {
+-            return i >= 0 && i < this.field_178659_h.func_178669_a().size() ? MoreObjects.firstNonNull(this.field_178659_h.func_178669_a().get(i), field_178657_a) : field_178657_a;
++            return i >= 0 && i < this.field_178659_h.func_178669_a().size() ? (ISpectatorMenuObject)MoreObjects.firstNonNull(this.field_178659_h.func_178669_a().get(i), field_178657_a) : field_178657_a;
+         }
+     }
+ 
+     public List<ISpectatorMenuObject> func_178642_a()
+     {
+-        List<ISpectatorMenuObject> list = Lists.newArrayList();
++        List<ISpectatorMenuObject> list = Lists.<ISpectatorMenuObject>newArrayList();
+ 
+         for (int i = 0; i <= 8; ++i)
+         {
+@@ -147,7 +146,7 @@
+ 
+             public ITextComponent func_178664_z_()
+             {
+-                return new TextComponentTranslation("spectatorMenu.close");
++                return new TextComponentTranslation("spectatorMenu.close", new Object[0]);
+             }
+ 
+             public void func_178663_a(float p_178663_1_, int p_178663_2_)
+@@ -181,7 +180,7 @@
+ 
+             public ITextComponent func_178664_z_()
+             {
+-                return this.field_178666_a < 0 ? new TextComponentTranslation("spectatorMenu.previous_page") : new TextComponentTranslation("spectatorMenu.next_page");
++                return this.field_178666_a < 0 ? new TextComponentTranslation("spectatorMenu.previous_page", new Object[0]) : new TextComponentTranslation("spectatorMenu.next_page", new Object[0]);
+             }
+ 
+             public void func_178663_a(float p_178663_1_, int p_178663_2_)

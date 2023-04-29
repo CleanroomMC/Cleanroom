@@ -1,0 +1,11 @@
+--- before/net/minecraft/command/CommandReload.java
++++ after/net/minecraft/command/CommandReload.java
+@@ -23,7 +23,7 @@
+     {
+         if (p_184881_3_.length > 0)
+         {
+-            throw new WrongUsageException("commands.reload.usage");
++            throw new WrongUsageException("commands.reload.usage", new Object[0]);
+         }
+         else
+         {

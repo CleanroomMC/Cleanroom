@@ -9,8 +9,43 @@
  {
      X0_Y0(0, 0),
      X0_Y90(0, 90),
-@@ -116,4 +116,9 @@
-             field_177546_q.put(Integer.valueOf(modelrotation.field_177545_r), modelrotation);
+@@ -29,7 +29,7 @@
+     X270_Y180(270, 180),
+     X270_Y270(270, 270);
+ 
+-    private static final Map<Integer, ModelRotation> field_177546_q = Maps.newHashMap();
++    private static final Map<Integer, ModelRotation> field_177546_q = Maps.<Integer, ModelRotation>newHashMap();
+     private final int field_177545_r;
+     private final Matrix4f field_177544_s;
+     private final int field_177543_t;
+@@ -46,11 +46,11 @@
+         this.field_177544_s = new Matrix4f();
+         Matrix4f matrix4f = new Matrix4f();
+         matrix4f.setIdentity();
+-        Matrix4f.rotate((float)(-p_i46087_3_) * ((float)Math.PI / 180F), new Vector3f(1.0F, 0.0F, 0.0F), matrix4f, matrix4f);
++        Matrix4f.rotate((float)(-p_i46087_3_) * 0.017453292F, new Vector3f(1.0F, 0.0F, 0.0F), matrix4f, matrix4f);
+         this.field_177543_t = MathHelper.func_76130_a(p_i46087_3_ / 90);
+         Matrix4f matrix4f1 = new Matrix4f();
+         matrix4f1.setIdentity();
+-        Matrix4f.rotate((float)(-p_i46087_4_) * ((float)Math.PI / 180F), new Vector3f(0.0F, 1.0F, 0.0F), matrix4f1, matrix4f1);
++        Matrix4f.rotate((float)(-p_i46087_4_) * 0.017453292F, new Vector3f(0.0F, 1.0F, 0.0F), matrix4f1, matrix4f1);
+         this.field_177542_u = MathHelper.func_76130_a(p_i46087_4_ / 90);
+         Matrix4f.mul(matrix4f1, matrix4f, this.field_177544_s);
+     }
+@@ -106,14 +106,19 @@
+ 
+     public static ModelRotation func_177524_a(int p_177524_0_, int p_177524_1_)
+     {
+-        return field_177546_q.get(func_177521_b(MathHelper.func_180184_b(p_177524_0_, 360), MathHelper.func_180184_b(p_177524_1_, 360)));
++        return field_177546_q.get(Integer.valueOf(func_177521_b(MathHelper.func_180184_b(p_177524_0_, 360), MathHelper.func_180184_b(p_177524_1_, 360))));
+     }
+ 
+     static
+     {
+         for (ModelRotation modelrotation : values())
+         {
+-            field_177546_q.put(modelrotation.field_177545_r, modelrotation);
++            field_177546_q.put(Integer.valueOf(modelrotation.field_177545_r), modelrotation);
          }
      }
 +

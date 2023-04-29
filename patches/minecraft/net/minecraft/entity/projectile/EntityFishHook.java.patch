@@ -1,6 +1,57 @@
 --- before/net/minecraft/entity/projectile/EntityFishHook.java
 +++ after/net/minecraft/entity/projectile/EntityFishHook.java
-@@ -269,8 +269,8 @@
+@@ -35,7 +35,7 @@
+ 
+ public class EntityFishHook extends Entity
+ {
+-    private static final DataParameter<Integer> field_184528_c = EntityDataManager.func_187226_a(EntityFishHook.class, DataSerializers.field_187192_b);
++    private static final DataParameter<Integer> field_184528_c = EntityDataManager.<Integer>func_187226_a(EntityFishHook.class, DataSerializers.field_187192_b);
+     private boolean field_146051_au;
+     private int field_146049_av;
+     private EntityPlayer field_146042_b;
+@@ -89,10 +89,10 @@
+     {
+         float f = this.field_146042_b.field_70127_C + (this.field_146042_b.field_70125_A - this.field_146042_b.field_70127_C);
+         float f1 = this.field_146042_b.field_70126_B + (this.field_146042_b.field_70177_z - this.field_146042_b.field_70126_B);
+-        float f2 = MathHelper.func_76134_b(-f1 * ((float)Math.PI / 180F) - (float)Math.PI);
+-        float f3 = MathHelper.func_76126_a(-f1 * ((float)Math.PI / 180F) - (float)Math.PI);
+-        float f4 = -MathHelper.func_76134_b(-f * ((float)Math.PI / 180F));
+-        float f5 = MathHelper.func_76126_a(-f * ((float)Math.PI / 180F));
++        float f2 = MathHelper.func_76134_b(-f1 * 0.017453292F - (float)Math.PI);
++        float f3 = MathHelper.func_76126_a(-f1 * 0.017453292F - (float)Math.PI);
++        float f4 = -MathHelper.func_76134_b(-f * 0.017453292F);
++        float f5 = MathHelper.func_76126_a(-f * 0.017453292F);
+         double d0 = this.field_146042_b.field_70169_q + (this.field_146042_b.field_70165_t - this.field_146042_b.field_70169_q) - (double)f3 * 0.3D;
+         double d1 = this.field_146042_b.field_70167_r + (this.field_146042_b.field_70163_u - this.field_146042_b.field_70167_r) + (double)this.field_146042_b.func_70047_e();
+         double d2 = this.field_146042_b.field_70166_s + (this.field_146042_b.field_70161_v - this.field_146042_b.field_70166_s) - (double)f2 * 0.3D;
+@@ -105,22 +105,22 @@
+         this.field_70181_x *= 0.6D / (double)f6 + 0.5D + this.field_70146_Z.nextGaussian() * 0.0045D;
+         this.field_70179_y *= 0.6D / (double)f6 + 0.5D + this.field_70146_Z.nextGaussian() * 0.0045D;
+         float f7 = MathHelper.func_76133_a(this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y);
+-        this.field_70177_z = (float)(MathHelper.func_181159_b(this.field_70159_w, this.field_70179_y) * (double)(180F / (float)Math.PI));
+-        this.field_70125_A = (float)(MathHelper.func_181159_b(this.field_70181_x, (double)f7) * (double)(180F / (float)Math.PI));
++        this.field_70177_z = (float)(MathHelper.func_181159_b(this.field_70159_w, this.field_70179_y) * (180D / Math.PI));
++        this.field_70125_A = (float)(MathHelper.func_181159_b(this.field_70181_x, (double)f7) * (180D / Math.PI));
+         this.field_70126_B = this.field_70177_z;
+         this.field_70127_C = this.field_70125_A;
+     }
+ 
+     protected void func_70088_a()
+     {
+-        this.func_184212_Q().func_187214_a(field_184528_c, 0);
++        this.func_184212_Q().func_187214_a(field_184528_c, Integer.valueOf(0));
+     }
+ 
+     public void func_184206_a(DataParameter<?> p_184206_1_)
+     {
+         if (field_184528_c.equals(p_184206_1_))
+         {
+-            int i = this.func_184212_Q().func_187225_a(field_184528_c);
++            int i = ((Integer)this.func_184212_Q().func_187225_a(field_184528_c)).intValue();
+             this.field_146043_c = i > 0 ? this.field_70170_p.func_73045_a(i - 1) : null;
+         }
+ 
+@@ -269,10 +269,10 @@
      {
          ItemStack itemstack = this.field_146042_b.func_184614_ca();
          ItemStack itemstack1 = this.field_146042_b.func_184592_cb();
@@ -9,9 +60,51 @@
 +        boolean flag = itemstack.func_77973_b() instanceof net.minecraft.item.ItemFishingRod;
 +        boolean flag1 = itemstack1.func_77973_b() instanceof net.minecraft.item.ItemFishingRod;
  
-         if (!this.field_146042_b.field_70128_L && this.field_146042_b.func_70089_S() && (flag || flag1) && this.func_70068_e(this.field_146042_b) <= 1024.0D)
+-        if (!this.field_146042_b.field_70128_L && this.field_146042_b.func_70089_S() && (flag || flag1) && !(this.func_70068_e(this.field_146042_b) > 1024.0D))
++        if (!this.field_146042_b.field_70128_L && this.field_146042_b.func_70089_S() && (flag || flag1) && this.func_70068_e(this.field_146042_b) <= 1024.0D)
          {
-@@ -416,9 +416,9 @@
+             return false;
+         }
+@@ -286,10 +286,11 @@
+     private void func_190623_q()
+     {
+         float f = MathHelper.func_76133_a(this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y);
+-        this.field_70177_z = (float)(MathHelper.func_181159_b(this.field_70159_w, this.field_70179_y) * (double)(180F / (float)Math.PI));
++        this.field_70177_z = (float)(MathHelper.func_181159_b(this.field_70159_w, this.field_70179_y) * (180D / Math.PI));
+ 
+-        for (this.field_70125_A = (float)(MathHelper.func_181159_b(this.field_70181_x, (double)f) * (double)(180F / (float)Math.PI)); this.field_70125_A - this.field_70127_C < -180.0F; this.field_70127_C -= 360.0F)
++        for (this.field_70125_A = (float)(MathHelper.func_181159_b(this.field_70181_x, (double)f) * (180D / Math.PI)); this.field_70125_A - this.field_70127_C < -180.0F; this.field_70127_C -= 360.0F)
+         {
++            ;
+         }
+ 
+         while (this.field_70125_A - this.field_70127_C >= 180.0F)
+@@ -332,7 +333,7 @@
+         {
+             if (this.func_189739_a(entity1) && (entity1 != this.field_146042_b || this.field_146047_aw >= 5))
+             {
+-                AxisAlignedBB axisalignedbb = entity1.func_174813_aQ().func_186662_g((double)0.3F);
++                AxisAlignedBB axisalignedbb = entity1.func_174813_aQ().func_186662_g(0.30000001192092896D);
+                 RayTraceResult raytraceresult1 = axisalignedbb.func_72327_a(vec3d, vec3d1);
+ 
+                 if (raytraceresult1 != null)
+@@ -369,7 +370,7 @@
+ 
+     private void func_190622_s()
+     {
+-        this.func_184212_Q().func_187227_b(field_184528_c, this.field_146043_c.func_145782_y() + 1);
++        this.func_184212_Q().func_187227_b(field_184528_c, Integer.valueOf(this.field_146043_c.func_145782_y() + 1));
+     }
+ 
+     private void func_190621_a(BlockPos p_190621_1_)
+@@ -409,19 +410,19 @@
+             if (this.field_146038_az > 0)
+             {
+                 this.field_146054_aA = (float)((double)this.field_146054_aA + this.field_70146_Z.nextGaussian() * 4.0D);
+-                float f = this.field_146054_aA * ((float)Math.PI / 180F);
++                float f = this.field_146054_aA * 0.017453292F;
+                 float f1 = MathHelper.func_76126_a(f);
+                 float f2 = MathHelper.func_76134_b(f);
                  double d0 = this.field_70165_t + (double)(f1 * (float)this.field_146038_az * 0.1F);
                  double d1 = (double)((float)MathHelper.func_76128_c(this.func_174813_aQ().field_72338_b) + 1.0F);
                  double d2 = this.field_70161_v + (double)(f2 * (float)this.field_146038_az * 0.1F);
@@ -23,7 +116,29 @@
                  {
                      if (this.field_70146_Z.nextFloat() < 0.15F)
                      {
-@@ -466,9 +466,9 @@
+-                        worldserver.func_175739_a(EnumParticleTypes.WATER_BUBBLE, d0, d1 - (double)0.1F, d2, 1, (double)f1, 0.1D, (double)f2, 0.0D);
++                        worldserver.func_175739_a(EnumParticleTypes.WATER_BUBBLE, d0, d1 - 0.10000000149011612D, d2, 1, (double)f1, 0.1D, (double)f2, 0.0D);
+                     }
+ 
+                     float f3 = f1 * 0.04F;
+@@ -435,8 +436,8 @@
+                 this.field_70181_x = (double)(-0.4F * MathHelper.func_151240_a(this.field_70146_Z, 0.6F, 1.0F));
+                 this.func_184185_a(SoundEvents.field_187609_F, 0.25F, 1.0F + (this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.4F);
+                 double d3 = this.func_174813_aQ().field_72338_b + 0.5D;
+-                worldserver.func_175739_a(EnumParticleTypes.WATER_BUBBLE, this.field_70165_t, d3, this.field_70161_v, (int)(1.0F + this.field_70130_N * 20.0F), (double)this.field_70130_N, 0.0D, (double)this.field_70130_N, (double)0.2F);
+-                worldserver.func_175739_a(EnumParticleTypes.WATER_WAKE, this.field_70165_t, d3, this.field_70161_v, (int)(1.0F + this.field_70130_N * 20.0F), (double)this.field_70130_N, 0.0D, (double)this.field_70130_N, (double)0.2F);
++                worldserver.func_175739_a(EnumParticleTypes.WATER_BUBBLE, this.field_70165_t, d3, this.field_70161_v, (int)(1.0F + this.field_70130_N * 20.0F), (double)this.field_70130_N, 0.0D, (double)this.field_70130_N, 0.20000000298023224D);
++                worldserver.func_175739_a(EnumParticleTypes.WATER_WAKE, this.field_70165_t, d3, this.field_70161_v, (int)(1.0F + this.field_70130_N * 20.0F), (double)this.field_70130_N, 0.0D, (double)this.field_70130_N, 0.20000000298023224D);
+                 this.field_146045_ax = MathHelper.func_76136_a(this.field_70146_Z, 20, 40);
+             }
+         }
+@@ -460,16 +461,16 @@
+ 
+             if (this.field_70146_Z.nextFloat() < f5)
+             {
+-                float f6 = MathHelper.func_151240_a(this.field_70146_Z, 0.0F, 360.0F) * ((float)Math.PI / 180F);
++                float f6 = MathHelper.func_151240_a(this.field_70146_Z, 0.0F, 360.0F) * 0.017453292F;
+                 float f7 = MathHelper.func_151240_a(this.field_70146_Z, 25.0F, 60.0F);
                  double d4 = this.field_70165_t + (double)(MathHelper.func_76126_a(f6) * f7 * 0.1F);
                  double d5 = (double)((float)MathHelper.func_76128_c(this.func_174813_aQ().field_72338_b) + 1.0F);
                  double d6 = this.field_70161_v + (double)(MathHelper.func_76134_b(f6) * f7 * 0.1F);
@@ -33,9 +148,12 @@
 -                if (block1 == Blocks.field_150355_j || block1 == Blocks.field_150358_i)
 +                if (state.func_185904_a() == Material.field_151586_h)
                  {
-                     worldserver.func_175739_a(EnumParticleTypes.WATER_SPLASH, d4, d5, d6, 2 + this.field_70146_Z.nextInt(2), 0.10000000149011612D, 0.0D, 0.10000000149011612D, 0.0D);
+-                    worldserver.func_175739_a(EnumParticleTypes.WATER_SPLASH, d4, d5, d6, 2 + this.field_70146_Z.nextInt(2), (double)0.1F, 0.0D, (double)0.1F, 0.0D);
++                    worldserver.func_175739_a(EnumParticleTypes.WATER_SPLASH, d4, d5, d6, 2 + this.field_70146_Z.nextInt(2), 0.10000000149011612D, 0.0D, 0.10000000149011612D, 0.0D);
                  }
-@@ -506,6 +506,7 @@
+             }
+ 
+@@ -505,6 +506,7 @@
          {
              int i = 0;
  
@@ -43,7 +161,7 @@
              if (this.field_146043_c != null)
              {
                  this.func_184527_k();
-@@ -515,9 +516,17 @@
+@@ -514,9 +516,17 @@
              else if (this.field_146045_ax > 0)
              {
                  LootContext.Builder lootcontext$builder = new LootContext.Builder((WorldServer)this.field_70170_p);
@@ -63,7 +181,7 @@
                  {
                      EntityItem entityitem = new EntityItem(this.field_70170_p, this.field_70165_t, this.field_70163_u, this.field_70161_v, itemstack);
                      double d0 = this.field_146042_b.field_70165_t - this.field_70165_t;
-@@ -547,7 +556,7 @@
+@@ -546,7 +556,7 @@
              }
  
              this.func_70106_y();

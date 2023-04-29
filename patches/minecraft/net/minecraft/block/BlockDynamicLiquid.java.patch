@@ -1,13 +1,15 @@
 --- before/net/minecraft/block/BlockDynamicLiquid.java
 +++ after/net/minecraft/block/BlockDynamicLiquid.java
-@@ -26,6 +26,7 @@
+@@ -26,7 +26,8 @@
  
      public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
      {
+-        int i = p_180650_3_.func_177229_b(field_176367_b);
 +        if (!p_180650_1_.func_175697_a(p_180650_2_, this.func_185698_b(p_180650_1_))) return; // Forge: avoid loading unloaded chunks
-         int i = ((Integer)p_180650_3_.func_177229_b(field_176367_b)).intValue();
++        int i = ((Integer)p_180650_3_.func_177229_b(field_176367_b)).intValue();
          int j = 1;
  
+         if (this.field_149764_J == Material.field_151587_i && !p_180650_1_.field_73011_w.func_177500_n())
 @@ -67,7 +68,7 @@
                  }
              }
@@ -17,6 +19,24 @@
              {
                  IBlockState iblockstate = p_180650_1_.func_180495_p(p_180650_2_.func_177977_b());
  
+@@ -75,7 +76,7 @@
+                 {
+                     i1 = 0;
+                 }
+-                else if (iblockstate.func_185904_a() == this.field_149764_J && iblockstate.func_177229_b(field_176367_b) == 0)
++                else if (iblockstate.func_185904_a() == this.field_149764_J && ((Integer)iblockstate.func_177229_b(field_176367_b)).intValue() == 0)
+                 {
+                     i1 = 0;
+                 }
+@@ -100,7 +101,7 @@
+                 }
+                 else
+                 {
+-                    p_180650_3_ = p_180650_3_.func_177226_a(field_176367_b, i1);
++                    p_180650_3_ = p_180650_3_.func_177226_a(field_176367_b, Integer.valueOf(i1));
+                     p_180650_1_.func_180501_a(p_180650_2_, p_180650_3_, 2);
+                     p_180650_1_.func_175684_a(p_180650_2_, this, k);
+                     p_180650_1_.func_175685_c(p_180650_2_, this, false);
 @@ -118,7 +119,7 @@
          {
              if (this.field_149764_J == Material.field_151587_i && p_180650_1_.func_180495_p(p_180650_2_.func_177977_b()).func_185904_a() == Material.field_151586_h)
@@ -26,7 +46,7 @@
                  this.func_180688_d(p_180650_1_, p_180650_2_.func_177977_b());
                  return;
              }
-@@ -166,6 +167,7 @@
+@@ -166,11 +167,12 @@
                  }
                  else
                  {
@@ -34,15 +54,41 @@
                      p_176375_3_.func_177230_c().func_176226_b(p_176375_1_, p_176375_2_, p_176375_3_, 0);
                  }
              }
-@@ -187,7 +189,7 @@
  
-                 if (!this.func_176372_g(p_176374_1_, blockpos, iblockstate) && (iblockstate.func_185904_a() != this.field_149764_J || ((Integer)iblockstate.func_177229_b(field_176367_b)).intValue() > 0))
+-            p_176375_1_.func_180501_a(p_176375_2_, this.func_176223_P().func_177226_a(field_176367_b, p_176375_4_), 3);
++            p_176375_1_.func_180501_a(p_176375_2_, this.func_176223_P().func_177226_a(field_176367_b, Integer.valueOf(p_176375_4_)), 3);
+         }
+     }
+ 
+@@ -185,9 +187,9 @@
+                 BlockPos blockpos = p_176374_2_.func_177972_a(enumfacing);
+                 IBlockState iblockstate = p_176374_1_.func_180495_p(blockpos);
+ 
+-                if (!this.func_176372_g(p_176374_1_, blockpos, iblockstate) && (iblockstate.func_185904_a() != this.field_149764_J || iblockstate.func_177229_b(field_176367_b) > 0))
++                if (!this.func_176372_g(p_176374_1_, blockpos, iblockstate) && (iblockstate.func_185904_a() != this.field_149764_J || ((Integer)iblockstate.func_177229_b(field_176367_b)).intValue() > 0))
                  {
 -                    if (!this.func_176372_g(p_176374_1_, blockpos.func_177977_b(), iblockstate))
 +                    if (!this.func_176372_g(p_176374_1_, blockpos.func_177977_b(), p_176374_1_.func_180495_p(blockpos.func_177977_b())))
                      {
                          return p_176374_3_;
                      }
+@@ -216,14 +218,14 @@
+     private Set<EnumFacing> func_176376_e(World p_176376_1_, BlockPos p_176376_2_)
+     {
+         int i = 1000;
+-        Set<EnumFacing> set = EnumSet.noneOf(EnumFacing.class);
++        Set<EnumFacing> set = EnumSet.<EnumFacing>noneOf(EnumFacing.class);
+ 
+         for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
+         {
+             BlockPos blockpos = p_176376_2_.func_177972_a(enumfacing);
+             IBlockState iblockstate = p_176376_1_.func_180495_p(blockpos);
+ 
+-            if (!this.func_176372_g(p_176376_1_, blockpos, iblockstate) && (iblockstate.func_185904_a() != this.field_149764_J || iblockstate.func_177229_b(field_176367_b) > 0))
++            if (!this.func_176372_g(p_176376_1_, blockpos, iblockstate) && (iblockstate.func_185904_a() != this.field_149764_J || ((Integer)iblockstate.func_177229_b(field_176367_b)).intValue() > 0))
+             {
+                 int j;
+ 
 @@ -254,11 +256,12 @@
  
      private boolean func_176372_g(World p_176372_1_, BlockPos p_176372_2_, IBlockState p_176372_3_)

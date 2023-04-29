@@ -1,0 +1,52 @@
+--- before/net/minecraft/block/BlockFlower.java
++++ after/net/minecraft/block/BlockFlower.java
+@@ -34,7 +34,7 @@
+ 
+     public int func_180651_a(IBlockState p_180651_1_)
+     {
+-        return p_180651_1_.func_177229_b(this.func_176494_l()).func_176968_b();
++        return ((BlockFlower.EnumFlowerType)p_180651_1_.func_177229_b(this.func_176494_l())).func_176968_b();
+     }
+ 
+     public void func_149666_a(CreativeTabs p_149666_1_, NonNullList<ItemStack> p_149666_2_)
+@@ -56,7 +56,7 @@
+     {
+         if (this.field_176496_a == null)
+         {
+-            this.field_176496_a = PropertyEnum.func_177708_a("type", BlockFlower.EnumFlowerType.class, new Predicate<BlockFlower.EnumFlowerType>()
++            this.field_176496_a = PropertyEnum.<BlockFlower.EnumFlowerType>func_177708_a("type", BlockFlower.EnumFlowerType.class, new Predicate<BlockFlower.EnumFlowerType>()
+             {
+                 public boolean apply(@Nullable BlockFlower.EnumFlowerType p_apply_1_)
+                 {
+@@ -70,12 +70,12 @@
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(this.func_176494_l()).func_176968_b();
++        return ((BlockFlower.EnumFlowerType)p_176201_1_.func_177229_b(this.func_176494_l())).func_176968_b();
+     }
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, this.func_176494_l());
++        return new BlockStateContainer(this, new IProperty[] {this.func_176494_l()});
+     }
+ 
+     public Block.EnumOffsetType func_176218_Q()
+@@ -172,14 +172,14 @@
+         {
+             for (final BlockFlower.EnumFlowerColor blockflower$enumflowercolor : BlockFlower.EnumFlowerColor.values())
+             {
+-                Collection<BlockFlower.EnumFlowerType> collection = Collections2.filter(Lists.newArrayList(values()), new Predicate<BlockFlower.EnumFlowerType>()
++                Collection<BlockFlower.EnumFlowerType> collection = Collections2.<BlockFlower.EnumFlowerType>filter(Lists.newArrayList(values()), new Predicate<BlockFlower.EnumFlowerType>()
+                 {
+                     public boolean apply(@Nullable BlockFlower.EnumFlowerType p_apply_1_)
+                     {
+                         return p_apply_1_.func_176964_a() == blockflower$enumflowercolor;
+                     }
+                 });
+-                field_176981_k[blockflower$enumflowercolor.ordinal()] = collection.toArray(new BlockFlower.EnumFlowerType[collection.size()]);
++                field_176981_k[blockflower$enumflowercolor.ordinal()] = (BlockFlower.EnumFlowerType[])collection.toArray(new BlockFlower.EnumFlowerType[collection.size()]);
+             }
+         }
+     }

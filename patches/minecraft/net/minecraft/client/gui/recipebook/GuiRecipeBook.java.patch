@@ -1,6 +1,92 @@
 --- before/net/minecraft/client/gui/recipebook/GuiRecipeBook.java
 +++ after/net/minecraft/client/gui/recipebook/GuiRecipeBook.java
-@@ -448,7 +448,7 @@
+@@ -6,6 +6,8 @@
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Locale;
++import java.util.function.Consumer;
++import java.util.function.Predicate;
+ import javax.annotation.Nullable;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.gui.Gui;
+@@ -153,22 +155,37 @@
+ 
+     private void func_193003_g(boolean p_193003_1_)
+     {
+-        List<RecipeList> list = RecipeBookClient.field_194086_e.get(this.field_191913_x.func_191764_e());
+-        list.forEach((p_193944_1_) -> p_193944_1_.func_194210_a(this.field_193965_u, this.field_193961_o.func_174922_i(), this.field_193961_o.func_174923_h(), this.field_193964_s));
++        List<RecipeList> list = (List)RecipeBookClient.field_194086_e.get(this.field_191913_x.func_191764_e());
++        list.forEach((p_193944_1_) ->
++        {
++            p_193944_1_.func_194210_a(this.field_193965_u, this.field_193961_o.func_174922_i(), this.field_193961_o.func_174923_h(), this.field_193964_s);
++        });
+         List<RecipeList> list1 = Lists.newArrayList(list);
+-        list1.removeIf((p_193952_0_) -> !p_193952_0_.func_194209_a());
+-        list1.removeIf((p_193953_0_) -> !p_193953_0_.func_194212_c());
++        list1.removeIf((p_193952_0_) ->
++        {
++            return !p_193952_0_.func_194209_a();
++        });
++        list1.removeIf((p_193953_0_) ->
++        {
++            return !p_193953_0_.func_194212_c();
++        });
+         String s = this.field_193962_q.func_146179_b();
+ 
+         if (!s.isEmpty())
+         {
+-            ObjectSet<RecipeList> objectset = new ObjectLinkedOpenHashSet<>(this.field_191888_F.func_193987_a(SearchTreeManager.field_194012_b).func_194038_a(s.toLowerCase(Locale.ROOT)));
+-            list1.removeIf((p_193947_1_) -> !objectset.contains(p_193947_1_));
++            ObjectSet<RecipeList> objectset = new ObjectLinkedOpenHashSet<RecipeList>(this.field_191888_F.func_193987_a(SearchTreeManager.field_194012_b).func_194038_a(s.toLowerCase(Locale.ROOT)));
++            list1.removeIf((p_193947_1_) ->
++            {
++                return !objectset.contains(p_193947_1_);
++            });
+         }
+ 
+         if (this.field_193964_s.func_192815_c())
+         {
+-            list1.removeIf((p_193958_0_) -> !p_193958_0_.func_192708_c());
++            list1.removeIf((p_193958_0_) ->
++            {
++                return !p_193958_0_.func_192708_c();
++            });
+         }
+ 
+         this.field_193022_s.func_194192_a(list1, p_193003_1_);
+@@ -253,11 +270,11 @@
+ 
+             if (this.field_193960_m.func_146115_a())
+             {
+-                String s = I18n.func_135052_a(this.field_193960_m.func_191754_c() ? "gui.recipebook.toggleRecipes.craftable" : "gui.recipebook.toggleRecipes.all");
++                String s1 = I18n.func_135052_a(this.field_193960_m.func_191754_c() ? "gui.recipebook.toggleRecipes.craftable" : "gui.recipebook.toggleRecipes.all");
+ 
+                 if (this.field_191888_F.field_71462_r != null)
+                 {
+-                    this.field_191888_F.field_71462_r.func_146279_a(s, p_191876_3_, p_191876_4_);
++                    this.field_191888_F.field_71462_r.func_146279_a(s1, p_191876_3_, p_191876_4_);
+                 }
+             }
+ 
+@@ -396,13 +413,13 @@
+                 }
+                 else if (this.field_193962_q.func_146201_a(p_191859_1_, p_191859_2_))
+                 {
+-                    String s = this.field_193962_q.func_146179_b().toLowerCase(Locale.ROOT);
+-                    this.func_193716_a(s);
++                    String s1 = this.field_193962_q.func_146179_b().toLowerCase(Locale.ROOT);
++                    this.func_193716_a(s1);
+ 
+-                    if (!s.equals(this.field_193963_r))
++                    if (!s1.equals(this.field_193963_r))
+                     {
+                         this.func_193003_g(false);
+-                        this.field_193963_r = s;
++                        this.field_193963_r = s1;
+                     }
+ 
+                     return true;
+@@ -431,7 +448,7 @@
  
              languagemanager.func_135045_a(language);
              this.field_191888_F.field_71474_y.field_74363_ab = language.func_135034_a();
@@ -9,7 +95,7 @@
              this.field_191888_F.field_71466_p.func_78264_a(this.field_191888_F.func_135016_M().func_135042_a() || this.field_191888_F.field_71474_y.field_151455_aw);
              this.field_191888_F.field_71466_p.func_78275_b(languagemanager.func_135044_b());
              this.field_191888_F.field_71474_y.func_74303_b();
-@@ -485,7 +485,7 @@
+@@ -468,7 +485,7 @@
          this.field_191915_z.func_194187_a(Ingredient.func_193369_a(itemstack), (p_193951_2_.get(0)).field_75223_e, (p_193951_2_.get(0)).field_75221_f);
          int i = this.field_193961_o.func_174922_i();
          int j = this.field_193961_o.func_174923_h();
@@ -18,7 +104,7 @@
          int l = 1;
          Iterator<Ingredient> iterator = p_193951_1_.func_192400_c().iterator();
  
-@@ -500,7 +500,7 @@
+@@ -483,7 +500,7 @@
  
                  Ingredient ingredient = iterator.next();
  

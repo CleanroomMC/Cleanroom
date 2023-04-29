@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/renderer/entity/RenderEvokerFangs.java
++++ after/net/minecraft/client/renderer/entity/RenderEvokerFangs.java
+@@ -28,7 +28,7 @@
+ 
+             if (f > 0.9F)
+             {
+-                f1 = (float)((double)f1 * ((1.0D - (double)f) / (double)0.1F));
++                f1 = (float)((double)f1 * ((1.0D - (double)f) / 0.10000000149011612D));
+             }
+ 
+             GlStateManager.func_179094_E();

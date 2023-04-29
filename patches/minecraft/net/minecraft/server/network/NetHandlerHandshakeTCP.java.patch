@@ -9,3 +9,19 @@
          switch (p_147383_1_.func_149594_c())
          {
              case LOGIN:
+@@ -29,13 +31,13 @@
+ 
+                 if (p_147383_1_.func_149595_d() > 340)
+                 {
+-                    ITextComponent itextcomponent = new TextComponentTranslation("multiplayer.disconnect.outdated_server", "1.12.2");
++                    ITextComponent itextcomponent = new TextComponentTranslation("multiplayer.disconnect.outdated_server", new Object[] {"1.12.2"});
+                     this.field_147386_b.func_179290_a(new SPacketDisconnect(itextcomponent));
+                     this.field_147386_b.func_150718_a(itextcomponent);
+                 }
+                 else if (p_147383_1_.func_149595_d() < 340)
+                 {
+-                    ITextComponent itextcomponent1 = new TextComponentTranslation("multiplayer.disconnect.outdated_client", "1.12.2");
++                    ITextComponent itextcomponent1 = new TextComponentTranslation("multiplayer.disconnect.outdated_client", new Object[] {"1.12.2"});
+                     this.field_147386_b.func_179290_a(new SPacketDisconnect(itextcomponent1));
+                     this.field_147386_b.func_150718_a(itextcomponent1);
+                 }

@@ -1,0 +1,25 @@
+--- before/net/minecraft/entity/monster/EntityVindicator.java
++++ after/net/minecraft/entity/monster/EntityVindicator.java
+@@ -61,17 +61,17 @@
+         this.field_70714_bg.func_75776_a(8, new EntityAIWander(this, 0.6D));
+         this.field_70714_bg.func_75776_a(9, new EntityAIWatchClosest(this, EntityPlayer.class, 3.0F, 1.0F));
+         this.field_70714_bg.func_75776_a(10, new EntityAIWatchClosest(this, EntityLiving.class, 8.0F));
+-        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, true, EntityVindicator.class));
+-        this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
+-        this.field_70715_bh.func_75776_a(3, new EntityAINearestAttackableTarget<>(this, EntityVillager.class, true));
+-        this.field_70715_bh.func_75776_a(3, new EntityAINearestAttackableTarget<>(this, EntityIronGolem.class, true));
++        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, true, new Class[] {EntityVindicator.class}));
++        this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
++        this.field_70715_bh.func_75776_a(3, new EntityAINearestAttackableTarget(this, EntityVillager.class, true));
++        this.field_70715_bh.func_75776_a(3, new EntityAINearestAttackableTarget(this, EntityIronGolem.class, true));
+         this.field_70715_bh.func_75776_a(4, new EntityVindicator.AIJohnnyAttack(this));
+     }
+ 
+     protected void func_110147_ax()
+     {
+         super.func_110147_ax();
+-        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a((double)0.35F);
++        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.3499999940395355D);
+         this.func_110148_a(SharedMonsterAttributes.field_111265_b).func_111128_a(12.0D);
+         this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(24.0D);
+         this.func_110148_a(SharedMonsterAttributes.field_111264_e).func_111128_a(5.0D);

@@ -1,0 +1,19 @@
+--- before/net/minecraft/entity/ai/attributes/AttributeModifier.java
++++ after/net/minecraft/entity/ai/attributes/AttributeModifier.java
+@@ -11,7 +11,7 @@
+     private final int field_111172_b;
+     private final String field_111173_c;
+     private final UUID field_111170_d;
+-    private boolean field_111171_e = true;
++    private boolean field_111171_e;
+ 
+     public AttributeModifier(String p_i1605_1_, double p_i1605_2_, int p_i1605_4_)
+     {
+@@ -20,6 +20,7 @@
+ 
+     public AttributeModifier(UUID p_i1606_1_, String p_i1606_2_, double p_i1606_3_, int p_i1606_5_)
+     {
++        this.field_111171_e = true;
+         this.field_111170_d = p_i1606_1_;
+         this.field_111173_c = p_i1606_2_;
+         this.field_111174_a = p_i1606_3_;

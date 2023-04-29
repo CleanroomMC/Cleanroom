@@ -1,6 +1,31 @@
 --- before/net/minecraft/block/BlockPortal.java
 +++ after/net/minecraft/block/BlockPortal.java
-@@ -111,7 +111,7 @@
+@@ -4,6 +4,7 @@
+ import java.util.Random;
+ import javax.annotation.Nullable;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyEnum;
+ import net.minecraft.block.state.BlockFaceShape;
+ import net.minecraft.block.state.BlockStateContainer;
+@@ -31,7 +32,7 @@
+ 
+ public class BlockPortal extends BlockBreakable
+ {
+-    public static final PropertyEnum<EnumFacing.Axis> field_176550_a = PropertyEnum.func_177706_a("axis", EnumFacing.Axis.class, EnumFacing.Axis.X, EnumFacing.Axis.Z);
++    public static final PropertyEnum<EnumFacing.Axis> field_176550_a = PropertyEnum.<EnumFacing.Axis>func_177706_a("axis", EnumFacing.Axis.class, EnumFacing.Axis.X, EnumFacing.Axis.Z);
+     protected static final AxisAlignedBB field_185683_b = new AxisAlignedBB(0.0D, 0.0D, 0.375D, 1.0D, 1.0D, 0.625D);
+     protected static final AxisAlignedBB field_185684_c = new AxisAlignedBB(0.375D, 0.0D, 0.0D, 0.625D, 1.0D, 1.0D);
+     protected static final AxisAlignedBB field_185685_d = new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 1.0D, 0.625D);
+@@ -68,6 +69,7 @@
+ 
+             for (blockpos = p_180650_2_; !p_180650_1_.func_180495_p(blockpos).func_185896_q() && blockpos.func_177956_o() > 0; blockpos = blockpos.func_177977_b())
+             {
++                ;
+             }
+ 
+             if (i > 0 && !p_180650_1_.func_180495_p(blockpos.func_177984_a()).func_185915_l())
+@@ -109,7 +111,7 @@
      {
          BlockPortal.Size blockportal$size = new BlockPortal.Size(p_176548_1_, p_176548_2_, EnumFacing.Axis.X);
  
@@ -9,7 +34,7 @@
          {
              blockportal$size.func_150859_c();
              return true;
-@@ -120,7 +120,7 @@
+@@ -118,7 +120,7 @@
          {
              BlockPortal.Size blockportal$size1 = new BlockPortal.Size(p_176548_1_, p_176548_2_, EnumFacing.Axis.Z);
  
@@ -18,3 +43,56 @@
              {
                  blockportal$size1.func_150859_c();
                  return true;
+@@ -132,7 +134,7 @@
+ 
+     public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
+     {
+-        EnumFacing.Axis enumfacing$axis = p_189540_1_.func_177229_b(field_176550_a);
++        EnumFacing.Axis enumfacing$axis = (EnumFacing.Axis)p_189540_1_.func_177229_b(field_176550_a);
+ 
+         if (enumfacing$axis == EnumFacing.Axis.X)
+         {
+@@ -162,7 +164,7 @@
+ 
+         if (p_176225_1_.func_177230_c() == this)
+         {
+-            enumfacing$axis = p_176225_1_.func_177229_b(field_176550_a);
++            enumfacing$axis = (EnumFacing.Axis)p_176225_1_.func_177229_b(field_176550_a);
+ 
+             if (enumfacing$axis == null)
+             {
+@@ -269,7 +271,7 @@
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return func_176549_a(p_176201_1_.func_177229_b(field_176550_a));
++        return func_176549_a((EnumFacing.Axis)p_176201_1_.func_177229_b(field_176550_a));
+     }
+ 
+     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
+@@ -296,7 +298,7 @@
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176550_a);
++        return new BlockStateContainer(this, new IProperty[] {field_176550_a});
+     }
+ 
+     public BlockPattern.PatternHelper func_181089_f(World p_181089_1_, BlockPos p_181089_2_)
+@@ -333,7 +335,7 @@
+ 
+                         if (blockworldstate.func_177509_a() != null && blockworldstate.func_177509_a().func_185904_a() != Material.field_151579_a)
+                         {
+-                            int k = aint[enumfacing$axisdirection.ordinal()]++;
++                            ++aint[enumfacing$axisdirection.ordinal()];
+                         }
+                     }
+                 }
+@@ -387,6 +389,7 @@
+ 
+                 for (BlockPos blockpos = p_i45694_2_; p_i45694_2_.func_177956_o() > blockpos.func_177956_o() - 21 && p_i45694_2_.func_177956_o() > 0 && this.func_150857_a(p_i45694_1_.func_180495_p(p_i45694_2_.func_177977_b()).func_177230_c()); p_i45694_2_ = p_i45694_2_.func_177977_b())
+                 {
++                    ;
+                 }
+ 
+                 int i = this.func_180120_a(p_i45694_2_, this.field_150863_d) - 1;

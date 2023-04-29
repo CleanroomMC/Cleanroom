@@ -1,0 +1,22 @@
+--- before/net/minecraft/client/model/ModelBoat.java
++++ after/net/minecraft/client/model/ModelBoat.java
+@@ -39,7 +39,7 @@
+         this.field_78103_a[4].func_78790_a(-14.0F, -7.0F, -1.0F, 28, 6, 2, 0.0F);
+         this.field_78103_a[4].func_78793_a(0.0F, 4.0F, 9.0F);
+         this.field_78103_a[0].field_78795_f = ((float)Math.PI / 2F);
+-        this.field_78103_a[1].field_78796_g = ((float)Math.PI * 1.5F);
++        this.field_78103_a[1].field_78796_g = ((float)Math.PI * 3F / 2F);
+         this.field_78103_a[2].field_78796_g = ((float)Math.PI / 2F);
+         this.field_78103_a[3].field_78796_g = (float)Math.PI;
+         this.field_187057_b[0] = this.func_187056_a(true);
+@@ -94,8 +94,8 @@
+     {
+         float f = p_187055_1_.func_184448_a(p_187055_2_, p_187055_4_);
+         ModelRenderer modelrenderer = this.field_187057_b[p_187055_2_];
+-        modelrenderer.field_78795_f = (float)MathHelper.func_151238_b((double)(-(float)Math.PI / 3F), (double) - 0.2617994F, (double)((MathHelper.func_76126_a(-f) + 1.0F) / 2.0F));
+-        modelrenderer.field_78796_g = (float)MathHelper.func_151238_b((double)(-(float)Math.PI / 4F), (double)((float)Math.PI / 4F), (double)((MathHelper.func_76126_a(-f + 1.0F) + 1.0F) / 2.0F));
++        modelrenderer.field_78795_f = (float)MathHelper.func_151238_b(-1.0471975803375244D, -0.2617993950843811D, (double)((MathHelper.func_76126_a(-f) + 1.0F) / 2.0F));
++        modelrenderer.field_78796_g = (float)MathHelper.func_151238_b(-(Math.PI / 4D), (Math.PI / 4D), (double)((MathHelper.func_76126_a(-f + 1.0F) + 1.0F) / 2.0F));
+ 
+         if (p_187055_2_ == 1)
+         {

@@ -45,6 +45,15 @@
              this.field_175973_g = null;
          }
          else
+@@ -41,7 +60,7 @@
+                 this.func_75903_a((long)(j + p_75904_1_), (long)(i + p_75904_2_));
+                 int k = aint[j + i * p_75904_3_];
+                 int l = (k & 3840) >> 8;
+-                k &= -3841;
++                k = k & -3841;
+ 
+                 if (this.field_175973_g != null && this.field_175973_g.field_177779_F >= 0)
+                 {
 @@ -70,7 +89,7 @@
                      }
                      else

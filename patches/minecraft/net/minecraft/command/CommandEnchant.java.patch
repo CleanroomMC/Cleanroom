@@ -1,0 +1,56 @@
+--- before/net/minecraft/command/CommandEnchant.java
++++ after/net/minecraft/command/CommandEnchant.java
+@@ -31,11 +31,11 @@
+     {
+         if (p_184881_3_.length < 2)
+         {
+-            throw new WrongUsageException("commands.enchant.usage");
++            throw new WrongUsageException("commands.enchant.usage", new Object[0]);
+         }
+         else
+         {
+-            EntityLivingBase entitylivingbase = func_184884_a(p_184881_1_, p_184881_2_, p_184881_3_[0], EntityLivingBase.class);
++            EntityLivingBase entitylivingbase = (EntityLivingBase)func_184884_a(p_184881_1_, p_184881_2_, p_184881_3_[0], EntityLivingBase.class);
+             p_184881_2_.func_174794_a(CommandResultStats.Type.AFFECTED_ITEMS, 0);
+             Enchantment enchantment;
+ 
+@@ -43,14 +43,14 @@
+             {
+                 enchantment = Enchantment.func_185262_c(func_180528_a(p_184881_3_[1], 0));
+             }
+-            catch (NumberInvalidException numberinvalidexception)
++            catch (NumberInvalidException var12)
+             {
+                 enchantment = Enchantment.func_180305_b(p_184881_3_[1]);
+             }
+ 
+             if (enchantment == null)
+             {
+-                throw new NumberInvalidException("commands.enchant.notFound", p_184881_3_[1]);
++                throw new NumberInvalidException("commands.enchant.notFound", new Object[] {p_184881_3_[1]});
+             }
+             else
+             {
+@@ -59,11 +59,11 @@
+ 
+                 if (itemstack.func_190926_b())
+                 {
+-                    throw new CommandException("commands.enchant.noItem");
++                    throw new CommandException("commands.enchant.noItem", new Object[0]);
+                 }
+                 else if (!enchantment.func_92089_a(itemstack))
+                 {
+-                    throw new CommandException("commands.enchant.cantEnchant");
++                    throw new CommandException("commands.enchant.cantEnchant", new Object[0]);
+                 }
+                 else
+                 {
+@@ -86,7 +86,7 @@
+ 
+                                 if (!enchantment.func_191560_c(enchantment1))
+                                 {
+-                                    throw new CommandException("commands.enchant.cantCombine", enchantment.func_77316_c(i), enchantment1.func_77316_c(nbttaglist.func_150305_b(j).func_74765_d("lvl")));
++                                    throw new CommandException("commands.enchant.cantCombine", new Object[] {enchantment.func_77316_c(i), enchantment1.func_77316_c(nbttaglist.func_150305_b(j).func_74765_d("lvl"))});
+                                 }
+                             }
+                         }

@@ -1,0 +1,43 @@
+--- before/net/minecraft/item/ItemEnderEye.java
++++ after/net/minecraft/item/ItemEnderEye.java
+@@ -34,7 +34,7 @@
+         IBlockState iblockstate = p_180614_2_.func_180495_p(p_180614_3_);
+         ItemStack itemstack = p_180614_1_.func_184586_b(p_180614_4_);
+ 
+-        if (p_180614_1_.func_175151_a(p_180614_3_.func_177972_a(p_180614_5_), p_180614_5_, itemstack) && iblockstate.func_177230_c() == Blocks.field_150378_br && !iblockstate.func_177229_b(BlockEndPortalFrame.field_176507_b))
++        if (p_180614_1_.func_175151_a(p_180614_3_.func_177972_a(p_180614_5_), p_180614_5_, itemstack) && iblockstate.func_177230_c() == Blocks.field_150378_br && !((Boolean)iblockstate.func_177229_b(BlockEndPortalFrame.field_176507_b)).booleanValue())
+         {
+             if (p_180614_2_.field_72995_K)
+             {
+@@ -42,7 +42,7 @@
+             }
+             else
+             {
+-                p_180614_2_.func_180501_a(p_180614_3_, iblockstate.func_177226_a(BlockEndPortalFrame.field_176507_b, true), 2);
++                p_180614_2_.func_180501_a(p_180614_3_, iblockstate.func_177226_a(BlockEndPortalFrame.field_176507_b, Boolean.valueOf(true)), 2);
+                 p_180614_2_.func_175666_e(p_180614_3_, Blocks.field_150378_br);
+                 itemstack.func_190918_g(1);
+ 
+@@ -91,7 +91,7 @@
+ 
+         if (raytraceresult != null && raytraceresult.field_72313_a == RayTraceResult.Type.BLOCK && p_77659_1_.func_180495_p(raytraceresult.func_178782_a()).func_177230_c() == Blocks.field_150378_br)
+         {
+-            return new ActionResult<>(EnumActionResult.PASS, itemstack);
++            return new ActionResult<ItemStack>(EnumActionResult.PASS, itemstack);
+         }
+         else
+         {
+@@ -121,11 +121,11 @@
+                     }
+ 
+                     p_77659_2_.func_71029_a(StatList.func_188057_b(this));
+-                    return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
++                    return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+                 }
+             }
+ 
+-            return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
++            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+         }
+     }
+ }

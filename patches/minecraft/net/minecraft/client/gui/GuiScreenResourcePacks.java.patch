@@ -1,0 +1,22 @@
+--- before/net/minecraft/client/gui/GuiScreenResourcePacks.java
++++ after/net/minecraft/client/gui/GuiScreenResourcePacks.java
+@@ -37,8 +37,8 @@
+ 
+         if (!this.field_175289_s)
+         {
+-            this.field_146966_g = Lists.newArrayList();
+-            this.field_146969_h = Lists.newArrayList();
++            this.field_146966_g = Lists.<ResourcePackListEntry>newArrayList();
++            this.field_146969_h = Lists.<ResourcePackListEntry>newArrayList();
+             ResourcePackRepository resourcepackrepository = this.field_146297_k.func_110438_M();
+             resourcepackrepository.func_110611_a();
+             List<ResourcePackRepository.Entry> list = Lists.newArrayList(resourcepackrepository.func_110609_b());
+@@ -112,7 +112,7 @@
+             {
+                 if (this.field_175289_s)
+                 {
+-                    List<ResourcePackRepository.Entry> list = Lists.newArrayList();
++                    List<ResourcePackRepository.Entry> list = Lists.<ResourcePackRepository.Entry>newArrayList();
+ 
+                     for (ResourcePackListEntry resourcepacklistentry : this.field_146969_h)
+                     {

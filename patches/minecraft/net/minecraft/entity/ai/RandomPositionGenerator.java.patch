@@ -1,0 +1,35 @@
+--- before/net/minecraft/entity/ai/RandomPositionGenerator.java
++++ after/net/minecraft/entity/ai/RandomPositionGenerator.java
+@@ -75,7 +75,7 @@
+             int i1 = random.nextInt(2 * p_191379_2_ + 1) - p_191379_2_;
+             int j1 = random.nextInt(2 * p_191379_1_ + 1) - p_191379_1_;
+ 
+-            if (p_191379_3_ == null || !((double)l * p_191379_3_.field_72450_a + (double)j1 * p_191379_3_.field_72449_c < 0.0D))
++            if (p_191379_3_ == null || (double)l * p_191379_3_.field_72450_a + (double)j1 * p_191379_3_.field_72449_c >= 0.0D)
+             {
+                 if (p_191379_0_.func_110175_bO() && p_191379_1_ > 1)
+                 {
+@@ -128,7 +128,14 @@
+             }
+         }
+ 
+-        return flag1 ? new Vec3d((double)k1 + p_191379_0_.field_70165_t, (double)i + p_191379_0_.field_70163_u, (double)j + p_191379_0_.field_70161_v) : null;
++        if (flag1)
++        {
++            return new Vec3d((double)k1 + p_191379_0_.field_70165_t, (double)i + p_191379_0_.field_70163_u, (double)j + p_191379_0_.field_70161_v);
++        }
++        else
++        {
++            return null;
++        }
+     }
+ 
+     private static BlockPos func_191378_a(BlockPos p_191378_0_, EntityCreature p_191378_1_)
+@@ -143,6 +150,7 @@
+ 
+             for (blockpos = p_191378_0_.func_177984_a(); blockpos.func_177956_o() < p_191378_1_.field_70170_p.func_72800_K() && p_191378_1_.field_70170_p.func_180495_p(blockpos).func_185904_a().func_76220_a(); blockpos = blockpos.func_177984_a())
+             {
++                ;
+             }
+ 
+             return blockpos;

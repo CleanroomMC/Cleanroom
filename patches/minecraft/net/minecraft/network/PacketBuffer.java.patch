@@ -1,6 +1,69 @@
 --- before/net/minecraft/network/PacketBuffer.java
 +++ after/net/minecraft/network/PacketBuffer.java
-@@ -336,7 +336,7 @@
+@@ -183,7 +183,7 @@
+ 
+     public <T extends Enum<T>> T func_179257_a(Class<T> p_179257_1_)
+     {
+-        return (p_179257_1_.getEnumConstants())[this.func_150792_a()];
++        return (T)((Enum[])p_179257_1_.getEnumConstants())[this.func_150792_a()];
+     }
+ 
+     public PacketBuffer func_179249_a(Enum<?> p_179249_1_)
+@@ -195,19 +195,22 @@
+     {
+         int i = 0;
+         int j = 0;
+-        byte b0;
+ 
+-        do
++        while (true)
+         {
+-            b0 = this.readByte();
++            byte b0 = this.readByte();
+             i |= (b0 & 127) << j++ * 7;
+ 
+             if (j > 5)
+             {
+                 throw new RuntimeException("VarInt too big");
+             }
++
++            if ((b0 & 128) != 128)
++            {
++                break;
++            }
+         }
+-        while ((b0 & 128) == 128);
+ 
+         return i;
+     }
+@@ -216,19 +219,22 @@
+     {
+         long i = 0L;
+         int j = 0;
+-        byte b0;
+ 
+-        do
++        while (true)
+         {
+-            b0 = this.readByte();
++            byte b0 = this.readByte();
+             i |= (long)(b0 & 127) << j++ * 7;
+ 
+             if (j > 10)
+             {
+                 throw new RuntimeException("VarLong too big");
+             }
++
++            if ((b0 & 128) != 128)
++            {
++                break;
++            }
+         }
+-        while ((b0 & 128) == 128);
+ 
+         return i;
+     }
+@@ -330,7 +336,7 @@
  
              if (p_150788_1_.func_77973_b().func_77645_m() || p_150788_1_.func_77973_b().func_77651_p())
              {
@@ -9,7 +72,7 @@
              }
  
              this.func_150786_a(nbttagcompound);
-@@ -358,7 +358,7 @@
+@@ -352,7 +358,7 @@
              int j = this.readByte();
              int k = this.readShort();
              ItemStack itemstack = new ItemStack(Item.func_150899_d(i), j, k);

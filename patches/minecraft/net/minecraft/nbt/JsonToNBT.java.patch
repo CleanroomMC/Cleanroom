@@ -1,0 +1,49 @@
+--- before/net/minecraft/nbt/JsonToNBT.java
++++ after/net/minecraft/nbt/JsonToNBT.java
+@@ -136,8 +136,9 @@
+                 return new NBTTagByte((byte)0);
+             }
+         }
+-        catch (NumberFormatException numberformatexception)
++        catch (NumberFormatException var3)
+         {
++            ;
+         }
+ 
+         return new NBTTagString(p_193596_1_);
+@@ -197,6 +198,7 @@
+ 
+         for (i = this.field_193623_i; this.func_193612_g() && this.func_193599_a(this.func_193598_n()); ++this.field_193623_i)
+         {
++            ;
+         }
+ 
+         return this.field_193622_h.substring(i, this.field_193623_i);
+@@ -340,7 +342,7 @@
+ 
+     private <T extends Number> List<T> func_193603_a(byte p_193603_1_, byte p_193603_2_) throws NBTException
+     {
+-        List list = Lists.newArrayList();
++        List<T> list = Lists.<T>newArrayList();
+ 
+         while (true)
+         {
+@@ -356,15 +358,15 @@
+ 
+                 if (p_193603_2_ == 1)
+                 {
+-                    list.add(((NBTPrimitive)nbtbase).func_150290_f());
++                    list.add((T)Byte.valueOf(((NBTPrimitive)nbtbase).func_150290_f()));
+                 }
+                 else if (p_193603_2_ == 4)
+                 {
+-                    list.add(((NBTPrimitive)nbtbase).func_150291_c());
++                    list.add((T)Long.valueOf(((NBTPrimitive)nbtbase).func_150291_c()));
+                 }
+                 else
+                 {
+-                    list.add(((NBTPrimitive)nbtbase).func_150287_d());
++                    list.add((T)Integer.valueOf(((NBTPrimitive)nbtbase).func_150287_d()));
+                 }
+ 
+                 if (this.func_193613_m())

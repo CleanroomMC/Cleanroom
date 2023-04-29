@@ -1,6 +1,32 @@
 --- before/net/minecraft/client/renderer/texture/TextureMap.java
 +++ after/net/minecraft/client/renderer/texture/TextureMap.java
-@@ -45,6 +45,16 @@
+@@ -6,6 +6,7 @@
+ import java.io.IOException;
+ import java.util.List;
+ import java.util.Map;
++import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.renderer.StitcherException;
+@@ -29,13 +30,13 @@
+     private static final Logger field_147635_d = LogManager.getLogger();
+     public static final ResourceLocation field_174945_f = new ResourceLocation("missingno");
+     public static final ResourceLocation field_110575_b = new ResourceLocation("textures/atlas/blocks.png");
+-    private final List<TextureAtlasSprite> field_94258_i = Lists.newArrayList();
+-    private final Map<String, TextureAtlasSprite> field_110574_e = Maps.newHashMap();
+-    private final Map<String, TextureAtlasSprite> field_94252_e = Maps.newHashMap();
++    private final List<TextureAtlasSprite> field_94258_i;
++    private final Map<String, TextureAtlasSprite> field_110574_e;
++    private final Map<String, TextureAtlasSprite> field_94252_e;
+     private final String field_94254_c;
+     private final ITextureMapPopulator field_174946_m;
+     private int field_147636_j;
+-    private final TextureAtlasSprite field_94249_f = new TextureAtlasSprite("missingno");
++    private final TextureAtlasSprite field_94249_f;
+ 
+     public TextureMap(String p_i46099_1_)
+     {
+@@ -44,6 +45,20 @@
  
      public TextureMap(String p_i46100_1_, @Nullable ITextureMapPopulator p_i46100_2_)
      {
@@ -14,10 +40,14 @@
 +
 +    public TextureMap(String p_i46100_1_, @Nullable ITextureMapPopulator p_i46100_2_, boolean skipFirst)
 +    {
-         this.field_94258_i = Lists.<TextureAtlasSprite>newArrayList();
-         this.field_110574_e = Maps.<String, TextureAtlasSprite>newHashMap();
-         this.field_94252_e = Maps.<String, TextureAtlasSprite>newHashMap();
-@@ -74,6 +84,7 @@
++        this.field_94258_i = Lists.<TextureAtlasSprite>newArrayList();
++        this.field_110574_e = Maps.<String, TextureAtlasSprite>newHashMap();
++        this.field_94252_e = Maps.<String, TextureAtlasSprite>newHashMap();
++        this.field_94249_f = new TextureAtlasSprite("missingno");
+         this.field_94254_c = p_i46100_1_;
+         this.field_174946_m = p_i46100_2_;
+     }
+@@ -69,6 +84,7 @@
      public void func_174943_a(IResourceManager p_174943_1_, ITextureMapPopulator p_174943_2_)
      {
          this.field_110574_e.clear();
@@ -25,12 +55,12 @@
          p_174943_2_.func_177059_a(this);
          this.func_110569_e();
          this.func_147631_c();
-@@ -88,29 +99,74 @@
+@@ -83,29 +99,74 @@
          this.field_94258_i.clear();
          int j = Integer.MAX_VALUE;
          int k = 1 << this.field_147636_j;
 -
--        for (Entry<String, TextureAtlasSprite> entry : this.field_110574_e.entrySet())
+-        for (Map.Entry<String, TextureAtlasSprite> entry : this.field_110574_e.entrySet())
 -        {
 -            TextureAtlasSprite textureatlassprite = entry.getValue();
 -            ResourceLocation resourcelocation = this.func_184396_a(textureatlassprite);
@@ -111,11 +141,11 @@
              }
              finally
              {
-@@ -122,16 +178,28 @@
+@@ -117,27 +178,41 @@
  
              if (j1 < k)
              {
--                field_147635_d.warn("Texture {} with size {}x{} limits mip level from {} to {}", resourcelocation, Integer.valueOf(textureatlassprite.func_94211_a()), Integer.valueOf(textureatlassprite.func_94216_b()), Integer.valueOf(MathHelper.func_151239_c(k)), Integer.valueOf(MathHelper.func_151239_c(j1)));
+-                field_147635_d.warn("Texture {} with size {}x{} limits mip level from {} to {}", resourcelocation, textureatlassprite.func_94211_a(), textureatlassprite.func_94216_b(), MathHelper.func_151239_c(k), MathHelper.func_151239_c(j1));
 -                k = j1;
 +                // FORGE: do not lower the mipmap level, just log the problematic textures
 +                field_147635_d.warn("Texture {} with size {}x{} will have visual artifacts at mip level {}, it can only support level {}. Please report to the mod author that the texture should be some multiple of 16x16.", resourcelocation, Integer.valueOf(textureatlassprite.func_94211_a()), Integer.valueOf(textureatlassprite.func_94216_b()), Integer.valueOf(MathHelper.func_151239_c(k)), Integer.valueOf(MathHelper.func_151239_c(j1)));
@@ -142,8 +172,10 @@
 +        if (false) // FORGE: do not lower the mipmap level
          if (i1 < this.field_147636_j)
          {
-             field_147635_d.warn("{}: dropping miplevel from {} to {}, because of minimum power of two: {}", this.field_94254_c, Integer.valueOf(this.field_147636_j), Integer.valueOf(i1), Integer.valueOf(l));
-@@ -140,9 +208,11 @@
+-            field_147635_d.warn("{}: dropping miplevel from {} to {}, because of minimum power of two: {}", this.field_94254_c, this.field_147636_j, i1, l);
++            field_147635_d.warn("{}: dropping miplevel from {} to {}, because of minimum power of two: {}", this.field_94254_c, Integer.valueOf(this.field_147636_j), Integer.valueOf(i1), Integer.valueOf(l));
+             this.field_147636_j = i1;
+         }
  
          this.field_94249_f.func_147963_d(this.field_147636_j);
          stitcher.func_110934_a(this.field_94249_f);
@@ -155,17 +187,20 @@
              stitcher.func_94305_f();
          }
          catch (StitcherException stitcherexception)
-@@ -151,12 +221,16 @@
+@@ -145,13 +220,17 @@
+             throw stitcherexception;
          }
  
-         field_147635_d.info("Created: {}x{} {}-atlas", Integer.valueOf(stitcher.func_110935_a()), Integer.valueOf(stitcher.func_110936_b()), this.field_94254_c);
+-        field_147635_d.info("Created: {}x{} {}-atlas", stitcher.func_110935_a(), stitcher.func_110936_b(), this.field_94254_c);
++        field_147635_d.info("Created: {}x{} {}-atlas", Integer.valueOf(stitcher.func_110935_a()), Integer.valueOf(stitcher.func_110936_b()), this.field_94254_c);
 +        bar.step("Allocating GL texture");
          TextureUtil.func_180600_a(this.func_110552_b(), this.field_147636_j, stitcher.func_110935_a(), stitcher.func_110936_b());
-         Map<String, TextureAtlasSprite> map = Maps.<String, TextureAtlasSprite>newHashMap(this.field_110574_e);
- 
+-        Map<String, TextureAtlasSprite> map = Maps.newHashMap(this.field_110574_e);
++        Map<String, TextureAtlasSprite> map = Maps.<String, TextureAtlasSprite>newHashMap(this.field_110574_e);
++
 +        net.minecraftforge.fml.common.ProgressManager.pop(bar);
 +        bar = net.minecraftforge.fml.common.ProgressManager.push("Texture mipmap and upload", stitcher.func_94309_g().size());
-+
+ 
          for (TextureAtlasSprite textureatlassprite1 : stitcher.func_94309_g())
          {
 -            if (textureatlassprite1 == this.field_94249_f || this.func_184397_a(p_110571_1_, textureatlassprite1))
@@ -173,7 +208,7 @@
              {
                  String s = textureatlassprite1.func_94215_i();
                  map.remove(s);
-@@ -186,6 +260,8 @@
+@@ -181,6 +260,8 @@
          {
              textureatlassprite2.func_94217_a(this.field_94249_f);
          }
@@ -182,7 +217,7 @@
      }
  
      private boolean func_184397_a(IResourceManager p_184397_1_, final TextureAtlasSprite p_184397_2_)
-@@ -195,7 +271,7 @@
+@@ -190,7 +271,7 @@
          label62:
          {
              boolean flag;
@@ -191,7 +226,26 @@
              try
              {
                  iresource = p_184397_1_.func_110536_a(resourcelocation);
-@@ -292,7 +368,7 @@
+@@ -205,7 +286,8 @@
+             catch (IOException ioexception)
+             {
+                 field_147635_d.error("Using missing texture, unable to load {}", resourcelocation, ioexception);
+-                return false;
++                flag = false;
++                return flag;
+             }
+             finally
+             {
+@@ -245,7 +327,7 @@
+                     return p_184397_2_.func_110970_k() + " frames";
+                 }
+             });
+-            crashreportcategory.func_71507_a("Mipmap levels", this.field_147636_j);
++            crashreportcategory.func_71507_a("Mipmap levels", Integer.valueOf(this.field_147636_j));
+             throw new ReportedException(crashreport);
+         }
+     }
+@@ -286,7 +368,7 @@
          }
          else
          {
@@ -200,7 +254,7 @@
  
              if (textureatlassprite == null)
              {
-@@ -317,5 +393,53 @@
+@@ -311,5 +393,53 @@
      public TextureAtlasSprite func_174944_f()
      {
          return this.field_94249_f;

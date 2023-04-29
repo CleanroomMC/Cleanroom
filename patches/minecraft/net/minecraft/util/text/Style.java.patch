@@ -1,5 +1,38 @@
 --- before/net/minecraft/util/text/Style.java
 +++ after/net/minecraft/util/text/Style.java
+@@ -132,27 +132,27 @@
+ 
+     public boolean func_150223_b()
+     {
+-        return this.field_150248_c == null ? this.func_150224_n().func_150223_b() : this.field_150248_c;
++        return this.field_150248_c == null ? this.func_150224_n().func_150223_b() : this.field_150248_c.booleanValue();
+     }
+ 
+     public boolean func_150242_c()
+     {
+-        return this.field_150245_d == null ? this.func_150224_n().func_150242_c() : this.field_150245_d;
++        return this.field_150245_d == null ? this.func_150224_n().func_150242_c() : this.field_150245_d.booleanValue();
+     }
+ 
+     public boolean func_150236_d()
+     {
+-        return this.field_150243_f == null ? this.func_150224_n().func_150236_d() : this.field_150243_f;
++        return this.field_150243_f == null ? this.func_150224_n().func_150236_d() : this.field_150243_f.booleanValue();
+     }
+ 
+     public boolean func_150234_e()
+     {
+-        return this.field_150246_e == null ? this.func_150224_n().func_150234_e() : this.field_150246_e;
++        return this.field_150246_e == null ? this.func_150224_n().func_150234_e() : this.field_150246_e.booleanValue();
+     }
+ 
+     public boolean func_150233_f()
+     {
+-        return this.field_150244_g == null ? this.func_150224_n().func_150233_f() : this.field_150244_g;
++        return this.field_150244_g == null ? this.func_150224_n().func_150233_f() : this.field_150244_g.booleanValue();
+     }
+ 
+     public boolean func_150229_g()
 @@ -238,7 +238,6 @@
          return this;
      }
@@ -8,3 +41,147 @@
      public String func_150218_j()
      {
          if (this.func_150229_g())
+@@ -305,48 +304,58 @@
+         }
+         else
+         {
+-            Style style = (Style)p_equals_1_;
+-
+-            if (this.func_150223_b() == style.func_150223_b() && this.func_150215_a() == style.func_150215_a() && this.func_150242_c() == style.func_150242_c() && this.func_150233_f() == style.func_150233_f() && this.func_150236_d() == style.func_150236_d() && this.func_150234_e() == style.func_150234_e())
++            boolean flag;
++            label77:
+             {
+-                if (this.func_150235_h() != null)
+-                {
+-                    if (!this.func_150235_h().equals(style.func_150235_h()))
+-                    {
+-                        return false;
+-                    }
+-                }
+-                else if (style.func_150235_h() != null)
+-                {
+-                    return false;
+-                }
+-
+-                if (this.func_150210_i() != null)
+-                {
+-                    if (!this.func_150210_i().equals(style.func_150210_i()))
+-                    {
+-                        return false;
+-                    }
+-                }
+-                else if (style.func_150210_i() != null)
+-                {
+-                    return false;
+-                }
+-
+-                if (this.func_179986_j() != null)
+-                {
+-                    if (this.func_179986_j().equals(style.func_179986_j()))
+-                    {
+-                        return true;
+-                    }
+-                }
+-                else if (style.func_179986_j() == null)
+-                {
+-                    return true;
+-                }
++                Style style = (Style)p_equals_1_;
++
++                if (this.func_150223_b() == style.func_150223_b() && this.func_150215_a() == style.func_150215_a() && this.func_150242_c() == style.func_150242_c() && this.func_150233_f() == style.func_150233_f() && this.func_150236_d() == style.func_150236_d() && this.func_150234_e() == style.func_150234_e())
++                {
++                    label71:
++                    {
++                        if (this.func_150235_h() != null)
++                        {
++                            if (!this.func_150235_h().equals(style.func_150235_h()))
++                            {
++                                break label71;
++                            }
++                        }
++                        else if (style.func_150235_h() != null)
++                        {
++                            break label71;
++                        }
++
++                        if (this.func_150210_i() != null)
++                        {
++                            if (!this.func_150210_i().equals(style.func_150210_i()))
++                            {
++                                break label71;
++                            }
++                        }
++                        else if (style.func_150210_i() != null)
++                        {
++                            break label71;
++                        }
++
++                        if (this.func_179986_j() != null)
++                        {
++                            if (this.func_179986_j().equals(style.func_179986_j()))
++                            {
++                                break label77;
++                            }
++                        }
++                        else if (style.func_179986_j() == null)
++                        {
++                            break label77;
++                        }
++                    }
++                }
++
++                flag = false;
++                return flag;
+             }
+-
+-            return false;
++            flag = true;
++            return flag;
+         }
+     }
+ 
+@@ -360,7 +369,8 @@
+         i = 31 * i + this.field_150244_g.hashCode();
+         i = 31 * i + this.field_150251_h.hashCode();
+         i = 31 * i + this.field_150252_i.hashCode();
+-        return 31 * i + this.field_179990_j.hashCode();
++        i = 31 * i + this.field_179990_j.hashCode();
++        return i;
+     }
+ 
+     public Style func_150232_l()
+@@ -382,11 +392,11 @@
+     public Style func_150206_m()
+     {
+         Style style = new Style();
+-        style.func_150227_a(this.func_150223_b());
+-        style.func_150217_b(this.func_150242_c());
+-        style.func_150225_c(this.func_150236_d());
+-        style.func_150228_d(this.func_150234_e());
+-        style.func_150237_e(this.func_150233_f());
++        style.func_150227_a(Boolean.valueOf(this.func_150223_b()));
++        style.func_150217_b(Boolean.valueOf(this.func_150242_c()));
++        style.func_150225_c(Boolean.valueOf(this.func_150236_d()));
++        style.func_150228_d(Boolean.valueOf(this.func_150234_e()));
++        style.func_150237_e(Boolean.valueOf(this.func_150233_f()));
+         style.func_150238_a(this.func_150215_a());
+         style.func_150241_a(this.func_150235_h());
+         style.func_150209_a(this.func_150210_i());
+@@ -437,7 +447,7 @@
+ 
+                         if (jsonobject.has("color"))
+                         {
+-                            style.field_150247_b = p_deserialize_3_.deserialize(jsonobject.get("color"), TextFormatting.class);
++                            style.field_150247_b = (TextFormatting)p_deserialize_3_.deserialize(jsonobject.get("color"), TextFormatting.class);
+                         }
+ 
+                         if (jsonobject.has("insertion"))
+@@ -471,7 +481,7 @@
+                             {
+                                 JsonPrimitive jsonprimitive2 = jsonobject2.getAsJsonPrimitive("action");
+                                 HoverEvent.Action hoverevent$action = jsonprimitive2 == null ? null : HoverEvent.Action.func_150684_a(jsonprimitive2.getAsString());
+-                                ITextComponent itextcomponent = p_deserialize_3_.deserialize(jsonobject2.get("value"), ITextComponent.class);
++                                ITextComponent itextcomponent = (ITextComponent)p_deserialize_3_.deserialize(jsonobject2.get("value"), ITextComponent.class);
+ 
+                                 if (hoverevent$action != null && itextcomponent != null && hoverevent$action.func_150686_a())
+                                 {

@@ -1,6 +1,60 @@
 --- before/net/minecraft/block/BlockChest.java
 +++ after/net/minecraft/block/BlockChest.java
-@@ -470,7 +470,7 @@
+@@ -2,6 +2,7 @@
+ 
+ import javax.annotation.Nullable;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyDirection;
+ import net.minecraft.block.state.BlockFaceShape;
+ import net.minecraft.block.state.BlockStateContainer;
+@@ -183,7 +184,7 @@
+             IBlockState iblockstate1 = p_176455_1_.func_180495_p(p_176455_2_.func_177968_d());
+             IBlockState iblockstate2 = p_176455_1_.func_180495_p(p_176455_2_.func_177976_e());
+             IBlockState iblockstate3 = p_176455_1_.func_180495_p(p_176455_2_.func_177974_f());
+-            EnumFacing enumfacing = p_176455_3_.func_177229_b(field_176459_a);
++            EnumFacing enumfacing = (EnumFacing)p_176455_3_.func_177229_b(field_176459_a);
+ 
+             if (iblockstate.func_177230_c() != this && iblockstate1.func_177230_c() != this)
+             {
+@@ -200,11 +201,11 @@
+ 
+                     if (iblockstate2.func_177230_c() == this)
+                     {
+-                        enumfacing2 = iblockstate2.func_177229_b(field_176459_a);
++                        enumfacing2 = (EnumFacing)iblockstate2.func_177229_b(field_176459_a);
+                     }
+                     else
+                     {
+-                        enumfacing2 = iblockstate3.func_177229_b(field_176459_a);
++                        enumfacing2 = (EnumFacing)iblockstate3.func_177229_b(field_176459_a);
+                     }
+ 
+                     if (enumfacing2 == EnumFacing.NORTH)
+@@ -233,11 +234,11 @@
+ 
+                 if (iblockstate.func_177230_c() == this)
+                 {
+-                    enumfacing1 = iblockstate.func_177229_b(field_176459_a);
++                    enumfacing1 = (EnumFacing)iblockstate.func_177229_b(field_176459_a);
+                 }
+                 else
+                 {
+-                    enumfacing1 = iblockstate1.func_177229_b(field_176459_a);
++                    enumfacing1 = (EnumFacing)iblockstate1.func_177229_b(field_176459_a);
+                 }
+ 
+                 if (enumfacing1 == EnumFacing.WEST)
+@@ -293,7 +294,7 @@
+         }
+         else
+         {
+-            EnumFacing enumfacing2 = p_176458_3_.func_177229_b(field_176459_a);
++            EnumFacing enumfacing2 = (EnumFacing)p_176458_3_.func_177229_b(field_176459_a);
+ 
+             if (p_176458_1_.func_180495_p(p_176458_2_.func_177972_a(enumfacing2)).func_185913_b())
+             {
+@@ -469,7 +470,7 @@
  
                      if (block == this)
                      {
@@ -9,7 +63,7 @@
                          {
                              return null;
                          }
-@@ -538,7 +538,7 @@
+@@ -537,7 +538,7 @@
  
      private boolean func_176456_n(World p_176456_1_, BlockPos p_176456_2_)
      {
@@ -18,7 +72,34 @@
      }
  
      private boolean func_176453_o(World p_176453_1_, BlockPos p_176453_2_)
-@@ -607,5 +607,11 @@
+@@ -579,22 +580,22 @@
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(field_176459_a).func_176745_a();
++        return ((EnumFacing)p_176201_1_.func_177229_b(field_176459_a)).func_176745_a();
+     }
+ 
+     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
+     {
+-        return p_185499_1_.func_177226_a(field_176459_a, p_185499_2_.func_185831_a(p_185499_1_.func_177229_b(field_176459_a)));
++        return p_185499_1_.func_177226_a(field_176459_a, p_185499_2_.func_185831_a((EnumFacing)p_185499_1_.func_177229_b(field_176459_a)));
+     }
+ 
+     public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
+     {
+-        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a(p_185471_1_.func_177229_b(field_176459_a)));
++        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a((EnumFacing)p_185471_1_.func_177229_b(field_176459_a)));
+     }
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176459_a);
++        return new BlockStateContainer(this, new IProperty[] {field_176459_a});
+     }
+ 
+     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+@@ -606,5 +607,11 @@
      {
          BASIC,
          TRAP;

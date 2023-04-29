@@ -9,3 +9,21 @@
                  }
                  public boolean func_82869_a(EntityPlayer p_82869_1_)
                  {
+@@ -138,7 +138,7 @@
+                     return ItemStack.field_190927_a;
+                 }
+             }
+-            else if (entityequipmentslot.func_188453_a() == EntityEquipmentSlot.Type.ARMOR && !this.field_75151_b.get(8 - entityequipmentslot.func_188454_b()).func_75216_d())
++            else if (entityequipmentslot.func_188453_a() == EntityEquipmentSlot.Type.ARMOR && !((Slot)this.field_75151_b.get(8 - entityequipmentslot.func_188454_b())).func_75216_d())
+             {
+                 int i = 8 - entityequipmentslot.func_188454_b();
+ 
+@@ -147,7 +147,7 @@
+                     return ItemStack.field_190927_a;
+                 }
+             }
+-            else if (entityequipmentslot == EntityEquipmentSlot.OFFHAND && !this.field_75151_b.get(45).func_75216_d())
++            else if (entityequipmentslot == EntityEquipmentSlot.OFFHAND && !((Slot)this.field_75151_b.get(45)).func_75216_d())
+             {
+                 if (!this.func_75135_a(itemstack1, 45, 46, false))
+                 {

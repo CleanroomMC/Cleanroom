@@ -1,0 +1,72 @@
+--- before/net/minecraft/util/JsonUtils.java
++++ after/net/minecraft/util/JsonUtils.java
+@@ -277,7 +277,7 @@
+     {
+         if (p_188179_0_ != null)
+         {
+-            return p_188179_2_.deserialize(p_188179_0_, p_188179_3_);
++            return (T)p_188179_2_.deserialize(p_188179_0_, p_188179_3_);
+         }
+         else
+         {
+@@ -289,7 +289,7 @@
+     {
+         if (p_188174_0_.has(p_188174_1_))
+         {
+-            return func_188179_a(p_188174_0_.get(p_188174_1_), p_188174_1_, p_188174_2_, p_188174_3_);
++            return (T)func_188179_a(p_188174_0_.get(p_188174_1_), p_188174_1_, p_188174_2_, p_188174_3_);
+         }
+         else
+         {
+@@ -350,7 +350,7 @@
+         {
+             JsonReader jsonreader = new JsonReader(p_188173_1_);
+             jsonreader.setLenient(p_188173_3_);
+-            return p_188173_0_.getAdapter(p_188173_2_).read(jsonreader);
++            return (T)p_188173_0_.getAdapter(p_188173_2_).read(jsonreader);
+         }
+         catch (IOException ioexception)
+         {
+@@ -376,36 +376,36 @@
+     @Nullable
+     public static <T> T func_193837_a(Gson p_193837_0_, String p_193837_1_, Type p_193837_2_, boolean p_193837_3_)
+     {
+-        return func_193838_a(p_193837_0_, new StringReader(p_193837_1_), p_193837_2_, p_193837_3_);
++        return (T)func_193838_a(p_193837_0_, new StringReader(p_193837_1_), p_193837_2_, p_193837_3_);
+     }
+ 
+     @Nullable
+     public static <T> T func_188176_a(Gson p_188176_0_, String p_188176_1_, Class<T> p_188176_2_, boolean p_188176_3_)
+     {
+-        return func_188173_a(p_188176_0_, new StringReader(p_188176_1_), p_188176_2_, p_188176_3_);
++        return (T)func_188173_a(p_188176_0_, new StringReader(p_188176_1_), p_188176_2_, p_188176_3_);
+     }
+ 
+     @Nullable
+     public static <T> T func_193841_a(Gson p_193841_0_, Reader p_193841_1_, Type p_193841_2_)
+     {
+-        return func_193838_a(p_193841_0_, p_193841_1_, p_193841_2_, false);
++        return (T)func_193838_a(p_193841_0_, p_193841_1_, p_193841_2_, false);
+     }
+ 
+     @Nullable
+     public static <T> T func_193840_a(Gson p_193840_0_, String p_193840_1_, Type p_193840_2_)
+     {
+-        return func_193837_a(p_193840_0_, p_193840_1_, p_193840_2_, false);
++        return (T)func_193837_a(p_193840_0_, p_193840_1_, p_193840_2_, false);
+     }
+ 
+     @Nullable
+     public static <T> T func_193839_a(Gson p_193839_0_, Reader p_193839_1_, Class<T> p_193839_2_)
+     {
+-        return func_188173_a(p_193839_0_, p_193839_1_, p_193839_2_, false);
++        return (T)func_188173_a(p_193839_0_, p_193839_1_, p_193839_2_, false);
+     }
+ 
+     @Nullable
+     public static <T> T func_188178_a(Gson p_188178_0_, String p_188178_1_, Class<T> p_188178_2_)
+     {
+-        return func_188176_a(p_188178_0_, p_188178_1_, p_188178_2_, false);
++        return (T)func_188176_a(p_188178_0_, p_188178_1_, p_188178_2_, false);
+     }
+ }

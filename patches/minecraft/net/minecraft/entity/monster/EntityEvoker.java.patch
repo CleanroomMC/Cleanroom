@@ -1,6 +1,63 @@
 --- before/net/minecraft/entity/monster/EntityEvoker.java
 +++ after/net/minecraft/entity/monster/EntityEvoker.java
-@@ -365,7 +365,7 @@
+@@ -49,17 +49,17 @@
+         super.func_184651_r();
+         this.field_70714_bg.func_75776_a(0, new EntityAISwimming(this));
+         this.field_70714_bg.func_75776_a(1, new EntityEvoker.AICastingSpell());
+-        this.field_70714_bg.func_75776_a(2, new EntityAIAvoidEntity<>(this, EntityPlayer.class, 8.0F, 0.6D, 1.0D));
++        this.field_70714_bg.func_75776_a(2, new EntityAIAvoidEntity(this, EntityPlayer.class, 8.0F, 0.6D, 1.0D));
+         this.field_70714_bg.func_75776_a(4, new EntityEvoker.AISummonSpell());
+         this.field_70714_bg.func_75776_a(5, new EntityEvoker.AIAttackSpell());
+         this.field_70714_bg.func_75776_a(6, new EntityEvoker.AIWololoSpell());
+         this.field_70714_bg.func_75776_a(8, new EntityAIWander(this, 0.6D));
+         this.field_70714_bg.func_75776_a(9, new EntityAIWatchClosest(this, EntityPlayer.class, 3.0F, 1.0F));
+         this.field_70714_bg.func_75776_a(10, new EntityAIWatchClosest(this, EntityLiving.class, 8.0F));
+-        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, true, EntityEvoker.class));
+-        this.field_70715_bh.func_75776_a(2, (new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true)).func_190882_b(300));
+-        this.field_70715_bh.func_75776_a(3, (new EntityAINearestAttackableTarget<>(this, EntityVillager.class, false)).func_190882_b(300));
+-        this.field_70715_bh.func_75776_a(3, new EntityAINearestAttackableTarget<>(this, EntityIronGolem.class, false));
++        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, true, new Class[] {EntityEvoker.class}));
++        this.field_70715_bh.func_75776_a(2, (new EntityAINearestAttackableTarget(this, EntityPlayer.class, true)).func_190882_b(300));
++        this.field_70715_bh.func_75776_a(3, (new EntityAINearestAttackableTarget(this, EntityVillager.class, false)).func_190882_b(300));
++        this.field_70715_bh.func_75776_a(3, new EntityAINearestAttackableTarget(this, EntityIronGolem.class, false));
+     }
+ 
+     protected void func_110147_ax()
+@@ -218,7 +218,7 @@
+             boolean flag = false;
+             double d0 = 0.0D;
+ 
+-            do
++            while (true)
+             {
+                 if (!EntityEvoker.this.field_70170_p.func_175677_d(blockpos, true) && EntityEvoker.this.field_70170_p.func_175677_d(blockpos.func_177977_b(), true))
+                 {
+@@ -238,8 +238,12 @@
+                 }
+ 
+                 blockpos = blockpos.func_177977_b();
++
++                if (blockpos.func_177956_o() < MathHelper.func_76128_c(p_190876_5_) - 1)
++                {
++                    break;
++                }
+             }
+-            while (blockpos.func_177956_o() >= MathHelper.func_76128_c(p_190876_5_) - 1);
+ 
+             if (flag)
+             {
+@@ -343,6 +347,10 @@
+             }
+         };
+ 
++        public AIWololoSpell()
++        {
++        }
++
+         public boolean func_75250_a()
+         {
+             if (EntityEvoker.this.func_70638_az() != null)
+@@ -357,13 +365,13 @@
              {
                  return false;
              }
@@ -9,3 +66,10 @@
              {
                  return false;
              }
+             else
+             {
+-                List<EntitySheep> list = EntityEvoker.this.field_70170_p.func_175647_a(EntitySheep.class, EntityEvoker.this.func_174813_aQ().func_72314_b(16.0D, 4.0D, 16.0D), this.field_190879_a);
++                List<EntitySheep> list = EntityEvoker.this.field_70170_p.<EntitySheep>func_175647_a(EntitySheep.class, EntityEvoker.this.func_174813_aQ().func_72314_b(16.0D, 4.0D, 16.0D), this.field_190879_a);
+ 
+                 if (list.isEmpty())
+                 {

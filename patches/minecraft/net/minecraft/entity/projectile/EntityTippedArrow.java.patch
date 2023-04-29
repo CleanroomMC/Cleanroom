@@ -1,0 +1,88 @@
+--- before/net/minecraft/entity/projectile/EntityTippedArrow.java
++++ after/net/minecraft/entity/projectile/EntityTippedArrow.java
+@@ -16,6 +16,7 @@
+ import net.minecraft.potion.PotionType;
+ import net.minecraft.potion.PotionUtils;
+ import net.minecraft.util.EnumParticleTypes;
++import net.minecraft.util.ResourceLocation;
+ import net.minecraft.util.datafix.DataFixer;
+ import net.minecraft.world.World;
+ import net.minecraftforge.fml.relauncher.Side;
+@@ -23,9 +24,9 @@
+ 
+ public class EntityTippedArrow extends EntityArrow
+ {
+-    private static final DataParameter<Integer> field_184559_f = EntityDataManager.func_187226_a(EntityTippedArrow.class, DataSerializers.field_187192_b);
++    private static final DataParameter<Integer> field_184559_f = EntityDataManager.<Integer>func_187226_a(EntityTippedArrow.class, DataSerializers.field_187192_b);
+     private PotionType field_184560_g = PotionTypes.field_185229_a;
+-    private final Set<PotionEffect> field_184561_h = Sets.newHashSet();
++    private final Set<PotionEffect> field_184561_h = Sets.<PotionEffect>newHashSet();
+     private boolean field_191509_at;
+ 
+     public EntityTippedArrow(World p_i46756_1_)
+@@ -73,7 +74,7 @@
+         {
+             this.field_184560_g = PotionTypes.field_185229_a;
+             this.field_184561_h.clear();
+-            this.field_70180_af.func_187227_b(field_184559_f, -1);
++            this.field_70180_af.func_187227_b(field_184559_f, Integer.valueOf(-1));
+         }
+     }
+ 
+@@ -86,19 +87,19 @@
+     private void func_190548_o()
+     {
+         this.field_191509_at = false;
+-        this.field_70180_af.func_187227_b(field_184559_f, PotionUtils.func_185181_a(PotionUtils.func_185186_a(this.field_184560_g, this.field_184561_h)));
++        this.field_70180_af.func_187227_b(field_184559_f, Integer.valueOf(PotionUtils.func_185181_a(PotionUtils.func_185186_a(this.field_184560_g, this.field_184561_h))));
+     }
+ 
+     public void func_184558_a(PotionEffect p_184558_1_)
+     {
+         this.field_184561_h.add(p_184558_1_);
+-        this.func_184212_Q().func_187227_b(field_184559_f, PotionUtils.func_185181_a(PotionUtils.func_185186_a(this.field_184560_g, this.field_184561_h)));
++        this.func_184212_Q().func_187227_b(field_184559_f, Integer.valueOf(PotionUtils.func_185181_a(PotionUtils.func_185186_a(this.field_184560_g, this.field_184561_h))));
+     }
+ 
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+-        this.field_70180_af.func_187214_a(field_184559_f, -1);
++        this.field_70180_af.func_187214_a(field_184559_f, Integer.valueOf(-1));
+     }
+ 
+     public void func_70071_h_()
+@@ -124,7 +125,7 @@
+             this.field_70170_p.func_72960_a(this, (byte)0);
+             this.field_184560_g = PotionTypes.field_185229_a;
+             this.field_184561_h.clear();
+-            this.field_70180_af.func_187227_b(field_184559_f, -1);
++            this.field_70180_af.func_187227_b(field_184559_f, Integer.valueOf(-1));
+         }
+     }
+ 
+@@ -147,13 +148,13 @@
+ 
+     public int func_184557_n()
+     {
+-        return this.field_70180_af.func_187225_a(field_184559_f);
++        return ((Integer)this.field_70180_af.func_187225_a(field_184559_f)).intValue();
+     }
+ 
+     private void func_191507_d(int p_191507_1_)
+     {
+         this.field_191509_at = true;
+-        this.field_70180_af.func_187227_b(field_184559_f, p_191507_1_);
++        this.field_70180_af.func_187227_b(field_184559_f, Integer.valueOf(p_191507_1_));
+     }
+ 
+     public static void func_189660_b(DataFixer p_189660_0_)
+@@ -167,7 +168,7 @@
+ 
+         if (this.field_184560_g != PotionTypes.field_185229_a && this.field_184560_g != null)
+         {
+-            p_70014_1_.func_74778_a("Potion", PotionType.field_185176_a.func_177774_c(this.field_184560_g).toString());
++            p_70014_1_.func_74778_a("Potion", ((ResourceLocation)PotionType.field_185176_a.func_177774_c(this.field_184560_g)).toString());
+         }
+ 
+         if (this.field_191509_at)

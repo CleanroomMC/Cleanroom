@@ -1,5 +1,53 @@
 --- before/net/minecraft/item/ItemMonsterPlacer.java
 +++ after/net/minecraft/item/ItemMonsterPlacer.java
+@@ -165,7 +165,7 @@
+ 
+         if (p_77659_1_.field_72995_K)
+         {
+-            return new ActionResult<>(EnumActionResult.PASS, itemstack);
++            return new ActionResult<ItemStack>(EnumActionResult.PASS, itemstack);
+         }
+         else
+         {
+@@ -177,7 +177,7 @@
+ 
+                 if (!(p_77659_1_.func_180495_p(blockpos).func_177230_c() instanceof BlockLiquid))
+                 {
+-                    return new ActionResult<>(EnumActionResult.PASS, itemstack);
++                    return new ActionResult<ItemStack>(EnumActionResult.PASS, itemstack);
+                 }
+                 else if (p_77659_1_.func_175660_a(p_77659_2_, blockpos) && p_77659_2_.func_175151_a(blockpos, raytraceresult.field_178784_b, itemstack))
+                 {
+@@ -185,7 +185,7 @@
+ 
+                     if (entity == null)
+                     {
+-                        return new ActionResult<>(EnumActionResult.PASS, itemstack);
++                        return new ActionResult<ItemStack>(EnumActionResult.PASS, itemstack);
+                     }
+                     else
+                     {
+@@ -202,17 +202,17 @@
+                         }
+ 
+                         p_77659_2_.func_71029_a(StatList.func_188057_b(this));
+-                        return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
++                        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+                     }
+                 }
+                 else
+                 {
+-                    return new ActionResult<>(EnumActionResult.FAIL, itemstack);
++                    return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
+                 }
+             }
+             else
+             {
+-                return new ActionResult<>(EnumActionResult.PASS, itemstack);
++                return new ActionResult<ItemStack>(EnumActionResult.PASS, itemstack);
+             }
+         }
+     }
 @@ -234,6 +234,7 @@
                      entity.func_70012_b(p_77840_2_, p_77840_4_, p_77840_6_, MathHelper.func_76142_g(p_77840_0_.field_73012_v.nextFloat() * 360.0F), 0.0F);
                      entityliving.field_70759_as = entityliving.field_70177_z;

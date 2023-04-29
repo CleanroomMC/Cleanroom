@@ -1,0 +1,60 @@
+--- before/net/minecraft/world/gen/structure/MapGenVillage.java
++++ after/net/minecraft/world/gen/structure/MapGenVillage.java
+@@ -4,6 +4,7 @@
+ import java.util.List;
+ import java.util.Map;
+ import java.util.Random;
++import java.util.Map.Entry;
+ import net.minecraft.init.Biomes;
+ import net.minecraft.nbt.NBTTagCompound;
+ import net.minecraft.util.math.BlockPos;
+@@ -13,26 +14,28 @@
+ 
+ public class MapGenVillage extends MapGenStructure
+ {
+-    public static List<Biome> field_75055_e = Arrays.asList(Biomes.field_76772_c, Biomes.field_76769_d, Biomes.field_150588_X, Biomes.field_76768_g);
++    public static List<Biome> field_75055_e = Arrays.<Biome>asList(Biomes.field_76772_c, Biomes.field_76769_d, Biomes.field_150588_X, Biomes.field_76768_g);
+     private int field_75054_f;
+-    private int field_82665_g = 32;
+-    private final int field_82666_h = 8;
++    private int field_82665_g;
++    private final int field_82666_h;
+ 
+     public MapGenVillage()
+     {
++        this.field_82665_g = 32;
++        this.field_82666_h = 8;
+     }
+ 
+     public MapGenVillage(Map<String, String> p_i2093_1_)
+     {
+         this();
+ 
+-        for (Map.Entry<String, String> entry : p_i2093_1_.entrySet())
++        for (Entry<String, String> entry : p_i2093_1_.entrySet())
+         {
+-            if (entry.getKey().equals("size"))
++            if (((String)entry.getKey()).equals("size"))
+             {
+                 this.field_75054_f = MathHelper.func_82714_a(entry.getValue(), this.field_75054_f, 0);
+             }
+-            else if (entry.getKey().equals("distance"))
++            else if (((String)entry.getKey()).equals("distance"))
+             {
+                 this.field_82665_g = MathHelper.func_82714_a(entry.getValue(), this.field_82665_g, 9);
+             }
+@@ -62,10 +65,10 @@
+         int k = p_75047_1_ / this.field_82665_g;
+         int l = p_75047_2_ / this.field_82665_g;
+         Random random = this.field_75039_c.func_72843_D(k, l, 10387312);
+-        k *= this.field_82665_g;
+-        l *= this.field_82665_g;
+-        k += random.nextInt(this.field_82665_g - 8);
+-        l += random.nextInt(this.field_82665_g - 8);
++        k = k * this.field_82665_g;
++        l = l * this.field_82665_g;
++        k = k + random.nextInt(this.field_82665_g - 8);
++        l = l + random.nextInt(this.field_82665_g - 8);
+ 
+         if (i == k && j == l)
+         {

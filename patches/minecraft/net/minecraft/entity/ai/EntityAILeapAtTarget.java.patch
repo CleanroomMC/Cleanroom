@@ -1,0 +1,22 @@
+--- before/net/minecraft/entity/ai/EntityAILeapAtTarget.java
++++ after/net/minecraft/entity/ai/EntityAILeapAtTarget.java
+@@ -29,7 +29,7 @@
+         {
+             double d0 = this.field_75328_a.func_70068_e(this.field_75326_b);
+ 
+-            if (!(d0 < 4.0D) && !(d0 > 16.0D))
++            if (d0 >= 4.0D && d0 <= 16.0D)
+             {
+                 if (!this.field_75328_a.field_70122_E)
+                 {
+@@ -60,8 +60,8 @@
+ 
+         if ((double)f >= 1.0E-4D)
+         {
+-            this.field_75328_a.field_70159_w += d0 / (double)f * 0.5D * (double)0.8F + this.field_75328_a.field_70159_w * (double)0.2F;
+-            this.field_75328_a.field_70179_y += d1 / (double)f * 0.5D * (double)0.8F + this.field_75328_a.field_70179_y * (double)0.2F;
++            this.field_75328_a.field_70159_w += d0 / (double)f * 0.5D * 0.800000011920929D + this.field_75328_a.field_70159_w * 0.20000000298023224D;
++            this.field_75328_a.field_70179_y += d1 / (double)f * 0.5D * 0.800000011920929D + this.field_75328_a.field_70179_y * 0.20000000298023224D;
+         }
+ 
+         this.field_75328_a.field_70181_x = (double)this.field_75327_c;

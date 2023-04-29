@@ -1,6 +1,23 @@
 --- before/net/minecraft/command/server/CommandSetBlock.java
 +++ after/net/minecraft/command/server/CommandSetBlock.java
-@@ -70,7 +70,7 @@
+@@ -41,7 +41,7 @@
+     {
+         if (p_184881_3_.length < 4)
+         {
+-            throw new WrongUsageException("commands.setblock.usage");
++            throw new WrongUsageException("commands.setblock.usage", new Object[0]);
+         }
+         else
+         {
+@@ -63,14 +63,14 @@
+ 
+             if (!world.func_175667_e(blockpos))
+             {
+-                throw new CommandException("commands.setblock.outOfWorld");
++                throw new CommandException("commands.setblock.outOfWorld", new Object[0]);
+             }
+             else
+             {
                  NBTTagCompound nbttagcompound = new NBTTagCompound();
                  boolean flag = false;
  
@@ -9,3 +26,30 @@
                  {
                      String s = func_180529_a(p_184881_3_, 6);
  
+@@ -81,7 +81,7 @@
+                     }
+                     catch (NBTException nbtexception)
+                     {
+-                        throw new CommandException("commands.setblock.tagError", nbtexception.getMessage());
++                        throw new CommandException("commands.setblock.tagError", new Object[] {nbtexception.getMessage()});
+                     }
+                 }
+ 
+@@ -99,7 +99,7 @@
+                     }
+                     else if ("keep".equals(p_184881_3_[5]) && !world.func_175623_d(blockpos))
+                     {
+-                        throw new CommandException("commands.setblock.noChange");
++                        throw new CommandException("commands.setblock.noChange", new Object[0]);
+                     }
+                 }
+ 
+@@ -112,7 +112,7 @@
+ 
+                 if (!world.func_180501_a(blockpos, iblockstate, 2))
+                 {
+-                    throw new CommandException("commands.setblock.noChange");
++                    throw new CommandException("commands.setblock.noChange", new Object[0]);
+                 }
+                 else
+                 {

@@ -1,0 +1,11 @@
+--- before/net/minecraft/tileentity/TileEntityEndGateway.java
++++ after/net/minecraft/tileentity/TileEntityEndGateway.java
+@@ -82,7 +82,7 @@
+         }
+         else if (!this.field_145850_b.field_72995_K)
+         {
+-            List<Entity> list = this.field_145850_b.func_72872_a(Entity.class, new AxisAlignedBB(this.func_174877_v()));
++            List<Entity> list = this.field_145850_b.<Entity>func_72872_a(Entity.class, new AxisAlignedBB(this.func_174877_v()));
+ 
+             if (!list.isEmpty())
+             {

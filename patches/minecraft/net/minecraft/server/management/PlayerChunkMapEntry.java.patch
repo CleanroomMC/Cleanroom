@@ -1,5 +1,14 @@
 --- before/net/minecraft/server/management/PlayerChunkMapEntry.java
 +++ after/net/minecraft/server/management/PlayerChunkMapEntry.java
+@@ -23,7 +23,7 @@
+ {
+     private static final Logger field_187281_a = LogManager.getLogger();
+     private final PlayerChunkMap field_187282_b;
+-    private final List<EntityPlayerMP> field_187283_c = Lists.newArrayList();
++    private final List<EntityPlayerMP> field_187283_c = Lists.<EntityPlayerMP>newArrayList();
+     private final ChunkPos field_187284_d;
+     private short[] field_187285_e = new short[64];
+     @Nullable
 @@ -32,12 +32,21 @@
      private int field_187288_h;
      private long field_187289_i;
@@ -23,6 +32,15 @@
      }
  
      public ChunkPos func_187264_a()
+@@ -49,7 +58,7 @@
+     {
+         if (this.field_187283_c.contains(p_187276_1_))
+         {
+-            field_187281_a.debug("Failed to add player. {} already is in chunk {}, {}", p_187276_1_, this.field_187284_d.field_77276_a, this.field_187284_d.field_77275_b);
++            field_187281_a.debug("Failed to add player. {} already is in chunk {}, {}", p_187276_1_, Integer.valueOf(this.field_187284_d.field_77276_a), Integer.valueOf(this.field_187284_d.field_77275_b));
+         }
+         else
+         {
 @@ -63,6 +72,8 @@
              if (this.field_187290_j)
              {

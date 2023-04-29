@@ -12,3 +12,78 @@
                      {
                          textureatlassprite1 = this.field_187501_d;
                      }
+@@ -207,8 +207,8 @@
+                         f40 = f10;
+                         d3 = d0;
+                         d5 = d0 + 1.0D;
+-                        d4 = d2 + (double)0.001F;
+-                        d6 = d2 + (double)0.001F;
++                        d4 = d2 + 0.0010000000474974513D;
++                        d6 = d2 + 0.0010000000474974513D;
+                     }
+                     else if (i1 == 1)
+                     {
+@@ -216,15 +216,15 @@
+                         f40 = f8;
+                         d3 = d0 + 1.0D;
+                         d5 = d0;
+-                        d4 = d2 + 1.0D - (double)0.001F;
+-                        d6 = d2 + 1.0D - (double)0.001F;
++                        d4 = d2 + 1.0D - 0.0010000000474974513D;
++                        d6 = d2 + 1.0D - 0.0010000000474974513D;
+                     }
+                     else if (i1 == 2)
+                     {
+                         f39 = f8;
+                         f40 = f7;
+-                        d3 = d0 + (double)0.001F;
+-                        d5 = d0 + (double)0.001F;
++                        d3 = d0 + 0.0010000000474974513D;
++                        d5 = d0 + 0.0010000000474974513D;
+                         d4 = d2 + 1.0D;
+                         d6 = d2;
+                     }
+@@ -232,8 +232,8 @@
+                     {
+                         f39 = f10;
+                         f40 = f9;
+-                        d3 = d0 + 1.0D - (double)0.001F;
+-                        d5 = d0 + 1.0D - (double)0.001F;
++                        d3 = d0 + 1.0D - 0.0010000000474974513D;
++                        d5 = d0 + 1.0D - 0.0010000000474974513D;
+                         d4 = d2;
+                         d6 = d2 + 1.0D;
+                     }
+@@ -287,9 +287,17 @@
+             IBlockState iblockstate = p_178269_1_.func_180495_p(blockpos);
+             Material material = iblockstate.func_185904_a();
+ 
+-            if (material == p_178269_3_)
+-            {
+-                int k = iblockstate.func_177229_b(BlockLiquid.field_176367_b);
++            if (material != p_178269_3_)
++            {
++                if (!material.func_76220_a())
++                {
++                    ++f;
++                    ++i;
++                }
++            }
++            else
++            {
++                int k = ((Integer)iblockstate.func_177229_b(BlockLiquid.field_176367_b)).intValue();
+ 
+                 if (k >= 8 || k == 0)
+                 {
+@@ -298,11 +306,6 @@
+                 }
+ 
+                 f += BlockLiquid.func_149801_b(k);
+-                ++i;
+-            }
+-            else if (!material.func_76220_a())
+-            {
+-                ++f;
+                 ++i;
+             }
+         }

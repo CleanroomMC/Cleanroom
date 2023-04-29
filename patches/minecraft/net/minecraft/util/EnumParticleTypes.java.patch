@@ -1,0 +1,31 @@
+--- before/net/minecraft/util/EnumParticleTypes.java
++++ after/net/minecraft/util/EnumParticleTypes.java
+@@ -61,8 +61,8 @@
+     private final int field_179372_R;
+     private final boolean field_179371_S;
+     private final int field_179366_T;
+-    private static final Map<Integer, EnumParticleTypes> field_179365_U = Maps.newHashMap();
+-    private static final Map<String, EnumParticleTypes> field_186837_Z = Maps.newHashMap();
++    private static final Map<Integer, EnumParticleTypes> field_179365_U = Maps.<Integer, EnumParticleTypes>newHashMap();
++    private static final Map<String, EnumParticleTypes> field_186837_Z = Maps.<String, EnumParticleTypes>newHashMap();
+ 
+     private EnumParticleTypes(String p_i46011_3_, int p_i46011_4_, boolean p_i46011_5_, int p_i46011_6_)
+     {
+@@ -105,7 +105,7 @@
+     @Nullable
+     public static EnumParticleTypes func_179342_a(int p_179342_0_)
+     {
+-        return field_179365_U.get(p_179342_0_);
++        return field_179365_U.get(Integer.valueOf(p_179342_0_));
+     }
+ 
+     @Nullable
+@@ -118,7 +118,7 @@
+     {
+         for (EnumParticleTypes enumparticletypes : values())
+         {
+-            field_179365_U.put(enumparticletypes.func_179348_c(), enumparticletypes);
++            field_179365_U.put(Integer.valueOf(enumparticletypes.func_179348_c()), enumparticletypes);
+             field_186837_Z.put(enumparticletypes.func_179346_b(), enumparticletypes);
+         }
+     }

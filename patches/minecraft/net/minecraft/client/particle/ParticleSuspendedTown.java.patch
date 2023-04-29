@@ -1,0 +1,15 @@
+--- before/net/minecraft/client/particle/ParticleSuspendedTown.java
++++ after/net/minecraft/client/particle/ParticleSuspendedTown.java
+@@ -17,9 +17,9 @@
+         this.func_70536_a(0);
+         this.func_187115_a(0.02F, 0.02F);
+         this.field_70544_f *= this.field_187136_p.nextFloat() * 0.6F + 0.5F;
+-        this.field_187129_i *= (double)0.02F;
+-        this.field_187130_j *= (double)0.02F;
+-        this.field_187131_k *= (double)0.02F;
++        this.field_187129_i *= 0.019999999552965164D;
++        this.field_187130_j *= 0.019999999552965164D;
++        this.field_187131_k *= 0.019999999552965164D;
+         this.field_70547_e = (int)(20.0D / (Math.random() * 0.8D + 0.2D));
+     }
+ 

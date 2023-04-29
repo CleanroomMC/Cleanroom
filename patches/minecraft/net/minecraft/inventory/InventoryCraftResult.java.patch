@@ -1,0 +1,20 @@
+--- before/net/minecraft/inventory/InventoryCraftResult.java
++++ after/net/minecraft/inventory/InventoryCraftResult.java
+@@ -11,7 +11,7 @@
+ 
+ public class InventoryCraftResult implements IInventory
+ {
+-    private final NonNullList<ItemStack> field_70467_a = NonNullList.func_191197_a(1, ItemStack.field_190927_a);
++    private final NonNullList<ItemStack> field_70467_a = NonNullList.<ItemStack>func_191197_a(1, ItemStack.field_190927_a);
+     private IRecipe field_193057_b;
+ 
+     public int func_70302_i_()
+@@ -49,7 +49,7 @@
+ 
+     public ITextComponent func_145748_c_()
+     {
+-        return (ITextComponent)(this.func_145818_k_() ? new TextComponentString(this.func_70005_c_()) : new TextComponentTranslation(this.func_70005_c_()));
++        return (ITextComponent)(this.func_145818_k_() ? new TextComponentString(this.func_70005_c_()) : new TextComponentTranslation(this.func_70005_c_(), new Object[0]));
+     }
+ 
+     public ItemStack func_70298_a(int p_70298_1_, int p_70298_2_)

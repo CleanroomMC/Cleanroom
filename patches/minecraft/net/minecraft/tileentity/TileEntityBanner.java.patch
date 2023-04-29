@@ -1,0 +1,22 @@
+--- before/net/minecraft/tileentity/TileEntityBanner.java
++++ after/net/minecraft/tileentity/TileEntityBanner.java
+@@ -56,7 +56,7 @@
+ 
+     public ITextComponent func_145748_c_()
+     {
+-        return (ITextComponent)(this.func_145818_k_() ? new TextComponentString(this.func_70005_c_()) : new TextComponentTranslation(this.func_70005_c_()));
++        return (ITextComponent)(this.func_145818_k_() ? new TextComponentString(this.func_70005_c_()) : new TextComponentTranslation(this.func_70005_c_(), new Object[0]));
+     }
+ 
+     public NBTTagCompound func_189515_b(NBTTagCompound p_189515_1_)
+@@ -143,8 +143,8 @@
+             }
+             else
+             {
+-                this.field_175122_h = Lists.newArrayList();
+-                this.field_175123_i = Lists.newArrayList();
++                this.field_175122_h = Lists.<BannerPattern>newArrayList();
++                this.field_175123_i = Lists.<EnumDyeColor>newArrayList();
+                 this.field_175122_h.add(BannerPattern.BASE);
+                 this.field_175123_i.add(this.field_175120_a);
+                 this.field_175121_j = "b" + this.field_175120_a.func_176767_b();

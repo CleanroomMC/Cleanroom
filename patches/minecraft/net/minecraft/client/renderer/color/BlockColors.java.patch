@@ -4,12 +4,48 @@
  @SideOnly(Side.CLIENT)
  public class BlockColors
  {
--    private final ObjectIntIdentityMap<IBlockColor> field_186725_a = new ObjectIntIdentityMap<IBlockColor>(32);
+-    private final ObjectIntIdentityMap<IBlockColor> field_186725_a = new ObjectIntIdentityMap<>(32);
 +    // FORGE: Use RegistryDelegates as non-Vanilla block ids are not constant
 +    private final java.util.Map<net.minecraftforge.registries.IRegistryDelegate<Block>, IBlockColor> blockColorMap = com.google.common.collect.Maps.newHashMap();
  
      public static BlockColors func_186723_a()
      {
+@@ -36,7 +37,7 @@
+         {
+             public int func_186720_a(IBlockState p_186720_1_, @Nullable IBlockAccess p_186720_2_, @Nullable BlockPos p_186720_3_, int p_186720_4_)
+             {
+-                BlockDoublePlant.EnumPlantType blockdoubleplant$enumplanttype = p_186720_1_.func_177229_b(BlockDoublePlant.field_176493_a);
++                BlockDoublePlant.EnumPlantType blockdoubleplant$enumplanttype = (BlockDoublePlant.EnumPlantType)p_186720_1_.func_177229_b(BlockDoublePlant.field_176493_a);
+                 return p_186720_2_ != null && p_186720_3_ != null && (blockdoubleplant$enumplanttype == BlockDoublePlant.EnumPlantType.GRASS || blockdoubleplant$enumplanttype == BlockDoublePlant.EnumPlantType.FERN) ? BiomeColorHelper.func_180286_a(p_186720_2_, p_186720_1_.func_177229_b(BlockDoublePlant.field_176492_b) == BlockDoublePlant.EnumBlockHalf.UPPER ? p_186720_3_.func_177977_b() : p_186720_3_) : -1;
+             }
+         }, Blocks.field_150398_cm);
+@@ -76,7 +77,7 @@
+         {
+             public int func_186720_a(IBlockState p_186720_1_, @Nullable IBlockAccess p_186720_2_, @Nullable BlockPos p_186720_3_, int p_186720_4_)
+             {
+-                BlockPlanks.EnumType blockplanks$enumtype = p_186720_1_.func_177229_b(BlockOldLeaf.field_176239_P);
++                BlockPlanks.EnumType blockplanks$enumtype = (BlockPlanks.EnumType)p_186720_1_.func_177229_b(BlockOldLeaf.field_176239_P);
+ 
+                 if (blockplanks$enumtype == BlockPlanks.EnumType.SPRUCE)
+                 {
+@@ -110,7 +111,7 @@
+         {
+             public int func_186720_a(IBlockState p_186720_1_, @Nullable IBlockAccess p_186720_2_, @Nullable BlockPos p_186720_3_, int p_186720_4_)
+             {
+-                return BlockRedstoneWire.func_176337_b(p_186720_1_.func_177229_b(BlockRedstoneWire.field_176351_O));
++                return BlockRedstoneWire.func_176337_b(((Integer)p_186720_1_.func_177229_b(BlockRedstoneWire.field_176351_O)).intValue());
+             }
+         }, Blocks.field_150488_af);
+         blockcolors.func_186722_a(new IBlockColor()
+@@ -124,7 +125,7 @@
+         {
+             public int func_186720_a(IBlockState p_186720_1_, @Nullable IBlockAccess p_186720_2_, @Nullable BlockPos p_186720_3_, int p_186720_4_)
+             {
+-                int i = p_186720_1_.func_177229_b(BlockStem.field_176484_a);
++                int i = ((Integer)p_186720_1_.func_177229_b(BlockStem.field_176484_a)).intValue();
+                 int j = i * 32;
+                 int k = 255 - i * 8;
+                 int l = i * 4;
 @@ -159,12 +160,13 @@
                  return p_186720_2_ != null && p_186720_3_ != null ? 2129968 : 7455580;
              }

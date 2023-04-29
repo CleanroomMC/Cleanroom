@@ -1,6 +1,21 @@
 --- before/net/minecraft/client/renderer/chunk/ChunkRenderDispatcher.java
 +++ after/net/minecraft/client/renderer/chunk/ChunkRenderDispatcher.java
-@@ -44,9 +44,15 @@
+@@ -33,20 +33,26 @@
+     private static final Logger field_178523_a = LogManager.getLogger();
+     private static final ThreadFactory field_178521_b = (new ThreadFactoryBuilder()).setNameFormat("Chunk Batcher %d").setDaemon(true).build();
+     private final int field_188249_c;
+-    private final List<Thread> field_188250_d = Lists.newArrayList();
+-    private final List<ChunkRenderWorker> field_178522_c = Lists.newArrayList();
+-    private final PriorityBlockingQueue<ChunkCompileTaskGenerator> field_178519_d = Queues.newPriorityBlockingQueue();
++    private final List<Thread> field_188250_d = Lists.<Thread>newArrayList();
++    private final List<ChunkRenderWorker> field_178522_c = Lists.<ChunkRenderWorker>newArrayList();
++    private final PriorityBlockingQueue<ChunkCompileTaskGenerator> field_178519_d = Queues.<ChunkCompileTaskGenerator>newPriorityBlockingQueue();
+     private final BlockingQueue<RegionRenderCacheBuilder> field_178520_e;
+     private final WorldVertexBufferUploader field_178517_f = new WorldVertexBufferUploader();
+     private final VertexBufferUploader field_178518_g = new VertexBufferUploader();
+-    private final Queue<ChunkRenderDispatcher.PendingUpload> field_178524_h = Queues.newPriorityQueue();
++    private final Queue<ChunkRenderDispatcher.PendingUpload> field_178524_h = Queues.<ChunkRenderDispatcher.PendingUpload>newPriorityQueue();
+     private final ChunkRenderWorker field_178525_i;
  
      public ChunkRenderDispatcher()
      {
@@ -17,3 +32,104 @@
  
          if (j > 1)
          {
+@@ -60,7 +66,7 @@
+             }
+         }
+ 
+-        this.field_178520_e = Queues.newArrayBlockingQueue(this.field_188249_c);
++        this.field_178520_e = Queues.<RegionRenderCacheBuilder>newArrayBlockingQueue(this.field_188249_c);
+ 
+         for (int l = 0; l < this.field_188249_c; ++l)
+         {
+@@ -78,11 +84,10 @@
+     public boolean func_178516_a(long p_178516_1_)
+     {
+         boolean flag = false;
+-        boolean flag1;
+ 
+-        do
++        while (true)
+         {
+-            flag1 = false;
++            boolean flag1 = false;
+ 
+             if (this.field_188250_d.isEmpty())
+             {
+@@ -95,7 +100,7 @@
+                         this.field_178525_i.func_178474_a(chunkcompiletaskgenerator);
+                         flag1 = true;
+                     }
+-                    catch (InterruptedException interruptedexception)
++                    catch (InterruptedException var8)
+                     {
+                         field_178523_a.warn("Skipped task due to interrupt");
+                     }
+@@ -111,8 +116,12 @@
+                     flag = true;
+                 }
+             }
++
++            if (p_178516_1_ == 0L || !flag1 || p_178516_1_ < System.nanoTime())
++            {
++                break;
++            }
+         }
+-        while (p_178516_1_ != 0L && flag1 && p_178516_1_ >= System.nanoTime());
+ 
+         return flag;
+     }
+@@ -162,8 +171,9 @@
+             {
+                 this.field_178525_i.func_178474_a(chunkcompiletaskgenerator);
+             }
+-            catch (InterruptedException interruptedexception)
++            catch (InterruptedException var7)
+             {
++                ;
+             }
+ 
+             flag = true;
+@@ -179,7 +189,7 @@
+     public void func_178514_b()
+     {
+         this.func_178513_e();
+-        List<RegionRenderCacheBuilder> list = Lists.newArrayList();
++        List<RegionRenderCacheBuilder> list = Lists.<RegionRenderCacheBuilder>newArrayList();
+ 
+         while (list.size() != this.field_188249_c)
+         {
+@@ -189,8 +199,9 @@
+             {
+                 list.add(this.func_178515_c());
+             }
+-            catch (InterruptedException interruptedexception)
++            catch (InterruptedException var3)
+             {
++                ;
+             }
+         }
+ 
+@@ -223,7 +234,8 @@
+ 
+             if (chunkcompiletaskgenerator == null)
+             {
+-                return true;
++                flag = true;
++                return flag;
+             }
+ 
+             chunkcompiletaskgenerator.func_178539_a(new Runnable()
+@@ -257,11 +269,11 @@
+             }
+ 
+             p_188245_2_.func_178969_c(0.0D, 0.0D, 0.0D);
+-            return Futures.immediateFuture((Object)null);
++            return Futures.<Object>immediateFuture((Object)null);
+         }
+         else
+         {
+-            ListenableFutureTask<Object> listenablefuturetask = ListenableFutureTask.create(new Runnable()
++            ListenableFutureTask<Object> listenablefuturetask = ListenableFutureTask.<Object>create(new Runnable()
+             {
+                 public void run()
+                 {

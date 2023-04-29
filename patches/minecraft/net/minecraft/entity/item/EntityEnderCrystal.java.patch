@@ -1,0 +1,43 @@
+--- before/net/minecraft/entity/item/EntityEnderCrystal.java
++++ after/net/minecraft/entity/item/EntityEnderCrystal.java
+@@ -20,8 +20,8 @@
+ 
+ public class EntityEnderCrystal extends Entity
+ {
+-    private static final DataParameter<Optional<BlockPos>> field_184521_b = EntityDataManager.func_187226_a(EntityEnderCrystal.class, DataSerializers.field_187201_k);
+-    private static final DataParameter<Boolean> field_184522_c = EntityDataManager.func_187226_a(EntityEnderCrystal.class, DataSerializers.field_187198_h);
++    private static final DataParameter<Optional<BlockPos>> field_184521_b = EntityDataManager.<Optional<BlockPos>>func_187226_a(EntityEnderCrystal.class, DataSerializers.field_187201_k);
++    private static final DataParameter<Boolean> field_184522_c = EntityDataManager.<Boolean>func_187226_a(EntityEnderCrystal.class, DataSerializers.field_187198_h);
+     public int field_70261_a;
+ 
+     public EntityEnderCrystal(World p_i1698_1_)
+@@ -46,7 +46,7 @@
+     protected void func_70088_a()
+     {
+         this.func_184212_Q().func_187214_a(field_184521_b, Optional.absent());
+-        this.func_184212_Q().func_187214_a(field_184522_c, true);
++        this.func_184212_Q().func_187214_a(field_184522_c, Boolean.valueOf(true));
+     }
+ 
+     public void func_70071_h_()
+@@ -154,17 +154,17 @@
+     @Nullable
+     public BlockPos func_184518_j()
+     {
+-        return this.func_184212_Q().func_187225_a(field_184521_b).orNull();
++        return (BlockPos)((Optional)this.func_184212_Q().func_187225_a(field_184521_b)).orNull();
+     }
+ 
+     public void func_184517_a(boolean p_184517_1_)
+     {
+-        this.func_184212_Q().func_187227_b(field_184522_c, p_184517_1_);
++        this.func_184212_Q().func_187227_b(field_184522_c, Boolean.valueOf(p_184517_1_));
+     }
+ 
+     public boolean func_184520_k()
+     {
+-        return this.func_184212_Q().func_187225_a(field_184522_c);
++        return ((Boolean)this.func_184212_Q().func_187225_a(field_184522_c)).booleanValue();
+     }
+ 
+     @SideOnly(Side.CLIENT)

@@ -1,0 +1,148 @@
+--- before/net/minecraft/network/rcon/RConThreadClient.java
++++ after/net/minecraft/network/rcon/RConThreadClient.java
+@@ -29,7 +29,7 @@
+         {
+             this.field_72659_h.setSoTimeout(0);
+         }
+-        catch (Exception exception)
++        catch (Exception var4)
+         {
+             this.field_72619_a = false;
+         }
+@@ -40,20 +40,20 @@
+ 
+     public void run()
+     {
+-        try
++        while (true)
+         {
+             try
+             {
+-                while (this.field_72619_a)
+-                {
+-                    BufferedInputStream bufferedinputstream = new BufferedInputStream(this.field_72659_h.getInputStream());
+-                    int i = bufferedinputstream.read(this.field_72660_i, 0, 1460);
+-
+-                    if (10 > i)
+-                    {
+-                        return;
+-                    }
+-
++                if (!this.field_72619_a)
++                {
++                    return;
++                }
++
++                BufferedInputStream bufferedinputstream = new BufferedInputStream(this.field_72659_h.getInputStream());
++                int i = bufferedinputstream.read(this.field_72660_i, 0, 1460);
++
++                if (10 <= i)
++                {
+                     int j = 0;
+                     int k = RConUtils.func_72665_b(this.field_72660_i, 0, i);
+ 
+@@ -62,11 +62,11 @@
+                         return;
+                     }
+ 
+-                    j += 4;
++                    j = j + 4;
+                     int l = RConUtils.func_72665_b(this.field_72660_i, j, i);
+-                    j += 4;
++                    j = j + 4;
+                     int i1 = RConUtils.func_72662_b(this.field_72660_i, j);
+-                    j += 4;
++                    j = j + 4;
+ 
+                     switch (i1)
+                     {
+@@ -85,46 +85,50 @@
+                                     this.func_72655_a(l, "Error executing: " + s1 + " (" + exception.getMessage() + ")");
+                                 }
+ 
+-                                break;
++                                continue;
+                             }
+ 
+                             this.func_72656_f();
+-                            break;
++                            continue;
+                         case 3:
+                             String s = RConUtils.func_72661_a(this.field_72660_i, j, i);
+-                            j += s.length();
++                            int j1 = j + s.length();
+ 
+                             if (!s.isEmpty() && s.equals(this.field_72658_j))
+                             {
+                                 this.field_72657_g = true;
+                                 this.func_72654_a(l, 2, "");
+-                                break;
++                                continue;
+                             }
+ 
+                             this.field_72657_g = false;
+                             this.func_72656_f();
+-                            break;
++                            continue;
+                         default:
+                             this.func_72655_a(l, String.format("Unknown request %s", Integer.toHexString(i1)));
++                            continue;
+                     }
+                 }
+-
+-                return;
+-            }
+-            catch (SocketTimeoutException sockettimeoutexception)
+-            {
+-            }
+-            catch (IOException ioexception)
+-            {
++            }
++            catch (SocketTimeoutException var17)
++            {
++                return;
++            }
++            catch (IOException var18)
++            {
++                return;
+             }
+             catch (Exception exception1)
+             {
+                 field_164005_h.error("Exception whilst parsing RCON input", (Throwable)exception1);
+-            }
+-        }
+-        finally
+-        {
+-            this.func_72653_g();
++                return;
++            }
++            finally
++            {
++                this.func_72653_g();
++            }
++
++            return;
+         }
+     }
+ 
+@@ -151,14 +155,18 @@
+     {
+         int i = p_72655_2_.length();
+ 
+-        do
++        while (true)
+         {
+             int j = 4096 <= i ? 4096 : i;
+             this.func_72654_a(p_72655_1_, 0, p_72655_2_.substring(0, j));
+             p_72655_2_ = p_72655_2_.substring(j);
+             i = p_72655_2_.length();
++
++            if (0 == i)
++            {
++                break;
++            }
+         }
+-        while (0 != i);
+     }
+ 
+     private void func_72653_g()

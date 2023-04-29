@@ -1,5 +1,57 @@
 --- before/net/minecraft/entity/passive/AbstractHorse.java
 +++ after/net/minecraft/entity/passive/AbstractHorse.java
+@@ -67,8 +67,8 @@
+         }
+     };
+     protected static final IAttribute field_110271_bv = (new RangedAttribute((IAttribute)null, "horse.jumpStrength", 0.7D, 0.0D, 2.0D)).func_111117_a("Jump Strength").func_111112_a(true);
+-    private static final DataParameter<Byte> field_184787_bE = EntityDataManager.func_187226_a(AbstractHorse.class, DataSerializers.field_187191_a);
+-    private static final DataParameter<Optional<UUID>> field_184790_bH = EntityDataManager.func_187226_a(AbstractHorse.class, DataSerializers.field_187203_m);
++    private static final DataParameter<Byte> field_184787_bE = EntityDataManager.<Byte>func_187226_a(AbstractHorse.class, DataSerializers.field_187191_a);
++    private static final DataParameter<Optional<UUID>> field_184790_bH = EntityDataManager.<Optional<UUID>>func_187226_a(AbstractHorse.class, DataSerializers.field_187203_m);
+     private int field_190689_bJ;
+     private int field_110290_bE;
+     private int field_110295_bF;
+@@ -111,26 +111,26 @@
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+-        this.field_70180_af.func_187214_a(field_184787_bE, (byte)0);
++        this.field_70180_af.func_187214_a(field_184787_bE, Byte.valueOf((byte)0));
+         this.field_70180_af.func_187214_a(field_184790_bH, Optional.absent());
+     }
+ 
+     protected boolean func_110233_w(int p_110233_1_)
+     {
+-        return (this.field_70180_af.func_187225_a(field_184787_bE) & p_110233_1_) != 0;
++        return (((Byte)this.field_70180_af.func_187225_a(field_184787_bE)).byteValue() & p_110233_1_) != 0;
+     }
+ 
+     protected void func_110208_b(int p_110208_1_, boolean p_110208_2_)
+     {
+-        byte b0 = this.field_70180_af.func_187225_a(field_184787_bE);
++        byte b0 = ((Byte)this.field_70180_af.func_187225_a(field_184787_bE)).byteValue();
+ 
+         if (p_110208_2_)
+         {
+-            this.field_70180_af.func_187227_b(field_184787_bE, (byte)(b0 | p_110208_1_));
++            this.field_70180_af.func_187227_b(field_184787_bE, Byte.valueOf((byte)(b0 | p_110208_1_)));
+         }
+         else
+         {
+-            this.field_70180_af.func_187227_b(field_184787_bE, (byte)(b0 & ~p_110208_1_));
++            this.field_70180_af.func_187227_b(field_184787_bE, Byte.valueOf((byte)(b0 & ~p_110208_1_)));
+         }
+     }
+ 
+@@ -142,7 +142,7 @@
+     @Nullable
+     public UUID func_184780_dh()
+     {
+-        return this.field_70180_af.func_187225_a(field_184790_bH).orNull();
++        return (UUID)((Optional)this.field_70180_af.func_187225_a(field_184790_bH)).orNull();
+     }
+ 
+     public void func_184779_b(@Nullable UUID p_184779_1_)
 @@ -312,6 +312,7 @@
  
          this.field_110296_bG.func_110134_a(this);
@@ -8,6 +60,70 @@
      }
  
      protected void func_110232_cE()
+@@ -454,7 +455,7 @@
+         super.func_110147_ax();
+         this.func_110140_aT().func_111150_b(field_110271_bv);
+         this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(53.0D);
+-        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a((double)0.225F);
++        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.22499999403953552D);
+     }
+ 
+     public int func_70641_bl()
+@@ -872,8 +873,8 @@
+ 
+                 if (p_191986_3_ > 0.0F)
+                 {
+-                    float f = MathHelper.func_76126_a(this.field_70177_z * ((float)Math.PI / 180F));
+-                    float f1 = MathHelper.func_76134_b(this.field_70177_z * ((float)Math.PI / 180F));
++                    float f = MathHelper.func_76126_a(this.field_70177_z * 0.017453292F);
++                    float f1 = MathHelper.func_76134_b(this.field_70177_z * 0.017453292F);
+                     this.field_70159_w += (double)(-0.4F * f * this.field_110277_bt);
+                     this.field_70179_y += (double)(0.4F * f1 * this.field_110277_bt);
+                     this.func_184185_a(SoundEvents.field_187720_cs, 0.4F, 1.0F);
+@@ -925,7 +926,7 @@
+     public static void func_190683_c(DataFixer p_190683_0_, Class<?> p_190683_1_)
+     {
+         EntityLiving.func_189752_a(p_190683_0_, p_190683_1_);
+-        p_190683_0_.func_188258_a(FixTypes.ENTITY, new ItemStackData(p_190683_1_, "SaddleItem"));
++        p_190683_0_.func_188258_a(FixTypes.ENTITY, new ItemStackData(p_190683_1_, new String[] {"SaddleItem"}));
+     }
+ 
+     public void func_70014_b(NBTTagCompound p_70014_1_)
+@@ -1124,8 +1125,8 @@
+ 
+         if (this.field_110282_bM > 0.0F)
+         {
+-            float f3 = MathHelper.func_76126_a(this.field_70761_aq * ((float)Math.PI / 180F));
+-            float f = MathHelper.func_76134_b(this.field_70761_aq * ((float)Math.PI / 180F));
++            float f3 = MathHelper.func_76126_a(this.field_70761_aq * 0.017453292F);
++            float f = MathHelper.func_76134_b(this.field_70761_aq * 0.017453292F);
+             float f1 = 0.7F * this.field_110282_bM;
+             float f2 = 0.15F * this.field_110282_bM;
+             p_184232_1_.func_70107_b(this.field_70165_t + (double)(f1 * f3), this.field_70163_u + this.func_70042_X() + p_184232_1_.func_70033_W() + (double)f2, this.field_70161_v - (double)(f1 * f));
+@@ -1144,12 +1145,12 @@
+ 
+     protected double func_110245_cM()
+     {
+-        return (double)0.4F + this.field_70146_Z.nextDouble() * 0.2D + this.field_70146_Z.nextDouble() * 0.2D + this.field_70146_Z.nextDouble() * 0.2D;
++        return 0.4000000059604645D + this.field_70146_Z.nextDouble() * 0.2D + this.field_70146_Z.nextDouble() * 0.2D + this.field_70146_Z.nextDouble() * 0.2D;
+     }
+ 
+     protected double func_110203_cN()
+     {
+-        return ((double)0.45F + this.field_70146_Z.nextDouble() * 0.3D + this.field_70146_Z.nextDouble() * 0.3D + this.field_70146_Z.nextDouble() * 0.3D) * 0.25D;
++        return (0.44999998807907104D + this.field_70146_Z.nextDouble() * 0.3D + this.field_70146_Z.nextDouble() * 0.3D + this.field_70146_Z.nextDouble() * 0.3D) * 0.25D;
+     }
+ 
+     public boolean func_70617_f_()
+@@ -1212,7 +1213,7 @@
+     @Nullable
+     public Entity func_184179_bs()
+     {
+-        return this.func_184188_bt().isEmpty() ? null : this.func_184188_bt().get(0);
++        return this.func_184188_bt().isEmpty() ? null : (Entity)this.func_184188_bt().get(0);
+     }
+ 
+     @Nullable
 @@ -1226,5 +1227,23 @@
          }
  

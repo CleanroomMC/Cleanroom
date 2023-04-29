@@ -1,0 +1,37 @@
+--- before/net/minecraft/block/BlockRail.java
++++ after/net/minecraft/block/BlockRail.java
+@@ -11,7 +11,7 @@
+ 
+ public class BlockRail extends BlockRailBase
+ {
+-    public static final PropertyEnum<BlockRailBase.EnumRailDirection> field_176565_b = PropertyEnum.func_177709_a("shape", BlockRailBase.EnumRailDirection.class);
++    public static final PropertyEnum<BlockRailBase.EnumRailDirection> field_176565_b = PropertyEnum.<BlockRailBase.EnumRailDirection>func_177709_a("shape", BlockRailBase.EnumRailDirection.class);
+ 
+     protected BlockRail()
+     {
+@@ -39,7 +39,7 @@
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(field_176565_b).func_177015_a();
++        return ((BlockRailBase.EnumRailDirection)p_176201_1_.func_177229_b(field_176565_b)).func_177015_a();
+     }
+ 
+     @SuppressWarnings("incomplete-switch")
+@@ -129,7 +129,7 @@
+     @SuppressWarnings("incomplete-switch")
+     public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
+     {
+-        BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = p_185471_1_.func_177229_b(field_176565_b);
++        BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = (BlockRailBase.EnumRailDirection)p_185471_1_.func_177229_b(field_176565_b);
+ 
+         switch (p_185471_2_)
+         {
+@@ -181,6 +181,6 @@
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176565_b);
++        return new BlockStateContainer(this, new IProperty[] {field_176565_b});
+     }
+ }

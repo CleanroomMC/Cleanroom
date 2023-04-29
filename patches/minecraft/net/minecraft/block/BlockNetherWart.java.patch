@@ -1,6 +1,31 @@
 --- before/net/minecraft/block/BlockNetherWart.java
 +++ after/net/minecraft/block/BlockNetherWart.java
-@@ -42,25 +42,28 @@
+@@ -3,6 +3,7 @@
+ import java.util.Random;
+ import net.minecraft.block.material.MapColor;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyInteger;
+ import net.minecraft.block.state.BlockStateContainer;
+ import net.minecraft.block.state.IBlockState;
+@@ -24,14 +25,14 @@
+     protected BlockNetherWart()
+     {
+         super(Material.field_151585_k, MapColor.field_151645_D);
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176486_a, 0));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176486_a, Integer.valueOf(0)));
+         this.func_149675_a(true);
+         this.func_149647_a((CreativeTabs)null);
+     }
+ 
+     public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
+     {
+-        return field_185519_c[p_185496_1_.func_177229_b(field_176486_a)];
++        return field_185519_c[((Integer)p_185496_1_.func_177229_b(field_176486_a)).intValue()];
+     }
+ 
+     protected boolean func_185514_i(IBlockState p_185514_1_)
+@@ -41,29 +42,32 @@
  
      public boolean func_180671_f(World p_180671_1_, BlockPos p_180671_2_, IBlockState p_180671_3_)
      {
@@ -10,12 +35,13 @@
  
      public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
      {
-         int i = ((Integer)p_180650_3_.func_177229_b(field_176486_a)).intValue();
+-        int i = p_180650_3_.func_177229_b(field_176486_a);
++        int i = ((Integer)p_180650_3_.func_177229_b(field_176486_a)).intValue();
  
 -        if (i < 3 && p_180650_4_.nextInt(10) == 0)
 +        if (i < 3 && net.minecraftforge.common.ForgeHooks.onCropsGrowPre(p_180650_1_, p_180650_2_, p_180650_3_, p_180650_4_.nextInt(10) == 0))
          {
--            p_180650_3_ = p_180650_3_.func_177226_a(field_176486_a, Integer.valueOf(i + 1));
+-            p_180650_3_ = p_180650_3_.func_177226_a(field_176486_a, i + 1);
 -            p_180650_1_.func_180501_a(p_180650_2_, p_180650_3_, 2);
 +            IBlockState newState = p_180650_3_.func_177226_a(field_176486_a, Integer.valueOf(i + 1));
 +            p_180650_1_.func_180501_a(p_180650_2_, newState, 2);
@@ -34,10 +60,23 @@
          {
              int i = 1;
  
-@@ -104,6 +107,23 @@
+-            if (p_180653_3_.func_177229_b(field_176486_a) >= 3)
++            if (((Integer)p_180653_3_.func_177229_b(field_176486_a)).intValue() >= 3)
+             {
+                 i = 2 + p_180653_1_.field_73012_v.nextInt(3);
+ 
+@@ -97,16 +101,33 @@
+ 
+     public IBlockState func_176203_a(int p_176203_1_)
+     {
+-        return this.func_176223_P().func_177226_a(field_176486_a, p_176203_1_);
++        return this.func_176223_P().func_177226_a(field_176486_a, Integer.valueOf(p_176203_1_));
+     }
+ 
      public int func_176201_c(IBlockState p_176201_1_)
      {
-         return ((Integer)p_176201_1_.func_177229_b(field_176486_a)).intValue();
+-        return p_176201_1_.func_177229_b(field_176486_a);
++        return ((Integer)p_176201_1_.func_177229_b(field_176486_a)).intValue();
 +    }
 +
 +    @Override
@@ -58,3 +97,8 @@
      }
  
      protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176486_a);
++        return new BlockStateContainer(this, new IProperty[] {field_176486_a});
+     }
+ }

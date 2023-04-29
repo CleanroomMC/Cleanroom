@@ -1,0 +1,47 @@
+--- before/net/minecraft/entity/projectile/EntityPotion.java
++++ after/net/minecraft/entity/projectile/EntityPotion.java
+@@ -34,7 +34,7 @@
+ 
+ public class EntityPotion extends EntityThrowable
+ {
+-    private static final DataParameter<ItemStack> field_184545_d = EntityDataManager.func_187226_a(EntityPotion.class, DataSerializers.field_187196_f);
++    private static final DataParameter<ItemStack> field_184545_d = EntityDataManager.<ItemStack>func_187226_a(EntityPotion.class, DataSerializers.field_187196_f);
+     private static final Logger field_184546_e = LogManager.getLogger();
+     public static final Predicate<EntityLivingBase> field_190546_d = new Predicate<EntityLivingBase>()
+     {
+@@ -72,7 +72,7 @@
+ 
+     public ItemStack func_184543_l()
+     {
+-        ItemStack itemstack = this.func_184212_Q().func_187225_a(field_184545_d);
++        ItemStack itemstack = (ItemStack)this.func_184212_Q().func_187225_a(field_184545_d);
+ 
+         if (itemstack.func_77973_b() != Items.field_185155_bH && itemstack.func_77973_b() != Items.field_185156_bI)
+         {
+@@ -145,7 +145,7 @@
+     private void func_190545_n()
+     {
+         AxisAlignedBB axisalignedbb = this.func_174813_aQ().func_72314_b(4.0D, 2.0D, 4.0D);
+-        List<EntityLivingBase> list = this.field_70170_p.func_175647_a(EntityLivingBase.class, axisalignedbb, field_190546_d);
++        List<EntityLivingBase> list = this.field_70170_p.<EntityLivingBase>func_175647_a(EntityLivingBase.class, axisalignedbb, field_190546_d);
+ 
+         if (!list.isEmpty())
+         {
+@@ -164,7 +164,7 @@
+     private void func_190543_a(RayTraceResult p_190543_1_, List<PotionEffect> p_190543_2_)
+     {
+         AxisAlignedBB axisalignedbb = this.func_174813_aQ().func_72314_b(4.0D, 2.0D, 4.0D);
+-        List<EntityLivingBase> list = this.field_70170_p.func_72872_a(EntityLivingBase.class, axisalignedbb);
++        List<EntityLivingBase> list = this.field_70170_p.<EntityLivingBase>func_72872_a(EntityLivingBase.class, axisalignedbb);
+ 
+         if (!list.isEmpty())
+         {
+@@ -248,7 +248,7 @@
+     public static void func_189665_a(DataFixer p_189665_0_)
+     {
+         EntityThrowable.func_189661_a(p_189665_0_, "ThrownPotion");
+-        p_189665_0_.func_188258_a(FixTypes.ENTITY, new ItemStackData(EntityPotion.class, "Potion"));
++        p_189665_0_.func_188258_a(FixTypes.ENTITY, new ItemStackData(EntityPotion.class, new String[] {"Potion"}));
+     }
+ 
+     public void func_70037_a(NBTTagCompound p_70037_1_)

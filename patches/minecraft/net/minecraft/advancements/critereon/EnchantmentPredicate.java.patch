@@ -1,0 +1,11 @@
+--- before/net/minecraft/advancements/critereon/EnchantmentPredicate.java
++++ after/net/minecraft/advancements/critereon/EnchantmentPredicate.java
+@@ -37,7 +37,7 @@
+                 return false;
+             }
+ 
+-            int i = p_192463_1_.get(this.field_192467_b);
++            int i = ((Integer)p_192463_1_.get(this.field_192467_b)).intValue();
+ 
+             if (this.field_192468_c != null && !this.field_192468_c.func_192514_a((float)i))
+             {

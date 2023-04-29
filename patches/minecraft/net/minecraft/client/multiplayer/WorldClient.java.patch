@@ -1,13 +1,27 @@
 --- before/net/minecraft/client/multiplayer/WorldClient.java
 +++ after/net/minecraft/client/multiplayer/WorldClient.java
-@@ -60,17 +60,19 @@
+@@ -51,24 +51,28 @@
+ {
+     private final NetHandlerPlayClient field_73035_a;
+     private ChunkProviderClient field_73033_b;
+-    private final Set<Entity> field_73032_d = Sets.newHashSet();
+-    private final Set<Entity> field_73036_L = Sets.newHashSet();
++    private final Set<Entity> field_73032_d = Sets.<Entity>newHashSet();
++    private final Set<Entity> field_73036_L = Sets.<Entity>newHashSet();
+     private final Minecraft field_73037_M = Minecraft.func_71410_x();
+-    private final Set<ChunkPos> field_73038_N = Sets.newHashSet();
+-    private int field_184158_M = this.field_73012_v.nextInt(12000);
+-    protected Set<ChunkPos> field_184157_a = Sets.newHashSet();
++    private final Set<ChunkPos> field_73038_N = Sets.<ChunkPos>newHashSet();
++    private int field_184158_M;
++    protected Set<ChunkPos> field_184157_a;
  
      public WorldClient(NetHandlerPlayClient p_i45063_1_, WorldSettings p_i45063_2_, int p_i45063_3_, EnumDifficulty p_i45063_4_, Profiler p_i45063_5_)
      {
 -        super(new SaveHandlerMP(), new WorldInfo(p_i45063_2_, "MpServer"), DimensionType.func_186069_a(p_i45063_3_).func_186070_d(), p_i45063_5_, true);
 +        super(new SaveHandlerMP(), new WorldInfo(p_i45063_2_, "MpServer"), net.minecraftforge.common.DimensionManager.createProviderFor(p_i45063_3_), p_i45063_5_, true);
-         this.field_184158_M = this.field_73012_v.nextInt(12000);
-         this.field_184157_a = Sets.<ChunkPos>newHashSet();
++        this.field_184158_M = this.field_73012_v.nextInt(12000);
++        this.field_184157_a = Sets.<ChunkPos>newHashSet();
          this.field_73035_a = p_i45063_1_;
          this.func_72912_H().func_176144_a(p_i45063_4_);
 -        this.func_175652_B(new BlockPos(8, 64, 8));
@@ -22,3 +36,14 @@
      }
  
      public void func_72835_b()
+@@ -311,8 +315,8 @@
+             int l = i >> 16 & 255;
+             BlockPos blockpos = new BlockPos(j + p_147467_1_, l, k + p_147467_2_);
+             IBlockState iblockstate = p_147467_3_.func_177435_g(blockpos);
+-            j += p_147467_1_;
+-            k += p_147467_2_;
++            j = j + p_147467_1_;
++            k = k + p_147467_2_;
+ 
+             if (iblockstate.func_185904_a() == Material.field_151579_a && this.func_175699_k(blockpos) <= this.field_73012_v.nextInt(8) && this.func_175642_b(EnumSkyBlock.SKY, blockpos) <= 0)
+             {

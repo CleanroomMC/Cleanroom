@@ -9,10 +9,12 @@
          {
              if (this.func_185525_y(p_180653_3_) && p_180653_1_.field_73012_v.nextInt(50) == 0)
              {
-@@ -39,5 +39,13 @@
+@@ -38,6 +38,14 @@
+ 
      public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
      {
-         return field_185534_a[((Integer)p_185496_1_.func_177229_b(this.func_185524_e())).intValue()];
+-        return field_185534_a[p_185496_1_.func_177229_b(this.func_185524_e())];
++        return field_185534_a[((Integer)p_185496_1_.func_177229_b(this.func_185524_e())).intValue()];
 +    }
 +
 +    @Override

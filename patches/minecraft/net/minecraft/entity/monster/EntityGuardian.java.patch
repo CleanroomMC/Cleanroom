@@ -1,0 +1,115 @@
+--- before/net/minecraft/entity/monster/EntityGuardian.java
++++ after/net/minecraft/entity/monster/EntityGuardian.java
+@@ -40,8 +40,8 @@
+ 
+ public class EntityGuardian extends EntityMob
+ {
+-    private static final DataParameter<Boolean> field_190766_bz = EntityDataManager.func_187226_a(EntityGuardian.class, DataSerializers.field_187198_h);
+-    private static final DataParameter<Integer> field_184723_b = EntityDataManager.func_187226_a(EntityGuardian.class, DataSerializers.field_187192_b);
++    private static final DataParameter<Boolean> field_190766_bz = EntityDataManager.<Boolean>func_187226_a(EntityGuardian.class, DataSerializers.field_187198_h);
++    private static final DataParameter<Integer> field_184723_b = EntityDataManager.<Integer>func_187226_a(EntityGuardian.class, DataSerializers.field_187192_b);
+     protected float field_175482_b;
+     protected float field_175484_c;
+     protected float field_175483_bk;
+@@ -74,7 +74,7 @@
+         this.field_70714_bg.func_75776_a(9, new EntityAILookIdle(this));
+         this.field_175481_bq.func_75248_a(3);
+         entityaimovetowardsrestriction.func_75248_a(3);
+-        this.field_70715_bh.func_75776_a(1, new EntityAINearestAttackableTarget<>(this, EntityLivingBase.class, 10, true, false, new EntityGuardian.GuardianTargetSelector(this)));
++        this.field_70715_bh.func_75776_a(1, new EntityAINearestAttackableTarget(this, EntityLivingBase.class, 10, true, false, new EntityGuardian.GuardianTargetSelector(this)));
+     }
+ 
+     protected void func_110147_ax()
+@@ -99,18 +99,18 @@
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+-        this.field_70180_af.func_187214_a(field_190766_bz, false);
+-        this.field_70180_af.func_187214_a(field_184723_b, 0);
++        this.field_70180_af.func_187214_a(field_190766_bz, Boolean.valueOf(false));
++        this.field_70180_af.func_187214_a(field_184723_b, Integer.valueOf(0));
+     }
+ 
+     public boolean func_175472_n()
+     {
+-        return this.field_70180_af.func_187225_a(field_190766_bz);
++        return ((Boolean)this.field_70180_af.func_187225_a(field_190766_bz)).booleanValue();
+     }
+ 
+     private void func_175476_l(boolean p_175476_1_)
+     {
+-        this.field_70180_af.func_187227_b(field_190766_bz, p_175476_1_);
++        this.field_70180_af.func_187227_b(field_190766_bz, Boolean.valueOf(p_175476_1_));
+     }
+ 
+     public int func_175464_ck()
+@@ -120,12 +120,12 @@
+ 
+     private void func_175463_b(int p_175463_1_)
+     {
+-        this.field_70180_af.func_187227_b(field_184723_b, p_175463_1_);
++        this.field_70180_af.func_187227_b(field_184723_b, Integer.valueOf(p_175463_1_));
+     }
+ 
+     public boolean func_175474_cn()
+     {
+-        return this.field_70180_af.func_187225_a(field_184723_b) != 0;
++        return ((Integer)this.field_70180_af.func_187225_a(field_184723_b)).intValue() != 0;
+     }
+ 
+     @Nullable
+@@ -143,7 +143,7 @@
+             }
+             else
+             {
+-                Entity entity = this.field_70170_p.func_73045_a(this.field_70180_af.func_187225_a(field_184723_b));
++                Entity entity = this.field_70170_p.func_73045_a(((Integer)this.field_70180_af.func_187225_a(field_184723_b)).intValue());
+ 
+                 if (entity instanceof EntityLivingBase)
+                 {
+@@ -285,9 +285,9 @@
+                     double d1 = entitylivingbase.field_70163_u + (double)(entitylivingbase.field_70131_O * 0.5F) - (this.field_70163_u + (double)this.func_70047_e());
+                     double d2 = entitylivingbase.field_70161_v - this.field_70161_v;
+                     double d3 = Math.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+-                    d0 /= d3;
+-                    d1 /= d3;
+-                    d2 /= d3;
++                    d0 = d0 / d3;
++                    d1 = d1 / d3;
++                    d2 = d2 / d3;
+                     double d4 = this.field_70146_Z.nextDouble();
+ 
+                     while (d4 < d3)
+@@ -395,9 +395,9 @@
+         {
+             this.func_191958_b(p_191986_1_, p_191986_2_, p_191986_3_, 0.1F);
+             this.func_70091_d(MoverType.SELF, this.field_70159_w, this.field_70181_x, this.field_70179_y);
+-            this.field_70159_w *= (double)0.9F;
+-            this.field_70181_x *= (double)0.9F;
+-            this.field_70179_y *= (double)0.9F;
++            this.field_70159_w *= 0.8999999761581421D;
++            this.field_70181_x *= 0.8999999761581421D;
++            this.field_70179_y *= 0.8999999761581421D;
+ 
+             if (!this.func_175472_n() && this.func_70638_az() == null)
+             {
+@@ -510,15 +510,15 @@
+                     double d1 = this.field_75647_c - this.field_179930_g.field_70163_u;
+                     double d2 = this.field_75644_d - this.field_179930_g.field_70161_v;
+                     double d3 = (double)MathHelper.func_76133_a(d0 * d0 + d1 * d1 + d2 * d2);
+-                    d1 /= d3;
+-                    float f = (float)(MathHelper.func_181159_b(d2, d0) * (double)(180F / (float)Math.PI)) - 90.0F;
++                    d1 = d1 / d3;
++                    float f = (float)(MathHelper.func_181159_b(d2, d0) * (180D / Math.PI)) - 90.0F;
+                     this.field_179930_g.field_70177_z = this.func_75639_a(this.field_179930_g.field_70177_z, f, 90.0F);
+                     this.field_179930_g.field_70761_aq = this.field_179930_g.field_70177_z;
+                     float f1 = (float)(this.field_75645_e * this.field_179930_g.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111126_e());
+                     this.field_179930_g.func_70659_e(this.field_179930_g.func_70689_ay() + (f1 - this.field_179930_g.func_70689_ay()) * 0.125F);
+                     double d4 = Math.sin((double)(this.field_179930_g.field_70173_aa + this.field_179930_g.func_145782_y()) * 0.5D) * 0.05D;
+-                    double d5 = Math.cos((double)(this.field_179930_g.field_70177_z * ((float)Math.PI / 180F)));
+-                    double d6 = Math.sin((double)(this.field_179930_g.field_70177_z * ((float)Math.PI / 180F)));
++                    double d5 = Math.cos((double)(this.field_179930_g.field_70177_z * 0.017453292F));
++                    double d6 = Math.sin((double)(this.field_179930_g.field_70177_z * 0.017453292F));
+                     this.field_179930_g.field_70159_w += d4 * d5;
+                     this.field_179930_g.field_70179_y += d4 * d6;
+                     d4 = Math.sin((double)(this.field_179930_g.field_70173_aa + this.field_179930_g.func_145782_y()) * 0.75D) * 0.05D;

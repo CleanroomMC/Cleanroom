@@ -18,3 +18,14 @@
          {
              float f = MathHelper.func_76126_a(this.field_78095_p * (float)Math.PI);
              float f1 = MathHelper.func_76126_a((1.0F - (1.0F - this.field_78095_p) * (1.0F - this.field_78095_p)) * (float)Math.PI);
+@@ -77,8 +77,8 @@
+             this.field_178724_i.field_78808_h = 0.0F;
+             this.field_178723_h.field_78796_g = -(0.1F - f * 0.6F);
+             this.field_178724_i.field_78796_g = 0.1F - f * 0.6F;
+-            this.field_178723_h.field_78795_f = (-(float)Math.PI / 2F);
+-            this.field_178724_i.field_78795_f = (-(float)Math.PI / 2F);
++            this.field_178723_h.field_78795_f = -((float)Math.PI / 2F);
++            this.field_178724_i.field_78795_f = -((float)Math.PI / 2F);
+             this.field_178723_h.field_78795_f -= f * 1.2F - f1 * 0.4F;
+             this.field_178724_i.field_78795_f -= f * 1.2F - f1 * 0.4F;
+             this.field_178723_h.field_78808_h += MathHelper.func_76134_b(p_78087_3_ * 0.09F) * 0.05F + 0.05F;

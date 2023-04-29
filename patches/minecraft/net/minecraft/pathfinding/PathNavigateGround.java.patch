@@ -1,0 +1,73 @@
+--- before/net/minecraft/pathfinding/PathNavigateGround.java
++++ after/net/minecraft/pathfinding/PathNavigateGround.java
+@@ -44,6 +44,7 @@
+ 
+             for (blockpos = p_179680_1_.func_177977_b(); blockpos.func_177956_o() > 0 && this.field_75513_b.func_180495_p(blockpos).func_185904_a() == Material.field_151579_a; blockpos = blockpos.func_177977_b())
+             {
++                ;
+             }
+ 
+             if (blockpos.func_177956_o() > 0)
+@@ -69,6 +70,7 @@
+ 
+             for (blockpos1 = p_179680_1_.func_177984_a(); blockpos1.func_177956_o() < this.field_75513_b.func_72800_K() && this.field_75513_b.func_180495_p(blockpos1).func_185904_a().func_76220_a(); blockpos1 = blockpos1.func_177984_a())
+             {
++                ;
+             }
+ 
+             return super.func_179680_a(blockpos1);
+@@ -147,10 +149,10 @@
+         else
+         {
+             double d3 = 1.0D / Math.sqrt(d2);
+-            d0 *= d3;
+-            d1 *= d3;
+-            p_75493_3_ += 2;
+-            p_75493_5_ += 2;
++            d0 = d0 * d3;
++            d1 = d1 * d3;
++            p_75493_3_ = p_75493_3_ + 2;
++            p_75493_5_ = p_75493_5_ + 2;
+ 
+             if (!this.func_179683_a(i, (int)p_75493_1_.field_72448_b, j, p_75493_3_, p_75493_4_, p_75493_5_, p_75493_1_, d0, d1))
+             {
+@@ -158,8 +160,8 @@
+             }
+             else
+             {
+-                p_75493_3_ -= 2;
+-                p_75493_5_ -= 2;
++                p_75493_3_ = p_75493_3_ - 2;
++                p_75493_5_ = p_75493_5_ - 2;
+                 double d4 = 1.0D / Math.abs(d0);
+                 double d5 = 1.0D / Math.abs(d1);
+                 double d6 = (double)i - p_75493_1_.field_72450_a;
+@@ -175,8 +177,8 @@
+                     ++d7;
+                 }
+ 
+-                d6 /= d0;
+-                d7 /= d1;
++                d6 = d6 / d0;
++                d7 = d7 / d1;
+                 int k = d0 < 0.0D ? -1 : 1;
+                 int l = d1 < 0.0D ? -1 : 1;
+                 int i1 = MathHelper.func_76128_c(p_75493_2_.field_72450_a);
+@@ -228,7 +230,7 @@
+                     double d0 = (double)k + 0.5D - p_179683_7_.field_72450_a;
+                     double d1 = (double)l + 0.5D - p_179683_7_.field_72449_c;
+ 
+-                    if (!(d0 * p_179683_8_ + d1 * p_179683_10_ < 0.0D))
++                    if (d0 * p_179683_8_ + d1 * p_179683_10_ >= 0.0D)
+                     {
+                         PathNodeType pathnodetype = this.field_179695_a.func_186319_a(this.field_75513_b, k, p_179683_2_ - 1, l, this.field_75515_a, p_179683_4_, p_179683_5_, p_179683_6_, true, true);
+ 
+@@ -274,7 +276,7 @@
+             double d0 = (double)blockpos.func_177958_n() + 0.5D - p_179692_7_.field_72450_a;
+             double d1 = (double)blockpos.func_177952_p() + 0.5D - p_179692_7_.field_72449_c;
+ 
+-            if (!(d0 * p_179692_8_ + d1 * p_179692_10_ < 0.0D))
++            if (d0 * p_179692_8_ + d1 * p_179692_10_ >= 0.0D)
+             {
+                 Block block = this.field_75513_b.func_180495_p(blockpos).func_177230_c();
+ 

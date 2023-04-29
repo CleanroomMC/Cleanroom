@@ -1,0 +1,44 @@
+--- before/net/minecraft/client/gui/inventory/GuiEditStructure.java
++++ after/net/minecraft/client/gui/inventory/GuiEditStructure.java
+@@ -60,7 +60,7 @@
+     private GuiButton field_189840_P;
+     private GuiButton field_189841_Q;
+     private GuiButton field_189842_R;
+-    private final List<GuiTextField> field_189843_S = Lists.newArrayList();
++    private final List<GuiTextField> field_189843_S = Lists.<GuiTextField>newArrayList();
+     private final DecimalFormat field_189844_T = new DecimalFormat("0.0###");
+ 
+     public GuiEditStructure(TileEntityStructure p_i47142_1_)
+@@ -466,9 +466,9 @@
+     {
+         try
+         {
+-            return Long.valueOf(p_189821_1_);
++            return Long.valueOf(p_189821_1_).longValue();
+         }
+-        catch (NumberFormatException numberformatexception)
++        catch (NumberFormatException var3)
+         {
+             return 0L;
+         }
+@@ -478,9 +478,9 @@
+     {
+         try
+         {
+-            return Float.valueOf(p_189819_1_);
++            return Float.valueOf(p_189819_1_).floatValue();
+         }
+-        catch (NumberFormatException numberformatexception)
++        catch (NumberFormatException var3)
+         {
+             return 1.0F;
+         }
+@@ -492,7 +492,7 @@
+         {
+             return Integer.parseInt(p_189817_1_);
+         }
+-        catch (NumberFormatException numberformatexception)
++        catch (NumberFormatException var3)
+         {
+             return 0;
+         }

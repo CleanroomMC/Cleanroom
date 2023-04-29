@@ -1,0 +1,13 @@
+--- before/net/minecraft/client/model/ModelIronGolem.java
++++ after/net/minecraft/client/model/ModelIronGolem.java
+@@ -66,8 +66,8 @@
+ 
+     public void func_78087_a(float p_78087_1_, float p_78087_2_, float p_78087_3_, float p_78087_4_, float p_78087_5_, float p_78087_6_, Entity p_78087_7_)
+     {
+-        this.field_78178_a.field_78796_g = p_78087_4_ * ((float)Math.PI / 180F);
+-        this.field_78178_a.field_78795_f = p_78087_5_ * ((float)Math.PI / 180F);
++        this.field_78178_a.field_78796_g = p_78087_4_ * 0.017453292F;
++        this.field_78178_a.field_78795_f = p_78087_5_ * 0.017453292F;
+         this.field_78175_e.field_78795_f = -1.5F * this.func_78172_a(p_78087_1_, 13.0F) * p_78087_2_;
+         this.field_78173_f.field_78795_f = 1.5F * this.func_78172_a(p_78087_1_, 13.0F) * p_78087_2_;
+         this.field_78175_e.field_78796_g = 0.0F;

@@ -1,6 +1,15 @@
 --- before/net/minecraft/client/renderer/chunk/RenderChunk.java
 +++ after/net/minecraft/client/renderer/chunk/RenderChunk.java
-@@ -162,7 +162,7 @@
+@@ -42,7 +42,7 @@
+     private final ReentrantLock field_178587_g = new ReentrantLock();
+     private final ReentrantLock field_178598_h = new ReentrantLock();
+     private ChunkCompileTaskGenerator field_178599_i;
+-    private final Set<TileEntity> field_181056_j = Sets.newHashSet();
++    private final Set<TileEntity> field_181056_j = Sets.<TileEntity>newHashSet();
+     private final int field_178596_j;
+     private final FloatBuffer field_178597_k = GLAllocation.func_74529_h(16);
+     private final VertexBuffer[] field_178594_l = new VertexBuffer[BlockRenderLayer.values().length];
+@@ -162,27 +162,29 @@
                      lvt_9_1_.func_178606_a(blockpos$mutableblockpos);
                  }
  
@@ -9,7 +18,10 @@
                  {
                      TileEntity tileentity = this.field_189564_r.func_190300_a(blockpos$mutableblockpos, Chunk.EnumCreateEntityType.CHECK);
  
-@@ -172,17 +172,19 @@
+                     if (tileentity != null)
+                     {
+-                        TileEntitySpecialRenderer<TileEntity> tileentityspecialrenderer = TileEntityRendererDispatcher.field_147556_a.func_147547_b(tileentity);
++                        TileEntitySpecialRenderer<TileEntity> tileentityspecialrenderer = TileEntityRendererDispatcher.field_147556_a.<TileEntity>func_147547_b(tileentity);
  
                          if (tileentityspecialrenderer != null)
                          {
@@ -40,7 +52,7 @@
              }
  
              for (BlockRenderLayer blockrenderlayer : BlockRenderLayer.values())
-@@ -278,7 +282,9 @@
+@@ -278,14 +282,16 @@
      private void func_189563_q()
      {
          int i = 1;
@@ -51,7 +63,37 @@
      }
  
      @Nullable
-@@ -426,6 +432,26 @@
+     public ChunkCompileTaskGenerator func_178582_e()
+     {
+         this.field_178587_g.lock();
+-        Object object;
++        ChunkCompileTaskGenerator chunkcompiletaskgenerator;
+ 
+         try
+         {
+@@ -299,17 +305,18 @@
+ 
+                 this.field_178599_i = new ChunkCompileTaskGenerator(this, ChunkCompileTaskGenerator.Type.RESORT_TRANSPARENCY, this.func_188280_f());
+                 this.field_178599_i.func_178543_a(this.field_178590_b);
+-                return this.field_178599_i;
++                chunkcompiletaskgenerator = this.field_178599_i;
++                return chunkcompiletaskgenerator;
+             }
+ 
+-            object = null;
++            chunkcompiletaskgenerator = null;
+         }
+         finally
+         {
+             this.field_178587_g.unlock();
+         }
+ 
+-        return (ChunkCompileTaskGenerator)object;
++        return chunkcompiletaskgenerator;
+     }
+ 
+     protected double func_188280_f()
+@@ -425,6 +432,26 @@
      {
          return this.field_178593_n && this.field_188284_q;
      }

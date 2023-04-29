@@ -1,0 +1,24 @@
+--- before/net/minecraft/server/gui/PlayerListComponent.java
++++ after/net/minecraft/server/gui/PlayerListComponent.java
+@@ -2,6 +2,7 @@
+ 
+ import java.util.Vector;
+ import javax.swing.JList;
++import net.minecraft.entity.player.EntityPlayerMP;
+ import net.minecraft.server.MinecraftServer;
+ import net.minecraft.util.ITickable;
+ import net.minecraftforge.fml.relauncher.Side;
+@@ -23,11 +24,11 @@
+     {
+         if (this.field_120014_b++ % 20 == 0)
+         {
+-            Vector<String> vector = new Vector<>();
++            Vector<String> vector = new Vector<String>();
+ 
+             for (int i = 0; i < this.field_120015_a.func_184103_al().func_181057_v().size(); ++i)
+             {
+-                vector.add(this.field_120015_a.func_184103_al().func_181057_v().get(i).func_70005_c_());
++                vector.add(((EntityPlayerMP)this.field_120015_a.func_184103_al().func_181057_v().get(i)).func_70005_c_());
+             }
+ 
+             this.setListData(vector);

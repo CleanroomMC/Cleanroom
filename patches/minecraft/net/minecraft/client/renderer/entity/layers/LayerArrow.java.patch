@@ -1,0 +1,20 @@
+--- before/net/minecraft/client/renderer/entity/layers/LayerArrow.java
++++ after/net/minecraft/client/renderer/entity/layers/LayerArrow.java
+@@ -49,12 +49,12 @@
+                 f = f * 2.0F - 1.0F;
+                 f1 = f1 * 2.0F - 1.0F;
+                 f2 = f2 * 2.0F - 1.0F;
+-                f *= -1.0F;
+-                f1 *= -1.0F;
+-                f2 *= -1.0F;
++                f = f * -1.0F;
++                f1 = f1 * -1.0F;
++                f2 = f2 * -1.0F;
+                 float f6 = MathHelper.func_76129_c(f * f + f2 * f2);
+-                entity.field_70177_z = (float)(Math.atan2((double)f, (double)f2) * (double)(180F / (float)Math.PI));
+-                entity.field_70125_A = (float)(Math.atan2((double)f1, (double)f6) * (double)(180F / (float)Math.PI));
++                entity.field_70177_z = (float)(Math.atan2((double)f, (double)f2) * (180D / Math.PI));
++                entity.field_70125_A = (float)(Math.atan2((double)f1, (double)f6) * (180D / Math.PI));
+                 entity.field_70126_B = entity.field_70177_z;
+                 entity.field_70127_C = entity.field_70125_A;
+                 double d0 = 0.0D;

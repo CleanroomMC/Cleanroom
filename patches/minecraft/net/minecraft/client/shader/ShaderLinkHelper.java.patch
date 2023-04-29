@@ -1,0 +1,13 @@
+--- before/net/minecraft/client/shader/ShaderLinkHelper.java
++++ after/net/minecraft/client/shader/ShaderLinkHelper.java
+@@ -24,10 +24,6 @@
+         return field_148079_b;
+     }
+ 
+-    private ShaderLinkHelper()
+-    {
+-    }
+-
+     public void func_148077_a(ShaderManager p_148077_1_)
+     {
+         p_148077_1_.func_147994_f().func_148054_b(p_148077_1_);

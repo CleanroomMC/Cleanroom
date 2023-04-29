@@ -1,0 +1,11 @@
+--- before/net/minecraft/command/server/CommandSaveOff.java
++++ after/net/minecraft/command/server/CommandSaveOff.java
+@@ -42,7 +42,7 @@
+         }
+         else
+         {
+-            throw new CommandException("commands.save-off.alreadyOff");
++            throw new CommandException("commands.save-off.alreadyOff", new Object[0]);
+         }
+     }
+ }

@@ -1,6 +1,17 @@
 --- before/net/minecraft/client/gui/GuiScreen.java
 +++ after/net/minecraft/client/gui/GuiScreen.java
-@@ -61,6 +61,7 @@
+@@ -51,8 +51,8 @@
+     protected RenderItem field_146296_j;
+     public int field_146294_l;
+     public int field_146295_m;
+-    protected List<GuiButton> field_146292_n = Lists.newArrayList();
+-    protected List<GuiLabel> field_146293_o = Lists.newArrayList();
++    protected List<GuiButton> field_146292_n = Lists.<GuiButton>newArrayList();
++    protected List<GuiLabel> field_146293_o = Lists.<GuiLabel>newArrayList();
+     public boolean field_146291_p;
+     protected FontRenderer field_146289_q;
+     protected GuiButton field_146290_a;
+@@ -61,17 +61,18 @@
      private int field_146298_h;
      private URI field_175286_t;
      private boolean field_193977_u;
@@ -8,7 +19,41 @@
  
      public void func_73863_a(int p_73863_1_, int p_73863_2_, float p_73863_3_)
      {
-@@ -131,7 +132,10 @@
+         for (int i = 0; i < this.field_146292_n.size(); ++i)
+         {
+-            this.field_146292_n.get(i).func_191745_a(this.field_146297_k, p_73863_1_, p_73863_2_, p_73863_3_);
++            ((GuiButton)this.field_146292_n.get(i)).func_191745_a(this.field_146297_k, p_73863_1_, p_73863_2_, p_73863_3_);
+         }
+ 
+         for (int j = 0; j < this.field_146293_o.size(); ++j)
+         {
+-            this.field_146293_o.get(j).func_146159_a(this.field_146297_k, p_73863_1_, p_73863_2_);
++            ((GuiLabel)this.field_146293_o.get(j)).func_146159_a(this.field_146297_k, p_73863_1_, p_73863_2_);
+         }
+     }
+ 
+@@ -105,8 +106,9 @@
+                 return (String)transferable.getTransferData(DataFlavor.stringFlavor);
+             }
+         }
+-        catch (Exception exception)
++        catch (Exception var1)
+         {
++            ;
+         }
+ 
+         return "";
+@@ -121,15 +123,19 @@
+                 StringSelection stringselection = new StringSelection(p_146275_0_);
+                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringselection, (ClipboardOwner)null);
+             }
+-            catch (Exception exception)
++            catch (Exception var2)
+             {
++                ;
+             }
+         }
+     }
  
      protected void func_146285_a(ItemStack p_146285_1_, int p_146285_2_, int p_146285_3_)
      {
@@ -20,7 +65,7 @@
      }
  
      public List<String> func_191927_a(ItemStack p_191927_1_)
-@@ -142,7 +146,7 @@
+@@ -140,7 +146,7 @@
          {
              if (i == 0)
              {
@@ -29,7 +74,7 @@
              }
              else
              {
-@@ -170,7 +174,13 @@
+@@ -168,7 +174,13 @@
  
      public void func_146283_a(List<String> p_146283_1_, int p_146283_2_, int p_146283_3_)
      {
@@ -44,7 +89,36 @@
          {
              GlStateManager.func_179101_C();
              RenderHelper.func_74518_a();
-@@ -403,10 +413,13 @@
+@@ -261,8 +273,9 @@
+                         itemstack = new ItemStack((NBTTagCompound)nbtbase);
+                     }
+                 }
+-                catch (NBTException nbtexception1)
++                catch (NBTException var9)
+                 {
++                    ;
+                 }
+ 
+                 if (itemstack.func_190926_b())
+@@ -281,7 +294,7 @@
+                     try
+                     {
+                         NBTTagCompound nbttagcompound = JsonToNBT.func_180713_a(hoverevent.func_150702_b().func_150260_c());
+-                        List<String> list = Lists.newArrayList();
++                        List<String> list = Lists.<String>newArrayList();
+                         list.add(nbttagcompound.func_74779_i("name"));
+ 
+                         if (nbttagcompound.func_150297_b("type", 8))
+@@ -293,7 +306,7 @@
+                         list.add(nbttagcompound.func_74779_i("id"));
+                         this.func_146283_a(list, p_175272_2_, p_175272_3_);
+                     }
+-                    catch (NBTException nbtexception)
++                    catch (NBTException var8)
+                     {
+                         this.func_146279_a(TextFormatting.RED + "Invalid Entity!", p_175272_2_, p_175272_3_);
+                     }
+@@ -400,10 +413,13 @@
  
      public void func_175281_b(String p_175281_1_, boolean p_175281_2_)
      {
@@ -58,7 +132,7 @@
  
          this.field_146297_k.field_71439_g.func_71165_d(p_175281_1_);
      }
-@@ -421,9 +434,15 @@
+@@ -418,9 +434,15 @@
  
                  if (guibutton.func_146116_c(this.field_146297_k, p_73864_1_, p_73864_2_))
                  {
@@ -74,7 +148,7 @@
                  }
              }
          }
-@@ -453,8 +472,12 @@
+@@ -450,8 +472,12 @@
          this.field_146289_q = p_146280_1_.field_71466_p;
          this.field_146294_l = p_146280_2_;
          this.field_146295_m = p_146280_3_;
@@ -87,7 +161,7 @@
      }
  
      public void func_183500_a(int p_183500_1_, int p_183500_2_)
-@@ -473,7 +496,10 @@
+@@ -470,7 +496,10 @@
          {
              while (Mouse.next())
              {
@@ -98,7 +172,7 @@
              }
          }
  
-@@ -481,7 +507,10 @@
+@@ -478,7 +507,10 @@
          {
              while (Keyboard.next())
              {
@@ -109,7 +183,7 @@
              }
          }
      }
-@@ -543,6 +572,7 @@
+@@ -540,6 +572,7 @@
      public void func_146276_q_()
      {
          this.func_146270_b(0);

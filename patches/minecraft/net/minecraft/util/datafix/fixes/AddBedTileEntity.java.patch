@@ -1,0 +1,11 @@
+--- before/net/minecraft/util/datafix/fixes/AddBedTileEntity.java
++++ after/net/minecraft/util/datafix/fixes/AddBedTileEntity.java
+@@ -50,7 +50,7 @@
+                 }
+             }
+         }
+-        catch (Exception exception)
++        catch (Exception var17)
+         {
+             field_193842_a.warn("Unable to datafix Bed blocks, level format may be missing tags.");
+         }

@@ -1,6 +1,110 @@
 --- before/net/minecraft/world/biome/BiomeMesa.java
 +++ after/net/minecraft/world/biome/BiomeMesa.java
-@@ -318,13 +318,13 @@
+@@ -99,7 +99,7 @@
+                     d4 = d3;
+                 }
+ 
+-                d4 += 64.0D;
++                d4 = d4 + 64.0D;
+             }
+         }
+ 
+@@ -157,7 +157,48 @@
+ 
+                         l = k + Math.max(0, j1 - i2);
+ 
+-                        if (j1 < i2 - 1)
++                        if (j1 >= i2 - 1)
++                        {
++                            if (this.field_150620_aI && j1 > 86 + k * 2)
++                            {
++                                if (flag)
++                                {
++                                    p_180622_3_.func_177855_a(l1, j1, k1, field_185385_y);
++                                }
++                                else
++                                {
++                                    p_180622_3_.func_177855_a(l1, j1, k1, field_185386_z);
++                                }
++                            }
++                            else if (j1 > i2 + 3 + k)
++                            {
++                                IBlockState iblockstate2;
++
++                                if (j1 >= 64 && j1 <= 127)
++                                {
++                                    if (flag)
++                                    {
++                                        iblockstate2 = field_185381_A;
++                                    }
++                                    else
++                                    {
++                                        iblockstate2 = this.func_180629_a(p_180622_4_, j1, p_180622_5_);
++                                    }
++                                }
++                                else
++                                {
++                                    iblockstate2 = field_185383_C;
++                                }
++
++                                p_180622_3_.func_177855_a(l1, j1, k1, iblockstate2);
++                            }
++                            else
++                            {
++                                p_180622_3_.func_177855_a(l1, j1, k1, this.field_76752_A);
++                                flag1 = true;
++                            }
++                        }
++                        else
+                         {
+                             p_180622_3_.func_177855_a(l1, j1, k1, iblockstate3);
+ 
+@@ -166,44 +207,6 @@
+                                 p_180622_3_.func_177855_a(l1, j1, k1, field_185383_C);
+                             }
+                         }
+-                        else if (this.field_150620_aI && j1 > 86 + k * 2)
+-                        {
+-                            if (flag)
+-                            {
+-                                p_180622_3_.func_177855_a(l1, j1, k1, field_185385_y);
+-                            }
+-                            else
+-                            {
+-                                p_180622_3_.func_177855_a(l1, j1, k1, field_185386_z);
+-                            }
+-                        }
+-                        else if (j1 <= i2 + 3 + k)
+-                        {
+-                            p_180622_3_.func_177855_a(l1, j1, k1, this.field_76752_A);
+-                            flag1 = true;
+-                        }
+-                        else
+-                        {
+-                            IBlockState iblockstate2;
+-
+-                            if (j1 >= 64 && j1 <= 127)
+-                            {
+-                                if (flag)
+-                                {
+-                                    iblockstate2 = field_185381_A;
+-                                }
+-                                else
+-                                {
+-                                    iblockstate2 = this.func_180629_a(p_180622_4_, j1, p_180622_5_);
+-                                }
+-                            }
+-                            else
+-                            {
+-                                iblockstate2 = field_185383_C;
+-                            }
+-
+-                            p_180622_3_.func_177855_a(l1, j1, k1, iblockstate2);
+-                        }
+                     }
+                     else if (l > 0)
+                     {
+@@ -315,13 +318,13 @@
      @SideOnly(Side.CLIENT)
      public int func_180625_c(BlockPos p_180625_1_)
      {
@@ -16,7 +120,7 @@
      }
  
      class Decorator extends BiomeDecorator
-@@ -336,6 +336,7 @@
+@@ -333,6 +336,7 @@
          protected void func_76797_b(World p_76797_1_, Random p_76797_2_)
          {
              super.func_76797_b(p_76797_1_, p_76797_2_);

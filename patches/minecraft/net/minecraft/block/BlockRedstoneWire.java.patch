@@ -1,6 +1,50 @@
 --- before/net/minecraft/block/BlockRedstoneWire.java
 +++ after/net/minecraft/block/BlockRedstoneWire.java
-@@ -99,15 +99,15 @@
+@@ -8,6 +8,7 @@
+ import java.util.Set;
+ import javax.annotation.Nullable;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyEnum;
+ import net.minecraft.block.properties.PropertyInteger;
+ import net.minecraft.block.state.BlockFaceShape;
+@@ -33,19 +34,19 @@
+ 
+ public class BlockRedstoneWire extends Block
+ {
+-    public static final PropertyEnum<BlockRedstoneWire.EnumAttachPosition> field_176348_a = PropertyEnum.func_177709_a("north", BlockRedstoneWire.EnumAttachPosition.class);
+-    public static final PropertyEnum<BlockRedstoneWire.EnumAttachPosition> field_176347_b = PropertyEnum.func_177709_a("east", BlockRedstoneWire.EnumAttachPosition.class);
+-    public static final PropertyEnum<BlockRedstoneWire.EnumAttachPosition> field_176349_M = PropertyEnum.func_177709_a("south", BlockRedstoneWire.EnumAttachPosition.class);
+-    public static final PropertyEnum<BlockRedstoneWire.EnumAttachPosition> field_176350_N = PropertyEnum.func_177709_a("west", BlockRedstoneWire.EnumAttachPosition.class);
++    public static final PropertyEnum<BlockRedstoneWire.EnumAttachPosition> field_176348_a = PropertyEnum.<BlockRedstoneWire.EnumAttachPosition>func_177709_a("north", BlockRedstoneWire.EnumAttachPosition.class);
++    public static final PropertyEnum<BlockRedstoneWire.EnumAttachPosition> field_176347_b = PropertyEnum.<BlockRedstoneWire.EnumAttachPosition>func_177709_a("east", BlockRedstoneWire.EnumAttachPosition.class);
++    public static final PropertyEnum<BlockRedstoneWire.EnumAttachPosition> field_176349_M = PropertyEnum.<BlockRedstoneWire.EnumAttachPosition>func_177709_a("south", BlockRedstoneWire.EnumAttachPosition.class);
++    public static final PropertyEnum<BlockRedstoneWire.EnumAttachPosition> field_176350_N = PropertyEnum.<BlockRedstoneWire.EnumAttachPosition>func_177709_a("west", BlockRedstoneWire.EnumAttachPosition.class);
+     public static final PropertyInteger field_176351_O = PropertyInteger.func_177719_a("power", 0, 15);
+     protected static final AxisAlignedBB[] field_185700_f = new AxisAlignedBB[] {new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 0.8125D, 0.0625D, 0.8125D), new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 0.8125D, 0.0625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.1875D, 0.8125D, 0.0625D, 0.8125D), new AxisAlignedBB(0.0D, 0.0D, 0.1875D, 0.8125D, 0.0625D, 1.0D), new AxisAlignedBB(0.1875D, 0.0D, 0.0D, 0.8125D, 0.0625D, 0.8125D), new AxisAlignedBB(0.1875D, 0.0D, 0.0D, 0.8125D, 0.0625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.8125D, 0.0625D, 0.8125D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.8125D, 0.0625D, 1.0D), new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 1.0D, 0.0625D, 0.8125D), new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 1.0D, 0.0625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.1875D, 1.0D, 0.0625D, 0.8125D), new AxisAlignedBB(0.0D, 0.0D, 0.1875D, 1.0D, 0.0625D, 1.0D), new AxisAlignedBB(0.1875D, 0.0D, 0.0D, 1.0D, 0.0625D, 0.8125D), new AxisAlignedBB(0.1875D, 0.0D, 0.0D, 1.0D, 0.0625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.0625D, 0.8125D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.0625D, 1.0D)};
+     private boolean field_150181_a = true;
+-    private final Set<BlockPos> field_150179_b = Sets.newHashSet();
++    private final Set<BlockPos> field_150179_b = Sets.<BlockPos>newHashSet();
+ 
+     public BlockRedstoneWire()
+     {
+         super(Material.field_151594_q);
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176348_a, BlockRedstoneWire.EnumAttachPosition.NONE).func_177226_a(field_176347_b, BlockRedstoneWire.EnumAttachPosition.NONE).func_177226_a(field_176349_M, BlockRedstoneWire.EnumAttachPosition.NONE).func_177226_a(field_176350_N, BlockRedstoneWire.EnumAttachPosition.NONE).func_177226_a(field_176351_O, 0));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176348_a, BlockRedstoneWire.EnumAttachPosition.NONE).func_177226_a(field_176347_b, BlockRedstoneWire.EnumAttachPosition.NONE).func_177226_a(field_176349_M, BlockRedstoneWire.EnumAttachPosition.NONE).func_177226_a(field_176350_N, BlockRedstoneWire.EnumAttachPosition.NONE).func_177226_a(field_176351_O, Integer.valueOf(0)));
+     }
+ 
+     public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
+@@ -89,7 +90,8 @@
+         p_176221_1_ = p_176221_1_.func_177226_a(field_176350_N, this.func_176341_c(p_176221_2_, p_176221_3_, EnumFacing.WEST));
+         p_176221_1_ = p_176221_1_.func_177226_a(field_176347_b, this.func_176341_c(p_176221_2_, p_176221_3_, EnumFacing.EAST));
+         p_176221_1_ = p_176221_1_.func_177226_a(field_176348_a, this.func_176341_c(p_176221_2_, p_176221_3_, EnumFacing.NORTH));
+-        return p_176221_1_.func_177226_a(field_176349_M, this.func_176341_c(p_176221_2_, p_176221_3_, EnumFacing.SOUTH));
++        p_176221_1_ = p_176221_1_.func_177226_a(field_176349_M, this.func_176341_c(p_176221_2_, p_176221_3_, EnumFacing.SOUTH));
++        return p_176221_1_;
+     }
+ 
+     private BlockRedstoneWire.EnumAttachPosition func_176341_c(IBlockAccess p_176341_1_, BlockPos p_176341_2_, EnumFacing p_176341_3_)
+@@ -97,15 +99,15 @@
          BlockPos blockpos = p_176341_2_.func_177972_a(p_176341_3_);
          IBlockState iblockstate = p_176341_1_.func_180495_p(p_176341_2_.func_177972_a(p_176341_3_));
  
@@ -19,7 +63,7 @@
                  {
                      if (iblockstate.func_185898_k())
                      {
-@@ -144,7 +144,8 @@
+@@ -142,7 +144,8 @@
  
      public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)
      {
@@ -29,7 +73,67 @@
      }
  
      private IBlockState func_176338_e(World p_176338_1_, BlockPos p_176338_2_, IBlockState p_176338_3_)
-@@ -414,7 +415,7 @@
+@@ -162,7 +165,7 @@
+     private IBlockState func_176345_a(World p_176345_1_, BlockPos p_176345_2_, BlockPos p_176345_3_, IBlockState p_176345_4_)
+     {
+         IBlockState iblockstate = p_176345_4_;
+-        int i = p_176345_4_.func_177229_b(field_176351_O);
++        int i = ((Integer)p_176345_4_.func_177229_b(field_176351_O)).intValue();
+         int j = 0;
+         j = this.func_176342_a(p_176345_1_, p_176345_3_, j);
+         this.field_150181_a = false;
+@@ -219,7 +222,7 @@
+ 
+         if (i != j)
+         {
+-            p_176345_4_ = p_176345_4_.func_177226_a(field_176351_O, j);
++            p_176345_4_ = p_176345_4_.func_177226_a(field_176351_O, Integer.valueOf(j));
+ 
+             if (p_176345_1_.func_180495_p(p_176345_2_) == iblockstate)
+             {
+@@ -324,7 +327,7 @@
+         }
+         else
+         {
+-            int i = p_176342_1_.func_180495_p(p_176342_2_).func_177229_b(field_176351_O);
++            int i = ((Integer)p_176342_1_.func_180495_p(p_176342_2_).func_177229_b(field_176351_O)).intValue();
+             return i > p_176342_3_ ? i : p_176342_3_;
+         }
+     }
+@@ -363,7 +366,7 @@
+         }
+         else
+         {
+-            int i = p_180656_1_.func_177229_b(field_176351_O);
++            int i = ((Integer)p_180656_1_.func_177229_b(field_176351_O)).intValue();
+ 
+             if (i == 0)
+             {
+@@ -375,7 +378,7 @@
+             }
+             else
+             {
+-                EnumSet<EnumFacing> enumset = EnumSet.noneOf(EnumFacing.class);
++                EnumSet<EnumFacing> enumset = EnumSet.<EnumFacing>noneOf(EnumFacing.class);
+ 
+                 for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
+                 {
+@@ -389,9 +392,13 @@
+                 {
+                     return i;
+                 }
++                else if (enumset.contains(p_180656_4_) && !enumset.contains(p_180656_4_.func_176735_f()) && !enumset.contains(p_180656_4_.func_176746_e()))
++                {
++                    return i;
++                }
+                 else
+                 {
+-                    return enumset.contains(p_180656_4_) && !enumset.contains(p_180656_4_.func_176735_f()) && !enumset.contains(p_180656_4_.func_176746_e()) ? i : 0;
++                    return 0;
+                 }
+             }
+         }
+@@ -408,7 +415,7 @@
          {
              return true;
          }
@@ -38,7 +142,7 @@
          {
              return true;
          }
-@@ -430,15 +431,10 @@
+@@ -424,15 +431,10 @@
  
      protected static boolean func_176340_e(IBlockAccess p_176340_0_, BlockPos p_176340_1_)
      {
@@ -58,7 +162,16 @@
      {
          Block block = p_176343_0_.func_177230_c();
  
-@@ -457,7 +453,7 @@
+@@ -442,7 +444,7 @@
+         }
+         else if (Blocks.field_150413_aR.func_185547_C(p_176343_0_))
+         {
+-            EnumFacing enumfacing = p_176343_0_.func_177229_b(BlockRedstoneRepeater.field_185512_D);
++            EnumFacing enumfacing = (EnumFacing)p_176343_0_.func_177229_b(BlockRedstoneRepeater.field_185512_D);
+             return enumfacing == p_176343_1_ || enumfacing.func_176734_d() == p_176343_1_;
+         }
+         else if (Blocks.field_190976_dk == p_176343_0_.func_177230_c())
+@@ -451,7 +453,7 @@
          }
          else
          {
@@ -67,3 +180,39 @@
          }
      }
  
+@@ -493,7 +495,7 @@
+     @SideOnly(Side.CLIENT)
+     public void func_180655_c(IBlockState p_180655_1_, World p_180655_2_, BlockPos p_180655_3_, Random p_180655_4_)
+     {
+-        int i = p_180655_1_.func_177229_b(field_176351_O);
++        int i = ((Integer)p_180655_1_.func_177229_b(field_176351_O)).intValue();
+ 
+         if (i != 0)
+         {
+@@ -515,7 +517,7 @@
+ 
+     public IBlockState func_176203_a(int p_176203_1_)
+     {
+-        return this.func_176223_P().func_177226_a(field_176351_O, p_176203_1_);
++        return this.func_176223_P().func_177226_a(field_176351_O, Integer.valueOf(p_176203_1_));
+     }
+ 
+     @SideOnly(Side.CLIENT)
+@@ -526,7 +528,7 @@
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(field_176351_O);
++        return ((Integer)p_176201_1_.func_177229_b(field_176351_O)).intValue();
+     }
+ 
+     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
+@@ -559,7 +561,7 @@
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176348_a, field_176347_b, field_176349_M, field_176350_N, field_176351_O);
++        return new BlockStateContainer(this, new IProperty[] {field_176348_a, field_176347_b, field_176349_M, field_176350_N, field_176351_O});
+     }
+ 
+     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)

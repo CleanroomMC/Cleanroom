@@ -1,0 +1,10 @@
+--- before/net/minecraft/item/ItemExpBottle.java
++++ after/net/minecraft/item/ItemExpBottle.java
+@@ -45,6 +45,6 @@
+         }
+ 
+         p_77659_2_.func_71029_a(StatList.func_188057_b(this));
+-        return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
++        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+     }
+ }

@@ -1,0 +1,10 @@
+--- before/net/minecraft/item/ItemSplashPotion.java
++++ after/net/minecraft/item/ItemSplashPotion.java
+@@ -33,6 +33,6 @@
+         }
+ 
+         p_77659_2_.func_71029_a(StatList.func_188057_b(this));
+-        return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
++        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+     }
+ }

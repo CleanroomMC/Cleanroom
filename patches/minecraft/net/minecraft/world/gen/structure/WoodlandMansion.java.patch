@@ -1,0 +1,35 @@
+--- before/net/minecraft/world/gen/structure/WoodlandMansion.java
++++ after/net/minecraft/world/gen/structure/WoodlandMansion.java
+@@ -18,7 +18,7 @@
+ {
+     private final int field_191073_b = 80;
+     private final int field_191074_d = 20;
+-    public static final List<Biome> field_191072_a = Arrays.asList(Biomes.field_150585_R, Biomes.field_185430_ab);
++    public static final List<Biome> field_191072_a = Arrays.<Biome>asList(Biomes.field_150585_R, Biomes.field_185430_ab);
+     private final ChunkGeneratorOverworld field_191075_h;
+ 
+     public WoodlandMansion(ChunkGeneratorOverworld p_i47240_1_)
+@@ -49,10 +49,10 @@
+         int k = i / 80;
+         int l = j / 80;
+         Random random = this.field_75039_c.func_72843_D(k, l, 10387319);
+-        k *= 80;
+-        l *= 80;
+-        k += (random.nextInt(60) + random.nextInt(60)) / 2;
+-        l += (random.nextInt(60) + random.nextInt(60)) / 2;
++        k = k * 80;
++        l = l * 80;
++        k = k + (random.nextInt(60) + random.nextInt(60)) / 2;
++        l = l + (random.nextInt(60) + random.nextInt(60)) / 2;
+ 
+         if (p_75047_1_ == k && p_75047_2_ == l)
+         {
+@@ -128,7 +128,7 @@
+                 else
+                 {
+                     BlockPos blockpos = new BlockPos(p_191092_4_ * 16 + 8, k1 + 1, p_191092_5_ * 16 + 8);
+-                    List<WoodlandMansionPieces.MansionTemplate> list = Lists.newLinkedList();
++                    List<WoodlandMansionPieces.MansionTemplate> list = Lists.<WoodlandMansionPieces.MansionTemplate>newLinkedList();
+                     WoodlandMansionPieces.func_191152_a(p_191092_1_.func_72860_G().func_186340_h(), blockpos, rotation, list, p_191092_3_);
+                     this.field_75075_a.addAll(list);
+                     this.func_75072_c();

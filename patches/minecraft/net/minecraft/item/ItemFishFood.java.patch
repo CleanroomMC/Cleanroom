@@ -1,0 +1,29 @@
+--- before/net/minecraft/item/ItemFishFood.java
++++ after/net/minecraft/item/ItemFishFood.java
+@@ -72,7 +72,7 @@
+         CLOWNFISH(2, "clownfish", 1, 0.1F),
+         PUFFERFISH(3, "pufferfish", 1, 0.1F);
+ 
+-        private static final Map<Integer, ItemFishFood.FishType> field_150983_e = Maps.newHashMap();
++        private static final Map<Integer, ItemFishFood.FishType> field_150983_e = Maps.<Integer, ItemFishFood.FishType>newHashMap();
+         private final int field_150980_f;
+         private final String field_150981_g;
+         private final int field_150991_j;
+@@ -140,7 +140,7 @@
+ 
+         public static ItemFishFood.FishType func_150974_a(int p_150974_0_)
+         {
+-            ItemFishFood.FishType itemfishfood$fishtype = field_150983_e.get(p_150974_0_);
++            ItemFishFood.FishType itemfishfood$fishtype = field_150983_e.get(Integer.valueOf(p_150974_0_));
+             return itemfishfood$fishtype == null ? COD : itemfishfood$fishtype;
+         }
+ 
+@@ -153,7 +153,7 @@
+         {
+             for (ItemFishFood.FishType itemfishfood$fishtype : values())
+             {
+-                field_150983_e.put(itemfishfood$fishtype.func_150976_a(), itemfishfood$fishtype);
++                field_150983_e.put(Integer.valueOf(itemfishfood$fishtype.func_150976_a()), itemfishfood$fishtype);
+             }
+         }
+     }

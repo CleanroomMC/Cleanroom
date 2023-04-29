@@ -1,0 +1,42 @@
+--- before/net/minecraft/client/util/JsonException.java
++++ after/net/minecraft/client/util/JsonException.java
+@@ -11,7 +11,7 @@
+ @SideOnly(Side.CLIENT)
+ public class JsonException extends IOException
+ {
+-    private final List<JsonException.Entry> field_151383_a = Lists.newArrayList();
++    private final List<JsonException.Entry> field_151383_a = Lists.<JsonException.Entry>newArrayList();
+     private final String field_151382_b;
+ 
+     public JsonException(String p_i45279_1_)
+@@ -29,7 +29,7 @@
+ 
+     public void func_151380_a(String p_151380_1_)
+     {
+-        this.field_151383_a.get(0).func_151373_a(p_151380_1_);
++        ((JsonException.Entry)this.field_151383_a.get(0)).func_151373_a(p_151380_1_);
+     }
+ 
+     public void func_151381_b(String p_151381_1_)
+@@ -66,10 +66,11 @@
+     public static class Entry
+         {
+             private String field_151376_a;
+-            private final List<String> field_151375_b = Lists.newArrayList();
++            private final List<String> field_151375_b;
+ 
+             private Entry()
+             {
++                this.field_151375_b = Lists.<String>newArrayList();
+             }
+ 
+             private void func_151373_a(String p_151373_1_)
+@@ -79,7 +80,7 @@
+ 
+             public String func_151372_b()
+             {
+-                return StringUtils.join((Iterable<?>)this.field_151375_b, "->");
++                return StringUtils.join((Iterable)this.field_151375_b, "->");
+             }
+ 
+             public String toString()

@@ -1,0 +1,17 @@
+--- before/net/minecraft/client/tutorial/MovementStep.java
++++ after/net/minecraft/client/tutorial/MovementStep.java
+@@ -13,10 +13,10 @@
+ @SideOnly(Side.CLIENT)
+ public class MovementStep implements ITutorialStep
+ {
+-    private static final ITextComponent field_193254_a = new TextComponentTranslation("tutorial.move.title", Tutorial.func_193291_a("forward"), Tutorial.func_193291_a("left"), Tutorial.func_193291_a("back"), Tutorial.func_193291_a("right"));
+-    private static final ITextComponent field_193255_b = new TextComponentTranslation("tutorial.move.description", Tutorial.func_193291_a("jump"));
+-    private static final ITextComponent field_193256_c = new TextComponentTranslation("tutorial.look.title");
+-    private static final ITextComponent field_193257_d = new TextComponentTranslation("tutorial.look.description");
++    private static final ITextComponent field_193254_a = new TextComponentTranslation("tutorial.move.title", new Object[] {Tutorial.func_193291_a("forward"), Tutorial.func_193291_a("left"), Tutorial.func_193291_a("back"), Tutorial.func_193291_a("right")});
++    private static final ITextComponent field_193255_b = new TextComponentTranslation("tutorial.move.description", new Object[] {Tutorial.func_193291_a("jump")});
++    private static final ITextComponent field_193256_c = new TextComponentTranslation("tutorial.look.title", new Object[0]);
++    private static final ITextComponent field_193257_d = new TextComponentTranslation("tutorial.look.description", new Object[0]);
+     private final Tutorial field_193258_e;
+     private TutorialToast field_193259_f;
+     private TutorialToast field_193260_g;

@@ -1,0 +1,64 @@
+--- before/net/minecraft/entity/monster/EntitySpellcasterIllager.java
++++ after/net/minecraft/entity/monster/EntitySpellcasterIllager.java
+@@ -15,7 +15,7 @@
+ 
+ public abstract class EntitySpellcasterIllager extends AbstractIllager
+ {
+-    private static final DataParameter<Byte> field_193088_c = EntityDataManager.func_187226_a(EntitySpellcasterIllager.class, DataSerializers.field_187191_a);
++    private static final DataParameter<Byte> field_193088_c = EntityDataManager.<Byte>func_187226_a(EntitySpellcasterIllager.class, DataSerializers.field_187191_a);
+     protected int field_193087_b;
+     private EntitySpellcasterIllager.SpellType field_193089_bx = EntitySpellcasterIllager.SpellType.NONE;
+ 
+@@ -27,7 +27,7 @@
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+-        this.field_70180_af.func_187214_a(field_193088_c, (byte)0);
++        this.field_70180_af.func_187214_a(field_193088_c, Byte.valueOf((byte)0));
+     }
+ 
+     public void func_70037_a(NBTTagCompound p_70037_1_)
+@@ -52,7 +52,7 @@
+     {
+         if (this.field_70170_p.field_72995_K)
+         {
+-            return this.field_70180_af.func_187225_a(field_193088_c) > 0;
++            return ((Byte)this.field_70180_af.func_187225_a(field_193088_c)).byteValue() > 0;
+         }
+         else
+         {
+@@ -63,12 +63,12 @@
+     public void func_193081_a(EntitySpellcasterIllager.SpellType p_193081_1_)
+     {
+         this.field_193089_bx = p_193081_1_;
+-        this.field_70180_af.func_187227_b(field_193088_c, (byte)p_193081_1_.field_193345_g);
++        this.field_70180_af.func_187227_b(field_193088_c, Byte.valueOf((byte)p_193081_1_.field_193345_g));
+     }
+ 
+     protected EntitySpellcasterIllager.SpellType func_193083_dm()
+     {
+-        return !this.field_70170_p.field_72995_K ? this.field_193089_bx : EntitySpellcasterIllager.SpellType.func_193337_a(this.field_70180_af.func_187225_a(field_193088_c));
++        return !this.field_70170_p.field_72995_K ? this.field_193089_bx : EntitySpellcasterIllager.SpellType.func_193337_a(((Byte)this.field_70180_af.func_187225_a(field_193088_c)).byteValue());
+     }
+ 
+     protected void func_70619_bc()
+@@ -91,7 +91,7 @@
+             double d0 = entityspellcasterillager$spelltype.field_193346_h[0];
+             double d1 = entityspellcasterillager$spelltype.field_193346_h[1];
+             double d2 = entityspellcasterillager$spelltype.field_193346_h[2];
+-            float f = this.field_70761_aq * ((float)Math.PI / 180F) + MathHelper.func_76134_b((float)this.field_70173_aa * 0.6662F) * 0.25F;
++            float f = this.field_70761_aq * 0.017453292F + MathHelper.func_76134_b((float)this.field_70173_aa * 0.6662F) * 0.25F;
+             float f1 = MathHelper.func_76134_b(f);
+             float f2 = MathHelper.func_76126_a(f);
+             this.field_70170_p.func_175688_a(EnumParticleTypes.SPELL_MOB, this.field_70165_t + (double)f1 * 0.6D, this.field_70163_u + 1.8D, this.field_70161_v + (double)f2 * 0.6D, d0, d1, d2);
+@@ -143,10 +143,6 @@
+     {
+         protected int field_193321_c;
+         protected int field_193322_d;
+-
+-        protected AIUseSpell()
+-        {
+-        }
+ 
+         public boolean func_75250_a()
+         {

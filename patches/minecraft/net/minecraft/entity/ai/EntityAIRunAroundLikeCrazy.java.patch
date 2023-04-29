@@ -1,5 +1,14 @@
 --- before/net/minecraft/entity/ai/EntityAIRunAroundLikeCrazy.java
 +++ after/net/minecraft/entity/ai/EntityAIRunAroundLikeCrazy.java
+@@ -58,7 +58,7 @@
+     {
+         if (!this.field_111180_a.func_110248_bS() && this.field_111180_a.func_70681_au().nextInt(50) == 0)
+         {
+-            Entity entity = this.field_111180_a.func_184188_bt().get(0);
++            Entity entity = (Entity)this.field_111180_a.func_184188_bt().get(0);
+ 
+             if (entity == null)
+             {
 @@ -70,7 +70,7 @@
                  int i = this.field_111180_a.func_110252_cg();
                  int j = this.field_111180_a.func_190676_dC();

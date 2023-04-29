@@ -1,0 +1,11 @@
+--- before/net/minecraft/world/ColorizerGrass.java
++++ after/net/minecraft/world/ColorizerGrass.java
+@@ -15,7 +15,7 @@
+ 
+     public static int func_77480_a(double p_77480_0_, double p_77480_2_)
+     {
+-        p_77480_2_ *= p_77480_0_;
++        p_77480_2_ = p_77480_2_ * p_77480_0_;
+         int i = (int)((1.0D - p_77480_0_) * 255.0D);
+         int j = (int)((1.0D - p_77480_2_) * 255.0D);
+         int k = j << 8 | i;

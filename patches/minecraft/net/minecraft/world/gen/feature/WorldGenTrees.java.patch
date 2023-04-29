@@ -1,5 +1,14 @@
 --- before/net/minecraft/world/gen/feature/WorldGenTrees.java
 +++ after/net/minecraft/world/gen/feature/WorldGenTrees.java
+@@ -19,7 +19,7 @@
+ public class WorldGenTrees extends WorldGenAbstractTree
+ {
+     private static final IBlockState field_181653_a = Blocks.field_150364_r.func_176223_P().func_177226_a(BlockOldLog.field_176301_b, BlockPlanks.EnumType.OAK);
+-    private static final IBlockState field_181654_b = Blocks.field_150362_t.func_176223_P().func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.OAK).func_177226_a(BlockLeaves.field_176236_b, false);
++    private static final IBlockState field_181654_b = Blocks.field_150362_t.func_176223_P().func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.OAK).func_177226_a(BlockLeaves.field_176236_b, Boolean.valueOf(false));
+     private final int field_76533_a;
+     private final boolean field_76531_b;
+     private final IBlockState field_76532_c;
 @@ -44,7 +44,7 @@
          int i = p_180709_2_.nextInt(3) + this.field_76533_a;
          boolean flag = true;
@@ -97,6 +106,21 @@
                                          {
                                              this.func_181650_b(p_180709_1_, blockpos1, BlockVine.field_176273_b);
                                          }
+@@ -232,12 +234,12 @@
+ 
+     private void func_181652_a(World p_181652_1_, int p_181652_2_, BlockPos p_181652_3_, EnumFacing p_181652_4_)
+     {
+-        this.func_175903_a(p_181652_1_, p_181652_3_, Blocks.field_150375_by.func_176223_P().func_177226_a(BlockCocoa.field_176501_a, p_181652_2_).func_177226_a(BlockCocoa.field_185512_D, p_181652_4_));
++        this.func_175903_a(p_181652_1_, p_181652_3_, Blocks.field_150375_by.func_176223_P().func_177226_a(BlockCocoa.field_176501_a, Integer.valueOf(p_181652_2_)).func_177226_a(BlockCocoa.field_185512_D, p_181652_4_));
+     }
+ 
+     private void func_181651_a(World p_181651_1_, BlockPos p_181651_2_, PropertyBool p_181651_3_)
+     {
+-        this.func_175903_a(p_181651_1_, p_181651_2_, Blocks.field_150395_bd.func_176223_P().func_177226_a(p_181651_3_, true));
++        this.func_175903_a(p_181651_1_, p_181651_2_, Blocks.field_150395_bd.func_176223_P().func_177226_a(p_181651_3_, Boolean.valueOf(true)));
+     }
+ 
+     private void func_181650_b(World p_181650_1_, BlockPos p_181650_2_, PropertyBool p_181650_3_)
 @@ -245,7 +247,7 @@
          this.func_181651_a(p_181650_1_, p_181650_2_, p_181650_3_);
          int i = 4;

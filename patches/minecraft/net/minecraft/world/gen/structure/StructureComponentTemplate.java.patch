@@ -1,0 +1,39 @@
+--- before/net/minecraft/world/gen/structure/StructureComponentTemplate.java
++++ after/net/minecraft/world/gen/structure/StructureComponentTemplate.java
+@@ -2,6 +2,7 @@
+ 
+ import java.util.Map;
+ import java.util.Random;
++import java.util.Map.Entry;
+ import net.minecraft.init.Blocks;
+ import net.minecraft.nbt.NBTTagCompound;
+ import net.minecraft.util.EnumFacing;
+@@ -17,16 +18,18 @@
+ {
+     private static final PlacementSettings field_186179_d = new PlacementSettings();
+     protected Template field_186176_a;
+-    protected PlacementSettings field_186177_b = field_186179_d.func_186222_a(true).func_186225_a(Blocks.field_150350_a);
++    protected PlacementSettings field_186177_b;
+     protected BlockPos field_186178_c;
+ 
+     public StructureComponentTemplate()
+     {
++        this.field_186177_b = field_186179_d.func_186222_a(true).func_186225_a(Blocks.field_150350_a);
+     }
+ 
+     public StructureComponentTemplate(int p_i46662_1_)
+     {
+         super(p_i46662_1_);
++        this.field_186177_b = field_186179_d.func_186222_a(true).func_186225_a(Blocks.field_150350_a);
+     }
+ 
+     protected void func_186173_a(Template p_186173_1_, BlockPos p_186173_2_, PlacementSettings p_186173_3_)
+@@ -56,7 +59,7 @@
+         this.field_186176_a.func_189962_a(p_74875_1_, this.field_186178_c, this.field_186177_b, 18);
+         Map<BlockPos, String> map = this.field_186176_a.func_186258_a(this.field_186178_c, this.field_186177_b);
+ 
+-        for (Map.Entry<BlockPos, String> entry : map.entrySet())
++        for (Entry<BlockPos, String> entry : map.entrySet())
+         {
+             String s = entry.getValue();
+             this.func_186175_a(s, entry.getKey(), p_74875_1_, p_74875_2_, p_74875_3_);

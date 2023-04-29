@@ -1,20 +1,49 @@
 --- before/net/minecraft/world/gen/layer/GenLayer.java
 +++ after/net/minecraft/world/gen/layer/GenLayer.java
-@@ -47,11 +47,11 @@
+@@ -15,8 +15,8 @@
+     public static GenLayer[] func_180781_a(long p_180781_0_, WorldType p_180781_2_, ChunkGeneratorSettings p_180781_3_)
+     {
+         GenLayer genlayer = new GenLayerIsland(1L);
+-        GenLayer genlayerfuzzyzoom = new GenLayerFuzzyZoom(2000L, genlayer);
+-        GenLayer genlayeraddisland = new GenLayerAddIsland(1L, genlayerfuzzyzoom);
++        genlayer = new GenLayerFuzzyZoom(2000L, genlayer);
++        GenLayer genlayeraddisland = new GenLayerAddIsland(1L, genlayer);
+         GenLayer genlayerzoom = new GenLayerZoom(2001L, genlayeraddisland);
+         GenLayer genlayeraddisland1 = new GenLayerAddIsland(2L, genlayerzoom);
+         genlayeraddisland1 = new GenLayerAddIsland(50L, genlayeraddisland1);
+@@ -32,7 +32,7 @@
+         GenLayer genlayeraddisland3 = new GenLayerAddIsland(4L, genlayerzoom1);
+         GenLayer genlayeraddmushroomisland = new GenLayerAddMushroomIsland(5L, genlayeraddisland3);
+         GenLayer genlayerdeepocean = new GenLayerDeepOcean(4L, genlayeraddmushroomisland);
+-        genlayerdeepocean = GenLayerZoom.func_75915_a(1000L, genlayerdeepocean, 0);
++        GenLayer genlayer4 = GenLayerZoom.func_75915_a(1000L, genlayerdeepocean, 0);
+         int i = 4;
+         int j = i;
+ 
+@@ -47,16 +47,16 @@
              i = 6;
          }
  
+-        GenLayer lvt_7_1_ = GenLayerZoom.func_75915_a(1000L, genlayerdeepocean, 0);
 +        i = getModdedBiomeSize(p_180781_2_, i);
 +
-         GenLayer lvt_7_1_ = GenLayerZoom.func_75915_a(1000L, genlayer4, 0);
++        GenLayer lvt_7_1_ = GenLayerZoom.func_75915_a(1000L, genlayer4, 0);
          GenLayer genlayerriverinit = new GenLayerRiverInit(100L, lvt_7_1_);
--        GenLayer lvt_8_1_ = new GenLayerBiome(200L, genlayer4, p_180781_2_, p_180781_3_);
--        GenLayer genlayer6 = GenLayerZoom.func_75915_a(1000L, lvt_8_1_, 2);
--        GenLayer genlayerbiomeedge = new GenLayerBiomeEdge(1000L, genlayer6);
+-        GenLayer lvt_8_1_ = new GenLayerBiome(200L, genlayerdeepocean, p_180781_2_, p_180781_3_);
+-        lvt_8_1_ = GenLayerZoom.func_75915_a(1000L, lvt_8_1_, 2);
+-        GenLayer genlayerbiomeedge = new GenLayerBiomeEdge(1000L, lvt_8_1_);
 +        GenLayer genlayerbiomeedge = p_180781_2_.getBiomeLayer(p_180781_0_, genlayer4, p_180781_3_);
          GenLayer lvt_9_1_ = GenLayerZoom.func_75915_a(1000L, genlayerriverinit, 2);
          GenLayer genlayerhills = new GenLayerHills(1000L, genlayerbiomeedge, lvt_9_1_);
-         GenLayer genlayer5 = GenLayerZoom.func_75915_a(1000L, genlayerriverinit, 2);
+-        genlayerriverinit = GenLayerZoom.func_75915_a(1000L, genlayerriverinit, 2);
+-        genlayerriverinit = GenLayerZoom.func_75915_a(1000L, genlayerriverinit, j);
+-        GenLayer genlayerriver = new GenLayerRiver(1L, genlayerriverinit);
++        GenLayer genlayer5 = GenLayerZoom.func_75915_a(1000L, genlayerriverinit, 2);
++        genlayer5 = GenLayerZoom.func_75915_a(1000L, genlayer5, j);
++        GenLayer genlayerriver = new GenLayerRiver(1L, genlayer5);
+         GenLayer genlayersmooth = new GenLayerSmooth(1000L, genlayerriver);
+         genlayerhills = new GenLayerRareBiome(1001L, genlayerhills);
+ 
 @@ -171,9 +171,31 @@
  
      protected static boolean func_151618_b(int p_151618_0_)

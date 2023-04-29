@@ -21,7 +21,7 @@
              {
                  p_186363_1_.add(itemstack);
              }
-@@ -79,6 +79,7 @@
+@@ -79,18 +79,19 @@
  
      public static LootEntryItem func_186367_a(JsonObject p_186367_0_, JsonDeserializationContext p_186367_1_, int p_186367_2_, int p_186367_3_, LootCondition[] p_186367_4_)
      {
@@ -29,7 +29,13 @@
          Item item = JsonUtils.func_188180_i(p_186367_0_, "name");
          LootFunction[] alootfunction;
  
-@@ -91,6 +92,6 @@
+         if (p_186367_0_.has("functions"))
+         {
+-            alootfunction = JsonUtils.func_188174_a(p_186367_0_, "functions", p_186367_1_, LootFunction[].class);
++            alootfunction = (LootFunction[])JsonUtils.func_188174_a(p_186367_0_, "functions", p_186367_1_, LootFunction[].class);
+         }
+         else
+         {
              alootfunction = new LootFunction[0];
          }
  

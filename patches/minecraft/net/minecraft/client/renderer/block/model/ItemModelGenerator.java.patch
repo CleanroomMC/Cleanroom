@@ -1,0 +1,79 @@
+--- before/net/minecraft/client/renderer/block/model/ItemModelGenerator.java
++++ after/net/minecraft/client/renderer/block/model/ItemModelGenerator.java
+@@ -21,8 +21,8 @@
+     @Nullable
+     public ModelBlock func_178392_a(TextureMap p_178392_1_, ModelBlock p_178392_2_)
+     {
+-        Map<String, String> map = Maps.newHashMap();
+-        List<BlockPart> list = Lists.newArrayList();
++        Map<String, String> map = Maps.<String, String>newHashMap();
++        List<BlockPart> list = Lists.<BlockPart>newArrayList();
+ 
+         for (int i = 0; i < field_178398_a.size(); ++i)
+         {
+@@ -45,17 +45,17 @@
+         }
+         else
+         {
+-            map.put("particle", p_178392_2_.func_178300_b("particle") ? p_178392_2_.func_178308_c("particle") : map.get("layer0"));
++            map.put("particle", p_178392_2_.func_178300_b("particle") ? p_178392_2_.func_178308_c("particle") : (String)map.get("layer0"));
+             return new ModelBlock((ResourceLocation)null, list, map, false, false, p_178392_2_.func_181682_g(), p_178392_2_.func_187966_f());
+         }
+     }
+ 
+     private List<BlockPart> func_178394_a(int p_178394_1_, String p_178394_2_, TextureAtlasSprite p_178394_3_)
+     {
+-        Map<EnumFacing, BlockPartFace> map = Maps.newHashMap();
++        Map<EnumFacing, BlockPartFace> map = Maps.<EnumFacing, BlockPartFace>newHashMap();
+         map.put(EnumFacing.SOUTH, new BlockPartFace((EnumFacing)null, p_178394_1_, p_178394_2_, new BlockFaceUV(new float[] {0.0F, 0.0F, 16.0F, 16.0F}, 0)));
+         map.put(EnumFacing.NORTH, new BlockPartFace((EnumFacing)null, p_178394_1_, p_178394_2_, new BlockFaceUV(new float[] {16.0F, 0.0F, 0.0F, 16.0F}, 0)));
+-        List<BlockPart> list = Lists.newArrayList();
++        List<BlockPart> list = Lists.<BlockPart>newArrayList();
+         list.add(new BlockPart(new Vector3f(0.0F, 0.0F, 7.5F), new Vector3f(16.0F, 16.0F, 8.5F), map, (BlockPartRotation)null, true));
+         list.addAll(this.func_178397_a(p_178394_3_, p_178394_2_, p_178394_1_));
+         return list;
+@@ -65,7 +65,7 @@
+     {
+         float f = (float)p_178397_1_.func_94211_a();
+         float f1 = (float)p_178397_1_.func_94216_b();
+-        List<BlockPart> list = Lists.newArrayList();
++        List<BlockPart> list = Lists.<BlockPart>newArrayList();
+ 
+         for (ItemModelGenerator.Span itemmodelgenerator$span : this.func_178393_a(p_178397_1_))
+         {
+@@ -133,17 +133,17 @@
+ 
+             float f15 = 16.0F / f;
+             float f16 = 16.0F / f1;
+-            f2 *= f15;
+-            f4 *= f15;
+-            f3 *= f16;
+-            f5 *= f16;
++            f2 = f2 * f15;
++            f4 = f4 * f15;
++            f3 = f3 * f16;
++            f5 = f5 * f16;
+             f3 = 16.0F - f3;
+             f5 = 16.0F - f5;
+-            f6 *= f10;
+-            f7 *= f10;
+-            f8 *= f11;
+-            f9 *= f11;
+-            Map<EnumFacing, BlockPartFace> map = Maps.newHashMap();
++            f6 = f6 * f10;
++            f7 = f7 * f10;
++            f8 = f8 * f11;
++            f9 = f9 * f11;
++            Map<EnumFacing, BlockPartFace> map = Maps.<EnumFacing, BlockPartFace>newHashMap();
+             map.put(itemmodelgenerator$spanfacing.func_178367_a(), new BlockPartFace((EnumFacing)null, p_178397_3_, p_178397_2_, new BlockFaceUV(new float[] {f6, f8, f7, f9}, 0)));
+ 
+             switch (itemmodelgenerator$spanfacing)
+@@ -169,7 +169,7 @@
+     {
+         int i = p_178393_1_.func_94211_a();
+         int j = p_178393_1_.func_94216_b();
+-        List<ItemModelGenerator.Span> list = Lists.newArrayList();
++        List<ItemModelGenerator.Span> list = Lists.<ItemModelGenerator.Span>newArrayList();
+ 
+         for (int k = 0; k < p_178393_1_.func_110970_k(); ++k)
+         {

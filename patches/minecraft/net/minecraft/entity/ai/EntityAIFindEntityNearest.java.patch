@@ -1,0 +1,20 @@
+--- before/net/minecraft/entity/ai/EntityAIFindEntityNearest.java
++++ after/net/minecraft/entity/ai/EntityAIFindEntityNearest.java
+@@ -40,7 +40,7 @@
+ 
+                 if (p_apply_1_.func_70093_af())
+                 {
+-                    d0 *= (double)0.8F;
++                    d0 *= 0.800000011920929D;
+                 }
+ 
+                 if (p_apply_1_.func_82150_aj())
+@@ -59,7 +59,7 @@
+     public boolean func_75250_a()
+     {
+         double d0 = this.func_179438_f();
+-        List<EntityLivingBase> list = this.field_179442_b.field_70170_p.func_175647_a(this.field_179439_f, this.field_179442_b.func_174813_aQ().func_72314_b(d0, 4.0D, d0), this.field_179443_c);
++        List<EntityLivingBase> list = this.field_179442_b.field_70170_p.<EntityLivingBase>func_175647_a(this.field_179439_f, this.field_179442_b.func_174813_aQ().func_72314_b(d0, 4.0D, d0), this.field_179443_c);
+         Collections.sort(list, this.field_179440_d);
+ 
+         if (list.isEmpty())

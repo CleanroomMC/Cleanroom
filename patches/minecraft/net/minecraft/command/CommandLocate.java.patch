@@ -1,0 +1,25 @@
+--- before/net/minecraft/command/CommandLocate.java
++++ after/net/minecraft/command/CommandLocate.java
+@@ -28,7 +28,7 @@
+     {
+         if (p_184881_3_.length != 1)
+         {
+-            throw new WrongUsageException("commands.locate.usage");
++            throw new WrongUsageException("commands.locate.usage", new Object[0]);
+         }
+         else
+         {
+@@ -37,11 +37,11 @@
+ 
+             if (blockpos != null)
+             {
+-                p_184881_2_.func_145747_a(new TextComponentTranslation("commands.locate.success", s, blockpos.func_177958_n(), blockpos.func_177952_p()));
++                p_184881_2_.func_145747_a(new TextComponentTranslation("commands.locate.success", new Object[] {s, blockpos.func_177958_n(), blockpos.func_177952_p()}));
+             }
+             else
+             {
+-                throw new CommandException("commands.locate.failure", s);
++                throw new CommandException("commands.locate.failure", new Object[] {s});
+             }
+         }
+     }

@@ -9,3 +9,27 @@
          {
              return false;
          }
+@@ -41,6 +41,7 @@
+     public boolean func_75253_b()
+     {
+         double d0 = this.field_75356_a.func_174818_b(this.field_179507_b);
++        boolean flag;
+ 
+         if (this.field_75359_i <= 240)
+         {
+@@ -48,11 +49,13 @@
+ 
+             if (!BlockDoor.func_176514_f(this.field_75356_a.field_70170_p, this.field_179507_b) && d0 < 4.0D)
+             {
+-                return true;
++                flag = true;
++                return flag;
+             }
+         }
+ 
+-        return false;
++        flag = false;
++        return flag;
+     }
+ 
+     public void func_75251_c()

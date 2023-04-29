@@ -1,5 +1,14 @@
 --- before/net/minecraft/world/gen/feature/WorldGenSavannaTree.java
 +++ after/net/minecraft/world/gen/feature/WorldGenSavannaTree.java
+@@ -16,7 +16,7 @@
+ public class WorldGenSavannaTree extends WorldGenAbstractTree
+ {
+     private static final IBlockState field_181643_a = Blocks.field_150363_s.func_176223_P().func_177226_a(BlockNewLog.field_176300_b, BlockPlanks.EnumType.ACACIA);
+-    private static final IBlockState field_181644_b = Blocks.field_150361_u.func_176223_P().func_177226_a(BlockNewLeaf.field_176240_P, BlockPlanks.EnumType.ACACIA).func_177226_a(BlockLeaves.field_176236_b, false);
++    private static final IBlockState field_181644_b = Blocks.field_150361_u.func_176223_P().func_177226_a(BlockNewLeaf.field_176240_P, BlockPlanks.EnumType.ACACIA).func_177226_a(BlockLeaves.field_176236_b, Boolean.valueOf(false));
+ 
+     public WorldGenSavannaTree(boolean p_i45463_1_)
+     {
 @@ -52,7 +52,7 @@
                      {
                          if (j >= 0 && j < 256)

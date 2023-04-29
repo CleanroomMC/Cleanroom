@@ -1,0 +1,30 @@
+--- before/net/minecraft/item/ItemCarrotOnAStick.java
++++ after/net/minecraft/item/ItemCarrotOnAStick.java
+@@ -39,7 +39,7 @@
+ 
+         if (p_77659_1_.field_72995_K)
+         {
+-            return new ActionResult<>(EnumActionResult.PASS, itemstack);
++            return new ActionResult<ItemStack>(EnumActionResult.PASS, itemstack);
+         }
+         else
+         {
+@@ -55,15 +55,15 @@
+                     {
+                         ItemStack itemstack1 = new ItemStack(Items.field_151112_aM);
+                         itemstack1.func_77982_d(itemstack.func_77978_p());
+-                        return new ActionResult<>(EnumActionResult.SUCCESS, itemstack1);
++                        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack1);
+                     }
+ 
+-                    return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
++                    return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+                 }
+             }
+ 
+             p_77659_2_.func_71029_a(StatList.func_188057_b(this));
+-            return new ActionResult<>(EnumActionResult.PASS, itemstack);
++            return new ActionResult<ItemStack>(EnumActionResult.PASS, itemstack);
+         }
+     }
+ }

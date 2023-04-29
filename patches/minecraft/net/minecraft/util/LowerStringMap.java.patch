@@ -1,0 +1,33 @@
+--- before/net/minecraft/util/LowerStringMap.java
++++ after/net/minecraft/util/LowerStringMap.java
+@@ -5,10 +5,11 @@
+ import java.util.Locale;
+ import java.util.Map;
+ import java.util.Set;
++import java.util.Map.Entry;
+ 
+ public class LowerStringMap<V> implements Map<String, V>
+ {
+-    private final Map<String, V> field_76117_a = Maps.newLinkedHashMap();
++    private final Map<String, V> field_76117_a = Maps.<String, V>newLinkedHashMap();
+ 
+     public int size()
+     {
+@@ -47,7 +48,7 @@
+ 
+     public void putAll(Map <? extends String, ? extends V > p_putAll_1_)
+     {
+-        for (Map.Entry <? extends String, ? extends V > entry : p_putAll_1_.entrySet())
++        for (Entry <? extends String, ? extends V > entry : p_putAll_1_.entrySet())
+         {
+             this.put(entry.getKey(), entry.getValue());
+         }
+@@ -68,7 +69,7 @@
+         return this.field_76117_a.values();
+     }
+ 
+-    public Set<Map.Entry<String, V>> entrySet()
++    public Set<Entry<String, V>> entrySet()
+     {
+         return this.field_76117_a.entrySet();
+     }

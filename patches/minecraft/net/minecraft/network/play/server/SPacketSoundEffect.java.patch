@@ -1,0 +1,11 @@
+--- before/net/minecraft/network/play/server/SPacketSoundEffect.java
++++ after/net/minecraft/network/play/server/SPacketSoundEffect.java
+@@ -39,7 +39,7 @@
+     public void func_148837_a(PacketBuffer p_148837_1_) throws IOException
+     {
+         this.field_186979_a = SoundEvent.field_187505_a.func_148754_a(p_148837_1_.func_150792_a());
+-        this.field_186980_b = p_148837_1_.func_179257_a(SoundCategory.class);
++        this.field_186980_b = (SoundCategory)p_148837_1_.func_179257_a(SoundCategory.class);
+         this.field_149217_b = p_148837_1_.readInt();
+         this.field_149218_c = p_148837_1_.readInt();
+         this.field_149215_d = p_148837_1_.readInt();

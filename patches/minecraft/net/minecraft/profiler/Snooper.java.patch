@@ -1,0 +1,90 @@
+--- before/net/minecraft/profiler/Snooper.java
++++ after/net/minecraft/profiler/Snooper.java
+@@ -10,6 +10,7 @@
+ import java.util.Timer;
+ import java.util.TimerTask;
+ import java.util.UUID;
++import java.util.Map.Entry;
+ import net.minecraft.server.MinecraftServer;
+ import net.minecraft.util.HttpUtil;
+ import net.minecraftforge.fml.relauncher.Side;
+@@ -17,8 +18,8 @@
+ 
+ public class Snooper
+ {
+-    private final Map<String, Object> field_152773_a = Maps.newHashMap();
+-    private final Map<String, Object> field_152774_b = Maps.newHashMap();
++    private final Map<String, Object> field_152773_a = Maps.<String, Object>newHashMap();
++    private final Map<String, Object> field_152774_b = Maps.<String, Object>newHashMap();
+     private final String field_76480_b = UUID.randomUUID().toString();
+     private final URL field_76481_c;
+     private final ISnooperInfo field_76478_d;
+@@ -34,7 +35,7 @@
+         {
+             this.field_76481_c = new URL("http://snoop.minecraft.net/" + p_i1563_1_ + "?version=" + 2);
+         }
+-        catch (MalformedURLException malformedurlexception)
++        catch (MalformedURLException var6)
+         {
+             throw new IllegalArgumentException();
+         }
+@@ -59,14 +60,14 @@
+ 
+                         synchronized (Snooper.this.field_76476_f)
+                         {
+-                            map = Maps.newHashMap(Snooper.this.field_152774_b);
++                            map = Maps.<String, Object>newHashMap(Snooper.this.field_152774_b);
+ 
+                             if (Snooper.this.field_76483_h == 0)
+                             {
+                                 map.putAll(Snooper.this.field_152773_a);
+                             }
+ 
+-                            map.put("snooper_count", Snooper.this.field_76483_h++);
++                            map.put("snooper_count", Integer.valueOf(Snooper.this.field_76483_h++));
+                             map.put("snooper_token", Snooper.this.field_76480_b);
+                         }
+ 
+@@ -105,15 +106,15 @@
+             }
+         }
+ 
+-        this.func_152768_a("jvm_args", i);
++        this.func_152768_a("jvm_args", Integer.valueOf(i));
+     }
+ 
+     public void func_76471_b()
+     {
+-        this.func_152767_b("memory_total", Runtime.getRuntime().totalMemory());
+-        this.func_152767_b("memory_max", Runtime.getRuntime().maxMemory());
+-        this.func_152767_b("memory_free", Runtime.getRuntime().freeMemory());
+-        this.func_152767_b("cpu_cores", Runtime.getRuntime().availableProcessors());
++        this.func_152767_b("memory_total", Long.valueOf(Runtime.getRuntime().totalMemory()));
++        this.func_152767_b("memory_max", Long.valueOf(Runtime.getRuntime().maxMemory()));
++        this.func_152767_b("memory_free", Long.valueOf(Runtime.getRuntime().freeMemory()));
++        this.func_152767_b("cpu_cores", Integer.valueOf(Runtime.getRuntime().availableProcessors()));
+         this.field_76478_d.func_70000_a(this);
+     }
+ 
+@@ -136,18 +137,18 @@
+     @SideOnly(Side.CLIENT)
+     public Map<String, String> func_76465_c()
+     {
+-        Map<String, String> map = Maps.newLinkedHashMap();
++        Map<String, String> map = Maps.<String, String>newLinkedHashMap();
+ 
+         synchronized (this.field_76476_f)
+         {
+             this.func_76471_b();
+ 
+-            for (Map.Entry<String, Object> entry : this.field_152773_a.entrySet())
++            for (Entry<String, Object> entry : this.field_152773_a.entrySet())
+             {
+                 map.put(entry.getKey(), entry.getValue().toString());
+             }
+ 
+-            for (Map.Entry<String, Object> entry1 : this.field_152774_b.entrySet())
++            for (Entry<String, Object> entry1 : this.field_152774_b.entrySet())
+             {
+                 map.put(entry1.getKey(), entry1.getValue().toString());
+             }

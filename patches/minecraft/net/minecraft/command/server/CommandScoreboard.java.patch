@@ -1,0 +1,766 @@
+--- before/net/minecraft/command/server/CommandScoreboard.java
++++ after/net/minecraft/command/server/CommandScoreboard.java
+@@ -58,7 +58,7 @@
+         {
+             if (p_184881_3_.length < 1)
+             {
+-                throw new WrongUsageException("commands.scoreboard.usage");
++                throw new WrongUsageException("commands.scoreboard.usage", new Object[0]);
+             }
+             else
+             {
+@@ -66,7 +66,7 @@
+                 {
+                     if (p_184881_3_.length == 1)
+                     {
+-                        throw new WrongUsageException("commands.scoreboard.objectives.usage");
++                        throw new WrongUsageException("commands.scoreboard.objectives.usage", new Object[0]);
+                     }
+ 
+                     if ("list".equalsIgnoreCase(p_184881_3_[1]))
+@@ -77,7 +77,7 @@
+                     {
+                         if (p_184881_3_.length < 4)
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.objectives.add.usage");
++                            throw new WrongUsageException("commands.scoreboard.objectives.add.usage", new Object[0]);
+                         }
+ 
+                         this.func_184908_a(p_184881_2_, p_184881_3_, 2, p_184881_1_);
+@@ -86,7 +86,7 @@
+                     {
+                         if (p_184881_3_.length != 3)
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.objectives.remove.usage");
++                            throw new WrongUsageException("commands.scoreboard.objectives.remove.usage", new Object[0]);
+                         }
+ 
+                         this.func_184905_a(p_184881_2_, p_184881_3_[2], p_184881_1_);
+@@ -95,12 +95,12 @@
+                     {
+                         if (!"setdisplay".equalsIgnoreCase(p_184881_3_[1]))
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.objectives.usage");
++                            throw new WrongUsageException("commands.scoreboard.objectives.usage", new Object[0]);
+                         }
+ 
+                         if (p_184881_3_.length != 3 && p_184881_3_.length != 4)
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.objectives.setdisplay.usage");
++                            throw new WrongUsageException("commands.scoreboard.objectives.setdisplay.usage", new Object[0]);
+                         }
+ 
+                         this.func_184919_i(p_184881_2_, p_184881_3_, 2, p_184881_1_);
+@@ -110,14 +110,14 @@
+                 {
+                     if (p_184881_3_.length == 1)
+                     {
+-                        throw new WrongUsageException("commands.scoreboard.players.usage");
++                        throw new WrongUsageException("commands.scoreboard.players.usage", new Object[0]);
+                     }
+ 
+                     if ("list".equalsIgnoreCase(p_184881_3_[1]))
+                     {
+                         if (p_184881_3_.length > 3)
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.players.list.usage");
++                            throw new WrongUsageException("commands.scoreboard.players.list.usage", new Object[0]);
+                         }
+ 
+                         this.func_184920_j(p_184881_2_, p_184881_3_, 2, p_184881_1_);
+@@ -126,7 +126,7 @@
+                     {
+                         if (p_184881_3_.length < 5)
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.players.add.usage");
++                            throw new WrongUsageException("commands.scoreboard.players.add.usage", new Object[0]);
+                         }
+ 
+                         this.func_184918_k(p_184881_2_, p_184881_3_, 2, p_184881_1_);
+@@ -135,7 +135,7 @@
+                     {
+                         if (p_184881_3_.length < 5)
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.players.remove.usage");
++                            throw new WrongUsageException("commands.scoreboard.players.remove.usage", new Object[0]);
+                         }
+ 
+                         this.func_184918_k(p_184881_2_, p_184881_3_, 2, p_184881_1_);
+@@ -144,7 +144,7 @@
+                     {
+                         if (p_184881_3_.length < 5)
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.players.set.usage");
++                            throw new WrongUsageException("commands.scoreboard.players.set.usage", new Object[0]);
+                         }
+ 
+                         this.func_184918_k(p_184881_2_, p_184881_3_, 2, p_184881_1_);
+@@ -153,7 +153,7 @@
+                     {
+                         if (p_184881_3_.length != 3 && p_184881_3_.length != 4)
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.players.reset.usage");
++                            throw new WrongUsageException("commands.scoreboard.players.reset.usage", new Object[0]);
+                         }
+ 
+                         this.func_184912_l(p_184881_2_, p_184881_3_, 2, p_184881_1_);
+@@ -162,7 +162,7 @@
+                     {
+                         if (p_184881_3_.length != 4)
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.players.enable.usage");
++                            throw new WrongUsageException("commands.scoreboard.players.enable.usage", new Object[0]);
+                         }
+ 
+                         this.func_184914_m(p_184881_2_, p_184881_3_, 2, p_184881_1_);
+@@ -171,7 +171,7 @@
+                     {
+                         if (p_184881_3_.length != 5 && p_184881_3_.length != 6)
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.players.test.usage");
++                            throw new WrongUsageException("commands.scoreboard.players.test.usage", new Object[0]);
+                         }
+ 
+                         this.func_184907_n(p_184881_2_, p_184881_3_, 2, p_184881_1_);
+@@ -180,7 +180,7 @@
+                     {
+                         if (p_184881_3_.length != 7)
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.players.operation.usage");
++                            throw new WrongUsageException("commands.scoreboard.players.operation.usage", new Object[0]);
+                         }
+ 
+                         this.func_184906_o(p_184881_2_, p_184881_3_, 2, p_184881_1_);
+@@ -189,12 +189,12 @@
+                     {
+                         if (!"tag".equalsIgnoreCase(p_184881_3_[1]))
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.players.usage");
++                            throw new WrongUsageException("commands.scoreboard.players.usage", new Object[0]);
+                         }
+ 
+                         if (p_184881_3_.length < 4)
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.players.tag.usage");
++                            throw new WrongUsageException("commands.scoreboard.players.tag.usage", new Object[0]);
+                         }
+ 
+                         this.func_184924_a(p_184881_1_, p_184881_2_, p_184881_3_, 2);
+@@ -204,19 +204,19 @@
+                 {
+                     if (!"teams".equalsIgnoreCase(p_184881_3_[0]))
+                     {
+-                        throw new WrongUsageException("commands.scoreboard.usage");
++                        throw new WrongUsageException("commands.scoreboard.usage", new Object[0]);
+                     }
+ 
+                     if (p_184881_3_.length == 1)
+                     {
+-                        throw new WrongUsageException("commands.scoreboard.teams.usage");
++                        throw new WrongUsageException("commands.scoreboard.teams.usage", new Object[0]);
+                     }
+ 
+                     if ("list".equalsIgnoreCase(p_184881_3_[1]))
+                     {
+                         if (p_184881_3_.length > 3)
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.teams.list.usage");
++                            throw new WrongUsageException("commands.scoreboard.teams.list.usage", new Object[0]);
+                         }
+ 
+                         this.func_184922_e(p_184881_2_, p_184881_3_, 2, p_184881_1_);
+@@ -225,7 +225,7 @@
+                     {
+                         if (p_184881_3_.length < 3)
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.teams.add.usage");
++                            throw new WrongUsageException("commands.scoreboard.teams.add.usage", new Object[0]);
+                         }
+ 
+                         this.func_184910_b(p_184881_2_, p_184881_3_, 2, p_184881_1_);
+@@ -234,7 +234,7 @@
+                     {
+                         if (p_184881_3_.length != 3)
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.teams.remove.usage");
++                            throw new WrongUsageException("commands.scoreboard.teams.remove.usage", new Object[0]);
+                         }
+ 
+                         this.func_184921_d(p_184881_2_, p_184881_3_, 2, p_184881_1_);
+@@ -243,7 +243,7 @@
+                     {
+                         if (p_184881_3_.length != 3)
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.teams.empty.usage");
++                            throw new WrongUsageException("commands.scoreboard.teams.empty.usage", new Object[0]);
+                         }
+ 
+                         this.func_184917_h(p_184881_2_, p_184881_3_, 2, p_184881_1_);
+@@ -252,7 +252,7 @@
+                     {
+                         if (p_184881_3_.length < 4 && (p_184881_3_.length != 3 || !(p_184881_2_ instanceof EntityPlayer)))
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.teams.join.usage");
++                            throw new WrongUsageException("commands.scoreboard.teams.join.usage", new Object[0]);
+                         }
+ 
+                         this.func_184916_f(p_184881_2_, p_184881_3_, 2, p_184881_1_);
+@@ -261,7 +261,7 @@
+                     {
+                         if (p_184881_3_.length < 3 && !(p_184881_2_ instanceof EntityPlayer))
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.teams.leave.usage");
++                            throw new WrongUsageException("commands.scoreboard.teams.leave.usage", new Object[0]);
+                         }
+ 
+                         this.func_184911_g(p_184881_2_, p_184881_3_, 2, p_184881_1_);
+@@ -270,12 +270,12 @@
+                     {
+                         if (!"option".equalsIgnoreCase(p_184881_3_[1]))
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.teams.usage");
++                            throw new WrongUsageException("commands.scoreboard.teams.usage", new Object[0]);
+                         }
+ 
+                         if (p_184881_3_.length != 4 && p_184881_3_.length != 5)
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.teams.option.usage");
++                            throw new WrongUsageException("commands.scoreboard.teams.option.usage", new Object[0]);
+                         }
+ 
+                         this.func_184923_c(p_184881_2_, p_184881_3_, 2, p_184881_1_);
+@@ -295,7 +295,7 @@
+             {
+                 if (i >= 0)
+                 {
+-                    throw new CommandException("commands.scoreboard.noMultiWildcard");
++                    throw new CommandException("commands.scoreboard.noMultiWildcard", new Object[0]);
+                 }
+ 
+                 i = j;
+@@ -310,7 +310,7 @@
+         {
+             List<String> list1 = Lists.newArrayList(this.func_184913_a(p_184909_1_).func_96526_d());
+             String s = p_184909_3_[i];
+-            List<String> list = Lists.newArrayList();
++            List<String> list = Lists.<String>newArrayList();
+ 
+             for (String s1 : list1)
+             {
+@@ -334,7 +334,7 @@
+ 
+             if (list.isEmpty())
+             {
+-                throw new WrongUsageException("commands.scoreboard.allMatchesFailed");
++                throw new WrongUsageException("commands.scoreboard.allMatchesFailed", new Object[0]);
+             }
+             else
+             {
+@@ -355,11 +355,11 @@
+ 
+         if (scoreobjective == null)
+         {
+-            throw new CommandException("commands.scoreboard.objectiveNotFound", p_184903_1_);
++            throw new CommandException("commands.scoreboard.objectiveNotFound", new Object[] {p_184903_1_});
+         }
+         else if (p_184903_2_ && scoreobjective.func_96680_c().func_96637_b())
+         {
+-            throw new CommandException("commands.scoreboard.objectiveReadOnly", p_184903_1_);
++            throw new CommandException("commands.scoreboard.objectiveReadOnly", new Object[] {p_184903_1_});
+         }
+         else
+         {
+@@ -374,7 +374,7 @@
+ 
+         if (scoreplayerteam == null)
+         {
+-            throw new CommandException("commands.scoreboard.teamNotFound", p_184915_1_);
++            throw new CommandException("commands.scoreboard.teamNotFound", new Object[] {p_184915_1_});
+         }
+         else
+         {
+@@ -391,19 +391,19 @@
+ 
+         if (iscorecriteria == null)
+         {
+-            throw new WrongUsageException("commands.scoreboard.objectives.add.wrongType", s1);
++            throw new WrongUsageException("commands.scoreboard.objectives.add.wrongType", new Object[] {s1});
+         }
+         else if (scoreboard.func_96518_b(s) != null)
+         {
+-            throw new CommandException("commands.scoreboard.objectives.add.alreadyExists", s);
++            throw new CommandException("commands.scoreboard.objectives.add.alreadyExists", new Object[] {s});
+         }
+         else if (s.length() > 16)
+         {
+-            throw new SyntaxErrorException("commands.scoreboard.objectives.add.tooLong", s, 16);
++            throw new SyntaxErrorException("commands.scoreboard.objectives.add.tooLong", new Object[] {s, Integer.valueOf(16)});
+         }
+         else if (s.isEmpty())
+         {
+-            throw new WrongUsageException("commands.scoreboard.objectives.add.usage");
++            throw new WrongUsageException("commands.scoreboard.objectives.add.usage", new Object[0]);
+         }
+         else
+         {
+@@ -413,7 +413,7 @@
+ 
+                 if (s2.length() > 32)
+                 {
+-                    throw new SyntaxErrorException("commands.scoreboard.objectives.add.displayTooLong", s2, 32);
++                    throw new SyntaxErrorException("commands.scoreboard.objectives.add.displayTooLong", new Object[] {s2, Integer.valueOf(32)});
+                 }
+ 
+                 if (s2.isEmpty())
+@@ -441,15 +441,15 @@
+ 
+         if (scoreboard.func_96508_e(s) != null)
+         {
+-            throw new CommandException("commands.scoreboard.teams.add.alreadyExists", s);
++            throw new CommandException("commands.scoreboard.teams.add.alreadyExists", new Object[] {s});
+         }
+         else if (s.length() > 16)
+         {
+-            throw new SyntaxErrorException("commands.scoreboard.teams.add.tooLong", s, 16);
++            throw new SyntaxErrorException("commands.scoreboard.teams.add.tooLong", new Object[] {s, Integer.valueOf(16)});
+         }
+         else if (s.isEmpty())
+         {
+-            throw new WrongUsageException("commands.scoreboard.teams.add.usage");
++            throw new WrongUsageException("commands.scoreboard.teams.add.usage", new Object[0]);
+         }
+         else
+         {
+@@ -459,7 +459,7 @@
+ 
+                 if (s1.length() > 32)
+                 {
+-                    throw new SyntaxErrorException("commands.scoreboard.teams.add.displayTooLong", s1, 32);
++                    throw new SyntaxErrorException("commands.scoreboard.teams.add.displayTooLong", new Object[] {s1, Integer.valueOf(32)});
+                 }
+ 
+                 if (s1.isEmpty())
+@@ -490,13 +490,13 @@
+ 
+             if (!"color".equalsIgnoreCase(s) && !"friendlyfire".equalsIgnoreCase(s) && !"seeFriendlyInvisibles".equalsIgnoreCase(s) && !"nametagVisibility".equalsIgnoreCase(s) && !"deathMessageVisibility".equalsIgnoreCase(s) && !"collisionRule".equalsIgnoreCase(s))
+             {
+-                throw new WrongUsageException("commands.scoreboard.teams.option.usage");
++                throw new WrongUsageException("commands.scoreboard.teams.option.usage", new Object[0]);
+             }
+             else if (p_184923_2_.length == 4)
+             {
+                 if ("color".equalsIgnoreCase(s))
+                 {
+-                    throw new WrongUsageException("commands.scoreboard.teams.option.noValue", s, func_96333_a(TextFormatting.func_96296_a(true, false)));
++                    throw new WrongUsageException("commands.scoreboard.teams.option.noValue", new Object[] {s, func_96333_a(TextFormatting.func_96296_a(true, false))});
+                 }
+                 else if (!"friendlyfire".equalsIgnoreCase(s) && !"seeFriendlyInvisibles".equalsIgnoreCase(s))
+                 {
+@@ -504,21 +504,21 @@
+                     {
+                         if ("collisionRule".equalsIgnoreCase(s))
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.teams.option.noValue", s, func_71527_a(Team.CollisionRule.func_186687_a()));
++                            throw new WrongUsageException("commands.scoreboard.teams.option.noValue", new Object[] {s, func_71527_a(Team.CollisionRule.func_186687_a())});
+                         }
+                         else
+                         {
+-                            throw new WrongUsageException("commands.scoreboard.teams.option.usage");
++                            throw new WrongUsageException("commands.scoreboard.teams.option.usage", new Object[0]);
+                         }
+                     }
+                     else
+                     {
+-                        throw new WrongUsageException("commands.scoreboard.teams.option.noValue", s, func_71527_a(Team.EnumVisible.func_178825_a()));
++                        throw new WrongUsageException("commands.scoreboard.teams.option.noValue", new Object[] {s, func_71527_a(Team.EnumVisible.func_178825_a())});
+                     }
+                 }
+                 else
+                 {
+-                    throw new WrongUsageException("commands.scoreboard.teams.option.noValue", s, func_96333_a(Arrays.asList("true", "false")));
++                    throw new WrongUsageException("commands.scoreboard.teams.option.noValue", new Object[] {s, func_96333_a(Arrays.asList("true", "false"))});
+                 }
+             }
+             else
+@@ -531,7 +531,7 @@
+ 
+                     if (textformatting == null || textformatting.func_96301_b())
+                     {
+-                        throw new WrongUsageException("commands.scoreboard.teams.option.noValue", s, func_96333_a(TextFormatting.func_96296_a(true, false)));
++                        throw new WrongUsageException("commands.scoreboard.teams.option.noValue", new Object[] {s, func_96333_a(TextFormatting.func_96296_a(true, false))});
+                     }
+ 
+                     scoreplayerteam.func_178774_a(textformatting);
+@@ -542,7 +542,7 @@
+                 {
+                     if (!"true".equalsIgnoreCase(s1) && !"false".equalsIgnoreCase(s1))
+                     {
+-                        throw new WrongUsageException("commands.scoreboard.teams.option.noValue", s, func_96333_a(Arrays.asList("true", "false")));
++                        throw new WrongUsageException("commands.scoreboard.teams.option.noValue", new Object[] {s, func_96333_a(Arrays.asList("true", "false"))});
+                     }
+ 
+                     scoreplayerteam.func_96660_a("true".equalsIgnoreCase(s1));
+@@ -551,7 +551,7 @@
+                 {
+                     if (!"true".equalsIgnoreCase(s1) && !"false".equalsIgnoreCase(s1))
+                     {
+-                        throw new WrongUsageException("commands.scoreboard.teams.option.noValue", s, func_96333_a(Arrays.asList("true", "false")));
++                        throw new WrongUsageException("commands.scoreboard.teams.option.noValue", new Object[] {s, func_96333_a(Arrays.asList("true", "false"))});
+                     }
+ 
+                     scoreplayerteam.func_98300_b("true".equalsIgnoreCase(s1));
+@@ -562,7 +562,7 @@
+ 
+                     if (team$enumvisible == null)
+                     {
+-                        throw new WrongUsageException("commands.scoreboard.teams.option.noValue", s, func_71527_a(Team.EnumVisible.func_178825_a()));
++                        throw new WrongUsageException("commands.scoreboard.teams.option.noValue", new Object[] {s, func_71527_a(Team.EnumVisible.func_178825_a())});
+                     }
+ 
+                     scoreplayerteam.func_178772_a(team$enumvisible);
+@@ -573,7 +573,7 @@
+ 
+                     if (team$enumvisible1 == null)
+                     {
+-                        throw new WrongUsageException("commands.scoreboard.teams.option.noValue", s, func_71527_a(Team.EnumVisible.func_178825_a()));
++                        throw new WrongUsageException("commands.scoreboard.teams.option.noValue", new Object[] {s, func_71527_a(Team.EnumVisible.func_178825_a())});
+                     }
+ 
+                     scoreplayerteam.func_178773_b(team$enumvisible1);
+@@ -584,7 +584,7 @@
+ 
+                     if (team$collisionrule == null)
+                     {
+-                        throw new WrongUsageException("commands.scoreboard.teams.option.noValue", s, func_71527_a(Team.CollisionRule.func_186687_a()));
++                        throw new WrongUsageException("commands.scoreboard.teams.option.noValue", new Object[] {s, func_71527_a(Team.CollisionRule.func_186687_a())});
+                     }
+ 
+                     scoreplayerteam.func_186682_a(team$collisionrule);
+@@ -625,10 +625,10 @@
+ 
+             if (collection.isEmpty())
+             {
+-                throw new CommandException("commands.scoreboard.teams.list.player.empty", scoreplayerteam.func_96661_b());
++                throw new CommandException("commands.scoreboard.teams.list.player.empty", new Object[] {scoreplayerteam.func_96661_b()});
+             }
+ 
+-            TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("commands.scoreboard.teams.list.player.count", collection.size(), scoreplayerteam.func_96661_b());
++            TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("commands.scoreboard.teams.list.player.count", new Object[] {collection.size(), scoreplayerteam.func_96661_b()});
+             textcomponenttranslation.func_150256_b().func_150238_a(TextFormatting.DARK_GREEN);
+             p_184922_1_.func_145747_a(textcomponenttranslation);
+             p_184922_1_.func_145747_a(new TextComponentString(func_71527_a(collection.toArray())));
+@@ -640,16 +640,16 @@
+ 
+             if (collection1.isEmpty())
+             {
+-                throw new CommandException("commands.scoreboard.teams.list.empty");
++                throw new CommandException("commands.scoreboard.teams.list.empty", new Object[0]);
+             }
+ 
+-            TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.scoreboard.teams.list.count", collection1.size());
++            TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.scoreboard.teams.list.count", new Object[] {collection1.size()});
+             textcomponenttranslation1.func_150256_b().func_150238_a(TextFormatting.DARK_GREEN);
+             p_184922_1_.func_145747_a(textcomponenttranslation1);
+ 
+             for (ScorePlayerTeam scoreplayerteam1 : collection1)
+             {
+-                p_184922_1_.func_145747_a(new TextComponentTranslation("commands.scoreboard.teams.list.entry", scoreplayerteam1.func_96661_b(), scoreplayerteam1.func_96669_c(), scoreplayerteam1.func_96670_d().size()));
++                p_184922_1_.func_145747_a(new TextComponentTranslation("commands.scoreboard.teams.list.entry", new Object[] {scoreplayerteam1.func_96661_b(), scoreplayerteam1.func_96669_c(), scoreplayerteam1.func_96670_d().size()}));
+             }
+         }
+     }
+@@ -658,8 +658,8 @@
+     {
+         Scoreboard scoreboard = this.func_184913_a(p_184916_4_);
+         String s = p_184916_2_[p_184916_3_++];
+-        Set<String> set = Sets.newHashSet();
+-        Set<String> set1 = Sets.newHashSet();
++        Set<String> set = Sets.<String>newHashSet();
++        Set<String> set1 = Sets.<String>newHashSet();
+ 
+         if (p_184916_1_ instanceof EntityPlayer && p_184916_3_ == p_184916_2_.length)
+         {
+@@ -720,15 +720,15 @@
+ 
+         if (!set1.isEmpty())
+         {
+-            throw new CommandException("commands.scoreboard.teams.join.failure", set1.size(), s, func_71527_a(set1.toArray(new String[set1.size()])));
++            throw new CommandException("commands.scoreboard.teams.join.failure", new Object[] {set1.size(), s, func_71527_a(set1.toArray(new String[set1.size()]))});
+         }
+     }
+ 
+     protected void func_184911_g(ICommandSender p_184911_1_, String[] p_184911_2_, int p_184911_3_, MinecraftServer p_184911_4_) throws CommandException
+     {
+         Scoreboard scoreboard = this.func_184913_a(p_184911_4_);
+-        Set<String> set = Sets.newHashSet();
+-        Set<String> set1 = Sets.newHashSet();
++        Set<String> set = Sets.<String>newHashSet();
++        Set<String> set1 = Sets.<String>newHashSet();
+ 
+         if (p_184911_1_ instanceof EntityPlayer && p_184911_3_ == p_184911_2_.length)
+         {
+@@ -789,7 +789,7 @@
+ 
+         if (!set1.isEmpty())
+         {
+-            throw new CommandException("commands.scoreboard.teams.leave.failure", set1.size(), func_71527_a(set1.toArray(new String[set1.size()])));
++            throw new CommandException("commands.scoreboard.teams.leave.failure", new Object[] {set1.size(), func_71527_a(set1.toArray(new String[set1.size()]))});
+         }
+     }
+ 
+@@ -805,7 +805,7 @@
+ 
+             if (collection.isEmpty())
+             {
+-                throw new CommandException("commands.scoreboard.teams.empty.alreadyEmpty", scoreplayerteam.func_96661_b());
++                throw new CommandException("commands.scoreboard.teams.empty.alreadyEmpty", new Object[] {scoreplayerteam.func_96661_b()});
+             }
+             else
+             {
+@@ -834,17 +834,17 @@
+ 
+         if (collection.isEmpty())
+         {
+-            throw new CommandException("commands.scoreboard.objectives.list.empty");
++            throw new CommandException("commands.scoreboard.objectives.list.empty", new Object[0]);
+         }
+         else
+         {
+-            TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("commands.scoreboard.objectives.list.count", collection.size());
++            TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("commands.scoreboard.objectives.list.count", new Object[] {collection.size()});
+             textcomponenttranslation.func_150256_b().func_150238_a(TextFormatting.DARK_GREEN);
+             p_184925_1_.func_145747_a(textcomponenttranslation);
+ 
+             for (ScoreObjective scoreobjective : collection)
+             {
+-                p_184925_1_.func_145747_a(new TextComponentTranslation("commands.scoreboard.objectives.list.entry", scoreobjective.func_96679_b(), scoreobjective.func_96678_d(), scoreobjective.func_96680_c().func_96636_a()));
++                p_184925_1_.func_145747_a(new TextComponentTranslation("commands.scoreboard.objectives.list.entry", new Object[] {scoreobjective.func_96679_b(), scoreobjective.func_96678_d(), scoreobjective.func_96680_c().func_96636_a()}));
+             }
+         }
+     }
+@@ -863,7 +863,7 @@
+ 
+         if (i < 0)
+         {
+-            throw new CommandException("commands.scoreboard.objectives.setdisplay.invalidSlot", s);
++            throw new CommandException("commands.scoreboard.objectives.setdisplay.invalidSlot", new Object[] {s});
+         }
+         else
+         {
+@@ -892,16 +892,16 @@
+ 
+             if (map.isEmpty())
+             {
+-                throw new CommandException("commands.scoreboard.players.list.player.empty", s);
++                throw new CommandException("commands.scoreboard.players.list.player.empty", new Object[] {s});
+             }
+ 
+-            TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("commands.scoreboard.players.list.player.count", map.size(), s);
++            TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("commands.scoreboard.players.list.player.count", new Object[] {map.size(), s});
+             textcomponenttranslation.func_150256_b().func_150238_a(TextFormatting.DARK_GREEN);
+             p_184920_1_.func_145747_a(textcomponenttranslation);
+ 
+             for (Score score : map.values())
+             {
+-                p_184920_1_.func_145747_a(new TextComponentTranslation("commands.scoreboard.players.list.player.entry", score.func_96652_c(), score.func_96645_d().func_96678_d(), score.func_96645_d().func_96679_b()));
++                p_184920_1_.func_145747_a(new TextComponentTranslation("commands.scoreboard.players.list.player.entry", new Object[] {score.func_96652_c(), score.func_96645_d().func_96678_d(), score.func_96645_d().func_96679_b()}));
+             }
+         }
+         else
+@@ -911,10 +911,10 @@
+ 
+             if (collection.isEmpty())
+             {
+-                throw new CommandException("commands.scoreboard.players.list.empty");
++                throw new CommandException("commands.scoreboard.players.list.empty", new Object[0]);
+             }
+ 
+-            TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.scoreboard.players.list.count", collection.size());
++            TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.scoreboard.players.list.count", new Object[] {collection.size()});
+             textcomponenttranslation1.func_150256_b().func_150238_a(TextFormatting.DARK_GREEN);
+             p_184920_1_.func_145747_a(textcomponenttranslation1);
+             p_184920_1_.func_145747_a(new TextComponentString(func_71527_a(collection.toArray())));
+@@ -929,7 +929,7 @@
+ 
+         if (s1.length() > 40)
+         {
+-            throw new SyntaxErrorException("commands.scoreboard.players.name.tooLong", s1, 40);
++            throw new SyntaxErrorException("commands.scoreboard.players.name.tooLong", new Object[] {s1, Integer.valueOf(40)});
+         }
+         else
+         {
+@@ -947,12 +947,12 @@
+ 
+                     if (!NBTUtil.func_181123_a(nbttagcompound, nbttagcompound1, true))
+                     {
+-                        throw new CommandException("commands.scoreboard.players.set.tagMismatch", s1);
++                        throw new CommandException("commands.scoreboard.players.set.tagMismatch", new Object[] {s1});
+                     }
+                 }
+                 catch (NBTException nbtexception)
+                 {
+-                    throw new CommandException("commands.scoreboard.players.set.tagError", nbtexception.getMessage());
++                    throw new CommandException("commands.scoreboard.players.set.tagError", new Object[] {nbtexception.getMessage()});
+                 }
+             }
+ 
+@@ -1001,7 +1001,7 @@
+ 
+         if (s.length() > 40)
+         {
+-            throw new SyntaxErrorException("commands.scoreboard.players.name.tooLong", s, 40);
++            throw new SyntaxErrorException("commands.scoreboard.players.name.tooLong", new Object[] {s, Integer.valueOf(40)});
+         }
+         else
+         {
+@@ -1009,7 +1009,7 @@
+ 
+             if (scoreobjective.func_96680_c() != IScoreCriteria.field_178791_c)
+             {
+-                throw new CommandException("commands.scoreboard.players.enable.noTrigger", scoreobjective.func_96679_b());
++                throw new CommandException("commands.scoreboard.players.enable.noTrigger", new Object[] {scoreobjective.func_96679_b()});
+             }
+             else
+             {
+@@ -1027,7 +1027,7 @@
+ 
+         if (s.length() > 40)
+         {
+-            throw new SyntaxErrorException("commands.scoreboard.players.name.tooLong", s, 40);
++            throw new SyntaxErrorException("commands.scoreboard.players.name.tooLong", new Object[] {s, Integer.valueOf(40)});
+         }
+         else
+         {
+@@ -1035,7 +1035,7 @@
+ 
+             if (!scoreboard.func_178819_b(s, scoreobjective))
+             {
+-                throw new CommandException("commands.scoreboard.players.test.notFound", scoreobjective.func_96679_b(), s);
++                throw new CommandException("commands.scoreboard.players.test.notFound", new Object[] {scoreobjective.func_96679_b(), s});
+             }
+             else
+             {
+@@ -1050,7 +1050,7 @@
+                 }
+                 else
+                 {
+-                    throw new CommandException("commands.scoreboard.players.test.failed", score.func_96652_c(), i, j);
++                    throw new CommandException("commands.scoreboard.players.test.failed", new Object[] {score.func_96652_c(), i, j});
+                 }
+             }
+         }
+@@ -1067,11 +1067,11 @@
+ 
+         if (s.length() > 40)
+         {
+-            throw new SyntaxErrorException("commands.scoreboard.players.name.tooLong", s, 40);
++            throw new SyntaxErrorException("commands.scoreboard.players.name.tooLong", new Object[] {s, Integer.valueOf(40)});
+         }
+         else if (s2.length() > 40)
+         {
+-            throw new SyntaxErrorException("commands.scoreboard.players.name.tooLong", s2, 40);
++            throw new SyntaxErrorException("commands.scoreboard.players.name.tooLong", new Object[] {s2, Integer.valueOf(40)});
+         }
+         else
+         {
+@@ -1079,7 +1079,7 @@
+ 
+             if (!scoreboard.func_178819_b(s2, scoreobjective1))
+             {
+-                throw new CommandException("commands.scoreboard.players.operation.notFound", scoreobjective1.func_96679_b(), s2);
++                throw new CommandException("commands.scoreboard.players.operation.notFound", new Object[] {scoreobjective1.func_96679_b(), s2});
+             }
+             else
+             {
+@@ -1127,7 +1127,7 @@
+                 {
+                     if (!"><".equals(s1))
+                     {
+-                        throw new CommandException("commands.scoreboard.players.operation.invalidOperation", s1);
++                        throw new CommandException("commands.scoreboard.players.operation.invalidOperation", new Object[] {s1});
+                     }
+ 
+                     int i = score.func_96652_c();
+@@ -1151,7 +1151,7 @@
+         {
+             if (!set.isEmpty())
+             {
+-                TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("commands.scoreboard.players.tag.list", s);
++                TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("commands.scoreboard.players.tag.list", new Object[] {s});
+                 textcomponenttranslation.func_150256_b().func_150238_a(TextFormatting.DARK_GREEN);
+                 p_184924_2_.func_145747_a(textcomponenttranslation);
+                 p_184924_2_.func_145747_a(new TextComponentString(func_71527_a(set.toArray())));
+@@ -1161,7 +1161,7 @@
+         }
+         else if (p_184924_3_.length < 5)
+         {
+-            throw new WrongUsageException("commands.scoreboard.players.tag.usage");
++            throw new WrongUsageException("commands.scoreboard.players.tag.usage", new Object[0]);
+         }
+         else
+         {
+@@ -1176,12 +1176,12 @@
+ 
+                     if (!NBTUtil.func_181123_a(nbttagcompound, nbttagcompound1, true))
+                     {
+-                        throw new CommandException("commands.scoreboard.players.tag.tagMismatch", s);
++                        throw new CommandException("commands.scoreboard.players.tag.tagMismatch", new Object[] {s});
+                     }
+                 }
+                 catch (NBTException nbtexception)
+                 {
+-                    throw new CommandException("commands.scoreboard.players.tag.tagError", nbtexception.getMessage());
++                    throw new CommandException("commands.scoreboard.players.tag.tagError", new Object[] {nbtexception.getMessage()});
+                 }
+             }
+ 
+@@ -1189,7 +1189,7 @@
+             {
+                 if (!entity.func_184211_a(s2))
+                 {
+-                    throw new CommandException("commands.scoreboard.players.tag.tooMany", 1024);
++                    throw new CommandException("commands.scoreboard.players.tag.tooMany", new Object[] {Integer.valueOf(1024)});
+                 }
+ 
+                 func_152373_a(p_184924_2_, this, "commands.scoreboard.players.tag.success.add", new Object[] {s2});
+@@ -1198,12 +1198,12 @@
+             {
+                 if (!"remove".equals(s1))
+                 {
+-                    throw new WrongUsageException("commands.scoreboard.players.tag.usage");
++                    throw new WrongUsageException("commands.scoreboard.players.tag.usage", new Object[0]);
+                 }
+ 
+                 if (!entity.func_184197_b(s2))
+                 {
+-                    throw new CommandException("commands.scoreboard.players.tag.notFound", s2);
++                    throw new CommandException("commands.scoreboard.players.tag.notFound", new Object[] {s2});
+                 }
+ 
+                 func_152373_a(p_184924_2_, this, "commands.scoreboard.players.tag.success.remove", new Object[] {s2});
+@@ -1414,14 +1414,14 @@
+                 }
+             }
+ 
+-            return Collections.emptyList();
++            return Collections.<String>emptyList();
+         }
+     }
+ 
+     protected List<String> func_184926_a(boolean p_184926_1_, MinecraftServer p_184926_2_)
+     {
+         Collection<ScoreObjective> collection = this.func_184913_a(p_184926_2_).func_96514_c();
+-        List<String> list = Lists.newArrayList();
++        List<String> list = Lists.<String>newArrayList();
+ 
+         for (ScoreObjective scoreobjective : collection)
+         {
+@@ -1437,7 +1437,7 @@
+     protected List<String> func_184904_b(MinecraftServer p_184904_1_)
+     {
+         Collection<ScoreObjective> collection = this.func_184913_a(p_184904_1_).func_96514_c();
+-        List<String> list = Lists.newArrayList();
++        List<String> list = Lists.<String>newArrayList();
+ 
+         for (ScoreObjective scoreobjective : collection)
+         {

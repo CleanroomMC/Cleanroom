@@ -1,6 +1,30 @@
 --- before/net/minecraft/block/BlockFlowerPot.java
 +++ after/net/minecraft/block/BlockFlowerPot.java
-@@ -152,12 +152,14 @@
+@@ -3,6 +3,7 @@
+ import java.util.Random;
+ import javax.annotation.Nullable;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyEnum;
+ import net.minecraft.block.properties.PropertyInteger;
+ import net.minecraft.block.state.BlockFaceShape;
+@@ -35,13 +36,13 @@
+ public class BlockFlowerPot extends BlockContainer
+ {
+     public static final PropertyInteger field_176444_a = PropertyInteger.func_177719_a("legacy_data", 0, 15);
+-    public static final PropertyEnum<BlockFlowerPot.EnumFlowerType> field_176443_b = PropertyEnum.func_177709_a("contents", BlockFlowerPot.EnumFlowerType.class);
++    public static final PropertyEnum<BlockFlowerPot.EnumFlowerType> field_176443_b = PropertyEnum.<BlockFlowerPot.EnumFlowerType>func_177709_a("contents", BlockFlowerPot.EnumFlowerType.class);
+     protected static final AxisAlignedBB field_185570_c = new AxisAlignedBB(0.3125D, 0.0D, 0.3125D, 0.6875D, 0.375D, 0.6875D);
+ 
+     public BlockFlowerPot()
+     {
+         super(Material.field_151594_q);
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176443_b, BlockFlowerPot.EnumFlowerType.EMPTY).func_177226_a(field_176444_a, 0));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176443_b, BlockFlowerPot.EnumFlowerType.EMPTY).func_177226_a(field_176444_a, Integer.valueOf(0)));
+     }
+ 
+     public String func_149732_F()
+@@ -151,12 +152,14 @@
  
      public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)
      {
@@ -17,7 +41,7 @@
          {
              this.func_176226_b(p_189540_2_, p_189540_3_, p_189540_1_, 0);
              p_189540_2_.func_175698_g(p_189540_3_);
-@@ -166,13 +168,6 @@
+@@ -165,13 +168,6 @@
  
      public void func_180663_b(World p_180663_1_, BlockPos p_180663_2_, IBlockState p_180663_3_)
      {
@@ -31,7 +55,22 @@
          super.func_180663_b(p_180663_1_, p_180663_2_, p_180663_3_);
      }
  
-@@ -397,6 +392,30 @@
+@@ -262,12 +258,12 @@
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176443_b, field_176444_a);
++        return new BlockStateContainer(this, new IProperty[] {field_176443_b, field_176444_a});
+     }
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(field_176444_a);
++        return ((Integer)p_176201_1_.func_177229_b(field_176444_a)).intValue();
+     }
+ 
+     public IBlockState func_176221_a(IBlockState p_176221_1_, IBlockAccess p_176221_2_, BlockPos p_176221_3_)
+@@ -396,6 +392,30 @@
      {
          return BlockFaceShape.UNDEFINED;
      }

@@ -1,5 +1,46 @@
 --- before/net/minecraft/tileentity/MobSpawnerBaseLogic.java
 +++ after/net/minecraft/tileentity/MobSpawnerBaseLogic.java
+@@ -23,7 +23,7 @@
+ public abstract class MobSpawnerBaseLogic
+ {
+     private int field_98286_b = 20;
+-    private final List<WeightedSpawnerEntity> field_98285_e = Lists.newArrayList();
++    private final List<WeightedSpawnerEntity> field_98285_e = Lists.<WeightedSpawnerEntity>newArrayList();
+     private WeightedSpawnerEntity field_98282_f = new WeightedSpawnerEntity();
+     private double field_98287_c;
+     private double field_98284_d;
+@@ -68,11 +68,11 @@
+ 
+             if (this.func_98271_a().field_72995_K)
+             {
+-                double d0 = (double)((float)blockpos.func_177958_n() + this.func_98271_a().field_73012_v.nextFloat());
+-                double d1 = (double)((float)blockpos.func_177956_o() + this.func_98271_a().field_73012_v.nextFloat());
+-                double d2 = (double)((float)blockpos.func_177952_p() + this.func_98271_a().field_73012_v.nextFloat());
+-                this.func_98271_a().func_175688_a(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+-                this.func_98271_a().func_175688_a(EnumParticleTypes.FLAME, d0, d1, d2, 0.0D, 0.0D, 0.0D);
++                double d3 = (double)((float)blockpos.func_177958_n() + this.func_98271_a().field_73012_v.nextFloat());
++                double d4 = (double)((float)blockpos.func_177956_o() + this.func_98271_a().field_73012_v.nextFloat());
++                double d5 = (double)((float)blockpos.func_177952_p() + this.func_98271_a().field_73012_v.nextFloat());
++                this.func_98271_a().func_175688_a(EnumParticleTypes.SMOKE_NORMAL, d3, d4, d5, 0.0D, 0.0D, 0.0D);
++                this.func_98271_a().func_175688_a(EnumParticleTypes.FLAME, d3, d4, d5, 0.0D, 0.0D, 0.0D);
+ 
+                 if (this.field_98286_b > 0)
+                 {
+@@ -103,10 +103,10 @@
+                     NBTTagList nbttaglist = nbttagcompound.func_150295_c("Pos", 6);
+                     World world = this.func_98271_a();
+                     int j = nbttaglist.func_74745_c();
+-                    double d3 = j >= 1 ? nbttaglist.func_150309_d(0) : (double)blockpos.func_177958_n() + (world.field_73012_v.nextDouble() - world.field_73012_v.nextDouble()) * (double)this.field_98290_m + 0.5D;
+-                    double d4 = j >= 2 ? nbttaglist.func_150309_d(1) : (double)(blockpos.func_177956_o() + world.field_73012_v.nextInt(3) - 1);
+-                    double d5 = j >= 3 ? nbttaglist.func_150309_d(2) : (double)blockpos.func_177952_p() + (world.field_73012_v.nextDouble() - world.field_73012_v.nextDouble()) * (double)this.field_98290_m + 0.5D;
+-                    Entity entity = AnvilChunkLoader.func_186054_a(nbttagcompound, world, d3, d4, d5, false);
++                    double d0 = j >= 1 ? nbttaglist.func_150309_d(0) : (double)blockpos.func_177958_n() + (world.field_73012_v.nextDouble() - world.field_73012_v.nextDouble()) * (double)this.field_98290_m + 0.5D;
++                    double d1 = j >= 2 ? nbttaglist.func_150309_d(1) : (double)(blockpos.func_177956_o() + world.field_73012_v.nextInt(3) - 1);
++                    double d2 = j >= 3 ? nbttaglist.func_150309_d(2) : (double)blockpos.func_177952_p() + (world.field_73012_v.nextDouble() - world.field_73012_v.nextDouble()) * (double)this.field_98290_m + 0.5D;
++                    Entity entity = AnvilChunkLoader.func_186054_a(nbttagcompound, world, d0, d1, d2, false);
+ 
+                     if (entity == null)
+                     {
 @@ -124,10 +124,11 @@
                      EntityLiving entityliving = entity instanceof EntityLiving ? (EntityLiving)entity : null;
                      entity.func_70012_b(entity.field_70165_t, entity.field_70163_u, entity.field_70161_v, world.field_73012_v.nextFloat() * 360.0F, 0.0F);
@@ -13,7 +54,32 @@
                              ((EntityLiving)entity).func_180482_a(world.func_175649_E(new BlockPos(entity)), (IEntityLivingData)null);
                          }
  
-@@ -307,4 +308,7 @@
+@@ -159,12 +160,13 @@
+         }
+         else
+         {
+-            this.field_98286_b = this.field_98283_g + this.func_98271_a().field_73012_v.nextInt(this.field_98293_h - this.field_98283_g);
++            int i = this.field_98293_h - this.field_98283_g;
++            this.field_98286_b = this.field_98283_g + this.func_98271_a().field_73012_v.nextInt(i);
+         }
+ 
+         if (!this.field_98285_e.isEmpty())
+         {
+-            this.func_184993_a(WeightedRandom.func_76271_a(this.func_98271_a().field_73012_v, this.field_98285_e));
++            this.func_184993_a((WeightedSpawnerEntity)WeightedRandom.func_76271_a(this.func_98271_a().field_73012_v, this.field_98285_e));
+         }
+ 
+         this.func_98267_a(1);
+@@ -191,7 +193,7 @@
+         }
+         else if (!this.field_98285_e.isEmpty())
+         {
+-            this.func_184993_a(WeightedRandom.func_76271_a(this.func_98271_a().field_73012_v, this.field_98285_e));
++            this.func_184993_a((WeightedSpawnerEntity)WeightedRandom.func_76271_a(this.func_98271_a().field_73012_v, this.field_98285_e));
+         }
+ 
+         if (p_98270_1_.func_150297_b("MinSpawnDelay", 99))
+@@ -306,4 +308,7 @@
      {
          return this.field_98284_d;
      }

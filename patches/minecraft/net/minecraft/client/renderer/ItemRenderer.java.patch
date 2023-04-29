@@ -1,6 +1,25 @@
 --- before/net/minecraft/client/renderer/ItemRenderer.java
 +++ after/net/minecraft/client/renderer/ItemRenderer.java
-@@ -216,7 +216,7 @@
+@@ -114,7 +114,8 @@
+     {
+         float f = 1.0F - p_178100_1_ / 45.0F + 0.1F;
+         f = MathHelper.func_76131_a(f, 0.0F, 1.0F);
+-        return -MathHelper.func_76134_b(f * (float)Math.PI) * 0.5F + 0.5F;
++        f = -MathHelper.func_76134_b(f * (float)Math.PI) * 0.5F + 0.5F;
++        return f;
+     }
+ 
+     private void func_187466_c()
+@@ -134,7 +135,7 @@
+     private void func_187455_a(EnumHandSide p_187455_1_)
+     {
+         this.field_78455_a.func_110434_K().func_110577_a(this.field_78455_a.field_71439_g.func_110306_p());
+-        Render<AbstractClientPlayer> render = this.field_178111_g.func_78713_a(this.field_78455_a.field_71439_g);
++        Render<AbstractClientPlayer> render = this.field_178111_g.<AbstractClientPlayer>func_78713_a(this.field_78455_a.field_71439_g);
+         RenderPlayer renderplayer = (RenderPlayer)render;
+         GlStateManager.func_179094_E();
+         float f = p_187455_1_ == EnumHandSide.RIGHT ? 1.0F : -1.0F;
+@@ -215,7 +216,7 @@
          bufferbuilder.func_181662_b(135.0D, -7.0D, 0.0D).func_187315_a(1.0D, 0.0D).func_181675_d();
          bufferbuilder.func_181662_b(-7.0D, -7.0D, 0.0D).func_187315_a(0.0D, 0.0D).func_181675_d();
          tessellator.func_78381_a();
@@ -9,7 +28,16 @@
  
          if (mapdata != null)
          {
-@@ -312,7 +312,7 @@
+@@ -301,7 +302,7 @@
+     {
+         AbstractClientPlayer abstractclientplayer = this.field_78455_a.field_71439_g;
+         float f = abstractclientplayer.func_70678_g(p_78440_1_);
+-        EnumHand enumhand = MoreObjects.firstNonNull(abstractclientplayer.field_184622_au, EnumHand.MAIN_HAND);
++        EnumHand enumhand = (EnumHand)MoreObjects.firstNonNull(abstractclientplayer.field_184622_au, EnumHand.MAIN_HAND);
+         float f1 = abstractclientplayer.field_70127_C + (abstractclientplayer.field_70125_A - abstractclientplayer.field_70127_C) * p_78440_1_;
+         float f2 = abstractclientplayer.field_70126_B + (abstractclientplayer.field_70177_z - abstractclientplayer.field_70126_B) * p_78440_1_;
+         boolean flag = true;
+@@ -311,7 +312,7 @@
          {
              ItemStack itemstack = abstractclientplayer.func_184607_cu();
  
@@ -18,7 +46,7 @@
              {
                  EnumHand enumhand1 = abstractclientplayer.func_184600_cs();
                  flag = enumhand1 == EnumHand.MAIN_HAND;
-@@ -329,6 +329,7 @@
+@@ -328,6 +329,7 @@
          {
              float f3 = enumhand == EnumHand.MAIN_HAND ? f : 0.0F;
              float f5 = 1.0F - (this.field_187470_g + (this.field_187469_f - this.field_187470_g) * p_78440_1_);
@@ -26,7 +54,7 @@
              this.func_187457_a(abstractclientplayer, p_78440_1_, f1, EnumHand.MAIN_HAND, f3, this.field_187467_d, f5);
          }
  
-@@ -336,6 +337,7 @@
+@@ -335,6 +337,7 @@
          {
              float f4 = enumhand == EnumHand.OFF_HAND ? f : 0.0F;
              float f6 = 1.0F - (this.field_187472_i + (this.field_187471_h - this.field_187472_i) * p_78440_1_);
@@ -34,7 +62,7 @@
              this.func_187457_a(abstractclientplayer, p_78440_1_, f1, EnumHand.OFF_HAND, f4, this.field_187468_e, f6);
          }
  
-@@ -356,7 +358,7 @@
+@@ -355,7 +358,7 @@
                  this.func_187456_a(p_187457_7_, p_187457_5_, enumhandside);
              }
          }
@@ -43,7 +71,7 @@
          {
              if (flag && this.field_187468_e.func_190926_b())
              {
-@@ -440,6 +442,7 @@
+@@ -439,6 +442,7 @@
          if (this.field_78455_a.field_71439_g.func_70094_T())
          {
              IBlockState iblockstate = this.field_78455_a.field_71441_e.func_180495_p(new BlockPos(this.field_78455_a.field_71439_g));
@@ -51,7 +79,7 @@
              EntityPlayer entityplayer = this.field_78455_a.field_71439_g;
  
              for (int i = 0; i < 8; ++i)
-@@ -453,11 +456,13 @@
+@@ -452,11 +456,13 @@
                  if (iblockstate1.func_191058_s())
                  {
                      iblockstate = iblockstate1;
@@ -65,7 +93,7 @@
                  this.func_178108_a(this.field_78455_a.func_175602_ab().func_175023_a().func_178122_a(iblockstate));
              }
          }
-@@ -466,11 +471,13 @@
+@@ -465,11 +471,13 @@
          {
              if (this.field_78455_a.field_71439_g.func_70055_a(Material.field_151586_h))
              {
@@ -79,7 +107,7 @@
                  this.func_78442_d();
              }
          }
-@@ -592,8 +599,17 @@
+@@ -591,8 +599,17 @@
          else
          {
              float f = entityplayersp.func_184825_o(1.0F);

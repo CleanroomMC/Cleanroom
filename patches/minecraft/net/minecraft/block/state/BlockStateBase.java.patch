@@ -1,13 +1,45 @@
 --- before/net/minecraft/block/state/BlockStateBase.java
 +++ after/net/minecraft/block/state/BlockStateBase.java
-@@ -73,4 +73,10 @@
+@@ -5,7 +5,7 @@
+ import com.google.common.collect.Iterables;
+ import java.util.Collection;
+ import java.util.Iterator;
+-import java.util.Map;
++import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+ import net.minecraft.block.Block;
+ import net.minecraft.block.properties.IProperty;
+@@ -13,10 +13,10 @@
+ public abstract class BlockStateBase implements IBlockState
+ {
+     private static final Joiner field_177234_a = Joiner.on(',');
+-    private static final Function < Map.Entry < IProperty<?>, Comparable<? >> , String > field_177233_b = new Function < Map.Entry < IProperty<?>, Comparable<? >> , String > ()
++    private static final Function < Entry < IProperty<?>, Comparable<? >> , String > field_177233_b = new Function < Entry < IProperty<?>, Comparable<? >> , String > ()
+     {
+         @Nullable
+-        public String apply(@Nullable Map.Entry < IProperty<?>, Comparable<? >> p_apply_1_)
++        public String apply(@Nullable Entry < IProperty<?>, Comparable<? >> p_apply_1_)
+         {
+             if (p_apply_1_ == null)
+             {
+@@ -24,7 +24,7 @@
+             }
+             else
+             {
+-                IProperty<?> iproperty = p_apply_1_.getKey();
++                IProperty<?> iproperty = (IProperty)p_apply_1_.getKey();
+                 return iproperty.func_177701_a() + "=" + this.func_185886_a(iproperty, p_apply_1_.getValue());
+             }
+         }
+@@ -72,5 +72,11 @@
+         }
  
          return stringbuilder.toString();
-     }
++    }
 +
 +    @Nullable
 +    public com.google.common.collect.ImmutableTable<IProperty<?>, Comparable<?>, IBlockState> getPropertyValueTable()
 +    {
 +        return null;
-+    }
+     }
  }

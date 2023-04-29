@@ -1,0 +1,118 @@
+--- before/net/minecraft/client/model/ModelBiped.java
++++ after/net/minecraft/client/model/ModelBiped.java
+@@ -19,8 +19,8 @@
+     public ModelRenderer field_178724_i;
+     public ModelRenderer field_178721_j;
+     public ModelRenderer field_178722_k;
+-    public ModelBiped.ArmPose field_187075_l = ModelBiped.ArmPose.EMPTY;
+-    public ModelBiped.ArmPose field_187076_m = ModelBiped.ArmPose.EMPTY;
++    public ModelBiped.ArmPose field_187075_l;
++    public ModelBiped.ArmPose field_187076_m;
+     public boolean field_78117_n;
+ 
+     public ModelBiped()
+@@ -35,6 +35,8 @@
+ 
+     public ModelBiped(float p_i1149_1_, float p_i1149_2_, int p_i1149_3_, int p_i1149_4_)
+     {
++        this.field_187075_l = ModelBiped.ArmPose.EMPTY;
++        this.field_187076_m = ModelBiped.ArmPose.EMPTY;
+         this.field_78090_t = p_i1149_3_;
+         this.field_78089_u = p_i1149_4_;
+         this.field_78116_c = new ModelRenderer(this, 0, 0);
+@@ -107,15 +109,15 @@
+     public void func_78087_a(float p_78087_1_, float p_78087_2_, float p_78087_3_, float p_78087_4_, float p_78087_5_, float p_78087_6_, Entity p_78087_7_)
+     {
+         boolean flag = p_78087_7_ instanceof EntityLivingBase && ((EntityLivingBase)p_78087_7_).func_184599_cB() > 4;
+-        this.field_78116_c.field_78796_g = p_78087_4_ * ((float)Math.PI / 180F);
++        this.field_78116_c.field_78796_g = p_78087_4_ * 0.017453292F;
+ 
+         if (flag)
+         {
+-            this.field_78116_c.field_78795_f = (-(float)Math.PI / 4F);
++            this.field_78116_c.field_78795_f = -((float)Math.PI / 4F);
+         }
+         else
+         {
+-            this.field_78116_c.field_78795_f = p_78087_5_ * ((float)Math.PI / 180F);
++            this.field_78116_c.field_78795_f = p_78087_5_ * 0.017453292F;
+         }
+ 
+         this.field_78115_e.field_78796_g = 0.0F;
+@@ -128,8 +130,8 @@
+         if (flag)
+         {
+             f = (float)(p_78087_7_.field_70159_w * p_78087_7_.field_70159_w + p_78087_7_.field_70181_x * p_78087_7_.field_70181_x + p_78087_7_.field_70179_y * p_78087_7_.field_70179_y);
+-            f /= 0.2F;
+-            f *= f * f;
++            f = f / 0.2F;
++            f = f * f * f;
+         }
+ 
+         if (f < 1.0F)
+@@ -150,13 +152,13 @@
+ 
+         if (this.field_78093_q)
+         {
+-            this.field_178723_h.field_78795_f += (-(float)Math.PI / 5F);
+-            this.field_178724_i.field_78795_f += (-(float)Math.PI / 5F);
++            this.field_178723_h.field_78795_f += -((float)Math.PI / 5F);
++            this.field_178724_i.field_78795_f += -((float)Math.PI / 5F);
+             this.field_178721_j.field_78795_f = -1.4137167F;
+             this.field_178721_j.field_78796_g = ((float)Math.PI / 10F);
+             this.field_178721_j.field_78808_h = 0.07853982F;
+             this.field_178722_k.field_78795_f = -1.4137167F;
+-            this.field_178722_k.field_78796_g = (-(float)Math.PI / 10F);
++            this.field_178722_k.field_78796_g = -((float)Math.PI / 10F);
+             this.field_178722_k.field_78808_h = -0.07853982F;
+         }
+ 
+@@ -170,7 +172,7 @@
+                 break;
+             case BLOCK:
+                 this.field_178724_i.field_78795_f = this.field_178724_i.field_78795_f * 0.5F - 0.9424779F;
+-                this.field_178724_i.field_78796_g = ((float)Math.PI / 6F);
++                this.field_178724_i.field_78796_g = 0.5235988F;
+                 break;
+             case ITEM:
+                 this.field_178724_i.field_78795_f = this.field_178724_i.field_78795_f * 0.5F - ((float)Math.PI / 10F);
+@@ -184,7 +186,7 @@
+                 break;
+             case BLOCK:
+                 this.field_178723_h.field_78795_f = this.field_178723_h.field_78795_f * 0.5F - 0.9424779F;
+-                this.field_178723_h.field_78796_g = (-(float)Math.PI / 6F);
++                this.field_178723_h.field_78796_g = -0.5235988F;
+                 break;
+             case ITEM:
+                 this.field_178723_h.field_78795_f = this.field_178723_h.field_78795_f * 0.5F - ((float)Math.PI / 10F);
+@@ -211,8 +213,8 @@
+             this.field_178724_i.field_78796_g += this.field_78115_e.field_78796_g;
+             this.field_178724_i.field_78795_f += this.field_78115_e.field_78796_g;
+             f1 = 1.0F - this.field_78095_p;
+-            f1 *= f1;
+-            f1 *= f1;
++            f1 = f1 * f1;
++            f1 = f1 * f1;
+             f1 = 1.0F - f1;
+             float f2 = MathHelper.func_76126_a(f1 * (float)Math.PI);
+             float f3 = MathHelper.func_76126_a(this.field_78095_p * (float)Math.PI) * -(this.field_78116_c.field_78795_f - 0.7F) * 0.75F;
+@@ -251,15 +253,15 @@
+         {
+             this.field_178723_h.field_78796_g = -0.1F + this.field_78116_c.field_78796_g;
+             this.field_178724_i.field_78796_g = 0.1F + this.field_78116_c.field_78796_g + 0.4F;
+-            this.field_178723_h.field_78795_f = (-(float)Math.PI / 2F) + this.field_78116_c.field_78795_f;
+-            this.field_178724_i.field_78795_f = (-(float)Math.PI / 2F) + this.field_78116_c.field_78795_f;
++            this.field_178723_h.field_78795_f = -((float)Math.PI / 2F) + this.field_78116_c.field_78795_f;
++            this.field_178724_i.field_78795_f = -((float)Math.PI / 2F) + this.field_78116_c.field_78795_f;
+         }
+         else if (this.field_187075_l == ModelBiped.ArmPose.BOW_AND_ARROW)
+         {
+             this.field_178723_h.field_78796_g = -0.1F + this.field_78116_c.field_78796_g - 0.4F;
+             this.field_178724_i.field_78796_g = 0.1F + this.field_78116_c.field_78796_g;
+-            this.field_178723_h.field_78795_f = (-(float)Math.PI / 2F) + this.field_78116_c.field_78795_f;
+-            this.field_178724_i.field_78795_f = (-(float)Math.PI / 2F) + this.field_78116_c.field_78795_f;
++            this.field_178723_h.field_78795_f = -((float)Math.PI / 2F) + this.field_78116_c.field_78795_f;
++            this.field_178724_i.field_78795_f = -((float)Math.PI / 2F) + this.field_78116_c.field_78795_f;
+         }
+ 
+         func_178685_a(this.field_78116_c, this.field_178720_f);

@@ -1,0 +1,51 @@
+--- before/net/minecraft/network/rcon/RConThreadMain.java
++++ after/net/minecraft/network/rcon/RConThreadMain.java
+@@ -9,6 +9,7 @@
+ import java.net.SocketTimeoutException;
+ import java.util.Iterator;
+ import java.util.Map;
++import java.util.Map.Entry;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+@@ -34,7 +35,7 @@
+         {
+             this.field_72647_g = this.field_72651_h + 10;
+             this.func_72609_b("Setting default rcon port to " + this.field_72647_g);
+-            p_i1538_1_.func_71328_a("rcon.port", this.field_72647_g);
++            p_i1538_1_.func_71328_a("rcon.port", Integer.valueOf(this.field_72647_g));
+ 
+             if (this.field_72650_k.isEmpty())
+             {
+@@ -55,18 +56,18 @@
+ 
+     private void func_72646_f()
+     {
+-        this.field_72648_l = Maps.newHashMap();
++        this.field_72648_l = Maps.<SocketAddress, RConThreadClient>newHashMap();
+     }
+ 
+     private void func_72645_g()
+     {
+-        Iterator<Map.Entry<SocketAddress, RConThreadClient>> iterator = this.field_72648_l.entrySet().iterator();
++        Iterator<Entry<SocketAddress, RConThreadClient>> iterator = this.field_72648_l.entrySet().iterator();
+ 
+         while (iterator.hasNext())
+         {
+-            Map.Entry<SocketAddress, RConThreadClient> entry = iterator.next();
++            Entry<SocketAddress, RConThreadClient> entry = (Entry)iterator.next();
+ 
+-            if (!entry.getValue().func_72613_c())
++            if (!((RConThreadClient)entry.getValue()).func_72613_c())
+             {
+                 iterator.remove();
+             }
+@@ -90,7 +91,7 @@
+                     this.field_72648_l.put(socket.getRemoteSocketAddress(), rconthreadclient);
+                     this.func_72645_g();
+                 }
+-                catch (SocketTimeoutException sockettimeoutexception)
++                catch (SocketTimeoutException var7)
+                 {
+                     this.func_72645_g();
+                 }

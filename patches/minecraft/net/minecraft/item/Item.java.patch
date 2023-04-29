@@ -7,14 +7,43 @@
 -public class Item
 +public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<Item>
  {
--    public static final RegistryNamespaced<ResourceLocation, Item> field_150901_e = new RegistryNamespaced<ResourceLocation, Item>();
--    private static final Map<Block, Item> field_179220_a = Maps.<Block, Item>newHashMap();
+-    public static final RegistryNamespaced<ResourceLocation, Item> field_150901_e = new RegistryNamespaced<>();
+-    private static final Map<Block, Item> field_179220_a = Maps.newHashMap();
 +    public static final RegistryNamespaced<ResourceLocation, Item> field_150901_e = net.minecraftforge.registries.GameData.getWrapper(Item.class);
 +    private static final Map<Block, Item> field_179220_a = net.minecraftforge.registries.GameData.getBlockItemMap();
      private static final IItemPropertyGetter field_185046_b = new IItemPropertyGetter()
      {
          @SideOnly(Side.CLIENT)
-@@ -197,6 +197,7 @@
+@@ -94,7 +94,7 @@
+             return p_185085_3_ instanceof EntityPlayer ? ((EntityPlayer)p_185085_3_).func_184811_cZ().func_185143_a(p_185085_1_.func_77973_b(), 0.0F) : 0.0F;
+         }
+     };
+-    private final IRegistry<ResourceLocation, IItemPropertyGetter> field_185051_m = new RegistrySimple<>();
++    private final IRegistry<ResourceLocation, IItemPropertyGetter> field_185051_m = new RegistrySimple<ResourceLocation, IItemPropertyGetter>();
+     protected static final UUID field_111210_e = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
+     protected static final UUID field_185050_h = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
+     private CreativeTabs field_77701_a;
+@@ -133,8 +133,9 @@
+             {
+                 return func_150899_d(Integer.parseInt(p_111206_0_));
+             }
+-            catch (NumberFormatException numberformatexception)
++            catch (NumberFormatException var3)
+             {
++                ;
+             }
+         }
+ 
+@@ -188,7 +189,7 @@
+ 
+     public ActionResult<ItemStack> func_77659_a(World p_77659_1_, EntityPlayer p_77659_2_, EnumHand p_77659_3_)
+     {
+-        return new ActionResult<>(EnumActionResult.PASS, p_77659_2_.func_184586_b(p_77659_3_));
++        return new ActionResult<ItemStack>(EnumActionResult.PASS, p_77659_2_.func_184586_b(p_77659_3_));
+     }
+ 
+     public ItemStack func_77654_b(ItemStack p_77654_1_, World p_77654_2_, EntityLivingBase p_77654_3_)
+@@ -196,6 +197,7 @@
          return p_77654_1_;
      }
  
@@ -22,7 +51,7 @@
      public int func_77639_j()
      {
          return this.field_77777_bU;
-@@ -218,6 +219,7 @@
+@@ -217,6 +219,7 @@
          return this;
      }
  
@@ -30,7 +59,7 @@
      public int func_77612_l()
      {
          return this.field_77699_b;
-@@ -317,6 +319,7 @@
+@@ -316,6 +319,7 @@
          return this.field_77700_c;
      }
  
@@ -38,7 +67,7 @@
      public boolean func_77634_r()
      {
          return this.field_77700_c != null;
-@@ -365,6 +368,7 @@
+@@ -364,6 +368,7 @@
          return p_77636_1_.func_77948_v();
      }
  
@@ -46,7 +75,7 @@
      public EnumRarity func_77613_e(ItemStack p_77613_1_)
      {
          return p_77613_1_.func_77948_v() ? EnumRarity.RARE : EnumRarity.COMMON;
-@@ -372,7 +376,7 @@
+@@ -371,7 +376,7 @@
  
      public boolean func_77616_k(ItemStack p_77616_1_)
      {
@@ -55,8 +84,18 @@
      }
  
      protected RayTraceResult func_77621_a(World p_77621_1_, EntityPlayer p_77621_2_, boolean p_77621_3_)
-@@ -389,8 +393,8 @@
-         float f5 = MathHelper.func_76126_a(-f * 0.017453292F);
+@@ -382,14 +387,14 @@
+         double d1 = p_77621_2_.field_70163_u + (double)p_77621_2_.func_70047_e();
+         double d2 = p_77621_2_.field_70161_v;
+         Vec3d vec3d = new Vec3d(d0, d1, d2);
+-        float f2 = MathHelper.func_76134_b(-f1 * ((float)Math.PI / 180F) - (float)Math.PI);
+-        float f3 = MathHelper.func_76126_a(-f1 * ((float)Math.PI / 180F) - (float)Math.PI);
+-        float f4 = -MathHelper.func_76134_b(-f * ((float)Math.PI / 180F));
+-        float f5 = MathHelper.func_76126_a(-f * ((float)Math.PI / 180F));
++        float f2 = MathHelper.func_76134_b(-f1 * 0.017453292F - (float)Math.PI);
++        float f3 = MathHelper.func_76126_a(-f1 * 0.017453292F - (float)Math.PI);
++        float f4 = -MathHelper.func_76134_b(-f * 0.017453292F);
++        float f5 = MathHelper.func_76126_a(-f * 0.017453292F);
          float f6 = f3 * f4;
          float f7 = f2 * f4;
 -        double d3 = 5.0D;
@@ -66,7 +105,7 @@
          return p_77621_1_.func_147447_a(vec3d, vec3d1, p_77621_3_, !p_77621_3_, false);
      }
  
-@@ -409,6 +413,9 @@
+@@ -408,6 +413,9 @@
  
      protected boolean func_194125_a(CreativeTabs p_194125_1_)
      {
@@ -76,16 +115,18 @@
          CreativeTabs creativetabs = this.func_77640_w();
          return creativetabs != null && (p_194125_1_ == CreativeTabs.field_78027_g || p_194125_1_ == creativetabs);
      }
-@@ -435,11 +442,784 @@
+@@ -434,10 +442,783 @@
          return false;
      }
  
 +    @Deprecated // Use ItemStack sensitive version below.
      public Multimap<String, AttributeModifier> func_111205_h(EntityEquipmentSlot p_111205_1_)
      {
-         return HashMultimap.<String, AttributeModifier>create();
-     }
- 
+-        return HashMultimap.create();
+-    }
++        return HashMultimap.<String, AttributeModifier>create();
++    }
++
 +    /* ======================================== FORGE START =====================================*/
 +    /**
 +     * ItemStack sensitive version of getItemAttributeModifiers
@@ -857,11 +898,10 @@
 +    }
 +
 +    /* ======================================== FORGE END   =====================================*/
-+
+ 
      public static void func_150900_l()
      {
-         func_179214_a(Blocks.field_150350_a, new ItemAir(Blocks.field_150350_a));
-@@ -999,6 +1779,8 @@
+@@ -998,6 +1779,8 @@
          private final float field_78010_h;
          private final float field_78011_i;
          private final int field_78008_j;
@@ -870,7 +910,7 @@
  
          private ToolMaterial(int p_i1874_3_, int p_i1874_4_, float p_i1874_5_, float p_i1874_6_, int p_i1874_7_)
          {
-@@ -1034,6 +1816,7 @@
+@@ -1033,6 +1816,7 @@
              return this.field_78008_j;
          }
  
@@ -878,7 +918,7 @@
          public Item func_150995_f()
          {
              if (this == WOOD)
-@@ -1056,6 +1839,22 @@
+@@ -1055,6 +1839,22 @@
              {
                  return this == DIAMOND ? Items.field_151045_i : null;
              }

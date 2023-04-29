@@ -1,0 +1,11 @@
+--- before/net/minecraft/tileentity/TileEntityDropper.java
++++ after/net/minecraft/tileentity/TileEntityDropper.java
+@@ -8,7 +8,7 @@
+ {
+     public static void func_189679_b(DataFixer p_189679_0_)
+     {
+-        p_189679_0_.func_188258_a(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityDropper.class, "Items"));
++        p_189679_0_.func_188258_a(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityDropper.class, new String[] {"Items"}));
+     }
+ 
+     public String func_70005_c_()

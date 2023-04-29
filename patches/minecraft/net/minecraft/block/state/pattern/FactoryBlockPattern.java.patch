@@ -1,0 +1,72 @@
+--- before/net/minecraft/block/state/pattern/FactoryBlockPattern.java
++++ after/net/minecraft/block/state/pattern/FactoryBlockPattern.java
+@@ -8,6 +8,7 @@
+ import java.lang.reflect.Array;
+ import java.util.List;
+ import java.util.Map;
++import java.util.Map.Entry;
+ import net.minecraft.block.state.BlockWorldState;
+ import org.apache.commons.lang3.ArrayUtils;
+ import org.apache.commons.lang3.StringUtils;
+@@ -15,8 +16,8 @@
+ public class FactoryBlockPattern
+ {
+     private static final Joiner field_177667_a = Joiner.on(",");
+-    private final List<String[]> field_177665_b = Lists.newArrayList();
+-    private final Map<Character, Predicate<BlockWorldState>> field_177666_c = Maps.newHashMap();
++    private final List<String[]> field_177665_b = Lists.<String[]>newArrayList();
++    private final Map<Character, Predicate<BlockWorldState>> field_177666_c = Maps.<Character, Predicate<BlockWorldState>>newHashMap();
+     private int field_177663_d;
+     private int field_177664_e;
+ 
+@@ -50,9 +51,9 @@
+ 
+                     for (char c0 : s.toCharArray())
+                     {
+-                        if (!this.field_177666_c.containsKey(c0))
++                        if (!this.field_177666_c.containsKey(Character.valueOf(c0)))
+                         {
+-                            this.field_177666_c.put(c0, null);
++                            this.field_177666_c.put(Character.valueOf(c0), null);
+                         }
+                     }
+                 }
+@@ -74,7 +75,7 @@
+ 
+     public FactoryBlockPattern func_177662_a(char p_177662_1_, Predicate<BlockWorldState> p_177662_2_)
+     {
+-        this.field_177666_c.put(p_177662_1_, p_177662_2_);
++        this.field_177666_c.put(Character.valueOf(p_177662_1_), p_177662_2_);
+         return this;
+     }
+ 
+@@ -86,7 +87,7 @@
+     private Predicate<BlockWorldState>[][][] func_177658_c()
+     {
+         this.func_177657_d();
+-        Predicate<BlockWorldState>[][][] predicate = (Predicate[][][])Array.newInstance(Predicate.class, this.field_177665_b.size(), this.field_177663_d, this.field_177664_e);
++        Predicate<BlockWorldState>[][][] predicate = (Predicate[][][])((Predicate[][][])Array.newInstance(Predicate.class, this.field_177665_b.size(), this.field_177663_d, this.field_177664_e));
+ 
+         for (int i = 0; i < this.field_177665_b.size(); ++i)
+         {
+@@ -94,7 +95,7 @@
+             {
+                 for (int k = 0; k < this.field_177664_e; ++k)
+                 {
+-                    predicate[i][j][k] = this.field_177666_c.get((this.field_177665_b.get(i))[j].charAt(k));
++                    predicate[i][j][k] = this.field_177666_c.get(Character.valueOf(((String[])this.field_177665_b.get(i))[j].charAt(k)));
+                 }
+             }
+         }
+@@ -104,9 +105,9 @@
+ 
+     private void func_177657_d()
+     {
+-        List<Character> list = Lists.newArrayList();
++        List<Character> list = Lists.<Character>newArrayList();
+ 
+-        for (Map.Entry<Character, Predicate<BlockWorldState>> entry : this.field_177666_c.entrySet())
++        for (Entry<Character, Predicate<BlockWorldState>> entry : this.field_177666_c.entrySet())
+         {
+             if (entry.getValue() == null)
+             {

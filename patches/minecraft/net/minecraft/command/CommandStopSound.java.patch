@@ -1,0 +1,20 @@
+--- before/net/minecraft/command/CommandStopSound.java
++++ after/net/minecraft/command/CommandStopSound.java
+@@ -45,7 +45,7 @@
+ 
+                 if (soundcategory == null)
+                 {
+-                    throw new CommandException("commands.stopsound.unknownSoundSource", s2);
++                    throw new CommandException("commands.stopsound.unknownSoundSource", new Object[] {s2});
+                 }
+ 
+                 s = soundcategory.func_187948_a();
+@@ -76,7 +76,7 @@
+         }
+         else
+         {
+-            throw new WrongUsageException(this.func_71518_a(p_184881_2_));
++            throw new WrongUsageException(this.func_71518_a(p_184881_2_), new Object[0]);
+         }
+     }
+ 

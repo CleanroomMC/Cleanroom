@@ -1,0 +1,15 @@
+--- before/net/minecraft/network/play/client/CPacketClientSettings.java
++++ after/net/minecraft/network/play/client/CPacketClientSettings.java
+@@ -37,10 +37,10 @@
+     {
+         this.field_149530_a = p_148837_1_.func_150789_c(16);
+         this.field_149528_b = p_148837_1_.readByte();
+-        this.field_149529_c = p_148837_1_.func_179257_a(EntityPlayer.EnumChatVisibility.class);
++        this.field_149529_c = (EntityPlayer.EnumChatVisibility)p_148837_1_.func_179257_a(EntityPlayer.EnumChatVisibility.class);
+         this.field_149526_d = p_148837_1_.readBoolean();
+         this.field_179711_e = p_148837_1_.readUnsignedByte();
+-        this.field_186992_f = p_148837_1_.func_179257_a(EnumHandSide.class);
++        this.field_186992_f = (EnumHandSide)p_148837_1_.func_179257_a(EnumHandSide.class);
+     }
+ 
+     public void func_148840_b(PacketBuffer p_148840_1_) throws IOException

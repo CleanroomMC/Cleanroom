@@ -1,0 +1,11 @@
+--- before/net/minecraft/block/state/pattern/BlockPattern.java
++++ after/net/minecraft/block/state/pattern/BlockPattern.java
+@@ -108,7 +108,7 @@
+ 
+     public static LoadingCache<BlockPos, BlockWorldState> func_181627_a(World p_181627_0_, boolean p_181627_1_)
+     {
+-        return CacheBuilder.newBuilder().build(new BlockPattern.CacheLoader(p_181627_0_, p_181627_1_));
++        return CacheBuilder.newBuilder().<BlockPos, BlockWorldState>build(new BlockPattern.CacheLoader(p_181627_0_, p_181627_1_));
+     }
+ 
+     protected static BlockPos func_177683_a(BlockPos p_177683_0_, EnumFacing p_177683_1_, EnumFacing p_177683_2_, int p_177683_3_, int p_177683_4_, int p_177683_5_)

@@ -1,0 +1,11 @@
+--- before/net/minecraft/entity/EntityBodyHelper.java
++++ after/net/minecraft/entity/EntityBodyHelper.java
+@@ -18,7 +18,7 @@
+         double d0 = this.field_75668_a.field_70165_t - this.field_75668_a.field_70169_q;
+         double d1 = this.field_75668_a.field_70161_v - this.field_75668_a.field_70166_s;
+ 
+-        if (d0 * d0 + d1 * d1 > (double)2.5000003E-7F)
++        if (d0 * d0 + d1 * d1 > 2.500000277905201E-7D)
+         {
+             this.field_75668_a.field_70761_aq = this.field_75668_a.field_70177_z;
+             this.field_75668_a.field_70759_as = this.func_75665_a(this.field_75668_a.field_70761_aq, this.field_75668_a.field_70759_as, 75.0F);

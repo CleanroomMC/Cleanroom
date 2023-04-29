@@ -1,6 +1,50 @@
 --- before/net/minecraft/client/Minecraft.java
 +++ after/net/minecraft/client/Minecraft.java
-@@ -332,6 +332,7 @@
+@@ -19,7 +19,6 @@
+ import java.io.InputStream;
+ import java.net.Proxy;
+ import java.net.SocketAddress;
+-import java.nio.Buffer;
+ import java.nio.ByteBuffer;
+ import java.nio.ByteOrder;
+ import java.nio.IntBuffer;
+@@ -27,6 +26,7 @@
+ import java.text.SimpleDateFormat;
+ import java.util.Collections;
+ import java.util.Date;
++import java.util.Iterator;
+ import java.util.List;
+ import java.util.Locale;
+ import java.util.Queue;
+@@ -35,6 +35,9 @@
+ import java.util.concurrent.Callable;
+ import java.util.concurrent.Executors;
+ import java.util.concurrent.FutureTask;
++import java.util.function.Consumer;
++import java.util.function.Function;
++import java.util.function.Predicate;
+ import java.util.stream.Collectors;
+ import javax.annotation.Nullable;
+ import javax.imageio.ImageIO;
+@@ -298,7 +301,7 @@
+     private long field_83002_am = -1L;
+     private IReloadableResourceManager field_110451_am;
+     private final MetadataSerializer field_110452_an = new MetadataSerializer();
+-    private final List<IResourcePack> field_110449_ao = Lists.newArrayList();
++    private final List<IResourcePack> field_110449_ao = Lists.<IResourcePack>newArrayList();
+     public final DefaultResourcePack field_110450_ap;
+     private ResourcePackRepository field_110448_aq;
+     private LanguageManager field_135017_as;
+@@ -311,7 +314,7 @@
+     private ResourceLocation field_152354_ay;
+     private final MinecraftSessionService field_152355_az;
+     private SkinManager field_152350_aA;
+-    private final Queue < FutureTask<? >> field_152351_aB = Queues.newArrayDeque();
++    private final Queue < FutureTask<? >> field_152351_aB = Queues. < FutureTask<? >> newArrayDeque();
+     private final Thread field_152352_aC = Thread.currentThread();
+     private ModelManager field_175617_aL;
+     private BlockRendererDispatcher field_175618_aM;
+@@ -329,6 +332,7 @@
      public Minecraft(GameConfiguration p_i45547_1_)
      {
          field_71432_P = this;
@@ -8,7 +52,7 @@
          this.field_71412_D = p_i45547_1_.field_178744_c.field_178760_a;
          this.field_110446_Y = p_i45547_1_.field_178744_c.field_178759_c;
          this.field_130070_K = p_i45547_1_.field_178744_c.field_178758_b;
-@@ -344,7 +345,6 @@
+@@ -341,7 +345,6 @@
          this.field_152355_az = (new YggdrasilAuthenticationService(this.field_110453_aa, UUID.randomUUID().toString())).createMinecraftSessionService();
          this.field_71449_j = p_i45547_1_.field_178745_a.field_178752_a;
          field_147123_G.info("Setting user: {}", (Object)this.field_71449_j.func_111285_a());
@@ -16,7 +60,81 @@
          this.field_71459_aj = p_i45547_1_.field_178741_d.field_178756_a;
          this.field_71443_c = p_i45547_1_.field_178743_b.field_178764_a > 0 ? p_i45547_1_.field_178743_b.field_178764_a : 1;
          this.field_71440_d = p_i45547_1_.field_178743_b.field_178762_b > 0 ? p_i45547_1_.field_178743_b.field_178762_b : 1;
-@@ -464,10 +464,10 @@
+@@ -382,36 +385,34 @@
+             return;
+         }
+ 
+-        try
++        while (true)
+         {
+             try
+             {
+                 while (this.field_71425_J)
+                 {
+-                    if (this.field_71434_R && this.field_71433_S != null)
+-                    {
+-                        this.func_71377_b(this.field_71433_S);
+-                        return;
+-                    }
+-                    else
++                    if (!this.field_71434_R || this.field_71433_S == null)
+                     {
+                         try
+                         {
+                             this.func_71411_J();
+                         }
+-                        catch (OutOfMemoryError outofmemoryerror)
++                        catch (OutOfMemoryError var10)
+                         {
+                             this.func_71398_f();
+                             this.func_147108_a(new GuiMemoryErrorScreen());
+                             System.gc();
+                         }
+                     }
++                    else
++                    {
++                        this.func_71377_b(this.field_71433_S);
++                    }
+                 }
+-
+-                return;
+             }
+-            catch (MinecraftError minecrafterror)
++            catch (MinecraftError var12)
+             {
++                break;
+             }
+             catch (ReportedException reportedexception)
+             {
+@@ -419,6 +420,7 @@
+                 this.func_71398_f();
+                 field_147123_G.fatal("Reported exception thrown!", (Throwable)reportedexception);
+                 this.func_71377_b(reportedexception.func_71575_a());
++                break;
+             }
+             catch (Throwable throwable1)
+             {
+@@ -426,11 +428,14 @@
+                 this.func_71398_f();
+                 field_147123_G.fatal("Unreported exception thrown!", throwable1);
+                 this.func_71377_b(crashreport1);
+-            }
+-        }
+-        finally
+-        {
+-            this.func_71405_e();
++                break;
++            }
++            finally
++            {
++                this.func_71405_e();
++            }
++
++            return;
+         }
+     }
+ 
+@@ -459,10 +464,10 @@
          this.field_110451_am = new SimpleReloadableResourceManager(this.field_110452_an);
          this.field_135017_as = new LanguageManager(this.field_110452_an, this.field_71474_y.field_74363_ab);
          this.field_110451_am.func_110542_a(this.field_135017_as);
@@ -29,7 +147,7 @@
          this.field_152350_aA = new SkinManager(this.field_71446_o, new File(this.field_110446_Y, "skins"), this.field_152355_az);
          this.field_71469_aa = new AnvilSaveConverter(new File(this.field_71412_D, "saves"), this.field_184131_U);
          this.field_147127_av = new SoundHandler(this.field_110451_am, this.field_71474_y);
-@@ -487,6 +487,8 @@
+@@ -482,6 +487,8 @@
          this.field_110451_am.func_110542_a(new GrassColorReloadListener());
          this.field_110451_am.func_110542_a(new FoliageColorReloadListener());
          this.field_71417_B = new MouseHelper();
@@ -38,7 +156,7 @@
          this.func_71361_d("Pre startup");
          GlStateManager.func_179098_w();
          GlStateManager.func_179103_j(7425);
-@@ -500,19 +502,24 @@
+@@ -495,19 +502,24 @@
          GlStateManager.func_179096_D();
          GlStateManager.func_179128_n(5888);
          this.func_71361_d("Startup");
@@ -63,7 +181,7 @@
          this.field_71460_t = new EntityRenderer(this, this.field_110451_am);
          this.field_110451_am.func_110542_a(this.field_71460_t);
          this.field_175618_aM = new BlockRendererDispatcher(this.field_175617_aL.func_174954_c(), this.field_184127_aH);
-@@ -523,23 +530,27 @@
+@@ -518,23 +530,27 @@
          this.field_110451_am.func_110542_a(this.field_193995_ae);
          GlStateManager.func_179083_b(0, 0, this.field_71443_c, this.field_71440_d);
          this.field_71452_i = new ParticleManager(this.field_71441_e, this.field_71446_o);
@@ -94,7 +212,56 @@
          if (this.field_71474_y.field_74353_u && !this.field_71431_Q)
          {
              this.func_71352_k();
-@@ -604,35 +615,13 @@
+@@ -544,7 +560,7 @@
+         {
+             Display.setVSyncEnabled(this.field_71474_y.field_74352_v);
+         }
+-        catch (OpenGLException openglexception)
++        catch (OpenGLException var2)
+         {
+             this.field_71474_y.field_74352_v = false;
+             this.field_71474_y.func_74303_b();
+@@ -555,8 +571,16 @@
+ 
+     public void func_193986_ar()
+     {
+-        SearchTree<ItemStack> searchtree = new SearchTree<>((p_193988_0_) -> p_193988_0_.func_82840_a((EntityPlayer)null, ITooltipFlag.TooltipFlags.NORMAL).stream().map(TextFormatting::func_110646_a).map(String::trim).filter((p_193984_0_) -> !p_193984_0_.isEmpty()).collect(Collectors.toList()), (p_193985_0_) -> Collections.singleton(Item.field_150901_e.func_177774_c(p_193985_0_.func_77973_b())));
+-        NonNullList<ItemStack> nonnulllist = NonNullList.func_191196_a();
++        SearchTree<ItemStack> searchtree = new SearchTree<ItemStack>((p_193988_0_) ->
++        {
++            return (List)p_193988_0_.func_82840_a((EntityPlayer)null, ITooltipFlag.TooltipFlags.NORMAL).stream().map(TextFormatting::func_110646_a).map(String::trim).filter((p_193984_0_) -> {
++                return !p_193984_0_.isEmpty();
++            }).collect(Collectors.toList());
++        }, (p_193985_0_) ->
++        {
++            return Collections.singleton(Item.field_150901_e.func_177774_c(p_193985_0_.func_77973_b()));
++        });
++        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191196_a();
+ 
+         for (Item item : Item.field_150901_e)
+         {
+@@ -564,7 +588,19 @@
+         }
+ 
+         nonnulllist.forEach(searchtree::func_194043_a);
+-        SearchTree<RecipeList> searchtree1 = new SearchTree<>((p_193990_0_) -> p_193990_0_.func_192711_b().stream().flatMap((p_193993_0_) -> p_193993_0_.func_77571_b().func_82840_a((EntityPlayer)null, ITooltipFlag.TooltipFlags.NORMAL).stream()).map(TextFormatting::func_110646_a).map(String::trim).filter((p_193994_0_) -> !p_193994_0_.isEmpty()).collect(Collectors.toList()), (p_193991_0_) -> p_193991_0_.func_192711_b().stream().map((p_193992_0_) -> Item.field_150901_e.func_177774_c(p_193992_0_.func_77571_b().func_77973_b())).collect(Collectors.toList()));
++        SearchTree<RecipeList> searchtree1 = new SearchTree<RecipeList>((p_193990_0_) ->
++        {
++            return (List)p_193990_0_.func_192711_b().stream().flatMap((p_193993_0_) -> {
++                return p_193993_0_.func_77571_b().func_82840_a((EntityPlayer)null, ITooltipFlag.TooltipFlags.NORMAL).stream();
++            }).map(TextFormatting::func_110646_a).map(String::trim).filter((p_193994_0_) -> {
++                return !p_193994_0_.isEmpty();
++            }).collect(Collectors.toList());
++        }, (p_193991_0_) ->
++        {
++            return (List)p_193991_0_.func_192711_b().stream().map((p_193992_0_) -> {
++                return Item.field_150901_e.func_177774_c(p_193992_0_.func_77571_b().func_77973_b());
++            }).collect(Collectors.toList());
++        });
+         RecipeBookClient.field_194087_f.forEach(searchtree1::func_194043_a);
+         this.field_193995_ae.func_194009_a(SearchTreeManager.field_194011_a, searchtree);
+         this.field_193995_ae.func_194009_a(SearchTreeManager.field_194012_b, searchtree1);
+@@ -579,34 +615,13 @@
          this.field_110452_an.func_110504_a(new LanguageMetadataSectionSerializer(), LanguageMetadataSection.class);
      }
  
@@ -116,9 +283,8 @@
 -            {
 -                Thread.sleep(1000L);
 -            }
--            catch (InterruptedException var3)
+-            catch (InterruptedException interruptedexception)
 -            {
--                ;
 -            }
 -
 -            if (this.field_71431_Q)
@@ -135,7 +301,18 @@
      }
  
      private void func_175605_an() throws LWJGLException
-@@ -748,21 +737,23 @@
+@@ -699,8 +714,9 @@
+                     {
+                         Thread.sleep(2147483647L);
+                     }
+-                    catch (InterruptedException interruptedexception)
++                    catch (InterruptedException var2)
+                     {
++                        ;
+                     }
+                 }
+             }
+@@ -721,21 +737,23 @@
          File file2 = new File(file1, "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-client.txt");
          Bootstrap.func_179870_a(p_71377_1_.func_71502_e());
  
@@ -162,7 +339,7 @@
      }
  
      public boolean func_152349_b()
-@@ -770,6 +761,7 @@
+@@ -743,6 +761,7 @@
          return this.field_135017_as.func_135042_a() || this.field_71474_y.field_151455_aw;
      }
  
@@ -170,7 +347,58 @@
      public void func_110436_a()
      {
          List<IResourcePack> list = Lists.newArrayList(this.field_110449_ao);
-@@ -955,11 +947,6 @@
+@@ -797,18 +816,20 @@
+             bytebuffer.putInt(i << 8 | i >> 24 & 255);
+         }
+ 
+-        ((Buffer)bytebuffer).flip();
++        bytebuffer.flip();
+         return bytebuffer;
+     }
+ 
+     private void func_110441_Q() throws LWJGLException
+     {
+-        Set<DisplayMode> set = Sets.newHashSet();
++        Set<DisplayMode> set = Sets.<DisplayMode>newHashSet();
+         Collections.addAll(set, Display.getAvailableDisplayModes());
+         DisplayMode displaymode = Display.getDesktopDisplayMode();
+ 
+         if (!set.contains(displaymode) && Util.func_110647_a() == Util.EnumOS.OSX)
+         {
++            label52:
++
+             for (DisplayMode displaymode1 : field_110445_I)
+             {
+                 boolean flag = true;
+@@ -824,14 +845,25 @@
+ 
+                 if (!flag)
+                 {
+-                    for (DisplayMode displaymode3 : set)
++                    Iterator iterator = set.iterator();
++                    DisplayMode displaymode3;
++
++                    while (true)
+                     {
++                        if (!iterator.hasNext())
++                        {
++                            continue label52;
++                        }
++
++                        displaymode3 = (DisplayMode)iterator.next();
++
+                         if (displaymode3.getBitsPerPixel() == 32 && displaymode3.getWidth() == displaymode1.getWidth() / 2 && displaymode3.getHeight() == displaymode1.getHeight() / 2)
+                         {
+-                            displaymode = displaymode3;
+                             break;
+                         }
+                     }
++
++                    displaymode = displaymode3;
+                 }
+             }
+         }
+@@ -915,11 +947,6 @@
  
      public void func_147108_a(@Nullable GuiScreen p_147108_1_)
      {
@@ -182,7 +410,7 @@
          if (p_147108_1_ == null && this.field_71441_e == null)
          {
              p_147108_1_ = new GuiMainMenu();
-@@ -969,6 +956,17 @@
+@@ -929,6 +956,17 @@
              p_147108_1_ = new GuiGameOver((ITextComponent)null);
          }
  
@@ -200,7 +428,40 @@
          if (p_147108_1_ instanceof GuiMainMenu || p_147108_1_ instanceof GuiMultiplayer)
          {
              this.field_71474_y.field_74330_P = false;
-@@ -1082,7 +1080,7 @@
+@@ -944,10 +982,12 @@
+ 
+             while (Mouse.next())
+             {
++                ;
+             }
+ 
+             while (Keyboard.next())
+             {
++                ;
+             }
+ 
+             ScaledResolution scaledresolution = new ScaledResolution(this);
+@@ -972,7 +1012,7 @@
+             String s = GLU.gluErrorString(i);
+             field_147123_G.error("########## GL ERROR ##########");
+             field_147123_G.error("@ {}", (Object)p_71361_1_);
+-            field_147123_G.error("{}: {}", i, s);
++            field_147123_G.error("{}: {}", Integer.valueOf(i), s);
+         }
+     }
+ 
+@@ -986,8 +1026,9 @@
+             {
+                 this.func_71403_a((WorldClient)null);
+             }
+-            catch (Throwable throwable)
++            catch (Throwable var5)
+             {
++                ;
+             }
+ 
+             this.field_147127_av.func_147685_d();
+@@ -1039,7 +1080,7 @@
          long i1 = System.nanoTime() - l;
          this.func_71361_d("Pre render");
          this.field_71424_I.func_76318_c("sound");
@@ -209,7 +470,7 @@
          this.field_71424_I.func_76319_b();
          this.field_71424_I.func_76320_a("render");
          GlStateManager.func_179094_E();
-@@ -1094,11 +1092,13 @@
+@@ -1051,11 +1092,13 @@
  
          if (!this.field_71454_w)
          {
@@ -223,7 +484,47 @@
          }
  
          this.field_71424_I.func_76319_b();
-@@ -1455,9 +1455,9 @@
+@@ -1185,8 +1228,9 @@
+             field_71444_a = new byte[0];
+             this.field_71438_f.func_72728_f();
+         }
+-        catch (Throwable throwable1)
++        catch (Throwable var3)
+         {
++            ;
+         }
+ 
+         try
+@@ -1194,8 +1238,9 @@
+             System.gc();
+             this.func_71403_a((WorldClient)null);
+         }
+-        catch (Throwable throwable)
++        catch (Throwable var2)
+         {
++            ;
+         }
+ 
+         System.gc();
+@@ -1282,7 +1327,7 @@
+ 
+                 for (int j2 = i1; j2 >= 0; --j2)
+                 {
+-                    float f = (float)((d0 + profiler$result1.field_76332_a * (double)j2 / (double)i1) * (double)((float)Math.PI * 2F) / 100.0D);
++                    float f = (float)((d0 + profiler$result1.field_76332_a * (double)j2 / (double)i1) * (Math.PI * 2D) / 100.0D);
+                     float f1 = MathHelper.func_76126_a(f) * 160.0F;
+                     float f2 = MathHelper.func_76134_b(f) * 160.0F * 0.5F;
+                     bufferbuilder.func_181662_b((double)((float)j + f1), (double)((float)k - f2), 0.0D).func_181669_b(k1, l1, i2, 255).func_181675_d();
+@@ -1293,7 +1338,7 @@
+ 
+                 for (int i3 = i1; i3 >= 0; --i3)
+                 {
+-                    float f3 = (float)((d0 + profiler$result1.field_76332_a * (double)i3 / (double)i1) * (double)((float)Math.PI * 2F) / 100.0D);
++                    float f3 = (float)((d0 + profiler$result1.field_76332_a * (double)i3 / (double)i1) * (Math.PI * 2D) / 100.0D);
+                     float f4 = MathHelper.func_76126_a(f3) * 160.0F;
+                     float f5 = MathHelper.func_76134_b(f3) * 160.0F * 0.5F;
+                     bufferbuilder.func_181662_b((double)((float)j + f4), (double)((float)k - f5), 0.0D).func_181669_b(k1 >> 1, l1 >> 1, i2 >> 1, 255).func_181675_d();
+@@ -1410,9 +1455,9 @@
              {
                  BlockPos blockpos = this.field_71476_x.func_178782_a();
  
@@ -235,7 +536,7 @@
                      this.field_71439_g.func_184609_a(EnumHand.MAIN_HAND);
                  }
              }
-@@ -1491,7 +1491,7 @@
+@@ -1446,7 +1491,7 @@
                      case BLOCK:
                          BlockPos blockpos = this.field_71476_x.func_178782_a();
  
@@ -244,7 +545,7 @@
                          {
                              this.field_71442_b.func_180511_b(blockpos, this.field_71476_x.field_178784_b);
                              break;
-@@ -1505,6 +1505,7 @@
+@@ -1460,6 +1505,7 @@
                          }
  
                          this.field_71439_g.func_184821_cY();
@@ -252,7 +553,7 @@
                  }
  
                  this.field_71439_g.func_184609_a(EnumHand.MAIN_HAND);
-@@ -1570,6 +1571,7 @@
+@@ -1525,6 +1571,7 @@
                          }
                      }
  
@@ -260,7 +561,7 @@
                      if (!itemstack.func_190926_b() && this.field_71442_b.func_187101_a(this.field_71439_g, this.field_71441_e, enumhand) == EnumActionResult.SUCCESS)
                      {
                          this.field_71460_t.field_78516_c.func_187460_a(enumhand);
-@@ -1630,6 +1632,11 @@
+@@ -1585,6 +1632,11 @@
              }
  
              Display.setFullscreen(this.field_71431_Q);
@@ -272,7 +573,7 @@
              Display.setVSyncEnabled(this.field_71474_y.field_74352_v);
              this.func_175601_h();
          }
-@@ -1676,6 +1683,8 @@
+@@ -1631,6 +1683,8 @@
              --this.field_71467_ac;
          }
  
@@ -281,7 +582,7 @@
          this.field_71424_I.func_76320_a("gui");
  
          if (!this.field_71445_n)
-@@ -1877,6 +1886,7 @@
+@@ -1832,6 +1886,7 @@
          }
  
          this.field_71424_I.func_76319_b();
@@ -289,7 +590,7 @@
          this.field_71423_H = func_71386_F();
      }
  
-@@ -1982,6 +1992,7 @@
+@@ -1937,6 +1992,7 @@
                      }
                  }
              }
@@ -297,7 +598,72 @@
          }
  
          this.func_184117_aA();
-@@ -2239,6 +2250,8 @@
+@@ -2013,16 +2069,16 @@
+         {
+             this.func_190521_a("debug.help.message");
+             GuiNewChat guinewchat = this.field_71456_v.func_146158_b();
+-            guinewchat.func_146227_a(new TextComponentTranslation("debug.reload_chunks.help"));
+-            guinewchat.func_146227_a(new TextComponentTranslation("debug.show_hitboxes.help"));
+-            guinewchat.func_146227_a(new TextComponentTranslation("debug.clear_chat.help"));
+-            guinewchat.func_146227_a(new TextComponentTranslation("debug.cycle_renderdistance.help"));
+-            guinewchat.func_146227_a(new TextComponentTranslation("debug.chunk_boundaries.help"));
+-            guinewchat.func_146227_a(new TextComponentTranslation("debug.advanced_tooltips.help"));
+-            guinewchat.func_146227_a(new TextComponentTranslation("debug.creative_spectator.help"));
+-            guinewchat.func_146227_a(new TextComponentTranslation("debug.pause_focus.help"));
+-            guinewchat.func_146227_a(new TextComponentTranslation("debug.help.help"));
+-            guinewchat.func_146227_a(new TextComponentTranslation("debug.reload_resourcepacks.help"));
++            guinewchat.func_146227_a(new TextComponentTranslation("debug.reload_chunks.help", new Object[0]));
++            guinewchat.func_146227_a(new TextComponentTranslation("debug.show_hitboxes.help", new Object[0]));
++            guinewchat.func_146227_a(new TextComponentTranslation("debug.clear_chat.help", new Object[0]));
++            guinewchat.func_146227_a(new TextComponentTranslation("debug.cycle_renderdistance.help", new Object[0]));
++            guinewchat.func_146227_a(new TextComponentTranslation("debug.chunk_boundaries.help", new Object[0]));
++            guinewchat.func_146227_a(new TextComponentTranslation("debug.advanced_tooltips.help", new Object[0]));
++            guinewchat.func_146227_a(new TextComponentTranslation("debug.creative_spectator.help", new Object[0]));
++            guinewchat.func_146227_a(new TextComponentTranslation("debug.pause_focus.help", new Object[0]));
++            guinewchat.func_146227_a(new TextComponentTranslation("debug.help.help", new Object[0]));
++            guinewchat.func_146227_a(new TextComponentTranslation("debug.reload_resourcepacks.help", new Object[0]));
+             return true;
+         }
+         else if (p_184122_1_ == 20)
+@@ -2141,16 +2197,27 @@
+                 this.field_71442_b.func_78766_c(this.field_71439_g);
+             }
+ 
+-            while (this.field_71474_y.field_74312_F.func_151468_f())
+-            {
+-            }
+-
+-            while (this.field_71474_y.field_74313_G.func_151468_f())
+-            {
+-            }
+-
+-            while (this.field_71474_y.field_74322_I.func_151468_f())
+-            {
++            label109:
++
++            while (true)
++            {
++                if (!this.field_71474_y.field_74312_F.func_151468_f())
++                {
++                    while (this.field_71474_y.field_74313_G.func_151468_f())
++                    {
++                        ;
++                    }
++
++                    while (true)
++                    {
++                        if (this.field_71474_y.field_74322_I.func_151468_f())
++                        {
++                            continue;
++                        }
++
++                        break label109;
++                    }
++                }
+             }
+         }
+         else
+@@ -2183,6 +2250,8 @@
      {
          while (Mouse.next())
          {
@@ -306,7 +672,7 @@
              int i = Mouse.getEventButton();
              KeyBinding.func_74510_a(i - 100, Mouse.getEventButtonState());
  
-@@ -2294,6 +2307,7 @@
+@@ -2238,16 +2307,18 @@
                      this.field_71462_r.func_146274_d();
                  }
              }
@@ -314,7 +680,11 @@
          }
      }
  
-@@ -2304,6 +2318,7 @@
+     private void func_190521_a(String p_190521_1_, Object... p_190521_2_)
+     {
+-        this.field_71456_v.func_146158_b().func_146227_a((new TextComponentString("")).func_150257_a((new TextComponentTranslation("debug.prefix")).func_150255_a((new Style()).func_150238_a(TextFormatting.YELLOW).func_150227_a(true))).func_150258_a(" ").func_150257_a(new TextComponentTranslation(p_190521_1_, p_190521_2_)));
++        this.field_71456_v.func_146158_b().func_146227_a((new TextComponentString("")).func_150257_a((new TextComponentTranslation("debug.prefix", new Object[0])).func_150255_a((new Style()).func_150238_a(TextFormatting.YELLOW).func_150227_a(Boolean.valueOf(true)))).func_150258_a(" ").func_150257_a(new TextComponentTranslation(p_190521_1_, p_190521_2_)));
+     }
  
      public void func_71371_a(String p_71371_1_, String p_71371_2_, @Nullable WorldSettings p_71371_3_)
      {
@@ -322,7 +692,7 @@
          this.func_71403_a((WorldClient)null);
          System.gc();
          ISaveHandler isavehandler = this.field_71469_aa.func_75804_a(p_71371_1_, false);
-@@ -2346,6 +2361,12 @@
+@@ -2290,6 +2361,12 @@
  
          while (!this.field_71437_Z.func_71200_ad())
          {
@@ -335,7 +705,18 @@
              String s = this.field_71437_Z.func_71195_b_();
  
              if (s != null)
-@@ -2371,8 +2392,14 @@
+@@ -2305,8 +2382,9 @@
+             {
+                 Thread.sleep(200L);
+             }
+-            catch (InterruptedException interruptedexception)
++            catch (InterruptedException var10)
+             {
++                ;
+             }
+         }
+ 
+@@ -2314,8 +2392,14 @@
          SocketAddress socketaddress = this.field_71437_Z.func_147137_ag().func_151270_a();
          NetworkManager networkmanager = NetworkManager.func_150722_a(socketaddress);
          networkmanager.func_150719_a(new NetHandlerLoginClient(networkmanager, this, (GuiScreen)null));
@@ -352,7 +733,7 @@
          this.field_71453_ak = networkmanager;
      }
  
-@@ -2383,6 +2410,8 @@
+@@ -2326,6 +2410,8 @@
  
      public void func_71353_a(@Nullable WorldClient p_71353_1_, String p_71353_2_)
      {
@@ -361,7 +742,7 @@
          if (p_71353_1_ == null)
          {
              NetHandlerPlayClient nethandlerplayclient = this.func_147114_u();
-@@ -2395,6 +2424,18 @@
+@@ -2338,6 +2424,18 @@
              if (this.field_71437_Z != null && this.field_71437_Z.func_175578_N())
              {
                  this.field_71437_Z.func_71263_m();
@@ -380,7 +761,7 @@
              }
  
              this.field_71437_Z = null;
-@@ -2418,6 +2459,7 @@
+@@ -2361,6 +2459,7 @@
              this.field_71456_v.func_181029_i();
              this.func_71351_a((ServerData)null);
              this.field_71455_al = false;
@@ -388,7 +769,7 @@
          }
  
          this.field_147127_av.func_147690_c();
-@@ -2434,6 +2476,7 @@
+@@ -2377,6 +2476,7 @@
          }
  
          TileEntityRendererDispatcher.field_147556_a.func_147543_a(p_71353_1_);
@@ -396,7 +777,7 @@
  
          if (p_71353_1_ != null)
          {
-@@ -2488,6 +2531,7 @@
+@@ -2431,6 +2531,7 @@
          EntityPlayerSP entityplayersp = this.field_71439_g;
          this.field_71439_g = this.field_71442_b.func_192830_a(this.field_71441_e, this.field_71439_g == null ? new StatisticsManager() : this.field_71439_g.func_146107_m(), this.field_71439_g == null ? new RecipeBook() : this.field_71439_g.func_192035_E());
          this.field_71439_g.func_184212_Q().func_187218_a(entityplayersp.func_184212_Q().func_187231_c());
@@ -404,7 +785,7 @@
          this.field_71439_g.field_71093_bK = p_71354_1_;
          this.field_175622_Z = this.field_71439_g;
          this.field_71439_g.func_70065_x();
-@@ -2535,159 +2579,8 @@
+@@ -2478,159 +2579,8 @@
      {
          if (this.field_71476_x != null && this.field_71476_x.field_72313_a != RayTraceResult.Type.MISS)
          {
@@ -467,30 +848,30 @@
 -                else if (this.field_71476_x.field_72308_g instanceof EntityMinecart)
 -                {
 -                    EntityMinecart entityminecart = (EntityMinecart)this.field_71476_x.field_72308_g;
--                    Item item1;
+-                    Item item;
 -
 -                    switch (entityminecart.func_184264_v())
 -                    {
 -                        case FURNACE:
--                            item1 = Items.field_151109_aJ;
+-                            item = Items.field_151109_aJ;
 -                            break;
 -                        case CHEST:
--                            item1 = Items.field_151108_aI;
+-                            item = Items.field_151108_aI;
 -                            break;
 -                        case TNT:
--                            item1 = Items.field_151142_bV;
+-                            item = Items.field_151142_bV;
 -                            break;
 -                        case HOPPER:
--                            item1 = Items.field_151140_bW;
+-                            item = Items.field_151140_bW;
 -                            break;
 -                        case COMMAND_BLOCK:
--                            item1 = Items.field_151095_cc;
+-                            item = Items.field_151095_cc;
 -                            break;
 -                        default:
--                            item1 = Items.field_151143_au;
+-                            item = Items.field_151143_au;
 -                    }
 -
--                    itemstack = new ItemStack(item1);
+-                    itemstack = new ItemStack(item);
 -                }
 -                else if (this.field_71476_x.field_72308_g instanceof EntityBoat)
 -                {
@@ -524,7 +905,7 @@
 -
 -                if (this.field_71476_x.field_72313_a == RayTraceResult.Type.BLOCK)
 -                {
--                    s = ((ResourceLocation)Block.field_149771_c.func_177774_c(this.field_71441_e.func_180495_p(this.field_71476_x.func_178782_a()).func_177230_c())).toString();
+-                    s = Block.field_149771_c.func_177774_c(this.field_71441_e.func_180495_p(this.field_71476_x.func_178782_a()).func_177230_c()).toString();
 -                }
 -                else if (this.field_71476_x.field_72313_a == RayTraceResult.Type.ENTITY)
 -                {
@@ -566,7 +947,7 @@
          }
      }
  
-@@ -2834,6 +2727,7 @@
+@@ -2777,6 +2727,7 @@
          return field_71432_P;
      }
  
@@ -574,7 +955,247 @@
      public ListenableFuture<Object> func_175603_A()
      {
          return this.func_152344_a(new Runnable()
-@@ -3009,18 +2903,8 @@
+@@ -2790,18 +2741,18 @@
+ 
+     public void func_70000_a(Snooper p_70000_1_)
+     {
+-        p_70000_1_.func_152768_a("fps", field_71470_ab);
+-        p_70000_1_.func_152768_a("vsync_enabled", this.field_71474_y.field_74352_v);
+-        p_70000_1_.func_152768_a("display_frequency", Display.getDisplayMode().getFrequency());
++        p_70000_1_.func_152768_a("fps", Integer.valueOf(field_71470_ab));
++        p_70000_1_.func_152768_a("vsync_enabled", Boolean.valueOf(this.field_71474_y.field_74352_v));
++        p_70000_1_.func_152768_a("display_frequency", Integer.valueOf(Display.getDisplayMode().getFrequency()));
+         p_70000_1_.func_152768_a("display_type", this.field_71431_Q ? "fullscreen" : "windowed");
+-        p_70000_1_.func_152768_a("run_time", (MinecraftServer.func_130071_aq() - p_70000_1_.func_130105_g()) / 60L * 1000L);
++        p_70000_1_.func_152768_a("run_time", Long.valueOf((MinecraftServer.func_130071_aq() - p_70000_1_.func_130105_g()) / 60L * 1000L));
+         p_70000_1_.func_152768_a("current_action", this.func_181538_aA());
+         p_70000_1_.func_152768_a("language", this.field_71474_y.field_74363_ab == null ? "en_us" : this.field_71474_y.field_74363_ab);
+         String s = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN ? "little" : "big";
+         p_70000_1_.func_152768_a("endianness", s);
+-        p_70000_1_.func_152768_a("subtitles", this.field_71474_y.field_186717_N);
++        p_70000_1_.func_152768_a("subtitles", Boolean.valueOf(this.field_71474_y.field_186717_N));
+         p_70000_1_.func_152768_a("touch", this.field_71474_y.field_85185_A ? "touch" : "mouse");
+-        p_70000_1_.func_152768_a("resource_packs", this.field_110448_aq.func_110613_c().size());
++        p_70000_1_.func_152768_a("resource_packs", Integer.valueOf(this.field_110448_aq.func_110613_c().size()));
+         int i = 0;
+ 
+         for (ResourcePackRepository.Entry resourcepackrepository$entry : this.field_110448_aq.func_110613_c())
+@@ -2838,110 +2789,110 @@
+         p_70001_1_.func_152767_b("client_brand", ClientBrandRetriever.getClientModName());
+         p_70001_1_.func_152767_b("launched_version", this.field_110447_Z);
+         ContextCapabilities contextcapabilities = GLContext.getCapabilities();
+-        p_70001_1_.func_152767_b("gl_caps[ARB_arrays_of_arrays]", contextcapabilities.GL_ARB_arrays_of_arrays);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_base_instance]", contextcapabilities.GL_ARB_base_instance);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_blend_func_extended]", contextcapabilities.GL_ARB_blend_func_extended);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_clear_buffer_object]", contextcapabilities.GL_ARB_clear_buffer_object);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_color_buffer_float]", contextcapabilities.GL_ARB_color_buffer_float);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_compatibility]", contextcapabilities.GL_ARB_compatibility);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_compressed_texture_pixel_storage]", contextcapabilities.GL_ARB_compressed_texture_pixel_storage);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_compute_shader]", contextcapabilities.GL_ARB_compute_shader);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_copy_buffer]", contextcapabilities.GL_ARB_copy_buffer);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_copy_image]", contextcapabilities.GL_ARB_copy_image);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_depth_buffer_float]", contextcapabilities.GL_ARB_depth_buffer_float);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_compute_shader]", contextcapabilities.GL_ARB_compute_shader);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_copy_buffer]", contextcapabilities.GL_ARB_copy_buffer);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_copy_image]", contextcapabilities.GL_ARB_copy_image);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_depth_buffer_float]", contextcapabilities.GL_ARB_depth_buffer_float);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_depth_clamp]", contextcapabilities.GL_ARB_depth_clamp);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_depth_texture]", contextcapabilities.GL_ARB_depth_texture);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_draw_buffers]", contextcapabilities.GL_ARB_draw_buffers);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_draw_buffers_blend]", contextcapabilities.GL_ARB_draw_buffers_blend);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_draw_elements_base_vertex]", contextcapabilities.GL_ARB_draw_elements_base_vertex);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_draw_indirect]", contextcapabilities.GL_ARB_draw_indirect);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_draw_instanced]", contextcapabilities.GL_ARB_draw_instanced);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_explicit_attrib_location]", contextcapabilities.GL_ARB_explicit_attrib_location);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_explicit_uniform_location]", contextcapabilities.GL_ARB_explicit_uniform_location);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_fragment_layer_viewport]", contextcapabilities.GL_ARB_fragment_layer_viewport);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_fragment_program]", contextcapabilities.GL_ARB_fragment_program);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_fragment_shader]", contextcapabilities.GL_ARB_fragment_shader);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_fragment_program_shadow]", contextcapabilities.GL_ARB_fragment_program_shadow);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_framebuffer_object]", contextcapabilities.GL_ARB_framebuffer_object);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_framebuffer_sRGB]", contextcapabilities.GL_ARB_framebuffer_sRGB);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_geometry_shader4]", contextcapabilities.GL_ARB_geometry_shader4);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_gpu_shader5]", contextcapabilities.GL_ARB_gpu_shader5);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_half_float_pixel]", contextcapabilities.GL_ARB_half_float_pixel);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_half_float_vertex]", contextcapabilities.GL_ARB_half_float_vertex);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_instanced_arrays]", contextcapabilities.GL_ARB_instanced_arrays);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_map_buffer_alignment]", contextcapabilities.GL_ARB_map_buffer_alignment);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_map_buffer_range]", contextcapabilities.GL_ARB_map_buffer_range);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_multisample]", contextcapabilities.GL_ARB_multisample);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_multitexture]", contextcapabilities.GL_ARB_multitexture);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_occlusion_query2]", contextcapabilities.GL_ARB_occlusion_query2);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_pixel_buffer_object]", contextcapabilities.GL_ARB_pixel_buffer_object);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_seamless_cube_map]", contextcapabilities.GL_ARB_seamless_cube_map);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_shader_objects]", contextcapabilities.GL_ARB_shader_objects);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_shader_stencil_export]", contextcapabilities.GL_ARB_shader_stencil_export);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_shader_texture_lod]", contextcapabilities.GL_ARB_shader_texture_lod);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_shadow]", contextcapabilities.GL_ARB_shadow);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_shadow_ambient]", contextcapabilities.GL_ARB_shadow_ambient);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_stencil_texturing]", contextcapabilities.GL_ARB_stencil_texturing);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_sync]", contextcapabilities.GL_ARB_sync);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_tessellation_shader]", contextcapabilities.GL_ARB_tessellation_shader);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_texture_border_clamp]", contextcapabilities.GL_ARB_texture_border_clamp);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_texture_buffer_object]", contextcapabilities.GL_ARB_texture_buffer_object);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_texture_cube_map]", contextcapabilities.GL_ARB_texture_cube_map);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_texture_cube_map_array]", contextcapabilities.GL_ARB_texture_cube_map_array);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_texture_non_power_of_two]", contextcapabilities.GL_ARB_texture_non_power_of_two);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_uniform_buffer_object]", contextcapabilities.GL_ARB_uniform_buffer_object);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_vertex_blend]", contextcapabilities.GL_ARB_vertex_blend);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_vertex_buffer_object]", contextcapabilities.GL_ARB_vertex_buffer_object);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_vertex_program]", contextcapabilities.GL_ARB_vertex_program);
+-        p_70001_1_.func_152767_b("gl_caps[ARB_vertex_shader]", contextcapabilities.GL_ARB_vertex_shader);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_bindable_uniform]", contextcapabilities.GL_EXT_bindable_uniform);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_blend_equation_separate]", contextcapabilities.GL_EXT_blend_equation_separate);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_blend_func_separate]", contextcapabilities.GL_EXT_blend_func_separate);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_blend_minmax]", contextcapabilities.GL_EXT_blend_minmax);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_blend_subtract]", contextcapabilities.GL_EXT_blend_subtract);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_draw_instanced]", contextcapabilities.GL_EXT_draw_instanced);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_framebuffer_multisample]", contextcapabilities.GL_EXT_framebuffer_multisample);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_framebuffer_object]", contextcapabilities.GL_EXT_framebuffer_object);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_framebuffer_sRGB]", contextcapabilities.GL_EXT_framebuffer_sRGB);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_geometry_shader4]", contextcapabilities.GL_EXT_geometry_shader4);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_gpu_program_parameters]", contextcapabilities.GL_EXT_gpu_program_parameters);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_gpu_shader4]", contextcapabilities.GL_EXT_gpu_shader4);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_multi_draw_arrays]", contextcapabilities.GL_EXT_multi_draw_arrays);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_packed_depth_stencil]", contextcapabilities.GL_EXT_packed_depth_stencil);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_paletted_texture]", contextcapabilities.GL_EXT_paletted_texture);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_rescale_normal]", contextcapabilities.GL_EXT_rescale_normal);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_separate_shader_objects]", contextcapabilities.GL_EXT_separate_shader_objects);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_shader_image_load_store]", contextcapabilities.GL_EXT_shader_image_load_store);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_shadow_funcs]", contextcapabilities.GL_EXT_shadow_funcs);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_shared_texture_palette]", contextcapabilities.GL_EXT_shared_texture_palette);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_stencil_clear_tag]", contextcapabilities.GL_EXT_stencil_clear_tag);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_stencil_two_side]", contextcapabilities.GL_EXT_stencil_two_side);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_stencil_wrap]", contextcapabilities.GL_EXT_stencil_wrap);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_texture_3d]", contextcapabilities.GL_EXT_texture_3d);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_texture_array]", contextcapabilities.GL_EXT_texture_array);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_texture_buffer_object]", contextcapabilities.GL_EXT_texture_buffer_object);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_texture_integer]", contextcapabilities.GL_EXT_texture_integer);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_texture_lod_bias]", contextcapabilities.GL_EXT_texture_lod_bias);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_texture_sRGB]", contextcapabilities.GL_EXT_texture_sRGB);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_vertex_shader]", contextcapabilities.GL_EXT_vertex_shader);
+-        p_70001_1_.func_152767_b("gl_caps[EXT_vertex_weighting]", contextcapabilities.GL_EXT_vertex_weighting);
+-        p_70001_1_.func_152767_b("gl_caps[gl_max_vertex_uniforms]", GlStateManager.func_187397_v(35658));
+-        GlStateManager.func_187434_L();
+-        p_70001_1_.func_152767_b("gl_caps[gl_max_fragment_uniforms]", GlStateManager.func_187397_v(35657));
+-        GlStateManager.func_187434_L();
+-        p_70001_1_.func_152767_b("gl_caps[gl_max_vertex_attribs]", GlStateManager.func_187397_v(34921));
+-        GlStateManager.func_187434_L();
+-        p_70001_1_.func_152767_b("gl_caps[gl_max_vertex_texture_image_units]", GlStateManager.func_187397_v(35660));
+-        GlStateManager.func_187434_L();
+-        p_70001_1_.func_152767_b("gl_caps[gl_max_texture_image_units]", GlStateManager.func_187397_v(34930));
+-        GlStateManager.func_187434_L();
+-        p_70001_1_.func_152767_b("gl_caps[gl_max_array_texture_layers]", GlStateManager.func_187397_v(35071));
+-        GlStateManager.func_187434_L();
+-        p_70001_1_.func_152767_b("gl_max_texture_size", func_71369_N());
++        p_70001_1_.func_152767_b("gl_caps[ARB_arrays_of_arrays]", Boolean.valueOf(contextcapabilities.GL_ARB_arrays_of_arrays));
++        p_70001_1_.func_152767_b("gl_caps[ARB_base_instance]", Boolean.valueOf(contextcapabilities.GL_ARB_base_instance));
++        p_70001_1_.func_152767_b("gl_caps[ARB_blend_func_extended]", Boolean.valueOf(contextcapabilities.GL_ARB_blend_func_extended));
++        p_70001_1_.func_152767_b("gl_caps[ARB_clear_buffer_object]", Boolean.valueOf(contextcapabilities.GL_ARB_clear_buffer_object));
++        p_70001_1_.func_152767_b("gl_caps[ARB_color_buffer_float]", Boolean.valueOf(contextcapabilities.GL_ARB_color_buffer_float));
++        p_70001_1_.func_152767_b("gl_caps[ARB_compatibility]", Boolean.valueOf(contextcapabilities.GL_ARB_compatibility));
++        p_70001_1_.func_152767_b("gl_caps[ARB_compressed_texture_pixel_storage]", Boolean.valueOf(contextcapabilities.GL_ARB_compressed_texture_pixel_storage));
++        p_70001_1_.func_152767_b("gl_caps[ARB_compute_shader]", Boolean.valueOf(contextcapabilities.GL_ARB_compute_shader));
++        p_70001_1_.func_152767_b("gl_caps[ARB_copy_buffer]", Boolean.valueOf(contextcapabilities.GL_ARB_copy_buffer));
++        p_70001_1_.func_152767_b("gl_caps[ARB_copy_image]", Boolean.valueOf(contextcapabilities.GL_ARB_copy_image));
++        p_70001_1_.func_152767_b("gl_caps[ARB_depth_buffer_float]", Boolean.valueOf(contextcapabilities.GL_ARB_depth_buffer_float));
++        p_70001_1_.func_152767_b("gl_caps[ARB_compute_shader]", Boolean.valueOf(contextcapabilities.GL_ARB_compute_shader));
++        p_70001_1_.func_152767_b("gl_caps[ARB_copy_buffer]", Boolean.valueOf(contextcapabilities.GL_ARB_copy_buffer));
++        p_70001_1_.func_152767_b("gl_caps[ARB_copy_image]", Boolean.valueOf(contextcapabilities.GL_ARB_copy_image));
++        p_70001_1_.func_152767_b("gl_caps[ARB_depth_buffer_float]", Boolean.valueOf(contextcapabilities.GL_ARB_depth_buffer_float));
++        p_70001_1_.func_152767_b("gl_caps[ARB_depth_clamp]", Boolean.valueOf(contextcapabilities.GL_ARB_depth_clamp));
++        p_70001_1_.func_152767_b("gl_caps[ARB_depth_texture]", Boolean.valueOf(contextcapabilities.GL_ARB_depth_texture));
++        p_70001_1_.func_152767_b("gl_caps[ARB_draw_buffers]", Boolean.valueOf(contextcapabilities.GL_ARB_draw_buffers));
++        p_70001_1_.func_152767_b("gl_caps[ARB_draw_buffers_blend]", Boolean.valueOf(contextcapabilities.GL_ARB_draw_buffers_blend));
++        p_70001_1_.func_152767_b("gl_caps[ARB_draw_elements_base_vertex]", Boolean.valueOf(contextcapabilities.GL_ARB_draw_elements_base_vertex));
++        p_70001_1_.func_152767_b("gl_caps[ARB_draw_indirect]", Boolean.valueOf(contextcapabilities.GL_ARB_draw_indirect));
++        p_70001_1_.func_152767_b("gl_caps[ARB_draw_instanced]", Boolean.valueOf(contextcapabilities.GL_ARB_draw_instanced));
++        p_70001_1_.func_152767_b("gl_caps[ARB_explicit_attrib_location]", Boolean.valueOf(contextcapabilities.GL_ARB_explicit_attrib_location));
++        p_70001_1_.func_152767_b("gl_caps[ARB_explicit_uniform_location]", Boolean.valueOf(contextcapabilities.GL_ARB_explicit_uniform_location));
++        p_70001_1_.func_152767_b("gl_caps[ARB_fragment_layer_viewport]", Boolean.valueOf(contextcapabilities.GL_ARB_fragment_layer_viewport));
++        p_70001_1_.func_152767_b("gl_caps[ARB_fragment_program]", Boolean.valueOf(contextcapabilities.GL_ARB_fragment_program));
++        p_70001_1_.func_152767_b("gl_caps[ARB_fragment_shader]", Boolean.valueOf(contextcapabilities.GL_ARB_fragment_shader));
++        p_70001_1_.func_152767_b("gl_caps[ARB_fragment_program_shadow]", Boolean.valueOf(contextcapabilities.GL_ARB_fragment_program_shadow));
++        p_70001_1_.func_152767_b("gl_caps[ARB_framebuffer_object]", Boolean.valueOf(contextcapabilities.GL_ARB_framebuffer_object));
++        p_70001_1_.func_152767_b("gl_caps[ARB_framebuffer_sRGB]", Boolean.valueOf(contextcapabilities.GL_ARB_framebuffer_sRGB));
++        p_70001_1_.func_152767_b("gl_caps[ARB_geometry_shader4]", Boolean.valueOf(contextcapabilities.GL_ARB_geometry_shader4));
++        p_70001_1_.func_152767_b("gl_caps[ARB_gpu_shader5]", Boolean.valueOf(contextcapabilities.GL_ARB_gpu_shader5));
++        p_70001_1_.func_152767_b("gl_caps[ARB_half_float_pixel]", Boolean.valueOf(contextcapabilities.GL_ARB_half_float_pixel));
++        p_70001_1_.func_152767_b("gl_caps[ARB_half_float_vertex]", Boolean.valueOf(contextcapabilities.GL_ARB_half_float_vertex));
++        p_70001_1_.func_152767_b("gl_caps[ARB_instanced_arrays]", Boolean.valueOf(contextcapabilities.GL_ARB_instanced_arrays));
++        p_70001_1_.func_152767_b("gl_caps[ARB_map_buffer_alignment]", Boolean.valueOf(contextcapabilities.GL_ARB_map_buffer_alignment));
++        p_70001_1_.func_152767_b("gl_caps[ARB_map_buffer_range]", Boolean.valueOf(contextcapabilities.GL_ARB_map_buffer_range));
++        p_70001_1_.func_152767_b("gl_caps[ARB_multisample]", Boolean.valueOf(contextcapabilities.GL_ARB_multisample));
++        p_70001_1_.func_152767_b("gl_caps[ARB_multitexture]", Boolean.valueOf(contextcapabilities.GL_ARB_multitexture));
++        p_70001_1_.func_152767_b("gl_caps[ARB_occlusion_query2]", Boolean.valueOf(contextcapabilities.GL_ARB_occlusion_query2));
++        p_70001_1_.func_152767_b("gl_caps[ARB_pixel_buffer_object]", Boolean.valueOf(contextcapabilities.GL_ARB_pixel_buffer_object));
++        p_70001_1_.func_152767_b("gl_caps[ARB_seamless_cube_map]", Boolean.valueOf(contextcapabilities.GL_ARB_seamless_cube_map));
++        p_70001_1_.func_152767_b("gl_caps[ARB_shader_objects]", Boolean.valueOf(contextcapabilities.GL_ARB_shader_objects));
++        p_70001_1_.func_152767_b("gl_caps[ARB_shader_stencil_export]", Boolean.valueOf(contextcapabilities.GL_ARB_shader_stencil_export));
++        p_70001_1_.func_152767_b("gl_caps[ARB_shader_texture_lod]", Boolean.valueOf(contextcapabilities.GL_ARB_shader_texture_lod));
++        p_70001_1_.func_152767_b("gl_caps[ARB_shadow]", Boolean.valueOf(contextcapabilities.GL_ARB_shadow));
++        p_70001_1_.func_152767_b("gl_caps[ARB_shadow_ambient]", Boolean.valueOf(contextcapabilities.GL_ARB_shadow_ambient));
++        p_70001_1_.func_152767_b("gl_caps[ARB_stencil_texturing]", Boolean.valueOf(contextcapabilities.GL_ARB_stencil_texturing));
++        p_70001_1_.func_152767_b("gl_caps[ARB_sync]", Boolean.valueOf(contextcapabilities.GL_ARB_sync));
++        p_70001_1_.func_152767_b("gl_caps[ARB_tessellation_shader]", Boolean.valueOf(contextcapabilities.GL_ARB_tessellation_shader));
++        p_70001_1_.func_152767_b("gl_caps[ARB_texture_border_clamp]", Boolean.valueOf(contextcapabilities.GL_ARB_texture_border_clamp));
++        p_70001_1_.func_152767_b("gl_caps[ARB_texture_buffer_object]", Boolean.valueOf(contextcapabilities.GL_ARB_texture_buffer_object));
++        p_70001_1_.func_152767_b("gl_caps[ARB_texture_cube_map]", Boolean.valueOf(contextcapabilities.GL_ARB_texture_cube_map));
++        p_70001_1_.func_152767_b("gl_caps[ARB_texture_cube_map_array]", Boolean.valueOf(contextcapabilities.GL_ARB_texture_cube_map_array));
++        p_70001_1_.func_152767_b("gl_caps[ARB_texture_non_power_of_two]", Boolean.valueOf(contextcapabilities.GL_ARB_texture_non_power_of_two));
++        p_70001_1_.func_152767_b("gl_caps[ARB_uniform_buffer_object]", Boolean.valueOf(contextcapabilities.GL_ARB_uniform_buffer_object));
++        p_70001_1_.func_152767_b("gl_caps[ARB_vertex_blend]", Boolean.valueOf(contextcapabilities.GL_ARB_vertex_blend));
++        p_70001_1_.func_152767_b("gl_caps[ARB_vertex_buffer_object]", Boolean.valueOf(contextcapabilities.GL_ARB_vertex_buffer_object));
++        p_70001_1_.func_152767_b("gl_caps[ARB_vertex_program]", Boolean.valueOf(contextcapabilities.GL_ARB_vertex_program));
++        p_70001_1_.func_152767_b("gl_caps[ARB_vertex_shader]", Boolean.valueOf(contextcapabilities.GL_ARB_vertex_shader));
++        p_70001_1_.func_152767_b("gl_caps[EXT_bindable_uniform]", Boolean.valueOf(contextcapabilities.GL_EXT_bindable_uniform));
++        p_70001_1_.func_152767_b("gl_caps[EXT_blend_equation_separate]", Boolean.valueOf(contextcapabilities.GL_EXT_blend_equation_separate));
++        p_70001_1_.func_152767_b("gl_caps[EXT_blend_func_separate]", Boolean.valueOf(contextcapabilities.GL_EXT_blend_func_separate));
++        p_70001_1_.func_152767_b("gl_caps[EXT_blend_minmax]", Boolean.valueOf(contextcapabilities.GL_EXT_blend_minmax));
++        p_70001_1_.func_152767_b("gl_caps[EXT_blend_subtract]", Boolean.valueOf(contextcapabilities.GL_EXT_blend_subtract));
++        p_70001_1_.func_152767_b("gl_caps[EXT_draw_instanced]", Boolean.valueOf(contextcapabilities.GL_EXT_draw_instanced));
++        p_70001_1_.func_152767_b("gl_caps[EXT_framebuffer_multisample]", Boolean.valueOf(contextcapabilities.GL_EXT_framebuffer_multisample));
++        p_70001_1_.func_152767_b("gl_caps[EXT_framebuffer_object]", Boolean.valueOf(contextcapabilities.GL_EXT_framebuffer_object));
++        p_70001_1_.func_152767_b("gl_caps[EXT_framebuffer_sRGB]", Boolean.valueOf(contextcapabilities.GL_EXT_framebuffer_sRGB));
++        p_70001_1_.func_152767_b("gl_caps[EXT_geometry_shader4]", Boolean.valueOf(contextcapabilities.GL_EXT_geometry_shader4));
++        p_70001_1_.func_152767_b("gl_caps[EXT_gpu_program_parameters]", Boolean.valueOf(contextcapabilities.GL_EXT_gpu_program_parameters));
++        p_70001_1_.func_152767_b("gl_caps[EXT_gpu_shader4]", Boolean.valueOf(contextcapabilities.GL_EXT_gpu_shader4));
++        p_70001_1_.func_152767_b("gl_caps[EXT_multi_draw_arrays]", Boolean.valueOf(contextcapabilities.GL_EXT_multi_draw_arrays));
++        p_70001_1_.func_152767_b("gl_caps[EXT_packed_depth_stencil]", Boolean.valueOf(contextcapabilities.GL_EXT_packed_depth_stencil));
++        p_70001_1_.func_152767_b("gl_caps[EXT_paletted_texture]", Boolean.valueOf(contextcapabilities.GL_EXT_paletted_texture));
++        p_70001_1_.func_152767_b("gl_caps[EXT_rescale_normal]", Boolean.valueOf(contextcapabilities.GL_EXT_rescale_normal));
++        p_70001_1_.func_152767_b("gl_caps[EXT_separate_shader_objects]", Boolean.valueOf(contextcapabilities.GL_EXT_separate_shader_objects));
++        p_70001_1_.func_152767_b("gl_caps[EXT_shader_image_load_store]", Boolean.valueOf(contextcapabilities.GL_EXT_shader_image_load_store));
++        p_70001_1_.func_152767_b("gl_caps[EXT_shadow_funcs]", Boolean.valueOf(contextcapabilities.GL_EXT_shadow_funcs));
++        p_70001_1_.func_152767_b("gl_caps[EXT_shared_texture_palette]", Boolean.valueOf(contextcapabilities.GL_EXT_shared_texture_palette));
++        p_70001_1_.func_152767_b("gl_caps[EXT_stencil_clear_tag]", Boolean.valueOf(contextcapabilities.GL_EXT_stencil_clear_tag));
++        p_70001_1_.func_152767_b("gl_caps[EXT_stencil_two_side]", Boolean.valueOf(contextcapabilities.GL_EXT_stencil_two_side));
++        p_70001_1_.func_152767_b("gl_caps[EXT_stencil_wrap]", Boolean.valueOf(contextcapabilities.GL_EXT_stencil_wrap));
++        p_70001_1_.func_152767_b("gl_caps[EXT_texture_3d]", Boolean.valueOf(contextcapabilities.GL_EXT_texture_3d));
++        p_70001_1_.func_152767_b("gl_caps[EXT_texture_array]", Boolean.valueOf(contextcapabilities.GL_EXT_texture_array));
++        p_70001_1_.func_152767_b("gl_caps[EXT_texture_buffer_object]", Boolean.valueOf(contextcapabilities.GL_EXT_texture_buffer_object));
++        p_70001_1_.func_152767_b("gl_caps[EXT_texture_integer]", Boolean.valueOf(contextcapabilities.GL_EXT_texture_integer));
++        p_70001_1_.func_152767_b("gl_caps[EXT_texture_lod_bias]", Boolean.valueOf(contextcapabilities.GL_EXT_texture_lod_bias));
++        p_70001_1_.func_152767_b("gl_caps[EXT_texture_sRGB]", Boolean.valueOf(contextcapabilities.GL_EXT_texture_sRGB));
++        p_70001_1_.func_152767_b("gl_caps[EXT_vertex_shader]", Boolean.valueOf(contextcapabilities.GL_EXT_vertex_shader));
++        p_70001_1_.func_152767_b("gl_caps[EXT_vertex_weighting]", Boolean.valueOf(contextcapabilities.GL_EXT_vertex_weighting));
++        p_70001_1_.func_152767_b("gl_caps[gl_max_vertex_uniforms]", Integer.valueOf(GlStateManager.func_187397_v(35658)));
++        GlStateManager.func_187434_L();
++        p_70001_1_.func_152767_b("gl_caps[gl_max_fragment_uniforms]", Integer.valueOf(GlStateManager.func_187397_v(35657)));
++        GlStateManager.func_187434_L();
++        p_70001_1_.func_152767_b("gl_caps[gl_max_vertex_attribs]", Integer.valueOf(GlStateManager.func_187397_v(34921)));
++        GlStateManager.func_187434_L();
++        p_70001_1_.func_152767_b("gl_caps[gl_max_vertex_texture_image_units]", Integer.valueOf(GlStateManager.func_187397_v(35660)));
++        GlStateManager.func_187434_L();
++        p_70001_1_.func_152767_b("gl_caps[gl_max_texture_image_units]", Integer.valueOf(GlStateManager.func_187397_v(34930)));
++        GlStateManager.func_187434_L();
++        p_70001_1_.func_152767_b("gl_caps[gl_max_array_texture_layers]", Integer.valueOf(GlStateManager.func_187397_v(35071)));
++        GlStateManager.func_187434_L();
++        p_70001_1_.func_152767_b("gl_max_texture_size", Integer.valueOf(func_71369_N()));
+         GameProfile gameprofile = this.field_71449_j.func_148256_e();
+ 
+         if (gameprofile != null && gameprofile.getId() != null)
+@@ -2952,18 +2903,8 @@
  
      public static int func_71369_N()
      {
@@ -595,7 +1216,7 @@
      }
  
      public boolean func_70002_Q()
-@@ -3152,6 +3036,9 @@
+@@ -3095,6 +3036,9 @@
          }
          else if (this.field_71439_g != null)
          {
@@ -605,7 +1226,7 @@
              if (this.field_71439_g.field_70170_p.field_73011_w instanceof WorldProviderHell)
              {
                  return MusicTicker.MusicType.NETHER;
-@@ -3181,11 +3068,11 @@
+@@ -3124,11 +3068,11 @@
              {
                  if (Keyboard.getEventKeyState())
                  {
@@ -619,7 +1240,7 @@
                      {
                          this.field_71456_v.func_146158_b().func_146227_a(ScreenShotHelper.func_148260_a(this.field_71412_D, this.field_71443_c, this.field_71440_d, this.field_147124_at));
                      }
-@@ -3199,6 +3086,7 @@
+@@ -3142,6 +3086,7 @@
                          }
                      }
                  }
@@ -627,7 +1248,12 @@
              }
          }
      }
-@@ -3237,7 +3125,7 @@
+@@ -3176,16 +3121,16 @@
+         {
+             try
+             {
+-                return Futures.immediateFuture(p_152343_1_.call());
++                return Futures.<V>immediateFuture(p_152343_1_.call());
              }
              catch (Exception exception)
              {
@@ -636,7 +1262,31 @@
              }
          }
          else
-@@ -3328,6 +3216,12 @@
+         {
+-            ListenableFutureTask<V> listenablefuturetask = ListenableFutureTask.create(p_152343_1_);
++            ListenableFutureTask<V> listenablefuturetask = ListenableFutureTask.<V>create(p_152343_1_);
+ 
+             synchronized (this.field_152351_aB)
+             {
+@@ -3198,7 +3143,7 @@
+     public ListenableFuture<Object> func_152344_a(Runnable p_152344_1_)
+     {
+         Validate.notNull(p_152344_1_);
+-        return this.func_152343_a(Executors.callable(p_152344_1_));
++        return this.<Object>func_152343_a(Executors.callable(p_152344_1_));
+     }
+ 
+     public boolean func_152345_ab()
+@@ -3228,7 +3173,7 @@
+ 
+     public <T> ISearchTree<T> func_193987_a(SearchTreeManager.Key<T> p_193987_1_)
+     {
+-        return this.field_193995_ae.func_194010_a(p_193987_1_);
++        return this.field_193995_ae.<T>func_194010_a(p_193987_1_);
+     }
+ 
+     public static int func_175610_ah()
+@@ -3271,6 +3216,12 @@
          return this.field_184127_aH;
      }
  
@@ -649,7 +1299,7 @@
      public boolean func_189648_am()
      {
          return this.field_71439_g != null && this.field_71439_g.func_175140_cp() || this.field_71474_y.field_178879_v;
-@@ -3341,5 +3235,10 @@
+@@ -3284,5 +3235,10 @@
      public Tutorial func_193032_ao()
      {
          return this.field_193035_aW;

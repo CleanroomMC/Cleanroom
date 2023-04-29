@@ -1,22 +1,71 @@
 --- before/net/minecraft/client/settings/GameSettings.java
 +++ after/net/minecraft/client/settings/GameSettings.java
-@@ -165,6 +165,7 @@
+@@ -82,8 +82,8 @@
+     public int field_74345_l = 2;
+     public boolean field_74347_j = true;
+     public int field_74348_k = 2;
+-    public List<String> field_151453_l = Lists.newArrayList();
+-    public List<String> field_183018_l = Lists.newArrayList();
++    public List<String> field_151453_l = Lists.<String>newArrayList();
++    public List<String> field_183018_l = Lists.<String>newArrayList();
+     public EntityPlayer.EnumChatVisibility field_74343_n = EntityPlayer.EnumChatVisibility.FULL;
+     public boolean field_74344_o = true;
+     public boolean field_74359_p = true;
+@@ -142,29 +142,35 @@
+     public KeyBinding[] field_151456_ac = new KeyBinding[] {new KeyBinding("key.hotbar.1", 2, "key.categories.inventory"), new KeyBinding("key.hotbar.2", 3, "key.categories.inventory"), new KeyBinding("key.hotbar.3", 4, "key.categories.inventory"), new KeyBinding("key.hotbar.4", 5, "key.categories.inventory"), new KeyBinding("key.hotbar.5", 6, "key.categories.inventory"), new KeyBinding("key.hotbar.6", 7, "key.categories.inventory"), new KeyBinding("key.hotbar.7", 8, "key.categories.inventory"), new KeyBinding("key.hotbar.8", 9, "key.categories.inventory"), new KeyBinding("key.hotbar.9", 10, "key.categories.inventory")};
+     public KeyBinding field_193629_ap = new KeyBinding("key.saveToolbarActivator", 46, "key.categories.creative");
+     public KeyBinding field_193630_aq = new KeyBinding("key.loadToolbarActivator", 45, "key.categories.creative");
+-    public KeyBinding[] field_74324_K = ArrayUtils.addAll(new KeyBinding[] {this.field_74312_F, this.field_74313_G, this.field_74351_w, this.field_74370_x, this.field_74368_y, this.field_74366_z, this.field_74314_A, this.field_74311_E, this.field_151444_V, this.field_74316_C, this.field_151445_Q, this.field_74310_D, this.field_74321_H, this.field_74322_I, this.field_74323_J, this.field_151447_Z, this.field_151457_aa, this.field_151458_ab, this.field_152395_am, this.field_178883_an, this.field_186718_X, this.field_193629_ap, this.field_193630_aq, this.field_194146_ao}, this.field_151456_ac);
++    public KeyBinding[] field_74324_K;
+     protected Minecraft field_74317_L;
+     private File field_74354_ai;
+-    public EnumDifficulty field_74318_M = EnumDifficulty.NORMAL;
++    public EnumDifficulty field_74318_M;
+     public boolean field_74319_N;
+     public int field_74320_O;
+     public boolean field_74330_P;
+     public boolean field_74329_Q;
+     public boolean field_181657_aC;
+-    public String field_74332_R = "";
++    public String field_74332_R;
+     public boolean field_74326_T;
+     public boolean field_74325_U;
+-    public float field_74334_X = 70.0F;
++    public float field_74334_X;
+     public float field_74333_Y;
+     public float field_151452_as;
+     public int field_74335_Z;
+     public int field_74362_aa;
+     public int field_192571_R;
+-    public String field_74363_ab = "en_us";
++    public String field_74363_ab;
+     public boolean field_151455_aw;
  
      public GameSettings(Minecraft p_i46326_1_, File p_i46326_2_)
      {
 +        setForgeKeybindProperties();
-         this.field_74324_K = (KeyBinding[])ArrayUtils.addAll(new KeyBinding[] {this.field_74312_F, this.field_74313_G, this.field_74351_w, this.field_74370_x, this.field_74368_y, this.field_74366_z, this.field_74314_A, this.field_74311_E, this.field_151444_V, this.field_74316_C, this.field_151445_Q, this.field_74310_D, this.field_74321_H, this.field_74322_I, this.field_74323_J, this.field_151447_Z, this.field_151457_aa, this.field_151458_ab, this.field_152395_am, this.field_178883_an, this.field_186718_X, this.field_193629_ap, this.field_193630_aq, this.field_194146_ao}, this.field_151456_ac);
-         this.field_74318_M = EnumDifficulty.NORMAL;
-         this.field_74332_R = "";
-@@ -188,6 +189,7 @@
++        this.field_74324_K = (KeyBinding[])ArrayUtils.addAll(new KeyBinding[] {this.field_74312_F, this.field_74313_G, this.field_74351_w, this.field_74370_x, this.field_74368_y, this.field_74366_z, this.field_74314_A, this.field_74311_E, this.field_151444_V, this.field_74316_C, this.field_151445_Q, this.field_74310_D, this.field_74321_H, this.field_74322_I, this.field_74323_J, this.field_151447_Z, this.field_151457_aa, this.field_151458_ab, this.field_152395_am, this.field_178883_an, this.field_186718_X, this.field_193629_ap, this.field_193630_aq, this.field_194146_ao}, this.field_151456_ac);
++        this.field_74318_M = EnumDifficulty.NORMAL;
++        this.field_74332_R = "";
++        this.field_74334_X = 70.0F;
++        this.field_74363_ab = "en_us";
+         this.field_74317_L = p_i46326_1_;
+         this.field_74354_ai = new File(p_i46326_2_, "options.txt");
+ 
+@@ -183,6 +189,12 @@
  
      public GameSettings()
      {
 +        setForgeKeybindProperties();
-         this.field_74324_K = (KeyBinding[])ArrayUtils.addAll(new KeyBinding[] {this.field_74312_F, this.field_74313_G, this.field_74351_w, this.field_74370_x, this.field_74368_y, this.field_74366_z, this.field_74314_A, this.field_74311_E, this.field_151444_V, this.field_74316_C, this.field_151445_Q, this.field_74310_D, this.field_74321_H, this.field_74322_I, this.field_74323_J, this.field_151447_Z, this.field_151457_aa, this.field_151458_ab, this.field_152395_am, this.field_178883_an, this.field_186718_X, this.field_193629_ap, this.field_193630_aq, this.field_194146_ao}, this.field_151456_ac);
-         this.field_74318_M = EnumDifficulty.NORMAL;
-         this.field_74332_R = "";
-@@ -299,7 +301,7 @@
++        this.field_74324_K = (KeyBinding[])ArrayUtils.addAll(new KeyBinding[] {this.field_74312_F, this.field_74313_G, this.field_74351_w, this.field_74370_x, this.field_74368_y, this.field_74366_z, this.field_74314_A, this.field_74311_E, this.field_151444_V, this.field_74316_C, this.field_151445_Q, this.field_74310_D, this.field_74321_H, this.field_74322_I, this.field_74323_J, this.field_151447_Z, this.field_151457_aa, this.field_151458_ab, this.field_152395_am, this.field_178883_an, this.field_186718_X, this.field_193629_ap, this.field_193630_aq, this.field_194146_ao}, this.field_151456_ac);
++        this.field_74318_M = EnumDifficulty.NORMAL;
++        this.field_74332_R = "";
++        this.field_74334_X = 70.0F;
++        this.field_74363_ab = "en_us";
+     }
+ 
+     public static String func_74298_c(int p_74298_0_)
+@@ -289,7 +301,7 @@
                  this.field_74317_L.func_147117_R().func_147633_a(this.field_151442_I);
                  this.field_74317_L.func_110434_K().func_110577_a(TextureMap.field_110575_b);
                  this.field_74317_L.func_147117_R().func_174937_a(false, this.field_151442_I > 0);
@@ -25,7 +74,7 @@
              }
          }
  
-@@ -361,7 +363,7 @@
+@@ -351,7 +363,7 @@
          if (p_74306_1_ == GameSettings.Options.ANAGLYPH)
          {
              this.field_74337_g = !this.field_74337_g;
@@ -34,7 +83,7 @@
          }
  
          if (p_74306_1_ == GameSettings.Options.GRAPHICS)
-@@ -724,6 +726,7 @@
+@@ -714,6 +726,7 @@
  
      public void func_74300_a()
      {
@@ -42,7 +91,7 @@
          try
          {
              if (!this.field_74354_ai.exists())
-@@ -732,7 +735,7 @@
+@@ -722,7 +735,7 @@
              }
  
              this.field_186714_aM.clear();
@@ -51,7 +100,42 @@
              NBTTagCompound nbttagcompound = new NBTTagCompound();
  
              for (String s : list)
-@@ -1068,7 +1071,12 @@
+@@ -732,7 +745,7 @@
+                     Iterator<String> iterator = field_189990_a.omitEmptyStrings().limit(2).split(s).iterator();
+                     nbttagcompound.func_74778_a(iterator.next(), iterator.next());
+                 }
+-                catch (Exception exception)
++                catch (Exception var10)
+                 {
+                     field_151454_ax.warn("Skipping bad option: {}", (Object)s);
+                 }
+@@ -871,21 +884,21 @@
+ 
+                     if ("resourcePacks".equals(s1))
+                     {
+-                        this.field_151453_l = JsonUtils.func_193840_a(field_151450_ay, s2, field_151449_az);
++                        this.field_151453_l = (List)JsonUtils.func_193840_a(field_151450_ay, s2, field_151449_az);
+ 
+                         if (this.field_151453_l == null)
+                         {
+-                            this.field_151453_l = Lists.newArrayList();
++                            this.field_151453_l = Lists.<String>newArrayList();
+                         }
+                     }
+ 
+                     if ("incompatibleResourcePacks".equals(s1))
+                     {
+-                        this.field_183018_l = JsonUtils.func_193840_a(field_151450_ay, s2, field_151449_az);
++                        this.field_183018_l = (List)JsonUtils.func_193840_a(field_151450_ay, s2, field_151449_az);
+ 
+                         if (this.field_183018_l == null)
+                         {
+-                            this.field_183018_l = Lists.newArrayList();
++                            this.field_183018_l = Lists.<String>newArrayList();
+                         }
+                     }
+ 
+@@ -1058,7 +1071,12 @@
                      {
                          if (s1.equals("key_" + keybinding.func_151464_g()))
                          {
@@ -65,15 +149,50 @@
                          }
                      }
  
-@@ -1100,6 +1108,7 @@
+@@ -1066,7 +1084,7 @@
+                     {
+                         if (s1.equals("soundCategory_" + soundcategory.func_187948_a()))
+                         {
+-                            this.field_186714_aM.put(soundcategory, this.func_74305_a(s2));
++                            this.field_186714_aM.put(soundcategory, Float.valueOf(this.func_74305_a(s2)));
+                         }
+                     }
+ 
+@@ -1078,7 +1096,7 @@
+                         }
+                     }
+                 }
+-                catch (Exception exception1)
++                catch (Exception var11)
+                 {
+                     field_151454_ax.warn("Skipping bad option: {}:{}", s1, s2);
+                 }
+@@ -1086,10 +1104,11 @@
+ 
+             KeyBinding.func_74508_b();
+         }
+-        catch (Exception exception2)
++        catch (Exception exception)
          {
-             field_151454_ax.error("Failed to load options", (Throwable)exception);
+-            field_151454_ax.error("Failed to load options", (Throwable)exception2);
++            field_151454_ax.error("Failed to load options", (Throwable)exception);
          }
 +        finally { IOUtils.closeQuietly(fileInputStream); } // Forge: fix MC-151173
      }
  
      private NBTTagCompound func_189988_a(NBTTagCompound p_189988_1_)
-@@ -1132,6 +1141,7 @@
+@@ -1100,8 +1119,9 @@
+         {
+             i = Integer.parseInt(p_189988_1_.func_74779_i("version"));
+         }
+-        catch (RuntimeException runtimeexception)
++        catch (RuntimeException var4)
+         {
++            ;
+         }
+ 
+         return this.field_74317_L.func_184126_aj().func_188251_a(FixTypes.OPTIONS, p_189988_1_, i);
+@@ -1121,6 +1141,7 @@
  
      public void func_74303_b()
      {
@@ -81,7 +200,7 @@
          PrintWriter printwriter = null;
  
          try
-@@ -1206,7 +1216,8 @@
+@@ -1195,7 +1216,8 @@
  
              for (KeyBinding keybinding : this.field_74324_K)
              {
@@ -91,7 +210,23 @@
              }
  
              for (SoundCategory soundcategory : SoundCategory.values())
-@@ -1440,4 +1451,35 @@
+@@ -1222,13 +1244,13 @@
+ 
+     public float func_186711_a(SoundCategory p_186711_1_)
+     {
+-        return this.field_186714_aM.containsKey(p_186711_1_) ? this.field_186714_aM.get(p_186711_1_) : 1.0F;
++        return this.field_186714_aM.containsKey(p_186711_1_) ? ((Float)this.field_186714_aM.get(p_186711_1_)).floatValue() : 1.0F;
+     }
+ 
+     public void func_186712_a(SoundCategory p_186712_1_, float p_186712_2_)
+     {
+         this.field_74317_L.func_147118_V().func_184399_a(p_186712_1_, p_186712_2_);
+-        this.field_186714_aM.put(p_186712_1_, p_186712_2_);
++        this.field_186714_aM.put(p_186712_1_, Float.valueOf(p_186712_2_));
+     }
+ 
+     public void func_82879_c()
+@@ -1429,4 +1451,35 @@
              return p_148264_1_;
          }
      }

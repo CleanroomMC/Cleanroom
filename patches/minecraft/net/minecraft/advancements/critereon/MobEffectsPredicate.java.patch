@@ -1,0 +1,52 @@
+--- before/net/minecraft/advancements/critereon/MobEffectsPredicate.java
++++ after/net/minecraft/advancements/critereon/MobEffectsPredicate.java
+@@ -6,6 +6,7 @@
+ import com.google.gson.JsonSyntaxException;
+ import java.util.Collections;
+ import java.util.Map;
++import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+ import net.minecraft.entity.Entity;
+ import net.minecraft.entity.EntityLivingBase;
+@@ -49,11 +50,11 @@
+         }
+         else
+         {
+-            for (Map.Entry<Potion, MobEffectsPredicate.InstancePredicate> entry : this.field_193474_b.entrySet())
++            for (Entry<Potion, MobEffectsPredicate.InstancePredicate> entry : this.field_193474_b.entrySet())
+             {
+                 PotionEffect potioneffect = p_193470_1_.get(entry.getKey());
+ 
+-                if (!entry.getValue().func_193463_a(potioneffect))
++                if (!((MobEffectsPredicate.InstancePredicate)entry.getValue()).func_193463_a(potioneffect))
+                 {
+                     return false;
+                 }
+@@ -68,9 +69,9 @@
+         if (p_193471_0_ != null && !p_193471_0_.isJsonNull())
+         {
+             JsonObject jsonobject = JsonUtils.func_151210_l(p_193471_0_, "effects");
+-            Map<Potion, MobEffectsPredicate.InstancePredicate> map = Maps.newHashMap();
++            Map<Potion, MobEffectsPredicate.InstancePredicate> map = Maps.<Potion, MobEffectsPredicate.InstancePredicate>newHashMap();
+ 
+-            for (Map.Entry<String, JsonElement> entry : jsonobject.entrySet())
++            for (Entry<String, JsonElement> entry : jsonobject.entrySet())
+             {
+                 ResourceLocation resourcelocation = new ResourceLocation(entry.getKey());
+                 Potion potion = Potion.field_188414_b.func_82594_a(resourcelocation);
+@@ -123,13 +124,13 @@
+                 {
+                     return false;
+                 }
+-                else if (this.field_193467_c != null && this.field_193467_c != p_193463_1_.func_82720_e())
++                else if (this.field_193467_c != null && this.field_193467_c.booleanValue() != p_193463_1_.func_82720_e())
+                 {
+                     return false;
+                 }
+                 else
+                 {
+-                    return this.field_193468_d == null || this.field_193468_d == p_193463_1_.func_188418_e();
++                    return this.field_193468_d == null || this.field_193468_d.booleanValue() == p_193463_1_.func_188418_e();
+                 }
+             }
+ 

@@ -1,5 +1,14 @@
 --- before/net/minecraft/world/gen/feature/WorldGenDungeons.java
 +++ after/net/minecraft/world/gen/feature/WorldGenDungeons.java
+@@ -146,7 +146,7 @@
+             }
+             else
+             {
+-                field_175918_a.error("Failed to fetch mob spawner entity at ({}, {}, {})", p_180709_3_.func_177958_n(), p_180709_3_.func_177956_o(), p_180709_3_.func_177952_p());
++                field_175918_a.error("Failed to fetch mob spawner entity at ({}, {}, {})", Integer.valueOf(p_180709_3_.func_177958_n()), Integer.valueOf(p_180709_3_.func_177956_o()), Integer.valueOf(p_180709_3_.func_177952_p()));
+             }
+ 
+             return true;
 @@ -159,6 +159,6 @@
  
      private ResourceLocation func_76543_b(Random p_76543_1_)

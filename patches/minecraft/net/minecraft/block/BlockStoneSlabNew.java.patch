@@ -1,0 +1,73 @@
+--- before/net/minecraft/block/BlockStoneSlabNew.java
++++ after/net/minecraft/block/BlockStoneSlabNew.java
+@@ -22,7 +22,7 @@
+ public abstract class BlockStoneSlabNew extends BlockSlab
+ {
+     public static final PropertyBool field_176558_b = PropertyBool.func_177716_a("seamless");
+-    public static final PropertyEnum<BlockStoneSlabNew.EnumType> field_176559_M = PropertyEnum.func_177709_a("variant", BlockStoneSlabNew.EnumType.class);
++    public static final PropertyEnum<BlockStoneSlabNew.EnumType> field_176559_M = PropertyEnum.<BlockStoneSlabNew.EnumType>func_177709_a("variant", BlockStoneSlabNew.EnumType.class);
+ 
+     public BlockStoneSlabNew()
+     {
+@@ -31,7 +31,7 @@
+ 
+         if (this.func_176552_j())
+         {
+-            iblockstate = iblockstate.func_177226_a(field_176558_b, false);
++            iblockstate = iblockstate.func_177226_a(field_176558_b, Boolean.valueOf(false));
+         }
+         else
+         {
+@@ -54,7 +54,7 @@
+ 
+     public ItemStack func_185473_a(World p_185473_1_, BlockPos p_185473_2_, IBlockState p_185473_3_)
+     {
+-        return new ItemStack(Blocks.field_180389_cP, 1, p_185473_3_.func_177229_b(field_176559_M).func_176915_a());
++        return new ItemStack(Blocks.field_180389_cP, 1, ((BlockStoneSlabNew.EnumType)p_185473_3_.func_177229_b(field_176559_M)).func_176915_a());
+     }
+ 
+     public String func_150002_b(int p_150002_1_)
+@@ -86,7 +86,7 @@
+ 
+         if (this.func_176552_j())
+         {
+-            iblockstate = iblockstate.func_177226_a(field_176558_b, (p_176203_1_ & 8) != 0);
++            iblockstate = iblockstate.func_177226_a(field_176558_b, Boolean.valueOf((p_176203_1_ & 8) != 0));
+         }
+         else
+         {
+@@ -99,11 +99,11 @@
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+         int i = 0;
+-        i |= p_176201_1_.func_177229_b(field_176559_M).func_176915_a();
++        i = i | ((BlockStoneSlabNew.EnumType)p_176201_1_.func_177229_b(field_176559_M)).func_176915_a();
+ 
+         if (this.func_176552_j())
+         {
+-            if (p_176201_1_.func_177229_b(field_176558_b))
++            if (((Boolean)p_176201_1_.func_177229_b(field_176558_b)).booleanValue())
+             {
+                 i |= 8;
+             }
+@@ -118,17 +118,17 @@
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return this.func_176552_j() ? new BlockStateContainer(this, field_176558_b, field_176559_M) : new BlockStateContainer(this, field_176554_a, field_176559_M);
++        return this.func_176552_j() ? new BlockStateContainer(this, new IProperty[] {field_176558_b, field_176559_M}) : new BlockStateContainer(this, new IProperty[] {field_176554_a, field_176559_M});
+     }
+ 
+     public MapColor func_180659_g(IBlockState p_180659_1_, IBlockAccess p_180659_2_, BlockPos p_180659_3_)
+     {
+-        return p_180659_1_.func_177229_b(field_176559_M).func_181068_c();
++        return ((BlockStoneSlabNew.EnumType)p_180659_1_.func_177229_b(field_176559_M)).func_181068_c();
+     }
+ 
+     public int func_180651_a(IBlockState p_180651_1_)
+     {
+-        return p_180651_1_.func_177229_b(field_176559_M).func_176915_a();
++        return ((BlockStoneSlabNew.EnumType)p_180651_1_.func_177229_b(field_176559_M)).func_176915_a();
+     }
+ 
+     public static enum EnumType implements IStringSerializable

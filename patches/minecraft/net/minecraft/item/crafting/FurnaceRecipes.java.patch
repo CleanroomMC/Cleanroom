@@ -1,20 +1,55 @@
 --- before/net/minecraft/item/crafting/FurnaceRecipes.java
 +++ after/net/minecraft/item/crafting/FurnaceRecipes.java
-@@ -113,6 +113,7 @@
+@@ -2,6 +2,7 @@
+ 
+ import com.google.common.collect.Maps;
+ import java.util.Map;
++import java.util.Map.Entry;
+ import net.minecraft.block.Block;
+ import net.minecraft.block.BlockStoneBrick;
+ import net.minecraft.init.Blocks;
+@@ -14,8 +15,8 @@
+ public class FurnaceRecipes
+ {
+     private static final FurnaceRecipes field_77606_a = new FurnaceRecipes();
+-    private final Map<ItemStack, ItemStack> field_77604_b = Maps.newHashMap();
+-    private final Map<ItemStack, Float> field_77605_c = Maps.newHashMap();
++    private final Map<ItemStack, ItemStack> field_77604_b = Maps.<ItemStack, ItemStack>newHashMap();
++    private final Map<ItemStack, Float> field_77605_c = Maps.<ItemStack, Float>newHashMap();
+ 
+     public static FurnaceRecipes func_77602_a()
+     {
+@@ -112,13 +113,14 @@
  
      public void func_151394_a(ItemStack p_151394_1_, ItemStack p_151394_2_, float p_151394_3_)
      {
 +        if (func_151395_a(p_151394_1_) != ItemStack.field_190927_a) { net.minecraftforge.fml.common.FMLLog.log.info("Ignored smelting recipe with conflicting input: {} = {}", p_151394_1_, p_151394_2_); return; }
          this.field_77604_b.put(p_151394_1_, p_151394_2_);
-         this.field_77605_c.put(p_151394_2_, Float.valueOf(p_151394_3_));
+-        this.field_77605_c.put(p_151394_2_, p_151394_3_);
++        this.field_77605_c.put(p_151394_2_, Float.valueOf(p_151394_3_));
      }
-@@ -142,6 +143,9 @@
+ 
+     public ItemStack func_151395_a(ItemStack p_151395_1_)
+     {
+-        for (Map.Entry<ItemStack, ItemStack> entry : this.field_77604_b.entrySet())
++        for (Entry<ItemStack, ItemStack> entry : this.field_77604_b.entrySet())
+         {
+             if (this.func_151397_a(p_151395_1_, entry.getKey()))
+             {
+@@ -141,11 +143,14 @@
  
      public float func_151398_b(ItemStack p_151398_1_)
      {
+-        for (Map.Entry<ItemStack, Float> entry : this.field_77605_c.entrySet())
 +        float ret = p_151398_1_.func_77973_b().getSmeltingExperience(p_151398_1_);
 +        if (ret != -1) return ret;
 +
-         for (Entry<ItemStack, Float> entry : this.field_77605_c.entrySet())
++        for (Entry<ItemStack, Float> entry : this.field_77605_c.entrySet())
          {
              if (this.func_151397_a(p_151398_1_, entry.getKey()))
+             {
+-                return entry.getValue();
++                return ((Float)entry.getValue()).floatValue();
+             }
+         }
+ 

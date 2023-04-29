@@ -1,0 +1,11 @@
+--- before/net/minecraft/server/ServerEula.java
++++ after/net/minecraft/server/ServerEula.java
+@@ -37,7 +37,7 @@
+             properties.load(fileinputstream);
+             flag = Boolean.parseBoolean(properties.getProperty("eula", "false"));
+         }
+-        catch (Exception exception)
++        catch (Exception var8)
+         {
+             field_154349_a.warn("Failed to load {}", (Object)p_154347_1_);
+             this.func_154348_b();

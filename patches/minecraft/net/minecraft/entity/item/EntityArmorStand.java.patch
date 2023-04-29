@@ -1,6 +1,24 @@
 --- before/net/minecraft/entity/item/EntityArmorStand.java
 +++ after/net/minecraft/entity/item/EntityArmorStand.java
-@@ -58,7 +58,7 @@
+@@ -47,36 +47,44 @@
+     private static final Rotations field_175431_d = new Rotations(-15.0F, 0.0F, 10.0F);
+     private static final Rotations field_175432_e = new Rotations(-1.0F, 0.0F, -1.0F);
+     private static final Rotations field_175429_f = new Rotations(1.0F, 0.0F, 1.0F);
+-    public static final DataParameter<Byte> field_184801_a = EntityDataManager.func_187226_a(EntityArmorStand.class, DataSerializers.field_187191_a);
+-    public static final DataParameter<Rotations> field_184802_b = EntityDataManager.func_187226_a(EntityArmorStand.class, DataSerializers.field_187199_i);
+-    public static final DataParameter<Rotations> field_184803_c = EntityDataManager.func_187226_a(EntityArmorStand.class, DataSerializers.field_187199_i);
+-    public static final DataParameter<Rotations> field_184804_d = EntityDataManager.func_187226_a(EntityArmorStand.class, DataSerializers.field_187199_i);
+-    public static final DataParameter<Rotations> field_184805_e = EntityDataManager.func_187226_a(EntityArmorStand.class, DataSerializers.field_187199_i);
+-    public static final DataParameter<Rotations> field_184806_f = EntityDataManager.func_187226_a(EntityArmorStand.class, DataSerializers.field_187199_i);
+-    public static final DataParameter<Rotations> field_184807_g = EntityDataManager.func_187226_a(EntityArmorStand.class, DataSerializers.field_187199_i);
++    public static final DataParameter<Byte> field_184801_a = EntityDataManager.<Byte>func_187226_a(EntityArmorStand.class, DataSerializers.field_187191_a);
++    public static final DataParameter<Rotations> field_184802_b = EntityDataManager.<Rotations>func_187226_a(EntityArmorStand.class, DataSerializers.field_187199_i);
++    public static final DataParameter<Rotations> field_184803_c = EntityDataManager.<Rotations>func_187226_a(EntityArmorStand.class, DataSerializers.field_187199_i);
++    public static final DataParameter<Rotations> field_184804_d = EntityDataManager.<Rotations>func_187226_a(EntityArmorStand.class, DataSerializers.field_187199_i);
++    public static final DataParameter<Rotations> field_184805_e = EntityDataManager.<Rotations>func_187226_a(EntityArmorStand.class, DataSerializers.field_187199_i);
++    public static final DataParameter<Rotations> field_184806_f = EntityDataManager.<Rotations>func_187226_a(EntityArmorStand.class, DataSerializers.field_187199_i);
++    public static final DataParameter<Rotations> field_184807_g = EntityDataManager.<Rotations>func_187226_a(EntityArmorStand.class, DataSerializers.field_187199_i);
+     private static final Predicate<Entity> field_184798_bv = new Predicate<Entity>()
      {
          public boolean apply(@Nullable Entity p_apply_1_)
          {
@@ -8,4 +26,185 @@
 +            return p_apply_1_ instanceof EntityMinecart && ((EntityMinecart)p_apply_1_).canBeRidden();
          }
      };
-     private final NonNullList<ItemStack> field_184799_bw;
+-    private final NonNullList<ItemStack> field_184799_bw = NonNullList.func_191197_a(2, ItemStack.field_190927_a);
+-    private final NonNullList<ItemStack> field_184800_bx = NonNullList.func_191197_a(4, ItemStack.field_190927_a);
++    private final NonNullList<ItemStack> field_184799_bw;
++    private final NonNullList<ItemStack> field_184800_bx;
+     private boolean field_175436_h;
+     public long field_175437_i;
+     private int field_175442_bg;
+     private boolean field_181028_bj;
+-    private Rotations field_175443_bh = field_175435_a;
+-    private Rotations field_175444_bi = field_175433_b;
+-    private Rotations field_175438_bj = field_175434_c;
+-    private Rotations field_175439_bk = field_175431_d;
+-    private Rotations field_175440_bl = field_175432_e;
+-    private Rotations field_175441_bm = field_175429_f;
++    private Rotations field_175443_bh;
++    private Rotations field_175444_bi;
++    private Rotations field_175438_bj;
++    private Rotations field_175439_bk;
++    private Rotations field_175440_bl;
++    private Rotations field_175441_bm;
+ 
+     public EntityArmorStand(World p_i45854_1_)
+     {
+         super(p_i45854_1_);
++        this.field_184799_bw = NonNullList.<ItemStack>func_191197_a(2, ItemStack.field_190927_a);
++        this.field_184800_bx = NonNullList.<ItemStack>func_191197_a(4, ItemStack.field_190927_a);
++        this.field_175443_bh = field_175435_a;
++        this.field_175444_bi = field_175433_b;
++        this.field_175438_bj = field_175434_c;
++        this.field_175439_bk = field_175431_d;
++        this.field_175440_bl = field_175432_e;
++        this.field_175441_bm = field_175429_f;
+         this.field_70145_X = this.func_189652_ae();
+         this.func_70105_a(0.5F, 1.975F);
+     }
+@@ -105,7 +113,7 @@
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+-        this.field_70180_af.func_187214_a(field_184801_a, (byte)0);
++        this.field_70180_af.func_187214_a(field_184801_a, Byte.valueOf((byte)0));
+         this.field_70180_af.func_187214_a(field_184802_b, field_175435_a);
+         this.field_70180_af.func_187214_a(field_184803_c, field_175433_b);
+         this.field_70180_af.func_187214_a(field_184804_d, field_175434_c);
+@@ -198,7 +206,7 @@
+ 
+     public static void func_189805_a(DataFixer p_189805_0_)
+     {
+-        p_189805_0_.func_188258_a(FixTypes.ENTITY, new ItemStackDataLists(EntityArmorStand.class, "ArmorItems", "HandItems"));
++        p_189805_0_.func_188258_a(FixTypes.ENTITY, new ItemStackDataLists(EntityArmorStand.class, new String[] {"ArmorItems", "HandItems"}));
+     }
+ 
+     public void func_70014_b(NBTTagCompound p_70014_1_)
+@@ -595,7 +603,7 @@
+             d0 = 4.0D;
+         }
+ 
+-        d0 *= 64.0D;
++        d0 = d0 * 64.0D;
+         return p_70112_1_ < d0 * d0;
+     }
+ 
+@@ -610,7 +618,7 @@
+     private void func_175406_a(float p_175406_1_)
+     {
+         float f = this.func_110143_aJ();
+-        f -= p_175406_1_;
++        f = f - p_175406_1_;
+ 
+         if (f <= 0.5F)
+         {
+@@ -675,7 +683,7 @@
+ 
+     public double func_70033_W()
+     {
+-        return this.func_181026_s() ? 0.0D : (double)0.1F;
++        return this.func_181026_s() ? 0.0D : 0.10000000149011612D;
+     }
+ 
+     public void func_191986_a(float p_191986_1_, float p_191986_2_, float p_191986_3_)
+@@ -701,42 +709,42 @@
+     public void func_70071_h_()
+     {
+         super.func_70071_h_();
+-        Rotations rotations = this.field_70180_af.func_187225_a(field_184802_b);
++        Rotations rotations = (Rotations)this.field_70180_af.func_187225_a(field_184802_b);
+ 
+         if (!this.field_175443_bh.equals(rotations))
+         {
+             this.func_175415_a(rotations);
+         }
+ 
+-        Rotations rotations1 = this.field_70180_af.func_187225_a(field_184803_c);
++        Rotations rotations1 = (Rotations)this.field_70180_af.func_187225_a(field_184803_c);
+ 
+         if (!this.field_175444_bi.equals(rotations1))
+         {
+             this.func_175424_b(rotations1);
+         }
+ 
+-        Rotations rotations2 = this.field_70180_af.func_187225_a(field_184804_d);
++        Rotations rotations2 = (Rotations)this.field_70180_af.func_187225_a(field_184804_d);
+ 
+         if (!this.field_175438_bj.equals(rotations2))
+         {
+             this.func_175405_c(rotations2);
+         }
+ 
+-        Rotations rotations3 = this.field_70180_af.func_187225_a(field_184805_e);
++        Rotations rotations3 = (Rotations)this.field_70180_af.func_187225_a(field_184805_e);
+ 
+         if (!this.field_175439_bk.equals(rotations3))
+         {
+             this.func_175428_d(rotations3);
+         }
+ 
+-        Rotations rotations4 = this.field_70180_af.func_187225_a(field_184806_f);
++        Rotations rotations4 = (Rotations)this.field_70180_af.func_187225_a(field_184806_f);
+ 
+         if (!this.field_175440_bl.equals(rotations4))
+         {
+             this.func_175417_e(rotations4);
+         }
+ 
+-        Rotations rotations5 = this.field_70180_af.func_187225_a(field_184807_g);
++        Rotations rotations5 = (Rotations)this.field_70180_af.func_187225_a(field_184807_g);
+ 
+         if (!this.field_175441_bm.equals(rotations5))
+         {
+@@ -798,44 +806,44 @@
+ 
+     private void func_175420_a(boolean p_175420_1_)
+     {
+-        this.field_70180_af.func_187227_b(field_184801_a, this.func_184797_a(this.field_70180_af.func_187225_a(field_184801_a), 1, p_175420_1_));
++        this.field_70180_af.func_187227_b(field_184801_a, Byte.valueOf(this.func_184797_a(((Byte)this.field_70180_af.func_187225_a(field_184801_a)).byteValue(), 1, p_175420_1_)));
+         this.func_70105_a(0.5F, 1.975F);
+     }
+ 
+     public boolean func_175410_n()
+     {
+-        return (this.field_70180_af.func_187225_a(field_184801_a) & 1) != 0;
++        return (((Byte)this.field_70180_af.func_187225_a(field_184801_a)).byteValue() & 1) != 0;
+     }
+ 
+     private void func_175413_k(boolean p_175413_1_)
+     {
+-        this.field_70180_af.func_187227_b(field_184801_a, this.func_184797_a(this.field_70180_af.func_187225_a(field_184801_a), 4, p_175413_1_));
++        this.field_70180_af.func_187227_b(field_184801_a, Byte.valueOf(this.func_184797_a(((Byte)this.field_70180_af.func_187225_a(field_184801_a)).byteValue(), 4, p_175413_1_)));
+     }
+ 
+     public boolean func_175402_q()
+     {
+-        return (this.field_70180_af.func_187225_a(field_184801_a) & 4) != 0;
++        return (((Byte)this.field_70180_af.func_187225_a(field_184801_a)).byteValue() & 4) != 0;
+     }
+ 
+     private void func_175426_l(boolean p_175426_1_)
+     {
+-        this.field_70180_af.func_187227_b(field_184801_a, this.func_184797_a(this.field_70180_af.func_187225_a(field_184801_a), 8, p_175426_1_));
++        this.field_70180_af.func_187227_b(field_184801_a, Byte.valueOf(this.func_184797_a(((Byte)this.field_70180_af.func_187225_a(field_184801_a)).byteValue(), 8, p_175426_1_)));
+     }
+ 
+     public boolean func_175414_r()
+     {
+-        return (this.field_70180_af.func_187225_a(field_184801_a) & 8) != 0;
++        return (((Byte)this.field_70180_af.func_187225_a(field_184801_a)).byteValue() & 8) != 0;
+     }
+ 
+     private void func_181027_m(boolean p_181027_1_)
+     {
+-        this.field_70180_af.func_187227_b(field_184801_a, this.func_184797_a(this.field_70180_af.func_187225_a(field_184801_a), 16, p_181027_1_));
++        this.field_70180_af.func_187227_b(field_184801_a, Byte.valueOf(this.func_184797_a(((Byte)this.field_70180_af.func_187225_a(field_184801_a)).byteValue(), 16, p_181027_1_)));
+         this.func_70105_a(0.5F, 1.975F);
+     }
+ 
+     public boolean func_181026_s()
+     {
+-        return (this.field_70180_af.func_187225_a(field_184801_a) & 16) != 0;
++        return (((Byte)this.field_70180_af.func_187225_a(field_184801_a)).byteValue() & 16) != 0;
+     }
+ 
+     private byte func_184797_a(byte p_184797_1_, int p_184797_2_, boolean p_184797_3_)

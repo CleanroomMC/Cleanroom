@@ -1,10 +1,25 @@
 --- before/net/minecraft/block/BlockFire.java
 +++ after/net/minecraft/block/BlockFire.java
-@@ -39,7 +39,15 @@
+@@ -6,6 +6,7 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.block.material.MapColor;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyBool;
+ import net.minecraft.block.properties.PropertyInteger;
+ import net.minecraft.block.state.BlockFaceShape;
+@@ -33,18 +34,26 @@
+     public static final PropertyBool field_176541_P = PropertyBool.func_177716_a("south");
+     public static final PropertyBool field_176539_Q = PropertyBool.func_177716_a("west");
+     public static final PropertyBool field_176542_R = PropertyBool.func_177716_a("up");
+-    private final Map<Block, Integer> field_149849_a = Maps.newIdentityHashMap();
+-    private final Map<Block, Integer> field_149848_b = Maps.newIdentityHashMap();
++    private final Map<Block, Integer> field_149849_a = Maps.<Block, Integer>newIdentityHashMap();
++    private final Map<Block, Integer> field_149848_b = Maps.<Block, Integer>newIdentityHashMap();
  
      public IBlockState func_176221_a(IBlockState p_176221_1_, IBlockAccess p_176221_2_, BlockPos p_176221_3_)
      {
--        return !p_176221_2_.func_180495_p(p_176221_3_.func_177977_b()).func_185896_q() && !Blocks.field_150480_ab.func_176535_e(p_176221_2_, p_176221_3_.func_177977_b()) ? p_176221_1_.func_177226_a(field_176545_N, Boolean.valueOf(this.func_176535_e(p_176221_2_, p_176221_3_.func_177978_c()))).func_177226_a(field_176546_O, Boolean.valueOf(this.func_176535_e(p_176221_2_, p_176221_3_.func_177974_f()))).func_177226_a(field_176541_P, Boolean.valueOf(this.func_176535_e(p_176221_2_, p_176221_3_.func_177968_d()))).func_177226_a(field_176539_Q, Boolean.valueOf(this.func_176535_e(p_176221_2_, p_176221_3_.func_177976_e()))).func_177226_a(field_176542_R, Boolean.valueOf(this.func_176535_e(p_176221_2_, p_176221_3_.func_177984_a()))) : this.func_176223_P();
+-        return !p_176221_2_.func_180495_p(p_176221_3_.func_177977_b()).func_185896_q() && !Blocks.field_150480_ab.func_176535_e(p_176221_2_, p_176221_3_.func_177977_b()) ? p_176221_1_.func_177226_a(field_176545_N, this.func_176535_e(p_176221_2_, p_176221_3_.func_177978_c())).func_177226_a(field_176546_O, this.func_176535_e(p_176221_2_, p_176221_3_.func_177974_f())).func_177226_a(field_176541_P, this.func_176535_e(p_176221_2_, p_176221_3_.func_177968_d())).func_177226_a(field_176539_Q, this.func_176535_e(p_176221_2_, p_176221_3_.func_177976_e())).func_177226_a(field_176542_R, this.func_176535_e(p_176221_2_, p_176221_3_.func_177984_a())) : this.func_176223_P();
 +        if (!p_176221_2_.func_180495_p(p_176221_3_.func_177977_b()).isSideSolid(p_176221_2_, p_176221_3_.func_177977_b(), EnumFacing.UP) && !Blocks.field_150480_ab.canCatchFire(p_176221_2_, p_176221_3_.func_177977_b(), EnumFacing.UP))
 +        {
 +            return p_176221_1_.func_177226_a(field_176545_N, this.canCatchFire(p_176221_2_, p_176221_3_.func_177978_c(), EnumFacing.SOUTH))
@@ -17,15 +32,26 @@
      }
  
      protected BlockFire()
-@@ -92,6 +100,7 @@
+     {
+         super(Material.field_151581_o);
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176543_a, 0).func_177226_a(field_176545_N, false).func_177226_a(field_176546_O, false).func_177226_a(field_176541_P, false).func_177226_a(field_176539_Q, false).func_177226_a(field_176542_R, false));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176543_a, Integer.valueOf(0)).func_177226_a(field_176545_N, Boolean.valueOf(false)).func_177226_a(field_176546_O, Boolean.valueOf(false)).func_177226_a(field_176541_P, Boolean.valueOf(false)).func_177226_a(field_176539_Q, Boolean.valueOf(false)).func_177226_a(field_176542_R, Boolean.valueOf(false)));
+         this.func_149675_a(true);
+     }
+ 
+@@ -91,8 +100,9 @@
  
      public void func_180686_a(Block p_180686_1_, int p_180686_2_, int p_180686_3_)
      {
+-        this.field_149849_a.put(p_180686_1_, p_180686_2_);
+-        this.field_149848_b.put(p_180686_1_, p_180686_3_);
 +        if (p_180686_1_ == Blocks.field_150350_a) throw new IllegalArgumentException("Tried to set air on fire... This is bad.");
-         this.field_149849_a.put(p_180686_1_, Integer.valueOf(p_180686_2_));
-         this.field_149848_b.put(p_180686_1_, Integer.valueOf(p_180686_3_));
++        this.field_149849_a.put(p_180686_1_, Integer.valueOf(p_180686_2_));
++        this.field_149848_b.put(p_180686_1_, Integer.valueOf(p_180686_3_));
      }
-@@ -126,18 +135,14 @@
+ 
+     @Nullable
+@@ -125,20 +135,16 @@
      {
          if (p_180650_1_.func_82736_K().func_82766_b("doFireTick"))
          {
@@ -42,11 +68,24 @@
 -            {
 -                flag = true;
 -            }
+-
+-            int i = p_180650_3_.func_177229_b(field_176543_a);
 +            boolean flag = block.isFireSource(p_180650_1_, p_180650_2_.func_177977_b(), EnumFacing.UP);
++
++            int i = ((Integer)p_180650_3_.func_177229_b(field_176543_a)).intValue();
  
-             int i = ((Integer)p_180650_3_.func_177229_b(field_176543_a)).intValue();
+             if (!flag && p_180650_1_.func_72896_J() && this.func_176537_d(p_180650_1_, p_180650_2_) && p_180650_4_.nextFloat() < 0.2F + (float)i * 0.03F)
+             {
+@@ -148,7 +154,7 @@
+             {
+                 if (i < 15)
+                 {
+-                    p_180650_3_ = p_180650_3_.func_177226_a(field_176543_a, i + p_180650_4_.nextInt(3) / 2);
++                    p_180650_3_ = p_180650_3_.func_177226_a(field_176543_a, Integer.valueOf(i + p_180650_4_.nextInt(3) / 2));
+                     p_180650_1_.func_180501_a(p_180650_2_, p_180650_3_, 4);
+                 }
  
-@@ -159,7 +164,7 @@
+@@ -158,7 +164,7 @@
                  {
                      if (!this.func_176533_e(p_180650_1_, p_180650_2_))
                      {
@@ -55,7 +94,7 @@
                          {
                              p_180650_1_.func_175698_g(p_180650_2_);
                          }
-@@ -167,7 +172,7 @@
+@@ -166,7 +172,7 @@
                          return;
                      }
  
@@ -64,7 +103,7 @@
                      {
                          p_180650_1_.func_175698_g(p_180650_2_);
                          return;
-@@ -182,12 +187,12 @@
+@@ -181,12 +187,12 @@
                      j = -50;
                  }
  
@@ -83,7 +122,16 @@
  
                  for (int k = -1; k <= 1; ++k)
                  {
-@@ -246,21 +251,29 @@
+@@ -224,7 +230,7 @@
+                                             i2 = 15;
+                                         }
+ 
+-                                        p_180650_1_.func_180501_a(blockpos, p_180650_3_.func_177226_a(field_176543_a, i2), 3);
++                                        p_180650_1_.func_180501_a(blockpos, p_180650_3_.func_177226_a(field_176543_a, Integer.valueOf(i2)), 3);
+                                     }
+                                 }
+                             }
+@@ -245,21 +251,29 @@
          return false;
      }
  
@@ -91,14 +139,16 @@
      public int func_176532_c(Block p_176532_1_)
      {
          Integer integer = this.field_149848_b.get(p_176532_1_);
-         return integer == null ? 0 : integer.intValue();
+-        return integer == null ? 0 : integer;
++        return integer == null ? 0 : integer.intValue();
      }
  
 +    @Deprecated // Use Block.getFireSpreadSpeed
      public int func_176534_d(Block p_176534_1_)
      {
          Integer integer = this.field_149849_a.get(p_176534_1_);
-         return integer == null ? 0 : integer.intValue();
+-        return integer == null ? 0 : integer;
++        return integer == null ? 0 : integer.intValue();
      }
  
 +    @Deprecated // Use tryCatchFire with face below
@@ -114,7 +164,25 @@
  
          if (p_176536_4_.nextInt(p_176536_3_) < i)
          {
-@@ -293,7 +306,7 @@
+@@ -274,7 +288,7 @@
+                     j = 15;
+                 }
+ 
+-                p_176536_1_.func_180501_a(p_176536_2_, this.func_176223_P().func_177226_a(field_176543_a, j), 3);
++                p_176536_1_.func_180501_a(p_176536_2_, this.func_176223_P().func_177226_a(field_176543_a, Integer.valueOf(j)), 3);
+             }
+             else
+             {
+@@ -283,7 +297,7 @@
+ 
+             if (iblockstate.func_177230_c() == Blocks.field_150335_W)
+             {
+-                Blocks.field_150335_W.func_176206_d(p_176536_1_, p_176536_2_, iblockstate.func_177226_a(BlockTNT.field_176246_a, true));
++                Blocks.field_150335_W.func_176206_d(p_176536_1_, p_176536_2_, iblockstate.func_177226_a(BlockTNT.field_176246_a, Boolean.valueOf(true)));
+             }
+         }
+     }
+@@ -292,7 +306,7 @@
      {
          for (EnumFacing enumfacing : EnumFacing.values())
          {
@@ -123,7 +191,7 @@
              {
                  return true;
              }
-@@ -314,7 +327,7 @@
+@@ -313,7 +327,7 @@
  
              for (EnumFacing enumfacing : EnumFacing.values())
              {
@@ -132,7 +200,7 @@
              }
  
              return i;
-@@ -326,9 +339,10 @@
+@@ -325,9 +339,10 @@
          return false;
      }
  
@@ -144,7 +212,7 @@
      }
  
      public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)
-@@ -372,9 +386,9 @@
+@@ -371,58 +386,58 @@
              p_180655_2_.func_184134_a((double)((float)p_180655_3_.func_177958_n() + 0.5F), (double)((float)p_180655_3_.func_177956_o() + 0.5F), (double)((float)p_180655_3_.func_177952_p() + 0.5F), SoundEvents.field_187643_bs, SoundCategory.BLOCKS, 1.0F + p_180655_4_.nextFloat(), p_180655_4_.nextFloat() * 0.7F + 0.3F, false);
          }
  
@@ -156,7 +224,11 @@
              {
                  for (int j = 0; j < 2; ++j)
                  {
-@@ -385,7 +399,7 @@
+-                    double d3 = (double)p_180655_3_.func_177958_n() + p_180655_4_.nextDouble() * (double)0.1F;
++                    double d3 = (double)p_180655_3_.func_177958_n() + p_180655_4_.nextDouble() * 0.10000000149011612D;
+                     double d8 = (double)p_180655_3_.func_177956_o() + p_180655_4_.nextDouble();
+                     double d13 = (double)p_180655_3_.func_177952_p() + p_180655_4_.nextDouble();
+                     p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d3, d8, d13, 0.0D, 0.0D, 0.0D);
                  }
              }
  
@@ -165,7 +237,11 @@
              {
                  for (int k = 0; k < 2; ++k)
                  {
-@@ -396,7 +410,7 @@
+-                    double d4 = (double)(p_180655_3_.func_177958_n() + 1) - p_180655_4_.nextDouble() * (double)0.1F;
++                    double d4 = (double)(p_180655_3_.func_177958_n() + 1) - p_180655_4_.nextDouble() * 0.10000000149011612D;
+                     double d9 = (double)p_180655_3_.func_177956_o() + p_180655_4_.nextDouble();
+                     double d14 = (double)p_180655_3_.func_177952_p() + p_180655_4_.nextDouble();
+                     p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d4, d9, d14, 0.0D, 0.0D, 0.0D);
                  }
              }
  
@@ -174,7 +250,11 @@
              {
                  for (int l = 0; l < 2; ++l)
                  {
-@@ -407,7 +421,7 @@
+                     double d5 = (double)p_180655_3_.func_177958_n() + p_180655_4_.nextDouble();
+                     double d10 = (double)p_180655_3_.func_177956_o() + p_180655_4_.nextDouble();
+-                    double d15 = (double)p_180655_3_.func_177952_p() + p_180655_4_.nextDouble() * (double)0.1F;
++                    double d15 = (double)p_180655_3_.func_177952_p() + p_180655_4_.nextDouble() * 0.10000000149011612D;
+                     p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d5, d10, d15, 0.0D, 0.0D, 0.0D);
                  }
              }
  
@@ -183,7 +263,11 @@
              {
                  for (int i1 = 0; i1 < 2; ++i1)
                  {
-@@ -418,7 +432,7 @@
+                     double d6 = (double)p_180655_3_.func_177958_n() + p_180655_4_.nextDouble();
+                     double d11 = (double)p_180655_3_.func_177956_o() + p_180655_4_.nextDouble();
+-                    double d16 = (double)(p_180655_3_.func_177952_p() + 1) - p_180655_4_.nextDouble() * (double)0.1F;
++                    double d16 = (double)(p_180655_3_.func_177952_p() + 1) - p_180655_4_.nextDouble() * 0.10000000149011612D;
+                     p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d6, d11, d16, 0.0D, 0.0D, 0.0D);
                  }
              }
  
@@ -192,10 +276,35 @@
              {
                  for (int j1 = 0; j1 < 2; ++j1)
                  {
-@@ -461,6 +475,21 @@
+                     double d7 = (double)p_180655_3_.func_177958_n() + p_180655_4_.nextDouble();
+-                    double d12 = (double)(p_180655_3_.func_177956_o() + 1) - p_180655_4_.nextDouble() * (double)0.1F;
++                    double d12 = (double)(p_180655_3_.func_177956_o() + 1) - p_180655_4_.nextDouble() * 0.10000000149011612D;
+                     double d17 = (double)p_180655_3_.func_177952_p() + p_180655_4_.nextDouble();
+                     p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d7, d12, d17, 0.0D, 0.0D, 0.0D);
+                 }
+@@ -442,7 +457,7 @@
+ 
+     public IBlockState func_176203_a(int p_176203_1_)
      {
-         return new BlockStateContainer(this, new IProperty[] {field_176543_a, field_176545_N, field_176546_O, field_176541_P, field_176539_Q, field_176542_R});
+-        return this.func_176223_P().func_177226_a(field_176543_a, p_176203_1_);
++        return this.func_176223_P().func_177226_a(field_176543_a, Integer.valueOf(p_176203_1_));
      }
+ 
+     @SideOnly(Side.CLIENT)
+@@ -453,13 +468,28 @@
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(field_176543_a);
++        return ((Integer)p_176201_1_.func_177229_b(field_176543_a)).intValue();
+     }
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176543_a, field_176545_N, field_176546_O, field_176541_P, field_176539_Q, field_176542_R);
+-    }
++        return new BlockStateContainer(this, new IProperty[] {field_176543_a, field_176545_N, field_176546_O, field_176541_P, field_176539_Q, field_176542_R});
++    }
 +
 +    /*================================= Forge Start ======================================*/
 +    /**

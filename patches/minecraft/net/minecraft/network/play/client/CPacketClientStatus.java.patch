@@ -1,0 +1,11 @@
+--- before/net/minecraft/network/play/client/CPacketClientStatus.java
++++ after/net/minecraft/network/play/client/CPacketClientStatus.java
+@@ -20,7 +20,7 @@
+ 
+     public void func_148837_a(PacketBuffer p_148837_1_) throws IOException
+     {
+-        this.field_149437_a = p_148837_1_.func_179257_a(CPacketClientStatus.State.class);
++        this.field_149437_a = (CPacketClientStatus.State)p_148837_1_.func_179257_a(CPacketClientStatus.State.class);
+     }
+ 
+     public void func_148840_b(PacketBuffer p_148840_1_) throws IOException

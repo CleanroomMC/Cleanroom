@@ -26,6 +26,19 @@
      public ItemCameraTransforms(ItemTransformVec3f p_i46569_1_, ItemTransformVec3f p_i46569_2_, ItemTransformVec3f p_i46569_3_, ItemTransformVec3f p_i46569_4_, ItemTransformVec3f p_i46569_5_, ItemTransformVec3f p_i46569_6_, ItemTransformVec3f p_i46569_7_, ItemTransformVec3f p_i46569_8_)
      {
          this.field_188036_k = p_i46569_1_;
+@@ -91,9 +96,9 @@
+ 
+     private static Quaternion func_188035_a(float p_188035_0_, float p_188035_1_, float p_188035_2_)
+     {
+-        float f = p_188035_0_ * ((float)Math.PI / 180F);
+-        float f1 = p_188035_1_ * ((float)Math.PI / 180F);
+-        float f2 = p_188035_2_ * ((float)Math.PI / 180F);
++        float f = p_188035_0_ * 0.017453292F;
++        float f1 = p_188035_1_ * 0.017453292F;
++        float f2 = p_188035_2_ * 0.017453292F;
+         float f3 = MathHelper.func_76126_a(0.5F * f);
+         float f4 = MathHelper.func_76134_b(0.5F * f);
+         float f5 = MathHelper.func_76126_a(0.5F * f1);
 @@ -103,6 +108,7 @@
          return new Quaternion(f3 * f6 * f8 + f4 * f5 * f7, f4 * f5 * f8 - f3 * f6 * f7, f3 * f5 * f8 + f4 * f6 * f7, f4 * f6 * f8 - f3 * f5 * f7);
      }
@@ -34,7 +47,13 @@
      public ItemTransformVec3f func_181688_b(ItemCameraTransforms.TransformType p_181688_1_)
      {
          switch (p_181688_1_)
-@@ -169,7 +175,7 @@
+@@ -164,12 +170,12 @@
+ 
+             private ItemTransformVec3f func_181683_a(JsonDeserializationContext p_181683_1_, JsonObject p_181683_2_, String p_181683_3_)
+             {
+-                return p_181683_2_.has(p_181683_3_) ? p_181683_1_.deserialize(p_181683_2_.get(p_181683_3_), ItemTransformVec3f.class) : ItemTransformVec3f.field_178366_a;
++                return p_181683_2_.has(p_181683_3_) ? (ItemTransformVec3f)p_181683_1_.deserialize(p_181683_2_.get(p_181683_3_), ItemTransformVec3f.class) : ItemTransformVec3f.field_178366_a;
+             }
          }
  
      @SideOnly(Side.CLIENT)

@@ -1,0 +1,62 @@
+--- before/net/minecraft/block/BlockPressurePlate.java
++++ after/net/minecraft/block/BlockPressurePlate.java
+@@ -2,6 +2,7 @@
+ 
+ import java.util.List;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyBool;
+ import net.minecraft.block.state.BlockStateContainer;
+ import net.minecraft.block.state.IBlockState;
+@@ -22,18 +23,18 @@
+     protected BlockPressurePlate(Material p_i45693_1_, BlockPressurePlate.Sensitivity p_i45693_2_)
+     {
+         super(p_i45693_1_);
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176580_a, false));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176580_a, Boolean.valueOf(false)));
+         this.field_150069_a = p_i45693_2_;
+     }
+ 
+     protected int func_176576_e(IBlockState p_176576_1_)
+     {
+-        return p_176576_1_.func_177229_b(field_176580_a) ? 15 : 0;
++        return ((Boolean)p_176576_1_.func_177229_b(field_176580_a)).booleanValue() ? 15 : 0;
+     }
+ 
+     protected IBlockState func_176575_a(IBlockState p_176575_1_, int p_176575_2_)
+     {
+-        return p_176575_1_.func_177226_a(field_176580_a, p_176575_2_ > 0);
++        return p_176575_1_.func_177226_a(field_176580_a, Boolean.valueOf(p_176575_2_ > 0));
+     }
+ 
+     protected void func_185507_b(World p_185507_1_, BlockPos p_185507_2_)
+@@ -71,7 +72,7 @@
+                 list = p_180669_1_.func_72839_b((Entity)null, axisalignedbb);
+                 break;
+             case MOBS:
+-                list = p_180669_1_.func_72872_a(EntityLivingBase.class, axisalignedbb);
++                list = p_180669_1_.<Entity>func_72872_a(EntityLivingBase.class, axisalignedbb);
+                 break;
+             default:
+                 return 0;
+@@ -93,17 +94,17 @@
+ 
+     public IBlockState func_176203_a(int p_176203_1_)
+     {
+-        return this.func_176223_P().func_177226_a(field_176580_a, p_176203_1_ == 1);
++        return this.func_176223_P().func_177226_a(field_176580_a, Boolean.valueOf(p_176203_1_ == 1));
+     }
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(field_176580_a) ? 1 : 0;
++        return ((Boolean)p_176201_1_.func_177229_b(field_176580_a)).booleanValue() ? 1 : 0;
+     }
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176580_a);
++        return new BlockStateContainer(this, new IProperty[] {field_176580_a});
+     }
+ 
+     public static enum Sensitivity

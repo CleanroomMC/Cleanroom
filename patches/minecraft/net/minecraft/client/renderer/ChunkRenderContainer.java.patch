@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/renderer/ChunkRenderContainer.java
++++ after/net/minecraft/client/renderer/ChunkRenderContainer.java
+@@ -14,7 +14,7 @@
+     private double field_178008_c;
+     private double field_178005_d;
+     private double field_178006_e;
+-    protected List<RenderChunk> field_178009_a = Lists.newArrayListWithCapacity(17424);
++    protected List<RenderChunk> field_178009_a = Lists.<RenderChunk>newArrayListWithCapacity(17424);
+     protected boolean field_178007_b;
+ 
+     public void func_178004_a(double p_178004_1_, double p_178004_3_, double p_178004_5_)

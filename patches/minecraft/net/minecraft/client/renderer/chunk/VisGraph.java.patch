@@ -1,0 +1,20 @@
+--- before/net/minecraft/client/renderer/chunk/VisGraph.java
++++ after/net/minecraft/client/renderer/chunk/VisGraph.java
+@@ -70,14 +70,14 @@
+ 
+     private Set<EnumFacing> func_178604_a(int p_178604_1_)
+     {
+-        Set<EnumFacing> set = EnumSet.noneOf(EnumFacing.class);
+-        Queue<Integer> queue = Queues.newArrayDeque();
++        Set<EnumFacing> set = EnumSet.<EnumFacing>noneOf(EnumFacing.class);
++        Queue<Integer> queue = Queues.<Integer>newArrayDeque();
+         queue.add(IntegerCache.func_181756_a(p_178604_1_));
+         this.field_178612_d.set(p_178604_1_, true);
+ 
+         while (!queue.isEmpty())
+         {
+-            int i = queue.poll();
++            int i = ((Integer)queue.poll()).intValue();
+             this.func_178610_a(i, set);
+ 
+             for (EnumFacing enumfacing : EnumFacing.values())

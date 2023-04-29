@@ -1,5 +1,23 @@
 --- before/net/minecraft/entity/item/EntityMinecartContainer.java
 +++ after/net/minecraft/entity/item/EntityMinecartContainer.java
+@@ -26,7 +26,7 @@
+ 
+ public abstract class EntityMinecartContainer extends EntityMinecart implements ILockableContainer, ILootContainer
+ {
+-    private NonNullList<ItemStack> field_94113_a = NonNullList.func_191197_a(36, ItemStack.field_190927_a);
++    private NonNullList<ItemStack> field_94113_a = NonNullList.<ItemStack>func_191197_a(36, ItemStack.field_190927_a);
+     public boolean field_94112_b = true;
+     private ResourceLocation field_184290_c;
+     private long field_184291_d;
+@@ -115,7 +115,7 @@
+         }
+         else
+         {
+-            return !(p_70300_1_.func_70068_e(this) > 64.0D);
++            return p_70300_1_.func_70068_e(this) <= 64.0D;
+         }
+     }
+ 
 @@ -138,10 +138,10 @@
      }
  
@@ -13,6 +31,24 @@
      }
  
      public void func_70106_y()
+@@ -162,7 +162,7 @@
+     public static void func_190574_b(DataFixer p_190574_0_, Class<?> p_190574_1_)
+     {
+         EntityMinecart.func_189669_a(p_190574_0_, p_190574_1_);
+-        p_190574_0_.func_188258_a(FixTypes.ENTITY, new ItemStackDataLists(p_190574_1_, "Items"));
++        p_190574_0_.func_188258_a(FixTypes.ENTITY, new ItemStackDataLists(p_190574_1_, new String[] {"Items"}));
+     }
+ 
+     protected void func_70014_b(NBTTagCompound p_70014_1_)
+@@ -187,7 +187,7 @@
+     protected void func_70037_a(NBTTagCompound p_70037_1_)
+     {
+         super.func_70037_a(p_70037_1_);
+-        this.field_94113_a = NonNullList.func_191197_a(this.func_70302_i_(), ItemStack.field_190927_a);
++        this.field_94113_a = NonNullList.<ItemStack>func_191197_a(this.func_70302_i_(), ItemStack.field_190927_a);
+ 
+         if (p_70037_1_.func_150297_b("LootTable", 8))
+         {
 @@ -202,6 +202,7 @@
  
      public boolean func_184230_a(EntityPlayer p_184230_1_, EnumHand p_184230_2_)

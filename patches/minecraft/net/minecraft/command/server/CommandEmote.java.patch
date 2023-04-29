@@ -1,0 +1,17 @@
+--- before/net/minecraft/command/server/CommandEmote.java
++++ after/net/minecraft/command/server/CommandEmote.java
+@@ -33,12 +33,12 @@
+     {
+         if (p_184881_3_.length <= 0)
+         {
+-            throw new WrongUsageException("commands.me.usage");
++            throw new WrongUsageException("commands.me.usage", new Object[0]);
+         }
+         else
+         {
+             ITextComponent itextcomponent = func_147176_a(p_184881_2_, p_184881_3_, 0, !(p_184881_2_ instanceof EntityPlayer));
+-            p_184881_1_.func_184103_al().func_148539_a(new TextComponentTranslation("chat.type.emote", p_184881_2_.func_145748_c_(), itextcomponent));
++            p_184881_1_.func_184103_al().func_148539_a(new TextComponentTranslation("chat.type.emote", new Object[] {p_184881_2_.func_145748_c_(), itextcomponent}));
+         }
+     }
+ 

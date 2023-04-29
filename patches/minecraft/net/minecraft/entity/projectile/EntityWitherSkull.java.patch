@@ -1,5 +1,14 @@
 --- before/net/minecraft/entity/projectile/EntityWitherSkull.java
 +++ after/net/minecraft/entity/projectile/EntityWitherSkull.java
+@@ -21,7 +21,7 @@
+ 
+ public class EntityWitherSkull extends EntityFireball
+ {
+-    private static final DataParameter<Boolean> field_184565_e = EntityDataManager.func_187226_a(EntityWitherSkull.class, DataSerializers.field_187198_h);
++    private static final DataParameter<Boolean> field_184565_e = EntityDataManager.<Boolean>func_187226_a(EntityWitherSkull.class, DataSerializers.field_187198_h);
+ 
+     public EntityWitherSkull(World p_i1793_1_)
+     {
 @@ -62,7 +62,7 @@
          float f = super.func_180428_a(p_180428_1_, p_180428_2_, p_180428_3_, p_180428_4_);
          Block block = p_180428_4_.func_177230_c();
@@ -18,3 +27,24 @@
              this.func_70106_y();
          }
      }
+@@ -132,17 +132,17 @@
+ 
+     protected void func_70088_a()
+     {
+-        this.field_70180_af.func_187214_a(field_184565_e, false);
++        this.field_70180_af.func_187214_a(field_184565_e, Boolean.valueOf(false));
+     }
+ 
+     public boolean func_82342_d()
+     {
+-        return this.field_70180_af.func_187225_a(field_184565_e);
++        return ((Boolean)this.field_70180_af.func_187225_a(field_184565_e)).booleanValue();
+     }
+ 
+     public void func_82343_e(boolean p_82343_1_)
+     {
+-        this.field_70180_af.func_187227_b(field_184565_e, p_82343_1_);
++        this.field_70180_af.func_187227_b(field_184565_e, Boolean.valueOf(p_82343_1_));
+     }
+ 
+     protected boolean func_184564_k()

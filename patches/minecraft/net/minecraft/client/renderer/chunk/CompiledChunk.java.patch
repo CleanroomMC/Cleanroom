@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/renderer/chunk/CompiledChunk.java
++++ after/net/minecraft/client/renderer/chunk/CompiledChunk.java
+@@ -30,7 +30,7 @@
+     private final boolean[] field_178500_b = new boolean[BlockRenderLayer.values().length];
+     private final boolean[] field_178501_c = new boolean[BlockRenderLayer.values().length];
+     private boolean field_178498_d = true;
+-    private final List<TileEntity> field_178499_e = Lists.newArrayList();
++    private final List<TileEntity> field_178499_e = Lists.<TileEntity>newArrayList();
+     private SetVisibility field_178496_f = new SetVisibility();
+     private BufferBuilder.State field_178497_g;
+ 

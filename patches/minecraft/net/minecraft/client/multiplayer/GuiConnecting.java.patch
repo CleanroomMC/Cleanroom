@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/multiplayer/GuiConnecting.java
 +++ after/net/minecraft/client/multiplayer/GuiConnecting.java
+@@ -50,7 +50,7 @@
+ 
+     private void func_146367_a(final String p_146367_1_, final int p_146367_2_)
+     {
+-        field_146370_f.info("Connecting to {}, {}", p_146367_1_, p_146367_2_);
++        field_146370_f.info("Connecting to {}, {}", p_146367_1_, Integer.valueOf(p_146367_2_));
+         (new Thread("Server Connector #" + field_146372_a.incrementAndGet())
+         {
+             public void run()
 @@ -67,7 +67,7 @@
                      inetaddress = InetAddress.getByName(p_146367_1_);
                      GuiConnecting.this.field_146371_g = NetworkManager.func_181124_a(inetaddress, p_146367_2_, GuiConnecting.this.field_146297_k.field_71474_y.func_181148_f());
@@ -9,3 +18,21 @@
                      GuiConnecting.this.field_146371_g.func_179290_a(new CPacketLoginStart(GuiConnecting.this.field_146297_k.func_110432_I().func_148256_e()));
                  }
                  catch (UnknownHostException unknownhostexception)
+@@ -78,7 +78,7 @@
+                     }
+ 
+                     GuiConnecting.field_146370_f.error("Couldn't connect to server", (Throwable)unknownhostexception);
+-                    GuiConnecting.this.field_146297_k.func_147108_a(new GuiDisconnected(GuiConnecting.this.field_146374_i, "connect.failed", new TextComponentTranslation("disconnect.genericReason", "Unknown host")));
++                    GuiConnecting.this.field_146297_k.func_147108_a(new GuiDisconnected(GuiConnecting.this.field_146374_i, "connect.failed", new TextComponentTranslation("disconnect.genericReason", new Object[] {"Unknown host"})));
+                 }
+                 catch (Exception exception)
+                 {
+@@ -96,7 +96,7 @@
+                         s = s.replaceAll(s1, "");
+                     }
+ 
+-                    GuiConnecting.this.field_146297_k.func_147108_a(new GuiDisconnected(GuiConnecting.this.field_146374_i, "connect.failed", new TextComponentTranslation("disconnect.genericReason", s)));
++                    GuiConnecting.this.field_146297_k.func_147108_a(new GuiDisconnected(GuiConnecting.this.field_146374_i, "connect.failed", new TextComponentTranslation("disconnect.genericReason", new Object[] {s})));
+                 }
+             }
+         }).start();

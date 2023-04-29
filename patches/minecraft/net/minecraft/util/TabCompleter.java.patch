@@ -1,5 +1,14 @@
 --- before/net/minecraft/util/TabCompleter.java
 +++ after/net/minecraft/util/TabCompleter.java
+@@ -18,7 +18,7 @@
+     protected boolean field_186846_c;
+     protected boolean field_186847_d;
+     protected int field_186848_e;
+-    protected List<String> field_186849_f = Lists.newArrayList();
++    protected List<String> field_186849_f = Lists.<String>newArrayList();
+ 
+     public TabCompleter(GuiTextField p_i46597_1_, boolean p_i46597_2_)
+     {
 @@ -55,13 +55,14 @@
              this.field_186844_a.func_146175_b(i - this.field_186844_a.func_146198_h());
          }

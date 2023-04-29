@@ -1,0 +1,10 @@
+--- before/net/minecraft/world/gen/structure/template/BlockRotationProcessor.java
++++ after/net/minecraft/world/gen/structure/template/BlockRotationProcessor.java
+@@ -19,6 +19,6 @@
+     @Nullable
+     public Template.BlockInfo func_189943_a(World p_189943_1_, BlockPos p_189943_2_, Template.BlockInfo p_189943_3_)
+     {
+-        return !(this.field_189944_a >= 1.0F) && !(this.field_189945_b.nextFloat() <= this.field_189944_a) ? null : p_189943_3_;
++        return this.field_189944_a < 1.0F && this.field_189945_b.nextFloat() > this.field_189944_a ? null : p_189943_3_;
+     }
+ }

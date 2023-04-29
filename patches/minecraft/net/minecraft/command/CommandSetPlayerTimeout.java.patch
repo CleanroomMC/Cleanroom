@@ -1,0 +1,11 @@
+--- before/net/minecraft/command/CommandSetPlayerTimeout.java
++++ after/net/minecraft/command/CommandSetPlayerTimeout.java
+@@ -23,7 +23,7 @@
+     {
+         if (p_184881_3_.length != 1)
+         {
+-            throw new WrongUsageException("commands.setidletimeout.usage");
++            throw new WrongUsageException("commands.setidletimeout.usage", new Object[0]);
+         }
+         else
+         {

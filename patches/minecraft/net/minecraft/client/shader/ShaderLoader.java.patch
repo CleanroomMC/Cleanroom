@@ -1,6 +1,19 @@
 --- before/net/minecraft/client/shader/ShaderLoader.java
 +++ after/net/minecraft/client/shader/ShaderLoader.java
-@@ -60,7 +60,8 @@
+@@ -4,7 +4,6 @@
+ import java.io.BufferedInputStream;
+ import java.io.Closeable;
+ import java.io.IOException;
+-import java.nio.Buffer;
+ import java.nio.ByteBuffer;
+ import java.util.Map;
+ import net.minecraft.client.renderer.OpenGlHelper;
+@@ -57,11 +56,12 @@
+ 
+     public static ShaderLoader func_148057_a(IResourceManager p_148057_0_, ShaderLoader.ShaderType p_148057_1_, String p_148057_2_) throws IOException
+     {
+-        ShaderLoader shaderloader = p_148057_1_.func_148064_d().get(p_148057_2_);
++        ShaderLoader shaderloader = (ShaderLoader)p_148057_1_.func_148064_d().get(p_148057_2_);
  
          if (shaderloader == null)
          {
@@ -10,3 +23,21 @@
              IResource iresource = p_148057_0_.func_110536_a(resourcelocation);
  
              try
+@@ -69,7 +69,7 @@
+                 byte[] abyte = IOUtils.toByteArray(new BufferedInputStream(iresource.func_110527_b()));
+                 ByteBuffer bytebuffer = BufferUtils.createByteBuffer(abyte.length);
+                 bytebuffer.put(abyte);
+-                ((Buffer)bytebuffer).position(0);
++                bytebuffer.position(0);
+                 int i = OpenGlHelper.func_153195_b(p_148057_1_.func_148065_c());
+                 OpenGlHelper.func_153169_a(i, bytebuffer);
+                 OpenGlHelper.func_153170_c(i);
+@@ -103,7 +103,7 @@
+         private final String field_148072_c;
+         private final String field_148069_d;
+         private final int field_148070_e;
+-        private final Map<String, ShaderLoader> field_148067_f = Maps.newHashMap();
++        private final Map<String, ShaderLoader> field_148067_f = Maps.<String, ShaderLoader>newHashMap();
+ 
+         private ShaderType(String p_i45090_3_, String p_i45090_4_, int p_i45090_5_)
+         {

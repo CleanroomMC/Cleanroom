@@ -1,0 +1,49 @@
+--- before/net/minecraft/client/renderer/block/statemap/StateMapperBase.java
++++ after/net/minecraft/client/renderer/block/statemap/StateMapperBase.java
+@@ -1,7 +1,9 @@
+ package net.minecraft.client.renderer.block.statemap;
+ 
+ import com.google.common.collect.Maps;
++import com.google.common.collect.UnmodifiableIterator;
+ import java.util.Map;
++import java.util.Map.Entry;
+ import net.minecraft.block.Block;
+ import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.state.IBlockState;
+@@ -12,20 +14,20 @@
+ @SideOnly(Side.CLIENT)
+ public abstract class StateMapperBase implements IStateMapper
+ {
+-    protected Map<IBlockState, ModelResourceLocation> field_178133_b = Maps.newLinkedHashMap();
++    protected Map<IBlockState, ModelResourceLocation> field_178133_b = Maps.<IBlockState, ModelResourceLocation>newLinkedHashMap();
+ 
+     public String func_178131_a(Map < IProperty<?>, Comparable<? >> p_178131_1_)
+     {
+         StringBuilder stringbuilder = new StringBuilder();
+ 
+-        for (Map.Entry < IProperty<?>, Comparable<? >> entry : p_178131_1_.entrySet())
++        for (Entry < IProperty<?>, Comparable<? >> entry : p_178131_1_.entrySet())
+         {
+             if (stringbuilder.length() != 0)
+             {
+                 stringbuilder.append(",");
+             }
+ 
+-            IProperty<?> iproperty = entry.getKey();
++            IProperty<?> iproperty = (IProperty)entry.getKey();
+             stringbuilder.append(iproperty.func_177701_a());
+             stringbuilder.append("=");
+             stringbuilder.append(this.func_187489_a(iproperty, entry.getValue()));
+@@ -46,8 +48,11 @@
+ 
+     public Map<IBlockState, ModelResourceLocation> func_178130_a(Block p_178130_1_)
+     {
+-        for (IBlockState iblockstate : p_178130_1_.func_176194_O().func_177619_a())
++        UnmodifiableIterator unmodifiableiterator = p_178130_1_.func_176194_O().func_177619_a().iterator();
++
++        while (unmodifiableiterator.hasNext())
+         {
++            IBlockState iblockstate = (IBlockState)unmodifiableiterator.next();
+             this.field_178133_b.put(iblockstate, this.func_178132_a(iblockstate));
+         }
+ 

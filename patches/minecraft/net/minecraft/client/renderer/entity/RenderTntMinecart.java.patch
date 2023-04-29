@@ -1,0 +1,13 @@
+--- before/net/minecraft/client/renderer/entity/RenderTntMinecart.java
++++ after/net/minecraft/client/renderer/entity/RenderTntMinecart.java
+@@ -26,8 +26,8 @@
+         {
+             float f = 1.0F - ((float)i - p_188319_2_ + 1.0F) / 10.0F;
+             f = MathHelper.func_76131_a(f, 0.0F, 1.0F);
+-            f *= f;
+-            f *= f;
++            f = f * f;
++            f = f * f;
+             float f1 = 1.0F + f * 0.3F;
+             GlStateManager.func_179152_a(f1, f1, f1);
+         }

@@ -1,0 +1,36 @@
+--- before/net/minecraft/client/model/ModelRabbit.java
++++ after/net/minecraft/client/model/ModelRabbit.java
+@@ -153,21 +153,21 @@
+     {
+         float f = p_78087_3_ - (float)p_78087_7_.field_70173_aa;
+         EntityRabbit entityrabbit = (EntityRabbit)p_78087_7_;
+-        this.field_178700_l.field_78795_f = p_78087_5_ * ((float)Math.PI / 180F);
+-        this.field_178704_h.field_78795_f = p_78087_5_ * ((float)Math.PI / 180F);
+-        this.field_178705_i.field_78795_f = p_78087_5_ * ((float)Math.PI / 180F);
+-        this.field_178702_j.field_78795_f = p_78087_5_ * ((float)Math.PI / 180F);
+-        this.field_178700_l.field_78796_g = p_78087_4_ * ((float)Math.PI / 180F);
+-        this.field_178704_h.field_78796_g = p_78087_4_ * ((float)Math.PI / 180F);
++        this.field_178700_l.field_78795_f = p_78087_5_ * 0.017453292F;
++        this.field_178704_h.field_78795_f = p_78087_5_ * 0.017453292F;
++        this.field_178705_i.field_78795_f = p_78087_5_ * 0.017453292F;
++        this.field_178702_j.field_78795_f = p_78087_5_ * 0.017453292F;
++        this.field_178700_l.field_78796_g = p_78087_4_ * 0.017453292F;
++        this.field_178704_h.field_78796_g = p_78087_4_ * 0.017453292F;
+         this.field_178705_i.field_78796_g = this.field_178700_l.field_78796_g - 0.2617994F;
+         this.field_178702_j.field_78796_g = this.field_178700_l.field_78796_g + 0.2617994F;
+         this.field_178701_m = MathHelper.func_76126_a(entityrabbit.func_175521_o(f) * (float)Math.PI);
+-        this.field_178697_c.field_78795_f = (this.field_178701_m * 50.0F - 21.0F) * ((float)Math.PI / 180F);
+-        this.field_178694_d.field_78795_f = (this.field_178701_m * 50.0F - 21.0F) * ((float)Math.PI / 180F);
+-        this.field_178698_a.field_78795_f = this.field_178701_m * 50.0F * ((float)Math.PI / 180F);
+-        this.field_178696_b.field_78795_f = this.field_178701_m * 50.0F * ((float)Math.PI / 180F);
+-        this.field_178692_f.field_78795_f = (this.field_178701_m * -40.0F - 11.0F) * ((float)Math.PI / 180F);
+-        this.field_178693_g.field_78795_f = (this.field_178701_m * -40.0F - 11.0F) * ((float)Math.PI / 180F);
++        this.field_178697_c.field_78795_f = (this.field_178701_m * 50.0F - 21.0F) * 0.017453292F;
++        this.field_178694_d.field_78795_f = (this.field_178701_m * 50.0F - 21.0F) * 0.017453292F;
++        this.field_178698_a.field_78795_f = this.field_178701_m * 50.0F * 0.017453292F;
++        this.field_178696_b.field_78795_f = this.field_178701_m * 50.0F * 0.017453292F;
++        this.field_178692_f.field_78795_f = (this.field_178701_m * -40.0F - 11.0F) * 0.017453292F;
++        this.field_178693_g.field_78795_f = (this.field_178701_m * -40.0F - 11.0F) * 0.017453292F;
+     }
+ 
+     public void func_78086_a(EntityLivingBase p_78086_1_, float p_78086_2_, float p_78086_3_, float p_78086_4_)

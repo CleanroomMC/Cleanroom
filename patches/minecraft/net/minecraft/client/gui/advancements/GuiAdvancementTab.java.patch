@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/gui/advancements/GuiAdvancementTab.java
 +++ after/net/minecraft/client/gui/advancements/GuiAdvancementTab.java
+@@ -28,7 +28,7 @@
+     private final ItemStack field_191807_j;
+     private final String field_191808_k;
+     private final GuiAdvancement field_191809_l;
+-    private final Map<Advancement, GuiAdvancement> field_191810_m = Maps.newLinkedHashMap();
++    private final Map<Advancement, GuiAdvancement> field_191810_m = Maps.<Advancement, GuiAdvancement>newLinkedHashMap();
+     private int field_191811_n;
+     private int field_191812_o;
+     private int field_193939_q = Integer.MAX_VALUE;
 @@ -37,6 +37,7 @@
      private int field_191814_q = Integer.MIN_VALUE;
      private float field_191815_r;

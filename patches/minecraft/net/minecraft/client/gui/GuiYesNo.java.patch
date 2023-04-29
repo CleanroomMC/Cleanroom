@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/gui/GuiYesNo.java
++++ after/net/minecraft/client/gui/GuiYesNo.java
+@@ -13,7 +13,7 @@
+     protected GuiYesNoCallback field_146355_a;
+     protected String field_146351_f;
+     private final String field_146354_r;
+-    private final List<String> field_175298_s = Lists.newArrayList();
++    private final List<String> field_175298_s = Lists.<String>newArrayList();
+     protected String field_146352_g;
+     protected String field_146356_h;
+     protected int field_146357_i;

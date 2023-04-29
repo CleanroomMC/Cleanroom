@@ -1,8 +1,22 @@
 --- before/net/minecraft/client/renderer/texture/Stitcher.java
 +++ after/net/minecraft/client/renderer/texture/Stitcher.java
-@@ -56,18 +56,24 @@
+@@ -14,8 +14,8 @@
+ public class Stitcher
+ {
+     private final int field_147971_a;
+-    private final Set<Stitcher.Holder> field_94319_a = Sets.newHashSetWithExpectedSize(256);
+-    private final List<Stitcher.Slot> field_94317_b = Lists.newArrayListWithCapacity(256);
++    private final Set<Stitcher.Holder> field_94319_a = Sets.<Stitcher.Holder>newHashSetWithExpectedSize(256);
++    private final List<Stitcher.Slot> field_94317_b = Lists.<Stitcher.Slot>newArrayListWithCapacity(256);
+     private int field_94318_c;
+     private int field_94315_d;
+     private final int field_94316_e;
+@@ -54,32 +54,38 @@
+ 
+     public void func_94305_f()
      {
-         Stitcher.Holder[] astitcher$holder = (Stitcher.Holder[])this.field_94319_a.toArray(new Stitcher.Holder[this.field_94319_a.size()]);
+-        Stitcher.Holder[] astitcher$holder = this.field_94319_a.toArray(new Stitcher.Holder[this.field_94319_a.size()]);
++        Stitcher.Holder[] astitcher$holder = (Stitcher.Holder[])this.field_94319_a.toArray(new Stitcher.Holder[this.field_94319_a.size()]);
          Arrays.sort((Object[])astitcher$holder);
 +        net.minecraftforge.fml.common.ProgressManager.ProgressBar bar = net.minecraftforge.fml.common.ProgressManager.push("Texture stitching", astitcher$holder.length);
  
@@ -25,6 +39,38 @@
      }
  
      public List<TextureAtlasSprite> func_94309_g()
+     {
+-        List<Stitcher.Slot> list = Lists.newArrayList();
++        List<Stitcher.Slot> list = Lists.<Stitcher.Slot>newArrayList();
+ 
+         for (Stitcher.Slot stitcher$slot : this.field_94317_b)
+         {
+             stitcher$slot.func_94184_a(list);
+         }
+ 
+-        List<TextureAtlasSprite> list1 = Lists.newArrayList();
++        List<TextureAtlasSprite> list1 = Lists.<TextureAtlasSprite>newArrayList();
+ 
+         for (Stitcher.Slot stitcher$slot1 : list)
+         {
+@@ -104,7 +110,7 @@
+ 
+         for (int i = 0; i < this.field_94317_b.size(); ++i)
+         {
+-            if (this.field_94317_b.get(i).func_94182_a(p_94310_1_))
++            if (((Stitcher.Slot)this.field_94317_b.get(i)).func_94182_a(p_94310_1_))
+             {
+                 return true;
+             }
+@@ -113,7 +119,7 @@
+             {
+                 p_94310_1_.func_94194_d();
+ 
+-                if (this.field_94317_b.get(i).func_94182_a(p_94310_1_))
++                if (((Stitcher.Slot)this.field_94317_b.get(i)).func_94182_a(p_94310_1_))
+                 {
+                     return true;
+                 }
 @@ -148,7 +154,7 @@
  
              if (flag3 ^ flag4)
@@ -43,3 +89,12 @@
              }
  
              public int compareTo(Stitcher.Holder p_compareTo_1_)
+@@ -325,7 +331,7 @@
+                         {
+                             if (this.field_94189_e == null)
+                             {
+-                                this.field_94189_e = Lists.newArrayListWithCapacity(1);
++                                this.field_94189_e = Lists.<Stitcher.Slot>newArrayListWithCapacity(1);
+                                 this.field_94189_e.add(new Stitcher.Slot(this.field_94192_a, this.field_94190_b, i, j));
+                                 int k = this.field_94191_c - i;
+                                 int l = this.field_94188_d - j;

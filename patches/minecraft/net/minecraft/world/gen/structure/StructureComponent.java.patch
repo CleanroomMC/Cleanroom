@@ -11,3 +11,23 @@
          NBTTagCompound nbttagcompound = new NBTTagCompound();
          nbttagcompound.func_74778_a("id", MapGenStructureIO.func_143036_a(this));
          nbttagcompound.func_74782_a("BB", this.field_74887_e.func_151535_h());
+@@ -315,7 +319,7 @@
+             {
+                 for (int k = p_189914_7_; k <= p_189914_10_; ++k)
+                 {
+-                    if (!(p_189914_3_.nextFloat() > p_189914_4_) && (!p_189914_13_ || this.func_175807_a(p_189914_1_, j, i, k, p_189914_2_).func_185904_a() != Material.field_151579_a) && (p_189914_14_ <= 0 || this.func_189916_b(p_189914_1_, j, i, k, p_189914_2_) < p_189914_14_))
++                    if (p_189914_3_.nextFloat() <= p_189914_4_ && (!p_189914_13_ || this.func_175807_a(p_189914_1_, j, i, k, p_189914_2_).func_185904_a() != Material.field_151579_a) && (p_189914_14_ <= 0 || this.func_189916_b(p_189914_1_, j, i, k, p_189914_2_) < p_189914_14_))
+                     {
+                         if (i != p_189914_6_ && i != p_189914_9_ && j != p_189914_5_ && j != p_189914_8_ && k != p_189914_7_ && k != p_189914_10_)
+                         {
+@@ -508,10 +512,6 @@
+     public abstract static class BlockSelector
+         {
+             protected IBlockState field_151562_a = Blocks.field_150350_a.func_176223_P();
+-
+-            protected BlockSelector()
+-            {
+-            }
+ 
+             public abstract void func_75062_a(Random p_75062_1_, int p_75062_2_, int p_75062_3_, int p_75062_4_, boolean p_75062_5_);
+ 

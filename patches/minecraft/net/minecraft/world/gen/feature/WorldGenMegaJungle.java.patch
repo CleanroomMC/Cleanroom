@@ -36,6 +36,15 @@
                      {
                          this.func_175903_a(p_180709_1_, blockpos3, this.field_76520_b);
  
+@@ -117,7 +117,7 @@
+     {
+         if (p_181632_2_.nextInt(3) > 0 && p_181632_1_.func_175623_d(p_181632_3_))
+         {
+-            this.func_175903_a(p_181632_1_, p_181632_3_, Blocks.field_150395_bd.func_176223_P().func_177226_a(p_181632_4_, true));
++            this.func_175903_a(p_181632_1_, p_181632_3_, Blocks.field_150395_bd.func_176223_P().func_177226_a(p_181632_4_, Boolean.valueOf(true)));
+         }
+     }
+ 
 @@ -129,5 +129,12 @@
          {
              this.func_175925_a(p_175930_1_, p_175930_2_.func_177981_b(j), p_175930_3_ + 1 - j);

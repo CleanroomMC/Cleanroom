@@ -1,0 +1,11 @@
+--- before/net/minecraft/realms/RealmsAnvilLevelStorageSource.java
++++ after/net/minecraft/realms/RealmsAnvilLevelStorageSource.java
+@@ -66,7 +66,7 @@
+ 
+     public List<RealmsLevelSummary> getLevelList() throws AnvilConverterException
+     {
+-        List<RealmsLevelSummary> list = Lists.newArrayList();
++        List<RealmsLevelSummary> list = Lists.<RealmsLevelSummary>newArrayList();
+ 
+         for (WorldSummary worldsummary : this.levelStorageSource.func_75799_b())
+         {

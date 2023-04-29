@@ -8,3 +8,12 @@
      }
  
      public void func_174859_a(EnumFacing p_174859_1_)
+@@ -98,7 +99,7 @@
+         {
+             boolean flag = false;
+             double d0 = 7.0D;
+-            List<EntityLiving> list = this.field_70170_p.func_72872_a(EntityLiving.class, new AxisAlignedBB(this.field_70165_t - 7.0D, this.field_70163_u - 7.0D, this.field_70161_v - 7.0D, this.field_70165_t + 7.0D, this.field_70163_u + 7.0D, this.field_70161_v + 7.0D));
++            List<EntityLiving> list = this.field_70170_p.<EntityLiving>func_72872_a(EntityLiving.class, new AxisAlignedBB(this.field_70165_t - 7.0D, this.field_70163_u - 7.0D, this.field_70161_v - 7.0D, this.field_70165_t + 7.0D, this.field_70163_u + 7.0D, this.field_70161_v + 7.0D));
+ 
+             for (EntityLiving entityliving : list)
+             {

@@ -1,0 +1,84 @@
+--- before/net/minecraft/block/BlockTNT.java
++++ after/net/minecraft/block/BlockTNT.java
+@@ -1,6 +1,7 @@
+ package net.minecraft.block;
+ 
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyBool;
+ import net.minecraft.block.state.BlockStateContainer;
+ import net.minecraft.block.state.IBlockState;
+@@ -28,7 +29,7 @@
+     public BlockTNT()
+     {
+         super(Material.field_151590_u);
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176246_a, false));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176246_a, Boolean.valueOf(false)));
+         this.func_149647_a(CreativeTabs.field_78028_d);
+     }
+ 
+@@ -38,7 +39,7 @@
+ 
+         if (p_176213_1_.func_175640_z(p_176213_2_))
+         {
+-            this.func_176206_d(p_176213_1_, p_176213_2_, p_176213_3_.func_177226_a(field_176246_a, true));
++            this.func_176206_d(p_176213_1_, p_176213_2_, p_176213_3_.func_177226_a(field_176246_a, Boolean.valueOf(true)));
+             p_176213_1_.func_175698_g(p_176213_2_);
+         }
+     }
+@@ -47,7 +48,7 @@
+     {
+         if (p_189540_2_.func_175640_z(p_189540_3_))
+         {
+-            this.func_176206_d(p_189540_2_, p_189540_3_, p_189540_1_.func_177226_a(field_176246_a, true));
++            this.func_176206_d(p_189540_2_, p_189540_3_, p_189540_1_.func_177226_a(field_176246_a, Boolean.valueOf(true)));
+             p_189540_2_.func_175698_g(p_189540_3_);
+         }
+     }
+@@ -71,7 +72,7 @@
+     {
+         if (!p_180692_1_.field_72995_K)
+         {
+-            if (p_180692_3_.func_177229_b(field_176246_a))
++            if (((Boolean)p_180692_3_.func_177229_b(field_176246_a)).booleanValue())
+             {
+                 EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(p_180692_1_, (double)((float)p_180692_2_.func_177958_n() + 0.5F), (double)p_180692_2_.func_177956_o(), (double)((float)p_180692_2_.func_177952_p() + 0.5F), p_180692_4_);
+                 p_180692_1_.func_72838_d(entitytntprimed);
+@@ -86,7 +87,7 @@
+ 
+         if (!itemstack.func_190926_b() && (itemstack.func_77973_b() == Items.field_151033_d || itemstack.func_77973_b() == Items.field_151059_bz))
+         {
+-            this.func_180692_a(p_180639_1_, p_180639_2_, p_180639_3_.func_177226_a(field_176246_a, true), p_180639_4_);
++            this.func_180692_a(p_180639_1_, p_180639_2_, p_180639_3_.func_177226_a(field_176246_a, Boolean.valueOf(true)), p_180639_4_);
+             p_180639_1_.func_180501_a(p_180639_2_, Blocks.field_150350_a.func_176223_P(), 11);
+ 
+             if (itemstack.func_77973_b() == Items.field_151033_d)
+@@ -114,7 +115,7 @@
+ 
+             if (entityarrow.func_70027_ad())
+             {
+-                this.func_180692_a(p_180634_1_, p_180634_2_, p_180634_1_.func_180495_p(p_180634_2_).func_177226_a(field_176246_a, true), entityarrow.field_70250_c instanceof EntityLivingBase ? (EntityLivingBase)entityarrow.field_70250_c : null);
++                this.func_180692_a(p_180634_1_, p_180634_2_, p_180634_1_.func_180495_p(p_180634_2_).func_177226_a(field_176246_a, Boolean.valueOf(true)), entityarrow.field_70250_c instanceof EntityLivingBase ? (EntityLivingBase)entityarrow.field_70250_c : null);
+                 p_180634_1_.func_175698_g(p_180634_2_);
+             }
+         }
+@@ -127,16 +128,16 @@
+ 
+     public IBlockState func_176203_a(int p_176203_1_)
+     {
+-        return this.func_176223_P().func_177226_a(field_176246_a, (p_176203_1_ & 1) > 0);
++        return this.func_176223_P().func_177226_a(field_176246_a, Boolean.valueOf((p_176203_1_ & 1) > 0));
+     }
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(field_176246_a) ? 1 : 0;
++        return ((Boolean)p_176201_1_.func_177229_b(field_176246_a)).booleanValue() ? 1 : 0;
+     }
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176246_a);
++        return new BlockStateContainer(this, new IProperty[] {field_176246_a});
+     }
+ }

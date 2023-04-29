@@ -1,0 +1,42 @@
+--- before/net/minecraft/advancements/FunctionManager.java
++++ after/net/minecraft/advancements/FunctionManager.java
+@@ -24,10 +24,10 @@
+     private static final Logger field_193067_a = LogManager.getLogger();
+     private final File field_193068_b;
+     private final MinecraftServer field_193069_c;
+-    private final Map<ResourceLocation, FunctionObject> field_193070_d = Maps.newHashMap();
++    private final Map<ResourceLocation, FunctionObject> field_193070_d = Maps.<ResourceLocation, FunctionObject>newHashMap();
+     private String field_193071_e = "-";
+     private FunctionObject field_193072_f;
+-    private final ArrayDeque<FunctionManager.QueuedCommand> field_194020_g = new ArrayDeque<>();
++    private final ArrayDeque<FunctionManager.QueuedCommand> field_194020_g = new ArrayDeque<FunctionManager.QueuedCommand>();
+     private boolean field_194021_h = false;
+     private final ICommandSender field_193073_g = new ICommandSender()
+     {
+@@ -121,17 +121,22 @@
+                     this.field_194020_g.push(new FunctionManager.QueuedCommand(this, p_194019_2_, afunctionobject$entry[k]));
+                 }
+ 
+-                do
++                while (true)
+                 {
+                     if (this.field_194020_g.isEmpty())
+                     {
+-                        return j;
++                        l = j;
++                        return l;
+                     }
+ 
+-                    this.field_194020_g.removeFirst().func_194222_a(this.field_194020_g, i);
++                    (this.field_194020_g.removeFirst()).func_194222_a(this.field_194020_g, i);
+                     ++j;
++
++                    if (j >= i)
++                    {
++                        break;
++                    }
+                 }
+-                while (j < i);
+ 
+                 l = j;
+             }

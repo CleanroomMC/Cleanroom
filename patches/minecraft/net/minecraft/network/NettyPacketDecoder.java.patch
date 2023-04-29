@@ -1,0 +1,29 @@
+--- before/net/minecraft/network/NettyPacketDecoder.java
++++ after/net/minecraft/network/NettyPacketDecoder.java
+@@ -27,7 +27,7 @@
+         {
+             PacketBuffer packetbuffer = new PacketBuffer(p_decode_2_);
+             int i = packetbuffer.func_150792_a();
+-            Packet<?> packet = p_decode_1_.channel().attr(NetworkManager.field_150739_c).get().func_179244_a(this.field_152499_c, i);
++            Packet<?> packet = ((EnumConnectionState)p_decode_1_.channel().attr(NetworkManager.field_150739_c).get()).func_179244_a(this.field_152499_c, i);
+ 
+             if (packet == null)
+             {
+@@ -39,7 +39,7 @@
+ 
+                 if (packetbuffer.readableBytes() > 0)
+                 {
+-                    throw new IOException("Packet " + p_decode_1_.channel().attr(NetworkManager.field_150739_c).get().func_150759_c() + "/" + i + " (" + packet.getClass().getSimpleName() + ") was larger than I expected, found " + packetbuffer.readableBytes() + " bytes extra whilst reading packet " + i);
++                    throw new IOException("Packet " + ((EnumConnectionState)p_decode_1_.channel().attr(NetworkManager.field_150739_c).get()).func_150759_c() + "/" + i + " (" + packet.getClass().getSimpleName() + ") was larger than I expected, found " + packetbuffer.readableBytes() + " bytes extra whilst reading packet " + i);
+                 }
+                 else
+                 {
+@@ -47,7 +47,7 @@
+ 
+                     if (field_150800_a.isDebugEnabled())
+                     {
+-                        field_150800_a.debug(field_150799_b, " IN: [{}:{}] {}", p_decode_1_.channel().attr(NetworkManager.field_150739_c).get(), i, packet.getClass().getName());
++                        field_150800_a.debug(field_150799_b, " IN: [{}:{}] {}", p_decode_1_.channel().attr(NetworkManager.field_150739_c).get(), Integer.valueOf(i), packet.getClass().getName());
+                     }
+                 }
+             }

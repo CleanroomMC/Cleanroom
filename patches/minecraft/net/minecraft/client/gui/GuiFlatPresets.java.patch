@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/gui/GuiFlatPresets.java
++++ after/net/minecraft/client/gui/GuiFlatPresets.java
+@@ -28,7 +28,7 @@
+ @SideOnly(Side.CLIENT)
+ public class GuiFlatPresets extends GuiScreen
+ {
+-    private static final List<GuiFlatPresets.LayerItem> field_146431_f = Lists.newArrayList();
++    private static final List<GuiFlatPresets.LayerItem> field_146431_f = Lists.<GuiFlatPresets.LayerItem>newArrayList();
+     private final GuiCreateFlatWorld field_146432_g;
+     private String field_146438_h;
+     private String field_146439_i;

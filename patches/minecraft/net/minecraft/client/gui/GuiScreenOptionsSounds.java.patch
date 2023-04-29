@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/gui/GuiScreenOptionsSounds.java
++++ after/net/minecraft/client/gui/GuiScreenOptionsSounds.java
+@@ -33,7 +33,7 @@
+         this.field_146508_h = I18n.func_135052_a("options.off");
+         int i = 0;
+         this.field_146292_n.add(new GuiScreenOptionsSounds.Button(SoundCategory.MASTER.ordinal(), this.field_146294_l / 2 - 155 + i % 2 * 160, this.field_146295_m / 6 - 12 + 24 * (i >> 1), SoundCategory.MASTER, true));
+-        i += 2;
++        i = i + 2;
+ 
+         for (SoundCategory soundcategory : SoundCategory.values())
+         {

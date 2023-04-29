@@ -1,0 +1,20 @@
+--- before/net/minecraft/client/resources/ResourcePackListEntryServer.java
++++ after/net/minecraft/client/resources/ResourcePackListEntryServer.java
+@@ -30,7 +30,7 @@
+         {
+             dynamictexture = new DynamicTexture(p_i46594_2_.func_110586_a());
+         }
+-        catch (IOException ioexception)
++        catch (IOException var5)
+         {
+             dynamictexture = TextureUtil.field_111001_a;
+         }
+@@ -47,7 +47,7 @@
+     {
+         try
+         {
+-            PackMetadataSection packmetadatasection = this.field_148320_d.func_135058_a(this.field_148317_a.func_110438_M().field_110621_c, "pack");
++            PackMetadataSection packmetadatasection = (PackMetadataSection)this.field_148320_d.func_135058_a(this.field_148317_a.func_110438_M().field_110621_c, "pack");
+ 
+             if (packmetadatasection != null)
+             {

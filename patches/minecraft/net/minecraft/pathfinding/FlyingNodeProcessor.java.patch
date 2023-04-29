@@ -1,7 +1,20 @@
 --- before/net/minecraft/pathfinding/FlyingNodeProcessor.java
 +++ after/net/minecraft/pathfinding/FlyingNodeProcessor.java
-@@ -272,7 +272,9 @@
-         EnumSet<PathNodeType> enumset = EnumSet.<PathNodeType>noneOf(PathNodeType.class);
+@@ -50,7 +50,7 @@
+ 
+         if (this.field_186326_b.func_184643_a(pathnodetype1) < 0.0F)
+         {
+-            Set<BlockPos> set = Sets.newHashSet();
++            Set<BlockPos> set = Sets.<BlockPos>newHashSet();
+             set.add(new BlockPos(this.field_186326_b.func_174813_aQ().field_72340_a, (double)i, this.field_186326_b.func_174813_aQ().field_72339_c));
+             set.add(new BlockPos(this.field_186326_b.func_174813_aQ().field_72340_a, (double)i, this.field_186326_b.func_174813_aQ().field_72334_f));
+             set.add(new BlockPos(this.field_186326_b.func_174813_aQ().field_72336_d, (double)i, this.field_186326_b.func_174813_aQ().field_72339_c));
+@@ -269,10 +269,12 @@
+ 
+     public PathNodeType func_186319_a(IBlockAccess p_186319_1_, int p_186319_2_, int p_186319_3_, int p_186319_4_, EntityLiving p_186319_5_, int p_186319_6_, int p_186319_7_, int p_186319_8_, boolean p_186319_9_, boolean p_186319_10_)
+     {
+-        EnumSet<PathNodeType> enumset = EnumSet.noneOf(PathNodeType.class);
++        EnumSet<PathNodeType> enumset = EnumSet.<PathNodeType>noneOf(PathNodeType.class);
          PathNodeType pathnodetype = PathNodeType.BLOCKED;
          BlockPos blockpos = new BlockPos(p_186319_5_);
 +        this.currentEntity = p_186319_5_;
@@ -10,7 +23,23 @@
  
          if (enumset.contains(PathNodeType.FENCE))
          {
-@@ -321,6 +323,7 @@
+@@ -295,7 +297,14 @@
+                 }
+             }
+ 
+-            return pathnodetype == PathNodeType.OPEN && p_186319_5_.func_184643_a(pathnodetype1) == 0.0F ? PathNodeType.OPEN : pathnodetype1;
++            if (pathnodetype == PathNodeType.OPEN && p_186319_5_.func_184643_a(pathnodetype1) == 0.0F)
++            {
++                return PathNodeType.OPEN;
++            }
++            else
++            {
++                return pathnodetype1;
++            }
+         }
+     }
+ 
+@@ -314,6 +323,7 @@
                  {
                      pathnodetype = PathNodeType.DAMAGE_CACTUS;
                  }
@@ -18,3 +47,13 @@
                  else
                  {
                      pathnodetype = pathnodetype1 != PathNodeType.WALKABLE && pathnodetype1 != PathNodeType.OPEN && pathnodetype1 != PathNodeType.WATER ? PathNodeType.WALKABLE : PathNodeType.OPEN;
+@@ -325,7 +335,8 @@
+             }
+         }
+ 
+-        return this.func_193578_a(p_186330_1_, p_186330_2_, p_186330_3_, p_186330_4_, pathnodetype);
++        pathnodetype = this.func_193578_a(p_186330_1_, p_186330_2_, p_186330_3_, p_186330_4_, pathnodetype);
++        return pathnodetype;
+     }
+ 
+     private PathNodeType func_192559_a(EntityLiving p_192559_1_, BlockPos p_192559_2_)

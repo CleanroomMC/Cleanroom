@@ -1,0 +1,44 @@
+--- before/net/minecraft/block/BlockWallSign.java
++++ after/net/minecraft/block/BlockWallSign.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.block;
+ 
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyDirection;
+ import net.minecraft.block.state.BlockStateContainer;
+ import net.minecraft.block.state.IBlockState;
+@@ -42,7 +43,7 @@
+ 
+     public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
+     {
+-        EnumFacing enumfacing = p_189540_1_.func_177229_b(field_176412_a);
++        EnumFacing enumfacing = (EnumFacing)p_189540_1_.func_177229_b(field_176412_a);
+ 
+         if (!p_189540_2_.func_180495_p(p_189540_3_.func_177972_a(enumfacing.func_176734_d())).func_185904_a().func_76220_a())
+         {
+@@ -67,21 +68,21 @@
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(field_176412_a).func_176745_a();
++        return ((EnumFacing)p_176201_1_.func_177229_b(field_176412_a)).func_176745_a();
+     }
+ 
+     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
+     {
+-        return p_185499_1_.func_177226_a(field_176412_a, p_185499_2_.func_185831_a(p_185499_1_.func_177229_b(field_176412_a)));
++        return p_185499_1_.func_177226_a(field_176412_a, p_185499_2_.func_185831_a((EnumFacing)p_185499_1_.func_177229_b(field_176412_a)));
+     }
+ 
+     public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
+     {
+-        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a(p_185471_1_.func_177229_b(field_176412_a)));
++        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a((EnumFacing)p_185471_1_.func_177229_b(field_176412_a)));
+     }
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176412_a);
++        return new BlockStateContainer(this, new IProperty[] {field_176412_a});
+     }
+ }

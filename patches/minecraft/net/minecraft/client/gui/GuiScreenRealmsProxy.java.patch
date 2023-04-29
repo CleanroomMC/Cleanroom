@@ -1,0 +1,20 @@
+--- before/net/minecraft/client/gui/GuiScreenRealmsProxy.java
++++ after/net/minecraft/client/gui/GuiScreenRealmsProxy.java
+@@ -18,7 +18,7 @@
+     public GuiScreenRealmsProxy(RealmsScreen p_i1087_1_)
+     {
+         this.field_154330_a = p_i1087_1_;
+-        this.field_146292_n = Collections.synchronizedList(Lists.newArrayList());
++        this.field_146292_n = Collections.<GuiButton>synchronizedList(Lists.newArrayList());
+     }
+ 
+     public RealmsScreen func_154321_a()
+@@ -138,7 +138,7 @@
+ 
+     public List<RealmsButton> func_154320_j()
+     {
+-        List<RealmsButton> list = Lists.newArrayListWithExpectedSize(this.field_146292_n.size());
++        List<RealmsButton> list = Lists.<RealmsButton>newArrayListWithExpectedSize(this.field_146292_n.size());
+ 
+         for (GuiButton guibutton : this.field_146292_n)
+         {

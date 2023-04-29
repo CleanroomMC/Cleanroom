@@ -1,0 +1,17 @@
+--- before/net/minecraft/world/storage/loot/functions/EnchantWithLevels.java
++++ after/net/minecraft/world/storage/loot/functions/EnchantWithLevels.java
+@@ -39,12 +39,12 @@
+             public void func_186532_a(JsonObject p_186532_1_, EnchantWithLevels p_186532_2_, JsonSerializationContext p_186532_3_)
+             {
+                 p_186532_1_.add("levels", p_186532_3_.serialize(p_186532_2_.field_186577_a));
+-                p_186532_1_.addProperty("treasure", p_186532_2_.field_186578_b);
++                p_186532_1_.addProperty("treasure", Boolean.valueOf(p_186532_2_.field_186578_b));
+             }
+ 
+             public EnchantWithLevels func_186530_b(JsonObject p_186530_1_, JsonDeserializationContext p_186530_2_, LootCondition[] p_186530_3_)
+             {
+-                RandomValueRange randomvaluerange = JsonUtils.func_188174_a(p_186530_1_, "levels", p_186530_2_, RandomValueRange.class);
++                RandomValueRange randomvaluerange = (RandomValueRange)JsonUtils.func_188174_a(p_186530_1_, "levels", p_186530_2_, RandomValueRange.class);
+                 boolean flag = JsonUtils.func_151209_a(p_186530_1_, "treasure", false);
+                 return new EnchantWithLevels(p_186530_3_, randomvaluerange, flag);
+             }

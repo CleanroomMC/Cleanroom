@@ -9,6 +9,15 @@
  
          try
          {
+@@ -51,7 +51,7 @@
+             CrashReport crashreport = CrashReport.func_85055_a(throwable, "Tesselating block model");
+             CrashReportCategory crashreportcategory = crashreport.func_85058_a("Block model being tesselated");
+             CrashReportCategory.func_175750_a(crashreportcategory, p_187493_4_, p_187493_3_);
+-            crashreportcategory.func_71507_a("Using AO", flag);
++            crashreportcategory.func_71507_a("Using AO", Boolean.valueOf(flag));
+             throw new ReportedException(crashreport);
+         }
+     }
 @@ -128,7 +128,14 @@
              p_187492_8_.func_187491_a(p_187492_1_, p_187492_2_, p_187492_3_, bakedquad.func_178210_d(), p_187492_6_, p_187492_7_);
              p_187492_4_.func_178981_a(bakedquad.func_178209_a());
@@ -25,7 +34,7 @@
              if (bakedquad.func_178212_b())
              {
                  int k = this.field_187499_a.func_186724_a(p_187492_2_, p_187492_1_, p_187492_3_, bakedquad.func_178211_c());
-@@ -262,10 +269,25 @@
+@@ -262,11 +269,26 @@
                  float f = (float)(k >> 16 & 255) / 255.0F;
                  float f1 = (float)(k >> 8 & 255) / 255.0F;
                  float f2 = (float)(k & 255) / 255.0F;
@@ -40,7 +49,7 @@
                  p_187496_6_.func_178978_a(f, f1, f2, 3);
                  p_187496_6_.func_178978_a(f, f1, f2, 2);
                  p_187496_6_.func_178978_a(f, f1, f2, 1);
-+            }
+             }
 +            else if(bakedquad.shouldApplyDiffuseLighting())
 +            {
 +                float diffuse = net.minecraftforge.client.model.pipeline.LightUtil.diffuseLight(bakedquad.func_178210_d());
@@ -48,6 +57,18 @@
 +                p_187496_6_.func_178978_a(diffuse, diffuse, diffuse, 3);
 +                p_187496_6_.func_178978_a(diffuse, diffuse, diffuse, 2);
 +                p_187496_6_.func_178978_a(diffuse, diffuse, diffuse, 1);
-             }
++            }
  
              p_187496_6_.func_178987_a(d0, d1, d2);
+         }
+@@ -342,10 +364,6 @@
+     {
+         private final float[] field_178206_b = new float[4];
+         private final int[] field_178207_c = new int[4];
+-
+-        public AmbientOcclusionFace()
+-        {
+-        }
+ 
+         public void func_187491_a(IBlockAccess p_187491_1_, IBlockState p_187491_2_, BlockPos p_187491_3_, EnumFacing p_187491_4_, float[] p_187491_5_, BitSet p_187491_6_)
+         {

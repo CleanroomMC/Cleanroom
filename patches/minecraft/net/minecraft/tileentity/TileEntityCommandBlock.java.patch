@@ -1,0 +1,28 @@
+--- before/net/minecraft/tileentity/TileEntityCommandBlock.java
++++ after/net/minecraft/tileentity/TileEntityCommandBlock.java
+@@ -10,6 +10,7 @@
+ import net.minecraft.nbt.NBTTagCompound;
+ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+ import net.minecraft.server.MinecraftServer;
++import net.minecraft.util.EnumFacing;
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.util.math.Vec3d;
+ import net.minecraft.world.World;
+@@ -156,7 +157,7 @@
+ 
+         if (this.func_184258_j())
+         {
+-            BlockPos blockpos = this.field_174879_c.func_177972_a(this.field_145850_b.func_180495_p(this.field_174879_c).func_177229_b(BlockCommandBlock.field_185564_a).func_176734_d());
++            BlockPos blockpos = this.field_174879_c.func_177972_a(((EnumFacing)this.field_145850_b.func_180495_p(this.field_174879_c).func_177229_b(BlockCommandBlock.field_185564_a)).func_176734_d());
+ 
+             if (this.field_145850_b.func_180495_p(blockpos).func_177230_c() instanceof BlockCommandBlock)
+             {
+@@ -203,7 +204,7 @@
+     public boolean func_184258_j()
+     {
+         IBlockState iblockstate = this.field_145850_b.func_180495_p(this.func_174877_v());
+-        return iblockstate.func_177230_c() instanceof BlockCommandBlock ? iblockstate.func_177229_b(BlockCommandBlock.field_185565_b) : false;
++        return iblockstate.func_177230_c() instanceof BlockCommandBlock ? ((Boolean)iblockstate.func_177229_b(BlockCommandBlock.field_185565_b)).booleanValue() : false;
+     }
+ 
+     public void func_145829_t()

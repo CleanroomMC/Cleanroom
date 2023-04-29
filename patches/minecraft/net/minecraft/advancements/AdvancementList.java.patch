@@ -1,0 +1,66 @@
+--- before/net/minecraft/advancements/AdvancementList.java
++++ after/net/minecraft/advancements/AdvancementList.java
+@@ -6,6 +6,7 @@
+ import java.util.Iterator;
+ import java.util.Map;
+ import java.util.Set;
++import java.util.Map.Entry;
+ import java.util.function.Function;
+ import javax.annotation.Nullable;
+ import net.minecraft.util.ResourceLocation;
+@@ -17,9 +18,9 @@
+ public class AdvancementList
+ {
+     private static final Logger field_192091_a = LogManager.getLogger();
+-    private final Map<ResourceLocation, Advancement> field_192092_b = Maps.newHashMap();
+-    private final Set<Advancement> field_192093_c = Sets.newLinkedHashSet();
+-    private final Set<Advancement> field_192094_d = Sets.newLinkedHashSet();
++    private final Map<ResourceLocation, Advancement> field_192092_b = Maps.<ResourceLocation, Advancement>newHashMap();
++    private final Set<Advancement> field_192093_c = Sets.<Advancement>newLinkedHashSet();
++    private final Set<Advancement> field_192094_d = Sets.<Advancement>newLinkedHashSet();
+     private AdvancementList.Listener field_192095_e;
+ 
+     @SideOnly(Side.CLIENT)
+@@ -73,16 +74,17 @@
+ 
+     public void func_192083_a(Map<ResourceLocation, Advancement.Builder> p_192083_1_)
+     {
+-        Function<ResourceLocation, Advancement> function = Functions.forMap(this.field_192092_b, null);
++        Function<ResourceLocation, Advancement> function = Functions.<ResourceLocation, Advancement>forMap(this.field_192092_b, null);
++        label42:
+ 
+         while (!p_192083_1_.isEmpty())
+         {
+             boolean flag = false;
+-            Iterator<Map.Entry<ResourceLocation, Advancement.Builder>> iterator = p_192083_1_.entrySet().iterator();
++            Iterator<Entry<ResourceLocation, Advancement.Builder>> iterator = p_192083_1_.entrySet().iterator();
+ 
+             while (iterator.hasNext())
+             {
+-                Map.Entry<ResourceLocation, Advancement.Builder> entry = iterator.next();
++                Entry<ResourceLocation, Advancement.Builder> entry = (Entry)iterator.next();
+                 ResourceLocation resourcelocation = entry.getKey();
+                 Advancement.Builder advancement$builder = entry.getValue();
+ 
+@@ -116,12 +118,18 @@
+ 
+             if (!flag)
+             {
+-                for (Map.Entry<ResourceLocation, Advancement.Builder> entry1 : p_192083_1_.entrySet())
++                iterator = p_192083_1_.entrySet().iterator();
++
++                while (true)
+                 {
++                    if (!iterator.hasNext())
++                    {
++                        break label42;
++                    }
++
++                    Entry<ResourceLocation, Advancement.Builder> entry1 = (Entry)iterator.next();
+                     field_192091_a.error("Couldn't load advancement " + entry1.getKey() + ": " + entry1.getValue());
+                 }
+-
+-                break;
+             }
+         }
+ 

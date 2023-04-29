@@ -1,6 +1,73 @@
 --- before/net/minecraft/block/BlockWall.java
 +++ after/net/minecraft/block/BlockWall.java
-@@ -159,10 +159,10 @@
+@@ -2,6 +2,7 @@
+ 
+ import java.util.List;
+ import javax.annotation.Nullable;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyBool;
+ import net.minecraft.block.properties.PropertyEnum;
+ import net.minecraft.block.state.BlockFaceShape;
+@@ -29,14 +30,14 @@
+     public static final PropertyBool field_176257_M = PropertyBool.func_177716_a("east");
+     public static final PropertyBool field_176258_N = PropertyBool.func_177716_a("south");
+     public static final PropertyBool field_176259_O = PropertyBool.func_177716_a("west");
+-    public static final PropertyEnum<BlockWall.EnumType> field_176255_P = PropertyEnum.func_177709_a("variant", BlockWall.EnumType.class);
++    public static final PropertyEnum<BlockWall.EnumType> field_176255_P = PropertyEnum.<BlockWall.EnumType>func_177709_a("variant", BlockWall.EnumType.class);
+     protected static final AxisAlignedBB[] field_185751_g = new AxisAlignedBB[] {new AxisAlignedBB(0.25D, 0.0D, 0.25D, 0.75D, 1.0D, 0.75D), new AxisAlignedBB(0.25D, 0.0D, 0.25D, 0.75D, 1.0D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.25D, 0.75D, 1.0D, 0.75D), new AxisAlignedBB(0.0D, 0.0D, 0.25D, 0.75D, 1.0D, 1.0D), new AxisAlignedBB(0.25D, 0.0D, 0.0D, 0.75D, 1.0D, 0.75D), new AxisAlignedBB(0.3125D, 0.0D, 0.0D, 0.6875D, 0.875D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.75D, 1.0D, 0.75D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.75D, 1.0D, 1.0D), new AxisAlignedBB(0.25D, 0.0D, 0.25D, 1.0D, 1.0D, 0.75D), new AxisAlignedBB(0.25D, 0.0D, 0.25D, 1.0D, 1.0D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.3125D, 1.0D, 0.875D, 0.6875D), new AxisAlignedBB(0.0D, 0.0D, 0.25D, 1.0D, 1.0D, 1.0D), new AxisAlignedBB(0.25D, 0.0D, 0.0D, 1.0D, 1.0D, 0.75D), new AxisAlignedBB(0.25D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 0.75D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D)};
+     protected static final AxisAlignedBB[] field_185750_B = new AxisAlignedBB[] {field_185751_g[0].func_186666_e(1.5D), field_185751_g[1].func_186666_e(1.5D), field_185751_g[2].func_186666_e(1.5D), field_185751_g[3].func_186666_e(1.5D), field_185751_g[4].func_186666_e(1.5D), field_185751_g[5].func_186666_e(1.5D), field_185751_g[6].func_186666_e(1.5D), field_185751_g[7].func_186666_e(1.5D), field_185751_g[8].func_186666_e(1.5D), field_185751_g[9].func_186666_e(1.5D), field_185751_g[10].func_186666_e(1.5D), field_185751_g[11].func_186666_e(1.5D), field_185751_g[12].func_186666_e(1.5D), field_185751_g[13].func_186666_e(1.5D), field_185751_g[14].func_186666_e(1.5D), field_185751_g[15].func_186666_e(1.5D)};
+ 
+     public BlockWall(Block p_i45435_1_)
+     {
+         super(p_i45435_1_.field_149764_J);
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176256_a, false).func_177226_a(field_176254_b, false).func_177226_a(field_176257_M, false).func_177226_a(field_176258_N, false).func_177226_a(field_176259_O, false).func_177226_a(field_176255_P, BlockWall.EnumType.NORMAL));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176256_a, Boolean.valueOf(false)).func_177226_a(field_176254_b, Boolean.valueOf(false)).func_177226_a(field_176257_M, Boolean.valueOf(false)).func_177226_a(field_176258_N, Boolean.valueOf(false)).func_177226_a(field_176259_O, Boolean.valueOf(false)).func_177226_a(field_176255_P, BlockWall.EnumType.NORMAL));
+         this.func_149711_c(p_i45435_1_.field_149782_v);
+         this.func_149752_b(p_i45435_1_.field_149781_w / 3.0F);
+         this.func_149672_a(p_i45435_1_.field_149762_H);
+@@ -70,22 +71,22 @@
+     {
+         int i = 0;
+ 
+-        if (p_185749_0_.func_177229_b(field_176254_b))
++        if (((Boolean)p_185749_0_.func_177229_b(field_176254_b)).booleanValue())
+         {
+             i |= 1 << EnumFacing.NORTH.func_176736_b();
+         }
+ 
+-        if (p_185749_0_.func_177229_b(field_176257_M))
++        if (((Boolean)p_185749_0_.func_177229_b(field_176257_M)).booleanValue())
+         {
+             i |= 1 << EnumFacing.EAST.func_176736_b();
+         }
+ 
+-        if (p_185749_0_.func_177229_b(field_176258_N))
++        if (((Boolean)p_185749_0_.func_177229_b(field_176258_N)).booleanValue())
+         {
+             i |= 1 << EnumFacing.SOUTH.func_176736_b();
+         }
+ 
+-        if (p_185749_0_.func_177229_b(field_176259_O))
++        if (((Boolean)p_185749_0_.func_177229_b(field_176259_O)).booleanValue())
+         {
+             i |= 1 << EnumFacing.WEST.func_176736_b();
+         }
+@@ -137,7 +138,7 @@
+ 
+     public int func_180651_a(IBlockState p_180651_1_)
+     {
+-        return p_180651_1_.func_177229_b(field_176255_P).func_176657_a();
++        return ((BlockWall.EnumType)p_180651_1_.func_177229_b(field_176255_P)).func_176657_a();
+     }
+ 
+     @SideOnly(Side.CLIENT)
+@@ -153,28 +154,45 @@
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(field_176255_P).func_176657_a();
++        return ((BlockWall.EnumType)p_176201_1_.func_177229_b(field_176255_P)).func_176657_a();
+     }
  
      public IBlockState func_176221_a(IBlockState p_176221_1_, IBlockAccess p_176221_2_, BlockPos p_176221_3_)
      {
@@ -13,9 +80,17 @@
 +        boolean flag2 = canWallConnectTo(p_176221_2_, p_176221_3_, EnumFacing.SOUTH);
 +        boolean flag3 = canWallConnectTo(p_176221_2_, p_176221_3_, EnumFacing.WEST);
          boolean flag4 = flag && !flag1 && flag2 && !flag3 || !flag && flag1 && !flag2 && flag3;
-         return p_176221_1_.func_177226_a(field_176256_a, Boolean.valueOf(!flag4 || !p_176221_2_.func_175623_d(p_176221_3_.func_177984_a()))).func_177226_a(field_176254_b, Boolean.valueOf(flag)).func_177226_a(field_176257_M, Boolean.valueOf(flag1)).func_177226_a(field_176258_N, Boolean.valueOf(flag2)).func_177226_a(field_176259_O, Boolean.valueOf(flag3));
+-        return p_176221_1_.func_177226_a(field_176256_a, !flag4 || !p_176221_2_.func_175623_d(p_176221_3_.func_177984_a())).func_177226_a(field_176254_b, flag).func_177226_a(field_176257_M, flag1).func_177226_a(field_176258_N, flag2).func_177226_a(field_176259_O, flag3);
++        return p_176221_1_.func_177226_a(field_176256_a, Boolean.valueOf(!flag4 || !p_176221_2_.func_175623_d(p_176221_3_.func_177984_a()))).func_177226_a(field_176254_b, Boolean.valueOf(flag)).func_177226_a(field_176257_M, Boolean.valueOf(flag1)).func_177226_a(field_176258_N, Boolean.valueOf(flag2)).func_177226_a(field_176259_O, Boolean.valueOf(flag3));
      }
-@@ -176,6 +176,23 @@
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176256_a, field_176254_b, field_176257_M, field_176259_O, field_176258_N, field_176255_P);
++        return new BlockStateContainer(this, new IProperty[] {field_176256_a, field_176254_b, field_176257_M, field_176259_O, field_176258_N, field_176255_P});
+     }
+ 
+     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
      {
          return p_193383_4_ != EnumFacing.UP && p_193383_4_ != EnumFacing.DOWN ? BlockFaceShape.MIDDLE_POLE_THICK : BlockFaceShape.CENTER_BIG;
      }

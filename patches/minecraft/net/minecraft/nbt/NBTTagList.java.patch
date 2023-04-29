@@ -1,6 +1,6 @@
 --- before/net/minecraft/nbt/NBTTagList.java
 +++ after/net/minecraft/nbt/NBTTagList.java
-@@ -9,7 +9,7 @@
+@@ -9,10 +9,10 @@
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
  
@@ -8,7 +8,47 @@
 +public class NBTTagList extends NBTBase implements java.lang.Iterable<NBTBase>
  {
      private static final Logger field_179239_b = LogManager.getLogger();
-     private List<NBTBase> field_74747_a = Lists.<NBTBase>newArrayList();
+-    private List<NBTBase> field_74747_a = Lists.newArrayList();
++    private List<NBTBase> field_74747_a = Lists.<NBTBase>newArrayList();
+     private byte field_74746_b = 0;
+ 
+     void func_74734_a(DataOutput p_74734_1_) throws IOException
+@@ -23,7 +23,7 @@
+         }
+         else
+         {
+-            this.field_74746_b = this.field_74747_a.get(0).func_74732_a();
++            this.field_74746_b = ((NBTBase)this.field_74747_a.get(0)).func_74732_a();
+         }
+ 
+         p_74734_1_.writeByte(this.field_74746_b);
+@@ -31,7 +31,7 @@
+ 
+         for (int i = 0; i < this.field_74747_a.size(); ++i)
+         {
+-            this.field_74747_a.get(i).func_74734_a(p_74734_1_);
++            ((NBTBase)this.field_74747_a.get(i)).func_74734_a(p_74734_1_);
+         }
+     }
+ 
+@@ -55,7 +55,7 @@
+             else
+             {
+                 p_152446_3_.func_152450_a(32L * (long)i);
+-                this.field_74747_a = Lists.newArrayListWithCapacity(i);
++                this.field_74747_a = Lists.<NBTBase>newArrayListWithCapacity(i);
+ 
+                 for (int j = 0; j < i; ++j)
+                 {
+@@ -237,7 +237,7 @@
+ 
+     public NBTBase func_179238_g(int p_179238_1_)
+     {
+-        return (NBTBase)(p_179238_1_ >= 0 && p_179238_1_ < this.field_74747_a.size() ? this.field_74747_a.get(p_179238_1_) : new NBTTagEnd());
++        return (NBTBase)(p_179238_1_ >= 0 && p_179238_1_ < this.field_74747_a.size() ? (NBTBase)this.field_74747_a.get(p_179238_1_) : new NBTTagEnd());
+     }
+ 
+     public int func_74745_c()
 @@ -281,4 +281,5 @@
      {
          return this.field_74746_b;

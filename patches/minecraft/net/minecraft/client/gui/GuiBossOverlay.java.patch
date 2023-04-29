@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/gui/GuiBossOverlay.java
 +++ after/net/minecraft/client/gui/GuiBossOverlay.java
+@@ -16,7 +16,7 @@
+ {
+     private static final ResourceLocation field_184058_a = new ResourceLocation("textures/gui/bars.png");
+     private final Minecraft field_184059_f;
+-    private final Map<UUID, BossInfoClient> field_184060_g = Maps.newLinkedHashMap();
++    private final Map<UUID, BossInfoClient> field_184060_g = Maps.<UUID, BossInfoClient>newLinkedHashMap();
+ 
+     public GuiBossOverlay(Minecraft p_i46606_1_)
+     {
 @@ -34,13 +34,18 @@
              for (BossInfoClient bossinfoclient : this.field_184060_g.values())
              {
@@ -20,3 +29,12 @@
                  if (j >= scaledresolution.func_78328_b() / 3)
                  {
                      break;
+@@ -83,7 +88,7 @@
+         }
+         else
+         {
+-            this.field_184060_g.get(p_184055_1_.func_186908_a()).func_186765_a(p_184055_1_);
++            ((BossInfoClient)this.field_184060_g.get(p_184055_1_.func_186908_a())).func_186765_a(p_184055_1_);
+         }
+     }
+ 

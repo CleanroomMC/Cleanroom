@@ -1,0 +1,20 @@
+--- before/net/minecraft/command/server/CommandTeleport.java
++++ after/net/minecraft/command/server/CommandTeleport.java
+@@ -39,7 +39,7 @@
+     {
+         if (p_184881_3_.length < 4)
+         {
+-            throw new WrongUsageException("commands.teleport.usage");
++            throw new WrongUsageException("commands.teleport.usage", new Object[0]);
+         }
+         else
+         {
+@@ -67,7 +67,7 @@
+     {
+         if (p_189862_0_ instanceof EntityPlayerMP)
+         {
+-            Set<SPacketPlayerPosLook.EnumFlags> set = EnumSet.noneOf(SPacketPlayerPosLook.EnumFlags.class);
++            Set<SPacketPlayerPosLook.EnumFlags> set = EnumSet.<SPacketPlayerPosLook.EnumFlags>noneOf(SPacketPlayerPosLook.EnumFlags.class);
+             float f = (float)p_189862_4_.func_179629_b();
+ 
+             if (p_189862_4_.func_179630_c())

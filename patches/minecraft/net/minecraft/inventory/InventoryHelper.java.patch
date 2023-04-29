@@ -1,0 +1,15 @@
+--- before/net/minecraft/inventory/InventoryHelper.java
++++ after/net/minecraft/inventory/InventoryHelper.java
+@@ -44,9 +44,9 @@
+         {
+             EntityItem entityitem = new EntityItem(p_180173_0_, p_180173_1_ + (double)f, p_180173_3_ + (double)f1, p_180173_5_ + (double)f2, p_180173_7_.func_77979_a(field_180177_a.nextInt(21) + 10));
+             float f3 = 0.05F;
+-            entityitem.field_70159_w = field_180177_a.nextGaussian() * (double)0.05F;
+-            entityitem.field_70181_x = field_180177_a.nextGaussian() * (double)0.05F + (double)0.2F;
+-            entityitem.field_70179_y = field_180177_a.nextGaussian() * (double)0.05F;
++            entityitem.field_70159_w = field_180177_a.nextGaussian() * 0.05000000074505806D;
++            entityitem.field_70181_x = field_180177_a.nextGaussian() * 0.05000000074505806D + 0.20000000298023224D;
++            entityitem.field_70179_y = field_180177_a.nextGaussian() * 0.05000000074505806D;
+             p_180173_0_.func_72838_d(entityitem);
+         }
+     }

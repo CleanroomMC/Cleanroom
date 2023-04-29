@@ -1,5 +1,16 @@
 --- before/net/minecraft/entity/EntityTracker.java
 +++ after/net/minecraft/entity/EntityTracker.java
+@@ -52,8 +52,8 @@
+ {
+     private static final Logger field_151249_a = LogManager.getLogger();
+     private final WorldServer field_72795_a;
+-    private final Set<EntityTrackerEntry> field_72793_b = Sets.newHashSet();
+-    private final IntHashMap<EntityTrackerEntry> field_72794_c = new IntHashMap<>();
++    private final Set<EntityTrackerEntry> field_72793_b = Sets.<EntityTrackerEntry>newHashSet();
++    private final IntHashMap<EntityTrackerEntry> field_72794_c = new IntHashMap<EntityTrackerEntry>();
+     private int field_72792_d;
+ 
+     public EntityTracker(WorldServer p_i1516_1_)
 @@ -77,6 +77,8 @@
  
      public void func_72786_a(Entity p_72786_1_)
@@ -9,11 +20,28 @@
          if (p_72786_1_ instanceof EntityPlayerMP)
          {
              this.func_72791_a(p_72786_1_, 512, 2);
-@@ -338,6 +340,25 @@
-             entitytrackerentry.func_151259_a(p_151247_2_);
+@@ -247,7 +249,7 @@
+                 }
+             });
+             p_72785_1_.func_85029_a(crashreportcategory);
+-            this.field_72794_c.func_76041_a(p_72785_1_.func_145782_y()).func_187260_b().func_85029_a(crashreport.func_85058_a("Entity That Is Already Tracked"));
++            ((EntityTrackerEntry)this.field_72794_c.func_76041_a(p_72785_1_.func_145782_y())).func_187260_b().func_85029_a(crashreport.func_85058_a("Entity That Is Already Tracked"));
+ 
+             try
+             {
+@@ -283,7 +285,7 @@
+ 
+     public void func_72788_a()
+     {
+-        List<EntityPlayerMP> list = Lists.newArrayList();
++        List<EntityPlayerMP> list = Lists.<EntityPlayerMP>newArrayList();
+ 
+         for (EntityTrackerEntry entitytrackerentry : this.field_72793_b)
+         {
+@@ -339,6 +341,25 @@
          }
      }
-+
+ 
 +    /* ======================================== FORGE START =====================================*/
 +
 +    // don't expose the EntityTrackerEntry directly so mods can't mess with the data in there as easily
@@ -32,6 +60,18 @@
 +    }
 +
 +    /* ======================================== FORGE END   =====================================*/
- 
++
      public void func_151248_b(Entity p_151248_1_, Packet<?> p_151248_2_)
      {
+         EntityTrackerEntry entitytrackerentry = this.field_72794_c.func_76041_a(p_151248_1_.func_145782_y());
+@@ -359,8 +380,8 @@
+ 
+     public void func_85172_a(EntityPlayerMP p_85172_1_, Chunk p_85172_2_)
+     {
+-        List<Entity> list = Lists.newArrayList();
+-        List<Entity> list1 = Lists.newArrayList();
++        List<Entity> list = Lists.<Entity>newArrayList();
++        List<Entity> list1 = Lists.<Entity>newArrayList();
+ 
+         for (EntityTrackerEntry entitytrackerentry : this.field_72793_b)
+         {

@@ -1,6 +1,93 @@
 --- before/net/minecraft/client/particle/Particle.java
 +++ after/net/minecraft/client/particle/Particle.java
-@@ -265,8 +265,8 @@
+@@ -27,13 +27,13 @@
+     protected double field_187129_i;
+     protected double field_187130_j;
+     protected double field_187131_k;
+-    private AxisAlignedBB field_187120_G = field_187121_a;
++    private AxisAlignedBB field_187120_G;
+     protected boolean field_187132_l;
+     protected boolean field_190017_n;
+     protected boolean field_187133_m;
+-    protected float field_187134_n = 0.6F;
+-    protected float field_187135_o = 1.8F;
+-    protected Random field_187136_p = new Random();
++    protected float field_187134_n;
++    protected float field_187135_o;
++    protected Random field_187136_p;
+     protected int field_94054_b;
+     protected int field_94055_c;
+     protected float field_70548_b;
+@@ -45,7 +45,7 @@
+     protected float field_70552_h;
+     protected float field_70553_i;
+     protected float field_70551_j;
+-    protected float field_82339_as = 1.0F;
++    protected float field_82339_as;
+     protected TextureAtlasSprite field_187119_C;
+     protected float field_190014_F;
+     protected float field_190015_G;
+@@ -56,6 +56,11 @@
+ 
+     protected Particle(World p_i46352_1_, double p_i46352_2_, double p_i46352_4_, double p_i46352_6_)
+     {
++        this.field_187120_G = field_187121_a;
++        this.field_187134_n = 0.6F;
++        this.field_187135_o = 1.8F;
++        this.field_187136_p = new Random();
++        this.field_82339_as = 1.0F;
+         this.field_187122_b = p_i46352_1_;
+         this.func_187115_a(0.2F, 0.2F);
+         this.func_187109_b(p_i46352_2_, p_i46352_4_, p_i46352_6_);
+@@ -76,20 +81,20 @@
+     public Particle(World p_i1219_1_, double p_i1219_2_, double p_i1219_4_, double p_i1219_6_, double p_i1219_8_, double p_i1219_10_, double p_i1219_12_)
+     {
+         this(p_i1219_1_, p_i1219_2_, p_i1219_4_, p_i1219_6_);
+-        this.field_187129_i = p_i1219_8_ + (Math.random() * 2.0D - 1.0D) * (double)0.4F;
+-        this.field_187130_j = p_i1219_10_ + (Math.random() * 2.0D - 1.0D) * (double)0.4F;
+-        this.field_187131_k = p_i1219_12_ + (Math.random() * 2.0D - 1.0D) * (double)0.4F;
++        this.field_187129_i = p_i1219_8_ + (Math.random() * 2.0D - 1.0D) * 0.4000000059604645D;
++        this.field_187130_j = p_i1219_10_ + (Math.random() * 2.0D - 1.0D) * 0.4000000059604645D;
++        this.field_187131_k = p_i1219_12_ + (Math.random() * 2.0D - 1.0D) * 0.4000000059604645D;
+         float f = (float)(Math.random() + Math.random() + 1.0D) * 0.15F;
+         float f1 = MathHelper.func_76133_a(this.field_187129_i * this.field_187129_i + this.field_187130_j * this.field_187130_j + this.field_187131_k * this.field_187131_k);
+-        this.field_187129_i = this.field_187129_i / (double)f1 * (double)f * (double)0.4F;
+-        this.field_187130_j = this.field_187130_j / (double)f1 * (double)f * (double)0.4F + (double)0.1F;
+-        this.field_187131_k = this.field_187131_k / (double)f1 * (double)f * (double)0.4F;
++        this.field_187129_i = this.field_187129_i / (double)f1 * (double)f * 0.4000000059604645D;
++        this.field_187130_j = this.field_187130_j / (double)f1 * (double)f * 0.4000000059604645D + 0.10000000149011612D;
++        this.field_187131_k = this.field_187131_k / (double)f1 * (double)f * 0.4000000059604645D;
+     }
+ 
+     public Particle func_70543_e(float p_70543_1_)
+     {
+         this.field_187129_i *= (double)p_70543_1_;
+-        this.field_187130_j = (this.field_187130_j - (double)0.1F) * (double)p_70543_1_ + (double)0.1F;
++        this.field_187130_j = (this.field_187130_j - 0.10000000149011612D) * (double)p_70543_1_ + 0.10000000149011612D;
+         this.field_187131_k *= (double)p_70543_1_;
+         return this;
+     }
+@@ -151,14 +156,14 @@
+ 
+         this.field_187130_j -= 0.04D * (double)this.field_70545_g;
+         this.func_187110_a(this.field_187129_i, this.field_187130_j, this.field_187131_k);
+-        this.field_187129_i *= (double)0.98F;
+-        this.field_187130_j *= (double)0.98F;
+-        this.field_187131_k *= (double)0.98F;
++        this.field_187129_i *= 0.9800000190734863D;
++        this.field_187130_j *= 0.9800000190734863D;
++        this.field_187131_k *= 0.9800000190734863D;
+ 
+         if (this.field_187132_l)
+         {
+-            this.field_187129_i *= (double)0.7F;
+-            this.field_187131_k *= (double)0.7F;
++            this.field_187129_i *= 0.699999988079071D;
++            this.field_187131_k *= 0.699999988079071D;
+         }
+     }
+ 
+@@ -260,8 +265,8 @@
          {
              this.field_187134_n = p_187115_1_;
              this.field_187135_o = p_187115_2_;
@@ -11,29 +98,33 @@
          }
      }
  
-@@ -283,6 +283,8 @@
+@@ -277,9 +282,9 @@
+ 
      public void func_187110_a(double p_187110_1_, double p_187110_3_, double p_187110_5_)
      {
-         double d0 = p_187110_3_;
+-        double d0 = p_187110_1_;
+-        double d1 = p_187110_3_;
+-        double d2 = p_187110_5_;
++        double d0 = p_187110_3_;
 +        double origX = p_187110_1_;
 +        double origZ = p_187110_5_;
  
          if (this.field_190017_n)
          {
-@@ -315,14 +317,14 @@
+@@ -312,14 +317,14 @@
          }
  
          this.func_187118_j();
--        this.field_187132_l = p_187110_3_ != p_187110_3_ && d0 < 0.0D;
+-        this.field_187132_l = d1 != p_187110_3_ && d1 < 0.0D;
 +        this.field_187132_l = d0 != p_187110_3_ && d0 < 0.0D;
  
--        if (p_187110_1_ != p_187110_1_)
+-        if (d0 != p_187110_1_)
 +        if (origX != p_187110_1_)
          {
              this.field_187129_i = 0.0D;
          }
  
--        if (p_187110_5_ != p_187110_5_)
+-        if (d2 != p_187110_5_)
 +        if (origZ != p_187110_5_)
          {
              this.field_187131_k = 0.0D;

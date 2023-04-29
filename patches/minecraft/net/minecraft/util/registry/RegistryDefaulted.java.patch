@@ -1,0 +1,11 @@
+--- before/net/minecraft/util/registry/RegistryDefaulted.java
++++ after/net/minecraft/util/registry/RegistryDefaulted.java
+@@ -15,7 +15,7 @@
+     @Nonnull
+     public V func_82594_a(@Nullable K p_82594_1_)
+     {
+-        V v = super.func_82594_a(p_82594_1_);
++        V v = (V)super.func_82594_a(p_82594_1_);
+         return (V)(v == null ? this.field_82597_b : v);
+     }
+ }

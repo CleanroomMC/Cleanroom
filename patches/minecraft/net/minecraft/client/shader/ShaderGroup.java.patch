@@ -1,6 +1,19 @@
 --- before/net/minecraft/client/shader/ShaderGroup.java
 +++ after/net/minecraft/client/shader/ShaderGroup.java
-@@ -179,7 +179,8 @@
+@@ -32,9 +32,9 @@
+     private final Framebuffer field_148035_a;
+     private final IResourceManager field_148033_b;
+     private final String field_148034_c;
+-    private final List<Shader> field_148031_d = Lists.newArrayList();
+-    private final Map<String, Framebuffer> field_148032_e = Maps.newHashMap();
+-    private final List<Framebuffer> field_148029_f = Lists.newArrayList();
++    private final List<Shader> field_148031_d = Lists.<Shader>newArrayList();
++    private final Map<String, Framebuffer> field_148032_e = Maps.<String, Framebuffer>newHashMap();
++    private final List<Framebuffer> field_148029_f = Lists.<Framebuffer>newArrayList();
+     private Matrix4f field_148030_g;
+     private int field_148038_h;
+     private int field_148039_i;
+@@ -179,14 +179,15 @@
  
                          if (framebuffer2 == null)
                          {
@@ -10,3 +23,58 @@
                              IResource iresource = null;
  
                              try
+                             {
+                                 iresource = this.field_148033_b.func_110536_a(resourcelocation);
+                             }
+-                            catch (FileNotFoundException filenotfoundexception)
++                            catch (FileNotFoundException var29)
+                             {
+                                 throw new JsonException("Render target or texture '" + s3 + "' does not exist");
+                             }
+@@ -199,9 +200,9 @@
+                             ITextureObject lvt_20_2_ = p_152764_1_.func_110581_b(resourcelocation);
+                             int lvt_21_1_ = JsonUtils.func_151203_m(jsonobject1, "width");
+                             int lvt_22_1_ = JsonUtils.func_151203_m(jsonobject1, "height");
+-                            boolean flag = JsonUtils.func_151212_i(jsonobject1, "bilinear");
++                            boolean lvt_23_1_ = JsonUtils.func_151212_i(jsonobject1, "bilinear");
+ 
+-                            if (flag)
++                            if (lvt_23_1_)
+                             {
+                                 GlStateManager.func_187421_b(3553, 10241, 9729);
+                                 GlStateManager.func_187421_b(3553, 10240, 9729);
+@@ -212,7 +213,7 @@
+                                 GlStateManager.func_187421_b(3553, 10240, 9728);
+                             }
+ 
+-                            shader.func_148041_a(s4, lvt_20_2_.func_110552_b(), lvt_21_1_, lvt_22_1_);
++                            shader.func_148041_a(s4, Integer.valueOf(lvt_20_2_.func_110552_b()), lvt_21_1_, lvt_22_1_);
+                         }
+                         else
+                         {
+@@ -259,7 +260,7 @@
+     {
+         JsonObject jsonobject = JsonUtils.func_151210_l(p_148028_1_, "uniform");
+         String s = JsonUtils.func_151200_h(jsonobject, "name");
+-        ShaderUniform shaderuniform = this.field_148031_d.get(this.field_148031_d.size() - 1).func_148043_c().func_147991_a(s);
++        ShaderUniform shaderuniform = ((Shader)this.field_148031_d.get(this.field_148031_d.size() - 1)).func_148043_c().func_147991_a(s);
+ 
+         if (shaderuniform == null)
+         {
+@@ -389,6 +390,7 @@
+ 
+         for (this.field_148037_k = p_148018_1_; this.field_148036_j > 20.0F; this.field_148036_j -= 20.0F)
+         {
++            ;
+         }
+ 
+         for (Shader shader : this.field_148031_d)
+@@ -410,7 +412,7 @@
+         }
+         else
+         {
+-            return p_148017_1_.equals("minecraft:main") ? this.field_148035_a : this.field_148032_e.get(p_148017_1_);
++            return p_148017_1_.equals("minecraft:main") ? this.field_148035_a : (Framebuffer)this.field_148032_e.get(p_148017_1_);
+         }
+     }
+ }

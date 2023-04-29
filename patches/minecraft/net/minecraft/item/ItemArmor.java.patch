@@ -1,6 +1,25 @@
 --- before/net/minecraft/item/ItemArmor.java
 +++ after/net/minecraft/item/ItemArmor.java
-@@ -187,7 +187,9 @@
+@@ -21,6 +21,7 @@
+ import net.minecraft.util.ActionResult;
+ import net.minecraft.util.EntitySelectors;
+ import net.minecraft.util.EnumActionResult;
++import net.minecraft.util.EnumFacing;
+ import net.minecraft.util.EnumHand;
+ import net.minecraft.util.SoundEvent;
+ import net.minecraft.util.math.AxisAlignedBB;
+@@ -50,8 +51,8 @@
+ 
+     public static ItemStack func_185082_a(IBlockSource p_185082_0_, ItemStack p_185082_1_)
+     {
+-        BlockPos blockpos = p_185082_0_.func_180699_d().func_177972_a(p_185082_0_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
+-        List<EntityLivingBase> list = p_185082_0_.func_82618_k().func_175647_a(EntityLivingBase.class, new AxisAlignedBB(blockpos), Predicates.and(EntitySelectors.field_180132_d, new EntitySelectors.ArmoredMob(p_185082_1_)));
++        BlockPos blockpos = p_185082_0_.func_180699_d().func_177972_a((EnumFacing)p_185082_0_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
++        List<EntityLivingBase> list = p_185082_0_.func_82618_k().<EntityLivingBase>func_175647_a(EntityLivingBase.class, new AxisAlignedBB(blockpos), Predicates.and(EntitySelectors.field_180132_d, new EntitySelectors.ArmoredMob(p_185082_1_)));
+ 
+         if (list.isEmpty())
+         {
+@@ -186,7 +187,9 @@
  
      public boolean func_82789_a(ItemStack p_82789_1_, ItemStack p_82789_2_)
      {
@@ -11,7 +30,21 @@
      }
  
      public ActionResult<ItemStack> func_77659_a(World p_77659_1_, EntityPlayer p_77659_2_, EnumHand p_77659_3_)
-@@ -221,6 +223,19 @@
+@@ -199,11 +202,11 @@
+         {
+             p_77659_2_.func_184201_a(entityequipmentslot, itemstack.func_77946_l());
+             itemstack.func_190920_e(0);
+-            return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
++            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+         }
+         else
+         {
+-            return new ActionResult<>(EnumActionResult.FAIL, itemstack);
++            return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
+         }
+     }
+ 
+@@ -220,6 +223,19 @@
          return multimap;
      }
  
@@ -31,7 +64,7 @@
      public static enum ArmorMaterial
      {
          LEATHER("leather", 5, new int[]{1, 2, 3, 1}, 15, SoundEvents.field_187728_s, 0.0F),
-@@ -235,6 +250,8 @@
+@@ -234,6 +250,8 @@
          private final int field_78055_h;
          private final SoundEvent field_185020_j;
          private final float field_189417_k;
@@ -40,7 +73,7 @@
  
          private ArmorMaterial(String p_i47117_3_, int p_i47117_4_, int[] p_i47117_5_, int p_i47117_6_, SoundEvent p_i47117_7_, float p_i47117_8_)
          {
-@@ -266,6 +283,7 @@
+@@ -265,6 +283,7 @@
              return this.field_185020_j;
          }
  
@@ -48,7 +81,7 @@
          public Item func_151685_b()
          {
              if (this == LEATHER)
-@@ -299,6 +317,22 @@
+@@ -298,6 +317,22 @@
          public float func_189416_e()
          {
              return this.field_189417_k;

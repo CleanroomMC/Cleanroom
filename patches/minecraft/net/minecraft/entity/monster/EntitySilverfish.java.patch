@@ -1,5 +1,16 @@
 --- before/net/minecraft/entity/monster/EntitySilverfish.java
 +++ after/net/minecraft/entity/monster/EntitySilverfish.java
+@@ -49,8 +49,8 @@
+         this.field_70714_bg.func_75776_a(3, this.field_175460_b);
+         this.field_70714_bg.func_75776_a(4, new EntityAIAttackMelee(this, 1.0D, false));
+         this.field_70714_bg.func_75776_a(5, new EntitySilverfish.AIHideInStone(this));
+-        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, true));
+-        this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
++        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, true, new Class[0]));
++        this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
+     }
+ 
+     public double func_70033_W()
 @@ -184,7 +184,7 @@
                  {
                      Random random = this.field_75457_a.func_70681_au();
@@ -9,7 +20,7 @@
                      {
                          this.field_179483_b = EnumFacing.func_176741_a(random);
                          BlockPos blockpos = (new BlockPos(this.field_75457_a.field_70165_t, this.field_75457_a.field_70163_u + 0.5D, this.field_75457_a.field_70161_v)).func_177972_a(this.field_179483_b);
-@@ -273,7 +273,7 @@
+@@ -273,13 +273,13 @@
  
                                  if (iblockstate.func_177230_c() == Blocks.field_150418_aU)
                                  {
@@ -18,3 +29,10 @@
                                      {
                                          world.func_175655_b(blockpos1, true);
                                      }
+                                     else
+                                     {
+-                                        world.func_180501_a(blockpos1, iblockstate.func_177229_b(BlockSilverfish.field_176378_a).func_176883_d(), 3);
++                                        world.func_180501_a(blockpos1, ((BlockSilverfish.EnumType)iblockstate.func_177229_b(BlockSilverfish.field_176378_a)).func_176883_d(), 3);
+                                     }
+ 
+                                     if (random.nextBoolean())

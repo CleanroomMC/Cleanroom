@@ -1,0 +1,11 @@
+--- before/net/minecraft/world/storage/loot/functions/SetMetadata.java
++++ after/net/minecraft/world/storage/loot/functions/SetMetadata.java
+@@ -52,7 +52,7 @@
+ 
+             public SetMetadata func_186530_b(JsonObject p_186530_1_, JsonDeserializationContext p_186530_2_, LootCondition[] p_186530_3_)
+             {
+-                return new SetMetadata(p_186530_3_, JsonUtils.func_188174_a(p_186530_1_, "data", p_186530_2_, RandomValueRange.class));
++                return new SetMetadata(p_186530_3_, (RandomValueRange)JsonUtils.func_188174_a(p_186530_1_, "data", p_186530_2_, RandomValueRange.class));
+             }
+         }
+ }

@@ -1,5 +1,14 @@
 --- before/net/minecraft/entity/monster/EntityMagmaCube.java
 +++ after/net/minecraft/entity/monster/EntityMagmaCube.java
+@@ -31,7 +31,7 @@
+     protected void func_110147_ax()
+     {
+         super.func_110147_ax();
+-        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a((double)0.2F);
++        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.20000000298023224D);
+     }
+ 
+     public boolean func_70601_bi()
 @@ -96,6 +96,7 @@
      {
          this.field_70181_x = (double)(0.42F + (float)this.func_70809_q() * 0.1F);

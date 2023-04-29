@@ -1,0 +1,91 @@
+--- before/net/minecraft/world/gen/layer/GenLayerShore.java
++++ after/net/minecraft/world/gen/layer/GenLayerShore.java
+@@ -28,30 +28,30 @@
+ 
+                 if (k == Biome.func_185362_a(Biomes.field_76789_p))
+                 {
+-                    int l = aint[j + 1 + (i + 1 - 1) * (p_75904_3_ + 2)];
+-                    int i1 = aint[j + 1 + 1 + (i + 1) * (p_75904_3_ + 2)];
+-                    int j1 = aint[j + 1 - 1 + (i + 1) * (p_75904_3_ + 2)];
+-                    int k1 = aint[j + 1 + (i + 1 + 1) * (p_75904_3_ + 2)];
+-
+-                    if (l != Biome.func_185362_a(Biomes.field_76771_b) && i1 != Biome.func_185362_a(Biomes.field_76771_b) && j1 != Biome.func_185362_a(Biomes.field_76771_b) && k1 != Biome.func_185362_a(Biomes.field_76771_b))
+-                    {
+-                        aint1[j + i * p_75904_3_] = k;
+-                    }
+-                    else
+-                    {
+-                        aint1[j + i * p_75904_3_] = Biome.func_185362_a(Biomes.field_76788_q);
+-                    }
+-                }
+-                else if (biome != null && biome.func_150562_l() == BiomeJungle.class)
+-                {
+                     int j2 = aint[j + 1 + (i + 1 - 1) * (p_75904_3_ + 2)];
+                     int i3 = aint[j + 1 + 1 + (i + 1) * (p_75904_3_ + 2)];
+                     int l3 = aint[j + 1 - 1 + (i + 1) * (p_75904_3_ + 2)];
+                     int k4 = aint[j + 1 + (i + 1 + 1) * (p_75904_3_ + 2)];
+ 
+-                    if (this.func_151631_c(j2) && this.func_151631_c(i3) && this.func_151631_c(l3) && this.func_151631_c(k4))
+-                    {
+-                        if (!func_151618_b(j2) && !func_151618_b(i3) && !func_151618_b(l3) && !func_151618_b(k4))
++                    if (j2 != Biome.func_185362_a(Biomes.field_76771_b) && i3 != Biome.func_185362_a(Biomes.field_76771_b) && l3 != Biome.func_185362_a(Biomes.field_76771_b) && k4 != Biome.func_185362_a(Biomes.field_76771_b))
++                    {
++                        aint1[j + i * p_75904_3_] = k;
++                    }
++                    else
++                    {
++                        aint1[j + i * p_75904_3_] = Biome.func_185362_a(Biomes.field_76788_q);
++                    }
++                }
++                else if (biome != null && biome.func_150562_l() == BiomeJungle.class)
++                {
++                    int i2 = aint[j + 1 + (i + 1 - 1) * (p_75904_3_ + 2)];
++                    int l2 = aint[j + 1 + 1 + (i + 1) * (p_75904_3_ + 2)];
++                    int k3 = aint[j + 1 - 1 + (i + 1) * (p_75904_3_ + 2)];
++                    int j4 = aint[j + 1 + (i + 1 + 1) * (p_75904_3_ + 2)];
++
++                    if (this.func_151631_c(i2) && this.func_151631_c(l2) && this.func_151631_c(k3) && this.func_151631_c(j4))
++                    {
++                        if (!func_151618_b(i2) && !func_151618_b(l2) && !func_151618_b(k3) && !func_151618_b(j4))
+                         {
+                             aint1[j + i * p_75904_3_] = k;
+                         }
+@@ -75,12 +75,12 @@
+                     {
+                         if (k != Biome.func_185362_a(Biomes.field_76771_b) && k != Biome.func_185362_a(Biomes.field_150575_M) && k != Biome.func_185362_a(Biomes.field_76781_i) && k != Biome.func_185362_a(Biomes.field_76780_h))
+                         {
+-                            int i2 = aint[j + 1 + (i + 1 - 1) * (p_75904_3_ + 2)];
+-                            int l2 = aint[j + 1 + 1 + (i + 1) * (p_75904_3_ + 2)];
+-                            int k3 = aint[j + 1 - 1 + (i + 1) * (p_75904_3_ + 2)];
+-                            int j4 = aint[j + 1 + (i + 1 + 1) * (p_75904_3_ + 2)];
++                            int l1 = aint[j + 1 + (i + 1 - 1) * (p_75904_3_ + 2)];
++                            int k2 = aint[j + 1 + 1 + (i + 1) * (p_75904_3_ + 2)];
++                            int j3 = aint[j + 1 - 1 + (i + 1) * (p_75904_3_ + 2)];
++                            int i4 = aint[j + 1 + (i + 1 + 1) * (p_75904_3_ + 2)];
+ 
+-                            if (!func_151618_b(i2) && !func_151618_b(l2) && !func_151618_b(k3) && !func_151618_b(j4))
++                            if (!func_151618_b(l1) && !func_151618_b(k2) && !func_151618_b(j3) && !func_151618_b(i4))
+                             {
+                                 aint1[j + i * p_75904_3_] = k;
+                             }
+@@ -96,14 +96,14 @@
+                     }
+                     else
+                     {
+-                        int l1 = aint[j + 1 + (i + 1 - 1) * (p_75904_3_ + 2)];
+-                        int k2 = aint[j + 1 + 1 + (i + 1) * (p_75904_3_ + 2)];
+-                        int j3 = aint[j + 1 - 1 + (i + 1) * (p_75904_3_ + 2)];
+-                        int i4 = aint[j + 1 + (i + 1 + 1) * (p_75904_3_ + 2)];
++                        int l = aint[j + 1 + (i + 1 - 1) * (p_75904_3_ + 2)];
++                        int i1 = aint[j + 1 + 1 + (i + 1) * (p_75904_3_ + 2)];
++                        int j1 = aint[j + 1 - 1 + (i + 1) * (p_75904_3_ + 2)];
++                        int k1 = aint[j + 1 + (i + 1 + 1) * (p_75904_3_ + 2)];
+ 
+-                        if (!func_151618_b(l1) && !func_151618_b(k2) && !func_151618_b(j3) && !func_151618_b(i4))
++                        if (!func_151618_b(l) && !func_151618_b(i1) && !func_151618_b(j1) && !func_151618_b(k1))
+                         {
+-                            if (this.func_151633_d(l1) && this.func_151633_d(k2) && this.func_151633_d(j3) && this.func_151633_d(i4))
++                            if (this.func_151633_d(l) && this.func_151633_d(i1) && this.func_151633_d(j1) && this.func_151633_d(k1))
+                             {
+                                 aint1[j + i * p_75904_3_] = k;
+                             }

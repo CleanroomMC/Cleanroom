@@ -1,0 +1,39 @@
+--- before/net/minecraft/entity/ai/attributes/AbstractAttributeMap.java
++++ after/net/minecraft/entity/ai/attributes/AbstractAttributeMap.java
+@@ -5,14 +5,15 @@
+ import com.google.common.collect.Multimap;
+ import java.util.Collection;
+ import java.util.Map;
++import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+ import net.minecraft.util.LowerStringMap;
+ 
+ public abstract class AbstractAttributeMap
+ {
+-    protected final Map<IAttribute, IAttributeInstance> field_111154_a = Maps.newHashMap();
+-    protected final Map<String, IAttributeInstance> field_111153_b = new LowerStringMap<>();
+-    protected final Multimap<IAttribute, IAttribute> field_180377_c = HashMultimap.create();
++    protected final Map<IAttribute, IAttributeInstance> field_111154_a = Maps.<IAttribute, IAttributeInstance>newHashMap();
++    protected final Map<String, IAttributeInstance> field_111153_b = new LowerStringMap();
++    protected final Multimap<IAttribute, IAttribute> field_180377_c = HashMultimap.<IAttribute, IAttribute>create();
+ 
+     public IAttributeInstance func_111151_a(IAttribute p_111151_1_)
+     {
+@@ -59,7 +60,7 @@
+ 
+     public void func_111148_a(Multimap<String, AttributeModifier> p_111148_1_)
+     {
+-        for (Map.Entry<String, AttributeModifier> entry : p_111148_1_.entries())
++        for (Entry<String, AttributeModifier> entry : p_111148_1_.entries())
+         {
+             IAttributeInstance iattributeinstance = this.func_111152_a(entry.getKey());
+ 
+@@ -72,7 +73,7 @@
+ 
+     public void func_111147_b(Multimap<String, AttributeModifier> p_111147_1_)
+     {
+-        for (Map.Entry<String, AttributeModifier> entry : p_111147_1_.entries())
++        for (Entry<String, AttributeModifier> entry : p_111147_1_.entries())
+         {
+             IAttributeInstance iattributeinstance = this.func_111152_a(entry.getKey());
+ 

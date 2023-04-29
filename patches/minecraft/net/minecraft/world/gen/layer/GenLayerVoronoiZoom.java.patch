@@ -1,0 +1,13 @@
+--- before/net/minecraft/world/gen/layer/GenLayerVoronoiZoom.java
++++ after/net/minecraft/world/gen/layer/GenLayerVoronoiZoom.java
+@@ -10,8 +10,8 @@
+ 
+     public int[] func_75904_a(int p_75904_1_, int p_75904_2_, int p_75904_3_, int p_75904_4_)
+     {
+-        p_75904_1_ -= 2;
+-        p_75904_2_ -= 2;
++        p_75904_1_ = p_75904_1_ - 2;
++        p_75904_2_ = p_75904_2_ - 2;
+         int i = p_75904_1_ >> 2;
+         int j = p_75904_2_ >> 2;
+         int k = (p_75904_3_ >> 2) + 2;

@@ -1,0 +1,11 @@
+--- before/net/minecraft/nbt/NBTTagIntArray.java
++++ after/net/minecraft/nbt/NBTTagIntArray.java
+@@ -31,7 +31,7 @@
+         for (int i = 0; i < p_193584_0_.size(); ++i)
+         {
+             Integer integer = p_193584_0_.get(i);
+-            aint[i] = integer == null ? 0 : integer;
++            aint[i] = integer == null ? 0 : integer.intValue();
+         }
+ 
+         return aint;

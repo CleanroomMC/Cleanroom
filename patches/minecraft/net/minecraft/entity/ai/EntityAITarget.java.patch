@@ -1,0 +1,19 @@
+--- before/net/minecraft/entity/ai/EntityAITarget.java
++++ after/net/minecraft/entity/ai/EntityAITarget.java
+@@ -23,7 +23,7 @@
+     private int field_75302_c;
+     private int field_75298_g;
+     protected EntityLivingBase field_188509_g;
+-    protected int field_188510_h = 60;
++    protected int field_188510_h;
+ 
+     public EntityAITarget(EntityCreature p_i1669_1_, boolean p_i1669_2_)
+     {
+@@ -32,6 +32,7 @@
+ 
+     public EntityAITarget(EntityCreature p_i1670_1_, boolean p_i1670_2_, boolean p_i1670_3_)
+     {
++        this.field_188510_h = 60;
+         this.field_75299_d = p_i1670_1_;
+         this.field_75297_f = p_i1670_2_;
+         this.field_75303_a = p_i1670_3_;

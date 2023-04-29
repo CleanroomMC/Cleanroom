@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/gui/GuiOptionsRowList.java
++++ after/net/minecraft/client/gui/GuiOptionsRowList.java
+@@ -10,7 +10,7 @@
+ @SideOnly(Side.CLIENT)
+ public class GuiOptionsRowList extends GuiListExtended
+ {
+-    private final List<GuiOptionsRowList.Row> field_148184_k = Lists.newArrayList();
++    private final List<GuiOptionsRowList.Row> field_148184_k = Lists.<GuiOptionsRowList.Row>newArrayList();
+ 
+     public GuiOptionsRowList(Minecraft p_i45015_1_, int p_i45015_2_, int p_i45015_3_, int p_i45015_4_, int p_i45015_5_, int p_i45015_6_, GameSettings.Options... p_i45015_7_)
+     {

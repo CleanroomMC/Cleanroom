@@ -1,0 +1,74 @@
+--- before/net/minecraft/command/CommandTrigger.java
++++ after/net/minecraft/command/CommandTrigger.java
+@@ -34,7 +34,7 @@
+     {
+         if (p_184881_3_.length < 3)
+         {
+-            throw new WrongUsageException("commands.trigger.usage");
++            throw new WrongUsageException("commands.trigger.usage", new Object[0]);
+         }
+         else
+         {
+@@ -50,7 +50,7 @@
+ 
+                 if (!(entity instanceof EntityPlayerMP))
+                 {
+-                    throw new CommandException("commands.trigger.invalidPlayer");
++                    throw new CommandException("commands.trigger.invalidPlayer", new Object[0]);
+                 }
+ 
+                 entityplayermp = (EntityPlayerMP)entity;
+@@ -65,7 +65,7 @@
+ 
+                 if (!scoreboard.func_178819_b(entityplayermp.func_70005_c_(), scoreobjective))
+                 {
+-                    throw new CommandException("commands.trigger.invalidObjective", p_184881_3_[0]);
++                    throw new CommandException("commands.trigger.invalidObjective", new Object[] {p_184881_3_[0]});
+                 }
+                 else
+                 {
+@@ -73,7 +73,7 @@
+ 
+                     if (score.func_178816_g())
+                     {
+-                        throw new CommandException("commands.trigger.disabled", p_184881_3_[0]);
++                        throw new CommandException("commands.trigger.disabled", new Object[] {p_184881_3_[0]});
+                     }
+                     else
+                     {
+@@ -85,7 +85,7 @@
+                         {
+                             if (!"add".equals(p_184881_3_[1]))
+                             {
+-                                throw new CommandException("commands.trigger.invalidMode", p_184881_3_[1]);
++                                throw new CommandException("commands.trigger.invalidMode", new Object[] {p_184881_3_[1]});
+                             }
+ 
+                             score.func_96649_a(i);
+@@ -102,7 +102,7 @@
+             }
+             else
+             {
+-                throw new CommandException("commands.trigger.invalidObjective", p_184881_3_[0]);
++                throw new CommandException("commands.trigger.invalidObjective", new Object[] {p_184881_3_[0]});
+             }
+         }
+     }
+@@ -112,7 +112,7 @@
+         if (p_184883_3_.length == 1)
+         {
+             Scoreboard scoreboard = p_184883_1_.func_71218_a(0).func_96441_U();
+-            List<String> list = Lists.newArrayList();
++            List<String> list = Lists.<String>newArrayList();
+ 
+             for (ScoreObjective scoreobjective : scoreboard.func_96514_c())
+             {
+@@ -122,7 +122,7 @@
+                 }
+             }
+ 
+-            return func_71530_a(p_184883_3_, list.toArray(new String[list.size()]));
++            return func_71530_a(p_184883_3_, (String[])list.toArray(new String[list.size()]));
+         }
+         else
+         {

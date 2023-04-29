@@ -1,0 +1,38 @@
+--- before/net/minecraft/client/multiplayer/ServerAddress.java
++++ after/net/minecraft/client/multiplayer/ServerAddress.java
+@@ -26,7 +26,7 @@
+         {
+             return IDN.toASCII(this.field_78866_a);
+         }
+-        catch (IllegalArgumentException illegalargumentexception)
++        catch (IllegalArgumentException var2)
+         {
+             return "";
+         }
+@@ -93,7 +93,7 @@
+         {
+             String s = "com.sun.jndi.dns.DnsContextFactory";
+             Class.forName("com.sun.jndi.dns.DnsContextFactory");
+-            Hashtable<String, String> hashtable = new Hashtable<>();
++            Hashtable<String, String> hashtable = new Hashtable<String, String>();
+             hashtable.put("java.naming.factory.initial", "com.sun.jndi.dns.DnsContextFactory");
+             hashtable.put("java.naming.provider.url", "dns:");
+             hashtable.put("com.sun.jndi.dns.timeout.retries", "1");
+@@ -102,7 +102,7 @@
+             String[] astring = attributes.get("srv").get().toString().split(" ", 4);
+             return new String[] {astring[3], astring[2]};
+         }
+-        catch (Throwable throwable)
++        catch (Throwable var6)
+         {
+             return new String[] {p_78863_0_, Integer.toString(25565)};
+         }
+@@ -114,7 +114,7 @@
+         {
+             return Integer.parseInt(p_78862_0_.trim());
+         }
+-        catch (Exception exception)
++        catch (Exception var3)
+         {
+             return p_78862_1_;
+         }

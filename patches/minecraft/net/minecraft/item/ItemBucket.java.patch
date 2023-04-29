@@ -1,6 +1,6 @@
 --- before/net/minecraft/item/ItemBucket.java
 +++ after/net/minecraft/item/ItemBucket.java
-@@ -40,6 +40,8 @@
+@@ -40,14 +40,16 @@
          boolean flag = this.field_77876_a == Blocks.field_150350_a;
          ItemStack itemstack = p_77659_2_.func_184586_b(p_77659_3_);
          RayTraceResult raytraceresult = this.func_77621_a(p_77659_1_, p_77659_2_, flag);
@@ -9,6 +9,83 @@
  
          if (raytraceresult == null)
          {
+-            return new ActionResult<>(EnumActionResult.PASS, itemstack);
++            return new ActionResult<ItemStack>(EnumActionResult.PASS, itemstack);
+         }
+         else if (raytraceresult.field_72313_a != RayTraceResult.Type.BLOCK)
+         {
+-            return new ActionResult<>(EnumActionResult.PASS, itemstack);
++            return new ActionResult<ItemStack>(EnumActionResult.PASS, itemstack);
+         }
+         else
+         {
+@@ -55,36 +57,36 @@
+ 
+             if (!p_77659_1_.func_175660_a(p_77659_2_, blockpos))
+             {
+-                return new ActionResult<>(EnumActionResult.FAIL, itemstack);
++                return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
+             }
+             else if (flag)
+             {
+                 if (!p_77659_2_.func_175151_a(blockpos.func_177972_a(raytraceresult.field_178784_b), raytraceresult.field_178784_b, itemstack))
+                 {
+-                    return new ActionResult<>(EnumActionResult.FAIL, itemstack);
++                    return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
+                 }
+                 else
+                 {
+                     IBlockState iblockstate = p_77659_1_.func_180495_p(blockpos);
+                     Material material = iblockstate.func_185904_a();
+ 
+-                    if (material == Material.field_151586_h && iblockstate.func_177229_b(BlockLiquid.field_176367_b) == 0)
++                    if (material == Material.field_151586_h && ((Integer)iblockstate.func_177229_b(BlockLiquid.field_176367_b)).intValue() == 0)
+                     {
+                         p_77659_1_.func_180501_a(blockpos, Blocks.field_150350_a.func_176223_P(), 11);
+                         p_77659_2_.func_71029_a(StatList.func_188057_b(this));
+                         p_77659_2_.func_184185_a(SoundEvents.field_187630_M, 1.0F, 1.0F);
+-                        return new ActionResult<>(EnumActionResult.SUCCESS, this.func_150910_a(itemstack, p_77659_2_, Items.field_151131_as));
++                        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, this.func_150910_a(itemstack, p_77659_2_, Items.field_151131_as));
+                     }
+-                    else if (material == Material.field_151587_i && iblockstate.func_177229_b(BlockLiquid.field_176367_b) == 0)
++                    else if (material == Material.field_151587_i && ((Integer)iblockstate.func_177229_b(BlockLiquid.field_176367_b)).intValue() == 0)
+                     {
+                         p_77659_2_.func_184185_a(SoundEvents.field_187633_N, 1.0F, 1.0F);
+                         p_77659_1_.func_180501_a(blockpos, Blocks.field_150350_a.func_176223_P(), 11);
+                         p_77659_2_.func_71029_a(StatList.func_188057_b(this));
+-                        return new ActionResult<>(EnumActionResult.SUCCESS, this.func_150910_a(itemstack, p_77659_2_, Items.field_151129_at));
++                        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, this.func_150910_a(itemstack, p_77659_2_, Items.field_151129_at));
+                     }
+                     else
+                     {
+-                        return new ActionResult<>(EnumActionResult.FAIL, itemstack);
++                        return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
+                     }
+                 }
+             }
+@@ -95,7 +97,7 @@
+ 
+                 if (!p_77659_2_.func_175151_a(blockpos1, raytraceresult.field_178784_b, itemstack))
+                 {
+-                    return new ActionResult<>(EnumActionResult.FAIL, itemstack);
++                    return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
+                 }
+                 else if (this.func_180616_a(p_77659_2_, p_77659_1_, blockpos1))
+                 {
+@@ -105,11 +107,11 @@
+                     }
+ 
+                     p_77659_2_.func_71029_a(StatList.func_188057_b(this));
+-                    return !p_77659_2_.field_71075_bZ.field_75098_d ? new ActionResult<>(EnumActionResult.SUCCESS, new ItemStack(Items.field_151133_ar)) : new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
++                    return !p_77659_2_.field_71075_bZ.field_75098_d ? new ActionResult(EnumActionResult.SUCCESS, new ItemStack(Items.field_151133_ar)) : new ActionResult(EnumActionResult.SUCCESS, itemstack);
+                 }
+                 else
+                 {
+-                    return new ActionResult<>(EnumActionResult.FAIL, itemstack);
++                    return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
+                 }
+             }
+         }
 @@ -186,6 +188,18 @@
  
                  return true;

@@ -1,0 +1,80 @@
+--- before/net/minecraft/block/BlockJukebox.java
++++ after/net/minecraft/block/BlockJukebox.java
+@@ -2,6 +2,7 @@
+ 
+ import net.minecraft.block.material.MapColor;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyBool;
+ import net.minecraft.block.state.BlockStateContainer;
+ import net.minecraft.block.state.IBlockState;
+@@ -29,22 +30,22 @@
+ 
+     public static void func_189873_a(DataFixer p_189873_0_)
+     {
+-        p_189873_0_.func_188258_a(FixTypes.BLOCK_ENTITY, new ItemStackData(BlockJukebox.TileEntityJukebox.class, "RecordItem"));
++        p_189873_0_.func_188258_a(FixTypes.BLOCK_ENTITY, new ItemStackData(BlockJukebox.TileEntityJukebox.class, new String[] {"RecordItem"}));
+     }
+ 
+     protected BlockJukebox()
+     {
+         super(Material.field_151575_d, MapColor.field_151664_l);
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176432_a, false));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176432_a, Boolean.valueOf(false)));
+         this.func_149647_a(CreativeTabs.field_78031_c);
+     }
+ 
+     public boolean func_180639_a(World p_180639_1_, BlockPos p_180639_2_, IBlockState p_180639_3_, EntityPlayer p_180639_4_, EnumHand p_180639_5_, EnumFacing p_180639_6_, float p_180639_7_, float p_180639_8_, float p_180639_9_)
+     {
+-        if (p_180639_3_.func_177229_b(field_176432_a))
++        if (((Boolean)p_180639_3_.func_177229_b(field_176432_a)).booleanValue())
+         {
+             this.func_180678_e(p_180639_1_, p_180639_2_, p_180639_3_);
+-            p_180639_3_ = p_180639_3_.func_177226_a(field_176432_a, false);
++            p_180639_3_ = p_180639_3_.func_177226_a(field_176432_a, Boolean.valueOf(false));
+             p_180639_1_.func_180501_a(p_180639_2_, p_180639_3_, 2);
+             return true;
+         }
+@@ -61,7 +62,7 @@
+         if (tileentity instanceof BlockJukebox.TileEntityJukebox)
+         {
+             ((BlockJukebox.TileEntityJukebox)tileentity).func_145857_a(p_176431_4_.func_77946_l());
+-            p_176431_1_.func_180501_a(p_176431_2_, p_176431_3_.func_177226_a(field_176432_a, true), 2);
++            p_176431_1_.func_180501_a(p_176431_2_, p_176431_3_.func_177226_a(field_176432_a, Boolean.valueOf(true)), 2);
+         }
+     }
+ 
+@@ -82,9 +83,9 @@
+                     p_180678_1_.func_184149_a(p_180678_2_, (SoundEvent)null);
+                     blockjukebox$tileentityjukebox.func_145857_a(ItemStack.field_190927_a);
+                     float f = 0.7F;
+-                    double d0 = (double)(p_180678_1_.field_73012_v.nextFloat() * 0.7F) + (double)0.15F;
+-                    double d1 = (double)(p_180678_1_.field_73012_v.nextFloat() * 0.7F) + (double)0.060000002F + 0.6D;
+-                    double d2 = (double)(p_180678_1_.field_73012_v.nextFloat() * 0.7F) + (double)0.15F;
++                    double d0 = (double)(p_180678_1_.field_73012_v.nextFloat() * 0.7F) + 0.15000000596046448D;
++                    double d1 = (double)(p_180678_1_.field_73012_v.nextFloat() * 0.7F) + 0.06000000238418579D + 0.6D;
++                    double d2 = (double)(p_180678_1_.field_73012_v.nextFloat() * 0.7F) + 0.15000000596046448D;
+                     ItemStack itemstack1 = itemstack.func_77946_l();
+                     EntityItem entityitem = new EntityItem(p_180678_1_, (double)p_180678_2_.func_177958_n() + d0, (double)p_180678_2_.func_177956_o() + d1, (double)p_180678_2_.func_177952_p() + d2, itemstack1);
+                     entityitem.func_174869_p();
+@@ -142,17 +143,17 @@
+ 
+     public IBlockState func_176203_a(int p_176203_1_)
+     {
+-        return this.func_176223_P().func_177226_a(field_176432_a, p_176203_1_ > 0);
++        return this.func_176223_P().func_177226_a(field_176432_a, Boolean.valueOf(p_176203_1_ > 0));
+     }
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(field_176432_a) ? 1 : 0;
++        return ((Boolean)p_176201_1_.func_177229_b(field_176432_a)).booleanValue() ? 1 : 0;
+     }
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176432_a);
++        return new BlockStateContainer(this, new IProperty[] {field_176432_a});
+     }
+ 
+     public static class TileEntityJukebox extends TileEntity

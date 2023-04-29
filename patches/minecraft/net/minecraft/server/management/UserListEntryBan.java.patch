@@ -1,0 +1,20 @@
+--- before/net/minecraft/server/management/UserListEntryBan.java
++++ after/net/minecraft/server/management/UserListEntryBan.java
+@@ -31,7 +31,7 @@
+         {
+             date = p_i1174_2_.has("created") ? field_73698_a.parse(p_i1174_2_.get("created").getAsString()) : new Date();
+         }
+-        catch (ParseException parseexception1)
++        catch (ParseException var7)
+         {
+             date = new Date();
+         }
+@@ -44,7 +44,7 @@
+         {
+             date1 = p_i1174_2_.has("expires") ? field_73698_a.parse(p_i1174_2_.get("expires").getAsString()) : null;
+         }
+-        catch (ParseException parseexception)
++        catch (ParseException var6)
+         {
+             date1 = null;
+         }

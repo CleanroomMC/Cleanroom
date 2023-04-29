@@ -1,0 +1,20 @@
+--- before/net/minecraft/item/ItemEmptyMap.java
++++ after/net/minecraft/item/ItemEmptyMap.java
+@@ -23,7 +23,7 @@
+ 
+         if (itemstack1.func_190926_b())
+         {
+-            return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
++            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+         }
+         else
+         {
+@@ -33,7 +33,7 @@
+             }
+ 
+             p_77659_2_.func_71029_a(StatList.func_188057_b(this));
+-            return new ActionResult<>(EnumActionResult.SUCCESS, itemstack1);
++            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack1);
+         }
+     }
+ }

@@ -1,5 +1,14 @@
 --- before/net/minecraft/world/gen/structure/StructureStart.java
 +++ after/net/minecraft/world/gen/structure/StructureStart.java
+@@ -11,7 +11,7 @@
+ 
+ public abstract class StructureStart
+ {
+-    protected List<StructureComponent> field_75075_a = Lists.newLinkedList();
++    protected List<StructureComponent> field_75075_a = Lists.<StructureComponent>newLinkedList();
+     protected StructureBoundingBox field_75074_b;
+     private int field_143024_c;
+     private int field_143023_d;
 @@ -63,6 +63,10 @@
  
      public NBTTagCompound func_143021_a(int p_143021_1_, int p_143021_2_)

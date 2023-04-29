@@ -8,3 +8,35 @@
          field_192784_c.func_192083_a(map);
  
          for (Advancement advancement : field_192784_c.func_192088_b())
+@@ -86,11 +87,11 @@
+     {
+         if (this.field_192785_d == null)
+         {
+-            return Maps.newHashMap();
++            return Maps.<ResourceLocation, Advancement.Builder>newHashMap();
+         }
+         else
+         {
+-            Map<ResourceLocation, Advancement.Builder> map = Maps.newHashMap();
++            Map<ResourceLocation, Advancement.Builder> map = Maps.<ResourceLocation, Advancement.Builder>newHashMap();
+             this.field_192785_d.mkdirs();
+ 
+             for (File file1 : FileUtils.listFiles(this.field_192785_d, new String[] {"json"}, true))
+@@ -104,7 +105,7 @@
+ 
+                     try
+                     {
+-                        Advancement.Builder advancement$builder = JsonUtils.func_188178_a(field_192783_b, FileUtils.readFileToString(file1, StandardCharsets.UTF_8), Advancement.Builder.class);
++                        Advancement.Builder advancement$builder = (Advancement.Builder)JsonUtils.func_188178_a(field_192783_b, FileUtils.readFileToString(file1, StandardCharsets.UTF_8), Advancement.Builder.class);
+ 
+                         if (advancement$builder == null)
+                         {
+@@ -180,7 +181,7 @@
+                             try
+                             {
+                                 bufferedreader = Files.newBufferedReader(path1);
+-                                Advancement.Builder advancement$builder = JsonUtils.func_193839_a(field_192783_b, bufferedreader, Advancement.Builder.class);
++                                Advancement.Builder advancement$builder = (Advancement.Builder)JsonUtils.func_193839_a(field_192783_b, bufferedreader, Advancement.Builder.class);
+                                 p_192777_1_.put(resourcelocation, advancement$builder);
+                             }
+                             catch (JsonParseException jsonparseexception)

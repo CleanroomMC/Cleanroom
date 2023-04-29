@@ -1,0 +1,21 @@
+--- before/net/minecraft/client/renderer/tileentity/TileEntityEndPortalRenderer.java
++++ after/net/minecraft/client/renderer/tileentity/TileEntityEndPortalRenderer.java
+@@ -1,6 +1,5 @@
+ package net.minecraft.client.renderer.tileentity;
+ 
+-import java.nio.Buffer;
+ import java.nio.FloatBuffer;
+ import java.util.Random;
+ import net.minecraft.client.Minecraft;
+@@ -207,9 +206,9 @@
+ 
+     private FloatBuffer func_147525_a(float p_147525_1_, float p_147525_2_, float p_147525_3_, float p_147525_4_)
+     {
+-        ((Buffer)this.field_147528_b).clear();
++        this.field_147528_b.clear();
+         this.field_147528_b.put(p_147525_1_).put(p_147525_2_).put(p_147525_3_).put(p_147525_4_);
+-        ((Buffer)this.field_147528_b).flip();
++        this.field_147528_b.flip();
+         return this.field_147528_b;
+     }
+ }

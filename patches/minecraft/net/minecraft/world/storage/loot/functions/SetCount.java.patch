@@ -1,0 +1,11 @@
+--- before/net/minecraft/world/storage/loot/functions/SetCount.java
++++ after/net/minecraft/world/storage/loot/functions/SetCount.java
+@@ -41,7 +41,7 @@
+ 
+             public SetCount func_186530_b(JsonObject p_186530_1_, JsonDeserializationContext p_186530_2_, LootCondition[] p_186530_3_)
+             {
+-                return new SetCount(p_186530_3_, JsonUtils.func_188174_a(p_186530_1_, "count", p_186530_2_, RandomValueRange.class));
++                return new SetCount(p_186530_3_, (RandomValueRange)JsonUtils.func_188174_a(p_186530_1_, "count", p_186530_2_, RandomValueRange.class));
+             }
+         }
+ }

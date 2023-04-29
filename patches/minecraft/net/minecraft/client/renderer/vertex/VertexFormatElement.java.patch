@@ -1,6 +1,16 @@
 --- before/net/minecraft/client/renderer/vertex/VertexFormatElement.java
 +++ after/net/minecraft/client/renderer/vertex/VertexFormatElement.java
-@@ -158,9 +158,16 @@
+@@ -109,7 +109,8 @@
+         int i = this.field_177379_b.hashCode();
+         i = 31 * i + this.field_177380_c.hashCode();
+         i = 31 * i + this.field_177377_d;
+-        return 31 * i + this.field_177378_e;
++        i = 31 * i + this.field_177378_e;
++        return i;
+     }
+ 
+     @SideOnly(Side.CLIENT)
+@@ -157,9 +158,16 @@
          NORMAL("Normal"),
          COLOR("Vertex Color"),
          UV("UV"),

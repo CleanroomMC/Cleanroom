@@ -1,5 +1,81 @@
 --- before/net/minecraft/entity/monster/EntityIronGolem.java
 +++ after/net/minecraft/entity/monster/EntityIronGolem.java
+@@ -41,7 +41,7 @@
+ 
+ public class EntityIronGolem extends EntityGolem
+ {
+-    protected static final DataParameter<Byte> field_184750_a = EntityDataManager.func_187226_a(EntityIronGolem.class, DataSerializers.field_187191_a);
++    protected static final DataParameter<Byte> field_184750_a = EntityDataManager.<Byte>func_187226_a(EntityIronGolem.class, DataSerializers.field_187191_a);
+     private int field_70858_e;
+     @Nullable
+     Village field_70857_d;
+@@ -65,8 +65,8 @@
+         this.field_70714_bg.func_75776_a(7, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
+         this.field_70714_bg.func_75776_a(8, new EntityAILookIdle(this));
+         this.field_70715_bh.func_75776_a(1, new EntityAIDefendVillage(this));
+-        this.field_70715_bh.func_75776_a(2, new EntityAIHurtByTarget(this, false));
+-        this.field_70715_bh.func_75776_a(3, new EntityAINearestAttackableTarget<>(this, EntityLiving.class, 10, false, true, new Predicate<EntityLiving>()
++        this.field_70715_bh.func_75776_a(2, new EntityAIHurtByTarget(this, false, new Class[0]));
++        this.field_70715_bh.func_75776_a(3, new EntityAINearestAttackableTarget(this, EntityLiving.class, 10, false, true, new Predicate<EntityLiving>()
+         {
+             public boolean apply(@Nullable EntityLiving p_apply_1_)
+             {
+@@ -78,7 +78,7 @@
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+-        this.field_70180_af.func_187214_a(field_184750_a, (byte)0);
++        this.field_70180_af.func_187214_a(field_184750_a, Byte.valueOf((byte)0));
+     }
+ 
+     protected void func_70619_bc()
+@@ -139,10 +139,10 @@
+             --this.field_70856_g;
+         }
+ 
+-        if (this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y > (double)2.5000003E-7F && this.field_70146_Z.nextInt(5) == 0)
++        if (this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y > 2.500000277905201E-7D && this.field_70146_Z.nextInt(5) == 0)
+         {
+             int i = MathHelper.func_76128_c(this.field_70165_t);
+-            int j = MathHelper.func_76128_c(this.field_70163_u - (double)0.2F);
++            int j = MathHelper.func_76128_c(this.field_70163_u - 0.20000000298023224D);
+             int k = MathHelper.func_76128_c(this.field_70161_v);
+             IBlockState iblockstate = this.field_70170_p.func_180495_p(new BlockPos(i, j, k));
+ 
+@@ -190,7 +190,7 @@
+ 
+         if (flag)
+         {
+-            p_70652_1_.field_70181_x += (double)0.4F;
++            p_70652_1_.field_70181_x += 0.4000000059604645D;
+             this.func_174815_a(this, p_70652_1_);
+         }
+ 
+@@ -273,20 +273,20 @@
+ 
+     public boolean func_70850_q()
+     {
+-        return (this.field_70180_af.func_187225_a(field_184750_a) & 1) != 0;
++        return (((Byte)this.field_70180_af.func_187225_a(field_184750_a)).byteValue() & 1) != 0;
+     }
+ 
+     public void func_70849_f(boolean p_70849_1_)
+     {
+-        byte b0 = this.field_70180_af.func_187225_a(field_184750_a);
++        byte b0 = ((Byte)this.field_70180_af.func_187225_a(field_184750_a)).byteValue();
+ 
+         if (p_70849_1_)
+         {
+-            this.field_70180_af.func_187227_b(field_184750_a, (byte)(b0 | 1));
++            this.field_70180_af.func_187227_b(field_184750_a, Byte.valueOf((byte)(b0 | 1)));
+         }
+         else
+         {
+-            this.field_70180_af.func_187227_b(field_184750_a, (byte)(b0 & -2));
++            this.field_70180_af.func_187227_b(field_184750_a, Byte.valueOf((byte)(b0 & -2)));
+         }
+     }
+ 
 @@ -294,7 +294,7 @@
      {
          if (!this.func_70850_q() && this.field_70717_bb != null && this.field_70857_d != null)

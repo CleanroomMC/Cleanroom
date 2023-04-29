@@ -1,6 +1,35 @@
 --- before/net/minecraft/entity/item/EntityItemFrame.java
 +++ after/net/minecraft/entity/item/EntityItemFrame.java
-@@ -140,13 +140,14 @@
+@@ -27,8 +27,8 @@
+ 
+ public class EntityItemFrame extends EntityHanging
+ {
+-    private static final DataParameter<ItemStack> field_184525_c = EntityDataManager.func_187226_a(EntityItemFrame.class, DataSerializers.field_187196_f);
+-    private static final DataParameter<Integer> field_184526_d = EntityDataManager.func_187226_a(EntityItemFrame.class, DataSerializers.field_187192_b);
++    private static final DataParameter<ItemStack> field_184525_c = EntityDataManager.<ItemStack>func_187226_a(EntityItemFrame.class, DataSerializers.field_187196_f);
++    private static final DataParameter<Integer> field_184526_d = EntityDataManager.<Integer>func_187226_a(EntityItemFrame.class, DataSerializers.field_187192_b);
+     private float field_82337_e = 1.0F;
+ 
+     public EntityItemFrame(World p_i1590_1_)
+@@ -45,7 +45,7 @@
+     protected void func_70088_a()
+     {
+         this.func_184212_Q().func_187214_a(field_184525_c, ItemStack.field_190927_a);
+-        this.func_184212_Q().func_187214_a(field_184526_d, 0);
++        this.func_184212_Q().func_187214_a(field_184526_d, Integer.valueOf(0));
+     }
+ 
+     public float func_70111_Y()
+@@ -90,7 +90,7 @@
+     public boolean func_70112_a(double p_70112_1_)
+     {
+         double d0 = 16.0D;
+-        d0 *= 64.0D * func_184183_bd();
++        d0 = d0 * 64.0D * func_184183_bd();
+         return p_70112_1_ < d0 * d0;
+     }
+ 
+@@ -140,19 +140,20 @@
      {
          if (!p_110131_1_.func_190926_b())
          {
@@ -16,3 +45,37 @@
          }
      }
  
+     public ItemStack func_82335_i()
+     {
+-        return this.func_184212_Q().func_187225_a(field_184525_c);
++        return (ItemStack)this.func_184212_Q().func_187225_a(field_184525_c);
+     }
+ 
+     public void func_82334_a(ItemStack p_82334_1_)
+@@ -198,7 +199,7 @@
+ 
+     public int func_82333_j()
+     {
+-        return this.func_184212_Q().func_187225_a(field_184526_d);
++        return ((Integer)this.func_184212_Q().func_187225_a(field_184526_d)).intValue();
+     }
+ 
+     public void func_82336_g(int p_82336_1_)
+@@ -208,7 +209,7 @@
+ 
+     private void func_174865_a(int p_174865_1_, boolean p_174865_2_)
+     {
+-        this.func_184212_Q().func_187227_b(field_184526_d, p_174865_1_ % 8);
++        this.func_184212_Q().func_187227_b(field_184526_d, Integer.valueOf(p_174865_1_ % 8));
+ 
+         if (p_174865_2_ && this.field_174861_a != null)
+         {
+@@ -218,7 +219,7 @@
+ 
+     public static void func_189738_a(DataFixer p_189738_0_)
+     {
+-        p_189738_0_.func_188258_a(FixTypes.ENTITY, new ItemStackData(EntityItemFrame.class, "Item"));
++        p_189738_0_.func_188258_a(FixTypes.ENTITY, new ItemStackData(EntityItemFrame.class, new String[] {"Item"}));
+     }
+ 
+     public void func_70014_b(NBTTagCompound p_70014_1_)

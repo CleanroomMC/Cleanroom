@@ -1,5 +1,23 @@
 --- before/net/minecraft/client/gui/recipebook/GuiRecipeOverlay.java
 +++ after/net/minecraft/client/gui/recipebook/GuiRecipeOverlay.java
+@@ -23,7 +23,7 @@
+ public class GuiRecipeOverlay extends Gui
+ {
+     private static final ResourceLocation field_191847_a = new ResourceLocation("textures/gui/recipe_book.png");
+-    private final List<GuiRecipeOverlay.Button> field_193972_f = Lists.newArrayList();
++    private final List<GuiRecipeOverlay.Button> field_193972_f = Lists.<GuiRecipeOverlay.Button>newArrayList();
+     private boolean field_191850_h;
+     private int field_191851_i;
+     private int field_191852_j;
+@@ -76,7 +76,7 @@
+         for (int j1 = 0; j1 < j; ++j1)
+         {
+             boolean flag1 = j1 < i;
+-            this.field_193972_f.add(new GuiRecipeOverlay.Button(this.field_191851_i + 4 + 25 * (j1 % k), this.field_191852_j + 5 + 25 * (j1 / k), flag1 ? list.get(j1) : list1.get(j1 - i), flag1));
++            this.field_193972_f.add(new GuiRecipeOverlay.Button(this.field_191851_i + 4 + 25 * (j1 % k), this.field_191852_j + 5 + 25 * (j1 / k), flag1 ? (IRecipe)list.get(j1) : (IRecipe)list1.get(j1 - i), flag1));
+         }
+ 
+         this.field_193973_l = null;
 @@ -230,11 +230,11 @@
              int k = 3;
              int l = 3;
@@ -16,3 +34,12 @@
              }
  
              Iterator<Ingredient> iterator = this.field_193924_p.func_192400_c().iterator();
+@@ -247,7 +247,7 @@
+                 {
+                     if (iterator.hasNext())
+                     {
+-                        ItemStack[] aitemstack = iterator.next().func_193365_a();
++                        ItemStack[] aitemstack = ((Ingredient)iterator.next()).func_193365_a();
+ 
+                         if (aitemstack.length != 0)
+                         {

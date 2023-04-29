@@ -43,6 +43,52 @@
          double d0 = 0.03125D;
          this.field_186002_u = this.field_185994_m.func_151599_a(this.field_186002_u, (double)(p_185977_1_ * 16), (double)(p_185977_2_ * 16), 16, 16, 0.0625D, 0.0625D, 1.0D);
  
+@@ -287,8 +309,8 @@
+                     }
+                 }
+ 
+-                f2 /= f4;
+-                f3 /= f4;
++                f2 = f2 / f4;
++                f3 = f3 / f4;
+                 f2 = f2 * 0.9F + 0.1F;
+                 f3 = (f3 * 4.0F - 1.0F) / 8.0F;
+                 double d7 = this.field_185989_h[j] / 8000.0D;
+@@ -302,15 +324,15 @@
+ 
+                 if (d7 < 0.0D)
+                 {
+-                    d7 /= 2.0D;
++                    d7 = d7 / 2.0D;
+ 
+                     if (d7 < -1.0D)
+                     {
+                         d7 = -1.0D;
+                     }
+ 
+-                    d7 /= 1.4D;
+-                    d7 /= 2.0D;
++                    d7 = d7 / 1.4D;
++                    d7 = d7 / 2.0D;
+                 }
+                 else
+                 {
+@@ -319,13 +341,13 @@
+                         d7 = 1.0D;
+                     }
+ 
+-                    d7 /= 8.0D;
++                    d7 = d7 / 8.0D;
+                 }
+ 
+                 ++j;
+                 double d8 = (double)f3;
+                 double d9 = (double)f2;
+-                d8 += d7 * 0.2D;
++                d8 = d8 + d7 * 0.2D;
+                 d8 = d8 * (double)this.field_186000_s.field_177823_k / 8.0D;
+                 double d0 = (double)this.field_186000_s.field_177823_k + d8 * 4.0D;
+ 
 @@ -370,6 +392,8 @@
          boolean flag = false;
          ChunkPos chunkpos = new ChunkPos(p_185931_1_, p_185931_2_);

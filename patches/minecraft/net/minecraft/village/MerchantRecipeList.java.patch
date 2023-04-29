@@ -1,0 +1,37 @@
+--- before/net/minecraft/village/MerchantRecipeList.java
++++ after/net/minecraft/village/MerchantRecipeList.java
+@@ -27,14 +27,14 @@
+     {
+         if (p_77203_3_ > 0 && p_77203_3_ < this.size())
+         {
+-            MerchantRecipe merchantrecipe1 = this.get(p_77203_3_);
++            MerchantRecipe merchantrecipe1 = (MerchantRecipe)this.get(p_77203_3_);
+             return !this.func_181078_a(p_77203_1_, merchantrecipe1.func_77394_a()) || (!p_77203_2_.func_190926_b() || merchantrecipe1.func_77398_c()) && (!merchantrecipe1.func_77398_c() || !this.func_181078_a(p_77203_2_, merchantrecipe1.func_77396_b())) || p_77203_1_.func_190916_E() < merchantrecipe1.func_77394_a().func_190916_E() || merchantrecipe1.func_77398_c() && p_77203_2_.func_190916_E() < merchantrecipe1.func_77396_b().func_190916_E() ? null : merchantrecipe1;
+         }
+         else
+         {
+             for (int i = 0; i < this.size(); ++i)
+             {
+-                MerchantRecipe merchantrecipe = this.get(i);
++                MerchantRecipe merchantrecipe = (MerchantRecipe)this.get(i);
+ 
+                 if (this.func_181078_a(p_77203_1_, merchantrecipe.func_77394_a()) && p_77203_1_.func_190916_E() >= merchantrecipe.func_77394_a().func_190916_E() && (!merchantrecipe.func_77398_c() && p_77203_2_.func_190926_b() || merchantrecipe.func_77398_c() && this.func_181078_a(p_77203_2_, merchantrecipe.func_77396_b()) && p_77203_2_.func_190916_E() >= merchantrecipe.func_77396_b().func_190916_E()))
+                 {
+@@ -57,7 +57,7 @@
+ 
+         for (int i = 0; i < this.size(); ++i)
+         {
+-            MerchantRecipe merchantrecipe = this.get(i);
++            MerchantRecipe merchantrecipe = (MerchantRecipe)this.get(i);
+             p_151391_1_.func_150788_a(merchantrecipe.func_77394_a());
+             p_151391_1_.func_150788_a(merchantrecipe.func_77397_d());
+             ItemStack itemstack = merchantrecipe.func_77396_b();
+@@ -92,7 +92,7 @@
+ 
+         for (int i = 0; i < this.size(); ++i)
+         {
+-            MerchantRecipe merchantrecipe = this.get(i);
++            MerchantRecipe merchantrecipe = (MerchantRecipe)this.get(i);
+             nbttaglist.func_74742_a(merchantrecipe.func_77395_g());
+         }
+ 

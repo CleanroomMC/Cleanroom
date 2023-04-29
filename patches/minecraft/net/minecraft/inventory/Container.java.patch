@@ -1,6 +1,48 @@
 --- before/net/minecraft/inventory/Container.java
 +++ after/net/minecraft/inventory/Container.java
-@@ -81,9 +81,11 @@
+@@ -21,16 +21,16 @@
+ 
+ public abstract class Container
+ {
+-    public NonNullList<ItemStack> field_75153_a = NonNullList.func_191196_a();
+-    public List<Slot> field_75151_b = Lists.newArrayList();
++    public NonNullList<ItemStack> field_75153_a = NonNullList.<ItemStack>func_191196_a();
++    public List<Slot> field_75151_b = Lists.<Slot>newArrayList();
+     public int field_75152_c;
+     @SideOnly(Side.CLIENT)
+     private short field_75150_e;
+     private int field_94535_f = -1;
+     private int field_94536_g;
+-    private final Set<Slot> field_94537_h = Sets.newHashSet();
+-    protected List<IContainerListener> field_75149_d = Lists.newArrayList();
+-    private final Set<EntityPlayer> field_75148_f = Sets.newHashSet();
++    private final Set<Slot> field_94537_h = Sets.<Slot>newHashSet();
++    protected List<IContainerListener> field_75149_d = Lists.<IContainerListener>newArrayList();
++    private final Set<EntityPlayer> field_75148_f = Sets.<EntityPlayer>newHashSet();
+ 
+     protected Slot func_75146_a(Slot p_75146_1_)
+     {
+@@ -56,11 +56,11 @@
+ 
+     public NonNullList<ItemStack> func_75138_a()
+     {
+-        NonNullList<ItemStack> nonnulllist = NonNullList.func_191196_a();
++        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191196_a();
+ 
+         for (int i = 0; i < this.field_75151_b.size(); ++i)
+         {
+-            nonnulllist.add(this.field_75151_b.get(i).func_75211_c());
++            nonnulllist.add(((Slot)this.field_75151_b.get(i)).func_75211_c());
+         }
+ 
+         return nonnulllist;
+@@ -76,17 +76,19 @@
+     {
+         for (int i = 0; i < this.field_75151_b.size(); ++i)
+         {
+-            ItemStack itemstack = this.field_75151_b.get(i).func_75211_c();
++            ItemStack itemstack = ((Slot)this.field_75151_b.get(i)).func_75211_c();
+             ItemStack itemstack1 = this.field_75153_a.get(i);
  
              if (!ItemStack.func_77989_b(itemstack1, itemstack))
              {
@@ -11,7 +53,11 @@
 +                if (clientStackChanged)
                  for (int j = 0; j < this.field_75149_d.size(); ++j)
                  {
-                     ((IContainerListener)this.field_75149_d.get(j)).func_71111_a(this, i, itemstack1);
+-                    this.field_75149_d.get(j).func_71111_a(this, i, itemstack1);
++                    ((IContainerListener)this.field_75149_d.get(j)).func_71111_a(this, i, itemstack1);
+                 }
+             }
+         }
 @@ -589,18 +591,19 @@
                  if (!itemstack.func_190926_b() && itemstack.func_77973_b() == p_75135_1_.func_77973_b() && (!p_75135_1_.func_77981_g() || p_75135_1_.func_77960_j() == itemstack.func_77960_j()) && ItemStack.func_77970_a(p_75135_1_, itemstack))
                  {
@@ -45,3 +91,12 @@
          }
  
          p_94525_2_.func_190917_f(p_94525_3_);
+@@ -776,7 +779,7 @@
+                 }
+             }
+ 
+-            f /= (float)p_94526_0_.func_70302_i_();
++            f = f / (float)p_94526_0_.func_70302_i_();
+             return MathHelper.func_76141_d(f * 14.0F) + (i > 0 ? 1 : 0);
+         }
+     }

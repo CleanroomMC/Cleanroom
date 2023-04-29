@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/renderer/entity/RenderAbstractHorse.java
++++ after/net/minecraft/client/renderer/entity/RenderAbstractHorse.java
+@@ -16,7 +16,7 @@
+ @SideOnly(Side.CLIENT)
+ public class RenderAbstractHorse extends RenderLiving<AbstractHorse>
+ {
+-    private static final Map < Class<?>, ResourceLocation > field_191359_a = Maps.newHashMap();
++    private static final Map < Class<?>, ResourceLocation > field_191359_a = Maps. < Class<?>, ResourceLocation > newHashMap();
+     private final float field_191360_j;
+ 
+     public RenderAbstractHorse(RenderManager p_i47212_1_)

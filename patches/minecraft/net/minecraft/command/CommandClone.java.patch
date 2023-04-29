@@ -1,0 +1,91 @@
+--- before/net/minecraft/command/CommandClone.java
++++ after/net/minecraft/command/CommandClone.java
+@@ -39,7 +39,7 @@
+     {
+         if (p_184881_3_.length < 9)
+         {
+-            throw new WrongUsageException("commands.clone.usage");
++            throw new WrongUsageException("commands.clone.usage", new Object[0]);
+         }
+         else
+         {
+@@ -53,7 +53,7 @@
+ 
+             if (i > 32768)
+             {
+-                throw new CommandException("commands.clone.tooManyBlocks", i, 32768);
++                throw new CommandException("commands.clone.tooManyBlocks", new Object[] {i, Integer.valueOf(32768)});
+             }
+             else
+             {
+@@ -63,7 +63,7 @@
+ 
+                 if ((p_184881_3_.length < 11 || !"force".equals(p_184881_3_[10]) && !"move".equals(p_184881_3_[10])) && structureboundingbox.func_78884_a(structureboundingbox1))
+                 {
+-                    throw new CommandException("commands.clone.noOverlap");
++                    throw new CommandException("commands.clone.noOverlap", new Object[0]);
+                 }
+                 else
+                 {
+@@ -90,7 +90,7 @@
+                                 {
+                                     if (p_184881_3_.length < 12)
+                                     {
+-                                        throw new WrongUsageException("commands.clone.usage");
++                                        throw new WrongUsageException("commands.clone.usage", new Object[0]);
+                                     }
+ 
+                                     block = func_147180_g(p_184881_2_, p_184881_3_[11]);
+@@ -102,10 +102,10 @@
+                                 }
+                             }
+ 
+-                            List<CommandClone.StaticCloneData> list = Lists.newArrayList();
+-                            List<CommandClone.StaticCloneData> list1 = Lists.newArrayList();
+-                            List<CommandClone.StaticCloneData> list2 = Lists.newArrayList();
+-                            Deque<BlockPos> deque = Lists.newLinkedList();
++                            List<CommandClone.StaticCloneData> list = Lists.<CommandClone.StaticCloneData>newArrayList();
++                            List<CommandClone.StaticCloneData> list1 = Lists.<CommandClone.StaticCloneData>newArrayList();
++                            List<CommandClone.StaticCloneData> list2 = Lists.<CommandClone.StaticCloneData>newArrayList();
++                            Deque<BlockPos> deque = Lists.<BlockPos>newLinkedList();
+                             BlockPos blockpos3 = new BlockPos(structureboundingbox1.field_78897_a - structureboundingbox.field_78897_a, structureboundingbox1.field_78895_b - structureboundingbox.field_78895_b, structureboundingbox1.field_78896_c - structureboundingbox.field_78896_c);
+ 
+                             for (int j = structureboundingbox.field_78896_c; j <= structureboundingbox.field_78892_f; ++j)
+@@ -163,11 +163,11 @@
+                                 }
+                             }
+ 
+-                            List<CommandClone.StaticCloneData> list3 = Lists.newArrayList();
++                            List<CommandClone.StaticCloneData> list3 = Lists.<CommandClone.StaticCloneData>newArrayList();
+                             list3.addAll(list);
+                             list3.addAll(list1);
+                             list3.addAll(list2);
+-                            List<CommandClone.StaticCloneData> list4 = Lists.reverse(list3);
++                            List<CommandClone.StaticCloneData> list4 = Lists.<CommandClone.StaticCloneData>reverse(list3);
+ 
+                             for (CommandClone.StaticCloneData commandclone$staticclonedata : list4)
+                             {
+@@ -228,7 +228,7 @@
+ 
+                             if (i <= 0)
+                             {
+-                                throw new CommandException("commands.clone.failed");
++                                throw new CommandException("commands.clone.failed", new Object[0]);
+                             }
+                             else
+                             {
+@@ -238,12 +238,12 @@
+                         }
+                         else
+                         {
+-                            throw new CommandException("commands.clone.outOfWorld");
++                            throw new CommandException("commands.clone.outOfWorld", new Object[0]);
+                         }
+                     }
+                     else
+                     {
+-                        throw new CommandException("commands.clone.outOfWorld");
++                        throw new CommandException("commands.clone.outOfWorld", new Object[0]);
+                     }
+                 }
+             }

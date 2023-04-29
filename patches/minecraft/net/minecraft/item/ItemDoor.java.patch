@@ -9,3 +9,12 @@
                  p_180614_2_.func_184133_a(p_180614_1_, p_180614_3_, soundtype.func_185841_e(), SoundCategory.BLOCKS, (soundtype.func_185843_a() + 1.0F) / 2.0F, soundtype.func_185847_b() * 0.8F);
                  itemstack.func_190918_g(1);
                  return EnumActionResult.SUCCESS;
+@@ -83,7 +83,7 @@
+ 
+         BlockPos blockpos2 = p_179235_1_.func_177984_a();
+         boolean flag2 = p_179235_0_.func_175640_z(p_179235_1_) || p_179235_0_.func_175640_z(blockpos2);
+-        IBlockState iblockstate = p_179235_3_.func_176223_P().func_177226_a(BlockDoor.field_176520_a, p_179235_2_).func_177226_a(BlockDoor.field_176521_M, p_179235_4_ ? BlockDoor.EnumHingePosition.RIGHT : BlockDoor.EnumHingePosition.LEFT).func_177226_a(BlockDoor.field_176522_N, flag2).func_177226_a(BlockDoor.field_176519_b, flag2);
++        IBlockState iblockstate = p_179235_3_.func_176223_P().func_177226_a(BlockDoor.field_176520_a, p_179235_2_).func_177226_a(BlockDoor.field_176521_M, p_179235_4_ ? BlockDoor.EnumHingePosition.RIGHT : BlockDoor.EnumHingePosition.LEFT).func_177226_a(BlockDoor.field_176522_N, Boolean.valueOf(flag2)).func_177226_a(BlockDoor.field_176519_b, Boolean.valueOf(flag2));
+         p_179235_0_.func_180501_a(p_179235_1_, iblockstate.func_177226_a(BlockDoor.field_176523_O, BlockDoor.EnumDoorHalf.LOWER), 2);
+         p_179235_0_.func_180501_a(blockpos2, iblockstate.func_177226_a(BlockDoor.field_176523_O, BlockDoor.EnumDoorHalf.UPPER), 2);
+         p_179235_0_.func_175685_c(p_179235_1_, p_179235_3_, false);

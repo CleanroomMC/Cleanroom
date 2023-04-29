@@ -1,6 +1,85 @@
 --- before/net/minecraft/client/renderer/BufferBuilder.java
 +++ after/net/minecraft/client/renderer/BufferBuilder.java
-@@ -123,6 +123,8 @@
+@@ -1,7 +1,6 @@
+ package net.minecraft.client.renderer;
+ 
+ import com.google.common.primitives.Floats;
+-import java.nio.Buffer;
+ import java.nio.ByteBuffer;
+ import java.nio.ByteOrder;
+ import java.nio.FloatBuffer;
+@@ -51,18 +50,18 @@
+         {
+             int i = this.field_179001_a.capacity();
+             int j = i + MathHelper.func_154354_b(p_181670_1_, 2097152);
+-            field_187316_a.debug("Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", i, j);
++            field_187316_a.debug("Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", Integer.valueOf(i), Integer.valueOf(j));
+             int k = this.field_178999_b.position();
+             ByteBuffer bytebuffer = GLAllocation.func_74524_c(j);
+-            ((Buffer)this.field_179001_a).position(0);
++            this.field_179001_a.position(0);
+             bytebuffer.put(this.field_179001_a);
+-            ((Buffer)bytebuffer).rewind();
++            bytebuffer.rewind();
+             this.field_179001_a = bytebuffer;
+             this.field_179000_c = this.field_179001_a.asFloatBuffer().asReadOnlyBuffer();
+             this.field_178999_b = this.field_179001_a.asIntBuffer();
+-            ((Buffer)this.field_178999_b).position(k);
++            this.field_178999_b.position(k);
+             this.field_181676_c = this.field_179001_a.asShortBuffer();
+-            ((Buffer)this.field_181676_c).position(k << 1);
++            this.field_181676_c.position(k << 1);
+         }
+     }
+ 
+@@ -87,7 +86,7 @@
+         {
+             public int compare(Integer p_compare_1_, Integer p_compare_2_)
+             {
+-                return Floats.compare(afloat[p_compare_2_], afloat[p_compare_1_]);
++                return Floats.compare(afloat[p_compare_2_.intValue()], afloat[p_compare_1_.intValue()]);
+             }
+         });
+         BitSet bitset = new BitSet();
+@@ -96,45 +95,47 @@
+ 
+         for (int i1 = bitset.nextClearBit(0); i1 < ainteger.length; i1 = bitset.nextClearBit(i1 + 1))
+         {
+-            int j1 = ainteger[i1];
++            int j1 = ainteger[i1].intValue();
+ 
+             if (j1 != i1)
+             {
+-                ((Buffer)this.field_178999_b).limit(j1 * l + l);
+-                ((Buffer)this.field_178999_b).position(j1 * l);
++                this.field_178999_b.limit(j1 * l + l);
++                this.field_178999_b.position(j1 * l);
+                 this.field_178999_b.get(aint);
+                 int k1 = j1;
+ 
+-                for (int l1 = ainteger[j1]; k1 != i1; l1 = ainteger[l1])
++                for (int l1 = ainteger[j1].intValue(); k1 != i1; l1 = ainteger[l1].intValue())
+                 {
+-                    ((Buffer)this.field_178999_b).limit(l1 * l + l);
+-                    ((Buffer)this.field_178999_b).position(l1 * l);
++                    this.field_178999_b.limit(l1 * l + l);
++                    this.field_178999_b.position(l1 * l);
+                     IntBuffer intbuffer = this.field_178999_b.slice();
+-                    ((Buffer)this.field_178999_b).limit(k1 * l + l);
+-                    ((Buffer)this.field_178999_b).position(k1 * l);
++                    this.field_178999_b.limit(k1 * l + l);
++                    this.field_178999_b.position(k1 * l);
+                     this.field_178999_b.put(intbuffer);
+                     bitset.set(k1);
+                     k1 = l1;
+                 }
+ 
+-                ((Buffer)this.field_178999_b).limit(i1 * l + l);
+-                ((Buffer)this.field_178999_b).position(i1 * l);
++                this.field_178999_b.limit(i1 * l + l);
++                this.field_178999_b.position(i1 * l);
+                 this.field_178999_b.put(aint);
+             }
  
              bitset.set(i1);
          }
@@ -9,16 +88,72 @@
      }
  
      public BufferBuilder.State func_181672_a()
-@@ -415,7 +417,7 @@
+     {
+-        ((Buffer)this.field_178999_b).rewind();
++        this.field_178999_b.rewind();
+         int i = this.func_181664_j();
+-        ((Buffer)this.field_178999_b).limit(i);
++        this.field_178999_b.limit(i);
+         int[] aint = new int[i];
+         this.field_178999_b.get(aint);
+-        ((Buffer)this.field_178999_b).limit(this.field_178999_b.capacity());
+-        ((Buffer)this.field_178999_b).position(i);
++        this.field_178999_b.limit(this.field_178999_b.capacity());
++        this.field_178999_b.position(i);
+         return new BufferBuilder.State(aint, new VertexFormat(this.field_179011_q));
+     }
+ 
+@@ -165,7 +166,7 @@
+ 
+     public void func_178993_a(BufferBuilder.State p_178993_1_)
+     {
+-        ((Buffer)this.field_178999_b).clear();
++        this.field_178999_b.clear();
+         this.func_181670_b(p_178993_1_.func_179013_a().length * 4);
+         this.field_178999_b.put(p_178993_1_.func_179013_a());
+         this.field_178997_d = p_178993_1_.func_179014_c();
+@@ -193,7 +194,7 @@
+             this.field_179011_q = p_181668_2_;
+             this.field_181677_f = p_181668_2_.func_177348_c(this.field_181678_g);
+             this.field_78939_q = false;
+-            ((Buffer)this.field_179001_a).limit(this.field_179001_a.capacity());
++            this.field_179001_a.limit(this.field_179001_a.capacity());
+         }
+     }
+ 
+@@ -302,16 +303,16 @@
+                 int k = (int)((float)(j & 255) * p_178978_1_);
+                 int l = (int)((float)(j >> 8 & 255) * p_178978_2_);
+                 int i1 = (int)((float)(j >> 16 & 255) * p_178978_3_);
+-                j &= -16777216;
+-                j |= i1 << 16 | l << 8 | k;
++                j = j & -16777216;
++                j = j | i1 << 16 | l << 8 | k;
+             }
+             else
+             {
+                 int j1 = (int)((float)(j >> 24 & 255) * p_178978_1_);
+                 int k1 = (int)((float)(j >> 16 & 255) * p_178978_2_);
+                 int l1 = (int)((float)(j >> 8 & 255) * p_178978_3_);
+-                j &= 255;
+-                j |= j1 << 24 | k1 << 16 | l1 << 8;
++                j = j & 255;
++                j = j | j1 << 24 | k1 << 16 | l1 << 8;
+             }
+         }
+ 
+@@ -416,8 +417,8 @@
  
      public void func_178981_a(int[] p_178981_1_)
      {
 -        this.func_181670_b(p_178981_1_.length * 4);
+-        ((Buffer)this.field_178999_b).position(this.func_181664_j());
 +        this.func_181670_b(p_178981_1_.length * 4 + this.field_179011_q.func_177338_f());//Forge, fix MC-122110
-         this.field_178999_b.position(this.func_181664_j());
++        this.field_178999_b.position(this.func_181664_j());
          this.field_178999_b.put(p_178981_1_);
          this.field_178997_d += p_178981_1_.length / this.field_179011_q.func_181719_f();
-@@ -506,15 +508,15 @@
+     }
+@@ -507,15 +508,15 @@
                  break;
              case USHORT:
              case SHORT:
@@ -40,7 +175,18 @@
          }
  
          this.func_181667_k();
-@@ -604,5 +606,28 @@
+@@ -538,8 +539,8 @@
+         else
+         {
+             this.field_179010_r = false;
+-            ((Buffer)this.field_179001_a).position(0);
+-            ((Buffer)this.field_179001_a).limit(this.func_181664_j() * 4);
++            this.field_179001_a.position(0);
++            this.field_179001_a.limit(this.func_181664_j() * 4);
+         }
+     }
+ 
+@@ -605,5 +606,28 @@
          {
              return this.field_179018_e;
          }

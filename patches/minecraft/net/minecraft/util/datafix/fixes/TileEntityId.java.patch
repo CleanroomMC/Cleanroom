@@ -1,0 +1,11 @@
+--- before/net/minecraft/util/datafix/fixes/TileEntityId.java
++++ after/net/minecraft/util/datafix/fixes/TileEntityId.java
+@@ -7,7 +7,7 @@
+ 
+ public class TileEntityId implements IFixableData
+ {
+-    private static final Map<String, String> field_191275_a = Maps.newHashMap();
++    private static final Map<String, String> field_191275_a = Maps.<String, String>newHashMap();
+ 
+     public int func_188216_a()
+     {

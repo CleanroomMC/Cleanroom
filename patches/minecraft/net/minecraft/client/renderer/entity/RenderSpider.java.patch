@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/renderer/entity/RenderSpider.java
++++ after/net/minecraft/client/renderer/entity/RenderSpider.java
+@@ -15,7 +15,7 @@
+     public RenderSpider(RenderManager p_i46139_1_)
+     {
+         super(p_i46139_1_, new ModelSpider(), 1.0F);
+-        this.func_177094_a(new LayerSpiderEyes<>(this));
++        this.func_177094_a(new LayerSpiderEyes(this));
+     }
+ 
+     protected float func_77037_a(T p_77037_1_)

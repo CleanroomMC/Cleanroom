@@ -1,14 +1,59 @@
 --- before/net/minecraft/world/gen/ChunkProviderServer.java
 +++ after/net/minecraft/world/gen/ChunkProviderServer.java
-@@ -35,6 +35,7 @@
+@@ -4,6 +4,7 @@
+ import com.google.common.collect.Sets;
+ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
++import it.unimi.dsi.fastutil.objects.ObjectIterator;
+ import java.io.IOException;
+ import java.util.Collection;
+ import java.util.Iterator;
+@@ -29,11 +30,12 @@
+ public class ChunkProviderServer implements IChunkProvider
+ {
+     private static final Logger field_147417_b = LogManager.getLogger();
+-    private final Set<Long> field_73248_b = Sets.newHashSet();
++    private final Set<Long> field_73248_b = Sets.<Long>newHashSet();
+     public final IChunkGenerator field_186029_c;
      public final IChunkLoader field_73247_e;
-     public final Long2ObjectMap<Chunk> field_73244_f = new Long2ObjectOpenHashMap<Chunk>(8192);
+-    public final Long2ObjectMap<Chunk> field_73244_f = new Long2ObjectOpenHashMap<>(8192);
++    public final Long2ObjectMap<Chunk> field_73244_f = new Long2ObjectOpenHashMap<Chunk>(8192);
      public final WorldServer field_73251_h;
 +    private final Set<Long> loadingChunks = com.google.common.collect.Sets.newHashSet();
  
      public ChunkProviderServer(WorldServer p_i46838_1_, IChunkLoader p_i46838_2_, IChunkGenerator p_i46838_3_)
      {
-@@ -85,20 +86,47 @@
+@@ -51,15 +53,18 @@
+     {
+         if (this.field_73251_h.field_73011_w.func_186056_c(p_189549_1_.field_76635_g, p_189549_1_.field_76647_h))
+         {
+-            this.field_73248_b.add(ChunkPos.func_77272_a(p_189549_1_.field_76635_g, p_189549_1_.field_76647_h));
++            this.field_73248_b.add(Long.valueOf(ChunkPos.func_77272_a(p_189549_1_.field_76635_g, p_189549_1_.field_76647_h)));
+             p_189549_1_.field_189550_d = true;
+         }
+     }
+ 
+     public void func_73240_a()
+     {
+-        for (Chunk chunk : this.field_73244_f.values())
++        ObjectIterator objectiterator = this.field_73244_f.values().iterator();
++
++        while (objectiterator.hasNext())
+         {
++            Chunk chunk = (Chunk)objectiterator.next();
+             this.func_189549_a(chunk);
+         }
+     }
+@@ -68,7 +73,7 @@
+     public Chunk func_186026_b(int p_186026_1_, int p_186026_2_)
+     {
+         long i = ChunkPos.func_77272_a(p_186026_1_, p_186026_2_);
+-        Chunk chunk = this.field_73244_f.get(i);
++        Chunk chunk = (Chunk)this.field_73244_f.get(i);
+ 
+         if (chunk != null)
+         {
+@@ -81,20 +86,47 @@
      @Nullable
      public Chunk func_186028_c(int p_186028_1_, int p_186028_2_)
      {
@@ -60,7 +105,16 @@
          return chunk;
      }
  
-@@ -224,6 +252,11 @@
+@@ -115,7 +147,7 @@
+                 CrashReport crashreport = CrashReport.func_85055_a(throwable, "Exception generating new chunk");
+                 CrashReportCategory crashreportcategory = crashreport.func_85058_a("Chunk to be generated");
+                 crashreportcategory.func_71507_a("Location", String.format("%d,%d", p_186025_1_, p_186025_2_));
+-                crashreportcategory.func_71507_a("Position hash", i);
++                crashreportcategory.func_71507_a("Position hash", Long.valueOf(i));
+                 crashreportcategory.func_71507_a("Generator", this.field_186029_c);
+                 throw new ReportedException(crashreport);
+             }
+@@ -220,16 +252,22 @@
          {
              if (!this.field_73248_b.isEmpty())
              {
@@ -72,7 +126,11 @@
                  Iterator<Long> iterator = this.field_73248_b.iterator();
  
                  for (int i = 0; i < 100 && iterator.hasNext(); iterator.remove())
-@@ -234,6 +267,7 @@
+                 {
+                     Long olong = iterator.next();
+-                    Chunk chunk = this.field_73244_f.get(olong);
++                    Chunk chunk = (Chunk)this.field_73244_f.get(olong);
+ 
                      if (chunk != null && chunk.field_189550_d)
                      {
                          chunk.func_76623_d();
@@ -80,7 +138,7 @@
                          this.func_73242_b(chunk);
                          this.func_73243_a(chunk);
                          this.field_73244_f.remove(olong);
-@@ -241,6 +275,8 @@
+@@ -237,6 +275,8 @@
                      }
                  }
              }

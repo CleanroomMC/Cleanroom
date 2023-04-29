@@ -1,0 +1,18 @@
+--- before/net/minecraft/command/CommandDefaultGameMode.java
++++ after/net/minecraft/command/CommandDefaultGameMode.java
+@@ -21,13 +21,13 @@
+     {
+         if (p_184881_3_.length <= 0)
+         {
+-            throw new WrongUsageException("commands.defaultgamemode.usage");
++            throw new WrongUsageException("commands.defaultgamemode.usage", new Object[0]);
+         }
+         else
+         {
+             GameType gametype = this.func_71539_b(p_184881_2_, p_184881_3_[0]);
+             this.func_184896_a(gametype, p_184881_1_);
+-            func_152373_a(p_184881_2_, this, "commands.defaultgamemode.success", new Object[] {new TextComponentTranslation("gameMode." + gametype.func_77149_b())});
++            func_152373_a(p_184881_2_, this, "commands.defaultgamemode.success", new Object[] {new TextComponentTranslation("gameMode." + gametype.func_77149_b(), new Object[0])});
+         }
+     }
+ 

@@ -1,0 +1,100 @@
+--- before/net/minecraft/util/CombatTracker.java
++++ after/net/minecraft/util/CombatTracker.java
+@@ -15,7 +15,7 @@
+ 
+ public class CombatTracker
+ {
+-    private final List<CombatEntry> field_94556_a = Lists.newArrayList();
++    private final List<CombatEntry> field_94556_a = Lists.<CombatEntry>newArrayList();
+     private final EntityLivingBase field_94554_b;
+     private int field_94555_c;
+     private int field_152775_d;
+@@ -74,7 +74,7 @@
+     {
+         if (this.field_94556_a.isEmpty())
+         {
+-            return new TextComponentTranslation("death.attack.generic", this.field_94554_b.func_145748_c_());
++            return new TextComponentTranslation("death.attack.generic", new Object[] {this.field_94554_b.func_145748_c_()});
+         }
+         else
+         {
+@@ -97,11 +97,11 @@
+ 
+                         if (!itemstack1.func_190926_b() && itemstack1.func_82837_s())
+                         {
+-                            itextcomponent = new TextComponentTranslation("death.fell.assist.item", this.field_94554_b.func_145748_c_(), itextcomponent2, itemstack1.func_151000_E());
++                            itextcomponent = new TextComponentTranslation("death.fell.assist.item", new Object[] {this.field_94554_b.func_145748_c_(), itextcomponent2, itemstack1.func_151000_E()});
+                         }
+                         else
+                         {
+-                            itextcomponent = new TextComponentTranslation("death.fell.assist", this.field_94554_b.func_145748_c_(), itextcomponent2);
++                            itextcomponent = new TextComponentTranslation("death.fell.assist", new Object[] {this.field_94554_b.func_145748_c_(), itextcomponent2});
+                         }
+                     }
+                     else if (itextcomponent1 != null)
+@@ -110,21 +110,21 @@
+ 
+                         if (!itemstack.func_190926_b() && itemstack.func_82837_s())
+                         {
+-                            itextcomponent = new TextComponentTranslation("death.fell.finish.item", this.field_94554_b.func_145748_c_(), itextcomponent1, itemstack.func_151000_E());
++                            itextcomponent = new TextComponentTranslation("death.fell.finish.item", new Object[] {this.field_94554_b.func_145748_c_(), itextcomponent1, itemstack.func_151000_E()});
+                         }
+                         else
+                         {
+-                            itextcomponent = new TextComponentTranslation("death.fell.finish", this.field_94554_b.func_145748_c_(), itextcomponent1);
++                            itextcomponent = new TextComponentTranslation("death.fell.finish", new Object[] {this.field_94554_b.func_145748_c_(), itextcomponent1});
+                         }
+                     }
+                     else
+                     {
+-                        itextcomponent = new TextComponentTranslation("death.fell.killer", this.field_94554_b.func_145748_c_());
++                        itextcomponent = new TextComponentTranslation("death.fell.killer", new Object[] {this.field_94554_b.func_145748_c_()});
+                     }
+                 }
+                 else
+                 {
+-                    itextcomponent = new TextComponentTranslation("death.fell.accident." + this.func_94548_b(combatentry), this.field_94554_b.func_145748_c_());
++                    itextcomponent = new TextComponentTranslation("death.fell.accident." + this.func_94548_b(combatentry), new Object[] {this.field_94554_b.func_145748_c_()});
+                 }
+             }
+             else
+@@ -159,7 +159,14 @@
+             }
+         }
+ 
+-        return (EntityLivingBase)(entityplayer != null && f1 >= f / 3.0F ? entityplayer : entitylivingbase);
++        if (entityplayer != null && f1 >= f / 3.0F)
++        {
++            return entityplayer;
++        }
++        else
++        {
++            return entitylivingbase;
++        }
+     }
+ 
+     @Nullable
+@@ -173,7 +180,7 @@
+         for (int i = 0; i < this.field_94556_a.size(); ++i)
+         {
+             CombatEntry combatentry2 = this.field_94556_a.get(i);
+-            CombatEntry combatentry3 = i > 0 ? this.field_94556_a.get(i - 1) : null;
++            CombatEntry combatentry3 = i > 0 ? (CombatEntry)this.field_94556_a.get(i - 1) : null;
+ 
+             if ((combatentry2.func_94560_a() == DamageSource.field_76379_h || combatentry2.func_94560_a() == DamageSource.field_76380_i) && combatentry2.func_94561_i() > 0.0F && (combatentry == null || combatentry2.func_94561_i() > f1))
+             {
+@@ -200,9 +207,13 @@
+         {
+             return combatentry;
+         }
++        else if (f > 5.0F && combatentry1 != null)
++        {
++            return combatentry1;
++        }
+         else
+         {
+-            return f > 5.0F && combatentry1 != null ? combatentry1 : null;
++            return null;
+         }
+     }
+ 

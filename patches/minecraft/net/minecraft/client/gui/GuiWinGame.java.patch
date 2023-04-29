@@ -1,0 +1,20 @@
+--- before/net/minecraft/client/gui/GuiWinGame.java
++++ after/net/minecraft/client/gui/GuiWinGame.java
+@@ -82,7 +82,7 @@
+     {
+         if (this.field_146582_i == null)
+         {
+-            this.field_146582_i = Lists.newArrayList();
++            this.field_146582_i = Lists.<String>newArrayList();
+             IResource iresource = null;
+ 
+             try
+@@ -172,7 +172,7 @@
+             f3 = 1.0F;
+         }
+ 
+-        f3 *= f3;
++        f3 = f3 * f3;
+         f3 = f3 * 96.0F / 255.0F;
+         bufferbuilder.func_181662_b(0.0D, (double)this.field_146295_m, (double)this.field_73735_i).func_187315_a(0.0D, (double)(f * 0.015625F)).func_181666_a(f3, f3, f3, 1.0F).func_181675_d();
+         bufferbuilder.func_181662_b((double)i, (double)this.field_146295_m, (double)this.field_73735_i).func_187315_a((double)((float)i * 0.015625F), (double)(f * 0.015625F)).func_181666_a(f3, f3, f3, 1.0F).func_181675_d();

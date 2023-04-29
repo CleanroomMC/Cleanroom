@@ -1,0 +1,28 @@
+--- before/net/minecraft/client/particle/ParticleWaterWake.java
++++ after/net/minecraft/client/particle/ParticleWaterWake.java
+@@ -10,9 +10,9 @@
+     protected ParticleWaterWake(World p_i45073_1_, double p_i45073_2_, double p_i45073_4_, double p_i45073_6_, double p_i45073_8_, double p_i45073_10_, double p_i45073_12_)
+     {
+         super(p_i45073_1_, p_i45073_2_, p_i45073_4_, p_i45073_6_, 0.0D, 0.0D, 0.0D);
+-        this.field_187129_i *= (double)0.3F;
+-        this.field_187130_j = Math.random() * (double)0.2F + (double)0.1F;
+-        this.field_187131_k *= (double)0.3F;
++        this.field_187129_i *= 0.30000001192092896D;
++        this.field_187130_j = Math.random() * 0.20000000298023224D + 0.10000000149011612D;
++        this.field_187131_k *= 0.30000001192092896D;
+         this.field_70552_h = 1.0F;
+         this.field_70553_i = 1.0F;
+         this.field_70551_j = 1.0F;
+@@ -32,9 +32,9 @@
+         this.field_187125_e = this.field_187128_h;
+         this.field_187130_j -= (double)this.field_70545_g;
+         this.func_187110_a(this.field_187129_i, this.field_187130_j, this.field_187131_k);
+-        this.field_187129_i *= (double)0.98F;
+-        this.field_187130_j *= (double)0.98F;
+-        this.field_187131_k *= (double)0.98F;
++        this.field_187129_i *= 0.9800000190734863D;
++        this.field_187130_j *= 0.9800000190734863D;
++        this.field_187131_k *= 0.9800000190734863D;
+         int i = 60 - this.field_70547_e;
+         float f = (float)i * 0.001F;
+         this.func_187115_a(f, f);

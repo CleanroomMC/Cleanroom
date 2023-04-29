@@ -16,11 +16,30 @@
 -            if (this.func_146978_c(60, 14 + 19 * j, 108, 17, p_73863_1_, p_73863_2_) && k > 0 && l >= 0 && enchantment != null)
 +            if (this.func_146978_c(60, 14 + 19 * j, 108, 17, p_73863_1_, p_73863_2_) && k > 0)
              {
-                 List<String> list = Lists.<String>newArrayList();
+-                List<String> list = Lists.newArrayList();
 -                list.add("" + TextFormatting.WHITE + TextFormatting.ITALIC + I18n.func_135052_a("container.enchant.clue", enchantment.func_77316_c(l)));
++                List<String> list = Lists.<String>newArrayList();
 +                list.add("" + TextFormatting.WHITE + TextFormatting.ITALIC + I18n.func_135052_a("container.enchant.clue", enchantment == null ? "" : enchantment.func_77316_c(l)));
  
 +                if(enchantment == null) java.util.Collections.addAll(list, "", TextFormatting.RED + I18n.func_135052_a("forge.container.enchant.limitedEnchantability")); else
                  if (!flag)
                  {
                      list.add("");
+@@ -276,11 +277,15 @@
+         {
+             this.field_147077_B = itemstack;
+ 
+-            do
++            while (true)
+             {
+                 this.field_147082_x += (float)(this.field_147074_F.nextInt(4) - this.field_147074_F.nextInt(4));
++
++                if (this.field_147071_v > this.field_147082_x + 1.0F || this.field_147071_v < this.field_147082_x - 1.0F)
++                {
++                    break;
++                }
+             }
+-            while (this.field_147071_v <= this.field_147082_x + 1.0F && this.field_147071_v >= this.field_147082_x - 1.0F);
+         }
+ 
+         ++this.field_147073_u;

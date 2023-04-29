@@ -1,0 +1,38 @@
+--- before/net/minecraft/command/CommandTP.java
++++ after/net/minecraft/command/CommandTP.java
+@@ -34,7 +34,7 @@
+     {
+         if (p_184881_3_.length < 1)
+         {
+-            throw new WrongUsageException("commands.tp.usage");
++            throw new WrongUsageException("commands.tp.usage", new Object[0]);
+         }
+         else
+         {
+@@ -55,7 +55,7 @@
+             {
+                 if (p_184881_3_.length < i + 3)
+                 {
+-                    throw new WrongUsageException("commands.tp.usage");
++                    throw new WrongUsageException("commands.tp.usage", new Object[0]);
+                 }
+                 else if (entity.field_70170_p != null)
+                 {
+@@ -76,7 +76,7 @@
+ 
+                 if (entity1.field_70170_p != entity.field_70170_p)
+                 {
+-                    throw new CommandException("commands.tp.notSameDimension");
++                    throw new CommandException("commands.tp.notSameDimension", new Object[0]);
+                 }
+                 else
+                 {
+@@ -101,7 +101,7 @@
+     {
+         if (p_189863_0_ instanceof EntityPlayerMP)
+         {
+-            Set<SPacketPlayerPosLook.EnumFlags> set = EnumSet.noneOf(SPacketPlayerPosLook.EnumFlags.class);
++            Set<SPacketPlayerPosLook.EnumFlags> set = EnumSet.<SPacketPlayerPosLook.EnumFlags>noneOf(SPacketPlayerPosLook.EnumFlags.class);
+ 
+             if (p_189863_1_.func_179630_c())
+             {

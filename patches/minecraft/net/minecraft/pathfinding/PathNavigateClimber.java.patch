@@ -1,0 +1,11 @@
+--- before/net/minecraft/pathfinding/PathNavigateClimber.java
++++ after/net/minecraft/pathfinding/PathNavigateClimber.java
+@@ -55,7 +55,7 @@
+             {
+                 double d0 = (double)(this.field_75515_a.field_70130_N * this.field_75515_a.field_70130_N);
+ 
+-                if (!(this.field_75515_a.func_174831_c(this.field_179696_f) < d0) && (!(this.field_75515_a.field_70163_u > (double)this.field_179696_f.func_177956_o()) || !(this.field_75515_a.func_174831_c(new BlockPos(this.field_179696_f.func_177958_n(), MathHelper.func_76128_c(this.field_75515_a.field_70163_u), this.field_179696_f.func_177952_p())) < d0)))
++                if (this.field_75515_a.func_174831_c(this.field_179696_f) >= d0 && (this.field_75515_a.field_70163_u <= (double)this.field_179696_f.func_177956_o() || this.field_75515_a.func_174831_c(new BlockPos(this.field_179696_f.func_177958_n(), MathHelper.func_76128_c(this.field_75515_a.field_70163_u), this.field_179696_f.func_177952_p())) >= d0))
+                 {
+                     this.field_75515_a.func_70605_aq().func_75642_a((double)this.field_179696_f.func_177958_n(), (double)this.field_179696_f.func_177956_o(), (double)this.field_179696_f.func_177952_p(), this.field_75511_d);
+                 }

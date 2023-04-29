@@ -1,0 +1,44 @@
+--- before/net/minecraft/command/RecipeCommand.java
++++ after/net/minecraft/command/RecipeCommand.java
+@@ -32,7 +32,7 @@
+     {
+         if (p_184881_3_.length < 2)
+         {
+-            throw new WrongUsageException("commands.recipe.usage");
++            throw new WrongUsageException("commands.recipe.usage", new Object[0]);
+         }
+         else
+         {
+@@ -41,7 +41,7 @@
+ 
+             if (!flag && !flag1)
+             {
+-                throw new WrongUsageException("commands.recipe.usage");
++                throw new WrongUsageException("commands.recipe.usage", new Object[0]);
+             }
+             else
+             {
+@@ -66,12 +66,12 @@
+ 
+                         if (irecipe == null)
+                         {
+-                            throw new CommandException("commands.recipe.unknownrecipe", p_184881_3_[2]);
++                            throw new CommandException("commands.recipe.unknownrecipe", new Object[] {p_184881_3_[2]});
+                         }
+ 
+                         if (irecipe.func_192399_d())
+                         {
+-                            throw new CommandException("commands.recipe.unsupported", p_184881_3_[2]);
++                            throw new CommandException("commands.recipe.unsupported", new Object[] {p_184881_3_[2]});
+                         }
+ 
+                         List<IRecipe> list = Lists.newArrayList(irecipe);
+@@ -79,7 +79,7 @@
+                         if (flag == entityplayermp.func_192037_E().func_193830_f(irecipe))
+                         {
+                             String s = flag ? "commands.recipe.alreadyHave" : "commands.recipe.dontHave";
+-                            throw new CommandException(s, entityplayermp.func_70005_c_(), irecipe.func_77571_b().func_82833_r());
++                            throw new CommandException(s, new Object[] {entityplayermp.func_70005_c_(), irecipe.func_77571_b().func_82833_r()});
+                         }
+ 
+                         if (flag)

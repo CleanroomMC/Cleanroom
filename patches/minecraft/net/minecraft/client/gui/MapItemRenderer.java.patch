@@ -1,5 +1,29 @@
 --- before/net/minecraft/client/gui/MapItemRenderer.java
 +++ after/net/minecraft/client/gui/MapItemRenderer.java
+@@ -21,7 +21,7 @@
+ {
+     private static final ResourceLocation field_148253_a = new ResourceLocation("textures/map/map_icons.png");
+     private final TextureManager field_148251_b;
+-    private final Map<String, MapItemRenderer.Instance> field_148252_c = Maps.newHashMap();
++    private final Map<String, MapItemRenderer.Instance> field_148252_c = Maps.<String, MapItemRenderer.Instance>newHashMap();
+ 
+     public MapItemRenderer(TextureManager p_i45009_1_)
+     {
+@@ -125,10 +125,10 @@
+             GlStateManager.func_187428_a(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
+             GlStateManager.func_179118_c();
+             bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181707_g);
+-            bufferbuilder.func_181662_b(0.0D, 128.0D, (double) - 0.01F).func_187315_a(0.0D, 1.0D).func_181675_d();
+-            bufferbuilder.func_181662_b(128.0D, 128.0D, (double) - 0.01F).func_187315_a(1.0D, 1.0D).func_181675_d();
+-            bufferbuilder.func_181662_b(128.0D, 0.0D, (double) - 0.01F).func_187315_a(1.0D, 0.0D).func_181675_d();
+-            bufferbuilder.func_181662_b(0.0D, 0.0D, (double) - 0.01F).func_187315_a(0.0D, 0.0D).func_181675_d();
++            bufferbuilder.func_181662_b(0.0D, 128.0D, -0.009999999776482582D).func_187315_a(0.0D, 1.0D).func_181675_d();
++            bufferbuilder.func_181662_b(128.0D, 128.0D, -0.009999999776482582D).func_187315_a(1.0D, 1.0D).func_181675_d();
++            bufferbuilder.func_181662_b(128.0D, 0.0D, -0.009999999776482582D).func_187315_a(1.0D, 0.0D).func_181675_d();
++            bufferbuilder.func_181662_b(0.0D, 0.0D, -0.009999999776482582D).func_187315_a(0.0D, 0.0D).func_181675_d();
+             tessellator.func_78381_a();
+             GlStateManager.func_179141_d();
+             GlStateManager.func_179084_k();
 @@ -139,6 +139,8 @@
              {
                  if (!p_148237_1_ || mapdecoration.func_191180_f())

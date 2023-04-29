@@ -1,6 +1,11 @@
 --- before/net/minecraft/entity/EntitySpawnPlacementRegistry.java
 +++ after/net/minecraft/entity/EntitySpawnPlacementRegistry.java
-@@ -50,7 +50,12 @@
+@@ -46,11 +46,16 @@
+ 
+ public class EntitySpawnPlacementRegistry
+ {
+-    private static final Map < Class<?>, EntityLiving.SpawnPlacementType > field_180110_a = Maps.newHashMap();
++    private static final Map < Class<?>, EntityLiving.SpawnPlacementType > field_180110_a = Maps. < Class<?>, EntityLiving.SpawnPlacementType > newHashMap();
  
      public static EntityLiving.SpawnPlacementType func_180109_a(Class<?> p_180109_0_)
      {

@@ -1,6 +1,32 @@
 --- before/net/minecraft/client/renderer/chunk/ChunkRenderWorker.java
 +++ after/net/minecraft/client/renderer/chunk/ChunkRenderWorker.java
-@@ -149,7 +149,7 @@
+@@ -27,7 +27,7 @@
+     private static final Logger field_152478_a = LogManager.getLogger();
+     private final ChunkRenderDispatcher field_178477_b;
+     private final RegionRenderCacheBuilder field_178478_c;
+-    private boolean field_188265_d = true;
++    private boolean field_188265_d;
+ 
+     public ChunkRenderWorker(ChunkRenderDispatcher p_i46201_1_)
+     {
+@@ -36,6 +36,7 @@
+ 
+     public ChunkRenderWorker(ChunkRenderDispatcher p_i46202_1_, @Nullable RegionRenderCacheBuilder p_i46202_2_)
+     {
++        this.field_188265_d = true;
+         this.field_178477_b = p_i46202_1_;
+         this.field_178478_c = p_i46202_2_;
+     }
+@@ -48,7 +49,7 @@
+             {
+                 this.func_178474_a(this.field_178477_b.func_178511_d());
+             }
+-            catch (InterruptedException interruptedexception)
++            catch (InterruptedException var3)
+             {
+                 field_152478_a.debug("Stopping chunk worker due to interrupt");
+                 return;
+@@ -148,7 +149,7 @@
              }
  
              final CompiledChunk compiledchunk = p_178474_1_.func_178544_c();
@@ -9,7 +35,7 @@
  
              if (chunkcompiletaskgenerator$type == ChunkCompileTaskGenerator.Type.REBUILD_CHUNK)
              {
-@@ -213,7 +213,7 @@
+@@ -212,7 +213,7 @@
                          Minecraft.func_71410_x().func_71404_a(CrashReport.func_85055_a(p_onFailure_1_, "Rendering chunk"));
                      }
                  }

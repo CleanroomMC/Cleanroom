@@ -1,0 +1,38 @@
+--- before/net/minecraft/command/CommandPlaySound.java
++++ after/net/minecraft/command/CommandPlaySound.java
+@@ -32,7 +32,7 @@
+     {
+         if (p_184881_3_.length < 2)
+         {
+-            throw new WrongUsageException(this.func_71518_a(p_184881_2_));
++            throw new WrongUsageException(this.func_71518_a(p_184881_2_), new Object[0]);
+         }
+         else
+         {
+@@ -43,7 +43,7 @@
+ 
+             if (soundcategory == null)
+             {
+-                throw new CommandException("commands.playsound.unknownSoundSource", s1);
++                throw new CommandException("commands.playsound.unknownSoundSource", new Object[] {s1});
+             }
+             else
+             {
+@@ -52,7 +52,7 @@
+                 double d0 = p_184881_3_.length > i ? func_175761_b(vec3d.field_72450_a, p_184881_3_[i++], true) : vec3d.field_72450_a;
+                 double d1 = p_184881_3_.length > i ? func_175769_b(vec3d.field_72448_b, p_184881_3_[i++], 0, 0, false) : vec3d.field_72448_b;
+                 double d2 = p_184881_3_.length > i ? func_175761_b(vec3d.field_72449_c, p_184881_3_[i++], true) : vec3d.field_72449_c;
+-                double d3 = p_184881_3_.length > i ? func_175756_a(p_184881_3_[i++], 0.0D, (double)Float.MAX_VALUE) : 1.0D;
++                double d3 = p_184881_3_.length > i ? func_175756_a(p_184881_3_[i++], 0.0D, 3.4028234663852886E38D) : 1.0D;
+                 double d4 = p_184881_3_.length > i ? func_175756_a(p_184881_3_[i++], 0.0D, 2.0D) : 1.0D;
+                 double d5 = p_184881_3_.length > i ? func_175756_a(p_184881_3_[i], 0.0D, 1.0D) : 0.0D;
+                 double d6 = d3 > 1.0D ? d3 * 16.0D : 16.0D;
+@@ -62,7 +62,7 @@
+                 {
+                     if (d5 <= 0.0D)
+                     {
+-                        throw new CommandException("commands.playsound.playerTooFar", entityplayermp.func_70005_c_());
++                        throw new CommandException("commands.playsound.playerTooFar", new Object[] {entityplayermp.func_70005_c_()});
+                     }
+ 
+                     double d8 = d0 - entityplayermp.field_70165_t;

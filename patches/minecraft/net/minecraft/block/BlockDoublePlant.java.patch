@@ -1,15 +1,46 @@
 --- before/net/minecraft/block/BlockDoublePlant.java
 +++ after/net/minecraft/block/BlockDoublePlant.java
-@@ -24,7 +24,7 @@
+@@ -3,6 +3,7 @@
+ import java.util.Random;
+ import javax.annotation.Nullable;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyEnum;
+ import net.minecraft.block.state.BlockStateContainer;
+ import net.minecraft.block.state.IBlockState;
+@@ -23,10 +24,10 @@
  import net.minecraft.world.IBlockAccess;
  import net.minecraft.world.World;
  
 -public class BlockDoublePlant extends BlockBush implements IGrowable
 +public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecraftforge.common.IShearable
  {
-     public static final PropertyEnum<BlockDoublePlant.EnumPlantType> field_176493_a = PropertyEnum.<BlockDoublePlant.EnumPlantType>func_177709_a("variant", BlockDoublePlant.EnumPlantType.class);
-     public static final PropertyEnum<BlockDoublePlant.EnumBlockHalf> field_176492_b = PropertyEnum.<BlockDoublePlant.EnumBlockHalf>func_177709_a("half", BlockDoublePlant.EnumBlockHalf.class);
-@@ -87,6 +87,8 @@
+-    public static final PropertyEnum<BlockDoublePlant.EnumPlantType> field_176493_a = PropertyEnum.func_177709_a("variant", BlockDoublePlant.EnumPlantType.class);
+-    public static final PropertyEnum<BlockDoublePlant.EnumBlockHalf> field_176492_b = PropertyEnum.func_177709_a("half", BlockDoublePlant.EnumBlockHalf.class);
++    public static final PropertyEnum<BlockDoublePlant.EnumPlantType> field_176493_a = PropertyEnum.<BlockDoublePlant.EnumPlantType>func_177709_a("variant", BlockDoublePlant.EnumPlantType.class);
++    public static final PropertyEnum<BlockDoublePlant.EnumBlockHalf> field_176492_b = PropertyEnum.<BlockDoublePlant.EnumBlockHalf>func_177709_a("half", BlockDoublePlant.EnumBlockHalf.class);
+     public static final PropertyEnum<EnumFacing> field_181084_N = BlockHorizontal.field_185512_D;
+ 
+     public BlockDoublePlant()
+@@ -48,7 +49,7 @@
+         if (p_185517_3_.func_177230_c() == this)
+         {
+             p_185517_3_ = p_185517_3_.func_185899_b(p_185517_1_, p_185517_2_);
+-            return p_185517_3_.func_177229_b(field_176493_a);
++            return (BlockDoublePlant.EnumPlantType)p_185517_3_.func_177229_b(field_176493_a);
+         }
+         else
+         {
+@@ -71,7 +72,7 @@
+         }
+         else
+         {
+-            BlockDoublePlant.EnumPlantType blockdoubleplant$enumplanttype = iblockstate.func_185899_b(p_176200_1_, p_176200_2_).func_177229_b(field_176493_a);
++            BlockDoublePlant.EnumPlantType blockdoubleplant$enumplanttype = (BlockDoublePlant.EnumPlantType)iblockstate.func_185899_b(p_176200_1_, p_176200_2_).func_177229_b(field_176493_a);
+             return blockdoubleplant$enumplanttype == BlockDoublePlant.EnumPlantType.FERN || blockdoubleplant$enumplanttype == BlockDoublePlant.EnumPlantType.GRASS;
+         }
+     }
+@@ -86,6 +87,8 @@
              Block block = (Block)(flag ? this : p_176475_1_.func_180495_p(blockpos).func_177230_c());
              Block block1 = (Block)(flag ? p_176475_1_.func_180495_p(blockpos1).func_177230_c() : this);
  
@@ -18,7 +49,7 @@
              if (block == this)
              {
                  p_176475_1_.func_180501_a(blockpos, Blocks.field_150350_a.func_176223_P(), 2);
-@@ -95,17 +97,13 @@
+@@ -94,17 +97,13 @@
              if (block1 == this)
              {
                  p_176475_1_.func_180501_a(blockpos1, Blocks.field_150350_a.func_176223_P(), 3);
@@ -37,7 +68,25 @@
          if (p_180671_3_.func_177229_b(field_176492_b) == BlockDoublePlant.EnumBlockHalf.UPPER)
          {
              return p_180671_1_.func_180495_p(p_180671_2_.func_177977_b()).func_177230_c() == this;
-@@ -160,7 +158,6 @@
+@@ -124,7 +123,7 @@
+         }
+         else
+         {
+-            BlockDoublePlant.EnumPlantType blockdoubleplant$enumplanttype = p_180660_1_.func_177229_b(field_176493_a);
++            BlockDoublePlant.EnumPlantType blockdoubleplant$enumplanttype = (BlockDoublePlant.EnumPlantType)p_180660_1_.func_177229_b(field_176493_a);
+ 
+             if (blockdoubleplant$enumplanttype == BlockDoublePlant.EnumPlantType.FERN)
+             {
+@@ -143,7 +142,7 @@
+ 
+     public int func_180651_a(IBlockState p_180651_1_)
+     {
+-        return p_180651_1_.func_177229_b(field_176492_b) != BlockDoublePlant.EnumBlockHalf.UPPER && p_180651_1_.func_177229_b(field_176493_a) != BlockDoublePlant.EnumPlantType.GRASS ? p_180651_1_.func_177229_b(field_176493_a).func_176936_a() : 0;
++        return p_180651_1_.func_177229_b(field_176492_b) != BlockDoublePlant.EnumBlockHalf.UPPER && p_180651_1_.func_177229_b(field_176493_a) != BlockDoublePlant.EnumPlantType.GRASS ? ((BlockDoublePlant.EnumPlantType)p_180651_1_.func_177229_b(field_176493_a)).func_176936_a() : 0;
+     }
+ 
+     public void func_176491_a(World p_176491_1_, BlockPos p_176491_2_, BlockDoublePlant.EnumPlantType p_176491_3_, int p_176491_4_)
+@@ -159,7 +158,6 @@
  
      public void func_180657_a(World p_180657_1_, EntityPlayer p_180657_2_, BlockPos p_180657_3_, IBlockState p_180657_4_, @Nullable TileEntity p_180657_5_, ItemStack p_180657_6_)
      {
@@ -45,7 +94,25 @@
          {
              super.func_180657_a(p_180657_1_, p_180657_2_, p_180657_3_, p_180657_4_, p_180657_5_, p_180657_6_);
          }
-@@ -220,8 +217,6 @@
+@@ -178,7 +176,7 @@
+                 else
+                 {
+                     IBlockState iblockstate = p_176208_1_.func_180495_p(p_176208_2_.func_177977_b());
+-                    BlockDoublePlant.EnumPlantType blockdoubleplant$enumplanttype = iblockstate.func_177229_b(field_176493_a);
++                    BlockDoublePlant.EnumPlantType blockdoubleplant$enumplanttype = (BlockDoublePlant.EnumPlantType)iblockstate.func_177229_b(field_176493_a);
+ 
+                     if (blockdoubleplant$enumplanttype != BlockDoublePlant.EnumPlantType.FERN && blockdoubleplant$enumplanttype != BlockDoublePlant.EnumPlantType.GRASS)
+                     {
+@@ -210,7 +208,7 @@
+ 
+     private boolean func_176489_b(World p_176489_1_, BlockPos p_176489_2_, IBlockState p_176489_3_, EntityPlayer p_176489_4_)
+     {
+-        BlockDoublePlant.EnumPlantType blockdoubleplant$enumplanttype = p_176489_3_.func_177229_b(field_176493_a);
++        BlockDoublePlant.EnumPlantType blockdoubleplant$enumplanttype = (BlockDoublePlant.EnumPlantType)p_176489_3_.func_177229_b(field_176493_a);
+ 
+         if (blockdoubleplant$enumplanttype != BlockDoublePlant.EnumPlantType.FERN && blockdoubleplant$enumplanttype != BlockDoublePlant.EnumPlantType.GRASS)
+         {
+@@ -219,8 +217,6 @@
          else
          {
              p_176489_4_.func_71029_a(StatList.func_188055_a(this));
@@ -54,7 +121,20 @@
              return true;
          }
      }
-@@ -288,6 +283,24 @@
+@@ -276,17 +272,35 @@
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(field_176492_b) == BlockDoublePlant.EnumBlockHalf.UPPER ? 8 | p_176201_1_.func_177229_b(field_181084_N).func_176736_b() : p_176201_1_.func_177229_b(field_176493_a).func_176936_a();
++        return p_176201_1_.func_177229_b(field_176492_b) == BlockDoublePlant.EnumBlockHalf.UPPER ? 8 | ((EnumFacing)p_176201_1_.func_177229_b(field_181084_N)).func_176736_b() : ((BlockDoublePlant.EnumPlantType)p_176201_1_.func_177229_b(field_176493_a)).func_176936_a();
+     }
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176492_b, field_176493_a, field_181084_N);
++        return new BlockStateContainer(this, new IProperty[] {field_176492_b, field_176493_a, field_181084_N});
+     }
+ 
      public Block.EnumOffsetType func_176218_Q()
      {
          return Block.EnumOffsetType.XZ;

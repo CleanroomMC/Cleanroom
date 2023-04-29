@@ -1,0 +1,85 @@
+--- before/net/minecraft/entity/passive/EntityBat.java
++++ after/net/minecraft/entity/passive/EntityBat.java
+@@ -23,7 +23,7 @@
+ 
+ public class EntityBat extends EntityAmbientCreature
+ {
+-    private static final DataParameter<Byte> field_184660_a = EntityDataManager.func_187226_a(EntityBat.class, DataSerializers.field_187191_a);
++    private static final DataParameter<Byte> field_184660_a = EntityDataManager.<Byte>func_187226_a(EntityBat.class, DataSerializers.field_187191_a);
+     private BlockPos field_82237_a;
+ 
+     public EntityBat(World p_i1680_1_)
+@@ -36,7 +36,7 @@
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+-        this.field_70180_af.func_187214_a(field_184660_a, (byte)0);
++        this.field_70180_af.func_187214_a(field_184660_a, Byte.valueOf((byte)0));
+     }
+ 
+     protected float func_70599_aP()
+@@ -86,20 +86,20 @@
+ 
+     public boolean func_82235_h()
+     {
+-        return (this.field_70180_af.func_187225_a(field_184660_a) & 1) != 0;
++        return (((Byte)this.field_70180_af.func_187225_a(field_184660_a)).byteValue() & 1) != 0;
+     }
+ 
+     public void func_82236_f(boolean p_82236_1_)
+     {
+-        byte b0 = this.field_70180_af.func_187225_a(field_184660_a);
++        byte b0 = ((Byte)this.field_70180_af.func_187225_a(field_184660_a)).byteValue();
+ 
+         if (p_82236_1_)
+         {
+-            this.field_70180_af.func_187227_b(field_184660_a, (byte)(b0 | 1));
++            this.field_70180_af.func_187227_b(field_184660_a, Byte.valueOf((byte)(b0 | 1)));
+         }
+         else
+         {
+-            this.field_70180_af.func_187227_b(field_184660_a, (byte)(b0 & -2));
++            this.field_70180_af.func_187227_b(field_184660_a, Byte.valueOf((byte)(b0 & -2)));
+         }
+     }
+ 
+@@ -116,7 +116,7 @@
+         }
+         else
+         {
+-            this.field_70181_x *= (double)0.6F;
++            this.field_70181_x *= 0.6000000238418579D;
+         }
+     }
+ 
+@@ -162,10 +162,10 @@
+             double d0 = (double)this.field_82237_a.func_177958_n() + 0.5D - this.field_70165_t;
+             double d1 = (double)this.field_82237_a.func_177956_o() + 0.1D - this.field_70163_u;
+             double d2 = (double)this.field_82237_a.func_177952_p() + 0.5D - this.field_70161_v;
+-            this.field_70159_w += (Math.signum(d0) * 0.5D - this.field_70159_w) * (double)0.1F;
+-            this.field_70181_x += (Math.signum(d1) * (double)0.7F - this.field_70181_x) * (double)0.1F;
+-            this.field_70179_y += (Math.signum(d2) * 0.5D - this.field_70179_y) * (double)0.1F;
+-            float f = (float)(MathHelper.func_181159_b(this.field_70179_y, this.field_70159_w) * (double)(180F / (float)Math.PI)) - 90.0F;
++            this.field_70159_w += (Math.signum(d0) * 0.5D - this.field_70159_w) * 0.10000000149011612D;
++            this.field_70181_x += (Math.signum(d1) * 0.699999988079071D - this.field_70181_x) * 0.10000000149011612D;
++            this.field_70179_y += (Math.signum(d2) * 0.5D - this.field_70179_y) * 0.10000000149011612D;
++            float f = (float)(MathHelper.func_181159_b(this.field_70179_y, this.field_70159_w) * (180D / Math.PI)) - 90.0F;
+             float f1 = MathHelper.func_76142_g(f - this.field_70177_z);
+             this.field_191988_bg = 0.5F;
+             this.field_70177_z += f1;
+@@ -220,13 +220,13 @@
+     public void func_70037_a(NBTTagCompound p_70037_1_)
+     {
+         super.func_70037_a(p_70037_1_);
+-        this.field_70180_af.func_187227_b(field_184660_a, p_70037_1_.func_74771_c("BatFlags"));
++        this.field_70180_af.func_187227_b(field_184660_a, Byte.valueOf(p_70037_1_.func_74771_c("BatFlags")));
+     }
+ 
+     public void func_70014_b(NBTTagCompound p_70014_1_)
+     {
+         super.func_70014_b(p_70014_1_);
+-        p_70014_1_.func_74774_a("BatFlags", this.field_70180_af.func_187225_a(field_184660_a));
++        p_70014_1_.func_74774_a("BatFlags", ((Byte)this.field_70180_af.func_187225_a(field_184660_a)).byteValue());
+     }
+ 
+     public boolean func_70601_bi()

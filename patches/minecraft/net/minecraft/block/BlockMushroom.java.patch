@@ -1,5 +1,14 @@
 --- before/net/minecraft/block/BlockMushroom.java
 +++ after/net/minecraft/block/BlockMushroom.java
+@@ -12,7 +12,7 @@
+ 
+ public class BlockMushroom extends BlockBush implements IGrowable
+ {
+-    protected static final AxisAlignedBB field_185518_a = new AxisAlignedBB((double)0.3F, 0.0D, (double)0.3F, (double)0.7F, (double)0.4F, (double)0.7F);
++    protected static final AxisAlignedBB field_185518_a = new AxisAlignedBB(0.30000001192092896D, 0.0D, 0.30000001192092896D, 0.699999988079071D, 0.4000000059604645D, 0.699999988079071D);
+ 
+     protected BlockMushroom()
+     {
 @@ -89,7 +89,7 @@
              }
              else

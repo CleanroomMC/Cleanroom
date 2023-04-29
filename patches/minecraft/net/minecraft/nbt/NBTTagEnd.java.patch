@@ -1,0 +1,13 @@
+--- before/net/minecraft/nbt/NBTTagEnd.java
++++ after/net/minecraft/nbt/NBTTagEnd.java
+@@ -6,10 +6,6 @@
+ 
+ public class NBTTagEnd extends NBTBase
+ {
+-    NBTTagEnd()
+-    {
+-    }
+-
+     void func_152446_a(DataInput p_152446_1_, int p_152446_2_, NBTSizeTracker p_152446_3_) throws IOException
+     {
+         p_152446_3_.func_152450_a(64L);

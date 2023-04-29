@@ -1,0 +1,49 @@
+--- before/net/minecraft/advancements/critereon/InventoryChangeTrigger.java
++++ after/net/minecraft/advancements/critereon/InventoryChangeTrigger.java
+@@ -20,7 +20,7 @@
+ public class InventoryChangeTrigger implements ICriterionTrigger<InventoryChangeTrigger.Instance>
+ {
+     private static final ResourceLocation field_192209_a = new ResourceLocation("inventory_changed");
+-    private final Map<PlayerAdvancements, InventoryChangeTrigger.Listeners> field_192210_b = Maps.newHashMap();
++    private final Map<PlayerAdvancements, InventoryChangeTrigger.Listeners> field_192210_b = Maps.<PlayerAdvancements, InventoryChangeTrigger.Listeners>newHashMap();
+ 
+     public ResourceLocation func_192163_a()
+     {
+@@ -146,9 +146,13 @@
+                 {
+                     return false;
+                 }
++                else if (!list.isEmpty())
++                {
++                    return false;
++                }
+                 else
+                 {
+-                    return list.isEmpty();
++                    return true;
+                 }
+             }
+         }
+@@ -156,7 +160,7 @@
+     static class Listeners
+         {
+             private final PlayerAdvancements field_192490_a;
+-            private final Set<ICriterionTrigger.Listener<InventoryChangeTrigger.Instance>> field_192491_b = Sets.newHashSet();
++            private final Set<ICriterionTrigger.Listener<InventoryChangeTrigger.Instance>> field_192491_b = Sets.<ICriterionTrigger.Listener<InventoryChangeTrigger.Instance>>newHashSet();
+ 
+             public Listeners(PlayerAdvancements p_i47391_1_)
+             {
+@@ -184,11 +188,11 @@
+ 
+                 for (ICriterionTrigger.Listener<InventoryChangeTrigger.Instance> listener : this.field_192491_b)
+                 {
+-                    if (listener.func_192158_a().func_192265_a(p_192486_1_))
++                    if (((InventoryChangeTrigger.Instance)listener.func_192158_a()).func_192265_a(p_192486_1_))
+                     {
+                         if (list == null)
+                         {
+-                            list = Lists.newArrayList();
++                            list = Lists.<ICriterionTrigger.Listener<InventoryChangeTrigger.Instance>>newArrayList();
+                         }
+ 
+                         list.add(listener);

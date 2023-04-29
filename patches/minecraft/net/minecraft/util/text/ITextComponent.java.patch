@@ -1,5 +1,14 @@
 --- before/net/minecraft/util/text/ITextComponent.java
 +++ after/net/minecraft/util/text/ITextComponent.java
+@@ -13,7 +13,7 @@
+ import com.google.gson.JsonSerializer;
+ import java.lang.reflect.Type;
+ import java.util.List;
+-import java.util.Map;
++import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+ import net.minecraft.util.EnumTypeAdapterFactory;
+ import net.minecraft.util.JsonUtils;
 @@ -34,7 +34,6 @@
  
      String func_150260_c();
@@ -8,3 +17,46 @@
      String func_150254_d();
  
      List<ITextComponent> func_150253_a();
+@@ -116,7 +115,7 @@
+                         }
+                         else
+                         {
+-                            itextcomponent = new TextComponentTranslation(s);
++                            itextcomponent = new TextComponentTranslation(s, new Object[0]);
+                         }
+                     }
+                     else if (jsonobject.has("score"))
+@@ -164,7 +163,7 @@
+                         }
+                     }
+ 
+-                    itextcomponent.func_150255_a(p_deserialize_3_.deserialize(p_deserialize_1_, Style.class));
++                    itextcomponent.func_150255_a((Style)p_deserialize_3_.deserialize(p_deserialize_1_, Style.class));
+                     return itextcomponent;
+                 }
+             }
+@@ -177,7 +176,7 @@
+                 {
+                     JsonObject jsonobject = (JsonObject)jsonelement;
+ 
+-                    for (Map.Entry<String, JsonElement> entry : jsonobject.entrySet())
++                    for (Entry<String, JsonElement> entry : jsonobject.entrySet())
+                     {
+                         p_150695_2_.add(entry.getKey(), entry.getValue());
+                     }
+@@ -269,13 +268,13 @@
+             @Nullable
+             public static ITextComponent func_150699_a(String p_150699_0_)
+             {
+-                return JsonUtils.func_188176_a(field_150700_a, p_150699_0_, ITextComponent.class, false);
++                return (ITextComponent)JsonUtils.func_188176_a(field_150700_a, p_150699_0_, ITextComponent.class, false);
+             }
+ 
+             @Nullable
+             public static ITextComponent func_186877_b(String p_186877_0_)
+             {
+-                return JsonUtils.func_188176_a(field_150700_a, p_186877_0_, ITextComponent.class, true);
++                return (ITextComponent)JsonUtils.func_188176_a(field_150700_a, p_186877_0_, ITextComponent.class, true);
+             }
+ 
+             static

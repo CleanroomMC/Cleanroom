@@ -1,12 +1,43 @@
 --- before/net/minecraft/entity/EntityHanging.java
 +++ after/net/minecraft/entity/EntityHanging.java
-@@ -144,6 +144,9 @@
+@@ -69,12 +69,12 @@
+             double d3 = 0.46875D;
+             double d4 = this.func_190202_a(this.func_82329_d());
+             double d5 = this.func_190202_a(this.func_82330_g());
+-            d0 -= (double)this.field_174860_b.func_82601_c() * 0.46875D;
+-            d2 -= (double)this.field_174860_b.func_82599_e() * 0.46875D;
+-            d1 += d5;
++            d0 = d0 - (double)this.field_174860_b.func_82601_c() * 0.46875D;
++            d2 = d2 - (double)this.field_174860_b.func_82599_e() * 0.46875D;
++            d1 = d1 + d5;
+             EnumFacing enumfacing = this.field_174860_b.func_176735_f();
+-            d0 += d4 * (double)enumfacing.func_82601_c();
+-            d2 += d4 * (double)enumfacing.func_82599_e();
++            d0 = d0 + d4 * (double)enumfacing.func_82601_c();
++            d2 = d2 + d4 * (double)enumfacing.func_82599_e();
+             this.field_70165_t = d0;
+             this.field_70163_u = d1;
+             this.field_70161_v = d2;
+@@ -91,9 +91,9 @@
+                 d6 = 1.0D;
+             }
+ 
+-            d6 /= 32.0D;
+-            d7 /= 32.0D;
+-            d8 /= 32.0D;
++            d6 = d6 / 32.0D;
++            d7 = d7 / 32.0D;
++            d8 = d8 / 32.0D;
+             this.func_174826_a(new AxisAlignedBB(d0 - d6, d1 - d7, d2 - d8, d0 + d6, d1 + d7, d2 + d8));
+         }
+     }
+@@ -143,6 +143,9 @@
+                     int j1 = (j - 1) / -2;
                      blockpos$mutableblockpos.func_189533_g(blockpos).func_189534_c(enumfacing, k + i1).func_189534_c(EnumFacing.UP, l + j1);
                      IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos$mutableblockpos);
- 
++
 +                    if (iblockstate.isSideSolid(this.field_70170_p, blockpos$mutableblockpos, this.field_174860_b))
 +                        continue;
-+
+ 
                      if (!iblockstate.func_185904_a().func_76220_a() && !BlockRedstoneDiode.func_185546_B(iblockstate))
                      {
-                         return false;

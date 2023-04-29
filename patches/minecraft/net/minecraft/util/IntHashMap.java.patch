@@ -1,0 +1,35 @@
+--- before/net/minecraft/util/IntHashMap.java
++++ after/net/minecraft/util/IntHashMap.java
+@@ -4,20 +4,14 @@
+ 
+ public class IntHashMap<V>
+ {
+-    private transient IntHashMap.Entry<V>[] field_76055_a;
++    private transient IntHashMap.Entry<V>[] field_76055_a = new IntHashMap.Entry[16];
+     private transient int field_76053_b;
+-    private int field_76054_c;
++    private int field_76054_c = 12;
+     private final float field_76051_d = 0.75F;
+ 
+-    public IntHashMap()
+-    {
+-        this.field_76054_c = 12;
+-        this.field_76055_a = new IntHashMap.Entry[16];
+-    }
+-
+     private static int func_76044_g(int p_76044_0_)
+     {
+-        p_76044_0_ ^= p_76044_0_ >>> 20 ^ p_76044_0_ >>> 12;
++        p_76044_0_ = p_76044_0_ ^ p_76044_0_ >>> 20 ^ p_76044_0_ >>> 12;
+         return p_76044_0_ ^ p_76044_0_ >>> 7 ^ p_76044_0_ >>> 4;
+     }
+ 
+@@ -185,7 +179,7 @@
+     private void func_76040_a(int p_76040_1_, int p_76040_2_, V p_76040_3_, int p_76040_4_)
+     {
+         IntHashMap.Entry<V> entry = this.field_76055_a[p_76040_4_];
+-        this.field_76055_a[p_76040_4_] = new IntHashMap.Entry<>(p_76040_1_, p_76040_2_, p_76040_3_, entry);
++        this.field_76055_a[p_76040_4_] = new IntHashMap.Entry(p_76040_1_, p_76040_2_, p_76040_3_, entry);
+ 
+         if (this.field_76053_b++ >= this.field_76054_c)
+         {

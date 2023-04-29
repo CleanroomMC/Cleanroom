@@ -1,0 +1,43 @@
+--- before/net/minecraft/util/datafix/fixes/SignStrictJSON.java
++++ after/net/minecraft/util/datafix/fixes/SignStrictJSON.java
+@@ -82,15 +82,16 @@
+             {
+                 try
+                 {
+-                    itextcomponent = JsonUtils.func_188176_a(field_188225_a, s, ITextComponent.class, true);
++                    itextcomponent = (ITextComponent)JsonUtils.func_188176_a(field_188225_a, s, ITextComponent.class, true);
+ 
+                     if (itextcomponent == null)
+                     {
+                         itextcomponent = new TextComponentString("");
+                     }
+                 }
+-                catch (JsonParseException jsonparseexception2)
++                catch (JsonParseException var8)
+                 {
++                    ;
+                 }
+ 
+                 if (itextcomponent == null)
+@@ -99,8 +100,9 @@
+                     {
+                         itextcomponent = ITextComponent.Serializer.func_150699_a(s);
+                     }
+-                    catch (JsonParseException jsonparseexception1)
++                    catch (JsonParseException var7)
+                     {
++                        ;
+                     }
+                 }
+ 
+@@ -110,8 +112,9 @@
+                     {
+                         itextcomponent = ITextComponent.Serializer.func_186877_b(s);
+                     }
+-                    catch (JsonParseException jsonparseexception)
++                    catch (JsonParseException var6)
+                     {
++                        ;
+                     }
+                 }
+ 

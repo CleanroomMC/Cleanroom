@@ -1,0 +1,11 @@
+--- before/net/minecraft/command/server/CommandSaveOn.java
++++ after/net/minecraft/command/server/CommandSaveOn.java
+@@ -42,7 +42,7 @@
+         }
+         else
+         {
+-            throw new CommandException("commands.save-on.alreadyOn");
++            throw new CommandException("commands.save-on.alreadyOn", new Object[0]);
+         }
+     }
+ }

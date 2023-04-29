@@ -1,6 +1,14 @@
 --- before/net/minecraft/item/crafting/ShapedRecipes.java
 +++ after/net/minecraft/item/crafting/ShapedRecipes.java
-@@ -19,10 +19,8 @@
+@@ -10,6 +10,7 @@
+ import com.google.gson.JsonSyntaxException;
+ import java.util.Map;
+ import java.util.Set;
++import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+ import net.minecraft.inventory.InventoryCrafting;
+ import net.minecraft.item.Item;
+@@ -18,10 +19,8 @@
  import net.minecraft.util.NonNullList;
  import net.minecraft.util.ResourceLocation;
  import net.minecraft.world.World;
@@ -12,7 +20,7 @@
  {
      public final int field_77576_b;
      public final int field_77577_c;
-@@ -39,7 +37,6 @@
+@@ -38,7 +37,6 @@
          this.field_77575_e = p_i47501_5_;
      }
  
@@ -20,7 +28,14 @@
      public String func_193358_e()
      {
          return this.field_194137_e;
-@@ -58,10 +55,7 @@
+@@ -51,16 +49,13 @@
+ 
+     public NonNullList<ItemStack> func_179532_b(InventoryCrafting p_179532_1_)
+     {
+-        NonNullList<ItemStack> nonnulllist = NonNullList.func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
++        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
+ 
+         for (int i = 0; i < nonnulllist.size(); ++i)
          {
              ItemStack itemstack = p_179532_1_.func_70301_a(i);
  
@@ -32,7 +47,7 @@
          }
  
          return nonnulllist;
-@@ -72,7 +66,6 @@
+@@ -71,7 +66,6 @@
          return this.field_77574_d;
      }
  
@@ -40,7 +55,7 @@
      public boolean func_194133_a(int p_194133_1_, int p_194133_2_)
      {
          return p_194133_1_ >= this.field_77576_b && p_194133_2_ >= this.field_77577_c;
-@@ -80,9 +73,9 @@
+@@ -79,9 +73,9 @@
  
      public boolean func_77569_a(InventoryCrafting p_77569_1_, World p_77569_2_)
      {
@@ -52,7 +67,7 @@
              {
                  if (this.func_77573_a(p_77569_1_, i, j, true))
                  {
-@@ -101,9 +94,9 @@
+@@ -100,9 +94,9 @@
  
      private boolean func_77573_a(InventoryCrafting p_77573_1_, int p_77573_2_, int p_77573_3_, boolean p_77573_4_)
      {
@@ -64,7 +79,47 @@
              {
                  int k = i - p_77573_2_;
                  int l = j - p_77573_3_;
-@@ -378,5 +371,17 @@
+@@ -159,7 +153,7 @@
+ 
+     private static NonNullList<Ingredient> func_192402_a(String[] p_192402_0_, Map<String, Ingredient> p_192402_1_, int p_192402_2_, int p_192402_3_)
+     {
+-        NonNullList<Ingredient> nonnulllist = NonNullList.func_191197_a(p_192402_2_ * p_192402_3_, Ingredient.field_193370_a);
++        NonNullList<Ingredient> nonnulllist = NonNullList.<Ingredient>func_191197_a(p_192402_2_ * p_192402_3_, Ingredient.field_193370_a);
+         Set<String> set = Sets.newHashSet(p_192402_1_.keySet());
+         set.remove(" ");
+ 
+@@ -243,6 +237,7 @@
+ 
+         for (i = 0; i < p_194135_0_.length() && p_194135_0_.charAt(i) == ' '; ++i)
+         {
++            ;
+         }
+ 
+         return i;
+@@ -254,6 +249,7 @@
+ 
+         for (i = p_194136_0_.length() - 1; i >= 0 && p_194136_0_.charAt(i) == ' '; --i)
+         {
++            ;
+         }
+ 
+         return i;
+@@ -296,11 +292,11 @@
+ 
+     private static Map<String, Ingredient> func_192408_a(JsonObject p_192408_0_)
+     {
+-        Map<String, Ingredient> map = Maps.newHashMap();
++        Map<String, Ingredient> map = Maps.<String, Ingredient>newHashMap();
+ 
+-        for (Map.Entry<String, JsonElement> entry : p_192408_0_.entrySet())
++        for (Entry<String, JsonElement> entry : p_192408_0_.entrySet())
+         {
+-            if (entry.getKey().length() != 1)
++            if (((String)entry.getKey()).length() != 1)
+             {
+                 throw new JsonSyntaxException("Invalid key entry: '" + (String)entry.getKey() + "' is an invalid symbol (must be 1 character only).");
+             }
+@@ -375,5 +371,17 @@
              int j = p_192405_1_ ? JsonUtils.func_151208_a(p_192405_0_, "count", 1) : 1;
              return new ItemStack(item, j, i);
          }

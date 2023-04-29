@@ -1,5 +1,14 @@
 --- before/net/minecraft/nbt/NBTTagCompound.java
 +++ after/net/minecraft/nbt/NBTTagCompound.java
+@@ -25,7 +25,7 @@
+ {
+     private static final Logger field_191551_b = LogManager.getLogger();
+     private static final Pattern field_193583_c = Pattern.compile("[A-Za-z0-9._+-]+");
+-    private final Map<String, NBTBase> field_74784_a = Maps.newHashMap();
++    private final Map<String, NBTBase> field_74784_a = Maps.<String, NBTBase>newHashMap();
+ 
+     void func_74734_a(DataOutput p_74734_1_) throws IOException
+     {
 @@ -82,6 +82,7 @@
  
      public void func_74782_a(String p_74782_1_, NBTBase p_74782_2_)
@@ -8,7 +17,106 @@
          this.field_74784_a.put(p_74782_1_, p_74782_2_);
      }
  
-@@ -477,6 +478,7 @@
+@@ -195,8 +196,9 @@
+                 return ((NBTPrimitive)this.field_74784_a.get(p_74771_1_)).func_150290_f();
+             }
+         }
+-        catch (ClassCastException classcastexception)
++        catch (ClassCastException var3)
+         {
++            ;
+         }
+ 
+         return 0;
+@@ -211,8 +213,9 @@
+                 return ((NBTPrimitive)this.field_74784_a.get(p_74765_1_)).func_150289_e();
+             }
+         }
+-        catch (ClassCastException classcastexception)
++        catch (ClassCastException var3)
+         {
++            ;
+         }
+ 
+         return 0;
+@@ -227,8 +230,9 @@
+                 return ((NBTPrimitive)this.field_74784_a.get(p_74762_1_)).func_150287_d();
+             }
+         }
+-        catch (ClassCastException classcastexception)
++        catch (ClassCastException var3)
+         {
++            ;
+         }
+ 
+         return 0;
+@@ -243,8 +247,9 @@
+                 return ((NBTPrimitive)this.field_74784_a.get(p_74763_1_)).func_150291_c();
+             }
+         }
+-        catch (ClassCastException classcastexception)
++        catch (ClassCastException var3)
+         {
++            ;
+         }
+ 
+         return 0L;
+@@ -259,8 +264,9 @@
+                 return ((NBTPrimitive)this.field_74784_a.get(p_74760_1_)).func_150288_h();
+             }
+         }
+-        catch (ClassCastException classcastexception)
++        catch (ClassCastException var3)
+         {
++            ;
+         }
+ 
+         return 0.0F;
+@@ -275,8 +281,9 @@
+                 return ((NBTPrimitive)this.field_74784_a.get(p_74769_1_)).func_150286_g();
+             }
+         }
+-        catch (ClassCastException classcastexception)
++        catch (ClassCastException var3)
+         {
++            ;
+         }
+ 
+         return 0.0D;
+@@ -288,11 +295,12 @@
+         {
+             if (this.func_150297_b(p_74779_1_, 8))
+             {
+-                return this.field_74784_a.get(p_74779_1_).func_150285_a_();
++                return ((NBTBase)this.field_74784_a.get(p_74779_1_)).func_150285_a_();
+             }
+         }
+-        catch (ClassCastException classcastexception)
++        catch (ClassCastException var3)
+         {
++            ;
+         }
+ 
+         return "";
+@@ -421,7 +429,7 @@
+         {
+             public String call() throws Exception
+             {
+-                return NBTBase.field_82578_b[NBTTagCompound.this.field_74784_a.get(p_82581_1_).func_74732_a()];
++                return NBTBase.field_82578_b[((NBTBase)NBTTagCompound.this.field_74784_a.get(p_82581_1_)).func_74732_a()];
+             }
+         });
+         crashreportcategory.func_189529_a("Tag type expected", new ICrashReportDetail<String>()
+@@ -441,7 +449,7 @@
+ 
+         for (String s : this.field_74784_a.keySet())
+         {
+-            nbttagcompound.func_74782_a(s, this.field_74784_a.get(s).func_74737_b());
++            nbttagcompound.func_74782_a(s, ((NBTBase)this.field_74784_a.get(s)).func_74737_b());
+         }
+ 
+         return nbttagcompound;
+@@ -470,6 +478,7 @@
  
      private static byte func_152447_a(DataInput p_152447_0_, NBTSizeTracker p_152447_1_) throws IOException
      {
@@ -16,7 +124,7 @@
          return p_152447_0_.readByte();
      }
  
-@@ -487,6 +489,7 @@
+@@ -480,6 +489,7 @@
  
      static NBTBase func_152449_a(byte p_152449_0_, String p_152449_1_, DataInput p_152449_2_, int p_152449_3_, NBTSizeTracker p_152449_4_) throws IOException
      {
@@ -24,3 +132,12 @@
          NBTBase nbtbase = NBTBase.func_150284_a(p_152449_0_);
  
          try
+@@ -492,7 +502,7 @@
+             CrashReport crashreport = CrashReport.func_85055_a(ioexception, "Loading NBT data");
+             CrashReportCategory crashreportcategory = crashreport.func_85058_a("NBT Tag");
+             crashreportcategory.func_71507_a("Tag name", p_152449_1_);
+-            crashreportcategory.func_71507_a("Tag type", p_152449_0_);
++            crashreportcategory.func_71507_a("Tag type", Byte.valueOf(p_152449_0_));
+             throw new ReportedException(crashreport);
+         }
+     }

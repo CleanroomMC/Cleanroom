@@ -1,6 +1,6 @@
 --- before/net/minecraft/network/NetworkSystem.java
 +++ after/net/minecraft/network/NetworkSystem.java
-@@ -49,21 +49,21 @@
+@@ -49,27 +49,27 @@
      {
          protected NioEventLoopGroup func_179280_b()
          {
@@ -25,6 +25,14 @@
          }
      };
      private final MinecraftServer field_151273_d;
+     public volatile boolean field_151277_a;
+-    private final List<ChannelFuture> field_151274_e = Collections.synchronizedList(Lists.newArrayList());
+-    private final List<NetworkManager> field_151272_f = Collections.synchronizedList(Lists.newArrayList());
++    private final List<ChannelFuture> field_151274_e = Collections.<ChannelFuture>synchronizedList(Lists.newArrayList());
++    private final List<NetworkManager> field_151272_f = Collections.<NetworkManager>synchronizedList(Lists.newArrayList());
+ 
+     public NetworkSystem(MinecraftServer p_i45292_1_)
+     {
 @@ -79,6 +79,7 @@
  
      public void func_151265_a(InetAddress p_151265_1_, int p_151265_2_) throws IOException
@@ -33,8 +41,24 @@
          synchronized (this.field_151274_e)
          {
              Class <? extends ServerSocketChannel > oclass;
-@@ -110,7 +111,7 @@
-                         ;
+@@ -97,25 +98,26 @@
+                 field_151275_b.info("Using default channel type");
+             }
+ 
+-            this.field_151274_e.add((new ServerBootstrap()).channel(oclass).childHandler(new ChannelInitializer<Channel>()
++            this.field_151274_e.add(((ServerBootstrap)((ServerBootstrap)(new ServerBootstrap()).channel(oclass)).childHandler(new ChannelInitializer<Channel>()
+             {
+                 protected void initChannel(Channel p_initChannel_1_) throws Exception
+                 {
+                     try
+                     {
+-                        p_initChannel_1_.config().setOption(ChannelOption.TCP_NODELAY, true);
++                        p_initChannel_1_.config().setOption(ChannelOption.TCP_NODELAY, Boolean.valueOf(true));
+                     }
+-                    catch (ChannelException channelexception)
++                    catch (ChannelException var3)
+                     {
++                        ;
                      }
  
 -                    p_initChannel_1_.pipeline().addLast("timeout", new ReadTimeoutHandler(30)).addLast("legacy_query", new LegacyPingHandler(NetworkSystem.this)).addLast("splitter", new NettyVarint21FrameDecoder()).addLast("decoder", new NettyPacketDecoder(EnumPacketDirection.SERVERBOUND)).addLast("prepender", new NettyVarint21FrameEncoder()).addLast("encoder", new NettyPacketEncoder(EnumPacketDirection.CLIENTBOUND));
@@ -42,3 +66,37 @@
                      NetworkManager networkmanager = new NetworkManager(EnumPacketDirection.SERVERBOUND);
                      NetworkSystem.this.field_151272_f.add(networkmanager);
                      p_initChannel_1_.pipeline().addLast("packet_handler", networkmanager);
+                     networkmanager.func_150719_a(new NetHandlerHandshakeTCP(NetworkSystem.this.field_151273_d, networkmanager));
+                 }
+-            }).group(lazyloadbase.func_179281_c()).localAddress(p_151265_1_, p_151265_2_).bind().syncUninterruptibly());
++            }).group(lazyloadbase.func_179281_c()).localAddress(p_151265_1_, p_151265_2_)).bind().syncUninterruptibly());
+         }
+     }
+ 
+@@ -126,7 +128,7 @@
+ 
+         synchronized (this.field_151274_e)
+         {
+-            channelfuture = (new ServerBootstrap()).channel(LocalServerChannel.class).childHandler(new ChannelInitializer<Channel>()
++            channelfuture = ((ServerBootstrap)((ServerBootstrap)(new ServerBootstrap()).channel(LocalServerChannel.class)).childHandler(new ChannelInitializer<Channel>()
+             {
+                 protected void initChannel(Channel p_initChannel_1_) throws Exception
+                 {
+@@ -135,7 +137,7 @@
+                     NetworkSystem.this.field_151272_f.add(networkmanager);
+                     p_initChannel_1_.pipeline().addLast("packet_handler", networkmanager);
+                 }
+-            }).group(field_151276_c.func_179281_c()).localAddress(LocalAddress.ANY).bind().syncUninterruptibly();
++            }).group(field_151276_c.func_179281_c()).localAddress(LocalAddress.ANY)).bind().syncUninterruptibly();
+             this.field_151274_e.add(channelfuture);
+         }
+ 
+@@ -152,7 +154,7 @@
+             {
+                 channelfuture.channel().close().sync();
+             }
+-            catch (InterruptedException interruptedexception)
++            catch (InterruptedException var4)
+             {
+                 field_151275_b.error("Interrupted whilst closing channel");
+             }

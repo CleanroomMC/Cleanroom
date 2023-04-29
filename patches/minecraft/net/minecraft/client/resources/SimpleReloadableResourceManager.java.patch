@@ -1,5 +1,18 @@
 --- before/net/minecraft/client/resources/SimpleReloadableResourceManager.java
 +++ after/net/minecraft/client/resources/SimpleReloadableResourceManager.java
+@@ -24,9 +24,9 @@
+ {
+     private static final Logger field_147967_a = LogManager.getLogger();
+     private static final Joiner field_130074_a = Joiner.on(", ");
+-    private final Map<String, FallbackResourceManager> field_110548_a = Maps.newHashMap();
+-    private final List<IResourceManagerReloadListener> field_110546_b = Lists.newArrayList();
+-    private final Set<String> field_135057_d = Sets.newLinkedHashSet();
++    private final Map<String, FallbackResourceManager> field_110548_a = Maps.<String, FallbackResourceManager>newHashMap();
++    private final List<IResourceManagerReloadListener> field_110546_b = Lists.<IResourceManagerReloadListener>newArrayList();
++    private final Set<String> field_135057_d = Sets.<String>newLinkedHashSet();
+     private final MetadataSerializer field_110547_c;
+ 
+     public SimpleReloadableResourceManager(MetadataSerializer p_i1299_1_)
 @@ -92,6 +92,7 @@
  
      public void func_110541_a(List<IResourcePack> p_110541_1_)

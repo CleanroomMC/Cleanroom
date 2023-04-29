@@ -1,0 +1,29 @@
+--- before/net/minecraft/command/server/CommandTestFor.java
++++ after/net/minecraft/command/server/CommandTestFor.java
+@@ -36,7 +36,7 @@
+     {
+         if (p_184881_3_.length < 1)
+         {
+-            throw new WrongUsageException("commands.testfor.usage");
++            throw new WrongUsageException("commands.testfor.usage", new Object[0]);
+         }
+         else
+         {
+@@ -51,7 +51,7 @@
+                 }
+                 catch (NBTException nbtexception)
+                 {
+-                    throw new CommandException("commands.testfor.tagError", nbtexception.getMessage());
++                    throw new CommandException("commands.testfor.tagError", new Object[] {nbtexception.getMessage()});
+                 }
+             }
+ 
+@@ -61,7 +61,7 @@
+ 
+                 if (!NBTUtil.func_181123_a(nbttagcompound, nbttagcompound1, true))
+                 {
+-                    throw new CommandException("commands.testfor.failure", entity.func_70005_c_());
++                    throw new CommandException("commands.testfor.failure", new Object[] {entity.func_70005_c_()});
+                 }
+             }
+ 

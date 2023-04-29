@@ -1,0 +1,148 @@
+--- before/net/minecraft/command/CommandReplaceItem.java
++++ after/net/minecraft/command/CommandReplaceItem.java
+@@ -22,7 +22,7 @@
+ 
+ public class CommandReplaceItem extends CommandBase
+ {
+-    private static final Map<String, Integer> field_175785_a = Maps.newHashMap();
++    private static final Map<String, Integer> field_175785_a = Maps.<String, Integer>newHashMap();
+ 
+     public String func_71517_b()
+     {
+@@ -43,7 +43,7 @@
+     {
+         if (p_184881_3_.length < 1)
+         {
+-            throw new WrongUsageException("commands.replaceitem.usage");
++            throw new WrongUsageException("commands.replaceitem.usage", new Object[0]);
+         }
+         else
+         {
+@@ -57,7 +57,7 @@
+             {
+                 if (!"block".equals(p_184881_3_[0]))
+                 {
+-                    throw new WrongUsageException("commands.replaceitem.usage");
++                    throw new WrongUsageException("commands.replaceitem.usage", new Object[0]);
+                 }
+ 
+                 flag = true;
+@@ -69,7 +69,7 @@
+             {
+                 if (p_184881_3_.length < 6)
+                 {
+-                    throw new WrongUsageException("commands.replaceitem.block.usage");
++                    throw new WrongUsageException("commands.replaceitem.block.usage", new Object[0]);
+                 }
+ 
+                 i = 4;
+@@ -78,7 +78,7 @@
+             {
+                 if (p_184881_3_.length < 4)
+                 {
+-                    throw new WrongUsageException("commands.replaceitem.entity.usage");
++                    throw new WrongUsageException("commands.replaceitem.entity.usage", new Object[0]);
+                 }
+ 
+                 i = 2;
+@@ -117,7 +117,7 @@
+                 }
+                 catch (NBTException nbtexception)
+                 {
+-                    throw new CommandException("commands.replaceitem.tagError", nbtexception.getMessage());
++                    throw new CommandException("commands.replaceitem.tagError", new Object[] {nbtexception.getMessage()});
+                 }
+             }
+ 
+@@ -130,7 +130,7 @@
+ 
+                 if (tileentity == null || !(tileentity instanceof IInventory))
+                 {
+-                    throw new CommandException("commands.replaceitem.noContainer", blockpos.func_177958_n(), blockpos.func_177956_o(), blockpos.func_177952_p());
++                    throw new CommandException("commands.replaceitem.noContainer", new Object[] {blockpos.func_177958_n(), blockpos.func_177956_o(), blockpos.func_177952_p()});
+                 }
+ 
+                 IInventory iinventory = (IInventory)tileentity;
+@@ -152,7 +152,7 @@
+ 
+                 if (!entity.func_174820_d(j, itemstack))
+                 {
+-                    throw new CommandException("commands.replaceitem.failed", s, k, itemstack.func_190926_b() ? "Air" : itemstack.func_151000_E());
++                    throw new CommandException("commands.replaceitem.failed", new Object[] {s, k, itemstack.func_190926_b() ? "Air" : itemstack.func_151000_E()});
+                 }
+ 
+                 if (entity instanceof EntityPlayer)
+@@ -170,11 +170,11 @@
+     {
+         if (!field_175785_a.containsKey(p_175783_1_))
+         {
+-            throw new CommandException("commands.generic.parameter.invalid", p_175783_1_);
++            throw new CommandException("commands.generic.parameter.invalid", new Object[] {p_175783_1_});
+         }
+         else
+         {
+-            return field_175785_a.get(p_175783_1_);
++            return ((Integer)field_175785_a.get(p_175783_1_)).intValue();
+         }
+     }
+ 
+@@ -211,43 +211,43 @@
+     {
+         for (int i = 0; i < 54; ++i)
+         {
+-            field_175785_a.put("slot.container." + i, i);
++            field_175785_a.put("slot.container." + i, Integer.valueOf(i));
+         }
+ 
+         for (int j = 0; j < 9; ++j)
+         {
+-            field_175785_a.put("slot.hotbar." + j, j);
++            field_175785_a.put("slot.hotbar." + j, Integer.valueOf(j));
+         }
+ 
+         for (int k = 0; k < 27; ++k)
+         {
+-            field_175785_a.put("slot.inventory." + k, 9 + k);
++            field_175785_a.put("slot.inventory." + k, Integer.valueOf(9 + k));
+         }
+ 
+         for (int l = 0; l < 27; ++l)
+         {
+-            field_175785_a.put("slot.enderchest." + l, 200 + l);
++            field_175785_a.put("slot.enderchest." + l, Integer.valueOf(200 + l));
+         }
+ 
+         for (int i1 = 0; i1 < 8; ++i1)
+         {
+-            field_175785_a.put("slot.villager." + i1, 300 + i1);
++            field_175785_a.put("slot.villager." + i1, Integer.valueOf(300 + i1));
+         }
+ 
+         for (int j1 = 0; j1 < 15; ++j1)
+         {
+-            field_175785_a.put("slot.horse." + j1, 500 + j1);
++            field_175785_a.put("slot.horse." + j1, Integer.valueOf(500 + j1));
+         }
+ 
+-        field_175785_a.put("slot.weapon", 98);
+-        field_175785_a.put("slot.weapon.mainhand", 98);
+-        field_175785_a.put("slot.weapon.offhand", 99);
+-        field_175785_a.put("slot.armor.head", 100 + EntityEquipmentSlot.HEAD.func_188454_b());
+-        field_175785_a.put("slot.armor.chest", 100 + EntityEquipmentSlot.CHEST.func_188454_b());
+-        field_175785_a.put("slot.armor.legs", 100 + EntityEquipmentSlot.LEGS.func_188454_b());
+-        field_175785_a.put("slot.armor.feet", 100 + EntityEquipmentSlot.FEET.func_188454_b());
+-        field_175785_a.put("slot.horse.saddle", 400);
+-        field_175785_a.put("slot.horse.armor", 401);
+-        field_175785_a.put("slot.horse.chest", 499);
++        field_175785_a.put("slot.weapon", Integer.valueOf(98));
++        field_175785_a.put("slot.weapon.mainhand", Integer.valueOf(98));
++        field_175785_a.put("slot.weapon.offhand", Integer.valueOf(99));
++        field_175785_a.put("slot.armor.head", Integer.valueOf(100 + EntityEquipmentSlot.HEAD.func_188454_b()));
++        field_175785_a.put("slot.armor.chest", Integer.valueOf(100 + EntityEquipmentSlot.CHEST.func_188454_b()));
++        field_175785_a.put("slot.armor.legs", Integer.valueOf(100 + EntityEquipmentSlot.LEGS.func_188454_b()));
++        field_175785_a.put("slot.armor.feet", Integer.valueOf(100 + EntityEquipmentSlot.FEET.func_188454_b()));
++        field_175785_a.put("slot.horse.saddle", Integer.valueOf(400));
++        field_175785_a.put("slot.horse.armor", Integer.valueOf(401));
++        field_175785_a.put("slot.horse.chest", Integer.valueOf(499));
+     }
+ }

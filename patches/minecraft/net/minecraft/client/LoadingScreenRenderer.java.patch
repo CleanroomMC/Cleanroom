@@ -24,3 +24,14 @@
                  this.field_146588_g.func_147609_e();
  
                  if (OpenGlHelper.func_148822_b())
+@@ -187,8 +197,9 @@
+                 {
+                     Thread.yield();
+                 }
+-                catch (Exception exception)
++                catch (Exception var15)
+                 {
++                    ;
+                 }
+             }
+         }

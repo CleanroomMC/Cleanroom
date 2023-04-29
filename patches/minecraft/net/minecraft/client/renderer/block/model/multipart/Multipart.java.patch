@@ -1,0 +1,25 @@
+--- before/net/minecraft/client/renderer/block/model/multipart/Multipart.java
++++ after/net/minecraft/client/renderer/block/model/multipart/Multipart.java
+@@ -33,7 +33,7 @@
+ 
+     public Set<VariantList> func_188137_b()
+     {
+-        Set<VariantList> set = Sets.newHashSet();
++        Set<VariantList> set = Sets.<VariantList>newHashSet();
+ 
+         for (Selector selector : this.field_188139_a)
+         {
+@@ -95,11 +95,11 @@
+ 
+             private List<Selector> func_188133_a(JsonDeserializationContext p_188133_1_, JsonArray p_188133_2_)
+             {
+-                List<Selector> list = Lists.newArrayList();
++                List<Selector> list = Lists.<Selector>newArrayList();
+ 
+                 for (JsonElement jsonelement : p_188133_2_)
+                 {
+-                    list.add(p_188133_1_.deserialize(jsonelement, Selector.class));
++                    list.add((Selector)p_188133_1_.deserialize(jsonelement, Selector.class));
+                 }
+ 
+                 return list;

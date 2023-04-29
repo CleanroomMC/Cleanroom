@@ -1,6 +1,14 @@
 --- before/net/minecraft/client/renderer/texture/TextureUtil.java
 +++ after/net/minecraft/client/renderer/texture/TextureUtil.java
-@@ -63,7 +63,7 @@
+@@ -4,7 +4,6 @@
+ import java.io.Closeable;
+ import java.io.IOException;
+ import java.io.InputStream;
+-import java.nio.Buffer;
+ import java.nio.IntBuffer;
+ import javax.imageio.ImageIO;
+ import net.minecraft.client.Minecraft;
+@@ -64,7 +63,7 @@
          {
              boolean flag = false;
  
@@ -9,7 +17,7 @@
              {
                  if (p_147949_2_[0][i] >> 24 == 0)
                  {
-@@ -83,6 +83,7 @@
+@@ -84,6 +83,7 @@
                      int[] aint1 = aint[l1 - 1];
                      int[] aint2 = new int[aint1.length >> 2];
                      int j = p_147949_1_ >> l1;
@@ -17,7 +25,7 @@
                      int k = aint2.length / j;
                      int l = j << 1;
  
-@@ -94,6 +95,7 @@
+@@ -95,6 +95,7 @@
                              aint2[i1 + j1 * j] = func_147943_a(aint1[k1 + 0], aint1[k1 + 1], aint1[k1 + 0 + l], aint1[k1 + 1 + l], flag);
                          }
                      }
@@ -25,7 +33,22 @@
  
                      aint[l1] = aint2;
                  }
-@@ -168,6 +170,7 @@
+@@ -128,10 +129,10 @@
+                 }
+             }
+ 
+-            f /= 4.0F;
+-            f1 /= 4.0F;
+-            f2 /= 4.0F;
+-            f3 /= 4.0F;
++            f = f / 4.0F;
++            f1 = f1 / 4.0F;
++            f2 = f2 / 4.0F;
++            f3 = f3 / 4.0F;
+             int i2 = (int)(Math.pow((double)f, 0.45454545454545453D) * 255.0D);
+             int j1 = (int)(Math.pow((double)f1, 0.45454545454545453D) * 255.0D);
+             int k1 = (int)(Math.pow((double)f2, 0.45454545454545453D) * 255.0D);
+@@ -169,6 +170,7 @@
          for (int i = 0; i < p_147955_0_.length; ++i)
          {
              int[] aint = p_147955_0_[i];
@@ -33,7 +56,7 @@
              func_147947_a(i, aint, p_147955_1_ >> i, p_147955_2_ >> i, p_147955_3_ >> i, p_147955_4_ >> i, p_147955_5_, p_147955_6_, p_147955_0_.length > 1);
          }
      }
-@@ -202,9 +205,11 @@
+@@ -203,9 +205,11 @@
  
      public static void func_180600_a(int p_180600_0_, int p_180600_1_, int p_180600_2_, int p_180600_3_)
      {
@@ -46,3 +69,15 @@
          if (p_180600_1_ >= 0)
          {
              GlStateManager.func_187421_b(3553, 33085, p_180600_1_);
+@@ -294,9 +298,9 @@
+             aint = func_110985_a(p_110994_0_);
+         }
+ 
+-        ((Buffer)field_111000_c).clear();
++        field_111000_c.clear();
+         field_111000_c.put(aint, p_110994_1_, p_110994_2_);
+-        ((Buffer)field_111000_c).position(0).limit(p_110994_2_);
++        field_111000_c.position(0).limit(p_110994_2_);
+     }
+ 
+     static void func_94277_a(int p_94277_0_)

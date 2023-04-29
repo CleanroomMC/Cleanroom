@@ -1,0 +1,26 @@
+--- before/net/minecraft/client/player/inventory/ContainerLocalMenu.java
++++ after/net/minecraft/client/player/inventory/ContainerLocalMenu.java
+@@ -16,7 +16,7 @@
+ public class ContainerLocalMenu extends InventoryBasic implements ILockableContainer
+ {
+     private final String field_174896_a;
+-    private final Map<Integer, Integer> field_174895_b = Maps.newHashMap();
++    private final Map<Integer, Integer> field_174895_b = Maps.<Integer, Integer>newHashMap();
+ 
+     public ContainerLocalMenu(String p_i46276_1_, ITextComponent p_i46276_2_, int p_i46276_3_)
+     {
+@@ -26,12 +26,12 @@
+ 
+     public int func_174887_a_(int p_174887_1_)
+     {
+-        return this.field_174895_b.containsKey(p_174887_1_) ? this.field_174895_b.get(p_174887_1_) : 0;
++        return this.field_174895_b.containsKey(Integer.valueOf(p_174887_1_)) ? ((Integer)this.field_174895_b.get(Integer.valueOf(p_174887_1_))).intValue() : 0;
+     }
+ 
+     public void func_174885_b(int p_174885_1_, int p_174885_2_)
+     {
+-        this.field_174895_b.put(p_174885_1_, p_174885_2_);
++        this.field_174895_b.put(Integer.valueOf(p_174885_1_), Integer.valueOf(p_174885_2_));
+     }
+ 
+     public int func_174890_g()

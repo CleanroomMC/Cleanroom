@@ -1,6 +1,6 @@
 --- before/net/minecraft/client/renderer/entity/RenderFish.java
 +++ after/net/minecraft/client/renderer/entity/RenderFish.java
-@@ -75,7 +75,7 @@
+@@ -75,14 +75,14 @@
              int k = entityplayer.func_184591_cq() == EnumHandSide.RIGHT ? 1 : -1;
              ItemStack itemstack = entityplayer.func_184614_ca();
  
@@ -9,3 +9,25 @@
              {
                  k = -k;
              }
+ 
+             float f7 = entityplayer.func_70678_g(p_76986_9_);
+             float f8 = MathHelper.func_76126_a(MathHelper.func_76129_c(f7) * (float)Math.PI);
+-            float f9 = (entityplayer.field_70760_ar + (entityplayer.field_70761_aq - entityplayer.field_70760_ar) * p_76986_9_) * ((float)Math.PI / 180F);
++            float f9 = (entityplayer.field_70760_ar + (entityplayer.field_70761_aq - entityplayer.field_70760_ar) * p_76986_9_) * 0.017453292F;
+             double d0 = (double)MathHelper.func_76126_a(f9);
+             double d1 = (double)MathHelper.func_76134_b(f9);
+             double d2 = (double)k * 0.35D;
+@@ -95,10 +95,10 @@
+             if ((this.field_76990_c.field_78733_k == null || this.field_76990_c.field_78733_k.field_74320_O <= 0) && entityplayer == Minecraft.func_71410_x().field_71439_g)
+             {
+                 float f10 = this.field_76990_c.field_78733_k.field_74334_X;
+-                f10 /= 100.0F;
++                f10 = f10 / 100.0F;
+                 Vec3d vec3d = new Vec3d((double)k * -0.36D * (double)f10, -0.045D * (double)f10, 0.4D);
+-                vec3d = vec3d.func_178789_a(-(entityplayer.field_70127_C + (entityplayer.field_70125_A - entityplayer.field_70127_C) * p_76986_9_) * ((float)Math.PI / 180F));
+-                vec3d = vec3d.func_178785_b(-(entityplayer.field_70126_B + (entityplayer.field_70177_z - entityplayer.field_70126_B) * p_76986_9_) * ((float)Math.PI / 180F));
++                vec3d = vec3d.func_178789_a(-(entityplayer.field_70127_C + (entityplayer.field_70125_A - entityplayer.field_70127_C) * p_76986_9_) * 0.017453292F);
++                vec3d = vec3d.func_178785_b(-(entityplayer.field_70126_B + (entityplayer.field_70177_z - entityplayer.field_70126_B) * p_76986_9_) * 0.017453292F);
+                 vec3d = vec3d.func_178785_b(f8 * 0.5F);
+                 vec3d = vec3d.func_178789_a(-f8 * 0.7F);
+                 d4 = entityplayer.field_70169_q + (entityplayer.field_70165_t - entityplayer.field_70169_q) * (double)p_76986_9_ + vec3d.field_72450_a;

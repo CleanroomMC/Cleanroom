@@ -1,6 +1,26 @@
 --- before/net/minecraft/entity/monster/EntityIllusionIllager.java
 +++ after/net/minecraft/entity/monster/EntityIllusionIllager.java
-@@ -214,6 +214,8 @@
+@@ -65,14 +65,14 @@
+         this.field_70714_bg.func_75776_a(1, new EntitySpellcasterIllager.AICastingApell());
+         this.field_70714_bg.func_75776_a(4, new EntityIllusionIllager.AIMirriorSpell());
+         this.field_70714_bg.func_75776_a(5, new EntityIllusionIllager.AIBlindnessSpell());
+-        this.field_70714_bg.func_75776_a(6, new EntityAIAttackRangedBow<>(this, 0.5D, 20, 15.0F));
++        this.field_70714_bg.func_75776_a(6, new EntityAIAttackRangedBow(this, 0.5D, 20, 15.0F));
+         this.field_70714_bg.func_75776_a(8, new EntityAIWander(this, 0.6D));
+         this.field_70714_bg.func_75776_a(9, new EntityAIWatchClosest(this, EntityPlayer.class, 3.0F, 1.0F));
+         this.field_70714_bg.func_75776_a(10, new EntityAIWatchClosest(this, EntityLiving.class, 8.0F));
+-        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, true, EntityIllusionIllager.class));
+-        this.field_70715_bh.func_75776_a(2, (new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true)).func_190882_b(300));
+-        this.field_70715_bh.func_75776_a(3, (new EntityAINearestAttackableTarget<>(this, EntityVillager.class, false)).func_190882_b(300));
+-        this.field_70715_bh.func_75776_a(3, (new EntityAINearestAttackableTarget<>(this, EntityIronGolem.class, false)).func_190882_b(300));
++        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, true, new Class[] {EntityIllusionIllager.class}));
++        this.field_70715_bh.func_75776_a(2, (new EntityAINearestAttackableTarget(this, EntityPlayer.class, true)).func_190882_b(300));
++        this.field_70715_bh.func_75776_a(3, (new EntityAINearestAttackableTarget(this, EntityVillager.class, false)).func_190882_b(300));
++        this.field_70715_bh.func_75776_a(3, (new EntityAINearestAttackableTarget(this, EntityIronGolem.class, false)).func_190882_b(300));
+     }
+ 
+     protected void func_110147_ax()
+@@ -214,11 +214,13 @@
      public void func_82196_d(EntityLivingBase p_82196_1_, float p_82196_2_)
      {
          EntityArrow entityarrow = this.func_193097_t(p_82196_2_);
@@ -9,3 +29,9 @@
          double d0 = p_82196_1_.field_70165_t - this.field_70165_t;
          double d1 = p_82196_1_.func_174813_aQ().field_72338_b + (double)(p_82196_1_.field_70131_O / 3.0F) - entityarrow.field_70163_u;
          double d2 = p_82196_1_.field_70161_v - this.field_70161_v;
+         double d3 = (double)MathHelper.func_76133_a(d0 * d0 + d2 * d2);
+-        entityarrow.func_70186_c(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.field_70170_p.func_175659_aa().func_151525_a() * 4));
++        entityarrow.func_70186_c(d0, d1 + d3 * 0.20000000298023224D, d2, 1.6F, (float)(14 - this.field_70170_p.func_175659_aa().func_151525_a() * 4));
+         this.func_184185_a(SoundEvents.field_187866_fi, 1.0F, 1.0F / (this.func_70681_au().nextFloat() * 0.4F + 0.8F));
+         this.field_70170_p.func_72838_d(entityarrow);
+     }

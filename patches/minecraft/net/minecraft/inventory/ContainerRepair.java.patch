@@ -1,6 +1,40 @@
 --- before/net/minecraft/inventory/ContainerRepair.java
 +++ after/net/minecraft/inventory/ContainerRepair.java
-@@ -70,6 +70,8 @@
+@@ -22,15 +22,8 @@
+ public class ContainerRepair extends Container
+ {
+     private static final Logger field_148326_f = LogManager.getLogger();
+-    private final IInventory field_82852_f = new InventoryCraftResult();
+-    private final IInventory field_82853_g = new InventoryBasic("Repair", true, 2)
+-    {
+-        public void func_70296_d()
+-        {
+-            super.func_70296_d();
+-            ContainerRepair.this.func_75130_a(this);
+-        }
+-    };
++    private final IInventory field_82852_f;
++    private final IInventory field_82853_g;
+     private final World field_82860_h;
+     private final BlockPos field_178156_j;
+     public int field_82854_e;
+@@ -46,6 +39,15 @@
+ 
+     public ContainerRepair(InventoryPlayer p_i45807_1_, final World p_i45807_2_, final BlockPos p_i45807_3_, EntityPlayer p_i45807_4_)
+     {
++        this.field_82852_f = new InventoryCraftResult();
++        this.field_82853_g = new InventoryBasic("Repair", true, 2)
++        {
++            public void func_70296_d()
++            {
++                super.func_70296_d();
++                ContainerRepair.this.func_75130_a(this);
++            }
++        };
+         this.field_178156_j = p_i45807_3_;
+         this.field_82860_h = p_i45807_2_;
+         this.field_82855_n = p_i45807_4_;
+@@ -68,6 +70,8 @@
                      p_190901_1_.func_82242_a(-ContainerRepair.this.field_82854_e);
                  }
  
@@ -9,18 +43,33 @@
                  ContainerRepair.this.field_82853_g.func_70299_a(0, ItemStack.field_190927_a);
  
                  if (ContainerRepair.this.field_82856_l > 0)
-@@ -94,7 +96,7 @@
+@@ -92,9 +96,9 @@
                  ContainerRepair.this.field_82854_e = 0;
                  IBlockState iblockstate = p_i45807_2_.func_180495_p(p_i45807_3_);
  
 -                if (!p_190901_1_.field_71075_bZ.field_75098_d && !p_i45807_2_.field_72995_K && iblockstate.func_177230_c() == Blocks.field_150467_bQ && p_190901_1_.func_70681_au().nextFloat() < 0.12F)
 +                if (!p_190901_1_.field_71075_bZ.field_75098_d && !p_i45807_2_.field_72995_K && iblockstate.func_177230_c() == Blocks.field_150467_bQ && p_190901_1_.func_70681_au().nextFloat() < breakChance)
                  {
-                     int l = ((Integer)iblockstate.func_177229_b(BlockAnvil.field_176505_b)).intValue();
+-                    int l = iblockstate.func_177229_b(BlockAnvil.field_176505_b);
++                    int l = ((Integer)iblockstate.func_177229_b(BlockAnvil.field_176505_b)).intValue();
                      ++l;
-@@ -163,10 +165,12 @@
+ 
+                     if (l > 2)
+@@ -104,7 +108,7 @@
+                     }
+                     else
+                     {
+-                        p_i45807_2_.func_180501_a(p_i45807_3_, iblockstate.func_177226_a(BlockAnvil.field_176505_b, l), 2);
++                        p_i45807_2_.func_180501_a(p_i45807_3_, iblockstate.func_177226_a(BlockAnvil.field_176505_b, Integer.valueOf(l)), 2);
+                         p_i45807_2_.func_175718_b(1030, p_i45807_3_, 0);
+                     }
+                 }
+@@ -159,12 +163,14 @@
+             ItemStack itemstack1 = itemstack.func_77946_l();
+             ItemStack itemstack2 = this.field_82853_g.func_70301_a(1);
              Map<Enchantment, Integer> map = EnchantmentHelper.func_82781_a(itemstack1);
-             j = j + itemstack.func_82838_A() + (itemstack2.func_190926_b() ? 0 : itemstack2.func_82838_A());
+-            j += itemstack.func_82838_A() + (itemstack2.func_190926_b() ? 0 : itemstack2.func_82838_A());
++            j = j + itemstack.func_82838_A() + (itemstack2.func_190926_b() ? 0 : itemstack2.func_82838_A());
              this.field_82856_l = 0;
 +            boolean flag = false;
  
@@ -32,7 +81,7 @@
  
                  if (itemstack1.func_77984_f() && itemstack1.func_77973_b().func_82789_a(itemstack, itemstack2))
                  {
-@@ -213,7 +217,7 @@
+@@ -211,7 +217,7 @@
                              l1 = 0;
                          }
  
@@ -41,7 +90,27 @@
                          {
                              itemstack1.func_77964_b(l1);
                              i += 2;
-@@ -317,6 +321,7 @@
+@@ -226,8 +232,8 @@
+                     {
+                         if (enchantment1 != null)
+                         {
+-                            int i2 = map.containsKey(enchantment1) ? map.get(enchantment1) : 0;
+-                            int j2 = map1.get(enchantment1);
++                            int i2 = map.containsKey(enchantment1) ? ((Integer)map.get(enchantment1)).intValue() : 0;
++                            int j2 = ((Integer)map1.get(enchantment1)).intValue();
+                             j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
+                             boolean flag1 = enchantment1.func_92089_a(itemstack);
+ 
+@@ -258,7 +264,7 @@
+                                     j2 = enchantment1.func_77325_b();
+                                 }
+ 
+-                                map.put(enchantment1, j2);
++                                map.put(enchantment1, Integer.valueOf(j2));
+                                 int k3 = 0;
+ 
+                                 switch (enchantment1.func_77324_c())
+@@ -315,6 +321,7 @@
                  i += k;
                  itemstack1.func_151001_c(this.field_82857_m);
              }

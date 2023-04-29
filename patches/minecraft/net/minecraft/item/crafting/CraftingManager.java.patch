@@ -4,12 +4,102 @@
  {
      private static final Logger field_192422_a = LogManager.getLogger();
      private static int field_193381_c;
--    public static final RegistryNamespaced<ResourceLocation, IRecipe> field_193380_a = new RegistryNamespaced<ResourceLocation, IRecipe>();
+-    public static final RegistryNamespaced<ResourceLocation, IRecipe> field_193380_a = new RegistryNamespaced<>();
 +    public static final RegistryNamespaced<ResourceLocation, IRecipe> field_193380_a = net.minecraftforge.registries.GameData.getWrapper(IRecipe.class);
  
      public static boolean func_193377_a()
      {
-@@ -173,12 +173,14 @@
+@@ -55,7 +55,7 @@
+             func_193379_a("shulkerboxcoloring", new ShulkerBoxRecipes.ShulkerBoxColoring());
+             return func_192420_c();
+         }
+-        catch (Throwable throwable)
++        catch (Throwable var1)
+         {
+             return false;
+         }
+@@ -65,7 +65,7 @@
+     {
+         FileSystem filesystem = null;
+         Gson gson = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
+-        boolean flag;
++        boolean flag1;
+ 
+         try
+         {
+@@ -85,7 +85,8 @@
+                     if (!"jar".equals(uri.getScheme()))
+                     {
+                         field_192422_a.error("Unsupported scheme " + uri + " trying to list all recipes");
+-                        return false;
++                        boolean flag2 = false;
++                        return flag2;
+                     }
+ 
+                     filesystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
+@@ -107,18 +108,25 @@
+ 
+                         try
+                         {
+-                            bufferedreader = Files.newBufferedReader(path1);
+-                            func_193379_a(s, func_193376_a(JsonUtils.func_193839_a(gson, bufferedreader, JsonObject.class)));
+-                        }
+-                        catch (JsonParseException jsonparseexception)
+-                        {
+-                            field_192422_a.error("Parsing error loading recipe " + resourcelocation, (Throwable)jsonparseexception);
+-                            return false;
+-                        }
+-                        catch (IOException ioexception)
+-                        {
+-                            field_192422_a.error("Couldn't read recipe " + resourcelocation + " from " + path1, (Throwable)ioexception);
+-                            return false;
++                            boolean flag;
++
++                            try
++                            {
++                                bufferedreader = Files.newBufferedReader(path1);
++                                func_193379_a(s, func_193376_a((JsonObject)JsonUtils.func_193839_a(gson, bufferedreader, JsonObject.class)));
++                            }
++                            catch (JsonParseException jsonparseexception)
++                            {
++                                field_192422_a.error("Parsing error loading recipe " + resourcelocation, (Throwable)jsonparseexception);
++                                flag = false;
++                                return flag;
++                            }
++                            catch (IOException ioexception)
++                            {
++                                field_192422_a.error("Couldn't read recipe " + resourcelocation + " from " + path1, (Throwable)ioexception);
++                                flag = false;
++                                return flag;
++                            }
+                         }
+                         finally
+                         {
+@@ -131,19 +139,20 @@
+             }
+ 
+             field_192422_a.error("Couldn't find .mcassetsroot");
+-            flag = false;
++            flag1 = false;
+         }
+         catch (IOException | URISyntaxException urisyntaxexception)
+         {
+             field_192422_a.error("Couldn't get a list of all recipe files", (Throwable)urisyntaxexception);
+-            return false;
++            flag1 = false;
++            return flag1;
+         }
+         finally
+         {
+             IOUtils.closeQuietly((Closeable)filesystem);
+         }
+ 
+-        return flag;
++        return flag1;
+     }
+ 
+     private static IRecipe func_193376_a(JsonObject p_193376_0_)
+@@ -164,12 +173,14 @@
          }
      }
  
@@ -26,7 +116,16 @@
      {
          if (field_193380_a.func_148741_d(p_193372_0_))
          {
-@@ -243,11 +245,13 @@
+@@ -218,7 +229,7 @@
+             }
+         }
+ 
+-        NonNullList<ItemStack> nonnulllist = NonNullList.func_191197_a(p_180303_0_.func_70302_i_(), ItemStack.field_190927_a);
++        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191197_a(p_180303_0_.func_70302_i_(), ItemStack.field_190927_a);
+ 
+         for (int i = 0; i < nonnulllist.size(); ++i)
+         {
+@@ -234,11 +245,13 @@
          return field_193380_a.func_82594_a(p_193373_0_);
      }
  

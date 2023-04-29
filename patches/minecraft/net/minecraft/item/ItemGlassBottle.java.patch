@@ -1,0 +1,50 @@
+--- before/net/minecraft/item/ItemGlassBottle.java
++++ after/net/minecraft/item/ItemGlassBottle.java
+@@ -30,7 +30,7 @@
+ 
+     public ActionResult<ItemStack> func_77659_a(World p_77659_1_, EntityPlayer p_77659_2_, EnumHand p_77659_3_)
+     {
+-        List<EntityAreaEffectCloud> list = p_77659_1_.func_175647_a(EntityAreaEffectCloud.class, p_77659_2_.func_174813_aQ().func_186662_g(2.0D), new Predicate<EntityAreaEffectCloud>()
++        List<EntityAreaEffectCloud> list = p_77659_1_.<EntityAreaEffectCloud>func_175647_a(EntityAreaEffectCloud.class, p_77659_2_.func_174813_aQ().func_186662_g(2.0D), new Predicate<EntityAreaEffectCloud>()
+         {
+             public boolean apply(@Nullable EntityAreaEffectCloud p_apply_1_)
+             {
+@@ -44,7 +44,7 @@
+             EntityAreaEffectCloud entityareaeffectcloud = list.get(0);
+             entityareaeffectcloud.func_184483_a(entityareaeffectcloud.func_184490_j() - 0.5F);
+             p_77659_1_.func_184148_a((EntityPlayer)null, p_77659_2_.field_70165_t, p_77659_2_.field_70163_u, p_77659_2_.field_70161_v, SoundEvents.field_187618_I, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+-            return new ActionResult<>(EnumActionResult.SUCCESS, this.func_185061_a(itemstack, p_77659_2_, new ItemStack(Items.field_185157_bK)));
++            return new ActionResult(EnumActionResult.SUCCESS, this.func_185061_a(itemstack, p_77659_2_, new ItemStack(Items.field_185157_bK)));
+         }
+         else
+         {
+@@ -52,7 +52,7 @@
+ 
+             if (raytraceresult == null)
+             {
+-                return new ActionResult<>(EnumActionResult.PASS, itemstack);
++                return new ActionResult(EnumActionResult.PASS, itemstack);
+             }
+             else
+             {
+@@ -62,17 +62,17 @@
+ 
+                     if (!p_77659_1_.func_175660_a(p_77659_2_, blockpos) || !p_77659_2_.func_175151_a(blockpos.func_177972_a(raytraceresult.field_178784_b), raytraceresult.field_178784_b, itemstack))
+                     {
+-                        return new ActionResult<>(EnumActionResult.PASS, itemstack);
++                        return new ActionResult(EnumActionResult.PASS, itemstack);
+                     }
+ 
+                     if (p_77659_1_.func_180495_p(blockpos).func_185904_a() == Material.field_151586_h)
+                     {
+                         p_77659_1_.func_184148_a(p_77659_2_, p_77659_2_.field_70165_t, p_77659_2_.field_70163_u, p_77659_2_.field_70161_v, SoundEvents.field_187615_H, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+-                        return new ActionResult<>(EnumActionResult.SUCCESS, this.func_185061_a(itemstack, p_77659_2_, PotionUtils.func_185188_a(new ItemStack(Items.field_151068_bn), PotionTypes.field_185230_b)));
++                        return new ActionResult(EnumActionResult.SUCCESS, this.func_185061_a(itemstack, p_77659_2_, PotionUtils.func_185188_a(new ItemStack(Items.field_151068_bn), PotionTypes.field_185230_b)));
+                     }
+                 }
+ 
+-                return new ActionResult<>(EnumActionResult.PASS, itemstack);
++                return new ActionResult(EnumActionResult.PASS, itemstack);
+             }
+         }
+     }

@@ -1,0 +1,24 @@
+--- before/net/minecraft/world/DifficultyInstance.java
++++ after/net/minecraft/world/DifficultyInstance.java
+@@ -48,17 +48,17 @@
+             boolean flag = p_180169_1_ == EnumDifficulty.HARD;
+             float f = 0.75F;
+             float f1 = MathHelper.func_76131_a(((float)p_180169_2_ + -72000.0F) / 1440000.0F, 0.0F, 1.0F) * 0.25F;
+-            f += f1;
++            f = f + f1;
+             float f2 = 0.0F;
+-            f2 += MathHelper.func_76131_a((float)p_180169_4_ / 3600000.0F, 0.0F, 1.0F) * (flag ? 1.0F : 0.75F);
+-            f2 += MathHelper.func_76131_a(p_180169_6_ * 0.25F, 0.0F, f1);
++            f2 = f2 + MathHelper.func_76131_a((float)p_180169_4_ / 3600000.0F, 0.0F, 1.0F) * (flag ? 1.0F : 0.75F);
++            f2 = f2 + MathHelper.func_76131_a(p_180169_6_ * 0.25F, 0.0F, f1);
+ 
+             if (p_180169_1_ == EnumDifficulty.EASY)
+             {
+                 f2 *= 0.5F;
+             }
+ 
+-            f += f2;
++            f = f + f2;
+             return (float)p_180169_1_.func_151525_a() * f;
+         }
+     }

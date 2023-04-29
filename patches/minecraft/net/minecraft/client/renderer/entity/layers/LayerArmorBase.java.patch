@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/renderer/entity/layers/LayerArmorBase.java
 +++ after/net/minecraft/client/renderer/entity/layers/LayerArmorBase.java
+@@ -26,7 +26,7 @@
+     private float field_177185_g = 1.0F;
+     private float field_177192_h = 1.0F;
+     private boolean field_177193_i;
+-    private static final Map<String, ResourceLocation> field_177191_j = Maps.newHashMap();
++    private static final Map<String, ResourceLocation> field_177191_j = Maps.<String, ResourceLocation>newHashMap();
+ 
+     public LayerArmorBase(RenderLivingBase<?> p_i46125_1_)
+     {
 @@ -58,31 +58,29 @@
              if (itemarmor.func_185083_B_() == p_188361_9_)
              {

@@ -1,0 +1,23 @@
+--- before/net/minecraft/client/gui/GuiOptions.java
++++ after/net/minecraft/client/gui/GuiOptions.java
+@@ -85,9 +85,9 @@
+     public String func_175355_a(EnumDifficulty p_175355_1_)
+     {
+         ITextComponent itextcomponent = new TextComponentString("");
+-        itextcomponent.func_150257_a(new TextComponentTranslation("options.difficulty"));
++        itextcomponent.func_150257_a(new TextComponentTranslation("options.difficulty", new Object[0]));
+         itextcomponent.func_150258_a(": ");
+-        itextcomponent.func_150257_a(new TextComponentTranslation(p_175355_1_.func_151526_b()));
++        itextcomponent.func_150257_a(new TextComponentTranslation(p_175355_1_.func_151526_b(), new Object[0]));
+         return itextcomponent.func_150254_d();
+     }
+ 
+@@ -133,7 +133,7 @@
+ 
+             if (p_146284_1_.field_146127_k == 109)
+             {
+-                this.field_146297_k.func_147108_a(new GuiYesNo(this, (new TextComponentTranslation("difficulty.lock.title")).func_150254_d(), (new TextComponentTranslation("difficulty.lock.question", new TextComponentTranslation(this.field_146297_k.field_71441_e.func_72912_H().func_176130_y().func_151526_b()))).func_150254_d(), 109));
++                this.field_146297_k.func_147108_a(new GuiYesNo(this, (new TextComponentTranslation("difficulty.lock.title", new Object[0])).func_150254_d(), (new TextComponentTranslation("difficulty.lock.question", new Object[] {new TextComponentTranslation(this.field_146297_k.field_71441_e.func_72912_H().func_176130_y().func_151526_b(), new Object[0])})).func_150254_d(), 109));
+             }
+ 
+             if (p_146284_1_.field_146127_k == 110)

@@ -11,3 +11,12 @@
      }
  
      public Multimap<String, AttributeModifier> func_111205_h(EntityEquipmentSlot p_111205_1_)
+@@ -98,7 +100,7 @@
+         if (p_111205_1_ == EntityEquipmentSlot.MAINHAND)
+         {
+             multimap.put(SharedMonsterAttributes.field_111264_e.func_111108_a(), new AttributeModifier(field_111210_e, "Weapon modifier", (double)this.field_150934_a, 0));
+-            multimap.put(SharedMonsterAttributes.field_188790_f.func_111108_a(), new AttributeModifier(field_185050_h, "Weapon modifier", (double) - 2.4F, 0));
++            multimap.put(SharedMonsterAttributes.field_188790_f.func_111108_a(), new AttributeModifier(field_185050_h, "Weapon modifier", -2.4000000953674316D, 0));
+         }
+ 
+         return multimap;

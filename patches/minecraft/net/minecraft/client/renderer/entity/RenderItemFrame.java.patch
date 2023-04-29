@@ -33,11 +33,20 @@
                  GlStateManager.func_179109_b(0.0F, 0.0F, -1.0F);
  
                  if (mapdata != null)
-@@ -123,6 +126,7 @@
-                 this.field_177074_h.func_181564_a(itemstack, ItemCameraTransforms.TransformType.FIXED);
+@@ -124,6 +127,7 @@
                  RenderHelper.func_74518_a();
                  GlStateManager.func_179099_b();
-+            }
              }
++            }
  
              GlStateManager.func_179145_e();
+             GlStateManager.func_179121_F();
+@@ -137,7 +141,7 @@
+             double d0 = p_177067_1_.func_70068_e(this.field_76990_c.field_78734_h);
+             float f = p_177067_1_.func_70093_af() ? 32.0F : 64.0F;
+ 
+-            if (!(d0 >= (double)(f * f)))
++            if (d0 < (double)(f * f))
+             {
+                 String s = p_177067_1_.func_82335_i().func_82833_r();
+                 this.func_147906_a(p_177067_1_, s, p_177067_2_, p_177067_4_, p_177067_6_, 64);

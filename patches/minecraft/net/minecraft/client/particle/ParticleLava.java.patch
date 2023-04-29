@@ -1,0 +1,35 @@
+--- before/net/minecraft/client/particle/ParticleLava.java
++++ after/net/minecraft/client/particle/ParticleLava.java
+@@ -15,9 +15,9 @@
+     protected ParticleLava(World p_i1215_1_, double p_i1215_2_, double p_i1215_4_, double p_i1215_6_)
+     {
+         super(p_i1215_1_, p_i1215_2_, p_i1215_4_, p_i1215_6_, 0.0D, 0.0D, 0.0D);
+-        this.field_187129_i *= (double)0.8F;
+-        this.field_187130_j *= (double)0.8F;
+-        this.field_187131_k *= (double)0.8F;
++        this.field_187129_i *= 0.800000011920929D;
++        this.field_187130_j *= 0.800000011920929D;
++        this.field_187131_k *= 0.800000011920929D;
+         this.field_187130_j = (double)(this.field_187136_p.nextFloat() * 0.4F + 0.05F);
+         this.field_70552_h = 1.0F;
+         this.field_70553_i = 1.0F;
+@@ -63,14 +63,14 @@
+ 
+         this.field_187130_j -= 0.03D;
+         this.func_187110_a(this.field_187129_i, this.field_187130_j, this.field_187131_k);
+-        this.field_187129_i *= (double)0.999F;
+-        this.field_187130_j *= (double)0.999F;
+-        this.field_187131_k *= (double)0.999F;
++        this.field_187129_i *= 0.9990000128746033D;
++        this.field_187130_j *= 0.9990000128746033D;
++        this.field_187131_k *= 0.9990000128746033D;
+ 
+         if (this.field_187132_l)
+         {
+-            this.field_187129_i *= (double)0.7F;
+-            this.field_187131_k *= (double)0.7F;
++            this.field_187129_i *= 0.699999988079071D;
++            this.field_187131_k *= 0.699999988079071D;
+         }
+     }
+ 

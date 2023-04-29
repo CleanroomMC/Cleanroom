@@ -1,6 +1,31 @@
 --- before/net/minecraft/server/MinecraftServer.java
 +++ after/net/minecraft/server/MinecraftServer.java
-@@ -105,7 +105,7 @@
+@@ -33,6 +33,7 @@
+ import java.util.concurrent.Callable;
+ import java.util.concurrent.Executors;
+ import java.util.concurrent.FutureTask;
++import java.util.function.Supplier;
+ import javax.annotation.Nullable;
+ import javax.imageio.ImageIO;
+ import net.minecraft.advancements.AdvancementManager;
+@@ -45,6 +46,7 @@
+ import net.minecraft.crash.ICrashReportDetail;
+ import net.minecraft.entity.Entity;
+ import net.minecraft.entity.player.EntityPlayer;
++import net.minecraft.entity.player.EntityPlayerMP;
+ import net.minecraft.init.Bootstrap;
+ import net.minecraft.network.NetworkSystem;
+ import net.minecraft.network.ServerStatusResponse;
+@@ -93,7 +95,7 @@
+     private final ISaveFormat field_71310_m;
+     private final Snooper field_71307_n = new Snooper("server", this, func_130071_aq());
+     private final File field_71308_o;
+-    private final List<ITickable> field_71322_p = Lists.newArrayList();
++    private final List<ITickable> field_71322_p = Lists.<ITickable>newArrayList();
+     public final ICommandManager field_71321_q;
+     public final Profiler field_71304_b = new Profiler();
+     private final NetworkSystem field_147144_o;
+@@ -103,7 +105,7 @@
      @SideOnly(Side.SERVER)
      private String field_71320_r;
      private int field_71319_s = -1;
@@ -9,7 +34,7 @@
      private PlayerList field_71318_t;
      private boolean field_71317_u = true;
      private boolean field_71316_v;
-@@ -123,7 +123,8 @@
+@@ -121,7 +123,8 @@
      private int field_71280_D;
      private int field_143008_E;
      public final long[] field_71311_j = new long[100];
@@ -19,7 +44,35 @@
      private KeyPair field_71292_I;
      private String field_71293_J;
      private String field_71294_K;
-@@ -222,8 +223,6 @@
+@@ -141,7 +144,7 @@
+     private final GameProfileRepository field_152365_W;
+     private final PlayerProfileCache field_152366_X;
+     private long field_147142_T;
+-    public final Queue < FutureTask<? >> field_175589_i = Queues.newArrayDeque();
++    public final Queue < FutureTask<? >> field_175589_i = Queues. < FutureTask<? >> newArrayDeque();
+     private Thread field_175590_aa;
+     protected long field_175591_ab = func_130071_aq();
+     @SideOnly(Side.CLIENT)
+@@ -176,15 +179,15 @@
+             this.func_71192_d("menu.convertingLevel");
+             this.func_71254_M().func_75805_a(p_71237_1_, new IProgressUpdate()
+             {
+-                private long field_96245_b = MinecraftServer.func_130071_aq();
++                private long field_96245_b = System.currentTimeMillis();
+                 public void func_73720_a(String p_73720_1_)
+                 {
+                 }
+                 public void func_73718_a(int p_73718_1_)
+                 {
+-                    if (MinecraftServer.func_130071_aq() - this.field_96245_b >= 1000L)
++                    if (System.currentTimeMillis() - this.field_96245_b >= 1000L)
+                     {
+-                        this.field_96245_b = MinecraftServer.func_130071_aq();
++                        this.field_96245_b = System.currentTimeMillis();
+                         MinecraftServer.field_147145_h.info("Converting... {}%", (int)p_73718_1_);
+                     }
+                 }
+@@ -220,8 +223,6 @@
      {
          this.func_71237_c(p_71247_1_);
          this.func_71192_d("menu.loadingLevel");
@@ -28,7 +81,7 @@
          ISaveHandler isavehandler = this.field_71310_m.func_75804_a(p_71247_1_, true);
          this.func_175584_a(this.func_71270_I(), isavehandler);
          WorldInfo worldinfo = isavehandler.func_75757_d();
-@@ -254,6 +253,7 @@
+@@ -252,6 +253,7 @@
              worldsettings = new WorldSettings(worldinfo);
          }
  
@@ -36,7 +89,7 @@
          for (int i = 0; i < this.field_71305_c.length; ++i)
          {
              int j = 0;
-@@ -293,8 +293,23 @@
+@@ -291,8 +293,23 @@
                  this.field_71305_c[i].func_72912_H().func_76060_a(this.func_71265_f());
              }
          }
@@ -62,7 +115,7 @@
          this.func_147139_a(this.func_147135_j());
          this.func_71222_d();
      }
-@@ -309,7 +324,7 @@
+@@ -307,7 +324,7 @@
          this.func_71192_d("menu.generatingTerrain");
          int j1 = 0;
          field_147145_h.info("Preparing start region for level 0");
@@ -71,7 +124,25 @@
          BlockPos blockpos = worldserver.func_175694_M();
          long k1 = func_130071_aq();
  
-@@ -434,15 +449,24 @@
+@@ -341,7 +358,7 @@
+             {
+                 this.func_180507_a_("level://" + URLEncoder.encode(p_175584_1_, StandardCharsets.UTF_8.toString()) + "/" + "resources.zip", "");
+             }
+-            catch (UnsupportedEncodingException unsupportedencodingexception)
++            catch (UnsupportedEncodingException var5)
+             {
+                 field_147145_h.warn("Something went wrong url encoding {}", (Object)p_175584_1_);
+             }
+@@ -366,7 +383,7 @@
+     {
+         this.field_71302_d = p_71216_1_;
+         this.field_71303_e = p_71216_2_;
+-        field_147145_h.info("{}: {}%", p_71216_1_, p_71216_2_);
++        field_147145_h.info("{}: {}%", p_71216_1_, Integer.valueOf(p_71216_2_));
+     }
+ 
+     protected void func_71243_i()
+@@ -432,15 +449,24 @@
              {
                  if (worldserver1 != null)
                  {
@@ -96,7 +167,7 @@
      }
  
      public boolean func_71278_l()
-@@ -461,6 +485,7 @@
+@@ -459,6 +485,7 @@
          {
              if (this.func_71197_b())
              {
@@ -104,7 +175,16 @@
                  this.field_175591_ab = func_130071_aq();
                  long i = 0L;
                  this.field_147147_p.func_151315_a(new TextComponentString(this.field_71286_C));
-@@ -505,12 +530,20 @@
+@@ -472,7 +499,7 @@
+ 
+                     if (j > 2000L && this.field_175591_ab - this.field_71299_R >= 15000L)
+                     {
+-                        field_147145_h.warn("Can't keep up! Did the system time change, or is the server overloaded? Running {}ms behind, skipping {} tick(s)", j, j / 50L);
++                        field_147145_h.warn("Can't keep up! Did the system time change, or is the server overloaded? Running {}ms behind, skipping {} tick(s)", Long.valueOf(j), Long.valueOf(j / 50L));
+                         j = 2000L;
+                         this.field_71299_R = this.field_175591_ab;
+                     }
+@@ -503,12 +530,20 @@
                      Thread.sleep(Math.max(1L, 50L - i));
                      this.field_71296_Q = true;
                  }
@@ -125,7 +205,7 @@
          catch (Throwable throwable1)
          {
              field_147145_h.error("Encountered an unexpected exception", throwable1);
-@@ -536,13 +569,13 @@
+@@ -534,13 +569,13 @@
                  field_147145_h.error("We were unable to save this crash report to disk.");
              }
  
@@ -140,7 +220,7 @@
                  this.func_71260_j();
              }
              catch (Throwable throwable)
-@@ -551,6 +584,8 @@
+@@ -549,6 +584,8 @@
              }
              finally
              {
@@ -149,7 +229,7 @@
                  this.func_71240_o();
              }
          }
-@@ -577,6 +612,7 @@
+@@ -575,6 +612,7 @@
                  ImageIO.write(bufferedimage, "PNG", new ByteBufOutputStream(bytebuf));
                  ByteBuf bytebuf1 = Base64.encode(bytebuf);
                  p_184107_1_.func_151320_a("data:image/png;base64," + bytebuf1.toString(StandardCharsets.UTF_8));
@@ -157,7 +237,7 @@
              }
              catch (Exception exception)
              {
-@@ -618,6 +654,7 @@
+@@ -616,6 +654,7 @@
      public void func_71217_p()
      {
          long i = System.nanoTime();
@@ -165,7 +245,13 @@
          ++this.field_71315_w;
  
          if (this.field_71295_T)
-@@ -644,6 +681,7 @@
+@@ -637,11 +676,12 @@
+ 
+             for (int k = 0; k < agameprofile.length; ++k)
+             {
+-                agameprofile[k] = this.field_71318_t.func_181057_v().get(j + k).func_146103_bH();
++                agameprofile[k] = ((EntityPlayerMP)this.field_71318_t.func_181057_v().get(j + k)).func_146103_bH();
+             }
  
              Collections.shuffle(Arrays.asList(agameprofile));
              this.field_147147_p.func_151318_b().func_151330_a(agameprofile);
@@ -173,7 +259,7 @@
          }
  
          if (this.field_71315_w % 900 == 0)
-@@ -671,6 +709,7 @@
+@@ -669,6 +709,7 @@
  
          this.field_71304_b.func_76319_b();
          this.field_71304_b.func_76319_b();
@@ -181,7 +267,7 @@
      }
  
      public void func_71190_q()
-@@ -686,14 +725,17 @@
+@@ -684,24 +725,31 @@
          }
  
          this.field_71304_b.func_76318_c("levels");
@@ -198,11 +284,13 @@
 +            if (id == 0 || this.func_71255_r())
              {
 -                WorldServer worldserver = this.field_71305_c[j];
+-                this.field_71304_b.func_194340_a(() -> worldserver.func_72912_H().func_76065_j());
 +                WorldServer worldserver = net.minecraftforge.common.DimensionManager.getWorld(id);
-                 this.field_71304_b.func_194340_a(() ->
-                 {
-                     return worldserver.func_72912_H().func_76065_j();
-@@ -702,11 +744,12 @@
++                this.field_71304_b.func_194340_a(() ->
++                {
++                    return worldserver.func_72912_H().func_76065_j();
++                });
+ 
                  if (this.field_71315_w % 20 == 0)
                  {
                      this.field_71304_b.func_76320_a("timeSync");
@@ -216,7 +304,7 @@
  
                  try
                  {
-@@ -730,6 +773,7 @@
+@@ -725,6 +773,7 @@
                      throw new ReportedException(crashreport1);
                  }
  
@@ -224,7 +312,7 @@
                  this.field_71304_b.func_76319_b();
                  this.field_71304_b.func_76320_a("tracker");
                  worldserver.func_73039_n().func_72788_a();
-@@ -737,9 +781,11 @@
+@@ -732,9 +781,11 @@
                  this.field_71304_b.func_76319_b();
              }
  
@@ -237,7 +325,16 @@
          this.field_71304_b.func_76318_c("connection");
          this.func_147137_ag().func_151269_c();
          this.field_71304_b.func_76318_c("players");
-@@ -763,7 +809,8 @@
+@@ -745,7 +796,7 @@
+ 
+         for (int k = 0; k < this.field_71322_p.size(); ++k)
+         {
+-            this.field_71322_p.get(k).func_73660_a();
++            ((ITickable)this.field_71322_p.get(k)).func_73660_a();
+         }
+ 
+         this.field_71304_b.func_76319_b();
+@@ -758,7 +809,8 @@
  
      public void func_71256_s()
      {
@@ -247,7 +344,7 @@
          this.field_175590_aa.start();
      }
  
-@@ -779,14 +826,13 @@
+@@ -774,14 +826,13 @@
  
      public WorldServer func_71218_a(int p_71218_1_)
      {
@@ -269,7 +366,7 @@
      }
  
      public String func_71249_w()
-@@ -816,7 +862,7 @@
+@@ -811,7 +862,7 @@
  
      public String getServerModName()
      {
@@ -278,7 +375,167 @@
      }
  
      public CrashReport func_71230_b(CrashReport p_71230_1_)
-@@ -1338,7 +1384,7 @@
+@@ -840,7 +891,7 @@
+ 
+     public List<String> func_184104_a(ICommandSender p_184104_1_, String p_184104_2_, @Nullable BlockPos p_184104_3_, boolean p_184104_4_)
+     {
+-        List<String> list = Lists.newArrayList();
++        List<String> list = Lists.<String>newArrayList();
+         boolean flag = p_184104_2_.startsWith("/");
+ 
+         if (flag)
+@@ -961,24 +1012,24 @@
+ 
+     public void func_147139_a(EnumDifficulty p_147139_1_)
+     {
+-        for (WorldServer worldserver : this.field_71305_c)
++        for (WorldServer worldserver1 : this.field_71305_c)
+         {
+-            if (worldserver != null)
++            if (worldserver1 != null)
+             {
+-                if (worldserver.func_72912_H().func_76093_s())
++                if (worldserver1.func_72912_H().func_76093_s())
+                 {
+-                    worldserver.func_72912_H().func_176144_a(EnumDifficulty.HARD);
+-                    worldserver.func_72891_a(true, true);
++                    worldserver1.func_72912_H().func_176144_a(EnumDifficulty.HARD);
++                    worldserver1.func_72891_a(true, true);
+                 }
+                 else if (this.func_71264_H())
+                 {
+-                    worldserver.func_72912_H().func_176144_a(p_147139_1_);
+-                    worldserver.func_72891_a(worldserver.func_175659_aa() != EnumDifficulty.PEACEFUL, true);
++                    worldserver1.func_72912_H().func_176144_a(p_147139_1_);
++                    worldserver1.func_72891_a(worldserver1.func_175659_aa() != EnumDifficulty.PEACEFUL, true);
+                 }
+                 else
+                 {
+-                    worldserver.func_72912_H().func_176144_a(p_147139_1_);
+-                    worldserver.func_72891_a(this.func_71193_K(), this.field_71324_y);
++                    worldserver1.func_72912_H().func_176144_a(p_147139_1_);
++                    worldserver1.func_72891_a(this.func_71193_K(), this.field_71324_y);
+                 }
+             }
+         }
+@@ -1027,51 +1078,51 @@
+ 
+     public void func_70000_a(Snooper p_70000_1_)
+     {
+-        p_70000_1_.func_152768_a("whitelist_enabled", false);
+-        p_70000_1_.func_152768_a("whitelist_count", 0);
++        p_70000_1_.func_152768_a("whitelist_enabled", Boolean.valueOf(false));
++        p_70000_1_.func_152768_a("whitelist_count", Integer.valueOf(0));
+ 
+         if (this.field_71318_t != null)
+         {
+-            p_70000_1_.func_152768_a("players_current", this.func_71233_x());
+-            p_70000_1_.func_152768_a("players_max", this.func_71275_y());
+-            p_70000_1_.func_152768_a("players_seen", this.field_71318_t.func_72373_m().length);
++            p_70000_1_.func_152768_a("players_current", Integer.valueOf(this.func_71233_x()));
++            p_70000_1_.func_152768_a("players_max", Integer.valueOf(this.func_71275_y()));
++            p_70000_1_.func_152768_a("players_seen", Integer.valueOf(this.field_71318_t.func_72373_m().length));
+         }
+ 
+-        p_70000_1_.func_152768_a("uses_auth", this.field_71325_x);
++        p_70000_1_.func_152768_a("uses_auth", Boolean.valueOf(this.field_71325_x));
+         p_70000_1_.func_152768_a("gui_state", this.func_71279_ae() ? "enabled" : "disabled");
+-        p_70000_1_.func_152768_a("run_time", (func_130071_aq() - p_70000_1_.func_130105_g()) / 60L * 1000L);
+-        p_70000_1_.func_152768_a("avg_tick_ms", (int)(MathHelper.func_76127_a(this.field_71311_j) * 1.0E-6D));
+-        int i = 0;
++        p_70000_1_.func_152768_a("run_time", Long.valueOf((func_130071_aq() - p_70000_1_.func_130105_g()) / 60L * 1000L));
++        p_70000_1_.func_152768_a("avg_tick_ms", Integer.valueOf((int)(MathHelper.func_76127_a(this.field_71311_j) * 1.0E-6D)));
++        int l = 0;
+ 
+         if (this.field_71305_c != null)
+         {
+-            for (WorldServer worldserver : this.field_71305_c)
++            for (WorldServer worldserver1 : this.field_71305_c)
+             {
+-                if (worldserver != null)
++                if (worldserver1 != null)
+                 {
+-                    WorldInfo worldinfo = worldserver.func_72912_H();
+-                    p_70000_1_.func_152768_a("world[" + i + "][dimension]", worldserver.field_73011_w.func_186058_p().func_186068_a());
+-                    p_70000_1_.func_152768_a("world[" + i + "][mode]", worldinfo.func_76077_q());
+-                    p_70000_1_.func_152768_a("world[" + i + "][difficulty]", worldserver.func_175659_aa());
+-                    p_70000_1_.func_152768_a("world[" + i + "][hardcore]", worldinfo.func_76093_s());
+-                    p_70000_1_.func_152768_a("world[" + i + "][generator_name]", worldinfo.func_76067_t().func_77127_a());
+-                    p_70000_1_.func_152768_a("world[" + i + "][generator_version]", worldinfo.func_76067_t().func_77131_c());
+-                    p_70000_1_.func_152768_a("world[" + i + "][height]", this.field_71280_D);
+-                    p_70000_1_.func_152768_a("world[" + i + "][chunks_loaded]", worldserver.func_72863_F().func_73152_e());
+-                    ++i;
++                    WorldInfo worldinfo = worldserver1.func_72912_H();
++                    p_70000_1_.func_152768_a("world[" + l + "][dimension]", Integer.valueOf(worldserver1.field_73011_w.func_186058_p().func_186068_a()));
++                    p_70000_1_.func_152768_a("world[" + l + "][mode]", worldinfo.func_76077_q());
++                    p_70000_1_.func_152768_a("world[" + l + "][difficulty]", worldserver1.func_175659_aa());
++                    p_70000_1_.func_152768_a("world[" + l + "][hardcore]", Boolean.valueOf(worldinfo.func_76093_s()));
++                    p_70000_1_.func_152768_a("world[" + l + "][generator_name]", worldinfo.func_76067_t().func_77127_a());
++                    p_70000_1_.func_152768_a("world[" + l + "][generator_version]", Integer.valueOf(worldinfo.func_76067_t().func_77131_c()));
++                    p_70000_1_.func_152768_a("world[" + l + "][height]", Integer.valueOf(this.field_71280_D));
++                    p_70000_1_.func_152768_a("world[" + l + "][chunks_loaded]", Integer.valueOf(worldserver1.func_72863_F().func_73152_e()));
++                    ++l;
+                 }
+             }
+         }
+ 
+-        p_70000_1_.func_152768_a("worlds", i);
++        p_70000_1_.func_152768_a("worlds", Integer.valueOf(l));
+     }
+ 
+     public void func_70001_b(Snooper p_70001_1_)
+     {
+-        p_70001_1_.func_152767_b("singleplayer", this.func_71264_H());
++        p_70001_1_.func_152767_b("singleplayer", Boolean.valueOf(this.func_71264_H()));
+         p_70001_1_.func_152767_b("server_brand", this.getServerModName());
+         p_70001_1_.func_152767_b("gui_supported", GraphicsEnvironment.isHeadless() ? "headless" : "supported");
+-        p_70001_1_.func_152767_b("dedicated", this.func_71262_S());
++        p_70001_1_.func_152767_b("dedicated", Boolean.valueOf(this.func_71262_S()));
+     }
+ 
+     public boolean func_70002_Q()
+@@ -1177,9 +1228,9 @@
+ 
+     public void func_71235_a(GameType p_71235_1_)
+     {
+-        for (WorldServer worldserver : this.field_71305_c)
++        for (WorldServer worldserver1 : this.field_71305_c)
+         {
+-            worldserver.func_72912_H().func_76060_a(p_71235_1_);
++            worldserver1.func_72912_H().func_76060_a(p_71235_1_);
+         }
+     }
+ 
+@@ -1280,11 +1331,11 @@
+     @Nullable
+     public Entity func_175576_a(UUID p_175576_1_)
+     {
+-        for (WorldServer worldserver : this.field_71305_c)
++        for (WorldServer worldserver1 : this.field_71305_c)
+         {
+-            if (worldserver != null)
++            if (worldserver1 != null)
+             {
+-                Entity entity = worldserver.func_175733_a(p_175576_1_);
++                Entity entity = worldserver1.func_175733_a(p_175576_1_);
+ 
+                 if (entity != null)
+                 {
+@@ -1317,7 +1368,7 @@
+ 
+         if (!this.func_152345_ab() && !this.func_71241_aa())
+         {
+-            ListenableFutureTask<V> listenablefuturetask = ListenableFutureTask.create(p_175586_1_);
++            ListenableFutureTask<V> listenablefuturetask = ListenableFutureTask.<V>create(p_175586_1_);
+ 
+             synchronized (this.field_175589_i)
+             {
+@@ -1329,11 +1380,11 @@
+         {
+             try
+             {
+-                return Futures.immediateFuture(p_175586_1_.call());
++                return Futures.<V>immediateFuture(p_175586_1_.call());
              }
              catch (Exception exception)
              {
@@ -287,7 +544,16 @@
              }
          }
      }
-@@ -1411,6 +1457,16 @@
+@@ -1341,7 +1392,7 @@
+     public ListenableFuture<Object> func_152344_a(Runnable p_152344_1_)
+     {
+         Validate.notNull(p_152344_1_);
+-        return this.func_175586_a(Executors.callable(p_152344_1_));
++        return this.<Object>func_175586_a(Executors.callable(p_152344_1_));
+     }
+ 
+     public boolean func_152345_ab()
+@@ -1406,6 +1457,16 @@
      @SideOnly(Side.SERVER)
      public static void main(String[] p_main_0_)
      {
@@ -304,7 +570,59 @@
          Bootstrap.func_151354_b();
  
          try
-@@ -1597,5 +1653,10 @@
+@@ -1416,12 +1477,12 @@
+             String s2 = null;
+             boolean flag1 = false;
+             boolean flag2 = false;
+-            int i = -1;
++            int l = -1;
+ 
+-            for (int j = 0; j < p_main_0_.length; ++j)
++            for (int i1 = 0; i1 < p_main_0_.length; ++i1)
+             {
+-                String s3 = p_main_0_[j];
+-                String s4 = j == p_main_0_.length - 1 ? null : p_main_0_[j + 1];
++                String s3 = p_main_0_[i1];
++                String s4 = i1 == p_main_0_.length - 1 ? null : p_main_0_[i1 + 1];
+                 boolean flag3 = false;
+ 
+                 if (!"nogui".equals(s3) && !"--nogui".equals(s3))
+@@ -1432,10 +1493,11 @@
+ 
+                         try
+                         {
+-                            i = Integer.parseInt(s4);
++                            l = Integer.parseInt(s4);
+                         }
+-                        catch (NumberFormatException numberformatexception)
++                        catch (NumberFormatException var13)
+                         {
++                            ;
+                         }
+                     }
+                     else if ("--singleplayer".equals(s3) && s4 != null)
+@@ -1469,7 +1531,7 @@
+ 
+                 if (flag3)
+                 {
+-                    ++j;
++                    ++i1;
+                 }
+             }
+ 
+@@ -1489,9 +1551,9 @@
+                 dedicatedserver.func_71261_m(s2);
+             }
+ 
+-            if (i >= 0)
++            if (l >= 0)
+             {
+-                dedicatedserver.func_71208_b(i);
++                dedicatedserver.func_71208_b(l);
+             }
+ 
+             if (flag1)
+@@ -1591,5 +1653,10 @@
      public Thread func_175583_aK()
      {
          return this.field_175590_aa;

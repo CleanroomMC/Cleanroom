@@ -1,0 +1,11 @@
+--- before/net/minecraft/world/chunk/BlockStatePaletteHashMap.java
++++ after/net/minecraft/world/chunk/BlockStatePaletteHashMap.java
+@@ -18,7 +18,7 @@
+     {
+         this.field_186048_c = p_i47089_1_;
+         this.field_186047_b = p_i47089_2_;
+-        this.field_186046_a = new IntIdentityHashBiMap<>(1 << p_i47089_1_);
++        this.field_186046_a = new IntIdentityHashBiMap<IBlockState>(1 << p_i47089_1_);
+     }
+ 
+     public int func_186041_a(IBlockState p_186041_1_)

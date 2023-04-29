@@ -1,6 +1,13 @@
 --- before/net/minecraft/client/entity/EntityOtherPlayerMP.java
 +++ after/net/minecraft/client/entity/EntityOtherPlayerMP.java
-@@ -43,6 +43,7 @@
+@@ -37,12 +37,13 @@
+             d0 = 1.0D;
+         }
+ 
+-        d0 *= 64.0D * func_184183_bd();
++        d0 = d0 * 64.0D * func_184183_bd();
+         return p_70112_1_ < d0 * d0;
+     }
  
      public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
      {
@@ -8,3 +15,20 @@
          return true;
      }
  
+@@ -85,6 +86,7 @@
+ 
+             for (d3 = this.field_71180_f - (double)this.field_70177_z; d3 < -180.0D; d3 += 360.0D)
+             {
++                ;
+             }
+ 
+             while (d3 >= 180.0D)
+@@ -102,7 +104,7 @@
+         this.field_71107_bF = this.field_71109_bG;
+         this.func_82168_bl();
+         float f1 = MathHelper.func_76133_a(this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y);
+-        float f = (float)Math.atan(-this.field_70181_x * (double)0.2F) * 15.0F;
++        float f = (float)Math.atan(-this.field_70181_x * 0.20000000298023224D) * 15.0F;
+ 
+         if (f1 > 0.1F)
+         {

@@ -1,0 +1,29 @@
+--- before/net/minecraft/command/server/CommandBanPlayer.java
++++ after/net/minecraft/command/server/CommandBanPlayer.java
+@@ -45,7 +45,7 @@
+ 
+             if (gameprofile == null)
+             {
+-                throw new CommandException("commands.ban.failed", p_184881_3_[0]);
++                throw new CommandException("commands.ban.failed", new Object[] {p_184881_3_[0]});
+             }
+             else
+             {
+@@ -62,7 +62,7 @@
+ 
+                 if (entityplayermp != null)
+                 {
+-                    entityplayermp.field_71135_a.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.banned"));
++                    entityplayermp.field_71135_a.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.banned", new Object[0]));
+                 }
+ 
+                 func_152373_a(p_184881_2_, this, "commands.ban.success", new Object[] {p_184881_3_[0]});
+@@ -70,7 +70,7 @@
+         }
+         else
+         {
+-            throw new WrongUsageException("commands.ban.usage");
++            throw new WrongUsageException("commands.ban.usage", new Object[0]);
+         }
+     }
+ 

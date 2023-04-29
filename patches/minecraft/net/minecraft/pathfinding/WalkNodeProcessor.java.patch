@@ -8,7 +8,29 @@
  
      public void func_186315_a(IBlockAccess p_186315_1_, EntityLiving p_186315_2_)
      {
-@@ -295,7 +296,9 @@
+@@ -61,6 +62,7 @@
+ 
+             for (blockpos = new BlockPos(this.field_186326_b); (this.field_176169_a.func_180495_p(blockpos).func_185904_a() == Material.field_151579_a || this.field_176169_a.func_180495_p(blockpos).func_177230_c().func_176205_b(this.field_176169_a, blockpos)) && blockpos.func_177956_o() > 0; blockpos = blockpos.func_177977_b())
+             {
++                ;
+             }
+ 
+             i = blockpos.func_177984_a().func_177956_o();
+@@ -71,7 +73,7 @@
+ 
+         if (this.field_186326_b.func_184643_a(pathnodetype1) < 0.0F)
+         {
+-            Set<BlockPos> set = Sets.newHashSet();
++            Set<BlockPos> set = Sets.<BlockPos>newHashSet();
+             set.add(new BlockPos(this.field_186326_b.func_174813_aQ().field_72340_a, (double)i, this.field_186326_b.func_174813_aQ().field_72339_c));
+             set.add(new BlockPos(this.field_186326_b.func_174813_aQ().field_72340_a, (double)i, this.field_186326_b.func_174813_aQ().field_72334_f));
+             set.add(new BlockPos(this.field_186326_b.func_174813_aQ().field_72336_d, (double)i, this.field_186326_b.func_174813_aQ().field_72339_c));
+@@ -290,11 +292,13 @@
+ 
+     public PathNodeType func_186319_a(IBlockAccess p_186319_1_, int p_186319_2_, int p_186319_3_, int p_186319_4_, EntityLiving p_186319_5_, int p_186319_6_, int p_186319_7_, int p_186319_8_, boolean p_186319_9_, boolean p_186319_10_)
+     {
+-        EnumSet<PathNodeType> enumset = EnumSet.noneOf(PathNodeType.class);
++        EnumSet<PathNodeType> enumset = EnumSet.<PathNodeType>noneOf(PathNodeType.class);
          PathNodeType pathnodetype = PathNodeType.BLOCKED;
          double d0 = (double)p_186319_5_.field_70130_N / 2.0D;
          BlockPos blockpos = new BlockPos(p_186319_5_);
@@ -18,7 +40,23 @@
  
          if (enumset.contains(PathNodeType.FENCE))
          {
-@@ -399,6 +402,8 @@
+@@ -317,7 +321,14 @@
+                 }
+             }
+ 
+-            return pathnodetype == PathNodeType.OPEN && p_186319_5_.func_184643_a(pathnodetype1) == 0.0F ? PathNodeType.OPEN : pathnodetype1;
++            if (pathnodetype == PathNodeType.OPEN && p_186319_5_.func_184643_a(pathnodetype1) == 0.0F)
++            {
++                return PathNodeType.OPEN;
++            }
++            else
++            {
++                return pathnodetype1;
++            }
+         }
+     }
+ 
+@@ -391,9 +402,12 @@
              {
                  pathnodetype = PathNodeType.DAMAGE_CACTUS;
              }
@@ -26,8 +64,13 @@
 +            if (pathnodetype1 == PathNodeType.DAMAGE_OTHER) pathnodetype = PathNodeType.DAMAGE_OTHER;
          }
  
-         pathnodetype = this.func_193578_a(p_186330_1_, p_186330_2_, p_186330_3_, p_186330_4_, pathnodetype);
-@@ -417,16 +422,19 @@
+-        return this.func_193578_a(p_186330_1_, p_186330_2_, p_186330_3_, p_186330_4_, pathnodetype);
++        pathnodetype = this.func_193578_a(p_186330_1_, p_186330_2_, p_186330_3_, p_186330_4_, pathnodetype);
++        return pathnodetype;
+     }
+ 
+     public PathNodeType func_193578_a(IBlockAccess p_193578_1_, int p_193578_2_, int p_193578_3_, int p_193578_4_, PathNodeType p_193578_5_)
+@@ -408,16 +422,19 @@
                  {
                      if (i != 0 || j != 0)
                      {
@@ -50,13 +93,41 @@
                      }
                  }
              }
-@@ -442,6 +450,9 @@
-         IBlockState iblockstate = p_189553_1_.func_180495_p(blockpos);
+@@ -434,6 +451,9 @@
          Block block = iblockstate.func_177230_c();
          Material material = iblockstate.func_185904_a();
-+
+ 
 +        PathNodeType type = block.getAiPathNodeType(iblockstate, p_189553_1_, blockpos, this.currentEntity);
 +        if (type != null) return type;
- 
++
          if (material == Material.field_151579_a)
          {
+             return PathNodeType.OPEN;
+@@ -448,15 +468,15 @@
+             {
+                 return PathNodeType.DAMAGE_CACTUS;
+             }
+-            else if (block instanceof BlockDoor && material == Material.field_151575_d && !iblockstate.func_177229_b(BlockDoor.field_176519_b))
++            else if (block instanceof BlockDoor && material == Material.field_151575_d && !((Boolean)iblockstate.func_177229_b(BlockDoor.field_176519_b)).booleanValue())
+             {
+                 return PathNodeType.DOOR_WOOD_CLOSED;
+             }
+-            else if (block instanceof BlockDoor && material == Material.field_151573_f && !iblockstate.func_177229_b(BlockDoor.field_176519_b))
++            else if (block instanceof BlockDoor && material == Material.field_151573_f && !((Boolean)iblockstate.func_177229_b(BlockDoor.field_176519_b)).booleanValue())
+             {
+                 return PathNodeType.DOOR_IRON_CLOSED;
+             }
+-            else if (block instanceof BlockDoor && iblockstate.func_177229_b(BlockDoor.field_176519_b))
++            else if (block instanceof BlockDoor && ((Boolean)iblockstate.func_177229_b(BlockDoor.field_176519_b)).booleanValue())
+             {
+                 return PathNodeType.DOOR_OPEN;
+             }
+@@ -464,7 +484,7 @@
+             {
+                 return PathNodeType.RAIL;
+             }
+-            else if (!(block instanceof BlockFence) && !(block instanceof BlockWall) && (!(block instanceof BlockFenceGate) || iblockstate.func_177229_b(BlockFenceGate.field_176466_a)))
++            else if (!(block instanceof BlockFence) && !(block instanceof BlockWall) && (!(block instanceof BlockFenceGate) || ((Boolean)iblockstate.func_177229_b(BlockFenceGate.field_176466_a)).booleanValue()))
+             {
+                 if (material == Material.field_151586_h)
+                 {

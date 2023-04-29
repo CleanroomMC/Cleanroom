@@ -1,0 +1,80 @@
+--- before/net/minecraft/world/gen/NoiseGeneratorSimplex.java
++++ after/net/minecraft/world/gen/NoiseGeneratorSimplex.java
+@@ -6,7 +6,7 @@
+ {
+     private static final int[][] field_151611_e = new int[][] {{1, 1, 0}, { -1, 1, 0}, {1, -1, 0}, { -1, -1, 0}, {1, 0, 1}, { -1, 0, 1}, {1, 0, -1}, { -1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}};
+     public static final double field_151614_a = Math.sqrt(3.0D);
+-    private final int[] field_151608_f = new int[512];
++    private final int[] field_151608_f;
+     public double field_151612_b;
+     public double field_151613_c;
+     public double field_151610_d;
+@@ -20,12 +20,14 @@
+ 
+     public NoiseGeneratorSimplex(Random p_i45471_1_)
+     {
++        this.field_151608_f = new int[512];
+         this.field_151612_b = p_i45471_1_.nextDouble() * 256.0D;
+         this.field_151613_c = p_i45471_1_.nextDouble() * 256.0D;
+         this.field_151610_d = p_i45471_1_.nextDouble() * 256.0D;
+ 
+         for (int i = 0; i < 256; this.field_151608_f[i] = i++)
+         {
++            ;
+         }
+ 
+         for (int l = 0; l < 256; ++l)
+@@ -92,7 +94,7 @@
+         }
+         else
+         {
+-            d15 *= d15;
++            d15 = d15 * d15;
+             d0 = d15 * d15 * func_151604_a(field_151611_e[k1], d9, d10);
+         }
+ 
+@@ -105,7 +107,7 @@
+         }
+         else
+         {
+-            d16 *= d16;
++            d16 = d16 * d16;
+             d1 = d16 * d16 * func_151604_a(field_151611_e[l1], d11, d12);
+         }
+ 
+@@ -118,7 +120,7 @@
+         }
+         else
+         {
+-            d17 *= d17;
++            d17 = d17 * d17;
+             d2 = d17 * d17 * func_151604_a(field_151611_e[i2], d13, d14);
+         }
+ 
+@@ -176,7 +178,7 @@
+                 }
+                 else
+                 {
+-                    d15 *= d15;
++                    d15 = d15 * d15;
+                     d2 = d15 * d15 * func_151604_a(field_151611_e[j2], d9, d10);
+                 }
+ 
+@@ -189,7 +191,7 @@
+                 }
+                 else
+                 {
+-                    d16 *= d16;
++                    d16 = d16 * d16;
+                     d3 = d16 * d16 * func_151604_a(field_151611_e[k2], d11, d12);
+                 }
+ 
+@@ -202,7 +204,7 @@
+                 }
+                 else
+                 {
+-                    d17 *= d17;
++                    d17 = d17 * d17;
+                     d4 = d17 * d17 * func_151604_a(field_151611_e[l2], d13, d14);
+                 }
+ 

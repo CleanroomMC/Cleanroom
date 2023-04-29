@@ -1,0 +1,52 @@
+--- before/net/minecraft/world/storage/loot/functions/LootFunctionManager.java
++++ after/net/minecraft/world/storage/loot/functions/LootFunctionManager.java
+@@ -17,8 +17,8 @@
+ 
+ public class LootFunctionManager
+ {
+-    private static final Map < ResourceLocation, LootFunction.Serializer<? >> field_186584_a = Maps.newHashMap();
+-    private static final Map < Class <? extends LootFunction > , LootFunction.Serializer<? >> field_186585_b = Maps.newHashMap();
++    private static final Map < ResourceLocation, LootFunction.Serializer<? >> field_186584_a = Maps. < ResourceLocation, LootFunction.Serializer<? >> newHashMap();
++    private static final Map < Class <? extends LootFunction > , LootFunction.Serializer<? >> field_186585_b = Maps. < Class <? extends LootFunction > , LootFunction.Serializer<? >> newHashMap();
+ 
+     public static <T extends LootFunction> void func_186582_a(LootFunction.Serializer <? extends T > p_186582_0_)
+     {
+@@ -42,7 +42,7 @@
+ 
+     public static LootFunction.Serializer<?> func_186583_a(ResourceLocation p_186583_0_)
+     {
+-        LootFunction.Serializer<?> serializer = field_186584_a.get(p_186583_0_);
++        LootFunction.Serializer<?> serializer = (LootFunction.Serializer)field_186584_a.get(p_186583_0_);
+ 
+         if (serializer == null)
+         {
+@@ -56,7 +56,7 @@
+ 
+     public static <T extends LootFunction> LootFunction.Serializer<T> func_186581_a(T p_186581_0_)
+     {
+-        LootFunction.Serializer<T> serializer = (LootFunction.Serializer<T>) field_186585_b.get(p_186581_0_.getClass());
++        LootFunction.Serializer<T> serializer = (LootFunction.Serializer)field_186585_b.get(p_186581_0_.getClass());
+ 
+         if (serializer == null)
+         {
+@@ -93,17 +93,17 @@
+                 {
+                     serializer = LootFunctionManager.func_186583_a(resourcelocation);
+                 }
+-                catch (IllegalArgumentException illegalargumentexception)
++                catch (IllegalArgumentException var8)
+                 {
+                     throw new JsonSyntaxException("Unknown function '" + resourcelocation + "'");
+                 }
+ 
+-                return serializer.func_186530_b(jsonobject, p_deserialize_3_, JsonUtils.func_188177_a(jsonobject, "conditions", new LootCondition[0], p_deserialize_3_, LootCondition[].class));
++                return serializer.func_186530_b(jsonobject, p_deserialize_3_, (LootCondition[])JsonUtils.func_188177_a(jsonobject, "conditions", new LootCondition[0], p_deserialize_3_, LootCondition[].class));
+             }
+ 
+             public JsonElement serialize(LootFunction p_serialize_1_, Type p_serialize_2_, JsonSerializationContext p_serialize_3_)
+             {
+-                LootFunction.Serializer<LootFunction> serializer = LootFunctionManager.func_186581_a(p_serialize_1_);
++                LootFunction.Serializer<LootFunction> serializer = LootFunctionManager.<LootFunction>func_186581_a(p_serialize_1_);
+                 JsonObject jsonobject = new JsonObject();
+                 serializer.func_186532_a(jsonobject, p_serialize_1_, p_serialize_3_);
+                 jsonobject.addProperty("function", serializer.func_186529_a().toString());

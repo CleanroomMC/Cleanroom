@@ -1,6 +1,31 @@
 --- before/net/minecraft/block/BlockMycelium.java
 +++ after/net/minecraft/block/BlockMycelium.java
-@@ -39,7 +39,8 @@
+@@ -3,6 +3,7 @@
+ import java.util.Random;
+ import net.minecraft.block.material.MapColor;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyBool;
+ import net.minecraft.block.state.BlockStateContainer;
+ import net.minecraft.block.state.IBlockState;
+@@ -23,7 +24,7 @@
+     protected BlockMycelium()
+     {
+         super(Material.field_151577_b, MapColor.field_151678_z);
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176384_a, false));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176384_a, Boolean.valueOf(false)));
+         this.func_149675_a(true);
+         this.func_149647_a(CreativeTabs.field_78030_b);
+     }
+@@ -31,14 +32,15 @@
+     public IBlockState func_176221_a(IBlockState p_176221_1_, IBlockAccess p_176221_2_, BlockPos p_176221_3_)
+     {
+         Block block = p_176221_2_.func_180495_p(p_176221_3_.func_177984_a()).func_177230_c();
+-        return p_176221_1_.func_177226_a(field_176384_a, block == Blocks.field_150433_aE || block == Blocks.field_150431_aC);
++        return p_176221_1_.func_177226_a(field_176384_a, Boolean.valueOf(block == Blocks.field_150433_aE || block == Blocks.field_150431_aC));
+     }
+ 
+     public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
      {
          if (!p_180650_1_.field_72995_K)
          {
@@ -10,7 +35,7 @@
              {
                  p_180650_1_.func_175656_a(p_180650_2_, Blocks.field_150346_d.func_176223_P().func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.DIRT));
              }
-@@ -53,7 +54,7 @@
+@@ -52,7 +54,7 @@
                          IBlockState iblockstate = p_180650_1_.func_180495_p(blockpos);
                          IBlockState iblockstate1 = p_180650_1_.func_180495_p(blockpos.func_177984_a());
  
@@ -19,3 +44,11 @@
                          {
                              p_180650_1_.func_175656_a(blockpos, this.func_176223_P());
                          }
+@@ -85,6 +87,6 @@
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176384_a);
++        return new BlockStateContainer(this, new IProperty[] {field_176384_a});
+     }
+ }

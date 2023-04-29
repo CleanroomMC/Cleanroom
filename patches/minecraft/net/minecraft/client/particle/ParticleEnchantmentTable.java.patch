@@ -1,0 +1,28 @@
+--- before/net/minecraft/client/particle/ParticleEnchantmentTable.java
++++ after/net/minecraft/client/particle/ParticleEnchantmentTable.java
+@@ -47,11 +47,11 @@
+     {
+         int i = super.func_189214_a(p_189214_1_);
+         float f = (float)this.field_70546_d / (float)this.field_70547_e;
+-        f *= f;
+-        f *= f;
++        f = f * f;
++        f = f * f;
+         int j = i & 255;
+         int k = i >> 16 & 255;
+-        k += (int)(f * 15.0F * 16.0F);
++        k = k + (int)(f * 15.0F * 16.0F);
+ 
+         if (k > 240)
+         {
+@@ -69,8 +69,8 @@
+         float f = (float)this.field_70546_d / (float)this.field_70547_e;
+         f = 1.0F - f;
+         float f1 = 1.0F - f;
+-        f1 *= f1;
+-        f1 *= f1;
++        f1 = f1 * f1;
++        f1 = f1 * f1;
+         this.field_187126_f = this.field_70568_aq + this.field_187129_i * (double)f;
+         this.field_187127_g = this.field_70567_ar + this.field_187130_j * (double)f - (double)(f1 * 1.2F);
+         this.field_187128_h = this.field_70566_as + this.field_187131_k * (double)f;

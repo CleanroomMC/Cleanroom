@@ -1,6 +1,12 @@
 --- before/net/minecraft/world/gen/feature/WorldGenIceSpike.java
 +++ after/net/minecraft/world/gen/feature/WorldGenIceSpike.java
-@@ -51,7 +51,7 @@
+@@ -46,12 +46,12 @@
+                     {
+                         float f2 = (float)MathHelper.func_76130_a(j1) - 0.25F;
+ 
+-                        if ((i1 == 0 && j1 == 0 || !(f1 * f1 + f2 * f2 > f * f)) && (i1 != -l && i1 != l && j1 != -l && j1 != l || !(p_180709_2_.nextFloat() > 0.75F)))
++                        if ((i1 == 0 && j1 == 0 || f1 * f1 + f2 * f2 <= f * f) && (i1 != -l && i1 != l && j1 != -l && j1 != l || p_180709_2_.nextFloat() <= 0.75F))
+                         {
                              IBlockState iblockstate = p_180709_1_.func_180495_p(p_180709_3_.func_177982_a(i1, k, j1));
                              Block block = iblockstate.func_177230_c();
  

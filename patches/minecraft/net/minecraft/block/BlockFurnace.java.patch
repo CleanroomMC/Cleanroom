@@ -1,0 +1,54 @@
+--- before/net/minecraft/block/BlockFurnace.java
++++ after/net/minecraft/block/BlockFurnace.java
+@@ -2,6 +2,7 @@
+ 
+ import java.util.Random;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyDirection;
+ import net.minecraft.block.state.BlockStateContainer;
+ import net.minecraft.block.state.IBlockState;
+@@ -59,7 +60,7 @@
+             IBlockState iblockstate1 = p_176445_1_.func_180495_p(p_176445_2_.func_177968_d());
+             IBlockState iblockstate2 = p_176445_1_.func_180495_p(p_176445_2_.func_177976_e());
+             IBlockState iblockstate3 = p_176445_1_.func_180495_p(p_176445_2_.func_177974_f());
+-            EnumFacing enumfacing = p_176445_3_.func_177229_b(field_176447_a);
++            EnumFacing enumfacing = (EnumFacing)p_176445_3_.func_177229_b(field_176447_a);
+ 
+             if (enumfacing == EnumFacing.NORTH && iblockstate.func_185913_b() && !iblockstate1.func_185913_b())
+             {
+@@ -88,7 +89,7 @@
+     {
+         if (this.field_149932_b)
+         {
+-            EnumFacing enumfacing = p_180655_1_.func_177229_b(field_176447_a);
++            EnumFacing enumfacing = (EnumFacing)p_180655_1_.func_177229_b(field_176447_a);
+             double d0 = (double)p_180655_3_.func_177958_n() + 0.5D;
+             double d1 = (double)p_180655_3_.func_177956_o() + p_180655_4_.nextDouble() * 6.0D / 16.0D;
+             double d2 = (double)p_180655_3_.func_177952_p() + 0.5D;
+@@ -242,21 +243,21 @@
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(field_176447_a).func_176745_a();
++        return ((EnumFacing)p_176201_1_.func_177229_b(field_176447_a)).func_176745_a();
+     }
+ 
+     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
+     {
+-        return p_185499_1_.func_177226_a(field_176447_a, p_185499_2_.func_185831_a(p_185499_1_.func_177229_b(field_176447_a)));
++        return p_185499_1_.func_177226_a(field_176447_a, p_185499_2_.func_185831_a((EnumFacing)p_185499_1_.func_177229_b(field_176447_a)));
+     }
+ 
+     public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
+     {
+-        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a(p_185471_1_.func_177229_b(field_176447_a)));
++        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a((EnumFacing)p_185471_1_.func_177229_b(field_176447_a)));
+     }
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176447_a);
++        return new BlockStateContainer(this, new IProperty[] {field_176447_a});
+     }
+ }

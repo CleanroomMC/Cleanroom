@@ -1,0 +1,11 @@
+--- before/net/minecraft/item/ItemFishingRod.java
++++ after/net/minecraft/item/ItemFishingRod.java
+@@ -100,7 +100,7 @@
+             p_77659_2_.func_71029_a(StatList.func_188057_b(this));
+         }
+ 
+-        return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
++        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+     }
+ 
+     public int func_77619_b()

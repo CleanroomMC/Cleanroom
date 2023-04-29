@@ -1,5 +1,22 @@
 --- before/net/minecraft/world/gen/feature/WorldGenBigTree.java
 +++ after/net/minecraft/world/gen/feature/WorldGenBigTree.java
+@@ -52,14 +52,14 @@
+ 
+         int j = this.field_175947_m.func_177956_o() + this.field_76501_f;
+         int k = this.field_76504_e - this.field_76508_n;
+-        this.field_175948_j = Lists.newArrayList();
++        this.field_175948_j = Lists.<WorldGenBigTree.FoliageCoordinates>newArrayList();
+         this.field_175948_j.add(new WorldGenBigTree.FoliageCoordinates(this.field_175947_m.func_177981_b(k), j));
+ 
+         for (; k >= 0; --k)
+         {
+             float f = this.func_76490_a(k);
+ 
+-            if (!(f < 0.0F))
++            if (f >= 0.0F)
+             {
+                 for (int l = 0; l < i; ++l)
+                 {
 @@ -99,9 +99,9 @@
                  if (Math.pow((double)Math.abs(j) + 0.5D, 2.0D) + Math.pow((double)Math.abs(k) + 0.5D, 2.0D) <= (double)(p_181631_2_ * p_181631_2_))
                  {
@@ -12,6 +29,15 @@
                      {
                          this.func_175903_a(this.field_175946_l, blockpos, p_181631_3_);
                      }
+@@ -151,7 +151,7 @@
+     {
+         for (int i = 0; i < this.field_76508_n; ++i)
+         {
+-            this.func_181631_a(p_175940_1_.func_177981_b(i), this.func_76495_b(i), Blocks.field_150362_t.func_176223_P().func_177226_a(BlockLeaves.field_176236_b, false));
++            this.func_181631_a(p_175940_1_.func_177981_b(i), this.func_76495_b(i), Blocks.field_150362_t.func_176223_P().func_177226_a(BlockLeaves.field_176236_b, Boolean.valueOf(false)));
+         }
+     }
+ 
 @@ -269,7 +269,7 @@
              {
                  BlockPos blockpos1 = p_175936_1_.func_177963_a((double)(0.5F + (float)j * f), (double)(0.5F + (float)j * f1), (double)(0.5F + (float)j * f2));

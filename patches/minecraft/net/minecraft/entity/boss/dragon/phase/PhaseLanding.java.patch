@@ -1,0 +1,29 @@
+--- before/net/minecraft/entity/boss/dragon/phase/PhaseLanding.java
++++ after/net/minecraft/entity/boss/dragon/phase/PhaseLanding.java
+@@ -19,7 +19,7 @@
+     public void func_188657_b()
+     {
+         Vec3d vec3d = this.field_188661_a.func_184665_a(1.0F).func_72432_b();
+-        vec3d.func_178785_b((-(float)Math.PI / 4F));
++        vec3d.func_178785_b(-((float)Math.PI / 4F));
+         double d0 = this.field_188661_a.field_70986_h.field_70165_t;
+         double d1 = this.field_188661_a.field_70986_h.field_70163_u + (double)(this.field_188661_a.field_70986_h.field_70131_O / 2.0F);
+         double d2 = this.field_188661_a.field_70986_h.field_70161_v;
+@@ -29,7 +29,7 @@
+             double d3 = d0 + this.field_188661_a.func_70681_au().nextGaussian() / 2.0D;
+             double d4 = d1 + this.field_188661_a.func_70681_au().nextGaussian() / 2.0D;
+             double d5 = d2 + this.field_188661_a.func_70681_au().nextGaussian() / 2.0D;
+-            this.field_188661_a.field_70170_p.func_175688_a(EnumParticleTypes.DRAGON_BREATH, d3, d4, d5, -vec3d.field_72450_a * (double)0.08F + this.field_188661_a.field_70159_w, -vec3d.field_72448_b * (double)0.3F + this.field_188661_a.field_70181_x, -vec3d.field_72449_c * (double)0.08F + this.field_188661_a.field_70179_y);
++            this.field_188661_a.field_70170_p.func_175688_a(EnumParticleTypes.DRAGON_BREATH, d3, d4, d5, -vec3d.field_72450_a * 0.07999999821186066D + this.field_188661_a.field_70159_w, -vec3d.field_72448_b * 0.30000001192092896D + this.field_188661_a.field_70181_x, -vec3d.field_72449_c * 0.07999999821186066D + this.field_188661_a.field_70179_y);
+             vec3d.func_178785_b(0.19634955F);
+         }
+     }
+@@ -43,7 +43,7 @@
+ 
+         if (this.field_188685_b.func_186679_c(this.field_188661_a.field_70165_t, this.field_188661_a.field_70163_u, this.field_188661_a.field_70161_v) < 1.0D)
+         {
+-            this.field_188661_a.func_184670_cT().func_188757_b(PhaseList.field_188746_f).func_188663_j();
++            ((PhaseSittingFlaming)this.field_188661_a.func_184670_cT().func_188757_b(PhaseList.field_188746_f)).func_188663_j();
+             this.field_188661_a.func_184670_cT().func_188758_a(PhaseList.field_188747_g);
+         }
+     }

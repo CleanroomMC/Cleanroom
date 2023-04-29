@@ -1,0 +1,11 @@
+--- before/net/minecraft/network/play/client/CPacketEntityAction.java
++++ after/net/minecraft/network/play/client/CPacketEntityAction.java
+@@ -35,7 +35,7 @@
+     public void func_148837_a(PacketBuffer p_148837_1_) throws IOException
+     {
+         this.field_149517_a = p_148837_1_.func_150792_a();
+-        this.field_149515_b = p_148837_1_.func_179257_a(CPacketEntityAction.Action.class);
++        this.field_149515_b = (CPacketEntityAction.Action)p_148837_1_.func_179257_a(CPacketEntityAction.Action.class);
+         this.field_149516_c = p_148837_1_.func_150792_a();
+     }
+ 

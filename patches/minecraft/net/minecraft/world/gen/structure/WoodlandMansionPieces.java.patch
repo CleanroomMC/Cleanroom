@@ -1,0 +1,196 @@
+--- before/net/minecraft/world/gen/structure/WoodlandMansionPieces.java
++++ after/net/minecraft/world/gen/structure/WoodlandMansionPieces.java
+@@ -113,6 +113,7 @@
+ 
+                 while (this.func_191111_a(this.field_191118_b))
+                 {
++                    ;
+                 }
+ 
+                 this.field_191120_d = new WoodlandMansionPieces.SimpleGrid[3];
+@@ -200,10 +201,10 @@
+                         if (p_191111_1_.func_191145_a(j, i) == 0)
+                         {
+                             int k = 0;
+-                            k += func_191109_a(p_191111_1_, j + 1, i) ? 1 : 0;
+-                            k += func_191109_a(p_191111_1_, j - 1, i) ? 1 : 0;
+-                            k += func_191109_a(p_191111_1_, j, i + 1) ? 1 : 0;
+-                            k += func_191109_a(p_191111_1_, j, i - 1) ? 1 : 0;
++                            k = k + (func_191109_a(p_191111_1_, j + 1, i) ? 1 : 0);
++                            k = k + (func_191109_a(p_191111_1_, j - 1, i) ? 1 : 0);
++                            k = k + (func_191109_a(p_191111_1_, j, i + 1) ? 1 : 0);
++                            k = k + (func_191109_a(p_191111_1_, j, i - 1) ? 1 : 0);
+ 
+                             if (k >= 3)
+                             {
+@@ -213,10 +214,10 @@
+                             else if (k == 2)
+                             {
+                                 int l = 0;
+-                                l += func_191109_a(p_191111_1_, j + 1, i + 1) ? 1 : 0;
+-                                l += func_191109_a(p_191111_1_, j - 1, i + 1) ? 1 : 0;
+-                                l += func_191109_a(p_191111_1_, j + 1, i - 1) ? 1 : 0;
+-                                l += func_191109_a(p_191111_1_, j - 1, i - 1) ? 1 : 0;
++                                l = l + (func_191109_a(p_191111_1_, j + 1, i + 1) ? 1 : 0);
++                                l = l + (func_191109_a(p_191111_1_, j - 1, i + 1) ? 1 : 0);
++                                l = l + (func_191109_a(p_191111_1_, j + 1, i - 1) ? 1 : 0);
++                                l = l + (func_191109_a(p_191111_1_, j - 1, i - 1) ? 1 : 0);
+ 
+                                 if (l <= 1)
+                                 {
+@@ -233,7 +234,7 @@
+ 
+             private void func_191115_b()
+             {
+-                List<Tuple<Integer, Integer>> list = Lists.newArrayList();
++                List<Tuple<Integer, Integer>> list = Lists.<Tuple<Integer, Integer>>newArrayList();
+                 WoodlandMansionPieces.SimpleGrid woodlandmansionpieces$simplegrid = this.field_191120_d[1];
+ 
+                 for (int i = 0; i < this.field_191119_c.field_191150_c; ++i)
+@@ -245,7 +246,7 @@
+ 
+                         if (l == 131072 && (k & 2097152) == 2097152)
+                         {
+-                            list.add(new Tuple<>(j, i));
++                            list.add(new Tuple(j, i));
+                         }
+                     }
+                 }
+@@ -256,12 +257,12 @@
+                 }
+                 else
+                 {
+-                    Tuple<Integer, Integer> tuple = list.get(this.field_191117_a.nextInt(list.size()));
+-                    int l1 = woodlandmansionpieces$simplegrid.func_191145_a(tuple.func_76341_a(), tuple.func_76340_b());
+-                    woodlandmansionpieces$simplegrid.func_191144_a(tuple.func_76341_a(), tuple.func_76340_b(), l1 | 4194304);
+-                    EnumFacing enumfacing1 = this.func_191113_b(this.field_191118_b, tuple.func_76341_a(), tuple.func_76340_b(), 1, l1 & 65535);
+-                    int i2 = tuple.func_76341_a() + enumfacing1.func_82601_c();
+-                    int i1 = tuple.func_76340_b() + enumfacing1.func_82599_e();
++                    Tuple<Integer, Integer> tuple = (Tuple)list.get(this.field_191117_a.nextInt(list.size()));
++                    int l1 = woodlandmansionpieces$simplegrid.func_191145_a(((Integer)tuple.func_76341_a()).intValue(), ((Integer)tuple.func_76340_b()).intValue());
++                    woodlandmansionpieces$simplegrid.func_191144_a(((Integer)tuple.func_76341_a()).intValue(), ((Integer)tuple.func_76340_b()).intValue(), l1 | 4194304);
++                    EnumFacing enumfacing1 = this.func_191113_b(this.field_191118_b, ((Integer)tuple.func_76341_a()).intValue(), ((Integer)tuple.func_76340_b()).intValue(), 1, l1 & 65535);
++                    int i2 = ((Integer)tuple.func_76341_a()).intValue() + enumfacing1.func_82601_c();
++                    int i1 = ((Integer)tuple.func_76340_b()).intValue() + enumfacing1.func_82599_e();
+ 
+                     for (int j1 = 0; j1 < this.field_191119_c.field_191150_c; ++j1)
+                     {
+@@ -271,7 +272,7 @@
+                             {
+                                 this.field_191119_c.func_191144_a(k1, j1, 5);
+                             }
+-                            else if (k1 == tuple.func_76341_a() && j1 == tuple.func_76340_b())
++                            else if (k1 == ((Integer)tuple.func_76341_a()).intValue() && j1 == ((Integer)tuple.func_76340_b()).intValue())
+                             {
+                                 this.field_191119_c.func_191144_a(k1, j1, 3);
+                             }
+@@ -283,7 +284,7 @@
+                         }
+                     }
+ 
+-                    List<EnumFacing> list1 = Lists.newArrayList();
++                    List<EnumFacing> list1 = Lists.<EnumFacing>newArrayList();
+ 
+                     for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL.func_179516_a())
+                     {
+@@ -296,7 +297,7 @@
+                     if (list1.isEmpty())
+                     {
+                         this.field_191119_c.func_191142_a(0, 0, this.field_191119_c.field_191149_b, this.field_191119_c.field_191150_c, 5);
+-                        woodlandmansionpieces$simplegrid.func_191144_a(tuple.func_76341_a(), tuple.func_76340_b(), l1);
++                        woodlandmansionpieces$simplegrid.func_191144_a(((Integer)tuple.func_76341_a()).intValue(), ((Integer)tuple.func_76340_b()).intValue(), l1);
+                     }
+                     else
+                     {
+@@ -305,6 +306,7 @@
+ 
+                         while (this.func_191111_a(this.field_191119_c))
+                         {
++                            ;
+                         }
+                     }
+                 }
+@@ -312,7 +314,7 @@
+ 
+             private void func_191116_a(WoodlandMansionPieces.SimpleGrid p_191116_1_, WoodlandMansionPieces.SimpleGrid p_191116_2_)
+             {
+-                List<Tuple<Integer, Integer>> list = Lists.newArrayList();
++                List<Tuple<Integer, Integer>> list = Lists.<Tuple<Integer, Integer>>newArrayList();
+ 
+                 for (int i = 0; i < p_191116_1_.field_191150_c; ++i)
+                 {
+@@ -320,7 +322,7 @@
+                     {
+                         if (p_191116_1_.func_191145_a(j, i) == 2)
+                         {
+-                            list.add(new Tuple<>(j, i));
++                            list.add(new Tuple(j, i));
+                         }
+                     }
+                 }
+@@ -330,8 +332,8 @@
+ 
+                 for (Tuple<Integer, Integer> tuple : list)
+                 {
+-                    int k = tuple.func_76341_a();
+-                    int l = tuple.func_76340_b();
++                    int k = ((Integer)tuple.func_76341_a()).intValue();
++                    int l = ((Integer)tuple.func_76340_b()).intValue();
+ 
+                     if (p_191116_2_.func_191145_a(k, l) == 0)
+                     {
+@@ -562,6 +564,7 @@
+ 
+                 if (!p_191125_3_.isEmpty())
+                 {
++                    ;
+                 }
+ 
+                 WoodlandMansionPieces.SimpleGrid woodlandmansionpieces$simplegrid = p_191125_4_.field_191118_b;
+@@ -598,9 +601,13 @@
+ 
+                 if (!p_191125_3_.isEmpty())
+                 {
++                    ;
+                 }
+ 
+-                WoodlandMansionPieces.RoomCollection[] awoodlandmansionpieces$roomcollection = new WoodlandMansionPieces.RoomCollection[] {new WoodlandMansionPieces.FirstFloor(), new WoodlandMansionPieces.SecondFloor(), new WoodlandMansionPieces.ThirdFloor()};
++                WoodlandMansionPieces.RoomCollection[] awoodlandmansionpieces$roomcollection = new WoodlandMansionPieces.RoomCollection[3];
++                awoodlandmansionpieces$roomcollection[0] = new WoodlandMansionPieces.FirstFloor();
++                awoodlandmansionpieces$roomcollection[1] = new WoodlandMansionPieces.SecondFloor();
++                awoodlandmansionpieces$roomcollection[2] = new WoodlandMansionPieces.ThirdFloor();
+ 
+                 for (int l2 = 0; l2 < 3; ++l2)
+                 {
+@@ -645,7 +652,7 @@
+ 
+                     String s2 = l2 == 0 ? "indoors_wall" : "indoors_wall_2";
+                     String s3 = l2 == 0 ? "indoors_door" : "indoors_door_2";
+-                    List<EnumFacing> list = Lists.newArrayList();
++                    List<EnumFacing> list = Lists.<EnumFacing>newArrayList();
+ 
+                     for (int k1 = 0; k1 < woodlandmansionpieces$simplegrid3.field_191150_c; ++k1)
+                     {
+@@ -748,7 +755,7 @@
+                 int j = p_191130_6_;
+                 EnumFacing enumfacing = p_191130_4_;
+ 
+-                do
++                while (true)
+                 {
+                     if (!WoodlandMansionPieces.Grid.func_191109_a(p_191130_3_, i + p_191130_4_.func_82601_c(), j + p_191130_4_.func_82599_e()))
+                     {
+@@ -777,8 +784,12 @@
+                             this.func_191131_b(p_191130_1_, p_191130_2_);
+                         }
+                     }
++
++                    if (i == p_191130_7_ && j == p_191130_8_ && enumfacing == p_191130_4_)
++                    {
++                        break;
++                    }
+                 }
+-                while (i != p_191130_7_ || j != p_191130_8_ || enumfacing != p_191130_4_);
+             }
+ 
+             private void func_191123_a(List<WoodlandMansionPieces.MansionTemplate> p_191123_1_, BlockPos p_191123_2_, Rotation p_191123_3_, WoodlandMansionPieces.SimpleGrid p_191123_4_, @Nullable WoodlandMansionPieces.SimpleGrid p_191123_5_)

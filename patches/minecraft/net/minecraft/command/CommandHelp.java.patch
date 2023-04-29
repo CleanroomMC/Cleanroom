@@ -1,0 +1,59 @@
+--- before/net/minecraft/command/CommandHelp.java
++++ after/net/minecraft/command/CommandHelp.java
+@@ -38,7 +38,7 @@
+ 
+     public List<String> func_71514_a()
+     {
+-        return Arrays.asList("?");
++        return Arrays.<String>asList("?");
+     }
+ 
+     public void func_184881_a(MinecraftServer p_184881_1_, ICommandSender p_184881_2_, String[] p_184881_3_) throws CommandException
+@@ -65,7 +65,7 @@
+ 
+                 if (icommand != null)
+                 {
+-                    throw new WrongUsageException(icommand.func_71518_a(p_184881_2_));
++                    throw new WrongUsageException(icommand.func_71518_a(p_184881_2_), new Object[0]);
+                 }
+ 
+                 if (MathHelper.func_82715_a(p_184881_3_[0], -1) == -1 && MathHelper.func_82715_a(p_184881_3_[0], -2) == -2)
+@@ -77,21 +77,21 @@
+             }
+ 
+             int l = Math.min((k + 1) * 7, list.size());
+-            TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.help.header", k + 1, j + 1);
++            TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.help.header", new Object[] {k + 1, j + 1});
+             textcomponenttranslation1.func_150256_b().func_150238_a(TextFormatting.DARK_GREEN);
+             p_184881_2_.func_145747_a(textcomponenttranslation1);
+ 
+             for (int i1 = k * 7; i1 < l; ++i1)
+             {
+                 ICommand icommand1 = list.get(i1);
+-                TextComponentTranslation textcomponenttranslation = new TextComponentTranslation(icommand1.func_71518_a(p_184881_2_));
++                TextComponentTranslation textcomponenttranslation = new TextComponentTranslation(icommand1.func_71518_a(p_184881_2_), new Object[0]);
+                 textcomponenttranslation.func_150256_b().func_150241_a(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/" + icommand1.func_71517_b() + " "));
+                 p_184881_2_.func_145747_a(textcomponenttranslation);
+             }
+ 
+             if (k == 0)
+             {
+-                TextComponentTranslation textcomponenttranslation2 = new TextComponentTranslation("commands.help.footer");
++                TextComponentTranslation textcomponenttranslation2 = new TextComponentTranslation("commands.help.footer", new Object[0]);
+                 textcomponenttranslation2.func_150256_b().func_150238_a(TextFormatting.GREEN);
+                 p_184881_2_.func_145747_a(textcomponenttranslation2);
+             }
+@@ -115,11 +115,11 @@
+         if (p_184883_3_.length == 1)
+         {
+             Set<String> set = this.func_184899_a(p_184883_1_).keySet();
+-            return func_71530_a(p_184883_3_, set.toArray(new String[set.size()]));
++            return func_71530_a(p_184883_3_, (String[])set.toArray(new String[set.size()]));
+         }
+         else
+         {
+-            return Collections.emptyList();
++            return Collections.<String>emptyList();
+         }
+     }
+ }

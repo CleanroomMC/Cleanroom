@@ -4,10 +4,11 @@
      public static final ResourceLocation field_191307_a = new ResourceLocation("lightning_bolt");
      private static final ResourceLocation field_191310_e = new ResourceLocation("player");
      private static final Logger field_151516_b = LogManager.getLogger();
--    public static final RegistryNamespaced < ResourceLocation, Class <? extends Entity >> field_191308_b = new RegistryNamespaced < ResourceLocation, Class <? extends Entity >> ();
-     public static final Map<ResourceLocation, EntityList.EntityEggInfo> field_75627_a = Maps.<ResourceLocation, EntityList.EntityEggInfo>newLinkedHashMap();
--    public static final Set<ResourceLocation> field_191309_d = Sets.<ResourceLocation>newHashSet();
--    private static final List<String> field_191311_g = Lists.<String>newArrayList();
+-    public static final RegistryNamespaced < ResourceLocation, Class <? extends Entity >> field_191308_b = new RegistryNamespaced<>();
+-    public static final Map<ResourceLocation, EntityList.EntityEggInfo> field_75627_a = Maps.newLinkedHashMap();
+-    public static final Set<ResourceLocation> field_191309_d = Sets.newHashSet();
+-    private static final List<String> field_191311_g = Lists.newArrayList();
++    public static final Map<ResourceLocation, EntityList.EntityEggInfo> field_75627_a = Maps.<ResourceLocation, EntityList.EntityEggInfo>newLinkedHashMap();
 +    private static final Set<ResourceLocation> EXTRA_NAMES = Sets.newHashSet();
  
      @Nullable
@@ -25,7 +26,7 @@
      public static String func_75621_b(Entity p_75621_0_)
      {
 -        int i = field_191308_b.func_148757_b(p_75621_0_.getClass());
--        return i == -1 ? null : (String)field_191311_g.get(i);
+-        return i == -1 ? null : field_191311_g.get(i);
 +        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(p_75621_0_.getClass());
 +        return entry == null ? null : entry.getName();
      }
@@ -34,7 +35,7 @@
      public static String func_191302_a(@Nullable ResourceLocation p_191302_0_)
      {
 -        int i = field_191308_b.func_148757_b(field_191308_b.func_82594_a(p_191302_0_));
--        return i == -1 ? null : (String)field_191311_g.get(i);
+-        return i == -1 ? null : field_191311_g.get(i);
 +        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(p_191302_0_);
 +        return entry == null ? null : entry.getName();
      }
@@ -43,7 +44,7 @@
      @SideOnly(Side.CLIENT)
      public static Class <? extends Entity > func_90035_a(int p_90035_0_)
      {
--        return (Class)field_191308_b.func_148754_a(p_90035_0_);
+-        return field_191308_b.func_148754_a(p_90035_0_);
 +        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.registries.GameData.getEntityRegistry().getValue(p_90035_0_);
 +        return entry == null ? null : entry.getEntityClass();
      }
@@ -52,7 +53,7 @@
      @SideOnly(Side.CLIENT)
      public static Class <? extends Entity > func_192839_a(String p_192839_0_)
      {
--        return (Class)field_191308_b.func_82594_a(new ResourceLocation(p_192839_0_));
+-        return field_191308_b.func_82594_a(new ResourceLocation(p_192839_0_));
 +        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(new ResourceLocation(p_192839_0_));
 +        return entry == null ? null : entry.getEntityClass();
 +    }
@@ -133,6 +134,15 @@
      }
  
      private static void func_191303_a(int p_191303_0_, String p_191303_1_, Class <? extends Entity > p_191303_2_, String p_191303_3_)
+@@ -382,7 +409,7 @@
+         {
+             p_191303_2_.getConstructor(World.class);
+         }
+-        catch (NoSuchMethodException nosuchmethodexception)
++        catch (NoSuchMethodException var5)
+         {
+             throw new RuntimeException("Invalid class " + p_191303_2_ + " no constructor taking " + World.class.getName());
+         }
 @@ -394,22 +421,17 @@
          else
          {

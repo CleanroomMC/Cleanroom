@@ -14,3 +14,14 @@
  
          return p_186618_1_.nextFloat() < this.field_186627_a + (float)i * this.field_186628_b;
      }
+@@ -42,8 +37,8 @@
+ 
+             public void func_186605_a(JsonObject p_186605_1_, RandomChanceWithLooting p_186605_2_, JsonSerializationContext p_186605_3_)
+             {
+-                p_186605_1_.addProperty("chance", p_186605_2_.field_186627_a);
+-                p_186605_1_.addProperty("looting_multiplier", p_186605_2_.field_186628_b);
++                p_186605_1_.addProperty("chance", Float.valueOf(p_186605_2_.field_186627_a));
++                p_186605_1_.addProperty("looting_multiplier", Float.valueOf(p_186605_2_.field_186628_b));
+             }
+ 
+             public RandomChanceWithLooting func_186603_b(JsonObject p_186603_1_, JsonDeserializationContext p_186603_2_)

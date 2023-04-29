@@ -1,5 +1,39 @@
 --- before/net/minecraft/entity/passive/EntityOcelot.java
 +++ after/net/minecraft/entity/passive/EntityOcelot.java
+@@ -44,7 +44,7 @@
+ 
+ public class EntityOcelot extends EntityTameable
+ {
+-    private static final DataParameter<Integer> field_184757_bz = EntityDataManager.func_187226_a(EntityOcelot.class, DataSerializers.field_187192_b);
++    private static final DataParameter<Integer> field_184757_bz = EntityDataManager.<Integer>func_187226_a(EntityOcelot.class, DataSerializers.field_187192_b);
+     private EntityAIAvoidEntity<EntityPlayer> field_175545_bm;
+     private EntityAITempt field_70914_e;
+ 
+@@ -68,13 +68,13 @@
+         this.field_70714_bg.func_75776_a(9, new EntityAIMate(this, 0.8D));
+         this.field_70714_bg.func_75776_a(10, new EntityAIWanderAvoidWater(this, 0.8D, 1.0000001E-5F));
+         this.field_70714_bg.func_75776_a(11, new EntityAIWatchClosest(this, EntityPlayer.class, 10.0F));
+-        this.field_70715_bh.func_75776_a(1, new EntityAITargetNonTamed<>(this, EntityChicken.class, false, (Predicate <? super EntityChicken >)null));
++        this.field_70715_bh.func_75776_a(1, new EntityAITargetNonTamed(this, EntityChicken.class, false, (Predicate)null));
+     }
+ 
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+-        this.field_70180_af.func_187214_a(field_184757_bz, 0);
++        this.field_70180_af.func_187214_a(field_184757_bz, Integer.valueOf(0));
+     }
+ 
+     public void func_70619_bc()
+@@ -115,7 +115,7 @@
+     {
+         super.func_110147_ax();
+         this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(10.0D);
+-        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a((double)0.3F);
++        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.30000001192092896D);
+     }
+ 
+     public void func_180430_e(float p_180430_1_, float p_180430_2_)
 @@ -222,7 +222,7 @@
  
              if (!this.field_70170_p.field_72995_K)
@@ -9,6 +43,21 @@
                  {
                      this.func_193101_c(p_184645_1_);
                      this.func_70912_b(1 + this.field_70170_p.field_73012_v.nextInt(3));
+@@ -293,12 +293,12 @@
+ 
+     public int func_70913_u()
+     {
+-        return this.field_70180_af.func_187225_a(field_184757_bz);
++        return ((Integer)this.field_70180_af.func_187225_a(field_184757_bz)).intValue();
+     }
+ 
+     public void func_70912_b(int p_70912_1_)
+     {
+-        this.field_70180_af.func_187227_b(field_184757_bz, p_70912_1_);
++        this.field_70180_af.func_187227_b(field_184757_bz, Integer.valueOf(p_70912_1_));
+     }
+ 
+     public boolean func_70601_bi()
 @@ -320,7 +320,7 @@
              IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos.func_177977_b());
              Block block = iblockstate.func_177230_c();
@@ -18,3 +67,12 @@
              {
                  return true;
              }
+@@ -345,7 +345,7 @@
+     {
+         if (this.field_175545_bm == null)
+         {
+-            this.field_175545_bm = new EntityAIAvoidEntity<>(this, EntityPlayer.class, 16.0F, 0.8D, 1.33D);
++            this.field_175545_bm = new EntityAIAvoidEntity<EntityPlayer>(this, EntityPlayer.class, 16.0F, 0.8D, 1.33D);
+         }
+ 
+         this.field_70714_bg.func_85156_a(this.field_175545_bm);

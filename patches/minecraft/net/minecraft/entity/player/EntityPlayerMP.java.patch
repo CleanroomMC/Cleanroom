@@ -1,5 +1,14 @@
 --- before/net/minecraft/entity/player/EntityPlayerMP.java
 +++ after/net/minecraft/entity/player/EntityPlayerMP.java
+@@ -123,7 +123,7 @@
+     public final PlayerInteractionManager field_71134_c;
+     public double field_71131_d;
+     public double field_71132_e;
+-    private final List<Integer> field_71130_g = Lists.newLinkedList();
++    private final List<Integer> field_71130_g = Lists.<Integer>newLinkedList();
+     private final PlayerAdvancements field_192042_bX;
+     private final StatisticsManagerServer field_147103_bO;
+     private float field_130068_bO = Float.MIN_VALUE;
 @@ -158,9 +158,9 @@
          super(p_i45285_2_, p_i45285_3_);
          p_i45285_4_.field_73090_b = this;
@@ -21,6 +30,15 @@
          {
              this.func_71053_j();
              this.field_71070_bA = this.field_71069_bz;
+@@ -338,7 +338,7 @@
+ 
+             while (iterator.hasNext() && j < i)
+             {
+-                aint[j++] = iterator.next();
++                aint[j++] = ((Integer)iterator.next()).intValue();
+                 iterator.remove();
+             }
+ 
 @@ -471,6 +471,7 @@
  
      public void func_70645_a(DamageSource p_70645_1_)
@@ -50,6 +68,15 @@
          }
  
          for (ScoreObjective scoreobjective : this.field_70170_p.func_96441_U().func_96520_a(IScoreCriteria.field_96642_c))
+@@ -590,7 +603,7 @@
+             }
+         }
+ 
+-        return Lists.newArrayList();
++        return Lists.<ScoreObjective>newArrayList();
+     }
+ 
+     public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
 @@ -645,8 +658,9 @@
      }
  
@@ -79,7 +106,13 @@
              this.field_71135_a.func_147359_a(new SPacketEffect(1032, BlockPos.field_177992_a, 0, false));
              this.field_71144_ck = -1;
              this.field_71149_ch = -1.0F;
-@@ -808,7 +822,7 @@
+@@ -803,12 +817,12 @@
+     public void func_71122_b(double p_71122_1_, boolean p_71122_3_)
+     {
+         int i = MathHelper.func_76128_c(this.field_70165_t);
+-        int j = MathHelper.func_76128_c(this.field_70163_u - (double)0.2F);
++        int j = MathHelper.func_76128_c(this.field_70163_u - 0.20000000298023224D);
+         int k = MathHelper.func_76128_c(this.field_70161_v);
          BlockPos blockpos = new BlockPos(i, j, k);
          IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos);
  
@@ -88,6 +121,15 @@
          {
              BlockPos blockpos1 = blockpos.func_177977_b();
              IBlockState iblockstate1 = this.field_70170_p.func_180495_p(blockpos1);
+@@ -839,7 +853,7 @@
+     {
+         if (p_180468_1_ instanceof ILootContainer && ((ILootContainer)p_180468_1_).func_184276_b() != null && this.func_175149_v())
+         {
+-            this.func_146105_b((new TextComponentTranslation("container.spectatorCantOpen")).func_150255_a((new Style()).func_150238_a(TextFormatting.RED)), true);
++            this.func_146105_b((new TextComponentTranslation("container.spectatorCantOpen", new Object[0])).func_150255_a((new Style()).func_150238_a(TextFormatting.RED)), true);
+         }
+         else
+         {
 @@ -848,6 +862,7 @@
              this.field_71070_bA = p_180468_1_.func_174876_a(this.field_71071_by, this);
              this.field_71070_bA.field_75152_c = this.field_71139_cq;
@@ -96,6 +138,24 @@
          }
      }
  
+@@ -855,7 +870,7 @@
+     {
+         if (p_71007_1_ instanceof ILootContainer && ((ILootContainer)p_71007_1_).func_184276_b() != null && this.func_175149_v())
+         {
+-            this.func_146105_b((new TextComponentTranslation("container.spectatorCantOpen")).func_150255_a((new Style()).func_150238_a(TextFormatting.RED)), true);
++            this.func_146105_b((new TextComponentTranslation("container.spectatorCantOpen", new Object[0])).func_150255_a((new Style()).func_150238_a(TextFormatting.RED)), true);
+         }
+         else
+         {
+@@ -870,7 +885,7 @@
+ 
+                 if (ilockablecontainer.func_174893_q_() && !this.func_175146_a(ilockablecontainer.func_174891_i()) && !this.func_175149_v())
+                 {
+-                    this.field_71135_a.func_147359_a(new SPacketChat(new TextComponentTranslation("container.isLocked", p_71007_1_.func_145748_c_()), ChatType.GAME_INFO));
++                    this.field_71135_a.func_147359_a(new SPacketChat(new TextComponentTranslation("container.isLocked", new Object[] {p_71007_1_.func_145748_c_()}), ChatType.GAME_INFO));
+                     this.field_71135_a.func_147359_a(new SPacketSoundEffect(SoundEvents.field_187654_U, SoundCategory.BLOCKS, this.field_70165_t, this.field_70163_u, this.field_70161_v, 1.0F, 1.0F));
+                     return;
+                 }
 @@ -891,6 +906,7 @@
  
              this.field_71070_bA.field_75152_c = this.field_71139_cq;
@@ -120,6 +180,15 @@
          this.field_71070_bA = this.field_71069_bz;
      }
  
+@@ -1058,7 +1076,7 @@
+ 
+     public void func_193102_a(ResourceLocation[] p_193102_1_)
+     {
+-        List<IRecipe> list = Lists.newArrayList();
++        List<IRecipe> list = Lists.<IRecipe>newArrayList();
+ 
+         for (ResourceLocation resourcelocation : p_193102_1_)
+         {
 @@ -1144,6 +1162,23 @@
          this.field_193110_cw = p_193104_1_.field_193110_cw;
          this.func_192029_h(p_193104_1_.func_192023_dk());
@@ -144,3 +213,47 @@
      }
  
      protected void func_70670_a(PotionEffect p_70670_1_)
+@@ -1253,7 +1288,7 @@
+         {
+             if (this.field_71133_b.func_184103_al().func_152596_g(this.func_146103_bH()))
+             {
+-                UserListOpsEntry userlistopsentry = this.field_71133_b.func_184103_al().func_152603_m().func_152683_b(this.func_146103_bH());
++                UserListOpsEntry userlistopsentry = (UserListOpsEntry)this.field_71133_b.func_184103_al().func_152603_m().func_152683_b(this.func_146103_bH());
+ 
+                 if (userlistopsentry != null)
+                 {
+@@ -1279,7 +1314,8 @@
+     {
+         String s = this.field_71135_a.field_147371_a.func_74430_c().toString();
+         s = s.substring(s.indexOf("/") + 1);
+-        return s.substring(0, s.indexOf(":"));
++        s = s.substring(0, s.indexOf(":"));
++        return s;
+     }
+ 
+     public void func_147100_a(CPacketClientSettings p_147100_1_)
+@@ -1287,8 +1323,8 @@
+         this.field_71148_cg = p_147100_1_.func_149524_c();
+         this.field_71143_cn = p_147100_1_.func_149523_e();
+         this.field_71140_co = p_147100_1_.func_149520_f();
+-        this.func_184212_Q().func_187227_b(field_184827_bp, (byte)p_147100_1_.func_149521_d());
+-        this.func_184212_Q().func_187227_b(field_184828_bq, (byte)(p_147100_1_.func_186991_f() == EnumHandSide.LEFT ? 0 : 1));
++        this.func_184212_Q().func_187227_b(field_184827_bp, Byte.valueOf((byte)p_147100_1_.func_149521_d()));
++        this.func_184212_Q().func_187227_b(field_184828_bq, Byte.valueOf((byte)(p_147100_1_.func_186991_f() == EnumHandSide.LEFT ? 0 : 1)));
+     }
+ 
+     public EntityPlayer.EnumChatVisibility func_147096_v()
+@@ -1325,11 +1361,11 @@
+     {
+         if (p_152339_1_ instanceof EntityPlayer)
+         {
+-            this.field_71135_a.func_147359_a(new SPacketDestroyEntities(p_152339_1_.func_145782_y()));
++            this.field_71135_a.func_147359_a(new SPacketDestroyEntities(new int[] {p_152339_1_.func_145782_y()}));
+         }
+         else
+         {
+-            this.field_71130_g.add(p_152339_1_.func_145782_y());
++            this.field_71130_g.add(Integer.valueOf(p_152339_1_.func_145782_y()));
+         }
+     }
+ 

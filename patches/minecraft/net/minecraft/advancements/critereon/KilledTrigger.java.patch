@@ -1,0 +1,34 @@
+--- before/net/minecraft/advancements/critereon/KilledTrigger.java
++++ after/net/minecraft/advancements/critereon/KilledTrigger.java
+@@ -17,7 +17,7 @@
+ 
+ public class KilledTrigger implements ICriterionTrigger<KilledTrigger.Instance>
+ {
+-    private final Map<PlayerAdvancements, KilledTrigger.Listeners> field_192213_a = Maps.newHashMap();
++    private final Map<PlayerAdvancements, KilledTrigger.Listeners> field_192213_a = Maps.<PlayerAdvancements, KilledTrigger.Listeners>newHashMap();
+     private final ResourceLocation field_192214_b;
+ 
+     public KilledTrigger(ResourceLocation p_i47433_1_)
+@@ -99,7 +99,7 @@
+     static class Listeners
+         {
+             private final PlayerAdvancements field_192505_a;
+-            private final Set<ICriterionTrigger.Listener<KilledTrigger.Instance>> field_192506_b = Sets.newHashSet();
++            private final Set<ICriterionTrigger.Listener<KilledTrigger.Instance>> field_192506_b = Sets.<ICriterionTrigger.Listener<KilledTrigger.Instance>>newHashSet();
+ 
+             public Listeners(PlayerAdvancements p_i47455_1_)
+             {
+@@ -127,11 +127,11 @@
+ 
+                 for (ICriterionTrigger.Listener<KilledTrigger.Instance> listener : this.field_192506_b)
+                 {
+-                    if (listener.func_192158_a().func_192270_a(p_192503_1_, p_192503_2_, p_192503_3_))
++                    if (((KilledTrigger.Instance)listener.func_192158_a()).func_192270_a(p_192503_1_, p_192503_2_, p_192503_3_))
+                     {
+                         if (list == null)
+                         {
+-                            list = Lists.newArrayList();
++                            list = Lists.<ICriterionTrigger.Listener<KilledTrigger.Instance>>newArrayList();
+                         }
+ 
+                         list.add(listener);

@@ -1,11 +1,23 @@
 --- before/net/minecraft/block/BlockDropper.java
 +++ after/net/minecraft/block/BlockDropper.java
-@@ -43,7 +43,7 @@
+@@ -29,7 +29,7 @@
+     protected void func_176439_d(World p_176439_1_, BlockPos p_176439_2_)
+     {
+         BlockSourceImpl blocksourceimpl = new BlockSourceImpl(p_176439_1_, p_176439_2_);
+-        TileEntityDispenser tileentitydispenser = blocksourceimpl.func_150835_j();
++        TileEntityDispenser tileentitydispenser = (TileEntityDispenser)blocksourceimpl.func_150835_j();
+ 
+         if (tileentitydispenser != null)
+         {
+@@ -43,9 +43,9 @@
              {
                  ItemStack itemstack = tileentitydispenser.func_70301_a(i);
  
 -                if (!itemstack.func_190926_b())
 +                if (!itemstack.func_190926_b() && net.minecraftforge.items.VanillaInventoryCodeHooks.dropperInsertHook(p_176439_1_, p_176439_2_, tileentitydispenser, i, itemstack))
                  {
-                     EnumFacing enumfacing = (EnumFacing)p_176439_1_.func_180495_p(p_176439_2_).func_177229_b(field_176441_a);
+-                    EnumFacing enumfacing = p_176439_1_.func_180495_p(p_176439_2_).func_177229_b(field_176441_a);
++                    EnumFacing enumfacing = (EnumFacing)p_176439_1_.func_180495_p(p_176439_2_).func_177229_b(field_176441_a);
                      BlockPos blockpos = p_176439_2_.func_177972_a(enumfacing);
+                     IInventory iinventory = TileEntityHopper.func_145893_b(p_176439_1_, (double)blockpos.func_177958_n(), (double)blockpos.func_177956_o(), (double)blockpos.func_177952_p());
+                     ItemStack itemstack1;

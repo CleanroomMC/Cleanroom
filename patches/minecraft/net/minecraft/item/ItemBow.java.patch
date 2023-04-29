@@ -27,7 +27,8 @@
 -                int i = this.func_77626_a(p_77615_1_) - p_77615_4_;
                  float f = func_185059_b(i);
  
-                 if ((double)f >= 0.1D)
+-                if (!((double)f < 0.1D))
++                if ((double)f >= 0.1D)
                  {
 -                    boolean flag1 = flag && itemstack.func_77973_b() == Items.field_151032_g;
 +                    boolean flag1 = entityplayer.field_71075_bZ.field_75098_d || (itemstack.func_77973_b() instanceof ItemArrow && ((ItemArrow) itemstack.func_77973_b()).isInfinite(itemstack, p_77615_1_, entityplayer));
@@ -40,7 +41,7 @@
                          entityarrow.func_184547_a(entityplayer, entityplayer.field_70125_A, entityplayer.field_70177_z, 0.0F, f * 3.0F, 1.0F);
  
                          if (f == 1.0F)
-@@ -190,6 +194,9 @@
+@@ -190,19 +194,27 @@
          ItemStack itemstack = p_77659_2_.func_184586_b(p_77659_3_);
          boolean flag = !this.func_185060_a(p_77659_2_).func_190926_b();
  
@@ -49,8 +50,17 @@
 +
          if (!p_77659_2_.field_71075_bZ.field_75098_d && !flag)
          {
-             return flag ? new ActionResult(EnumActionResult.PASS, itemstack) : new ActionResult(EnumActionResult.FAIL, itemstack);
-@@ -204,5 +211,10 @@
+-            return flag ? new ActionResult<>(EnumActionResult.PASS, itemstack) : new ActionResult<>(EnumActionResult.FAIL, itemstack);
++            return flag ? new ActionResult(EnumActionResult.PASS, itemstack) : new ActionResult(EnumActionResult.FAIL, itemstack);
+         }
+         else
+         {
+             p_77659_2_.func_184598_c(p_77659_3_);
+-            return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
++            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+         }
+     }
+ 
      public int func_77619_b()
      {
          return 1;

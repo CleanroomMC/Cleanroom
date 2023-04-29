@@ -1,6 +1,23 @@
 --- before/net/minecraft/block/BlockRotatedPillar.java
 +++ after/net/minecraft/block/BlockRotatedPillar.java
-@@ -28,6 +28,21 @@
+@@ -2,6 +2,7 @@
+ 
+ import net.minecraft.block.material.MapColor;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyEnum;
+ import net.minecraft.block.state.BlockStateContainer;
+ import net.minecraft.block.state.IBlockState;
+@@ -15,7 +16,7 @@
+ 
+ public class BlockRotatedPillar extends Block
+ {
+-    public static final PropertyEnum<EnumFacing.Axis> field_176298_M = PropertyEnum.func_177709_a("axis", EnumFacing.Axis.class);
++    public static final PropertyEnum<EnumFacing.Axis> field_176298_M = PropertyEnum.<EnumFacing.Axis>func_177709_a("axis", EnumFacing.Axis.class);
+ 
+     protected BlockRotatedPillar(Material p_i45425_1_)
+     {
+@@ -27,6 +28,21 @@
          super(p_i46385_1_, p_i46385_2_);
      }
  
@@ -22,3 +39,21 @@
      public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
      {
          switch (p_185499_2_)
+@@ -69,7 +85,7 @@
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+         int i = 0;
+-        EnumFacing.Axis enumfacing$axis = p_176201_1_.func_177229_b(field_176298_M);
++        EnumFacing.Axis enumfacing$axis = (EnumFacing.Axis)p_176201_1_.func_177229_b(field_176298_M);
+ 
+         if (enumfacing$axis == EnumFacing.Axis.X)
+         {
+@@ -85,7 +101,7 @@
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176298_M);
++        return new BlockStateContainer(this, new IProperty[] {field_176298_M});
+     }
+ 
+     protected ItemStack func_180643_i(IBlockState p_180643_1_)

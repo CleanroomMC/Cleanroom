@@ -1,5 +1,16 @@
 --- before/net/minecraft/client/renderer/block/model/FaceBakery.java
 +++ after/net/minecraft/client/renderer/block/model/FaceBakery.java
+@@ -15,8 +15,8 @@
+ @SideOnly(Side.CLIENT)
+ public class FaceBakery
+ {
+-    private static final float field_178418_a = 1.0F / (float)Math.cos((double)((float)Math.PI / 8F)) - 1.0F;
+-    private static final float field_178417_b = 1.0F / (float)Math.cos((double)((float)Math.PI / 4F)) - 1.0F;
++    private static final float field_178418_a = 1.0F / (float)Math.cos(0.39269909262657166D) - 1.0F;
++    private static final float field_178417_b = 1.0F / (float)Math.cos((Math.PI / 4D)) - 1.0F;
+     private static final FaceBakery.Rotation[] field_188016_c = new FaceBakery.Rotation[ModelRotation.values().length * EnumFacing.values().length];
+     private static final FaceBakery.Rotation field_188017_d = new FaceBakery.Rotation()
+     {
 @@ -49,14 +49,19 @@
  
      public BakedQuad func_178414_a(Vector3f p_178414_1_, Vector3f p_178414_2_, BlockPartFace p_178414_3_, TextureAtlasSprite p_178414_4_, EnumFacing p_178414_5_, ModelRotation p_178414_6_, @Nullable BlockPartRotation p_178414_7_, boolean p_178414_8_, boolean p_178414_9_)
@@ -81,6 +92,25 @@
      }
  
      private void func_178407_a(Vector3f p_178407_1_, @Nullable BlockPartRotation p_178407_2_)
+@@ -154,15 +170,15 @@
+             switch (p_178407_2_.field_178342_b)
+             {
+                 case X:
+-                    Matrix4f.rotate(p_178407_2_.field_178343_c * ((float)Math.PI / 180F), new Vector3f(1.0F, 0.0F, 0.0F), matrix4f, matrix4f);
++                    Matrix4f.rotate(p_178407_2_.field_178343_c * 0.017453292F, new Vector3f(1.0F, 0.0F, 0.0F), matrix4f, matrix4f);
+                     vector3f.set(0.0F, 1.0F, 1.0F);
+                     break;
+                 case Y:
+-                    Matrix4f.rotate(p_178407_2_.field_178343_c * ((float)Math.PI / 180F), new Vector3f(0.0F, 1.0F, 0.0F), matrix4f, matrix4f);
++                    Matrix4f.rotate(p_178407_2_.field_178343_c * 0.017453292F, new Vector3f(0.0F, 1.0F, 0.0F), matrix4f, matrix4f);
+                     vector3f.set(1.0F, 0.0F, 1.0F);
+                     break;
+                 case Z:
+-                    Matrix4f.rotate(p_178407_2_.field_178343_c * ((float)Math.PI / 180F), new Vector3f(0.0F, 0.0F, 1.0F), matrix4f, matrix4f);
++                    Matrix4f.rotate(p_178407_2_.field_178343_c * 0.017453292F, new Vector3f(0.0F, 0.0F, 1.0F), matrix4f, matrix4f);
+                     vector3f.set(1.0F, 1.0F, 0.0F);
+             }
+ 
 @@ -190,14 +206,19 @@
  
      public int func_188011_a(Vector3f p_188011_1_, EnumFacing p_188011_2_, int p_188011_3_, ModelRotation p_188011_4_)
@@ -103,3 +133,19 @@
          }
      }
  
+@@ -249,7 +270,14 @@
+             }
+         }
+ 
+-        return enumfacing == null ? EnumFacing.UP : enumfacing;
++        if (enumfacing == null)
++        {
++            return EnumFacing.UP;
++        }
++        else
++        {
++            return enumfacing;
++        }
+     }
+ 
+     private void func_178408_a(int[] p_178408_1_, EnumFacing p_178408_2_)

@@ -1,0 +1,28 @@
+--- before/net/minecraft/command/CommandServerKick.java
++++ after/net/minecraft/command/CommandServerKick.java
+@@ -34,7 +34,7 @@
+ 
+             if (entityplayermp == null)
+             {
+-                throw new PlayerNotFoundException("commands.generic.player.notFound", p_184881_3_[0]);
++                throw new PlayerNotFoundException("commands.generic.player.notFound", new Object[] {p_184881_3_[0]});
+             }
+             else
+             {
+@@ -46,14 +46,14 @@
+                 }
+                 else
+                 {
+-                    entityplayermp.field_71135_a.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.kicked"));
++                    entityplayermp.field_71135_a.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.kicked", new Object[0]));
+                     func_152373_a(p_184881_2_, this, "commands.kick.success", new Object[] {entityplayermp.func_70005_c_()});
+                 }
+             }
+         }
+         else
+         {
+-            throw new WrongUsageException("commands.kick.usage");
++            throw new WrongUsageException("commands.kick.usage", new Object[0]);
+         }
+     }
+ 

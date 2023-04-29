@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/tutorial/Tutorial.java
++++ after/net/minecraft/client/tutorial/Tutorial.java
+@@ -138,7 +138,7 @@
+     public static ITextComponent func_193291_a(String p_193291_0_)
+     {
+         TextComponentKeybind textcomponentkeybind = new TextComponentKeybind("key." + p_193291_0_);
+-        textcomponentkeybind.func_150256_b().func_150227_a(true);
++        textcomponentkeybind.func_150256_b().func_150227_a(Boolean.valueOf(true));
+         return textcomponentkeybind;
+     }
+ }

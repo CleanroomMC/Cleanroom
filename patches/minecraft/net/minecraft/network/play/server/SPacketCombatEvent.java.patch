@@ -1,0 +1,11 @@
+--- before/net/minecraft/network/play/server/SPacketCombatEvent.java
++++ after/net/minecraft/network/play/server/SPacketCombatEvent.java
+@@ -55,7 +55,7 @@
+ 
+     public void func_148837_a(PacketBuffer p_148837_1_) throws IOException
+     {
+-        this.field_179776_a = p_148837_1_.func_179257_a(SPacketCombatEvent.Event.class);
++        this.field_179776_a = (SPacketCombatEvent.Event)p_148837_1_.func_179257_a(SPacketCombatEvent.Event.class);
+ 
+         if (this.field_179776_a == SPacketCombatEvent.Event.END_COMBAT)
+         {

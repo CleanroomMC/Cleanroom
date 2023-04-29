@@ -1,0 +1,53 @@
+--- before/net/minecraft/block/properties/PropertyEnum.java
++++ after/net/minecraft/block/properties/PropertyEnum.java
+@@ -14,7 +14,7 @@
+ public class PropertyEnum<T extends Enum<T> & IStringSerializable> extends PropertyHelper<T>
+ {
+     private final ImmutableSet<T> field_177711_a;
+-    private final Map<String, T> field_177710_b = Maps.newHashMap();
++    private final Map<String, T> field_177710_b = Maps.<String, T>newHashMap();
+ 
+     protected PropertyEnum(String p_i45649_1_, Class<T> p_i45649_2_, Collection<T> p_i45649_3_)
+     {
+@@ -23,7 +23,7 @@
+ 
+         for (T t : p_i45649_3_)
+         {
+-            String s = t.func_176610_l();
++            String s = ((IStringSerializable)t).func_176610_l();
+ 
+             if (this.field_177710_b.containsKey(s))
+             {
+@@ -41,12 +41,12 @@
+ 
+     public Optional<T> func_185929_b(String p_185929_1_)
+     {
+-        return Optional.fromNullable(this.field_177710_b.get(p_185929_1_));
++        return Optional.<T>fromNullable(this.field_177710_b.get(p_185929_1_));
+     }
+ 
+     public String func_177702_a(T p_177702_1_)
+     {
+-        return p_177702_1_.func_176610_l();
++        return ((IStringSerializable)p_177702_1_).func_176610_l();
+     }
+ 
+     public boolean equals(Object p_equals_1_)
+@@ -70,7 +70,8 @@
+     {
+         int i = super.hashCode();
+         i = 31 * i + this.field_177711_a.hashCode();
+-        return 31 * i + this.field_177710_b.hashCode();
++        i = 31 * i + this.field_177710_b.hashCode();
++        return i;
+     }
+ 
+     public static <T extends Enum<T> & IStringSerializable> PropertyEnum<T> func_177709_a(String p_177709_0_, Class<T> p_177709_1_)
+@@ -90,6 +91,6 @@
+ 
+     public static <T extends Enum<T> & IStringSerializable> PropertyEnum<T> func_177707_a(String p_177707_0_, Class<T> p_177707_1_, Collection<T> p_177707_2_)
+     {
+-        return new PropertyEnum<>(p_177707_0_, p_177707_1_, p_177707_2_);
++        return new PropertyEnum<T>(p_177707_0_, p_177707_1_, p_177707_2_);
+     }
+ }

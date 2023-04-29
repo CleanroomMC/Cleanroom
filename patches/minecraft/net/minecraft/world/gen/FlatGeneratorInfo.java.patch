@@ -1,0 +1,84 @@
+--- before/net/minecraft/world/gen/FlatGeneratorInfo.java
++++ after/net/minecraft/world/gen/FlatGeneratorInfo.java
+@@ -5,6 +5,7 @@
+ import java.util.List;
+ import java.util.Locale;
+ import java.util.Map;
++import java.util.Map.Entry;
+ import net.minecraft.block.Block;
+ import net.minecraft.init.Biomes;
+ import net.minecraft.init.Blocks;
+@@ -13,8 +14,8 @@
+ 
+ public class FlatGeneratorInfo
+ {
+-    private final List<FlatLayerInfo> field_82655_a = Lists.newArrayList();
+-    private final Map<String, Map<String, String>> field_82653_b = Maps.newHashMap();
++    private final List<FlatLayerInfo> field_82655_a = Lists.<FlatLayerInfo>newArrayList();
++    private final Map<String, Map<String, String>> field_82653_b = Maps.<String, Map<String, String>>newHashMap();
+     private int field_82654_c;
+ 
+     public int func_82648_a()
+@@ -76,22 +77,22 @@
+             stringbuilder.append(";");
+             int k = 0;
+ 
+-            for (Map.Entry<String, Map<String, String>> entry : this.field_82653_b.entrySet())
++            for (Entry<String, Map<String, String>> entry : this.field_82653_b.entrySet())
+             {
+                 if (k++ > 0)
+                 {
+                     stringbuilder.append(",");
+                 }
+ 
+-                stringbuilder.append(entry.getKey().toLowerCase(Locale.ROOT));
+-                Map<String, String> map = entry.getValue();
++                stringbuilder.append(((String)entry.getKey()).toLowerCase(Locale.ROOT));
++                Map<String, String> map = (Map)entry.getValue();
+ 
+                 if (!map.isEmpty())
+                 {
+                     stringbuilder.append("(");
+                     int j = 0;
+ 
+-                    for (Map.Entry<String, String> entry1 : map.entrySet())
++                    for (Entry<String, String> entry1 : map.entrySet())
+                     {
+                         if (j++ > 0)
+                         {
+@@ -133,7 +134,7 @@
+                     i = 0;
+                 }
+             }
+-            catch (Throwable throwable)
++            catch (Throwable var8)
+             {
+                 return null;
+             }
+@@ -191,7 +192,7 @@
+                 j = 0;
+             }
+         }
+-        catch (Throwable throwable1)
++        catch (Throwable var9)
+         {
+             return null;
+         }
+@@ -205,7 +206,7 @@
+     {
+         if (p_180716_1_ != null && p_180716_1_.length() >= 1)
+         {
+-            List<FlatLayerInfo> list = Lists.newArrayList();
++            List<FlatLayerInfo> list = Lists.<FlatLayerInfo>newArrayList();
+             String[] astring = p_180716_1_.split(",");
+             int i = 0;
+ 
+@@ -267,7 +268,7 @@
+                         for (String s : astring1)
+                         {
+                             String[] astring2 = s.split("\\(", 2);
+-                            Map<String, String> map = Maps.newHashMap();
++                            Map<String, String> map = Maps.<String, String>newHashMap();
+ 
+                             if (!astring2[0].isEmpty())
+                             {

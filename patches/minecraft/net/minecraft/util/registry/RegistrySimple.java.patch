@@ -1,0 +1,20 @@
+--- before/net/minecraft/util/registry/RegistrySimple.java
++++ after/net/minecraft/util/registry/RegistrySimple.java
+@@ -20,7 +20,7 @@
+ 
+     protected Map<K, V> func_148740_a()
+     {
+-        return Maps.newHashMap();
++        return Maps.<K, V>newHashMap();
+     }
+ 
+     @Nullable
+@@ -45,7 +45,7 @@
+ 
+     public Set<K> func_148742_b()
+     {
+-        return Collections.unmodifiableSet(this.field_82596_a.keySet());
++        return Collections.<K>unmodifiableSet(this.field_82596_a.keySet());
+     }
+ 
+     @Nullable

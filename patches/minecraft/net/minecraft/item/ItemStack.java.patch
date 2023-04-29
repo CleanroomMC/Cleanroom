@@ -1,5 +1,15 @@
 --- before/net/minecraft/item/ItemStack.java
 +++ after/net/minecraft/item/ItemStack.java
+@@ -5,8 +5,8 @@
+ import com.google.common.collect.Multimap;
+ import java.text.DecimalFormat;
+ import java.util.List;
+-import java.util.Map;
+ import java.util.Random;
++import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+ import net.minecraft.advancements.CriteriaTriggers;
+ import net.minecraft.block.Block;
 @@ -50,7 +50,7 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
@@ -215,6 +225,53 @@
          }
      }
  
+@@ -634,7 +658,7 @@
+     @SideOnly(Side.CLIENT)
+     public List<String> func_82840_a(@Nullable EntityPlayer p_82840_1_, ITooltipFlag p_82840_2_)
+     {
+-        List<String> list = Lists.newArrayList();
++        List<String> list = Lists.<String>newArrayList();
+         String s = this.func_82833_r();
+ 
+         if (this.func_82837_s())
+@@ -743,7 +767,7 @@
+                 list.add("");
+                 list.add(I18n.func_74838_a("item.modifiers." + entityequipmentslot.func_188450_d()));
+ 
+-                for (Map.Entry<String, AttributeModifier> entry : multimap.entries())
++                for (Entry<String, AttributeModifier> entry : multimap.entries())
+                 {
+                     AttributeModifier attributemodifier = entry.getValue();
+                     double d0 = attributemodifier.func_111164_d();
+@@ -753,8 +777,8 @@
+                     {
+                         if (attributemodifier.func_111167_a() == Item.field_111210_e)
+                         {
+-                            d0 += p_82840_1_.func_110148_a(SharedMonsterAttributes.field_111264_e).func_111125_b();
+-                            d0 += (double)EnchantmentHelper.func_152377_a(this, EnumCreatureAttribute.UNDEFINED);
++                            d0 = d0 + p_82840_1_.func_110148_a(SharedMonsterAttributes.field_111264_e).func_111125_b();
++                            d0 = d0 + (double)EnchantmentHelper.func_152377_a(this, EnumCreatureAttribute.UNDEFINED);
+                             flag = true;
+                         }
+                         else if (attributemodifier.func_111167_a() == Item.field_185050_h)
+@@ -785,7 +809,7 @@
+                     }
+                     else if (d0 < 0.0D)
+                     {
+-                        d1 *= -1.0D;
++                        d1 = d1 * -1.0D;
+                         list.add(TextFormatting.RED + " " + I18n.func_74837_a("attribute.modifier.take." + attributemodifier.func_111169_c(), field_111284_a.format(d1), I18n.func_74838_a("attribute.name." + (String)entry.getKey())));
+                     }
+                 }
+@@ -854,7 +878,7 @@
+                 list.add(I18n.func_74837_a("item.durability", this.func_77958_k() - this.func_77952_i(), this.func_77958_k()));
+             }
+ 
+-            list.add(TextFormatting.DARK_GRAY + Item.field_150901_e.func_177774_c(this.field_151002_e).toString());
++            list.add(TextFormatting.DARK_GRAY + ((ResourceLocation)Item.field_150901_e.func_177774_c(this.field_151002_e)).toString());
+ 
+             if (this.func_77942_o())
+             {
 @@ -862,6 +886,7 @@
              }
          }
@@ -231,6 +288,15 @@
      public EnumRarity func_77953_t()
      {
          return this.func_77973_b().func_77613_e(this);
+@@ -971,7 +997,7 @@
+ 
+         if (this.func_77942_o() && this.field_77990_d.func_150297_b("AttributeModifiers", 9))
+         {
+-            multimap = HashMultimap.create();
++            multimap = HashMultimap.<String, AttributeModifier>create();
+             NBTTagList nbttaglist = this.field_77990_d.func_150295_c("AttributeModifiers", 10);
+ 
+             for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
 @@ -987,7 +1013,7 @@
          }
          else
@@ -240,6 +306,15 @@
          }
  
          return multimap;
+@@ -1023,7 +1049,7 @@
+ 
+         if (this.func_82837_s())
+         {
+-            textcomponentstring.func_150256_b().func_150217_b(true);
++            textcomponentstring.func_150256_b().func_150217_b(Boolean.valueOf(true));
+         }
+ 
+         ITextComponent itextcomponent = (new TextComponentString("[")).func_150257_a(textcomponentstring).func_150258_a("]");
 @@ -1032,7 +1058,7 @@
          {
              NBTTagCompound nbttagcompound = this.func_77955_b(new NBTTagCompound());

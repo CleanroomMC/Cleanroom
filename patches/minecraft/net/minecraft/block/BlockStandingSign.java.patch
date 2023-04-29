@@ -1,0 +1,50 @@
+--- before/net/minecraft/block/BlockStandingSign.java
++++ after/net/minecraft/block/BlockStandingSign.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.block;
+ 
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyInteger;
+ import net.minecraft.block.state.BlockStateContainer;
+ import net.minecraft.block.state.IBlockState;
+@@ -14,7 +15,7 @@
+ 
+     public BlockStandingSign()
+     {
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176413_a, 0));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176413_a, Integer.valueOf(0)));
+     }
+ 
+     public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
+@@ -30,26 +31,26 @@
+ 
+     public IBlockState func_176203_a(int p_176203_1_)
+     {
+-        return this.func_176223_P().func_177226_a(field_176413_a, p_176203_1_);
++        return this.func_176223_P().func_177226_a(field_176413_a, Integer.valueOf(p_176203_1_));
+     }
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(field_176413_a);
++        return ((Integer)p_176201_1_.func_177229_b(field_176413_a)).intValue();
+     }
+ 
+     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
+     {
+-        return p_185499_1_.func_177226_a(field_176413_a, p_185499_2_.func_185833_a(p_185499_1_.func_177229_b(field_176413_a), 16));
++        return p_185499_1_.func_177226_a(field_176413_a, Integer.valueOf(p_185499_2_.func_185833_a(((Integer)p_185499_1_.func_177229_b(field_176413_a)).intValue(), 16)));
+     }
+ 
+     public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
+     {
+-        return p_185471_1_.func_177226_a(field_176413_a, p_185471_2_.func_185802_a(p_185471_1_.func_177229_b(field_176413_a), 16));
++        return p_185471_1_.func_177226_a(field_176413_a, Integer.valueOf(p_185471_2_.func_185802_a(((Integer)p_185471_1_.func_177229_b(field_176413_a)).intValue(), 16)));
+     }
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176413_a);
++        return new BlockStateContainer(this, new IProperty[] {field_176413_a});
+     }
+ }

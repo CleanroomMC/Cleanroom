@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/renderer/texture/SimpleTexture.java
++++ after/net/minecraft/client/renderer/texture/SimpleTexture.java
+@@ -40,7 +40,7 @@
+             {
+                 try
+                 {
+-                    TextureMetadataSection texturemetadatasection = iresource.func_110526_a("texture");
++                    TextureMetadataSection texturemetadatasection = (TextureMetadataSection)iresource.func_110526_a("texture");
+ 
+                     if (texturemetadatasection != null)
+                     {

@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/gui/GuiScreenAddServer.java
++++ after/net/minecraft/client/gui/GuiScreenAddServer.java
+@@ -42,7 +42,7 @@
+                         String s = IDN.toASCII(astring[0]);
+                         return true;
+                     }
+-                    catch (IllegalArgumentException illegalargumentexception)
++                    catch (IllegalArgumentException var4)
+                     {
+                         return false;
+                     }

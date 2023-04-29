@@ -19,7 +19,7 @@
      public static void func_77474_a()
      {
          ContextCapabilities contextcapabilities = GLContext.getCapabilities();
-@@ -294,8 +299,8 @@
+@@ -294,11 +299,12 @@
  
          try
          {
@@ -28,9 +28,14 @@
 +            CentralProcessor aprocessor = (new SystemInfo()).getHardware().getProcessor();
 +            field_183030_aa = String.format("%dx %s", aprocessor.getLogicalProcessorCount(), aprocessor.getProcessorIdentifier().getName()).replaceAll("\\s+", " ");
          }
-         catch (Throwable var3)
+-        catch (Throwable throwable)
++        catch (Throwable var3)
          {
-@@ -852,6 +857,12 @@
++            ;
+         }
+     }
+ 
+@@ -851,6 +857,12 @@
          else
          {
              GL13.glMultiTexCoord2f(p_77475_0_, p_77475_1_, p_77475_2_);

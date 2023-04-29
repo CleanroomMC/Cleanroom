@@ -1,5 +1,14 @@
 --- before/net/minecraft/world/gen/feature/WorldGenCanopyTree.java
 +++ after/net/minecraft/world/gen/feature/WorldGenCanopyTree.java
+@@ -16,7 +16,7 @@
+ public class WorldGenCanopyTree extends WorldGenAbstractTree
+ {
+     private static final IBlockState field_181640_a = Blocks.field_150363_s.func_176223_P().func_177226_a(BlockNewLog.field_176300_b, BlockPlanks.EnumType.DARK_OAK);
+-    private static final IBlockState field_181641_b = Blocks.field_150361_u.func_176223_P().func_177226_a(BlockNewLeaf.field_176240_P, BlockPlanks.EnumType.DARK_OAK).func_177226_a(BlockLeaves.field_176236_b, false);
++    private static final IBlockState field_181641_b = Blocks.field_150361_u.func_176223_P().func_177226_a(BlockNewLeaf.field_176240_P, BlockPlanks.EnumType.DARK_OAK).func_177226_a(BlockLeaves.field_176236_b, Boolean.valueOf(false));
+ 
+     public WorldGenCanopyTree(boolean p_i45461_1_)
+     {
 @@ -33,9 +33,10 @@
          if (k >= 1 && k + i + 1 < 256)
          {

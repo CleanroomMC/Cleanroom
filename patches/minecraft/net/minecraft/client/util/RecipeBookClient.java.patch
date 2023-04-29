@@ -1,9 +1,44 @@
 --- before/net/minecraft/client/util/RecipeBookClient.java
 +++ after/net/minecraft/client/util/RecipeBookClient.java
-@@ -54,6 +54,14 @@
+@@ -7,6 +7,7 @@
+ import java.util.ArrayList;
+ import java.util.List;
+ import java.util.Map;
++import java.util.function.Function;
+ import net.minecraft.client.gui.recipebook.RecipeList;
+ import net.minecraft.creativetab.CreativeTabs;
+ import net.minecraft.item.ItemStack;
+@@ -19,15 +20,21 @@
+ @SideOnly(Side.CLIENT)
+ public class RecipeBookClient extends RecipeBook
+ {
+-    public static final Map<CreativeTabs, List<RecipeList>> field_194086_e = Maps.newHashMap();
+-    public static final List<RecipeList> field_194087_f = Lists.newArrayList();
++    public static final Map<CreativeTabs, List<RecipeList>> field_194086_e = Maps.<CreativeTabs, List<RecipeList>>newHashMap();
++    public static final List<RecipeList> field_194087_f = Lists.<RecipeList>newArrayList();
+ 
+     private static RecipeList func_194082_a(CreativeTabs p_194082_0_)
+     {
+         RecipeList recipelist = new RecipeList();
+         field_194087_f.add(recipelist);
+-        field_194086_e.computeIfAbsent(p_194082_0_, (p_194085_0_) -> new ArrayList()).add(recipelist);
+-        field_194086_e.computeIfAbsent(CreativeTabs.field_78027_g, (p_194083_0_) -> new ArrayList()).add(recipelist);
++        (field_194086_e.computeIfAbsent(p_194082_0_, (p_194085_0_) ->
++        {
++            return new ArrayList();
++        })).add(recipelist);
++        (field_194086_e.computeIfAbsent(CreativeTabs.field_78027_g, (p_194083_0_) ->
++        {
++            return new ArrayList();
++        })).add(recipelist);
+         return recipelist;
+     }
+ 
+@@ -47,7 +54,15 @@
  
      static
      {
+-        Table<CreativeTabs, String, RecipeList> table = HashBasedTable.create();
 +        rebuildTable();
 +    }
 +
@@ -12,6 +47,39 @@
 +        field_194086_e.clear();
 +        field_194087_f.clear();
 +
-         Table<CreativeTabs, String, RecipeList> table = HashBasedTable.<CreativeTabs, String, RecipeList>create();
++        Table<CreativeTabs, String, RecipeList> table = HashBasedTable.<CreativeTabs, String, RecipeList>create();
  
          for (IRecipe irecipe : CraftingManager.field_193380_a)
+         {
+@@ -55,24 +70,24 @@
+             {
+                 CreativeTabs creativetabs = func_194084_a(irecipe.func_77571_b());
+                 String s = irecipe.func_193358_e();
+-                RecipeList recipelist;
++                RecipeList recipelist1;
+ 
+                 if (s.isEmpty())
+                 {
+-                    recipelist = func_194082_a(creativetabs);
++                    recipelist1 = func_194082_a(creativetabs);
+                 }
+                 else
+                 {
+-                    recipelist = table.get(creativetabs, s);
++                    recipelist1 = table.get(creativetabs, s);
+ 
+-                    if (recipelist == null)
++                    if (recipelist1 == null)
+                     {
+-                        recipelist = func_194082_a(creativetabs);
+-                        table.put(creativetabs, s, recipelist);
++                        recipelist1 = func_194082_a(creativetabs);
++                        table.put(creativetabs, s, recipelist1);
+                     }
+                 }
+ 
+-                recipelist.func_192709_a(irecipe);
++                recipelist1.func_192709_a(irecipe);
+             }
+         }
+     }

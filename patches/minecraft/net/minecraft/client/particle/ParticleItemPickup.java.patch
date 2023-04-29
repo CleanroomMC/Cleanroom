@@ -1,0 +1,24 @@
+--- before/net/minecraft/client/particle/ParticleItemPickup.java
++++ after/net/minecraft/client/particle/ParticleItemPickup.java
+@@ -32,7 +32,7 @@
+     public void func_180434_a(BufferBuilder p_180434_1_, Entity p_180434_2_, float p_180434_3_, float p_180434_4_, float p_180434_5_, float p_180434_6_, float p_180434_7_, float p_180434_8_)
+     {
+         float f = ((float)this.field_70594_ar + p_180434_3_) / (float)this.field_70593_as;
+-        f *= f;
++        f = f * f;
+         double d0 = this.field_174840_a.field_70165_t;
+         double d1 = this.field_174840_a.field_70163_u;
+         double d2 = this.field_174840_a.field_70161_v;
+@@ -47,9 +47,9 @@
+         int k = i / 65536;
+         OpenGlHelper.func_77475_a(OpenGlHelper.field_77476_b, (float)j, (float)k);
+         GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
+-        d6 -= field_70556_an;
+-        d7 -= field_70554_ao;
+-        d8 -= field_70555_ap;
++        d6 = d6 - field_70556_an;
++        d7 = d7 - field_70554_ao;
++        d8 = d8 - field_70555_ap;
+         GlStateManager.func_179145_e();
+         this.field_174842_aB.func_188391_a(this.field_174840_a, d6, d7, d8, this.field_174840_a.field_70177_z, p_180434_3_, false);
+     }

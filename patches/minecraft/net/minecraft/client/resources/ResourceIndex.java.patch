@@ -1,0 +1,42 @@
+--- before/net/minecraft/client/resources/ResourceIndex.java
++++ after/net/minecraft/client/resources/ResourceIndex.java
+@@ -12,6 +12,7 @@
+ import java.io.Reader;
+ import java.nio.charset.StandardCharsets;
+ import java.util.Map;
++import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+ import net.minecraft.util.JsonUtils;
+ import net.minecraft.util.ResourceLocation;
+@@ -25,7 +26,7 @@
+ public class ResourceIndex
+ {
+     private static final Logger field_152783_a = LogManager.getLogger();
+-    private final Map<String, File> field_152784_b = Maps.newHashMap();
++    private final Map<String, File> field_152784_b = Maps.<String, File>newHashMap();
+ 
+     protected ResourceIndex()
+     {
+@@ -45,7 +46,7 @@
+ 
+             if (jsonobject1 != null)
+             {
+-                for (Map.Entry<String, JsonElement> entry : jsonobject1.entrySet())
++                for (Entry<String, JsonElement> entry : jsonobject1.entrySet())
+                 {
+                     JsonObject jsonobject2 = (JsonObject)entry.getValue();
+                     String s = entry.getKey();
+@@ -57,11 +58,11 @@
+                 }
+             }
+         }
+-        catch (JsonParseException jsonparseexception)
++        catch (JsonParseException var20)
+         {
+             field_152783_a.error("Unable to parse resource index file: {}", (Object)file2);
+         }
+-        catch (FileNotFoundException filenotfoundexception)
++        catch (FileNotFoundException var21)
+         {
+             field_152783_a.error("Can't find the resource index file: {}", (Object)file2);
+         }

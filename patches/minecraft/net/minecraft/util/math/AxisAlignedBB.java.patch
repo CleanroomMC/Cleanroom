@@ -1,0 +1,54 @@
+--- before/net/minecraft/util/math/AxisAlignedBB.java
++++ after/net/minecraft/util/math/AxisAlignedBB.java
+@@ -100,7 +100,8 @@
+         i = Double.doubleToLongBits(this.field_72337_e);
+         j = 31 * j + (int)(i ^ i >>> 32);
+         i = Double.doubleToLongBits(this.field_72334_f);
+-        return 31 * j + (int)(i ^ i >>> 32);
++        j = 31 * j + (int)(i ^ i >>> 32);
++        return j;
+     }
+ 
+     public AxisAlignedBB func_191195_a(double p_191195_1_, double p_191195_3_, double p_191195_5_)
+@@ -236,7 +237,7 @@
+ 
+     public double func_72316_a(AxisAlignedBB p_72316_1_, double p_72316_2_)
+     {
+-        if (!(p_72316_1_.field_72337_e <= this.field_72338_b) && !(p_72316_1_.field_72338_b >= this.field_72337_e) && !(p_72316_1_.field_72334_f <= this.field_72339_c) && !(p_72316_1_.field_72339_c >= this.field_72334_f))
++        if (p_72316_1_.field_72337_e > this.field_72338_b && p_72316_1_.field_72338_b < this.field_72337_e && p_72316_1_.field_72334_f > this.field_72339_c && p_72316_1_.field_72339_c < this.field_72334_f)
+         {
+             if (p_72316_2_ > 0.0D && p_72316_1_.field_72336_d <= this.field_72340_a)
+             {
+@@ -267,7 +268,7 @@
+ 
+     public double func_72323_b(AxisAlignedBB p_72323_1_, double p_72323_2_)
+     {
+-        if (!(p_72323_1_.field_72336_d <= this.field_72340_a) && !(p_72323_1_.field_72340_a >= this.field_72336_d) && !(p_72323_1_.field_72334_f <= this.field_72339_c) && !(p_72323_1_.field_72339_c >= this.field_72334_f))
++        if (p_72323_1_.field_72336_d > this.field_72340_a && p_72323_1_.field_72340_a < this.field_72336_d && p_72323_1_.field_72334_f > this.field_72339_c && p_72323_1_.field_72339_c < this.field_72334_f)
+         {
+             if (p_72323_2_ > 0.0D && p_72323_1_.field_72337_e <= this.field_72338_b)
+             {
+@@ -298,7 +299,7 @@
+ 
+     public double func_72322_c(AxisAlignedBB p_72322_1_, double p_72322_2_)
+     {
+-        if (!(p_72322_1_.field_72336_d <= this.field_72340_a) && !(p_72322_1_.field_72340_a >= this.field_72336_d) && !(p_72322_1_.field_72337_e <= this.field_72338_b) && !(p_72322_1_.field_72338_b >= this.field_72337_e))
++        if (p_72322_1_.field_72336_d > this.field_72340_a && p_72322_1_.field_72340_a < this.field_72336_d && p_72322_1_.field_72337_e > this.field_72338_b && p_72322_1_.field_72338_b < this.field_72337_e)
+         {
+             if (p_72322_2_ > 0.0D && p_72322_1_.field_72334_f <= this.field_72339_c)
+             {
+@@ -345,11 +346,11 @@
+ 
+     public boolean func_72318_a(Vec3d p_72318_1_)
+     {
+-        if (!(p_72318_1_.field_72450_a <= this.field_72340_a) && !(p_72318_1_.field_72450_a >= this.field_72336_d))
++        if (p_72318_1_.field_72450_a > this.field_72340_a && p_72318_1_.field_72450_a < this.field_72336_d)
+         {
+-            if (!(p_72318_1_.field_72448_b <= this.field_72338_b) && !(p_72318_1_.field_72448_b >= this.field_72337_e))
++            if (p_72318_1_.field_72448_b > this.field_72338_b && p_72318_1_.field_72448_b < this.field_72337_e)
+             {
+-                return !(p_72318_1_.field_72449_c <= this.field_72339_c) && !(p_72318_1_.field_72449_c >= this.field_72334_f);
++                return p_72318_1_.field_72449_c > this.field_72339_c && p_72318_1_.field_72449_c < this.field_72334_f;
+             }
+             else
+             {

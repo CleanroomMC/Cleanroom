@@ -1,0 +1,29 @@
+--- before/net/minecraft/entity/ai/EntityAIAttackRanged.java
++++ after/net/minecraft/entity/ai/EntityAIAttackRanged.java
+@@ -10,7 +10,7 @@
+     private final EntityLiving field_75322_b;
+     private final IRangedAttackMob field_82641_b;
+     private EntityLivingBase field_75323_c;
+-    private int field_75320_d = -1;
++    private int field_75320_d;
+     private final double field_75321_e;
+     private int field_75318_f;
+     private final int field_96561_g;
+@@ -25,6 +25,8 @@
+ 
+     public EntityAIAttackRanged(IRangedAttackMob p_i1650_1_, double p_i1650_2_, int p_i1650_4_, int p_i1650_5_, float p_i1650_6_)
+     {
++        this.field_75320_d = -1;
++
+         if (!(p_i1650_1_ instanceof EntityLivingBase))
+         {
+             throw new IllegalArgumentException("ArrowAttackGoal requires Mob implements RangedAttackMob");
+@@ -83,7 +85,7 @@
+             this.field_75318_f = 0;
+         }
+ 
+-        if (!(d0 > (double)this.field_82642_h) && this.field_75318_f >= 20)
++        if (d0 <= (double)this.field_82642_h && this.field_75318_f >= 20)
+         {
+             this.field_75322_b.func_70661_as().func_75499_g();
+         }

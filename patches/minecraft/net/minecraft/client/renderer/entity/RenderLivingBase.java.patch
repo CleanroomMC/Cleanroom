@@ -1,7 +1,19 @@
 --- before/net/minecraft/client/renderer/entity/RenderLivingBase.java
 +++ after/net/minecraft/client/renderer/entity/RenderLivingBase.java
-@@ -32,6 +32,9 @@
-     protected List<LayerRenderer<T>> field_177097_h = Lists.<LayerRenderer<T>>newArrayList();
+@@ -1,7 +1,6 @@
+ package net.minecraft.client.renderer.entity;
+ 
+ import com.google.common.collect.Lists;
+-import java.nio.Buffer;
+ import java.nio.FloatBuffer;
+ import java.util.List;
+ import net.minecraft.client.Minecraft;
+@@ -30,9 +29,12 @@
+     private static final DynamicTexture field_177096_e = new DynamicTexture(16, 16);
+     protected ModelBase field_77045_g;
+     protected FloatBuffer field_177095_g = GLAllocation.func_74529_h(4);
+-    protected List<LayerRenderer<T>> field_177097_h = Lists.newArrayList();
++    protected List<LayerRenderer<T>> field_177097_h = Lists.<LayerRenderer<T>>newArrayList();
      protected boolean field_188323_j;
  
 +    public static float NAME_TAG_RANGE = 64.0f;
@@ -10,6 +22,14 @@
      public RenderLivingBase(RenderManager p_i46156_1_, ModelBase p_i46156_2_, float p_i46156_3_)
      {
          super(p_i46156_1_);
+@@ -56,6 +58,7 @@
+ 
+         for (f = p_77034_2_ - p_77034_1_; f < -180.0F; f += 360.0F)
+         {
++            ;
+         }
+ 
+         while (f >= 180.0F)
 @@ -72,10 +75,12 @@
  
      public void func_76986_a(T p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_, float p_76986_9_)
@@ -49,7 +69,25 @@
      }
  
      public float func_188322_c(T p_188322_1_, float p_188322_2_)
-@@ -454,10 +461,11 @@
+@@ -300,7 +307,7 @@
+             GlStateManager.func_187399_a(8960, OpenGlHelper.field_176077_E, 7681);
+             GlStateManager.func_187399_a(8960, OpenGlHelper.field_176078_F, OpenGlHelper.field_176091_w);
+             GlStateManager.func_187399_a(8960, OpenGlHelper.field_176085_I, 770);
+-            ((Buffer)this.field_177095_g).position(0);
++            this.field_177095_g.position(0);
+ 
+             if (flag1)
+             {
+@@ -321,7 +328,7 @@
+                 this.field_177095_g.put(1.0F - f1);
+             }
+ 
+-            ((Buffer)this.field_177095_g).flip();
++            this.field_177095_g.flip();
+             GlStateManager.func_187448_b(8960, 8705, this.field_177095_g);
+             GlStateManager.func_179138_g(OpenGlHelper.field_176096_r);
+             GlStateManager.func_179098_w();
+@@ -454,18 +461,20 @@
  
      public void func_177067_a(T p_177067_1_, double p_177067_2_, double p_177067_4_, double p_177067_6_)
      {
@@ -60,9 +98,11 @@
 -            float f = p_177067_1_.func_70093_af() ? 32.0F : 64.0F;
 +            float f = p_177067_1_.func_70093_af() ? NAME_TAG_RANGE_SNEAK : NAME_TAG_RANGE;
  
-             if (d0 < (double)(f * f))
+-            if (!(d0 >= (double)(f * f)))
++            if (d0 < (double)(f * f))
              {
-@@ -466,6 +474,7 @@
+                 String s = p_177067_1_.func_145748_c_().func_150254_d();
+                 GlStateManager.func_179092_a(516, 0.1F);
                  this.func_188296_a(p_177067_1_, p_177067_2_, p_177067_4_, p_177067_6_, s, d0);
              }
          }

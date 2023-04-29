@@ -1,6 +1,32 @@
 --- before/net/minecraft/advancements/critereon/ItemPredicate.java
 +++ after/net/minecraft/advancements/critereon/ItemPredicate.java
-@@ -104,6 +104,13 @@
+@@ -54,7 +54,7 @@
+         {
+             return false;
+         }
+-        else if (this.field_192497_c != null && p_192493_1_.func_77960_j() != this.field_192497_c)
++        else if (this.field_192497_c != null && p_192493_1_.func_77960_j() != this.field_192497_c.intValue())
+         {
+             return false;
+         }
+@@ -87,7 +87,15 @@
+             }
+ 
+             PotionType potiontype = PotionUtils.func_185191_c(p_192493_1_);
+-            return this.field_192500_f == null || this.field_192500_f == potiontype;
++
++            if (this.field_192500_f != null && this.field_192500_f != potiontype)
++            {
++                return false;
++            }
++            else
++            {
++                return true;
++            }
+         }
+     }
+ 
+@@ -96,6 +104,13 @@
          if (p_192492_0_ != null && !p_192492_0_.isJsonNull())
          {
              JsonObject jsonobject = JsonUtils.func_151210_l(p_192492_0_, "item");

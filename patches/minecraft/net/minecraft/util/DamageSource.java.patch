@@ -1,0 +1,11 @@
+--- before/net/minecraft/util/DamageSource.java
++++ after/net/minecraft/util/DamageSource.java
+@@ -185,7 +185,7 @@
+         EntityLivingBase entitylivingbase = p_151519_1_.func_94060_bK();
+         String s = "death.attack." + this.field_76373_n;
+         String s1 = s + ".player";
+-        return entitylivingbase != null && I18n.func_94522_b(s1) ? new TextComponentTranslation(s1, p_151519_1_.func_145748_c_(), entitylivingbase.func_145748_c_()) : new TextComponentTranslation(s, p_151519_1_.func_145748_c_());
++        return entitylivingbase != null && I18n.func_94522_b(s1) ? new TextComponentTranslation(s1, new Object[] {p_151519_1_.func_145748_c_(), entitylivingbase.func_145748_c_()}) : new TextComponentTranslation(s, new Object[] {p_151519_1_.func_145748_c_()});
+     }
+ 
+     public boolean func_76347_k()

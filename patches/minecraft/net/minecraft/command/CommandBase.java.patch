@@ -1,6 +1,179 @@
 --- before/net/minecraft/command/CommandBase.java
 +++ after/net/minecraft/command/CommandBase.java
-@@ -393,7 +393,7 @@
+@@ -16,6 +16,7 @@
+ import java.util.List;
+ import java.util.Map;
+ import java.util.UUID;
++import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+ import net.minecraft.block.Block;
+ import net.minecraft.block.properties.IProperty;
+@@ -55,7 +56,7 @@
+             }
+         }
+ 
+-        return new SyntaxErrorException("commands.tellraw.jsonException", s);
++        return new SyntaxErrorException("commands.tellraw.jsonException", new Object[] {s});
+     }
+ 
+     public static NBTTagCompound func_184887_a(Entity p_184887_0_)
+@@ -82,7 +83,7 @@
+ 
+     public List<String> func_71514_a()
+     {
+-        return Collections.emptyList();
++        return Collections.<String>emptyList();
+     }
+ 
+     public boolean func_184882_a(MinecraftServer p_184882_1_, ICommandSender p_184882_2_)
+@@ -92,7 +93,7 @@
+ 
+     public List<String> func_184883_a(MinecraftServer p_184883_1_, ICommandSender p_184883_2_, String[] p_184883_3_, @Nullable BlockPos p_184883_4_)
+     {
+-        return Collections.emptyList();
++        return Collections.<String>emptyList();
+     }
+ 
+     public static int func_175755_a(String p_175755_0_) throws NumberInvalidException
+@@ -101,9 +102,9 @@
+         {
+             return Integer.parseInt(p_175755_0_);
+         }
+-        catch (NumberFormatException numberformatexception)
++        catch (NumberFormatException var2)
+         {
+-            throw new NumberInvalidException("commands.generic.num.invalid", p_175755_0_);
++            throw new NumberInvalidException("commands.generic.num.invalid", new Object[] {p_175755_0_});
+         }
+     }
+ 
+@@ -118,11 +119,11 @@
+ 
+         if (i < p_175764_1_)
+         {
+-            throw new NumberInvalidException("commands.generic.num.tooSmall", i, p_175764_1_);
++            throw new NumberInvalidException("commands.generic.num.tooSmall", new Object[] {i, p_175764_1_});
+         }
+         else if (i > p_175764_2_)
+         {
+-            throw new NumberInvalidException("commands.generic.num.tooBig", i, p_175764_2_);
++            throw new NumberInvalidException("commands.generic.num.tooBig", new Object[] {i, p_175764_2_});
+         }
+         else
+         {
+@@ -136,9 +137,9 @@
+         {
+             return Long.parseLong(p_175766_0_);
+         }
+-        catch (NumberFormatException numberformatexception)
++        catch (NumberFormatException var2)
+         {
+-            throw new NumberInvalidException("commands.generic.num.invalid", p_175766_0_);
++            throw new NumberInvalidException("commands.generic.num.invalid", new Object[] {p_175766_0_});
+         }
+     }
+ 
+@@ -148,11 +149,11 @@
+ 
+         if (i < p_175760_1_)
+         {
+-            throw new NumberInvalidException("commands.generic.num.tooSmall", i, p_175760_1_);
++            throw new NumberInvalidException("commands.generic.num.tooSmall", new Object[] {i, p_175760_1_});
+         }
+         else if (i > p_175760_3_)
+         {
+-            throw new NumberInvalidException("commands.generic.num.tooBig", i, p_175760_3_);
++            throw new NumberInvalidException("commands.generic.num.tooBig", new Object[] {i, p_175760_3_});
+         }
+         else
+         {
+@@ -174,16 +175,16 @@
+ 
+             if (!Doubles.isFinite(d0))
+             {
+-                throw new NumberInvalidException("commands.generic.num.invalid", p_175765_0_);
++                throw new NumberInvalidException("commands.generic.num.invalid", new Object[] {p_175765_0_});
+             }
+             else
+             {
+                 return d0;
+             }
+         }
+-        catch (NumberFormatException numberformatexception)
++        catch (NumberFormatException var3)
+         {
+-            throw new NumberInvalidException("commands.generic.num.invalid", p_175765_0_);
++            throw new NumberInvalidException("commands.generic.num.invalid", new Object[] {p_175765_0_});
+         }
+     }
+ 
+@@ -198,11 +199,11 @@
+ 
+         if (d0 < p_175756_1_)
+         {
+-            throw new NumberInvalidException("commands.generic.num.tooSmall", String.format("%.2f", d0), String.format("%.2f", p_175756_1_));
++            throw new NumberInvalidException("commands.generic.num.tooSmall", new Object[] {String.format("%.2f", d0), String.format("%.2f", p_175756_1_)});
+         }
+         else if (d0 > p_175756_3_)
+         {
+-            throw new NumberInvalidException("commands.generic.num.tooBig", String.format("%.2f", d0), String.format("%.2f", p_175756_3_));
++            throw new NumberInvalidException("commands.generic.num.tooBig", new Object[] {String.format("%.2f", d0), String.format("%.2f", p_175756_3_)});
+         }
+         else
+         {
+@@ -216,7 +217,7 @@
+         {
+             if (!"false".equals(p_180527_0_) && !"0".equals(p_180527_0_))
+             {
+-                throw new CommandException("commands.generic.boolean.invalid", p_180527_0_);
++                throw new CommandException("commands.generic.boolean.invalid", new Object[] {p_180527_0_});
+             }
+             else
+             {
+@@ -260,8 +261,9 @@
+             {
+                 p_193512_1_ = p_193512_0_.func_184103_al().func_177451_a(UUID.fromString(p_193512_2_));
+             }
+-            catch (IllegalArgumentException illegalargumentexception)
++            catch (IllegalArgumentException var4)
+             {
++                ;
+             }
+         }
+ 
+@@ -272,7 +274,7 @@
+ 
+         if (p_193512_1_ == null)
+         {
+-            throw new PlayerNotFoundException("commands.generic.player.notFound", p_193512_2_);
++            throw new PlayerNotFoundException("commands.generic.player.notFound", new Object[] {p_193512_2_});
+         }
+         else
+         {
+@@ -306,11 +308,11 @@
+                     entity = p_184884_0_.func_184103_al().func_177451_a(uuid);
+                 }
+             }
+-            catch (IllegalArgumentException illegalargumentexception)
++            catch (IllegalArgumentException var6)
+             {
+                 if (p_184884_2_.split("-").length == 5)
+                 {
+-                    throw new EntityNotFoundException("commands.generic.entity.invalidUuid", p_184884_2_);
++                    throw new EntityNotFoundException("commands.generic.entity.invalidUuid", new Object[] {p_184884_2_});
+                 }
+             }
+         }
+@@ -355,7 +357,7 @@
+         {
+             return func_184888_a(p_184891_0_, p_184891_1_, p_184891_2_).func_70005_c_();
+         }
+-        catch (PlayerNotFoundException playernotfoundexception)
++        catch (PlayerNotFoundException var6)
+         {
+             try
+             {
+@@ -391,7 +393,7 @@
                  itextcomponent.func_150258_a(" ");
              }
  
@@ -9,3 +182,198 @@
  
              if (p_147176_3_)
              {
+@@ -401,7 +403,7 @@
+                 {
+                     if (EntitySelector.func_82378_b(p_147176_1_[i]))
+                     {
+-                        throw new PlayerNotFoundException("commands.generic.selector.notFound", p_147176_1_[i]);
++                        throw new PlayerNotFoundException("commands.generic.selector.notFound", new Object[] {p_147176_1_[i]});
+                     }
+                 }
+                 else
+@@ -445,7 +447,7 @@
+ 
+         if (flag && Double.isNaN(p_175767_0_))
+         {
+-            throw new NumberInvalidException("commands.generic.num.invalid", p_175767_0_);
++            throw new NumberInvalidException("commands.generic.num.invalid", new Object[] {p_175767_0_});
+         }
+         else
+         {
+@@ -474,12 +476,12 @@
+             {
+                 if (d1 < (double)p_175767_3_)
+                 {
+-                    throw new NumberInvalidException("commands.generic.num.tooSmall", String.format("%.2f", d1), p_175767_3_);
++                    throw new NumberInvalidException("commands.generic.num.tooSmall", new Object[] {String.format("%.2f", d1), p_175767_3_});
+                 }
+ 
+                 if (d1 > (double)p_175767_4_)
+                 {
+-                    throw new NumberInvalidException("commands.generic.num.tooBig", String.format("%.2f", d1), p_175767_4_);
++                    throw new NumberInvalidException("commands.generic.num.tooBig", new Object[] {String.format("%.2f", d1), p_175767_4_});
+                 }
+             }
+ 
+@@ -498,7 +500,7 @@
+ 
+         if (flag && Double.isNaN(p_175769_0_))
+         {
+-            throw new NumberInvalidException("commands.generic.num.invalid", p_175769_0_);
++            throw new NumberInvalidException("commands.generic.num.invalid", new Object[] {p_175769_0_});
+         }
+         else
+         {
+@@ -525,12 +527,12 @@
+             {
+                 if (d0 < (double)p_175769_3_)
+                 {
+-                    throw new NumberInvalidException("commands.generic.num.tooSmall", String.format("%.2f", d0), p_175769_3_);
++                    throw new NumberInvalidException("commands.generic.num.tooSmall", new Object[] {String.format("%.2f", d0), p_175769_3_});
+                 }
+ 
+                 if (d0 > (double)p_175769_4_)
+                 {
+-                    throw new NumberInvalidException("commands.generic.num.tooBig", String.format("%.2f", d0), p_175769_4_);
++                    throw new NumberInvalidException("commands.generic.num.tooBig", new Object[] {String.format("%.2f", d0), p_175769_4_});
+                 }
+             }
+ 
+@@ -545,7 +547,7 @@
+ 
+         if (item == null)
+         {
+-            throw new NumberInvalidException("commands.give.item.notFound", resourcelocation);
++            throw new NumberInvalidException("commands.give.item.notFound", new Object[] {resourcelocation});
+         }
+         else
+         {
+@@ -559,7 +561,7 @@
+ 
+         if (!Block.field_149771_c.func_148741_d(resourcelocation))
+         {
+-            throw new NumberInvalidException("commands.give.block.notFound", resourcelocation);
++            throw new NumberInvalidException("commands.give.block.notFound", new Object[] {resourcelocation});
+         }
+         else
+         {
+@@ -575,41 +577,41 @@
+ 
+             if (i < 0)
+             {
+-                throw new NumberInvalidException("commands.generic.num.tooSmall", i, 0);
++                throw new NumberInvalidException("commands.generic.num.tooSmall", new Object[] {i, Integer.valueOf(0)});
+             }
+             else if (i > 15)
+             {
+-                throw new NumberInvalidException("commands.generic.num.tooBig", i, 15);
++                throw new NumberInvalidException("commands.generic.num.tooBig", new Object[] {i, Integer.valueOf(15)});
+             }
+             else
+             {
+                 return p_190794_0_.func_176203_a(Integer.parseInt(p_190794_1_));
+             }
+         }
+-        catch (RuntimeException runtimeexception1)
++        catch (RuntimeException var7)
+         {
+             try
+             {
+                 Map < IProperty<?>, Comparable<? >> map = func_190795_c(p_190794_0_, p_190794_1_);
+                 IBlockState iblockstate = p_190794_0_.func_176223_P();
+ 
+-                for (Map.Entry < IProperty<?>, Comparable<? >> entry : map.entrySet())
++                for (Entry < IProperty<?>, Comparable<? >> entry : map.entrySet())
+                 {
+                     iblockstate = func_190793_a(iblockstate, entry.getKey(), entry.getValue());
+                 }
+ 
+                 return iblockstate;
+             }
+-            catch (RuntimeException runtimeexception)
++            catch (RuntimeException var6)
+             {
+-                throw new InvalidBlockStateException("commands.generic.blockstate.invalid", p_190794_1_, Block.field_149771_c.func_177774_c(p_190794_0_));
++                throw new InvalidBlockStateException("commands.generic.blockstate.invalid", new Object[] {p_190794_1_, Block.field_149771_c.func_177774_c(p_190794_0_)});
+             }
+         }
+     }
+ 
+     private static <T extends Comparable<T>> IBlockState func_190793_a(IBlockState p_190793_0_, IProperty<T> p_190793_1_, Comparable<?> p_190793_2_)
+     {
+-        return p_190793_0_.func_177226_a(p_190793_1_, (T) p_190793_2_);
++        return p_190793_0_.func_177226_a(p_190793_1_, (T)p_190793_2_);
+     }
+ 
+     public static Predicate<IBlockState> func_190791_b(final Block p_190791_0_, String p_190791_1_) throws InvalidBlockStateException
+@@ -627,7 +629,7 @@
+                     }
+                 };
+             }
+-            catch (RuntimeException runtimeexception)
++            catch (RuntimeException var3)
+             {
+                 final Map < IProperty<?>, Comparable<? >> map = func_190795_c(p_190791_0_, p_190791_1_);
+                 return new Predicate<IBlockState>()
+@@ -636,7 +638,7 @@
+                     {
+                         if (p_apply_1_ != null && p_190791_0_ == p_apply_1_.func_177230_c())
+                         {
+-                            for (Map.Entry < IProperty<?>, Comparable<? >> entry : map.entrySet())
++                            for (Entry < IProperty<?>, Comparable<? >> entry : map.entrySet())
+                             {
+                                 if (!p_apply_1_.func_177229_b(entry.getKey()).equals(entry.getValue()))
+                                 {
+@@ -662,7 +664,7 @@
+ 
+     private static Map < IProperty<?>, Comparable<? >> func_190795_c(Block p_190795_0_, String p_190795_1_) throws InvalidBlockStateException
+     {
+-        Map < IProperty<?>, Comparable<? >> map = Maps.newHashMap();
++        Map < IProperty<?>, Comparable<? >> map = Maps. < IProperty<?>, Comparable<? >> newHashMap();
+ 
+         if ("default".equals(p_190795_1_))
+         {
+@@ -705,14 +707,14 @@
+                 map.put(iproperty, comparable);
+             }
+ 
+-            throw new InvalidBlockStateException("commands.generic.blockstate.invalid", p_190795_1_, Block.field_149771_c.func_177774_c(p_190795_0_));
++            throw new InvalidBlockStateException("commands.generic.blockstate.invalid", new Object[] {p_190795_1_, Block.field_149771_c.func_177774_c(p_190795_0_)});
+         }
+     }
+ 
+     @Nullable
+     private static <T extends Comparable<T>> T func_190792_a(IProperty<T> p_190792_0_, String p_190792_1_)
+     {
+-        return p_190792_0_.func_185929_b(p_190792_1_).orNull();
++        return (T)(p_190792_0_.func_185929_b(p_190792_1_).orNull());
+     }
+ 
+     public static String func_71527_a(Object[] p_71527_0_)
+@@ -793,7 +795,7 @@
+             {
+                 if (i != p_175771_1_ + 2)
+                 {
+-                    return Collections.emptyList();
++                    return Collections.<String>emptyList();
+                 }
+ 
+                 s = Integer.toString(p_175771_2_.func_177952_p());
+@@ -822,7 +824,7 @@
+             {
+                 if (i != p_181043_1_ + 1)
+                 {
+-                    return Collections.emptyList();
++                    return Collections.<String>emptyList();
+                 }
+ 
+                 s = Integer.toString(p_181043_2_.func_177952_p());
+@@ -845,7 +847,7 @@
+     public static List<String> func_175762_a(String[] p_175762_0_, Collection<?> p_175762_1_)
+     {
+         String s = p_175762_0_[p_175762_0_.length - 1];
+-        List<String> list = Lists.newArrayList();
++        List<String> list = Lists.<String>newArrayList();
+ 
+         if (!p_175762_1_.isEmpty())
+         {

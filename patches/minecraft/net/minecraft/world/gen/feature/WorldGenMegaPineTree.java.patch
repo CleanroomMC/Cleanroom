@@ -1,5 +1,14 @@
 --- before/net/minecraft/world/gen/feature/WorldGenMegaPineTree.java
 +++ after/net/minecraft/world/gen/feature/WorldGenMegaPineTree.java
+@@ -17,7 +17,7 @@
+ public class WorldGenMegaPineTree extends WorldGenHugeTrees
+ {
+     private static final IBlockState field_181633_e = Blocks.field_150364_r.func_176223_P().func_177226_a(BlockOldLog.field_176301_b, BlockPlanks.EnumType.SPRUCE);
+-    private static final IBlockState field_181634_f = Blocks.field_150362_t.func_176223_P().func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.SPRUCE).func_177226_a(BlockLeaves.field_176236_b, false);
++    private static final IBlockState field_181634_f = Blocks.field_150362_t.func_176223_P().func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.SPRUCE).func_177226_a(BlockLeaves.field_176236_b, Boolean.valueOf(false));
+     private static final IBlockState field_181635_g = Blocks.field_150346_d.func_176223_P().func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.PODZOL);
+     private final boolean field_150542_e;
+ 
 @@ -41,32 +41,25 @@
  
              for (int j = 0; j < i; ++j)

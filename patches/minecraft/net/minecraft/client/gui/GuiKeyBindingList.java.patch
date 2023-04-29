@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/gui/GuiKeyBindingList.java
 +++ after/net/minecraft/client/gui/GuiKeyBindingList.java
+@@ -23,7 +23,7 @@
+         super(p_i45031_2_, p_i45031_1_.field_146294_l + 45, p_i45031_1_.field_146295_m, 63, p_i45031_1_.field_146295_m - 32, 20);
+         this.field_148191_k = p_i45031_1_;
+         this.field_148189_l = p_i45031_2_;
+-        KeyBinding[] akeybinding = ArrayUtils.clone(p_i45031_2_.field_71474_y.field_74324_K);
++        KeyBinding[] akeybinding = (KeyBinding[])ArrayUtils.clone(p_i45031_2_.field_71474_y.field_74324_K);
+         this.field_148190_m = new GuiListExtended.IGuiListEntry[akeybinding.length + KeyBinding.func_151467_c().size()];
+         Arrays.sort((Object[])akeybinding);
+         int i = 0;
 @@ -62,7 +62,7 @@
  
      protected int func_148137_d()

@@ -1,9 +1,14 @@
 --- before/net/minecraft/world/storage/MapDecoration.java
 +++ after/net/minecraft/world/storage/MapDecoration.java
-@@ -92,6 +92,17 @@
-         return i;
-     }
- 
+@@ -88,7 +88,19 @@
+         int i = this.field_191181_a.func_191163_a();
+         i = 31 * i + this.field_176115_b;
+         i = 31 * i + this.field_176116_c;
+-        return 31 * i + this.field_176114_d;
++        i = 31 * i + this.field_176114_d;
++        return i;
++    }
++
 +    /**
 +     * Renders this decoration, useful for custom sprite sheets.
 +     * @param index The index of this icon in the MapData's list. Used by vanilla to offset the Z-coordinate to prevent Z-fighting
@@ -13,8 +18,23 @@
 +    public boolean render(int index)
 +    {
 +        return false;
-+    }
-+
+     }
+ 
      public static enum Type
-     {
-         PLAYER(false),
+@@ -104,7 +116,7 @@
+         MANSION(true, 5393476),
+         MONUMENT(true, 3830373);
+ 
+-        private final byte field_191175_k = (byte)this.ordinal();
++        private final byte field_191175_k;
+         private final boolean field_191176_l;
+         private final int field_191177_m;
+ 
+@@ -115,6 +127,7 @@
+ 
+         private Type(boolean p_i47344_3_, int p_i47344_4_)
+         {
++            this.field_191175_k = (byte)this.ordinal();
+             this.field_191176_l = p_i47344_3_;
+             this.field_191177_m = p_i47344_4_;
+         }

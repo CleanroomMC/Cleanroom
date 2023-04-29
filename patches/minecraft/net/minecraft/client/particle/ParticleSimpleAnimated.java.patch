@@ -1,0 +1,13 @@
+--- before/net/minecraft/client/particle/ParticleSimpleAnimated.java
++++ after/net/minecraft/client/particle/ParticleSimpleAnimated.java
+@@ -78,8 +78,8 @@
+ 
+         if (this.field_187132_l)
+         {
+-            this.field_187129_i *= (double)0.7F;
+-            this.field_187131_k *= (double)0.7F;
++            this.field_187129_i *= 0.699999988079071D;
++            this.field_187131_k *= 0.699999988079071D;
+         }
+     }
+ 

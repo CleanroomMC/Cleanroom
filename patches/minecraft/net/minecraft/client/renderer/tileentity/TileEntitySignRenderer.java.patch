@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/renderer/tileentity/TileEntitySignRenderer.java
++++ after/net/minecraft/client/renderer/tileentity/TileEntitySignRenderer.java
+@@ -93,7 +93,7 @@
+                 {
+                     ITextComponent itextcomponent = p_192841_1_.field_145915_a[j];
+                     List<ITextComponent> list = GuiUtilRenderComponents.func_178908_a(itextcomponent, 90, fontrenderer, false, true);
+-                    String s = list != null && !list.isEmpty() ? list.get(0).func_150254_d() : "";
++                    String s = list != null && !list.isEmpty() ? ((ITextComponent)list.get(0)).func_150254_d() : "";
+ 
+                     if (j == p_192841_1_.field_145918_i)
+                     {

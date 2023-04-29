@@ -1,0 +1,20 @@
+--- before/net/minecraft/command/server/CommandBanIp.java
++++ after/net/minecraft/command/server/CommandBanIp.java
+@@ -67,7 +67,7 @@
+         }
+         else
+         {
+-            throw new WrongUsageException("commands.banip.usage");
++            throw new WrongUsageException("commands.banip.usage", new Object[0]);
+         }
+     }
+ 
+@@ -86,7 +86,7 @@
+ 
+         for (EntityPlayerMP entityplayermp : list)
+         {
+-            entityplayermp.field_71135_a.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.ip_banned"));
++            entityplayermp.field_71135_a.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.ip_banned", new Object[0]));
+             astring[i++] = entityplayermp.func_70005_c_();
+         }
+ 

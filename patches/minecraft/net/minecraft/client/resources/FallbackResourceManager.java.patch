@@ -1,5 +1,23 @@
 --- before/net/minecraft/client/resources/FallbackResourceManager.java
 +++ after/net/minecraft/client/resources/FallbackResourceManager.java
+@@ -20,7 +20,7 @@
+ public class FallbackResourceManager implements IResourceManager
+ {
+     private static final Logger field_177246_b = LogManager.getLogger();
+-    protected final List<IResourcePack> field_110540_a = Lists.newArrayList();
++    protected final List<IResourcePack> field_110540_a = Lists.<IResourcePack>newArrayList();
+     private final MetadataSerializer field_110539_b;
+ 
+     public FallbackResourceManager(MetadataSerializer p_i1289_1_)
+@@ -35,7 +35,7 @@
+ 
+     public Set<String> func_135055_a()
+     {
+-        return Collections.emptySet();
++        return Collections.<String>emptySet();
+     }
+ 
+     public IResource func_110536_a(ResourceLocation p_110536_1_) throws IOException
 @@ -69,6 +69,7 @@
          throw new FileNotFoundException(p_110536_1_.toString());
      }
@@ -8,3 +26,12 @@
      protected InputStream func_177245_a(ResourceLocation p_177245_1_, IResourcePack p_177245_2_) throws IOException
      {
          InputStream inputstream = p_177245_2_.func_110590_a(p_177245_1_);
+@@ -86,7 +87,7 @@
+     public List<IResource> func_135056_b(ResourceLocation p_135056_1_) throws IOException
+     {
+         this.func_188552_d(p_135056_1_);
+-        List<IResource> list = Lists.newArrayList();
++        List<IResource> list = Lists.<IResource>newArrayList();
+         ResourceLocation resourcelocation = func_110537_b(p_135056_1_);
+ 
+         for (IResourcePack iresourcepack : this.field_110540_a)

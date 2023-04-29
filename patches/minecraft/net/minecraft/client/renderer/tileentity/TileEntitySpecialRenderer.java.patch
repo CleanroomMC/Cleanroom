@@ -1,6 +1,6 @@
 --- before/net/minecraft/client/renderer/tileentity/TileEntitySpecialRenderer.java
 +++ after/net/minecraft/client/renderer/tileentity/TileEntitySpecialRenderer.java
-@@ -77,6 +77,8 @@
+@@ -77,12 +77,14 @@
          return false;
      }
  
@@ -9,3 +9,10 @@
      protected void func_190052_a(T p_190052_1_, String p_190052_2_, double p_190052_3_, double p_190052_5_, double p_190052_7_, int p_190052_9_)
      {
          Entity entity = this.field_147501_a.field_147551_g;
+         double d0 = p_190052_1_.func_145835_a(entity.field_70165_t, entity.field_70163_u, entity.field_70161_v);
+ 
+-        if (!(d0 > (double)(p_190052_9_ * p_190052_9_)))
++        if (d0 <= (double)(p_190052_9_ * p_190052_9_))
+         {
+             float f = this.field_147501_a.field_147562_h;
+             float f1 = this.field_147501_a.field_147563_i;

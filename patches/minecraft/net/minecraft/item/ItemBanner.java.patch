@@ -1,0 +1,11 @@
+--- before/net/minecraft/item/ItemBanner.java
++++ after/net/minecraft/item/ItemBanner.java
+@@ -62,7 +62,7 @@
+                     if (p_180614_5_ == EnumFacing.UP)
+                     {
+                         int i = MathHelper.func_76128_c((double)((p_180614_1_.field_70177_z + 180.0F) * 16.0F / 360.0F) + 0.5D) & 15;
+-                        p_180614_2_.func_180501_a(p_180614_3_, Blocks.field_180393_cK.func_176223_P().func_177226_a(BlockStandingSign.field_176413_a, i), 3);
++                        p_180614_2_.func_180501_a(p_180614_3_, Blocks.field_180393_cK.func_176223_P().func_177226_a(BlockStandingSign.field_176413_a, Integer.valueOf(i)), 3);
+                     }
+                     else
+                     {

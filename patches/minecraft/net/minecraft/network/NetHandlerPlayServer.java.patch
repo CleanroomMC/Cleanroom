@@ -1,6 +1,77 @@
 --- before/net/minecraft/network/NetHandlerPlayServer.java
 +++ after/net/minecraft/network/NetHandlerPlayServer.java
-@@ -377,11 +377,13 @@
+@@ -133,7 +133,7 @@
+     private long field_194404_h;
+     private int field_147374_l;
+     private int field_147375_m;
+-    private final IntHashMap<Short> field_147372_n = new IntHashMap<>();
++    private final IntHashMap<Short> field_147372_n = new IntHashMap<Short>();
+     private double field_184349_l;
+     private double field_184350_m;
+     private double field_184351_n;
+@@ -180,7 +180,7 @@
+             if (++this.field_147365_f > 80)
+             {
+                 field_147370_c.warn("{} was kicked for floating too long!", (Object)this.field_147369_b.func_70005_c_());
+-                this.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.flying"));
++                this.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.flying", new Object[0]));
+                 return;
+             }
+         }
+@@ -206,7 +206,7 @@
+                 if (++this.field_184346_E > 80)
+                 {
+                     field_147370_c.warn("{} was kicked for floating a vehicle too long!", (Object)this.field_147369_b.func_70005_c_());
+-                    this.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.flying"));
++                    this.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.flying", new Object[0]));
+                     return;
+                 }
+             }
+@@ -230,7 +230,7 @@
+         {
+             if (this.field_194403_g)
+             {
+-                this.func_194028_b(new TextComponentTranslation("disconnect.timeout"));
++                this.func_194028_b(new TextComponentTranslation("disconnect.timeout", new Object[0]));
+             }
+             else
+             {
+@@ -255,7 +255,7 @@
+ 
+         if (this.field_147369_b.func_154331_x() > 0L && this.field_147367_d.func_143007_ar() > 0 && MinecraftServer.func_130071_aq() - this.field_147369_b.func_154331_x() > (long)(this.field_147367_d.func_143007_ar() * 1000 * 60))
+         {
+-            this.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.idling"));
++            this.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.idling", new Object[0]));
+         }
+     }
+ 
+@@ -322,7 +322,7 @@
+ 
+         if (func_184341_b(p_184338_1_))
+         {
+-            this.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.invalid_vehicle_movement"));
++            this.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.invalid_vehicle_movement", new Object[0]));
+         }
+         else
+         {
+@@ -347,7 +347,7 @@
+ 
+                 if (d10 - d9 > 100.0D && (!this.field_147367_d.func_71264_H() || !this.field_147367_d.func_71214_G().equals(entity.func_70005_c_())))
+                 {
+-                    field_147370_c.warn("{} (vehicle of {}) moved too quickly! {},{},{}", entity.func_70005_c_(), this.field_147369_b.func_70005_c_(), d6, d7, d8);
++                    field_147370_c.warn("{} (vehicle of {}) moved too quickly! {},{},{}", entity.func_70005_c_(), this.field_147369_b.func_70005_c_(), Double.valueOf(d6), Double.valueOf(d7), Double.valueOf(d8));
+                     this.field_147371_a.func_179290_a(new SPacketMoveVehicle(entity));
+                     return;
+                 }
+@@ -357,6 +357,7 @@
+                 d7 = d4 - this.field_184360_w - 1.0E-6D;
+                 d8 = d5 - this.field_184361_x;
+                 entity.func_70091_d(MoverType.PLAYER, d6, d7, d8);
++                double d11 = d7;
+                 d6 = d3 - entity.field_70165_t;
+                 d7 = d4 - entity.field_70163_u;
+ 
+@@ -376,18 +377,20 @@
                  }
  
                  entity.func_70080_a(d3, d4, d5, f, f1);
@@ -14,7 +85,59 @@
                      this.field_147371_a.func_179290_a(new SPacketMoveVehicle(entity));
                      return;
                  }
-@@ -671,7 +673,10 @@
+ 
+                 this.field_147367_d.func_184103_al().func_72358_d(this.field_147369_b);
+                 this.field_147369_b.func_71000_j(this.field_147369_b.field_70165_t - d0, this.field_147369_b.field_70163_u - d1, this.field_147369_b.field_70161_v - d2);
+-                this.field_184345_D = d7 >= -0.03125D && !this.field_147367_d.func_71231_X() && !worldserver.func_72829_c(entity.func_174813_aQ().func_186662_g(0.0625D).func_72321_a(0.0D, -0.55D, 0.0D));
++                this.field_184345_D = d11 >= -0.03125D && !this.field_147367_d.func_71231_X() && !worldserver.func_72829_c(entity.func_174813_aQ().func_186662_g(0.0625D).func_72321_a(0.0D, -0.55D, 0.0D));
+                 this.field_184359_v = entity.field_70165_t;
+                 this.field_184360_w = entity.field_70163_u;
+                 this.field_184361_x = entity.field_70161_v;
+@@ -452,7 +455,7 @@
+ 
+         if (func_183006_b(p_147347_1_))
+         {
+-            this.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.invalid_player_movement"));
++            this.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.invalid_player_movement", new Object[0]));
+         }
+         else
+         {
+@@ -513,7 +516,7 @@
+ 
+                             if (i > 5)
+                             {
+-                                field_147370_c.debug("{} is sending move packets too frequently ({} packets since last tick)", this.field_147369_b.func_70005_c_(), i);
++                                field_147370_c.debug("{} is sending move packets too frequently ({} packets since last tick)", this.field_147369_b.func_70005_c_(), Integer.valueOf(i));
+                                 i = 1;
+                             }
+ 
+@@ -523,7 +526,7 @@
+ 
+                                 if (d11 - d10 > (double)(f2 * (float)i) && (!this.field_147367_d.func_71264_H() || !this.field_147367_d.func_71214_G().equals(this.field_147369_b.func_70005_c_())))
+                                 {
+-                                    field_147370_c.warn("{} moved too quickly! {},{},{}", this.field_147369_b.func_70005_c_(), d7, d8, d9);
++                                    field_147370_c.warn("{} moved too quickly! {},{},{}", this.field_147369_b.func_70005_c_(), Double.valueOf(d7), Double.valueOf(d8), Double.valueOf(d9));
+                                     this.func_147364_a(this.field_147369_b.field_70165_t, this.field_147369_b.field_70163_u, this.field_147369_b.field_70161_v, this.field_147369_b.field_70177_z, this.field_147369_b.field_70125_A);
+                                     return;
+                                 }
+@@ -541,6 +544,7 @@
+ 
+                             this.field_147369_b.func_70091_d(MoverType.PLAYER, d7, d8, d9);
+                             this.field_147369_b.field_70122_E = p_147347_1_.func_149465_i();
++                            double d12 = d8;
+                             d7 = d4 - this.field_147369_b.field_70165_t;
+                             d8 = d5 - this.field_147369_b.field_70163_u;
+ 
+@@ -573,7 +577,7 @@
+                                 }
+                             }
+ 
+-                            this.field_184344_B = d8 >= -0.03125D;
++                            this.field_184344_B = d12 >= -0.03125D;
+                             this.field_184344_B &= !this.field_147367_d.func_71231_X() && !this.field_147369_b.field_71075_bZ.field_75101_c;
+                             this.field_184344_B &= !this.field_147369_b.func_70644_a(MobEffects.field_188424_y) && !this.field_147369_b.func_184613_cA() && !worldserver.func_72829_c(this.field_147369_b.func_174813_aQ().func_186662_g(0.0625D).func_72321_a(0.0D, -0.55D, 0.0D));
+                             this.field_147369_b.field_70122_E = p_147347_1_.func_149465_i();
+@@ -669,7 +673,10 @@
                  double d2 = this.field_147369_b.field_70161_v - ((double)blockpos.func_177952_p() + 0.5D);
                  double d3 = d0 * d0 + d1 * d1 + d2 * d2;
  
@@ -26,7 +149,7 @@
                  {
                      return;
                  }
-@@ -729,7 +734,9 @@
+@@ -727,14 +734,16 @@
  
          if (blockpos.func_177956_o() < this.field_147367_d.func_71207_Z() - 1 || enumfacing != EnumFacing.UP && blockpos.func_177956_o() < this.field_147367_d.func_71207_Z())
          {
@@ -37,7 +160,15 @@
              {
                  this.field_147369_b.field_71134_c.func_187251_a(this.field_147369_b, worldserver, itemstack, enumhand, blockpos, enumfacing, p_184337_1_.func_187026_d(), p_184337_1_.func_187025_e(), p_184337_1_.func_187020_f());
              }
-@@ -789,12 +796,13 @@
+         }
+         else
+         {
+-            TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("build.tooHigh", this.field_147367_d.func_71207_Z());
++            TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("build.tooHigh", new Object[] {this.field_147367_d.func_71207_Z()});
+             textcomponenttranslation.func_150256_b().func_150238_a(TextFormatting.RED);
+             this.field_147369_b.field_71135_a.func_147359_a(new SPacketChat(textcomponenttranslation, ChatType.GAME_INFO));
+         }
+@@ -787,12 +796,13 @@
                  {
                      this.field_147369_b.func_70634_a(entity.field_70165_t, entity.field_70163_u, entity.field_70161_v);
                  }
@@ -53,7 +184,7 @@
                      this.field_147367_d.func_184103_al().func_187243_f(this.field_147369_b);
                      worldserver1.func_72973_f(this.field_147369_b);
                      this.field_147369_b.field_70128_L = false;
-@@ -813,6 +821,7 @@
+@@ -811,6 +821,7 @@
                      this.field_147369_b.field_71134_c.func_73080_a(worldserver2);
                      this.field_147367_d.func_184103_al().func_72354_b(this.field_147369_b, worldserver2);
                      this.field_147367_d.func_184103_al().func_72385_f(this.field_147369_b);
@@ -61,18 +192,54 @@
                  }
              }
          }
-@@ -933,7 +942,9 @@
+@@ -835,7 +846,7 @@
+     {
+         field_147370_c.info("{} lost connection: {}", this.field_147369_b.func_70005_c_(), p_147231_1_.func_150260_c());
+         this.field_147367_d.func_147132_au();
+-        TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("multiplayer.player.left", this.field_147369_b.func_145748_c_());
++        TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("multiplayer.player.left", new Object[] {this.field_147369_b.func_145748_c_()});
+         textcomponenttranslation.func_150256_b().func_150238_a(TextFormatting.YELLOW);
+         this.field_147367_d.func_184103_al().func_148539_a(textcomponenttranslation);
+         this.field_147369_b.func_71123_m();
+@@ -906,7 +917,7 @@
+ 
+         if (this.field_147369_b.func_147096_v() == EntityPlayer.EnumChatVisibility.HIDDEN)
+         {
+-            TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("chat.cannotSend");
++            TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("chat.cannotSend", new Object[0]);
+             textcomponenttranslation.func_150256_b().func_150238_a(TextFormatting.RED);
+             this.func_147359_a(new SPacketChat(textcomponenttranslation));
+         }
+@@ -920,7 +931,7 @@
+             {
+                 if (!ChatAllowedCharacters.func_71566_a(s.charAt(i)))
+                 {
+-                    this.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.illegal_characters"));
++                    this.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.illegal_characters", new Object[0]));
+                     return;
+                 }
+             }
+@@ -931,7 +942,9 @@
              }
              else
              {
--                ITextComponent itextcomponent = new TextComponentTranslation("chat.type.text", new Object[] {this.field_147369_b.func_145748_c_(), s});
+-                ITextComponent itextcomponent = new TextComponentTranslation("chat.type.text", this.field_147369_b.func_145748_c_(), s);
 +                ITextComponent itextcomponent = new TextComponentTranslation("chat.type.text", this.field_147369_b.func_145748_c_(), net.minecraftforge.common.ForgeHooks.newChatWithLinks(s));
 +                itextcomponent = net.minecraftforge.common.ForgeHooks.onServerChatEvent(this, s, itextcomponent);
 +                if (itextcomponent == null) return;
                  this.field_147367_d.func_184103_al().func_148544_a(itextcomponent, false);
              }
  
-@@ -1066,6 +1077,7 @@
+@@ -939,7 +952,7 @@
+ 
+             if (this.field_147374_l > 200 && !this.field_147367_d.func_184103_al().func_152596_g(this.field_147369_b.func_146103_bH()))
+             {
+-                this.func_194028_b(new TextComponentTranslation("disconnect.spam"));
++                this.func_194028_b(new TextComponentTranslation("disconnect.spam", new Object[0]));
+             }
+         }
+     }
+@@ -1064,13 +1077,14 @@
                  else if (p_147340_1_.func_149565_c() == CPacketUseEntity.Action.INTERACT_AT)
                  {
                      EnumHand enumhand1 = p_147340_1_.func_186994_b();
@@ -80,7 +247,15 @@
                      entity.func_184199_a(this.field_147369_b, p_147340_1_.func_179712_b(), enumhand1);
                  }
                  else if (p_147340_1_.func_149565_c() == CPacketUseEntity.Action.ATTACK)
-@@ -1106,7 +1118,7 @@
+                 {
+                     if (entity instanceof EntityItem || entity instanceof EntityXPOrb || entity instanceof EntityArrow || entity == this.field_147369_b)
+                     {
+-                        this.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.invalid_entity_attacked"));
++                        this.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.invalid_entity_attacked", new Object[0]));
+                         this.field_147367_d.func_71236_h("Player " + this.field_147369_b.func_70005_c_() + " tried to attack an invalid entity");
+                         return;
+                     }
+@@ -1104,7 +1118,7 @@
                          return;
                      }
  
@@ -89,7 +264,21 @@
  
                      if (this.field_147367_d.func_71199_h())
                      {
-@@ -1149,7 +1161,7 @@
+@@ -1134,11 +1148,11 @@
+         {
+             if (this.field_147369_b.func_175149_v())
+             {
+-                NonNullList<ItemStack> nonnulllist = NonNullList.func_191196_a();
++                NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191196_a();
+ 
+                 for (int i = 0; i < this.field_147369_b.field_71070_bA.field_75151_b.size(); ++i)
+                 {
+-                    nonnulllist.add(this.field_147369_b.field_71070_bA.field_75151_b.get(i).func_75211_c());
++                    nonnulllist.add(((Slot)this.field_147369_b.field_71070_bA.field_75151_b.get(i)).func_75211_c());
+                 }
+ 
+                 this.field_147369_b.func_71110_a(this.field_147369_b.field_71070_bA, nonnulllist);
+@@ -1147,7 +1161,7 @@
              {
                  ItemStack itemstack2 = this.field_147369_b.field_71070_bA.func_184996_a(p_147351_1_.func_149544_d(), p_147351_1_.func_149543_e(), p_147351_1_.func_186993_f(), this.field_147369_b);
  
@@ -98,3 +287,177 @@
                  {
                      this.field_147369_b.field_71135_a.func_147359_a(new SPacketConfirmTransaction(p_147351_1_.func_149548_c(), p_147351_1_.func_149547_f(), true));
                      this.field_147369_b.field_71137_h = true;
+@@ -1157,14 +1171,14 @@
+                 }
+                 else
+                 {
+-                    this.field_147372_n.func_76038_a(this.field_147369_b.field_71070_bA.field_75152_c, p_147351_1_.func_149547_f());
++                    this.field_147372_n.func_76038_a(this.field_147369_b.field_71070_bA.field_75152_c, Short.valueOf(p_147351_1_.func_149547_f()));
+                     this.field_147369_b.field_71135_a.func_147359_a(new SPacketConfirmTransaction(p_147351_1_.func_149548_c(), p_147351_1_.func_149547_f(), false));
+                     this.field_147369_b.field_71070_bA.func_75128_a(this.field_147369_b, false);
+-                    NonNullList<ItemStack> nonnulllist1 = NonNullList.func_191196_a();
++                    NonNullList<ItemStack> nonnulllist1 = NonNullList.<ItemStack>func_191196_a();
+ 
+                     for (int j = 0; j < this.field_147369_b.field_71070_bA.field_75151_b.size(); ++j)
+                     {
+-                        ItemStack itemstack = this.field_147369_b.field_71070_bA.field_75151_b.get(j).func_75211_c();
++                        ItemStack itemstack = ((Slot)this.field_147369_b.field_71070_bA.field_75151_b.get(j)).func_75211_c();
+                         ItemStack itemstack1 = itemstack.func_190926_b() ? ItemStack.field_190927_a : itemstack;
+                         nonnulllist1.add(itemstack1);
+                     }
+@@ -1261,7 +1275,7 @@
+         PacketThreadUtil.func_180031_a(p_147339_1_, this, this.field_147369_b.func_71121_q());
+         Short oshort = this.field_147372_n.func_76041_a(this.field_147369_b.field_71070_bA.field_75152_c);
+ 
+-        if (oshort != null && p_147339_1_.func_149533_d() == oshort && this.field_147369_b.field_71070_bA.field_75152_c == p_147339_1_.func_149532_c() && !this.field_147369_b.field_71070_bA.func_75129_b(this.field_147369_b) && !this.field_147369_b.func_175149_v())
++        if (oshort != null && p_147339_1_.func_149533_d() == oshort.shortValue() && this.field_147369_b.field_71070_bA.field_75152_c == p_147339_1_.func_149532_c() && !this.field_147369_b.field_71070_bA.func_75129_b(this.field_147369_b) && !this.field_147369_b.func_175149_v())
+         {
+             this.field_147369_b.field_71070_bA.func_75128_a(this.field_147369_b, true);
+         }
+@@ -1314,7 +1328,7 @@
+         }
+         else if (!this.field_147369_b.func_70005_c_().equals(this.field_147367_d.func_71214_G()))
+         {
+-            this.func_194028_b(new TextComponentTranslation("disconnect.timeout"));
++            this.func_194028_b(new TextComponentTranslation("disconnect.timeout", new Object[0]));
+         }
+     }
+ 
+@@ -1332,14 +1346,14 @@
+     public void func_147341_a(CPacketTabComplete p_147341_1_)
+     {
+         PacketThreadUtil.func_180031_a(p_147341_1_, this, this.field_147369_b.func_71121_q());
+-        List<String> list = Lists.newArrayList();
++        List<String> list = Lists.<String>newArrayList();
+ 
+         for (String s : this.field_147367_d.func_184104_a(this.field_147369_b, p_147341_1_.func_149419_c(), p_147341_1_.func_179709_b(), p_147341_1_.func_186989_c()))
+         {
+             list.add(s);
+         }
+ 
+-        this.field_147369_b.field_71135_a.func_147359_a(new SPacketTabComplete(list.toArray(new String[list.size()])));
++        this.field_147369_b.field_71135_a.func_147359_a(new SPacketTabComplete((String[])list.toArray(new String[list.size()])));
+     }
+ 
+     public void func_147352_a(CPacketClientSettings p_147352_1_)
+@@ -1458,13 +1472,13 @@
+         {
+             if (!this.field_147367_d.func_82356_Z())
+             {
+-                this.field_147369_b.func_145747_a(new TextComponentTranslation("advMode.notEnabled"));
++                this.field_147369_b.func_145747_a(new TextComponentTranslation("advMode.notEnabled", new Object[0]));
+                 return;
+             }
+ 
+             if (!this.field_147369_b.func_189808_dh())
+             {
+-                this.field_147369_b.func_145747_a(new TextComponentTranslation("advMode.notAllowed"));
++                this.field_147369_b.func_145747_a(new TextComponentTranslation("advMode.notAllowed", new Object[0]));
+                 return;
+             }
+ 
+@@ -1508,7 +1522,7 @@
+                     }
+ 
+                     commandblockbaselogic1.func_145756_e();
+-                    this.field_147369_b.func_145747_a(new TextComponentTranslation("advMode.setCommand.success", s6));
++                    this.field_147369_b.func_145747_a(new TextComponentTranslation("advMode.setCommand.success", new Object[] {s6}));
+                 }
+             }
+             catch (Exception exception4)
+@@ -1520,13 +1534,13 @@
+         {
+             if (!this.field_147367_d.func_82356_Z())
+             {
+-                this.field_147369_b.func_145747_a(new TextComponentTranslation("advMode.notEnabled"));
++                this.field_147369_b.func_145747_a(new TextComponentTranslation("advMode.notEnabled", new Object[0]));
+                 return;
+             }
+ 
+             if (!this.field_147369_b.func_189808_dh())
+             {
+-                this.field_147369_b.func_145747_a(new TextComponentTranslation("advMode.notAllowed"));
++                this.field_147369_b.func_145747_a(new TextComponentTranslation("advMode.notAllowed", new Object[0]));
+                 return;
+             }
+ 
+@@ -1553,21 +1567,21 @@
+ 
+                 if (commandblockbaselogic != null)
+                 {
+-                    EnumFacing enumfacing = this.field_147369_b.field_70170_p.func_180495_p(blockpos1).func_177229_b(BlockCommandBlock.field_185564_a);
++                    EnumFacing enumfacing = (EnumFacing)this.field_147369_b.field_70170_p.func_180495_p(blockpos1).func_177229_b(BlockCommandBlock.field_185564_a);
+ 
+                     switch (tileentitycommandblock$mode)
+                     {
+                         case SEQUENCE:
+                             IBlockState iblockstate3 = Blocks.field_185777_dd.func_176223_P();
+-                            this.field_147369_b.field_70170_p.func_180501_a(blockpos1, iblockstate3.func_177226_a(BlockCommandBlock.field_185564_a, enumfacing).func_177226_a(BlockCommandBlock.field_185565_b, flag), 2);
++                            this.field_147369_b.field_70170_p.func_180501_a(blockpos1, iblockstate3.func_177226_a(BlockCommandBlock.field_185564_a, enumfacing).func_177226_a(BlockCommandBlock.field_185565_b, Boolean.valueOf(flag)), 2);
+                             break;
+                         case AUTO:
+                             IBlockState iblockstate2 = Blocks.field_185776_dc.func_176223_P();
+-                            this.field_147369_b.field_70170_p.func_180501_a(blockpos1, iblockstate2.func_177226_a(BlockCommandBlock.field_185564_a, enumfacing).func_177226_a(BlockCommandBlock.field_185565_b, flag), 2);
++                            this.field_147369_b.field_70170_p.func_180501_a(blockpos1, iblockstate2.func_177226_a(BlockCommandBlock.field_185564_a, enumfacing).func_177226_a(BlockCommandBlock.field_185565_b, Boolean.valueOf(flag)), 2);
+                             break;
+                         case REDSTONE:
+                             IBlockState iblockstate = Blocks.field_150483_bI.func_176223_P();
+-                            this.field_147369_b.field_70170_p.func_180501_a(blockpos1, iblockstate.func_177226_a(BlockCommandBlock.field_185564_a, enumfacing).func_177226_a(BlockCommandBlock.field_185565_b, flag), 2);
++                            this.field_147369_b.field_70170_p.func_180501_a(blockpos1, iblockstate.func_177226_a(BlockCommandBlock.field_185564_a, enumfacing).func_177226_a(BlockCommandBlock.field_185565_b, Boolean.valueOf(flag)), 2);
+                     }
+ 
+                     tileentity2.func_145829_t();
+@@ -1585,7 +1599,7 @@
+ 
+                     if (!net.minecraft.util.StringUtils.func_151246_b(s7))
+                     {
+-                        this.field_147369_b.func_145747_a(new TextComponentTranslation("advMode.setCommand.success", s7));
++                        this.field_147369_b.func_145747_a(new TextComponentTranslation("advMode.setCommand.success", new Object[] {s7}));
+                     }
+                 }
+             }
+@@ -1688,37 +1702,37 @@
+                     {
+                         if (tileentitystructure.func_184419_m())
+                         {
+-                            this.field_147369_b.func_146105_b(new TextComponentTranslation("structure_block.save_success", s4), false);
++                            this.field_147369_b.func_146105_b(new TextComponentTranslation("structure_block.save_success", new Object[] {s4}), false);
+                         }
+                         else
+                         {
+-                            this.field_147369_b.func_146105_b(new TextComponentTranslation("structure_block.save_failure", s4), false);
++                            this.field_147369_b.func_146105_b(new TextComponentTranslation("structure_block.save_failure", new Object[] {s4}), false);
+                         }
+                     }
+                     else if (l1 == 3)
+                     {
+                         if (!tileentitystructure.func_189709_F())
+                         {
+-                            this.field_147369_b.func_146105_b(new TextComponentTranslation("structure_block.load_not_found", s4), false);
++                            this.field_147369_b.func_146105_b(new TextComponentTranslation("structure_block.load_not_found", new Object[] {s4}), false);
+                         }
+                         else if (tileentitystructure.func_184412_n())
+                         {
+-                            this.field_147369_b.func_146105_b(new TextComponentTranslation("structure_block.load_success", s4), false);
++                            this.field_147369_b.func_146105_b(new TextComponentTranslation("structure_block.load_success", new Object[] {s4}), false);
+                         }
+                         else
+                         {
+-                            this.field_147369_b.func_146105_b(new TextComponentTranslation("structure_block.load_prepare", s4), false);
++                            this.field_147369_b.func_146105_b(new TextComponentTranslation("structure_block.load_prepare", new Object[] {s4}), false);
+                         }
+                     }
+                     else if (l1 == 4)
+                     {
+                         if (tileentitystructure.func_184417_l())
+                         {
+-                            this.field_147369_b.func_146105_b(new TextComponentTranslation("structure_block.size_success", s4), false);
++                            this.field_147369_b.func_146105_b(new TextComponentTranslation("structure_block.size_success", new Object[] {s4}), false);
+                         }
+                         else
+                         {
+-                            this.field_147369_b.func_146105_b(new TextComponentTranslation("structure_block.size_failure"), false);
++                            this.field_147369_b.func_146105_b(new TextComponentTranslation("structure_block.size_failure", new Object[0]), false);
+                         }
+                     }
+ 

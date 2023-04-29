@@ -1,0 +1,35 @@
+--- before/net/minecraft/item/ItemKnowledgeBook.java
++++ after/net/minecraft/item/ItemKnowledgeBook.java
+@@ -40,7 +40,7 @@
+             if (!p_77659_1_.field_72995_K)
+             {
+                 NBTTagList nbttaglist = nbttagcompound.func_150295_c("Recipes", 8);
+-                List<IRecipe> list = Lists.newArrayList();
++                List<IRecipe> list = Lists.<IRecipe>newArrayList();
+ 
+                 for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+                 {
+@@ -50,7 +50,7 @@
+                     if (irecipe == null)
+                     {
+                         field_194126_a.error("Invalid recipe: " + s);
+-                        return new ActionResult<>(EnumActionResult.FAIL, itemstack);
++                        return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
+                     }
+ 
+                     list.add(irecipe);
+@@ -60,12 +60,12 @@
+                 p_77659_2_.func_71029_a(StatList.func_188057_b(this));
+             }
+ 
+-            return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
++            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+         }
+         else
+         {
+             field_194126_a.error("Tag not valid: " + nbttagcompound);
+-            return new ActionResult<>(EnumActionResult.FAIL, itemstack);
++            return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
+         }
+     }
+ }

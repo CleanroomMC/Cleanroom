@@ -1,6 +1,28 @@
 --- before/net/minecraft/world/end/DragonFightManager.java
 +++ after/net/minecraft/world/end/DragonFightManager.java
-@@ -82,6 +82,7 @@
+@@ -8,6 +8,7 @@
+ import com.google.common.collect.Range;
+ import com.google.common.collect.Sets;
+ import java.util.Collections;
++import java.util.Iterator;
+ import java.util.List;
+ import java.util.Random;
+ import java.util.Set;
+@@ -50,10 +51,10 @@
+ public class DragonFightManager
+ {
+     private static final Logger field_186107_a = LogManager.getLogger();
+-    private static final Predicate<EntityPlayerMP> field_186108_b = Predicates.and(EntitySelectors.field_94557_a, EntitySelectors.func_188443_a(0.0D, 128.0D, 0.0D, 192.0D));
+-    private final BossInfoServer field_186109_c = (BossInfoServer)(new BossInfoServer(new TextComponentTranslation("entity.EnderDragon.name"), BossInfo.Color.PINK, BossInfo.Overlay.PROGRESS)).func_186742_b(true).func_186743_c(true);
++    private static final Predicate<EntityPlayerMP> field_186108_b = Predicates.<EntityPlayerMP>and(EntitySelectors.field_94557_a, EntitySelectors.func_188443_a(0.0D, 128.0D, 0.0D, 192.0D));
++    private final BossInfoServer field_186109_c = (BossInfoServer)(new BossInfoServer(new TextComponentTranslation("entity.EnderDragon.name", new Object[0]), BossInfo.Color.PINK, BossInfo.Overlay.PROGRESS)).func_186742_b(true).func_186743_c(true);
+     private final WorldServer field_186110_d;
+-    private final List<Integer> field_186111_e = Lists.newArrayList();
++    private final List<Integer> field_186111_e = Lists.<Integer>newArrayList();
+     private final BlockPattern field_186112_f;
+     private int field_186113_g;
+     private int field_186114_h;
+@@ -81,6 +82,7 @@
  
              this.field_186117_k = p_i46669_2_.func_74767_n("DragonKilled");
              this.field_186118_l = p_i46669_2_.func_74767_n("PreviouslyKilled");
@@ -8,7 +30,22 @@
  
              if (p_i46669_2_.func_74767_n("IsRespawning"))
              {
-@@ -128,6 +129,7 @@
+@@ -104,12 +106,12 @@
+ 
+             for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+             {
+-                this.field_186111_e.add(nbttaglist.func_186858_c(i));
++                this.field_186111_e.add(Integer.valueOf(nbttaglist.func_186858_c(i)));
+             }
+         }
+         else
+         {
+-            this.field_186111_e.addAll(ContiguousSet.create(Range.closedOpen(0, 20), DiscreteDomain.integers()));
++            this.field_186111_e.addAll(ContiguousSet.create(Range.closedOpen(Integer.valueOf(0), Integer.valueOf(20)), DiscreteDomain.integers()));
+             Collections.shuffle(this.field_186111_e, new Random(p_i46669_1_.func_72905_C()));
+         }
+ 
+@@ -127,6 +129,7 @@
  
          nbttagcompound.func_74757_a("DragonKilled", this.field_186117_k);
          nbttagcompound.func_74757_a("PreviouslyKilled", this.field_186118_l);
@@ -16,7 +53,64 @@
  
          if (this.field_186121_o != null)
          {
-@@ -581,5 +583,15 @@
+@@ -134,9 +137,11 @@
+         }
+ 
+         NBTTagList nbttaglist = new NBTTagList();
++        Iterator iterator = this.field_186111_e.iterator();
+ 
+-        for (int i : this.field_186111_e)
++        while (iterator.hasNext())
+         {
++            int i = ((Integer)iterator.next()).intValue();
+             nbttaglist.func_74742_a(new NBTTagInt(i));
+         }
+ 
+@@ -228,7 +233,7 @@
+                     else
+                     {
+                         field_186107_a.debug("Haven't seen our dragon, but found another one to use.");
+-                        this.field_186119_m = list1.get(0).func_110124_au();
++                        this.field_186119_m = ((EntityDragon)list1.get(0)).func_110124_au();
+                     }
+ 
+                     this.field_186113_g = 0;
+@@ -356,7 +361,7 @@
+ 
+     private void func_186100_j()
+     {
+-        Set<EntityPlayerMP> set = Sets.newHashSet();
++        Set<EntityPlayerMP> set = Sets.<EntityPlayerMP>newHashSet();
+ 
+         for (EntityPlayerMP entityplayermp : this.field_186110_d.func_175661_b(EntityPlayerMP.class, field_186108_b))
+         {
+@@ -409,7 +414,7 @@
+     {
+         if (!this.field_186111_e.isEmpty())
+         {
+-            int i = this.field_186111_e.remove(this.field_186111_e.size() - 1);
++            int i = ((Integer)this.field_186111_e.remove(this.field_186111_e.size() - 1)).intValue();
+             int j = (int)(96.0D * Math.cos(2.0D * (-Math.PI + 0.15707963267948966D * (double)i)));
+             int k = (int)(96.0D * Math.sin(2.0D * (-Math.PI + 0.15707963267948966D * (double)i)));
+             this.func_186089_a(new BlockPos(j, 75, k));
+@@ -430,6 +435,7 @@
+         {
+             for (this.field_186121_o = this.field_186110_d.func_175672_r(WorldGenEndPodium.field_186139_a).func_177977_b(); this.field_186110_d.func_180495_p(this.field_186121_o).func_177230_c() == Blocks.field_150357_h && this.field_186121_o.func_177956_o() > this.field_186110_d.func_181545_F(); this.field_186121_o = this.field_186121_o.func_177977_b())
+             {
++                ;
+             }
+         }
+ 
+@@ -517,7 +523,7 @@
+                 blockpos = this.field_186121_o;
+             }
+ 
+-            List<EntityEnderCrystal> list1 = Lists.newArrayList();
++            List<EntityEnderCrystal> list1 = Lists.<EntityEnderCrystal>newArrayList();
+             BlockPos blockpos1 = blockpos.func_177981_b(1);
+ 
+             for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
+@@ -577,5 +583,15 @@
                  entityendercrystal.func_184516_a((BlockPos)null);
              }
          }

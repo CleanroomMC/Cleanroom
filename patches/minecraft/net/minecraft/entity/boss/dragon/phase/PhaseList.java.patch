@@ -1,0 +1,13 @@
+--- before/net/minecraft/entity/boss/dragon/phase/PhaseList.java
++++ after/net/minecraft/entity/boss/dragon/phase/PhaseList.java
+@@ -69,8 +69,8 @@
+ 
+     private static <T extends IPhase> PhaseList<T> func_188735_a(Class<T> p_188735_0_, String p_188735_1_)
+     {
+-        PhaseList<T> phaselist = new PhaseList<>(field_188752_l.length, p_188735_0_, p_188735_1_);
+-        field_188752_l = Arrays.copyOf(field_188752_l, field_188752_l.length + 1);
++        PhaseList<T> phaselist = new PhaseList<T>(field_188752_l.length, p_188735_0_, p_188735_1_);
++        field_188752_l = (PhaseList[])Arrays.copyOf(field_188752_l, field_188752_l.length + 1);
+         field_188752_l[phaselist.func_188740_b()] = phaselist;
+         return phaselist;
+     }

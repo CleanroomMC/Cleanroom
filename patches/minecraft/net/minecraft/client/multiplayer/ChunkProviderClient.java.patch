@@ -1,6 +1,22 @@
 --- before/net/minecraft/client/multiplayer/ChunkProviderClient.java
 +++ after/net/minecraft/client/multiplayer/ChunkProviderClient.java
-@@ -60,6 +60,7 @@
+@@ -3,6 +3,7 @@
+ import com.google.common.base.MoreObjects;
+ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
++import it.unimi.dsi.fastutil.objects.ObjectIterator;
+ import javax.annotation.Nullable;
+ import net.minecraft.util.math.ChunkPos;
+ import net.minecraft.world.World;
+@@ -52,28 +53,31 @@
+     @Nullable
+     public Chunk func_186026_b(int p_186026_1_, int p_186026_2_)
+     {
+-        return this.field_73236_b.get(ChunkPos.func_77272_a(p_186026_1_, p_186026_2_));
++        return (Chunk)this.field_73236_b.get(ChunkPos.func_77272_a(p_186026_1_, p_186026_2_));
+     }
+ 
+     public Chunk func_73158_c(int p_73158_1_, int p_73158_2_)
      {
          Chunk chunk = new Chunk(this.field_73235_d, p_73158_1_, p_73158_2_);
          this.field_73236_b.put(ChunkPos.func_77272_a(p_73158_1_, p_73158_2_), chunk);
@@ -8,3 +24,22 @@
          chunk.func_177417_c(true);
          return chunk;
      }
+ 
+     public Chunk func_186025_d(int p_186025_1_, int p_186025_2_)
+     {
+-        return MoreObjects.firstNonNull(this.func_186026_b(p_186025_1_, p_186025_2_), this.field_73238_a);
++        return (Chunk)MoreObjects.firstNonNull(this.func_186026_b(p_186025_1_, p_186025_2_), this.field_73238_a);
+     }
+ 
+     public boolean func_73156_b()
+     {
+         long i = System.currentTimeMillis();
++        ObjectIterator objectiterator = this.field_73236_b.values().iterator();
+ 
+-        for (Chunk chunk : this.field_73236_b.values())
++        while (objectiterator.hasNext())
+         {
++            Chunk chunk = (Chunk)objectiterator.next();
+             chunk.func_150804_b(System.currentTimeMillis() - i > 5L);
+         }
+ 

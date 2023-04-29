@@ -1,0 +1,22 @@
+--- before/net/minecraft/client/gui/ServerSelectionList.java
++++ after/net/minecraft/client/gui/ServerSelectionList.java
+@@ -12,8 +12,8 @@
+ public class ServerSelectionList extends GuiListExtended
+ {
+     private final GuiMultiplayer field_148200_k;
+-    private final List<ServerListEntryNormal> field_148198_l = Lists.newArrayList();
+-    private final List<ServerListEntryLanDetected> field_148199_m = Lists.newArrayList();
++    private final List<ServerListEntryNormal> field_148198_l = Lists.<ServerListEntryNormal>newArrayList();
++    private final List<ServerListEntryLanDetected> field_148199_m = Lists.<ServerListEntryLanDetected>newArrayList();
+     private final GuiListExtended.IGuiListEntry field_148196_n = new ServerListEntryLanScan();
+     private int field_148197_o = -1;
+ 
+@@ -31,7 +31,7 @@
+         }
+         else
+         {
+-            p_148180_1_ -= this.field_148198_l.size();
++            p_148180_1_ = p_148180_1_ - this.field_148198_l.size();
+ 
+             if (p_148180_1_ == 0)
+             {

@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/gui/inventory/GuiEditCommandBlockMinecart.java
++++ after/net/minecraft/client/gui/inventory/GuiEditCommandBlockMinecart.java
+@@ -159,7 +159,7 @@
+ 
+         if (!this.field_184092_f.func_146179_b().isEmpty())
+         {
+-            i += j * this.field_146289_q.field_78288_b + 20;
++            i = i + j * this.field_146289_q.field_78288_b + 20;
+             this.func_73731_b(this.field_146289_q, I18n.func_135052_a("advMode.previousOutput"), this.field_146294_l / 2 - 150, i, 10526880);
+             this.field_184092_f.func_146194_f();
+         }

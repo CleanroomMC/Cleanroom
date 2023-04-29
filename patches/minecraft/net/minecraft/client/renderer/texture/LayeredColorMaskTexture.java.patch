@@ -1,6 +1,11 @@
 --- before/net/minecraft/client/renderer/texture/LayeredColorMaskTexture.java
 +++ after/net/minecraft/client/renderer/texture/LayeredColorMaskTexture.java
-@@ -71,9 +71,7 @@
+@@ -67,13 +67,11 @@
+                     try
+                     {
+                         String s = this.field_174949_h.get(j);
+-                        int k = this.field_174950_i.get(j).func_193350_e();
++                        int k = ((EnumDyeColor)this.field_174950_i.get(j)).func_193350_e();
  
                          if (s != null)
                          {

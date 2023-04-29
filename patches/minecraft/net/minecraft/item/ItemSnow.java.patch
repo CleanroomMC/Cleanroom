@@ -1,6 +1,17 @@
 --- before/net/minecraft/item/ItemSnow.java
 +++ after/net/minecraft/item/ItemSnow.java
-@@ -51,7 +51,7 @@
+@@ -42,16 +42,16 @@
+ 
+             if (block == this.field_150939_a)
+             {
+-                int i = iblockstate.func_177229_b(BlockSnow.field_176315_a);
++                int i = ((Integer)iblockstate.func_177229_b(BlockSnow.field_176315_a)).intValue();
+ 
+                 if (i < 8)
+                 {
+-                    IBlockState iblockstate1 = iblockstate.func_177226_a(BlockSnow.field_176315_a, i + 1);
++                    IBlockState iblockstate1 = iblockstate.func_177226_a(BlockSnow.field_176315_a, Integer.valueOf(i + 1));
+                     AxisAlignedBB axisalignedbb = iblockstate1.func_185890_d(p_180614_2_, blockpos);
  
                      if (axisalignedbb != Block.field_185506_k && p_180614_2_.func_72855_b(axisalignedbb.func_186670_a(blockpos)) && p_180614_2_.func_180501_a(blockpos, iblockstate1, 10))
                      {

@@ -1,0 +1,46 @@
+--- before/net/minecraft/block/BlockBrewingStand.java
++++ after/net/minecraft/block/BlockBrewingStand.java
+@@ -4,6 +4,7 @@
+ import java.util.Random;
+ import javax.annotation.Nullable;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyBool;
+ import net.minecraft.block.state.BlockFaceShape;
+ import net.minecraft.block.state.BlockStateContainer;
+@@ -41,7 +42,7 @@
+     public BlockBrewingStand()
+     {
+         super(Material.field_151573_f);
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176451_a[0], false).func_177226_a(field_176451_a[1], false).func_177226_a(field_176451_a[2], false));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176451_a[0], Boolean.valueOf(false)).func_177226_a(field_176451_a[1], Boolean.valueOf(false)).func_177226_a(field_176451_a[2], Boolean.valueOf(false)));
+     }
+ 
+     public String func_149732_F()
+@@ -166,7 +167,7 @@
+ 
+         for (int i = 0; i < 3; ++i)
+         {
+-            iblockstate = iblockstate.func_177226_a(field_176451_a[i], (p_176203_1_ & 1 << i) > 0);
++            iblockstate = iblockstate.func_177226_a(field_176451_a[i], Boolean.valueOf((p_176203_1_ & 1 << i) > 0));
+         }
+ 
+         return iblockstate;
+@@ -178,7 +179,7 @@
+ 
+         for (int j = 0; j < 3; ++j)
+         {
+-            if (p_176201_1_.func_177229_b(field_176451_a[j]))
++            if (((Boolean)p_176201_1_.func_177229_b(field_176451_a[j])).booleanValue())
+             {
+                 i |= 1 << j;
+             }
+@@ -189,7 +190,7 @@
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176451_a[0], field_176451_a[1], field_176451_a[2]);
++        return new BlockStateContainer(this, new IProperty[] {field_176451_a[0], field_176451_a[1], field_176451_a[2]});
+     }
+ 
+     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)

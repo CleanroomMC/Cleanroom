@@ -14,7 +14,32 @@
          {
              public boolean func_77569_a(InventoryCrafting p_77569_1_, World p_77569_2_)
              {
-@@ -128,7 +126,6 @@
+@@ -55,7 +53,14 @@
+                     }
+                 }
+ 
+-                return !itemstack.func_190926_b() && !itemstack1.func_190926_b();
++                if (!itemstack.func_190926_b() && !itemstack1.func_190926_b())
++                {
++                    return true;
++                }
++                else
++                {
++                    return false;
++                }
+             }
+ 
+             public ItemStack func_77572_b(InventoryCrafting p_77572_1_)
+@@ -101,7 +106,7 @@
+ 
+             public NonNullList<ItemStack> func_179532_b(InventoryCrafting p_179532_1_)
+             {
+-                NonNullList<ItemStack> nonnulllist = NonNullList.func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
++                NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
+ 
+                 for (int i = 0; i < nonnulllist.size(); ++i)
+                 {
+@@ -121,7 +126,6 @@
                  return true;
              }
  

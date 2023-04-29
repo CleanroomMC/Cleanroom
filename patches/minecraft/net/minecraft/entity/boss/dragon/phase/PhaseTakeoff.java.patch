@@ -1,0 +1,42 @@
+--- before/net/minecraft/entity/boss/dragon/phase/PhaseTakeoff.java
++++ after/net/minecraft/entity/boss/dragon/phase/PhaseTakeoff.java
+@@ -53,7 +53,7 @@
+ 
+         if (this.field_188661_a.func_184664_cU() != null && this.field_188661_a.func_184664_cU().func_186092_c() > 0)
+         {
+-            j %= 12;
++            j = j % 12;
+ 
+             if (j < 0)
+             {
+@@ -62,9 +62,9 @@
+         }
+         else
+         {
+-            j -= 12;
+-            j &= 7;
+-            j += 12;
++            j = j - 12;
++            j = j & 7;
++            j = j + 12;
+         }
+ 
+         this.field_188698_c = this.field_188661_a.func_184666_a(i, j, (PathPoint)null);
+@@ -82,11 +82,15 @@
+         this.field_188698_c.func_75875_a();
+         double d0;
+ 
+-        do
++        while (true)
+         {
+             d0 = vec3d.field_72448_b + (double)(this.field_188661_a.func_70681_au().nextFloat() * 20.0F);
++
++            if (d0 >= vec3d.field_72448_b)
++            {
++                break;
++            }
+         }
+-        while (d0 < vec3d.field_72448_b);
+ 
+         this.field_188699_d = new Vec3d(vec3d.field_72450_a, d0, vec3d.field_72449_c);
+     }

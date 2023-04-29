@@ -8,7 +8,13 @@
  import com.google.common.collect.Sets;
  import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
  import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-@@ -89,12 +90,12 @@
+@@ -84,17 +85,17 @@
+ 
+ public class EntityParrot extends EntityShoulderRiding implements EntityFlying
+ {
+-    private static final DataParameter<Integer> field_192013_bG = EntityDataManager.func_187226_a(EntityParrot.class, DataSerializers.field_187192_b);
++    private static final DataParameter<Integer> field_192013_bG = EntityDataManager.<Integer>func_187226_a(EntityParrot.class, DataSerializers.field_187192_b);
+     private static final Predicate<EntityLiving> field_192014_bH = new Predicate<EntityLiving>()
      {
          public boolean apply(@Nullable EntityLiving p_apply_1_)
          {
@@ -18,11 +24,31 @@
      };
      private static final Item field_192015_bI = Items.field_151106_aX;
      private static final Set<Item> field_192016_bJ = Sets.newHashSet(Items.field_151014_N, Items.field_151081_bc, Items.field_151080_bb, Items.field_185163_cU);
--    private static final Int2ObjectMap<SoundEvent> field_192017_bK = new Int2ObjectOpenHashMap<SoundEvent>(32);
+-    private static final Int2ObjectMap<SoundEvent> field_192017_bK = new Int2ObjectOpenHashMap<>(32);
 +    private static final java.util.Map<Class<? extends Entity>, SoundEvent> MIMIC_SOUNDS = Maps.newHashMapWithExpectedSize(32);
      public float field_192008_bB;
      public float field_192009_bC;
      public float field_192010_bD;
+@@ -135,8 +136,8 @@
+         super.func_110147_ax();
+         this.func_110140_aT().func_111150_b(SharedMonsterAttributes.field_193334_e);
+         this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(6.0D);
+-        this.func_110148_a(SharedMonsterAttributes.field_193334_e).func_111128_a((double)0.4F);
+-        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a((double)0.2F);
++        this.func_110148_a(SharedMonsterAttributes.field_193334_e).func_111128_a(0.4000000059604645D);
++        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.20000000298023224D);
+     }
+ 
+     protected PathNavigate func_175447_b(World p_175447_1_)
+@@ -206,7 +207,7 @@
+     {
+         if (!p_192006_1_.func_174814_R() && p_192006_0_.field_73012_v.nextInt(50) == 0)
+         {
+-            List<EntityLiving> list = p_192006_0_.func_175647_a(EntityLiving.class, p_192006_1_.func_174813_aQ().func_186662_g(20.0D), field_192014_bH);
++            List<EntityLiving> list = p_192006_0_.<EntityLiving>func_175647_a(EntityLiving.class, p_192006_1_.func_174813_aQ().func_186662_g(20.0D), field_192014_bH);
+ 
+             if (!list.isEmpty())
+             {
 @@ -214,7 +215,7 @@
  
                  if (!entityliving.func_174814_R())
@@ -45,8 +71,8 @@
      {
          if (p_192003_0_.nextInt(1000) == 0)
          {
--            List<Integer> list = new ArrayList<Integer>(field_192017_bK.keySet());
--            return func_191999_g(((Integer)list.get(p_192003_0_.nextInt(list.size()))).intValue());
+-            List<Integer> list = new ArrayList<>(field_192017_bK.keySet());
+-            return func_191999_g(list.get(p_192003_0_.nextInt(list.size())));
 +            List<SoundEvent> list = new ArrayList<SoundEvent>(MIMIC_SOUNDS.values());
 +            SoundEvent ret = list.get(p_192003_0_.nextInt(list.size()));
 +            return ret == null ? SoundEvents.field_192792_ep : ret;
@@ -59,12 +85,34 @@
  
 -    public static SoundEvent func_191999_g(int p_191999_0_)
 -    {
--        return field_192017_bK.containsKey(p_191999_0_) ? (SoundEvent)field_192017_bK.get(p_191999_0_) : SoundEvents.field_192792_ep;
+-        return field_192017_bK.containsKey(p_191999_0_) ? field_192017_bK.get(p_191999_0_) : SoundEvents.field_192792_ep;
 -    }
 -
      protected SoundEvent func_184601_bQ(DamageSource p_184601_1_)
      {
          return SoundEvents.field_192794_er;
+@@ -432,18 +429,18 @@
+ 
+     public int func_191998_ds()
+     {
+-        return MathHelper.func_76125_a(this.field_70180_af.func_187225_a(field_192013_bG), 0, 4);
++        return MathHelper.func_76125_a(((Integer)this.field_70180_af.func_187225_a(field_192013_bG)).intValue(), 0, 4);
+     }
+ 
+     public void func_191997_m(int p_191997_1_)
+     {
+-        this.field_70180_af.func_187227_b(field_192013_bG, p_191997_1_);
++        this.field_70180_af.func_187227_b(field_192013_bG, Integer.valueOf(p_191997_1_));
+     }
+ 
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+-        this.field_70180_af.func_187214_a(field_192013_bG, 0);
++        this.field_70180_af.func_187214_a(field_192013_bG, Integer.valueOf(0));
+     }
+ 
+     public void func_70014_b(NBTTagCompound p_70014_1_)
 @@ -471,33 +468,38 @@
  
      static

@@ -10,3 +10,12 @@
                                      {
                                          p_180709_1_.func_180501_a(blockpos, this.field_175920_a, 2);
                                      }
+@@ -98,7 +99,7 @@
+             {
+                 if (p_apply_1_ != null && p_apply_1_.func_177230_c() == Blocks.field_150348_b)
+                 {
+-                    BlockStone.EnumType blockstone$enumtype = p_apply_1_.func_177229_b(BlockStone.field_176247_a);
++                    BlockStone.EnumType blockstone$enumtype = (BlockStone.EnumType)p_apply_1_.func_177229_b(BlockStone.field_176247_a);
+                     return blockstone$enumtype.func_190912_e();
+                 }
+                 else

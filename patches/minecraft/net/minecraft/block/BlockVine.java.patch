@@ -1,6 +1,14 @@
 --- before/net/minecraft/block/BlockVine.java
 +++ after/net/minecraft/block/BlockVine.java
-@@ -28,7 +28,7 @@
+@@ -3,6 +3,7 @@
+ import java.util.Random;
+ import javax.annotation.Nullable;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyBool;
+ import net.minecraft.block.state.BlockFaceShape;
+ import net.minecraft.block.state.BlockStateContainer;
+@@ -27,7 +28,7 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  
@@ -9,7 +17,79 @@
  {
      public static final PropertyBool field_176277_a = PropertyBool.func_177716_a("up");
      public static final PropertyBool field_176273_b = PropertyBool.func_177716_a("north");
-@@ -185,7 +185,7 @@
+@@ -44,7 +45,7 @@
+     public BlockVine()
+     {
+         super(Material.field_151582_l);
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176277_a, false).func_177226_a(field_176273_b, false).func_177226_a(field_176278_M, false).func_177226_a(field_176279_N, false).func_177226_a(field_176280_O, false));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176277_a, Boolean.valueOf(false)).func_177226_a(field_176273_b, Boolean.valueOf(false)).func_177226_a(field_176278_M, Boolean.valueOf(false)).func_177226_a(field_176279_N, Boolean.valueOf(false)).func_177226_a(field_176280_O, Boolean.valueOf(false)));
+         this.func_149675_a(true);
+         this.func_149647_a(CreativeTabs.field_78031_c);
+     }
+@@ -61,31 +62,31 @@
+         int i = 0;
+         AxisAlignedBB axisalignedbb = field_185505_j;
+ 
+-        if (p_185496_1_.func_177229_b(field_176277_a))
++        if (((Boolean)p_185496_1_.func_177229_b(field_176277_a)).booleanValue())
+         {
+             axisalignedbb = field_185757_g;
+             ++i;
+         }
+ 
+-        if (p_185496_1_.func_177229_b(field_176273_b))
++        if (((Boolean)p_185496_1_.func_177229_b(field_176273_b)).booleanValue())
+         {
+             axisalignedbb = field_185755_D;
+             ++i;
+         }
+ 
+-        if (p_185496_1_.func_177229_b(field_176278_M))
++        if (((Boolean)p_185496_1_.func_177229_b(field_176278_M)).booleanValue())
+         {
+             axisalignedbb = field_185754_C;
+             ++i;
+         }
+ 
+-        if (p_185496_1_.func_177229_b(field_176279_N))
++        if (((Boolean)p_185496_1_.func_177229_b(field_176279_N)).booleanValue())
+         {
+             axisalignedbb = field_185756_E;
+             ++i;
+         }
+ 
+-        if (p_185496_1_.func_177229_b(field_176280_O))
++        if (((Boolean)p_185496_1_.func_177229_b(field_176280_O)).booleanValue())
+         {
+             axisalignedbb = field_185753_B;
+             ++i;
+@@ -97,7 +98,7 @@
+     public IBlockState func_176221_a(IBlockState p_176221_1_, IBlockAccess p_176221_2_, BlockPos p_176221_3_)
+     {
+         BlockPos blockpos = p_176221_3_.func_177984_a();
+-        return p_176221_1_.func_177226_a(field_176277_a, p_176221_2_.func_180495_p(blockpos).func_193401_d(p_176221_2_, blockpos, EnumFacing.DOWN) == BlockFaceShape.SOLID);
++        return p_176221_1_.func_177226_a(field_176277_a, Boolean.valueOf(p_176221_2_.func_180495_p(blockpos).func_193401_d(p_176221_2_, blockpos, EnumFacing.DOWN) == BlockFaceShape.SOLID));
+     }
+ 
+     public boolean func_149662_c(IBlockState p_149662_1_)
+@@ -145,13 +146,13 @@
+         {
+             PropertyBool propertybool = func_176267_a(enumfacing);
+ 
+-            if (p_176269_3_.func_177229_b(propertybool) && !this.func_193395_a(p_176269_1_, p_176269_2_, enumfacing.func_176734_d()))
++            if (((Boolean)p_176269_3_.func_177229_b(propertybool)).booleanValue() && !this.func_193395_a(p_176269_1_, p_176269_2_, enumfacing.func_176734_d()))
+             {
+                 IBlockState iblockstate1 = p_176269_1_.func_180495_p(p_176269_2_.func_177984_a());
+ 
+-                if (iblockstate1.func_177230_c() != this || !iblockstate1.func_177229_b(propertybool))
++                if (iblockstate1.func_177230_c() != this || !((Boolean)iblockstate1.func_177229_b(propertybool)).booleanValue())
+                 {
+-                    p_176269_3_ = p_176269_3_.func_177226_a(propertybool, false);
++                    p_176269_3_ = p_176269_3_.func_177226_a(propertybool, Boolean.valueOf(false));
+                 }
+             }
+         }
+@@ -184,12 +185,12 @@
      {
          if (!p_180650_1_.field_72995_K)
          {
@@ -18,7 +98,47 @@
              {
                  int i = 4;
                  int j = 5;
-@@ -244,7 +244,7 @@
+                 boolean flag = false;
+-                label179:
++                label181:
+ 
+                 for (int k = -4; k <= 4; ++k)
+                 {
+@@ -204,7 +205,7 @@
+                                 if (j <= 0)
+                                 {
+                                     flag = true;
+-                                    break label179;
++                                    break label181;
+                                 }
+                             }
+                         }
+@@ -222,20 +223,20 @@
+                     {
+                         if (p_180650_4_.nextBoolean() && this.func_193395_a(p_180650_1_, blockpos2, enumfacing2.func_176734_d()))
+                         {
+-                            iblockstate2 = iblockstate2.func_177226_a(func_176267_a(enumfacing2), true);
++                            iblockstate2 = iblockstate2.func_177226_a(func_176267_a(enumfacing2), Boolean.valueOf(true));
+                         }
+                         else
+                         {
+-                            iblockstate2 = iblockstate2.func_177226_a(func_176267_a(enumfacing2), false);
++                            iblockstate2 = iblockstate2.func_177226_a(func_176267_a(enumfacing2), Boolean.valueOf(false));
+                         }
+                     }
+ 
+-                    if (iblockstate2.func_177229_b(field_176273_b) || iblockstate2.func_177229_b(field_176278_M) || iblockstate2.func_177229_b(field_176279_N) || iblockstate2.func_177229_b(field_176280_O))
++                    if (((Boolean)iblockstate2.func_177229_b(field_176273_b)).booleanValue() || ((Boolean)iblockstate2.func_177229_b(field_176278_M)).booleanValue() || ((Boolean)iblockstate2.func_177229_b(field_176279_N)).booleanValue() || ((Boolean)iblockstate2.func_177229_b(field_176280_O)).booleanValue())
+                     {
+                         p_180650_1_.func_180501_a(blockpos2, iblockstate2, 2);
+                     }
+                 }
+-                else if (enumfacing1.func_176740_k().func_176722_c() && !p_180650_3_.func_177229_b(func_176267_a(enumfacing1)))
++                else if (enumfacing1.func_176740_k().func_176722_c() && !((Boolean)p_180650_3_.func_177229_b(func_176267_a(enumfacing1))).booleanValue())
+                 {
+                     if (!flag)
+                     {
+@@ -243,35 +244,35 @@
                          IBlockState iblockstate3 = p_180650_1_.func_180495_p(blockpos4);
                          Block block1 = iblockstate3.func_177230_c();
  
@@ -27,7 +147,138 @@
                          {
                              EnumFacing enumfacing3 = enumfacing1.func_176746_e();
                              EnumFacing enumfacing4 = enumfacing1.func_176735_f();
-@@ -459,6 +459,16 @@
+-                            boolean flag1 = p_180650_3_.func_177229_b(func_176267_a(enumfacing3));
+-                            boolean flag2 = p_180650_3_.func_177229_b(func_176267_a(enumfacing4));
++                            boolean flag1 = ((Boolean)p_180650_3_.func_177229_b(func_176267_a(enumfacing3))).booleanValue();
++                            boolean flag2 = ((Boolean)p_180650_3_.func_177229_b(func_176267_a(enumfacing4))).booleanValue();
+                             BlockPos blockpos = blockpos4.func_177972_a(enumfacing3);
+                             BlockPos blockpos1 = blockpos4.func_177972_a(enumfacing4);
+ 
+                             if (flag1 && this.func_193395_a(p_180650_1_, blockpos.func_177972_a(enumfacing3), enumfacing3))
+                             {
+-                                p_180650_1_.func_180501_a(blockpos4, this.func_176223_P().func_177226_a(func_176267_a(enumfacing3), true), 2);
++                                p_180650_1_.func_180501_a(blockpos4, this.func_176223_P().func_177226_a(func_176267_a(enumfacing3), Boolean.valueOf(true)), 2);
+                             }
+                             else if (flag2 && this.func_193395_a(p_180650_1_, blockpos1.func_177972_a(enumfacing4), enumfacing4))
+                             {
+-                                p_180650_1_.func_180501_a(blockpos4, this.func_176223_P().func_177226_a(func_176267_a(enumfacing4), true), 2);
++                                p_180650_1_.func_180501_a(blockpos4, this.func_176223_P().func_177226_a(func_176267_a(enumfacing4), Boolean.valueOf(true)), 2);
+                             }
+                             else if (flag1 && p_180650_1_.func_175623_d(blockpos) && this.func_193395_a(p_180650_1_, blockpos, enumfacing1))
+                             {
+-                                p_180650_1_.func_180501_a(blockpos, this.func_176223_P().func_177226_a(func_176267_a(enumfacing1.func_176734_d()), true), 2);
++                                p_180650_1_.func_180501_a(blockpos, this.func_176223_P().func_177226_a(func_176267_a(enumfacing1.func_176734_d()), Boolean.valueOf(true)), 2);
+                             }
+                             else if (flag2 && p_180650_1_.func_175623_d(blockpos1) && this.func_193395_a(p_180650_1_, blockpos1, enumfacing1))
+                             {
+-                                p_180650_1_.func_180501_a(blockpos1, this.func_176223_P().func_177226_a(func_176267_a(enumfacing1.func_176734_d()), true), 2);
++                                p_180650_1_.func_180501_a(blockpos1, this.func_176223_P().func_177226_a(func_176267_a(enumfacing1.func_176734_d()), Boolean.valueOf(true)), 2);
+                             }
+                         }
+                         else if (iblockstate3.func_193401_d(p_180650_1_, blockpos4, enumfacing1) == BlockFaceShape.SOLID)
+                         {
+-                            p_180650_1_.func_180501_a(p_180650_2_, p_180650_3_.func_177226_a(func_176267_a(enumfacing1), true), 2);
++                            p_180650_1_.func_180501_a(p_180650_2_, p_180650_3_.func_177226_a(func_176267_a(enumfacing1), Boolean.valueOf(true)), 2);
+                         }
+                     }
+                 }
+@@ -291,11 +292,11 @@
+                             {
+                                 if (p_180650_4_.nextBoolean())
+                                 {
+-                                    iblockstate1 = iblockstate1.func_177226_a(func_176267_a(enumfacing), false);
++                                    iblockstate1 = iblockstate1.func_177226_a(func_176267_a(enumfacing), Boolean.valueOf(false));
+                                 }
+                             }
+ 
+-                            if (iblockstate1.func_177229_b(field_176273_b) || iblockstate1.func_177229_b(field_176278_M) || iblockstate1.func_177229_b(field_176279_N) || iblockstate1.func_177229_b(field_176280_O))
++                            if (((Boolean)iblockstate1.func_177229_b(field_176273_b)).booleanValue() || ((Boolean)iblockstate1.func_177229_b(field_176278_M)).booleanValue() || ((Boolean)iblockstate1.func_177229_b(field_176279_N)).booleanValue() || ((Boolean)iblockstate1.func_177229_b(field_176280_O)).booleanValue())
+                             {
+                                 p_180650_1_.func_180501_a(blockpos3, iblockstate1, 2);
+                             }
+@@ -308,13 +309,13 @@
+                             {
+                                 PropertyBool propertybool = func_176267_a(enumfacing5);
+ 
+-                                if (p_180650_4_.nextBoolean() && p_180650_3_.func_177229_b(propertybool))
++                                if (p_180650_4_.nextBoolean() && ((Boolean)p_180650_3_.func_177229_b(propertybool)).booleanValue())
+                                 {
+-                                    iblockstate4 = iblockstate4.func_177226_a(propertybool, true);
++                                    iblockstate4 = iblockstate4.func_177226_a(propertybool, Boolean.valueOf(true));
+                                 }
+                             }
+ 
+-                            if (iblockstate4.func_177229_b(field_176273_b) || iblockstate4.func_177229_b(field_176278_M) || iblockstate4.func_177229_b(field_176279_N) || iblockstate4.func_177229_b(field_176280_O))
++                            if (((Boolean)iblockstate4.func_177229_b(field_176273_b)).booleanValue() || ((Boolean)iblockstate4.func_177229_b(field_176278_M)).booleanValue() || ((Boolean)iblockstate4.func_177229_b(field_176279_N)).booleanValue() || ((Boolean)iblockstate4.func_177229_b(field_176280_O)).booleanValue())
+                             {
+                                 p_180650_1_.func_180501_a(blockpos3, iblockstate4, 2);
+                             }
+@@ -327,8 +328,8 @@
+ 
+     public IBlockState func_180642_a(World p_180642_1_, BlockPos p_180642_2_, EnumFacing p_180642_3_, float p_180642_4_, float p_180642_5_, float p_180642_6_, int p_180642_7_, EntityLivingBase p_180642_8_)
+     {
+-        IBlockState iblockstate = this.func_176223_P().func_177226_a(field_176277_a, false).func_177226_a(field_176273_b, false).func_177226_a(field_176278_M, false).func_177226_a(field_176279_N, false).func_177226_a(field_176280_O, false);
+-        return p_180642_3_.func_176740_k().func_176722_c() ? iblockstate.func_177226_a(func_176267_a(p_180642_3_.func_176734_d()), true) : iblockstate;
++        IBlockState iblockstate = this.func_176223_P().func_177226_a(field_176277_a, Boolean.valueOf(false)).func_177226_a(field_176273_b, Boolean.valueOf(false)).func_177226_a(field_176278_M, Boolean.valueOf(false)).func_177226_a(field_176279_N, Boolean.valueOf(false)).func_177226_a(field_176280_O, Boolean.valueOf(false));
++        return p_180642_3_.func_176740_k().func_176722_c() ? iblockstate.func_177226_a(func_176267_a(p_180642_3_.func_176734_d()), Boolean.valueOf(true)) : iblockstate;
+     }
+ 
+     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
+@@ -356,7 +357,7 @@
+ 
+     public IBlockState func_176203_a(int p_176203_1_)
+     {
+-        return this.func_176223_P().func_177226_a(field_176279_N, (p_176203_1_ & 1) > 0).func_177226_a(field_176280_O, (p_176203_1_ & 2) > 0).func_177226_a(field_176273_b, (p_176203_1_ & 4) > 0).func_177226_a(field_176278_M, (p_176203_1_ & 8) > 0);
++        return this.func_176223_P().func_177226_a(field_176279_N, Boolean.valueOf((p_176203_1_ & 1) > 0)).func_177226_a(field_176280_O, Boolean.valueOf((p_176203_1_ & 2) > 0)).func_177226_a(field_176273_b, Boolean.valueOf((p_176203_1_ & 4) > 0)).func_177226_a(field_176278_M, Boolean.valueOf((p_176203_1_ & 8) > 0));
+     }
+ 
+     @SideOnly(Side.CLIENT)
+@@ -369,22 +370,22 @@
+     {
+         int i = 0;
+ 
+-        if (p_176201_1_.func_177229_b(field_176279_N))
++        if (((Boolean)p_176201_1_.func_177229_b(field_176279_N)).booleanValue())
+         {
+             i |= 1;
+         }
+ 
+-        if (p_176201_1_.func_177229_b(field_176280_O))
++        if (((Boolean)p_176201_1_.func_177229_b(field_176280_O)).booleanValue())
+         {
+             i |= 2;
+         }
+ 
+-        if (p_176201_1_.func_177229_b(field_176273_b))
++        if (((Boolean)p_176201_1_.func_177229_b(field_176273_b)).booleanValue())
+         {
+             i |= 4;
+         }
+ 
+-        if (p_176201_1_.func_177229_b(field_176278_M))
++        if (((Boolean)p_176201_1_.func_177229_b(field_176278_M)).booleanValue())
+         {
+             i |= 8;
+         }
+@@ -394,7 +395,7 @@
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176277_a, field_176273_b, field_176278_M, field_176279_N, field_176280_O);
++        return new BlockStateContainer(this, new IProperty[] {field_176277_a, field_176273_b, field_176278_M, field_176279_N, field_176280_O});
+     }
+ 
+     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
+@@ -450,7 +451,7 @@
+ 
+         for (PropertyBool propertybool : field_176274_P)
+         {
+-            if (p_176268_0_.func_177229_b(propertybool))
++            if (((Boolean)p_176268_0_.func_177229_b(propertybool)).booleanValue())
+             {
+                 ++i;
+             }
+@@ -458,6 +459,16 @@
  
          return i;
      }

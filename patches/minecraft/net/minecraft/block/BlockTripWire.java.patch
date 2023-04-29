@@ -1,0 +1,124 @@
+--- before/net/minecraft/block/BlockTripWire.java
++++ after/net/minecraft/block/BlockTripWire.java
+@@ -4,6 +4,7 @@
+ import java.util.Random;
+ import javax.annotation.Nullable;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyBool;
+ import net.minecraft.block.state.BlockFaceShape;
+ import net.minecraft.block.state.BlockStateContainer;
+@@ -40,18 +41,18 @@
+     public BlockTripWire()
+     {
+         super(Material.field_151594_q);
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176293_a, false).func_177226_a(field_176294_M, false).func_177226_a(field_176295_N, false).func_177226_a(field_176296_O, false).func_177226_a(field_176291_P, false).func_177226_a(field_176289_Q, false).func_177226_a(field_176292_R, false));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176293_a, Boolean.valueOf(false)).func_177226_a(field_176294_M, Boolean.valueOf(false)).func_177226_a(field_176295_N, Boolean.valueOf(false)).func_177226_a(field_176296_O, Boolean.valueOf(false)).func_177226_a(field_176291_P, Boolean.valueOf(false)).func_177226_a(field_176289_Q, Boolean.valueOf(false)).func_177226_a(field_176292_R, Boolean.valueOf(false)));
+         this.func_149675_a(true);
+     }
+ 
+     public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
+     {
+-        return !p_185496_1_.func_177229_b(field_176294_M) ? field_185748_C : field_185747_B;
++        return !((Boolean)p_185496_1_.func_177229_b(field_176294_M)).booleanValue() ? field_185748_C : field_185747_B;
+     }
+ 
+     public IBlockState func_176221_a(IBlockState p_176221_1_, IBlockAccess p_176221_2_, BlockPos p_176221_3_)
+     {
+-        return p_176221_1_.func_177226_a(field_176296_O, func_176287_c(p_176221_2_, p_176221_3_, p_176221_1_, EnumFacing.NORTH)).func_177226_a(field_176291_P, func_176287_c(p_176221_2_, p_176221_3_, p_176221_1_, EnumFacing.EAST)).func_177226_a(field_176289_Q, func_176287_c(p_176221_2_, p_176221_3_, p_176221_1_, EnumFacing.SOUTH)).func_177226_a(field_176292_R, func_176287_c(p_176221_2_, p_176221_3_, p_176221_1_, EnumFacing.WEST));
++        return p_176221_1_.func_177226_a(field_176296_O, Boolean.valueOf(func_176287_c(p_176221_2_, p_176221_3_, p_176221_1_, EnumFacing.NORTH))).func_177226_a(field_176291_P, Boolean.valueOf(func_176287_c(p_176221_2_, p_176221_3_, p_176221_1_, EnumFacing.EAST))).func_177226_a(field_176289_Q, Boolean.valueOf(func_176287_c(p_176221_2_, p_176221_3_, p_176221_1_, EnumFacing.SOUTH))).func_177226_a(field_176292_R, Boolean.valueOf(func_176287_c(p_176221_2_, p_176221_3_, p_176221_1_, EnumFacing.WEST)));
+     }
+ 
+     @Nullable
+@@ -94,7 +95,7 @@
+ 
+     public void func_180663_b(World p_180663_1_, BlockPos p_180663_2_, IBlockState p_180663_3_)
+     {
+-        this.func_176286_e(p_180663_1_, p_180663_2_, p_180663_3_.func_177226_a(field_176293_a, true));
++        this.func_176286_e(p_180663_1_, p_180663_2_, p_180663_3_.func_177226_a(field_176293_a, Boolean.valueOf(true)));
+     }
+ 
+     public void func_176208_a(World p_176208_1_, BlockPos p_176208_2_, IBlockState p_176208_3_, EntityPlayer p_176208_4_)
+@@ -103,7 +104,7 @@
+         {
+             if (!p_176208_4_.func_184614_ca().func_190926_b() && p_176208_4_.func_184614_ca().func_77973_b() == Items.field_151097_aZ)
+             {
+-                p_176208_1_.func_180501_a(p_176208_2_, p_176208_3_.func_177226_a(field_176295_N, true), 4);
++                p_176208_1_.func_180501_a(p_176208_2_, p_176208_3_.func_177226_a(field_176295_N, Boolean.valueOf(true)), 4);
+             }
+         }
+     }
+@@ -139,7 +140,7 @@
+     {
+         if (!p_180634_1_.field_72995_K)
+         {
+-            if (!p_180634_3_.func_177229_b(field_176293_a))
++            if (!((Boolean)p_180634_3_.func_177229_b(field_176293_a)).booleanValue())
+             {
+                 this.func_176288_d(p_180634_1_, p_180634_2_);
+             }
+@@ -154,7 +155,7 @@
+     {
+         if (!p_180650_1_.field_72995_K)
+         {
+-            if (p_180650_1_.func_180495_p(p_180650_2_).func_177229_b(field_176293_a))
++            if (((Boolean)p_180650_1_.func_180495_p(p_180650_2_).func_177229_b(field_176293_a)).booleanValue())
+             {
+                 this.func_176288_d(p_180650_1_, p_180650_2_);
+             }
+@@ -164,7 +165,7 @@
+     private void func_176288_d(World p_176288_1_, BlockPos p_176288_2_)
+     {
+         IBlockState iblockstate = p_176288_1_.func_180495_p(p_176288_2_);
+-        boolean flag = iblockstate.func_177229_b(field_176293_a);
++        boolean flag = ((Boolean)iblockstate.func_177229_b(field_176293_a)).booleanValue();
+         boolean flag1 = false;
+         List <? extends Entity > list = p_176288_1_.func_72839_b((Entity)null, iblockstate.func_185900_c(p_176288_1_, p_176288_2_).func_186670_a(p_176288_2_));
+ 
+@@ -182,7 +183,7 @@
+ 
+         if (flag1 != flag)
+         {
+-            iblockstate = iblockstate.func_177226_a(field_176293_a, flag1);
++            iblockstate = iblockstate.func_177226_a(field_176293_a, Boolean.valueOf(flag1));
+             p_176288_1_.func_180501_a(p_176288_2_, iblockstate, 3);
+             this.func_176286_e(p_176288_1_, p_176288_2_, iblockstate);
+         }
+@@ -212,24 +213,24 @@
+ 
+     public IBlockState func_176203_a(int p_176203_1_)
+     {
+-        return this.func_176223_P().func_177226_a(field_176293_a, (p_176203_1_ & 1) > 0).func_177226_a(field_176294_M, (p_176203_1_ & 4) > 0).func_177226_a(field_176295_N, (p_176203_1_ & 8) > 0);
++        return this.func_176223_P().func_177226_a(field_176293_a, Boolean.valueOf((p_176203_1_ & 1) > 0)).func_177226_a(field_176294_M, Boolean.valueOf((p_176203_1_ & 4) > 0)).func_177226_a(field_176295_N, Boolean.valueOf((p_176203_1_ & 8) > 0));
+     }
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+         int i = 0;
+ 
+-        if (p_176201_1_.func_177229_b(field_176293_a))
++        if (((Boolean)p_176201_1_.func_177229_b(field_176293_a)).booleanValue())
+         {
+             i |= 1;
+         }
+ 
+-        if (p_176201_1_.func_177229_b(field_176294_M))
++        if (((Boolean)p_176201_1_.func_177229_b(field_176294_M)).booleanValue())
+         {
+             i |= 4;
+         }
+ 
+-        if (p_176201_1_.func_177229_b(field_176295_N))
++        if (((Boolean)p_176201_1_.func_177229_b(field_176295_N)).booleanValue())
+         {
+             i |= 8;
+         }
+@@ -267,7 +268,7 @@
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176293_a, field_176294_M, field_176295_N, field_176296_O, field_176291_P, field_176292_R, field_176289_Q);
++        return new BlockStateContainer(this, new IProperty[] {field_176293_a, field_176294_M, field_176295_N, field_176296_O, field_176291_P, field_176292_R, field_176289_Q});
+     }
+ 
+     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)

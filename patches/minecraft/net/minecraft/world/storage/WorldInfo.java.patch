@@ -1,6 +1,14 @@
 --- before/net/minecraft/world/storage/WorldInfo.java
 +++ after/net/minecraft/world/storage/WorldInfo.java
-@@ -63,8 +63,9 @@
+@@ -2,6 +2,7 @@
+ 
+ import com.google.common.collect.Maps;
+ import java.util.Map;
++import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+ import net.minecraft.crash.CrashReportCategory;
+ import net.minecraft.crash.ICrashReportDetail;
+@@ -62,8 +63,9 @@
      private double field_176153_H = 0.2D;
      private int field_176154_I = 5;
      private int field_176155_J = 15;
@@ -11,7 +19,7 @@
  
      protected WorldInfo()
      {
-@@ -251,7 +252,7 @@
+@@ -250,7 +252,7 @@
  
              for (String s : nbttagcompound1.func_150296_c())
              {
@@ -20,7 +28,7 @@
              }
          }
      }
-@@ -366,6 +367,7 @@
+@@ -365,6 +367,7 @@
          p_76064_1_.func_74780_a("BorderSizeLerpTarget", this.field_176148_F);
          p_76064_1_.func_74780_a("BorderWarningBlocks", (double)this.field_176154_I);
          p_76064_1_.func_74780_a("BorderWarningTime", (double)this.field_176155_J);
@@ -28,20 +36,20 @@
  
          if (this.field_176158_z != null)
          {
-@@ -376,9 +378,10 @@
+@@ -375,9 +378,10 @@
          p_76064_1_.func_74782_a("GameRules", this.field_82577_x.func_82770_a());
          NBTTagCompound nbttagcompound1 = new NBTTagCompound();
  
--        for (Entry<DimensionType, NBTTagCompound> entry : this.field_186348_N.entrySet())
+-        for (Map.Entry<DimensionType, NBTTagCompound> entry : this.field_186348_N.entrySet())
 +        for (Entry<Integer, NBTTagCompound> entry : this.field_186348_N.entrySet())
          {
--            nbttagcompound1.func_74782_a(String.valueOf(((DimensionType)entry.getKey()).func_186068_a()), entry.getValue());
+-            nbttagcompound1.func_74782_a(String.valueOf(entry.getKey().func_186068_a()), entry.getValue());
 +            if (entry.getValue() == null || entry.getValue().func_82582_d()) continue;
 +            nbttagcompound1.func_74782_a(String.valueOf(entry.getKey()), entry.getValue());
          }
  
          p_76064_1_.func_74782_a("DimensionData", nbttagcompound1);
-@@ -708,6 +711,7 @@
+@@ -707,6 +711,7 @@
  
      public void func_176144_a(EnumDifficulty p_176144_1_)
      {
@@ -49,7 +57,7 @@
          this.field_176158_z = p_176144_1_;
      }
  
-@@ -805,16 +809,47 @@
+@@ -804,16 +809,47 @@
              }
          });
      }

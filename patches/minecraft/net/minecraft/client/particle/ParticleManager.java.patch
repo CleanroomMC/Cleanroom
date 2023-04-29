@@ -1,5 +1,38 @@
 --- before/net/minecraft/client/particle/ParticleManager.java
 +++ after/net/minecraft/client/particle/ParticleManager.java
+@@ -41,11 +41,11 @@
+     private static final ResourceLocation field_110737_b = new ResourceLocation("textures/particle/particles.png");
+     protected World field_78878_a;
+     private final ArrayDeque<Particle>[][] field_78876_b = new ArrayDeque[4][];
+-    private final Queue<ParticleEmitter> field_178933_d = Queues.newArrayDeque();
++    private final Queue<ParticleEmitter> field_178933_d = Queues.<ParticleEmitter>newArrayDeque();
+     private final TextureManager field_78877_c;
+     private final Random field_78875_d = new Random();
+-    private final Map<Integer, IParticleFactory> field_178932_g = Maps.newHashMap();
+-    private final Queue<Particle> field_187241_h = Queues.newArrayDeque();
++    private final Map<Integer, IParticleFactory> field_178932_g = Maps.<Integer, IParticleFactory>newHashMap();
++    private final Queue<Particle> field_187241_h = Queues.<Particle>newArrayDeque();
+ 
+     public ParticleManager(World p_i1220_1_, TextureManager p_i1220_2_)
+     {
+@@ -119,7 +119,7 @@
+ 
+     public void func_178929_a(int p_178929_1_, IParticleFactory p_178929_2_)
+     {
+-        this.field_178932_g.put(p_178929_1_, p_178929_2_);
++        this.field_178932_g.put(Integer.valueOf(p_178929_1_), p_178929_2_);
+     }
+ 
+     public void func_178926_a(Entity p_178926_1_, EnumParticleTypes p_178926_2_)
+@@ -135,7 +135,7 @@
+     @Nullable
+     public Particle func_178927_a(int p_178927_1_, double p_178927_2_, double p_178927_4_, double p_178927_6_, double p_178927_8_, double p_178927_10_, double p_178927_12_, int... p_178927_14_)
+     {
+-        IParticleFactory iparticlefactory = this.field_178932_g.get(p_178927_1_);
++        IParticleFactory iparticlefactory = this.field_178932_g.get(Integer.valueOf(p_178927_1_));
+ 
+         if (iparticlefactory != null)
+         {
 @@ -153,6 +153,7 @@
  
      public void func_78873_a(Particle p_78873_1_)
@@ -8,6 +41,34 @@
          this.field_187241_h.add(p_78873_1_);
      }
  
+@@ -165,7 +166,7 @@
+ 
+         if (!this.field_178933_d.isEmpty())
+         {
+-            List<ParticleEmitter> list = Lists.newArrayList();
++            List<ParticleEmitter> list = Lists.<ParticleEmitter>newArrayList();
+ 
+             for (ParticleEmitter particleemitter : this.field_178933_d)
+             {
+@@ -368,12 +369,12 @@
+ 
+     public void func_78872_b(Entity p_78872_1_, float p_78872_2_)
+     {
+-        float f = ((float)Math.PI / 180F);
+-        float f1 = MathHelper.func_76134_b(p_78872_1_.field_70177_z * ((float)Math.PI / 180F));
+-        float f2 = MathHelper.func_76126_a(p_78872_1_.field_70177_z * ((float)Math.PI / 180F));
+-        float f3 = -f2 * MathHelper.func_76126_a(p_78872_1_.field_70125_A * ((float)Math.PI / 180F));
+-        float f4 = f1 * MathHelper.func_76126_a(p_78872_1_.field_70125_A * ((float)Math.PI / 180F));
+-        float f5 = MathHelper.func_76134_b(p_78872_1_.field_70125_A * ((float)Math.PI / 180F));
++        float f = 0.017453292F;
++        float f1 = MathHelper.func_76134_b(p_78872_1_.field_70177_z * 0.017453292F);
++        float f2 = MathHelper.func_76126_a(p_78872_1_.field_70177_z * 0.017453292F);
++        float f3 = -f2 * MathHelper.func_76126_a(p_78872_1_.field_70125_A * 0.017453292F);
++        float f4 = f1 * MathHelper.func_76126_a(p_78872_1_.field_70125_A * 0.017453292F);
++        float f5 = MathHelper.func_76134_b(p_78872_1_.field_70125_A * 0.017453292F);
+ 
+         for (int i = 0; i < 2; ++i)
+         {
 @@ -409,7 +410,7 @@
  
      public void func_180533_a(BlockPos p_180533_1_, IBlockState p_180533_2_)
@@ -17,6 +78,54 @@
          {
              p_180533_2_ = p_180533_2_.func_185899_b(this.field_78878_a, p_180533_1_);
              int i = 4;
+@@ -441,38 +442,38 @@
+             int k = p_180532_1_.func_177952_p();
+             float f = 0.1F;
+             AxisAlignedBB axisalignedbb = iblockstate.func_185900_c(this.field_78878_a, p_180532_1_);
+-            double d0 = (double)i + this.field_78875_d.nextDouble() * (axisalignedbb.field_72336_d - axisalignedbb.field_72340_a - (double)0.2F) + (double)0.1F + axisalignedbb.field_72340_a;
+-            double d1 = (double)j + this.field_78875_d.nextDouble() * (axisalignedbb.field_72337_e - axisalignedbb.field_72338_b - (double)0.2F) + (double)0.1F + axisalignedbb.field_72338_b;
+-            double d2 = (double)k + this.field_78875_d.nextDouble() * (axisalignedbb.field_72334_f - axisalignedbb.field_72339_c - (double)0.2F) + (double)0.1F + axisalignedbb.field_72339_c;
++            double d0 = (double)i + this.field_78875_d.nextDouble() * (axisalignedbb.field_72336_d - axisalignedbb.field_72340_a - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.field_72340_a;
++            double d1 = (double)j + this.field_78875_d.nextDouble() * (axisalignedbb.field_72337_e - axisalignedbb.field_72338_b - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.field_72338_b;
++            double d2 = (double)k + this.field_78875_d.nextDouble() * (axisalignedbb.field_72334_f - axisalignedbb.field_72339_c - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.field_72339_c;
+ 
+             if (p_180532_2_ == EnumFacing.DOWN)
+             {
+-                d1 = (double)j + axisalignedbb.field_72338_b - (double)0.1F;
++                d1 = (double)j + axisalignedbb.field_72338_b - 0.10000000149011612D;
+             }
+ 
+             if (p_180532_2_ == EnumFacing.UP)
+             {
+-                d1 = (double)j + axisalignedbb.field_72337_e + (double)0.1F;
++                d1 = (double)j + axisalignedbb.field_72337_e + 0.10000000149011612D;
+             }
+ 
+             if (p_180532_2_ == EnumFacing.NORTH)
+             {
+-                d2 = (double)k + axisalignedbb.field_72339_c - (double)0.1F;
++                d2 = (double)k + axisalignedbb.field_72339_c - 0.10000000149011612D;
+             }
+ 
+             if (p_180532_2_ == EnumFacing.SOUTH)
+             {
+-                d2 = (double)k + axisalignedbb.field_72334_f + (double)0.1F;
++                d2 = (double)k + axisalignedbb.field_72334_f + 0.10000000149011612D;
+             }
+ 
+             if (p_180532_2_ == EnumFacing.WEST)
+             {
+-                d0 = (double)i + axisalignedbb.field_72340_a - (double)0.1F;
++                d0 = (double)i + axisalignedbb.field_72340_a - 0.10000000149011612D;
+             }
+ 
+             if (p_180532_2_ == EnumFacing.EAST)
+             {
+-                d0 = (double)i + axisalignedbb.field_72336_d + (double)0.1F;
++                d0 = (double)i + axisalignedbb.field_72336_d + 0.10000000149011612D;
+             }
+ 
+             this.func_78873_a((new ParticleDigging(this.field_78878_a, d0, d1, d2, 0.0D, 0.0D, 0.0D, iblockstate)).func_174846_a(p_180532_1_).func_70543_e(0.2F).func_70541_f(0.6F));
 @@ -493,4 +494,13 @@
  
          return "" + i;

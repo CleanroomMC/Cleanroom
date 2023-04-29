@@ -1,10 +1,19 @@
 --- before/net/minecraft/entity/EntityAgeable.java
 +++ after/net/minecraft/entity/EntityAgeable.java
+@@ -15,7 +15,7 @@
+ 
+ public abstract class EntityAgeable extends EntityCreature
+ {
+-    private static final DataParameter<Boolean> field_184751_bv = EntityDataManager.func_187226_a(EntityAgeable.class, DataSerializers.field_187198_h);
++    private static final DataParameter<Boolean> field_184751_bv = EntityDataManager.<Boolean>func_187226_a(EntityAgeable.class, DataSerializers.field_187198_h);
+     protected int field_175504_a;
+     protected int field_175502_b;
+     protected int field_175503_c;
 @@ -38,7 +38,7 @@
          {
              if (!this.field_70170_p.field_72995_K)
              {
--                Class <? extends Entity > oclass = (Class)EntityList.field_191308_b.func_82594_a(ItemMonsterPlacer.func_190908_h(itemstack));
+-                Class <? extends Entity > oclass = EntityList.field_191308_b.func_82594_a(ItemMonsterPlacer.func_190908_h(itemstack));
 +                Class <? extends Entity > oclass = EntityList.getClass(ItemMonsterPlacer.func_190908_h(itemstack));
  
                  if (oclass != null && this.getClass() == oclass)
@@ -13,8 +22,64 @@
          }
          else
          {
--            Class <? extends Entity > oclass = (Class)EntityList.field_191308_b.func_82594_a(ItemMonsterPlacer.func_190908_h(p_190669_1_));
+-            Class <? extends Entity > oclass = EntityList.field_191308_b.func_82594_a(ItemMonsterPlacer.func_190908_h(p_190669_1_));
 +            Class <? extends Entity > oclass = EntityList.getClass(ItemMonsterPlacer.func_190908_h(p_190669_1_));
              return oclass != null && p_190669_2_ == oclass;
          }
+     }
+@@ -87,14 +87,14 @@
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+-        this.field_70180_af.func_187214_a(field_184751_bv, false);
++        this.field_70180_af.func_187214_a(field_184751_bv, Boolean.valueOf(false));
+     }
+ 
+     public int func_70874_b()
+     {
+         if (this.field_70170_p.field_72995_K)
+         {
+-            return this.field_70180_af.func_187225_a(field_184751_bv) ? -1 : 1;
++            return ((Boolean)this.field_70180_af.func_187225_a(field_184751_bv)).booleanValue() ? -1 : 1;
+         }
+         else
+         {
+@@ -105,24 +105,25 @@
+     public void func_175501_a(int p_175501_1_, boolean p_175501_2_)
+     {
+         int i = this.func_70874_b();
+-        i += p_175501_1_ * 20;
++        int j = i;
++        i = i + p_175501_1_ * 20;
+ 
+         if (i > 0)
+         {
+             i = 0;
+ 
+-            if (i < 0)
++            if (j < 0)
+             {
+                 this.func_175500_n();
+             }
+         }
+ 
+-        int j = i - i;
++        int k = i - j;
+         this.func_70873_a(i);
+ 
+         if (p_175501_2_)
+         {
+-            this.field_175502_b += j;
++            this.field_175502_b += k;
+ 
+             if (this.field_175503_c == 0)
+             {
+@@ -143,7 +144,7 @@
+ 
+     public void func_70873_a(int p_70873_1_)
+     {
+-        this.field_70180_af.func_187227_b(field_184751_bv, p_70873_1_ < 0);
++        this.field_70180_af.func_187227_b(field_184751_bv, Boolean.valueOf(p_70873_1_ < 0));
+         this.field_175504_a = p_70873_1_;
+         this.func_98054_a(this.func_70631_g_());
      }

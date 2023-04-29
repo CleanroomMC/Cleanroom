@@ -1,0 +1,20 @@
+--- before/net/minecraft/item/ItemWrittenBook.java
++++ after/net/minecraft/item/ItemWrittenBook.java
+@@ -97,7 +97,7 @@
+ 
+         p_77659_2_.func_184814_a(itemstack, p_77659_3_);
+         p_77659_2_.func_71029_a(StatList.func_188057_b(this));
+-        return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
++        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+     }
+ 
+     private void func_179229_a(ItemStack p_179229_1_, EntityPlayer p_179229_2_)
+@@ -124,7 +124,7 @@
+                             itextcomponent = ITextComponent.Serializer.func_186877_b(s);
+                             itextcomponent = TextComponentUtils.func_179985_a(p_179229_2_, itextcomponent, p_179229_2_);
+                         }
+-                        catch (Exception exception)
++                        catch (Exception var9)
+                         {
+                             itextcomponent = new TextComponentString(s);
+                         }

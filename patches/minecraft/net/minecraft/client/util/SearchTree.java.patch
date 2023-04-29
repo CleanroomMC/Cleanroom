@@ -1,0 +1,73 @@
+--- before/net/minecraft/client/util/SearchTree.java
++++ after/net/minecraft/client/util/SearchTree.java
+@@ -7,6 +7,7 @@
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Locale;
++import java.util.function.Consumer;
+ import java.util.function.Function;
+ import net.minecraft.util.ResourceLocation;
+ import net.minecraftforge.fml.relauncher.Side;
+@@ -15,12 +16,12 @@
+ @SideOnly(Side.CLIENT)
+ public class SearchTree<T> implements ISearchTree<T>
+ {
+-    protected SuffixArray<T> field_194044_a = new SuffixArray<>();
+-    protected SuffixArray<T> field_194045_b = new SuffixArray<>();
++    protected SuffixArray<T> field_194044_a = new SuffixArray<T>();
++    protected SuffixArray<T> field_194045_b = new SuffixArray<T>();
+     private final Function<T, Iterable<String>> field_194046_c;
+     private final Function<T, Iterable<ResourceLocation>> field_194047_d;
+-    private final List<T> field_194048_e = Lists.newArrayList();
+-    private Object2IntMap<T> field_194049_f = new Object2IntOpenHashMap<>();
++    private final List<T> field_194048_e = Lists.<T>newArrayList();
++    private Object2IntMap<T> field_194049_f = new Object2IntOpenHashMap<T>();
+ 
+     public SearchTree(Function<T, Iterable<String>> p_i47612_1_, Function<T, Iterable<ResourceLocation>> p_i47612_2_)
+     {
+@@ -30,8 +31,8 @@
+ 
+     public void func_194040_a()
+     {
+-        this.field_194044_a = new SuffixArray<>();
+-        this.field_194045_b = new SuffixArray<>();
++        this.field_194044_a = new SuffixArray<T>();
++        this.field_194045_b = new SuffixArray<T>();
+ 
+         for (T t : this.field_194048_e)
+         {
+@@ -51,8 +52,14 @@
+ 
+     private void func_194042_b(T p_194042_1_)
+     {
+-        this.field_194047_d.apply(p_194042_1_).forEach((p_194039_2_) -> this.field_194045_b.func_194057_a(p_194042_1_, p_194039_2_.toString().toLowerCase(Locale.ROOT)));
+-        this.field_194046_c.apply(p_194042_1_).forEach((p_194041_2_) -> this.field_194044_a.func_194057_a(p_194042_1_, p_194041_2_.toLowerCase(Locale.ROOT)));
++        (this.field_194047_d.apply(p_194042_1_)).forEach((p_194039_2_) ->
++        {
++            this.field_194045_b.func_194057_a(p_194042_1_, p_194039_2_.toString().toLowerCase(Locale.ROOT));
++        });
++        (this.field_194046_c.apply(p_194042_1_)).forEach((p_194041_2_) ->
++        {
++            this.field_194044_a.func_194057_a(p_194042_1_, p_194041_2_.toLowerCase(Locale.ROOT));
++        });
+     }
+ 
+     public List<T> func_194038_a(String p_194038_1_)
+@@ -66,7 +73,7 @@
+         else
+         {
+             List<T> list1 = this.field_194045_b.func_194055_a(p_194038_1_);
+-            return (List<T>)(list1.isEmpty() ? list : Lists.newArrayList(new SearchTree.MergingIterator<>(list.iterator(), list1.iterator(), this.field_194049_f)));
++            return (List<T>)(list1.isEmpty() ? list : Lists.newArrayList(new SearchTree.MergingIterator(list.iterator(), list1.iterator(), this.field_194049_f)));
+         }
+     }
+ 
+@@ -92,7 +99,7 @@
+             {
+                 if (this.field_194036_d == null && this.field_194037_e == null)
+                 {
+-                    return this.endOfData();
++                    return (T)this.endOfData();
+                 }
+                 else
+                 {

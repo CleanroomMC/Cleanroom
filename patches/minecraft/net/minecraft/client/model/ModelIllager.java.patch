@@ -1,0 +1,22 @@
+--- before/net/minecraft/client/model/ModelIllager.java
++++ after/net/minecraft/client/model/ModelIllager.java
+@@ -84,8 +84,8 @@
+ 
+     public void func_78087_a(float p_78087_1_, float p_78087_2_, float p_78087_3_, float p_78087_4_, float p_78087_5_, float p_78087_6_, Entity p_78087_7_)
+     {
+-        this.field_191217_a.field_78796_g = p_78087_4_ * ((float)Math.PI / 180F);
+-        this.field_191217_a.field_78795_f = p_78087_5_ * ((float)Math.PI / 180F);
++        this.field_191217_a.field_78796_g = p_78087_4_ * 0.017453292F;
++        this.field_191217_a.field_78795_f = p_78087_5_ * 0.017453292F;
+         this.field_191219_c.field_78797_d = 3.0F;
+         this.field_191219_c.field_78798_e = -1.0F;
+         this.field_191219_c.field_78795_f = -0.75F;
+@@ -140,7 +140,7 @@
+         else if (abstractillager$illagerarmpose == AbstractIllager.IllagerArmPose.BOW_AND_ARROW)
+         {
+             this.field_191223_g.field_78796_g = -0.1F + this.field_191217_a.field_78796_g;
+-            this.field_191223_g.field_78795_f = (-(float)Math.PI / 2F) + this.field_191217_a.field_78795_f;
++            this.field_191223_g.field_78795_f = -((float)Math.PI / 2F) + this.field_191217_a.field_78795_f;
+             this.field_191224_h.field_78795_f = -0.9424779F + this.field_191217_a.field_78795_f;
+             this.field_191224_h.field_78796_g = this.field_191217_a.field_78796_g - 0.4F;
+             this.field_191224_h.field_78808_h = ((float)Math.PI / 2F);

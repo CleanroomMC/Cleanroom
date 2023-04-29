@@ -1,0 +1,74 @@
+--- before/net/minecraft/entity/boss/dragon/phase/PhaseStrafePlayer.java
++++ after/net/minecraft/entity/boss/dragon/phase/PhaseStrafePlayer.java
+@@ -43,7 +43,7 @@
+                 double d2 = d0 - this.field_188661_a.field_70165_t;
+                 double d3 = d1 - this.field_188661_a.field_70161_v;
+                 double d4 = (double)MathHelper.func_76133_a(d2 * d2 + d3 * d3);
+-                double d5 = Math.min((double)0.4F + d4 / 80.0D - 1.0D, 10.0D);
++                double d5 = Math.min(0.4000000059604645D + d4 / 80.0D - 1.0D, 10.0D);
+                 this.field_188692_e = new Vec3d(d0, this.field_188693_f.field_70163_u + d5, d1);
+             }
+ 
+@@ -62,10 +62,10 @@
+                 {
+                     ++this.field_188690_c;
+                     Vec3d vec3d1 = (new Vec3d(this.field_188693_f.field_70165_t - this.field_188661_a.field_70165_t, 0.0D, this.field_188693_f.field_70161_v - this.field_188661_a.field_70161_v)).func_72432_b();
+-                    Vec3d vec3d = (new Vec3d((double)MathHelper.func_76126_a(this.field_188661_a.field_70177_z * ((float)Math.PI / 180F)), 0.0D, (double)(-MathHelper.func_76134_b(this.field_188661_a.field_70177_z * ((float)Math.PI / 180F))))).func_72432_b();
++                    Vec3d vec3d = (new Vec3d((double)MathHelper.func_76126_a(this.field_188661_a.field_70177_z * 0.017453292F), 0.0D, (double)(-MathHelper.func_76134_b(this.field_188661_a.field_70177_z * 0.017453292F)))).func_72432_b();
+                     float f1 = (float)vec3d.func_72430_b(vec3d1);
+-                    float f = (float)(Math.acos((double)f1) * (double)(180F / (float)Math.PI));
+-                    f += 0.5F;
++                    float f = (float)(Math.acos((double)f1) * (180D / Math.PI));
++                    f = f + 0.5F;
+ 
+                     if (this.field_188690_c >= 5 && f >= 0.0F && f < 10.0F)
+                     {
+@@ -130,7 +130,7 @@
+ 
+             if (this.field_188661_a.func_184664_cU() != null && this.field_188661_a.func_184664_cU().func_186092_c() > 0)
+             {
+-                j %= 12;
++                j = j % 12;
+ 
+                 if (j < 0)
+                 {
+@@ -139,9 +139,9 @@
+             }
+             else
+             {
+-                j -= 12;
+-                j &= 7;
+-                j += 12;
++                j = j - 12;
++                j = j & 7;
++                j = j + 12;
+             }
+ 
+             this.field_188691_d = this.field_188661_a.func_184666_a(i, j, (PathPoint)null);
+@@ -165,11 +165,15 @@
+             double d2 = vec3d.field_72449_c;
+             double d1;
+ 
+-            do
++            while (true)
+             {
+                 d1 = vec3d.field_72448_b + (double)(this.field_188661_a.func_70681_au().nextFloat() * 20.0F);
++
++                if (d1 >= vec3d.field_72448_b)
++                {
++                    break;
++                }
+             }
+-            while (d1 < vec3d.field_72448_b);
+ 
+             this.field_188692_e = new Vec3d(d0, d1, d2);
+         }
+@@ -193,7 +197,7 @@
+         double d0 = (double)k - this.field_188661_a.field_70165_t;
+         double d1 = (double)l - this.field_188661_a.field_70161_v;
+         double d2 = (double)MathHelper.func_76133_a(d0 * d0 + d1 * d1);
+-        double d3 = Math.min((double)0.4F + d2 / 80.0D - 1.0D, 10.0D);
++        double d3 = Math.min(0.4000000059604645D + d2 / 80.0D - 1.0D, 10.0D);
+         int i1 = MathHelper.func_76128_c(this.field_188693_f.field_70163_u + d3);
+         PathPoint pathpoint = new PathPoint(k, i1, l);
+         this.field_188691_d = this.field_188661_a.func_184666_a(i, j, pathpoint);

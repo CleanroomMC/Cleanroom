@@ -1,0 +1,40 @@
+--- before/net/minecraft/entity/ai/EntityAIAvoidEntity.java
++++ after/net/minecraft/entity/ai/EntityAIAvoidEntity.java
+@@ -13,13 +13,7 @@
+ 
+ public class EntityAIAvoidEntity<T extends Entity> extends EntityAIBase
+ {
+-    private final Predicate<Entity> field_179509_a = new Predicate<Entity>()
+-    {
+-        public boolean apply(@Nullable Entity p_apply_1_)
+-        {
+-            return p_apply_1_.func_70089_S() && EntityAIAvoidEntity.this.field_75380_a.func_70635_at().func_75522_a(p_apply_1_) && !EntityAIAvoidEntity.this.field_75380_a.func_184191_r(p_apply_1_);
+-        }
+-    };
++    private final Predicate<Entity> field_179509_a;
+     protected EntityCreature field_75380_a;
+     private final double field_75378_b;
+     private final double field_75379_c;
+@@ -37,6 +31,13 @@
+ 
+     public EntityAIAvoidEntity(EntityCreature p_i46405_1_, Class<T> p_i46405_2_, Predicate <? super T > p_i46405_3_, float p_i46405_4_, double p_i46405_5_, double p_i46405_7_)
+     {
++        this.field_179509_a = new Predicate<Entity>()
++        {
++            public boolean apply(@Nullable Entity p_apply_1_)
++            {
++                return p_apply_1_.func_70089_S() && EntityAIAvoidEntity.this.field_75380_a.func_70635_at().func_75522_a(p_apply_1_) && !EntityAIAvoidEntity.this.field_75380_a.func_184191_r(p_apply_1_);
++            }
++        };
+         this.field_75380_a = p_i46405_1_;
+         this.field_181064_i = p_i46405_2_;
+         this.field_179510_i = p_i46405_3_;
+@@ -49,7 +50,7 @@
+ 
+     public boolean func_75250_a()
+     {
+-        List<T> list = this.field_75380_a.field_70170_p.func_175647_a(this.field_181064_i, this.field_75380_a.func_174813_aQ().func_72314_b((double)this.field_179508_f, 3.0D, (double)this.field_179508_f), Predicates.and(EntitySelectors.field_188444_d, this.field_179509_a, this.field_179510_i));
++        List<T> list = this.field_75380_a.field_70170_p.<T>func_175647_a(this.field_181064_i, this.field_75380_a.func_174813_aQ().func_72314_b((double)this.field_179508_f, 3.0D, (double)this.field_179508_f), Predicates.and(EntitySelectors.field_188444_d, this.field_179509_a, this.field_179510_i));
+ 
+         if (list.isEmpty())
+         {

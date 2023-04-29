@@ -1,0 +1,17 @@
+--- before/net/minecraft/inventory/ItemStackHelper.java
++++ after/net/minecraft/inventory/ItemStackHelper.java
+@@ -10,12 +10,12 @@
+ {
+     public static ItemStack func_188382_a(List<ItemStack> p_188382_0_, int p_188382_1_, int p_188382_2_)
+     {
+-        return p_188382_1_ >= 0 && p_188382_1_ < p_188382_0_.size() && !p_188382_0_.get(p_188382_1_).func_190926_b() && p_188382_2_ > 0 ? p_188382_0_.get(p_188382_1_).func_77979_a(p_188382_2_) : ItemStack.field_190927_a;
++        return p_188382_1_ >= 0 && p_188382_1_ < p_188382_0_.size() && !((ItemStack)p_188382_0_.get(p_188382_1_)).func_190926_b() && p_188382_2_ > 0 ? ((ItemStack)p_188382_0_.get(p_188382_1_)).func_77979_a(p_188382_2_) : ItemStack.field_190927_a;
+     }
+ 
+     public static ItemStack func_188383_a(List<ItemStack> p_188383_0_, int p_188383_1_)
+     {
+-        return p_188383_1_ >= 0 && p_188383_1_ < p_188383_0_.size() ? p_188383_0_.set(p_188383_1_, ItemStack.field_190927_a) : ItemStack.field_190927_a;
++        return p_188383_1_ >= 0 && p_188383_1_ < p_188383_0_.size() ? (ItemStack)p_188383_0_.set(p_188383_1_, ItemStack.field_190927_a) : ItemStack.field_190927_a;
+     }
+ 
+     public static NBTTagCompound func_191282_a(NBTTagCompound p_191282_0_, NonNullList<ItemStack> p_191282_1_)

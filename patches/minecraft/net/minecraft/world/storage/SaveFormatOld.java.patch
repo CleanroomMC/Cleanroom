@@ -1,5 +1,14 @@
 --- before/net/minecraft/world/storage/SaveFormatOld.java
 +++ after/net/minecraft/world/storage/SaveFormatOld.java
+@@ -44,7 +44,7 @@
+     @SideOnly(Side.CLIENT)
+     public List<WorldSummary> func_75799_b() throws AnvilConverterException
+     {
+-        List<WorldSummary> list = Lists.newArrayList();
++        List<WorldSummary> list = Lists.<WorldSummary>newArrayList();
+ 
+         for (int i = 0; i < 5; ++i)
+         {
 @@ -109,6 +109,24 @@
          }
      }
@@ -25,3 +34,14 @@
      @SideOnly(Side.CLIENT)
      public void func_75806_a(String p_75806_1_, String p_75806_2_)
      {
+@@ -195,8 +213,9 @@
+                     {
+                         Thread.sleep(500L);
+                     }
+-                    catch (InterruptedException interruptedexception)
++                    catch (InterruptedException var5)
+                     {
++                        ;
+                     }
+                 }
+             }

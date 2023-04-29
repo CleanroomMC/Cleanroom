@@ -1,6 +1,6 @@
 --- before/net/minecraft/village/Village.java
 +++ after/net/minecraft/village/Village.java
-@@ -26,7 +26,7 @@
+@@ -26,10 +26,10 @@
  import net.minecraft.util.math.Vec3d;
  import net.minecraft.world.World;
  
@@ -8,14 +8,19 @@
 +public class Village implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound>
  {
      private World field_75586_a;
-     private final List<VillageDoorInfo> field_75584_b = Lists.<VillageDoorInfo>newArrayList();
+-    private final List<VillageDoorInfo> field_75584_b = Lists.newArrayList();
++    private final List<VillageDoorInfo> field_75584_b = Lists.<VillageDoorInfo>newArrayList();
+     private BlockPos field_75585_c = BlockPos.field_177992_a;
+     private BlockPos field_75582_d = BlockPos.field_177992_a;
+     private int field_75583_e;
 @@ -37,17 +37,19 @@
      private int field_75581_g;
      private int field_75588_h;
      private int field_82694_i;
--    private final Map<String, Integer> field_82693_j = Maps.<String, Integer>newHashMap();
+-    private final Map<String, Integer> field_82693_j = Maps.newHashMap();
+-    private final List<Village.VillageAggressor> field_75589_i = Lists.newArrayList();
 +    private final Map<UUID, Integer> field_82693_j = Maps.<UUID, Integer>newHashMap();
-     private final List<Village.VillageAggressor> field_75589_i = Lists.<Village.VillageAggressor>newArrayList();
++    private final List<Village.VillageAggressor> field_75589_i = Lists.<Village.VillageAggressor>newArrayList();
      private int field_75587_j;
  
      public Village()
@@ -30,7 +35,41 @@
      }
  
      public void func_82691_a(World p_82691_1_)
-@@ -310,11 +312,11 @@
+@@ -133,13 +135,13 @@
+ 
+     private void func_75579_h()
+     {
+-        List<EntityIronGolem> list = this.field_75586_a.func_72872_a(EntityIronGolem.class, new AxisAlignedBB((double)(this.field_75582_d.func_177958_n() - this.field_75583_e), (double)(this.field_75582_d.func_177956_o() - 4), (double)(this.field_75582_d.func_177952_p() - this.field_75583_e), (double)(this.field_75582_d.func_177958_n() + this.field_75583_e), (double)(this.field_75582_d.func_177956_o() + 4), (double)(this.field_75582_d.func_177952_p() + this.field_75583_e)));
++        List<EntityIronGolem> list = this.field_75586_a.<EntityIronGolem>func_72872_a(EntityIronGolem.class, new AxisAlignedBB((double)(this.field_75582_d.func_177958_n() - this.field_75583_e), (double)(this.field_75582_d.func_177956_o() - 4), (double)(this.field_75582_d.func_177952_p() - this.field_75583_e), (double)(this.field_75582_d.func_177958_n() + this.field_75583_e), (double)(this.field_75582_d.func_177956_o() + 4), (double)(this.field_75582_d.func_177952_p() + this.field_75583_e)));
+         this.field_75587_j = list.size();
+     }
+ 
+     private void func_75572_i()
+     {
+-        List<EntityVillager> list = this.field_75586_a.func_72872_a(EntityVillager.class, new AxisAlignedBB((double)(this.field_75582_d.func_177958_n() - this.field_75583_e), (double)(this.field_75582_d.func_177956_o() - 4), (double)(this.field_75582_d.func_177952_p() - this.field_75583_e), (double)(this.field_75582_d.func_177958_n() + this.field_75583_e), (double)(this.field_75582_d.func_177956_o() + 4), (double)(this.field_75582_d.func_177952_p() + this.field_75583_e)));
++        List<EntityVillager> list = this.field_75586_a.<EntityVillager>func_72872_a(EntityVillager.class, new AxisAlignedBB((double)(this.field_75582_d.func_177958_n() - this.field_75583_e), (double)(this.field_75582_d.func_177956_o() - 4), (double)(this.field_75582_d.func_177952_p() - this.field_75583_e), (double)(this.field_75582_d.func_177958_n() + this.field_75583_e), (double)(this.field_75582_d.func_177956_o() + 4), (double)(this.field_75582_d.func_177952_p() + this.field_75583_e)));
+         this.field_75588_h = list.size();
+ 
+         if (this.field_75588_h == 0)
+@@ -213,7 +215,7 @@
+ 
+             if (j > 256)
+             {
+-                j *= 1000;
++                j = j * 1000;
+             }
+             else
+             {
+@@ -295,7 +297,7 @@
+             Village.VillageAggressor village$villageaggressor1 = this.field_75589_i.get(i);
+             double d1 = village$villageaggressor1.field_75592_a.func_70068_e(p_75571_1_);
+ 
+-            if (!(d1 > d0))
++            if (d1 <= d0)
+             {
+                 village$villageaggressor = village$villageaggressor1;
+                 d0 = d1;
+@@ -310,17 +312,17 @@
          double d0 = Double.MAX_VALUE;
          EntityPlayer entityplayer = null;
  
@@ -45,6 +84,13 @@
  
                  if (entityplayer1 != null)
                  {
+                     double d1 = entityplayer1.func_70068_e(p_82685_1_);
+ 
+-                    if (!(d1 > d0))
++                    if (d1 <= d0)
+                     {
+                         entityplayer = entityplayer1;
+                         d0 = d1;
 @@ -362,6 +364,7 @@
                  villagedoorinfo.func_75466_d();
              }
@@ -66,9 +112,12 @@
 +    public int getPlayerReputation(UUID p_82684_1_)
 +    {
          Integer integer = this.field_82693_j.get(p_82684_1_);
-         return integer == null ? 0 : integer.intValue();
-     }
- 
+-        return integer == null ? 0 : integer;
+-    }
+-
++        return integer == null ? 0 : integer.intValue();
++    }
++
 +    private UUID findUUID(String name)
 +    {
 +        if (this.field_75586_a == null || this.field_75586_a.func_73046_m() == null)
@@ -88,7 +137,8 @@
 +    {
 +        int i = this.getPlayerReputation(p_82688_1_);
          int j = MathHelper.func_76125_a(i + p_82688_2_, -30, 10);
-         this.field_82693_j.put(p_82688_1_, Integer.valueOf(j));
+-        this.field_82693_j.put(p_82688_1_, j);
++        this.field_82693_j.put(p_82688_1_, Integer.valueOf(j));
          return j;
      }
  
@@ -117,13 +167,13 @@
 -
 -                if (gameprofile != null)
 -                {
--                    this.field_82693_j.put(gameprofile.getName(), Integer.valueOf(nbttagcompound1.func_74762_e("S")));
+-                    this.field_82693_j.put(gameprofile.getName(), nbttagcompound1.func_74762_e("S"));
 -                }
 +                this.field_82693_j.put(UUID.fromString(nbttagcompound1.func_74779_i("UUID")), Integer.valueOf(nbttagcompound1.func_74762_e("S")));
              }
              else
              {
--                this.field_82693_j.put(nbttagcompound1.func_74779_i("Name"), Integer.valueOf(nbttagcompound1.func_74762_e("S")));
+-                this.field_82693_j.put(nbttagcompound1.func_74779_i("Name"), nbttagcompound1.func_74762_e("S"));
 +                //World is never set here, so this will always be offline UUIDs, sadly there is no way to convert this.
 +                this.field_82693_j.put(findUUID(nbttagcompound1.func_74779_i("Name")), Integer.valueOf(nbttagcompound1.func_74762_e("S")));
              }
@@ -132,7 +182,7 @@
      }
  
      public void func_82689_b(NBTTagCompound p_82689_1_)
-@@ -507,18 +532,14 @@
+@@ -507,28 +532,26 @@
          p_82689_1_.func_74782_a("Doors", nbttaglist);
          NBTTagList nbttaglist1 = new NBTTagList();
  
@@ -149,11 +199,17 @@
 -                if (gameprofile != null)
                  {
 -                    nbttagcompound1.func_74778_a("UUID", gameprofile.getId().toString());
+-                    nbttagcompound1.func_74768_a("S", this.field_82693_j.get(s));
 +                    nbttagcompound1.func_74778_a("UUID", s.toString());
-                     nbttagcompound1.func_74768_a("S", ((Integer)this.field_82693_j.get(s)).intValue());
++                    nbttagcompound1.func_74768_a("S", ((Integer)this.field_82693_j.get(s)).intValue());
                      nbttaglist1.func_74742_a(nbttagcompound1);
                  }
-@@ -530,6 +551,7 @@
+             }
+-            catch (RuntimeException runtimeexception)
++            catch (RuntimeException var9)
+             {
++                ;
+             }
          }
  
          p_82689_1_.func_74782_a("Players", nbttaglist1);
@@ -161,7 +217,7 @@
      }
  
      public void func_82692_h()
-@@ -544,9 +566,9 @@
+@@ -543,9 +566,9 @@
  
      public void func_82683_b(int p_82683_1_)
      {
@@ -173,7 +229,7 @@
          }
      }
  
-@@ -561,4 +583,31 @@
+@@ -560,4 +583,31 @@
              this.field_75590_b = p_i1674_3_;
          }
      }

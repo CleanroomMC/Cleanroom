@@ -1,8 +1,11 @@
 --- before/net/minecraft/client/gui/GuiScreenDemo.java
 +++ after/net/minecraft/client/gui/GuiScreenDemo.java
-@@ -68,10 +68,10 @@
+@@ -66,12 +66,12 @@
+         int i = (this.field_146294_l - 248) / 2 + 10;
+         int j = (this.field_146295_m - 166) / 2 + 8;
          this.field_146289_q.func_78276_b(I18n.func_135052_a("demo.help.title"), i, j, 2039583);
-         j = j + 12;
+-        j += 12;
++        j = j + 12;
          GameSettings gamesettings = this.field_146297_k.field_71474_y;
 -        this.field_146289_q.func_78276_b(I18n.func_135052_a("demo.help.movementShort", GameSettings.func_74298_c(gamesettings.field_74351_w.func_151463_i()), GameSettings.func_74298_c(gamesettings.field_74370_x.func_151463_i()), GameSettings.func_74298_c(gamesettings.field_74368_y.func_151463_i()), GameSettings.func_74298_c(gamesettings.field_74366_z.func_151463_i())), i, j, 5197647);
 +        this.field_146289_q.func_78276_b(I18n.func_135052_a("demo.help.movementShort", gamesettings.field_74351_w.getDisplayName(), gamesettings.field_74370_x.getDisplayName(), gamesettings.field_74368_y.getDisplayName(), gamesettings.field_74366_z.getDisplayName()), i, j, 5197647);

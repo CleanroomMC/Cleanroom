@@ -1,18 +1,28 @@
 --- before/net/minecraft/potion/Potion.java
 +++ after/net/minecraft/potion/Potion.java
-@@ -22,9 +22,9 @@
+@@ -3,6 +3,7 @@
+ import com.google.common.collect.Maps;
+ import java.util.Map;
+ import java.util.UUID;
++import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+ import net.minecraft.entity.Entity;
+ import net.minecraft.entity.EntityLivingBase;
+@@ -21,10 +22,10 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  
 -public class Potion
 +public class Potion extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<Potion>
  {
--    public static final RegistryNamespaced<ResourceLocation, Potion> field_188414_b = new RegistryNamespaced<ResourceLocation, Potion>();
+-    public static final RegistryNamespaced<ResourceLocation, Potion> field_188414_b = new RegistryNamespaced<>();
+-    private final Map<IAttribute, AttributeModifier> field_111188_I = Maps.newHashMap();
 +    public static final RegistryNamespaced<ResourceLocation, Potion> field_188414_b = net.minecraftforge.registries.GameData.getWrapper(Potion.class);
-     private final Map<IAttribute, AttributeModifier> field_111188_I = Maps.<IAttribute, AttributeModifier>newHashMap();
++    private final Map<IAttribute, AttributeModifier> field_111188_I = Maps.<IAttribute, AttributeModifier>newHashMap();
      private final boolean field_76418_K;
      private final int field_76414_N;
-@@ -222,7 +222,6 @@
+     private String field_76416_I = "";
+@@ -221,7 +222,6 @@
          return this.field_76417_J;
      }
  
@@ -20,11 +30,28 @@
      public boolean func_76398_f()
      {
          return this.field_76418_K;
-@@ -292,6 +291,121 @@
+@@ -255,7 +255,7 @@
+ 
+     public void func_111187_a(EntityLivingBase p_111187_1_, AbstractAttributeMap p_111187_2_, int p_111187_3_)
      {
+-        for (Map.Entry<IAttribute, AttributeModifier> entry : this.field_111188_I.entrySet())
++        for (Entry<IAttribute, AttributeModifier> entry : this.field_111188_I.entrySet())
+         {
+             IAttributeInstance iattributeinstance = p_111187_2_.func_111151_a(entry.getKey());
+ 
+@@ -274,7 +274,7 @@
+ 
+     public void func_111185_a(EntityLivingBase p_111185_1_, AbstractAttributeMap p_111185_2_, int p_111185_3_)
+     {
+-        for (Map.Entry<IAttribute, AttributeModifier> entry : this.field_111188_I.entrySet())
++        for (Entry<IAttribute, AttributeModifier> entry : this.field_111188_I.entrySet())
+         {
+             IAttributeInstance iattributeinstance = p_111185_2_.func_111151_a(entry.getKey());
+ 
+@@ -292,6 +292,121 @@
          return p_111183_2_.func_111164_d() * (double)(p_111183_1_ + 1);
      }
-+
+ 
 +    /* ======================================== FORGE START =====================================*/
 +
 +    /**
@@ -139,6 +166,22 @@
 +    }
 +
 +    /* ======================================== FORGE END =====================================*/
- 
++
      @SideOnly(Side.CLIENT)
      public boolean func_188408_i()
+     {
+@@ -306,10 +421,10 @@
+ 
+     public static void func_188411_k()
+     {
+-        field_188414_b.func_177775_a(1, new ResourceLocation("speed"), (new Potion(false, 8171462)).func_76390_b("effect.moveSpeed").func_76399_b(0, 0).func_111184_a(SharedMonsterAttributes.field_111263_d, "91AEAA56-376B-4498-935B-2F7F68070635", (double)0.2F, 2).func_188413_j());
+-        field_188414_b.func_177775_a(2, new ResourceLocation("slowness"), (new Potion(true, 5926017)).func_76390_b("effect.moveSlowdown").func_76399_b(1, 0).func_111184_a(SharedMonsterAttributes.field_111263_d, "7107DE5E-7CE8-4030-940E-514C1F160890", (double) - 0.15F, 2));
+-        field_188414_b.func_177775_a(3, new ResourceLocation("haste"), (new Potion(false, 14270531)).func_76390_b("effect.digSpeed").func_76399_b(2, 0).func_76404_a(1.5D).func_188413_j().func_111184_a(SharedMonsterAttributes.field_188790_f, "AF8B6E3F-3328-4C0A-AA36-5BA2BB9DBEF3", (double)0.1F, 2));
+-        field_188414_b.func_177775_a(4, new ResourceLocation("mining_fatigue"), (new Potion(true, 4866583)).func_76390_b("effect.digSlowDown").func_76399_b(3, 0).func_111184_a(SharedMonsterAttributes.field_188790_f, "55FCED67-E92A-486E-9800-B47F202C4386", (double) - 0.1F, 2));
++        field_188414_b.func_177775_a(1, new ResourceLocation("speed"), (new Potion(false, 8171462)).func_76390_b("effect.moveSpeed").func_76399_b(0, 0).func_111184_a(SharedMonsterAttributes.field_111263_d, "91AEAA56-376B-4498-935B-2F7F68070635", 0.20000000298023224D, 2).func_188413_j());
++        field_188414_b.func_177775_a(2, new ResourceLocation("slowness"), (new Potion(true, 5926017)).func_76390_b("effect.moveSlowdown").func_76399_b(1, 0).func_111184_a(SharedMonsterAttributes.field_111263_d, "7107DE5E-7CE8-4030-940E-514C1F160890", -0.15000000596046448D, 2));
++        field_188414_b.func_177775_a(3, new ResourceLocation("haste"), (new Potion(false, 14270531)).func_76390_b("effect.digSpeed").func_76399_b(2, 0).func_76404_a(1.5D).func_188413_j().func_111184_a(SharedMonsterAttributes.field_188790_f, "AF8B6E3F-3328-4C0A-AA36-5BA2BB9DBEF3", 0.10000000149011612D, 2));
++        field_188414_b.func_177775_a(4, new ResourceLocation("mining_fatigue"), (new Potion(true, 4866583)).func_76390_b("effect.digSlowDown").func_76399_b(3, 0).func_111184_a(SharedMonsterAttributes.field_188790_f, "55FCED67-E92A-486E-9800-B47F202C4386", -0.10000000149011612D, 2));
+         field_188414_b.func_177775_a(5, new ResourceLocation("strength"), (new PotionAttackDamage(false, 9643043, 3.0D)).func_76390_b("effect.damageBoost").func_76399_b(4, 0).func_111184_a(SharedMonsterAttributes.field_111264_e, "648D7064-6A60-4F59-8ABE-C2C23A6DD7A9", 0.0D, 0).func_188413_j());
+         field_188414_b.func_177775_a(6, new ResourceLocation("instant_health"), (new PotionHealth(false, 16262179)).func_76390_b("effect.heal").func_188413_j());
+         field_188414_b.func_177775_a(7, new ResourceLocation("instant_damage"), (new PotionHealth(true, 4393481)).func_76390_b("effect.harm").func_188413_j());

@@ -1,0 +1,35 @@
+--- before/net/minecraft/client/particle/ParticleExplosion.java
++++ after/net/minecraft/client/particle/ParticleExplosion.java
+@@ -10,9 +10,9 @@
+     protected ParticleExplosion(World p_i1205_1_, double p_i1205_2_, double p_i1205_4_, double p_i1205_6_, double p_i1205_8_, double p_i1205_10_, double p_i1205_12_)
+     {
+         super(p_i1205_1_, p_i1205_2_, p_i1205_4_, p_i1205_6_, p_i1205_8_, p_i1205_10_, p_i1205_12_);
+-        this.field_187129_i = p_i1205_8_ + (Math.random() * 2.0D - 1.0D) * (double)0.05F;
+-        this.field_187130_j = p_i1205_10_ + (Math.random() * 2.0D - 1.0D) * (double)0.05F;
+-        this.field_187131_k = p_i1205_12_ + (Math.random() * 2.0D - 1.0D) * (double)0.05F;
++        this.field_187129_i = p_i1205_8_ + (Math.random() * 2.0D - 1.0D) * 0.05000000074505806D;
++        this.field_187130_j = p_i1205_10_ + (Math.random() * 2.0D - 1.0D) * 0.05000000074505806D;
++        this.field_187131_k = p_i1205_12_ + (Math.random() * 2.0D - 1.0D) * 0.05000000074505806D;
+         float f = this.field_187136_p.nextFloat() * 0.3F + 0.7F;
+         this.field_70552_h = f;
+         this.field_70553_i = f;
+@@ -35,14 +35,14 @@
+         this.func_70536_a(7 - this.field_70546_d * 8 / this.field_70547_e);
+         this.field_187130_j += 0.004D;
+         this.func_187110_a(this.field_187129_i, this.field_187130_j, this.field_187131_k);
+-        this.field_187129_i *= (double)0.9F;
+-        this.field_187130_j *= (double)0.9F;
+-        this.field_187131_k *= (double)0.9F;
++        this.field_187129_i *= 0.8999999761581421D;
++        this.field_187130_j *= 0.8999999761581421D;
++        this.field_187131_k *= 0.8999999761581421D;
+ 
+         if (this.field_187132_l)
+         {
+-            this.field_187129_i *= (double)0.7F;
+-            this.field_187131_k *= (double)0.7F;
++            this.field_187129_i *= 0.699999988079071D;
++            this.field_187131_k *= 0.699999988079071D;
+         }
+     }
+ 

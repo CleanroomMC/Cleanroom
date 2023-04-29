@@ -1,6 +1,14 @@
 --- before/net/minecraft/world/gen/feature/WorldGenLakes.java
 +++ after/net/minecraft/world/gen/feature/WorldGenLakes.java
-@@ -161,7 +161,8 @@
+@@ -22,6 +22,7 @@
+     {
+         for (p_180709_3_ = p_180709_3_.func_177982_a(-8, 0, -8); p_180709_3_.func_177956_o() > 5 && p_180709_1_.func_175623_d(p_180709_3_); p_180709_3_ = p_180709_3_.func_177977_b())
+         {
++            ;
+         }
+ 
+         if (p_180709_3_.func_177956_o() <= 4)
+@@ -160,7 +161,8 @@
  
                          if (p_180709_1_.func_175675_v(p_180709_3_.func_177982_a(k2, 4, l3)))
                          {

@@ -1,0 +1,20 @@
+--- before/net/minecraft/client/resources/AbstractResourcePack.java
++++ after/net/minecraft/client/resources/AbstractResourcePack.java
+@@ -63,7 +63,7 @@
+ 
+     public <T extends IMetadataSection> T func_135058_a(MetadataSerializer p_135058_1_, String p_135058_2_) throws IOException
+     {
+-        return func_110596_a(p_135058_1_, this.func_110591_a("pack.mcmeta"), p_135058_2_);
++        return (T)func_110596_a(p_135058_1_, this.func_110591_a("pack.mcmeta"), p_135058_2_);
+     }
+ 
+     static <T extends IMetadataSection> T func_110596_a(MetadataSerializer p_110596_0_, InputStream p_110596_1_, String p_110596_2_)
+@@ -85,7 +85,7 @@
+             IOUtils.closeQuietly((Reader)bufferedreader);
+         }
+ 
+-        return p_110596_0_.func_110503_a(p_110596_2_, jsonobject);
++        return (T)p_110596_0_.func_110503_a(p_110596_2_, jsonobject);
+     }
+ 
+     public BufferedImage func_110586_a() throws IOException

@@ -1,6 +1,48 @@
 --- before/net/minecraft/enchantment/EnchantmentHelper.java
 +++ after/net/minecraft/enchantment/EnchantmentHelper.java
-@@ -140,6 +140,7 @@
+@@ -6,6 +6,7 @@
+ import java.util.List;
+ import java.util.Map;
+ import java.util.Random;
++import java.util.Map.Entry;
+ import net.minecraft.entity.Entity;
+ import net.minecraft.entity.EntityLivingBase;
+ import net.minecraft.entity.EnumCreatureAttribute;
+@@ -57,7 +58,7 @@
+ 
+     public static Map<Enchantment, Integer> func_82781_a(ItemStack p_82781_0_)
+     {
+-        Map<Enchantment, Integer> map = Maps.newLinkedHashMap();
++        Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newLinkedHashMap();
+         NBTTagList nbttaglist = p_82781_0_.func_77973_b() == Items.field_151134_bR ? ItemEnchantedBook.func_92110_g(p_82781_0_) : p_82781_0_.func_77986_q();
+ 
+         for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+@@ -65,7 +66,7 @@
+             NBTTagCompound nbttagcompound = nbttaglist.func_150305_b(i);
+             Enchantment enchantment = Enchantment.func_185262_c(nbttagcompound.func_74765_d("id"));
+             int j = nbttagcompound.func_74765_d("lvl");
+-            map.put(enchantment, j);
++            map.put(enchantment, Integer.valueOf(j));
+         }
+ 
+         return map;
+@@ -75,13 +76,13 @@
+     {
+         NBTTagList nbttaglist = new NBTTagList();
+ 
+-        for (Map.Entry<Enchantment, Integer> entry : p_82782_0_.entrySet())
++        for (Entry<Enchantment, Integer> entry : p_82782_0_.entrySet())
+         {
+             Enchantment enchantment = entry.getKey();
+ 
+             if (enchantment != null)
+             {
+-                int i = entry.getValue();
++                int i = ((Integer)entry.getValue()).intValue();
+                 NBTTagCompound nbttagcompound = new NBTTagCompound();
+                 nbttagcompound.func_74777_a("id", (short)Enchantment.func_185258_b(enchantment));
+                 nbttagcompound.func_74777_a("lvl", (short)i);
+@@ -139,6 +140,7 @@
          field_77520_b.field_77497_a = 0;
          field_77520_b.field_77496_b = p_77508_1_;
          func_77516_a(field_77520_b, p_77508_0_);
@@ -8,7 +50,7 @@
          return field_77520_b.field_77497_a;
      }
  
-@@ -171,6 +172,9 @@
+@@ -170,6 +172,9 @@
          {
              func_77518_a(field_151388_d, p_151384_0_.func_184614_ca());
          }
@@ -18,7 +60,7 @@
      }
  
      public static void func_151385_b(EntityLivingBase p_151385_0_, Entity p_151385_1_)
-@@ -187,6 +191,9 @@
+@@ -186,6 +191,9 @@
          {
              func_77518_a(field_151389_e, p_151385_0_.func_184614_ca());
          }
@@ -28,7 +70,24 @@
      }
  
      public static int func_185284_a(Enchantment p_185284_0_, EntityLivingBase p_185284_1_)
-@@ -302,7 +309,7 @@
+@@ -284,7 +292,7 @@
+         }
+         else
+         {
+-            List<ItemStack> list1 = Lists.newArrayList();
++            List<ItemStack> list1 = Lists.<ItemStack>newArrayList();
+ 
+             for (ItemStack itemstack : list)
+             {
+@@ -294,14 +302,14 @@
+                 }
+             }
+ 
+-            return list1.isEmpty() ? ItemStack.field_190927_a : list1.get(p_92099_1_.func_70681_au().nextInt(list1.size()));
++            return list1.isEmpty() ? ItemStack.field_190927_a : (ItemStack)list1.get(p_92099_1_.func_70681_au().nextInt(list1.size()));
+         }
+     }
+ 
      public static int func_77514_a(Random p_77514_0_, int p_77514_1_, int p_77514_2_, ItemStack p_77514_3_)
      {
          Item item = p_77514_3_.func_77973_b();
@@ -37,16 +96,44 @@
  
          if (i <= 0)
          {
-@@ -357,7 +364,7 @@
+@@ -354,9 +362,9 @@
+ 
+     public static List<EnchantmentData> func_77513_b(Random p_77513_0_, ItemStack p_77513_1_, int p_77513_2_, boolean p_77513_3_)
      {
-         List<EnchantmentData> list = Lists.<EnchantmentData>newArrayList();
+-        List<EnchantmentData> list = Lists.newArrayList();
++        List<EnchantmentData> list = Lists.<EnchantmentData>newArrayList();
          Item item = p_77513_1_.func_77973_b();
 -        int i = item.func_77619_b();
 +        int i = item.getItemEnchantability(p_77513_1_);
  
          if (i <= 0)
          {
-@@ -413,7 +420,7 @@
+@@ -364,7 +372,7 @@
+         }
+         else
+         {
+-            p_77513_2_ += 1 + p_77513_0_.nextInt(i / 4 + 1) + p_77513_0_.nextInt(i / 4 + 1);
++            p_77513_2_ = p_77513_2_ + 1 + p_77513_0_.nextInt(i / 4 + 1) + p_77513_0_.nextInt(i / 4 + 1);
+             float f = (p_77513_0_.nextFloat() + p_77513_0_.nextFloat() - 1.0F) * 0.15F;
+             p_77513_2_ = MathHelper.func_76125_a(Math.round((float)p_77513_2_ + (float)p_77513_2_ * f), 1, Integer.MAX_VALUE);
+             List<EnchantmentData> list1 = func_185291_a(p_77513_2_, p_77513_1_, p_77513_3_);
+@@ -375,7 +383,7 @@
+ 
+                 while (p_77513_0_.nextInt(50) <= p_77513_2_)
+                 {
+-                    func_185282_a(list1, Util.func_184878_a(list));
++                    func_185282_a(list1, (EnchantmentData)Util.func_184878_a(list));
+ 
+                     if (list1.isEmpty())
+                     {
+@@ -406,13 +414,13 @@
+ 
+     public static List<EnchantmentData> func_185291_a(int p_185291_0_, ItemStack p_185291_1_, boolean p_185291_2_)
+     {
+-        List<EnchantmentData> list = Lists.newArrayList();
++        List<EnchantmentData> list = Lists.<EnchantmentData>newArrayList();
+         Item item = p_185291_1_.func_77973_b();
+         boolean flag = p_185291_1_.func_77973_b() == Items.field_151122_aG;
  
          for (Enchantment enchantment : Enchantment.field_185264_b)
          {

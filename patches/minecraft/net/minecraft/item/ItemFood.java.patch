@@ -1,0 +1,33 @@
+--- before/net/minecraft/item/ItemFood.java
++++ after/net/minecraft/item/ItemFood.java
+@@ -16,7 +16,7 @@
+ 
+ public class ItemFood extends Item
+ {
+-    public final int field_77855_a = 32;
++    public final int field_77855_a;
+     private final int field_77853_b;
+     private final float field_77854_c;
+     private final boolean field_77856_bY;
+@@ -26,6 +26,7 @@
+ 
+     public ItemFood(int p_i45339_1_, float p_i45339_2_, boolean p_i45339_3_)
+     {
++        this.field_77855_a = 32;
+         this.field_77853_b = p_i45339_1_;
+         this.field_77856_bY = p_i45339_3_;
+         this.field_77854_c = p_i45339_2_;
+@@ -82,11 +83,11 @@
+         if (p_77659_2_.func_71043_e(this.field_77852_bZ))
+         {
+             p_77659_2_.func_184598_c(p_77659_3_);
+-            return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
++            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+         }
+         else
+         {
+-            return new ActionResult<>(EnumActionResult.FAIL, itemstack);
++            return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
+         }
+     }
+ 

@@ -9,3 +9,37 @@
      }
  
      public boolean func_75253_b()
+@@ -51,13 +51,13 @@
+     public void func_75249_e()
+     {
+         super.func_75249_e();
+-        this.field_188499_a.func_184724_a(true);
++        ((IRangedAttackMob)this.field_188499_a).func_184724_a(true);
+     }
+ 
+     public void func_75251_c()
+     {
+         super.func_75251_c();
+-        this.field_188499_a.func_184724_a(false);
++        ((IRangedAttackMob)this.field_188499_a).func_184724_a(false);
+         this.field_188504_f = 0;
+         this.field_188503_e = -1;
+         this.field_188499_a.func_184602_cy();
+@@ -87,7 +87,7 @@
+                 --this.field_188504_f;
+             }
+ 
+-            if (!(d0 > (double)this.field_188502_d) && this.field_188504_f >= 20)
++            if (d0 <= (double)this.field_188502_d && this.field_188504_f >= 20)
+             {
+                 this.field_188499_a.func_70661_as().func_75499_g();
+                 ++this.field_188507_i;
+@@ -145,7 +145,7 @@
+                     if (i >= 20)
+                     {
+                         this.field_188499_a.func_184602_cy();
+-                        this.field_188499_a.func_82196_d(entitylivingbase, ItemBow.func_185059_b(i));
++                        ((IRangedAttackMob)this.field_188499_a).func_82196_d(entitylivingbase, ItemBow.func_185059_b(i));
+                         this.field_188503_e = this.field_188501_c;
+                     }
+                 }

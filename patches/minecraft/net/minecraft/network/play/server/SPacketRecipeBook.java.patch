@@ -1,0 +1,25 @@
+--- before/net/minecraft/network/play/server/SPacketRecipeBook.java
++++ after/net/minecraft/network/play/server/SPacketRecipeBook.java
+@@ -39,11 +39,11 @@
+ 
+     public void func_148837_a(PacketBuffer p_148837_1_) throws IOException
+     {
+-        this.field_193646_a = p_148837_1_.func_179257_a(SPacketRecipeBook.State.class);
++        this.field_193646_a = (SPacketRecipeBook.State)p_148837_1_.func_179257_a(SPacketRecipeBook.State.class);
+         this.field_192598_c = p_148837_1_.readBoolean();
+         this.field_192599_d = p_148837_1_.readBoolean();
+         int i = p_148837_1_.func_150792_a();
+-        this.field_192596_a = Lists.newArrayList();
++        this.field_192596_a = Lists.<IRecipe>newArrayList();
+ 
+         for (int j = 0; j < i; ++j)
+         {
+@@ -53,7 +53,7 @@
+         if (this.field_193646_a == SPacketRecipeBook.State.INIT)
+         {
+             i = p_148837_1_.func_150792_a();
+-            this.field_193647_c = Lists.newArrayList();
++            this.field_193647_c = Lists.<IRecipe>newArrayList();
+ 
+             for (int k = 0; k < i; ++k)
+             {

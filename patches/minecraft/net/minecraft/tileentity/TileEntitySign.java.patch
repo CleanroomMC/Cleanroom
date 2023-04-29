@@ -9,3 +9,12 @@
              }
              public BlockPos func_180425_c()
              {
+@@ -88,7 +88,7 @@
+             {
+                 this.field_145915_a[i] = TextComponentUtils.func_179985_a(icommandsender, itextcomponent, (Entity)null);
+             }
+-            catch (CommandException commandexception)
++            catch (CommandException var7)
+             {
+                 this.field_145915_a[i] = itextcomponent;
+             }

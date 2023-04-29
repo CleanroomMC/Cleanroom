@@ -1,0 +1,13 @@
+--- before/net/minecraft/client/tutorial/OpenInventoryStep.java
++++ after/net/minecraft/client/tutorial/OpenInventoryStep.java
+@@ -10,8 +10,8 @@
+ @SideOnly(Side.CLIENT)
+ public class OpenInventoryStep implements ITutorialStep
+ {
+-    private static final ITextComponent field_193281_a = new TextComponentTranslation("tutorial.open_inventory.title");
+-    private static final ITextComponent field_193282_b = new TextComponentTranslation("tutorial.open_inventory.description", Tutorial.func_193291_a("inventory"));
++    private static final ITextComponent field_193281_a = new TextComponentTranslation("tutorial.open_inventory.title", new Object[0]);
++    private static final ITextComponent field_193282_b = new TextComponentTranslation("tutorial.open_inventory.description", new Object[] {Tutorial.func_193291_a("inventory")});
+     private final Tutorial field_193283_c;
+     private TutorialToast field_193284_d;
+     private int field_193285_e;

@@ -1,5 +1,31 @@
 --- before/net/minecraft/client/gui/GuiIngame.java
 +++ after/net/minecraft/client/gui/GuiIngame.java
+@@ -90,7 +90,7 @@
+     protected int field_175189_D;
+     protected long field_175190_E;
+     protected long field_175191_F;
+-    protected final Map<ChatType, List<IChatListener>> field_191743_I = Maps.newHashMap();
++    protected final Map<ChatType, List<IChatListener>> field_191743_I = Maps.<ChatType, List<IChatListener>>newHashMap();
+ 
+     public GuiIngame(Minecraft p_i46325_1_)
+     {
+@@ -109,11 +109,11 @@
+         }
+ 
+         IChatListener ichatlistener = NarratorChatListener.field_193643_a;
+-        this.field_191743_I.get(ChatType.CHAT).add(new NormalChatListener(p_i46325_1_));
+-        this.field_191743_I.get(ChatType.CHAT).add(ichatlistener);
+-        this.field_191743_I.get(ChatType.SYSTEM).add(new NormalChatListener(p_i46325_1_));
+-        this.field_191743_I.get(ChatType.SYSTEM).add(ichatlistener);
+-        this.field_191743_I.get(ChatType.GAME_INFO).add(new OverlayChatListener(p_i46325_1_));
++        (this.field_191743_I.get(ChatType.CHAT)).add(new NormalChatListener(p_i46325_1_));
++        (this.field_191743_I.get(ChatType.CHAT)).add(ichatlistener);
++        (this.field_191743_I.get(ChatType.SYSTEM)).add(new NormalChatListener(p_i46325_1_));
++        (this.field_191743_I.get(ChatType.SYSTEM)).add(ichatlistener);
++        (this.field_191743_I.get(ChatType.GAME_INFO)).add(new OverlayChatListener(p_i46325_1_));
+         this.func_175177_a();
+     }
+ 
 @@ -379,7 +379,8 @@
  
                  BlockPos blockpos = raytraceresult.func_178782_a();
@@ -10,6 +36,15 @@
                  {
                      return;
                  }
+@@ -413,7 +414,7 @@
+                     if (this.field_73839_d.field_147125_j != null && this.field_73839_d.field_147125_j instanceof EntityLivingBase && f >= 1.0F)
+                     {
+                         flag = this.field_73839_d.field_71439_g.func_184818_cX() > 5.0F;
+-                        flag &= ((EntityLivingBase)this.field_73839_d.field_147125_j).func_70089_S();
++                        flag = flag & ((EntityLivingBase)this.field_73839_d.field_147125_j).func_70089_S();
+                     }
+ 
+                     int i = i1 / 2 - 7 + 16;
 @@ -449,7 +450,10 @@
              {
                  Potion potion = potioneffect.func_188419_a();
@@ -22,6 +57,21 @@
                  {
                      int k = p_184048_1_.func_78326_a();
                      int l = 1;
+@@ -464,12 +468,12 @@
+                     if (potion.func_188408_i())
+                     {
+                         ++i;
+-                        k -= 25 * i;
++                        k = k - 25 * i;
+                     }
+                     else
+                     {
+                         ++j;
+-                        k -= 25 * j;
++                        k = k - 25 * j;
+                         l += 26;
+                     }
+ 
 @@ -492,7 +496,10 @@
                      }
  
@@ -33,3 +83,14 @@
                  }
              }
          }
+@@ -1105,8 +1112,8 @@
+     {
+         if (p_180474_1_ < 1.0F)
+         {
+-            p_180474_1_ *= p_180474_1_;
+-            p_180474_1_ *= p_180474_1_;
++            p_180474_1_ = p_180474_1_ * p_180474_1_;
++            p_180474_1_ = p_180474_1_ * p_180474_1_;
+             p_180474_1_ = p_180474_1_ * 0.8F + 0.2F;
+         }
+ 

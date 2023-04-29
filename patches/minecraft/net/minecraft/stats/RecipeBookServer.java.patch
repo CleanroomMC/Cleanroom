@@ -1,5 +1,23 @@
 --- before/net/minecraft/stats/RecipeBookServer.java
 +++ after/net/minecraft/stats/RecipeBookServer.java
+@@ -21,7 +21,7 @@
+ 
+     public void func_193835_a(List<IRecipe> p_193835_1_, EntityPlayerMP p_193835_2_)
+     {
+-        List<IRecipe> list = Lists.newArrayList();
++        List<IRecipe> list = Lists.<IRecipe>newArrayList();
+ 
+         for (IRecipe irecipe : p_193835_1_)
+         {
+@@ -39,7 +39,7 @@
+ 
+     public void func_193834_b(List<IRecipe> p_193834_1_, EntityPlayerMP p_193834_2_)
+     {
+-        List<IRecipe> list = Lists.newArrayList();
++        List<IRecipe> list = Lists.<IRecipe>newArrayList();
+ 
+         for (IRecipe irecipe : p_193834_1_)
+         {
 @@ -55,7 +55,7 @@
  
      private void func_194081_a(SPacketRecipeBook.State p_194081_1_, EntityPlayerMP p_194081_2_, List<IRecipe> p_194081_3_)
@@ -9,6 +27,42 @@
      }
  
      public NBTTagCompound func_192824_e()
+@@ -67,7 +67,7 @@
+ 
+         for (IRecipe irecipe : this.func_194079_d())
+         {
+-            nbttaglist.func_74742_a(new NBTTagString(CraftingManager.field_193380_a.func_177774_c(irecipe).toString()));
++            nbttaglist.func_74742_a(new NBTTagString(((ResourceLocation)CraftingManager.field_193380_a.func_177774_c(irecipe)).toString()));
+         }
+ 
+         nbttagcompound.func_74782_a("recipes", nbttaglist);
+@@ -75,7 +75,7 @@
+ 
+         for (IRecipe irecipe1 : this.func_194080_e())
+         {
+-            nbttaglist1.func_74742_a(new NBTTagString(CraftingManager.field_193380_a.func_177774_c(irecipe1).toString()));
++            nbttaglist1.func_74742_a(new NBTTagString(((ResourceLocation)CraftingManager.field_193380_a.func_177774_c(irecipe1)).toString()));
+         }
+ 
+         nbttagcompound.func_74782_a("toBeDisplayed", nbttaglist1);
+@@ -123,7 +123,7 @@
+ 
+     private List<IRecipe> func_194079_d()
+     {
+-        List<IRecipe> list = Lists.newArrayList();
++        List<IRecipe> list = Lists.<IRecipe>newArrayList();
+ 
+         for (int i = this.field_194077_a.nextSetBit(0); i >= 0; i = this.field_194077_a.nextSetBit(i + 1))
+         {
+@@ -135,7 +135,7 @@
+ 
+     private List<IRecipe> func_194080_e()
+     {
+-        List<IRecipe> list = Lists.newArrayList();
++        List<IRecipe> list = Lists.<IRecipe>newArrayList();
+ 
+         for (int i = this.field_194078_b.nextSetBit(0); i >= 0; i = this.field_194078_b.nextSetBit(i + 1))
+         {
 @@ -147,6 +147,6 @@
  
      public void func_192826_c(EntityPlayerMP p_192826_1_)

@@ -1,0 +1,84 @@
+--- before/net/minecraft/server/management/PreYggdrasilConverter.java
++++ after/net/minecraft/server/management/PreYggdrasilConverter.java
+@@ -41,7 +41,7 @@
+ 
+     private static void func_152717_a(MinecraftServer p_152717_0_, Collection<String> p_152717_1_, ProfileLookupCallback p_152717_2_)
+     {
+-        String[] astring = Iterators.toArray(Iterators.filter(p_152717_1_.iterator(), new Predicate<String>()
++        String[] astring = (String[])Iterators.toArray(Iterators.filter(p_152717_1_.iterator(), new Predicate<String>()
+         {
+             public boolean apply(@Nullable String p_apply_1_)
+             {
+@@ -76,7 +76,7 @@
+             }
+             else if (!p_187473_0_.func_71264_H() && p_187473_0_.func_71266_T())
+             {
+-                final List<GameProfile> list = Lists.newArrayList();
++                final List<GameProfile> list = Lists.<GameProfile>newArrayList();
+                 ProfileLookupCallback profilelookupcallback = new ProfileLookupCallback()
+                 {
+                     public void onProfileLookupSucceeded(GameProfile p_onProfileLookupSucceeded_1_)
+@@ -90,7 +90,7 @@
+                     }
+                 };
+                 func_152717_a(p_187473_0_, Lists.newArrayList(p_187473_1_), profilelookupcallback);
+-                return !list.isEmpty() && list.get(0).getId() != null ? list.get(0).getId().toString() : "";
++                return !list.isEmpty() && ((GameProfile)list.get(0)).getId() != null ? ((GameProfile)list.get(0)).getId().toString() : "";
+             }
+             else
+             {
+@@ -143,7 +143,7 @@
+ 
+             try
+             {
+-                final Map<String, String[]> map = Maps.newHashMap();
++                final Map<String, String[]> map = Maps.<String, String[]>newHashMap();
+                 func_152721_a(field_152729_b, map);
+                 ProfileLookupCallback profilelookupcallback = new ProfileLookupCallback()
+                 {
+@@ -219,7 +219,7 @@
+ 
+             try
+             {
+-                Map<String, String[]> map = Maps.newHashMap();
++                Map<String, String[]> map = Maps.<String, String[]>newHashMap();
+                 func_152721_a(field_152728_a, map);
+ 
+                 for (String s : map.keySet())
+@@ -380,7 +380,7 @@
+         if (file1.exists() && file1.isDirectory())
+         {
+             File[] afile = file1.listFiles();
+-            List<String> list = Lists.newArrayList();
++            List<String> list = Lists.<String>newArrayList();
+ 
+             for (File file4 : afile)
+             {
+@@ -399,7 +399,7 @@
+ 
+             try
+             {
+-                final String[] astring = list.toArray(new String[list.size()]);
++                final String[] astring = (String[])list.toArray(new String[list.size()]);
+                 ProfileLookupCallback profilelookupcallback = new ProfileLookupCallback()
+                 {
+                     public void onProfileLookupSucceeded(GameProfile p_onProfileLookupSucceeded_1_)
+@@ -499,7 +499,8 @@
+     public static boolean func_152714_a(PropertyManager p_152714_0_)
+     {
+         boolean flag = func_152712_b(p_152714_0_);
+-        return flag && func_152715_c(p_152714_0_);
++        flag = flag && func_152715_c(p_152714_0_);
++        return flag;
+     }
+ 
+     @SideOnly(Side.SERVER)
+@@ -608,7 +609,7 @@
+         {
+             date = UserListEntryBan.field_73698_a.parse(p_152713_0_);
+         }
+-        catch (ParseException parseexception)
++        catch (ParseException var4)
+         {
+             date = p_152713_1_;
+         }

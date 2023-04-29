@@ -1,0 +1,43 @@
+--- before/net/minecraft/network/play/server/SPacketChunkData.java
++++ after/net/minecraft/network/play/server/SPacketChunkData.java
+@@ -5,7 +5,7 @@
+ import io.netty.buffer.Unpooled;
+ import java.io.IOException;
+ import java.util.List;
+-import java.util.Map;
++import java.util.Map.Entry;
+ import net.minecraft.nbt.NBTTagCompound;
+ import net.minecraft.network.Packet;
+ import net.minecraft.network.PacketBuffer;
+@@ -38,9 +38,9 @@
+         boolean flag = p_i47124_1_.func_177412_p().field_73011_w.func_191066_m();
+         this.field_186949_d = new byte[this.func_189556_a(p_i47124_1_, flag, p_i47124_2_)];
+         this.field_186948_c = this.func_189555_a(new PacketBuffer(this.func_186945_f()), p_i47124_1_, flag, p_i47124_2_);
+-        this.field_189557_e = Lists.newArrayList();
++        this.field_189557_e = Lists.<NBTTagCompound>newArrayList();
+ 
+-        for (Map.Entry<BlockPos, TileEntity> entry : p_i47124_1_.func_177434_r().entrySet())
++        for (Entry<BlockPos, TileEntity> entry : p_i47124_1_.func_177434_r().entrySet())
+         {
+             BlockPos blockpos = entry.getKey();
+             TileEntity tileentity = entry.getValue();
+@@ -71,7 +71,7 @@
+             this.field_186949_d = new byte[i];
+             p_148837_1_.readBytes(this.field_186949_d);
+             int j = p_148837_1_.func_150792_a();
+-            this.field_189557_e = Lists.newArrayList();
++            this.field_189557_e = Lists.<NBTTagCompound>newArrayList();
+ 
+             for (int k = 0; k < j; ++k)
+             {
+@@ -157,8 +157,8 @@
+ 
+             if (extendedblockstorage != Chunk.field_186036_a && (!this.func_149274_i() || !extendedblockstorage.func_76663_a()) && (p_189556_3_ & 1 << j) != 0)
+             {
+-                i += extendedblockstorage.func_186049_g().func_186018_a();
+-                i += extendedblockstorage.func_76661_k().func_177481_a().length;
++                i = i + extendedblockstorage.func_186049_g().func_186018_a();
++                i = i + extendedblockstorage.func_76661_k().func_177481_a().length;
+ 
+                 if (p_189556_2_)
+                 {

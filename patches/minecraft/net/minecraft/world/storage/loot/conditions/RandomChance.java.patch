@@ -1,0 +1,11 @@
+--- before/net/minecraft/world/storage/loot/conditions/RandomChance.java
++++ after/net/minecraft/world/storage/loot/conditions/RandomChance.java
+@@ -31,7 +31,7 @@
+ 
+             public void func_186605_a(JsonObject p_186605_1_, RandomChance p_186605_2_, JsonSerializationContext p_186605_3_)
+             {
+-                p_186605_1_.addProperty("chance", p_186605_2_.field_186630_a);
++                p_186605_1_.addProperty("chance", Float.valueOf(p_186605_2_.field_186630_a));
+             }
+ 
+             public RandomChance func_186603_b(JsonObject p_186603_1_, JsonDeserializationContext p_186603_2_)

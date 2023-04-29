@@ -1,0 +1,28 @@
+--- before/net/minecraft/entity/ai/EntityFlyHelper.java
++++ after/net/minecraft/entity/ai/EntityFlyHelper.java
+@@ -22,14 +22,14 @@
+             double d2 = this.field_75644_d - this.field_75648_a.field_70161_v;
+             double d3 = d0 * d0 + d1 * d1 + d2 * d2;
+ 
+-            if (d3 < (double)2.5000003E-7F)
++            if (d3 < 2.500000277905201E-7D)
+             {
+                 this.field_75648_a.func_70657_f(0.0F);
+                 this.field_75648_a.func_191989_p(0.0F);
+                 return;
+             }
+ 
+-            float f = (float)(MathHelper.func_181159_b(d2, d0) * (double)(180F / (float)Math.PI)) - 90.0F;
++            float f = (float)(MathHelper.func_181159_b(d2, d0) * (180D / Math.PI)) - 90.0F;
+             this.field_75648_a.field_70177_z = this.func_75639_a(this.field_75648_a.field_70177_z, f, 10.0F);
+             float f1;
+ 
+@@ -44,7 +44,7 @@
+ 
+             this.field_75648_a.func_70659_e(f1);
+             double d4 = (double)MathHelper.func_76133_a(d0 * d0 + d2 * d2);
+-            float f2 = (float)(-(MathHelper.func_181159_b(d1, d4) * (double)(180F / (float)Math.PI)));
++            float f2 = (float)(-(MathHelper.func_181159_b(d1, d4) * (180D / Math.PI)));
+             this.field_75648_a.field_70125_A = this.func_75639_a(this.field_75648_a.field_70125_A, f2, 10.0F);
+             this.field_75648_a.func_70657_f(d1 > 0.0D ? f1 : -f1);
+         }

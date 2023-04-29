@@ -1,6 +1,89 @@
 --- before/net/minecraft/world/gen/structure/MapGenStructure.java
 +++ after/net/minecraft/world/gen/structure/MapGenStructure.java
-@@ -175,12 +175,12 @@
+@@ -2,6 +2,8 @@
+ 
+ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
++import it.unimi.dsi.fastutil.objects.ObjectIterator;
++import java.util.Iterator;
+ import java.util.Random;
+ import javax.annotation.Nullable;
+ import net.minecraft.crash.CrashReport;
+@@ -19,7 +21,7 @@
+ public abstract class MapGenStructure extends MapGenBase
+ {
+     private MapGenStructureData field_143029_e;
+-    protected Long2ObjectMap<StructureStart> field_75053_d = new Long2ObjectOpenHashMap<>(1024);
++    protected Long2ObjectMap<StructureStart> field_75053_d = new Long2ObjectOpenHashMap<StructureStart>(1024);
+ 
+     public abstract String func_143025_a();
+ 
+@@ -81,9 +83,12 @@
+         int i = (p_175794_3_.field_77276_a << 4) + 8;
+         int j = (p_175794_3_.field_77275_b << 4) + 8;
+         boolean flag = false;
++        ObjectIterator objectiterator = this.field_75053_d.values().iterator();
+ 
+-        for (StructureStart structurestart : this.field_75053_d.values())
++        while (objectiterator.hasNext())
+         {
++            StructureStart structurestart = (StructureStart)objectiterator.next();
++
+             if (structurestart.func_75069_d() && structurestart.func_175788_a(p_175794_3_) && structurestart.func_75071_a().func_78885_a(i, j, i + 15, j + 15))
+             {
+                 structurestart.func_75068_a(p_175794_1_, p_175794_2_, new StructureBoundingBox(i, j, i + 15, j + 15));
+@@ -112,17 +117,33 @@
+     @Nullable
+     protected StructureStart func_175797_c(BlockPos p_175797_1_)
+     {
+-        for (StructureStart structurestart : this.field_75053_d.values())
++        ObjectIterator objectiterator = this.field_75053_d.values().iterator();
++        label31:
++
++        while (objectiterator.hasNext())
+         {
++            StructureStart structurestart = (StructureStart)objectiterator.next();
++
+             if (structurestart.func_75069_d() && structurestart.func_75071_a().func_175898_b(p_175797_1_))
+             {
+-                for (StructureComponent structurecomponent : structurestart.func_186161_c())
++                Iterator<StructureComponent> iterator = structurestart.func_186161_c().iterator();
++
++                while (true)
+                 {
++                    if (!iterator.hasNext())
++                    {
++                        continue label31;
++                    }
++
++                    StructureComponent structurecomponent = iterator.next();
++
+                     if (structurecomponent.func_74874_b().func_175898_b(p_175797_1_))
+                     {
+-                        return structurestart;
++                        break;
+                     }
+                 }
++
++                return structurestart;
+             }
+         }
+ 
+@@ -132,9 +153,12 @@
+     public boolean func_175796_a(World p_175796_1_, BlockPos p_175796_2_)
+     {
+         this.func_143027_a(p_175796_1_);
++        ObjectIterator objectiterator = this.field_75053_d.values().iterator();
+ 
+-        for (StructureStart structurestart : this.field_75053_d.values())
++        while (objectiterator.hasNext())
+         {
++            StructureStart structurestart = (StructureStart)objectiterator.next();
++
+             if (structurestart.func_75069_d() && structurestart.func_75071_a().func_175898_b(p_175796_2_))
+             {
+                 return true;
+@@ -151,12 +175,12 @@
      {
          if (this.field_143029_e == null && p_143027_1_ != null)
          {
@@ -15,3 +98,28 @@
              }
              else
              {
+@@ -231,18 +255,18 @@
+                         int l1 = j1 / p_191069_3_;
+                         int i2 = k1 / p_191069_3_;
+                         Random random1 = p_191069_0_.func_72843_D(l1, i2, p_191069_5_);
+-                        l1 *= p_191069_3_;
+-                        i2 *= p_191069_3_;
++                        l1 = l1 * p_191069_3_;
++                        i2 = i2 * p_191069_3_;
+ 
+                         if (p_191069_6_)
+                         {
+-                            l1 += (random1.nextInt(p_191069_3_ - p_191069_4_) + random1.nextInt(p_191069_3_ - p_191069_4_)) / 2;
+-                            i2 += (random1.nextInt(p_191069_3_ - p_191069_4_) + random1.nextInt(p_191069_3_ - p_191069_4_)) / 2;
++                            l1 = l1 + (random1.nextInt(p_191069_3_ - p_191069_4_) + random1.nextInt(p_191069_3_ - p_191069_4_)) / 2;
++                            i2 = i2 + (random1.nextInt(p_191069_3_ - p_191069_4_) + random1.nextInt(p_191069_3_ - p_191069_4_)) / 2;
+                         }
+                         else
+                         {
+-                            l1 += random1.nextInt(p_191069_3_ - p_191069_4_);
+-                            i2 += random1.nextInt(p_191069_3_ - p_191069_4_);
++                            l1 = l1 + random1.nextInt(p_191069_3_ - p_191069_4_);
++                            i2 = i2 + random1.nextInt(p_191069_3_ - p_191069_4_);
+                         }
+ 
+                         MapGenBase.func_191068_a(p_191069_0_.func_72905_C(), random, l1, i2);

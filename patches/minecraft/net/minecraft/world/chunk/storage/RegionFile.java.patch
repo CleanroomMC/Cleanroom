@@ -10,6 +10,26 @@
      private static final byte[] field_76720_a = new byte[4096];
      private final File field_76718_b;
      private RandomAccessFile field_76719_c;
+@@ -58,15 +61,15 @@
+             }
+ 
+             int i1 = (int)this.field_76719_c.length() / 4096;
+-            this.field_76714_f = Lists.newArrayListWithCapacity(i1);
++            this.field_76714_f = Lists.<Boolean>newArrayListWithCapacity(i1);
+ 
+             for (int j = 0; j < i1; ++j)
+             {
+-                this.field_76714_f.add(true);
++                this.field_76714_f.add(Boolean.valueOf(true));
+             }
+ 
+-            this.field_76714_f.set(0, false);
+-            this.field_76714_f.set(1, false);
++            this.field_76714_f.set(0, Boolean.valueOf(false));
++            this.field_76714_f.set(1, Boolean.valueOf(false));
+             this.field_76719_c.seek(0L);
+ 
+             for (int j1 = 0; j1 < 1024; ++j1)
 @@ -74,13 +77,25 @@
                  int k = this.field_76719_c.readInt();
                  this.field_76716_d[j1] = k;
@@ -31,7 +51,8 @@
 +                {
 +                    for (int l = 0; l < length; ++l)
                      {
-                         this.field_76714_f.set((k >> 8) + l, Boolean.valueOf(false));
+-                        this.field_76714_f.set((k >> 8) + l, false);
++                        this.field_76714_f.set((k >> 8) + l, Boolean.valueOf(false));
                      }
                  }
 +                else if (length > 0)
@@ -77,6 +98,15 @@
                              return null;
                          }
                          else
+@@ -159,7 +187,7 @@
+                     }
+                 }
+             }
+-            catch (IOException ioexception)
++            catch (IOException var9)
+             {
+                 return null;
+             }
 @@ -179,11 +207,17 @@
              int i = this.func_76707_e(p_76706_1_, p_76706_2_);
              int j = i >> 8;
@@ -96,7 +126,38 @@
              }
  
              if (j != 0 && k == l)
-@@ -231,7 +265,7 @@
+@@ -194,10 +228,10 @@
+             {
+                 for (int i1 = 0; i1 < k; ++i1)
+                 {
+-                    this.field_76714_f.set(j + i1, true);
++                    this.field_76714_f.set(j + i1, Boolean.valueOf(true));
+                 }
+ 
+-                int l1 = this.field_76714_f.indexOf(true);
++                int l1 = this.field_76714_f.indexOf(Boolean.valueOf(true));
+                 int j1 = 0;
+ 
+                 if (l1 != -1)
+@@ -206,7 +240,7 @@
+                     {
+                         if (j1 != 0)
+                         {
+-                            if (this.field_76714_f.get(k1))
++                            if (((Boolean)this.field_76714_f.get(k1)).booleanValue())
+                             {
+                                 ++j1;
+                             }
+@@ -215,7 +249,7 @@
+                                 j1 = 0;
+                             }
+                         }
+-                        else if (this.field_76714_f.get(k1))
++                        else if (((Boolean)this.field_76714_f.get(k1)).booleanValue())
+                         {
+                             l1 = k1;
+                             j1 = 1;
+@@ -231,11 +265,11 @@
                  if (j1 >= l)
                  {
                      j = l1;
@@ -105,7 +166,18 @@
  
                      for (int j2 = 0; j2 < l; ++j2)
                      {
-@@ -253,7 +287,7 @@
+-                        this.field_76714_f.set(j + j2, false);
++                        this.field_76714_f.set(j + j2, Boolean.valueOf(false));
+                     }
+ 
+                     this.func_76712_a(j, p_76706_3_, p_76706_4_);
+@@ -248,12 +282,12 @@
+                     for (int i2 = 0; i2 < l; ++i2)
+                     {
+                         this.field_76719_c.write(field_76720_a);
+-                        this.field_76714_f.add(false);
++                        this.field_76714_f.add(Boolean.valueOf(false));
+                     }
  
                      this.field_76715_g += 4096 * l;
                      this.func_76712_a(j, p_76706_3_, p_76706_4_);

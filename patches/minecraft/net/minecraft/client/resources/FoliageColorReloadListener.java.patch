@@ -1,0 +1,13 @@
+--- before/net/minecraft/client/resources/FoliageColorReloadListener.java
++++ after/net/minecraft/client/resources/FoliageColorReloadListener.java
+@@ -18,8 +18,9 @@
+         {
+             ColorizerFoliage.func_77467_a(TextureUtil.func_110986_a(p_110549_1_, field_130079_a));
+         }
+-        catch (IOException ioexception)
++        catch (IOException var3)
+         {
++            ;
+         }
+     }
+ }

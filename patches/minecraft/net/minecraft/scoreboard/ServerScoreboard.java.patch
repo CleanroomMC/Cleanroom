@@ -1,0 +1,38 @@
+--- before/net/minecraft/scoreboard/ServerScoreboard.java
++++ after/net/minecraft/scoreboard/ServerScoreboard.java
+@@ -16,7 +16,7 @@
+ public class ServerScoreboard extends Scoreboard
+ {
+     private final MinecraftServer field_96555_a;
+-    private final Set<ScoreObjective> field_96553_b = Sets.newHashSet();
++    private final Set<ScoreObjective> field_96553_b = Sets.<ScoreObjective>newHashSet();
+     private Runnable[] field_186685_c = new Runnable[0];
+ 
+     public ServerScoreboard(MinecraftServer p_i1501_1_)
+@@ -157,7 +157,7 @@
+ 
+     public void func_186684_a(Runnable p_186684_1_)
+     {
+-        this.field_186685_c = Arrays.copyOf(this.field_186685_c, this.field_186685_c.length + 1);
++        this.field_186685_c = (Runnable[])Arrays.copyOf(this.field_186685_c, this.field_186685_c.length + 1);
+         this.field_186685_c[this.field_186685_c.length - 1] = p_186684_1_;
+     }
+ 
+@@ -171,7 +171,7 @@
+ 
+     public List < Packet<? >> func_96550_d(ScoreObjective p_96550_1_)
+     {
+-        List < Packet<? >> list = Lists.newArrayList();
++        List < Packet<? >> list = Lists. < Packet<? >> newArrayList();
+         list.add(new SPacketScoreboardObjective(p_96550_1_, 0));
+ 
+         for (int i = 0; i < 19; ++i)
+@@ -207,7 +207,7 @@
+ 
+     public List < Packet<? >> func_96548_f(ScoreObjective p_96548_1_)
+     {
+-        List < Packet<? >> list = Lists.newArrayList();
++        List < Packet<? >> list = Lists. < Packet<? >> newArrayList();
+         list.add(new SPacketScoreboardObjective(p_96548_1_, 1));
+ 
+         for (int i = 0; i < 19; ++i)

@@ -8,9 +8,90 @@
  import java.util.concurrent.locks.ReentrantLock;
  import java.util.regex.Pattern;
  import javax.annotation.Nullable;
-@@ -278,29 +279,23 @@
+@@ -66,8 +67,8 @@
+     private IResourcePack field_148532_f;
+     private final ReentrantLock field_177321_h = new ReentrantLock();
+     private ListenableFuture<Object> field_177322_i;
+-    private List<ResourcePackRepository.Entry> field_110619_e = Lists.newArrayList();
+-    private final List<ResourcePackRepository.Entry> field_110617_f = Lists.newArrayList();
++    private List<ResourcePackRepository.Entry> field_110619_e = Lists.<ResourcePackRepository.Entry>newArrayList();
++    private final List<ResourcePackRepository.Entry> field_110617_f = Lists.<ResourcePackRepository.Entry>newArrayList();
+ 
+     public ResourcePackRepository(File p_i45101_1_, File p_i45101_2_, IResourcePack p_i45101_3_, MetadataSerializer p_i45101_4_, GameSettings p_i45101_5_)
+     {
+@@ -102,7 +103,7 @@
+ 
+     public static Map<String, String> func_190115_a()
+     {
+-        Map<String, String> map = Maps.newHashMap();
++        Map<String, String> map = Maps.<String, String>newHashMap();
+         map.put("X-Minecraft-Username", Minecraft.func_71410_x().func_110432_I().func_111285_a());
+         map.put("X-Minecraft-UUID", Minecraft.func_71410_x().func_110432_I().func_148255_b());
+         map.put("X-Minecraft-Version", "1.12.2");
+@@ -144,15 +145,16 @@
+ 
+         try
+         {
+-            PackMetadataSection packmetadatasection = iresourcepack.func_135058_a(this.field_110621_c, "pack");
++            PackMetadataSection packmetadatasection = (PackMetadataSection)iresourcepack.func_135058_a(this.field_110621_c, "pack");
+ 
+             if (packmetadatasection != null && packmetadatasection.func_110462_b() == 2)
+             {
+                 return new LegacyV2Adapter(iresourcepack);
+             }
+         }
+-        catch (Exception exception)
++        catch (Exception var4)
+         {
++            ;
+         }
+ 
+         return iresourcepack;
+@@ -160,7 +162,7 @@
+ 
+     public void func_110611_a()
+     {
+-        List<ResourcePackRepository.Entry> list = Lists.newArrayList();
++        List<ResourcePackRepository.Entry> list = Lists.<ResourcePackRepository.Entry>newArrayList();
+ 
+         for (File file1 : this.func_110614_g())
+         {
+@@ -182,7 +184,7 @@
+                     resourcepackrepository$entry.func_110516_a();
+                     list.add(resourcepackrepository$entry);
+                 }
+-                catch (Exception exception)
++                catch (Exception var6)
+                 {
+                     list.remove(resourcepackrepository$entry);
+                 }
+@@ -211,8 +213,9 @@
+                 resourcepackrepository$entry.func_110516_a();
+                 return resourcepackrepository$entry;
+             }
+-            catch (IOException ioexception)
++            catch (IOException var3)
+             {
++                ;
+             }
+         }
+ 
+@@ -255,7 +258,8 @@
+             {
+                 if (this.func_190113_a(s1, file1))
+                 {
+-                    return this.func_177319_a(file1);
++                    ListenableFuture listenablefuture1 = this.func_177319_a(file1);
++                    return listenablefuture1;
+                 }
+ 
+                 field_177320_c.warn("Deleting file {}", (Object)file1);
+@@ -273,29 +277,24 @@
+                     minecraft.func_147108_a(guiscreenworking);
+                 }
              }));
-             final SettableFuture<Object> settablefuture = SettableFuture.<Object>create();
+-            final SettableFuture<Object> settablefuture = SettableFuture.create();
++            final SettableFuture<Object> settablefuture = SettableFuture.<Object>create();
              this.field_177322_i = HttpUtil.func_180192_a(file1, p_180601_1_, map, 52428800, guiscreenworking, minecraft.func_110437_J());
 -            Futures.addCallback(this.field_177322_i, new FutureCallback<Object>()
 -            {
@@ -41,14 +122,11 @@
                      settablefuture.setException(p_onFailure_1_);
                  }
 -            });
--            ListenableFuture listenablefuture = this.field_177322_i;
--            return listenablefuture;
 +            }, Runnable::run);
-+            return this.field_177322_i;
+             return this.field_177322_i;
          }
          finally
-         {
-@@ -310,9 +305,10 @@
+@@ -306,9 +305,10 @@
  
      private boolean func_190113_a(String p_190113_1_, File p_190113_2_)
      {
@@ -60,7 +138,7 @@
  
              if (p_190113_1_.isEmpty())
              {
-@@ -332,6 +328,7 @@
+@@ -328,6 +328,7 @@
          {
              field_177320_c.warn("File {} couldn't be hashed.", p_190113_2_, ioexception);
          }
@@ -68,3 +146,32 @@
  
          return false;
      }
+@@ -375,7 +376,7 @@
+     {
+         if (!this.func_190112_b(p_177319_1_))
+         {
+-            return Futures.immediateFailedFuture(new RuntimeException("Invalid resourcepack"));
++            return Futures.<Object>immediateFailedFuture(new RuntimeException("Invalid resourcepack"));
+         }
+         else
+         {
+@@ -434,7 +435,7 @@
+ 
+         public void func_110516_a() throws IOException
+         {
+-            this.field_110521_d = this.field_110524_c.func_135058_a(ResourcePackRepository.this.field_110621_c, "pack");
++            this.field_110521_d = (PackMetadataSection)this.field_110524_c.func_135058_a(ResourcePackRepository.this.field_110621_c, "pack");
+             this.func_110517_b();
+         }
+ 
+@@ -446,8 +447,9 @@
+             {
+                 bufferedimage = this.field_110524_c.func_110586_a();
+             }
+-            catch (IOException ioexception1)
++            catch (IOException var5)
+             {
++                ;
+             }
+ 
+             if (bufferedimage == null)

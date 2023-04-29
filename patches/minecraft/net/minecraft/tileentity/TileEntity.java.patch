@@ -1,6 +1,6 @@
 --- before/net/minecraft/tileentity/TileEntity.java
 +++ after/net/minecraft/tileentity/TileEntity.java
-@@ -21,7 +21,7 @@
+@@ -21,10 +21,10 @@
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
  
@@ -8,7 +8,11 @@
 +public abstract class TileEntity implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound>
  {
      private static final Logger field_145852_a = LogManager.getLogger();
-     private static final RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> field_190562_f = new RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> ();
+-    private static final RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> field_190562_f = new RegistryNamespaced<>();
++    private static final RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> field_190562_f = new RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> ();
+     protected World field_145850_b;
+     protected BlockPos field_174879_c = BlockPos.field_177992_a;
+     protected boolean field_145846_f;
 @@ -60,6 +60,8 @@
      public void func_145839_a(NBTTagCompound p_145839_1_)
      {
@@ -35,7 +39,7 @@
  
          try
          {
--            Class <? extends TileEntity > oclass = (Class)field_190562_f.func_82594_a(new ResourceLocation(s));
+-            Class <? extends TileEntity > oclass = field_190562_f.func_82594_a(new ResourceLocation(s));
 +            oclass = (Class)field_190562_f.func_82594_a(new ResourceLocation(s));
  
              if (oclass != null)
@@ -66,15 +70,18 @@
      public double func_145835_a(double p_145835_1_, double p_145835_3_, double p_145835_5_)
      {
          double d0 = (double)this.field_174879_c.func_177958_n() + 0.5D - p_145835_1_;
-@@ -244,7 +252,7 @@
+@@ -244,9 +252,9 @@
  
                      try
                      {
 -                        return String.format("ID #%d (%s // %s)", i, Block.func_149729_e(i).func_149739_a(), Block.func_149729_e(i).getClass().getCanonicalName());
 +                        return String.format("ID #%d (%s // %s // %s)", i, Block.func_149729_e(i).func_149739_a(), Block.func_149729_e(i).getClass().getName(), Block.func_149729_e(i).getRegistryName());
                      }
-                     catch (Throwable var3)
+-                    catch (Throwable throwable)
++                    catch (Throwable var3)
                      {
+                         return "ID #" + i;
+                     }
 @@ -295,6 +303,204 @@
  
      public void func_189668_a(Mirror p_189668_1_)

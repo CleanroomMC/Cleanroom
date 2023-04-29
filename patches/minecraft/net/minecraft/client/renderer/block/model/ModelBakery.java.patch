@@ -1,6 +1,52 @@
 --- before/net/minecraft/client/renderer/block/model/ModelBakery.java
 +++ after/net/minecraft/client/renderer/block/model/ModelBakery.java
-@@ -103,6 +103,21 @@
+@@ -22,6 +22,7 @@
+ import java.util.List;
+ import java.util.Map;
+ import java.util.Set;
++import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+ import net.minecraft.block.Block;
+ import net.minecraft.block.state.IBlockState;
+@@ -54,24 +55,24 @@
+     private static final Logger field_177603_c = LogManager.getLogger();
+     public static final ModelResourceLocation field_177604_a = new ModelResourceLocation("builtin/missing", "missing");
+     private static final String field_188641_d = "{    'textures': {       'particle': 'missingno',       'missingno': 'missingno'    },    'elements': [         {  'from': [ 0, 0, 0 ],            'to': [ 16, 16, 16 ],            'faces': {                'down':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'down',  'texture': '#missingno' },                'up':    { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'up',    'texture': '#missingno' },                'north': { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'north', 'texture': '#missingno' },                'south': { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'south', 'texture': '#missingno' },                'west':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'west',  'texture': '#missingno' },                'east':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'east',  'texture': '#missingno' }            }        }    ]}".replaceAll("'", "\"");
+-    private static final Map<String, String> field_177600_d = Maps.newHashMap();
+-    private static final Joiner field_177601_e;
++    private static final Map<String, String> field_177600_d = Maps.<String, String>newHashMap();
++    private static final Joiner field_177601_e = Joiner.on(" -> ");
+     protected final IResourceManager field_177598_f;
+-    protected final Map<ResourceLocation, TextureAtlasSprite> field_177599_g = Maps.newHashMap();
+-    private final Map<ResourceLocation, ModelBlock> field_177611_h = Maps.newLinkedHashMap();
+-    private final Map<ModelResourceLocation, VariantList> field_177612_i = Maps.newLinkedHashMap();
+-    private final Map<ModelBlockDefinition, Collection<ModelResourceLocation>> field_188642_k = Maps.newLinkedHashMap();
++    protected final Map<ResourceLocation, TextureAtlasSprite> field_177599_g = Maps.<ResourceLocation, TextureAtlasSprite>newHashMap();
++    private final Map<ResourceLocation, ModelBlock> field_177611_h = Maps.<ResourceLocation, ModelBlock>newLinkedHashMap();
++    private final Map<ModelResourceLocation, VariantList> field_177612_i = Maps.<ModelResourceLocation, VariantList>newLinkedHashMap();
++    private final Map<ModelBlockDefinition, Collection<ModelResourceLocation>> field_188642_k = Maps.<ModelBlockDefinition, Collection<ModelResourceLocation>>newLinkedHashMap();
+     protected final TextureMap field_177609_j;
+     protected final BlockModelShapes field_177610_k;
+     private final FaceBakery field_177607_l = new FaceBakery();
+     private final ItemModelGenerator field_177608_m = new ItemModelGenerator();
+-    protected final RegistrySimple<ModelResourceLocation, IBakedModel> field_177605_n = new RegistrySimple<>();
+-    private static final String field_188643_q;
+-    protected static final ModelBlock field_177606_o;
+-    protected static final ModelBlock field_177616_r;
+-    private final Map<String, ResourceLocation> field_177615_s = Maps.newLinkedHashMap();
+-    private final Map<ResourceLocation, ModelBlockDefinition> field_177614_t = Maps.newHashMap();
+-    private final Map<Item, List<String>> field_177613_u = Maps.newIdentityHashMap();
++    protected final RegistrySimple<ModelResourceLocation, IBakedModel> field_177605_n = new RegistrySimple<ModelResourceLocation, IBakedModel>();
++    private static final String field_188643_q = "{    'elements': [        {   'from': [0, 0, 0],            'to': [16, 16, 16],            'faces': {                'down': {'uv': [0, 0, 16, 16], 'texture': '' }            }        }    ]}".replaceAll("'", "\"");
++    protected static final ModelBlock field_177606_o = ModelBlock.func_178294_a(field_188643_q);
++    protected static final ModelBlock field_177616_r = ModelBlock.func_178294_a(field_188643_q);
++    private final Map<String, ResourceLocation> field_177615_s = Maps.<String, ResourceLocation>newLinkedHashMap();
++    private final Map<ResourceLocation, ModelBlockDefinition> field_177614_t = Maps.<ResourceLocation, ModelBlockDefinition>newHashMap();
++    private final Map<Item, List<String>> field_177613_u = Maps.<Item, List<String>>newIdentityHashMap();
+ 
+     public ModelBakery(IResourceManager p_i46085_1_, TextureMap p_i46085_2_, BlockModelShapes p_i46085_3_)
+     {
+@@ -102,6 +103,21 @@
              {
                  try
                  {
@@ -22,30 +68,42 @@
                      ModelBlockDefinition modelblockdefinition = this.func_177586_a(resourcelocation);
                      Map<IBlockState, ModelResourceLocation> map = blockstatemapper.func_188181_b(block);
  
-@@ -115,7 +130,6 @@
+@@ -109,12 +125,11 @@
+                     {
+                         Collection<ModelResourceLocation> collection = Sets.newHashSet(map.values());
+                         modelblockdefinition.func_188001_c().func_188138_a(block.func_176194_O());
+-                        Collection<ModelResourceLocation> collection1 = this.field_188642_k.get(modelblockdefinition);
++                        Collection<ModelResourceLocation> collection1 = (Collection)this.field_188642_k.get(modelblockdefinition);
+ 
                          if (collection1 == null)
                          {
-                             collection1 = Lists.<ModelResourceLocation>newArrayList();
+-                            collection1 = Lists.newArrayList();
 -                            this.field_188642_k.put(modelblockdefinition, collection1);
++                            collection1 = Lists.<ModelResourceLocation>newArrayList();
                          }
  
                          collection1.addAll(Lists.newArrayList(Iterables.filter(collection, new Predicate<ModelResourceLocation>()
-@@ -125,6 +139,7 @@
+@@ -124,9 +139,10 @@
                                  return resourcelocation.equals(p_apply_1_);
                              }
                          })));
 +                        registerMultipartVariant(modelblockdefinition, collection1);
                      }
  
-                     for (Entry<IBlockState, ModelResourceLocation> entry : map.entrySet())
-@@ -135,22 +150,18 @@
+-                    for (Map.Entry<IBlockState, ModelResourceLocation> entry : map.entrySet())
++                    for (Entry<IBlockState, ModelResourceLocation> entry : map.entrySet())
+                     {
+                         ModelResourceLocation modelresourcelocation = entry.getValue();
+ 
+@@ -134,22 +150,18 @@
                          {
                              try
                              {
 -                                this.field_177612_i.put(modelresourcelocation, modelblockdefinition.func_188004_c(modelresourcelocation.func_177518_c()));
 +                                func_177569_a(modelblockdefinition, modelresourcelocation);
                              }
-                             catch (RuntimeException var12)
+-                            catch (RuntimeException runtimeexception)
++                            catch (RuntimeException var12)
                              {
                                  if (!modelblockdefinition.func_188002_b())
                                  {
@@ -63,7 +121,25 @@
              }
          }
      }
-@@ -228,7 +239,7 @@
+@@ -177,7 +189,7 @@
+         {
+             this.field_177612_i.put(p_177569_2_, p_177569_1_.func_188004_c(p_177569_2_.func_177518_c()));
+         }
+-        catch (RuntimeException runtimeexception)
++        catch (RuntimeException var4)
+         {
+             if (!p_177569_1_.func_188002_b())
+             {
+@@ -202,7 +214,7 @@
+ 
+     private ModelBlockDefinition func_188632_a(ResourceLocation p_188632_1_, ResourceLocation p_188632_2_)
+     {
+-        List<ModelBlockDefinition> list = Lists.newArrayList();
++        List<ModelBlockDefinition> list = Lists.<ModelBlockDefinition>newArrayList();
+ 
+         try
+         {
+@@ -227,7 +239,7 @@
          try
          {
              inputstream = p_188636_2_.func_110527_b();
@@ -72,7 +148,77 @@
          }
          catch (Exception exception)
          {
-@@ -394,6 +405,7 @@
+@@ -248,7 +260,7 @@
+ 
+     protected void func_177595_c()
+     {
+-        for (Map.Entry<ModelResourceLocation, VariantList> entry : this.field_177612_i.entrySet())
++        for (Entry<ModelResourceLocation, VariantList> entry : this.field_177612_i.entrySet())
+         {
+             this.func_188638_a(entry.getKey(), entry.getValue());
+         }
+@@ -256,11 +268,11 @@
+ 
+     protected void func_188637_e()
+     {
+-        for (Map.Entry<ModelBlockDefinition, Collection<ModelResourceLocation>> entry : this.field_188642_k.entrySet())
++        for (Entry<ModelBlockDefinition, Collection<ModelResourceLocation>> entry : this.field_188642_k.entrySet())
+         {
+-            ModelResourceLocation modelresourcelocation = entry.getValue().iterator().next();
++            ModelResourceLocation modelresourcelocation = (ModelResourceLocation)(entry.getValue()).iterator().next();
+ 
+-            for (VariantList variantlist : entry.getKey().func_188003_a())
++            for (VariantList variantlist : (entry.getKey()).func_188003_a())
+             {
+                 this.func_188638_a(modelresourcelocation, variantlist);
+             }
+@@ -291,7 +303,7 @@
+     {
+         Reader reader = null;
+         IResource iresource = null;
+-        ModelBlock modelblock;
++        ModelBlock lvt_5_2_;
+ 
+         try
+         {
+@@ -301,7 +313,8 @@
+             {
+                 if ("builtin/entity".equals(s))
+                 {
+-                    return field_177616_r;
++                    lvt_5_2_ = field_177616_r;
++                    return lvt_5_2_;
+                 }
+ 
+                 if (s.startsWith("builtin/"))
+@@ -322,12 +335,13 @@
+                     reader = new InputStreamReader(iresource.func_110527_b(), StandardCharsets.UTF_8);
+                 }
+ 
+-                modelblock = ModelBlock.func_178307_a(reader);
+-                modelblock.field_178317_b = p_177594_1_.toString();
+-                return modelblock;
++                lvt_5_2_ = ModelBlock.func_178307_a(reader);
++                lvt_5_2_.field_178317_b = p_177594_1_.toString();
++                ModelBlock modelblock1 = lvt_5_2_;
++                return modelblock1;
+             }
+ 
+-            modelblock = field_177606_o;
++            lvt_5_2_ = field_177606_o;
+         }
+         finally
+         {
+@@ -335,7 +349,7 @@
+             IOUtils.closeQuietly((Closeable)iresource);
+         }
+ 
+-        return modelblock;
++        return lvt_5_2_;
+     }
+ 
+     protected ResourceLocation func_177580_d(ResourceLocation p_177580_1_)
+@@ -391,6 +405,7 @@
  
      protected void func_177592_e()
      {
@@ -80,7 +226,7 @@
          this.field_177613_u.put(Item.func_150898_a(Blocks.field_150348_b), Lists.newArrayList("stone", "granite", "granite_smooth", "diorite", "diorite_smooth", "andesite", "andesite_smooth"));
          this.field_177613_u.put(Item.func_150898_a(Blocks.field_150346_d), Lists.newArrayList("dirt", "coarse_dirt", "podzol"));
          this.field_177613_u.put(Item.func_150898_a(Blocks.field_150344_f), Lists.newArrayList("oak_planks", "spruce_planks", "birch_planks", "jungle_planks", "acacia_planks", "dark_oak_planks"));
-@@ -441,6 +453,10 @@
+@@ -438,15 +453,19 @@
          this.field_177613_u.put(Items.field_179570_aq, Lists.newArrayList("oak_door"));
          this.field_177613_u.put(Items.field_151124_az, Lists.newArrayList("oak_boat"));
          this.field_177613_u.put(Items.field_190929_cY, Lists.newArrayList("totem"));
@@ -91,7 +237,18 @@
      }
  
      protected List<String> func_177596_a(Item p_177596_1_)
-@@ -457,7 +473,7 @@
+     {
+-        List<String> list = this.field_177613_u.get(p_177596_1_);
++        List<String> list = (List)this.field_177613_u.get(p_177596_1_);
+ 
+         if (list == null)
+         {
+-            list = Collections.singletonList(Item.field_150901_e.func_177774_c(p_177596_1_).toString());
++            list = Collections.<String>singletonList(((ResourceLocation)Item.field_150901_e.func_177774_c(p_177596_1_)).toString());
+         }
+ 
+         return list;
+@@ -454,7 +473,7 @@
  
      protected ResourceLocation func_177583_a(String p_177583_1_)
      {
@@ -100,8 +257,26 @@
          return new ResourceLocation(resourcelocation.func_110624_b(), "item/" + resourcelocation.func_110623_a());
      }
  
-@@ -565,7 +581,7 @@
-         for (Entry<String, ResourceLocation> entry : this.field_177615_s.entrySet())
+@@ -470,11 +489,11 @@
+             }
+         }
+ 
+-        for (Map.Entry<ModelBlockDefinition, Collection<ModelResourceLocation>> entry : this.field_188642_k.entrySet())
++        for (Entry<ModelBlockDefinition, Collection<ModelResourceLocation>> entry : this.field_188642_k.entrySet())
+         {
+             ModelBlockDefinition modelblockdefinition = entry.getKey();
+             Multipart multipart = modelblockdefinition.func_188001_c();
+-            String s = Block.field_149771_c.func_177774_c(multipart.func_188135_c().func_177622_c()).toString();
++            String s = ((ResourceLocation)Block.field_149771_c.func_177774_c(multipart.func_188135_c().func_177622_c())).toString();
+             MultipartBakedModel.Builder multipartbakedmodel$builder = new MultipartBakedModel.Builder();
+ 
+             for (Selector selector : multipart.func_188136_a())
+@@ -559,10 +578,10 @@
+ 
+     private void func_188635_i()
+     {
+-        for (Map.Entry<String, ResourceLocation> entry : this.field_177615_s.entrySet())
++        for (Entry<String, ResourceLocation> entry : this.field_177615_s.entrySet())
          {
              ResourceLocation resourcelocation = entry.getValue();
 -            ModelResourceLocation modelresourcelocation = new ModelResourceLocation(entry.getKey(), "inventory");
@@ -109,7 +284,16 @@
              ModelBlock modelblock = this.field_177611_h.get(resourcelocation);
  
              if (modelblock != null && modelblock.func_178303_d())
-@@ -653,6 +669,11 @@
+@@ -594,7 +613,7 @@
+ 
+     private Set<ResourceLocation> func_177575_g()
+     {
+-        Set<ResourceLocation> set = Sets.newHashSet();
++        Set<ResourceLocation> set = Sets.<ResourceLocation>newHashSet();
+         List<ModelResourceLocation> list = Lists.newArrayList(this.field_177612_i.keySet());
+         Collections.sort(list, new Comparator<ModelResourceLocation>()
+         {
+@@ -650,6 +669,11 @@
      @Nullable
      private IBakedModel func_177578_a(ModelBlock p_177578_1_, ModelRotation p_177578_2_, boolean p_177578_3_)
      {
@@ -121,7 +305,7 @@
          TextureAtlasSprite textureatlassprite = this.field_177599_g.get(new ResourceLocation(p_177578_1_.func_178308_c("particle")));
          SimpleBakedModel.Builder simplebakedmodel$builder = (new SimpleBakedModel.Builder(p_177578_1_, p_177578_1_.func_187967_g())).func_177646_a(textureatlassprite);
  
-@@ -669,13 +690,13 @@
+@@ -666,13 +690,13 @@
                      BlockPartFace blockpartface = blockpart.field_178240_c.get(enumfacing);
                      TextureAtlasSprite textureatlassprite1 = this.field_177599_g.get(new ResourceLocation(p_177578_1_.func_178308_c(blockpartface.field_178242_d)));
  
@@ -138,7 +322,7 @@
                      }
                  }
              }
-@@ -686,7 +707,12 @@
+@@ -683,7 +707,12 @@
  
      private BakedQuad func_177589_a(BlockPart p_177589_1_, BlockPartFace p_177589_2_, TextureAtlasSprite p_177589_3_, EnumFacing p_177589_4_, ModelRotation p_177589_5_, boolean p_177589_6_)
      {
@@ -152,8 +336,52 @@
      }
  
      private void func_177597_h()
-@@ -915,5 +941,24 @@
+@@ -700,8 +729,8 @@
+ 
+     private void func_177574_i()
+     {
+-        Deque<ResourceLocation> deque = Queues.newArrayDeque();
+-        Set<ResourceLocation> set = Sets.newHashSet();
++        Deque<ResourceLocation> deque = Queues.<ResourceLocation>newArrayDeque();
++        Set<ResourceLocation> set = Sets.<ResourceLocation>newHashSet();
+ 
+         for (ResourceLocation resourcelocation : this.field_177611_h.keySet())
+         {
+@@ -759,7 +788,7 @@
+     @Nullable
+     private ResourceLocation func_177576_f(ResourceLocation p_177576_1_)
+     {
+-        for (Map.Entry<ResourceLocation, ModelBlock> entry : this.field_177611_h.entrySet())
++        for (Entry<ResourceLocation, ModelBlock> entry : this.field_177611_h.entrySet())
+         {
+             ModelBlock modelblock = entry.getValue();
+ 
+@@ -774,7 +803,7 @@
+ 
+     protected Set<ResourceLocation> func_177585_a(ModelBlock p_177585_1_)
+     {
+-        Set<ResourceLocation> set = Sets.newHashSet();
++        Set<ResourceLocation> set = Sets.<ResourceLocation>newHashSet();
+ 
+         for (BlockPart blockpart : p_177585_1_.func_178298_a())
+         {
+@@ -811,7 +840,7 @@
+ 
+     private Set<ResourceLocation> func_177571_k()
+     {
+-        Set<ResourceLocation> set = Sets.newHashSet();
++        Set<ResourceLocation> set = Sets.<ResourceLocation>newHashSet();
+ 
+         for (ResourceLocation resourcelocation : this.field_177615_s.values())
+         {
+@@ -910,11 +939,26 @@
+     static
+     {
          field_177600_d.put("missing", field_188641_d);
+-        field_177601_e = Joiner.on(" -> ");
+-        field_188643_q = "{    'elements': [        {   'from': [0, 0, 0],            'to': [16, 16, 16],            'faces': {                'down': {'uv': [0, 0, 16, 16], 'texture': '' }            }        }    ]}".replaceAll("'", "\"");
+-        field_177606_o = ModelBlock.func_178294_a(field_188643_q);
+-        field_177616_r = ModelBlock.func_178294_a(field_188643_q);
          field_177606_o.field_178317_b = "generation marker";
          field_177616_r.field_178317_b = "block entity marker";
 +    }

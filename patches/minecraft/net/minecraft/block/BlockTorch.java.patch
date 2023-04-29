@@ -1,6 +1,31 @@
 --- before/net/minecraft/block/BlockTorch.java
 +++ after/net/minecraft/block/BlockTorch.java
-@@ -82,18 +82,8 @@
+@@ -4,6 +4,7 @@
+ import java.util.Random;
+ import javax.annotation.Nullable;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyDirection;
+ import net.minecraft.block.state.BlockFaceShape;
+ import net.minecraft.block.state.BlockStateContainer;
+@@ -32,11 +33,11 @@
+             return p_apply_1_ != EnumFacing.DOWN;
+         }
+     });
+-    protected static final AxisAlignedBB field_185738_b = new AxisAlignedBB((double)0.4F, 0.0D, (double)0.4F, (double)0.6F, (double)0.6F, (double)0.6F);
+-    protected static final AxisAlignedBB field_185739_c = new AxisAlignedBB((double)0.35F, (double)0.2F, (double)0.7F, (double)0.65F, (double)0.8F, 1.0D);
+-    protected static final AxisAlignedBB field_185740_d = new AxisAlignedBB((double)0.35F, (double)0.2F, 0.0D, (double)0.65F, (double)0.8F, (double)0.3F);
+-    protected static final AxisAlignedBB field_185741_e = new AxisAlignedBB((double)0.7F, (double)0.2F, (double)0.35F, 1.0D, (double)0.8F, (double)0.65F);
+-    protected static final AxisAlignedBB field_185742_f = new AxisAlignedBB(0.0D, (double)0.2F, (double)0.35F, (double)0.3F, (double)0.8F, (double)0.65F);
++    protected static final AxisAlignedBB field_185738_b = new AxisAlignedBB(0.4000000059604645D, 0.0D, 0.4000000059604645D, 0.6000000238418579D, 0.6000000238418579D, 0.6000000238418579D);
++    protected static final AxisAlignedBB field_185739_c = new AxisAlignedBB(0.3499999940395355D, 0.20000000298023224D, 0.699999988079071D, 0.6499999761581421D, 0.800000011920929D, 1.0D);
++    protected static final AxisAlignedBB field_185740_d = new AxisAlignedBB(0.3499999940395355D, 0.20000000298023224D, 0.0D, 0.6499999761581421D, 0.800000011920929D, 0.30000001192092896D);
++    protected static final AxisAlignedBB field_185741_e = new AxisAlignedBB(0.699999988079071D, 0.20000000298023224D, 0.3499999940395355D, 1.0D, 0.800000011920929D, 0.6499999761581421D);
++    protected static final AxisAlignedBB field_185742_f = new AxisAlignedBB(0.0D, 0.20000000298023224D, 0.3499999940395355D, 0.30000001192092896D, 0.800000011920929D, 0.6499999761581421D);
+ 
+     protected BlockTorch()
+     {
+@@ -81,18 +82,8 @@
  
      private boolean func_176594_d(World p_176594_1_, BlockPos p_176594_2_)
      {
@@ -21,3 +46,78 @@
      }
  
      public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)
+@@ -167,7 +158,7 @@
+         }
+         else
+         {
+-            EnumFacing enumfacing = p_176592_3_.func_177229_b(field_176596_a);
++            EnumFacing enumfacing = (EnumFacing)p_176592_3_.func_177229_b(field_176596_a);
+             EnumFacing.Axis enumfacing$axis = enumfacing.func_176740_k();
+             EnumFacing enumfacing1 = enumfacing.func_176734_d();
+             BlockPos blockpos = p_176592_2_.func_177972_a(enumfacing1);
+@@ -197,7 +188,7 @@
+ 
+     protected boolean func_176593_f(World p_176593_1_, BlockPos p_176593_2_, IBlockState p_176593_3_)
+     {
+-        if (p_176593_3_.func_177230_c() == this && this.func_176595_b(p_176593_1_, p_176593_2_, p_176593_3_.func_177229_b(field_176596_a)))
++        if (p_176593_3_.func_177230_c() == this && this.func_176595_b(p_176593_1_, p_176593_2_, (EnumFacing)p_176593_3_.func_177229_b(field_176596_a)))
+         {
+             return true;
+         }
+@@ -216,7 +207,7 @@
+     @SideOnly(Side.CLIENT)
+     public void func_180655_c(IBlockState p_180655_1_, World p_180655_2_, BlockPos p_180655_3_, Random p_180655_4_)
+     {
+-        EnumFacing enumfacing = p_180655_1_.func_177229_b(field_176596_a);
++        EnumFacing enumfacing = (EnumFacing)p_180655_1_.func_177229_b(field_176596_a);
+         double d0 = (double)p_180655_3_.func_177958_n() + 0.5D;
+         double d1 = (double)p_180655_3_.func_177956_o() + 0.7D;
+         double d2 = (double)p_180655_3_.func_177952_p() + 0.5D;
+@@ -275,21 +266,21 @@
+         switch ((EnumFacing)p_176201_1_.func_177229_b(field_176596_a))
+         {
+             case EAST:
+-                i |= 1;
++                i = i | 1;
+                 break;
+             case WEST:
+-                i |= 2;
++                i = i | 2;
+                 break;
+             case SOUTH:
+-                i |= 3;
++                i = i | 3;
+                 break;
+             case NORTH:
+-                i |= 4;
++                i = i | 4;
+                 break;
+             case DOWN:
+             case UP:
+             default:
+-                i |= 5;
++                i = i | 5;
+         }
+ 
+         return i;
+@@ -297,17 +288,17 @@
+ 
+     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
+     {
+-        return p_185499_1_.func_177226_a(field_176596_a, p_185499_2_.func_185831_a(p_185499_1_.func_177229_b(field_176596_a)));
++        return p_185499_1_.func_177226_a(field_176596_a, p_185499_2_.func_185831_a((EnumFacing)p_185499_1_.func_177229_b(field_176596_a)));
+     }
+ 
+     public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
+     {
+-        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a(p_185471_1_.func_177229_b(field_176596_a)));
++        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a((EnumFacing)p_185471_1_.func_177229_b(field_176596_a)));
+     }
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176596_a);
++        return new BlockStateContainer(this, new IProperty[] {field_176596_a});
+     }
+ 
+     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)

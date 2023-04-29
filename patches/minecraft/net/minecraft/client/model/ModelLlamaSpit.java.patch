@@ -1,0 +1,19 @@
+--- before/net/minecraft/client/model/ModelLlamaSpit.java
++++ after/net/minecraft/client/model/ModelLlamaSpit.java
+@@ -7,7 +7,7 @@
+ @SideOnly(Side.CLIENT)
+ public class ModelLlamaSpit extends ModelBase
+ {
+-    private final ModelRenderer field_191225_a = new ModelRenderer(this);
++    private final ModelRenderer field_191225_a;
+ 
+     public ModelLlamaSpit()
+     {
+@@ -16,6 +16,7 @@
+ 
+     public ModelLlamaSpit(float p_i47225_1_)
+     {
++        this.field_191225_a = new ModelRenderer(this);
+         int i = 2;
+         this.field_191225_a.func_78784_a(0, 0).func_78790_a(-4.0F, 0.0F, 0.0F, 2, 2, 2, p_i47225_1_);
+         this.field_191225_a.func_78784_a(0, 0).func_78790_a(0.0F, -4.0F, 0.0F, 2, 2, 2, p_i47225_1_);

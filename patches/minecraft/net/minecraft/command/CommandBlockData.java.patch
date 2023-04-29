@@ -1,0 +1,47 @@
+--- before/net/minecraft/command/CommandBlockData.java
++++ after/net/minecraft/command/CommandBlockData.java
+@@ -33,7 +33,7 @@
+     {
+         if (p_184881_3_.length < 4)
+         {
+-            throw new WrongUsageException("commands.blockdata.usage");
++            throw new WrongUsageException("commands.blockdata.usage", new Object[0]);
+         }
+         else
+         {
+@@ -43,7 +43,7 @@
+ 
+             if (!world.func_175667_e(blockpos))
+             {
+-                throw new CommandException("commands.blockdata.outOfWorld");
++                throw new CommandException("commands.blockdata.outOfWorld", new Object[0]);
+             }
+             else
+             {
+@@ -52,7 +52,7 @@
+ 
+                 if (tileentity == null)
+                 {
+-                    throw new CommandException("commands.blockdata.notValid");
++                    throw new CommandException("commands.blockdata.notValid", new Object[0]);
+                 }
+                 else
+                 {
+@@ -66,7 +66,7 @@
+                     }
+                     catch (NBTException nbtexception)
+                     {
+-                        throw new CommandException("commands.blockdata.tagError", nbtexception.getMessage());
++                        throw new CommandException("commands.blockdata.tagError", new Object[] {nbtexception.getMessage()});
+                     }
+ 
+                     nbttagcompound.func_179237_a(nbttagcompound2);
+@@ -76,7 +76,7 @@
+ 
+                     if (nbttagcompound.equals(nbttagcompound1))
+                     {
+-                        throw new CommandException("commands.blockdata.failed", nbttagcompound.toString());
++                        throw new CommandException("commands.blockdata.failed", new Object[] {nbttagcompound.toString()});
+                     }
+                     else
+                     {

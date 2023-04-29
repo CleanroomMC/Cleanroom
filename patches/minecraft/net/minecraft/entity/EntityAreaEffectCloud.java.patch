@@ -1,0 +1,253 @@
+--- before/net/minecraft/entity/EntityAreaEffectCloud.java
++++ after/net/minecraft/entity/EntityAreaEffectCloud.java
+@@ -6,6 +6,7 @@
+ import java.util.List;
+ import java.util.Map;
+ import java.util.UUID;
++import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+ import net.minecraft.block.material.EnumPushReaction;
+ import net.minecraft.init.PotionTypes;
+@@ -18,24 +19,25 @@
+ import net.minecraft.potion.PotionType;
+ import net.minecraft.potion.PotionUtils;
+ import net.minecraft.util.EnumParticleTypes;
++import net.minecraft.util.ResourceLocation;
+ import net.minecraft.util.math.MathHelper;
+ import net.minecraft.world.World;
+ import net.minecraft.world.WorldServer;
+ 
+ public class EntityAreaEffectCloud extends Entity
+ {
+-    private static final DataParameter<Float> field_184498_a = EntityDataManager.func_187226_a(EntityAreaEffectCloud.class, DataSerializers.field_187193_c);
+-    private static final DataParameter<Integer> field_184499_b = EntityDataManager.func_187226_a(EntityAreaEffectCloud.class, DataSerializers.field_187192_b);
+-    private static final DataParameter<Boolean> field_184500_c = EntityDataManager.func_187226_a(EntityAreaEffectCloud.class, DataSerializers.field_187198_h);
+-    private static final DataParameter<Integer> field_184501_d = EntityDataManager.func_187226_a(EntityAreaEffectCloud.class, DataSerializers.field_187192_b);
+-    private static final DataParameter<Integer> field_189736_e = EntityDataManager.func_187226_a(EntityAreaEffectCloud.class, DataSerializers.field_187192_b);
+-    private static final DataParameter<Integer> field_189737_f = EntityDataManager.func_187226_a(EntityAreaEffectCloud.class, DataSerializers.field_187192_b);
+-    private PotionType field_184502_e = PotionTypes.field_185229_a;
+-    private final List<PotionEffect> field_184503_f = Lists.newArrayList();
+-    private final Map<Entity, Integer> field_184504_g = Maps.newHashMap();
+-    private int field_184505_h = 600;
+-    private int field_184506_as = 20;
+-    private int field_184507_at = 20;
++    private static final DataParameter<Float> field_184498_a = EntityDataManager.<Float>func_187226_a(EntityAreaEffectCloud.class, DataSerializers.field_187193_c);
++    private static final DataParameter<Integer> field_184499_b = EntityDataManager.<Integer>func_187226_a(EntityAreaEffectCloud.class, DataSerializers.field_187192_b);
++    private static final DataParameter<Boolean> field_184500_c = EntityDataManager.<Boolean>func_187226_a(EntityAreaEffectCloud.class, DataSerializers.field_187198_h);
++    private static final DataParameter<Integer> field_184501_d = EntityDataManager.<Integer>func_187226_a(EntityAreaEffectCloud.class, DataSerializers.field_187192_b);
++    private static final DataParameter<Integer> field_189736_e = EntityDataManager.<Integer>func_187226_a(EntityAreaEffectCloud.class, DataSerializers.field_187192_b);
++    private static final DataParameter<Integer> field_189737_f = EntityDataManager.<Integer>func_187226_a(EntityAreaEffectCloud.class, DataSerializers.field_187192_b);
++    private PotionType field_184502_e;
++    private final List<PotionEffect> field_184503_f;
++    private final Map<Entity, Integer> field_184504_g;
++    private int field_184505_h;
++    private int field_184506_as;
++    private int field_184507_at;
+     private boolean field_184508_au;
+     private int field_184509_av;
+     private float field_184510_aw;
+@@ -46,6 +48,12 @@
+     public EntityAreaEffectCloud(World p_i46809_1_)
+     {
+         super(p_i46809_1_);
++        this.field_184502_e = PotionTypes.field_185229_a;
++        this.field_184503_f = Lists.<PotionEffect>newArrayList();
++        this.field_184504_g = Maps.<Entity, Integer>newHashMap();
++        this.field_184505_h = 600;
++        this.field_184506_as = 20;
++        this.field_184507_at = 20;
+         this.field_70145_X = true;
+         this.field_70178_ae = true;
+         this.func_184483_a(3.0F);
+@@ -59,12 +67,12 @@
+ 
+     protected void func_70088_a()
+     {
+-        this.func_184212_Q().func_187214_a(field_184499_b, 0);
+-        this.func_184212_Q().func_187214_a(field_184498_a, 0.5F);
+-        this.func_184212_Q().func_187214_a(field_184500_c, false);
+-        this.func_184212_Q().func_187214_a(field_184501_d, EnumParticleTypes.SPELL_MOB.func_179348_c());
+-        this.func_184212_Q().func_187214_a(field_189736_e, 0);
+-        this.func_184212_Q().func_187214_a(field_189737_f, 0);
++        this.func_184212_Q().func_187214_a(field_184499_b, Integer.valueOf(0));
++        this.func_184212_Q().func_187214_a(field_184498_a, Float.valueOf(0.5F));
++        this.func_184212_Q().func_187214_a(field_184500_c, Boolean.valueOf(false));
++        this.func_184212_Q().func_187214_a(field_184501_d, Integer.valueOf(EnumParticleTypes.SPELL_MOB.func_179348_c()));
++        this.func_184212_Q().func_187214_a(field_189736_e, Integer.valueOf(0));
++        this.func_184212_Q().func_187214_a(field_189737_f, Integer.valueOf(0));
+     }
+ 
+     public void func_184483_a(float p_184483_1_)
+@@ -77,13 +85,13 @@
+ 
+         if (!this.field_70170_p.field_72995_K)
+         {
+-            this.func_184212_Q().func_187227_b(field_184498_a, p_184483_1_);
++            this.func_184212_Q().func_187227_b(field_184498_a, Float.valueOf(p_184483_1_));
+         }
+     }
+ 
+     public float func_184490_j()
+     {
+-        return this.func_184212_Q().func_187225_a(field_184498_a);
++        return ((Float)this.func_184212_Q().func_187225_a(field_184498_a)).floatValue();
+     }
+ 
+     public void func_184484_a(PotionType p_184484_1_)
+@@ -100,11 +108,11 @@
+     {
+         if (this.field_184502_e == PotionTypes.field_185229_a && this.field_184503_f.isEmpty())
+         {
+-            this.func_184212_Q().func_187227_b(field_184499_b, 0);
++            this.func_184212_Q().func_187227_b(field_184499_b, Integer.valueOf(0));
+         }
+         else
+         {
+-            this.func_184212_Q().func_187227_b(field_184499_b, PotionUtils.func_185181_a(PotionUtils.func_185186_a(this.field_184502_e, this.field_184503_f)));
++            this.func_184212_Q().func_187227_b(field_184499_b, Integer.valueOf(PotionUtils.func_185181_a(PotionUtils.func_185186_a(this.field_184502_e, this.field_184503_f))));
+         }
+     }
+ 
+@@ -120,53 +128,53 @@
+ 
+     public int func_184492_k()
+     {
+-        return this.func_184212_Q().func_187225_a(field_184499_b);
++        return ((Integer)this.func_184212_Q().func_187225_a(field_184499_b)).intValue();
+     }
+ 
+     public void func_184482_a(int p_184482_1_)
+     {
+         this.field_184508_au = true;
+-        this.func_184212_Q().func_187227_b(field_184499_b, p_184482_1_);
++        this.func_184212_Q().func_187227_b(field_184499_b, Integer.valueOf(p_184482_1_));
+     }
+ 
+     public EnumParticleTypes func_184493_l()
+     {
+-        return EnumParticleTypes.func_179342_a(this.func_184212_Q().func_187225_a(field_184501_d));
++        return EnumParticleTypes.func_179342_a(((Integer)this.func_184212_Q().func_187225_a(field_184501_d)).intValue());
+     }
+ 
+     public void func_184491_a(EnumParticleTypes p_184491_1_)
+     {
+-        this.func_184212_Q().func_187227_b(field_184501_d, p_184491_1_.func_179348_c());
++        this.func_184212_Q().func_187227_b(field_184501_d, Integer.valueOf(p_184491_1_.func_179348_c()));
+     }
+ 
+     public int func_189733_n()
+     {
+-        return this.func_184212_Q().func_187225_a(field_189736_e);
++        return ((Integer)this.func_184212_Q().func_187225_a(field_189736_e)).intValue();
+     }
+ 
+     public void func_189734_b(int p_189734_1_)
+     {
+-        this.func_184212_Q().func_187227_b(field_189736_e, p_189734_1_);
++        this.func_184212_Q().func_187227_b(field_189736_e, Integer.valueOf(p_189734_1_));
+     }
+ 
+     public int func_189735_o()
+     {
+-        return this.func_184212_Q().func_187225_a(field_189737_f);
++        return ((Integer)this.func_184212_Q().func_187225_a(field_189737_f)).intValue();
+     }
+ 
+     public void func_189732_d(int p_189732_1_)
+     {
+-        this.func_184212_Q().func_187227_b(field_189737_f, p_189732_1_);
++        this.func_184212_Q().func_187227_b(field_189737_f, Integer.valueOf(p_189732_1_));
+     }
+ 
+     protected void func_184488_a(boolean p_184488_1_)
+     {
+-        this.func_184212_Q().func_187227_b(field_184500_c, p_184488_1_);
++        this.func_184212_Q().func_187227_b(field_184500_c, Boolean.valueOf(p_184488_1_));
+     }
+ 
+     public boolean func_184497_n()
+     {
+-        return this.func_184212_Q().func_187225_a(field_184500_c);
++        return ((Boolean)this.func_184212_Q().func_187225_a(field_184500_c)).booleanValue();
+     }
+ 
+     public int func_184489_o()
+@@ -247,7 +255,7 @@
+                     }
+                     else
+                     {
+-                        this.field_70170_p.func_190523_a(enumparticletypes.func_179348_c(), this.field_70165_t + (double)f8, this.field_70163_u, this.field_70161_v + (double)f9, (0.5D - this.field_70146_Z.nextDouble()) * 0.15D, (double)0.01F, (0.5D - this.field_70146_Z.nextDouble()) * 0.15D, aint);
++                        this.field_70170_p.func_190523_a(enumparticletypes.func_179348_c(), this.field_70165_t + (double)f8, this.field_70163_u, this.field_70161_v + (double)f9, (0.5D - this.field_70146_Z.nextDouble()) * 0.15D, 0.009999999776482582D, (0.5D - this.field_70146_Z.nextDouble()) * 0.15D, aint);
+                     }
+                 }
+             }
+@@ -287,38 +295,38 @@
+ 
+             if (this.field_70173_aa % 5 == 0)
+             {
+-                Iterator<Map.Entry<Entity, Integer>> iterator = this.field_184504_g.entrySet().iterator();
++                Iterator<Entry<Entity, Integer>> iterator = this.field_184504_g.entrySet().iterator();
+ 
+                 while (iterator.hasNext())
+                 {
+-                    Map.Entry<Entity, Integer> entry = iterator.next();
++                    Entry<Entity, Integer> entry = (Entry)iterator.next();
+ 
+-                    if (this.field_70173_aa >= entry.getValue())
++                    if (this.field_70173_aa >= ((Integer)entry.getValue()).intValue())
+                     {
+                         iterator.remove();
+                     }
+                 }
+ 
+-                List<PotionEffect> list = Lists.newArrayList();
++                List<PotionEffect> potions = Lists.<PotionEffect>newArrayList();
+ 
+                 for (PotionEffect potioneffect1 : this.field_184502_e.func_185170_a())
+                 {
+-                    list.add(new PotionEffect(potioneffect1.func_188419_a(), potioneffect1.func_76459_b() / 4, potioneffect1.func_76458_c(), potioneffect1.func_82720_e(), potioneffect1.func_188418_e()));
++                    potions.add(new PotionEffect(potioneffect1.func_188419_a(), potioneffect1.func_76459_b() / 4, potioneffect1.func_76458_c(), potioneffect1.func_82720_e(), potioneffect1.func_188418_e()));
+                 }
+ 
+-                list.addAll(this.field_184503_f);
++                potions.addAll(this.field_184503_f);
+ 
+-                if (list.isEmpty())
++                if (potions.isEmpty())
+                 {
+                     this.field_184504_g.clear();
+                 }
+                 else
+                 {
+-                    List<EntityLivingBase> list1 = this.field_70170_p.func_72872_a(EntityLivingBase.class, this.func_174813_aQ());
++                    List<EntityLivingBase> list = this.field_70170_p.<EntityLivingBase>func_72872_a(EntityLivingBase.class, this.func_174813_aQ());
+ 
+-                    if (!list1.isEmpty())
++                    if (!list.isEmpty())
+                     {
+-                        for (EntityLivingBase entitylivingbase : list1)
++                        for (EntityLivingBase entitylivingbase : list)
+                         {
+                             if (!this.field_184504_g.containsKey(entitylivingbase) && entitylivingbase.func_184603_cC())
+                             {
+@@ -328,9 +336,9 @@
+ 
+                                 if (d2 <= (double)(f * f))
+                                 {
+-                                    this.field_184504_g.put(entitylivingbase, this.field_70173_aa + this.field_184507_at);
++                                    this.field_184504_g.put(entitylivingbase, Integer.valueOf(this.field_70173_aa + this.field_184507_at));
+ 
+-                                    for (PotionEffect potioneffect : list)
++                                    for (PotionEffect potioneffect : potions)
+                                     {
+                                         if (potioneffect.func_188419_a().func_76403_b())
+                                         {
+@@ -488,7 +496,7 @@
+ 
+         if (this.field_184502_e != PotionTypes.field_185229_a && this.field_184502_e != null)
+         {
+-            p_70014_1_.func_74778_a("Potion", PotionType.field_185176_a.func_177774_c(this.field_184502_e).toString());
++            p_70014_1_.func_74778_a("Potion", ((ResourceLocation)PotionType.field_185176_a.func_177774_c(this.field_184502_e)).toString());
+         }
+ 
+         if (!this.field_184503_f.isEmpty())

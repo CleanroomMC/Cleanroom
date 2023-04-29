@@ -1,5 +1,23 @@
 --- before/net/minecraft/world/gen/ChunkGeneratorFlat.java
 +++ after/net/minecraft/world/gen/ChunkGeneratorFlat.java
+@@ -30,7 +30,7 @@
+     private final Random field_73161_b;
+     private final IBlockState[] field_82700_c = new IBlockState[256];
+     private final FlatGeneratorInfo field_82699_e;
+-    private final Map<String, MapGenStructure> field_82696_f = new HashMap<>();
++    private final Map<String, MapGenStructure> field_82696_f = new HashMap<String, MapGenStructure>();
+     private final boolean field_82697_g;
+     private final boolean field_82702_h;
+     private WorldGenLakes field_82703_i;
+@@ -48,7 +48,7 @@
+ 
+             if (map.containsKey("village"))
+             {
+-                Map<String, String> map1 = map.get("village");
++                Map<String, String> map1 = (Map)map.get("village");
+ 
+                 if (!map1.containsKey("size"))
+                 {
 @@ -162,6 +162,7 @@
  
      public void func_185931_b(int p_185931_1_, int p_185931_2_)

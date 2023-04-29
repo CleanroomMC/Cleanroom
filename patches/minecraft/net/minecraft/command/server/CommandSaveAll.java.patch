@@ -1,0 +1,29 @@
+--- before/net/minecraft/command/server/CommandSaveAll.java
++++ after/net/minecraft/command/server/CommandSaveAll.java
+@@ -27,7 +27,7 @@
+ 
+     public void func_184881_a(MinecraftServer p_184881_1_, ICommandSender p_184881_2_, String[] p_184881_3_) throws CommandException
+     {
+-        p_184881_2_.func_145747_a(new TextComponentTranslation("commands.save.start"));
++        p_184881_2_.func_145747_a(new TextComponentTranslation("commands.save.start", new Object[0]));
+ 
+         if (p_184881_1_.func_184103_al() != null)
+         {
+@@ -50,7 +50,7 @@
+ 
+             if (p_184881_3_.length > 0 && "flush".equals(p_184881_3_[0]))
+             {
+-                p_184881_2_.func_145747_a(new TextComponentTranslation("commands.save.flushStart"));
++                p_184881_2_.func_145747_a(new TextComponentTranslation("commands.save.flushStart", new Object[0]));
+ 
+                 for (int j = 0; j < p_184881_1_.field_71305_c.length; ++j)
+                 {
+@@ -64,7 +64,7 @@
+                     }
+                 }
+ 
+-                p_184881_2_.func_145747_a(new TextComponentTranslation("commands.save.flushEnd"));
++                p_184881_2_.func_145747_a(new TextComponentTranslation("commands.save.flushEnd", new Object[0]));
+             }
+         }
+         catch (MinecraftException minecraftexception)

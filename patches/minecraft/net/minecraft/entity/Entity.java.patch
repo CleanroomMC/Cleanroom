@@ -1,6 +1,6 @@
 --- before/net/minecraft/entity/Entity.java
 +++ after/net/minecraft/entity/Entity.java
-@@ -85,7 +85,7 @@
+@@ -85,10 +85,10 @@
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
  
@@ -8,8 +8,31 @@
 +public abstract class Entity implements ICommandSender, net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound>
  {
      private static final Logger field_184243_a = LogManager.getLogger();
-     private static final List<ItemStack> field_190535_b = Collections.<ItemStack>emptyList();
-@@ -177,6 +177,10 @@
+-    private static final List<ItemStack> field_190535_b = Collections.emptyList();
++    private static final List<ItemStack> field_190535_b = Collections.<ItemStack>emptyList();
+     private static final AxisAlignedBB field_174836_a = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
+     private static double field_70155_l = 1.0D;
+     private static int field_70152_a;
+@@ -143,12 +143,12 @@
+     protected boolean field_70148_d;
+     protected boolean field_70178_ae;
+     protected EntityDataManager field_70180_af;
+-    protected static final DataParameter<Byte> field_184240_ax = EntityDataManager.func_187226_a(Entity.class, DataSerializers.field_187191_a);
+-    private static final DataParameter<Integer> field_184241_ay = EntityDataManager.func_187226_a(Entity.class, DataSerializers.field_187192_b);
+-    private static final DataParameter<String> field_184242_az = EntityDataManager.func_187226_a(Entity.class, DataSerializers.field_187194_d);
+-    private static final DataParameter<Boolean> field_184233_aA = EntityDataManager.func_187226_a(Entity.class, DataSerializers.field_187198_h);
+-    private static final DataParameter<Boolean> field_184234_aB = EntityDataManager.func_187226_a(Entity.class, DataSerializers.field_187198_h);
+-    private static final DataParameter<Boolean> field_189655_aD = EntityDataManager.func_187226_a(Entity.class, DataSerializers.field_187198_h);
++    protected static final DataParameter<Byte> field_184240_ax = EntityDataManager.<Byte>func_187226_a(Entity.class, DataSerializers.field_187191_a);
++    private static final DataParameter<Integer> field_184241_ay = EntityDataManager.<Integer>func_187226_a(Entity.class, DataSerializers.field_187192_b);
++    private static final DataParameter<String> field_184242_az = EntityDataManager.<String>func_187226_a(Entity.class, DataSerializers.field_187194_d);
++    private static final DataParameter<Boolean> field_184233_aA = EntityDataManager.<Boolean>func_187226_a(Entity.class, DataSerializers.field_187198_h);
++    private static final DataParameter<Boolean> field_184234_aB = EntityDataManager.<Boolean>func_187226_a(Entity.class, DataSerializers.field_187198_h);
++    private static final DataParameter<Boolean> field_189655_aD = EntityDataManager.<Boolean>func_187226_a(Entity.class, DataSerializers.field_187198_h);
+     public boolean field_70175_ag;
+     public int field_70176_ah;
+     public int field_70162_ai;
+@@ -177,11 +177,15 @@
      private boolean field_184237_aG;
      private final double[] field_191505_aI;
      private long field_191506_aJ;
@@ -20,7 +43,21 @@
  
      public Entity(World p_i1582_1_)
      {
-@@ -200,7 +204,7 @@
+         this.field_145783_c = field_70152_a++;
+-        this.field_184244_h = Lists.newArrayList();
++        this.field_184244_h = Lists.<Entity>newArrayList();
+         this.field_70121_D = field_174836_a;
+         this.field_70130_N = 0.6F;
+         this.field_70131_O = 1.8F;
+@@ -193,25 +197,33 @@
+         this.field_96093_i = MathHelper.func_180182_a(this.field_70146_Z);
+         this.field_189513_ar = this.field_96093_i.toString();
+         this.field_174837_as = new CommandResultStats();
+-        this.field_184236_aF = Sets.newHashSet();
++        this.field_184236_aF = Sets.<String>newHashSet();
+         this.field_191505_aI = new double[] {0.0D, 0.0D, 0.0D};
+         this.field_70170_p = p_i1582_1_;
+         this.func_70107_b(0.0D, 0.0D, 0.0D);
  
          if (p_i1582_1_ != null)
          {
@@ -29,9 +66,17 @@
          }
  
          this.field_70180_af = new EntityDataManager(this);
-@@ -211,7 +215,15 @@
-         this.field_70180_af.func_187214_a(field_184234_aB, Boolean.valueOf(false));
-         this.field_70180_af.func_187214_a(field_189655_aD, Boolean.valueOf(false));
+-        this.field_70180_af.func_187214_a(field_184240_ax, (byte)0);
+-        this.field_70180_af.func_187214_a(field_184241_ay, 300);
+-        this.field_70180_af.func_187214_a(field_184233_aA, false);
++        this.field_70180_af.func_187214_a(field_184240_ax, Byte.valueOf((byte)0));
++        this.field_70180_af.func_187214_a(field_184241_ay, Integer.valueOf(300));
++        this.field_70180_af.func_187214_a(field_184233_aA, Boolean.valueOf(false));
+         this.field_70180_af.func_187214_a(field_184242_az, "");
+-        this.field_70180_af.func_187214_a(field_184234_aB, false);
+-        this.field_70180_af.func_187214_a(field_189655_aD, false);
++        this.field_70180_af.func_187214_a(field_184234_aB, Boolean.valueOf(false));
++        this.field_70180_af.func_187214_a(field_189655_aD, Boolean.valueOf(false));
          this.func_70088_a();
 +        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityEvent.EntityConstructing(this));
 +        capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(this);
@@ -53,6 +98,150 @@
          float f = this.field_70130_N / 2.0F;
          float f1 = this.field_70131_O;
          this.func_174826_a(new AxisAlignedBB(p_70107_1_ - (double)f, p_70107_3_, p_70107_5_ - (double)f, p_70107_1_ + (double)f, p_70107_3_ + (double)f1, p_70107_5_ + (double)f));
+@@ -583,7 +596,7 @@
+                     p_70091_2_ = d0 - this.field_191505_aI[j];
+                     this.field_191505_aI[j] = d0;
+ 
+-                    if (Math.abs(p_70091_2_) <= (double)1.0E-5F)
++                    if (Math.abs(p_70091_2_) <= 9.999999747378752E-6D)
+                     {
+                         return;
+                     }
+@@ -595,7 +608,7 @@
+                     p_70091_4_ = d12 - this.field_191505_aI[l4];
+                     this.field_191505_aI[l4] = d12;
+ 
+-                    if (Math.abs(p_70091_4_) <= (double)1.0E-5F)
++                    if (Math.abs(p_70091_4_) <= 9.999999747378752E-6D)
+                     {
+                         return;
+                     }
+@@ -612,7 +625,7 @@
+                     p_70091_6_ = d13 - this.field_191505_aI[i5];
+                     this.field_191505_aI[i5] = d13;
+ 
+-                    if (Math.abs(p_70091_6_) <= (double)1.0E-5F)
++                    if (Math.abs(p_70091_6_) <= 9.999999747378752E-6D)
+                     {
+                         return;
+                     }
+@@ -628,7 +641,7 @@
+             {
+                 this.field_70134_J = false;
+                 p_70091_2_ *= 0.25D;
+-                p_70091_4_ *= (double)0.05F;
++                p_70091_4_ *= 0.05000000074505806D;
+                 p_70091_6_ *= 0.25D;
+                 this.field_70159_w = 0.0D;
+                 this.field_70181_x = 0.0D;
+@@ -714,7 +727,7 @@
+ 
+                 for (int l = list1.size(); k < l; ++k)
+                 {
+-                    p_70091_4_ = list1.get(k).func_72323_b(this.func_174813_aQ(), p_70091_4_);
++                    p_70091_4_ = ((AxisAlignedBB)list1.get(k)).func_72323_b(this.func_174813_aQ(), p_70091_4_);
+                 }
+ 
+                 this.func_174826_a(this.func_174813_aQ().func_72317_d(0.0D, p_70091_4_, 0.0D));
+@@ -726,7 +739,7 @@
+ 
+                 for (int l5 = list1.size(); j5 < l5; ++j5)
+                 {
+-                    p_70091_2_ = list1.get(j5).func_72316_a(this.func_174813_aQ(), p_70091_2_);
++                    p_70091_2_ = ((AxisAlignedBB)list1.get(j5)).func_72316_a(this.func_174813_aQ(), p_70091_2_);
+                 }
+ 
+                 if (p_70091_2_ != 0.0D)
+@@ -741,7 +754,7 @@
+ 
+                 for (int i6 = list1.size(); k5 < i6; ++k5)
+                 {
+-                    p_70091_6_ = list1.get(k5).func_72322_c(this.func_174813_aQ(), p_70091_6_);
++                    p_70091_6_ = ((AxisAlignedBB)list1.get(k5)).func_72322_c(this.func_174813_aQ(), p_70091_6_);
+                 }
+ 
+                 if (p_70091_6_ != 0.0D)
+@@ -768,7 +781,7 @@
+ 
+                 for (int k1 = list.size(); j1 < k1; ++j1)
+                 {
+-                    d8 = list.get(j1).func_72323_b(axisalignedbb3, d8);
++                    d8 = ((AxisAlignedBB)list.get(j1)).func_72323_b(axisalignedbb3, d8);
+                 }
+ 
+                 axisalignedbb2 = axisalignedbb2.func_72317_d(0.0D, d8, 0.0D);
+@@ -777,7 +790,7 @@
+ 
+                 for (int i2 = list.size(); l1 < i2; ++l1)
+                 {
+-                    d18 = list.get(l1).func_72316_a(axisalignedbb2, d18);
++                    d18 = ((AxisAlignedBB)list.get(l1)).func_72316_a(axisalignedbb2, d18);
+                 }
+ 
+                 axisalignedbb2 = axisalignedbb2.func_72317_d(d18, 0.0D, 0.0D);
+@@ -786,7 +799,7 @@
+ 
+                 for (int k2 = list.size(); j2 < k2; ++j2)
+                 {
+-                    d19 = list.get(j2).func_72322_c(axisalignedbb2, d19);
++                    d19 = ((AxisAlignedBB)list.get(j2)).func_72322_c(axisalignedbb2, d19);
+                 }
+ 
+                 axisalignedbb2 = axisalignedbb2.func_72317_d(0.0D, 0.0D, d19);
+@@ -796,7 +809,7 @@
+ 
+                 for (int i3 = list.size(); l2 < i3; ++l2)
+                 {
+-                    d20 = list.get(l2).func_72323_b(axisalignedbb4, d20);
++                    d20 = ((AxisAlignedBB)list.get(l2)).func_72323_b(axisalignedbb4, d20);
+                 }
+ 
+                 axisalignedbb4 = axisalignedbb4.func_72317_d(0.0D, d20, 0.0D);
+@@ -805,7 +818,7 @@
+ 
+                 for (int k3 = list.size(); j3 < k3; ++j3)
+                 {
+-                    d21 = list.get(j3).func_72316_a(axisalignedbb4, d21);
++                    d21 = ((AxisAlignedBB)list.get(j3)).func_72316_a(axisalignedbb4, d21);
+                 }
+ 
+                 axisalignedbb4 = axisalignedbb4.func_72317_d(d21, 0.0D, 0.0D);
+@@ -814,7 +827,7 @@
+ 
+                 for (int i4 = list.size(); l3 < i4; ++l3)
+                 {
+-                    d22 = list.get(l3).func_72322_c(axisalignedbb4, d22);
++                    d22 = ((AxisAlignedBB)list.get(l3)).func_72322_c(axisalignedbb4, d22);
+                 }
+ 
+                 axisalignedbb4 = axisalignedbb4.func_72317_d(0.0D, 0.0D, d22);
+@@ -840,7 +853,7 @@
+ 
+                 for (int k4 = list.size(); j4 < k4; ++j4)
+                 {
+-                    p_70091_4_ = list.get(j4).func_72323_b(this.func_174813_aQ(), p_70091_4_);
++                    p_70091_4_ = ((AxisAlignedBB)list.get(j4)).func_72323_b(this.func_174813_aQ(), p_70091_4_);
+                 }
+ 
+                 this.func_174826_a(this.func_174813_aQ().func_72317_d(0.0D, p_70091_4_, 0.0D));
+@@ -862,7 +875,7 @@
+             this.field_70122_E = this.field_70124_G && d3 < 0.0D;
+             this.field_70132_H = this.field_70123_F || this.field_70124_G;
+             int j6 = MathHelper.func_76128_c(this.field_70165_t);
+-            int i1 = MathHelper.func_76128_c(this.field_70163_u - (double)0.2F);
++            int i1 = MathHelper.func_76128_c(this.field_70163_u - 0.20000000298023224D);
+             int k6 = MathHelper.func_76128_c(this.field_70161_v);
+             BlockPos blockpos = new BlockPos(j6, i1, k6);
+             IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos);
+@@ -926,7 +939,7 @@
+                     {
+                         Entity entity = this.func_184207_aI() && this.func_184179_bs() != null ? this.func_184179_bs() : this;
+                         float f = entity == this ? 0.35F : 0.4F;
+-                        float f1 = MathHelper.func_76133_a(entity.field_70159_w * entity.field_70159_w * (double)0.2F + entity.field_70181_x * entity.field_70181_x + entity.field_70179_y * entity.field_70179_y * (double)0.2F) * f;
++                        float f1 = MathHelper.func_76133_a(entity.field_70159_w * entity.field_70159_w * 0.20000000298023224D + entity.field_70181_x * entity.field_70181_x + entity.field_70179_y * entity.field_70179_y * 0.20000000298023224D) * f;
+ 
+                         if (f1 > 1.0F)
+                         {
 @@ -995,6 +1008,7 @@
          this.field_70165_t = (axisalignedbb.field_72340_a + axisalignedbb.field_72336_d) / 2.0D;
          this.field_70163_u = axisalignedbb.field_72338_b;
@@ -70,7 +259,58 @@
  
          if (this.field_70170_p.func_180495_p(p_180429_1_.func_177984_a()).func_177230_c() == Blocks.field_150431_aC)
          {
-@@ -1259,6 +1273,7 @@
+@@ -1086,22 +1100,22 @@
+ 
+     public boolean func_174814_R()
+     {
+-        return this.field_70180_af.func_187225_a(field_184234_aB);
++        return ((Boolean)this.field_70180_af.func_187225_a(field_184234_aB)).booleanValue();
+     }
+ 
+     public void func_174810_b(boolean p_174810_1_)
+     {
+-        this.field_70180_af.func_187227_b(field_184234_aB, p_174810_1_);
++        this.field_70180_af.func_187227_b(field_184234_aB, Boolean.valueOf(p_174810_1_));
+     }
+ 
+     public boolean func_189652_ae()
+     {
+-        return this.field_70180_af.func_187225_a(field_189655_aD);
++        return ((Boolean)this.field_70180_af.func_187225_a(field_189655_aD)).booleanValue();
+     }
+ 
+     public void func_189654_d(boolean p_189654_1_)
+     {
+-        this.field_70180_af.func_187227_b(field_189655_aD, p_189654_1_);
++        this.field_70180_af.func_187227_b(field_189655_aD, Boolean.valueOf(p_189654_1_));
+     }
+ 
+     protected boolean func_70041_e_()
+@@ -1195,7 +1209,7 @@
+         {
+             this.field_70171_ac = false;
+         }
+-        else if (this.field_70170_p.func_72918_a(this.func_174813_aQ().func_72314_b(0.0D, (double) - 0.4F, 0.0D).func_186664_h(0.001D), Material.field_151586_h, this))
++        else if (this.field_70170_p.func_72918_a(this.func_174813_aQ().func_72314_b(0.0D, -0.4000000059604645D, 0.0D).func_186664_h(0.001D), Material.field_151586_h, this))
+         {
+             if (!this.field_70171_ac && !this.field_70148_d)
+             {
+@@ -1218,7 +1232,7 @@
+     {
+         Entity entity = this.func_184207_aI() && this.func_184179_bs() != null ? this.func_184179_bs() : this;
+         float f = entity == this ? 0.2F : 0.9F;
+-        float f1 = MathHelper.func_76133_a(entity.field_70159_w * entity.field_70159_w * (double)0.2F + entity.field_70181_x * entity.field_70181_x + entity.field_70179_y * entity.field_70179_y * (double)0.2F) * f;
++        float f1 = MathHelper.func_76133_a(entity.field_70159_w * entity.field_70159_w * 0.20000000298023224D + entity.field_70181_x * entity.field_70181_x + entity.field_70179_y * entity.field_70179_y * 0.20000000298023224D) * f;
+ 
+         if (f1 > 1.0F)
+         {
+@@ -1254,11 +1268,12 @@
+     protected void func_174808_Z()
+     {
+         int i = MathHelper.func_76128_c(this.field_70165_t);
+-        int j = MathHelper.func_76128_c(this.field_70163_u - (double)0.2F);
++        int j = MathHelper.func_76128_c(this.field_70163_u - 0.20000000298023224D);
+         int k = MathHelper.func_76128_c(this.field_70161_v);
          BlockPos blockpos = new BlockPos(i, j, k);
          IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos);
  
@@ -95,6 +335,40 @@
              }
              else
              {
+@@ -1293,14 +1308,14 @@
+ 
+     public boolean func_180799_ab()
+     {
+-        return this.field_70170_p.func_72875_a(this.func_174813_aQ().func_72314_b((double) - 0.1F, (double) - 0.4F, (double) - 0.1F), Material.field_151587_i);
++        return this.field_70170_p.func_72875_a(this.func_174813_aQ().func_72314_b(-0.10000000149011612D, -0.4000000059604645D, -0.10000000149011612D), Material.field_151587_i);
+     }
+ 
+     public void func_191958_b(float p_191958_1_, float p_191958_2_, float p_191958_3_, float p_191958_4_)
+     {
+         float f = p_191958_1_ * p_191958_1_ + p_191958_2_ * p_191958_2_ + p_191958_3_ * p_191958_3_;
+ 
+-        if (!(f < 1.0E-4F))
++        if (f >= 1.0E-4F)
+         {
+             f = MathHelper.func_76129_c(f);
+ 
+@@ -1310,11 +1325,11 @@
+             }
+ 
+             f = p_191958_4_ / f;
+-            p_191958_1_ *= f;
+-            p_191958_2_ *= f;
+-            p_191958_3_ *= f;
+-            float f1 = MathHelper.func_76126_a(this.field_70177_z * ((float)Math.PI / 180F));
+-            float f2 = MathHelper.func_76134_b(this.field_70177_z * ((float)Math.PI / 180F));
++            p_191958_1_ = p_191958_1_ * f;
++            p_191958_2_ = p_191958_2_ * f;
++            p_191958_3_ = p_191958_3_ * f;
++            float f1 = MathHelper.func_76126_a(this.field_70177_z * 0.017453292F);
++            float f2 = MathHelper.func_76134_b(this.field_70177_z * 0.017453292F);
+             this.field_70159_w += (double)(p_191958_1_ * f2 - p_191958_3_ * f1);
+             this.field_70181_x += (double)p_191958_2_;
+             this.field_70179_y += (double)(p_191958_3_ * f2 + p_191958_1_ * f1);
 @@ -1382,6 +1397,7 @@
              this.field_70126_B -= 360.0F;
          }
@@ -103,6 +377,64 @@
          this.func_70107_b(this.field_70165_t, this.field_70163_u, this.field_70161_v);
          this.func_70101_b(p_70080_7_, p_70080_8_);
      }
+@@ -1463,11 +1479,11 @@
+                 double d1 = p_70108_1_.field_70161_v - this.field_70161_v;
+                 double d2 = MathHelper.func_76132_a(d0, d1);
+ 
+-                if (d2 >= (double)0.01F)
++                if (d2 >= 0.009999999776482582D)
+                 {
+                     d2 = (double)MathHelper.func_76133_a(d2);
+-                    d0 /= d2;
+-                    d1 /= d2;
++                    d0 = d0 / d2;
++                    d1 = d1 / d2;
+                     double d3 = 1.0D / d2;
+ 
+                     if (d3 > 1.0D)
+@@ -1475,12 +1491,12 @@
+                         d3 = 1.0D;
+                     }
+ 
+-                    d0 *= d3;
+-                    d1 *= d3;
+-                    d0 *= (double)0.05F;
+-                    d1 *= (double)0.05F;
+-                    d0 *= (double)(1.0F - this.field_70144_Y);
+-                    d1 *= (double)(1.0F - this.field_70144_Y);
++                    d0 = d0 * d3;
++                    d1 = d1 * d3;
++                    d0 = d0 * 0.05000000074505806D;
++                    d1 = d1 * 0.05000000074505806D;
++                    d0 = d0 * (double)(1.0F - this.field_70144_Y);
++                    d1 = d1 * (double)(1.0F - this.field_70144_Y);
+ 
+                     if (!this.func_184207_aI())
+                     {
+@@ -1538,10 +1554,10 @@
+ 
+     protected final Vec3d func_174806_f(float p_174806_1_, float p_174806_2_)
+     {
+-        float f = MathHelper.func_76134_b(-p_174806_2_ * ((float)Math.PI / 180F) - (float)Math.PI);
+-        float f1 = MathHelper.func_76126_a(-p_174806_2_ * ((float)Math.PI / 180F) - (float)Math.PI);
+-        float f2 = -MathHelper.func_76134_b(-p_174806_1_ * ((float)Math.PI / 180F));
+-        float f3 = MathHelper.func_76126_a(-p_174806_1_ * ((float)Math.PI / 180F));
++        float f = MathHelper.func_76134_b(-p_174806_2_ * 0.017453292F - (float)Math.PI);
++        float f1 = MathHelper.func_76126_a(-p_174806_2_ * 0.017453292F - (float)Math.PI);
++        float f2 = -MathHelper.func_76134_b(-p_174806_1_ * 0.017453292F);
++        float f3 = MathHelper.func_76126_a(-p_174806_1_ * 0.017453292F);
+         return new Vec3d((double)(f1 * f2), (double)f3, (double)(f * f2));
+     }
+ 
+@@ -1608,7 +1624,7 @@
+             d0 = 1.0D;
+         }
+ 
+-        d0 *= 64.0D * field_70155_l;
++        d0 = d0 * 64.0D * field_70155_l;
+         return p_70112_1_ < d0 * d0;
+     }
+ 
 @@ -1707,6 +1723,7 @@
              {
                  p_189511_1_.func_74757_a("Glowing", this.field_184238_ar);
@@ -160,6 +492,15 @@
          if (p_184205_2_ || this.func_184228_n(p_184205_1_) && p_184205_1_.func_184219_q(this))
          {
              if (this.func_184218_aH())
+@@ -2058,7 +2087,7 @@
+     {
+         for (int i = this.field_184244_h.size() - 1; i >= 0; --i)
+         {
+-            this.field_184244_h.get(i).func_184210_p();
++            ((Entity)this.field_184244_h.get(i)).func_184210_p();
+         }
+     }
+ 
 @@ -2067,6 +2096,7 @@
          if (this.field_184239_as != null)
          {
@@ -168,6 +509,53 @@
              this.field_184239_as = null;
              entity.func_184225_p(this);
          }
+@@ -2197,7 +2227,7 @@
+ 
+     public Iterable<ItemStack> func_184209_aF()
+     {
+-        return Iterables.concat(this.func_184214_aD(), this.func_184193_aE());
++        return Iterables.<ItemStack>concat(this.func_184214_aD(), this.func_184193_aE());
+     }
+ 
+     public void func_184201_a(EntityEquipmentSlot p_184201_1_, ItemStack p_184201_2_)
+@@ -2297,31 +2327,31 @@
+ 
+     protected boolean func_70083_f(int p_70083_1_)
+     {
+-        return (this.field_70180_af.func_187225_a(field_184240_ax) & 1 << p_70083_1_) != 0;
++        return (((Byte)this.field_70180_af.func_187225_a(field_184240_ax)).byteValue() & 1 << p_70083_1_) != 0;
+     }
+ 
+     protected void func_70052_a(int p_70052_1_, boolean p_70052_2_)
+     {
+-        byte b0 = this.field_70180_af.func_187225_a(field_184240_ax);
++        byte b0 = ((Byte)this.field_70180_af.func_187225_a(field_184240_ax)).byteValue();
+ 
+         if (p_70052_2_)
+         {
+-            this.field_70180_af.func_187227_b(field_184240_ax, (byte)(b0 | 1 << p_70052_1_));
++            this.field_70180_af.func_187227_b(field_184240_ax, Byte.valueOf((byte)(b0 | 1 << p_70052_1_)));
+         }
+         else
+         {
+-            this.field_70180_af.func_187227_b(field_184240_ax, (byte)(b0 & ~(1 << p_70052_1_)));
++            this.field_70180_af.func_187227_b(field_184240_ax, Byte.valueOf((byte)(b0 & ~(1 << p_70052_1_))));
+         }
+     }
+ 
+     public int func_70086_ai()
+     {
+-        return this.field_70180_af.func_187225_a(field_184241_ay);
++        return ((Integer)this.field_70180_af.func_187225_a(field_184241_ay)).intValue();
+     }
+ 
+     public void func_70050_g(int p_70050_1_)
+     {
+-        this.field_70180_af.func_187227_b(field_184241_ay, p_70050_1_);
++        this.field_70180_af.func_187227_b(field_184241_ay, Integer.valueOf(p_70050_1_));
+     }
+ 
+     public void func_70077_a(EntityLightningBolt p_70077_1_)
 @@ -2509,8 +2539,16 @@
      @Nullable
      public Entity func_184204_a(int p_184204_1_)
@@ -251,11 +639,46 @@
      }
  
      public boolean func_174816_a(Explosion p_174816_1_, World p_174816_2_, BlockPos p_174816_3_, IBlockState p_174816_4_, float p_174816_5_)
-@@ -2900,6 +2938,218 @@
+@@ -2641,7 +2679,7 @@
+                 return EntityList.func_191301_a(Entity.this) + " (" + Entity.this.getClass().getCanonicalName() + ")";
+             }
+         });
+-        p_85029_1_.func_71507_a("Entity ID", this.field_145783_c);
++        p_85029_1_.func_71507_a("Entity ID", Integer.valueOf(this.field_145783_c));
+         p_85029_1_.func_189529_a("Entity Name", new ICrashReportDetail<String>()
+         {
+             public String call() throws Exception
+@@ -2722,22 +2760,22 @@
  
+     public String func_95999_t()
+     {
+-        return this.field_70180_af.func_187225_a(field_184242_az);
++        return (String)this.field_70180_af.func_187225_a(field_184242_az);
+     }
+ 
+     public boolean func_145818_k_()
+     {
+-        return !this.field_70180_af.func_187225_a(field_184242_az).isEmpty();
++        return !((String)this.field_70180_af.func_187225_a(field_184242_az)).isEmpty();
+     }
+ 
+     public void func_174805_g(boolean p_174805_1_)
+     {
+-        this.field_70180_af.func_187227_b(field_184233_aA, p_174805_1_);
++        this.field_70180_af.func_187227_b(field_184233_aA, Boolean.valueOf(p_174805_1_));
+     }
+ 
+     public boolean func_174833_aM()
+     {
+-        return this.field_70180_af.func_187225_a(field_184233_aA);
++        return ((Boolean)this.field_70180_af.func_187225_a(field_184233_aA)).booleanValue();
+     }
+ 
+     public void func_70634_a(double p_70634_1_, double p_70634_3_, double p_70634_5_)
+@@ -2901,6 +2939,218 @@
          EnchantmentHelper.func_151385_b(p_174815_1_, p_174815_2_);
      }
-+
+ 
 +    /* ================================== Forge Start =====================================*/
 +    /**
 +     * Internal use for keeping track of entities that are tracked by a world, to
@@ -467,6 +890,32 @@
 +            && this.field_70130_N * this.field_70130_N * this.field_70131_O > 0.512F;
 +    }
 +    /* ================================== Forge End =====================================*/
- 
++
      public void func_184178_b(EntityPlayerMP p_184178_1_)
      {
+     }
+@@ -2979,14 +3229,14 @@
+ 
+     public Collection<Entity> func_184182_bu()
+     {
+-        Set<Entity> set = Sets.newHashSet();
++        Set<Entity> set = Sets.<Entity>newHashSet();
+         this.func_184175_a(Entity.class, set);
+         return set;
+     }
+ 
+     public <T extends Entity> Collection<T> func_184180_b(Class<T> p_184180_1_)
+     {
+-        Set<T> set = Sets.newHashSet();
++        Set<T> set = Sets.<T>newHashSet();
+         this.func_184175_a(p_184180_1_, set);
+         return set;
+     }
+@@ -3010,6 +3260,7 @@
+ 
+         for (entity = this; entity.func_184218_aH(); entity = entity.func_184187_bx())
+         {
++            ;
+         }
+ 
+         return entity;

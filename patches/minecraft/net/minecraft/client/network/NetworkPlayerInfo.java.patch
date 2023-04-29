@@ -1,0 +1,29 @@
+--- before/net/minecraft/client/network/NetworkPlayerInfo.java
++++ after/net/minecraft/client/network/NetworkPlayerInfo.java
+@@ -22,7 +22,7 @@
+ public class NetworkPlayerInfo
+ {
+     private final GameProfile field_178867_a;
+-    Map<MinecraftProfileTexture.Type, ResourceLocation> field_187107_a = Maps.newEnumMap(MinecraftProfileTexture.Type.class);
++    Map<Type, ResourceLocation> field_187107_a = Maps.newEnumMap(Type.class);
+     private GameType field_178866_b;
+     private int field_78829_b;
+     private boolean field_178864_d;
+@@ -85,7 +85,7 @@
+     public ResourceLocation func_178837_g()
+     {
+         this.func_178841_j();
+-        return MoreObjects.firstNonNull(this.field_187107_a.get(Type.SKIN), DefaultPlayerSkin.func_177334_a(this.field_178867_a.getId()));
++        return (ResourceLocation)MoreObjects.firstNonNull(this.field_187107_a.get(Type.SKIN), DefaultPlayerSkin.func_177334_a(this.field_178867_a.getId()));
+     }
+ 
+     @Nullable
+@@ -117,7 +117,7 @@
+                 this.field_178864_d = true;
+                 Minecraft.func_71410_x().func_152342_ad().func_152790_a(this.field_178867_a, new SkinManager.SkinAvailableCallback()
+                 {
+-                    public void func_180521_a(MinecraftProfileTexture.Type p_180521_1_, ResourceLocation p_180521_2_, MinecraftProfileTexture p_180521_3_)
++                    public void func_180521_a(Type p_180521_1_, ResourceLocation p_180521_2_, MinecraftProfileTexture p_180521_3_)
+                     {
+                         switch (p_180521_1_)
+                         {

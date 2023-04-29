@@ -1,6 +1,6 @@
 --- before/net/minecraft/client/renderer/tileentity/TileEntityPistonRenderer.java
 +++ after/net/minecraft/client/renderer/tileentity/TileEntityPistonRenderer.java
-@@ -23,10 +23,11 @@
+@@ -23,15 +23,16 @@
  @SideOnly(Side.CLIENT)
  public class TileEntityPistonRenderer extends TileEntitySpecialRenderer<TileEntityPiston>
  {
@@ -13,3 +13,30 @@
          BlockPos blockpos = p_192841_1_.func_174877_v();
          IBlockState iblockstate = p_192841_1_.func_174927_b();
          Block block = iblockstate.func_177230_c();
+ 
+-        if (iblockstate.func_185904_a() != Material.field_151579_a && !(p_192841_1_.func_145860_a(p_192841_8_) >= 1.0F))
++        if (iblockstate.func_185904_a() != Material.field_151579_a && p_192841_1_.func_145860_a(p_192841_8_) < 1.0F)
+         {
+             Tessellator tessellator = Tessellator.func_178181_a();
+             BufferBuilder bufferbuilder = tessellator.func_178180_c();
+@@ -56,17 +57,17 @@
+ 
+             if (block == Blocks.field_150332_K && p_192841_1_.func_145860_a(p_192841_8_) <= 0.25F)
+             {
+-                iblockstate = iblockstate.func_177226_a(BlockPistonExtension.field_176327_M, true);
++                iblockstate = iblockstate.func_177226_a(BlockPistonExtension.field_176327_M, Boolean.valueOf(true));
+                 this.func_188186_a(blockpos, iblockstate, bufferbuilder, world, true);
+             }
+             else if (p_192841_1_.func_145867_d() && !p_192841_1_.func_145868_b())
+             {
+                 BlockPistonExtension.EnumPistonType blockpistonextension$enumpistontype = block == Blocks.field_150320_F ? BlockPistonExtension.EnumPistonType.STICKY : BlockPistonExtension.EnumPistonType.DEFAULT;
+                 IBlockState iblockstate1 = Blocks.field_150332_K.func_176223_P().func_177226_a(BlockPistonExtension.field_176325_b, blockpistonextension$enumpistontype).func_177226_a(BlockPistonExtension.field_176387_N, iblockstate.func_177229_b(BlockPistonBase.field_176387_N));
+-                iblockstate1 = iblockstate1.func_177226_a(BlockPistonExtension.field_176327_M, p_192841_1_.func_145860_a(p_192841_8_) >= 0.5F);
++                iblockstate1 = iblockstate1.func_177226_a(BlockPistonExtension.field_176327_M, Boolean.valueOf(p_192841_1_.func_145860_a(p_192841_8_) >= 0.5F));
+                 this.func_188186_a(blockpos, iblockstate1, bufferbuilder, world, true);
+                 bufferbuilder.func_178969_c(p_192841_2_ - (double)blockpos.func_177958_n(), p_192841_4_ - (double)blockpos.func_177956_o(), p_192841_6_ - (double)blockpos.func_177952_p());
+-                iblockstate = iblockstate.func_177226_a(BlockPistonBase.field_176320_b, true);
++                iblockstate = iblockstate.func_177226_a(BlockPistonBase.field_176320_b, Boolean.valueOf(true));
+                 this.func_188186_a(blockpos, iblockstate, bufferbuilder, world, true);
+             }
+             else

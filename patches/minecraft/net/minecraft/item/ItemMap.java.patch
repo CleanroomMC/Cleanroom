@@ -27,7 +27,89 @@
          {
              int i = 1 << p_77872_3_.field_76197_d;
              int j = p_77872_3_.field_76201_a;
-@@ -251,13 +251,13 @@
+@@ -114,7 +114,7 @@
+                             boolean flag1 = i2 * i2 + j2 * j2 > (j1 - 2) * (j1 - 2);
+                             int k2 = (j / i + k1 - 64) * i;
+                             int l2 = (k / i + l1 - 64) * i;
+-                            Multiset<MapColor> multiset = HashMultiset.create();
++                            Multiset<MapColor> multiset = HashMultiset.<MapColor>create();
+                             Chunk chunk = p_77872_1_.func_175726_f(new BlockPos(k2, 0, l2));
+ 
+                             if (!chunk.func_76621_g())
+@@ -157,25 +157,35 @@
+                                             }
+                                             else
+                                             {
+-                                                do
+-                                                {
+-                                                    --k4;
+-                                                    iblockstate = chunk.func_186032_a(i4 + i3, k4, j4 + j3);
+-                                                    blockpos$mutableblockpos.func_181079_c((chunk.field_76635_g << 4) + i4 + i3, k4, (chunk.field_76647_h << 4) + j4 + j3);
+-                                                }
+-                                                while (iblockstate.func_185909_g(p_77872_1_, blockpos$mutableblockpos) == MapColor.field_151660_b && k4 > 0);
+-
+-                                                if (k4 > 0 && iblockstate.func_185904_a().func_76224_d())
+-                                                {
+-                                                    int l4 = k4 - 1;
+-                                                    IBlockState iblockstate1;
+-
+-                                                    do
+-                                                    {
+-                                                        iblockstate1 = chunk.func_186032_a(i4 + i3, l4--, j4 + j3);
+-                                                        ++k3;
+-                                                    }
+-                                                    while (l4 > 0 && iblockstate1.func_185904_a().func_76224_d());
++                                                label175:
++                                                {
++                                                    while (true)
++                                                    {
++                                                        --k4;
++                                                        iblockstate = chunk.func_186032_a(i4 + i3, k4, j4 + j3);
++                                                        blockpos$mutableblockpos.func_181079_c((chunk.field_76635_g << 4) + i4 + i3, k4, (chunk.field_76647_h << 4) + j4 + j3);
++
++                                                        if (iblockstate.func_185909_g(p_77872_1_, blockpos$mutableblockpos) != MapColor.field_151660_b || k4 <= 0)
++                                                        {
++                                                            break;
++                                                        }
++                                                    }
++
++                                                    if (k4 > 0 && iblockstate.func_185904_a().func_76224_d())
++                                                    {
++                                                        int l4 = k4 - 1;
++
++                                                        while (true)
++                                                        {
++                                                            IBlockState iblockstate1 = chunk.func_186032_a(i4 + i3, l4--, j4 + j3);
++                                                            ++k3;
++
++                                                            if (l4 <= 0 || !iblockstate1.func_185904_a().func_76224_d())
++                                                            {
++                                                                break label175;
++                                                            }
++                                                        }
++                                                    }
+                                                 }
+                                             }
+ 
+@@ -185,7 +195,7 @@
+                                     }
+                                 }
+ 
+-                                k3 /= i * i;
++                                k3 = k3 / (i * i);
+                                 double d2 = (d1 - d0) * 4.0D / (double)(i + 4) + ((double)(k1 + l1 & 1) - 0.5D) * 0.4D;
+                                 int i5 = 1;
+ 
+@@ -199,7 +209,7 @@
+                                     i5 = 0;
+                                 }
+ 
+-                                MapColor mapcolor = Iterables.getFirst(Multisets.copyHighestCountFirst(multiset), MapColor.field_151660_b);
++                                MapColor mapcolor = (MapColor)Iterables.getFirst(Multisets.copyHighestCountFirst(multiset), MapColor.field_151660_b);
+ 
+                                 if (mapcolor == MapColor.field_151662_n)
+                                 {
+@@ -241,13 +251,13 @@
  
      public static void func_190905_a(World p_190905_0_, ItemStack p_190905_1_)
      {
@@ -44,3 +126,12 @@
                  {
                      int i = 1 << mapdata.field_76197_d;
                      int j = mapdata.field_76201_a;
+@@ -457,7 +467,7 @@
+             if (mapdata != null)
+             {
+                 p_77624_3_.add(I18n.func_74837_a("filled_map.scale", 1 << mapdata.field_76197_d));
+-                p_77624_3_.add(I18n.func_74837_a("filled_map.level", mapdata.field_76197_d, 4));
++                p_77624_3_.add(I18n.func_74837_a("filled_map.level", mapdata.field_76197_d, Integer.valueOf(4)));
+             }
+             else
+             {

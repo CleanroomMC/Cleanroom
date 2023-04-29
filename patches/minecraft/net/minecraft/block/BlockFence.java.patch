@@ -1,10 +1,81 @@
 --- before/net/minecraft/block/BlockFence.java
 +++ after/net/minecraft/block/BlockFence.java
-@@ -165,7 +165,10 @@
+@@ -4,6 +4,7 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.block.material.MapColor;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyBool;
+ import net.minecraft.block.state.BlockFaceShape;
+ import net.minecraft.block.state.BlockStateContainer;
+@@ -42,7 +43,7 @@
+     public BlockFence(Material p_i46395_1_, MapColor p_i46395_2_)
+     {
+         super(p_i46395_1_, p_i46395_2_);
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176526_a, false).func_177226_a(field_176525_b, false).func_177226_a(field_176527_M, false).func_177226_a(field_176528_N, false));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176526_a, Boolean.valueOf(false)).func_177226_a(field_176525_b, Boolean.valueOf(false)).func_177226_a(field_176527_M, Boolean.valueOf(false)).func_177226_a(field_176528_N, Boolean.valueOf(false)));
+         this.func_149647_a(CreativeTabs.field_78031_c);
+     }
+ 
+@@ -55,22 +56,22 @@
+ 
+         func_185492_a(p_185477_3_, p_185477_4_, p_185477_5_, field_185671_f);
+ 
+-        if (p_185477_1_.func_177229_b(field_176526_a))
++        if (((Boolean)p_185477_1_.func_177229_b(field_176526_a)).booleanValue())
+         {
+             func_185492_a(p_185477_3_, p_185477_4_, p_185477_5_, field_185668_C);
+         }
+ 
+-        if (p_185477_1_.func_177229_b(field_176525_b))
++        if (((Boolean)p_185477_1_.func_177229_b(field_176525_b)).booleanValue())
+         {
+             func_185492_a(p_185477_3_, p_185477_4_, p_185477_5_, field_185669_D);
+         }
+ 
+-        if (p_185477_1_.func_177229_b(field_176527_M))
++        if (((Boolean)p_185477_1_.func_177229_b(field_176527_M)).booleanValue())
+         {
+             func_185492_a(p_185477_3_, p_185477_4_, p_185477_5_, field_185672_g);
+         }
+ 
+-        if (p_185477_1_.func_177229_b(field_176528_N))
++        if (((Boolean)p_185477_1_.func_177229_b(field_176528_N)).booleanValue())
+         {
+             func_185492_a(p_185477_3_, p_185477_4_, p_185477_5_, field_185667_B);
+         }
+@@ -86,22 +87,22 @@
+     {
+         int i = 0;
+ 
+-        if (p_185666_0_.func_177229_b(field_176526_a))
++        if (((Boolean)p_185666_0_.func_177229_b(field_176526_a)).booleanValue())
+         {
+             i |= 1 << EnumFacing.NORTH.func_176736_b();
+         }
+ 
+-        if (p_185666_0_.func_177229_b(field_176525_b))
++        if (((Boolean)p_185666_0_.func_177229_b(field_176525_b)).booleanValue())
+         {
+             i |= 1 << EnumFacing.EAST.func_176736_b();
+         }
+ 
+-        if (p_185666_0_.func_177229_b(field_176527_M))
++        if (((Boolean)p_185666_0_.func_177229_b(field_176527_M)).booleanValue())
+         {
+             i |= 1 << EnumFacing.SOUTH.func_176736_b();
+         }
+ 
+-        if (p_185666_0_.func_177229_b(field_176528_N))
++        if (((Boolean)p_185666_0_.func_177229_b(field_176528_N)).booleanValue())
+         {
+             i |= 1 << EnumFacing.WEST.func_176736_b();
+         }
+@@ -164,7 +165,10 @@
  
      public IBlockState func_176221_a(IBlockState p_176221_1_, IBlockAccess p_176221_2_, BlockPos p_176221_3_)
      {
--        return p_176221_1_.func_177226_a(field_176526_a, Boolean.valueOf(this.func_176524_e(p_176221_2_, p_176221_3_.func_177978_c(), EnumFacing.SOUTH))).func_177226_a(field_176525_b, Boolean.valueOf(this.func_176524_e(p_176221_2_, p_176221_3_.func_177974_f(), EnumFacing.WEST))).func_177226_a(field_176527_M, Boolean.valueOf(this.func_176524_e(p_176221_2_, p_176221_3_.func_177968_d(), EnumFacing.NORTH))).func_177226_a(field_176528_N, Boolean.valueOf(this.func_176524_e(p_176221_2_, p_176221_3_.func_177976_e(), EnumFacing.EAST)));
+-        return p_176221_1_.func_177226_a(field_176526_a, this.func_176524_e(p_176221_2_, p_176221_3_.func_177978_c(), EnumFacing.SOUTH)).func_177226_a(field_176525_b, this.func_176524_e(p_176221_2_, p_176221_3_.func_177974_f(), EnumFacing.WEST)).func_177226_a(field_176527_M, this.func_176524_e(p_176221_2_, p_176221_3_.func_177968_d(), EnumFacing.NORTH)).func_177226_a(field_176528_N, this.func_176524_e(p_176221_2_, p_176221_3_.func_177976_e(), EnumFacing.EAST));
 +        return p_176221_1_.func_177226_a(field_176526_a, canFenceConnectTo(p_176221_2_, p_176221_3_, EnumFacing.NORTH))
 +                    .func_177226_a(field_176525_b,  canFenceConnectTo(p_176221_2_, p_176221_3_, EnumFacing.EAST))
 +                    .func_177226_a(field_176527_M, canFenceConnectTo(p_176221_2_, p_176221_3_, EnumFacing.SOUTH))
@@ -12,10 +83,14 @@
      }
  
      public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
-@@ -200,6 +203,23 @@
+@@ -197,8 +201,25 @@
+ 
+     protected BlockStateContainer func_180661_e()
      {
-         return new BlockStateContainer(this, new IProperty[] {field_176526_a, field_176525_b, field_176528_N, field_176527_M});
-     }
+-        return new BlockStateContainer(this, field_176526_a, field_176525_b, field_176528_N, field_176527_M);
+-    }
++        return new BlockStateContainer(this, new IProperty[] {field_176526_a, field_176525_b, field_176528_N, field_176527_M});
++    }
 +
 +    /* ======================================== FORGE START ======================================== */
 +

@@ -1,0 +1,19 @@
+--- before/net/minecraft/util/FoodStats.java
++++ after/net/minecraft/util/FoodStats.java
+@@ -11,15 +11,10 @@
+ public class FoodStats
+ {
+     private int field_75127_a = 20;
+-    private float field_75125_b;
++    private float field_75125_b = 5.0F;
+     private float field_75126_c;
+     private int field_75123_d;
+     private int field_75124_e = 20;
+-
+-    public FoodStats()
+-    {
+-        this.field_75125_b = 5.0F;
+-    }
+ 
+     public void func_75122_a(int p_75122_1_, float p_75122_2_)
+     {

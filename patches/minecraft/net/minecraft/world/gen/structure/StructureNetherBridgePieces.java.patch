@@ -1,0 +1,29 @@
+--- before/net/minecraft/world/gen/structure/StructureNetherBridgePieces.java
++++ after/net/minecraft/world/gen/structure/StructureNetherBridgePieces.java
+@@ -1222,7 +1222,7 @@
+             public StructureNetherBridgePieces.PieceWeight field_74970_a;
+             public List<StructureNetherBridgePieces.PieceWeight> field_74968_b;
+             public List<StructureNetherBridgePieces.PieceWeight> field_74969_c;
+-            public List<StructureComponent> field_74967_d = Lists.newArrayList();
++            public List<StructureComponent> field_74967_d = Lists.<StructureComponent>newArrayList();
+ 
+             public Start()
+             {
+@@ -1231,7 +1231,7 @@
+             public Start(Random p_i2059_1_, int p_i2059_2_, int p_i2059_3_)
+             {
+                 super(p_i2059_1_, p_i2059_2_, p_i2059_3_);
+-                this.field_74968_b = Lists.newArrayList();
++                this.field_74968_b = Lists.<StructureNetherBridgePieces.PieceWeight>newArrayList();
+ 
+                 for (StructureNetherBridgePieces.PieceWeight structurenetherbridgepieces$pieceweight : StructureNetherBridgePieces.field_78742_a)
+                 {
+@@ -1239,7 +1239,7 @@
+                     this.field_74968_b.add(structurenetherbridgepieces$pieceweight);
+                 }
+ 
+-                this.field_74969_c = Lists.newArrayList();
++                this.field_74969_c = Lists.<StructureNetherBridgePieces.PieceWeight>newArrayList();
+ 
+                 for (StructureNetherBridgePieces.PieceWeight structurenetherbridgepieces$pieceweight1 : StructureNetherBridgePieces.field_78741_b)
+                 {

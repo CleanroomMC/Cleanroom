@@ -1,0 +1,15 @@
+--- before/net/minecraft/world/WorldSettings.java
++++ after/net/minecraft/world/WorldSettings.java
+@@ -13,10 +13,11 @@
+     private final WorldType field_77171_e;
+     private boolean field_77168_f;
+     private boolean field_77169_g;
+-    private String field_82751_h = "";
++    private String field_82751_h;
+ 
+     public WorldSettings(long p_i1957_1_, GameType p_i1957_3_, boolean p_i1957_4_, boolean p_i1957_5_, WorldType p_i1957_6_)
+     {
++        this.field_82751_h = "";
+         this.field_77174_a = p_i1957_1_;
+         this.field_77172_b = p_i1957_3_;
+         this.field_77173_c = p_i1957_4_;

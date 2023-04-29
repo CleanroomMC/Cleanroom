@@ -1,6 +1,31 @@
 --- before/net/minecraft/block/BlockSapling.java
 +++ after/net/minecraft/block/BlockSapling.java
-@@ -53,6 +53,7 @@
+@@ -1,6 +1,7 @@
+ package net.minecraft.block;
+ 
+ import java.util.Random;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyEnum;
+ import net.minecraft.block.properties.PropertyInteger;
+ import net.minecraft.block.state.BlockStateContainer;
+@@ -26,13 +27,13 @@
+ 
+ public class BlockSapling extends BlockBush implements IGrowable
+ {
+-    public static final PropertyEnum<BlockPlanks.EnumType> field_176480_a = PropertyEnum.func_177709_a("type", BlockPlanks.EnumType.class);
++    public static final PropertyEnum<BlockPlanks.EnumType> field_176480_a = PropertyEnum.<BlockPlanks.EnumType>func_177709_a("type", BlockPlanks.EnumType.class);
+     public static final PropertyInteger field_176479_b = PropertyInteger.func_177719_a("stage", 0, 1);
+-    protected static final AxisAlignedBB field_185520_d = new AxisAlignedBB((double)0.099999994F, 0.0D, (double)0.099999994F, (double)0.9F, (double)0.8F, (double)0.9F);
++    protected static final AxisAlignedBB field_185520_d = new AxisAlignedBB(0.09999999403953552D, 0.0D, 0.09999999403953552D, 0.8999999761581421D, 0.800000011920929D, 0.8999999761581421D);
+ 
+     protected BlockSapling()
+     {
+-        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176480_a, BlockPlanks.EnumType.OAK).func_177226_a(field_176479_b, 0));
++        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176480_a, BlockPlanks.EnumType.OAK).func_177226_a(field_176479_b, Integer.valueOf(0)));
+         this.func_149647_a(CreativeTabs.field_78031_c);
+     }
+ 
+@@ -52,6 +53,7 @@
          {
              super.func_180650_b(p_180650_1_, p_180650_2_, p_180650_3_, p_180650_4_);
  
@@ -8,7 +33,16 @@
              if (p_180650_1_.func_175671_l(p_180650_2_.func_177984_a()) >= 9 && p_180650_4_.nextInt(7) == 0)
              {
                  this.func_176478_d(p_180650_1_, p_180650_2_, p_180650_3_, p_180650_4_);
-@@ -74,6 +75,7 @@
+@@ -61,7 +63,7 @@
+ 
+     public void func_176478_d(World p_176478_1_, BlockPos p_176478_2_, IBlockState p_176478_3_, Random p_176478_4_)
+     {
+-        if (p_176478_3_.func_177229_b(field_176479_b) == 0)
++        if (((Integer)p_176478_3_.func_177229_b(field_176479_b)).intValue() == 0)
+         {
+             p_176478_1_.func_180501_a(p_176478_2_, p_176478_3_.func_177231_a(field_176479_b), 4);
+         }
+@@ -73,6 +75,7 @@
  
      public void func_176476_e(World p_176476_1_, BlockPos p_176476_2_, IBlockState p_176476_3_, Random p_176476_4_)
      {
@@ -16,3 +50,45 @@
          WorldGenerator worldgenerator = (WorldGenerator)(p_176476_4_.nextInt(10) == 0 ? new WorldGenBigTree(true) : new WorldGenTrees(true));
          int i = 0;
          int j = 0;
+@@ -109,7 +112,7 @@
+                 break;
+             case JUNGLE:
+                 IBlockState iblockstate = Blocks.field_150364_r.func_176223_P().func_177226_a(BlockOldLog.field_176301_b, BlockPlanks.EnumType.JUNGLE);
+-                IBlockState iblockstate1 = Blocks.field_150362_t.func_176223_P().func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.JUNGLE).func_177226_a(BlockLeaves.field_176236_b, false);
++                IBlockState iblockstate1 = Blocks.field_150362_t.func_176223_P().func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.JUNGLE).func_177226_a(BlockLeaves.field_176236_b, Boolean.valueOf(false));
+                 label82:
+ 
+                 for (i = 0; i >= -1; --i)
+@@ -203,7 +206,7 @@
+ 
+     public int func_180651_a(IBlockState p_180651_1_)
+     {
+-        return p_180651_1_.func_177229_b(field_176480_a).func_176839_a();
++        return ((BlockPlanks.EnumType)p_180651_1_.func_177229_b(field_176480_a)).func_176839_a();
+     }
+ 
+     public void func_149666_a(CreativeTabs p_149666_1_, NonNullList<ItemStack> p_149666_2_)
+@@ -231,18 +234,19 @@
+ 
+     public IBlockState func_176203_a(int p_176203_1_)
+     {
+-        return this.func_176223_P().func_177226_a(field_176480_a, BlockPlanks.EnumType.func_176837_a(p_176203_1_ & 7)).func_177226_a(field_176479_b, (p_176203_1_ & 8) >> 3);
++        return this.func_176223_P().func_177226_a(field_176480_a, BlockPlanks.EnumType.func_176837_a(p_176203_1_ & 7)).func_177226_a(field_176479_b, Integer.valueOf((p_176203_1_ & 8) >> 3));
+     }
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+         int i = 0;
+-        i |= p_176201_1_.func_177229_b(field_176480_a).func_176839_a();
+-        return i | p_176201_1_.func_177229_b(field_176479_b) << 3;
++        i = i | ((BlockPlanks.EnumType)p_176201_1_.func_177229_b(field_176480_a)).func_176839_a();
++        i = i | ((Integer)p_176201_1_.func_177229_b(field_176479_b)).intValue() << 3;
++        return i;
+     }
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176480_a, field_176479_b);
++        return new BlockStateContainer(this, new IProperty[] {field_176480_a, field_176479_b});
+     }
+ }

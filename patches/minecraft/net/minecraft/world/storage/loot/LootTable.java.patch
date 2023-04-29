@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/storage/loot/LootTable.java
 +++ after/net/minecraft/world/storage/loot/LootTable.java
-@@ -24,11 +24,11 @@
+@@ -24,16 +24,16 @@
  {
      private static final Logger field_186465_b = LogManager.getLogger();
      public static final LootTable field_186464_a = new LootTable(new LootPool[0]);
@@ -14,11 +14,63 @@
      }
  
      public List<ItemStack> func_186462_a(Random p_186462_1_, LootContext p_186462_2_)
-@@ -143,6 +143,58 @@
-         Collections.shuffle(list, p_186459_2_);
+     {
+-        List<ItemStack> list = Lists.newArrayList();
++        List<ItemStack> list = Lists.<ItemStack>newArrayList();
+ 
+         if (p_186462_2_.func_186496_a(this))
+         {
+@@ -68,18 +68,18 @@
+ 
+             if (itemstack.func_190926_b())
+             {
+-                p_186460_1_.func_70299_a(list1.remove(list1.size() - 1), ItemStack.field_190927_a);
++                p_186460_1_.func_70299_a(((Integer)list1.remove(list1.size() - 1)).intValue(), ItemStack.field_190927_a);
+             }
+             else
+             {
+-                p_186460_1_.func_70299_a(list1.remove(list1.size() - 1), itemstack);
++                p_186460_1_.func_70299_a(((Integer)list1.remove(list1.size() - 1)).intValue(), itemstack);
+             }
+         }
+     }
+ 
+     private void func_186463_a(List<ItemStack> p_186463_1_, int p_186463_2_, Random p_186463_3_)
+     {
+-        List<ItemStack> list = Lists.newArrayList();
++        List<ItemStack> list = Lists.<ItemStack>newArrayList();
+         Iterator<ItemStack> iterator = p_186463_1_.iterator();
+ 
+         while (iterator.hasNext())
+@@ -97,7 +97,7 @@
+             }
+         }
+ 
+-        p_186463_2_ -= p_186463_1_.size();
++        p_186463_2_ = p_186463_2_ - p_186463_1_.size();
+ 
+         while (p_186463_2_ > 0 && !list.isEmpty())
+         {
+@@ -130,13 +130,13 @@
+ 
+     private List<Integer> func_186459_a(IInventory p_186459_1_, Random p_186459_2_)
+     {
+-        List<Integer> list = Lists.newArrayList();
++        List<Integer> list = Lists.<Integer>newArrayList();
+ 
+         for (int i = 0; i < p_186459_1_.func_70302_i_(); ++i)
+         {
+             if (p_186459_1_.func_70301_a(i).func_190926_b())
+             {
+-                list.add(i);
++                list.add(Integer.valueOf(i));
+             }
+         }
+ 
+@@ -144,12 +144,64 @@
          return list;
      }
-+
+ 
 +    //======================== FORGE START =============================================
 +    private boolean isFrozen = false;
 +    public void freeze()
@@ -70,6 +122,14 @@
 +        this.field_186466_c.add(pool);
 +    }
 +    //======================== FORGE END ===============================================
- 
++
      public static class Serializer implements JsonDeserializer<LootTable>, JsonSerializer<LootTable>
          {
+             public LootTable deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_) throws JsonParseException
+             {
+                 JsonObject jsonobject = JsonUtils.func_151210_l(p_deserialize_1_, "loot table");
+-                LootPool[] alootpool = JsonUtils.func_188177_a(jsonobject, "pools", new LootPool[0], p_deserialize_3_, LootPool[].class);
++                LootPool[] alootpool = (LootPool[])JsonUtils.func_188177_a(jsonobject, "pools", new LootPool[0], p_deserialize_3_, LootPool[].class);
+                 return new LootTable(alootpool);
+             }
+ 

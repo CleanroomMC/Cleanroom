@@ -1,5 +1,45 @@
 --- before/net/minecraft/entity/item/EntityMinecartFurnace.java
 +++ after/net/minecraft/entity/item/EntityMinecartFurnace.java
+@@ -21,7 +21,7 @@
+ 
+ public class EntityMinecartFurnace extends EntityMinecart
+ {
+-    private static final DataParameter<Boolean> field_184275_c = EntityDataManager.func_187226_a(EntityMinecartFurnace.class, DataSerializers.field_187198_h);
++    private static final DataParameter<Boolean> field_184275_c = EntityDataManager.<Boolean>func_187226_a(EntityMinecartFurnace.class, DataSerializers.field_187198_h);
+     private int field_94110_c;
+     public double field_94111_a;
+     public double field_94109_b;
+@@ -49,7 +49,7 @@
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+-        this.field_70180_af.func_187214_a(field_184275_c, false);
++        this.field_70180_af.func_187214_a(field_184275_c, Boolean.valueOf(false));
+     }
+ 
+     public void func_70071_h_()
+@@ -125,17 +125,17 @@
+             this.field_94111_a /= d0;
+             this.field_94109_b /= d0;
+             double d1 = 1.0D;
+-            this.field_70159_w *= (double)0.8F;
++            this.field_70159_w *= 0.800000011920929D;
+             this.field_70181_x *= 0.0D;
+-            this.field_70179_y *= (double)0.8F;
++            this.field_70179_y *= 0.800000011920929D;
+             this.field_70159_w += this.field_94111_a * 1.0D;
+             this.field_70179_y += this.field_94109_b * 1.0D;
+         }
+         else
+         {
+-            this.field_70159_w *= (double)0.98F;
++            this.field_70159_w *= 0.9800000190734863D;
+             this.field_70181_x *= 0.0D;
+-            this.field_70179_y *= (double)0.98F;
++            this.field_70179_y *= 0.9800000190734863D;
+         }
+ 
+         super.func_94101_h();
 @@ -145,6 +145,8 @@
      {
          ItemStack itemstack = p_184230_1_.func_184586_b(p_184230_2_);
@@ -9,3 +49,18 @@
          if (itemstack.func_77973_b() == Items.field_151044_h && this.field_94110_c + 3600 <= 32000)
          {
              if (!p_184230_1_.field_71075_bZ.field_75098_d)
+@@ -178,12 +180,12 @@
+ 
+     protected boolean func_94108_c()
+     {
+-        return this.field_70180_af.func_187225_a(field_184275_c);
++        return ((Boolean)this.field_70180_af.func_187225_a(field_184275_c)).booleanValue();
+     }
+ 
+     protected void func_94107_f(boolean p_94107_1_)
+     {
+-        this.field_70180_af.func_187227_b(field_184275_c, p_94107_1_);
++        this.field_70180_af.func_187227_b(field_184275_c, Boolean.valueOf(p_94107_1_));
+     }
+ 
+     public IBlockState func_180457_u()

@@ -1,6 +1,14 @@
 --- before/net/minecraft/util/IntIdentityHashBiMap.java
 +++ after/net/minecraft/util/IntIdentityHashBiMap.java
-@@ -168,7 +168,6 @@
+@@ -88,6 +88,7 @@
+ 
+             for (j = this.field_186818_b.length << 1; j < p_186814_2_; j <<= 1)
+             {
++                ;
+             }
+ 
+             this.func_186807_d(j);
+@@ -167,7 +168,6 @@
          return Iterators.filter(Iterators.forArray(this.field_186820_d), Predicates.notNull());
      }
  

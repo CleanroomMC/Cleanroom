@@ -1,0 +1,71 @@
+--- before/net/minecraft/entity/monster/EntityBlaze.java
++++ after/net/minecraft/entity/monster/EntityBlaze.java
+@@ -35,7 +35,7 @@
+ {
+     private float field_70847_d = 0.5F;
+     private int field_70848_e;
+-    private static final DataParameter<Byte> field_184712_c = EntityDataManager.func_187226_a(EntityBlaze.class, DataSerializers.field_187191_a);
++    private static final DataParameter<Byte> field_184712_c = EntityDataManager.<Byte>func_187226_a(EntityBlaze.class, DataSerializers.field_187191_a);
+ 
+     public EntityBlaze(World p_i1731_1_)
+     {
+@@ -60,22 +60,22 @@
+         this.field_70714_bg.func_75776_a(7, new EntityAIWanderAvoidWater(this, 1.0D, 0.0F));
+         this.field_70714_bg.func_75776_a(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+         this.field_70714_bg.func_75776_a(8, new EntityAILookIdle(this));
+-        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, true));
+-        this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
++        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, true, new Class[0]));
++        this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
+     }
+ 
+     protected void func_110147_ax()
+     {
+         super.func_110147_ax();
+         this.func_110148_a(SharedMonsterAttributes.field_111264_e).func_111128_a(6.0D);
+-        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a((double)0.23F);
++        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.23000000417232513D);
+         this.func_110148_a(SharedMonsterAttributes.field_111265_b).func_111128_a(48.0D);
+     }
+ 
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+-        this.field_70180_af.func_187214_a(field_184712_c, (byte)0);
++        this.field_70180_af.func_187214_a(field_184712_c, Byte.valueOf((byte)0));
+     }
+ 
+     protected SoundEvent func_184639_G()
+@@ -146,7 +146,7 @@
+ 
+         if (entitylivingbase != null && entitylivingbase.field_70163_u + (double)entitylivingbase.func_70047_e() > this.field_70163_u + (double)this.func_70047_e() + (double)this.field_70847_d)
+         {
+-            this.field_70181_x += ((double)0.3F - this.field_70181_x) * (double)0.3F;
++            this.field_70181_x += (0.30000001192092896D - this.field_70181_x) * 0.30000001192092896D;
+             this.field_70160_al = true;
+         }
+ 
+@@ -170,12 +170,12 @@
+ 
+     public boolean func_70845_n()
+     {
+-        return (this.field_70180_af.func_187225_a(field_184712_c) & 1) != 0;
++        return (((Byte)this.field_70180_af.func_187225_a(field_184712_c)).byteValue() & 1) != 0;
+     }
+ 
+     public void func_70844_e(boolean p_70844_1_)
+     {
+-        byte b0 = this.field_70180_af.func_187225_a(field_184712_c);
++        byte b0 = ((Byte)this.field_70180_af.func_187225_a(field_184712_c)).byteValue();
+ 
+         if (p_70844_1_)
+         {
+@@ -186,7 +186,7 @@
+             b0 = (byte)(b0 & -2);
+         }
+ 
+-        this.field_70180_af.func_187227_b(field_184712_c, b0);
++        this.field_70180_af.func_187227_b(field_184712_c, Byte.valueOf(b0));
+     }
+ 
+     protected boolean func_70814_o()

@@ -59,6 +59,15 @@
      }
  
      public void func_71217_p()
+@@ -171,7 +186,7 @@
+ 
+             if (this.field_71349_l.field_71474_y.field_151451_c != this.func_184103_al().func_72395_o())
+             {
+-                field_147148_h.info("Changing view distance to {}, from {}", this.field_71349_l.field_71474_y.field_151451_c, this.func_184103_al().func_72395_o());
++                field_147148_h.info("Changing view distance to {}, from {}", Integer.valueOf(this.field_71349_l.field_71474_y.field_151451_c), Integer.valueOf(this.func_184103_al().func_72395_o()));
+                 this.func_184103_al().func_152611_a(this.field_71349_l.field_71474_y.field_151451_c);
+             }
+ 
 @@ -213,6 +228,7 @@
  
      public EnumDifficulty func_147135_j()
@@ -67,7 +76,27 @@
          return this.field_71349_l.field_71441_e.func_72912_H().func_176130_y();
      }
  
-@@ -364,6 +380,7 @@
+@@ -325,8 +341,9 @@
+             {
+                 i = HttpUtil.func_76181_a();
+             }
+-            catch (IOException ioexception)
++            catch (IOException var5)
+             {
++                ;
+             }
+ 
+             if (i <= 0)
+@@ -344,7 +361,7 @@
+             this.field_71349_l.field_71439_g.func_184839_n(p_71206_2_ ? 4 : 0);
+             return i + "";
+         }
+-        catch (IOException ioexception1)
++        catch (IOException var6)
+         {
+             return null;
+         }
+@@ -363,6 +380,7 @@
  
      public void func_71263_m()
      {

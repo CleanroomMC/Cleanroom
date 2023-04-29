@@ -1,0 +1,20 @@
+--- before/net/minecraft/realms/RealmsBridge.java
++++ after/net/minecraft/realms/RealmsBridge.java
+@@ -27,7 +27,7 @@
+             Object object = constructor.newInstance(this);
+             Minecraft.func_71410_x().func_147108_a(((RealmsScreen)object).getProxy());
+         }
+-        catch (ClassNotFoundException classnotfoundexception)
++        catch (ClassNotFoundException var5)
+         {
+             LOGGER.error("Realms module missing");
+         }
+@@ -48,7 +48,7 @@
+             Object object = constructor.newInstance(this);
+             return ((RealmsScreen)object).getProxy();
+         }
+-        catch (ClassNotFoundException classnotfoundexception)
++        catch (ClassNotFoundException var5)
+         {
+             LOGGER.error("Realms module missing");
+         }

@@ -1,0 +1,48 @@
+--- before/net/minecraft/client/network/LanServerDetector.java
++++ after/net/minecraft/client/network/LanServerDetector.java
+@@ -25,7 +25,7 @@
+     @SideOnly(Side.CLIENT)
+     public static class LanServerList
+         {
+-            private final List<LanServerInfo> field_77555_b = Lists.newArrayList();
++            private final List<LanServerInfo> field_77555_b = Lists.<LanServerInfo>newArrayList();
+             boolean field_77556_a;
+ 
+             public synchronized boolean func_77553_a()
+@@ -40,7 +40,7 @@
+ 
+             public synchronized List<LanServerInfo> func_77554_c()
+             {
+-                return Collections.unmodifiableList(this.field_77555_b);
++                return Collections.<LanServerInfo>unmodifiableList(this.field_77555_b);
+             }
+ 
+             public synchronized void func_77551_a(String p_77551_1_, InetAddress p_77551_2_)
+@@ -102,13 +102,13 @@
+                     {
+                         this.field_77499_c.receive(datagrampacket);
+                     }
+-                    catch (SocketTimeoutException sockettimeoutexception)
++                    catch (SocketTimeoutException var5)
+                     {
+                         continue;
+                     }
+-                    catch (IOException ioexception1)
++                    catch (IOException ioexception)
+                     {
+-                        LanServerDetector.field_148550_b.error("Couldn't ping server", (Throwable)ioexception1);
++                        LanServerDetector.field_148550_b.error("Couldn't ping server", (Throwable)ioexception);
+                         break;
+                     }
+ 
+@@ -121,8 +121,9 @@
+                 {
+                     this.field_77499_c.leaveGroup(this.field_77498_b);
+                 }
+-                catch (IOException ioexception)
++                catch (IOException var4)
+                 {
++                    ;
+                 }
+ 
+                 this.field_77499_c.close();

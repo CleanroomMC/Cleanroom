@@ -1,5 +1,41 @@
 --- before/net/minecraft/crash/CrashReportCategory.java
 +++ after/net/minecraft/crash/CrashReportCategory.java
+@@ -12,7 +12,7 @@
+ {
+     private final CrashReport field_85078_a;
+     private final String field_85076_b;
+-    private final List<CrashReportCategory.Entry> field_85077_c = Lists.newArrayList();
++    private final List<CrashReportCategory.Entry> field_85077_c = Lists.<CrashReportCategory.Entry>newArrayList();
+     private StackTraceElement[] field_85075_d = new StackTraceElement[0];
+ 
+     public CrashReportCategory(CrashReport p_i1353_1_, String p_i1353_2_)
+@@ -40,7 +40,7 @@
+         {
+             stringbuilder.append(String.format("World: (%d,%d,%d)", p_184876_0_, p_184876_1_, p_184876_2_));
+         }
+-        catch (Throwable throwable2)
++        catch (Throwable var16)
+         {
+             stringbuilder.append("(Error finding world loc)");
+         }
+@@ -60,7 +60,7 @@
+             int i2 = (j + 1 << 4) - 1;
+             stringbuilder.append(String.format("Chunk: (at %d,%d,%d in %d,%d; contains blocks %d,0,%d to %d,255,%d)", k, l, i1, i, j, j1, k1, l1, i2));
+         }
+-        catch (Throwable throwable1)
++        catch (Throwable var15)
+         {
+             stringbuilder.append("(Error finding chunk loc)");
+         }
+@@ -81,7 +81,7 @@
+             int j2 = (l2 + 1 << 9) - 1;
+             stringbuilder.append(String.format("Region: (%d,%d; contains chunks %d,%d to %d,%d, blocks %d,0,%d to %d,255,%d)", k2, l2, i3, j3, k3, l3, i4, j4, k4, j2));
+         }
+-        catch (Throwable throwable)
++        catch (Throwable var14)
+         {
+             stringbuilder.append("(Error finding world loc)");
+         }
 @@ -121,8 +121,11 @@
          }
          else
@@ -14,12 +50,15 @@
              return this.field_85075_d.length;
          }
      }
-@@ -206,7 +209,7 @@
+@@ -206,9 +209,9 @@
              {
                  try
                  {
 -                    return String.format("ID #%d (%s // %s)", i, p_180523_2_.func_149739_a(), p_180523_2_.getClass().getCanonicalName());
 +                    return String.format("ID #%d (%s // %s // %s)", i, p_180523_2_.func_149739_a(), p_180523_2_.getClass().getName(), p_180523_2_.getRegistryName());
                  }
-                 catch (Throwable var2)
+-                catch (Throwable throwable)
++                catch (Throwable var2)
                  {
+                     return "ID #" + i;
+                 }

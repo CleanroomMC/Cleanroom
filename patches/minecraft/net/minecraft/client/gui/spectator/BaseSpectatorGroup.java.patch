@@ -1,0 +1,19 @@
+--- before/net/minecraft/client/gui/spectator/BaseSpectatorGroup.java
++++ after/net/minecraft/client/gui/spectator/BaseSpectatorGroup.java
+@@ -12,7 +12,7 @@
+ @SideOnly(Side.CLIENT)
+ public class BaseSpectatorGroup implements ISpectatorMenuView
+ {
+-    private final List<ISpectatorMenuObject> field_178671_a = Lists.newArrayList();
++    private final List<ISpectatorMenuObject> field_178671_a = Lists.<ISpectatorMenuObject>newArrayList();
+ 
+     public BaseSpectatorGroup()
+     {
+@@ -27,6 +27,6 @@
+ 
+     public ITextComponent func_178670_b()
+     {
+-        return new TextComponentTranslation("spectatorMenu.root.prompt");
++        return new TextComponentTranslation("spectatorMenu.root.prompt", new Object[0]);
+     }
+ }

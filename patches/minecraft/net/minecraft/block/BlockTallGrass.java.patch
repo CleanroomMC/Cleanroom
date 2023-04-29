@@ -1,15 +1,28 @@
 --- before/net/minecraft/block/BlockTallGrass.java
 +++ after/net/minecraft/block/BlockTallGrass.java
-@@ -22,7 +22,7 @@
+@@ -3,6 +3,7 @@
+ import java.util.Random;
+ import javax.annotation.Nullable;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.properties.IProperty;
+ import net.minecraft.block.properties.PropertyEnum;
+ import net.minecraft.block.state.BlockStateContainer;
+ import net.minecraft.block.state.IBlockState;
+@@ -21,10 +22,10 @@
  import net.minecraft.world.IBlockAccess;
  import net.minecraft.world.World;
  
 -public class BlockTallGrass extends BlockBush implements IGrowable
 +public class BlockTallGrass extends BlockBush implements IGrowable, net.minecraftforge.common.IShearable
  {
-     public static final PropertyEnum<BlockTallGrass.EnumType> field_176497_a = PropertyEnum.<BlockTallGrass.EnumType>func_177709_a("type", BlockTallGrass.EnumType.class);
-     protected static final AxisAlignedBB field_185522_c = new AxisAlignedBB(0.09999999403953552D, 0.0D, 0.09999999403953552D, 0.8999999761581421D, 0.800000011920929D, 0.8999999761581421D);
-@@ -40,7 +40,7 @@
+-    public static final PropertyEnum<BlockTallGrass.EnumType> field_176497_a = PropertyEnum.func_177709_a("type", BlockTallGrass.EnumType.class);
+-    protected static final AxisAlignedBB field_185522_c = new AxisAlignedBB((double)0.099999994F, 0.0D, (double)0.099999994F, (double)0.9F, (double)0.8F, (double)0.9F);
++    public static final PropertyEnum<BlockTallGrass.EnumType> field_176497_a = PropertyEnum.<BlockTallGrass.EnumType>func_177709_a("type", BlockTallGrass.EnumType.class);
++    protected static final AxisAlignedBB field_185522_c = new AxisAlignedBB(0.09999999403953552D, 0.0D, 0.09999999403953552D, 0.8999999761581421D, 0.800000011920929D, 0.8999999761581421D);
+ 
+     protected BlockTallGrass()
+     {
+@@ -39,7 +40,7 @@
  
      public boolean func_180671_f(World p_180671_1_, BlockPos p_180671_2_, IBlockState p_180671_3_)
      {
@@ -18,7 +31,7 @@
      }
  
      public boolean func_176200_f(IBlockAccess p_176200_1_, BlockPos p_176200_2_)
-@@ -50,7 +50,7 @@
+@@ -49,7 +50,7 @@
  
      public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
      {
@@ -27,7 +40,31 @@
      }
  
      public int func_149679_a(int p_149679_1_, Random p_149679_2_)
-@@ -177,5 +177,20 @@
+@@ -62,7 +63,7 @@
+         if (!p_180657_1_.field_72995_K && p_180657_6_.func_77973_b() == Items.field_151097_aZ)
+         {
+             p_180657_2_.func_71029_a(StatList.func_188055_a(this));
+-            func_180635_a(p_180657_1_, p_180657_3_, new ItemStack(Blocks.field_150329_H, 1, p_180657_4_.func_177229_b(field_176497_a).func_177044_a()));
++            func_180635_a(p_180657_1_, p_180657_3_, new ItemStack(Blocks.field_150329_H, 1, ((BlockTallGrass.EnumType)p_180657_4_.func_177229_b(field_176497_a)).func_177044_a()));
+         }
+         else
+         {
+@@ -115,12 +116,12 @@
+ 
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+-        return p_176201_1_.func_177229_b(field_176497_a).func_177044_a();
++        return ((BlockTallGrass.EnumType)p_176201_1_.func_177229_b(field_176497_a)).func_177044_a();
+     }
+ 
+     protected BlockStateContainer func_180661_e()
+     {
+-        return new BlockStateContainer(this, field_176497_a);
++        return new BlockStateContainer(this, new IProperty[] {field_176497_a});
+     }
+ 
+     public Block.EnumOffsetType func_176218_Q()
+@@ -176,5 +177,20 @@
                  field_177048_d[blocktallgrass$enumtype.func_177044_a()] = blocktallgrass$enumtype;
              }
          }

@@ -1,0 +1,72 @@
+--- before/net/minecraft/entity/ai/attributes/ModifiableAttributeInstance.java
++++ after/net/minecraft/entity/ai/attributes/ModifiableAttributeInstance.java
+@@ -15,9 +15,9 @@
+ {
+     private final AbstractAttributeMap field_111138_a;
+     private final IAttribute field_111136_b;
+-    private final Map<Integer, Set<AttributeModifier>> field_111137_c = Maps.newHashMap();
+-    private final Map<String, Set<AttributeModifier>> field_111134_d = Maps.newHashMap();
+-    private final Map<UUID, AttributeModifier> field_111135_e = Maps.newHashMap();
++    private final Map<Integer, Set<AttributeModifier>> field_111137_c = Maps.<Integer, Set<AttributeModifier>>newHashMap();
++    private final Map<String, Set<AttributeModifier>> field_111134_d = Maps.<String, Set<AttributeModifier>>newHashMap();
++    private final Map<UUID, AttributeModifier> field_111135_e = Maps.<UUID, AttributeModifier>newHashMap();
+     private double field_111132_f;
+     private boolean field_111133_g = true;
+     private double field_111139_h;
+@@ -30,7 +30,7 @@
+ 
+         for (int i = 0; i < 3; ++i)
+         {
+-            this.field_111137_c.put(i, Sets.newHashSet());
++            this.field_111137_c.put(Integer.valueOf(i), Sets.newHashSet());
+         }
+     }
+ 
+@@ -55,12 +55,12 @@
+ 
+     public Collection<AttributeModifier> func_111130_a(int p_111130_1_)
+     {
+-        return this.field_111137_c.get(p_111130_1_);
++        return (Collection)this.field_111137_c.get(Integer.valueOf(p_111130_1_));
+     }
+ 
+     public Collection<AttributeModifier> func_111122_c()
+     {
+-        Set<AttributeModifier> set = Sets.newHashSet();
++        Set<AttributeModifier> set = Sets.<AttributeModifier>newHashSet();
+ 
+         for (int i = 0; i < 3; ++i)
+         {
+@@ -89,15 +89,15 @@
+         }
+         else
+         {
+-            Set<AttributeModifier> set = this.field_111134_d.get(p_111121_1_.func_111166_b());
++            Set<AttributeModifier> set = (Set)this.field_111134_d.get(p_111121_1_.func_111166_b());
+ 
+             if (set == null)
+             {
+-                set = Sets.newHashSet();
++                set = Sets.<AttributeModifier>newHashSet();
+                 this.field_111134_d.put(p_111121_1_.func_111166_b(), set);
+             }
+ 
+-            this.field_111137_c.get(p_111121_1_.func_111169_c()).add(p_111121_1_);
++            (this.field_111137_c.get(Integer.valueOf(p_111121_1_.func_111169_c()))).add(p_111121_1_);
+             set.add(p_111121_1_);
+             this.field_111135_e.put(p_111121_1_.func_111167_a(), p_111121_1_);
+             this.func_111131_f();
+@@ -114,11 +114,11 @@
+     {
+         for (int i = 0; i < 3; ++i)
+         {
+-            Set<AttributeModifier> set = this.field_111137_c.get(i);
++            Set<AttributeModifier> set = (Set)this.field_111137_c.get(Integer.valueOf(i));
+             set.remove(p_111124_1_);
+         }
+ 
+-        Set<AttributeModifier> set1 = this.field_111134_d.get(p_111124_1_.func_111166_b());
++        Set<AttributeModifier> set1 = (Set)this.field_111134_d.get(p_111124_1_.func_111166_b());
+ 
+         if (set1 != null)
+         {
