@@ -387,6 +387,7 @@ project(':cleanroom') {
         lwjglNatives {
             transitive = false
         }
+
         testCompile.extendsFrom(lwjglNatives)
     }
 
@@ -396,7 +397,7 @@ project(':cleanroom') {
             runtimeOnly "org.lwjgl3:$it::$lwjglArch"
 
             lwjglLibraries[1].each { arch ->
-                lwjglNatives "org.lwjgl3:$it:$props.lwjgl_version:$arch"
+                installer "org.lwjgl3:$it:$props.lwjgl_version:$arch"
             }
         }
 
@@ -1111,7 +1112,7 @@ project(':cleanroom') {
             maven(MavenPublication) {
                 groupId = "com.cleanroommc"
                 artifactId = "cleanroom"
-                version = "15.24.0.3001"
+                version = "15.24.0.3000"
                 from components.java
                 artifact userdevJar
                 artifact universalJar
