@@ -1,10 +1,31 @@
+pluginManagement {
+    repositories {
+        maven {
+            // RetroFuturaGradle
+            name 'GTNH Maven'
+            url uri('http://jenkins.usrv.eu:8081/nexus/content/groups/public/')
+            allowInsecureProtocol = true
+            mavenContent {
+                includeGroup 'com.gtnewhorizons'
+                includeGroup 'com.gtnewhorizons.retrofuturagradle'
+            }
+        }
+        gradlePluginPortal()
+        mavenCentral()
+        mavenLocal()
+    }
+}
+
+plugins {
+    // Automatic toolchain provisioning
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.4.0'
+}
+
 rootProject.name = 'Cleanroom'
 
-include ':mcp'
-include ':minecraft'
-include ':cleanroom'
+// TODO: in the future, when, 1.7, 1.10 and more versions need unifying, we will include them as subprojects here
+include 'ReForge 1.12.2'
+// include 'Patch 1.12.2'
 
-project(":mcp").projectDir = file("projects/mcp")
-project(":minecraft").projectDir = file("projects/minecraft")
-project(":cleanroom").projectDir = file("projects/cleanroom")
-
+project(':ReForge 1.12.2').projectDir = file('versions/1.12.2/reforge')
+// project(':Patch 1.12.2').projectDir = file('versions/1.12.2/patch')
