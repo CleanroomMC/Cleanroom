@@ -24,8 +24,8 @@ plugins {
 rootProject.name = 'Cleanroom'
 
 // TODO: in the future, when, 1.7, 1.10 and more versions need unifying, we will include them as subprojects here
-include 'ReForge 1.12.2'
+include 'reforge_1.12.2'
 // include 'Patch 1.12.2'
 
-project(':ReForge 1.12.2').projectDir = file('versions/1.12.2/reforge')
+project(':reforge_1.12.2').projectDir = file('versions/1.12.2/reforge')
 // project(':Patch 1.12.2').projectDir = file('versions/1.12.2/patch')

@@ -28,3 +28,6 @@ minecraft {
     usesForge = false
 }
 
+sourceSets.main.compileClasspath += sourceSets.patchedMc.output
+sourceSets.main.runtimeClasspath += sourceSets.patchedMc.output
+
