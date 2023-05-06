@@ -31,3 +31,5 @@ minecraft {
 sourceSets.main.compileClasspath += sourceSets.patchedMc.output
 sourceSets.main.runtimeClasspath += sourceSets.patchedMc.output
 
+tasks.deobfuscateMergedJarToSrg.accessTransformerFiles.from(files('src/main/resources/forge_at.cfg'))
+tasks.srgifyBinpatchedJar.accessTransformerFiles.from(files('src/main/resources/forge_at.cfg'))
