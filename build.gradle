@@ -397,7 +397,7 @@ project(':cleanroom') {
             runtimeOnly "org.lwjgl3:$it::$lwjglArch"
 
             lwjglLibraries[1].each { arch ->
-                installer "org.lwjgl3:$it:$props.lwjgl_version:$arch"
+                lwjglNatives "org.lwjgl3:$it:$props.lwjgl_version:$arch"
             }
         }
 
@@ -665,7 +665,7 @@ project(':cleanroom') {
         doLast {
             def json = version_json.json()
             json.libraries.each { lib ->
-                def artifacts = [lib.downloads.artifact] + lib.downloads.get('classifiers', [: ]).values()
+                def artifacts = [lib.downloads.artifact] + lib.downloads.get('archiveClassifier', [: ]).values()
                 artifacts.each { art ->
                     def target = file('build/libraries/' + art.path)
                     if (!target.exists()) {
@@ -684,7 +684,7 @@ project(':cleanroom') {
         doFirst {
             def json = version_json.json()
             json.libraries.each { lib ->
-                def artifacts = [lib.downloads.artifact] + lib.downloads.get('classifiers', [: ]).values()
+                def artifacts = [lib.downloads.artifact] + lib.downloads.get('archiveClassifier', [: ]).values()
                 artifacts.each { art ->
                     def target = file('build/libraries/' + art.path)
                     if (target.exists()) {
@@ -973,7 +973,7 @@ project(':cleanroom') {
             ], 'net/minecraftforge/common/')
         }
 
-        classifier 'universal'
+        archiveClassifier = 'universal'
     }
 
     task downloadInstaller(type: DownloadMavenArtifact) {
@@ -982,9 +982,9 @@ project(':cleanroom') {
     }
 
     task installerJar(type: Zip, dependsOn: [downloadInstaller, installerJson, launcherJson, genClientBinPatches, genServerBinPatches/*, 'signUniversalJar'*/]) {
-        classifier = 'installer'
-        extension = 'jar' //Needs to be Zip task to not override Manifest, so set extension
-        destinationDir = file('build/libs')
+        archiveClassifier = 'installer'
+        archiveExtension = 'jar' //Needs to be Zip task to not override Manifest, so set extension
+        destinationDirectory = file('build/libs')
         from(extra_files)
         from(rootProject.file('/src/main/resources/forge_logo.png')) {
             rename { 'big_logo.png' }
@@ -1066,7 +1066,7 @@ project(':cleanroom') {
     task userdevExtras(type: Jar) {
         dependsOn classes
         from sourceSets.userdev.output
-        classifier 'userdev-temp'
+        archiveClassifier = 'userdev-temp'
     }
 
     task userdevExtrasReobf(type: ReobfuscateJar) {
@@ -1083,7 +1083,7 @@ project(':cleanroom') {
         from(sourceSets.userdev.output.resourcesDir) {
             into '/inject/'
         }
-        classifier 'userdev' // Should be 'userdev' but FG5 hardcoded pre1.13 versions to userdev3
+        archiveClassifier = 'userdev' // Should be 'userdev' but FG5 hardcoded pre1.13 versions to userdev3
     }
 
     if (project.hasProperty('UPDATE_MAPPINGS')) {
@@ -1112,7 +1112,7 @@ project(':cleanroom') {
             maven(MavenPublication) {
                 groupId = "com.cleanroommc"
                 artifactId = "cleanroom"
-                version = "15.24.0.3000"
+                version = project.new_forge_version
                 from components.java
                 artifact userdevJar
                 artifact universalJar
