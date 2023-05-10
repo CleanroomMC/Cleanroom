@@ -1,5 +1,6 @@
 package net.minecraftforge.fml.relauncher;
 
+import com.cleanroommc.bouncepad.Bouncepad;
 import com.google.common.eventbus.EventBus;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValueInjectionInfo;
 import com.llamalad7.mixinextras.injector.ModifyReceiverInjectionInfo;
@@ -24,6 +25,7 @@ import org.spongepowered.asm.mixin.transformer.ext.IExtension;
 import zone.rong.mixinbooter.IEarlyMixinLoader;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -106,13 +108,17 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
                     Field field = coremod.getClass().getField("coreModInstance");
                     field.setAccessible(true);
                     Object theMod = field.get(coremod);
-                    if (theMod instanceof IEarlyMixinLoader) {
-                        IEarlyMixinLoader loader = (IEarlyMixinLoader) theMod;
-                        for (String mixinConfig : loader.getMixinConfigs()) {
-                            if (loader.shouldMixinConfigQueue(mixinConfig)) {
+                    Class clazz = Bouncepad.classLoader.loadClass("zone.rong.mixinbooter.IEarlyMixinLoader");
+                    Method get = clazz.getDeclaredMethod("getMixinConfigs");
+                    Method should = clazz.getDeclaredMethod("shouldMixinConfigQueue", String.class);
+                    Method on = clazz.getDeclaredMethod("onMixinConfigQueued", String.class);
+                    if (clazz.isInstance(theMod)) {
+                        Object loader = clazz.cast(theMod);
+                        for (String mixinConfig : (List<String>)get.invoke(loader)) {
+                            if ((Boolean) should.invoke(loader, mixinConfig)) {
                                 LOGGER.info("Adding {} mixin configuration.", mixinConfig);
                                 Mixins.addConfiguration(mixinConfig);
-                                loader.onMixinConfigQueued(mixinConfig);
+                                on.invoke(loader, mixinConfig);
                             }
                         }
                     }

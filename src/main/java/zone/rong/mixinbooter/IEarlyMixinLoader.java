@@ -11,6 +11,7 @@ import java.util.List;
  * Implement this in your {@link net.minecraftforge.fml.relauncher.IFMLLoadingPlugin}.
  * Return all early mixin configs you want MixinBooter to queue and send to Mixin library.
  */
+@Deprecated
 public interface IEarlyMixinLoader {
 
     /**

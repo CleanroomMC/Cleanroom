@@ -13,6 +13,7 @@ import java.util.List;
  * Implement this in any arbitrary class. Said class will be constructed when mixins are ready to be queued.
  * Return all late mixin configs you want MixinBooter to queue and send to Mixin library.
  */
+@Deprecated
 public interface ILateMixinLoader {
 
     /**
