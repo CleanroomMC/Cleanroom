@@ -266,7 +266,7 @@ project(':cleanroom') {
                 environment 'FORGE_GROUP', project.group
                 environment 'FORGE_VERSION', props.new_forge_version
 
-                jvmArgs '-Djava.library.path=' + project.file('build/natives') + ' -Dmixin.debug=true'
+                jvmArgs jvm_arguments + ' -Djava.library.path=' + project.file('build/natives') + ' -Dmixin.debug=true'
                 // jvmArgs jvm_arguments
 
                 // Lazily supply the Mappings target, createSrg2Mcp.getMappings() doesn't get populated until later
@@ -1122,7 +1122,7 @@ project(':cleanroom') {
     }
 
     test {
-        jvmArgs jvm_arguments
+        jvmArgs jvm_arguments + compiler_jvm_arguments
     }
 }
 
