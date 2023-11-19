@@ -176,10 +176,14 @@ public class EnumHelper
         return EnumHackery.addEnumEntry(HorseArmorType.class, name, new Class<?>[] { String.class, int.class }, new Object[] { textureLocation, armorStrength });
     }
 
+    @SuppressWarnings("removal")
     public static void setFailsafeFieldValue(Field field, @Nullable Object target, @Nullable Object value) throws Exception
     {
+        if(Modifier.isStatic(field.getModifiers()))
+            ReflectionHackery.unsafe.putObject(target, ReflectionHackery.unsafe.staticFieldOffset(field), value);
+        else
+            ReflectionHackery.unsafe.putObject(target, ReflectionHackery.unsafe.objectFieldOffset(field), value);
 
-        ReflectionHackery.unsafe.putReference(ReflectionHackery.unsafe.staticFieldBase(field), ReflectionHackery.unsafe.staticFieldOffset(field), value);
         /*
         field.setAccessible(true);
         ReflectionHackery.stripFieldOfFinalModifier(field);
