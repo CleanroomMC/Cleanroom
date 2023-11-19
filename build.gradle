@@ -457,7 +457,7 @@ project(':cleanroom') {
         installer 'org.glassfish.corba:glassfish-corba-omgapi:4.2.5'
 
         // Mixin
-        installer 'com.cleanroommc:sponge-mixin:0.12.10+mixin.0.8.5'
+        installer 'com.cleanroommc:sponge-mixin:0.13.0+mixin.0.8.5'
         installer annotationProcessor('com.github.llamalad7.mixinextras:mixinextras-common:0.2.1-beta.2')
 
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.0.0'
