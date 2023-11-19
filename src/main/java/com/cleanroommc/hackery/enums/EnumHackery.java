@@ -67,9 +67,9 @@ public final class EnumHackery {
             MethodHandle handle = MethodHandles.lookup().unreflectConstructor(constructor);
             Method m = enumClass.getMethod("values");
             Object o = m.invoke(enumClass);
-            handle.invokeWithArguments(ArrayUtils.addAll(new Object[]{enumName, ((Object[])o).length}, parameterValues));
+            T instance = (T)handle.invokeWithArguments(ArrayUtils.addAll(new Object[]{enumName, ((Object[])o).length}, parameterValues));
 
-            T instance = UnsafeHacks.newInstance(enumClass);
+            //T instance = UnsafeHacks.newInstance(enumClass);
             //System.out.println(Arrays.toString(Enum.class.getDeclaredFields()));
 
             Field nameField = Enum.class.getDeclaredField("name");
