@@ -69,9 +69,6 @@ public final class EnumHackery {
             Object o = m.invoke(enumClass);
             T instance = (T)handle.invokeWithArguments(ArrayUtils.addAll(new Object[]{enumName, ((Object[])o).length}, parameterValues));
 
-            //T instance = UnsafeHacks.newInstance(enumClass);
-            //System.out.println(Arrays.toString(Enum.class.getDeclaredFields()));
-
             Field nameField = Enum.class.getDeclaredField("name");
             nameField.setAccessible(true);
             nameField.set(instance, enumName);
@@ -88,7 +85,7 @@ public final class EnumHackery {
                 T value = values[i];
                 if (value.name().equals(enumName)) {
                     //setOrdinal(enumName, value.ordinal());
-                    ordinalField.set(enumName, value.ordinal());
+                    ordinalField.set(instance, value.ordinal());
                     values[i] = instance;
                     Field[] fields = enumClass.getDeclaredFields();
                     for (Field field : fields) {
@@ -108,38 +105,14 @@ public final class EnumHackery {
 
             int ordinal = newValues.length - 1;
             ordinalField.set(instance, ordinal);
-            //addSwitchCase();
-
 
             return instance;
 
         } catch (Throwable e) {
             System.out.println(e);
             throw new RuntimeException(e);
-        }/*
-        try {
-            // Constructors are compiled to have additional prefixed parameters, a [String name] and an [int ordinal] before all the other parameters
-            Class<?>[] prefixParameterTypes = new Class<?>[] { String.class, int.class };
-            parameterTypes = parameterTypes.length == 0 ? prefixParameterTypes : ArrayUtils.addAll(prefixParameterTypes, parameterTypes);
-            Constructor<T> constructor = enumClass.getDeclaredConstructor(parameterTypes);
-            // ctor.newInstance() results in: throw new IllegalArgumentException("Cannot reflectively create enum objects");
-            // Java 19: Constructor#acquireConstructorAccessor results in: throw new IllegalArgumentException("Cannot reflectively create enum objects");
-            Object constructorAccessor = factory.getConstructorAccessor(constructor);
-            T[] currentConstants = enumClass.getEnumConstants();
-            int nextOrdinal = currentConstants.length;
-            Object[] prefixParameterValues = new Object[] { enumName, nextOrdinal };
-            parameterValues = parameterValues.length == 0 ? prefixParameterValues : ArrayUtils.addAll(prefixParameterValues, parameterValues);
-            T enumEntry = (T) constructorAccessor$newInstance.invoke(constructorAccessor, new Object[] { parameterValues });
-            T[] newConstants = ArrayUtils.add(currentConstants, enumEntry);
-            Field enum$values = enumClass.getDeclaredField("$VALUES");
-            enum$values.setAccessible(true);
-            ReflectionHackery.stripFieldOfFinalModifier(enum$values);
-            enum$values.set(null, newConstants);
-            resetEnumRelatedCaches(enumClass);
-            return enumEntry;
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }*/
+        }
+
     }
 
     public static <T extends Enum<T>> void resetEnumRelatedCaches(Class<T> enumClass) throws ReflectiveOperationException {
