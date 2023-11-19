@@ -180,7 +180,7 @@ public class EnumHelper
     public static void setFailsafeFieldValue(Field field, @Nullable Object target, @Nullable Object value) throws Exception
     {
         if(Modifier.isStatic(field.getModifiers()))
-            ReflectionHackery.unsafe.putObject(target, ReflectionHackery.unsafe.staticFieldOffset(field), value);
+            ReflectionHackery.unsafe.putObject(ReflectionHackery.unsafe.staticFieldBase(field), ReflectionHackery.unsafe.staticFieldOffset(field), value);
         else
             ReflectionHackery.unsafe.putObject(target, ReflectionHackery.unsafe.objectFieldOffset(field), value);
 

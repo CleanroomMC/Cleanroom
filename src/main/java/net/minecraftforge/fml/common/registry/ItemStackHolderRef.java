@@ -62,6 +62,7 @@ class ItemStackHolderRef {
         }
     }
 
+    @SuppressWarnings("removal")
     public void apply()
     {
         ItemStack is;
@@ -75,7 +76,8 @@ class ItemStackHolderRef {
         }
         try
         {
-            field.set(null, is);
+            ReflectionHackery.unsafe.putObject(ReflectionHackery.unsafe.staticFieldBase(field), ReflectionHackery.unsafe.staticFieldOffset(field), is);
+            //field.set(null, is);
         }
         catch (Exception e)
         {
