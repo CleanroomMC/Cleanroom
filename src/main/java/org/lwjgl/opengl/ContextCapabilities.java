@@ -309,6 +309,7 @@ public class ContextCapabilities {
     public boolean OpenGL42;
     public boolean OpenGL43;
     public boolean OpenGL44;
+    public boolean OpenGL45;
     public boolean GL_GREMEDY_frame_terminator;
     public boolean GL_GREMEDY_string_marker;
     public boolean GL_HP_occlusion_test;

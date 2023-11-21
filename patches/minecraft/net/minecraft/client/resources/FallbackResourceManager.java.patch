@@ -35,3 +35,19 @@
          ResourceLocation resourcelocation = func_110537_b(p_135056_1_);
  
          for (IResourcePack iresourcepack : this.field_110540_a)
+@@ -134,15 +135,6 @@
+                 this.field_177329_c = true;
+             }
+ 
+-            protected void finalize() throws Throwable
+-            {
+-                if (!this.field_177329_c)
+-                {
+-                    FallbackResourceManager.field_177246_b.warn(this.field_177328_b);
+-                }
+-
+-                super.finalize();
+-            }
+ 
+             public int read() throws IOException
+             {

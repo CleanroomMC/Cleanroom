@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/resources/FileResourcePack.java
 +++ after/net/minecraft/client/resources/FileResourcePack.java
+@@ -17,7 +17,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+ @SideOnly(Side.CLIENT)
+-public class FileResourcePack extends AbstractResourcePack implements Closeable
++public class FileResourcePack extends AbstractResourcePack implements AutoCloseable
+ {
+     public static final Splitter field_110601_c = Splitter.on('/').omitEmptyStrings().limit(3);
+     private ZipFile field_110600_d;
 @@ -58,7 +58,7 @@
          {
              return this.func_110599_c().getEntry(p_110593_1_) != null;
@@ -26,3 +35,17 @@
  
          while (enumeration.hasMoreElements())
          {
+@@ -108,12 +108,8 @@
+         return set;
+     }
+ 
+-    protected void finalize() throws Throwable
+-    {
+-        this.close();
+-        super.finalize();
+-    }
+ 
++    @Override
+     public void close() throws IOException
+     {
+         if (this.field_110600_d != null)

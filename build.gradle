@@ -84,6 +84,11 @@ project(':mcp') {
             name "outlandsReleases"
             url "https://maven.outlands.top/releases"
         }
+        maven {
+            name 'MinecraftForge'
+            url 'https://maven.minecraftforge.net/'
+        }
+
     }
     mcp {
         config = props.minecraft_version + '-' + props.mcp_version
@@ -103,6 +108,10 @@ project(':minecraft') {
         maven {
             name "outlandsReleases"
             url "https://maven.outlands.top/releases"
+        }
+        maven {
+            name 'MinecraftForge'
+            url 'https://maven.minecraftforge.net/'
         }
 
     }
@@ -412,23 +421,23 @@ project(':cleanroom') {
 
         installer "com.cleanroommc:bouncepad:$props.bouncepad_version"
 
-        installer 'com.ibm.icu:icu4j:73.2'
+        installer 'com.ibm.icu:icu4j:74.1'
 
-        installer 'org.jline:jline:3.5.1'
-        installer 'com.typesafe.akka:akka-actor_2.11:2.3.3'
-        installer 'com.typesafe:config:1.2.1'
+        installer 'org.jline:jline:3.24.1'
+        installer 'com.typesafe.akka:akka-actor_2.12:2.8.5'
+        installer 'com.typesafe:config:1.4.3'
         // TODO: Move scala away from being defaulted when installing (download on-demand?)
         installer 'org.scala-lang:scala-actors-migration_2.11:1.1.0'
-        installer 'org.scala-lang:scala-compiler:2.11.1'
+        installer 'org.scala-lang:scala-compiler:2.12.18'
         // We change the version so old installs don't break, as our clone of the jar is different the maven central
-        installer 'org.scala-lang.plugins:scala-continuations-library_2.11:1.0.2_mc'
-        installer 'org.scala-lang.plugins:scala-continuations-plugin_2.11.1:1.0.2_mc'
+        installer 'org.scala-lang.plugins:scala-continuations-library_2.12:1.0.3'
+        installer 'org.scala-lang.plugins:scala-continuations-plugin_2.12.2:1.0.3'
 
-        installer 'org.scala-lang:scala-library:2.11.1'
-        installer 'org.scala-lang:scala-parser-combinators_2.11:1.0.1'
-        installer 'org.scala-lang:scala-reflect:2.11.1'
-        installer 'org.scala-lang:scala-swing_2.11:1.0.1'
-        installer 'org.scala-lang:scala-xml_2.11:1.0.2'
+        installer 'org.scala-lang:scala-library:2.12.18'
+        installer 'org.scala-lang.modules:scala-parser-combinators_2.12:2.3.0'
+        installer 'org.scala-lang:scala-reflect:2.12.18'
+        installer 'org.scala-lang.modules:scala-swing_2.12:3.0.0'
+        installer 'org.scala-lang.modules:scala-xml_2.12:2.2.0'
         installer 'lzma:lzma:0.0.1'
         installer 'java3d:vecmath:1.5.2'
         installer 'net.sf.trove4j:trove4j:3.0.3'
@@ -458,7 +467,7 @@ project(':cleanroom') {
 
         // Mixin
         installer 'com.cleanroommc:sponge-mixin:0.13.3+mixin.0.8.5'
-        installer annotationProcessor('com.github.llamalad7.mixinextras:mixinextras-common:0.2.1-beta.2')
+        installer annotationProcessor('com.github.llamalad7.mixinextras:mixinextras-common:0.2.1')
 
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.0.0'
         testImplementation 'org.junit.vintage:junit-vintage-engine:5.+'
@@ -1026,10 +1035,8 @@ project(':cleanroom') {
     // TODO: MDK Task
 
     userdevConfig {
-        def artifacts = Util.getArtifacts(project, project.configurations.installer, true)
-        artifacts.each { key, lib ->
-            libraries.add(lib.name)
-        }
+        Util.getArtifacts(project, project.configurations.installer, true).each { key, lib -> libraries.add(lib.name) }
+        artifacts
         libraries.add('net.minecraftforge:legacydev:0.2.3.+:fatjar')
         universalFilters.add('^(?!binpatches\\.pack\\.lzma$).*$')
 
@@ -1100,7 +1107,7 @@ project(':cleanroom') {
     publishing {
         repositories {
             maven {
-                name = "outlandsReleases"
+                name = "outland"
                 url = "https://maven.outlands.top/releases"
                 credentials(PasswordCredentials)
                 authentication {
