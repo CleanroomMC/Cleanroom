@@ -111,6 +111,7 @@ public class ASMEventHandler implements IEventListener
         MethodVisitor mv;
 
         boolean isStatic = Modifier.isStatic(callback.getModifiers());
+        boolean isInterface = callback.getDeclaringClass().isInterface();
         String name = getUniqueName(callback);
         String desc = name.replace('.',  '/');
         String instType = Type.getInternalName(callback.getDeclaringClass());
@@ -124,7 +125,7 @@ public class ASMEventHandler implements IEventListener
         System.out.println("Event:    " + eventType);
         */
 
-        cw.visit(V1_6, ACC_PUBLIC | ACC_SUPER, desc, null, "java/lang/Object", new String[]{ HANDLER_DESC });
+        cw.visit(V17, ACC_PUBLIC | ACC_SUPER, desc, null, "java/lang/Object", new String[]{ HANDLER_DESC });
 
         cw.visitSource(".dynamic", null);
         {
@@ -157,7 +158,7 @@ public class ASMEventHandler implements IEventListener
             }
             mv.visitVarInsn(ALOAD, 1);
             mv.visitTypeInsn(CHECKCAST, eventType);
-            mv.visitMethodInsn(isStatic ? INVOKESTATIC : INVOKEVIRTUAL, instType, callback.getName(), Type.getMethodDescriptor(callback), false);
+            mv.visitMethodInsn(isStatic ? INVOKESTATIC : INVOKEVIRTUAL, instType, callback.getName(), Type.getMethodDescriptor(callback), isInterface);
             mv.visitInsn(RETURN);
             mv.visitMaxs(2, 2);
             mv.visitEnd();
