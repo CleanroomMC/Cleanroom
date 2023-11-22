@@ -76,6 +76,7 @@ class ItemStackHolderRef {
         }
         try
         {
+            field.get(is);
             ReflectionHackery.unsafe.putObject(ReflectionHackery.unsafe.staticFieldBase(field), ReflectionHackery.unsafe.staticFieldOffset(field), is);
             //field.set(null, is);
         }
