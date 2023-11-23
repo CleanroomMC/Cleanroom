@@ -177,8 +177,8 @@ class ObjectHolderRef
         {
 
             try {
-                field.get(instance);
-            } catch (InaccessibleObjectException ignored) {}
+                field.getDeclaringClass().newInstance();
+            } catch (Throwable ignored) {}
             unsafe.putObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), thing);
         }
     }
