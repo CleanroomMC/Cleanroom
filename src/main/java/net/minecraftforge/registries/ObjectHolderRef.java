@@ -176,9 +176,7 @@ class ObjectHolderRef
         static void setField(Field field, @Nullable Object instance, Object thing) throws ReflectiveOperationException
         {
 
-            try {
-                field.getDeclaringClass().newInstance();
-            } catch (Throwable ignored) {}
+            unsafe.ensureClassInitialized(field.getDeclaringClass());
             unsafe.putObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), thing);
         }
     }
