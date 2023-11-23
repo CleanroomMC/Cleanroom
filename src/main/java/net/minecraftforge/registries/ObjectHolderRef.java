@@ -20,12 +20,13 @@
 package net.minecraftforge.registries;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InaccessibleObjectException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
 
 import com.cleanroommc.hackery.ReflectionHackery;
-import jdk.internal.misc.Unsafe;
+import sun.misc.Unsafe;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.common.FMLLog;
@@ -154,7 +155,17 @@ class ObjectHolderRef
     @SuppressWarnings("removal")
     private static class FinalFieldHelper
     {
-        private static final Unsafe unsafe=ReflectionHackery.unsafe;
+        private static final Unsafe unsafe;
+        static {
+            Field f;
+            try {
+                f = Unsafe.class.getDeclaredField("theUnsafe");
+                f.setAccessible(true);
+                unsafe = (Unsafe) f.get(null);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
         static Field makeWritable(Field f) throws ReflectiveOperationException
         {
             f.setAccessible(true);
@@ -164,7 +175,10 @@ class ObjectHolderRef
 
         static void setField(Field field, @Nullable Object instance, Object thing) throws ReflectiveOperationException
         {
-            field.get(instance);
+
+            try {
+                field.get(instance);
+            } catch (InaccessibleObjectException ignored) {}
             unsafe.putObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), thing);
         }
     }
