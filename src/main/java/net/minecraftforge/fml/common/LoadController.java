@@ -19,12 +19,16 @@
 
 package net.minecraftforge.fml.common;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.cleanroommc.bouncepad.Bouncepad;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.util.TextTable;
 import net.minecraftforge.fml.common.LoaderState.ModState;
 import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
@@ -38,6 +42,7 @@ import net.minecraftforge.fml.common.eventhandler.FMLThrowingEventBus;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 
 import net.minecraftforge.fml.relauncher.MixinBooterPlugin;
+import net.minecraftforge.fml.relauncher.mixinfix.MixinFixer;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.message.FormattedMessage;
 
@@ -57,7 +62,11 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
+import org.spongepowered.asm.mixin.extensibility.IMixinProcessor;
+import org.spongepowered.asm.mixin.transformer.IMixinTransformer;
 import org.spongepowered.asm.mixin.transformer.Proxy;
+import org.spongepowered.asm.service.MixinService;
+import org.spongepowered.asm.service.mojang.MixinServiceLaunchWrapper;
 import zone.rong.mixinbooter.ILateMixinLoader;
 
 import javax.annotation.Nullable;
@@ -135,7 +144,6 @@ public class LoadController
 
     public void distributeStateMessage(LoaderState state, Object... eventData)
     {
-
         if (state.hasEvent())
         {
             if (state == LoaderState.CONSTRUCTING) { // This state is where Forge adds mod files to ModClassLoader
@@ -143,11 +151,25 @@ public class LoadController
                 ModClassLoader modClassLoader = (ModClassLoader) eventData[0];
                 ASMDataTable asmDataTable = (ASMDataTable) eventData[1];
 
+
+
                 try {
+
+                    // Add mods into the delegated ModClassLoader
+                    for (ModContainer container : this.loader.getActiveModList()) {
+                        modClassLoader.addFile(container.getSource());
+                    }
+
+                    FMLContextQuery.init(); // Initialize FMLContextQuery and add it to the global list
+                    boolean log = false;
 
                     MixinBooterPlugin.LOGGER.info("Instantiating all ILateMixinLoader implemented classes...");
 
                     for (ASMDataTable.ASMData asmData : asmDataTable.getAll(ILateMixinLoader.class.getName().replace('.', '/'))) {
+                        if (!log) {
+                            MixinBooterPlugin.LOGGER.info("Instantiating all ILateMixinLoader implemented classes...");
+                            log = true;
+                        }
                         modClassLoader.addFile(asmData.getCandidate().getModContainer()); // Add to path before `newInstance`
                         Class<?> clazz = Class.forName(asmData.getClassName().replace('/', '.'));
                         MixinBooterPlugin.LOGGER.info("Instantiating {} for its mixins.", clazz);
@@ -161,10 +183,25 @@ public class LoadController
                         }
                     }
 
+                    log = false;
+
+                    // Append all non-conventional mixin configurations gathered via MixinFixer
+                    for (String mixinConfig : MixinFixer.retrieveLateMixinConfigs()) {
+                        if (!log) {
+                            MixinBooterPlugin.LOGGER.info("Appending non-conventional mixin configurations...");
+                            log = true;
+                        }
+                        MixinBooterPlugin.LOGGER.info("Adding {} mixin configuration.", mixinConfig);
+                        Mixins.addConfiguration(mixinConfig);
+                    }
+
                     for (ModContainer container : this.loader.getActiveModList()) {
                         modClassLoader.addFile(container.getSource());
                     }
                 } catch (Throwable ignored) {}
+                if (MixinService.getService() instanceof MixinServiceLaunchWrapper) {
+                    ((MixinServiceLaunchWrapper) MixinService.getService()).setDelegatedTransformers(null);
+                }
                 MixinEnvironment current = MixinEnvironment.getCurrentEnvironment();
                 Proxy.transformer.processor.selectConfigs(current);
                 Proxy.transformer.processor.prepareConfigs(current, Proxy.transformer.processor.extensions);

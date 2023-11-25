@@ -1,30 +1,23 @@
 package net.minecraftforge.fml.relauncher;
 
 import com.cleanroommc.bouncepad.Bouncepad;
-import com.llamalad7.mixinextras.injector.ModifyExpressionValueInjectionInfo;
-import com.llamalad7.mixinextras.injector.ModifyReceiverInjectionInfo;
-import com.llamalad7.mixinextras.injector.ModifyReturnValueInjectionInfo;
-import com.llamalad7.mixinextras.injector.WrapWithConditionInjectionInfo;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperationApplicatorExtension;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperationInjectionInfo;
+import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.ForgeVersion;
+import net.minecraftforge.fml.relauncher.mixinfix.MixinFixer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.spongepowered.asm.launch.GlobalProperties;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
-import org.spongepowered.asm.mixin.injection.struct.InjectionInfo;
 import org.spongepowered.asm.mixin.transformer.IMixinTransformer;
 import org.spongepowered.asm.mixin.transformer.ext.Extensions;
 import org.spongepowered.asm.mixin.transformer.ext.IExtension;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @IFMLLoadingPlugin.Name("MixinBooter")
 @IFMLLoadingPlugin.MCVersion(ForgeVersion.mcVersion)
@@ -35,19 +28,6 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
 
     static {
         Launch.classLoader.addTransformerExclusion("scala.");
-    }
-
-    // Initialize MixinExtras
-    public static void initMixinExtra(boolean runtime) {
-        InjectionInfo.register(ModifyExpressionValueInjectionInfo.class);
-        InjectionInfo.register(ModifyReceiverInjectionInfo.class);
-        InjectionInfo.register(ModifyReturnValueInjectionInfo.class);
-        InjectionInfo.register(WrapWithConditionInjectionInfo.class);
-        InjectionInfo.register(WrapOperationInjectionInfo.class);
-        // Make sure it is not running in build-time
-        if (runtime) {
-            registerExtension(new WrapOperationApplicatorExtension());
-        }
     }
 
     // (0.1.1-rc.2) Apply @WrapOperations in an IExtension to make sure they're the last injectors to run.
@@ -74,9 +54,13 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
     }
 
     public MixinBooterPlugin() {
-        LOGGER.info("MixinBootstrap Initializing...");
+        addTransformationExclusions();
+        initialize();
+        LOGGER.info("Initializing Mixins...");
         MixinBootstrap.init();
-        initMixinExtra(true);
+        LOGGER.info("Initializing MixinExtras...");
+        MixinExtrasBootstrap.init();
+        MixinFixer.patchAncientModMixinsLoadingMethod();
     }
 
     @Override
@@ -98,17 +82,21 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
     public void injectData(Map<String, Object> data) {
         Object coremodList = data.get("coremodList");
         if (coremodList instanceof List) {
+            Field fmlPluginWrapper$coreModInstance = null;
             for (Object coremod : (List) coremodList) {
                 try {
-                    Field field = coremod.getClass().getField("coreModInstance");
-                    field.setAccessible(true);
-                    Object theMod = field.get(coremod);
-                    Class clazz = Bouncepad.classLoader.loadClass("zone.rong.mixinbooter.IEarlyMixinLoader");
+                    if (fmlPluginWrapper$coreModInstance == null) {
+                        fmlPluginWrapper$coreModInstance = coremod.getClass().getField("coreModInstance");
+                        fmlPluginWrapper$coreModInstance.setAccessible(true);
+                    }
+                    Object theMod = fmlPluginWrapper$coreModInstance.get(coremod);
+                    Class<?> clazz = Bouncepad.classLoader.loadClass("zone.rong.mixinbooter.IEarlyMixinLoader");
                     Method get = clazz.getDeclaredMethod("getMixinConfigs");
                     Method should = clazz.getDeclaredMethod("shouldMixinConfigQueue", String.class);
                     Method on = clazz.getDeclaredMethod("onMixinConfigQueued", String.class);
                     if (clazz.isInstance(theMod)) {
                         Object loader = clazz.cast(theMod);
+                        LOGGER.info("Grabbing {} for its mixins.", loader.getClass());
                         for (String mixinConfig : (List<String>)get.invoke(loader)) {
                             if ((Boolean) should.invoke(loader, mixinConfig)) {
                                 LOGGER.info("Adding {} mixin configuration.", mixinConfig);
@@ -116,9 +104,11 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
                                 on.invoke(loader, mixinConfig);
                             }
                         }
+                    } else if ("org.spongepowered.mod.SpongeCoremod".equals(theMod.getClass().getName())) {
+                        Launch.classLoader.registerTransformer("zone.rong.mixinbooter.fix.spongeforge.SpongeForgeFixer");
                     }
-                } catch (Exception e) {
-                    LOGGER.error("Unexpected error", e);
+                } catch (Throwable t) {
+                    LOGGER.error("Unexpected error", t);
                 }
             }
         }
@@ -127,6 +117,15 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
     @Override
     public String getAccessTransformerClass() {
         return null;
+    }
+
+    private void addTransformationExclusions() {
+        Launch.classLoader.addTransformerExclusion("scala.");
+        Launch.classLoader.addTransformerExclusion("com.llamalad7.mixinextras.");
+    }
+
+    private void initialize() {
+        GlobalProperties.put(GlobalProperties.Keys.CLEANROOM_DISABLE_MIXIN_CONFIGS, new HashSet<>());
     }
 
 }
