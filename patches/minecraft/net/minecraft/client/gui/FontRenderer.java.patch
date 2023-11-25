@@ -178,7 +178,7 @@
          {
              p_78273_1_ = p_78273_1_.substring(0, p_78273_1_.length() - 1);
          }
-@@ -719,9 +734,94 @@
+@@ -719,9 +734,95 @@
  
      public List<String> func_78271_c(String p_78271_1_, int p_78271_2_)
      {
@@ -243,7 +243,8 @@
 +                            if (k == lastReset.peek().i()) {
 +                                lastReset.pop(); // Remove reset
 +                            }
-+                            nextFormat.delete(nextFormat.length() - 2, nextFormat.length()); // Remove format
++                            if (nextFormat.length() > 1)
++                                nextFormat.delete(nextFormat.length() - 2, nextFormat.length()); // Remove format
 +                            l++;
 +                        }
 +                    }
@@ -274,7 +275,7 @@
      String func_78280_d(String p_78280_1_, int p_78280_2_)
      {
          int i = this.func_78259_e(p_78280_1_, p_78280_2_);
-@@ -739,59 +839,46 @@
+@@ -739,59 +840,46 @@
              return s + "\n" + this.func_78280_d(s1, p_78280_2_);
          }
      }
@@ -350,7 +351,7 @@
                  break;
              }
  
-@@ -800,8 +887,9 @@
+@@ -800,8 +888,9 @@
                  break;
              }
          }
@@ -362,7 +363,7 @@
      }
  
      private static boolean func_78272_b(char p_78272_0_)
-@@ -843,6 +931,26 @@
+@@ -843,6 +932,26 @@
      public boolean func_78260_a()
      {
          return this.field_78294_m;
