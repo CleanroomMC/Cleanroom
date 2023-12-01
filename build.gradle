@@ -12,7 +12,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:6.0.+'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:6.99.+'
     }
 }
 
@@ -1126,6 +1126,7 @@ project(':cleanroom') {
                 artifact userdevJar
                 artifact universalJar
                 artifact sourcesJar
+                artifact installerJar
             }
         }
     }

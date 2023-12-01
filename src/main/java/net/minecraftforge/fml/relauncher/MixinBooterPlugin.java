@@ -1,14 +1,10 @@
 package net.minecraftforge.fml.relauncher;
 
 import com.cleanroommc.bouncepad.Bouncepad;
-import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.ForgeVersion;
-import net.minecraftforge.fml.relauncher.mixinfix.MixinFixer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.spongepowered.asm.launch.GlobalProperties;
-import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.transformer.IMixinTransformer;
@@ -17,11 +13,14 @@ import org.spongepowered.asm.mixin.transformer.ext.IExtension;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @IFMLLoadingPlugin.Name("MixinBooter")
 @IFMLLoadingPlugin.MCVersion(ForgeVersion.mcVersion)
-@IFMLLoadingPlugin.SortingIndex(Integer.MIN_VALUE + 1)
+@IFMLLoadingPlugin.SortingIndex(Integer.MIN_VALUE + 2)
 public final class MixinBooterPlugin implements IFMLLoadingPlugin {
 
     public static final Logger LOGGER = LogManager.getLogger("MixinBooter");
@@ -54,13 +53,6 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
     }
 
     public MixinBooterPlugin() {
-        addTransformationExclusions();
-        initialize();
-        LOGGER.info("Initializing Mixins...");
-        MixinBootstrap.init();
-        LOGGER.info("Initializing MixinExtras...");
-        MixinExtrasBootstrap.init();
-        MixinFixer.patchAncientModMixinsLoadingMethod();
     }
 
     @Override
@@ -75,7 +67,7 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
 
     @Override
     public String getSetupClass() {
-        return null;
+        return "net.minecraftforge.fml.relauncher.MixinSetup";
     }
 
     @Override
@@ -119,13 +111,6 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
         return null;
     }
 
-    private void addTransformationExclusions() {
-        Launch.classLoader.addTransformerExclusion("scala.");
-        Launch.classLoader.addTransformerExclusion("com.llamalad7.mixinextras.");
-    }
 
-    private void initialize() {
-        GlobalProperties.put(GlobalProperties.Keys.CLEANROOM_DISABLE_MIXIN_CONFIGS, new HashSet<>());
-    }
 
 }
