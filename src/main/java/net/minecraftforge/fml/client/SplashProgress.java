@@ -205,12 +205,16 @@ public class SplashProgress
         FMLCommonHandler.instance().registerCrashCallable(new ICrashCallable()
         {
             @Override
-            public String call() throws Exception
+            public String call()
             {
-                return "' Vendor: '" + glGetString(GL_VENDOR) +
-                       "' Version: '" + glGetString(GL_VERSION) +
-                       "' Renderer: '" + glGetString(GL_RENDERER) +
-                       "'";
+                if (Minecraft.getMinecraft().isCallingFromMinecraftThread())
+                {
+                    return "' Vendor: '" + glGetString(GL_VENDOR) +
+                            "' Version: '" + glGetString(GL_VERSION) +
+                            "' Renderer: '" + glGetString(GL_RENDERER) +
+                            "'";
+                }
+                return "No OpenGL context found in the current thread";
             }
 
             @Override
