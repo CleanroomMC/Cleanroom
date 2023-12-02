@@ -1,6 +1,9 @@
 package com.cleanroommc.hackery;
 
+import com.cleanroommc.hackery.enums.EnumHackery;
 import jdk.internal.misc.Unsafe;
+import net.minecraftforge.common.util.EnumHelper;
+import net.minecraftforge.fml.common.FMLLog;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
@@ -54,6 +57,27 @@ public final class ReflectionHackery {
 
     public static void stripFieldOfModifier(Field field, int modifierFlag) throws IllegalAccessException {
         field$modifiers.setInt(field, field.getModifiers() & ~modifierFlag);
+    }
+
+    @SuppressWarnings("removal")
+    public static void setField(Field field, Object owner, Object value) throws IllegalAccessException {
+        int mod = field.getModifiers();
+        if (Modifier.isStatic(mod) && !field.getType().isPrimitive()) {
+            unsafe.putObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), value);
+        } else {
+            field.set(owner, value);
+        }
+    }
+
+    @SuppressWarnings("removal")
+    public static Object getField(Field field, Object owner) throws IllegalAccessException {
+        int mod = field.getModifiers();
+        if (Modifier.isStatic(mod)) {
+            return unsafe.getObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field));
+        } else {
+            return field.get(owner);
+        }
+
     }
 
 }
