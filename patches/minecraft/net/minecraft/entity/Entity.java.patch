@@ -648,6 +648,31 @@
          p_85029_1_.func_189529_a("Entity Name", new ICrashReportDetail<String>()
          {
              public String call() throws Exception
+@@ -2668,18 +2706,18 @@
+         });
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public boolean func_90999_ad()
+-    {
+-        return this.func_70027_ad();
+-    }
+-
+     public void func_184221_a(UUID p_184221_1_)
+     {
+         this.field_96093_i = p_184221_1_;
+         this.field_189513_ar = this.field_96093_i.toString();
+     }
+ 
++    @SideOnly(Side.CLIENT)
++    public boolean func_90999_ad()
++    {
++        return this.func_70027_ad();
++    }
++
+     public UUID func_110124_au()
+     {
+         return this.field_96093_i;
 @@ -2722,22 +2760,22 @@
  
      public String func_95999_t()
@@ -675,6 +700,27 @@
      }
  
      public void func_70634_a(double p_70634_1_, double p_70634_3_, double p_70634_5_)
+@@ -2747,16 +2785,16 @@
+         this.field_70170_p.func_72866_a(this, false);
+     }
+ 
++    public void func_184206_a(DataParameter<?> p_184206_1_)
++    {
++    }
++
+     @SideOnly(Side.CLIENT)
+     public boolean func_94059_bO()
+     {
+         return this.func_174833_aM();
+     }
+ 
+-    public void func_184206_a(DataParameter<?> p_184206_1_)
+-    {
+-    }
+-
+     public EnumFacing func_174811_aO()
+     {
+         return EnumFacing.func_176731_b(MathHelper.func_76128_c((double)(this.field_70177_z * 4.0F / 360.0F) + 0.5D) & 3);
 @@ -2901,6 +2939,218 @@
          EnchantmentHelper.func_151385_b(p_174815_1_, p_174815_2_);
      }

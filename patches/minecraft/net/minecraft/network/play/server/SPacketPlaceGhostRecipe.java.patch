@@ -1,0 +1,25 @@
+--- before/net/minecraft/network/play/server/SPacketPlaceGhostRecipe.java
++++ after/net/minecraft/network/play/server/SPacketPlaceGhostRecipe.java
+@@ -30,16 +30,16 @@
+         return this.field_194315_b;
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public int func_194313_b()
+-    {
+-        return this.field_194314_a;
+-    }
+-
+     public void func_148837_a(PacketBuffer p_148837_1_) throws IOException
+     {
+         this.field_194314_a = p_148837_1_.readByte();
+         this.field_194315_b = CraftingManager.func_193374_a(p_148837_1_.func_150792_a());
++    }
++
++    @SideOnly(Side.CLIENT)
++    public int func_194313_b()
++    {
++        return this.field_194314_a;
+     }
+ 
+     public void func_148840_b(PacketBuffer p_148840_1_) throws IOException

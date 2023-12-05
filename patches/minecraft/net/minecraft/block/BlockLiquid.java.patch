@@ -35,7 +35,33 @@
      }
  
      private boolean func_176212_b(IBlockAccess p_176212_1_, BlockPos p_176212_2_, EnumFacing p_176212_3_)
-@@ -182,7 +183,7 @@
+@@ -128,25 +129,6 @@
+         }
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public boolean func_176364_g(IBlockAccess p_176364_1_, BlockPos p_176364_2_)
+-    {
+-        for (int i = -1; i <= 1; ++i)
+-        {
+-            for (int j = -1; j <= 1; ++j)
+-            {
+-                IBlockState iblockstate = p_176364_1_.func_180495_p(p_176364_2_.func_177982_a(i, 0, j));
+-
+-                if (iblockstate.func_185904_a() != this.field_149764_J && !iblockstate.func_185913_b())
+-                {
+-                    return true;
+-                }
+-            }
+-        }
+-
+-        return false;
+-    }
+-
+     public EnumBlockRenderType func_149645_b(IBlockState p_149645_1_)
+     {
+         return EnumBlockRenderType.LIQUID;
+@@ -201,7 +183,7 @@
  
          Vec3d vec3d = new Vec3d(d0, d1, d2);
  
@@ -44,31 +70,88 @@
          {
              for (EnumFacing enumfacing1 : EnumFacing.Plane.HORIZONTAL)
              {
-@@ -279,18 +280,18 @@
+@@ -241,6 +223,35 @@
+     }
  
-             if (flag)
-             {
--                Integer integer = p_176365_3_.func_177229_b(field_176367_b);
+     @SideOnly(Side.CLIENT)
++    public boolean func_176364_g(IBlockAccess p_176364_1_, BlockPos p_176364_2_)
++    {
++        for (int i = -1; i <= 1; ++i)
++        {
++            for (int j = -1; j <= 1; ++j)
++            {
++                IBlockState iblockstate = p_176364_1_.func_180495_p(p_176364_2_.func_177982_a(i, 0, j));
++
++                if (iblockstate.func_185904_a() != this.field_149764_J && !iblockstate.func_185913_b())
++                {
++                    return true;
++                }
++            }
++        }
++
++        return false;
++    }
++
++    public void func_176213_c(World p_176213_1_, BlockPos p_176213_2_, IBlockState p_176213_3_)
++    {
++        this.func_176365_e(p_176213_1_, p_176213_2_, p_176213_3_);
++    }
++
++    public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
++    {
++        this.func_176365_e(p_189540_2_, p_189540_3_, p_189540_1_);
++    }
++
++    @SideOnly(Side.CLIENT)
+     public int func_185484_c(IBlockState p_185484_1_, IBlockAccess p_185484_2_, BlockPos p_185484_3_)
+     {
+         int i = p_185484_2_.func_175626_b(p_185484_3_, 0);
+@@ -252,6 +263,44 @@
+         return (k > l ? k : l) | (i1 > j1 ? i1 : j1) << 16;
+     }
+ 
++    public boolean func_176365_e(World p_176365_1_, BlockPos p_176365_2_, IBlockState p_176365_3_)
++    {
++        if (this.field_149764_J == Material.field_151587_i)
++        {
++            boolean flag = false;
++
++            for (EnumFacing enumfacing : EnumFacing.values())
++            {
++                if (enumfacing != EnumFacing.DOWN && p_176365_1_.func_180495_p(p_176365_2_.func_177972_a(enumfacing)).func_185904_a() == Material.field_151586_h)
++                {
++                    flag = true;
++                    break;
++                }
++            }
++
++            if (flag)
++            {
 +                Integer integer = (Integer)p_176365_3_.func_177229_b(field_176367_b);
- 
--                if (integer == 0)
++
 +                if (integer.intValue() == 0)
-                 {
--                    p_176365_1_.func_175656_a(p_176365_2_, Blocks.field_150343_Z.func_176223_P());
++                {
 +                    p_176365_1_.func_175656_a(p_176365_2_, net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(p_176365_1_, p_176365_2_, p_176365_2_, Blocks.field_150343_Z.func_176223_P()));
-                     this.func_180688_d(p_176365_1_, p_176365_2_);
-                     return true;
-                 }
- 
--                if (integer <= 4)
++                    this.func_180688_d(p_176365_1_, p_176365_2_);
++                    return true;
++                }
++
 +                if (integer.intValue() <= 4)
-                 {
--                    p_176365_1_.func_175656_a(p_176365_2_, Blocks.field_150347_e.func_176223_P());
++                {
 +                    p_176365_1_.func_175656_a(p_176365_2_, net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(p_176365_1_, p_176365_2_, p_176365_2_, Blocks.field_150347_e.func_176223_P()));
-                     this.func_180688_d(p_176365_1_, p_176365_2_);
-                     return true;
-                 }
-@@ -315,7 +316,7 @@
++                    this.func_180688_d(p_176365_1_, p_176365_2_);
++                    return true;
++                }
++            }
++        }
++
++        return false;
++    }
++
+     @SideOnly(Side.CLIENT)
+     public BlockRenderLayer func_180664_k()
+     {
+@@ -267,7 +316,7 @@
  
          if (this.field_149764_J == Material.field_151586_h)
          {
@@ -77,6 +160,61 @@
  
              if (i > 0 && i < 8)
              {
+@@ -328,54 +377,6 @@
+         return vec3d.field_72450_a == 0.0D && vec3d.field_72449_c == 0.0D ? -1000.0F : (float)MathHelper.func_181159_b(vec3d.field_72449_c, vec3d.field_72450_a) - ((float)Math.PI / 2F);
+     }
+ 
+-    public void func_176213_c(World p_176213_1_, BlockPos p_176213_2_, IBlockState p_176213_3_)
+-    {
+-        this.func_176365_e(p_176213_1_, p_176213_2_, p_176213_3_);
+-    }
+-
+-    public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
+-    {
+-        this.func_176365_e(p_189540_2_, p_189540_3_, p_189540_1_);
+-    }
+-
+-    public boolean func_176365_e(World p_176365_1_, BlockPos p_176365_2_, IBlockState p_176365_3_)
+-    {
+-        if (this.field_149764_J == Material.field_151587_i)
+-        {
+-            boolean flag = false;
+-
+-            for (EnumFacing enumfacing : EnumFacing.values())
+-            {
+-                if (enumfacing != EnumFacing.DOWN && p_176365_1_.func_180495_p(p_176365_2_.func_177972_a(enumfacing)).func_185904_a() == Material.field_151586_h)
+-                {
+-                    flag = true;
+-                    break;
+-                }
+-            }
+-
+-            if (flag)
+-            {
+-                Integer integer = p_176365_3_.func_177229_b(field_176367_b);
+-
+-                if (integer == 0)
+-                {
+-                    p_176365_1_.func_175656_a(p_176365_2_, Blocks.field_150343_Z.func_176223_P());
+-                    this.func_180688_d(p_176365_1_, p_176365_2_);
+-                    return true;
+-                }
+-
+-                if (integer <= 4)
+-                {
+-                    p_176365_1_.func_175656_a(p_176365_2_, Blocks.field_150347_e.func_176223_P());
+-                    this.func_180688_d(p_176365_1_, p_176365_2_);
+-                    return true;
+-                }
+-            }
+-        }
+-
+-        return false;
+-    }
+-
+     protected void func_180688_d(World p_180688_1_, BlockPos p_180688_2_)
+     {
+         double d0 = (double)p_180688_2_.func_177958_n();
 @@ -391,17 +392,17 @@
  
      public IBlockState func_176203_a(int p_176203_1_)

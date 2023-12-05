@@ -49,6 +49,30 @@
          }
  
          p_76064_1_.func_74782_a("DimensionData", nbttagcompound1);
+@@ -441,17 +445,17 @@
+         this.field_76096_d = p_76056_1_;
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public void func_76087_c(int p_76087_1_)
+-    {
+-        this.field_76097_e = p_76087_1_;
+-    }
+-
+     public void func_82572_b(long p_82572_1_)
+     {
+         this.field_82575_g = p_82572_1_;
+     }
+ 
++    @SideOnly(Side.CLIENT)
++    public void func_76087_c(int p_76087_1_)
++    {
++        this.field_76097_e = p_76087_1_;
++    }
++
+     public void func_76068_b(long p_76068_1_)
+     {
+         this.field_76094_f = p_76068_1_;
 @@ -707,6 +711,7 @@
  
      public void func_176144_a(EnumDifficulty p_176144_1_)

@@ -410,7 +410,20 @@
      }
  
      public void func_72900_e(Entity p_72900_1_)
-@@ -1219,6 +1297,7 @@
+@@ -1205,12 +1283,6 @@
+         this.field_73021_x.add(p_72954_1_);
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public void func_72848_b(IWorldEventListener p_72848_1_)
+-    {
+-        this.field_73021_x.remove(p_72848_1_);
+-    }
+-
+     private boolean func_191504_a(@Nullable Entity p_191504_1_, AxisAlignedBB p_191504_2_, boolean p_191504_3_, @Nullable List<AxisAlignedBB> p_191504_4_)
+     {
+         int i = MathHelper.func_76128_c(p_191504_2_.field_72340_a) - 1;
+@@ -1225,6 +1297,7 @@
          IBlockState iblockstate = Blocks.field_150348_b.func_176223_P();
          BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.func_185346_s();
  
@@ -418,7 +431,7 @@
          try
          {
              for (int k1 = i; k1 < j; ++k1)
-@@ -1238,7 +1317,8 @@
+@@ -1244,7 +1317,8 @@
                                  {
                                      if (k1 < -30000000 || k1 >= 30000000 || l1 < -30000000 || l1 >= 30000000)
                                      {
@@ -428,7 +441,7 @@
                                      }
                                  }
                                  else if (p_191504_1_ != null && flag == flag1)
-@@ -1260,9 +1340,10 @@
+@@ -1266,9 +1340,10 @@
  
                                  iblockstate1.func_185908_a(this, blockpos$pooledmutableblockpos, p_191504_2_, p_191504_4_, p_191504_1_, false);
  
@@ -441,7 +454,7 @@
                                  }
                              }
                          }
-@@ -1280,7 +1361,7 @@
+@@ -1286,7 +1361,7 @@
  
      public List<AxisAlignedBB> func_184144_a(@Nullable Entity p_184144_1_, AxisAlignedBB p_184144_2_)
      {
@@ -450,19 +463,21 @@
          this.func_191504_a(p_184144_1_, p_184144_2_, false, list);
  
          if (p_184144_1_ != null)
-@@ -1309,11 +1390,10 @@
+@@ -1315,8 +1390,13 @@
                  }
              }
          }
 -
 +        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.GetCollisionBoxesEvent(this, p_184144_1_, p_184144_2_, list));
          return list;
++    }
++
++    public void func_72848_b(IWorldEventListener p_72848_1_)
++    {
++        this.field_73021_x.remove(p_72848_1_);
      }
  
--    @SideOnly(Side.CLIENT)
-     public void func_72848_b(IWorldEventListener p_72848_1_)
-     {
-         this.field_73021_x.remove(p_72848_1_);
+     public boolean func_191503_g(Entity p_191503_1_)
 @@ -1351,19 +1431,38 @@
  
      public int func_72967_a(float p_72967_1_)
@@ -2268,7 +2283,7 @@
          }
      }
  
-@@ -3456,52 +3704,52 @@
+@@ -3456,58 +3704,52 @@
      {
          try
          {
@@ -2320,6 +2335,12 @@
          return this.field_73012_v;
      }
  
+-    @SideOnly(Side.CLIENT)
+-    public double func_72919_O()
+-    {
+-        return this.field_72986_A.func_76067_t() == WorldType.field_77138_c ? 0.0D : 63.0D;
+-    }
+-
      public CrashReportCategory func_72914_a(CrashReport p_72914_1_)
      {
 -        CrashReportCategory crashreportcategory = p_72914_1_.func_85057_a("Affected level", 1);
@@ -2339,7 +2360,7 @@
          {
              public String call()
              {
-@@ -3511,27 +3759,27 @@
+@@ -3517,21 +3759,27 @@
  
          try
          {
@@ -2355,12 +2376,11 @@
  
 -        return crashreportcategory;
 +        return crashreportcategory3;
-     }
- 
-     @SideOnly(Side.CLIENT)
-     public double func_72919_O()
-     {
--        return this.field_72986_A.func_76067_t() == WorldType.field_77138_c ? 0.0D : 63.0D;
++    }
++
++    @SideOnly(Side.CLIENT)
++    public double func_72919_O()
++    {
 +        return field_73011_w.getHorizon();
      }
  

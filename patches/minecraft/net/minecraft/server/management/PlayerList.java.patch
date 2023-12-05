@@ -388,7 +388,20 @@
          }
  
          return agameprofile;
-@@ -942,7 +1023,7 @@
+@@ -935,12 +1016,6 @@
+         return this.field_72400_f.field_71305_c[0].func_72860_G().func_75756_e().func_75754_f();
+     }
+ 
+-    @SideOnly(Side.SERVER)
+-    public boolean func_72383_n()
+-    {
+-        return this.field_72409_l;
+-    }
+-
+     public void func_72371_a(boolean p_72371_1_)
+     {
+         this.field_72409_l = p_72371_1_;
+@@ -948,7 +1023,7 @@
  
      public List<EntityPlayerMP> func_72382_j(String p_72382_1_)
      {
@@ -397,7 +410,7 @@
  
          for (EntityPlayerMP entityplayermp : this.field_72404_b)
          {
-@@ -1000,7 +1081,7 @@
+@@ -1006,7 +1081,7 @@
      {
          for (int i = 0; i < this.field_72404_b.size(); ++i)
          {
@@ -406,7 +419,7 @@
          }
      }
  
-@@ -1019,7 +1100,7 @@
+@@ -1025,7 +1100,7 @@
      public StatisticsManagerServer func_152602_a(EntityPlayer p_152602_1_)
      {
          UUID uuid = p_152602_1_.func_110124_au();
@@ -415,3 +428,15 @@
  
          if (statisticsmanagerserver == null)
          {
+@@ -1105,5 +1180,11 @@
+         {
+             playeradvancements.func_193766_b();
+         }
++    }
++
++    @SideOnly(Side.SERVER)
++    public boolean func_72383_n()
++    {
++        return this.field_72409_l;
+     }
+ }

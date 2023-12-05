@@ -1,6 +1,25 @@
 --- before/net/minecraft/world/biome/BiomeMesa.java
 +++ after/net/minecraft/world/biome/BiomeMesa.java
-@@ -99,7 +99,7 @@
+@@ -64,18 +64,6 @@
+         return field_76757_N;
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public int func_180625_c(BlockPos p_180625_1_)
+-    {
+-        return 10387789;
+-    }
+-
+-    @SideOnly(Side.CLIENT)
+-    public int func_180627_b(BlockPos p_180627_1_)
+-    {
+-        return 9470285;
+-    }
+-
+     public void func_180622_a(World p_180622_1_, Random p_180622_2_, ChunkPrimer p_180622_3_, int p_180622_4_, int p_180622_5_, double p_180622_6_)
+     {
+         if (this.field_150621_aC == null || this.field_150622_aD != p_180622_1_.func_72905_C())
+@@ -111,7 +99,7 @@
                      d4 = d3;
                  }
  
@@ -9,7 +28,7 @@
              }
          }
  
-@@ -157,7 +157,48 @@
+@@ -169,7 +157,48 @@
  
                          l = k + Math.max(0, j1 - i2);
  
@@ -59,7 +78,7 @@
                          {
                              p_180622_3_.func_177855_a(l1, j1, k1, iblockstate3);
  
-@@ -166,44 +207,6 @@
+@@ -178,44 +207,6 @@
                                  p_180622_3_.func_177855_a(l1, j1, k1, field_185383_C);
                              }
                          }
@@ -104,22 +123,25 @@
                      }
                      else if (l > 0)
                      {
-@@ -315,13 +318,13 @@
-     @SideOnly(Side.CLIENT)
-     public int func_180625_c(BlockPos p_180625_1_)
-     {
--        return 10387789;
+@@ -324,6 +315,18 @@
+         return this.field_150621_aC[(p_180629_2_ + i + 64) % 64];
+     }
+ 
++    @SideOnly(Side.CLIENT)
++    public int func_180625_c(BlockPos p_180625_1_)
++    {
 +        return getModdedBiomeFoliageColor(10387789);
-     }
- 
-     @SideOnly(Side.CLIENT)
-     public int func_180627_b(BlockPos p_180627_1_)
-     {
--        return 9470285;
++    }
++
++    @SideOnly(Side.CLIENT)
++    public int func_180627_b(BlockPos p_180627_1_)
++    {
 +        return getModdedBiomeGrassColor(9470285);
-     }
- 
++    }
++
      class Decorator extends BiomeDecorator
+     {
+         private Decorator()
 @@ -333,6 +336,7 @@
          protected void func_76797_b(World p_76797_1_, Random p_76797_2_)
          {

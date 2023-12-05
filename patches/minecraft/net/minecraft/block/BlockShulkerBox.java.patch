@@ -41,8 +41,47 @@
                  ItemStackHelper.func_191283_b(nbttagcompound1, nonnulllist);
                  int i = 0;
                  int j = 0;
-@@ -345,18 +346,18 @@
+@@ -286,18 +287,6 @@
+         return itemstack;
+     }
  
+-    @SideOnly(Side.CLIENT)
+-    public static EnumDyeColor func_190955_b(Item p_190955_0_)
+-    {
+-        return func_190954_c(Block.func_149634_a(p_190955_0_));
+-    }
+-
+-    @SideOnly(Side.CLIENT)
+-    public static EnumDyeColor func_190954_c(Block p_190954_0_)
+-    {
+-        return p_190954_0_ instanceof BlockShulkerBox ? ((BlockShulkerBox)p_190954_0_).func_190956_e() : EnumDyeColor.PURPLE;
+-    }
+-
+     public static Block func_190952_a(EnumDyeColor p_190952_0_)
+     {
+         switch (p_190952_0_)
+@@ -339,9 +328,9 @@
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    public EnumDyeColor func_190956_e()
++    public static EnumDyeColor func_190955_b(Item p_190955_0_)
+     {
+-        return this.field_190958_b;
++        return func_190954_c(Block.func_149634_a(p_190955_0_));
+     }
+ 
+     public static ItemStack func_190953_b(EnumDyeColor p_190953_0_)
+@@ -349,21 +338,33 @@
+         return new ItemStack(func_190952_a(p_190953_0_));
+     }
+ 
++    @SideOnly(Side.CLIENT)
++    public static EnumDyeColor func_190954_c(Block p_190954_0_)
++    {
++        return p_190954_0_ instanceof BlockShulkerBox ? ((BlockShulkerBox)p_190954_0_).func_190956_e() : EnumDyeColor.PURPLE;
++    }
++
      public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
      {
 -        return p_185499_1_.func_177226_a(field_190957_a, p_185499_2_.func_185831_a(p_185499_1_.func_177229_b(field_190957_a)));
@@ -62,4 +101,11 @@
 +        EnumFacing enumfacing = (EnumFacing)p_193383_2_.func_177229_b(field_190957_a);
          TileEntityShulkerBox.AnimationStatus tileentityshulkerbox$animationstatus = ((TileEntityShulkerBox)p_193383_1_.func_175625_s(p_193383_3_)).func_190591_p();
          return tileentityshulkerbox$animationstatus != TileEntityShulkerBox.AnimationStatus.CLOSED && (tileentityshulkerbox$animationstatus != TileEntityShulkerBox.AnimationStatus.OPENED || enumfacing != p_193383_4_.func_176734_d() && enumfacing != p_193383_4_) ? BlockFaceShape.UNDEFINED : BlockFaceShape.SOLID;
++    }
++
++    @SideOnly(Side.CLIENT)
++    public EnumDyeColor func_190956_e()
++    {
++        return this.field_190958_b;
      }
+ }

@@ -212,7 +212,19 @@
      }
  
      public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)
-@@ -371,58 +386,58 @@
+@@ -358,6 +373,11 @@
+         }
+     }
+ 
++    public MapColor func_180659_g(IBlockState p_180659_1_, IBlockAccess p_180659_2_, BlockPos p_180659_3_)
++    {
++        return MapColor.field_151656_f;
++    }
++
+     @SideOnly(Side.CLIENT)
+     public void func_180655_c(IBlockState p_180655_1_, World p_180655_2_, BlockPos p_180655_3_, Random p_180655_4_)
+     {
+@@ -366,58 +386,58 @@
              p_180655_2_.func_184134_a((double)((float)p_180655_3_.func_177958_n() + 0.5F), (double)((float)p_180655_3_.func_177956_o() + 0.5F), (double)((float)p_180655_3_.func_177952_p() + 0.5F), SoundEvents.field_187643_bs, SoundCategory.BLOCKS, 1.0F + p_180655_4_.nextFloat(), p_180655_4_.nextFloat() * 0.7F + 0.3F, false);
          }
  
@@ -282,17 +294,27 @@
                      double d17 = (double)p_180655_3_.func_177952_p() + p_180655_4_.nextDouble();
                      p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d7, d12, d17, 0.0D, 0.0D, 0.0D);
                  }
-@@ -442,7 +457,7 @@
+@@ -435,9 +455,9 @@
+         }
+     }
  
-     public IBlockState func_176203_a(int p_176203_1_)
+-    public MapColor func_180659_g(IBlockState p_180659_1_, IBlockAccess p_180659_2_, BlockPos p_180659_3_)
++    public IBlockState func_176203_a(int p_176203_1_)
      {
--        return this.func_176223_P().func_177226_a(field_176543_a, p_176203_1_);
+-        return MapColor.field_151656_f;
 +        return this.func_176223_P().func_177226_a(field_176543_a, Integer.valueOf(p_176203_1_));
      }
  
      @SideOnly(Side.CLIENT)
-@@ -453,13 +468,28 @@
+@@ -446,20 +466,30 @@
+         return BlockRenderLayer.CUTOUT;
+     }
  
+-    public IBlockState func_176203_a(int p_176203_1_)
+-    {
+-        return this.func_176223_P().func_177226_a(field_176543_a, p_176203_1_);
+-    }
+-
      public int func_176201_c(IBlockState p_176201_1_)
      {
 -        return p_176201_1_.func_177229_b(field_176543_a);

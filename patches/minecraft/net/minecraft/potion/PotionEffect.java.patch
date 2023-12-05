@@ -63,18 +63,27 @@
          }
      }
  
-@@ -231,12 +241,93 @@
+@@ -228,15 +238,96 @@
+         this.field_100013_f = p_100012_1_;
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public boolean func_100011_g()
+-    {
+-        return this.field_100013_f;
+-    }
+-
      public int compareTo(PotionEffect p_compareTo_1_)
      {
          int i = 32147;
 -        return (this.func_76459_b() <= 32147 || p_compareTo_1_.func_76459_b() <= 32147) && (!this.func_82720_e() || !p_compareTo_1_.func_82720_e()) ? ComparisonChain.start().compare(this.func_82720_e(), p_compareTo_1_.func_82720_e()).compare(this.func_76459_b(), p_compareTo_1_.func_76459_b()).compare(this.func_188419_a().func_76401_j(), p_compareTo_1_.func_188419_a().func_76401_j()).result() : ComparisonChain.start().compare(this.func_82720_e(), p_compareTo_1_.func_82720_e()).compare(this.func_188419_a().func_76401_j(), p_compareTo_1_.func_188419_a().func_76401_j()).result();
 +        return (this.func_76459_b() <= 32147 || p_compareTo_1_.func_76459_b() <= 32147) && (!this.func_82720_e() || !p_compareTo_1_.func_82720_e()) ? ComparisonChain.start().compare(Boolean.valueOf(this.func_82720_e()), Boolean.valueOf(p_compareTo_1_.func_82720_e())).compare(this.func_76459_b(), p_compareTo_1_.func_76459_b()).compare(this.func_188419_a().getGuiSortColor(this), p_compareTo_1_.func_188419_a().getGuiSortColor(p_compareTo_1_)).result() : ComparisonChain.start().compare(Boolean.valueOf(this.func_82720_e()), Boolean.valueOf(p_compareTo_1_.func_82720_e())).compare(this.func_188419_a().getGuiSortColor(this), p_compareTo_1_.func_188419_a().getGuiSortColor(p_compareTo_1_)).result();
-     }
- 
-     @SideOnly(Side.CLIENT)
-     public boolean func_100011_g()
-     {
-         return this.field_100013_f;
++    }
++
++    @SideOnly(Side.CLIENT)
++    public boolean func_100011_g()
++    {
++        return this.field_100013_f;
 +    }
 +
 +    /* ======================================== FORGE START =====================================*/

@@ -73,6 +73,32 @@
          double d0 = (double)p_180655_3_.func_177958_n() + 0.5D;
          double d1 = (double)p_180655_3_.func_177956_o() + 0.7D;
          double d2 = (double)p_180655_3_.func_177952_p() + 0.5D;
+@@ -236,12 +227,6 @@
+         }
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public BlockRenderLayer func_180664_k()
+-    {
+-        return BlockRenderLayer.CUTOUT;
+-    }
+-
+     public IBlockState func_176203_a(int p_176203_1_)
+     {
+         IBlockState iblockstate = this.func_176223_P();
+@@ -268,6 +253,12 @@
+         return iblockstate;
+     }
+ 
++    @SideOnly(Side.CLIENT)
++    public BlockRenderLayer func_180664_k()
++    {
++        return BlockRenderLayer.CUTOUT;
++    }
++
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+         int i = 0;
 @@ -275,21 +266,21 @@
          switch ((EnumFacing)p_176201_1_.func_177229_b(field_176596_a))
          {

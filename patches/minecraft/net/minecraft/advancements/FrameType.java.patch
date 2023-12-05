@@ -1,0 +1,28 @@
+--- before/net/minecraft/advancements/FrameType.java
++++ after/net/minecraft/advancements/FrameType.java
+@@ -26,12 +26,6 @@
+         return this.field_192313_d;
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public int func_192309_b()
+-    {
+-        return this.field_192314_e;
+-    }
+-
+     public static FrameType func_192308_a(String p_192308_0_)
+     {
+         for (FrameType frametype : values())
+@@ -43,6 +37,12 @@
+         }
+ 
+         throw new IllegalArgumentException("Unknown frame type '" + p_192308_0_ + "'");
++    }
++
++    @SideOnly(Side.CLIENT)
++    public int func_192309_b()
++    {
++        return this.field_192314_e;
+     }
+ 
+     public TextFormatting func_193229_c()

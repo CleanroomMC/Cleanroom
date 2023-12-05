@@ -28,7 +28,42 @@
      }
  
      @Nullable
-@@ -189,7 +189,7 @@
+@@ -185,42 +185,11 @@
+         }
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public float func_70894_j(float p_70894_1_)
+-    {
+-        if (this.field_70899_e <= 0)
+-        {
+-            return 0.0F;
+-        }
+-        else if (this.field_70899_e >= 4 && this.field_70899_e <= 36)
+-        {
+-            return 1.0F;
+-        }
+-        else
+-        {
+-            return this.field_70899_e < 4 ? ((float)this.field_70899_e - p_70894_1_) / 4.0F : -((float)(this.field_70899_e - 40) - p_70894_1_) / 4.0F;
+-        }
+-    }
+-
+-    @SideOnly(Side.CLIENT)
+-    public float func_70890_k(float p_70890_1_)
+-    {
+-        if (this.field_70899_e > 4 && this.field_70899_e <= 36)
+-        {
+-            float f = ((float)(this.field_70899_e - 4) - p_70890_1_) / 32.0F;
+-            return ((float)Math.PI / 5F) + ((float)Math.PI * 7F / 100F) * MathHelper.func_76126_a(f * 28.7F);
+-        }
+-        else
+-        {
+-            return this.field_70899_e > 0 ? ((float)Math.PI / 5F) : this.field_70125_A * ((float)Math.PI / 180F);
+-        }
+-    }
+-
+     public boolean func_184645_a(EntityPlayer p_184645_1_, EnumHand p_184645_2_)
      {
          ItemStack itemstack = p_184645_1_.func_184586_b(p_184645_2_);
  
@@ -37,15 +72,44 @@
          {
              if (!this.field_70170_p.field_72995_K)
              {
-@@ -244,7 +244,7 @@
-         }
-         else
-         {
--            return this.field_70899_e > 0 ? ((float)Math.PI / 5F) : this.field_70125_A * ((float)Math.PI / 180F);
-+            return this.field_70899_e > 0 ? ((float)Math.PI / 5F) : this.field_70125_A * 0.017453292F;
-         }
+@@ -248,6 +217,37 @@
+         EntityLiving.func_189752_a(p_189802_0_, EntitySheep.class);
      }
  
++    @SideOnly(Side.CLIENT)
++    public float func_70894_j(float p_70894_1_)
++    {
++        if (this.field_70899_e <= 0)
++        {
++            return 0.0F;
++        }
++        else if (this.field_70899_e >= 4 && this.field_70899_e <= 36)
++        {
++            return 1.0F;
++        }
++        else
++        {
++            return this.field_70899_e < 4 ? ((float)this.field_70899_e - p_70894_1_) / 4.0F : -((float)(this.field_70899_e - 40) - p_70894_1_) / 4.0F;
++        }
++    }
++
++    @SideOnly(Side.CLIENT)
++    public float func_70890_k(float p_70890_1_)
++    {
++        if (this.field_70899_e > 4 && this.field_70899_e <= 36)
++        {
++            float f = ((float)(this.field_70899_e - 4) - p_70890_1_) / 32.0F;
++            return ((float)Math.PI / 5F) + ((float)Math.PI * 7F / 100F) * MathHelper.func_76126_a(f * 28.7F);
++        }
++        else
++        {
++            return this.field_70899_e > 0 ? ((float)Math.PI / 5F) : this.field_70125_A * 0.017453292F;
++        }
++    }
++
+     public void func_70014_b(NBTTagCompound p_70014_1_)
+     {
+         super.func_70014_b(p_70014_1_);
 @@ -284,31 +284,31 @@
  
      public EnumDyeColor func_175509_cj()

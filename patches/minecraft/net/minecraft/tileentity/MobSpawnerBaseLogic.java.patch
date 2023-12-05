@@ -79,6 +79,46 @@
          }
  
          if (p_98270_1_.func_150297_b("MinSpawnDelay", 99))
+@@ -255,6 +257,19 @@
+         }
+     }
+ 
++    public boolean func_98268_b(int p_98268_1_)
++    {
++        if (p_98268_1_ == 1 && this.func_98271_a().field_72995_K)
++        {
++            this.field_98286_b = this.field_98283_g;
++            return true;
++        }
++        else
++        {
++            return false;
++        }
++    }
++
+     @SideOnly(Side.CLIENT)
+     public Entity func_184994_d()
+     {
+@@ -271,19 +286,6 @@
+         return this.field_98291_j;
+     }
+ 
+-    public boolean func_98268_b(int p_98268_1_)
+-    {
+-        if (p_98268_1_ == 1 && this.func_98271_a().field_72995_K)
+-        {
+-            this.field_98286_b = this.field_98283_g;
+-            return true;
+-        }
+-        else
+-        {
+-            return false;
+-        }
+-    }
+-
+     public void func_184993_a(WeightedSpawnerEntity p_184993_1_)
+     {
+         this.field_98282_f = p_184993_1_;
 @@ -306,4 +308,7 @@
      {
          return this.field_98284_d;

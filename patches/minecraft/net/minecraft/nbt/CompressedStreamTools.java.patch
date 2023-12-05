@@ -17,7 +17,55 @@
      public static void func_74793_a(NBTTagCompound p_74793_0_, File p_74793_1_) throws IOException
      {
          File file1 = new File(p_74793_1_.getAbsolutePath() + "_tmp");
-@@ -119,6 +116,7 @@
+@@ -81,47 +78,6 @@
+         }
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public static void func_74795_b(NBTTagCompound p_74795_0_, File p_74795_1_) throws IOException
+-    {
+-        DataOutputStream dataoutputstream = new DataOutputStream(new FileOutputStream(p_74795_1_));
+-
+-        try
+-        {
+-            func_74800_a(p_74795_0_, dataoutputstream);
+-        }
+-        finally
+-        {
+-            dataoutputstream.close();
+-        }
+-    }
+-
+-    @Nullable
+-    @SideOnly(Side.CLIENT)
+-    public static NBTTagCompound func_74797_a(File p_74797_0_) throws IOException
+-    {
+-        if (!p_74797_0_.exists())
+-        {
+-            return null;
+-        }
+-        else
+-        {
+-            DataInputStream datainputstream = new DataInputStream(new FileInputStream(p_74797_0_));
+-            NBTTagCompound nbttagcompound;
+-
+-            try
+-            {
+-                nbttagcompound = func_152456_a(datainputstream, NBTSizeTracker.field_152451_a);
+-            }
+-            finally
+-            {
+-                datainputstream.close();
+-            }
+-
+-            return nbttagcompound;
+-        }
+-    }
+-
+     public static NBTTagCompound func_74794_a(DataInputStream p_74794_0_) throws IOException
+     {
+         return func_152456_a(p_74794_0_, NBTSizeTracker.field_152451_a);
+@@ -160,6 +116,7 @@
      private static NBTBase func_152455_a(DataInput p_152455_0_, int p_152455_1_, NBTSizeTracker p_152455_2_) throws IOException
      {
          byte b0 = p_152455_0_.readByte();
@@ -25,7 +73,7 @@
  
          if (b0 == 0)
          {
-@@ -126,7 +124,8 @@
+@@ -167,7 +124,8 @@
          }
          else
          {
@@ -35,7 +83,7 @@
              NBTBase nbtbase = NBTBase.func_150284_a(b0);
  
              try
-@@ -138,13 +137,12 @@
+@@ -179,9 +137,48 @@
              {
                  CrashReport crashreport = CrashReport.func_85055_a(ioexception, "Loading NBT data");
                  CrashReportCategory crashreportcategory = crashreport.func_85058_a("NBT Tag");
@@ -43,18 +91,45 @@
 +                crashreportcategory.func_71507_a("Tag type", Byte.valueOf(b0));
                  throw new ReportedException(crashreport);
              }
++        }
++    }
++
++    public static void func_74795_b(NBTTagCompound p_74795_0_, File p_74795_1_) throws IOException
++    {
++        DataOutputStream dataoutputstream = new DataOutputStream(new FileOutputStream(p_74795_1_));
++
++        try
++        {
++            func_74800_a(p_74795_0_, dataoutputstream);
++        }
++        finally
++        {
++            dataoutputstream.close();
++        }
++    }
++
++    @Nullable
++    public static NBTTagCompound func_74797_a(File p_74797_0_) throws IOException
++    {
++        if (!p_74797_0_.exists())
++        {
++            return null;
++        }
++        else
++        {
++            DataInputStream datainputstream = new DataInputStream(new FileInputStream(p_74797_0_));
++            NBTTagCompound nbttagcompound;
++
++            try
++            {
++                nbttagcompound = func_152456_a(datainputstream, NBTSizeTracker.field_152451_a);
++            }
++            finally
++            {
++                datainputstream.close();
++            }
++
++            return nbttagcompound;
          }
      }
- 
--    @SideOnly(Side.CLIENT)
-     public static void func_74795_b(NBTTagCompound p_74795_0_, File p_74795_1_) throws IOException
-     {
-         DataOutputStream dataoutputstream = new DataOutputStream(new FileOutputStream(p_74795_1_));
-@@ -160,7 +158,6 @@
-     }
- 
-     @Nullable
--    @SideOnly(Side.CLIENT)
-     public static NBTTagCompound func_74797_a(File p_74797_0_) throws IOException
-     {
-         if (!p_74797_0_.exists())
+ }

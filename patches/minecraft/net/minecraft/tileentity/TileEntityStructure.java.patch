@@ -27,6 +27,103 @@
          {
              this.field_184427_l = TileEntityStructure.Mode.DATA;
          }
+@@ -235,28 +235,28 @@
+         this.field_184425_j = p_184411_1_;
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public Rotation func_189726_i()
+-    {
+-        return this.field_184426_k;
+-    }
+-
+     public void func_184408_a(Rotation p_184408_1_)
+     {
+         this.field_184426_k = p_184408_1_;
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public String func_189708_j()
+-    {
+-        return this.field_184422_g;
+-    }
+-
+     public void func_184410_b(String p_184410_1_)
+     {
+         this.field_184422_g = p_184410_1_;
+     }
+ 
++    @SideOnly(Side.CLIENT)
++    public Rotation func_189726_i()
++    {
++        return this.field_184426_k;
++    }
++
++    @SideOnly(Side.CLIENT)
++    public String func_189708_j()
++    {
++        return this.field_184422_g;
++    }
++
+     public TileEntityStructure.Mode func_189700_k()
+     {
+         return this.field_184427_l;
+@@ -273,6 +273,21 @@
+         }
+     }
+ 
++    public void func_184406_a(boolean p_184406_1_)
++    {
++        this.field_184428_m = p_184406_1_;
++    }
++
++    public void func_189718_a(float p_189718_1_)
++    {
++        this.field_189730_q = p_189718_1_;
++    }
++
++    public void func_189725_a(long p_189725_1_)
++    {
++        this.field_189731_r = p_189725_1_;
++    }
++
+     @SideOnly(Side.CLIENT)
+     public void func_189724_l()
+     {
+@@ -298,33 +313,18 @@
+         return this.field_184428_m;
+     }
+ 
+-    public void func_184406_a(boolean p_184406_1_)
+-    {
+-        this.field_184428_m = p_184406_1_;
+-    }
+-
+     @SideOnly(Side.CLIENT)
+     public float func_189702_n()
+     {
+         return this.field_189730_q;
+     }
+ 
+-    public void func_189718_a(float p_189718_1_)
+-    {
+-        this.field_189730_q = p_189718_1_;
+-    }
+-
+     @SideOnly(Side.CLIENT)
+     public long func_189719_o()
+     {
+         return this.field_189731_r;
+     }
+ 
+-    public void func_189725_a(long p_189725_1_)
+-    {
+-        this.field_189731_r = p_189725_1_;
+-    }
+-
+     public boolean func_184417_l()
+     {
+         if (this.field_184427_l != TileEntityStructure.Mode.SAVE)
 @@ -379,7 +379,7 @@
  
      private List<TileEntityStructure> func_184418_a(BlockPos p_184418_1_, BlockPos p_184418_2_)

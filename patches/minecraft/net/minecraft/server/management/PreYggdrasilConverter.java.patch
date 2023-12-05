@@ -1,7 +1,28 @@
 --- before/net/minecraft/server/management/PreYggdrasilConverter.java
 +++ after/net/minecraft/server/management/PreYggdrasilConverter.java
-@@ -41,7 +41,7 @@
+@@ -39,28 +39,9 @@
+     public static final File field_152730_c = new File("ops.txt");
+     public static final File field_152731_d = new File("white-list.txt");
  
+-    @SideOnly(Side.SERVER)
+-    static List<String> func_152721_a(File p_152721_0_, Map<String, String[]> p_152721_1_) throws IOException
+-    {
+-        List<String> list = Files.readLines(p_152721_0_, StandardCharsets.UTF_8);
+-
+-        for (String s : list)
+-        {
+-            s = s.trim();
+-
+-            if (!s.startsWith("#") && s.length() >= 1)
+-            {
+-                String[] astring = s.split("\\|");
+-                p_152721_1_.put(astring[0].toLowerCase(Locale.ROOT), astring);
+-            }
+-        }
+-
+-        return list;
+-    }
+-
      private static void func_152717_a(MinecraftServer p_152717_0_, Collection<String> p_152717_1_, ProfileLookupCallback p_152717_2_)
      {
 -        String[] astring = Iterators.toArray(Iterators.filter(p_152717_1_.iterator(), new Predicate<String>()
@@ -9,25 +30,72 @@
          {
              public boolean apply(@Nullable String p_apply_1_)
              {
-@@ -76,7 +76,7 @@
-             }
-             else if (!p_187473_0_.func_71264_H() && p_187473_0_.func_71266_T())
-             {
--                final List<GameProfile> list = Lists.newArrayList();
+@@ -83,6 +64,64 @@
+         }
+     }
+ 
++    public static String func_187473_a(final MinecraftServer p_187473_0_, String p_187473_1_)
++    {
++        if (!StringUtils.func_151246_b(p_187473_1_) && p_187473_1_.length() <= 16)
++        {
++            GameProfile gameprofile = p_187473_0_.func_152358_ax().func_152655_a(p_187473_1_);
++
++            if (gameprofile != null && gameprofile.getId() != null)
++            {
++                return gameprofile.getId().toString();
++            }
++            else if (!p_187473_0_.func_71264_H() && p_187473_0_.func_71266_T())
++            {
 +                final List<GameProfile> list = Lists.<GameProfile>newArrayList();
-                 ProfileLookupCallback profilelookupcallback = new ProfileLookupCallback()
-                 {
-                     public void onProfileLookupSucceeded(GameProfile p_onProfileLookupSucceeded_1_)
-@@ -90,7 +90,7 @@
-                     }
-                 };
-                 func_152717_a(p_187473_0_, Lists.newArrayList(p_187473_1_), profilelookupcallback);
--                return !list.isEmpty() && list.get(0).getId() != null ? list.get(0).getId().toString() : "";
++                ProfileLookupCallback profilelookupcallback = new ProfileLookupCallback()
++                {
++                    public void onProfileLookupSucceeded(GameProfile p_onProfileLookupSucceeded_1_)
++                    {
++                        p_187473_0_.func_152358_ax().func_152649_a(p_onProfileLookupSucceeded_1_);
++                        list.add(p_onProfileLookupSucceeded_1_);
++                    }
++                    public void onProfileLookupFailed(GameProfile p_onProfileLookupFailed_1_, Exception p_onProfileLookupFailed_2_)
++                    {
++                        PreYggdrasilConverter.field_152732_e.warn("Could not lookup user whitelist entry for {}", p_onProfileLookupFailed_1_.getName(), p_onProfileLookupFailed_2_);
++                    }
++                };
++                func_152717_a(p_187473_0_, Lists.newArrayList(p_187473_1_), profilelookupcallback);
 +                return !list.isEmpty() && ((GameProfile)list.get(0)).getId() != null ? ((GameProfile)list.get(0)).getId().toString() : "";
-             }
-             else
-             {
-@@ -143,7 +143,7 @@
++            }
++            else
++            {
++                return EntityPlayer.func_146094_a(new GameProfile((UUID)null, p_187473_1_)).toString();
++            }
++        }
++        else
++        {
++            return p_187473_1_;
++        }
++    }
++
++    @SideOnly(Side.SERVER)
++    static List<String> func_152721_a(File p_152721_0_, Map<String, String[]> p_152721_1_) throws IOException
++    {
++        List<String> list = Files.readLines(p_152721_0_, StandardCharsets.UTF_8);
++
++        for (String s : list)
++        {
++            s = s.trim();
++
++            if (!s.startsWith("#") && s.length() >= 1)
++            {
++                String[] astring = s.split("\\|");
++                p_152721_1_.put(astring[0].toLowerCase(Locale.ROOT), astring);
++            }
++        }
++
++        return list;
++    }
++
+     @SideOnly(Side.SERVER)
+     public static boolean func_152724_a(final MinecraftServer p_152724_0_) throws IOException
+     {
+@@ -104,7 +143,7 @@
  
              try
              {
@@ -36,7 +104,7 @@
                  func_152721_a(field_152729_b, map);
                  ProfileLookupCallback profilelookupcallback = new ProfileLookupCallback()
                  {
-@@ -219,7 +219,7 @@
+@@ -180,7 +219,7 @@
  
              try
              {
@@ -45,6 +113,52 @@
                  func_152721_a(field_152728_a, map);
  
                  for (String s : map.keySet())
+@@ -331,45 +370,6 @@
+         }
+     }
+ 
+-    public static String func_187473_a(final MinecraftServer p_187473_0_, String p_187473_1_)
+-    {
+-        if (!StringUtils.func_151246_b(p_187473_1_) && p_187473_1_.length() <= 16)
+-        {
+-            GameProfile gameprofile = p_187473_0_.func_152358_ax().func_152655_a(p_187473_1_);
+-
+-            if (gameprofile != null && gameprofile.getId() != null)
+-            {
+-                return gameprofile.getId().toString();
+-            }
+-            else if (!p_187473_0_.func_71264_H() && p_187473_0_.func_71266_T())
+-            {
+-                final List<GameProfile> list = Lists.newArrayList();
+-                ProfileLookupCallback profilelookupcallback = new ProfileLookupCallback()
+-                {
+-                    public void onProfileLookupSucceeded(GameProfile p_onProfileLookupSucceeded_1_)
+-                    {
+-                        p_187473_0_.func_152358_ax().func_152649_a(p_onProfileLookupSucceeded_1_);
+-                        list.add(p_onProfileLookupSucceeded_1_);
+-                    }
+-                    public void onProfileLookupFailed(GameProfile p_onProfileLookupFailed_1_, Exception p_onProfileLookupFailed_2_)
+-                    {
+-                        PreYggdrasilConverter.field_152732_e.warn("Could not lookup user whitelist entry for {}", p_onProfileLookupFailed_1_.getName(), p_onProfileLookupFailed_2_);
+-                    }
+-                };
+-                func_152717_a(p_187473_0_, Lists.newArrayList(p_187473_1_), profilelookupcallback);
+-                return !list.isEmpty() && list.get(0).getId() != null ? list.get(0).getId().toString() : "";
+-            }
+-            else
+-            {
+-                return EntityPlayer.func_146094_a(new GameProfile((UUID)null, p_187473_1_)).toString();
+-            }
+-        }
+-        else
+-        {
+-            return p_187473_1_;
+-        }
+-    }
+-
+     @SideOnly(Side.SERVER)
+     public static boolean func_152723_a(final DedicatedServer p_152723_0_, PropertyManager p_152723_1_)
+     {
 @@ -380,7 +380,7 @@
          if (file1.exists() && file1.isDirectory())
          {

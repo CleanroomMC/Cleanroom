@@ -189,17 +189,26 @@
  
          if (i != 0)
          {
-@@ -515,7 +517,7 @@
- 
-     public IBlockState func_176203_a(int p_176203_1_)
-     {
--        return this.func_176223_P().func_177226_a(field_176351_O, p_176203_1_);
-+        return this.func_176223_P().func_177226_a(field_176351_O, Integer.valueOf(p_176203_1_));
+@@ -513,20 +515,20 @@
+         return new ItemStack(Items.field_151137_ax);
      }
  
++    public IBlockState func_176203_a(int p_176203_1_)
++    {
++        return this.func_176223_P().func_177226_a(field_176351_O, Integer.valueOf(p_176203_1_));
++    }
++
      @SideOnly(Side.CLIENT)
-@@ -526,7 +528,7 @@
+     public BlockRenderLayer func_180664_k()
+     {
+         return BlockRenderLayer.CUTOUT;
+     }
  
+-    public IBlockState func_176203_a(int p_176203_1_)
+-    {
+-        return this.func_176223_P().func_177226_a(field_176351_O, p_176203_1_);
+-    }
+-
      public int func_176201_c(IBlockState p_176201_1_)
      {
 -        return p_176201_1_.func_177229_b(field_176351_O);

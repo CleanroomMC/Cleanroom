@@ -34,6 +34,29 @@
              }
          }
  
+@@ -153,17 +154,17 @@
+         return this.field_185051_m.func_82594_a(p_185045_1_);
+     }
+ 
++    public boolean func_179215_a(NBTTagCompound p_179215_1_)
++    {
++        return false;
++    }
++
+     @SideOnly(Side.CLIENT)
+     public boolean func_185040_i()
+     {
+         return !this.field_185051_m.func_148742_b().isEmpty();
+     }
+ 
+-    public boolean func_179215_a(NBTTagCompound p_179215_1_)
+-    {
+-        return false;
+-    }
+-
+     public Item()
+     {
+         this.func_185043_a(new ResourceLocation("lefthanded"), field_185048_d);
 @@ -188,7 +189,7 @@
  
      public ActionResult<ItemStack> func_77659_a(World p_77659_1_, EntityPlayer p_77659_2_, EnumHand p_77659_3_)

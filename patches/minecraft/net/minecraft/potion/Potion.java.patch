@@ -22,7 +22,20 @@
      private final boolean field_76418_K;
      private final int field_76414_N;
      private String field_76416_I = "";
-@@ -221,7 +222,6 @@
+@@ -203,6 +204,12 @@
+         return this.field_76416_I;
+     }
+ 
++    protected Potion func_76404_a(double p_76404_1_)
++    {
++        this.field_76412_L = p_76404_1_;
++        return this;
++    }
++
+     @SideOnly(Side.CLIENT)
+     public boolean func_76400_d()
+     {
+@@ -215,7 +222,6 @@
          return this.field_76417_J;
      }
  
@@ -30,8 +43,29 @@
      public boolean func_76398_f()
      {
          return this.field_76418_K;
-@@ -255,7 +255,7 @@
+@@ -235,12 +241,6 @@
+         }
+     }
  
+-    protected Potion func_76404_a(double p_76404_1_)
+-    {
+-        this.field_76412_L = p_76404_1_;
+-        return this;
+-    }
+-
+     public int func_76401_j()
+     {
+         return this.field_76414_N;
+@@ -253,15 +253,9 @@
+         return this;
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public Map<IAttribute, AttributeModifier> func_111186_k()
+-    {
+-        return this.field_111188_I;
+-    }
+-
      public void func_111187_a(EntityLivingBase p_111187_1_, AbstractAttributeMap p_111187_2_, int p_111187_3_)
      {
 -        for (Map.Entry<IAttribute, AttributeModifier> entry : this.field_111188_I.entrySet())
@@ -39,8 +73,16 @@
          {
              IAttributeInstance iattributeinstance = p_111187_2_.func_111151_a(entry.getKey());
  
-@@ -274,7 +274,7 @@
+@@ -272,9 +266,15 @@
+         }
+     }
  
++    @SideOnly(Side.CLIENT)
++    public Map<IAttribute, AttributeModifier> func_111186_k()
++    {
++        return this.field_111188_I;
++    }
++
      public void func_111185_a(EntityLivingBase p_111185_1_, AbstractAttributeMap p_111185_2_, int p_111185_3_)
      {
 -        for (Map.Entry<IAttribute, AttributeModifier> entry : this.field_111188_I.entrySet())

@@ -97,7 +97,31 @@
                      }
                  }
              }
-@@ -349,8 +350,8 @@
+@@ -337,23 +338,11 @@
+         }
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public World func_145807_e()
+-    {
+-        return this.field_70170_p;
+-    }
+-
+     public void func_145806_a(boolean p_145806_1_)
+     {
+         this.field_145809_g = p_145806_1_;
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public boolean func_90999_ad()
+-    {
+-        return false;
+-    }
+-
+     public void func_85029_a(CrashReportCategory p_85029_1_)
+     {
+         super.func_85029_a(p_85029_1_);
+@@ -361,9 +350,21 @@
          if (this.field_175132_d != null)
          {
              Block block = this.field_175132_d.func_177230_c();
@@ -106,5 +130,18 @@
 +            p_85029_1_.func_71507_a("Immitating block ID", Integer.valueOf(Block.func_149682_b(block)));
 +            p_85029_1_.func_71507_a("Immitating block data", Integer.valueOf(block.func_176201_c(this.field_175132_d)));
          }
++    }
++
++    @SideOnly(Side.CLIENT)
++    public World func_145807_e()
++    {
++        return this.field_70170_p;
++    }
++
++    @SideOnly(Side.CLIENT)
++    public boolean func_90999_ad()
++    {
++        return false;
      }
  
+     @Nullable

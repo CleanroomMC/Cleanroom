@@ -9,8 +9,10 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.function.Predicate;
 
+@SuppressWarnings("removal")
 public final class ReflectionHackery {
 
     private static final Field field$modifiers;
@@ -59,25 +61,25 @@ public final class ReflectionHackery {
         field$modifiers.setInt(field, field.getModifiers() & ~modifierFlag);
     }
 
-    @SuppressWarnings("removal")
+
     public static void setField(Field field, Object owner, Object value) throws IllegalAccessException {
         int mod = field.getModifiers();
         if (Modifier.isStatic(mod) && !field.getType().isPrimitive()) {
             unsafe.putObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), value);
         } else {
+            field.setAccessible(true);
             field.set(owner, value);
         }
     }
 
-    @SuppressWarnings("removal")
     public static Object getField(Field field, Object owner) throws IllegalAccessException {
         int mod = field.getModifiers();
-        if (Modifier.isStatic(mod)) {
-            return unsafe.getObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field));
+        if (Modifier.isStatic(mod) && !field.getType().isPrimitive()) {
+                return unsafe.getObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field));
         } else {
+            field.setAccessible(true);
             return field.get(owner);
         }
-
     }
 
 }

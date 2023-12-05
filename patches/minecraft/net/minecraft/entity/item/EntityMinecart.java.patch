@@ -444,17 +444,27 @@
                                  p_70108_1_.func_70024_g(d7 + d0, 0.0D, d8 + d1);
                              }
                          }
-@@ -932,7 +964,7 @@
- 
-     public void func_70492_c(float p_70492_1_)
-     {
--        this.field_70180_af.func_187227_b(field_184267_c, p_70492_1_);
-+        this.field_70180_af.func_187227_b(field_184267_c, Float.valueOf(p_70492_1_));
+@@ -930,6 +962,11 @@
+         this.field_70179_y = this.field_70506_as;
      }
  
++    public void func_70492_c(float p_70492_1_)
++    {
++        this.field_70180_af.func_187227_b(field_184267_c, Float.valueOf(p_70492_1_));
++    }
++
      @SideOnly(Side.CLIENT)
-@@ -948,34 +980,34 @@
+     public void func_70016_h(double p_70016_1_, double p_70016_3_, double p_70016_5_)
+     {
+@@ -941,41 +978,36 @@
+         this.field_70506_as = this.field_70179_y;
+     }
  
+-    public void func_70492_c(float p_70492_1_)
+-    {
+-        this.field_70180_af.func_187227_b(field_184267_c, p_70492_1_);
+-    }
+-
      public float func_70491_i()
      {
 -        return this.field_70180_af.func_187225_a(field_184267_c);

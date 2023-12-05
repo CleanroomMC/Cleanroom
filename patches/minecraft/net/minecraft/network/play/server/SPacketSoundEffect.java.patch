@@ -9,3 +9,26 @@
          this.field_149217_b = p_148837_1_.readInt();
          this.field_149218_c = p_148837_1_.readInt();
          this.field_149215_d = p_148837_1_.readInt();
+@@ -64,6 +64,11 @@
+         return this.field_186979_a;
+     }
+ 
++    public void func_148833_a(INetHandlerPlayClient p_148833_1_)
++    {
++        p_148833_1_.func_184327_a(this);
++    }
++
+     @SideOnly(Side.CLIENT)
+     public SoundCategory func_186977_b()
+     {
+@@ -98,10 +103,5 @@
+     public float func_149209_h()
+     {
+         return this.field_149214_f;
+-    }
+-
+-    public void func_148833_a(INetHandlerPlayClient p_148833_1_)
+-    {
+-        p_148833_1_.func_184327_a(this);
+     }
+ }

@@ -38,6 +38,30 @@
          }
      }
  
+@@ -175,17 +176,17 @@
+         return false;
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public boolean func_176225_a(IBlockState p_176225_1_, IBlockAccess p_176225_2_, BlockPos p_176225_3_, EnumFacing p_176225_4_)
+-    {
+-        return true;
+-    }
+-
+     public static EnumFacing func_176428_b(int p_176428_0_)
+     {
+         return EnumFacing.func_82600_a(p_176428_0_ & 7);
+     }
+ 
++    @SideOnly(Side.CLIENT)
++    public boolean func_176225_a(IBlockState p_176225_1_, IBlockAccess p_176225_2_, BlockPos p_176225_3_, EnumFacing p_176225_4_)
++    {
++        return true;
++    }
++
+     public static boolean func_149917_c(int p_149917_0_)
+     {
+         return (p_149917_0_ & 8) != 8;
 @@ -209,15 +210,15 @@
  
      public IBlockState func_176203_a(int p_176203_1_)

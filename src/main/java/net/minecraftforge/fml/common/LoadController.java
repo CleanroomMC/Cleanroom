@@ -186,7 +186,13 @@ public class LoadController
                 }
                 MixinEnvironment current = MixinEnvironment.getCurrentEnvironment();
                 if ((boolean)Launch.blackboard.get("fml.deobfuscatedEnvironment")) {
-                    current.setOption(MixinEnvironment.Option.DISABLE_REFMAP, true);
+
+                    current.setOption(MixinEnvironment.Option.REFMAP_REMAP, true);
+                    current.setOption(MixinEnvironment.Option.REFMAP_REMAP_RESOURCE, true);
+                    current.setOption(MixinEnvironment.Option.REFMAP_REMAP_SOURCE_ENV, true);
+                    System.setProperty("mixin.env.refMapRemapping", "build/createSrg2Mcp/output.tsrg");
+                    System.setProperty("mixin.env.refMapRemappingEnv", "mcp");
+
                 }
                 Proxy.transformer.processor.selectConfigs(current);
                 Proxy.transformer.processor.prepareConfigs(current, Proxy.transformer.processor.extensions);

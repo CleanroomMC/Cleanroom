@@ -15,3 +15,23 @@
      }
  
      public boolean func_149662_c(IBlockState p_149662_1_)
+@@ -54,14 +58,14 @@
+         return EnumBlockRenderType.MODEL;
+     }
+ 
++    public ItemStack func_185473_a(World p_185473_1_, BlockPos p_185473_2_, IBlockState p_185473_3_)
++    {
++        return ItemStack.field_190927_a;
++    }
++
+     @SideOnly(Side.CLIENT)
+     public BlockRenderLayer func_180664_k()
+     {
+         return BlockRenderLayer.CUTOUT;
+-    }
+-
+-    public ItemStack func_185473_a(World p_185473_1_, BlockPos p_185473_2_, IBlockState p_185473_3_)
+-    {
+-        return ItemStack.field_190927_a;
+     }
+ }

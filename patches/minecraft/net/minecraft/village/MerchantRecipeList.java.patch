@@ -26,12 +26,68 @@
              p_151391_1_.func_150788_a(merchantrecipe.func_77394_a());
              p_151391_1_.func_150788_a(merchantrecipe.func_77397_d());
              ItemStack itemstack = merchantrecipe.func_77396_b();
-@@ -92,7 +92,7 @@
+@@ -74,6 +74,32 @@
+         }
+     }
  
-         for (int i = 0; i < this.size(); ++i)
-         {
--            MerchantRecipe merchantrecipe = this.get(i);
++    public void func_77201_a(NBTTagCompound p_77201_1_)
++    {
++        NBTTagList nbttaglist = p_77201_1_.func_150295_c("Recipes", 10);
++
++        for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
++        {
++            NBTTagCompound nbttagcompound = nbttaglist.func_150305_b(i);
++            this.add(new MerchantRecipe(nbttagcompound));
++        }
++    }
++
++    public NBTTagCompound func_77202_a()
++    {
++        NBTTagCompound nbttagcompound = new NBTTagCompound();
++        NBTTagList nbttaglist = new NBTTagList();
++
++        for (int i = 0; i < this.size(); ++i)
++        {
 +            MerchantRecipe merchantrecipe = (MerchantRecipe)this.get(i);
-             nbttaglist.func_74742_a(merchantrecipe.func_77395_g());
++            nbttaglist.func_74742_a(merchantrecipe.func_77395_g());
++        }
++
++        nbttagcompound.func_74782_a("Recipes", nbttaglist);
++        return nbttagcompound;
++    }
++
+     @SideOnly(Side.CLIENT)
+     public static MerchantRecipeList func_151390_b(PacketBuffer p_151390_0_) throws IOException
+     {
+@@ -105,31 +131,5 @@
          }
  
+         return merchantrecipelist;
+-    }
+-
+-    public void func_77201_a(NBTTagCompound p_77201_1_)
+-    {
+-        NBTTagList nbttaglist = p_77201_1_.func_150295_c("Recipes", 10);
+-
+-        for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+-        {
+-            NBTTagCompound nbttagcompound = nbttaglist.func_150305_b(i);
+-            this.add(new MerchantRecipe(nbttagcompound));
+-        }
+-    }
+-
+-    public NBTTagCompound func_77202_a()
+-    {
+-        NBTTagCompound nbttagcompound = new NBTTagCompound();
+-        NBTTagList nbttaglist = new NBTTagList();
+-
+-        for (int i = 0; i < this.size(); ++i)
+-        {
+-            MerchantRecipe merchantrecipe = this.get(i);
+-            nbttaglist.func_74742_a(merchantrecipe.func_77395_g());
+-        }
+-
+-        nbttagcompound.func_74782_a("Recipes", nbttaglist);
+-        return nbttagcompound;
+     }
+ }

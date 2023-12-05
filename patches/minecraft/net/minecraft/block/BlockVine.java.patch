@@ -224,16 +224,27 @@
      }
  
      public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
-@@ -356,7 +357,7 @@
- 
-     public IBlockState func_176203_a(int p_176203_1_)
-     {
--        return this.func_176223_P().func_177226_a(field_176279_N, (p_176203_1_ & 1) > 0).func_177226_a(field_176280_O, (p_176203_1_ & 2) > 0).func_177226_a(field_176273_b, (p_176203_1_ & 4) > 0).func_177226_a(field_176278_M, (p_176203_1_ & 8) > 0);
-+        return this.func_176223_P().func_177226_a(field_176279_N, Boolean.valueOf((p_176203_1_ & 1) > 0)).func_177226_a(field_176280_O, Boolean.valueOf((p_176203_1_ & 2) > 0)).func_177226_a(field_176273_b, Boolean.valueOf((p_176203_1_ & 4) > 0)).func_177226_a(field_176278_M, Boolean.valueOf((p_176203_1_ & 8) > 0));
+@@ -354,37 +355,37 @@
+         }
      }
  
++    public IBlockState func_176203_a(int p_176203_1_)
++    {
++        return this.func_176223_P().func_177226_a(field_176279_N, Boolean.valueOf((p_176203_1_ & 1) > 0)).func_177226_a(field_176280_O, Boolean.valueOf((p_176203_1_ & 2) > 0)).func_177226_a(field_176273_b, Boolean.valueOf((p_176203_1_ & 4) > 0)).func_177226_a(field_176278_M, Boolean.valueOf((p_176203_1_ & 8) > 0));
++    }
++
      @SideOnly(Side.CLIENT)
-@@ -369,22 +370,22 @@
+     public BlockRenderLayer func_180664_k()
+     {
+         return BlockRenderLayer.CUTOUT;
+     }
+ 
+-    public IBlockState func_176203_a(int p_176203_1_)
+-    {
+-        return this.func_176223_P().func_177226_a(field_176279_N, (p_176203_1_ & 1) > 0).func_177226_a(field_176280_O, (p_176203_1_ & 2) > 0).func_177226_a(field_176273_b, (p_176203_1_ & 4) > 0).func_177226_a(field_176278_M, (p_176203_1_ & 8) > 0);
+-    }
+-
+     public int func_176201_c(IBlockState p_176201_1_)
      {
          int i = 0;
  

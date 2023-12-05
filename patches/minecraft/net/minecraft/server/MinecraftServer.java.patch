@@ -53,7 +53,7 @@
      private Thread field_175590_aa;
      protected long field_175591_ab = func_130071_aq();
      @SideOnly(Side.CLIENT)
-@@ -176,15 +179,15 @@
+@@ -176,23 +179,23 @@
              this.func_71192_d("menu.convertingLevel");
              this.func_71254_M().func_75805_a(p_71237_1_, new IProgressUpdate()
              {
@@ -62,6 +62,10 @@
                  public void func_73720_a(String p_73720_1_)
                  {
                  }
+-                @SideOnly(Side.CLIENT)
+-                public void func_73721_b(String p_73721_1_)
+-                {
+-                }
                  public void func_73718_a(int p_73718_1_)
                  {
 -                    if (MinecraftServer.func_130071_aq() - this.field_96245_b >= 1000L)
@@ -71,6 +75,14 @@
 +                        this.field_96245_b = System.currentTimeMillis();
                          MinecraftServer.field_147145_h.info("Converting... {}%", (int)p_73718_1_);
                      }
+                 }
+                 @SideOnly(Side.CLIENT)
++                public void func_73721_b(String p_73721_1_)
++                {
++                }
++                @SideOnly(Side.CLIENT)
+                 public void func_146586_a()
+                 {
                  }
 @@ -220,8 +223,6 @@
      {
@@ -142,7 +154,7 @@
      }
  
      protected void func_71243_i()
-@@ -432,15 +449,24 @@
+@@ -432,27 +449,24 @@
              {
                  if (worldserver1 != null)
                  {
@@ -162,12 +174,24 @@
          {
              this.field_71307_n.func_76470_e();
          }
+-    }
+-
+-    @SideOnly(Side.SERVER)
+-    public String func_71211_k()
+-    {
+-        return this.field_71320_r;
+-    }
+-
+-    @SideOnly(Side.SERVER)
+-    public void func_71189_e(String p_71189_1_)
+-    {
+-        this.field_71320_r = p_71189_1_;
 +
 +        CommandBase.func_71529_a(null); // Forge: fix MC-128561
      }
  
      public boolean func_71278_l()
-@@ -459,6 +485,7 @@
+@@ -471,6 +485,7 @@
          {
              if (this.func_71197_b())
              {
@@ -175,7 +199,7 @@
                  this.field_175591_ab = func_130071_aq();
                  long i = 0L;
                  this.field_147147_p.func_151315_a(new TextComponentString(this.field_71286_C));
-@@ -472,7 +499,7 @@
+@@ -484,7 +499,7 @@
  
                      if (j > 2000L && this.field_175591_ab - this.field_71299_R >= 15000L)
                      {
@@ -184,7 +208,7 @@
                          j = 2000L;
                          this.field_71299_R = this.field_175591_ab;
                      }
-@@ -503,12 +530,20 @@
+@@ -515,12 +530,20 @@
                      Thread.sleep(Math.max(1L, 50L - i));
                      this.field_71296_Q = true;
                  }
@@ -205,7 +229,7 @@
          catch (Throwable throwable1)
          {
              field_147145_h.error("Encountered an unexpected exception", throwable1);
-@@ -534,13 +569,13 @@
+@@ -546,13 +569,13 @@
                  field_147145_h.error("We were unable to save this crash report to disk.");
              }
  
@@ -220,7 +244,7 @@
                  this.func_71260_j();
              }
              catch (Throwable throwable)
-@@ -549,6 +584,8 @@
+@@ -561,6 +584,8 @@
              }
              finally
              {
@@ -229,7 +253,7 @@
                  this.func_71240_o();
              }
          }
-@@ -575,6 +612,7 @@
+@@ -587,6 +612,7 @@
                  ImageIO.write(bufferedimage, "PNG", new ByteBufOutputStream(bytebuf));
                  ByteBuf bytebuf1 = Base64.encode(bytebuf);
                  p_184107_1_.func_151320_a("data:image/png;base64," + bytebuf1.toString(StandardCharsets.UTF_8));
@@ -237,7 +261,7 @@
              }
              catch (Exception exception)
              {
-@@ -616,6 +654,7 @@
+@@ -628,6 +654,7 @@
      public void func_71217_p()
      {
          long i = System.nanoTime();
@@ -245,7 +269,7 @@
          ++this.field_71315_w;
  
          if (this.field_71295_T)
-@@ -637,11 +676,12 @@
+@@ -649,11 +676,12 @@
  
              for (int k = 0; k < agameprofile.length; ++k)
              {
@@ -259,7 +283,7 @@
          }
  
          if (this.field_71315_w % 900 == 0)
-@@ -669,6 +709,7 @@
+@@ -681,6 +709,7 @@
  
          this.field_71304_b.func_76319_b();
          this.field_71304_b.func_76319_b();
@@ -267,7 +291,7 @@
      }
  
      public void func_71190_q()
-@@ -684,24 +725,31 @@
+@@ -696,24 +725,31 @@
          }
  
          this.field_71304_b.func_76318_c("levels");
@@ -304,7 +328,7 @@
  
                  try
                  {
-@@ -725,6 +773,7 @@
+@@ -737,6 +773,7 @@
                      throw new ReportedException(crashreport1);
                  }
  
@@ -312,7 +336,7 @@
                  this.field_71304_b.func_76319_b();
                  this.field_71304_b.func_76320_a("tracker");
                  worldserver.func_73039_n().func_72788_a();
-@@ -732,9 +781,11 @@
+@@ -744,9 +781,11 @@
                  this.field_71304_b.func_76319_b();
              }
  
@@ -325,7 +349,7 @@
          this.field_71304_b.func_76318_c("connection");
          this.func_147137_ag().func_151269_c();
          this.field_71304_b.func_76318_c("players");
-@@ -745,7 +796,7 @@
+@@ -757,7 +796,7 @@
  
          for (int k = 0; k < this.field_71322_p.size(); ++k)
          {
@@ -334,8 +358,137 @@
          }
  
          this.field_71304_b.func_76319_b();
-@@ -758,7 +809,8 @@
+@@ -768,136 +807,10 @@
+         return true;
+     }
  
+-    @SideOnly(Side.SERVER)
+-    public void func_82010_a(ITickable p_82010_1_)
+-    {
+-        this.field_71322_p.add(p_82010_1_);
+-    }
+-
+-    @SideOnly(Side.SERVER)
+-    public static void main(String[] p_main_0_)
+-    {
+-        Bootstrap.func_151354_b();
+-
+-        try
+-        {
+-            boolean flag = true;
+-            String s = null;
+-            String s1 = ".";
+-            String s2 = null;
+-            boolean flag1 = false;
+-            boolean flag2 = false;
+-            int i = -1;
+-
+-            for (int j = 0; j < p_main_0_.length; ++j)
+-            {
+-                String s3 = p_main_0_[j];
+-                String s4 = j == p_main_0_.length - 1 ? null : p_main_0_[j + 1];
+-                boolean flag3 = false;
+-
+-                if (!"nogui".equals(s3) && !"--nogui".equals(s3))
+-                {
+-                    if ("--port".equals(s3) && s4 != null)
+-                    {
+-                        flag3 = true;
+-
+-                        try
+-                        {
+-                            i = Integer.parseInt(s4);
+-                        }
+-                        catch (NumberFormatException numberformatexception)
+-                        {
+-                        }
+-                    }
+-                    else if ("--singleplayer".equals(s3) && s4 != null)
+-                    {
+-                        flag3 = true;
+-                        s = s4;
+-                    }
+-                    else if ("--universe".equals(s3) && s4 != null)
+-                    {
+-                        flag3 = true;
+-                        s1 = s4;
+-                    }
+-                    else if ("--world".equals(s3) && s4 != null)
+-                    {
+-                        flag3 = true;
+-                        s2 = s4;
+-                    }
+-                    else if ("--demo".equals(s3))
+-                    {
+-                        flag1 = true;
+-                    }
+-                    else if ("--bonusChest".equals(s3))
+-                    {
+-                        flag2 = true;
+-                    }
+-                }
+-                else
+-                {
+-                    flag = false;
+-                }
+-
+-                if (flag3)
+-                {
+-                    ++j;
+-                }
+-            }
+-
+-            YggdrasilAuthenticationService yggdrasilauthenticationservice = new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString());
+-            MinecraftSessionService minecraftsessionservice = yggdrasilauthenticationservice.createMinecraftSessionService();
+-            GameProfileRepository gameprofilerepository = yggdrasilauthenticationservice.createProfileRepository();
+-            PlayerProfileCache playerprofilecache = new PlayerProfileCache(gameprofilerepository, new File(s1, field_152367_a.getName()));
+-            final DedicatedServer dedicatedserver = new DedicatedServer(new File(s1), DataFixesManager.func_188279_a(), yggdrasilauthenticationservice, minecraftsessionservice, gameprofilerepository, playerprofilecache);
+-
+-            if (s != null)
+-            {
+-                dedicatedserver.func_71224_l(s);
+-            }
+-
+-            if (s2 != null)
+-            {
+-                dedicatedserver.func_71261_m(s2);
+-            }
+-
+-            if (i >= 0)
+-            {
+-                dedicatedserver.func_71208_b(i);
+-            }
+-
+-            if (flag1)
+-            {
+-                dedicatedserver.func_71204_b(true);
+-            }
+-
+-            if (flag2)
+-            {
+-                dedicatedserver.func_71194_c(true);
+-            }
+-
+-            if (flag && !GraphicsEnvironment.isHeadless())
+-            {
+-                dedicatedserver.func_120011_ar();
+-            }
+-
+-            dedicatedserver.func_71256_s();
+-            Runtime.getRuntime().addShutdownHook(new Thread("Server Shutdown Thread")
+-            {
+-                public void run()
+-                {
+-                    dedicatedserver.func_71260_j();
+-                }
+-            });
+-        }
+-        catch (Exception exception)
+-        {
+-            field_147145_h.fatal("Failed to start the minecraft server", (Throwable)exception);
+-        }
+-    }
+-
      public void func_71256_s()
      {
 -        this.field_175590_aa = new Thread(this, "Server thread");
@@ -344,7 +497,20 @@
          this.field_175590_aa.start();
      }
  
-@@ -774,14 +826,13 @@
+@@ -906,12 +819,6 @@
+         return new File(this.func_71238_n(), p_71209_1_);
+     }
+ 
+-    @SideOnly(Side.SERVER)
+-    public void func_71244_g(String p_71244_1_)
+-    {
+-        field_147145_h.info(p_71244_1_);
+-    }
+-
+     public void func_71236_h(String p_71236_1_)
+     {
+         field_147145_h.warn(p_71236_1_);
+@@ -919,14 +826,13 @@
  
      public WorldServer func_71218_a(int p_71218_1_)
      {
@@ -366,8 +532,31 @@
      }
  
      public String func_71249_w()
-@@ -811,7 +862,7 @@
+@@ -954,30 +860,9 @@
+         return this.field_71318_t.func_152600_g();
+     }
  
+-    @SideOnly(Side.SERVER)
+-    public boolean func_71239_B()
+-    {
+-        return false;
+-    }
+-
+-    @SideOnly(Side.SERVER)
+-    public void func_71201_j(String p_71201_1_)
+-    {
+-        field_147145_h.error(p_71201_1_);
+-    }
+-
+-    @SideOnly(Side.SERVER)
+-    public void func_71198_k(String p_71198_1_)
+-    {
+-        if (this.func_71239_B())
+-        {
+-            field_147145_h.info(p_71198_1_);
+-        }
+-    }
+-
      public String getServerModName()
      {
 -        return "vanilla";
@@ -375,7 +564,7 @@
      }
  
      public CrashReport func_71230_b(CrashReport p_71230_1_)
-@@ -840,7 +891,7 @@
+@@ -1006,7 +891,7 @@
  
      public List<String> func_184104_a(ICommandSender p_184104_1_, String p_184104_2_, @Nullable BlockPos p_184104_3_, boolean p_184104_4_)
      {
@@ -384,7 +573,26 @@
          boolean flag = p_184104_2_.startsWith("/");
  
          if (flag)
-@@ -961,24 +1012,24 @@
+@@ -1083,18 +968,6 @@
+         return this.field_71292_I;
+     }
+ 
+-    @SideOnly(Side.SERVER)
+-    public int func_71215_F()
+-    {
+-        return this.field_71319_s;
+-    }
+-
+-    @SideOnly(Side.SERVER)
+-    public void func_71208_b(int p_71208_1_)
+-    {
+-        this.field_71319_s = p_71208_1_;
+-    }
+-
+     public String func_71214_G()
+     {
+         return this.field_71293_J;
+@@ -1139,24 +1012,24 @@
  
      public void func_147139_a(EnumDifficulty p_147139_1_)
      {
@@ -418,7 +626,7 @@
                  }
              }
          }
-@@ -1027,51 +1078,51 @@
+@@ -1205,51 +1078,51 @@
  
      public void func_70000_a(Snooper p_70000_1_)
      {
@@ -494,7 +702,20 @@
      }
  
      public boolean func_70002_Q()
-@@ -1177,9 +1228,9 @@
+@@ -1274,12 +1147,6 @@
+         return this.field_190519_A;
+     }
+ 
+-    @SideOnly(Side.SERVER)
+-    public void func_190517_e(boolean p_190517_1_)
+-    {
+-        this.field_190519_A = p_190517_1_;
+-    }
+-
+     public boolean func_71268_U()
+     {
+         return this.field_71324_y;
+@@ -1361,9 +1228,9 @@
  
      public void func_71235_a(GameType p_71235_1_)
      {
@@ -506,7 +727,31 @@
          }
      }
  
-@@ -1280,11 +1331,11 @@
+@@ -1406,23 +1273,11 @@
+         return this.field_71305_c[0];
+     }
+ 
+-    @SideOnly(Side.SERVER)
+-    public int func_82357_ak()
+-    {
+-        return 16;
+-    }
+-
+     public boolean func_175579_a(World p_175579_1_, BlockPos p_175579_2_, EntityPlayer p_175579_3_)
+     {
+         return false;
+     }
+ 
+-    @SideOnly(Side.SERVER)
+-    public void func_104055_i(boolean p_104055_1_)
+-    {
+-        this.field_104057_T = p_104055_1_;
+-    }
+-
+     public boolean func_104056_am()
+     {
+         return this.field_104057_T;
+@@ -1476,11 +1331,11 @@
      @Nullable
      public Entity func_175576_a(UUID p_175576_1_)
      {
@@ -521,7 +766,7 @@
  
                  if (entity != null)
                  {
-@@ -1317,7 +1368,7 @@
+@@ -1513,7 +1368,7 @@
  
          if (!this.func_152345_ab() && !this.func_71241_aa())
          {
@@ -530,7 +775,7 @@
  
              synchronized (this.field_175589_i)
              {
-@@ -1329,11 +1380,11 @@
+@@ -1525,11 +1380,11 @@
          {
              try
              {
@@ -544,7 +789,7 @@
              }
          }
      }
-@@ -1341,7 +1392,7 @@
+@@ -1537,7 +1392,7 @@
      public ListenableFuture<Object> func_152344_a(Runnable p_152344_1_)
      {
          Validate.notNull(p_152344_1_);
@@ -553,10 +798,52 @@
      }
  
      public boolean func_152345_ab()
-@@ -1406,6 +1457,16 @@
-     @SideOnly(Side.SERVER)
-     public static void main(String[] p_main_0_)
+@@ -1550,18 +1405,6 @@
+         return 256;
+     }
+ 
+-    @SideOnly(Side.SERVER)
+-    public long func_175587_aJ()
+-    {
+-        return this.field_175591_ab;
+-    }
+-
+-    @SideOnly(Side.SERVER)
+-    public Thread func_175583_aK()
+-    {
+-        return this.field_175590_aa;
+-    }
+-
+     public int func_184108_a(@Nullable WorldServer p_184108_1_)
      {
+         return p_184108_1_ != null ? p_184108_1_.func_82736_K().func_180263_c("spawnRadius") : 10;
+@@ -1591,5 +1434,229 @@
+         {
+             this.func_152344_a(this::func_193031_aM);
+         }
++    }
++
++    @SideOnly(Side.SERVER)
++    public String func_71211_k()
++    {
++        return this.field_71320_r;
++    }
++
++    @SideOnly(Side.SERVER)
++    public void func_71189_e(String p_71189_1_)
++    {
++        this.field_71320_r = p_71189_1_;
++    }
++
++    @SideOnly(Side.SERVER)
++    public void func_82010_a(ITickable p_82010_1_)
++    {
++        this.field_71322_p.add(p_82010_1_);
++    }
++
++    @SideOnly(Side.SERVER)
++    public static void main(String[] p_main_0_)
++    {
 +        //Forge: Copied from DedicatedServer.init as to run as early as possible, Old code left in place intentionally.
 +        //Done in good faith with permission: https://github.com/MinecraftForge/MinecraftForge/issues/3659#issuecomment-390467028
 +        ServerEula eula = new ServerEula(new File("eula.txt"));
@@ -567,65 +854,192 @@
 +            return;
 +        }
 +
-         Bootstrap.func_151354_b();
- 
-         try
-@@ -1416,12 +1477,12 @@
-             String s2 = null;
-             boolean flag1 = false;
-             boolean flag2 = false;
--            int i = -1;
++        Bootstrap.func_151354_b();
++
++        try
++        {
++            boolean flag = true;
++            String s = null;
++            String s1 = ".";
++            String s2 = null;
++            boolean flag1 = false;
++            boolean flag2 = false;
 +            int l = -1;
- 
--            for (int j = 0; j < p_main_0_.length; ++j)
++
 +            for (int i1 = 0; i1 < p_main_0_.length; ++i1)
-             {
--                String s3 = p_main_0_[j];
--                String s4 = j == p_main_0_.length - 1 ? null : p_main_0_[j + 1];
++            {
 +                String s3 = p_main_0_[i1];
 +                String s4 = i1 == p_main_0_.length - 1 ? null : p_main_0_[i1 + 1];
-                 boolean flag3 = false;
- 
-                 if (!"nogui".equals(s3) && !"--nogui".equals(s3))
-@@ -1432,10 +1493,11 @@
- 
-                         try
-                         {
--                            i = Integer.parseInt(s4);
++                boolean flag3 = false;
++
++                if (!"nogui".equals(s3) && !"--nogui".equals(s3))
++                {
++                    if ("--port".equals(s3) && s4 != null)
++                    {
++                        flag3 = true;
++
++                        try
++                        {
 +                            l = Integer.parseInt(s4);
-                         }
--                        catch (NumberFormatException numberformatexception)
++                        }
 +                        catch (NumberFormatException var13)
-                         {
++                        {
 +                            ;
-                         }
-                     }
-                     else if ("--singleplayer".equals(s3) && s4 != null)
-@@ -1469,7 +1531,7 @@
- 
-                 if (flag3)
-                 {
--                    ++j;
++                        }
++                    }
++                    else if ("--singleplayer".equals(s3) && s4 != null)
++                    {
++                        flag3 = true;
++                        s = s4;
++                    }
++                    else if ("--universe".equals(s3) && s4 != null)
++                    {
++                        flag3 = true;
++                        s1 = s4;
++                    }
++                    else if ("--world".equals(s3) && s4 != null)
++                    {
++                        flag3 = true;
++                        s2 = s4;
++                    }
++                    else if ("--demo".equals(s3))
++                    {
++                        flag1 = true;
++                    }
++                    else if ("--bonusChest".equals(s3))
++                    {
++                        flag2 = true;
++                    }
++                }
++                else
++                {
++                    flag = false;
++                }
++
++                if (flag3)
++                {
 +                    ++i1;
-                 }
-             }
- 
-@@ -1489,9 +1551,9 @@
-                 dedicatedserver.func_71261_m(s2);
-             }
- 
--            if (i >= 0)
++                }
++            }
++
++            YggdrasilAuthenticationService yggdrasilauthenticationservice = new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString());
++            MinecraftSessionService minecraftsessionservice = yggdrasilauthenticationservice.createMinecraftSessionService();
++            GameProfileRepository gameprofilerepository = yggdrasilauthenticationservice.createProfileRepository();
++            PlayerProfileCache playerprofilecache = new PlayerProfileCache(gameprofilerepository, new File(s1, field_152367_a.getName()));
++            final DedicatedServer dedicatedserver = new DedicatedServer(new File(s1), DataFixesManager.func_188279_a(), yggdrasilauthenticationservice, minecraftsessionservice, gameprofilerepository, playerprofilecache);
++
++            if (s != null)
++            {
++                dedicatedserver.func_71224_l(s);
++            }
++
++            if (s2 != null)
++            {
++                dedicatedserver.func_71261_m(s2);
++            }
++
 +            if (l >= 0)
-             {
--                dedicatedserver.func_71208_b(i);
++            {
 +                dedicatedserver.func_71208_b(l);
-             }
- 
-             if (flag1)
-@@ -1591,5 +1653,10 @@
-     public Thread func_175583_aK()
-     {
-         return this.field_175590_aa;
++            }
++
++            if (flag1)
++            {
++                dedicatedserver.func_71204_b(true);
++            }
++
++            if (flag2)
++            {
++                dedicatedserver.func_71194_c(true);
++            }
++
++            if (flag && !GraphicsEnvironment.isHeadless())
++            {
++                dedicatedserver.func_120011_ar();
++            }
++
++            dedicatedserver.func_71256_s();
++            Runtime.getRuntime().addShutdownHook(new Thread("Server Shutdown Thread")
++            {
++                public void run()
++                {
++                    dedicatedserver.func_71260_j();
++                }
++            });
++        }
++        catch (Exception exception)
++        {
++            field_147145_h.fatal("Failed to start the minecraft server", (Throwable)exception);
++        }
++    }
++
++    @SideOnly(Side.SERVER)
++    public void func_71244_g(String p_71244_1_)
++    {
++        field_147145_h.info(p_71244_1_);
++    }
++
++    @SideOnly(Side.SERVER)
++    public boolean func_71239_B()
++    {
++        return false;
++    }
++
++    @SideOnly(Side.SERVER)
++    public void func_71201_j(String p_71201_1_)
++    {
++        field_147145_h.error(p_71201_1_);
++    }
++
++    @SideOnly(Side.SERVER)
++    public void func_71198_k(String p_71198_1_)
++    {
++        if (this.func_71239_B())
++        {
++            field_147145_h.info(p_71198_1_);
++        }
++    }
++
++    @SideOnly(Side.SERVER)
++    public int func_71215_F()
++    {
++        return this.field_71319_s;
++    }
++
++    @SideOnly(Side.SERVER)
++    public void func_71208_b(int p_71208_1_)
++    {
++        this.field_71319_s = p_71208_1_;
++    }
++
++    @SideOnly(Side.SERVER)
++    public void func_190517_e(boolean p_190517_1_)
++    {
++        this.field_190519_A = p_190517_1_;
++    }
++
++    @SideOnly(Side.SERVER)
++    public int func_82357_ak()
++    {
++        return 16;
++    }
++
++    @SideOnly(Side.SERVER)
++    public void func_104055_i(boolean p_104055_1_)
++    {
++        this.field_104057_T = p_104055_1_;
++    }
++
++    @SideOnly(Side.SERVER)
++    public long func_175587_aJ()
++    {
++        return this.field_175591_ab;
++    }
++
++    @SideOnly(Side.SERVER)
++    public Thread func_175583_aK()
++    {
++        return this.field_175590_aa;
 +    }
 +
 +    public DataFixer getDataFixer()

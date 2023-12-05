@@ -13,3 +13,26 @@
          this.field_77174_a = p_i1957_1_;
          this.field_77172_b = p_i1957_3_;
          this.field_77173_c = p_i1957_4_;
+@@ -35,16 +36,16 @@
+         return this;
+     }
+ 
++    public WorldSettings func_82750_a(String p_82750_1_)
++    {
++        this.field_82751_h = p_82750_1_;
++        return this;
++    }
++
+     @SideOnly(Side.CLIENT)
+     public WorldSettings func_77166_b()
+     {
+         this.field_77168_f = true;
+-        return this;
+-    }
+-
+-    public WorldSettings func_82750_a(String p_82750_1_)
+-    {
+-        this.field_82751_h = p_82750_1_;
+         return this;
+     }
+ 

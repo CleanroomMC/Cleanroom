@@ -89,16 +89,26 @@
          }
  
          return iblockstate;
-@@ -202,7 +203,7 @@
- 
-     public IBlockState func_176203_a(int p_176203_1_)
-     {
--        return this.func_176223_P().func_177226_a(field_176284_a, func_176281_b(p_176203_1_)).func_177226_a(field_176283_b, (p_176203_1_ & 4) != 0).func_177226_a(field_176285_M, (p_176203_1_ & 8) == 0 ? BlockTrapDoor.DoorHalf.BOTTOM : BlockTrapDoor.DoorHalf.TOP);
-+        return this.func_176223_P().func_177226_a(field_176284_a, func_176281_b(p_176203_1_)).func_177226_a(field_176283_b, Boolean.valueOf((p_176203_1_ & 4) != 0)).func_177226_a(field_176285_M, (p_176203_1_ & 8) == 0 ? BlockTrapDoor.DoorHalf.BOTTOM : BlockTrapDoor.DoorHalf.TOP);
+@@ -200,23 +201,23 @@
+         }
      }
  
++    public IBlockState func_176203_a(int p_176203_1_)
++    {
++        return this.func_176223_P().func_177226_a(field_176284_a, func_176281_b(p_176203_1_)).func_177226_a(field_176283_b, Boolean.valueOf((p_176203_1_ & 4) != 0)).func_177226_a(field_176285_M, (p_176203_1_ & 8) == 0 ? BlockTrapDoor.DoorHalf.BOTTOM : BlockTrapDoor.DoorHalf.TOP);
++    }
++
      @SideOnly(Side.CLIENT)
-@@ -214,9 +215,9 @@
+     public BlockRenderLayer func_180664_k()
+     {
+         return BlockRenderLayer.CUTOUT;
+     }
+ 
+-    public IBlockState func_176203_a(int p_176203_1_)
+-    {
+-        return this.func_176223_P().func_177226_a(field_176284_a, func_176281_b(p_176203_1_)).func_177226_a(field_176283_b, (p_176203_1_ & 4) != 0).func_177226_a(field_176285_M, (p_176203_1_ & 8) == 0 ? BlockTrapDoor.DoorHalf.BOTTOM : BlockTrapDoor.DoorHalf.TOP);
+-    }
+-
      public int func_176201_c(IBlockState p_176201_1_)
      {
          int i = 0;

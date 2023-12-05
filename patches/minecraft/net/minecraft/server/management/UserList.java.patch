@@ -9,7 +9,20 @@
      private boolean field_152697_e = true;
      private static final ParameterizedType field_152698_f = new ParameterizedType()
      {
-@@ -90,7 +90,7 @@
+@@ -73,12 +73,6 @@
+         this.field_152697_e = p_152686_1_;
+     }
+ 
+-    @SideOnly(Side.SERVER)
+-    public File func_152691_c()
+-    {
+-        return this.field_152695_c;
+-    }
+-
+     public void func_152687_a(V p_152687_1_)
+     {
+         this.field_152696_d.put(this.func_152681_a(p_152687_1_.func_152640_f()), p_152687_1_);
+@@ -96,7 +90,7 @@
      public V func_152683_b(K p_152683_1_)
      {
          this.func_152680_h();
@@ -18,16 +31,30 @@
      }
  
      public void func_152684_c(K p_152684_1_)
-@@ -115,7 +115,7 @@
+@@ -113,15 +107,15 @@
+         }
+     }
  
++    @SideOnly(Side.SERVER)
++    public File func_152691_c()
++    {
++        return this.field_152695_c;
++    }
++
      public String[] func_152685_a()
      {
 -        return this.field_152696_d.keySet().toArray(new String[this.field_152696_d.size()]);
+-    }
+-
+-    @SideOnly(Side.SERVER)
+-    public boolean func_152690_d()
+-    {
+-        return this.field_152696_d.size() < 1;
 +        return (String[])this.field_152696_d.keySet().toArray(new String[this.field_152696_d.size()]);
      }
  
      protected String func_152681_a(K p_152681_1_)
-@@ -130,7 +130,7 @@
+@@ -136,7 +130,7 @@
  
      private void func_152680_h()
      {
@@ -36,7 +63,7 @@
  
          for (V v : this.field_152696_d.values())
          {
-@@ -148,7 +148,7 @@
+@@ -154,7 +148,7 @@
  
      protected UserListEntry<K> func_152682_a(JsonObject p_152682_1_)
      {
@@ -45,6 +72,19 @@
      }
  
      protected Map<String, V> func_152688_e()
+@@ -180,6 +174,12 @@
+     }
+ 
+     @SideOnly(Side.SERVER)
++    public boolean func_152690_d()
++    {
++        return this.field_152696_d.size() < 1;
++    }
++
++    @SideOnly(Side.SERVER)
+     public void func_152679_g() throws IOException, FileNotFoundException
+     {
+         if (this.field_152695_c.exists())
 @@ -190,7 +190,7 @@
              try
              {

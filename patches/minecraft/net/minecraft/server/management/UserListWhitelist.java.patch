@@ -1,6 +1,19 @@
 --- before/net/minecraft/server/management/UserListWhitelist.java
 +++ after/net/minecraft/server/management/UserListWhitelist.java
-@@ -25,7 +25,7 @@
+@@ -18,12 +18,6 @@
+         return new UserListWhitelistEntry(p_152682_1_);
+     }
+ 
+-    @SideOnly(Side.SERVER)
+-    public boolean func_152705_a(GameProfile p_152705_1_)
+-    {
+-        return this.func_152692_d(p_152705_1_);
+-    }
+-
+     public String[] func_152685_a()
+     {
+         String[] astring = new String[this.func_152688_e().size()];
+@@ -31,12 +25,18 @@
  
          for (UserListWhitelistEntry userlistwhitelistentry : this.func_152688_e().values())
          {
@@ -9,6 +22,17 @@
          }
  
          return astring;
+     }
+ 
++    @SideOnly(Side.SERVER)
++    public boolean func_152705_a(GameProfile p_152705_1_)
++    {
++        return this.func_152692_d(p_152705_1_);
++    }
++
+     protected String func_152681_a(GameProfile p_152681_1_)
+     {
+         return p_152681_1_.getId().toString();
 @@ -46,9 +46,9 @@
      {
          for (UserListWhitelistEntry userlistwhitelistentry : this.func_152688_e().values())

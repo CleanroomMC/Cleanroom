@@ -1,0 +1,58 @@
+--- before/net/minecraft/network/play/server/SPacketSpawnObject.java
++++ after/net/minecraft/network/play/server/SPacketSpawnObject.java
+@@ -103,18 +103,33 @@
+         return this.field_149018_a;
+     }
+ 
++    public void func_149003_d(int p_149003_1_)
++    {
++        this.field_149015_e = p_149003_1_;
++    }
++
+     @SideOnly(Side.CLIENT)
+     public UUID func_186879_b()
+     {
+         return this.field_186883_b;
+     }
+ 
++    public void func_149000_e(int p_149000_1_)
++    {
++        this.field_149012_f = p_149000_1_;
++    }
++
+     @SideOnly(Side.CLIENT)
+     public double func_186880_c()
+     {
+         return this.field_149016_b;
+     }
+ 
++    public void func_149007_f(int p_149007_1_)
++    {
++        this.field_149013_g = p_149007_1_;
++    }
++
+     @SideOnly(Side.CLIENT)
+     public double func_186882_d()
+     {
+@@ -167,21 +182,6 @@
+     public int func_149009_m()
+     {
+         return this.field_149020_k;
+-    }
+-
+-    public void func_149003_d(int p_149003_1_)
+-    {
+-        this.field_149015_e = p_149003_1_;
+-    }
+-
+-    public void func_149000_e(int p_149000_1_)
+-    {
+-        this.field_149012_f = p_149000_1_;
+-    }
+-
+-    public void func_149007_f(int p_149007_1_)
+-    {
+-        this.field_149013_g = p_149007_1_;
+     }
+ 
+     @SideOnly(Side.CLIENT)

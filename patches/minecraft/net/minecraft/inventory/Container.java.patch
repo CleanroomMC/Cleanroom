@@ -22,8 +22,16 @@
  
      protected Slot func_75146_a(Slot p_75146_1_)
      {
-@@ -56,11 +56,11 @@
+@@ -54,39 +54,41 @@
+         }
+     }
  
+-    @SideOnly(Side.CLIENT)
+-    public void func_82847_b(IContainerListener p_82847_1_)
+-    {
+-        this.field_75149_d.remove(p_82847_1_);
+-    }
+-
      public NonNullList<ItemStack> func_75138_a()
      {
 -        NonNullList<ItemStack> nonnulllist = NonNullList.func_191196_a();
@@ -36,7 +44,15 @@
          }
  
          return nonnulllist;
-@@ -76,17 +76,19 @@
+     }
+ 
++    @SideOnly(Side.CLIENT)
++    public void func_82847_b(IContainerListener p_82847_1_)
++    {
++        this.field_75149_d.remove(p_82847_1_);
++    }
++
+     public void func_75142_b()
      {
          for (int i = 0; i < this.field_75151_b.size(); ++i)
          {

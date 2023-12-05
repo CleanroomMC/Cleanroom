@@ -77,24 +77,57 @@
          }
      }
  
-@@ -230,7 +235,7 @@
-     {
-         double d0 = (double)MathHelper.func_76131_a(this.func_180626_a(p_180627_1_), 0.0F, 1.0F);
-         double d1 = (double)MathHelper.func_76131_a(this.func_76727_i(), 0.0F, 1.0F);
+@@ -220,27 +225,19 @@
+         this.field_76760_I.func_180292_a(p_180624_1_, p_180624_2_, this, p_180624_3_);
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public int func_180627_b(BlockPos p_180627_1_)
+-    {
+-        double d0 = (double)MathHelper.func_76131_a(this.func_180626_a(p_180627_1_), 0.0F, 1.0F);
+-        double d1 = (double)MathHelper.func_76131_a(this.func_76727_i(), 0.0F, 1.0F);
 -        return ColorizerGrass.func_77480_a(d0, d1);
-+        return getModdedBiomeGrassColor(ColorizerGrass.func_77480_a(d0, d1));
-     }
- 
-     public final void func_180628_b(World p_180628_1_, Random p_180628_2_, ChunkPrimer p_180628_3_, int p_180628_4_, int p_180628_5_, double p_180628_6_)
-@@ -323,7 +328,7 @@
-     {
-         double d0 = (double)MathHelper.func_76131_a(this.func_180626_a(p_180625_1_), 0.0F, 1.0F);
-         double d1 = (double)MathHelper.func_76131_a(this.func_76727_i(), 0.0F, 1.0F);
+-    }
+-
+-    @SideOnly(Side.CLIENT)
+-    public int func_180625_c(BlockPos p_180625_1_)
+-    {
+-        double d0 = (double)MathHelper.func_76131_a(this.func_180626_a(p_180625_1_), 0.0F, 1.0F);
+-        double d1 = (double)MathHelper.func_76131_a(this.func_76727_i(), 0.0F, 1.0F);
 -        return ColorizerFoliage.func_77470_a(d0, d1);
-+        return getModdedBiomeFoliageColor(ColorizerFoliage.func_77470_a(d0, d1));
+-    }
+-
+     public void func_180622_a(World p_180622_1_, Random p_180622_2_, ChunkPrimer p_180622_3_, int p_180622_4_, int p_180622_5_, double p_180622_6_)
+     {
+         this.func_180628_b(p_180622_1_, p_180622_2_, p_180622_3_, p_180622_4_, p_180622_5_, p_180622_6_);
      }
  
++    @SideOnly(Side.CLIENT)
++    public int func_180627_b(BlockPos p_180627_1_)
++    {
++        double d0 = (double)MathHelper.func_76131_a(this.func_180626_a(p_180627_1_), 0.0F, 1.0F);
++        double d1 = (double)MathHelper.func_76131_a(this.func_76727_i(), 0.0F, 1.0F);
++        return getModdedBiomeGrassColor(ColorizerGrass.func_77480_a(d0, d1));
++    }
++
+     public final void func_180628_b(World p_180628_1_, Random p_180628_2_, ChunkPrimer p_180628_3_, int p_180628_4_, int p_180628_5_, double p_180628_6_)
+     {
+         int i = p_180628_1_.func_181545_F();
+@@ -326,6 +323,14 @@
+         }
+     }
+ 
++    @SideOnly(Side.CLIENT)
++    public int func_180625_c(BlockPos p_180625_1_)
++    {
++        double d0 = (double)MathHelper.func_76131_a(this.func_180626_a(p_180625_1_), 0.0F, 1.0F);
++        double d1 = (double)MathHelper.func_76131_a(this.func_76727_i(), 0.0F, 1.0F);
++        return getModdedBiomeFoliageColor(ColorizerFoliage.func_77470_a(d0, d1));
++    }
++
      public Class <? extends Biome > func_150562_l()
+     {
+         return this.getClass();
 @@ -389,7 +394,7 @@
      @SideOnly(Side.CLIENT)
      public final int func_185361_o()

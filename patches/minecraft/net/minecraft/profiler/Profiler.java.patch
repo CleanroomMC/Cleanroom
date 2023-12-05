@@ -127,15 +127,30 @@
              return list;
          }
      }
-@@ -153,7 +152,7 @@
- 
-     public String func_76322_c()
-     {
--        return this.field_76325_b.isEmpty() ? "[UNKNOWN]" : this.field_76325_b.get(this.field_76325_b.size() - 1);
-+        return this.field_76325_b.isEmpty() ? "[UNKNOWN]" : (String)this.field_76325_b.get(this.field_76325_b.size() - 1);
+@@ -151,6 +150,11 @@
+         this.func_76320_a(p_76318_1_);
      }
  
++    public String func_76322_c()
++    {
++        return this.field_76325_b.isEmpty() ? "[UNKNOWN]" : (String)this.field_76325_b.get(this.field_76325_b.size() - 1);
++    }
++
      @SideOnly(Side.CLIENT)
+     public void func_194339_b(Supplier<String> p_194339_1_)
+     {
+@@ -158,11 +162,6 @@
+         this.func_194340_a(p_194339_1_);
+     }
+ 
+-    public String func_76322_c()
+-    {
+-        return this.field_76325_b.isEmpty() ? "[UNKNOWN]" : this.field_76325_b.get(this.field_76325_b.size() - 1);
+-    }
+-
+     public static final class Result implements Comparable<Profiler.Result>
+         {
+             public double field_76332_a;
 @@ -194,4 +193,16 @@
                  return (this.field_76331_c.hashCode() & 11184810) + 4473924;
              }

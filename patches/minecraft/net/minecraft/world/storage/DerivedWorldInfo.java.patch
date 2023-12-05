@@ -1,5 +1,25 @@
 --- before/net/minecraft/world/storage/DerivedWorldInfo.java
 +++ after/net/minecraft/world/storage/DerivedWorldInfo.java
+@@ -117,15 +117,15 @@
+     {
+     }
+ 
++    public void func_82572_b(long p_82572_1_)
++    {
++    }
++
+     @SideOnly(Side.CLIENT)
+     public void func_76087_c(int p_76087_1_)
+     {
+     }
+ 
+-    public void func_82572_b(long p_82572_1_)
+-    {
+-    }
+-
+     public void func_76068_b(long p_76068_1_)
+     {
+     }
 @@ -218,13 +218,25 @@
      {
      }

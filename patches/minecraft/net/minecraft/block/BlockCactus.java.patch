@@ -75,17 +75,26 @@
      }
  
      public void func_180634_a(World p_180634_1_, BlockPos p_180634_2_, IBlockState p_180634_3_, Entity p_180634_4_)
-@@ -121,7 +128,7 @@
- 
-     public IBlockState func_176203_a(int p_176203_1_)
-     {
--        return this.func_176223_P().func_177226_a(field_176587_a, p_176203_1_);
-+        return this.func_176223_P().func_177226_a(field_176587_a, Integer.valueOf(p_176203_1_));
+@@ -119,25 +126,37 @@
+         p_180634_4_.func_70097_a(DamageSource.field_76367_g, 1.0F);
      }
  
++    public IBlockState func_176203_a(int p_176203_1_)
++    {
++        return this.func_176223_P().func_177226_a(field_176587_a, Integer.valueOf(p_176203_1_));
++    }
++
      @SideOnly(Side.CLIENT)
-@@ -132,12 +139,24 @@
+     public BlockRenderLayer func_180664_k()
+     {
+         return BlockRenderLayer.CUTOUT;
+     }
  
+-    public IBlockState func_176203_a(int p_176203_1_)
+-    {
+-        return this.func_176223_P().func_177226_a(field_176587_a, p_176203_1_);
+-    }
+-
      public int func_176201_c(IBlockState p_176201_1_)
      {
 -        return p_176201_1_.func_177229_b(field_176587_a);

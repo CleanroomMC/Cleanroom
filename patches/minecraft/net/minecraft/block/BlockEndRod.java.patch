@@ -47,17 +47,29 @@
          double d0 = (double)p_180655_3_.func_177958_n() + 0.55D - (double)(p_180655_4_.nextFloat() * 0.1F);
          double d1 = (double)p_180655_3_.func_177956_o() + 0.55D - (double)(p_180655_4_.nextFloat() * 0.1F);
          double d2 = (double)p_180655_3_.func_177952_p() + 0.55D - (double)(p_180655_4_.nextFloat() * 0.1F);
-@@ -108,7 +109,8 @@
+@@ -105,26 +106,27 @@
+         }
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public BlockRenderLayer func_180664_k()
+-    {
+-        return BlockRenderLayer.CUTOUT;
+-    }
+-
      public IBlockState func_176203_a(int p_176203_1_)
      {
          IBlockState iblockstate = this.func_176223_P();
 -        return iblockstate.func_177226_a(field_176387_N, EnumFacing.func_82600_a(p_176203_1_));
 +        iblockstate = iblockstate.func_177226_a(field_176387_N, EnumFacing.func_82600_a(p_176203_1_));
 +        return iblockstate;
++    }
++
++    @SideOnly(Side.CLIENT)
++    public BlockRenderLayer func_180664_k()
++    {
++        return BlockRenderLayer.CUTOUT;
      }
- 
-     @SideOnly(Side.CLIENT)
-@@ -119,12 +121,12 @@
  
      public int func_176201_c(IBlockState p_176201_1_)
      {

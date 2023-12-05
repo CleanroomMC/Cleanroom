@@ -118,6 +118,34 @@
      }
  
      @Deprecated
+@@ -446,13 +455,6 @@
+     }
+ 
+     @Deprecated
+-    @SideOnly(Side.CLIENT)
+-    public AxisAlignedBB func_180640_a(IBlockState p_180640_1_, World p_180640_2_, BlockPos p_180640_3_)
+-    {
+-        return p_180640_1_.func_185900_c(p_180640_2_, p_180640_3_).func_186670_a(p_180640_3_);
+-    }
+-
+-    @Deprecated
+     public void func_185477_a(IBlockState p_185477_1_, World p_185477_2_, BlockPos p_185477_3_, AxisAlignedBB p_185477_4_, List<AxisAlignedBB> p_185477_5_, @Nullable Entity p_185477_6_, boolean p_185477_7_)
+     {
+         func_185492_a(p_185477_3_, p_185477_4_, p_185477_5_, p_185477_1_.func_185890_d(p_185477_2_, p_185477_3_));
+@@ -479,6 +481,13 @@
+     }
+ 
+     @Deprecated
++    @SideOnly(Side.CLIENT)
++    public AxisAlignedBB func_180640_a(IBlockState p_180640_1_, World p_180640_2_, BlockPos p_180640_3_)
++    {
++        return p_180640_1_.func_185900_c(p_180640_2_, p_180640_3_).func_186670_a(p_180640_3_);
++    }
++
++    @Deprecated
+     public boolean func_149662_c(IBlockState p_149662_1_)
+     {
+         return true;
 @@ -528,6 +537,10 @@
  
      public void func_180663_b(World p_180663_1_, BlockPos p_180663_2_, IBlockState p_180663_3_)

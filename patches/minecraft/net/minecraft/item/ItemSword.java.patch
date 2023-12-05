@@ -1,5 +1,28 @@
 --- before/net/minecraft/item/ItemSword.java
 +++ after/net/minecraft/item/ItemSword.java
+@@ -65,17 +65,17 @@
+         return true;
+     }
+ 
++    public boolean func_150897_b(IBlockState p_150897_1_)
++    {
++        return p_150897_1_.func_177230_c() == Blocks.field_150321_G;
++    }
++
+     @SideOnly(Side.CLIENT)
+     public boolean func_77662_d()
+     {
+         return true;
+     }
+ 
+-    public boolean func_150897_b(IBlockState p_150897_1_)
+-    {
+-        return p_150897_1_.func_177230_c() == Blocks.field_150321_G;
+-    }
+-
+     public int func_77619_b()
+     {
+         return this.field_150933_b.func_77995_e();
 @@ -88,7 +88,9 @@
  
      public boolean func_82789_a(ItemStack p_82789_1_, ItemStack p_82789_2_)

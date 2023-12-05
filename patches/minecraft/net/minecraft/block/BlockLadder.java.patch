@@ -17,8 +17,29 @@
  
          if (!this.func_193392_c(p_189540_2_, p_189540_3_.func_177972_a(enumfacing.func_176734_d()), enumfacing))
          {
-@@ -139,23 +140,25 @@
+@@ -119,12 +120,6 @@
+         super.func_189540_a(p_189540_1_, p_189540_2_, p_189540_3_, p_189540_4_, p_189540_5_);
+     }
  
+-    @SideOnly(Side.CLIENT)
+-    public BlockRenderLayer func_180664_k()
+-    {
+-        return BlockRenderLayer.CUTOUT;
+-    }
+-
+     public IBlockState func_176203_a(int p_176203_1_)
+     {
+         EnumFacing enumfacing = EnumFacing.func_82600_a(p_176203_1_);
+@@ -137,25 +132,33 @@
+         return this.func_176223_P().func_177226_a(field_176382_a, enumfacing);
+     }
+ 
++    @SideOnly(Side.CLIENT)
++    public BlockRenderLayer func_180664_k()
++    {
++        return BlockRenderLayer.CUTOUT;
++    }
++
      public int func_176201_c(IBlockState p_176201_1_)
      {
 -        return p_176201_1_.func_177229_b(field_176382_a).func_176745_a();

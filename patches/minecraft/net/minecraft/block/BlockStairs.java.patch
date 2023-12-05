@@ -55,6 +55,47 @@
  
                  switch (blockstairs$enumshape)
                  {
+@@ -230,28 +231,28 @@
+         return this.field_150149_b.func_149638_a(p_149638_1_);
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public BlockRenderLayer func_180664_k()
+-    {
+-        return this.field_150149_b.func_180664_k();
+-    }
+-
+     public int func_149738_a(World p_149738_1_)
+     {
+         return this.field_150149_b.func_149738_a(p_149738_1_);
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    public AxisAlignedBB func_180640_a(IBlockState p_180640_1_, World p_180640_2_, BlockPos p_180640_3_)
+-    {
+-        return this.field_150151_M.func_185918_c(p_180640_2_, p_180640_3_);
+-    }
+-
+     public Vec3d func_176197_a(World p_176197_1_, BlockPos p_176197_2_, Entity p_176197_3_, Vec3d p_176197_4_)
+     {
+         return this.field_150149_b.func_176197_a(p_176197_1_, p_176197_2_, p_176197_3_, p_176197_4_);
+     }
+ 
++    @SideOnly(Side.CLIENT)
++    public BlockRenderLayer func_180664_k()
++    {
++        return this.field_150149_b.func_180664_k();
++    }
++
++    @SideOnly(Side.CLIENT)
++    public AxisAlignedBB func_180640_a(IBlockState p_180640_1_, World p_180640_2_, BlockPos p_180640_3_)
++    {
++        return this.field_150151_M.func_185918_c(p_180640_2_, p_180640_3_);
++    }
++
+     public boolean func_149703_v()
+     {
+         return this.field_150149_b.func_149703_v();
 @@ -312,13 +313,13 @@
      {
          IBlockState iblockstate = super.func_180642_a(p_180642_1_, p_180642_2_, p_180642_3_, p_180642_4_, p_180642_5_, p_180642_6_, p_180642_7_, p_180642_8_);

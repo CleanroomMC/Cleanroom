@@ -83,12 +83,37 @@
          {
              func_185492_a(p_185477_3_, p_185477_4_, p_185477_5_, new AxisAlignedBB(0.1875D, 0.1875D, 0.8125D, 0.8125D, 0.8125D, 1.0D));
          }
-@@ -183,7 +184,7 @@
- 
-     protected BlockStateContainer func_180661_e()
-     {
--        return new BlockStateContainer(this, field_185609_a, field_185610_b, field_185611_c, field_185612_d, field_185613_e, field_185614_f);
-+        return new BlockStateContainer(this, new IProperty[] {field_185609_a, field_185610_b, field_185611_c, field_185612_d, field_185613_e, field_185614_f});
+@@ -181,6 +182,16 @@
+         return block2 == this || block2 == Blocks.field_150377_bs;
      }
  
-     public boolean func_176205_b(IBlockAccess p_176205_1_, BlockPos p_176205_2_)
++    protected BlockStateContainer func_180661_e()
++    {
++        return new BlockStateContainer(this, new IProperty[] {field_185609_a, field_185610_b, field_185611_c, field_185612_d, field_185613_e, field_185614_f});
++    }
++
++    public boolean func_176205_b(IBlockAccess p_176205_1_, BlockPos p_176205_2_)
++    {
++        return false;
++    }
++
+     @SideOnly(Side.CLIENT)
+     public BlockRenderLayer func_180664_k()
+     {
+@@ -192,16 +203,6 @@
+     {
+         Block block = p_176225_2_.func_180495_p(p_176225_3_.func_177972_a(p_176225_4_)).func_177230_c();
+         return block != this && block != Blocks.field_185766_cS && (p_176225_4_ != EnumFacing.DOWN || block != Blocks.field_150377_bs);
+-    }
+-
+-    protected BlockStateContainer func_180661_e()
+-    {
+-        return new BlockStateContainer(this, field_185609_a, field_185610_b, field_185611_c, field_185612_d, field_185613_e, field_185614_f);
+-    }
+-
+-    public boolean func_176205_b(IBlockAccess p_176205_1_, BlockPos p_176205_2_)
+-    {
+-        return false;
+     }
+ 
+     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
