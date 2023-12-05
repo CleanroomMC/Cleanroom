@@ -143,7 +143,7 @@ public class MipMap extends Util {
         // Determine bytes per input type
         switch (typein) {
             case GL_UNSIGNED_BYTE -> {
-                if (!stbir_resize_uint8_srgb(
+                if (null == stbir_resize_uint8_srgb(
                         dataIn,
                         widthIn,
                         heightIn,
@@ -152,14 +152,12 @@ public class MipMap extends Util {
                         widthOut,
                         heightOut,
                         strideOut,
-                        components,
-                        alphaIdx,
                         0)) {
                     throw new RuntimeException("Couldn't resize image with stbir");
                 }
             }
             case GL_FLOAT -> {
-                if (!stbir_resize_float(
+                if (null != stbir_resize_float_linear(
                         dataIn.asFloatBuffer(),
                         widthIn,
                         heightIn,
@@ -168,7 +166,7 @@ public class MipMap extends Util {
                         widthOut,
                         heightOut,
                         strideOut * 4,
-                        components)) {
+                        0)) {
                     throw new RuntimeException("Couldn't resize image with stbir");
                 }
             }
