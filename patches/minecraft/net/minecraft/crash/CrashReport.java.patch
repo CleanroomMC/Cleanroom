@@ -1,6 +1,6 @@
 --- before/net/minecraft/crash/CrashReport.java
 +++ after/net/minecraft/crash/CrashReport.java
-@@ -9,18 +9,25 @@
+@@ -9,18 +9,26 @@
  import java.io.Writer;
  import java.lang.management.ManagementFactory;
  import java.lang.management.RuntimeMXBean;
@@ -23,10 +23,11 @@
  import org.apache.logging.log4j.Logger;
 +import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 +import org.spongepowered.asm.mixin.transformer.ClassInfo;
++import org.spongepowered.asm.mixin.transformer.MixinInfo;
  
  public class CrashReport
  {
-@@ -28,7 +35,7 @@
+@@ -28,7 +36,7 @@
      private final String field_71513_a;
      private final Throwable field_71511_b;
      private final CrashReportCategory field_85061_c = new CrashReportCategory(this, "System Details");
@@ -35,7 +36,7 @@
      private File field_71510_d;
      private boolean field_85059_f = true;
      private StackTraceElement[] field_85060_g = new StackTraceElement[0];
-@@ -116,6 +123,7 @@
+@@ -116,6 +124,7 @@
                  return IntCache.func_85144_b();
              }
          });
@@ -43,7 +44,7 @@
      }
  
      public String func_71501_a()
-@@ -132,7 +140,7 @@
+@@ -132,7 +141,7 @@
      {
          if ((this.field_85060_g == null || this.field_85060_g.length <= 0) && !this.field_71512_c.isEmpty())
          {
@@ -52,7 +53,7 @@
          }
  
          if (this.field_85060_g != null && this.field_85060_g.length > 0)
-@@ -198,6 +206,52 @@
+@@ -198,6 +207,46 @@
              IOUtils.closeQuietly((Writer)printwriter);
          }
  
@@ -64,35 +65,29 @@
 +                for (StackTraceElement stackTraceElement : stacktrace) {
 +                    classes.add(stackTraceElement.getClassName());
 +                }
-+                Method classInfo$getMixins;
-+                try {
-+                    classInfo$getMixins = ClassInfo.class.getDeclaredMethod("getMixins");
-+                    classInfo$getMixins.setAccessible(true);
-+                    for (String className : classes) {
-+                        ClassInfo classInfo = ClassInfo.fromCache(className);
-+                        if (classInfo != null) {
-+                            @SuppressWarnings("unchecked")
-+                            Set<IMixinInfo> mixinInfos = (Set<IMixinInfo>) classInfo$getMixins.invoke(classInfo);
-+                            if (!mixinInfos.isEmpty()) {
-+                                if (mixinMetadataBuilder == null) {
-+                                    mixinMetadataBuilder = new StringBuilder("\n(MixinBooter) Mixins in Stacktrace:");
-+                                }
-+                                mixinMetadataBuilder.append("\n\t");
-+                                mixinMetadataBuilder.append(className);
-+                                mixinMetadataBuilder.append(":");
-+                                for (IMixinInfo mixinInfo : mixinInfos) {
-+                                    mixinMetadataBuilder.append("\n\t\t");
-+                                    mixinMetadataBuilder.append(mixinInfo.getClassName());
-+                                    mixinMetadataBuilder.append(" (");
-+                                    mixinMetadataBuilder.append(mixinInfo.getConfig().getName());
-+                                    mixinMetadataBuilder.append(")");
-+                                }
++                for (String className : classes) {
++                    ClassInfo classInfo = ClassInfo.fromCache(className);
++                    if (classInfo != null) {
++                        @SuppressWarnings("unchecked")
++                        Set<MixinInfo> mixinInfos = classInfo.getMixins();
++                        if (!mixinInfos.isEmpty()) {
++                            if (mixinMetadataBuilder == null) {
++                                mixinMetadataBuilder = new StringBuilder("\n(MixinBooter) Mixins in Stacktrace:");
++                            }
++                            mixinMetadataBuilder.append("\n\t");
++                            mixinMetadataBuilder.append(className);
++                            mixinMetadataBuilder.append(":");
++                            for (IMixinInfo mixinInfo : mixinInfos) {
++                                mixinMetadataBuilder.append("\n\t\t");
++                                mixinMetadataBuilder.append(mixinInfo.getClassName());
++                                mixinMetadataBuilder.append(" (");
++                                mixinMetadataBuilder.append(mixinInfo.getConfig().getName());
++                                mixinMetadataBuilder.append(")");
 +                            }
 +                        }
 +                    }
-+                } catch (ReflectiveOperationException e) {
-+                    MixinBooterPlugin.LOGGER.warn("Not able to reflect ClassInfo#getMixins");
 +                }
++
 +                if (mixinMetadataBuilder == null) {
 +                    return s + "\nNo Mixin Metadata is found in the Stacktrace.\n";
 +                } else {
@@ -105,7 +100,7 @@
          return s;
      }
  
-@@ -205,6 +259,7 @@
+@@ -205,6 +254,7 @@
      {
          StringBuilder stringbuilder = new StringBuilder();
          stringbuilder.append("---- Minecraft Crash Report ----\n");
@@ -113,7 +108,7 @@
          stringbuilder.append("// ");
          stringbuilder.append(func_71503_h());
          stringbuilder.append("\n\n");
-@@ -247,26 +302,27 @@
+@@ -247,26 +297,27 @@
              }
  
              Writer writer = null;
@@ -145,7 +140,7 @@
          }
      }
  
-@@ -337,7 +393,7 @@
+@@ -337,7 +388,7 @@
          {
              return astring[(int)(System.nanoTime() % (long)astring.length)];
          }
