@@ -657,7 +657,7 @@ public class CoreModManager {
         // Basically a copy of Collections.sort pre 8u20, optimized as we know we're an array list.
         // Thanks unhelpful fixer of http://bugs.java.com/view_bug.do?bug_id=8032636
         ITweaker[] toSort = tweakers.toArray(new ITweaker[tweakers.size()]);
-        ToIntFunction<ITweaker> getOrder = o -> o instanceof FMLInjectionAndSortingTweaker ? Integer.MIN_VALUE : o instanceof FMLPluginWrapper ? ((FMLPluginWrapper)o).sortIndex : o instanceof MixinTweaker ? Integer.MIN_VALUE + 3 : tweakSorting.getOrDefault(o.getClass().getName(), 0);
+        ToIntFunction<ITweaker> getOrder = o -> o instanceof FMLInjectionAndSortingTweaker ? Integer.MIN_VALUE : o instanceof FMLPluginWrapper ? ((FMLPluginWrapper)o).sortIndex : o instanceof MixinTweaker ? Integer.MAX_VALUE : tweakSorting.getOrDefault(o.getClass().getName(), 0);
         Arrays.sort(toSort, (o1, o2) -> Ints.saturatedCast((long)getOrder.applyAsInt(o1) - (long)getOrder.applyAsInt(o2)));
         for (int j = 0; j < toSort.length; j++) {
             tweakers.set(j, toSort[j]);

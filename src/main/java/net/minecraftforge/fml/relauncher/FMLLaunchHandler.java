@@ -69,6 +69,7 @@ public class FMLLaunchHandler
         this.classLoader.addTransformerExclusion("net.minecraftforge.fml.common.asm.transformers.");
         this.classLoader.addTransformerExclusion("net.minecraftforge.fml.common.patcher.");
         this.classLoader.addTransformerExclusion("net.minecraftforge.fml.repackage.");
+        this.classLoader.addTransformerExclusion("org.spongepowered.");
         this.classLoader.addClassLoaderExclusion("org.apache.commons.");
         this.classLoader.addClassLoaderExclusion("org.apache.http.");
         this.classLoader.addClassLoaderExclusion("org.apache.maven.");

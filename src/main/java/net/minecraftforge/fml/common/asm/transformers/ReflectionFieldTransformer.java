@@ -14,11 +14,14 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class ReflectionFieldTransformer implements IClassTransformer {
-    private static final List<String> excludeList = Stream.of("com.cleanroommc", "org.spongepowered", "net.minecraft", "com.google", "com.ibm.icu", "io.netty", "com.sun", "it.unimi.dsi", "oshi", "org.slf4j", "com.mojang", "zone.rong", "com.esotericsoftware", "org.orecruncher", "com.therandomlabs").toList();
+    private static final List<String> excludeList = Stream.of("com.cleanroommc", "org.spongepowered", "net.minecraft", "com.google", "com.ibm.icu", "io.netty", "com.sun", "it.unimi.dsi", "oshi", "org.slf4j", "com.mojang", "zone.rong", "org.orecruncher", "com.therandomlabs").toList();
 
 
     @Override
     public byte[] transform(String s, String s1, byte[] bytes) {
+        if (bytes == null) {
+            return null;
+        }
         for (String str: excludeList) {
             if (s1.startsWith(str))
                 return bytes;

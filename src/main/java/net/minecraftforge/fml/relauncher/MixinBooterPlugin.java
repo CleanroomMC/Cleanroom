@@ -29,29 +29,6 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
         Launch.classLoader.addTransformerExclusion("scala.");
     }
 
-    // (0.1.1-rc.2) Apply @WrapOperations in an IExtension to make sure they're the last injectors to run.
-    // (0.1.1-rc.4) Add extensions to Extensions#activeExtensions in case they've already been selected
-    @SuppressWarnings("unchecked")
-    private static void registerExtension(IExtension extension) {
-        IMixinTransformer transformer = (IMixinTransformer) MixinEnvironment.getDefaultEnvironment().getActiveTransformer();
-        Extensions extensions = (Extensions) transformer.getExtensions();
-        // Because the extensions have already been selected by MixinBooters, so we have to hack extension in.
-        // If we haven't passed selection yet, it doesn't matter, because the list is re-created then.
-        try {
-            Field activeExtensionsField = Extensions.class.getDeclaredField("activeExtensions");
-            activeExtensionsField.setAccessible(true);
-            List<IExtension> activeExtensions = new ArrayList<>((List<IExtension>) activeExtensionsField.get(extensions));
-            activeExtensions.add(extension);
-            activeExtensionsField.set(extensions, Collections.unmodifiableList(activeExtensions));
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            // Fail-fast so people report this and I can fix it
-            throw new RuntimeException(
-                String.format("Failed to inject extension %s. Please inform Rongmario!", extension),
-                e
-            );
-        }
-    }
-
     public MixinBooterPlugin() {
     }
 
