@@ -1,9 +1,6 @@
 package com.cleanroommc.hackery;
 
-import com.cleanroommc.hackery.enums.EnumHackery;
 import jdk.internal.misc.Unsafe;
-import net.minecraftforge.common.util.EnumHelper;
-import net.minecraftforge.fml.common.FMLLog;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.*;
@@ -58,45 +55,85 @@ public final class ReflectionHackery {
         field$modifiers.setInt(field, field.getModifiers() & ~modifierFlag);
     }
 
-
     public static void setField(Field field, Object owner, Object value) throws IllegalAccessException {
         if (Modifier.isStatic(field.getModifiers())) {
+            unsafe.ensureClassInitialized(field.getDeclaringClass());
             putHelper(field.getType(), unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), value);
         } else {
             putHelper(field.getType(), owner, unsafe.objectFieldOffset(field), value);
         }
     }
 
-    private static void putHelper(Class<?> clazz, Object owner, long offset, Object value) {
-        if (clazz.equals(int.class)) {
-            unsafe.putInt(owner, offset, (int) value);
-            return;
+    public static void setBooleanField(Field field, Object owner, boolean value) throws IllegalAccessException {
+        if (Modifier.isStatic(field.getModifiers())) {
+            unsafe.ensureClassInitialized(field.getDeclaringClass());
+            unsafe.putBoolean(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), value);
+        } else {
+            unsafe.putBoolean(owner, unsafe.objectFieldOffset(field), value);
         }
-        if (clazz.equals(byte.class)) {
-            unsafe.putByte(owner, offset, (byte) value);
-            return;
+    }
+
+    public static void setByteField(Field field, Object owner, byte value) throws IllegalAccessException {
+        if (Modifier.isStatic(field.getModifiers())) {
+            unsafe.ensureClassInitialized(field.getDeclaringClass());
+            unsafe.putByte(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), value);
+        } else {
+            unsafe.putByte(owner, unsafe.objectFieldOffset(field), value);
         }
-        if (clazz.equals(long.class)) {
-            unsafe.putLong(owner, offset, (long) value);
-            return;
+    }
+
+    public static void setCharField(Field field, Object owner, char value) throws IllegalAccessException {
+        if (Modifier.isStatic(field.getModifiers())) {
+            unsafe.ensureClassInitialized(field.getDeclaringClass());
+            unsafe.putChar(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), value);
+        } else {
+            unsafe.putChar(owner, unsafe.objectFieldOffset(field), value);
         }
-        if (clazz.equals(float.class)) {
-            unsafe.putFloat(owner, offset, (float) value);
-            return;
+    }
+
+    public static void setShortField(Field field, Object owner, short value) throws IllegalAccessException {
+        if (Modifier.isStatic(field.getModifiers())) {
+            unsafe.ensureClassInitialized(field.getDeclaringClass());
+            unsafe.putShort(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), value);
+        } else {
+            unsafe.putShort(owner, unsafe.objectFieldOffset(field), value);
         }
-        if (clazz.equals(double.class)) {
-            unsafe.putDouble(owner, offset, (double) value);
-            return;
+    }
+
+    public static void setIntField(Field field, Object owner, int value) throws IllegalAccessException {
+        if (Modifier.isStatic(field.getModifiers())) {
+            unsafe.ensureClassInitialized(field.getDeclaringClass());
+            unsafe.putInt(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), value);
+        } else {
+            unsafe.putInt(owner, unsafe.objectFieldOffset(field), value);
         }
-        if (clazz.equals(boolean.class)) {
-            unsafe.putBoolean(owner, offset, (boolean) value);
-            return;
+    }
+
+    public static void setLongField(Field field, Object owner, long value) throws IllegalAccessException {
+        if (Modifier.isStatic(field.getModifiers())) {
+            unsafe.ensureClassInitialized(field.getDeclaringClass());
+            unsafe.putLong(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), value);
+        } else {
+            unsafe.putLong(owner, unsafe.objectFieldOffset(field), value);
         }
-        if (clazz.equals(char.class)) {
-            unsafe.putChar(owner, offset, (char) value);
-            return;
+    }
+
+    public static void setFloatField(Field field, Object owner, float value) throws IllegalAccessException {
+        if (Modifier.isStatic(field.getModifiers())) {
+            unsafe.ensureClassInitialized(field.getDeclaringClass());
+            unsafe.putFloat(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), value);
+        } else {
+            unsafe.putFloat(owner, unsafe.objectFieldOffset(field), value);
         }
-        unsafe.putObject(owner, offset, value);
+    }
+
+    public static void setDoubleField(Field field, Object owner, double value) throws IllegalAccessException {
+        if (Modifier.isStatic(field.getModifiers())) {
+            unsafe.ensureClassInitialized(field.getDeclaringClass());
+            unsafe.putDouble(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), value);
+        } else {
+            unsafe.putDouble(owner, unsafe.objectFieldOffset(field), value);
+        }
     }
 
     public static Object getField(Field field, Object owner) throws IllegalAccessException {
@@ -108,29 +145,116 @@ public final class ReflectionHackery {
         }
     }
 
+    public static boolean getBooleanField(Field field, Object owner) throws IllegalAccessException {
+        if (Modifier.isStatic(field.getModifiers())) {
+            unsafe.ensureClassInitialized(field.getDeclaringClass());
+            return unsafe.getBoolean(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field));
+        } else {
+            return unsafe.getBoolean(owner, unsafe.objectFieldOffset(field));
+        }
+    }
+
+    public static byte getByteField(Field field, Object owner) throws IllegalAccessException {
+        if (Modifier.isStatic(field.getModifiers())) {
+            unsafe.ensureClassInitialized(field.getDeclaringClass());
+            return unsafe.getByte(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field));
+        } else {
+            return unsafe.getByte(owner, unsafe.objectFieldOffset(field));
+        }
+    }
+
+    public static char getCharField(Field field, Object owner) throws IllegalAccessException {
+        if (Modifier.isStatic(field.getModifiers())) {
+            unsafe.ensureClassInitialized(field.getDeclaringClass());
+            return unsafe.getChar(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field));
+        } else {
+            return unsafe.getChar(owner, unsafe.objectFieldOffset(field));
+        }
+    }
+
+    public static short getShortField(Field field, Object owner) throws IllegalAccessException {
+        if (Modifier.isStatic(field.getModifiers())) {
+            unsafe.ensureClassInitialized(field.getDeclaringClass());
+            return unsafe.getShort(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field));
+        } else {
+            return unsafe.getShort(owner, unsafe.objectFieldOffset(field));
+        }
+    }
+
+    public static int getIntField(Field field, Object owner) throws IllegalAccessException {
+        if (Modifier.isStatic(field.getModifiers())) {
+            unsafe.ensureClassInitialized(field.getDeclaringClass());
+            return unsafe.getInt(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field));
+        } else {
+            return unsafe.getInt(owner, unsafe.objectFieldOffset(field));
+        }
+    }
+
+    public static long getLongField(Field field, Object owner) throws IllegalAccessException {
+        if (Modifier.isStatic(field.getModifiers())) {
+            unsafe.ensureClassInitialized(field.getDeclaringClass());
+            return unsafe.getLong(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field));
+        } else {
+            return unsafe.getLong(owner, unsafe.objectFieldOffset(field));
+        }
+    }
+
+    public static float getFloatField(Field field, Object owner) throws IllegalAccessException {
+        if (Modifier.isStatic(field.getModifiers())) {
+            unsafe.ensureClassInitialized(field.getDeclaringClass());
+            return unsafe.getFloat(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field));
+        } else {
+            return unsafe.getFloat(owner, unsafe.objectFieldOffset(field));
+        }
+    }
+
+    public static double getDoubleField(Field field, Object owner) throws IllegalAccessException {
+        if (Modifier.isStatic(field.getModifiers())) {
+            unsafe.ensureClassInitialized(field.getDeclaringClass());
+            return unsafe.getDouble(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field));
+        } else {
+            return unsafe.getDouble(owner, unsafe.objectFieldOffset(field));
+        }
+    }
+
+    private static void putHelper(Class<?> clazz, Object owner, long offset, Object value) {
+        if (clazz == Integer.TYPE) {
+            unsafe.putInt(owner, offset, (int) value);
+        } else if (clazz == Byte.TYPE) {
+            unsafe.putByte(owner, offset, (byte) value);
+        } else if (clazz == Long.TYPE) {
+            unsafe.putLong(owner, offset, (long) value);
+        } else if (clazz == Float.TYPE) {
+            unsafe.putFloat(owner, offset, (float) value);
+        } else if (clazz == Double.TYPE) {
+            unsafe.putDouble(owner, offset, (double) value);
+        } else if (clazz == Boolean.TYPE) {
+            unsafe.putBoolean(owner, offset, (boolean) value);
+        } else if (clazz == Character.TYPE) {
+            unsafe.putChar(owner, offset, (char) value);
+        } else {
+            unsafe.putObject(owner, offset, value);
+        }
+    }
+
     private static Object getHelper(Class<?> clazz, Object owner, long offset) {
-        if (clazz.equals(int.class)) {
+        if (clazz == Integer.TYPE) {
             return unsafe.getInt(owner, offset);
-        }
-        if (clazz.equals(byte.class)) {
+        } else if (clazz == Byte.TYPE) {
             return unsafe.getByte(owner, offset);
-        }
-        if (clazz.equals(long.class)) {
+        } else if (clazz == Long.TYPE) {
             return unsafe.getLong(owner, offset);
-        }
-        if (clazz.equals(float.class)) {
+        } else if (clazz == Float.TYPE) {
             return unsafe.getFloat(owner, offset);
-        }
-        if (clazz.equals(double.class)) {
+        } else if (clazz == Double.TYPE) {
             return unsafe.getDouble(owner, offset);
-        }
-        if (clazz.equals(boolean.class)) {
+        } else if (clazz == Boolean.TYPE) {
             return unsafe.getBoolean(owner, offset);
-        }
-        if (clazz.equals(char.class)) {
+        } else if (clazz == Character.TYPE) {
             return unsafe.getChar(owner, offset);
+        } else {
+            return unsafe.getObject(owner, offset);
         }
-        return unsafe.getObject(owner, offset);
     }
 
 }
