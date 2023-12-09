@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class ReflectionFieldTransformer implements IClassTransformer {
-    private static final List<String> excludeList = Stream.of("com.cleanroommc", "org.spongepowered", "net.minecraft", "com.google", "com.ibm.icu", "io.netty", "com.sun", "it.unimi.dsi", "oshi", "org.slf4j", "com.mojang", "zone.rong", "org.orecruncher", "com.therandomlabs", "kotlin").toList();
+    private static final List<String> excludeList = Stream.of("com.cleanroommc.hackery", "org.spongepowered", "net.minecraft", "com.google", "com.ibm.icu", "io.netty", "com.sun", "it.unimi.dsi", "oshi", "org.slf4j", "com.mojang", "zone.rong", "kotlin").toList();
 
 
     @Override

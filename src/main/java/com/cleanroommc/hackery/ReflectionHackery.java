@@ -6,10 +6,7 @@ import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.common.FMLLog;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.function.Predicate;
 
 @SuppressWarnings("removal")
@@ -63,23 +60,77 @@ public final class ReflectionHackery {
 
 
     public static void setField(Field field, Object owner, Object value) throws IllegalAccessException {
-        int mod = field.getModifiers();
-        if (Modifier.isStatic(mod) && !field.getType().isPrimitive()) {
-            unsafe.putObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), value);
+        if (Modifier.isStatic(field.getModifiers())) {
+            putHelper(field.getType(), unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), value);
         } else {
-            field.setAccessible(true);
-            field.set(owner, value);
+            putHelper(field.getType(), owner, unsafe.objectFieldOffset(field), value);
         }
     }
 
-    public static Object getField(Field field, Object owner) throws IllegalAccessException {
-        int mod = field.getModifiers();
-        if (Modifier.isStatic(mod) && !field.getType().isPrimitive()) {
-                return unsafe.getObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field));
-        } else {
-            field.setAccessible(true);
-            return field.get(owner);
+    private static void putHelper(Class<?> clazz, Object owner, long offset, Object value) {
+        if (clazz.equals(int.class)) {
+            unsafe.putInt(owner, offset, (int) value);
+            return;
         }
+        if (clazz.equals(byte.class)) {
+            unsafe.putByte(owner, offset, (byte) value);
+            return;
+        }
+        if (clazz.equals(long.class)) {
+            unsafe.putLong(owner, offset, (long) value);
+            return;
+        }
+        if (clazz.equals(float.class)) {
+            unsafe.putFloat(owner, offset, (float) value);
+            return;
+        }
+        if (clazz.equals(double.class)) {
+            unsafe.putDouble(owner, offset, (double) value);
+            return;
+        }
+        if (clazz.equals(boolean.class)) {
+            unsafe.putBoolean(owner, offset, (boolean) value);
+            return;
+        }
+        if (clazz.equals(char.class)) {
+            unsafe.putChar(owner, offset, (char) value);
+            return;
+        }
+        unsafe.putObject(owner, offset, value);
+    }
+
+    public static Object getField(Field field, Object owner) throws IllegalAccessException {
+        if (Modifier.isStatic(field.getModifiers())) {
+            unsafe.ensureClassInitialized(field.getDeclaringClass());
+            return getHelper(field.getType(), unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field));
+        } else {
+            return getHelper(field.getType(), owner, unsafe.objectFieldOffset(field));
+        }
+    }
+
+    private static Object getHelper(Class<?> clazz, Object owner, long offset) {
+        if (clazz.equals(int.class)) {
+            return unsafe.getInt(owner, offset);
+        }
+        if (clazz.equals(byte.class)) {
+            return unsafe.getByte(owner, offset);
+        }
+        if (clazz.equals(long.class)) {
+            return unsafe.getLong(owner, offset);
+        }
+        if (clazz.equals(float.class)) {
+            return unsafe.getFloat(owner, offset);
+        }
+        if (clazz.equals(double.class)) {
+            return unsafe.getDouble(owner, offset);
+        }
+        if (clazz.equals(boolean.class)) {
+            return unsafe.getBoolean(owner, offset);
+        }
+        if (clazz.equals(char.class)) {
+            return unsafe.getChar(owner, offset);
+        }
+        return unsafe.getObject(owner, offset);
     }
 
 }
