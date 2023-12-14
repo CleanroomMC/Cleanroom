@@ -20,7 +20,7 @@ import java.util.Map;
 
 @IFMLLoadingPlugin.Name("MixinBooter")
 @IFMLLoadingPlugin.MCVersion(ForgeVersion.mcVersion)
-@IFMLLoadingPlugin.SortingIndex(Integer.MIN_VALUE + 2)
+@IFMLLoadingPlugin.SortingIndex(1)
 public final class MixinBooterPlugin implements IFMLLoadingPlugin {
 
     public static final Logger LOGGER = LogManager.getLogger("MixinBooter");

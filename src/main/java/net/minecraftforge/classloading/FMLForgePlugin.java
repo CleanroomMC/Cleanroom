@@ -26,7 +26,6 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
 import javax.annotation.Nullable;
 
-@IFMLLoadingPlugin.SortingIndex(Integer.MIN_VALUE + 1)
 public class FMLForgePlugin implements IFMLLoadingPlugin
 {
     public static boolean RUNTIME_DEOBF = false;

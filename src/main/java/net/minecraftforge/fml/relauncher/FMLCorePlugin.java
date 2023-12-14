@@ -21,7 +21,6 @@ package net.minecraftforge.fml.relauncher;
 
 import java.util.Map;
 
-@IFMLLoadingPlugin.SortingIndex(Integer.MIN_VALUE + 1)
 public class FMLCorePlugin implements IFMLLoadingPlugin
 {
     @Override
