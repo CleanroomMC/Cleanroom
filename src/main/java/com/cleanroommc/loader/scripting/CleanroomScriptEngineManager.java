@@ -1,6 +1,6 @@
 package com.cleanroommc.loader.scripting;
 
-import org.mozilla.javascript.engine.RhinoScriptEngineFactory;
+import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import scala.tools.nsc.interpreter.Scripted;
 
 import javax.script.ScriptEngineManager;
@@ -26,14 +26,7 @@ public class CleanroomScriptEngineManager extends ScriptEngineManager {
         for (String ext : scala.getExtensions()) {
             this.registerEngineExtension(ext, scala);
         }
-        var js = new RhinoScriptEngineFactory();
-        // TODO: evaluate if this will hurt anything
-        this.registerEngineName("nashorn", js);
-        this.registerEngineName("Nashorn", js);
-        this.registerEngineName("js", js);
-        this.registerEngineName("JS", js);
-        this.registerEngineName("ecmascript", js);
-        this.registerEngineName("ECMAScript", js);
+        var js = new NashornScriptEngineFactory();
         for (String name : js.getNames()) {
             this.registerEngineName(name, js);
         }
