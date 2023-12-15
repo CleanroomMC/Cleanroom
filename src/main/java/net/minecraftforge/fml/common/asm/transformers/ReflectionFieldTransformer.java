@@ -38,7 +38,7 @@ public class ReflectionFieldTransformer implements IClassTransformer
         ClassNode classNode = new ClassNode();
         ClassReader classReader = new ClassReader(bytes);
         classReader.accept(classNode, 0);
-
+        boolean modified = false;
         if (classNode.methods != null)
         {
             for (MethodNode methodNode : classNode.methods)
@@ -75,6 +75,7 @@ public class ReflectionFieldTransformer implements IClassTransformer
                                     default -> null;
                                 };
                                 if (result != null) {
+                                    modified = true;
                                     FMLLog.log.info("[{}]: Transformed {}", s1, result);
                                 }
                             }
@@ -83,11 +84,14 @@ public class ReflectionFieldTransformer implements IClassTransformer
                 }
             }
         }
+        if (modified)
+        {
+            ClassWriter classWriter = new ClassWriter(0);
 
-        ClassWriter classWriter = new ClassWriter(0);
-
-        classNode.accept(classWriter);
-        return classWriter.toByteArray();
+            classNode.accept(classWriter);
+            return classWriter.toByteArray();
+        }
+        return bytes;
     }
 
 }
