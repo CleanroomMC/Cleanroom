@@ -64,6 +64,7 @@ public class FMLLaunchHandler
         this.classLoader = launchLoader;
         this.tweaker = tweaker;
         this.minecraftHome = tweaker.getGameDir();
+        this.classLoader.addTransformerExclusion("com.cleanroommc.loader.");
         this.classLoader.addClassLoaderExclusion("net.minecraftforge.fml.relauncher.");
         this.classLoader.addClassLoaderExclusion("net.minecraftforge.classloading.");
         this.classLoader.addTransformerExclusion("net.minecraftforge.fml.common.asm.transformers.");
