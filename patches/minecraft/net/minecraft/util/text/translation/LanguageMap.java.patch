@@ -4,8 +4,7 @@
      private static final Pattern field_111053_a = Pattern.compile("%(\\d+\\$)?[\\d\\.]*[df]");
      private static final Splitter field_135065_b = Splitter.on('=').limit(2);
      private static final LanguageMap field_74817_a = new LanguageMap();
--    private final Map<String, String> field_74816_c = Maps.newHashMap();
-+    private final Map<String, String> field_74816_c = Maps.<String, String>newHashMap();
+     private final Map<String, String> field_74816_c = Maps.newHashMap();
      private long field_150511_e;
  
      public LanguageMap()
@@ -48,8 +47,7 @@
              {
                  if (!s.isEmpty() && s.charAt(0) != '#')
                  {
--                    String[] astring = Iterables.toArray(field_135065_b.split(s), String.class);
-+                    String[] astring = (String[])Iterables.toArray(field_135065_b.split(s), String.class);
+                     String[] astring = Iterables.toArray(field_135065_b.split(s), String.class);
  
                      if (astring != null && astring.length == 2)
                      {
@@ -63,8 +61,7 @@
  
 -            this.field_150511_e = System.currentTimeMillis();
          }
--        catch (IOException ioexception)
-+        catch (IOException var7)
+         catch (IOException ioexception)
          {
 +            ;
          }
@@ -73,12 +70,3 @@
      }
  
      static LanguageMap func_74808_a()
-@@ -76,7 +105,7 @@
-         {
-             return String.format(s, p_74803_2_);
-         }
--        catch (IllegalFormatException illegalformatexception)
-+        catch (IllegalFormatException var5)
-         {
-             return "Format error: " + s;
-         }

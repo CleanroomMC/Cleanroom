@@ -61,63 +61,6 @@
  
              if (enumfacing$axis == null)
              {
-@@ -210,12 +212,6 @@
-         return 0;
-     }
- 
--    @SideOnly(Side.CLIENT)
--    public BlockRenderLayer func_180664_k()
--    {
--        return BlockRenderLayer.TRANSLUCENT;
--    }
--
-     public void func_180634_a(World p_180634_1_, BlockPos p_180634_2_, IBlockState p_180634_3_, Entity p_180634_4_)
-     {
-         if (!p_180634_4_.func_184218_aH() && !p_180634_4_.func_184207_aI() && p_180634_4_.func_184222_aU())
-@@ -224,6 +220,22 @@
-         }
-     }
- 
-+    public ItemStack func_185473_a(World p_185473_1_, BlockPos p_185473_2_, IBlockState p_185473_3_)
-+    {
-+        return ItemStack.field_190927_a;
-+    }
-+
-+    public IBlockState func_176203_a(int p_176203_1_)
-+    {
-+        return this.func_176223_P().func_177226_a(field_176550_a, (p_176203_1_ & 3) == 2 ? EnumFacing.Axis.Z : EnumFacing.Axis.X);
-+    }
-+
-+    @SideOnly(Side.CLIENT)
-+    public BlockRenderLayer func_180664_k()
-+    {
-+        return BlockRenderLayer.TRANSLUCENT;
-+    }
-+
-     @SideOnly(Side.CLIENT)
-     public void func_180655_c(IBlockState p_180655_1_, World p_180655_2_, BlockPos p_180655_3_, Random p_180655_4_)
-     {
-@@ -257,19 +269,9 @@
-         }
-     }
- 
--    public ItemStack func_185473_a(World p_185473_1_, BlockPos p_185473_2_, IBlockState p_185473_3_)
--    {
--        return ItemStack.field_190927_a;
--    }
--
--    public IBlockState func_176203_a(int p_176203_1_)
--    {
--        return this.func_176223_P().func_177226_a(field_176550_a, (p_176203_1_ & 3) == 2 ? EnumFacing.Axis.Z : EnumFacing.Axis.X);
--    }
--
-     public int func_176201_c(IBlockState p_176201_1_)
-     {
--        return func_176549_a(p_176201_1_.func_177229_b(field_176550_a));
-+        return func_176549_a((EnumFacing.Axis)p_176201_1_.func_177229_b(field_176550_a));
-     }
- 
-     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
 @@ -296,7 +298,7 @@
  
      protected BlockStateContainer func_180661_e()

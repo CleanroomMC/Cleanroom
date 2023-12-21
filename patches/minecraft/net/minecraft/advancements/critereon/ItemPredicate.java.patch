@@ -1,14 +1,5 @@
 --- before/net/minecraft/advancements/critereon/ItemPredicate.java
 +++ after/net/minecraft/advancements/critereon/ItemPredicate.java
-@@ -54,7 +54,7 @@
-         {
-             return false;
-         }
--        else if (this.field_192497_c != null && p_192493_1_.func_77960_j() != this.field_192497_c)
-+        else if (this.field_192497_c != null && p_192493_1_.func_77960_j() != this.field_192497_c.intValue())
-         {
-             return false;
-         }
 @@ -87,7 +87,15 @@
              }
  

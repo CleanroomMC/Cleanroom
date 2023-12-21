@@ -1,23 +1,5 @@
 --- before/net/minecraft/entity/boss/dragon/phase/PhaseSittingFlaming.java
 +++ after/net/minecraft/entity/boss/dragon/phase/PhaseSittingFlaming.java
-@@ -27,7 +27,7 @@
-         if (this.field_188664_b % 2 == 0 && this.field_188664_b < 10)
-         {
-             Vec3d vec3d = this.field_188661_a.func_184665_a(1.0F).func_72432_b();
--            vec3d.func_178785_b((-(float)Math.PI / 4F));
-+            vec3d.func_178785_b(-((float)Math.PI / 4F));
-             double d0 = this.field_188661_a.field_70986_h.field_70165_t;
-             double d1 = this.field_188661_a.field_70986_h.field_70163_u + (double)(this.field_188661_a.field_70986_h.field_70131_O / 2.0F);
-             double d2 = this.field_188661_a.field_70986_h.field_70161_v;
-@@ -40,7 +40,7 @@
- 
-                 for (int j = 0; j < 6; ++j)
-                 {
--                    this.field_188661_a.field_70170_p.func_175688_a(EnumParticleTypes.DRAGON_BREATH, d3, d4, d5, -vec3d.field_72450_a * (double)0.08F * (double)j, -vec3d.field_72448_b * (double)0.6F, -vec3d.field_72449_c * (double)0.08F * (double)j);
-+                    this.field_188661_a.field_70170_p.func_175688_a(EnumParticleTypes.DRAGON_BREATH, d3, d4, d5, -vec3d.field_72450_a * 0.07999999821186066D * (double)j, -vec3d.field_72448_b * 0.6000000238418579D, -vec3d.field_72449_c * 0.07999999821186066D * (double)j);
-                 }
- 
-                 vec3d.func_178785_b(0.19634955F);
 @@ -72,7 +72,7 @@
              double d2 = this.field_188661_a.field_70986_h.field_70163_u + (double)(this.field_188661_a.field_70986_h.field_70131_O / 2.0F);
              BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(MathHelper.func_76128_c(d0), MathHelper.func_76128_c(d2), MathHelper.func_76128_c(d1));
