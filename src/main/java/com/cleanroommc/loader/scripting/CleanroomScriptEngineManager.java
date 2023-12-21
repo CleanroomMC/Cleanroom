@@ -1,7 +1,7 @@
 package com.cleanroommc.loader.scripting;
 
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
-import scala.tools.nsc.interpreter.Scripted;
+// import scala.tools.nsc.interpreter.Scripted;
 
 import javax.script.ScriptEngineManager;
 
