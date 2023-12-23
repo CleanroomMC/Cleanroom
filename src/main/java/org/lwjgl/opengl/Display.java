@@ -422,6 +422,10 @@ public class Display {
         return displayFramebufferHeight;
     }
 
+    public static String getTitle() {
+        return windowTitle;
+    }
+
     public static void setTitle(String title) {
         windowTitle = title;
     }
