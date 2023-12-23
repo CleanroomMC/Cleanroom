@@ -1,5 +1,22 @@
 --- before/net/minecraft/world/WorldType.java
 +++ after/net/minecraft/world/WorldType.java
+@@ -6,13 +6,13 @@
+ public class WorldType
+ {
+     public static WorldType[] field_77139_a = new WorldType[16];
+-    public static final WorldType field_77137_b = new WorldType(0, "default", 1).func_77129_f();
++    public static final WorldType field_77137_b = (new WorldType(0, "default", 1)).func_77129_f();
+     public static final WorldType field_77138_c = new WorldType(1, "flat");
+     public static final WorldType field_77135_d = new WorldType(2, "largeBiomes");
+-    public static final WorldType field_151360_e = new WorldType(3, "amplified").func_151358_j();
++    public static final WorldType field_151360_e = (new WorldType(3, "amplified")).func_151358_j();
+     public static final WorldType field_180271_f = new WorldType(4, "customized");
+     public static final WorldType field_180272_g = new WorldType(5, "debug_all_block_states");
+-    public static final WorldType field_77136_e = new WorldType(8, "default_1_1", 0).func_77124_a(false);
++    public static final WorldType field_77136_e = (new WorldType(8, "default_1_1", 0)).func_77124_a(false);
+     private final int field_82748_f;
+     private final String field_77133_f;
+     private final int field_77134_g;
 @@ -27,6 +27,7 @@
  
      private WorldType(int p_i1960_1_, String p_i1960_2_, int p_i1960_3_)

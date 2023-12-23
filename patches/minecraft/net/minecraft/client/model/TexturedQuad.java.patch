@@ -16,3 +16,19 @@
      public void func_178765_a(BufferBuilder p_178765_1_, float p_178765_2_)
      {
          Vec3d vec3d = this.field_78239_a[1].field_78243_a.func_72444_a(this.field_78239_a[0].field_78243_a);
+@@ -64,14 +64,7 @@
+         for (int i = 0; i < 4; ++i)
+         {
+             PositionTextureVertex positiontexturevertex = this.field_78239_a[i];
+-            p_178765_1_.func_181662_b(
+-                positiontexturevertex.field_78243_a.field_72450_a * (double)p_178765_2_,
+-                positiontexturevertex.field_78243_a.field_72448_b * (double)p_178765_2_,
+-                positiontexturevertex.field_78243_a.field_72449_c * (double)p_178765_2_
+-            )
+-            .func_187315_a((double)positiontexturevertex.field_78241_b, (double)positiontexturevertex.field_78242_c)
+-            .func_181663_c(f, f1, f2)
+-            .func_181675_d();
++            p_178765_1_.func_181662_b(positiontexturevertex.field_78243_a.field_72450_a * (double)p_178765_2_, positiontexturevertex.field_78243_a.field_72448_b * (double)p_178765_2_, positiontexturevertex.field_78243_a.field_72449_c * (double)p_178765_2_).func_187315_a((double)positiontexturevertex.field_78241_b, (double)positiontexturevertex.field_78242_c).func_181663_c(f, f1, f2).func_181675_d();
+         }
+ 
+         Tessellator.func_178181_a().func_78381_a();

@@ -1,7 +1,17 @@
 --- before/net/minecraft/world/storage/SaveFormatOld.java
 +++ after/net/minecraft/world/storage/SaveFormatOld.java
-@@ -44,7 +44,7 @@
+@@ -36,17 +36,15 @@
+     }
+ 
      @SideOnly(Side.CLIENT)
+-    @Override
+     public String func_154333_a()
+     {
+         return "Old Format";
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    @Override
      public List<WorldSummary> func_75799_b() throws AnvilConverterException
      {
 -        List<WorldSummary> list = Lists.newArrayList();
@@ -9,7 +19,21 @@
  
          for (int i = 0; i < 5; ++i)
          {
-@@ -109,6 +109,24 @@
+@@ -63,13 +61,11 @@
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    @Override
+     public void func_75800_d()
+     {
+     }
+ 
+     @Nullable
+-    @Override
+     public WorldInfo func_75803_c(String p_75803_1_)
+     {
+         File file1 = new File(this.field_75808_a, p_75803_1_);
+@@ -113,8 +109,25 @@
          }
      }
  
@@ -32,9 +56,11 @@
 +    }
 +
      @SideOnly(Side.CLIENT)
+-    @Override
      public void func_75806_a(String p_75806_1_, String p_75806_2_)
      {
-@@ -135,6 +153,11 @@
+         File file1 = new File(this.field_75808_a, p_75806_1_);
+@@ -140,8 +153,12 @@
          }
      }
  
@@ -44,9 +70,33 @@
 +    }
 +
      @SideOnly(Side.CLIENT)
+-    @Override
      public boolean func_154335_d(String p_154335_1_)
      {
-@@ -190,8 +213,9 @@
+         File file1 = new File(this.field_75808_a, p_154335_1_);
+@@ -167,7 +184,6 @@
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    @Override
+     public boolean func_75802_e(String p_75802_1_)
+     {
+         File file1 = new File(this.field_75808_a, p_75802_1_);
+@@ -178,11 +194,11 @@
+         }
+         else
+         {
+-            field_151479_b.info("Deleting level {}", p_75802_1_);
++            field_151479_b.info("Deleting level {}", (Object)p_75802_1_);
+ 
+             for (int i = 1; i <= 5; ++i)
+             {
+-                field_151479_b.info("Attempt {}...", i);
++                field_151479_b.info("Attempt {}...", (int)i);
+ 
+                 if (func_75807_a(file1.listFiles()))
+                 {
+@@ -197,8 +213,9 @@
                      {
                          Thread.sleep(500L);
                      }
@@ -57,15 +107,65 @@
                      }
                  }
              }
-@@ -221,11 +245,6 @@
-         }
+@@ -212,17 +229,17 @@
+     {
+         for (File file1 : p_75807_0_)
+         {
+-            field_151479_b.debug("Deleting {}", file1);
++            field_151479_b.debug("Deleting {}", (Object)file1);
  
+             if (file1.isDirectory() && !func_75807_a(file1.listFiles()))
+             {
+-                field_151479_b.warn("Couldn't delete directory {}", file1);
++                field_151479_b.warn("Couldn't delete directory {}", (Object)file1);
+                 return false;
+             }
+ 
+             if (!file1.delete())
+             {
+-                field_151479_b.warn("Couldn't delete file {}", file1);
++                field_151479_b.warn("Couldn't delete file {}", (Object)file1);
+                 return false;
+             }
+         }
+@@ -230,40 +247,29 @@
          return true;
--    }
--
+     }
+ 
+-    @Override
 -    public ISaveHandler func_75804_a(String p_75804_1_, boolean p_75804_2_)
 -    {
 -        return new SaveHandler(this.field_75808_a, p_75804_1_, p_75804_2_, this.field_186354_b);
+-    }
+-
+     @SideOnly(Side.CLIENT)
+-    @Override
+     public boolean func_154334_a(String p_154334_1_)
+     {
+         return false;
+     }
+ 
+-    @Override
+     public boolean func_75801_b(String p_75801_1_)
+     {
+         return false;
+     }
+ 
+-    @Override
+     public boolean func_75805_a(String p_75805_1_, IProgressUpdate p_75805_2_)
+     {
+         return false;
      }
  
      @SideOnly(Side.CLIENT)
+-    @Override
+     public boolean func_90033_f(String p_90033_1_)
+     {
+         File file1 = new File(this.field_75808_a, p_90033_1_);
+         return file1.isDirectory();
+     }
+ 
+-    @Override
+     public File func_186352_b(String p_186352_1_, String p_186352_2_)
+     {
+         return new File(new File(this.field_75808_a, p_186352_1_), p_186352_2_);

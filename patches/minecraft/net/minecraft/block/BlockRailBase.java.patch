@@ -1,5 +1,16 @@
 --- before/net/minecraft/block/BlockRailBase.java
 +++ after/net/minecraft/block/BlockRailBase.java
+@@ -22,8 +22,8 @@
+ 
+ public abstract class BlockRailBase extends Block
+ {
+-    protected static final AxisAlignedBB field_185590_a = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.125, 1.0);
+-    protected static final AxisAlignedBB field_190959_b = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.5, 1.0);
++    protected static final AxisAlignedBB field_185590_a = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.125D, 1.0D);
++    protected static final AxisAlignedBB field_190959_b = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D);
+     protected final boolean field_150053_a;
+ 
+     public static boolean func_176562_d(World p_176562_0_, BlockPos p_176562_1_)
 @@ -34,7 +34,7 @@
      public static boolean func_176563_d(IBlockState p_176563_0_)
      {
@@ -9,25 +20,61 @@
      }
  
      protected BlockRailBase(boolean p_i45389_1_)
-@@ -57,7 +57,7 @@
+@@ -45,46 +45,37 @@
+     }
  
+     @Nullable
+-    @Override
+     public AxisAlignedBB func_180646_a(IBlockState p_180646_1_, IBlockAccess p_180646_2_, BlockPos p_180646_3_)
+     {
+         return field_185506_k;
+     }
+ 
+-    @Override
+     public boolean func_149662_c(IBlockState p_149662_1_)
+     {
+         return false;
+     }
+ 
+-    @Override
      public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
      {
--        BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = p_185496_1_.func_177230_c() == this ? p_185496_1_.func_177229_b(this.func_176560_l()) : null;
+-        BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = p_185496_1_.func_177230_c() == this
+-                ? p_185496_1_.func_177229_b(this.func_176560_l())
+-                : null;
 +        BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = p_185496_1_.func_177230_c() == this ? getRailDirection(p_185496_2_, p_185496_3_, p_185496_1_, null) : null;
          return blockrailbase$enumraildirection != null && blockrailbase$enumraildirection.func_177018_c() ? field_190959_b : field_185590_a;
      }
  
-@@ -73,7 +73,7 @@
+-    @Override
+     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+     {
+         return BlockFaceShape.UNDEFINED;
+     }
  
+-    @Override
+     public boolean func_149686_d(IBlockState p_149686_1_)
+     {
+         return false;
+     }
+ 
+-    @Override
      public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)
      {
 -        return p_176196_1_.func_180495_p(p_176196_2_.func_177977_b()).func_185896_q();
 +        return p_176196_1_.func_180495_p(p_176196_2_.func_177977_b()).isSideSolid(p_176196_1_, p_176196_2_.func_177977_b(), EnumFacing.UP);
      }
  
+-    @Override
      public void func_176213_c(World p_176213_1_, BlockPos p_176213_2_, IBlockState p_176213_3_)
-@@ -93,32 +93,33 @@
+     {
+         if (!p_176213_1_.field_72995_K)
+@@ -98,41 +89,37 @@
+         }
+     }
+ 
+-    @Override
+     public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
      {
          if (!p_189540_2_.field_72995_K)
          {
@@ -41,19 +88,23 @@
 -                flag = true;
 -            }
 -
--            if (blockrailbase$enumraildirection == BlockRailBase.EnumRailDirection.ASCENDING_EAST && !p_189540_2_.func_180495_p(p_189540_3_.func_177974_f()).func_185896_q())
+-            if (blockrailbase$enumraildirection == BlockRailBase.EnumRailDirection.ASCENDING_EAST
+-                    && !p_189540_2_.func_180495_p(p_189540_3_.func_177974_f()).func_185896_q())
 -            {
 -                flag = true;
 -            }
--            else if (blockrailbase$enumraildirection == BlockRailBase.EnumRailDirection.ASCENDING_WEST && !p_189540_2_.func_180495_p(p_189540_3_.func_177976_e()).func_185896_q())
+-            else if (blockrailbase$enumraildirection == BlockRailBase.EnumRailDirection.ASCENDING_WEST
+-                     && !p_189540_2_.func_180495_p(p_189540_3_.func_177976_e()).func_185896_q())
 -            {
 -                flag = true;
 -            }
--            else if (blockrailbase$enumraildirection == BlockRailBase.EnumRailDirection.ASCENDING_NORTH && !p_189540_2_.func_180495_p(p_189540_3_.func_177978_c()).func_185896_q())
+-            else if (blockrailbase$enumraildirection == BlockRailBase.EnumRailDirection.ASCENDING_NORTH
+-                     && !p_189540_2_.func_180495_p(p_189540_3_.func_177978_c()).func_185896_q())
 -            {
 -                flag = true;
 -            }
--            else if (blockrailbase$enumraildirection == BlockRailBase.EnumRailDirection.ASCENDING_SOUTH && !p_189540_2_.func_180495_p(p_189540_3_.func_177968_d()).func_185896_q())
+-            else if (blockrailbase$enumraildirection == BlockRailBase.EnumRailDirection.ASCENDING_SOUTH
+-                     && !p_189540_2_.func_180495_p(p_189540_3_.func_177968_d()).func_185896_q())
 -            {
 -                flag = true;
 -            }
@@ -85,7 +136,31 @@
              {
                  this.func_176226_b(p_189540_2_, p_189540_3_, p_189540_1_, 0);
                  p_189540_2_.func_175698_g(p_189540_3_);
-@@ -154,7 +155,7 @@
+@@ -150,30 +137,25 @@
+ 
+     protected IBlockState func_176564_a(World p_176564_1_, BlockPos p_176564_2_, IBlockState p_176564_3_, boolean p_176564_4_)
+     {
+-        return p_176564_1_.field_72995_K
+-               ? p_176564_3_
+-               : new BlockRailBase.Rail(p_176564_1_, p_176564_2_, p_176564_3_).func_180364_a(p_176564_1_.func_175640_z(p_176564_2_), p_176564_4_).func_180362_b();
++        return p_176564_1_.field_72995_K ? p_176564_3_ : (new BlockRailBase.Rail(p_176564_1_, p_176564_2_, p_176564_3_)).func_180364_a(p_176564_1_.func_175640_z(p_176564_2_), p_176564_4_).func_180362_b();
+     }
+ 
+-    @Override
+     public EnumPushReaction func_149656_h(IBlockState p_149656_1_)
+     {
+         return EnumPushReaction.NORMAL;
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    @Override
+     public BlockRenderLayer func_180664_k()
+     {
+         return BlockRenderLayer.CUTOUT;
+     }
+ 
+-    @Override
+     public void func_180663_b(World p_180663_1_, BlockPos p_180663_2_, IBlockState p_180663_3_)
      {
          super.func_180663_b(p_180663_1_, p_180663_2_, p_180663_3_);
  
@@ -94,7 +169,7 @@
          {
              p_180663_1_.func_175685_c(p_180663_2_.func_177984_a(), this, false);
          }
-@@ -166,8 +167,101 @@
+@@ -185,8 +167,101 @@
          }
      }
  
@@ -196,7 +271,23 @@
      public static enum EnumRailDirection implements IStringSerializable
      {
          NORTH_SOUTH(0, "north_south"),
-@@ -237,7 +331,8 @@
+@@ -215,7 +290,6 @@
+             return this.field_177027_l;
+         }
+ 
+-        @Override
+         public String toString()
+         {
+             return this.field_177028_m;
+@@ -236,7 +310,6 @@
+             return field_177030_k[p_177016_0_];
+         }
+ 
+-        @Override
+         public String func_176610_l()
+         {
+             return this.field_177028_m;
+@@ -258,7 +331,8 @@
          private final BlockRailBase field_180365_d;
          private IBlockState field_180366_e;
          private final boolean field_150656_f;
@@ -206,7 +297,7 @@
  
          public Rail(World p_i45739_2_, BlockPos p_i45739_3_, IBlockState p_i45739_4_)
          {
-@@ -245,8 +340,9 @@
+@@ -266,8 +340,9 @@
              this.field_180367_c = p_i45739_3_;
              this.field_180366_e = p_i45739_4_;
              this.field_180365_d = (BlockRailBase)p_i45739_4_.func_177230_c();
@@ -218,7 +309,18 @@
              this.func_180360_a(blockrailbase$enumraildirection);
          }
  
-@@ -438,7 +534,7 @@
+@@ -343,9 +418,7 @@
+ 
+         private boolean func_180359_a(BlockPos p_180359_1_)
+         {
+-            return BlockRailBase.func_176562_d(this.field_150660_b, p_180359_1_)
+-                   || BlockRailBase.func_176562_d(this.field_150660_b, p_180359_1_.func_177984_a())
+-                   || BlockRailBase.func_176562_d(this.field_150660_b, p_180359_1_.func_177977_b());
++            return BlockRailBase.func_176562_d(this.field_150660_b, p_180359_1_) || BlockRailBase.func_176562_d(this.field_150660_b, p_180359_1_.func_177984_a()) || BlockRailBase.func_176562_d(this.field_150660_b, p_180359_1_.func_177977_b());
+         }
+ 
+         @Nullable
+@@ -461,7 +534,7 @@
                  }
              }
  
@@ -227,7 +329,7 @@
              {
                  if (BlockRailBase.func_176562_d(this.field_150660_b, blockpos.func_177984_a()))
                  {
-@@ -451,7 +547,7 @@
+@@ -474,7 +547,7 @@
                  }
              }
  
@@ -236,7 +338,7 @@
              {
                  if (BlockRailBase.func_176562_d(this.field_150660_b, blockpos3.func_177984_a()))
                  {
-@@ -594,7 +690,7 @@
+@@ -617,7 +690,7 @@
                  }
              }
  
@@ -245,7 +347,7 @@
              {
                  if (BlockRailBase.func_176562_d(this.field_150660_b, blockpos.func_177984_a()))
                  {
-@@ -607,7 +703,7 @@
+@@ -630,7 +703,7 @@
                  }
              }
  

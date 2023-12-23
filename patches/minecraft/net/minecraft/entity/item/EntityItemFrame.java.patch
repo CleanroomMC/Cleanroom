@@ -11,7 +11,11 @@
      private float field_82337_e = 1.0F;
  
      public EntityItemFrame(World p_i1590_1_)
-@@ -45,7 +45,7 @@
+@@ -42,20 +42,17 @@
+         this.func_174859_a(p_i45852_3_);
+     }
+ 
+-    @Override
      protected void func_70088_a()
      {
          this.func_184212_Q().func_187214_a(field_184525_c, ItemStack.field_190927_a);
@@ -19,17 +23,55 @@
 +        this.func_184212_Q().func_187214_a(field_184526_d, Integer.valueOf(0));
      }
  
+-    @Override
      public float func_70111_Y()
-@@ -90,7 +90,7 @@
+     {
+         return 0.0F;
+     }
+ 
+-    @Override
+     public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
+     {
+         if (this.func_180431_b(p_70097_1_))
+@@ -79,35 +76,30 @@
+         }
+     }
+ 
+-    @Override
+     public int func_82329_d()
+     {
+         return 12;
+     }
+ 
+-    @Override
+     public int func_82330_g()
+     {
+         return 12;
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    @Override
      public boolean func_70112_a(double p_70112_1_)
      {
-         double d0 = 16.0D;
--        d0 *= 64.0D * func_184183_bd();
+-        double d0 = 16.0;
+-        d0 *= 64.0 * func_184183_bd();
++        double d0 = 16.0D;
 +        d0 = d0 * 64.0D * func_184183_bd();
          return p_70112_1_ < d0 * d0;
      }
  
-@@ -140,19 +140,20 @@
+-    @Override
+     public void func_110128_b(@Nullable Entity p_110128_1_)
+     {
+         this.func_184185_a(SoundEvents.field_187623_cM, 1.0F, 1.0F);
+         this.func_146065_b(p_110128_1_, true);
+     }
+ 
+-    @Override
+     public void func_184523_o()
+     {
+         this.func_184185_a(SoundEvents.field_187626_cN, 1.0F, 1.0F);
+@@ -148,19 +140,20 @@
      {
          if (!p_110131_1_.func_190926_b())
          {
@@ -40,7 +82,8 @@
                  mapdata.field_76203_h.remove("frame-" + this.func_145782_y());
              }
  
-             p_110131_1_.func_82842_a((EntityItemFrame)null);
+-            p_110131_1_.func_82842_a(null);
++            p_110131_1_.func_82842_a((EntityItemFrame)null);
 +            this.func_82334_a(ItemStack.field_190927_a); //Forge: Fix MC-124833 Pistons duplicating Items.
          }
      }
@@ -52,7 +95,15 @@
      }
  
      public void func_82334_a(ItemStack p_82334_1_)
-@@ -198,7 +199,7 @@
+@@ -191,7 +184,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_184206_a(DataParameter<?> p_184206_1_)
+     {
+         if (p_184206_1_.equals(field_184525_c))
+@@ -207,7 +199,7 @@
  
      public int func_82333_j()
      {
@@ -61,7 +112,7 @@
      }
  
      public void func_82336_g(int p_82336_1_)
-@@ -208,7 +209,7 @@
+@@ -217,7 +209,7 @@
  
      private void func_174865_a(int p_174865_1_, boolean p_174865_2_)
      {
@@ -70,7 +121,7 @@
  
          if (p_174865_2_ && this.field_174861_a != null)
          {
-@@ -218,7 +219,7 @@
+@@ -227,10 +219,9 @@
  
      public static void func_189738_a(DataFixer p_189738_0_)
      {
@@ -78,4 +129,23 @@
 +        p_189738_0_.func_188258_a(FixTypes.ENTITY, new ItemStackData(EntityItemFrame.class, new String[] {"Item"}));
      }
  
+-    @Override
      public void func_70014_b(NBTTagCompound p_70014_1_)
+     {
+         if (!this.func_82335_i().func_190926_b())
+@@ -243,7 +234,6 @@
+         super.func_70014_b(p_70014_1_);
+     }
+ 
+-    @Override
+     public void func_70037_a(NBTTagCompound p_70037_1_)
+     {
+         NBTTagCompound nbttagcompound = p_70037_1_.func_74775_l("Item");
+@@ -262,7 +252,6 @@
+         super.func_70037_a(p_70037_1_);
+     }
+ 
+-    @Override
+     public boolean func_184230_a(EntityPlayer p_184230_1_, EnumHand p_184230_2_)
+     {
+         ItemStack itemstack = p_184230_1_.func_184586_b(p_184230_2_);

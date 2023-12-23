@@ -13,7 +13,29 @@
      }
  
      public String func_135034_a()
-@@ -55,4 +61,8 @@
+@@ -29,13 +35,11 @@
+         return this.field_135036_d;
+     }
+ 
+-    @Override
+     public String toString()
+     {
+         return String.format("%s (%s)", this.field_135038_c, this.field_135037_b);
+     }
+ 
+-    @Override
+     public boolean equals(Object p_equals_1_)
+     {
+         if (this == p_equals_1_)
+@@ -48,7 +52,6 @@
+         }
+     }
+ 
+-    @Override
+     public int hashCode()
+     {
+         return this.field_135039_a.hashCode();
+@@ -58,4 +61,8 @@
      {
          return this.field_135039_a.compareTo(p_compareTo_1_.field_135039_a);
      }

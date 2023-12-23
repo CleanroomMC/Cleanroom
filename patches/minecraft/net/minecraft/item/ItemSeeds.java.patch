@@ -9,18 +9,35 @@
  {
      private final Block field_150925_a;
      private final Block field_77838_b;
-@@ -26,8 +26,8 @@
-     public EnumActionResult func_180614_a(EntityPlayer p_180614_1_, World p_180614_2_, BlockPos p_180614_3_, EnumHand p_180614_4_, EnumFacing p_180614_5_, float p_180614_6_, float p_180614_7_, float p_180614_8_)
+@@ -23,24 +23,11 @@
+         this.func_77637_a(CreativeTabs.field_78035_l);
+     }
+ 
+-    @Override
+-    public EnumActionResult func_180614_a(
+-        EntityPlayer p_180614_1_,
+-        World p_180614_2_,
+-        BlockPos p_180614_3_,
+-        EnumHand p_180614_4_,
+-        EnumFacing p_180614_5_,
+-        float p_180614_6_,
+-        float p_180614_7_,
+-        float p_180614_8_
+-    )
++    public EnumActionResult func_180614_a(EntityPlayer p_180614_1_, World p_180614_2_, BlockPos p_180614_3_, EnumHand p_180614_4_, EnumFacing p_180614_5_, float p_180614_6_, float p_180614_7_, float p_180614_8_)
      {
          ItemStack itemstack = p_180614_1_.func_184586_b(p_180614_4_);
 -
--        if (p_180614_5_ == EnumFacing.UP && p_180614_1_.func_175151_a(p_180614_3_.func_177972_a(p_180614_5_), p_180614_5_, itemstack) && p_180614_2_.func_180495_p(p_180614_3_).func_177230_c() == this.field_77838_b && p_180614_2_.func_175623_d(p_180614_3_.func_177984_a()))
+-        if (p_180614_5_ == EnumFacing.UP
+-                && p_180614_1_.func_175151_a(p_180614_3_.func_177972_a(p_180614_5_), p_180614_5_, itemstack)
+-                && p_180614_2_.func_180495_p(p_180614_3_).func_177230_c() == this.field_77838_b
+-                && p_180614_2_.func_175623_d(p_180614_3_.func_177984_a()))
 +        net.minecraft.block.state.IBlockState state = p_180614_2_.func_180495_p(p_180614_3_);
 +        if (p_180614_5_ == EnumFacing.UP && p_180614_1_.func_175151_a(p_180614_3_.func_177972_a(p_180614_5_), p_180614_5_, itemstack) && state.func_177230_c().canSustainPlant(state, p_180614_2_, p_180614_3_, EnumFacing.UP, this) && p_180614_2_.func_175623_d(p_180614_3_.func_177984_a()))
          {
              p_180614_2_.func_175656_a(p_180614_3_.func_177984_a(), this.field_150925_a.func_176223_P());
  
-@@ -43,5 +43,17 @@
+@@ -56,5 +43,17 @@
          {
              return EnumActionResult.FAIL;
          }

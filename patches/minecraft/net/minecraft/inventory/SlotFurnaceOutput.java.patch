@@ -1,6 +1,59 @@
 --- before/net/minecraft/inventory/SlotFurnaceOutput.java
 +++ after/net/minecraft/inventory/SlotFurnaceOutput.java
-@@ -79,5 +79,6 @@
+@@ -17,13 +17,11 @@
+         this.field_75229_a = p_i45793_1_;
+     }
+ 
+-    @Override
+     public boolean func_75214_a(ItemStack p_75214_1_)
+     {
+         return false;
+     }
+ 
+-    @Override
+     public ItemStack func_75209_a(int p_75209_1_)
+     {
+         if (this.func_75216_d())
+@@ -34,7 +32,6 @@
+         return super.func_75209_a(p_75209_1_);
+     }
+ 
+-    @Override
+     public ItemStack func_190901_a(EntityPlayer p_190901_1_, ItemStack p_190901_2_)
+     {
+         this.func_75208_c(p_190901_2_);
+@@ -42,14 +39,12 @@
+         return p_190901_2_;
+     }
+ 
+-    @Override
+     protected void func_75210_a(ItemStack p_75210_1_, int p_75210_2_)
+     {
+         this.field_75228_b += p_75210_2_;
+         this.func_75208_c(p_75210_1_);
+     }
+ 
+-    @Override
+     protected void func_75208_c(ItemStack p_75208_1_)
+     {
+         p_75208_1_.func_77980_a(this.field_75229_a.field_70170_p, this.field_75229_a, this.field_75228_b);
+@@ -79,20 +74,11 @@
+             {
+                 int k = EntityXPOrb.func_70527_a(i);
+                 i -= k;
+-                this.field_75229_a
+-                .field_70170_p
+-                .func_72838_d(
+-                    new EntityXPOrb(
+-                        this.field_75229_a.field_70170_p,
+-                        this.field_75229_a.field_70165_t,
+-                        this.field_75229_a.field_70163_u + 0.5,
+-                        this.field_75229_a.field_70161_v + 0.5,
+-                        k
+-                    )
+-                );
++                this.field_75229_a.field_70170_p.func_72838_d(new EntityXPOrb(this.field_75229_a.field_70170_p, this.field_75229_a.field_70165_t, this.field_75229_a.field_70163_u + 0.5D, this.field_75229_a.field_70161_v + 0.5D, k));
+             }
          }
  
          this.field_75228_b = 0;

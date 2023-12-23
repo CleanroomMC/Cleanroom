@@ -1,6 +1,27 @@
 --- before/net/minecraft/world/biome/BiomeHills.java
 +++ after/net/minecraft/world/biome/BiomeHills.java
-@@ -39,28 +39,21 @@
+@@ -14,9 +14,7 @@
+ 
+ public class BiomeHills extends Biome
+ {
+-    private final WorldGenerator field_82915_S = new WorldGenMinable(
+-        Blocks.field_150418_aU.func_176223_P().func_177226_a(BlockSilverfish.field_176378_a, BlockSilverfish.EnumType.STONE), 9
+-    );
++    private final WorldGenerator field_82915_S = new WorldGenMinable(Blocks.field_150418_aU.func_176223_P().func_177226_a(BlockSilverfish.field_176378_a, BlockSilverfish.EnumType.STONE), 9);
+     private final WorldGenTaiga2 field_150634_aD = new WorldGenTaiga2(false);
+     private final BiomeHills.Type field_150638_aH;
+ 
+@@ -33,52 +31,42 @@
+         this.field_150638_aH = p_i46710_1_;
+     }
+ 
+-    @Override
+     public WorldGenAbstractTree func_150567_a(Random p_150567_1_)
+     {
+         return (WorldGenAbstractTree)(p_150567_1_.nextInt(3) > 0 ? this.field_150634_aD : super.func_150567_a(p_150567_1_));
+     }
+ 
+-    @Override
      public void func_180624_a(World p_180624_1_, Random p_180624_2_, BlockPos p_180624_3_)
      {
          super.func_180624_a(p_180624_1_, p_180624_2_, p_180624_3_);
@@ -35,8 +56,24 @@
 +        net.minecraftforge.common.MinecraftForge.ORE_GEN_BUS.post(new net.minecraftforge.event.terraingen.OreGenEvent.Post(p_180624_1_, p_180624_2_, p_180624_3_));
      }
  
+-    @Override
      public void func_180622_a(World p_180622_1_, Random p_180622_2_, ChunkPrimer p_180622_3_, int p_180622_4_, int p_180622_5_, double p_180622_6_)
-@@ -87,5 +80,26 @@
+     {
+         this.field_76752_A = Blocks.field_150349_c.func_176223_P();
+         this.field_76753_B = Blocks.field_150346_d.func_176223_P();
+ 
+-        if ((p_180622_6_ < -1.0 || p_180622_6_ > 2.0) && this.field_150638_aH == BiomeHills.Type.MUTATED)
++        if ((p_180622_6_ < -1.0D || p_180622_6_ > 2.0D) && this.field_150638_aH == BiomeHills.Type.MUTATED)
+         {
+             this.field_76752_A = Blocks.field_150351_n.func_176223_P();
+             this.field_76753_B = Blocks.field_150351_n.func_176223_P();
+         }
+-        else if (p_180622_6_ > 1.0 && this.field_150638_aH != BiomeHills.Type.EXTRA_TREES)
++        else if (p_180622_6_ > 1.0D && this.field_150638_aH != BiomeHills.Type.EXTRA_TREES)
+         {
+             this.field_76752_A = Blocks.field_150348_b.func_176223_P();
+             this.field_76753_B = Blocks.field_150348_b.func_176223_P();
+@@ -92,5 +80,26 @@
          NORMAL,
          EXTRA_TREES,
          MUTATED;

@@ -1,6 +1,36 @@
 --- before/net/minecraft/world/biome/BiomePlains.java
 +++ after/net/minecraft/world/biome/BiomePlains.java
-@@ -80,6 +80,7 @@
+@@ -25,12 +25,11 @@
+         this.field_76760_I.field_76803_B = 10;
+     }
+ 
+-    @Override
+     public BlockFlower.EnumFlowerType func_180623_a(Random p_180623_1_, BlockPos p_180623_2_)
+     {
+-        double d0 = field_180281_af.func_151601_a((double)p_180623_2_.func_177958_n() / 200.0, (double)p_180623_2_.func_177952_p() / 200.0);
++        double d0 = field_180281_af.func_151601_a((double)p_180623_2_.func_177958_n() / 200.0D, (double)p_180623_2_.func_177952_p() / 200.0D);
+ 
+-        if (d0 < -0.8)
++        if (d0 < -0.8D)
+         {
+             int j = p_180623_1_.nextInt(4);
+ 
+@@ -66,12 +65,11 @@
+         }
+     }
+ 
+-    @Override
+     public void func_180624_a(World p_180624_1_, Random p_180624_2_, BlockPos p_180624_3_)
+     {
+-        double d0 = field_180281_af.func_151601_a((double)(p_180624_3_.func_177958_n() + 8) / 200.0, (double)(p_180624_3_.func_177952_p() + 8) / 200.0);
++        double d0 = field_180281_af.func_151601_a((double)(p_180624_3_.func_177958_n() + 8) / 200.0D, (double)(p_180624_3_.func_177952_p() + 8) / 200.0D);
+ 
+-        if (d0 < -0.8)
++        if (d0 < -0.8D)
+         {
+             this.field_76760_I.field_76802_A = 15;
+             this.field_76760_I.field_76803_B = 5;
+@@ -82,6 +80,7 @@
              this.field_76760_I.field_76803_B = 10;
              field_180280_ag.func_180710_a(BlockDoublePlant.EnumPlantType.GRASS);
  
@@ -8,7 +38,7 @@
              for (int i = 0; i < 7; ++i)
              {
                  int j = p_180624_2_.nextInt(16) + 8;
-@@ -89,7 +90,7 @@
+@@ -91,7 +90,7 @@
              }
          }
  
@@ -17,13 +47,10 @@
          {
              field_180280_ag.func_180710_a(BlockDoublePlant.EnumPlantType.SUNFLOWER);
  
-@@ -103,6 +104,21 @@
-         }
+@@ -108,6 +107,20 @@
+     }
  
-         super.func_180624_a(p_180624_1_, p_180624_2_, p_180624_3_);
-+    }
-+
-+    @Override
+     @Override
 +    public void addDefaultFlowers()
 +    {
 +        BlockFlower red = net.minecraft.init.Blocks.field_150328_O;
@@ -36,6 +63,8 @@
 +        addFlower(red.func_176223_P().func_177226_a(red.func_176494_l(), BlockFlower.EnumFlowerType.HOUSTONIA), 20);
 +        addFlower(red.func_176223_P().func_177226_a(red.func_176494_l(), BlockFlower.EnumFlowerType.OXEYE_DAISY), 20);
 +        addFlower(yel.func_176223_P().func_177226_a(yel.func_176494_l(), BlockFlower.EnumFlowerType.DANDELION), 30);
-     }
- 
++    }
++
      public WorldGenAbstractTree func_150567_a(Random p_150567_1_)
+     {
+         return (WorldGenAbstractTree)(p_150567_1_.nextInt(3) == 0 ? field_76758_O : field_76757_N);

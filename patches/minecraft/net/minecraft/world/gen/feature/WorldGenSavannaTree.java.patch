@@ -1,24 +1,47 @@
 --- before/net/minecraft/world/gen/feature/WorldGenSavannaTree.java
 +++ after/net/minecraft/world/gen/feature/WorldGenSavannaTree.java
-@@ -16,7 +16,7 @@
+@@ -15,20 +15,14 @@
+ 
  public class WorldGenSavannaTree extends WorldGenAbstractTree
  {
-     private static final IBlockState field_181643_a = Blocks.field_150363_s.func_176223_P().func_177226_a(BlockNewLog.field_176300_b, BlockPlanks.EnumType.ACACIA);
--    private static final IBlockState field_181644_b = Blocks.field_150361_u.func_176223_P().func_177226_a(BlockNewLeaf.field_176240_P, BlockPlanks.EnumType.ACACIA).func_177226_a(BlockLeaves.field_176236_b, false);
+-    private static final IBlockState field_181643_a = Blocks.field_150363_s
+-                .func_176223_P()
+-                .func_177226_a(BlockNewLog.field_176300_b, BlockPlanks.EnumType.ACACIA);
+-    private static final IBlockState field_181644_b = Blocks.field_150361_u
+-                .func_176223_P()
+-                .func_177226_a(BlockNewLeaf.field_176240_P, BlockPlanks.EnumType.ACACIA)
+-                .func_177226_a(BlockLeaves.field_176236_b, false);
++    private static final IBlockState field_181643_a = Blocks.field_150363_s.func_176223_P().func_177226_a(BlockNewLog.field_176300_b, BlockPlanks.EnumType.ACACIA);
 +    private static final IBlockState field_181644_b = Blocks.field_150361_u.func_176223_P().func_177226_a(BlockNewLeaf.field_176240_P, BlockPlanks.EnumType.ACACIA).func_177226_a(BlockLeaves.field_176236_b, Boolean.valueOf(false));
  
      public WorldGenSavannaTree(boolean p_i45463_1_)
      {
-@@ -52,7 +52,7 @@
+         super(p_i45463_1_);
+     }
+ 
+-    @Override
+     public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
+     {
+         int i = p_180709_2_.nextInt(3) + p_180709_2_.nextInt(3) + 5;
+@@ -56,11 +50,14 @@
+                 {
+                     for (int i1 = p_180709_3_.func_177952_p() - k; i1 <= p_180709_3_.func_177952_p() + k && flag; ++i1)
                      {
-                         if (j >= 0 && j < 256)
+-                        if (j < 0 || j >= 256)
++                        if (j >= 0 && j < 256)
                          {
--                            if (!this.func_150523_a(p_180709_1_.func_180495_p(blockpos$mutableblockpos.func_181079_c(l, j, i1)).func_177230_c()))
+-                            flag = false;
 +                            if (!this.isReplaceable(p_180709_1_,blockpos$mutableblockpos.func_181079_c(l, j, i1)))
-                             {
-                                 flag = false;
-                             }
-@@ -71,11 +71,13 @@
++                            {
++                                flag = false;
++                            }
+                         }
+-                        else if (!this.func_150523_a(p_180709_1_.func_180495_p(blockpos$mutableblockpos.func_181079_c(l, j, i1)).func_177230_c()))
++                        else
+                         {
+                             flag = false;
+                         }
+@@ -74,11 +71,13 @@
              }
              else
              {
@@ -35,7 +58,7 @@
                      EnumFacing enumfacing = EnumFacing.Plane.HORIZONTAL.func_179518_a(p_180709_2_);
                      int k2 = i - p_180709_2_.nextInt(4) - 1;
                      int l2 = 3 - p_180709_2_.nextInt(3);
-@@ -95,9 +97,9 @@
+@@ -98,9 +97,9 @@
                          }
  
                          BlockPos blockpos = new BlockPos(i3, i2, j1);
@@ -47,7 +70,7 @@
                          {
                              this.func_181642_b(p_180709_1_, blockpos);
                              k1 = i2;
-@@ -149,9 +151,9 @@
+@@ -152,9 +151,9 @@
                                  i3 += enumfacing1.func_82601_c();
                                  j1 += enumfacing1.func_82599_e();
                                  BlockPos blockpos1 = new BlockPos(i3, j2, j1);
@@ -59,7 +82,7 @@
                                  {
                                      this.func_181642_b(p_180709_1_, blockpos1);
                                      k1 = j2;
-@@ -209,9 +211,9 @@
+@@ -212,9 +211,9 @@
  
      private void func_175924_b(World p_175924_1_, BlockPos p_175924_2_)
      {

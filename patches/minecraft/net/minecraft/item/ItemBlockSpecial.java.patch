@@ -1,6 +1,30 @@
 --- before/net/minecraft/item/ItemBlockSpecial.java
 +++ after/net/minecraft/item/ItemBlockSpecial.java
-@@ -30,7 +30,7 @@
+@@ -5,6 +5,7 @@
+ import net.minecraft.block.BlockSnow;
+ import net.minecraft.block.SoundType;
+ import net.minecraft.block.state.IBlockState;
++import net.minecraft.entity.Entity;
+ import net.minecraft.entity.player.EntityPlayer;
+ import net.minecraft.entity.player.EntityPlayerMP;
+ import net.minecraft.init.Blocks;
+@@ -24,22 +25,12 @@
+         this.field_150935_a = p_i45329_1_;
+     }
+ 
+-    @Override
+-    public EnumActionResult func_180614_a(
+-        EntityPlayer p_180614_1_,
+-        World p_180614_2_,
+-        BlockPos p_180614_3_,
+-        EnumHand p_180614_4_,
+-        EnumFacing p_180614_5_,
+-        float p_180614_6_,
+-        float p_180614_7_,
+-        float p_180614_8_
+-    )
++    public EnumActionResult func_180614_a(EntityPlayer p_180614_1_, World p_180614_2_, BlockPos p_180614_3_, EnumHand p_180614_4_, EnumFacing p_180614_5_, float p_180614_6_, float p_180614_7_, float p_180614_8_)
+     {
          IBlockState iblockstate = p_180614_2_.func_180495_p(p_180614_3_);
          Block block = iblockstate.func_177230_c();
  
@@ -9,28 +33,40 @@
          {
              p_180614_5_ = EnumFacing.UP;
          }
-@@ -41,9 +41,9 @@
+@@ -50,12 +41,9 @@
  
          ItemStack itemstack = p_180614_1_.func_184586_b(p_180614_4_);
  
--        if (!itemstack.func_190926_b() && p_180614_1_.func_175151_a(p_180614_3_, p_180614_5_, itemstack) && p_180614_2_.func_190527_a(this.field_150935_a, p_180614_3_, false, p_180614_5_, (Entity)null))
+-        if (!itemstack.func_190926_b()
+-                && p_180614_1_.func_175151_a(p_180614_3_, p_180614_5_, itemstack)
+-                && p_180614_2_.func_190527_a(this.field_150935_a, p_180614_3_, false, p_180614_5_, null))
 +        if (!itemstack.func_190926_b() && p_180614_1_.func_175151_a(p_180614_3_, p_180614_5_, itemstack) && p_180614_2_.func_190527_a(this.field_150935_a, p_180614_3_, false, p_180614_5_, p_180614_1_))
          {
--            IBlockState iblockstate1 = this.field_150935_a.func_180642_a(p_180614_2_, p_180614_3_, p_180614_5_, p_180614_6_, p_180614_7_, p_180614_8_, 0, p_180614_1_);
+-            IBlockState iblockstate1 = this.field_150935_a
+-                                       .func_180642_a(p_180614_2_, p_180614_3_, p_180614_5_, p_180614_6_, p_180614_7_, p_180614_8_, 0, p_180614_1_);
 +            IBlockState iblockstate1 = this.field_150935_a.getStateForPlacement(p_180614_2_, p_180614_3_, p_180614_5_, p_180614_6_, p_180614_7_, p_180614_8_, 0, p_180614_1_, p_180614_4_);
  
              if (!p_180614_2_.func_180501_a(p_180614_3_, iblockstate1, 11))
              {
-@@ -64,7 +64,7 @@
+@@ -76,15 +64,8 @@
                      }
                  }
  
 -                SoundType soundtype = this.field_150935_a.func_185467_w();
+-                p_180614_2_.func_184133_a(
+-                    p_180614_1_,
+-                    p_180614_3_,
+-                    soundtype.func_185841_e(),
+-                    SoundCategory.BLOCKS,
+-                    (soundtype.func_185843_a() + 1.0F) / 2.0F,
+-                    soundtype.func_185847_b() * 0.8F
+-                );
 +                SoundType soundtype = iblockstate1.func_177230_c().getSoundType(iblockstate1, p_180614_2_, p_180614_3_, p_180614_1_);
-                 p_180614_2_.func_184133_a(p_180614_1_, p_180614_3_, soundtype.func_185841_e(), SoundCategory.BLOCKS, (soundtype.func_185843_a() + 1.0F) / 2.0F, soundtype.func_185847_b() * 0.8F);
++                p_180614_2_.func_184133_a(p_180614_1_, p_180614_3_, soundtype.func_185841_e(), SoundCategory.BLOCKS, (soundtype.func_185843_a() + 1.0F) / 2.0F, soundtype.func_185847_b() * 0.8F);
                  itemstack.func_190918_g(1);
                  return EnumActionResult.SUCCESS;
-@@ -74,5 +74,15 @@
+             }
+@@ -93,5 +74,15 @@
          {
              return EnumActionResult.FAIL;
          }

@@ -1,7 +1,10 @@
 --- before/net/minecraft/client/renderer/block/model/ModelManager.java
 +++ after/net/minecraft/client/renderer/block/model/ModelManager.java
-@@ -24,9 +24,10 @@
+@@ -22,12 +22,12 @@
+         this.field_174957_c = new BlockModelShapes(this);
+     }
  
+-    @Override
      public void func_110549_a(IResourceManager p_110549_1_)
      {
 -        ModelBakery modelbakery = new ModelBakery(p_110549_1_, this.field_174956_b, this.field_174957_c);

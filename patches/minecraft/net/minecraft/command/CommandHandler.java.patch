@@ -1,14 +1,6 @@
 --- before/net/minecraft/command/CommandHandler.java
 +++ after/net/minecraft/command/CommandHandler.java
-@@ -7,6 +7,7 @@
- import java.util.List;
- import java.util.Map;
- import java.util.Set;
-+import java.util.Map.Entry;
- import javax.annotation.Nullable;
- import net.minecraft.entity.Entity;
- import net.minecraft.server.MinecraftServer;
-@@ -19,8 +20,8 @@
+@@ -20,10 +20,9 @@
  public abstract class CommandHandler implements ICommandManager
  {
      private static final Logger field_147175_a = LogManager.getLogger();
@@ -17,9 +9,11 @@
 +    private final Map<String, ICommand> field_71562_a = Maps.<String, ICommand>newHashMap();
 +    private final Set<ICommand> field_71561_b = Sets.<ICommand>newHashSet();
  
+-    @Override
      public int func_71556_a(ICommandSender p_71556_1_, String p_71556_2_)
      {
-@@ -43,21 +44,32 @@
+         p_71556_2_ = p_71556_2_.trim();
+@@ -45,21 +44,32 @@
  
              if (icommand == null)
              {
@@ -55,7 +49,7 @@
                      }
  
                      for (Entity entity : list)
-@@ -84,7 +96,7 @@
+@@ -86,7 +96,7 @@
              }
              else
              {
@@ -64,16 +58,18 @@
                  textcomponenttranslation2.func_150256_b().func_150238_a(TextFormatting.RED);
                  p_71556_1_.func_145747_a(textcomponenttranslation2);
              }
-@@ -109,7 +121,7 @@
+@@ -111,9 +121,7 @@
          }
          catch (WrongUsageException wrongusageexception)
          {
--            TextComponentTranslation textcomponenttranslation2 = new TextComponentTranslation("commands.generic.usage", new TextComponentTranslation(wrongusageexception.getMessage(), wrongusageexception.func_74844_a()));
+-            TextComponentTranslation textcomponenttranslation2 = new TextComponentTranslation(
+-                "commands.generic.usage", new TextComponentTranslation(wrongusageexception.getMessage(), wrongusageexception.func_74844_a())
+-            );
 +            TextComponentTranslation textcomponenttranslation2 = new TextComponentTranslation("commands.generic.usage", new Object[] {new TextComponentTranslation(wrongusageexception.getMessage(), wrongusageexception.func_74844_a())});
              textcomponenttranslation2.func_150256_b().func_150238_a(TextFormatting.RED);
              p_175786_1_.func_145747_a(textcomponenttranslation2);
          }
-@@ -121,7 +133,7 @@
+@@ -125,7 +133,7 @@
          }
          catch (Throwable throwable)
          {
@@ -82,22 +78,29 @@
              textcomponenttranslation.func_150256_b().func_150238_a(TextFormatting.RED);
              p_175786_1_.func_145747_a(textcomponenttranslation);
              field_147175_a.warn("Couldn't process command: " + p_175786_4_, throwable);
-@@ -164,11 +176,11 @@
+@@ -161,7 +169,6 @@
+         return astring;
+     }
+ 
+-    @Override
+     public List<String> func_180524_a(ICommandSender p_180524_1_, String p_180524_2_, @Nullable BlockPos p_180524_3_)
+     {
+         String[] astring = p_180524_2_.split(" ", -1);
+@@ -169,11 +176,11 @@
  
          if (astring.length == 1)
          {
 -            List<String> list = Lists.newArrayList();
 +            List<String> list = Lists.<String>newArrayList();
  
--            for (Map.Entry<String, ICommand> entry : this.field_71562_a.entrySet())
-+            for (Entry<String, ICommand> entry : this.field_71562_a.entrySet())
+             for (Entry<String, ICommand> entry : this.field_71562_a.entrySet())
              {
 -                if (CommandBase.func_71523_a(s, entry.getKey()) && entry.getValue().func_184882_a(this.func_184879_a(), p_180524_1_))
 +                if (CommandBase.func_71523_a(s, entry.getKey()) && ((ICommand)entry.getValue()).func_184882_a(this.func_184879_a(), p_180524_1_))
                  {
                      list.add(entry.getKey());
                  }
-@@ -188,13 +200,13 @@
+@@ -193,14 +200,13 @@
                  }
              }
  
@@ -106,6 +109,7 @@
          }
      }
  
+-    @Override
      public List<ICommand> func_71557_a(ICommandSender p_71557_1_)
      {
 -        List<ICommand> list = Lists.newArrayList();
@@ -113,3 +117,11 @@
  
          for (ICommand icommand : this.field_71561_b)
          {
+@@ -213,7 +219,6 @@
+         return list;
+     }
+ 
+-    @Override
+     public Map<String, ICommand> func_71555_a()
+     {
+         return this.field_71562_a;

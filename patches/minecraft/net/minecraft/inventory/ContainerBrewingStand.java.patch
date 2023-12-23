@@ -1,15 +1,91 @@
 --- before/net/minecraft/inventory/ContainerBrewingStand.java
 +++ after/net/minecraft/inventory/ContainerBrewingStand.java
-@@ -197,7 +197,7 @@
+@@ -43,14 +43,12 @@
+         }
+     }
  
+-    @Override
+     public void func_75132_a(IContainerListener p_75132_1_)
+     {
+         super.func_75132_a(p_75132_1_);
+         p_75132_1_.func_175173_a(this, this.field_75188_e);
+     }
+ 
+-    @Override
+     public void func_75142_b()
+     {
+         super.func_75142_b();
+@@ -75,19 +73,16 @@
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    @Override
+     public void func_75137_b(int p_75137_1_, int p_75137_2_)
+     {
+         this.field_75188_e.func_174885_b(p_75137_1_, p_75137_2_);
+     }
+ 
+-    @Override
+     public boolean func_75145_c(EntityPlayer p_75145_1_)
+     {
+         return this.field_75188_e.func_70300_a(p_75145_1_);
+     }
+ 
+-    @Override
+     public ItemStack func_82846_b(EntityPlayer p_82846_1_, int p_82846_2_)
+     {
+         ItemStack itemstack = ItemStack.field_190927_a;
+@@ -177,7 +172,6 @@
+                 super(p_i47070_1_, p_i47070_2_, p_i47070_3_, p_i47070_4_);
+             }
+ 
+-            @Override
+             public boolean func_75214_a(ItemStack p_75214_1_)
+             {
+                 return func_185004_b_(p_75214_1_);
+@@ -188,7 +182,6 @@
+                 return p_185004_0_.func_77973_b() == Items.field_151065_br;
+             }
+ 
+-            @Override
+             public int func_75219_a()
+             {
+                 return 64;
+@@ -202,13 +195,11 @@
+                 super(p_i47069_1_, p_i47069_2_, p_i47069_3_, p_i47069_4_);
+             }
+ 
+-            @Override
              public boolean func_75214_a(ItemStack p_75214_1_)
              {
 -                return PotionHelper.func_185205_a(p_75214_1_);
 +                return net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidIngredient(p_75214_1_);
              }
  
+-            @Override
              public int func_75219_a()
-@@ -229,6 +229,7 @@
+             {
+                 return 64;
+@@ -222,25 +213,23 @@
+                 super(p_i47598_1_, p_i47598_2_, p_i47598_3_, p_i47598_4_);
+             }
+ 
+-            @Override
+             public boolean func_75214_a(ItemStack p_75214_1_)
+             {
+                 return func_75243_a_(p_75214_1_);
+             }
+ 
+-            @Override
+             public int func_75219_a()
+             {
+                 return 1;
+             }
+ 
+-            @Override
+             public ItemStack func_190901_a(EntityPlayer p_190901_1_, ItemStack p_190901_2_)
+             {
+                 PotionType potiontype = PotionUtils.func_185191_c(p_190901_2_);
  
                  if (p_190901_1_ instanceof EntityPlayerMP)
                  {
@@ -17,7 +93,7 @@
                      CriteriaTriggers.field_192130_j.func_192173_a((EntityPlayerMP)p_190901_1_, potiontype);
                  }
  
-@@ -238,8 +239,7 @@
+@@ -250,8 +239,7 @@
  
              public static boolean func_75243_a_(ItemStack p_75243_0_)
              {

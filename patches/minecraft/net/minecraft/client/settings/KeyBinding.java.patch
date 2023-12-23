@@ -74,11 +74,13 @@
      }
  
      public String func_151466_e()
-@@ -150,23 +151,166 @@
+@@ -150,25 +151,166 @@
  
      public int compareTo(KeyBinding p_compareTo_1_)
      {
--        return this.field_151471_f.equals(p_compareTo_1_.field_151471_f) ? I18n.func_135052_a(this.field_74515_c).compareTo(I18n.func_135052_a(p_compareTo_1_.field_74515_c)) : field_193627_d.get(this.field_151471_f).compareTo(field_193627_d.get(p_compareTo_1_.field_151471_f));
+-        return this.field_151471_f.equals(p_compareTo_1_.field_151471_f)
+-               ? I18n.func_135052_a(this.field_74515_c).compareTo(I18n.func_135052_a(p_compareTo_1_.field_74515_c))
+-               : field_193627_d.get(this.field_151471_f).compareTo(field_193627_d.get(p_compareTo_1_.field_151471_f));
 -    }
 +        if (this.field_151471_f.equals(p_compareTo_1_.field_151471_f)) return I18n.func_135052_a(this.field_74515_c).compareTo(I18n.func_135052_a(p_compareTo_1_.field_74515_c));
 +        Integer tCat = field_193627_d.get(this.field_151471_f);

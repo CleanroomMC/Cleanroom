@@ -8,7 +8,7 @@
  import net.minecraft.block.properties.PropertyBool;
  import net.minecraft.block.properties.PropertyInteger;
  import net.minecraft.block.state.BlockFaceShape;
-@@ -33,18 +34,26 @@
+@@ -33,35 +34,26 @@
      public static final PropertyBool field_176541_P = PropertyBool.func_177716_a("south");
      public static final PropertyBool field_176539_Q = PropertyBool.func_177716_a("west");
      public static final PropertyBool field_176542_R = PropertyBool.func_177716_a("up");
@@ -17,9 +17,17 @@
 +    private final Map<Block, Integer> field_149849_a = Maps.<Block, Integer>newIdentityHashMap();
 +    private final Map<Block, Integer> field_149848_b = Maps.<Block, Integer>newIdentityHashMap();
  
+-    @Override
      public IBlockState func_176221_a(IBlockState p_176221_1_, IBlockAccess p_176221_2_, BlockPos p_176221_3_)
      {
--        return !p_176221_2_.func_180495_p(p_176221_3_.func_177977_b()).func_185896_q() && !Blocks.field_150480_ab.func_176535_e(p_176221_2_, p_176221_3_.func_177977_b()) ? p_176221_1_.func_177226_a(field_176545_N, this.func_176535_e(p_176221_2_, p_176221_3_.func_177978_c())).func_177226_a(field_176546_O, this.func_176535_e(p_176221_2_, p_176221_3_.func_177974_f())).func_177226_a(field_176541_P, this.func_176535_e(p_176221_2_, p_176221_3_.func_177968_d())).func_177226_a(field_176539_Q, this.func_176535_e(p_176221_2_, p_176221_3_.func_177976_e())).func_177226_a(field_176542_R, this.func_176535_e(p_176221_2_, p_176221_3_.func_177984_a())) : this.func_176223_P();
+-        return !p_176221_2_.func_180495_p(p_176221_3_.func_177977_b()).func_185896_q()
+-               && !Blocks.field_150480_ab.func_176535_e(p_176221_2_, p_176221_3_.func_177977_b())
+-               ? p_176221_1_.func_177226_a(field_176545_N, this.func_176535_e(p_176221_2_, p_176221_3_.func_177978_c()))
+-               .func_177226_a(field_176546_O, this.func_176535_e(p_176221_2_, p_176221_3_.func_177974_f()))
+-               .func_177226_a(field_176541_P, this.func_176535_e(p_176221_2_, p_176221_3_.func_177968_d()))
+-               .func_177226_a(field_176539_Q, this.func_176535_e(p_176221_2_, p_176221_3_.func_177976_e()))
+-               .func_177226_a(field_176542_R, this.func_176535_e(p_176221_2_, p_176221_3_.func_177984_a()))
+-               : this.func_176223_P();
 +        if (!p_176221_2_.func_180495_p(p_176221_3_.func_177977_b()).isSideSolid(p_176221_2_, p_176221_3_.func_177977_b(), EnumFacing.UP) && !Blocks.field_150480_ab.canCatchFire(p_176221_2_, p_176221_3_.func_177977_b(), EnumFacing.UP))
 +        {
 +            return p_176221_1_.func_177226_a(field_176545_N, this.canCatchFire(p_176221_2_, p_176221_3_.func_177978_c(), EnumFacing.SOUTH))
@@ -34,12 +42,21 @@
      protected BlockFire()
      {
          super(Material.field_151581_o);
--        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176543_a, 0).func_177226_a(field_176545_N, false).func_177226_a(field_176546_O, false).func_177226_a(field_176541_P, false).func_177226_a(field_176539_Q, false).func_177226_a(field_176542_R, false));
+-        this.func_180632_j(
+-            this.field_176227_L
+-            .func_177621_b()
+-            .func_177226_a(field_176543_a, 0)
+-            .func_177226_a(field_176545_N, false)
+-            .func_177226_a(field_176546_O, false)
+-            .func_177226_a(field_176541_P, false)
+-            .func_177226_a(field_176539_Q, false)
+-            .func_177226_a(field_176542_R, false)
+-        );
 +        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176543_a, Integer.valueOf(0)).func_177226_a(field_176545_N, Boolean.valueOf(false)).func_177226_a(field_176546_O, Boolean.valueOf(false)).func_177226_a(field_176541_P, Boolean.valueOf(false)).func_177226_a(field_176539_Q, Boolean.valueOf(false)).func_177226_a(field_176542_R, Boolean.valueOf(false)));
          this.func_149675_a(true);
      }
  
-@@ -91,8 +100,9 @@
+@@ -108,60 +100,51 @@
  
      public void func_180686_a(Block p_180686_1_, int p_180686_2_, int p_180686_3_)
      {
@@ -51,7 +68,38 @@
      }
  
      @Nullable
-@@ -125,20 +135,16 @@
+-    @Override
+     public AxisAlignedBB func_180646_a(IBlockState p_180646_1_, IBlockAccess p_180646_2_, BlockPos p_180646_3_)
+     {
+         return field_185506_k;
+     }
+ 
+-    @Override
+     public boolean func_149662_c(IBlockState p_149662_1_)
+     {
+         return false;
+     }
+ 
+-    @Override
+     public boolean func_149686_d(IBlockState p_149686_1_)
+     {
+         return false;
+     }
+ 
+-    @Override
+     public int func_149745_a(Random p_149745_1_)
+     {
+         return 0;
+     }
+ 
+-    @Override
+     public int func_149738_a(World p_149738_1_)
+     {
+         return 30;
+     }
+ 
+-    @Override
+     public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
      {
          if (p_180650_1_.func_82736_K().func_82766_b("doFireTick"))
          {
@@ -76,7 +124,7 @@
  
              if (!flag && p_180650_1_.func_72896_J() && this.func_176537_d(p_180650_1_, p_180650_2_) && p_180650_4_.nextFloat() < 0.2F + (float)i * 0.03F)
              {
-@@ -148,7 +154,7 @@
+@@ -171,7 +154,7 @@
              {
                  if (i < 15)
                  {
@@ -85,7 +133,7 @@
                      p_180650_1_.func_180501_a(p_180650_2_, p_180650_3_, 4);
                  }
  
-@@ -158,7 +164,7 @@
+@@ -181,7 +164,7 @@
                  {
                      if (!this.func_176533_e(p_180650_1_, p_180650_2_))
                      {
@@ -94,7 +142,7 @@
                          {
                              p_180650_1_.func_175698_g(p_180650_2_);
                          }
-@@ -166,7 +172,7 @@
+@@ -189,7 +172,7 @@
                          return;
                      }
  
@@ -103,7 +151,7 @@
                      {
                          p_180650_1_.func_175698_g(p_180650_2_);
                          return;
-@@ -181,12 +187,12 @@
+@@ -204,12 +187,12 @@
                      j = -50;
                  }
  
@@ -122,7 +170,7 @@
  
                  for (int k = -1; k <= 1; ++k)
                  {
-@@ -224,7 +230,7 @@
+@@ -247,7 +230,7 @@
                                              i2 = 15;
                                          }
  
@@ -131,7 +179,21 @@
                                      }
                                  }
                              }
-@@ -245,21 +251,29 @@
+@@ -260,34 +243,37 @@
+ 
+     protected boolean func_176537_d(World p_176537_1_, BlockPos p_176537_2_)
+     {
+-        return p_176537_1_.func_175727_C(p_176537_2_)
+-               || p_176537_1_.func_175727_C(p_176537_2_.func_177976_e())
+-               || p_176537_1_.func_175727_C(p_176537_2_.func_177974_f())
+-               || p_176537_1_.func_175727_C(p_176537_2_.func_177978_c())
+-               || p_176537_1_.func_175727_C(p_176537_2_.func_177968_d());
++        return p_176537_1_.func_175727_C(p_176537_2_) || p_176537_1_.func_175727_C(p_176537_2_.func_177976_e()) || p_176537_1_.func_175727_C(p_176537_2_.func_177974_f()) || p_176537_1_.func_175727_C(p_176537_2_.func_177978_c()) || p_176537_1_.func_175727_C(p_176537_2_.func_177968_d());
+     }
+ 
+-    @Override
+     public boolean func_149698_L()
+     {
          return false;
      }
  
@@ -164,7 +226,7 @@
  
          if (p_176536_4_.nextInt(p_176536_3_) < i)
          {
-@@ -274,7 +288,7 @@
+@@ -302,7 +288,7 @@
                      j = 15;
                  }
  
@@ -173,7 +235,7 @@
              }
              else
              {
-@@ -283,7 +297,7 @@
+@@ -311,7 +297,7 @@
  
              if (iblockstate.func_177230_c() == Blocks.field_150335_W)
              {
@@ -182,7 +244,7 @@
              }
          }
      }
-@@ -292,7 +306,7 @@
+@@ -320,7 +306,7 @@
      {
          for (EnumFacing enumfacing : EnumFacing.values())
          {
@@ -191,7 +253,7 @@
              {
                  return true;
              }
-@@ -313,7 +327,7 @@
+@@ -341,31 +327,29 @@
  
              for (EnumFacing enumfacing : EnumFacing.values())
              {
@@ -200,7 +262,12 @@
              }
  
              return i;
-@@ -325,9 +339,10 @@
+         }
+     }
+ 
+-    @Override
+     public boolean func_149703_v()
+     {
          return false;
      }
  
@@ -211,8 +278,25 @@
 +        return canCatchFire(p_176535_1_, p_176535_2_, EnumFacing.UP);
      }
  
+-    @Override
      public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)
-@@ -358,6 +373,11 @@
+     {
+         return p_176196_1_.func_180495_p(p_176196_2_.func_177977_b()).func_185896_q() || this.func_176533_e(p_176196_1_, p_176196_2_);
+     }
+ 
+-    @Override
+     public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
+     {
+         if (!p_189540_2_.func_180495_p(p_189540_3_.func_177977_b()).func_185896_q() && !this.func_176533_e(p_189540_2_, p_189540_3_))
+@@ -374,7 +358,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_176213_c(World p_176213_1_, BlockPos p_176213_2_, IBlockState p_176213_3_)
+     {
+         if (p_176213_1_.field_73011_w.func_186058_p().func_186068_a() > 0 || !Blocks.field_150427_aO.func_176548_d(p_176213_1_, p_176213_2_))
+@@ -390,79 +373,73 @@
          }
      }
  
@@ -222,13 +306,26 @@
 +    }
 +
      @SideOnly(Side.CLIENT)
+-    @Override
      public void func_180655_c(IBlockState p_180655_1_, World p_180655_2_, BlockPos p_180655_3_, Random p_180655_4_)
      {
-@@ -366,58 +386,58 @@
-             p_180655_2_.func_184134_a((double)((float)p_180655_3_.func_177958_n() + 0.5F), (double)((float)p_180655_3_.func_177956_o() + 0.5F), (double)((float)p_180655_3_.func_177952_p() + 0.5F), SoundEvents.field_187643_bs, SoundCategory.BLOCKS, 1.0F + p_180655_4_.nextFloat(), p_180655_4_.nextFloat() * 0.7F + 0.3F, false);
+         if (p_180655_4_.nextInt(24) == 0)
+         {
+-            p_180655_2_.func_184134_a(
+-                (double)((float)p_180655_3_.func_177958_n() + 0.5F),
+-                (double)((float)p_180655_3_.func_177956_o() + 0.5F),
+-                (double)((float)p_180655_3_.func_177952_p() + 0.5F),
+-                SoundEvents.field_187643_bs,
+-                SoundCategory.BLOCKS,
+-                1.0F + p_180655_4_.nextFloat(),
+-                p_180655_4_.nextFloat() * 0.7F + 0.3F,
+-                false
+-            );
++            p_180655_2_.func_184134_a((double)((float)p_180655_3_.func_177958_n() + 0.5F), (double)((float)p_180655_3_.func_177956_o() + 0.5F), (double)((float)p_180655_3_.func_177952_p() + 0.5F), SoundEvents.field_187643_bs, SoundCategory.BLOCKS, 1.0F + p_180655_4_.nextFloat(), p_180655_4_.nextFloat() * 0.7F + 0.3F, false);
          }
  
--        if (!p_180655_2_.func_180495_p(p_180655_3_.func_177977_b()).func_185896_q() && !Blocks.field_150480_ab.func_176535_e(p_180655_2_, p_180655_3_.func_177977_b()))
+-        if (!p_180655_2_.func_180495_p(p_180655_3_.func_177977_b()).func_185896_q()
+-                && !Blocks.field_150480_ab.func_176535_e(p_180655_2_, p_180655_3_.func_177977_b()))
 +        if (!p_180655_2_.func_180495_p(p_180655_3_.func_177977_b()).isSideSolid(p_180655_2_, p_180655_3_.func_177977_b(), EnumFacing.UP) && !Blocks.field_150480_ab.canCatchFire(p_180655_2_, p_180655_3_.func_177977_b(), EnumFacing.UP))
          {
 -            if (Blocks.field_150480_ab.func_176535_e(p_180655_2_, p_180655_3_.func_177976_e()))
@@ -236,11 +333,12 @@
              {
                  for (int j = 0; j < 2; ++j)
                  {
--                    double d3 = (double)p_180655_3_.func_177958_n() + p_180655_4_.nextDouble() * (double)0.1F;
+-                    double d3 = (double)p_180655_3_.func_177958_n() + p_180655_4_.nextDouble() * 0.1F;
 +                    double d3 = (double)p_180655_3_.func_177958_n() + p_180655_4_.nextDouble() * 0.10000000149011612D;
                      double d8 = (double)p_180655_3_.func_177956_o() + p_180655_4_.nextDouble();
                      double d13 = (double)p_180655_3_.func_177952_p() + p_180655_4_.nextDouble();
-                     p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d3, d8, d13, 0.0D, 0.0D, 0.0D);
+-                    p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d3, d8, d13, 0.0, 0.0, 0.0);
++                    p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d3, d8, d13, 0.0D, 0.0D, 0.0D);
                  }
              }
  
@@ -249,11 +347,12 @@
              {
                  for (int k = 0; k < 2; ++k)
                  {
--                    double d4 = (double)(p_180655_3_.func_177958_n() + 1) - p_180655_4_.nextDouble() * (double)0.1F;
+-                    double d4 = (double)(p_180655_3_.func_177958_n() + 1) - p_180655_4_.nextDouble() * 0.1F;
 +                    double d4 = (double)(p_180655_3_.func_177958_n() + 1) - p_180655_4_.nextDouble() * 0.10000000149011612D;
                      double d9 = (double)p_180655_3_.func_177956_o() + p_180655_4_.nextDouble();
                      double d14 = (double)p_180655_3_.func_177952_p() + p_180655_4_.nextDouble();
-                     p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d4, d9, d14, 0.0D, 0.0D, 0.0D);
+-                    p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d4, d9, d14, 0.0, 0.0, 0.0);
++                    p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d4, d9, d14, 0.0D, 0.0D, 0.0D);
                  }
              }
  
@@ -264,9 +363,10 @@
                  {
                      double d5 = (double)p_180655_3_.func_177958_n() + p_180655_4_.nextDouble();
                      double d10 = (double)p_180655_3_.func_177956_o() + p_180655_4_.nextDouble();
--                    double d15 = (double)p_180655_3_.func_177952_p() + p_180655_4_.nextDouble() * (double)0.1F;
+-                    double d15 = (double)p_180655_3_.func_177952_p() + p_180655_4_.nextDouble() * 0.1F;
+-                    p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d5, d10, d15, 0.0, 0.0, 0.0);
 +                    double d15 = (double)p_180655_3_.func_177952_p() + p_180655_4_.nextDouble() * 0.10000000149011612D;
-                     p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d5, d10, d15, 0.0D, 0.0D, 0.0D);
++                    p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d5, d10, d15, 0.0D, 0.0D, 0.0D);
                  }
              }
  
@@ -277,9 +377,10 @@
                  {
                      double d6 = (double)p_180655_3_.func_177958_n() + p_180655_4_.nextDouble();
                      double d11 = (double)p_180655_3_.func_177956_o() + p_180655_4_.nextDouble();
--                    double d16 = (double)(p_180655_3_.func_177952_p() + 1) - p_180655_4_.nextDouble() * (double)0.1F;
+-                    double d16 = (double)(p_180655_3_.func_177952_p() + 1) - p_180655_4_.nextDouble() * 0.1F;
+-                    p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d6, d11, d16, 0.0, 0.0, 0.0);
 +                    double d16 = (double)(p_180655_3_.func_177952_p() + 1) - p_180655_4_.nextDouble() * 0.10000000149011612D;
-                     p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d6, d11, d16, 0.0D, 0.0D, 0.0D);
++                    p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d6, d11, d16, 0.0D, 0.0D, 0.0D);
                  }
              }
  
@@ -289,15 +390,28 @@
                  for (int j1 = 0; j1 < 2; ++j1)
                  {
                      double d7 = (double)p_180655_3_.func_177958_n() + p_180655_4_.nextDouble();
--                    double d12 = (double)(p_180655_3_.func_177956_o() + 1) - p_180655_4_.nextDouble() * (double)0.1F;
+-                    double d12 = (double)(p_180655_3_.func_177956_o() + 1) - p_180655_4_.nextDouble() * 0.1F;
 +                    double d12 = (double)(p_180655_3_.func_177956_o() + 1) - p_180655_4_.nextDouble() * 0.10000000149011612D;
                      double d17 = (double)p_180655_3_.func_177952_p() + p_180655_4_.nextDouble();
-                     p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d7, d12, d17, 0.0D, 0.0D, 0.0D);
+-                    p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d7, d12, d17, 0.0, 0.0, 0.0);
++                    p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d7, d12, d17, 0.0D, 0.0D, 0.0D);
                  }
-@@ -435,9 +455,9 @@
+             }
+         }
+@@ -471,45 +448,49 @@
+             for (int i = 0; i < 3; ++i)
+             {
+                 double d0 = (double)p_180655_3_.func_177958_n() + p_180655_4_.nextDouble();
+-                double d1 = (double)p_180655_3_.func_177956_o() + p_180655_4_.nextDouble() * 0.5 + 0.5;
++                double d1 = (double)p_180655_3_.func_177956_o() + p_180655_4_.nextDouble() * 0.5D + 0.5D;
+                 double d2 = (double)p_180655_3_.func_177952_p() + p_180655_4_.nextDouble();
+-                p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d0, d1, d2, 0.0, 0.0, 0.0);
++                p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+             }
          }
      }
  
+-    @Override
 -    public MapColor func_180659_g(IBlockState p_180659_1_, IBlockAccess p_180659_2_, BlockPos p_180659_3_)
 +    public IBlockState func_176203_a(int p_176203_1_)
      {
@@ -306,25 +420,32 @@
      }
  
      @SideOnly(Side.CLIENT)
-@@ -446,20 +466,30 @@
+-    @Override
+     public BlockRenderLayer func_180664_k()
+     {
          return BlockRenderLayer.CUTOUT;
      }
  
+-    @Override
 -    public IBlockState func_176203_a(int p_176203_1_)
 -    {
 -        return this.func_176223_P().func_177226_a(field_176543_a, p_176203_1_);
 -    }
 -
+-    @Override
      public int func_176201_c(IBlockState p_176201_1_)
      {
 -        return p_176201_1_.func_177229_b(field_176543_a);
 +        return ((Integer)p_176201_1_.func_177229_b(field_176543_a)).intValue();
      }
  
+-    @Override
      protected BlockStateContainer func_180661_e()
      {
 -        return new BlockStateContainer(this, field_176543_a, field_176545_N, field_176546_O, field_176541_P, field_176539_Q, field_176542_R);
 -    }
+-
+-    @Override
 +        return new BlockStateContainer(this, new IProperty[] {field_176543_a, field_176545_N, field_176546_O, field_176541_P, field_176539_Q, field_176542_R});
 +    }
 +
@@ -342,6 +463,7 @@
 +        return world.func_180495_p(pos).func_177230_c().isFlammable(world, pos, face);
 +    }
 +    /*================================= Forge Start ======================================*/
- 
++
      public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
      {
+         return BlockFaceShape.UNDEFINED;

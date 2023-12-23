@@ -121,7 +121,12 @@
          }
  
          return map;
-@@ -210,7 +210,7 @@
+@@ -206,11 +206,11 @@
+         {
+             if (this.func_96539_a(i) == p_96519_1_)
+             {
+-                this.func_96530_a(i, null);
++                this.func_96530_a(i, (ScoreObjective)null);
              }
          }
  
@@ -130,3 +135,12 @@
  
          if (list != null)
          {
+@@ -459,7 +459,7 @@
+         if (p_181140_1_ != null && !(p_181140_1_ instanceof EntityPlayer) && !p_181140_1_.func_70089_S())
+         {
+             String s = p_181140_1_.func_189512_bd();
+-            this.func_178822_d(s, null);
++            this.func_178822_d(s, (ScoreObjective)null);
+             this.func_96524_g(s);
+         }
+     }

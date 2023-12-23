@@ -21,8 +21,8 @@
      {
          RecipeList recipelist = new RecipeList();
          field_194087_f.add(recipelist);
--        field_194086_e.computeIfAbsent(p_194082_0_, (p_194085_0_) -> new ArrayList()).add(recipelist);
--        field_194086_e.computeIfAbsent(CreativeTabs.field_78027_g, (p_194083_0_) -> new ArrayList()).add(recipelist);
+-        field_194086_e.computeIfAbsent(p_194082_0_, p_194085_0_ -> new ArrayList()).add(recipelist);
+-        field_194086_e.computeIfAbsent(CreativeTabs.field_78027_g, p_194083_0_ -> new ArrayList()).add(recipelist);
 +        (field_194086_e.computeIfAbsent(p_194082_0_, (p_194085_0_) ->
 +        {
 +            return new ArrayList();
@@ -34,7 +34,24 @@
          return recipelist;
      }
  
-@@ -47,7 +54,15 @@
+@@ -35,19 +42,27 @@
+     {
+         CreativeTabs creativetabs = p_194084_0_.func_77973_b().func_77640_w();
+ 
+-        if (creativetabs == CreativeTabs.field_78030_b || creativetabs == CreativeTabs.field_78040_i || creativetabs == CreativeTabs.field_78028_d)
+-        {
+-            return creativetabs;
+-        }
+-        else
++        if (creativetabs != CreativeTabs.field_78030_b && creativetabs != CreativeTabs.field_78040_i && creativetabs != CreativeTabs.field_78028_d)
+         {
+             return creativetabs == CreativeTabs.field_78037_j ? CreativeTabs.field_78040_i : CreativeTabs.field_78026_f;
+         }
++        else
++        {
++            return creativetabs;
++        }
+     }
  
      static
      {

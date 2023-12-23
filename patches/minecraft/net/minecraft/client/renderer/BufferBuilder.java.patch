@@ -8,7 +8,13 @@
  import java.nio.ByteBuffer;
  import java.nio.ByteOrder;
  import java.nio.FloatBuffer;
-@@ -51,18 +50,18 @@
+@@ -47,23 +46,22 @@
+ 
+     private void func_181670_b(int p_181670_1_)
+     {
+-        if (MathHelper.func_154354_b(p_181670_1_, 4) / 4 > this.field_178999_b.remaining()
+-                || this.field_178997_d * this.field_179011_q.func_177338_f() + p_181670_1_ > this.field_179001_a.capacity())
++        if (MathHelper.func_154354_b(p_181670_1_, 4) / 4 > this.field_178999_b.remaining() || this.field_178997_d * this.field_179011_q.func_177338_f() + p_181670_1_ > this.field_179001_a.capacity())
          {
              int i = this.field_179001_a.capacity();
              int j = i + MathHelper.func_154354_b(p_181670_1_, 2097152);
@@ -32,7 +38,23 @@
          }
      }
  
-@@ -87,7 +86,7 @@
+@@ -74,14 +72,7 @@
+ 
+         for (int j = 0; j < i; ++j)
+         {
+-            afloat[j] = func_181665_a(
+-                            this.field_179000_c,
+-                            (float)((double)p_181674_1_ + this.field_179004_l),
+-                            (float)((double)p_181674_2_ + this.field_179005_m),
+-                            (float)((double)p_181674_3_ + this.field_179002_n),
+-                            this.field_179011_q.func_181719_f(),
+-                            j * this.field_179011_q.func_177338_f()
+-                        );
++            afloat[j] = func_181665_a(this.field_179000_c, (float)((double)p_181674_1_ + this.field_179004_l), (float)((double)p_181674_2_ + this.field_179005_m), (float)((double)p_181674_3_ + this.field_179002_n), this.field_179011_q.func_181719_f(), j * this.field_179011_q.func_177338_f());
+         }
+ 
+         Integer[] ainteger = new Integer[i];
+@@ -95,7 +86,7 @@
          {
              public int compare(Integer p_compare_1_, Integer p_compare_2_)
              {
@@ -41,7 +63,7 @@
              }
          });
          BitSet bitset = new BitSet();
-@@ -96,45 +95,47 @@
+@@ -104,45 +95,47 @@
  
          for (int i1 = bitset.nextClearBit(0); i1 < ainteger.length; i1 = bitset.nextClearBit(i1 + 1))
          {
@@ -103,7 +125,7 @@
          return new BufferBuilder.State(aint, new VertexFormat(this.field_179011_q));
      }
  
-@@ -165,7 +166,7 @@
+@@ -173,7 +166,7 @@
  
      public void func_178993_a(BufferBuilder.State p_178993_1_)
      {
@@ -112,7 +134,7 @@
          this.func_181670_b(p_178993_1_.func_179013_a().length * 4);
          this.field_178999_b.put(p_178993_1_.func_179013_a());
          this.field_178997_d = p_178993_1_.func_179014_c();
-@@ -193,7 +194,7 @@
+@@ -201,7 +194,7 @@
              this.field_179011_q = p_181668_2_;
              this.field_181677_f = p_181668_2_.func_177348_c(this.field_181678_g);
              this.field_78939_q = false;
@@ -121,28 +143,64 @@
          }
      }
  
-@@ -302,16 +303,16 @@
-                 int k = (int)((float)(j & 255) * p_178978_1_);
-                 int l = (int)((float)(j >> 8 & 255) * p_178978_2_);
-                 int i1 = (int)((float)(j >> 16 & 255) * p_178978_3_);
+@@ -307,19 +300,19 @@
+ 
+             if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN)
+             {
+-                int k = (int)((float)(j & 0xFF) * p_178978_1_);
+-                int l = (int)((float)(j >> 8 & 0xFF) * p_178978_2_);
+-                int i1 = (int)((float)(j >> 16 & 0xFF) * p_178978_3_);
 -                j &= -16777216;
 -                j |= i1 << 16 | l << 8 | k;
++                int k = (int)((float)(j & 255) * p_178978_1_);
++                int l = (int)((float)(j >> 8 & 255) * p_178978_2_);
++                int i1 = (int)((float)(j >> 16 & 255) * p_178978_3_);
 +                j = j & -16777216;
 +                j = j | i1 << 16 | l << 8 | k;
              }
              else
              {
-                 int j1 = (int)((float)(j >> 24 & 255) * p_178978_1_);
-                 int k1 = (int)((float)(j >> 16 & 255) * p_178978_2_);
-                 int l1 = (int)((float)(j >> 8 & 255) * p_178978_3_);
+-                int j1 = (int)((float)(j >> 24 & 0xFF) * p_178978_1_);
+-                int k1 = (int)((float)(j >> 16 & 0xFF) * p_178978_2_);
+-                int l1 = (int)((float)(j >> 8 & 0xFF) * p_178978_3_);
 -                j &= 255;
 -                j |= j1 << 24 | k1 << 16 | l1 << 8;
++                int j1 = (int)((float)(j >> 24 & 255) * p_178978_1_);
++                int k1 = (int)((float)(j >> 16 & 255) * p_178978_2_);
++                int l1 = (int)((float)(j >> 8 & 255) * p_178978_3_);
 +                j = j & 255;
 +                j = j | j1 << 24 | k1 << 16 | l1 << 8;
              }
          }
  
-@@ -416,8 +417,8 @@
+@@ -329,9 +322,9 @@
+     private void func_192836_a(int p_192836_1_, int p_192836_2_)
+     {
+         int i = this.func_78909_a(p_192836_2_);
+-        int j = p_192836_1_ >> 16 & 0xFF;
+-        int k = p_192836_1_ >> 8 & 0xFF;
+-        int l = p_192836_1_ & 0xFF;
++        int j = p_192836_1_ >> 16 & 255;
++        int k = p_192836_1_ >> 8 & 255;
++        int l = p_192836_1_ & 255;
+         this.func_178972_a(i, j, k, l);
+     }
+ 
+@@ -348,11 +341,11 @@
+     {
+         if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN)
+         {
+-            this.field_178999_b.put(p_178972_1_, 0xFF000000 | p_178972_4_ << 16 | p_178972_3_ << 8 | p_178972_2_);
++            this.field_178999_b.put(p_178972_1_, -16777216 | p_178972_4_ << 16 | p_178972_3_ << 8 | p_178972_2_);
+         }
+         else
+         {
+-            this.field_178999_b.put(p_178972_1_, p_178972_2_ << 24 | p_178972_3_ << 16 | p_178972_4_ << 8 | 0xFF);
++            this.field_178999_b.put(p_178972_1_, p_178972_2_ << 24 | p_178972_3_ << 16 | p_178972_4_ << 8 | 255);
+         }
+     }
+ 
+@@ -424,8 +417,8 @@
  
      public void func_178981_a(int[] p_178981_1_)
      {
@@ -153,7 +211,7 @@
          this.field_178999_b.put(p_178981_1_);
          this.field_178997_d += p_178981_1_.length / this.field_179011_q.func_181719_f();
      }
-@@ -507,15 +508,15 @@
+@@ -515,15 +508,15 @@
                  break;
              case USHORT:
              case SHORT:
@@ -166,16 +224,16 @@
                  break;
              case UBYTE:
              case BYTE:
--                this.field_179001_a.put(i, (byte)((int)p_181663_1_ * 127 & 255));
--                this.field_179001_a.put(i + 1, (byte)((int)p_181663_2_ * 127 & 255));
--                this.field_179001_a.put(i + 2, (byte)((int)p_181663_3_ * 127 & 255));
+-                this.field_179001_a.put(i, (byte)((int)p_181663_1_ * 127 & 0xFF));
+-                this.field_179001_a.put(i + 1, (byte)((int)p_181663_2_ * 127 & 0xFF));
+-                this.field_179001_a.put(i + 2, (byte)((int)p_181663_3_ * 127 & 0xFF));
 +                this.field_179001_a.put(i, (byte)((int)(p_181663_1_ * 127) & 255));
 +                this.field_179001_a.put(i + 1, (byte)((int)(p_181663_2_ * 127) & 255));
 +                this.field_179001_a.put(i + 2, (byte)((int)(p_181663_3_ * 127) & 255));
          }
  
          this.func_181667_k();
-@@ -538,8 +539,8 @@
+@@ -546,8 +539,8 @@
          else
          {
              this.field_179010_r = false;
@@ -186,7 +244,7 @@
          }
      }
  
-@@ -605,5 +606,28 @@
+@@ -613,5 +606,28 @@
          {
              return this.field_179018_e;
          }

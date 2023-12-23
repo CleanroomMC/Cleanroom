@@ -1,6 +1,29 @@
 --- before/net/minecraft/command/server/CommandWhitelist.java
 +++ after/net/minecraft/command/server/CommandWhitelist.java
-@@ -34,7 +34,7 @@
+@@ -15,30 +15,26 @@
+ 
+ public class CommandWhitelist extends CommandBase
+ {
+-    @Override
+     public String func_71517_b()
+     {
+         return "whitelist";
+     }
+ 
+-    @Override
+     public int func_82362_a()
+     {
+         return 3;
+     }
+ 
+-    @Override
+     public String func_71518_a(ICommandSender p_71518_1_)
+     {
+         return "commands.whitelist.usage";
+     }
+ 
+-    @Override
+     public void func_184881_a(MinecraftServer p_184881_1_, ICommandSender p_184881_2_, String[] p_184881_3_) throws CommandException
      {
          if (p_184881_3_.length < 1)
          {
@@ -9,16 +32,20 @@
          }
          else
          {
-@@ -50,7 +50,7 @@
+@@ -54,11 +50,7 @@
              }
              else if ("list".equals(p_184881_3_[0]))
              {
--                p_184881_2_.func_145747_a(new TextComponentTranslation("commands.whitelist.list", p_184881_1_.func_184103_al().func_152598_l().length, p_184881_1_.func_184103_al().func_72373_m().length));
+-                p_184881_2_.func_145747_a(
+-                    new TextComponentTranslation(
+-                        "commands.whitelist.list", p_184881_1_.func_184103_al().func_152598_l().length, p_184881_1_.func_184103_al().func_72373_m().length
+-                    )
+-                );
 +                p_184881_2_.func_145747_a(new TextComponentTranslation("commands.whitelist.list", new Object[] {p_184881_1_.func_184103_al().func_152598_l().length, p_184881_1_.func_184103_al().func_72373_m().length}));
                  String[] astring = p_184881_1_.func_184103_al().func_152598_l();
                  p_184881_2_.func_145747_a(new TextComponentString(func_71527_a(astring)));
              }
-@@ -58,14 +58,14 @@
+@@ -66,14 +58,14 @@
              {
                  if (p_184881_3_.length < 2)
                  {
@@ -35,7 +62,7 @@
                  }
  
                  p_184881_1_.func_184103_al().func_152601_d(gameprofile);
-@@ -75,14 +75,14 @@
+@@ -83,14 +75,14 @@
              {
                  if (p_184881_3_.length < 2)
                  {
@@ -52,7 +79,15 @@
                  }
  
                  p_184881_1_.func_184103_al().func_152597_c(gameprofile1);
-@@ -117,7 +117,7 @@
+@@ -104,7 +96,6 @@
+         }
+     }
+ 
+-    @Override
+     public List<String> func_184883_a(MinecraftServer p_184883_1_, ICommandSender p_184883_2_, String[] p_184883_3_, @Nullable BlockPos p_184883_4_)
+     {
+         if (p_184883_3_.length == 1)
+@@ -126,7 +117,7 @@
                  }
              }
  

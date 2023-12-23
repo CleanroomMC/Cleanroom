@@ -1,15 +1,17 @@
 --- before/net/minecraft/world/storage/WorldInfo.java
 +++ after/net/minecraft/world/storage/WorldInfo.java
-@@ -2,6 +2,7 @@
- 
- import com.google.common.collect.Maps;
- import java.util.Map;
-+import java.util.Map.Entry;
- import javax.annotation.Nullable;
- import net.minecraft.crash.CrashReportCategory;
- import net.minecraft.crash.ICrashReportDetail;
-@@ -62,8 +63,9 @@
-     private double field_176153_H = 0.2D;
+@@ -56,15 +56,16 @@
+     private boolean field_176150_A;
+     private double field_176151_B;
+     private double field_176152_C;
+-    private double field_176146_D = 6.0E7;
++    private double field_176146_D = 6.0E7D;
+     private long field_176147_E;
+     private double field_176148_F;
+-    private double field_176149_G = 5.0;
+-    private double field_176153_H = 0.2;
++    private double field_176149_G = 5.0D;
++    private double field_176153_H = 0.2D;
      private int field_176154_I = 5;
      private int field_176155_J = 15;
 -    private final Map<DimensionType, NBTTagCompound> field_186348_N = Maps.newEnumMap(DimensionType.class);
@@ -19,7 +21,15 @@
  
      protected WorldInfo()
      {
-@@ -250,7 +252,7 @@
+@@ -74,7 +75,6 @@
+     {
+         p_189967_0_.func_188258_a(FixTypes.LEVEL, new IDataWalker()
+         {
+-            @Override
+             public NBTTagCompound func_188266_a(IDataFixer p_188266_1_, NBTTagCompound p_188266_2_, int p_188266_3_)
+             {
+                 if (p_188266_2_.func_150297_b("Player", 10))
+@@ -252,7 +252,7 @@
  
              for (String s : nbttagcompound1.func_150296_c())
              {
@@ -28,7 +38,7 @@
              }
          }
      }
-@@ -365,6 +367,7 @@
+@@ -367,6 +367,7 @@
          p_76064_1_.func_74780_a("BorderSizeLerpTarget", this.field_176148_F);
          p_76064_1_.func_74780_a("BorderWarningBlocks", (double)this.field_176154_I);
          p_76064_1_.func_74780_a("BorderWarningTime", (double)this.field_176155_J);
@@ -36,11 +46,11 @@
  
          if (this.field_176158_z != null)
          {
-@@ -375,9 +378,10 @@
+@@ -377,9 +378,10 @@
          p_76064_1_.func_74782_a("GameRules", this.field_82577_x.func_82770_a());
          NBTTagCompound nbttagcompound1 = new NBTTagCompound();
  
--        for (Map.Entry<DimensionType, NBTTagCompound> entry : this.field_186348_N.entrySet())
+-        for (Entry<DimensionType, NBTTagCompound> entry : this.field_186348_N.entrySet())
 +        for (Entry<Integer, NBTTagCompound> entry : this.field_186348_N.entrySet())
          {
 -            nbttagcompound1.func_74782_a(String.valueOf(entry.getKey().func_186068_a()), entry.getValue());
@@ -49,7 +59,7 @@
          }
  
          p_76064_1_.func_74782_a("DimensionData", nbttagcompound1);
-@@ -441,17 +445,17 @@
+@@ -443,17 +445,17 @@
          this.field_76096_d = p_76056_1_;
      }
  
@@ -73,7 +83,7 @@
      public void func_76068_b(long p_76068_1_)
      {
          this.field_76094_f = p_76068_1_;
-@@ -707,6 +711,7 @@
+@@ -709,6 +711,7 @@
  
      public void func_176144_a(EnumDifficulty p_176144_1_)
      {
@@ -81,11 +91,94 @@
          this.field_176158_z = p_176144_1_;
      }
  
-@@ -804,16 +809,47 @@
+@@ -731,22 +734,13 @@
+                 return String.valueOf(WorldInfo.this.func_76063_b());
              }
          });
-     }
+-        p_85118_1_.func_189529_a(
+-            "Level generator",
+-            new ICrashReportDetail<String>()
++        p_85118_1_.func_189529_a("Level generator", new ICrashReportDetail<String>()
+         {
+             public String call() throws Exception
+             {
+-                return String.format(
+-                           "ID %02d - %s, ver %d. Features enabled: %b",
+-                           WorldInfo.this.field_76098_b.func_82747_f(),
+-                           WorldInfo.this.field_76098_b.func_77127_a(),
+-                           WorldInfo.this.field_76098_b.func_77131_c(),
+-                           WorldInfo.this.field_76112_r
+-                       );
++                return String.format("ID %02d - %s, ver %d. Features enabled: %b", WorldInfo.this.field_76098_b.func_82747_f(), WorldInfo.this.field_76098_b.func_77127_a(), WorldInfo.this.field_76098_b.func_77131_c(), WorldInfo.this.field_76112_r);
+             }
+-        }
+-        );
++        });
+         p_85118_1_.func_189529_a("Level generator options", new ICrashReportDetail<String>()
+         {
+             public String call() throws Exception
+@@ -792,56 +786,70 @@
+                             s = "Anvil";
+                     }
+                 }
+-                catch (Throwable throwable)
++                catch (Throwable var3)
+                 {
++                    ;
+                 }
+ 
+                 return String.format("0x%05X - %s", WorldInfo.this.field_76103_l, s);
+             }
+         });
+-        p_85118_1_.func_189529_a(
+-            "Level weather",
+-            new ICrashReportDetail<String>()
+-        {
+-            public String call() throws Exception
+-            {
+-                return String.format(
+-                           "Rain time: %d (now: %b), thunder time: %d (now: %b)",
+-                           WorldInfo.this.field_76101_n,
+-                           WorldInfo.this.field_76104_m,
+-                           WorldInfo.this.field_76114_p,
+-                           WorldInfo.this.field_76102_o
+-                       );
+-            }
+-        }
+-        );
+-        p_85118_1_.func_189529_a(
+-            "Level game mode",
+-            new ICrashReportDetail<String>()
+-        {
+-            public String call() throws Exception
+-            {
+-                return String.format(
+-                           "Game mode: %s (ID %d). Hardcore: %b. Cheats: %b",
+-                           WorldInfo.this.field_76113_q.func_77149_b(),
+-                           WorldInfo.this.field_76113_q.func_77148_a(),
+-                           WorldInfo.this.field_76111_s,
+-                           WorldInfo.this.field_76110_t
+-                       );
+-            }
+-        }
+-        );
+-    }
 -
++        p_85118_1_.func_189529_a("Level weather", new ICrashReportDetail<String>()
++        {
++            public String call() throws Exception
++            {
++                return String.format("Rain time: %d (now: %b), thunder time: %d (now: %b)", WorldInfo.this.field_76101_n, WorldInfo.this.field_76104_m, WorldInfo.this.field_76114_p, WorldInfo.this.field_76102_o);
++            }
++        });
++        p_85118_1_.func_189529_a("Level game mode", new ICrashReportDetail<String>()
++        {
++            public String call() throws Exception
++            {
++                return String.format("Game mode: %s (ID %d). Hardcore: %b. Cheats: %b", WorldInfo.this.field_76113_q.func_77149_b(), WorldInfo.this.field_76113_q.func_77148_a(), WorldInfo.this.field_76111_s, WorldInfo.this.field_76110_t);
++            }
++        });
++    }
 +    /**
 +     * Allow access to additional mod specific world based properties
 +     * Used by FML to store mod list associated with a world, and maybe an id map

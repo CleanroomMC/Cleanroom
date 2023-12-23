@@ -17,7 +17,15 @@
  
      public ClassInheritanceMultiMap(Class<T> p_i45909_1_)
      {
-@@ -78,7 +79,7 @@
+@@ -63,7 +64,6 @@
+         }
+     }
+ 
+-    @Override
+     public boolean add(T p_add_1_)
+     {
+         for (Class<?> oclass : this.field_180216_b)
+@@ -79,7 +79,7 @@
  
      private void func_181743_a(T p_181743_1_, Class<?> p_181743_2_)
      {
@@ -26,7 +34,15 @@
  
          if (list == null)
          {
-@@ -99,7 +100,7 @@
+@@ -91,7 +91,6 @@
+         }
+     }
+ 
+-    @Override
+     public boolean remove(Object p_remove_1_)
+     {
+         T t = (T)p_remove_1_;
+@@ -101,7 +100,7 @@
          {
              if (oclass.isAssignableFrom(t.getClass()))
              {
@@ -35,8 +51,19 @@
  
                  if (list != null && list.remove(t))
                  {
-@@ -122,11 +123,11 @@
+@@ -113,7 +112,6 @@
+         return flag;
+     }
+ 
+-    @Override
+     public boolean contains(Object p_contains_1_)
+     {
+         return Iterators.contains(this.func_180215_b(p_contains_1_.getClass()).iterator(), p_contains_1_);
+@@ -123,14 +121,13 @@
+     {
+         return new Iterable<S>()
          {
+-            @Override
              public Iterator<S> iterator()
              {
 -                List<T> list = ClassInheritanceMultiMap.this.field_180218_a.get(ClassInheritanceMultiMap.this.func_181157_b(p_180215_1_));
@@ -49,3 +76,17 @@
                  }
                  else
                  {
+@@ -141,13 +138,11 @@
+         };
+     }
+ 
+-    @Override
+     public Iterator<T> iterator()
+     {
+         return (Iterator<T>)(this.field_181745_e.isEmpty() ? Collections.emptyIterator() : Iterators.unmodifiableIterator(this.field_181745_e.iterator()));
+     }
+ 
+-    @Override
+     public int size()
+     {
+         return this.field_181745_e.size();

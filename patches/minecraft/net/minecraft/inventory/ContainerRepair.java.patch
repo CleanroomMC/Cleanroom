@@ -1,12 +1,13 @@
 --- before/net/minecraft/inventory/ContainerRepair.java
 +++ after/net/minecraft/inventory/ContainerRepair.java
-@@ -22,15 +22,8 @@
+@@ -22,16 +22,8 @@
  public class ContainerRepair extends Container
  {
      private static final Logger field_148326_f = LogManager.getLogger();
 -    private final IInventory field_82852_f = new InventoryCraftResult();
 -    private final IInventory field_82853_g = new InventoryBasic("Repair", true, 2)
 -    {
+-        @Override
 -        public void func_70296_d()
 -        {
 -            super.func_70296_d();
@@ -18,7 +19,7 @@
      private final World field_82860_h;
      private final BlockPos field_178156_j;
      public int field_82854_e;
-@@ -46,6 +39,15 @@
+@@ -47,27 +39,30 @@
  
      public ContainerRepair(InventoryPlayer p_i45807_1_, final World p_i45807_2_, final BlockPos p_i45807_3_, EntityPlayer p_i45807_4_)
      {
@@ -34,7 +35,30 @@
          this.field_178156_j = p_i45807_3_;
          this.field_82860_h = p_i45807_2_;
          this.field_82855_n = p_i45807_4_;
-@@ -68,6 +70,8 @@
+         this.func_75146_a(new Slot(this.field_82853_g, 0, 27, 47));
+         this.func_75146_a(new Slot(this.field_82853_g, 1, 76, 47));
+-        this.func_75146_a(
+-            new Slot(this.field_82852_f, 2, 134, 47)
++        this.func_75146_a(new Slot(this.field_82852_f, 2, 134, 47)
+         {
+-            @Override
+             public boolean func_75214_a(ItemStack p_75214_1_)
+             {
+                 return false;
+             }
+-            @Override
+             public boolean func_82869_a(EntityPlayer p_82869_1_)
+             {
+-                return (p_82869_1_.field_71075_bZ.field_75098_d || p_82869_1_.field_71068_ca >= ContainerRepair.this.field_82854_e)
+-                       && ContainerRepair.this.field_82854_e > 0
+-                       && this.func_75216_d();
++                return (p_82869_1_.field_71075_bZ.field_75098_d || p_82869_1_.field_71068_ca >= ContainerRepair.this.field_82854_e) && ContainerRepair.this.field_82854_e > 0 && this.func_75216_d();
+             }
+-            @Override
+             public ItemStack func_190901_a(EntityPlayer p_190901_1_, ItemStack p_190901_2_)
+             {
+                 if (!p_190901_1_.field_71075_bZ.field_75098_d)
+@@ -75,6 +70,8 @@
                      p_190901_1_.func_82242_a(-ContainerRepair.this.field_82854_e);
                  }
  
@@ -43,19 +67,25 @@
                  ContainerRepair.this.field_82853_g.func_70299_a(0, ItemStack.field_190927_a);
  
                  if (ContainerRepair.this.field_82856_l > 0)
-@@ -92,9 +96,9 @@
+@@ -99,21 +96,19 @@
                  ContainerRepair.this.field_82854_e = 0;
                  IBlockState iblockstate = p_i45807_2_.func_180495_p(p_i45807_3_);
  
--                if (!p_190901_1_.field_71075_bZ.field_75098_d && !p_i45807_2_.field_72995_K && iblockstate.func_177230_c() == Blocks.field_150467_bQ && p_190901_1_.func_70681_au().nextFloat() < 0.12F)
+-                if (!p_190901_1_.field_71075_bZ.field_75098_d
+-                        && !p_i45807_2_.field_72995_K
+-                        && iblockstate.func_177230_c() == Blocks.field_150467_bQ
+-                        && p_190901_1_.func_70681_au().nextFloat() < 0.12F)
 +                if (!p_190901_1_.field_71075_bZ.field_75098_d && !p_i45807_2_.field_72995_K && iblockstate.func_177230_c() == Blocks.field_150467_bQ && p_190901_1_.func_70681_au().nextFloat() < breakChance)
                  {
 -                    int l = iblockstate.func_177229_b(BlockAnvil.field_176505_b);
 +                    int l = ((Integer)iblockstate.func_177229_b(BlockAnvil.field_176505_b)).intValue();
-                     ++l;
++                    ++l;
  
-                     if (l > 2)
-@@ -104,7 +108,7 @@
+-                    if (++l > 2)
++                    if (l > 2)
+                     {
+                         p_i45807_2_.func_175698_g(p_i45807_3_);
+                         p_i45807_2_.func_175718_b(1029, p_i45807_3_, 0);
                      }
                      else
                      {
@@ -64,7 +94,25 @@
                          p_i45807_2_.func_175718_b(1030, p_i45807_3_, 0);
                      }
                  }
-@@ -159,12 +163,14 @@
+@@ -124,8 +119,7 @@
+ 
+                 return p_190901_2_;
+             }
+-        }
+-        );
++        });
+ 
+         for (int i = 0; i < 3; ++i)
+         {
+@@ -141,7 +135,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_75130_a(IInventory p_75130_1_)
+     {
+         super.func_75130_a(p_75130_1_);
+@@ -170,12 +163,14 @@
              ItemStack itemstack1 = itemstack.func_77946_l();
              ItemStack itemstack2 = this.field_82853_g.func_70301_a(1);
              Map<Enchantment, Integer> map = EnchantmentHelper.func_82781_a(itemstack1);
@@ -81,7 +129,7 @@
  
                  if (itemstack1.func_77984_f() && itemstack1.func_77973_b().func_82789_a(itemstack, itemstack2))
                  {
-@@ -211,7 +217,7 @@
+@@ -222,7 +217,7 @@
                              l1 = 0;
                          }
  
@@ -90,7 +138,7 @@
                          {
                              itemstack1.func_77964_b(l1);
                              i += 2;
-@@ -226,8 +232,8 @@
+@@ -237,8 +232,8 @@
                      {
                          if (enchantment1 != null)
                          {
@@ -101,7 +149,7 @@
                              j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
                              boolean flag1 = enchantment1.func_92089_a(itemstack);
  
-@@ -258,7 +264,7 @@
+@@ -269,7 +264,7 @@
                                      j2 = enchantment1.func_77325_b();
                                  }
  
@@ -110,7 +158,7 @@
                                  int k3 = 0;
  
                                  switch (enchantment1.func_77324_c())
-@@ -315,6 +321,7 @@
+@@ -326,6 +321,7 @@
                  i += k;
                  itemstack1.func_151001_c(this.field_82857_m);
              }
@@ -118,3 +166,53 @@
  
              this.field_82854_e = j + i;
  
+@@ -367,7 +363,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_75132_a(IContainerListener p_75132_1_)
+     {
+         super.func_75132_a(p_75132_1_);
+@@ -375,7 +370,6 @@
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    @Override
+     public void func_75137_b(int p_75137_1_, int p_75137_2_)
+     {
+         if (p_75137_1_ == 0)
+@@ -384,7 +378,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_75134_a(EntityPlayer p_75134_1_)
+     {
+         super.func_75134_a(p_75134_1_);
+@@ -395,7 +388,6 @@
+         }
+     }
+ 
+-    @Override
+     public boolean func_75145_c(EntityPlayer p_75145_1_)
+     {
+         if (this.field_82860_h.func_180495_p(this.field_178156_j).func_177230_c() != Blocks.field_150467_bQ)
+@@ -404,16 +396,10 @@
+         }
+         else
+         {
+-            return p_75145_1_.func_70092_e(
+-                       (double)this.field_178156_j.func_177958_n() + 0.5,
+-                       (double)this.field_178156_j.func_177956_o() + 0.5,
+-                       (double)this.field_178156_j.func_177952_p() + 0.5
+-                   )
+-                   <= 64.0;
++            return p_75145_1_.func_70092_e((double)this.field_178156_j.func_177958_n() + 0.5D, (double)this.field_178156_j.func_177956_o() + 0.5D, (double)this.field_178156_j.func_177952_p() + 0.5D) <= 64.0D;
+         }
+     }
+ 
+-    @Override
+     public ItemStack func_82846_b(EntityPlayer p_82846_1_, int p_82846_2_)
+     {
+         ItemStack itemstack = ItemStack.field_190927_a;

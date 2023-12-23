@@ -1,6 +1,6 @@
 --- before/net/minecraft/item/crafting/ShapelessRecipes.java
 +++ after/net/minecraft/item/crafting/ShapelessRecipes.java
-@@ -10,23 +10,25 @@
+@@ -10,63 +10,59 @@
  import net.minecraft.util.JsonUtils;
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
@@ -27,11 +27,25 @@
      }
  
 -    @SideOnly(Side.CLIENT)
+-    @Override
      public String func_193358_e()
      {
          return this.field_194138_c;
-@@ -44,16 +46,13 @@
+     }
  
+-    @Override
+     public ItemStack func_77571_b()
+     {
+         return this.field_77580_a;
+     }
+ 
+-    @Override
+     public NonNullList<Ingredient> func_192400_c()
+     {
+         return this.field_77579_b;
+     }
+ 
+-    @Override
      public NonNullList<ItemStack> func_179532_b(InventoryCrafting p_179532_1_)
      {
 -        NonNullList<ItemStack> nonnulllist = NonNullList.func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
@@ -49,8 +63,9 @@
          }
  
          return nonnulllist;
-@@ -61,7 +60,9 @@
+     }
  
+-    @Override
      public boolean func_77569_a(InventoryCrafting p_77569_1_, World p_77569_2_)
      {
 -        List<Ingredient> list = Lists.newArrayList(this.field_77579_b);
@@ -60,7 +75,7 @@
  
          for (int i = 0; i < p_77569_1_.func_174923_h(); ++i)
          {
-@@ -71,27 +72,22 @@
+@@ -76,30 +72,24 @@
  
                  if (!itemstack.func_190926_b())
                  {
@@ -99,8 +114,11 @@
 +        return net.minecraftforge.common.util.RecipeMatcher.findMatches(inputs, this.field_77579_b) != null;
      }
  
+-    @Override
      public ItemStack func_77572_b(InventoryCrafting p_77572_1_)
-@@ -121,7 +117,7 @@
+     {
+         return this.field_77580_a.func_77946_l();
+@@ -127,7 +117,7 @@
  
      private static NonNullList<Ingredient> func_193364_a(JsonArray p_193364_0_)
      {
@@ -109,11 +127,12 @@
  
          for (int i = 0; i < p_193364_0_.size(); ++i)
          {
-@@ -136,7 +132,6 @@
+@@ -142,8 +132,6 @@
          return nonnulllist;
      }
  
 -    @SideOnly(Side.CLIENT)
+-    @Override
      public boolean func_194133_a(int p_194133_1_, int p_194133_2_)
      {
          return p_194133_1_ * p_194133_2_ >= this.field_77579_b.size();

@@ -81,7 +81,16 @@
          return render != null && render.func_177071_a(p_178635_1_, p_178635_2_, p_178635_3_, p_178635_5_, p_178635_7_);
      }
  
-@@ -368,7 +374,7 @@
+@@ -362,15 +368,13 @@
+         this.func_188391_a(p_188388_1_, d0 - this.field_78725_b, d1 - this.field_78726_c, d2 - this.field_78723_d, f, p_188388_2_, p_188388_3_);
+     }
+ 
+-    public void func_188391_a(
+-        Entity p_188391_1_, double p_188391_2_, double p_188391_4_, double p_188391_6_, float p_188391_8_, float p_188391_9_, boolean p_188391_10_
+-    )
++    public void func_188391_a(Entity p_188391_1_, double p_188391_2_, double p_188391_4_, double p_188391_6_, float p_188391_8_, float p_188391_9_, boolean p_188391_10_)
+     {
+         Render<Entity> render = null;
  
          try
          {
@@ -90,7 +99,7 @@
  
              if (render != null && this.field_78724_e != null)
              {
-@@ -415,8 +421,8 @@
+@@ -417,8 +421,8 @@
              CrashReportCategory crashreportcategory1 = crashreport.func_85058_a("Renderer details");
              crashreportcategory1.func_71507_a("Assigned renderer", render);
              crashreportcategory1.func_71507_a("Location", CrashReportCategory.func_85074_a(p_188391_2_, p_188391_4_, p_188391_6_));
@@ -101,7 +110,7 @@
              throw new ReportedException(crashreport);
          }
      }
-@@ -445,7 +451,7 @@
+@@ -447,7 +451,7 @@
          int k = i / 65536;
          OpenGlHelper.func_77475_a(OpenGlHelper.field_77476_b, (float)j, (float)k);
          GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
@@ -110,12 +119,77 @@
  
          if (render != null && this.field_78724_e != null)
          {
-@@ -480,7 +486,7 @@
+@@ -464,18 +468,7 @@
+         GlStateManager.func_179084_k();
+         float f = p_85094_1_.field_70130_N / 2.0F;
+         AxisAlignedBB axisalignedbb = p_85094_1_.func_174813_aQ();
+-        RenderGlobal.func_189694_a(
+-            axisalignedbb.field_72340_a - p_85094_1_.field_70165_t + p_85094_2_,
+-            axisalignedbb.field_72338_b - p_85094_1_.field_70163_u + p_85094_4_,
+-            axisalignedbb.field_72339_c - p_85094_1_.field_70161_v + p_85094_6_,
+-            axisalignedbb.field_72336_d - p_85094_1_.field_70165_t + p_85094_2_,
+-            axisalignedbb.field_72337_e - p_85094_1_.field_70163_u + p_85094_4_,
+-            axisalignedbb.field_72334_f - p_85094_1_.field_70161_v + p_85094_6_,
+-            1.0F,
+-            1.0F,
+-            1.0F,
+-            1.0F
+-        );
++        RenderGlobal.func_189694_a(axisalignedbb.field_72340_a - p_85094_1_.field_70165_t + p_85094_2_, axisalignedbb.field_72338_b - p_85094_1_.field_70163_u + p_85094_4_, axisalignedbb.field_72339_c - p_85094_1_.field_70161_v + p_85094_6_, axisalignedbb.field_72336_d - p_85094_1_.field_70165_t + p_85094_2_, axisalignedbb.field_72337_e - p_85094_1_.field_70163_u + p_85094_4_, axisalignedbb.field_72334_f - p_85094_1_.field_70161_v + p_85094_6_, 1.0F, 1.0F, 1.0F, 1.0F);
+         Entity[] aentity = p_85094_1_.func_70021_al();
+ 
+         if (aentity != null)
+@@ -486,36 +479,14 @@
+                 double d1 = (entity.field_70163_u - entity.field_70167_r) * (double)p_85094_9_;
+                 double d2 = (entity.field_70161_v - entity.field_70166_s) * (double)p_85094_9_;
+                 AxisAlignedBB axisalignedbb1 = entity.func_174813_aQ();
+-                RenderGlobal.func_189694_a(
+-                    axisalignedbb1.field_72340_a - this.field_78725_b + d0,
+-                    axisalignedbb1.field_72338_b - this.field_78726_c + d1,
+-                    axisalignedbb1.field_72339_c - this.field_78723_d + d2,
+-                    axisalignedbb1.field_72336_d - this.field_78725_b + d0,
+-                    axisalignedbb1.field_72337_e - this.field_78726_c + d1,
+-                    axisalignedbb1.field_72334_f - this.field_78723_d + d2,
+-                    0.25F,
+-                    1.0F,
+-                    0.0F,
+-                    1.0F
+-                );
++                RenderGlobal.func_189694_a(axisalignedbb1.field_72340_a - this.field_78725_b + d0, axisalignedbb1.field_72338_b - this.field_78726_c + d1, axisalignedbb1.field_72339_c - this.field_78723_d + d2, axisalignedbb1.field_72336_d - this.field_78725_b + d0, axisalignedbb1.field_72337_e - this.field_78726_c + d1, axisalignedbb1.field_72334_f - this.field_78723_d + d2, 0.25F, 1.0F, 0.0F, 1.0F);
+             }
+         }
+ 
          if (p_85094_1_ instanceof EntityLivingBase)
          {
              float f1 = 0.01F;
--            RenderGlobal.func_189694_a(p_85094_2_ - (double)f, p_85094_4_ + (double)p_85094_1_.func_70047_e() - (double)0.01F, p_85094_6_ - (double)f, p_85094_2_ + (double)f, p_85094_4_ + (double)p_85094_1_.func_70047_e() + (double)0.01F, p_85094_6_ + (double)f, 1.0F, 0.0F, 0.0F, 1.0F);
+-            RenderGlobal.func_189694_a(
+-                p_85094_2_ - (double)f,
+-                p_85094_4_ + (double)p_85094_1_.func_70047_e() - 0.01F,
+-                p_85094_6_ - (double)f,
+-                p_85094_2_ + (double)f,
+-                p_85094_4_ + (double)p_85094_1_.func_70047_e() + 0.01F,
+-                p_85094_6_ + (double)f,
+-                1.0F,
+-                0.0F,
+-                0.0F,
+-                1.0F
+-            );
 +            RenderGlobal.func_189694_a(p_85094_2_ - (double)f, p_85094_4_ + (double)p_85094_1_.func_70047_e() - 0.009999999776482582D, p_85094_6_ - (double)f, p_85094_2_ + (double)f, p_85094_4_ + (double)p_85094_1_.func_70047_e() + 0.009999999776482582D, p_85094_6_ + (double)f, 1.0F, 0.0F, 0.0F, 1.0F);
          }
  
          Tessellator tessellator = Tessellator.func_178181_a();
+@@ -523,13 +494,7 @@
+         Vec3d vec3d = p_85094_1_.func_70676_i(p_85094_9_);
+         bufferbuilder.func_181668_a(3, DefaultVertexFormats.field_181706_f);
+         bufferbuilder.func_181662_b(p_85094_2_, p_85094_4_ + (double)p_85094_1_.func_70047_e(), p_85094_6_).func_181669_b(0, 0, 255, 255).func_181675_d();
+-        bufferbuilder.func_181662_b(
+-            p_85094_2_ + vec3d.field_72450_a * 2.0,
+-            p_85094_4_ + (double)p_85094_1_.func_70047_e() + vec3d.field_72448_b * 2.0,
+-            p_85094_6_ + vec3d.field_72449_c * 2.0
+-        )
+-        .func_181669_b(0, 0, 255, 255)
+-        .func_181675_d();
++        bufferbuilder.func_181662_b(p_85094_2_ + vec3d.field_72450_a * 2.0D, p_85094_4_ + (double)p_85094_1_.func_70047_e() + vec3d.field_72448_b * 2.0D, p_85094_6_ + vec3d.field_72449_c * 2.0D).func_181669_b(0, 0, 255, 255).func_181675_d();
+         tessellator.func_78381_a();
+         GlStateManager.func_179098_w();
+         GlStateManager.func_179145_e();

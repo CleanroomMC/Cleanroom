@@ -1,18 +1,55 @@
 --- before/net/minecraft/util/IntIdentityHashBiMap.java
 +++ after/net/minecraft/util/IntIdentityHashBiMap.java
-@@ -88,6 +88,7 @@
+@@ -34,7 +34,7 @@
+     @Nullable
+     public K func_186813_a(int p_186813_1_)
+     {
+-        return p_186813_1_ >= 0 && p_186813_1_ < this.field_186820_d.length ? this.field_186820_d[p_186813_1_] : null;
++        return (K)(p_186813_1_ >= 0 && p_186813_1_ < this.field_186820_d.length ? this.field_186820_d[p_186813_1_] : null);
+     }
  
-             for (j = this.field_186818_b.length << 1; j < p_186814_2_; j <<= 1)
+     private int func_186805_c(int p_186805_1_)
+@@ -84,11 +84,11 @@
+ 
+         if ((float)i >= (float)this.field_186818_b.length * 0.8F)
+         {
+-            int j = this.field_186818_b.length << 1;
++            int j;
+ 
+-            while (j < p_186814_2_)
++            for (j = this.field_186818_b.length << 1; j < p_186814_2_; j <<= 1)
              {
+-                j <<= 1;
 +                ;
              }
  
              this.func_186807_d(j);
-@@ -167,7 +168,6 @@
+@@ -108,7 +108,7 @@
+ 
+     private int func_186811_d(@Nullable K p_186811_1_)
+     {
+-        return (MathHelper.func_188208_f(System.identityHashCode(p_186811_1_)) & 2147483647) % this.field_186818_b.length;
++        return (MathHelper.func_188208_f(System.identityHashCode(p_186811_1_)) & Integer.MAX_VALUE) % this.field_186818_b.length;
+     }
+ 
+     private int func_186816_b(@Nullable K p_186816_1_, int p_186816_2_)
+@@ -163,17 +163,15 @@
+         throw new RuntimeException("Overflowed :(");
+     }
+ 
+-    @Override
+     public Iterator<K> iterator()
+     {
          return Iterators.filter(Iterators.forArray(this.field_186820_d), Predicates.notNull());
      }
  
 -    @SideOnly(Side.CLIENT)
      public void func_186812_a()
      {
-         Arrays.fill(this.field_186818_b, (Object)null);
+-        Arrays.fill(this.field_186818_b, null);
+-        Arrays.fill(this.field_186820_d, null);
++        Arrays.fill(this.field_186818_b, (Object)null);
++        Arrays.fill(this.field_186820_d, (Object)null);
+         this.field_186821_e = 0;
+         this.field_186822_f = 0;
+     }

@@ -1,6 +1,14 @@
 --- before/net/minecraft/client/shader/ShaderManager.java
 +++ after/net/minecraft/client/shader/ShaderManager.java
-@@ -35,12 +35,12 @@
+@@ -6,6 +6,7 @@
+ import com.google.gson.JsonElement;
+ import com.google.gson.JsonObject;
+ import com.google.gson.JsonParser;
++import java.io.Closeable;
+ import java.io.IOException;
+ import java.nio.charset.StandardCharsets;
+ import java.util.List;
+@@ -34,12 +35,12 @@
      private static ShaderManager field_148002_c;
      private static int field_147999_d = -1;
      private static boolean field_148000_e = true;
@@ -19,7 +27,7 @@
      private final int field_148006_l;
      private final String field_148007_m;
      private final boolean field_148004_n;
-@@ -54,7 +54,8 @@
+@@ -53,7 +54,8 @@
      public ShaderManager(IResourceManager p_i45087_1_, String p_i45087_2_) throws JsonException, IOException
      {
          JsonParser jsonparser = new JsonParser();
@@ -29,7 +37,22 @@
          this.field_148007_m = p_i45087_2_;
          IResource iresource = null;
  
-@@ -92,8 +93,8 @@
+@@ -63,7 +65,7 @@
+             JsonObject jsonobject = jsonparser.parse(IOUtils.toString(iresource.func_110527_b(), StandardCharsets.UTF_8)).getAsJsonObject();
+             String s = JsonUtils.func_151200_h(jsonobject, "vertex");
+             String s1 = JsonUtils.func_151200_h(jsonobject, "fragment");
+-            JsonArray jsonarray = JsonUtils.func_151213_a(jsonobject, "samplers", null);
++            JsonArray jsonarray = JsonUtils.func_151213_a(jsonobject, "samplers", (JsonArray)null);
+ 
+             if (jsonarray != null)
+             {
+@@ -86,13 +88,13 @@
+                 }
+             }
+ 
+-            JsonArray jsonarray1 = JsonUtils.func_151213_a(jsonobject, "attributes", null);
++            JsonArray jsonarray1 = JsonUtils.func_151213_a(jsonobject, "attributes", (JsonArray)null);
+ 
              if (jsonarray1 != null)
              {
                  int j = 0;
@@ -40,7 +63,25 @@
  
                  for (JsonElement jsonelement1 : jsonarray1)
                  {
-@@ -153,7 +154,7 @@
+@@ -116,7 +118,7 @@
+                 this.field_148014_r = null;
+             }
+ 
+-            JsonArray jsonarray2 = JsonUtils.func_151213_a(jsonobject, "uniforms", null);
++            JsonArray jsonarray2 = JsonUtils.func_151213_a(jsonobject, "uniforms", (JsonArray)null);
+ 
+             if (jsonarray2 != null)
+             {
+@@ -139,7 +141,7 @@
+                 }
+             }
+ 
+-            this.field_148016_p = JsonBlendingMode.func_148110_a(JsonUtils.func_151218_a(jsonobject, "blend", null));
++            this.field_148016_p = JsonBlendingMode.func_148110_a(JsonUtils.func_151218_a(jsonobject, "blend", (JsonObject)null));
+             this.field_148004_n = JsonUtils.func_151209_a(jsonobject, "cull", true);
+             this.field_148013_s = ShaderLoader.func_148057_a(p_i45087_1_, ShaderLoader.ShaderType.VERTEX, s);
+             this.field_148012_t = ShaderLoader.func_148057_a(p_i45087_1_, ShaderLoader.ShaderType.FRAGMENT, s1);
+@@ -152,7 +154,7 @@
                  for (String s2 : this.field_148014_r)
                  {
                      int l = OpenGlHelper.func_153164_b(this.field_148006_l, s2);
@@ -49,7 +90,16 @@
                  }
              }
          }
-@@ -233,7 +234,7 @@
+@@ -164,7 +166,7 @@
+         }
+         finally
+         {
+-            IOUtils.closeQuietly(iresource);
++            IOUtils.closeQuietly((Closeable)iresource);
+         }
+ 
+         this.func_147985_d();
+@@ -232,7 +234,7 @@
                  }
                  else if (object instanceof Integer)
                  {
@@ -58,7 +108,7 @@
                  }
  
                  if (j != -1)
-@@ -285,7 +286,7 @@
+@@ -284,7 +286,7 @@
              }
              else
              {
@@ -67,7 +117,12 @@
              }
  
              ++i;
-@@ -302,7 +303,7 @@
+@@ -297,11 +299,11 @@
+ 
+             if (l == -1)
+             {
+-                field_148003_a.warn("Could not find uniform named {} in the specified shader program.", s1);
++                field_148003_a.warn("Could not find uniform named {} in the specified shader program.", (Object)s1);
              }
              else
              {
@@ -76,3 +131,12 @@
                  shaderuniform.func_148084_b(l);
                  this.field_148009_k.put(s1, shaderuniform);
              }
+@@ -315,7 +317,7 @@
+ 
+         if (!JsonUtils.func_151205_a(jsonobject, "file"))
+         {
+-            this.field_147997_f.put(s, null);
++            this.field_147997_f.put(s, (Object)null);
+             this.field_147998_g.add(s);
+         }
+         else

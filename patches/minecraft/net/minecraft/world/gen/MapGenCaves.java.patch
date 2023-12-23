@@ -1,6 +1,61 @@
 --- before/net/minecraft/world/gen/MapGenCaves.java
 +++ after/net/minecraft/world/gen/MapGenCaves.java
-@@ -58,19 +58,19 @@
+@@ -17,42 +17,12 @@
+     protected static final IBlockState field_186128_c = Blocks.field_150322_A.func_176223_P();
+     protected static final IBlockState field_186129_d = Blocks.field_180395_cM.func_176223_P();
+ 
+-    protected void func_180703_a(
+-        long p_180703_1_, int p_180703_3_, int p_180703_4_, ChunkPrimer p_180703_5_, double p_180703_6_, double p_180703_8_, double p_180703_10_
+-    )
++    protected void func_180703_a(long p_180703_1_, int p_180703_3_, int p_180703_4_, ChunkPrimer p_180703_5_, double p_180703_6_, double p_180703_8_, double p_180703_10_)
+     {
+-        this.func_180702_a(
+-            p_180703_1_,
+-            p_180703_3_,
+-            p_180703_4_,
+-            p_180703_5_,
+-            p_180703_6_,
+-            p_180703_8_,
+-            p_180703_10_,
+-            1.0F + this.field_75038_b.nextFloat() * 6.0F,
+-            0.0F,
+-            0.0F,
+-            -1,
+-            -1,
+-            0.5
+-        );
++        this.func_180702_a(p_180703_1_, p_180703_3_, p_180703_4_, p_180703_5_, p_180703_6_, p_180703_8_, p_180703_10_, 1.0F + this.field_75038_b.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5D);
+     }
+ 
+-    protected void func_180702_a(
+-        long p_180702_1_,
+-        int p_180702_3_,
+-        int p_180702_4_,
+-        ChunkPrimer p_180702_5_,
+-        double p_180702_6_,
+-        double p_180702_8_,
+-        double p_180702_10_,
+-        float p_180702_12_,
+-        float p_180702_13_,
+-        float p_180702_14_,
+-        int p_180702_15_,
+-        int p_180702_16_,
+-        double p_180702_17_
+-    )
++    protected void func_180702_a(long p_180702_1_, int p_180702_3_, int p_180702_4_, ChunkPrimer p_180702_5_, double p_180702_6_, double p_180702_8_, double p_180702_10_, float p_180702_12_, float p_180702_13_, float p_180702_14_, int p_180702_15_, int p_180702_16_, double p_180702_17_)
+     {
+         double d0 = (double)(p_180702_3_ * 16 + 8);
+         double d1 = (double)(p_180702_4_ * 16 + 8);
+@@ -78,7 +48,7 @@
+ 
+         for (boolean flag = random.nextInt(6) == 0; p_180702_15_ < p_180702_16_; ++p_180702_15_)
+         {
+-            double d2 = 1.5 + (double)(MathHelper.func_76126_a((float)p_180702_15_ * (float) Math.PI / (float)p_180702_16_) * p_180702_12_);
++            double d2 = 1.5D + (double)(MathHelper.func_76126_a((float)p_180702_15_ * (float)Math.PI / (float)p_180702_16_) * p_180702_12_);
+             double d3 = d2 * p_180702_17_;
+             float f2 = MathHelper.func_76134_b(p_180702_14_);
+             float f3 = MathHelper.func_76126_a(p_180702_14_);
+@@ -88,52 +58,24 @@
  
              if (flag)
              {
@@ -27,16 +82,54 @@
  
              if (!flag2 && p_180702_15_ == j && p_180702_12_ > 1.0F && p_180702_16_ > 0)
              {
-@@ -91,7 +91,7 @@
+-                this.func_180702_a(
+-                    random.nextLong(),
+-                    p_180702_3_,
+-                    p_180702_4_,
+-                    p_180702_5_,
+-                    p_180702_6_,
+-                    p_180702_8_,
+-                    p_180702_10_,
+-                    random.nextFloat() * 0.5F + 0.5F,
+-                    p_180702_13_ - (float)(Math.PI / 2),
+-                    p_180702_14_ / 3.0F,
+-                    p_180702_15_,
+-                    p_180702_16_,
+-                    1.0
+-                );
+-                this.func_180702_a(
+-                    random.nextLong(),
+-                    p_180702_3_,
+-                    p_180702_4_,
+-                    p_180702_5_,
+-                    p_180702_6_,
+-                    p_180702_8_,
+-                    p_180702_10_,
+-                    random.nextFloat() * 0.5F + 0.5F,
+-                    p_180702_13_ + (float)(Math.PI / 2),
+-                    p_180702_14_ / 3.0F,
+-                    p_180702_15_,
+-                    p_180702_16_,
+-                    1.0
+-                );
++                this.func_180702_a(random.nextLong(), p_180702_3_, p_180702_4_, p_180702_5_, p_180702_6_, p_180702_8_, p_180702_10_, random.nextFloat() * 0.5F + 0.5F, p_180702_13_ - ((float)Math.PI / 2F), p_180702_14_ / 3.0F, p_180702_15_, p_180702_16_, 1.0D);
++                this.func_180702_a(random.nextLong(), p_180702_3_, p_180702_4_, p_180702_5_, p_180702_6_, p_180702_8_, p_180702_10_, random.nextFloat() * 0.5F + 0.5F, p_180702_13_ + ((float)Math.PI / 2F), p_180702_14_ / 3.0F, p_180702_15_, p_180702_16_, 1.0D);
+                 return;
+             }
+ 
+@@ -149,10 +91,7 @@
                      return;
                  }
  
--                if (!(p_180702_6_ < d0 - 16.0D - d2 * 2.0D) && !(p_180702_10_ < d1 - 16.0D - d2 * 2.0D) && !(p_180702_6_ > d0 + 16.0D + d2 * 2.0D) && !(p_180702_10_ > d1 + 16.0D + d2 * 2.0D))
+-                if (!(p_180702_6_ < d0 - 16.0 - d2 * 2.0)
+-                        && !(p_180702_10_ < d1 - 16.0 - d2 * 2.0)
+-                        && !(p_180702_6_ > d0 + 16.0 + d2 * 2.0)
+-                        && !(p_180702_10_ > d1 + 16.0 + d2 * 2.0))
 +                if (p_180702_6_ >= d0 - 16.0D - d2 * 2.0D && p_180702_10_ >= d1 - 16.0D - d2 * 2.0D && p_180702_6_ <= d0 + 16.0D + d2 * 2.0D && p_180702_10_ <= d1 + 16.0D + d2 * 2.0D)
                  {
                      int k2 = MathHelper.func_76128_c(p_180702_6_ - d2) - p_180702_3_ * 16 - 1;
                      int k = MathHelper.func_76128_c(p_180702_6_ + d2) - p_180702_3_ * 16 + 1;
-@@ -140,9 +140,7 @@
+@@ -201,9 +140,7 @@
                              {
                                  if (l1 >= 0 && l1 < 256)
                                  {
@@ -47,8 +140,29 @@
                                      {
                                          flag3 = true;
                                      }
-@@ -178,30 +176,14 @@
-                                         if (d9 > -0.7D && d10 * d10 + d9 * d9 + d8 * d8 < 1.0D)
+@@ -223,51 +160,30 @@
+ 
+                         for (int j3 = k2; j3 < k; ++j3)
+                         {
+-                            double d10 = ((double)(j3 + p_180702_3_ * 16) + 0.5 - p_180702_6_) / d2;
++                            double d10 = ((double)(j3 + p_180702_3_ * 16) + 0.5D - p_180702_6_) / d2;
+ 
+                             for (int i2 = i3; i2 < i1; ++i2)
+                             {
+-                                double d8 = ((double)(i2 + p_180702_4_ * 16) + 0.5 - p_180702_10_) / d2;
++                                double d8 = ((double)(i2 + p_180702_4_ * 16) + 0.5D - p_180702_10_) / d2;
+                                 boolean flag1 = false;
+ 
+-                                if (d10 * d10 + d8 * d8 < 1.0)
++                                if (d10 * d10 + d8 * d8 < 1.0D)
+                                 {
+                                     for (int j2 = l; j2 > l2; --j2)
+                                     {
+-                                        double d9 = ((double)(j2 - 1) + 0.5 - p_180702_8_) / d3;
++                                        double d9 = ((double)(j2 - 1) + 0.5D - p_180702_8_) / d3;
+ 
+-                                        if (d9 > -0.7 && d10 * d10 + d9 * d9 + d8 * d8 < 1.0)
++                                        if (d9 > -0.7D && d10 * d10 + d9 * d9 + d8 * d8 < 1.0D)
                                          {
                                              IBlockState iblockstate1 = p_180702_5_.func_177856_a(j3, j2, i2);
 -                                            IBlockState iblockstate2 = MoreObjects.firstNonNull(p_180702_5_.func_177856_a(j3, j2 + 1, i2), field_186127_b);
@@ -73,7 +187,12 @@
 -                                                    if (flag1 && p_180702_5_.func_177856_a(j3, j2 - 1, i2).func_177230_c() == Blocks.field_150346_d)
 -                                                    {
 -                                                        blockpos$mutableblockpos.func_181079_c(j3 + p_180702_3_ * 16, 0, i2 + p_180702_4_ * 16);
--                                                        p_180702_5_.func_177855_a(j3, j2 - 1, i2, this.field_75039_c.func_180494_b(blockpos$mutableblockpos).field_76752_A.func_177230_c().func_176223_P());
+-                                                        p_180702_5_.func_177855_a(
+-                                                            j3,
+-                                                            j2 - 1,
+-                                                            i2,
+-                                                            this.field_75039_c.func_180494_b(blockpos$mutableblockpos).field_76752_A.func_177230_c().func_176223_P()
+-                                                        );
 -                                                    }
 -                                                }
 -                                            }
@@ -81,10 +200,35 @@
                                          }
                                      }
                                  }
-@@ -296,6 +278,68 @@
+@@ -324,12 +240,10 @@
+         }
+         else
+         {
+-            return (p_175793_1_.func_177230_c() == Blocks.field_150354_m || p_175793_1_.func_177230_c() == Blocks.field_150351_n)
+-                   && p_175793_2_.func_185904_a() != Material.field_151586_h;
++            return (p_175793_1_.func_177230_c() == Blocks.field_150354_m || p_175793_1_.func_177230_c() == Blocks.field_150351_n) && p_175793_2_.func_185904_a() != Material.field_151586_h;
+         }
+     }
+ 
+-    @Override
+     protected void func_180701_a(World p_180701_1_, int p_180701_2_, int p_180701_3_, int p_180701_4_, int p_180701_5_, ChunkPrimer p_180701_6_)
+     {
+         int i = this.field_75038_b.nextInt(this.field_75038_b.nextInt(this.field_75038_b.nextInt(15) + 1) + 1);
+@@ -354,7 +268,7 @@
+ 
+             for (int l = 0; l < k; ++l)
+             {
+-                float f = this.field_75038_b.nextFloat() * (float)(Math.PI * 2);
++                float f = this.field_75038_b.nextFloat() * ((float)Math.PI * 2F);
+                 float f1 = (this.field_75038_b.nextFloat() - 0.5F) * 2.0F / 8.0F;
+                 float f2 = this.field_75038_b.nextFloat() * 2.0F + this.field_75038_b.nextFloat();
+ 
+@@ -363,7 +277,69 @@
+                     f2 *= this.field_75038_b.nextFloat() * this.field_75038_b.nextFloat() * 3.0F + 1.0F;
                  }
  
-                 this.func_180702_a(this.field_75038_b.nextLong(), p_180701_4_, p_180701_5_, p_180701_6_, d0, d1, d2, f2, f, f1, 0, 0, 1.0D);
+-                this.func_180702_a(this.field_75038_b.nextLong(), p_180701_4_, p_180701_5_, p_180701_6_, d0, d1, d2, f2, f, f1, 0, 0, 1.0);
++                this.func_180702_a(this.field_75038_b.nextLong(), p_180701_4_, p_180701_5_, p_180701_6_, d0, d1, d2, f2, f, f1, 0, 0, 1.0D);
 +            }
 +        }
 +    }

@@ -1,9 +1,109 @@
 --- before/net/minecraft/client/gui/GuiVideoSettings.java
 +++ after/net/minecraft/client/gui/GuiVideoSettings.java
-@@ -117,4 +117,12 @@
+@@ -14,25 +14,7 @@
+     protected String field_146500_a = "Video Settings";
+     private final GameSettings field_146499_g;
+     private GuiListExtended field_146501_h;
+-    private static final GameSettings.Options[] field_146502_i = new GameSettings.Options[]
+-        {
+-            GameSettings.Options.GRAPHICS,
+-            GameSettings.Options.RENDER_DISTANCE,
+-            GameSettings.Options.AMBIENT_OCCLUSION,
+-            GameSettings.Options.FRAMERATE_LIMIT,
+-            GameSettings.Options.ANAGLYPH,
+-            GameSettings.Options.VIEW_BOBBING,
+-            GameSettings.Options.GUI_SCALE,
+-            GameSettings.Options.ATTACK_INDICATOR,
+-            GameSettings.Options.GAMMA,
+-            GameSettings.Options.RENDER_CLOUDS,
+-            GameSettings.Options.PARTICLES,
+-            GameSettings.Options.USE_FULLSCREEN,
+-            GameSettings.Options.ENABLE_VSYNC,
+-            GameSettings.Options.MIPMAP_LEVELS,
+-            GameSettings.Options.USE_VBO,
+-            GameSettings.Options.ENTITY_SHADOWS
+-        };
++    private static final GameSettings.Options[] field_146502_i = new GameSettings.Options[] {GameSettings.Options.GRAPHICS, GameSettings.Options.RENDER_DISTANCE, GameSettings.Options.AMBIENT_OCCLUSION, GameSettings.Options.FRAMERATE_LIMIT, GameSettings.Options.ANAGLYPH, GameSettings.Options.VIEW_BOBBING, GameSettings.Options.GUI_SCALE, GameSettings.Options.ATTACK_INDICATOR, GameSettings.Options.GAMMA, GameSettings.Options.RENDER_CLOUDS, GameSettings.Options.PARTICLES, GameSettings.Options.USE_FULLSCREEN, GameSettings.Options.ENABLE_VSYNC, GameSettings.Options.MIPMAP_LEVELS, GameSettings.Options.USE_VBO, GameSettings.Options.ENTITY_SHADOWS};
+ 
+     public GuiVideoSettings(GuiScreen p_i1062_1_, GameSettings p_i1062_2_)
+     {
+@@ -40,7 +22,6 @@
+         this.field_146499_g = p_i1062_2_;
+     }
+ 
+-    @Override
+     public void func_73866_w_()
+     {
+         this.field_146500_a = I18n.func_135052_a("options.videoTitle");
+@@ -49,9 +30,7 @@
+ 
+         if (OpenGlHelper.field_176083_O)
+         {
+-            this.field_146501_h = new GuiOptionsRowList(
+-                this.field_146297_k, this.field_146294_l, this.field_146295_m, 32, this.field_146295_m - 32, 25, field_146502_i
+-            );
++            this.field_146501_h = new GuiOptionsRowList(this.field_146297_k, this.field_146294_l, this.field_146295_m, 32, this.field_146295_m - 32, 25, field_146502_i);
+         }
+         else
+         {
+@@ -69,20 +48,16 @@
+                 ++i;
+             }
+ 
+-            this.field_146501_h = new GuiOptionsRowList(
+-                this.field_146297_k, this.field_146294_l, this.field_146295_m, 32, this.field_146295_m - 32, 25, agamesettings$options
+-            );
++            this.field_146501_h = new GuiOptionsRowList(this.field_146297_k, this.field_146294_l, this.field_146295_m, 32, this.field_146295_m - 32, 25, agamesettings$options);
+         }
+     }
+ 
+-    @Override
+     public void func_146274_d() throws IOException
+     {
+         super.func_146274_d();
+         this.field_146501_h.func_178039_p();
+     }
+ 
+-    @Override
+     protected void func_73869_a(char p_73869_1_, int p_73869_2_) throws IOException
+     {
+         if (p_73869_2_ == 1)
+@@ -93,7 +68,6 @@
+         super.func_73869_a(p_73869_1_, p_73869_2_);
+     }
+ 
+-    @Override
+     protected void func_146284_a(GuiButton p_146284_1_) throws IOException
+     {
+         if (p_146284_1_.field_146124_l)
+@@ -106,7 +80,6 @@
+         }
+     }
+ 
+-    @Override
+     protected void func_73864_a(int p_73864_1_, int p_73864_2_, int p_73864_3_) throws IOException
+     {
+         int i = this.field_146499_g.field_74335_Z;
+@@ -122,7 +95,6 @@
+         }
+     }
+ 
+-    @Override
+     protected void func_146286_b(int p_146286_1_, int p_146286_2_, int p_146286_3_)
+     {
+         int i = this.field_146499_g.field_74335_Z;
+@@ -138,12 +110,19 @@
+         }
+     }
+ 
+-    @Override
+     public void func_73863_a(int p_73863_1_, int p_73863_2_, float p_73863_3_)
+     {
+         this.func_146276_q_();
+         this.field_146501_h.func_148128_a(p_73863_1_, p_73863_2_, p_73863_3_);
          this.func_73732_a(this.field_146289_q, this.field_146500_a, this.field_146294_l / 2, 5, 16777215);
          super.func_73863_a(p_73863_1_, p_73863_2_, p_73863_3_);
-     }
++    }
 +
 +    // FORGE: fix for MC-64581 very laggy mipmap slider
 +    @Override
@@ -11,5 +111,5 @@
 +    {
 +        super.func_146281_b();
 +        this.field_146297_k.field_71474_y.onGuiClosed();
-+    }
+     }
  }

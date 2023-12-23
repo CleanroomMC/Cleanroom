@@ -1,6 +1,20 @@
 --- before/net/minecraft/world/storage/MapDecoration.java
 +++ after/net/minecraft/world/storage/MapDecoration.java
-@@ -88,7 +88,19 @@
+@@ -50,7 +50,6 @@
+         return this.field_191181_a.func_191160_b();
+     }
+ 
+-    @Override
+     public boolean equals(Object p_equals_1_)
+     {
+         if (this == p_equals_1_)
+@@ -84,13 +83,24 @@
+         }
+     }
+ 
+-    @Override
+     public int hashCode()
+     {
          int i = this.field_191181_a.func_191163_a();
          i = 31 * i + this.field_176115_b;
          i = 31 * i + this.field_176116_c;
@@ -21,7 +35,7 @@
      }
  
      public static enum Type
-@@ -104,7 +116,7 @@
+@@ -106,7 +116,7 @@
          MANSION(true, 5393476),
          MONUMENT(true, 3830373);
  
@@ -30,7 +44,7 @@
          private final boolean field_191176_l;
          private final int field_191177_m;
  
-@@ -115,6 +127,7 @@
+@@ -117,6 +127,7 @@
  
          private Type(boolean p_i47344_3_, int p_i47344_4_)
          {

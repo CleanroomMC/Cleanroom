@@ -1,15 +1,48 @@
 --- before/net/minecraft/item/ItemBow.java
 +++ after/net/minecraft/item/ItemBow.java
-@@ -37,7 +37,7 @@
+@@ -26,12 +26,9 @@
+         this.field_77777_bU = 1;
+         this.func_77656_e(384);
+         this.func_77637_a(CreativeTabs.field_78037_j);
+-        this.func_185043_a(
+-            new ResourceLocation("pull"),
+-            new IItemPropertyGetter()
++        this.func_185043_a(new ResourceLocation("pull"), new IItemPropertyGetter()
+         {
+             @SideOnly(Side.CLIENT)
+-            @Override
+             public float func_185085_a(ItemStack p_185085_1_, @Nullable World p_185085_2_, @Nullable EntityLivingBase p_185085_3_)
+             {
+                 if (p_185085_3_ == null)
+@@ -40,17 +37,13 @@
                  }
                  else
                  {
--                    return p_185085_3_.func_184607_cu().func_77973_b() != Items.field_151031_f ? 0.0F : (float)(p_185085_1_.func_77988_m() - p_185085_3_.func_184605_cv()) / 20.0F;
+-                    return p_185085_3_.func_184607_cu().func_77973_b() != Items.field_151031_f
+-                           ? 0.0F
+-                           : (float)(p_185085_1_.func_77988_m() - p_185085_3_.func_184605_cv()) / 20.0F;
 +                    return !(p_185085_3_.func_184607_cu().func_77973_b() instanceof ItemBow) ? 0.0F : (float)(p_185085_1_.func_77988_m() - p_185085_3_.func_184605_cv()) / 20.0F;
                  }
              }
-         });
-@@ -90,6 +90,10 @@
+-        }
+-        );
++        });
+         this.func_185043_a(new ResourceLocation("pulling"), new IItemPropertyGetter()
+         {
+             @SideOnly(Side.CLIENT)
+-            @Override
+             public float func_185085_a(ItemStack p_185085_1_, @Nullable World p_185085_2_, @Nullable EntityLivingBase p_185085_3_)
+             {
+                 return p_185085_3_ != null && p_185085_3_.func_184587_cr() && p_185085_3_.func_184607_cu() == p_185085_1_ ? 1.0F : 0.0F;
+@@ -89,7 +82,6 @@
+         return p_185058_1_.func_77973_b() instanceof ItemArrow;
+     }
+ 
+-    @Override
+     public void func_77615_a(ItemStack p_77615_1_, World p_77615_2_, EntityLivingBase p_77615_3_, int p_77615_4_)
+     {
+         if (p_77615_3_ instanceof EntityPlayer)
+@@ -98,6 +90,10 @@
              boolean flag = entityplayer.field_71075_bZ.field_75098_d || EnchantmentHelper.func_77506_a(Enchantments.field_185312_x, p_77615_1_) > 0;
              ItemStack itemstack = this.func_185060_a(entityplayer);
  
@@ -20,14 +53,14 @@
              if (!itemstack.func_190926_b() || flag)
              {
                  if (itemstack.func_190926_b())
-@@ -97,17 +101,17 @@
+@@ -105,17 +101,17 @@
                      itemstack = new ItemStack(Items.field_151032_g);
                  }
  
 -                int i = this.func_77626_a(p_77615_1_) - p_77615_4_;
                  float f = func_185059_b(i);
  
--                if (!((double)f < 0.1D))
+-                if (!((double)f < 0.1))
 +                if ((double)f >= 0.1D)
                  {
 -                    boolean flag1 = flag && itemstack.func_77973_b() == Items.field_151032_g;
@@ -41,26 +74,87 @@
                          entityarrow.func_184547_a(entityplayer, entityplayer.field_70125_A, entityplayer.field_70177_z, 0.0F, f * 3.0F, 1.0F);
  
                          if (f == 1.0F)
-@@ -190,19 +194,27 @@
+@@ -127,7 +123,7 @@
+ 
+                         if (j > 0)
+                         {
+-                            entityarrow.func_70239_b(entityarrow.func_70242_d() + (double)j * 0.5 + 0.5);
++                            entityarrow.func_70239_b(entityarrow.func_70242_d() + (double)j * 0.5D + 0.5D);
+                         }
+ 
+                         int k = EnchantmentHelper.func_77506_a(Enchantments.field_185310_v, p_77615_1_);
+@@ -144,9 +140,7 @@
+ 
+                         p_77615_1_.func_77972_a(1, entityplayer);
+ 
+-                        if (flag1
+-                                || entityplayer.field_71075_bZ.field_75098_d
+-                                && (itemstack.func_77973_b() == Items.field_185166_h || itemstack.func_77973_b() == Items.field_185167_i))
++                        if (flag1 || entityplayer.field_71075_bZ.field_75098_d && (itemstack.func_77973_b() == Items.field_185166_h || itemstack.func_77973_b() == Items.field_185167_i))
+                         {
+                             entityarrow.field_70251_a = EntityArrow.PickupStatus.CREATIVE_ONLY;
+                         }
+@@ -154,16 +148,7 @@
+                         p_77615_2_.func_72838_d(entityarrow);
+                     }
+ 
+-                    p_77615_2_.func_184148_a(
+-                        null,
+-                        entityplayer.field_70165_t,
+-                        entityplayer.field_70163_u,
+-                        entityplayer.field_70161_v,
+-                        SoundEvents.field_187737_v,
+-                        SoundCategory.PLAYERS,
+-                        1.0F,
+-                        1.0F / (field_77697_d.nextFloat() * 0.4F + 1.2F) + f * 0.5F
+-                    );
++                    p_77615_2_.func_184148_a((EntityPlayer)null, entityplayer.field_70165_t, entityplayer.field_70163_u, entityplayer.field_70161_v, SoundEvents.field_187737_v, SoundCategory.PLAYERS, 1.0F, 1.0F / (field_77697_d.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
+ 
+                     if (!flag1 && !entityplayer.field_71075_bZ.field_75098_d)
+                     {
+@@ -194,38 +179,42 @@
+         return f;
+     }
+ 
+-    @Override
+     public int func_77626_a(ItemStack p_77626_1_)
+     {
+         return 72000;
+     }
+ 
+-    @Override
+     public EnumAction func_77661_b(ItemStack p_77661_1_)
+     {
+         return EnumAction.BOW;
+     }
+ 
+-    @Override
+     public ActionResult<ItemStack> func_77659_a(World p_77659_1_, EntityPlayer p_77659_2_, EnumHand p_77659_3_)
+     {
          ItemStack itemstack = p_77659_2_.func_184586_b(p_77659_3_);
          boolean flag = !this.func_185060_a(p_77659_2_).func_190926_b();
  
+-        if (p_77659_2_.field_71075_bZ.field_75098_d || flag)
 +        ActionResult<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onArrowNock(itemstack, p_77659_1_, p_77659_2_, p_77659_3_, flag);
 +        if (ret != null) return ret;
 +
-         if (!p_77659_2_.field_71075_bZ.field_75098_d && !flag)
-         {
--            return flag ? new ActionResult<>(EnumActionResult.PASS, itemstack) : new ActionResult<>(EnumActionResult.FAIL, itemstack);
++        if (!p_77659_2_.field_71075_bZ.field_75098_d && !flag)
++        {
 +            return flag ? new ActionResult(EnumActionResult.PASS, itemstack) : new ActionResult(EnumActionResult.FAIL, itemstack);
-         }
-         else
++        }
++        else
          {
              p_77659_2_.func_184598_c(p_77659_3_);
 -            return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
+-        }
+-        else
+-        {
+-            return flag ? new ActionResult<>(EnumActionResult.PASS, itemstack) : new ActionResult<>(EnumActionResult.FAIL, itemstack);
 +            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
          }
      }
  
+-    @Override
      public int func_77619_b()
      {
          return 1;

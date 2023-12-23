@@ -1,6 +1,14 @@
 --- before/net/minecraft/client/renderer/RenderItem.java
 +++ after/net/minecraft/client/renderer/RenderItem.java
-@@ -71,7 +71,7 @@
+@@ -20,6 +20,7 @@
+ import net.minecraft.block.BlockStoneSlabNew;
+ import net.minecraft.block.BlockTallGrass;
+ import net.minecraft.block.BlockWall;
++import net.minecraft.block.state.IBlockState;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.entity.EntityPlayerSP;
+ import net.minecraft.client.gui.FontRenderer;
+@@ -70,7 +71,7 @@
      public RenderItem(TextureManager p_i46552_1_, ModelManager p_i46552_2_, ItemColors p_i46552_3_)
      {
          this.field_175057_n = p_i46552_1_;
@@ -9,7 +17,7 @@
          this.func_175041_b();
          this.field_184395_f = p_i46552_3_;
      }
-@@ -113,6 +113,11 @@
+@@ -112,16 +113,21 @@
  
      private void func_191967_a(IBakedModel p_191967_1_, int p_191967_2_, ItemStack p_191967_3_)
      {
@@ -21,7 +29,19 @@
          Tessellator tessellator = Tessellator.func_178181_a();
          BufferBuilder bufferbuilder = tessellator.func_178180_c();
          bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_176599_b);
-@@ -137,7 +142,7 @@
+ 
+         for (EnumFacing enumfacing : EnumFacing.values())
+         {
+-            this.func_191970_a(bufferbuilder, p_191967_1_.func_188616_a(null, enumfacing, 0L), p_191967_2_, p_191967_3_);
++            this.func_191970_a(bufferbuilder, p_191967_1_.func_188616_a((IBlockState)null, enumfacing, 0L), p_191967_2_, p_191967_3_);
+         }
+ 
+-        this.func_191970_a(bufferbuilder, p_191967_1_.func_188616_a(null, null, 0L), p_191967_2_, p_191967_3_);
++        this.func_191970_a(bufferbuilder, p_191967_1_.func_188616_a((IBlockState)null, (EnumFacing)null, 0L), p_191967_2_, p_191967_3_);
+         tessellator.func_78381_a();
+     }
+ 
+@@ -136,7 +142,7 @@
              {
                  GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
                  GlStateManager.func_179091_B();
@@ -30,7 +50,7 @@
              }
              else
              {
-@@ -215,10 +220,10 @@
+@@ -214,10 +220,10 @@
                      k = TextureUtil.func_177054_c(k);
                  }
  
@@ -43,7 +63,16 @@
          }
      }
  
-@@ -240,17 +245,7 @@
+@@ -231,7 +237,7 @@
+     {
+         if (!p_181564_1_.func_190926_b())
+         {
+-            IBakedModel ibakedmodel = this.func_184393_a(p_181564_1_, null, null);
++            IBakedModel ibakedmodel = this.func_184393_a(p_181564_1_, (World)null, (EntityLivingBase)null);
+             this.func_184394_a(p_181564_1_, ibakedmodel, p_181564_2_, false);
+         }
+     }
+@@ -239,19 +245,7 @@
      public IBakedModel func_184393_a(ItemStack p_184393_1_, @Nullable World p_184393_2_, @Nullable EntityLivingBase p_184393_3_)
      {
          IBakedModel ibakedmodel = this.field_175059_m.func_178089_a(p_184393_1_);
@@ -52,7 +81,9 @@
 -        if (item != null && item.func_185040_i())
 -        {
 -            ResourceLocation resourcelocation = ibakedmodel.func_188617_f().func_188021_a(p_184393_1_, p_184393_2_, p_184393_3_);
--            return resourcelocation == null ? ibakedmodel : this.field_175059_m.func_178083_a().func_174953_a(new ModelResourceLocation(resourcelocation, "inventory"));
+-            return resourcelocation == null
+-                   ? ibakedmodel
+-                   : this.field_175059_m.func_178083_a().func_174953_a(new ModelResourceLocation(resourcelocation, "inventory"));
 -        }
 -        else
 -        {
@@ -62,9 +93,17 @@
      }
  
      public void func_184392_a(ItemStack p_184392_1_, EntityLivingBase p_184392_2_, ItemCameraTransforms.TransformType p_184392_3_, boolean p_184392_4_)
-@@ -274,13 +269,8 @@
+@@ -273,20 +267,10 @@
+             GlStateManager.func_179091_B();
+             GlStateManager.func_179092_a(516, 0.1F);
              GlStateManager.func_179147_l();
-             GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+-            GlStateManager.func_187428_a(
+-                GlStateManager.SourceFactor.SRC_ALPHA,
+-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+-                GlStateManager.SourceFactor.ONE,
+-                GlStateManager.DestFactor.ZERO
+-            );
++            GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
              GlStateManager.func_179094_E();
 -            ItemCameraTransforms itemcameratransforms = p_184394_2_.func_177552_f();
 -            ItemCameraTransforms.func_188034_a(itemcameratransforms.func_181688_b(p_184394_3_), p_184394_4_);
@@ -78,7 +117,16 @@
  
              this.func_180454_a(p_184394_1_, p_184394_2_);
              GlStateManager.func_187407_a(GlStateManager.CullFace.BACK);
-@@ -314,7 +304,7 @@
+@@ -305,7 +289,7 @@
+ 
+     public void func_175042_a(ItemStack p_175042_1_, int p_175042_2_, int p_175042_3_)
+     {
+-        this.func_191962_a(p_175042_1_, p_175042_2_, p_175042_3_, this.func_184393_a(p_175042_1_, null, null));
++        this.func_191962_a(p_175042_1_, p_175042_2_, p_175042_3_, this.func_184393_a(p_175042_1_, (World)null, (EntityLivingBase)null));
+     }
+ 
+     protected void func_191962_a(ItemStack p_191962_1_, int p_191962_2_, int p_191962_3_, IBakedModel p_191962_4_)
+@@ -320,7 +304,7 @@
          GlStateManager.func_187401_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
          GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
          this.func_180452_a(p_191962_2_, p_191962_3_, p_191962_4_.func_177556_c());
@@ -87,15 +135,46 @@
          this.func_180454_a(p_191962_1_, p_191962_4_);
          GlStateManager.func_179118_c();
          GlStateManager.func_179101_C();
-@@ -367,6 +357,7 @@
-                         return String.valueOf((Object)p_184391_2_.func_77973_b());
+@@ -360,7 +344,7 @@
+ 
+             try
+             {
+-                this.func_191962_a(p_184391_2_, p_184391_3_, p_184391_4_, this.func_184393_a(p_184391_2_, null, p_184391_1_));
++                this.func_191962_a(p_184391_2_, p_184391_3_, p_184391_4_, this.func_184393_a(p_184391_2_, (World)null, p_184391_1_));
+             }
+             catch (Throwable throwable)
+             {
+@@ -370,9 +354,10 @@
+                 {
+                     public String call() throws Exception
+                     {
+-                        return String.valueOf(p_184391_2_.func_77973_b());
++                        return String.valueOf((Object)p_184391_2_.func_77973_b());
                      }
                  });
 +                crashreportcategory.func_189529_a("Registry Name", () -> String.valueOf(p_184391_2_.func_77973_b().getRegistryName()));
                  crashreportcategory.func_189529_a("Item Aux", new ICrashReportDetail<String>()
                  {
                      public String call() throws Exception
-@@ -413,9 +404,12 @@
+@@ -384,7 +369,7 @@
+                 {
+                     public String call() throws Exception
+                     {
+-                        return String.valueOf(p_184391_2_.func_77978_p());
++                        return String.valueOf((Object)p_184391_2_.func_77978_p());
+                     }
+                 });
+                 crashreportcategory.func_189529_a("Item Foil", new ICrashReportDetail<String>()
+@@ -403,7 +388,7 @@
+ 
+     public void func_175030_a(FontRenderer p_175030_1_, ItemStack p_175030_2_, int p_175030_3_, int p_175030_4_)
+     {
+-        this.func_180453_a(p_175030_1_, p_175030_2_, p_175030_3_, p_175030_4_, null);
++        this.func_180453_a(p_175030_1_, p_175030_2_, p_175030_3_, p_175030_4_, (String)null);
+     }
+ 
+     public void func_180453_a(FontRenderer p_180453_1_, ItemStack p_180453_2_, int p_180453_3_, int p_180453_4_, @Nullable String p_180453_5_)
+@@ -419,9 +404,12 @@
                  p_180453_1_.func_175063_a(s, (float)(p_180453_3_ + 19 - 2 - p_180453_1_.func_78256_a(s)), (float)(p_180453_4_ + 6 + 3), 16777215);
                  GlStateManager.func_179145_e();
                  GlStateManager.func_179126_j();
@@ -109,7 +188,7 @@
              {
                  GlStateManager.func_179140_f();
                  GlStateManager.func_179097_i();
-@@ -424,11 +418,10 @@
+@@ -430,13 +418,12 @@
                  GlStateManager.func_179084_k();
                  Tessellator tessellator = Tessellator.func_178181_a();
                  BufferBuilder bufferbuilder = tessellator.func_178180_c();
@@ -123,13 +202,134 @@
 +                int i = Math.round(13.0F - (float)health * 13.0F);
 +                int j = rgbfordisplay;
                  this.func_181565_a(bufferbuilder, p_180453_3_ + 2, p_180453_4_ + 13, 13, 2, 0, 0, 0, 255);
-                 this.func_181565_a(bufferbuilder, p_180453_3_ + 2, p_180453_4_ + 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
+-                this.func_181565_a(bufferbuilder, p_180453_3_ + 2, p_180453_4_ + 13, i, 1, j >> 16 & 0xFF, j >> 8 & 0xFF, j & 0xFF, 255);
++                this.func_181565_a(bufferbuilder, p_180453_3_ + 2, p_180453_4_ + 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
                  GlStateManager.func_179147_l();
-@@ -1099,6 +1092,7 @@
+                 GlStateManager.func_179141_d();
+                 GlStateManager.func_179098_w();
+@@ -445,9 +432,7 @@
+             }
+ 
+             EntityPlayerSP entityplayersp = Minecraft.func_71410_x().field_71439_g;
+-            float f3 = entityplayersp == null
+-                       ? 0.0F
+-                       : entityplayersp.func_184811_cZ().func_185143_a(p_180453_2_.func_77973_b(), Minecraft.func_71410_x().func_184121_ak());
++            float f3 = entityplayersp == null ? 0.0F : entityplayersp.func_184811_cZ().func_185143_a(p_180453_2_.func_77973_b(), Minecraft.func_71410_x().func_184121_ak());
+ 
+             if (f3 > 0.0F)
+             {
+@@ -456,17 +441,7 @@
+                 GlStateManager.func_179090_x();
+                 Tessellator tessellator1 = Tessellator.func_178181_a();
+                 BufferBuilder bufferbuilder1 = tessellator1.func_178180_c();
+-                this.func_181565_a(
+-                    bufferbuilder1,
+-                    p_180453_3_,
+-                    p_180453_4_ + MathHelper.func_76141_d(16.0F * (1.0F - f3)),
+-                    16,
+-                    MathHelper.func_76123_f(16.0F * f3),
+-                    255,
+-                    255,
+-                    255,
+-                    127
+-                );
++                this.func_181565_a(bufferbuilder1, p_180453_3_, p_180453_4_ + MathHelper.func_76141_d(16.0F * (1.0F - f3)), 16, MathHelper.func_76123_f(16.0F * f3), 255, 255, 255, 127);
+                 GlStateManager.func_179098_w();
+                 GlStateManager.func_179145_e();
+                 GlStateManager.func_179126_j();
+@@ -474,31 +449,13 @@
+         }
+     }
+ 
+-    private void func_181565_a(
+-        BufferBuilder p_181565_1_,
+-        int p_181565_2_,
+-        int p_181565_3_,
+-        int p_181565_4_,
+-        int p_181565_5_,
+-        int p_181565_6_,
+-        int p_181565_7_,
+-        int p_181565_8_,
+-        int p_181565_9_
+-    )
++    private void func_181565_a(BufferBuilder p_181565_1_, int p_181565_2_, int p_181565_3_, int p_181565_4_, int p_181565_5_, int p_181565_6_, int p_181565_7_, int p_181565_8_, int p_181565_9_)
+     {
+         p_181565_1_.func_181668_a(7, DefaultVertexFormats.field_181706_f);
+-        p_181565_1_.func_181662_b((double)(p_181565_2_ + 0), (double)(p_181565_3_ + 0), 0.0)
+-        .func_181669_b(p_181565_6_, p_181565_7_, p_181565_8_, p_181565_9_)
+-        .func_181675_d();
+-        p_181565_1_.func_181662_b((double)(p_181565_2_ + 0), (double)(p_181565_3_ + p_181565_5_), 0.0)
+-        .func_181669_b(p_181565_6_, p_181565_7_, p_181565_8_, p_181565_9_)
+-        .func_181675_d();
+-        p_181565_1_.func_181662_b((double)(p_181565_2_ + p_181565_4_), (double)(p_181565_3_ + p_181565_5_), 0.0)
+-        .func_181669_b(p_181565_6_, p_181565_7_, p_181565_8_, p_181565_9_)
+-        .func_181675_d();
+-        p_181565_1_.func_181662_b((double)(p_181565_2_ + p_181565_4_), (double)(p_181565_3_ + 0), 0.0)
+-        .func_181669_b(p_181565_6_, p_181565_7_, p_181565_8_, p_181565_9_)
+-        .func_181675_d();
++        p_181565_1_.func_181662_b((double)(p_181565_2_ + 0), (double)(p_181565_3_ + 0), 0.0D).func_181669_b(p_181565_6_, p_181565_7_, p_181565_8_, p_181565_9_).func_181675_d();
++        p_181565_1_.func_181662_b((double)(p_181565_2_ + 0), (double)(p_181565_3_ + p_181565_5_), 0.0D).func_181669_b(p_181565_6_, p_181565_7_, p_181565_8_, p_181565_9_).func_181675_d();
++        p_181565_1_.func_181662_b((double)(p_181565_2_ + p_181565_4_), (double)(p_181565_3_ + p_181565_5_), 0.0D).func_181669_b(p_181565_6_, p_181565_7_, p_181565_8_, p_181565_9_).func_181675_d();
++        p_181565_1_.func_181662_b((double)(p_181565_2_ + p_181565_4_), (double)(p_181565_3_ + 0), 0.0D).func_181669_b(p_181565_6_, p_181565_7_, p_181565_8_, p_181565_9_).func_181675_d();
+         Tessellator.func_178181_a().func_78381_a();
+     }
+ 
+@@ -1026,7 +983,6 @@
+         this.func_175047_a(Items.field_151060_bw, "speckled_melon");
+         this.field_175059_m.func_178080_a(Items.field_151063_bx, new ItemMeshDefinition()
+         {
+-            @Override
+             public ModelResourceLocation func_178113_a(ItemStack p_178113_1_)
+             {
+                 return new ModelResourceLocation("spawn_egg", "inventory");
+@@ -1068,7 +1024,6 @@
+         this.func_175047_a(Items.field_151057_cb, "name_tag");
+         this.field_175059_m.func_178080_a(Items.field_179564_cE, new ItemMeshDefinition()
+         {
+-            @Override
+             public ModelResourceLocation func_178113_a(ItemStack p_178113_1_)
+             {
+                 return new ModelResourceLocation("banner", "inventory");
+@@ -1076,7 +1031,6 @@
+         });
+         this.field_175059_m.func_178080_a(Items.field_151104_aV, new ItemMeshDefinition()
+         {
+-            @Override
+             public ModelResourceLocation func_178113_a(ItemStack p_178113_1_)
+             {
+                 return new ModelResourceLocation("bed", "inventory");
+@@ -1084,7 +1038,6 @@
+         });
+         this.field_175059_m.func_178080_a(Items.field_185159_cQ, new ItemMeshDefinition()
+         {
+-            @Override
+             public ModelResourceLocation func_178113_a(ItemStack p_178113_1_)
+             {
+                 return new ModelResourceLocation("shield", "inventory");
+@@ -1112,7 +1065,6 @@
+         this.func_175047_a(Items.field_192397_db, "knowledge_book");
+         this.field_175059_m.func_178080_a(Items.field_151134_bR, new ItemMeshDefinition()
+         {
+-            @Override
+             public ModelResourceLocation func_178113_a(ItemStack p_178113_1_)
+             {
+                 return new ModelResourceLocation("enchanted_book", "inventory");
+@@ -1120,7 +1072,6 @@
+         });
+         this.field_175059_m.func_178080_a(Items.field_151098_aY, new ItemMeshDefinition()
+         {
+-            @Override
+             public ModelResourceLocation func_178113_a(ItemStack p_178113_1_)
+             {
+                 return new ModelResourceLocation("filled_map", "inventory");
+@@ -1141,9 +1092,9 @@
          this.func_175029_a(Blocks.field_185779_df, TileEntityStructure.Mode.LOAD.func_185110_a(), "structure_block");
          this.func_175029_a(Blocks.field_185779_df, TileEntityStructure.Mode.CORNER.func_185110_a(), "structure_block");
          this.func_175029_a(Blocks.field_185779_df, TileEntityStructure.Mode.DATA.func_185110_a(), "structure_block");
 +        net.minecraftforge.client.model.ModelLoader.onRegisterItems(this.field_175059_m);
      }
  
+-    @Override
      public void func_110549_a(IResourceManager p_110549_1_)
+     {
+         this.field_175059_m.func_178085_b();

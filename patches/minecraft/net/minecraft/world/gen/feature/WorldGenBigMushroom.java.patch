@@ -1,6 +1,14 @@
 --- before/net/minecraft/world/gen/feature/WorldGenBigMushroom.java
 +++ after/net/minecraft/world/gen/feature/WorldGenBigMushroom.java
-@@ -62,9 +62,9 @@
+@@ -25,7 +25,6 @@
+         this.field_76523_a = null;
+     }
+ 
+-    @Override
+     public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
+     {
+         Block block = this.field_76523_a;
+@@ -63,9 +62,9 @@
                      {
                          if (j >= 0 && j < 256)
                          {
@@ -12,8 +20,13 @@
                              {
                                  flag = false;
                              }
-@@ -199,8 +199,9 @@
-                                 if (p_180709_3_.func_177956_o() >= p_180709_3_.func_177956_o() + i - 1 || blockhugemushroom$enumtype != BlockHugeMushroom.EnumType.ALL_INSIDE)
+@@ -197,16 +196,14 @@
+                                     blockhugemushroom$enumtype = BlockHugeMushroom.EnumType.ALL_INSIDE;
+                                 }
+ 
+-                                if (p_180709_3_.func_177956_o() >= p_180709_3_.func_177956_o() + i - 1
+-                                        || blockhugemushroom$enumtype != BlockHugeMushroom.EnumType.ALL_INSIDE)
++                                if (p_180709_3_.func_177956_o() >= p_180709_3_.func_177956_o() + i - 1 || blockhugemushroom$enumtype != BlockHugeMushroom.EnumType.ALL_INSIDE)
                                  {
                                      BlockPos blockpos = new BlockPos(l1, l2, i2);
 +                                    IBlockState state = p_180709_1_.func_180495_p(blockpos);
@@ -21,14 +34,26 @@
 -                                    if (!p_180709_1_.func_180495_p(blockpos).func_185913_b())
 +                                    if (state.func_177230_c().canBeReplacedByLeaves(state, p_180709_1_, blockpos))
                                      {
-                                         this.func_175903_a(p_180709_1_, blockpos, block.func_176223_P().func_177226_a(BlockHugeMushroom.field_176380_a, blockhugemushroom$enumtype));
+-                                        this.func_175903_a(
+-                                            p_180709_1_, blockpos, block.func_176223_P().func_177226_a(BlockHugeMushroom.field_176380_a, blockhugemushroom$enumtype)
+-                                        );
++                                        this.func_175903_a(p_180709_1_, blockpos, block.func_176223_P().func_177226_a(BlockHugeMushroom.field_176380_a, blockhugemushroom$enumtype));
                                      }
-@@ -213,7 +214,7 @@
+                                 }
+                             }
+@@ -217,13 +214,9 @@
                      {
                          IBlockState iblockstate = p_180709_1_.func_180495_p(p_180709_3_.func_177981_b(i3));
  
 -                        if (!iblockstate.func_185913_b())
 +                        if (iblockstate.func_177230_c().canBeReplacedByLeaves(iblockstate, p_180709_1_, p_180709_3_.func_177981_b(i3)))
                          {
-                             this.func_175903_a(p_180709_1_, p_180709_3_.func_177981_b(i3), block.func_176223_P().func_177226_a(BlockHugeMushroom.field_176380_a, BlockHugeMushroom.EnumType.STEM));
+-                            this.func_175903_a(
+-                                p_180709_1_,
+-                                p_180709_3_.func_177981_b(i3),
+-                                block.func_176223_P().func_177226_a(BlockHugeMushroom.field_176380_a, BlockHugeMushroom.EnumType.STEM)
+-                            );
++                            this.func_175903_a(p_180709_1_, p_180709_3_.func_177981_b(i3), block.func_176223_P().func_177226_a(BlockHugeMushroom.field_176380_a, BlockHugeMushroom.EnumType.STEM));
                          }
+                     }
+ 

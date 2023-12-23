@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/WorldProvider.java
 +++ after/net/minecraft/world/WorldProvider.java
-@@ -55,37 +55,12 @@
+@@ -55,45 +55,12 @@
      protected void func_76572_b()
      {
          this.field_191067_f = true;
@@ -26,7 +26,9 @@
      {
 -        if (this.field_76577_b == WorldType.field_77138_c)
 -        {
--            return new ChunkGeneratorFlat(this.field_76579_a, this.field_76579_a.func_72905_C(), this.field_76579_a.func_72912_H().func_76089_r(), this.field_82913_c);
+-            return new ChunkGeneratorFlat(
+-                       this.field_76579_a, this.field_76579_a.func_72905_C(), this.field_76579_a.func_72912_H().func_76089_r(), this.field_82913_c
+-                   );
 -        }
 -        else if (this.field_76577_b == WorldType.field_180272_g)
 -        {
@@ -34,32 +36,55 @@
 -        }
 -        else
 -        {
--            return this.field_76577_b == WorldType.field_180271_f ? new ChunkGeneratorOverworld(this.field_76579_a, this.field_76579_a.func_72905_C(), this.field_76579_a.func_72912_H().func_76089_r(), this.field_82913_c) : new ChunkGeneratorOverworld(this.field_76579_a, this.field_76579_a.func_72905_C(), this.field_76579_a.func_72912_H().func_76089_r(), this.field_82913_c);
+-            return this.field_76577_b == WorldType.field_180271_f
+-                   ? new ChunkGeneratorOverworld(
+-                       this.field_76579_a, this.field_76579_a.func_72905_C(), this.field_76579_a.func_72912_H().func_76089_r(), this.field_82913_c
+-                   )
+-                   : new ChunkGeneratorOverworld(
+-                       this.field_76579_a, this.field_76579_a.func_72905_C(), this.field_76579_a.func_72912_H().func_76089_r(), this.field_82913_c
+-                   );
 -        }
 +        return this.field_76577_b.getChunkGenerator(field_76579_a, field_82913_c);
      }
  
      public boolean func_76566_a(int p_76566_1_, int p_76566_2_)
-@@ -118,7 +93,8 @@
+@@ -125,8 +92,9 @@
+             --f;
          }
  
-         float f1 = 1.0F - (float)((Math.cos((double)f * Math.PI) + 1.0D) / 2.0D);
+-        float f1 = 1.0F - (float)((Math.cos((double)f * Math.PI) + 1.0) / 2.0);
 -        return f + (f1 - f) / 3.0F;
++        float f1 = 1.0F - (float)((Math.cos((double)f * Math.PI) + 1.0D) / 2.0D);
 +        f = f + (f1 - f) / 3.0F;
 +        return f;
      }
  
      public int func_76559_b(long p_76559_1_)
-@@ -143,7 +119,7 @@
+@@ -144,14 +112,14 @@
+     public float[] func_76560_a(float p_76560_1_, float p_76560_2_)
+     {
+         float f = 0.4F;
+-        float f1 = MathHelper.func_76134_b(p_76560_1_ * (float)(Math.PI * 2)) - 0.0F;
++        float f1 = MathHelper.func_76134_b(p_76560_1_ * ((float)Math.PI * 2F)) - 0.0F;
+         float f2 = -0.0F;
+ 
+         if (f1 >= -0.4F && f1 <= 0.4F)
          {
              float f3 = (f1 - -0.0F) / 0.4F * 0.5F + 0.5F;
-             float f4 = 1.0F - (1.0F - MathHelper.func_76126_a(f3 * (float)Math.PI)) * 0.99F;
+-            float f4 = 1.0F - (1.0F - MathHelper.func_76126_a(f3 * (float) Math.PI)) * 0.99F;
 -            f4 *= f4;
++            float f4 = 1.0F - (1.0F - MathHelper.func_76126_a(f3 * (float)Math.PI)) * 0.99F;
 +            f4 = f4 * f4;
              this.field_76580_h[0] = f3 * 0.3F + 0.7F;
              this.field_76580_h[1] = f3 * f3 * 0.7F + 0.2F;
              this.field_76580_h[2] = f3 * f3 * 0.0F + 0.2F;
-@@ -164,9 +140,9 @@
+@@ -167,14 +135,14 @@
+     @SideOnly(Side.CLIENT)
+     public Vec3d func_76562_b(float p_76562_1_, float p_76562_2_)
+     {
+-        float f = MathHelper.func_76134_b(p_76562_1_ * (float)(Math.PI * 2)) * 2.0F + 0.5F;
++        float f = MathHelper.func_76134_b(p_76562_1_ * ((float)Math.PI * 2F)) * 2.0F + 0.5F;
+         f = MathHelper.func_76131_a(f, 0.0F, 1.0F);
          float f1 = 0.7529412F;
          float f2 = 0.84705883F;
          float f3 = 1.0F;
@@ -72,7 +97,7 @@
          return new Vec3d((double)f1, (double)f2, (double)f3);
      }
  
-@@ -178,7 +154,7 @@
+@@ -186,7 +154,7 @@
      @SideOnly(Side.CLIENT)
      public float func_76571_f()
      {
@@ -81,7 +106,7 @@
      }
  
      @SideOnly(Side.CLIENT)
-@@ -195,13 +171,13 @@
+@@ -203,13 +171,13 @@
  
      public int func_76557_i()
      {
@@ -92,12 +117,12 @@
      @SideOnly(Side.CLIENT)
      public double func_76565_k()
      {
--        return this.field_76577_b == WorldType.field_77138_c ? 1.0D : 0.03125D;
+-        return this.field_76577_b == WorldType.field_77138_c ? 1.0 : 0.03125;
 +        return this.field_76577_b.voidFadeMagnitude();
      }
  
      @SideOnly(Side.CLIENT)
-@@ -238,6 +214,371 @@
+@@ -246,6 +214,371 @@
      public WorldBorder func_177501_r()
      {
          return new WorldBorder();

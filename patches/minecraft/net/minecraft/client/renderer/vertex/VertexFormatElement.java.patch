@@ -1,6 +1,28 @@
 --- before/net/minecraft/client/renderer/vertex/VertexFormatElement.java
 +++ after/net/minecraft/client/renderer/vertex/VertexFormatElement.java
-@@ -109,7 +109,8 @@
+@@ -56,7 +56,6 @@
+         return this.field_177377_d;
+     }
+ 
+-    @Override
+     public String toString()
+     {
+         return this.field_177378_e + "," + this.field_177380_c.func_177384_a() + "," + this.field_177379_b.func_177396_b();
+@@ -72,7 +71,6 @@
+         return this.field_177380_c == VertexFormatElement.EnumUsage.POSITION;
+     }
+ 
+-    @Override
+     public boolean equals(Object p_equals_1_)
+     {
+         if (this == p_equals_1_)
+@@ -106,13 +104,13 @@
+         }
+     }
+ 
+-    @Override
+     public int hashCode()
+     {
          int i = this.field_177379_b.hashCode();
          i = 31 * i + this.field_177380_c.hashCode();
          i = 31 * i + this.field_177377_d;
@@ -10,7 +32,7 @@
      }
  
      @SideOnly(Side.CLIENT)
-@@ -157,9 +158,16 @@
+@@ -160,9 +158,16 @@
          NORMAL("Normal"),
          COLOR("Vertex Color"),
          UV("UV"),

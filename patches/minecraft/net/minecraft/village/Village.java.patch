@@ -35,23 +35,56 @@
      }
  
      public void func_82691_a(World p_82691_1_)
-@@ -133,13 +135,13 @@
+@@ -91,9 +93,7 @@
+     {
+         for (int i = 0; i < 10; ++i)
+         {
+-            BlockPos blockpos = p_179862_1_.func_177982_a(
+-                                    this.field_75586_a.field_73012_v.nextInt(16) - 8, this.field_75586_a.field_73012_v.nextInt(6) - 3, this.field_75586_a.field_73012_v.nextInt(16) - 8
+-                                );
++            BlockPos blockpos = p_179862_1_.func_177982_a(this.field_75586_a.field_73012_v.nextInt(16) - 8, this.field_75586_a.field_73012_v.nextInt(6) - 3, this.field_75586_a.field_73012_v.nextInt(16) - 8);
+ 
+             if (this.func_179866_a(blockpos) && this.func_179861_a(new BlockPos(p_179862_2_, p_179862_3_, p_179862_4_), blockpos))
+             {
+@@ -135,35 +135,13 @@
  
      private void func_75579_h()
      {
--        List<EntityIronGolem> list = this.field_75586_a.func_72872_a(EntityIronGolem.class, new AxisAlignedBB((double)(this.field_75582_d.func_177958_n() - this.field_75583_e), (double)(this.field_75582_d.func_177956_o() - 4), (double)(this.field_75582_d.func_177952_p() - this.field_75583_e), (double)(this.field_75582_d.func_177958_n() + this.field_75583_e), (double)(this.field_75582_d.func_177956_o() + 4), (double)(this.field_75582_d.func_177952_p() + this.field_75583_e)));
+-        List<EntityIronGolem> list = this.field_75586_a
+-                                     .func_72872_a(
+-                                         EntityIronGolem.class,
+-                                         new AxisAlignedBB(
+-                                             (double)(this.field_75582_d.func_177958_n() - this.field_75583_e),
+-                                             (double)(this.field_75582_d.func_177956_o() - 4),
+-                                             (double)(this.field_75582_d.func_177952_p() - this.field_75583_e),
+-                                             (double)(this.field_75582_d.func_177958_n() + this.field_75583_e),
+-                                             (double)(this.field_75582_d.func_177956_o() + 4),
+-                                             (double)(this.field_75582_d.func_177952_p() + this.field_75583_e)
+-                                         )
+-                                     );
 +        List<EntityIronGolem> list = this.field_75586_a.<EntityIronGolem>func_72872_a(EntityIronGolem.class, new AxisAlignedBB((double)(this.field_75582_d.func_177958_n() - this.field_75583_e), (double)(this.field_75582_d.func_177956_o() - 4), (double)(this.field_75582_d.func_177952_p() - this.field_75583_e), (double)(this.field_75582_d.func_177958_n() + this.field_75583_e), (double)(this.field_75582_d.func_177956_o() + 4), (double)(this.field_75582_d.func_177952_p() + this.field_75583_e)));
          this.field_75587_j = list.size();
      }
  
      private void func_75572_i()
      {
--        List<EntityVillager> list = this.field_75586_a.func_72872_a(EntityVillager.class, new AxisAlignedBB((double)(this.field_75582_d.func_177958_n() - this.field_75583_e), (double)(this.field_75582_d.func_177956_o() - 4), (double)(this.field_75582_d.func_177952_p() - this.field_75583_e), (double)(this.field_75582_d.func_177958_n() + this.field_75583_e), (double)(this.field_75582_d.func_177956_o() + 4), (double)(this.field_75582_d.func_177952_p() + this.field_75583_e)));
+-        List<EntityVillager> list = this.field_75586_a
+-                                    .func_72872_a(
+-                                        EntityVillager.class,
+-                                        new AxisAlignedBB(
+-                                            (double)(this.field_75582_d.func_177958_n() - this.field_75583_e),
+-                                            (double)(this.field_75582_d.func_177956_o() - 4),
+-                                            (double)(this.field_75582_d.func_177952_p() - this.field_75583_e),
+-                                            (double)(this.field_75582_d.func_177958_n() + this.field_75583_e),
+-                                            (double)(this.field_75582_d.func_177956_o() + 4),
+-                                            (double)(this.field_75582_d.func_177952_p() + this.field_75583_e)
+-                                        )
+-                                    );
 +        List<EntityVillager> list = this.field_75586_a.<EntityVillager>func_72872_a(EntityVillager.class, new AxisAlignedBB((double)(this.field_75582_d.func_177958_n() - this.field_75583_e), (double)(this.field_75582_d.func_177956_o() - 4), (double)(this.field_75582_d.func_177952_p() - this.field_75583_e), (double)(this.field_75582_d.func_177958_n() + this.field_75583_e), (double)(this.field_75582_d.func_177956_o() + 4), (double)(this.field_75582_d.func_177952_p() + this.field_75583_e)));
          this.field_75588_h = list.size();
  
          if (this.field_75588_h == 0)
-@@ -213,7 +215,7 @@
+@@ -237,7 +215,7 @@
  
              if (j > 256)
              {
@@ -60,7 +93,42 @@
              }
              else
              {
-@@ -295,7 +297,7 @@
+@@ -249,22 +227,7 @@
+                 BlockPos blockpos = villagedoorinfo1.func_179852_d();
+                 EnumFacing enumfacing = villagedoorinfo1.func_188567_j();
+ 
+-                if (this.field_75586_a
+-                        .func_180495_p(blockpos.func_177967_a(enumfacing, 1))
+-                        .func_177230_c()
+-                        .func_176205_b(this.field_75586_a, blockpos.func_177967_a(enumfacing, 1))
+-                        && this.field_75586_a
+-                        .func_180495_p(blockpos.func_177967_a(enumfacing, -1))
+-                        .func_177230_c()
+-                        .func_176205_b(this.field_75586_a, blockpos.func_177967_a(enumfacing, -1))
+-                        && this.field_75586_a
+-                        .func_180495_p(blockpos.func_177984_a().func_177967_a(enumfacing, 1))
+-                        .func_177230_c()
+-                        .func_176205_b(this.field_75586_a, blockpos.func_177984_a().func_177967_a(enumfacing, 1))
+-                        && this.field_75586_a
+-                        .func_180495_p(blockpos.func_177984_a().func_177967_a(enumfacing, -1))
+-                        .func_177230_c()
+-                        .func_176205_b(this.field_75586_a, blockpos.func_177984_a().func_177967_a(enumfacing, -1)))
++                if (this.field_75586_a.func_180495_p(blockpos.func_177967_a(enumfacing, 1)).func_177230_c().func_176205_b(this.field_75586_a, blockpos.func_177967_a(enumfacing, 1)) && this.field_75586_a.func_180495_p(blockpos.func_177967_a(enumfacing, -1)).func_177230_c().func_176205_b(this.field_75586_a, blockpos.func_177967_a(enumfacing, -1)) && this.field_75586_a.func_180495_p(blockpos.func_177984_a().func_177967_a(enumfacing, 1)).func_177230_c().func_176205_b(this.field_75586_a, blockpos.func_177984_a().func_177967_a(enumfacing, 1)) && this.field_75586_a.func_180495_p(blockpos.func_177984_a().func_177967_a(enumfacing, -1)).func_177230_c().func_176205_b(this.field_75586_a, blockpos.func_177984_a().func_177967_a(enumfacing, -1)))
+                 {
+                     villagedoorinfo = villagedoorinfo1;
+                     i = j;
+@@ -286,9 +249,7 @@
+         {
+             for (VillageDoorInfo villagedoorinfo : this.field_75584_b)
+             {
+-                if (villagedoorinfo.func_179852_d().func_177958_n() == p_179864_1_.func_177958_n()
+-                        && villagedoorinfo.func_179852_d().func_177952_p() == p_179864_1_.func_177952_p()
+-                        && Math.abs(villagedoorinfo.func_179852_d().func_177956_o() - p_179864_1_.func_177956_o()) <= 1)
++                if (villagedoorinfo.func_179852_d().func_177958_n() == p_179864_1_.func_177958_n() && villagedoorinfo.func_179852_d().func_177952_p() == p_179864_1_.func_177952_p() && Math.abs(villagedoorinfo.func_179852_d().func_177956_o() - p_179864_1_.func_177956_o()) <= 1)
+                 {
+                     return villagedoorinfo;
+                 }
+@@ -336,7 +297,7 @@
              Village.VillageAggressor village$villageaggressor1 = this.field_75589_i.get(i);
              double d1 = village$villageaggressor1.field_75592_a.func_70068_e(p_75571_1_);
  
@@ -69,7 +137,7 @@
              {
                  village$villageaggressor = village$villageaggressor1;
                  d0 = d1;
-@@ -310,17 +312,17 @@
+@@ -351,17 +312,17 @@
          double d0 = Double.MAX_VALUE;
          EntityPlayer entityplayer = null;
  
@@ -91,7 +159,7 @@
                      {
                          entityplayer = entityplayer1;
                          d0 = d1;
-@@ -362,6 +364,7 @@
+@@ -403,6 +364,7 @@
                  villagedoorinfo.func_75466_d();
              }
  
@@ -99,7 +167,18 @@
              if (!this.func_179860_f(villagedoorinfo.func_179852_d()) || Math.abs(this.field_75581_g - villagedoorinfo.func_75473_b()) > 1200)
              {
                  this.field_75585_c = this.field_75585_c.func_177973_b(villagedoorinfo.func_179852_d());
-@@ -415,23 +418,49 @@
+@@ -444,9 +406,7 @@
+         }
+         else
+         {
+-            this.field_75582_d = new BlockPos(
+-                this.field_75585_c.func_177958_n() / i, this.field_75585_c.func_177956_o() / i, this.field_75585_c.func_177952_p() / i
+-            );
++            this.field_75582_d = new BlockPos(this.field_75585_c.func_177958_n() / i, this.field_75585_c.func_177956_o() / i, this.field_75585_c.func_177952_p() / i);
+             int j = 0;
+ 
+             for (VillageDoorInfo villagedoorinfo : this.field_75584_b)
+@@ -458,23 +418,49 @@
          }
      }
  
@@ -155,7 +234,21 @@
      }
  
      public void func_82690_a(NBTTagCompound p_82690_1_)
-@@ -459,21 +488,17 @@
+@@ -492,12 +478,7 @@
+         for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+         {
+             NBTTagCompound nbttagcompound = nbttaglist.func_150305_b(i);
+-            VillageDoorInfo villagedoorinfo = new VillageDoorInfo(
+-                new BlockPos(nbttagcompound.func_74762_e("X"), nbttagcompound.func_74762_e("Y"), nbttagcompound.func_74762_e("Z")),
+-                nbttagcompound.func_74762_e("IDX"),
+-                nbttagcompound.func_74762_e("IDZ"),
+-                nbttagcompound.func_74762_e("TS")
+-            );
++            VillageDoorInfo villagedoorinfo = new VillageDoorInfo(new BlockPos(nbttagcompound.func_74762_e("X"), nbttagcompound.func_74762_e("Y"), nbttagcompound.func_74762_e("Z")), nbttagcompound.func_74762_e("IDX"), nbttagcompound.func_74762_e("IDZ"), nbttagcompound.func_74762_e("TS"));
+             this.field_75584_b.add(villagedoorinfo);
+         }
+ 
+@@ -507,21 +488,17 @@
          {
              NBTTagCompound nbttagcompound1 = nbttaglist1.func_150305_b(j);
  
@@ -182,7 +275,7 @@
      }
  
      public void func_82689_b(NBTTagCompound p_82689_1_)
-@@ -507,28 +532,26 @@
+@@ -555,28 +532,26 @@
          p_82689_1_.func_74782_a("Doors", nbttaglist);
          NBTTagList nbttaglist1 = new NBTTagList();
  
@@ -217,7 +310,7 @@
      }
  
      public void func_82692_h()
-@@ -543,9 +566,9 @@
+@@ -591,9 +566,9 @@
  
      public void func_82683_b(int p_82683_1_)
      {
@@ -229,7 +322,7 @@
          }
      }
  
-@@ -560,4 +583,31 @@
+@@ -608,4 +583,31 @@
              this.field_75590_b = p_i1674_3_;
          }
      }

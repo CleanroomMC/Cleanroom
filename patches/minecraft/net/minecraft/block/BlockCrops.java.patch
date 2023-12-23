@@ -1,6 +1,6 @@
 --- before/net/minecraft/block/BlockCrops.java
 +++ after/net/minecraft/block/BlockCrops.java
-@@ -1,6 +1,7 @@
+@@ -1,9 +1,11 @@
  package net.minecraft.block;
  
  import java.util.Random;
@@ -8,25 +8,51 @@
  import net.minecraft.block.properties.PropertyInteger;
  import net.minecraft.block.state.BlockStateContainer;
  import net.minecraft.block.state.IBlockState;
-@@ -22,7 +23,7 @@
++import net.minecraft.creativetab.CreativeTabs;
+ import net.minecraft.init.Blocks;
+ import net.minecraft.init.Items;
+ import net.minecraft.item.Item;
+@@ -17,35 +19,23 @@
+ public class BlockCrops extends BlockBush implements IGrowable
+ {
+     public static final PropertyInteger field_176488_a = PropertyInteger.func_177719_a("age", 0, 7);
+-    private static final AxisAlignedBB[] field_185530_a = new AxisAlignedBB[]
+-        {
+-            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.125, 1.0),
+-            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.25, 1.0),
+-            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.375, 1.0),
+-            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.5, 1.0),
+-            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.625, 1.0),
+-            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.75, 1.0),
+-            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.875, 1.0),
+-            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
+-        };
++    private static final AxisAlignedBB[] field_185530_a = new AxisAlignedBB[] {new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.125D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.25D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.375D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.75D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.875D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D)};
  
      protected BlockCrops()
      {
 -        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(this.func_185524_e(), 0));
 +        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(this.func_185524_e(), Integer.valueOf(0)));
          this.func_149675_a(true);
-         this.func_149647_a((CreativeTabs)null);
+-        this.func_149647_a(null);
++        this.func_149647_a((CreativeTabs)null);
          this.func_149711_c(0.0F);
-@@ -32,7 +33,7 @@
+         this.func_149672_a(SoundType.field_185850_c);
+         this.func_149649_H();
+     }
  
+-    @Override
      public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
      {
 -        return field_185530_a[p_185496_1_.func_177229_b(this.func_185524_e())];
 +        return field_185530_a[((Integer)p_185496_1_.func_177229_b(this.func_185524_e())).intValue()];
      }
  
+-    @Override
      protected boolean func_185514_i(IBlockState p_185514_1_)
-@@ -52,23 +53,24 @@
+     {
+         return p_185514_1_.func_177230_c() == Blocks.field_150458_ak;
+@@ -63,24 +53,24 @@
  
      protected int func_185527_x(IBlockState p_185527_1_)
      {
@@ -46,6 +72,7 @@
 +        return ((Integer)p_185525_1_.func_177229_b(this.func_185524_e())).intValue() >= this.func_185526_g();
      }
  
+-    @Override
      public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
      {
          super.func_180650_b(p_180650_1_, p_180650_2_, p_180650_3_, p_180650_4_);
@@ -54,7 +81,7 @@
          if (p_180650_1_.func_175671_l(p_180650_2_.func_177984_a()) >= 9)
          {
              int i = this.func_185527_x(p_180650_3_);
-@@ -77,9 +79,10 @@
+@@ -89,9 +79,10 @@
              {
                  float f = func_180672_a(this, p_180650_1_, p_180650_2_);
  
@@ -66,7 +93,7 @@
                  }
              }
          }
-@@ -115,11 +118,11 @@
+@@ -127,11 +118,11 @@
                  float f1 = 0.0F;
                  IBlockState iblockstate = p_180672_1_.func_180495_p(blockpos.func_177982_a(i, 0, j));
  
@@ -80,21 +107,46 @@
                      {
                          f1 = 3.0F;
                      }
-@@ -160,7 +163,8 @@
+@@ -151,8 +142,7 @@
+         BlockPos blockpos3 = p_180672_2_.func_177976_e();
+         BlockPos blockpos4 = p_180672_2_.func_177974_f();
+         boolean flag = p_180672_0_ == p_180672_1_.func_180495_p(blockpos3).func_177230_c() || p_180672_0_ == p_180672_1_.func_180495_p(blockpos4).func_177230_c();
+-        boolean flag1 = p_180672_0_ == p_180672_1_.func_180495_p(blockpos1).func_177230_c()
+-                        || p_180672_0_ == p_180672_1_.func_180495_p(blockpos2).func_177230_c();
++        boolean flag1 = p_180672_0_ == p_180672_1_.func_180495_p(blockpos1).func_177230_c() || p_180672_0_ == p_180672_1_.func_180495_p(blockpos2).func_177230_c();
  
+         if (flag && flag1)
+         {
+@@ -160,10 +150,7 @@
+         }
+         else
+         {
+-            boolean flag2 = p_180672_0_ == p_180672_1_.func_180495_p(blockpos3.func_177978_c()).func_177230_c()
+-                            || p_180672_0_ == p_180672_1_.func_180495_p(blockpos4.func_177978_c()).func_177230_c()
+-                            || p_180672_0_ == p_180672_1_.func_180495_p(blockpos4.func_177968_d()).func_177230_c()
+-                            || p_180672_0_ == p_180672_1_.func_180495_p(blockpos3.func_177968_d()).func_177230_c();
++            boolean flag2 = p_180672_0_ == p_180672_1_.func_180495_p(blockpos3.func_177978_c()).func_177230_c() || p_180672_0_ == p_180672_1_.func_180495_p(blockpos4.func_177978_c()).func_177230_c() || p_180672_0_ == p_180672_1_.func_180495_p(blockpos4.func_177968_d()).func_177230_c() || p_180672_0_ == p_180672_1_.func_180495_p(blockpos3.func_177968_d()).func_177230_c();
+ 
+             if (flag2)
+             {
+@@ -174,11 +161,10 @@
+         return f;
+     }
+ 
+-    @Override
      public boolean func_180671_f(World p_180671_1_, BlockPos p_180671_2_, IBlockState p_180671_3_)
      {
--        return (p_180671_1_.func_175699_k(p_180671_2_) >= 8 || p_180671_1_.func_175678_i(p_180671_2_)) && this.func_185514_i(p_180671_1_.func_180495_p(p_180671_2_.func_177977_b()));
+-        return (p_180671_1_.func_175699_k(p_180671_2_) >= 8 || p_180671_1_.func_175678_i(p_180671_2_))
+-               && this.func_185514_i(p_180671_1_.func_180495_p(p_180671_2_.func_177977_b()));
 +        IBlockState soil = p_180671_1_.func_180495_p(p_180671_2_.func_177977_b());
 +        return (p_180671_1_.func_175699_k(p_180671_2_) >= 8 || p_180671_1_.func_175678_i(p_180671_2_)) && soil.func_177230_c().canSustainPlant(soil, p_180671_1_, p_180671_2_.func_177977_b(), net.minecraft.util.EnumFacing.UP, this);
      }
  
      protected Item func_149866_i()
-@@ -173,11 +177,32 @@
-         return Items.field_151015_O;
+@@ -192,11 +178,31 @@
      }
  
-+    @Override
+     @Override
 +    public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, net.minecraft.world.IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
 +    {
 +        super.getDrops(drops, world, pos, state, 0);
@@ -125,8 +177,53 @@
          {
              int i = this.func_185527_x(p_180653_3_);
  
-@@ -233,6 +258,6 @@
+@@ -215,51 +221,43 @@
+         }
+     }
  
+-    @Override
+     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
+     {
+         return this.func_185525_y(p_180660_1_) ? this.func_149865_P() : this.func_149866_i();
+     }
+ 
+-    @Override
+     public ItemStack func_185473_a(World p_185473_1_, BlockPos p_185473_2_, IBlockState p_185473_3_)
+     {
+         return new ItemStack(this.func_149866_i());
+     }
+ 
+-    @Override
+     public boolean func_176473_a(World p_176473_1_, BlockPos p_176473_2_, IBlockState p_176473_3_, boolean p_176473_4_)
+     {
+         return !this.func_185525_y(p_176473_3_);
+     }
+ 
+-    @Override
+     public boolean func_180670_a(World p_180670_1_, Random p_180670_2_, BlockPos p_180670_3_, IBlockState p_180670_4_)
+     {
+         return true;
+     }
+ 
+-    @Override
+     public void func_176474_b(World p_176474_1_, Random p_176474_2_, BlockPos p_176474_3_, IBlockState p_176474_4_)
+     {
+         this.func_176487_g(p_176474_1_, p_176474_3_, p_176474_4_);
+     }
+ 
+-    @Override
+     public IBlockState func_176203_a(int p_176203_1_)
+     {
+         return this.func_185528_e(p_176203_1_);
+     }
+ 
+-    @Override
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+         return this.func_185527_x(p_176201_1_);
+     }
+ 
+-    @Override
      protected BlockStateContainer func_180661_e()
      {
 -        return new BlockStateContainer(this, field_176488_a);

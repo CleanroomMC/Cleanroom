@@ -9,7 +9,17 @@
      private int field_94110_c;
      public double field_94111_a;
      public double field_94109_b;
-@@ -49,7 +49,7 @@
+@@ -41,20 +41,17 @@
+         EntityMinecart.func_189669_a(p_189671_0_, EntityMinecartFurnace.class);
+     }
+ 
+-    @Override
+     public EntityMinecart.Type func_184264_v()
+     {
+         return EntityMinecart.Type.FURNACE;
+     }
+ 
+-    @Override
      protected void func_70088_a()
      {
          super.func_70088_a();
@@ -17,30 +27,110 @@
 +        this.field_70180_af.func_187214_a(field_184275_c, Boolean.valueOf(false));
      }
  
+-    @Override
      public void func_70071_h_()
-@@ -125,17 +125,17 @@
+     {
+         super.func_70071_h_();
+@@ -66,25 +63,23 @@
+ 
+         if (this.field_94110_c <= 0)
+         {
+-            this.field_94111_a = 0.0;
+-            this.field_94109_b = 0.0;
++            this.field_94111_a = 0.0D;
++            this.field_94109_b = 0.0D;
+         }
+ 
+         this.func_94107_f(this.field_94110_c > 0);
+ 
+         if (this.func_94108_c() && this.field_70146_Z.nextInt(4) == 0)
+         {
+-            this.field_70170_p.func_175688_a(EnumParticleTypes.SMOKE_LARGE, this.field_70165_t, this.field_70163_u + 0.8, this.field_70161_v, 0.0, 0.0, 0.0);
++            this.field_70170_p.func_175688_a(EnumParticleTypes.SMOKE_LARGE, this.field_70165_t, this.field_70163_u + 0.8D, this.field_70161_v, 0.0D, 0.0D, 0.0D);
+         }
+     }
+ 
+-    @Override
+     protected double func_174898_m()
+     {
+-        return 0.2;
++        return 0.2D;
+     }
+ 
+-    @Override
+     public void func_94095_a(DamageSource p_94095_1_)
+     {
+         super.func_94095_a(p_94095_1_);
+@@ -95,22 +90,21 @@
+         }
+     }
+ 
+-    @Override
+     protected void func_180460_a(BlockPos p_180460_1_, IBlockState p_180460_2_)
+     {
+         super.func_180460_a(p_180460_1_, p_180460_2_);
+         double d0 = this.field_94111_a * this.field_94111_a + this.field_94109_b * this.field_94109_b;
+ 
+-        if (d0 > 1.0E-4 && this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y > 0.001)
++        if (d0 > 1.0E-4D && this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y > 0.001D)
+         {
+             d0 = (double)MathHelper.func_76133_a(d0);
              this.field_94111_a /= d0;
              this.field_94109_b /= d0;
-             double d1 = 1.0D;
--            this.field_70159_w *= (double)0.8F;
+ 
+-            if (this.field_94111_a * this.field_70159_w + this.field_94109_b * this.field_70179_y < 0.0)
++            if (this.field_94111_a * this.field_70159_w + this.field_94109_b * this.field_70179_y < 0.0D)
+             {
+-                this.field_94111_a = 0.0;
+-                this.field_94109_b = 0.0;
++                this.field_94111_a = 0.0D;
++                this.field_94109_b = 0.0D;
+             }
+             else
+             {
+@@ -121,38 +115,38 @@
+         }
+     }
+ 
+-    @Override
+     protected void func_94101_h()
+     {
+         double d0 = this.field_94111_a * this.field_94111_a + this.field_94109_b * this.field_94109_b;
+ 
+-        if (d0 > 1.0E-4)
++        if (d0 > 1.0E-4D)
+         {
+             d0 = (double)MathHelper.func_76133_a(d0);
+             this.field_94111_a /= d0;
+             this.field_94109_b /= d0;
+-            double d1 = 1.0;
+-            this.field_70159_w *= 0.8F;
+-            this.field_70181_x *= 0.0;
+-            this.field_70179_y *= 0.8F;
+-            this.field_70159_w += this.field_94111_a * 1.0;
+-            this.field_70179_y += this.field_94109_b * 1.0;
++            double d1 = 1.0D;
 +            this.field_70159_w *= 0.800000011920929D;
-             this.field_70181_x *= 0.0D;
--            this.field_70179_y *= (double)0.8F;
++            this.field_70181_x *= 0.0D;
 +            this.field_70179_y *= 0.800000011920929D;
-             this.field_70159_w += this.field_94111_a * 1.0D;
-             this.field_70179_y += this.field_94109_b * 1.0D;
++            this.field_70159_w += this.field_94111_a * 1.0D;
++            this.field_70179_y += this.field_94109_b * 1.0D;
          }
          else
          {
--            this.field_70159_w *= (double)0.98F;
+-            this.field_70159_w *= 0.98F;
+-            this.field_70181_x *= 0.0;
+-            this.field_70179_y *= 0.98F;
 +            this.field_70159_w *= 0.9800000190734863D;
-             this.field_70181_x *= 0.0D;
--            this.field_70179_y *= (double)0.98F;
++            this.field_70181_x *= 0.0D;
 +            this.field_70179_y *= 0.9800000190734863D;
          }
  
          super.func_94101_h();
-@@ -145,6 +145,8 @@
+     }
+ 
+-    @Override
+     public boolean func_184230_a(EntityPlayer p_184230_1_, EnumHand p_184230_2_)
      {
          ItemStack itemstack = p_184230_1_.func_184586_b(p_184230_2_);
  
@@ -49,7 +139,23 @@
          if (itemstack.func_77973_b() == Items.field_151044_h && this.field_94110_c + 3600 <= 32000)
          {
              if (!p_184230_1_.field_71075_bZ.field_75098_d)
-@@ -178,12 +180,12 @@
+@@ -168,7 +162,6 @@
+         return true;
+     }
+ 
+-    @Override
+     protected void func_70014_b(NBTTagCompound p_70014_1_)
+     {
+         super.func_70014_b(p_70014_1_);
+@@ -177,7 +170,6 @@
+         p_70014_1_.func_74777_a("Fuel", (short)this.field_94110_c);
+     }
+ 
+-    @Override
+     protected void func_70037_a(NBTTagCompound p_70037_1_)
+     {
+         super.func_70037_a(p_70037_1_);
+@@ -188,19 +180,16 @@
  
      protected boolean func_94108_c()
      {
@@ -63,4 +169,12 @@
 +        this.field_70180_af.func_187227_b(field_184275_c, Boolean.valueOf(p_94107_1_));
      }
  
+-    @Override
      public IBlockState func_180457_u()
+     {
+-        return (this.func_94108_c() ? Blocks.field_150470_am : Blocks.field_150460_al)
+-               .func_176223_P()
+-               .func_177226_a(BlockFurnace.field_176447_a, EnumFacing.NORTH);
++        return (this.func_94108_c() ? Blocks.field_150470_am : Blocks.field_150460_al).func_176223_P().func_177226_a(BlockFurnace.field_176447_a, EnumFacing.NORTH);
+     }
+ }

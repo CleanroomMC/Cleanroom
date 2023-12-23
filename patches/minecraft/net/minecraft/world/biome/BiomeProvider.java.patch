@@ -1,11 +1,13 @@
 --- before/net/minecraft/world/biome/BiomeProvider.java
 +++ after/net/minecraft/world/biome/BiomeProvider.java
-@@ -20,11 +20,14 @@
+@@ -20,13 +20,14 @@
      private ChunkGeneratorSettings field_190945_a;
      private GenLayer field_76944_d;
      private GenLayer field_76945_e;
 -    private final BiomeCache field_76942_f = new BiomeCache(this);
--    private final List<Biome> field_76943_g = Lists.newArrayList(Biomes.field_76767_f, Biomes.field_76772_c, Biomes.field_76768_g, Biomes.field_76784_u, Biomes.field_76785_t, Biomes.field_76782_w, Biomes.field_76792_x);
+-    private final List<Biome> field_76943_g = Lists.newArrayList(
+-                Biomes.field_76767_f, Biomes.field_76772_c, Biomes.field_76768_g, Biomes.field_76784_u, Biomes.field_76785_t, Biomes.field_76782_w, Biomes.field_76792_x
+-            );
 +    private final BiomeCache field_76942_f;
 +    private final List<Biome> field_76943_g;
 +    public static List<Biome> allowedBiomes = Lists.newArrayList(Biomes.field_76767_f, Biomes.field_76772_c, Biomes.field_76768_g, Biomes.field_76784_u, Biomes.field_76785_t, Biomes.field_76782_w, Biomes.field_76792_x);
@@ -17,7 +19,7 @@
      }
  
      private BiomeProvider(long p_i45744_1_, WorldType p_i45744_3_, String p_i45744_4_)
-@@ -37,6 +40,7 @@
+@@ -39,6 +40,7 @@
          }
  
          GenLayer[] agenlayer = GenLayer.func_180781_a(p_i45744_1_, p_i45744_3_, this.field_190945_a);
@@ -25,7 +27,16 @@
          this.field_76944_d = agenlayer[0];
          this.field_76945_e = agenlayer[1];
      }
-@@ -90,11 +94,11 @@
+@@ -55,7 +57,7 @@
+ 
+     public Biome func_180631_a(BlockPos p_180631_1_)
+     {
+-        return this.func_180300_a(p_180631_1_, null);
++        return this.func_180300_a(p_180631_1_, (Biome)null);
+     }
+ 
+     public Biome func_180300_a(BlockPos p_180300_1_, Biome p_180300_2_)
+@@ -92,11 +94,11 @@
          {
              CrashReport crashreport = CrashReport.func_85055_a(throwable, "Invalid Biome id");
              CrashReportCategory crashreportcategory = crashreport.func_85058_a("RawBiomeBlock");
@@ -42,7 +53,7 @@
              throw new ReportedException(crashreport);
          }
      }
-@@ -162,9 +166,9 @@
+@@ -164,9 +166,9 @@
              CrashReport crashreport = CrashReport.func_85055_a(throwable, "Invalid Biome id");
              CrashReportCategory crashreportcategory = crashreport.func_85058_a("Layer");
              crashreportcategory.func_71507_a("Layer", this.field_76944_d.toString());
@@ -55,7 +66,7 @@
              crashreportcategory.func_71507_a("allowed", p_76940_4_);
              throw new ReportedException(crashreport);
          }
-@@ -203,6 +207,13 @@
+@@ -205,6 +207,13 @@
      public void func_76938_b()
      {
          this.field_76942_f.func_76838_a();

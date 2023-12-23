@@ -1,15 +1,5 @@
 --- before/net/minecraft/item/ItemStack.java
 +++ after/net/minecraft/item/ItemStack.java
-@@ -5,8 +5,8 @@
- import com.google.common.collect.Multimap;
- import java.text.DecimalFormat;
- import java.util.List;
--import java.util.Map;
- import java.util.Random;
-+import java.util.Map.Entry;
- import javax.annotation.Nullable;
- import net.minecraft.advancements.CriteriaTriggers;
- import net.minecraft.block.Block;
 @@ -50,7 +50,7 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
@@ -68,16 +58,36 @@
      }
  
      public boolean func_190926_b()
-@@ -135,7 +144,7 @@
+@@ -135,17 +144,20 @@
          {
              return true;
          }
--        else if (this.field_151002_e != null && this.field_151002_e != Item.func_150898_a(Blocks.field_150350_a))
+-        else if (this.field_151002_e == null || this.field_151002_e == Item.func_150898_a(Blocks.field_150350_a))
+-        {
+-            return true;
+-        }
+-        else if (this.field_77994_a <= 0)
+-        {
+-            return true;
 +        else if (this.getItemRaw() != null && this.getItemRaw() != Items.field_190931_a)
++        {
++            if (this.field_77994_a <= 0)
++            {
++                return true;
++            }
++            else
++            {
++                return this.field_77991_e < -32768 || this.field_77991_e > 65535;
++            }
+         }
+         else
          {
-             if (this.field_77994_a <= 0)
-             {
-@@ -169,11 +178,12 @@
+-            return this.field_77991_e < -32768 || this.field_77991_e > 65535;
++            return true;
+         }
+     }
+ 
+@@ -166,22 +178,13 @@
  
      public Item func_77973_b()
      {
@@ -85,13 +95,26 @@
 +        return this.field_190928_g || this.delegate == null ? Items.field_190931_a : this.delegate.get();
      }
  
-     public EnumActionResult func_179546_a(EntityPlayer p_179546_1_, World p_179546_2_, BlockPos p_179546_3_, EnumHand p_179546_4_, EnumFacing p_179546_5_, float p_179546_6_, float p_179546_7_, float p_179546_8_)
+-    public EnumActionResult func_179546_a(
+-        EntityPlayer p_179546_1_,
+-        World p_179546_2_,
+-        BlockPos p_179546_3_,
+-        EnumHand p_179546_4_,
+-        EnumFacing p_179546_5_,
+-        float p_179546_6_,
+-        float p_179546_7_,
+-        float p_179546_8_
+-    )
++    public EnumActionResult func_179546_a(EntityPlayer p_179546_1_, World p_179546_2_, BlockPos p_179546_3_, EnumHand p_179546_4_, EnumFacing p_179546_5_, float p_179546_6_, float p_179546_7_, float p_179546_8_)
      {
+-        EnumActionResult enumactionresult = this.func_77973_b()
+-                                            .func_180614_a(p_179546_1_, p_179546_2_, p_179546_3_, p_179546_4_, p_179546_5_, p_179546_6_, p_179546_7_, p_179546_8_);
 +        if (!p_179546_2_.field_72995_K) return net.minecraftforge.common.ForgeHooks.onPlaceItemIntoWorld(this, p_179546_1_, p_179546_2_, p_179546_3_, p_179546_5_, p_179546_6_, p_179546_7_, p_179546_8_, p_179546_4_);
-         EnumActionResult enumactionresult = this.func_77973_b().func_180614_a(p_179546_1_, p_179546_2_, p_179546_3_, p_179546_4_, p_179546_5_, p_179546_6_, p_179546_7_, p_179546_8_);
++        EnumActionResult enumactionresult = this.func_77973_b().func_180614_a(p_179546_1_, p_179546_2_, p_179546_3_, p_179546_4_, p_179546_5_, p_179546_6_, p_179546_7_, p_179546_8_);
  
          if (enumactionresult == EnumActionResult.SUCCESS)
-@@ -184,6 +194,19 @@
+         {
+@@ -191,6 +194,19 @@
          return enumactionresult;
      }
  
@@ -111,7 +134,7 @@
      public float func_150997_a(IBlockState p_150997_1_)
      {
          return this.func_77973_b().func_150893_a(this, p_150997_1_);
-@@ -211,12 +234,18 @@
+@@ -218,12 +234,18 @@
              p_77955_1_.func_74782_a("tag", this.field_77990_d);
          }
  
@@ -131,7 +154,7 @@
      }
  
      public boolean func_77985_e()
-@@ -230,7 +259,7 @@
+@@ -237,7 +259,7 @@
          {
              return false;
          }
@@ -140,7 +163,7 @@
          {
              return false;
          }
-@@ -247,32 +276,27 @@
+@@ -254,32 +276,27 @@
  
      public boolean func_77951_h()
      {
@@ -178,7 +201,7 @@
      }
  
      public boolean func_96631_a(int p_96631_1_, Random p_96631_2_, @Nullable EntityPlayerMP p_96631_3_)
-@@ -309,8 +333,8 @@
+@@ -316,8 +333,8 @@
                  CriteriaTriggers.field_193132_s.func_193158_a(p_96631_3_, this, this.field_77991_e + p_96631_1_);
              }
  
@@ -189,7 +212,7 @@
          }
      }
  
-@@ -359,7 +383,7 @@
+@@ -366,7 +383,7 @@
  
      public boolean func_150998_b(IBlockState p_150998_1_)
      {
@@ -198,7 +221,7 @@
      }
  
      public boolean func_111282_a(EntityPlayer p_111282_1_, EntityLivingBase p_111282_2_, EnumHand p_111282_3_)
-@@ -369,7 +393,7 @@
+@@ -376,7 +393,7 @@
  
      public ItemStack func_77946_l()
      {
@@ -207,16 +230,36 @@
          itemstack.func_190915_d(this.func_190921_D());
  
          if (this.field_77990_d != null)
-@@ -394,7 +418,7 @@
-             }
-             else
-             {
--                return p_77970_0_.field_77990_d == null || p_77970_0_.field_77990_d.equals(p_77970_1_.field_77990_d);
+@@ -393,17 +410,20 @@
+         {
+             return true;
+         }
+-        else if (p_77970_0_.func_190926_b() || p_77970_1_.func_190926_b())
+-        {
+-            return false;
+-        }
+-        else if (p_77970_0_.field_77990_d == null && p_77970_1_.field_77990_d != null)
+-        {
+-            return false;
++        else if (!p_77970_0_.func_190926_b() && !p_77970_1_.func_190926_b())
++        {
++            if (p_77970_0_.field_77990_d == null && p_77970_1_.field_77990_d != null)
++            {
++                return false;
++            }
++            else
++            {
 +                return (p_77970_0_.field_77990_d == null || p_77970_0_.field_77990_d.equals(p_77970_1_.field_77990_d)) && p_77970_0_.areCapsCompatible(p_77970_1_);
-             }
++            }
          }
          else
-@@ -435,7 +459,7 @@
+         {
+-            return p_77970_0_.field_77990_d == null || p_77970_0_.field_77990_d.equals(p_77970_1_.field_77990_d);
++            return false;
+         }
+     }
+ 
+@@ -439,7 +459,7 @@
          }
          else
          {
@@ -225,7 +268,15 @@
          }
      }
  
-@@ -634,7 +658,7 @@
+@@ -489,7 +509,6 @@
+         return this.func_77973_b().func_77667_c(this);
+     }
+ 
+-    @Override
+     public String toString()
+     {
+         return this.field_77994_a + "x" + this.func_77973_b().func_77658_a() + "@" + this.field_77991_e;
+@@ -639,7 +658,7 @@
      @SideOnly(Side.CLIENT)
      public List<String> func_82840_a(@Nullable EntityPlayer p_82840_1_, ITooltipFlag p_82840_2_)
      {
@@ -234,16 +285,7 @@
          String s = this.func_82833_r();
  
          if (this.func_82837_s())
-@@ -743,7 +767,7 @@
-                 list.add("");
-                 list.add(I18n.func_74838_a("item.modifiers." + entityequipmentslot.func_188450_d()));
- 
--                for (Map.Entry<String, AttributeModifier> entry : multimap.entries())
-+                for (Entry<String, AttributeModifier> entry : multimap.entries())
-                 {
-                     AttributeModifier attributemodifier = entry.getValue();
-                     double d0 = attributemodifier.func_111164_d();
-@@ -753,8 +777,8 @@
+@@ -758,8 +777,8 @@
                      {
                          if (attributemodifier.func_111167_a() == Item.field_111210_e)
                          {
@@ -254,16 +296,63 @@
                              flag = true;
                          }
                          else if (attributemodifier.func_111167_a() == Item.field_185050_h)
-@@ -785,7 +809,7 @@
+@@ -777,44 +796,21 @@
                      }
-                     else if (d0 < 0.0D)
+                     else
                      {
--                        d1 *= -1.0D;
+-                        d1 = d0 * 100.0;
++                        d1 = d0 * 100.0D;
+                     }
+ 
+                     if (flag)
+                     {
+-                        list.add(
+-                            " "
+-                            + I18n.func_74837_a(
+-                                "attribute.modifier.equals." + attributemodifier.func_111169_c(),
+-                                field_111284_a.format(d1),
+-                                I18n.func_74838_a("attribute.name." + (String)entry.getKey())
+-                            )
+-                        );
+-                    }
+-                    else if (d0 > 0.0)
+-                    {
+-                        list.add(
+-                            TextFormatting.BLUE
+-                            + " "
+-                            + I18n.func_74837_a(
+-                                "attribute.modifier.plus." + attributemodifier.func_111169_c(),
+-                                field_111284_a.format(d1),
+-                                I18n.func_74838_a("attribute.name." + (String)entry.getKey())
+-                            )
+-                        );
+-                    }
+-                    else if (d0 < 0.0)
+-                    {
+-                        d1 *= -1.0;
+-                        list.add(
+-                            TextFormatting.RED
+-                            + " "
+-                            + I18n.func_74837_a(
+-                                "attribute.modifier.take." + attributemodifier.func_111169_c(),
+-                                field_111284_a.format(d1),
+-                                I18n.func_74838_a("attribute.name." + (String)entry.getKey())
+-                            )
+-                        );
++                        list.add(" " + I18n.func_74837_a("attribute.modifier.equals." + attributemodifier.func_111169_c(), field_111284_a.format(d1), I18n.func_74838_a("attribute.name." + (String)entry.getKey())));
++                    }
++                    else if (d0 > 0.0D)
++                    {
++                        list.add(TextFormatting.BLUE + " " + I18n.func_74837_a("attribute.modifier.plus." + attributemodifier.func_111169_c(), field_111284_a.format(d1), I18n.func_74838_a("attribute.name." + (String)entry.getKey())));
++                    }
++                    else if (d0 < 0.0D)
++                    {
 +                        d1 = d1 * -1.0D;
-                         list.add(TextFormatting.RED + " " + I18n.func_74837_a("attribute.modifier.take." + attributemodifier.func_111169_c(), field_111284_a.format(d1), I18n.func_74838_a("attribute.name." + (String)entry.getKey())));
++                        list.add(TextFormatting.RED + " " + I18n.func_74837_a("attribute.modifier.take." + attributemodifier.func_111169_c(), field_111284_a.format(d1), I18n.func_74838_a("attribute.name." + (String)entry.getKey())));
                      }
                  }
-@@ -854,7 +878,7 @@
+             }
+@@ -882,7 +878,7 @@
                  list.add(I18n.func_74837_a("item.durability", this.func_77958_k() - this.func_77952_i(), this.func_77958_k()));
              }
  
@@ -272,7 +361,7 @@
  
              if (this.func_77942_o())
              {
-@@ -862,6 +886,7 @@
+@@ -890,6 +886,7 @@
              }
          }
  
@@ -280,7 +369,7 @@
          return list;
      }
  
-@@ -871,6 +896,7 @@
+@@ -899,6 +896,7 @@
          return this.func_77973_b().func_77636_d(this);
      }
  
@@ -288,7 +377,7 @@
      public EnumRarity func_77953_t()
      {
          return this.func_77973_b().func_77613_e(this);
-@@ -971,7 +997,7 @@
+@@ -999,7 +997,7 @@
  
          if (this.func_77942_o() && this.field_77990_d.func_150297_b("AttributeModifiers", 9))
          {
@@ -297,7 +386,19 @@
              NBTTagList nbttaglist = this.field_77990_d.func_150295_c("AttributeModifiers", 10);
  
              for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
-@@ -987,7 +1013,7 @@
+@@ -1007,10 +1005,7 @@
+                 NBTTagCompound nbttagcompound = nbttaglist.func_150305_b(i);
+                 AttributeModifier attributemodifier = SharedMonsterAttributes.func_111259_a(nbttagcompound);
+ 
+-                if (attributemodifier != null
+-                        && (!nbttagcompound.func_150297_b("Slot", 8) || nbttagcompound.func_74779_i("Slot").equals(p_111283_1_.func_188450_d()))
+-                        && attributemodifier.func_111167_a().getLeastSignificantBits() != 0L
+-                        && attributemodifier.func_111167_a().getMostSignificantBits() != 0L)
++                if (attributemodifier != null && (!nbttagcompound.func_150297_b("Slot", 8) || nbttagcompound.func_74779_i("Slot").equals(p_111283_1_.func_188450_d())) && attributemodifier.func_111167_a().getLeastSignificantBits() != 0L && attributemodifier.func_111167_a().getMostSignificantBits() != 0L)
+                 {
+                     multimap.put(nbttagcompound.func_74779_i("AttributeName"), attributemodifier);
+                 }
+@@ -1018,7 +1013,7 @@
          }
          else
          {
@@ -306,7 +407,7 @@
          }
  
          return multimap;
-@@ -1023,7 +1049,7 @@
+@@ -1054,16 +1049,16 @@
  
          if (this.func_82837_s())
          {
@@ -314,8 +415,10 @@
 +            textcomponentstring.func_150256_b().func_150217_b(Boolean.valueOf(true));
          }
  
-         ITextComponent itextcomponent = (new TextComponentString("[")).func_150257_a(textcomponentstring).func_150258_a("]");
-@@ -1032,7 +1058,7 @@
+-        ITextComponent itextcomponent = new TextComponentString("[").func_150257_a(textcomponentstring).func_150258_a("]");
++        ITextComponent itextcomponent = (new TextComponentString("[")).func_150257_a(textcomponentstring).func_150258_a("]");
+ 
+         if (!this.field_190928_g)
          {
              NBTTagCompound nbttagcompound = this.func_77955_b(new NBTTagCompound());
              itextcomponent.func_150256_b().func_150209_a(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new TextComponentString(nbttagcompound.toString())));
@@ -324,7 +427,7 @@
          }
  
          return itextcomponent;
-@@ -1129,5 +1155,129 @@
+@@ -1160,5 +1155,129 @@
      public void func_190918_g(int p_190918_1_)
      {
          this.func_190917_f(-p_190918_1_);

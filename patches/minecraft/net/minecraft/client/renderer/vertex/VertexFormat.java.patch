@@ -61,7 +61,7 @@
              return this;
          }
      }
-@@ -101,7 +109,7 @@
+@@ -101,17 +109,16 @@
  
      public int func_177344_b(int p_177344_1_)
      {
@@ -69,8 +69,10 @@
 +        return ((Integer)this.field_177351_f.get(p_177344_1_)).intValue();
      }
  
+-    @Override
      public String toString()
-@@ -110,7 +118,7 @@
+     {
+         String s = "format: " + this.field_177355_b.size() + " elements: ";
  
          for (int i = 0; i < this.field_177355_b.size(); ++i)
          {
@@ -79,7 +81,7 @@
  
              if (i != this.field_177355_b.size() - 1)
              {
-@@ -165,7 +173,7 @@
+@@ -166,10 +173,9 @@
  
      public int func_181720_d(int p_181720_1_)
      {
@@ -87,9 +89,15 @@
 +        return ((Integer)this.field_177356_c.get(p_181720_1_)).intValue();
      }
  
+-    @Override
      public boolean equals(Object p_equals_1_)
-@@ -199,8 +207,11 @@
+     {
+         if (this == p_equals_1_)
+@@ -199,11 +205,13 @@
+         }
+     }
  
+-    @Override
      public int hashCode()
      {
 +        if (this.hashCode != 0) return this.hashCode;

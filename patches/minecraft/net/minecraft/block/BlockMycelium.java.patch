@@ -8,7 +8,7 @@
  import net.minecraft.block.properties.PropertyBool;
  import net.minecraft.block.state.BlockStateContainer;
  import net.minecraft.block.state.IBlockState;
-@@ -23,7 +24,7 @@
+@@ -23,24 +24,23 @@
      protected BlockMycelium()
      {
          super(Material.field_151577_b, MapColor.field_151678_z);
@@ -17,7 +17,8 @@
          this.func_149675_a(true);
          this.func_149647_a(CreativeTabs.field_78030_b);
      }
-@@ -31,14 +32,15 @@
+ 
+-    @Override
      public IBlockState func_176221_a(IBlockState p_176221_1_, IBlockAccess p_176221_2_, BlockPos p_176221_3_)
      {
          Block block = p_176221_2_.func_180495_p(p_176221_3_.func_177984_a()).func_177230_c();
@@ -25,6 +26,7 @@
 +        return p_176221_1_.func_177226_a(field_176384_a, Boolean.valueOf(block == Blocks.field_150433_aE || block == Blocks.field_150431_aC));
      }
  
+-    @Override
      public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
      {
          if (!p_180650_1_.field_72995_K)
@@ -35,17 +37,57 @@
              {
                  p_180650_1_.func_175656_a(p_180650_2_, Blocks.field_150346_d.func_176223_P().func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.DIRT));
              }
-@@ -52,7 +54,7 @@
+@@ -54,10 +54,7 @@
                          IBlockState iblockstate = p_180650_1_.func_180495_p(blockpos);
                          IBlockState iblockstate1 = p_180650_1_.func_180495_p(blockpos.func_177984_a());
  
--                        if (iblockstate.func_177230_c() == Blocks.field_150346_d && iblockstate.func_177229_b(BlockDirt.field_176386_a) == BlockDirt.DirtType.DIRT && p_180650_1_.func_175671_l(blockpos.func_177984_a()) >= 4 && iblockstate1.func_185891_c() <= 2)
+-                        if (iblockstate.func_177230_c() == Blocks.field_150346_d
+-                                && iblockstate.func_177229_b(BlockDirt.field_176386_a) == BlockDirt.DirtType.DIRT
+-                                && p_180650_1_.func_175671_l(blockpos.func_177984_a()) >= 4
+-                                && iblockstate1.func_185891_c() <= 2)
 +                        if (iblockstate.func_177230_c() == Blocks.field_150346_d && iblockstate.func_177229_b(BlockDirt.field_176386_a) == BlockDirt.DirtType.DIRT && p_180650_1_.func_175671_l(blockpos.func_177984_a()) >= 4 && iblockstate1.getLightOpacity(p_180650_1_, blockpos.func_177984_a()) <= 2)
                          {
                              p_180650_1_.func_175656_a(blockpos, this.func_176223_P());
                          }
-@@ -85,6 +87,6 @@
+@@ -68,41 +65,28 @@
+     }
  
+     @SideOnly(Side.CLIENT)
+-    @Override
+     public void func_180655_c(IBlockState p_180655_1_, World p_180655_2_, BlockPos p_180655_3_, Random p_180655_4_)
+     {
+         super.func_180655_c(p_180655_1_, p_180655_2_, p_180655_3_, p_180655_4_);
+ 
+         if (p_180655_4_.nextInt(10) == 0)
+         {
+-            p_180655_2_.func_175688_a(
+-                EnumParticleTypes.TOWN_AURA,
+-                (double)((float)p_180655_3_.func_177958_n() + p_180655_4_.nextFloat()),
+-                (double)((float)p_180655_3_.func_177956_o() + 1.1F),
+-                (double)((float)p_180655_3_.func_177952_p() + p_180655_4_.nextFloat()),
+-                0.0,
+-                0.0,
+-                0.0
+-            );
++            p_180655_2_.func_175688_a(EnumParticleTypes.TOWN_AURA, (double)((float)p_180655_3_.func_177958_n() + p_180655_4_.nextFloat()), (double)((float)p_180655_3_.func_177956_o() + 1.1F), (double)((float)p_180655_3_.func_177952_p() + p_180655_4_.nextFloat()), 0.0D, 0.0D, 0.0D);
+         }
+     }
+ 
+-    @Override
+     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
+     {
+-        return Blocks.field_150346_d
+-               .func_180660_a(Blocks.field_150346_d.func_176223_P().func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.DIRT), p_180660_2_, p_180660_3_);
++        return Blocks.field_150346_d.func_180660_a(Blocks.field_150346_d.func_176223_P().func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.DIRT), p_180660_2_, p_180660_3_);
+     }
+ 
+-    @Override
+     public int func_176201_c(IBlockState p_176201_1_)
+     {
+         return 0;
+     }
+ 
+-    @Override
      protected BlockStateContainer func_180661_e()
      {
 -        return new BlockStateContainer(this, field_176384_a);

@@ -1,6 +1,17 @@
 --- before/net/minecraft/network/play/client/CPacketCreativeInventoryAction.java
 +++ after/net/minecraft/network/play/client/CPacketCreativeInventoryAction.java
-@@ -38,7 +38,7 @@
+@@ -29,18 +29,16 @@
+         p_148833_1_.func_147344_a(this);
+     }
+ 
+-    @Override
+     public void func_148837_a(PacketBuffer p_148837_1_) throws IOException
+     {
+         this.field_149629_a = p_148837_1_.readShort();
+         this.field_149628_b = p_148837_1_.func_150791_c();
+     }
+ 
+-    @Override
      public void func_148840_b(PacketBuffer p_148840_1_) throws IOException
      {
          p_148840_1_.writeShort(this.field_149629_a);

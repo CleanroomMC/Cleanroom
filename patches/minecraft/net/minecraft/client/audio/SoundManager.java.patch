@@ -1,14 +1,6 @@
 --- before/net/minecraft/client/audio/SoundManager.java
 +++ after/net/minecraft/client/audio/SoundManager.java
-@@ -18,6 +18,7 @@
- import java.util.List;
- import java.util.Map;
- import java.util.Set;
-+import java.util.Map.Entry;
- import net.minecraft.client.Minecraft;
- import net.minecraft.client.settings.GameSettings;
- import net.minecraft.entity.player.EntityPlayer;
-@@ -44,23 +45,30 @@
+@@ -45,23 +45,30 @@
  {
      private static final Marker field_148623_a = MarkerManager.getMarker("SOUNDS");
      private static final Logger field_148621_b = LogManager.getLogger();
@@ -48,7 +40,7 @@
          this.field_148622_c = p_i45119_1_;
          this.field_148619_d = p_i45119_2_;
  
-@@ -68,6 +76,7 @@
+@@ -69,6 +76,7 @@
          {
              SoundSystemConfig.addLibrary(LibraryLWJGLOpenAL.class);
              SoundSystemConfig.setCodec("ogg", CodecJOrbis.class);
@@ -56,7 +48,7 @@
          }
          catch (SoundSystemException soundsystemexception)
          {
-@@ -92,6 +101,7 @@
+@@ -93,6 +101,7 @@
  
          this.func_148613_b();
          this.func_148608_i();
@@ -64,7 +56,54 @@
      }
  
      private synchronized void func_148608_i()
-@@ -197,6 +207,7 @@
+@@ -101,14 +110,12 @@
+         {
+             try
+             {
+-                new Thread(new Runnable()
++                (new Thread(new Runnable()
+                 {
+-                    @Override
+                     public void run()
+                     {
+                         SoundSystemConfig.setLogger(new SoundSystemLogger()
+                         {
+-                            @Override
+                             public void message(String p_message_1_, int p_message_2_)
+                             {
+                                 if (!p_message_1_.isEmpty())
+@@ -116,7 +123,6 @@
+                                     SoundManager.field_148621_b.info(p_message_1_);
+                                 }
+                             }
+-                            @Override
+                             public void importantMessage(String p_importantMessage_1_, int p_importantMessage_2_)
+                             {
+                                 if (!p_importantMessage_1_.isEmpty())
+@@ -124,12 +130,11 @@
+                                     SoundManager.field_148621_b.warn(p_importantMessage_1_);
+                                 }
+                             }
+-                            @Override
+                             public void errorMessage(String p_errorMessage_1_, String p_errorMessage_2_, int p_errorMessage_3_)
+                             {
+                                 if (!p_errorMessage_2_.isEmpty())
+                                 {
+-                                    SoundManager.field_148621_b.error("Error in class '{}'", p_errorMessage_1_);
++                                    SoundManager.field_148621_b.error("Error in class '{}'", (Object)p_errorMessage_1_);
+                                     SoundManager.field_148621_b.error(p_errorMessage_2_);
+                                 }
+                             }
+@@ -139,7 +144,7 @@
+                         SoundManager.this.field_148620_e.setMasterVolume(SoundManager.this.field_148619_d.func_186711_a(SoundCategory.MASTER));
+                         SoundManager.field_148621_b.info(SoundManager.field_148623_a, "Sound engine started");
+                     }
+-                }, "Sound Library Loader").start();
++                }, "Sound Library Loader")).start();
+             }
+             catch (RuntimeException runtimeexception)
+             {
+@@ -202,6 +207,7 @@
                  this.field_148620_e.stop(s);
              }
  
@@ -72,16 +111,11 @@
              this.field_148629_h.clear();
              this.field_148626_m.clear();
              this.field_148625_l.clear();
-@@ -236,17 +247,17 @@
-             }
-         }
- 
--        Iterator<Map.Entry<String, ISound>> iterator = this.field_148629_h.entrySet().iterator();
-+        Iterator<Entry<String, ISound>> iterator = this.field_148629_h.entrySet().iterator();
+@@ -245,13 +251,13 @@
  
          while (iterator.hasNext())
          {
--            Map.Entry<String, ISound> entry = iterator.next();
+-            Entry<String, ISound> entry = iterator.next();
 +            Entry<String, ISound> entry = (Entry)iterator.next();
              String s1 = entry.getKey();
              ISound isound = entry.getValue();
@@ -93,7 +127,7 @@
  
                  if (i <= this.field_148618_g)
                  {
-@@ -254,7 +265,7 @@
+@@ -259,11 +265,11 @@
  
                      if (isound.func_147657_c() && j > 0)
                      {
@@ -102,7 +136,12 @@
                      }
  
                      iterator.remove();
-@@ -266,8 +277,9 @@
+-                    field_148621_b.debug(field_148623_a, "Removed channel {} because it's not playing anymore", s1);
++                    field_148621_b.debug(field_148623_a, "Removed channel {} because it's not playing anymore", (Object)s1);
+                     this.field_148620_e.removeSource(s1);
+                     this.field_148624_n.remove(s1);
+ 
+@@ -271,8 +277,9 @@
                      {
                          this.field_188776_k.remove(isound.func_184365_d(), s1);
                      }
@@ -113,16 +152,11 @@
                      }
  
                      if (isound instanceof ITickableSound)
-@@ -278,13 +290,13 @@
-             }
-         }
- 
--        Iterator<Map.Entry<ISound, Integer>> iterator1 = this.field_148626_m.entrySet().iterator();
-+        Iterator<Entry<ISound, Integer>> iterator1 = this.field_148626_m.entrySet().iterator();
+@@ -287,9 +294,9 @@
  
          while (iterator1.hasNext())
          {
--            Map.Entry<ISound, Integer> entry1 = iterator1.next();
+-            Entry<ISound, Integer> entry1 = iterator1.next();
 +            Entry<ISound, Integer> entry1 = (Entry)iterator1.next();
  
 -            if (this.field_148618_g >= entry1.getValue())
@@ -130,7 +164,7 @@
              {
                  ISound isound1 = entry1.getKey();
  
-@@ -315,7 +327,7 @@
+@@ -320,7 +327,7 @@
              }
              else
              {
@@ -139,7 +173,7 @@
              }
          }
      }
-@@ -337,6 +349,9 @@
+@@ -342,6 +349,9 @@
      {
          if (this.field_148617_f)
          {
@@ -149,15 +183,78 @@
              SoundEventAccessor soundeventaccessor = p_148611_1_.func_184366_a(this.field_148622_c);
              ResourceLocation resourcelocation = p_148611_1_.func_147650_b();
  
-@@ -399,17 +414,19 @@
+@@ -349,7 +359,7 @@
+             {
+                 if (field_188775_c.add(resourcelocation))
+                 {
+-                    field_148621_b.warn(field_148623_a, "Unable to play unknown soundEvent: {}", resourcelocation);
++                    field_148621_b.warn(field_148623_a, "Unable to play unknown soundEvent: {}", (Object)resourcelocation);
+                 }
+             }
+             else
+@@ -364,7 +374,7 @@
+ 
+                 if (this.field_148620_e.getMasterVolume() <= 0.0F)
+                 {
+-                    field_148621_b.debug(field_148623_a, "Skipped playing soundEvent: {}, master volume was zero", resourcelocation);
++                    field_148621_b.debug(field_148623_a, "Skipped playing soundEvent: {}, master volume was zero", (Object)resourcelocation);
+                 }
+                 else
+                 {
+@@ -374,7 +384,7 @@
+                     {
+                         if (field_188775_c.add(resourcelocation))
+                         {
+-                            field_148621_b.warn(field_148623_a, "Unable to play empty soundEvent: {}", resourcelocation);
++                            field_148621_b.warn(field_148623_a, "Unable to play empty soundEvent: {}", (Object)resourcelocation);
+                         }
+                     }
+                     else
+@@ -393,7 +403,7 @@
+ 
+                         if (f1 == 0.0F)
+                         {
+-                            field_148621_b.debug(field_148623_a, "Skipped playing sound {}, volume was zero.", sound.func_188719_a());
++                            field_148621_b.debug(field_148623_a, "Skipped playing sound {}, volume was zero.", (Object)sound.func_188719_a());
+                         }
+                         else
+                         {
+@@ -403,42 +413,20 @@
+ 
                              if (sound.func_188723_h())
                              {
-                                 this.field_148620_e.newStreamingSource(false, s, func_148612_a(resourcelocation1), resourcelocation1.toString(), flag, p_148611_1_.func_147649_g(), p_148611_1_.func_147654_h(), p_148611_1_.func_147651_i(), p_148611_1_.func_147656_j().func_148586_a(), f);
+-                                this.field_148620_e
+-                                .newStreamingSource(
+-                                    false,
+-                                    s,
+-                                    func_148612_a(resourcelocation1),
+-                                    resourcelocation1.toString(),
+-                                    flag,
+-                                    p_148611_1_.func_147649_g(),
+-                                    p_148611_1_.func_147654_h(),
+-                                    p_148611_1_.func_147651_i(),
+-                                    p_148611_1_.func_147656_j().func_148586_a(),
+-                                    f
+-                                );
++                                this.field_148620_e.newStreamingSource(false, s, func_148612_a(resourcelocation1), resourcelocation1.toString(), flag, p_148611_1_.func_147649_g(), p_148611_1_.func_147654_h(), p_148611_1_.func_147651_i(), p_148611_1_.func_147656_j().func_148586_a(), f);
 +                                net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.sound.PlayStreamingSourceEvent(this, p_148611_1_, s));
                              }
                              else
                              {
-                                 this.field_148620_e.newSource(false, s, func_148612_a(resourcelocation1), resourcelocation1.toString(), flag, p_148611_1_.func_147649_g(), p_148611_1_.func_147654_h(), p_148611_1_.func_147651_i(), p_148611_1_.func_147656_j().func_148586_a(), f);
+-                                this.field_148620_e
+-                                .newSource(
+-                                    false,
+-                                    s,
+-                                    func_148612_a(resourcelocation1),
+-                                    resourcelocation1.toString(),
+-                                    flag,
+-                                    p_148611_1_.func_147649_g(),
+-                                    p_148611_1_.func_147654_h(),
+-                                    p_148611_1_.func_147651_i(),
+-                                    p_148611_1_.func_147656_j().func_148586_a(),
+-                                    f
+-                                );
++                                this.field_148620_e.newSource(false, s, func_148612_a(resourcelocation1), resourcelocation1.toString(), flag, p_148611_1_.func_147649_g(), p_148611_1_.func_147654_h(), p_148611_1_.func_147651_i(), p_148611_1_.func_147656_j().func_148586_a(), f);
 +                                net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.sound.PlaySoundSourceEvent(this, p_148611_1_, s));
                              }
  
@@ -170,16 +267,25 @@
                              this.field_148629_h.put(s, p_148611_1_);
                              this.field_188776_k.put(soundcategory, s);
  
-@@ -436,7 +453,7 @@
+@@ -472,7 +460,7 @@
  
-     public void func_148610_e()
+             if (flag)
+             {
+-                field_148621_b.debug(field_148623_a, "Pausing channel {}", s);
++                field_148621_b.debug(field_148623_a, "Pausing channel {}", (Object)s);
+                 this.field_148620_e.pause(s);
+                 this.field_189000_p.add(s);
+             }
+@@ -483,7 +471,7 @@
      {
--        for (Map.Entry<String, ISound> entry : this.field_148629_h.entrySet())
-+        for (Entry<String, ISound> entry : this.field_148629_h.entrySet())
+         for (String s : this.field_189000_p)
          {
-             String s = entry.getKey();
-             boolean flag = this.func_148597_a(entry.getValue());
-@@ -463,7 +480,7 @@
+-            field_148621_b.debug(field_148623_a, "Resuming channel {}", s);
++            field_148621_b.debug(field_148623_a, "Resuming channel {}", (Object)s);
+             this.field_148620_e.play(s);
+         }
+ 
+@@ -492,7 +480,7 @@
  
      public void func_148599_a(ISound p_148599_1_, int p_148599_2_)
      {
@@ -188,16 +294,36 @@
      }
  
      private static URL func_148612_a(final ResourceLocation p_148612_0_)
-@@ -490,7 +507,7 @@
+@@ -500,16 +488,13 @@
+         String s = String.format("%s:%s:%s", "mcsounddomain", p_148612_0_.func_110624_b(), p_148612_0_.func_110623_a());
+         URLStreamHandler urlstreamhandler = new URLStreamHandler()
          {
-             return new URL((URL)null, s, urlstreamhandler);
+-            @Override
+             protected URLConnection openConnection(URL p_openConnection_1_)
+             {
+                 return new URLConnection(p_openConnection_1_)
+                 {
+-                    @Override
+                     public void connect() throws IOException
+                     {
+                     }
+-                    @Override
+                     public InputStream getInputStream() throws IOException
+                     {
+                         return Minecraft.func_71410_x().func_110442_L().func_110536_a(p_148612_0_).func_110527_b();
+@@ -520,9 +505,9 @@
+ 
+         try
+         {
+-            return new URL(null, s, urlstreamhandler);
++            return new URL((URL)null, s, urlstreamhandler);
          }
 -        catch (MalformedURLException malformedurlexception)
 +        catch (MalformedURLException var4)
          {
              throw new Error("TODO: Sanely handle url exception! :D");
          }
-@@ -498,6 +515,11 @@
+@@ -530,21 +515,24 @@
  
      public void func_148615_a(EntityPlayer p_148615_1_, float p_148615_2_)
      {
@@ -209,16 +335,19 @@
          if (this.field_148617_f && p_148615_1_ != null)
          {
              float f = p_148615_1_.field_70127_C + (p_148615_1_.field_70125_A - p_148615_1_.field_70127_C) * p_148615_2_;
-@@ -505,12 +527,12 @@
+             float f1 = p_148615_1_.field_70126_B + (p_148615_1_.field_70177_z - p_148615_1_.field_70126_B) * p_148615_2_;
              double d0 = p_148615_1_.field_70169_q + (p_148615_1_.field_70165_t - p_148615_1_.field_70169_q) * (double)p_148615_2_;
-             double d1 = p_148615_1_.field_70167_r + (p_148615_1_.field_70163_u - p_148615_1_.field_70167_r) * (double)p_148615_2_ + (double)p_148615_1_.func_70047_e();
+-            double d1 = p_148615_1_.field_70167_r
+-                        + (p_148615_1_.field_70163_u - p_148615_1_.field_70167_r) * (double)p_148615_2_
+-                        + (double)p_148615_1_.func_70047_e();
++            double d1 = p_148615_1_.field_70167_r + (p_148615_1_.field_70163_u - p_148615_1_.field_70167_r) * (double)p_148615_2_ + (double)p_148615_1_.func_70047_e();
              double d2 = p_148615_1_.field_70166_s + (p_148615_1_.field_70161_v - p_148615_1_.field_70166_s) * (double)p_148615_2_;
--            float f2 = MathHelper.func_76134_b((f1 + 90.0F) * ((float)Math.PI / 180F));
--            float f3 = MathHelper.func_76126_a((f1 + 90.0F) * ((float)Math.PI / 180F));
--            float f4 = MathHelper.func_76134_b(-f * ((float)Math.PI / 180F));
--            float f5 = MathHelper.func_76126_a(-f * ((float)Math.PI / 180F));
--            float f6 = MathHelper.func_76134_b((-f + 90.0F) * ((float)Math.PI / 180F));
--            float f7 = MathHelper.func_76126_a((-f + 90.0F) * ((float)Math.PI / 180F));
+-            float f2 = MathHelper.func_76134_b((f1 + 90.0F) * (float)(Math.PI / 180.0));
+-            float f3 = MathHelper.func_76126_a((f1 + 90.0F) * (float)(Math.PI / 180.0));
+-            float f4 = MathHelper.func_76134_b(-f * (float)(Math.PI / 180.0));
+-            float f5 = MathHelper.func_76126_a(-f * (float)(Math.PI / 180.0));
+-            float f6 = MathHelper.func_76134_b((-f + 90.0F) * (float)(Math.PI / 180.0));
+-            float f7 = MathHelper.func_76126_a((-f + 90.0F) * (float)(Math.PI / 180.0));
 +            float f2 = MathHelper.func_76134_b((f1 + 90.0F) * 0.017453292F);
 +            float f3 = MathHelper.func_76126_a((f1 + 90.0F) * 0.017453292F);
 +            float f4 = MathHelper.func_76134_b(-f * 0.017453292F);
@@ -228,7 +357,15 @@
              float f8 = f2 * f4;
              float f9 = f3 * f4;
              float f10 = f2 * f6;
-@@ -571,7 +593,7 @@
+@@ -595,7 +583,6 @@
+         {
+         }
+ 
+-        @Override
+         public boolean playing(String p_playing_1_)
+         {
+             synchronized (SoundSystemConfig.THREAD_SYNC)
+@@ -606,7 +593,7 @@
                  }
                  else
                  {

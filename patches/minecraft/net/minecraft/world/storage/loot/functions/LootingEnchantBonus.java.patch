@@ -1,6 +1,13 @@
 --- before/net/minecraft/world/storage/loot/functions/LootingEnchantBonus.java
 +++ after/net/minecraft/world/storage/loot/functions/LootingEnchantBonus.java
-@@ -32,7 +32,7 @@
+@@ -26,14 +26,13 @@
+         this.field_189971_b = p_i47145_3_;
+     }
+ 
+-    @Override
+     public ItemStack func_186553_a(ItemStack p_186553_1_, Random p_186553_2_, LootContext p_186553_3_)
+     {
+         Entity entity = p_186553_3_.func_186492_c();
  
          if (entity instanceof EntityLivingBase)
          {
@@ -9,7 +16,7 @@
  
              if (i == 0)
              {
-@@ -64,14 +64,14 @@
+@@ -65,14 +64,14 @@
  
                  if (p_186532_2_.field_189971_b > 0)
                  {

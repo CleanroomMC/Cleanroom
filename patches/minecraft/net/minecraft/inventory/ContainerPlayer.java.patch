@@ -1,24 +1,105 @@
 --- before/net/minecraft/inventory/ContainerPlayer.java
 +++ after/net/minecraft/inventory/ContainerPlayer.java
-@@ -43,7 +43,7 @@
+@@ -12,10 +12,7 @@
+ 
+ public class ContainerPlayer extends Container
+ {
+-    private static final EntityEquipmentSlot[] field_185003_h = new EntityEquipmentSlot[]
+-        {
+-            EntityEquipmentSlot.HEAD, EntityEquipmentSlot.CHEST, EntityEquipmentSlot.LEGS, EntityEquipmentSlot.FEET
+-        };
++    private static final EntityEquipmentSlot[] field_185003_h = new EntityEquipmentSlot[] {EntityEquipmentSlot.HEAD, EntityEquipmentSlot.CHEST, EntityEquipmentSlot.LEGS, EntityEquipmentSlot.FEET};
+     public InventoryCrafting field_75181_e = new InventoryCrafting(this, 2, 2);
+     public InventoryCraftResult field_75179_f = new InventoryCraftResult();
+     public boolean field_75180_g;
+@@ -38,36 +35,28 @@
+         for (int k = 0; k < 4; ++k)
+         {
+             final EntityEquipmentSlot entityequipmentslot = field_185003_h[k];
+-            this.func_75146_a(
+-                new Slot(p_i1819_1_, 36 + (3 - k), 8, 8 + k * 18)
++            this.func_75146_a(new Slot(p_i1819_1_, 36 + (3 - k), 8, 8 + k * 18)
+             {
+-                @Override
+                 public int func_75219_a()
+                 {
+                     return 1;
                  }
+-                @Override
                  public boolean func_75214_a(ItemStack p_75214_1_)
                  {
 -                    return entityequipmentslot == EntityLiving.func_184640_d(p_75214_1_);
 +                    return p_75214_1_.func_77973_b().isValidArmor(p_75214_1_, entityequipmentslot, field_82862_h);
                  }
+-                @Override
                  public boolean func_82869_a(EntityPlayer p_82869_1_)
                  {
-@@ -138,7 +138,7 @@
+                     ItemStack itemstack = this.func_75211_c();
+-                    return !itemstack.func_190926_b() && !p_82869_1_.func_184812_l_() && EnchantmentHelper.func_190938_b(itemstack)
+-                           ? false
+-                           : super.func_82869_a(p_82869_1_);
++                    return !itemstack.func_190926_b() && !p_82869_1_.func_184812_l_() && EnchantmentHelper.func_190938_b(itemstack) ? false : super.func_82869_a(p_82869_1_);
+                 }
+                 @Nullable
+                 @SideOnly(Side.CLIENT)
+-                @Override
+                 public String func_178171_c()
+                 {
+                     return ItemArmor.field_94603_a[entityequipmentslot.func_188454_b()];
+                 }
+-            }
+-            );
++            });
+         }
+ 
+         for (int l = 0; l < 3; ++l)
+@@ -87,7 +76,6 @@
+         {
+             @Nullable
+             @SideOnly(Side.CLIENT)
+-            @Override
+             public String func_178171_c()
+             {
+                 return "minecraft:items/empty_armor_slot_shield";
+@@ -95,13 +83,11 @@
+         });
+     }
+ 
+-    @Override
+     public void func_75130_a(IInventory p_75130_1_)
+     {
+         this.func_192389_a(this.field_82862_h.field_70170_p, this.field_82862_h, this.field_75181_e, this.field_75179_f);
+     }
+ 
+-    @Override
+     public void func_75134_a(EntityPlayer p_75134_1_)
+     {
+         super.func_75134_a(p_75134_1_);
+@@ -113,13 +99,11 @@
+         }
+     }
+ 
+-    @Override
+     public boolean func_75145_c(EntityPlayer p_75145_1_)
+     {
+         return true;
+     }
+ 
+-    @Override
+     public ItemStack func_82846_b(EntityPlayer p_82846_1_, int p_82846_2_)
+     {
+         ItemStack itemstack = ItemStack.field_190927_a;
+@@ -154,8 +138,7 @@
                      return ItemStack.field_190927_a;
                  }
              }
--            else if (entityequipmentslot.func_188453_a() == EntityEquipmentSlot.Type.ARMOR && !this.field_75151_b.get(8 - entityequipmentslot.func_188454_b()).func_75216_d())
+-            else if (entityequipmentslot.func_188453_a() == EntityEquipmentSlot.Type.ARMOR
+-                     && !this.field_75151_b.get(8 - entityequipmentslot.func_188454_b()).func_75216_d())
 +            else if (entityequipmentslot.func_188453_a() == EntityEquipmentSlot.Type.ARMOR && !((Slot)this.field_75151_b.get(8 - entityequipmentslot.func_188454_b())).func_75216_d())
              {
                  int i = 8 - entityequipmentslot.func_188454_b();
  
-@@ -147,7 +147,7 @@
+@@ -164,7 +147,7 @@
                      return ItemStack.field_190927_a;
                  }
              }
@@ -27,3 +108,11 @@
              {
                  if (!this.func_75135_a(itemstack1, 45, 46, false))
                  {
+@@ -215,7 +198,6 @@
+         return itemstack;
+     }
+ 
+-    @Override
+     public boolean func_94530_a(ItemStack p_94530_1_, Slot p_94530_2_)
+     {
+         return p_94530_2_.field_75224_c != this.field_75179_f && super.func_94530_a(p_94530_1_, p_94530_2_);

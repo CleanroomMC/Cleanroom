@@ -1,14 +1,5 @@
 --- before/net/minecraft/util/text/ITextComponent.java
 +++ after/net/minecraft/util/text/ITextComponent.java
-@@ -13,7 +13,7 @@
- import com.google.gson.JsonSerializer;
- import java.lang.reflect.Type;
- import java.util.List;
--import java.util.Map;
-+import java.util.Map.Entry;
- import javax.annotation.Nullable;
- import net.minecraft.util.EnumTypeAdapterFactory;
- import net.minecraft.util.JsonUtils;
 @@ -34,7 +34,6 @@
  
      String func_150260_c();
@@ -35,15 +26,6 @@
                      return itextcomponent;
                  }
              }
-@@ -177,7 +176,7 @@
-                 {
-                     JsonObject jsonobject = (JsonObject)jsonelement;
- 
--                    for (Map.Entry<String, JsonElement> entry : jsonobject.entrySet())
-+                    for (Entry<String, JsonElement> entry : jsonobject.entrySet())
-                     {
-                         p_150695_2_.add(entry.getKey(), entry.getValue());
-                     }
 @@ -269,13 +268,13 @@
              @Nullable
              public static ITextComponent func_150699_a(String p_150699_0_)

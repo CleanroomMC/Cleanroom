@@ -1,19 +1,55 @@
 --- before/net/minecraft/entity/ai/EntityAIMate.java
 +++ after/net/minecraft/entity/ai/EntityAIMate.java
-@@ -72,7 +72,7 @@
+@@ -34,7 +34,6 @@
+         this.func_75248_a(3);
+     }
+ 
+-    @Override
+     public boolean func_75250_a()
+     {
+         if (!this.field_75390_d.func_70880_s())
+@@ -48,27 +47,24 @@
+         }
+     }
+ 
+-    @Override
+     public boolean func_75253_b()
+     {
+         return this.field_75391_e.func_70089_S() && this.field_75391_e.func_70880_s() && this.field_75392_b < 60;
+     }
+ 
+-    @Override
+     public void func_75251_c()
+     {
+         this.field_75391_e = null;
+         this.field_75392_b = 0;
+     }
+ 
+-    @Override
+     public void func_75246_d()
+     {
+         this.field_75390_d.func_70671_ap().func_75651_a(this.field_75391_e, 10.0F, (float)this.field_75390_d.func_70646_bf());
+         this.field_75390_d.func_70661_as().func_75497_a(this.field_75391_e, this.field_75393_c);
+         ++this.field_75392_b;
+ 
+-        if (this.field_75392_b >= 60 && this.field_75390_d.func_70068_e(this.field_75391_e) < 9.0)
++        if (this.field_75392_b >= 60 && this.field_75390_d.func_70068_e(this.field_75391_e) < 9.0D)
+         {
+             this.func_75388_i();
+         }
+@@ -76,7 +72,7 @@
  
      private EntityAnimal func_75389_f()
      {
--        List<EntityAnimal> list = this.field_75394_a.func_72872_a(this.field_190857_e, this.field_75390_d.func_174813_aQ().func_186662_g(8.0D));
+-        List<EntityAnimal> list = this.field_75394_a.func_72872_a(this.field_190857_e, this.field_75390_d.func_174813_aQ().func_186662_g(8.0));
 +        List<EntityAnimal> list = this.field_75394_a.<EntityAnimal>func_72872_a(this.field_190857_e, this.field_75390_d.func_174813_aQ().func_186662_g(8.0D));
          double d0 = Double.MAX_VALUE;
          EntityAnimal entityanimal = null;
  
-@@ -91,6 +91,18 @@
-     private void func_75388_i()
+@@ -96,6 +92,18 @@
      {
          EntityAgeable entityageable = this.field_75390_d.func_90011_a(this.field_75391_e);
-+
+ 
 +        final net.minecraftforge.event.entity.living.BabyEntitySpawnEvent event = new net.minecraftforge.event.entity.living.BabyEntitySpawnEvent(field_75390_d, field_75391_e, entityageable);
 +        final boolean cancelled = net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
 +        entityageable = event.getChild();
@@ -25,6 +61,52 @@
 +            this.field_75391_e.func_70875_t();
 +            return;
 +        }
- 
++
          if (entityageable != null)
          {
+             EntityPlayerMP entityplayermp = this.field_75390_d.func_191993_do();
+@@ -122,36 +130,18 @@
+ 
+             for (int i = 0; i < 7; ++i)
+             {
+-                double d0 = random.nextGaussian() * 0.02;
+-                double d1 = random.nextGaussian() * 0.02;
+-                double d2 = random.nextGaussian() * 0.02;
+-                double d3 = random.nextDouble() * (double)this.field_75390_d.field_70130_N * 2.0 - (double)this.field_75390_d.field_70130_N;
+-                double d4 = 0.5 + random.nextDouble() * (double)this.field_75390_d.field_70131_O;
+-                double d5 = random.nextDouble() * (double)this.field_75390_d.field_70130_N * 2.0 - (double)this.field_75390_d.field_70130_N;
+-                this.field_75394_a
+-                .func_175688_a(
+-                    EnumParticleTypes.HEART,
+-                    this.field_75390_d.field_70165_t + d3,
+-                    this.field_75390_d.field_70163_u + d4,
+-                    this.field_75390_d.field_70161_v + d5,
+-                    d0,
+-                    d1,
+-                    d2
+-                );
++                double d0 = random.nextGaussian() * 0.02D;
++                double d1 = random.nextGaussian() * 0.02D;
++                double d2 = random.nextGaussian() * 0.02D;
++                double d3 = random.nextDouble() * (double)this.field_75390_d.field_70130_N * 2.0D - (double)this.field_75390_d.field_70130_N;
++                double d4 = 0.5D + random.nextDouble() * (double)this.field_75390_d.field_70131_O;
++                double d5 = random.nextDouble() * (double)this.field_75390_d.field_70130_N * 2.0D - (double)this.field_75390_d.field_70130_N;
++                this.field_75394_a.func_175688_a(EnumParticleTypes.HEART, this.field_75390_d.field_70165_t + d3, this.field_75390_d.field_70163_u + d4, this.field_75390_d.field_70161_v + d5, d0, d1, d2);
+             }
+ 
+             if (this.field_75394_a.func_82736_K().func_82766_b("doMobLoot"))
+             {
+-                this.field_75394_a
+-                .func_72838_d(
+-                    new EntityXPOrb(
+-                        this.field_75394_a,
+-                        this.field_75390_d.field_70165_t,
+-                        this.field_75390_d.field_70163_u,
+-                        this.field_75390_d.field_70161_v,
+-                        random.nextInt(7) + 1
+-                    )
+-                );
++                this.field_75394_a.func_72838_d(new EntityXPOrb(this.field_75394_a, this.field_75390_d.field_70165_t, this.field_75390_d.field_70163_u, this.field_75390_d.field_70161_v, random.nextInt(7) + 1));
+             }
+         }
+     }

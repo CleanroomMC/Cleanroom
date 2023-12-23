@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/storage/loot/LootEntryItem.java
 +++ after/net/minecraft/world/storage/loot/LootEntryItem.java
-@@ -18,9 +18,9 @@
+@@ -18,14 +18,13 @@
      protected final Item field_186368_a;
      protected final LootFunction[] field_186369_b;
  
@@ -12,7 +12,12 @@
          this.field_186368_a = p_i46644_1_;
          this.field_186369_b = p_i46644_4_;
      }
-@@ -39,7 +39,7 @@
+ 
+-    @Override
+     public void func_186363_a(Collection<ItemStack> p_186363_1_, Random p_186363_2_, LootContext p_186363_3_)
+     {
+         ItemStack itemstack = new ItemStack(this.field_186368_a);
+@@ -40,7 +39,7 @@
  
          if (!itemstack.func_190926_b())
          {
@@ -21,21 +26,28 @@
              {
                  p_186363_1_.add(itemstack);
              }
-@@ -79,18 +79,19 @@
+@@ -59,7 +58,6 @@
+         }
+     }
  
-     public static LootEntryItem func_186367_a(JsonObject p_186367_0_, JsonDeserializationContext p_186367_1_, int p_186367_2_, int p_186367_3_, LootCondition[] p_186367_4_)
+-    @Override
+     protected void func_186362_a(JsonObject p_186362_1_, JsonSerializationContext p_186362_2_)
+     {
+         if (this.field_186369_b != null && this.field_186369_b.length > 0)
+@@ -79,10 +77,9 @@
+         }
+     }
+ 
+-    public static LootEntryItem func_186367_a(
+-            JsonObject p_186367_0_, JsonDeserializationContext p_186367_1_, int p_186367_2_, int p_186367_3_, LootCondition[] p_186367_4_
+-        )
++    public static LootEntryItem func_186367_a(JsonObject p_186367_0_, JsonDeserializationContext p_186367_1_, int p_186367_2_, int p_186367_3_, LootCondition[] p_186367_4_)
      {
 +        String name = net.minecraftforge.common.ForgeHooks.readLootEntryName(p_186367_0_, "item");
          Item item = JsonUtils.func_188180_i(p_186367_0_, "name");
          LootFunction[] alootfunction;
  
-         if (p_186367_0_.has("functions"))
-         {
--            alootfunction = JsonUtils.func_188174_a(p_186367_0_, "functions", p_186367_1_, LootFunction[].class);
-+            alootfunction = (LootFunction[])JsonUtils.func_188174_a(p_186367_0_, "functions", p_186367_1_, LootFunction[].class);
-         }
-         else
-         {
+@@ -95,6 +92,6 @@
              alootfunction = new LootFunction[0];
          }
  

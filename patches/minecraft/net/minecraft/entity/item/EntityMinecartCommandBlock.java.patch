@@ -1,25 +1,135 @@
 --- before/net/minecraft/entity/item/EntityMinecartCommandBlock.java
 +++ after/net/minecraft/entity/item/EntityMinecartCommandBlock.java
-@@ -29,8 +29,8 @@
+@@ -29,55 +29,41 @@
  
  public class EntityMinecartCommandBlock extends EntityMinecart
  {
 -    private static final DataParameter<String> field_184273_a = EntityDataManager.func_187226_a(EntityMinecartCommandBlock.class, DataSerializers.field_187194_d);
--    private static final DataParameter<ITextComponent> field_184274_b = EntityDataManager.func_187226_a(EntityMinecartCommandBlock.class, DataSerializers.field_187195_e);
+-    private static final DataParameter<ITextComponent> field_184274_b = EntityDataManager.func_187226_a(
+-                    EntityMinecartCommandBlock.class, DataSerializers.field_187195_e
+-                );
 +    private static final DataParameter<String> field_184273_a = EntityDataManager.<String>func_187226_a(EntityMinecartCommandBlock.class, DataSerializers.field_187194_d);
 +    private static final DataParameter<ITextComponent> field_184274_b = EntityDataManager.<ITextComponent>func_187226_a(EntityMinecartCommandBlock.class, DataSerializers.field_187195_e);
      private final CommandBlockBaseLogic field_145824_a = new CommandBlockBaseLogic()
      {
+-        @Override
          public void func_145756_e()
-@@ -147,6 +147,7 @@
+         {
+             EntityMinecartCommandBlock.this.func_184212_Q().func_187227_b(EntityMinecartCommandBlock.field_184273_a, this.func_145753_i());
+             EntityMinecartCommandBlock.this.func_184212_Q().func_187227_b(EntityMinecartCommandBlock.field_184274_b, this.func_145749_h());
+         }
+         @SideOnly(Side.CLIENT)
+-        @Override
+         public int func_145751_f()
+         {
+             return 1;
+         }
+         @SideOnly(Side.CLIENT)
+-        @Override
+         public void func_145757_a(ByteBuf p_145757_1_)
+         {
+             p_145757_1_.writeInt(EntityMinecartCommandBlock.this.func_145782_y());
+         }
+-        @Override
+         public BlockPos func_180425_c()
+         {
+-            return new BlockPos(
+-                       EntityMinecartCommandBlock.this.field_70165_t, EntityMinecartCommandBlock.this.field_70163_u + 0.5, EntityMinecartCommandBlock.this.field_70161_v
+-                   );
++            return new BlockPos(EntityMinecartCommandBlock.this.field_70165_t, EntityMinecartCommandBlock.this.field_70163_u + 0.5D, EntityMinecartCommandBlock.this.field_70161_v);
+         }
+-        @Override
+         public Vec3d func_174791_d()
+         {
+-            return new Vec3d(
+-                       EntityMinecartCommandBlock.this.field_70165_t, EntityMinecartCommandBlock.this.field_70163_u, EntityMinecartCommandBlock.this.field_70161_v
+-                   );
++            return new Vec3d(EntityMinecartCommandBlock.this.field_70165_t, EntityMinecartCommandBlock.this.field_70163_u, EntityMinecartCommandBlock.this.field_70161_v);
+         }
+-        @Override
+         public World func_130014_f_()
+         {
+             return EntityMinecartCommandBlock.this.field_70170_p;
+         }
+-        @Override
+         public Entity func_174793_f()
+         {
+             return EntityMinecartCommandBlock.this;
+         }
+-        @Override
+         public MinecraftServer func_184102_h()
+         {
+             return EntityMinecartCommandBlock.this.field_70170_p.func_73046_m();
+@@ -100,7 +86,6 @@
+         EntityMinecart.func_189669_a(p_189670_0_, EntityMinecartCommandBlock.class);
+         p_189670_0_.func_188258_a(FixTypes.ENTITY, new IDataWalker()
+         {
+-            @Override
+             public NBTTagCompound func_188266_a(IDataFixer p_188266_1_, NBTTagCompound p_188266_2_, int p_188266_3_)
+             {
+                 if (TileEntity.func_190559_a(TileEntityCommandBlock.class).equals(new ResourceLocation(p_188266_2_.func_74779_i("id"))))
+@@ -115,7 +100,6 @@
+         });
+     }
  
+-    @Override
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+@@ -123,7 +107,6 @@
+         this.func_184212_Q().func_187214_a(field_184274_b, new TextComponentString(""));
+     }
+ 
+-    @Override
+     protected void func_70037_a(NBTTagCompound p_70037_1_)
+     {
+         super.func_70037_a(p_70037_1_);
+@@ -132,20 +115,17 @@
+         this.func_184212_Q().func_187227_b(field_184274_b, this.func_145822_e().func_145749_h());
+     }
+ 
+-    @Override
+     protected void func_70014_b(NBTTagCompound p_70014_1_)
+     {
+         super.func_70014_b(p_70014_1_);
+         this.field_145824_a.func_189510_a(p_70014_1_);
+     }
+ 
+-    @Override
+     public EntityMinecart.Type func_184264_v()
+     {
+         return EntityMinecart.Type.COMMAND_BLOCK;
+     }
+ 
+-    @Override
+     public IBlockState func_180457_u()
+     {
+         return Blocks.field_150483_bI.func_176223_P();
+@@ -156,7 +136,6 @@
+         return this.field_145824_a;
+     }
+ 
+-    @Override
+     public void func_96095_a(int p_96095_1_, int p_96095_2_, int p_96095_3_, boolean p_96095_4_)
+     {
+         if (p_96095_4_ && this.field_70173_aa - this.field_145823_b >= 4)
+@@ -166,14 +145,13 @@
+         }
+     }
+ 
+-    @Override
      public boolean func_184230_a(EntityPlayer p_184230_1_, EnumHand p_184230_2_)
      {
 +        if (super.func_184230_a(p_184230_1_, p_184230_2_)) return true;
          this.field_145824_a.func_175574_a(p_184230_1_);
          return false;
      }
-@@ -159,15 +160,16 @@
+ 
+-    @Override
+     public void func_184206_a(DataParameter<?> p_184206_1_)
+     {
+         super.func_184206_a(p_184206_1_);
+@@ -182,19 +160,19 @@
          {
              try
              {
@@ -39,3 +149,7 @@
          }
      }
  
+-    @Override
+     public boolean func_184213_bq()
+     {
+         return true;

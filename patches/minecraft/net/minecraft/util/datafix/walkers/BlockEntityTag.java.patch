@@ -1,6 +1,6 @@
 --- before/net/minecraft/util/datafix/walkers/BlockEntityTag.java
 +++ after/net/minecraft/util/datafix/walkers/BlockEntityTag.java
-@@ -14,13 +14,13 @@
+@@ -14,18 +14,15 @@
  public class BlockEntityTag implements IDataWalker
  {
      private static final Logger field_188268_a = LogManager.getLogger();
@@ -12,8 +12,22 @@
      @Nullable
      private static String func_188267_a(int p_188267_0_, String p_188267_1_)
      {
--        return p_188267_0_ < 515 ? field_190892_b.get((new ResourceLocation(p_188267_1_)).toString()) : field_188269_b.get((new ResourceLocation(p_188267_1_)).toString());
+-        return p_188267_0_ < 515
+-               ? field_190892_b.get(new ResourceLocation(p_188267_1_).toString())
+-               : field_188269_b.get(new ResourceLocation(p_188267_1_).toString());
 +        return p_188267_0_ < 515 ? (String)field_190892_b.get((new ResourceLocation(p_188267_1_)).toString()) : (String)field_188269_b.get((new ResourceLocation(p_188267_1_)).toString());
      }
  
+-    @Override
      public NBTTagCompound func_188266_a(IDataFixer p_188266_1_, NBTTagCompound p_188266_2_, int p_188266_3_)
+     {
+         if (!p_188266_2_.func_150297_b("tag", 10))
+@@ -45,7 +42,7 @@
+ 
+                 if (s1 == null)
+                 {
+-                    field_188268_a.warn("Unable to resolve BlockEntity for ItemInstance: {}", s);
++                    field_188268_a.warn("Unable to resolve BlockEntity for ItemInstance: {}", (Object)s);
+                     flag = false;
+                 }
+                 else

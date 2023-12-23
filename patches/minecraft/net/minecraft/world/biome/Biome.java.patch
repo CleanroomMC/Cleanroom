@@ -77,7 +77,18 @@
          }
      }
  
-@@ -220,27 +225,19 @@
+@@ -206,9 +211,7 @@
+     {
+         if (p_180626_1_.func_177956_o() > 64)
+         {
+-            float f = (float)(
+-                          field_150605_ac.func_151601_a((double)((float)p_180626_1_.func_177958_n() / 8.0F), (double)((float)p_180626_1_.func_177952_p() / 8.0F)) * 4.0
+-                      );
++            float f = (float)(field_150605_ac.func_151601_a((double)((float)p_180626_1_.func_177958_n() / 8.0F), (double)((float)p_180626_1_.func_177952_p() / 8.0F)) * 4.0D);
+             return this.func_185353_n() - (f + (float)p_180626_1_.func_177956_o() - 64.0F) * 0.05F / 30.0F;
+         }
+         else
+@@ -222,34 +225,26 @@
          this.field_76760_I.func_180292_a(p_180624_1_, p_180624_2_, this, p_180624_3_);
      }
  
@@ -113,7 +124,15 @@
      public final void func_180628_b(World p_180628_1_, Random p_180628_2_, ChunkPrimer p_180628_3_, int p_180628_4_, int p_180628_5_, double p_180628_6_)
      {
          int i = p_180628_1_.func_181545_F();
-@@ -326,6 +323,14 @@
+         IBlockState iblockstate = this.field_76752_A;
+         IBlockState iblockstate1 = this.field_76753_B;
+         int j = -1;
+-        int k = (int)(p_180628_6_ / 3.0 + 3.0 + p_180628_2_.nextDouble() * 0.25);
++        int k = (int)(p_180628_6_ / 3.0D + 3.0D + p_180628_2_.nextDouble() * 0.25D);
+         int l = p_180628_4_ & 15;
+         int i1 = p_180628_5_ & 15;
+         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+@@ -328,6 +323,14 @@
          }
      }
  
@@ -128,7 +147,31 @@
      public Class <? extends Biome > func_150562_l()
      {
          return this.getClass();
-@@ -389,7 +394,7 @@
+@@ -335,20 +338,20 @@
+ 
+     public Biome.TempCategory func_150561_m()
+     {
+-        if ((double)this.func_185353_n() < 0.2)
++        if ((double)this.func_185353_n() < 0.2D)
+         {
+             return Biome.TempCategory.COLD;
+         }
+         else
+         {
+-            return (double)this.func_185353_n() < 1.0 ? Biome.TempCategory.MEDIUM : Biome.TempCategory.WARM;
++            return (double)this.func_185353_n() < 1.0D ? Biome.TempCategory.MEDIUM : Biome.TempCategory.WARM;
+         }
+     }
+ 
+     @Nullable
+     public static Biome func_150568_d(int p_150568_0_)
+     {
+-        return func_180276_a(p_150568_0_, null);
++        return func_180276_a(p_150568_0_, (Biome)null);
+     }
+ 
+     public static Biome func_180276_a(int p_180276_0_, Biome p_180276_1_)
+@@ -391,7 +394,7 @@
      @SideOnly(Side.CLIENT)
      public final int func_185361_o()
      {
@@ -137,7 +180,7 @@
      }
  
      public final boolean func_150559_j()
-@@ -397,6 +402,84 @@
+@@ -399,477 +402,148 @@
          return this.field_76766_R;
      }
  
@@ -221,8 +264,545 @@
 +
      public static void func_185358_q()
      {
-         func_185354_a(0, "ocean", new BiomeOcean((new Biome.BiomeProperties("Ocean")).func_185398_c(-1.0F).func_185400_d(0.1F)));
-@@ -564,6 +647,13 @@
+-        func_185354_a(0, "ocean", new BiomeOcean(new Biome.BiomeProperties("Ocean").func_185398_c(-1.0F).func_185400_d(0.1F)));
+-        func_185354_a(
+-            1,
+-            "plains",
+-            new BiomePlains(false, new Biome.BiomeProperties("Plains").func_185398_c(0.125F).func_185400_d(0.05F).func_185410_a(0.8F).func_185395_b(0.4F))
+-        );
+-        func_185354_a(
+-            2,
+-            "desert",
+-            new BiomeDesert(new Biome.BiomeProperties("Desert").func_185398_c(0.125F).func_185400_d(0.05F).func_185410_a(2.0F).func_185395_b(0.0F).func_185396_a())
+-        );
+-        func_185354_a(
+-            3,
+-            "extreme_hills",
+-            new BiomeHills(
+-                BiomeHills.Type.NORMAL, new Biome.BiomeProperties("Extreme Hills").func_185398_c(1.0F).func_185400_d(0.5F).func_185410_a(0.2F).func_185395_b(0.3F)
+-            )
+-        );
+-        func_185354_a(4, "forest", new BiomeForest(BiomeForest.Type.NORMAL, new Biome.BiomeProperties("Forest").func_185410_a(0.7F).func_185395_b(0.8F)));
+-        func_185354_a(
+-            5,
+-            "taiga",
+-            new BiomeTaiga(
+-                BiomeTaiga.Type.NORMAL, new Biome.BiomeProperties("Taiga").func_185398_c(0.2F).func_185400_d(0.2F).func_185410_a(0.25F).func_185395_b(0.8F)
+-            )
+-        );
+-        func_185354_a(
+-            6,
+-            "swampland",
+-            new BiomeSwamp(
+-                new Biome.BiomeProperties("Swampland").func_185398_c(-0.2F).func_185400_d(0.1F).func_185410_a(0.8F).func_185395_b(0.9F).func_185402_a(14745518)
+-            )
+-        );
+-        func_185354_a(7, "river", new BiomeRiver(new Biome.BiomeProperties("River").func_185398_c(-0.5F).func_185400_d(0.0F)));
+-        func_185354_a(8, "hell", new BiomeHell(new Biome.BiomeProperties("Hell").func_185410_a(2.0F).func_185395_b(0.0F).func_185396_a()));
+-        func_185354_a(9, "sky", new BiomeEnd(new Biome.BiomeProperties("The End").func_185396_a()));
+-        func_185354_a(
+-            10,
+-            "frozen_ocean",
+-            new BiomeOcean(
+-                new Biome.BiomeProperties("FrozenOcean").func_185398_c(-1.0F).func_185400_d(0.1F).func_185410_a(0.0F).func_185395_b(0.5F).func_185411_b()
+-            )
+-        );
+-        func_185354_a(
+-            11,
+-            "frozen_river",
+-            new BiomeRiver(
+-                new Biome.BiomeProperties("FrozenRiver").func_185398_c(-0.5F).func_185400_d(0.0F).func_185410_a(0.0F).func_185395_b(0.5F).func_185411_b()
+-            )
+-        );
+-        func_185354_a(
+-            12,
+-            "ice_flats",
+-            new BiomeSnow(
+-                false, new Biome.BiomeProperties("Ice Plains").func_185398_c(0.125F).func_185400_d(0.05F).func_185410_a(0.0F).func_185395_b(0.5F).func_185411_b()
+-            )
+-        );
+-        func_185354_a(
+-            13,
+-            "ice_mountains",
+-            new BiomeSnow(
+-                false, new Biome.BiomeProperties("Ice Mountains").func_185398_c(0.45F).func_185400_d(0.3F).func_185410_a(0.0F).func_185395_b(0.5F).func_185411_b()
+-            )
+-        );
+-        func_185354_a(
+-            14,
+-            "mushroom_island",
+-            new BiomeMushroomIsland(new Biome.BiomeProperties("MushroomIsland").func_185398_c(0.2F).func_185400_d(0.3F).func_185410_a(0.9F).func_185395_b(1.0F))
+-        );
+-        func_185354_a(
+-            15,
+-            "mushroom_island_shore",
+-            new BiomeMushroomIsland(
+-                new Biome.BiomeProperties("MushroomIslandShore").func_185398_c(0.0F).func_185400_d(0.025F).func_185410_a(0.9F).func_185395_b(1.0F)
+-            )
+-        );
+-        func_185354_a(
+-            16, "beaches", new BiomeBeach(new Biome.BiomeProperties("Beach").func_185398_c(0.0F).func_185400_d(0.025F).func_185410_a(0.8F).func_185395_b(0.4F))
+-        );
+-        func_185354_a(
+-            17,
+-            "desert_hills",
+-            new BiomeDesert(
+-                new Biome.BiomeProperties("DesertHills").func_185398_c(0.45F).func_185400_d(0.3F).func_185410_a(2.0F).func_185395_b(0.0F).func_185396_a()
+-            )
+-        );
+-        func_185354_a(
+-            18,
+-            "forest_hills",
+-            new BiomeForest(
+-                BiomeForest.Type.NORMAL, new Biome.BiomeProperties("ForestHills").func_185398_c(0.45F).func_185400_d(0.3F).func_185410_a(0.7F).func_185395_b(0.8F)
+-            )
+-        );
+-        func_185354_a(
+-            19,
+-            "taiga_hills",
+-            new BiomeTaiga(
+-                BiomeTaiga.Type.NORMAL, new Biome.BiomeProperties("TaigaHills").func_185410_a(0.25F).func_185395_b(0.8F).func_185398_c(0.45F).func_185400_d(0.3F)
+-            )
+-        );
+-        func_185354_a(
+-            20,
+-            "smaller_extreme_hills",
+-            new BiomeHills(
+-                BiomeHills.Type.EXTRA_TREES,
+-                new Biome.BiomeProperties("Extreme Hills Edge").func_185398_c(0.8F).func_185400_d(0.3F).func_185410_a(0.2F).func_185395_b(0.3F)
+-            )
+-        );
+-        func_185354_a(21, "jungle", new BiomeJungle(false, new Biome.BiomeProperties("Jungle").func_185410_a(0.95F).func_185395_b(0.9F)));
+-        func_185354_a(
+-            22,
+-            "jungle_hills",
+-            new BiomeJungle(false, new Biome.BiomeProperties("JungleHills").func_185398_c(0.45F).func_185400_d(0.3F).func_185410_a(0.95F).func_185395_b(0.9F))
+-        );
+-        func_185354_a(23, "jungle_edge", new BiomeJungle(true, new Biome.BiomeProperties("JungleEdge").func_185410_a(0.95F).func_185395_b(0.8F)));
+-        func_185354_a(24, "deep_ocean", new BiomeOcean(new Biome.BiomeProperties("Deep Ocean").func_185398_c(-1.8F).func_185400_d(0.1F)));
+-        func_185354_a(
+-            25,
+-            "stone_beach",
+-            new BiomeStoneBeach(new Biome.BiomeProperties("Stone Beach").func_185398_c(0.1F).func_185400_d(0.8F).func_185410_a(0.2F).func_185395_b(0.3F))
+-        );
+-        func_185354_a(
+-            26,
+-            "cold_beach",
+-            new BiomeBeach(
+-                new Biome.BiomeProperties("Cold Beach").func_185398_c(0.0F).func_185400_d(0.025F).func_185410_a(0.05F).func_185395_b(0.3F).func_185411_b()
+-            )
+-        );
+-        func_185354_a(
+-            27, "birch_forest", new BiomeForest(BiomeForest.Type.BIRCH, new Biome.BiomeProperties("Birch Forest").func_185410_a(0.6F).func_185395_b(0.6F))
+-        );
+-        func_185354_a(
+-            28,
+-            "birch_forest_hills",
+-            new BiomeForest(
+-                BiomeForest.Type.BIRCH,
+-                new Biome.BiomeProperties("Birch Forest Hills").func_185398_c(0.45F).func_185400_d(0.3F).func_185410_a(0.6F).func_185395_b(0.6F)
+-            )
+-        );
+-        func_185354_a(
+-            29, "roofed_forest", new BiomeForest(BiomeForest.Type.ROOFED, new Biome.BiomeProperties("Roofed Forest").func_185410_a(0.7F).func_185395_b(0.8F))
+-        );
+-        func_185354_a(
+-            30,
+-            "taiga_cold",
+-            new BiomeTaiga(
+-                BiomeTaiga.Type.NORMAL,
+-                new Biome.BiomeProperties("Cold Taiga").func_185398_c(0.2F).func_185400_d(0.2F).func_185410_a(-0.5F).func_185395_b(0.4F).func_185411_b()
+-            )
+-        );
+-        func_185354_a(
+-            31,
+-            "taiga_cold_hills",
+-            new BiomeTaiga(
+-                BiomeTaiga.Type.NORMAL,
+-                new Biome.BiomeProperties("Cold Taiga Hills").func_185398_c(0.45F).func_185400_d(0.3F).func_185410_a(-0.5F).func_185395_b(0.4F).func_185411_b()
+-            )
+-        );
+-        func_185354_a(
+-            32,
+-            "redwood_taiga",
+-            new BiomeTaiga(
+-                BiomeTaiga.Type.MEGA, new Biome.BiomeProperties("Mega Taiga").func_185410_a(0.3F).func_185395_b(0.8F).func_185398_c(0.2F).func_185400_d(0.2F)
+-            )
+-        );
+-        func_185354_a(
+-            33,
+-            "redwood_taiga_hills",
+-            new BiomeTaiga(
+-                BiomeTaiga.Type.MEGA,
+-                new Biome.BiomeProperties("Mega Taiga Hills").func_185398_c(0.45F).func_185400_d(0.3F).func_185410_a(0.3F).func_185395_b(0.8F)
+-            )
+-        );
+-        func_185354_a(
+-            34,
+-            "extreme_hills_with_trees",
+-            new BiomeHills(
+-                BiomeHills.Type.EXTRA_TREES,
+-                new Biome.BiomeProperties("Extreme Hills+").func_185398_c(1.0F).func_185400_d(0.5F).func_185410_a(0.2F).func_185395_b(0.3F)
+-            )
+-        );
+-        func_185354_a(
+-            35,
+-            "savanna",
+-            new BiomeSavanna(
+-                new Biome.BiomeProperties("Savanna").func_185398_c(0.125F).func_185400_d(0.05F).func_185410_a(1.2F).func_185395_b(0.0F).func_185396_a()
+-            )
+-        );
+-        func_185354_a(
+-            36,
+-            "savanna_rock",
+-            new BiomeSavanna(
+-                new Biome.BiomeProperties("Savanna Plateau").func_185398_c(1.5F).func_185400_d(0.025F).func_185410_a(1.0F).func_185395_b(0.0F).func_185396_a()
+-            )
+-        );
+-        func_185354_a(37, "mesa", new BiomeMesa(false, false, new Biome.BiomeProperties("Mesa").func_185410_a(2.0F).func_185395_b(0.0F).func_185396_a()));
+-        func_185354_a(
+-            38,
+-            "mesa_rock",
+-            new BiomeMesa(
+-                false,
+-                true,
+-                new Biome.BiomeProperties("Mesa Plateau F").func_185398_c(1.5F).func_185400_d(0.025F).func_185410_a(2.0F).func_185395_b(0.0F).func_185396_a()
+-            )
+-        );
+-        func_185354_a(
+-            39,
+-            "mesa_clear_rock",
+-            new BiomeMesa(
+-                false,
+-                false,
+-                new Biome.BiomeProperties("Mesa Plateau").func_185398_c(1.5F).func_185400_d(0.025F).func_185410_a(2.0F).func_185395_b(0.0F).func_185396_a()
+-            )
+-        );
+-        func_185354_a(127, "void", new BiomeVoid(new Biome.BiomeProperties("The Void").func_185396_a()));
+-        func_185354_a(
+-            129,
+-            "mutated_plains",
+-            new BiomePlains(
+-                true,
+-                new Biome.BiomeProperties("Sunflower Plains")
+-                .func_185399_a("plains")
+-                .func_185398_c(0.125F)
+-                .func_185400_d(0.05F)
+-                .func_185410_a(0.8F)
+-                .func_185395_b(0.4F)
+-            )
+-        );
+-        func_185354_a(
+-            130,
+-            "mutated_desert",
+-            new BiomeDesert(
+-                new Biome.BiomeProperties("Desert M")
+-                .func_185399_a("desert")
+-                .func_185398_c(0.225F)
+-                .func_185400_d(0.25F)
+-                .func_185410_a(2.0F)
+-                .func_185395_b(0.0F)
+-                .func_185396_a()
+-            )
+-        );
+-        func_185354_a(
+-            131,
+-            "mutated_extreme_hills",
+-            new BiomeHills(
+-                BiomeHills.Type.MUTATED,
+-                new Biome.BiomeProperties("Extreme Hills M")
+-                .func_185399_a("extreme_hills")
+-                .func_185398_c(1.0F)
+-                .func_185400_d(0.5F)
+-                .func_185410_a(0.2F)
+-                .func_185395_b(0.3F)
+-            )
+-        );
+-        func_185354_a(
+-            132,
+-            "mutated_forest",
+-            new BiomeForest(
+-                BiomeForest.Type.FLOWER,
+-                new Biome.BiomeProperties("Flower Forest").func_185399_a("forest").func_185400_d(0.4F).func_185410_a(0.7F).func_185395_b(0.8F)
+-            )
+-        );
+-        func_185354_a(
+-            133,
+-            "mutated_taiga",
+-            new BiomeTaiga(
+-                BiomeTaiga.Type.NORMAL,
+-                new Biome.BiomeProperties("Taiga M").func_185399_a("taiga").func_185398_c(0.3F).func_185400_d(0.4F).func_185410_a(0.25F).func_185395_b(0.8F)
+-            )
+-        );
+-        func_185354_a(
+-            134,
+-            "mutated_swampland",
+-            new BiomeSwamp(
+-                new Biome.BiomeProperties("Swampland M")
+-                .func_185399_a("swampland")
+-                .func_185398_c(-0.1F)
+-                .func_185400_d(0.3F)
+-                .func_185410_a(0.8F)
+-                .func_185395_b(0.9F)
+-                .func_185402_a(14745518)
+-            )
+-        );
+-        func_185354_a(
+-            140,
+-            "mutated_ice_flats",
+-            new BiomeSnow(
+-                true,
+-                new Biome.BiomeProperties("Ice Plains Spikes")
+-                .func_185399_a("ice_flats")
+-                .func_185398_c(0.425F)
+-                .func_185400_d(0.45000002F)
+-                .func_185410_a(0.0F)
+-                .func_185395_b(0.5F)
+-                .func_185411_b()
+-            )
+-        );
+-        func_185354_a(
+-            149,
+-            "mutated_jungle",
+-            new BiomeJungle(
+-                false,
+-                new Biome.BiomeProperties("Jungle M").func_185399_a("jungle").func_185398_c(0.2F).func_185400_d(0.4F).func_185410_a(0.95F).func_185395_b(0.9F)
+-            )
+-        );
+-        func_185354_a(
+-            151,
+-            "mutated_jungle_edge",
+-            new BiomeJungle(
+-                true,
+-                new Biome.BiomeProperties("JungleEdge M")
+-                .func_185399_a("jungle_edge")
+-                .func_185398_c(0.2F)
+-                .func_185400_d(0.4F)
+-                .func_185410_a(0.95F)
+-                .func_185395_b(0.8F)
+-            )
+-        );
+-        func_185354_a(
+-            155,
+-            "mutated_birch_forest",
+-            new BiomeForestMutated(
+-                new Biome.BiomeProperties("Birch Forest M")
+-                .func_185399_a("birch_forest")
+-                .func_185398_c(0.2F)
+-                .func_185400_d(0.4F)
+-                .func_185410_a(0.6F)
+-                .func_185395_b(0.6F)
+-            )
+-        );
+-        func_185354_a(
+-            156,
+-            "mutated_birch_forest_hills",
+-            new BiomeForestMutated(
+-                new Biome.BiomeProperties("Birch Forest Hills M")
+-                .func_185399_a("birch_forest_hills")
+-                .func_185398_c(0.55F)
+-                .func_185400_d(0.5F)
+-                .func_185410_a(0.6F)
+-                .func_185395_b(0.6F)
+-            )
+-        );
+-        func_185354_a(
+-            157,
+-            "mutated_roofed_forest",
+-            new BiomeForest(
+-                BiomeForest.Type.ROOFED,
+-                new Biome.BiomeProperties("Roofed Forest M")
+-                .func_185399_a("roofed_forest")
+-                .func_185398_c(0.2F)
+-                .func_185400_d(0.4F)
+-                .func_185410_a(0.7F)
+-                .func_185395_b(0.8F)
+-            )
+-        );
+-        func_185354_a(
+-            158,
+-            "mutated_taiga_cold",
+-            new BiomeTaiga(
+-                BiomeTaiga.Type.NORMAL,
+-                new Biome.BiomeProperties("Cold Taiga M")
+-                .func_185399_a("taiga_cold")
+-                .func_185398_c(0.3F)
+-                .func_185400_d(0.4F)
+-                .func_185410_a(-0.5F)
+-                .func_185395_b(0.4F)
+-                .func_185411_b()
+-            )
+-        );
+-        func_185354_a(
+-            160,
+-            "mutated_redwood_taiga",
+-            new BiomeTaiga(
+-                BiomeTaiga.Type.MEGA_SPRUCE,
+-                new Biome.BiomeProperties("Mega Spruce Taiga")
+-                .func_185399_a("redwood_taiga")
+-                .func_185398_c(0.2F)
+-                .func_185400_d(0.2F)
+-                .func_185410_a(0.25F)
+-                .func_185395_b(0.8F)
+-            )
+-        );
+-        func_185354_a(
+-            161,
+-            "mutated_redwood_taiga_hills",
+-            new BiomeTaiga(
+-                BiomeTaiga.Type.MEGA_SPRUCE,
+-                new Biome.BiomeProperties("Redwood Taiga Hills M")
+-                .func_185399_a("redwood_taiga_hills")
+-                .func_185398_c(0.2F)
+-                .func_185400_d(0.2F)
+-                .func_185410_a(0.25F)
+-                .func_185395_b(0.8F)
+-            )
+-        );
+-        func_185354_a(
+-            162,
+-            "mutated_extreme_hills_with_trees",
+-            new BiomeHills(
+-                BiomeHills.Type.MUTATED,
+-                new Biome.BiomeProperties("Extreme Hills+ M")
+-                .func_185399_a("extreme_hills_with_trees")
+-                .func_185398_c(1.0F)
+-                .func_185400_d(0.5F)
+-                .func_185410_a(0.2F)
+-                .func_185395_b(0.3F)
+-            )
+-        );
+-        func_185354_a(
+-            163,
+-            "mutated_savanna",
+-            new BiomeSavannaMutated(
+-                new Biome.BiomeProperties("Savanna M")
+-                .func_185399_a("savanna")
+-                .func_185398_c(0.3625F)
+-                .func_185400_d(1.225F)
+-                .func_185410_a(1.1F)
+-                .func_185395_b(0.0F)
+-                .func_185396_a()
+-            )
+-        );
+-        func_185354_a(
+-            164,
+-            "mutated_savanna_rock",
+-            new BiomeSavannaMutated(
+-                new Biome.BiomeProperties("Savanna Plateau M")
+-                .func_185399_a("savanna_rock")
+-                .func_185398_c(1.05F)
+-                .func_185400_d(1.2125001F)
+-                .func_185410_a(1.0F)
+-                .func_185395_b(0.0F)
+-                .func_185396_a()
+-            )
+-        );
+-        func_185354_a(
+-            165,
+-            "mutated_mesa",
+-            new BiomeMesa(true, false, new Biome.BiomeProperties("Mesa (Bryce)").func_185399_a("mesa").func_185410_a(2.0F).func_185395_b(0.0F).func_185396_a())
+-        );
+-        func_185354_a(
+-            166,
+-            "mutated_mesa_rock",
+-            new BiomeMesa(
+-                false,
+-                true,
+-                new Biome.BiomeProperties("Mesa Plateau F M")
+-                .func_185399_a("mesa_rock")
+-                .func_185398_c(0.45F)
+-                .func_185400_d(0.3F)
+-                .func_185410_a(2.0F)
+-                .func_185395_b(0.0F)
+-                .func_185396_a()
+-            )
+-        );
+-        func_185354_a(
+-            167,
+-            "mutated_mesa_clear_rock",
+-            new BiomeMesa(
+-                false,
+-                false,
+-                new Biome.BiomeProperties("Mesa Plateau M")
+-                .func_185399_a("mesa_clear_rock")
+-                .func_185398_c(0.45F)
+-                .func_185400_d(0.3F)
+-                .func_185410_a(2.0F)
+-                .func_185395_b(0.0F)
+-                .func_185396_a()
+-            )
+-        );
++        func_185354_a(0, "ocean", new BiomeOcean((new Biome.BiomeProperties("Ocean")).func_185398_c(-1.0F).func_185400_d(0.1F)));
++        func_185354_a(1, "plains", new BiomePlains(false, (new Biome.BiomeProperties("Plains")).func_185398_c(0.125F).func_185400_d(0.05F).func_185410_a(0.8F).func_185395_b(0.4F)));
++        func_185354_a(2, "desert", new BiomeDesert((new Biome.BiomeProperties("Desert")).func_185398_c(0.125F).func_185400_d(0.05F).func_185410_a(2.0F).func_185395_b(0.0F).func_185396_a()));
++        func_185354_a(3, "extreme_hills", new BiomeHills(BiomeHills.Type.NORMAL, (new Biome.BiomeProperties("Extreme Hills")).func_185398_c(1.0F).func_185400_d(0.5F).func_185410_a(0.2F).func_185395_b(0.3F)));
++        func_185354_a(4, "forest", new BiomeForest(BiomeForest.Type.NORMAL, (new Biome.BiomeProperties("Forest")).func_185410_a(0.7F).func_185395_b(0.8F)));
++        func_185354_a(5, "taiga", new BiomeTaiga(BiomeTaiga.Type.NORMAL, (new Biome.BiomeProperties("Taiga")).func_185398_c(0.2F).func_185400_d(0.2F).func_185410_a(0.25F).func_185395_b(0.8F)));
++        func_185354_a(6, "swampland", new BiomeSwamp((new Biome.BiomeProperties("Swampland")).func_185398_c(-0.2F).func_185400_d(0.1F).func_185410_a(0.8F).func_185395_b(0.9F).func_185402_a(14745518)));
++        func_185354_a(7, "river", new BiomeRiver((new Biome.BiomeProperties("River")).func_185398_c(-0.5F).func_185400_d(0.0F)));
++        func_185354_a(8, "hell", new BiomeHell((new Biome.BiomeProperties("Hell")).func_185410_a(2.0F).func_185395_b(0.0F).func_185396_a()));
++        func_185354_a(9, "sky", new BiomeEnd((new Biome.BiomeProperties("The End")).func_185396_a()));
++        func_185354_a(10, "frozen_ocean", new BiomeOcean((new Biome.BiomeProperties("FrozenOcean")).func_185398_c(-1.0F).func_185400_d(0.1F).func_185410_a(0.0F).func_185395_b(0.5F).func_185411_b()));
++        func_185354_a(11, "frozen_river", new BiomeRiver((new Biome.BiomeProperties("FrozenRiver")).func_185398_c(-0.5F).func_185400_d(0.0F).func_185410_a(0.0F).func_185395_b(0.5F).func_185411_b()));
++        func_185354_a(12, "ice_flats", new BiomeSnow(false, (new Biome.BiomeProperties("Ice Plains")).func_185398_c(0.125F).func_185400_d(0.05F).func_185410_a(0.0F).func_185395_b(0.5F).func_185411_b()));
++        func_185354_a(13, "ice_mountains", new BiomeSnow(false, (new Biome.BiomeProperties("Ice Mountains")).func_185398_c(0.45F).func_185400_d(0.3F).func_185410_a(0.0F).func_185395_b(0.5F).func_185411_b()));
++        func_185354_a(14, "mushroom_island", new BiomeMushroomIsland((new Biome.BiomeProperties("MushroomIsland")).func_185398_c(0.2F).func_185400_d(0.3F).func_185410_a(0.9F).func_185395_b(1.0F)));
++        func_185354_a(15, "mushroom_island_shore", new BiomeMushroomIsland((new Biome.BiomeProperties("MushroomIslandShore")).func_185398_c(0.0F).func_185400_d(0.025F).func_185410_a(0.9F).func_185395_b(1.0F)));
++        func_185354_a(16, "beaches", new BiomeBeach((new Biome.BiomeProperties("Beach")).func_185398_c(0.0F).func_185400_d(0.025F).func_185410_a(0.8F).func_185395_b(0.4F)));
++        func_185354_a(17, "desert_hills", new BiomeDesert((new Biome.BiomeProperties("DesertHills")).func_185398_c(0.45F).func_185400_d(0.3F).func_185410_a(2.0F).func_185395_b(0.0F).func_185396_a()));
++        func_185354_a(18, "forest_hills", new BiomeForest(BiomeForest.Type.NORMAL, (new Biome.BiomeProperties("ForestHills")).func_185398_c(0.45F).func_185400_d(0.3F).func_185410_a(0.7F).func_185395_b(0.8F)));
++        func_185354_a(19, "taiga_hills", new BiomeTaiga(BiomeTaiga.Type.NORMAL, (new Biome.BiomeProperties("TaigaHills")).func_185410_a(0.25F).func_185395_b(0.8F).func_185398_c(0.45F).func_185400_d(0.3F)));
++        func_185354_a(20, "smaller_extreme_hills", new BiomeHills(BiomeHills.Type.EXTRA_TREES, (new Biome.BiomeProperties("Extreme Hills Edge")).func_185398_c(0.8F).func_185400_d(0.3F).func_185410_a(0.2F).func_185395_b(0.3F)));
++        func_185354_a(21, "jungle", new BiomeJungle(false, (new Biome.BiomeProperties("Jungle")).func_185410_a(0.95F).func_185395_b(0.9F)));
++        func_185354_a(22, "jungle_hills", new BiomeJungle(false, (new Biome.BiomeProperties("JungleHills")).func_185398_c(0.45F).func_185400_d(0.3F).func_185410_a(0.95F).func_185395_b(0.9F)));
++        func_185354_a(23, "jungle_edge", new BiomeJungle(true, (new Biome.BiomeProperties("JungleEdge")).func_185410_a(0.95F).func_185395_b(0.8F)));
++        func_185354_a(24, "deep_ocean", new BiomeOcean((new Biome.BiomeProperties("Deep Ocean")).func_185398_c(-1.8F).func_185400_d(0.1F)));
++        func_185354_a(25, "stone_beach", new BiomeStoneBeach((new Biome.BiomeProperties("Stone Beach")).func_185398_c(0.1F).func_185400_d(0.8F).func_185410_a(0.2F).func_185395_b(0.3F)));
++        func_185354_a(26, "cold_beach", new BiomeBeach((new Biome.BiomeProperties("Cold Beach")).func_185398_c(0.0F).func_185400_d(0.025F).func_185410_a(0.05F).func_185395_b(0.3F).func_185411_b()));
++        func_185354_a(27, "birch_forest", new BiomeForest(BiomeForest.Type.BIRCH, (new Biome.BiomeProperties("Birch Forest")).func_185410_a(0.6F).func_185395_b(0.6F)));
++        func_185354_a(28, "birch_forest_hills", new BiomeForest(BiomeForest.Type.BIRCH, (new Biome.BiomeProperties("Birch Forest Hills")).func_185398_c(0.45F).func_185400_d(0.3F).func_185410_a(0.6F).func_185395_b(0.6F)));
++        func_185354_a(29, "roofed_forest", new BiomeForest(BiomeForest.Type.ROOFED, (new Biome.BiomeProperties("Roofed Forest")).func_185410_a(0.7F).func_185395_b(0.8F)));
++        func_185354_a(30, "taiga_cold", new BiomeTaiga(BiomeTaiga.Type.NORMAL, (new Biome.BiomeProperties("Cold Taiga")).func_185398_c(0.2F).func_185400_d(0.2F).func_185410_a(-0.5F).func_185395_b(0.4F).func_185411_b()));
++        func_185354_a(31, "taiga_cold_hills", new BiomeTaiga(BiomeTaiga.Type.NORMAL, (new Biome.BiomeProperties("Cold Taiga Hills")).func_185398_c(0.45F).func_185400_d(0.3F).func_185410_a(-0.5F).func_185395_b(0.4F).func_185411_b()));
++        func_185354_a(32, "redwood_taiga", new BiomeTaiga(BiomeTaiga.Type.MEGA, (new Biome.BiomeProperties("Mega Taiga")).func_185410_a(0.3F).func_185395_b(0.8F).func_185398_c(0.2F).func_185400_d(0.2F)));
++        func_185354_a(33, "redwood_taiga_hills", new BiomeTaiga(BiomeTaiga.Type.MEGA, (new Biome.BiomeProperties("Mega Taiga Hills")).func_185398_c(0.45F).func_185400_d(0.3F).func_185410_a(0.3F).func_185395_b(0.8F)));
++        func_185354_a(34, "extreme_hills_with_trees", new BiomeHills(BiomeHills.Type.EXTRA_TREES, (new Biome.BiomeProperties("Extreme Hills+")).func_185398_c(1.0F).func_185400_d(0.5F).func_185410_a(0.2F).func_185395_b(0.3F)));
++        func_185354_a(35, "savanna", new BiomeSavanna((new Biome.BiomeProperties("Savanna")).func_185398_c(0.125F).func_185400_d(0.05F).func_185410_a(1.2F).func_185395_b(0.0F).func_185396_a()));
++        func_185354_a(36, "savanna_rock", new BiomeSavanna((new Biome.BiomeProperties("Savanna Plateau")).func_185398_c(1.5F).func_185400_d(0.025F).func_185410_a(1.0F).func_185395_b(0.0F).func_185396_a()));
++        func_185354_a(37, "mesa", new BiomeMesa(false, false, (new Biome.BiomeProperties("Mesa")).func_185410_a(2.0F).func_185395_b(0.0F).func_185396_a()));
++        func_185354_a(38, "mesa_rock", new BiomeMesa(false, true, (new Biome.BiomeProperties("Mesa Plateau F")).func_185398_c(1.5F).func_185400_d(0.025F).func_185410_a(2.0F).func_185395_b(0.0F).func_185396_a()));
++        func_185354_a(39, "mesa_clear_rock", new BiomeMesa(false, false, (new Biome.BiomeProperties("Mesa Plateau")).func_185398_c(1.5F).func_185400_d(0.025F).func_185410_a(2.0F).func_185395_b(0.0F).func_185396_a()));
++        func_185354_a(127, "void", new BiomeVoid((new Biome.BiomeProperties("The Void")).func_185396_a()));
++        func_185354_a(129, "mutated_plains", new BiomePlains(true, (new Biome.BiomeProperties("Sunflower Plains")).func_185399_a("plains").func_185398_c(0.125F).func_185400_d(0.05F).func_185410_a(0.8F).func_185395_b(0.4F)));
++        func_185354_a(130, "mutated_desert", new BiomeDesert((new Biome.BiomeProperties("Desert M")).func_185399_a("desert").func_185398_c(0.225F).func_185400_d(0.25F).func_185410_a(2.0F).func_185395_b(0.0F).func_185396_a()));
++        func_185354_a(131, "mutated_extreme_hills", new BiomeHills(BiomeHills.Type.MUTATED, (new Biome.BiomeProperties("Extreme Hills M")).func_185399_a("extreme_hills").func_185398_c(1.0F).func_185400_d(0.5F).func_185410_a(0.2F).func_185395_b(0.3F)));
++        func_185354_a(132, "mutated_forest", new BiomeForest(BiomeForest.Type.FLOWER, (new Biome.BiomeProperties("Flower Forest")).func_185399_a("forest").func_185400_d(0.4F).func_185410_a(0.7F).func_185395_b(0.8F)));
++        func_185354_a(133, "mutated_taiga", new BiomeTaiga(BiomeTaiga.Type.NORMAL, (new Biome.BiomeProperties("Taiga M")).func_185399_a("taiga").func_185398_c(0.3F).func_185400_d(0.4F).func_185410_a(0.25F).func_185395_b(0.8F)));
++        func_185354_a(134, "mutated_swampland", new BiomeSwamp((new Biome.BiomeProperties("Swampland M")).func_185399_a("swampland").func_185398_c(-0.1F).func_185400_d(0.3F).func_185410_a(0.8F).func_185395_b(0.9F).func_185402_a(14745518)));
++        func_185354_a(140, "mutated_ice_flats", new BiomeSnow(true, (new Biome.BiomeProperties("Ice Plains Spikes")).func_185399_a("ice_flats").func_185398_c(0.425F).func_185400_d(0.45000002F).func_185410_a(0.0F).func_185395_b(0.5F).func_185411_b()));
++        func_185354_a(149, "mutated_jungle", new BiomeJungle(false, (new Biome.BiomeProperties("Jungle M")).func_185399_a("jungle").func_185398_c(0.2F).func_185400_d(0.4F).func_185410_a(0.95F).func_185395_b(0.9F)));
++        func_185354_a(151, "mutated_jungle_edge", new BiomeJungle(true, (new Biome.BiomeProperties("JungleEdge M")).func_185399_a("jungle_edge").func_185398_c(0.2F).func_185400_d(0.4F).func_185410_a(0.95F).func_185395_b(0.8F)));
++        func_185354_a(155, "mutated_birch_forest", new BiomeForestMutated((new Biome.BiomeProperties("Birch Forest M")).func_185399_a("birch_forest").func_185398_c(0.2F).func_185400_d(0.4F).func_185410_a(0.6F).func_185395_b(0.6F)));
++        func_185354_a(156, "mutated_birch_forest_hills", new BiomeForestMutated((new Biome.BiomeProperties("Birch Forest Hills M")).func_185399_a("birch_forest_hills").func_185398_c(0.55F).func_185400_d(0.5F).func_185410_a(0.6F).func_185395_b(0.6F)));
++        func_185354_a(157, "mutated_roofed_forest", new BiomeForest(BiomeForest.Type.ROOFED, (new Biome.BiomeProperties("Roofed Forest M")).func_185399_a("roofed_forest").func_185398_c(0.2F).func_185400_d(0.4F).func_185410_a(0.7F).func_185395_b(0.8F)));
++        func_185354_a(158, "mutated_taiga_cold", new BiomeTaiga(BiomeTaiga.Type.NORMAL, (new Biome.BiomeProperties("Cold Taiga M")).func_185399_a("taiga_cold").func_185398_c(0.3F).func_185400_d(0.4F).func_185410_a(-0.5F).func_185395_b(0.4F).func_185411_b()));
++        func_185354_a(160, "mutated_redwood_taiga", new BiomeTaiga(BiomeTaiga.Type.MEGA_SPRUCE, (new Biome.BiomeProperties("Mega Spruce Taiga")).func_185399_a("redwood_taiga").func_185398_c(0.2F).func_185400_d(0.2F).func_185410_a(0.25F).func_185395_b(0.8F)));
++        func_185354_a(161, "mutated_redwood_taiga_hills", new BiomeTaiga(BiomeTaiga.Type.MEGA_SPRUCE, (new Biome.BiomeProperties("Redwood Taiga Hills M")).func_185399_a("redwood_taiga_hills").func_185398_c(0.2F).func_185400_d(0.2F).func_185410_a(0.25F).func_185395_b(0.8F)));
++        func_185354_a(162, "mutated_extreme_hills_with_trees", new BiomeHills(BiomeHills.Type.MUTATED, (new Biome.BiomeProperties("Extreme Hills+ M")).func_185399_a("extreme_hills_with_trees").func_185398_c(1.0F).func_185400_d(0.5F).func_185410_a(0.2F).func_185395_b(0.3F)));
++        func_185354_a(163, "mutated_savanna", new BiomeSavannaMutated((new Biome.BiomeProperties("Savanna M")).func_185399_a("savanna").func_185398_c(0.3625F).func_185400_d(1.225F).func_185410_a(1.1F).func_185395_b(0.0F).func_185396_a()));
++        func_185354_a(164, "mutated_savanna_rock", new BiomeSavannaMutated((new Biome.BiomeProperties("Savanna Plateau M")).func_185399_a("savanna_rock").func_185398_c(1.05F).func_185400_d(1.2125001F).func_185410_a(1.0F).func_185395_b(0.0F).func_185396_a()));
++        func_185354_a(165, "mutated_mesa", new BiomeMesa(true, false, (new Biome.BiomeProperties("Mesa (Bryce)")).func_185399_a("mesa").func_185410_a(2.0F).func_185395_b(0.0F).func_185396_a()));
++        func_185354_a(166, "mutated_mesa_rock", new BiomeMesa(false, true, (new Biome.BiomeProperties("Mesa Plateau F M")).func_185399_a("mesa_rock").func_185398_c(0.45F).func_185400_d(0.3F).func_185410_a(2.0F).func_185395_b(0.0F).func_185396_a()));
++        func_185354_a(167, "mutated_mesa_clear_rock", new BiomeMesa(false, false, (new Biome.BiomeProperties("Mesa Plateau M")).func_185399_a("mesa_clear_rock").func_185398_c(0.45F).func_185400_d(0.3F).func_185410_a(2.0F).func_185395_b(0.0F).func_185396_a()));
+     }
+ 
+     public static void func_185354_a(int p_185354_0_, String p_185354_1_, Biome p_185354_2_)
+@@ -970,10 +644,16 @@
+                 this.field_76299_d = p_i1970_4_;
+             }
+ 
+-            @Override
              public String toString()
              {
                  return this.field_76300_b.getSimpleName() + "*(" + this.field_76301_c + "-" + this.field_76299_d + "):" + this.field_76292_a;

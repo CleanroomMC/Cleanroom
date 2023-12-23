@@ -9,7 +9,41 @@
      private final int field_178596_j;
      private final FloatBuffer field_178597_k = GLAllocation.func_74529_h(16);
      private final VertexBuffer[] field_178594_l = new VertexBuffer[BlockRenderLayer.values().length];
-@@ -162,27 +162,29 @@
+@@ -94,15 +94,11 @@
+ 
+     public void func_189562_a(int p_189562_1_, int p_189562_2_, int p_189562_3_)
+     {
+-        if (p_189562_1_ != this.field_178586_f.func_177958_n()
+-                || p_189562_2_ != this.field_178586_f.func_177956_o()
+-                || p_189562_3_ != this.field_178586_f.func_177952_p())
++        if (p_189562_1_ != this.field_178586_f.func_177958_n() || p_189562_2_ != this.field_178586_f.func_177956_o() || p_189562_3_ != this.field_178586_f.func_177952_p())
+         {
+             this.func_178585_h();
+             this.field_178586_f.func_181079_c(p_189562_1_, p_189562_2_, p_189562_3_);
+-            this.field_178591_c = new AxisAlignedBB(
+-                (double)p_189562_1_, (double)p_189562_2_, (double)p_189562_3_, (double)(p_189562_1_ + 16), (double)(p_189562_2_ + 16), (double)(p_189562_3_ + 16)
+-            );
++            this.field_178591_c = new AxisAlignedBB((double)p_189562_1_, (double)p_189562_2_, (double)p_189562_3_, (double)(p_189562_1_ + 16), (double)(p_189562_2_ + 16), (double)(p_189562_3_ + 16));
+ 
+             for (EnumFacing enumfacing : EnumFacing.values())
+             {
+@@ -121,14 +117,7 @@
+         {
+             this.func_178573_a(p_178570_4_.func_178545_d().func_179038_a(BlockRenderLayer.TRANSLUCENT), this.field_178586_f);
+             p_178570_4_.func_178545_d().func_179038_a(BlockRenderLayer.TRANSLUCENT).func_178993_a(compiledchunk.func_178487_c());
+-            this.func_178584_a(
+-                BlockRenderLayer.TRANSLUCENT,
+-                p_178570_1_,
+-                p_178570_2_,
+-                p_178570_3_,
+-                p_178570_4_.func_178545_d().func_179038_a(BlockRenderLayer.TRANSLUCENT),
+-                compiledchunk
+-            );
++            this.func_178584_a(BlockRenderLayer.TRANSLUCENT, p_178570_1_, p_178570_2_, p_178570_3_, p_178570_4_.func_178545_d().func_179038_a(BlockRenderLayer.TRANSLUCENT), compiledchunk);
+         }
+     }
+ 
+@@ -173,27 +162,29 @@
                      lvt_9_1_.func_178606_a(blockpos$mutableblockpos);
                  }
  
@@ -43,7 +77,7 @@
                  int j = blockrenderlayer1.ordinal();
  
                  if (block.func_176223_P().func_185901_i() != EnumBlockRenderType.INVISIBLE)
-@@ -197,6 +199,8 @@
+@@ -208,6 +199,8 @@
  
                      aboolean[j] |= blockrendererdispatcher.func_175018_a(iblockstate, blockpos$mutableblockpos, this.field_189564_r, bufferbuilder);
                  }
@@ -52,7 +86,18 @@
              }
  
              for (BlockRenderLayer blockrenderlayer : BlockRenderLayer.values())
-@@ -278,14 +282,16 @@
+@@ -219,9 +212,7 @@
+ 
+                 if (compiledchunk.func_178492_d(blockrenderlayer))
+                 {
+-                    this.func_178584_a(
+-                        blockrenderlayer, p_178581_1_, p_178581_2_, p_178581_3_, p_178581_4_.func_178545_d().func_179038_a(blockrenderlayer), compiledchunk
+-                    );
++                    this.func_178584_a(blockrenderlayer, p_178581_1_, p_178581_2_, p_178581_3_, p_178581_4_.func_178545_d().func_179038_a(blockrenderlayer), compiledchunk);
+                 }
+             }
+         }
+@@ -291,14 +282,16 @@
      private void func_189563_q()
      {
          int i = 1;
@@ -71,7 +116,7 @@
  
          try
          {
-@@ -299,17 +305,18 @@
+@@ -312,25 +305,26 @@
  
                  this.field_178599_i = new ChunkCompileTaskGenerator(this, ChunkCompileTaskGenerator.Type.RESORT_TRANSPARENCY, this.func_188280_f());
                  this.field_178599_i.func_178543_a(this.field_178590_b);
@@ -93,7 +138,29 @@
      }
  
      protected double func_188280_f()
-@@ -425,6 +432,26 @@
+     {
+         EntityPlayerSP entityplayersp = Minecraft.func_71410_x().field_71439_g;
+-        double d0 = this.field_178591_c.field_72340_a + 8.0 - entityplayersp.field_70165_t;
+-        double d1 = this.field_178591_c.field_72338_b + 8.0 - entityplayersp.field_70163_u;
+-        double d2 = this.field_178591_c.field_72339_c + 8.0 - entityplayersp.field_70161_v;
++        double d0 = this.field_178591_c.field_72340_a + 8.0D - entityplayersp.field_70165_t;
++        double d1 = this.field_178591_c.field_72338_b + 8.0D - entityplayersp.field_70163_u;
++        double d2 = this.field_178591_c.field_72339_c + 8.0D - entityplayersp.field_70161_v;
+         return d0 * d0 + d1 * d1 + d2 * d2;
+     }
+ 
+@@ -340,9 +334,7 @@
+         p_178573_1_.func_178969_c((double)(-p_178573_2_.func_177958_n()), (double)(-p_178573_2_.func_177956_o()), (double)(-p_178573_2_.func_177952_p()));
+     }
+ 
+-    private void func_178584_a(
+-        BlockRenderLayer p_178584_1_, float p_178584_2_, float p_178584_3_, float p_178584_4_, BufferBuilder p_178584_5_, CompiledChunk p_178584_6_
+-    )
++    private void func_178584_a(BlockRenderLayer p_178584_1_, float p_178584_2_, float p_178584_3_, float p_178584_4_, BufferBuilder p_178584_5_, CompiledChunk p_178584_6_)
+     {
+         if (p_178584_1_ == BlockRenderLayer.TRANSLUCENT && !p_178584_6_.func_178491_b(p_178584_1_))
+         {
+@@ -440,6 +432,26 @@
      {
          return this.field_178593_n && this.field_188284_q;
      }

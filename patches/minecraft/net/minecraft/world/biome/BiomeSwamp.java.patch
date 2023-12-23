@@ -1,33 +1,70 @@
 --- before/net/minecraft/world/biome/BiomeSwamp.java
 +++ after/net/minecraft/world/biome/BiomeSwamp.java
-@@ -39,19 +39,6 @@
+@@ -34,39 +34,21 @@
+         this.field_76761_J.add(new Biome.SpawnListEntry(EntitySlime.class, 1, 1, 1));
+     }
+ 
+-    @Override
+     public WorldGenAbstractTree func_150567_a(Random p_150567_1_)
+     {
          return field_76763_Q;
      }
  
 -    @SideOnly(Side.CLIENT)
+-    @Override
 -    public int func_180627_b(BlockPos p_180627_1_)
 -    {
--        double d0 = field_180281_af.func_151601_a((double)p_180627_1_.func_177958_n() * 0.0225D, (double)p_180627_1_.func_177952_p() * 0.0225D);
--        return d0 < -0.1D ? 5011004 : 6975545;
+-        double d0 = field_180281_af.func_151601_a((double)p_180627_1_.func_177958_n() * 0.0225, (double)p_180627_1_.func_177952_p() * 0.0225);
+-        return d0 < -0.1 ? 5011004 : 6975545;
 -    }
 -
 -    @SideOnly(Side.CLIENT)
+-    @Override
 -    public int func_180625_c(BlockPos p_180625_1_)
 -    {
 -        return 6975545;
 -    }
 -
+-    @Override
      public BlockFlower.EnumFlowerType func_180623_a(Random p_180623_1_, BlockPos p_180623_2_)
      {
          return BlockFlower.EnumFlowerType.BLUE_ORCHID;
-@@ -92,9 +79,29 @@
+     }
+ 
+-    @Override
+     public void func_180622_a(World p_180622_1_, Random p_180622_2_, ChunkPrimer p_180622_3_, int p_180622_4_, int p_180622_5_, double p_180622_6_)
+     {
+-        double d0 = field_180281_af.func_151601_a((double)p_180622_4_ * 0.25, (double)p_180622_5_ * 0.25);
++        double d0 = field_180281_af.func_151601_a((double)p_180622_4_ * 0.25D, (double)p_180622_5_ * 0.25D);
+ 
+-        if (d0 > 0.0)
++        if (d0 > 0.0D)
+         {
+             int i = p_180622_4_ & 15;
+             int j = p_180622_5_ & 15;
+@@ -79,7 +61,7 @@
+                     {
+                         p_180622_3_.func_177855_a(j, k, i, field_185372_h);
+ 
+-                        if (d0 < 0.12)
++                        if (d0 < 0.12D)
+                         {
+                             p_180622_3_.func_177855_a(j, k + 1, i, field_185387_y);
+                         }
+@@ -93,14 +75,33 @@
+         this.func_180628_b(p_180622_1_, p_180622_2_, p_180622_3_, p_180622_4_, p_180622_5_, p_180622_6_);
+     }
+ 
+-    @Override
+     public void func_180624_a(World p_180624_1_, Random p_180624_2_, BlockPos p_180624_3_)
      {
          super.func_180624_a(p_180624_1_, p_180624_2_, p_180624_3_);
  
 +        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(p_180624_1_, p_180624_2_, new net.minecraft.util.math.ChunkPos(p_180624_3_), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FOSSIL))
          if (p_180624_2_.nextInt(64) == 0)
          {
-             (new WorldGenFossils()).func_180709_b(p_180624_1_, p_180624_2_, p_180624_3_);
+-            new WorldGenFossils().func_180709_b(p_180624_1_, p_180624_2_, p_180624_3_);
++            (new WorldGenFossils()).func_180709_b(p_180624_1_, p_180624_2_, p_180624_3_);
          }
 +    }
 +

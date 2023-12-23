@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/WorldServerMulti.java
 +++ after/net/minecraft/world/WorldServerMulti.java
-@@ -11,12 +11,13 @@
+@@ -11,57 +11,51 @@
  public class WorldServerMulti extends WorldServer
  {
      private final WorldServer field_175743_a;
@@ -13,9 +13,38 @@
 -        p_i45923_4_.func_175723_af().func_177737_a(new IBorderListener()
 +        this.borderListener = new IBorderListener()
          {
+-            @Override
              public void func_177694_a(WorldBorder p_177694_1_, double p_177694_2_)
              {
-@@ -46,11 +47,13 @@
+                 WorldServerMulti.this.func_175723_af().func_177750_a(p_177694_2_);
+             }
+-            @Override
+             public void func_177692_a(WorldBorder p_177692_1_, double p_177692_2_, double p_177692_4_, long p_177692_6_)
+             {
+                 WorldServerMulti.this.func_175723_af().func_177738_a(p_177692_2_, p_177692_4_, p_177692_6_);
+             }
+-            @Override
+             public void func_177693_a(WorldBorder p_177693_1_, double p_177693_2_, double p_177693_4_)
+             {
+                 WorldServerMulti.this.func_175723_af().func_177739_c(p_177693_2_, p_177693_4_);
+             }
+-            @Override
+             public void func_177691_a(WorldBorder p_177691_1_, int p_177691_2_)
+             {
+                 WorldServerMulti.this.func_175723_af().func_177723_b(p_177691_2_);
+             }
+-            @Override
+             public void func_177690_b(WorldBorder p_177690_1_, int p_177690_2_)
+             {
+                 WorldServerMulti.this.func_175723_af().func_177747_c(p_177690_2_);
+             }
+-            @Override
+             public void func_177696_b(WorldBorder p_177696_1_, double p_177696_2_)
+             {
+                 WorldServerMulti.this.func_175723_af().func_177744_c(p_177696_2_);
+             }
+-            @Override
+             public void func_177695_c(WorldBorder p_177695_1_, double p_177695_2_)
              {
                  WorldServerMulti.this.func_175723_af().func_177724_b(p_177695_2_);
              }
@@ -24,13 +53,17 @@
 +        this.field_175743_a.func_175723_af().func_177737_a(this.borderListener);
      }
  
+-    @Override
      protected void func_73042_a() throws MinecraftException
      {
 +        this.perWorldStorage.func_75744_a();
      }
  
+-    @Override
      public World func_175643_b()
-@@ -60,12 +63,12 @@
+     {
+         this.field_72988_C = this.field_175743_a.func_175693_T();
+@@ -69,12 +63,12 @@
          this.field_184151_B = this.field_175743_a.func_184146_ak();
          this.field_191951_C = this.field_175743_a.func_191952_z();
          String s = VillageCollection.func_176062_a(this.field_73011_w);
@@ -45,7 +78,7 @@
          }
          else
          {
-@@ -73,7 +76,16 @@
+@@ -82,7 +76,16 @@
              this.field_72982_D.func_82566_a(this);
          }
  

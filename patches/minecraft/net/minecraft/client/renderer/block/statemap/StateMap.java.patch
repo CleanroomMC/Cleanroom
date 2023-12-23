@@ -8,8 +8,11 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  
-@@ -29,16 +30,16 @@
+@@ -27,19 +28,18 @@
+         this.field_178140_d = p_i46210_3_;
+     }
  
+-    @Override
      protected ModelResourceLocation func_178132_a(IBlockState p_178132_1_)
      {
 -        Map < IProperty<?>, Comparable<? >> map = Maps.newLinkedHashMap(p_178132_1_.func_177228_b());
@@ -28,16 +31,7 @@
          }
  
          if (this.field_178141_c != null)
-@@ -56,7 +57,7 @@
- 
-     private <T extends Comparable<T>> String func_187490_a(IProperty<T> p_187490_1_, Map < IProperty<?>, Comparable<? >> p_187490_2_)
-     {
--        return p_187490_1_.func_177702_a((T)(p_187490_2_.remove(this.field_178142_a)));
-+        return p_187490_1_.func_177702_a((T)p_187490_2_.remove(this.field_178142_a));
-     }
- 
-     @SideOnly(Side.CLIENT)
-@@ -64,7 +65,7 @@
+@@ -65,7 +65,7 @@
          {
              private IProperty<?> field_178445_a;
              private String field_178443_b;

@@ -1,6 +1,13 @@
 --- before/net/minecraft/client/gui/GuiUtilRenderComponents.java
 +++ after/net/minecraft/client/gui/GuiUtilRenderComponents.java
-@@ -21,7 +21,7 @@
+@@ -17,13 +17,11 @@
+         return !p_178909_1_ && !Minecraft.func_71410_x().field_71474_y.field_74344_o ? TextFormatting.func_110646_a(p_178909_0_) : p_178909_0_;
+     }
+ 
+-    public static List<ITextComponent> func_178908_a(
+-            ITextComponent p_178908_0_, int p_178908_1_, FontRenderer p_178908_2_, boolean p_178908_3_, boolean p_178908_4_
+-        )
++    public static List<ITextComponent> func_178908_a(ITextComponent p_178908_0_, int p_178908_1_, FontRenderer p_178908_2_, boolean p_178908_3_, boolean p_178908_4_)
      {
          int i = 0;
          ITextComponent itextcomponent = new TextComponentString("");
@@ -9,7 +16,7 @@
          List<ITextComponent> list1 = Lists.newArrayList(p_178908_0_);
  
          for (int j = 0; j < list1.size(); ++j)
-@@ -49,18 +49,20 @@
+@@ -51,18 +49,20 @@
  
              if (i + i1 > p_178908_1_)
              {

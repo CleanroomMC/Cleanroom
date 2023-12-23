@@ -95,7 +95,7 @@
  
          try
          {
--            dataentry = this.field_187234_c.get(p_187219_1_.func_187155_a());
+-            dataentry = (EntityDataManager.DataEntry)this.field_187234_c.get(p_187219_1_.func_187155_a());
 +            dataentry = (EntityDataManager.DataEntry)this.field_187234_c.get(Integer.valueOf(p_187219_1_.func_187155_a()));
          }
          catch (Throwable throwable)

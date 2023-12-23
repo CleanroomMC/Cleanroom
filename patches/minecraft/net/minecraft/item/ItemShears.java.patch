@@ -1,19 +1,37 @@
 --- before/net/minecraft/item/ItemShears.java
 +++ after/net/minecraft/item/ItemShears.java
-@@ -26,6 +26,7 @@
+@@ -18,7 +18,6 @@
+         this.func_77637_a(CreativeTabs.field_78040_i);
+     }
+ 
+-    @Override
+     public boolean func_179218_a(ItemStack p_179218_1_, World p_179218_2_, IBlockState p_179218_3_, BlockPos p_179218_4_, EntityLivingBase p_179218_5_)
+     {
+         if (!p_179218_2_.field_72995_K)
+@@ -27,35 +26,96 @@
          }
  
          Block block = p_179218_3_.func_177230_c();
+-        return p_179218_3_.func_185904_a() != Material.field_151584_j
+-               && block != Blocks.field_150321_G
+-               && block != Blocks.field_150329_H
+-               && block != Blocks.field_150395_bd
+-               && block != Blocks.field_150473_bD
+-               && block != Blocks.field_150325_L
+-               ? super.func_179218_a(p_179218_1_, p_179218_2_, p_179218_3_, p_179218_4_, p_179218_5_)
+-               : true;
 +        if (block instanceof net.minecraftforge.common.IShearable) return true;
-         return p_179218_3_.func_185904_a() != Material.field_151584_j && block != Blocks.field_150321_G && block != Blocks.field_150329_H && block != Blocks.field_150395_bd && block != Blocks.field_150473_bD && block != Blocks.field_150325_L ? super.func_179218_a(p_179218_1_, p_179218_2_, p_179218_3_, p_179218_4_, p_179218_5_) : true;
++        return p_179218_3_.func_185904_a() != Material.field_151584_j && block != Blocks.field_150321_G && block != Blocks.field_150329_H && block != Blocks.field_150395_bd && block != Blocks.field_150473_bD && block != Blocks.field_150325_L ? super.func_179218_a(p_179218_1_, p_179218_2_, p_179218_3_, p_179218_4_, p_179218_5_) : true;
      }
  
-@@ -33,6 +34,75 @@
+-    @Override
+     public boolean func_150897_b(IBlockState p_150897_1_)
      {
          Block block = p_150897_1_.func_177230_c();
          return block == Blocks.field_150321_G || block == Blocks.field_150488_af || block == Blocks.field_150473_bD;
-+    }
-+
+     }
+ 
+-    @Override
 +
 +    @Override
 +    public boolean func_111207_a(ItemStack itemstack, net.minecraft.entity.player.EntityPlayer player, EntityLivingBase entity, net.minecraft.util.EnumHand hand)
@@ -81,6 +99,24 @@
 +            }
 +        }
 +        return false;
-     }
- 
++    }
++
      public float func_150893_a(ItemStack p_150893_1_, IBlockState p_150893_2_)
+     {
+         Block block = p_150893_2_.func_177230_c();
+ 
+-        if (block == Blocks.field_150321_G || p_150893_2_.func_185904_a() == Material.field_151584_j)
+-        {
+-            return 15.0F;
+-        }
+-        else
++        if (block != Blocks.field_150321_G && p_150893_2_.func_185904_a() != Material.field_151584_j)
+         {
+             return block == Blocks.field_150325_L ? 5.0F : super.func_150893_a(p_150893_1_, p_150893_2_);
++        }
++        else
++        {
++            return 15.0F;
+         }
+     }
+ }

@@ -1,26 +1,46 @@
 --- before/net/minecraft/tileentity/TileEntityBeacon.java
 +++ after/net/minecraft/tileentity/TileEntityBeacon.java
-@@ -37,8 +37,8 @@
+@@ -36,15 +36,9 @@
+ 
  public class TileEntityBeacon extends TileEntityLockable implements ITickable, ISidedInventory
  {
-     public static final Potion[][] field_146009_a = new Potion[][] {{MobEffects.field_76424_c, MobEffects.field_76422_e}, {MobEffects.field_76429_m, MobEffects.field_76430_j}, {MobEffects.field_76420_g}, {MobEffects.field_76428_l}};
+-    public static final Potion[][] field_146009_a = new Potion[][]
+-        {
+-            {MobEffects.field_76424_c, MobEffects.field_76422_e},
+-            {MobEffects.field_76429_m, MobEffects.field_76430_j},
+-            {MobEffects.field_76420_g},
+-            {MobEffects.field_76428_l}
+-        };
 -    private static final Set<Potion> field_184280_f = Sets.newHashSet();
 -    private final List<TileEntityBeacon.BeamSegment> field_174909_f = Lists.newArrayList();
++    public static final Potion[][] field_146009_a = new Potion[][] {{MobEffects.field_76424_c, MobEffects.field_76422_e}, {MobEffects.field_76429_m, MobEffects.field_76430_j}, {MobEffects.field_76420_g}, {MobEffects.field_76428_l}};
 +    private static final Set<Potion> field_184280_f = Sets.<Potion>newHashSet();
 +    private final List<TileEntityBeacon.BeamSegment> field_174909_f = Lists.<TileEntityBeacon.BeamSegment>newArrayList();
      @SideOnly(Side.CLIENT)
      private long field_146016_i;
      @SideOnly(Side.CLIENT)
-@@ -86,7 +86,7 @@
+@@ -58,7 +52,6 @@
+     private ItemStack field_146011_o = ItemStack.field_190927_a;
+     private String field_146008_p;
+ 
+-    @Override
+     public void func_73660_a()
+     {
+         if (this.field_145850_b.func_82737_E() % 80L == 0L)
+@@ -92,10 +85,8 @@
+             int k = this.field_174879_c.func_177958_n();
              int l = this.field_174879_c.func_177956_o();
              int i1 = this.field_174879_c.func_177952_p();
-             AxisAlignedBB axisalignedbb = (new AxisAlignedBB((double)k, (double)l, (double)i1, (double)(k + 1), (double)(l + 1), (double)(i1 + 1))).func_186662_g(d0).func_72321_a(0.0D, (double)this.field_145850_b.func_72800_K(), 0.0D);
+-            AxisAlignedBB axisalignedbb = new AxisAlignedBB((double)k, (double)l, (double)i1, (double)(k + 1), (double)(l + 1), (double)(i1 + 1))
+-            .func_186662_g(d0)
+-            .func_72321_a(0.0, (double)this.field_145850_b.func_72800_K(), 0.0);
 -            List<EntityPlayer> list = this.field_145850_b.func_72872_a(EntityPlayer.class, axisalignedbb);
++            AxisAlignedBB axisalignedbb = (new AxisAlignedBB((double)k, (double)l, (double)i1, (double)(k + 1), (double)(l + 1), (double)(i1 + 1))).func_186662_g(d0).func_72321_a(0.0D, (double)this.field_145850_b.func_72800_K(), 0.0D);
 +            List<EntityPlayer> list = this.field_145850_b.<EntityPlayer>func_72872_a(EntityPlayer.class, axisalignedbb);
  
              for (EntityPlayer entityplayer : list)
              {
-@@ -124,24 +124,28 @@
+@@ -133,34 +124,33 @@
  
              if (iblockstate.func_177230_c() == Blocks.field_150399_cn)
              {
@@ -54,7 +74,18 @@
              }
  
              if (!flag)
-@@ -181,7 +185,7 @@
+             {
+-                afloat = new float[]
+-                {
+-                    (tileentitybeacon$beamsegment.func_177263_b()[0] + afloat[0]) / 2.0F,
+-                    (tileentitybeacon$beamsegment.func_177263_b()[1] + afloat[1]) / 2.0F,
+-                    (tileentitybeacon$beamsegment.func_177263_b()[2] + afloat[2]) / 2.0F
+-                };
++                afloat = new float[] {(tileentitybeacon$beamsegment.func_177263_b()[0] + afloat[0]) / 2.0F, (tileentitybeacon$beamsegment.func_177263_b()[1] + afloat[1]) / 2.0F, (tileentitybeacon$beamsegment.func_177263_b()[2] + afloat[2]) / 2.0F};
+             }
+ 
+             if (Arrays.equals(afloat, tileentitybeacon$beamsegment.func_177263_b()))
+@@ -195,7 +185,7 @@
                      {
                          Block block = this.field_145850_b.func_180495_p(new BlockPos(j1, i2, k1)).func_177230_c();
  
@@ -63,21 +94,250 @@
                          {
                              flag1 = false;
                              break;
-@@ -381,7 +385,7 @@
+@@ -217,10 +207,7 @@
+ 
+         if (!this.field_145850_b.field_72995_K && l < this.field_146012_l)
+         {
+-            for (EntityPlayerMP entityplayermp : this.field_145850_b
+-                    .func_72872_a(
+-                        EntityPlayerMP.class, new AxisAlignedBB((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).func_72314_b(10.0, 5.0, 10.0)
+-                    ))
++            for (EntityPlayerMP entityplayermp : this.field_145850_b.func_72872_a(EntityPlayerMP.class, (new AxisAlignedBB((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k)).func_72314_b(10.0D, 5.0D, 10.0D)))
+             {
+                 CriteriaTriggers.field_192131_k.func_192180_a(entityplayermp, this);
+             }
+@@ -272,23 +259,20 @@
+     }
+ 
+     @Nullable
+-    @Override
+     public SPacketUpdateTileEntity func_189518_D_()
+     {
+         return new SPacketUpdateTileEntity(this.field_174879_c, 3, this.func_189517_E_());
+     }
+ 
+-    @Override
+     public NBTTagCompound func_189517_E_()
+     {
+         return this.func_189515_b(new NBTTagCompound());
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    @Override
+     public double func_145833_n()
+     {
+-        return 65536.0;
++        return 65536.0D;
+     }
+ 
+     @Nullable
+@@ -298,7 +282,6 @@
+         return field_184280_f.contains(potion) ? potion : null;
+     }
+ 
+-    @Override
+     public void func_145839_a(NBTTagCompound p_145839_1_)
+     {
+         super.func_145839_a(p_145839_1_);
+@@ -307,7 +290,6 @@
+         this.field_146012_l = p_145839_1_.func_74762_e("Levels");
+     }
+ 
+-    @Override
+     public NBTTagCompound func_189515_b(NBTTagCompound p_189515_1_)
+     {
+         super.func_189515_b(p_189515_1_);
+@@ -317,44 +299,42 @@
+         return p_189515_1_;
+     }
+ 
+-    @Override
+     public int func_70302_i_()
+     {
+         return 1;
+     }
+ 
+-    @Override
+     public boolean func_191420_l()
+     {
+         return this.field_146011_o.func_190926_b();
+     }
+ 
+-    @Override
+     public ItemStack func_70301_a(int p_70301_1_)
+     {
+         return p_70301_1_ == 0 ? this.field_146011_o : ItemStack.field_190927_a;
+     }
+ 
+-    @Override
+     public ItemStack func_70298_a(int p_70298_1_, int p_70298_2_)
+     {
+-        if (p_70298_1_ != 0 || this.field_146011_o.func_190926_b())
+-        {
+-            return ItemStack.field_190927_a;
+-        }
+-        else if (p_70298_2_ >= this.field_146011_o.func_190916_E())
+-        {
+-            ItemStack itemstack = this.field_146011_o;
+-            this.field_146011_o = ItemStack.field_190927_a;
+-            return itemstack;
++        if (p_70298_1_ == 0 && !this.field_146011_o.func_190926_b())
++        {
++            if (p_70298_2_ >= this.field_146011_o.func_190916_E())
++            {
++                ItemStack itemstack = this.field_146011_o;
++                this.field_146011_o = ItemStack.field_190927_a;
++                return itemstack;
++            }
++            else
++            {
++                return this.field_146011_o.func_77979_a(p_70298_2_);
++            }
          }
          else
          {
--            return !(p_70300_1_.func_70092_e((double)this.field_174879_c.func_177958_n() + 0.5D, (double)this.field_174879_c.func_177956_o() + 0.5D, (double)this.field_174879_c.func_177952_p() + 0.5D) > 64.0D);
+-            return this.field_146011_o.func_77979_a(p_70298_2_);
++            return ItemStack.field_190927_a;
+         }
+     }
+ 
+-    @Override
+     public ItemStack func_70304_b(int p_70304_1_)
+     {
+         if (p_70304_1_ == 0)
+@@ -369,7 +349,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_70299_a(int p_70299_1_, ItemStack p_70299_2_)
+     {
+         if (p_70299_1_ == 0)
+@@ -378,13 +357,11 @@
+         }
+     }
+ 
+-    @Override
+     public String func_70005_c_()
+     {
+         return this.func_145818_k_() ? this.field_146008_p : "container.beacon";
+     }
+ 
+-    @Override
+     public boolean func_145818_k_()
+     {
+         return this.field_146008_p != null && !this.field_146008_p.isEmpty();
+@@ -395,13 +372,11 @@
+         this.field_146008_p = p_145999_1_;
+     }
+ 
+-    @Override
+     public int func_70297_j_()
+     {
+         return 1;
+     }
+ 
+-    @Override
+     public boolean func_70300_a(EntityPlayer p_70300_1_)
+     {
+         if (this.field_145850_b.func_175625_s(this.field_174879_c) != this)
+@@ -410,49 +385,33 @@
+         }
+         else
+         {
+-            return !(
+-                       p_70300_1_.func_70092_e(
+-                           (double)this.field_174879_c.func_177958_n() + 0.5,
+-                           (double)this.field_174879_c.func_177956_o() + 0.5,
+-                           (double)this.field_174879_c.func_177952_p() + 0.5
+-                       )
+-                       > 64.0
+-                   );
 +            return p_70300_1_.func_70092_e((double)this.field_174879_c.func_177958_n() + 0.5D, (double)this.field_174879_c.func_177956_o() + 0.5D, (double)this.field_174879_c.func_177952_p() + 0.5D) <= 64.0D;
          }
      }
  
-@@ -395,7 +399,7 @@
+-    @Override
+     public void func_174889_b(EntityPlayer p_174889_1_)
+     {
+     }
  
+-    @Override
+     public void func_174886_c(EntityPlayer p_174886_1_)
+     {
+     }
+ 
+-    @Override
      public boolean func_94041_b(int p_94041_1_, ItemStack p_94041_2_)
      {
--        return p_94041_2_.func_77973_b() == Items.field_151166_bC || p_94041_2_.func_77973_b() == Items.field_151045_i || p_94041_2_.func_77973_b() == Items.field_151043_k || p_94041_2_.func_77973_b() == Items.field_151042_j;
+-        return p_94041_2_.func_77973_b() == Items.field_151166_bC
+-               || p_94041_2_.func_77973_b() == Items.field_151045_i
+-               || p_94041_2_.func_77973_b() == Items.field_151043_k
+-               || p_94041_2_.func_77973_b() == Items.field_151042_j;
 +        return p_94041_2_.func_77973_b() != null && p_94041_2_.func_77973_b().isBeaconPayment(p_94041_2_);
      }
  
+-    @Override
      public String func_174875_k()
+     {
+         return "minecraft:beacon";
+     }
+ 
+-    @Override
+     public Container func_174876_a(InventoryPlayer p_174876_1_, EntityPlayer p_174876_2_)
+     {
+         return new ContainerBeacon(p_174876_1_, this);
+     }
+ 
+-    @Override
+     public int func_174887_a_(int p_174887_1_)
+     {
+         switch (p_174887_1_)
+@@ -468,7 +427,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_174885_b(int p_174885_1_, int p_174885_2_)
+     {
+         switch (p_174885_1_)
+@@ -484,19 +442,16 @@
+         }
+     }
+ 
+-    @Override
+     public int func_174890_g()
+     {
+         return 3;
+     }
+ 
+-    @Override
+     public void func_174888_l()
+     {
+         this.field_146011_o = ItemStack.field_190927_a;
+     }
+ 
+-    @Override
+     public boolean func_145842_c(int p_145842_1_, int p_145842_2_)
+     {
+         if (p_145842_1_ == 1)
+@@ -510,19 +465,16 @@
+         }
+     }
+ 
+-    @Override
+     public int[] func_180463_a(EnumFacing p_180463_1_)
+     {
+         return new int[0];
+     }
+ 
+-    @Override
+     public boolean func_180462_a(int p_180462_1_, ItemStack p_180462_2_, EnumFacing p_180462_3_)
+     {
+         return false;
+     }
+ 
+-    @Override
+     public boolean func_180461_b(int p_180461_1_, ItemStack p_180461_2_, EnumFacing p_180461_3_)
+     {
+         return false;

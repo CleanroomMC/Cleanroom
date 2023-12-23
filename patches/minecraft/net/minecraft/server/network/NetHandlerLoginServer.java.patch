@@ -1,6 +1,14 @@
 --- before/net/minecraft/server/network/NetHandlerLoginServer.java
 +++ after/net/minecraft/server/network/NetHandlerLoginServer.java
-@@ -69,14 +69,14 @@
+@@ -56,7 +56,6 @@
+         field_147329_d.nextBytes(this.field_147330_e);
+     }
+ 
+-    @Override
+     public void func_73660_a()
+     {
+         if (this.field_147328_g == NetHandlerLoginServer.LoginState.READY_TO_ACCEPT)
+@@ -70,14 +69,14 @@
              if (entityplayermp == null)
              {
                  this.field_147328_g = NetHandlerLoginServer.LoginState.READY_TO_ACCEPT;
@@ -17,7 +25,7 @@
          }
      }
  
-@@ -105,7 +105,7 @@
+@@ -106,7 +105,7 @@
  
          if (s != null)
          {
@@ -26,7 +34,7 @@
          }
          else
          {
-@@ -132,7 +132,7 @@
+@@ -133,12 +132,11 @@
              }
              else
              {
@@ -35,22 +43,77 @@
              }
          }
      }
-@@ -177,7 +177,7 @@
+ 
+-    @Override
+     public void func_147231_a(ITextComponent p_147231_1_)
+     {
+         field_147332_c.info("{} lost connection: {}", this.func_147317_d(), p_147231_1_.func_150260_c());
+@@ -146,12 +144,9 @@
+ 
+     public String func_147317_d()
+     {
+-        return this.field_147337_i != null
+-               ? this.field_147337_i + " (" + this.field_147333_a.func_74430_c() + ")"
+-               : String.valueOf(this.field_147333_a.func_74430_c());
++        return this.field_147337_i != null ? this.field_147337_i + " (" + this.field_147333_a.func_74430_c() + ")" : String.valueOf((Object)this.field_147333_a.func_74430_c());
+     }
+ 
+-    @Override
+     public void func_147316_a(CPacketLoginStart p_147316_1_)
+     {
+         Validate.validState(this.field_147328_g == NetHandlerLoginServer.LoginState.HELLO, "Unexpected hello packet");
+@@ -168,7 +163,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_147315_a(CPacketEncryptionResponse p_147315_1_)
+     {
+         Validate.validState(this.field_147328_g == NetHandlerLoginServer.LoginState.KEY, "Unexpected key packet");
+@@ -183,31 +177,20 @@
              this.field_147335_k = p_147315_1_.func_149300_a(privatekey);
              this.field_147328_g = NetHandlerLoginServer.LoginState.AUTHENTICATING;
              this.field_147333_a.func_150727_a(this.field_147335_k);
 -            (new Thread("User Authenticator #" + field_147331_b.incrementAndGet())
 +            (new Thread(net.minecraftforge.fml.common.thread.SidedThreadGroups.SERVER, "User Authenticator #" + field_147331_b.incrementAndGet())
              {
+-                @Override
                  public void run()
                  {
-@@ -201,11 +201,11 @@
+                     GameProfile gameprofile = NetHandlerLoginServer.this.field_147337_i;
+ 
+                     try
+                     {
+-                        String s = new BigInteger(
+-                            CryptManager.func_75895_a(
+-                                "", NetHandlerLoginServer.this.field_147327_f.func_71250_E().getPublic(), NetHandlerLoginServer.this.field_147335_k
+-                            )
+-                        )
+-                        .toString(16);
+-                        NetHandlerLoginServer.this.field_147337_i = NetHandlerLoginServer.this.field_147327_f
+-                                .func_147130_as()
+-                                .hasJoinedServer(new GameProfile(null, gameprofile.getName()), s, this.func_191235_a());
++                        String s = (new BigInteger(CryptManager.func_75895_a("", NetHandlerLoginServer.this.field_147327_f.func_71250_E().getPublic(), NetHandlerLoginServer.this.field_147335_k))).toString(16);
++                        NetHandlerLoginServer.this.field_147337_i = NetHandlerLoginServer.this.field_147327_f.func_147130_as().hasJoinedServer(new GameProfile((UUID)null, gameprofile.getName()), s, this.func_191235_a());
+ 
+                         if (NetHandlerLoginServer.this.field_147337_i != null)
+                         {
+-                            NetHandlerLoginServer.field_147332_c
+-                            .info(
+-                                "UUID of player {} is {}", NetHandlerLoginServer.this.field_147337_i.getName(), NetHandlerLoginServer.this.field_147337_i.getId()
+-                            );
++                            NetHandlerLoginServer.field_147332_c.info("UUID of player {} is {}", NetHandlerLoginServer.this.field_147337_i.getName(), NetHandlerLoginServer.this.field_147337_i.getId());
+                             NetHandlerLoginServer.this.field_147328_g = NetHandlerLoginServer.LoginState.READY_TO_ACCEPT;
+                         }
+                         else if (NetHandlerLoginServer.this.field_147327_f.func_71264_H())
+@@ -218,11 +201,11 @@
                          }
                          else
                          {
 -                            NetHandlerLoginServer.this.func_194026_b(new TextComponentTranslation("multiplayer.disconnect.unverified_username"));
+-                            NetHandlerLoginServer.field_147332_c.error("Username '{}' tried to join with an invalid session", gameprofile.getName());
 +                            NetHandlerLoginServer.this.func_194026_b(new TextComponentTranslation("multiplayer.disconnect.unverified_username", new Object[0]));
-                             NetHandlerLoginServer.field_147332_c.error("Username '{}' tried to join with an invalid session", (Object)gameprofile.getName());
++                            NetHandlerLoginServer.field_147332_c.error("Username '{}' tried to join with an invalid session", (Object)gameprofile.getName());
                          }
                      }
 -                    catch (AuthenticationUnavailableException authenticationunavailableexception)
@@ -58,7 +121,7 @@
                      {
                          if (NetHandlerLoginServer.this.field_147327_f.func_71264_H())
                          {
-@@ -215,7 +215,7 @@
+@@ -232,7 +215,7 @@
                          }
                          else
                          {
@@ -67,3 +130,18 @@
                              NetHandlerLoginServer.field_147332_c.error("Couldn't verify username because servers are unavailable");
                          }
                      }
+@@ -241,12 +224,9 @@
+                 private InetAddress func_191235_a()
+                 {
+                     SocketAddress socketaddress = NetHandlerLoginServer.this.field_147333_a.func_74430_c();
+-                    return NetHandlerLoginServer.this.field_147327_f.func_190518_ac() && socketaddress instanceof InetSocketAddress
+-                           ? ((InetSocketAddress)socketaddress).getAddress()
+-                           : null;
++                    return NetHandlerLoginServer.this.field_147327_f.func_190518_ac() && socketaddress instanceof InetSocketAddress ? ((InetSocketAddress)socketaddress).getAddress() : null;
+                 }
+-            })
+-            .start();
++            }).start();
+         }
+     }
+ 

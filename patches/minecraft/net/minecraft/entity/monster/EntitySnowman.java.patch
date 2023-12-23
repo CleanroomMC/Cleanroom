@@ -12,22 +12,34 @@
  
      public EntitySnowman(World p_i1692_1_)
      {
-@@ -52,20 +52,20 @@
-         this.field_70714_bg.func_75776_a(2, new EntityAIWanderAvoidWater(this, 1.0D, 1.0000001E-5F));
+@@ -46,39 +46,34 @@
+         EntityLiving.func_189752_a(p_189783_0_, EntitySnowman.class);
+     }
+ 
+-    @Override
+     protected void func_184651_r()
+     {
+-        this.field_70714_bg.func_75776_a(1, new EntityAIAttackRanged(this, 1.25, 20, 10.0F));
+-        this.field_70714_bg.func_75776_a(2, new EntityAIWanderAvoidWater(this, 1.0, 1.0000001E-5F));
++        this.field_70714_bg.func_75776_a(1, new EntityAIAttackRanged(this, 1.25D, 20, 10.0F));
++        this.field_70714_bg.func_75776_a(2, new EntityAIWanderAvoidWater(this, 1.0D, 1.0000001E-5F));
          this.field_70714_bg.func_75776_a(3, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
          this.field_70714_bg.func_75776_a(4, new EntityAILookIdle(this));
 -        this.field_70715_bh.func_75776_a(1, new EntityAINearestAttackableTarget<>(this, EntityLiving.class, 10, true, false, IMob.field_82192_a));
 +        this.field_70715_bh.func_75776_a(1, new EntityAINearestAttackableTarget(this, EntityLiving.class, 10, true, false, IMob.field_82192_a));
      }
  
+-    @Override
      protected void func_110147_ax()
      {
          super.func_110147_ax();
-         this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(4.0D);
--        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a((double)0.2F);
+-        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(4.0);
+-        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.2F);
++        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(4.0D);
 +        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.20000000298023224D);
      }
  
+-    @Override
      protected void func_70088_a()
      {
          super.func_70088_a();
@@ -35,8 +47,26 @@
 +        this.field_70180_af.func_187214_a(field_184749_a, Byte.valueOf((byte)16));
      }
  
+-    @Override
      public void func_70014_b(NBTTagCompound p_70014_1_)
-@@ -104,7 +104,7 @@
+     {
+         super.func_70014_b(p_70014_1_);
+         p_70014_1_.func_74757_a("Pumpkin", this.func_184748_o());
+     }
+ 
+-    @Override
+     public void func_70037_a(NBTTagCompound p_70037_1_)
+     {
+         super.func_70037_a(p_70037_1_);
+@@ -89,7 +84,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_70636_d()
+     {
+         super.func_70636_d();
+@@ -110,7 +104,7 @@
                  this.func_70097_a(DamageSource.field_76370_b, 1.0F);
              }
  
@@ -45,16 +75,48 @@
              {
                  return;
              }
-@@ -133,7 +133,7 @@
+@@ -122,9 +116,7 @@
+                 k = MathHelper.func_76128_c(this.field_70161_v + (double)((float)(l / 2 % 2 * 2 - 1) * 0.25F));
+                 BlockPos blockpos = new BlockPos(i, j, k);
+ 
+-                if (this.field_70170_p.func_180495_p(blockpos).func_185904_a() == Material.field_151579_a
+-                        && this.field_70170_p.func_180494_b(blockpos).func_180626_a(blockpos) < 0.8F
+-                        && Blocks.field_150431_aC.func_176196_c(this.field_70170_p, blockpos))
++                if (this.field_70170_p.func_180495_p(blockpos).func_185904_a() == Material.field_151579_a && this.field_70170_p.func_180494_b(blockpos).func_180626_a(blockpos) < 0.8F && Blocks.field_150431_aC.func_176196_c(this.field_70170_p, blockpos))
+                 {
+                     this.field_70170_p.func_175656_a(blockpos, Blocks.field_150431_aC.func_176223_P());
+                 }
+@@ -133,17 +125,15 @@
+     }
+ 
+     @Nullable
+-    @Override
+     protected ResourceLocation func_184647_J()
+     {
+         return LootTableList.field_186444_z;
+     }
+ 
+-    @Override
      public void func_82196_d(EntityLivingBase p_82196_1_, float p_82196_2_)
      {
          EntitySnowball entitysnowball = new EntitySnowball(this.field_70170_p, this);
--        double d0 = p_82196_1_.field_70163_u + (double)p_82196_1_.func_70047_e() - (double)1.1F;
+-        double d0 = p_82196_1_.field_70163_u + (double)p_82196_1_.func_70047_e() - 1.1F;
 +        double d0 = p_82196_1_.field_70163_u + (double)p_82196_1_.func_70047_e() - 1.100000023841858D;
          double d1 = p_82196_1_.field_70165_t - this.field_70165_t;
          double d2 = d0 - entitysnowball.field_70163_u;
          double d3 = p_82196_1_.field_70161_v - this.field_70161_v;
-@@ -152,7 +152,7 @@
+@@ -153,18 +143,16 @@
+         this.field_70170_p.func_72838_d(entitysnowball);
+     }
+ 
+-    @Override
+     public float func_70047_e()
+     {
+         return 1.7F;
+     }
+ 
+-    @Override
+     protected boolean func_184645_a(EntityPlayer p_184645_1_, EnumHand p_184645_2_)
      {
          ItemStack itemstack = p_184645_1_.func_184586_b(p_184645_2_);
  
@@ -63,7 +125,7 @@
          {
              this.func_184747_a(false);
              itemstack.func_77972_a(1, p_184645_1_);
-@@ -163,20 +163,20 @@
+@@ -175,45 +163,49 @@
  
      public boolean func_184748_o()
      {
@@ -88,18 +150,35 @@
          }
      }
  
-@@ -196,6 +196,14 @@
+     @Nullable
+-    @Override
+     protected SoundEvent func_184639_G()
+     {
+         return SoundEvents.field_187799_fB;
+     }
+ 
+     @Nullable
+-    @Override
+     protected SoundEvent func_184601_bQ(DamageSource p_184601_1_)
+     {
+         return SoundEvents.field_187803_fD;
+     }
+ 
+     @Nullable
+-    @Override
      protected SoundEvent func_184615_bR()
      {
          return SoundEvents.field_187801_fC;
-+    }
-+
+     }
+ 
 +    @Override public boolean isShearable(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos) { return this.func_184748_o(); }
-+    @Override
+     @Override
 +    public java.util.List<ItemStack> onSheared(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune)
 +    {
 +        this.func_184747_a(false);
 +        return com.google.common.collect.Lists.newArrayList();
-     }
- 
++    }
++
      public void func_184724_a(boolean p_184724_1_)
+     {
+     }

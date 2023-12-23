@@ -4,7 +4,7 @@
      {
          protected NioEventLoopGroup func_179280_b()
          {
--            return new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Server IO #%d").setDaemon(true).build());
+-            return new NioEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Server IO #%d").setDaemon(true).build());
 +            return new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Server IO #%d").setDaemon(true).setThreadFactory(net.minecraftforge.fml.common.thread.SidedThreadGroups.SERVER).build());
          }
      };
@@ -12,7 +12,7 @@
      {
          protected EpollEventLoopGroup func_179280_b()
          {
--            return new EpollEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Epoll Server IO #%d").setDaemon(true).build());
+-            return new EpollEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Epoll Server IO #%d").setDaemon(true).build());
 +            return new EpollEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Epoll Server IO #%d").setDaemon(true).setThreadFactory(net.minecraftforge.fml.common.thread.SidedThreadGroups.SERVER).build());
          }
      };
@@ -20,7 +20,7 @@
      {
          protected LocalEventLoopGroup func_179280_b()
          {
--            return new LocalEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Local Server IO #%d").setDaemon(true).build());
+-            return new LocalEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Local Server IO #%d").setDaemon(true).build());
 +            return new LocalEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Local Server IO #%d").setDaemon(true).setThreadFactory(net.minecraftforge.fml.common.thread.SidedThreadGroups.CLIENT).build());
          }
      };
@@ -41,13 +41,19 @@
          synchronized (this.field_151274_e)
          {
              Class <? extends ServerSocketChannel > oclass;
-@@ -97,25 +98,26 @@
+@@ -97,43 +98,26 @@
                  field_151275_b.info("Using default channel type");
              }
  
--            this.field_151274_e.add((new ServerBootstrap()).channel(oclass).childHandler(new ChannelInitializer<Channel>()
+-            this.field_151274_e
+-            .add(
+-                new ServerBootstrap()
+-                .channel(oclass)
+-                .childHandler(
+-                    new ChannelInitializer<Channel>()
 +            this.field_151274_e.add(((ServerBootstrap)((ServerBootstrap)(new ServerBootstrap()).channel(oclass)).childHandler(new ChannelInitializer<Channel>()
              {
+-                @Override
                  protected void initChannel(Channel p_initChannel_1_) throws Exception
                  {
                      try
@@ -61,28 +67,42 @@
 +                        ;
                      }
  
--                    p_initChannel_1_.pipeline().addLast("timeout", new ReadTimeoutHandler(30)).addLast("legacy_query", new LegacyPingHandler(NetworkSystem.this)).addLast("splitter", new NettyVarint21FrameDecoder()).addLast("decoder", new NettyPacketDecoder(EnumPacketDirection.SERVERBOUND)).addLast("prepender", new NettyVarint21FrameEncoder()).addLast("encoder", new NettyPacketEncoder(EnumPacketDirection.CLIENTBOUND));
+-                    p_initChannel_1_.pipeline()
+-                    .addLast("timeout", new ReadTimeoutHandler(30))
+-                    .addLast("legacy_query", new LegacyPingHandler(NetworkSystem.this))
+-                    .addLast("splitter", new NettyVarint21FrameDecoder())
+-                    .addLast("decoder", new NettyPacketDecoder(EnumPacketDirection.SERVERBOUND))
+-                    .addLast("prepender", new NettyVarint21FrameEncoder())
+-                    .addLast("encoder", new NettyPacketEncoder(EnumPacketDirection.CLIENTBOUND));
 +                    p_initChannel_1_.pipeline().addLast("timeout", new ReadTimeoutHandler(net.minecraftforge.fml.common.network.internal.FMLNetworkHandler.READ_TIMEOUT)).addLast("legacy_query", new LegacyPingHandler(NetworkSystem.this)).addLast("splitter", new NettyVarint21FrameDecoder()).addLast("decoder", new NettyPacketDecoder(EnumPacketDirection.SERVERBOUND)).addLast("prepender", new NettyVarint21FrameEncoder()).addLast("encoder", new NettyPacketEncoder(EnumPacketDirection.CLIENTBOUND));
                      NetworkManager networkmanager = new NetworkManager(EnumPacketDirection.SERVERBOUND);
                      NetworkSystem.this.field_151272_f.add(networkmanager);
                      p_initChannel_1_.pipeline().addLast("packet_handler", networkmanager);
                      networkmanager.func_150719_a(new NetHandlerHandshakeTCP(NetworkSystem.this.field_151273_d, networkmanager));
                  }
--            }).group(lazyloadbase.func_179281_c()).localAddress(p_151265_1_, p_151265_2_).bind().syncUninterruptibly());
+-            }
+-                )
+-                .group(lazyloadbase.func_179281_c())
+-                .localAddress(p_151265_1_, p_151265_2_)
+-                .bind()
+-                .syncUninterruptibly()
+-            );
 +            }).group(lazyloadbase.func_179281_c()).localAddress(p_151265_1_, p_151265_2_)).bind().syncUninterruptibly());
          }
      }
  
-@@ -126,7 +128,7 @@
+@@ -144,9 +128,8 @@
  
          synchronized (this.field_151274_e)
          {
--            channelfuture = (new ServerBootstrap()).channel(LocalServerChannel.class).childHandler(new ChannelInitializer<Channel>()
+-            channelfuture = new ServerBootstrap().channel(LocalServerChannel.class).childHandler(new ChannelInitializer<Channel>()
 +            channelfuture = ((ServerBootstrap)((ServerBootstrap)(new ServerBootstrap()).channel(LocalServerChannel.class)).childHandler(new ChannelInitializer<Channel>()
              {
+-                @Override
                  protected void initChannel(Channel p_initChannel_1_) throws Exception
                  {
-@@ -135,7 +137,7 @@
+                     NetworkManager networkmanager = new NetworkManager(EnumPacketDirection.SERVERBOUND);
+@@ -154,7 +137,7 @@
                      NetworkSystem.this.field_151272_f.add(networkmanager);
                      p_initChannel_1_.pipeline().addLast("packet_handler", networkmanager);
                  }
@@ -91,7 +111,7 @@
              this.field_151274_e.add(channelfuture);
          }
  
-@@ -152,7 +154,7 @@
+@@ -171,7 +154,7 @@
              {
                  channelfuture.channel().close().sync();
              }
@@ -100,3 +120,11 @@
              {
                  field_151275_b.error("Interrupted whilst closing channel");
              }
+@@ -216,7 +199,6 @@
+                             final TextComponentString textcomponentstring = new TextComponentString("Internal server error");
+                             networkmanager.func_179288_a(new SPacketDisconnect(textcomponentstring), new GenericFutureListener < Future <? super Void >> ()
+                             {
+-                                @Override
+                                 public void operationComplete(Future <? super Void > p_operationComplete_1_) throws Exception
+                                 {
+                                     networkmanager.func_150718_a(textcomponentstring);

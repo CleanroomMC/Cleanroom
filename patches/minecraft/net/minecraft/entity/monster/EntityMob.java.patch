@@ -1,19 +1,98 @@
 --- before/net/minecraft/entity/monster/EntityMob.java
 +++ after/net/minecraft/entity/monster/EntityMob.java
-@@ -102,7 +102,7 @@
+@@ -27,13 +27,11 @@
+         this.field_70728_aV = 5;
+     }
+ 
+-    @Override
+     public SoundCategory func_184176_by()
+     {
+         return SoundCategory.HOSTILE;
+     }
+ 
+-    @Override
+     public void func_70636_d()
+     {
+         this.func_82168_bl();
+@@ -47,7 +45,6 @@
+         super.func_70636_d();
+     }
+ 
+-    @Override
+     public void func_70071_h_()
+     {
+         super.func_70071_h_();
+@@ -58,43 +55,36 @@
+         }
+     }
+ 
+-    @Override
+     protected SoundEvent func_184184_Z()
+     {
+         return SoundEvents.field_187593_cC;
+     }
+ 
+-    @Override
+     protected SoundEvent func_184181_aa()
+     {
+         return SoundEvents.field_187591_cB;
+     }
+ 
+-    @Override
+     public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
+     {
+         return this.func_180431_b(p_70097_1_) ? false : super.func_70097_a(p_70097_1_, p_70097_2_);
+     }
+ 
+-    @Override
+     protected SoundEvent func_184601_bQ(DamageSource p_184601_1_)
+     {
+         return SoundEvents.field_187741_cz;
+     }
+ 
+-    @Override
+     protected SoundEvent func_184615_bR()
+     {
+         return SoundEvents.field_187738_cy;
+     }
+ 
+-    @Override
+     protected SoundEvent func_184588_d(int p_184588_1_)
+     {
+         return p_184588_1_ > 4 ? SoundEvents.field_187735_cx : SoundEvents.field_187589_cA;
+     }
+ 
+-    @Override
+     public boolean func_70652_k(Entity p_70652_1_)
+     {
+         float f = (float)this.func_110148_a(SharedMonsterAttributes.field_111264_e).func_111126_e();
+@@ -112,15 +102,9 @@
          {
              if (i > 0 && p_70652_1_ instanceof EntityLivingBase)
              {
--                ((EntityLivingBase)p_70652_1_).func_70653_a(this, (float)i * 0.5F, (double)MathHelper.func_76126_a(this.field_70177_z * ((float)Math.PI / 180F)), (double)(-MathHelper.func_76134_b(this.field_70177_z * ((float)Math.PI / 180F))));
+-                ((EntityLivingBase)p_70652_1_)
+-                .func_70653_a(
+-                    this,
+-                    (float)i * 0.5F,
+-                    (double)MathHelper.func_76126_a(this.field_70177_z * (float)(Math.PI / 180.0)),
+-                    (double)(-MathHelper.func_76134_b(this.field_70177_z * (float)(Math.PI / 180.0)))
+-                );
+-                this.field_70159_w *= 0.6;
+-                this.field_70179_y *= 0.6;
 +                ((EntityLivingBase)p_70652_1_).func_70653_a(this, (float)i * 0.5F, (double)MathHelper.func_76126_a(this.field_70177_z * 0.017453292F), (double)(-MathHelper.func_76134_b(this.field_70177_z * 0.017453292F)));
-                 this.field_70159_w *= 0.6D;
-                 this.field_70179_y *= 0.6D;
++                this.field_70159_w *= 0.6D;
++                this.field_70179_y *= 0.6D;
              }
-@@ -120,13 +120,13 @@
+ 
+             int j = EnchantmentHelper.func_90036_a(this);
+@@ -136,16 +120,13 @@
                  ItemStack itemstack = this.func_184614_ca();
                  ItemStack itemstack1 = entityplayer.func_184587_cr() ? entityplayer.func_184607_cu() : ItemStack.field_190927_a;
  
--                if (!itemstack.func_190926_b() && !itemstack1.func_190926_b() && itemstack.func_77973_b() instanceof ItemAxe && itemstack1.func_77973_b() == Items.field_185159_cQ)
+-                if (!itemstack.func_190926_b()
+-                        && !itemstack1.func_190926_b()
+-                        && itemstack.func_77973_b() instanceof ItemAxe
+-                        && itemstack1.func_77973_b() == Items.field_185159_cQ)
 +                if (!itemstack.func_190926_b() && !itemstack1.func_190926_b() && itemstack.func_77973_b().canDisableShield(itemstack, itemstack1, entityplayer, this) && itemstack1.func_77973_b().isShield(itemstack1, entityplayer))
                  {
                      float f1 = 0.25F + (float)EnchantmentHelper.func_185293_e(this) * 0.05F;
@@ -25,3 +104,32 @@
                          this.field_70170_p.func_72960_a(entityplayer, (byte)30);
                      }
                  }
+@@ -157,7 +138,6 @@
+         return flag;
+     }
+ 
+-    @Override
+     public float func_180484_a(BlockPos p_180484_1_)
+     {
+         return 0.5F - this.field_70170_p.func_175724_o(p_180484_1_);
+@@ -187,20 +167,17 @@
+         }
+     }
+ 
+-    @Override
+     public boolean func_70601_bi()
+     {
+         return this.field_70170_p.func_175659_aa() != EnumDifficulty.PEACEFUL && this.func_70814_o() && super.func_70601_bi();
+     }
+ 
+-    @Override
+     protected void func_110147_ax()
+     {
+         super.func_110147_ax();
+         this.func_110140_aT().func_111150_b(SharedMonsterAttributes.field_111264_e);
+     }
+ 
+-    @Override
+     protected boolean func_146066_aG()
+     {
+         return true;

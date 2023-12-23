@@ -8,14 +8,15 @@
  import net.minecraft.block.properties.PropertyBool;
  import net.minecraft.block.properties.PropertyEnum;
  import net.minecraft.block.state.BlockFaceShape;
-@@ -37,14 +38,14 @@
+@@ -37,18 +38,17 @@
  
  public class BlockBed extends BlockHorizontal implements ITileEntityProvider
  {
 -    public static final PropertyEnum<BlockBed.EnumPartType> field_176472_a = PropertyEnum.func_177709_a("part", BlockBed.EnumPartType.class);
 +    public static final PropertyEnum<BlockBed.EnumPartType> field_176472_a = PropertyEnum.<BlockBed.EnumPartType>func_177709_a("part", BlockBed.EnumPartType.class);
      public static final PropertyBool field_176471_b = PropertyBool.func_177716_a("occupied");
-     protected static final AxisAlignedBB field_185513_c = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5625D, 1.0D);
+-    protected static final AxisAlignedBB field_185513_c = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.5625, 1.0);
++    protected static final AxisAlignedBB field_185513_c = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5625D, 1.0D);
  
      public BlockBed()
      {
@@ -25,7 +26,31 @@
          this.field_149758_A = true;
      }
  
-@@ -74,7 +75,7 @@
+-    @Override
+     public MapColor func_180659_g(IBlockState p_180659_1_, IBlockAccess p_180659_2_, BlockPos p_180659_3_)
+     {
+         if (p_180659_1_.func_177229_b(field_176472_a) == BlockBed.EnumPartType.FOOT)
+@@ -65,18 +65,7 @@
+         return MapColor.field_151659_e;
+     }
+ 
+-    @Override
+-    public boolean func_180639_a(
+-        World p_180639_1_,
+-        BlockPos p_180639_2_,
+-        IBlockState p_180639_3_,
+-        EntityPlayer p_180639_4_,
+-        EnumHand p_180639_5_,
+-        EnumFacing p_180639_6_,
+-        float p_180639_7_,
+-        float p_180639_8_,
+-        float p_180639_9_
+-    )
++    public boolean func_180639_a(World p_180639_1_, BlockPos p_180639_2_, IBlockState p_180639_3_, EntityPlayer p_180639_4_, EnumHand p_180639_5_, EnumFacing p_180639_6_, float p_180639_7_, float p_180639_8_, float p_180639_9_)
+     {
+         if (p_180639_1_.field_72995_K)
+         {
+@@ -86,7 +75,7 @@
          {
              if (p_180639_3_.func_177229_b(field_176472_a) != BlockBed.EnumPartType.HEAD)
              {
@@ -34,7 +59,7 @@
                  p_180639_3_ = p_180639_1_.func_180495_p(p_180639_2_);
  
                  if (p_180639_3_.func_177230_c() != this)
-@@ -83,19 +84,21 @@
+@@ -95,19 +84,21 @@
                  }
              }
  
@@ -60,7 +85,7 @@
                      p_180639_1_.func_180501_a(p_180639_2_, p_180639_3_, 4);
                  }
  
-@@ -103,7 +106,7 @@
+@@ -115,7 +106,7 @@
  
                  if (entityplayer$sleepresult == EntityPlayer.SleepResult.OK)
                  {
@@ -69,7 +94,7 @@
                      p_180639_1_.func_180501_a(p_180639_2_, p_180639_3_, 4);
                      return true;
                  }
-@@ -111,15 +114,15 @@
+@@ -123,15 +114,15 @@
                  {
                      if (entityplayer$sleepresult == EntityPlayer.SleepResult.NOT_POSSIBLE_NOW)
                      {
@@ -88,7 +113,7 @@
                      }
  
                      return true;
-@@ -128,7 +131,7 @@
+@@ -140,22 +131,14 @@
              else
              {
                  p_180639_1_.func_175698_g(p_180639_2_);
@@ -97,17 +122,66 @@
  
                  if (p_180639_1_.func_180495_p(blockpos).func_177230_c() == this)
                  {
-@@ -178,7 +181,7 @@
+                     p_180639_1_.func_175698_g(blockpos);
+                 }
+ 
+-                p_180639_1_.func_72885_a(
+-                    null,
+-                    (double)p_180639_2_.func_177958_n() + 0.5,
+-                    (double)p_180639_2_.func_177956_o() + 0.5,
+-                    (double)p_180639_2_.func_177952_p() + 0.5,
+-                    5.0F,
+-                    true,
+-                    true
+-                );
++                p_180639_1_.func_72885_a((Entity)null, (double)p_180639_2_.func_177958_n() + 0.5D, (double)p_180639_2_.func_177956_o() + 0.5D, (double)p_180639_2_.func_177952_p() + 0.5D, 5.0F, true, true);
+                 return true;
+             }
          }
-         else if (p_176216_2_.field_70181_x < 0.0D)
+@@ -175,46 +158,41 @@
+         return null;
+     }
+ 
+-    @Override
+     public boolean func_149686_d(IBlockState p_149686_1_)
+     {
+         return false;
+     }
+ 
+-    @Override
+     public boolean func_149662_c(IBlockState p_149662_1_)
+     {
+         return false;
+     }
+ 
+-    @Override
+     public void func_180658_a(World p_180658_1_, BlockPos p_180658_2_, Entity p_180658_3_, float p_180658_4_)
+     {
+         super.func_180658_a(p_180658_1_, p_180658_2_, p_180658_3_, p_180658_4_ * 0.5F);
+     }
+ 
+-    @Override
+     public void func_176216_a(World p_176216_1_, Entity p_176216_2_)
+     {
+         if (p_176216_2_.func_70093_af())
          {
--            p_176216_2_.field_70181_x = -p_176216_2_.field_70181_x * (double)0.66F;
+             super.func_176216_a(p_176216_1_, p_176216_2_);
+         }
+-        else if (p_176216_2_.field_70181_x < 0.0)
++        else if (p_176216_2_.field_70181_x < 0.0D)
+         {
+-            p_176216_2_.field_70181_x = -p_176216_2_.field_70181_x * 0.66F;
 +            p_176216_2_.field_70181_x = -p_176216_2_.field_70181_x * 0.6600000262260437D;
  
              if (!(p_176216_2_ instanceof EntityLivingBase))
              {
-@@ -189,7 +192,7 @@
+-                p_176216_2_.field_70181_x *= 0.8;
++                p_176216_2_.field_70181_x *= 0.8D;
+             }
+         }
+     }
  
+-    @Override
      public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
      {
 -        EnumFacing enumfacing = p_189540_1_.func_177229_b(field_185512_D);
@@ -115,7 +189,28 @@
  
          if (p_189540_1_.func_177229_b(field_176472_a) == BlockBed.EnumPartType.FOOT)
          {
-@@ -228,7 +231,7 @@
+@@ -234,20 +212,17 @@
+         }
+     }
+ 
+-    @Override
+     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
+     {
+         return p_180660_1_.func_177229_b(field_176472_a) == BlockBed.EnumPartType.FOOT ? Items.field_190931_a : Items.field_151104_aV;
+     }
+ 
+-    @Override
+     public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
+     {
+         return field_185513_c;
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    @Override
+     public boolean func_190946_v(IBlockState p_190946_1_)
+     {
+         return true;
+@@ -256,7 +231,7 @@
      @Nullable
      public static BlockPos func_176468_a(World p_176468_0_, BlockPos p_176468_1_, int p_176468_2_)
      {
@@ -124,7 +219,47 @@
          int i = p_176468_1_.func_177958_n();
          int j = p_176468_1_.func_177956_o();
          int k = p_176468_1_.func_177952_p();
-@@ -299,7 +302,7 @@
+@@ -292,12 +267,9 @@
+ 
+     protected static boolean func_176469_d(World p_176469_0_, BlockPos p_176469_1_)
+     {
+-        return p_176469_0_.func_180495_p(p_176469_1_.func_177977_b()).func_185896_q()
+-               && !p_176469_0_.func_180495_p(p_176469_1_).func_185904_a().func_76220_a()
+-               && !p_176469_0_.func_180495_p(p_176469_1_.func_177984_a()).func_185904_a().func_76220_a();
++        return p_176469_0_.func_180495_p(p_176469_1_.func_177977_b()).func_185896_q() && !p_176469_0_.func_180495_p(p_176469_1_).func_185904_a().func_76220_a() && !p_176469_0_.func_180495_p(p_176469_1_.func_177984_a()).func_185904_a().func_76220_a();
+     }
+ 
+-    @Override
+     public void func_180653_a(World p_180653_1_, BlockPos p_180653_2_, IBlockState p_180653_3_, float p_180653_4_, int p_180653_5_)
+     {
+         if (p_180653_3_.func_177229_b(field_176472_a) == BlockBed.EnumPartType.HEAD)
+@@ -308,33 +280,29 @@
+         }
+     }
+ 
+-    @Override
+     public EnumPushReaction func_149656_h(IBlockState p_149656_1_)
+     {
+         return EnumPushReaction.DESTROY;
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    @Override
+     public BlockRenderLayer func_180664_k()
+     {
+         return BlockRenderLayer.CUTOUT;
+     }
+ 
+-    @Override
+     public EnumBlockRenderType func_149645_b(IBlockState p_149645_1_)
+     {
+         return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
+     }
+ 
+-    @Override
+     public ItemStack func_185473_a(World p_185473_1_, BlockPos p_185473_2_, IBlockState p_185473_3_)
+     {
+         BlockPos blockpos = p_185473_2_;
  
          if (p_185473_3_.func_177229_b(field_176472_a) == BlockBed.EnumPartType.FOOT)
          {
@@ -133,7 +268,12 @@
          }
  
          TileEntity tileentity = p_185473_1_.func_175625_s(blockpos);
-@@ -311,7 +314,7 @@
+@@ -342,12 +310,11 @@
+         return new ItemStack(Items.field_151104_aV, 1, enumdyecolor.func_176765_a());
+     }
+ 
+-    @Override
+     public void func_176208_a(World p_176208_1_, BlockPos p_176208_2_, IBlockState p_176208_3_, EntityPlayer p_176208_4_)
      {
          if (p_176208_4_.field_71075_bZ.field_75098_d && p_176208_3_.func_177229_b(field_176472_a) == BlockBed.EnumPartType.FOOT)
          {
@@ -142,14 +282,48 @@
  
              if (p_176208_1_.func_180495_p(blockpos).func_177230_c() == this)
              {
-@@ -343,14 +346,14 @@
+@@ -356,10 +323,7 @@
+         }
+     }
+ 
+-    @Override
+-    public void func_180657_a(
+-        World p_180657_1_, EntityPlayer p_180657_2_, BlockPos p_180657_3_, IBlockState p_180657_4_, TileEntity p_180657_5_, ItemStack p_180657_6_
+-    )
++    public void func_180657_a(World p_180657_1_, EntityPlayer p_180657_2_, BlockPos p_180657_3_, IBlockState p_180657_4_, TileEntity p_180657_5_, ItemStack p_180657_6_)
+     {
+         if (p_180657_4_.func_177229_b(field_176472_a) == BlockBed.EnumPartType.HEAD && p_180657_5_ instanceof TileEntityBed)
+         {
+@@ -369,35 +333,27 @@
+         }
+         else
+         {
+-            super.func_180657_a(p_180657_1_, p_180657_2_, p_180657_3_, p_180657_4_, null, p_180657_6_);
++            super.func_180657_a(p_180657_1_, p_180657_2_, p_180657_3_, p_180657_4_, (TileEntity)null, p_180657_6_);
+         }
+     }
+ 
+-    @Override
+     public void func_180663_b(World p_180663_1_, BlockPos p_180663_2_, IBlockState p_180663_3_)
+     {
+         super.func_180663_b(p_180663_1_, p_180663_2_, p_180663_3_);
+         p_180663_1_.func_175713_t(p_180663_2_);
+     }
+ 
+-    @Override
      public IBlockState func_176203_a(int p_176203_1_)
      {
          EnumFacing enumfacing = EnumFacing.func_176731_b(p_176203_1_);
--        return (p_176203_1_ & 8) > 0 ? this.func_176223_P().func_177226_a(field_176472_a, BlockBed.EnumPartType.HEAD).func_177226_a(field_185512_D, enumfacing).func_177226_a(field_176471_b, (p_176203_1_ & 4) > 0) : this.func_176223_P().func_177226_a(field_176472_a, BlockBed.EnumPartType.FOOT).func_177226_a(field_185512_D, enumfacing);
+-        return (p_176203_1_ & 8) > 0
+-               ? this.func_176223_P()
+-               .func_177226_a(field_176472_a, BlockBed.EnumPartType.HEAD)
+-               .func_177226_a(field_185512_D, enumfacing)
+-               .func_177226_a(field_176471_b, (p_176203_1_ & 4) > 0)
+-               : this.func_176223_P().func_177226_a(field_176472_a, BlockBed.EnumPartType.FOOT).func_177226_a(field_185512_D, enumfacing);
 +        return (p_176203_1_ & 8) > 0 ? this.func_176223_P().func_177226_a(field_176472_a, BlockBed.EnumPartType.HEAD).func_177226_a(field_185512_D, enumfacing).func_177226_a(field_176471_b, Boolean.valueOf((p_176203_1_ & 4) > 0)) : this.func_176223_P().func_177226_a(field_176472_a, BlockBed.EnumPartType.FOOT).func_177226_a(field_185512_D, enumfacing);
      }
  
+-    @Override
      public IBlockState func_176221_a(IBlockState p_176221_1_, IBlockAccess p_176221_2_, BlockPos p_176221_3_)
      {
          if (p_176221_1_.func_177229_b(field_176472_a) == BlockBed.EnumPartType.FOOT)
@@ -159,20 +333,25 @@
  
              if (iblockstate.func_177230_c() == this)
              {
-@@ -363,24 +366,24 @@
+@@ -408,29 +364,26 @@
+         return p_176221_1_;
+     }
  
+-    @Override
      public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
      {
 -        return p_185499_1_.func_177226_a(field_185512_D, p_185499_2_.func_185831_a(p_185499_1_.func_177229_b(field_185512_D)));
 +        return p_185499_1_.func_177226_a(field_185512_D, p_185499_2_.func_185831_a((EnumFacing)p_185499_1_.func_177229_b(field_185512_D)));
      }
  
+-    @Override
      public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
      {
 -        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a(p_185471_1_.func_177229_b(field_185512_D)));
 +        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a((EnumFacing)p_185471_1_.func_177229_b(field_185512_D)));
      }
  
+-    @Override
      public int func_176201_c(IBlockState p_176201_1_)
      {
          int i = 0;
@@ -188,12 +367,38 @@
              {
                  i |= 4;
              }
-@@ -396,7 +399,7 @@
+@@ -439,19 +392,16 @@
+         return i;
+     }
  
+-    @Override
+     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+     {
+         return BlockFaceShape.UNDEFINED;
+     }
+ 
+-    @Override
      protected BlockStateContainer func_180661_e()
      {
 -        return new BlockStateContainer(this, field_185512_D, field_176472_a, field_176471_b);
 +        return new BlockStateContainer(this, new IProperty[] {field_185512_D, field_176472_a, field_176471_b});
      }
  
+-    @Override
      public TileEntity func_149915_a(World p_149915_1_, int p_149915_2_)
+     {
+         return new TileEntityBed();
+@@ -475,13 +425,11 @@
+             this.field_177036_c = p_i45735_3_;
+         }
+ 
+-        @Override
+         public String toString()
+         {
+             return this.field_177036_c;
+         }
+ 
+-        @Override
+         public String func_176610_l()
+         {
+             return this.field_177036_c;

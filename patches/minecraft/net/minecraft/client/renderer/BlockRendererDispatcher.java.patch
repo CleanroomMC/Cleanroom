@@ -13,7 +13,7 @@
          {
              p_175020_1_ = p_175020_1_.func_185899_b(p_175020_4_, p_175020_2_);
              IBakedModel ibakedmodel = this.field_175028_a.func_178125_b(p_175020_1_);
--            IBakedModel ibakedmodel1 = (new SimpleBakedModel.Builder(p_175020_1_, ibakedmodel, p_175020_3_, p_175020_2_)).func_177645_b();
+-            IBakedModel ibakedmodel1 = new SimpleBakedModel.Builder(p_175020_1_, ibakedmodel, p_175020_3_, p_175020_2_).func_177645_b();
 +            IBakedModel ibakedmodel1 = net.minecraftforge.client.ForgeHooksClient.getDamageModel(ibakedmodel, p_175020_3_, p_175020_1_, p_175020_4_, p_175020_2_);
              this.field_175027_c.func_178267_a(p_175020_4_, ibakedmodel1, p_175020_1_, p_175020_2_, Tessellator.func_178181_a().func_178180_c(), true);
          }
@@ -39,3 +39,22 @@
                      case ENTITYBLOCK_ANIMATED:
                          return false;
                      case LIQUID:
+@@ -88,9 +91,7 @@
+         {
+             CrashReport crashreport = CrashReport.func_85055_a(throwable, "Tesselating block in world");
+             CrashReportCategory crashreportcategory = crashreport.func_85058_a("Block being tesselated");
+-            CrashReportCategory.func_180523_a(
+-                crashreportcategory, p_175018_2_, p_175018_1_.func_177230_c(), p_175018_1_.func_177230_c().func_176201_c(p_175018_1_)
+-            );
++            CrashReportCategory.func_180523_a(crashreportcategory, p_175018_2_, p_175018_1_.func_177230_c(), p_175018_1_.func_177230_c().func_176201_c(p_175018_1_));
+             throw new ReportedException(crashreport);
+         }
+     }
+@@ -125,7 +126,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_110549_a(IResourceManager p_110549_1_)
+     {
+         this.field_175025_e.func_178268_a();

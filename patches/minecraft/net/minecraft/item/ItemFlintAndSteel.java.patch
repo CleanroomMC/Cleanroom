@@ -1,11 +1,35 @@
 --- before/net/minecraft/item/ItemFlintAndSteel.java
 +++ after/net/minecraft/item/ItemFlintAndSteel.java
-@@ -34,7 +34,7 @@
+@@ -23,17 +23,7 @@
+         this.func_77637_a(CreativeTabs.field_78040_i);
+     }
+ 
+-    @Override
+-    public EnumActionResult func_180614_a(
+-        EntityPlayer p_180614_1_,
+-        World p_180614_2_,
+-        BlockPos p_180614_3_,
+-        EnumHand p_180614_4_,
+-        EnumFacing p_180614_5_,
+-        float p_180614_6_,
+-        float p_180614_7_,
+-        float p_180614_8_
+-    )
++    public EnumActionResult func_180614_a(EntityPlayer p_180614_1_, World p_180614_2_, BlockPos p_180614_3_, EnumHand p_180614_4_, EnumFacing p_180614_5_, float p_180614_6_, float p_180614_7_, float p_180614_8_)
+     {
+         p_180614_3_ = p_180614_3_.func_177972_a(p_180614_5_);
+         ItemStack itemstack = p_180614_1_.func_184586_b(p_180614_4_);
+@@ -44,11 +34,9 @@
          }
          else
          {
 -            if (p_180614_2_.func_180495_p(p_180614_3_).func_185904_a() == Material.field_151579_a)
 +            if (p_180614_2_.func_175623_d(p_180614_3_))
              {
-                 p_180614_2_.func_184133_a(p_180614_1_, p_180614_3_, SoundEvents.field_187649_bu, SoundCategory.BLOCKS, 1.0F, field_77697_d.nextFloat() * 0.4F + 0.8F);
+-                p_180614_2_.func_184133_a(
+-                    p_180614_1_, p_180614_3_, SoundEvents.field_187649_bu, SoundCategory.BLOCKS, 1.0F, field_77697_d.nextFloat() * 0.4F + 0.8F
+-                );
++                p_180614_2_.func_184133_a(p_180614_1_, p_180614_3_, SoundEvents.field_187649_bu, SoundCategory.BLOCKS, 1.0F, field_77697_d.nextFloat() * 0.4F + 0.8F);
                  p_180614_2_.func_180501_a(p_180614_3_, Blocks.field_150480_ab.func_176223_P(), 11);
+             }
+ 

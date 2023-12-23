@@ -1,15 +1,29 @@
 --- before/net/minecraft/world/gen/feature/WorldGenCanopyTree.java
 +++ after/net/minecraft/world/gen/feature/WorldGenCanopyTree.java
-@@ -16,7 +16,7 @@
+@@ -15,20 +15,14 @@
+ 
  public class WorldGenCanopyTree extends WorldGenAbstractTree
  {
-     private static final IBlockState field_181640_a = Blocks.field_150363_s.func_176223_P().func_177226_a(BlockNewLog.field_176300_b, BlockPlanks.EnumType.DARK_OAK);
--    private static final IBlockState field_181641_b = Blocks.field_150361_u.func_176223_P().func_177226_a(BlockNewLeaf.field_176240_P, BlockPlanks.EnumType.DARK_OAK).func_177226_a(BlockLeaves.field_176236_b, false);
+-    private static final IBlockState field_181640_a = Blocks.field_150363_s
+-                .func_176223_P()
+-                .func_177226_a(BlockNewLog.field_176300_b, BlockPlanks.EnumType.DARK_OAK);
+-    private static final IBlockState field_181641_b = Blocks.field_150361_u
+-                .func_176223_P()
+-                .func_177226_a(BlockNewLeaf.field_176240_P, BlockPlanks.EnumType.DARK_OAK)
+-                .func_177226_a(BlockLeaves.field_176236_b, false);
++    private static final IBlockState field_181640_a = Blocks.field_150363_s.func_176223_P().func_177226_a(BlockNewLog.field_176300_b, BlockPlanks.EnumType.DARK_OAK);
 +    private static final IBlockState field_181641_b = Blocks.field_150361_u.func_176223_P().func_177226_a(BlockNewLeaf.field_176240_P, BlockPlanks.EnumType.DARK_OAK).func_177226_a(BlockLeaves.field_176236_b, Boolean.valueOf(false));
  
      public WorldGenCanopyTree(boolean p_i45461_1_)
      {
-@@ -33,9 +33,10 @@
+         super(p_i45461_1_);
+     }
+ 
+-    @Override
+     public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
+     {
+         int i = p_180709_2_.nextInt(3) + p_180709_2_.nextInt(2) + 6;
+@@ -39,9 +33,10 @@
          if (k >= 1 && k + i + 1 < 256)
          {
              BlockPos blockpos = p_180709_3_.func_177977_b();
@@ -22,7 +36,7 @@
              {
                  return false;
              }
-@@ -45,10 +46,10 @@
+@@ -51,10 +46,10 @@
              }
              else
              {
@@ -37,7 +51,7 @@
                  EnumFacing enumfacing = EnumFacing.Plane.HORIZONTAL.func_179518_a(p_180709_2_);
                  int i1 = i - p_180709_2_.nextInt(4);
                  int j1 = 2 - p_180709_2_.nextInt(3);
-@@ -67,9 +68,9 @@
+@@ -73,9 +68,9 @@
  
                      int k2 = k + j2;
                      BlockPos blockpos1 = new BlockPos(k1, k2, l1);
@@ -49,7 +63,37 @@
                      {
                          this.func_181639_b(p_180709_1_, blockpos1);
                          this.func_181639_b(p_180709_1_, blockpos1.func_177974_f());
-@@ -187,7 +188,7 @@
+@@ -96,11 +91,11 @@
+ 
+                         if ((i3 > -2 || l3 > -1) && (i3 != -1 || l3 != -2))
+                         {
+-                            int b0 = 1;
+-                            this.func_150526_a(p_180709_1_, k1 + i3, i2 + b0, l1 + l3);
+-                            this.func_150526_a(p_180709_1_, 1 + k1 - i3, i2 + b0, l1 + l3);
+-                            this.func_150526_a(p_180709_1_, k1 + i3, i2 + b0, 1 + l1 - l3);
+-                            this.func_150526_a(p_180709_1_, 1 + k1 - i3, i2 + b0, 1 + l1 - l3);
++                            k4 = 1;
++                            this.func_150526_a(p_180709_1_, k1 + i3, i2 + k4, l1 + l3);
++                            this.func_150526_a(p_180709_1_, 1 + k1 - i3, i2 + k4, l1 + l3);
++                            this.func_150526_a(p_180709_1_, k1 + i3, i2 + k4, 1 + l1 - l3);
++                            this.func_150526_a(p_180709_1_, 1 + k1 - i3, i2 + k4, 1 + l1 - l3);
+                         }
+                     }
+                 }
+@@ -117,11 +112,7 @@
+                 {
+                     for (int i4 = -3; i4 <= 4; ++i4)
+                     {
+-                        if ((j3 != -3 || i4 != -3)
+-                                && (j3 != -3 || i4 != 4)
+-                                && (j3 != 4 || i4 != -3)
+-                                && (j3 != 4 || i4 != 4)
+-                                && (Math.abs(j3) < 3 || Math.abs(i4) < 3))
++                        if ((j3 != -3 || i4 != -3) && (j3 != -3 || i4 != 4) && (j3 != 4 || i4 != -3) && (j3 != 4 || i4 != 4) && (Math.abs(j3) < 3 || Math.abs(i4) < 3))
+                         {
+                             this.func_150526_a(p_180709_1_, k1 + j3, i2, l1 + i4);
+                         }
+@@ -197,7 +188,7 @@
              {
                  for (int k1 = -i1; k1 <= i1; ++k1)
                  {
@@ -58,7 +102,7 @@
                      {
                          return false;
                      }
-@@ -209,11 +210,18 @@
+@@ -219,11 +210,18 @@
      private void func_150526_a(World p_150526_1_, int p_150526_2_, int p_150526_3_, int p_150526_4_)
      {
          BlockPos blockpos = new BlockPos(p_150526_2_, p_150526_3_, p_150526_4_);

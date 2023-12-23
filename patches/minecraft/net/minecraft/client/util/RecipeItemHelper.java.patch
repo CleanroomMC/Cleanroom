@@ -28,11 +28,29 @@
              this.func_194117_b(i, j);
          }
      }
+@@ -69,7 +76,7 @@
+ 
+     public boolean func_194118_a(IRecipe p_194118_1_, @Nullable IntList p_194118_2_, int p_194118_3_)
+     {
+-        return new RecipeItemHelper.RecipePicker(p_194118_1_).func_194092_a(p_194118_3_, p_194118_2_);
++        return (new RecipeItemHelper.RecipePicker(p_194118_1_)).func_194092_a(p_194118_3_, p_194118_2_);
+     }
+ 
+     public int func_194114_b(IRecipe p_194114_1_, @Nullable IntList p_194114_2_)
+@@ -79,7 +86,7 @@
+ 
+     public int func_194121_a(IRecipe p_194121_1_, int p_194121_2_, @Nullable IntList p_194121_3_)
+     {
+-        return new RecipeItemHelper.RecipePicker(p_194121_1_).func_194102_b(p_194121_2_, p_194121_3_);
++        return (new RecipeItemHelper.RecipePicker(p_194121_1_)).func_194102_b(p_194121_2_, p_194121_3_);
+     }
+ 
+     public static ItemStack func_194115_b(int p_194115_0_)
 @@ -106,7 +113,10 @@
          {
              this.field_194105_b = p_i47608_2_;
              this.field_194106_c.addAll(p_i47608_2_.func_192400_c());
--            this.field_194106_c.removeIf((p_194103_0_) -> p_194103_0_ == Ingredient.field_193370_a);
+-            this.field_194106_c.removeIf(p_194103_0_ -> p_194103_0_ == Ingredient.field_193370_a);
 +            this.field_194106_c.removeIf((p_194103_0_) ->
 +            {
 +                return p_194103_0_ == Ingredient.field_193370_a;
@@ -40,3 +58,53 @@
              this.field_194107_d = this.field_194106_c.size();
              this.field_194108_e = this.func_194097_a();
              this.field_194109_f = this.field_194108_e.length;
+@@ -237,29 +247,21 @@
+                         }
+ 
+                         int i1 = flag ? this.field_194107_d : i;
+-                        int j1 = 0;
+ 
+-                        while (true)
++                        for (int j1 = 0; j1 < i1; ++j1)
+                         {
+-                            if (j1 < i1)
++                            if (!this.func_194101_b(flag, j1) && this.func_194093_a(flag, l, j1) && this.func_194100_b(flag, l, j1))
+                             {
+-                                if (this.func_194101_b(flag, j1) || !this.func_194093_a(flag, l, j1) || !this.func_194100_b(flag, l, j1))
+-                                {
+-                                    ++j1;
+-                                    continue;
+-                                }
+-
+                                 this.func_194088_a(flag, j1);
+-                            }
+-
+-                            j1 = this.field_194111_h.size();
+-
+-                            if (j1 == k)
+-                            {
+-                                this.field_194111_h.removeInt(j1 - 1);
+-                            }
+-
+-                            break;
++                                break;
++                            }
++                        }
++
++                        int k1 = this.field_194111_h.size();
++
++                        if (k1 == k)
++                        {
++                            this.field_194111_h.removeInt(k1 - 1);
+                         }
+                     }
+ 
+@@ -334,7 +336,7 @@
+             {
+                 int k = (i + j) / 2;
+ 
+-                if (this.func_194092_a(k, null))
++                if (this.func_194092_a(k, (IntList)null))
+                 {
+                     if (j - i <= 1)
+                     {

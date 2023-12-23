@@ -13,6 +13,24 @@
      private static final Predicate<ItemStack> field_185216_d = new Predicate<ItemStack>()
      {
          public boolean apply(ItemStack p_apply_1_)
+@@ -43,7 +43,7 @@
+ 
+         for (int j = field_185214_b.size(); i < j; ++i)
+         {
+-            if (field_185214_b.get(i).field_185199_b.apply(p_185203_0_))
++            if ((field_185214_b.get(i)).field_185199_b.apply(p_185203_0_))
+             {
+                 return true;
+             }
+@@ -58,7 +58,7 @@
+ 
+         for (int j = field_185213_a.size(); i < j; ++i)
+         {
+-            if (field_185213_a.get(i).field_185199_b.apply(p_185211_0_))
++            if ((field_185213_a.get(i)).field_185199_b.apply(p_185211_0_))
+             {
+                 return true;
+             }
 @@ -86,9 +86,9 @@
  
          for (int j = field_185214_b.size(); i < j; ++i)
@@ -67,7 +85,20 @@
                  }
              }
          }
-@@ -209,7 +209,7 @@
+@@ -184,11 +184,7 @@
+         func_193357_a(PotionTypes.field_185233_e, Items.field_151102_aT, PotionTypes.field_185243_o);
+         func_193357_a(PotionTypes.field_185243_o, Items.field_151137_ax, PotionTypes.field_185244_p);
+         func_193357_a(PotionTypes.field_185243_o, Items.field_151114_aO, PotionTypes.field_185245_q);
+-        func_193356_a(
+-            PotionTypes.field_185233_e,
+-            Ingredient.func_193369_a(new ItemStack(Items.field_151115_aP, 1, ItemFishFood.FishType.PUFFERFISH.func_150976_a())),
+-            PotionTypes.field_185248_t
+-        );
++        func_193356_a(PotionTypes.field_185233_e, Ingredient.func_193369_a(new ItemStack(Items.field_151115_aP, 1, ItemFishFood.FishType.PUFFERFISH.func_150976_a())), PotionTypes.field_185248_t);
+         func_193357_a(PotionTypes.field_185248_t, Items.field_151137_ax, PotionTypes.field_185249_u);
+         func_193357_a(PotionTypes.field_185233_e, Items.field_151060_bw, PotionTypes.field_185250_v);
+         func_193357_a(PotionTypes.field_185250_v, Items.field_151114_aO, PotionTypes.field_185251_w);
+@@ -213,7 +209,7 @@
  
      public static void func_193355_a(ItemPotion p_193355_0_, Item p_193355_1_, ItemPotion p_193355_2_)
      {
@@ -76,7 +107,7 @@
      }
  
      public static void func_193354_a(ItemPotion p_193354_0_)
-@@ -224,20 +224,20 @@
+@@ -228,20 +224,20 @@
  
      public static void func_193356_a(PotionType p_193356_0_, Ingredient p_193356_1_, PotionType p_193356_2_)
      {

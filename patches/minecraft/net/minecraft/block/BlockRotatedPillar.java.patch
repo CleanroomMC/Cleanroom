@@ -17,11 +17,10 @@
  
      protected BlockRotatedPillar(Material p_i45425_1_)
      {
-@@ -27,6 +28,21 @@
-         super(p_i46385_1_, p_i46385_2_);
+@@ -28,6 +29,20 @@
      }
  
-+    @Override
+     @Override
 +    public boolean rotateBlock(net.minecraft.world.World world, BlockPos pos, EnumFacing axis)
 +    {
 +        net.minecraft.block.state.IBlockState state = world.func_180495_p(pos);
@@ -39,7 +38,19 @@
      public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
      {
          switch (p_185499_2_)
-@@ -69,7 +85,7 @@
+@@ -50,7 +65,6 @@
+         }
+     }
+ 
+-    @Override
+     public IBlockState func_176203_a(int p_176203_1_)
+     {
+         EnumFacing.Axis enumfacing$axis = EnumFacing.Axis.Y;
+@@ -68,11 +82,10 @@
+         return this.func_176223_P().func_177226_a(field_176298_M, enumfacing$axis);
+     }
+ 
+-    @Override
      public int func_176201_c(IBlockState p_176201_1_)
      {
          int i = 0;
@@ -48,12 +59,38 @@
  
          if (enumfacing$axis == EnumFacing.Axis.X)
          {
-@@ -85,7 +101,7 @@
+@@ -86,31 +99,18 @@
+         return i;
+     }
  
+-    @Override
      protected BlockStateContainer func_180661_e()
      {
 -        return new BlockStateContainer(this, field_176298_M);
 +        return new BlockStateContainer(this, new IProperty[] {field_176298_M});
      }
  
+-    @Override
      protected ItemStack func_180643_i(IBlockState p_180643_1_)
+     {
+         return new ItemStack(Item.func_150898_a(this));
+     }
+ 
+-    @Override
+-    public IBlockState func_180642_a(
+-        World p_180642_1_,
+-        BlockPos p_180642_2_,
+-        EnumFacing p_180642_3_,
+-        float p_180642_4_,
+-        float p_180642_5_,
+-        float p_180642_6_,
+-        int p_180642_7_,
+-        EntityLivingBase p_180642_8_
+-    )
++    public IBlockState func_180642_a(World p_180642_1_, BlockPos p_180642_2_, EnumFacing p_180642_3_, float p_180642_4_, float p_180642_5_, float p_180642_6_, int p_180642_7_, EntityLivingBase p_180642_8_)
+     {
+-        return super.func_180642_a(p_180642_1_, p_180642_2_, p_180642_3_, p_180642_4_, p_180642_5_, p_180642_6_, p_180642_7_, p_180642_8_)
+-               .func_177226_a(field_176298_M, p_180642_3_.func_176740_k());
++        return super.func_180642_a(p_180642_1_, p_180642_2_, p_180642_3_, p_180642_4_, p_180642_5_, p_180642_6_, p_180642_7_, p_180642_8_).func_177226_a(field_176298_M, p_180642_3_.func_176740_k());
+     }
+ }

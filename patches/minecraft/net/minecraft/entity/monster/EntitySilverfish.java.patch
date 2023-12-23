@@ -1,8 +1,17 @@
 --- before/net/minecraft/entity/monster/EntitySilverfish.java
 +++ after/net/minecraft/entity/monster/EntitySilverfish.java
-@@ -49,8 +49,8 @@
+@@ -42,70 +42,60 @@
+         EntityLiving.func_189752_a(p_189767_0_, EntitySilverfish.class);
+     }
+ 
+-    @Override
+     protected void func_184651_r()
+     {
+         this.field_175460_b = new EntitySilverfish.AISummonSilverfish(this);
+         this.field_70714_bg.func_75776_a(1, new EntityAISwimming(this));
          this.field_70714_bg.func_75776_a(3, this.field_175460_b);
-         this.field_70714_bg.func_75776_a(4, new EntityAIAttackMelee(this, 1.0D, false));
+-        this.field_70714_bg.func_75776_a(4, new EntityAIAttackMelee(this, 1.0, false));
++        this.field_70714_bg.func_75776_a(4, new EntityAIAttackMelee(this, 1.0D, false));
          this.field_70714_bg.func_75776_a(5, new EntitySilverfish.AIHideInStone(this));
 -        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, true));
 -        this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
@@ -10,8 +19,133 @@
 +        this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
      }
  
+-    @Override
      public double func_70033_W()
-@@ -184,7 +184,7 @@
+     {
+-        return 0.1;
++        return 0.1D;
+     }
+ 
+-    @Override
+     public float func_70047_e()
+     {
+         return 0.1F;
+     }
+ 
+-    @Override
+     protected void func_110147_ax()
+     {
+         super.func_110147_ax();
+-        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(8.0);
+-        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.25);
+-        this.func_110148_a(SharedMonsterAttributes.field_111264_e).func_111128_a(1.0);
++        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(8.0D);
++        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.25D);
++        this.func_110148_a(SharedMonsterAttributes.field_111264_e).func_111128_a(1.0D);
+     }
+ 
+-    @Override
+     protected boolean func_70041_e_()
+     {
+         return false;
+     }
+ 
+-    @Override
+     protected SoundEvent func_184639_G()
+     {
+         return SoundEvents.field_187793_eY;
+     }
+ 
+-    @Override
+     protected SoundEvent func_184601_bQ(DamageSource p_184601_1_)
+     {
+         return SoundEvents.field_187850_fa;
+     }
+ 
+-    @Override
+     protected SoundEvent func_184615_bR()
+     {
+         return SoundEvents.field_187795_eZ;
+     }
+ 
+-    @Override
+     protected void func_180429_a(BlockPos p_180429_1_, Block p_180429_2_)
+     {
+         this.func_184185_a(SoundEvents.field_187852_fb, 0.15F, 1.0F);
+     }
+ 
+-    @Override
+     public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
+     {
+         if (this.func_180431_b(p_70097_1_))
+@@ -124,44 +114,38 @@
+     }
+ 
+     @Nullable
+-    @Override
+     protected ResourceLocation func_184647_J()
+     {
+         return LootTableList.field_186438_t;
+     }
+ 
+-    @Override
+     public void func_70071_h_()
+     {
+         this.field_70761_aq = this.field_70177_z;
+         super.func_70071_h_();
+     }
+ 
+-    @Override
+     public void func_181013_g(float p_181013_1_)
+     {
+         this.field_70177_z = p_181013_1_;
+         super.func_181013_g(p_181013_1_);
+     }
+ 
+-    @Override
+     public float func_180484_a(BlockPos p_180484_1_)
+     {
+         return this.field_70170_p.func_180495_p(p_180484_1_.func_177977_b()).func_177230_c() == Blocks.field_150348_b ? 10.0F : super.func_180484_a(p_180484_1_);
+     }
+ 
+-    @Override
+     protected boolean func_70814_o()
+     {
+         return true;
+     }
+ 
+-    @Override
+     public boolean func_70601_bi()
+     {
+         if (super.func_70601_bi())
+         {
+-            EntityPlayer entityplayer = this.field_70170_p.func_184136_b(this, 5.0);
++            EntityPlayer entityplayer = this.field_70170_p.func_184136_b(this, 5.0D);
+             return entityplayer == null;
+         }
+         else
+@@ -170,7 +154,6 @@
+         }
+     }
+ 
+-    @Override
+     public EnumCreatureAttribute func_70668_bt()
+     {
+         return EnumCreatureAttribute.ARTHROPOD;
+@@ -183,11 +166,10 @@
+ 
+             public AIHideInStone(EntitySilverfish p_i45827_1_)
+             {
+-                super(p_i45827_1_, 1.0, 10);
++                super(p_i45827_1_, 1.0D, 10);
+                 this.func_75248_a(1);
+             }
+ 
+-            @Override
+             public boolean func_75250_a()
+             {
+                 if (this.field_75457_a.func_70638_az() != null)
+@@ -202,11 +184,10 @@
                  {
                      Random random = this.field_75457_a.func_70681_au();
  
@@ -19,8 +153,61 @@
 +                    if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.field_75457_a.field_70170_p, this.field_75457_a) && random.nextInt(10) == 0)
                      {
                          this.field_179483_b = EnumFacing.func_176741_a(random);
-                         BlockPos blockpos = (new BlockPos(this.field_75457_a.field_70165_t, this.field_75457_a.field_70163_u + 0.5D, this.field_75457_a.field_70161_v)).func_177972_a(this.field_179483_b);
-@@ -273,13 +273,13 @@
+-                        BlockPos blockpos = new BlockPos(this.field_75457_a.field_70165_t, this.field_75457_a.field_70163_u + 0.5, this.field_75457_a.field_70161_v)
+-                        .func_177972_a(this.field_179483_b);
++                        BlockPos blockpos = (new BlockPos(this.field_75457_a.field_70165_t, this.field_75457_a.field_70163_u + 0.5D, this.field_75457_a.field_70161_v)).func_177972_a(this.field_179483_b);
+                         IBlockState iblockstate = this.field_75457_a.field_70170_p.func_180495_p(blockpos);
+ 
+                         if (BlockSilverfish.func_176377_d(iblockstate))
+@@ -221,13 +202,11 @@
+                 }
+             }
+ 
+-            @Override
+             public boolean func_75253_b()
+             {
+                 return this.field_179484_c ? false : super.func_75253_b();
+             }
+ 
+-            @Override
+             public void func_75249_e()
+             {
+                 if (!this.field_179484_c)
+@@ -237,17 +216,12 @@
+                 else
+                 {
+                     World world = this.field_75457_a.field_70170_p;
+-                    BlockPos blockpos = new BlockPos(this.field_75457_a.field_70165_t, this.field_75457_a.field_70163_u + 0.5, this.field_75457_a.field_70161_v)
+-                    .func_177972_a(this.field_179483_b);
++                    BlockPos blockpos = (new BlockPos(this.field_75457_a.field_70165_t, this.field_75457_a.field_70163_u + 0.5D, this.field_75457_a.field_70161_v)).func_177972_a(this.field_179483_b);
+                     IBlockState iblockstate = world.func_180495_p(blockpos);
+ 
+                     if (BlockSilverfish.func_176377_d(iblockstate))
+                     {
+-                        world.func_180501_a(
+-                            blockpos,
+-                            Blocks.field_150418_aU.func_176223_P().func_177226_a(BlockSilverfish.field_176378_a, BlockSilverfish.EnumType.func_176878_a(iblockstate)),
+-                            3
+-                        );
++                        world.func_180501_a(blockpos, Blocks.field_150418_aU.func_176223_P().func_177226_a(BlockSilverfish.field_176378_a, BlockSilverfish.EnumType.func_176878_a(iblockstate)), 3);
+                         this.field_75457_a.func_70656_aK();
+                         this.field_75457_a.func_70106_y();
+                     }
+@@ -273,13 +247,11 @@
+                 }
+             }
+ 
+-            @Override
+             public boolean func_75250_a()
+             {
+                 return this.field_179463_b > 0;
+             }
+ 
+-            @Override
+             public void func_75246_d()
+             {
+                 --this.field_179463_b;
+@@ -301,13 +273,13 @@
  
                                  if (iblockstate.func_177230_c() == Blocks.field_150418_aU)
                                  {

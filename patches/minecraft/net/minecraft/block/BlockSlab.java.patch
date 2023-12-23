@@ -1,19 +1,77 @@
 --- before/net/minecraft/block/BlockSlab.java
 +++ after/net/minecraft/block/BlockSlab.java
-@@ -21,7 +21,7 @@
+@@ -21,9 +21,9 @@
  
  public abstract class BlockSlab extends Block
  {
 -    public static final PropertyEnum<BlockSlab.EnumBlockHalf> field_176554_a = PropertyEnum.func_177709_a("half", BlockSlab.EnumBlockHalf.class);
+-    protected static final AxisAlignedBB field_185676_b = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.5, 1.0);
+-    protected static final AxisAlignedBB field_185677_c = new AxisAlignedBB(0.0, 0.5, 0.0, 1.0, 1.0, 1.0);
 +    public static final PropertyEnum<BlockSlab.EnumBlockHalf> field_176554_a = PropertyEnum.<BlockSlab.EnumBlockHalf>func_177709_a("half", BlockSlab.EnumBlockHalf.class);
-     protected static final AxisAlignedBB field_185676_b = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D);
-     protected static final AxisAlignedBB field_185677_c = new AxisAlignedBB(0.0D, 0.5D, 0.0D, 1.0D, 1.0D, 1.0D);
++    protected static final AxisAlignedBB field_185676_b = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D);
++    protected static final AxisAlignedBB field_185677_c = new AxisAlignedBB(0.0D, 0.5D, 0.0D, 1.0D, 1.0D, 1.0D);
  
-@@ -80,6 +80,19 @@
+     public BlockSlab(Material p_i45714_1_)
+     {
+@@ -37,13 +37,11 @@
+         this.func_149713_g(255);
+     }
+ 
+-    @Override
+     protected boolean func_149700_E()
+     {
+         return false;
+     }
+ 
+-    @Override
+     public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
+     {
+         if (this.func_176552_j())
+@@ -56,13 +54,11 @@
+         }
+     }
+ 
+-    @Override
+     public boolean func_185481_k(IBlockState p_185481_1_)
+     {
+         return ((BlockSlab)p_185481_1_.func_177230_c()).func_176552_j() || p_185481_1_.func_177229_b(field_176554_a) == BlockSlab.EnumBlockHalf.TOP;
+     }
+ 
+-    @Override
+     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+     {
+         if (((BlockSlab)p_193383_2_.func_177230_c()).func_176552_j())
+@@ -75,32 +71,31 @@
+         }
+         else
+         {
+-            return p_193383_4_ == EnumFacing.DOWN && p_193383_2_.func_177229_b(field_176554_a) == BlockSlab.EnumBlockHalf.BOTTOM
+-                   ? BlockFaceShape.SOLID
+-                   : BlockFaceShape.UNDEFINED;
++            return p_193383_4_ == EnumFacing.DOWN && p_193383_2_.func_177229_b(field_176554_a) == BlockSlab.EnumBlockHalf.BOTTOM ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
+         }
+     }
+ 
+-    @Override
+     public boolean func_149662_c(IBlockState p_149662_1_)
+     {
          return this.func_176552_j();
      }
  
-+    @Override
+     @Override
+-    public IBlockState func_180642_a(
+-        World p_180642_1_,
+-        BlockPos p_180642_2_,
+-        EnumFacing p_180642_3_,
+-        float p_180642_4_,
+-        float p_180642_5_,
+-        float p_180642_6_,
+-        int p_180642_7_,
+-        EntityLivingBase p_180642_8_
+-    )
+-    {
+-        IBlockState iblockstate = super.func_180642_a(p_180642_1_, p_180642_2_, p_180642_3_, p_180642_4_, p_180642_5_, p_180642_6_, p_180642_7_, p_180642_8_)
+-                                  .func_177226_a(field_176554_a, BlockSlab.EnumBlockHalf.BOTTOM);
 +    public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face)
 +    {
 +        if (net.minecraftforge.common.ForgeModContainer.disableStairSlabCulling)
@@ -26,19 +84,41 @@
 +        return (side == EnumBlockHalf.TOP && face == EnumFacing.UP) || (side == EnumBlockHalf.BOTTOM && face == EnumFacing.DOWN);
 +    }
 +
-     public IBlockState func_180642_a(World p_180642_1_, BlockPos p_180642_2_, EnumFacing p_180642_3_, float p_180642_4_, float p_180642_5_, float p_180642_6_, int p_180642_7_, EntityLivingBase p_180642_8_)
-     {
-         IBlockState iblockstate = super.func_180642_a(p_180642_1_, p_180642_2_, p_180642_3_, p_180642_4_, p_180642_5_, p_180642_6_, p_180642_7_, p_180642_8_).func_177226_a(field_176554_a, BlockSlab.EnumBlockHalf.BOTTOM);
-@@ -90,7 +103,7 @@
++    public IBlockState func_180642_a(World p_180642_1_, BlockPos p_180642_2_, EnumFacing p_180642_3_, float p_180642_4_, float p_180642_5_, float p_180642_6_, int p_180642_7_, EntityLivingBase p_180642_8_)
++    {
++        IBlockState iblockstate = super.func_180642_a(p_180642_1_, p_180642_2_, p_180642_3_, p_180642_4_, p_180642_5_, p_180642_6_, p_180642_7_, p_180642_8_).func_177226_a(field_176554_a, BlockSlab.EnumBlockHalf.BOTTOM);
+ 
+         if (this.func_176552_j())
+         {
+@@ -108,26 +103,21 @@
          }
          else
          {
--            return p_180642_3_ != EnumFacing.DOWN && (p_180642_3_ == EnumFacing.UP || !((double)p_180642_5_ > 0.5D)) ? iblockstate : iblockstate.func_177226_a(field_176554_a, BlockSlab.EnumBlockHalf.TOP);
+-            return p_180642_3_ != EnumFacing.DOWN && (p_180642_3_ == EnumFacing.UP || !((double)p_180642_5_ > 0.5))
+-                   ? iblockstate
+-                   : iblockstate.func_177226_a(field_176554_a, BlockSlab.EnumBlockHalf.TOP);
 +            return p_180642_3_ != EnumFacing.DOWN && (p_180642_3_ == EnumFacing.UP || (double)p_180642_5_ <= 0.5D) ? iblockstate : iblockstate.func_177226_a(field_176554_a, BlockSlab.EnumBlockHalf.TOP);
          }
      }
  
-@@ -115,7 +128,7 @@
+-    @Override
+     public int func_149745_a(Random p_149745_1_)
+     {
+         return this.func_176552_j() ? 2 : 1;
+     }
+ 
+-    @Override
+     public boolean func_149686_d(IBlockState p_149686_1_)
+     {
+         return this.func_176552_j();
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    @Override
+     public boolean func_176225_a(IBlockState p_176225_1_, IBlockAccess p_176225_2_, BlockPos p_176225_3_, EnumFacing p_176225_4_)
+     {
+         if (this.func_176552_j())
+@@ -138,7 +128,7 @@
          {
              return false;
          }
@@ -47,7 +127,7 @@
          {
              IBlockState iblockstate = p_176225_2_.func_180495_p(p_176225_3_.func_177972_a(p_176225_4_));
              boolean flag = func_185675_i(iblockstate) && iblockstate.func_177229_b(field_176554_a) == BlockSlab.EnumBlockHalf.TOP;
-@@ -149,6 +162,7 @@
+@@ -172,6 +162,7 @@
                  return !func_185675_i(iblockstate) || flag;
              }
          }
@@ -55,3 +135,17 @@
      }
  
      @SideOnly(Side.CLIENT)
+@@ -201,13 +192,11 @@
+             this.field_176988_c = p_i45713_3_;
+         }
+ 
+-        @Override
+         public String toString()
+         {
+             return this.field_176988_c;
+         }
+ 
+-        @Override
+         public String func_176610_l()
+         {
+             return this.field_176988_c;

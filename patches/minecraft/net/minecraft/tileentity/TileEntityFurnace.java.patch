@@ -1,6 +1,6 @@
 --- before/net/minecraft/tileentity/TileEntityFurnace.java
 +++ after/net/minecraft/tileentity/TileEntityFurnace.java
-@@ -37,7 +37,7 @@
+@@ -37,20 +37,18 @@
      private static final int[] field_145962_k = new int[] {0};
      private static final int[] field_145959_l = new int[] {2, 1};
      private static final int[] field_145960_m = new int[] {1};
@@ -9,7 +9,60 @@
      private int field_145956_a;
      private int field_145963_i;
      private int field_174906_k;
-@@ -113,17 +113,17 @@
+     private int field_174905_l;
+     private String field_145958_o;
+ 
+-    @Override
+     public int func_70302_i_()
+     {
+         return this.field_145957_n.size();
+     }
+ 
+-    @Override
+     public boolean func_191420_l()
+     {
+         for (ItemStack itemstack : this.field_145957_n)
+@@ -64,25 +62,21 @@
+         return true;
+     }
+ 
+-    @Override
+     public ItemStack func_70301_a(int p_70301_1_)
+     {
+         return this.field_145957_n.get(p_70301_1_);
+     }
+ 
+-    @Override
+     public ItemStack func_70298_a(int p_70298_1_, int p_70298_2_)
+     {
+         return ItemStackHelper.func_188382_a(this.field_145957_n, p_70298_1_, p_70298_2_);
+     }
+ 
+-    @Override
+     public ItemStack func_70304_b(int p_70304_1_)
+     {
+         return ItemStackHelper.func_188383_a(this.field_145957_n, p_70304_1_);
+     }
+ 
+-    @Override
+     public void func_70299_a(int p_70299_1_, ItemStack p_70299_2_)
+     {
+         ItemStack itemstack = this.field_145957_n.get(p_70299_1_);
+@@ -102,13 +96,11 @@
+         }
+     }
+ 
+-    @Override
+     public String func_70005_c_()
+     {
+         return this.func_145818_k_() ? this.field_145958_o : "container.furnace";
+     }
+ 
+-    @Override
+     public boolean func_145818_k_()
+     {
+         return this.field_145958_o != null && !this.field_145958_o.isEmpty();
+@@ -121,18 +113,17 @@
  
      public static void func_189676_a(DataFixer p_189676_0_)
      {
@@ -17,6 +70,7 @@
 +        p_189676_0_.func_188258_a(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityFurnace.class, new String[] {"Items"}));
      }
  
+-    @Override
      public void func_145839_a(NBTTagCompound p_145839_1_)
      {
          super.func_145839_a(p_145839_1_);
@@ -32,7 +86,11 @@
          this.field_145963_i = func_145952_a(this.field_145957_n.get(1));
  
          if (p_145839_1_.func_150297_b("CustomName", 8))
-@@ -135,9 +135,9 @@
+@@ -141,13 +132,12 @@
+         }
+     }
+ 
+-    @Override
      public NBTTagCompound func_189515_b(NBTTagCompound p_189515_1_)
      {
          super.func_189515_b(p_189515_1_);
@@ -45,7 +103,23 @@
          ItemStackHelper.func_191282_a(p_189515_1_, this.field_145957_n);
  
          if (this.func_145818_k_())
-@@ -178,7 +178,7 @@
+@@ -158,7 +148,6 @@
+         return p_189515_1_;
+     }
+ 
+-    @Override
+     public int func_70297_j_()
+     {
+         return 64;
+@@ -175,7 +164,6 @@
+         return p_174903_0_.func_174887_a_(0) > 0;
+     }
+ 
+-    @Override
+     public void func_73660_a()
+     {
+         boolean flag = this.func_145950_i();
+@@ -190,7 +178,7 @@
          {
              ItemStack itemstack = this.field_145957_n.get(1);
  
@@ -54,7 +128,7 @@
              {
                  if (!this.func_145950_i() && this.func_145948_k())
                  {
-@@ -196,8 +196,8 @@
+@@ -208,8 +196,8 @@
  
                              if (itemstack.func_190926_b())
                              {
@@ -65,7 +139,7 @@
                              }
                          }
                      }
-@@ -245,7 +245,7 @@
+@@ -257,7 +245,7 @@
  
      private boolean func_145948_k()
      {
@@ -74,7 +148,7 @@
          {
              return false;
          }
-@@ -269,13 +269,13 @@
+@@ -281,13 +269,13 @@
                  {
                      return false;
                  }
@@ -90,7 +164,7 @@
                  }
              }
          }
-@@ -295,10 +295,10 @@
+@@ -307,13 +295,10 @@
              }
              else if (itemstack2.func_77973_b() == itemstack1.func_77973_b())
              {
@@ -98,12 +172,15 @@
 +                itemstack2.func_190917_f(itemstack1.func_190916_E());
              }
  
--            if (itemstack.func_77973_b() == Item.func_150898_a(Blocks.field_150360_v) && itemstack.func_77960_j() == 1 && !this.field_145957_n.get(1).func_190926_b() && this.field_145957_n.get(1).func_77973_b() == Items.field_151133_ar)
+-            if (itemstack.func_77973_b() == Item.func_150898_a(Blocks.field_150360_v)
+-                    && itemstack.func_77960_j() == 1
+-                    && !this.field_145957_n.get(1).func_190926_b()
+-                    && this.field_145957_n.get(1).func_77973_b() == Items.field_151133_ar)
 +            if (itemstack.func_77973_b() == Item.func_150898_a(Blocks.field_150360_v) && itemstack.func_77960_j() == 1 && !((ItemStack)this.field_145957_n.get(1)).func_190926_b() && ((ItemStack)this.field_145957_n.get(1)).func_77973_b() == Items.field_151133_ar)
              {
                  this.field_145957_n.set(1, new ItemStack(Items.field_151131_as));
              }
-@@ -315,6 +315,8 @@
+@@ -330,6 +315,8 @@
          }
          else
          {
@@ -112,16 +189,177 @@
              Item item = p_145952_0_.func_77973_b();
  
              if (item == Item.func_150898_a(Blocks.field_150376_bx))
-@@ -415,7 +417,7 @@
+@@ -376,37 +363,43 @@
+             {
+                 return 100;
+             }
+-            else if (item == Items.field_151031_f || item == Items.field_151112_aM)
+-            {
+-                return 300;
+-            }
+-            else if (item == Items.field_151155_ap)
+-            {
+-                return 200;
+-            }
+-            else if (item == Items.field_151044_h)
+-            {
+-                return 1600;
+-            }
+-            else if (item == Items.field_151129_at)
+-            {
+-                return 20000;
+-            }
+-            else if (item == Item.func_150898_a(Blocks.field_150345_g) || item == Items.field_151054_z)
+-            {
+-                return 100;
+-            }
+-            else if (item == Items.field_151072_bj)
+-            {
+-                return 2400;
+-            }
+-            else if (item instanceof ItemDoor && item != Items.field_151139_aw)
+-            {
+-                return 200;
++            else if (item != Items.field_151031_f && item != Items.field_151112_aM)
++            {
++                if (item == Items.field_151155_ap)
++                {
++                    return 200;
++                }
++                else if (item == Items.field_151044_h)
++                {
++                    return 1600;
++                }
++                else if (item == Items.field_151129_at)
++                {
++                    return 20000;
++                }
++                else if (item != Item.func_150898_a(Blocks.field_150345_g) && item != Items.field_151054_z)
++                {
++                    if (item == Items.field_151072_bj)
++                    {
++                        return 2400;
++                    }
++                    else if (item instanceof ItemDoor && item != Items.field_151139_aw)
++                    {
++                        return 200;
++                    }
++                    else
++                    {
++                        return item instanceof ItemBoat ? 400 : 0;
++                    }
++                }
++                else
++                {
++                    return 100;
++                }
+             }
+             else
+             {
+-                return item instanceof ItemBoat ? 400 : 0;
++                return 300;
+             }
+         }
+     }
+@@ -416,7 +409,6 @@
+         return func_145952_a(p_145954_0_) > 0;
+     }
+ 
+-    @Override
+     public boolean func_70300_a(EntityPlayer p_70300_1_)
+     {
+         if (this.field_145850_b.func_175625_s(this.field_174879_c) != this)
+@@ -425,28 +417,18 @@
          }
          else
          {
--            return !(p_70300_1_.func_70092_e((double)this.field_174879_c.func_177958_n() + 0.5D, (double)this.field_174879_c.func_177956_o() + 0.5D, (double)this.field_174879_c.func_177952_p() + 0.5D) > 64.0D);
+-            return !(
+-                       p_70300_1_.func_70092_e(
+-                           (double)this.field_174879_c.func_177958_n() + 0.5,
+-                           (double)this.field_174879_c.func_177956_o() + 0.5,
+-                           (double)this.field_174879_c.func_177952_p() + 0.5
+-                       )
+-                       > 64.0
+-                   );
 +            return p_70300_1_.func_70092_e((double)this.field_174879_c.func_177958_n() + 0.5D, (double)this.field_174879_c.func_177956_o() + 0.5D, (double)this.field_174879_c.func_177952_p() + 0.5D) <= 64.0D;
          }
      }
  
-@@ -529,5 +531,24 @@
+-    @Override
+     public void func_174889_b(EntityPlayer p_174889_1_)
+     {
+     }
+ 
+-    @Override
+     public void func_174886_c(EntityPlayer p_174886_1_)
+     {
+     }
+ 
+-    @Override
+     public boolean func_94041_b(int p_94041_1_, ItemStack p_94041_2_)
+     {
+         if (p_94041_1_ == 2)
+@@ -464,7 +446,6 @@
+         }
+     }
+ 
+-    @Override
+     public int[] func_180463_a(EnumFacing p_180463_1_)
+     {
+         if (p_180463_1_ == EnumFacing.DOWN)
+@@ -477,13 +458,11 @@
+         }
+     }
+ 
+-    @Override
+     public boolean func_180462_a(int p_180462_1_, ItemStack p_180462_2_, EnumFacing p_180462_3_)
+     {
+         return this.func_94041_b(p_180462_1_, p_180462_2_);
+     }
+ 
+-    @Override
+     public boolean func_180461_b(int p_180461_1_, ItemStack p_180461_2_, EnumFacing p_180461_3_)
+     {
+         if (p_180461_3_ == EnumFacing.DOWN && p_180461_1_ == 1)
+@@ -499,19 +478,16 @@
+         return true;
+     }
+ 
+-    @Override
+     public String func_174875_k()
+     {
+         return "minecraft:furnace";
+     }
+ 
+-    @Override
+     public Container func_174876_a(InventoryPlayer p_174876_1_, EntityPlayer p_174876_2_)
+     {
+         return new ContainerFurnace(p_174876_1_, this);
+     }
+ 
+-    @Override
+     public int func_174887_a_(int p_174887_1_)
+     {
+         switch (p_174887_1_)
+@@ -529,7 +505,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_174885_b(int p_174885_1_, int p_174885_2_)
+     {
+         switch (p_174885_1_)
+@@ -548,15 +523,32 @@
+         }
+     }
+ 
+-    @Override
+     public int func_174890_g()
+     {
+         return 4;
+     }
+ 
+-    @Override
      public void func_174888_l()
      {
          this.field_145957_n.clear();

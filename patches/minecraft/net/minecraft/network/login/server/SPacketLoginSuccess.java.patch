@@ -1,6 +1,11 @@
 --- before/net/minecraft/network/login/server/SPacketLoginSuccess.java
 +++ after/net/minecraft/network/login/server/SPacketLoginSuccess.java
-@@ -26,7 +26,7 @@
+@@ -22,16 +22,14 @@
+         this.field_149602_a = p_i46856_1_;
+     }
+ 
+-    @Override
+     public void func_148837_a(PacketBuffer p_148837_1_) throws IOException
      {
          String s = p_148837_1_.func_150789_c(36);
          String s1 = p_148837_1_.func_150789_c(16);
@@ -9,3 +14,7 @@
          this.field_149602_a = new GameProfile(uuid, s1);
      }
  
+-    @Override
+     public void func_148840_b(PacketBuffer p_148840_1_) throws IOException
+     {
+         UUID uuid = this.field_149602_a.getId();

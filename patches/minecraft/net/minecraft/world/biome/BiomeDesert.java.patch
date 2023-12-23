@@ -1,6 +1,11 @@
 --- before/net/minecraft/world/biome/BiomeDesert.java
 +++ after/net/minecraft/world/biome/BiomeDesert.java
-@@ -47,6 +47,7 @@
+@@ -43,22 +43,23 @@
+         this.field_76761_J.add(new Biome.SpawnListEntry(EntityHusk.class, 80, 4, 4));
+     }
+ 
+-    @Override
+     public void func_180624_a(World p_180624_1_, Random p_180624_2_, BlockPos p_180624_3_)
      {
          super.func_180624_a(p_180624_1_, p_180624_2_, p_180624_3_);
  
@@ -8,11 +13,17 @@
          if (p_180624_2_.nextInt(1000) == 0)
          {
              int i = p_180624_2_.nextInt(16) + 8;
-@@ -55,6 +56,7 @@
-             (new WorldGenDesertWells()).func_180709_b(p_180624_1_, p_180624_2_, blockpos);
+             int j = p_180624_2_.nextInt(16) + 8;
+             BlockPos blockpos = p_180624_1_.func_175645_m(p_180624_3_.func_177982_a(i, 0, j)).func_177984_a();
+-            new WorldGenDesertWells().func_180709_b(p_180624_1_, p_180624_2_, blockpos);
++            (new WorldGenDesertWells()).func_180709_b(p_180624_1_, p_180624_2_, blockpos);
          }
  
 +        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(p_180624_1_, p_180624_2_, new net.minecraft.util.math.ChunkPos(p_180624_3_), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FOSSIL))
          if (p_180624_2_.nextInt(64) == 0)
          {
-             (new WorldGenFossils()).func_180709_b(p_180624_1_, p_180624_2_, p_180624_3_);
+-            new WorldGenFossils().func_180709_b(p_180624_1_, p_180624_2_, p_180624_3_);
++            (new WorldGenFossils()).func_180709_b(p_180624_1_, p_180624_2_, p_180624_3_);
+         }
+     }
+ }

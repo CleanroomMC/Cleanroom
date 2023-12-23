@@ -1,6 +1,13 @@
 --- before/net/minecraft/network/play/client/CPacketClickWindow.java
 +++ after/net/minecraft/network/play/client/CPacketClickWindow.java
-@@ -44,7 +44,7 @@
+@@ -38,18 +38,16 @@
+         p_148833_1_.func_147351_a(this);
+     }
+ 
+-    @Override
+     public void func_148837_a(PacketBuffer p_148837_1_) throws IOException
+     {
+         this.field_149554_a = p_148837_1_.readByte();
          this.field_149552_b = p_148837_1_.readShort();
          this.field_149553_c = p_148837_1_.readByte();
          this.field_149550_d = p_148837_1_.readShort();
@@ -9,7 +16,11 @@
          this.field_149551_e = p_148837_1_.func_150791_c();
      }
  
-@@ -55,7 +55,7 @@
+-    @Override
+     public void func_148840_b(PacketBuffer p_148840_1_) throws IOException
+     {
+         p_148840_1_.writeByte(this.field_149554_a);
+@@ -57,7 +55,7 @@
          p_148840_1_.writeByte(this.field_149553_c);
          p_148840_1_.writeShort(this.field_149550_d);
          p_148840_1_.func_179249_a(this.field_149549_f);

@@ -1,6 +1,29 @@
 --- before/net/minecraft/command/CommandTrigger.java
 +++ after/net/minecraft/command/CommandTrigger.java
-@@ -34,7 +34,7 @@
+@@ -15,30 +15,26 @@
+ 
+ public class CommandTrigger extends CommandBase
+ {
+-    @Override
+     public String func_71517_b()
+     {
+         return "trigger";
+     }
+ 
+-    @Override
+     public int func_82362_a()
+     {
+         return 0;
+     }
+ 
+-    @Override
+     public String func_71518_a(ICommandSender p_71518_1_)
+     {
+         return "commands.trigger.usage";
+     }
+ 
+-    @Override
+     public void func_184881_a(MinecraftServer p_184881_1_, ICommandSender p_184881_2_, String[] p_184881_3_) throws CommandException
      {
          if (p_184881_3_.length < 3)
          {
@@ -9,7 +32,7 @@
          }
          else
          {
-@@ -50,7 +50,7 @@
+@@ -54,7 +50,7 @@
  
                  if (!(entity instanceof EntityPlayerMP))
                  {
@@ -18,7 +41,7 @@
                  }
  
                  entityplayermp = (EntityPlayerMP)entity;
-@@ -65,7 +65,7 @@
+@@ -69,7 +65,7 @@
  
                  if (!scoreboard.func_178819_b(entityplayermp.func_70005_c_(), scoreobjective))
                  {
@@ -27,7 +50,7 @@
                  }
                  else
                  {
-@@ -73,7 +73,7 @@
+@@ -77,7 +73,7 @@
  
                      if (score.func_178816_g())
                      {
@@ -36,7 +59,7 @@
                      }
                      else
                      {
-@@ -85,7 +85,7 @@
+@@ -89,7 +85,7 @@
                          {
                              if (!"add".equals(p_184881_3_[1]))
                              {
@@ -45,7 +68,7 @@
                              }
  
                              score.func_96649_a(i);
-@@ -102,7 +102,7 @@
+@@ -106,18 +102,17 @@
              }
              else
              {
@@ -54,7 +77,10 @@
              }
          }
      }
-@@ -112,7 +112,7 @@
+ 
+-    @Override
+     public List<String> func_184883_a(MinecraftServer p_184883_1_, ICommandSender p_184883_2_, String[] p_184883_3_, @Nullable BlockPos p_184883_4_)
+     {
          if (p_184883_3_.length == 1)
          {
              Scoreboard scoreboard = p_184883_1_.func_71218_a(0).func_96441_U();
@@ -63,7 +89,7 @@
  
              for (ScoreObjective scoreobjective : scoreboard.func_96514_c())
              {
-@@ -122,7 +122,7 @@
+@@ -127,7 +122,7 @@
                  }
              }
  

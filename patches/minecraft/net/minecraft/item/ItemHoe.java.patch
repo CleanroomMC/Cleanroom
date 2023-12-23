@@ -1,6 +1,25 @@
 --- before/net/minecraft/item/ItemHoe.java
 +++ after/net/minecraft/item/ItemHoe.java
-@@ -47,10 +47,13 @@
+@@ -37,17 +37,7 @@
+     }
+ 
+     @SuppressWarnings("incomplete-switch")
+-    @Override
+-    public EnumActionResult func_180614_a(
+-        EntityPlayer p_180614_1_,
+-        World p_180614_2_,
+-        BlockPos p_180614_3_,
+-        EnumHand p_180614_4_,
+-        EnumFacing p_180614_5_,
+-        float p_180614_6_,
+-        float p_180614_7_,
+-        float p_180614_8_
+-    )
++    public EnumActionResult func_180614_a(EntityPlayer p_180614_1_, World p_180614_2_, BlockPos p_180614_3_, EnumHand p_180614_4_, EnumFacing p_180614_5_, float p_180614_6_, float p_180614_7_, float p_180614_8_)
+     {
+         ItemStack itemstack = p_180614_1_.func_184586_b(p_180614_4_);
+ 
+@@ -57,10 +47,13 @@
          }
          else
          {
@@ -15,3 +34,55 @@
              {
                  if (block == Blocks.field_150349_c || block == Blocks.field_185774_da)
                  {
+@@ -76,13 +69,7 @@
+                             this.func_185071_a(itemstack, p_180614_1_, p_180614_2_, p_180614_3_, Blocks.field_150458_ak.func_176223_P());
+                             return EnumActionResult.SUCCESS;
+                         case COARSE_DIRT:
+-                            this.func_185071_a(
+-                                itemstack,
+-                                p_180614_1_,
+-                                p_180614_2_,
+-                                p_180614_3_,
+-                                Blocks.field_150346_d.func_176223_P().func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.DIRT)
+-                            );
++                            this.func_185071_a(itemstack, p_180614_1_, p_180614_2_, p_180614_3_, Blocks.field_150346_d.func_176223_P().func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.DIRT));
+                             return EnumActionResult.SUCCESS;
+                     }
+                 }
+@@ -92,7 +79,6 @@
+         }
+     }
+ 
+-    @Override
+     public boolean func_77644_a(ItemStack p_77644_1_, EntityLivingBase p_77644_2_, EntityLivingBase p_77644_3_)
+     {
+         p_77644_1_.func_77972_a(1, p_77644_3_);
+@@ -111,7 +97,6 @@
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    @Override
+     public boolean func_77662_d()
+     {
+         return true;
+@@ -122,18 +107,14 @@
+         return this.field_77843_a.toString();
+     }
+ 
+-    @Override
+     public Multimap<String, AttributeModifier> func_111205_h(EntityEquipmentSlot p_111205_1_)
+     {
+         Multimap<String, AttributeModifier> multimap = super.func_111205_h(p_111205_1_);
+ 
+         if (p_111205_1_ == EntityEquipmentSlot.MAINHAND)
+         {
+-            multimap.put(SharedMonsterAttributes.field_111264_e.func_111108_a(), new AttributeModifier(field_111210_e, "Weapon modifier", 0.0, 0));
+-            multimap.put(
+-                SharedMonsterAttributes.field_188790_f.func_111108_a(),
+-                new AttributeModifier(field_185050_h, "Weapon modifier", (double)(this.field_185072_b - 4.0F), 0)
+-            );
++            multimap.put(SharedMonsterAttributes.field_111264_e.func_111108_a(), new AttributeModifier(field_111210_e, "Weapon modifier", 0.0D, 0));
++            multimap.put(SharedMonsterAttributes.field_188790_f.func_111108_a(), new AttributeModifier(field_185050_h, "Weapon modifier", (double)(this.field_185072_b - 4.0F), 0));
+         }
+ 
+         return multimap;

@@ -9,7 +9,7 @@
      public static TileEntityRendererDispatcher field_147556_a = new TileEntityRendererDispatcher();
      public FontRenderer field_147557_n;
      public static double field_147554_b;
-@@ -78,21 +78,21 @@
+@@ -78,7 +78,7 @@
  
      public <T extends TileEntity> TileEntitySpecialRenderer<T> func_147546_a(Class <? extends TileEntity > p_147546_1_)
      {
@@ -18,8 +18,7 @@
  
          if (tileentityspecialrenderer == null && p_147546_1_ != TileEntity.class)
          {
--            tileentityspecialrenderer = this.func_147546_a((Class <? extends TileEntity >) p_147546_1_.getSuperclass());
-+            tileentityspecialrenderer = this.func_147546_a((Class <? extends TileEntity >)p_147546_1_.getSuperclass());
+@@ -86,18 +86,16 @@
              this.field_147559_m.put(p_147546_1_, tileentityspecialrenderer);
          }
  
@@ -34,8 +33,14 @@
 +        return p_147547_1_ == null || p_147547_1_.func_145837_r() ? null : this.func_147546_a(p_147547_1_.getClass()); // Forge: fix MC-123363
      }
  
-     public void func_190056_a(World p_190056_1_, TextureManager p_190056_2_, FontRenderer p_190056_3_, Entity p_190056_4_, RayTraceResult p_190056_5_, float p_190056_6_)
-@@ -117,13 +117,17 @@
+-    public void func_190056_a(
+-        World p_190056_1_, TextureManager p_190056_2_, FontRenderer p_190056_3_, Entity p_190056_4_, RayTraceResult p_190056_5_, float p_190056_6_
+-    )
++    public void func_190056_a(World p_190056_1_, TextureManager p_190056_2_, FontRenderer p_190056_3_, Entity p_190056_4_, RayTraceResult p_190056_5_, float p_190056_6_)
+     {
+         if (this.field_147550_f != p_190056_1_)
+         {
+@@ -119,22 +117,18 @@
      {
          if (p_180546_1_.func_145835_a(this.field_147560_j, this.field_147561_k, this.field_147558_l) < p_180546_1_.func_145833_n())
          {
@@ -49,13 +54,28 @@
              GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
 +            }
              BlockPos blockpos = p_180546_1_.func_174877_v();
+-            this.func_192854_a(
+-                p_180546_1_,
+-                (double)blockpos.func_177958_n() - field_147554_b,
+-                (double)blockpos.func_177956_o() - field_147555_c,
+-                (double)blockpos.func_177952_p() - field_147552_d,
+-                p_180546_2_,
+-                p_180546_3_,
+-                1.0F
+-            );
 +            if (this.field_147550_f.func_175668_a(blockpos, false)) // Forge: fix MC-123363
-             this.func_192854_a(p_180546_1_, (double)blockpos.func_177958_n() - field_147554_b, (double)blockpos.func_177956_o() - field_147555_c, (double)blockpos.func_177952_p() - field_147552_d, p_180546_2_, p_180546_3_, 1.0F);
++            this.func_192854_a(p_180546_1_, (double)blockpos.func_177958_n() - field_147554_b, (double)blockpos.func_177956_o() - field_147555_c, (double)blockpos.func_177952_p() - field_147552_d, p_180546_2_, p_180546_3_, 1.0F);
          }
      }
-@@ -140,12 +144,15 @@
  
-     public void func_192854_a(TileEntity p_192854_1_, double p_192854_2_, double p_192854_4_, double p_192854_6_, float p_192854_8_, int p_192854_9_, float p_192854_10_)
+@@ -148,16 +142,17 @@
+         this.func_192854_a(p_192855_1_, p_192855_2_, p_192855_4_, p_192855_6_, p_192855_8_, -1, p_192855_9_);
+     }
+ 
+-    public void func_192854_a(
+-        TileEntity p_192854_1_, double p_192854_2_, double p_192854_4_, double p_192854_6_, float p_192854_8_, int p_192854_9_, float p_192854_10_
+-    )
++    public void func_192854_a(TileEntity p_192854_1_, double p_192854_2_, double p_192854_4_, double p_192854_6_, float p_192854_8_, int p_192854_9_, float p_192854_10_)
      {
 -        TileEntitySpecialRenderer<TileEntity> tileentityspecialrenderer = this.func_147547_b(p_192854_1_);
 +        TileEntitySpecialRenderer<TileEntity> tileentityspecialrenderer = this.<TileEntity>func_147547_b(p_192854_1_);
@@ -70,7 +90,7 @@
                  tileentityspecialrenderer.func_192841_a(p_192854_1_, p_192854_2_, p_192854_4_, p_192854_6_, p_192854_8_, p_192854_9_, p_192854_10_);
              }
              catch (Throwable throwable)
-@@ -171,5 +178,54 @@
+@@ -183,5 +178,54 @@
      public FontRenderer func_147548_a()
      {
          return this.field_147557_n;

@@ -1,6 +1,123 @@
 --- before/net/minecraft/util/text/Style.java
 +++ after/net/minecraft/util/text/Style.java
-@@ -132,27 +132,27 @@
+@@ -30,116 +30,94 @@
+     private static final Style field_150250_j = new Style()
+     {
+         @Nullable
+-        @Override
+         public TextFormatting func_150215_a()
+         {
+             return null;
+         }
+-        @Override
+         public boolean func_150223_b()
+         {
+             return false;
+         }
+-        @Override
+         public boolean func_150242_c()
+         {
+             return false;
+         }
+-        @Override
+         public boolean func_150236_d()
+         {
+             return false;
+         }
+-        @Override
+         public boolean func_150234_e()
+         {
+             return false;
+         }
+-        @Override
+         public boolean func_150233_f()
+         {
+             return false;
+         }
+         @Nullable
+-        @Override
+         public ClickEvent func_150235_h()
+         {
+             return null;
+         }
+         @Nullable
+-        @Override
+         public HoverEvent func_150210_i()
+         {
+             return null;
+         }
+         @Nullable
+-        @Override
+         public String func_179986_j()
+         {
+             return null;
+         }
+-        @Override
+         public Style func_150238_a(TextFormatting p_150238_1_)
+         {
+             throw new UnsupportedOperationException();
+         }
+-        @Override
+         public Style func_150227_a(Boolean p_150227_1_)
+         {
+             throw new UnsupportedOperationException();
+         }
+-        @Override
+         public Style func_150217_b(Boolean p_150217_1_)
+         {
+             throw new UnsupportedOperationException();
+         }
+-        @Override
+         public Style func_150225_c(Boolean p_150225_1_)
+         {
+             throw new UnsupportedOperationException();
+         }
+-        @Override
+         public Style func_150228_d(Boolean p_150228_1_)
+         {
+             throw new UnsupportedOperationException();
+         }
+-        @Override
+         public Style func_150237_e(Boolean p_150237_1_)
+         {
+             throw new UnsupportedOperationException();
+         }
+-        @Override
+         public Style func_150241_a(ClickEvent p_150241_1_)
+         {
+             throw new UnsupportedOperationException();
+         }
+-        @Override
+         public Style func_150209_a(HoverEvent p_150209_1_)
+         {
+             throw new UnsupportedOperationException();
+         }
+-        @Override
+         public Style func_150221_a(Style p_150221_1_)
+         {
+             throw new UnsupportedOperationException();
+         }
+-        @Override
+         public String toString()
+         {
+             return "Style.ROOT";
+         }
+-        @Override
+         public Style func_150232_l()
+         {
+             return this;
+         }
+-        @Override
+         public Style func_150206_m()
+         {
+             return this;
+         }
+         @SideOnly(Side.CLIENT)
+-        @Override
+         public String func_150218_j()
+         {
+             return "";
+@@ -154,40 +132,32 @@
  
      public boolean func_150223_b()
      {
@@ -33,7 +150,21 @@
      }
  
      public boolean func_150229_g()
-@@ -238,7 +238,6 @@
+     {
+-        return this.field_150248_c == null
+-               && this.field_150245_d == null
+-               && this.field_150243_f == null
+-               && this.field_150246_e == null
+-               && this.field_150244_g == null
+-               && this.field_150247_b == null
+-               && this.field_150251_h == null
+-               && this.field_150252_i == null
+-               && this.field_179990_j == null;
++        return this.field_150248_c == null && this.field_150245_d == null && this.field_150243_f == null && this.field_150246_e == null && this.field_150244_g == null && this.field_150247_b == null && this.field_150251_h == null && this.field_150252_i == null && this.field_179990_j == null;
+     }
+ 
+     @Nullable
+@@ -268,7 +238,6 @@
          return this;
      }
  
@@ -41,51 +172,95 @@
      public String func_150218_j()
      {
          if (this.func_150229_g())
-@@ -305,48 +304,58 @@
+@@ -281,32 +250,32 @@
+ 
+             if (this.func_150215_a() != null)
+             {
+-                stringbuilder.append(this.func_150215_a());
++                stringbuilder.append((Object)this.func_150215_a());
+             }
+ 
+             if (this.func_150223_b())
+             {
+-                stringbuilder.append(TextFormatting.BOLD);
++                stringbuilder.append((Object)TextFormatting.BOLD);
+             }
+ 
+             if (this.func_150242_c())
+             {
+-                stringbuilder.append(TextFormatting.ITALIC);
++                stringbuilder.append((Object)TextFormatting.ITALIC);
+             }
+ 
+             if (this.func_150234_e())
+             {
+-                stringbuilder.append(TextFormatting.UNDERLINE);
++                stringbuilder.append((Object)TextFormatting.UNDERLINE);
+             }
+ 
+             if (this.func_150233_f())
+             {
+-                stringbuilder.append(TextFormatting.OBFUSCATED);
++                stringbuilder.append((Object)TextFormatting.OBFUSCATED);
+             }
+ 
+             if (this.func_150236_d())
+             {
+-                stringbuilder.append(TextFormatting.STRIKETHROUGH);
++                stringbuilder.append((Object)TextFormatting.STRIKETHROUGH);
+             }
+ 
+             return stringbuilder.toString();
+@@ -318,31 +287,11 @@
+         return this.field_150249_a == null ? field_150250_j : this.field_150249_a;
+     }
+ 
+-    @Override
+     public String toString()
+     {
+-        return "Style{hasParent="
+-               + (this.field_150249_a != null)
+-               + ", color="
+-               + this.field_150247_b
+-               + ", bold="
+-               + this.field_150248_c
+-               + ", italic="
+-               + this.field_150245_d
+-               + ", underlined="
+-               + this.field_150246_e
+-               + ", obfuscated="
+-               + this.field_150244_g
+-               + ", clickEvent="
+-               + this.func_150235_h()
+-               + ", hoverEvent="
+-               + this.func_150210_i()
+-               + ", insertion="
+-               + this.func_179986_j()
+-               + '}';
++        return "Style{hasParent=" + (this.field_150249_a != null) + ", color=" + this.field_150247_b + ", bold=" + this.field_150248_c + ", italic=" + this.field_150245_d + ", underlined=" + this.field_150246_e + ", obfuscated=" + this.field_150244_g + ", clickEvent=" + this.func_150235_h() + ", hoverEvent=" + this.func_150210_i() + ", insertion=" + this.func_179986_j() + '}';
+     }
+ 
+-    @Override
+     public boolean equals(Object p_equals_1_)
+     {
+         if (this == p_equals_1_)
+@@ -355,20 +304,61 @@
          }
          else
          {
 -            Style style = (Style)p_equals_1_;
--
--            if (this.func_150223_b() == style.func_150223_b() && this.func_150215_a() == style.func_150215_a() && this.func_150242_c() == style.func_150242_c() && this.func_150233_f() == style.func_150233_f() && this.func_150236_d() == style.func_150236_d() && this.func_150234_e() == style.func_150234_e())
+-            return this.func_150223_b() == style.func_150223_b()
+-                   && this.func_150215_a() == style.func_150215_a()
+-                   && this.func_150242_c() == style.func_150242_c()
+-                   && this.func_150233_f() == style.func_150233_f()
+-                   && this.func_150236_d() == style.func_150236_d()
+-                   && this.func_150234_e() == style.func_150234_e()
+-                   && (this.func_150235_h() != null ? this.func_150235_h().equals(style.func_150235_h()) : style.func_150235_h() == null)
+-                   && (this.func_150210_i() != null ? this.func_150210_i().equals(style.func_150210_i()) : style.func_150210_i() == null)
+-                   && (this.func_179986_j() != null ? this.func_179986_j().equals(style.func_179986_j()) : style.func_179986_j() == null);
 +            boolean flag;
 +            label77:
-             {
--                if (this.func_150235_h() != null)
--                {
--                    if (!this.func_150235_h().equals(style.func_150235_h()))
--                    {
--                        return false;
--                    }
--                }
--                else if (style.func_150235_h() != null)
--                {
--                    return false;
--                }
--
--                if (this.func_150210_i() != null)
--                {
--                    if (!this.func_150210_i().equals(style.func_150210_i()))
--                    {
--                        return false;
--                    }
--                }
--                else if (style.func_150210_i() != null)
--                {
--                    return false;
--                }
--
--                if (this.func_179986_j() != null)
--                {
--                    if (this.func_179986_j().equals(style.func_179986_j()))
--                    {
--                        return true;
--                    }
--                }
--                else if (style.func_179986_j() == null)
--                {
--                    return true;
--                }
++            {
 +                Style style = (Style)p_equals_1_;
 +
 +                if (this.func_150223_b() == style.func_150223_b() && this.func_150215_a() == style.func_150215_a() && this.func_150242_c() == style.func_150242_c() && this.func_150233_f() == style.func_150233_f() && this.func_150236_d() == style.func_150236_d() && this.func_150234_e() == style.func_150234_e())
@@ -132,15 +307,17 @@
 +
 +                flag = false;
 +                return flag;
-             }
--
--            return false;
++            }
 +            flag = true;
 +            return flag;
          }
      }
  
-@@ -360,7 +369,8 @@
+-    @Override
+     public int hashCode()
+     {
+         int i = this.field_150247_b.hashCode();
+@@ -379,7 +369,8 @@
          i = 31 * i + this.field_150244_g.hashCode();
          i = 31 * i + this.field_150251_h.hashCode();
          i = 31 * i + this.field_150252_i.hashCode();
@@ -150,7 +327,7 @@
      }
  
      public Style func_150232_l()
-@@ -382,11 +392,11 @@
+@@ -401,11 +392,11 @@
      public Style func_150206_m()
      {
          Style style = new Style();
@@ -167,7 +344,7 @@
          style.func_150238_a(this.func_150215_a());
          style.func_150241_a(this.func_150235_h());
          style.func_150209_a(this.func_150210_i());
-@@ -437,7 +447,7 @@
+@@ -456,7 +447,7 @@
  
                          if (jsonobject.has("color"))
                          {
@@ -176,7 +353,7 @@
                          }
  
                          if (jsonobject.has("insertion"))
-@@ -471,7 +481,7 @@
+@@ -490,7 +481,7 @@
                              {
                                  JsonPrimitive jsonprimitive2 = jsonobject2.getAsJsonPrimitive("action");
                                  HoverEvent.Action hoverevent$action = jsonprimitive2 == null ? null : HoverEvent.Action.func_150684_a(jsonprimitive2.getAsString());

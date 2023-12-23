@@ -1,6 +1,14 @@
 --- before/net/minecraft/item/crafting/CraftingManager.java
 +++ after/net/minecraft/item/crafting/CraftingManager.java
-@@ -36,7 +36,7 @@
+@@ -6,6 +6,7 @@
+ import com.google.gson.JsonParseException;
+ import com.google.gson.JsonSyntaxException;
+ import java.io.BufferedReader;
++import java.io.Closeable;
+ import java.io.IOException;
+ import java.io.Reader;
+ import java.net.URI;
+@@ -35,7 +36,7 @@
  {
      private static final Logger field_192422_a = LogManager.getLogger();
      private static int field_193381_c;
@@ -9,7 +17,7 @@
  
      public static boolean func_193377_a()
      {
-@@ -55,7 +55,7 @@
+@@ -54,7 +55,7 @@
              func_193379_a("shulkerboxcoloring", new ShulkerBoxRecipes.ShulkerBoxColoring());
              return func_192420_c();
          }
@@ -18,16 +26,29 @@
          {
              return false;
          }
-@@ -65,7 +65,7 @@
+@@ -63,18 +64,14 @@
+     private static boolean func_192420_c()
      {
          FileSystem filesystem = null;
-         Gson gson = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
--        boolean flag;
+-        Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
++        Gson gson = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
 +        boolean flag1;
  
          try
          {
-@@ -85,7 +85,8 @@
+             URL url = CraftingManager.class.getResource("/assets/.mcassetsroot");
+ 
+-            if (url == null)
+-            {
+-                field_192422_a.error("Couldn't find .mcassetsroot");
+-                return false;
+-            }
+-            else
++            if (url != null)
+             {
+                 URI uri = url.toURI();
+                 Path path;
+@@ -88,7 +85,8 @@
                      if (!"jar".equals(uri.getScheme()))
                      {
                          field_192422_a.error("Unsupported scheme " + uri + " trying to list all recipes");
@@ -37,7 +58,7 @@
                      }
  
                      filesystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
-@@ -107,18 +108,25 @@
+@@ -110,18 +108,25 @@
  
                          try
                          {
@@ -75,11 +96,12 @@
                          }
                          finally
                          {
-@@ -131,19 +139,20 @@
-             }
+@@ -132,16 +137,22 @@
  
-             field_192422_a.error("Couldn't find .mcassetsroot");
--            flag = false;
+                 return true;
+             }
++
++            field_192422_a.error("Couldn't find .mcassetsroot");
 +            flag1 = false;
          }
          catch (IOException | URISyntaxException urisyntaxexception)
@@ -91,15 +113,15 @@
          }
          finally
          {
-             IOUtils.closeQuietly((Closeable)filesystem);
+-            IOUtils.closeQuietly(filesystem);
++            IOUtils.closeQuietly((Closeable)filesystem);
          }
- 
--        return flag;
++
 +        return flag1;
      }
  
      private static IRecipe func_193376_a(JsonObject p_193376_0_)
-@@ -164,12 +173,14 @@
+@@ -162,12 +173,14 @@
          }
      }
  
@@ -116,7 +138,7 @@
      {
          if (field_193380_a.func_148741_d(p_193372_0_))
          {
-@@ -218,7 +229,7 @@
+@@ -216,7 +229,7 @@
              }
          }
  
@@ -125,7 +147,7 @@
  
          for (int i = 0; i < nonnulllist.size(); ++i)
          {
-@@ -234,11 +245,13 @@
+@@ -232,11 +245,13 @@
          return field_193380_a.func_82594_a(p_193373_0_);
      }
  

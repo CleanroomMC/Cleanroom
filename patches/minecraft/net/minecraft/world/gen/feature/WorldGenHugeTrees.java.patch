@@ -1,15 +1,17 @@
 --- before/net/minecraft/world/gen/feature/WorldGenHugeTrees.java
 +++ after/net/minecraft/world/gen/feature/WorldGenHugeTrees.java
-@@ -59,7 +59,7 @@
+@@ -59,9 +59,7 @@
                  {
                      for (int l = -j; l <= j && flag; ++l)
                      {
--                        if (p_175926_2_.func_177956_o() + i < 0 || p_175926_2_.func_177956_o() + i >= 256 || !this.func_150523_a(p_175926_1_.func_180495_p(p_175926_2_.func_177982_a(k, i, l)).func_177230_c()))
+-                        if (p_175926_2_.func_177956_o() + i < 0
+-                                || p_175926_2_.func_177956_o() + i >= 256
+-                                || !this.func_150523_a(p_175926_1_.func_180495_p(p_175926_2_.func_177982_a(k, i, l)).func_177230_c()))
 +                        if (p_175926_2_.func_177956_o() + i < 0 || p_175926_2_.func_177956_o() + i >= 256 || !this.isReplaceable(p_175926_1_,p_175926_2_.func_177982_a(k, i, l)))
                          {
                              flag = false;
                          }
-@@ -78,14 +78,15 @@
+@@ -80,14 +78,15 @@
      private boolean func_175927_a(BlockPos p_175927_1_, World p_175927_2_)
      {
          BlockPos blockpos = p_175927_1_.func_177977_b();
@@ -31,7 +33,7 @@
              return true;
          }
          else
-@@ -113,9 +114,9 @@
+@@ -115,9 +114,9 @@
                  if (j * j + k * k <= i || l * l + i1 * i1 <= i || j * j + i1 * i1 <= i || l * l + k * k <= i)
                  {
                      BlockPos blockpos = p_175925_2_.func_177982_a(j, 0, k);
@@ -43,7 +45,7 @@
                      {
                          this.func_175903_a(p_175925_1_, blockpos, this.field_76521_c);
                      }
-@@ -135,14 +136,21 @@
+@@ -137,14 +136,21 @@
                  if (j * j + k * k <= i)
                  {
                      BlockPos blockpos = p_175928_2_.func_177982_a(j, 0, k);

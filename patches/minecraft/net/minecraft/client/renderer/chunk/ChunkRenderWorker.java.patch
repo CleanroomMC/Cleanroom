@@ -1,6 +1,6 @@
 --- before/net/minecraft/client/renderer/chunk/ChunkRenderWorker.java
 +++ after/net/minecraft/client/renderer/chunk/ChunkRenderWorker.java
-@@ -27,7 +27,7 @@
+@@ -27,20 +27,20 @@
      private static final Logger field_152478_a = LogManager.getLogger();
      private final ChunkRenderDispatcher field_178477_b;
      private final RegionRenderCacheBuilder field_178478_c;
@@ -9,7 +9,9 @@
  
      public ChunkRenderWorker(ChunkRenderDispatcher p_i46201_1_)
      {
-@@ -36,6 +36,7 @@
+-        this(p_i46201_1_, null);
++        this(p_i46201_1_, (RegionRenderCacheBuilder)null);
+     }
  
      public ChunkRenderWorker(ChunkRenderDispatcher p_i46202_1_, @Nullable RegionRenderCacheBuilder p_i46202_2_)
      {
@@ -17,7 +19,12 @@
          this.field_178477_b = p_i46202_1_;
          this.field_178478_c = p_i46202_2_;
      }
-@@ -48,7 +49,7 @@
+ 
+-    @Override
+     public void run()
+     {
+         while (this.field_188265_d)
+@@ -49,7 +49,7 @@
              {
                  this.func_178474_a(this.field_178477_b.func_178511_d());
              }
@@ -26,7 +33,43 @@
              {
                  field_152478_a.debug("Stopping chunk worker due to interrupt");
                  return;
-@@ -148,7 +149,7 @@
+@@ -73,7 +73,7 @@
+             {
+                 if (!p_178474_1_.func_178537_h())
+                 {
+-                    field_152478_a.warn("Chunk render task was {} when I expected it to be pending; ignoring task", p_178474_1_.func_178546_a());
++                    field_152478_a.warn("Chunk render task was {} when I expected it to be pending; ignoring task", (Object)p_178474_1_.func_178546_a());
+                 }
+ 
+                 return;
+@@ -85,15 +85,12 @@
+             int j = 8;
+             int k = 24;
+ 
+-            if (blockpos1.func_177982_a(8, 8, 8).func_177951_i(blockpos) > 576.0)
++            if (blockpos1.func_177982_a(8, 8, 8).func_177951_i(blockpos) > 576.0D)
+             {
+                 World world = p_178474_1_.func_178536_b().func_188283_p();
+                 BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(blockpos1);
+ 
+-                if (!this.func_188263_a(blockpos$mutableblockpos.func_189533_g(blockpos1).func_189534_c(EnumFacing.WEST, 16), world)
+-                        || !this.func_188263_a(blockpos$mutableblockpos.func_189533_g(blockpos1).func_189534_c(EnumFacing.NORTH, 16), world)
+-                        || !this.func_188263_a(blockpos$mutableblockpos.func_189533_g(blockpos1).func_189534_c(EnumFacing.EAST, 16), world)
+-                        || !this.func_188263_a(blockpos$mutableblockpos.func_189533_g(blockpos1).func_189534_c(EnumFacing.SOUTH, 16), world))
++                if (!this.func_188263_a(blockpos$mutableblockpos.func_189533_g(blockpos1).func_189534_c(EnumFacing.WEST, 16), world) || !this.func_188263_a(blockpos$mutableblockpos.func_189533_g(blockpos1).func_189534_c(EnumFacing.NORTH, 16), world) || !this.func_188263_a(blockpos$mutableblockpos.func_189533_g(blockpos1).func_189534_c(EnumFacing.EAST, 16), world) || !this.func_188263_a(blockpos$mutableblockpos.func_189533_g(blockpos1).func_189534_c(EnumFacing.SOUTH, 16), world))
+                 {
+                     return;
+                 }
+@@ -137,7 +134,7 @@
+                 {
+                     if (!p_178474_1_.func_178537_h())
+                     {
+-                        field_152478_a.warn("Chunk render task was {} when I expected it to be compiling; aborting task", p_178474_1_.func_178546_a());
++                        field_152478_a.warn("Chunk render task was {} when I expected it to be compiling; aborting task", (Object)p_178474_1_.func_178546_a());
+                     }
+ 
+                     this.func_178473_b(p_178474_1_);
+@@ -152,7 +149,7 @@
              }
  
              final CompiledChunk compiledchunk = p_178474_1_.func_178544_c();
@@ -35,11 +78,91 @@
  
              if (chunkcompiletaskgenerator$type == ChunkCompileTaskGenerator.Type.REBUILD_CHUNK)
              {
-@@ -212,7 +213,7 @@
+@@ -160,64 +157,42 @@
+                 {
+                     if (compiledchunk.func_178492_d(blockrenderlayer))
+                     {
+-                        arraylist.add(
+-                            this.field_178477_b
+-                            .func_188245_a(
+-                                blockrenderlayer,
+-                                p_178474_1_.func_178545_d().func_179038_a(blockrenderlayer),
+-                                p_178474_1_.func_178536_b(),
+-                                compiledchunk,
+-                                p_178474_1_.func_188228_i()
+-                            )
+-                        );
++                        arraylist.add(this.field_178477_b.func_188245_a(blockrenderlayer, p_178474_1_.func_178545_d().func_179038_a(blockrenderlayer), p_178474_1_.func_178536_b(), compiledchunk, p_178474_1_.func_188228_i()));
+                     }
+                 }
+             }
+             else if (chunkcompiletaskgenerator$type == ChunkCompileTaskGenerator.Type.RESORT_TRANSPARENCY)
+             {
+-                arraylist.add(
+-                    this.field_178477_b
+-                    .func_188245_a(
+-                        BlockRenderLayer.TRANSLUCENT,
+-                        p_178474_1_.func_178545_d().func_179038_a(BlockRenderLayer.TRANSLUCENT),
+-                        p_178474_1_.func_178536_b(),
+-                        compiledchunk,
+-                        p_178474_1_.func_188228_i()
+-                    )
+-                );
++                arraylist.add(this.field_178477_b.func_188245_a(BlockRenderLayer.TRANSLUCENT, p_178474_1_.func_178545_d().func_179038_a(BlockRenderLayer.TRANSLUCENT), p_178474_1_.func_178536_b(), compiledchunk, p_178474_1_.func_188228_i()));
+             }
+ 
+             final ListenableFuture<List<Object>> listenablefuture = Futures.allAsList(arraylist);
+             p_178474_1_.func_178539_a(new Runnable()
+             {
+-                @Override
+                 public void run()
+                 {
+                     listenablefuture.cancel(false);
+                 }
+             });
+-            Futures.addCallback(
+-                listenablefuture,
+-                new FutureCallback<List<Object>>()
++            Futures.addCallback(listenablefuture, new FutureCallback<List<Object>>()
+             {
+                 public void onSuccess(@Nullable List<Object> p_onSuccess_1_)
+                 {
+                     ChunkRenderWorker.this.func_178473_b(p_178474_1_);
+                     p_178474_1_.func_178540_f().lock();
+-                    label41:
++                    label49:
+                     {
+                         try
+                         {
+                             if (p_178474_1_.func_178546_a() == ChunkCompileTaskGenerator.Status.UPLOADING)
+                             {
+                                 p_178474_1_.func_178535_a(ChunkCompileTaskGenerator.Status.DONE);
+-                                break label41;
++                                break label49;
+                             }
+ 
+                             if (!p_178474_1_.func_178537_h())
+                             {
+-                                ChunkRenderWorker.field_152478_a
+-                                .warn("Chunk render task was {} when I expected it to be uploading; aborting task", p_178474_1_.func_178546_a());
++                                ChunkRenderWorker.field_152478_a.warn("Chunk render task was {} when I expected it to be uploading; aborting task", (Object)p_178474_1_.func_178546_a());
+                             }
+                         }
+                         finally
+@@ -229,7 +204,6 @@
+                     }
+                     p_178474_1_.func_178536_b().func_178580_a(compiledchunk);
+                 }
+-                @Override
+                 public void onFailure(Throwable p_onFailure_1_)
+                 {
+                     ChunkRenderWorker.this.func_178473_b(p_178474_1_);
+@@ -239,8 +213,7 @@
                          Minecraft.func_71410_x().func_71404_a(CrashReport.func_85055_a(p_onFailure_1_, "Rendering chunk"));
                      }
                  }
--            });
+-            }
+-            );
 +            }, Runnable::run);
          }
      }
