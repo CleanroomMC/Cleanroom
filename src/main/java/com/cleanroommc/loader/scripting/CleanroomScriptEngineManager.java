@@ -1,7 +1,7 @@
 package com.cleanroommc.loader.scripting;
 
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
-import scala.tools.nsc.interpreter.Scripted;
+import scala.tools.nsc.interpreter.IMain;
 
 import javax.script.ScriptEngineManager;
 
@@ -16,7 +16,7 @@ public class CleanroomScriptEngineManager extends ScriptEngineManager {
     }
 
     private void initialize() {
-        var scala = new Scripted.Factory();
+        var scala = new IMain.Factory();
         for (String name : scala.getNames()) {
             this.registerEngineName(name, scala);
         }
