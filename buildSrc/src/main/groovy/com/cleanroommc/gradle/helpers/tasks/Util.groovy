@@ -144,7 +144,7 @@ class Util {
 	}
 
 	// TODO: Change to standard maven
-	static def getNativeURL(String path, String filename) {
+	static def getNativeURL(path, filename) {
 		def urlList = [
 				"https://repo.cleanroommc.com/releases/",
 				"https://repo.cleanroommc.com/snapshots/", // In case we use snapshot/forked version of dependency
