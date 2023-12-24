@@ -40,7 +40,27 @@
      }
  
      public static int func_70451_h()
-@@ -66,7 +69,7 @@
+@@ -54,25 +57,19 @@
+ 
+     private boolean func_184436_a(ItemStack p_184436_1_, ItemStack p_184436_2_)
+     {
+-        return !p_184436_1_.func_190926_b()
+-               && this.func_184431_b(p_184436_1_, p_184436_2_)
+-               && p_184436_1_.func_77985_e()
+-               && p_184436_1_.func_190916_E() < p_184436_1_.func_77976_d()
+-               && p_184436_1_.func_190916_E() < this.func_70297_j_();
++        return !p_184436_1_.func_190926_b() && this.func_184431_b(p_184436_1_, p_184436_2_) && p_184436_1_.func_77985_e() && p_184436_1_.func_190916_E() < p_184436_1_.func_77976_d() && p_184436_1_.func_190916_E() < this.func_70297_j_();
+     }
+ 
+     private boolean func_184431_b(ItemStack p_184431_1_, ItemStack p_184431_2_)
+     {
+-        return p_184431_1_.func_77973_b() == p_184431_2_.func_77973_b()
+-               && (!p_184431_1_.func_77981_g() || p_184431_1_.func_77960_j() == p_184431_2_.func_77960_j())
+-               && ItemStack.func_77970_a(p_184431_1_, p_184431_2_);
++        return p_184431_1_.func_77973_b() == p_184431_2_.func_77973_b() && (!p_184431_1_.func_77981_g() || p_184431_1_.func_77960_j() == p_184431_2_.func_77960_j()) && ItemStack.func_77970_a(p_184431_1_, p_184431_2_);
+     }
+ 
+     public int func_70447_i()
      {
          for (int i = 0; i < this.field_70462_a.size(); ++i)
          {
@@ -49,7 +69,7 @@
              {
                  return i;
              }
-@@ -90,7 +93,7 @@
+@@ -96,7 +93,7 @@
              {
                  this.field_70461_c = this.func_184433_k();
  
@@ -58,7 +78,7 @@
                  {
                      int j = this.func_70447_i();
  
-@@ -127,7 +130,7 @@
+@@ -133,7 +130,7 @@
      {
          for (int i = 0; i < this.field_70462_a.size(); ++i)
          {
@@ -67,16 +87,20 @@
              {
                  return i;
              }
-@@ -142,7 +145,7 @@
+@@ -148,11 +145,7 @@
          {
              ItemStack itemstack = this.field_70462_a.get(i);
  
--            if (!this.field_70462_a.get(i).func_190926_b() && this.func_184431_b(p_194014_1_, this.field_70462_a.get(i)) && !this.field_70462_a.get(i).func_77951_h() && !itemstack.func_77948_v() && !itemstack.func_82837_s())
+-            if (!this.field_70462_a.get(i).func_190926_b()
+-                    && this.func_184431_b(p_194014_1_, this.field_70462_a.get(i))
+-                    && !this.field_70462_a.get(i).func_77951_h()
+-                    && !itemstack.func_77948_v()
+-                    && !itemstack.func_82837_s())
 +            if (!((ItemStack)this.field_70462_a.get(i)).func_190926_b() && this.func_184431_b(p_194014_1_, this.field_70462_a.get(i)) && !((ItemStack)this.field_70462_a.get(i)).func_77951_h() && !itemstack.func_77948_v() && !itemstack.func_82837_s())
              {
                  return i;
              }
-@@ -157,7 +160,7 @@
+@@ -167,7 +160,7 @@
          {
              int j = (this.field_70461_c + i) % 9;
  
@@ -85,7 +109,7 @@
              {
                  return j;
              }
-@@ -167,7 +170,7 @@
+@@ -177,7 +170,7 @@
          {
              int l = (this.field_70461_c + k) % 9;
  
@@ -94,15 +118,33 @@
              {
                  return l;
              }
-@@ -191,6 +194,7 @@
+@@ -199,11 +192,9 @@
+             p_70453_1_ = -1;
+         }
  
-         for (this.field_70461_c -= p_70453_1_; this.field_70461_c < 0; this.field_70461_c += 9)
+-        this.field_70461_c -= p_70453_1_;
+-
+-        while (this.field_70461_c < 0)
++        for (this.field_70461_c -= p_70453_1_; this.field_70461_c < 0; this.field_70461_c += 9)
          {
+-            this.field_70461_c += 9;
 +            ;
          }
  
          while (this.field_70461_c >= 9)
-@@ -288,7 +292,8 @@
+@@ -220,10 +211,7 @@
+         {
+             ItemStack itemstack = this.func_70301_a(j);
+ 
+-            if (!itemstack.func_190926_b()
+-                    && (p_174925_1_ == null || itemstack.func_77973_b() == p_174925_1_)
+-                    && (p_174925_2_ <= -1 || itemstack.func_77960_j() == p_174925_2_)
+-                    && (p_174925_4_ == null || NBTUtil.func_181123_a(p_174925_4_, itemstack.func_77978_p(), true)))
++            if (!itemstack.func_190926_b() && (p_174925_1_ == null || itemstack.func_77973_b() == p_174925_1_) && (p_174925_2_ <= -1 || itemstack.func_77960_j() == p_174925_2_) && (p_174925_4_ == null || NBTUtil.func_181123_a(p_174925_4_, itemstack.func_77978_p(), true)))
+             {
+                 int k = p_174925_3_ <= 0 ? itemstack.func_190916_E() : Math.min(p_174925_3_ - i, itemstack.func_190916_E());
+                 i += k;
+@@ -304,7 +292,8 @@
  
          if (itemstack.func_190926_b())
          {
@@ -112,7 +154,7 @@
  
              if (p_191973_2_.func_77942_o())
              {
-@@ -316,7 +321,7 @@
+@@ -332,7 +321,7 @@
          }
          else
          {
@@ -121,7 +163,7 @@
              itemstack.func_190917_f(j);
              itemstack.func_190915_d(5);
              return i;
-@@ -353,10 +358,17 @@
+@@ -369,10 +358,17 @@
          {
              for (int i = 0; i < nonnulllist.size(); ++i)
              {
@@ -141,7 +183,7 @@
              }
          }
      }
-@@ -386,7 +398,7 @@
+@@ -402,7 +398,7 @@
                      if (p_191971_1_ >= 0)
                      {
                          this.field_70462_a.set(p_191971_1_, p_191971_2_.func_77946_l());
@@ -150,7 +192,7 @@
                          p_191971_2_.func_190920_e(0);
                          return true;
                      }
-@@ -404,7 +416,7 @@
+@@ -420,7 +416,7 @@
                  {
                      int i;
  
@@ -159,7 +201,7 @@
                      {
                          i = p_191971_2_.func_190916_E();
  
-@@ -416,8 +428,12 @@
+@@ -432,8 +428,12 @@
                          {
                              p_191971_2_.func_190920_e(this.func_191973_d(p_191971_1_, p_191971_2_));
                          }
@@ -173,7 +215,7 @@
  
                      if (p_191971_2_.func_190916_E() == i && this.field_70458_d.field_71075_bZ.field_75098_d)
                      {
-@@ -434,8 +450,10 @@
+@@ -450,8 +450,10 @@
              {
                  CrashReport crashreport = CrashReport.func_85055_a(throwable, "Adding item to inventory");
                  CrashReportCategory crashreportcategory = crashreport.func_85058_a("Item being added");
@@ -186,7 +228,15 @@
                  crashreportcategory.func_189529_a("Item name", new ICrashReportDetail<String>()
                  {
                      public String call() throws Exception
-@@ -492,7 +510,7 @@
+@@ -493,7 +495,6 @@
+         }
+     }
+ 
+-    @Override
+     public ItemStack func_70298_a(int p_70298_1_, int p_70298_2_)
+     {
+         List<ItemStack> list = null;
+@@ -509,7 +510,7 @@
              p_70298_1_ -= nonnulllist.size();
          }
  
@@ -195,7 +245,15 @@
      }
  
      public void func_184437_d(ItemStack p_184437_1_)
-@@ -525,7 +543,7 @@
+@@ -527,7 +528,6 @@
+         }
+     }
+ 
+-    @Override
+     public ItemStack func_70304_b(int p_70304_1_)
+     {
+         NonNullList<ItemStack> nonnulllist = null;
+@@ -543,7 +543,7 @@
              p_70304_1_ -= nonnulllist1.size();
          }
  
@@ -204,7 +262,15 @@
          {
              ItemStack itemstack = nonnulllist.get(p_70304_1_);
              nonnulllist.set(p_70304_1_, ItemStack.field_190927_a);
-@@ -562,9 +580,9 @@
+@@ -555,7 +555,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_70299_a(int p_70299_1_, ItemStack p_70299_2_)
+     {
+         NonNullList<ItemStack> nonnulllist = null;
+@@ -581,9 +580,9 @@
      {
          float f = 1.0F;
  
@@ -216,7 +282,7 @@
          }
  
          return f;
-@@ -574,33 +592,33 @@
+@@ -593,33 +592,33 @@
      {
          for (int i = 0; i < this.field_70462_a.size(); ++i)
          {
@@ -256,7 +322,29 @@
                  p_70442_1_.func_74742_a(nbttagcompound2);
              }
          }
-@@ -687,7 +705,7 @@
+@@ -657,13 +656,11 @@
+         }
+     }
+ 
+-    @Override
+     public int func_70302_i_()
+     {
+         return this.field_70462_a.size() + this.field_70460_b.size() + this.field_184439_c.size();
+     }
+ 
+-    @Override
+     public boolean func_191420_l()
+     {
+         for (ItemStack itemstack : this.field_70462_a)
+@@ -693,7 +690,6 @@
+         return true;
+     }
+ 
+-    @Override
+     public ItemStack func_70301_a(int p_70301_1_)
+     {
+         List<ItemStack> list = null;
+@@ -709,28 +705,24 @@
              p_70301_1_ -= nonnulllist.size();
          }
  
@@ -264,17 +352,30 @@
 +        return list == null ? ItemStack.field_190927_a : (ItemStack)list.get(p_70301_1_);
      }
  
+-    @Override
      public String func_70005_c_()
-@@ -702,7 +720,7 @@
+     {
+         return "container.inventory";
+     }
  
+-    @Override
+     public boolean func_145818_k_()
+     {
+         return false;
+     }
+ 
+-    @Override
      public ITextComponent func_145748_c_()
      {
 -        return (ITextComponent)(this.func_145818_k_() ? new TextComponentString(this.func_70005_c_()) : new TextComponentTranslation(this.func_70005_c_()));
 +        return (ITextComponent)(this.func_145818_k_() ? new TextComponentString(this.func_70005_c_()) : new TextComponentTranslation(this.func_70005_c_(), new Object[0]));
      }
  
+-    @Override
      public int func_70297_j_()
-@@ -731,7 +749,7 @@
+     {
+         return 64;
+@@ -757,7 +749,7 @@
  
      public void func_70449_g(float p_70449_1_)
      {
@@ -283,11 +384,27 @@
  
          if (p_70449_1_ < 1.0F)
          {
-@@ -795,21 +813,34 @@
+@@ -792,7 +784,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_70296_d()
+     {
+         ++this.field_194017_h;
+@@ -814,7 +805,6 @@
+         return this.field_70457_g;
+     }
+ 
+-    @Override
+     public boolean func_70300_a(EntityPlayer p_70300_1_)
+     {
+         if (this.field_70458_d.field_70128_L)
+@@ -823,37 +813,47 @@
          }
          else
          {
--            return !(p_70300_1_.func_70068_e(this.field_70458_d) > 64.0D);
+-            return !(p_70300_1_.func_70068_e(this.field_70458_d) > 64.0);
 +            return p_70300_1_.func_70068_e(this.field_70458_d) <= 64.0D;
          }
      }
@@ -321,3 +438,44 @@
          }
  
          return false;
+     }
+ 
+-    @Override
+     public void func_174889_b(EntityPlayer p_174889_1_)
+     {
+     }
+ 
+-    @Override
+     public void func_174886_c(EntityPlayer p_174886_1_)
+     {
+     }
+ 
+-    @Override
+     public boolean func_94041_b(int p_94041_1_, ItemStack p_94041_2_)
+     {
+         return true;
+@@ -869,24 +869,20 @@
+         this.field_70461_c = p_70455_1_.field_70461_c;
+     }
+ 
+-    @Override
+     public int func_174887_a_(int p_174887_1_)
+     {
+         return 0;
+     }
+ 
+-    @Override
+     public void func_174885_b(int p_174885_1_, int p_174885_2_)
+     {
+     }
+ 
+-    @Override
+     public int func_174890_g()
+     {
+         return 0;
+     }
+ 
+-    @Override
+     public void func_174888_l()
+     {
+         for (List<ItemStack> list : this.field_184440_g)

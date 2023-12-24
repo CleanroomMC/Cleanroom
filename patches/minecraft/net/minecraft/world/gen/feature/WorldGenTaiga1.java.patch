@@ -1,24 +1,47 @@
 --- before/net/minecraft/world/gen/feature/WorldGenTaiga1.java
 +++ after/net/minecraft/world/gen/feature/WorldGenTaiga1.java
-@@ -15,7 +15,7 @@
+@@ -14,20 +14,14 @@
+ 
  public class WorldGenTaiga1 extends WorldGenAbstractTree
  {
-     private static final IBlockState field_181636_a = Blocks.field_150364_r.func_176223_P().func_177226_a(BlockOldLog.field_176301_b, BlockPlanks.EnumType.SPRUCE);
--    private static final IBlockState field_181637_b = Blocks.field_150362_t.func_176223_P().func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.SPRUCE).func_177226_a(BlockLeaves.field_176236_b, false);
+-    private static final IBlockState field_181636_a = Blocks.field_150364_r
+-                .func_176223_P()
+-                .func_177226_a(BlockOldLog.field_176301_b, BlockPlanks.EnumType.SPRUCE);
+-    private static final IBlockState field_181637_b = Blocks.field_150362_t
+-                .func_176223_P()
+-                .func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.SPRUCE)
+-                .func_177226_a(BlockLeaves.field_176236_b, false);
++    private static final IBlockState field_181636_a = Blocks.field_150364_r.func_176223_P().func_177226_a(BlockOldLog.field_176301_b, BlockPlanks.EnumType.SPRUCE);
 +    private static final IBlockState field_181637_b = Blocks.field_150362_t.func_176223_P().func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.SPRUCE).func_177226_a(BlockLeaves.field_176236_b, Boolean.valueOf(false));
  
      public WorldGenTaiga1()
      {
-@@ -54,7 +54,7 @@
+         super(false);
+     }
+ 
+-    @Override
+     public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
+     {
+         int i = p_180709_2_.nextInt(5) + 7;
+@@ -58,11 +52,14 @@
+                 {
+                     for (int l1 = p_180709_3_.func_177952_p() - j1; l1 <= p_180709_3_.func_177952_p() + j1 && flag; ++l1)
                      {
-                         if (i1 >= 0 && i1 < 256)
+-                        if (i1 < 0 || i1 >= 256)
++                        if (i1 >= 0 && i1 < 256)
                          {
--                            if (!this.func_150523_a(p_180709_1_.func_180495_p(blockpos$mutableblockpos.func_181079_c(k1, i1, l1)).func_177230_c()))
+-                            flag = false;
 +                            if (!this.isReplaceable(p_180709_1_,blockpos$mutableblockpos.func_181079_c(k1, i1, l1)))
-                             {
-                                 flag = false;
-                             }
-@@ -73,11 +73,13 @@
++                            {
++                                flag = false;
++                            }
+                         }
+-                        else if (!this.func_150523_a(p_180709_1_.func_180495_p(blockpos$mutableblockpos.func_181079_c(k1, i1, l1)).func_177230_c()))
++                        else
+                         {
+                             flag = false;
+                         }
+@@ -76,11 +73,13 @@
              }
              else
              {
@@ -35,7 +58,7 @@
                      int k2 = 0;
  
                      for (int l2 = p_180709_3_.func_177956_o() + i; l2 >= p_180709_3_.func_177956_o() + j; --l2)
-@@ -93,8 +95,9 @@
+@@ -96,8 +95,9 @@
                                  if (Math.abs(k3) != k2 || Math.abs(j2) != k2 || k2 <= 0)
                                  {
                                      BlockPos blockpos = new BlockPos(j3, l2, i2);
@@ -46,7 +69,7 @@
                                      {
                                          this.func_175903_a(p_180709_1_, blockpos, field_181637_b);
                                      }
-@@ -114,9 +117,10 @@
+@@ -117,9 +117,10 @@
  
                      for (int i3 = 0; i3 < i - 1; ++i3)
                      {

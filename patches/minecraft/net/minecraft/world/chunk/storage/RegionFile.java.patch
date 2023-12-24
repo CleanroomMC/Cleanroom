@@ -34,9 +34,9 @@
                  int k = this.field_76719_c.readInt();
                  this.field_76716_d[j1] = k;
  
--                if (k != 0 && (k >> 8) + (k & 255) <= this.field_76714_f.size())
+-                if (k != 0 && (k >> 8) + (k & 0xFF) <= this.field_76714_f.size())
 -                {
--                    for (int l = 0; l < (k & 255); ++l)
+-                    for (int l = 0; l < (k & 0xFF); ++l)
 +                int length = k & 255;
 +                if (length == 255)
 +                {
@@ -73,10 +73,12 @@
      @Nullable
  
      public synchronized DataInputStream func_76704_a(int p_76704_1_, int p_76704_2_)
-@@ -117,6 +138,11 @@
+@@ -116,7 +137,12 @@
+                 else
                  {
                      int j = i >> 8;
-                     int k = i & 255;
+-                    int k = i & 0xFF;
++                    int k = i & 255;
 +                    if (k == 255)
 +                    {
 +                        this.field_76719_c.seek(j * 4096);
@@ -107,10 +109,23 @@
              {
                  return null;
              }
-@@ -179,11 +207,17 @@
+@@ -169,9 +197,7 @@
+     @Nullable
+     public DataOutputStream func_76710_b(int p_76710_1_, int p_76710_2_)
+     {
+-        return this.func_76705_d(p_76710_1_, p_76710_2_)
+-               ? null
+-               : new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(new RegionFile.ChunkBuffer(p_76710_1_, p_76710_2_))));
++        return this.func_76705_d(p_76710_1_, p_76710_2_) ? null : new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(new RegionFile.ChunkBuffer(p_76710_1_, p_76710_2_))));
+     }
+ 
+     protected synchronized void func_76706_a(int p_76706_1_, int p_76706_2_, byte[] p_76706_3_, int p_76706_4_)
+@@ -180,12 +206,18 @@
+         {
              int i = this.func_76707_e(p_76706_1_, p_76706_2_);
              int j = i >> 8;
-             int k = i & 255;
+-            int k = i & 0xFF;
++            int k = i & 255;
 +            if (k == 255)
 +            {
 +                this.field_76719_c.seek(j * 4096);
@@ -126,7 +141,7 @@
              }
  
              if (j != 0 && k == l)
-@@ -194,10 +228,10 @@
+@@ -196,10 +228,10 @@
              {
                  for (int i1 = 0; i1 < k; ++i1)
                  {
@@ -139,7 +154,7 @@
                  int j1 = 0;
  
                  if (l1 != -1)
-@@ -206,7 +240,7 @@
+@@ -208,7 +240,7 @@
                      {
                          if (j1 != 0)
                          {
@@ -148,7 +163,7 @@
                              {
                                  ++j1;
                              }
-@@ -215,7 +249,7 @@
+@@ -217,7 +249,7 @@
                                  j1 = 0;
                              }
                          }
@@ -157,7 +172,7 @@
                          {
                              l1 = k1;
                              j1 = 1;
-@@ -231,11 +265,11 @@
+@@ -233,11 +265,11 @@
                  if (j1 >= l)
                  {
                      j = l1;
@@ -171,7 +186,7 @@
                      }
  
                      this.func_76712_a(j, p_76706_3_, p_76706_4_);
-@@ -248,12 +282,12 @@
+@@ -250,12 +282,12 @@
                      for (int i2 = 0; i2 < l; ++i2)
                      {
                          this.field_76719_c.write(field_76720_a);
@@ -186,3 +201,11 @@
                  }
              }
  
+@@ -324,7 +356,6 @@
+             this.field_76723_c = p_i2000_3_;
+         }
+ 
+-        @Override
+         public void close() throws IOException
+         {
+             RegionFile.this.func_76706_a(this.field_76722_b, this.field_76723_c, this.buf, this.count);

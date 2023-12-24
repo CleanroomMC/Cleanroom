@@ -1,20 +1,35 @@
 --- before/net/minecraft/entity/monster/EntityEvoker.java
 +++ after/net/minecraft/entity/monster/EntityEvoker.java
-@@ -49,17 +49,17 @@
+@@ -8,6 +8,7 @@
+ import net.minecraft.entity.EntityLiving;
+ import net.minecraft.entity.EntityLivingBase;
+ import net.minecraft.entity.EnumCreatureAttribute;
++import net.minecraft.entity.IEntityLivingData;
+ import net.minecraft.entity.SharedMonsterAttributes;
+ import net.minecraft.entity.ai.EntityAIAvoidEntity;
+ import net.minecraft.entity.ai.EntityAIHurtByTarget;
+@@ -43,35 +44,32 @@
+         this.field_70728_aV = 10;
+     }
+ 
+-    @Override
+     protected void func_184651_r()
+     {
          super.func_184651_r();
          this.field_70714_bg.func_75776_a(0, new EntityAISwimming(this));
          this.field_70714_bg.func_75776_a(1, new EntityEvoker.AICastingSpell());
--        this.field_70714_bg.func_75776_a(2, new EntityAIAvoidEntity<>(this, EntityPlayer.class, 8.0F, 0.6D, 1.0D));
+-        this.field_70714_bg.func_75776_a(2, new EntityAIAvoidEntity<>(this, EntityPlayer.class, 8.0F, 0.6, 1.0));
 +        this.field_70714_bg.func_75776_a(2, new EntityAIAvoidEntity(this, EntityPlayer.class, 8.0F, 0.6D, 1.0D));
          this.field_70714_bg.func_75776_a(4, new EntityEvoker.AISummonSpell());
          this.field_70714_bg.func_75776_a(5, new EntityEvoker.AIAttackSpell());
          this.field_70714_bg.func_75776_a(6, new EntityEvoker.AIWololoSpell());
-         this.field_70714_bg.func_75776_a(8, new EntityAIWander(this, 0.6D));
+-        this.field_70714_bg.func_75776_a(8, new EntityAIWander(this, 0.6));
++        this.field_70714_bg.func_75776_a(8, new EntityAIWander(this, 0.6D));
          this.field_70714_bg.func_75776_a(9, new EntityAIWatchClosest(this, EntityPlayer.class, 3.0F, 1.0F));
          this.field_70714_bg.func_75776_a(10, new EntityAIWatchClosest(this, EntityLiving.class, 8.0F));
 -        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, true, EntityEvoker.class));
--        this.field_70715_bh.func_75776_a(2, (new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true)).func_190882_b(300));
--        this.field_70715_bh.func_75776_a(3, (new EntityAINearestAttackableTarget<>(this, EntityVillager.class, false)).func_190882_b(300));
+-        this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true).func_190882_b(300));
+-        this.field_70715_bh.func_75776_a(3, new EntityAINearestAttackableTarget<>(this, EntityVillager.class, false).func_190882_b(300));
 -        this.field_70715_bh.func_75776_a(3, new EntityAINearestAttackableTarget<>(this, EntityIronGolem.class, false));
 +        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, true, new Class[] {EntityEvoker.class}));
 +        this.field_70715_bh.func_75776_a(2, (new EntityAINearestAttackableTarget(this, EntityPlayer.class, true)).func_190882_b(300));
@@ -22,17 +37,185 @@
 +        this.field_70715_bh.func_75776_a(3, new EntityAINearestAttackableTarget(this, EntityIronGolem.class, false));
      }
  
+-    @Override
      protected void func_110147_ax()
-@@ -218,7 +218,7 @@
+     {
+         super.func_110147_ax();
+-        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.5);
+-        this.func_110148_a(SharedMonsterAttributes.field_111265_b).func_111128_a(12.0);
+-        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(24.0);
++        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.5D);
++        this.func_110148_a(SharedMonsterAttributes.field_111265_b).func_111128_a(12.0D);
++        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(24.0D);
+     }
+ 
+-    @Override
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+@@ -82,37 +80,31 @@
+         EntityLiving.func_189752_a(p_190759_0_, EntityEvoker.class);
+     }
+ 
+-    @Override
+     public void func_70037_a(NBTTagCompound p_70037_1_)
+     {
+         super.func_70037_a(p_70037_1_);
+     }
+ 
+-    @Override
+     public void func_70014_b(NBTTagCompound p_70014_1_)
+     {
+         super.func_70014_b(p_70014_1_);
+     }
+ 
+-    @Override
+     protected ResourceLocation func_184647_J()
+     {
+         return LootTableList.field_191185_au;
+     }
+ 
+-    @Override
+     protected void func_70619_bc()
+     {
+         super.func_70619_bc();
+     }
+ 
+-    @Override
+     public void func_70071_h_()
+     {
+         super.func_70071_h_();
+     }
+ 
+-    @Override
+     public boolean func_184191_r(Entity p_184191_1_)
+     {
+         if (p_184191_1_ == null)
+@@ -141,19 +133,16 @@
+         }
+     }
+ 
+-    @Override
+     protected SoundEvent func_184639_G()
+     {
+         return SoundEvents.field_191243_bm;
+     }
+ 
+-    @Override
+     protected SoundEvent func_184615_bR()
+     {
+         return SoundEvents.field_191245_bo;
+     }
+ 
+-    @Override
+     protected SoundEvent func_184601_bQ(DamageSource p_184601_1_)
+     {
+         return SoundEvents.field_191246_bp;
+@@ -170,7 +159,6 @@
+         return this.field_190763_bw;
+     }
+ 
+-    @Override
+     protected SoundEvent func_193086_dk()
+     {
+         return SoundEvents.field_191244_bn;
+@@ -182,70 +170,44 @@
+         {
+         }
+ 
+-        @Override
+         protected int func_190869_f()
+         {
+             return 40;
+         }
+ 
+-        @Override
+         protected int func_190872_i()
+         {
+             return 100;
+         }
+ 
+-        @Override
+         protected void func_190868_j()
+         {
+             EntityLivingBase entitylivingbase = EntityEvoker.this.func_70638_az();
+             double d0 = Math.min(entitylivingbase.field_70163_u, EntityEvoker.this.field_70163_u);
+-            double d1 = Math.max(entitylivingbase.field_70163_u, EntityEvoker.this.field_70163_u) + 1.0;
+-            float f = (float)MathHelper.func_181159_b(
+-                          entitylivingbase.field_70161_v - EntityEvoker.this.field_70161_v, entitylivingbase.field_70165_t - EntityEvoker.this.field_70165_t
+-                      );
++            double d1 = Math.max(entitylivingbase.field_70163_u, EntityEvoker.this.field_70163_u) + 1.0D;
++            float f = (float)MathHelper.func_181159_b(entitylivingbase.field_70161_v - EntityEvoker.this.field_70161_v, entitylivingbase.field_70165_t - EntityEvoker.this.field_70165_t);
+ 
+-            if (EntityEvoker.this.func_70068_e(entitylivingbase) < 9.0)
++            if (EntityEvoker.this.func_70068_e(entitylivingbase) < 9.0D)
+             {
+                 for (int i = 0; i < 5; ++i)
+                 {
+-                    float f1 = f + (float)i * (float) Math.PI * 0.4F;
+-                    this.func_190876_a(
+-                        EntityEvoker.this.field_70165_t + (double)MathHelper.func_76134_b(f1) * 1.5,
+-                        EntityEvoker.this.field_70161_v + (double)MathHelper.func_76126_a(f1) * 1.5,
+-                        d0,
+-                        d1,
+-                        f1,
+-                        0
+-                    );
++                    float f1 = f + (float)i * (float)Math.PI * 0.4F;
++                    this.func_190876_a(EntityEvoker.this.field_70165_t + (double)MathHelper.func_76134_b(f1) * 1.5D, EntityEvoker.this.field_70161_v + (double)MathHelper.func_76126_a(f1) * 1.5D, d0, d1, f1, 0);
+                 }
+ 
+                 for (int k = 0; k < 8; ++k)
+                 {
+-                    float f2 = f + (float)k * (float) Math.PI * 2.0F / 8.0F + (float)(Math.PI * 2.0 / 5.0);
+-                    this.func_190876_a(
+-                        EntityEvoker.this.field_70165_t + (double)MathHelper.func_76134_b(f2) * 2.5,
+-                        EntityEvoker.this.field_70161_v + (double)MathHelper.func_76126_a(f2) * 2.5,
+-                        d0,
+-                        d1,
+-                        f2,
+-                        3
+-                    );
++                    float f2 = f + (float)k * (float)Math.PI * 2.0F / 8.0F + ((float)Math.PI * 2F / 5F);
++                    this.func_190876_a(EntityEvoker.this.field_70165_t + (double)MathHelper.func_76134_b(f2) * 2.5D, EntityEvoker.this.field_70161_v + (double)MathHelper.func_76126_a(f2) * 2.5D, d0, d1, f2, 3);
+                 }
+             }
+             else
+             {
+                 for (int l = 0; l < 16; ++l)
+                 {
+-                    double d2 = 1.25 * (double)(l + 1);
++                    double d2 = 1.25D * (double)(l + 1);
+                     int j = 1 * l;
+-                    this.func_190876_a(
+-                        EntityEvoker.this.field_70165_t + (double)MathHelper.func_76134_b(f) * d2,
+-                        EntityEvoker.this.field_70161_v + (double)MathHelper.func_76126_a(f) * d2,
+-                        d0,
+-                        d1,
+-                        f,
+-                        j
+-                    );
++                    this.func_190876_a(EntityEvoker.this.field_70165_t + (double)MathHelper.func_76134_b(f) * d2, EntityEvoker.this.field_70161_v + (double)MathHelper.func_76126_a(f) * d2, d0, d1, f, j);
+                 }
+             }
+         }
+@@ -254,12 +216,11 @@
+         {
+             BlockPos blockpos = new BlockPos(p_190876_1_, p_190876_7_, p_190876_3_);
              boolean flag = false;
-             double d0 = 0.0D;
+-            double d0 = 0.0;
++            double d0 = 0.0D;
  
 -            do
 +            while (true)
              {
-                 if (!EntityEvoker.this.field_70170_p.func_175677_d(blockpos, true) && EntityEvoker.this.field_70170_p.func_175677_d(blockpos.func_177977_b(), true))
+-                if (!EntityEvoker.this.field_70170_p.func_175677_d(blockpos, true) && EntityEvoker.this.field_70170_p.func_175677_d(blockpos.func_177977_b(), true)
+-                   )
++                if (!EntityEvoker.this.field_70170_p.func_175677_d(blockpos, true) && EntityEvoker.this.field_70170_p.func_175677_d(blockpos.func_177977_b(), true))
                  {
-@@ -238,8 +238,12 @@
+                     if (!EntityEvoker.this.field_70170_p.func_175623_d(blockpos))
+                     {
+@@ -277,25 +238,25 @@
                  }
  
                  blockpos = blockpos.func_177977_b();
@@ -46,10 +229,109 @@
  
              if (flag)
              {
-@@ -343,6 +347,10 @@
+-                EntityEvokerFangs entityevokerfangs = new EntityEvokerFangs(
+-                    EntityEvoker.this.field_70170_p, p_190876_1_, (double)blockpos.func_177956_o() + d0, p_190876_3_, p_190876_9_, p_190876_10_, EntityEvoker.this
+-                );
++                EntityEvokerFangs entityevokerfangs = new EntityEvokerFangs(EntityEvoker.this.field_70170_p, p_190876_1_, (double)blockpos.func_177956_o() + d0, p_190876_3_, p_190876_9_, p_190876_10_, EntityEvoker.this);
+                 EntityEvoker.this.field_70170_p.func_72838_d(entityevokerfangs);
+             }
+         }
+ 
+-        @Override
+         protected SoundEvent func_190871_k()
+         {
+             return SoundEvents.field_191247_bq;
+         }
+ 
+-        @Override
+         protected EntitySpellcasterIllager.SpellType func_193320_l()
+         {
+             return EntitySpellcasterIllager.SpellType.FANGS;
+@@ -308,18 +269,15 @@
+         {
+         }
+ 
+-        @Override
+         public void func_75246_d()
+         {
+             if (EntityEvoker.this.func_70638_az() != null)
+             {
+-                EntityEvoker.this.func_70671_ap()
+-                .func_75651_a(EntityEvoker.this.func_70638_az(), (float)EntityEvoker.this.func_184649_cE(), (float)EntityEvoker.this.func_70646_bf());
++                EntityEvoker.this.func_70671_ap().func_75651_a(EntityEvoker.this.func_70638_az(), (float)EntityEvoker.this.func_184649_cE(), (float)EntityEvoker.this.func_70646_bf());
+             }
+             else if (EntityEvoker.this.func_190751_dj() != null)
+             {
+-                EntityEvoker.this.func_70671_ap()
+-                .func_75651_a(EntityEvoker.this.func_190751_dj(), (float)EntityEvoker.this.func_184649_cE(), (float)EntityEvoker.this.func_70646_bf());
++                EntityEvoker.this.func_70671_ap().func_75651_a(EntityEvoker.this.func_190751_dj(), (float)EntityEvoker.this.func_184649_cE(), (float)EntityEvoker.this.func_70646_bf());
+             }
+         }
+     }
+@@ -330,7 +288,6 @@
+         {
+         }
+ 
+-        @Override
+         public boolean func_75250_a()
+         {
+             if (!super.func_75250_a())
+@@ -339,33 +296,29 @@
+             }
+             else
+             {
+-                int i = EntityEvoker.this.field_70170_p.func_72872_a(EntityVex.class, EntityEvoker.this.func_174813_aQ().func_186662_g(16.0)).size();
++                int i = EntityEvoker.this.field_70170_p.func_72872_a(EntityVex.class, EntityEvoker.this.func_174813_aQ().func_186662_g(16.0D)).size();
+                 return EntityEvoker.this.field_70146_Z.nextInt(8) + 1 > i;
+             }
+         }
+ 
+-        @Override
+         protected int func_190869_f()
+         {
+             return 100;
+         }
+ 
+-        @Override
+         protected int func_190872_i()
+         {
+             return 340;
+         }
+ 
+-        @Override
+         protected void func_190868_j()
+         {
+             for (int i = 0; i < 3; ++i)
+             {
+-                BlockPos blockpos = new BlockPos(EntityEvoker.this)
+-                .func_177982_a(-2 + EntityEvoker.this.field_70146_Z.nextInt(5), 1, -2 + EntityEvoker.this.field_70146_Z.nextInt(5));
++                BlockPos blockpos = (new BlockPos(EntityEvoker.this)).func_177982_a(-2 + EntityEvoker.this.field_70146_Z.nextInt(5), 1, -2 + EntityEvoker.this.field_70146_Z.nextInt(5));
+                 EntityVex entityvex = new EntityVex(EntityEvoker.this.field_70170_p);
+                 entityvex.func_174828_a(blockpos, 0.0F, 0.0F);
+-                entityvex.func_180482_a(EntityEvoker.this.field_70170_p.func_175649_E(blockpos), null);
++                entityvex.func_180482_a(EntityEvoker.this.field_70170_p.func_175649_E(blockpos), (IEntityLivingData)null);
+                 entityvex.func_190658_a(EntityEvoker.this);
+                 entityvex.func_190651_g(blockpos);
+                 entityvex.func_190653_a(20 * (30 + EntityEvoker.this.field_70146_Z.nextInt(90)));
+@@ -373,13 +326,11 @@
+             }
+         }
+ 
+-        @Override
+         protected SoundEvent func_190871_k()
+         {
+             return SoundEvents.field_191248_br;
+         }
+ 
+-        @Override
+         protected EntitySpellcasterIllager.SpellType func_193320_l()
+         {
+             return EntitySpellcasterIllager.SpellType.SUMMON_VEX;
+@@ -396,7 +347,10 @@
              }
          };
  
+-        @Override
 +        public AIWololoSpell()
 +        {
 +        }
@@ -57,7 +339,7 @@
          public boolean func_75250_a()
          {
              if (EntityEvoker.this.func_70638_az() != null)
-@@ -357,13 +365,13 @@
+@@ -411,14 +365,13 @@
              {
                  return false;
              }
@@ -68,8 +350,63 @@
              }
              else
              {
--                List<EntitySheep> list = EntityEvoker.this.field_70170_p.func_175647_a(EntitySheep.class, EntityEvoker.this.func_174813_aQ().func_72314_b(16.0D, 4.0D, 16.0D), this.field_190879_a);
+-                List<EntitySheep> list = EntityEvoker.this.field_70170_p
+-                                         .func_175647_a(EntitySheep.class, EntityEvoker.this.func_174813_aQ().func_72314_b(16.0, 4.0, 16.0), this.field_190879_a);
 +                List<EntitySheep> list = EntityEvoker.this.field_70170_p.<EntitySheep>func_175647_a(EntitySheep.class, EntityEvoker.this.func_174813_aQ().func_72314_b(16.0D, 4.0D, 16.0D), this.field_190879_a);
  
                  if (list.isEmpty())
                  {
+@@ -432,20 +385,17 @@
+             }
+         }
+ 
+-        @Override
+         public boolean func_75253_b()
+         {
+             return EntityEvoker.this.func_190751_dj() != null && this.field_193321_c > 0;
+         }
+ 
+-        @Override
+         public void func_75251_c()
+         {
+             super.func_75251_c();
+-            EntityEvoker.this.func_190748_a(null);
++            EntityEvoker.this.func_190748_a((EntitySheep)null);
+         }
+ 
+-        @Override
+         protected void func_190868_j()
+         {
+             EntitySheep entitysheep = EntityEvoker.this.func_190751_dj();
+@@ -456,31 +406,26 @@
+             }
+         }
+ 
+-        @Override
+         protected int func_190867_m()
+         {
+             return 40;
+         }
+ 
+-        @Override
+         protected int func_190869_f()
+         {
+             return 60;
+         }
+ 
+-        @Override
+         protected int func_190872_i()
+         {
+             return 140;
+         }
+ 
+-        @Override
+         protected SoundEvent func_190871_k()
+         {
+             return SoundEvents.field_191249_bs;
+         }
+ 
+-        @Override
+         protected EntitySpellcasterIllager.SpellType func_193320_l()
+         {
+             return EntitySpellcasterIllager.SpellType.WOLOLO;

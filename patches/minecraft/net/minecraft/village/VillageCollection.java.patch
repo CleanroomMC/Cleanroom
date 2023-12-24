@@ -17,7 +17,7 @@
      public Village func_176056_a(BlockPos p_176056_1_, int p_176056_2_)
      {
          Village village = null;
--        double d0 = (double)Float.MAX_VALUE;
+-        double d0 = Float.MAX_VALUE;
 +        double d0 = 3.4028234663852886E38D;
  
          for (Village village1 : this.field_75552_d)
@@ -42,3 +42,41 @@
          int i = 16;
          int j = 4;
          int k = 16;
+@@ -186,9 +187,7 @@
+     {
+         for (VillageDoorInfo villagedoorinfo : this.field_75555_c)
+         {
+-            if (villagedoorinfo.func_179852_d().func_177958_n() == p_176055_1_.func_177958_n()
+-                    && villagedoorinfo.func_179852_d().func_177952_p() == p_176055_1_.func_177952_p()
+-                    && Math.abs(villagedoorinfo.func_179852_d().func_177956_o() - p_176055_1_.func_177956_o()) <= 1)
++            if (villagedoorinfo.func_179852_d().func_177958_n() == p_176055_1_.func_177958_n() && villagedoorinfo.func_179852_d().func_177952_p() == p_176055_1_.func_177952_p() && Math.abs(villagedoorinfo.func_179852_d().func_177956_o() - p_176055_1_.func_177956_o()) <= 1)
+             {
+                 return villagedoorinfo;
+             }
+@@ -228,7 +227,9 @@
+         {
+             if (this.field_75556_a.func_175678_i(p_176061_1_.func_177967_a(p_176061_2_, j)))
+             {
+-                if (++i >= p_176061_3_)
++                ++i;
++
++                if (i >= p_176061_3_)
+                 {
+                     return i;
+                 }
+@@ -266,7 +267,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_76184_a(NBTTagCompound p_76184_1_)
+     {
+         this.field_75553_e = p_76184_1_.func_74762_e("Tick");
+@@ -281,7 +281,6 @@
+         }
+     }
+ 
+-    @Override
+     public NBTTagCompound func_189551_b(NBTTagCompound p_189551_1_)
+     {
+         p_189551_1_.func_74768_a("Tick", this.field_75553_e);

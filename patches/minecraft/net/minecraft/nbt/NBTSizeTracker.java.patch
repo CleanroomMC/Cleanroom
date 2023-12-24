@@ -1,9 +1,24 @@
 --- before/net/minecraft/nbt/NBTSizeTracker.java
 +++ after/net/minecraft/nbt/NBTSizeTracker.java
-@@ -25,4 +25,34 @@
-             throw new RuntimeException("Tried to read NBT tag that was too big; tried to allocate: " + this.field_152453_c + "bytes where max allowed: " + this.field_152452_b);
+@@ -4,7 +4,6 @@
+ {
+     public static final NBTSizeTracker field_152451_a = new NBTSizeTracker(0L)
+     {
+-        @Override
+         public void func_152450_a(long p_152450_1_)
+         {
          }
-     }
+@@ -23,9 +22,37 @@
+ 
+         if (this.field_152453_c > this.field_152452_b)
+         {
+-            throw new RuntimeException(
+-                "Tried to read NBT tag that was too big; tried to allocate: " + this.field_152453_c + "bytes where max allowed: " + this.field_152452_b
+-            );
+-        }
++            throw new RuntimeException("Tried to read NBT tag that was too big; tried to allocate: " + this.field_152453_c + "bytes where max allowed: " + this.field_152452_b);
++        }
++    }
 +
 +    /*
 +     * UTF8 is not a simple encoding system, each character can be either
@@ -33,5 +48,5 @@
 +            else                                utflen += 2;
 +        }
 +        tracker.func_152450_a(8 * utflen);
-+    }
+     }
  }

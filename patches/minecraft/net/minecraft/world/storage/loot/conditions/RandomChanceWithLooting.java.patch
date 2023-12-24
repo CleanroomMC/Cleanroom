@@ -1,7 +1,10 @@
 --- before/net/minecraft/world/storage/loot/conditions/RandomChanceWithLooting.java
 +++ after/net/minecraft/world/storage/loot/conditions/RandomChanceWithLooting.java
-@@ -23,12 +23,7 @@
+@@ -21,15 +21,9 @@
+         this.field_186628_b = p_i46614_2_;
+     }
  
+-    @Override
      public boolean func_186618_a(Random p_186618_1_, LootContext p_186618_2_)
      {
 -        int i = 0;
@@ -14,7 +17,7 @@
  
          return p_186618_1_.nextFloat() < this.field_186627_a + (float)i * this.field_186628_b;
      }
-@@ -42,8 +37,8 @@
+@@ -43,8 +37,8 @@
  
              public void func_186605_a(JsonObject p_186605_1_, RandomChanceWithLooting p_186605_2_, JsonSerializationContext p_186605_3_)
              {

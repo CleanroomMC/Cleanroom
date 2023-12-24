@@ -1,6 +1,22 @@
 --- before/net/minecraft/tileentity/TileEntityNote.java
 +++ after/net/minecraft/tileentity/TileEntityNote.java
-@@ -32,7 +32,9 @@
+@@ -14,7 +14,6 @@
+     public byte field_145879_a;
+     public boolean field_145880_i;
+ 
+-    @Override
+     public NBTTagCompound func_189515_b(NBTTagCompound p_189515_1_)
+     {
+         super.func_189515_b(p_189515_1_);
+@@ -23,7 +22,6 @@
+         return p_189515_1_;
+     }
+ 
+-    @Override
+     public void func_145839_a(NBTTagCompound p_145839_1_)
+     {
+         super.func_145839_a(p_145839_1_);
+@@ -34,7 +32,9 @@
  
      public void func_145877_a()
      {

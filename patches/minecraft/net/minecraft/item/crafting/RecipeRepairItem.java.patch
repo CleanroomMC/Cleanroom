@@ -1,6 +1,6 @@
 --- before/net/minecraft/item/crafting/RecipeRepairItem.java
 +++ after/net/minecraft/item/crafting/RecipeRepairItem.java
-@@ -7,14 +7,12 @@
+@@ -7,15 +7,12 @@
  import net.minecraft.item.ItemStack;
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
@@ -10,6 +10,7 @@
 -public class RecipeRepairItem implements IRecipe
 +public class RecipeRepairItem extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe
  {
+-    @Override
      public boolean func_77569_a(InventoryCrafting p_77569_1_, World p_77569_2_)
      {
 -        List<ItemStack> list = Lists.newArrayList();
@@ -17,17 +18,23 @@
  
          for (int i = 0; i < p_77569_1_.func_70302_i_(); ++i)
          {
-@@ -28,7 +26,7 @@
+@@ -29,10 +26,7 @@
                  {
                      ItemStack itemstack1 = list.get(0);
  
--                    if (itemstack.func_77973_b() != itemstack1.func_77973_b() || itemstack1.func_190916_E() != 1 || itemstack.func_190916_E() != 1 || !itemstack1.func_77973_b().func_77645_m())
+-                    if (itemstack.func_77973_b() != itemstack1.func_77973_b()
+-                            || itemstack1.func_190916_E() != 1
+-                            || itemstack.func_190916_E() != 1
+-                            || !itemstack1.func_77973_b().func_77645_m())
 +                    if (itemstack.func_77973_b() != itemstack1.func_77973_b() || itemstack1.func_190916_E() != 1 || itemstack.func_190916_E() != 1 || !itemstack1.func_77973_b().isRepairable())
                      {
                          return false;
                      }
-@@ -41,7 +39,7 @@
+@@ -43,10 +37,9 @@
+         return list.size() == 2;
+     }
  
+-    @Override
      public ItemStack func_77572_b(InventoryCrafting p_77572_1_)
      {
 -        List<ItemStack> list = Lists.newArrayList();
@@ -35,20 +42,26 @@
  
          for (int i = 0; i < p_77572_1_.func_70302_i_(); ++i)
          {
-@@ -55,7 +53,7 @@
+@@ -60,10 +53,7 @@
                  {
                      ItemStack itemstack1 = list.get(0);
  
--                    if (itemstack.func_77973_b() != itemstack1.func_77973_b() || itemstack1.func_190916_E() != 1 || itemstack.func_190916_E() != 1 || !itemstack1.func_77973_b().func_77645_m())
+-                    if (itemstack.func_77973_b() != itemstack1.func_77973_b()
+-                            || itemstack1.func_190916_E() != 1
+-                            || itemstack.func_190916_E() != 1
+-                            || !itemstack1.func_77973_b().func_77645_m())
 +                    if (itemstack.func_77973_b() != itemstack1.func_77973_b() || itemstack1.func_190916_E() != 1 || itemstack.func_190916_E() != 1 || !itemstack1.func_77973_b().isRepairable())
                      {
                          return ItemStack.field_190927_a;
                      }
-@@ -68,13 +66,13 @@
+@@ -76,16 +66,13 @@
              ItemStack itemstack2 = list.get(0);
              ItemStack itemstack3 = list.get(1);
  
--            if (itemstack2.func_77973_b() == itemstack3.func_77973_b() && itemstack2.func_190916_E() == 1 && itemstack3.func_190916_E() == 1 && itemstack2.func_77973_b().func_77645_m())
+-            if (itemstack2.func_77973_b() == itemstack3.func_77973_b()
+-                    && itemstack2.func_190916_E() == 1
+-                    && itemstack3.func_190916_E() == 1
+-                    && itemstack2.func_77973_b().func_77645_m())
 +            if (itemstack2.func_77973_b() == itemstack3.func_77973_b() && itemstack2.func_190916_E() == 1 && itemstack3.func_190916_E() == 1 && itemstack2.func_77973_b().isRepairable())
              {
 -                Item item = itemstack2.func_77973_b();
@@ -64,8 +77,17 @@
  
                  if (i1 < 0)
                  {
-@@ -95,16 +93,12 @@
+@@ -99,38 +86,29 @@
+         return ItemStack.field_190927_a;
+     }
  
+-    @Override
+     public ItemStack func_77571_b()
+     {
+         return ItemStack.field_190927_a;
+     }
+ 
+-    @Override
      public NonNullList<ItemStack> func_179532_b(InventoryCrafting p_179532_1_)
      {
 -        NonNullList<ItemStack> nonnulllist = NonNullList.func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
@@ -83,11 +105,16 @@
          }
  
          return nonnulllist;
-@@ -115,7 +109,6 @@
+     }
+ 
+-    @Override
+     public boolean func_192399_d()
+     {
          return true;
      }
  
 -    @SideOnly(Side.CLIENT)
+-    @Override
      public boolean func_194133_a(int p_194133_1_, int p_194133_2_)
      {
          return p_194133_1_ * p_194133_2_ >= 2;

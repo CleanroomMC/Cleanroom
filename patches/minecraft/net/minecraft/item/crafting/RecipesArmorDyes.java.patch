@@ -1,6 +1,6 @@
 --- before/net/minecraft/item/crafting/RecipesArmorDyes.java
 +++ after/net/minecraft/item/crafting/RecipesArmorDyes.java
-@@ -9,15 +9,13 @@
+@@ -9,16 +9,13 @@
  import net.minecraft.item.ItemStack;
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
@@ -10,6 +10,7 @@
 -public class RecipesArmorDyes implements IRecipe
 +public class RecipesArmorDyes extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe
  {
+-    @Override
      public boolean func_77569_a(InventoryCrafting p_77569_1_, World p_77569_2_)
      {
          ItemStack itemstack = ItemStack.field_190927_a;
@@ -18,7 +19,7 @@
  
          for (int i = 0; i < p_77569_1_.func_70302_i_(); ++i)
          {
-@@ -38,7 +36,7 @@
+@@ -39,7 +36,7 @@
                  }
                  else
                  {
@@ -27,7 +28,28 @@
                      {
                          return false;
                      }
-@@ -92,12 +90,12 @@
+@@ -52,7 +49,6 @@
+         return !itemstack.func_190926_b() && !list.isEmpty();
+     }
+ 
+-    @Override
+     public ItemStack func_77572_b(InventoryCrafting p_77572_1_)
+     {
+         ItemStack itemstack = ItemStack.field_190927_a;
+@@ -82,9 +78,9 @@
+                     if (itemarmor.func_82816_b_(itemstack1))
+                     {
+                         int l = itemarmor.func_82814_b(itemstack);
+-                        float f = (float)(l >> 16 & 0xFF) / 255.0F;
+-                        float f1 = (float)(l >> 8 & 0xFF) / 255.0F;
+-                        float f2 = (float)(l & 0xFF) / 255.0F;
++                        float f = (float)(l >> 16 & 255) / 255.0F;
++                        float f1 = (float)(l >> 8 & 255) / 255.0F;
++                        float f2 = (float)(l & 255) / 255.0F;
+                         i = (int)((float)i + Math.max(f, Math.max(f1, f2)) * 255.0F);
+                         aint[0] = (int)((float)aint[0] + f * 255.0F);
+                         aint[1] = (int)((float)aint[1] + f1 * 255.0F);
+@@ -94,12 +90,12 @@
                  }
                  else
                  {
@@ -42,8 +64,17 @@
                      int l1 = (int)(afloat[0] * 255.0F);
                      int i2 = (int)(afloat[1] * 255.0F);
                      int j2 = (int)(afloat[2] * 255.0F);
-@@ -138,16 +136,12 @@
+@@ -133,38 +129,29 @@
+         }
+     }
  
+-    @Override
+     public ItemStack func_77571_b()
+     {
+         return ItemStack.field_190927_a;
+     }
+ 
+-    @Override
      public NonNullList<ItemStack> func_179532_b(InventoryCrafting p_179532_1_)
      {
 -        NonNullList<ItemStack> nonnulllist = NonNullList.func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
@@ -61,11 +92,16 @@
          }
  
          return nonnulllist;
-@@ -158,7 +152,6 @@
+     }
+ 
+-    @Override
+     public boolean func_192399_d()
+     {
          return true;
      }
  
 -    @SideOnly(Side.CLIENT)
+-    @Override
      public boolean func_194133_a(int p_194133_1_, int p_194133_2_)
      {
          return p_194133_1_ * p_194133_2_ >= 2;

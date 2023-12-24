@@ -8,7 +8,7 @@
  import net.minecraft.block.properties.PropertyBool;
  import net.minecraft.block.state.BlockStateContainer;
  import net.minecraft.block.state.IBlockState;
-@@ -21,34 +22,34 @@
+@@ -21,52 +22,47 @@
      public BlockObserver()
      {
          super(Material.field_151576_e);
@@ -17,24 +17,28 @@
          this.func_149647_a(CreativeTabs.field_78028_d);
      }
  
+-    @Override
      protected BlockStateContainer func_180661_e()
      {
 -        return new BlockStateContainer(this, field_176387_N, field_190963_a);
 +        return new BlockStateContainer(this, new IProperty[] {field_176387_N, field_190963_a});
      }
  
+-    @Override
      public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
      {
 -        return p_185499_1_.func_177226_a(field_176387_N, p_185499_2_.func_185831_a(p_185499_1_.func_177229_b(field_176387_N)));
 +        return p_185499_1_.func_177226_a(field_176387_N, p_185499_2_.func_185831_a((EnumFacing)p_185499_1_.func_177229_b(field_176387_N)));
      }
  
+-    @Override
      public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
      {
 -        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a(p_185471_1_.func_177229_b(field_176387_N)));
 +        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a((EnumFacing)p_185471_1_.func_177229_b(field_176387_N)));
      }
  
+-    @Override
      public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
      {
 -        if (p_180650_3_.func_177229_b(field_190963_a))
@@ -50,7 +54,13 @@
              p_180650_1_.func_175684_a(p_180650_2_, this, 2);
          }
  
-@@ -61,7 +62,7 @@
+         this.func_190961_e(p_180650_1_, p_180650_2_, p_180650_3_);
+     }
+ 
+-    @Override
+     public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
+     {
+     }
  
      public void func_190962_b(IBlockState p_190962_1_, World p_190962_2_, BlockPos p_190962_3_, Block p_190962_4_, BlockPos p_190962_5_)
      {
@@ -59,7 +69,7 @@
          {
              this.func_190960_d(p_190962_1_, p_190962_2_, p_190962_3_);
          }
-@@ -69,7 +70,7 @@
+@@ -74,7 +70,7 @@
  
      private void func_190960_d(IBlockState p_190960_1_, World p_190960_2_, BlockPos p_190960_3_)
      {
@@ -68,7 +78,7 @@
          {
              if (!p_190960_2_.func_184145_b(p_190960_3_, this))
              {
-@@ -80,7 +81,7 @@
+@@ -85,36 +81,32 @@
  
      protected void func_190961_e(World p_190961_1_, BlockPos p_190961_2_, IBlockState p_190961_3_)
      {
@@ -77,14 +87,28 @@
          BlockPos blockpos = p_190961_2_.func_177972_a(enumfacing.func_176734_d());
          p_190961_1_.func_190524_a(blockpos, this, p_190961_2_);
          p_190961_1_.func_175695_a(blockpos, this, enumfacing);
-@@ -98,14 +99,14 @@
+     }
  
+-    @Override
+     public boolean func_149744_f(IBlockState p_149744_1_)
+     {
+         return true;
+     }
+ 
+-    @Override
+     public int func_176211_b(IBlockState p_176211_1_, IBlockAccess p_176211_2_, BlockPos p_176211_3_, EnumFacing p_176211_4_)
+     {
+         return p_176211_1_.func_185911_a(p_176211_2_, p_176211_3_, p_176211_4_);
+     }
+ 
+-    @Override
      public int func_180656_a(IBlockState p_180656_1_, IBlockAccess p_180656_2_, BlockPos p_180656_3_, EnumFacing p_180656_4_)
      {
 -        return p_180656_1_.func_177229_b(field_190963_a) && p_180656_1_.func_177229_b(field_176387_N) == p_180656_4_ ? 15 : 0;
 +        return ((Boolean)p_180656_1_.func_177229_b(field_190963_a)).booleanValue() && p_180656_1_.func_177229_b(field_176387_N) == p_180656_4_ ? 15 : 0;
      }
  
+-    @Override
      public void func_176213_c(World p_176213_1_, BlockPos p_176213_2_, IBlockState p_176213_3_)
      {
          if (!p_176213_1_.field_72995_K)
@@ -94,8 +118,11 @@
              {
                  this.func_180650_b(p_176213_1_, p_176213_2_, p_176213_3_, p_176213_1_.field_73012_v);
              }
-@@ -116,9 +117,9 @@
+@@ -123,37 +115,25 @@
+         }
+     }
  
+-    @Override
      public void func_180663_b(World p_180663_1_, BlockPos p_180663_2_, IBlockState p_180663_3_)
      {
 -        if (p_180663_3_.func_177229_b(field_190963_a) && p_180663_1_.func_184145_b(p_180663_2_, this))
@@ -106,7 +133,23 @@
          }
      }
  
-@@ -130,9 +131,9 @@
+-    @Override
+-    public IBlockState func_180642_a(
+-        World p_180642_1_,
+-        BlockPos p_180642_2_,
+-        EnumFacing p_180642_3_,
+-        float p_180642_4_,
+-        float p_180642_5_,
+-        float p_180642_6_,
+-        int p_180642_7_,
+-        EntityLivingBase p_180642_8_
+-    )
++    public IBlockState func_180642_a(World p_180642_1_, BlockPos p_180642_2_, EnumFacing p_180642_3_, float p_180642_4_, float p_180642_5_, float p_180642_6_, int p_180642_7_, EntityLivingBase p_180642_8_)
+     {
+         return this.func_176223_P().func_177226_a(field_176387_N, EnumFacing.func_190914_a(p_180642_2_, p_180642_8_).func_176734_d());
+     }
+ 
+-    @Override
      public int func_176201_c(IBlockState p_176201_1_)
      {
          int i = 0;
@@ -118,7 +161,12 @@
          {
              i |= 8;
          }
-@@ -144,4 +145,12 @@
+@@ -161,9 +141,16 @@
+         return i;
+     }
+ 
+-    @Override
+     public IBlockState func_176203_a(int p_176203_1_)
      {
          return this.func_176223_P().func_177226_a(field_176387_N, EnumFacing.func_82600_a(p_176203_1_ & 7));
      }

@@ -1,6 +1,25 @@
 --- before/net/minecraft/client/renderer/entity/layers/LayerHeldItem.java
 +++ after/net/minecraft/client/renderer/entity/layers/LayerHeldItem.java
-@@ -49,13 +49,13 @@
+@@ -21,17 +21,7 @@
+         this.field_177206_a = p_i46115_1_;
+     }
+ 
+-    @Override
+-    public void func_177141_a(
+-        EntityLivingBase p_177141_1_,
+-        float p_177141_2_,
+-        float p_177141_3_,
+-        float p_177141_4_,
+-        float p_177141_5_,
+-        float p_177141_6_,
+-        float p_177141_7_,
+-        float p_177141_8_
+-    )
++    public void func_177141_a(EntityLivingBase p_177141_1_, float p_177141_2_, float p_177141_3_, float p_177141_4_, float p_177141_5_, float p_177141_6_, float p_177141_7_, float p_177141_8_)
+     {
+         boolean flag = p_177141_1_.func_184591_cq() == EnumHandSide.RIGHT;
+         ItemStack itemstack = flag ? p_177141_1_.func_184592_cb() : p_177141_1_.func_184614_ca();
+@@ -59,13 +49,13 @@
          if (!p_188358_2_.func_190926_b())
          {
              GlStateManager.func_179094_E();
@@ -16,3 +35,11 @@
              GlStateManager.func_179114_b(-90.0F, 1.0F, 0.0F, 0.0F);
              GlStateManager.func_179114_b(180.0F, 0.0F, 1.0F, 0.0F);
              boolean flag = p_188358_4_ == EnumHandSide.LEFT;
+@@ -80,7 +70,6 @@
+         ((ModelBiped)this.field_177206_a.func_177087_b()).func_187073_a(0.0625F, p_191361_1_);
+     }
+ 
+-    @Override
+     public boolean func_177142_b()
+     {
+         return false;

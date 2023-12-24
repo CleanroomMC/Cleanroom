@@ -23,7 +23,7 @@
  
      public ChunkProviderServer(WorldServer p_i46838_1_, IChunkLoader p_i46838_2_, IChunkGenerator p_i46838_3_)
      {
-@@ -51,15 +53,18 @@
+@@ -51,25 +53,27 @@
      {
          if (this.field_73251_h.field_73011_w.func_186056_c(p_189549_1_.field_76635_g, p_189549_1_.field_76647_h))
          {
@@ -44,7 +44,9 @@
              this.func_189549_a(chunk);
          }
      }
-@@ -68,7 +73,7 @@
+ 
+     @Nullable
+-    @Override
      public Chunk func_186026_b(int p_186026_1_, int p_186026_2_)
      {
          long i = ChunkPos.func_77272_a(p_186026_1_, p_186026_2_);
@@ -53,7 +55,7 @@
  
          if (chunk != null)
          {
-@@ -81,20 +86,47 @@
+@@ -82,24 +86,50 @@
      @Nullable
      public Chunk func_186028_c(int p_186028_1_, int p_186028_2_)
      {
@@ -105,7 +107,11 @@
          return chunk;
      }
  
-@@ -115,7 +147,7 @@
+-    @Override
+     public Chunk func_186025_d(int p_186025_1_, int p_186025_2_)
+     {
+         Chunk chunk = this.func_186028_c(p_186025_1_, p_186025_2_);
+@@ -117,7 +147,7 @@
                  CrashReport crashreport = CrashReport.func_85055_a(throwable, "Exception generating new chunk");
                  CrashReportCategory crashreportcategory = crashreport.func_85058_a("Chunk to be generated");
                  crashreportcategory.func_71507_a("Location", String.format("%d,%d", p_186025_1_, p_186025_2_));
@@ -114,7 +120,25 @@
                  crashreportcategory.func_71507_a("Generator", this.field_186029_c);
                  throw new ReportedException(crashreport);
              }
-@@ -220,16 +252,22 @@
+@@ -199,8 +229,9 @@
+             {
+                 this.func_73242_b(chunk);
+                 chunk.func_177427_f(false);
++                ++i;
+ 
+-                if (++i == 24 && !p_186027_1_)
++                if (i == 24 && !p_186027_1_)
+                 {
+                     return false;
+                 }
+@@ -215,23 +246,28 @@
+         this.field_73247_e.func_75818_b();
+     }
+ 
+-    @Override
+     public boolean func_73156_b()
+     {
+         if (!this.field_73251_h.field_73058_d)
          {
              if (!this.field_73248_b.isEmpty())
              {
@@ -138,12 +162,28 @@
                          this.func_73242_b(chunk);
                          this.func_73243_a(chunk);
                          this.field_73244_f.remove(olong);
-@@ -237,6 +275,8 @@
-                     }
+@@ -240,6 +276,8 @@
                  }
              }
-+
-+            if (this.field_73244_f.isEmpty()) net.minecraftforge.common.DimensionManager.unloadWorld(this.field_73251_h.field_73011_w.getDimension());
  
++            if (this.field_73244_f.isEmpty()) net.minecraftforge.common.DimensionManager.unloadWorld(this.field_73251_h.field_73011_w.getDimension());
++
              this.field_73247_e.func_75817_a();
          }
+ 
+@@ -251,7 +289,6 @@
+         return !this.field_73251_h.field_73058_d;
+     }
+ 
+-    @Override
+     public String func_73148_d()
+     {
+         return "ServerChunkCache: " + this.field_73244_f.size() + " Drop: " + this.field_73248_b.size();
+@@ -283,7 +320,6 @@
+         return this.field_73244_f.containsKey(ChunkPos.func_77272_a(p_73149_1_, p_73149_2_));
+     }
+ 
+-    @Override
+     public boolean func_191062_e(int p_191062_1_, int p_191062_2_)
+     {
+         return this.field_73244_f.containsKey(ChunkPos.func_77272_a(p_191062_1_, p_191062_2_)) || this.field_73247_e.func_191063_a(p_191062_1_, p_191062_2_);

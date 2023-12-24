@@ -20,6 +20,15 @@
                  }
              }
          }
+@@ -72,7 +73,7 @@
+         }
+ 
+         float f = (float)i / (float)j;
+-        this.field_135029_d = (double)f > 0.1;
++        this.field_135029_d = (double)f > 0.1D;
+     }
+ 
+     private void func_135028_a(List<IResource> p_135028_1_) throws IOException
 @@ -94,11 +95,13 @@
  
      private void func_135021_a(InputStream p_135021_1_) throws IOException

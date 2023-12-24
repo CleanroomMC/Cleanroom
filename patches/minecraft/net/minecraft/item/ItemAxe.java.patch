@@ -1,9 +1,31 @@
 --- before/net/minecraft/item/ItemAxe.java
 +++ after/net/minecraft/item/ItemAxe.java
-@@ -20,6 +20,13 @@
+@@ -9,19 +9,7 @@
+ 
+ public class ItemAxe extends ItemTool
+ {
+-    private static final Set<Block> field_150917_c = Sets.newHashSet(
+-                    Blocks.field_150344_f,
+-                    Blocks.field_150342_X,
+-                    Blocks.field_150364_r,
+-                    Blocks.field_150363_s,
+-                    Blocks.field_150486_ae,
+-                    Blocks.field_150423_aK,
+-                    Blocks.field_150428_aP,
+-                    Blocks.field_150440_ba,
+-                    Blocks.field_150468_ap,
+-                    Blocks.field_150471_bO,
+-                    Blocks.field_150452_aw
+-                );
++    private static final Set<Block> field_150917_c = Sets.newHashSet(Blocks.field_150344_f, Blocks.field_150342_X, Blocks.field_150364_r, Blocks.field_150363_s, Blocks.field_150486_ae, Blocks.field_150423_aK, Blocks.field_150428_aP, Blocks.field_150440_ba, Blocks.field_150468_ap, Blocks.field_150471_bO, Blocks.field_150452_aw);
+     private static final float[] field_185066_m = new float[] {6.0F, 8.0F, 8.0F, 8.0F, 6.0F};
+     private static final float[] field_185067_n = new float[] { -3.2F, -3.2F, -3.1F, -3.0F, -3.0F};
+ 
+@@ -32,12 +20,16 @@
          this.field_185065_c = field_185067_n[p_i45327_1_.ordinal()];
      }
  
+-    @Override
 +    protected ItemAxe(Item.ToolMaterial material, float damage, float speed)
 +    {
 +        super(material, field_150917_c);
@@ -14,3 +36,9 @@
      public float func_150893_a(ItemStack p_150893_1_, IBlockState p_150893_2_)
      {
          Material material = p_150893_2_.func_185904_a();
+-        return material != Material.field_151575_d && material != Material.field_151585_k && material != Material.field_151582_l
+-               ? super.func_150893_a(p_150893_1_, p_150893_2_)
+-               : this.field_77864_a;
++        return material != Material.field_151575_d && material != Material.field_151585_k && material != Material.field_151582_l ? super.func_150893_a(p_150893_1_, p_150893_2_) : this.field_77864_a;
+     }
+ }

@@ -1,6 +1,31 @@
 --- before/net/minecraft/entity/ai/EntityAIRunAroundLikeCrazy.java
 +++ after/net/minecraft/entity/ai/EntityAIRunAroundLikeCrazy.java
-@@ -58,7 +58,7 @@
+@@ -20,7 +20,6 @@
+         this.func_75248_a(1);
+     }
+ 
+-    @Override
+     public boolean func_75250_a()
+     {
+         if (!this.field_111180_a.func_110248_bS() && this.field_111180_a.func_184207_aI())
+@@ -45,24 +44,21 @@
+         }
+     }
+ 
+-    @Override
+     public void func_75249_e()
+     {
+         this.field_111180_a.func_70661_as().func_75492_a(this.field_111179_c, this.field_111176_d, this.field_111177_e, this.field_111178_b);
+     }
+ 
+-    @Override
+     public boolean func_75253_b()
+     {
+         return !this.field_111180_a.func_110248_bS() && !this.field_111180_a.func_70661_as().func_75500_f() && this.field_111180_a.func_184207_aI();
+     }
+ 
+-    @Override
+     public void func_75246_d()
      {
          if (!this.field_111180_a.func_110248_bS() && this.field_111180_a.func_70681_au().nextInt(50) == 0)
          {
@@ -9,7 +34,7 @@
  
              if (entity == null)
              {
-@@ -70,7 +70,7 @@
+@@ -74,7 +70,7 @@
                  int i = this.field_111180_a.func_110252_cg();
                  int j = this.field_111180_a.func_190676_dC();
  

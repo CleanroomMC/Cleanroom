@@ -9,7 +9,15 @@
  {
      public static final PropertyBool field_176237_a = PropertyBool.func_177716_a("decayable");
      public static final PropertyBool field_176236_b = PropertyBool.func_177716_a("check_decay");
-@@ -53,9 +53,9 @@
+@@ -34,7 +34,6 @@
+         this.func_149672_a(SoundType.field_185850_c);
+     }
+ 
+-    @Override
+     public void func_180663_b(World p_180663_1_, BlockPos p_180663_2_, IBlockState p_180663_3_)
+     {
+         int i = 1;
+@@ -54,9 +53,9 @@
                          BlockPos blockpos = p_180663_2_.func_177982_a(j1, k1, l1);
                          IBlockState iblockstate = p_180663_1_.func_180495_p(blockpos);
  
@@ -21,7 +29,12 @@
                          }
                      }
                  }
-@@ -67,7 +67,7 @@
+@@ -64,12 +63,11 @@
+         }
+     }
+ 
+-    @Override
+     public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
      {
          if (!p_180650_1_.field_72995_K)
          {
@@ -30,7 +43,7 @@
              {
                  int i = 4;
                  int j = 5;
-@@ -83,7 +83,8 @@
+@@ -85,7 +83,8 @@
                      this.field_150128_a = new int[32768];
                  }
  
@@ -40,7 +53,7 @@
                  {
                      BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
-@@ -96,9 +97,9 @@
+@@ -98,9 +97,9 @@
                                  IBlockState iblockstate = p_180650_1_.func_180495_p(blockpos$mutableblockpos.func_181079_c(k + i2, l + j2, i1 + k2));
                                  Block block = iblockstate.func_177230_c();
  
@@ -52,7 +65,7 @@
                                      {
                                          this.field_150128_a[(i2 + 16) * 1024 + (j2 + 16) * 32 + k2 + 16] = -2;
                                      }
-@@ -165,7 +166,7 @@
+@@ -167,7 +166,7 @@
  
                  if (l2 >= 0)
                  {
@@ -61,34 +74,44 @@
                  }
                  else
                  {
-@@ -175,6 +176,12 @@
-         }
+@@ -178,17 +177,14 @@
      }
  
-+    private void func_176235_d(World p_176235_1_, BlockPos p_176235_2_)
-+    {
-+        this.func_176226_b(p_176235_1_, p_176235_2_, p_176235_1_.func_180495_p(p_176235_2_), 0);
-+        p_176235_1_.func_175698_g(p_176235_2_);
-+    }
-+
      @SideOnly(Side.CLIENT)
+-    @Override
      public void func_180655_c(IBlockState p_180655_1_, World p_180655_2_, BlockPos p_180655_3_, Random p_180655_4_)
      {
-@@ -187,12 +194,6 @@
+-        if (p_180655_2_.func_175727_C(p_180655_3_.func_177984_a())
+-                && !p_180655_2_.func_180495_p(p_180655_3_.func_177977_b()).func_185896_q()
+-                && p_180655_4_.nextInt(15) == 1)
++        if (p_180655_2_.func_175727_C(p_180655_3_.func_177984_a()) && !p_180655_2_.func_180495_p(p_180655_3_.func_177977_b()).func_185896_q() && p_180655_4_.nextInt(15) == 1)
+         {
+             double d0 = (double)((float)p_180655_3_.func_177958_n() + p_180655_4_.nextFloat());
+-            double d1 = (double)p_180655_3_.func_177956_o() - 0.05;
++            double d1 = (double)p_180655_3_.func_177956_o() - 0.05D;
+             double d2 = (double)((float)p_180655_3_.func_177952_p() + p_180655_4_.nextFloat());
+-            p_180655_2_.func_175688_a(EnumParticleTypes.DRIP_WATER, d0, d1, d2, 0.0, 0.0, 0.0);
++            p_180655_2_.func_175688_a(EnumParticleTypes.DRIP_WATER, d0, d1, d2, 0.0D, 0.0D, 0.0D);
          }
      }
  
--    private void func_176235_d(World p_176235_1_, BlockPos p_176235_2_)
--    {
--        this.func_176226_b(p_176235_1_, p_176235_2_, p_176235_1_.func_180495_p(p_176235_2_), 0);
--        p_176235_1_.func_175698_g(p_176235_2_);
--    }
--
+@@ -198,55 +194,19 @@
+         p_176235_1_.func_175698_g(p_176235_2_);
+     }
+ 
+-    @Override
      public int func_149745_a(Random p_149745_1_)
      {
          return p_149745_1_.nextInt(20) == 0 ? 1 : 0;
-@@ -205,40 +206,7 @@
+     }
  
+-    @Override
+     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
+     {
+         return Item.func_150898_a(Blocks.field_150345_g);
+     }
+ 
+-    @Override
      public void func_180653_a(World p_180653_1_, BlockPos p_180653_2_, IBlockState p_180653_3_, float p_180653_4_, int p_180653_5_)
      {
 -        if (!p_180653_1_.field_72995_K)
@@ -129,11 +152,32 @@
      }
  
      protected void func_176234_a(World p_176234_1_, BlockPos p_176234_2_, IBlockState p_176234_3_, int p_176234_4_)
-@@ -273,6 +241,51 @@
+@@ -258,7 +218,6 @@
+         return 20;
      }
  
+-    @Override
+     public boolean func_149662_c(IBlockState p_149662_1_)
+     {
+         return !this.field_185686_c;
+@@ -271,13 +230,11 @@
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    @Override
+     public BlockRenderLayer func_180664_k()
+     {
+         return this.field_185686_c ? BlockRenderLayer.CUTOUT_MIPPED : BlockRenderLayer.SOLID;
+     }
+ 
+-    @Override
+     public boolean func_176214_u(IBlockState p_176214_1_)
+     {
+         return false;
+@@ -285,12 +242,54 @@
+ 
      public abstract BlockPlanks.EnumType func_176233_b(int p_176233_1_);
-+
+ 
 +    @Override public boolean isShearable(ItemStack item, IBlockAccess world, BlockPos pos){ return true; }
 +    @Override public boolean isLeaves(IBlockState state, IBlockAccess world, BlockPos pos){ return true; }
 +
@@ -178,6 +222,14 @@
 +        drops.addAll(this.captureDrops(false));
 +    }
 +
- 
++
      @SideOnly(Side.CLIENT)
+-    @Override
      public boolean func_176225_a(IBlockState p_176225_1_, IBlockAccess p_176225_2_, BlockPos p_176225_3_, EnumFacing p_176225_4_)
+     {
+-        return !this.field_185686_c && p_176225_2_.func_180495_p(p_176225_3_.func_177972_a(p_176225_4_)).func_177230_c() == this
+-               ? false
+-               : super.func_176225_a(p_176225_1_, p_176225_2_, p_176225_3_, p_176225_4_);
++        return !this.field_185686_c && p_176225_2_.func_180495_p(p_176225_3_.func_177972_a(p_176225_4_)).func_177230_c() == this ? false : super.func_176225_a(p_176225_1_, p_176225_2_, p_176225_3_, p_176225_4_);
+     }
+ }

@@ -30,7 +30,18 @@
      }
  
      public String func_151316_d()
-@@ -125,8 +129,8 @@
+@@ -98,9 +102,7 @@
+                     public ServerStatusResponse.Players deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_) throws JsonParseException
+                     {
+                         JsonObject jsonobject = JsonUtils.func_151210_l(p_deserialize_1_, "players");
+-                        ServerStatusResponse.Players serverstatusresponse$players = new ServerStatusResponse.Players(
+-                            JsonUtils.func_151203_m(jsonobject, "max"), JsonUtils.func_151203_m(jsonobject, "online")
+-                        );
++                        ServerStatusResponse.Players serverstatusresponse$players = new ServerStatusResponse.Players(JsonUtils.func_151203_m(jsonobject, "max"), JsonUtils.func_151203_m(jsonobject, "online"));
+ 
+                         if (JsonUtils.func_151202_d(jsonobject, "sample"))
+                         {
+@@ -127,8 +129,8 @@
                      public JsonElement serialize(ServerStatusResponse.Players p_serialize_1_, Type p_serialize_2_, JsonSerializationContext p_serialize_3_)
                      {
                          JsonObject jsonobject = new JsonObject();
@@ -41,7 +52,7 @@
  
                          if (p_serialize_1_.func_151331_c() != null && p_serialize_1_.func_151331_c().length > 0)
                          {
-@@ -158,17 +162,17 @@
+@@ -160,17 +162,17 @@
  
                  if (jsonobject.has("description"))
                  {
@@ -62,7 +73,7 @@
                  }
  
                  if (jsonobject.has("favicon"))
-@@ -176,6 +180,7 @@
+@@ -178,6 +180,7 @@
                      serverstatusresponse.func_151320_a(JsonUtils.func_151200_h(jsonobject, "favicon"));
                  }
  
@@ -70,7 +81,7 @@
                  return serverstatusresponse;
              }
  
-@@ -203,10 +208,50 @@
+@@ -205,10 +208,50 @@
                      jsonobject.addProperty("favicon", p_serialize_1_.func_151316_d());
                  }
  
@@ -121,7 +132,7 @@
      public static class Version
          {
              private final String field_151306_a;
-@@ -240,7 +285,7 @@
+@@ -242,7 +285,7 @@
                      {
                          JsonObject jsonobject = new JsonObject();
                          jsonobject.addProperty("name", p_serialize_1_.func_151303_a());

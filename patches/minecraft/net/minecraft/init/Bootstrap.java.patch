@@ -1,7 +1,219 @@
 --- before/net/minecraft/init/Bootstrap.java
 +++ after/net/minecraft/init/Bootstrap.java
-@@ -189,7 +189,7 @@
+@@ -1,8 +1,10 @@
+ package net.minecraft.init;
+ 
+ import com.mojang.authlib.GameProfile;
++import java.io.File;
+ import java.io.PrintStream;
+ import java.util.Random;
++import java.util.UUID;
+ import net.minecraft.advancements.AdvancementManager;
+ import net.minecraft.block.Block;
+ import net.minecraft.block.BlockDispenser;
+@@ -28,6 +30,8 @@
+ import net.minecraft.entity.item.EntityExpBottle;
+ import net.minecraft.entity.item.EntityFireworkRocket;
+ import net.minecraft.entity.item.EntityTNTPrimed;
++import net.minecraft.entity.player.EntityPlayer;
++import net.minecraft.entity.player.EntityPlayerMP;
+ import net.minecraft.entity.projectile.EntityArrow;
+ import net.minecraft.entity.projectile.EntityEgg;
+ import net.minecraft.entity.projectile.EntityPotion;
+@@ -82,42 +86,27 @@
+ 
+     static void func_151353_a()
+     {
+-        BlockDispenser.field_149943_a
+-        .func_82595_a(
+-            Items.field_151032_g,
+-            new BehaviorProjectileDispense()
++        BlockDispenser.field_149943_a.func_82595_a(Items.field_151032_g, new BehaviorProjectileDispense()
          {
+-            @Override
+             protected IProjectile func_82499_a(World p_82499_1_, IPosition p_82499_2_, ItemStack p_82499_3_)
+             {
+-                EntityTippedArrow entitytippedarrow = new EntityTippedArrow(
+-                    p_82499_1_, p_82499_2_.func_82615_a(), p_82499_2_.func_82617_b(), p_82499_2_.func_82616_c()
+-                );
++                EntityTippedArrow entitytippedarrow = new EntityTippedArrow(p_82499_1_, p_82499_2_.func_82615_a(), p_82499_2_.func_82617_b(), p_82499_2_.func_82616_c());
+                 entitytippedarrow.field_70251_a = EntityArrow.PickupStatus.ALLOWED;
+                 return entitytippedarrow;
+             }
+-        }
+-        );
+-        BlockDispenser.field_149943_a
+-        .func_82595_a(
+-            Items.field_185167_i,
+-            new BehaviorProjectileDispense()
++        });
++        BlockDispenser.field_149943_a.func_82595_a(Items.field_185167_i, new BehaviorProjectileDispense()
+         {
+-            @Override
+             protected IProjectile func_82499_a(World p_82499_1_, IPosition p_82499_2_, ItemStack p_82499_3_)
+             {
+-                EntityTippedArrow entitytippedarrow = new EntityTippedArrow(
+-                    p_82499_1_, p_82499_2_.func_82615_a(), p_82499_2_.func_82617_b(), p_82499_2_.func_82616_c()
+-                );
++                EntityTippedArrow entitytippedarrow = new EntityTippedArrow(p_82499_1_, p_82499_2_.func_82615_a(), p_82499_2_.func_82617_b(), p_82499_2_.func_82616_c());
+                 entitytippedarrow.func_184555_a(p_82499_3_);
+                 entitytippedarrow.field_70251_a = EntityArrow.PickupStatus.ALLOWED;
+                 return entitytippedarrow;
+             }
+-        }
+-        );
++        });
+         BlockDispenser.field_149943_a.func_82595_a(Items.field_185166_h, new BehaviorProjectileDispense()
+         {
+-            @Override
+             protected IProjectile func_82499_a(World p_82499_1_, IPosition p_82499_2_, ItemStack p_82499_3_)
+             {
+                 EntityArrow entityarrow = new EntitySpectralArrow(p_82499_1_, p_82499_2_.func_82615_a(), p_82499_2_.func_82617_b(), p_82499_2_.func_82616_c());
+@@ -127,7 +116,6 @@
+         });
+         BlockDispenser.field_149943_a.func_82595_a(Items.field_151110_aK, new BehaviorProjectileDispense()
+         {
+-            @Override
+             protected IProjectile func_82499_a(World p_82499_1_, IPosition p_82499_2_, ItemStack p_82499_3_)
+             {
+                 return new EntityEgg(p_82499_1_, p_82499_2_.func_82615_a(), p_82499_2_.func_82617_b(), p_82499_2_.func_82616_c());
+@@ -135,7 +123,6 @@
+         });
+         BlockDispenser.field_149943_a.func_82595_a(Items.field_151126_ay, new BehaviorProjectileDispense()
+         {
+-            @Override
+             protected IProjectile func_82499_a(World p_82499_1_, IPosition p_82499_2_, ItemStack p_82499_3_)
+             {
+                 return new EntitySnowball(p_82499_1_, p_82499_2_.func_82615_a(), p_82499_2_.func_82617_b(), p_82499_2_.func_82616_c());
+@@ -143,92 +130,66 @@
+         });
+         BlockDispenser.field_149943_a.func_82595_a(Items.field_151062_by, new BehaviorProjectileDispense()
+         {
+-            @Override
+             protected IProjectile func_82499_a(World p_82499_1_, IPosition p_82499_2_, ItemStack p_82499_3_)
+             {
+                 return new EntityExpBottle(p_82499_1_, p_82499_2_.func_82615_a(), p_82499_2_.func_82617_b(), p_82499_2_.func_82616_c());
+             }
+-            @Override
+             protected float func_82498_a()
+             {
+                 return super.func_82498_a() * 0.5F;
+             }
+-            @Override
+             protected float func_82500_b()
+             {
+                 return super.func_82500_b() * 1.25F;
+             }
+         });
+-        BlockDispenser.field_149943_a
+-        .func_82595_a(
+-            Items.field_185155_bH,
+-            new IBehaviorDispenseItem()
+-        {
+-            @Override
+-            public ItemStack func_82482_a(IBlockSource p_82482_1_, final ItemStack p_82482_2_)
+-            {
+-                return (new BehaviorProjectileDispense()
+-                {
+-                    @Override
+-                    protected IProjectile func_82499_a(World p_82499_1_, IPosition p_82499_2_, ItemStack p_82499_3_)
+-                    {
+-                        return new EntityPotion(
+-                                   p_82499_1_, p_82499_2_.func_82615_a(), p_82499_2_.func_82617_b(), p_82499_2_.func_82616_c(), p_82482_2_.func_77946_l()
+-                               );
+-                    }
+-                    @Override
+-                    protected float func_82498_a()
+-                    {
+-                        return super.func_82498_a() * 0.5F;
+-                    }
+-                    @Override
+-                    protected float func_82500_b()
+-                    {
+-                        return super.func_82500_b() * 1.25F;
+-                    }
+-                })
+-                       .func_82482_a(p_82482_1_, p_82482_2_);
+-            }
+-        }
+-        );
+-        BlockDispenser.field_149943_a
+-        .func_82595_a(
+-            Items.field_185156_bI,
+-            new IBehaviorDispenseItem()
+-        {
+-            @Override
+-            public ItemStack func_82482_a(IBlockSource p_82482_1_, final ItemStack p_82482_2_)
+-            {
+-                return (new BehaviorProjectileDispense()
+-                {
+-                    @Override
+-                    protected IProjectile func_82499_a(World p_82499_1_, IPosition p_82499_2_, ItemStack p_82499_3_)
+-                    {
+-                        return new EntityPotion(
+-                                   p_82499_1_, p_82499_2_.func_82615_a(), p_82499_2_.func_82617_b(), p_82499_2_.func_82616_c(), p_82482_2_.func_77946_l()
+-                               );
+-                    }
+-                    @Override
+-                    protected float func_82498_a()
+-                    {
+-                        return super.func_82498_a() * 0.5F;
+-                    }
+-                    @Override
+-                    protected float func_82500_b()
+-                    {
+-                        return super.func_82500_b() * 1.25F;
+-                    }
+-                })
+-                       .func_82482_a(p_82482_1_, p_82482_2_);
+-            }
+-        }
+-        );
++        BlockDispenser.field_149943_a.func_82595_a(Items.field_185155_bH, new IBehaviorDispenseItem()
++        {
++            public ItemStack func_82482_a(IBlockSource p_82482_1_, final ItemStack p_82482_2_)
++            {
++                return (new BehaviorProjectileDispense()
++                {
++                    protected IProjectile func_82499_a(World p_82499_1_, IPosition p_82499_2_, ItemStack p_82499_3_)
++                    {
++                        return new EntityPotion(p_82499_1_, p_82499_2_.func_82615_a(), p_82499_2_.func_82617_b(), p_82499_2_.func_82616_c(), p_82482_2_.func_77946_l());
++                    }
++                    protected float func_82498_a()
++                    {
++                        return super.func_82498_a() * 0.5F;
++                    }
++                    protected float func_82500_b()
++                    {
++                        return super.func_82500_b() * 1.25F;
++                    }
++                }).func_82482_a(p_82482_1_, p_82482_2_);
++            }
++        });
++        BlockDispenser.field_149943_a.func_82595_a(Items.field_185156_bI, new IBehaviorDispenseItem()
++        {
++            public ItemStack func_82482_a(IBlockSource p_82482_1_, final ItemStack p_82482_2_)
++            {
++                return (new BehaviorProjectileDispense()
++                {
++                    protected IProjectile func_82499_a(World p_82499_1_, IPosition p_82499_2_, ItemStack p_82499_3_)
++                    {
++                        return new EntityPotion(p_82499_1_, p_82499_2_.func_82615_a(), p_82499_2_.func_82617_b(), p_82499_2_.func_82616_c(), p_82482_2_.func_77946_l());
++                    }
++                    protected float func_82498_a()
++                    {
++                        return super.func_82498_a() * 0.5F;
++                    }
++                    protected float func_82500_b()
++                    {
++                        return super.func_82500_b() * 1.25F;
++                    }
++                }).func_82482_a(p_82482_1_, p_82482_2_);
++            }
++        });
+         BlockDispenser.field_149943_a.func_82595_a(Items.field_151063_bx, new BehaviorDefaultDispenseItem()
+         {
+-            @Override
              public ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
              {
 -                EnumFacing enumfacing = p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
@@ -9,8 +221,19 @@
                  double d0 = p_82487_1_.func_82615_a() + (double)enumfacing.func_82601_c();
                  double d1 = (double)((float)(p_82487_1_.func_180699_d().func_177956_o() + enumfacing.func_96559_d()) + 0.2F);
                  double d2 = p_82487_1_.func_82616_c() + (double)enumfacing.func_82599_e();
-@@ -209,7 +209,7 @@
+@@ -239,17 +200,16 @@
+                     entity.func_96094_a(p_82487_2_.func_82833_r());
+                 }
+ 
+-                ItemMonsterPlacer.func_185079_a(p_82487_1_.func_82618_k(), null, p_82487_2_, entity);
++                ItemMonsterPlacer.func_185079_a(p_82487_1_.func_82618_k(), (EntityPlayer)null, p_82487_2_, entity);
+                 p_82487_2_.func_190918_g(1);
+                 return p_82487_2_;
+             }
+         });
+         BlockDispenser.field_149943_a.func_82595_a(Items.field_151152_bP, new BehaviorDefaultDispenseItem()
          {
+-            @Override
              public ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
              {
 -                EnumFacing enumfacing = p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
@@ -18,8 +241,19 @@
                  double d0 = p_82487_1_.func_82615_a() + (double)enumfacing.func_82601_c();
                  double d1 = (double)((float)p_82487_1_.func_180699_d().func_177956_o() + 0.2F);
                  double d2 = p_82487_1_.func_82616_c() + (double)enumfacing.func_82599_e();
-@@ -227,7 +227,7 @@
+@@ -258,7 +218,6 @@
+                 p_82487_2_.func_190918_g(1);
+                 return p_82487_2_;
+             }
+-            @Override
+             protected void func_82485_a(IBlockSource p_82485_1_)
+             {
+                 p_82485_1_.func_82618_k().func_175718_b(1004, p_82485_1_.func_180699_d(), 0);
+@@ -266,24 +225,22 @@
+         });
+         BlockDispenser.field_149943_a.func_82595_a(Items.field_151059_bz, new BehaviorDefaultDispenseItem()
          {
+-            @Override
              public ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
              {
 -                EnumFacing enumfacing = p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
@@ -27,13 +261,37 @@
                  IPosition iposition = BlockDispenser.func_149939_a(p_82487_1_);
                  double d0 = iposition.func_82615_a() + (double)((float)enumfacing.func_82601_c() * 0.3F);
                  double d1 = iposition.func_82617_b() + (double)((float)enumfacing.func_96559_d() * 0.3F);
-@@ -258,31 +258,34 @@
+                 double d2 = iposition.func_82616_c() + (double)((float)enumfacing.func_82599_e() * 0.3F);
+                 World world = p_82487_1_.func_82618_k();
+                 Random random = world.field_73012_v;
+-                double d3 = random.nextGaussian() * 0.05 + (double)enumfacing.func_82601_c();
+-                double d4 = random.nextGaussian() * 0.05 + (double)enumfacing.func_96559_d();
+-                double d5 = random.nextGaussian() * 0.05 + (double)enumfacing.func_82599_e();
++                double d3 = random.nextGaussian() * 0.05D + (double)enumfacing.func_82601_c();
++                double d4 = random.nextGaussian() * 0.05D + (double)enumfacing.func_96559_d();
++                double d5 = random.nextGaussian() * 0.05D + (double)enumfacing.func_82599_e();
+                 world.func_72838_d(new EntitySmallFireball(world, d0, d1, d2, d3, d4, d5));
+                 p_82487_2_.func_190918_g(1);
+                 return p_82487_2_;
+             }
+-            @Override
+             protected void func_82485_a(IBlockSource p_82485_1_)
+             {
+                 p_82485_1_.func_82618_k().func_175718_b(1018, p_82485_1_.func_180699_d(), 0);
+@@ -298,38 +255,37 @@
+         IBehaviorDispenseItem ibehaviordispenseitem = new BehaviorDefaultDispenseItem()
+         {
+             private final BehaviorDefaultDispenseItem field_150841_b = new BehaviorDefaultDispenseItem();
+-            @Override
              public ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
              {
                  ItemBucket itembucket = (ItemBucket)p_82487_2_.func_77973_b();
 -                BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a(p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
+-                return itembucket.func_180616_a(null, p_82487_1_.func_82618_k(), blockpos)
+-                       ? new ItemStack(Items.field_151133_ar)
+-                       : this.field_150841_b.func_82482_a(p_82487_1_, p_82487_2_);
 +                BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a((EnumFacing)p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
-                 return itembucket.func_180616_a((EntityPlayer)null, p_82487_1_.func_82618_k(), blockpos) ? new ItemStack(Items.field_151133_ar) : this.field_150841_b.func_82482_a(p_82487_1_, p_82487_2_);
++                return itembucket.func_180616_a((EntityPlayer)null, p_82487_1_.func_82618_k(), blockpos) ? new ItemStack(Items.field_151133_ar) : this.field_150841_b.func_82482_a(p_82487_1_, p_82487_2_);
              }
          };
          BlockDispenser.field_149943_a.func_82595_a(Items.field_151129_at, ibehaviordispenseitem);
@@ -44,6 +302,7 @@
          BlockDispenser.field_149943_a.func_82595_a(Items.field_151133_ar, new BehaviorDefaultDispenseItem()
          {
 -            private final BehaviorDefaultDispenseItem field_150840_b = new BehaviorDefaultDispenseItem();
+-            @Override
 +            private final BehaviorDefaultDispenseItem dispenseBehavior = new BehaviorDefaultDispenseItem();
              public ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
              {
@@ -67,7 +326,7 @@
                      {
                          return super.func_82487_b(p_82487_1_, p_82487_2_);
                      }
-@@ -299,9 +302,9 @@
+@@ -346,9 +302,9 @@
                  }
                  else
                  {
@@ -79,7 +338,12 @@
                      }
  
                      return p_82487_2_;
-@@ -314,7 +317,7 @@
+@@ -357,25 +313,24 @@
+         });
+         BlockDispenser.field_149943_a.func_82595_a(Items.field_151033_d, new Bootstrap.BehaviorDispenseOptional()
+         {
+-            @Override
+             protected ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
              {
                  World world = p_82487_1_.func_82618_k();
                  this.field_190911_b = true;
@@ -88,7 +352,13 @@
  
                  if (world.func_175623_d(blockpos))
                  {
-@@ -327,7 +330,7 @@
+                     world.func_175656_a(blockpos, Blocks.field_150480_ab.func_176223_P());
+ 
+-                    if (p_82487_2_.func_96631_a(1, world.field_73012_v, null))
++                    if (p_82487_2_.func_96631_a(1, world.field_73012_v, (EntityPlayerMP)null))
+                     {
+                         p_82487_2_.func_190920_e(0);
+                     }
                  }
                  else if (world.func_180495_p(blockpos).func_177230_c() == Blocks.field_150335_W)
                  {
@@ -97,7 +367,15 @@
                      world.func_175698_g(blockpos);
                  }
                  else
-@@ -347,7 +350,7 @@
+@@ -388,7 +343,6 @@
+         });
+         BlockDispenser.field_149943_a.func_82595_a(Items.field_151100_aR, new Bootstrap.BehaviorDispenseOptional()
+         {
+-            @Override
+             protected ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
+             {
+                 this.field_190911_b = true;
+@@ -396,7 +350,7 @@
                  if (EnumDyeColor.WHITE == EnumDyeColor.func_176766_a(p_82487_2_.func_77960_j()))
                  {
                      World world = p_82487_1_.func_82618_k();
@@ -106,16 +384,47 @@
  
                      if (ItemDye.func_179234_a(p_82487_2_, world, blockpos))
                      {
-@@ -374,7 +377,7 @@
+@@ -418,42 +372,25 @@
+                 }
+             }
+         });
+-        BlockDispenser.field_149943_a
+-        .func_82595_a(
+-            Item.func_150898_a(Blocks.field_150335_W),
+-            new BehaviorDefaultDispenseItem()
++        BlockDispenser.field_149943_a.func_82595_a(Item.func_150898_a(Blocks.field_150335_W), new BehaviorDefaultDispenseItem()
+         {
+-            @Override
              protected ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
              {
                  World world = p_82487_1_.func_82618_k();
 -                BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a(p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
+-                EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(
+-                    world, (double)blockpos.func_177958_n() + 0.5, (double)blockpos.func_177956_o(), (double)blockpos.func_177952_p() + 0.5, null
+-                );
 +                BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a((EnumFacing)p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a));
-                 EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double)blockpos.func_177958_n() + 0.5D, (double)blockpos.func_177956_o(), (double)blockpos.func_177952_p() + 0.5D, (EntityLivingBase)null);
++                EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double)blockpos.func_177958_n() + 0.5D, (double)blockpos.func_177956_o(), (double)blockpos.func_177952_p() + 0.5D, (EntityLivingBase)null);
                  world.func_72838_d(entitytntprimed);
-                 world.func_184148_a((EntityPlayer)null, entitytntprimed.field_70165_t, entitytntprimed.field_70163_u, entitytntprimed.field_70161_v, SoundEvents.field_187904_gd, SoundCategory.BLOCKS, 1.0F, 1.0F);
-@@ -387,7 +390,7 @@
+-                world.func_184148_a(
+-                    null,
+-                    entitytntprimed.field_70165_t,
+-                    entitytntprimed.field_70163_u,
+-                    entitytntprimed.field_70161_v,
+-                    SoundEvents.field_187904_gd,
+-                    SoundCategory.BLOCKS,
+-                    1.0F,
+-                    1.0F
+-                );
++                world.func_184148_a((EntityPlayer)null, entitytntprimed.field_70165_t, entitytntprimed.field_70163_u, entitytntprimed.field_70161_v, SoundEvents.field_187904_gd, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                 p_82487_2_.func_190918_g(1);
+                 return p_82487_2_;
+             }
+-        }
+-        );
++        });
+         BlockDispenser.field_149943_a.func_82595_a(Items.field_151144_bL, new Bootstrap.BehaviorDispenseOptional()
+         {
+-            @Override
              protected ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
              {
                  World world = p_82487_1_.func_82618_k();
@@ -124,7 +433,20 @@
                  BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a(enumfacing);
                  BlockSkull blockskull = Blocks.field_150465_bP;
                  this.field_190911_b = true;
-@@ -451,7 +454,7 @@
+@@ -485,7 +422,7 @@
+ 
+                                         if (!StringUtils.func_151246_b(s))
+                                         {
+-                                            gameprofile = new GameProfile(null, s);
++                                            gameprofile = new GameProfile((UUID)null, s);
+                                         }
+                                     }
+                                 }
+@@ -514,11 +451,10 @@
+         });
+         BlockDispenser.field_149943_a.func_82595_a(Item.func_150898_a(Blocks.field_150423_aK), new Bootstrap.BehaviorDispenseOptional()
+         {
+-            @Override
              protected ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
              {
                  World world = p_82487_1_.func_82618_k();
@@ -133,7 +455,17 @@
                  BlockPumpkin blockpumpkin = (BlockPumpkin)Blocks.field_150423_aK;
                  this.field_190911_b = true;
  
-@@ -489,6 +492,7 @@
+@@ -547,8 +483,7 @@
+ 
+         for (EnumDyeColor enumdyecolor : EnumDyeColor.values())
+         {
+-            BlockDispenser.field_149943_a
+-            .func_82595_a(Item.func_150898_a(BlockShulkerBox.func_190952_a(enumdyecolor)), new Bootstrap.BehaviorDispenseShulkerBox());
++            BlockDispenser.field_149943_a.func_82595_a(Item.func_150898_a(BlockShulkerBox.func_190952_a(enumdyecolor)), new Bootstrap.BehaviorDispenseShulkerBox());
+         }
+     }
+ 
+@@ -557,6 +492,7 @@
          if (!field_151355_a)
          {
              field_151355_a = true;
@@ -141,7 +473,16 @@
              func_179868_d();
              SoundEvent.func_187504_b();
              Block.func_149671_p();
-@@ -524,6 +528,8 @@
+@@ -580,7 +516,7 @@
+ 
+             if (field_179871_c.isDebugEnabled())
+             {
+-                if (new AdvancementManager(null).func_193767_b())
++                if ((new AdvancementManager((File)null)).func_193767_b())
+                 {
+                     field_194219_b = true;
+                     field_179871_c.error("Errors with built-in advancements!");
+@@ -592,6 +528,8 @@
                      field_179871_c.error("Errors with built-in loot tables");
                  }
              }
@@ -150,8 +491,11 @@
          }
      }
  
-@@ -559,7 +565,7 @@
+@@ -625,10 +563,9 @@
+                 this.field_185027_c = p_i47023_1_;
+             }
  
+-            @Override
              public ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
              {
 -                EnumFacing enumfacing = p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
@@ -159,12 +503,54 @@
                  World world = p_82487_1_.func_82618_k();
                  double d0 = p_82487_1_.func_82615_a() + (double)((float)enumfacing.func_82601_c() * 1.125F);
                  double d1 = p_82487_1_.func_82617_b() + (double)((float)enumfacing.func_96559_d() * 1.125F);
-@@ -616,7 +622,7 @@
+@@ -639,7 +576,7 @@
+ 
+                 if (Material.field_151586_h.equals(material))
+                 {
+-                    d3 = 1.0;
++                    d3 = 1.0D;
+                 }
+                 else
+                 {
+@@ -648,7 +585,7 @@
+                         return this.field_185026_b.func_82482_a(p_82487_1_, p_82487_2_);
+                     }
+ 
+-                    d3 = 0.0;
++                    d3 = 0.0D;
+                 }
+ 
+                 EntityBoat entityboat = new EntityBoat(world, d0, d1 + d3, d2);
+@@ -659,7 +596,6 @@
+                 return p_82487_2_;
+             }
+ 
+-            @Override
+             protected void func_82485_a(IBlockSource p_82485_1_)
+             {
+                 p_82485_1_.func_82618_k().func_175718_b(1000, p_82485_1_.func_180699_d(), 0);
+@@ -670,7 +606,6 @@
+         {
+             protected boolean field_190911_b = true;
+ 
+-            @Override
+             protected void func_82485_a(IBlockSource p_82485_1_)
+             {
+                 p_82485_1_.func_82618_k().func_175718_b(this.field_190911_b ? 1000 : 1001, p_82485_1_.func_180699_d(), 0);
+@@ -683,14 +618,13 @@
+             {
+             }
+ 
+-            @Override
+             protected ItemStack func_82487_b(IBlockSource p_82487_1_, ItemStack p_82487_2_)
              {
                  Block block = Block.func_149634_a(p_82487_2_.func_77973_b());
                  World world = p_82487_1_.func_82618_k();
 -                EnumFacing enumfacing = p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
 +                EnumFacing enumfacing = (EnumFacing)p_82487_1_.func_189992_e().func_177229_b(BlockDispenser.field_176441_a);
                  BlockPos blockpos = p_82487_1_.func_180699_d().func_177972_a(enumfacing);
-                 this.field_190911_b = world.func_190527_a(block, blockpos, false, EnumFacing.DOWN, (Entity)null);
+-                this.field_190911_b = world.func_190527_a(block, blockpos, false, EnumFacing.DOWN, null);
++                this.field_190911_b = world.func_190527_a(block, blockpos, false, EnumFacing.DOWN, (Entity)null);
  
+                 if (this.field_190911_b)
+                 {

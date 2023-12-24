@@ -1,6 +1,44 @@
 --- before/net/minecraft/inventory/ContainerBeacon.java
 +++ after/net/minecraft/inventory/ContainerBeacon.java
-@@ -90,12 +90,9 @@
+@@ -34,7 +34,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_75132_a(IContainerListener p_75132_1_)
+     {
+         super.func_75132_a(p_75132_1_);
+@@ -42,7 +41,6 @@
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    @Override
+     public void func_75137_b(int p_75137_1_, int p_75137_2_)
+     {
+         this.field_82866_e.func_174885_b(p_75137_1_, p_75137_2_);
+@@ -53,7 +51,6 @@
+         return this.field_82866_e;
+     }
+ 
+-    @Override
+     public void func_75134_a(EntityPlayer p_75134_1_)
+     {
+         super.func_75134_a(p_75134_1_);
+@@ -69,13 +66,11 @@
+         }
+     }
+ 
+-    @Override
+     public boolean func_75145_c(EntityPlayer p_75145_1_)
+     {
+         return this.field_82866_e.func_70300_a(p_75145_1_);
+     }
+ 
+-    @Override
+     public ItemStack func_82846_b(EntityPlayer p_82846_1_, int p_82846_2_)
+     {
+         ItemStack itemstack = ItemStack.field_190927_a;
+@@ -95,12 +90,9 @@
  
                  slot.func_75220_a(itemstack1, itemstack);
              }
@@ -15,8 +53,11 @@
              }
              else if (p_82846_2_ >= 1 && p_82846_2_ < 28)
              {
-@@ -145,8 +142,7 @@
+@@ -148,14 +140,11 @@
+             super(p_i1801_2_, p_i1801_3_, p_i1801_4_, p_i1801_5_);
+         }
  
+-        @Override
          public boolean func_75214_a(ItemStack p_75214_1_)
          {
 -            Item item = p_75214_1_.func_77973_b();
@@ -24,4 +65,7 @@
 +            return p_75214_1_.func_77973_b().isBeaconPayment(p_75214_1_);
          }
  
+-        @Override
          public int func_75219_a()
+         {
+             return 1;

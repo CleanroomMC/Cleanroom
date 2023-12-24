@@ -8,8 +8,19 @@
  import javax.annotation.Nullable;
  import net.minecraft.util.math.ChunkPos;
  import net.minecraft.world.World;
-@@ -52,28 +53,31 @@
+@@ -21,7 +22,6 @@
+     private final Chunk field_73238_a;
+     private final Long2ObjectMap<Chunk> field_73236_b = new Long2ObjectOpenHashMap<Chunk>(8192)
+     {
+-        @Override
+         protected void rehash(int p_rehash_1_)
+         {
+             if (p_rehash_1_ > this.key.length)
+@@ -51,51 +51,49 @@
+     }
+ 
      @Nullable
+-    @Override
      public Chunk func_186026_b(int p_186026_1_, int p_186026_2_)
      {
 -        return this.field_73236_b.get(ChunkPos.func_77272_a(p_186026_1_, p_186026_2_));
@@ -25,12 +36,14 @@
          return chunk;
      }
  
+-    @Override
      public Chunk func_186025_d(int p_186025_1_, int p_186025_2_)
      {
 -        return MoreObjects.firstNonNull(this.func_186026_b(p_186025_1_, p_186025_2_), this.field_73238_a);
 +        return (Chunk)MoreObjects.firstNonNull(this.func_186026_b(p_186025_1_, p_186025_2_), this.field_73238_a);
      }
  
+-    @Override
      public boolean func_73156_b()
      {
          long i = System.currentTimeMillis();
@@ -43,3 +56,22 @@
              chunk.func_150804_b(System.currentTimeMillis() - i > 5L);
          }
  
+         if (System.currentTimeMillis() - i > 100L)
+         {
+-            field_147436_a.info("Warning: Clientside chunk ticking took {} ms", System.currentTimeMillis() - i);
++            field_147436_a.info("Warning: Clientside chunk ticking took {} ms", (long)(System.currentTimeMillis() - i));
+         }
+ 
+         return false;
+     }
+ 
+-    @Override
+     public String func_73148_d()
+     {
+         return "MultiplayerChunkCache: " + this.field_73236_b.size() + ", " + this.field_73236_b.size();
+     }
+ 
+-    @Override
+     public boolean func_191062_e(int p_191062_1_, int p_191062_2_)
+     {
+         return this.field_73236_b.containsKey(ChunkPos.func_77272_a(p_191062_1_, p_191062_2_));

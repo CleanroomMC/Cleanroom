@@ -21,6 +21,15 @@
      private static int field_185178_c;
      private final String field_185179_d;
      private final ImmutableList<PotionEffect> field_185180_e;
+@@ -23,7 +25,7 @@
+ 
+     public PotionType(PotionEffect... p_i46739_1_)
+     {
+-        this(null, p_i46739_1_);
++        this((String)null, p_i46739_1_);
+     }
+ 
+     public PotionType(@Nullable String p_i46740_1_, PotionEffect... p_i46740_2_)
 @@ -34,7 +36,7 @@
  
      public String func_185174_b(String p_185174_1_)

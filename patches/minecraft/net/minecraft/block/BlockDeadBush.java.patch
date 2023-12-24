@@ -1,18 +1,69 @@
 --- before/net/minecraft/block/BlockDeadBush.java
 +++ after/net/minecraft/block/BlockDeadBush.java
-@@ -17,9 +17,9 @@
+@@ -17,58 +17,46 @@
  import net.minecraft.world.IBlockAccess;
  import net.minecraft.world.World;
  
 -public class BlockDeadBush extends BlockBush
 +public class BlockDeadBush extends BlockBush implements net.minecraftforge.common.IShearable
  {
--    protected static final AxisAlignedBB field_185516_a = new AxisAlignedBB((double)0.099999994F, 0.0D, (double)0.099999994F, (double)0.9F, (double)0.8F, (double)0.9F);
+-    protected static final AxisAlignedBB field_185516_a = new AxisAlignedBB(0.099999994F, 0.0, 0.099999994F, 0.9F, 0.8F, 0.9F);
 +    protected static final AxisAlignedBB field_185516_a = new AxisAlignedBB(0.09999999403953552D, 0.0D, 0.09999999403953552D, 0.8999999761581421D, 0.800000011920929D, 0.8999999761581421D);
  
      protected BlockDeadBush()
      {
-@@ -67,5 +67,12 @@
+         super(Material.field_151582_l);
+     }
+ 
+-    @Override
+     public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
+     {
+         return field_185516_a;
+     }
+ 
+-    @Override
+     public MapColor func_180659_g(IBlockState p_180659_1_, IBlockAccess p_180659_2_, BlockPos p_180659_3_)
+     {
+         return MapColor.field_151663_o;
+     }
+ 
+-    @Override
+     protected boolean func_185514_i(IBlockState p_185514_1_)
+     {
+-        return p_185514_1_.func_177230_c() == Blocks.field_150354_m
+-               || p_185514_1_.func_177230_c() == Blocks.field_150405_ch
+-               || p_185514_1_.func_177230_c() == Blocks.field_150406_ce
+-               || p_185514_1_.func_177230_c() == Blocks.field_150346_d;
++        return p_185514_1_.func_177230_c() == Blocks.field_150354_m || p_185514_1_.func_177230_c() == Blocks.field_150405_ch || p_185514_1_.func_177230_c() == Blocks.field_150406_ce || p_185514_1_.func_177230_c() == Blocks.field_150346_d;
+     }
+ 
+-    @Override
+     public boolean func_176200_f(IBlockAccess p_176200_1_, BlockPos p_176200_2_)
+     {
+         return true;
+     }
+ 
+-    @Override
+     public int func_149745_a(Random p_149745_1_)
+     {
+         return p_149745_1_.nextInt(3);
+     }
+ 
+-    @Override
+     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
+     {
+         return Items.field_151055_y;
+     }
+ 
+-    @Override
+-    public void func_180657_a(
+-        World p_180657_1_, EntityPlayer p_180657_2_, BlockPos p_180657_3_, IBlockState p_180657_4_, @Nullable TileEntity p_180657_5_, ItemStack p_180657_6_
+-    )
++    public void func_180657_a(World p_180657_1_, EntityPlayer p_180657_2_, BlockPos p_180657_3_, IBlockState p_180657_4_, @Nullable TileEntity p_180657_5_, ItemStack p_180657_6_)
+     {
+         if (!p_180657_1_.field_72995_K && p_180657_6_.func_77973_b() == Items.field_151097_aZ)
+         {
+@@ -79,5 +67,12 @@
          {
              super.func_180657_a(p_180657_1_, p_180657_2_, p_180657_3_, p_180657_4_, p_180657_5_, p_180657_6_);
          }

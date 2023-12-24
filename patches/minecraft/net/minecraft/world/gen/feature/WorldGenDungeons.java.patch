@@ -1,15 +1,67 @@
 --- before/net/minecraft/world/gen/feature/WorldGenDungeons.java
 +++ after/net/minecraft/world/gen/feature/WorldGenDungeons.java
-@@ -146,7 +146,7 @@
+@@ -21,15 +21,8 @@
+ public class WorldGenDungeons extends WorldGenerator
+ {
+     private static final Logger field_175918_a = LogManager.getLogger();
+-    private static final ResourceLocation[] field_175916_b = new ResourceLocation[]
+-        {
+-            EntityList.func_191306_a(EntitySkeleton.class),
+-            EntityList.func_191306_a(EntityZombie.class),
+-            EntityList.func_191306_a(EntityZombie.class),
+-            EntityList.func_191306_a(EntitySpider.class)
+-        };
++    private static final ResourceLocation[] field_175916_b = new ResourceLocation[] {EntityList.func_191306_a(EntitySkeleton.class), EntityList.func_191306_a(EntityZombie.class), EntityList.func_191306_a(EntityZombie.class), EntityList.func_191306_a(EntitySpider.class)};
+ 
+-    @Override
+     public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
+     {
+         int i = 3;
+@@ -63,10 +56,7 @@
+                         return false;
+                     }
+ 
+-                    if ((k2 == k || k2 == l || i3 == l1 || i3 == i2)
+-                            && l2 == 0
+-                            && p_180709_1_.func_175623_d(blockpos)
+-                            && p_180709_1_.func_175623_d(blockpos.func_177984_a()))
++                    if ((k2 == k || k2 == l || i3 == l1 || i3 == i2) && l2 == 0 && p_180709_1_.func_175623_d(blockpos) && p_180709_1_.func_175623_d(blockpos.func_177984_a()))
+                     {
+                         ++j2;
+                     }
+@@ -95,8 +85,7 @@
+                         {
+                             p_180709_1_.func_175698_g(blockpos1);
+                         }
+-                        else if (p_180709_1_.func_180495_p(blockpos1).func_185904_a().func_76220_a()
+-                                 && p_180709_1_.func_180495_p(blockpos1).func_177230_c() != Blocks.field_150486_ae)
++                        else if (p_180709_1_.func_180495_p(blockpos1).func_185904_a().func_76220_a() && p_180709_1_.func_180495_p(blockpos1).func_177230_c() != Blocks.field_150486_ae)
+                         {
+                             if (i4 == -1 && p_180709_2_.nextInt(4) != 0)
+                             {
+@@ -134,9 +123,7 @@
+ 
+                         if (j3 == 1)
+                         {
+-                            p_180709_1_.func_180501_a(
+-                                blockpos2, Blocks.field_150486_ae.func_176458_f(p_180709_1_, blockpos2, Blocks.field_150486_ae.func_176223_P()), 2
+-                            );
++                            p_180709_1_.func_180501_a(blockpos2, Blocks.field_150486_ae.func_176458_f(p_180709_1_, blockpos2, Blocks.field_150486_ae.func_176223_P()), 2);
+                             TileEntity tileentity1 = p_180709_1_.func_175625_s(blockpos2);
+ 
+                             if (tileentity1 instanceof TileEntityChest)
+@@ -159,9 +146,7 @@
              }
              else
              {
--                field_175918_a.error("Failed to fetch mob spawner entity at ({}, {}, {})", p_180709_3_.func_177958_n(), p_180709_3_.func_177956_o(), p_180709_3_.func_177952_p());
+-                field_175918_a.error(
+-                    "Failed to fetch mob spawner entity at ({}, {}, {})", p_180709_3_.func_177958_n(), p_180709_3_.func_177956_o(), p_180709_3_.func_177952_p()
+-                );
 +                field_175918_a.error("Failed to fetch mob spawner entity at ({}, {}, {})", Integer.valueOf(p_180709_3_.func_177958_n()), Integer.valueOf(p_180709_3_.func_177956_o()), Integer.valueOf(p_180709_3_.func_177952_p()));
              }
  
              return true;
-@@ -159,6 +159,6 @@
+@@ -174,6 +159,6 @@
  
      private ResourceLocation func_76543_b(Random p_76543_1_)
      {

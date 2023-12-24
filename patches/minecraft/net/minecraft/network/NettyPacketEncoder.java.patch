@@ -9,7 +9,18 @@
  
          if (enumconnectionstate == null)
          {
-@@ -44,7 +44,7 @@
+@@ -34,9 +34,7 @@
+ 
+             if (field_150798_a.isDebugEnabled())
+             {
+-                field_150798_a.debug(
+-                    field_150797_b, "OUT: [{}:{}] {}", p_encode_1_.channel().attr(NetworkManager.field_150739_c).get(), integer, p_encode_2_.getClass().getName()
+-                );
++                field_150798_a.debug(field_150797_b, "OUT: [{}:{}] {}", p_encode_1_.channel().attr(NetworkManager.field_150739_c).get(), integer, p_encode_2_.getClass().getName());
+             }
+ 
+             if (integer == null)
+@@ -46,7 +44,7 @@
              else
              {
                  PacketBuffer packetbuffer = new PacketBuffer(p_encode_3_);
@@ -18,7 +29,7 @@
  
                  try
                  {
-@@ -52,7 +52,7 @@
+@@ -54,7 +52,7 @@
                  }
                  catch (Throwable throwable)
                  {

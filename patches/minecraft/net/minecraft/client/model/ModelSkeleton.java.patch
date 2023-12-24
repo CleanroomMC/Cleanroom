@@ -1,6 +1,13 @@
 --- before/net/minecraft/client/model/ModelSkeleton.java
 +++ after/net/minecraft/client/model/ModelSkeleton.java
-@@ -48,7 +48,7 @@
+@@ -42,14 +42,13 @@
+         }
+     }
+ 
+-    @Override
+     public void func_78086_a(EntityLivingBase p_78086_1_, float p_78086_2_, float p_78086_3_, float p_78086_4_)
+     {
+         this.field_187076_m = ModelBiped.ArmPose.EMPTY;
          this.field_187075_l = ModelBiped.ArmPose.EMPTY;
          ItemStack itemstack = p_78086_1_.func_184586_b(EnumHand.MAIN_HAND);
  
@@ -9,23 +16,40 @@
          {
              if (p_78086_1_.func_184591_cq() == EnumHandSide.RIGHT)
              {
-@@ -69,7 +69,7 @@
+@@ -64,23 +63,22 @@
+         super.func_78086_a(p_78086_1_, p_78086_2_, p_78086_3_, p_78086_4_);
+     }
+ 
+-    @Override
+     public void func_78087_a(float p_78087_1_, float p_78087_2_, float p_78087_3_, float p_78087_4_, float p_78087_5_, float p_78087_6_, Entity p_78087_7_)
+     {
+         super.func_78087_a(p_78087_1_, p_78087_2_, p_78087_3_, p_78087_4_, p_78087_5_, p_78087_6_, p_78087_7_);
          ItemStack itemstack = ((EntityLivingBase)p_78087_7_).func_184614_ca();
          AbstractSkeleton abstractskeleton = (AbstractSkeleton)p_78087_7_;
  
 -        if (abstractskeleton.func_184725_db() && (itemstack.func_190926_b() || itemstack.func_77973_b() != Items.field_151031_f))
 +        if (abstractskeleton.func_184725_db() && (itemstack.func_190926_b() || !(itemstack.func_77973_b() instanceof net.minecraft.item.ItemBow)))
          {
-             float f = MathHelper.func_76126_a(this.field_78095_p * (float)Math.PI);
-             float f1 = MathHelper.func_76126_a((1.0F - (1.0F - this.field_78095_p) * (1.0F - this.field_78095_p)) * (float)Math.PI);
-@@ -77,8 +77,8 @@
+-            float f = MathHelper.func_76126_a(this.field_78095_p * (float) Math.PI);
+-            float f1 = MathHelper.func_76126_a((1.0F - (1.0F - this.field_78095_p) * (1.0F - this.field_78095_p)) * (float) Math.PI);
++            float f = MathHelper.func_76126_a(this.field_78095_p * (float)Math.PI);
++            float f1 = MathHelper.func_76126_a((1.0F - (1.0F - this.field_78095_p) * (1.0F - this.field_78095_p)) * (float)Math.PI);
+             this.field_178723_h.field_78808_h = 0.0F;
              this.field_178724_i.field_78808_h = 0.0F;
              this.field_178723_h.field_78796_g = -(0.1F - f * 0.6F);
              this.field_178724_i.field_78796_g = 0.1F - f * 0.6F;
--            this.field_178723_h.field_78795_f = (-(float)Math.PI / 2F);
--            this.field_178724_i.field_78795_f = (-(float)Math.PI / 2F);
+-            this.field_178723_h.field_78795_f = (float)(-Math.PI / 2);
+-            this.field_178724_i.field_78795_f = (float)(-Math.PI / 2);
 +            this.field_178723_h.field_78795_f = -((float)Math.PI / 2F);
 +            this.field_178724_i.field_78795_f = -((float)Math.PI / 2F);
              this.field_178723_h.field_78795_f -= f * 1.2F - f1 * 0.4F;
              this.field_178724_i.field_78795_f -= f * 1.2F - f1 * 0.4F;
              this.field_178723_h.field_78808_h += MathHelper.func_76134_b(p_78087_3_ * 0.09F) * 0.05F + 0.05F;
+@@ -90,7 +88,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_187073_a(float p_187073_1_, EnumHandSide p_187073_2_)
+     {
+         float f = p_187073_2_ == EnumHandSide.RIGHT ? 1.0F : -1.0F;

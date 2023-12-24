@@ -1,24 +1,52 @@
 --- before/net/minecraft/block/BlockRailDetector.java
 +++ after/net/minecraft/block/BlockRailDetector.java
-@@ -25,7 +25,7 @@
+@@ -25,79 +25,63 @@
  
  public class BlockRailDetector extends BlockRailBase
  {
--    public static final PropertyEnum<BlockRailBase.EnumRailDirection> field_176573_b = PropertyEnum.func_177708_a("shape", BlockRailBase.EnumRailDirection.class, new Predicate<BlockRailBase.EnumRailDirection>()
+-    public static final PropertyEnum<BlockRailBase.EnumRailDirection> field_176573_b = PropertyEnum.func_177708_a(
+-                    "shape",
+-                    BlockRailBase.EnumRailDirection.class,
+-                    new Predicate<BlockRailBase.EnumRailDirection>()
 +    public static final PropertyEnum<BlockRailBase.EnumRailDirection> field_176573_b = PropertyEnum.<BlockRailBase.EnumRailDirection>func_177708_a("shape", BlockRailBase.EnumRailDirection.class, new Predicate<BlockRailBase.EnumRailDirection>()
      {
          public boolean apply(@Nullable BlockRailBase.EnumRailDirection p_apply_1_)
          {
-@@ -37,7 +37,7 @@
+-            return p_apply_1_ != BlockRailBase.EnumRailDirection.NORTH_EAST
+-                   && p_apply_1_ != BlockRailBase.EnumRailDirection.NORTH_WEST
+-                   && p_apply_1_ != BlockRailBase.EnumRailDirection.SOUTH_EAST
+-                   && p_apply_1_ != BlockRailBase.EnumRailDirection.SOUTH_WEST;
++            return p_apply_1_ != BlockRailBase.EnumRailDirection.NORTH_EAST && p_apply_1_ != BlockRailBase.EnumRailDirection.NORTH_WEST && p_apply_1_ != BlockRailBase.EnumRailDirection.SOUTH_EAST && p_apply_1_ != BlockRailBase.EnumRailDirection.SOUTH_WEST;
+         }
+-    }
+-            );
++    });
+     public static final PropertyBool field_176574_M = PropertyBool.func_177716_a("powered");
+ 
      public BlockRailDetector()
      {
          super(true);
--        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176574_M, false).func_177226_a(field_176573_b, BlockRailBase.EnumRailDirection.NORTH_SOUTH));
+-        this.func_180632_j(
+-            this.field_176227_L.func_177621_b().func_177226_a(field_176574_M, false).func_177226_a(field_176573_b, BlockRailBase.EnumRailDirection.NORTH_SOUTH)
+-        );
 +        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176574_M, Boolean.valueOf(false)).func_177226_a(field_176573_b, BlockRailBase.EnumRailDirection.NORTH_SOUTH));
          this.func_149675_a(true);
      }
  
-@@ -55,7 +55,7 @@
+-    @Override
+     public int func_149738_a(World p_149738_1_)
+     {
+         return 20;
+     }
+ 
+-    @Override
+     public boolean func_149744_f(IBlockState p_149744_1_)
+     {
+         return true;
+     }
+ 
+-    @Override
+     public void func_180634_a(World p_180634_1_, BlockPos p_180634_2_, IBlockState p_180634_3_, Entity p_180634_4_)
      {
          if (!p_180634_1_.field_72995_K)
          {
@@ -27,8 +55,15 @@
              {
                  this.func_176570_e(p_180634_1_, p_180634_2_, p_180634_3_);
              }
-@@ -68,7 +68,7 @@
+         }
+     }
  
+-    @Override
+     public void func_180645_a(World p_180645_1_, BlockPos p_180645_2_, IBlockState p_180645_3_, Random p_180645_4_)
+     {
+     }
+ 
+-    @Override
      public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
      {
 -        if (!p_180650_1_.field_72995_K && p_180650_3_.func_177229_b(field_176574_M))
@@ -36,14 +71,16 @@
          {
              this.func_176570_e(p_180650_1_, p_180650_2_, p_180650_3_);
          }
-@@ -76,12 +76,12 @@
+     }
  
+-    @Override
      public int func_180656_a(IBlockState p_180656_1_, IBlockAccess p_180656_2_, BlockPos p_180656_3_, EnumFacing p_180656_4_)
      {
 -        return p_180656_1_.func_177229_b(field_176574_M) ? 15 : 0;
 +        return ((Boolean)p_180656_1_.func_177229_b(field_176574_M)).booleanValue() ? 15 : 0;
      }
  
+-    @Override
      public int func_176211_b(IBlockState p_176211_1_, IBlockAccess p_176211_2_, BlockPos p_176211_3_, EnumFacing p_176211_4_)
      {
 -        if (!p_176211_1_.func_177229_b(field_176574_M))
@@ -51,7 +88,7 @@
          {
              return 0;
          }
-@@ -93,9 +93,9 @@
+@@ -109,9 +93,9 @@
  
      private void func_176570_e(World p_176570_1_, BlockPos p_176570_2_, IBlockState p_176570_3_)
      {
@@ -63,7 +100,7 @@
  
          if (!list.isEmpty())
          {
-@@ -104,7 +104,7 @@
+@@ -120,7 +104,7 @@
  
          if (flag1 && !flag)
          {
@@ -72,7 +109,7 @@
              this.func_185592_b(p_176570_1_, p_176570_2_, p_176570_3_, true);
              p_176570_1_.func_175685_c(p_176570_2_, this, false);
              p_176570_1_.func_175685_c(p_176570_2_.func_177977_b(), this, false);
-@@ -113,7 +113,7 @@
+@@ -129,7 +113,7 @@
  
          if (!flag1 && flag)
          {
@@ -81,8 +118,30 @@
              this.func_185592_b(p_176570_1_, p_176570_2_, p_176570_3_, false);
              p_176570_1_.func_175685_c(p_176570_2_, this, false);
              p_176570_1_.func_175685_c(p_176570_2_.func_177977_b(), this, false);
-@@ -161,16 +161,18 @@
+@@ -159,38 +143,36 @@
+         }
+     }
  
+-    @Override
+     public void func_176213_c(World p_176213_1_, BlockPos p_176213_2_, IBlockState p_176213_3_)
+     {
+         super.func_176213_c(p_176213_1_, p_176213_2_, p_176213_3_);
+         this.func_176570_e(p_176213_1_, p_176213_2_, p_176213_3_);
+     }
+ 
+-    @Override
+     public IProperty<BlockRailBase.EnumRailDirection> func_176560_l()
+     {
+         return field_176573_b;
+     }
+ 
+-    @Override
+     public boolean func_149740_M(IBlockState p_149740_1_)
+     {
+         return true;
+     }
+ 
+-    @Override
      public int func_180641_l(IBlockState p_180641_1_, World p_180641_2_, BlockPos p_180641_3_)
      {
 -        if (p_180641_1_.func_177229_b(field_176574_M))
@@ -104,14 +163,40 @@
  
              if (!list1.isEmpty())
              {
-@@ -195,15 +197,15 @@
+@@ -204,39 +186,26 @@
+     protected <T extends EntityMinecart> List<T> func_176571_a(World p_176571_1_, BlockPos p_176571_2_, Class<T> p_176571_3_, Predicate<Entity>... p_176571_4_)
+     {
+         AxisAlignedBB axisalignedbb = this.func_176572_a(p_176571_2_);
+-        return p_176571_4_.length != 1
+-               ? p_176571_1_.func_72872_a(p_176571_3_, axisalignedbb)
+-               : p_176571_1_.func_175647_a(p_176571_3_, axisalignedbb, p_176571_4_[0]);
++        return p_176571_4_.length != 1 ? p_176571_1_.func_72872_a(p_176571_3_, axisalignedbb) : p_176571_1_.func_175647_a(p_176571_3_, axisalignedbb, p_176571_4_[0]);
+     }
  
+     private AxisAlignedBB func_176572_a(BlockPos p_176572_1_)
+     {
+         float f = 0.2F;
+-        return new AxisAlignedBB(
+-                   (double)((float)p_176572_1_.func_177958_n() + 0.2F),
+-                   (double)p_176572_1_.func_177956_o(),
+-                   (double)((float)p_176572_1_.func_177952_p() + 0.2F),
+-                   (double)((float)(p_176572_1_.func_177958_n() + 1) - 0.2F),
+-                   (double)((float)(p_176572_1_.func_177956_o() + 1) - 0.2F),
+-                   (double)((float)(p_176572_1_.func_177952_p() + 1) - 0.2F)
+-               );
++        return new AxisAlignedBB((double)((float)p_176572_1_.func_177958_n() + 0.2F), (double)p_176572_1_.func_177956_o(), (double)((float)p_176572_1_.func_177952_p() + 0.2F), (double)((float)(p_176572_1_.func_177958_n() + 1) - 0.2F), (double)((float)(p_176572_1_.func_177956_o() + 1) - 0.2F), (double)((float)(p_176572_1_.func_177952_p() + 1) - 0.2F));
+     }
+ 
+-    @Override
      public IBlockState func_176203_a(int p_176203_1_)
      {
--        return this.func_176223_P().func_177226_a(field_176573_b, BlockRailBase.EnumRailDirection.func_177016_a(p_176203_1_ & 7)).func_177226_a(field_176574_M, (p_176203_1_ & 8) > 0);
+-        return this.func_176223_P()
+-               .func_177226_a(field_176573_b, BlockRailBase.EnumRailDirection.func_177016_a(p_176203_1_ & 7))
+-               .func_177226_a(field_176574_M, (p_176203_1_ & 8) > 0);
 +        return this.func_176223_P().func_177226_a(field_176573_b, BlockRailBase.EnumRailDirection.func_177016_a(p_176203_1_ & 7)).func_177226_a(field_176574_M, Boolean.valueOf((p_176203_1_ & 8) > 0));
      }
  
+-    @Override
      public int func_176201_c(IBlockState p_176201_1_)
      {
          int i = 0;
@@ -123,8 +208,19 @@
          {
              i |= 8;
          }
-@@ -298,7 +300,7 @@
+@@ -245,7 +214,6 @@
+     }
+ 
      @SuppressWarnings("incomplete-switch")
+-    @Override
+     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
+     {
+         switch (p_185499_2_)
+@@ -330,10 +298,9 @@
+     }
+ 
+     @SuppressWarnings("incomplete-switch")
+-    @Override
      public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
      {
 -        BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = p_185471_1_.func_177229_b(field_176573_b);
@@ -132,8 +228,11 @@
  
          switch (p_185471_2_)
          {
-@@ -350,6 +352,6 @@
+@@ -383,9 +350,8 @@
+         return super.func_185471_a(p_185471_1_, p_185471_2_);
+     }
  
+-    @Override
      protected BlockStateContainer func_180661_e()
      {
 -        return new BlockStateContainer(this, field_176573_b, field_176574_M);

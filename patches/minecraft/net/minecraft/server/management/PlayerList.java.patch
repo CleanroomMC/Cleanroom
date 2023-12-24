@@ -62,24 +62,48 @@
          p_72355_2_.field_71134_c.func_73080_a((WorldServer)p_72355_2_.field_70170_p);
          String s1 = "local";
  
-@@ -117,12 +134,13 @@
+@@ -117,34 +134,14 @@
              s1 = p_72355_1_.func_74430_c().toString();
          }
  
--        field_148546_d.info("{}[{}] logged in with entity id {} at ({}, {}, {})", p_72355_2_.func_70005_c_(), s1, p_72355_2_.func_145782_y(), p_72355_2_.field_70165_t, p_72355_2_.field_70163_u, p_72355_2_.field_70161_v);
+-        field_148546_d.info(
+-            "{}[{}] logged in with entity id {} at ({}, {}, {})",
+-            p_72355_2_.func_70005_c_(),
+-            s1,
+-            p_72355_2_.func_145782_y(),
+-            p_72355_2_.field_70165_t,
+-            p_72355_2_.field_70163_u,
+-            p_72355_2_.field_70161_v
+-        );
 +        field_148546_d.info("{}[{}] logged in with entity id {} at ({}, {}, {})", p_72355_2_.func_70005_c_(), s1, Integer.valueOf(p_72355_2_.func_145782_y()), Double.valueOf(p_72355_2_.field_70165_t), Double.valueOf(p_72355_2_.field_70163_u), Double.valueOf(p_72355_2_.field_70161_v));
          WorldServer worldserver = this.field_72400_f.func_71218_a(p_72355_2_.field_71093_bK);
          WorldInfo worldinfo = worldserver.func_72912_H();
-         this.func_72381_a(p_72355_2_, (EntityPlayerMP)null, worldserver);
+-        this.func_72381_a(p_72355_2_, null, worldserver);
 -        NetHandlerPlayServer nethandlerplayserver = new NetHandlerPlayServer(this.field_72400_f, p_72355_1_, p_72355_2_);
--        nethandlerplayserver.func_147359_a(new SPacketJoinGame(p_72355_2_.func_145782_y(), p_72355_2_.field_71134_c.func_73081_b(), worldinfo.func_76093_s(), worldserver.field_73011_w.func_186058_p().func_186068_a(), worldserver.func_175659_aa(), this.func_72352_l(), worldinfo.func_76067_t(), worldserver.func_82736_K().func_82766_b("reducedDebugInfo")));
+-        nethandlerplayserver.func_147359_a(
+-            new SPacketJoinGame(
+-                p_72355_2_.func_145782_y(),
+-                p_72355_2_.field_71134_c.func_73081_b(),
+-                worldinfo.func_76093_s(),
+-                worldserver.field_73011_w.func_186058_p().func_186068_a(),
+-                worldserver.func_175659_aa(),
+-                this.func_72352_l(),
+-                worldinfo.func_76067_t(),
+-                worldserver.func_82736_K().func_82766_b("reducedDebugInfo")
+-            )
+-        );
+-        nethandlerplayserver.func_147359_a(
+-            new SPacketCustomPayload("MC|Brand", new PacketBuffer(Unpooled.buffer()).func_180714_a(this.func_72365_p().getServerModName()))
+-        );
++        this.func_72381_a(p_72355_2_, (EntityPlayerMP)null, worldserver);
 +        p_72355_2_.field_71135_a = nethandlerplayserver;
 +        net.minecraftforge.fml.common.FMLCommonHandler.instance().fireServerConnectionEvent(p_72355_1_);
 +        nethandlerplayserver.func_147359_a(new SPacketJoinGame(p_72355_2_.func_145782_y(), p_72355_2_.field_71134_c.func_73081_b(), worldinfo.func_76093_s(), worldserver.field_73011_w.getDimension(), worldserver.func_175659_aa(), this.func_72352_l(), worldinfo.func_76067_t(), worldserver.func_82736_K().func_82766_b("reducedDebugInfo")));
-         nethandlerplayserver.func_147359_a(new SPacketCustomPayload("MC|Brand", (new PacketBuffer(Unpooled.buffer())).func_180714_a(this.func_72365_p().getServerModName())));
++        nethandlerplayserver.func_147359_a(new SPacketCustomPayload("MC|Brand", (new PacketBuffer(Unpooled.buffer())).func_180714_a(this.func_72365_p().getServerModName())));
          nethandlerplayserver.func_147359_a(new SPacketServerDifficulty(worldinfo.func_176130_y(), worldinfo.func_176123_z()));
          nethandlerplayserver.func_147359_a(new SPacketPlayerAbilities(p_72355_2_.field_71075_bZ));
-@@ -136,11 +154,11 @@
+         nethandlerplayserver.func_147359_a(new SPacketHeldItemChange(p_72355_2_.field_71071_by.field_70461_c));
+@@ -157,19 +154,17 @@
  
          if (p_72355_2_.func_70005_c_().equalsIgnoreCase(s))
          {
@@ -93,7 +117,16 @@
          }
  
          textcomponenttranslation.func_150256_b().func_150238_a(TextFormatting.YELLOW);
-@@ -198,11 +216,12 @@
+         this.func_148539_a(textcomponenttranslation);
+         this.func_72377_c(p_72355_2_);
+-        nethandlerplayserver.func_147364_a(
+-            p_72355_2_.field_70165_t, p_72355_2_.field_70163_u, p_72355_2_.field_70161_v, p_72355_2_.field_70177_z, p_72355_2_.field_70125_A
+-        );
++        nethandlerplayserver.func_147364_a(p_72355_2_.field_70165_t, p_72355_2_.field_70163_u, p_72355_2_.field_70161_v, p_72355_2_.field_70177_z, p_72355_2_.field_70125_A);
+         this.func_72354_b(p_72355_2_, worldserver);
+ 
+         if (!this.field_72400_f.func_147133_T().isEmpty())
+@@ -221,11 +216,12 @@
          }
  
          p_72355_2_.func_71116_b();
@@ -107,7 +140,55 @@
  
          for (ScorePlayerTeam scoreplayerteam : p_96456_1_.func_96525_g())
          {
-@@ -298,6 +317,7 @@
+@@ -253,36 +249,29 @@
+         this.field_72412_k = p_72364_1_[0].func_72860_G().func_75756_e();
+         p_72364_1_[0].func_175723_af().func_177737_a(new IBorderListener()
+         {
+-            @Override
+             public void func_177694_a(WorldBorder p_177694_1_, double p_177694_2_)
+             {
+                 PlayerList.this.func_148540_a(new SPacketWorldBorder(p_177694_1_, SPacketWorldBorder.Action.SET_SIZE));
+             }
+-            @Override
+             public void func_177692_a(WorldBorder p_177692_1_, double p_177692_2_, double p_177692_4_, long p_177692_6_)
+             {
+                 PlayerList.this.func_148540_a(new SPacketWorldBorder(p_177692_1_, SPacketWorldBorder.Action.LERP_SIZE));
+             }
+-            @Override
+             public void func_177693_a(WorldBorder p_177693_1_, double p_177693_2_, double p_177693_4_)
+             {
+                 PlayerList.this.func_148540_a(new SPacketWorldBorder(p_177693_1_, SPacketWorldBorder.Action.SET_CENTER));
+             }
+-            @Override
+             public void func_177691_a(WorldBorder p_177691_1_, int p_177691_2_)
+             {
+                 PlayerList.this.func_148540_a(new SPacketWorldBorder(p_177691_1_, SPacketWorldBorder.Action.SET_WARNING_TIME));
+             }
+-            @Override
+             public void func_177690_b(WorldBorder p_177690_1_, int p_177690_2_)
+             {
+                 PlayerList.this.func_148540_a(new SPacketWorldBorder(p_177690_1_, SPacketWorldBorder.Action.SET_WARNING_BLOCKS));
+             }
+-            @Override
+             public void func_177696_b(WorldBorder p_177696_1_, double p_177696_2_)
+             {
+             }
+-            @Override
+             public void func_177695_c(WorldBorder p_177695_1_, double p_177695_2_)
+             {
+             }
+@@ -305,9 +294,7 @@
+         {
+             CriteriaTriggers.field_193134_u.func_193143_a(p_72375_1_, p_72375_2_.field_73011_w.func_186058_p(), worldserver.field_73011_w.func_186058_p());
+ 
+-            if (p_72375_2_.field_73011_w.func_186058_p() == DimensionType.NETHER
+-                    && p_72375_1_.field_70170_p.field_73011_w.func_186058_p() == DimensionType.OVERWORLD
+-                    && p_72375_1_.func_193106_Q() != null)
++            if (p_72375_2_.field_73011_w.func_186058_p() == DimensionType.NETHER && p_72375_1_.field_70170_p.field_73011_w.func_186058_p() == DimensionType.OVERWORLD && p_72375_1_.func_193106_Q() != null)
+             {
+                 CriteriaTriggers.field_193131_B.func_193168_a(p_72375_1_, p_72375_1_.func_193106_Q());
+             }
+@@ -330,6 +317,7 @@
              nbttagcompound1 = nbttagcompound;
              p_72380_1_.func_70020_e(nbttagcompound);
              field_148546_d.debug("loading single player");
@@ -115,7 +196,7 @@
          }
          else
          {
-@@ -307,8 +327,24 @@
+@@ -339,8 +327,24 @@
          return nbttagcompound1;
      }
  
@@ -140,7 +221,7 @@
          this.field_72412_k.func_75753_a(p_72391_1_);
          StatisticsManagerServer statisticsmanagerserver = this.field_148547_k.get(p_72391_1_.func_110124_au());
  
-@@ -329,14 +365,15 @@
+@@ -361,16 +365,17 @@
      {
          this.field_72404_b.add(p_72377_1_);
          this.field_177454_f.put(p_72377_1_.func_110124_au(), p_72377_1_);
@@ -156,9 +237,12 @@
  
 +        net.minecraftforge.common.chunkio.ChunkIOExecutor.adjustPoolSize(this.func_72394_k());
          worldserver.func_72838_d(p_72377_1_);
-         this.func_72375_a(p_72377_1_, (WorldServer)null);
+-        this.func_72375_a(p_72377_1_, null);
++        this.func_72375_a(p_72377_1_, (WorldServer)null);
      }
-@@ -348,6 +385,7 @@
+ 
+     public void func_72358_d(EntityPlayerMP p_72358_1_)
+@@ -380,6 +385,7 @@
  
      public void func_72367_e(EntityPlayerMP p_72367_1_)
      {
@@ -166,7 +250,7 @@
          WorldServer worldserver = p_72367_1_.func_71121_q();
          p_72367_1_.func_71029_a(StatList.field_75947_j);
          this.func_72391_b(p_72367_1_);
-@@ -370,6 +408,7 @@
+@@ -402,6 +408,7 @@
                  worldserver.func_72964_e(p_72367_1_.field_70176_ah, p_72367_1_.field_70164_aj).func_76630_e();
              }
          }
@@ -174,7 +258,7 @@
  
          worldserver.func_72900_e(p_72367_1_);
          worldserver.func_184164_w().func_72695_c(p_72367_1_);
-@@ -385,14 +424,14 @@
+@@ -417,14 +424,14 @@
              this.field_192055_p.remove(uuid);
          }
  
@@ -191,7 +275,7 @@
              String s1 = "You are banned from this server!\nReason: " + userlistbansentry.func_73686_f();
  
              if (userlistbansentry.func_73680_d() != null)
-@@ -427,7 +466,7 @@
+@@ -459,7 +466,7 @@
      public EntityPlayerMP func_148545_a(GameProfile p_148545_1_)
      {
          UUID uuid = EntityPlayer.func_146094_a(p_148545_1_);
@@ -200,7 +284,7 @@
  
          for (int i = 0; i < this.field_72404_b.size(); ++i)
          {
-@@ -448,7 +487,7 @@
+@@ -480,7 +487,7 @@
  
          for (EntityPlayerMP entityplayermp1 : list)
          {
@@ -209,7 +293,7 @@
          }
  
          PlayerInteractionManager playerinteractionmanager;
-@@ -467,13 +506,24 @@
+@@ -499,13 +506,24 @@
  
      public EntityPlayerMP func_72368_a(EntityPlayerMP p_72368_1_, int p_72368_2_, boolean p_72368_3_)
      {
@@ -236,15 +320,74 @@
          p_72368_1_.field_71093_bK = p_72368_2_;
          PlayerInteractionManager playerinteractionmanager;
  
-@@ -489,6 +539,7 @@
-         EntityPlayerMP entityplayermp = new EntityPlayerMP(this.field_72400_f, this.field_72400_f.func_71218_a(p_72368_1_.field_71093_bK), p_72368_1_.func_146103_bH(), playerinteractionmanager);
+@@ -518,11 +536,10 @@
+             playerinteractionmanager = new PlayerInteractionManager(this.field_72400_f.func_71218_a(p_72368_1_.field_71093_bK));
+         }
+ 
+-        EntityPlayerMP entityplayermp = new EntityPlayerMP(
+-            this.field_72400_f, this.field_72400_f.func_71218_a(p_72368_1_.field_71093_bK), p_72368_1_.func_146103_bH(), playerinteractionmanager
+-        );
++        EntityPlayerMP entityplayermp = new EntityPlayerMP(this.field_72400_f, this.field_72400_f.func_71218_a(p_72368_1_.field_71093_bK), p_72368_1_.func_146103_bH(), playerinteractionmanager);
          entityplayermp.field_71135_a = p_72368_1_.field_71135_a;
          entityplayermp.func_193104_a(p_72368_1_, p_72368_3_);
 +        entityplayermp.field_71093_bK = p_72368_2_;
          entityplayermp.func_145769_d(p_72368_1_.func_145782_y());
          entityplayermp.func_174817_o(p_72368_1_);
          entityplayermp.func_184819_a(p_72368_1_.func_184591_cq());
-@@ -536,6 +587,7 @@
+@@ -541,13 +558,7 @@
+ 
+             if (blockpos1 != null)
+             {
+-                entityplayermp.func_70012_b(
+-                    (double)((float)blockpos1.func_177958_n() + 0.5F),
+-                    (double)((float)blockpos1.func_177956_o() + 0.1F),
+-                    (double)((float)blockpos1.func_177952_p() + 0.5F),
+-                    0.0F,
+-                    0.0F
+-                );
++                entityplayermp.func_70012_b((double)((float)blockpos1.func_177958_n() + 0.5F), (double)((float)blockpos1.func_177956_o() + 0.1F), (double)((float)blockpos1.func_177952_p() + 0.5F), 0.0F, 0.0F);
+                 entityplayermp.func_180473_a(blockpos, flag);
+             }
+             else
+@@ -558,32 +569,16 @@
+ 
+         worldserver.func_72863_F().func_186025_d((int)entityplayermp.field_70165_t >> 4, (int)entityplayermp.field_70161_v >> 4);
+ 
+-        while (!worldserver.func_184144_a(entityplayermp, entityplayermp.func_174813_aQ()).isEmpty() && entityplayermp.field_70163_u < 256.0)
++        while (!worldserver.func_184144_a(entityplayermp, entityplayermp.func_174813_aQ()).isEmpty() && entityplayermp.field_70163_u < 256.0D)
+         {
+-            entityplayermp.func_70107_b(entityplayermp.field_70165_t, entityplayermp.field_70163_u + 1.0, entityplayermp.field_70161_v);
++            entityplayermp.func_70107_b(entityplayermp.field_70165_t, entityplayermp.field_70163_u + 1.0D, entityplayermp.field_70161_v);
+         }
+ 
+-        entityplayermp.field_71135_a
+-        .func_147359_a(
+-            new SPacketRespawn(
+-                entityplayermp.field_71093_bK,
+-                entityplayermp.field_70170_p.func_175659_aa(),
+-                entityplayermp.field_70170_p.func_72912_H().func_76067_t(),
+-                entityplayermp.field_71134_c.func_73081_b()
+-            )
+-        );
++        entityplayermp.field_71135_a.func_147359_a(new SPacketRespawn(entityplayermp.field_71093_bK, entityplayermp.field_70170_p.func_175659_aa(), entityplayermp.field_70170_p.func_72912_H().func_76067_t(), entityplayermp.field_71134_c.func_73081_b()));
+         BlockPos blockpos2 = worldserver.func_175694_M();
+-        entityplayermp.field_71135_a
+-        .func_147364_a(
+-            entityplayermp.field_70165_t,
+-            entityplayermp.field_70163_u,
+-            entityplayermp.field_70161_v,
+-            entityplayermp.field_70177_z,
+-            entityplayermp.field_70125_A
+-        );
++        entityplayermp.field_71135_a.func_147364_a(entityplayermp.field_70165_t, entityplayermp.field_70163_u, entityplayermp.field_70161_v, entityplayermp.field_70177_z, entityplayermp.field_70125_A);
+         entityplayermp.field_71135_a.func_147359_a(new SPacketSpawnPosition(blockpos2));
+-        entityplayermp.field_71135_a
+-        .func_147359_a(new SPacketSetExperience(entityplayermp.field_71106_cc, entityplayermp.field_71067_cb, entityplayermp.field_71068_ca));
++        entityplayermp.field_71135_a.func_147359_a(new SPacketSetExperience(entityplayermp.field_71106_cc, entityplayermp.field_71067_cb, entityplayermp.field_71068_ca));
+         this.func_72354_b(entityplayermp, worldserver);
+         this.func_187243_f(entityplayermp);
+         worldserver.func_184164_w().func_72683_a(entityplayermp);
+@@ -592,6 +587,7 @@
          this.field_177454_f.put(entityplayermp.func_110124_au(), entityplayermp);
          entityplayermp.func_71116_b();
          entityplayermp.func_70606_j(entityplayermp.func_110143_aJ());
@@ -252,7 +395,7 @@
          return entityplayermp;
      }
  
-@@ -550,15 +602,26 @@
+@@ -606,26 +602,28 @@
  
      public void func_187242_a(EntityPlayerMP p_187242_1_, int p_187242_2_)
      {
@@ -271,7 +414,15 @@
          WorldServer worldserver = this.field_72400_f.func_71218_a(p_187242_1_.field_71093_bK);
          p_187242_1_.field_71093_bK = p_187242_2_;
          WorldServer worldserver1 = this.field_72400_f.func_71218_a(p_187242_1_.field_71093_bK);
--        p_187242_1_.field_71135_a.func_147359_a(new SPacketRespawn(p_187242_1_.field_71093_bK, p_187242_1_.field_70170_p.func_175659_aa(), p_187242_1_.field_70170_p.func_72912_H().func_76067_t(), p_187242_1_.field_71134_c.func_73081_b()));
+-        p_187242_1_.field_71135_a
+-        .func_147359_a(
+-            new SPacketRespawn(
+-                p_187242_1_.field_71093_bK,
+-                p_187242_1_.field_70170_p.func_175659_aa(),
+-                p_187242_1_.field_70170_p.func_72912_H().func_76067_t(),
+-                p_187242_1_.field_71134_c.func_73081_b()
+-            )
+-        );
 +        p_187242_1_.field_71135_a.func_147359_a(new SPacketRespawn(p_187242_1_.field_71093_bK, worldserver1.func_175659_aa(), worldserver1.func_72912_H().func_76067_t(), p_187242_1_.field_71134_c.func_73081_b())); // Forge: Use new dimensions information
          this.func_187243_f(p_187242_1_);
          worldserver.func_72973_f(p_187242_1_);
@@ -279,9 +430,13 @@
 -        this.func_82448_a(p_187242_1_, i, worldserver, worldserver1);
 +        this.transferEntityToWorld(p_187242_1_, i, worldserver, worldserver1, teleporter);
          this.func_72375_a(p_187242_1_, worldserver);
-         p_187242_1_.field_71135_a.func_147364_a(p_187242_1_.field_70165_t, p_187242_1_.field_70163_u, p_187242_1_.field_70161_v, p_187242_1_.field_70177_z, p_187242_1_.field_70125_A);
+-        p_187242_1_.field_71135_a
+-        .func_147364_a(p_187242_1_.field_70165_t, p_187242_1_.field_70163_u, p_187242_1_.field_70161_v, p_187242_1_.field_70177_z, p_187242_1_.field_70125_A);
++        p_187242_1_.field_71135_a.func_147364_a(p_187242_1_.field_70165_t, p_187242_1_.field_70163_u, p_187242_1_.field_70161_v, p_187242_1_.field_70177_z, p_187242_1_.field_70125_A);
          p_187242_1_.field_71134_c.func_73080_a(worldserver1);
-@@ -570,17 +633,34 @@
+         p_187242_1_.field_71135_a.func_147359_a(new SPacketPlayerAbilities(p_187242_1_.field_71075_bZ));
+         this.func_72354_b(p_187242_1_, worldserver1);
+@@ -635,39 +633,56 @@
          {
              p_187242_1_.field_71135_a.func_147359_a(new SPacketEntityEffect(p_187242_1_.func_145782_y(), potioneffect));
          }
@@ -296,6 +451,7 @@
      {
 -        double d0 = p_82448_1_.field_70165_t;
 -        double d1 = p_82448_1_.field_70161_v;
+-        double d2 = 8.0;
 +        transferEntityToWorld(p_82448_1_, p_82448_2_, p_82448_3_, p_82448_4_, p_82448_4_.func_85176_s());
 +    }
 +
@@ -310,34 +466,60 @@
 +        double moveFactor = p_82448_3_.field_73011_w.getMovementFactor() / p_82448_4_.field_73011_w.getMovementFactor();
 +        double d0 = MathHelper.func_151237_a(p_82448_1_.field_70165_t * moveFactor, p_82448_4_.func_175723_af().func_177726_b() + 16.0D, p_82448_4_.func_175723_af().func_177728_d() - 16.0D);
 +        double d1 = MathHelper.func_151237_a(p_82448_1_.field_70161_v * moveFactor, p_82448_4_.func_175723_af().func_177736_c() + 16.0D, p_82448_4_.func_175723_af().func_177733_e() - 16.0D);
-         double d2 = 8.0D;
++        double d2 = 8.0D;
          float f = p_82448_1_.field_70177_z;
          p_82448_3_.field_72984_F.func_76320_a("moving");
  
 -        if (p_82448_1_.field_71093_bK == -1)
-+        if (false && p_82448_1_.field_71093_bK == -1)
-         {
-             d0 = MathHelper.func_151237_a(d0 / 8.0D, p_82448_4_.func_175723_af().func_177726_b() + 16.0D, p_82448_4_.func_175723_af().func_177728_d() - 16.0D);
-             d1 = MathHelper.func_151237_a(d1 / 8.0D, p_82448_4_.func_175723_af().func_177736_c() + 16.0D, p_82448_4_.func_175723_af().func_177733_e() - 16.0D);
-@@ -591,7 +671,7 @@
-                 p_82448_3_.func_72866_a(p_82448_1_, false);
-             }
-         }
+-        {
+-            d0 = MathHelper.func_151237_a(d0 / 8.0, p_82448_4_.func_175723_af().func_177726_b() + 16.0, p_82448_4_.func_175723_af().func_177728_d() - 16.0);
+-            d1 = MathHelper.func_151237_a(d1 / 8.0, p_82448_4_.func_175723_af().func_177736_c() + 16.0, p_82448_4_.func_175723_af().func_177733_e() - 16.0);
+-            p_82448_1_.func_70012_b(d0, p_82448_1_.field_70163_u, d1, p_82448_1_.field_70177_z, p_82448_1_.field_70125_A);
+-
+-            if (p_82448_1_.func_70089_S())
+-            {
+-                p_82448_3_.func_72866_a(p_82448_1_, false);
+-            }
+-        }
 -        else if (p_82448_1_.field_71093_bK == 0)
-+        else if (false && p_82448_1_.field_71093_bK == 0)
-         {
-             d0 = MathHelper.func_151237_a(d0 * 8.0D, p_82448_4_.func_175723_af().func_177726_b() + 16.0D, p_82448_4_.func_175723_af().func_177728_d() - 16.0D);
-             d1 = MathHelper.func_151237_a(d1 * 8.0D, p_82448_4_.func_175723_af().func_177736_c() + 16.0D, p_82448_4_.func_175723_af().func_177733_e() - 16.0D);
-@@ -602,7 +682,7 @@
-                 p_82448_3_.func_72866_a(p_82448_1_, false);
-             }
-         }
+-        {
+-            d0 = MathHelper.func_151237_a(d0 * 8.0, p_82448_4_.func_175723_af().func_177726_b() + 16.0, p_82448_4_.func_175723_af().func_177728_d() - 16.0);
+-            d1 = MathHelper.func_151237_a(d1 * 8.0, p_82448_4_.func_175723_af().func_177736_c() + 16.0, p_82448_4_.func_175723_af().func_177733_e() - 16.0);
+-            p_82448_1_.func_70012_b(d0, p_82448_1_.field_70163_u, d1, p_82448_1_.field_70177_z, p_82448_1_.field_70125_A);
+-
+-            if (p_82448_1_.func_70089_S())
+-            {
+-                p_82448_3_.func_72866_a(p_82448_1_, false);
+-            }
+-        }
 -        else
++        if (false && p_82448_1_.field_71093_bK == -1)
++        {
++            d0 = MathHelper.func_151237_a(d0 / 8.0D, p_82448_4_.func_175723_af().func_177726_b() + 16.0D, p_82448_4_.func_175723_af().func_177728_d() - 16.0D);
++            d1 = MathHelper.func_151237_a(d1 / 8.0D, p_82448_4_.func_175723_af().func_177736_c() + 16.0D, p_82448_4_.func_175723_af().func_177733_e() - 16.0D);
++            p_82448_1_.func_70012_b(d0, p_82448_1_.field_70163_u, d1, p_82448_1_.field_70177_z, p_82448_1_.field_70125_A);
++
++            if (p_82448_1_.func_70089_S())
++            {
++                p_82448_3_.func_72866_a(p_82448_1_, false);
++            }
++        }
++        else if (false && p_82448_1_.field_71093_bK == 0)
++        {
++            d0 = MathHelper.func_151237_a(d0 * 8.0D, p_82448_4_.func_175723_af().func_177726_b() + 16.0D, p_82448_4_.func_175723_af().func_177728_d() - 16.0D);
++            d1 = MathHelper.func_151237_a(d1 * 8.0D, p_82448_4_.func_175723_af().func_177736_c() + 16.0D, p_82448_4_.func_175723_af().func_177733_e() - 16.0D);
++            p_82448_1_.func_70012_b(d0, p_82448_1_.field_70163_u, d1, p_82448_1_.field_70177_z, p_82448_1_.field_70125_A);
++
++            if (p_82448_1_.func_70089_S())
++            {
++                p_82448_3_.func_72866_a(p_82448_1_, false);
++            }
++        }
 +        if (p_82448_1_.field_71093_bK == 1 && teleporter.isVanilla())
          {
              BlockPos blockpos;
  
-@@ -628,7 +708,7 @@
+@@ -693,7 +708,7 @@
  
          p_82448_3_.field_72984_F.func_76319_b();
  
@@ -346,7 +528,7 @@
          {
              p_82448_3_.field_72984_F.func_76320_a("placing");
              d0 = (double)MathHelper.func_76125_a((int)d0, -29999872, 29999872);
-@@ -637,7 +717,8 @@
+@@ -702,7 +717,8 @@
              if (p_82448_1_.func_70089_S())
              {
                  p_82448_1_.func_70012_b(d0, p_82448_1_.field_70163_u, d1, p_82448_1_.field_70177_z, p_82448_1_.field_70125_A);
@@ -356,7 +538,16 @@
                  p_82448_4_.func_72838_d(p_82448_1_);
                  p_82448_4_.func_72866_a(p_82448_1_, false);
              }
-@@ -730,11 +811,11 @@
+@@ -726,7 +742,7 @@
+     {
+         for (int i = 0; i < this.field_72404_b.size(); ++i)
+         {
+-            this.field_72404_b.get(i).field_71135_a.func_147359_a(p_148540_1_);
++            (this.field_72404_b.get(i)).field_71135_a.func_147359_a(p_148540_1_);
+         }
+     }
+ 
+@@ -795,11 +811,11 @@
                  s = s + ", ";
              }
  
@@ -370,7 +561,7 @@
              }
          }
  
-@@ -747,7 +828,7 @@
+@@ -812,7 +828,7 @@
  
          for (int i = 0; i < this.field_72404_b.size(); ++i)
          {
@@ -379,7 +570,7 @@
          }
  
          return astring;
-@@ -759,7 +840,7 @@
+@@ -824,7 +840,7 @@
  
          for (int i = 0; i < this.field_72404_b.size(); ++i)
          {
@@ -388,7 +579,47 @@
          }
  
          return agameprofile;
-@@ -935,12 +1016,6 @@
+@@ -883,11 +899,7 @@
+ 
+     public boolean func_152596_g(GameProfile p_152596_1_)
+     {
+-        return this.field_72414_i.func_152692_d(p_152596_1_)
+-               || this.field_72400_f.func_71264_H()
+-               && this.field_72400_f.field_71305_c[0].func_72912_H().func_76086_u()
+-               && this.field_72400_f.func_71214_G().equalsIgnoreCase(p_152596_1_.getName())
+-               || this.field_72407_n;
++        return this.field_72414_i.func_152692_d(p_152596_1_) || this.field_72400_f.func_71264_H() && this.field_72400_f.field_71305_c[0].func_72912_H().func_76086_u() && this.field_72400_f.func_71214_G().equalsIgnoreCase(p_152596_1_.getName()) || this.field_72407_n;
+     }
+ 
+     @Nullable
+@@ -904,15 +916,7 @@
+         return null;
+     }
+ 
+-    public void func_148543_a(
+-        @Nullable EntityPlayer p_148543_1_,
+-        double p_148543_2_,
+-        double p_148543_4_,
+-        double p_148543_6_,
+-        double p_148543_8_,
+-        int p_148543_10_,
+-        Packet<?> p_148543_11_
+-    )
++    public void func_148543_a(@Nullable EntityPlayer p_148543_1_, double p_148543_2_, double p_148543_4_, double p_148543_6_, double p_148543_8_, int p_148543_10_, Packet<?> p_148543_11_)
+     {
+         for (int i = 0; i < this.field_72404_b.size(); ++i)
+         {
+@@ -978,8 +982,7 @@
+     {
+         WorldBorder worldborder = this.field_72400_f.field_71305_c[0].func_175723_af();
+         p_72354_1_.field_71135_a.func_147359_a(new SPacketWorldBorder(worldborder, SPacketWorldBorder.Action.INITIALIZE));
+-        p_72354_1_.field_71135_a
+-        .func_147359_a(new SPacketTimeUpdate(p_72354_2_.func_82737_E(), p_72354_2_.func_72820_D(), p_72354_2_.func_82736_K().func_82766_b("doDaylightCycle")));
++        p_72354_1_.field_71135_a.func_147359_a(new SPacketTimeUpdate(p_72354_2_.func_82737_E(), p_72354_2_.func_72820_D(), p_72354_2_.func_82736_K().func_82766_b("doDaylightCycle")));
+         BlockPos blockpos = p_72354_2_.func_175694_M();
+         p_72354_1_.field_71135_a.func_147359_a(new SPacketSpawnPosition(blockpos));
+ 
+@@ -1013,12 +1016,6 @@
          return this.field_72400_f.field_71305_c[0].func_72860_G().func_75756_e().func_75754_f();
      }
  
@@ -401,7 +632,7 @@
      public void func_72371_a(boolean p_72371_1_)
      {
          this.field_72409_l = p_72371_1_;
-@@ -948,7 +1023,7 @@
+@@ -1026,7 +1023,7 @@
  
      public List<EntityPlayerMP> func_72382_j(String p_72382_1_)
      {
@@ -410,16 +641,16 @@
  
          for (EntityPlayerMP entityplayermp : this.field_72404_b)
          {
-@@ -1006,7 +1081,7 @@
+@@ -1084,7 +1081,7 @@
      {
          for (int i = 0; i < this.field_72404_b.size(); ++i)
          {
--            (this.field_72404_b.get(i)).field_71135_a.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.server_shutdown"));
+-            this.field_72404_b.get(i).field_71135_a.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.server_shutdown"));
 +            (this.field_72404_b.get(i)).field_71135_a.func_194028_b(new TextComponentTranslation("multiplayer.disconnect.server_shutdown", new Object[0]));
          }
      }
  
-@@ -1025,7 +1100,7 @@
+@@ -1103,7 +1100,7 @@
      public StatisticsManagerServer func_152602_a(EntityPlayer p_152602_1_)
      {
          UUID uuid = p_152602_1_.func_110124_au();
@@ -428,7 +659,7 @@
  
          if (statisticsmanagerserver == null)
          {
-@@ -1105,5 +1180,11 @@
+@@ -1183,5 +1180,11 @@
          {
              playeradvancements.func_193766_b();
          }

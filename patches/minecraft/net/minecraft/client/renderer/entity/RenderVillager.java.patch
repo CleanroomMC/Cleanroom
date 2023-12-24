@@ -24,3 +24,12 @@
      }
  
      protected void func_77041_b(EntityVillager p_77041_1_, float p_77041_2_)
+@@ -55,7 +40,7 @@
+ 
+         if (p_77041_1_.func_70874_b() < 0)
+         {
+-            f = (float)((double)f * 0.5);
++            f = (float)((double)f * 0.5D);
+             this.field_76989_e = 0.25F;
+         }
+         else

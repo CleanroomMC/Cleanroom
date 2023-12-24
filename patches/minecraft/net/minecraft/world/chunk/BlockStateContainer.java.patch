@@ -20,7 +20,15 @@
              }
  
              this.field_186022_c.func_186041_a(field_186020_a);
-@@ -102,11 +108,15 @@
+@@ -54,7 +60,6 @@
+         }
+     }
+ 
+-    @Override
+     public int func_186008_a(int p_186008_1_, IBlockState p_186008_2_)
+     {
+         BitArray bitarray = this.field_186021_b;
+@@ -103,11 +108,15 @@
  
          if (this.field_186024_e != i)
          {
@@ -37,3 +45,23 @@
      }
  
      public void func_186009_b(PacketBuffer p_186009_1_)
+@@ -139,7 +148,7 @@
+                 nibblearray.func_76581_a(k, l, i1, j >> 12 & 15);
+             }
+ 
+-            p_186017_1_[i] = (byte)(j >> 4 & 0xFF);
++            p_186017_1_[i] = (byte)(j >> 4 & 255);
+             p_186017_2_.func_76581_a(k, l, i1, j & 15);
+         }
+ 
+@@ -161,9 +170,6 @@
+ 
+     public int func_186018_a()
+     {
+-        return 1
+-               + this.field_186022_c.func_186040_a()
+-               + PacketBuffer.func_150790_a(this.field_186021_b.func_188144_b())
+-               + this.field_186021_b.func_188143_a().length * 8;
++        return 1 + this.field_186022_c.func_186040_a() + PacketBuffer.func_150790_a(this.field_186021_b.func_188144_b()) + this.field_186021_b.func_188143_a().length * 8;
+     }
+ }

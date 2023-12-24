@@ -1,6 +1,12 @@
 --- before/net/minecraft/item/ItemBucket.java
 +++ after/net/minecraft/item/ItemBucket.java
-@@ -40,14 +40,16 @@
+@@ -35,20 +35,21 @@
+         this.func_77637_a(CreativeTabs.field_78026_f);
+     }
+ 
+-    @Override
+     public ActionResult<ItemStack> func_77659_a(World p_77659_1_, EntityPlayer p_77659_2_, EnumHand p_77659_3_)
+     {
          boolean flag = this.field_77876_a == Blocks.field_150350_a;
          ItemStack itemstack = p_77659_2_.func_184586_b(p_77659_3_);
          RayTraceResult raytraceresult = this.func_77621_a(p_77659_1_, p_77659_2_, flag);
@@ -19,7 +25,7 @@
          }
          else
          {
-@@ -55,36 +57,36 @@
+@@ -56,36 +57,36 @@
  
              if (!p_77659_1_.func_175660_a(p_77659_2_, blockpos))
              {
@@ -63,7 +69,7 @@
                      }
                  }
              }
-@@ -95,7 +97,7 @@
+@@ -96,7 +97,7 @@
  
                  if (!p_77659_2_.func_175151_a(blockpos1, raytraceresult.field_178784_b, itemstack))
                  {
@@ -72,11 +78,13 @@
                  }
                  else if (this.func_180616_a(p_77659_2_, p_77659_1_, blockpos1))
                  {
-@@ -105,11 +107,11 @@
+@@ -106,13 +107,11 @@
                      }
  
                      p_77659_2_.func_71029_a(StatList.func_188057_b(this));
--                    return !p_77659_2_.field_71075_bZ.field_75098_d ? new ActionResult<>(EnumActionResult.SUCCESS, new ItemStack(Items.field_151133_ar)) : new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
+-                    return !p_77659_2_.field_71075_bZ.field_75098_d
+-                           ? new ActionResult<>(EnumActionResult.SUCCESS, new ItemStack(Items.field_151133_ar))
+-                           : new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
 +                    return !p_77659_2_.field_71075_bZ.field_75098_d ? new ActionResult(EnumActionResult.SUCCESS, new ItemStack(Items.field_151133_ar)) : new ActionResult(EnumActionResult.SUCCESS, itemstack);
                  }
                  else
@@ -86,7 +94,30 @@
                  }
              }
          }
-@@ -186,6 +188,18 @@
+@@ -168,20 +167,11 @@
+                     int l = p_180616_3_.func_177958_n();
+                     int i = p_180616_3_.func_177956_o();
+                     int j = p_180616_3_.func_177952_p();
+-                    p_180616_2_.func_184133_a(
+-                        p_180616_1_,
+-                        p_180616_3_,
+-                        SoundEvents.field_187646_bt,
+-                        SoundCategory.BLOCKS,
+-                        0.5F,
+-                        2.6F + (p_180616_2_.field_73012_v.nextFloat() - p_180616_2_.field_73012_v.nextFloat()) * 0.8F
+-                    );
++                    p_180616_2_.func_184133_a(p_180616_1_, p_180616_3_, SoundEvents.field_187646_bt, SoundCategory.BLOCKS, 0.5F, 2.6F + (p_180616_2_.field_73012_v.nextFloat() - p_180616_2_.field_73012_v.nextFloat()) * 0.8F);
+ 
+                     for (int k = 0; k < 8; ++k)
+                     {
+-                        p_180616_2_.func_175688_a(
+-                            EnumParticleTypes.SMOKE_LARGE, (double)l + Math.random(), (double)i + Math.random(), (double)j + Math.random(), 0.0, 0.0, 0.0
+-                        );
++                        p_180616_2_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, (double)l + Math.random(), (double)i + Math.random(), (double)j + Math.random(), 0.0D, 0.0D, 0.0D);
+                     }
+                 }
+                 else
+@@ -198,6 +188,18 @@
  
                  return true;
              }

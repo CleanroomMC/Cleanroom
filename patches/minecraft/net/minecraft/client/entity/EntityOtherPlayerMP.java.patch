@@ -1,34 +1,108 @@
 --- before/net/minecraft/client/entity/EntityOtherPlayerMP.java
 +++ after/net/minecraft/client/entity/EntityOtherPlayerMP.java
-@@ -37,12 +37,13 @@
-             d0 = 1.0D;
+@@ -28,30 +28,26 @@
+         this.field_71082_cx = 0.25F;
+     }
+ 
+-    @Override
+     public boolean func_70112_a(double p_70112_1_)
+     {
+-        double d0 = this.func_174813_aQ().func_72320_b() * 10.0;
++        double d0 = this.func_174813_aQ().func_72320_b() * 10.0D;
+ 
+         if (Double.isNaN(d0))
+         {
+-            d0 = 1.0;
++            d0 = 1.0D;
          }
  
--        d0 *= 64.0D * func_184183_bd();
+-        d0 *= 64.0 * func_184183_bd();
 +        d0 = d0 * 64.0D * func_184183_bd();
          return p_70112_1_ < d0 * d0;
      }
  
+-    @Override
      public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
      {
 +        net.minecraftforge.common.ForgeHooks.onPlayerAttack(this, p_70097_1_, p_70097_2_);
          return true;
      }
  
-@@ -85,6 +86,7 @@
+-    @Override
+-    public void func_180426_a(
+-        double p_180426_1_, double p_180426_3_, double p_180426_5_, float p_180426_7_, float p_180426_8_, int p_180426_9_, boolean p_180426_10_
+-    )
++    public void func_180426_a(double p_180426_1_, double p_180426_3_, double p_180426_5_, float p_180426_7_, float p_180426_8_, int p_180426_9_, boolean p_180426_10_)
+     {
+         this.field_71185_c = p_180426_1_;
+         this.field_71182_d = p_180426_3_;
+@@ -61,7 +57,6 @@
+         this.field_71184_b = p_180426_9_;
+     }
  
-             for (d3 = this.field_71180_f - (double)this.field_70177_z; d3 < -180.0D; d3 += 360.0D)
+-    @Override
+     public void func_70071_h_()
+     {
+         this.field_71082_cx = 0.0F;
+@@ -80,7 +75,6 @@
+         this.field_184619_aG += this.field_70721_aZ;
+     }
+ 
+-    @Override
+     public void func_70636_d()
+     {
+         if (this.field_71184_b > 0)
+@@ -88,16 +82,16 @@
+             double d0 = this.field_70165_t + (this.field_71185_c - this.field_70165_t) / (double)this.field_71184_b;
+             double d1 = this.field_70163_u + (this.field_71182_d - this.field_70163_u) / (double)this.field_71184_b;
+             double d2 = this.field_70161_v + (this.field_71183_e - this.field_70161_v) / (double)this.field_71184_b;
+-            double d3 = this.field_71180_f - (double)this.field_70177_z;
++            double d3;
+ 
+-            while (d3 < -180.0)
++            for (d3 = this.field_71180_f - (double)this.field_70177_z; d3 < -180.0D; d3 += 360.0D)
              {
+-                d3 += 360.0;
 +                ;
              }
  
-             while (d3 >= 180.0D)
-@@ -102,7 +104,7 @@
+-            while (d3 >= 180.0)
++            while (d3 >= 180.0D)
+             {
+-                d3 -= 360.0;
++                d3 -= 360.0D;
+             }
+ 
+             this.field_70177_z = (float)((double)this.field_70177_z + d3 / (double)this.field_71184_b);
+@@ -110,7 +104,7 @@
          this.field_71107_bF = this.field_71109_bG;
          this.func_82168_bl();
          float f1 = MathHelper.func_76133_a(this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y);
--        float f = (float)Math.atan(-this.field_70181_x * (double)0.2F) * 15.0F;
+-        float f = (float)Math.atan(-this.field_70181_x * 0.2F) * 15.0F;
 +        float f = (float)Math.atan(-this.field_70181_x * 0.20000000298023224D) * 15.0F;
  
          if (f1 > 0.1F)
          {
+@@ -134,21 +128,18 @@
+         this.field_70170_p.field_72984_F.func_76319_b();
+     }
+ 
+-    @Override
+     public void func_145747_a(ITextComponent p_145747_1_)
+     {
+         Minecraft.func_71410_x().field_71456_v.func_146158_b().func_146227_a(p_145747_1_);
+     }
+ 
+-    @Override
+     public boolean func_70003_b(int p_70003_1_, String p_70003_2_)
+     {
+         return false;
+     }
+ 
+-    @Override
+     public BlockPos func_180425_c()
+     {
+-        return new BlockPos(this.field_70165_t + 0.5, this.field_70163_u + 0.5, this.field_70161_v + 0.5);
++        return new BlockPos(this.field_70165_t + 0.5D, this.field_70163_u + 0.5D, this.field_70161_v + 0.5D);
+     }
+ }

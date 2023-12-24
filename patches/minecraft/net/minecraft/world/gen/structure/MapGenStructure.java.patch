@@ -9,7 +9,7 @@
  import java.util.Random;
  import javax.annotation.Nullable;
  import net.minecraft.crash.CrashReport;
-@@ -19,7 +21,7 @@
+@@ -19,15 +21,11 @@
  public abstract class MapGenStructure extends MapGenBase
  {
      private MapGenStructureData field_143029_e;
@@ -18,7 +18,16 @@
  
      public abstract String func_143025_a();
  
-@@ -81,9 +83,12 @@
+-    @Override
+-
+-    protected final synchronized void func_180701_a(
+-        World p_180701_1_, final int p_180701_2_, final int p_180701_3_, int p_180701_4_, int p_180701_5_, ChunkPrimer p_180701_6_
+-    )
++    protected final synchronized void func_180701_a(World p_180701_1_, final int p_180701_2_, final int p_180701_3_, int p_180701_4_, int p_180701_5_, ChunkPrimer p_180701_6_)
+     {
+         this.func_143027_a(p_180701_1_);
+ 
+@@ -85,9 +83,12 @@
          int i = (p_175794_3_.field_77276_a << 4) + 8;
          int j = (p_175794_3_.field_77275_b << 4) + 8;
          boolean flag = false;
@@ -32,7 +41,7 @@
              if (structurestart.func_75069_d() && structurestart.func_175788_a(p_175794_3_) && structurestart.func_75071_a().func_78885_a(i, j, i + 15, j + 15))
              {
                  structurestart.func_75068_a(p_175794_1_, p_175794_2_, new StructureBoundingBox(i, j, i + 15, j + 15));
-@@ -112,17 +117,33 @@
+@@ -116,17 +117,33 @@
      @Nullable
      protected StructureStart func_175797_c(BlockPos p_175797_1_)
      {
@@ -69,7 +78,7 @@
              }
          }
  
-@@ -132,9 +153,12 @@
+@@ -136,9 +153,12 @@
      public boolean func_175796_a(World p_175796_1_, BlockPos p_175796_2_)
      {
          this.func_143027_a(p_175796_1_);
@@ -83,7 +92,7 @@
              if (structurestart.func_75069_d() && structurestart.func_75071_a().func_175898_b(p_175796_2_))
              {
                  return true;
-@@ -151,12 +175,12 @@
+@@ -155,12 +175,12 @@
      {
          if (this.field_143029_e == null && p_143027_1_ != null)
          {
@@ -98,7 +107,26 @@
              }
              else
              {
-@@ -231,18 +255,18 @@
+@@ -201,17 +221,7 @@
+ 
+     protected abstract StructureStart func_75049_b(int p_75049_1_, int p_75049_2_);
+ 
+-    protected static BlockPos func_191069_a(
+-            World p_191069_0_,
+-            MapGenStructure p_191069_1_,
+-            BlockPos p_191069_2_,
+-            int p_191069_3_,
+-            int p_191069_4_,
+-            int p_191069_5_,
+-            boolean p_191069_6_,
+-            int p_191069_7_,
+-            boolean p_191069_8_
+-        )
++    protected static BlockPos func_191069_a(World p_191069_0_, MapGenStructure p_191069_1_, BlockPos p_191069_2_, int p_191069_3_, int p_191069_4_, int p_191069_5_, boolean p_191069_6_, int p_191069_7_, boolean p_191069_8_)
+     {
+         int i = p_191069_2_.func_177958_n() >> 4;
+         int j = p_191069_2_.func_177952_p() >> 4;
+@@ -245,18 +255,18 @@
                          int l1 = j1 / p_191069_3_;
                          int i2 = k1 / p_191069_3_;
                          Random random1 = p_191069_0_.func_72843_D(l1, i2, p_191069_5_);

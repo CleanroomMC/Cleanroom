@@ -1,12 +1,32 @@
 --- before/net/minecraft/network/play/client/CPacketCustomPayload.java
 +++ after/net/minecraft/network/play/client/CPacketCustomPayload.java
-@@ -47,7 +47,11 @@
+@@ -1,5 +1,6 @@
+ package net.minecraft.network.play.client;
+ 
++import io.netty.buffer.ByteBuf;
+ import java.io.IOException;
+ import net.minecraft.network.Packet;
+ import net.minecraft.network.PacketBuffer;
+@@ -28,7 +29,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_148837_a(PacketBuffer p_148837_1_) throws IOException
+     {
+         this.field_149562_a = p_148837_1_.func_150789_c(20);
+@@ -44,11 +44,14 @@
+         }
+     }
+ 
+-    @Override
      public void func_148840_b(PacketBuffer p_148840_1_) throws IOException
      {
          p_148840_1_.func_180714_a(this.field_149562_a);
+-        p_148840_1_.writeBytes(this.field_149561_c);
 +        synchronized(this.field_149561_c) { //This may be access multiple times, from multiple threads, lets be safe.
 +        this.field_149561_c.markReaderIndex();
-         p_148840_1_.writeBytes((ByteBuf)this.field_149561_c);
++        p_148840_1_.writeBytes((ByteBuf)this.field_149561_c);
 +        this.field_149561_c.resetReaderIndex();
 +        }
      }

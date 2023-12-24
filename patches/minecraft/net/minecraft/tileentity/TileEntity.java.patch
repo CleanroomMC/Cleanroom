@@ -53,7 +53,7 @@
          }
  
          if (tileentity != null)
-@@ -115,6 +122,8 @@
+@@ -115,12 +122,14 @@
              catch (Throwable throwable)
              {
                  field_145852_a.error("Failed to load data for block entity {}", s, throwable);
@@ -62,14 +62,37 @@
                  tileentity = null;
              }
          }
-@@ -156,7 +165,6 @@
+         else
+         {
+-            field_145852_a.warn("Skipping BlockEntity with id {}", s);
++            field_145852_a.warn("Skipping BlockEntity with id {}", (Object)s);
+         }
+ 
+         return tileentity;
+@@ -156,19 +165,18 @@
          }
      }
  
 -    @SideOnly(Side.CLIENT)
      public double func_145835_a(double p_145835_1_, double p_145835_3_, double p_145835_5_)
      {
-         double d0 = (double)this.field_174879_c.func_177958_n() + 0.5D - p_145835_1_;
+-        double d0 = (double)this.field_174879_c.func_177958_n() + 0.5 - p_145835_1_;
+-        double d1 = (double)this.field_174879_c.func_177956_o() + 0.5 - p_145835_3_;
+-        double d2 = (double)this.field_174879_c.func_177952_p() + 0.5 - p_145835_5_;
++        double d0 = (double)this.field_174879_c.func_177958_n() + 0.5D - p_145835_1_;
++        double d1 = (double)this.field_174879_c.func_177956_o() + 0.5D - p_145835_3_;
++        double d2 = (double)this.field_174879_c.func_177952_p() + 0.5D - p_145835_5_;
+         return d0 * d0 + d1 * d1 + d2 * d2;
+     }
+ 
+     @SideOnly(Side.CLIENT)
+     public double func_145833_n()
+     {
+-        return 4096.0;
++        return 4096.0D;
+     }
+ 
+     public BlockPos func_174877_v()
 @@ -244,9 +252,9 @@
  
                      try

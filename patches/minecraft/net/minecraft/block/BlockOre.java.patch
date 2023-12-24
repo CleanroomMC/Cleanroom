@@ -1,7 +1,24 @@
 --- before/net/minecraft/block/BlockOre.java
 +++ after/net/minecraft/block/BlockOre.java
-@@ -58,7 +58,7 @@
+@@ -27,7 +27,6 @@
+         this.func_149647_a(CreativeTabs.field_78030_b);
+     }
  
+-    @Override
+     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
+     {
+         if (this == Blocks.field_150365_q)
+@@ -52,16 +51,14 @@
+         }
+     }
+ 
+-    @Override
+     public int func_149745_a(Random p_149745_1_)
+     {
+         return this == Blocks.field_150369_x ? 4 + p_149745_1_.nextInt(5) : 1;
+     }
+ 
+-    @Override
      public int func_149679_a(int p_149679_1_, Random p_149679_2_)
      {
 -        if (p_149679_1_ > 0 && Item.func_150898_a(this) != this.func_180660_a(this.func_176194_O().func_177619_a().iterator().next(), p_149679_2_, p_149679_1_))
@@ -9,7 +26,11 @@
          {
              int i = p_149679_2_.nextInt(p_149679_1_ + 2) - 1;
  
-@@ -78,34 +78,39 @@
+@@ -78,47 +75,49 @@
+         }
+     }
+ 
+-    @Override
      public void func_180653_a(World p_180653_1_, BlockPos p_180653_2_, IBlockState p_180653_3_, float p_180653_4_, int p_180653_5_)
      {
          super.func_180653_a(p_180653_1_, p_180653_2_, p_180653_3_, p_180653_4_, p_180653_5_);
@@ -56,4 +77,13 @@
 +        return 0;
      }
  
+-    @Override
      public ItemStack func_185473_a(World p_185473_1_, BlockPos p_185473_2_, IBlockState p_185473_3_)
+     {
+         return new ItemStack(this);
+     }
+ 
+-    @Override
+     public int func_180651_a(IBlockState p_180651_1_)
+     {
+         return this == Blocks.field_150369_x ? EnumDyeColor.BLUE.func_176767_b() : 0;

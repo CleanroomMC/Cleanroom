@@ -1,6 +1,6 @@
 --- before/net/minecraft/client/gui/advancements/GuiScreenAdvancements.java
 +++ after/net/minecraft/client/gui/advancements/GuiScreenAdvancements.java
-@@ -24,11 +24,12 @@
+@@ -24,18 +24,18 @@
      private static final ResourceLocation field_191943_f = new ResourceLocation("textures/gui/advancements/window.png");
      private static final ResourceLocation field_191945_g = new ResourceLocation("textures/gui/advancements/tabs.png");
      private final ClientAdvancementManager field_191946_h;
@@ -14,7 +14,14 @@
  
      public GuiScreenAdvancements(ClientAdvancementManager p_i47383_1_)
      {
-@@ -43,12 +44,20 @@
+         this.field_191946_h = p_i47383_1_;
+     }
+ 
+-    @Override
+     public void func_73866_w_()
+     {
+         this.field_191947_i.clear();
+@@ -44,18 +44,25 @@
  
          if (this.field_191940_s == null && !this.field_191947_i.isEmpty())
          {
@@ -35,8 +42,23 @@
 +        }
      }
  
+-    @Override
      public void func_146281_b()
-@@ -71,7 +80,7 @@
+     {
+-        this.field_191946_h.func_192798_a(null);
++        this.field_191946_h.func_192798_a((ClientAdvancementManager.IListener)null);
+         NetHandlerPlayClient nethandlerplayclient = this.field_146297_k.func_147114_u();
+ 
+         if (nethandlerplayclient != null)
+@@ -64,7 +71,6 @@
+         }
+     }
+ 
+-    @Override
+     protected void func_73864_a(int p_73864_1_, int p_73864_2_, int p_73864_3_) throws IOException
+     {
+         if (p_73864_3_ == 0)
+@@ -74,7 +80,7 @@
  
              for (GuiAdvancementTab guiadvancementtab : this.field_191947_i.values())
              {
@@ -45,7 +67,29 @@
                  {
                      this.field_191946_h.func_194230_a(guiadvancementtab.func_193935_c(), true);
                      break;
-@@ -122,6 +131,14 @@
+@@ -85,12 +91,11 @@
+         super.func_73864_a(p_73864_1_, p_73864_2_, p_73864_3_);
+     }
+ 
+-    @Override
+     protected void func_73869_a(char p_73869_1_, int p_73869_2_) throws IOException
+     {
+         if (p_73869_2_ == this.field_146297_k.field_71474_y.field_194146_ao.func_151463_i())
+         {
+-            this.field_146297_k.func_147108_a(null);
++            this.field_146297_k.func_147108_a((GuiScreen)null);
+             this.field_146297_k.func_71381_h();
+         }
+         else
+@@ -99,7 +104,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_73863_a(int p_73863_1_, int p_73863_2_, float p_73863_3_)
+     {
+         int i = (this.field_146294_l - 252) / 2;
+@@ -127,6 +131,14 @@
          this.func_146276_q_();
          this.func_191936_c(p_73863_1_, p_73863_2_, i, j);
          this.func_191934_b(i, j);
@@ -60,7 +104,19 @@
          this.func_191937_d(p_73863_1_, p_73863_2_, i, j);
      }
  
-@@ -163,6 +180,7 @@
+@@ -140,10 +152,7 @@
+             String s = I18n.func_135052_a("advancements.empty");
+             int i = this.field_146289_q.func_78256_a(s);
+             this.field_146289_q.func_78276_b(s, p_191936_3_ + 9 + 117 - i / 2, p_191936_4_ + 18 + 56 - this.field_146289_q.field_78288_b / 2, -1);
+-            this.field_146289_q
+-            .func_78276_b(
+-                ":(", p_191936_3_ + 9 + 117 - this.field_146289_q.func_78256_a(":(") / 2, p_191936_4_ + 18 + 113 - this.field_146289_q.field_78288_b, -1
+-            );
++            this.field_146289_q.func_78276_b(":(", p_191936_3_ + 9 + 117 - this.field_146289_q.func_78256_a(":(") / 2, p_191936_4_ + 18 + 113 - this.field_146289_q.field_78288_b, -1);
+         }
+         else
+         {
+@@ -171,20 +180,17 @@
  
              for (GuiAdvancementTab guiadvancementtab : this.field_191947_i.values())
              {
@@ -68,7 +124,15 @@
                  guiadvancementtab.func_191798_a(p_191934_1_, p_191934_2_, guiadvancementtab == this.field_191940_s);
              }
  
-@@ -172,6 +190,7 @@
+             GlStateManager.func_179091_B();
+-            GlStateManager.func_187428_a(
+-                GlStateManager.SourceFactor.SRC_ALPHA,
+-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+-                GlStateManager.SourceFactor.ONE,
+-                GlStateManager.DestFactor.ZERO
+-            );
++            GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+             RenderHelper.func_74520_c();
  
              for (GuiAdvancementTab guiadvancementtab1 : this.field_191947_i.values())
              {
@@ -76,7 +140,7 @@
                  guiadvancementtab1.func_191796_a(p_191934_1_, p_191934_2_, this.field_146296_j);
              }
  
-@@ -199,7 +218,7 @@
+@@ -212,7 +218,7 @@
          {
              for (GuiAdvancementTab guiadvancementtab : this.field_191947_i.values())
              {
@@ -85,7 +149,55 @@
                  {
                      this.func_146279_a(guiadvancementtab.func_191795_d(), p_191937_1_, p_191937_2_);
                  }
-@@ -272,5 +291,14 @@
+@@ -220,7 +226,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_191931_a(Advancement p_191931_1_)
+     {
+         GuiAdvancementTab guiadvancementtab = GuiAdvancementTab.func_193936_a(this.field_146297_k, this, this.field_191947_i.size(), p_191931_1_);
+@@ -231,12 +236,10 @@
+         }
+     }
+ 
+-    @Override
+     public void func_191928_b(Advancement p_191928_1_)
+     {
+     }
+ 
+-    @Override
+     public void func_191932_c(Advancement p_191932_1_)
+     {
+         GuiAdvancementTab guiadvancementtab = this.func_191935_f(p_191932_1_);
+@@ -247,12 +250,10 @@
+         }
+     }
+ 
+-    @Override
+     public void func_191929_d(Advancement p_191929_1_)
+     {
+     }
+ 
+-    @Override
+     public void func_191933_a(Advancement p_191933_1_, AdvancementProgress p_191933_2_)
+     {
+         GuiAdvancement guiadvancement = this.func_191938_e(p_191933_1_);
+@@ -263,13 +264,11 @@
+         }
+     }
+ 
+-    @Override
+     public void func_193982_e(@Nullable Advancement p_193982_1_)
+     {
+         this.field_191940_s = this.field_191947_i.get(p_193982_1_);
+     }
+ 
+-    @Override
+     public void func_191930_a()
+     {
+         this.field_191947_i.clear();
+@@ -292,5 +291,14 @@
          }
  
          return this.field_191947_i.get(p_191935_1_);

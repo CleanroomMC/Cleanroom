@@ -16,7 +16,27 @@
      public static final ItemTransformVec3f field_178366_a = new ItemTransformVec3f(new Vector3f(), new Vector3f(), new Vector3f(1.0F, 1.0F, 1.0F));
      public final Vector3f field_178364_b;
      public final Vector3f field_178365_c;
-@@ -49,7 +54,8 @@
+@@ -28,7 +33,6 @@
+         this.field_178363_d = new Vector3f(p_i46214_3_);
+     }
+ 
+-    @Override
+     public boolean equals(Object p_equals_1_)
+     {
+         if (this == p_equals_1_)
+@@ -42,18 +46,16 @@
+         else
+         {
+             ItemTransformVec3f itemtransformvec3f = (ItemTransformVec3f)p_equals_1_;
+-            return this.field_178364_b.equals(itemtransformvec3f.field_178364_b)
+-                   && this.field_178363_d.equals(itemtransformvec3f.field_178363_d)
+-                   && this.field_178365_c.equals(itemtransformvec3f.field_178365_c);
++            return this.field_178364_b.equals(itemtransformvec3f.field_178364_b) && this.field_178363_d.equals(itemtransformvec3f.field_178363_d) && this.field_178365_c.equals(itemtransformvec3f.field_178365_c);
+         }
+     }
+ 
+-    @Override
+     public int hashCode()
      {
          int i = this.field_178364_b.hashCode();
          i = 31 * i + this.field_178365_c.hashCode();

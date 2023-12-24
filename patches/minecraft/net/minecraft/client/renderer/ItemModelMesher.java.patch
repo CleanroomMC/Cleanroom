@@ -1,14 +1,6 @@
 --- before/net/minecraft/client/renderer/ItemModelMesher.java
 +++ after/net/minecraft/client/renderer/ItemModelMesher.java
-@@ -2,6 +2,7 @@
- 
- import com.google.common.collect.Maps;
- import java.util.Map;
-+import java.util.Map.Entry;
- import javax.annotation.Nullable;
- import net.minecraft.client.renderer.block.model.IBakedModel;
- import net.minecraft.client.renderer.block.model.ModelManager;
-@@ -15,9 +16,9 @@
+@@ -16,9 +16,9 @@
  @SideOnly(Side.CLIENT)
  public class ItemModelMesher
  {
@@ -21,7 +13,7 @@
      private final ModelManager field_178090_d;
  
      public ItemModelMesher(ModelManager p_i46250_1_)
-@@ -32,7 +33,9 @@
+@@ -33,7 +33,9 @@
  
      public TextureAtlasSprite func_178087_a(Item p_178087_1_, int p_178087_2_)
      {
@@ -32,7 +24,7 @@
      }
  
      public IBakedModel func_178089_a(ItemStack p_178089_1_)
-@@ -66,7 +69,7 @@
+@@ -67,7 +69,7 @@
      @Nullable
      protected IBakedModel func_178088_b(Item p_178088_1_, int p_178088_2_)
      {
@@ -41,7 +33,7 @@
      }
  
      private int func_178081_c(Item p_178081_1_, int p_178081_2_)
-@@ -76,8 +79,8 @@
+@@ -77,8 +79,8 @@
  
      public void func_178086_a(Item p_178086_1_, int p_178086_2_, ModelResourceLocation p_178086_3_)
      {
@@ -52,12 +44,3 @@
      }
  
      public void func_178080_a(Item p_178080_1_, ItemMeshDefinition p_178080_2_)
-@@ -94,7 +97,7 @@
-     {
-         this.field_178091_b.clear();
- 
--        for (Map.Entry<Integer, ModelResourceLocation> entry : this.field_178093_a.entrySet())
-+        for (Entry<Integer, ModelResourceLocation> entry : this.field_178093_a.entrySet())
-         {
-             this.field_178091_b.put(entry.getKey(), this.field_178090_d.func_174953_a(entry.getValue()));
-         }

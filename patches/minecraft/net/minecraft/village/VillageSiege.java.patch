@@ -1,14 +1,26 @@
 --- before/net/minecraft/village/VillageSiege.java
 +++ after/net/minecraft/village/VillageSiege.java
-@@ -1,5 +1,7 @@
+@@ -1,7 +1,10 @@
  package net.minecraft.village;
  
 +import java.util.Iterator;
 +import java.util.List;
  import javax.annotation.Nullable;
  import net.minecraft.entity.EntityLiving;
- import net.minecraft.entity.IEntityLivingData;
-@@ -90,8 +92,18 @@
++import net.minecraft.entity.IEntityLivingData;
+ import net.minecraft.entity.monster.EntityZombie;
+ import net.minecraft.entity.player.EntityPlayer;
+ import net.minecraft.util.math.BlockPos;
+@@ -39,7 +42,7 @@
+             {
+                 float f = this.field_75537_a.func_72826_c(0.0F);
+ 
+-                if ((double)f < 0.5 || (double)f > 0.501)
++                if ((double)f < 0.5D || (double)f > 0.501D)
+                 {
+                     return;
+                 }
+@@ -89,16 +92,23 @@
  
      private boolean func_75529_b()
      {
@@ -28,7 +40,30 @@
              if (!entityplayer.func_175149_v())
              {
                  this.field_75531_f = this.field_75537_a.func_175714_ae().func_176056_a(new BlockPos(entityplayer), 1);
-@@ -134,15 +146,16 @@
+ 
+-                if (this.field_75531_f != null
+-                        && this.field_75531_f.func_75567_c() >= 10
+-                        && this.field_75531_f.func_75561_d() >= 20
+-                        && this.field_75531_f.func_75562_e() >= 20)
++                if (this.field_75531_f != null && this.field_75531_f.func_75567_c() >= 10 && this.field_75531_f.func_75561_d() >= 20 && this.field_75531_f.func_75562_e() >= 20)
+                 {
+                     BlockPos blockpos = this.field_75531_f.func_180608_a();
+                     float f = (float)this.field_75531_f.func_75568_b();
+@@ -106,10 +116,10 @@
+ 
+                     for (int i = 0; i < 10; ++i)
+                     {
+-                        float f1 = this.field_75537_a.field_73012_v.nextFloat() * (float)(Math.PI * 2);
+-                        this.field_75532_g = blockpos.func_177958_n() + (int)((double)(MathHelper.func_76134_b(f1) * f) * 0.9);
++                        float f1 = this.field_75537_a.field_73012_v.nextFloat() * ((float)Math.PI * 2F);
++                        this.field_75532_g = blockpos.func_177958_n() + (int)((double)(MathHelper.func_76134_b(f1) * f) * 0.9D);
+                         this.field_75538_h = blockpos.func_177956_o();
+-                        this.field_75539_i = blockpos.func_177952_p() + (int)((double)(MathHelper.func_76126_a(f1) * f) * 0.9);
++                        this.field_75539_i = blockpos.func_177952_p() + (int)((double)(MathHelper.func_76126_a(f1) * f) * 0.9D);
+                         flag = false;
+ 
+                         for (Village village : this.field_75537_a.func_175714_ae().func_75540_b())
+@@ -136,15 +146,16 @@
  
                      if (vec3d != null)
                      {
@@ -49,3 +84,27 @@
      }
  
      private boolean func_75530_c()
+@@ -162,7 +173,7 @@
+             try
+             {
+                 entityzombie = new EntityZombie(this.field_75537_a);
+-                entityzombie.func_180482_a(this.field_75537_a.func_175649_E(new BlockPos(entityzombie)), null);
++                entityzombie.func_180482_a(this.field_75537_a.func_175649_E(new BlockPos(entityzombie)), (IEntityLivingData)null);
+             }
+             catch (Exception exception)
+             {
+@@ -183,12 +194,9 @@
+     {
+         for (int i = 0; i < 10; ++i)
+         {
+-            BlockPos blockpos = p_179867_1_.func_177982_a(
+-                                    this.field_75537_a.field_73012_v.nextInt(16) - 8, this.field_75537_a.field_73012_v.nextInt(6) - 3, this.field_75537_a.field_73012_v.nextInt(16) - 8
+-                                );
++            BlockPos blockpos = p_179867_1_.func_177982_a(this.field_75537_a.field_73012_v.nextInt(16) - 8, this.field_75537_a.field_73012_v.nextInt(6) - 3, this.field_75537_a.field_73012_v.nextInt(16) - 8);
+ 
+-            if (this.field_75531_f.func_179866_a(blockpos)
+-                    && WorldEntitySpawner.func_180267_a(EntityLiving.SpawnPlacementType.ON_GROUND, this.field_75537_a, blockpos))
++            if (this.field_75531_f.func_179866_a(blockpos) && WorldEntitySpawner.func_180267_a(EntityLiving.SpawnPlacementType.ON_GROUND, this.field_75537_a, blockpos))
+             {
+                 return new Vec3d((double)blockpos.func_177958_n(), (double)blockpos.func_177956_o(), (double)blockpos.func_177952_p());
+             }

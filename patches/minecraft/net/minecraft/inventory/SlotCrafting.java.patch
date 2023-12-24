@@ -1,6 +1,39 @@
 --- before/net/minecraft/inventory/SlotCrafting.java
 +++ after/net/minecraft/inventory/SlotCrafting.java
-@@ -51,6 +51,7 @@
+@@ -20,13 +20,11 @@
+         this.field_75239_a = p_i45790_2_;
+     }
+ 
+-    @Override
+     public boolean func_75214_a(ItemStack p_75214_1_)
+     {
+         return false;
+     }
+ 
+-    @Override
+     public ItemStack func_75209_a(int p_75209_1_)
+     {
+         if (this.func_75216_d())
+@@ -37,25 +35,23 @@
+         return super.func_75209_a(p_75209_1_);
+     }
+ 
+-    @Override
+     protected void func_75210_a(ItemStack p_75210_1_, int p_75210_2_)
+     {
+         this.field_75237_g += p_75210_2_;
+         this.func_75208_c(p_75210_1_);
+     }
+ 
+-    @Override
+     protected void func_190900_b(int p_190900_1_)
+     {
+         this.field_75237_g += p_190900_1_;
+     }
+ 
+-    @Override
+     protected void func_75208_c(ItemStack p_75208_1_)
+     {
          if (this.field_75237_g > 0)
          {
              p_75208_1_.func_77980_a(this.field_75238_b.field_70170_p, this.field_75238_b, this.field_75237_g);
@@ -8,7 +41,16 @@
          }
  
          this.field_75237_g = 0;
-@@ -67,7 +68,9 @@
+@@ -65,15 +61,16 @@
+         if (irecipe != null && !irecipe.func_192399_d())
+         {
+             this.field_75238_b.func_192021_a(Lists.newArrayList(irecipe));
+-            inventorycraftresult.func_193056_a(null);
++            inventorycraftresult.func_193056_a((IRecipe)null);
+         }
+     }
+ 
+-    @Override
      public ItemStack func_190901_a(EntityPlayer p_190901_1_, ItemStack p_190901_2_)
      {
          this.func_75208_c(p_190901_2_);

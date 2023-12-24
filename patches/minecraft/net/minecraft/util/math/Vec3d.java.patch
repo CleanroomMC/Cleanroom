@@ -1,6 +1,6 @@
 --- before/net/minecraft/util/math/Vec3d.java
 +++ after/net/minecraft/util/math/Vec3d.java
-@@ -1,9 +1,6 @@
+@@ -1,31 +1,28 @@
  package net.minecraft.util.math;
  
  import javax.annotation.Nullable;
@@ -9,28 +9,99 @@
 -
  public class Vec3d
  {
-     public static final Vec3d field_186680_a = new Vec3d(0.0D, 0.0D, 0.0D);
-@@ -54,7 +51,6 @@
+-    public static final Vec3d field_186680_a = new Vec3d(0.0, 0.0, 0.0);
++    public static final Vec3d field_186680_a = new Vec3d(0.0D, 0.0D, 0.0D);
+     public final double field_72450_a;
+     public final double field_72448_b;
+     public final double field_72449_c;
+ 
+     public Vec3d(double p_i47092_1_, double p_i47092_3_, double p_i47092_5_)
+     {
+-        if (p_i47092_1_ == -0.0)
+-        {
+-            p_i47092_1_ = 0.0;
+-        }
+-
+-        if (p_i47092_3_ == -0.0)
+-        {
+-            p_i47092_3_ = 0.0;
+-        }
+-
+-        if (p_i47092_5_ == -0.0)
+-        {
+-            p_i47092_5_ = 0.0;
++        if (p_i47092_1_ == -0.0D)
++        {
++            p_i47092_1_ = 0.0D;
++        }
++
++        if (p_i47092_3_ == -0.0D)
++        {
++            p_i47092_3_ = 0.0D;
++        }
++
++        if (p_i47092_5_ == -0.0D)
++        {
++            p_i47092_5_ = 0.0D;
+         }
+ 
+         this.field_72450_a = p_i47092_1_;
+@@ -40,17 +37,13 @@
+ 
+     public Vec3d func_72444_a(Vec3d p_72444_1_)
+     {
+-        return new Vec3d(
+-                   p_72444_1_.field_72450_a - this.field_72450_a, p_72444_1_.field_72448_b - this.field_72448_b, p_72444_1_.field_72449_c - this.field_72449_c
+-               );
++        return new Vec3d(p_72444_1_.field_72450_a - this.field_72450_a, p_72444_1_.field_72448_b - this.field_72448_b, p_72444_1_.field_72449_c - this.field_72449_c);
+     }
+ 
+     public Vec3d func_72432_b()
+     {
+-        double d0 = (double)MathHelper.func_76133_a(
+-                        this.field_72450_a * this.field_72450_a + this.field_72448_b * this.field_72448_b + this.field_72449_c * this.field_72449_c
+-                    );
+-        return d0 < 1.0E-4 ? field_186680_a : new Vec3d(this.field_72450_a / d0, this.field_72448_b / d0, this.field_72449_c / d0);
++        double d0 = (double)MathHelper.func_76133_a(this.field_72450_a * this.field_72450_a + this.field_72448_b * this.field_72448_b + this.field_72449_c * this.field_72449_c);
++        return d0 < 1.0E-4D ? field_186680_a : new Vec3d(this.field_72450_a / d0, this.field_72448_b / d0, this.field_72449_c / d0);
+     }
+ 
+     public double func_72430_b(Vec3d p_72430_1_)
+@@ -58,14 +51,9 @@
          return this.field_72450_a * p_72430_1_.field_72450_a + this.field_72448_b * p_72430_1_.field_72448_b + this.field_72449_c * p_72430_1_.field_72449_c;
      }
  
 -    @SideOnly(Side.CLIENT)
      public Vec3d func_72431_c(Vec3d p_72431_1_)
      {
-         return new Vec3d(this.field_72448_b * p_72431_1_.field_72449_c - this.field_72449_c * p_72431_1_.field_72448_b, this.field_72449_c * p_72431_1_.field_72450_a - this.field_72450_a * p_72431_1_.field_72449_c, this.field_72450_a * p_72431_1_.field_72448_b - this.field_72448_b * p_72431_1_.field_72450_a);
-@@ -114,7 +110,6 @@
-         return (double)MathHelper.func_76133_a(this.field_72450_a * this.field_72450_a + this.field_72448_b * this.field_72448_b + this.field_72449_c * this.field_72449_c);
+-        return new Vec3d(
+-                   this.field_72448_b * p_72431_1_.field_72449_c - this.field_72449_c * p_72431_1_.field_72448_b,
+-                   this.field_72449_c * p_72431_1_.field_72450_a - this.field_72450_a * p_72431_1_.field_72449_c,
+-                   this.field_72450_a * p_72431_1_.field_72448_b - this.field_72448_b * p_72431_1_.field_72450_a
+-               );
++        return new Vec3d(this.field_72448_b * p_72431_1_.field_72449_c - this.field_72449_c * p_72431_1_.field_72448_b, this.field_72449_c * p_72431_1_.field_72450_a - this.field_72450_a * p_72431_1_.field_72449_c, this.field_72450_a * p_72431_1_.field_72448_b - this.field_72448_b * p_72431_1_.field_72450_a);
+     }
+ 
+     public Vec3d func_178788_d(Vec3d p_178788_1_)
+@@ -119,12 +107,9 @@
+ 
+     public double func_72433_c()
+     {
+-        return (double)MathHelper.func_76133_a(
+-                   this.field_72450_a * this.field_72450_a + this.field_72448_b * this.field_72448_b + this.field_72449_c * this.field_72449_c
+-               );
++        return (double)MathHelper.func_76133_a(this.field_72450_a * this.field_72450_a + this.field_72448_b * this.field_72448_b + this.field_72449_c * this.field_72449_c);
      }
  
 -    @SideOnly(Side.CLIENT)
      public double func_189985_c()
      {
          return this.field_72450_a * this.field_72450_a + this.field_72448_b * this.field_72448_b + this.field_72449_c * this.field_72449_c;
-@@ -127,14 +122,14 @@
+@@ -137,14 +122,14 @@
          double d1 = p_72429_1_.field_72448_b - this.field_72448_b;
          double d2 = p_72429_1_.field_72449_c - this.field_72449_c;
  
--        if (d0 * d0 < (double)1.0E-7F)
+-        if (d0 * d0 < 1.0E-7F)
 +        if (d0 * d0 < 1.0000000116860974E-7D)
          {
              return null;
@@ -38,16 +109,16 @@
          else
          {
              double d3 = (p_72429_2_ - this.field_72450_a) / d0;
--            return !(d3 < 0.0D) && !(d3 > 1.0D) ? new Vec3d(this.field_72450_a + d0 * d3, this.field_72448_b + d1 * d3, this.field_72449_c + d2 * d3) : null;
+-            return !(d3 < 0.0) && !(d3 > 1.0) ? new Vec3d(this.field_72450_a + d0 * d3, this.field_72448_b + d1 * d3, this.field_72449_c + d2 * d3) : null;
 +            return d3 >= 0.0D && d3 <= 1.0D ? new Vec3d(this.field_72450_a + d0 * d3, this.field_72448_b + d1 * d3, this.field_72449_c + d2 * d3) : null;
          }
      }
  
-@@ -145,14 +140,14 @@
+@@ -155,14 +140,14 @@
          double d1 = p_72435_1_.field_72448_b - this.field_72448_b;
          double d2 = p_72435_1_.field_72449_c - this.field_72449_c;
  
--        if (d1 * d1 < (double)1.0E-7F)
+-        if (d1 * d1 < 1.0E-7F)
 +        if (d1 * d1 < 1.0000000116860974E-7D)
          {
              return null;
@@ -55,16 +126,16 @@
          else
          {
              double d3 = (p_72435_2_ - this.field_72448_b) / d1;
--            return !(d3 < 0.0D) && !(d3 > 1.0D) ? new Vec3d(this.field_72450_a + d0 * d3, this.field_72448_b + d1 * d3, this.field_72449_c + d2 * d3) : null;
+-            return !(d3 < 0.0) && !(d3 > 1.0) ? new Vec3d(this.field_72450_a + d0 * d3, this.field_72448_b + d1 * d3, this.field_72449_c + d2 * d3) : null;
 +            return d3 >= 0.0D && d3 <= 1.0D ? new Vec3d(this.field_72450_a + d0 * d3, this.field_72448_b + d1 * d3, this.field_72449_c + d2 * d3) : null;
          }
      }
  
-@@ -163,14 +158,14 @@
+@@ -173,18 +158,17 @@
          double d1 = p_72434_1_.field_72448_b - this.field_72448_b;
          double d2 = p_72434_1_.field_72449_c - this.field_72449_c;
  
--        if (d2 * d2 < (double)1.0E-7F)
+-        if (d2 * d2 < 1.0E-7F)
 +        if (d2 * d2 < 1.0000000116860974E-7D)
          {
              return null;
@@ -72,12 +143,24 @@
          else
          {
              double d3 = (p_72434_2_ - this.field_72449_c) / d2;
--            return !(d3 < 0.0D) && !(d3 > 1.0D) ? new Vec3d(this.field_72450_a + d0 * d3, this.field_72448_b + d1 * d3, this.field_72449_c + d2 * d3) : null;
+-            return !(d3 < 0.0) && !(d3 > 1.0) ? new Vec3d(this.field_72450_a + d0 * d3, this.field_72448_b + d1 * d3, this.field_72449_c + d2 * d3) : null;
 +            return d3 >= 0.0D && d3 <= 1.0D ? new Vec3d(this.field_72450_a + d0 * d3, this.field_72448_b + d1 * d3, this.field_72449_c + d2 * d3) : null;
          }
      }
  
-@@ -210,7 +205,8 @@
+-    @Override
+     public boolean equals(Object p_equals_1_)
+     {
+         if (this == p_equals_1_)
+@@ -214,7 +198,6 @@
+         }
+     }
+ 
+-    @Override
+     public int hashCode()
+     {
+         long j = Double.doubleToLongBits(this.field_72450_a);
+@@ -222,10 +205,10 @@
          j = Double.doubleToLongBits(this.field_72448_b);
          i = 31 * i + (int)(j ^ j >>> 32);
          j = Double.doubleToLongBits(this.field_72449_c);
@@ -86,8 +169,11 @@
 +        return i;
      }
  
+-    @Override
      public String toString()
-@@ -238,19 +234,17 @@
+     {
+         return "(" + this.field_72450_a + ", " + this.field_72448_b + ", " + this.field_72449_c + ")";
+@@ -251,19 +234,17 @@
          return new Vec3d(d0, d1, d2);
      }
  
@@ -100,10 +186,10 @@
 -    @SideOnly(Side.CLIENT)
      public static Vec3d func_189986_a(float p_189986_0_, float p_189986_1_)
      {
--        float f = MathHelper.func_76134_b(-p_189986_1_ * ((float)Math.PI / 180F) - (float)Math.PI);
--        float f1 = MathHelper.func_76126_a(-p_189986_1_ * ((float)Math.PI / 180F) - (float)Math.PI);
--        float f2 = -MathHelper.func_76134_b(-p_189986_0_ * ((float)Math.PI / 180F));
--        float f3 = MathHelper.func_76126_a(-p_189986_0_ * ((float)Math.PI / 180F));
+-        float f = MathHelper.func_76134_b(-p_189986_1_ * (float)(Math.PI / 180.0) - (float) Math.PI);
+-        float f1 = MathHelper.func_76126_a(-p_189986_1_ * (float)(Math.PI / 180.0) - (float) Math.PI);
+-        float f2 = -MathHelper.func_76134_b(-p_189986_0_ * (float)(Math.PI / 180.0));
+-        float f3 = MathHelper.func_76126_a(-p_189986_0_ * (float)(Math.PI / 180.0));
 +        float f = MathHelper.func_76134_b(-p_189986_1_ * 0.017453292F - (float)Math.PI);
 +        float f1 = MathHelper.func_76126_a(-p_189986_1_ * 0.017453292F - (float)Math.PI);
 +        float f2 = -MathHelper.func_76134_b(-p_189986_0_ * 0.017453292F);

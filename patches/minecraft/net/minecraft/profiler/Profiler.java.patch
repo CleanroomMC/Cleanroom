@@ -46,7 +46,7 @@
  
              if (k > 100000000L)
              {
--                field_151234_b.warn("Something's taking too long! '{}' took aprox {} ms", this.field_76323_d, (double)k / 1000000.0D);
+-                field_151234_b.warn("Something's taking too long! '{}' took aprox {} ms", this.field_76323_d, (double)k / 1000000.0);
 +                field_151234_b.warn("Something's taking too long! '{}' took aprox {} ms", this.field_76323_d, Double.valueOf((double)k / 1000000.0D));
              }
  
@@ -89,7 +89,7 @@
                  }
              }
  
-@@ -117,21 +116,21 @@
+@@ -117,30 +116,30 @@
                  i = k;
              }
  
@@ -100,11 +100,13 @@
 +                if (s1.length() > p_76321_1_.length() && s1.startsWith(p_76321_1_) && s1.indexOf(".", p_76321_1_.length() + 1) < 0)
                  {
 -                    long l = this.field_76324_e.get(s2);
-+                    long l = ((Long)this.field_76324_e.get(s1)).longValue();
-                     double d0 = (double)l * 100.0D / (double)k;
-                     double d1 = (double)l * 100.0D / (double)i;
+-                    double d0 = (double)l * 100.0 / (double)k;
+-                    double d1 = (double)l * 100.0 / (double)i;
 -                    String s3 = s2.substring(p_76321_1_.length());
 -                    list.add(new Profiler.Result(s3, d0, d1));
++                    long l = ((Long)this.field_76324_e.get(s1)).longValue();
++                    double d0 = (double)l * 100.0D / (double)k;
++                    double d1 = (double)l * 100.0D / (double)i;
 +                    String s2 = s1.substring(p_76321_1_.length());
 +                    list.add(new Profiler.Result(s2, d0, d1));
                  }
@@ -118,11 +120,13 @@
              }
  
              if ((float)k > f)
-@@ -140,7 +139,7 @@
+             {
+-                list.add(new Profiler.Result("unspecified", (double)((float)k - f) * 100.0 / (double)k, (double)((float)k - f) * 100.0 / (double)i));
++                list.add(new Profiler.Result("unspecified", (double)((float)k - f) * 100.0D / (double)k, (double)((float)k - f) * 100.0D / (double)i));
              }
  
              Collections.sort(list);
--            list.add(0, new Profiler.Result(s, 100.0D, (double)k * 100.0D / (double)i));
+-            list.add(0, new Profiler.Result(s, 100.0, (double)k * 100.0 / (double)i));
 +            list.add(0, new Profiler.Result(p_76321_1_, 100.0D, (double)k * 100.0D / (double)i));
              return list;
          }

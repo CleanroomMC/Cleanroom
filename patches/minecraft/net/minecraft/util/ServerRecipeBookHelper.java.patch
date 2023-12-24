@@ -20,6 +20,24 @@
  
              if (this.field_194335_f != null && this.field_194336_g != null)
              {
+@@ -63,7 +69,7 @@
+                     p_194327_1_.field_71071_by.func_194016_a(this.field_194331_b, false);
+                     this.field_194336_g.func_194018_a(this.field_194331_b);
+ 
+-                    if (this.field_194331_b.func_194116_a(p_194327_2_, null))
++                    if (this.field_194331_b.func_194116_a(p_194327_2_, (IntList)null))
+                     {
+                         this.func_194329_b();
+                     }
+@@ -113,7 +119,7 @@
+     private void func_194329_b()
+     {
+         boolean flag = this.field_194333_d.func_77569_a(this.field_194336_g, this.field_194332_c.field_70170_p);
+-        int i = this.field_194331_b.func_194114_b(this.field_194333_d, null);
++        int i = this.field_194331_b.func_194114_b(this.field_194333_d, (IntList)null);
+ 
+         if (flag)
+         {
 @@ -141,9 +147,11 @@
          if (this.field_194331_b.func_194118_a(this.field_194333_d, intlist, i1))
          {

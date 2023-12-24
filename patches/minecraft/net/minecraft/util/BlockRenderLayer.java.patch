@@ -10,3 +10,11 @@
  public enum BlockRenderLayer
  {
      SOLID("Solid"),
+@@ -18,7 +14,6 @@
+         this.field_180338_e = p_i45755_3_;
+     }
+ 
+-    @Override
+     public String toString()
+     {
+         return this.field_180338_e;

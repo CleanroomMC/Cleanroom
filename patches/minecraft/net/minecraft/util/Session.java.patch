@@ -38,7 +38,7 @@
 -        catch (IllegalArgumentException illegalargumentexception)
 +        catch (IllegalArgumentException var2)
          {
--            return new GameProfile((UUID)null, this.func_111285_a());
+-            return new GameProfile(null, this.func_111285_a());
 +            return new GameProfile(net.minecraft.entity.player.EntityPlayer.func_146094_a(new GameProfile((UUID)null, this.func_111285_a())), this.func_111285_a());
          }
      }

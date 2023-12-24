@@ -1,7 +1,10 @@
 --- before/net/minecraft/world/ChunkCache.java
 +++ after/net/minecraft/world/ChunkCache.java
-@@ -61,7 +61,7 @@
+@@ -59,10 +59,9 @@
+     }
+ 
      @Nullable
+-    @Override
      public TileEntity func_175625_s(BlockPos p_175625_1_)
      {
 -        return this.func_190300_a(p_175625_1_, Chunk.EnumCreateEntityType.IMMEDIATE);
@@ -9,7 +12,7 @@
      }
  
      @Nullable
-@@ -69,6 +69,7 @@
+@@ -70,11 +69,11 @@
      {
          int i = (p_190300_1_.func_177958_n() >> 4) - this.field_72818_a;
          int j = (p_190300_1_.func_177952_p() >> 4) - this.field_72816_b;
@@ -17,7 +20,25 @@
          return this.field_72817_c[i][j].func_177424_a(p_190300_1_, p_190300_2_);
      }
  
-@@ -112,6 +113,7 @@
+     @SideOnly(Side.CLIENT)
+-    @Override
+     public int func_175626_b(BlockPos p_175626_1_, int p_175626_2_)
+     {
+         int i = this.func_175629_a(EnumSkyBlock.SKY, p_175626_1_);
+@@ -88,7 +87,6 @@
+         return i << 20 | j << 4;
+     }
+ 
+-    @Override
+     public IBlockState func_180495_p(BlockPos p_180495_1_)
+     {
+         if (p_180495_1_.func_177956_o() >= 0 && p_180495_1_.func_177956_o() < 256)
+@@ -111,11 +109,11 @@
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    @Override
+     public Biome func_180494_b(BlockPos p_180494_1_)
      {
          int i = (p_180494_1_.func_177958_n() >> 4) - this.field_72818_a;
          int j = (p_180494_1_.func_177952_p() >> 4) - this.field_72816_b;
@@ -25,7 +46,7 @@
          return this.field_72817_c[i][j].func_177411_a(p_180494_1_, this.field_72815_e.func_72959_q());
      }
  
-@@ -149,6 +151,7 @@
+@@ -153,6 +151,7 @@
              {
                  int i = (p_175629_2_.func_177958_n() >> 4) - this.field_72818_a;
                  int j = (p_175629_2_.func_177952_p() >> 4) - this.field_72816_b;
@@ -33,8 +54,11 @@
                  return this.field_72817_c[i][j].func_177413_a(p_175629_1_, p_175629_2_);
              }
          }
-@@ -160,7 +163,8 @@
+@@ -162,10 +161,10 @@
+         }
+     }
  
+-    @Override
      public boolean func_175623_d(BlockPos p_175623_1_)
      {
 -        return this.func_180495_p(p_175623_1_).func_185904_a() == Material.field_151579_a;
@@ -43,7 +67,7 @@
      }
  
      @SideOnly(Side.CLIENT)
-@@ -170,6 +174,7 @@
+@@ -175,6 +174,7 @@
          {
              int i = (p_175628_2_.func_177958_n() >> 4) - this.field_72818_a;
              int j = (p_175628_2_.func_177952_p() >> 4) - this.field_72816_b;
@@ -51,7 +75,18 @@
              return this.field_72817_c[i][j].func_177413_a(p_175628_1_, p_175628_2_);
          }
          else
-@@ -187,5 +192,22 @@
+@@ -183,16 +183,31 @@
+         }
+     }
+ 
+-    @Override
+     public int func_175627_a(BlockPos p_175627_1_, EnumFacing p_175627_2_)
+     {
+         return this.func_180495_p(p_175627_1_).func_185893_b(this, p_175627_1_, p_175627_2_);
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    @Override
      public WorldType func_175624_G()
      {
          return this.field_72815_e.func_175624_G();

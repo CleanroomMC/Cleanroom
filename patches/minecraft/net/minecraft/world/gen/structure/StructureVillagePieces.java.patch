@@ -1,38 +1,210 @@
 --- before/net/minecraft/world/gen/structure/StructureVillagePieces.java
 +++ after/net/minecraft/world/gen/structure/StructureVillagePieces.java
-@@ -58,7 +58,7 @@
+@@ -18,6 +18,7 @@
+ import net.minecraft.block.BlockTorch;
+ import net.minecraft.block.material.Material;
+ import net.minecraft.block.state.IBlockState;
++import net.minecraft.entity.IEntityLivingData;
+ import net.minecraft.entity.monster.EntityZombieVillager;
+ import net.minecraft.entity.passive.EntityVillager;
+ import net.minecraft.init.Biomes;
+@@ -57,41 +58,22 @@
  
      public static List<StructureVillagePieces.PieceWeight> func_75084_a(Random p_75084_0_, int p_75084_1_)
      {
 -        List<StructureVillagePieces.PieceWeight> list = Lists.newArrayList();
+-        list.add(
+-            new StructureVillagePieces.PieceWeight(
+-                StructureVillagePieces.House4Garden.class, 4, MathHelper.func_76136_a(p_75084_0_, 2 + p_75084_1_, 4 + p_75084_1_ * 2)
+-            )
+-        );
+-        list.add(
+-            new StructureVillagePieces.PieceWeight(StructureVillagePieces.Church.class, 20, MathHelper.func_76136_a(p_75084_0_, 0 + p_75084_1_, 1 + p_75084_1_))
+-        );
+-        list.add(
+-            new StructureVillagePieces.PieceWeight(StructureVillagePieces.House1.class, 20, MathHelper.func_76136_a(p_75084_0_, 0 + p_75084_1_, 2 + p_75084_1_))
+-        );
+-        list.add(
+-            new StructureVillagePieces.PieceWeight(
+-                StructureVillagePieces.WoodHut.class, 3, MathHelper.func_76136_a(p_75084_0_, 2 + p_75084_1_, 5 + p_75084_1_ * 3)
+-            )
+-        );
+-        list.add(
+-            new StructureVillagePieces.PieceWeight(StructureVillagePieces.Hall.class, 15, MathHelper.func_76136_a(p_75084_0_, 0 + p_75084_1_, 2 + p_75084_1_))
+-        );
+-        list.add(
+-            new StructureVillagePieces.PieceWeight(StructureVillagePieces.Field1.class, 3, MathHelper.func_76136_a(p_75084_0_, 1 + p_75084_1_, 4 + p_75084_1_))
+-        );
+-        list.add(
+-            new StructureVillagePieces.PieceWeight(StructureVillagePieces.Field2.class, 3, MathHelper.func_76136_a(p_75084_0_, 2 + p_75084_1_, 4 + p_75084_1_ * 2))
+-        );
 +        List<StructureVillagePieces.PieceWeight> list = Lists.<StructureVillagePieces.PieceWeight>newArrayList();
-         list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.House4Garden.class, 4, MathHelper.func_76136_a(p_75084_0_, 2 + p_75084_1_, 4 + p_75084_1_ * 2)));
-         list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.Church.class, 20, MathHelper.func_76136_a(p_75084_0_, 0 + p_75084_1_, 1 + p_75084_1_)));
-         list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.House1.class, 20, MathHelper.func_76136_a(p_75084_0_, 0 + p_75084_1_, 2 + p_75084_1_)));
-@@ -68,6 +68,7 @@
-         list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.Field2.class, 3, MathHelper.func_76136_a(p_75084_0_, 2 + p_75084_1_, 4 + p_75084_1_ * 2)));
++        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.House4Garden.class, 4, MathHelper.func_76136_a(p_75084_0_, 2 + p_75084_1_, 4 + p_75084_1_ * 2)));
++        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.Church.class, 20, MathHelper.func_76136_a(p_75084_0_, 0 + p_75084_1_, 1 + p_75084_1_)));
++        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.House1.class, 20, MathHelper.func_76136_a(p_75084_0_, 0 + p_75084_1_, 2 + p_75084_1_)));
++        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.WoodHut.class, 3, MathHelper.func_76136_a(p_75084_0_, 2 + p_75084_1_, 5 + p_75084_1_ * 3)));
++        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.Hall.class, 15, MathHelper.func_76136_a(p_75084_0_, 0 + p_75084_1_, 2 + p_75084_1_)));
++        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.Field1.class, 3, MathHelper.func_76136_a(p_75084_0_, 1 + p_75084_1_, 4 + p_75084_1_)));
++        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.Field2.class, 3, MathHelper.func_76136_a(p_75084_0_, 2 + p_75084_1_, 4 + p_75084_1_ * 2)));
          list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.House2.class, 15, MathHelper.func_76136_a(p_75084_0_, 0, 1 + p_75084_1_)));
-         list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.House3.class, 8, MathHelper.func_76136_a(p_75084_0_, 0 + p_75084_1_, 3 + p_75084_1_ * 2)));
+-        list.add(
+-            new StructureVillagePieces.PieceWeight(StructureVillagePieces.House3.class, 8, MathHelper.func_76136_a(p_75084_0_, 0 + p_75084_1_, 3 + p_75084_1_ * 2))
+-        );
++        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.House3.class, 8, MathHelper.func_76136_a(p_75084_0_, 0 + p_75084_1_, 3 + p_75084_1_ * 2)));
 +        net.minecraftforge.fml.common.registry.VillagerRegistry.addExtraVillageComponents(list, p_75084_0_, p_75084_1_);
          Iterator<StructureVillagePieces.PieceWeight> iterator = list.iterator();
  
          while (iterator.hasNext())
-@@ -140,6 +141,10 @@
          {
-             structurevillagepieces$village = StructureVillagePieces.House3.func_175849_a(p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
+-            if (iterator.next().field_75087_d == 0)
++            if ((iterator.next()).field_75087_d == 0)
+             {
+                 iterator.remove();
+             }
+@@ -107,8 +89,7 @@
+ 
+         for (StructureVillagePieces.PieceWeight structurevillagepieces$pieceweight : p_75079_0_)
+         {
+-            if (structurevillagepieces$pieceweight.field_75087_d > 0
+-                    && structurevillagepieces$pieceweight.field_75089_c < structurevillagepieces$pieceweight.field_75087_d)
++            if (structurevillagepieces$pieceweight.field_75087_d > 0 && structurevillagepieces$pieceweight.field_75089_c < structurevillagepieces$pieceweight.field_75087_d)
+             {
+                 flag = true;
+             }
+@@ -119,89 +100,56 @@
+         return flag ? i : -1;
+     }
+ 
+-    private static StructureVillagePieces.Village func_176065_a(
+-            StructureVillagePieces.Start p_176065_0_,
+-            StructureVillagePieces.PieceWeight p_176065_1_,
+-            List<StructureComponent> p_176065_2_,
+-            Random p_176065_3_,
+-            int p_176065_4_,
+-            int p_176065_5_,
+-            int p_176065_6_,
+-            EnumFacing p_176065_7_,
+-            int p_176065_8_
+-        )
++    private static StructureVillagePieces.Village func_176065_a(StructureVillagePieces.Start p_176065_0_, StructureVillagePieces.PieceWeight p_176065_1_, List<StructureComponent> p_176065_2_, Random p_176065_3_, int p_176065_4_, int p_176065_5_, int p_176065_6_, EnumFacing p_176065_7_, int p_176065_8_)
+     {
+         Class <? extends StructureVillagePieces.Village > oclass = p_176065_1_.field_75090_a;
+         StructureVillagePieces.Village structurevillagepieces$village = null;
+ 
+         if (oclass == StructureVillagePieces.House4Garden.class)
+         {
+-            structurevillagepieces$village = StructureVillagePieces.House4Garden.func_175858_a(
+-                                                 p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_
+-                                             );
++            structurevillagepieces$village = StructureVillagePieces.House4Garden.func_175858_a(p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
          }
+         else if (oclass == StructureVillagePieces.Church.class)
+         {
+-            structurevillagepieces$village = StructureVillagePieces.Church.func_175854_a(
+-                                                 p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_
+-                                             );
++            structurevillagepieces$village = StructureVillagePieces.Church.func_175854_a(p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
+         }
+         else if (oclass == StructureVillagePieces.House1.class)
+         {
+-            structurevillagepieces$village = StructureVillagePieces.House1.func_175850_a(
+-                                                 p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_
+-                                             );
++            structurevillagepieces$village = StructureVillagePieces.House1.func_175850_a(p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
+         }
+         else if (oclass == StructureVillagePieces.WoodHut.class)
+         {
+-            structurevillagepieces$village = StructureVillagePieces.WoodHut.func_175853_a(
+-                                                 p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_
+-                                             );
++            structurevillagepieces$village = StructureVillagePieces.WoodHut.func_175853_a(p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
+         }
+         else if (oclass == StructureVillagePieces.Hall.class)
+         {
+-            structurevillagepieces$village = StructureVillagePieces.Hall.func_175857_a(
+-                                                 p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_
+-                                             );
++            structurevillagepieces$village = StructureVillagePieces.Hall.func_175857_a(p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
+         }
+         else if (oclass == StructureVillagePieces.Field1.class)
+         {
+-            structurevillagepieces$village = StructureVillagePieces.Field1.func_175851_a(
+-                                                 p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_
+-                                             );
++            structurevillagepieces$village = StructureVillagePieces.Field1.func_175851_a(p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
+         }
+         else if (oclass == StructureVillagePieces.Field2.class)
+         {
+-            structurevillagepieces$village = StructureVillagePieces.Field2.func_175852_a(
+-                                                 p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_
+-                                             );
++            structurevillagepieces$village = StructureVillagePieces.Field2.func_175852_a(p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
+         }
+         else if (oclass == StructureVillagePieces.House2.class)
+         {
+-            structurevillagepieces$village = StructureVillagePieces.House2.func_175855_a(
+-                                                 p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_
+-                                             );
++            structurevillagepieces$village = StructureVillagePieces.House2.func_175855_a(p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
+         }
+         else if (oclass == StructureVillagePieces.House3.class)
+         {
+-            structurevillagepieces$village = StructureVillagePieces.House3.func_175849_a(
+-                                                 p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_
+-                                             );
++            structurevillagepieces$village = StructureVillagePieces.House3.func_175849_a(p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
++        }
 +        else
 +        {
 +            structurevillagepieces$village = net.minecraftforge.fml.common.registry.VillagerRegistry.getVillageComponent(p_176065_1_, p_176065_0_ , p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
-+        }
+         }
  
          return structurevillagepieces$village;
      }
-@@ -191,7 +196,15 @@
+ 
+-    private static StructureVillagePieces.Village func_176067_c(
+-            StructureVillagePieces.Start p_176067_0_,
+-            List<StructureComponent> p_176067_1_,
+-            Random p_176067_2_,
+-            int p_176067_3_,
+-            int p_176067_4_,
+-            int p_176067_5_,
+-            EnumFacing p_176067_6_,
+-            int p_176067_7_
+-        )
++    private static StructureVillagePieces.Village func_176067_c(StructureVillagePieces.Start p_176067_0_, List<StructureComponent> p_176067_1_, Random p_176067_2_, int p_176067_3_, int p_176067_4_, int p_176067_5_, EnumFacing p_176067_6_, int p_176067_7_)
+     {
+         int i = func_75079_a(p_176067_0_.field_74931_h);
+ 
+@@ -224,15 +172,12 @@
+ 
+                     if (k < 0)
+                     {
+-                        if (!structurevillagepieces$pieceweight.func_75085_a(p_176067_7_)
+-                                || structurevillagepieces$pieceweight == p_176067_0_.field_74926_d && p_176067_0_.field_74931_h.size() > 1)
++                        if (!structurevillagepieces$pieceweight.func_75085_a(p_176067_7_) || structurevillagepieces$pieceweight == p_176067_0_.field_74926_d && p_176067_0_.field_74931_h.size() > 1)
+                         {
+                             break;
+                         }
+ 
+-                        StructureVillagePieces.Village structurevillagepieces$village = func_176065_a(
+-                                    p_176067_0_, structurevillagepieces$pieceweight, p_176067_1_, p_176067_2_, p_176067_3_, p_176067_4_, p_176067_5_, p_176067_6_, p_176067_7_
+-                                );
++                        StructureVillagePieces.Village structurevillagepieces$village = func_176065_a(p_176067_0_, structurevillagepieces$pieceweight, p_176067_1_, p_176067_2_, p_176067_3_, p_176067_4_, p_176067_5_, p_176067_6_, p_176067_7_);
+ 
+                         if (structurevillagepieces$village != null)
+                         {
+@@ -250,36 +195,28 @@
+                 }
              }
  
-             StructureBoundingBox structureboundingbox = StructureVillagePieces.Torch.func_175856_a(p_176067_0_, p_176067_1_, p_176067_2_, p_176067_3_, p_176067_4_, p_176067_5_, p_176067_6_);
--            return structureboundingbox != null ? new StructureVillagePieces.Torch(p_176067_0_, p_176067_7_, p_176067_2_, structureboundingbox, p_176067_6_) : null;
+-            StructureBoundingBox structureboundingbox = StructureVillagePieces.Torch.func_175856_a(
+-                        p_176067_0_, p_176067_1_, p_176067_2_, p_176067_3_, p_176067_4_, p_176067_5_, p_176067_6_
+-                    );
+-            return structureboundingbox != null
+-                   ? new StructureVillagePieces.Torch(p_176067_0_, p_176067_7_, p_176067_2_, structureboundingbox, p_176067_6_)
+-                   : null;
++            StructureBoundingBox structureboundingbox = StructureVillagePieces.Torch.func_175856_a(p_176067_0_, p_176067_1_, p_176067_2_, p_176067_3_, p_176067_4_, p_176067_5_, p_176067_6_);
 +
 +            if (structureboundingbox != null)
 +            {
@@ -45,7 +217,613 @@
          }
      }
  
-@@ -1529,8 +1542,9 @@
+-    private static StructureComponent func_176066_d(
+-            StructureVillagePieces.Start p_176066_0_,
+-            List<StructureComponent> p_176066_1_,
+-            Random p_176066_2_,
+-            int p_176066_3_,
+-            int p_176066_4_,
+-            int p_176066_5_,
+-            EnumFacing p_176066_6_,
+-            int p_176066_7_
+-        )
++    private static StructureComponent func_176066_d(StructureVillagePieces.Start p_176066_0_, List<StructureComponent> p_176066_1_, Random p_176066_2_, int p_176066_3_, int p_176066_4_, int p_176066_5_, EnumFacing p_176066_6_, int p_176066_7_)
+     {
+         if (p_176066_7_ > 50)
+         {
+             return null;
+         }
+-        else if (Math.abs(p_176066_3_ - p_176066_0_.func_74874_b().field_78897_a) <= 112
+-                 && Math.abs(p_176066_5_ - p_176066_0_.func_74874_b().field_78896_c) <= 112)
++        else if (Math.abs(p_176066_3_ - p_176066_0_.func_74874_b().field_78897_a) <= 112 && Math.abs(p_176066_5_ - p_176066_0_.func_74874_b().field_78896_c) <= 112)
+         {
+-            StructureComponent structurecomponent = func_176067_c(
+-                                                        p_176066_0_, p_176066_1_, p_176066_2_, p_176066_3_, p_176066_4_, p_176066_5_, p_176066_6_, p_176066_7_ + 1
+-                                                    );
++            StructureComponent structurecomponent = func_176067_c(p_176066_0_, p_176066_1_, p_176066_2_, p_176066_3_, p_176066_4_, p_176066_5_, p_176066_6_, p_176066_7_ + 1);
+ 
+             if (structurecomponent != null)
+             {
+@@ -298,27 +235,15 @@
+         }
+     }
+ 
+-    private static StructureComponent func_176069_e(
+-            StructureVillagePieces.Start p_176069_0_,
+-            List<StructureComponent> p_176069_1_,
+-            Random p_176069_2_,
+-            int p_176069_3_,
+-            int p_176069_4_,
+-            int p_176069_5_,
+-            EnumFacing p_176069_6_,
+-            int p_176069_7_
+-        )
++    private static StructureComponent func_176069_e(StructureVillagePieces.Start p_176069_0_, List<StructureComponent> p_176069_1_, Random p_176069_2_, int p_176069_3_, int p_176069_4_, int p_176069_5_, EnumFacing p_176069_6_, int p_176069_7_)
+     {
+         if (p_176069_7_ > 3 + p_176069_0_.field_74928_c)
+         {
+             return null;
+         }
+-        else if (Math.abs(p_176069_3_ - p_176069_0_.func_74874_b().field_78897_a) <= 112
+-                 && Math.abs(p_176069_5_ - p_176069_0_.func_74874_b().field_78896_c) <= 112)
++        else if (Math.abs(p_176069_3_ - p_176069_0_.func_74874_b().field_78897_a) <= 112 && Math.abs(p_176069_5_ - p_176069_0_.func_74874_b().field_78896_c) <= 112)
+         {
+-            StructureBoundingBox structureboundingbox = StructureVillagePieces.Path.func_175848_a(
+-                        p_176069_0_, p_176069_1_, p_176069_2_, p_176069_3_, p_176069_4_, p_176069_5_, p_176069_6_
+-                    );
++            StructureBoundingBox structureboundingbox = StructureVillagePieces.Path.func_175848_a(p_176069_0_, p_176069_1_, p_176069_2_, p_176069_3_, p_176069_4_, p_176069_5_, p_176069_6_);
+ 
+             if (structureboundingbox != null && structureboundingbox.field_78895_b > 10)
+             {
+@@ -351,24 +276,12 @@
+                 this.field_74887_e = p_i45564_4_;
+             }
+ 
+-            public static StructureVillagePieces.Church func_175854_a(
+-                    StructureVillagePieces.Start p_175854_0_,
+-                    List<StructureComponent> p_175854_1_,
+-                    Random p_175854_2_,
+-                    int p_175854_3_,
+-                    int p_175854_4_,
+-                    int p_175854_5_,
+-                    EnumFacing p_175854_6_,
+-                    int p_175854_7_
+-                )
++            public static StructureVillagePieces.Church func_175854_a(StructureVillagePieces.Start p_175854_0_, List<StructureComponent> p_175854_1_, Random p_175854_2_, int p_175854_3_, int p_175854_4_, int p_175854_5_, EnumFacing p_175854_6_, int p_175854_7_)
+             {
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175854_3_, p_175854_4_, p_175854_5_, 0, 0, 0, 5, 12, 9, p_175854_6_);
+-                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175854_1_, structureboundingbox) == null
+-                       ? new StructureVillagePieces.Church(p_175854_0_, p_175854_7_, p_175854_2_, structureboundingbox, p_175854_6_)
+-                       : null;
++                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175854_1_, structureboundingbox) == null ? new StructureVillagePieces.Church(p_175854_0_, p_175854_7_, p_175854_2_, structureboundingbox, p_175854_6_) : null;
+             }
+ 
+-            @Override
+             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             {
+                 if (this.field_143015_k < 0)
+@@ -444,8 +357,7 @@
+                 this.func_175811_a(p_74875_1_, Blocks.field_150350_a.func_176223_P(), 2, 2, 0, p_74875_3_);
+                 this.func_189927_a(p_74875_1_, p_74875_3_, p_74875_2_, 2, 1, 0, EnumFacing.NORTH);
+ 
+-                if (this.func_175807_a(p_74875_1_, 2, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a
+-                        && this.func_175807_a(p_74875_1_, 2, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
++                if (this.func_175807_a(p_74875_1_, 2, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a && this.func_175807_a(p_74875_1_, 2, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
+                 {
+                     this.func_175811_a(p_74875_1_, iblockstate1, 2, 0, -1, p_74875_3_);
+ 
+@@ -468,7 +380,6 @@
+                 return true;
+             }
+ 
+-            @Override
+             protected int func_180779_c(int p_180779_1_, int p_180779_2_)
+             {
+                 return 2;
+@@ -497,7 +408,6 @@
+                 this.field_82681_h = this.func_151559_a(p_i45570_3_);
+             }
+ 
+-            @Override
+             protected void func_143012_a(NBTTagCompound p_143012_1_)
+             {
+                 super.func_143012_a(p_143012_1_);
+@@ -507,7 +417,6 @@
+                 p_143012_1_.func_74768_a("CD", Block.field_149771_c.func_148757_b(this.field_82681_h));
+             }
+ 
+-            @Override
+             protected void func_143011_b(NBTTagCompound p_143011_1_, TemplateManager p_143011_2_)
+             {
+                 super.func_143011_b(p_143011_1_, p_143011_2_);
+@@ -554,24 +463,12 @@
+                 }
+             }
+ 
+-            public static StructureVillagePieces.Field1 func_175851_a(
+-                    StructureVillagePieces.Start p_175851_0_,
+-                    List<StructureComponent> p_175851_1_,
+-                    Random p_175851_2_,
+-                    int p_175851_3_,
+-                    int p_175851_4_,
+-                    int p_175851_5_,
+-                    EnumFacing p_175851_6_,
+-                    int p_175851_7_
+-                )
++            public static StructureVillagePieces.Field1 func_175851_a(StructureVillagePieces.Start p_175851_0_, List<StructureComponent> p_175851_1_, Random p_175851_2_, int p_175851_3_, int p_175851_4_, int p_175851_5_, EnumFacing p_175851_6_, int p_175851_7_)
+             {
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175851_3_, p_175851_4_, p_175851_5_, 0, 0, 0, 13, 4, 9, p_175851_6_);
+-                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175851_1_, structureboundingbox) == null
+-                       ? new StructureVillagePieces.Field1(p_175851_0_, p_175851_7_, p_175851_2_, structureboundingbox, p_175851_6_)
+-                       : null;
++                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175851_1_, structureboundingbox) == null ? new StructureVillagePieces.Field1(p_175851_0_, p_175851_7_, p_175851_2_, structureboundingbox, p_175851_6_) : null;
+             }
+ 
+-            @Override
+             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             {
+                 if (this.field_143015_k < 0)
+@@ -651,7 +548,6 @@
+                 this.field_82676_c = this.func_151560_a(p_i45569_3_);
+             }
+ 
+-            @Override
+             protected void func_143012_a(NBTTagCompound p_143012_1_)
+             {
+                 super.func_143012_a(p_143012_1_);
+@@ -659,7 +555,6 @@
+                 p_143012_1_.func_74768_a("CB", Block.field_149771_c.func_148757_b(this.field_82676_c));
+             }
+ 
+-            @Override
+             protected void func_143011_b(NBTTagCompound p_143011_1_, TemplateManager p_143011_2_)
+             {
+                 super.func_143011_b(p_143011_1_, p_143011_2_);
+@@ -684,24 +579,12 @@
+                 }
+             }
+ 
+-            public static StructureVillagePieces.Field2 func_175852_a(
+-                    StructureVillagePieces.Start p_175852_0_,
+-                    List<StructureComponent> p_175852_1_,
+-                    Random p_175852_2_,
+-                    int p_175852_3_,
+-                    int p_175852_4_,
+-                    int p_175852_5_,
+-                    EnumFacing p_175852_6_,
+-                    int p_175852_7_
+-                )
++            public static StructureVillagePieces.Field2 func_175852_a(StructureVillagePieces.Start p_175852_0_, List<StructureComponent> p_175852_1_, Random p_175852_2_, int p_175852_3_, int p_175852_4_, int p_175852_5_, EnumFacing p_175852_6_, int p_175852_7_)
+             {
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175852_3_, p_175852_4_, p_175852_5_, 0, 0, 0, 7, 4, 9, p_175852_6_);
+-                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175852_1_, structureboundingbox) == null
+-                       ? new StructureVillagePieces.Field2(p_175852_0_, p_175852_7_, p_175852_2_, structureboundingbox, p_175852_6_)
+-                       : null;
++                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175852_1_, structureboundingbox) == null ? new StructureVillagePieces.Field2(p_175852_0_, p_175852_7_, p_175852_2_, structureboundingbox, p_175852_6_) : null;
+             }
+ 
+-            @Override
+             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             {
+                 if (this.field_143015_k < 0)
+@@ -764,24 +647,12 @@
+                 this.field_74887_e = p_i45567_4_;
+             }
+ 
+-            public static StructureVillagePieces.Hall func_175857_a(
+-                    StructureVillagePieces.Start p_175857_0_,
+-                    List<StructureComponent> p_175857_1_,
+-                    Random p_175857_2_,
+-                    int p_175857_3_,
+-                    int p_175857_4_,
+-                    int p_175857_5_,
+-                    EnumFacing p_175857_6_,
+-                    int p_175857_7_
+-                )
++            public static StructureVillagePieces.Hall func_175857_a(StructureVillagePieces.Start p_175857_0_, List<StructureComponent> p_175857_1_, Random p_175857_2_, int p_175857_3_, int p_175857_4_, int p_175857_5_, EnumFacing p_175857_6_, int p_175857_7_)
+             {
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175857_3_, p_175857_4_, p_175857_5_, 0, 0, 0, 9, 7, 11, p_175857_6_);
+-                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175857_1_, structureboundingbox) == null
+-                       ? new StructureVillagePieces.Hall(p_175857_0_, p_175857_7_, p_175857_2_, structureboundingbox, p_175857_6_)
+-                       : null;
++                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175857_1_, structureboundingbox) == null ? new StructureVillagePieces.Hall(p_175857_0_, p_175857_7_, p_175857_2_, structureboundingbox, p_175857_6_) : null;
+             }
+ 
+-            @Override
+             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             {
+                 if (this.field_143015_k < 0)
+@@ -861,8 +732,7 @@
+                 this.func_189926_a(p_74875_1_, EnumFacing.NORTH, 2, 3, 1, p_74875_3_);
+                 this.func_189927_a(p_74875_1_, p_74875_3_, p_74875_2_, 2, 1, 0, EnumFacing.NORTH);
+ 
+-                if (this.func_175807_a(p_74875_1_, 2, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a
+-                        && this.func_175807_a(p_74875_1_, 2, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
++                if (this.func_175807_a(p_74875_1_, 2, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a && this.func_175807_a(p_74875_1_, 2, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
+                 {
+                     this.func_175811_a(p_74875_1_, iblockstate7, 2, 0, -1, p_74875_3_);
+ 
+@@ -890,7 +760,6 @@
+                 return true;
+             }
+ 
+-            @Override
+             protected int func_180779_c(int p_180779_1_, int p_180779_2_)
+             {
+                 return p_180779_1_ == 0 ? 4 : super.func_180779_c(p_180779_1_, p_180779_2_);
+@@ -910,24 +779,12 @@
+                 this.field_74887_e = p_i45571_4_;
+             }
+ 
+-            public static StructureVillagePieces.House1 func_175850_a(
+-                    StructureVillagePieces.Start p_175850_0_,
+-                    List<StructureComponent> p_175850_1_,
+-                    Random p_175850_2_,
+-                    int p_175850_3_,
+-                    int p_175850_4_,
+-                    int p_175850_5_,
+-                    EnumFacing p_175850_6_,
+-                    int p_175850_7_
+-                )
++            public static StructureVillagePieces.House1 func_175850_a(StructureVillagePieces.Start p_175850_0_, List<StructureComponent> p_175850_1_, Random p_175850_2_, int p_175850_3_, int p_175850_4_, int p_175850_5_, EnumFacing p_175850_6_, int p_175850_7_)
+             {
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175850_3_, p_175850_4_, p_175850_5_, 0, 0, 0, 9, 9, 6, p_175850_6_);
+-                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175850_1_, structureboundingbox) == null
+-                       ? new StructureVillagePieces.House1(p_175850_0_, p_175850_7_, p_175850_2_, structureboundingbox, p_175850_6_)
+-                       : null;
++                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175850_1_, structureboundingbox) == null ? new StructureVillagePieces.House1(p_175850_0_, p_175850_7_, p_175850_2_, structureboundingbox, p_175850_6_) : null;
+             }
+ 
+-            @Override
+             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             {
+                 if (this.field_143015_k < 0)
+@@ -1012,8 +869,7 @@
+                 this.func_175811_a(p_74875_1_, Blocks.field_150350_a.func_176223_P(), 1, 2, 0, p_74875_3_);
+                 this.func_189927_a(p_74875_1_, p_74875_3_, p_74875_2_, 1, 1, 0, EnumFacing.NORTH);
+ 
+-                if (this.func_175807_a(p_74875_1_, 1, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a
+-                        && this.func_175807_a(p_74875_1_, 1, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
++                if (this.func_175807_a(p_74875_1_, 1, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a && this.func_175807_a(p_74875_1_, 1, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
+                 {
+                     this.func_175811_a(p_74875_1_, iblockstate5, 1, 0, -1, p_74875_3_);
+ 
+@@ -1036,7 +892,6 @@
+                 return true;
+             }
+ 
+-            @Override
+             protected int func_180779_c(int p_180779_1_, int p_180779_2_)
+             {
+                 return 1;
+@@ -1058,38 +913,24 @@
+                 this.field_74887_e = p_i45563_4_;
+             }
+ 
+-            public static StructureVillagePieces.House2 func_175855_a(
+-                    StructureVillagePieces.Start p_175855_0_,
+-                    List<StructureComponent> p_175855_1_,
+-                    Random p_175855_2_,
+-                    int p_175855_3_,
+-                    int p_175855_4_,
+-                    int p_175855_5_,
+-                    EnumFacing p_175855_6_,
+-                    int p_175855_7_
+-                )
++            public static StructureVillagePieces.House2 func_175855_a(StructureVillagePieces.Start p_175855_0_, List<StructureComponent> p_175855_1_, Random p_175855_2_, int p_175855_3_, int p_175855_4_, int p_175855_5_, EnumFacing p_175855_6_, int p_175855_7_)
+             {
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175855_3_, p_175855_4_, p_175855_5_, 0, 0, 0, 10, 6, 7, p_175855_6_);
+-                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175855_1_, structureboundingbox) == null
+-                       ? new StructureVillagePieces.House2(p_175855_0_, p_175855_7_, p_175855_2_, structureboundingbox, p_175855_6_)
+-                       : null;
++                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175855_1_, structureboundingbox) == null ? new StructureVillagePieces.House2(p_175855_0_, p_175855_7_, p_175855_2_, structureboundingbox, p_175855_6_) : null;
+             }
+ 
+-            @Override
+             protected void func_143012_a(NBTTagCompound p_143012_1_)
+             {
+                 super.func_143012_a(p_143012_1_);
+                 p_143012_1_.func_74757_a("Chest", this.field_74917_c);
+             }
+ 
+-            @Override
+             protected void func_143011_b(NBTTagCompound p_143011_1_, TemplateManager p_143011_2_)
+             {
+                 super.func_143011_b(p_143011_1_, p_143011_2_);
+                 this.field_74917_c = p_143011_1_.func_74767_n("Chest");
+             }
+ 
+-            @Override
+             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             {
+                 if (this.field_143015_k < 0)
+@@ -1155,8 +996,7 @@
+ 
+                 for (int i = 6; i <= 8; ++i)
+                 {
+-                    if (this.func_175807_a(p_74875_1_, i, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a
+-                            && this.func_175807_a(p_74875_1_, i, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
++                    if (this.func_175807_a(p_74875_1_, i, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a && this.func_175807_a(p_74875_1_, i, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
+                     {
+                         this.func_175811_a(p_74875_1_, iblockstate4, i, 0, -1, p_74875_3_);
+ 
+@@ -1180,7 +1020,6 @@
+                 return true;
+             }
+ 
+-            @Override
+             protected int func_180779_c(int p_180779_1_, int p_180779_2_)
+             {
+                 return 3;
+@@ -1200,24 +1039,12 @@
+                 this.field_74887_e = p_i45561_4_;
+             }
+ 
+-            public static StructureVillagePieces.House3 func_175849_a(
+-                    StructureVillagePieces.Start p_175849_0_,
+-                    List<StructureComponent> p_175849_1_,
+-                    Random p_175849_2_,
+-                    int p_175849_3_,
+-                    int p_175849_4_,
+-                    int p_175849_5_,
+-                    EnumFacing p_175849_6_,
+-                    int p_175849_7_
+-                )
++            public static StructureVillagePieces.House3 func_175849_a(StructureVillagePieces.Start p_175849_0_, List<StructureComponent> p_175849_1_, Random p_175849_2_, int p_175849_3_, int p_175849_4_, int p_175849_5_, EnumFacing p_175849_6_, int p_175849_7_)
+             {
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175849_3_, p_175849_4_, p_175849_5_, 0, 0, 0, 9, 7, 12, p_175849_6_);
+-                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175849_1_, structureboundingbox) == null
+-                       ? new StructureVillagePieces.House3(p_175849_0_, p_175849_7_, p_175849_2_, structureboundingbox, p_175849_6_)
+-                       : null;
++                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175849_1_, structureboundingbox) == null ? new StructureVillagePieces.House3(p_175849_0_, p_175849_7_, p_175849_2_, structureboundingbox, p_175849_6_) : null;
+             }
+ 
+-            @Override
+             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             {
+                 if (this.field_143015_k < 0)
+@@ -1335,8 +1162,7 @@
+                 this.func_189927_a(p_74875_1_, p_74875_3_, p_74875_2_, 2, 1, 0, EnumFacing.NORTH);
+                 this.func_175804_a(p_74875_1_, p_74875_3_, 1, 0, -1, 3, 2, -1, Blocks.field_150350_a.func_176223_P(), Blocks.field_150350_a.func_176223_P(), false);
+ 
+-                if (this.func_175807_a(p_74875_1_, 2, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a
+-                        && this.func_175807_a(p_74875_1_, 2, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
++                if (this.func_175807_a(p_74875_1_, 2, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a && this.func_175807_a(p_74875_1_, 2, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
+                 {
+                     this.func_175811_a(p_74875_1_, iblockstate7, 2, 0, -1, p_74875_3_);
+ 
+@@ -1377,9 +1203,7 @@
+             {
+             }
+ 
+-            public House4Garden(
+-                StructureVillagePieces.Start p_i45566_1_, int p_i45566_2_, Random p_i45566_3_, StructureBoundingBox p_i45566_4_, EnumFacing p_i45566_5_
+-            )
++            public House4Garden(StructureVillagePieces.Start p_i45566_1_, int p_i45566_2_, Random p_i45566_3_, StructureBoundingBox p_i45566_4_, EnumFacing p_i45566_5_)
+             {
+                 super(p_i45566_1_, p_i45566_2_);
+                 this.func_186164_a(p_i45566_5_);
+@@ -1387,38 +1211,24 @@
+                 this.field_74913_b = p_i45566_3_.nextBoolean();
+             }
+ 
+-            @Override
+             protected void func_143012_a(NBTTagCompound p_143012_1_)
+             {
+                 super.func_143012_a(p_143012_1_);
+                 p_143012_1_.func_74757_a("Terrace", this.field_74913_b);
+             }
+ 
+-            @Override
+             protected void func_143011_b(NBTTagCompound p_143011_1_, TemplateManager p_143011_2_)
+             {
+                 super.func_143011_b(p_143011_1_, p_143011_2_);
+                 this.field_74913_b = p_143011_1_.func_74767_n("Terrace");
+             }
+ 
+-            public static StructureVillagePieces.House4Garden func_175858_a(
+-                    StructureVillagePieces.Start p_175858_0_,
+-                    List<StructureComponent> p_175858_1_,
+-                    Random p_175858_2_,
+-                    int p_175858_3_,
+-                    int p_175858_4_,
+-                    int p_175858_5_,
+-                    EnumFacing p_175858_6_,
+-                    int p_175858_7_
+-                )
++            public static StructureVillagePieces.House4Garden func_175858_a(StructureVillagePieces.Start p_175858_0_, List<StructureComponent> p_175858_1_, Random p_175858_2_, int p_175858_3_, int p_175858_4_, int p_175858_5_, EnumFacing p_175858_6_, int p_175858_7_)
+             {
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175858_3_, p_175858_4_, p_175858_5_, 0, 0, 0, 5, 6, 5, p_175858_6_);
+-                return StructureComponent.func_74883_a(p_175858_1_, structureboundingbox) != null
+-                       ? null
+-                       : new StructureVillagePieces.House4Garden(p_175858_0_, p_175858_7_, p_175858_2_, structureboundingbox, p_175858_6_);
++                return StructureComponent.func_74883_a(p_175858_1_, structureboundingbox) != null ? null : new StructureVillagePieces.House4Garden(p_175858_0_, p_175858_7_, p_175858_2_, structureboundingbox, p_175858_6_);
+             }
+ 
+-            @Override
+             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             {
+                 if (this.field_143015_k < 0)
+@@ -1467,8 +1277,7 @@
+                 this.func_175811_a(p_74875_1_, iblockstate1, 3, 2, 0, p_74875_3_);
+                 this.func_175811_a(p_74875_1_, iblockstate1, 3, 1, 0, p_74875_3_);
+ 
+-                if (this.func_175807_a(p_74875_1_, 2, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a
+-                        && this.func_175807_a(p_74875_1_, 2, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
++                if (this.func_175807_a(p_74875_1_, 2, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a && this.func_175807_a(p_74875_1_, 2, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
+                 {
+                     this.func_175811_a(p_74875_1_, iblockstate2, 2, 0, -1, p_74875_3_);
+ 
+@@ -1541,21 +1350,18 @@
+                 this.field_74934_a = Math.max(p_i45562_4_.func_78883_b(), p_i45562_4_.func_78880_d());
+             }
+ 
+-            @Override
+             protected void func_143012_a(NBTTagCompound p_143012_1_)
+             {
+                 super.func_143012_a(p_143012_1_);
+                 p_143012_1_.func_74768_a("Length", this.field_74934_a);
+             }
+ 
+-            @Override
+             protected void func_143011_b(NBTTagCompound p_143011_1_, TemplateManager p_143011_2_)
+             {
+                 super.func_143011_b(p_143011_1_, p_143011_2_);
+                 this.field_74934_a = p_143011_1_.func_74762_e("Length");
+             }
+ 
+-            @Override
+             public void func_74861_a(StructureComponent p_74861_1_, List<StructureComponent> p_74861_2_, Random p_74861_3_)
+             {
+                 boolean flag = false;
+@@ -1590,52 +1396,16 @@
+                     {
+                         case NORTH:
+                         default:
+-                            StructureVillagePieces.func_176069_e(
+-                                (StructureVillagePieces.Start)p_74861_1_,
+-                                p_74861_2_,
+-                                p_74861_3_,
+-                                this.field_74887_e.field_78897_a - 1,
+-                                this.field_74887_e.field_78895_b,
+-                                this.field_74887_e.field_78896_c,
+-                                EnumFacing.WEST,
+-                                this.func_74877_c()
+-                            );
++                            StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78897_a - 1, this.field_74887_e.field_78895_b, this.field_74887_e.field_78896_c, EnumFacing.WEST, this.func_74877_c());
+                             break;
+                         case SOUTH:
+-                            StructureVillagePieces.func_176069_e(
+-                                (StructureVillagePieces.Start)p_74861_1_,
+-                                p_74861_2_,
+-                                p_74861_3_,
+-                                this.field_74887_e.field_78897_a - 1,
+-                                this.field_74887_e.field_78895_b,
+-                                this.field_74887_e.field_78892_f - 2,
+-                                EnumFacing.WEST,
+-                                this.func_74877_c()
+-                            );
++                            StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78897_a - 1, this.field_74887_e.field_78895_b, this.field_74887_e.field_78892_f - 2, EnumFacing.WEST, this.func_74877_c());
+                             break;
+                         case WEST:
+-                            StructureVillagePieces.func_176069_e(
+-                                (StructureVillagePieces.Start)p_74861_1_,
+-                                p_74861_2_,
+-                                p_74861_3_,
+-                                this.field_74887_e.field_78897_a,
+-                                this.field_74887_e.field_78895_b,
+-                                this.field_74887_e.field_78896_c - 1,
+-                                EnumFacing.NORTH,
+-                                this.func_74877_c()
+-                            );
++                            StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78897_a, this.field_74887_e.field_78895_b, this.field_74887_e.field_78896_c - 1, EnumFacing.NORTH, this.func_74877_c());
+                             break;
+                         case EAST:
+-                            StructureVillagePieces.func_176069_e(
+-                                (StructureVillagePieces.Start)p_74861_1_,
+-                                p_74861_2_,
+-                                p_74861_3_,
+-                                this.field_74887_e.field_78893_d - 2,
+-                                this.field_74887_e.field_78895_b,
+-                                this.field_74887_e.field_78896_c - 1,
+-                                EnumFacing.NORTH,
+-                                this.func_74877_c()
+-                            );
++                            StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78893_d - 2, this.field_74887_e.field_78895_b, this.field_74887_e.field_78896_c - 1, EnumFacing.NORTH, this.func_74877_c());
+                     }
+                 }
+ 
+@@ -1645,65 +1415,21 @@
+                     {
+                         case NORTH:
+                         default:
+-                            StructureVillagePieces.func_176069_e(
+-                                (StructureVillagePieces.Start)p_74861_1_,
+-                                p_74861_2_,
+-                                p_74861_3_,
+-                                this.field_74887_e.field_78893_d + 1,
+-                                this.field_74887_e.field_78895_b,
+-                                this.field_74887_e.field_78896_c,
+-                                EnumFacing.EAST,
+-                                this.func_74877_c()
+-                            );
++                            StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78893_d + 1, this.field_74887_e.field_78895_b, this.field_74887_e.field_78896_c, EnumFacing.EAST, this.func_74877_c());
+                             break;
+                         case SOUTH:
+-                            StructureVillagePieces.func_176069_e(
+-                                (StructureVillagePieces.Start)p_74861_1_,
+-                                p_74861_2_,
+-                                p_74861_3_,
+-                                this.field_74887_e.field_78893_d + 1,
+-                                this.field_74887_e.field_78895_b,
+-                                this.field_74887_e.field_78892_f - 2,
+-                                EnumFacing.EAST,
+-                                this.func_74877_c()
+-                            );
++                            StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78893_d + 1, this.field_74887_e.field_78895_b, this.field_74887_e.field_78892_f - 2, EnumFacing.EAST, this.func_74877_c());
+                             break;
+                         case WEST:
+-                            StructureVillagePieces.func_176069_e(
+-                                (StructureVillagePieces.Start)p_74861_1_,
+-                                p_74861_2_,
+-                                p_74861_3_,
+-                                this.field_74887_e.field_78897_a,
+-                                this.field_74887_e.field_78895_b,
+-                                this.field_74887_e.field_78892_f + 1,
+-                                EnumFacing.SOUTH,
+-                                this.func_74877_c()
+-                            );
++                            StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78897_a, this.field_74887_e.field_78895_b, this.field_74887_e.field_78892_f + 1, EnumFacing.SOUTH, this.func_74877_c());
+                             break;
+                         case EAST:
+-                            StructureVillagePieces.func_176069_e(
+-                                (StructureVillagePieces.Start)p_74861_1_,
+-                                p_74861_2_,
+-                                p_74861_3_,
+-                                this.field_74887_e.field_78893_d - 2,
+-                                this.field_74887_e.field_78895_b,
+-                                this.field_74887_e.field_78892_f + 1,
+-                                EnumFacing.SOUTH,
+-                                this.func_74877_c()
+-                            );
++                            StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78893_d - 2, this.field_74887_e.field_78895_b, this.field_74887_e.field_78892_f + 1, EnumFacing.SOUTH, this.func_74877_c());
+                     }
+                 }
+             }
+ 
+-            public static StructureBoundingBox func_175848_a(
+-                    StructureVillagePieces.Start p_175848_0_,
+-                    List<StructureComponent> p_175848_1_,
+-                    Random p_175848_2_,
+-                    int p_175848_3_,
+-                    int p_175848_4_,
+-                    int p_175848_5_,
+-                    EnumFacing p_175848_6_
+-                )
++            public static StructureBoundingBox func_175848_a(StructureVillagePieces.Start p_175848_0_, List<StructureComponent> p_175848_1_, Random p_175848_2_, int p_175848_3_, int p_175848_4_, int p_175848_5_, EnumFacing p_175848_6_)
+             {
+                 for (int i = 7 * MathHelper.func_76136_a(p_175848_2_, 3, 5); i >= 7; i -= 7)
+                 {
+@@ -1718,7 +1444,6 @@
+                 return null;
+             }
+ 
+-            @Override
+             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             {
+                 IBlockState iblockstate = this.func_175847_a(Blocks.field_185774_da.func_176223_P());
+@@ -1757,9 +1482,7 @@
+                                     break;
+                                 }
+ 
+-                                if (iblockstate4.func_177230_c() == Blocks.field_150354_m
+-                                        || iblockstate4.func_177230_c() == Blocks.field_150322_A
+-                                        || iblockstate4.func_177230_c() == Blocks.field_180395_cM)
++                                if (iblockstate4.func_177230_c() == Blocks.field_150354_m || iblockstate4.func_177230_c() == Blocks.field_150322_A || iblockstate4.func_177230_c() == Blocks.field_180395_cM)
+                                 {
+                                     p_74875_1_.func_180501_a(blockpos, iblockstate2, 2);
+                                     p_74875_1_.func_180501_a(blockpos.func_177977_b(), iblockstate3, 2);
+@@ -1819,28 +1542,23 @@
              public int field_74928_c;
              public StructureVillagePieces.PieceWeight field_74926_d;
              public List<StructureVillagePieces.PieceWeight> field_74931_h;
@@ -57,7 +835,22 @@
  
              public Start()
              {
-@@ -1543,6 +1557,8 @@
+             }
+ 
+-            public Start(
+-                BiomeProvider p_i2104_1_,
+-                int p_i2104_2_,
+-                Random p_i2104_3_,
+-                int p_i2104_4_,
+-                int p_i2104_5_,
+-                List<StructureVillagePieces.PieceWeight> p_i2104_6_,
+-                int p_i2104_7_
+-            )
++            public Start(BiomeProvider p_i2104_1_, int p_i2104_2_, Random p_i2104_3_, int p_i2104_4_, int p_i2104_5_, List<StructureVillagePieces.PieceWeight> p_i2104_6_, int p_i2104_7_)
+             {
+-                super(null, 0, p_i2104_3_, p_i2104_4_, p_i2104_5_);
++                super((StructureVillagePieces.Start)null, 0, p_i2104_3_, p_i2104_4_, p_i2104_5_);
+                 this.field_74929_a = p_i2104_1_;
                  this.field_74931_h = p_i2104_6_;
                  this.field_74928_c = p_i2104_7_;
                  Biome biome = p_i2104_1_.func_180300_a(new BlockPos(p_i2104_4_, 0, p_i2104_5_), Biomes.field_180279_ad);
@@ -66,7 +859,30 @@
  
                  if (biome instanceof BiomeDesert)
                  {
-@@ -1615,6 +1631,7 @@
+@@ -1873,21 +1591,12 @@
+                 this.field_74887_e = p_i45568_4_;
+             }
+ 
+-            public static StructureBoundingBox func_175856_a(
+-                    StructureVillagePieces.Start p_175856_0_,
+-                    List<StructureComponent> p_175856_1_,
+-                    Random p_175856_2_,
+-                    int p_175856_3_,
+-                    int p_175856_4_,
+-                    int p_175856_5_,
+-                    EnumFacing p_175856_6_
+-                )
++            public static StructureBoundingBox func_175856_a(StructureVillagePieces.Start p_175856_0_, List<StructureComponent> p_175856_1_, Random p_175856_2_, int p_175856_3_, int p_175856_4_, int p_175856_5_, EnumFacing p_175856_6_)
+             {
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175856_3_, p_175856_4_, p_175856_5_, 0, 0, 0, 3, 4, 2, p_175856_6_);
+                 return StructureComponent.func_74883_a(p_175856_1_, structureboundingbox) != null ? null : structureboundingbox;
+             }
+ 
+-            @Override
+             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             {
+                 if (this.field_143015_k < 0)
+@@ -1922,6 +1631,7 @@
              private int field_74896_a;
              protected int field_189928_h;
              protected boolean field_189929_i;
@@ -74,7 +890,7 @@
  
              public Village()
              {
-@@ -1628,6 +1645,7 @@
+@@ -1935,10 +1645,10 @@
                  {
                      this.field_189928_h = p_i2107_1_.field_189928_h;
                      this.field_189929_i = p_i2107_1_.field_189929_i;
@@ -82,7 +898,149 @@
                  }
              }
  
-@@ -1725,7 +1743,14 @@
+-            @Override
+             protected void func_143012_a(NBTTagCompound p_143012_1_)
+             {
+                 p_143012_1_.func_74768_a("HPos", this.field_143015_k);
+@@ -1947,7 +1657,6 @@
+                 p_143012_1_.func_74757_a("Zombie", this.field_189929_i);
+             }
+ 
+-            @Override
+             protected void func_143011_b(NBTTagCompound p_143011_1_, TemplateManager p_143011_2_)
+             {
+                 this.field_143015_k = p_143011_1_.func_74762_e("HPos");
+@@ -1963,9 +1672,7 @@
+             }
+ 
+             @Nullable
+-            protected StructureComponent func_74891_a(
+-                StructureVillagePieces.Start p_74891_1_, List<StructureComponent> p_74891_2_, Random p_74891_3_, int p_74891_4_, int p_74891_5_
+-            )
++            protected StructureComponent func_74891_a(StructureVillagePieces.Start p_74891_1_, List<StructureComponent> p_74891_2_, Random p_74891_3_, int p_74891_4_, int p_74891_5_)
+             {
+                 EnumFacing enumfacing = this.func_186165_e();
+ 
+@@ -1975,49 +1682,13 @@
+                     {
+                         case NORTH:
+                         default:
+-                            return StructureVillagePieces.func_176066_d(
+-                                       p_74891_1_,
+-                                       p_74891_2_,
+-                                       p_74891_3_,
+-                                       this.field_74887_e.field_78897_a - 1,
+-                                       this.field_74887_e.field_78895_b + p_74891_4_,
+-                                       this.field_74887_e.field_78896_c + p_74891_5_,
+-                                       EnumFacing.WEST,
+-                                       this.func_74877_c()
+-                                   );
++                            return StructureVillagePieces.func_176066_d(p_74891_1_, p_74891_2_, p_74891_3_, this.field_74887_e.field_78897_a - 1, this.field_74887_e.field_78895_b + p_74891_4_, this.field_74887_e.field_78896_c + p_74891_5_, EnumFacing.WEST, this.func_74877_c());
+                         case SOUTH:
+-                            return StructureVillagePieces.func_176066_d(
+-                                       p_74891_1_,
+-                                       p_74891_2_,
+-                                       p_74891_3_,
+-                                       this.field_74887_e.field_78897_a - 1,
+-                                       this.field_74887_e.field_78895_b + p_74891_4_,
+-                                       this.field_74887_e.field_78896_c + p_74891_5_,
+-                                       EnumFacing.WEST,
+-                                       this.func_74877_c()
+-                                   );
++                            return StructureVillagePieces.func_176066_d(p_74891_1_, p_74891_2_, p_74891_3_, this.field_74887_e.field_78897_a - 1, this.field_74887_e.field_78895_b + p_74891_4_, this.field_74887_e.field_78896_c + p_74891_5_, EnumFacing.WEST, this.func_74877_c());
+                         case WEST:
+-                            return StructureVillagePieces.func_176066_d(
+-                                       p_74891_1_,
+-                                       p_74891_2_,
+-                                       p_74891_3_,
+-                                       this.field_74887_e.field_78897_a + p_74891_5_,
+-                                       this.field_74887_e.field_78895_b + p_74891_4_,
+-                                       this.field_74887_e.field_78896_c - 1,
+-                                       EnumFacing.NORTH,
+-                                       this.func_74877_c()
+-                                   );
++                            return StructureVillagePieces.func_176066_d(p_74891_1_, p_74891_2_, p_74891_3_, this.field_74887_e.field_78897_a + p_74891_5_, this.field_74887_e.field_78895_b + p_74891_4_, this.field_74887_e.field_78896_c - 1, EnumFacing.NORTH, this.func_74877_c());
+                         case EAST:
+-                            return StructureVillagePieces.func_176066_d(
+-                                       p_74891_1_,
+-                                       p_74891_2_,
+-                                       p_74891_3_,
+-                                       this.field_74887_e.field_78897_a + p_74891_5_,
+-                                       this.field_74887_e.field_78895_b + p_74891_4_,
+-                                       this.field_74887_e.field_78896_c - 1,
+-                                       EnumFacing.NORTH,
+-                                       this.func_74877_c()
+-                                   );
++                            return StructureVillagePieces.func_176066_d(p_74891_1_, p_74891_2_, p_74891_3_, this.field_74887_e.field_78897_a + p_74891_5_, this.field_74887_e.field_78895_b + p_74891_4_, this.field_74887_e.field_78896_c - 1, EnumFacing.NORTH, this.func_74877_c());
+                     }
+                 }
+                 else
+@@ -2027,9 +1698,7 @@
+             }
+ 
+             @Nullable
+-            protected StructureComponent func_74894_b(
+-                StructureVillagePieces.Start p_74894_1_, List<StructureComponent> p_74894_2_, Random p_74894_3_, int p_74894_4_, int p_74894_5_
+-            )
++            protected StructureComponent func_74894_b(StructureVillagePieces.Start p_74894_1_, List<StructureComponent> p_74894_2_, Random p_74894_3_, int p_74894_4_, int p_74894_5_)
+             {
+                 EnumFacing enumfacing = this.func_186165_e();
+ 
+@@ -2039,49 +1708,13 @@
+                     {
+                         case NORTH:
+                         default:
+-                            return StructureVillagePieces.func_176066_d(
+-                                       p_74894_1_,
+-                                       p_74894_2_,
+-                                       p_74894_3_,
+-                                       this.field_74887_e.field_78893_d + 1,
+-                                       this.field_74887_e.field_78895_b + p_74894_4_,
+-                                       this.field_74887_e.field_78896_c + p_74894_5_,
+-                                       EnumFacing.EAST,
+-                                       this.func_74877_c()
+-                                   );
++                            return StructureVillagePieces.func_176066_d(p_74894_1_, p_74894_2_, p_74894_3_, this.field_74887_e.field_78893_d + 1, this.field_74887_e.field_78895_b + p_74894_4_, this.field_74887_e.field_78896_c + p_74894_5_, EnumFacing.EAST, this.func_74877_c());
+                         case SOUTH:
+-                            return StructureVillagePieces.func_176066_d(
+-                                       p_74894_1_,
+-                                       p_74894_2_,
+-                                       p_74894_3_,
+-                                       this.field_74887_e.field_78893_d + 1,
+-                                       this.field_74887_e.field_78895_b + p_74894_4_,
+-                                       this.field_74887_e.field_78896_c + p_74894_5_,
+-                                       EnumFacing.EAST,
+-                                       this.func_74877_c()
+-                                   );
++                            return StructureVillagePieces.func_176066_d(p_74894_1_, p_74894_2_, p_74894_3_, this.field_74887_e.field_78893_d + 1, this.field_74887_e.field_78895_b + p_74894_4_, this.field_74887_e.field_78896_c + p_74894_5_, EnumFacing.EAST, this.func_74877_c());
+                         case WEST:
+-                            return StructureVillagePieces.func_176066_d(
+-                                       p_74894_1_,
+-                                       p_74894_2_,
+-                                       p_74894_3_,
+-                                       this.field_74887_e.field_78897_a + p_74894_5_,
+-                                       this.field_74887_e.field_78895_b + p_74894_4_,
+-                                       this.field_74887_e.field_78892_f + 1,
+-                                       EnumFacing.SOUTH,
+-                                       this.func_74877_c()
+-                                   );
++                            return StructureVillagePieces.func_176066_d(p_74894_1_, p_74894_2_, p_74894_3_, this.field_74887_e.field_78897_a + p_74894_5_, this.field_74887_e.field_78895_b + p_74894_4_, this.field_74887_e.field_78892_f + 1, EnumFacing.SOUTH, this.func_74877_c());
+                         case EAST:
+-                            return StructureVillagePieces.func_176066_d(
+-                                       p_74894_1_,
+-                                       p_74894_2_,
+-                                       p_74894_3_,
+-                                       this.field_74887_e.field_78897_a + p_74894_5_,
+-                                       this.field_74887_e.field_78895_b + p_74894_4_,
+-                                       this.field_74887_e.field_78892_f + 1,
+-                                       EnumFacing.SOUTH,
+-                                       this.func_74877_c()
+-                                   );
++                            return StructureVillagePieces.func_176066_d(p_74894_1_, p_74894_2_, p_74894_3_, this.field_74887_e.field_78897_a + p_74894_5_, this.field_74887_e.field_78895_b + p_74894_4_, this.field_74887_e.field_78892_f + 1, EnumFacing.SOUTH, this.func_74877_c());
+                     }
+                 }
+                 else
+@@ -2110,7 +1743,14 @@
                      }
                  }
  
@@ -98,26 +1056,32 @@
              }
  
              protected static boolean func_74895_a(StructureBoundingBox p_74895_0_)
-@@ -1755,7 +1780,7 @@
+@@ -2138,31 +1778,40 @@
+                         if (this.field_189929_i)
+                         {
                              EntityZombieVillager entityzombievillager = new EntityZombieVillager(p_74893_1_);
-                             entityzombievillager.func_70012_b((double)j + 0.5D, (double)k, (double)l + 0.5D, 0.0F, 0.0F);
-                             entityzombievillager.func_180482_a(p_74893_1_.func_175649_E(new BlockPos(entityzombievillager)), (IEntityLivingData)null);
+-                            entityzombievillager.func_70012_b((double)j + 0.5, (double)k, (double)l + 0.5, 0.0F, 0.0F);
+-                            entityzombievillager.func_180482_a(p_74893_1_.func_175649_E(new BlockPos(entityzombievillager)), null);
 -                            entityzombievillager.func_190733_a(this.func_180779_c(i, 0));
++                            entityzombievillager.func_70012_b((double)j + 0.5D, (double)k, (double)l + 0.5D, 0.0F, 0.0F);
++                            entityzombievillager.func_180482_a(p_74893_1_.func_175649_E(new BlockPos(entityzombievillager)), (IEntityLivingData)null);
 +                            entityzombievillager.setForgeProfession(this.chooseForgeProfession(i, net.minecraftforge.fml.common.registry.VillagerRegistry.FARMER));
                              entityzombievillager.func_110163_bv();
                              p_74893_1_.func_72838_d(entityzombievillager);
                          }
-@@ -1763,7 +1788,8 @@
+                         else
                          {
                              EntityVillager entityvillager = new EntityVillager(p_74893_1_);
-                             entityvillager.func_70012_b((double)j + 0.5D, (double)k, (double)l + 0.5D, 0.0F, 0.0F);
+-                            entityvillager.func_70012_b((double)j + 0.5, (double)k, (double)l + 0.5, 0.0F, 0.0F);
 -                            entityvillager.func_70938_b(this.func_180779_c(i, p_74893_1_.field_73012_v.nextInt(6)));
+-                            entityvillager.func_190672_a(p_74893_1_.func_175649_E(new BlockPos(entityvillager)), null, false);
++                            entityvillager.func_70012_b((double)j + 0.5D, (double)k, (double)l + 0.5D, 0.0F, 0.0F);
 +                            net.minecraftforge.fml.common.registry.VillagerRegistry.setRandomProfession(entityvillager, p_74893_1_.field_73012_v);
 +                            entityvillager.setProfession(this.chooseForgeProfession(i, entityvillager.getProfessionForge()));
-                             entityvillager.func_190672_a(p_74893_1_.func_175649_E(new BlockPos(entityvillager)), (IEntityLivingData)null, false);
++                            entityvillager.func_190672_a(p_74893_1_.func_175649_E(new BlockPos(entityvillager)), (IEntityLivingData)null, false);
                              p_74893_1_.func_72838_d(entityvillager);
                          }
-@@ -1771,13 +1797,21 @@
+                     }
                  }
              }
  
@@ -139,3 +1103,191 @@
                  if (this.field_189928_h == 1)
                  {
                      if (p_175847_1_.func_177230_c() == Blocks.field_150364_r || p_175847_1_.func_177230_c() == Blocks.field_150363_s)
+@@ -2199,10 +1848,7 @@
+                 {
+                     if (p_175847_1_.func_177230_c() == Blocks.field_150364_r || p_175847_1_.func_177230_c() == Blocks.field_150363_s)
+                     {
+-                        return Blocks.field_150364_r
+-                               .func_176223_P()
+-                               .func_177226_a(BlockOldLog.field_176301_b, BlockPlanks.EnumType.SPRUCE)
+-                               .func_177226_a(BlockLog.field_176299_a, p_175847_1_.func_177229_b(BlockLog.field_176299_a));
++                        return Blocks.field_150364_r.func_176223_P().func_177226_a(BlockOldLog.field_176301_b, BlockPlanks.EnumType.SPRUCE).func_177226_a(BlockLog.field_176299_a, p_175847_1_.func_177229_b(BlockLog.field_176299_a));
+                     }
+ 
+                     if (p_175847_1_.func_177230_c() == Blocks.field_150344_f)
+@@ -2224,10 +1870,7 @@
+                 {
+                     if (p_175847_1_.func_177230_c() == Blocks.field_150364_r || p_175847_1_.func_177230_c() == Blocks.field_150363_s)
+                     {
+-                        return Blocks.field_150363_s
+-                               .func_176223_P()
+-                               .func_177226_a(BlockNewLog.field_176300_b, BlockPlanks.EnumType.ACACIA)
+-                               .func_177226_a(BlockLog.field_176299_a, p_175847_1_.func_177229_b(BlockLog.field_176299_a));
++                        return Blocks.field_150363_s.func_176223_P().func_177226_a(BlockNewLog.field_176300_b, BlockPlanks.EnumType.ACACIA).func_177226_a(BlockLog.field_176299_a, p_175847_1_.func_177229_b(BlockLog.field_176299_a));
+                     }
+ 
+                     if (p_175847_1_.func_177230_c() == Blocks.field_150344_f)
+@@ -2242,10 +1885,7 @@
+ 
+                     if (p_175847_1_.func_177230_c() == Blocks.field_150347_e)
+                     {
+-                        return Blocks.field_150363_s
+-                               .func_176223_P()
+-                               .func_177226_a(BlockNewLog.field_176300_b, BlockPlanks.EnumType.ACACIA)
+-                               .func_177226_a(BlockLog.field_176299_a, BlockLog.EnumAxis.Y);
++                        return Blocks.field_150363_s.func_176223_P().func_177226_a(BlockNewLog.field_176300_b, BlockPlanks.EnumType.ACACIA).func_177226_a(BlockLog.field_176299_a, BlockLog.EnumAxis.Y);
+                     }
+ 
+                     if (p_175847_1_.func_177230_c() == Blocks.field_180407_aO)
+@@ -2270,9 +1910,7 @@
+                 }
+             }
+ 
+-            protected void func_189927_a(
+-                World p_189927_1_, StructureBoundingBox p_189927_2_, Random p_189927_3_, int p_189927_4_, int p_189927_5_, int p_189927_6_, EnumFacing p_189927_7_
+-            )
++            protected void func_189927_a(World p_189927_1_, StructureBoundingBox p_189927_2_, Random p_189927_3_, int p_189927_4_, int p_189927_5_, int p_189927_6_, EnumFacing p_189927_7_)
+             {
+                 if (!this.field_189929_i)
+                 {
+@@ -2280,27 +1918,15 @@
+                 }
+             }
+ 
+-            protected void func_189926_a(
+-                World p_189926_1_, EnumFacing p_189926_2_, int p_189926_3_, int p_189926_4_, int p_189926_5_, StructureBoundingBox p_189926_6_
+-            )
++            protected void func_189926_a(World p_189926_1_, EnumFacing p_189926_2_, int p_189926_3_, int p_189926_4_, int p_189926_5_, StructureBoundingBox p_189926_6_)
+             {
+                 if (!this.field_189929_i)
+                 {
+-                    this.func_175811_a(
+-                        p_189926_1_,
+-                        Blocks.field_150478_aa.func_176223_P().func_177226_a(BlockTorch.field_176596_a, p_189926_2_),
+-                        p_189926_3_,
+-                        p_189926_4_,
+-                        p_189926_5_,
+-                        p_189926_6_
+-                    );
++                    this.func_175811_a(p_189926_1_, Blocks.field_150478_aa.func_176223_P().func_177226_a(BlockTorch.field_176596_a, p_189926_2_), p_189926_3_, p_189926_4_, p_189926_5_, p_189926_6_);
+                 }
+             }
+ 
+-            @Override
+-            protected void func_175808_b(
+-                World p_175808_1_, IBlockState p_175808_2_, int p_175808_3_, int p_175808_4_, int p_175808_5_, StructureBoundingBox p_175808_6_
+-            )
++            protected void func_175808_b(World p_175808_1_, IBlockState p_175808_2_, int p_175808_3_, int p_175808_4_, int p_175808_5_, StructureBoundingBox p_175808_6_)
+             {
+                 IBlockState iblockstate = this.func_175847_a(p_175808_2_);
+                 super.func_175808_b(p_175808_1_, iblockstate, p_175808_3_, p_175808_4_, p_175808_5_, p_175808_6_);
+@@ -2333,52 +1959,14 @@
+                 }
+             }
+ 
+-            @Override
+             public void func_74861_a(StructureComponent p_74861_1_, List<StructureComponent> p_74861_2_, Random p_74861_3_)
+             {
+-                StructureVillagePieces.func_176069_e(
+-                    (StructureVillagePieces.Start)p_74861_1_,
+-                    p_74861_2_,
+-                    p_74861_3_,
+-                    this.field_74887_e.field_78897_a - 1,
+-                    this.field_74887_e.field_78894_e - 4,
+-                    this.field_74887_e.field_78896_c + 1,
+-                    EnumFacing.WEST,
+-                    this.func_74877_c()
+-                );
+-                StructureVillagePieces.func_176069_e(
+-                    (StructureVillagePieces.Start)p_74861_1_,
+-                    p_74861_2_,
+-                    p_74861_3_,
+-                    this.field_74887_e.field_78893_d + 1,
+-                    this.field_74887_e.field_78894_e - 4,
+-                    this.field_74887_e.field_78896_c + 1,
+-                    EnumFacing.EAST,
+-                    this.func_74877_c()
+-                );
+-                StructureVillagePieces.func_176069_e(
+-                    (StructureVillagePieces.Start)p_74861_1_,
+-                    p_74861_2_,
+-                    p_74861_3_,
+-                    this.field_74887_e.field_78897_a + 1,
+-                    this.field_74887_e.field_78894_e - 4,
+-                    this.field_74887_e.field_78896_c - 1,
+-                    EnumFacing.NORTH,
+-                    this.func_74877_c()
+-                );
+-                StructureVillagePieces.func_176069_e(
+-                    (StructureVillagePieces.Start)p_74861_1_,
+-                    p_74861_2_,
+-                    p_74861_3_,
+-                    this.field_74887_e.field_78897_a + 1,
+-                    this.field_74887_e.field_78894_e - 4,
+-                    this.field_74887_e.field_78892_f + 1,
+-                    EnumFacing.SOUTH,
+-                    this.func_74877_c()
+-                );
++                StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78897_a - 1, this.field_74887_e.field_78894_e - 4, this.field_74887_e.field_78896_c + 1, EnumFacing.WEST, this.func_74877_c());
++                StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78893_d + 1, this.field_74887_e.field_78894_e - 4, this.field_74887_e.field_78896_c + 1, EnumFacing.EAST, this.func_74877_c());
++                StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78897_a + 1, this.field_74887_e.field_78894_e - 4, this.field_74887_e.field_78896_c - 1, EnumFacing.NORTH, this.func_74877_c());
++                StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78897_a + 1, this.field_74887_e.field_78894_e - 4, this.field_74887_e.field_78892_f + 1, EnumFacing.SOUTH, this.func_74877_c());
+             }
+ 
+-            @Override
+             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             {
+                 if (this.field_143015_k < 0)
+@@ -2444,7 +2032,6 @@
+                 this.field_74910_c = p_i45565_3_.nextInt(3);
+             }
+ 
+-            @Override
+             protected void func_143012_a(NBTTagCompound p_143012_1_)
+             {
+                 super.func_143012_a(p_143012_1_);
+@@ -2452,7 +2039,6 @@
+                 p_143012_1_.func_74757_a("C", this.field_74909_b);
+             }
+ 
+-            @Override
+             protected void func_143011_b(NBTTagCompound p_143011_1_, TemplateManager p_143011_2_)
+             {
+                 super.func_143011_b(p_143011_1_, p_143011_2_);
+@@ -2460,24 +2046,12 @@
+                 this.field_74909_b = p_143011_1_.func_74767_n("C");
+             }
+ 
+-            public static StructureVillagePieces.WoodHut func_175853_a(
+-                    StructureVillagePieces.Start p_175853_0_,
+-                    List<StructureComponent> p_175853_1_,
+-                    Random p_175853_2_,
+-                    int p_175853_3_,
+-                    int p_175853_4_,
+-                    int p_175853_5_,
+-                    EnumFacing p_175853_6_,
+-                    int p_175853_7_
+-                )
++            public static StructureVillagePieces.WoodHut func_175853_a(StructureVillagePieces.Start p_175853_0_, List<StructureComponent> p_175853_1_, Random p_175853_2_, int p_175853_3_, int p_175853_4_, int p_175853_5_, EnumFacing p_175853_6_, int p_175853_7_)
+             {
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175853_3_, p_175853_4_, p_175853_5_, 0, 0, 0, 4, 6, 5, p_175853_6_);
+-                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175853_1_, structureboundingbox) == null
+-                       ? new StructureVillagePieces.WoodHut(p_175853_0_, p_175853_7_, p_175853_2_, structureboundingbox, p_175853_6_)
+-                       : null;
++                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175853_1_, structureboundingbox) == null ? new StructureVillagePieces.WoodHut(p_175853_0_, p_175853_7_, p_175853_2_, structureboundingbox, p_175853_6_) : null;
+             }
+ 
+-            @Override
+             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             {
+                 if (this.field_143015_k < 0)
+@@ -2541,8 +2115,7 @@
+                 this.func_175811_a(p_74875_1_, Blocks.field_150350_a.func_176223_P(), 1, 2, 0, p_74875_3_);
+                 this.func_189927_a(p_74875_1_, p_74875_3_, p_74875_2_, 1, 1, 0, EnumFacing.NORTH);
+ 
+-                if (this.func_175807_a(p_74875_1_, 1, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a
+-                        && this.func_175807_a(p_74875_1_, 1, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
++                if (this.func_175807_a(p_74875_1_, 1, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a && this.func_175807_a(p_74875_1_, 1, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
+                 {
+                     this.func_175811_a(p_74875_1_, iblockstate2, 1, 0, -1, p_74875_3_);
+ 

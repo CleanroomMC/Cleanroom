@@ -32,16 +32,18 @@
      }
  
      public ChunkPos func_187264_a()
-@@ -49,7 +58,7 @@
+@@ -49,9 +58,7 @@
      {
          if (this.field_187283_c.contains(p_187276_1_))
          {
--            field_187281_a.debug("Failed to add player. {} already is in chunk {}, {}", p_187276_1_, this.field_187284_d.field_77276_a, this.field_187284_d.field_77275_b);
+-            field_187281_a.debug(
+-                "Failed to add player. {} already is in chunk {}, {}", p_187276_1_, this.field_187284_d.field_77276_a, this.field_187284_d.field_77275_b
+-            );
 +            field_187281_a.debug("Failed to add player. {} already is in chunk {}, {}", p_187276_1_, Integer.valueOf(this.field_187284_d.field_77276_a), Integer.valueOf(this.field_187284_d.field_77275_b));
          }
          else
          {
-@@ -63,6 +72,8 @@
+@@ -65,6 +72,8 @@
              if (this.field_187290_j)
              {
                  this.func_187278_c(p_187276_1_);
@@ -50,7 +52,7 @@
              }
          }
      }
-@@ -71,6 +82,20 @@
+@@ -73,6 +82,20 @@
      {
          if (this.field_187283_c.contains(p_187277_1_))
          {
@@ -71,7 +73,7 @@
              if (this.field_187290_j)
              {
                  p_187277_1_.field_71135_a.func_147359_a(new SPacketUnloadChunk(this.field_187284_d.field_77276_a, this.field_187284_d.field_77275_b));
-@@ -78,6 +103,8 @@
+@@ -80,6 +103,8 @@
  
              this.field_187283_c.remove(p_187277_1_);
  
@@ -80,7 +82,7 @@
              if (this.field_187283_c.isEmpty())
              {
                  this.field_187282_b.func_187305_b(this);
-@@ -87,6 +114,7 @@
+@@ -89,6 +114,7 @@
  
      public boolean func_187268_a(boolean p_187268_1_)
      {
@@ -88,7 +90,27 @@
          if (this.field_187286_f != null)
          {
              return true;
-@@ -125,12 +153,15 @@
+@@ -97,17 +123,11 @@
+         {
+             if (p_187268_1_)
+             {
+-                this.field_187286_f = this.field_187282_b
+-                                      .func_72688_a()
+-                                      .func_72863_F()
+-                                      .func_186025_d(this.field_187284_d.field_77276_a, this.field_187284_d.field_77275_b);
++                this.field_187286_f = this.field_187282_b.func_72688_a().func_72863_F().func_186025_d(this.field_187284_d.field_77276_a, this.field_187284_d.field_77275_b);
+             }
+             else
+             {
+-                this.field_187286_f = this.field_187282_b
+-                                      .func_72688_a()
+-                                      .func_72863_F()
+-                                      .func_186028_c(this.field_187284_d.field_77276_a, this.field_187284_d.field_77275_b);
++                this.field_187286_f = this.field_187282_b.func_72688_a().func_72863_F().func_186028_c(this.field_187284_d.field_77276_a, this.field_187284_d.field_77275_b);
+             }
+ 
+             return this.field_187286_f != null;
+@@ -133,12 +153,15 @@
              this.field_187287_g = 0;
              this.field_187288_h = 0;
              this.field_187290_j = true;
@@ -104,7 +126,7 @@
              }
  
              return true;
-@@ -169,7 +200,7 @@
+@@ -177,7 +200,7 @@
  
              this.field_187288_h |= 1 << (p_187265_2_ >> 4);
  
@@ -113,7 +135,7 @@
              {
                  short short1 = (short)(p_187265_1_ << 12 | p_187265_3_ << 8 | p_187265_2_);
  
-@@ -180,7 +211,8 @@
+@@ -188,7 +211,8 @@
                          return;
                      }
                  }
@@ -123,7 +145,13 @@
                  this.field_187285_e[this.field_187287_g++] = short1;
              }
          }
-@@ -197,6 +229,7 @@
+@@ -200,11 +224,12 @@
+         {
+             for (int i = 0; i < this.field_187283_c.size(); ++i)
+             {
+-                this.field_187283_c.get(i).field_71135_a.func_147359_a(p_187267_1_);
++                (this.field_187283_c.get(i)).field_71135_a.func_147359_a(p_187267_1_);
+             }
          }
      }
  
@@ -131,7 +159,7 @@
      public void func_187280_d()
      {
          if (this.field_187290_j && this.field_187286_f != null)
-@@ -210,28 +243,32 @@
+@@ -218,28 +243,32 @@
                      int k = (this.field_187285_e[0] >> 8 & 15) + this.field_187284_d.field_77275_b * 16;
                      BlockPos blockpos = new BlockPos(i, j, k);
                      this.func_187267_a(new SPacketBlockChange(this.field_187282_b.func_72688_a(), blockpos));
@@ -168,7 +196,7 @@
                          {
                              this.func_187273_a(this.field_187282_b.func_72688_a().func_175625_s(blockpos1));
                          }
-@@ -310,5 +347,10 @@
+@@ -318,5 +347,10 @@
          }
  
          return d0;

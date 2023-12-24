@@ -1,6 +1,21 @@
 --- before/net/minecraft/nbt/NBTBase.java
 +++ after/net/minecraft/nbt/NBTBase.java
-@@ -16,10 +16,6 @@
+@@ -6,24 +6,16 @@
+ 
+ public abstract class NBTBase
+ {
+-    public static final String[] field_82578_b = new String[]
+-        {
+-            "END", "BYTE", "SHORT", "INT", "LONG", "FLOAT", "DOUBLE", "BYTE[]", "STRING", "LIST", "COMPOUND", "INT[]", "LONG[]"
+-        };
++    public static final String[] field_82578_b = new String[] {"END", "BYTE", "SHORT", "INT", "LONG", "FLOAT", "DOUBLE", "BYTE[]", "STRING", "LIST", "COMPOUND", "INT[]", "LONG[]"};
+ 
+     abstract void func_74734_a(DataOutput p_74734_1_) throws IOException;
+ 
+     abstract void func_152446_a(DataInput p_152446_1_, int p_152446_2_, NBTSizeTracker p_152446_3_) throws IOException;
+ 
+-    @Override
+     public abstract String toString();
  
      public abstract byte func_74732_a();
  
@@ -11,3 +26,17 @@
      protected static NBTBase func_150284_a(byte p_150284_0_)
      {
          switch (p_150284_0_)
+@@ -103,13 +95,11 @@
+         return false;
+     }
+ 
+-    @Override
+     public boolean equals(Object p_equals_1_)
+     {
+         return p_equals_1_ instanceof NBTBase && this.func_74732_a() == ((NBTBase)p_equals_1_).func_74732_a();
+     }
+ 
+-    @Override
+     public int hashCode()
+     {
+         return this.func_74732_a();

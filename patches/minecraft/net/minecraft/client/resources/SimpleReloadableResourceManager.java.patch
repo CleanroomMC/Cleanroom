@@ -13,15 +13,43 @@
      private final MetadataSerializer field_110547_c;
  
      public SimpleReloadableResourceManager(MetadataSerializer p_i1299_1_)
-@@ -92,6 +92,7 @@
+@@ -51,13 +51,11 @@
+         }
+     }
  
+-    @Override
+     public Set<String> func_135055_a()
+     {
+         return this.field_135057_d;
+     }
+ 
+-    @Override
+     public IResource func_110536_a(ResourceLocation p_110536_1_) throws IOException
+     {
+         IResourceManager iresourcemanager = this.field_110548_a.get(p_110536_1_.func_110624_b());
+@@ -72,7 +70,6 @@
+         }
+     }
+ 
+-    @Override
+     public List<IResource> func_135056_b(ResourceLocation p_135056_1_) throws IOException
+     {
+         IResourceManager iresourcemanager = this.field_110548_a.get(p_135056_1_.func_110624_b());
+@@ -93,11 +90,11 @@
+         this.field_135057_d.clear();
+     }
+ 
+-    @Override
      public void func_110541_a(List<IResourcePack> p_110541_1_)
      {
 +        net.minecraftforge.fml.common.ProgressManager.ProgressBar resReload = net.minecraftforge.fml.common.ProgressManager.push("Loading Resources", p_110541_1_.size()+1, true);
          this.func_110543_a();
-         field_147967_a.info("Reloading ResourceManager: {}", (Object)field_130074_a.join(Iterables.transform(p_110541_1_, new Function<IResourcePack, String>()
+-        field_147967_a.info("Reloading ResourceManager: {}", field_130074_a.join(Iterables.transform(p_110541_1_, new Function<IResourcePack, String>()
++        field_147967_a.info("Reloading ResourceManager: {}", (Object)field_130074_a.join(Iterables.transform(p_110541_1_, new Function<IResourcePack, String>()
          {
-@@ -103,23 +104,33 @@
+             public String apply(@Nullable IResourcePack p_apply_1_)
+             {
+@@ -107,24 +104,33 @@
  
          for (IResourcePack iresourcepack : p_110541_1_)
          {
@@ -34,6 +62,7 @@
 +        net.minecraftforge.fml.common.ProgressManager.pop(resReload);
      }
  
+-    @Override
      public void func_110542_a(IResourceManagerReloadListener p_110542_1_)
      {
 +        net.minecraftforge.fml.common.ProgressManager.ProgressBar resReload = net.minecraftforge.fml.common.ProgressManager.push("Loading Resource", 1);

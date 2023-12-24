@@ -1,6 +1,44 @@
 --- before/net/minecraft/client/settings/GameSettings.java
 +++ after/net/minecraft/client/settings/GameSettings.java
-@@ -82,8 +82,8 @@
+@@ -52,35 +52,26 @@
+     private static final Gson field_151450_ay = new Gson();
+     private static final Type field_151449_az = new ParameterizedType()
+     {
+-        @Override
+         public Type[] getActualTypeArguments()
+         {
+             return new Type[] {String.class};
+         }
+-        @Override
+         public Type getRawType()
+         {
+             return List.class;
+         }
+-        @Override
+         public Type getOwnerType()
+         {
+             return null;
+         }
+     };
+     public static final Splitter field_189990_a = Splitter.on(':');
+-    private static final String[] field_74367_ae = new String[]
+-        {
+-            "options.guiScale.auto", "options.guiScale.small", "options.guiScale.normal", "options.guiScale.large"
+-        };
++    private static final String[] field_74367_ae = new String[] {"options.guiScale.auto", "options.guiScale.small", "options.guiScale.normal", "options.guiScale.large"};
+     private static final String[] field_74364_ag = new String[] {"options.particles.all", "options.particles.decreased", "options.particles.minimal"};
+     private static final String[] field_98303_au = new String[] {"options.ao.off", "options.ao.min", "options.ao.max"};
+     private static final String[] field_181149_aW = new String[] {"options.off", "options.clouds.fast", "options.clouds.fancy"};
+     private static final String[] field_186713_aK = new String[] {"options.off", "options.attack.crosshair", "options.attack.hotbar"};
+-    public static final String[] field_193632_b = new String[]
+-        {
+-            "options.narrator.off", "options.narrator.all", "options.narrator.chat", "options.narrator.system"
+-        };
++    public static final String[] field_193632_b = new String[] {"options.narrator.off", "options.narrator.all", "options.narrator.chat", "options.narrator.system"};
+     public float field_74341_c = 0.5F;
+     public boolean field_74338_d;
+     public int field_151451_c = -1;
+@@ -91,8 +82,8 @@
      public int field_74345_l = 2;
      public boolean field_74347_j = true;
      public int field_74348_k = 2;
@@ -11,11 +49,55 @@
      public EntityPlayer.EnumChatVisibility field_74343_n = EntityPlayer.EnumChatVisibility.FULL;
      public boolean field_74344_o = true;
      public boolean field_74359_p = true;
-@@ -142,29 +142,35 @@
-     public KeyBinding[] field_151456_ac = new KeyBinding[] {new KeyBinding("key.hotbar.1", 2, "key.categories.inventory"), new KeyBinding("key.hotbar.2", 3, "key.categories.inventory"), new KeyBinding("key.hotbar.3", 4, "key.categories.inventory"), new KeyBinding("key.hotbar.4", 5, "key.categories.inventory"), new KeyBinding("key.hotbar.5", 6, "key.categories.inventory"), new KeyBinding("key.hotbar.6", 7, "key.categories.inventory"), new KeyBinding("key.hotbar.7", 8, "key.categories.inventory"), new KeyBinding("key.hotbar.8", 9, "key.categories.inventory"), new KeyBinding("key.hotbar.9", 10, "key.categories.inventory")};
+@@ -148,72 +139,38 @@
+     public KeyBinding field_152395_am = new KeyBinding("key.fullscreen", 87, "key.categories.misc");
+     public KeyBinding field_178883_an = new KeyBinding("key.spectatorOutlines", 0, "key.categories.misc");
+     public KeyBinding field_194146_ao = new KeyBinding("key.advancements", 38, "key.categories.misc");
+-    public KeyBinding[] field_151456_ac = new KeyBinding[]
+-    {
+-        new KeyBinding("key.hotbar.1", 2, "key.categories.inventory"),
+-        new KeyBinding("key.hotbar.2", 3, "key.categories.inventory"),
+-        new KeyBinding("key.hotbar.3", 4, "key.categories.inventory"),
+-        new KeyBinding("key.hotbar.4", 5, "key.categories.inventory"),
+-        new KeyBinding("key.hotbar.5", 6, "key.categories.inventory"),
+-        new KeyBinding("key.hotbar.6", 7, "key.categories.inventory"),
+-        new KeyBinding("key.hotbar.7", 8, "key.categories.inventory"),
+-        new KeyBinding("key.hotbar.8", 9, "key.categories.inventory"),
+-        new KeyBinding("key.hotbar.9", 10, "key.categories.inventory")
+-    };
++    public KeyBinding[] field_151456_ac = new KeyBinding[] {new KeyBinding("key.hotbar.1", 2, "key.categories.inventory"), new KeyBinding("key.hotbar.2", 3, "key.categories.inventory"), new KeyBinding("key.hotbar.3", 4, "key.categories.inventory"), new KeyBinding("key.hotbar.4", 5, "key.categories.inventory"), new KeyBinding("key.hotbar.5", 6, "key.categories.inventory"), new KeyBinding("key.hotbar.6", 7, "key.categories.inventory"), new KeyBinding("key.hotbar.7", 8, "key.categories.inventory"), new KeyBinding("key.hotbar.8", 9, "key.categories.inventory"), new KeyBinding("key.hotbar.9", 10, "key.categories.inventory")};
      public KeyBinding field_193629_ap = new KeyBinding("key.saveToolbarActivator", 46, "key.categories.creative");
      public KeyBinding field_193630_aq = new KeyBinding("key.loadToolbarActivator", 45, "key.categories.creative");
--    public KeyBinding[] field_74324_K = ArrayUtils.addAll(new KeyBinding[] {this.field_74312_F, this.field_74313_G, this.field_74351_w, this.field_74370_x, this.field_74368_y, this.field_74366_z, this.field_74314_A, this.field_74311_E, this.field_151444_V, this.field_74316_C, this.field_151445_Q, this.field_74310_D, this.field_74321_H, this.field_74322_I, this.field_74323_J, this.field_151447_Z, this.field_151457_aa, this.field_151458_ab, this.field_152395_am, this.field_178883_an, this.field_186718_X, this.field_193629_ap, this.field_193630_aq, this.field_194146_ao}, this.field_151456_ac);
+-    public KeyBinding[] field_74324_K = ArrayUtils.addAll(
+-                                            new KeyBinding[]
+-                                            {
+-                                                this.field_74312_F,
+-                                                this.field_74313_G,
+-                                                this.field_74351_w,
+-                                                this.field_74370_x,
+-                                                this.field_74368_y,
+-                                                this.field_74366_z,
+-                                                this.field_74314_A,
+-                                                this.field_74311_E,
+-                                                this.field_151444_V,
+-                                                this.field_74316_C,
+-                                                this.field_151445_Q,
+-                                                this.field_74310_D,
+-                                                this.field_74321_H,
+-                                                this.field_74322_I,
+-                                                this.field_74323_J,
+-                                                this.field_151447_Z,
+-                                                this.field_151457_aa,
+-                                                this.field_151458_ab,
+-                                                this.field_152395_am,
+-                                                this.field_178883_an,
+-                                                this.field_186718_X,
+-                                                this.field_193629_ap,
+-                                                this.field_193630_aq,
+-                                                this.field_194146_ao
+-                                            },
+-                                            this.field_151456_ac
+-                                        );
 +    public KeyBinding[] field_74324_K;
      protected Minecraft field_74317_L;
      private File field_74354_ai;
@@ -52,7 +134,7 @@
          this.field_74317_L = p_i46326_1_;
          this.field_74354_ai = new File(p_i46326_2_, "options.txt");
  
-@@ -183,6 +189,12 @@
+@@ -232,6 +189,12 @@
  
      public GameSettings()
      {
@@ -65,7 +147,27 @@
      }
  
      public static String func_74298_c(int p_74298_0_)
-@@ -289,7 +301,7 @@
+@@ -260,14 +223,14 @@
+     {
+         int i = p_100015_0_.func_151463_i();
+ 
+-        if (i == 0 || i >= 256)
+-        {
+-            return false;
+-        }
+-        else
++        if (i != 0 && i < 256)
+         {
+             return i < 0 ? Mouse.isButtonDown(i + 100) : Keyboard.isKeyDown(i);
+         }
++        else
++        {
++            return false;
++        }
+     }
+ 
+     public void func_151440_a(KeyBinding p_151440_1_, int p_151440_2_)
+@@ -338,7 +301,7 @@
                  this.field_74317_L.func_147117_R().func_147633_a(this.field_151442_I);
                  this.field_74317_L.func_110434_K().func_110577_a(TextureMap.field_110575_b);
                  this.field_74317_L.func_147117_R().func_174937_a(false, this.field_151442_I > 0);
@@ -74,7 +176,18 @@
              }
          }
  
-@@ -351,7 +363,7 @@
+@@ -353,9 +316,7 @@
+     {
+         if (p_74306_1_ == GameSettings.Options.RENDER_DISTANCE)
+         {
+-            this.func_74304_a(
+-                p_74306_1_, MathHelper.func_76131_a((float)(this.field_151451_c + p_74306_2_), p_74306_1_.func_186707_e(), p_74306_1_.func_148267_f())
+-            );
++            this.func_74304_a(p_74306_1_, MathHelper.func_76131_a((float)(this.field_151451_c + p_74306_2_), p_74306_1_.func_186707_e(), p_74306_1_.func_148267_f()));
+         }
+ 
+         if (p_74306_1_ == GameSettings.Options.MAIN_HAND)
+@@ -402,7 +363,7 @@
          if (p_74306_1_ == GameSettings.Options.ANAGLYPH)
          {
              this.field_74337_g = !this.field_74337_g;
@@ -83,7 +196,29 @@
          }
  
          if (p_74306_1_ == GameSettings.Options.GRAPHICS)
-@@ -714,6 +726,7 @@
+@@ -658,9 +619,7 @@
+             }
+             else if (p_74297_1_ == GameSettings.Options.FRAMERATE_LIMIT)
+             {
+-                return f1 == p_74297_1_.field_148272_O
+-                       ? s + I18n.func_135052_a("options.framerateLimit.max")
+-                       : s + I18n.func_135052_a("options.framerate", (int)f1);
++                return f1 == p_74297_1_.field_148272_O ? s + I18n.func_135052_a("options.framerateLimit.max") : s + I18n.func_135052_a("options.framerate", (int)f1);
+             }
+             else if (p_74297_1_ == GameSettings.Options.RENDER_CLOUDS)
+             {
+@@ -757,9 +716,7 @@
+         }
+         else if (p_74297_1_ == GameSettings.Options.NARRATOR)
+         {
+-            return NarratorChatListener.field_193643_a.func_193640_a()
+-                   ? s + func_74299_a(field_193632_b, this.field_192571_R)
+-                   : s + I18n.func_135052_a("options.narrator.notavailable");
++            return NarratorChatListener.field_193643_a.func_193640_a() ? s + func_74299_a(field_193632_b, this.field_192571_R) : s + I18n.func_135052_a("options.narrator.notavailable");
+         }
+         else
+         {
+@@ -769,6 +726,7 @@
  
      public void func_74300_a()
      {
@@ -91,7 +226,7 @@
          try
          {
              if (!this.field_74354_ai.exists())
-@@ -722,7 +735,7 @@
+@@ -777,7 +735,7 @@
              }
  
              this.field_186714_aM.clear();
@@ -100,16 +235,19 @@
              NBTTagCompound nbttagcompound = new NBTTagCompound();
  
              for (String s : list)
-@@ -732,7 +745,7 @@
+@@ -787,9 +745,9 @@
                      Iterator<String> iterator = field_189990_a.omitEmptyStrings().limit(2).split(s).iterator();
                      nbttagcompound.func_74778_a(iterator.next(), iterator.next());
                  }
 -                catch (Exception exception)
 +                catch (Exception var10)
                  {
-                     field_151454_ax.warn("Skipping bad option: {}", (Object)s);
+-                    field_151454_ax.warn("Skipping bad option: {}", s);
++                    field_151454_ax.warn("Skipping bad option: {}", (Object)s);
                  }
-@@ -871,21 +884,21 @@
+             }
+ 
+@@ -926,21 +884,21 @@
  
                      if ("resourcePacks".equals(s1))
                      {
@@ -135,7 +273,7 @@
                          }
                      }
  
-@@ -1058,7 +1071,12 @@
+@@ -1113,7 +1071,12 @@
                      {
                          if (s1.equals("key_" + keybinding.func_151464_g()))
                          {
@@ -149,7 +287,7 @@
                          }
                      }
  
-@@ -1066,7 +1084,7 @@
+@@ -1121,7 +1084,7 @@
                      {
                          if (s1.equals("soundCategory_" + soundcategory.func_187948_a()))
                          {
@@ -158,7 +296,7 @@
                          }
                      }
  
-@@ -1078,7 +1096,7 @@
+@@ -1133,7 +1096,7 @@
                          }
                      }
                  }
@@ -167,7 +305,7 @@
                  {
                      field_151454_ax.warn("Skipping bad option: {}:{}", s1, s2);
                  }
-@@ -1086,10 +1104,11 @@
+@@ -1141,10 +1104,11 @@
  
              KeyBinding.func_74508_b();
          }
@@ -181,7 +319,7 @@
      }
  
      private NBTTagCompound func_189988_a(NBTTagCompound p_189988_1_)
-@@ -1100,8 +1119,9 @@
+@@ -1155,8 +1119,9 @@
          {
              i = Integer.parseInt(p_189988_1_.func_74779_i("version"));
          }
@@ -192,7 +330,7 @@
          }
  
          return this.field_74317_L.func_184126_aj().func_188251_a(FixTypes.OPTIONS, p_189988_1_, i);
-@@ -1121,6 +1141,7 @@
+@@ -1176,6 +1141,7 @@
  
      public void func_74303_b()
      {
@@ -200,7 +338,7 @@
          PrintWriter printwriter = null;
  
          try
-@@ -1195,7 +1216,8 @@
+@@ -1250,7 +1216,8 @@
  
              for (KeyBinding keybinding : this.field_74324_K)
              {
@@ -210,7 +348,7 @@
              }
  
              for (SoundCategory soundcategory : SoundCategory.values())
-@@ -1222,13 +1244,13 @@
+@@ -1277,13 +1244,13 @@
  
      public float func_186711_a(SoundCategory p_186711_1_)
      {
@@ -226,7 +364,19 @@
      }
  
      public void func_82879_c()
-@@ -1429,4 +1451,35 @@
+@@ -1297,10 +1264,7 @@
+                 i |= enumplayermodelparts.func_179327_a();
+             }
+ 
+-            this.field_74317_L
+-            .field_71439_g
+-            .field_71174_a
+-            .func_147297_a(new CPacketClientSettings(this.field_74363_ab, this.field_151451_c, this.field_74343_n, this.field_74344_o, i, this.field_186715_A));
++            this.field_74317_L.field_71439_g.field_71174_a.func_147297_a(new CPacketClientSettings(this.field_74363_ab, this.field_151451_c, this.field_74343_n, this.field_74344_o, i, this.field_186715_A));
+         }
+     }
+ 
+@@ -1487,4 +1451,35 @@
              return p_148264_1_;
          }
      }

@@ -1,6 +1,6 @@
 --- before/net/minecraft/entity/passive/EntitySheep.java
 +++ after/net/minecraft/entity/passive/EntitySheep.java
-@@ -46,9 +46,9 @@
+@@ -46,12 +46,11 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  
@@ -11,15 +11,60 @@
 +    private static final DataParameter<Byte> field_184774_bv = EntityDataManager.<Byte>func_187226_a(EntitySheep.class, DataSerializers.field_187191_a);
      private final InventoryCrafting field_90016_e = new InventoryCrafting(new Container()
      {
+-        @Override
          public boolean func_75145_c(EntityPlayer p_75145_1_)
-@@ -115,13 +115,13 @@
+         {
+             return false;
+@@ -82,29 +81,26 @@
+         this.field_90016_e.func_70299_a(1, new ItemStack(Items.field_151100_aR));
+     }
+ 
+-    @Override
+     protected void func_184651_r()
+     {
+         this.field_146087_bs = new EntityAIEatGrass(this);
+         this.field_70714_bg.func_75776_a(0, new EntityAISwimming(this));
+-        this.field_70714_bg.func_75776_a(1, new EntityAIPanic(this, 1.25));
+-        this.field_70714_bg.func_75776_a(2, new EntityAIMate(this, 1.0));
+-        this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.1, Items.field_151015_O, false));
+-        this.field_70714_bg.func_75776_a(4, new EntityAIFollowParent(this, 1.1));
++        this.field_70714_bg.func_75776_a(1, new EntityAIPanic(this, 1.25D));
++        this.field_70714_bg.func_75776_a(2, new EntityAIMate(this, 1.0D));
++        this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.1D, Items.field_151015_O, false));
++        this.field_70714_bg.func_75776_a(4, new EntityAIFollowParent(this, 1.1D));
+         this.field_70714_bg.func_75776_a(5, this.field_146087_bs);
+-        this.field_70714_bg.func_75776_a(6, new EntityAIWanderAvoidWater(this, 1.0));
++        this.field_70714_bg.func_75776_a(6, new EntityAIWanderAvoidWater(this, 1.0D));
+         this.field_70714_bg.func_75776_a(7, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
+         this.field_70714_bg.func_75776_a(8, new EntityAILookIdle(this));
+     }
+ 
+-    @Override
+     protected void func_70619_bc()
+     {
+         this.field_70899_e = this.field_146087_bs.func_151499_f();
+         super.func_70619_bc();
+     }
+ 
+-    @Override
+     public void func_70636_d()
+     {
+         if (this.field_70170_p.field_72995_K)
+@@ -115,23 +111,20 @@
+         super.func_70636_d();
+     }
+ 
+-    @Override
+     protected void func_110147_ax()
      {
          super.func_110147_ax();
-         this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(8.0D);
--        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a((double)0.23F);
+-        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(8.0);
+-        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.23F);
++        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(8.0D);
 +        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.23000000417232513D);
      }
  
+-    @Override
      protected void func_70088_a()
      {
          super.func_70088_a();
@@ -28,7 +73,19 @@
      }
  
      @Nullable
-@@ -185,42 +185,11 @@
+-    @Override
+     protected ResourceLocation func_184647_J()
+     {
+         if (this.func_70892_o())
+@@ -180,7 +173,6 @@
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    @Override
+     public void func_70103_a(byte p_70103_1_)
+     {
+         if (p_70103_1_ == 10)
+@@ -193,43 +185,11 @@
          }
      }
  
@@ -55,14 +112,15 @@
 -        if (this.field_70899_e > 4 && this.field_70899_e <= 36)
 -        {
 -            float f = ((float)(this.field_70899_e - 4) - p_70890_1_) / 32.0F;
--            return ((float)Math.PI / 5F) + ((float)Math.PI * 7F / 100F) * MathHelper.func_76126_a(f * 28.7F);
+-            return (float)(Math.PI / 5) + ((float)Math.PI * 7F / 100F) * MathHelper.func_76126_a(f * 28.7F);
 -        }
 -        else
 -        {
--            return this.field_70899_e > 0 ? ((float)Math.PI / 5F) : this.field_70125_A * ((float)Math.PI / 180F);
+-            return this.field_70899_e > 0 ? (float)(Math.PI / 5) : this.field_70125_A * (float)(Math.PI / 180.0);
 -        }
 -    }
 -
+-    @Override
      public boolean func_184645_a(EntityPlayer p_184645_1_, EnumHand p_184645_2_)
      {
          ItemStack itemstack = p_184645_1_.func_184586_b(p_184645_2_);
@@ -72,10 +130,22 @@
          {
              if (!this.field_70170_p.field_72995_K)
              {
-@@ -248,6 +217,37 @@
+@@ -238,9 +198,7 @@
+ 
+                 for (int j = 0; j < i; ++j)
+                 {
+-                    EntityItem entityitem = this.func_70099_a(
+-                                                new ItemStack(Item.func_150898_a(Blocks.field_150325_L), 1, this.func_175509_cj().func_176765_a()), 1.0F
+-                                            );
++                    EntityItem entityitem = this.func_70099_a(new ItemStack(Item.func_150898_a(Blocks.field_150325_L), 1, this.func_175509_cj().func_176765_a()), 1.0F);
+                     entityitem.field_70181_x += (double)(this.field_70146_Z.nextFloat() * 0.05F);
+                     entityitem.field_70159_w += (double)((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.1F);
+                     entityitem.field_70179_y += (double)((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.1F);
+@@ -259,7 +217,37 @@
          EntityLiving.func_189752_a(p_189802_0_, EntitySheep.class);
      }
  
+-    @Override
 +    @SideOnly(Side.CLIENT)
 +    public float func_70894_j(float p_70894_1_)
 +    {
@@ -110,7 +180,41 @@
      public void func_70014_b(NBTTagCompound p_70014_1_)
      {
          super.func_70014_b(p_70014_1_);
-@@ -284,31 +284,31 @@
+@@ -267,7 +255,6 @@
+         p_70014_1_.func_74774_a("Color", (byte)this.func_175509_cj().func_176765_a());
+     }
+ 
+-    @Override
+     public void func_70037_a(NBTTagCompound p_70037_1_)
+     {
+         super.func_70037_a(p_70037_1_);
+@@ -275,25 +262,21 @@
+         this.func_175512_b(EnumDyeColor.func_176764_b(p_70037_1_.func_74771_c("Color")));
+     }
+ 
+-    @Override
+     protected SoundEvent func_184639_G()
+     {
+         return SoundEvents.field_187757_eG;
+     }
+ 
+-    @Override
+     protected SoundEvent func_184601_bQ(DamageSource p_184601_1_)
+     {
+         return SoundEvents.field_187761_eI;
+     }
+ 
+-    @Override
+     protected SoundEvent func_184615_bR()
+     {
+         return SoundEvents.field_187759_eH;
+     }
+ 
+-    @Override
+     protected void func_180429_a(BlockPos p_180429_1_, Block p_180429_2_)
+     {
+         this.func_184185_a(SoundEvents.field_187765_eK, 0.15F, 1.0F);
+@@ -301,31 +284,31 @@
  
      public EnumDyeColor func_175509_cj()
      {
@@ -149,12 +253,26 @@
          }
      }
  
-@@ -362,6 +362,21 @@
+@@ -363,7 +346,6 @@
+         return entitysheep1;
+     }
+ 
+-    @Override
+     public void func_70615_aA()
+     {
+         this.func_70893_e(false);
+@@ -375,7 +357,6 @@
+     }
+ 
+     @Nullable
+-    @Override
+     public IEntityLivingData func_180482_a(DifficultyInstance p_180482_1_, @Nullable IEntityLivingData p_180482_2_)
+     {
          p_180482_2_ = super.func_180482_a(p_180482_1_, p_180482_2_);
-         this.func_175512_b(func_175510_a(this.field_70170_p.field_73012_v));
+@@ -383,6 +364,21 @@
          return p_180482_2_;
-+    }
-+
+     }
+ 
 +    @Override public boolean isShearable(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos){ return !this.func_70892_o() && !this.func_70631_g_(); }
 +    @Override
 +    public java.util.List<ItemStack> onSheared(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune)
@@ -168,6 +286,16 @@
 +
 +        this.func_184185_a(SoundEvents.field_187763_eJ, 1.0F, 1.0F);
 +        return ret;
++    }
++
+     private EnumDyeColor func_175511_a(EntityAnimal p_175511_1_, EntityAnimal p_175511_2_)
+     {
+         int i = ((EntitySheep)p_175511_1_).func_175509_cj().func_176767_b();
+@@ -404,7 +400,6 @@
+         return EnumDyeColor.func_176766_a(k);
      }
  
-     private EnumDyeColor func_175511_a(EntityAnimal p_175511_1_, EntityAnimal p_175511_2_)
+-    @Override
+     public float func_70047_e()
+     {
+         return 0.95F * this.field_70131_O;

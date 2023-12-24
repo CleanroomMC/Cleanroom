@@ -9,29 +9,107 @@
      private int field_175540_bm;
      private int field_175535_bn;
      private boolean field_175537_bp;
-@@ -79,9 +79,9 @@
-         this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.0D, Items.field_151172_bF, false));
-         this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.0D, Items.field_151150_bK, false));
-         this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.0D, Item.func_150898_a(Blocks.field_150327_N), false));
--        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity<>(this, EntityPlayer.class, 8.0F, 2.2D, 2.2D));
--        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity<>(this, EntityWolf.class, 10.0F, 2.2D, 2.2D));
--        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity<>(this, EntityMob.class, 4.0F, 2.2D, 2.2D));
+@@ -68,30 +68,28 @@
+         this.func_70105_a(0.4F, 0.5F);
+         this.field_70767_i = new EntityRabbit.RabbitJumpHelper(this);
+         this.field_70765_h = new EntityRabbit.RabbitMoveHelper(this);
+-        this.func_175515_b(0.0);
++        this.func_175515_b(0.0D);
+     }
+ 
+-    @Override
+     protected void func_184651_r()
+     {
+         this.field_70714_bg.func_75776_a(1, new EntityAISwimming(this));
+-        this.field_70714_bg.func_75776_a(1, new EntityRabbit.AIPanic(this, 2.2));
+-        this.field_70714_bg.func_75776_a(2, new EntityAIMate(this, 0.8));
+-        this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.0, Items.field_151172_bF, false));
+-        this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.0, Items.field_151150_bK, false));
+-        this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.0, Item.func_150898_a(Blocks.field_150327_N), false));
+-        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity<>(this, EntityPlayer.class, 8.0F, 2.2, 2.2));
+-        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity<>(this, EntityWolf.class, 10.0F, 2.2, 2.2));
+-        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity<>(this, EntityMob.class, 4.0F, 2.2, 2.2));
++        this.field_70714_bg.func_75776_a(1, new EntityRabbit.AIPanic(this, 2.2D));
++        this.field_70714_bg.func_75776_a(2, new EntityAIMate(this, 0.8D));
++        this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.0D, Items.field_151172_bF, false));
++        this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.0D, Items.field_151150_bK, false));
++        this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.0D, Item.func_150898_a(Blocks.field_150327_N), false));
 +        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity(this, EntityPlayer.class, 8.0F, 2.2D, 2.2D));
 +        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity(this, EntityWolf.class, 10.0F, 2.2D, 2.2D));
 +        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity(this, EntityMob.class, 4.0F, 2.2D, 2.2D));
          this.field_70714_bg.func_75776_a(5, new EntityRabbit.AIRaidFarm(this));
-         this.field_70714_bg.func_75776_a(6, new EntityAIWanderAvoidWater(this, 0.6D));
+-        this.field_70714_bg.func_75776_a(6, new EntityAIWanderAvoidWater(this, 0.6));
++        this.field_70714_bg.func_75776_a(6, new EntityAIWanderAvoidWater(this, 0.6D));
          this.field_70714_bg.func_75776_a(11, new EntityAIWatchClosest(this, EntityPlayer.class, 10.0F));
-@@ -89,7 +89,7 @@
+     }
  
+-    @Override
      protected float func_175134_bD()
      {
--        if (!this.field_70123_F && (!this.field_70765_h.func_75640_a() || !(this.field_70765_h.func_179919_e() > this.field_70163_u + 0.5D)))
+-        if (!this.field_70123_F && (!this.field_70765_h.func_75640_a() || !(this.field_70765_h.func_179919_e() > this.field_70163_u + 0.5)))
 +        if (!this.field_70123_F && (!this.field_70765_h.func_75640_a() || this.field_70765_h.func_179919_e() <= this.field_70163_u + 0.5D))
          {
              Path path = this.field_70699_by.func_75505_d();
  
-@@ -164,7 +164,7 @@
+@@ -99,13 +97,13 @@
+             {
+                 Vec3d vec3d = path.func_75878_a(this);
+ 
+-                if (vec3d.field_72448_b > this.field_70163_u + 0.5)
++                if (vec3d.field_72448_b > this.field_70163_u + 0.5D)
+                 {
+                     return 0.5F;
+                 }
+             }
+ 
+-            return this.field_70765_h.func_75638_b() <= 0.6 ? 0.2F : 0.3F;
++            return this.field_70765_h.func_75638_b() <= 0.6D ? 0.2F : 0.3F;
+         }
+         else
+         {
+@@ -113,17 +111,16 @@
+         }
+     }
+ 
+-    @Override
+     protected void func_70664_aZ()
+     {
+         super.func_70664_aZ();
+         double d0 = this.field_70765_h.func_75638_b();
+ 
+-        if (d0 > 0.0)
++        if (d0 > 0.0D)
+         {
+             double d1 = this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y;
+ 
+-            if (d1 < 0.010000000000000002)
++            if (d1 < 0.010000000000000002D)
+             {
+                 this.func_191958_b(0.0F, 0.0F, 1.0F, 0.1F);
+             }
+@@ -147,16 +144,13 @@
+         this.field_70765_h.func_75642_a(this.field_70765_h.func_179917_d(), this.field_70765_h.func_179919_e(), this.field_70765_h.func_179918_f(), p_175515_1_);
+     }
+ 
+-    @Override
+     public void func_70637_d(boolean p_70637_1_)
+     {
+         super.func_70637_d(p_70637_1_);
+ 
+         if (p_70637_1_)
+         {
+-            this.func_184185_a(
+-                this.func_184771_da(), this.func_70599_aP(), ((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.2F + 1.0F) * 0.8F
+-            );
++            this.func_184185_a(this.func_184771_da(), this.func_70599_aP(), ((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.2F + 1.0F) * 0.8F);
+         }
+     }
+ 
+@@ -167,14 +161,12 @@
+         this.field_175540_bm = 0;
+     }
+ 
+-    @Override
      protected void func_70088_a()
      {
          super.func_70088_a();
@@ -39,26 +117,147 @@
 +        this.field_70180_af.func_187214_a(field_184773_bv, Integer.valueOf(0));
      }
  
+-    @Override
      public void func_70619_bc()
-@@ -238,7 +238,7 @@
+     {
+         if (this.field_175538_bq > 0)
+@@ -204,13 +196,10 @@
+             {
+                 EntityLivingBase entitylivingbase = this.func_70638_az();
+ 
+-                if (entitylivingbase != null && this.func_70068_e(entitylivingbase) < 16.0)
++                if (entitylivingbase != null && this.func_70068_e(entitylivingbase) < 16.0D)
+                 {
+                     this.func_175533_a(entitylivingbase.field_70165_t, entitylivingbase.field_70161_v);
+-                    this.field_70765_h
+-                    .func_75642_a(
+-                        entitylivingbase.field_70165_t, entitylivingbase.field_70163_u, entitylivingbase.field_70161_v, this.field_70765_h.func_75638_b()
+-                    );
++                    this.field_70765_h.func_75642_a(entitylivingbase.field_70165_t, entitylivingbase.field_70163_u, entitylivingbase.field_70161_v, this.field_70765_h.func_75638_b());
+                     this.func_184770_cZ();
+                     this.field_175537_bp = true;
+                 }
+@@ -243,15 +232,13 @@
+         this.field_175537_bp = this.field_70122_E;
+     }
+ 
+-    @Override
+     public void func_174830_Y()
+     {
+     }
  
      private void func_175533_a(double p_175533_1_, double p_175533_3_)
      {
--        this.field_70177_z = (float)(MathHelper.func_181159_b(p_175533_3_ - this.field_70161_v, p_175533_1_ - this.field_70165_t) * (double)(180F / (float)Math.PI)) - 90.0F;
+-        this.field_70177_z = (float)(MathHelper.func_181159_b(p_175533_3_ - this.field_70161_v, p_175533_1_ - this.field_70165_t) * 180.0F / (float)Math.PI)
+-                             - 90.0F;
 +        this.field_70177_z = (float)(MathHelper.func_181159_b(p_175533_3_ - this.field_70161_v, p_175533_1_ - this.field_70165_t) * (180D / Math.PI)) - 90.0F;
      }
  
      private void func_175518_cr()
-@@ -289,7 +289,7 @@
+@@ -266,7 +253,7 @@
+ 
+     private void func_175530_ct()
+     {
+-        if (this.field_70765_h.func_75638_b() < 2.2)
++        if (this.field_70765_h.func_75638_b() < 2.2D)
+         {
+             this.field_175538_bq = 10;
+         }
+@@ -282,7 +269,6 @@
+         this.func_175520_cs();
+     }
+ 
+-    @Override
+     public void func_70636_d()
+     {
+         super.func_70636_d();
+@@ -299,12 +285,11 @@
+         }
+     }
+ 
+-    @Override
+     protected void func_110147_ax()
      {
          super.func_110147_ax();
-         this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(3.0D);
--        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a((double)0.3F);
+-        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(3.0);
+-        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.3F);
++        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(3.0D);
 +        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.30000001192092896D);
      }
  
      public static void func_189801_b(DataFixer p_189801_0_)
-@@ -393,7 +393,7 @@
+@@ -312,7 +297,6 @@
+         EntityLiving.func_189752_a(p_189801_0_, EntityRabbit.class);
+     }
+ 
+-    @Override
+     public void func_70014_b(NBTTagCompound p_70014_1_)
+     {
+         super.func_70014_b(p_70014_1_);
+@@ -320,7 +304,6 @@
+         p_70014_1_.func_74768_a("MoreCarrotTicks", this.field_175541_bs);
+     }
+ 
+-    @Override
+     public void func_70037_a(NBTTagCompound p_70037_1_)
+     {
+         super.func_70037_a(p_70037_1_);
+@@ -333,25 +316,21 @@
+         return SoundEvents.field_187824_en;
+     }
+ 
+-    @Override
+     protected SoundEvent func_184639_G()
+     {
+         return SoundEvents.field_187816_ej;
+     }
+ 
+-    @Override
+     protected SoundEvent func_184601_bQ(DamageSource p_184601_1_)
+     {
+         return SoundEvents.field_187822_em;
+     }
+ 
+-    @Override
+     protected SoundEvent func_184615_bR()
+     {
+         return SoundEvents.field_187820_el;
+     }
+ 
+-    @Override
+     public boolean func_70652_k(Entity p_70652_1_)
+     {
+         if (this.func_175531_cl() == 99)
+@@ -365,20 +344,17 @@
+         }
+     }
+ 
+-    @Override
+     public SoundCategory func_184176_by()
+     {
+         return this.func_175531_cl() == 99 ? SoundCategory.HOSTILE : SoundCategory.NEUTRAL;
+     }
+ 
+-    @Override
+     public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
+     {
+         return this.func_180431_b(p_70097_1_) ? false : super.func_70097_a(p_70097_1_, p_70097_2_);
+     }
+ 
+     @Nullable
+-    @Override
+     protected ResourceLocation func_184647_J()
+     {
+         return LootTableList.field_186393_A;
+@@ -410,7 +386,6 @@
+         return entityrabbit;
+     }
+ 
+-    @Override
+     public boolean func_70877_b(ItemStack p_70877_1_)
+     {
+         return this.func_175525_a(p_70877_1_.func_77973_b());
+@@ -418,18 +393,18 @@
  
      public int func_175531_cl()
      {
@@ -67,9 +266,11 @@
      }
  
      public void func_175529_r(int p_175529_1_)
-@@ -402,9 +402,9 @@
+     {
+         if (p_175529_1_ == 99)
          {
-             this.func_110148_a(SharedMonsterAttributes.field_188791_g).func_111128_a(8.0D);
+-            this.func_110148_a(SharedMonsterAttributes.field_188791_g).func_111128_a(8.0);
++            this.func_110148_a(SharedMonsterAttributes.field_188791_g).func_111128_a(8.0D);
              this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIEvilAttack(this));
 -            this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, false));
 -            this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
@@ -80,7 +281,7 @@
  
              if (!this.func_145818_k_())
              {
-@@ -412,7 +412,7 @@
+@@ -437,11 +412,10 @@
              }
          }
  
@@ -89,16 +290,73 @@
      }
  
      @Nullable
-@@ -543,7 +543,7 @@
+-    @Override
+     public IEntityLivingData func_180482_a(DifficultyInstance p_180482_1_, @Nullable IEntityLivingData p_180482_2_)
+     {
+         p_180482_2_ = super.func_180482_a(p_180482_1_, p_180482_2_);
+@@ -496,22 +470,11 @@
+     {
+         BlockCarrot blockcarrot = (BlockCarrot)Blocks.field_150459_bM;
+         IBlockState iblockstate = blockcarrot.func_185528_e(blockcarrot.func_185526_g());
+-        this.field_70170_p
+-        .func_175688_a(
+-            EnumParticleTypes.BLOCK_DUST,
+-            this.field_70165_t + (double)(this.field_70146_Z.nextFloat() * this.field_70130_N * 2.0F) - (double)this.field_70130_N,
+-            this.field_70163_u + 0.5 + (double)(this.field_70146_Z.nextFloat() * this.field_70131_O),
+-            this.field_70161_v + (double)(this.field_70146_Z.nextFloat() * this.field_70130_N * 2.0F) - (double)this.field_70130_N,
+-            0.0,
+-            0.0,
+-            0.0,
+-            Block.func_176210_f(iblockstate)
+-        );
++        this.field_70170_p.func_175688_a(EnumParticleTypes.BLOCK_DUST, this.field_70165_t + (double)(this.field_70146_Z.nextFloat() * this.field_70130_N * 2.0F) - (double)this.field_70130_N, this.field_70163_u + 0.5D + (double)(this.field_70146_Z.nextFloat() * this.field_70131_O), this.field_70161_v + (double)(this.field_70146_Z.nextFloat() * this.field_70130_N * 2.0F) - (double)this.field_70130_N, 0.0D, 0.0D, 0.0D, Block.func_176210_f(iblockstate));
+         this.field_175541_bs = 40;
+     }
+ 
+     @SideOnly(Side.CLIENT)
+-    @Override
+     public void func_70103_a(byte p_70103_1_)
+     {
+         if (p_70103_1_ == 1)
+@@ -536,7 +499,6 @@
+                 this.field_179511_d = p_i46403_1_;
+             }
+ 
+-            @Override
+             public boolean func_75250_a()
+             {
+                 return this.field_179511_d.func_175531_cl() != 99 && super.func_75250_a();
+@@ -547,10 +509,9 @@
+         {
+             public AIEvilAttack(EntityRabbit p_i45867_1_)
+             {
+-                super(p_i45867_1_, 1.4, true);
++                super(p_i45867_1_, 1.4D, true);
+             }
+ 
+-            @Override
+             protected double func_179512_a(EntityLivingBase p_179512_1_)
+             {
+                 return (double)(4.0F + p_179512_1_.field_70130_N);
+@@ -567,7 +528,6 @@
+                 this.field_179486_b = p_i45861_1_;
+             }
+ 
+-            @Override
+             public void func_75246_d()
+             {
+                 super.func_75246_d();
+@@ -583,16 +543,15 @@
  
              public AIRaidFarm(EntityRabbit p_i45860_1_)
              {
--                super(p_i45860_1_, (double)0.7F, 16);
+-                super(p_i45860_1_, 0.7F, 16);
 +                super(p_i45860_1_, 0.699999988079071D, 16);
                  this.field_179500_c = p_i45860_1_;
              }
  
-@@ -551,7 +551,7 @@
+-            @Override
+             public boolean func_75250_a()
              {
                  if (this.field_179496_a <= 0)
                  {
@@ -107,7 +365,34 @@
                      {
                          return false;
                      }
-@@ -583,16 +583,16 @@
+@@ -605,25 +564,15 @@
+                 return super.func_75250_a();
+             }
+ 
+-            @Override
+             public boolean func_75253_b()
+             {
+                 return this.field_179499_e && super.func_75253_b();
+             }
+ 
+-            @Override
+             public void func_75246_d()
+             {
+                 super.func_75246_d();
+-                this.field_179500_c
+-                .func_70671_ap()
+-                .func_75650_a(
+-                    (double)this.field_179494_b.func_177958_n() + 0.5,
+-                    (double)(this.field_179494_b.func_177956_o() + 1),
+-                    (double)this.field_179494_b.func_177952_p() + 0.5,
+-                    10.0F,
+-                    (float)this.field_179500_c.func_70646_bf()
+-                );
++                this.field_179500_c.func_70671_ap().func_75650_a((double)this.field_179494_b.func_177958_n() + 0.5D, (double)(this.field_179494_b.func_177956_o() + 1), (double)this.field_179494_b.func_177952_p() + 0.5D, 10.0F, (float)this.field_179500_c.func_70646_bf());
+ 
+                 if (this.func_179487_f())
+                 {
+@@ -634,16 +583,16 @@
  
                      if (this.field_179499_e && block instanceof BlockCarrot)
                      {
@@ -127,3 +412,56 @@
                              world.func_175718_b(2001, blockpos, Block.func_176210_f(iblockstate));
                          }
  
+@@ -655,7 +604,6 @@
+                 }
+             }
+ 
+-            @Override
+             protected boolean func_179488_a(World p_179488_1_, BlockPos p_179488_2_)
+             {
+                 Block block = p_179488_1_.func_180495_p(p_179488_2_).func_177230_c();
+@@ -703,7 +651,6 @@
+             this.field_180068_d = p_180066_1_;
+         }
+ 
+-        @Override
+         public void func_75661_b()
+         {
+             if (this.field_75662_b)
+@@ -725,14 +672,11 @@
+                 this.field_179929_g = p_i45862_1_;
+             }
+ 
+-            @Override
+             public void func_75641_c()
+             {
+-                if (this.field_179929_g.field_70122_E
+-                        && !this.field_179929_g.field_70703_bu
+-                        && !((EntityRabbit.RabbitJumpHelper)this.field_179929_g.field_70767_i).func_180067_c())
++                if (this.field_179929_g.field_70122_E && !this.field_179929_g.field_70703_bu && !((EntityRabbit.RabbitJumpHelper)this.field_179929_g.field_70767_i).func_180067_c())
+                 {
+-                    this.field_179929_g.func_175515_b(0.0);
++                    this.field_179929_g.func_175515_b(0.0D);
+                 }
+                 else if (this.func_75640_a())
+                 {
+@@ -742,17 +686,16 @@
+                 super.func_75641_c();
+             }
+ 
+-            @Override
+             public void func_75642_a(double p_75642_1_, double p_75642_3_, double p_75642_5_, double p_75642_7_)
+             {
+                 if (this.field_179929_g.func_70090_H())
+                 {
+-                    p_75642_7_ = 1.5;
++                    p_75642_7_ = 1.5D;
+                 }
+ 
+                 super.func_75642_a(p_75642_1_, p_75642_3_, p_75642_5_, p_75642_7_);
+ 
+-                if (p_75642_7_ > 0.0)
++                if (p_75642_7_ > 0.0D)
+                 {
+                     this.field_188492_j = p_75642_7_;
+                 }

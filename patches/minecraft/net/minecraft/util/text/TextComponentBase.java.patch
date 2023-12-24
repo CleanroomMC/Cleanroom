@@ -1,6 +1,6 @@
 --- before/net/minecraft/util/text/TextComponentBase.java
 +++ after/net/minecraft/util/text/TextComponentBase.java
-@@ -11,7 +11,7 @@
+@@ -11,10 +11,9 @@
  
  public abstract class TextComponentBase implements ITextComponent
  {
@@ -8,38 +8,113 @@
 +    protected List<ITextComponent> field_150264_a = Lists.<ITextComponent>newArrayList();
      private Style field_150263_b;
  
+-    @Override
      public ITextComponent func_150257_a(ITextComponent p_150257_1_)
-@@ -60,7 +60,7 @@
+     {
+         p_150257_1_.func_150256_b().func_150221_a(this.func_150256_b());
+@@ -22,19 +21,16 @@
+         return this;
+     }
  
+-    @Override
+     public List<ITextComponent> func_150253_a()
+     {
+         return this.field_150264_a;
+     }
+ 
+-    @Override
+     public ITextComponent func_150258_a(String p_150258_1_)
+     {
+         return this.func_150257_a(new TextComponentString(p_150258_1_));
+     }
+ 
+-    @Override
+     public ITextComponent func_150255_a(Style p_150255_1_)
+     {
+         this.field_150263_b = p_150255_1_;
+@@ -47,7 +43,6 @@
+         return this;
+     }
+ 
+-    @Override
+     public Style func_150256_b()
+     {
+         if (this.field_150263_b == null)
+@@ -63,13 +58,11 @@
+         return this.field_150263_b;
+     }
+ 
+-    @Override
      public Iterator<ITextComponent> iterator()
      {
 -        return Iterators.concat(Iterators.forArray(this), func_150262_a(this.field_150264_a));
 +        return Iterators.<ITextComponent>concat(Iterators.forArray(this), func_150262_a(this.field_150264_a));
      }
  
+-    @Override
      public final String func_150260_c()
-@@ -75,7 +75,6 @@
+     {
+         StringBuilder stringbuilder = new StringBuilder();
+@@ -82,8 +75,6 @@
          return stringbuilder.toString();
      }
  
 -    @SideOnly(Side.CLIENT)
+-    @Override
      public final String func_150254_d()
      {
          StringBuilder stringbuilder = new StringBuilder();
-@@ -104,7 +103,7 @@
+@@ -96,7 +87,7 @@
+             {
+                 stringbuilder.append(itextcomponent.func_150256_b().func_150218_j());
+                 stringbuilder.append(s);
+-                stringbuilder.append(TextFormatting.RESET);
++                stringbuilder.append((Object)TextFormatting.RESET);
+             }
+         }
+ 
+@@ -105,16 +96,14 @@
+ 
+     public static Iterator<ITextComponent> func_150262_a(Iterable<ITextComponent> p_150262_0_)
+     {
+-        Iterator<ITextComponent> iterator = Iterators.concat(
+-                                                Iterators.transform(p_150262_0_.iterator(), new Function<ITextComponent, Iterator<ITextComponent>>()
++        Iterator<ITextComponent> iterator = Iterators.concat(Iterators.transform(p_150262_0_.iterator(), new Function<ITextComponent, Iterator<ITextComponent>>()
+         {
+             public Iterator<ITextComponent> apply(@Nullable ITextComponent p_apply_1_)
+             {
                  return p_apply_1_.iterator();
              }
-         }));
+-        })
+-                                            );
 -        return Iterators.transform(iterator, new Function<ITextComponent, ITextComponent>()
++        }));
 +        iterator = Iterators.transform(iterator, new Function<ITextComponent, ITextComponent>()
          {
              public ITextComponent apply(@Nullable ITextComponent p_apply_1_)
              {
-@@ -113,6 +112,7 @@
+@@ -123,9 +112,9 @@
                  return itextcomponent;
              }
          });
 +        return iterator;
      }
  
+-    @Override
      public boolean equals(Object p_equals_1_)
+     {
+         if (this == p_equals_1_)
+@@ -143,13 +132,11 @@
+         }
+     }
+ 
+-    @Override
+     public int hashCode()
+     {
+         return 31 * this.field_150263_b.hashCode() + this.field_150264_a.hashCode();
+     }
+ 
+-    @Override
+     public String toString()
+     {
+         return "BaseComponent{style=" + this.field_150263_b + ", siblings=" + this.field_150264_a + '}';

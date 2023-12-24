@@ -19,8 +19,19 @@
  
      public MapData(String p_i2140_1_)
      {
-@@ -45,7 +45,7 @@
+@@ -37,16 +37,15 @@
+     public void func_176054_a(double p_176054_1_, double p_176054_3_, int p_176054_5_)
+     {
+         int i = 128 * (1 << p_176054_5_);
+-        int j = MathHelper.func_76128_c((p_176054_1_ + 64.0) / (double)i);
+-        int k = MathHelper.func_76128_c((p_176054_3_ + 64.0) / (double)i);
++        int j = MathHelper.func_76128_c((p_176054_1_ + 64.0D) / (double)i);
++        int k = MathHelper.func_76128_c((p_176054_3_ + 64.0D) / (double)i);
+         this.field_76201_a = j * i + i / 2 - 64;
+         this.field_76199_b = k * i + i / 2 - 64;
+     }
  
+-    @Override
      public void func_76184_a(NBTTagCompound p_76184_1_)
      {
 -        this.field_76200_c = p_76184_1_.func_74771_c("dimension");
@@ -28,8 +39,11 @@
          this.field_76201_a = p_76184_1_.func_74762_e("xCenter");
          this.field_76199_b = p_76184_1_.func_74762_e("zCenter");
          this.field_76197_d = p_76184_1_.func_74771_c("scale");
-@@ -97,7 +97,7 @@
+@@ -96,10 +95,9 @@
+         }
+     }
  
+-    @Override
      public NBTTagCompound func_189551_b(NBTTagCompound p_189551_1_)
      {
 -        p_189551_1_.func_74774_a("dimension", this.field_76200_c);
@@ -37,13 +51,86 @@
          p_189551_1_.func_74768_a("xCenter", this.field_76201_a);
          p_189551_1_.func_74768_a("zCenter", this.field_76199_b);
          p_189551_1_.func_74774_a("scale", this.field_76197_d);
-@@ -205,12 +205,12 @@
+@@ -129,19 +127,11 @@
+         {
+             MapData.MapInfo mapdata$mapinfo1 = this.field_76196_g.get(i);
+ 
+-            if (!mapdata$mapinfo1.field_76211_a.field_70128_L
+-                    && (mapdata$mapinfo1.field_76211_a.field_71071_by.func_70431_c(p_76191_2_) || p_76191_2_.func_82839_y()))
++            if (!mapdata$mapinfo1.field_76211_a.field_70128_L && (mapdata$mapinfo1.field_76211_a.field_71071_by.func_70431_c(p_76191_2_) || p_76191_2_.func_82839_y()))
+             {
+                 if (!p_76191_2_.func_82839_y() && mapdata$mapinfo1.field_76211_a.field_71093_bK == this.field_76200_c && this.field_186210_e)
+                 {
+-                    this.func_191095_a(
+-                        MapDecoration.Type.PLAYER,
+-                        mapdata$mapinfo1.field_76211_a.field_70170_p,
+-                        mapdata$mapinfo1.field_76211_a.func_70005_c_(),
+-                        mapdata$mapinfo1.field_76211_a.field_70165_t,
+-                        mapdata$mapinfo1.field_76211_a.field_70161_v,
+-                        (double)mapdata$mapinfo1.field_76211_a.field_70177_z
+-                    );
++                    this.func_191095_a(MapDecoration.Type.PLAYER, mapdata$mapinfo1.field_76211_a.field_70170_p, mapdata$mapinfo1.field_76211_a.func_70005_c_(), mapdata$mapinfo1.field_76211_a.field_70165_t, mapdata$mapinfo1.field_76211_a.field_70161_v, (double)mapdata$mapinfo1.field_76211_a.field_70177_z);
+                 }
+             }
+             else
+@@ -155,14 +145,7 @@
+         {
+             EntityItemFrame entityitemframe = p_76191_2_.func_82836_z();
+             BlockPos blockpos = entityitemframe.func_174857_n();
+-            this.func_191095_a(
+-                MapDecoration.Type.FRAME,
+-                p_76191_1_.field_70170_p,
+-                "frame-" + entityitemframe.func_145782_y(),
+-                (double)blockpos.func_177958_n(),
+-                (double)blockpos.func_177952_p(),
+-                (double)(entityitemframe.field_174860_b.func_176736_b() * 90)
+-            );
++            this.func_191095_a(MapDecoration.Type.FRAME, p_76191_1_.field_70170_p, "frame-" + entityitemframe.func_145782_y(), (double)blockpos.func_177958_n(), (double)blockpos.func_177952_p(), (double)(entityitemframe.field_174860_b.func_176736_b() * 90));
+         }
+ 
+         if (p_76191_2_.func_77942_o() && p_76191_2_.func_77978_p().func_150297_b("Decorations", 9))
+@@ -175,14 +158,7 @@
+ 
+                 if (!this.field_76203_h.containsKey(nbttagcompound.func_74779_i("id")))
+                 {
+-                    this.func_191095_a(
+-                        MapDecoration.Type.func_191159_a(nbttagcompound.func_74771_c("type")),
+-                        p_76191_1_.field_70170_p,
+-                        nbttagcompound.func_74779_i("id"),
+-                        nbttagcompound.func_74769_h("x"),
+-                        nbttagcompound.func_74769_h("z"),
+-                        nbttagcompound.func_74769_h("rot")
+-                    );
++                    this.func_191095_a(MapDecoration.Type.func_191159_a(nbttagcompound.func_74771_c("type")), p_76191_1_.field_70170_p, nbttagcompound.func_74779_i("id"), nbttagcompound.func_74769_h("x"), nbttagcompound.func_74769_h("z"), nbttagcompound.func_74769_h("rot"));
+                 }
+             }
+         }
+@@ -207,7 +183,7 @@
+         nbttagcompound.func_74778_a("id", p_191094_2_);
+         nbttagcompound.func_74780_a("x", (double)p_191094_1_.func_177958_n());
+         nbttagcompound.func_74780_a("z", (double)p_191094_1_.func_177952_p());
+-        nbttagcompound.func_74780_a("rot", 180.0);
++        nbttagcompound.func_74780_a("rot", 180.0D);
+         nbttaglist.func_74742_a(nbttagcompound);
+ 
+         if (p_191094_3_.func_191162_c())
+@@ -222,19 +198,19 @@
+         int i = 1 << this.field_76197_d;
+         float f = (float)(p_191095_4_ - (double)this.field_76201_a) / (float)i;
+         float f1 = (float)(p_191095_6_ - (double)this.field_76199_b) / (float)i;
+-        byte b0 = (byte)((int)((double)(f * 2.0F) + 0.5));
+-        byte b1 = (byte)((int)((double)(f1 * 2.0F) + 0.5));
++        byte b0 = (byte)((int)((double)(f * 2.0F) + 0.5D));
++        byte b1 = (byte)((int)((double)(f1 * 2.0F) + 0.5D));
+         int j = 63;
+         byte b2;
  
          if (f >= -63.0F && f1 >= -63.0F && f <= 63.0F && f1 <= 63.0F)
          {
--            p_191095_8_ += p_191095_8_ < 0.0D ? -8.0D : 8.0D;
+-            p_191095_8_ += p_191095_8_ < 0.0 ? -8.0 : 8.0;
+-            b2 = (byte)((int)(p_191095_8_ * 16.0 / 360.0));
 +            p_191095_8_ = p_191095_8_ + (p_191095_8_ < 0.0D ? -8.0D : 8.0D);
-             b2 = (byte)((int)(p_191095_8_ * 16.0D / 360.0D));
++            b2 = (byte)((int)(p_191095_8_ * 16.0D / 360.0D));
  
 -            if (this.field_76200_c < 0)
 +            if (p_191095_2_.field_73011_w.shouldMapSpin(p_191095_3_, p_191095_4_, p_191095_6_, p_191095_8_))
@@ -53,3 +140,39 @@
                  b2 = (byte)(l * l * 34187121 + l * 121 >> 15 & 15);
              }
          }
+@@ -342,33 +318,11 @@
+             if (this.field_176105_d)
+             {
+                 this.field_176105_d = false;
+-                return new SPacketMaps(
+-                           p_176101_1_.func_77960_j(),
+-                           MapData.this.field_76197_d,
+-                           MapData.this.field_186210_e,
+-                           MapData.this.field_76203_h.values(),
+-                           MapData.this.field_76198_e,
+-                           this.field_176106_e,
+-                           this.field_176103_f,
+-                           this.field_176104_g + 1 - this.field_176106_e,
+-                           this.field_176108_h + 1 - this.field_176103_f
+-                       );
++                return new SPacketMaps(p_176101_1_.func_77960_j(), MapData.this.field_76197_d, MapData.this.field_186210_e, MapData.this.field_76203_h.values(), MapData.this.field_76198_e, this.field_176106_e, this.field_176103_f, this.field_176104_g + 1 - this.field_176106_e, this.field_176108_h + 1 - this.field_176103_f);
+             }
+             else
+             {
+-                return this.field_176109_i++ % 5 == 0
+-                       ? new SPacketMaps(
+-                           p_176101_1_.func_77960_j(),
+-                           MapData.this.field_76197_d,
+-                           MapData.this.field_186210_e,
+-                           MapData.this.field_76203_h.values(),
+-                           MapData.this.field_76198_e,
+-                           0,
+-                           0,
+-                           0,
+-                           0
+-                       )
+-                       : null;
++                return this.field_176109_i++ % 5 == 0 ? new SPacketMaps(p_176101_1_.func_77960_j(), MapData.this.field_76197_d, MapData.this.field_186210_e, MapData.this.field_76203_h.values(), MapData.this.field_76198_e, 0, 0, 0, 0) : null;
+             }
+         }
+ 

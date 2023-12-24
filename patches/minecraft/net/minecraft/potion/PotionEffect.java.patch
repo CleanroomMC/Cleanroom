@@ -29,7 +29,39 @@
          return this.field_188420_b;
      }
  
-@@ -184,7 +192,8 @@
+@@ -135,7 +143,6 @@
+         return this.field_188420_b.func_76393_a();
+     }
+ 
+-    @Override
+     public String toString()
+     {
+         String s;
+@@ -162,7 +169,6 @@
+         return s;
+     }
+ 
+-    @Override
+     public boolean equals(Object p_equals_1_)
+     {
+         if (this == p_equals_1_)
+@@ -176,22 +182,18 @@
+         else
+         {
+             PotionEffect potioneffect = (PotionEffect)p_equals_1_;
+-            return this.field_76460_b == potioneffect.field_76460_b
+-                   && this.field_76461_c == potioneffect.field_76461_c
+-                   && this.field_82723_d == potioneffect.field_82723_d
+-                   && this.field_82724_e == potioneffect.field_82724_e
+-                   && this.field_188420_b.equals(potioneffect.field_188420_b);
++            return this.field_76460_b == potioneffect.field_76460_b && this.field_76461_c == potioneffect.field_76461_c && this.field_82723_d == potioneffect.field_82723_d && this.field_82724_e == potioneffect.field_82724_e && this.field_188420_b.equals(potioneffect.field_188420_b);
+         }
+     }
+ 
+-    @Override
+     public int hashCode()
+     {
+         int i = this.field_188420_b.hashCode();
          i = 31 * i + this.field_76460_b;
          i = 31 * i + this.field_76461_c;
          i = 31 * i + (this.field_82723_d ? 1 : 0);
@@ -39,7 +71,7 @@
      }
  
      public NBTTagCompound func_82719_a(NBTTagCompound p_82719_1_)
-@@ -194,12 +203,13 @@
+@@ -201,12 +203,13 @@
          p_82719_1_.func_74768_a("Duration", this.func_76459_b());
          p_82719_1_.func_74757_a("Ambient", this.func_82720_e());
          p_82719_1_.func_74757_a("ShowParticles", this.func_188418_e());
@@ -54,7 +86,7 @@
          Potion potion = Potion.func_188412_a(i);
  
          if (potion == null)
-@@ -218,7 +228,7 @@
+@@ -225,7 +228,7 @@
                  flag1 = p_82722_0_.func_74767_n("ShowParticles");
              }
  
@@ -63,7 +95,7 @@
          }
      }
  
-@@ -228,15 +238,96 @@
+@@ -235,24 +238,96 @@
          this.field_100013_f = p_100012_1_;
      }
  
@@ -76,7 +108,16 @@
      public int compareTo(PotionEffect p_compareTo_1_)
      {
          int i = 32147;
--        return (this.func_76459_b() <= 32147 || p_compareTo_1_.func_76459_b() <= 32147) && (!this.func_82720_e() || !p_compareTo_1_.func_82720_e()) ? ComparisonChain.start().compare(this.func_82720_e(), p_compareTo_1_.func_82720_e()).compare(this.func_76459_b(), p_compareTo_1_.func_76459_b()).compare(this.func_188419_a().func_76401_j(), p_compareTo_1_.func_188419_a().func_76401_j()).result() : ComparisonChain.start().compare(this.func_82720_e(), p_compareTo_1_.func_82720_e()).compare(this.func_188419_a().func_76401_j(), p_compareTo_1_.func_188419_a().func_76401_j()).result();
+-        return (this.func_76459_b() <= 32147 || p_compareTo_1_.func_76459_b() <= 32147) && (!this.func_82720_e() || !p_compareTo_1_.func_82720_e())
+-               ? ComparisonChain.start()
+-               .compare(this.func_82720_e(), p_compareTo_1_.func_82720_e())
+-               .compare(this.func_76459_b(), p_compareTo_1_.func_76459_b())
+-               .compare(this.func_188419_a().func_76401_j(), p_compareTo_1_.func_188419_a().func_76401_j())
+-               .result()
+-               : ComparisonChain.start()
+-               .compare(this.func_82720_e(), p_compareTo_1_.func_82720_e())
+-               .compare(this.func_188419_a().func_76401_j(), p_compareTo_1_.func_188419_a().func_76401_j())
+-               .result();
 +        return (this.func_76459_b() <= 32147 || p_compareTo_1_.func_76459_b() <= 32147) && (!this.func_82720_e() || !p_compareTo_1_.func_82720_e()) ? ComparisonChain.start().compare(Boolean.valueOf(this.func_82720_e()), Boolean.valueOf(p_compareTo_1_.func_82720_e())).compare(this.func_76459_b(), p_compareTo_1_.func_76459_b()).compare(this.func_188419_a().getGuiSortColor(this), p_compareTo_1_.func_188419_a().getGuiSortColor(p_compareTo_1_)).result() : ComparisonChain.start().compare(Boolean.valueOf(this.func_82720_e()), Boolean.valueOf(p_compareTo_1_.func_82720_e())).compare(this.func_188419_a().getGuiSortColor(this), p_compareTo_1_.func_188419_a().getGuiSortColor(p_compareTo_1_)).result();
 +    }
 +

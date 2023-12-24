@@ -8,12 +8,18 @@
  import java.util.List;
  import java.util.Random;
  import java.util.Set;
-@@ -50,10 +51,10 @@
+@@ -50,16 +51,10 @@
  public class DragonFightManager
  {
      private static final Logger field_186107_a = LogManager.getLogger();
--    private static final Predicate<EntityPlayerMP> field_186108_b = Predicates.and(EntitySelectors.field_94557_a, EntitySelectors.func_188443_a(0.0D, 128.0D, 0.0D, 192.0D));
--    private final BossInfoServer field_186109_c = (BossInfoServer)(new BossInfoServer(new TextComponentTranslation("entity.EnderDragon.name"), BossInfo.Color.PINK, BossInfo.Overlay.PROGRESS)).func_186742_b(true).func_186743_c(true);
+-    private static final Predicate<EntityPlayerMP> field_186108_b = Predicates.and(
+-                    EntitySelectors.field_94557_a, EntitySelectors.func_188443_a(0.0, 128.0, 0.0, 192.0)
+-                );
+-    private final BossInfoServer field_186109_c = (BossInfoServer)new BossInfoServer(
+-                new TextComponentTranslation("entity.EnderDragon.name"), BossInfo.Color.PINK, BossInfo.Overlay.PROGRESS
+-            )
+-            .func_186742_b(true)
+-            .func_186743_c(true);
 +    private static final Predicate<EntityPlayerMP> field_186108_b = Predicates.<EntityPlayerMP>and(EntitySelectors.field_94557_a, EntitySelectors.func_188443_a(0.0D, 128.0D, 0.0D, 192.0D));
 +    private final BossInfoServer field_186109_c = (BossInfoServer)(new BossInfoServer(new TextComponentTranslation("entity.EnderDragon.name", new Object[0]), BossInfo.Color.PINK, BossInfo.Overlay.PROGRESS)).func_186742_b(true).func_186743_c(true);
      private final WorldServer field_186110_d;
@@ -22,7 +28,7 @@
      private final BlockPattern field_186112_f;
      private int field_186113_g;
      private int field_186114_h;
-@@ -81,6 +82,7 @@
+@@ -87,6 +82,7 @@
  
              this.field_186117_k = p_i46669_2_.func_74767_n("DragonKilled");
              this.field_186118_l = p_i46669_2_.func_74767_n("PreviouslyKilled");
@@ -30,7 +36,7 @@
  
              if (p_i46669_2_.func_74767_n("IsRespawning"))
              {
-@@ -104,12 +106,12 @@
+@@ -110,23 +106,16 @@
  
              for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
              {
@@ -45,7 +51,19 @@
              Collections.shuffle(this.field_186111_e, new Random(p_i46669_1_.func_72905_C()));
          }
  
-@@ -127,6 +129,7 @@
+-        this.field_186112_f = FactoryBlockPattern.func_177660_a()
+-                              .func_177659_a("       ", "       ", "       ", "   #   ", "       ", "       ", "       ")
+-                              .func_177659_a("       ", "       ", "       ", "   #   ", "       ", "       ", "       ")
+-                              .func_177659_a("       ", "       ", "       ", "   #   ", "       ", "       ", "       ")
+-                              .func_177659_a("  ###  ", " #   # ", "#     #", "#  #  #", "#     #", " #   # ", "  ###  ")
+-                              .func_177659_a("       ", "  ###  ", " ##### ", " ##### ", " ##### ", "  ###  ", "       ")
+-                              .func_177662_a('#', BlockWorldState.func_177510_a(BlockMatcher.func_177642_a(Blocks.field_150357_h)))
+-                              .func_177661_b();
++        this.field_186112_f = FactoryBlockPattern.func_177660_a().func_177659_a("       ", "       ", "       ", "   #   ", "       ", "       ", "       ").func_177659_a("       ", "       ", "       ", "   #   ", "       ", "       ", "       ").func_177659_a("       ", "       ", "       ", "   #   ", "       ", "       ", "       ").func_177659_a("  ###  ", " #   # ", "#     #", "#  #  #", "#     #", " #   # ", "  ###  ").func_177659_a("       ", "  ###  ", " ##### ", " ##### ", " ##### ", "  ###  ", "       ").func_177662_a('#', BlockWorldState.func_177510_a(BlockMatcher.func_177642_a(Blocks.field_150357_h))).func_177661_b();
+     }
+ 
+     public NBTTagCompound func_186088_a()
+@@ -140,6 +129,7 @@
  
          nbttagcompound.func_74757_a("DragonKilled", this.field_186117_k);
          nbttagcompound.func_74757_a("PreviouslyKilled", this.field_186118_l);
@@ -53,7 +71,7 @@
  
          if (this.field_186121_o != null)
          {
-@@ -134,9 +137,11 @@
+@@ -147,9 +137,11 @@
          }
  
          NBTTagList nbttaglist = new NBTTagList();
@@ -66,7 +84,16 @@
              nbttaglist.func_74742_a(new NBTTagInt(i));
          }
  
-@@ -228,7 +233,7 @@
+@@ -198,7 +190,7 @@
+                 {
+                     EntityDragon entitydragon = list.get(0);
+                     this.field_186119_m = entitydragon.func_110124_au();
+-                    field_186107_a.info("Found that there's a dragon still alive ({})", entitydragon);
++                    field_186107_a.info("Found that there's a dragon still alive ({})", (Object)entitydragon);
+                     this.field_186117_k = false;
+ 
+                     if (!flag)
+@@ -241,7 +233,7 @@
                      else
                      {
                          field_186107_a.debug("Haven't seen our dragon, but found another one to use.");
@@ -75,7 +102,19 @@
                      }
  
                      this.field_186113_g = 0;
-@@ -356,7 +361,7 @@
+@@ -340,10 +332,7 @@
+ 
+         for (int l = k; l >= 0; --l)
+         {
+-            BlockPattern.PatternHelper blockpattern$patternhelper1 = this.field_186112_f
+-                    .func_177681_a(
+-                        this.field_186110_d, new BlockPos(WorldGenEndPodium.field_186139_a.func_177958_n(), l, WorldGenEndPodium.field_186139_a.func_177952_p())
+-                    );
++            BlockPattern.PatternHelper blockpattern$patternhelper1 = this.field_186112_f.func_177681_a(this.field_186110_d, new BlockPos(WorldGenEndPodium.field_186139_a.func_177958_n(), l, WorldGenEndPodium.field_186139_a.func_177952_p()));
+ 
+             if (blockpattern$patternhelper1 != null)
+             {
+@@ -372,7 +361,7 @@
  
      private void func_186100_j()
      {
@@ -84,24 +123,64 @@
  
          for (EntityPlayerMP entityplayermp : this.field_186110_d.func_175661_b(EntityPlayerMP.class, field_186108_b))
          {
-@@ -409,7 +414,7 @@
+@@ -399,7 +388,7 @@
+             this.field_186114_h += this.field_186110_d.func_72872_a(EntityEnderCrystal.class, worldgenspikes$endspike.func_186153_f()).size();
+         }
+ 
+-        field_186107_a.debug("Found {} end crystals still alive", this.field_186114_h);
++        field_186107_a.debug("Found {} end crystals still alive", (int)this.field_186114_h);
+     }
+ 
+     public void func_186096_a(EntityDragon p_186096_1_)
+@@ -425,9 +414,9 @@
      {
          if (!this.field_186111_e.isEmpty())
          {
 -            int i = this.field_186111_e.remove(this.field_186111_e.size() - 1);
+-            int j = (int)(96.0 * Math.cos(2.0 * (-Math.PI + (Math.PI / 20) * (double)i)));
+-            int k = (int)(96.0 * Math.sin(2.0 * (-Math.PI + (Math.PI / 20) * (double)i)));
 +            int i = ((Integer)this.field_186111_e.remove(this.field_186111_e.size() - 1)).intValue();
-             int j = (int)(96.0D * Math.cos(2.0D * (-Math.PI + 0.15707963267948966D * (double)i)));
-             int k = (int)(96.0D * Math.sin(2.0D * (-Math.PI + 0.15707963267948966D * (double)i)));
++            int j = (int)(96.0D * Math.cos(2.0D * (-Math.PI + 0.15707963267948966D * (double)i)));
++            int k = (int)(96.0D * Math.sin(2.0D * (-Math.PI + 0.15707963267948966D * (double)i)));
              this.func_186089_a(new BlockPos(j, 75, k));
-@@ -430,6 +435,7 @@
+         }
+     }
+@@ -435,7 +424,7 @@
+     private void func_186089_a(BlockPos p_186089_1_)
+     {
+         this.field_186110_d.func_175718_b(3000, p_186089_1_, 0);
+-        new WorldGenEndGateway().func_180709_b(this.field_186110_d, new Random(), p_186089_1_);
++        (new WorldGenEndGateway()).func_180709_b(this.field_186110_d, new Random(), p_186089_1_);
+     }
+ 
+     private void func_186094_a(boolean p_186094_1_)
+@@ -444,14 +433,9 @@
+ 
+         if (this.field_186121_o == null)
          {
-             for (this.field_186121_o = this.field_186110_d.func_175672_r(WorldGenEndPodium.field_186139_a).func_177977_b(); this.field_186110_d.func_180495_p(this.field_186121_o).func_177230_c() == Blocks.field_150357_h && this.field_186121_o.func_177956_o() > this.field_186110_d.func_181545_F(); this.field_186121_o = this.field_186121_o.func_177977_b())
+-            this.field_186121_o = this.field_186110_d.func_175672_r(WorldGenEndPodium.field_186139_a).func_177977_b();
+-
+-            while (
+-                this.field_186110_d.func_180495_p(this.field_186121_o).func_177230_c() == Blocks.field_150357_h
+-                && this.field_186121_o.func_177956_o() > this.field_186110_d.func_181545_F()
+-            )
++            for (this.field_186121_o = this.field_186110_d.func_175672_r(WorldGenEndPodium.field_186139_a).func_177977_b(); this.field_186110_d.func_180495_p(this.field_186121_o).func_177230_c() == Blocks.field_150357_h && this.field_186121_o.func_177956_o() > this.field_186110_d.func_181545_F(); this.field_186121_o = this.field_186121_o.func_177977_b())
              {
+-                this.field_186121_o = this.field_186121_o.func_177977_b();
 +                ;
              }
          }
  
-@@ -517,7 +523,7 @@
+@@ -463,7 +447,7 @@
+         this.field_186110_d.func_175726_f(new BlockPos(0, 128, 0));
+         EntityDragon entitydragon = new EntityDragon(this.field_186110_d);
+         entitydragon.func_184670_cT().func_188758_a(PhaseList.field_188741_a);
+-        entitydragon.func_70012_b(0.0, 128.0, 0.0, this.field_186110_d.field_73012_v.nextFloat() * 360.0F, 0.0F);
++        entitydragon.func_70012_b(0.0D, 128.0D, 0.0D, this.field_186110_d.field_73012_v.nextFloat() * 360.0F, 0.0F);
+         this.field_186110_d.func_72838_d(entitydragon);
+         this.field_186119_m = entitydragon.func_110124_au();
+         return entitydragon;
+@@ -539,13 +523,12 @@
                  blockpos = this.field_186121_o;
              }
  
@@ -110,8 +189,41 @@
              BlockPos blockpos1 = blockpos.func_177981_b(1);
  
              for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
-@@ -577,5 +583,15 @@
-                 entityendercrystal.func_184516_a((BlockPos)null);
+             {
+-                List<EntityEnderCrystal> list = this.field_186110_d
+-                                                .func_72872_a(EntityEnderCrystal.class, new AxisAlignedBB(blockpos1.func_177967_a(enumfacing, 2)));
++                List<EntityEnderCrystal> list = this.field_186110_d.func_72872_a(EntityEnderCrystal.class, new AxisAlignedBB(blockpos1.func_177967_a(enumfacing, 2)));
+ 
+                 if (list.isEmpty())
+                 {
+@@ -564,10 +547,7 @@
+     {
+         if (this.field_186117_k && this.field_186122_p == null)
+         {
+-            for (BlockPattern.PatternHelper blockpattern$patternhelper = this.func_186091_h();
+-                    blockpattern$patternhelper != null;
+-                    blockpattern$patternhelper = this.func_186091_h()
+-                )
++            for (BlockPattern.PatternHelper blockpattern$patternhelper = this.func_186091_h(); blockpattern$patternhelper != null; blockpattern$patternhelper = this.func_186091_h())
+             {
+                 for (int i = 0; i < this.field_186112_f.func_177684_c(); ++i)
+                 {
+@@ -577,8 +557,7 @@
+                         {
+                             BlockWorldState blockworldstate = blockpattern$patternhelper.func_177670_a(i, j, k);
+ 
+-                            if (blockworldstate.func_177509_a().func_177230_c() == Blocks.field_150357_h
+-                                    || blockworldstate.func_177509_a().func_177230_c() == Blocks.field_150384_bq)
++                            if (blockworldstate.func_177509_a().func_177230_c() == Blocks.field_150357_h || blockworldstate.func_177509_a().func_177230_c() == Blocks.field_150384_bq)
+                             {
+                                 this.field_186110_d.func_175656_a(blockworldstate.func_177508_d(), Blocks.field_150377_bs.func_176223_P());
+                             }
+@@ -601,8 +580,18 @@
+             for (EntityEnderCrystal entityendercrystal : this.field_186110_d.func_72872_a(EntityEnderCrystal.class, worldgenspikes$endspike.func_186153_f()))
+             {
+                 entityendercrystal.func_184224_h(false);
+-                entityendercrystal.func_184516_a(null);
++                entityendercrystal.func_184516_a((BlockPos)null);
              }
          }
 +    }

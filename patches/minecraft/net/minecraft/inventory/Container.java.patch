@@ -74,8 +74,107 @@
                  }
              }
          }
-@@ -589,18 +591,19 @@
-                 if (!itemstack.func_190926_b() && itemstack.func_77973_b() == p_75135_1_.func_77973_b() && (!p_75135_1_.func_77981_g() || p_75135_1_.func_77960_j() == itemstack.func_77960_j()) && ItemStack.func_77970_a(p_75135_1_, itemstack))
+@@ -161,11 +163,7 @@
+                 Slot slot7 = this.field_75151_b.get(p_184996_1_);
+                 ItemStack itemstack12 = inventoryplayer.func_70445_o();
+ 
+-                if (slot7 != null
+-                        && func_94527_a(slot7, itemstack12, true)
+-                        && slot7.func_75214_a(itemstack12)
+-                        && (this.field_94535_f == 2 || itemstack12.func_190916_E() > this.field_94537_h.size())
+-                        && this.func_94531_b(slot7))
++                if (slot7 != null && func_94527_a(slot7, itemstack12, true) && slot7.func_75214_a(itemstack12) && (this.field_94535_f == 2 || itemstack12.func_190916_E() > this.field_94537_h.size()) && this.func_94531_b(slot7))
+                 {
+                     this.field_94537_h.add(slot7);
+                 }
+@@ -181,11 +179,7 @@
+                     {
+                         ItemStack itemstack13 = inventoryplayer.func_70445_o();
+ 
+-                        if (slot8 != null
+-                                && func_94527_a(slot8, itemstack13, true)
+-                                && slot8.func_75214_a(itemstack13)
+-                                && (this.field_94535_f == 2 || itemstack13.func_190916_E() >= this.field_94537_h.size())
+-                                && this.func_94531_b(slot8))
++                        if (slot8 != null && func_94527_a(slot8, itemstack13, true) && slot8.func_75214_a(itemstack13) && (this.field_94535_f == 2 || itemstack13.func_190916_E() >= this.field_94537_h.size()) && this.func_94531_b(slot8))
+                         {
+                             ItemStack itemstack14 = itemstack9.func_77946_l();
+                             int j3 = slot8.func_75216_d() ? slot8.func_75211_c().func_190916_E() : 0;
+@@ -249,10 +243,7 @@
+                     return ItemStack.field_190927_a;
+                 }
+ 
+-                for (ItemStack itemstack7 = this.func_82846_b(p_184996_4_, p_184996_1_);
+-                        !itemstack7.func_190926_b() && ItemStack.func_179545_c(slot5.func_75211_c(), itemstack7);
+-                        itemstack7 = this.func_82846_b(p_184996_4_, p_184996_1_)
+-                    )
++                for (ItemStack itemstack7 = this.func_82846_b(p_184996_4_, p_184996_1_); !itemstack7.func_190926_b() && ItemStack.func_179545_c(slot5.func_75211_c(), itemstack7); itemstack7 = this.func_82846_b(p_184996_4_, p_184996_1_))
+                 {
+                     itemstack = itemstack7.func_77946_l();
+                 }
+@@ -314,9 +305,7 @@
+                         }
+                         else if (slot6.func_75214_a(itemstack11))
+                         {
+-                            if (itemstack8.func_77973_b() == itemstack11.func_77973_b()
+-                                    && itemstack8.func_77960_j() == itemstack11.func_77960_j()
+-                                    && ItemStack.func_77970_a(itemstack8, itemstack11))
++                            if (itemstack8.func_77973_b() == itemstack11.func_77973_b() && itemstack8.func_77960_j() == itemstack11.func_77960_j() && ItemStack.func_77970_a(itemstack8, itemstack11))
+                             {
+                                 int k2 = p_184996_2_ == 0 ? itemstack11.func_190916_E() : 1;
+ 
+@@ -339,11 +328,7 @@
+                                 inventoryplayer.func_70437_b(itemstack8);
+                             }
+                         }
+-                        else if (itemstack8.func_77973_b() == itemstack11.func_77973_b()
+-                                 && itemstack11.func_77976_d() > 1
+-                                 && (!itemstack8.func_77981_g() || itemstack8.func_77960_j() == itemstack11.func_77960_j())
+-                                 && ItemStack.func_77970_a(itemstack8, itemstack11)
+-                                 && !itemstack8.func_190926_b())
++                        else if (itemstack8.func_77973_b() == itemstack11.func_77973_b() && itemstack11.func_77976_d() > 1 && (!itemstack8.func_77981_g() || itemstack8.func_77960_j() == itemstack11.func_77960_j()) && ItemStack.func_77970_a(itemstack8, itemstack11) && !itemstack8.func_190926_b())
+                         {
+                             int j2 = itemstack8.func_190916_E();
+ 
+@@ -424,10 +409,7 @@
+                 }
+             }
+         }
+-        else if (p_184996_3_ == ClickType.CLONE
+-                 && p_184996_4_.field_71075_bZ.field_75098_d
+-                 && inventoryplayer.func_70445_o().func_190926_b()
+-                 && p_184996_1_ >= 0)
++        else if (p_184996_3_ == ClickType.CLONE && p_184996_4_.field_71075_bZ.field_75098_d && inventoryplayer.func_70445_o().func_190926_b() && p_184996_1_ >= 0)
+         {
+             Slot slot3 = this.field_75151_b.get(p_184996_1_);
+ 
+@@ -589,29 +571,39 @@
+ 
+         if (p_75135_1_.func_77985_e())
+         {
+-            while (!p_75135_1_.func_190926_b() && (p_75135_4_ ? i >= p_75135_2_ : i < p_75135_3_))
++            while (!p_75135_1_.func_190926_b())
+             {
++                if (p_75135_4_)
++                {
++                    if (i < p_75135_2_)
++                    {
++                        break;
++                    }
++                }
++                else if (i >= p_75135_3_)
++                {
++                    break;
++                }
++
+                 Slot slot = this.field_75151_b.get(i);
+                 ItemStack itemstack = slot.func_75211_c();
+ 
+-                if (!itemstack.func_190926_b()
+-                        && itemstack.func_77973_b() == p_75135_1_.func_77973_b()
+-                        && (!p_75135_1_.func_77981_g() || p_75135_1_.func_77960_j() == itemstack.func_77960_j())
+-                        && ItemStack.func_77970_a(p_75135_1_, itemstack))
++                if (!itemstack.func_190926_b() && itemstack.func_77973_b() == p_75135_1_.func_77973_b() && (!p_75135_1_.func_77981_g() || p_75135_1_.func_77960_j() == itemstack.func_77960_j()) && ItemStack.func_77970_a(p_75135_1_, itemstack))
                  {
                      int j = itemstack.func_190916_E() + p_75135_1_.func_190916_E();
 +                    int maxSize = Math.min(slot.func_75219_a(), p_75135_1_.func_77976_d());
@@ -98,7 +197,29 @@
                          slot.func_75218_e();
                          flag = true;
                      }
-@@ -738,7 +741,7 @@
+@@ -639,8 +631,20 @@
+                 i = p_75135_2_;
+             }
+ 
+-            while (p_75135_4_ ? i >= p_75135_2_ : i < p_75135_3_)
++            while (true)
+             {
++                if (p_75135_4_)
++                {
++                    if (i < p_75135_2_)
++                    {
++                        break;
++                    }
++                }
++                else if (i >= p_75135_3_)
++                {
++                    break;
++                }
++
+                 Slot slot1 = this.field_75151_b.get(i);
+                 ItemStack itemstack1 = slot1.func_75211_c();
+ 
+@@ -737,7 +741,7 @@
                  p_94525_2_.func_190920_e(1);
                  break;
              case 2:
@@ -107,7 +228,7 @@
          }
  
          p_94525_2_.func_190917_f(p_94525_3_);
-@@ -776,7 +779,7 @@
+@@ -775,7 +779,7 @@
                  }
              }
  
@@ -116,3 +237,17 @@
              return MathHelper.func_76141_d(f * 14.0F) + (i > 0 ? 1 : 0);
          }
      }
+@@ -788,12 +792,7 @@
+             ItemStack itemstack = ItemStack.field_190927_a;
+             IRecipe irecipe = CraftingManager.func_192413_b(p_192389_3_, p_192389_1_);
+ 
+-            if (irecipe != null
+-                    && (
+-                        irecipe.func_192399_d()
+-                        || !p_192389_1_.func_82736_K().func_82766_b("doLimitedCrafting")
+-                        || entityplayermp.func_192037_E().func_193830_f(irecipe)
+-                    ))
++            if (irecipe != null && (irecipe.func_192399_d() || !p_192389_1_.func_82736_K().func_82766_b("doLimitedCrafting") || entityplayermp.func_192037_E().func_193830_f(irecipe)))
+             {
+                 p_192389_4_.func_193056_a(irecipe);
+                 itemstack = irecipe.func_77572_b(p_192389_3_);

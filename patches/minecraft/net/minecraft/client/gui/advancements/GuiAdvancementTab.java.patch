@@ -9,15 +9,25 @@
      private int field_191811_n;
      private int field_191812_o;
      private int field_193939_q = Integer.MAX_VALUE;
-@@ -37,6 +37,7 @@
+@@ -37,15 +37,9 @@
      private int field_191814_q = Integer.MIN_VALUE;
      private float field_191815_r;
      private boolean field_192992_s;
 +    private int page;
  
-     public GuiAdvancementTab(Minecraft p_i47589_1_, GuiScreenAdvancements p_i47589_2_, AdvancementTabType p_i47589_3_, int p_i47589_4_, Advancement p_i47589_5_, DisplayInfo p_i47589_6_)
+-    public GuiAdvancementTab(
+-        Minecraft p_i47589_1_,
+-        GuiScreenAdvancements p_i47589_2_,
+-        AdvancementTabType p_i47589_3_,
+-        int p_i47589_4_,
+-        Advancement p_i47589_5_,
+-        DisplayInfo p_i47589_6_
+-    )
++    public GuiAdvancementTab(Minecraft p_i47589_1_, GuiScreenAdvancements p_i47589_2_, AdvancementTabType p_i47589_3_, int p_i47589_4_, Advancement p_i47589_5_, DisplayInfo p_i47589_6_)
      {
-@@ -160,9 +161,9 @@
+         this.field_191802_a = p_i47589_1_;
+         this.field_193938_f = p_i47589_2_;
+@@ -167,9 +161,9 @@
          {
              for (AdvancementTabType advancementtabtype : AdvancementTabType.values())
              {
@@ -29,7 +39,7 @@
                  }
  
                  p_193936_2_ -= advancementtabtype.func_192650_a();
-@@ -222,4 +223,17 @@
+@@ -229,4 +223,17 @@
      {
          return this.field_193938_f;
      }

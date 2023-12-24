@@ -22,12 +22,12 @@
          this.field_177544_s = new Matrix4f();
          Matrix4f matrix4f = new Matrix4f();
          matrix4f.setIdentity();
--        Matrix4f.rotate((float)(-p_i46087_3_) * ((float)Math.PI / 180F), new Vector3f(1.0F, 0.0F, 0.0F), matrix4f, matrix4f);
+-        Matrix4f.rotate((float)(-p_i46087_3_) * (float)(Math.PI / 180.0), new Vector3f(1.0F, 0.0F, 0.0F), matrix4f, matrix4f);
 +        Matrix4f.rotate((float)(-p_i46087_3_) * 0.017453292F, new Vector3f(1.0F, 0.0F, 0.0F), matrix4f, matrix4f);
          this.field_177543_t = MathHelper.func_76130_a(p_i46087_3_ / 90);
          Matrix4f matrix4f1 = new Matrix4f();
          matrix4f1.setIdentity();
--        Matrix4f.rotate((float)(-p_i46087_4_) * ((float)Math.PI / 180F), new Vector3f(0.0F, 1.0F, 0.0F), matrix4f1, matrix4f1);
+-        Matrix4f.rotate((float)(-p_i46087_4_) * (float)(Math.PI / 180.0), new Vector3f(0.0F, 1.0F, 0.0F), matrix4f1, matrix4f1);
 +        Matrix4f.rotate((float)(-p_i46087_4_) * 0.017453292F, new Vector3f(0.0F, 1.0F, 0.0F), matrix4f1, matrix4f1);
          this.field_177542_u = MathHelper.func_76130_a(p_i46087_4_ / 90);
          Matrix4f.mul(matrix4f1, matrix4f, this.field_177544_s);

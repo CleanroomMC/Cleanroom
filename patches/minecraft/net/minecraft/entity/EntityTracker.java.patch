@@ -11,6 +11,15 @@
      private int field_72792_d;
  
      public EntityTracker(WorldServer p_i1516_1_)
+@@ -64,7 +64,7 @@
+ 
+     public static long func_187253_a(double p_187253_0_)
+     {
+-        return MathHelper.func_76124_d(p_187253_0_ * 4096.0);
++        return MathHelper.func_76124_d(p_187253_0_ * 4096.0D);
+     }
+ 
+     @SideOnly(Side.CLIENT)
 @@ -77,6 +77,8 @@
  
      public void func_72786_a(Entity p_72786_1_)

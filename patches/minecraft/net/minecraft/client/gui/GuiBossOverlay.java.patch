@@ -9,7 +9,7 @@
  
      public GuiBossOverlay(Minecraft p_i46606_1_)
      {
-@@ -34,13 +34,18 @@
+@@ -34,15 +34,18 @@
              for (BossInfoClient bossinfoclient : this.field_184060_g.values())
              {
                  int k = i / 2 - 91;
@@ -20,8 +20,11 @@
                  this.field_184059_f.func_110434_K().func_110577_a(field_184058_a);
                  this.func_184052_a(k, j, bossinfoclient);
                  String s = bossinfoclient.func_186744_e().func_150254_d();
-                 this.field_184059_f.field_71466_p.func_175063_a(s, (float)(i / 2 - this.field_184059_f.field_71466_p.func_78256_a(s) / 2), (float)(j - 9), 16777215);
+-                this.field_184059_f
+-                .field_71466_p
+-                .func_175063_a(s, (float)(i / 2 - this.field_184059_f.field_71466_p.func_78256_a(s) / 2), (float)(j - 9), 16777215);
 -                j += 10 + this.field_184059_f.field_71466_p.field_78288_b;
++                this.field_184059_f.field_71466_p.func_175063_a(s, (float)(i / 2 - this.field_184059_f.field_71466_p.func_78256_a(s) / 2), (float)(j - 9), 16777215);
 +                }
 +                j += event.getIncrement();
  
@@ -29,7 +32,7 @@
                  if (j >= scaledresolution.func_78328_b() / 3)
                  {
                      break;
-@@ -83,7 +88,7 @@
+@@ -85,7 +88,7 @@
          }
          else
          {

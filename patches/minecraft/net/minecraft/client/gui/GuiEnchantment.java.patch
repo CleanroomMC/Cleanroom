@@ -1,6 +1,67 @@
 --- before/net/minecraft/client/gui/GuiEnchantment.java
 +++ after/net/minecraft/client/gui/GuiEnchantment.java
-@@ -171,7 +171,7 @@
+@@ -10,6 +10,7 @@
+ import net.minecraft.client.renderer.RenderHelper;
+ import net.minecraft.client.resources.I18n;
+ import net.minecraft.enchantment.Enchantment;
++import net.minecraft.entity.Entity;
+ import net.minecraft.entity.player.InventoryPlayer;
+ import net.minecraft.inventory.ContainerEnchantment;
+ import net.minecraft.item.ItemStack;
+@@ -50,21 +51,18 @@
+         this.field_175380_I = p_i45502_3_;
+     }
+ 
+-    @Override
+     protected void func_146979_b(int p_146979_1_, int p_146979_2_)
+     {
+         this.field_146289_q.func_78276_b(this.field_175380_I.func_145748_c_().func_150260_c(), 12, 5, 4210752);
+         this.field_146289_q.func_78276_b(this.field_175379_F.func_145748_c_().func_150260_c(), 8, this.field_147000_g - 96 + 2, 4210752);
+     }
+ 
+-    @Override
+     public void func_73876_c()
+     {
+         super.func_73876_c();
+         this.func_147068_g();
+     }
+ 
+-    @Override
+     protected void func_73864_a(int p_73864_1_, int p_73864_2_, int p_73864_3_) throws IOException
+     {
+         super.func_73864_a(p_73864_1_, p_73864_2_, p_73864_3_);
+@@ -83,7 +81,6 @@
+         }
+     }
+ 
+-    @Override
+     protected void func_146976_a(float p_146976_1_, int p_146976_2_, int p_146976_3_)
+     {
+         GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
+@@ -96,12 +93,7 @@
+         GlStateManager.func_179094_E();
+         GlStateManager.func_179096_D();
+         ScaledResolution scaledresolution = new ScaledResolution(this.field_146297_k);
+-        GlStateManager.func_179083_b(
+-            (scaledresolution.func_78326_a() - 320) / 2 * scaledresolution.func_78325_e(),
+-            (scaledresolution.func_78328_b() - 240) / 2 * scaledresolution.func_78325_e(),
+-            320 * scaledresolution.func_78325_e(),
+-            240 * scaledresolution.func_78325_e()
+-        );
++        GlStateManager.func_179083_b((scaledresolution.func_78326_a() - 320) / 2 * scaledresolution.func_78325_e(), (scaledresolution.func_78328_b() - 240) / 2 * scaledresolution.func_78325_e(), 320 * scaledresolution.func_78325_e(), 240 * scaledresolution.func_78325_e());
+         GlStateManager.func_179109_b(-0.34F, 0.23F, 0.0F);
+         Project.gluPerspective(90.0F, 1.3333334F, 9.0F, 80.0F);
+         float f = 1.0F;
+@@ -145,7 +137,7 @@
+         }
+ 
+         GlStateManager.func_179091_B();
+-        field_147072_E.func_78088_a(null, 0.0F, f3, f4, f2, 0.0F, 0.0625F);
++        field_147072_E.func_78088_a((Entity)null, 0.0F, f3, f4, f2, 0.0F, 0.0625F);
+         GlStateManager.func_179101_C();
+         RenderHelper.func_74518_a();
+         GlStateManager.func_179128_n(5889);
+@@ -179,7 +171,7 @@
                  FontRenderer fontrenderer = this.field_146297_k.field_71464_q;
                  int i2 = 6839882;
  
@@ -9,7 +70,15 @@
                  {
                      this.func_73729_b(i1, j + 14 + 19 * l, 0, 185, 108, 19);
                      this.func_73729_b(i1 + 1, j + 15 + 19 * l, 16 * l, 239, 16, 16);
-@@ -220,11 +220,12 @@
+@@ -212,7 +204,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_73863_a(int p_73863_1_, int p_73863_2_, float p_73863_3_)
+     {
+         p_73863_3_ = this.field_146297_k.func_193989_ak();
+@@ -229,11 +220,12 @@
              int l = this.field_147075_G.field_185002_i[j];
              int i1 = j + 1;
  
@@ -25,7 +94,7 @@
                  if (!flag)
                  {
                      list.add("");
-@@ -276,11 +277,15 @@
+@@ -285,11 +277,15 @@
          {
              this.field_147077_B = itemstack;
  

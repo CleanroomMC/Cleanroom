@@ -1,20 +1,28 @@
 --- before/net/minecraft/world/storage/loot/LootContext.java
 +++ after/net/minecraft/world/storage/loot/LootContext.java
-@@ -23,7 +23,7 @@
+@@ -23,16 +23,9 @@
      private final EntityPlayer field_186502_e;
      @Nullable
      private final DamageSource field_186503_f;
 -    private final Set<LootTable> field_186504_g = Sets.newLinkedHashSet();
 +    private final Set<LootTable> field_186504_g = Sets.<LootTable>newLinkedHashSet();
  
-     public LootContext(float p_i46640_1_, WorldServer p_i46640_2_, LootTableManager p_i46640_3_, @Nullable Entity p_i46640_4_, @Nullable EntityPlayer p_i46640_5_, @Nullable DamageSource p_i46640_6_)
+-    public LootContext(
+-        float p_i46640_1_,
+-        WorldServer p_i46640_2_,
+-        LootTableManager p_i46640_3_,
+-        @Nullable Entity p_i46640_4_,
+-        @Nullable EntityPlayer p_i46640_5_,
+-        @Nullable DamageSource p_i46640_6_
+-    )
++    public LootContext(float p_i46640_1_, WorldServer p_i46640_2_, LootTableManager p_i46640_3_, @Nullable Entity p_i46640_4_, @Nullable EntityPlayer p_i46640_5_, @Nullable DamageSource p_i46640_6_)
      {
-@@ -87,6 +87,16 @@
-             default:
-                 return null;
+         this.field_186498_a = p_i46640_1_;
+         this.field_186499_b = p_i46640_2_;
+@@ -96,6 +89,16 @@
          }
-+    }
-+
+     }
+ 
 +    public WorldServer getWorld()
 +    {
 +        return field_186499_b;
@@ -23,6 +31,19 @@
 +    public int getLootingModifier()
 +    {
 +        return net.minecraftforge.common.ForgeHooks.getLootingLevel(func_186493_a(), func_186492_c(), field_186503_f);
-     }
- 
++    }
++
      public static class Builder
+         {
+             private final WorldServer field_186474_a;
+@@ -135,9 +138,7 @@
+ 
+             public LootContext func_186471_a()
+             {
+-                return new LootContext(
+-                           this.field_186475_b, this.field_186474_a, this.field_186474_a.func_184146_ak(), this.field_186476_c, this.field_186477_d, this.field_186478_e
+-                       );
++                return new LootContext(this.field_186475_b, this.field_186474_a, this.field_186474_a.func_184146_ak(), this.field_186476_c, this.field_186477_d, this.field_186478_e);
+             }
+         }
+ 

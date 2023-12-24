@@ -1,6 +1,6 @@
 --- before/net/minecraft/item/crafting/ShulkerBoxRecipes.java
 +++ after/net/minecraft/item/crafting/ShulkerBoxRecipes.java
-@@ -8,12 +8,10 @@
+@@ -8,14 +8,11 @@
  import net.minecraft.item.ItemStack;
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
@@ -12,9 +12,11 @@
 -    public static class ShulkerBoxColoring implements IRecipe
 +    public static class ShulkerBoxColoring extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe
          {
+-            @Override
              public boolean func_77569_a(InventoryCrafting p_77569_1_, World p_77569_2_)
              {
-@@ -32,7 +30,7 @@
+                 int i = 0;
+@@ -33,7 +30,7 @@
                          }
                          else
                          {
@@ -23,7 +25,15 @@
                              {
                                  return false;
                              }
-@@ -65,14 +63,14 @@
+@@ -51,7 +48,6 @@
+                 return i == 1 && j == 1;
+             }
+ 
+-            @Override
+             public ItemStack func_77572_b(InventoryCrafting p_77572_1_)
+             {
+                 ItemStack itemstack = ItemStack.field_190927_a;
+@@ -67,14 +63,14 @@
                          {
                              itemstack = itemstack2;
                          }
@@ -40,8 +50,17 @@
  
                  if (itemstack.func_77942_o())
                  {
-@@ -89,7 +87,7 @@
+@@ -84,16 +80,14 @@
+                 return itemstack3;
+             }
  
+-            @Override
+             public ItemStack func_77571_b()
+             {
+                 return ItemStack.field_190927_a;
+             }
+ 
+-            @Override
              public NonNullList<ItemStack> func_179532_b(InventoryCrafting p_179532_1_)
              {
 -                NonNullList<ItemStack> nonnulllist = NonNullList.func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
@@ -49,11 +68,18 @@
  
                  for (int i = 0; i < nonnulllist.size(); ++i)
                  {
-@@ -109,7 +107,6 @@
+@@ -108,14 +102,11 @@
+                 return nonnulllist;
+             }
+ 
+-            @Override
+             public boolean func_192399_d()
+             {
                  return true;
              }
  
 -            @SideOnly(Side.CLIENT)
+-            @Override
              public boolean func_194133_a(int p_194133_1_, int p_194133_2_)
              {
                  return p_194133_1_ * p_194133_2_ >= 2;

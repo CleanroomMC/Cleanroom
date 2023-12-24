@@ -28,20 +28,29 @@
              this.func_194117_b(i, j);
          }
      }
-@@ -95,7 +102,7 @@
-     class RecipePicker
+@@ -69,7 +76,7 @@
+ 
+     public boolean func_194118_a(IRecipe p_194118_1_, @Nullable IntList p_194118_2_, int p_194118_3_)
      {
-         private final IRecipe field_194105_b;
--        private final List<Ingredient> field_194106_c = Lists.newArrayList();
-+        private final List<Ingredient> field_194106_c = Lists.<Ingredient>newArrayList();
-         private final int field_194107_d;
-         private final int[] field_194108_e;
-         private final int field_194109_f;
+-        return new RecipeItemHelper.RecipePicker(p_194118_1_).func_194092_a(p_194118_3_, p_194118_2_);
++        return (new RecipeItemHelper.RecipePicker(p_194118_1_)).func_194092_a(p_194118_3_, p_194118_2_);
+     }
+ 
+     public int func_194114_b(IRecipe p_194114_1_, @Nullable IntList p_194114_2_)
+@@ -79,7 +86,7 @@
+ 
+     public int func_194121_a(IRecipe p_194121_1_, int p_194121_2_, @Nullable IntList p_194121_3_)
+     {
+-        return new RecipeItemHelper.RecipePicker(p_194121_1_).func_194102_b(p_194121_2_, p_194121_3_);
++        return (new RecipeItemHelper.RecipePicker(p_194121_1_)).func_194102_b(p_194121_2_, p_194121_3_);
+     }
+ 
+     public static ItemStack func_194115_b(int p_194115_0_)
 @@ -106,7 +113,10 @@
          {
              this.field_194105_b = p_i47608_2_;
              this.field_194106_c.addAll(p_i47608_2_.func_192400_c());
--            this.field_194106_c.removeIf((p_194103_0_) -> p_194103_0_ == Ingredient.field_193370_a);
+-            this.field_194106_c.removeIf(p_194103_0_ -> p_194103_0_ == Ingredient.field_193370_a);
 +            this.field_194106_c.removeIf((p_194103_0_) ->
 +            {
 +                return p_194103_0_ == Ingredient.field_193370_a;
@@ -49,227 +58,53 @@
              this.field_194107_d = this.field_194106_c.size();
              this.field_194108_e = this.func_194097_a();
              this.field_194109_f = this.field_194108_e.length;
-@@ -114,7 +124,7 @@
+@@ -237,29 +247,21 @@
+                         }
  
-             for (int i = 0; i < this.field_194106_c.size(); ++i)
-             {
--                IntList intlist = this.field_194106_c.get(i).func_194139_b();
-+                IntList intlist = ((Ingredient)this.field_194106_c.get(i)).func_194139_b();
+                         int i1 = flag ? this.field_194107_d : i;
+-                        int j1 = 0;
  
-                 for (int j = 0; j < this.field_194109_f; ++j)
-                 {
-@@ -134,24 +144,24 @@
-             }
-             else
-             {
--                int i;
-+                int k;
- 
--                for (i = 0; this.func_194098_a(p_194092_1_); ++i)
-+                for (k = 0; this.func_194098_a(p_194092_1_); ++k)
-                 {
-                     RecipeItemHelper.this.func_194122_a(this.field_194108_e[this.field_194111_h.getInt(0)], p_194092_1_);
--                    int j = this.field_194111_h.size() - 1;
--                    this.func_194096_c(this.field_194111_h.getInt(j));
-+                    int l = this.field_194111_h.size() - 1;
-+                    this.func_194096_c(this.field_194111_h.getInt(l));
- 
--                    for (int k = 0; k < j; ++k)
-+                    for (int i1 = 0; i1 < l; ++i1)
-                     {
--                        this.func_194089_c((k & 1) == 0, this.field_194111_h.get(k), this.field_194111_h.get(k + 1));
-+                        this.func_194089_c((i1 & 1) == 0, ((Integer)this.field_194111_h.get(i1)).intValue(), ((Integer)this.field_194111_h.get(i1 + 1)).intValue());
-                     }
- 
-                     this.field_194111_h.clear();
-                     this.field_194110_g.clear(0, this.field_194107_d + this.field_194109_f);
-                 }
- 
--                boolean flag = i == this.field_194107_d;
-+                boolean flag = k == this.field_194107_d;
-                 boolean flag1 = flag && p_194092_2_ != null;
- 
-                 if (flag1)
-@@ -160,32 +170,32 @@
-                 }
- 
-                 this.field_194110_g.clear(0, this.field_194107_d + this.field_194109_f + this.field_194107_d);
--                int l = 0;
-+                int j1 = 0;
-                 List<Ingredient> list = this.field_194105_b.func_192400_c();
- 
--                for (int i1 = 0; i1 < list.size(); ++i1)
-+                for (int k1 = 0; k1 < list.size(); ++k1)
-                 {
--                    if (flag1 && list.get(i1) == Ingredient.field_193370_a)
-+                    if (flag1 && list.get(k1) == Ingredient.field_193370_a)
-                     {
-                         p_194092_2_.add(0);
-                     }
-                     else
-                     {
--                        for (int j1 = 0; j1 < this.field_194109_f; ++j1)
-+                        for (int l1 = 0; l1 < this.field_194109_f; ++l1)
+-                        while (true)
++                        for (int j1 = 0; j1 < i1; ++j1)
                          {
--                            if (this.func_194100_b(false, l, j1))
-+                            if (this.func_194100_b(false, j1, l1))
+-                            if (j1 < i1)
++                            if (!this.func_194101_b(flag, j1) && this.func_194093_a(flag, l, j1) && this.func_194100_b(flag, l, j1))
                              {
--                                this.func_194089_c(true, j1, l);
--                                RecipeItemHelper.this.func_194117_b(this.field_194108_e[j1], p_194092_1_);
-+                                this.func_194089_c(true, l1, j1);
-+                                RecipeItemHelper.this.func_194117_b(this.field_194108_e[l1], p_194092_1_);
- 
-                                 if (flag1)
-                                 {
--                                    p_194092_2_.add(this.field_194108_e[j1]);
-+                                    p_194092_2_.add(this.field_194108_e[l1]);
-                                 }
-                             }
+-                                if (this.func_194101_b(flag, j1) || !this.func_194093_a(flag, l, j1) || !this.func_194100_b(flag, l, j1))
+-                                {
+-                                    ++j1;
+-                                    continue;
+-                                }
+-
+                                 this.func_194088_a(flag, j1);
+-                            }
+-
+-                            j1 = this.field_194111_h.size();
+-
+-                            if (j1 == k)
+-                            {
+-                                this.field_194111_h.removeInt(j1 - 1);
+-                            }
+-
+-                            break;
++                                break;
++                            }
++                        }
++
++                        int k1 = this.field_194111_h.size();
++
++                        if (k1 == k)
++                        {
++                            this.field_194111_h.removeInt(k1 - 1);
                          }
- 
--                        ++l;
-+                        ++j1;
                      }
-                 }
  
-@@ -217,41 +227,41 @@
- 
-         private boolean func_194098_a(int p_194098_1_)
-         {
--            int i = this.field_194109_f;
-+            int k = this.field_194109_f;
- 
--            for (int j = 0; j < i; ++j)
-+            for (int l = 0; l < k; ++l)
+@@ -334,7 +336,7 @@
              {
--                if (RecipeItemHelper.this.field_194124_a.get(this.field_194108_e[j]) >= p_194098_1_)
-+                if (RecipeItemHelper.this.field_194124_a.get(this.field_194108_e[l]) >= p_194098_1_)
-                 {
--                    this.func_194088_a(false, j);
-+                    this.func_194088_a(false, l);
+                 int k = (i + j) / 2;
  
-                     while (!this.field_194111_h.isEmpty())
+-                if (this.func_194092_a(k, null))
++                if (this.func_194092_a(k, (IntList)null))
+                 {
+                     if (j - i <= 1)
                      {
--                        int k = this.field_194111_h.size();
--                        boolean flag = (k & 1) == 1;
--                        int l = this.field_194111_h.getInt(k - 1);
-+                        int i1 = this.field_194111_h.size();
-+                        boolean flag = (i1 & 1) == 1;
-+                        int j1 = this.field_194111_h.getInt(i1 - 1);
- 
--                        if (!flag && !this.func_194091_b(l))
-+                        if (!flag && !this.func_194091_b(j1))
-                         {
-                             break;
-                         }
- 
--                        int i1 = flag ? this.field_194107_d : i;
-+                        int k1 = flag ? this.field_194107_d : k;
- 
--                        for (int j1 = 0; j1 < i1; ++j1)
-+                        for (int l1 = 0; l1 < k1; ++l1)
-                         {
--                            if (!this.func_194101_b(flag, j1) && this.func_194093_a(flag, l, j1) && this.func_194100_b(flag, l, j1))
-+                            if (!this.func_194101_b(flag, l1) && this.func_194093_a(flag, j1, l1) && this.func_194100_b(flag, j1, l1))
-                             {
--                                this.func_194088_a(flag, j1);
-+                                this.func_194088_a(flag, l1);
-                                 break;
-                             }
-                         }
- 
--                        int k1 = this.field_194111_h.size();
-+                        int i2 = this.field_194111_h.size();
- 
--                        if (k1 == k)
-+                        if (i2 == i1)
-                         {
--                            this.field_194111_h.removeInt(k1 - 1);
-+                            this.field_194111_h.removeInt(i2 - 1);
-                         }
-                     }
- 
-@@ -297,8 +307,8 @@
- 
-         private int func_194095_d(boolean p_194095_1_, int p_194095_2_, int p_194095_3_)
-         {
--            int i = p_194095_1_ ? p_194095_2_ * this.field_194107_d + p_194095_3_ : p_194095_3_ * this.field_194107_d + p_194095_2_;
--            return this.field_194107_d + this.field_194109_f + this.field_194107_d + 2 * i;
-+            int k = p_194095_1_ ? p_194095_2_ * this.field_194107_d + p_194095_3_ : p_194095_3_ * this.field_194107_d + p_194095_2_;
-+            return this.field_194107_d + this.field_194109_f + this.field_194107_d + 2 * k;
-         }
- 
-         private void func_194088_a(boolean p_194088_1_, int p_194088_2_)
-@@ -319,54 +329,55 @@
- 
-         public int func_194102_b(int p_194102_1_, @Nullable IntList p_194102_2_)
-         {
--            int i = 0;
--            int j = Math.min(p_194102_1_, this.func_194090_b()) + 1;
-+            int k = 0;
-+            int l = Math.min(p_194102_1_, this.func_194090_b()) + 1;
- 
-             while (true)
-             {
--                int k = (i + j) / 2;
-+                int i1 = (k + l) / 2;
- 
--                if (this.func_194092_a(k, (IntList)null))
-+                if (this.func_194092_a(i1, (IntList)null))
-                 {
--                    if (j - i <= 1)
-+                    if (l - k <= 1)
-                     {
--                        if (k > 0)
-+                        if (i1 > 0)
-                         {
--                            this.func_194092_a(k, p_194102_2_);
-+                            this.func_194092_a(i1, p_194102_2_);
-                         }
- 
--                        return k;
-+                        return i1;
-                     }
- 
--                    i = k;
-+                    k = i1;
-                 }
-                 else
-                 {
--                    j = k;
-+                    l = i1;
-                 }
-             }
-         }
- 
-         private int func_194090_b()
-         {
--            int i = Integer.MAX_VALUE;
-+            int k = Integer.MAX_VALUE;
- 
-             for (Ingredient ingredient : this.field_194106_c)
-             {
--                int j = 0;
-+                int l = 0;
-+                int i1;
- 
--                for (int k : ingredient.func_194139_b())
-+                for (IntListIterator intlistiterator = ingredient.func_194139_b().iterator(); intlistiterator.hasNext(); l = Math.max(l, RecipeItemHelper.this.field_194124_a.get(i1)))
-                 {
--                    j = Math.max(j, RecipeItemHelper.this.field_194124_a.get(k));
-+                    i1 = ((Integer)intlistiterator.next()).intValue();
-                 }
- 
--                if (i > 0)
-+                if (k > 0)
-                 {
--                    i = Math.min(i, j);
-+                    k = Math.min(k, l);
-                 }
-             }
- 
--            return i;
-+            return k;
-         }
-     }
- }

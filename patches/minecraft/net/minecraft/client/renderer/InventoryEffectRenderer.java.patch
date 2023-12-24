@@ -1,6 +1,14 @@
 --- before/net/minecraft/client/renderer/InventoryEffectRenderer.java
 +++ after/net/minecraft/client/renderer/InventoryEffectRenderer.java
-@@ -28,13 +28,19 @@
+@@ -20,7 +20,6 @@
+         super(p_i1089_1_);
+     }
+ 
+-    @Override
+     public void func_73866_w_()
+     {
+         super.func_73866_w_();
+@@ -29,19 +28,24 @@
  
      protected void func_175378_g()
      {
@@ -21,7 +29,13 @@
              this.field_147003_i = 160 + (this.field_146294_l - this.field_146999_f - 200) / 2;
              this.field_147045_u = true;
          }
-@@ -71,6 +77,7 @@
+     }
+ 
+-    @Override
+     public void func_73863_a(int p_73863_1_, int p_73863_2_, float p_73863_3_)
+     {
+         super.func_73863_a(p_73863_1_, p_73863_2_, p_73863_3_);
+@@ -73,6 +77,7 @@
              for (PotionEffect potioneffect : Ordering.natural().sortedCopy(collection))
              {
                  Potion potion = potioneffect.func_188419_a();
@@ -29,7 +43,7 @@
                  GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
                  this.field_146297_k.func_110434_K().func_110577_a(field_147001_a);
                  this.func_73729_b(i, j, 0, 166, 140, 32);
-@@ -81,6 +88,8 @@
+@@ -83,6 +88,8 @@
                      this.func_73729_b(i + 6, j + 7, 0 + i1 % 8 * 18, 198 + i1 / 8 * 18, 18, 18);
                  }
  

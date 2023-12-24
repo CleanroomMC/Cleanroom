@@ -1,29 +1,109 @@
 --- before/net/minecraft/entity/boss/dragon/phase/PhaseSittingFlaming.java
 +++ after/net/minecraft/entity/boss/dragon/phase/PhaseSittingFlaming.java
-@@ -27,7 +27,7 @@
+@@ -20,7 +20,6 @@
+         super(p_i46786_1_);
+     }
+ 
+-    @Override
+     public void func_188657_b()
+     {
+         ++this.field_188664_b;
+@@ -28,38 +27,27 @@
          if (this.field_188664_b % 2 == 0 && this.field_188664_b < 10)
          {
              Vec3d vec3d = this.field_188661_a.func_184665_a(1.0F).func_72432_b();
--            vec3d.func_178785_b((-(float)Math.PI / 4F));
-+            vec3d.func_178785_b(-((float)Math.PI / 4F));
+-            vec3d.func_178785_b((float)(-Math.PI / 4));
++            vec3d.func_178785_b((-(float)Math.PI / 4F));
              double d0 = this.field_188661_a.field_70986_h.field_70165_t;
              double d1 = this.field_188661_a.field_70986_h.field_70163_u + (double)(this.field_188661_a.field_70986_h.field_70131_O / 2.0F);
              double d2 = this.field_188661_a.field_70986_h.field_70161_v;
-@@ -40,7 +40,7 @@
+ 
+             for (int i = 0; i < 8; ++i)
+             {
+-                double d3 = d0 + this.field_188661_a.func_70681_au().nextGaussian() / 2.0;
+-                double d4 = d1 + this.field_188661_a.func_70681_au().nextGaussian() / 2.0;
+-                double d5 = d2 + this.field_188661_a.func_70681_au().nextGaussian() / 2.0;
++                double d3 = d0 + this.field_188661_a.func_70681_au().nextGaussian() / 2.0D;
++                double d4 = d1 + this.field_188661_a.func_70681_au().nextGaussian() / 2.0D;
++                double d5 = d2 + this.field_188661_a.func_70681_au().nextGaussian() / 2.0D;
  
                  for (int j = 0; j < 6; ++j)
                  {
--                    this.field_188661_a.field_70170_p.func_175688_a(EnumParticleTypes.DRAGON_BREATH, d3, d4, d5, -vec3d.field_72450_a * (double)0.08F * (double)j, -vec3d.field_72448_b * (double)0.6F, -vec3d.field_72449_c * (double)0.08F * (double)j);
-+                    this.field_188661_a.field_70170_p.func_175688_a(EnumParticleTypes.DRAGON_BREATH, d3, d4, d5, -vec3d.field_72450_a * 0.07999999821186066D * (double)j, -vec3d.field_72448_b * 0.6000000238418579D, -vec3d.field_72449_c * 0.07999999821186066D * (double)j);
+-                    this.field_188661_a
+-                    .field_70170_p
+-                    .func_175688_a(
+-                        EnumParticleTypes.DRAGON_BREATH,
+-                        d3,
+-                        d4,
+-                        d5,
+-                        -vec3d.field_72450_a * 0.08F * (double)j,
+-                        -vec3d.field_72448_b * 0.6F,
+-                        -vec3d.field_72449_c * 0.08F * (double)j
+-                    );
++                    this.field_188661_a.field_70170_p.func_175688_a(EnumParticleTypes.DRAGON_BREATH, d3, d4, d5, -vec3d.field_72450_a * (double)0.08F * (double)j, -vec3d.field_72448_b * (double)0.6F, -vec3d.field_72449_c * (double)0.08F * (double)j);
                  }
  
-                 vec3d.func_178785_b(0.19634955F);
-@@ -72,7 +72,7 @@
+-                vec3d.func_178785_b((float)(Math.PI / 16));
++                vec3d.func_178785_b(0.19634955F);
+             }
+         }
+     }
+ 
+-    @Override
+     public void func_188659_c()
+     {
+         ++this.field_188664_b;
+@@ -77,23 +65,17 @@
+         }
+         else if (this.field_188664_b == 10)
+         {
+-            Vec3d vec3d = new Vec3d(
+-                this.field_188661_a.field_70986_h.field_70165_t - this.field_188661_a.field_70165_t,
+-                0.0,
+-                this.field_188661_a.field_70986_h.field_70161_v - this.field_188661_a.field_70161_v
+-            )
+-            .func_72432_b();
++            Vec3d vec3d = (new Vec3d(this.field_188661_a.field_70986_h.field_70165_t - this.field_188661_a.field_70165_t, 0.0D, this.field_188661_a.field_70986_h.field_70161_v - this.field_188661_a.field_70161_v)).func_72432_b();
+             float f = 5.0F;
+-            double d0 = this.field_188661_a.field_70986_h.field_70165_t + vec3d.field_72450_a * 5.0 / 2.0;
+-            double d1 = this.field_188661_a.field_70986_h.field_70161_v + vec3d.field_72449_c * 5.0 / 2.0;
++            double d0 = this.field_188661_a.field_70986_h.field_70165_t + vec3d.field_72450_a * 5.0D / 2.0D;
++            double d1 = this.field_188661_a.field_70986_h.field_70161_v + vec3d.field_72449_c * 5.0D / 2.0D;
              double d2 = this.field_188661_a.field_70986_h.field_70163_u + (double)(this.field_188661_a.field_70986_h.field_70131_O / 2.0F);
-             BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(MathHelper.func_76128_c(d0), MathHelper.func_76128_c(d2), MathHelper.func_76128_c(d1));
+-            BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(
+-                MathHelper.func_76128_c(d0), MathHelper.func_76128_c(d2), MathHelper.func_76128_c(d1)
+-            );
++            BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(MathHelper.func_76128_c(d0), MathHelper.func_76128_c(d2), MathHelper.func_76128_c(d1));
  
 -            while (this.field_188661_a.field_70170_p.func_175623_d(blockpos$mutableblockpos))
 +            while (this.field_188661_a.field_70170_p.func_175623_d(blockpos$mutableblockpos) && d2 >= 0) //Forge: Fix infinite loop if ground is missing.
              {
-                 --d2;
-                 blockpos$mutableblockpos.func_181079_c(MathHelper.func_76128_c(d0), MathHelper.func_76128_c(d2), MathHelper.func_76128_c(d1));
+-                blockpos$mutableblockpos.func_181079_c(MathHelper.func_76128_c(d0), MathHelper.func_76128_c(--d2), MathHelper.func_76128_c(d1));
++                --d2;
++                blockpos$mutableblockpos.func_181079_c(MathHelper.func_76128_c(d0), MathHelper.func_76128_c(d2), MathHelper.func_76128_c(d1));
+             }
+ 
+             d2 = (double)(MathHelper.func_76128_c(d2) + 1);
+@@ -107,14 +89,12 @@
+         }
+     }
+ 
+-    @Override
+     public void func_188660_d()
+     {
+         this.field_188664_b = 0;
+         ++this.field_188665_c;
+     }
+ 
+-    @Override
+     public void func_188658_e()
+     {
+         if (this.field_188666_d != null)
+@@ -124,7 +104,6 @@
+         }
+     }
+ 
+-    @Override
+     public PhaseList<PhaseSittingFlaming> func_188652_i()
+     {
+         return PhaseList.field_188746_f;

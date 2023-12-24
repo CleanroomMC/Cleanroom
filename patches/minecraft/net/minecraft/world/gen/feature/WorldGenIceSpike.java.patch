@@ -1,35 +1,64 @@
 --- before/net/minecraft/world/gen/feature/WorldGenIceSpike.java
 +++ after/net/minecraft/world/gen/feature/WorldGenIceSpike.java
-@@ -46,12 +46,12 @@
+@@ -11,7 +11,6 @@
+ 
+ public class WorldGenIceSpike extends WorldGenerator
+ {
+-    @Override
+     public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
+     {
+         while (p_180709_1_.func_175623_d(p_180709_3_) && p_180709_3_.func_177956_o() > 2)
+@@ -47,16 +46,12 @@
                      {
                          float f2 = (float)MathHelper.func_76130_a(j1) - 0.25F;
  
--                        if ((i1 == 0 && j1 == 0 || !(f1 * f1 + f2 * f2 > f * f)) && (i1 != -l && i1 != l && j1 != -l && j1 != l || !(p_180709_2_.nextFloat() > 0.75F)))
+-                        if ((i1 == 0 && j1 == 0 || !(f1 * f1 + f2 * f2 > f * f))
+-                                && (i1 != -l && i1 != l && j1 != -l && j1 != l || !(p_180709_2_.nextFloat() > 0.75F)))
 +                        if ((i1 == 0 && j1 == 0 || f1 * f1 + f2 * f2 <= f * f) && (i1 != -l && i1 != l && j1 != -l && j1 != l || p_180709_2_.nextFloat() <= 0.75F))
                          {
                              IBlockState iblockstate = p_180709_1_.func_180495_p(p_180709_3_.func_177982_a(i1, k, j1));
                              Block block = iblockstate.func_177230_c();
  
--                            if (iblockstate.func_185904_a() == Material.field_151579_a || block == Blocks.field_150346_d || block == Blocks.field_150433_aE || block == Blocks.field_150432_aD)
+-                            if (iblockstate.func_185904_a() == Material.field_151579_a
+-                                    || block == Blocks.field_150346_d
+-                                    || block == Blocks.field_150433_aE
+-                                    || block == Blocks.field_150432_aD)
 +                            if (iblockstate.func_177230_c().isAir(iblockstate, p_180709_1_, p_180709_3_.func_177982_a(i1, k, j1)) || block == Blocks.field_150346_d || block == Blocks.field_150433_aE || block == Blocks.field_150432_aD)
                              {
                                  this.func_175903_a(p_180709_1_, p_180709_3_.func_177982_a(i1, k, j1), Blocks.field_150403_cj.func_176223_P());
                              }
-@@ -61,7 +61,7 @@
+@@ -66,10 +61,7 @@
                                  iblockstate = p_180709_1_.func_180495_p(p_180709_3_.func_177982_a(i1, -k, j1));
                                  block = iblockstate.func_177230_c();
  
--                                if (iblockstate.func_185904_a() == Material.field_151579_a || block == Blocks.field_150346_d || block == Blocks.field_150433_aE || block == Blocks.field_150432_aD)
+-                                if (iblockstate.func_185904_a() == Material.field_151579_a
+-                                        || block == Blocks.field_150346_d
+-                                        || block == Blocks.field_150433_aE
+-                                        || block == Blocks.field_150432_aD)
 +                                if (iblockstate.func_177230_c().isAir(iblockstate, p_180709_1_, p_180709_3_.func_177982_a(i1, -k, j1)) || block == Blocks.field_150346_d || block == Blocks.field_150433_aE || block == Blocks.field_150432_aD)
                                  {
                                      this.func_175903_a(p_180709_1_, p_180709_3_.func_177982_a(i1, -k, j1), Blocks.field_150403_cj.func_176223_P());
                                  }
-@@ -99,7 +99,7 @@
+@@ -107,19 +99,16 @@
                          IBlockState iblockstate1 = p_180709_1_.func_180495_p(blockpos);
                          Block block1 = iblockstate1.func_177230_c();
  
--                        if (iblockstate1.func_185904_a() != Material.field_151579_a && block1 != Blocks.field_150346_d && block1 != Blocks.field_150433_aE && block1 != Blocks.field_150432_aD && block1 != Blocks.field_150403_cj)
+-                        if (iblockstate1.func_185904_a() != Material.field_151579_a
+-                                && block1 != Blocks.field_150346_d
+-                                && block1 != Blocks.field_150433_aE
+-                                && block1 != Blocks.field_150432_aD
+-                                && block1 != Blocks.field_150403_cj)
 +                        if (!iblockstate1.func_177230_c().isAir(iblockstate1, p_180709_1_, blockpos) && block1 != Blocks.field_150346_d && block1 != Blocks.field_150433_aE && block1 != Blocks.field_150432_aD && block1 != Blocks.field_150403_cj)
                          {
                              break;
                          }
+ 
+                         this.func_175903_a(p_180709_1_, blockpos, Blocks.field_150403_cj.func_176223_P());
+                         blockpos = blockpos.func_177977_b();
++                        --j2;
+ 
+-                        if (--j2 <= 0)
++                        if (j2 <= 0)
+                         {
+                             blockpos = blockpos.func_177979_c(p_180709_2_.nextInt(5) + 1);
+                             j2 = p_180709_2_.nextInt(5);

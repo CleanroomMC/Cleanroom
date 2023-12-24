@@ -1,29 +1,22 @@
 --- before/net/minecraft/client/renderer/block/model/multipart/Selector.java
 +++ after/net/minecraft/client/renderer/block/model/multipart/Selector.java
-@@ -10,8 +10,8 @@
- import com.google.gson.JsonObject;
- import com.google.gson.JsonParseException;
- import java.lang.reflect.Type;
--import java.util.Map;
- import java.util.Set;
-+import java.util.Map.Entry;
- import javax.annotation.Nullable;
- import net.minecraft.block.state.BlockStateContainer;
- import net.minecraft.block.state.IBlockState;
-@@ -91,10 +91,10 @@
-                     return p_apply_1_ == null ? null : Selector.Deserializer.func_188158_a(p_apply_1_.getAsJsonObject());
-                 }
-             };
--            private static final Function<Map.Entry<String, JsonElement>, ICondition> field_188164_b = new Function<Map.Entry<String, JsonElement>, ICondition>()
-+            private static final Function<Entry<String, JsonElement>, ICondition> field_188164_b = new Function<Entry<String, JsonElement>, ICondition>()
-             {
-                 @Nullable
--                public ICondition apply(@Nullable Map.Entry<String, JsonElement> p_apply_1_)
-+                public ICondition apply(@Nullable Entry<String, JsonElement> p_apply_1_)
-                 {
-                     return p_apply_1_ == null ? null : Selector.Deserializer.func_188161_b(p_apply_1_);
-                 }
-@@ -103,7 +103,7 @@
+@@ -53,7 +53,6 @@
+         return this.field_188167_a.func_188118_a(p_188166_1_);
+     }
+ 
+-    @Override
+     public boolean equals(Object p_equals_1_)
+     {
+         if (this == p_equals_1_)
+@@ -76,7 +75,6 @@
+         }
+     }
+ 
+-    @Override
+     public int hashCode()
+     {
+         return 31 * this.field_188167_a.hashCode() + this.field_188168_b.hashCode();
+@@ -105,7 +103,7 @@
              public Selector deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_) throws JsonParseException
              {
                  JsonObject jsonobject = p_deserialize_1_.getAsJsonObject();
@@ -32,21 +25,20 @@
              }
  
              private ICondition func_188159_b(JsonObject p_188159_1_)
-@@ -114,7 +114,7 @@
-             @VisibleForTesting
-             static ICondition func_188158_a(JsonObject p_188158_0_)
-             {
--                Set<Map.Entry<String, JsonElement>> set = p_188158_0_.entrySet();
-+                Set<Entry<String, JsonElement>> set = p_188158_0_.entrySet();
- 
-                 if (set.isEmpty())
-                 {
-@@ -137,9 +137,9 @@
+@@ -130,9 +128,7 @@
+                     }
+                     else
+                     {
+-                        return (ICondition)(p_188158_0_.has("AND")
+-                                            ? new ConditionAnd(Iterables.transform(JsonUtils.func_151214_t(p_188158_0_, "AND"), field_188163_a))
+-                                            : func_188161_b(set.iterator().next()));
++                        return (ICondition)(p_188158_0_.has("AND") ? new ConditionAnd(Iterables.transform(JsonUtils.func_151214_t(p_188158_0_, "AND"), field_188163_a)) : func_188161_b(set.iterator().next()));
+                     }
                  }
-             }
+                 else
+@@ -143,7 +139,7 @@
  
--            private static ConditionPropertyValue func_188161_b(Map.Entry<String, JsonElement> p_188161_0_)
-+            private static ConditionPropertyValue func_188161_b(Entry<String, JsonElement> p_188161_0_)
+             private static ConditionPropertyValue func_188161_b(Entry<String, JsonElement> p_188161_0_)
              {
 -                return new ConditionPropertyValue(p_188161_0_.getKey(), p_188161_0_.getValue().getAsString());
 +                return new ConditionPropertyValue(p_188161_0_.getKey(), ((JsonElement)p_188161_0_.getValue()).getAsString());

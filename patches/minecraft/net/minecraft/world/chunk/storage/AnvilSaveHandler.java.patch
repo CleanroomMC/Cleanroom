@@ -1,6 +1,11 @@
 --- before/net/minecraft/world/chunk/storage/AnvilSaveHandler.java
 +++ after/net/minecraft/world/chunk/storage/AnvilSaveHandler.java
-@@ -22,17 +22,11 @@
+@@ -18,37 +18,28 @@
+         super(p_i46650_1_, p_i46650_2_, p_i46650_3_, p_i46650_4_);
+     }
+ 
+-    @Override
+     public IChunkLoader func_75763_a(WorldProvider p_75763_1_)
      {
          File file1 = this.func_75765_b();
  
@@ -11,12 +16,27 @@
 +            File file3 = new File(file1, p_75763_1_.getSaveFolder());
              file3.mkdirs();
              return new AnvilChunkLoader(file3, this.field_186341_a);
--        }
+         }
 -        else if (p_75763_1_ instanceof WorldProviderEnd)
 -        {
 -            File file2 = new File(file1, "DIM1");
 -            file2.mkdirs();
 -            return new AnvilChunkLoader(file2, this.field_186341_a);
-         }
+-        }
          else
          {
+             return new AnvilChunkLoader(file1, this.field_186341_a);
+         }
+     }
+ 
+-    @Override
+     public void func_75755_a(WorldInfo p_75755_1_, @Nullable NBTTagCompound p_75755_2_)
+     {
+         p_75755_1_.func_76078_e(19133);
+         super.func_75755_a(p_75755_1_, p_75755_2_);
+     }
+ 
+-    @Override
+     public void func_75759_a()
+     {
+         try

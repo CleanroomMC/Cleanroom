@@ -1,8 +1,39 @@
 --- before/net/minecraft/entity/item/EntityEnderPearl.java
 +++ after/net/minecraft/entity/item/EntityEnderPearl.java
-@@ -98,6 +98,9 @@
+@@ -45,7 +45,6 @@
+         EntityThrowable.func_189661_a(p_189663_0_, "ThrownEnderpearl");
+     }
  
-                 if (entityplayermp.field_71135_a.func_147362_b().func_150724_d() && entityplayermp.field_70170_p == this.field_70170_p && !entityplayermp.func_70608_bn())
+-    @Override
+     protected void func_70184_a(RayTraceResult p_70184_1_)
+     {
+         EntityLivingBase entitylivingbase = this.func_85052_h();
+@@ -88,16 +87,7 @@
+ 
+         for (int i = 0; i < 32; ++i)
+         {
+-            this.field_70170_p
+-            .func_175688_a(
+-                EnumParticleTypes.PORTAL,
+-                this.field_70165_t,
+-                this.field_70163_u + this.field_70146_Z.nextDouble() * 2.0,
+-                this.field_70161_v,
+-                this.field_70146_Z.nextGaussian(),
+-                0.0,
+-                this.field_70146_Z.nextGaussian()
+-            );
++            this.field_70170_p.func_175688_a(EnumParticleTypes.PORTAL, this.field_70165_t, this.field_70163_u + this.field_70146_Z.nextDouble() * 2.0D, this.field_70161_v, this.field_70146_Z.nextGaussian(), 0.0D, this.field_70146_Z.nextGaussian());
+         }
+ 
+         if (!this.field_70170_p.field_72995_K)
+@@ -106,21 +96,16 @@
+             {
+                 EntityPlayerMP entityplayermp = (EntityPlayerMP)entitylivingbase;
+ 
+-                if (entityplayermp.field_71135_a.func_147362_b().func_150724_d()
+-                        && entityplayermp.field_70170_p == this.field_70170_p
+-                        && !entityplayermp.func_70608_bn())
++                if (entityplayermp.field_71135_a.func_147362_b().func_150724_d() && entityplayermp.field_70170_p == this.field_70170_p && !entityplayermp.func_70608_bn())
                  {
 +                    net.minecraftforge.event.entity.living.EnderTeleportEvent event = new net.minecraftforge.event.entity.living.EnderTeleportEvent(entityplayermp, this.field_70165_t, this.field_70163_u, this.field_70161_v, 5.0F);
 +                    if (!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event))
@@ -10,7 +41,19 @@
                      if (this.field_70146_Z.nextFloat() < 0.05F && this.field_70170_p.func_82736_K().func_82766_b("doMobSpawning"))
                      {
                          EntityEndermite entityendermite = new EntityEndermite(this.field_70170_p);
-@@ -111,9 +114,10 @@
+                         entityendermite.func_175496_a(true);
+-                        entityendermite.func_70012_b(
+-                            entitylivingbase.field_70165_t,
+-                            entitylivingbase.field_70163_u,
+-                            entitylivingbase.field_70161_v,
+-                            entitylivingbase.field_70177_z,
+-                            entitylivingbase.field_70125_A
+-                        );
++                        entityendermite.func_70012_b(entitylivingbase.field_70165_t, entitylivingbase.field_70163_u, entitylivingbase.field_70161_v, entitylivingbase.field_70177_z, entitylivingbase.field_70125_A);
+                         this.field_70170_p.func_72838_d(entityendermite);
+                     }
+ 
+@@ -129,9 +114,10 @@
                          entitylivingbase.func_184210_p();
                      }
  
@@ -23,10 +66,19 @@
                  }
              }
              else if (entitylivingbase != null)
-@@ -141,13 +145,13 @@
+@@ -144,7 +130,6 @@
+         }
+     }
+ 
+-    @Override
+     public void func_70071_h_()
+     {
+         EntityLivingBase entitylivingbase = this.func_85052_h();
+@@ -160,14 +145,13 @@
      }
  
      @Nullable
+-    @Override
 -    public Entity func_184204_a(int p_184204_1_)
 +    public Entity changeDimension(int p_184204_1_, net.minecraftforge.common.util.ITeleporter teleporter)
      {

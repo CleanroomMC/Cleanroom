@@ -1,6 +1,14 @@
 --- before/net/minecraft/client/renderer/entity/RenderItemFrame.java
 +++ after/net/minecraft/client/renderer/entity/RenderItemFrame.java
-@@ -49,7 +49,7 @@
+@@ -42,14 +42,14 @@
+         double d0 = (double)blockpos.func_177958_n() - p_76986_1_.field_70165_t + p_76986_2_;
+         double d1 = (double)blockpos.func_177956_o() - p_76986_1_.field_70163_u + p_76986_4_;
+         double d2 = (double)blockpos.func_177952_p() - p_76986_1_.field_70161_v + p_76986_6_;
+-        GlStateManager.func_179137_b(d0 + 0.5, d1 + 0.5, d2 + 0.5);
++        GlStateManager.func_179137_b(d0 + 0.5D, d1 + 0.5D, d2 + 0.5D);
+         GlStateManager.func_179114_b(180.0F - p_76986_1_.field_70177_z, 0.0F, 1.0F, 0.0F);
+         this.field_76990_c.field_78724_e.func_110577_a(TextureMap.field_110575_b);
+         BlockRendererDispatcher blockrendererdispatcher = this.field_147917_g.func_175602_ab();
          ModelManager modelmanager = blockrendererdispatcher.func_175023_a().func_178126_b();
          IBakedModel ibakedmodel;
  
@@ -9,7 +17,21 @@
          {
              ibakedmodel = modelmanager.func_174953_a(this.field_177073_g);
          }
-@@ -96,10 +96,13 @@
+@@ -79,12 +79,7 @@
+         GlStateManager.func_179109_b(0.0F, 0.0F, 0.4375F);
+         this.func_82402_b(p_76986_1_);
+         GlStateManager.func_179121_F();
+-        this.func_177067_a(
+-            p_76986_1_,
+-            p_76986_2_ + (double)((float)p_76986_1_.field_174860_b.func_82601_c() * 0.3F),
+-            p_76986_4_ - 0.25,
+-            p_76986_6_ + (double)((float)p_76986_1_.field_174860_b.func_82599_e() * 0.3F)
+-        );
++        this.func_177067_a(p_76986_1_, p_76986_2_ + (double)((float)p_76986_1_.field_174860_b.func_82601_c() * 0.3F), p_76986_4_ - 0.25D, p_76986_6_ + (double)((float)p_76986_1_.field_174860_b.func_82599_e() * 0.3F));
+     }
+ 
+     @Nullable
+@@ -101,10 +96,13 @@
          {
              GlStateManager.func_179094_E();
              GlStateManager.func_179140_f();
@@ -24,7 +46,7 @@
              if (flag)
              {
                  this.field_76990_c.field_78724_e.func_110577_a(field_110789_a);
-@@ -107,7 +110,7 @@
+@@ -112,7 +110,7 @@
                  float f = 0.0078125F;
                  GlStateManager.func_179152_a(0.0078125F, 0.0078125F, 0.0078125F);
                  GlStateManager.func_179109_b(-64.0F, -64.0F, 0.0F);
@@ -33,7 +55,7 @@
                  GlStateManager.func_179109_b(0.0F, 0.0F, -1.0F);
  
                  if (mapdata != null)
-@@ -124,6 +127,7 @@
+@@ -129,6 +127,7 @@
                  RenderHelper.func_74518_a();
                  GlStateManager.func_179099_b();
              }
@@ -41,7 +63,16 @@
  
              GlStateManager.func_179145_e();
              GlStateManager.func_179121_F();
-@@ -137,7 +141,7 @@
+@@ -137,15 +136,12 @@
+ 
+     protected void func_177067_a(EntityItemFrame p_177067_1_, double p_177067_2_, double p_177067_4_, double p_177067_6_)
+     {
+-        if (Minecraft.func_71382_s()
+-                && !p_177067_1_.func_82335_i().func_190926_b()
+-                && p_177067_1_.func_82335_i().func_82837_s()
+-                && this.field_76990_c.field_147941_i == p_177067_1_)
++        if (Minecraft.func_71382_s() && !p_177067_1_.func_82335_i().func_190926_b() && p_177067_1_.func_82335_i().func_82837_s() && this.field_76990_c.field_147941_i == p_177067_1_)
+         {
              double d0 = p_177067_1_.func_70068_e(this.field_76990_c.field_78734_h);
              float f = p_177067_1_.func_70093_af() ? 32.0F : 64.0F;
  

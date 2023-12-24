@@ -14,7 +14,16 @@
  
      @SideOnly(Side.CLIENT)
      boolean func_185895_e();
-@@ -95,7 +99,13 @@
+@@ -89,15 +93,19 @@
+     @Nullable
+     AxisAlignedBB func_185890_d(IBlockAccess p_185890_1_, BlockPos p_185890_2_);
+ 
+-    void func_185908_a(
+-        World p_185908_1_, BlockPos p_185908_2_, AxisAlignedBB p_185908_3_, List<AxisAlignedBB> p_185908_4_, @Nullable Entity p_185908_5_, boolean p_185908_6_
+-    );
++    void func_185908_a(World p_185908_1_, BlockPos p_185908_2_, AxisAlignedBB p_185908_3_, List<AxisAlignedBB> p_185908_4_, @Nullable Entity p_185908_5_, boolean p_185908_6_);
+ 
+     AxisAlignedBB func_185900_c(IBlockAccess p_185900_1_, BlockPos p_185900_2_);
  
      RayTraceResult func_185910_a(World p_185910_1_, BlockPos p_185910_2_, Vec3d p_185910_3_, Vec3d p_185910_4_);
  

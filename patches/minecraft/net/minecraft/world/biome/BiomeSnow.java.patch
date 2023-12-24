@@ -1,7 +1,16 @@
 --- before/net/minecraft/world/biome/BiomeSnow.java
 +++ after/net/minecraft/world/biome/BiomeSnow.java
-@@ -56,7 +56,7 @@
+@@ -49,16 +49,14 @@
+         this.field_76761_J.add(new Biome.SpawnListEntry(EntityStray.class, 80, 4, 4));
+     }
  
+-    @Override
+     public float func_76741_f()
+     {
+         return 0.07F;
+     }
+ 
+-    @Override
      public void func_180624_a(World p_180624_1_, Random p_180624_2_, BlockPos p_180624_3_)
      {
 -        if (this.field_150615_aC)
@@ -9,3 +18,11 @@
          {
              for (int i = 0; i < 3; ++i)
              {
+@@ -78,7 +76,6 @@
+         super.func_180624_a(p_180624_1_, p_180624_2_, p_180624_3_);
+     }
+ 
+-    @Override
+     public WorldGenAbstractTree func_150567_a(Random p_150567_1_)
+     {
+         return new WorldGenTaiga2(false);

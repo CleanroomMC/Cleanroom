@@ -29,7 +29,7 @@
          {
              return true;
          }
-@@ -106,13 +106,13 @@
+@@ -106,20 +106,20 @@
              }
              else
              {
@@ -40,10 +40,20 @@
                      iblockstate = this.field_177261_a.func_180495_p(blockpos);
                      block = iblockstate.func_177230_c();
  
--                    if (iblockstate.func_185904_a() == Material.field_151579_a || !BlockPistonBase.func_185646_a(iblockstate, this.field_177261_a, blockpos, this.field_177257_d, false, this.field_177257_d.func_176734_d()) || blockpos.equals(this.field_177259_b))
+-                    if (iblockstate.func_185904_a() == Material.field_151579_a
+-                            || !BlockPistonBase.func_185646_a(iblockstate, this.field_177261_a, blockpos, this.field_177257_d, false, this.field_177257_d.func_176734_d())
+-                            || blockpos.equals(this.field_177259_b))
 +                    if (iblockstate.func_177230_c().isAir(iblockstate, this.field_177261_a, blockpos) || !BlockPistonBase.func_185646_a(iblockstate, this.field_177261_a, blockpos, this.field_177257_d, false, this.field_177257_d.func_176734_d()) || blockpos.equals(this.field_177259_b))
                      {
                          break;
+                     }
+ 
+-                    if (++i + this.field_177258_e.size() > 12)
++                    ++i;
++
++                    if (i + this.field_177258_e.size() > 12)
+                     {
+                         return false;
                      }
 @@ -148,7 +148,7 @@
                          {
@@ -54,7 +64,7 @@
                              {
                                  return false;
                              }
-@@ -159,7 +159,7 @@
+@@ -159,13 +159,12 @@
  
                      iblockstate = this.field_177261_a.func_180495_p(blockpos1);
  
@@ -63,7 +73,14 @@
                      {
                          return true;
                      }
-@@ -190,9 +190,9 @@
+ 
+-                    if (!BlockPistonBase.func_185646_a(iblockstate, this.field_177261_a, blockpos1, this.field_177257_d, true, this.field_177257_d)
+-                            || blockpos1.equals(this.field_177259_b))
++                    if (!BlockPistonBase.func_185646_a(iblockstate, this.field_177261_a, blockpos1, this.field_177257_d, true, this.field_177257_d) || blockpos1.equals(this.field_177259_b))
+                     {
+                         return false;
+                     }
+@@ -191,9 +190,9 @@
  
      private void func_177255_a(int p_177255_1_, int p_177255_2_)
      {

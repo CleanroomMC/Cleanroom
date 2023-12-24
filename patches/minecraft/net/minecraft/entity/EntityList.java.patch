@@ -99,7 +99,12 @@
      }
  
      @Nullable
-@@ -198,7 +216,16 @@
+@@ -194,11 +212,20 @@
+ 
+         if (entity == null)
+         {
+-            field_151516_b.warn("Skipping Entity with id {}", resourcelocation);
++            field_151516_b.warn("Skipping Entity with id {}", (Object)resourcelocation);
          }
          else
          {
@@ -125,6 +130,19 @@
      }
  
      public static boolean func_180123_a(Entity p_180123_0_, ResourceLocation p_180123_1_)
+@@ -238,10 +265,10 @@
+ 
+         for (ResourceLocation resourcelocation : func_180124_b())
+         {
+-            stringbuilder.append(resourcelocation).append(", ");
++            stringbuilder.append((Object)resourcelocation).append(", ");
+         }
+ 
+-        stringbuilder.append(field_191310_e);
++        stringbuilder.append((Object)field_191310_e);
+         return stringbuilder.toString();
+     }
+ 
 @@ -373,7 +400,7 @@
          func_191305_a("zombie_horse", 3232308, 9945732);
          func_191305_a("zombie_pigman", 15373203, 5009705);

@@ -1,6 +1,25 @@
 --- before/net/minecraft/client/renderer/entity/layers/LayerArrow.java
 +++ after/net/minecraft/client/renderer/entity/layers/LayerArrow.java
-@@ -49,12 +49,12 @@
+@@ -23,17 +23,7 @@
+         this.field_177168_a = p_i46124_1_;
+     }
+ 
+-    @Override
+-    public void func_177141_a(
+-        EntityLivingBase p_177141_1_,
+-        float p_177141_2_,
+-        float p_177141_3_,
+-        float p_177141_4_,
+-        float p_177141_5_,
+-        float p_177141_6_,
+-        float p_177141_7_,
+-        float p_177141_8_
+-    )
++    public void func_177141_a(EntityLivingBase p_177141_1_, float p_177141_2_, float p_177141_3_, float p_177141_4_, float p_177141_5_, float p_177141_6_, float p_177141_7_, float p_177141_8_)
+     {
+         int i = p_177141_1_.func_85035_bI();
+ 
+@@ -59,18 +49,18 @@
                  f = f * 2.0F - 1.0F;
                  f1 = f1 * 2.0F - 1.0F;
                  f2 = f2 * 2.0F - 1.0F;
@@ -11,10 +30,28 @@
 +                f1 = f1 * -1.0F;
 +                f2 = f2 * -1.0F;
                  float f6 = MathHelper.func_76129_c(f * f + f2 * f2);
--                entity.field_70177_z = (float)(Math.atan2((double)f, (double)f2) * (double)(180F / (float)Math.PI));
--                entity.field_70125_A = (float)(Math.atan2((double)f1, (double)f6) * (double)(180F / (float)Math.PI));
+-                entity.field_70177_z = (float)(Math.atan2((double)f, (double)f2) * 180.0F / (float)Math.PI);
+-                entity.field_70125_A = (float)(Math.atan2((double)f1, (double)f6) * 180.0F / (float)Math.PI);
 +                entity.field_70177_z = (float)(Math.atan2((double)f, (double)f2) * (180D / Math.PI));
 +                entity.field_70125_A = (float)(Math.atan2((double)f1, (double)f6) * (180D / Math.PI));
                  entity.field_70126_B = entity.field_70177_z;
                  entity.field_70127_C = entity.field_70125_A;
-                 double d0 = 0.0D;
+-                double d0 = 0.0;
+-                double d1 = 0.0;
+-                double d2 = 0.0;
+-                this.field_177168_a.func_177068_d().func_188391_a(entity, 0.0, 0.0, 0.0, 0.0F, p_177141_4_, false);
++                double d0 = 0.0D;
++                double d1 = 0.0D;
++                double d2 = 0.0D;
++                this.field_177168_a.func_177068_d().func_188391_a(entity, 0.0D, 0.0D, 0.0D, 0.0F, p_177141_4_, false);
+                 GlStateManager.func_179121_F();
+             }
+ 
+@@ -78,7 +68,6 @@
+         }
+     }
+ 
+-    @Override
+     public boolean func_177142_b()
+     {
+         return false;

@@ -37,6 +37,15 @@
          this.field_78810_s = p_i1172_1_;
          p_i1172_1_.field_78092_r.add(this);
          this.field_78802_n = p_i1172_2_;
+@@ -45,7 +48,7 @@
+ 
+     public ModelRenderer(ModelBase p_i1173_1_)
+     {
+-        this(p_i1173_1_, null);
++        this(p_i1173_1_, (String)null);
+     }
+ 
+     public ModelRenderer(ModelBase p_i46358_1_, int p_i46358_2_, int p_i46358_3_)
 @@ -58,7 +61,7 @@
      {
          if (this.field_78805_m == null)
@@ -46,7 +55,51 @@
          }
  
          this.field_78805_m.add(p_78792_1_);
-@@ -104,6 +107,7 @@
+@@ -76,38 +79,25 @@
+         p_78786_1_ = this.field_78802_n + "." + p_78786_1_;
+         TextureOffset textureoffset = this.field_78810_s.func_78084_a(p_78786_1_);
+         this.func_78784_a(textureoffset.field_78783_a, textureoffset.field_78782_b);
+-        this.field_78804_l
+-        .add(
+-            new ModelBox(this, this.field_78803_o, this.field_78813_p, p_78786_2_, p_78786_3_, p_78786_4_, p_78786_5_, p_78786_6_, p_78786_7_, 0.0F)
+-            .func_78244_a(p_78786_1_)
+-        );
++        this.field_78804_l.add((new ModelBox(this, this.field_78803_o, this.field_78813_p, p_78786_2_, p_78786_3_, p_78786_4_, p_78786_5_, p_78786_6_, p_78786_7_, 0.0F)).func_78244_a(p_78786_1_));
+         return this;
+     }
+ 
+     public ModelRenderer func_78789_a(float p_78789_1_, float p_78789_2_, float p_78789_3_, int p_78789_4_, int p_78789_5_, int p_78789_6_)
+     {
+-        this.field_78804_l
+-        .add(new ModelBox(this, this.field_78803_o, this.field_78813_p, p_78789_1_, p_78789_2_, p_78789_3_, p_78789_4_, p_78789_5_, p_78789_6_, 0.0F));
++        this.field_78804_l.add(new ModelBox(this, this.field_78803_o, this.field_78813_p, p_78789_1_, p_78789_2_, p_78789_3_, p_78789_4_, p_78789_5_, p_78789_6_, 0.0F));
+         return this;
+     }
+ 
+-    public ModelRenderer func_178769_a(
+-        float p_178769_1_, float p_178769_2_, float p_178769_3_, int p_178769_4_, int p_178769_5_, int p_178769_6_, boolean p_178769_7_
+-    )
++    public ModelRenderer func_178769_a(float p_178769_1_, float p_178769_2_, float p_178769_3_, int p_178769_4_, int p_178769_5_, int p_178769_6_, boolean p_178769_7_)
+     {
+-        this.field_78804_l
+-        .add(
+-            new ModelBox(
+-                this, this.field_78803_o, this.field_78813_p, p_178769_1_, p_178769_2_, p_178769_3_, p_178769_4_, p_178769_5_, p_178769_6_, 0.0F, p_178769_7_
+-            )
+-        );
++        this.field_78804_l.add(new ModelBox(this, this.field_78803_o, this.field_78813_p, p_178769_1_, p_178769_2_, p_178769_3_, p_178769_4_, p_178769_5_, p_178769_6_, 0.0F, p_178769_7_));
+         return this;
+     }
+ 
+     public void func_78790_a(float p_78790_1_, float p_78790_2_, float p_78790_3_, int p_78790_4_, int p_78790_5_, int p_78790_6_, float p_78790_7_)
+     {
+-        this.field_78804_l
+-        .add(new ModelBox(this, this.field_78803_o, this.field_78813_p, p_78790_1_, p_78790_2_, p_78790_3_, p_78790_4_, p_78790_5_, p_78790_6_, p_78790_7_));
++        this.field_78804_l.add(new ModelBox(this, this.field_78803_o, this.field_78813_p, p_78790_1_, p_78790_2_, p_78790_3_, p_78790_4_, p_78790_5_, p_78790_6_, p_78790_7_));
+     }
+ 
+     public void func_78793_a(float p_78793_1_, float p_78793_2_, float p_78793_3_)
+@@ -117,6 +107,7 @@
          this.field_78798_e = p_78793_3_;
      }
  
@@ -54,25 +107,96 @@
      public void func_78785_a(float p_78785_1_)
      {
          if (!this.field_78807_k)
-@@ -127,7 +131,7 @@
-                         {
-                             for (int k = 0; k < this.field_78805_m.size(); ++k)
-                             {
--                                this.field_78805_m.get(k).func_78785_a(p_78785_1_);
-+                                ((ModelRenderer)this.field_78805_m.get(k)).func_78785_a(p_78785_1_);
-                             }
-                         }
-                     }
-@@ -140,7 +144,7 @@
-                         {
-                             for (int j = 0; j < this.field_78805_m.size(); ++j)
-                             {
--                                this.field_78805_m.get(j).func_78785_a(p_78785_1_);
-+                                ((ModelRenderer)this.field_78805_m.get(j)).func_78785_a(p_78785_1_);
-                             }
-                         }
+@@ -130,64 +121,67 @@
  
-@@ -173,7 +177,7 @@
+                 GlStateManager.func_179109_b(this.field_82906_o, this.field_82908_p, this.field_82907_q);
+ 
+-                if (this.field_78795_f != 0.0F || this.field_78796_g != 0.0F || this.field_78808_h != 0.0F)
++                if (this.field_78795_f == 0.0F && this.field_78796_g == 0.0F && this.field_78808_h == 0.0F)
++                {
++                    if (this.field_78800_c == 0.0F && this.field_78797_d == 0.0F && this.field_78798_e == 0.0F)
++                    {
++                        GlStateManager.func_179148_o(this.field_78811_r);
++
++                        if (this.field_78805_m != null)
++                        {
++                            for (int k = 0; k < this.field_78805_m.size(); ++k)
++                            {
++                                ((ModelRenderer)this.field_78805_m.get(k)).func_78785_a(p_78785_1_);
++                            }
++                        }
++                    }
++                    else
++                    {
++                        GlStateManager.func_179109_b(this.field_78800_c * p_78785_1_, this.field_78797_d * p_78785_1_, this.field_78798_e * p_78785_1_);
++                        GlStateManager.func_179148_o(this.field_78811_r);
++
++                        if (this.field_78805_m != null)
++                        {
++                            for (int j = 0; j < this.field_78805_m.size(); ++j)
++                            {
++                                ((ModelRenderer)this.field_78805_m.get(j)).func_78785_a(p_78785_1_);
++                            }
++                        }
++
++                        GlStateManager.func_179109_b(-this.field_78800_c * p_78785_1_, -this.field_78797_d * p_78785_1_, -this.field_78798_e * p_78785_1_);
++                    }
++                }
++                else
+                 {
+                     GlStateManager.func_179094_E();
+                     GlStateManager.func_179109_b(this.field_78800_c * p_78785_1_, this.field_78797_d * p_78785_1_, this.field_78798_e * p_78785_1_);
+ 
+                     if (this.field_78808_h != 0.0F)
+                     {
+-                        GlStateManager.func_179114_b(this.field_78808_h * (180.0F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
++                        GlStateManager.func_179114_b(this.field_78808_h * (180F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
+                     }
+ 
+                     if (this.field_78796_g != 0.0F)
+                     {
+-                        GlStateManager.func_179114_b(this.field_78796_g * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
++                        GlStateManager.func_179114_b(this.field_78796_g * (180F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
+                     }
+ 
+                     if (this.field_78795_f != 0.0F)
+                     {
+-                        GlStateManager.func_179114_b(this.field_78795_f * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
+-                    }
+-
+-                    GlStateManager.func_179148_o(this.field_78811_r);
+-
+-                    if (this.field_78805_m != null)
+-                    {
+-                        for (int k = 0; k < this.field_78805_m.size(); ++k)
+-                        {
+-                            this.field_78805_m.get(k).func_78785_a(p_78785_1_);
+-                        }
+-                    }
+-
+-                    GlStateManager.func_179121_F();
+-                }
+-                else if (this.field_78800_c == 0.0F && this.field_78797_d == 0.0F && this.field_78798_e == 0.0F)
+-                {
+-                    GlStateManager.func_179148_o(this.field_78811_r);
+-
+-                    if (this.field_78805_m != null)
+-                    {
+-                        for (int j = 0; j < this.field_78805_m.size(); ++j)
+-                        {
+-                            this.field_78805_m.get(j).func_78785_a(p_78785_1_);
+-                        }
+-                    }
+-                }
+-                else
+-                {
+-                    GlStateManager.func_179109_b(this.field_78800_c * p_78785_1_, this.field_78797_d * p_78785_1_, this.field_78798_e * p_78785_1_);
++                        GlStateManager.func_179114_b(this.field_78795_f * (180F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
++                    }
++
+                     GlStateManager.func_179148_o(this.field_78811_r);
+ 
+                     if (this.field_78805_m != null)
                      {
                          for (int i = 0; i < this.field_78805_m.size(); ++i)
                          {
@@ -81,7 +205,12 @@
                          }
                      }
  
-@@ -185,6 +189,7 @@
+-                    GlStateManager.func_179109_b(-this.field_78800_c * p_78785_1_, -this.field_78797_d * p_78785_1_, -this.field_78798_e * p_78785_1_);
++                    GlStateManager.func_179121_F();
+                 }
+ 
+                 GlStateManager.func_179109_b(-this.field_82906_o, -this.field_82908_p, -this.field_82907_q);
+@@ -195,6 +189,7 @@
          }
      }
  
@@ -89,7 +218,28 @@
      public void func_78791_b(float p_78791_1_)
      {
          if (!this.field_78807_k)
-@@ -220,6 +225,7 @@
+@@ -211,17 +206,17 @@
+ 
+                 if (this.field_78796_g != 0.0F)
+                 {
+-                    GlStateManager.func_179114_b(this.field_78796_g * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
++                    GlStateManager.func_179114_b(this.field_78796_g * (180F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
+                 }
+ 
+                 if (this.field_78795_f != 0.0F)
+                 {
+-                    GlStateManager.func_179114_b(this.field_78795_f * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
++                    GlStateManager.func_179114_b(this.field_78795_f * (180F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
+                 }
+ 
+                 if (this.field_78808_h != 0.0F)
+                 {
+-                    GlStateManager.func_179114_b(this.field_78808_h * (180.0F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
++                    GlStateManager.func_179114_b(this.field_78808_h * (180F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
+                 }
+ 
+                 GlStateManager.func_179148_o(this.field_78811_r);
+@@ -230,6 +225,7 @@
          }
      }
  
@@ -97,7 +247,45 @@
      public void func_78794_c(float p_78794_1_)
      {
          if (!this.field_78807_k)
-@@ -261,6 +267,7 @@
+@@ -241,33 +237,37 @@
+                     this.func_78788_d(p_78794_1_);
+                 }
+ 
+-                if (this.field_78795_f != 0.0F || this.field_78796_g != 0.0F || this.field_78808_h != 0.0F)
++                if (this.field_78795_f == 0.0F && this.field_78796_g == 0.0F && this.field_78808_h == 0.0F)
++                {
++                    if (this.field_78800_c != 0.0F || this.field_78797_d != 0.0F || this.field_78798_e != 0.0F)
++                    {
++                        GlStateManager.func_179109_b(this.field_78800_c * p_78794_1_, this.field_78797_d * p_78794_1_, this.field_78798_e * p_78794_1_);
++                    }
++                }
++                else
+                 {
+                     GlStateManager.func_179109_b(this.field_78800_c * p_78794_1_, this.field_78797_d * p_78794_1_, this.field_78798_e * p_78794_1_);
+ 
+                     if (this.field_78808_h != 0.0F)
+                     {
+-                        GlStateManager.func_179114_b(this.field_78808_h * (180.0F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
++                        GlStateManager.func_179114_b(this.field_78808_h * (180F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
+                     }
+ 
+                     if (this.field_78796_g != 0.0F)
+                     {
+-                        GlStateManager.func_179114_b(this.field_78796_g * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
++                        GlStateManager.func_179114_b(this.field_78796_g * (180F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
+                     }
+ 
+                     if (this.field_78795_f != 0.0F)
+                     {
+-                        GlStateManager.func_179114_b(this.field_78795_f * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
++                        GlStateManager.func_179114_b(this.field_78795_f * (180F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
+                     }
+-                }
+-                else if (this.field_78800_c != 0.0F || this.field_78797_d != 0.0F || this.field_78798_e != 0.0F)
+-                {
+-                    GlStateManager.func_179109_b(this.field_78800_c * p_78794_1_, this.field_78797_d * p_78794_1_, this.field_78798_e * p_78794_1_);
+                 }
+             }
          }
      }
  
@@ -105,7 +293,7 @@
      private void func_78788_d(float p_78788_1_)
      {
          this.field_78811_r = GLAllocation.func_74526_a(1);
-@@ -269,7 +276,7 @@
+@@ -276,7 +276,7 @@
  
          for (int i = 0; i < this.field_78804_l.size(); ++i)
          {

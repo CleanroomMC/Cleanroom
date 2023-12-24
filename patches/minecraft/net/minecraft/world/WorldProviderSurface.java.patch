@@ -1,7 +1,16 @@
 --- before/net/minecraft/world/WorldProviderSurface.java
 +++ after/net/minecraft/world/WorldProviderSurface.java
-@@ -9,6 +9,6 @@
+@@ -2,15 +2,13 @@
  
+ public class WorldProviderSurface extends WorldProvider
+ {
+-    @Override
+     public DimensionType func_186058_p()
+     {
+         return DimensionType.OVERWORLD;
+     }
+ 
+-    @Override
      public boolean func_186056_c(int p_186056_1_, int p_186056_2_)
      {
 -        return !this.field_76579_a.func_72916_c(p_186056_1_, p_186056_2_);
