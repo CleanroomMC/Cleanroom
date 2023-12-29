@@ -200,7 +200,7 @@ public class Display {
             @Override
             public void invoke(long window, double xoffset, double yoffset) {
 
-                Mouse.addWheelEvent(yoffset);
+                Mouse.addWheelEvent(yoffset == 0 ? xoffset : yoffset);
             }
         };
 
