@@ -220,6 +220,8 @@ public final class ReflectionHackery {
     private static void putHelper(Class<?> clazz, Object owner, long offset, Object value) {
         if (clazz == Integer.TYPE) {
             unsafe.putInt(owner, offset, (int) value);
+        } else if (clazz == Short.TYPE) {
+            unsafe.putShort(owner, offset, (short) value);
         } else if (clazz == Byte.TYPE) {
             unsafe.putByte(owner, offset, (byte) value);
         } else if (clazz == Long.TYPE) {
@@ -240,6 +242,8 @@ public final class ReflectionHackery {
     private static Object getHelper(Class<?> clazz, Object owner, long offset) {
         if (clazz == Integer.TYPE) {
             return unsafe.getInt(owner, offset);
+        } else if (clazz == Short.TYPE) {
+            return unsafe.getShort(owner, offset);
         } else if (clazz == Byte.TYPE) {
             return unsafe.getByte(owner, offset);
         } else if (clazz == Long.TYPE) {
