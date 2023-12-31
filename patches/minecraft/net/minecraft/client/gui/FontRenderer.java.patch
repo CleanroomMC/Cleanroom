@@ -429,7 +429,7 @@
 +                        l--;
 +                        back = str.charAt(k);
 +                        if (back == '\u00a7') {
-+                            if (k == lastReset.peek().i()) {
++                            if (!lastReset.isEmpty() && k == lastReset.peek().i()) {
 +                                lastReset.pop(); // Remove reset
 +                            }
 +                            if (nextFormat.length() > 1)
