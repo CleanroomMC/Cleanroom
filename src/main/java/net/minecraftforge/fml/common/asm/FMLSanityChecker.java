@@ -21,6 +21,9 @@ package net.minecraftforge.fml.common.asm;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.CodeSource;
@@ -185,6 +188,14 @@ public class FMLSanityChecker implements IFMLCallHook
         fmlLocation = (File)data.get("coremodLocation");
         ClassPatchManager.INSTANCE.setup(FMLLaunchHandler.side());
         FMLDeobfuscatingRemapper.INSTANCE.setup(mcDir, cl, (String) data.get("deobfuscationFileName"), liveEnv);
+        try {
+            Class<?> deobf = cl.getClass().getClassLoader().loadClass(FMLDeobfuscatingRemapper.class.getName());
+            Field instanceType = deobf.getField("INSTANCE");
+            Method setup = deobf.getMethod("setup", File.class, LaunchClassLoader.class, String.class, boolean.class);
+            Object instance = instanceType.get(null);
+            setup.invoke(instance, mcDir, cl, (String) data.get("deobfuscationFileName"), liveEnv);
+        } catch (ClassNotFoundException | NoSuchFieldException | NoSuchMethodException | IllegalAccessException |
+                 InvocationTargetException ignored) {}
     }
 
 }
