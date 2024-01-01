@@ -34,7 +34,8 @@ public class FMLCorePlugin implements IFMLLoadingPlugin
                              "net.minecraftforge.fml.common.asm.transformers.JavaxTransformer",
                              "net.minecraftforge.fml.common.asm.transformers.MalformedUUIDTransformer",
                              "net.minecraftforge.fml.common.asm.transformers.ReflectionFieldTransformer",
-                             "net.minecraftforge.fml.common.asm.transformers.ScriptEngineTransformer"
+                             "net.minecraftforge.fml.common.asm.transformers.ScriptEngineTransformer",
+                             "net.minecraftforge.fml.common.asm.transformers.URLClassLoaderTransformer"
                             };
     }
 
