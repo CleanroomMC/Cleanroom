@@ -1,9 +1,11 @@
 package com.cleanroommc.hackery;
 
 import jdk.internal.misc.Unsafe;
+import net.minecraft.launchwrapper.LaunchClassLoader;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.*;
+import java.net.URL;
 import java.util.function.Predicate;
 
 @SuppressWarnings("removal")
@@ -54,6 +56,21 @@ public final class ReflectionHackery {
     public static void stripFieldOfModifier(Field field, int modifierFlag) throws IllegalAccessException {
         field$modifiers.setInt(field, field.getModifiers() & ~modifierFlag);
     }
+
+    public static URL[] getURL(ClassLoader loader) {
+        try{
+            Field UCP = LaunchClassLoader.class.getClassLoader().getClass().getSuperclass().getDeclaredField("ucp");
+            UCP.setAccessible(true);
+            Object urls = UCP.get(loader);
+            Class<?> urlClassPath = Class.forName("jdk.internal.loader.URLClassPath");
+            Method get = urlClassPath.getMethod("getURLs");
+            return (URL[]) get.invoke(urls);
+        } catch (NoSuchFieldException | IllegalAccessException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
+            return new URL[0];
+        }
+    }
+
+
 
     public static void setField(Field field, Object owner, Object value) throws IllegalAccessException {
         if (Modifier.isStatic(field.getModifiers())) {
