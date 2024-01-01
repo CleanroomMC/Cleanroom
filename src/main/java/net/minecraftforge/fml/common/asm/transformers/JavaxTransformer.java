@@ -39,9 +39,9 @@ public class JavaxTransformer implements IClassTransformer {
     }
 
     static class JavaxRemapper extends Remapper {
-        final String[] fromPrefixes = new String[] { "javax/xml/bind/", "javax/xml/ws/", "javax/ws/", "javax/activation/", "javax/soap/", "javax/jws/" };
+        final String[] fromPrefixes = new String[] { "javax/xml/bind/", "javax/xml/ws/", "javax/ws/", "javax/activation/", "javax/soap/", "javax/jws/" , "sun/reflect/Reflection"};
 
-        final String[] toPrefixes = new String[] { "jakarta/xml/bind/", "jakarta/xml/ws/", "jakarta/ws/", "jakarta/activation/", "jakarta/soap/", "jakarta/jws/" };
+        final String[] toPrefixes = new String[] { "jakarta/xml/bind/", "jakarta/xml/ws/", "jakarta/ws/", "jakarta/activation/", "jakarta/soap/", "jakarta/jws/", "com/cleanroommc/hackery/Reflection"};
 
         @Override
         public String map(String typeName) {
