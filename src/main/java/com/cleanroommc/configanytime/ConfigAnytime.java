@@ -9,11 +9,11 @@ import net.minecraftforge.common.config.ConfigManager;
 
 public class ConfigAnytime {
     /**
-      *  Merged ConfigAnytime.
-      *  Use this to be able compatibility.
+      *  Deprecated.
+      *  Call this make it compatibility.
+     *   Just use @Config.
      */
-    public static void register(Class<?> configClass) {
-        ConfigManager.ConfigAnytime.register(configClass);
-    }
+    @Deprecated
+    public static void register(Class<?> configClass) {}
 
 }

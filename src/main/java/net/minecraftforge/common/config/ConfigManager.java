@@ -163,6 +163,22 @@ public class ConfigManager
             try
             {
                 Class<?> cls = Class.forName(targ.getClassName(), true, mcl);
+                try {
+                    Method classLoader$findLoadedClass = ClassLoader.class.getDeclaredMethod("findLoadedClass", String.class);
+                    classLoader$findLoadedClass.setAccessible(true);
+                    if (classLoader$findLoadedClass.invoke(Launch.classLoader, "net.minecraftforge.fml.common.Loader") != null) {
+                        if (!Loader.instance().hasReachedState(LoaderState.LOADING)) {
+                            // Early
+                            registerClass(cls);
+                        }
+                    } else {
+                        // Early
+                        registerClass(cls);
+                    }
+                    // Late, nothing should be done
+                } catch (Throwable t) {
+                    throw new RuntimeException(t);
+                }
 
                 Set<Class<?>> modConfigClasses = MOD_CONFIG_CLASSES.computeIfAbsent(modid, k -> Sets.<Class<?>>newHashSet());
                 modConfigClasses.add(cls);
@@ -187,7 +203,6 @@ public class ConfigManager
                 sync(cfg, cls, modid, category, !Loader.instance().hasReachedState(LoaderState.AVAILABLE), null);
 
                 cfg.save();
-
             }
             catch (Exception e)
             {
@@ -195,6 +210,27 @@ public class ConfigManager
                 throw new LoaderException(e);
             }
         }
+    }
+
+    private static void registerClass(Class<?> configClass) {
+        Config config = configClass.getAnnotation(Config.class);
+        String modId = config.modid();
+
+        Set<Class<?>> modConfigClasses = MOD_CONFIG_CLASSES.computeIfAbsent(modId, k -> Sets.newHashSet());
+        modConfigClasses.add(configClass);
+
+        File configDir = new File(Launch.minecraftHome, "config");
+        File configFile = new File(configDir, config.name() + ".cfg");
+        Configuration cfg = CONFIGS.get(configFile.getAbsolutePath());
+        if (cfg == null) {
+            cfg = new Configuration(configFile);
+            cfg.load();
+            CONFIGS.put(configFile.getAbsolutePath(), cfg);
+        }
+
+        sync(cfg, configClass, modId, config.category(), true, (Object) null);
+
+        cfg.save();
     }
 
     public static Class<?>[] getModConfigClasses(String modid)
@@ -380,57 +416,6 @@ public class ConfigManager
         if (f.isAnnotationPresent(Name.class))
             return f.getAnnotation(Name.class).value();
         return f.getName();
-    }
-
-    //Copyright by CleanroomMC & Rongmario
-    public static class ConfigAnytime {
-        /**
-         * Register configuration class that is annotated with {@link Config} here for it to be processed immediately with saving and loading supported.
-         * Preferably call this method in a static init block at the very end of your configuration class.
-         * @param configClass configuration class that is annotated with {@link Config}
-         */
-        public static void register(Class<?> configClass) {
-            if (!configClass.isAnnotationPresent(Config.class)) {
-                return;
-            }
-            try {
-                Method classLoader$findLoadedClass = ClassLoader.class.getDeclaredMethod("findLoadedClass", String.class);
-                classLoader$findLoadedClass.setAccessible(true);
-                if (classLoader$findLoadedClass.invoke(Launch.classLoader, "net.minecraftforge.fml.common.Loader") != null) {
-                    if (!Loader.instance().hasReachedState(LoaderState.LOADING)) {
-                        // Early
-                        $register(configClass);
-                    }
-                } else {
-                    // Early
-                    $register(configClass);
-                }
-                // Late, nothing should be done
-            } catch (Throwable t) {
-                throw new RuntimeException(t);
-            }
-        }
-
-        private static void $register(Class<?> configClass) {
-            Config config = configClass.getAnnotation(Config.class);
-            String modId = config.modid();
-
-            Set<Class<?>> modConfigClasses = MOD_CONFIG_CLASSES.computeIfAbsent(modId, k -> Sets.newHashSet());
-            modConfigClasses.add(configClass);
-
-            File configDir = new File(Launch.minecraftHome, "config");
-            File configFile = new File(configDir, config.name() + ".cfg");
-            Configuration cfg = CONFIGS.get(configFile.getAbsolutePath());
-            if (cfg == null) {
-                cfg = new Configuration(configFile);
-                cfg.load();
-                CONFIGS.put(configFile.getAbsolutePath(), cfg);
-            }
-
-            ConfigManager.sync(cfg, configClass, modId, config.category(), true, (Object) null);
-
-            cfg.save();
-        }
     }
 
 }
