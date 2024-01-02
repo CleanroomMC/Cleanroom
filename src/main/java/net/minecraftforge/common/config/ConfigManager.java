@@ -20,7 +20,11 @@
 package net.minecraftforge.common.config;
 
 import java.io.File;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Locale;
 import java.util.Map;
@@ -33,6 +37,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.config.Config.Comment;
 import net.minecraftforge.common.config.Config.LangKey;
 import net.minecraftforge.common.config.Config.Name;
@@ -375,6 +380,57 @@ public class ConfigManager
         if (f.isAnnotationPresent(Name.class))
             return f.getAnnotation(Name.class).value();
         return f.getName();
+    }
+
+    //Copyright by CleanroomMC & Rongmario
+    public static class ConfigAnytime {
+        /**
+         * Register configuration class that is annotated with {@link Config} here for it to be processed immediately with saving and loading supported.
+         * Preferably call this method in a static init block at the very end of your configuration class.
+         * @param configClass configuration class that is annotated with {@link Config}
+         */
+        public static void register(Class<?> configClass) {
+            if (!configClass.isAnnotationPresent(Config.class)) {
+                return;
+            }
+            try {
+                Method classLoader$findLoadedClass = ClassLoader.class.getDeclaredMethod("findLoadedClass", String.class);
+                classLoader$findLoadedClass.setAccessible(true);
+                if (classLoader$findLoadedClass.invoke(Launch.classLoader, "net.minecraftforge.fml.common.Loader") != null) {
+                    if (!Loader.instance().hasReachedState(LoaderState.LOADING)) {
+                        // Early
+                        $register(configClass);
+                    }
+                } else {
+                    // Early
+                    $register(configClass);
+                }
+                // Late, nothing should be done
+            } catch (Throwable t) {
+                throw new RuntimeException(t);
+            }
+        }
+
+        private static void $register(Class<?> configClass) {
+            Config config = configClass.getAnnotation(Config.class);
+            String modId = config.modid();
+
+            Set<Class<?>> modConfigClasses = MOD_CONFIG_CLASSES.computeIfAbsent(modId, k -> Sets.newHashSet());
+            modConfigClasses.add(configClass);
+
+            File configDir = new File(Launch.minecraftHome, "config");
+            File configFile = new File(configDir, config.name() + ".cfg");
+            Configuration cfg = CONFIGS.get(configFile.getAbsolutePath());
+            if (cfg == null) {
+                cfg = new Configuration(configFile);
+                cfg.load();
+                CONFIGS.put(configFile.getAbsolutePath(), cfg);
+            }
+
+            ConfigManager.sync(cfg, configClass, modId, config.category(), true, (Object) null);
+
+            cfg.save();
+        }
     }
 
 }
