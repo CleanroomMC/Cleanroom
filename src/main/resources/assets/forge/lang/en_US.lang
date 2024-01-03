@@ -240,3 +240,12 @@ fml.button.open.file=Open %s
 forge.container.enchant.limitedEnchantability=Limited Enchantability
 attribute.name.generic.reachDistance=Reach Distance
 attribute.name.forge.swimSpeed=Swim Speed
+
+forge.tooltip.metadata=Metadata: %s
+forge.tooltip.nbtTagData=NBT: %s
+forge.tooltip.durability=Durability: %s
+forge.tooltip.burnTime=Burn Time: %s ticks
+forge.tooltip.registryName=ID: %s
+forge.tooltip.maxStackSize=Max Stack Size: %s
+forge.tooltip.oreDict=Ore Dictionary Entries:
+forge.tooltip.unlocalizedName=Unlocalized Name: %s

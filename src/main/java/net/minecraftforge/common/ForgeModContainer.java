@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraftforge.client.DebugTooltipHandler;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -496,6 +497,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
         {
             MinecraftForge.EVENT_BUS.register(ForgeClientHandler.class);
+            MinecraftForge.EVENT_BUS.register(DebugTooltipHandler.class);
         }
         ForgeChunkManager.captureConfig(evt.getModConfigurationDirectory());
         MinecraftForge.EVENT_BUS.register(this);
