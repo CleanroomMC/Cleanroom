@@ -35,6 +35,10 @@ commands.forge.tracking.noData=No data has been recorded yet.
 commands.tree_base.invalid_cmd=Invalid subcommand '%s'!
 commands.tree_base.invalid_cmd.list_subcommands=Invalid subcommand '%s'! Available subcommands: %s
 commands.tree_base.available_subcommands=Available SubCommands: %s
+
+commands.forge_client.usage=Use /forge_client <subcommand>
+commands.forge_client.hand.usage=Export debug info for your main hand item to message
+
 forge.texture.preload.warning=Warning: Texture %s not preloaded, will cause render glitches!
 forge.client.shutdown.internal=Shutting down internal server...
 forge.update.newversion=New Cleanroom version available: %s

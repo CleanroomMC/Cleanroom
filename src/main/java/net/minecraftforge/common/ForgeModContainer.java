@@ -35,7 +35,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraftforge.client.DebugTooltipHandler;
+import net.minecraftforge.client.ClientCommandHandler;
+import net.minecraftforge.client.command.ForgeClientCommand;
+import net.minecraftforge.fml.common.event.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -89,13 +91,6 @@ import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.WorldAccessContainer;
 import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
 import net.minecraftforge.fml.common.discovery.json.JsonAnnotationLoader;
-import net.minecraftforge.fml.common.event.FMLConstructionEvent;
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.common.event.FMLModIdMappingEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -497,10 +492,12 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
         {
             MinecraftForge.EVENT_BUS.register(ForgeClientHandler.class);
-            MinecraftForge.EVENT_BUS.register(DebugTooltipHandler.class);
         }
         ForgeChunkManager.captureConfig(evt.getModConfigurationDirectory());
         MinecraftForge.EVENT_BUS.register(this);
+
+        ForgeClientCommand command = new ForgeClientCommand();
+        ClientCommandHandler.instance.registerCommand(command);
 
         // TODO: Create own version checker instead
 //        if (!ForgeModContainer.disableVersionCheck)
@@ -625,6 +622,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
                 "net.minecraftforge.client.model",
                 "net.minecraftforge.client.model.obj",
                 "net.minecraftforge.client.model.techne",
+                "net.minecraftforge.client.command",
                 "net.minecraftforge.common",
                 "net.minecraftforge.common.config",
                 "net.minecraftforge.common.network",
