@@ -268,100 +268,15 @@
          }
      }
  
-@@ -489,7 +509,6 @@
-         return this.func_77973_b().func_77667_c(this);
-     }
- 
--    @Override
-     public String toString()
-     {
-         return this.field_77994_a + "x" + this.func_77973_b().func_77658_a() + "@" + this.field_77991_e;
-@@ -639,7 +658,7 @@
-     @SideOnly(Side.CLIENT)
-     public List<String> func_82840_a(@Nullable EntityPlayer p_82840_1_, ITooltipFlag p_82840_2_)
-     {
--        List<String> list = Lists.newArrayList();
-+        List<String> list = Lists.<String>newArrayList();
-         String s = this.func_82833_r();
- 
-         if (this.func_82837_s())
-@@ -758,8 +777,8 @@
-                     {
-                         if (attributemodifier.func_111167_a() == Item.field_111210_e)
-                         {
--                            d0 += p_82840_1_.func_110148_a(SharedMonsterAttributes.field_111264_e).func_111125_b();
--                            d0 += (double)EnchantmentHelper.func_152377_a(this, EnumCreatureAttribute.UNDEFINED);
-+                            d0 = d0 + p_82840_1_.func_110148_a(SharedMonsterAttributes.field_111264_e).func_111125_b();
-+                            d0 = d0 + (double)EnchantmentHelper.func_152377_a(this, EnumCreatureAttribute.UNDEFINED);
-                             flag = true;
-                         }
-                         else if (attributemodifier.func_111167_a() == Item.field_185050_h)
-@@ -777,44 +796,21 @@
-                     }
-                     else
-                     {
--                        d1 = d0 * 100.0;
-+                        d1 = d0 * 100.0D;
-                     }
- 
-                     if (flag)
-                     {
--                        list.add(
--                            " "
--                            + I18n.func_74837_a(
--                                "attribute.modifier.equals." + attributemodifier.func_111169_c(),
--                                field_111284_a.format(d1),
--                                I18n.func_74838_a("attribute.name." + (String)entry.getKey())
--                            )
--                        );
--                    }
--                    else if (d0 > 0.0)
--                    {
--                        list.add(
--                            TextFormatting.BLUE
--                            + " "
--                            + I18n.func_74837_a(
--                                "attribute.modifier.plus." + attributemodifier.func_111169_c(),
--                                field_111284_a.format(d1),
--                                I18n.func_74838_a("attribute.name." + (String)entry.getKey())
--                            )
--                        );
--                    }
--                    else if (d0 < 0.0)
--                    {
--                        d1 *= -1.0;
--                        list.add(
--                            TextFormatting.RED
--                            + " "
--                            + I18n.func_74837_a(
--                                "attribute.modifier.take." + attributemodifier.func_111169_c(),
--                                field_111284_a.format(d1),
--                                I18n.func_74838_a("attribute.name." + (String)entry.getKey())
--                            )
--                        );
+@@ -815,6 +835,7 @@
+                                 I18n.func_74838_a("attribute.name." + (String)entry.getKey())
+                             )
+                         );
 +                        list.add(" " + I18n.func_74837_a("attribute.modifier.equals." + attributemodifier.func_111169_c(), field_111284_a.format(d1), I18n.func_74838_a("attribute.name." + (String)entry.getKey())));
-+                    }
-+                    else if (d0 > 0.0D)
-+                    {
-+                        list.add(TextFormatting.BLUE + " " + I18n.func_74837_a("attribute.modifier.plus." + attributemodifier.func_111169_c(), field_111284_a.format(d1), I18n.func_74838_a("attribute.name." + (String)entry.getKey())));
-+                    }
-+                    else if (d0 < 0.0D)
-+                    {
-+                        d1 = d1 * -1.0D;
-+                        list.add(TextFormatting.RED + " " + I18n.func_74837_a("attribute.modifier.take." + attributemodifier.func_111169_c(), field_111284_a.format(d1), I18n.func_74838_a("attribute.name." + (String)entry.getKey())));
                      }
                  }
              }
-@@ -882,7 +878,7 @@
-                 list.add(I18n.func_74837_a("item.durability", this.func_77958_k() - this.func_77952_i(), this.func_77958_k()));
-             }
- 
--            list.add(TextFormatting.DARK_GRAY + Item.field_150901_e.func_177774_c(this.field_151002_e).toString());
-+            list.add(TextFormatting.DARK_GRAY + ((ResourceLocation)Item.field_150901_e.func_177774_c(this.field_151002_e)).toString());
- 
-             if (this.func_77942_o())
-             {
-@@ -890,6 +886,7 @@
+@@ -890,6 +911,7 @@
              }
          }
  
@@ -369,7 +284,7 @@
          return list;
      }
  
-@@ -899,6 +896,7 @@
+@@ -899,6 +921,7 @@
          return this.func_77973_b().func_77636_d(this);
      }
  
@@ -377,28 +292,7 @@
      public EnumRarity func_77953_t()
      {
          return this.func_77973_b().func_77613_e(this);
-@@ -999,7 +997,7 @@
- 
-         if (this.func_77942_o() && this.field_77990_d.func_150297_b("AttributeModifiers", 9))
-         {
--            multimap = HashMultimap.create();
-+            multimap = HashMultimap.<String, AttributeModifier>create();
-             NBTTagList nbttaglist = this.field_77990_d.func_150295_c("AttributeModifiers", 10);
- 
-             for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
-@@ -1007,10 +1005,7 @@
-                 NBTTagCompound nbttagcompound = nbttaglist.func_150305_b(i);
-                 AttributeModifier attributemodifier = SharedMonsterAttributes.func_111259_a(nbttagcompound);
- 
--                if (attributemodifier != null
--                        && (!nbttagcompound.func_150297_b("Slot", 8) || nbttagcompound.func_74779_i("Slot").equals(p_111283_1_.func_188450_d()))
--                        && attributemodifier.func_111167_a().getLeastSignificantBits() != 0L
--                        && attributemodifier.func_111167_a().getMostSignificantBits() != 0L)
-+                if (attributemodifier != null && (!nbttagcompound.func_150297_b("Slot", 8) || nbttagcompound.func_74779_i("Slot").equals(p_111283_1_.func_188450_d())) && attributemodifier.func_111167_a().getLeastSignificantBits() != 0L && attributemodifier.func_111167_a().getMostSignificantBits() != 0L)
-                 {
-                     multimap.put(nbttagcompound.func_74779_i("AttributeName"), attributemodifier);
-                 }
-@@ -1018,7 +1013,7 @@
+@@ -1018,7 +1041,7 @@
          }
          else
          {
@@ -407,18 +301,7 @@
          }
  
          return multimap;
-@@ -1054,16 +1049,16 @@
- 
-         if (this.func_82837_s())
-         {
--            textcomponentstring.func_150256_b().func_150217_b(true);
-+            textcomponentstring.func_150256_b().func_150217_b(Boolean.valueOf(true));
-         }
- 
--        ITextComponent itextcomponent = new TextComponentString("[").func_150257_a(textcomponentstring).func_150258_a("]");
-+        ITextComponent itextcomponent = (new TextComponentString("[")).func_150257_a(textcomponentstring).func_150258_a("]");
- 
-         if (!this.field_190928_g)
+@@ -1063,7 +1086,7 @@
          {
              NBTTagCompound nbttagcompound = this.func_77955_b(new NBTTagCompound());
              itextcomponent.func_150256_b().func_150209_a(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new TextComponentString(nbttagcompound.toString())));
@@ -427,7 +310,7 @@
          }
  
          return itextcomponent;
-@@ -1160,5 +1155,129 @@
+@@ -1160,5 +1183,129 @@
      public void func_190918_g(int p_190918_1_)
      {
          this.func_190917_f(-p_190918_1_);
