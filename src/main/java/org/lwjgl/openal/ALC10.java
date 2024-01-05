@@ -1,5 +1,9 @@
 package org.lwjgl.openal;
 
+import org.lwjgl.MemoryUtil;
+
+import java.nio.ByteBuffer;
+
 public class ALC10 {
 
     static ALCcontext alcContext;
@@ -25,6 +29,14 @@ public class ALC10 {
         }
 
         return org.lwjgl3.openal.ALC10.alcGetString(device.device, pname);
+    }
+
+    public static ALCdevice alcOpenDevice(String devicename) {
+        long device_address = org.lwjgl3.openal.ALC10.alcOpenDevice(devicename);
+        if(device_address != 0) {
+            return new ALCdevice(device_address);
+        }
+        return null;
     }
 
     public static boolean alcIsExtensionPresent(ALCdevice device, java.lang.String extName) {
