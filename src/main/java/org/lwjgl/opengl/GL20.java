@@ -151,6 +151,10 @@ public class GL20 {
         org.lwjgl3.opengl.GL20.glGetActiveAttrib(program, index, length, size, type, name);
     }
 
+    public static String glGetActiveUniform(int program, int index, int maxLength) {
+        return org.lwjgl3.opengl.GL31C.glGetActiveUniformName(program, index, maxLength);
+    }
+
     public static void glGetActiveUniform(int program, int index, java.nio.IntBuffer length, java.nio.IntBuffer size,
             java.nio.IntBuffer type, java.nio.ByteBuffer name) {
         org.lwjgl3.opengl.GL20.glGetActiveUniform(program, index, length, size, type, name);
