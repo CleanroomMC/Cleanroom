@@ -16,7 +16,7 @@ public class CleanroomScriptEngineManager extends ScriptEngineManager {
     }
 
     private void initialize() {
-        var scala = new IMain.Factory();
+        IMain.Factory scala = new IMain.Factory();
         for (String name : scala.getNames()) {
             this.registerEngineName(name, scala);
         }
