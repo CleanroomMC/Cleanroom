@@ -26,7 +26,7 @@ public class CleanroomScriptEngineManager extends ScriptEngineManager {
         for (String ext : scala.getExtensions()) {
             this.registerEngineExtension(ext, scala);
         }
-        var js = new NashornScriptEngineFactory();
+        NashornScriptEngineFactory js = new NashornScriptEngineFactory();
         for (String name : js.getNames()) {
             this.registerEngineName(name, js);
         }
