@@ -23,7 +23,9 @@ public class AL10 {
     public static void alBufferData(int buffer, int format, java.nio.ShortBuffer data, int freq) {
         org.lwjgl3.openal.AL10.alBufferData(buffer, format, data, freq);
     }
-
+    public static void alcCloseDevice(ALCdevice alCdevice) {
+        org.lwjgl3.openal.ALC10.alcCloseDevice(alCdevice.device);
+    }
     public static void alDeleteBuffers(int buffer) {
         org.lwjgl3.openal.AL10.alDeleteBuffers(buffer);
     }
