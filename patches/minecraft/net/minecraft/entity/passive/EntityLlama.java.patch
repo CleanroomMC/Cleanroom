@@ -1,0 +1,14 @@
+--- before/net/minecraft/entity/passive/EntityLlama.java
++++ after/net/minecraft/entity/passive/EntityLlama.java
+@@ -488,6 +488,11 @@
+     @Override
+     public void func_180430_e(float p_180430_1_, float p_180430_2_)
+     {
++        net.minecraftforge.event.entity.living.LivingFallEvent evt=net.minecraftforge.event.ForgeEventFactory.onLivingFall(this,p_180430_1_,p_180430_2_);
++        if (evt.isCanceled())return;
++        p_180430_1_=evt.getDistance();
++        p_180430_2_=evt.getDamageMultiplier();
++
+         int i = MathHelper.func_76123_f((p_180430_1_ * 0.5F - 3.0F) * p_180430_2_);
+ 
+         if (i > 0)
