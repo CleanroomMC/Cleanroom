@@ -54,6 +54,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityMinecartContainer;
@@ -571,9 +572,13 @@ public class ForgeHooks
     //Optifine Helper Functions u.u, these are here specifically for Optifine
     //Note: When using Optifine, these methods are invoked using reflection, which
     //incurs a major performance penalty.
+    //TODO: find out could we change the method sign?
     public static void onLivingSetAttackTarget(EntityLivingBase entity, EntityLivingBase target)
     {
-        MinecraftForge.EVENT_BUS.post(new LivingSetAttackTargetEvent(entity, target));
+        LivingSetAttackTargetEvent evt=new LivingSetAttackTargetEvent(entity,target);
+        if (!MinecraftForge.EVENT_BUS.post(evt)){
+            ((EntityLiving)entity).attackTarget=evt.getTarget();
+        }
     }
 
     public static boolean onLivingUpdate(EntityLivingBase entity)

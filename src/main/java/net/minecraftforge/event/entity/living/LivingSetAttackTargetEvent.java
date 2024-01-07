@@ -32,26 +32,34 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable;
  * <br>
  * This event is fired via the {@link ForgeHooks#onLivingSetAttackTarget(EntityLivingBase, EntityLivingBase)}.<br>
  * <br>
- * {@link #target} contains the newly targeted Entity.<br>
+ * {@link #originalTarget} contains the newly targeted Entity.<br>
  * <br>
- * This event is not {@link Cancelable}.<br>
+ * {@link #redirectedTarget} contains the redirected Targeted Entity.<br>
+ * <br>
+ * This event is {@link Cancelable}.<br>
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * <br>
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  **/
+@Cancelable
 public class LivingSetAttackTargetEvent extends LivingEvent
 {
 
-    private final EntityLivingBase target;
+    private final EntityLivingBase originalTarget;
+    private EntityLivingBase redirectedTarget;
     public LivingSetAttackTargetEvent(EntityLivingBase entity, EntityLivingBase target)
     {
         super(entity);
-        this.target = target;
+        this.originalTarget = target;
+        this.redirectedTarget=null;
     }
 
     public EntityLivingBase getTarget()
     {
-        return target;
+        return redirectedTarget==null?originalTarget:redirectedTarget;
+    }
+    public void redirect(EntityLivingBase living){
+        this.redirectedTarget=living;
     }
 }
