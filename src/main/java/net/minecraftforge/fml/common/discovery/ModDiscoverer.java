@@ -22,6 +22,8 @@ package net.minecraftforge.fml.common.discovery;
 import java.io.File;
 import java.util.List;
 
+import com.cleanroommc.event.EarlyBus;
+import com.cleanroommc.event.FMLDiscoverModEvent;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.LoaderException;
 import net.minecraftforge.fml.common.ModClassLoader;
@@ -105,7 +107,7 @@ public class ModDiscoverer
                 FMLLog.log.warn("Identified a problem with the mod candidate {}, ignoring this source", candidate.getModContainer(), le);
             }
         }
-
+        EarlyBus.BUS.post(new FMLDiscoverModEvent(()->this,()->modList));
         return modList;
     }
 
