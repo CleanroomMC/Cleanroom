@@ -94,7 +94,7 @@ public class CoreModManager {
         }
     }
 
-    private static class FMLPluginWrapper implements ITweaker {
+    public static class FMLPluginWrapper implements ITweaker {
         public final String name;
         public final IFMLLoadingPlugin coreModInstance;
         public final List<String> predepends;

@@ -19,6 +19,8 @@
 
 package net.minecraftforge.fml.common;
 
+import com.cleanroommc.event.EarlyBus;
+import com.cleanroommc.event.MixinBootEvent;
 import com.google.common.base.Throwables;
 import com.google.common.collect.*;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -46,10 +48,7 @@ import zone.rong.mixinbooter.ILateMixinLoader;
 import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -147,6 +146,7 @@ public class LoadController
 
                     MixinBooterPlugin.LOGGER.info("Instantiating all ILateMixinLoader implemented classes...");
 
+                    List<ILateMixinLoader> lateMixinLoaders=new LinkedList<>();
                     for (ASMDataTable.ASMData asmData : asmDataTable.getAll(ILateMixinLoader.class.getName().replace('.', '/'))) {
                         if (!log) {
                             MixinBooterPlugin.LOGGER.info("Instantiating all ILateMixinLoader implemented classes...");
@@ -155,7 +155,10 @@ public class LoadController
                         modClassLoader.addFile(asmData.getCandidate().getModContainer()); // Add to path before `newInstance`
                         Class<?> clazz = Class.forName(asmData.getClassName().replace('/', '.'));
                         MixinBooterPlugin.LOGGER.info("Instantiating {} for its mixins.", clazz);
-                        ILateMixinLoader loader = (ILateMixinLoader) clazz.newInstance();
+                        lateMixinLoaders.add((ILateMixinLoader) clazz.newInstance());
+                    }
+                    EarlyBus.BUS.post(new MixinBootEvent.Late(lateMixinLoaders));
+                    for(ILateMixinLoader loader:lateMixinLoaders){
                         for (String mixinConfig : loader.getMixinConfigs()) {
                             if (loader.shouldMixinConfigQueue(mixinConfig)) {
                                 MixinBooterPlugin.LOGGER.info("Adding {} mixin configuration.", mixinConfig);
