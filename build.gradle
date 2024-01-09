@@ -439,7 +439,7 @@ project(':cleanroom') {
         installer 'org.apache.commons:commons-compress:1.24.0'
         installer 'org.apache.httpcomponents:httpclient:4.5.14'
         installer 'org.apache.httpcomponents:httpcore:4.4.16'
-        installer 'com.github.oshi:oshi-core:6.4.6'
+        installer 'com.github.oshi:oshi-core:6.4.10'
         installer 'it.unimi.dsi:fastutil:8.5.12'
         installer 'commons-codec:commons-codec:1.16.0'
         installer 'commons-io:commons-io:2.15.0'
