@@ -1,22 +1,20 @@
 --- before/net/minecraft/client/gui/FontRenderer.java
 +++ after/net/minecraft/client/gui/FontRenderer.java
-@@ -4,11 +4,11 @@
+@@ -3,6 +3,7 @@
+ import com.ibm.icu.text.ArabicShaping;
  import com.ibm.icu.text.ArabicShapingException;
  import com.ibm.icu.text.Bidi;
++import com.ibm.icu.text.BreakIterator;
  import java.awt.image.BufferedImage;
-+import java.io.Closeable;
  import java.io.IOException;
--import java.util.Arrays;
--import java.util.List;
--import java.util.Locale;
--import java.util.Random;
+ import java.util.Arrays;
+@@ -25,10 +26,13 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.commons.io.IOUtils;
+ 
 +import java.util.*;
 +
-+import com.ibm.icu.text.BreakIterator;
- import net.minecraft.client.Minecraft;
- import net.minecraft.client.renderer.BufferBuilder;
- import net.minecraft.client.renderer.GlStateManager;
-@@ -29,6 +29,7 @@
+ @SideOnly(Side.CLIENT)
  public class FontRenderer implements IResourceManagerReloadListener
  {
      private static final ResourceLocation[] field_111274_c = new ResourceLocation[256];
@@ -24,7 +22,7 @@
      protected final int[] field_78286_d = new int[256];
      public int field_78288_b = 9;
      public Random field_78289_c = new Random();
-@@ -56,7 +57,7 @@
+@@ -56,7 +60,7 @@
          this.field_111273_g = p_i1035_2_;
          this.field_78298_i = p_i1035_3_;
          this.field_78293_l = p_i1035_4_;
@@ -33,22 +31,7 @@
  
          for (int i = 0; i < 32; ++i)
          {
-@@ -87,13 +88,12 @@
-                 i1 /= 4;
-             }
- 
--            this.field_78285_g[i] = (k & 0xFF) << 16 | (l & 0xFF) << 8 | i1 & 0xFF;
-+            this.field_78285_g[i] = (k & 255) << 16 | (l & 255) << 8 | i1 & 255;
-         }
- 
-         this.func_98306_d();
-     }
- 
--    @Override
-     public void func_110549_a(IResourceManager p_110549_1_)
-     {
-         this.func_111272_d();
-@@ -107,7 +107,7 @@
+@@ -107,7 +111,7 @@
  
          try
          {
@@ -57,35 +40,7 @@
              bufferedimage = TextureUtil.func_177053_a(iresource.func_110527_b());
          }
          catch (IOException ioexception)
-@@ -116,7 +116,7 @@
-         }
-         finally
-         {
--            IOUtils.closeQuietly(iresource);
-+            IOUtils.closeQuietly((Closeable)iresource);
-         }
- 
-         int lvt_3_2_ = bufferedimage.getWidth();
-@@ -149,7 +149,7 @@
-                 {
-                     int k2 = (k1 * lvt_7_1_ + j2) * lvt_3_2_;
- 
--                    if ((lvt_5_1_[i2 + k2] >> 24 & 0xFF) != 0)
-+                    if ((lvt_5_1_[i2 + k2] >> 24 & 255) != 0)
-                     {
-                         flag1 = false;
-                     }
-@@ -161,7 +161,8 @@
-                 }
-             }
- 
--            this.field_78286_d[lvt_10_1_] = (int)(0.5 + (double)((float)(++l1) * lvt_9_1_)) + 1;
-+            ++l1;
-+            this.field_78286_d[lvt_10_1_] = (int)(0.5D + (double)((float)l1 * lvt_9_1_)) + 1;
-         }
-     }
- 
-@@ -171,7 +172,7 @@
+@@ -171,7 +175,7 @@
  
          try
          {
@@ -94,14 +49,7 @@
              iresource.func_110527_b().read(this.field_78287_e);
          }
          catch (IOException ioexception)
-@@ -180,20 +181,20 @@
-         }
-         finally
-         {
--            IOUtils.closeQuietly(iresource);
-+            IOUtils.closeQuietly((Closeable)iresource);
-         }
-     }
+@@ -186,6 +190,7 @@
  
      private float func_181559_a(char p_181559_1_, boolean p_181559_2_)
      {
@@ -109,16 +57,7 @@
          if (p_181559_1_ == ' ')
          {
              return 4.0F;
-         }
-         else
-         {
--            int i = "\u00c0\u00c1\u00c2\u00c8\u00ca\u00cb\u00cd\u00d3\u00d4\u00d5\u00da\u00df\u00e3\u00f5\u011f\u0130\u0131\u0152\u0153\u015e\u015f\u0174\u0175\u017e\u0207\u0000\u0000\u0000\u0000\u0000\u0000\u0000 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\u0000\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb\u2591\u2592\u2593\u2502\u2524\u2561\u2562\u2556\u2555\u2563\u2551\u2557\u255d\u255c\u255b\u2510\u2514\u2534\u252c\u251c\u2500\u253c\u255e\u255f\u255a\u2554\u2569\u2566\u2560\u2550\u256c\u2567\u2568\u2564\u2565\u2559\u2558\u2552\u2553\u256b\u256a\u2518\u250c\u2588\u2584\u258c\u2590\u2580\u03b1\u03b2\u0393\u03c0\u03a3\u03c3\u03bc\u03c4\u03a6\u0398\u03a9\u03b4\u221e\u2205\u2208\u2229\u2261\u00b1\u2265\u2264\u2320\u2321\u00f7\u2248\u00b0\u2219\u00b7\u221a\u207f\u00b2\u25a0\u0000"
--                    .indexOf(p_181559_1_);
-+            int i = "\u00c0\u00c1\u00c2\u00c8\u00ca\u00cb\u00cd\u00d3\u00d4\u00d5\u00da\u00df\u00e3\u00f5\u011f\u0130\u0131\u0152\u0153\u015e\u015f\u0174\u0175\u017e\u0207\u0000\u0000\u0000\u0000\u0000\u0000\u0000 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\u0000\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb\u2591\u2592\u2593\u2502\u2524\u2561\u2562\u2556\u2555\u2563\u2551\u2557\u255d\u255c\u255b\u2510\u2514\u2534\u252c\u251c\u2500\u253c\u255e\u255f\u255a\u2554\u2569\u2566\u2560\u2550\u256c\u2567\u2568\u2564\u2565\u2559\u2558\u2552\u2553\u256b\u256a\u2518\u250c\u2588\u2584\u258c\u2590\u2580\u03b1\u03b2\u0393\u03c0\u03a3\u03c3\u03bc\u03c4\u03a6\u0398\u03a9\u03b4\u221e\u2205\u2208\u2229\u2261\u00b1\u2265\u2264\u2320\u2321\u00f7\u2248\u00b0\u2219\u00b7\u221a\u207f\u00b2\u25a0\u0000".indexOf(p_181559_1_);
-             return i != -1 && !this.field_78293_l ? this.func_78266_a(i, p_181559_2_) : this.func_78277_a(p_181559_1_, p_181559_2_);
-         }
-     }
-@@ -203,7 +204,7 @@
+@@ -203,7 +208,7 @@
          int i = p_78266_1_ % 16 * 8;
          int j = p_78266_1_ / 16 * 8;
          int k = p_78266_2_ ? 1 : 0;
@@ -127,7 +66,7 @@
          int l = this.field_78286_d[p_78266_1_];
          float f = (float)l - 0.01F;
          GlStateManager.func_187447_r(5);
-@@ -231,7 +232,7 @@
+@@ -231,7 +236,7 @@
  
      private void func_78257_a(int p_78257_1_)
      {
@@ -136,7 +75,7 @@
      }
  
      protected float func_78277_a(char p_78277_1_, boolean p_78277_2_)
-@@ -280,7 +281,7 @@
+@@ -280,7 +285,7 @@
  
      public int func_175065_a(String p_175065_1_, float p_175065_2_, float p_175065_3_, int p_175065_4_, boolean p_175065_5_)
      {
@@ -145,21 +84,7 @@
          this.func_78265_b();
          int i;
  
-@@ -301,11 +302,11 @@
-     {
-         try
-         {
--            Bidi bidi = new Bidi(new ArabicShaping(8).shape(p_147647_1_), 127);
-+            Bidi bidi = new Bidi((new ArabicShaping(8)).shape(p_147647_1_), 127);
-             bidi.setReorderingMode(0);
-             return bidi.writeReordered(2);
-         }
--        catch (ArabicShapingException arabicshapingexception)
-+        catch (ArabicShapingException var3)
-         {
-             return p_147647_1_;
-         }
-@@ -350,7 +351,7 @@
+@@ -350,7 +355,7 @@
  
                      int j1 = this.field_78285_g[i1];
                      this.field_78304_r = j1;
@@ -168,7 +93,7 @@
                  }
                  else if (i1 == 16)
                  {
-@@ -379,37 +380,35 @@
+@@ -379,7 +384,7 @@
                      this.field_78299_w = false;
                      this.field_78300_v = false;
                      this.field_78301_u = false;
@@ -177,38 +102,7 @@
                  }
  
                  ++i;
-             }
-             else
-             {
--                int j = "\u00c0\u00c1\u00c2\u00c8\u00ca\u00cb\u00cd\u00d3\u00d4\u00d5\u00da\u00df\u00e3\u00f5\u011f\u0130\u0131\u0152\u0153\u015e\u015f\u0174\u0175\u017e\u0207\u0000\u0000\u0000\u0000\u0000\u0000\u0000 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\u0000\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb\u2591\u2592\u2593\u2502\u2524\u2561\u2562\u2556\u2555\u2563\u2551\u2557\u255d\u255c\u255b\u2510\u2514\u2534\u252c\u251c\u2500\u253c\u255e\u255f\u255a\u2554\u2569\u2566\u2560\u2550\u256c\u2567\u2568\u2564\u2565\u2559\u2558\u2552\u2553\u256b\u256a\u2518\u250c\u2588\u2584\u258c\u2590\u2580\u03b1\u03b2\u0393\u03c0\u03a3\u03c3\u03bc\u03c4\u03a6\u0398\u03a9\u03b4\u221e\u2205\u2208\u2229\u2261\u00b1\u2265\u2264\u2320\u2321\u00f7\u2248\u00b0\u2219\u00b7\u221a\u207f\u00b2\u25a0\u0000"
--                        .indexOf(c0);
-+                int j = "\u00c0\u00c1\u00c2\u00c8\u00ca\u00cb\u00cd\u00d3\u00d4\u00d5\u00da\u00df\u00e3\u00f5\u011f\u0130\u0131\u0152\u0153\u015e\u015f\u0174\u0175\u017e\u0207\u0000\u0000\u0000\u0000\u0000\u0000\u0000 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\u0000\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb\u2591\u2592\u2593\u2502\u2524\u2561\u2562\u2556\u2555\u2563\u2551\u2557\u255d\u255c\u255b\u2510\u2514\u2534\u252c\u251c\u2500\u253c\u255e\u255f\u255a\u2554\u2569\u2566\u2560\u2550\u256c\u2567\u2568\u2564\u2565\u2559\u2558\u2552\u2553\u256b\u256a\u2518\u250c\u2588\u2584\u258c\u2590\u2580\u03b1\u03b2\u0393\u03c0\u03a3\u03c3\u03bc\u03c4\u03a6\u0398\u03a9\u03b4\u221e\u2205\u2208\u2229\u2261\u00b1\u2265\u2264\u2320\u2321\u00f7\u2248\u00b0\u2219\u00b7\u221a\u207f\u00b2\u25a0\u0000".indexOf(c0);
- 
-                 if (this.field_78303_s && j != -1)
-                 {
-                     int k = this.func_78263_a(c0);
-                     char c1;
- 
--                    do
-+                    while (true)
-                     {
--                        j = this.field_78289_c
--                            .nextInt(
--                                "\u00c0\u00c1\u00c2\u00c8\u00ca\u00cb\u00cd\u00d3\u00d4\u00d5\u00da\u00df\u00e3\u00f5\u011f\u0130\u0131\u0152\u0153\u015e\u015f\u0174\u0175\u017e\u0207\u0000\u0000\u0000\u0000\u0000\u0000\u0000 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\u0000\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb\u2591\u2592\u2593\u2502\u2524\u2561\u2562\u2556\u2555\u2563\u2551\u2557\u255d\u255c\u255b\u2510\u2514\u2534\u252c\u251c\u2500\u253c\u255e\u255f\u255a\u2554\u2569\u2566\u2560\u2550\u256c\u2567\u2568\u2564\u2565\u2559\u2558\u2552\u2553\u256b\u256a\u2518\u250c\u2588\u2584\u258c\u2590\u2580\u03b1\u03b2\u0393\u03c0\u03a3\u03c3\u03bc\u03c4\u03a6\u0398\u03a9\u03b4\u221e\u2205\u2208\u2229\u2261\u00b1\u2265\u2264\u2320\u2321\u00f7\u2248\u00b0\u2219\u00b7\u221a\u207f\u00b2\u25a0\u0000"
--                                .length()
--                            );
--                        c1 = "\u00c0\u00c1\u00c2\u00c8\u00ca\u00cb\u00cd\u00d3\u00d4\u00d5\u00da\u00df\u00e3\u00f5\u011f\u0130\u0131\u0152\u0153\u015e\u015f\u0174\u0175\u017e\u0207\u0000\u0000\u0000\u0000\u0000\u0000\u0000 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\u0000\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb\u2591\u2592\u2593\u2502\u2524\u2561\u2562\u2556\u2555\u2563\u2551\u2557\u255d\u255c\u255b\u2510\u2514\u2534\u252c\u251c\u2500\u253c\u255e\u255f\u255a\u2554\u2569\u2566\u2560\u2550\u256c\u2567\u2568\u2564\u2565\u2559\u2558\u2552\u2553\u256b\u256a\u2518\u250c\u2588\u2584\u258c\u2590\u2580\u03b1\u03b2\u0393\u03c0\u03a3\u03c3\u03bc\u03c4\u03a6\u0398\u03a9\u03b4\u221e\u2205\u2208\u2229\u2261\u00b1\u2265\u2264\u2320\u2321\u00f7\u2248\u00b0\u2219\u00b7\u221a\u207f\u00b2\u25a0\u0000"
--                             .charAt(j);
-+                        j = this.field_78289_c.nextInt("\u00c0\u00c1\u00c2\u00c8\u00ca\u00cb\u00cd\u00d3\u00d4\u00d5\u00da\u00df\u00e3\u00f5\u011f\u0130\u0131\u0152\u0153\u015e\u015f\u0174\u0175\u017e\u0207\u0000\u0000\u0000\u0000\u0000\u0000\u0000 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\u0000\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb\u2591\u2592\u2593\u2502\u2524\u2561\u2562\u2556\u2555\u2563\u2551\u2557\u255d\u255c\u255b\u2510\u2514\u2534\u252c\u251c\u2500\u253c\u255e\u255f\u255a\u2554\u2569\u2566\u2560\u2550\u256c\u2567\u2568\u2564\u2565\u2559\u2558\u2552\u2553\u256b\u256a\u2518\u250c\u2588\u2584\u258c\u2590\u2580\u03b1\u03b2\u0393\u03c0\u03a3\u03c3\u03bc\u03c4\u03a6\u0398\u03a9\u03b4\u221e\u2205\u2208\u2229\u2261\u00b1\u2265\u2264\u2320\u2321\u00f7\u2248\u00b0\u2219\u00b7\u221a\u207f\u00b2\u25a0\u0000".length());
-+                        c1 = "\u00c0\u00c1\u00c2\u00c8\u00ca\u00cb\u00cd\u00d3\u00d4\u00d5\u00da\u00df\u00e3\u00f5\u011f\u0130\u0131\u0152\u0153\u015e\u015f\u0174\u0175\u017e\u0207\u0000\u0000\u0000\u0000\u0000\u0000\u0000 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\u0000\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb\u2591\u2592\u2593\u2502\u2524\u2561\u2562\u2556\u2555\u2563\u2551\u2557\u255d\u255c\u255b\u2510\u2514\u2534\u252c\u251c\u2500\u253c\u255e\u255f\u255a\u2554\u2569\u2566\u2560\u2550\u256c\u2567\u2568\u2564\u2565\u2559\u2558\u2552\u2553\u256b\u256a\u2518\u250c\u2588\u2584\u258c\u2590\u2580\u03b1\u03b2\u0393\u03c0\u03a3\u03c3\u03bc\u03c4\u03a6\u0398\u03a9\u03b4\u221e\u2205\u2208\u2229\u2261\u00b1\u2265\u2264\u2320\u2321\u00f7\u2248\u00b0\u2219\u00b7\u221a\u207f\u00b2\u25a0\u0000".charAt(j);
-+
-+                        if (k == this.func_78263_a(c1))
-+                        {
-+                            break;
-+                        }
-                     }
--                    while (k != this.func_78263_a(c1));
- 
+@@ -409,7 +414,7 @@
                      c0 = c1;
                  }
  
@@ -217,7 +111,7 @@
                  boolean flag = (c0 == 0 || j == -1 || this.field_78293_l) && p_78255_2_;
  
                  if (flag)
-@@ -447,6 +446,15 @@
+@@ -447,6 +452,15 @@
  
                      ++f;
                  }
@@ -233,91 +127,7 @@
  
                  if (this.field_78299_w)
                  {
-@@ -454,13 +462,10 @@
-                     BufferBuilder bufferbuilder = tessellator.func_178180_c();
-                     GlStateManager.func_179090_x();
-                     bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181705_e);
--                    bufferbuilder.func_181662_b((double)this.field_78295_j, (double)(this.field_78296_k + (float)(this.field_78288_b / 2)), 0.0).func_181675_d();
--                    bufferbuilder.func_181662_b((double)(this.field_78295_j + f), (double)(this.field_78296_k + (float)(this.field_78288_b / 2)), 0.0)
--                    .func_181675_d();
--                    bufferbuilder.func_181662_b((double)(this.field_78295_j + f), (double)(this.field_78296_k + (float)(this.field_78288_b / 2) - 1.0F), 0.0)
--                    .func_181675_d();
--                    bufferbuilder.func_181662_b((double)this.field_78295_j, (double)(this.field_78296_k + (float)(this.field_78288_b / 2) - 1.0F), 0.0)
--                    .func_181675_d();
-+                    bufferbuilder.func_181662_b((double)this.field_78295_j, (double)(this.field_78296_k + (float)(this.field_78288_b / 2)), 0.0D).func_181675_d();
-+                    bufferbuilder.func_181662_b((double)(this.field_78295_j + f), (double)(this.field_78296_k + (float)(this.field_78288_b / 2)), 0.0D).func_181675_d();
-+                    bufferbuilder.func_181662_b((double)(this.field_78295_j + f), (double)(this.field_78296_k + (float)(this.field_78288_b / 2) - 1.0F), 0.0D).func_181675_d();
-+                    bufferbuilder.func_181662_b((double)this.field_78295_j, (double)(this.field_78296_k + (float)(this.field_78288_b / 2) - 1.0F), 0.0D).func_181675_d();
-                     tessellator.func_78381_a();
-                     GlStateManager.func_179098_w();
-                 }
-@@ -472,13 +477,10 @@
-                     GlStateManager.func_179090_x();
-                     bufferbuilder1.func_181668_a(7, DefaultVertexFormats.field_181705_e);
-                     int l = this.field_78300_v ? -1 : 0;
--                    bufferbuilder1.func_181662_b((double)(this.field_78295_j + (float)l), (double)(this.field_78296_k + (float)this.field_78288_b), 0.0)
--                    .func_181675_d();
--                    bufferbuilder1.func_181662_b((double)(this.field_78295_j + f), (double)(this.field_78296_k + (float)this.field_78288_b), 0.0).func_181675_d();
--                    bufferbuilder1.func_181662_b((double)(this.field_78295_j + f), (double)(this.field_78296_k + (float)this.field_78288_b - 1.0F), 0.0)
--                    .func_181675_d();
--                    bufferbuilder1.func_181662_b((double)(this.field_78295_j + (float)l), (double)(this.field_78296_k + (float)this.field_78288_b - 1.0F), 0.0)
--                    .func_181675_d();
-+                    bufferbuilder1.func_181662_b((double)(this.field_78295_j + (float)l), (double)(this.field_78296_k + (float)this.field_78288_b), 0.0D).func_181675_d();
-+                    bufferbuilder1.func_181662_b((double)(this.field_78295_j + f), (double)(this.field_78296_k + (float)this.field_78288_b), 0.0D).func_181675_d();
-+                    bufferbuilder1.func_181662_b((double)(this.field_78295_j + f), (double)(this.field_78296_k + (float)this.field_78288_b - 1.0F), 0.0D).func_181675_d();
-+                    bufferbuilder1.func_181662_b((double)(this.field_78295_j + (float)l), (double)(this.field_78296_k + (float)this.field_78288_b - 1.0F), 0.0D).func_181675_d();
-                     tessellator1.func_78381_a();
-                     GlStateManager.func_179098_w();
-                 }
-@@ -519,14 +521,14 @@
- 
-             if (p_180455_5_)
-             {
--                p_180455_4_ = (p_180455_4_ & 16579836) >> 2 | p_180455_4_ & 0xFF000000;
-+                p_180455_4_ = (p_180455_4_ & 16579836) >> 2 | p_180455_4_ & -16777216;
-             }
- 
--            this.field_78291_n = (float)(p_180455_4_ >> 16 & 0xFF) / 255.0F;
--            this.field_78292_o = (float)(p_180455_4_ >> 8 & 0xFF) / 255.0F;
--            this.field_78306_p = (float)(p_180455_4_ & 0xFF) / 255.0F;
--            this.field_78305_q = (float)(p_180455_4_ >> 24 & 0xFF) / 255.0F;
--            GlStateManager.func_179131_c(this.field_78291_n, this.field_78292_o, this.field_78306_p, this.field_78305_q);
-+            this.field_78291_n = (float)(p_180455_4_ >> 16 & 255) / 255.0F;
-+            this.field_78292_o = (float)(p_180455_4_ >> 8 & 255) / 255.0F;
-+            this.field_78306_p = (float)(p_180455_4_ & 255) / 255.0F;
-+            this.field_78305_q = (float)(p_180455_4_ >> 24 & 255) / 255.0F;
-+            setColor(this.field_78291_n, this.field_78292_o, this.field_78306_p, this.field_78305_q);
-             this.field_78295_j = p_180455_2_;
-             this.field_78296_k = p_180455_3_;
-             this.func_78255_a(p_180455_1_, p_180455_5_);
-@@ -552,16 +554,20 @@
- 
-                 if (k < 0 && j < p_78256_1_.length() - 1)
-                 {
--                    c0 = p_78256_1_.charAt(++j);
-+                    ++j;
-+                    c0 = p_78256_1_.charAt(j);
- 
--                    if (c0 == 'l' || c0 == 'L')
-+                    if (c0 != 'l' && c0 != 'L')
-+                    {
-+                        if (c0 == 'r' || c0 == 'R')
-+                        {
-+                            flag = false;
-+                        }
-+                    }
-+                    else
-                     {
-                         flag = true;
-                     }
--                    else if (c0 == 'r' || c0 == 'R')
--                    {
--                        flag = false;
--                    }
- 
-                     k = 0;
-                 }
-@@ -580,6 +586,7 @@
+@@ -580,6 +594,7 @@
  
      public int func_78263_a(char p_78263_1_)
      {
@@ -325,17 +135,7 @@
          if (p_78263_1_ == 167)
          {
              return -1;
-@@ -590,8 +597,7 @@
-         }
-         else
-         {
--            int i = "\u00c0\u00c1\u00c2\u00c8\u00ca\u00cb\u00cd\u00d3\u00d4\u00d5\u00da\u00df\u00e3\u00f5\u011f\u0130\u0131\u0152\u0153\u015e\u015f\u0174\u0175\u017e\u0207\u0000\u0000\u0000\u0000\u0000\u0000\u0000 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\u0000\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb\u2591\u2592\u2593\u2502\u2524\u2561\u2562\u2556\u2555\u2563\u2551\u2557\u255d\u255c\u255b\u2510\u2514\u2534\u252c\u251c\u2500\u253c\u255e\u255f\u255a\u2554\u2569\u2566\u2560\u2550\u256c\u2567\u2568\u2564\u2565\u2559\u2558\u2552\u2553\u256b\u256a\u2518\u250c\u2588\u2584\u258c\u2590\u2580\u03b1\u03b2\u0393\u03c0\u03a3\u03c3\u03bc\u03c4\u03a6\u0398\u03a9\u03b4\u221e\u2205\u2208\u2229\u2261\u00b1\u2265\u2264\u2320\u2321\u00f7\u2248\u00b0\u2219\u00b7\u221a\u207f\u00b2\u25a0\u0000"
--                    .indexOf(p_78263_1_);
-+            int i = "\u00c0\u00c1\u00c2\u00c8\u00ca\u00cb\u00cd\u00d3\u00d4\u00d5\u00da\u00df\u00e3\u00f5\u011f\u0130\u0131\u0152\u0153\u015e\u015f\u0174\u0175\u017e\u0207\u0000\u0000\u0000\u0000\u0000\u0000\u0000 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\u0000\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb\u2591\u2592\u2593\u2502\u2524\u2561\u2562\u2556\u2555\u2563\u2551\u2557\u255d\u255c\u255b\u2510\u2514\u2534\u252c\u251c\u2500\u253c\u255e\u255f\u255a\u2554\u2569\u2566\u2560\u2550\u256c\u2567\u2568\u2564\u2565\u2559\u2558\u2552\u2553\u256b\u256a\u2518\u250c\u2588\u2584\u258c\u2590\u2580\u03b1\u03b2\u0393\u03c0\u03a3\u03c3\u03bc\u03c4\u03a6\u0398\u03a9\u03b4\u221e\u2205\u2208\u2229\u2261\u00b1\u2265\u2264\u2320\u2321\u00f7\u2248\u00b0\u2219\u00b7\u221a\u207f\u00b2\u25a0\u0000".indexOf(p_78263_1_);
- 
-             if (p_78263_1_ > 0 && i != -1 && !this.field_78293_l)
-             {
-@@ -635,14 +641,17 @@
+@@ -635,14 +650,17 @@
              {
                  flag = false;
  
@@ -358,7 +158,7 @@
              }
              else if (i1 < 0)
              {
-@@ -678,7 +687,7 @@
+@@ -678,7 +696,7 @@
  
      private String func_78273_d(String p_78273_1_)
      {
@@ -367,7 +167,7 @@
          {
              p_78273_1_ = p_78273_1_.substring(0, p_78273_1_.length() - 1);
          }
-@@ -725,9 +734,95 @@
+@@ -725,9 +743,95 @@
  
      public List<String> func_78271_c(String p_78271_1_, int p_78271_2_)
      {
@@ -464,96 +264,15 @@
      String func_78280_d(String p_78280_1_, int p_78280_2_)
      {
          int i = this.func_78259_e(p_78280_1_, p_78280_2_);
-@@ -745,54 +840,46 @@
-             return s + "\n" + this.func_78280_d(s1, p_78280_2_);
+@@ -746,6 +850,7 @@
          }
      }
--
+ 
 +    @Deprecated
      private int func_78259_e(String p_78259_1_, int p_78259_2_)
      {
          int i = p_78259_1_.length();
-         int j = 0;
-         int k = 0;
--        int l = -1;
--
--        for (boolean flag = false; k < i; ++k)
-+        int m = 0;
-+        BREAK_ITERATOR.setText(p_78259_1_.replaceAll("\u00a7.", "").replaceAll("\u00a7", ""));
-+        for (boolean flag = false; k < i; ++k, ++m)
-         {
-             char c0 = p_78259_1_.charAt(k);
- 
--            switch (c0)
--            {
--                case '\n':
--                    --k;
--                    break;
--                case ' ':
--                    l = k;
--                default:
-+            switch (c0) {
-+                case '\n' -> --k;
-+                default -> {
-                     j += this.func_78263_a(c0);
--
--                    if (flag)
--                    {
-+                    if (flag) {
-                         ++j;
-                     }
--
--                    break;
--                case '\u00a7':
--
--                    if (k < i - 1)
--                    {
--                        char c1 = p_78259_1_.charAt(++k);
--
--                        if (c1 == 'l' || c1 == 'L')
--                        {
-+                }
-+                case '\u00a7' -> {
-+                    if (k < i - 1) {
-+                        ++k;
-+                        --m;
-+                        char c1 = p_78259_1_.charAt(k);
-+
-+                        if (c1 != 'l' && c1 != 'L') {
-+                            if (c1 == 'r' || c1 == 'R' || func_78272_b(c1)) {
-+                                flag = false;
-+                            }
-+                        } else {
-                             flag = true;
-                         }
--                        else if (c1 == 'r' || c1 == 'R' || func_78272_b(c1))
--                        {
--                            flag = false;
--                        }
-                     }
-+                }
-             }
- 
-             if (c0 == '\n')
-             {
--                l = ++k;
-+                ++k;
-                 break;
-             }
- 
-@@ -801,8 +888,9 @@
-                 break;
-             }
-         }
--
--        return k != i && l != -1 && l < k ? l : k;
-+        BREAK_ITERATOR.following(m);
-+        int breakLine = BREAK_ITERATOR.previous();
-+        return breakLine < 0 ? k : breakLine;
-     }
- 
-     private static boolean func_78272_b(char p_78272_0_)
-@@ -844,6 +932,26 @@
+@@ -844,6 +949,26 @@
      public boolean func_78260_a()
      {
          return this.field_78294_m;
