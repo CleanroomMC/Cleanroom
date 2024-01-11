@@ -23,9 +23,9 @@ public abstract class TransformerSet implements IClassTransformer {
                     ClassNode cn=new ClassNode();
                     classReader.accept(cn, 0);
 
-                    int flag=ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS;
+                    int flag=0;
                     for(ITransformer transformer:transformers.get(transformedName)){
-                        flag= transformer.transform(cn);
+                        flag|=transformer.transform(cn);
                     }
 
                     ClassWriter classWriter=new ClassWriter(classReader,flag);
