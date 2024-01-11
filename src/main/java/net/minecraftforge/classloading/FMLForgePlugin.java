@@ -22,7 +22,9 @@ package net.minecraftforge.classloading;
 import java.io.File;
 import java.util.Map;
 
+import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nullable;
 
@@ -34,7 +36,11 @@ public class FMLForgePlugin implements IFMLLoadingPlugin
     @Override
     public String[] getASMTransformerClass()
     {
-        return new String[0];
+        if (FMLLaunchHandler.side()== Side.CLIENT){
+            return new String[]{
+                    "com.cleanroommc.hackery.model.ModelAbstractTransformer"
+            };
+        }else return new String[0];
     }
 
     @Override

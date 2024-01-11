@@ -16,7 +16,7 @@ public final class MixinContainer extends DummyModContainer{
 
     @Override
     public boolean registerBus(EventBus bus, LoadController controller) {
-        bus.register(this);
+        //do nothing to avoid unnecessary cost. Return true will turn available.
         return true;
     }
 }
