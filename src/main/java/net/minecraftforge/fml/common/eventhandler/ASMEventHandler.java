@@ -28,7 +28,6 @@ import java.util.HashMap;
 
 import net.minecraftforge.fml.common.ModContainer;
 
-import net.minecraftforge.fml.relauncher.ASMClassLoader;
 import org.apache.logging.log4j.ThreadContext;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
@@ -41,7 +40,7 @@ public class ASMEventHandler implements IEventListener
     private static int IDs = 0;
     private static final String HANDLER_DESC = Type.getInternalName(IEventListener.class);
     private static final String HANDLER_FUNC_DESC = Type.getMethodDescriptor(IEventListener.class.getDeclaredMethods()[0]);
-    private static final ASMClassLoader LOADER = ASMClassLoader.getOrCreate(ASMEventHandler.class.getClassLoader());
+    private static final ASMClassLoader LOADER = new ASMClassLoader();
     private static final HashMap<Method, Class<?>> cache = Maps.newHashMap();
     private static final boolean GETCONTEXT = Boolean.parseBoolean(System.getProperty("fml.LogContext", "false"));
 
@@ -178,6 +177,18 @@ public class ASMEventHandler implements IEventListener
                 callback.getParameterTypes()[0].getSimpleName());
     }
 
+    private static class ASMClassLoader extends ClassLoader
+    {
+        private ASMClassLoader()
+        {
+            super(ASMClassLoader.class.getClassLoader());
+        }
+
+        public Class<?> define(String name, byte[] data)
+        {
+            return defineClass(name, data, 0, data.length);
+        }
+    }
 
     public String toString()
     {
