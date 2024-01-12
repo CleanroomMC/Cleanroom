@@ -1,71 +1,78 @@
 package com.cleanroommc.hackery.model;
 
-import com.cleanroommc.event.ModelPoseHackTargetRegistryEvent;
+import com.cleanroommc.utils.asm.ASMUtil;
+import com.cleanroommc.utils.asm.name.MethodName;
 import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraftforge.common.MinecraftForge;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
-import java.util.List;
-import java.util.ListIterator;
+import java.util.HashSet;
 
-/**
- * @Project Cleanroom
- * @Author Hileb
- * @Date 2024/1/11 0:30
- **/
+//TODO rebuild with {@link com.cleanroommc.bouncepad.api.transformer.Transformer}
 public class ModelAbstractTransformer implements IClassTransformer {
-    public static List<String> targets;
-    public ModelAbstractTransformer(){
-        ModelPoseHackTargetRegistryEvent event=new ModelPoseHackTargetRegistryEvent();
-        //com.cleanroommc.event.EarlyBus.BUS.post(event); //TODO: waiting for early bus
-        targets=event.getTargets();
-    }
+    public static HashSet<String> transformedClasses=new HashSet<>();
+    public static final MethodName m_render=MethodName.of()
+            .mcp("render","(Lnet/minecraft/entity/Entity;FFFFFF)V")
+            .srg("func_78088_a","(Lnet/minecraft/entity/Entity;FFFFFF)V")
+            .notch("a","(Lvg;FFFFFF)V").build();
+    public static final MethodName m_setRotationAngles=MethodName.of()
+            .mcp("setRotationAngles","(FFFFFFLnet/minecraft/entity/Entity;)V")
+            .srg("func_78087_a","(FFFFFFLnet/minecraft/entity/Entity;)V")
+            .notch("a","(FFFFFFLvg;)V").build();
     @Override
     public byte[] transform(String s, String s1, byte[] basicClass) {
-        if (basicClass!=null && targets.contains(s1)){
+        if (basicClass!=null){
             ClassReader classReader=new ClassReader(basicClass);
             ClassNode cn=new ClassNode();
             classReader.accept(cn, 0);
+            if (
+                    "net.minecraft.client.model.ModelBase".equals(s1)
+                    || transformedClasses.contains(cn.superName)
+            ){
+                    transformedClasses.add(cn.name);
+                    transformModel(cn);
+                    ClassWriter classWriter=new ClassWriter(classReader,ClassWriter.COMPUTE_MAXS);
+                    cn.accept(classWriter);
+                    return classWriter.toByteArray();
+            }else return basicClass;
 
-            transformModel(cn);
-
-            ClassWriter classWriter=new ClassWriter(classReader,ClassWriter.COMPUTE_MAXS);
-            cn.accept(classWriter);
-            return classWriter.toByteArray();
         }else return basicClass;
     }
     public void transformModel(ClassNode cn){
         for(MethodNode mn:cn.methods){
-            if (
-                    "func_78087_a".equals(mn.name)
-                    ||
-                            ("setRotationAngles".equals(mn.name) && "(FFFFFFLnet/minecraft/entity/Entity;)V".equals(mn.desc))
-            ){
-                ListIterator<AbstractInsnNode> iterator= mn.instructions.iterator();
-                AbstractInsnNode node;
-                while (iterator.hasNext()){
-                    node=iterator.next();
-                    if (node.getOpcode()== Opcodes.RETURN){
-                        iterator.remove();
-                        iterator.add(new IntInsnNode(Opcodes.ALOAD,0));
-
-                        iterator.add(new IntInsnNode(Opcodes.FLOAD,1));
-                        iterator.add(new IntInsnNode(Opcodes.FLOAD,2));
-                        iterator.add(new IntInsnNode(Opcodes.FLOAD,3));
-                        iterator.add(new IntInsnNode(Opcodes.FLOAD,4));
-                        iterator.add(new IntInsnNode(Opcodes.FLOAD,5));
-                        iterator.add(new IntInsnNode(Opcodes.FLOAD,6));
-
-                        iterator.add(new IntInsnNode(Opcodes.ALOAD,7));
-
-                        iterator.add(new MethodInsnNode(Opcodes.INVOKESTATIC,"net/minecraftforge/client/ForgeHooksClient","onLivingModelPose","(Lnet/minecraft/client/model/ModelBase;FFFFFFLnet/minecraft/entity/Entity;)V"));
-                        iterator.add(node);
-                    }
-                }
+            if (m_render.is(mn)){
+                ASMUtil.injectAfter(
+                        mn.instructions,
+                        createHook(),
+                        (abstractInsnNode)-> {
+                            if (abstractInsnNode.getOpcode()==Opcodes.INVOKEVIRTUAL && abstractInsnNode.getType()==AbstractInsnNode.METHOD_INSN){
+                                MethodInsnNode methodInsnNode=(MethodInsnNode) abstractInsnNode;
+                                if (m_setRotationAngles.is(methodInsnNode.name,methodInsnNode.desc)){
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
+                );
             }
         }
+    }
+    public static InsnList createHook(){
+        InsnList hook=new InsnList();
+        hook.add(new IntInsnNode(Opcodes.ALOAD,0));
+
+        hook.add(new IntInsnNode(Opcodes.ALOAD,1));
+
+        hook.add(new IntInsnNode(Opcodes.FLOAD,2));
+        hook.add(new IntInsnNode(Opcodes.FLOAD,3));
+        hook.add(new IntInsnNode(Opcodes.FLOAD,4));
+        hook.add(new IntInsnNode(Opcodes.FLOAD,5));
+        hook.add(new IntInsnNode(Opcodes.FLOAD,6));
+        hook.add(new IntInsnNode(Opcodes.FLOAD,7));
+
+        hook.add(new MethodInsnNode(Opcodes.INVOKESTATIC,"net/minecraftforge/client/ForgeHooksClient","onLivingModelPose","(Lnet/minecraft/client/model/ModelBase;Lnet/minecraft/entity/Entity;FFFFFF)V"));
+        return hook;
     }
 }
