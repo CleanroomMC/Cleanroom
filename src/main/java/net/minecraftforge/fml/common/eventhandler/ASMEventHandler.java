@@ -178,22 +178,16 @@ public class ASMEventHandler implements IEventListener
                 callback.getParameterTypes()[0].getSimpleName());
     }
 
-    /**
-     * use {@link net.minecraftforge.fml.relauncher.ASMClassLoader}
-     * The reason this class is retained is that Mod may use it through reflection
-     * **/
-    @Deprecated
-    private static class ASMClassLoader //extends ClassLoader
+    private static class ASMClassLoader extends ClassLoader
     {
         private ASMClassLoader()
         {
-            //super(ASMClassLoader.class.getClassLoader());
+            super(ASMClassLoader.class.getClassLoader());
         }
 
         public Class<?> define(String name, byte[] data)
         {
-            //equal to redirection
-            return net.minecraftforge.fml.relauncher.ASMClassLoader.getOrCreate().define(name,data);
+            return defineClass(name, data, 0, data.length);
         }
     }
 

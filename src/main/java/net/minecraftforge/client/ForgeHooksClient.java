@@ -963,7 +963,4 @@ public class ForgeHooksClient
             FMLLog.log.error("Unable to invalidate log4j thread cache, thread fields in logs may be inaccurate", e);
         }
     }
-    public static void onLivingModelPose(ModelBase modelBase,Entity entityIn,float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor){
-        MinecraftForge.EVENT_BUS.post(new EntityModelPoseEvent(modelBase,limbSwing,limbSwingAmount,ageInTicks,netHeadYaw,headPitch,scaleFactor,entityIn));
-    }
 }
