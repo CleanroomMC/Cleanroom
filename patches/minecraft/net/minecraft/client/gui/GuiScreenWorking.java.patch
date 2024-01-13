@@ -1,0 +1,14 @@
+--- before/net/minecraft/client/gui/GuiScreenWorking.java
++++ after/net/minecraft/client/gui/GuiScreenWorking.java
+@@ -49,10 +49,7 @@
+     {
+         if (this.field_146592_h)
+         {
+-            if (!this.field_146297_k.func_181540_al())
+-            {
+-                this.field_146297_k.func_147108_a(null);
+-            }
++            this.field_146297_k.func_147108_a(null);
+         }
+         else
+         {

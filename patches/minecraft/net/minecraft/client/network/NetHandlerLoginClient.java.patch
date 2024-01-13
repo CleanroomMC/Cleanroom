@@ -1,6 +1,22 @@
 --- before/net/minecraft/client/network/NetHandlerLoginClient.java
 +++ after/net/minecraft/client/network/NetHandlerLoginClient.java
-@@ -49,13 +49,12 @@
+@@ -14,7 +14,6 @@
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.gui.GuiDisconnected;
+ import net.minecraft.client.gui.GuiScreen;
+-import net.minecraft.client.gui.GuiScreenRealmsProxy;
+ import net.minecraft.network.EnumConnectionState;
+ import net.minecraft.network.NetworkManager;
+ import net.minecraft.network.login.INetHandlerLoginClient;
+@@ -23,7 +22,6 @@
+ import net.minecraft.network.login.server.SPacketEnableCompression;
+ import net.minecraft.network.login.server.SPacketEncryptionRequest;
+ import net.minecraft.network.login.server.SPacketLoginSuccess;
+-import net.minecraft.realms.DisconnectedRealmsScreen;
+ import net.minecraft.util.CryptManager;
+ import net.minecraft.util.text.ITextComponent;
+ import net.minecraft.util.text.TextComponentTranslation;
+@@ -49,13 +47,12 @@
          this.field_147395_c = p_i45059_3_;
      }
  
@@ -15,7 +31,7 @@
  
          if (this.field_147394_b.func_147104_D() != null && this.field_147394_b.func_147104_D().func_181041_d())
          {
-@@ -63,7 +62,7 @@
+@@ -63,7 +60,7 @@
              {
                  this.func_147391_c().joinServer(this.field_147394_b.func_110432_I().func_148256_e(), this.field_147394_b.func_110432_I().func_148254_d(), s1);
              }
@@ -24,7 +40,7 @@
              {
                  field_147396_a.warn("Couldn't connect to auth servers but will continue to join LAN");
              }
-@@ -74,33 +73,25 @@
+@@ -74,33 +71,25 @@
              {
                  this.func_147391_c().joinServer(this.field_147394_b.func_110432_I().func_148256_e(), this.field_147394_b.func_110432_I().func_148254_d(), s1);
              }
@@ -64,7 +80,7 @@
              public void operationComplete(Future <? super Void > p_operationComplete_1_) throws Exception
              {
                  NetHandlerLoginClient.this.field_147393_d.func_150727_a(secretkey);
-@@ -113,21 +104,21 @@
+@@ -113,35 +102,26 @@
          return this.field_147394_b.func_152347_ac();
      }
  
@@ -83,16 +99,16 @@
 -    @Override
      public void func_147231_a(ITextComponent p_147231_1_)
      {
-         if (this.field_147395_c != null && this.field_147395_c instanceof GuiScreenRealmsProxy)
-         {
+-        if (this.field_147395_c != null && this.field_147395_c instanceof GuiScreenRealmsProxy)
+-        {
 -            this.field_147394_b
 -            .func_147108_a(new DisconnectedRealmsScreen(((GuiScreenRealmsProxy)this.field_147395_c).func_154321_a(), "connect.failed", p_147231_1_).getProxy());
-+            this.field_147394_b.func_147108_a((new DisconnectedRealmsScreen(((GuiScreenRealmsProxy)this.field_147395_c).func_154321_a(), "connect.failed", p_147231_1_)).getProxy());
-         }
-         else
-         {
-@@ -135,13 +126,11 @@
-         }
+-        }
+-        else
+-        {
+-            this.field_147394_b.func_147108_a(new GuiDisconnected(this.field_147395_c, "connect.failed", p_147231_1_));
+-        }
++        this.field_147394_b.func_147108_a(new GuiDisconnected(this.field_147395_c, "connect.failed", p_147231_1_));
      }
  
 -    @Override

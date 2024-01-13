@@ -1,14 +1,16 @@
 --- before/net/minecraft/client/gui/GuiIngameMenu.java
 +++ after/net/minecraft/client/gui/GuiIngameMenu.java
-@@ -3,6 +3,7 @@
+@@ -3,8 +3,8 @@
  import java.io.IOException;
  import net.minecraft.client.gui.achievement.GuiStats;
  import net.minecraft.client.gui.advancements.GuiScreenAdvancements;
 +import net.minecraft.client.multiplayer.WorldClient;
  import net.minecraft.client.resources.I18n;
- import net.minecraft.realms.RealmsBridge;
+-import net.minecraft.realms.RealmsBridge;
  import net.minecraftforge.fml.relauncher.Side;
-@@ -14,7 +15,6 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+@@ -14,7 +14,6 @@
      private int field_146445_a;
      private int field_146444_f;
  
@@ -16,7 +18,7 @@
      public void func_73866_w_()
      {
          this.field_146445_a = 0;
-@@ -25,21 +25,18 @@
+@@ -25,21 +24,18 @@
  
          if (!this.field_146297_k.func_71387_A())
          {
@@ -42,8 +44,11 @@
      protected void func_146284_a(GuiButton p_146284_1_) throws IOException
      {
          switch (p_146284_1_.field_146127_k)
-@@ -52,7 +49,7 @@
-                 boolean flag1 = this.field_146297_k.func_181540_al();
+@@ -49,20 +45,14 @@
+                 break;
+             case 1:
+                 boolean flag = this.field_146297_k.func_71387_A();
+-                boolean flag1 = this.field_146297_k.func_181540_al();
                  p_146284_1_.field_146124_l = false;
                  this.field_146297_k.field_71441_e.func_72882_A();
 -                this.field_146297_k.func_71403_a(null);
@@ -51,7 +56,17 @@
  
                  if (flag)
                  {
-@@ -73,28 +70,32 @@
+                     this.field_146297_k.func_147108_a(new GuiMainMenu());
+                 }
+-                else if (flag1)
+-                {
+-                    RealmsBridge realmsbridge = new RealmsBridge();
+-                    realmsbridge.switchToRealms(new GuiMainMenu());
+-                }
+                 else
+                 {
+                     this.field_146297_k.func_147108_a(new GuiMultiplayer(new GuiMainMenu()));
+@@ -73,28 +63,32 @@
              default:
                  break;
              case 4:

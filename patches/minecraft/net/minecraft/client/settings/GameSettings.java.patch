@@ -49,7 +49,15 @@
      public EntityPlayer.EnumChatVisibility field_74343_n = EntityPlayer.EnumChatVisibility.FULL;
      public boolean field_74344_o = true;
      public boolean field_74359_p = true;
-@@ -148,72 +139,38 @@
+@@ -123,7 +114,6 @@
+     public int field_186716_M = 1;
+     public boolean field_189422_N;
+     public boolean field_186717_N;
+-    public boolean field_183509_X = true;
+     public boolean field_189989_R = true;
+     public TutorialSteps field_193631_S = TutorialSteps.MOVEMENT;
+     public KeyBinding field_74351_w = new KeyBinding("key.forward", 17, "key.categories.movement");
+@@ -148,72 +138,38 @@
      public KeyBinding field_152395_am = new KeyBinding("key.fullscreen", 87, "key.categories.misc");
      public KeyBinding field_178883_an = new KeyBinding("key.spectatorOutlines", 0, "key.categories.misc");
      public KeyBinding field_194146_ao = new KeyBinding("key.advancements", 38, "key.categories.misc");
@@ -134,7 +142,7 @@
          this.field_74317_L = p_i46326_1_;
          this.field_74354_ai = new File(p_i46326_2_, "options.txt");
  
-@@ -232,6 +189,12 @@
+@@ -232,6 +188,12 @@
  
      public GameSettings()
      {
@@ -147,7 +155,7 @@
      }
  
      public static String func_74298_c(int p_74298_0_)
-@@ -260,14 +223,14 @@
+@@ -260,14 +222,14 @@
      {
          int i = p_100015_0_.func_151463_i();
  
@@ -167,7 +175,7 @@
      }
  
      public void func_151440_a(KeyBinding p_151440_1_, int p_151440_2_)
-@@ -338,7 +301,7 @@
+@@ -338,7 +300,7 @@
                  this.field_74317_L.func_147117_R().func_147633_a(this.field_151442_I);
                  this.field_74317_L.func_110434_K().func_110577_a(TextureMap.field_110575_b);
                  this.field_74317_L.func_147117_R().func_174937_a(false, this.field_151442_I > 0);
@@ -176,7 +184,7 @@
              }
          }
  
-@@ -353,9 +316,7 @@
+@@ -353,9 +315,7 @@
      {
          if (p_74306_1_ == GameSettings.Options.RENDER_DISTANCE)
          {
@@ -187,7 +195,7 @@
          }
  
          if (p_74306_1_ == GameSettings.Options.MAIN_HAND)
-@@ -402,7 +363,7 @@
+@@ -402,7 +362,7 @@
          if (p_74306_1_ == GameSettings.Options.ANAGLYPH)
          {
              this.field_74337_g = !this.field_74337_g;
@@ -196,7 +204,27 @@
          }
  
          if (p_74306_1_ == GameSettings.Options.GRAPHICS)
-@@ -658,9 +619,7 @@
+@@ -489,10 +449,6 @@
+             this.field_186717_N = !this.field_186717_N;
+         }
+ 
+-        if (p_74306_1_ == GameSettings.Options.REALMS_NOTIFICATIONS)
+-        {
+-            this.field_183509_X = !this.field_183509_X;
+-        }
+ 
+         if (p_74306_1_ == GameSettings.Options.AUTO_JUMP)
+         {
+@@ -604,8 +560,6 @@
+                 return this.field_181151_V;
+             case SHOW_SUBTITLES:
+                 return this.field_186717_N;
+-            case REALMS_NOTIFICATIONS:
+-                return this.field_183509_X;
+             case ENABLE_WEAK_ATTACKS:
+                 return this.field_189422_N;
+             case AUTO_JUMP:
+@@ -658,9 +612,7 @@
              }
              else if (p_74297_1_ == GameSettings.Options.FRAMERATE_LIMIT)
              {
@@ -207,7 +235,7 @@
              }
              else if (p_74297_1_ == GameSettings.Options.RENDER_CLOUDS)
              {
-@@ -757,9 +716,7 @@
+@@ -757,9 +709,7 @@
          }
          else if (p_74297_1_ == GameSettings.Options.NARRATOR)
          {
@@ -218,7 +246,7 @@
          }
          else
          {
-@@ -769,6 +726,7 @@
+@@ -769,6 +719,7 @@
  
      public void func_74300_a()
      {
@@ -226,7 +254,7 @@
          try
          {
              if (!this.field_74354_ai.exists())
-@@ -777,7 +735,7 @@
+@@ -777,7 +728,7 @@
              }
  
              this.field_186714_aM.clear();
@@ -235,7 +263,7 @@
              NBTTagCompound nbttagcompound = new NBTTagCompound();
  
              for (String s : list)
-@@ -787,9 +745,9 @@
+@@ -787,9 +738,9 @@
                      Iterator<String> iterator = field_189990_a.omitEmptyStrings().limit(2).split(s).iterator();
                      nbttagcompound.func_74778_a(iterator.next(), iterator.next());
                  }
@@ -247,7 +275,7 @@
                  }
              }
  
-@@ -926,21 +884,21 @@
+@@ -926,21 +877,21 @@
  
                      if ("resourcePacks".equals(s1))
                      {
@@ -273,7 +301,18 @@
                          }
                      }
  
-@@ -1113,7 +1071,12 @@
+@@ -1089,10 +1040,6 @@
+                         this.field_186717_N = "true".equals(s2);
+                     }
+ 
+-                    if ("realmsNotifications".equals(s1))
+-                    {
+-                        this.field_183509_X = "true".equals(s2);
+-                    }
+ 
+                     if ("enableWeakAttacks".equals(s1))
+                     {
+@@ -1113,7 +1060,12 @@
                      {
                          if (s1.equals("key_" + keybinding.func_151464_g()))
                          {
@@ -287,7 +326,7 @@
                          }
                      }
  
-@@ -1121,7 +1084,7 @@
+@@ -1121,7 +1073,7 @@
                      {
                          if (s1.equals("soundCategory_" + soundcategory.func_187948_a()))
                          {
@@ -296,7 +335,7 @@
                          }
                      }
  
-@@ -1133,7 +1096,7 @@
+@@ -1133,7 +1085,7 @@
                          }
                      }
                  }
@@ -305,7 +344,7 @@
                  {
                      field_151454_ax.warn("Skipping bad option: {}:{}", s1, s2);
                  }
-@@ -1141,10 +1104,11 @@
+@@ -1141,10 +1093,11 @@
  
              KeyBinding.func_74508_b();
          }
@@ -319,7 +358,7 @@
      }
  
      private NBTTagCompound func_189988_a(NBTTagCompound p_189988_1_)
-@@ -1155,8 +1119,9 @@
+@@ -1155,8 +1108,9 @@
          {
              i = Integer.parseInt(p_189988_1_.func_74779_i("version"));
          }
@@ -330,7 +369,7 @@
          }
  
          return this.field_74317_L.func_184126_aj().func_188251_a(FixTypes.OPTIONS, p_189988_1_, i);
-@@ -1176,6 +1141,7 @@
+@@ -1176,6 +1130,7 @@
  
      public void func_74303_b()
      {
@@ -338,7 +377,15 @@
          PrintWriter printwriter = null;
  
          try
-@@ -1250,7 +1216,8 @@
+@@ -1242,7 +1197,6 @@
+             printwriter.println("mainHand:" + (this.field_186715_A == EnumHandSide.LEFT ? "left" : "right"));
+             printwriter.println("attackIndicator:" + this.field_186716_M);
+             printwriter.println("showSubtitles:" + this.field_186717_N);
+-            printwriter.println("realmsNotifications:" + this.field_183509_X);
+             printwriter.println("enableWeakAttacks:" + this.field_189422_N);
+             printwriter.println("autoJump:" + this.field_189989_R);
+             printwriter.println("narrator:" + this.field_192571_R);
+@@ -1250,7 +1204,8 @@
  
              for (KeyBinding keybinding : this.field_74324_K)
              {
@@ -348,7 +395,7 @@
              }
  
              for (SoundCategory soundcategory : SoundCategory.values())
-@@ -1277,13 +1244,13 @@
+@@ -1277,13 +1232,13 @@
  
      public float func_186711_a(SoundCategory p_186711_1_)
      {
@@ -364,7 +411,7 @@
      }
  
      public void func_82879_c()
-@@ -1297,10 +1264,7 @@
+@@ -1297,10 +1252,7 @@
                  i |= enumplayermodelparts.func_179327_a();
              }
  
@@ -376,7 +423,15 @@
          }
      }
  
-@@ -1487,4 +1451,35 @@
+@@ -1387,7 +1339,6 @@
+         ATTACK_INDICATOR("options.attackIndicator", false, false),
+         ENABLE_WEAK_ATTACKS("options.enableWeakAttacks", false, true),
+         SHOW_SUBTITLES("options.showSubtitles", false, true),
+-        REALMS_NOTIFICATIONS("options.realmsNotifications", false, true),
+         AUTO_JUMP("options.autoJump", false, true),
+         NARRATOR("options.narrator", false, false);
+ 
+@@ -1487,4 +1438,35 @@
              return p_148264_1_;
          }
      }
