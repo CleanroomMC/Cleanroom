@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/resources/DefaultResourcePack.java
++++ after/net/minecraft/client/resources/DefaultResourcePack.java
+@@ -20,7 +20,7 @@
+ @SideOnly(Side.CLIENT)
+ public class DefaultResourcePack implements IResourcePack
+ {
+-    public static final Set<String> field_110608_a = ImmutableSet.of("minecraft", "realms");
++    public static final Set<String> field_110608_a = ImmutableSet.of("minecraft");
+     private final ResourceIndex field_188549_b;
+ 
+     public DefaultResourcePack(ResourceIndex p_i46541_1_)

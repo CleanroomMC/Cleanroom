@@ -1,0 +1,10 @@
+--- before/net/minecraft/realms/package-info.java
++++ /dev/null
+@@ -1,7 +1,0 @@
+-// Auto generated package-info by MCP
+-@ParametersAreNonnullByDefault
+-@MethodsReturnNonnullByDefault
+-package net.minecraft.realms;
+-
+-import mcp.MethodsReturnNonnullByDefault;
+-import javax.annotation.ParametersAreNonnullByDefault;

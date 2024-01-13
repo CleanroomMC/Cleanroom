@@ -1,0 +1,62 @@
+--- before/net/minecraft/realms/RealmsVertexFormatElement.java
++++ /dev/null
+@@ -1,59 +1,0 @@
+-package net.minecraft.realms;
+-
+-import net.minecraft.client.renderer.vertex.VertexFormatElement;
+-import net.minecraftforge.fml.relauncher.Side;
+-import net.minecraftforge.fml.relauncher.SideOnly;
+-
+-@SideOnly(Side.CLIENT)
+-public class RealmsVertexFormatElement
+-{
+-    private final VertexFormatElement v;
+-
+-    public RealmsVertexFormatElement(VertexFormatElement p_i46463_1_)
+-    {
+-        this.v = p_i46463_1_;
+-    }
+-
+-    public VertexFormatElement getVertexFormatElement()
+-    {
+-        return this.v;
+-    }
+-
+-    public boolean isPosition()
+-    {
+-        return this.v.func_177374_g();
+-    }
+-
+-    public int getIndex()
+-    {
+-        return this.v.func_177369_e();
+-    }
+-
+-    public int getByteSize()
+-    {
+-        return this.v.func_177368_f();
+-    }
+-
+-    public int getCount()
+-    {
+-        return this.v.func_177370_d();
+-    }
+-
+-    @Override
+-    public int hashCode()
+-    {
+-        return this.v.hashCode();
+-    }
+-
+-    @Override
+-    public boolean equals(Object p_equals_1_)
+-    {
+-        return this.v.equals(p_equals_1_);
+-    }
+-
+-    @Override
+-    public String toString()
+-    {
+-        return this.v.toString();
+-    }
+-}
