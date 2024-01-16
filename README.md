@@ -26,6 +26,7 @@
 - Cleanroom Minecraft (Continuation + Revamp of MinecraftForge)
 - Mixin [(Coming Soon)](https://github.com/CleanroomMC/CleanMix)
 - Bytecode Patcher (Coming Soon) \[Inspired by [Bansoukou](https://github.com/LoliKingdom/Bansoukou) and [Bytecode Patcher](https://github.com/jbredwards/Bytecode-Patcher)]
+- [Fugue](https://github.com/CleanroomMC/Fugue), a mod patches many incompatibilities. (temporary)
 
 ## Build Instructions:
 
