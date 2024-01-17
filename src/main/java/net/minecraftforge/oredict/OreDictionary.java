@@ -112,6 +112,12 @@ public class OreDictionary
             registerOre("doorWood", Items.OAK_DOOR);
             registerOre("doorWood", Items.JUNGLE_DOOR);
             registerOre("doorWood", Items.SPRUCE_DOOR);
+            registerOre("boatWood", Items.BOAT);
+            registerOre("boatWood", Items.SPRUCE_BOAT);
+            registerOre("boatWood", Items.BIRCH_BOAT);
+            registerOre("boatWood", Items.JUNGLE_BOAT);
+            registerOre("boatWood", Items.ACACIA_BOAT);
+            registerOre("boatWood", Items.DARK_OAK_BOAT);
             registerOre("stickWood",   Items.STICK);
             registerOre("treeSapling", new ItemStack(Blocks.SAPLING, 1, WILDCARD_VALUE));
             registerOre("treeLeaves",  new ItemStack(Blocks.LEAVES, 1, WILDCARD_VALUE));
