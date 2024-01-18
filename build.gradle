@@ -461,7 +461,7 @@ project(':cleanroom') {
 
         // Mixin
         installer 'com.cleanroommc:sponge-mixin:0.15.4+mixin.0.8.5'
-        installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.3.2')
+        installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.3.5')
 
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.0.0'
         testImplementation 'org.junit.vintage:junit-vintage-engine:5.+'
