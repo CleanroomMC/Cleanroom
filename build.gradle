@@ -413,9 +413,9 @@ project(':cleanroom') {
 
         installer "com.cleanroommc:bouncepad:$props.bouncepad_version"
 
-        installer 'com.ibm.icu:icu4j:74.1'
+        installer 'com.ibm.icu:icu4j:74.2'
 
-        installer 'org.jline:jline:3.24.1'
+        installer 'org.jline:jline:3.25.0'
         installer 'com.typesafe.akka:akka-actor_2.12:2.8.5'
         installer 'com.typesafe:config:1.4.3'
         // TODO: Move scala away from being defaulted when installing (download on-demand?)
@@ -442,16 +442,16 @@ project(':cleanroom') {
         installer 'com.github.oshi:oshi-core:6.4.10'
         installer 'it.unimi.dsi:fastutil:8.5.12'
         installer 'commons-codec:commons-codec:1.16.0'
-        installer 'commons-io:commons-io:2.15.0'
-        installer 'commons-logging:commons-logging:1.2'
+        installer 'commons-io:commons-io:2.15.1'
+        installer 'commons-logging:commons-logging:1.3.0'
         installer 'com.google.guava:guava:33.0.0-jre'
         installer 'com.google.guava:failureaccess:1.0.2'
         installer 'com.google.code.gson:gson:2.10.1'
         installer 'com.google.code.findbugs:jsr305:3.0.2'
 
         // TODO: Unpin in 1.18.1 or when Mojang bumps the Log4J version
-        installer 'org.apache.logging.log4j:log4j-api:2.22.0'
-        installer 'org.apache.logging.log4j:log4j-core:2.22.0'
+        installer 'org.apache.logging.log4j:log4j-api:2.22.1'
+        installer 'org.apache.logging.log4j:log4j-core:2.22.1'
         installer 'jakarta.annotation:jakarta.annotation-api:2.1.1'
         installer 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.1'
         installer 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.1'
@@ -463,10 +463,10 @@ project(':cleanroom') {
         installer 'com.cleanroommc:sponge-mixin:0.15.4+mixin.0.8.5'
         installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.3.5')
 
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.0.0'
-        testImplementation 'org.junit.vintage:junit-vintage-engine:5.+'
-        testImplementation 'org.opentest4j:opentest4j:1.0.0' // Needed for junit 5
-        testImplementation 'org.hamcrest:hamcrest-all:1.3' // Needs advanced matching for list order
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
+        testImplementation 'org.junit.vintage:junit-vintage-engine:5.10.1'
+        testImplementation 'org.opentest4j:opentest4j:1.3.0' // Needed for junit 5
+        testImplementation 'org.hamcrest:hamcrest:2.2' // Needs advanced matching for list order
 
         /*
         forgeGradleMcDeps
