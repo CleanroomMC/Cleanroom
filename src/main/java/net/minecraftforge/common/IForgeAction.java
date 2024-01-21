@@ -19,7 +19,7 @@ public interface IForgeAction {
 
     /**
      * @param stack the stack is being used by player.
-     * @param eatingParticleCount count.<br>Use finish:16.<br>When the usage time does not exceed 25 hours, one quarter of every 4 is 4, and the rest is 0
+     * @param eatingParticleCount count.<br>Use finish:16.<br>When the usage time does not exceed 25 ticks, one tick of every 4 ticks is 4, and the rest is 0
      */
     default void updateItemUse(ItemStack stack, int eatingParticleCount){}
 }
