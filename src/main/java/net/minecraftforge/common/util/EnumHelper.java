@@ -28,6 +28,7 @@ import com.cleanroommc.hackery.enums.EnumHackery;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 
+import net.minecraftforge.common.IForgeAction;
 import net.minecraftforge.fml.common.EnhancedRuntimeException;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraft.block.BlockPressurePlate.Sensitivity;
@@ -84,6 +85,13 @@ public class EnumHelper
     public static EnumAction addAction(String name)
     {
         return EnumHackery.addEnumEntry(EnumAction.class, name);
+    }
+    @Nullable
+    public static EnumAction addAction(String name, IForgeAction action)
+    {
+        return EnumHackery.addEnumEntry(EnumAction.class, name,
+                new Class<?>[]{IForgeAction.class},
+                new Object[]{action});
     }
     @Nullable
     public static ArmorMaterial addArmorMaterial(String name, String textureName, int durability, int[] reductionAmounts, int enchantability, SoundEvent soundOnEquip, float toughness)
