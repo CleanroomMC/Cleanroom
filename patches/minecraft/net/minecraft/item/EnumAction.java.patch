@@ -1,0 +1,27 @@
+--- before/net/minecraft/item/EnumAction.java
++++ after/net/minecraft/item/EnumAction.java
+@@ -1,10 +1,23 @@
+ package net.minecraft.item;
+ 
+-public enum EnumAction
++public enum EnumAction implements net.minecraftforge.common.IForgeAction
+ {
+     NONE,
+     EAT,
+     DRINK,
+     BLOCK,
+     BOW;
++    //========FORGE START========//
++    private final net.minecraftforge.common.IForgeAction action;
++    EnumAction(net.minecraftforge.common.IForgeAction actionIn){action=actionIn;}
++    EnumAction(){this(net.minecraftforge.common.IForgeAction.EMPTY);}
++    @Override
++    public void updateItemUse(ItemStack stack, int eatingParticleCount) {
++        action.updateItemUse(stack,eatingParticleCount);
++    }
++    @net.minecraftforge.fml.relauncher.SideOnly(net.minecraftforge.fml.relauncher.Side.CLIENT)
++    @Override
++    public net.minecraft.client.model.ModelBiped.ArmPose getBipedArmPose() {
++        return action.getBipedArmPose();
++    }
+ }
