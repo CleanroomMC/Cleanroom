@@ -134,6 +134,9 @@ public class Display {
         if (Window.handle == 0L) {
             throw new IllegalStateException("Failed to create Display window");
         }
+        if (org.lwjgl3.glfw.GLFW.glfwRawMouseMotionSupported()) {
+            GLFW.glfwSetInputMode(Window.handle, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+        }
 
         Window.keyCallback = new GLFWKeyCallback() {
 
