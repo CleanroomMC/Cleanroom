@@ -53,8 +53,8 @@ public class ALC10 {
         return alcContext;
     }
 
-    public static void alcCloseDevice(ALCdevice alCdevice) {
-        org.lwjgl3.openal.ALC10.alcCloseDevice(alCdevice.device);
+    public static boolean alcCloseDevice(ALCdevice alCdevice) {
+        return org.lwjgl3.openal.ALC10.alcCloseDevice(alCdevice.device);
     }
 
     public static ALCcontext alcGetCurrentContext() {
