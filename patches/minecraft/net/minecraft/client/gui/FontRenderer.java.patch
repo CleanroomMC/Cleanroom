@@ -8,12 +8,14 @@
  import java.awt.image.BufferedImage;
  import java.io.IOException;
  import java.util.Arrays;
-@@ -25,10 +26,13 @@
+@@ -24,11 +25,15 @@
+ import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  import org.apache.commons.io.IOUtils;
- 
-+import java.util.*;
++import org.apache.commons.lang3.tuple.Pair;
 +
++import java.util.*;
+ 
  @SideOnly(Side.CLIENT)
  public class FontRenderer implements IResourceManagerReloadListener
  {
@@ -22,7 +24,7 @@
      protected final int[] field_78286_d = new int[256];
      public int field_78288_b = 9;
      public Random field_78289_c = new Random();
-@@ -56,7 +60,7 @@
+@@ -56,7 +61,7 @@
          this.field_111273_g = p_i1035_2_;
          this.field_78298_i = p_i1035_3_;
          this.field_78293_l = p_i1035_4_;
@@ -31,7 +33,7 @@
  
          for (int i = 0; i < 32; ++i)
          {
-@@ -107,7 +111,7 @@
+@@ -107,7 +112,7 @@
  
          try
          {
@@ -40,7 +42,7 @@
              bufferedimage = TextureUtil.func_177053_a(iresource.func_110527_b());
          }
          catch (IOException ioexception)
-@@ -171,7 +175,7 @@
+@@ -171,7 +176,7 @@
  
          try
          {
@@ -49,7 +51,7 @@
              iresource.func_110527_b().read(this.field_78287_e);
          }
          catch (IOException ioexception)
-@@ -186,6 +190,7 @@
+@@ -186,6 +191,7 @@
  
      private float func_181559_a(char p_181559_1_, boolean p_181559_2_)
      {
@@ -57,7 +59,7 @@
          if (p_181559_1_ == ' ')
          {
              return 4.0F;
-@@ -203,7 +208,7 @@
+@@ -203,7 +209,7 @@
          int i = p_78266_1_ % 16 * 8;
          int j = p_78266_1_ / 16 * 8;
          int k = p_78266_2_ ? 1 : 0;
@@ -66,7 +68,7 @@
          int l = this.field_78286_d[p_78266_1_];
          float f = (float)l - 0.01F;
          GlStateManager.func_187447_r(5);
-@@ -231,7 +236,7 @@
+@@ -231,7 +237,7 @@
  
      private void func_78257_a(int p_78257_1_)
      {
@@ -75,7 +77,7 @@
      }
  
      protected float func_78277_a(char p_78277_1_, boolean p_78277_2_)
-@@ -280,7 +285,7 @@
+@@ -280,7 +286,7 @@
  
      public int func_175065_a(String p_175065_1_, float p_175065_2_, float p_175065_3_, int p_175065_4_, boolean p_175065_5_)
      {
@@ -84,7 +86,23 @@
          this.func_78265_b();
          int i;
  
-@@ -350,7 +355,7 @@
+@@ -328,9 +334,13 @@
+ 
+             if (c0 == 167 && i + 1 < p_78255_1_.length())
+             {
+-                int i1 = "0123456789abcdefklmnor".indexOf(String.valueOf(p_78255_1_.charAt(i + 1)).toLowerCase(Locale.ROOT).charAt(0));
++                int i1 = "0123456789abcdefklmnor§".indexOf(String.valueOf(p_78255_1_.charAt(i + 1)).toLowerCase(Locale.ROOT).charAt(0));
+ 
+-                if (i1 < 16)
++                if (i1 < 0)
++                {
++                    continue;
++                }
++                else if (i1 < 16)
+                 {
+                     this.field_78303_s = false;
+                     this.field_78302_t = false;
+@@ -350,7 +360,7 @@
  
                      int j1 = this.field_78285_g[i1];
                      this.field_78304_r = j1;
@@ -93,16 +111,20 @@
                  }
                  else if (i1 == 16)
                  {
-@@ -379,7 +384,7 @@
+@@ -379,7 +389,11 @@
                      this.field_78299_w = false;
                      this.field_78300_v = false;
                      this.field_78301_u = false;
 -                    GlStateManager.func_179131_c(this.field_78291_n, this.field_78292_o, this.field_78306_p, this.field_78305_q);
 +                    setColor(this.field_78291_n, this.field_78292_o, this.field_78306_p, this.field_78305_q);
++                }
++                else
++                {
++                    i--;
                  }
  
                  ++i;
-@@ -409,7 +414,7 @@
+@@ -409,7 +423,7 @@
                      c0 = c1;
                  }
  
@@ -111,7 +133,7 @@
                  boolean flag = (c0 == 0 || j == -1 || this.field_78293_l) && p_78255_2_;
  
                  if (flag)
-@@ -447,6 +452,15 @@
+@@ -447,6 +461,15 @@
  
                      ++f;
                  }
@@ -127,7 +149,7 @@
  
                  if (this.field_78299_w)
                  {
-@@ -580,6 +594,7 @@
+@@ -580,6 +603,7 @@
  
      public int func_78263_a(char p_78263_1_)
      {
@@ -135,7 +157,7 @@
          if (p_78263_1_ == 167)
          {
              return -1;
-@@ -635,14 +650,17 @@
+@@ -635,14 +659,17 @@
              {
                  flag = false;
  
@@ -158,7 +180,7 @@
              }
              else if (i1 < 0)
              {
-@@ -678,7 +696,7 @@
+@@ -678,7 +705,7 @@
  
      private String func_78273_d(String p_78273_1_)
      {
@@ -167,96 +189,93 @@
          {
              p_78273_1_ = p_78273_1_.substring(0, p_78273_1_.length() - 1);
          }
-@@ -725,9 +743,95 @@
+@@ -725,9 +752,92 @@
  
      public List<String> func_78271_c(String p_78271_1_, int p_78271_2_)
      {
 -        return Arrays.asList(this.func_78280_d(p_78271_1_, p_78271_2_).split("\n"));
-+        // They don't render and should not be feed into iterator
-+        String cleanStr = str.replaceAll("\u00a7.", "").replaceAll("\u00a7", "");
-+        if (cleanStr.length() == 0) return Collections.singletonList(str);
-+        BREAK_ITERATOR.setText(cleanStr);
++        if (p_78271_1_.isEmpty()){
++            return Collections.singletonList("");
++        }
++        BREAK_ITERATOR.setText(p_78271_1_);
 +        List<String> list = new ArrayList<>();
-+        String format = ""; // For last line's format since it should use format of previous line
-+        StringBuilder nextFormat = new StringBuilder();
-+        int i = 0, j = 0, k, l;
-+        record Reset(int i, int ri) {}
-+        Stack<Reset> lastReset = new Stack<>();
-+        lastReset.push(new Reset(0, 0));
-+        int strWidth = 0;
-+        int prevBreak = 0;
++        int lineWidth = 0, fed = 0, icui, d;
++        StringBuilder format = new StringBuilder(); // For next line's format since it should use format of previous line
++        HashMap<Integer, Pair<Integer, String>> map = new HashMap<>();
++        StringBuilder line = new StringBuilder();
++        String temp;
++        char[] chars = p_78271_1_.toCharArray();
++        char f;
 +        boolean bold = false;
-+        char c, f, back;
-+        int prevCandidate;
-+        do {
-+            switch (c = str.charAt(i)) {
-+                case '\n' -> {
-+                    list.add(nextFormat.substring(lastReset.peek().ri()) + str.substring(prevBreak, i));
-+                    format = nextFormat.toString();
-+                    prevBreak = i + 1;
-+                    strWidth = 0;
-+                }
-+                case '\u00a7' -> { // format start
-+                    if (i + 1 < str.length()) { // Prevent out of bound
-+                        f = str.charAt(++i);
-+                        nextFormat.append('\u00a7').append(f); // Add to current format code
++        for (int i = 0; i < chars.length; i++) {
++            char current = chars[i];
++            switch (current) {
++                case '\n':
++                    list.add(line.toString());
++                    fed += line.length() + 1;
++                    line.delete(0, line.length()).append(format);
++                    lineWidth = 0;
++                    map.put(i, Pair.of(lineWidth, format.toString()));
++                    continue;
++                case '§':
++                    if (i + 1 < chars.length) { // Prevent out of bound
++                        f = chars[i + 1];
 +                        if (f != 'l' && f != 'L') { // Check start of bold style
-+                            if (f == 'r' || f == 'R' || isFormatColor(f)) { // Not Bold, check end of style
++                            if (f == 'r' || f == 'R' || func_78272_b(f)) { // Not Bold, check end of style
 +                                bold = false;
-+                                lastReset.push(new Reset(i - 1, nextFormat.length())); // push reset location in str and format to stack
++                                if (f == 'r' || f == 'R') {
++                                    format.delete(0, format.length()); // Clear the format
++                                } else {
++                                    format.append('§').append(f); // Add to current format code
++                                }
++                                line.append('§').append(f);
++                                map.put(i, Pair.of(lineWidth, format.toString()));
++                                map.put(++i, Pair.of(lineWidth, format.toString()));
++                                continue;
++                            }
++                            if (f >= 'k' && f <= 'o' || f >= 'K' && f <= 'O') {
++                                format.append('§').append(f); // Add to current format code
++                                line.append('§').append(f);
++                                map.put(i, Pair.of(lineWidth, format.toString()));
++                                map.put(++i, Pair.of(lineWidth, format.toString()));
++                                continue;
 +                            }
 +                        } else {
 +                            bold = true;
++                            format.append('§').append(f); // Add to current format code
++                            line.append('§').append(f);
++                            map.put(i, Pair.of(lineWidth, format.toString()));
++                            map.put(++i, Pair.of(lineWidth, format.toString()));
++                            continue;
 +                        }
 +                    }
-+                }
-+                default -> {
-+                    strWidth += getCharWidth(c);
++                default:
++                    line.append(current);
++                    lineWidth += func_78263_a(current);
 +                    if (bold) {
-+                        // Bold style is fat
-+                        strWidth += 1;
++                        lineWidth++; // Bold style is one pixel wider
 +                    }
++                    break;
++            }
++            map.put(i, Pair.of(lineWidth, format.toString()));
++            if (lineWidth > p_78271_2_) {
++                icui = BREAK_ITERATOR.preceding(i);
++                if (icui <= fed) {
++                    list.add(line.substring(0,line.length() - 1));
++                    fed += line.length() - 1;
++                    line.delete(0, line.length()).append(format).append(current);
++                    lineWidth = func_78263_a(current);
++                } else {
++                    d = icui - fed;
++                    list.add(line.substring(0, d));
++                    temp = line.substring(d);
++                    fed += d;
++                    line.delete(0, line.length()).append(map.get(icui).getRight()).append(temp);
++                    lineWidth = lineWidth - map.get(icui - 1).getLeft();
 +                }
 +            }
-+            if (strWidth > wrapWidth) {
-+                BREAK_ITERATOR.following(j); // The legal break right after j
-+                prevCandidate = BREAK_ITERATOR.previous(); // Find the nearest legit break
-+                k = i;
-+                l = j;
-+                if (prevCandidate > -1) {
-+                    while (l > prevCandidate && k > 0) { // Backward searching to get actual format at break
-+                        k--;
-+                        l--;
-+                        back = str.charAt(k);
-+                        if (back == '\u00a7') {
-+                            if (!lastReset.isEmpty() && k == lastReset.peek().i()) {
-+                                lastReset.pop(); // Remove reset
-+                            }
-+                            if (nextFormat.length() > 1)
-+                                nextFormat.delete(nextFormat.length() - 2, nextFormat.length()); // Remove format
-+                            l++;
-+                        }
-+                    }
-+                }
-+                if (k <= prevBreak) {
-+                    k = i; // Break in previous line, not usable, set it to current i
-+                }
-+                if (str.charAt(k - 1) == '\u00a7') {
-+                    k--; // Make sure not to break in format code. Can't figure out how to put it in while(), so
-+                }
-+                list.add(nextFormat.substring(lastReset.peek().ri()) + str.substring(prevBreak, k));
-+                format = nextFormat.toString();
-+                if (k != i) {
-+                    j = prevCandidate; // k!=i means usable break point found, j should back to corresponding location
-+                }
-+                prevBreak = k;
-+                i = k;
-+                strWidth = getCharWidth(c); // Width of first char of new line.
-+            }
-+            i++;
-+            j++;
-+        } while (i < str.length());
-+        list.add(format + str.substring(prevBreak));
++        }
++        list.add(line.toString());
 +        return list;
      }
  
@@ -264,7 +283,7 @@
      String func_78280_d(String p_78280_1_, int p_78280_2_)
      {
          int i = this.func_78259_e(p_78280_1_, p_78280_2_);
-@@ -746,6 +850,7 @@
+@@ -746,6 +856,7 @@
          }
      }
  
@@ -272,7 +291,7 @@
      private int func_78259_e(String p_78259_1_, int p_78259_2_)
      {
          int i = p_78259_1_.length();
-@@ -844,6 +949,26 @@
+@@ -844,6 +955,26 @@
      public boolean func_78260_a()
      {
          return this.field_78294_m;
