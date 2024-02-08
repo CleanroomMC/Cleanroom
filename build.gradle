@@ -1134,6 +1134,7 @@ project(':cleanroom') {
 
 tasks.withType(JavaCompile) {
     options.compilerArgs += compiler_jvm_arguments
+    options.encoding = 'UTF-8'
 }
 
 idea.project.settings.compiler.javac.javacAdditionalOptions = compiler_jvm_arguments.join(' ')
@@ -1148,5 +1149,6 @@ task setup() {
 subprojects {
     tasks.withType(JavaCompile) {
         options.compilerArgs += compiler_jvm_arguments
+        options.encoding = 'UTF-8'
     }
 }
