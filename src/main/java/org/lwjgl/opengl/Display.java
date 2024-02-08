@@ -27,7 +27,7 @@ public class Display {
     private static boolean startFullscreen = false;
 
     private static DisplayMode mode = new DisplayMode(854, 480);
-    private static DisplayMode desktopDisplayMode = new DisplayMode(854, 480);
+    private static DisplayMode desktopDisplayMode;
 
     private static int latestEventKey = 0;
 
@@ -46,6 +46,7 @@ public class Display {
     private static ByteBuffer[] savedIcons;
     private static boolean cancelNextChar = false;
     private static KeyEvent ingredientKeyEvent;
+
     static {
         Sys.initialize(); // init using dummy sys method
 
@@ -95,16 +96,6 @@ public class Display {
             return;
         }
 
-        long monitor = glfwGetPrimaryMonitor();
-        GLFWVidMode vidmode = glfwGetVideoMode(monitor);
-
-        int monitorWidth = vidmode.width();
-        int monitorHeight = vidmode.height();
-        int monitorBitPerPixel = vidmode.redBits() + vidmode.greenBits() + vidmode.blueBits();
-        int monitorRefreshRate = vidmode.refreshRate();
-
-        desktopDisplayMode = new DisplayMode(monitorWidth, monitorHeight, monitorBitPerPixel, monitorRefreshRate);
-
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
@@ -117,6 +108,12 @@ public class Display {
         glfwWindowHint(GLFW_ICONIFIED, Config.WINDOW_START_ICONIFIED ? GLFW_TRUE : GLFW_FALSE);
         displayVisible = !Config.WINDOW_START_ICONIFIED;
         glfwWindowHint(GLFW_DECORATED, Config.WINDOW_DECORATED ? GLFW_TRUE : GLFW_FALSE);
+
+        displayX = (desktopDisplayMode.getWidth() - mode.getWidth()) / 2;
+        displayY = (desktopDisplayMode.getHeight() - mode.getHeight()) / 2;
+        glfwWindowHint(GLFW_POSITION_X, displayX);
+        glfwWindowHint(GLFW_POSITION_Y, displayY);
+        glfwWindowHint(GLFW_REFRESH_RATE, desktopDisplayMode.getFrequency());
 
         glfwWindowHint(GLFW_SRGB_CAPABLE, Config.OPENGL_SRGB_CONTEXT ? GLFW_TRUE : GLFW_FALSE);
         glfwWindowHint(GLFW_DOUBLEBUFFER, Config.OPENGL_DOUBLEBUFFER ? GLFW_TRUE : GLFW_FALSE);
@@ -134,6 +131,7 @@ public class Display {
         if (Window.handle == 0L) {
             throw new IllegalStateException("Failed to create Display window");
         }
+
         if (org.lwjgl3.glfw.GLFW.glfwRawMouseMotionSupported()) {
             GLFW.glfwSetInputMode(Window.handle, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
         }
@@ -265,17 +263,14 @@ public class Display {
 
         Window.setCallbacks();
 
-        displayWidth = mode.getWidth();
-        displayHeight = mode.getHeight();
+        displayWidth = desktopDisplayMode.getWidth();
+        displayHeight = desktopDisplayMode.getHeight();
 
         IntBuffer fbw = BufferUtils.createIntBuffer(1);
         IntBuffer fbh = BufferUtils.createIntBuffer(1);
         GLFW.glfwGetFramebufferSize(Window.handle, fbw, fbh);
         displayFramebufferWidth = fbw.get(0);
         displayFramebufferHeight = fbh.get(0);
-
-        displayX = (monitorWidth - mode.getWidth()) / 2;
-        displayY = (monitorHeight - mode.getHeight()) / 2;
 
         glfwMakeContextCurrent(Window.handle);
         drawable = new DrawableGL();
