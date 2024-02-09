@@ -47,7 +47,22 @@ jobs:
           path: projects/cleanroom/build/libs/*-universal.jar
 
       - name: Upload Forge Installer
+        id: upload-job
         uses: actions/upload-artifact@v3.1.2
         with:
           name: installer
           path: projects/cleanroom/build/libs/*-installer.jar
+          if-no-files-found: error
+
+      - uses: actions/github-script@v6
+        needs: upload-job
+        with:
+          github-token: ${{ secrets.CLEANROOMMC_DISPATCH_TOKEN }} # require PAT :shrug:
+          script: |
+            const result = await github.rest.repos.createDispatchEvent({
+              owner: 'CleanroomMC',
+              repo: 'CleanroomMMC',
+              event_type: 'cleanroom_upload_artifact',
+              client_payload: {"commit_hash": "${{ github.sha }}", "run_job_id": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}
+            })
+            console.log(result);
