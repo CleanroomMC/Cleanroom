@@ -108,7 +108,7 @@ public class SideTransformer implements IClassTransformer
                     {
                         if (DEBUG)
                         {
-                            System.out.println(String.format("Removing Method: %s.%s%s", classNode.name, method.name, method.desc));
+                            System.out.printf("Removing Method: %s.%s%s%n", classNode.name, method.name, method.desc);
                         }
                         methods.remove();
                         lambdaGatherer.accept(method);

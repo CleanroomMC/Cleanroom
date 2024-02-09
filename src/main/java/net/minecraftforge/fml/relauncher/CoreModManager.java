@@ -641,14 +641,11 @@ public class CoreModManager {
         @SuppressWarnings("unchecked")
         List<ITweaker> tweakers = (List<ITweaker>) Launch.blackboard.get("Tweaks");
         // Add the sorting tweaker first- it'll appear twice in the list
-        tweakers.add(0, fmlInjectionAndSortingTweaker);
-        for (FMLPluginWrapper wrapper : loadPlugins)
-        {
-            tweakers.add(wrapper);
-        }
+        tweakers.addFirst(fmlInjectionAndSortingTweaker);
+        tweakers.addAll(loadPlugins);
     }
 
-    private static Map<String,Integer> tweakSorting = Maps.newHashMap();
+    private static final Map<String,Integer> tweakSorting = Maps.newHashMap();
 
     public static void sortTweakList()
     {
@@ -656,7 +653,7 @@ public class CoreModManager {
         List<ITweaker> tweakers = (List<ITweaker>) Launch.blackboard.get("Tweaks");
         // Basically a copy of Collections.sort pre 8u20, optimized as we know we're an array list.
         // Thanks unhelpful fixer of http://bugs.java.com/view_bug.do?bug_id=8032636
-        ITweaker[] toSort = tweakers.toArray(new ITweaker[tweakers.size()]);
+        ITweaker[] toSort = tweakers.toArray(new ITweaker[0]);
         ToIntFunction<ITweaker> getOrder = o -> o instanceof FMLInjectionAndSortingTweaker ? Integer.MIN_VALUE : o instanceof FMLPluginWrapper ? ((FMLPluginWrapper)o).sortIndex : tweakSorting.getOrDefault(o.getClass().getName(), 0);
         Arrays.sort(toSort, (o1, o2) -> Ints.saturatedCast((long)getOrder.applyAsInt(o1) - (long)getOrder.applyAsInt(o2)));
         for (int j = 0; j < toSort.length; j++) {
