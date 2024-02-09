@@ -63,6 +63,6 @@ jobs:
               owner: 'CleanroomMC',
               repo: 'CleanroomMMC',
               event_type: 'cleanroom_upload_artifact',
-              client_payload: {"commit_hash": "${{ github.sha }}", "run_job_id": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}
+              client_payload: {"commit_hash": "${{ github.sha }}", "run_job_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}
             })
             console.log(result);
