@@ -54,15 +54,11 @@ jobs:
           path: projects/cleanroom/build/libs/*-installer.jar
           if-no-files-found: error
 
-      - uses: actions/github-script@v6
+      - name: Repository Dispatch
         if: success()
+        uses: peter-evans/repository-dispatch@v3
         with:
-          github-token: ${{ secrets.CLEANROOMMC_DISPATCH_TOKEN }} # require PAT :shrug:
-          script: |
-            const result = await github.rest.repos.createDispatchEvent({
-              owner: 'CleanroomMC',
-              repo: 'CleanroomMMC',
-              event_type: 'cleanroom_upload_artifact',
-              client_payload: {"commit_hash": "${{ github.sha }}", "run_job_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}
-            })
-            console.log(result);
+          token: ${{ secrets.CLEANROOMMC_DISPATCH_TOKEN }} # require PAT :shrug:
+          repository: CleanroomMC/CleanroomMMC
+          event-type: cleanroom_upload_artifact
+          client-payload: '{"commit_hash": "${{ github.sha }}", "run_job_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}'
