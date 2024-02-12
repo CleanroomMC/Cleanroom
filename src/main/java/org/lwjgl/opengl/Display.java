@@ -162,10 +162,10 @@ public class Display {
             }
         };
 
-        Window.charCallback = new GLFWCharCallback() {
+        Window.charCallback = new GLFWCharModsCallback() {
 
             @Override
-            public void invoke(long window, int codepoint) {
+            public void invoke(long window, int codepoint, int mods) {
                 if (cancelNextChar) { // Char event being cancelled
                     cancelNextChar = false;
                 } else if (ingredientKeyEvent != null) {
@@ -561,7 +561,7 @@ public class Display {
         static long handle;
 
         static GLFWKeyCallback keyCallback;
-        static GLFWCharCallback charCallback;
+        static GLFWCharModsCallback charCallback;
         static GLFWCursorPosCallback cursorPosCallback;
         static GLFWMouseButtonCallback mouseButtonCallback;
         static GLFWScrollCallback scrollCallback;
@@ -574,7 +574,7 @@ public class Display {
 
         public static void setCallbacks() {
             GLFW.glfwSetKeyCallback(handle, keyCallback);
-            GLFW.glfwSetCharCallback(handle, charCallback);
+            GLFW.glfwSetCharModsCallback(handle, charCallback);
             GLFW.glfwSetCursorPosCallback(handle, cursorPosCallback);
             GLFW.glfwSetMouseButtonCallback(handle, mouseButtonCallback);
             GLFW.glfwSetScrollCallback(handle, scrollCallback);
