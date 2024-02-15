@@ -1,14 +1,20 @@
 --- before/net/minecraft/client/gui/FontRenderer.java
 +++ after/net/minecraft/client/gui/FontRenderer.java
-@@ -3,6 +3,7 @@
+@@ -1,11 +1,12 @@
+ package net.minecraft.client.gui;
+ 
++import com.cleanroommc.client.BreakIteratorHolder;
  import com.ibm.icu.text.ArabicShaping;
  import com.ibm.icu.text.ArabicShapingException;
  import com.ibm.icu.text.Bidi;
-+import com.ibm.icu.text.BreakIterator;
++
  import java.awt.image.BufferedImage;
  import java.io.IOException;
- import java.util.Arrays;
-@@ -24,11 +25,15 @@
+-import java.util.Arrays;
+ import java.util.List;
+ import java.util.Locale;
+ import java.util.Random;
+@@ -24,6 +25,9 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  import org.apache.commons.io.IOUtils;
@@ -18,13 +24,7 @@
  
  @SideOnly(Side.CLIENT)
  public class FontRenderer implements IResourceManagerReloadListener
- {
-     private static final ResourceLocation[] field_111274_c = new ResourceLocation[256];
-+    public static final BreakIterator BREAK_ITERATOR = BreakIterator.getLineInstance();
-     protected final int[] field_78286_d = new int[256];
-     public int field_78288_b = 9;
-     public Random field_78289_c = new Random();
-@@ -56,7 +61,7 @@
+@@ -56,7 +60,7 @@
          this.field_111273_g = p_i1035_2_;
          this.field_78298_i = p_i1035_3_;
          this.field_78293_l = p_i1035_4_;
@@ -33,7 +33,7 @@
  
          for (int i = 0; i < 32; ++i)
          {
-@@ -107,7 +112,7 @@
+@@ -107,7 +111,7 @@
  
          try
          {
@@ -42,7 +42,7 @@
              bufferedimage = TextureUtil.func_177053_a(iresource.func_110527_b());
          }
          catch (IOException ioexception)
-@@ -171,7 +176,7 @@
+@@ -171,7 +175,7 @@
  
          try
          {
@@ -51,7 +51,7 @@
              iresource.func_110527_b().read(this.field_78287_e);
          }
          catch (IOException ioexception)
-@@ -186,6 +191,7 @@
+@@ -186,6 +190,7 @@
  
      private float func_181559_a(char p_181559_1_, boolean p_181559_2_)
      {
@@ -59,7 +59,7 @@
          if (p_181559_1_ == ' ')
          {
              return 4.0F;
-@@ -203,7 +209,7 @@
+@@ -203,7 +208,7 @@
          int i = p_78266_1_ % 16 * 8;
          int j = p_78266_1_ / 16 * 8;
          int k = p_78266_2_ ? 1 : 0;
@@ -68,7 +68,7 @@
          int l = this.field_78286_d[p_78266_1_];
          float f = (float)l - 0.01F;
          GlStateManager.func_187447_r(5);
-@@ -231,7 +237,7 @@
+@@ -231,7 +236,7 @@
  
      private void func_78257_a(int p_78257_1_)
      {
@@ -77,7 +77,7 @@
      }
  
      protected float func_78277_a(char p_78277_1_, boolean p_78277_2_)
-@@ -280,7 +286,7 @@
+@@ -280,7 +285,7 @@
  
      public int func_175065_a(String p_175065_1_, float p_175065_2_, float p_175065_3_, int p_175065_4_, boolean p_175065_5_)
      {
@@ -86,7 +86,7 @@
          this.func_78265_b();
          int i;
  
-@@ -328,20 +334,19 @@
+@@ -328,20 +333,19 @@
  
              if (c0 == 167 && i + 1 < p_78255_1_.length())
              {
@@ -113,7 +113,7 @@
  
                      if (p_78255_2_)
                      {
-@@ -350,7 +355,7 @@
+@@ -350,7 +354,7 @@
  
                      int j1 = this.field_78285_g[i1];
                      this.field_78304_r = j1;
@@ -122,7 +122,7 @@
                  }
                  else if (i1 == 16)
                  {
-@@ -379,7 +384,11 @@
+@@ -379,7 +383,11 @@
                      this.field_78299_w = false;
                      this.field_78300_v = false;
                      this.field_78301_u = false;
@@ -135,7 +135,7 @@
                  }
  
                  ++i;
-@@ -409,7 +418,7 @@
+@@ -409,7 +417,7 @@
                      c0 = c1;
                  }
  
@@ -144,7 +144,7 @@
                  boolean flag = (c0 == 0 || j == -1 || this.field_78293_l) && p_78255_2_;
  
                  if (flag)
-@@ -447,6 +456,15 @@
+@@ -447,6 +455,15 @@
  
                      ++f;
                  }
@@ -160,7 +160,7 @@
  
                  if (this.field_78299_w)
                  {
-@@ -580,6 +598,7 @@
+@@ -580,6 +597,7 @@
  
      public int func_78263_a(char p_78263_1_)
      {
@@ -168,7 +168,7 @@
          if (p_78263_1_ == 167)
          {
              return -1;
-@@ -635,14 +654,17 @@
+@@ -635,14 +653,17 @@
              {
                  flag = false;
  
@@ -191,7 +191,7 @@
              }
              else if (i1 < 0)
              {
-@@ -678,7 +700,7 @@
+@@ -678,7 +699,7 @@
  
      private String func_78273_d(String p_78273_1_)
      {
@@ -200,7 +200,7 @@
          {
              p_78273_1_ = p_78273_1_.substring(0, p_78273_1_.length() - 1);
          }
-@@ -725,9 +747,92 @@
+@@ -725,9 +746,92 @@
  
      public List<String> func_78271_c(String p_78271_1_, int p_78271_2_)
      {
@@ -208,7 +208,7 @@
 +        if (p_78271_1_.isEmpty()){
 +            return Collections.singletonList("");
 +        }
-+        BREAK_ITERATOR.setText(p_78271_1_);
++        BreakIteratorHolder.BREAK_ITERATOR.setText(p_78271_1_);
 +        List<String> list = new ArrayList<>();
 +        int lineWidth = 0, fed = 0, icui, d;
 +        StringBuilder format = new StringBuilder(); // For next line's format since it should use format of previous line
@@ -270,7 +270,7 @@
 +            }
 +            map.put(i, Pair.of(lineWidth, format.toString()));
 +            if (lineWidth > p_78271_2_) {
-+                icui = BREAK_ITERATOR.preceding(i);
++                icui = BreakIteratorHolder.BREAK_ITERATOR.preceding(i);
 +                if (icui <= fed) {
 +                    list.add(line.substring(0,line.length() - 1));
 +                    fed += line.length() - 1;
@@ -294,7 +294,7 @@
      String func_78280_d(String p_78280_1_, int p_78280_2_)
      {
          int i = this.func_78259_e(p_78280_1_, p_78280_2_);
-@@ -746,6 +851,7 @@
+@@ -746,6 +850,7 @@
          }
      }
  
@@ -302,7 +302,7 @@
      private int func_78259_e(String p_78259_1_, int p_78259_2_)
      {
          int i = p_78259_1_.length();
-@@ -844,6 +950,26 @@
+@@ -844,6 +949,26 @@
      public boolean func_78260_a()
      {
          return this.field_78294_m;
