@@ -20,8 +20,12 @@
 package net.minecraftforge.fml.common.launcher;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.JarURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -117,9 +121,15 @@ public class FMLTweaker implements ITweaker {
 
         try
         {
-            jarLocation = getClass().getProtectionDomain().getCodeSource().getLocation().toURI();
+            URL location = getClass().getProtectionDomain().getCodeSource().getLocation();
+            if (location.toString().startsWith("jar")) {
+                JarURLConnection connection = (JarURLConnection) location.openConnection();
+                jarLocation = connection.getJarFileURL().toURI();
+            } else {
+                jarLocation = location.toURI();
+            }
         }
-        catch (URISyntaxException e)
+        catch (URISyntaxException | IOException e)
         {
             LogManager.getLogger("FML.TWEAK").error("Missing URI information for FML tweak");
             throw new RuntimeException(e);

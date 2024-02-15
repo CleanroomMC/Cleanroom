@@ -39,6 +39,7 @@ import org.apache.logging.log4j.Level;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import top.outlands.TransformHandler;
 
 /**
  * A simple delegating class loader used to load mods into the system
@@ -173,7 +174,7 @@ public class ModClassLoader extends URLClassLoader
     public ModAPITransformer addModAPITransformer(ASMDataTable dataTable)
     {
         mainClassLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.ModAPITransformer");
-        List<IClassTransformer> transformers = mainClassLoader.getTransformers();
+        List<IClassTransformer> transformers = TransformHandler.getTransformers();
         ModAPITransformer modAPI = (ModAPITransformer) transformers.get(transformers.size()-1);
         modAPI.initTable(dataTable);
         return modAPI;
