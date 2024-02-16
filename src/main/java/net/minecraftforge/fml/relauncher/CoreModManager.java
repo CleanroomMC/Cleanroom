@@ -128,12 +128,13 @@ public class CoreModManager {
         {
             FMLLog.log.debug("Injecting coremod {} \\{{}\\} class transformers", name, coreModInstance.getClass().getName());
             List<String> ts = Lists.newArrayList();
-            if (coreModInstance.getASMTransformerClass() != null) for (String transformer : coreModInstance.getASMTransformerClass())
-            {
-                FMLLog.log.trace("Registering transformer {}", transformer);
-                classLoader.registerTransformer(ASMTransformerWrapper.getTransformerWrapper(classLoader, transformer, name));
-                ts.add(transformer);
-            }
+            String[] asmTransformerClasses = coreModInstance.getASMTransformerClass();
+            if (asmTransformerClasses != null) 
+                for (String transformer : asmTransformerClasses){
+                    FMLLog.log.trace("Registering transformer {}", transformer);
+                    classLoader.registerTransformer(ASMTransformerWrapper.getTransformerWrapper(classLoader, transformer, name));
+                    ts.add(transformer);
+                }
             if(!rootNames.contains(name))
             {
                 String loc;
