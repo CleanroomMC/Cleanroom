@@ -25,6 +25,7 @@ import io.netty.buffer.Unpooled;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -65,6 +66,8 @@ public abstract class FMLMessage {
         int x;
         int y;
         int z;
+        boolean isLegacy;
+        ByteBuf customData;
 
         public OpenGui() {}
         OpenGui(int windowId, String modId, int modGuiId, int x, int y, int z)
@@ -75,6 +78,19 @@ public abstract class FMLMessage {
             this.x = x;
             this.y = y;
             this.z = z;
+            isLegacy=true;
+            customData=null;
+        }
+        OpenGui(int windowId, String modId, int modGuiId, int x, int y, int z, ByteBuf customData)
+        {
+            this.windowId = windowId;
+            this.modId = modId;
+            this.modGuiId = modGuiId;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.isLegacy = false;
+            this.customData = customData;
         }
 
         @Override
@@ -86,6 +102,10 @@ public abstract class FMLMessage {
             buf.writeInt(x);
             buf.writeInt(y);
             buf.writeInt(z);
+            buf.writeBoolean(isLegacy);
+            if (!isLegacy){
+                buf.writeBytes(customData);
+            }
         }
 
         @Override
@@ -97,6 +117,11 @@ public abstract class FMLMessage {
             x = buf.readInt();
             y = buf.readInt();
             z = buf.readInt();
+            isLegacy= buf.readBoolean();
+            if (!isLegacy){
+                customData=Unpooled.buffer();
+                buf.readBytes(customData);
+            }
         }
     }
 

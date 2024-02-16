@@ -19,6 +19,8 @@
 
 package net.minecraftforge.fml.common.network.internal;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.embedded.EmbeddedChannel;
 
@@ -27,6 +29,7 @@ import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import net.minecraft.entity.Entity;
@@ -109,6 +112,44 @@ public class FMLNetworkHandler
         else if (FMLCommonHandler.instance().getSide().equals(Side.CLIENT))
         {
             Object guiContainer = NetworkRegistry.INSTANCE.getLocalGuiContainer(mc, entityPlayer, modGuiId, world, x, y, z);
+            FMLCommonHandler.instance().showGuiScreen(guiContainer);
+        }
+        else
+        {
+            FMLLog.log.debug("Invalid attempt to open a local GUI on a dedicated server. This is likely a bug. GUI ID: {},{}", mc.getModId(), modGuiId);
+        }
+
+    }
+    public static void openGui(EntityPlayer entityPlayer, Object mod, int modGuiId, World world, int x, int y, int z, ByteBuf customData)
+    {
+        ModContainer mc = FMLCommonHandler.instance().findContainerFor(mod);
+        if (entityPlayer instanceof EntityPlayerMP && !(entityPlayer instanceof FakePlayer))
+        {
+            EntityPlayerMP entityPlayerMP = (EntityPlayerMP) entityPlayer;
+            Container remoteGuiContainer = NetworkRegistry.INSTANCE.getRemoteGuiContainer(mc, entityPlayerMP, modGuiId, world, x, y, z, customData);
+            if (remoteGuiContainer != null)
+            {
+                entityPlayerMP.getNextWindowId();
+                entityPlayerMP.closeContainer();
+                int windowId = entityPlayerMP.currentWindowId;
+                FMLMessage.OpenGui openGui = new FMLMessage.OpenGui(windowId, mc.getModId(), modGuiId, x, y, z, customData);
+                EmbeddedChannel embeddedChannel = channelPair.get(Side.SERVER);
+                embeddedChannel.attr(FMLOutboundHandler.FML_MESSAGETARGET).set(OutboundTarget.PLAYER);
+                embeddedChannel.attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(entityPlayerMP);
+                embeddedChannel.writeOutbound(openGui);
+                entityPlayerMP.openContainer = remoteGuiContainer;
+                entityPlayerMP.openContainer.windowId = windowId;
+                entityPlayerMP.openContainer.addListener(entityPlayerMP);
+                net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(entityPlayer, entityPlayer.openContainer));
+            }
+        }
+        else if (entityPlayer instanceof FakePlayer)
+        {
+            // NO OP - I won't even log a message!
+        }
+        else if (FMLCommonHandler.instance().getSide().equals(Side.CLIENT))
+        {
+            Object guiContainer = NetworkRegistry.INSTANCE.getLocalGuiContainer(mc, entityPlayer, modGuiId, world, x, y, z, customData);
             FMLCommonHandler.instance().showGuiScreen(guiContainer);
         }
         else

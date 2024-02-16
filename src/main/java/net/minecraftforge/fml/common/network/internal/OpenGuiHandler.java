@@ -47,7 +47,8 @@ public class OpenGuiHandler extends SimpleChannelInboundHandler<FMLMessage.OpenG
     private void process(OpenGui msg)
     {
         EntityPlayer player = FMLClientHandler.instance().getClient().player;
-        player.openGui(msg.modId, msg.modGuiId, player.world, msg.x, msg.y, msg.z);
+        if (msg.isLegacy) player.openGui(msg.modId, msg.modGuiId, player.world, msg.x, msg.y, msg.z);
+        else player.openGui(msg.modId, msg.modGuiId, player.world, msg.x, msg.y, msg.z, msg.customData);
         player.openContainer.windowId = msg.windowId;
     }
 
