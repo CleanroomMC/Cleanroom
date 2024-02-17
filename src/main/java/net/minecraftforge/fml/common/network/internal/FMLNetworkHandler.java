@@ -121,7 +121,7 @@ public class FMLNetworkHandler
                 entityPlayerMP.getNextWindowId();
                 entityPlayerMP.closeContainer();
                 int windowId = entityPlayerMP.currentWindowId;
-                FMLMessage.OpenGui openGui = new FMLMessage.OpenGui(windowId, mc.getModId(), modGuiId, x, y, z, customData);
+                FMLMessage.OpenGuiExpand openGui = new FMLMessage.OpenGuiExpand(windowId, mc.getModId(), modGuiId, x, y, z, customData);
                 EmbeddedChannel embeddedChannel = channelPair.get(Side.SERVER);
                 embeddedChannel.attr(FMLOutboundHandler.FML_MESSAGETARGET).set(OutboundTarget.PLAYER);
                 embeddedChannel.attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(entityPlayerMP);
@@ -209,6 +209,7 @@ public class FMLNetworkHandler
         String targetName = channelPair.get(Side.CLIENT).findChannelHandlerNameForType(FMLRuntimeCodec.class);
         pipeline.addAfter(targetName, "GuiHandler", new OpenGuiHandler());
         pipeline.addAfter(targetName, "EntitySpawnHandler", new EntitySpawnHandler());
+        pipeline.addAfter(targetName, "GuiExpandHandler", new OpenGuiExpandHandler());
     }
     public static void registerChannel(FMLContainer container, Side side)
     {

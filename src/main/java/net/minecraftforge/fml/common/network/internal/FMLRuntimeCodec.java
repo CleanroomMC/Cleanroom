@@ -35,6 +35,7 @@ public class FMLRuntimeCodec extends FMLIndexedMessageToMessageCodec<FMLMessage>
         addDiscriminator(0,FMLMessage.CompleteHandshake.class);
         addDiscriminator(1,FMLMessage.OpenGui.class);
         addDiscriminator(2,FMLMessage.EntitySpawnMessage.class);
+        addDiscriminator(3,FMLMessage.OpenGuiExpand.class);
     }
     @Override
     public void encodeInto(ChannelHandlerContext ctx, FMLMessage msg, ByteBuf target) throws Exception
