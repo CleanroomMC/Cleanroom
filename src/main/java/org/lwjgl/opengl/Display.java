@@ -173,6 +173,8 @@ public class Display {
             }
         };
 
+        // TODO: Preferably handle with only GLFWCharCallback
+        // TODO: Perhaps recognise ALT keypresses in GLFWKeyCallback instead
         Window.charModsCallback = new GLFWCharModsCallback() {
 
             @Override
