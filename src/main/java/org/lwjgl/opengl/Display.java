@@ -162,7 +162,18 @@ public class Display {
             }
         };
 
-        Window.charCallback = new GLFWCharModsCallback() {
+        Window.charCallback = new GLFWCharCallback() {
+            @Override
+            public void invoke(long window, int codepoint) {
+                if (cancelNextChar) { // Char event being cancelled
+                    cancelNextChar = false;
+                } else {
+                    Keyboard.addCharEvent(0, (char) codepoint); // Non-ASCII chars
+                }
+            }
+        };
+
+        Window.charModsCallback = new GLFWCharModsCallback() {
 
             @Override
             public void invoke(long window, int codepoint, int mods) {
@@ -172,9 +183,10 @@ public class Display {
                     ingredientKeyEvent.aChar = (char) codepoint; // Send char with ASCII key event here
                     Keyboard.addKeyEvent(ingredientKeyEvent);
                     ingredientKeyEvent = null;
-                } else {
-                    Keyboard.addCharEvent(0, (char) codepoint); // Non-ASCII chars
+                    cancelNextChar = true; // Cancel char event for GLFWCharCallback
                 }
+
+                // Non-ASCII chars are handled in GLFWCharCallback
             }
         };
 
@@ -561,7 +573,8 @@ public class Display {
         static long handle;
 
         static GLFWKeyCallback keyCallback;
-        static GLFWCharModsCallback charCallback;
+        static GLFWCharCallback charCallback;
+        static GLFWCharModsCallback charModsCallback;
         static GLFWCursorPosCallback cursorPosCallback;
         static GLFWMouseButtonCallback mouseButtonCallback;
         static GLFWScrollCallback scrollCallback;
@@ -574,7 +587,8 @@ public class Display {
 
         public static void setCallbacks() {
             GLFW.glfwSetKeyCallback(handle, keyCallback);
-            GLFW.glfwSetCharModsCallback(handle, charCallback);
+            GLFW.glfwSetCharCallback(handle, charCallback);
+            GLFW.glfwSetCharModsCallback(handle, charModsCallback);
             GLFW.glfwSetCursorPosCallback(handle, cursorPosCallback);
             GLFW.glfwSetMouseButtonCallback(handle, mouseButtonCallback);
             GLFW.glfwSetScrollCallback(handle, scrollCallback);
