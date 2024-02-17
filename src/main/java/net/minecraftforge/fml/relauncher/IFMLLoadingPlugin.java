@@ -51,6 +51,8 @@ public interface IFMLLoadingPlugin
      * sorting behaviour.
      * All other mod behaviours are available however- this container can receive and handle
      * normal loading events
+     *
+     * The {@return} will be injected into {@link FMLInjectionData#containers}.
      */
     @Nullable
     String getModContainerClass();
