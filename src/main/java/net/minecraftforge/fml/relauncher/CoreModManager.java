@@ -128,7 +128,8 @@ public class CoreModManager {
         {
             FMLLog.log.debug("Injecting coremod {} \\{{}\\} class transformers", name, coreModInstance.getClass().getName());
             List<String> ts = Lists.newArrayList();
-            if (coreModInstance.getASMTransformerClass() != null) for (String transformer : coreModInstance.getASMTransformerClass())
+            String[] asmTransformerClasses=coreModInstance.getASMTransformerClass();//only call once, avoid run the operations twice in the method.
+            if (asmTransformerClasses != null) for (String transformer : asmTransformerClasses)
             {
                 FMLLog.log.trace("Registering transformer {}", transformer);
                 classLoader.registerTransformer(ASMTransformerWrapper.getTransformerWrapper(classLoader, transformer, name));

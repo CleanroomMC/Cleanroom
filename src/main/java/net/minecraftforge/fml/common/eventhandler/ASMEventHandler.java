@@ -28,6 +28,7 @@ import java.util.HashMap;
 
 import net.minecraftforge.fml.common.ModContainer;
 
+import net.minecraftforge.fml.relauncher.ASMClassLoader;
 import org.apache.logging.log4j.ThreadContext;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
@@ -177,16 +178,22 @@ public class ASMEventHandler implements IEventListener
                 callback.getParameterTypes()[0].getSimpleName());
     }
 
-    private static class ASMClassLoader extends ClassLoader
+    /**
+     * use {@link net.minecraftforge.fml.relauncher.ASMClassLoader}
+     * The reason this class is retained is that Mod may use it through reflection
+     * **/
+    @Deprecated
+    private static class ASMClassLoader //extends ClassLoader
     {
         private ASMClassLoader()
         {
-            super(ASMClassLoader.class.getClassLoader());
+            //super(ASMClassLoader.class.getClassLoader());
         }
 
         public Class<?> define(String name, byte[] data)
         {
-            return defineClass(name, data, 0, data.length);
+            //equal to redirection
+            return net.minecraftforge.fml.relauncher.ASMClassLoader.getOrCreate().define(name,data);
         }
     }
 
