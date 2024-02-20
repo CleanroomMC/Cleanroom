@@ -572,13 +572,10 @@ public class ForgeHooks
     //Optifine Helper Functions u.u, these are here specifically for Optifine
     //Note: When using Optifine, these methods are invoked using reflection, which
     //incurs a major performance penalty.
-    //TODO: find out could we change the method sign?
+    @Deprecated
     public static void onLivingSetAttackTarget(EntityLivingBase entity, EntityLivingBase target)
     {
-        LivingSetAttackTargetEvent evt=new LivingSetAttackTargetEvent(entity,target);
-        if (!MinecraftForge.EVENT_BUS.post(evt)){
-            ((EntityLiving)entity).attackTarget=evt.getTarget();
-        }
+        MinecraftForge.EVENT_BUS.post(new LivingSetAttackTargetEvent(entity,target));
     }
 
     public static boolean onLivingUpdate(EntityLivingBase entity)
