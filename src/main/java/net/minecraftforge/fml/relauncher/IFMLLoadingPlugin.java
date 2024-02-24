@@ -39,6 +39,7 @@ public interface IFMLLoadingPlugin
      * Return a list of classes that implements the IClassTransformer interface
      * @return a list of classes that implements the IClassTransformer interface
      */
+    @Nullable
     String[] getASMTransformerClass();
 
     /**
@@ -50,7 +51,10 @@ public interface IFMLLoadingPlugin
      * sorting behaviour.
      * All other mod behaviours are available however- this container can receive and handle
      * normal loading events
+     *
+     * The {@return} will be injected into {@link FMLInjectionData#containers}.
      */
+    @Nullable
     String getModContainerClass();
 
     /**
@@ -78,6 +82,7 @@ public interface IFMLLoadingPlugin
      * so ensure your ATs conform to the new srgnames scheme.
      * @return the name of an access transformer class or null if none is provided
      */
+    @Nullable
     String getAccessTransformerClass();
 
     /**
