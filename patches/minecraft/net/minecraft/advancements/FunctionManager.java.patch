@@ -1,0 +1,18 @@
+--- before/net/minecraft/advancements/FunctionManager.java
++++ after/net/minecraft/advancements/FunctionManager.java
+@@ -14,6 +14,7 @@
+ import net.minecraft.util.ITickable;
+ import net.minecraft.util.ResourceLocation;
+ import net.minecraft.world.World;
++import net.minecraftforge.common.ForgeHooks;
+ import org.apache.commons.io.FileUtils;
+ import org.apache.commons.io.FilenameUtils;
+ import org.apache.logging.log4j.LogManager;
+@@ -182,6 +183,7 @@
+                     }
+                 }
+             }
++            ForgeHooks.onMCFunctionLoad(this);
+ 
+             if (!this.field_193070_d.isEmpty())
+             {

@@ -689,6 +689,9 @@ public class Loader
     {
         return instance().namedMods.containsKey(modname) && instance().modController.getModState(instance.namedMods.get(modname))!=ModState.DISABLED;
     }
+    public static ModContainer getLoadedMod(String modname){
+        return instance().namedMods.get(modname);
+    }
 
     public File getConfigDir()
     {
