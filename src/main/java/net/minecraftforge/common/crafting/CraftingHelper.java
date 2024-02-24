@@ -636,10 +636,9 @@ public class CraftingHelper {
         //ModContainer old = Loader.instance().activeModContainer();
         Loader.instance().setActiveModContainer(null);
         Loader.instance().getActiveModList().forEach(CraftingHelper::loadFactories);
+        MinecraftForge.EVENT_BUS.post(new CraftingFactoriesRegisterEvent(conditions, ingredients, recipes));
         Loader.instance().getActiveModList().forEach(CraftingHelper::loadRecipes);
         Loader.instance().setActiveModContainer(null);
-
-        MinecraftForge.EVENT_BUS.post(new CraftingFactoriesRegisterEvent(conditions, ingredients, recipes));
 
         GameData.fireRegistryEvents(rl -> rl.equals(GameData.RECIPES));
 
