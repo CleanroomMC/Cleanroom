@@ -52,6 +52,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.command.FunctionObject;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -1400,8 +1401,8 @@ public class ForgeHooks
             true, true
         );
     }
-    public static void onMCFunctionLoad(FunctionManager manager){
-        MinecraftForge.EVENT_BUS.post(new MCFunctionLoadEvent(manager));
+    public static void onMCFunctionLoad(FunctionManager manager, Map<ResourceLocation, FunctionObject> functionsIn){
+        MinecraftForge.EVENT_BUS.post(new MCFunctionLoadEvent(manager, functionsIn));
     }
 
     public static void sendRecipeBook(NetHandlerPlayServer connection, State state, List<IRecipe> recipes, List<IRecipe> display, boolean isGuiOpen, boolean isFilteringCraftable)

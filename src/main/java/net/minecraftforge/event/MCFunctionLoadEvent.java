@@ -7,10 +7,14 @@ import com.google.common.io.LineProcessor;
 import net.minecraft.advancements.FunctionManager;
 import net.minecraft.command.FunctionObject;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.EnumDifficulty;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -18,6 +22,7 @@ import org.apache.commons.io.IOUtils;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -27,13 +32,35 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+/**
+ * MCFunctionLoadEvent is fired when {@link FunctionObject} `.mcfunction` be loaded and registered <br>
+ * <br>
+ * This event is fired via the {@link ForgeHooks#onMCFunctionLoad(FunctionManager, Map)}.<br>
+ * <br>
+ * This event is not {@link Cancelable}.<br>
+ * <br>
+ * This event does not have a result. {@link HasResult}<br>
+ * <br>
+ * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ **/
 public class MCFunctionLoadEvent extends Event {
     public final FunctionManager functionManager;
     public final Map<ResourceLocation, FunctionObject> functions;
-    public MCFunctionLoadEvent(FunctionManager manager){
-        this.functionManager=manager;
-        functions = ObfuscationReflectionHelper.getPrivateValue(FunctionManager.class,manager,"field_193070_d","functions");
+
+    /**
+     * @param manager the instance of {@link FunctionManager} , which is the owner of Functions.
+     * @param functionsIn the instance of {@link FunctionObject} map. It is a registry.
+     */
+    public MCFunctionLoadEvent(FunctionManager manager, Map<ResourceLocation, FunctionObject> functionsIn){
+        this.functionManager = manager;
+        this.functions = functionsIn;
     }
+
+    /**
+     * It will scan the `.mcfunction` file at `assets/<modid>/functions` and it's child folds, to load {@link FunctionObject} and register it, using the path as the register name.
+     * @param modid the modID
+     * @return the loaded {@link FunctionObject}
+     */
     public HashMap<ResourceLocation,FunctionObject> loadAndRegisterFor(String modid){
         HashMap<ResourceLocation,FunctionObject> map = new HashMap<>();
         ModContainer container = Loader.getLoadedMod(modid);
@@ -76,13 +103,28 @@ public class MCFunctionLoadEvent extends Event {
         Loader.instance().setActiveModContainer(null);
         return map;
     }
+
+    /**
+     * @param resourceLocation the register name
+     * @param functionObject the function
+     */
     public void register(ResourceLocation resourceLocation, FunctionObject functionObject){
         functions.put(resourceLocation, functionObject);
     }
+
+    /**
+     * @param resourceLocation the register name
+     * @return the function
+     */
     @Nullable
     public FunctionObject unregister(ResourceLocation resourceLocation){
         return functions.remove(resourceLocation);
     }
+
+    /**
+     * @param collection the register names
+     * @return the unregistered {@link FunctionObject}
+     */
     public HashMap<ResourceLocation,FunctionObject> unregisterAll(Collection<ResourceLocation> collection){
         HashMap<ResourceLocation,FunctionObject> hashMap = new HashMap<>();
         for(ResourceLocation resourceLocation:collection){
@@ -172,7 +214,7 @@ public class MCFunctionLoadEvent extends Event {
         return success;
     }
     private static ByteSource getByteSource(Path path) throws IOException {
-        return ByteSource.wrap(IOUtils.toByteArray(Files.newBufferedReader(path)));
+        return ByteSource.wrap(IOUtils.toByteArray(Files.newBufferedReader(path), StandardCharsets.UTF_8));
     }
     public static FunctionObject singleFunction(FunctionObject.Entry entry){
         return new FunctionObject(new FunctionObject.Entry[]{entry});
