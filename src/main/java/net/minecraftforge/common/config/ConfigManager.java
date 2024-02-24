@@ -159,7 +159,7 @@ public class ConfigManager
             {
                 Class<?> cls = Class.forName(targ.getClassName(), true, mcl);
 
-                Set<Class<?>> modConfigClasses = MOD_CONFIG_CLASSES.computeIfAbsent(modid, k -> Sets.<Class<?>>newHashSet());
+                Set<Class<?>> modConfigClasses = MOD_CONFIG_CLASSES.computeIfAbsent(modid, k -> Sets.newHashSet());
                 modConfigClasses.add(cls);
 
                 String name = (String)targ.getAnnotationInfo().get("name");
@@ -174,7 +174,14 @@ public class ConfigManager
                 Configuration cfg = CONFIGS.get(file.getAbsolutePath());
                 if (cfg == null)
                 {
-                    cfg = new Configuration(file);
+                    ConfigurationFileWrapper.FileType fileType;
+                    Object sFileType=targ.getAnnotationInfo().get("fileType");
+                    if (sFileType == null){
+                        fileType = ConfigurationFileWrapper.FileType.CFG;
+                    }else {
+                        fileType = ConfigurationFileWrapper.FileType.valueOf(((EnumHolder)sFileType).getValue());
+                    }
+                    cfg = new ModConfiguration(modid, cls, new ConfigurationFileWrapper(file, fileType));
                     cfg.load();
                     CONFIGS.put(file.getAbsolutePath(), cfg);
                 }

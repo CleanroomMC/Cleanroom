@@ -51,7 +51,9 @@ public @interface Config
      */
     String category() default "general";
 
-    public static enum Type
+    ConfigurationFileWrapper.FileType fileType() default ConfigurationFileWrapper.FileType.CFG;
+
+    enum Type
     {
         /**
         * Loaded once, directly after mod construction. Before pre-init.
@@ -61,7 +63,7 @@ public @interface Config
 
 
         private boolean isStatic = true;
-        private Type(boolean isStatic) { this.isStatic = isStatic; }
+        Type(boolean isStatic) { this.isStatic = isStatic; }
         public boolean isStatic(){ return this.isStatic; }
     }
 
