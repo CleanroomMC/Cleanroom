@@ -1,10 +1,15 @@
 package net.minecraftforge.common.config;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import net.minecraft.util.JsonUtils;
+import net.minecraftforge.common.config.utils.JsonConfigUtils;
 import net.minecraftforge.fml.common.FMLLog;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
@@ -338,8 +343,61 @@ public class ConfigurationFileWrapper {
                     }
                 }
             }
+        },
+        JSON{
+            public static final Gson GSON = new GsonBuilder().enableComplexMapKeySerialization().create();
+            @Override
+            public void readFromFile(ConfigurationFileWrapper fileWrapper, Configuration configuration) {
+                BufferedReader bufferedReader = null;
+                try {
+                    bufferedReader = Files.newBufferedReader(fileWrapper.getConfigFile().toPath());
+                    JsonObject jsonObject = JsonUtils.fromJson(GSON, bufferedReader, JsonObject.class);
+                    JsonConfigUtils.readFromJson(configuration, jsonObject);
+                } catch (IOException e) {
+                    throw new RuntimeException("Can not read the json config file: "+fileWrapper.getConfigFile().getAbsolutePath(), e);
+                }
+                finally {
+                    if (bufferedReader != null){
+                        try {
+                            bufferedReader.close();
+                        } catch (IOException ignored) {
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void writeToFile(Configuration configuration, ConfigurationFileWrapper fileWrapper) {
+                File file = fileWrapper.getConfigFile();
+                try
+                {
+                    if (file.getParentFile() != null)
+                    {
+                        file.getParentFile().mkdirs();
+                    }
+
+                    if (!file.exists() && !file.createNewFile())
+                    {
+                        return;
+                    }
+
+                    if (file.canWrite())
+                    {
+                        FileOutputStream fos = new FileOutputStream(file);
+                        BufferedWriter buffer = new BufferedWriter(new OutputStreamWriter(fos, configuration.defaultEncoding));
+
+                        buffer.write(GSON.toJson(JsonConfigUtils.writeToJson(configuration)));
+
+                        buffer.close();
+                        fos.close();
+                    }
+                }
+                catch (IOException e)
+                {
+                    FMLLog.log.error("Error while saving config {}.", configuration.getFileName(), e);
+                }
+            }
         };
-        //TODO:JSON?
 
         public abstract void readFromFile(ConfigurationFileWrapper fileWrapper, Configuration configuration);
         public abstract void writeToFile(Configuration configuration, ConfigurationFileWrapper fileWrapper);

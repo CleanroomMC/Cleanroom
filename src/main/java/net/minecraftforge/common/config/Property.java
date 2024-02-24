@@ -54,11 +54,12 @@ public class Property
 
         public static Type tryParse(char id)
         {
-            for (int x = 0; x < values().length; x++)
+            Type[] values = values();
+            for (int x = 0; x < values.length; x++)
             {
-                if (values()[x].getID() == id)
+                if (values[x].getID() == id)
                 {
-                    return values()[x];
+                    return values[x];
                 }
             }
 

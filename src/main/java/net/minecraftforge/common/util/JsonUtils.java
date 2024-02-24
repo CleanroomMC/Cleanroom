@@ -21,24 +21,20 @@ package net.minecraftforge.common.util;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeParameter;
 import com.google.common.reflect.TypeToken;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.config.Configuration;
 
 import javax.annotation.Nullable;
 
@@ -117,5 +113,55 @@ public class JsonUtils
     private static <E> TypeToken<Map<String, E>> mapOf(final Type arg)
     {
         return new TypeToken<Map<String, E>>() {}.where(new TypeParameter<E>() {}, (TypeToken<E>) TypeToken.of(arg));
+    }
+
+    public static List<String> walkAndGetAllEntryPath(JsonObject json, String splitter){
+        LinkedList<String> list=new LinkedList<>();
+        for(Map.Entry<String,JsonElement> elementEntry:json.entrySet()){
+            if (elementEntry.getValue().isJsonObject()){
+                //merge the path
+                List<String> newList=walkAndGetAllEntryPath(elementEntry.getValue().getAsJsonObject(),splitter);
+                ListIterator<String> iterator= newList.listIterator();
+                String activeString;
+                while (iterator.hasNext()){
+                    activeString=iterator.next();
+                    list.add(elementEntry.getKey()+splitter+activeString);
+                }
+                //end merge.
+            }else {
+                list.add(elementEntry.getKey());
+            }
+        }
+        return list;
+    }
+    @Nullable
+    public static JsonElement walkAndGetTheElement(JsonObject json, String path, String splitter){
+        String[] strings=path.split(splitter);
+        if (strings.length==1) return json.get(strings[0]);
+        else {
+            return walkAndGetTheElement(json.getAsJsonObject(strings[0]),path.substring(strings[0].length()+1),splitter);
+        }
+    }
+    @Nullable
+    public static void walkAndSetTheElement(JsonObject json, JsonElement element, String path, String splitter){
+        String[] strings=path.split(splitter);
+        if (strings.length==1) {
+            json.add(strings[0],element);
+        }
+        else {
+            if (!json.has(strings[0])){json.add(strings[0], new JsonObject());}
+            walkAndSetTheElement(json.getAsJsonObject(strings[0]), element, path.substring(strings[0].length()+1), splitter);
+        }
+    }
+    public static String getRawValue(JsonElement element){
+        return element.toString();
+    }
+    public static String[] getRawValueArray(JsonArray array){
+        int size = array.size();
+        String[] strings = new String[size];
+        for(int i=0; i<size; i++){
+            strings[i] = getRawValue(array.get(i));
+        }
+        return strings;
     }
 }

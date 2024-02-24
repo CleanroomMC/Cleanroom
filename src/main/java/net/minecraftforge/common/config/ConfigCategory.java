@@ -388,6 +388,7 @@ public class ConfigCategory implements Map<String, Property>
     }
 
 
+
     //Map bouncer functions for compatibility with older mods, to be removed once all mods stop using it.
     @Override public int size(){ return properties.size(); }
     @Override public boolean isEmpty() { return properties.isEmpty(); }
