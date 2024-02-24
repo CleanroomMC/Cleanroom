@@ -8,11 +8,6 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 
 import java.util.Map;
 
-/**
- * @Project Cleanroom
- * @Author Hileb
- * @Date 2024/2/24 15:54
- **/
 public class CraftingFactoriesRegisterEvent extends Event {
     public CraftingFactoriesRegisterEvent(Map<ResourceLocation, IConditionFactory> m1, Map<ResourceLocation, IIngredientFactory> m2, Map<ResourceLocation, IRecipeFactory> m3){
         conditions=m1;
