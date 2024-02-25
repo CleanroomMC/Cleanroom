@@ -604,7 +604,7 @@ public class ForgeEventFactory
     }
 
     public static LivingSetAttackTargetEvent onLivingSetAttackTarget(EntityLiving living,EntityLivingBase target){
-        var evt=new LivingSetAttackTargetEvent(living,target);
+        var evt = new LivingSetAttackTargetEvent(living,target);
         MinecraftForge.EVENT_BUS.post(evt);
         return evt;
     }
