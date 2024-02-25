@@ -53,19 +53,23 @@ public class LivingSetAttackTargetEvent extends LivingEvent
     {
         super(entity);
         this.originalTarget = target;
-        this.redirectedTarget=null;
-        this.isRedirected=false;
+        this.redirectedTarget = null;
+        this.isRedirected = false;
     }
 
     public EntityLivingBase getTarget()
     {
         return isRedirected?redirectedTarget:originalTarget;
     }
+    
     public EntityLivingBase getOriginalTarget(){
         return originalTarget;
     }
+    
     public void redirect(EntityLivingBase living){
         this.redirectedTarget=living;
         this.isRedirected=true;
     }
+    
+    public boolean isRedirected(){ return this.isRedirected; }
 }
