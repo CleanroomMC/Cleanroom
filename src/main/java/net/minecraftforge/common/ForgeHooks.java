@@ -575,7 +575,7 @@ public class ForgeHooks
     @Deprecated
     public static void onLivingSetAttackTarget(EntityLivingBase entity, EntityLivingBase target)
     {
-        MinecraftForge.EVENT_BUS.post(new LivingSetAttackTargetEvent(entity,target));
+        MinecraftForge.EVENT_BUS.post(new LivingSetAttackTargetEvent(entity, target));
     }
 
     public static boolean onLivingUpdate(EntityLivingBase entity)
