@@ -457,7 +457,7 @@
      private void func_184668_a(int p_184668_1_)
      {
 +        p_184668_1_ = net.minecraftforge.event.ForgeEventFactory.getExperienceDrop(this, this.field_70717_bb, p_184668_1_);
-+        if(p_184668_1_>0)
++         
          while (p_184668_1_ > 0)
          {
              int i = EntityXPOrb.func_70527_a(p_184668_1_);
