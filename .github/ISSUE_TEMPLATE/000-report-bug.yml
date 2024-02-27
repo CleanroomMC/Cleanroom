@@ -1,0 +1,86 @@
+name: 🐛 Report Bug
+description: "Did something not work as expected?"
+body:
+  - type: markdown
+    attributes:
+      value: "A bug/crash report with sufficient information and logs to reproduce and track down."
+  - type: input
+    id: discord
+    attributes:
+      label: Your CleanroomMC Discord Username
+      description: Leave empty if you don't have one, but this will make it harder to contact you if we need additional info.
+      placeholder: "Example: Fake#1234"
+  - type: input
+    id: version
+    attributes:
+      label: Cleanroom Version
+      description: "What version of the Cleanroom are you using?"
+      placeholder: "Example: 15.24.0.3000"
+    validations:
+      required: true
+  - type: dropdown
+    id: java
+    attributes:
+      label: Java Version
+      description: What Java version are you using? It's worth mentioning that if you play on Java9+ you should try update to latest minor release (e.g. prefer Java 17.0.6 over 17.0.2) of that version.
+      options:
+        - Java 8
+        - Java 9
+        - Java 11
+        - Java 17
+        - Java 19
+        - Java 20
+        - Java 21
+        - Other (Please Specify)
+    validations:
+      required: true
+  - type: dropdown
+    id: graphics
+    attributes:
+      label: Graphics Card Vendor
+      description: What graphics card vendor are you using?
+      options:
+        - Other (Please Specify)
+        - NVidia
+        - AMD/ATI
+        - Intel iGPU
+        - AMD iGPU
+        - Mesa/Software
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: Bug Report
+      description: "Relevant information, as well as relevant logs attached such as `logs/latest.log` and `logs/debug.log`."
+      placeholder: "Example: https://mclo.gs/ OR submit the file to github by dragging it to this textbox."
+    validations:
+      required: true
+  - type: textarea
+    id: modlist
+    attributes:
+      label: Mod List
+      description: "List of mods, ideally a minimal reproducible set (can be retrieved from latest.log)."
+      placeholder: "List of mods goes here"
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: MMC Instance Notes
+      description: "Obtain from Notes sections if using MMC instance pack."
+      placeholder: "Notes goes here"
+    validations:
+      required: true
+  - type: checkboxes
+    id: final
+    attributes:
+      label: Final Checklist
+      description: Certify that you read things
+      options:
+        - label: "I have searched the issues and haven't found a similar issue."
+          required: true
+        - label: "I have read the known incompatibilities and this is not related to one of those."
+          required: true
+        - label: "I am running a test build from Cleanroom Github Actions.  (Or, if I've compiled it myself I plan to fix the issue)"
+          required: true
