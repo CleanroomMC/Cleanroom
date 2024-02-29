@@ -24,8 +24,11 @@ import static org.objectweb.asm.Opcodes.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.security.ProtectionDomain;
 import java.util.HashMap;
 
+import com.cleanroommc.bouncepad.Bouncepad;
+import com.cleanroommc.hackery.ReflectionHackery;
 import net.minecraftforge.fml.common.ModContainer;
 
 import org.apache.logging.log4j.ThreadContext;
@@ -34,13 +37,13 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
 import com.google.common.collect.Maps;
+import sun.security.util.SecurityConstants;
 
 public class ASMEventHandler implements IEventListener
 {
     private static int IDs = 0;
     private static final String HANDLER_DESC = Type.getInternalName(IEventListener.class);
     private static final String HANDLER_FUNC_DESC = Type.getMethodDescriptor(IEventListener.class.getDeclaredMethods()[0]);
-    private static final ASMClassLoader LOADER = new ASMClassLoader();
     private static final HashMap<Method, Class<?>> cache = Maps.newHashMap();
     private static final boolean GETCONTEXT = Boolean.parseBoolean(System.getProperty("fml.LogContext", "false"));
 
@@ -164,7 +167,8 @@ public class ASMEventHandler implements IEventListener
             mv.visitEnd();
         }
         cw.visitEnd();
-        Class<?> ret = LOADER.define(name, cw.toByteArray());
+        byte[] clazz = cw.toByteArray();
+        Class<?> ret = ReflectionHackery.unsafe.defineClass(name, clazz, 0, clazz.length, Bouncepad.classLoader, callback.getDeclaringClass().getProtectionDomain());
         cache.put(callback, ret);
         return ret;
     }
@@ -175,19 +179,6 @@ public class ASMEventHandler implements IEventListener
                 callback.getDeclaringClass().getSimpleName(),
                 callback.getName(),
                 callback.getParameterTypes()[0].getSimpleName());
-    }
-
-    private static class ASMClassLoader extends ClassLoader
-    {
-        private ASMClassLoader()
-        {
-            super(ASMClassLoader.class.getClassLoader());
-        }
-
-        public Class<?> define(String name, byte[] data)
-        {
-            return defineClass(name, data, 0, data.length);
-        }
     }
 
     public String toString()

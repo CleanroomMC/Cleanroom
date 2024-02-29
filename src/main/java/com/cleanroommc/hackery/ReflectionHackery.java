@@ -13,6 +13,8 @@ public final class ReflectionHackery {
 
     private static final Field field$modifiers;
     public static Unsafe unsafe;
+    public static final Method class$getDeclaredFields0;
+    public static final Method class$getDeclaredMethods0;
 
     static {
         Field modifiers;
@@ -32,18 +34,40 @@ public final class ReflectionHackery {
             unsafeField.setAccessible(true);
             unsafe = (Unsafe) unsafeField.get(null);
         } catch (Exception e) {}
+        try{
+            class$getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
+            class$getDeclaredFields0.setAccessible(true);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("could not cache getDeclaredFields0",e);
+        }
+        try{
+            class$getDeclaredMethods0 = Class.class.getDeclaredMethod("getDeclaredMethods0", boolean.class);
+            class$getDeclaredMethods0.setAccessible(true);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("could not cache getDeclaredMethods0",e);
+        }
     }
 
     // Sensitive fields such as "modifiers" are only query-able via the native getDeclaredFields0 call
     public static @Nullable Field deepSearchForField(Class<?> clazz, Predicate<Field> search, boolean setAccessible) throws ReflectiveOperationException {
-        Method getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class); // TODO: cache?
-        getDeclaredFields0.setAccessible(true);
-        for (Field declaredField : (Field[]) getDeclaredFields0.invoke(clazz, false)) {
+        for (Field declaredField : (Field[]) class$getDeclaredFields0.invoke(clazz, false)) {
             if (search.test(declaredField)) {
                 if (setAccessible) {
                     declaredField.setAccessible(true);
                 }
                 return declaredField;
+            }
+        }
+        return null;
+    }
+
+    public static @Nullable Method deepSearchForMethod(Class<?> clazz, Predicate<Method> search, boolean setAccessible) throws ReflectiveOperationException {
+        for (Method declaredMethod : (Method[]) class$getDeclaredMethods0.invoke(clazz, false)) {
+            if (search.test(declaredMethod)) {
+                if (setAccessible) {
+                    declaredMethod.setAccessible(true);
+                }
+                return declaredMethod;
             }
         }
         return null;
