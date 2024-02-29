@@ -166,7 +166,7 @@ public class ASMEventHandler implements IEventListener
         }
         cw.visitEnd();
         byte[] clazz = cw.toByteArray();
-        Class<?> ret = ReflectionHackery.unsafe.defineClass(name, clazz, 0, clazz.length, Bouncepad.classLoader, callback.getDeclaringClass().getProtectionDomain());
+        Class<?> ret = ReflectionHackery.unsafe.defineClass(name, clazz, 0, clazz.length, Bouncepad.classLoader, null);
         cache.put(callback, ret);
         return ret;
     }
