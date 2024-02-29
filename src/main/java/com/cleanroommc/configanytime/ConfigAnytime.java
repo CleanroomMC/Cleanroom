@@ -3,10 +3,10 @@ package com.cleanroommc.configanytime;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 
+@Deprecated
 public class ConfigAnytime {
     /**
-     * Register configuration class that is annotated with {@link Config} here for it to be processed immediately with saving and loading supported.
-     * Preferably call this method in a static init block at the very end of your configuration class.
+     * A wrapper of {@link ConfigManager#register(Class)}, created for compatibility.
      * @param configClass configuration class that is annotated with {@link Config}
      */
     public static void register(Class<?> configClass) {
