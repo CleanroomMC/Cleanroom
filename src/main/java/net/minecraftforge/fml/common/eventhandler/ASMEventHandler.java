@@ -24,7 +24,6 @@ import static org.objectweb.asm.Opcodes.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.security.ProtectionDomain;
 import java.util.HashMap;
 
 import com.cleanroommc.bouncepad.Bouncepad;
@@ -37,7 +36,6 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
 import com.google.common.collect.Maps;
-import sun.security.util.SecurityConstants;
 
 public class ASMEventHandler implements IEventListener
 {
