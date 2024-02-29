@@ -2,14 +2,14 @@ package net.minecraftforge.fml.common;
 
 import com.google.common.eventbus.EventBus;
 
-public final class MixinContainer extends DummyModContainer{
-    public MixinContainer() {
+public class ConfigAnyTimeContainer extends DummyModContainer{
+    public ConfigAnyTimeContainer() {
         super(new ModMetadata());
         ModMetadata meta = this.getMetadata();
-        meta.modId = "mixinbooter";
-        meta.name = "MixinBooter";
-        meta.description = "A Mixin library and loader.";
-        meta.version = "10.0";
+        meta.modId = "configanytime";
+        meta.name = "ConfigAnytime";
+        meta.description = "Allows Forge configurations to be setup at any point in time.";
+        meta.version = "2.0";
         meta.authorList.add("Rongmario");
     }
 
