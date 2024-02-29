@@ -2,8 +2,8 @@ package net.minecraftforge.fml.common;
 
 import com.google.common.eventbus.EventBus;
 
-public class ConfigAnyTimeContainer extends DummyModContainer{
-    public ConfigAnyTimeContainer() {
+public class ConfigAnytimeContainer extends DummyModContainer{
+    public ConfigAnytimeContainer() {
         super(new ModMetadata());
         ModMetadata meta = this.getMetadata();
         meta.modId = "configanytime";
