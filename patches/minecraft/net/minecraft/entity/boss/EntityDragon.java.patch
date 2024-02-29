@@ -452,7 +452,16 @@
          this.field_70177_z += 20.0F;
          this.field_70761_aq = this.field_70177_z;
  
-@@ -792,21 +684,21 @@
+@@ -772,6 +664,8 @@
+ 
+     private void func_184668_a(int p_184668_1_)
+     {
++        p_184668_1_ = net.minecraftforge.event.ForgeEventFactory.getExperienceDrop(this, this.field_70717_bb, p_184668_1_);
++         
+         while (p_184668_1_ > 0)
+         {
+             int i = EntityXPOrb.func_70527_a(p_184668_1_);
+@@ -792,21 +686,21 @@
  
                  if (i < 12)
                  {
@@ -480,7 +489,7 @@
                  }
  
                  int j1 = Math.max(this.field_70170_p.func_181545_F() + 10, this.field_70170_p.func_175672_r(new BlockPos(l, 0, i1)).func_177956_o() + j);
-@@ -969,7 +861,7 @@
+@@ -969,7 +863,7 @@
          }
          else
          {
@@ -489,7 +498,7 @@
  
              if (p_184666_3_ != null)
              {
-@@ -1008,14 +900,12 @@
+@@ -1008,14 +902,12 @@
          EntityLiving.func_189752_a(p_189755_0_, EntityDragon.class);
      }
  
@@ -504,7 +513,7 @@
      public void func_70037_a(NBTTagCompound p_70037_1_)
      {
          super.func_70037_a(p_70037_1_);
-@@ -1026,55 +916,46 @@
+@@ -1026,55 +918,46 @@
          }
      }
  
@@ -560,7 +569,7 @@
      protected ResourceLocation func_184647_J()
      {
          return LootTableList.field_191189_ay;
-@@ -1087,24 +968,27 @@
+@@ -1087,24 +970,27 @@
          PhaseList <? extends IPhase > phaselist = iphase.func_188652_i();
          double d0;
  
@@ -601,7 +610,7 @@
  
          return (float)d0;
      }
-@@ -1115,28 +999,31 @@
+@@ -1115,28 +1001,31 @@
          PhaseList <? extends IPhase > phaselist = iphase.func_188652_i();
          Vec3d vec3d;
  
@@ -651,7 +660,7 @@
          }
  
          return vec3d;
-@@ -1152,7 +1039,7 @@
+@@ -1152,7 +1041,7 @@
          }
          else
          {
@@ -660,7 +669,7 @@
          }
  
          if (p_184672_1_ == this.field_70992_bH)
-@@ -1163,12 +1050,11 @@
+@@ -1163,12 +1052,11 @@
          this.field_184677_bJ.func_188756_a().func_188655_a(p_184672_1_, p_184672_2_, p_184672_3_, entityplayer);
      }
  
@@ -674,7 +683,7 @@
          }
  
          super.func_184206_a(p_184206_1_);
-@@ -1185,18 +1071,15 @@
+@@ -1185,18 +1073,15 @@
          return this.field_184676_bI;
      }
  

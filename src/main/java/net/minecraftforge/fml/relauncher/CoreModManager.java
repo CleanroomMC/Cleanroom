@@ -130,7 +130,8 @@ public class CoreModManager {
         {
             FMLLog.log.debug("Injecting coremod {} \\{{}\\} class transformers", name, coreModInstance.getClass().getName());
             List<String> ts = Lists.newArrayList();
-            if (coreModInstance.getASMTransformerClass() != null) for (String transformer : coreModInstance.getASMTransformerClass())
+            String[] asmTransformerClass = coreModInstance.getASMTransformerClass();
+            if (asmTransformerClass != null) for (String transformer : asmTransformerClass)
             {
                 FMLLog.log.trace("Registering transformer {}", transformer);
                 classLoader.registerTransformer(ASMTransformerWrapper.getTransformerWrapper(classLoader, transformer, name));
@@ -146,7 +147,7 @@ public class CoreModManager {
             FMLLog.log.debug("Injection complete");
 
             FMLLog.log.debug("Running coremod plugin for {} \\{{}\\}", name, coreModInstance.getClass().getName());
-            Map<String, Object> data = new HashMap<String, Object>();
+            Map<String, Object> data = new HashMap<>();
             data.put("mcLocation", mcDir);
             data.put("coremodList", loadPlugins);
             data.put("runtimeDeobfuscationEnabled", !deobfuscatedEnvironment);
@@ -158,8 +159,8 @@ public class CoreModManager {
             {
                 try
                 {
-                    IFMLCallHook call = (IFMLCallHook) Class.forName(setupClass, true, classLoader).newInstance();
-                    Map<String, Object> callData = new HashMap<String, Object>();
+                    IFMLCallHook call = (IFMLCallHook) Class.forName(setupClass, true, classLoader).getConstructor().newInstance();
+                    Map<String, Object> callData = new HashMap<>();
                     callData.put("runtimeDeobfuscationEnabled", !deobfuscatedEnvironment);
                     callData.put("mcLocation", mcDir);
                     callData.put("classLoader", classLoader);
