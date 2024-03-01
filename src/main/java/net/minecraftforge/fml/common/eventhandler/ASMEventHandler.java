@@ -27,6 +27,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 
 import com.cleanroommc.bouncepad.Bouncepad;
+import com.cleanroommc.bouncepad.BouncepadClassLoader;
 import com.cleanroommc.hackery.ReflectionHackery;
 import net.minecraftforge.fml.common.ModContainer;
 
@@ -166,7 +167,7 @@ public class ASMEventHandler implements IEventListener
         }
         cw.visitEnd();
         byte[] clazz = cw.toByteArray();
-        Class<?> ret = ReflectionHackery.unsafe.defineClass(name, clazz, 0, clazz.length, Bouncepad.classLoader, null);
+        Class<?> ret = ((BouncepadClassLoader)Bouncepad.classLoader).define(name, clazz);
         cache.put(callback, ret);
         return ret;
     }
