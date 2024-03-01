@@ -167,7 +167,7 @@ public class ASMEventHandler implements IEventListener
         }
         cw.visitEnd();
         byte[] clazz = cw.toByteArray();
-        Class<?> ret = ((BouncepadClassLoader)Bouncepad.classLoader).define(name, clazz);
+        Class<?> ret = ((BouncepadClassLoader)Bouncepad.classLoader).defineClass(name, clazz);
         cache.put(callback, ret);
         return ret;
     }
