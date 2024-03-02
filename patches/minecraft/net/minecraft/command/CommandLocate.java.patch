@@ -1,0 +1,11 @@
+--- before/net/minecraft/command/CommandLocate.java
++++ after/net/minecraft/command/CommandLocate.java
+@@ -54,7 +54,7 @@
+     public List<String> func_184883_a(MinecraftServer p_184883_1_, ICommandSender p_184883_2_, String[] p_184883_3_, @Nullable BlockPos p_184883_4_)
+     {
+         return p_184883_3_.length == 1
+-               ? func_71530_a(p_184883_3_, new String[] {"Stronghold", "Monument", "Village", "Mansion", "EndCity", "Fortress", "Temple", "Mineshaft"})
++               ? func_71530_a(p_184883_3_, net.minecraft.world.gen.structure.MapGenStructureIO.getStartNames())
+                : Collections.emptyList();
+     }
+ }

@@ -32,6 +32,7 @@ public record SingleStructureProvider(MapGenStructure structure) implements IStr
     public BlockPos getNearestStructurePos(IChunkGenerator generator, World worldIn, String structureName, BlockPos position, boolean findUnexplored) {
         return structure.getNearestStructurePos(worldIn, position, findUnexplored);
     }
+
     @Override
     public boolean isInsideStructure(IChunkGenerator generator, World worldIn, String structureName, BlockPos pos){
         return structure.isInsideStructure(pos);
