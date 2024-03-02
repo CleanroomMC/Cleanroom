@@ -52,6 +52,8 @@
 
 There's an unofficial [template](https://github.com/kappa-maintainer/ExampleMod-1.12.2-FG5) exist. Note: You need to build before run.
 
+A porting guide is available in [Cleanroom wiki](https://cleanroommc.com/wiki/cleanroom-mod-development/introduction).
+
 ## Roadmap flow chart
 
 ```mermaid
