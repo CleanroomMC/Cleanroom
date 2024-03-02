@@ -45,7 +45,6 @@ import com.google.gson.JsonParseException;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockFarmland;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -110,8 +109,13 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.WorldProvider;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.GameType;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.storage.IChunkLoader;
+import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.storage.loot.LootEntry;
 import net.minecraft.world.storage.loot.LootTable;
 import net.minecraft.world.storage.loot.LootTableManager;
@@ -119,6 +123,7 @@ import net.minecraft.world.storage.loot.conditions.LootCondition;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.JsonContext;
 import net.minecraftforge.common.util.BlockSnapshot;
+import net.minecraftforge.common.world.structure.StructureAttachRegistry;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.DifficultyChangeEvent;
 import net.minecraftforge.event.ForgeEventFactory;
@@ -1511,5 +1516,26 @@ public class ForgeHooks
             if (entry != null) id = serializerRegistry.getID(entry);
         }
         return id;
+    }
+
+    public static void postGenerateChunk(IChunkGenerator generator, World world, Chunk chunk, int x, int z){
+        StructureAttachRegistry.postGenerateChunk(generator, world, chunk, x, z);
+    }
+
+    public static void postPopulateGenerate(IChunkGenerator generator, World world, int x, int z){
+        StructureAttachRegistry.postPopulate(generator, world, x, z);
+    }
+
+    public static BlockPos onGetNearestStructurePos(IChunkGenerator generator, World worldIn, String structureName, BlockPos position, boolean findUnexplored)
+    {
+        return StructureAttachRegistry.getNearestStructurePos(generator, worldIn, structureName, position, findUnexplored);
+    }
+
+    public static boolean isInsideStructure(IChunkGenerator generator, World worldIn, String structureName, BlockPos pos){
+        return StructureAttachRegistry.isInsideStructure(generator, worldIn, structureName, pos);
+    }
+
+    public static void onCreateChunkProvider(WorldServer worldServer, IChunkLoader loader ,WorldProvider provider, IChunkGenerator generator){
+        StructureAttachRegistry.newStructureCollectionFor(worldServer, generator);
     }
 }
