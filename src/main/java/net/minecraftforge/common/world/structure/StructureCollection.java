@@ -32,7 +32,7 @@ public class StructureCollection implements IStructureProvider, Iterable<IStruct
     }
 
     @Override
-    public void generate(IChunkGenerator generator, World world, ChunkPrimer chunk, int x, int z) {
+    public void generate(IChunkGenerator generator, World world,  ChunkPrimer chunk, int x, int z) {
         for(IStructureProvider structureProvider: providers.values()){
             structureProvider.generate(generator, world, chunk, x, z);
         }

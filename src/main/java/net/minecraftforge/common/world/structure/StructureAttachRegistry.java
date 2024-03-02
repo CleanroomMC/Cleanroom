@@ -18,6 +18,10 @@ public class StructureAttachRegistry {
         REGISTRY.put(chunkGenerator, collection);
         return collection;
     }
+    public static void recreateStructures(IChunkGenerator generator, World world, int x, int z){
+        StructureCollection collection = REGISTRY.get(generator);
+        if (collection != null) collection.generate(generator, world, null, x, z);
+    }
     public static void postGenerateChunk(IChunkGenerator generator, World world, Chunk chunk, int x, int z){
         ChunkPrimer chunkPrimer = new IStructureProvider.ChunkReflection(chunk, x, z);
         StructureCollection collection = REGISTRY.get(generator);

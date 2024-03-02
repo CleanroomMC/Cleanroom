@@ -116,6 +116,7 @@ import net.minecraft.world.GameType;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.IChunkLoader;
 import net.minecraft.world.gen.IChunkGenerator;
+import net.minecraft.world.gen.structure.MapGenStructureIO;
 import net.minecraft.world.storage.loot.LootEntry;
 import net.minecraft.world.storage.loot.LootTable;
 import net.minecraft.world.storage.loot.LootTableManager;
@@ -1537,5 +1538,8 @@ public class ForgeHooks
 
     public static void onCreateChunkProvider(WorldServer worldServer, IChunkLoader loader ,WorldProvider provider, IChunkGenerator generator){
         StructureAttachRegistry.newStructureCollectionFor(worldServer, generator);
+    }
+    public static void onRecreateStructures(IChunkGenerator generator, World world, int x , int z){
+        StructureAttachRegistry.recreateStructures(generator, world, x, z);
     }
 }

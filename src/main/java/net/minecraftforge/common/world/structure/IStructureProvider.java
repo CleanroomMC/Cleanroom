@@ -12,6 +12,9 @@ import net.minecraft.world.gen.IChunkGenerator;
 import javax.annotation.Nullable;
 import java.util.Random;
 
+/**
+ * If modder do not have their own special proposal. Use the base implement {@link SingleStructureProvider} is enough.
+ */
 public interface IStructureProvider {
     String getName() ;
 
@@ -21,11 +24,11 @@ public interface IStructureProvider {
      *
      * @param generator the {@link IChunkGenerator}
      * @param world the {@link World}
-     * @param chunk the {@link ChunkReflection}, a special {@link ChunkPrimer}
+     * @param chunk the {@link ChunkReflection}, a special {@link ChunkPrimer} , Nullable. if it is a null, it is recreating Structures
      * @param x the x of a chunk
      * @param z the z of a chunk
      */
-    void generate(IChunkGenerator generator, World world, ChunkPrimer chunk, int x, int z);
+    void generate(IChunkGenerator generator, World world, @Nullable ChunkPrimer chunk, int x, int z);
 
     /**
      * invoke after {@link IChunkGenerator#generateStructures(Chunk, int, int)}
@@ -53,6 +56,7 @@ public interface IStructureProvider {
     BlockPos getNearestStructurePos(IChunkGenerator generator,World worldIn, String structureName, BlockPos position, boolean findUnexplored);
 
     /**
+     * usually invoke {@link net.minecraft.world.gen.structure.MapGenStructure#isInsideStructure(BlockPos)}
      * @param generator
      * @param worldIn
      * @param structureName
