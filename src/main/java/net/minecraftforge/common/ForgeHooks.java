@@ -572,7 +572,7 @@ public class ForgeHooks
     //Optifine Helper Functions u.u, these are here specifically for Optifine
     //Note: When using Optifine, these methods are invoked using reflection, which
     //incurs a major performance penalty.
-    @Deprecated
+    @Deprecated(since = "15.24.0.3026")
     public static void onLivingSetAttackTarget(EntityLivingBase entity, EntityLivingBase target)
     {
         MinecraftForge.EVENT_BUS.post(new LivingSetAttackTargetEvent(entity, target));
