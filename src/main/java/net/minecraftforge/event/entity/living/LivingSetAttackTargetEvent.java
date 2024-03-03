@@ -30,7 +30,7 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable;
  * This event is fired whenever an Entity sets a target to attack in
  * {@link EntityLiving#setAttackTarget(EntityLivingBase)}.<br>
  * <br>
- * This event is fired via the {@link ForgeHooks#onLivingSetAttackTarget(EntityLivingBase, EntityLivingBase)}.<br>
+ * This event is fired via the {@link ForgeHooks#onLivingSetAttackTarget(EntityLiving, EntityLivingBase)}.<br>
  * <br>
  * {@link #originalTarget} contains the newly targeted Entity.<br>
  * <br>

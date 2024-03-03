@@ -578,6 +578,14 @@ public class ForgeHooks
         MinecraftForge.EVENT_BUS.post(new LivingSetAttackTargetEvent(entity, target));
     }
 
+    public static EntityLivingBase onLivingSetAttackTarget(EntityLiving living, EntityLivingBase target)
+    {
+        LivingSetAttackTargetEvent event = new LivingSetAttackTargetEvent(living, target);
+        if (MinecraftForge.EVENT_BUS.post(event)){
+            return living.getAttackTarget();
+        }else return event.getTarget();
+    }
+
     public static boolean onLivingUpdate(EntityLivingBase entity)
     {
         return MinecraftForge.EVENT_BUS.post(new LivingUpdateEvent(entity));
