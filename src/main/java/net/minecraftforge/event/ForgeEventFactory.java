@@ -603,12 +603,6 @@ public class ForgeEventFactory
         return (MinecraftForge.EVENT_BUS.post(event) ? 0 : event.getAmount());
     }
 
-    public static LivingSetAttackTargetEvent onLivingSetAttackTarget(EntityLiving living,EntityLivingBase target){
-        var evt = new LivingSetAttackTargetEvent(living,target);
-        MinecraftForge.EVENT_BUS.post(evt);
-        return evt;
-    }
-
     public static boolean onPotionAttemptBrew(NonNullList<ItemStack> stacks)
     {
         NonNullList<ItemStack> tmp = NonNullList.withSize(stacks.size(), ItemStack.EMPTY);
