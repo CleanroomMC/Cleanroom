@@ -49,173 +49,70 @@
      }
  
      protected EntityBodyHelper func_184650_s()
-@@ -170,87 +169,86 @@
- 
+@@ -171,6 +170,7 @@
      public void func_70624_b(@Nullable EntityLivingBase p_70624_1_)
      {
--        this.field_70696_bz = p_70624_1_;
--    }
--
--    public boolean func_70686_a(Class <? extends EntityLivingBase > p_70686_1_)
--    {
--        return p_70686_1_ != EntityGhast.class;
--    }
--
--    public void func_70615_aA()
--    {
--    }
--
--    @Override
--    protected void func_70088_a()
--    {
--        super.func_70088_a();
--        this.field_70180_af.func_187214_a(field_184654_a, (byte)0);
--    }
--
--    public int func_70627_aG()
-+        var evt = net.minecraftforge.event.ForgeEventFactory.onLivingSetAttackTarget(this,p_70624_1_);
-+        if (!evt.isCanceled()){
-+            this.attackTarget = evt.getTarget();
-+        }
-+    }
-+
-+    public boolean canAttackClass(Class <? extends EntityLivingBase > cls)
-+    {
-+        return cls != EntityGhast.class;
-+    }
-+
-+    public void eatGrassBonus()
-+    {
-+    }
-+
-+    protected void entityInit()
-+    {
-+        super.entityInit();
-+        this.dataManager.register(AI_FLAGS, Byte.valueOf((byte)0));
-+    }
-+
-+    public int getTalkInterval()
-     {
-         return 80;
+         this.field_70696_bz = p_70624_1_;
++        net.minecraftforge.common.ForgeHooks.onLivingSetAttackTarget(this, p_70624_1_);
      }
- 
--    public void func_70642_aH()
-+    public void playLivingSound()
+
+     public boolean func_70686_a(Class <? extends EntityLivingBase > p_70686_1_)
+@@ -182,11 +182,10 @@
      {
--        SoundEvent soundevent = this.func_184639_G();
-+        SoundEvent soundevent = this.getAmbientSound();
- 
-         if (soundevent != null)
-         {
--            this.func_184185_a(soundevent, this.func_70599_aP(), this.func_70647_i());
--        }
--    }
--
+     }
+
 -    @Override
--    public void func_70030_z()
--    {
--        super.func_70030_z();
--        this.field_70170_p.field_72984_F.func_76320_a("mobBaseTick");
--
--        if (this.func_70089_S() && this.field_70146_Z.nextInt(1000) < this.field_70757_a++)
--        {
--            this.func_175456_n();
--            this.func_70642_aH();
--        }
--
--        this.field_70170_p.field_72984_F.func_76319_b();
--    }
--
+     protected void func_70088_a()
+     {
+         super.func_70088_a();
+-        this.field_70180_af.func_187214_a(field_184654_a, (byte)0);
++        this.field_70180_af.func_187214_a(field_184654_a, Byte.valueOf((byte)0));
+     }
+
+     public int func_70627_aG()
+@@ -204,7 +203,6 @@
+         }
+     }
+
 -    @Override
--    protected void func_184581_c(DamageSource p_184581_1_)
--    {
--        this.func_175456_n();
--        super.func_184581_c(p_184581_1_);
--    }
--
--    private void func_175456_n()
--    {
--        this.field_70757_a = -this.func_70627_aG();
--    }
--
+     public void func_70030_z()
+     {
+         super.func_70030_z();
+@@ -219,7 +217,6 @@
+         this.field_70170_p.field_72984_F.func_76319_b();
+     }
+
 -    @Override
--    protected int func_70693_a(EntityPlayer p_70693_1_)
--    {
--        if (this.field_70728_aV > 0)
--        {
--            int i = this.field_70728_aV;
--
--            for (int j = 0; j < this.field_184657_bw.size(); ++j)
-+            this.playSound(soundevent, this.getSoundVolume(), this.getSoundPitch());
-+        }
-+    }
-+
-+    public void onEntityUpdate()
-+    {
-+        super.onEntityUpdate();
-+        this.world.profiler.startSection("mobBaseTick");
-+
-+        if (this.isEntityAlive() && this.rand.nextInt(1000) < this.livingSoundTime++)
-+        {
-+            this.applyEntityAI();
-+            this.playLivingSound();
-+        }
-+
-+        this.world.profiler.endSection();
-+    }
-+
-+    protected void playHurtSound(DamageSource source)
-+    {
-+        this.applyEntityAI();
-+        super.playHurtSound(source);
-+    }
-+
-+    private void applyEntityAI()
-+    {
-+        this.livingSoundTime = -this.getTalkInterval();
-+    }
-+
-+    protected int getExperiencePoints(EntityPlayer player)
-+    {
-+        if (this.experienceValue > 0)
-+        {
-+            int i = this.experienceValue;
-+
-+            for (int j = 0; j < this.inventoryArmor.size(); ++j)
+     protected void func_184581_c(DamageSource p_184581_1_)
+     {
+         this.func_175456_n();
+@@ -231,7 +228,6 @@
+         this.field_70757_a = -this.func_70627_aG();
+     }
+
+-    @Override
+     protected int func_70693_a(EntityPlayer p_70693_1_)
+     {
+         if (this.field_70728_aV > 0)
+@@ -240,7 +236,7 @@
+
+             for (int j = 0; j < this.field_184657_bw.size(); ++j)
              {
 -                if (!this.field_184657_bw.get(j).func_190926_b() && this.field_184655_bs[j] <= 1.0F)
-+                if (!((ItemStack)this.inventoryArmor.get(j)).isEmpty() && this.inventoryArmorDropChances[j] <= 1.0F)
++                if (!((ItemStack)this.field_184657_bw.get(j)).func_190926_b() && this.field_184655_bs[j] <= 1.0F)
                  {
--                    i += 1 + this.field_70146_Z.nextInt(3);
-+                    i += 1 + this.rand.nextInt(3);
+                     i += 1 + this.field_70146_Z.nextInt(3);
                  }
-             }
- 
--            for (int k = 0; k < this.field_184656_bv.size(); ++k)
-+            for (int k = 0; k < this.inventoryHands.size(); ++k)
+@@ -248,7 +244,7 @@
+
+             for (int k = 0; k < this.field_184656_bv.size(); ++k)
              {
 -                if (!this.field_184656_bv.get(k).func_190926_b() && this.field_82174_bp[k] <= 1.0F)
-+                if (!((ItemStack)this.inventoryHands.get(k)).isEmpty() && this.inventoryHandsDropChances[k] <= 1.0F)
++                if (!((ItemStack)this.field_184656_bv.get(k)).func_190926_b() && this.field_82174_bp[k] <= 1.0F)
                  {
--                    i += 1 + this.field_70146_Z.nextInt(3);
-+                    i += 1 + this.rand.nextInt(3);
+                     i += 1 + this.field_70146_Z.nextInt(3);
                  }
-             }
- 
-@@ -258,419 +256,397 @@
-         }
-         else
-         {
--            return this.field_70728_aV;
-+            return this.experienceValue;
-         }
-     }
- 
--    public void func_70656_aK()
-+    public void spawnExplosionParticle()
-     {
--        if (this.field_70170_p.field_72995_K)
-+        if (this.world.isRemote)
+@@ -268,20 +264,11 @@
          {
              for (int i = 0; i < 20; ++i)
              {
@@ -233,1188 +130,339 @@
 -                    d1,
 -                    d2
 -                );
-+                double d0 = this.rand.nextGaussian() * 0.02D;
-+                double d1 = this.rand.nextGaussian() * 0.02D;
-+                double d2 = this.rand.nextGaussian() * 0.02D;
++                double d0 = this.field_70146_Z.nextGaussian() * 0.02D;
++                double d1 = this.field_70146_Z.nextGaussian() * 0.02D;
++                double d2 = this.field_70146_Z.nextGaussian() * 0.02D;
 +                double d3 = 10.0D;
-+                this.world.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width - d0 * 10.0D, this.posY + (double)(this.rand.nextFloat() * this.height) - d1 * 10.0D, this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width - d2 * 10.0D, d0, d1, d2);
++                this.field_70170_p.func_175688_a(EnumParticleTypes.EXPLOSION_NORMAL, this.field_70165_t + (double)(this.field_70146_Z.nextFloat() * this.field_70130_N * 2.0F) - (double)this.field_70130_N - d0 * 10.0D, this.field_70163_u + (double)(this.field_70146_Z.nextFloat() * this.field_70131_O) - d1 * 10.0D, this.field_70161_v + (double)(this.field_70146_Z.nextFloat() * this.field_70130_N * 2.0F) - (double)this.field_70130_N - d2 * 10.0D, d0, d1, d2);
              }
          }
          else
-         {
--            this.field_70170_p.func_72960_a(this, (byte)20);
-+            this.world.setEntityState(this, (byte)20);
-         }
+@@ -291,7 +278,6 @@
      }
- 
+
      @SideOnly(Side.CLIENT)
 -    @Override
--    public void func_70103_a(byte p_70103_1_)
-+    public void handleStatusUpdate(byte id)
+     public void func_70103_a(byte p_70103_1_)
      {
--        if (p_70103_1_ == 20)
-+        if (id == 20)
-         {
--            this.func_70656_aK();
-+            this.spawnExplosionParticle();
-         }
-         else
-         {
--            super.func_70103_a(p_70103_1_);
-+            super.handleStatusUpdate(id);
+         if (p_70103_1_ == 20)
+@@ -304,7 +290,6 @@
          }
      }
- 
+
 -    @Override
--    public void func_70071_h_()
-+    public void onUpdate()
+     public void func_70071_h_()
      {
--        super.func_70071_h_();
-+        super.onUpdate();
- 
--        if (!this.field_70170_p.field_72995_K)
-+        if (!this.world.isRemote)
-         {
--            this.func_110159_bB();
-+            this.updateLeashedState();
- 
--            if (this.field_70173_aa % 5 == 0)
-+            if (this.ticksExisted % 5 == 0)
-             {
--                boolean flag = !(this.func_184179_bs() instanceof EntityLiving);
--                boolean flag1 = !(this.func_184187_bx() instanceof EntityBoat);
--                this.field_70714_bg.func_188527_a(1, flag);
--                this.field_70714_bg.func_188527_a(4, flag && flag1);
--                this.field_70714_bg.func_188527_a(2, flag);
-+                boolean flag = !(this.getControllingPassenger() instanceof EntityLiving);
-+                boolean flag1 = !(this.getRidingEntity() instanceof EntityBoat);
-+                this.tasks.setControlFlag(1, flag);
-+                this.tasks.setControlFlag(4, flag && flag1);
-+                this.tasks.setControlFlag(2, flag);
-             }
+         super.func_70071_h_();
+@@ -324,7 +309,6 @@
          }
      }
- 
+
 -    @Override
--    protected float func_110146_f(float p_110146_1_, float p_110146_2_)
-+    protected float updateDistance(float p_110146_1_, float p_110146_2_)
+     protected float func_110146_f(float p_110146_1_, float p_110146_2_)
      {
--        this.field_70762_j.func_75664_a();
-+        this.bodyHelper.updateRenderAngles();
-         return p_110146_2_;
-     }
- 
-     @Nullable
--    protected SoundEvent func_184639_G()
-+    protected SoundEvent getAmbientSound()
-     {
+         this.field_70762_j.func_75664_a();
+@@ -343,7 +327,6 @@
          return null;
      }
- 
-     @Nullable
--    protected Item func_146068_u()
-+    protected Item getDropItem()
-     {
-         return null;
-     }
- 
+
 -    @Override
--    protected void func_70628_a(boolean p_70628_1_, int p_70628_2_)
-+    protected void dropFewItems(boolean wasRecentlyHit, int lootingModifier)
+     protected void func_70628_a(boolean p_70628_1_, int p_70628_2_)
      {
--        Item item = this.func_146068_u();
-+        Item item = this.getDropItem();
- 
-         if (item != null)
-         {
--            int i = this.field_70146_Z.nextInt(3);
-+            int i = this.rand.nextInt(3);
- 
--            if (p_70628_2_ > 0)
-+            if (lootingModifier > 0)
-             {
--                i += this.field_70146_Z.nextInt(p_70628_2_ + 1);
-+                i += this.rand.nextInt(lootingModifier + 1);
-             }
- 
-             for (int j = 0; j < i; ++j)
-             {
--                this.func_145779_a(item, 1);
-+                this.dropItem(item, 1);
-             }
-         }
-     }
- 
--    public static void func_189752_a(DataFixer p_189752_0_, Class<?> p_189752_1_)
-+    public static void registerFixesMob(DataFixer fixer, Class<?> name)
+         Item item = this.func_146068_u();
+@@ -366,10 +349,9 @@
+
+     public static void func_189752_a(DataFixer p_189752_0_, Class<?> p_189752_1_)
      {
 -        p_189752_0_.func_188258_a(FixTypes.ENTITY, new ItemStackDataLists(p_189752_1_, "ArmorItems", "HandItems"));
-+        fixer.registerWalker(FixTypes.ENTITY, new ItemStackDataLists(name, new String[] {"ArmorItems", "HandItems"}));
++        p_189752_0_.func_188258_a(FixTypes.ENTITY, new ItemStackDataLists(p_189752_1_, new String[] {"ArmorItems", "HandItems"}));
      }
- 
+
 -    @Override
--    public void func_70014_b(NBTTagCompound p_70014_1_)
-+    public void writeEntityToNBT(NBTTagCompound compound)
+     public void func_70014_b(NBTTagCompound p_70014_1_)
      {
--        super.func_70014_b(p_70014_1_);
--        p_70014_1_.func_74757_a("CanPickUpLoot", this.func_98052_bS());
--        p_70014_1_.func_74757_a("PersistenceRequired", this.field_82179_bU);
-+        super.writeEntityToNBT(compound);
-+        compound.setBoolean("CanPickUpLoot", this.canPickUpLoot());
-+        compound.setBoolean("PersistenceRequired", this.persistenceRequired);
-         NBTTagList nbttaglist = new NBTTagList();
- 
--        for (ItemStack itemstack : this.field_184657_bw)
-+        for (ItemStack itemstack : this.inventoryArmor)
-         {
-             NBTTagCompound nbttagcompound = new NBTTagCompound();
- 
--            if (!itemstack.func_190926_b())
-+            if (!itemstack.isEmpty())
-             {
--                itemstack.func_77955_b(nbttagcompound);
-+                itemstack.writeToNBT(nbttagcompound);
-             }
- 
--            nbttaglist.func_74742_a(nbttagcompound);
-+            nbttaglist.appendTag(nbttagcompound);
-         }
- 
--        p_70014_1_.func_74782_a("ArmorItems", nbttaglist);
-+        compound.setTag("ArmorItems", nbttaglist);
-         NBTTagList nbttaglist1 = new NBTTagList();
- 
--        for (ItemStack itemstack1 : this.field_184656_bv)
-+        for (ItemStack itemstack1 : this.inventoryHands)
-         {
-             NBTTagCompound nbttagcompound1 = new NBTTagCompound();
- 
--            if (!itemstack1.func_190926_b())
-+            if (!itemstack1.isEmpty())
-             {
--                itemstack1.func_77955_b(nbttagcompound1);
-+                itemstack1.writeToNBT(nbttagcompound1);
-             }
- 
--            nbttaglist1.func_74742_a(nbttagcompound1);
-+            nbttaglist1.appendTag(nbttagcompound1);
-         }
- 
--        p_70014_1_.func_74782_a("HandItems", nbttaglist1);
-+        compound.setTag("HandItems", nbttaglist1);
-         NBTTagList nbttaglist2 = new NBTTagList();
- 
--        for (float f : this.field_184655_bs)
-+        for (float f : this.inventoryArmorDropChances)
-         {
--            nbttaglist2.func_74742_a(new NBTTagFloat(f));
-+            nbttaglist2.appendTag(new NBTTagFloat(f));
-         }
- 
--        p_70014_1_.func_74782_a("ArmorDropChances", nbttaglist2);
-+        compound.setTag("ArmorDropChances", nbttaglist2);
-         NBTTagList nbttaglist3 = new NBTTagList();
- 
--        for (float f1 : this.field_82174_bp)
-+        for (float f1 : this.inventoryHandsDropChances)
-         {
--            nbttaglist3.func_74742_a(new NBTTagFloat(f1));
-+            nbttaglist3.appendTag(new NBTTagFloat(f1));
-         }
- 
--        p_70014_1_.func_74782_a("HandDropChances", nbttaglist3);
--        p_70014_1_.func_74757_a("Leashed", this.field_110169_bv);
-+        compound.setTag("HandDropChances", nbttaglist3);
-+        compound.setBoolean("Leashed", this.isLeashed);
- 
--        if (this.field_110168_bw != null)
-+        if (this.leashHolder != null)
-         {
-             NBTTagCompound nbttagcompound2 = new NBTTagCompound();
- 
--            if (this.field_110168_bw instanceof EntityLivingBase)
--            {
--                UUID uuid = this.field_110168_bw.func_110124_au();
--                nbttagcompound2.func_186854_a("UUID", uuid);
--            }
--            else if (this.field_110168_bw instanceof EntityHanging)
--            {
--                BlockPos blockpos = ((EntityHanging)this.field_110168_bw).func_174857_n();
--                nbttagcompound2.func_74768_a("X", blockpos.func_177958_n());
--                nbttagcompound2.func_74768_a("Y", blockpos.func_177956_o());
--                nbttagcompound2.func_74768_a("Z", blockpos.func_177952_p());
--            }
--
--            p_70014_1_.func_74782_a("Leash", nbttagcompound2);
--        }
--
--        p_70014_1_.func_74757_a("LeftHanded", this.func_184638_cS());
--
--        if (this.field_184659_bA != null)
--        {
--            p_70014_1_.func_74778_a("DeathLootTable", this.field_184659_bA.toString());
--
--            if (this.field_184653_bB != 0L)
--            {
--                p_70014_1_.func_74772_a("DeathLootTableSeed", this.field_184653_bB);
--            }
--        }
--
--        if (this.func_175446_cd())
--        {
--            p_70014_1_.func_74757_a("NoAI", this.func_175446_cd());
-+            if (this.leashHolder instanceof EntityLivingBase)
-+            {
-+                UUID uuid = this.leashHolder.getUniqueID();
-+                nbttagcompound2.setUniqueId("UUID", uuid);
-+            }
-+            else if (this.leashHolder instanceof EntityHanging)
-+            {
-+                BlockPos blockpos = ((EntityHanging)this.leashHolder).getHangingPosition();
-+                nbttagcompound2.setInteger("X", blockpos.getX());
-+                nbttagcompound2.setInteger("Y", blockpos.getY());
-+                nbttagcompound2.setInteger("Z", blockpos.getZ());
-+            }
-+
-+            compound.setTag("Leash", nbttagcompound2);
-+        }
-+
-+        compound.setBoolean("LeftHanded", this.isLeftHanded());
-+
-+        if (this.deathLootTable != null)
-+        {
-+            compound.setString("DeathLootTable", this.deathLootTable.toString());
-+
-+            if (this.deathLootTableSeed != 0L)
-+            {
-+                compound.setLong("DeathLootTableSeed", this.deathLootTableSeed);
-+            }
-+        }
-+
-+        if (this.isAIDisabled())
-+        {
-+            compound.setBoolean("NoAI", this.isAIDisabled());
+         super.func_70014_b(p_70014_1_);
+@@ -461,7 +443,6 @@
          }
      }
- 
+
 -    @Override
--    public void func_70037_a(NBTTagCompound p_70037_1_)
-+    public void readEntityFromNBT(NBTTagCompound compound)
+     public void func_70037_a(NBTTagCompound p_70037_1_)
      {
--        super.func_70037_a(p_70037_1_);
--
--        if (p_70037_1_.func_150297_b("CanPickUpLoot", 1))
--        {
--            this.func_98053_h(p_70037_1_.func_74767_n("CanPickUpLoot"));
--        }
--
--        this.field_82179_bU = p_70037_1_.func_74767_n("PersistenceRequired");
--
--        if (p_70037_1_.func_150297_b("ArmorItems", 9))
--        {
--            NBTTagList nbttaglist = p_70037_1_.func_150295_c("ArmorItems", 10);
--
--            for (int i = 0; i < this.field_184657_bw.size(); ++i)
--            {
--                this.field_184657_bw.set(i, new ItemStack(nbttaglist.func_150305_b(i)));
--            }
--        }
--
--        if (p_70037_1_.func_150297_b("HandItems", 9))
--        {
--            NBTTagList nbttaglist1 = p_70037_1_.func_150295_c("HandItems", 10);
--
--            for (int j = 0; j < this.field_184656_bv.size(); ++j)
--            {
--                this.field_184656_bv.set(j, new ItemStack(nbttaglist1.func_150305_b(j)));
--            }
--        }
--
--        if (p_70037_1_.func_150297_b("ArmorDropChances", 9))
--        {
--            NBTTagList nbttaglist2 = p_70037_1_.func_150295_c("ArmorDropChances", 5);
--
--            for (int k = 0; k < nbttaglist2.func_74745_c(); ++k)
--            {
--                this.field_184655_bs[k] = nbttaglist2.func_150308_e(k);
--            }
--        }
--
--        if (p_70037_1_.func_150297_b("HandDropChances", 9))
--        {
--            NBTTagList nbttaglist3 = p_70037_1_.func_150295_c("HandDropChances", 5);
--
--            for (int l = 0; l < nbttaglist3.func_74745_c(); ++l)
--            {
--                this.field_82174_bp[l] = nbttaglist3.func_150308_e(l);
--            }
--        }
--
--        this.field_110169_bv = p_70037_1_.func_74767_n("Leashed");
--
--        if (this.field_110169_bv && p_70037_1_.func_150297_b("Leash", 10))
--        {
--            this.field_110170_bx = p_70037_1_.func_74775_l("Leash");
--        }
--
--        this.func_184641_n(p_70037_1_.func_74767_n("LeftHanded"));
--
--        if (p_70037_1_.func_150297_b("DeathLootTable", 8))
--        {
--            this.field_184659_bA = new ResourceLocation(p_70037_1_.func_74779_i("DeathLootTable"));
--            this.field_184653_bB = p_70037_1_.func_74763_f("DeathLootTableSeed");
--        }
--
--        this.func_94061_f(p_70037_1_.func_74767_n("NoAI"));
-+        super.readEntityFromNBT(compound);
-+
-+        if (compound.hasKey("CanPickUpLoot", 1))
-+        {
-+            this.setCanPickUpLoot(compound.getBoolean("CanPickUpLoot"));
-+        }
-+
-+        this.persistenceRequired = compound.getBoolean("PersistenceRequired");
-+
-+        if (compound.hasKey("ArmorItems", 9))
-+        {
-+            NBTTagList nbttaglist = compound.getTagList("ArmorItems", 10);
-+
-+            for (int i = 0; i < this.inventoryArmor.size(); ++i)
-+            {
-+                this.inventoryArmor.set(i, new ItemStack(nbttaglist.getCompoundTagAt(i)));
-+            }
-+        }
-+
-+        if (compound.hasKey("HandItems", 9))
-+        {
-+            NBTTagList nbttaglist1 = compound.getTagList("HandItems", 10);
-+
-+            for (int j = 0; j < this.inventoryHands.size(); ++j)
-+            {
-+                this.inventoryHands.set(j, new ItemStack(nbttaglist1.getCompoundTagAt(j)));
-+            }
-+        }
-+
-+        if (compound.hasKey("ArmorDropChances", 9))
-+        {
-+            NBTTagList nbttaglist2 = compound.getTagList("ArmorDropChances", 5);
-+
-+            for (int k = 0; k < nbttaglist2.tagCount(); ++k)
-+            {
-+                this.inventoryArmorDropChances[k] = nbttaglist2.getFloatAt(k);
-+            }
-+        }
-+
-+        if (compound.hasKey("HandDropChances", 9))
-+        {
-+            NBTTagList nbttaglist3 = compound.getTagList("HandDropChances", 5);
-+
-+            for (int l = 0; l < nbttaglist3.tagCount(); ++l)
-+            {
-+                this.inventoryHandsDropChances[l] = nbttaglist3.getFloatAt(l);
-+            }
-+        }
-+
-+        this.isLeashed = compound.getBoolean("Leashed");
-+
-+        if (this.isLeashed && compound.hasKey("Leash", 10))
-+        {
-+            this.leashNBTTag = compound.getCompoundTag("Leash");
-+        }
-+
-+        this.setLeftHanded(compound.getBoolean("LeftHanded"));
-+
-+        if (compound.hasKey("DeathLootTable", 8))
-+        {
-+            this.deathLootTable = new ResourceLocation(compound.getString("DeathLootTable"));
-+            this.deathLootTableSeed = compound.getLong("DeathLootTableSeed");
-+        }
-+
-+        this.setNoAI(compound.getBoolean("NoAI"));
-     }
- 
-     @Nullable
--    protected ResourceLocation func_184647_J()
-+    protected ResourceLocation getLootTable()
-     {
+         super.func_70037_a(p_70037_1_);
+@@ -537,7 +518,6 @@
          return null;
      }
- 
+
 -    @Override
--    protected void func_184610_a(boolean p_184610_1_, int p_184610_2_, DamageSource p_184610_3_)
-+    protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source)
+     protected void func_184610_a(boolean p_184610_1_, int p_184610_2_, DamageSource p_184610_3_)
      {
--        ResourceLocation resourcelocation = this.field_184659_bA;
-+        ResourceLocation resourcelocation = this.deathLootTable;
- 
-         if (resourcelocation == null)
+         ResourceLocation resourcelocation = this.field_184659_bA;
+@@ -551,16 +531,14 @@
          {
--            resourcelocation = this.func_184647_J();
-+            resourcelocation = this.getLootTable();
-         }
- 
-         if (resourcelocation != null)
-         {
--            LootTable loottable = this.field_70170_p.func_184146_ak().func_186521_a(resourcelocation);
--            this.field_184659_bA = null;
+             LootTable loottable = this.field_70170_p.func_184146_ak().func_186521_a(resourcelocation);
+             this.field_184659_bA = null;
 -            LootContext.Builder lootcontext$builder = new LootContext.Builder((WorldServer)this.field_70170_p).func_186472_a(this).func_186473_a(p_184610_3_);
--
--            if (p_184610_1_ && this.field_70717_bb != null)
--            {
--                lootcontext$builder = lootcontext$builder.func_186470_a(this.field_70717_bb).func_186469_a(this.field_70717_bb.func_184817_da());
--            }
--
++            LootContext.Builder lootcontext$builder = (new LootContext.Builder((WorldServer)this.field_70170_p)).func_186472_a(this).func_186473_a(p_184610_3_);
+
+             if (p_184610_1_ && this.field_70717_bb != null)
+             {
+                 lootcontext$builder = lootcontext$builder.func_186470_a(this.field_70717_bb).func_186469_a(this.field_70717_bb.func_184817_da());
+             }
+
 -            for (ItemStack itemstack : loottable.func_186462_a(
 -                        this.field_184653_bB == 0L ? this.field_70146_Z : new Random(this.field_184653_bB), lootcontext$builder.func_186471_a()
 -                    ))
--            {
--                this.func_70099_a(itemstack, 0.0F);
--            }
--
--            this.func_82160_b(p_184610_1_, p_184610_2_);
-+            LootTable loottable = this.world.getLootTableManager().getLootTableFromLocation(resourcelocation);
-+            this.deathLootTable = null;
-+            LootContext.Builder lootcontext$builder = (new LootContext.Builder((WorldServer)this.world)).withLootedEntity(this).withDamageSource(source);
-+
-+            if (wasRecentlyHit && this.attackingPlayer != null)
-+            {
-+                lootcontext$builder = lootcontext$builder.withPlayer(this.attackingPlayer).withLuck(this.attackingPlayer.getLuck());
-+            }
-+
-+            for (ItemStack itemstack : loottable.generateLootForPools(this.deathLootTableSeed == 0L ? this.rand : new Random(this.deathLootTableSeed), lootcontext$builder.build()))
-+            {
-+                this.entityDropItem(itemstack, 0.0F);
-+            }
-+
-+            this.dropEquipment(wasRecentlyHit, lootingModifier);
-         }
-         else
-         {
--            super.func_184610_a(p_184610_1_, p_184610_2_, p_184610_3_);
-+            super.dropLoot(wasRecentlyHit, lootingModifier, source);
-         }
++            for (ItemStack itemstack : loottable.func_186462_a(this.field_184653_bB == 0L ? this.field_70146_Z : new Random(this.field_184653_bB), lootcontext$builder.func_186471_a()))
+             {
+                 this.func_70099_a(itemstack, 0.0F);
+             }
+@@ -588,22 +566,20 @@
+         this.field_70702_br = p_184646_1_;
      }
- 
--    public void func_191989_p(float p_191989_1_)
--    {
--        this.field_191988_bg = p_191989_1_;
--    }
--
--    public void func_70657_f(float p_70657_1_)
--    {
--        this.field_70701_bs = p_70657_1_;
--    }
--
--    public void func_184646_p(float p_184646_1_)
--    {
--        this.field_70702_br = p_184646_1_;
--    }
--
+
 -    @Override
--    public void func_70659_e(float p_70659_1_)
--    {
--        super.func_70659_e(p_70659_1_);
--        this.func_191989_p(p_70659_1_);
--    }
--
+     public void func_70659_e(float p_70659_1_)
+     {
+         super.func_70659_e(p_70659_1_);
+         this.func_191989_p(p_70659_1_);
+     }
+
 -    @Override
--    public void func_70636_d()
--    {
--        super.func_70636_d();
--        this.field_70170_p.field_72984_F.func_76320_a("looting");
--
+     public void func_70636_d()
+     {
+         super.func_70636_d();
+         this.field_70170_p.field_72984_F.func_76320_a("looting");
+
 -        if (!this.field_70170_p.field_72995_K && this.func_98052_bS() && !this.field_70729_aU && this.field_70170_p.func_82736_K().func_82766_b("mobGriefing"))
-+    public void setMoveForward(float amount)
-+    {
-+        this.moveForward = amount;
-+    }
-+
-+    public void setMoveVertical(float amount)
-+    {
-+        this.moveVertical = amount;
-+    }
-+
-+    public void setMoveStrafing(float amount)
-+    {
-+        this.moveStrafing = amount;
-+    }
-+
-+    public void setAIMoveSpeed(float speedIn)
-+    {
-+        super.setAIMoveSpeed(speedIn);
-+        this.setMoveForward(speedIn);
-+    }
-+
-+    public void onLivingUpdate()
-+    {
-+        super.onLivingUpdate();
-+        this.world.profiler.startSection("looting");
-+
-+        if (!this.world.isRemote && this.canPickUpLoot() && !this.dead && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this))
++        if (!this.field_70170_p.field_72995_K && this.func_98052_bS() && !this.field_70729_aU && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.field_70170_p, this))
          {
 -            for (EntityItem entityitem : this.field_70170_p.func_72872_a(EntityItem.class, this.func_174813_aQ().func_72314_b(1.0, 0.0, 1.0)))
-+            for (EntityItem entityitem : this.world.getEntitiesWithinAABB(EntityItem.class, this.getEntityBoundingBox().grow(1.0D, 0.0D, 1.0D)))
++            for (EntityItem entityitem : this.field_70170_p.func_72872_a(EntityItem.class, this.func_174813_aQ().func_72314_b(1.0D, 0.0D, 1.0D)))
              {
--                if (!entityitem.field_70128_L && !entityitem.func_92059_d().func_190926_b() && !entityitem.func_174874_s())
-+                if (!entityitem.isDead && !entityitem.getItem().isEmpty() && !entityitem.cannotPickup())
+                 if (!entityitem.field_70128_L && !entityitem.func_92059_d().func_190926_b() && !entityitem.func_174874_s())
                  {
--                    this.func_175445_a(entityitem);
-+                    this.updateEquipmentIfNeeded(entityitem);
-                 }
-             }
-         }
- 
--        this.field_70170_p.field_72984_F.func_76319_b();
-+        this.world.profiler.endSection();
-     }
- 
--    protected void func_175445_a(EntityItem p_175445_1_)
-+    protected void updateEquipmentIfNeeded(EntityItem itemEntity)
-     {
--        ItemStack itemstack = p_175445_1_.func_92059_d();
--        EntityEquipmentSlot entityequipmentslot = func_184640_d(itemstack);
-+        ItemStack itemstack = itemEntity.getItem();
-+        EntityEquipmentSlot entityequipmentslot = getSlotForItemStack(itemstack);
-         boolean flag = true;
--        ItemStack itemstack1 = this.func_184582_a(entityequipmentslot);
-+        ItemStack itemstack1 = this.getItemStackFromSlot(entityequipmentslot);
- 
--        if (!itemstack1.func_190926_b())
-+        if (!itemstack1.isEmpty())
-         {
--            if (entityequipmentslot.func_188453_a() == EntityEquipmentSlot.Type.HAND)
-+            if (entityequipmentslot.getSlotType() == EntityEquipmentSlot.Type.HAND)
-             {
--                if (itemstack.func_77973_b() instanceof ItemSword && !(itemstack1.func_77973_b() instanceof ItemSword))
-+                if (itemstack.getItem() instanceof ItemSword && !(itemstack1.getItem() instanceof ItemSword))
-                 {
-                     flag = true;
-                 }
--                else if (itemstack.func_77973_b() instanceof ItemSword && itemstack1.func_77973_b() instanceof ItemSword)
-+                else if (itemstack.getItem() instanceof ItemSword && itemstack1.getItem() instanceof ItemSword)
-                 {
--                    ItemSword itemsword = (ItemSword)itemstack.func_77973_b();
--                    ItemSword itemsword1 = (ItemSword)itemstack1.func_77973_b();
-+                    ItemSword itemsword = (ItemSword)itemstack.getItem();
-+                    ItemSword itemsword1 = (ItemSword)itemstack1.getItem();
- 
--                    if (itemsword.func_150931_i() == itemsword1.func_150931_i())
-+                    if (itemsword.getAttackDamage() == itemsword1.getAttackDamage())
-                     {
--                        flag = itemstack.func_77960_j() > itemstack1.func_77960_j() || itemstack.func_77942_o() && !itemstack1.func_77942_o();
-+                        flag = itemstack.getMetadata() > itemstack1.getMetadata() || itemstack.hasTagCompound() && !itemstack1.hasTagCompound();
-                     }
-                     else
-                     {
--                        flag = itemsword.func_150931_i() > itemsword1.func_150931_i();
-+                        flag = itemsword.getAttackDamage() > itemsword1.getAttackDamage();
-                     }
-                 }
--                else if (itemstack.func_77973_b() instanceof ItemBow && itemstack1.func_77973_b() instanceof ItemBow)
-+                else if (itemstack.getItem() instanceof ItemBow && itemstack1.getItem() instanceof ItemBow)
-                 {
--                    flag = itemstack.func_77942_o() && !itemstack1.func_77942_o();
-+                    flag = itemstack.hasTagCompound() && !itemstack1.hasTagCompound();
-                 }
-                 else
-                 {
-                     flag = false;
-                 }
-             }
--            else if (itemstack.func_77973_b() instanceof ItemArmor && !(itemstack1.func_77973_b() instanceof ItemArmor))
-+            else if (itemstack.getItem() instanceof ItemArmor && !(itemstack1.getItem() instanceof ItemArmor))
+@@ -657,9 +633,7 @@
              {
                  flag = true;
              }
 -            else if (itemstack.func_77973_b() instanceof ItemArmor
 -                     && itemstack1.func_77973_b() instanceof ItemArmor
 -                     && !EnchantmentHelper.func_190938_b(itemstack1))
-+            else if (itemstack.getItem() instanceof ItemArmor && itemstack1.getItem() instanceof ItemArmor && !EnchantmentHelper.hasBindingCurse(itemstack1))
++            else if (itemstack.func_77973_b() instanceof ItemArmor && itemstack1.func_77973_b() instanceof ItemArmor && !EnchantmentHelper.func_190938_b(itemstack1))
              {
--                ItemArmor itemarmor = (ItemArmor)itemstack.func_77973_b();
--                ItemArmor itemarmor1 = (ItemArmor)itemstack1.func_77973_b();
-+                ItemArmor itemarmor = (ItemArmor)itemstack.getItem();
-+                ItemArmor itemarmor1 = (ItemArmor)itemstack1.getItem();
- 
--                if (itemarmor.field_77879_b == itemarmor1.field_77879_b)
-+                if (itemarmor.damageReduceAmount == itemarmor1.damageReduceAmount)
-                 {
--                    flag = itemstack.func_77960_j() > itemstack1.func_77960_j() || itemstack.func_77942_o() && !itemstack1.func_77942_o();
-+                    flag = itemstack.getMetadata() > itemstack1.getMetadata() || itemstack.hasTagCompound() && !itemstack1.hasTagCompound();
-                 }
-                 else
-                 {
--                    flag = itemarmor.field_77879_b > itemarmor1.field_77879_b;
-+                    flag = itemarmor.damageReduceAmount > itemarmor1.damageReduceAmount;
-                 }
-             }
-             else
-@@ -679,219 +655,225 @@
-             }
-         }
- 
--        if (flag && this.func_175448_a(itemstack))
-+        if (flag && this.canEquipItem(itemstack))
-         {
-             double d0;
- 
--            switch (entityequipmentslot.func_188453_a())
-+            switch (entityequipmentslot.getSlotType())
-             {
-                 case HAND:
--                    d0 = (double)this.field_82174_bp[entityequipmentslot.func_188454_b()];
-+                    d0 = (double)this.inventoryHandsDropChances[entityequipmentslot.getIndex()];
-                     break;
-                 case ARMOR:
--                    d0 = (double)this.field_184655_bs[entityequipmentslot.func_188454_b()];
-+                    d0 = (double)this.inventoryArmorDropChances[entityequipmentslot.getIndex()];
+                 ItemArmor itemarmor = (ItemArmor)itemstack.func_77973_b();
+                 ItemArmor itemarmor1 = (ItemArmor)itemstack1.func_77973_b();
+@@ -692,7 +666,7 @@
+                     d0 = (double)this.field_184655_bs[entityequipmentslot.func_188454_b()];
                      break;
                  default:
 -                    d0 = 0.0;
 +                    d0 = 0.0D;
              }
- 
--            if (!itemstack1.func_190926_b() && (double)(this.field_70146_Z.nextFloat() - 0.1F) < d0)
-+            if (!itemstack1.isEmpty() && (double)(this.rand.nextFloat() - 0.1F) < d0)
-             {
--                this.func_70099_a(itemstack1, 0.0F);
-+                this.entityDropItem(itemstack1, 0.0F);
-             }
- 
--            this.func_184201_a(entityequipmentslot, itemstack);
-+            this.setItemStackToSlot(entityequipmentslot, itemstack);
- 
--            switch (entityequipmentslot.func_188453_a())
-+            switch (entityequipmentslot.getSlotType())
-             {
-                 case HAND:
--                    this.field_82174_bp[entityequipmentslot.func_188454_b()] = 2.0F;
-+                    this.inventoryHandsDropChances[entityequipmentslot.getIndex()] = 2.0F;
-                     break;
-                 case ARMOR:
--                    this.field_184655_bs[entityequipmentslot.func_188454_b()] = 2.0F;
--            }
--
--            this.field_82179_bU = true;
--            this.func_71001_a(p_175445_1_, itemstack.func_190916_E());
--            p_175445_1_.func_70106_y();
--        }
--    }
--
--    protected boolean func_175448_a(ItemStack p_175448_1_)
--    {
--        return true;
--    }
--
--    protected boolean func_70692_ba()
--    {
--        return true;
--    }
--
--    protected void func_70623_bb()
--    {
--        if (this.field_82179_bU)
--        {
--            this.field_70708_bq = 0;
-+                    this.inventoryArmorDropChances[entityequipmentslot.getIndex()] = 2.0F;
-+            }
-+
-+            this.persistenceRequired = true;
-+            this.onItemPickup(itemEntity, itemstack.getCount());
-+            itemEntity.setDead();
-+        }
-+    }
-+
-+    protected boolean canEquipItem(ItemStack stack)
-+    {
-+        return true;
-+    }
-+
-+    protected boolean canDespawn()
-+    {
-+        return true;
-+    }
-+
-+    protected void despawnEntity()
-+    {
+
+             if (!itemstack1.func_190926_b() && (double)(this.field_70146_Z.nextFloat() - 0.1F) < d0)
+@@ -729,13 +703,25 @@
+
+     protected void func_70623_bb()
+     {
 +        net.minecraftforge.fml.common.eventhandler.Event.Result result = null;
-+        if (this.persistenceRequired)
-+        {
-+            this.idleTime = 0;
-+        }
-+        else if ((this.idleTime & 0x1F) == 0x1F && (result = net.minecraftforge.event.ForgeEventFactory.canEntityDespawn(this)) != net.minecraftforge.fml.common.eventhandler.Event.Result.DEFAULT)
+         if (this.field_82179_bU)
+         {
+             this.field_70708_bq = 0;
+         }
++        else if ((this.field_70708_bq & 0x1F) == 0x1F && (result = net.minecraftforge.event.ForgeEventFactory.canEntityDespawn(this)) != net.minecraftforge.fml.common.eventhandler.Event.Result.DEFAULT)
 +        {
 +            if (result == net.minecraftforge.fml.common.eventhandler.Event.Result.DENY)
 +            {
-+                this.idleTime = 0;
++                this.field_70708_bq = 0;
 +            }
 +            else
 +            {
-+                this.setDead();
++                this.func_70106_y();
 +            }
-         }
++        }
          else
          {
 -            Entity entity = this.field_70170_p.func_72890_a(this, -1.0);
-+            Entity entity = this.world.getClosestPlayerToEntity(this, -1.0D);
- 
++            Entity entity = this.field_70170_p.func_72890_a(this, -1.0D);
+
              if (entity != null)
              {
--                double d0 = entity.field_70165_t - this.field_70165_t;
--                double d1 = entity.field_70163_u - this.field_70163_u;
--                double d2 = entity.field_70161_v - this.field_70161_v;
-+                double d0 = entity.posX - this.posX;
-+                double d1 = entity.posY - this.posY;
-+                double d2 = entity.posZ - this.posZ;
+@@ -744,16 +730,16 @@
+                 double d2 = entity.field_70161_v - this.field_70161_v;
                  double d3 = d0 * d0 + d1 * d1 + d2 * d2;
- 
+
 -                if (this.func_70692_ba() && d3 > 16384.0)
-+                if (this.canDespawn() && d3 > 16384.0D)
++                if (this.func_70692_ba() && d3 > 16384.0D)
                  {
--                    this.func_70106_y();
-+                    this.setDead();
+                     this.func_70106_y();
                  }
- 
+
 -                if (this.field_70708_bq > 600 && this.field_70146_Z.nextInt(800) == 0 && d3 > 1024.0 && this.func_70692_ba())
-+                if (this.idleTime > 600 && this.rand.nextInt(800) == 0 && d3 > 1024.0D && this.canDespawn())
++                if (this.field_70708_bq > 600 && this.field_70146_Z.nextInt(800) == 0 && d3 > 1024.0D && this.func_70692_ba())
                  {
--                    this.func_70106_y();
-+                    this.setDead();
+                     this.func_70106_y();
                  }
 -                else if (d3 < 1024.0)
 +                else if (d3 < 1024.0D)
                  {
--                    this.field_70708_bq = 0;
-+                    this.idleTime = 0;
+                     this.field_70708_bq = 0;
                  }
-             }
+@@ -761,7 +747,6 @@
          }
      }
- 
+
 -    @Override
--    protected final void func_70626_be()
-+    protected final void updateEntityActionState()
+     protected final void func_70626_be()
      {
--        ++this.field_70708_bq;
--        this.field_70170_p.field_72984_F.func_76320_a("checkDespawn");
--        this.func_70623_bb();
--        this.field_70170_p.field_72984_F.func_76319_b();
--        this.field_70170_p.field_72984_F.func_76320_a("sensing");
--        this.field_70723_bA.func_75523_a();
--        this.field_70170_p.field_72984_F.func_76319_b();
--        this.field_70170_p.field_72984_F.func_76320_a("targetSelector");
--        this.field_70715_bh.func_75774_a();
--        this.field_70170_p.field_72984_F.func_76319_b();
--        this.field_70170_p.field_72984_F.func_76320_a("goalSelector");
--        this.field_70714_bg.func_75774_a();
--        this.field_70170_p.field_72984_F.func_76319_b();
--        this.field_70170_p.field_72984_F.func_76320_a("navigation");
--        this.field_70699_by.func_75501_e();
--        this.field_70170_p.field_72984_F.func_76319_b();
--        this.field_70170_p.field_72984_F.func_76320_a("mob tick");
--        this.func_70619_bc();
--        this.field_70170_p.field_72984_F.func_76319_b();
-+        ++this.idleTime;
-+        this.world.profiler.startSection("checkDespawn");
-+        this.despawnEntity();
-+        this.world.profiler.endSection();
-+        this.world.profiler.startSection("sensing");
-+        this.senses.clearSensingCache();
-+        this.world.profiler.endSection();
-+        this.world.profiler.startSection("targetSelector");
-+        this.targetTasks.onUpdateTasks();
-+        this.world.profiler.endSection();
-+        this.world.profiler.startSection("goalSelector");
-+        this.tasks.onUpdateTasks();
-+        this.world.profiler.endSection();
-+        this.world.profiler.startSection("navigation");
-+        this.navigator.onUpdateNavigation();
-+        this.world.profiler.endSection();
-+        this.world.profiler.startSection("mob tick");
-+        this.updateAITasks();
-+        this.world.profiler.endSection();
- 
--        if (this.func_184218_aH() && this.func_184187_bx() instanceof EntityLiving)
-+        if (this.isRiding() && this.getRidingEntity() instanceof EntityLiving)
+         ++this.field_70708_bq;
+@@ -787,7 +772,7 @@
+         if (this.func_184218_aH() && this.func_184187_bx() instanceof EntityLiving)
          {
--            EntityLiving entityliving = (EntityLiving)this.func_184187_bx();
+             EntityLiving entityliving = (EntityLiving)this.func_184187_bx();
 -            entityliving.func_70661_as().func_75484_a(this.func_70661_as().func_75505_d(), 1.5);
--            entityliving.func_70605_aq().func_188487_a(this.func_70605_aq());
-+            EntityLiving entityliving = (EntityLiving)this.getRidingEntity();
-+            entityliving.getNavigator().setPath(this.getNavigator().getPath(), 1.5D);
-+            entityliving.getMoveHelper().read(this.getMoveHelper());
++            entityliving.func_70661_as().func_75484_a(this.func_70661_as().func_75505_d(), 1.5D);
+             entityliving.func_70605_aq().func_188487_a(this.func_70605_aq());
          }
- 
--        this.field_70170_p.field_72984_F.func_76320_a("controls");
--        this.field_70170_p.field_72984_F.func_76320_a("move");
--        this.field_70765_h.func_75641_c();
--        this.field_70170_p.field_72984_F.func_76318_c("look");
--        this.field_70749_g.func_75649_a();
--        this.field_70170_p.field_72984_F.func_76318_c("jump");
--        this.field_70767_i.func_75661_b();
--        this.field_70170_p.field_72984_F.func_76319_b();
--        this.field_70170_p.field_72984_F.func_76319_b();
-+        this.world.profiler.startSection("controls");
-+        this.world.profiler.startSection("move");
-+        this.moveHelper.onUpdateMoveHelper();
-+        this.world.profiler.endStartSection("look");
-+        this.lookHelper.onUpdateLook();
-+        this.world.profiler.endStartSection("jump");
-+        this.jumpHelper.doJump();
-+        this.world.profiler.endSection();
-+        this.world.profiler.endSection();
-     }
- 
--    protected void func_70619_bc()
-+    protected void updateAITasks()
-     {
-     }
- 
--    public int func_70646_bf()
-+    public int getVerticalFaceSpeed()
-     {
-         return 40;
-     }
- 
--    public int func_184649_cE()
-+    public int getHorizontalFaceSpeed()
-     {
-         return 10;
-     }
- 
--    public void func_70625_a(Entity p_70625_1_, float p_70625_2_, float p_70625_3_)
-+    public void faceEntity(Entity entityIn, float maxYawIncrease, float maxPitchIncrease)
-     {
--        double d0 = p_70625_1_.field_70165_t - this.field_70165_t;
--        double d2 = p_70625_1_.field_70161_v - this.field_70161_v;
-+        double d0 = entityIn.posX - this.posX;
-+        double d2 = entityIn.posZ - this.posZ;
-         double d1;
- 
--        if (p_70625_1_ instanceof EntityLivingBase)
-+        if (entityIn instanceof EntityLivingBase)
-         {
--            EntityLivingBase entitylivingbase = (EntityLivingBase)p_70625_1_;
--            d1 = entitylivingbase.field_70163_u + (double)entitylivingbase.func_70047_e() - (this.field_70163_u + (double)this.func_70047_e());
-+            EntityLivingBase entitylivingbase = (EntityLivingBase)entityIn;
-+            d1 = entitylivingbase.posY + (double)entitylivingbase.getEyeHeight() - (this.posY + (double)this.getEyeHeight());
+
+@@ -829,13 +814,12 @@
          }
          else
          {
 -            d1 = (p_70625_1_.func_174813_aQ().field_72338_b + p_70625_1_.func_174813_aQ().field_72337_e) / 2.0
 -                 - (this.field_70163_u + (double)this.func_70047_e());
--        }
--
--        double d3 = (double)MathHelper.func_76133_a(d0 * d0 + d2 * d2);
++            d1 = (p_70625_1_.func_174813_aQ().field_72338_b + p_70625_1_.func_174813_aQ().field_72337_e) / 2.0D - (this.field_70163_u + (double)this.func_70047_e());
+         }
+
+         double d3 = (double)MathHelper.func_76133_a(d0 * d0 + d2 * d2);
 -        float f = (float)(MathHelper.func_181159_b(d2, d0) * 180.0F / (float)Math.PI) - 90.0F;
 -        float f1 = (float)(-(MathHelper.func_181159_b(d1, d3) * 180.0F / (float)Math.PI));
--        this.field_70125_A = this.func_70663_b(this.field_70125_A, f1, p_70625_3_);
--        this.field_70177_z = this.func_70663_b(this.field_70177_z, f, p_70625_2_);
--    }
--
--    private float func_70663_b(float p_70663_1_, float p_70663_2_, float p_70663_3_)
--    {
--        float f = MathHelper.func_76142_g(p_70663_2_ - p_70663_1_);
--
--        if (f > p_70663_3_)
--        {
--            f = p_70663_3_;
--        }
--
--        if (f < -p_70663_3_)
--        {
--            f = -p_70663_3_;
--        }
--
--        return p_70663_1_ + f;
--    }
--
--    public boolean func_70601_bi()
--    {
++        float f = (float)(MathHelper.func_181159_b(d2, d0) * (180D / Math.PI)) - 90.0F;
++        float f1 = (float)(-(MathHelper.func_181159_b(d1, d3) * (180D / Math.PI)));
+         this.field_70125_A = this.func_70663_b(this.field_70125_A, f1, p_70625_3_);
+         this.field_70177_z = this.func_70663_b(this.field_70177_z, f, p_70625_2_);
+     }
+@@ -859,18 +843,15 @@
+
+     public boolean func_70601_bi()
+     {
 -        IBlockState iblockstate = this.field_70170_p.func_180495_p(new BlockPos(this).func_177977_b());
--        return iblockstate.func_189884_a(this);
--    }
--
--    public boolean func_70058_J()
--    {
++        IBlockState iblockstate = this.field_70170_p.func_180495_p((new BlockPos(this)).func_177977_b());
+         return iblockstate.func_189884_a(this);
+     }
+
+     public boolean func_70058_J()
+     {
 -        return !this.field_70170_p.func_72953_d(this.func_174813_aQ())
 -               && this.field_70170_p.func_184144_a(this, this.func_174813_aQ()).isEmpty()
 -               && this.field_70170_p.func_72917_a(this.func_174813_aQ(), this);
--    }
--
++        return !this.field_70170_p.func_72953_d(this.func_174813_aQ()) && this.field_70170_p.func_184144_a(this, this.func_174813_aQ()).isEmpty() && this.field_70170_p.func_72917_a(this.func_174813_aQ(), this);
+     }
+
 -    @SideOnly(Side.CLIENT)
--    public float func_70603_bj()
-+            d1 = (entityIn.getEntityBoundingBox().minY + entityIn.getEntityBoundingBox().maxY) / 2.0D - (this.posY + (double)this.getEyeHeight());
-+        }
-+
-+        double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
-+        float f = (float)(MathHelper.atan2(d2, d0) * (180D / Math.PI)) - 90.0F;
-+        float f1 = (float)(-(MathHelper.atan2(d1, d3) * (180D / Math.PI)));
-+        this.rotationPitch = this.updateRotation(this.rotationPitch, f1, maxPitchIncrease);
-+        this.rotationYaw = this.updateRotation(this.rotationYaw, f, maxYawIncrease);
-+    }
-+
-+    private float updateRotation(float angle, float targetAngle, float maxIncrease)
-+    {
-+        float f = MathHelper.wrapDegrees(targetAngle - angle);
-+
-+        if (f > maxIncrease)
-+        {
-+            f = maxIncrease;
-+        }
-+
-+        if (f < -maxIncrease)
-+        {
-+            f = -maxIncrease;
-+        }
-+
-+        return angle + f;
-+    }
-+
-+    public boolean getCanSpawnHere()
-+    {
-+        IBlockState iblockstate = this.world.getBlockState((new BlockPos(this)).down());
-+        return iblockstate.canEntitySpawn(this);
-+    }
-+
-+    public boolean isNotColliding()
-+    {
-+        return !this.world.containsAnyLiquid(this.getEntityBoundingBox()) && this.world.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty() && this.world.checkNoEntityCollision(this.getEntityBoundingBox(), this);
-+    }
-+
-+    public float getRenderSizeModifier()
+     public float func_70603_bj()
      {
          return 1.0F;
-     }
- 
--    public int func_70641_bl()
-+    public int getMaxSpawnedInChunk()
-     {
+@@ -881,7 +862,6 @@
          return 4;
      }
- 
+
 -    @Override
--    public int func_82143_as()
-+    public int getMaxFallHeight()
+     public int func_82143_as()
      {
--        if (this.func_70638_az() == null)
-+        if (this.getAttackTarget() == null)
-         {
-             return 3;
-         }
+         if (this.func_70638_az() == null)
+@@ -891,7 +871,7 @@
          else
          {
--            int i = (int)(this.func_110143_aJ() - this.func_110138_aP() * 0.33F);
+             int i = (int)(this.func_110143_aJ() - this.func_110138_aP() * 0.33F);
 -            i -= (3 - this.field_70170_p.func_175659_aa().func_151525_a()) * 4;
-+            int i = (int)(this.getHealth() - this.getMaxHealth() * 0.33F);
-+            i = i - (3 - this.world.getDifficulty().getId()) * 4;
- 
++            i = i - (3 - this.field_70170_p.func_175659_aa().func_151525_a()) * 4;
+
              if (i < 0)
              {
-@@ -902,102 +884,92 @@
+@@ -902,19 +882,16 @@
          }
      }
- 
+
 -    @Override
--    public Iterable<ItemStack> func_184214_aD()
--    {
--        return this.field_184656_bv;
--    }
--
--    @Override
--    public Iterable<ItemStack> func_184193_aE()
--    {
--        return this.field_184657_bw;
--    }
--
--    @Override
--    public ItemStack func_184582_a(EntityEquipmentSlot p_184582_1_)
--    {
--        switch (p_184582_1_.func_188453_a())
-+    public Iterable<ItemStack> getHeldEquipment()
-+    {
-+        return this.inventoryHands;
-+    }
-+
-+    public Iterable<ItemStack> getArmorInventoryList()
-+    {
-+        return this.inventoryArmor;
-+    }
-+
-+    public ItemStack getItemStackFromSlot(EntityEquipmentSlot slotIn)
-+    {
-+        switch (slotIn.getSlotType())
-         {
-             case HAND:
--                return this.field_184656_bv.get(p_184582_1_.func_188454_b());
-+                return this.inventoryHands.get(slotIn.getIndex());
-             case ARMOR:
--                return this.field_184657_bw.get(p_184582_1_.func_188454_b());
-+                return this.inventoryArmor.get(slotIn.getIndex());
-             default:
--                return ItemStack.field_190927_a;
-+                return ItemStack.EMPTY;
-         }
-     }
- 
--    @Override
--    public void func_184201_a(EntityEquipmentSlot p_184201_1_, ItemStack p_184201_2_)
-+    public void setItemStackToSlot(EntityEquipmentSlot slotIn, ItemStack stack)
+     public Iterable<ItemStack> func_184214_aD()
      {
--        switch (p_184201_1_.func_188453_a())
-+        switch (slotIn.getSlotType())
-         {
-             case HAND:
--                this.field_184656_bv.set(p_184201_1_.func_188454_b(), p_184201_2_);
-+                this.inventoryHands.set(slotIn.getIndex(), stack);
-                 break;
-             case ARMOR:
--                this.field_184657_bw.set(p_184201_1_.func_188454_b(), p_184201_2_);
-+                this.inventoryArmor.set(slotIn.getIndex(), stack);
+         return this.field_184656_bv;
+     }
+
+-    @Override
+     public Iterable<ItemStack> func_184193_aE()
+     {
+         return this.field_184657_bw;
+     }
+
+-    @Override
+     public ItemStack func_184582_a(EntityEquipmentSlot p_184582_1_)
+     {
+         switch (p_184582_1_.func_188453_a())
+@@ -928,7 +905,6 @@
          }
      }
- 
+
 -    @Override
--    protected void func_82160_b(boolean p_82160_1_, int p_82160_2_)
-+    protected void dropEquipment(boolean wasRecentlyHit, int lootingModifier)
+     public void func_184201_a(EntityEquipmentSlot p_184201_1_, ItemStack p_184201_2_)
+     {
+         switch (p_184201_1_.func_188453_a())
+@@ -941,7 +917,6 @@
+         }
+     }
+
+-    @Override
+     protected void func_82160_b(boolean p_82160_1_, int p_82160_2_)
      {
          for (EntityEquipmentSlot entityequipmentslot : EntityEquipmentSlot.values())
-         {
--            ItemStack itemstack = this.func_184582_a(entityequipmentslot);
-+            ItemStack itemstack = this.getItemStackFromSlot(entityequipmentslot);
-             double d0;
- 
--            switch (entityequipmentslot.func_188453_a())
-+            switch (entityequipmentslot.getSlotType())
-             {
-                 case HAND:
--                    d0 = (double)this.field_82174_bp[entityequipmentslot.func_188454_b()];
-+                    d0 = (double)this.inventoryHandsDropChances[entityequipmentslot.getIndex()];
-                     break;
-                 case ARMOR:
--                    d0 = (double)this.field_184655_bs[entityequipmentslot.func_188454_b()];
-+                    d0 = (double)this.inventoryArmorDropChances[entityequipmentslot.getIndex()];
+@@ -958,21 +933,16 @@
+                     d0 = (double)this.field_184655_bs[entityequipmentslot.func_188454_b()];
                      break;
                  default:
 -                    d0 = 0.0;
 +                    d0 = 0.0D;
              }
- 
+
 -            boolean flag = d0 > 1.0;
 +            boolean flag = d0 > 1.0D;
- 
+
 -            if (!itemstack.func_190926_b()
 -                    && !EnchantmentHelper.func_190939_c(itemstack)
 -                    && (p_82160_1_ || flag)
 -                    && (double)(this.field_70146_Z.nextFloat() - (float)p_82160_2_ * 0.01F) < d0)
-+            if (!itemstack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemstack) && (wasRecentlyHit || flag) && (double)(this.rand.nextFloat() - (float)lootingModifier * 0.01F) < d0)
++            if (!itemstack.func_190926_b() && !EnchantmentHelper.func_190939_c(itemstack) && (p_82160_1_ || flag) && (double)(this.field_70146_Z.nextFloat() - (float)p_82160_2_ * 0.01F) < d0)
              {
--                if (!flag && itemstack.func_77984_f())
-+                if (!flag && itemstack.isItemStackDamageable())
+                 if (!flag && itemstack.func_77984_f())
                  {
 -                    itemstack.func_77964_b(
 -                        itemstack.func_77958_k() - this.field_70146_Z.nextInt(1 + this.field_70146_Z.nextInt(Math.max(itemstack.func_77958_k() - 3, 1)))
 -                    );
-+                    itemstack.setItemDamage(itemstack.getMaxDamage() - this.rand.nextInt(1 + this.rand.nextInt(Math.max(itemstack.getMaxDamage() - 3, 1))));
++                    itemstack.func_77964_b(itemstack.func_77958_k() - this.field_70146_Z.nextInt(1 + this.field_70146_Z.nextInt(Math.max(itemstack.func_77958_k() - 3, 1))));
                  }
- 
--                this.func_70099_a(itemstack, 0.0F);
-+                this.entityDropItem(itemstack, 0.0F);
-             }
-         }
-     }
- 
--    protected void func_180481_a(DifficultyInstance p_180481_1_)
-+    protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty)
-     {
--        if (this.field_70146_Z.nextFloat() < 0.15F * p_180481_1_.func_180170_c())
-+        if (this.rand.nextFloat() < 0.15F * difficulty.getClampedAdditionalDifficulty())
-         {
--            int i = this.field_70146_Z.nextInt(2);
--            float f = this.field_70170_p.func_175659_aa() == EnumDifficulty.HARD ? 0.1F : 0.25F;
--
--            if (this.field_70146_Z.nextFloat() < 0.095F)
--            {
--                ++i;
--            }
--
--            if (this.field_70146_Z.nextFloat() < 0.095F)
--            {
--                ++i;
--            }
--
--            if (this.field_70146_Z.nextFloat() < 0.095F)
-+            int i = this.rand.nextInt(2);
-+            float f = this.world.getDifficulty() == EnumDifficulty.HARD ? 0.1F : 0.25F;
-+
-+            if (this.rand.nextFloat() < 0.095F)
-+            {
-+                ++i;
-+            }
-+
-+            if (this.rand.nextFloat() < 0.095F)
-+            {
-+                ++i;
-+            }
-+
-+            if (this.rand.nextFloat() < 0.095F)
-             {
-                 ++i;
-             }
-@@ -1006,24 +978,24 @@
- 
-             for (EntityEquipmentSlot entityequipmentslot : EntityEquipmentSlot.values())
-             {
--                if (entityequipmentslot.func_188453_a() == EntityEquipmentSlot.Type.ARMOR)
-+                if (entityequipmentslot.getSlotType() == EntityEquipmentSlot.Type.ARMOR)
-                 {
--                    ItemStack itemstack = this.func_184582_a(entityequipmentslot);
-+                    ItemStack itemstack = this.getItemStackFromSlot(entityequipmentslot);
- 
--                    if (!flag && this.field_70146_Z.nextFloat() < f)
-+                    if (!flag && this.rand.nextFloat() < f)
-                     {
-                         break;
-                     }
- 
-                     flag = false;
- 
--                    if (itemstack.func_190926_b())
-+                    if (itemstack.isEmpty())
-                     {
--                        Item item = func_184636_a(entityequipmentslot, i);
-+                        Item item = getArmorByChance(entityequipmentslot, i);
- 
-                         if (item != null)
-                         {
--                            this.func_184201_a(entityequipmentslot, new ItemStack(item));
-+                            this.setItemStackToSlot(entityequipmentslot, new ItemStack(item));
-                         }
-                     }
-                 }
-@@ -1031,121 +1003,126 @@
-         }
-     }
- 
--    public static EntityEquipmentSlot func_184640_d(ItemStack p_184640_0_)
-+    public static EntityEquipmentSlot getSlotForItemStack(ItemStack stack)
+
+                 this.func_70099_a(itemstack, 0.0F);
+@@ -1033,22 +1003,27 @@
+
+     public static EntityEquipmentSlot func_184640_d(ItemStack p_184640_0_)
      {
 -        if (p_184640_0_.func_77973_b() == Item.func_150898_a(Blocks.field_150423_aK) || p_184640_0_.func_77973_b() == Items.field_151144_bL)
-+        final EntityEquipmentSlot slot = stack.getItem().getEquipmentSlot(stack);
++        final EntityEquipmentSlot slot = p_184640_0_.func_77973_b().getEquipmentSlot(p_184640_0_);
 +        if (slot != null) return slot; // FORGE: Allow modders to set a non-default equipment slot for a stack; e.g. a non-armor chestplate-slot item
-+        if (stack.getItem() != Item.getItemFromBlock(Blocks.PUMPKIN) && stack.getItem() != Items.SKULL)
++        if (p_184640_0_.func_77973_b() != Item.func_150898_a(Blocks.field_150423_aK) && p_184640_0_.func_77973_b() != Items.field_151144_bL)
 +        {
-+            if (stack.getItem() instanceof ItemArmor)
++            if (p_184640_0_.func_77973_b() instanceof ItemArmor)
 +            {
-+                return ((ItemArmor)stack.getItem()).armorType;
++                return ((ItemArmor)p_184640_0_.func_77973_b()).field_77881_a;
 +            }
-+            else if (stack.getItem() == Items.ELYTRA)
++            else if (p_184640_0_.func_77973_b() == Items.field_185160_cR)
 +            {
 +                return EntityEquipmentSlot.CHEST;
 +            }
 +            else
 +            {
-+                return stack.getItem().isShield(stack, null) ? EntityEquipmentSlot.OFFHAND : EntityEquipmentSlot.MAINHAND;
++                return p_184640_0_.func_77973_b().isShield(p_184640_0_, null) ? EntityEquipmentSlot.OFFHAND : EntityEquipmentSlot.MAINHAND;
 +            }
 +        }
 +        else
@@ -1434,709 +482,152 @@
 -            return p_184640_0_.func_77973_b() == Items.field_185159_cQ ? EntityEquipmentSlot.OFFHAND : EntityEquipmentSlot.MAINHAND;
 -        }
      }
- 
+
      @Nullable
--    public static Item func_184636_a(EntityEquipmentSlot p_184636_0_, int p_184636_1_)
-+    public static Item getArmorByChance(EntityEquipmentSlot slotIn, int chance)
-     {
--        switch (p_184636_0_)
-+        switch (slotIn)
-         {
-             case HEAD:
- 
--                if (p_184636_1_ == 0)
--                {
--                    return Items.field_151024_Q;
--                }
--                else if (p_184636_1_ == 1)
--                {
--                    return Items.field_151169_ag;
--                }
--                else if (p_184636_1_ == 2)
--                {
--                    return Items.field_151020_U;
--                }
--                else if (p_184636_1_ == 3)
--                {
--                    return Items.field_151028_Y;
--                }
--                else if (p_184636_1_ == 4)
--                {
--                    return Items.field_151161_ac;
-+                if (chance == 0)
-+                {
-+                    return Items.LEATHER_HELMET;
-+                }
-+                else if (chance == 1)
-+                {
-+                    return Items.GOLDEN_HELMET;
-+                }
-+                else if (chance == 2)
-+                {
-+                    return Items.CHAINMAIL_HELMET;
-+                }
-+                else if (chance == 3)
-+                {
-+                    return Items.IRON_HELMET;
-+                }
-+                else if (chance == 4)
-+                {
-+                    return Items.DIAMOND_HELMET;
-                 }
- 
-             case CHEST:
- 
--                if (p_184636_1_ == 0)
--                {
--                    return Items.field_151027_R;
--                }
--                else if (p_184636_1_ == 1)
--                {
--                    return Items.field_151171_ah;
--                }
--                else if (p_184636_1_ == 2)
--                {
--                    return Items.field_151023_V;
--                }
--                else if (p_184636_1_ == 3)
--                {
--                    return Items.field_151030_Z;
--                }
--                else if (p_184636_1_ == 4)
--                {
--                    return Items.field_151163_ad;
-+                if (chance == 0)
-+                {
-+                    return Items.LEATHER_CHESTPLATE;
-+                }
-+                else if (chance == 1)
-+                {
-+                    return Items.GOLDEN_CHESTPLATE;
-+                }
-+                else if (chance == 2)
-+                {
-+                    return Items.CHAINMAIL_CHESTPLATE;
-+                }
-+                else if (chance == 3)
-+                {
-+                    return Items.IRON_CHESTPLATE;
-+                }
-+                else if (chance == 4)
-+                {
-+                    return Items.DIAMOND_CHESTPLATE;
-                 }
- 
-             case LEGS:
- 
--                if (p_184636_1_ == 0)
--                {
--                    return Items.field_151026_S;
--                }
--                else if (p_184636_1_ == 1)
--                {
--                    return Items.field_151149_ai;
--                }
--                else if (p_184636_1_ == 2)
--                {
--                    return Items.field_151022_W;
--                }
--                else if (p_184636_1_ == 3)
--                {
--                    return Items.field_151165_aa;
--                }
--                else if (p_184636_1_ == 4)
--                {
--                    return Items.field_151173_ae;
-+                if (chance == 0)
-+                {
-+                    return Items.LEATHER_LEGGINGS;
-+                }
-+                else if (chance == 1)
-+                {
-+                    return Items.GOLDEN_LEGGINGS;
-+                }
-+                else if (chance == 2)
-+                {
-+                    return Items.CHAINMAIL_LEGGINGS;
-+                }
-+                else if (chance == 3)
-+                {
-+                    return Items.IRON_LEGGINGS;
-+                }
-+                else if (chance == 4)
-+                {
-+                    return Items.DIAMOND_LEGGINGS;
-                 }
- 
-             case FEET:
- 
--                if (p_184636_1_ == 0)
--                {
--                    return Items.field_151021_T;
--                }
--                else if (p_184636_1_ == 1)
--                {
--                    return Items.field_151151_aj;
--                }
--                else if (p_184636_1_ == 2)
--                {
--                    return Items.field_151029_X;
--                }
--                else if (p_184636_1_ == 3)
--                {
--                    return Items.field_151167_ab;
--                }
--                else if (p_184636_1_ == 4)
--                {
--                    return Items.field_151175_af;
-+                if (chance == 0)
-+                {
-+                    return Items.LEATHER_BOOTS;
-+                }
-+                else if (chance == 1)
-+                {
-+                    return Items.GOLDEN_BOOTS;
-+                }
-+                else if (chance == 2)
-+                {
-+                    return Items.CHAINMAIL_BOOTS;
-+                }
-+                else if (chance == 3)
-+                {
-+                    return Items.IRON_BOOTS;
-+                }
-+                else if (chance == 4)
-+                {
-+                    return Items.DIAMOND_BOOTS;
-                 }
- 
-             default:
-@@ -1153,272 +1130,260 @@
-         }
-     }
- 
--    protected void func_180483_b(DifficultyInstance p_180483_1_)
-+    protected void setEnchantmentBasedOnDifficulty(DifficultyInstance difficulty)
-     {
--        float f = p_180483_1_.func_180170_c();
-+        float f = difficulty.getClampedAdditionalDifficulty();
- 
--        if (!this.func_184614_ca().func_190926_b() && this.field_70146_Z.nextFloat() < 0.25F * f)
-+        if (!this.getHeldItemMainhand().isEmpty() && this.rand.nextFloat() < 0.25F * f)
+@@ -1159,10 +1134,7 @@
+
+         if (!this.func_184614_ca().func_190926_b() && this.field_70146_Z.nextFloat() < 0.25F * f)
          {
 -            this.func_184201_a(
 -                EntityEquipmentSlot.MAINHAND,
 -                EnchantmentHelper.func_77504_a(this.field_70146_Z, this.func_184614_ca(), (int)(5.0F + f * (float)this.field_70146_Z.nextInt(18)), false)
 -            );
-+            this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, EnchantmentHelper.addRandomEnchantment(this.rand, this.getHeldItemMainhand(), (int)(5.0F + f * (float)this.rand.nextInt(18)), false));
++            this.func_184201_a(EntityEquipmentSlot.MAINHAND, EnchantmentHelper.func_77504_a(this.field_70146_Z, this.func_184614_ca(), (int)(5.0F + f * (float)this.field_70146_Z.nextInt(18)), false));
          }
- 
+
          for (EntityEquipmentSlot entityequipmentslot : EntityEquipmentSlot.values())
-         {
--            if (entityequipmentslot.func_188453_a() == EntityEquipmentSlot.Type.ARMOR)
-+            if (entityequipmentslot.getSlotType() == EntityEquipmentSlot.Type.ARMOR)
-             {
--                ItemStack itemstack = this.func_184582_a(entityequipmentslot);
-+                ItemStack itemstack = this.getItemStackFromSlot(entityequipmentslot);
- 
--                if (!itemstack.func_190926_b() && this.field_70146_Z.nextFloat() < 0.5F * f)
-+                if (!itemstack.isEmpty() && this.rand.nextFloat() < 0.5F * f)
+@@ -1173,10 +1145,7 @@
+
+                 if (!itemstack.func_190926_b() && this.field_70146_Z.nextFloat() < 0.5F * f)
                  {
 -                    this.func_184201_a(
 -                        entityequipmentslot,
 -                        EnchantmentHelper.func_77504_a(this.field_70146_Z, itemstack, (int)(5.0F + f * (float)this.field_70146_Z.nextInt(18)), false)
 -                    );
-+                    this.setItemStackToSlot(entityequipmentslot, EnchantmentHelper.addRandomEnchantment(this.rand, itemstack, (int)(5.0F + f * (float)this.rand.nextInt(18)), false));
++                    this.func_184201_a(entityequipmentslot, EnchantmentHelper.func_77504_a(this.field_70146_Z, itemstack, (int)(5.0F + f * (float)this.field_70146_Z.nextInt(18)), false));
                  }
              }
          }
-     }
- 
+@@ -1185,8 +1154,7 @@
      @Nullable
--    public IEntityLivingData func_180482_a(DifficultyInstance p_180482_1_, @Nullable IEntityLivingData p_180482_2_)
-+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
+     public IEntityLivingData func_180482_a(DifficultyInstance p_180482_1_, @Nullable IEntityLivingData p_180482_2_)
      {
 -        this.func_110148_a(SharedMonsterAttributes.field_111265_b)
 -        .func_111121_a(new AttributeModifier("Random spawn bonus", this.field_70146_Z.nextGaussian() * 0.05, 1));
-+        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).applyModifier(new AttributeModifier("Random spawn bonus", this.rand.nextGaussian() * 0.05D, 1));
- 
--        if (this.field_70146_Z.nextFloat() < 0.05F)
-+        if (this.rand.nextFloat() < 0.05F)
++        this.func_110148_a(SharedMonsterAttributes.field_111265_b).func_111121_a(new AttributeModifier("Random spawn bonus", this.field_70146_Z.nextGaussian() * 0.05D, 1));
+
+         if (this.field_70146_Z.nextFloat() < 0.05F)
          {
--            this.func_184641_n(true);
-+            this.setLeftHanded(true);
-         }
-         else
-         {
--            this.func_184641_n(false);
-+            this.setLeftHanded(false);
-         }
- 
--        return p_180482_2_;
-+        return livingdata;
+@@ -1237,7 +1205,6 @@
+         return this.field_82179_bU;
      }
- 
--    public boolean func_82171_bF()
-+    public boolean canBeSteered()
-     {
-         return false;
-     }
- 
--    public void func_110163_bv()
-+    public void enablePersistence()
-     {
--        this.field_82179_bU = true;
-+        this.persistenceRequired = true;
-     }
- 
--    public void func_184642_a(EntityEquipmentSlot p_184642_1_, float p_184642_2_)
-+    public void setDropChance(EntityEquipmentSlot slotIn, float chance)
-     {
--        switch (p_184642_1_.func_188453_a())
-+        switch (slotIn.getSlotType())
-         {
-             case HAND:
--                this.field_82174_bp[p_184642_1_.func_188454_b()] = p_184642_2_;
-+                this.inventoryHandsDropChances[slotIn.getIndex()] = chance;
-                 break;
-             case ARMOR:
--                this.field_184655_bs[p_184642_1_.func_188454_b()] = p_184642_2_;
-+                this.inventoryArmorDropChances[slotIn.getIndex()] = chance;
-         }
-     }
- 
--    public boolean func_98052_bS()
--    {
--        return this.field_82172_bs;
--    }
--
--    public void func_98053_h(boolean p_98053_1_)
--    {
--        this.field_82172_bs = p_98053_1_;
--    }
--
--    public boolean func_104002_bU()
--    {
--        return this.field_82179_bU;
--    }
--
+
 -    @Override
--    public final boolean func_184230_a(EntityPlayer p_184230_1_, EnumHand p_184230_2_)
--    {
--        if (this.func_110167_bD() && this.func_110166_bE() == p_184230_1_)
-+    public boolean canPickUpLoot()
-+    {
-+        return this.canPickUpLoot;
-+    }
-+
-+    public void setCanPickUpLoot(boolean canPickup)
-+    {
-+        this.canPickUpLoot = canPickup;
-+    }
-+
-+    public boolean isNoDespawnRequired()
-+    {
-+        return this.persistenceRequired;
-+    }
-+
-+    public final boolean processInitialInteract(EntityPlayer player, EnumHand hand)
-+    {
-+        if (this.getLeashed() && this.getLeashHolder() == player)
-         {
--            this.func_110160_i(true, !p_184230_1_.field_71075_bZ.field_75098_d);
-+            this.clearLeashed(true, !player.capabilities.isCreativeMode);
-             return true;
-         }
-         else
-         {
--            ItemStack itemstack = p_184230_1_.func_184586_b(p_184230_2_);
-+            ItemStack itemstack = player.getHeldItem(hand);
- 
--            if (itemstack.func_77973_b() == Items.field_151058_ca && this.func_184652_a(p_184230_1_))
-+            if (itemstack.getItem() == Items.LEAD && this.canBeLeashedTo(player))
-             {
--                this.func_110162_b(p_184230_1_, true);
--                itemstack.func_190918_g(1);
-+                this.setLeashHolder(player, true);
-+                itemstack.shrink(1);
-                 return true;
-             }
-             else
-             {
--                return this.func_184645_a(p_184230_1_, p_184230_2_) ? true : super.func_184230_a(p_184230_1_, p_184230_2_);
-+                return this.processInteract(player, hand) ? true : super.processInitialInteract(player, hand);
-             }
-         }
-     }
- 
--    protected boolean func_184645_a(EntityPlayer p_184645_1_, EnumHand p_184645_2_)
-+    protected boolean processInteract(EntityPlayer player, EnumHand hand)
+     public final boolean func_184230_a(EntityPlayer p_184230_1_, EnumHand p_184230_2_)
      {
-         return false;
-     }
- 
--    protected void func_110159_bB()
--    {
--        if (this.field_110170_bx != null)
--        {
--            this.func_110165_bF();
--        }
--
--        if (this.field_110169_bv)
--        {
--            if (!this.func_70089_S())
--            {
--                this.func_110160_i(true, true);
--            }
--
--            if (this.field_110168_bw == null || this.field_110168_bw.field_70128_L)
--            {
--                this.func_110160_i(true, true);
--            }
--        }
--    }
--
--    public void func_110160_i(boolean p_110160_1_, boolean p_110160_2_)
--    {
--        if (this.field_110169_bv)
--        {
--            this.field_110169_bv = false;
--            this.field_110168_bw = null;
--
--            if (!this.field_70170_p.field_72995_K && p_110160_2_)
--            {
--                this.func_145779_a(Items.field_151058_ca, 1);
--            }
--
--            if (!this.field_70170_p.field_72995_K && p_110160_1_ && this.field_70170_p instanceof WorldServer)
--            {
+         if (this.func_110167_bD() && this.func_110166_bE() == p_184230_1_)
+@@ -1302,7 +1269,7 @@
+
+             if (!this.field_70170_p.field_72995_K && p_110160_1_ && this.field_70170_p instanceof WorldServer)
+             {
 -                ((WorldServer)this.field_70170_p).func_73039_n().func_151247_a(this, new SPacketEntityAttach(this, null));
--            }
--        }
--    }
--
--    public boolean func_184652_a(EntityPlayer p_184652_1_)
--    {
--        return !this.func_110167_bD() && !(this instanceof IMob);
--    }
--
--    public boolean func_110167_bD()
--    {
--        return this.field_110169_bv;
--    }
--
--    public Entity func_110166_bE()
--    {
--        return this.field_110168_bw;
--    }
--
--    public void func_110162_b(Entity p_110162_1_, boolean p_110162_2_)
--    {
--        this.field_110169_bv = true;
--        this.field_110168_bw = p_110162_1_;
--
--        if (!this.field_70170_p.field_72995_K && p_110162_2_ && this.field_70170_p instanceof WorldServer)
--        {
--            ((WorldServer)this.field_70170_p).func_73039_n().func_151247_a(this, new SPacketEntityAttach(this, this.field_110168_bw));
--        }
--
--        if (this.func_184218_aH())
--        {
--            this.func_184210_p();
--        }
--    }
--
--    @Override
--    public boolean func_184205_a(Entity p_184205_1_, boolean p_184205_2_)
--    {
--        boolean flag = super.func_184205_a(p_184205_1_, p_184205_2_);
--
--        if (flag && this.func_110167_bD())
--        {
--            this.func_110160_i(true, true);
-+    protected void updateLeashedState()
-+    {
-+        if (this.leashNBTTag != null)
-+        {
-+            this.recreateLeash();
-+        }
-+
-+        if (this.isLeashed)
-+        {
-+            if (!this.isEntityAlive())
-+            {
-+                this.clearLeashed(true, true);
-+            }
-+
-+            if (this.leashHolder == null || this.leashHolder.isDead)
-+            {
-+                this.clearLeashed(true, true);
-+            }
-+        }
-+    }
-+
-+    public void clearLeashed(boolean sendPacket, boolean dropLead)
-+    {
-+        if (this.isLeashed)
-+        {
-+            this.isLeashed = false;
-+            this.leashHolder = null;
-+
-+            if (!this.world.isRemote && dropLead)
-+            {
-+                this.dropItem(Items.LEAD, 1);
-+            }
-+
-+            if (!this.world.isRemote && sendPacket && this.world instanceof WorldServer)
-+            {
-+                ((WorldServer)this.world).getEntityTracker().sendToTracking(this, new SPacketEntityAttach(this, (Entity)null));
-+            }
-+        }
-+    }
-+
-+    public boolean canBeLeashedTo(EntityPlayer player)
-+    {
-+        return !this.getLeashed() && !(this instanceof IMob);
-+    }
-+
-+    public boolean getLeashed()
-+    {
-+        return this.isLeashed;
-+    }
-+
-+    public Entity getLeashHolder()
-+    {
-+        return this.leashHolder;
-+    }
-+
-+    public void setLeashHolder(Entity entityIn, boolean sendAttachNotification)
-+    {
-+        this.isLeashed = true;
-+        this.leashHolder = entityIn;
-+
-+        if (!this.world.isRemote && sendAttachNotification && this.world instanceof WorldServer)
-+        {
-+            ((WorldServer)this.world).getEntityTracker().sendToTracking(this, new SPacketEntityAttach(this, this.leashHolder));
-+        }
-+
-+        if (this.isRiding())
-+        {
-+            this.dismountRidingEntity();
-+        }
-+    }
-+
-+    public boolean startRiding(Entity entityIn, boolean force)
-+    {
-+        boolean flag = super.startRiding(entityIn, force);
-+
-+        if (flag && this.getLeashed())
-+        {
-+            this.clearLeashed(true, true);
-         }
- 
-         return flag;
-     }
- 
--    private void func_110165_bF()
-+    private void recreateLeash()
-     {
--        if (this.field_110169_bv && this.field_110170_bx != null)
-+        if (this.isLeashed && this.leashNBTTag != null)
-         {
--            if (this.field_110170_bx.func_186855_b("UUID"))
-+            if (this.leashNBTTag.hasUniqueId("UUID"))
-             {
--                UUID uuid = this.field_110170_bx.func_186857_a("UUID");
-+                UUID uuid = this.leashNBTTag.getUniqueId("UUID");
- 
--                for (EntityLivingBase entitylivingbase : this.field_70170_p.func_72872_a(EntityLivingBase.class, this.func_174813_aQ().func_186662_g(10.0)))
-+                for (EntityLivingBase entitylivingbase : this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(10.0D)))
-                 {
--                    if (entitylivingbase.func_110124_au().equals(uuid))
-+                    if (entitylivingbase.getUniqueID().equals(uuid))
-                     {
--                        this.func_110162_b(entitylivingbase, true);
-+                        this.setLeashHolder(entitylivingbase, true);
-                         break;
-                     }
-                 }
++                ((WorldServer)this.field_70170_p).func_73039_n().func_151247_a(this, new SPacketEntityAttach(this, (Entity)null));
              }
--            else if (this.field_110170_bx.func_150297_b("X", 99) && this.field_110170_bx.func_150297_b("Y", 99) && this.field_110170_bx.func_150297_b("Z", 99))
-+            else if (this.leashNBTTag.hasKey("X", 99) && this.leashNBTTag.hasKey("Y", 99) && this.leashNBTTag.hasKey("Z", 99))
+         }
+     }
+@@ -1338,7 +1305,6 @@
+         }
+     }
+
+-    @Override
+     public boolean func_184205_a(Entity p_184205_1_, boolean p_184205_2_)
+     {
+         boolean flag = super.func_184205_a(p_184205_1_, p_184205_2_);
+@@ -1359,7 +1325,7 @@
+             {
+                 UUID uuid = this.field_110170_bx.func_186857_a("UUID");
+
+-                for (EntityLivingBase entitylivingbase : this.field_70170_p.func_72872_a(EntityLivingBase.class, this.func_174813_aQ().func_186662_g(10.0)))
++                for (EntityLivingBase entitylivingbase : this.field_70170_p.func_72872_a(EntityLivingBase.class, this.func_174813_aQ().func_186662_g(10.0D)))
+                 {
+                     if (entitylivingbase.func_110124_au().equals(uuid))
+                     {
+@@ -1370,9 +1336,7 @@
+             }
+             else if (this.field_110170_bx.func_150297_b("X", 99) && this.field_110170_bx.func_150297_b("Y", 99) && this.field_110170_bx.func_150297_b("Z", 99))
              {
 -                BlockPos blockpos = new BlockPos(
 -                    this.field_110170_bx.func_74762_e("X"), this.field_110170_bx.func_74762_e("Y"), this.field_110170_bx.func_74762_e("Z")
 -                );
--                EntityLeashKnot entityleashknot = EntityLeashKnot.func_174863_b(this.field_70170_p, blockpos);
-+                BlockPos blockpos = new BlockPos(this.leashNBTTag.getInteger("X"), this.leashNBTTag.getInteger("Y"), this.leashNBTTag.getInteger("Z"));
-+                EntityLeashKnot entityleashknot = EntityLeashKnot.getKnotForPosition(this.world, blockpos);
- 
++                BlockPos blockpos = new BlockPos(this.field_110170_bx.func_74762_e("X"), this.field_110170_bx.func_74762_e("Y"), this.field_110170_bx.func_74762_e("Z"));
+                 EntityLeashKnot entityleashknot = EntityLeashKnot.func_174863_b(this.field_70170_p, blockpos);
+
                  if (entityleashknot == null)
-                 {
--                    entityleashknot = EntityLeashKnot.func_174862_a(this.field_70170_p, blockpos);
-+                    entityleashknot = EntityLeashKnot.createKnot(this.world, blockpos);
-                 }
- 
--                this.func_110162_b(entityleashknot, true);
-+                this.setLeashHolder(entityleashknot, true);
-             }
-             else
-             {
--                this.func_110160_i(false, true);
-+                this.clearLeashed(false, true);
-             }
-         }
- 
--        this.field_110170_bx = null;
-+        this.leashNBTTag = null;
+@@ -1391,7 +1355,6 @@
+         this.field_110170_bx = null;
      }
- 
+
 -    @Override
--    public boolean func_174820_d(int p_174820_1_, ItemStack p_174820_2_)
-+    public boolean replaceItemInInventory(int inventorySlot, ItemStack itemStackIn)
+     public boolean func_174820_d(int p_174820_1_, ItemStack p_174820_2_)
      {
          EntityEquipmentSlot entityequipmentslot;
- 
--        if (p_174820_1_ == 98)
-+        if (inventorySlot == 98)
-         {
-             entityequipmentslot = EntityEquipmentSlot.MAINHAND;
-         }
--        else if (p_174820_1_ == 99)
-+        else if (inventorySlot == 99)
-         {
-             entityequipmentslot = EntityEquipmentSlot.OFFHAND;
-         }
--        else if (p_174820_1_ == 100 + EntityEquipmentSlot.HEAD.func_188454_b())
-+        else if (inventorySlot == 100 + EntityEquipmentSlot.HEAD.getIndex())
-         {
-             entityequipmentslot = EntityEquipmentSlot.HEAD;
-         }
--        else if (p_174820_1_ == 100 + EntityEquipmentSlot.CHEST.func_188454_b())
-+        else if (inventorySlot == 100 + EntityEquipmentSlot.CHEST.getIndex())
-         {
-             entityequipmentslot = EntityEquipmentSlot.CHEST;
-         }
--        else if (p_174820_1_ == 100 + EntityEquipmentSlot.LEGS.func_188454_b())
-+        else if (inventorySlot == 100 + EntityEquipmentSlot.LEGS.getIndex())
-         {
-             entityequipmentslot = EntityEquipmentSlot.LEGS;
-         }
-         else
-         {
--            if (p_174820_1_ != 100 + EntityEquipmentSlot.FEET.func_188454_b())
-+            if (inventorySlot != 100 + EntityEquipmentSlot.FEET.getIndex())
-             {
-                 return false;
-             }
-@@ -1426,63 +1391,58 @@
-             entityequipmentslot = EntityEquipmentSlot.FEET;
-         }
- 
--        if (!p_174820_2_.func_190926_b() && !func_184648_b(entityequipmentslot, p_174820_2_) && entityequipmentslot != EntityEquipmentSlot.HEAD)
-+        if (!itemStackIn.isEmpty() && !isItemStackInSlot(entityequipmentslot, itemStackIn) && entityequipmentslot != EntityEquipmentSlot.HEAD)
-         {
-             return false;
-         }
-         else
-         {
--            this.func_184201_a(entityequipmentslot, p_174820_2_);
-+            this.setItemStackToSlot(entityequipmentslot, itemStackIn);
-             return true;
+@@ -1437,7 +1400,6 @@
          }
      }
- 
+
 -    @Override
--    public boolean func_184186_bw()
--    {
--        return this.func_82171_bF() && super.func_184186_bw();
--    }
--
--    public static boolean func_184648_b(EntityEquipmentSlot p_184648_0_, ItemStack p_184648_1_)
--    {
--        EntityEquipmentSlot entityequipmentslot = func_184640_d(p_184648_1_);
+     public boolean func_184186_bw()
+     {
+         return this.func_82171_bF() && super.func_184186_bw();
+@@ -1446,12 +1408,9 @@
+     public static boolean func_184648_b(EntityEquipmentSlot p_184648_0_, ItemStack p_184648_1_)
+     {
+         EntityEquipmentSlot entityequipmentslot = func_184640_d(p_184648_1_);
 -        return entityequipmentslot == p_184648_0_
 -               || entityequipmentslot == EntityEquipmentSlot.MAINHAND && p_184648_0_ == EntityEquipmentSlot.OFFHAND
 -               || entityequipmentslot == EntityEquipmentSlot.OFFHAND && p_184648_0_ == EntityEquipmentSlot.MAINHAND;
--    }
--
++        return entityequipmentslot == p_184648_0_ || entityequipmentslot == EntityEquipmentSlot.MAINHAND && p_184648_0_ == EntityEquipmentSlot.OFFHAND || entityequipmentslot == EntityEquipmentSlot.OFFHAND && p_184648_0_ == EntityEquipmentSlot.MAINHAND;
+     }
+
 -    @Override
--    public boolean func_70613_aW()
--    {
--        return super.func_70613_aW() && !this.func_175446_cd();
--    }
--
--    public void func_94061_f(boolean p_94061_1_)
--    {
+     public boolean func_70613_aW()
+     {
+         return super.func_70613_aW() && !this.func_175446_cd();
+@@ -1459,27 +1418,26 @@
+
+     public void func_94061_f(boolean p_94061_1_)
+     {
 -        byte b0 = this.field_70180_af.func_187225_a(field_184654_a);
 -        this.field_70180_af.func_187227_b(field_184654_a, p_94061_1_ ? (byte)(b0 | 1) : (byte)(b0 & -2));
--    }
--
--    public void func_184641_n(boolean p_184641_1_)
--    {
++        byte b0 = ((Byte)this.field_70180_af.func_187225_a(field_184654_a)).byteValue();
++        this.field_70180_af.func_187227_b(field_184654_a, Byte.valueOf(p_94061_1_ ? (byte)(b0 | 1) : (byte)(b0 & -2)));
+     }
+
+     public void func_184641_n(boolean p_184641_1_)
+     {
 -        byte b0 = this.field_70180_af.func_187225_a(field_184654_a);
 -        this.field_70180_af.func_187227_b(field_184654_a, p_184641_1_ ? (byte)(b0 | 2) : (byte)(b0 & -3));
--    }
--
--    public boolean func_175446_cd()
--    {
--        return (this.field_70180_af.func_187225_a(field_184654_a) & 1) != 0;
--    }
--
--    public boolean func_184638_cS()
--    {
--        return (this.field_70180_af.func_187225_a(field_184654_a) & 2) != 0;
--    }
--
--    @Override
--    public EnumHandSide func_184591_cq()
--    {
--        return this.func_184638_cS() ? EnumHandSide.LEFT : EnumHandSide.RIGHT;
-+    public boolean canPassengerSteer()
-+    {
-+        return this.canBeSteered() && super.canPassengerSteer();
-+    }
-+
-+    public static boolean isItemStackInSlot(EntityEquipmentSlot slotIn, ItemStack stack)
-+    {
-+        EntityEquipmentSlot entityequipmentslot = getSlotForItemStack(stack);
-+        return entityequipmentslot == slotIn || entityequipmentslot == EntityEquipmentSlot.MAINHAND && slotIn == EntityEquipmentSlot.OFFHAND || entityequipmentslot == EntityEquipmentSlot.OFFHAND && slotIn == EntityEquipmentSlot.MAINHAND;
-+    }
-+
-+    public boolean isServerWorld()
-+    {
-+        return super.isServerWorld() && !this.isAIDisabled();
-+    }
-+
-+    public void setNoAI(boolean disable)
-+    {
-+        byte b0 = ((Byte)this.dataManager.get(AI_FLAGS)).byteValue();
-+        this.dataManager.set(AI_FLAGS, Byte.valueOf(disable ? (byte)(b0 | 1) : (byte)(b0 & -2)));
-+    }
-+
-+    public void setLeftHanded(boolean leftHanded)
-+    {
-+        byte b0 = ((Byte)this.dataManager.get(AI_FLAGS)).byteValue();
-+        this.dataManager.set(AI_FLAGS, Byte.valueOf(leftHanded ? (byte)(b0 | 2) : (byte)(b0 & -3)));
-+    }
-+
-+    public boolean isAIDisabled()
-+    {
-+        return (((Byte)this.dataManager.get(AI_FLAGS)).byteValue() & 1) != 0;
-+    }
-+
-+    public boolean isLeftHanded()
-+    {
-+        return (((Byte)this.dataManager.get(AI_FLAGS)).byteValue() & 2) != 0;
-+    }
-+
-+    public EnumHandSide getPrimaryHand()
-+    {
-+        return this.isLeftHanded() ? EnumHandSide.LEFT : EnumHandSide.RIGHT;
++        byte b0 = ((Byte)this.field_70180_af.func_187225_a(field_184654_a)).byteValue();
++        this.field_70180_af.func_187227_b(field_184654_a, Byte.valueOf(p_184641_1_ ? (byte)(b0 | 2) : (byte)(b0 & -3)));
      }
- 
-     public static enum SpawnPlacementType
-@@ -1490,5 +1450,19 @@
+
+     public boolean func_175446_cd()
+     {
+-        return (this.field_70180_af.func_187225_a(field_184654_a) & 1) != 0;
++        return (((Byte)this.field_70180_af.func_187225_a(field_184654_a)).byteValue() & 1) != 0;
+     }
+
+     public boolean func_184638_cS()
+     {
+-        return (this.field_70180_af.func_187225_a(field_184654_a) & 2) != 0;
++        return (((Byte)this.field_70180_af.func_187225_a(field_184654_a)).byteValue() & 2) != 0;
+     }
+
+-    @Override
+     public EnumHandSide func_184591_cq()
+     {
+         return this.func_184638_cS() ? EnumHandSide.LEFT : EnumHandSide.RIGHT;
+@@ -1490,5 +1448,19 @@
          ON_GROUND,
          IN_AIR,
          IN_WATER;
