@@ -26,8 +26,10 @@ import java.util.List;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.asm.transformers.DeobfuscationTransformer;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.FMLInjectionData;
+import top.outlands.foundation.TransformerDelegate;
 
 public class FMLDeobfTweaker implements ITweaker {
     @Override
@@ -39,7 +41,9 @@ public class FMLDeobfTweaker implements ITweaker {
     public void injectIntoClassLoader(LaunchClassLoader classLoader)
     {
         // Deobfuscation transformer, always last, and the access transformer tweaker as well
-        classLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.DeobfuscationTransformer");
+        DeobfuscationTransformer deobfuscationTransformer = new DeobfuscationTransformer();
+        TransformerDelegate.registerTransformerByInstance(deobfuscationTransformer);
+        TransformerDelegate.registerRenameTransformer(deobfuscationTransformer);
         // Add all the access transformers now as well
         for (String transformer : CoreModManager.getAccessTransformers())
         {

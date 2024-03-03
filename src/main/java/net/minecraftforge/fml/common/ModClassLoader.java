@@ -19,27 +19,20 @@
 
 package net.minecraftforge.fml.common;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.asm.transformers.ModAPITransformer;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import top.outlands.foundation.TransformerDelegate;
 
-import org.apache.logging.log4j.Level;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import top.outlands.TransformHandler;
+import java.io.File;
+import java.net.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A simple delegating class loader used to load mods into the system
@@ -173,9 +166,8 @@ public class ModClassLoader extends URLClassLoader
 
     public ModAPITransformer addModAPITransformer(ASMDataTable dataTable)
     {
-        mainClassLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.ModAPITransformer");
-        List<IClassTransformer> transformers = TransformHandler.getTransformers();
-        ModAPITransformer modAPI = (ModAPITransformer) transformers.get(transformers.size()-1);
+        ModAPITransformer modAPI = new ModAPITransformer();
+        TransformerDelegate.registerTransformerByInstance(modAPI);
         modAPI.initTable(dataTable);
         return modAPI;
     }
