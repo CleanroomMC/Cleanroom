@@ -122,9 +122,12 @@ public class FMLTweaker implements ITweaker {
         try
         {
             URL location = getClass().getProtectionDomain().getCodeSource().getLocation();
-            if (location.toString().startsWith("jar")) {
+            String path = location.toString();
+            if (path.startsWith("jar")) {
                 JarURLConnection connection = (JarURLConnection) location.openConnection();
                 jarLocation = connection.getJarFileURL().toURI();
+            } else if (path.startsWith("file")) {
+                jarLocation = URI.create(path.substring(0, path.indexOf("net/minecraftforge")));
             } else {
                 jarLocation = location.toURI();
             }
