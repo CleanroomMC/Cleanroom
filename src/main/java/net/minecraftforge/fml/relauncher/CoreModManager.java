@@ -440,13 +440,13 @@ public class CoreModManager {
         try
         {
             // Have to manually stuff the tweaker into the parent classloader
-            if (UCP == null || ADDURL == null)
+            /*if (UCP == null || ADDURL == null)
             {
                 UCP = classLoader.getClass().getClassLoader().getClass().getSuperclass().getDeclaredField("ucp");
                 UCP.setAccessible(true);
                 ADDURL = UCP.get(classLoader.getClass().getClassLoader()).getClass().getDeclaredMethod("addURL", URL.class);
             }
-            ADDURL.invoke(UCP.get(classLoader.getClass().getClassLoader()), coreMod.toURI().toURL());
+            ADDURL.invoke(UCP.get(classLoader.getClass().getClassLoader()), coreMod.toURI().toURL());*/
             classLoader.addURL(coreMod.toURI().toURL());
             CoreModManager.tweaker.injectCascadingTweak(cascadedTweaker);
             tweakSorting.put(cascadedTweaker,sortingOrder);

@@ -118,14 +118,14 @@ public class ASMEventHandler implements IEventListener
         String desc = name.replace('.',  '/');
         String instType = Type.getInternalName(callback.getDeclaringClass());
         String eventType = Type.getInternalName(callback.getParameterTypes()[0]);
-
+    /*
         System.out.println("Class     " + callback.getDeclaringClass().getName());
         System.out.println("Name:     " + name);
         System.out.println("Desc:     " + desc);
         System.out.println("InstType: " + instType);
         System.out.println("Callback: " + callback.getName() + Type.getMethodDescriptor(callback));
         System.out.println("Event:    " + eventType);
-
+    */
 
         cw.visit(V21, ACC_PUBLIC | ACC_SUPER, desc, null, "java/lang/Object", new String[]{ HANDLER_DESC });
 

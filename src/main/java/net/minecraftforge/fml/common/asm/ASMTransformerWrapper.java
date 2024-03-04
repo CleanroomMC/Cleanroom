@@ -30,6 +30,7 @@ import java.security.Permission;
 import java.util.Map;
 
 import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
 import org.objectweb.asm.ClassVisitor;
@@ -240,7 +241,7 @@ public class ASMTransformerWrapper
         {
             try
             {
-                this.parent = (IClassTransformer)this.getClass().getClassLoader().loadClass(getParentClass()).newInstance();
+                this.parent = (IClassTransformer) Launch.classLoader.loadClass(getParentClass()).newInstance();
             }
             catch(Exception e)
             {
