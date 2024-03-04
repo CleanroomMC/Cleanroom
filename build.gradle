@@ -415,6 +415,7 @@ project(':cleanroom') {
         installer "top.outlands:foundation:0.5.0"
         installer 'org.burningwave:jvm-driver:8.15.0'
         installer 'org.javassist:javassist:3.30.2-GA'
+        installer "zone.rong:imaginebreaker:2.1"
 
         installer 'com.ibm.icu:icu4j:74.2'
 
