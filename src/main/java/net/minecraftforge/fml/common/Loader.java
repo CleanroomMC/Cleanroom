@@ -371,6 +371,7 @@ public class Loader
         mods.add(minecraft);
         // Add in the MCP mod container
         mods.add(new InjectedModContainer(mcp,new File("minecraft.jar")));
+        mods.add(new InjectedModContainer(new ConfigAnytimeContainer(), new File("minecraft.jar")));
         for (String cont : injectedContainers)
         {
             ModContainer mc;
