@@ -371,7 +371,7 @@ public class Loader
         mods.add(minecraft);
         // Add in the MCP mod container
         mods.add(new InjectedModContainer(mcp, null));
-        mods.add(new InjectedModContainer(new ConfigAnytimeContainer(), null));
+        mods.add(new InjectedModContainer(new CleanroomContainer.ConfigAnytimeContainer(), null));
         mods.add(new InjectedModContainer(new CleanroomContainer.Cleanroom(), null));
         for (String cont : injectedContainers)
         {
