@@ -338,7 +338,9 @@ public class ForgeHooksClient
     private static int updatescrollcounter = 0;
     public static String renderMainMenu(GuiMainMenu gui, FontRenderer font, int width, int height, String splashText)
     {
-        Status status = ForgeVersion.getStatus();
+        //Status status = ForgeVersion.getStatus(); //TODO: cleanroom's own version check
+        Status status = BETA; // for now, we are always beta.
+
         if (status == BETA || status == BETA_OUTDATED)
         {
             // render a warning at the top of the screen,
