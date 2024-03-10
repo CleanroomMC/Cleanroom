@@ -39,7 +39,7 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
 
     @Override
     public String getModContainerClass() {
-        return "net.minecraftforge.fml.common.MixinContainer";
+        return "net.minecraftforge.fml.common.CleanroomContainer$MixinContainer";
     }
 
     @Override

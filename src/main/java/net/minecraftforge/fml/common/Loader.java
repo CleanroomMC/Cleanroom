@@ -370,14 +370,15 @@ public class Loader
         FMLLog.log.debug("Building injected Mod Containers {}", injectedContainers);
         mods.add(minecraft);
         // Add in the MCP mod container
-        mods.add(new InjectedModContainer(mcp,new File("minecraft.jar")));
-        mods.add(new InjectedModContainer(new ConfigAnytimeContainer(), new File("minecraft.jar")));
+        mods.add(new InjectedModContainer(mcp, null));
+        mods.add(new InjectedModContainer(new ConfigAnytimeContainer(), null));
+        mods.add(new InjectedModContainer(new CleanroomContainer.Cleanroom(), null));
         for (String cont : injectedContainers)
         {
             ModContainer mc;
             try
             {
-                mc = (ModContainer) Class.forName(cont,true,modClassLoader).newInstance();
+                mc = (ModContainer) Class.forName(cont,true,modClassLoader).getConstructor().newInstance();
             }
             catch (Exception e)
             {
