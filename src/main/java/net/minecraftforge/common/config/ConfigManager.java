@@ -394,7 +394,8 @@ public class ConfigManager
         Set<Class<?>> modConfigClasses = MOD_CONFIG_CLASSES.computeIfAbsent(modId, k -> Sets.newHashSet());
         modConfigClasses.add(configClass);
         File configDir = new File(Launch.minecraftHome, "config");
-        File configFile = new File(configDir, config.name() + ".cfg");
+        String name = config.name();
+        File configFile = new File(configDir, Strings.isNullOrEmpty(name) ? config.modid() : name + ".cfg");
         Configuration cfg = CONFIGS.get(configFile.getAbsolutePath());
         if (cfg == null) {
             cfg = new Configuration(configFile);
