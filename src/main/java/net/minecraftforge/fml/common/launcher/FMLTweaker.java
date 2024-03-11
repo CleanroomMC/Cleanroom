@@ -26,6 +26,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,6 +34,7 @@ import java.util.Map.Entry;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 
 import org.apache.logging.log4j.LogManager;
@@ -126,11 +128,12 @@ public class FMLTweaker implements ITweaker {
             if (path.startsWith("jar")) {
                 JarURLConnection connection = (JarURLConnection) location.openConnection();
                 jarLocation = connection.getJarFileURL().toURI();
-            } else if (path.startsWith("file")) {
+            } else if (path.startsWith("file") && path.endsWith(".class")) {
                 jarLocation = URI.create(path.substring(0, path.indexOf("net/minecraftforge")));
             } else {
                 jarLocation = location.toURI();
             }
+            LogManager.getLogger("FML.TWEAK").info("Jar location: " + jarLocation);
         }
         catch (URISyntaxException | IOException e)
         {
@@ -170,7 +173,7 @@ public class FMLTweaker implements ITweaker {
         }
         launchArgs.clear();
 
-        return args.toArray(new String[args.size()]);
+        return args.toArray(new String[0]);
     }
 
     public File getGameDir()

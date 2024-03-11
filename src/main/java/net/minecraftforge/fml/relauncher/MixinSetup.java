@@ -16,7 +16,7 @@ public class MixinSetup implements IFMLCallHook {
         addTransformationExclusions();
         initialize();
         MixinBooterPlugin.LOGGER.info("Initializing Mixins...");
-        MixinBootstrap.realInit();
+        MixinBootstrap.init();
         MixinBooterPlugin.LOGGER.info("Initializing MixinExtras...");
         MixinExtrasBootstrap.init();
         MixinFixer.patchAncientModMixinsLoadingMethod();

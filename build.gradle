@@ -412,7 +412,7 @@ project(':cleanroom') {
         installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
 
         //installer "com.cleanroommc:bouncepad:$props.bouncepad_version"
-        installer "top.outlands:foundation:0.5.0"
+        installer "top.outlands:foundation:0.8.2"
         installer 'org.burningwave:jvm-driver:8.15.0'
         installer 'org.javassist:javassist:3.30.2-GA'
         installer "zone.rong:imaginebreaker:2.1"
@@ -443,7 +443,7 @@ project(':cleanroom') {
         installer 'org.apache.commons:commons-compress:1.24.0'
         installer 'org.apache.httpcomponents:httpclient:4.5.14'
         installer 'org.apache.httpcomponents:httpcore:4.4.16'
-        installer 'com.github.oshi:oshi-core:6.4.10'
+        installer 'com.github.oshi:oshi-core:6.4.13'
         installer 'net.java.dev.jna:jna:5.14.0'
         installer 'net.java.dev.jna:jna-platform:5.14.0'
         installer 'it.unimi.dsi:fastutil:8.5.12'
@@ -456,8 +456,9 @@ project(':cleanroom') {
         installer 'com.google.code.findbugs:jsr305:3.0.2'
 
         // TODO: Unpin in 1.18.1 or when Mojang bumps the Log4J version
-        installer 'org.apache.logging.log4j:log4j-api:2.22.1'
-        installer 'org.apache.logging.log4j:log4j-core:2.22.1'
+        installer 'org.apache.logging.log4j:log4j-api:2.23.0'
+        installer 'org.apache.logging.log4j:log4j-core:2.23.0'
+        installer 'org.slf4j:slf4j-api:2.0.12'
         installer 'jakarta.annotation:jakarta.annotation-api:2.1.1'
         installer 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.1'
         installer 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.1'
@@ -466,7 +467,7 @@ project(':cleanroom') {
         installer 'org.openjdk.nashorn:nashorn-core:15.4'
 
         // Mixin
-        installer 'com.cleanroommc:sponge-mixin:0.17.1+mixin.0.8.5'
+        installer 'com.cleanroommc:sponge-mixin:0.17.4+mixin.0.8.5'
         installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.3.5')
 
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'

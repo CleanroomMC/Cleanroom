@@ -10,21 +10,27 @@ import org.objectweb.asm.commons.Remapper;
 
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 public class JavaxTransformer implements IClassTransformer {
     public static JavaxTransformer instance = null;
+    public static final Attributes.Name MANIFEST_SAFE_ATTRIBUTE = new Attributes.Name("Cleanroom-Compat");
     public static Set<String> javaxlist = new TreeSet<>();
     public JavaxTransformer () {
         instance = this;
     }
 
     @Override
-    public byte[] transform(String s, String s1, byte[] bytes) {
+    public byte[] transform(String s, String s1, byte[] bytes, Manifest manifest) {
         if (this != instance) {
             return bytes;
         }
         if (bytes == null) {
             return null;
+        }
+        if (manifest.getMainAttributes().getValue(MANIFEST_SAFE_ATTRIBUTE).equals("true")) {
+            return bytes;
         }
         ClassReader reader = new ClassReader(bytes);
         ClassWriter writer = new ClassWriter(0);
