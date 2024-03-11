@@ -160,6 +160,15 @@
  
                  if (this.field_78299_w)
                  {
+@@ -526,7 +543,7 @@
+             this.field_78292_o = (float)(p_180455_4_ >> 8 & 0xFF) / 255.0F;
+             this.field_78306_p = (float)(p_180455_4_ & 0xFF) / 255.0F;
+             this.field_78305_q = (float)(p_180455_4_ >> 24 & 0xFF) / 255.0F;
+-            GlStateManager.func_179131_c(this.field_78291_n, this.field_78292_o, this.field_78306_p, this.field_78305_q);
++            setColor(this.field_78291_n, this.field_78292_o, this.field_78306_p, this.field_78305_q);
+             this.field_78295_j = p_180455_2_;
+             this.field_78296_k = p_180455_3_;
+             this.func_78255_a(p_180455_1_, p_180455_5_);
 @@ -580,6 +597,7 @@
  
      public int func_78263_a(char p_78263_1_)
