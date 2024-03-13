@@ -412,7 +412,7 @@ project(':cleanroom') {
         installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
 
         //installer "com.cleanroommc:bouncepad:$props.bouncepad_version"
-        installer "top.outlands:foundation:0.8.2"
+        installer "top.outlands:foundation:0.10.0"
         installer 'org.burningwave:jvm-driver:8.15.0'
         installer 'org.javassist:javassist:3.30.2-GA'
         installer "zone.rong:imaginebreaker:2.1"
@@ -467,7 +467,7 @@ project(':cleanroom') {
         installer 'org.openjdk.nashorn:nashorn-core:15.4'
 
         // Mixin
-        installer 'com.cleanroommc:sponge-mixin:0.17.4+mixin.0.8.5'
+        installer 'com.cleanroommc:sponge-mixin:0.17.6+mixin.0.8.5'
         installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.3.5')
 
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'

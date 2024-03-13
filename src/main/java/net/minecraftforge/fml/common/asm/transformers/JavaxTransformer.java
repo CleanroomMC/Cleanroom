@@ -22,15 +22,12 @@ public class JavaxTransformer implements IClassTransformer {
     }
 
     @Override
-    public byte[] transform(String s, String s1, byte[] bytes, Manifest manifest) {
+    public byte[] transform(String s, String s1, byte[] bytes) {
         if (this != instance) {
             return bytes;
         }
         if (bytes == null) {
             return null;
-        }
-        if (manifest.getMainAttributes().getValue(MANIFEST_SAFE_ATTRIBUTE).equals("true")) {
-            return bytes;
         }
         ClassReader reader = new ClassReader(bytes);
         ClassWriter writer = new ClassWriter(0);
