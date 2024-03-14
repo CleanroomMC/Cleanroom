@@ -412,7 +412,7 @@ project(':cleanroom') {
         installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
 
         //installer "com.cleanroommc:bouncepad:$props.bouncepad_version"
-        installer "top.outlands:foundation:0.10.2"
+        installer "top.outlands:foundation:0.10.3"
         installer 'org.burningwave:jvm-driver:8.15.0'
         installer 'org.javassist:javassist:3.30.2-GA'
         installer "zone.rong:imaginebreaker:2.1"
