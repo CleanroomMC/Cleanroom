@@ -414,6 +414,7 @@ project(':cleanroom') {
         //installer "com.cleanroommc:bouncepad:$props.bouncepad_version"
         installer "top.outlands:foundation:0.10.3"
         installer 'org.burningwave:jvm-driver:8.15.0'
+        installer 'io.github.toolfactory:jvm-driver:9.6.0'
         installer 'org.javassist:javassist:3.30.2-GA'
         installer "zone.rong:imaginebreaker:2.1"
 
