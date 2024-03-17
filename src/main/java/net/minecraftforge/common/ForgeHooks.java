@@ -142,6 +142,7 @@ import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
+import net.minecraftforge.event.utils.ResourceLocationInitEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.NoteBlockEvent;
 import net.minecraftforge.fluids.IFluidBlock;
@@ -1486,6 +1487,13 @@ public class ForgeHooks
         }
         return false;
     }
+
+    public static String[] onResourceLocationInit(String namespace, String path){
+        ResourceLocationInitEvent evt = new ResourceLocationInitEvent(namespace, path);
+        MinecraftForge.EVENT_BUS.post(evt);
+        return new String[]{evt.getNamespace(), evt.getPath()};
+    }
+
 
     private static final Map<DataSerializer<?>, DataSerializerEntry> serializerEntries = GameData.getSerializerMap();
     private static final ForgeRegistry<DataSerializerEntry> serializerRegistry = (ForgeRegistry<DataSerializerEntry>) ForgeRegistries.DATA_SERIALIZERS;

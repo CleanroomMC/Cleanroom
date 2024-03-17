@@ -1,0 +1,33 @@
+--- before/net/minecraft/util/ResourceLocation.java
++++ after/net/minecraft/util/ResourceLocation.java
+@@ -9,6 +9,8 @@
+ import com.google.gson.JsonSerializer;
+ import java.lang.reflect.Type;
+ import java.util.Locale;
++import java.util.Objects;
++
+ import org.apache.commons.lang3.Validate;
+ 
+ public class ResourceLocation implements Comparable<ResourceLocation>
+@@ -18,9 +20,7 @@
+ 
+     protected ResourceLocation(int p_i45928_1_, String... p_i45928_2_)
+     {
+-        this.field_110626_a = org.apache.commons.lang3.StringUtils.isEmpty(p_i45928_2_[0]) ? "minecraft" : p_i45928_2_[0].toLowerCase(Locale.ROOT);
+-        this.field_110625_b = p_i45928_2_[1].toLowerCase(Locale.ROOT);
+-        Validate.notNull(this.field_110625_b);
++        this(org.apache.commons.lang3.StringUtils.isEmpty(p_i45928_2_[0]) ? "minecraft" : p_i45928_2_[0].toLowerCase(Locale.ROOT), Objects.requireNonNull(p_i45928_2_[1].toLowerCase(Locale.ROOT), "the path of ResourceLocation is non-null!"));
+     }
+ 
+     public ResourceLocation(String p_i1293_1_)
+@@ -30,7 +30,9 @@
+ 
+     public ResourceLocation(String p_i1292_1_, String p_i1292_2_)
+     {
+-        this(0, p_i1292_1_, p_i1292_2_);
++        String[] s = net.minecraftforge.common.ForgeHooks.onResourceLocationInit(p_i1292_1_, p_i1292_2_);
++        this.field_110626_a = s[0];
++        this.field_110625_b = s[1];
+     }
+ 
+     public static String[] func_177516_a(String p_177516_0_)
