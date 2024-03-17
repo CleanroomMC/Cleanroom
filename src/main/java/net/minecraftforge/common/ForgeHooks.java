@@ -1485,7 +1485,10 @@ public class ForgeHooks
                 if (fluid == null || fluid == FluidRegistry.WATER || fluid == FluidRegistry.LAVA || fluid.getName().equals("milk"))
                 {
                     return "minecraft";
-                }else return "forge";//TODO : could we find the source of the fluid?
+                }else {
+                    modId = FluidRegistry.getOwner(fluid);
+                    return modId == null ? "unknown" : modId;
+                }
             }
         }
         return modId;

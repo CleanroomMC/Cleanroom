@@ -47,6 +47,7 @@ import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.registries.IRegistryDelegate;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -65,6 +66,7 @@ public abstract class FluidRegistry
     static BiMap<String,Fluid> masterFluidReference = HashBiMap.create();
     static BiMap<String,String> defaultFluidName = HashBiMap.create();
     static Map<Fluid,FluidDelegate> delegates = Maps.newHashMap();
+    static Map<Fluid,String> fluidOwner = Maps.newHashMap(); // Fluid - modid
 
     static boolean universalBucketEnabled = false;
     static Set<String> bucketFluids = Sets.newHashSet();
@@ -165,6 +167,7 @@ public abstract class FluidRegistry
             return false;
         }
         fluids.put(fluid.getName(), fluid);
+        fluidOwner.put(fluid, Loader.instance().activeModContainer() == null ? null : Loader.instance().activeModContainer().getModId());
         maxID++;
         fluidIDs.put(fluid, maxID);
         fluidNames.put(maxID, fluid.getName());
@@ -450,6 +453,11 @@ public abstract class FluidRegistry
     static IRegistryDelegate<Fluid> makeDelegate(Fluid fl)
     {
         return delegates.get(fl);
+    }
+
+    @Nullable
+    public static String getOwner(@Nonnull Fluid fluid){
+        return fluidOwner.get(fluid);
     }
 
 
