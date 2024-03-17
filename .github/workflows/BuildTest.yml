@@ -11,6 +11,14 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+    inputs:
+      build_type:
+        type: choice
+        description: Build type
+        options:
+          - Alpha
+          - Beta
+          - Release
 
 permissions:
   contents: read
@@ -28,6 +36,11 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+
+      - name: Gather build info
+        id: vars
+        run: |
+          echo "BUILD_TYPE=$(echo ${{ github.event.commits[0].message }} | sed -En 's/.*\[(.*|\ .*)\]/\1/p')" >> $GITHUB_OUTPUT
 
       - name: Fix Gradle permission
         run: chmod +x ./gradlew
@@ -62,4 +75,4 @@ jobs:
           repository: CleanroomMC/CleanroomMMC
           event-type: cleanroom_upload_artifact
           client-payload: |
-            '{"commit_hash": "${{ github.sha }}", "run_job_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}, "branch": "${GITHUB_REF#*/}", "build_type": "$( echo ${{ github.event.commits[0].message }} | sed -En 's/.*\[(.*|\ .*)\]/\1/p' )"'
+            '{"commit_hash": "${{ github.sha }}", "run_job_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}, "branch": "${{ github.ref_name }}", "build_type": "${{ inputs.environment || steps.vars.outputs.BUILD_TYPE }}"'
