@@ -234,7 +234,7 @@
      public int func_70646_bf()
      {
          return 0;
-@@ -372,15 +344,13 @@
+@@ -372,15 +344,14 @@
          return this.func_70809_q() > 0;
      }
  
@@ -244,6 +244,7 @@
 -        this.field_70181_x = 0.42F;
 +        this.field_70181_x = 0.41999998688697815D;
          this.field_70160_al = true;
++        net.minecraftforge.common.ForgeHooks.onLivingJump(this);
      }
  
      @Nullable
@@ -251,7 +252,7 @@
      public IEntityLivingData func_180482_a(DifficultyInstance p_180482_1_, @Nullable IEntityLivingData p_180482_2_)
      {
          int i = this.field_70146_Z.nextInt(3);
-@@ -400,6 +370,14 @@
+@@ -400,6 +371,14 @@
          return this.func_189101_db() ? SoundEvents.field_189110_fE : SoundEvents.field_187882_fq;
      }
  
@@ -266,7 +267,7 @@
      static class AISlimeAttack extends EntityAIBase
          {
              private final EntitySlime field_179466_a;
-@@ -411,7 +389,6 @@
+@@ -411,7 +390,6 @@
                  this.func_75248_a(2);
              }
  
@@ -274,7 +275,7 @@
              public boolean func_75250_a()
              {
                  EntityLivingBase entitylivingbase = this.field_179466_a.func_70638_az();
-@@ -430,14 +407,12 @@
+@@ -430,14 +408,12 @@
                  }
              }
  
@@ -289,7 +290,7 @@
              public boolean func_75253_b()
              {
                  EntityLivingBase entitylivingbase = this.field_179466_a.func_70638_az();
-@@ -460,12 +435,10 @@
+@@ -460,12 +436,10 @@
                  }
              }
  
@@ -303,7 +304,7 @@
              }
          }
  
-@@ -481,19 +454,11 @@
+@@ -481,19 +455,11 @@
                  this.func_75248_a(2);
              }
  
@@ -324,7 +325,7 @@
              public void func_75246_d()
              {
                  if (--this.field_179460_c <= 0)
-@@ -517,13 +482,11 @@
+@@ -517,13 +483,11 @@
                  ((PathNavigateGround)p_i45823_1_.func_70661_as()).func_179693_d(true);
              }
  
@@ -338,7 +339,7 @@
              public void func_75246_d()
              {
                  if (this.field_179457_a.func_70681_au().nextFloat() < 0.8F)
-@@ -531,7 +494,7 @@
+@@ -531,7 +495,7 @@
                      this.field_179457_a.func_70683_ar().func_75660_a();
                  }
  
@@ -347,7 +348,7 @@
              }
          }
  
-@@ -545,16 +508,14 @@
+@@ -545,16 +509,14 @@
                  this.func_75248_a(5);
              }
  
@@ -365,7 +366,7 @@
              }
          }
  
-@@ -569,7 +530,7 @@
+@@ -569,7 +531,7 @@
              {
                  super(p_i45821_1_);
                  this.field_179925_i = p_i45821_1_;
@@ -374,7 +375,7 @@
              }
  
              public void func_179920_a(float p_179920_1_, boolean p_179920_2_)
-@@ -584,7 +545,6 @@
+@@ -584,7 +546,6 @@
                  this.field_188491_h = EntityMoveHelper.Action.MOVE_TO;
              }
  
@@ -382,7 +383,7 @@
              public void func_75641_c()
              {
                  this.field_75648_a.field_70177_z = this.func_75639_a(this.field_75648_a.field_70177_z, this.field_179922_g, 90.0F);
-@@ -601,8 +561,7 @@
+@@ -601,8 +562,7 @@
  
                      if (this.field_75648_a.field_70122_E)
                      {
@@ -392,7 +393,7 @@
  
                          if (this.field_179924_h-- <= 0)
                          {
-@@ -617,12 +576,7 @@
+@@ -617,12 +577,7 @@
  
                              if (this.field_179925_i.func_70807_r())
                              {
@@ -406,7 +407,7 @@
                              }
                          }
                          else
-@@ -634,8 +588,7 @@
+@@ -634,8 +589,7 @@
                      }
                      else
                      {
