@@ -62,4 +62,4 @@ jobs:
           repository: CleanroomMC/CleanroomMMC
           event-type: cleanroom_upload_artifact
           client-payload: |
-            '{"commit_hash": "${{ github.sha }}", "run_job_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}, "branch": "${GITHUB_REF#*/}", "build_type": "${{ echo ${{ github.event.commits[0].message }} | sed -En 's/.*\[(.*|\ .*)\]/\1/p' }}"'
+            '{"commit_hash": "${{ github.sha }}", "run_job_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}, "branch": "${GITHUB_REF#*/}", "build_type": "$( echo ${{ github.event.commits[0].message }} | sed -En 's/.*\[(.*|\ .*)\]/\1/p' )"'
