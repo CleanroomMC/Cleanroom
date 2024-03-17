@@ -241,8 +241,7 @@
 -    @Override
      protected void func_70664_aZ()
      {
--        this.field_70181_x = 0.42F;
-+        this.field_70181_x = 0.41999998688697815D;
+         this.field_70181_x = 0.42F;
          this.field_70160_al = true;
 +        net.minecraftforge.common.ForgeHooks.onLivingJump(this);
      }
