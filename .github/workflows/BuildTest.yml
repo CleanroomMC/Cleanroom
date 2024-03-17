@@ -16,9 +16,9 @@ on:
         type: choice
         description: Build type
         options:
-          - Alpha
-          - Beta
-          - Release
+          - Normal
+          - Experimental
+          - Bleeding Edge
 
 permissions:
   contents: read
