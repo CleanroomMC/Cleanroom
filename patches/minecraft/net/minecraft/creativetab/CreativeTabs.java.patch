@@ -135,7 +135,7 @@
      private final int field_78033_n;
      private final String field_78034_o;
 -    private String field_78043_p = "items.png";
-+    private net.minecraft.util.ResourceLocation field_78043_p = makeVanillaTextureLocation("items.png");
++    private net.minecraft.util.ResourceLocation backgroundTextureLocation = makeVanillaTextureLocation("items.png");
      private boolean field_78042_q = true;
      private boolean field_78041_r = true;
      private EnumEnchantmentType[] field_111230_s = new EnumEnchantmentType[0];
@@ -170,7 +170,7 @@
 +    }
 +
 +    public CreativeTabs setBackgroundImageName(net.minecraft.util.ResourceLocation texture){
-+        this.field_78043_p = texture;
++        this.backgroundTextureLocation = texture;
 +        return this;
 +    }
 +
@@ -192,8 +192,8 @@
 -    {
 -        this.field_78043_p = p_78025_1_;
 -        return this;
-+        if ("minecraft".equals(field_78043_p.func_110624_b()) && field_78043_p.func_110623_a().startsWith("textures/gui/container/creative_inventory/tab_")){
-+            return field_78043_p.func_110623_a().substring("textures/gui/container/creative_inventory/tab_".length());
++        if ("minecraft".equals(backgroundTextureLocation.func_110624_b()) && backgroundTextureLocation.func_110623_a().startsWith("textures/gui/container/creative_inventory/tab_")){
++            return backgroundTextureLocation.func_110623_a().substring("textures/gui/container/creative_inventory/tab_".length());
 +        }
 +        else return "items.png";
      }
@@ -272,7 +272,7 @@
 +    @SideOnly(Side.CLIENT)
 +    public net.minecraft.util.ResourceLocation getBackgroundImage()
 +    {
-+        return field_78043_p;
++        return backgroundTextureLocation;
 +    }
 +
 +    public int getLabelColor()
