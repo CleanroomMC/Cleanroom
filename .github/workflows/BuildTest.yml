@@ -45,7 +45,7 @@ jobs:
       - name: Gather build info
         id: vars
         run: |
-          BRANCH_FEAT=$(echo ${{ steps.branch-names.outputs.current_branch }} | cut -d';' -f1 | awk '{print tolower($0)}')
+          BRANCH_FEAT=$(echo "${{ steps.branch-names.outputs.current_branch }}" | cut -d'/' -f1 | awk '{print tolower($0)}')
           if [ "$BRANCH_FEAT" = "experimental" ]; then
             echo "BUILD_TYPE=Experimental" >> $GITHUB_OUTPUT
           elif [ "$BRANCH_FEAT" = "bleeding-edge" ]; then
