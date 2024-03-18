@@ -48,13 +48,11 @@ jobs:
           BRANCH_FEAT=$(echo ${{ steps.branch-names.outputs.current_branch }} | cut -d';' -f1 | awk '{print tolower($0)}')
           if [ "$BRANCH_FEAT" = "experimental" ]; then
             echo "BUILD_TYPE=Experimental" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          if [ "$BRANCH_FEAT" = "bleeding-edge" ]; then
+          elif [ "$BRANCH_FEAT" = "bleeding-edge" ]; then
             echo "BUILD_TYPE=Bleeding Edge" >> $GITHUB_OUTPUT
-            exit 0
+          else
+            echo "BUILD_TYPE=Stable" >> $GITHUB_OUTPUT
           fi
-          echo "BUILD_TYPE=Stable" >> $GITHUB_OUTPUT
 
       - name: Fix Gradle permission
         run: chmod +x ./gradlew
