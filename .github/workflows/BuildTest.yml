@@ -16,7 +16,7 @@ on:
         type: choice
         description: Build type
         options:
-          - Normal
+          - Stable
           - Experimental
           - Bleeding Edge
 
@@ -37,10 +37,20 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Get branch names.
+        id: branch-names
+        uses: tj-actions/branch-names@v8
+
+      # add more feat here if required
       - name: Gather build info
         id: vars
         run: |
-          echo "BUILD_TYPE=$(echo ${{ github.event.commits[0].message }} | sed -En 's/.*\[(.*|\ .*)\]/\1/p')" >> $GITHUB_OUTPUT
+          branch_feat = $(echo ${{ steps.branch-names.outputs.current_branch }} | cut -d';' -f1 | awk '{print tolower($0)}')
+          if [ "$branch_feat" = "experimental" ]; then
+            echo "BUILD_TYPE=Experimental" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "BUILD_TYPE=Stable" >> $GITHUB_OUTPUT
 
       - name: Fix Gradle permission
         run: chmod +x ./gradlew
