@@ -11,6 +11,14 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+    inputs:
+      build_type:
+        type: choice
+        description: Build type
+        options:
+          - Stable
+          - Experimental
+          - Bleeding Edge
 
 permissions:
   contents: read
@@ -28,6 +36,23 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+
+      - name: Get branch names.
+        id: branch-names
+        uses: tj-actions/branch-names@v8
+
+      # add more feat here if required
+      - name: Gather build info
+        id: vars
+        run: |
+          BRANCH_FEAT=$(echo ${{ steps.branch-names.outputs.current_branch }} | cut -d';' -f1 | awk '{print tolower($0)}')
+          if [ "$BRANCH_FEAT" = "experimental" ]; then
+            echo "BUILD_TYPE=Experimental" >> $GITHUB_OUTPUT
+          elif [ "$BRANCH_FEAT" = "bleeding-edge" ]; then
+            echo "BUILD_TYPE=Bleeding Edge" >> $GITHUB_OUTPUT
+          else
+            echo "BUILD_TYPE=Stable" >> $GITHUB_OUTPUT
+          fi
 
       - name: Fix Gradle permission
         run: chmod +x ./gradlew
@@ -61,4 +86,4 @@ jobs:
           token: ${{ secrets.CLEANROOMMC_DISPATCH_TOKEN }} # require PAT :shrug:
           repository: CleanroomMC/CleanroomMMC
           event-type: cleanroom_upload_artifact
-          client-payload: '{"commit_hash": "${{ github.sha }}", "run_job_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}'
+          client-payload: '{"commit_hash": "${{ github.sha }}", "run_job_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}", "branch": "${{ github.ref_name }}", "build_type": "${{ inputs.environment || steps.vars.outputs.BUILD_TYPE }}"}'
