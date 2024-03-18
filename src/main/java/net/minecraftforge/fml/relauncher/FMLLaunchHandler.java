@@ -23,6 +23,7 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.TracingPrintStream;
@@ -77,6 +78,8 @@ public class FMLLaunchHandler
         this.classLoader.addClassLoaderExclusion("com.google.common.");
         this.classLoader.addClassLoaderExclusion("org.objectweb.asm.");*/
         this.classLoader.addClassLoaderExclusion("LZMA.");
+        this.classLoader.addTransformerExclusion("scala.");
+        this.classLoader.addTransformerExclusion("com.llamalad7.mixinextras.");
     }
 
     private void setupClient()

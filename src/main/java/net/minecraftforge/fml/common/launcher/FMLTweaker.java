@@ -31,16 +31,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 
+import net.minecraftforge.fml.relauncher.MixinBooterPlugin;
 import org.apache.logging.log4j.LogManager;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.spongepowered.asm.launch.MixinBootstrap;
 
 public class FMLTweaker implements ITweaker {
     private File gameDir;
@@ -54,6 +57,10 @@ public class FMLTweaker implements ITweaker {
         {
             System.setProperty("java.net.preferIPv4Stack", "true");
         }
+        LogManager.getLogger("FML.TWEAK").info("Initializing Mixins...");
+        MixinBootstrap.init();
+        LogManager.getLogger("FML.TWEAK").info("Initializing MixinExtras...");
+        MixinExtrasBootstrap.init();
     }
     @SuppressWarnings("unchecked")
     @Override
