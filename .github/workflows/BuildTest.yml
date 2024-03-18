@@ -50,6 +50,10 @@ jobs:
             echo "BUILD_TYPE=Experimental" >> $GITHUB_OUTPUT
             exit 0
           fi
+          if [ "$branch_feat" = "bleeding-edge" ]; then
+            echo "BUILD_TYPE=Bleeding Edge" >> $GITHUB_OUTPUT
+            exit 0
+          fi
           echo "BUILD_TYPE=Stable" >> $GITHUB_OUTPUT
 
       - name: Fix Gradle permission
