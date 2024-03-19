@@ -93,7 +93,11 @@ public class CoreModManager {
         @Override
         public String toString()
         {
-            return String.format("%s {%s}", this.name, this.predepends);
+            if (this.predepends.isEmpty()) {
+                return this.name;
+            } else {
+                return String.format("%s {%s}", this.name, this.predepends);
+            }
         }
 
         @Override
@@ -439,14 +443,6 @@ public class CoreModManager {
     private static void handleCascadingTweak(File coreMod, JarFile jar, String cascadedTweaker, LaunchClassLoader classLoader, Integer sortingOrder) throws MalformedURLException {
         try
         {
-            // Have to manually stuff the tweaker into the parent classloader
-            /*if (UCP == null || ADDURL == null)
-            {
-                UCP = classLoader.getClass().getClassLoader().getClass().getSuperclass().getDeclaredField("ucp");
-                UCP.setAccessible(true);
-                ADDURL = UCP.get(classLoader.getClass().getClassLoader()).getClass().getDeclaredMethod("addURL", URL.class);
-            }
-            ADDURL.invoke(UCP.get(classLoader.getClass().getClassLoader()), coreMod.toURI().toURL());*/
             classLoader.addURL(coreMod.toURI().toURL());
             CoreModManager.tweaker.injectCascadingTweak(cascadedTweaker);
             tweakSorting.put(cascadedTweaker,sortingOrder);
