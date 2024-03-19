@@ -225,7 +225,7 @@ public class CoreModManager {
             throw new RuntimeException("The patch transformer failed to load! This is critical, loading cannot continue!", e);
         }
 
-        loadPlugins = new ArrayList<FMLPluginWrapper>();
+        loadPlugins = new ArrayList<>();
         for (String rootPluginName : rootPlugins)
         {
             loadCoreMod(classLoader, rootPluginName, new File(FMLTweaker.getJarLocation()));
@@ -379,7 +379,7 @@ public class CoreModManager {
                 }
 
                 String cascadedTweaker = mfAttributes.getValue("TweakClass");
-                if (cascadedTweaker != null)
+                if (cascadedTweaker != null && !cascadedTweaker.equals("org.spongepowered.asm.launch.MixinTweaker"))
                 {
                     FMLLog.log.info("Loading tweaker {} from {}", cascadedTweaker, coreMod.getName());
                     Integer sortOrder = Ints.tryParse(Strings.nullToEmpty(mfAttributes.getValue("TweakOrder")));
@@ -437,9 +437,6 @@ public class CoreModManager {
             loadCoreMod(classLoader, fmlCorePlugin, coreMod);
         }
     }
-    private static Field UCP;
-    private static Method ADDURL;
-
     private static void handleCascadingTweak(File coreMod, JarFile jar, String cascadedTweaker, LaunchClassLoader classLoader, Integer sortingOrder) throws MalformedURLException {
         try
         {
