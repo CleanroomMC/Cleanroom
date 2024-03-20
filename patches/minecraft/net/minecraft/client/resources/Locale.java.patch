@@ -1,35 +1,33 @@
 --- before/net/minecraft/client/resources/Locale.java
 +++ after/net/minecraft/client/resources/Locale.java
-@@ -20,7 +20,7 @@
- {
-     private static final Splitter field_135030_b = Splitter.on('=').limit(2);
-     private static final Pattern field_135031_c = Pattern.compile("%(\\d+\\$)?[\\d\\.]*[df]");
--    Map<String, String> field_135032_a = Maps.newHashMap();
-+    Map<String, String> field_135032_a = Maps.<String, String>newHashMap();
-     private boolean field_135029_d;
+@@ -53,26 +53,6 @@
  
-     public synchronized void func_135022_a(IResourceManager p_135022_1_, List<String> p_135022_2_)
-@@ -37,8 +37,9 @@
-                 {
-                     this.func_135028_a(p_135022_1_.func_135056_b(new ResourceLocation(s2, s1)));
-                 }
--                catch (IOException ioexception)
-+                catch (IOException var9)
-                 {
-+                    ;
-                 }
-             }
-         }
-@@ -72,7 +73,7 @@
-         }
- 
-         float f = (float)i / (float)j;
+     private void func_135024_b()
+     {
+-        this.field_135029_d = false;
+-        int i = 0;
+-        int j = 0;
+-
+-        for (String s : this.field_135032_a.values())
+-        {
+-            int k = s.length();
+-            j += k;
+-
+-            for (int l = 0; l < k; ++l)
+-            {
+-                if (s.charAt(l) >= 256)
+-                {
+-                    ++i;
+-                }
+-            }
+-        }
+-
+-        float f = (float)i / (float)j;
 -        this.field_135029_d = (double)f > 0.1;
-+        this.field_135029_d = (double)f > 0.1D;
      }
  
      private void func_135028_a(List<IResource> p_135028_1_) throws IOException
-@@ -94,11 +95,13 @@
+@@ -94,7 +74,9 @@
  
      private void func_135021_a(InputStream p_135021_1_) throws IOException
      {
@@ -39,17 +37,3 @@
          {
              if (!s.isEmpty() && s.charAt(0) != '#')
              {
--                String[] astring = Iterables.toArray(field_135030_b.split(s), String.class);
-+                String[] astring = (String[])Iterables.toArray(field_135030_b.split(s), String.class);
- 
-                 if (astring != null && astring.length == 2)
-                 {
-@@ -124,7 +127,7 @@
-         {
-             return String.format(s, p_135023_2_);
-         }
--        catch (IllegalFormatException illegalformatexception)
-+        catch (IllegalFormatException var5)
-         {
-             return "Format error: " + s;
-         }
