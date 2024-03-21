@@ -268,6 +268,11 @@ public class ASMTransformerWrapper
             return "TransformerWrapper(" + getParentClass() + ", " + getCoreMod() + ")";
         }
 
+        @Override
+        public int getPriority() {
+            return parent.getPriority();
+        }
+
         protected abstract String getParentClass();
 
         protected abstract String getCoreMod();
