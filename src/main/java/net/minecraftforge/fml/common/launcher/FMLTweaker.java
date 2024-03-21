@@ -46,7 +46,6 @@ public class FMLTweaker implements ITweaker {
 
     public FMLTweaker()
     {
-        ConfigManager.register(ForgeEarlyConfig.class);
         if (System.getProperty("java.net.preferIPv4Stack") == null)
         {
             System.setProperty("java.net.preferIPv4Stack", "true");
