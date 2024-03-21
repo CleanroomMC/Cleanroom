@@ -3,7 +3,7 @@ package org.lwjgl.input;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-import org.lwjgl.lwjgl3ify.core.Config;
+import net.minecraftforge.common.ForgeEarlyConfig;
 
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl3.BufferUtils;
@@ -109,10 +109,10 @@ public class Mouse {
     public static double totalScrollAmount = 0.0;
 
     public static void addWheelEvent(double delta) {
-        if (Config.INPUT_INVERT_WHEEL) {
+        if (ForgeEarlyConfig.INPUT_INVERT_WHEEL) {
             delta = -delta;
         }
-        delta *= Config.INPUT_SCROLL_SPEED;
+        delta *= ForgeEarlyConfig.INPUT_SCROLL_SPEED;
 
         final int lastWheel = (int) fractionalWheelPosition;
         fractionalWheelPosition += delta;
