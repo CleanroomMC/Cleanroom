@@ -28,7 +28,7 @@ public class FMLCorePlugin implements IFMLLoadingPlugin
     @Override
     public String[] getASMTransformerClass()
     {
-//        Launch.classLoader.registerSuperTransformer("net.minecraftforge.fml.common.asm.transformers.ReflectionFieldTransformer");// For reflection in exclusion
+        //Launch.classLoader.registerSuperTransformer("net.minecraftforge.fml.common.asm.transformers.ReflectionFieldTransformer");// For reflection in exclusion
         Launch.classLoader.registerSuperTransformer("net.minecraftforge.fml.common.asm.transformers.JavaxTransformer"); // For Botania Tweaks
         return new String[] {
                              "net.minecraftforge.fml.common.asm.transformers.SideTransformer",

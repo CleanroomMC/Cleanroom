@@ -1,6 +1,10 @@
 --- before/net/minecraft/client/gui/GuiUtilRenderComponents.java
 +++ after/net/minecraft/client/gui/GuiUtilRenderComponents.java
-@@ -4,6 +4,7 @@
+@@ -1,9 +1,11 @@
+ package net.minecraft.client.gui;
+ 
++import com.cleanroommc.client.BreakIteratorHolder;
+ import com.google.common.collect.Lists;
  import java.util.List;
  import net.minecraft.client.Minecraft;
  import net.minecraft.util.text.ITextComponent;
@@ -8,7 +12,7 @@
  import net.minecraft.util.text.TextComponentString;
  import net.minecraft.util.text.TextFormatting;
  import net.minecraftforge.fml.relauncher.Side;
-@@ -17,94 +18,111 @@
+@@ -17,94 +19,111 @@
          return !p_178909_1_ && !Minecraft.func_71410_x().field_71474_y.field_74344_o ? TextFormatting.func_110646_a(p_178909_0_) : p_178909_0_;
      }
  
@@ -71,7 +75,7 @@
 +            styleCache.add(originLine.func_150256_b());
 +            newLineCache.add(wrapped);
 +        }
-+        FontRenderer.BREAK_ITERATOR.setText(String.join("\n", cache));
++        BreakIteratorHolder.BREAK_ITERATOR.setText(String.join("\n", cache));
 +        int fed = 0;
 +        ITextComponent lineToAdd = new TextComponentString("");
 +        String cleanedLine;
@@ -98,7 +102,7 @@
 +                if (secondHalf != null)
                  {
 -                    int l = s2.lastIndexOf(32);
-+                    int l = FontRenderer.BREAK_ITERATOR.preceding(fed + firstHalf.length()) - fed;
++                    int l = BreakIteratorHolder.BREAK_ITERATOR.preceding(fed + firstHalf.length()) - fed;
  
 -                    if (l >= 0 && p_178908_2_.func_78256_a(s4.substring(0, l)) > 0)
 +                    if (l >= 0 && p_178908_2_.func_78256_a(cleanedLine.substring(0, l)) > 0)

@@ -29,6 +29,8 @@ import java.util.Map.Entry;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
+import net.minecraftforge.common.ForgeEarlyConfig;
+import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 
 import org.apache.logging.log4j.LogManager;

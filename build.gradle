@@ -440,6 +440,8 @@ project(':cleanroom') {
         installer 'org.apache.httpcomponents:httpclient:4.5.14'
         installer 'org.apache.httpcomponents:httpcore:4.4.16'
         installer 'com.github.oshi:oshi-core:6.4.10'
+        installer 'net.java.dev.jna:jna:5.14.0'
+        installer 'net.java.dev.jna:jna-platform:5.14.0'
         installer 'it.unimi.dsi:fastutil:8.5.12'
         installer 'commons-codec:commons-codec:1.16.0'
         installer 'commons-io:commons-io:2.15.1'
@@ -980,7 +982,7 @@ project(':cleanroom') {
     }
 
     task downloadInstaller(type: DownloadMavenArtifact) {
-        artifact = 'net.minecraftforge:installer:2.1.+:shrunk'
+        artifact = 'net.minecraftforge:installer:2.2.+:fatjar'
         changing = true
     }
 
@@ -1132,6 +1134,7 @@ project(':cleanroom') {
 
 tasks.withType(JavaCompile) {
     options.compilerArgs += compiler_jvm_arguments
+    options.encoding = 'UTF-8'
 }
 
 idea.project.settings.compiler.javac.javacAdditionalOptions = compiler_jvm_arguments.join(' ')
@@ -1146,5 +1149,6 @@ task setup() {
 subprojects {
     tasks.withType(JavaCompile) {
         options.compilerArgs += compiler_jvm_arguments
+        options.encoding = 'UTF-8'
     }
 }

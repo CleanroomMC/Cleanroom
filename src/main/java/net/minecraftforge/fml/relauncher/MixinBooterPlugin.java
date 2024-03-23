@@ -34,7 +34,7 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
 
     @Override
     public String[] getASMTransformerClass() {
-        return new String[0];
+        return null;
     }
 
     @Override

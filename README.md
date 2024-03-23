@@ -28,6 +28,11 @@
 - Bytecode Patcher (Coming Soon) \[Inspired by [Bansoukou](https://github.com/LoliKingdom/Bansoukou) and [Bytecode Patcher](https://github.com/jbredwards/Bytecode-Patcher)]
 - [Fugue](https://github.com/CleanroomMC/Fugue), a mod patches many incompatibilities. (temporary)
 
+## Downloads:
+
+- For MultiMC-based launchers (PolyMC, PrismLauncher), go to CleanroomMMC's [action page](https://github.com/CleanroomMC/CleanroomMMC/actions), download the latest build and import it in your launcher(alternatively unzip patches and json inside to your 1.12 instance).
+- For regular launcher (official launcher, AT launcher, FTB, HMCL), go to Cleanroom's [action page](https://github.com/CleanroomMC/Cleanroom/actions), click the latest action marked as **Build and Upload Test Artifact** and download the **installer** artifact. You could use the installer like the Forge one.
+
 ## Build Instructions:
 
 1. Clone this repository
@@ -46,6 +51,8 @@
 ## Mod Development:
 
 There's an unofficial [template](https://github.com/kappa-maintainer/ExampleMod-1.12.2-FG5) exist. Note: You need to build before run.
+
+A porting guide is available in [Cleanroom wiki](https://cleanroommc.com/wiki/cleanroom-mod-development/introduction).
 
 ## Roadmap flow chart
 

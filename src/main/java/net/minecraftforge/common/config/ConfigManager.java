@@ -33,6 +33,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.config.Config.Comment;
 import net.minecraftforge.common.config.Config.LangKey;
 import net.minecraftforge.common.config.Config.Name;
@@ -375,6 +376,35 @@ public class ConfigManager
         if (f.isAnnotationPresent(Name.class))
             return f.getAnnotation(Name.class).value();
         return f.getName();
+    }
+
+    /**
+     * Register configuration class that is annotated with {@link Config} here for it to be processed immediately with saving and loading supported.
+     * Preferably call this method in a static init block at the very end of your configuration class.
+     * @param configClass configuration class that is annotated with {@link Config}
+     */
+    public static void register(Class<?> configClass) {
+        if (Launch.classLoader.isClassLoaded("net.minecraftforge.fml.common.Loader")) {
+            if (Loader.instance().hasReachedState(LoaderState.PREINITIALIZATION)) {
+                throw new RuntimeException("Please call this method before pre-init!");
+            }
+        }
+        Config config = configClass.getAnnotation(Config.class);
+        String modId = config.modid();
+        Set<Class<?>> modConfigClasses = MOD_CONFIG_CLASSES.computeIfAbsent(modId, k -> Sets.newHashSet());
+        modConfigClasses.add(configClass);
+        File configDir = new File(Launch.minecraftHome, "config");
+        String name = config.name();
+        File configFile = new File(configDir, Strings.isNullOrEmpty(name) ? config.modid() : name + ".cfg");
+        Configuration cfg = CONFIGS.get(configFile.getAbsolutePath());
+        if (cfg == null) {
+            cfg = new Configuration(configFile);
+            cfg.load();
+            CONFIGS.put(configFile.getAbsolutePath(), cfg);
+        }
+        sync(cfg, configClass, modId, config.category(), true, null);
+
+        cfg.save();
     }
 
 }
