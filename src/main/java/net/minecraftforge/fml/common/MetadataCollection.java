@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import com.google.gson.JsonObject;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 import net.minecraftforge.fml.common.versioning.VersionParser;
 
@@ -58,9 +59,7 @@ public class MetadataCollection
         try
         {
             MetadataCollection collection;
-            Gson gson = new GsonBuilder().registerTypeAdapter(ArtifactVersion.class, new ArtifactVersionAdapter()).create();
-            JsonParser parser = new JsonParser();
-            JsonElement rootElement = parser.parse(reader);
+            JsonElement rootElement = JsonParser.parseReader(reader);
             if (rootElement.isJsonArray())
             {
                 collection = new MetadataCollection();
@@ -69,12 +68,22 @@ public class MetadataCollection
                 int i = 0;
                 for (JsonElement mod : jsonList)
                 {
-                    collection.modList[i++]=gson.fromJson(mod, ModMetadata.class);
+                    collection.modList[i++] = decodeMetaData(mod.getAsJsonObject());
                 }
             }
             else
             {
-                collection = gson.fromJson(rootElement, MetadataCollection.class);
+                JsonObject jsonObject = rootElement.getAsJsonObject();
+                collection = new MetadataCollection();
+                collection.modListVersion = jsonObject.get("modListVersion").getAsString(); // This field is never used.
+                JsonArray modListArray = jsonObject.get("modList").getAsJsonArray();
+                int size = modListArray.size();
+                ModMetadata[] modList = new ModMetadata[size];
+                for(int i = 0; i < size; i++){
+                    modList[i] = decodeMetaData(modListArray.get(i).getAsJsonObject());
+                }
+                collection.modList = modList;
+                // do not decode for `metadatas`
             }
             collection.parseModMetadataList();
             return collection;
@@ -108,6 +117,7 @@ public class MetadataCollection
         return metadatas.get(modId);
     }
 
+    @Deprecated
     public static class ArtifactVersionAdapter extends TypeAdapter<ArtifactVersion>
     {
 
@@ -123,5 +133,60 @@ public class MetadataCollection
             return VersionParser.parseVersionReference(in.nextString());
         }
 
+    }
+
+    public static ModMetadata decodeMetaData(JsonObject json){
+        ModMetadata metadata = new ModMetadata();
+
+        //basic message
+        metadata.modId = json.get("modid").getAsString();
+        metadata.name = json.get("name").getAsString();
+
+        //optional message
+        if (json.has("description")) metadata.description = json.get("description").getAsString();
+        if (json.has("credits")) metadata.credits = json.get("credits").getAsString();
+        if (json.has("url")) metadata.url = json.get("url").getAsString();
+        if (json.has("updateJSON")) metadata.updateJSON = json.get("updateJSON").getAsString();
+        if (json.has("logoFile")) metadata.logoFile = json.get("logoFile").getAsString();
+        if (json.has("version")) metadata.version = json.get("version").getAsString();
+        if (json.has("parent")) metadata.parent = json.get("parent").getAsString();
+        if (json.has("useDependencyInformation")) metadata.useDependencyInformation = json.get("useDependencyInformation").getAsBoolean();
+        if (metadata.useDependencyInformation){
+            if (json.has("requiredMods")){
+                for(JsonElement element : json.getAsJsonArray("requiredMods")){
+                    metadata.requiredMods.add(VersionParser.parseVersionReference(element.getAsString()));
+                }
+            }
+            if (json.has("dependencies")){
+                for(JsonElement element : json.getAsJsonArray("dependencies")){
+                    metadata.dependencies.add(VersionParser.parseVersionReference(element.getAsString()));
+                }
+            }
+            if (json.has("dependants")){
+                for(JsonElement element : json.getAsJsonArray("dependants")){
+                    metadata.dependants.add(VersionParser.parseVersionReference(element.getAsString()));
+                }
+            }
+        }
+        if (json.has("authorList")){
+            for(JsonElement element : json.getAsJsonArray("authorList")){
+                metadata.authorList.add(element.getAsString());
+            }
+        }
+        if (json.has("screenshots")){ // this field was never used
+            JsonArray array = json.getAsJsonArray("screenshots");
+            int size = array.size();
+            String[] screenshots = new String[size];
+            for (int i = 0; i < size; i++){
+                screenshots[i] = array.get(i).getAsString();
+            }
+            metadata.screenshots = screenshots;
+        }else metadata.screenshots = new String[0];
+        if (json.has("updateUrl")){ // this field is out of date
+            metadata.updateUrl = json.get("updateUrl").getAsString();
+            FMLLog.log.warn("{} is using a deprecated field 'updateUrl' in mcmod.info. Never really used for anything and format is undefined. See updateJSON for replacement.", metadata.modId);
+        }
+
+        return metadata;
     }
 }
