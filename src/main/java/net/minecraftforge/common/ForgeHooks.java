@@ -51,6 +51,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -142,6 +143,7 @@ import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
+import net.minecraftforge.event.items.CreativeTabEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.NoteBlockEvent;
 import net.minecraftforge.fluids.IFluidBlock;
@@ -1511,5 +1513,13 @@ public class ForgeHooks
             if (entry != null) id = serializerRegistry.getID(entry);
         }
         return id;
+    }
+
+    public static boolean preCreativeTabsSubItems(CreativeTabs tabIn, NonNullList<ItemStack> subItems){
+        return MinecraftForge.EVENT_BUS.post(new CreativeTabEvent.PreSubItems(tabIn, subItems));
+    }
+
+    public static void postCreativeTabsSubItems(CreativeTabs tabIn, NonNullList<ItemStack> subItems){
+        MinecraftForge.EVENT_BUS.post(new CreativeTabEvent.PostSubItems(tabIn, subItems));
     }
 }
