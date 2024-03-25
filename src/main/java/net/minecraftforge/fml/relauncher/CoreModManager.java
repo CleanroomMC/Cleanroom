@@ -39,10 +39,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 
 import java.io.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.cert.Certificate;
 import java.util.*;
 import java.util.function.ToIntFunction;
@@ -339,6 +336,9 @@ public class CoreModManager {
 
         for (File coreMod : file_canidates)
         {
+            try {
+                classLoader.addURL(coreMod.toURI().toURL());
+            } catch (MalformedURLException ignored){}
             FMLLog.log.debug("Examining for coremod candidacy {}", coreMod.getName());
             JarFile jar = null;
             Attributes mfAttributes;

@@ -133,8 +133,6 @@ public class LoadController
                 ModClassLoader modClassLoader = (ModClassLoader) eventData[0];
                 ASMDataTable asmDataTable = (ASMDataTable) eventData[1];
 
-
-
                 try {
 
                     // Add mods into the delegated ModClassLoader
@@ -190,6 +188,7 @@ public class LoadController
                 Proxy.transformer.processor.prepareConfigs(current, Proxy.transformer.processor.extensions);
 
             }
+            MixinEnvironment.gotoPhase(MixinEnvironment.Phase.MOD);
             masterChannel.post(state.getEvent(eventData));
         }
     }
@@ -413,9 +412,9 @@ public class LoadController
                         .filter(name -> name.lastIndexOf('.') != -1)
                         .map(name -> name.substring(0, name.lastIndexOf('.')))
                         .map(pkg -> packageOwners.get(pkg))
-                        .filter(l -> l != null && !l.isEmpty())
+                        .filter(l -> !l.isEmpty())
                         .findFirst()
-                        .map(l -> l.get(0))
+                        .map(List::getFirst)
                         .orElse(null)
                 );
     }

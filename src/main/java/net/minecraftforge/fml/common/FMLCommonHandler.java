@@ -159,7 +159,7 @@ public class FMLCommonHandler
         sidedDelegate = handler;
         MinecraftForge.initialize();
 //        MinecraftForge.registerCrashCallable();
-        return ImmutableList.<String>of();
+        return ImmutableList.of();
     }
 
     /**
