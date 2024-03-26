@@ -37,9 +37,13 @@ import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 import net.minecraftforge.fml.relauncher.libraries.Repository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
+import org.spongepowered.asm.mixin.MixinEnvironment;
+import org.spongepowered.asm.mixin.Mixins;
+import org.spongepowered.asm.util.Constants;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.cert.Certificate;
 import java.util.*;
 import java.util.function.ToIntFunction;
@@ -59,6 +63,7 @@ public class CoreModManager {
     private static List<String> candidateModFiles = Lists.newArrayList();
     private static List<String> accessTransformers = Lists.newArrayList();
     private static Set<String> rootNames = Sets.newHashSet();
+    private static Set<String> mixinConfigs = Sets.newHashSet();
 
     static boolean deobfuscatedEnvironment;
 
@@ -124,7 +129,7 @@ public class CoreModManager {
             }
             FMLLog.log.debug("Injection complete");
 
-            FMLLog.log.debug("Running coremod plugin for {} \\{{}\\}", name, coreModInstance.getClass().getName());
+            FMLLog.log.debug("Running coremod plugin for {} {{}}", name, coreModInstance.getClass().getName());
             Map<String, Object> data = new HashMap<>();
             data.put("mcLocation", mcDir);
             data.put("coremodList", loadPlugins);
@@ -336,8 +341,9 @@ public class CoreModManager {
 
         for (File coreMod : file_canidates)
         {
+            URL mod = null;
             try {
-                classLoader.addURL(coreMod.toURI().toURL());
+                mod = coreMod.toURI().toURL();
             } catch (MalformedURLException ignored){}
             FMLLog.log.debug("Examining for coremod candidacy {}", coreMod.getName());
             JarFile jar = null;
@@ -377,16 +383,20 @@ public class CoreModManager {
                         jar = new JarFile(coreMod);
                     ModAccessTransformer.addJar(jar, ats);
                 }
-
+                String configs = mfAttributes.getValue(Constants.ManifestAttributes.MIXINCONFIGS);
                 String cascadedTweaker = mfAttributes.getValue("TweakClass");
-                if (cascadedTweaker != null && !cascadedTweaker.equals("org.spongepowered.asm.launch.MixinTweaker"))
+                if (cascadedTweaker != null)
                 {
-                    FMLLog.log.info("Loading tweaker {} from {}", cascadedTweaker, coreMod.getName());
-                    Integer sortOrder = Ints.tryParse(Strings.nullToEmpty(mfAttributes.getValue("TweakOrder")));
-                    sortOrder = (sortOrder == null ? Integer.valueOf(0) : sortOrder);
-                    handleCascadingTweak(coreMod, jar, cascadedTweaker, classLoader, sortOrder);
-                    ignoredModFiles.add(coreMod.getName());
-                    continue;
+                    if (!cascadedTweaker.equals("org.spongepowered.asm.launch.MixinTweaker")) {
+                        FMLLog.log.info("Loading tweaker {} from {}", cascadedTweaker, coreMod.getName());
+                        Integer sortOrder = Ints.tryParse(Strings.nullToEmpty(mfAttributes.getValue("TweakOrder")));
+                        sortOrder = (sortOrder == null ? Integer.valueOf(0) : sortOrder);
+                        handleCascadingTweak(coreMod, jar, cascadedTweaker, classLoader, sortOrder);
+                        ignoredModFiles.add(coreMod.getName());
+                        if (configs != null)
+                            mixinConfigs.add(configs);
+                        continue;
+                    }
                 }
                 List<String> modTypes = mfAttributes.containsKey(MODTYPE) ? Arrays.asList(mfAttributes.getValue(MODTYPE).split(",")) : ImmutableList.of("FML");
 
@@ -396,6 +406,9 @@ public class CoreModManager {
                     ignoredModFiles.add(coreMod.getName());
                     continue;
                 }
+                if (configs != null)
+                    mixinConfigs.add(configs);
+                classLoader.addURL(mod);
                 fmlCorePlugin = mfAttributes.getValue("FMLCorePlugin");
                 if (fmlCorePlugin == null)
                 {
@@ -501,13 +514,13 @@ public class CoreModManager {
             FMLLog.log.debug("Instantiating coremod class {}", coreModName);
             classLoader.addTransformerExclusion(coreModClass);
             Class<?> coreModClazz = Class.forName(coreModClass, true, classLoader);
-            Name coreModNameAnn = coreModClazz.getAnnotation(IFMLLoadingPlugin.Name.class);
+            Name coreModNameAnn = coreModClazz.getAnnotation(Name.class);
             if (coreModNameAnn != null && !Strings.isNullOrEmpty(coreModNameAnn.value()))
             {
                 coreModName = coreModNameAnn.value();
                 FMLLog.log.trace("coremod named {} is loading", coreModName);
             }
-            MCVersion requiredMCVersion = coreModClazz.getAnnotation(IFMLLoadingPlugin.MCVersion.class);
+            MCVersion requiredMCVersion = coreModClazz.getAnnotation(MCVersion.class);
             if (!Arrays.asList(rootPlugins).contains(coreModClass) && (requiredMCVersion == null || Strings.isNullOrEmpty(requiredMCVersion.value())))
             {
                 FMLLog.log.warn("The coremod {} does not have a MCVersion annotation, it may cause issues with this version of Minecraft",
@@ -524,7 +537,7 @@ public class CoreModManager {
                 FMLLog.log.debug("The coremod {} requested minecraft version {} and minecraft is {}. It will be loaded.", coreModClass,
                         requiredMCVersion.value(), FMLInjectionData.mccversion);
             }
-            TransformerExclusions trExclusions = coreModClazz.getAnnotation(IFMLLoadingPlugin.TransformerExclusions.class);
+            TransformerExclusions trExclusions = coreModClazz.getAnnotation(TransformerExclusions.class);
             if (trExclusions != null)
             {
                 for (String st : trExclusions.value())
@@ -532,13 +545,13 @@ public class CoreModManager {
                     classLoader.addTransformerExclusion(st);
                 }
             }
-            DependsOn deplist = coreModClazz.getAnnotation(IFMLLoadingPlugin.DependsOn.class);
+            DependsOn deplist = coreModClazz.getAnnotation(DependsOn.class);
             String[] dependencies = new String[0];
             if (deplist != null)
             {
                 dependencies = deplist.value();
             }
-            SortingIndex index = coreModClazz.getAnnotation(IFMLLoadingPlugin.SortingIndex.class);
+            SortingIndex index = coreModClazz.getAnnotation(SortingIndex.class);
             int sortIndex = index != null ? index.value() : 0;
 
             Certificate[] certificates = coreModClazz.getProtectionDomain().getCodeSource().getCertificates();
@@ -652,11 +665,19 @@ public class CoreModManager {
         }
     }
 
-    private  static void closeQuietly(Closeable closeable) {
+    private static void closeQuietly(Closeable closeable) {
         try {
             if (closeable != null)
                 closeable.close();
         } catch (final IOException ioe){}
+    }
+
+    public static void beginMixinInitPhase() {
+        for (var config : mixinConfigs) {
+            FMLLog.log.debug("Adding Mixin configs: {}", config);
+            Mixins.addConfigurations(config.split(","));
+        }
+        MixinEnvironment.gotoPhase(MixinEnvironment.Phase.INIT);
     }
 
 }

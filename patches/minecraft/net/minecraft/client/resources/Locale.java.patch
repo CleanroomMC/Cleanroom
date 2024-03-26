@@ -27,7 +27,7 @@
      }
  
      private void func_135028_a(List<IResource> p_135028_1_) throws IOException
-@@ -94,7 +74,9 @@
+@@ -94,6 +74,8 @@
  
      private void func_135021_a(InputStream p_135021_1_) throws IOException
      {
@@ -36,4 +36,3 @@
          for (String s : IOUtils.readLines(p_135021_1_, StandardCharsets.UTF_8))
          {
              if (!s.isEmpty() && s.charAt(0) != '#')
-             {
