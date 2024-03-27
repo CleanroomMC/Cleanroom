@@ -77,9 +77,10 @@ public class FMLLaunchHandler
         this.classLoader.addClassLoaderExclusion("org.apache.maven.");
         this.classLoader.addClassLoaderExclusion("com.google.common.");
         this.classLoader.addClassLoaderExclusion("org.objectweb.asm.");*/
-        this.classLoader.addClassLoaderExclusion("LZMA.");
+        this.classLoader.addTransformerExclusion("LZMA.");
         this.classLoader.addTransformerExclusion("scala.");
-        this.classLoader.addTransformerExclusion("com.llamalad7.mixinextras.");
+        this.classLoader.addTransformerExclusion("it.unimi.dsi.");
+        this.classLoader.addTransformerExclusion("oshi.");
     }
 
     private void setupClient()
