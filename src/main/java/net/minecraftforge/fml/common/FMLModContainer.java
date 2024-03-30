@@ -109,7 +109,6 @@ public class FMLModContainer implements ModContainer
 
     static {
         registerLanguageAdapter("java", new ILanguageAdapter.JavaAdapter());
-        registerLanguageAdapter("scala", new ILanguageAdapter.ScalaAdapter());
     }
 
     public FMLModContainer(String className, ModCandidate container, Map<String, Object> modDescriptor)
