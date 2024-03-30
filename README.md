@@ -26,7 +26,8 @@
 - Cleanroom Minecraft (Continuation + Revamp of MinecraftForge)
 - Mixin [(Coming Soon)](https://github.com/CleanroomMC/CleanMix)
 - Bytecode Patcher (Coming Soon) \[Inspired by [Bansoukou](https://github.com/LoliKingdom/Bansoukou) and [Bytecode Patcher](https://github.com/jbredwards/Bytecode-Patcher)]
-- [Fugue](https://github.com/CleanroomMC/Fugue), a mod patches many incompatibilities. (temporary)
+- [Fugue](https://github.com/CleanroomMC/Fugue), a mod patches many incompatibilities. 
+- [Scalar](https://github.com/CleanroomMC/Scalar), the standalone Scala provider. (we will ship latest jvm langs like that)
 
 ## Downloads:
 
