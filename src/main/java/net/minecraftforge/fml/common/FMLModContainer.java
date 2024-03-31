@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
@@ -38,6 +37,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import com.cleanroommc.loader.LanguageAdapterRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -99,17 +99,12 @@ public class FMLModContainer implements ModContainer
     private Certificate certificate;
     private String modLanguage;
     private ILanguageAdapter languageAdapter;
-    private static final Map<String, ILanguageAdapter> adapterRegistry = Maps.newHashMap();
     private Disableable disableability;
     private ListMultimap<Class<? extends FMLEvent>, Method> eventMethods;
     private Map<String, String> customModProperties;
     private ModCandidate candidate;
     private URL updateJSONUrl;
     private int classVersion;
-
-    static {
-        registerLanguageAdapter("java", new ILanguageAdapter.JavaAdapter());
-    }
 
     public FMLModContainer(String className, ModCandidate container, Map<String, Object> modDescriptor)
     {
@@ -123,11 +118,7 @@ public class FMLModContainer implements ModContainer
         String languageAdapterType = (String)modDescriptor.get("modLanguageAdapter");
         if (Strings.isNullOrEmpty(languageAdapterType))
         {
-            if (adapterRegistry.containsKey(modLanguage)) {
-                this.languageAdapter = adapterRegistry.get(modLanguage);
-            } else {
-                languageAdapter = new ILanguageAdapter.JavaAdapter();
-            }
+            languageAdapter = LanguageAdapterRegistry.getAdapterFor(modLanguage);
         }
         else
         {
@@ -803,14 +794,5 @@ public class FMLModContainer implements ModContainer
     public int getClassVersion()
     {
         return this.classVersion;
-    }
-
-    public static void registerLanguageAdapter(String language, ILanguageAdapter languageAdapter) {
-        if (adapterRegistry.containsKey(language)) {
-            FMLLog.log.error("Language adapter {} of language {} already exists!", adapterRegistry.get(language).getClass().getName(), language);
-        } else {
-            adapterRegistry.put(language, languageAdapter);
-            FMLLog.log.debug("Registering language adapter {} for language {}.", languageAdapter.getClass().getName(), language);
-        }
     }
 }
