@@ -7,11 +7,10 @@ import net.minecraftforge.fml.common.ILanguageAdapter;
 import java.util.Map;
 
 public class LanguageAdapterRegistry {
+    private static final Map<String, ILanguageAdapter> adapterRegistry = Maps.newHashMap();
     static {
         registerLanguageAdapter("java", new ILanguageAdapter.JavaAdapter());
     }
-    private static final Map<String, ILanguageAdapter> adapterRegistry = Maps.newHashMap();
-
     public static void registerLanguageAdapter(String language, ILanguageAdapter languageAdapter) {
         if (adapterRegistry.containsKey(language)) {
             FMLLog.log.error("Language adapter {} of language {} already exists!", adapterRegistry.get(language).getClass().getName(), language);
