@@ -366,7 +366,10 @@ public class CoreModManager {
                 }
 
                 if (mfAttributes == null) // Not a coremod and no access transformer list
+                {
+                    classLoader.addURL(mod);
                     continue;
+                }
 
                 String modSide = mfAttributes.getValue(LibraryManager.MODSIDE);
                 if (modSide != null && !"BOTH".equals(modSide) && !FMLLaunchHandler.side().name().equals(modSide))
