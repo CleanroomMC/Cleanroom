@@ -42,7 +42,7 @@
          {
 -            return field_150690_d.get(p_150684_0_);
 +            HoverEvent.Action action = HoverEvent.NAME_MAPPING.get(p_150684_0_);
-+            if (action == null) return Action.field_150690_d.get(p_150684_0_); // if somebody have already harked in the mapping.
++            if (action == null) return Action.field_150690_d.get(p_150684_0_); // if somebody has already hacked in the mapping.
 +            else return action;
          }
  

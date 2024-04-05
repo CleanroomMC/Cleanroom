@@ -62,7 +62,7 @@
          {
 -            return field_150679_e.get(p_150672_0_);
 +            ClickEvent.Action action = ClickEvent.NAME_MAPPING.get(p_150672_0_);
-+            if (action == null) return Action.field_150679_e.get(p_150672_0_); // if somebody have already harked in the mapping.
++            if (action == null) return Action.field_150679_e.get(p_150672_0_); // if somebody has already hacked in the mapping.
 +            else return action;
          }
  
