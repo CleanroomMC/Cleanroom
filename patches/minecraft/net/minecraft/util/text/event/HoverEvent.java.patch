@@ -1,0 +1,60 @@
+--- before/net/minecraft/util/text/event/HoverEvent.java
++++ after/net/minecraft/util/text/event/HoverEvent.java
+@@ -64,20 +64,30 @@
+         return 31 * i + (this.field_150703_b != null ? this.field_150703_b.hashCode() : 0);
+     }
+ 
+-    public static enum Action
++    private static final Map<String, HoverEvent.Action> NAME_MAPPING = Maps.newHashMap();
++    public static enum Action implements net.minecraftforge.client.gui.text.IHoverEventAction
+     {
+         SHOW_TEXT("show_text", true),
+         SHOW_ITEM("show_item", true),
+         SHOW_ENTITY("show_entity", true);
+ 
++        @Deprecated //Forge : use HoverEvent#NAME_MAPPING
+         private static final Map<String, HoverEvent.Action> field_150690_d = Maps.newHashMap();
++
+         private final boolean field_150691_e;
+         private final String field_150688_f;
++        private final net.minecraftforge.client.gui.text.IHoverEventAction action;
+ 
+-        private Action(String p_i45157_3_, boolean p_i45157_4_)
+-        {
+-            this.field_150688_f = p_i45157_3_;
+-            this.field_150691_e = p_i45157_4_;
++        Action(net.minecraftforge.client.gui.text.IHoverEventAction actionIn, String canonicalNameIn, boolean allowedInChatIn)
++        {
++            this.field_150688_f = canonicalNameIn;
++            this.field_150691_e = allowedInChatIn;
++            this.action = actionIn;
++            HoverEvent.NAME_MAPPING.put(canonicalNameIn, this);
++        }
++        Action(String p_i45157_3_, boolean p_i45157_4_)
++        {
++            this(net.minecraftforge.client.gui.text.IHoverEventAction.EMPTY, p_i45157_3_, p_i45157_4_);
+         }
+ 
+         public boolean func_150686_a()
+@@ -92,15 +102,14 @@
+ 
+         public static HoverEvent.Action func_150684_a(String p_150684_0_)
+         {
+-            return field_150690_d.get(p_150684_0_);
++            HoverEvent.Action action = HoverEvent.NAME_MAPPING.get(p_150684_0_);
++            if (action == null) return Action.field_150690_d.get(p_150684_0_); // if somebody have already harked in the mapping.
++            else return action;
+         }
+ 
+-        static
+-        {
+-            for (HoverEvent.Action hoverevent$action : values())
+-            {
+-                field_150690_d.put(hoverevent$action.func_150685_b(), hoverevent$action);
+-            }
++        @Override
++        public void handle(HoverEvent hoverEvent, net.minecraft.client.gui.GuiScreen screen, ITextComponent textComponent, int x, int y) {
++            action.handle(hoverEvent, screen, textComponent, x, y);
+         }
+     }
+ }

@@ -1,0 +1,80 @@
+--- before/net/minecraft/util/text/event/ClickEvent.java
++++ after/net/minecraft/util/text/event/ClickEvent.java
+@@ -2,6 +2,7 @@
+ 
+ import com.google.common.collect.Maps;
+ import java.util.Map;
++import java.util.Objects;
+ 
+ public class ClickEvent
+ {
+@@ -41,7 +42,7 @@
+             }
+             else
+             {
+-                return this.field_150670_b != null ? this.field_150670_b.equals(clickevent.field_150670_b) : clickevent.field_150670_b == null;
++                return Objects.equals(this.field_150670_b, clickevent.field_150670_b);
+             }
+         }
+         else
+@@ -63,7 +64,8 @@
+         return 31 * i + (this.field_150670_b != null ? this.field_150670_b.hashCode() : 0);
+     }
+ 
+-    public static enum Action
++    private static final Map<String, ClickEvent.Action> NAME_MAPPING = Maps.newHashMap();
++    public static enum Action implements net.minecraftforge.client.gui.text.IClickEventAction
+     {
+         OPEN_URL("open_url", true),
+         OPEN_FILE("open_file", false),
+@@ -71,14 +73,23 @@
+         SUGGEST_COMMAND("suggest_command", true),
+         CHANGE_PAGE("change_page", true);
+ 
++        @Deprecated //Forge : use ClickEvent#NAME_MAPPING
+         private static final Map<String, ClickEvent.Action> field_150679_e = Maps.newHashMap();
+         private final boolean field_150676_f;
+         private final String field_150677_g;
+-
+-        private Action(String p_i45155_3_, boolean p_i45155_4_)
+-        {
+-            this.field_150677_g = p_i45155_3_;
+-            this.field_150676_f = p_i45155_4_;
++        private final net.minecraftforge.client.gui.text.IClickEventAction action;
++
++        Action(net.minecraftforge.client.gui.text.IClickEventAction actionIn, String canonicalNameIn, boolean allowedInChatIn)
++        {
++            this.action = actionIn;
++            this.field_150677_g = canonicalNameIn;
++            this.field_150676_f = allowedInChatIn;
++            ClickEvent.NAME_MAPPING.put(canonicalNameIn, this);
++        }
++
++        Action(String p_i45155_3_, boolean p_i45155_4_)
++        {
++            this(net.minecraftforge.client.gui.text.IClickEventAction.EMPTY, p_i45155_3_, p_i45155_4_);
+         }
+ 
+         public boolean func_150674_a()
+@@ -93,15 +104,14 @@
+ 
+         public static ClickEvent.Action func_150672_a(String p_150672_0_)
+         {
+-            return field_150679_e.get(p_150672_0_);
++            ClickEvent.Action action = ClickEvent.NAME_MAPPING.get(p_150672_0_);
++            if (action == null) return Action.field_150679_e.get(p_150672_0_); // if somebody have already harked in the mapping.
++            else return action;
+         }
+ 
+-        static
+-        {
+-            for (ClickEvent.Action clickevent$action : values())
+-            {
+-                field_150679_e.put(clickevent$action.func_150673_b(), clickevent$action);
+-            }
++        @Override
++        public boolean handle(ClickEvent clickEvent, net.minecraft.client.gui.GuiScreen screen,  net.minecraft.util.text.ITextComponent textComponent){
++            return action.handle(clickEvent, screen, textComponent);
+         }
+     }
+ }
