@@ -439,6 +439,9 @@ public class Display {
     }
 
     public static void setTitle(String title) {
+        if (getWindow() != 0) {
+            org.lwjgl3.glfw.GLFW.glfwSetWindowTitle(Window.handle, title);
+        }
         windowTitle = title;
     }
 
