@@ -341,10 +341,6 @@ public class CoreModManager {
 
         for (File coreMod : file_canidates)
         {
-            URL mod = null;
-            try {
-                mod = coreMod.toURI().toURL();
-            } catch (MalformedURLException ignored){}
             FMLLog.log.debug("Examining for coremod candidacy {}", coreMod.getName());
             JarFile jar = null;
             Attributes mfAttributes;
@@ -367,7 +363,7 @@ public class CoreModManager {
 
                 if (mfAttributes == null) // Not a coremod and no access transformer list
                 {
-                    classLoader.addURL(mod);
+                    classLoader.addURL(coreMod.toURI().toURL());
                     continue;
                 }
 
@@ -411,7 +407,7 @@ public class CoreModManager {
                 }
                 if (configs != null)
                     mixinConfigs.add(configs);
-                classLoader.addURL(mod);
+                classLoader.addURL(coreMod.toURI().toURL());
                 fmlCorePlugin = mfAttributes.getValue("FMLCorePlugin");
                 if (fmlCorePlugin == null)
                 {
