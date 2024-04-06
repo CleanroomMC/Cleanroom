@@ -61,6 +61,7 @@ public class CoreModManager {
     private static FMLTweaker tweaker;
     private static File mcDir;
     private static List<String> candidateModFiles = Lists.newArrayList();
+    private static List<String> earlyAddedClassPaths = Lists.newArrayList();
     private static List<String> accessTransformers = Lists.newArrayList();
     private static Set<String> rootNames = Sets.newHashSet();
     private static Set<String> mixinConfigs = Sets.newHashSet();
@@ -364,6 +365,7 @@ public class CoreModManager {
                 if (mfAttributes == null) // Not a coremod and no access transformer list
                 {
                     classLoader.addURL(coreMod.toURI().toURL());
+                    earlyAddedClassPaths.add(coreMod.getName());
                     continue;
                 }
 
@@ -407,11 +409,12 @@ public class CoreModManager {
                 }
                 if (configs != null)
                     mixinConfigs.add(configs);
-                classLoader.addURL(coreMod.toURI().toURL());
                 fmlCorePlugin = mfAttributes.getValue("FMLCorePlugin");
                 if (fmlCorePlugin == null)
                 {
                     // Not a coremod
+                    classLoader.addURL(coreMod.toURI().toURL());
+                    earlyAddedClassPaths.add(coreMod.getName());
                     FMLLog.log.debug("Not found coremod data in {}", coreMod.getName());
                     continue;
                 }
@@ -503,6 +506,10 @@ public class CoreModManager {
     public static List<String> getReparseableCoremods()
     {
         return candidateModFiles;
+    }
+
+    public static List<String> getEarlyAddedClassPaths() {
+        return earlyAddedClassPaths;
     }
 
     private static FMLPluginWrapper loadCoreMod(LaunchClassLoader classLoader, String coreModClass, File location)
