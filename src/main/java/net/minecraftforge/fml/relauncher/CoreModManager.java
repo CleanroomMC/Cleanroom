@@ -427,7 +427,7 @@ public class CoreModManager {
             try
             {
                 classLoader.addURL(coreMod.toURI().toURL());
-                if (configs != null && "org.spongepowered.asm.launch.MixinTweaker".equals(cascadedTweaker))
+                if (configs != null && !"org.spongepowered.asm.launch.MixinTweaker".equals(cascadedTweaker))
                     Mixins.addConfigurations(configs.split(","));
                 if (!mfAttributes.containsKey(COREMODCONTAINSFMLMOD))
                 {
