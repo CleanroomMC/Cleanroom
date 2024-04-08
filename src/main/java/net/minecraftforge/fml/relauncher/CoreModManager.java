@@ -393,19 +393,20 @@ public class CoreModManager {
                 containNonMods = Boolean.parseBoolean(mfAttributes.getValue("NonModDeps"));
                 if (cascadedTweaker != null)
                 {
-                    FMLLog.log.info("Loading tweaker {} from {}", cascadedTweaker, coreMod.getName());
-                    Integer sortOrder = Ints.tryParse(Strings.nullToEmpty(mfAttributes.getValue("TweakOrder")));
-                    sortOrder = (sortOrder == null ? Integer.valueOf(0) : sortOrder);
+                    boolean isMixinContainer = cascadedTweaker.equals(MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS);
                     if (containNonMods) {
                         for (String file: mfAttributes.getValue(LibraryManager.MODCONTAINSDEPS).split(" ")) {
                             classLoader.addURL(new File(mods_ver, file).getAbsoluteFile().toURI().toURL());
                         }
                     }
+                    FMLLog.log.info("Loading tweaker {} from {}", cascadedTweaker, coreMod.getName());
+                    Integer sortOrder = Ints.tryParse(Strings.nullToEmpty(mfAttributes.getValue("TweakOrder")));
+                    sortOrder = (sortOrder == null ? Integer.valueOf(0) : sortOrder);
                     handleCascadingTweak(coreMod, jar, cascadedTweaker, classLoader, sortOrder);
-                    ignoredModFiles.add(coreMod.getName());
                     if (configs != null)
                         Mixins.addConfigurations(configs.split(","));
-                    if (!cascadedTweaker.equals(MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS)) {
+                    if (!isMixinContainer) {
+                        ignoredModFiles.add(coreMod.getName());
                         continue;
                     }
                 }
