@@ -61,7 +61,6 @@ public class CoreModManager {
     private static FMLTweaker tweaker;
     private static File mcDir;
     private static List<String> candidateModFiles = Lists.newArrayList();
-    private static List<String> earlyAddedClassPaths = Lists.newArrayList();
     private static List<String> accessTransformers = Lists.newArrayList();
     private static Set<String> rootNames = Sets.newHashSet();
     private static Set<String> mixinConfigs = Sets.newHashSet();
@@ -346,6 +345,7 @@ public class CoreModManager {
             JarFile jar = null;
             Attributes mfAttributes;
             String fmlCorePlugin;
+            String configs;
             try
             {
                 File manifest = new File(coreMod.getAbsolutePath() + ".meta");
@@ -364,8 +364,6 @@ public class CoreModManager {
 
                 if (mfAttributes == null) // Not a coremod and no access transformer list
                 {
-                    classLoader.addURL(coreMod.toURI().toURL());
-                    earlyAddedClassPaths.add(coreMod.getName());
                     continue;
                 }
 
@@ -384,7 +382,7 @@ public class CoreModManager {
                         jar = new JarFile(coreMod);
                     ModAccessTransformer.addJar(jar, ats);
                 }
-                String configs = mfAttributes.getValue(Constants.ManifestAttributes.MIXINCONFIGS);
+                configs = mfAttributes.getValue(Constants.ManifestAttributes.MIXINCONFIGS);
                 String cascadedTweaker = mfAttributes.getValue("TweakClass");
                 if (cascadedTweaker != null)
                 {
@@ -395,7 +393,7 @@ public class CoreModManager {
                         handleCascadingTweak(coreMod, jar, cascadedTweaker, classLoader, sortOrder);
                         ignoredModFiles.add(coreMod.getName());
                         if (configs != null)
-                            mixinConfigs.add(configs);
+                            Mixins.addConfigurations(configs.split(","));
                         continue;
                     }
                 }
@@ -407,14 +405,10 @@ public class CoreModManager {
                     ignoredModFiles.add(coreMod.getName());
                     continue;
                 }
-                if (configs != null)
-                    mixinConfigs.add(configs);
                 fmlCorePlugin = mfAttributes.getValue("FMLCorePlugin");
                 if (fmlCorePlugin == null)
                 {
                     // Not a coremod
-                    classLoader.addURL(coreMod.toURI().toURL());
-                    earlyAddedClassPaths.add(coreMod.getName());
                     FMLLog.log.debug("Not found coremod data in {}", coreMod.getName());
                     continue;
                 }
@@ -432,6 +426,8 @@ public class CoreModManager {
             try
             {
                 classLoader.addURL(coreMod.toURI().toURL());
+                if (configs != null)
+                    Mixins.addConfigurations(configs.split(","));
                 if (!mfAttributes.containsKey(COREMODCONTAINSFMLMOD))
                 {
                     FMLLog.log.trace("Adding {} to the list of known coremods, it will not be examined again", coreMod.getName());
@@ -506,10 +502,6 @@ public class CoreModManager {
     public static List<String> getReparseableCoremods()
     {
         return candidateModFiles;
-    }
-
-    public static List<String> getEarlyAddedClassPaths() {
-        return earlyAddedClassPaths;
     }
 
     private static FMLPluginWrapper loadCoreMod(LaunchClassLoader classLoader, String coreModClass, File location)

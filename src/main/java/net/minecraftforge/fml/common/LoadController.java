@@ -19,6 +19,7 @@
 
 package net.minecraftforge.fml.common;
 
+import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.*;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -41,15 +42,17 @@ import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.transformer.Proxy;
 import org.spongepowered.asm.service.MixinService;
 import org.spongepowered.asm.service.mojang.MixinServiceLaunchWrapper;
+import org.spongepowered.asm.util.Constants;
 import zone.rong.mixinbooter.ILateMixinLoader;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.net.URL;
+import java.util.*;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -138,6 +141,18 @@ public class LoadController
                     // Add mods into the delegated ModClassLoader
                     for (ModContainer container : this.loader.getActiveModList()) {
                         modClassLoader.addFile(container.getSource());
+                    }
+                    // Handle Mixin Configs
+                    for (ModContainer container : this.loader.getActiveModList()) {
+                        try (JarFile jarFile = new JarFile(container.getSource())) {
+                            Attributes mfAttributes = jarFile.getManifest() == null ? null : jarFile.getManifest().getMainAttributes();
+                            if (mfAttributes != null) {
+                                String configs = mfAttributes.getValue(Constants.ManifestAttributes.MIXINCONFIGS);
+                                if (!Strings.isNullOrEmpty(configs)) {
+                                    Mixins.addConfigurations(configs.split(","));
+                                }
+                            }
+                        } catch (IOException ignored) {}
                     }
 
                     FMLContextQuery.init(); // Initialize FMLContextQuery and add it to the global list

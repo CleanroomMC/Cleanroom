@@ -47,8 +47,6 @@ public class ModDiscoverer
                 .addAll(CoreModManager.getIgnoredMods())
                 // skip reparse coremods here
                 .addAll(CoreModManager.getReparseableCoremods())
-                // skip early-added non-coremods
-                .addAll(CoreModManager.getEarlyAddedClassPaths())
                 .build();
         File[] minecraftSources = modClassLoader.getParentSources();
         if (minecraftSources.length == 1 && minecraftSources[0].isFile())

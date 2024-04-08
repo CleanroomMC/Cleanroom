@@ -21,7 +21,6 @@ package net.minecraftforge.fml.common;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.asm.transformers.ModAPITransformer;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
@@ -58,7 +57,7 @@ public class ModClassLoader extends URLClassLoader
 
     public void addFile(File modFile) throws MalformedURLException
     {
-        URL url = modFile.toURI().toURL();
+        mainClassLoader.addURL(modFile.toURI().toURL());
         this.sources.add(modFile);
     }
 

@@ -568,6 +568,7 @@ public class Loader
         modController.transition(LoaderState.LOADING, false);
         discoverer = identifyMods(injectedModContainers);
         ModAPIManager.INSTANCE.manageAPI(modClassLoader, discoverer);
+        disableRequestedMods();
         modController.distributeStateMessage(FMLLoadEvent.class);
         sortModList();
         ModAPIManager.INSTANCE.cleanupAPIContainers(modController.getActiveModList());
@@ -633,6 +634,50 @@ public class Loader
         ItemStackHolderInjector.INSTANCE.inject();
         modController.transition(LoaderState.INITIALIZATION, false);
         progressBar.step("Initializing Minecraft Engine");
+    }
+
+    private void disableRequestedMods()
+    {
+        String forcedModList = System.getProperty("fml.modStates", "");
+        FMLLog.log.trace("Received a system property request \'{}\'",forcedModList);
+        Map<String, String> sysPropertyStateList = Splitter.on(CharMatcher.anyOf(";:"))
+                .omitEmptyStrings().trimResults().withKeyValueSeparator("=")
+                .split(forcedModList);
+        FMLLog.log.trace("System property request managing the state of {} mods", sysPropertyStateList.size());
+        Map<String, String> modStates = Maps.newHashMap();
+
+        forcedModFile = new File(canonicalConfigDir, "fmlModState.properties");
+        Properties forcedModListProperties = new Properties();
+        if (forcedModFile.exists() && forcedModFile.isFile())
+        {
+            FMLLog.log.trace("Found a mod state file {}", forcedModFile.getName());
+            try
+            {
+                try (Reader reader = new InputStreamReader(new FileInputStream(forcedModFile), StandardCharsets.UTF_8))
+                {
+                    forcedModListProperties.load(reader);
+                }
+                FMLLog.log.trace("Loaded states for {} mods from file", forcedModListProperties.size());
+            }
+            catch (Exception e)
+            {
+                FMLLog.log.info("An error occurred reading the fmlModState.properties file", e);
+            }
+        }
+        modStates.putAll(Maps.fromProperties(forcedModListProperties));
+        modStates.putAll(sysPropertyStateList);
+        FMLLog.log.debug("After merging, found state information for {} mods", modStates.size());
+
+        Map<String, Boolean> isEnabled = Maps.transformValues(modStates, Boolean::parseBoolean);
+
+        for (Map.Entry<String, Boolean> entry : isEnabled.entrySet())
+        {
+            if (namedMods.containsKey(entry.getKey()))
+            {
+                FMLLog.log.info("Setting mod {} to enabled state {}", entry.getKey(), entry.getValue());
+                namedMods.get(entry.getKey()).setEnabledState(entry.getValue());
+            }
+        }
     }
 
     /**
@@ -860,7 +905,7 @@ public class Loader
             }
         }
 
-        if (difference.size() > 0)
+        if (!difference.isEmpty())
             FMLLog.log.info("Attempting connection with missing mods {} at {}", difference, side);
         return true;
     }
@@ -894,6 +939,24 @@ public class Loader
             List<ModContainer> localmods = Lists.newArrayList(mods);
             localmods.remove(mc);
             mods = ImmutableList.copyOf(localmods);
+        }
+
+        try
+        {
+            Properties props = new Properties();
+            try (Reader reader = new InputStreamReader(new FileInputStream(forcedModFile), StandardCharsets.UTF_8))
+            {
+                props.load(reader);
+            }
+            props.put(modId, "false");
+            try (Writer writer = new OutputStreamWriter(new FileOutputStream(forcedModFile), StandardCharsets.UTF_8))
+            {
+                props.store(writer, null);
+            }
+        }
+        catch (Exception e)
+        {
+            FMLLog.log.info("An error occurred writing the fml mod states file, your disabled change won't persist", e);
         }
     }
 
