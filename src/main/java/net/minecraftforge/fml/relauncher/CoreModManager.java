@@ -398,7 +398,7 @@ public class CoreModManager {
                         sortOrder = (sortOrder == null ? Integer.valueOf(0) : sortOrder);
                         if (containNonMods) {
                             for (String file: mfAttributes.getValue(LibraryManager.MODCONTAINSDEPS).split(" ")) {
-                                classLoader.addURL(new File(mods_ver, file).toURI().toURL());
+                                classLoader.addURL(new File(mods_ver, file).getAbsoluteFile().toURI().toURL());
                             }
                         }
                         handleCascadingTweak(coreMod, jar, cascadedTweaker, classLoader, sortOrder);
@@ -438,7 +438,7 @@ public class CoreModManager {
             {
                 if (containNonMods) {
                     for (String file: mfAttributes.getValue(LibraryManager.MODCONTAINSDEPS).split(" ")) {
-                        classLoader.addURL(URI.create(Launch.minecraftHome.getAbsolutePath() + File.pathSeparator + "mods" + File.pathSeparator + "1.12.2" + File.pathSeparator + file).toURL());
+                        classLoader.addURL(new File(mods_ver, file).getAbsoluteFile().toURI().toURL());
                     }
                 }
                 classLoader.addURL(coreMod.toURI().toURL());

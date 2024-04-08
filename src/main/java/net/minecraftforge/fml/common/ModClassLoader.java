@@ -57,7 +57,7 @@ public class ModClassLoader extends URLClassLoader
 
     public void addFile(File modFile) throws MalformedURLException
     {
-        mainClassLoader.addURL(modFile.toURI().toURL());
+        mainClassLoader.addURL(modFile.getAbsoluteFile().toURI().toURL());
         this.sources.add(modFile);
     }
 
