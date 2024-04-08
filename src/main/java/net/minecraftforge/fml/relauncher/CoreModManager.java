@@ -346,6 +346,7 @@ public class CoreModManager {
             Attributes mfAttributes;
             String fmlCorePlugin;
             String configs;
+            String cascadedTweaker;
             try
             {
                 File manifest = new File(coreMod.getAbsolutePath() + ".meta");
@@ -383,7 +384,7 @@ public class CoreModManager {
                     ModAccessTransformer.addJar(jar, ats);
                 }
                 configs = mfAttributes.getValue(Constants.ManifestAttributes.MIXINCONFIGS);
-                String cascadedTweaker = mfAttributes.getValue("TweakClass");
+                cascadedTweaker = mfAttributes.getValue("TweakClass");
                 if (cascadedTweaker != null)
                 {
                     if (!cascadedTweaker.equals("org.spongepowered.asm.launch.MixinTweaker")) {
@@ -426,7 +427,7 @@ public class CoreModManager {
             try
             {
                 classLoader.addURL(coreMod.toURI().toURL());
-                if (configs != null)
+                if (configs != null && !cascadedTweaker.equals("org.spongepowered.asm.launch.MixinTweaker"))
                     Mixins.addConfigurations(configs.split(","));
                 if (!mfAttributes.containsKey(COREMODCONTAINSFMLMOD))
                 {
