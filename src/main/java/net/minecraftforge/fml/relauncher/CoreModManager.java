@@ -25,6 +25,7 @@ import com.google.common.primitives.Ints;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
+import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.CertificateHelper;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.asm.ASMTransformerWrapper;
@@ -43,6 +44,7 @@ import org.spongepowered.asm.util.Constants;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.security.cert.Certificate;
 import java.util.*;
@@ -347,6 +349,8 @@ public class CoreModManager {
             String fmlCorePlugin;
             String configs;
             String cascadedTweaker;
+            File mods_ver = new File(new File(Launch.minecraftHome, "mods"), ForgeVersion.mcVersion);
+            boolean containNonMods = false;
             try
             {
                 File manifest = new File(coreMod.getAbsolutePath() + ".meta");
@@ -385,12 +389,18 @@ public class CoreModManager {
                 }
                 configs = mfAttributes.getValue(Constants.ManifestAttributes.MIXINCONFIGS);
                 cascadedTweaker = mfAttributes.getValue("TweakClass");
+                containNonMods = Boolean.parseBoolean(mfAttributes.getValue("NonModDeps"));
                 if (cascadedTweaker != null)
                 {
                     if (!cascadedTweaker.equals("org.spongepowered.asm.launch.MixinTweaker")) {
                         FMLLog.log.info("Loading tweaker {} from {}", cascadedTweaker, coreMod.getName());
                         Integer sortOrder = Ints.tryParse(Strings.nullToEmpty(mfAttributes.getValue("TweakOrder")));
                         sortOrder = (sortOrder == null ? Integer.valueOf(0) : sortOrder);
+                        if (containNonMods) {
+                            for (String file: mfAttributes.getValue(LibraryManager.MODCONTAINSDEPS).split(" ")) {
+                                classLoader.addURL(new File(mods_ver, file).toURI().toURL());
+                            }
+                        }
                         handleCascadingTweak(coreMod, jar, cascadedTweaker, classLoader, sortOrder);
                         ignoredModFiles.add(coreMod.getName());
                         if (configs != null)
@@ -426,6 +436,11 @@ public class CoreModManager {
             // Support things that are mod jars, but not FML mod jars
             try
             {
+                if (containNonMods) {
+                    for (String file: mfAttributes.getValue(LibraryManager.MODCONTAINSDEPS).split(" ")) {
+                        classLoader.addURL(URI.create(Launch.minecraftHome.getAbsolutePath() + File.pathSeparator + "mods" + File.pathSeparator + "1.12.2" + File.pathSeparator + file).toURL());
+                    }
+                }
                 classLoader.addURL(coreMod.toURI().toURL());
                 if (configs != null && !"org.spongepowered.asm.launch.MixinTweaker".equals(cascadedTweaker))
                     Mixins.addConfigurations(configs.split(","));

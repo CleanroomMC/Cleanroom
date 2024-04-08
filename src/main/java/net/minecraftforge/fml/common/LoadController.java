@@ -26,6 +26,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.util.TextTable;
 import net.minecraftforge.fml.common.LoaderState.ModState;
 import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
@@ -34,6 +35,7 @@ import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.eventhandler.FMLThrowingEventBus;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 import net.minecraftforge.fml.relauncher.MixinBooterPlugin;
+import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 import net.minecraftforge.fml.relauncher.mixinfix.MixinFixer;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.message.FormattedMessage;
@@ -46,6 +48,7 @@ import org.spongepowered.asm.util.Constants;
 import zone.rong.mixinbooter.ILateMixinLoader;
 
 import javax.annotation.Nullable;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -142,7 +145,8 @@ public class LoadController
                     for (ModContainer container : this.loader.getActiveModList()) {
                         modClassLoader.addFile(container.getSource());
                     }
-                    // Handle Mixin Configs
+                    // Handle Mixin Configs and non-mod libraries
+                    File mods_ver = new File(new File(Launch.minecraftHome, "mods"), ForgeVersion.mcVersion);
                     for (ModContainer container : this.loader.getActiveModList()) {
                         try (JarFile jarFile = new JarFile(container.getSource())) {
                             Attributes mfAttributes = jarFile.getManifest() == null ? null : jarFile.getManifest().getMainAttributes();
@@ -150,6 +154,12 @@ public class LoadController
                                 String configs = mfAttributes.getValue(Constants.ManifestAttributes.MIXINCONFIGS);
                                 if (!Strings.isNullOrEmpty(configs)) {
                                     Mixins.addConfigurations(configs.split(","));
+                                }
+                                boolean containNonMods = Boolean.parseBoolean(mfAttributes.getValue("NonModDeps"));
+                                if (containNonMods) {
+                                    for (String file: mfAttributes.getValue(LibraryManager.MODCONTAINSDEPS).split(" ")) {
+                                        modClassLoader.addFile(new File(mods_ver, file));
+                                    }
                                 }
                             }
                         } catch (IOException ignored) {}

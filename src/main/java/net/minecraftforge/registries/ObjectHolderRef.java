@@ -32,6 +32,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
+import zone.rong.imaginebreaker.ImagineBreaker;
 
 import javax.annotation.Nullable;
 
@@ -176,7 +177,7 @@ class ObjectHolderRef
         static void setField(Field field, @Nullable Object instance, Object thing) throws ReflectiveOperationException
         {
 
-            unsafe.ensureClassInitialized(field.getDeclaringClass());
+            ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
             unsafe.putObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), thing);
         }
     }

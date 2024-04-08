@@ -65,7 +65,7 @@ public class LibraryManager
     private static final Comparator<File> FILE_NAME_SORTER_INSENSITVE = Comparator.comparing(o -> o.getName().toLowerCase(Locale.ENGLISH));
 
     public static final Attributes.Name MODSIDE = new Attributes.Name("ModSide");
-    private static final Attributes.Name MODCONTAINSDEPS = new Attributes.Name("ContainedDeps");
+    public static final Attributes.Name MODCONTAINSDEPS = new Attributes.Name("ContainedDeps");
     private static final Attributes.Name MAVEN_ARTIFACT = new Attributes.Name("Maven-Artifact");
     private static final Attributes.Name TIMESTAMP = new Attributes.Name("Timestamp");
     private static final Attributes.Name MD5 = new Attributes.Name("MD5");

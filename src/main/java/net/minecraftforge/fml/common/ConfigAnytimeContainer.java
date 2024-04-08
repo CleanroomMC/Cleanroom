@@ -9,7 +9,7 @@ public class ConfigAnytimeContainer extends DummyModContainer{
         meta.modId = "configanytime";
         meta.name = "ConfigAnytime";
         meta.description = "Allows Forge configurations to be setup at any point in time.";
-        meta.version = "2.0";
+        meta.version = "3.0";
         meta.authorList.add("Rongmario");
     }
 
