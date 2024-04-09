@@ -1,6 +1,26 @@
 --- before/net/minecraft/client/resources/Locale.java
 +++ after/net/minecraft/client/resources/Locale.java
-@@ -53,26 +53,6 @@
+@@ -20,7 +20,7 @@
+ {
+     private static final Splitter field_135030_b = Splitter.on('=').limit(2);
+     private static final Pattern field_135031_c = Pattern.compile("%(\\d+\\$)?[\\d\\.]*[df]");
+-    Map<String, String> field_135032_a = Maps.newHashMap();
++    Map<String, String> field_135032_a = Maps.<String, String>newHashMap();
+     private boolean field_135029_d;
+ 
+     public synchronized void func_135022_a(IResourceManager p_135022_1_, List<String> p_135022_2_)
+@@ -37,8 +37,9 @@
+                 {
+                     this.func_135028_a(p_135022_1_.func_135056_b(new ResourceLocation(s2, s1)));
+                 }
+-                catch (IOException ioexception)
++                catch (IOException var9)
+                 {
++                    ;
+                 }
+             }
+         }
+@@ -53,26 +54,6 @@
  
      private void func_135024_b()
      {
@@ -27,7 +47,7 @@
      }
  
      private void func_135028_a(List<IResource> p_135028_1_) throws IOException
-@@ -94,6 +74,8 @@
+@@ -94,11 +75,13 @@
  
      private void func_135021_a(InputStream p_135021_1_) throws IOException
      {
@@ -36,3 +56,18 @@
          for (String s : IOUtils.readLines(p_135021_1_, StandardCharsets.UTF_8))
          {
              if (!s.isEmpty() && s.charAt(0) != '#')
+             {
+-                String[] astring = Iterables.toArray(field_135030_b.split(s), String.class);
++                String[] astring = (String[])Iterables.toArray(field_135030_b.split(s), String.class);
+ 
+                 if (astring != null && astring.length == 2)
+                 {
+@@ -124,7 +107,7 @@
+         {
+             return String.format(s, p_135023_2_);
+         }
+-        catch (IllegalFormatException illegalformatexception)
++        catch (IllegalFormatException var5)
+         {
+             return "Format error: " + s;
+         }

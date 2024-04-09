@@ -79,26 +79,19 @@
          }
  
          this.field_73974_b = field_175374_h.nextFloat();
-@@ -130,30 +131,18 @@
+@@ -133,7 +134,6 @@
+         return Minecraft.func_71410_x().field_71474_y.func_74308_b(GameSettings.Options.REALMS_NOTIFICATIONS) && this.field_183503_M != null;
+     }
  
-     private boolean func_183501_a()
+-    @Override
+     public void func_73876_c()
      {
--        return Minecraft.func_71410_x().field_71474_y.func_74308_b(GameSettings.Options.REALMS_NOTIFICATIONS) && this.field_183503_M != null;
--    }
--
+         if (this.func_183501_a())
+@@ -142,18 +142,15 @@
+         }
+     }
+ 
 -    @Override
--    public void func_73876_c()
--    {
--        if (this.func_183501_a())
--        {
--            this.field_183503_M.func_73876_c();
--        }
--    }
--
--    @Override
-+        return false;
-+    }
-+
      public boolean func_73868_f()
      {
          return false;
@@ -113,7 +106,7 @@
      public void func_73866_w_()
      {
          this.field_73977_n = new DynamicTexture(256, 256);
-@@ -198,40 +187,27 @@
+@@ -198,7 +195,7 @@
              this.field_92024_r = this.field_146289_q.func_78256_a(this.field_146972_A);
              int k = Math.max(this.field_92023_s, this.field_92024_r);
              this.field_92022_t = (this.field_146294_l - k) / 2;
@@ -122,21 +115,10 @@
              this.field_92020_v = this.field_92022_t + k;
              this.field_92019_w = this.field_92021_u + 24;
          }
- 
-         this.field_146297_k.func_181537_a(false);
- 
--        if (Minecraft.func_71410_x().field_71474_y.func_74308_b(GameSettings.Options.REALMS_NOTIFICATIONS) && !this.field_183502_L)
--        {
--            RealmsBridge realmsbridge = new RealmsBridge();
--            this.field_183503_M = realmsbridge.getNotificationScreen(this);
--            this.field_183502_L = true;
--        }
--
--        if (this.func_183501_a())
--        {
--            this.field_183503_M.func_183500_a(this.field_146294_l, this.field_146295_m);
--            this.field_183503_M.func_73866_w_();
--        }
+@@ -217,21 +214,21 @@
+             this.field_183503_M.func_183500_a(this.field_146294_l, this.field_146295_m);
+             this.field_183503_M.func_73866_w_();
+         }
 +        modUpdateNotification = net.minecraftforge.client.gui.NotificationModUpdateScreen.init(this, modButton);
      }
  
@@ -145,7 +127,8 @@
          this.field_146292_n.add(new GuiButton(1, this.field_146294_l / 2 - 100, p_73969_1_, I18n.func_135052_a("menu.singleplayer")));
          this.field_146292_n.add(new GuiButton(2, this.field_146294_l / 2 - 100, p_73969_1_ + p_73969_2_ * 1, I18n.func_135052_a("menu.multiplayer")));
 -        this.field_175372_K = this.func_189646_b(new GuiButton(14, this.field_146294_l / 2 - 100, p_73969_1_ + p_73969_2_ * 2, I18n.func_135052_a("menu.online")));
-+        this.field_146292_n.add(modButton = new GuiButton(6, this.field_146294_l / 2 - 100, p_73969_1_ + p_73969_2_ * 2, I18n.func_135052_a("fml.menu.mods")));
++        this.field_175372_K = this.func_189646_b(new GuiButton(14, this.field_146294_l / 2 + 2, p_73969_1_ + p_73969_2_ * 2, 98, 20, I18n.func_135052_a("menu.online").replace("Minecraft", "").trim()));
++        this.field_146292_n.add(modButton = new GuiButton(6, this.field_146294_l / 2 - 100, p_73969_1_ + p_73969_2_ * 2, 98, 20, I18n.func_135052_a("fml.menu.mods")));
      }
  
      private void func_73972_b(int p_73972_1_, int p_73972_2_)
@@ -158,7 +141,7 @@
          ISaveFormat isaveformat = this.field_146297_k.func_71359_d();
          WorldInfo worldinfo = isaveformat.func_75803_c("Demo_World");
  
-@@ -241,7 +217,6 @@
+@@ -241,7 +238,6 @@
          }
      }
  
@@ -166,17 +149,7 @@
      protected void func_146284_a(GuiButton p_146284_1_) throws IOException
      {
          if (p_146284_1_.field_146127_k == 0)
-@@ -264,16 +239,16 @@
-             this.field_146297_k.func_147108_a(new GuiMultiplayer(this));
-         }
- 
--        if (p_146284_1_.field_146127_k == 14 && this.field_175372_K.field_146125_m)
--        {
--            this.func_140005_i();
--        }
--
-         if (p_146284_1_.field_146127_k == 4)
-         {
+@@ -274,6 +270,11 @@
              this.field_146297_k.func_71400_g();
          }
  
@@ -188,7 +161,7 @@
          if (p_146284_1_.field_146127_k == 11)
          {
              this.field_146297_k.func_71371_a("Demo_World", "Demo_World", WorldServerDemo.field_73071_a);
-@@ -286,28 +261,15 @@
+@@ -286,17 +287,7 @@
  
              if (worldinfo != null)
              {
@@ -207,18 +180,15 @@
              }
          }
      }
- 
-     private void func_140005_i()
-     {
--        RealmsBridge realmsbridge = new RealmsBridge();
--        realmsbridge.switchToRealms(this);
+@@ -307,7 +298,6 @@
+         realmsbridge.switchToRealms(this);
      }
  
 -    @Override
      public void func_73878_a(boolean p_73878_1_, int p_73878_2_)
      {
          if (p_73878_1_ && p_73878_2_ == 12)
-@@ -328,7 +290,7 @@
+@@ -328,7 +318,7 @@
                  try
                  {
                      Class<?> oclass = Class.forName("java.awt.Desktop");
@@ -227,7 +197,7 @@
                      oclass.getMethod("browse", URI.class).invoke(object, new URI(this.field_104024_v));
                  }
                  catch (Throwable throwable)
-@@ -359,9 +321,7 @@
+@@ -359,9 +349,7 @@
          GlStateManager.func_179118_c();
          GlStateManager.func_179129_p();
          GlStateManager.func_179132_a(false);
@@ -238,7 +208,7 @@
          int i = 8;
  
          for (int j = 0; j < 64; ++j)
-@@ -407,10 +367,10 @@
+@@ -407,10 +395,10 @@
                  bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181709_i);
                  int l = 255 / (j + 1);
                  float f3 = 0.0F;
@@ -253,7 +223,7 @@
                  tessellator.func_78381_a();
                  GlStateManager.func_179121_F();
              }
-@@ -419,7 +379,7 @@
+@@ -419,7 +407,7 @@
              GlStateManager.func_179135_a(true, true, true, false);
          }
  
@@ -262,7 +232,7 @@
          GlStateManager.func_179135_a(true, true, true, true);
          GlStateManager.func_179128_n(5889);
          GlStateManager.func_179121_F();
-@@ -437,9 +397,7 @@
+@@ -437,9 +425,7 @@
          GlStateManager.func_187421_b(3553, 10240, 9729);
          GlStateManager.func_187443_a(3553, 0, 0, 0, 0, 0, 256, 256);
          GlStateManager.func_179147_l();
@@ -273,7 +243,7 @@
          GlStateManager.func_179135_a(true, true, true, false);
          Tessellator tessellator = Tessellator.func_178181_a();
          BufferBuilder bufferbuilder = tessellator.func_178180_c();
-@@ -453,22 +411,10 @@
+@@ -453,22 +439,10 @@
              int k = this.field_146294_l;
              int l = this.field_146295_m;
              float f1 = (float)(j - 1) / 256.0F;
@@ -300,7 +270,7 @@
          }
  
          tessellator.func_78381_a();
-@@ -498,26 +444,13 @@
+@@ -498,26 +472,13 @@
          Tessellator tessellator = Tessellator.func_178181_a();
          BufferBuilder bufferbuilder = tessellator.func_178180_c();
          bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181709_i);
@@ -331,7 +301,7 @@
      public void func_73863_a(int p_73863_1_, int p_73863_2_, float p_73863_3_)
      {
          this.field_73979_m += p_73863_3_;
-@@ -532,7 +465,7 @@
+@@ -532,7 +493,7 @@
          this.field_146297_k.func_110434_K().func_110577_a(field_110352_y);
          GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
  
@@ -340,7 +310,7 @@
          {
              this.func_73729_b(j + 0, 30, 0, 0, 99, 44);
              this.func_73729_b(j + 99, 30, 129, 0, 27, 44);
-@@ -548,10 +481,13 @@
+@@ -548,10 +509,13 @@
  
          this.field_146297_k.func_110434_K().func_110577_a(field_194400_H);
          func_146110_a(j + 88, 67, 0.0F, 0.0F, 98, 14, 128.0F, 16.0F);
@@ -355,7 +325,7 @@
          f = f * 100.0F / (float)(this.field_146289_q.func_78256_a(this.field_73975_c) + 32);
          GlStateManager.func_179152_a(f, f, f);
          this.func_73732_a(this.field_146289_q, this.field_73975_c, 0, -8, -256);
-@@ -567,14 +503,19 @@
+@@ -567,14 +531,19 @@
              s = s + ("release".equalsIgnoreCase(this.field_146297_k.func_184123_d()) ? "" : "/" + this.field_146297_k.func_184123_d());
          }
  
@@ -381,7 +351,7 @@
          {
              func_73734_a(this.field_193979_N, this.field_146295_m - 1, this.field_193979_N + this.field_193978_M, this.field_146295_m, -1);
          }
-@@ -583,32 +524,21 @@
+@@ -583,9 +552,7 @@
          {
              func_73734_a(this.field_92022_t - 2, this.field_92021_u - 2, this.field_92020_v + 2, this.field_92019_w - 1, 1428160512);
              this.func_73731_b(this.field_146289_q, this.field_92025_p, this.field_92022_t, this.field_92021_u, -1);
@@ -392,11 +362,10 @@
          }
  
          super.func_73863_a(p_73863_1_, p_73863_2_, p_73863_3_);
- 
--        if (this.func_183501_a())
--        {
--            this.field_183503_M.func_73863_a(p_73863_1_, p_73863_2_, p_73863_3_);
--        }
+@@ -594,21 +561,16 @@
+         {
+             this.field_183503_M.func_73863_a(p_73863_1_, p_73863_2_, p_73863_3_);
+         }
 +        modUpdateNotification.func_73863_a(p_73863_1_, p_73863_2_, p_73863_3_);
      }
  
@@ -417,15 +386,10 @@
              {
                  GuiConfirmOpenLink guiconfirmopenlink = new GuiConfirmOpenLink(this, this.field_104024_v, 13, true);
                  guiconfirmopenlink.func_146358_g();
-@@ -616,26 +546,10 @@
-             }
+@@ -621,16 +583,12 @@
+             this.field_183503_M.func_73864_a(p_73864_1_, p_73864_2_, p_73864_3_);
          }
  
--        if (this.func_183501_a())
--        {
--            this.field_183503_M.func_73864_a(p_73864_1_, p_73864_2_, p_73864_3_);
--        }
--
 -        if (p_73864_1_ > this.field_193979_N
 -                && p_73864_1_ < this.field_193979_N + this.field_193978_M
 -                && p_73864_2_ > this.field_146295_m - 10
@@ -437,11 +401,6 @@
      }
  
 -    @Override
--    public void func_146281_b()
--    {
--        if (this.field_183503_M != null)
--        {
--            this.field_183503_M.func_146281_b();
--        }
--    }
- }
+     public void func_146281_b()
+     {
+         if (this.field_183503_M != null)
