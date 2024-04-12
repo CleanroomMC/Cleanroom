@@ -460,6 +460,7 @@ project(':cleanroom') {
         installer 'jakarta.activation:jakarta.activation-api:2.1.2'
         installer 'org.glassfish.corba:glassfish-corba-omgapi:4.2.5'
         installer 'org.glassfish.jaxb:jaxb-core:4.0.5'
+        installer 'org.glassfish.jaxb:jaxb-runtime:4.0.5'
         installer 'org.openjdk.nashorn:nashorn-core:15.4'
 
         // Mixin
