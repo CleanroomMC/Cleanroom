@@ -82,7 +82,9 @@ body:
           required: true
         - label: "I have read the known incompatibilities and this is not related to one of those."
           required: true
-        - label: "I have installed [Fugue](https://github.com/CleanroomMC/Fugue) and it does not fixed this issue."
+        - label: "I have installed [Fugue](https://github.com/CleanroomMC/Fugue) and it does not fix this issue."
+          required: true
+        - label: "I am using experimental branch and have installed [Scalar](https://github.com/CleanroomMC/Scalar/releases/tag/2.11.1) and it does not fix this issue."
           required: true
         - label: "I am running a test build from Cleanroom Github Actions.  (Or, if I've compiled it myself I plan to fix the issue)"
           required: true
