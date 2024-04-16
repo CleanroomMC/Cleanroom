@@ -122,15 +122,15 @@ public class FMLModContainer implements ModContainer
         }
         else
         {
-            FMLLog.log.trace("Using custom language adapter {} for {} (modid: {})", languageAdapterType, this.className, getModId());
             try
             {
                 languageAdapter = (ILanguageAdapter)Class.forName((String)descriptor.get("modLanguageAdapter"), true, Loader.instance().getModClassLoader()).getConstructor().newInstance();
             }
             catch (Exception ex)
             {
-                FMLLog.log.error("Error constructing custom mod language adapter referenced by {} (modid: {})", this.className, getModId(), ex);
-                throw new RuntimeException(ex);
+                // Delay loading of the adapter until the mod is on the classpath, in case the mod itself contains it.
+                this.languageAdapter = null;
+                FMLLog.log.trace("Using custom language adapter {} for {} (modid: {})", languageAdapterType, this.className, getModId());
             }
         }
         sanityCheckModId();
@@ -601,6 +601,7 @@ public class FMLModContainer implements ModContainer
             disableability = hasReverseDepends ? Disableable.DEPENDENCIES : Disableable.RESTART;
         }
         Method factoryMethod = gatherAnnotations(clazz);
+        ILanguageAdapter languageAdapter = getLanguageAdapter();
         try
         {
             modInstance = languageAdapter.getNewInstance(this, clazz, modClassLoader, factoryMethod);
