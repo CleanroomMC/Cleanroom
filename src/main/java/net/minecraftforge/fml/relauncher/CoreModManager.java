@@ -412,14 +412,14 @@ public class CoreModManager {
                 }
                 List<String> modTypes = mfAttributes.containsKey(MODTYPE) ? Arrays.asList(mfAttributes.getValue(MODTYPE).split(",")) : ImmutableList.of("FML");
 
-                if (!modTypes.contains("FML"))
+                if (!modTypes.contains("FML") && !modTypes.contains("CRL"))
                 {
                     FMLLog.log.debug("Adding {} to the list of things to skip. It is not an FML mod, it has types {}", coreMod.getName(), modTypes);
                     ignoredModFiles.add(coreMod.getName());
                     continue;
                 }
                 fmlCorePlugin = mfAttributes.getValue("FMLCorePlugin");
-                if (fmlCorePlugin == null)
+                if (fmlCorePlugin == null && configs == null)
                 {
                     // Not a coremod
                     FMLLog.log.debug("Not found coremod data in {}", coreMod.getName());
@@ -451,11 +451,16 @@ public class CoreModManager {
                     FMLLog.log.trace("Adding {} to the list of known coremods, it will not be examined again", coreMod.getName());
                     ignoredModFiles.add(coreMod.getName());
                 }
-                else
+                else if (fmlCorePlugin != null)
                 {
-                    FMLLog.log.warn("Found FMLCorePluginContainsFMLMod marker in {}. This is not recommended, @Mods should be in a separate jar from the coremod.",
+                    FMLLog.log.info("Found FMLCorePluginContainsFMLMod marker in {}.",
                             coreMod.getName());
                     candidateModFiles.add(coreMod.getName());
+                } else {
+                    FMLLog.log.info("Found Mixin configs in non-coremod {}. Adding it to @Mod candidate list.",
+                            coreMod.getName());
+                    candidateModFiles.add(coreMod.getName());
+                    continue;
                 }
             }
             catch (MalformedURLException e)
