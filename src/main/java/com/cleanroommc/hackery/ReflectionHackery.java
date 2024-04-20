@@ -1,7 +1,8 @@
 package com.cleanroommc.hackery;
 
-import jdk.internal.misc.Unsafe;
+import sun.misc.Unsafe;
 import net.minecraft.launchwrapper.LaunchClassLoader;
+import top.outlands.foundation.boot.UnsafeHolder;
 import zone.rong.imaginebreaker.ImagineBreaker;
 
 import javax.annotation.Nullable;
@@ -9,11 +10,11 @@ import java.lang.reflect.*;
 import java.net.URL;
 import java.util.function.Predicate;
 
-@SuppressWarnings("removal")
+@SuppressWarnings("deprecation")
 public final class ReflectionHackery {
 
     private static final Field field$modifiers;
-    public static Unsafe unsafe;
+    public static Unsafe unsafe = UnsafeHolder.UNSAFE;
 
     static {
         Field modifiers;
@@ -28,23 +29,32 @@ public final class ReflectionHackery {
         }
         field$modifiers = modifiers;
         field$modifiers.setAccessible(true);
-        try {
-            final Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
-            unsafeField.setAccessible(true);
-            unsafe = (Unsafe) unsafeField.get(null);
-        } catch (Exception e) {}
     }
 
     // Sensitive fields such as "modifiers" are only query-able via the native getDeclaredFields0 call
     public static @Nullable Field deepSearchForField(Class<?> clazz, Predicate<Field> search, boolean setAccessible) throws ReflectiveOperationException {
-        Method getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class); // TODO: cache?
-        getDeclaredFields0.setAccessible(true);
-        for (Field declaredField : (Field[]) getDeclaredFields0.invoke(clazz, false)) {
-            if (search.test(declaredField)) {
-                if (setAccessible) {
-                    declaredField.setAccessible(true);
+        Method getDeclaredFields0;
+        if (System.getProperty("java.vendor").contains("IBM")) {
+            getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFieldsImpl");
+            getDeclaredFields0.setAccessible(true);
+            for (Field declaredField : (Field[]) getDeclaredFields0.invoke(clazz)) {
+                if (search.test(declaredField)) {
+                    if (setAccessible) {
+                        declaredField.setAccessible(true);
+                    }
+                    return declaredField;
                 }
-                return declaredField;
+            }
+        } else {
+            getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class); // TODO: cache?
+            getDeclaredFields0.setAccessible(true);
+            for (Field declaredField : (Field[]) getDeclaredFields0.invoke(clazz, false)) {
+                if (search.test(declaredField)) {
+                    if (setAccessible) {
+                        declaredField.setAccessible(true);
+                    }
+                    return declaredField;
+                }
             }
         }
         return null;
