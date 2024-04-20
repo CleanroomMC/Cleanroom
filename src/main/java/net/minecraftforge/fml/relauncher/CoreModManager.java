@@ -419,11 +419,13 @@ public class CoreModManager {
                     continue;
                 }
                 fmlCorePlugin = mfAttributes.getValue("FMLCorePlugin");
-                if (fmlCorePlugin == null && configs == null)
+                if (fmlCorePlugin == null)
                 {
-                    // Not a coremod
-                    FMLLog.log.debug("Not found coremod data in {}", coreMod.getName());
-                    continue;
+                    if (configs == null || MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker)) {
+                        // Not a coremod
+                        FMLLog.log.debug("Not found coremod data in {}", coreMod.getName());
+                        continue;
+                    }
                 }
             }
             catch (IOException ioe)
@@ -444,7 +446,7 @@ public class CoreModManager {
                     }
                 }
                 classLoader.addURL(coreMod.toURI().toURL());
-                if (configs != null && !"org.spongepowered.asm.launch.MixinTweaker".equals(cascadedTweaker))
+                if (configs != null && !MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker))
                     Mixins.addConfigurations(configs.split(","));
                 if (!mfAttributes.containsKey(COREMODCONTAINSFMLMOD))
                 {
