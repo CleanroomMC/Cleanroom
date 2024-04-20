@@ -898,7 +898,7 @@ project(':cleanroom') {
                 spec: 0,
                 profile: project.name,
                 version: launcherJson.id,
-                icon: 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon.ico').toPath()))),
+                //icon: 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon.ico').toPath()))),
                 json: '/version.json',
                 path: "${project.group}:${project.name}:${project.version}",
                 logo: '/cleanroom_logo.png',
