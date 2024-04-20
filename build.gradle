@@ -901,7 +901,7 @@ project(':cleanroom') {
                 icon: 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon.ico').toPath()))),
                 json: '/version.json',
                 path: "${project.group}:${project.name}:${project.version}",
-                logo: '/cleanroom_logo.png',
+                logo: '/big_logo.png',
                 minecraft: props.minecraft_version,
                 welcome: "Welcome to the simple ${project.name.capitalize()} installer.",
                 data: [ ] as Map,
