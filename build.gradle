@@ -898,7 +898,7 @@ project(':cleanroom') {
                 spec: 0,
                 profile: project.name,
                 version: launcherJson.id,
-                //icon: 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon.ico').toPath()))),
+                icon: 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon.ico').toPath()))),
                 json: '/version.json',
                 path: "${project.group}:${project.name}:${project.version}",
                 logo: '/cleanroom_logo.png',
@@ -996,14 +996,14 @@ project(':cleanroom') {
             into("/maven/${project.group.replace('.', '/')}/${project.name}/${project.version}/")
             rename { "${project.name }-${project.version }.jar" }
         }
+        from(rootProject.file('/src/main/resources/cleanroom_logo.png')) {
+            into("/big_logo.png")
+            rename { 'big_logo.png' }
+        }
         from(installerJson.output)
         from(launcherJson.output)
         from(zipTree(downloadInstaller.output)) {
             duplicatesStrategy = 'exclude'
-        }
-        from(rootProject.file('/src/main/resources/cleanroom_logo.png')) {
-            into("big_logo.png")
-            rename { 'big_logo.png' }
         }
     }
 
