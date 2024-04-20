@@ -901,7 +901,7 @@ project(':cleanroom') {
                 icon: 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon.ico').toPath()))),
                 json: '/version.json',
                 path: "${project.group}:${project.name}:${project.version}",
-                logo: '/big_logo.png',
+                logo: '/cleanroom_logo.png',
                 minecraft: props.minecraft_version,
                 welcome: "Welcome to the simple ${project.name.capitalize()} installer.",
                 data: [ ] as Map,
@@ -991,9 +991,6 @@ project(':cleanroom') {
         archiveExtension = 'jar' //Needs to be Zip task to not override Manifest, so set extension
         destinationDirectory = file('build/libs')
         from(extra_files)
-        from(rootProject.file('/src/main/resources/cleanroom_logo.png')) {
-            rename { 'big_logo.png' }
-        }
         from(rootProject.file('/src/main/resources/url.png'))
         from(universalJar) {
             into("/maven/${project.group.replace('.', '/')}/${project.name}/${project.version}/")
@@ -1003,6 +1000,9 @@ project(':cleanroom') {
         from(launcherJson.output)
         from(zipTree(downloadInstaller.output)) {
             duplicatesStrategy = 'exclude'
+        }
+        from(rootProject.file('/src/main/resources/cleanroom_logo.png')) {
+            rename { 'cleanroom_logo.png' }
         }
     }
 
