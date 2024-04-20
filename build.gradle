@@ -991,7 +991,7 @@ project(':cleanroom') {
         archiveExtension = 'jar' //Needs to be Zip task to not override Manifest, so set extension
         destinationDirectory = file('build/libs')
         from(extra_files)
-        from(rootProject.file('/src/main/resources/forge_logo.png')) {
+        from(rootProject.file('/src/main/resources/cleanroom_logo.png')) {
             rename { 'big_logo.png' }
         }
         from(rootProject.file('/src/main/resources/url.png'))
