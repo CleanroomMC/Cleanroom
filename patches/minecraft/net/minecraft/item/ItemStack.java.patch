@@ -50,7 +50,16 @@
          this.field_77994_a = p_i47263_1_.func_74771_c("Count");
          this.field_77991_e = Math.max(0, p_i47263_1_.func_74765_d("Damage"));
  
-@@ -127,6 +135,7 @@
+@@ -120,13 +128,14 @@
+         {
+             this.field_77990_d = p_i47263_1_.func_74775_l("tag");
+ 
+-            if (this.field_151002_e != null)
++            if (this.getItemRaw() != null)
+             {
+-                this.field_151002_e.func_179215_a(p_i47263_1_);
++                this.getItemRaw().func_179215_a(p_i47263_1_);
+             }
          }
  
          this.func_190923_F();
@@ -87,14 +96,13 @@
          }
      }
  
-@@ -166,22 +178,13 @@
+@@ -166,26 +178,30 @@
  
      public Item func_77973_b()
      {
 -        return this.field_190928_g ? Item.func_150898_a(Blocks.field_150350_a) : this.field_151002_e;
-+        return this.field_190928_g || this.delegate == null ? Items.field_190931_a : this.delegate.get();
-     }
- 
+-    }
+-
 -    public EnumActionResult func_179546_a(
 -        EntityPlayer p_179546_1_,
 -        World p_179546_2_,
@@ -105,19 +113,29 @@
 -        float p_179546_7_,
 -        float p_179546_8_
 -    )
-+    public EnumActionResult func_179546_a(EntityPlayer p_179546_1_, World p_179546_2_, BlockPos p_179546_3_, EnumHand p_179546_4_, EnumFacing p_179546_5_, float p_179546_6_, float p_179546_7_, float p_179546_8_)
-     {
+-    {
 -        EnumActionResult enumactionresult = this.func_77973_b()
 -                                            .func_180614_a(p_179546_1_, p_179546_2_, p_179546_3_, p_179546_4_, p_179546_5_, p_179546_6_, p_179546_7_, p_179546_8_);
+-
+-        if (enumactionresult == EnumActionResult.SUCCESS)
+-        {
+-            p_179546_1_.func_71029_a(StatList.func_188057_b(this.field_151002_e));
++        return this.field_190928_g || this.delegate == null ? Items.field_190931_a : this.delegate.get();
++    }
++
++    public EnumActionResult func_179546_a(EntityPlayer p_179546_1_, World p_179546_2_, BlockPos p_179546_3_, EnumHand p_179546_4_, EnumFacing p_179546_5_, float p_179546_6_, float p_179546_7_, float p_179546_8_)
++    {
 +        if (!p_179546_2_.field_72995_K) return net.minecraftforge.common.ForgeHooks.onPlaceItemIntoWorld(this, p_179546_1_, p_179546_2_, p_179546_3_, p_179546_5_, p_179546_6_, p_179546_7_, p_179546_8_, p_179546_4_);
 +        EnumActionResult enumactionresult = this.func_77973_b().func_180614_a(p_179546_1_, p_179546_2_, p_179546_3_, p_179546_4_, p_179546_5_, p_179546_6_, p_179546_7_, p_179546_8_);
- 
-         if (enumactionresult == EnumActionResult.SUCCESS)
-         {
-@@ -191,6 +194,19 @@
-         return enumactionresult;
-     }
- 
++
++        if (enumactionresult == EnumActionResult.SUCCESS)
++        {
++            p_179546_1_.func_71029_a(StatList.func_188057_b(this.getItemRaw()));
++        }
++
++        return enumactionresult;
++    }
++
 +    public EnumActionResult onItemUseFirst(EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
 +    {
 +        // copy of onitemuse but for onitemusefirst
@@ -125,15 +143,19 @@
 +
 +        if (enumactionresult == EnumActionResult.SUCCESS)
 +        {
-+            playerIn.func_71029_a(StatList.func_188057_b(this.field_151002_e));
-+        }
-+
-+        return enumactionresult;
-+    }
-+
-     public float func_150997_a(IBlockState p_150997_1_)
++            playerIn.func_71029_a(StatList.func_188057_b(this.getItemRaw()));
+         }
+ 
+         return enumactionresult;
+@@ -208,7 +224,7 @@
+ 
+     public NBTTagCompound func_77955_b(NBTTagCompound p_77955_1_)
      {
-         return this.func_77973_b().func_150893_a(this, p_150997_1_);
+-        ResourceLocation resourcelocation = Item.field_150901_e.func_177774_c(this.field_151002_e);
++        ResourceLocation resourcelocation = Item.field_150901_e.func_177774_c(this.getItemRaw());
+         p_77955_1_.func_74778_a("id", resourcelocation == null ? "minecraft:air" : resourcelocation.toString());
+         p_77955_1_.func_74774_a("Count", (byte)this.field_77994_a);
+         p_77955_1_.func_74777_a("Damage", (short)this.field_77991_e);
 @@ -218,12 +234,18 @@
              p_77955_1_.func_74782_a("tag", this.field_77990_d);
          }
@@ -159,7 +181,7 @@
              return false;
          }
 -        else if (this.field_151002_e.func_77612_l() <= 0)
-+        else if (this.field_151002_e.getMaxDamage(this) <= 0)
++        else if (this.getItemRaw().getMaxDamage(this) <= 0)
          {
              return false;
          }
@@ -212,7 +234,37 @@
          }
      }
  
-@@ -366,7 +383,7 @@
+@@ -335,7 +352,7 @@
+                     if (p_77972_2_ instanceof EntityPlayer)
+                     {
+                         EntityPlayer entityplayer = (EntityPlayer)p_77972_2_;
+-                        entityplayer.func_71029_a(StatList.func_188059_c(this.field_151002_e));
++                        entityplayer.func_71029_a(StatList.func_188059_c(this.getItemRaw()));
+                     }
+ 
+                     this.field_77991_e = 0;
+@@ -346,11 +363,11 @@
+ 
+     public void func_77961_a(EntityLivingBase p_77961_1_, EntityPlayer p_77961_2_)
+     {
+-        boolean flag = this.field_151002_e.func_77644_a(this, p_77961_1_, p_77961_2_);
++        boolean flag = this.getItemRaw().func_77644_a(this, p_77961_1_, p_77961_2_);
+ 
+         if (flag)
+         {
+-            p_77961_2_.func_71029_a(StatList.func_188057_b(this.field_151002_e));
++            p_77961_2_.func_71029_a(StatList.func_188057_b(this.getItemRaw()));
+         }
+     }
+ 
+@@ -360,13 +377,13 @@
+ 
+         if (flag)
+         {
+-            p_179548_4_.func_71029_a(StatList.func_188057_b(this.field_151002_e));
++            p_179548_4_.func_71029_a(StatList.func_188057_b(this.getItemRaw()));
+         }
+     }
  
      public boolean func_150998_b(IBlockState p_150998_1_)
      {
@@ -226,7 +278,7 @@
      public ItemStack func_77946_l()
      {
 -        ItemStack itemstack = new ItemStack(this.field_151002_e, this.field_77994_a, this.field_77991_e);
-+        ItemStack itemstack = new ItemStack(this.field_151002_e, this.field_77994_a, this.field_77991_e, this.capabilities != null ? this.capabilities.serializeNBT() : null);
++        ItemStack itemstack = new ItemStack(this.getItemRaw(), this.field_77994_a, this.field_77991_e, this.capabilities != null ? this.capabilities.serializeNBT() : null);
          itemstack.func_190915_d(this.func_190921_D());
  
          if (this.field_77990_d != null)
@@ -268,6 +320,61 @@
          }
      }
  
+@@ -469,7 +489,7 @@
+ 
+     public boolean func_77969_a(ItemStack p_77969_1_)
+     {
+-        return !p_77969_1_.func_190926_b() && this.field_151002_e == p_77969_1_.field_151002_e && this.field_77991_e == p_77969_1_.field_77991_e;
++        return !p_77969_1_.func_190926_b() && this.getItemRaw() == p_77969_1_.getItemRaw() && this.field_77991_e == p_77969_1_.field_77991_e;
+     }
+ 
+     public boolean func_185136_b(ItemStack p_185136_1_)
+@@ -480,7 +500,7 @@
+         }
+         else
+         {
+-            return !p_185136_1_.func_190926_b() && this.field_151002_e == p_185136_1_.field_151002_e;
++            return !p_185136_1_.func_190926_b() && this.getItemRaw() == p_185136_1_.getItemRaw();
+         }
+     }
+ 
+@@ -502,15 +522,15 @@
+             --this.field_77992_b;
+         }
+ 
+-        if (this.field_151002_e != null)
++        if (this.getItemRaw() != null)
+         {
+-            this.field_151002_e.func_77663_a(this, p_77945_1_, p_77945_2_, p_77945_3_, p_77945_4_);
++            this.getItemRaw().func_77663_a(this, p_77945_1_, p_77945_2_, p_77945_3_, p_77945_4_);
+         }
+     }
+ 
+     public void func_77980_a(World p_77980_1_, EntityPlayer p_77980_2_, int p_77980_3_)
+     {
+-        p_77980_2_.func_71064_a(StatList.func_188060_a(this.field_151002_e), p_77980_3_);
++        p_77980_2_.func_71064_a(StatList.func_188060_a(this.getItemRaw()), p_77980_3_);
+         this.func_77973_b().func_77622_d(this, p_77980_1_, p_77980_2_);
+     }
+ 
+@@ -659,7 +679,7 @@
+                 s1 = ")";
+             }
+ 
+-            int i = Item.func_150891_b(this.field_151002_e);
++            int i = Item.func_150891_b(this.getItemRaw());
+ 
+             if (this.func_77981_g())
+             {
+@@ -670,7 +690,7 @@
+                 s = s + String.format("#%04d%s", i, s1);
+             }
+         }
+-        else if (!this.func_82837_s() && this.field_151002_e == Items.field_151098_aY)
++        else if (!this.func_82837_s() && this.getItemRaw() == Items.field_151098_aY)
+         {
+             s = s + " #" + this.field_77991_e;
+         }
 @@ -815,6 +835,7 @@
                                  I18n.func_74838_a("attribute.name." + (String)entry.getKey())
                              )
@@ -276,6 +383,15 @@
                      }
                  }
              }
+@@ -882,7 +903,7 @@
+                 list.add(I18n.func_74837_a("item.durability", this.func_77958_k() - this.func_77952_i(), this.func_77958_k()));
+             }
+ 
+-            list.add(TextFormatting.DARK_GRAY + Item.field_150901_e.func_177774_c(this.field_151002_e).toString());
++            list.add(TextFormatting.DARK_GRAY + Item.field_150901_e.func_177774_c(this.getItemRaw()).toString());
+ 
+             if (this.func_77942_o())
+             {
 @@ -890,6 +911,7 @@
              }
          }

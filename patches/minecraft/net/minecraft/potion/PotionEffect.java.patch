@@ -9,7 +9,13 @@
  
      public PotionEffect(Potion p_i46811_1_)
      {
-@@ -51,6 +53,7 @@
+@@ -46,16 +48,17 @@
+ 
+     public PotionEffect(PotionEffect p_i1577_1_)
+     {
+-        this.field_188420_b = p_i1577_1_.field_188420_b;
++        this.field_188420_b = p_i1577_1_.getPotionRaw();
+         this.field_76460_b = p_i1577_1_.field_76460_b;
          this.field_76461_c = p_i1577_1_.field_76461_c;
          this.field_82724_e = p_i1577_1_.field_82724_e;
          this.field_188421_h = p_i1577_1_.field_188421_h;
@@ -17,6 +23,12 @@
      }
  
      public void func_76452_a(PotionEffect p_76452_1_)
+     {
+-        if (this.field_188420_b != p_76452_1_.field_188420_b)
++        if (this.getPotionRaw() != p_76452_1_.getPotionRaw())
+         {
+             field_180155_a.warn("This method should only be called for matching effects!");
+         }
 @@ -79,6 +82,11 @@
  
      public Potion func_188419_a()
@@ -29,8 +41,28 @@
          return this.field_188420_b;
      }
  
-@@ -135,7 +143,6 @@
-         return this.field_188420_b.func_76393_a();
+@@ -106,7 +114,7 @@
+     {
+         if (this.field_76460_b > 0)
+         {
+-            if (this.field_188420_b.func_76397_a(this.field_76460_b, this.field_76461_c))
++            if (this.getPotionRaw().func_76397_a(this.field_76460_b, this.field_76461_c))
+             {
+                 this.func_76457_b(p_76455_1_);
+             }
+@@ -126,16 +134,15 @@
+     {
+         if (this.field_76460_b > 0)
+         {
+-            this.field_188420_b.func_76394_a(p_76457_1_, this.field_76461_c);
++            this.getPotionRaw().func_76394_a(p_76457_1_, this.field_76461_c);
+         }
+     }
+ 
+     public String func_76453_d()
+     {
+-        return this.field_188420_b.func_76393_a();
++        return this.getPotionRaw().func_76393_a();
      }
  
 -    @Override
@@ -54,7 +86,7 @@
 -                   && this.field_82723_d == potioneffect.field_82723_d
 -                   && this.field_82724_e == potioneffect.field_82724_e
 -                   && this.field_188420_b.equals(potioneffect.field_188420_b);
-+            return this.field_76460_b == potioneffect.field_76460_b && this.field_76461_c == potioneffect.field_76461_c && this.field_82723_d == potioneffect.field_82723_d && this.field_82724_e == potioneffect.field_82724_e && this.field_188420_b.equals(potioneffect.field_188420_b);
++            return this.field_76460_b == potioneffect.field_76460_b && this.field_76461_c == potioneffect.field_76461_c && this.field_82723_d == potioneffect.field_82723_d && this.field_82724_e == potioneffect.field_82724_e && this.getPotionRaw().equals(potioneffect.getPotionRaw());
          }
      }
  

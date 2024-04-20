@@ -19,9 +19,20 @@
      {
          ItemStack itemstack = p_180614_1_.func_184586_b(p_180614_4_);
  
-@@ -52,26 +42,17 @@
+@@ -43,35 +33,26 @@
+             Block block = iblockstate.func_177230_c();
+             BlockPos blockpos = p_180614_3_;
  
-             if (block == this.field_150939_a)
+-            if ((p_180614_5_ != EnumFacing.UP || block != this.field_150939_a) && !block.func_176200_f(p_180614_2_, p_180614_3_))
++            if ((p_180614_5_ != EnumFacing.UP || block != this.getBlockRaw()) && !block.func_176200_f(p_180614_2_, p_180614_3_))
+             {
+                 blockpos = p_180614_3_.func_177972_a(p_180614_5_);
+                 iblockstate = p_180614_2_.func_180495_p(blockpos);
+                 block = iblockstate.func_177230_c();
+             }
+ 
+-            if (block == this.field_150939_a)
++            if (block == this.getBlockRaw())
              {
 -                int i = iblockstate.func_177229_b(BlockSnow.field_176315_a);
 +                int i = ((Integer)iblockstate.func_177229_b(BlockSnow.field_176315_a)).intValue();
@@ -46,7 +57,7 @@
 -                            (soundtype.func_185843_a() + 1.0F) / 2.0F,
 -                            soundtype.func_185847_b() * 0.8F
 -                        );
-+                        SoundType soundtype = this.field_150939_a.getSoundType(iblockstate1, p_180614_2_, p_180614_3_, p_180614_1_);
++                        SoundType soundtype = this.getBlockRaw().getSoundType(iblockstate1, p_180614_2_, p_180614_3_, p_180614_1_);
 +                        p_180614_2_.func_184133_a(p_180614_1_, blockpos, soundtype.func_185841_e(), SoundCategory.BLOCKS, (soundtype.func_185843_a() + 1.0F) / 2.0F, soundtype.func_185847_b() * 0.8F);
  
                          if (p_180614_1_ instanceof EntityPlayerMP)
