@@ -461,7 +461,7 @@ project(':cleanroom') {
         installer 'com.google.code.findbugs:jsr305:3.0.2'
 
         // Netty
-        installer 'io.netty:netty-codec:4.1.109.Final'
+        /*installer 'io.netty:netty-codec:4.1.109.Final'
         installer 'io.netty:netty-buffer:4.1.109.Final'
         installer 'io.netty:netty-common:4.1.109.Final'
         installer 'io.netty:netty-handler:4.1.109.Final'
@@ -471,7 +471,9 @@ project(':cleanroom') {
         installer 'io.netty:netty-transport-classes-epoll:4.1.109.Final'
         installer 'io.netty:netty-transport-native-epoll:4.1.109.Final'
         installer 'io.netty:netty-codec-http:4.1.109.Final'
-        installer 'io.netty:netty-codec-http2:4.1.109.Final'
+        installer 'io.netty:netty-codec-http2:4.1.109.Final'*/
+
+        installer 'io.netty:netty-all:4.1.93.Final'
 
         // TODO: Unpin in 1.18.1 or when Mojang bumps the Log4J version
         installer 'org.apache.logging.log4j:log4j-api:2.23.1'
