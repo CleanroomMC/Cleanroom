@@ -616,10 +616,10 @@ project(':cleanroom') {
 
     // TODO: Include?
     def extra_files = [
-            rootProject.file('CREDITS.txt'),
-            rootProject.file('LICENSE'),
-            rootProject.file('LICENSE-Paulscode IBXM Library.txt'),
-            rootProject.file('LICENSE-Paulscode SoundSystem CodecIBXM.txt')
+            layout.projectDirectory.file('CREDITS.txt'),
+            layout.projectDirectory.file('LICENSE'),
+            layout.projectDirectory.file('LICENSE-Paulscode IBXM Library.txt'),
+            layout.projectDirectory.file('LICENSE-Paulscode SoundSystem CodecIBXM.txt')
     ]
 
     def changelog = rootProject.file('build/changelog.txt')
@@ -1002,7 +1002,7 @@ project(':cleanroom') {
             duplicatesStrategy = 'exclude'
             exclude("big_logo.png") // Remove Forge Logo
         }
-        from(rootProject.file('installer_big_logo.png')) {
+        from(layout.projectDirectory.file('installer_big_logo.png')) {
             into("/")
             rename { "big_logo.png" }
         }
