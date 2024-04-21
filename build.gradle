@@ -901,7 +901,7 @@ project(':cleanroom') {
                 icon: 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon.ico').toPath()))),
                 json: '/version.json',
                 path: "${project.group}:${project.name}:${project.version}",
-                logo: '/META-INF/cleanroom_logo.png',
+                logo: '/big_logo',
                 minecraft: props.minecraft_version,
                 welcome: "Welcome to the simple ${project.name.capitalize()} installer.",
                 data: [ ] as Map,
@@ -1003,8 +1003,7 @@ project(':cleanroom') {
             exclude("big_logo.png") // Remove Forge Logo
         }
         from(file('installer_big_logo.png')) {
-            into("/META-INF/")
-            rename { "cleanroom_logo.png" }
+            rename { "big_logo.png" }
         }
     }
 
