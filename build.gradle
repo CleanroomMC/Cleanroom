@@ -616,10 +616,10 @@ project(':cleanroom') {
 
     // TODO: Include?
     def extra_files = [
-            "CREDITS.txt",
-            "LICENSE",
-            "LICENSE-Paulscode IBXM Library.txt",
-            "LICENSE-Paulscode SoundSystem CodecIBXM.txt"
+            file('CREDITS.txt'),
+            file('LICENSE'),
+            file('LICENSE-Paulscode IBXM Library.txt'),
+            file('LICENSE-Paulscode SoundSystem CodecIBXM.txt')
     ]
 
     def changelog = rootProject.file('build/changelog.txt')
