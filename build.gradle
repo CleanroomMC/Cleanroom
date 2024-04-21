@@ -1002,7 +1002,7 @@ project(':cleanroom') {
             duplicatesStrategy = 'exclude'
         }
         from(rootProject.file('/cleanroom_logo.png')) {
-            rename { 'big_logo.png' }
+            rename { 'cleanroom_logo.png' }
         }
     }
 
