@@ -1006,7 +1006,7 @@ project(':cleanroom') {
             into("/")
             rename { "big_logo.png" }
         }
-        from("patches")) {
+        from("patches") {
             into("/patches/")
         }
     }
