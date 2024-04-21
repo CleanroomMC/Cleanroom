@@ -1003,7 +1003,6 @@ project(':cleanroom') {
             exclude("big_logo.png") // Remove Forge Logo
         }
         from(rootProject.file('installer_big_logo.png')) {
-            into("/")
             rename { "big_logo.png" }
         }
     }
