@@ -991,7 +991,7 @@ project(':cleanroom') {
         archiveExtension = 'jar' //Needs to be Zip task to not override Manifest, so set extension
         destinationDirectory = file('build/libs')
         from(extra_files)
-        from('/src/main/resources/url.png')
+        from(file('/src/main/resources/url.png'))
         from(universalJar) {
             into("/maven/${project.group.replace('.', '/')}/${project.name}/${project.version}/")
             rename { "${project.name }-${project.version }.jar" }
@@ -1002,7 +1002,7 @@ project(':cleanroom') {
             duplicatesStrategy = 'exclude'
             exclude("big_logo.png") // Remove Forge Logo
         }
-        from('installer_big_logo.png') {
+        from(file('installer_big_logo.png')) {
             into("/META-INF/")
             rename { "cleanroom_logo.png" }
         }
