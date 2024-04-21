@@ -1002,7 +1002,7 @@ project(':cleanroom') {
             duplicatesStrategy = 'exclude'
             exclude("big_logo.png") // Remove Forge Logo
         }
-        from(rootProject.file('installer_big_logo.png').output) {
+        from(rootProject.file('installer_big_logo.png')) {
             rename { "big_logo.png" }
         }
     }
