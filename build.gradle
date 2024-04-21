@@ -616,10 +616,10 @@ project(':cleanroom') {
 
     // TODO: Include?
     def extra_files = [
-            rootProject.file('CREDITS.txt'),
-            rootProject.file('LICENSE.txt'),
-            rootProject.file('LICENSE-Paulscode IBXM Library.txt'),
-            rootProject.file('LICENSE-Paulscode SoundSystem CodecIBXM.txt')
+            "CREDITS.txt",
+            "LICENSE",
+            "LICENSE-Paulscode IBXM Library.txt",
+            "LICENSE-Paulscode SoundSystem CodecIBXM.txt"
     ]
 
     def changelog = rootProject.file('build/changelog.txt')
@@ -991,7 +991,7 @@ project(':cleanroom') {
         archiveExtension = 'jar' //Needs to be Zip task to not override Manifest, so set extension
         destinationDirectory = file('build/libs')
         from(extra_files)
-        from(rootProject.file('/src/main/resources/url.png'))
+        from('/src/main/resources/url.png')
         from(universalJar) {
             into("/maven/${project.group.replace('.', '/')}/${project.name}/${project.version}/")
             rename { "${project.name }-${project.version }.jar" }
@@ -1002,7 +1002,7 @@ project(':cleanroom') {
             duplicatesStrategy = 'exclude'
             exclude("big_logo.png") // Remove Forge Logo
         }
-        from(rootProject.file('installer_big_logo.png')) {
+        from('installer_big_logo.png') {
             into("/META-INF/")
             rename { "cleanroom_logo.png" }
         }
