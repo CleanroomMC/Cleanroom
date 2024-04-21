@@ -17,8 +17,8 @@ public final class EnumHackery {
 
     public static final ReflectionFactory factory = ReflectionFactory.getReflectionFactory();
 
-    private static final Field class$enumConstants, class$enumConstantDirectory, class$enumVars, enumVars$cachedEnumConstants, enumVars$cachedEnumConstantDirectory;
-    private static final Method constructorAccessor$newInstance, class$enumConstantDirectory_method;
+    private static final Field class$enumConstants, class$enumConstantDirectory, enumVars$cachedEnumConstants, enumVars$cachedEnumConstantDirectory;
+    private static final Method constructorAccessor$newInstance, class$enumConstantDirectory_method, class$getEnumVars;
 
     private static final Class[] prefix = {String.class, int.class};
 
@@ -30,16 +30,16 @@ public final class EnumHackery {
         Field enumConstantDirectoryj9;
         Method newInstance;
         Method enumConstantDirectoryMethod;
-        Field enumVars;
+        Method enumVars;
         try {
             constructorAccessor = ReflectionHackery.deepSearchForField(Constructor.class, field -> "constructorAccessor".equals(field.getName()), true);
 
             if (System.getProperty("java.vendor").startsWith("IBM")){
-                enumVars = Class.class.getDeclaredField("enumVars");
+                enumVars = Class.class.getDeclaredMethod("getEnumVars");
                 enumVars.setAccessible(true);
-                enumConstantsj9 = enumVars.getType().getDeclaredField("cachedEnumConstants");
+                enumConstantsj9 = enumVars.getReturnType().getDeclaredField("cachedEnumConstants");
                 enumConstantsj9.setAccessible(true);
-                enumConstantDirectoryj9 = enumVars.getType().getDeclaredField("cachedEnumConstantDirectory");
+                enumConstantDirectoryj9 = enumVars.getReturnType().getDeclaredField("cachedEnumConstantDirectory");
                 enumConstantsj9.setAccessible(true);
                 enumConstants = null;
                 enumConstantDirectory = null;
@@ -66,7 +66,7 @@ public final class EnumHackery {
 
         class$enumConstants = enumConstants;
         class$enumConstantDirectory = enumConstantDirectory;
-        class$enumVars = enumVars;
+        class$getEnumVars = enumVars;
         enumVars$cachedEnumConstants = enumConstantsj9;
         enumVars$cachedEnumConstantDirectory = enumConstantDirectoryj9;
         constructorAccessor$newInstance = newInstance;
@@ -125,9 +125,8 @@ public final class EnumHackery {
             newValues[newValues.length - 1] = instance;
             ReflectionHackery.setField(valuesField, null, newValues);
             if (System.getProperty("java.vendor").startsWith("IBM")){
-                Object enumVar = ReflectionHackery.getField(class$enumVars, enumClass);
+                Object enumVar = class$getEnumVars.invoke(enumClass);
                 ReflectionHackery.setField(enumVars$cachedEnumConstants, enumVar, newValues);
-
             }else {
                 // Add new enum to cache
                 ReflectionHackery.setField(class$enumConstants, enumClass, newValues);
@@ -154,9 +153,6 @@ public final class EnumHackery {
         if (class$enumConstants != null){
             class$enumConstants.set(enumClass, null);
             class$enumConstantDirectory.set(enumClass, null);
-        }
-        if (class$enumVars != null) {
-            class$enumVars.set(enumClass, null);
         }
     }
 
