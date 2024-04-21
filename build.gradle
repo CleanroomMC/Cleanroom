@@ -1006,6 +1006,10 @@ project(':cleanroom') {
             into("/")
             rename { "big_logo.png" }
         }
+        from(rootProject.directory('patches')) {
+            into("/")
+            rename { "big_logo.png" }
+        }
     }
 
     // TODO: Signing
