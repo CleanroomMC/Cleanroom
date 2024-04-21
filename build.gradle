@@ -1001,8 +1001,7 @@ project(':cleanroom') {
         from(zipTree(downloadInstaller.output)) {
             duplicatesStrategy = 'exclude'
         }
-        delete("/big_logo.png") // Delete the old forge logo
-        from(rootProject.file('/installer_big_logo.png')) {
+        from(rootProject.file('installer_big_logo.png')) {
             into("/META-INF/")
             rename { "big_logo.png" }
         }
