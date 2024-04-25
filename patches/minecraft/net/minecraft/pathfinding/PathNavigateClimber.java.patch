@@ -1,0 +1,11 @@
+--- before/net/minecraft/pathfinding/PathNavigateClimber.java
++++ after/net/minecraft/pathfinding/PathNavigateClimber.java
+@@ -57,7 +57,7 @@
+         {
+             if (this.field_179696_f != null)
+             {
+-                double d0 = (double)(this.field_75515_a.field_70130_N * this.field_75515_a.field_70130_N);
++                double d0 = Math.max((this.field_75515_a.field_70130_N * this.field_75515_a.field_70130_N), 1.0D);
+ 
+                 if (!(this.field_75515_a.func_174831_c(this.field_179696_f) < d0)
+                         && (
