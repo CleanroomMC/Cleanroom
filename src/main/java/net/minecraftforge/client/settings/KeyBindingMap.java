@@ -22,7 +22,6 @@ package net.minecraftforge.client.settings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.IntHashMap;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,21 +34,6 @@ public class KeyBindingMap
         {
             map.put(modifier, new IntHashMap<Collection<KeyBinding>>());
         }
-    }
-
-    @Nullable
-    public KeyBinding lookupActive(int keyCode)
-    {
-        KeyModifier activeModifier = KeyModifier.getActiveModifier();
-        if (!activeModifier.matches(keyCode))
-        {
-            KeyBinding binding = getBinding(keyCode, activeModifier);
-            if (binding != null)
-            {
-                return binding;
-            }
-        }
-        return getBinding(keyCode, KeyModifier.NONE);
     }
 
     public Set<KeyBinding> lookupActives(int keyCode)
@@ -65,24 +49,6 @@ public class KeyBindingMap
         }
         return getBindings(keyCode, KeyModifier.NONE);
     }
-
-    @Nullable
-    private KeyBinding getBinding(int keyCode, KeyModifier keyModifier)
-    {
-        Collection<KeyBinding> bindings = map.get(keyModifier).lookup(keyCode);
-        if (bindings != null)
-        {
-            for (KeyBinding binding : bindings)
-            {
-                if (binding.isActiveAndMatches(keyCode))
-                {
-                    return binding;
-                }
-            }
-        }
-        return null;
-    }
-
 
     private Set<KeyBinding> getBindings(int keyCode, KeyModifier keyModifier)
     {
