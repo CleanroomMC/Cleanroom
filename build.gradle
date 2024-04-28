@@ -413,7 +413,7 @@ project(':cleanroom') {
 
         installer "com.cleanroommc:bouncepad:$props.bouncepad_version"
 
-        installer 'com.ibm.icu:icu4j:74.2'
+        installer 'com.ibm.icu:icu4j:75.1'
 
         installer 'org.jline:jline:3.25.0'
         installer 'com.typesafe.akka:akka-actor_2.12:2.8.5'
