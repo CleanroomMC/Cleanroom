@@ -80,10 +80,10 @@ jobs:
           if-no-files-found: error
 
       - name: Repository Dispatch
-        if: success()
+        if: ${{ success() && github.event_name != 'pull_request' }}
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.CLEANROOMMC_DISPATCH_TOKEN }} # require PAT :shrug:
           repository: CleanroomMC/CleanroomMMC
           event-type: cleanroom_upload_artifact
-          client-payload: '{"commit_hash": "${{ github.sha }}", "run_job_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}", "branch": "${{ steps.branch-names.outputs.current_branch }}", "build_type": "${{ inputs.environment || steps.vars.outputs.BUILD_TYPE }}", "actor": "${{ github.actor }}"}'
+          client-payload: '{"commit_hash": "${{ github.sha }}", "run_job_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}", "branch": "${{ steps.branch-names.outputs.current_branch }}", "build_type": "${{ inputs.environment || steps.vars.outputs.BUILD_TYPE }}", "actor": "${{ github.actor }}", "number": "${{ github.run_number }}"}'
