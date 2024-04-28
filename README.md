@@ -29,10 +29,10 @@
 - [Fugue](https://github.com/CleanroomMC/Fugue), a mod patches many incompatibilities. (temporary)
 - [Scalar](https://github.com/CleanroomMC/Scalar/releases/tag/2.11.1), a Scala provider. We made Scala libraries become a standalone mod so it can be updated.
 
-## Downloads:
+## Download & Installation:
 
-- For MultiMC-based launchers (PolyMC, PrismLauncher), go to CleanroomMMC's [action page](https://github.com/CleanroomMC/CleanroomMMC/actions), download the latest build and import it in your launcher(alternatively unzip patches and json inside to your 1.12 instance).
-- For regular launcher (official launcher, AT launcher, FTB, HMCL), go to Cleanroom's [action page](https://github.com/CleanroomMC/Cleanroom/actions), click the latest action marked as **Build and Upload Test Artifact** and download the **installer** artifact. You could use the installer like the Forge one.
+- For MultiMC-based launchers (PolyMC, PrismLauncher), go to CleanroomMMC's [action page](https://github.com/CleanroomMC/CleanroomMMC/actions), download the latest build (Note: Login first!) and import it in your launcher(alternatively unzip patches and json inside to your 1.12 instance).
+- For regular launcher (official launcher, AT launcher, FTB, HMCL), go to Cleanroom's [action page](https://github.com/CleanroomMC/Cleanroom/actions), click the latest action marked as **Build and Upload Test Artifact** and download (Note: Login first!) the **installer** artifact. You could use the installer like the Forge one.
 - Remember to install Fugue!
 - And Scalar! (experimental branch only)
 
