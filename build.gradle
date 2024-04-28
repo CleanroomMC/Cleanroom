@@ -419,7 +419,7 @@ project(':cleanroom') {
         installer 'org.javassist:javassist:3.30.2-GA'
         installer "zone.rong:imaginebreaker:2.1"
 
-        installer 'com.ibm.icu:icu4j:74.2'
+        installer 'com.ibm.icu:icu4j:75.1'
 
         installer 'org.jline:jline:3.25.0'
         // TODO: Move scala away from being defaulted when installing (download on-demand?)
