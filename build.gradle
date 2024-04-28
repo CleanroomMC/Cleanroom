@@ -481,7 +481,7 @@ project(':cleanroom') {
         installer 'org.apache.logging.log4j:log4j-api:2.23.1'
         installer 'org.apache.logging.log4j:log4j-core:2.23.1'
         installer 'org.apache.logging.log4j:log4j-slf4j2-impl:2.23.1'
-        installer 'org.slf4j:slf4j-api:2.0.12'
+        installer 'org.slf4j:slf4j-api:2.0.13'
         installer 'jakarta.annotation:jakarta.annotation-api:2.1.1'
         installer 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
         installer 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.1'
