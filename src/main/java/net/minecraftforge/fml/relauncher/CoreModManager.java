@@ -448,21 +448,19 @@ public class CoreModManager {
                 classLoader.addURL(coreMod.toURI().toURL());
                 if (configs != null && !MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker))
                     Mixins.addConfigurations(configs.split(","));
-                if (!mfAttributes.containsKey(COREMODCONTAINSFMLMOD))
-                {
-                    FMLLog.log.trace("Adding {} to the list of known coremods, it will not be examined again", coreMod.getName());
-                    ignoredModFiles.add(coreMod.getName());
-                }
-                else if (fmlCorePlugin != null)
-                {
-                    FMLLog.log.info("Found FMLCorePluginContainsFMLMod marker in {}.",
-                            coreMod.getName());
-                    candidateModFiles.add(coreMod.getName());
-                } else {
+                if (fmlCorePlugin == null) {
                     FMLLog.log.info("Found Mixin configs in non-coremod {}. Adding it to @Mod candidate list.",
                             coreMod.getName());
                     candidateModFiles.add(coreMod.getName());
                     continue;
+                } else if (!mfAttributes.containsKey(COREMODCONTAINSFMLMOD)) {
+                    FMLLog.log.trace("Adding {} to the list of known coremods, it will not be examined again",
+                            coreMod.getName());
+                    ignoredModFiles.add(coreMod.getName());
+                } else {
+                    FMLLog.log.info("Found FMLCorePluginContainsFMLMod marker in {}.",
+                            coreMod.getName());
+                    candidateModFiles.add(coreMod.getName());
                 }
             }
             catch (MalformedURLException e)
