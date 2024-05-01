@@ -261,7 +261,7 @@ public class SplashProgress
                 logoTexture = new Texture(logoLoc, null, false);
                 forgeTexture = new Texture(forgeLoc, forgeFallbackLoc);
                 glEnable(GL_TEXTURE_2D);
-                fontRenderer = new SplashFontRenderer();
+                fontRenderer = new SplashFontRenderer(false);
                 glDisable(GL_TEXTURE_2D);
                 while(!done)
                 {
@@ -898,9 +898,9 @@ public class SplashProgress
     public static class SplashFontRenderer extends FontRenderer
     {
         public final HashMap<ResourceLocation, Texture> cachedImages = new HashMap<>();
-        public SplashFontRenderer()
+        public SplashFontRenderer(boolean isForcedUnicode)
         {
-            super(Minecraft.getMinecraft().gameSettings, fontTexture.getLocation(), null, true);
+            super(Minecraft.getMinecraft().gameSettings, fontTexture.getLocation(), null, isForcedUnicode);
             super.onResourceManagerReload(null);
         }
 
