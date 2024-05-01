@@ -897,7 +897,7 @@ public class SplashProgress
 
     public static class SplashFontRenderer extends FontRenderer
     {
-        public final HashMap<ResourceLocation, Texture> cachedImages = new HashMap<>();
+        public HashMap<ResourceLocation, Texture> cachedImages;
         public SplashFontRenderer(boolean isForcedUnicode)
         {
             super(Minecraft.getMinecraft().gameSettings, fontTexture.getLocation(), null, isForcedUnicode);
@@ -907,6 +907,7 @@ public class SplashProgress
         @Override
         protected void bindTexture(@Nonnull ResourceLocation location)
         {
+            if(cachedImages == null) cachedImages = new HashMap<>();
             if (!cachedImages.containsKey(location)) {
                 cachedImages.put(location, new Texture(location, null));
             }
@@ -921,10 +922,13 @@ public class SplashProgress
             return new SimpleResource(pack.getPackName(), location, pack.getInputStream(location), null, null);
         }
         public void clear(){
-            for(Texture texture : cachedImages.values()){
-                texture.delete();
+            if(cachedImages != null){
+                for(Texture texture : cachedImages.values()){
+                   texture.delete();
+                }
+                cachedImages.clear();
+                cachedImages = null;
             }
-            cachedImages.clear();
         }
     }
 
