@@ -405,6 +405,7 @@ public class SplashProgress
                         Display.sync(100);
                     }
                 }
+                SplashFontRenderer.clear();
                 clearGL();
             }
 
@@ -893,19 +894,22 @@ public class SplashProgress
         }
     }
 
-    private static class SplashFontRenderer extends FontRenderer
+    public static class SplashFontRenderer extends FontRenderer
     {
+        public static final HashMap<ResourceLocation, Texture> CACHED_IMAGES = new HashMap<>();
         public SplashFontRenderer()
         {
-            super(Minecraft.getMinecraft().gameSettings, fontTexture.getLocation(), null, false);
+            super(Minecraft.getMinecraft().gameSettings, fontTexture.getLocation(), null, true);
             super.onResourceManagerReload(null);
         }
 
         @Override
         protected void bindTexture(@Nonnull ResourceLocation location)
         {
-            if(location != locationFontTexture) throw new IllegalArgumentException();
-            fontTexture.bind();
+            if (!CACHED_IMAGES.containsKey(location)) {
+                CACHED_IMAGES.put(location, new Texture(location, null));
+            }
+            CACHED_IMAGES.get(location).bind();
         }
 
         @Nonnull
@@ -914,6 +918,12 @@ public class SplashProgress
         {
             DefaultResourcePack pack = Minecraft.getMinecraft().defaultResourcePack;
             return new SimpleResource(pack.getPackName(), location, pack.getInputStream(location), null, null);
+        }
+        public static void clear(){
+            for(Texture texture : CACHED_IMAGES.values()){
+                texture.delete();
+            }
+            CACHED_IMAGES.clear();
         }
     }
 
