@@ -5,10 +5,10 @@
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
 
-name: Build and Upload Test Artifact
+name: Build and Upload Test Artifact For Pull Request
 
 on:
-  push:
+  pull_request:
   workflow_dispatch:
     inputs:
       build_type:
@@ -24,7 +24,7 @@ permissions:
 
 jobs:
   build:
-    name: Build and Upload Artifact
+    name: Build and Upload Artifact For Pull Request
     runs-on: ubuntu-latest
 
     steps:
@@ -77,12 +77,3 @@ jobs:
           name: installer
           path: projects/cleanroom/build/libs/*-installer.jar
           if-no-files-found: error
-
-      - name: Repository Dispatch
-        if: ${{ success() && github.event_name != 'pull_request' }}
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.CLEANROOMMC_DISPATCH_TOKEN }} # require PAT :shrug:
-          repository: CleanroomMC/CleanroomMMC
-          event-type: cleanroom_upload_artifact
-          client-payload: '{"commit_hash": "${{ github.sha }}", "run_job_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}", "branch": "${{ steps.branch-names.outputs.current_branch }}", "build_type": "${{ inputs.environment || steps.vars.outputs.BUILD_TYPE }}", "actor": "${{ github.actor }}", "number": "${{ github.run_number }}"}'
