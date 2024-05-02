@@ -20,7 +20,7 @@ on:
           - Experimental
           - Bleeding Edge
 
-run-name: "${{ github.event_name == 'pull_request' && 'Pull Request Build, DO NOT DOWNLOAD' || format('{0}#{1}: {2}', github.ref_name, github.run_number, github.action)}}"
+run-name: "${{ github.event_name == 'pull_request' && 'Pull Request Build, DO NOT DOWNLOAD' || format('{0}#{1}: {2}', github.ref_name, github.run_number, github.event.commits[0].message)}}"
 
 permissions:
   contents: read
