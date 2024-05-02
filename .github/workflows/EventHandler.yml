@@ -7,7 +7,7 @@
 
 name: Event Handler
 on:
-  push:
+  workflow_dispatch:
 
 permissions:
   contents: read
