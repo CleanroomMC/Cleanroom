@@ -68,9 +68,7 @@ jobs:
         run: ./gradlew installerJar -Prun_number=${{ github.run_number }}
 
       - name: Get version
-        run: |
-          ./gradlew --quiet printVersion > out.txt
-           echo "CLEANROOM_VERSION=$(cat version.txt)" >> $GITHUB_ENV
+        run: echo "CLEANROOM_VERSION=$(cat version.txt)" >> $GITHUB_ENV
 
       - name: Upload Forge Universal
         uses: actions/upload-artifact@v4.3.3
