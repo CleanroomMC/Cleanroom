@@ -1,8 +1,13 @@
-package net.minecraftforge.fml.common;
+package com.cleanroommc.common;
 
 import com.google.common.eventbus.EventBus;
+import net.minecraftforge.fml.common.DummyModContainer;
+import net.minecraftforge.fml.common.LoadController;
+import net.minecraftforge.fml.common.ModMetadata;
 
-public class ConfigAnytimeContainer extends DummyModContainer{
+import java.util.Arrays;
+
+public class ConfigAnytimeContainer extends DummyModContainer {
     public ConfigAnytimeContainer() {
         super(new ModMetadata());
         ModMetadata meta = this.getMetadata();
