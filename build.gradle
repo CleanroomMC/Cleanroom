@@ -48,7 +48,7 @@ def sysProps = System.getProperties()
 def details = versionDetails()
 
 group 'com.cleanroommc'
-version details.lastTag + "-infdev.build." + details.commitDistance + (project.hasProperty("run_number") ? ("+run." + props.run_number) : "")
+version details.lastTag + "-alpha.build." + details.commitDistance + (project.hasProperty("run_number") ? ("+run." + props.run_number) : "")
 def version_txt = new File(project.projectDir, "version.txt")
 version_txt.write(version.toString())
 def spec_version = details.lastTag.toString().substring(0, details.lastTag.lastIndexOf('.'))
