@@ -5,3 +5,5 @@
 /buildSrc/.gradle/
 /buildSrc/build/
 /logs/
+version.txt
+src/main/java/com/cleanroommc/common/CleanroomVersion.java

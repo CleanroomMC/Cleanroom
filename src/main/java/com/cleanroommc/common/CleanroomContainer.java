@@ -18,7 +18,7 @@ public class CleanroomContainer extends DummyModContainer {
                 Our plan is to make 1.12.2 up-to-date with latest toolchain while adding more feature to
                 Forge & vanilla, so we don't need to care about higher versions' X point release * Y Mod API headache.
                 """;
-        meta.version = "2.0";
+        meta.version = CleanroomVersion.VERSION;
         meta.authorList = Arrays.asList("LexManos", "cpw", "fry", "Rongmario", "kappa_maintainer", "Li");
     }
 
