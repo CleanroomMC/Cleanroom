@@ -53,7 +53,8 @@ def version_txt = new File(project.projectDir, "version.txt")
 version_txt.write(version.toString())
 def spec_version = details.lastTag.toString().substring(0, details.lastTag.lastIndexOf('.'))
 
-println "Running Cleanroom $version"
+println "Setting up Cleanroom $version"
+if (project.hasProperty("run_number")) println("On GitHub runs #" + props.run_number)
 println "Java: ${ -> sysProps['java.version']} | JVM: ${ -> sysProps['java.vm.version']} | Vendor: ${ -> sysProps['java.vendor']} | Architecture: ${ -> sysProps['os.arch']}"
 
 // Initialize buildSrc
