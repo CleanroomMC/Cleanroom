@@ -403,10 +403,10 @@ public class CoreModManager {
                     Integer sortOrder = Ints.tryParse(Strings.nullToEmpty(mfAttributes.getValue("TweakOrder")));
                     sortOrder = (sortOrder == null ? Integer.valueOf(0) : sortOrder);
                     handleCascadingTweak(coreMod, jar, cascadedTweaker, classLoader, sortOrder);
-                    ignoredModFiles.add(coreMod.getName());
                     if (!isMixinContainer) {
                         if (configs != null)
                             Mixins.addConfigurations(configs.split(","));
+                        ignoredModFiles.add(coreMod.getName());
                         continue;
                     }
                 }
