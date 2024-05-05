@@ -403,10 +403,10 @@ public class CoreModManager {
                     Integer sortOrder = Ints.tryParse(Strings.nullToEmpty(mfAttributes.getValue("TweakOrder")));
                     sortOrder = (sortOrder == null ? Integer.valueOf(0) : sortOrder);
                     handleCascadingTweak(coreMod, jar, cascadedTweaker, classLoader, sortOrder);
+                    ignoredModFiles.add(coreMod.getName());
                     if (!isMixinContainer) {
                         if (configs != null)
                             Mixins.addConfigurations(configs.split(","));
-                        ignoredModFiles.add(coreMod.getName());
                         continue;
                     }
                 }
@@ -452,6 +452,7 @@ public class CoreModManager {
                     FMLLog.log.info("Found Mixin configs in non-coremod {}. Adding it to @Mod candidate list.",
                             coreMod.getName());
                     candidateModFiles.add(coreMod.getName());
+                    ignoredModFiles.remove(coreMod.getName());
                     continue;
                 } else if (!mfAttributes.containsKey(COREMODCONTAINSFMLMOD)) {
                     FMLLog.log.trace("Adding {} to the list of known coremods, it will not be examined again",
