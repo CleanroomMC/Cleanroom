@@ -462,6 +462,7 @@ public class CoreModManager {
                     FMLLog.log.info("Found FMLCorePluginContainsFMLMod marker in {}.",
                             coreMod.getName());
                     candidateModFiles.add(coreMod.getName());
+                    ignoredModFiles.remove(coreMod.getName());
                 }
             }
             catch (MalformedURLException e)
