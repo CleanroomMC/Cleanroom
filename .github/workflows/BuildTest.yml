@@ -84,6 +84,13 @@ jobs:
           path: projects/cleanroom/build/libs/*-installer.jar
           if-no-files-found: error
 
+
+      - name: Stop Gradle daemon again
+        run: ./gradlew --stop
+
+      - name: Publish to maven for mod development
+        run: ./gradle publish -PoutlandUsername=${{ secrets.MAVEN_USERNAME }} -PoutlandPassword="${{ secrets.MAVEN_PASSWORD }}"
+
       - name: Repository Dispatch
         if: ${{ success() && github.event_name != 'pull_request' }}
         uses: peter-evans/repository-dispatch@v3
