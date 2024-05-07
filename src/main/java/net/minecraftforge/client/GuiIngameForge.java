@@ -57,10 +57,15 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.ForgeModContainer;
 import net.minecraftforge.common.MinecraftForge;
 
 import org.lwjgl.opengl.GL11;
 
+/**
+ * @see net.minecraft.client.gui.GuiIngame
+ * @see net.minecraftforge.common.ForgeModContainer
+ */
 public class GuiIngameForge extends GuiIngame
 {
     //private static final ResourceLocation VIGNETTE     = new ResourceLocation("textures/misc/vignette.png");
@@ -72,20 +77,20 @@ public class GuiIngameForge extends GuiIngame
     //Flags to toggle the rendering of certain aspects of the HUD, valid conditions
     //must be met for them to render normally. If those conditions are met, but this flag
     //is false, they will not be rendered.
-    public static boolean renderVignette = true;
-    public static boolean renderHelmet = true;
-    public static boolean renderPortal = true;
-    public static boolean renderHotbar = true;
-    public static boolean renderCrosshairs = true;
-    public static boolean renderBossHealth = true;
-    public static boolean renderHealth = true;
-    public static boolean renderArmor = true;
-    public static boolean renderFood = true;
-    public static boolean renderHealthMount = true;
-    public static boolean renderAir = true;
-    public static boolean renderExperiance = true;
-    public static boolean renderJumpBar = true;
-    public static boolean renderObjective = true;
+    public static boolean renderVignette    = ForgeModContainer.renderVignetteByDefault   ;
+    public static boolean renderHelmet      = ForgeModContainer.renderHelmetByDefault     ;
+    public static boolean renderPortal      = ForgeModContainer.renderPortalByDefault     ;
+    public static boolean renderHotbar      = ForgeModContainer.renderHotbarByDefault     ;
+    public static boolean renderCrosshairs  = ForgeModContainer.renderCrosshairsByDefault ;
+    public static boolean renderBossHealth  = ForgeModContainer.renderBossHealthByDefault ;
+    public static boolean renderHealth      = ForgeModContainer.renderHealthByDefault     ;
+    public static boolean renderArmor       = ForgeModContainer.renderArmorByDefault      ;
+    public static boolean renderFood        = ForgeModContainer.renderFoodByDefault       ;
+    public static boolean renderHealthMount = ForgeModContainer.renderHealthMountByDefault;
+    public static boolean renderAir         = ForgeModContainer.renderAirByDefault        ;
+    public static boolean renderExperiance  = ForgeModContainer.renderExperianceByDefault ;
+    public static boolean renderJumpBar     = ForgeModContainer.renderJumpBarByDefault    ;
+    public static boolean renderObjective   = ForgeModContainer.renderObjectiveByDefault  ;
 
     public static int left_height = 39;
     public static int right_height = 39;
