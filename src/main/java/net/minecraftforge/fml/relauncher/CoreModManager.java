@@ -399,10 +399,10 @@ public class CoreModManager {
                     Integer sortOrder = Ints.tryParse(Strings.nullToEmpty(mfAttributes.getValue("TweakOrder")));
                     sortOrder = (sortOrder == null ? Integer.valueOf(0) : sortOrder);
                     handleCascadingTweak(coreMod, jar, cascadedTweaker, classLoader, sortOrder);
-                    ignoredModFiles.add(coreMod.getName());
                     if (!Strings.isNullOrEmpty(configs))
                         mixin_configs.addAll(List.of(configs.split(",")));
                     if (!MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker)) {
+                        ignoredModFiles.add(coreMod.getName());
                         continue;
                     }
                 }
@@ -450,7 +450,6 @@ public class CoreModManager {
                     FMLLog.log.info("Found FMLCorePluginContainsFMLMod marker in {}.",
                             coreMod.getName());
                     candidateModFiles.add(coreMod.getName());
-                    ignoredModFiles.remove(coreMod.getName());
                 }
             }
             catch (MalformedURLException e)
