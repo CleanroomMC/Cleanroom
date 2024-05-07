@@ -385,7 +385,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
 
         prop = config.get(Configuration.CATEGORY_CLIENT, "selectiveResourceReloadEnabled", false,
                 "When enabled, makes specific reload tasks such as language changing quicker to run.");
-        selectiveResourceReloadEnabled = prop.getBoolean(true);
+        selectiveResourceReloadEnabled = prop.getBoolean(false);
         prop.setLanguageKey("forge.configgui.selectiveResourceReloadEnabled");
         propOrder.add(prop.getName());
 
