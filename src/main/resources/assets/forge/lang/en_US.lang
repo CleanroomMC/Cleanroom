@@ -92,6 +92,21 @@ forge.configgui.allowEmissiveItems.tooltip=Allow item rendering to detect emissi
 forge.configgui.selectiveResourceReloadEnabled=Enable Selective Resource Loading
 forge.configgui.selectiveResourceReloadEnabled.tooltip=When enabled, makes specific reload tasks such as language changing quicker to run.
 
+forge.configgui.renderVignetteByDefault=Toggle off to disable vignette rendering. Note that this config only controls default behaviour, mods can still toggle vignette rendering.
+forge.configgui.renderHelmetByDefault=Toggle off to disable helmet rendering. Note that this config only controls default behaviour, mods can still toggle helmet rendering.
+forge.configgui.renderPortalByDefault=Toggle off to disable portal rendering. Note that this config only controls default behaviour, mods can still toggle portal rendering.
+forge.configgui.renderHotbarByDefault=Toggle off to disable hotbar rendering. Note that this config only controls default behaviour, mods can still toggle hotbar rendering.
+forge.configgui.renderCrosshairsByDefault=Toggle off to disable crosshairs rendering. Note that this config only controls default behaviour, mods can still toggle crosshairs rendering.
+forge.configgui.renderBossHealthByDefault=Toggle off to disable boss health rendering. Note that this config only controls default behaviour, mods can still toggle boss health rendering.
+forge.configgui.renderHealthByDefault=Toggle off to disable health rendering. Note that this config only controls default behaviour, mods can still toggle health rendering.
+forge.configgui.renderArmorByDefault=Toggle off to disable armor rendering. Note that this config only controls default behaviour, mods can still toggle armor rendering.
+forge.configgui.renderFoodByDefault=Toggle off to disable food rendering. Note that this config only controls default behaviour, mods can still toggle food rendering.
+forge.configgui.renderHealthMountByDefault=Toggle off to disable health mount rendering. Note that this config only controls default behaviour, mods can still toggle health mount rendering.
+forge.configgui.renderAirByDefault=Toggle off to disable air rendering. Note that this config only controls default behaviour, mods can still toggle air rendering.
+forge.configgui.renderExperianceByDefault=Toggle off to disable experiance rendering. Note that this config only controls default behaviour, mods can still toggle experiance rendering.
+forge.configgui.renderJumpBarByDefault=Toggle off to disable jump bar rendering. Note that this config only controls default behaviour, mods can still toggle jump bar rendering.
+forge.configgui.renderObjectiveByDefault=Toggle off to disable objective rendering. Note that this config only controls default behaviour, mods can still toggle objective rendering.
+
 forge.configgui.modID.tooltip=The mod ID that you want to define override settings for.
 forge.configgui.modID=Mod ID
 forge.configgui.asyncChunkLoading=Async Chunk Loading
