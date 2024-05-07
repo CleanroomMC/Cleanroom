@@ -45,8 +45,6 @@ import org.spongepowered.asm.util.Constants;
 
 import java.io.*;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 import java.security.cert.Certificate;
 import java.util.*;
 import java.util.function.ToIntFunction;
@@ -328,6 +326,7 @@ public class CoreModManager {
         FMLLog.log.debug("Discovering coremods");
         List<Artifact> maven_canidates = LibraryManager.flattenLists(mcDir);
         List<File> file_canidates = LibraryManager.gatherLegacyCanidates(mcDir);
+        Set<String> mixin_configs = new HashSet<>();
 
         for (Artifact artifact : maven_canidates)
         {
@@ -369,9 +368,7 @@ public class CoreModManager {
                 }
 
                 if (mfAttributes == null) // Not a coremod and no access transformer list
-                {
                     continue;
-                }
 
                 String modSide = mfAttributes.getValue(LibraryManager.MODSIDE);
                 if (modSide != null && !"BOTH".equals(modSide) && !FMLLaunchHandler.side().name().equals(modSide))
@@ -393,7 +390,6 @@ public class CoreModManager {
                 containNonMods = Boolean.parseBoolean(mfAttributes.getValue("NonModDeps"));
                 if (cascadedTweaker != null)
                 {
-                    boolean isMixinContainer = cascadedTweaker.equals(MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS);
                     if (containNonMods) {
                         for (String file: mfAttributes.getValue(LibraryManager.MODCONTAINSDEPS).split(" ")) {
                             classLoader.addURL(new File(mods_ver, file).getAbsoluteFile().toURI().toURL());
@@ -403,13 +399,10 @@ public class CoreModManager {
                     Integer sortOrder = Ints.tryParse(Strings.nullToEmpty(mfAttributes.getValue("TweakOrder")));
                     sortOrder = (sortOrder == null ? Integer.valueOf(0) : sortOrder);
                     handleCascadingTweak(coreMod, jar, cascadedTweaker, classLoader, sortOrder);
-                    ignoredModFiles.add(coreMod.getName());
-                    if (!isMixinContainer) {
-                        if (configs != null) {
-                            ignoredModFiles.remove(coreMod.getName());
-                            candidateModFiles.add(coreMod.getName());
-                            Mixins.addConfigurations(configs.split(","));
-                        }
+                    if (!Strings.isNullOrEmpty(configs))
+                        mixin_configs.addAll(List.of(configs.split(",")));
+                    if (!MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker)) {
+                        ignoredModFiles.add(coreMod.getName());
                         continue;
                     }
                 }
@@ -424,11 +417,9 @@ public class CoreModManager {
                 fmlCorePlugin = mfAttributes.getValue("FMLCorePlugin");
                 if (fmlCorePlugin == null)
                 {
-                    if (configs == null || MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker)) {
-                        // Not a coremod
-                        FMLLog.log.debug("Not found coremod data in {}", coreMod.getName());
-                        continue;
-                    }
+                    // Not a coremod
+                    FMLLog.log.debug("Not found coremod data in {}", coreMod.getName());
+                    continue;
                 }
             }
             catch (IOException ioe)
@@ -449,25 +440,16 @@ public class CoreModManager {
                     }
                 }
                 classLoader.addURL(coreMod.toURI().toURL());
-                boolean isMixinContainer = MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker);
-                if (configs != null && !isMixinContainer) {
-                    Mixins.addConfigurations(configs.split(","));
-                }
-                if (fmlCorePlugin == null && !isMixinContainer) {
-                    FMLLog.log.info("Found Mixin configs in non-coremod {}. Adding it to @Mod candidate list.",
-                            coreMod.getName());
-                    candidateModFiles.add(coreMod.getName());
-                    ignoredModFiles.remove(coreMod.getName());
-                    continue;
-                } else if (!mfAttributes.containsKey(COREMODCONTAINSFMLMOD)) {
-                    FMLLog.log.trace("Adding {} to the list of known coremods, it will not be examined again",
-                            coreMod.getName());
+                if (!Strings.isNullOrEmpty(configs))
+                    mixin_configs.addAll(List.of(configs.split(",")));
+                if (!mfAttributes.containsKey(COREMODCONTAINSFMLMOD))
+                {
+                    FMLLog.log.trace("Adding {} to the list of known coremods, it will not be examined again", coreMod.getName());
                     ignoredModFiles.add(coreMod.getName());
                 } else {
                     FMLLog.log.info("Found FMLCorePluginContainsFMLMod marker in {}.",
                             coreMod.getName());
                     candidateModFiles.add(coreMod.getName());
-                    ignoredModFiles.remove(coreMod.getName());
                 }
             }
             catch (MalformedURLException e)
@@ -477,6 +459,7 @@ public class CoreModManager {
             }
             loadCoreMod(classLoader, fmlCorePlugin, coreMod);
         }
+        Launch.blackboard.put("MixinConfigs", mixin_configs);
     }
     private static void handleCascadingTweak(File coreMod, JarFile jar, String cascadedTweaker, LaunchClassLoader classLoader, Integer sortingOrder) throws MalformedURLException {
         try
