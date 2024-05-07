@@ -405,8 +405,11 @@ public class CoreModManager {
                     handleCascadingTweak(coreMod, jar, cascadedTweaker, classLoader, sortOrder);
                     ignoredModFiles.add(coreMod.getName());
                     if (!isMixinContainer) {
-                        if (configs != null)
+                        if (configs != null) {
+                            ignoredModFiles.remove(coreMod.getName());
+                            candidateModFiles.add(coreMod.getName());
                             Mixins.addConfigurations(configs.split(","));
+                        }
                         continue;
                     }
                 }
@@ -446,9 +449,11 @@ public class CoreModManager {
                     }
                 }
                 classLoader.addURL(coreMod.toURI().toURL());
-                if (configs != null && !MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker))
+                boolean isMixinContainer = MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker);
+                if (configs != null && !isMixinContainer) {
                     Mixins.addConfigurations(configs.split(","));
-                if (fmlCorePlugin == null) {
+                }
+                if (fmlCorePlugin == null && !isMixinContainer) {
                     FMLLog.log.info("Found Mixin configs in non-coremod {}. Adding it to @Mod candidate list.",
                             coreMod.getName());
                     candidateModFiles.add(coreMod.getName());
