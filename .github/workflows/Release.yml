@@ -64,7 +64,7 @@ jobs:
         run: python main.py
         working-directory: ./mmc
         env:
-          PATH_TO_EXIST_INSTALLER: ./projects/cleanroom/build/libs/cleanroom-${{ env.CLEANROOM_VERSION }}-installer.jar
+          PATH_TO_EXIST_INSTALLER: ../projects/cleanroom/build/libs/cleanroom-${{ env.CLEANROOM_VERSION }}-installer.jar
 
       - name: Copy MMC Pack
         run: cp mmc/build/*.zip ./projects/cleanroom/build/libs/
