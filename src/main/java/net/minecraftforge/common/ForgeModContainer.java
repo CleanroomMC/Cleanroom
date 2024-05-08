@@ -486,7 +486,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     public void onConfigChanged(OnConfigChangedEvent event)
     {
         String configID = event.getConfigID();
-        if (!getMetadata().modId.equals(event.getModID()) || configID == null) {
+        if (!this.getMetadata().modId.equals(event.getModID()) || configID == null) {
             return;
         }
         switch (configID) {
@@ -495,15 +495,16 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
                 ForgeChunkManager.loadConfiguration();
             }
             case CATEGORY_CLIENT -> {
+                boolean tmpStairs = disableStairSlabCulling;
+                syncConfig(false);
                 //HUD rendering
                 GuiIngameForge.refreshConfig();
                 //stair culling
-                boolean tmpStairs = disableStairSlabCulling;
-                syncConfig(false);
                 if (event.isWorldRunning() && tmpStairs != disableStairSlabCulling) {
                     FMLCommonHandler.instance().reloadRenderers();
                 }
             }
+            default -> syncConfig(false);
         }
     }
 
