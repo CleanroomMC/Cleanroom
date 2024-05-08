@@ -72,3 +72,4 @@ jobs:
       - uses: ncipollo/release-action@v1.14.0
         with:
           artifacts: "projects/cleanroom/build/libs/*"
+          generateReleaseNotes: true
