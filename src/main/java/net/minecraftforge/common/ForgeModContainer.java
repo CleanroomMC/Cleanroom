@@ -370,96 +370,78 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
         prop.setLanguageKey("forge.configgui.selectiveResourceReloadEnabled");
         propOrder.add(prop.getName());
 
-        prop = config.get(Configuration.CATEGORY_CLIENT, "renderVignetteByDefault", true, "Toggle off to disable vignette rendering. Note that this config only controls default behaviour, mods can still toggle vignette rendering");
-        renderVignetteByDefault = prop.getBoolean(true);
-        GuiIngameForge.renderVignette = prop.getBoolean(true);
-        prop.setLanguageKey("forge.configgui.renderVignetteByDefault");
-        propOrder.add(prop.getName());
+        var categoryHUD = config.getCategory(Configuration.CATEGORY_CLIENT + Configuration.CATEGORY_SPLITTER + "hud");
+        categoryHUD.setComment("Controls the rendering of certain aspects of the HUD");
 
-        prop = config.get(Configuration.CATEGORY_CLIENT, "renderHelmetByDefault", true, "Toggle off to disable helmet rendering. Note that this config only controls default behaviour, mods can still toggle helmet rendering");
-        renderHelmetByDefault = prop.getBoolean(true);
-        GuiIngameForge.renderHelmet = prop.getBoolean(true);
-        prop.setLanguageKey("forge.configgui.renderHelmetByDefault");
-        propOrder.add(prop.getName());
-
-        prop = config.get(Configuration.CATEGORY_CLIENT, "renderPortalByDefault", true, "Toggle off to disable portal rendering. Note that this config only controls default behaviour, mods can still toggle portal rendering");
-        renderPortalByDefault = prop.getBoolean(true);
-        GuiIngameForge.renderPortal = prop.getBoolean(true);
-        prop.setLanguageKey("forge.configgui.renderPortalByDefault");
-        propOrder.add(prop.getName());
-
-        prop = config.get(Configuration.CATEGORY_CLIENT, "renderHotbarByDefault", true, "Toggle off to disable hotbar rendering. Note that this config only controls default behaviour, mods can still toggle hotbar rendering");
-        renderHotbarByDefault = prop.getBoolean(true);
-        GuiIngameForge.renderHotbar = prop.getBoolean(true);
-        prop.setLanguageKey("forge.configgui.renderHotbarByDefault");
-        propOrder.add(prop.getName());
-
-        prop = config.get(Configuration.CATEGORY_CLIENT, "renderCrosshairsByDefault", true, "Toggle off to disable crosshairs rendering. Note that this config only controls default behaviour, mods can still toggle crosshairs rendering");
-        renderCrosshairsByDefault = prop.getBoolean(true);
-        GuiIngameForge.renderCrosshairs = prop.getBoolean(true);
-        prop.setLanguageKey("forge.configgui.renderCrosshairsByDefault");
-        propOrder.add(prop.getName());
-
-        prop = config.get(Configuration.CATEGORY_CLIENT, "renderBossHealthByDefault", true, "Toggle off to disable boss health rendering. Note that this config only controls default behaviour, mods can still toggle boss health rendering");
-        renderBossHealthByDefault = prop.getBoolean(true);
-        GuiIngameForge.renderBossHealth = prop.getBoolean(true);
-        prop.setLanguageKey("forge.configgui.renderBossHealthByDefault");
-        propOrder.add(prop.getName());
-
-        prop = config.get(Configuration.CATEGORY_CLIENT, "renderHealthByDefault", true, "Toggle off to disable health rendering. Note that this config only controls default behaviour, mods can still toggle health rendering");
-        renderHealthByDefault = prop.getBoolean(true);
-        GuiIngameForge.renderHealth = prop.getBoolean(true);
-        prop.setLanguageKey("forge.configgui.renderHealthByDefault");
-        propOrder.add(prop.getName());
-
-        prop = config.get(Configuration.CATEGORY_CLIENT, "renderArmorByDefault", true, "Toggle off to disable armor rendering. Note that this config only controls default behaviour, mods can still toggle armor rendering");
-        renderArmorByDefault = prop.getBoolean(true);
-        GuiIngameForge.renderArmor = prop.getBoolean(true);
-        prop.setLanguageKey("forge.configgui.renderArmorByDefault");
-        propOrder.add(prop.getName());
-
-        prop = config.get(Configuration.CATEGORY_CLIENT, "renderFoodByDefault", true, "Toggle off to disable food rendering. Note that this config only controls default behaviour, mods can still toggle food rendering");
-        renderFoodByDefault = prop.getBoolean(true);
-        GuiIngameForge.renderFood = prop.getBoolean(true);
-        prop.setLanguageKey("forge.configgui.renderFoodByDefault");
-        propOrder.add(prop.getName());
-
-        prop = config.get(Configuration.CATEGORY_CLIENT, "renderHealthMountByDefault", true, "Toggle off to disable health mount rendering. Note that this config only controls default behaviour, mods can still toggle health mount rendering");
-        renderHealthMountByDefault = prop.getBoolean(true);
-        GuiIngameForge.renderHealthMount = prop.getBoolean(true);
-        prop.setLanguageKey("forge.configgui.renderHealthMountByDefault");
-        propOrder.add(prop.getName());
-
-        prop = config.get(Configuration.CATEGORY_CLIENT, "renderAirByDefault", true, "Toggle off to disable air rendering. Note that this config only controls default behaviour, mods can still toggle air rendering");
-        renderAirByDefault = prop.getBoolean(true);
-        GuiIngameForge.renderAir = prop.getBoolean(true);
-        prop.setLanguageKey("forge.configgui.renderAirByDefault");
-        propOrder.add(prop.getName());
-
-        prop = config.get(Configuration.CATEGORY_CLIENT, "renderExperienceByDefault", true, "Toggle off to disable experience rendering. Note that this config only controls default behaviour, mods can still toggle experiance rendering");
-        renderExperienceByDefault = prop.getBoolean(true);
-        GuiIngameForge.renderExperiance = prop.getBoolean(true);
-        prop.setLanguageKey("forge.configgui.renderExperienceByDefault");
-        propOrder.add(prop.getName());
-
-        prop = config.get(Configuration.CATEGORY_CLIENT, "renderJumpBarByDefault", true, "Toggle off to disable jump bar rendering. Note that this config only controls default behaviour, mods can still toggle jump bar rendering");
-        renderJumpBarByDefault = prop.getBoolean(true);
-        GuiIngameForge.renderJumpBar = prop.getBoolean(true);
-        prop.setLanguageKey("forge.configgui.renderJumpBarByDefault");
-        propOrder.add(prop.getName());
-
-        prop = config.get(Configuration.CATEGORY_CLIENT, "renderObjectiveByDefault", true, "Toggle off to disable objective rendering. Note that this config only controls default behaviour, mods can still toggle objective rendering");
-        renderObjectiveByDefault = prop.getBoolean(true);
-        GuiIngameForge.renderObjective = prop.getBoolean(true);
-        prop.setLanguageKey("forge.configgui.renderObjectiveByDefault");
-        propOrder.add(prop.getName());
-
+        propOrder.add(0, categoryHUD.getName());
         config.setCategoryPropertyOrder(CATEGORY_CLIENT, propOrder);
+
+        propOrder = setupHudConfig();
+        config.setCategoryPropertyOrder(categoryHUD.getName(), propOrder);
 
         if (config.hasChanged())
         {
             config.save();
         }
+    }
+
+    /**
+     * @return the order of hud config entries, represented by their keys
+     */
+    private static ArrayList<String> setupHudConfig()
+    {
+        final var categoryName = CATEGORY_CLIENT + Configuration.CATEGORY_SPLITTER + "hud";
+        final String[][] allConfigs = new String[][]{
+            {"renderVignette", "vignette"},
+            {"renderHelmet", "helmet"},
+            {"renderPortal", "portal"},
+            {"renderHotbar", "hotbar"},
+            {"renderCrosshairs", "crosshairs"},
+            {"renderBossHealth", "boss health"},
+            {"renderHealth", "health"},
+            {"renderArmor", "armor"},
+            {"renderFood", "food"},
+            {"renderHealthMount", "health mount"},
+            {"renderAir", "air"},
+            {"renderExperience", "experience"},
+            {"renderJumpBar", "jump bar"},
+            {"renderObjective", "objective"},
+        };
+
+        final var order = new ArrayList<String>(allConfigs.length);
+        boolean[] values = new boolean[allConfigs.length];
+
+        for (int i = 0; i < values.length; i++)
+        {
+            var key = allConfigs[i][0] + "ByDefault";
+            var friendlyName = allConfigs[i][1];
+            var comment = String.format(
+                "Toggle off to force disable %s rendering. Note that this config is applied once on config saved, mods can still change %s rendering bebaviour after that.",
+                friendlyName, friendlyName
+            );
+
+            var prop = config.get(categoryName, key, true, comment);
+            prop.setLanguageKey("forge.configgui." + key);
+            order.add(key);
+            values[i] = prop.getBoolean(true);
+        }
+
+        GuiIngameForge.renderVignette       = values[0];
+        GuiIngameForge.renderHelmet         = values[1];
+        GuiIngameForge.renderPortal         = values[2];
+        GuiIngameForge.renderHotbar         = values[3];
+        GuiIngameForge.renderCrosshairs     = values[4];
+        GuiIngameForge.renderBossHealth     = values[5];
+        GuiIngameForge.renderHealth         = values[6];
+        GuiIngameForge.renderArmor          = values[7];
+        GuiIngameForge.renderFood           = values[8];
+        GuiIngameForge.renderHealthMount    = values[9];
+        GuiIngameForge.renderAir            = values[10];
+        GuiIngameForge.renderExperiance     = values[11];
+        GuiIngameForge.renderJumpBar        = values[12];
+        GuiIngameForge.renderObjective      = values[13];
+
+        return order;
     }
 
     /**
