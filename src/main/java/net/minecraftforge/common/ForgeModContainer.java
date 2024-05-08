@@ -494,29 +494,16 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
                 ForgeChunkManager.syncConfigDefaults();
                 ForgeChunkManager.loadConfiguration();
             }
-            case "disableStairSlabCulling" -> {
+            case CATEGORY_CLIENT -> {
+                //HUD rendering
+                GuiIngameForge.refreshConfig();
+                //stair culling
                 boolean tmpStairs = disableStairSlabCulling;
-
                 syncConfig(false);
-
                 if (event.isWorldRunning() && tmpStairs != disableStairSlabCulling) {
                     FMLCommonHandler.instance().reloadRenderers();
                 }
             }
-            case "renderVignetteByDefault" -> GuiIngameForge.renderVignette = renderVignetteByDefault;
-            case "renderHelmetByDefault" -> GuiIngameForge.renderHelmet = renderHelmetByDefault;
-            case "renderPortalByDefault" -> GuiIngameForge.renderPortal = renderPortalByDefault;
-            case "renderHotbarByDefault" -> GuiIngameForge.renderHotbar = renderHotbarByDefault;
-            case "renderCrosshairsByDefault" -> GuiIngameForge.renderCrosshairs = renderCrosshairsByDefault;
-            case "renderBossHealthByDefault" -> GuiIngameForge.renderBossHealth = renderBossHealthByDefault;
-            case "renderHealthByDefault" -> GuiIngameForge.renderHealth = renderHealthByDefault;
-            case "renderArmorByDefault" -> GuiIngameForge.renderArmor = renderArmorByDefault;
-            case "renderFoodByDefault" -> GuiIngameForge.renderFood = renderFoodByDefault;
-            case "renderHealthMountByDefault" -> GuiIngameForge.renderHealthMount = renderHealthMountByDefault;
-            case "renderAirByDefault" -> GuiIngameForge.renderAir = renderAirByDefault;
-            case "renderExperianceByDefault" -> GuiIngameForge.renderExperiance = renderExperianceByDefault;
-            case "renderJumpBarByDefault" -> GuiIngameForge.renderJumpBar = renderJumpBarByDefault;
-            case "renderObjectiveByDefault" -> GuiIngameForge.renderObjective = renderObjectiveByDefault;
         }
     }
 
