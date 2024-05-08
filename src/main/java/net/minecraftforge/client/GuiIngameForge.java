@@ -88,7 +88,10 @@ public class GuiIngameForge extends GuiIngame
     public static boolean renderFood        = ForgeModContainer.renderFoodByDefault       ;
     public static boolean renderHealthMount = ForgeModContainer.renderHealthMountByDefault;
     public static boolean renderAir         = ForgeModContainer.renderAirByDefault        ;
-    public static boolean renderExperiance  = ForgeModContainer.renderExperianceByDefault ;
+    /**
+     * experiAnce?
+     */
+    public static boolean renderExperiance  = ForgeModContainer.renderExperienceByDefault;
     public static boolean renderJumpBar     = ForgeModContainer.renderJumpBarByDefault    ;
     public static boolean renderObjective   = ForgeModContainer.renderObjectiveByDefault  ;
 
@@ -923,7 +926,7 @@ public class GuiIngameForge extends GuiIngame
         renderFood        = ForgeModContainer.renderFoodByDefault       ;
         renderHealthMount = ForgeModContainer.renderHealthMountByDefault;
         renderAir         = ForgeModContainer.renderAirByDefault        ;
-        renderExperiance  = ForgeModContainer.renderExperianceByDefault ;
+        renderExperiance  = ForgeModContainer.renderExperienceByDefault;
         renderJumpBar     = ForgeModContainer.renderJumpBarByDefault    ;
         renderObjective   = ForgeModContainer.renderObjectiveByDefault  ;
     }

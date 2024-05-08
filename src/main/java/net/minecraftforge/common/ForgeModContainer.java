@@ -441,9 +441,9 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
         prop.setLanguageKey("forge.configgui.renderAirByDefault");
         propOrder.add(prop.getName());
 
-        prop = config.get(Configuration.CATEGORY_CLIENT, "renderExperianceByDefault", true, "Toggle off to disable experiance rendering. Note that this config only controls default behaviour, mods can still toggle experiance rendering");
-        renderExperianceByDefault = prop.getBoolean(true);
-        prop.setLanguageKey("forge.configgui.renderExperianceByDefault");
+        prop = config.get(Configuration.CATEGORY_CLIENT, "renderExperienceByDefault", true, "Toggle off to disable experience rendering. Note that this config only controls default behaviour, mods can still toggle experiance rendering");
+        renderExperienceByDefault = prop.getBoolean(true);
+        prop.setLanguageKey("forge.configgui.renderExperienceByDefault");
         propOrder.add(prop.getName());
 
         prop = config.get(Configuration.CATEGORY_CLIENT, "renderJumpBarByDefault", true, "Toggle off to disable jump bar rendering. Note that this config only controls default behaviour, mods can still toggle jump bar rendering");
