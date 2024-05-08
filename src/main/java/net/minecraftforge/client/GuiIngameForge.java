@@ -77,23 +77,23 @@ public class GuiIngameForge extends GuiIngame
     //Flags to toggle the rendering of certain aspects of the HUD, valid conditions
     //must be met for them to render normally. If those conditions are met, but this flag
     //is false, they will not be rendered.
-    public static boolean renderVignette    = ForgeModContainer.renderVignetteByDefault   ;
-    public static boolean renderHelmet      = ForgeModContainer.renderHelmetByDefault     ;
-    public static boolean renderPortal      = ForgeModContainer.renderPortalByDefault     ;
-    public static boolean renderHotbar      = ForgeModContainer.renderHotbarByDefault     ;
-    public static boolean renderCrosshairs  = ForgeModContainer.renderCrosshairsByDefault ;
-    public static boolean renderBossHealth  = ForgeModContainer.renderBossHealthByDefault ;
-    public static boolean renderHealth      = ForgeModContainer.renderHealthByDefault     ;
-    public static boolean renderArmor       = ForgeModContainer.renderArmorByDefault      ;
-    public static boolean renderFood        = ForgeModContainer.renderFoodByDefault       ;
-    public static boolean renderHealthMount = ForgeModContainer.renderHealthMountByDefault;
-    public static boolean renderAir         = ForgeModContainer.renderAirByDefault        ;
+    public static boolean renderVignette = true;
+    public static boolean renderHelmet = true;
+    public static boolean renderPortal = true;
+    public static boolean renderHotbar = true;
+    public static boolean renderCrosshairs = true;
+    public static boolean renderBossHealth = true;
+    public static boolean renderHealth = true;
+    public static boolean renderArmor = true;
+    public static boolean renderFood = true;
+    public static boolean renderHealthMount = true;
+    public static boolean renderAir = true;
     /**
      * experiAnce?
      */
-    public static boolean renderExperiance  = ForgeModContainer.renderExperienceByDefault;
-    public static boolean renderJumpBar     = ForgeModContainer.renderJumpBarByDefault    ;
-    public static boolean renderObjective   = ForgeModContainer.renderObjectiveByDefault  ;
+    public static boolean renderExperiance = true;
+    public static boolean renderJumpBar = true;
+    public static boolean renderObjective = true;
 
     public static int left_height = 39;
     public static int right_height = 39;
@@ -907,28 +907,6 @@ public class GuiIngameForge extends GuiIngame
         }
         GlStateManager.disableBlend();
         post(HEALTHMOUNT);
-    }
-
-    /**
-     * refresh flags using values from {@link ForgeModContainer}
-     * <p>
-     * each config will and should have one matched config, in {@code "{config name}ByDefault"} format
-     */
-    public static void refreshConfig() {
-        renderVignette    = ForgeModContainer.renderVignetteByDefault   ;
-        renderHelmet      = ForgeModContainer.renderHelmetByDefault     ;
-        renderPortal      = ForgeModContainer.renderPortalByDefault     ;
-        renderHotbar      = ForgeModContainer.renderHotbarByDefault     ;
-        renderCrosshairs  = ForgeModContainer.renderCrosshairsByDefault ;
-        renderBossHealth  = ForgeModContainer.renderBossHealthByDefault ;
-        renderHealth      = ForgeModContainer.renderHealthByDefault     ;
-        renderArmor       = ForgeModContainer.renderArmorByDefault      ;
-        renderFood        = ForgeModContainer.renderFoodByDefault       ;
-        renderHealthMount = ForgeModContainer.renderHealthMountByDefault;
-        renderAir         = ForgeModContainer.renderAirByDefault        ;
-        renderExperiance  = ForgeModContainer.renderExperienceByDefault;
-        renderJumpBar     = ForgeModContainer.renderJumpBarByDefault    ;
-        renderObjective   = ForgeModContainer.renderObjectiveByDefault  ;
     }
 
     //Helper macros
