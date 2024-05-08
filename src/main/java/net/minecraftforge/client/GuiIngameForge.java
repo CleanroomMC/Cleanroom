@@ -906,6 +906,28 @@ public class GuiIngameForge extends GuiIngame
         post(HEALTHMOUNT);
     }
 
+    /**
+     * refresh flags using values from {@link ForgeModContainer}
+     * <p>
+     * each config will and should have one matched config, in {@code "{config name}ByDefault"} format
+     */
+    public static void refreshConfig() {
+        renderVignette    = ForgeModContainer.renderVignetteByDefault   ;
+        renderHelmet      = ForgeModContainer.renderHelmetByDefault     ;
+        renderPortal      = ForgeModContainer.renderPortalByDefault     ;
+        renderHotbar      = ForgeModContainer.renderHotbarByDefault     ;
+        renderCrosshairs  = ForgeModContainer.renderCrosshairsByDefault ;
+        renderBossHealth  = ForgeModContainer.renderBossHealthByDefault ;
+        renderHealth      = ForgeModContainer.renderHealthByDefault     ;
+        renderArmor       = ForgeModContainer.renderArmorByDefault      ;
+        renderFood        = ForgeModContainer.renderFoodByDefault       ;
+        renderHealthMount = ForgeModContainer.renderHealthMountByDefault;
+        renderAir         = ForgeModContainer.renderAirByDefault        ;
+        renderExperiance  = ForgeModContainer.renderExperianceByDefault ;
+        renderJumpBar     = ForgeModContainer.renderJumpBarByDefault    ;
+        renderObjective   = ForgeModContainer.renderObjectiveByDefault  ;
+    }
+
     //Helper macros
     private boolean pre(ElementType type)
     {
