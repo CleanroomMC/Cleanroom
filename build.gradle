@@ -46,15 +46,14 @@ import org.objectweb.asm.Opcodes
 def props = project.properties
 def sysProps = System.getProperties()
 def details = versionDetails()
-def suffix = "infdev"
 
 group 'com.cleanroommc'
-version details.lastTag + "-" + suffix + (project.hasProperty("release") ?
+version details.lastTag + (project.hasProperty("release") ?
         "" : ("+build." + details.commitDistance + (project.hasProperty("run_number") ?
                 (".run." + props.run_number) : "")))
 def version_txt = new File(project.projectDir, "version.txt")
 version_txt.write(version.toString())
-def spec_version = details.lastTag.toString().substring(0, details.lastTag.lastIndexOf('.'))
+def spec_version = details.lastTag
 
 println "Setting up Cleanroom $version"
 if (project.hasProperty("run_number")) println("On GitHub runs #" + props.run_number)
