@@ -61,7 +61,8 @@ jobs:
           pip install -r mmc/requirements.txt
 
       - name: Generate MMC Pack
-        run: python mmc/main.py
+        run: python main.py
+        working-directory: ./mmc
         env:
           PATH_TO_EXIST_INSTALLER: ./projects/cleanroom/build/libs/cleanroom-${{ env.CLEANROOM_VERSION }}-installer.jar
 
