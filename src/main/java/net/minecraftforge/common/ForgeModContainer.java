@@ -385,6 +385,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
      */
     private static ArrayList<String> setupHudConfig(String categoryName)
     {
+        //config names, with their "words" form used for comment generating
         final String[][] allConfigs = new String[][]{
             {"renderVignette", "vignette"},
             {"renderHelmet", "helmet"},
@@ -410,7 +411,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
             var key = allConfigs[i][0] + "ByDefault";
             var friendlyName = allConfigs[i][1];
             var comment = String.format(
-                "Toggle off to force disable %s rendering. Note that this config is applied once on config saved, mods can still change %s rendering bebaviour after that.",
+                "Toggle off to force disable %s rendering. Note that this config is applied on config saved, mods can still change %s rendering behaviour after that.",
                 friendlyName, friendlyName
             );
 
