@@ -46,10 +46,13 @@ import org.objectweb.asm.Opcodes
 def props = project.properties
 def sysProps = System.getProperties()
 def details = versionDetails()
+def suffix = "alpha"
 
 group 'com.cleanroommc'
 
-version details.lastTag + "-alpha+build." + details.commitDistance + (project.hasProperty("run_number") ? (".run." + props.run_number) : "")
+version details.lastTag + "-" + suffix + (project.hasProperty("release") ?
+        "" : ("+build." + details.commitDistance + (project.hasProperty("run_number") ?
+                (".run." + props.run_number) : "")))
 
 def version_txt = new File(project.projectDir, "version.txt")
 version_txt.write(version.toString())
