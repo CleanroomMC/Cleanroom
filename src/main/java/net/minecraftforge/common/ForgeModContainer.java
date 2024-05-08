@@ -370,14 +370,9 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
         prop.setLanguageKey("forge.configgui.selectiveResourceReloadEnabled");
         propOrder.add(prop.getName());
 
-        var categoryHUD = config.getCategory(Configuration.CATEGORY_CLIENT + Configuration.CATEGORY_SPLITTER + "hud");
-        categoryHUD.setComment("Controls the rendering of certain aspects of the HUD");
+        propOrder.addAll(setupHudConfig(CATEGORY_CLIENT));
 
-        propOrder.add(0, categoryHUD.getName());
         config.setCategoryPropertyOrder(CATEGORY_CLIENT, propOrder);
-
-        propOrder = setupHudConfig();
-        config.setCategoryPropertyOrder(categoryHUD.getName(), propOrder);
 
         if (config.hasChanged())
         {
@@ -388,9 +383,8 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     /**
      * @return the order of hud config entries, represented by their keys
      */
-    private static ArrayList<String> setupHudConfig()
+    private static ArrayList<String> setupHudConfig(String categoryName)
     {
-        final var categoryName = CATEGORY_CLIENT + Configuration.CATEGORY_SPLITTER + "hud";
         final String[][] allConfigs = new String[][]{
             {"renderVignette", "vignette"},
             {"renderHelmet", "helmet"},
