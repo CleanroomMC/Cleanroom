@@ -67,7 +67,7 @@ jobs:
           PATH_TO_EXIST_INSTALLER: ../projects/cleanroom/build/libs/cleanroom-${{ env.CLEANROOM_VERSION }}-installer.jar
 
       - name: Copy MMC Pack
-        run: cp mmc/build/*.zip ./projects/cleanroom/build/libs/
+        run: cp mmc/build/CleanroomMMC.zip ./projects/cleanroom/build/libs/Cleanroom-MMC-instance-${{ env.CLEANROOM_VERSION }}.zip
 
       - uses: ncipollo/release-action@v1.14.0
         with:
