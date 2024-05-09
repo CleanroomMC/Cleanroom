@@ -26,6 +26,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.ModContainer;
 
 import org.apache.logging.log4j.ThreadContext;
@@ -40,7 +41,6 @@ public class ASMEventHandler implements IEventListener
     private static int IDs = 0;
     private static final String HANDLER_DESC = Type.getInternalName(IEventListener.class);
     private static final String HANDLER_FUNC_DESC = Type.getMethodDescriptor(IEventListener.class.getDeclaredMethods()[0]);
-    private static final ASMClassLoader LOADER = new ASMClassLoader();
     private static final HashMap<Method, Class<?>> cache = Maps.newHashMap();
     private static final boolean GETCONTEXT = Boolean.parseBoolean(System.getProperty("fml.LogContext", "false"));
 
@@ -164,7 +164,7 @@ public class ASMEventHandler implements IEventListener
             mv.visitEnd();
         }
         cw.visitEnd();
-        Class<?> ret = LOADER.define(name, cw.toByteArray());
+        Class<?> ret = Launch.classLoader.defineClass(name, cw.toByteArray());
         cache.put(callback, ret);
         return ret;
     }
@@ -175,19 +175,6 @@ public class ASMEventHandler implements IEventListener
                 callback.getDeclaringClass().getSimpleName(),
                 callback.getName(),
                 callback.getParameterTypes()[0].getSimpleName());
-    }
-
-    private static class ASMClassLoader extends ClassLoader
-    {
-        private ASMClassLoader()
-        {
-            super(ASMClassLoader.class.getClassLoader());
-        }
-
-        public Class<?> define(String name, byte[] data)
-        {
-            return defineClass(name, data, 0, data.length);
-        }
     }
 
     public String toString()

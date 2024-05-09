@@ -19,6 +19,8 @@
 
 package net.minecraftforge.fml.relauncher;
 
+import net.minecraft.launchwrapper.Launch;
+
 import java.util.Map;
 
 public class FMLCorePlugin implements IFMLLoadingPlugin
@@ -26,12 +28,14 @@ public class FMLCorePlugin implements IFMLLoadingPlugin
     @Override
     public String[] getASMTransformerClass()
     {
+        //Launch.classLoader.registerSuperTransformer("net.minecraftforge.fml.common.asm.transformers.ReflectionFieldTransformer");// For reflection in exclusion
+        Launch.classLoader.registerSuperTransformer("net.minecraftforge.fml.common.asm.transformers.JavaxTransformer"); // For Botania Tweaks
         return new String[] {
                              "net.minecraftforge.fml.common.asm.transformers.SideTransformer",
                              "net.minecraftforge.fml.common.asm.transformers.EventSubscriptionTransformer",
                              "net.minecraftforge.fml.common.asm.transformers.EventSubscriberTransformer",
                              "net.minecraftforge.fml.common.asm.transformers.SoundEngineFixTransformer",
-                             "net.minecraftforge.fml.common.asm.transformers.JavaxTransformer",
+                             //"net.minecraftforge.fml.common.asm.transformers.JavaxTransformer",
                              "net.minecraftforge.fml.common.asm.transformers.MalformedUUIDTransformer",
                              "net.minecraftforge.fml.common.asm.transformers.ReflectionFieldTransformer",
                              "net.minecraftforge.fml.common.asm.transformers.ScriptEngineTransformer",

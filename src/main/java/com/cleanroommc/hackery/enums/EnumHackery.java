@@ -2,6 +2,7 @@ package com.cleanroommc.hackery.enums;
 
 import com.cleanroommc.hackery.ReflectionHackery;
 import jdk.internal.reflect.ReflectionFactory;
+import net.minecraftforge.fml.common.FMLLog;
 import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.lwjgl3ify.UnsafeHacks;
 
@@ -11,13 +12,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Map;
 
 public final class EnumHackery {
 
     public static final ReflectionFactory factory = ReflectionFactory.getReflectionFactory();
 
     private static final Field class$enumConstants, class$enumConstantDirectory, class$enumVars;
-    private static final Method constructorAccessor$newInstance;
+    private static final Method constructorAccessor$newInstance, class$enumConstantDirectory_method;
 
     private static final Class[] prefix = {String.class, int.class};
 
@@ -26,6 +28,7 @@ public final class EnumHackery {
         Field enumConstants;
         Field enumConstantDirectory;
         Method newInstance;
+        Method enumConstantDirectoryMethod;
         try {
             constructorAccessor = ReflectionHackery.deepSearchForField(Constructor.class, field -> "constructorAccessor".equals(field.getName()), true);
 
@@ -36,6 +39,9 @@ public final class EnumHackery {
             enumConstantDirectory.setAccessible(true);
 
             newInstance = constructorAccessor.getType().getMethod("newInstance", Object[].class);
+            
+            enumConstantDirectoryMethod = Class.class.getDeclaredMethod("enumConstantDirectory");
+            enumConstantDirectoryMethod.setAccessible(true);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
@@ -49,6 +55,7 @@ public final class EnumHackery {
         class$enumConstantDirectory = enumConstantDirectory;
         class$enumVars = enumVars;
         constructorAccessor$newInstance = newInstance;
+        class$enumConstantDirectory_method = enumConstantDirectoryMethod;
     }
 
     public static <T extends Enum<T>> T addEnumEntry(Class<T> enumClass, String enumName) {
@@ -102,6 +109,12 @@ public final class EnumHackery {
             T[] newValues = Arrays.copyOf(values, values.length + 1);
             newValues[newValues.length - 1] = instance;
             UnsafeHacks.setField(valuesField, null, newValues);
+            // Add new enum to cache
+            UnsafeHacks.setField(class$enumConstants, enumClass, newValues);
+            // Ensure the cache exists 
+            Map<String, T> directory = (Map<String, T>) class$enumConstantDirectory_method.invoke(enumClass);
+            // Add new enum to cache
+            directory.put(enumName, instance);
 
             int ordinal = newValues.length - 1;
             ordinalField.set(instance, ordinal);
@@ -109,7 +122,7 @@ public final class EnumHackery {
             return instance;
 
         } catch (Throwable e) {
-            System.out.println(e);
+            FMLLog.log.error(e);
             throw new RuntimeException(e);
         }
 
