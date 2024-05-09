@@ -185,9 +185,8 @@ public class Util {
      * @return int
      */
     protected static int glGetIntegerv(int what) {
-        // scratch.rewind();
-        // glGetIntegerv(what, scratch);
-        // return scratch.get();
-        return 0;
+        scratch.rewind();
+        org.lwjgl3.opengl.GL11.glGetIntegerv(what, scratch);
+        return scratch.get();
     }
 }

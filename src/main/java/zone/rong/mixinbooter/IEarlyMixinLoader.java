@@ -1,15 +1,22 @@
 package zone.rong.mixinbooter;
 
 import java.util.List;
+import org.spongepowered.asm.mixin.MixinEnvironment.Phase;
+import net.minecraftforge.fml.common.Loader;
+import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
+import org.spongepowered.asm.mixin.transformer.Config;
 
 /**
- * Early mixins are defined as mixins that affects vanilla or forge classes.
- * Or technically, classes that can be queried via the current state of {@link net.minecraft.launchwrapper.LaunchClassLoader}
- *
- * If you want to add mixins that affect mods, use {@link ILateMixinLoader}
- *
- * Implement this in your {@link net.minecraftforge.fml.relauncher.IFMLLoadingPlugin}.
- * Return all early mixin configs you want MixinBooter to queue and send to Mixin library.
+ * @deprecated We forked Mixin.
+ * <br>New approach:
+ * Check <a href=https://github.com/CleanroomMC/Fugue/tree/master>Fugue</a>.<br>
+ * Summary:<br>
+ * If you are coremod, just call {@link org.spongepowered.asm.mixin.Mixins#addConfigurations(String...)} in loadingPluging or Tweaker, and handle shouldApply in IMixinConfigPlugin<br>
+ * If you aren't coremod:<br>
+ * Group mixins by phase, add target env in config, use @env(MOD) for mod mixins.<br>
+ * Add {"MixinConfigs": "modid.mod.mixin.json,modid.default.mixin.json"} to your jar manifest.<br>
+ * Handle shouldApply in IMixinConfigPlugin. You can call {@link Loader#isModLoaded(String)} for {@link Phase#MOD} mixin.<br>
+ * Recommend to group target mod name by package name. You can also get config instance from {@link IMixinConfigPlugin#injectConfig(Config)}.
  */
 @Deprecated
 public interface IEarlyMixinLoader {

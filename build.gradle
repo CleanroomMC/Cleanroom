@@ -48,9 +48,11 @@ def sysProps = System.getProperties()
 def details = versionDetails()
 
 group 'com.cleanroommc'
+
 version details.lastTag + (project.hasProperty("release") ?
         "" : ("+build." + details.commitDistance + (project.hasProperty("run_number") ?
                 (".run." + props.run_number) : "")))
+
 def version_txt = new File(project.projectDir, "version.txt")
 version_txt.write(version.toString())
 def spec_version = details.lastTag
@@ -183,7 +185,7 @@ project(':cleanroom') {
 
             target.withWriter { def writer ->
                 template.eachLine { def line ->
-                    def newLine = line.replace("%VERSION%", versionDetails().lastTag + "-infdev")
+                    def newLine = line.replace("%VERSION%", versionDetails().lastTag)
                             .replace("%BUILD_VERSION%", rootProject.version.toString())
                     writer.write(newLine + "\n");
                 }
@@ -277,7 +279,7 @@ project(':cleanroom') {
 
                 environment 'target', 'fmldevclient'
                 environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLTweaker'
-                environment 'mainClass', 'com.cleanroommc.bouncepad.Bouncepad'
+                environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
                 environment 'assetIndex', '{asset_index}'
                 environment 'assetDirectory', downloadAssets.output
                 environment 'nativesDirectory', extractNatives.output.get().asFile
@@ -288,7 +290,7 @@ project(':cleanroom') {
                 environment 'FORGE_GROUP', project.group
                 environment 'FORGE_VERSION', props.last_forge_version
 
-                jvmArgs jvm_arguments + '-Dmixin.debug.export=true' + '-Dmixin.checks.interfaces=true'
+                jvmArgs jvm_arguments + '-Dmixin.debug.export=true' + '-Dmixin.checks.interfaces=true' + '-Djava.system.class.loader=net.minecraft.launchwrapper.LaunchClassLoader'
                 //jvmArgs jvm_arguments
 
                 // Lazily supply the Mappings target, createSrg2Mcp.getMappings() doesn't get populated until later
@@ -330,7 +332,7 @@ project(':cleanroom') {
 
                 environment 'target', 'fmldevserver'
                 environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLServerTweaker'
-                environment 'mainClass', 'com.cleanroommc.bouncepad.Bouncepad'
+                environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
                 environment 'MC_VERSION', props.minecraft_version
                 environment 'MCP_VERSION', props.mcp_version
                 environment 'MCP_MAPPINGS', '{mcp_mappings}'
@@ -432,14 +434,19 @@ project(':cleanroom') {
         // Added back deprecated features for mods to load up properly
         installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
 
-        installer "com.cleanroommc:bouncepad:$props.bouncepad_version"
+        //installer "com.cleanroommc:bouncepad:$props.bouncepad_version"
+        installer "top.outlands:foundation:0.13.2"
+        installer 'org.burningwave:jvm-driver:8.15.0'
+        installer 'io.github.toolfactory:jvm-driver:9.7.0'
+        installer 'io.github.toolfactory:narcissus:1.0.7'
+        installer 'org.javassist:javassist:3.30.2-GA'
+        installer "zone.rong:imaginebreaker:2.1"
 
         installer 'com.ibm.icu:icu4j:75.1'
 
         installer 'org.jline:jline:3.25.0'
-        installer 'com.typesafe.akka:akka-actor_2.12:2.8.5'
-        installer 'com.typesafe:config:1.4.3'
         // TODO: Move scala away from being defaulted when installing (download on-demand?)
+        /*
         installer 'org.scala-lang:scala-actors-migration_2.11:1.1.0'
         installer 'org.scala-lang:scala-compiler:2.11.1'
         // We change the version so old installs don't break, as our clone of the jar is different the maven central
@@ -451,39 +458,62 @@ project(':cleanroom') {
         installer 'org.scala-lang:scala-reflect:2.11.1'
         installer 'org.scala-lang:scala-swing_2.11:1.0.1'
         installer 'org.scala-lang:scala-xml_2.11:1.0.2'
+
+        installer 'com.typesafe.akka:akka-actor_2.12:2.8.5'
+        installer 'com.typesafe:config:1.4.3'
+        */
         installer 'lzma:lzma:0.0.1'
         installer 'java3d:vecmath:1.5.2'
         installer 'net.sf.trove4j:trove4j:3.0.3'
         installer 'org.apache.maven:maven-artifact:3.9.5'
-        installer 'net.sf.jopt-simple:jopt-simple:5.0.3'
-        installer 'org.apache.commons:commons-lang3:3.13.0'
-        installer 'org.apache.commons:commons-compress:1.24.0'
+        installer 'net.sf.jopt-simple:jopt-simple:5.0.4'
+        installer 'org.apache.commons:commons-lang3:3.14.0'
+        installer 'org.apache.commons:commons-compress:1.26.1'
         installer 'org.apache.httpcomponents:httpclient:4.5.14'
         installer 'org.apache.httpcomponents:httpcore:4.4.16'
-        installer 'com.github.oshi:oshi-core:6.4.10'
+        installer 'com.github.oshi:oshi-core:6.5.0'
         installer 'net.java.dev.jna:jna:5.14.0'
         installer 'net.java.dev.jna:jna-platform:5.14.0'
-        installer 'it.unimi.dsi:fastutil:8.5.12'
+        installer 'it.unimi.dsi:fastutil:8.5.13'
         installer 'commons-codec:commons-codec:1.16.0'
-        installer 'commons-io:commons-io:2.15.1'
-        installer 'commons-logging:commons-logging:1.3.0'
-        installer 'com.google.guava:guava:33.0.0-jre'
+        installer 'commons-io:commons-io:2.16.1'
+        installer 'commons-logging:commons-logging:1.3.1'
+        installer 'com.google.guava:guava:33.1.0-jre'
         installer 'com.google.guava:failureaccess:1.0.2'
         installer 'com.google.code.gson:gson:2.10.1'
         installer 'com.google.code.findbugs:jsr305:3.0.2'
 
+        // Netty
+        installer 'io.netty:netty-codec:4.1.109.Final'
+        installer 'io.netty:netty-buffer:4.1.109.Final'
+        installer 'io.netty:netty-common:4.1.109.Final'
+        installer 'io.netty:netty-handler:4.1.109.Final'
+        installer 'io.netty:netty-resolver:4.1.109.Final'
+        installer 'io.netty:netty-transport:4.1.109.Final'
+        installer 'io.netty:netty-transport-native-unix-common:4.1.109.Final'
+        installer 'io.netty:netty-transport-classes-epoll:4.1.109.Final'
+        installer 'io.netty:netty-transport-native-epoll:4.1.109.Final'
+        installer 'io.netty:netty-codec-http:4.1.109.Final'
+        installer 'io.netty:netty-codec-http2:4.1.109.Final'
+        installer 'io.netty:netty-codec-dns:4.1.109.Final'
+        installer 'io.netty:netty-resolver-dns:4.1.109.Final'
+
+        // installer 'io.netty:netty-all:4.1.93.Final'
+
         // TODO: Unpin in 1.18.1 or when Mojang bumps the Log4J version
-        installer 'org.apache.logging.log4j:log4j-api:2.22.1'
-        installer 'org.apache.logging.log4j:log4j-core:2.22.1'
+        installer 'org.apache.logging.log4j:log4j-api:2.23.1'
+        installer 'org.apache.logging.log4j:log4j-core:2.23.1'
+        installer 'org.apache.logging.log4j:log4j-slf4j2-impl:2.23.1'
+        installer 'org.slf4j:slf4j-api:2.0.13'
         installer 'jakarta.annotation:jakarta.annotation-api:2.1.1'
-        installer 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.1'
+        installer 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
         installer 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.1'
         installer 'jakarta.activation:jakarta.activation-api:2.1.2'
         installer 'org.glassfish.corba:glassfish-corba-omgapi:4.2.5'
         installer 'org.openjdk.nashorn:nashorn-core:15.4'
 
         // Mixin
-        installer 'com.cleanroommc:sponge-mixin:0.16.0+mixin.0.8.5'
+        installer 'com.cleanroommc:sponge-mixin:0.19.5+mixin.0.8.5'
         installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.3.5')
 
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
@@ -847,7 +877,7 @@ project(':cleanroom') {
                 time: timestamp,
                 releaseTime: timestamp,
                 type: 'release',
-                mainClass: 'com.cleanroommc.bouncepad.Bouncepad',
+                mainClass: 'top.outlands.foundation.boot.Foundation',
                 inheritsFrom: props.minecraft_version,
                 logging: { },
                 minecraftArguments: [
@@ -1064,7 +1094,7 @@ project(':cleanroom') {
                 main 'com.cleanroommc.boot.MainClient'
 
                 environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLTweaker'
-                environment 'mainClass', 'com.cleanroommc.bouncepad.Bouncepad'
+                environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
                 environment 'assetIndex', '{asset_index}'
                 environment 'assetDirectory', '{assets_root}'
                 environment 'nativesDirectory', '{natives}'
@@ -1079,7 +1109,7 @@ project(':cleanroom') {
                 main 'com.cleanroommc.boot.MainServer'
 
                 environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLServerTweaker'
-                environment 'mainClass', 'com.cleanroommc.bouncepad.Bouncepad'
+                environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
                 environment 'MC_VERSION', props.minecraft_version
                 environment 'MCP_MAPPINGS', '{mcp_mappings}'
                 environment 'MCP_TO_SRG', '{mcp_to_srg}'

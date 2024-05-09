@@ -23,6 +23,7 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.TracingPrintStream;
@@ -65,18 +66,15 @@ public class FMLLaunchHandler
         this.tweaker = tweaker;
         this.minecraftHome = tweaker.getGameDir();
         this.classLoader.addTransformerExclusion("com.cleanroommc.loader.");
-        this.classLoader.addClassLoaderExclusion("net.minecraftforge.fml.relauncher.");
-        this.classLoader.addClassLoaderExclusion("net.minecraftforge.classloading.");
+        this.classLoader.addTransformerExclusion("net.minecraftforge.fml.relauncher.");
+        this.classLoader.addTransformerExclusion("net.minecraftforge.classloading.");
         this.classLoader.addTransformerExclusion("net.minecraftforge.fml.common.asm.transformers.");
         this.classLoader.addTransformerExclusion("net.minecraftforge.fml.common.patcher.");
         this.classLoader.addTransformerExclusion("net.minecraftforge.fml.repackage.");
-        this.classLoader.addTransformerExclusion("org.spongepowered.");
-        this.classLoader.addClassLoaderExclusion("org.apache.commons.");
-        this.classLoader.addClassLoaderExclusion("org.apache.http.");
-        this.classLoader.addClassLoaderExclusion("org.apache.maven.");
-        this.classLoader.addClassLoaderExclusion("com.google.common.");
-        this.classLoader.addClassLoaderExclusion("org.objectweb.asm.");
-        this.classLoader.addClassLoaderExclusion("LZMA.");
+        this.classLoader.addTransformerExclusion("LZMA.");
+        this.classLoader.addTransformerExclusion("scala.");
+        this.classLoader.addTransformerExclusion("it.unimi.dsi.");
+        this.classLoader.addTransformerExclusion("oshi.");
     }
 
     private void setupClient()

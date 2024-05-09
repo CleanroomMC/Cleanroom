@@ -908,7 +908,7 @@ public class Loader
             }
         }
 
-        if (difference.size() > 0)
+        if (!difference.isEmpty())
             FMLLog.log.info("Attempting connection with missing mods {} at {}", difference, side);
         return true;
     }

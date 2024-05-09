@@ -45,6 +45,8 @@ import net.minecraftforge.fml.relauncher.IFMLCallHook;
 import net.minecraftforge.fml.relauncher.Side;
 
 import com.google.common.io.ByteStreams;
+import org.spongepowered.asm.bridge.RemapperAdapterFML;
+import org.spongepowered.asm.launch.platform.MixinPlatformAgentFMLLegacy;
 
 public class FMLSanityChecker implements IFMLCallHook
 {
@@ -188,14 +190,7 @@ public class FMLSanityChecker implements IFMLCallHook
         fmlLocation = (File)data.get("coremodLocation");
         ClassPatchManager.INSTANCE.setup(FMLLaunchHandler.side());
         FMLDeobfuscatingRemapper.INSTANCE.setup(mcDir, cl, (String) data.get("deobfuscationFileName"), liveEnv);
-        try {
-            Class<?> deobf = cl.getClass().getClassLoader().loadClass(FMLDeobfuscatingRemapper.class.getName());
-            Field instanceType = deobf.getField("INSTANCE");
-            Method setup = deobf.getMethod("setup", File.class, LaunchClassLoader.class, String.class, boolean.class);
-            Object instance = instanceType.get(null);
-            setup.invoke(instance, mcDir, cl, (String) data.get("deobfuscationFileName"), liveEnv);
-        } catch (ClassNotFoundException | NoSuchFieldException | NoSuchMethodException | IllegalAccessException |
-                 InvocationTargetException ignored) {}
+        MixinPlatformAgentFMLLegacy.injectRemapper(RemapperAdapterFML.create(FMLDeobfuscatingRemapper.INSTANCE, FMLDeobfuscatingRemapper.INSTANCE::unmap));
     }
 
 }

@@ -21,12 +21,14 @@ package net.minecraftforge.fml.common.eventhandler;
 
 import static org.objectweb.asm.Opcodes.*;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 
 import net.minecraft.launchwrapper.Launch;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.ModContainer;
 
 import org.apache.logging.log4j.ThreadContext;
@@ -116,16 +118,16 @@ public class ASMEventHandler implements IEventListener
         String desc = name.replace('.',  '/');
         String instType = Type.getInternalName(callback.getDeclaringClass());
         String eventType = Type.getInternalName(callback.getParameterTypes()[0]);
-
-        /*
+    /*
+        System.out.println("Class     " + callback.getDeclaringClass().getName());
         System.out.println("Name:     " + name);
         System.out.println("Desc:     " + desc);
         System.out.println("InstType: " + instType);
         System.out.println("Callback: " + callback.getName() + Type.getMethodDescriptor(callback));
         System.out.println("Event:    " + eventType);
-        */
+    */
 
-        cw.visit(V17, ACC_PUBLIC | ACC_SUPER, desc, null, "java/lang/Object", new String[]{ HANDLER_DESC });
+        cw.visit(V21, ACC_PUBLIC | ACC_SUPER, desc, null, "java/lang/Object", new String[]{ HANDLER_DESC });
 
         cw.visitSource(".dynamic", null);
         {
