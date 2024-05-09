@@ -185,7 +185,7 @@ project(':cleanroom') {
 
             target.withWriter { def writer ->
                 template.eachLine { def line ->
-                    def newLine = line.replace("%VERSION%", versionDetails().lastTag + "-alpha")
+                    def newLine = line.replace("%VERSION%", versionDetails().lastTag)
                             .replace("%BUILD_VERSION%", rootProject.version.toString())
                     writer.write(newLine + "\n");
                 }
