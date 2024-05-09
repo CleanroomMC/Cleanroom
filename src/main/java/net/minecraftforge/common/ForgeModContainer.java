@@ -393,33 +393,31 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     {
         //config names, with their "friendly name" used for comment generating
         final String[][] allConfigs = new String[][]{
-            {"renderVignette", "vignette"},
-            {"renderHelmet", "helmet"},
-            {"renderPortal", "portal"},
-            {"renderHotbar", "hotbar"},
-            {"renderCrosshairs", "crosshairs"},
-            {"renderBossHealth", "boss health"},
-            {"renderHealth", "health"},
-            {"renderArmor", "armor"},
-            {"renderFood", "food"},
-            {"renderHealthMount", "health mount"},
-            {"renderAir", "air"},
-            {"renderExperience", "experience"},
-            {"renderJumpBar", "jump bar"},
-            {"renderObjective", "objective"},
+            {"allowVignette", "vignette"},
+            {"allowHelmet", "helmet"},
+            {"allowPortal", "portal"},
+            {"allowHotbar", "hotbar"},
+            {"allowCrosshairs", "crosshairs"},
+            {"allowBossHealth", "boss health"},
+            {"allowHealth", "health"},
+            {"allowArmor", "armor"},
+            {"allowFood", "food"},
+            {"allowHealthMount", "health mount"},
+            {"allowAir", "air"},
+            {"allowExperience", "experience"},
+            {"allowJumpBar", "jump bar"},
+            {"allowObjective", "objective"},
         };
 
-        final var order = new ArrayList<String>(allConfigs.length);
-        boolean[] values = new boolean[allConfigs.length];
+        var order = new ArrayList<String>(allConfigs.length);
+        var values = new boolean[allConfigs.length];
 
         for (int i = 0; i < values.length; i++)
         {
-            var key = allConfigs[i][0] + "ByDefault";
+            var key = allConfigs[i][0];
             var friendlyName = allConfigs[i][1];
-            var comment = String.format(
-                "Toggle off to force disable %s rendering. Note that this config is applied on config saved, mods can still change %s rendering behaviour after that.",
-                friendlyName, friendlyName
-            );
+            var comment = "Toggle off to force disable %s rendering. Note that this config is applied on config saved, mods can still change %s rendering behaviour after that."
+                    .formatted(friendlyName, friendlyName);
 
             var prop = config.get(categoryName, key, true, comment);
             prop.setLanguageKey("forge.configgui.hud." + key);
