@@ -37,19 +37,30 @@ import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.FMLLog;
 
-//Class used internally to provide the world specific data directories.
-
+/**
+ * Class used internally to provide the world specific data directories.
+ * This class extends the ISaveHandler interface and overrides its methods to provide
+ * custom handling for world-specific data files.
+ */
 public class WorldSpecificSaveHandler implements ISaveHandler
 {
     private WorldServer world;
     private ISaveHandler parent;
     private File dataDir;
 
+    /**
+     * Constructor for WorldSpecificSaveHandler.
+     *
+     * @param world The WorldServer instance associated with this save handler.
+     * @param parent The parent ISaveHandler instance to delegate to when necessary.
+     */
     public WorldSpecificSaveHandler(WorldServer world, ISaveHandler parent)
     {
         this.world = world;
         this.parent = parent;
     }
+
+    // Delegate methods from ISaveHandler interface
 
     @Override public WorldInfo loadWorldInfo() { return parent.loadWorldInfo(); }
     @Override public void checkSessionLock() throws MinecraftException { parent.checkSessionLock(); }
@@ -60,10 +71,16 @@ public class WorldSpecificSaveHandler implements ISaveHandler
     @Override public void flush() { parent.flush(); }
     @Override public File getWorldDirectory() { return parent.getWorldDirectory(); }
 
+    /**
+     * Overridden method to provide custom handling for world-specific data files.
+     *
+     * @param name The name of the data file.
+     * @return The File object representing the location of the data file.
+     */
     @Override
     public File getMapFileFromName(String name)
     {
-        if (dataDir == null) //Delayed down here do that world has time to be initialized first.
+        if (dataDir == null) // Delayed down here to ensure world has time to be initialized first.
         {
             dataDir = new File(world.getChunkSaveLocation(), "data");
             dataDir.mkdirs();
@@ -84,6 +101,12 @@ public class WorldSpecificSaveHandler implements ISaveHandler
         return file;
     }
 
+    /**
+     * Private helper method to copy a file from the parent save handler to the world-specific data directory.
+     *
+     * @param name The name of the file to copy.
+     * @param to The File object representing the destination location.
+     */
     private void copyFile(String name, File to)
     {
         File parentFile = parent.getMapFileFromName(name);
@@ -105,5 +128,4 @@ public class WorldSpecificSaveHandler implements ISaveHandler
     {
         return parent.getStructureTemplateManager();
     }
-
 }

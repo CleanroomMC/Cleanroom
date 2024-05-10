@@ -166,26 +166,60 @@ import javax.annotation.Nullable;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
+/**
+ * This class contains various hooks and utility methods for Minecraft Forge.
+ */
 public class ForgeHooks
 {
-    //TODO: Loot tables?
+    /**
+     * This class represents a weighted random item used for grass seed generation.
+     */
     static class SeedEntry extends WeightedRandom.Item
     {
+        /**
+         * The seed ItemStack for this entry.
+         */
         @Nonnull
         public final ItemStack seed;
+
+        /**
+         * Constructs a new SeedEntry with the given seed and weight.
+         *
+         * @param seed The seed ItemStack for this entry.
+         * @param weight The weight of this entry in the weighted random selection.
+         */
         public SeedEntry(@Nonnull ItemStack seed, int weight)
         {
             super(weight);
             this.seed = seed;
         }
+
+        /**
+         * Gets a copy of the seed ItemStack for this entry.
+         *
+         * @param rand The Random object for randomness.
+         * @param fortune The fortune level of the grass block.
+         * @return A copy of the seed ItemStack.
+         */
         @Nonnull
         public ItemStack getStack(Random rand, int fortune)
         {
             return seed.copy();
         }
     }
+
+    /**
+     * A list of SeedEntry objects used for grass seed generation.
+     */
     static final List<SeedEntry> seedList = new ArrayList<SeedEntry>();
 
+    /**
+     * Gets a random grass seed ItemStack based on the weighted random selection.
+     *
+     * @param rand The Random object for randomness.
+     * @param fortune The fortune level of the grass block.
+     * @return A random grass seed ItemStack. If the seedList is empty, returns an empty ItemStack.
+     */
     @Nonnull
     public static ItemStack getGrassSeed(Random rand, int fortune)
     {
@@ -201,9 +235,16 @@ public class ForgeHooks
         return entry.getStack(rand, fortune);
     }
 
+    /**
+     * Checks if the 'from' ItemStack can continue using the 'to' ItemStack.
+     *
+     * @param from The ItemStack being used.
+     * @param to The ItemStack being used with 'from'.
+     * @return True if 'from' can continue using 'to', false otherwise.
+     */
     public static boolean canContinueUsing(@Nonnull ItemStack from, @Nonnull ItemStack to)
     {
-        if (!from.isEmpty() && !to.isEmpty())
+        if (!from.isEmpty() &&!to.isEmpty())
         {
             return from.getItem().canContinueUsing(from, to);
         }
