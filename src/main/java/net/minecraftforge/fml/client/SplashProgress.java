@@ -606,8 +606,8 @@ public class SplashProgress
         }
     }
     /**
-     * Call before you need to explicitly modify GL context state during loading.
-     * Resource loading doesn't usually require this call.
+     * Pauses the splash screen rendering.
+     * This method should be called before modifying GL context state during loading.
      * Call {@link #resume()} when you're done.
      * @deprecated not a stable API, will break, don't use this yet
      */
@@ -631,6 +631,9 @@ public class SplashProgress
     }
 
     /**
+     * Resumes the splash screen rendering.
+     * This method should be called after modifying GL context state during loading.
+     * Call {@link #pause()} when you need to pause.
      * @deprecated not a stable API, will break, don't use this yet
      */
     @Deprecated
@@ -651,7 +654,12 @@ public class SplashProgress
         }
         lock.unlock();
     }
-
+    
+    /**
+     * Finishes the splash screen rendering.
+     * This method should be called when loading is done.
+     * It will stop the splash screen thread and release any resources.
+     */
     public static void finish()
     {
         if(!enabled) return;

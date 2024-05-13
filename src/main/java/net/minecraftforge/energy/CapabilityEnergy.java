@@ -27,21 +27,50 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
 
+/**
+ * This class provides a static method to register the Energy capability.
+ * It also injects the Energy capability into the CapabilityManager.
+ */
 public class CapabilityEnergy
 {
+    /**
+     * Energy capability instance.
+     * This capability is injected by the CapabilityInject annotation.
+     */
     @CapabilityInject(IEnergyStorage.class)
     public static Capability<IEnergyStorage> ENERGY = null;
 
+    /**
+     * Registers the Energy capability with the CapabilityManager.
+     * It also provides a default implementation of IStorage for the Energy capability.
+     * The default implementation is EnergyStorage, which has a maximum capacity of 1000 energy units.
+     */
     public static void register()
     {
         CapabilityManager.INSTANCE.register(IEnergyStorage.class, new IStorage<IEnergyStorage>()
         {
+            /**
+             * Writes the energy stored in the EnergyStorage instance to an NBTTagInt.
+             *
+             * @param capability The capability being stored.
+             * @param instance The EnergyStorage instance.
+             * @param side The side of the block being stored.
+             * @return An NBTTagInt containing the energy stored in the EnergyStorage instance.
+             */
             @Override
             public NBTBase writeNBT(Capability<IEnergyStorage> capability, IEnergyStorage instance, EnumFacing side)
             {
                 return new NBTTagInt(instance.getEnergyStored());
             }
 
+            /**
+             * Reads the energy from an NBTTagInt and stores it in the EnergyStorage instance.
+             *
+             * @param capability The capability being stored.
+             * @param instance The EnergyStorage instance.
+             * @param side The side of the block being stored.
+             * @param nbt The NBTBase containing the energy to be read.
+             */
             @Override
             public void readNBT(Capability<IEnergyStorage> capability, IEnergyStorage instance, EnumFacing side, NBTBase nbt)
             {

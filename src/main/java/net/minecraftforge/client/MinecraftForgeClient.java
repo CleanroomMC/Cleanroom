@@ -45,21 +45,36 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
+/**
+ * This class provides utility methods and functionalities for Minecraft Forge client-side.
+ */
 public class MinecraftForgeClient
 {
+    /**
+     * Returns the current render pass.
+     *
+     * @return the current render pass
+     */
     public static int getRenderPass()
     {
         return ForgeHooksClient.renderPass;
     }
-
+    
+    /**
+     * Returns the current render layer.
+     *
+     * @return the current render layer
+     */
     public static BlockRenderLayer getRenderLayer()
     {
         return ForgeHooksClient.renderLayer.get();
     }
 
     /**
-     * returns the Locale set by the player in Minecraft.
+     * Returns the Locale set by the player in Minecraft.
      * Useful for creating string and number formatters.
+     *
+     * @return the Locale set by the player
      */
     public static Locale getLocale()
     {
@@ -73,10 +88,8 @@ public class MinecraftForgeClient
     }
 
     /**
-     * Reserve a stencil bit for use in rendering
-     *
-     * Note: you must check the Framebuffer you are working with to
-     * determine if stencil bits are enabled on it before use.
+     * Reserve a stencil bit for use in rendering.
+     * Note: you must check the Framebuffer you are working with to determine if stencil bits are enabled on it before use.
      *
      * @return A bit or -1 if no further stencil bits are available
      */
@@ -140,7 +153,17 @@ public class MinecraftForgeClient
     {
         bufferedImageSuppliers.put(resourceLocation, supplier);
     }
-
+    
+    /**
+     * Returns a BufferedImage for the specified resource location.
+     * If a supplier has been registered for the resource location, it will be used to create the BufferedImage.
+     * Otherwise, the BufferedImage will be loaded from the resource manager.
+     *
+     * @param resourceLocation the resource location
+     * @param resourceManager the resource manager
+     * @return the BufferedImage for the specified resource location
+     * @throws IOException if an I/O error occurs
+     */
     @Nonnull
     public static BufferedImage getImageLayer(ResourceLocation resourceLocation, IResourceManager resourceManager) throws IOException
     {

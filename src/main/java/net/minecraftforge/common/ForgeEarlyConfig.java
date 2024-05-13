@@ -2,6 +2,13 @@ package net.minecraftforge.common;
 
 import net.minecraftforge.common.config.Config;
 
+/**
+ * This class contains early configuration options for Forge.
+ * These options are loaded before the main Forge configuration file.
+ *
+ * @author kappa-maintainer
+ * @since 0.2.1-alpha
+ */
 @Config(modid = ForgeVersion.MOD_ID, name = ForgeVersion.MOD_ID + "_early")
 public class ForgeEarlyConfig {
     public static boolean RAW_INPUT = true;

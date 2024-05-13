@@ -26,14 +26,32 @@ import net.minecraftforge.fluids.FluidUtil;
 
 import javax.annotation.Nonnull;
 
+/**
+ * This class implements the IItemColor interface to provide custom coloring for items
+ * that contain fluids. It is used to color the fluid inside the item container.
+ */
 public class FluidContainerColorer implements IItemColor
 {
+    /**
+     * This method is called by the Minecraft rendering system to get the color of the item.
+     *
+     * @param stack The ItemStack of the item being rendered.
+     * @param tintIndex The index of the tint to apply. In this case, 1 represents the color of the fluid inside the item.
+     * @return The color to apply to the item, or 0xFFFFFFFF if no color should be applied.
+     */
     @Override
     public int colorMultiplier(@Nonnull ItemStack stack, int tintIndex)
     {
-        if (tintIndex != 1) return 0xFFFFFFFF;
+        // Only apply color to the fluid tint (index 1)
+        if (tintIndex!= 1) return 0xFFFFFFFF;
+
+        // Get the fluid contained in the item stack
         FluidStack fluidStack = FluidUtil.getFluidContained(stack);
+
+        // If no fluid is contained, return white color
         if (fluidStack == null) return 0xFFFFFFFF;
+
+        // Return the color of the fluid
         return fluidStack.getFluid().getColor(fluidStack);
     }
 }

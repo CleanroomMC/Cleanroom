@@ -27,7 +27,21 @@ import net.minecraftforge.common.network.ForgeMessage.DimensionRegisterMessage;
 import org.apache.logging.log4j.Level;
 import net.minecraftforge.fml.common.FMLLog;
 
+/**
+ * This class handles the registration of new dimensions in the game.
+ * It extends SimpleChannelInboundHandler to process incoming DimensionRegisterMessage.
+ */
 public class DimensionMessageHandler extends SimpleChannelInboundHandler<ForgeMessage.DimensionRegisterMessage>{
+
+    /**
+     * This method is called when a new DimensionRegisterMessage is received.
+     * It checks if the dimension with the given id is already registered.
+     * If not, it registers the dimension using the provided dimension id and dimension type.
+     *
+     * @param ctx the ChannelHandlerContext for the connection
+     * @param msg the DimensionRegisterMessage containing the dimension id and provider id
+     * @throws Exception if an error occurs during the registration process
+     */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, DimensionRegisterMessage msg) throws Exception
     {
@@ -36,6 +50,15 @@ public class DimensionMessageHandler extends SimpleChannelInboundHandler<ForgeMe
             DimensionManager.registerDimension(msg.dimensionId, DimensionType.valueOf(msg.providerId));
         }
     }
+
+    /**
+     * This method is called when an exception is caught during the processing of a message.
+     * It logs the exception with an error message and then calls the super method to handle the exception.
+     *
+     * @param ctx the ChannelHandlerContext for the connection
+     * @param cause the Throwable that caused the exception
+     * @throws Exception if an error occurs during the exception handling process
+     */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception
     {

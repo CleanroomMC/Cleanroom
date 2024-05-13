@@ -67,11 +67,21 @@ import com.google.common.base.Strings;
 import org.lwjgl.opengl.GL11;
 
 /**
- * @author cpw
+ * This class represents the GUI screen for the mod list.
+ * It extends the GuiScreen class provided by Minecraft Forge.
  *
+ * @author cpw
  */
 public class GuiModList extends GuiScreen
 {
+    /**
+     * This enum represents the different sorting options for the mod list.
+     * It includes three options: NORMAL, A_TO_Z, and Z_TO_A.
+     *
+     * NORMAL: The mod list is displayed in the default order.
+     * A_TO_Z: The mod list is sorted alphabetically in ascending order.
+     * Z_TO_A: The mod list is sorted alphabetically in descending order.
+     */
     private enum SortType implements Comparator<ModContainer>
     {
         NORMAL(24),
@@ -85,6 +95,12 @@ public class GuiModList extends GuiScreen
             this.buttonID = buttonID;
         }
 
+        /**
+         * This method returns the SortType corresponding to the given button.
+         *
+         * @param button The button for which the SortType needs to be found.
+         * @return The SortType corresponding to the given button, or null if no match is found.
+         */
         @Nullable
         public static SortType getTypeForButton(GuiButton button)
         {
@@ -98,6 +114,13 @@ public class GuiModList extends GuiScreen
             return null;
         }
 
+        /**
+         * This method compares two mod names based on the sorting option.
+         *
+         * @param name1 The name of the first mod.
+         * @param name2 The name of the second mod.
+         * @return The result of the comparison based on the sorting option.
+         */
         protected int compare(String name1, String name2){ return 0; }
 
         @Override
