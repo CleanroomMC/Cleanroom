@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+package net.minecraftforge.client;
+
 /**
  * This interface is deprecated and will be removed in 1.13. It has never been used.
  * It provides methods to be called before and after a specific rendering context.
