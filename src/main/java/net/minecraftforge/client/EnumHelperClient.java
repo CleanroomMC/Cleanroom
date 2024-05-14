@@ -51,7 +51,7 @@ public class EnumHelperClient extends EnumHelper {
      * @param name The name of the new GameType.
      * @param id The ID of the new GameType.
      * @param displayName The register name of the new GameType, used at {@link net.minecraft.command.CommandGameMode}, displayed with a translatable key of `gameMode.${displayName}`
-     * @param shortName The short name of the new GameType.
+     * @param shortName The short name of the new GameType, used at {@link net.minecraft.command.CommandGameMode}.
      * @return The newly added GameType, or null if the addition failed.
      */
     @Nullable

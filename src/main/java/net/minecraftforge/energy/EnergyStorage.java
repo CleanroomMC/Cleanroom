@@ -85,7 +85,7 @@ public class EnergyStorage implements IEnergyStorage
      * Receive energy into this storage.
      *
      * @param maxReceive Maximum energy to receive.
-     * @param simulate If true, the energy is only simulated and not actually received.
+     * @param simulate If true, simulate the result once and should not cause any changes.
      * @return The actual energy received.
      */
     @Override
