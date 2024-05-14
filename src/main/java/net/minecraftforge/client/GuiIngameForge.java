@@ -62,8 +62,9 @@ import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.opengl.GL11;
 
 /**
- * @see net.minecraft.client.gui.GuiIngame
- * @see net.minecraftforge.common.ForgeModContainer
+ * a REPLACEMENT of {@link net.minecraft.client.gui.GuiIngame}, there should be no need of using the original {@code GuiIngame}
+ * <p>
+ * see {@link net.minecraftforge.common.ForgeModContainer#setupHudConfig(String)} for config
  */
 public class GuiIngameForge extends GuiIngame
 {
@@ -88,7 +89,8 @@ public class GuiIngameForge extends GuiIngame
     public static boolean renderHealthMount = true;
     public static boolean renderAir = true;
     /**
-     * experiAnce?
+     * experiAnce. This typo is kept for backward-compatibility.
+     * @see GuiIngameForge#renderExperience(int,int)
      */
     public static boolean renderExperiance = true;
     public static boolean renderJumpBar = true;
