@@ -1082,6 +1082,16 @@ public class ForgeHooks
         return onAnvilChange(container, left, right, outputSlot, name, baseCost, null);
     }
 
+    /**
+    * This method calculates the break chance when repairing an item in the anvil.
+    * It posts an {@link AnvilRepairEvent} to the Forge Event Bus.
+    *
+    * @param player The player interacting with the anvil.
+    * @param output The output item after repair.
+    * @param left The left item in the anvil.
+    * @param right The right item in the anvil.
+    * @return The break chance of the repair.
+    */
     public static float onAnvilRepair(EntityPlayer player, @Nonnull ItemStack output, @Nonnull ItemStack left, @Nonnull ItemStack right)
     {
         AnvilRepairEvent e = new AnvilRepairEvent(player, left, right, output);
@@ -1143,6 +1153,20 @@ public class ForgeHooks
         return ItemStack.EMPTY;
     }
 
+    /**
+     * Checks if the entity's eyes are inside of a specific material at a given position.
+     *
+     * @param material The material to check.
+     * @param entity The entity to check.
+     * @param pos The position to check.
+     * @return True if the entity's eyes are inside of the material at the given position, false otherwise.
+     *
+     * The method calculates the percentage of the block that is filled by the liquid.
+     * If the block is not a liquid, it assumes it's a solid block.
+     * It then checks if the entity's eyes are above or below the filled percentage of the block.
+     *
+     * Note: This method does not handle cases where the entity's eyes are partially inside and outside of the material.
+     */
     public static boolean isInsideOfMaterial(Material material, Entity entity, BlockPos pos)
     {
         IBlockState state = entity.world.getBlockState(pos);
@@ -1180,7 +1204,7 @@ public class ForgeHooks
     * This method is called when an entity is about to travel to a different dimension.
     * It posts an {@link EntityTravelToDimensionEvent} to the Forge Event Bus.
     * If the event is canceled, the entity will not travel to the new dimension.
-       *
+    *
     * @param entity The entity that is traveling to a different dimension.
     * @param dimension The ID of the dimension the entity is traveling to.
     * @return {@code true} if the entity is allowed to travel to the new dimension, {@code false} otherwise.
