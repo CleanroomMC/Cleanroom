@@ -372,7 +372,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
 
         var categoryHudId = CATEGORY_CLIENT + Configuration.CATEGORY_SPLITTER + "hud";
         var categoryHud = config.getCategory(categoryHudId);
-        categoryHud.setComment("Controls the rendering of certain aspects of the HUD.");
+        categoryHud.setComment("Controls rendering of various HUD elements");
         categoryHud.setLanguageKey("forge.configgui.hud.category");
         propOrder.addFirst(categoryHud.getName());
 
@@ -416,7 +416,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
         {
             var key = allConfigs[i][0];
             var friendlyName = allConfigs[i][1];
-            var comment = "Toggle off to force disable %s rendering. Note that this config is applied on config saved, mods can still change %s rendering behaviour after that."
+            var comment = "Toggle off to disable rendering of the %s. Note that even though this config is applied when the config is saved to disk, mods can still override the behaviour after-the-fact."
                     .formatted(friendlyName, friendlyName);
 
             var prop = config.get(categoryName, key, true, comment);
