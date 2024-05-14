@@ -77,7 +77,7 @@ public class ModFixs
     /**
      * Registers a new data fix for a specific {@link IFixType}.
      * The fix is added to the list of fixes for the given type, and the list is sorted in ascending order of fix versions.
-     * If the fix version is greater than the game's data version, a warning is logged and the fix is not registered.
+     * If the fix version is greater than the ModFixs's version, a warning is logged and the fix is not registered.
      *
      * @param type The type of fix to register.
      * @param fixer The data fix to register.
