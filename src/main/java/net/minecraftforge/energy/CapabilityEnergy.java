@@ -33,18 +33,9 @@ import net.minecraftforge.common.capabilities.Capability.IStorage;
  */
 public class CapabilityEnergy
 {
-    /**
-     * Energy capability instance.
-     * This capability is injected by the CapabilityInject annotation.
-     */
     @CapabilityInject(IEnergyStorage.class)
     public static Capability<IEnergyStorage> ENERGY = null;
 
-    /**
-     * Registers the Energy capability with the CapabilityManager.
-     * It also provides a default implementation of IStorage for the Energy capability.
-     * The default implementation is EnergyStorage, which has a maximum capacity of 1000 energy units.
-     */
     public static void register()
     {
         CapabilityManager.INSTANCE.register(IEnergyStorage.class, new IStorage<IEnergyStorage>()

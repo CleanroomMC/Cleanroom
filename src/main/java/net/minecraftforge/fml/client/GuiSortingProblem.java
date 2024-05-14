@@ -25,8 +25,8 @@ import net.minecraftforge.fml.common.toposort.ModSortingException;
 import net.minecraftforge.fml.common.toposort.ModSortingException.SortingExceptionData;
 
 /**
- * This class represents a GUI screen that is displayed when a mod sorting cycle is detected during Minecraft's loading process.
- * It extends the GuiScreen class from Minecraft's client GUI system.
+ * This class represents a GUI screen that extends the GuiScreen class from Minecraft's client GUI system.
+ * It is displayed when a mod sorting cycle is detected during Minecraft's loading process.
  */
 public class GuiSortingProblem extends GuiScreen {
 
@@ -60,7 +60,7 @@ public class GuiSortingProblem extends GuiScreen {
      *
      * @param mouseX The X coordinate of the mouse cursor.
      * @param mouseY The Y coordinate of the mouse cursor.
-     * @param partialTicks The time elapsed since the last frame, used for smooth animation.
+     * @param partialTicks The time elapsed since the last tick, used for smooth animation.
      */
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)

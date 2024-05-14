@@ -24,11 +24,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 
-/**
- * Abstract class representing a render handler. This class is intended to be extended by
- * classes that handle rendering operations in a Minecraft client.
- *
- */
 public abstract class IRenderHandler
 {
     /**

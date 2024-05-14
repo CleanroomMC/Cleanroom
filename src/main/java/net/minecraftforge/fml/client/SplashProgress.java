@@ -606,8 +606,8 @@ public class SplashProgress
         }
     }
     /**
-     * Pauses the splash screen rendering.
-     * This method should be called before modifying GL context state during loading.
+     * Call before you need to explicitly modify GL context state during loading.
+     * Resource loading doesn't usually require this call.
      * Call {@link #resume()} when you're done.
      * @deprecated not a stable API, will break, don't use this yet
      */

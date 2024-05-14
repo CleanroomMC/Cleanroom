@@ -29,67 +29,31 @@ import com.google.common.base.MoreObjects;
  */
 public final class Event implements Comparable<Event>
 {
-    /**
-     * The name of the event.
-     */
     private final String event;
-
-    /**
-     * The time offset of the event relative to the next event or the first query time.
-     */
     private final float offset;
 
-    /**
-     * Constructs a new Event object with the given event name and offset.
-     *
-     * @param event The name of the event.
-     * @param offset The time offset of the event.
-     */
     public Event(String event, float offset)
     {
         this.event = event;
         this.offset = offset;
     }
 
-    /**
-     * Returns the name of the event.
-     *
-     * @return The name of the event.
-     */
     public String event()
     {
         return event;
     }
 
-    /**
-     * Returns the time offset of the event relative to the next event or the first query time.
-     *
-     * @return The time offset of the event.
-     */
     public float offset()
     {
         return offset;
     }
 
-    /**
-     * Compares this event with the specified event for order.
-     * Events are ordered based on their offsets.
-     *
-     * @param event The event to be compared.
-     * @return A negative integer, zero, or a positive integer as this event is less than, equal to, or greater than the specified event.
-     */
     @Override
     public int compareTo(Event event)
     {
         return Float.compare(offset, event.offset);
     }
 
-    /**
-     * Returns a string representation of this event.
-     * The string representation consists of the class name, followed by the event name and offset.
-     *
-     * @return A string representation of this event.
-     */
     @Override
     public String toString()
     {
