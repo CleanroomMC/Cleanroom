@@ -52,6 +52,8 @@ public class ModFixs
 
     /**
      * Constructs a new instance of ModFixs.
+     Modder should get a ModFix like this with a auto registering:
+     <code>ModFixs modFixs = FMLCommonHandler.instance().getDataFixer().init("modid", "fixerVersion");</code>
      *
      * @param mod The name of the mod for which the fixes are being registered.
      * @param version The data version of the game when the fixes were registered.
