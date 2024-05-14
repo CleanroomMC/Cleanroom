@@ -93,7 +93,7 @@ forge.configgui.selectiveResourceReloadEnabled=Enable Selective Resource Loading
 forge.configgui.selectiveResourceReloadEnabled.tooltip=When enabled, makes specific reload tasks such as language changing quicker to run.
 
 forge.configgui.hud.category=HUD Settings
-forge.configgui.hud.category.tooltip=Controls the rendering of certain aspects of the HUD.
+forge.configgui.hud.category.tooltip=Controls rendering of various HUD elements.
 
 forge.configgui.hud.allowVignette=Allow Vignette Rendering
 forge.configgui.hud.allowVignette.tooltip=Toggle off to disable rendering of the vignette. Note that even though this config is applied when the config is saved to disk, mods can still override the behaviour after-the-fact.
