@@ -637,7 +637,7 @@ project(':cleanroom') {
 
     // TODO: Include?
     def extra_files = [
-            rootProject.file('CREDITS.txt'),
+            rootProject.file('FORGE-CREDITS.txt'),
             rootProject.file('LICENSE'),
             rootProject.file('LICENSE-Paulscode IBXM Library.txt'),
             rootProject.file('LICENSE-Paulscode SoundSystem CodecIBXM.txt')
@@ -919,7 +919,7 @@ project(':cleanroom') {
                 spec: 0,
                 profile: project.name,
                 version: launcherJson.id,
-                icon: 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon.ico').toPath()))),
+                icon: 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon.png').toPath()))),
                 json: '/version.json',
                 path: "${project.group}:${project.name}:${project.version}",
                 logo: '/big_logo.png',
@@ -1023,7 +1023,7 @@ project(':cleanroom') {
             duplicatesStrategy = 'exclude'
             exclude("big_logo.png") // Remove Forge Logo
         }
-        from(rootProject.file('installer_big_logo.png')) {
+        from(rootProject.file('icon.png')) {
             rename { "big_logo.png" }
         }
     }
