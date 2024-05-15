@@ -27,10 +27,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
 
-/**
- * This class provides a static method to register the Energy capability.
- * It also injects the Energy capability into the CapabilityManager.
- */
 public class CapabilityEnergy
 {
     @CapabilityInject(IEnergyStorage.class)
