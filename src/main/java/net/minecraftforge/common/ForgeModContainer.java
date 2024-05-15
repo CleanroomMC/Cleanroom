@@ -29,12 +29,9 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.cert.Certificate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import net.minecraftforge.client.GuiIngameForge;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -373,6 +370,14 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
         prop.setLanguageKey("forge.configgui.selectiveResourceReloadEnabled");
         propOrder.add(prop.getName());
 
+        var categoryHudId = CATEGORY_CLIENT + Configuration.CATEGORY_SPLITTER + "hud";
+        var categoryHud = config.getCategory(categoryHudId);
+        categoryHud.setComment("Controls rendering of various HUD elements");
+        categoryHud.setLanguageKey("forge.configgui.hud.category");
+        propOrder.addFirst(categoryHud.getName());
+
+        config.setCategoryPropertyOrder(categoryHudId, setupHudConfig(categoryHudId));
+
         config.setCategoryPropertyOrder(CATEGORY_CLIENT, propOrder);
 
         if (config.hasChanged())
@@ -382,31 +387,87 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     }
 
     /**
+     * @return the order of hud config entries, represented by their keys
+     */
+    private static ArrayList<String> setupHudConfig(String categoryName)
+    {
+        //config names, with their "friendly name" used for comment generating
+        final String[][] allConfigs = new String[][]{
+            {"allowVignette", "vignette"},
+            {"allowHelmet", "helmet"},
+            {"allowPortal", "portal"},
+            {"allowHotbar", "hotbar"},
+            {"allowCrosshairs", "crosshairs"},
+            {"allowBossHealth", "boss health"},
+            {"allowHealth", "health"},
+            {"allowArmor", "armor"},
+            {"allowFood", "food"},
+            {"allowHealthMount", "health mount"},
+            {"allowAir", "air"},
+            {"allowExperience", "experience"},
+            {"allowJumpBar", "jump bar"},
+            {"allowObjective", "objective"},
+        };
+
+        var order = new ArrayList<String>(allConfigs.length);
+        var values = new boolean[allConfigs.length];
+
+        for (int i = 0; i < values.length; i++)
+        {
+            var key = allConfigs[i][0];
+            var friendlyName = allConfigs[i][1];
+            var comment = "Toggle off to disable rendering of the %s. Note that even though this config is applied when the config is saved to disk, mods can still override the behaviour after-the-fact."
+                    .formatted(friendlyName, friendlyName);
+
+            var prop = config.get(categoryName, key, true, comment);
+            prop.setLanguageKey("forge.configgui.hud." + key);
+            order.add(key);
+            values[i] = prop.getBoolean(true);
+        }
+
+        GuiIngameForge.renderVignette       = values[0];
+        GuiIngameForge.renderHelmet         = values[1];
+        GuiIngameForge.renderPortal         = values[2];
+        GuiIngameForge.renderHotbar         = values[3];
+        GuiIngameForge.renderCrosshairs     = values[4];
+        GuiIngameForge.renderBossHealth     = values[5];
+        GuiIngameForge.renderHealth         = values[6];
+        GuiIngameForge.renderArmor          = values[7];
+        GuiIngameForge.renderFood           = values[8];
+        GuiIngameForge.renderHealthMount    = values[9];
+        GuiIngameForge.renderAir            = values[10];
+        GuiIngameForge.renderExperiance     = values[11];
+        GuiIngameForge.renderJumpBar        = values[12];
+        GuiIngameForge.renderObjective      = values[13];
+
+        return order;
+    }
+
+    /**
      * By subscribing to the OnConfigChangedEvent we are able to execute code when our config screens are closed.
      * This implementation uses the optional configID string to handle multiple Configurations using one event handler.
      */
     @SubscribeEvent
     public void onConfigChanged(OnConfigChangedEvent event)
     {
-        if (getMetadata().modId.equals(event.getModID()))
-        {
-            if ("chunkLoader".equals(event.getConfigID()))
-            {
+        String configID = event.getConfigID();
+        if (!this.getMetadata().modId.equals(event.getModID()) || configID == null) {
+            return;
+        }
+        switch (configID) {
+            case "chunkLoader" -> {
                 ForgeChunkManager.syncConfigDefaults();
                 ForgeChunkManager.loadConfiguration();
             }
-            else
-            {
+            case CATEGORY_CLIENT -> {
                 boolean tmpStairs = disableStairSlabCulling;
-
                 syncConfig(false);
-
-                if (event.isWorldRunning() && tmpStairs != disableStairSlabCulling)
-                {
+                //stair culling
+                if (event.isWorldRunning() && tmpStairs != disableStairSlabCulling) {
                     FMLCommonHandler.instance().reloadRenderers();
                 }
-
             }
+            default -> syncConfig(false);
         }
     }
 

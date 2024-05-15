@@ -23,7 +23,7 @@
 - Minecraft Coder Pack
 - CleanroomLoader (Continuation + Revamp of ForgeModLoader)
 - Cleanroom Minecraft (Continuation + Revamp of MinecraftForge)
-- Customized Mixin 
+- Customized Mixin
 - Bytecode Patcher (Coming Soon) \[Inspired by [Bansoukou](https://github.com/LoliKingdom/Bansoukou) and [Bytecode Patcher](https://github.com/jbredwards/Bytecode-Patcher)]
 - [Fugue](https://github.com/CleanroomMC/Fugue), a mod patches many incompatibilities.
 - Javassist
