@@ -24,44 +24,21 @@ import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.toposort.ModSortingException;
 import net.minecraftforge.fml.common.toposort.ModSortingException.SortingExceptionData;
 
-/**
- * This class represents a GUI screen that extends the GuiScreen class from Minecraft's client GUI system.
- * It is displayed when a mod sorting cycle is detected during Minecraft's loading process.
- */
 public class GuiSortingProblem extends GuiScreen {
 
-    /**
-     * The exception data related to the mod sorting cycle.
-     */
     private SortingExceptionData<ModContainer> failedList;
 
-    /**
-     * Constructor for the GuiSortingProblem class.
-     *
-     * @param modSorting The ModSortingException object that contains the exception data related to the mod sorting cycle.
-     */
     public GuiSortingProblem(ModSortingException modSorting)
     {
         this.failedList = modSorting.getExceptionData();
     }
 
-    /**
-     * Initializes the GUI components of this screen.
-     * This method is called when the screen is first displayed.
-     */
     @Override
     public void initGui()
     {
         super.initGui();
     }
 
-    /**
-     * Draws the screen and its components.
-     *
-     * @param mouseX The X coordinate of the mouse cursor.
-     * @param mouseY The Y coordinate of the mouse cursor.
-     * @param partialTicks The time elapsed since the last tick, used for smooth animation.
-     */
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
