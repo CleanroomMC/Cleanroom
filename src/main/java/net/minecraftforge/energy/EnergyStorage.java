@@ -32,47 +32,21 @@ public class EnergyStorage implements IEnergyStorage
     protected int maxReceive;
     protected int maxExtract;
 
-    /**
-     * Constructor for EnergyStorage with default maxReceive and maxExtract equal to capacity.
-     *
-     * @param capacity Initial energy capacity.
-     */
     public EnergyStorage(int capacity)
     {
         this(capacity, capacity, capacity, 0);
     }
 
-    /**
-     * Constructor for EnergyStorage with maxReceive and maxExtract equal to maxTransfer.
-     *
-     * @param capacity Initial energy capacity.
-     * @param maxTransfer Maximum energy that can be received or extracted per tick.
-     */
     public EnergyStorage(int capacity, int maxTransfer)
     {
         this(capacity, maxTransfer, maxTransfer, 0);
     }
 
-    /**
-     * Constructor for EnergyStorage.
-     *
-     * @param capacity Initial energy capacity.
-     * @param maxReceive Maximum energy that can be received per tick.
-     * @param maxExtract Maximum energy that can be extracted per tick.
-     */
     public EnergyStorage(int capacity, int maxReceive, int maxExtract)
     {
         this(capacity, maxReceive, maxExtract, 0);
     }
 
-    /**
-     * Constructor for EnergyStorage.
-     *
-     * @param capacity Initial energy capacity.
-     * @param maxReceive Maximum energy that can be received per tick.
-     * @param maxExtract Maximum energy that can be extracted per tick.
-     * @param energy Initial energy stored.
-     */
     public EnergyStorage(int capacity, int maxReceive, int maxExtract, int energy)
     {
         this.capacity = capacity;
@@ -81,13 +55,6 @@ public class EnergyStorage implements IEnergyStorage
         this.energy = Math.max(0, Math.min(capacity, energy));
     }
 
-    /**
-     * Receive energy into this storage.
-     *
-     * @param maxReceive Maximum energy to receive.
-     * @param simulate If true, simulate the result once and should not cause any changes.
-     * @return The actual energy received.
-     */
     @Override
     public int receiveEnergy(int maxReceive, boolean simulate)
     {
@@ -100,13 +67,6 @@ public class EnergyStorage implements IEnergyStorage
         return energyReceived;
     }
 
-    /**
-     * Extract energy from this storage.
-     *
-     * @param maxExtract Maximum energy to extract.
-     * @param simulate If true, the energy is only simulated and not actually extracted.
-     * @return The actual energy extracted.
-     */
     @Override
     public int extractEnergy(int maxExtract, boolean simulate)
     {
@@ -119,44 +79,24 @@ public class EnergyStorage implements IEnergyStorage
         return energyExtracted;
     }
 
-    /**
-     * Get the current energy stored in this storage.
-     *
-     * @return The current energy stored.
-     */
     @Override
     public int getEnergyStored()
     {
         return energy;
     }
 
-    /**
-     * Get the maximum energy capacity of this storage.
-     *
-     * @return The maximum energy capacity.
-     */
     @Override
     public int getMaxEnergyStored()
     {
         return capacity;
     }
 
-    /**
-     * Check if this storage can extract energy.
-     *
-     * @return True if energy can be extracted, false otherwise.
-     */
     @Override
     public boolean canExtract()
     {
         return this.maxExtract > 0;
     }
 
-    /**
-     * Check if this storage can receive energy.
-     *
-     * @return True if energy can be received, false otherwise.
-     */
     @Override
     public boolean canReceive()
     {
