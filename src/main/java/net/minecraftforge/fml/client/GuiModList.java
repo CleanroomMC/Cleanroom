@@ -68,7 +68,6 @@ import org.lwjgl.opengl.GL11;
 
 /**
  * This class represents the GUI screen for the mod list.
- * It extends the GuiScreen class provided by Minecraft Forge.
  *
  * @author cpw
  */
