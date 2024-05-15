@@ -52,7 +52,7 @@ public class EnergyStorage implements IEnergyStorage
         this.capacity = capacity;
         this.maxReceive = maxReceive;
         this.maxExtract = maxExtract;
-        this.energy = Math.max(0, Math.min(capacity, energy));
+        this.energy = Math.max(0 , Math.min(capacity, energy));
     }
 
     @Override
