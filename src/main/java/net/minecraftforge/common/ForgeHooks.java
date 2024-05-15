@@ -166,9 +166,6 @@ import javax.annotation.Nullable;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
-/**
- * This class contains various hooks and utility methods for Minecraft Forge.
- */
 public class ForgeHooks
 {
     static class SeedEntry extends WeightedRandom.Item
