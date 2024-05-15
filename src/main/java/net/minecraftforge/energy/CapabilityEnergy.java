@@ -40,28 +40,12 @@ public class CapabilityEnergy
     {
         CapabilityManager.INSTANCE.register(IEnergyStorage.class, new IStorage<IEnergyStorage>()
         {
-            /**
-             * Writes the energy stored in the EnergyStorage instance to an NBTTagInt.
-             *
-             * @param capability The capability being stored.
-             * @param instance The EnergyStorage instance.
-             * @param side The side of the block being stored.
-             * @return An NBTTagInt containing the energy stored in the EnergyStorage instance.
-             */
             @Override
             public NBTBase writeNBT(Capability<IEnergyStorage> capability, IEnergyStorage instance, EnumFacing side)
             {
                 return new NBTTagInt(instance.getEnergyStored());
             }
 
-            /**
-             * Reads the energy from an NBTTagInt and stores it in the EnergyStorage instance.
-             *
-             * @param capability The capability being stored.
-             * @param instance The EnergyStorage instance.
-             * @param side The side of the block being stored.
-             * @param nbt The NBTBase containing the energy to be read.
-             */
             @Override
             public void readNBT(Capability<IEnergyStorage> capability, IEnergyStorage instance, EnumFacing side, NBTBase nbt)
             {
