@@ -171,36 +171,17 @@ import org.apache.commons.io.IOUtils;
  */
 public class ForgeHooks
 {
-    /**
-     * This class represents a weighted random item used for grass seed generation.
-     */
     static class SeedEntry extends WeightedRandom.Item
     {
-        /**
-         * The seed ItemStack for this entry.
-         */
         @Nonnull
         public final ItemStack seed;
 
-        /**
-         * Constructs a new SeedEntry with the given seed and weight.
-         *
-         * @param seed The seed ItemStack for this entry.
-         * @param weight The weight of this entry in the weighted random selection.
-         */
         public SeedEntry(@Nonnull ItemStack seed, int weight)
         {
             super(weight);
             this.seed = seed;
         }
 
-        /**
-         * Gets a copy of the seed ItemStack for this entry.
-         *
-         * @param rand The Random object for randomness.
-         * @param fortune The fortune level of the grass block.
-         * @return A copy of the seed ItemStack.
-         */
         @Nonnull
         public ItemStack getStack(Random rand, int fortune)
         {
@@ -208,18 +189,8 @@ public class ForgeHooks
         }
     }
 
-    /**
-     * A list of SeedEntry objects used for grass seed generation.
-     */
     static final List<SeedEntry> seedList = new ArrayList<SeedEntry>();
 
-    /**
-     * Gets a random grass seed ItemStack based on the weighted random selection.
-     *
-     * @param rand The Random object for randomness.
-     * @param fortune The fortune level of the grass block.
-     * @return A random grass seed ItemStack. If the seedList is empty, returns an empty ItemStack.
-     */
     @Nonnull
     public static ItemStack getGrassSeed(Random rand, int fortune)
     {
@@ -235,13 +206,6 @@ public class ForgeHooks
         return entry.getStack(rand, fortune);
     }
 
-    /**
-     * Checks if the 'from' ItemStack can continue using the 'to' ItemStack.
-     *
-     * @param from The ItemStack being used.
-     * @param to The ItemStack being used with 'from'.
-     * @return True if 'from' can continue using 'to', false otherwise.
-     */
     public static boolean canContinueUsing(@Nonnull ItemStack from, @Nonnull ItemStack to)
     {
         if (!from.isEmpty() &&!to.isEmpty())
@@ -288,18 +252,6 @@ public class ForgeHooks
         return stack.getItem().getHarvestLevel(stack, tool, null, null) >= state.getBlock().getHarvestLevel(state);
     }
 
-    /**
-    * Calculates the block strength based on the player's digging speed and the block's hardness.
-    *
-    * @param state The block's state at the specified position.
-    * @param player The player interacting with the block.
-    * @param world The world in which the block is located.
-    * @param pos The position of the block.
-    *
-    * @return The calculated block strength. If the block's hardness is less than 0, the function returns 0.
-    * If the player cannot harvest the block, the function returns the player's digging speed divided by the block's hardness divided by 100.
-    * Otherwise, the function returns the player's digging speed divided by the block's hardness divided by 30.
-    */
     public static float blockStrength(@Nonnull IBlockState state, @Nonnull EntityPlayer player, @Nonnull World world, @Nonnull BlockPos pos)
     {
         float hardness = state.getBlockHardness(world, pos);
@@ -318,15 +270,6 @@ public class ForgeHooks
         }
     }
 
-    /**
-    * This method checks if a given tool is effective against a block at a specific position.
-    *
-    * @param world The world in which the block is located.
-    * @param pos The position of the block.
-    * @param stack The tool to be checked.
-    *
-    * @return True if the tool is effective against the block at the specified position, false otherwise.
-    */
     public static boolean isToolEffective(IBlockAccess world, BlockPos pos, @Nonnull ItemStack stack)
     {
         IBlockState state = world.getBlockState(pos);
@@ -382,15 +325,6 @@ public class ForgeHooks
         Blocks.QUARTZ_ORE.setHarvestLevel("pickaxe", 0);
     }
 
-    /**
-    * This method calculates the total armor value of a player.
-    * It iterates over the armor slots in the player's inventory,
-    * and if the item in the slot is an instance of ISpecialArmor,
-    * it adds the armor value provided by the item to the total armor value.
-     *
-     * @param player The player whose armor value needs to be calculated.
-     * @return The total armor value of the player.
-    */
     public static int getTotalArmorValue(EntityPlayer player)
     {
         int ret = player.getTotalArmorValue();
@@ -634,13 +568,6 @@ public class ForgeHooks
         return false;
     }
 
-    /**
-    * This method is called when the difficulty of the game changes.
-    * It posts a {@link DifficultyChangeEvent} to the MinecraftForge event bus.
-    *
-    * @param difficulty The new difficulty of the game.
-    * @param oldDifficulty The old difficulty of the game.
-    */
     public static void onDifficultyChange(EnumDifficulty difficulty, EnumDifficulty oldDifficulty)
     {
         MinecraftForge.EVENT_BUS.post(new DifficultyChangeEvent(difficulty, oldDifficulty));
@@ -726,15 +653,6 @@ public class ForgeHooks
         return event.getLootingLevel();
     }
 
-    /**
-    * This method calculates the player's visibility distance based on the given parameters.
-    * It uses a custom event to allow other mods to modify the visibility distance.
-    *
-    * @param player The player for whom the visibility distance is being calculated.
-    * @param xzDistance The horizontal and vertical distance from the player's position.
-    * @param maxXZDistance The maximum horizontal and vertical distance that the player can see.
-    * @return The calculated visibility distance, capped at the maximum distance if necessary.
-    */
     public static double getPlayerVisibilityDistance(EntityPlayer player, double xzDistance, double maxXZDistance)
     {
         PlayerEvent.Visibility event = new PlayerEvent.Visibility(player);
@@ -742,23 +660,7 @@ public class ForgeHooks
         double value = event.getVisibilityModifier() * xzDistance;
         return value >= maxXZDistance ? maxXZDistance : value;
     }
-    
-    /**
-     * Checks if the entity is on a ladder.
-     *
-     * @param state The block state of the entity's current position.
-     * @param world The world in which the entity is located.
-     * @param pos The position of the entity.
-     * @param entity The entity to check.
-     * @return True if the entity is on a ladder, false otherwise.
-     *
-     * If the entity is a player in spectator mode, this method returns false.
-     * If the 'fullBoundingBoxLadders' option in ForgeModContainer is false,
-     * this method calls the 'isLadder' method of the block state's block.
-     * If the 'fullBoundingBoxLadders' option is true, this method checks the
-     * block state of each block in the entity's bounding box to determine if
-     * it is a ladder.
-     */
+
     public static boolean isLivingOnLadder(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EntityLivingBase entity)
     {
         boolean isSpectator = (entity instanceof EntityPlayer && ((EntityPlayer)entity).isSpectator());
@@ -1082,16 +984,6 @@ public class ForgeHooks
         return onAnvilChange(container, left, right, outputSlot, name, baseCost, null);
     }
 
-    /**
-    * This method calculates the break chance when repairing an item in the anvil.
-    * It posts an {@link AnvilRepairEvent} to the Forge Event Bus.
-    *
-    * @param player The player interacting with the anvil.
-    * @param output The output item after repair.
-    * @param left The left item in the anvil.
-    * @param right The right item in the anvil.
-    * @return The break chance of the repair.
-    */
     public static float onAnvilRepair(EntityPlayer player, @Nonnull ItemStack output, @Nonnull ItemStack left, @Nonnull ItemStack right)
     {
         AnvilRepairEvent e = new AnvilRepairEvent(player, left, right, output);
@@ -1153,20 +1045,6 @@ public class ForgeHooks
         return ItemStack.EMPTY;
     }
 
-    /**
-     * Checks if the entity's eyes are inside of a specific material at a given position.
-     *
-     * @param material The material to check.
-     * @param entity The entity to check.
-     * @param pos The position to check.
-     * @return True if the entity's eyes are inside of the material at the given position, false otherwise.
-     *
-     * The method calculates the percentage of the block that is filled by the liquid.
-     * If the block is not a liquid, it assumes it's a solid block.
-     * It then checks if the entity's eyes are above or below the filled percentage of the block.
-     *
-     * Note: This method does not handle cases where the entity's eyes are partially inside and outside of the material.
-     */
     public static boolean isInsideOfMaterial(Material material, Entity entity, BlockPos pos)
     {
         IBlockState state = entity.world.getBlockState(pos);
@@ -1200,15 +1078,6 @@ public class ForgeHooks
         return stack.isEmpty() || !stack.getItem().onLeftClickEntity(stack, player, target);
     }
 
-    /**
-    * This method is called when an entity is about to travel to a different dimension.
-    * It posts an {@link EntityTravelToDimensionEvent} to the Forge Event Bus.
-    * If the event is canceled, the entity will not travel to the new dimension.
-    *
-    * @param entity The entity that is traveling to a different dimension.
-    * @param dimension The ID of the dimension the entity is traveling to.
-    * @return {@code true} if the entity is allowed to travel to the new dimension, {@code false} otherwise.
-    */
     public static boolean onTravelToDimension(Entity entity, int dimension)
     {
         EntityTravelToDimensionEvent event = new EntityTravelToDimensionEvent(entity, dimension);
@@ -1430,16 +1299,6 @@ public class ForgeHooks
         return ForgeEventFactory.onProjectileImpact(throwable, ray);
     }
 
-    /**
-     * This method is called before a crop block grows. 
-     * It posts a {@link BlockEvent.CropGrowEvent.Pre} event to the Forge Event Bus.
-     *
-     * @param worldIn the world where the crop block is growing
-     * @param pos the position of the crop block in the world
-     * @param state the current state of the crop block
-     * @param def the default return value, indicating whether the crop block should grow or not
-     * @return true if the crop block should grow, false otherwise. If the event is canceled, the return value will be determined by the event's result.
-     */
     public static boolean onCropsGrowPre(World worldIn, BlockPos pos, IBlockState state, boolean def)
     {
         BlockEvent ev = new BlockEvent.CropGrowEvent.Pre(worldIn,pos,state);
@@ -1447,15 +1306,6 @@ public class ForgeHooks
         return (ev.getResult() == Event.Result.ALLOW || (ev.getResult() == Event.Result.DEFAULT && def));
     }
 
-    /**
-    * This method is called after a crop block has successfully grown.
-    * It posts a {@link BlockEvent.CropGrowEvent.Post} event to the Forge Event Bus.
-    *
-    * @param worldIn the world where the crop block is growing
-    * @param pos the position of the crop block in the world
-    * @param state the current state of the crop block
-    * @param blockState the state of the block at the given position after the crop has grown
-    */
     public static void onCropsGrowPost(World worldIn, BlockPos pos, IBlockState state, IBlockState blockState)
     {
         MinecraftForge.EVENT_BUS.post(new BlockEvent.CropGrowEvent.Post(worldIn, pos, state, worldIn.getBlockState(pos)));
