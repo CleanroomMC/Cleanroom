@@ -435,7 +435,7 @@ project(':cleanroom') {
         installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
 
         //installer "com.cleanroommc:bouncepad:$props.bouncepad_version"
-        installer "top.outlands:foundation:0.13.2"
+        installer "top.outlands:foundation:0.13.3"
         installer 'org.burningwave:jvm-driver:8.15.0'
         installer 'io.github.toolfactory:jvm-driver:9.7.0'
         installer 'io.github.toolfactory:narcissus:1.0.7'
@@ -514,7 +514,7 @@ project(':cleanroom') {
 
         // Mixin
         installer 'com.cleanroommc:sponge-mixin:0.19.5+mixin.0.8.5'
-        installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.3.5')
+        installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.3.6')
 
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
         testImplementation 'org.junit.vintage:junit-vintage-engine:5.10.1'
