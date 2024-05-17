@@ -3,7 +3,7 @@ package net.minecraftforge.common;
 import net.minecraftforge.common.config.Config;
 
 /**
- * This class contains early configuration options for Forge.
+ * The early configuration for Cleanroom(Forge).
  * These options are loaded before the main Forge configuration file.
  *
  * @author kappa-maintainer
