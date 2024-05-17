@@ -27,7 +27,7 @@ import net.minecraftforge.fluids.FluidUtil;
 import javax.annotation.Nonnull;
 
 /**
- * This class implements the IItemColor interface to provide custom coloring for items
+ * Provide custom coloring for items which contains fluids.
  * that contain fluids. It is used to color the fluid inside the item container.
  */
 public class FluidContainerColorer implements IItemColor
