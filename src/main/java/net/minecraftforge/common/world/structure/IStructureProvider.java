@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 import java.util.Random;
 
 /**
- * If modder do not have their own special proposal. Use the base implement {@link SingleStructureProvider} is enough.
+ * If modder do not have their own special proposal, using the base implement {@link SingleStructureProvider} is enough.
  */
 public interface IStructureProvider {
     String getName() ;
@@ -43,7 +43,9 @@ public interface IStructureProvider {
     void generateStructure(IChunkGenerator generator, World world, Random random, int x, int z);
 
     /**
-     * locate the structure, for /locate command.
+     * Get the nearest structure location.
+     * 
+     * Command /locate or treasure map.
      *
      * @param generator
      * @param worldIn
@@ -56,6 +58,7 @@ public interface IStructureProvider {
     BlockPos getNearestStructurePos(IChunkGenerator generator,World worldIn, String structureName, BlockPos position, boolean findUnexplored);
 
     /**
+     * Checks whether a location is inside a structure.
      * usually invoke {@link net.minecraft.world.gen.structure.MapGenStructure#isInsideStructure(BlockPos)}
      * @param generator
      * @param worldIn
@@ -65,6 +68,11 @@ public interface IStructureProvider {
      */
     boolean isInsideStructure(IChunkGenerator generator,World worldIn, String structureName, BlockPos pos);
 
+    /**
+     * {@link ChunkPrimer} is the precursor material for building {@link Chunk|, which can achieve a large number of modifications with little overhead.
+     * Unfortunately, {@link ChunkPrimer} is generated and consumed internally in {@link IChunkGenerater}, and externally, we can only operate on {@link Chunk}.
+     * All operations of {@link ChunkReflection} are implemented on adult {@link Chunk}s.
+     */
     class ChunkReflection extends ChunkPrimer {
         private static final IBlockState DEFAULT_STATE = Blocks.AIR.getDefaultState();
         private int x;

@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 
 public final class StructureAttachRegistry {
-    private static final HashMap<IChunkGenerator,StructureCollection> REGISTRY = new HashMap<>();
+    private static final HashMap<IChunkGenerator, StructureCollection> REGISTRY = new HashMap<>();
 
     public static StructureCollection newStructureCollectionFor(WorldServer worldServer, IChunkGenerator chunkGenerator){
         StructureCollection collection = new StructureCollection(worldServer.getSeed(), worldServer);

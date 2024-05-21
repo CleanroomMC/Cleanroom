@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import java.util.Random;
 
 public record SingleStructureProvider(MapGenStructure structure) implements IStructureProvider {
+    
     @Override
     public String getName() {
         return structure.getStructureName();
