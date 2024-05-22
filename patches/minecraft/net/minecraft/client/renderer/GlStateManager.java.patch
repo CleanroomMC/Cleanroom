@@ -1,0 +1,23 @@
+--- before/net/minecraft/client/renderer/GlStateManager.java
++++ after/net/minecraft/client/renderer/GlStateManager.java
+@@ -5,6 +5,8 @@
+ import java.nio.FloatBuffer;
+ import java.nio.IntBuffer;
+ import javax.annotation.Nullable;
++
++import net.minecraft.client.Minecraft;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.lwjgl.BufferUtils;
+@@ -849,7 +851,10 @@
+ 
+     public static String func_187416_u(int p_187416_0_)
+     {
+-        return GL11.glGetString(p_187416_0_);
++        if (Minecraft.func_71410_x().func_152345_ab())
++            return GL11.glGetString(p_187416_0_);
++        else
++            return "No OpenGL context found in the current thread";
+     }
+ 
+     public static void func_187445_a(int p_187445_0_, IntBuffer p_187445_1_)
