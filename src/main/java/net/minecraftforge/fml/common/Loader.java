@@ -48,6 +48,7 @@ import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fml.common.LoaderState.ModState;
 import net.minecraftforge.fml.common.ModContainer.Disableable;
 import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
+import net.minecraftforge.fml.common.asm.FMLSanityChecker;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.ContainerType;
 import net.minecraftforge.fml.common.discovery.ModCandidate;
@@ -373,8 +374,8 @@ public class Loader
         mods.add(minecraft);
         // Add in the MCP mod container
         mods.add(new InjectedModContainer(mcp,new File("minecraft.jar")));
-        mods.add(new InjectedModContainer(new ConfigAnytimeContainer(), new File("minecraft.jar")));
-        mods.add(new InjectedModContainer(new CleanroomContainer(), new File("minecraft.jar")));
+        mods.add(new InjectedModContainer(new ConfigAnytimeContainer(), FMLSanityChecker.fmlLocation));
+        mods.add(new InjectedModContainer(new CleanroomContainer(), FMLSanityChecker.fmlLocation));
         for (String cont : injectedContainers)
         {
             ModContainer mc;
