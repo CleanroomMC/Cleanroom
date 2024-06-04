@@ -264,7 +264,7 @@
 +            }
 +            widths[i - fed] = lineWidth;
 +            formats[i - fed] = format.toString();
-+            if (lineWidth >= p_78271_2_) {
++            if (lineWidth > p_78271_2_) {
 +                if (BreakIteratorHolder.BREAK_ITERATOR.isBoundary(i)) {
 +                    icui = i;
 +                } else {
