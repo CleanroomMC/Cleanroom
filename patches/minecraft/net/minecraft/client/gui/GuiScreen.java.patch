@@ -124,18 +124,7 @@
          {
              GlStateManager.func_179101_C();
              RenderHelper.func_74518_a();
-@@ -249,8 +259,9 @@
-         if (p_175272_1_ != null && p_175272_1_.func_150256_b().func_150210_i() != null)
-         {
-             HoverEvent hoverevent = p_175272_1_.func_150256_b().func_150210_i();
-+            HoverEvent.Action action = hoverevent.func_150701_a();
- 
--            if (hoverevent.func_150701_a() == HoverEvent.Action.SHOW_ITEM)
-+            if (action == HoverEvent.Action.SHOW_ITEM)
-             {
-                 ItemStack itemstack = ItemStack.field_190927_a;
- 
-@@ -263,8 +274,9 @@
+@@ -263,8 +273,9 @@
                          itemstack = new ItemStack((NBTTagCompound)nbtbase);
                      }
                  }
@@ -146,15 +135,7 @@
                  }
  
                  if (itemstack.func_190926_b())
-@@ -276,14 +288,14 @@
-                     this.func_146285_a(itemstack, p_175272_2_, p_175272_3_);
-                 }
-             }
--            else if (hoverevent.func_150701_a() == HoverEvent.Action.SHOW_ENTITY)
-+            else if (action == HoverEvent.Action.SHOW_ENTITY)
-             {
-                 if (this.field_146297_k.field_71474_y.field_82882_x)
-                 {
+@@ -283,7 +294,7 @@
                      try
                      {
                          NBTTagCompound nbttagcompound = JsonToNBT.func_180713_a(hoverevent.func_150702_b().func_150260_c());
@@ -163,7 +144,7 @@
                          list.add(nbttagcompound.func_74779_i("name"));
  
                          if (nbttagcompound.func_150297_b("type", 8))
-@@ -295,19 +307,17 @@
+@@ -295,7 +306,7 @@
                          list.add(nbttagcompound.func_74779_i("id"));
                          this.func_146283_a(list, p_175272_2_, p_175272_3_);
                      }
@@ -172,10 +153,9 @@
                      {
                          this.func_146279_a(TextFormatting.RED + "Invalid Entity!", p_175272_2_, p_175272_3_);
                      }
-                 }
+@@ -303,11 +314,9 @@
              }
--            else if (hoverevent.func_150701_a() == HoverEvent.Action.SHOW_TEXT)
-+            else if (action == HoverEvent.Action.SHOW_TEXT)
+             else if (hoverevent.func_150701_a() == HoverEvent.Action.SHOW_TEXT)
              {
 -                this.func_146283_a(
 -                    this.field_146297_k.field_71466_p.func_78271_c(hoverevent.func_150702_b().func_150254_d(), Math.max(this.field_146294_l / 2, 200)),
@@ -183,51 +163,31 @@
 -                    p_175272_3_
 -                );
 +                this.func_146283_a(this.field_146297_k.field_71466_p.func_78271_c(hoverevent.func_150702_b().func_150254_d(), Math.max(this.field_146294_l / 2, 200)), p_175272_2_, p_175272_3_);
-+            }else if (action != null){
-+                action.handle(hoverevent, this, p_175272_1_, p_175272_2_, p_175272_3_);
++            }else if (hoverevent.func_150701_a() != null){
++                hoverevent.func_150701_a().handle(hoverevent, this, p_175272_1_, p_175272_2_, p_175272_3_);
              }
  
              GlStateManager.func_179140_f();
-@@ -337,7 +347,8 @@
-             }
-             else if (clickevent != null)
-             {
--                if (clickevent.func_150669_a() == ClickEvent.Action.OPEN_URL)
-+                ClickEvent.Action action = clickevent.func_150669_a();
-+                if (action == ClickEvent.Action.OPEN_URL)
-                 {
-                     if (!this.field_146297_k.field_71474_y.field_74359_p)
-                     {
-@@ -374,22 +385,23 @@
-                         field_175287_a.error("Can't open url for {}", clickevent, urisyntaxexception);
-                     }
+@@ -376,7 +385,7 @@
                  }
--                else if (clickevent.func_150669_a() == ClickEvent.Action.OPEN_FILE)
-+                else if (action == ClickEvent.Action.OPEN_FILE)
+                 else if (clickevent.func_150669_a() == ClickEvent.Action.OPEN_FILE)
                  {
 -                    URI uri1 = new File(clickevent.func_150668_b()).toURI();
 +                    URI uri1 = (new File(clickevent.func_150668_b())).toURI();
                      this.func_175282_a(uri1);
                  }
--                else if (clickevent.func_150669_a() == ClickEvent.Action.SUGGEST_COMMAND)
-+                else if (action == ClickEvent.Action.SUGGEST_COMMAND)
-                 {
-                     this.func_175274_a(clickevent.func_150668_b(), true);
-                 }
--                else if (clickevent.func_150669_a() == ClickEvent.Action.RUN_COMMAND)
-+                else if (action == ClickEvent.Action.RUN_COMMAND)
-                 {
-                     this.func_175281_b(clickevent.func_150668_b(), false);
+                 else if (clickevent.func_150669_a() == ClickEvent.Action.SUGGEST_COMMAND)
+@@ -389,7 +398,8 @@
                  }
                  else
                  {
 -                    field_175287_a.error("Don't know how to handle {}", clickevent);
-+                    if (action != null && action.handle(clickevent, this, p_175276_1_)) return true;
++                    if (clickevent.func_150669_a() != null && clickevent.func_150669_a().handle(clickevent, this, p_175276_1_)) return true;
 +                    else field_175287_a.error("Don't know how to handle {}", (Object)clickevent);
                  }
  
                  return true;
-@@ -406,10 +418,13 @@
+@@ -406,10 +416,13 @@
  
      public void func_175281_b(String p_175281_1_, boolean p_175281_2_)
      {
@@ -241,7 +201,7 @@
  
          this.field_146297_k.field_71439_g.func_71165_d(p_175281_1_);
      }
-@@ -424,9 +439,15 @@
+@@ -424,9 +437,15 @@
  
                  if (guibutton.func_146116_c(this.field_146297_k, p_73864_1_, p_73864_2_))
                  {
@@ -257,7 +217,7 @@
                  }
              }
          }
-@@ -456,8 +477,12 @@
+@@ -456,8 +475,12 @@
          this.field_146289_q = p_146280_1_.field_71466_p;
          this.field_146294_l = p_146280_2_;
          this.field_146295_m = p_146280_3_;
@@ -270,7 +230,7 @@
      }
  
      public void func_183500_a(int p_183500_1_, int p_183500_2_)
-@@ -476,7 +501,10 @@
+@@ -476,7 +499,10 @@
          {
              while (Mouse.next())
              {
@@ -281,7 +241,7 @@
              }
          }
  
-@@ -484,7 +512,10 @@
+@@ -484,7 +510,10 @@
          {
              while (Keyboard.next())
              {
@@ -292,7 +252,7 @@
              }
          }
      }
-@@ -546,6 +577,7 @@
+@@ -546,6 +575,7 @@
      public void func_146276_q_()
      {
          this.func_146270_b(0);
@@ -300,7 +260,7 @@
      }
  
      public void func_146270_b(int p_146270_1_)
-@@ -570,19 +602,10 @@
+@@ -570,19 +600,10 @@
          GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
          float f = 32.0F;
          bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181709_i);
@@ -324,7 +284,7 @@
          tessellator.func_78381_a();
      }
  
-@@ -591,7 +614,6 @@
+@@ -591,7 +612,6 @@
          return true;
      }
  
@@ -332,7 +292,7 @@
      public void func_73878_a(boolean p_73878_1_, int p_73878_2_)
      {
          if (p_73878_2_ == 31102009)
-@@ -611,13 +633,13 @@
+@@ -611,13 +631,13 @@
          try
          {
              Class<?> oclass = Class.forName("java.awt.Desktop");
