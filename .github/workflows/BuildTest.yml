@@ -18,7 +18,8 @@ on:
         options:
           - Stable
           - Experimental
-          - Bleeding Edge
+
+run-name: "${{ github.event_name == 'pull_request' && 'Pull Request Build, DO NOT DOWNLOAD' || format('{0}#{1}: {2}', github.ref_name, github.run_number, github.event.commits[0].message)}}"
 
 permissions:
   contents: read
@@ -29,10 +30,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4.1.4
+        with:
+          fetch-tags: true
+          fetch-depth: 0
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v3.10.0
+        uses: actions/setup-java@v4.2.1
         with:
           java-version: '21'
           distribution: 'temurin'
@@ -48,8 +52,6 @@ jobs:
           BRANCH_FEAT=$(echo "${{ steps.branch-names.outputs.current_branch }}" | cut -d'/' -f1 | awk '{print tolower($0)}')
           if [ "$BRANCH_FEAT" = "experimental" ]; then
             echo "BUILD_TYPE=Experimental" >> $GITHUB_OUTPUT
-          elif [ "$BRANCH_FEAT" = "bleeding-edge" ]; then
-            echo "BUILD_TYPE=Bleeding Edge" >> $GITHUB_OUTPUT
           else
             echo "BUILD_TYPE=Stable" >> $GITHUB_OUTPUT
           fi
@@ -58,32 +60,35 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Setup Forge env
-        run: ./gradlew setup
+        run: ./gradlew setup -Prun_number=${{ github.run_number }}
       - name: Stop Gradle daemon
         run: ./gradlew --stop
 
-      - name: Build Forge Installer Jar
-        run: ./gradlew installerJar
+      - name: Build Jars
+        run: ./gradlew installerJar -Prun_number=${{ github.run_number }}
+
+      - name: Get version
+        run: echo "CLEANROOM_VERSION=$(cat version.txt)" >> $GITHUB_ENV
 
       - name: Upload Forge Universal
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@v4.3.3
         with:
-          name: universal
+          name: universal-${{ env.CLEANROOM_VERSION }}
           path: projects/cleanroom/build/libs/*-universal.jar
 
       - name: Upload Forge Installer
         id: upload-job
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@v4.3.3
         with:
-          name: installer
+          name: installer-${{ env.CLEANROOM_VERSION }}
           path: projects/cleanroom/build/libs/*-installer.jar
           if-no-files-found: error
 
       - name: Repository Dispatch
-        if: success()
+        if: ${{ success() && github.event_name != 'pull_request' }}
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.CLEANROOMMC_DISPATCH_TOKEN }} # require PAT :shrug:
           repository: CleanroomMC/CleanroomMMC
           event-type: cleanroom_upload_artifact
-          client-payload: '{"commit_hash": "${{ github.sha }}", "run_job_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}", "branch": "${{ steps.branch-names.outputs.current_branch }}", "build_type": "${{ inputs.environment || steps.vars.outputs.BUILD_TYPE }}", "actor": "${{ github.actor }}"}'
+          client-payload: '{"commit_hash": "${{ github.sha }}", "run_job_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}", "branch": "${{ steps.branch-names.outputs.current_branch }}", "build_type": "${{ inputs.environment || steps.vars.outputs.BUILD_TYPE }}", "actor": "${{ github.actor }}", "version": "${{ env.CLEANROOM_VERSION }}"}'

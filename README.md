@@ -7,31 +7,34 @@
 - LWJGL3
 - A working *mod development template/kit*
 - Patches for loading incompatible mods
-- Built-in Mixin
+- Built-in Mixin w/ handy bootstrapping
+- Develop using Scala 3 + Kotlin 2
+- Compatibility to 99% of Forge mods
 
 ### Planning
 
 - CleanroomGradle to replace ForgeGradle
-- No more Late and Early mixin
 - Classfile API
-- Scala 3 + Kotlin 2
 - Actually useful APIs (See [here](https://github.com/orgs/CleanroomMC/projects/4/))
 - Optimized
-- Compatibility
 
 ## Components:
 
 - Minecraft Coder Pack
 - CleanroomLoader (Continuation + Revamp of ForgeModLoader)
 - Cleanroom Minecraft (Continuation + Revamp of MinecraftForge)
-- Mixin [(Coming Soon)](https://github.com/CleanroomMC/CleanMix)
+- Customized Mixin
 - Bytecode Patcher (Coming Soon) \[Inspired by [Bansoukou](https://github.com/LoliKingdom/Bansoukou) and [Bytecode Patcher](https://github.com/jbredwards/Bytecode-Patcher)]
-- [Fugue](https://github.com/CleanroomMC/Fugue), a mod patches many incompatibilities. (temporary)
+- [Fugue](https://github.com/CleanroomMC/Fugue), a mod patches many incompatibilities.
+- Javassist
+- [Scalar](https://github.com/CleanroomMC/Scalar/releases/tag/2.11.1), a Scala provider. We made Scala libraries become a standalone mod so it can be updated.
 
-## Downloads:
+## Download & Installation:
 
-- For MultiMC-based launchers (PolyMC, PrismLauncher), go to CleanroomMMC's [action page](https://github.com/CleanroomMC/CleanroomMMC/actions), download the latest build and import it in your launcher(alternatively unzip patches and json inside to your 1.12 instance).
-- For regular launcher (official launcher, AT launcher, FTB, HMCL), go to Cleanroom's [action page](https://github.com/CleanroomMC/Cleanroom/actions), click the latest action marked as **Build and Upload Test Artifact** and download the **installer** artifact. You could use the installer like the Forge one.
+- For MultiMC-based launchers (PolyMC, PrismLauncher), download the MMC instance from [release](https://github.com/CleanroomMC/Cleanroom/releases), import it in your launcher(alternatively unzip patches and json inside to your 1.12 instance).
+- For regular launcher (official launcher, AT launcher, FTB, HMCL), download the installer jar from release. You could use the installer like the Forge one.
+- **Remember to install Fugue!**
+- **And Scalar!**
 
 ## Build Instructions:
 

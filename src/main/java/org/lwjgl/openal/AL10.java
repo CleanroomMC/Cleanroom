@@ -2,15 +2,65 @@ package org.lwjgl.openal;
 
 public class AL10 {
 
-    public static final int AL_NO_ERROR = org.lwjgl3.openal.AL10.AL_NO_ERROR;
-    public static final int AL_BUFFER = org.lwjgl3.openal.AL10.AL_BUFFER;
-    public static final int AL_SOURCE_STATE = org.lwjgl3.openal.AL10.AL_SOURCE_STATE;
-    public static final int AL_PLAYING = org.lwjgl3.openal.AL10.AL_PLAYING;
-    public static final int AL_LOOPING = org.lwjgl3.openal.AL10.AL_LOOPING;
+    public static final int AL_INVALID = org.lwjgl3.openal.AL10.AL_INVALID;
+    public static final int AL_NONE = org.lwjgl3.openal.AL10.AL_NONE;
+    public static final int AL_FALSE = org.lwjgl3.openal.AL10.AL_FALSE;
     public static final int AL_TRUE = org.lwjgl3.openal.AL10.AL_TRUE;
-    public static final int AL_REFERENCE_DISTANCE = org.lwjgl3.openal.AL10.AL_REFERENCE_DISTANCE;
-    public static final int AL_ROLLOFF_FACTOR = org.lwjgl3.openal.AL10.AL_ROLLOFF_FACTOR;
+    public static final int AL_SOURCE_TYPE = org.lwjgl3.openal.AL10.AL_SOURCE_TYPE;
+    public static final int AL_SOURCE_ABSOLUTE = org.lwjgl3.openal.AL10.AL_SOURCE_ABSOLUTE;
+    public static final int AL_SOURCE_RELATIVE = org.lwjgl3.openal.AL10.AL_SOURCE_RELATIVE;
+    public static final int AL_CONE_INNER_ANGLE = org.lwjgl3.openal.AL10.AL_CONE_INNER_ANGLE;
+    public static final int AL_CONE_OUTER_ANGLE = org.lwjgl3.openal.AL10.AL_CONE_OUTER_ANGLE;
+    public static final int AL_PITCH = org.lwjgl3.openal.AL10.AL_PITCH;
     public static final int AL_POSITION = org.lwjgl3.openal.AL10.AL_POSITION;
+    public static final int AL_DIRECTION = org.lwjgl3.openal.AL10.AL_DIRECTION;
+    public static final int AL_VELOCITY = org.lwjgl3.openal.AL10.AL_VELOCITY;
+    public static final int AL_LOOPING = org.lwjgl3.openal.AL10.AL_LOOPING;
+    public static final int AL_BUFFER = org.lwjgl3.openal.AL10.AL_BUFFER;
+    public static final int AL_GAIN = org.lwjgl3.openal.AL10.AL_GAIN;
+    public static final int AL_MIN_GAIN = org.lwjgl3.openal.AL10.AL_MIN_GAIN;
+    public static final int AL_MAX_GAIN = org.lwjgl3.openal.AL10.AL_MAX_GAIN;
+    public static final int AL_ORIENTATION = org.lwjgl3.openal.AL10.AL_ORIENTATION,
+            AL_REFERENCE_DISTANCE = org.lwjgl3.openal.AL10.AL_REFERENCE_DISTANCE;
+    public static final int AL_ROLLOFF_FACTOR = org.lwjgl3.openal.AL10.AL_ROLLOFF_FACTOR;
+    public static final int AL_CONE_OUTER_GAIN = org.lwjgl3.openal.AL10.AL_CONE_OUTER_GAIN;
+    public static final int AL_MAX_DISTANCE = org.lwjgl3.openal.AL10.AL_MAX_DISTANCE;
+    public static final int AL_CHANNEL_MASK = 0x3000;
+    public static final int AL_SOURCE_STATE = org.lwjgl3.openal.AL10.AL_SOURCE_STATE,
+            AL_INITIAL = org.lwjgl3.openal.AL10.AL_INITIAL,
+            AL_PLAYING = org.lwjgl3.openal.AL10.AL_PLAYING,
+            AL_PAUSED = org.lwjgl3.openal.AL10.AL_PAUSED,
+            AL_STOPPED = org.lwjgl3.openal.AL10.AL_STOPPED;
+    public static final int AL_BUFFERS_QUEUED = org.lwjgl3.openal.AL10.AL_BUFFERS_QUEUED,
+            AL_BUFFERS_PROCESSED = org.lwjgl3.openal.AL10.AL_BUFFERS_PROCESSED;
+    public static final int AL_FORMAT_MONO8 = org.lwjgl3.openal.AL10.AL_FORMAT_MONO8,
+            AL_FORMAT_MONO16 = org.lwjgl3.openal.AL10.AL_FORMAT_MONO16,
+            AL_FORMAT_STEREO8 = org.lwjgl3.openal.AL10.AL_FORMAT_STEREO8,
+            AL_FORMAT_STEREO16 = org.lwjgl3.openal.AL10.AL_FORMAT_STEREO16;
+    public static final int AL_FORMAT_VORBIS_EXT = 0x10003;
+    public static final int AL_FREQUENCY = org.lwjgl3.openal.AL10.AL_FREQUENCY;
+    public static final int AL_BITS = org.lwjgl3.openal.AL10.AL_BITS;
+    public static final int AL_CHANNELS = org.lwjgl3.openal.AL10.AL_CHANNELS;
+    public static final int AL_SIZE = org.lwjgl3.openal.AL10.AL_SIZE;
+    public static final int AL_DATA = 0x2005;
+    public static final int AL_UNUSED = org.lwjgl3.openal.AL10.AL_UNUSED,
+            AL_PENDING = org.lwjgl3.openal.AL10.AL_PENDING,
+            AL_PROCESSED = org.lwjgl3.openal.AL10.AL_PROCESSED;
+    public static final int AL_NO_ERROR = 0x0;
+    public static final int AL_INVALID_NAME = org.lwjgl3.openal.AL10.AL_INVALID_NAME;
+    public static final int AL_INVALID_ENUM = org.lwjgl3.openal.AL10.AL_INVALID_ENUM;
+    public static final int AL_INVALID_VALUE = org.lwjgl3.openal.AL10.AL_INVALID_VALUE;
+    public static final int AL_INVALID_OPERATION = org.lwjgl3.openal.AL10.AL_INVALID_OPERATION;
+    public static final int AL_OUT_OF_MEMORY = org.lwjgl3.openal.AL10.AL_OUT_OF_MEMORY;
+    public static final int AL_VENDOR = org.lwjgl3.openal.AL10.AL_VENDOR;
+    public static final int AL_VERSION = org.lwjgl3.openal.AL10.AL_VERSION;
+    public static final int AL_RENDERER = org.lwjgl3.openal.AL10.AL_RENDERER;
+    public static final int AL_EXTENSIONS = org.lwjgl3.openal.AL10.AL_EXTENSIONS;
+    public static final int AL_DOPPLER_FACTOR = org.lwjgl3.openal.AL10.AL_DOPPLER_FACTOR;
+    public static final int AL_DOPPLER_VELOCITY = org.lwjgl3.openal.AL10.AL_DOPPLER_FACTOR;
+    public static final int AL_DISTANCE_MODEL = org.lwjgl3.openal.AL10.AL_DISTANCE_MODEL;
+    public static final int AL_INVERSE_DISTANCE = org.lwjgl3.openal.AL10.AL_INVERSE_DISTANCE,
+            AL_INVERSE_DISTANCE_CLAMPED = org.lwjgl3.openal.AL10.AL_INVERSE_DISTANCE_CLAMPED;
 
     public static void alBufferData(int buffer, int format, java.nio.ByteBuffer data, int freq) {
         org.lwjgl3.openal.AL10.alBufferData(buffer, format, data, freq);

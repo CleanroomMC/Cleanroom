@@ -3,21 +3,22 @@ buildscript {
         mavenLocal()
         mavenCentral()
         maven {
-            name 'MinecraftForge'
-            url 'https://maven.minecraftforge.net/'
+            name "MinecraftForge"
+            url "https://maven.minecraftforge.net/"
         }
         maven {
-            name 'Outlands'
-            url 'https://maven.outlands.top/releases/'
+            name "Outlands"
+            url "https://maven.outlands.top/releases/"
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:6.10.+'
+        classpath "net.minecraftforge.gradle:ForgeGradle:6.10.+"
     }
 }
 
 plugins {
-    id 'org.jetbrains.gradle.plugin.idea-ext' version '1.1.7'
+    id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.8"
+    id "com.palantir.git-version" version "3.0.0"
 }
 
 import com.cleanroommc.gradle.helpers.tasks.*
@@ -44,13 +45,18 @@ import org.objectweb.asm.Opcodes
 
 def props = project.properties
 def sysProps = System.getProperties()
+def details = versionDetails()
 
 group 'com.cleanroommc'
-version props.major_version << '.' << props.minor_version << '.' << props.patch_version
+version details.lastTag + (project.hasProperty("release") ?
+        "" : ("+build." + details.commitDistance + (project.hasProperty("run_number") ?
+                (".run." + props.run_number) : "")))
+def version_txt = new File(project.projectDir, "version.txt")
+version_txt.write(version.toString())
+def spec_version = details.lastTag
 
-def spec_version = props.new_forge_version.substring(props.new_forge_version.indexOf('.') + 1, props.new_forge_version.lastIndexOf('.'))
-
-println "Running Cleanroom $version"
+println "Setting up Cleanroom $version"
+if (project.hasProperty("run_number")) println("On GitHub runs #" + props.run_number)
 println "Java: ${ -> sysProps['java.version']} | JVM: ${ -> sysProps['java.vm.version']} | Vendor: ${ -> sysProps['java.vendor']} | Architecture: ${ -> sysProps['os.arch']}"
 
 // Initialize buildSrc
@@ -168,7 +174,22 @@ project(':cleanroom') {
 
     //  = 'net.minecraftforge'
     group = 'com.cleanroommc'
-    version = props.new_forge_version
+    version = rootProject.version
+
+    compileJava {
+        doFirst {
+            def target = new File("${rootProject.projectDir}/src/main/java/com/cleanroommc/common/CleanroomVersion.java")
+            def template = new File("${rootProject.projectDir}/templates/CleanroomVersion.java")
+
+            target.withWriter { def writer ->
+                template.eachLine { def line ->
+                    def newLine = line.replace("%VERSION%", versionDetails().lastTag + "-infdev")
+                            .replace("%BUILD_VERSION%", rootProject.version.toString())
+                    writer.write(newLine + "\n");
+                }
+            }
+        }
+    }
 
     sourceSets {
         main {
@@ -265,7 +286,7 @@ project(':cleanroom') {
                 environment 'MCP_MAPPINGS', '{mcp_mappings}'
                 environment 'MCP_TO_SRG', createSrg2Mcp.getOutput().get().getAsFile().getAbsolutePath()
                 environment 'FORGE_GROUP', project.group
-                environment 'FORGE_VERSION', props.new_forge_version
+                environment 'FORGE_VERSION', props.last_forge_version
 
                 jvmArgs jvm_arguments + '-Dmixin.debug.export=true' + '-Dmixin.checks.interfaces=true'
                 //jvmArgs jvm_arguments
@@ -315,7 +336,7 @@ project(':cleanroom') {
                 environment 'MCP_MAPPINGS', '{mcp_mappings}'
                 environment 'MCP_TO_SRG', createSrg2Mcp.getOutput().get().getAsFile().getAbsolutePath()
                 environment 'FORGE_GROUP', project.group
-                environment 'FORGE_VERSION', props.new_forge_version
+                environment 'FORGE_VERSION', props.last_forge_version
 
                 // Lazily supply the Mappings target, createSrg2Mcp.getMappings() doesn't get populated until later
                 lazyToken 'mcp_mappings', { ->
@@ -413,7 +434,7 @@ project(':cleanroom') {
 
         installer "com.cleanroommc:bouncepad:$props.bouncepad_version"
 
-        installer 'com.ibm.icu:icu4j:74.2'
+        installer 'com.ibm.icu:icu4j:75.1'
 
         installer 'org.jline:jline:3.25.0'
         installer 'com.typesafe.akka:akka-actor_2.12:2.8.5'
@@ -973,7 +994,7 @@ project(':cleanroom') {
                 'Specification-Vendor'  : props.vendor,
                 'Specification-Version' : spec_version,
                 'Implementation-Title'  : project.group,
-                'Implementation-Version': props.new_forge_version,
+                'Implementation-Version': props.last_forge_version,
                 'Implementation-Vendor' : props.vendor
             ], 'net/minecraftforge/common/')
         }
@@ -1051,7 +1072,7 @@ project(':cleanroom') {
                 environment 'MCP_MAPPINGS', '{mcp_mappings}'
                 environment 'MCP_TO_SRG', '{mcp_to_srg}'
                 environment 'FORGE_GROUP', project.group
-                environment 'FORGE_VERSION', props.new_forge_version
+                environment 'FORGE_VERSION', props.last_forge_version
             }
 
             server {
@@ -1063,7 +1084,7 @@ project(':cleanroom') {
                 environment 'MCP_MAPPINGS', '{mcp_mappings}'
                 environment 'MCP_TO_SRG', '{mcp_to_srg}'
                 environment 'FORGE_GROUP', project.group
-                environment 'FORGE_VERSION', props.new_forge_version
+                environment 'FORGE_VERSION', props.last_forge_version
             }
         }
     }
@@ -1117,7 +1138,7 @@ project(':cleanroom') {
             maven(MavenPublication) {
                 groupId = "com.cleanroommc"
                 artifactId = "cleanroom"
-                version = project.new_forge_version
+                version = rootProject.version
                 from components.java
                 artifact userdevJar
                 artifact universalJar
