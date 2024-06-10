@@ -31,6 +31,7 @@ body:
         - Java 19
         - Java 20
         - Java 21
+        - Java 22
         - Other (Please Specify)
     validations:
       required: true
