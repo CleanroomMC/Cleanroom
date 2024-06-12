@@ -12,7 +12,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "net.minecraftforge.gradle:ForgeGradle:6.10.+"
+        classpath "net.minecraftforge.gradle:ForgeGradle:6.0.+"
     }
 }
 
