@@ -114,7 +114,7 @@ public class FMLSanityChecker implements IFMLCallHook
             {
                 String mcPath = codeSource.getLocation().getPath().substring(5);
                 mcPath = mcPath.substring(0, mcPath.lastIndexOf('!'));
-                mcPath = URLDecoder.decode(mcPath, StandardCharsets.UTF_8.name());
+                mcPath = URLDecoder.decode(mcPath, StandardCharsets.UTF_8);
                 mcJarFile = new JarFile(mcPath,true);
                 mcJarFile.getManifest();
                 JarEntry cbrEntry = mcJarFile.getJarEntry("net/minecraft/client/ClientBrandRetriever.class");
@@ -176,7 +176,7 @@ public class FMLSanityChecker implements IFMLCallHook
         }
         if (!goodFML)
         {
-            FMLLog.log.error("FML appears to be missing any signature data. This is not a good thing");
+            FMLLog.log.info("FML appears to be missing any signature data. This is expected, don't worry.");
         }
         return null;
     }
