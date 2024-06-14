@@ -52,7 +52,6 @@ public class MinecraftForgeClient
     {
         return ForgeHooksClient.renderPass;
     }
-    
     public static BlockRenderLayer getRenderLayer()
     {
         return ForgeHooksClient.renderLayer.get();
