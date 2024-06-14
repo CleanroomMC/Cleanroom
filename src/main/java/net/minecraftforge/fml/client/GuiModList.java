@@ -67,7 +67,7 @@ import com.google.common.base.Strings;
 import org.lwjgl.opengl.GL11;
 
 /**
- * This class represents the GUI screen for the mod list.
+ * The GUI screen for the mod list displayed when the player presses the "Mods" button.
  *
  * @author cpw
  */
