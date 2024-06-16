@@ -4,6 +4,7 @@ import com.cleanroommc.hackery.ReflectionHackery;
 import jdk.internal.reflect.ReflectionFactory;
 import net.minecraftforge.fml.common.FMLLog;
 import org.apache.commons.lang3.ArrayUtils;
+import top.outlands.foundation.boot.JVMDriverHolder;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -77,7 +78,7 @@ public final class EnumHackery {
         return addEnumEntry(enumClass, enumName, new Class[0], new Object[0]);
     }
 
-
+    @SuppressWarnings("unchecked")
     public static <T extends Enum<T>> T addEnumEntry(Class<T> enumClass, String enumName, Class<?>[] parameterTypes, Object[] parameterValues) {
         if (parameterTypes.length != parameterValues.length) {
             throw new IllegalArgumentException("The amount of parameter types must be the same as the parameter values.");
@@ -89,7 +90,7 @@ public final class EnumHackery {
             MethodHandle handle = MethodHandles.lookup().unreflectConstructor(constructor);
             Method m = enumClass.getMethod("values");
             Object o = m.invoke(enumClass);
-            T instance = (T) handle.invokeWithArguments(ArrayUtils.addAll(new Object[]{enumName, ((Object[]) o).length}, parameterValues));
+            T instance = (T) handle.withVarargs(false).invokeWithArguments(ArrayUtils.addAll(new Object[]{enumName, ((Object[]) o).length}, parameterValues));
 
             Field nameField = Enum.class.getDeclaredField("name");
             nameField.setAccessible(true);
