@@ -241,10 +241,11 @@ public class Display {
             @Override
             public void invoke(long window, int width, int height) {
 
-                boolean minimized = width == 0 && height == 0;
-                latestResized = true && !minimized;
-                latestWidth = width;
-                latestHeight = height;
+                if (width != 0 && height != 0) {
+                    latestResized = true;
+                    latestWidth = width;
+                    latestHeight = height;
+                }
             }
         };
 
