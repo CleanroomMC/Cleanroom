@@ -25,16 +25,35 @@ import net.minecraftforge.fml.common.ModContainer;
 import java.io.File;
 import java.util.Map.Entry;
 
+/**
+ * This class represents a custom GUI screen that is displayed when Forge Mod Loader detects duplicate mods in the system.
+ * It extends the {@link GuiErrorBase} class and overrides its {@link #drawScreen(int, int, float)} method to display the error message and the list of duplicate mods.
+ */
 public class GuiDupesFound extends GuiErrorBase
 {
-
+    /**
+     * The exception that contains the list of duplicate mods.
+     */
     private DuplicateModsFoundException dupes;
 
+    /**
+     * Constructor for the {@link GuiDupesFound} class.
+     *
+     * @param dupes The exception that contains the list of duplicate mods.
+     */
     public GuiDupesFound(DuplicateModsFoundException dupes)
     {
         this.dupes = dupes;
     }
 
+    /**
+     * This method is called by Minecraft to draw the GUI screen.
+     * It overrides the method from the parent class and adds custom drawing logic for the error message and the list of duplicate mods.
+     *
+     * @param mouseX The X coordinate of the mouse cursor.
+     * @param mouseY The Y coordinate of the mouse cursor.
+     * @param partialTicks The partial ticks (fraction of a tick) since the last frame.
+     */
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {

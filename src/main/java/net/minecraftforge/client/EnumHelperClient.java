@@ -29,10 +29,9 @@ import net.minecraftforge.common.util.EnumHelper;
 
 import javax.annotation.Nullable;
 
-public class EnumHelperClient extends EnumHelper
-{
-    private static Class<?>[][] clientTypes =
-    {
+public class EnumHelperClient extends EnumHelper {
+
+    private static Class<?>[][] clientTypes = {
         {GameType.class, int.class, String.class, String.class},
         {Options.class, String.class, boolean.class, boolean.class},
         {EnumOS.class},
@@ -40,38 +39,33 @@ public class EnumHelperClient extends EnumHelper
     };
 
     @Nullable
-    public static GameType addGameType(String name, int id, String displayName, String shortName)
-    {
+    public static GameType addGameType(String name, int id, String displayName, String shortName) {
         return EnumHackery.addEnumEntry(GameType.class, name,
                 new Class<?>[] { int.class, String.class, String.class },
                 new Object[] { id, displayName, shortName });
     }
 
     @Nullable
-    public static Options addOptions(String name, String langName, boolean isSlider, boolean isToggle)
-    {
+    public static Options addOptions(String name, String langName, boolean isSlider, boolean isToggle) {
         return EnumHackery.addEnumEntry(Options.class, name,
                 new Class<?>[] { String.class, boolean.class, boolean.class },
                 new Object[] { langName, isSlider, isToggle });
     }
 
     @Nullable
-    public static Options addOptions(String name, String langName, boolean isSlider, boolean isToggle, float valMin, float valMax, float valStep)
-    {
+    public static Options addOptions(String name, String langName, boolean isSlider, boolean isToggle, float valMin, float valMax, float valStep) {
         return EnumHackery.addEnumEntry(Options.class, name,
                 new Class<?>[] { String.class, boolean.class, boolean.class, float.class, float.class, float.class },
                 new Object[] { langName, isSlider, isToggle, valMin, valMax, valStep });
     }
 
     @Nullable
-    public static EnumOS addOS2(String name)
-    {
+    public static EnumOS addOS2(String name) {
         return EnumHackery.addEnumEntry(EnumOS.class, name);
     }
 
     @Nullable
-    public static MusicTicker.MusicType addMusicType(String name, SoundEvent sound, int minDelay, int maxDelay)
-    {
+    public static MusicTicker.MusicType addMusicType(String name, SoundEvent sound, int minDelay, int maxDelay) {
         return EnumHackery.addEnumEntry(MusicTicker.MusicType.class, name,
                 new Class<?>[] { SoundEvent.class, int.class, int.class },
                 new Object[] { sound, minDelay, maxDelay });

@@ -168,22 +168,24 @@ import org.apache.commons.io.IOUtils;
 
 public class ForgeHooks
 {
-    //TODO: Loot tables?
     static class SeedEntry extends WeightedRandom.Item
     {
         @Nonnull
         public final ItemStack seed;
+
         public SeedEntry(@Nonnull ItemStack seed, int weight)
         {
             super(weight);
             this.seed = seed;
         }
+
         @Nonnull
         public ItemStack getStack(Random rand, int fortune)
         {
             return seed.copy();
         }
     }
+
     static final List<SeedEntry> seedList = new ArrayList<SeedEntry>();
 
     @Nonnull
@@ -203,7 +205,7 @@ public class ForgeHooks
 
     public static boolean canContinueUsing(@Nonnull ItemStack from, @Nonnull ItemStack to)
     {
-        if (!from.isEmpty() && !to.isEmpty())
+        if (!from.isEmpty() &&!to.isEmpty())
         {
             return from.getItem().canContinueUsing(from, to);
         }

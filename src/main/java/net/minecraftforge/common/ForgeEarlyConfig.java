@@ -2,6 +2,13 @@ package net.minecraftforge.common;
 
 import net.minecraftforge.common.config.Config;
 
+/**
+ * The early configuration for Cleanroom(Forge).
+ * These options are loaded before the main Forge configuration file.
+ *
+ * @author kappa-maintainer
+ * @since 0.2.1-alpha
+ */
 @Config(modid = ForgeVersion.MOD_ID, name = ForgeVersion.MOD_ID + "_early")
 public class ForgeEarlyConfig {
     public static boolean RAW_INPUT = true;

@@ -21,15 +21,33 @@ package net.minecraftforge.registries;
 
 import net.minecraft.network.datasync.DataSerializer;
 
+/**
+ * Represents an entry in the Forge registry for data serializers.
+ * This class wraps a {@link DataSerializer} object and provides methods to access it.
+ *
+ */
 public final class DataSerializerEntry extends IForgeRegistryEntry.Impl<DataSerializerEntry>
 {
+    /**
+     * The wrapped data serializer.
+     */
     private final DataSerializer<?> serializer;
 
+    /**
+     * Constructs a new DataSerializerEntry with the given data serializer.
+     *
+     * @param serializer The data serializer to be wrapped.
+     */
     public DataSerializerEntry(DataSerializer<?> serializer)
     {
         this.serializer = serializer;
     }
 
+    /**
+     * Returns the wrapped data serializer.
+     *
+     * @return The wrapped data serializer.
+     */
     public DataSerializer<?> getSerializer()
     {
         return serializer;

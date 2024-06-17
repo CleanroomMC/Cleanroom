@@ -31,11 +31,18 @@ import com.google.common.collect.Maps;
 import net.minecraft.util.datafix.IFixType;
 import net.minecraft.util.datafix.IFixableData;
 
+/**
+ * A set of utilities designed for incremental building, merging, and optimization of data transformations. Created for converting the game data for mods between different versions.
+ * Modder should get a ModFix like this with a auto registering:
+ *   <code> ModFixs modFixs = FMLCommonHandler.instance().getDataFixer().init("modid", fixerVersion); </code>
+ */
 public class ModFixs
 {
     private static final Logger LOGGER = LogManager.getLogger();
+
     final String mod;
     final int version;
+
     private final Map<IFixType, List<IFixableData>> fixes = Maps.newHashMap();
 
     ModFixs(String mod, int version)
@@ -74,5 +81,4 @@ public class ModFixs
         else
             list.add(fixer);
     }
-
 }
