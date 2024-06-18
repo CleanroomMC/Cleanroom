@@ -419,9 +419,13 @@ public class CoreModManager {
                 {
                     // Not a coremod
                     FMLLog.log.debug("Not found coremod data in {}", coreMod.getName());
-                    if (!MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker)) {
-                        continue;
+                    if (MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker) && mfAttributes.containsKey(COREMODCONTAINSFMLMOD)) {
+                        FMLLog.log.info("Found FMLCorePluginContainsFMLMod marker in mixin container {}.",
+                                coreMod.getName());
+                        candidateModFiles.add(coreMod.getName());
+                        ignoredModFiles.remove(coreMod.getName());
                     }
+                    continue;
                 }
             }
             catch (IOException ioe)
