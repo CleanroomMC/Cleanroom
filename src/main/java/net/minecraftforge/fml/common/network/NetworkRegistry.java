@@ -19,6 +19,7 @@
 
 package net.minecraftforge.fml.common.network;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
@@ -267,6 +268,32 @@ public enum NetworkRegistry
      * @param x X coord
      * @param y Y coord
      * @param z Z coord
+     * @return The server side GUI object (An instance of {@link Container})
+     */
+    @Nullable
+    public Container getRemoteGuiContainer(ModContainer mc, EntityPlayerMP player, int modGuiId, World world, int x, int y, int z, ByteBuf customData)
+    {
+        IGuiHandler handler = serverGuiHandlers.get(mc);
+
+        if (handler != null)
+        {
+            return (Container)handler.getServerGuiElement(modGuiId, player, world, x, y, z ,customData);
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    /**
+     * INTERNAL method for accessing the Gui registry
+     * @param mc Mod Container
+     * @param player Player
+     * @param modGuiId guiId
+     * @param world World
+     * @param x X coord
+     * @param y Y coord
+     * @param z Z coord
      * @return The client side GUI object (An instance of {@link net.minecraft.client.gui.Gui})
      */
     @Nullable
@@ -274,6 +301,25 @@ public enum NetworkRegistry
     {
         IGuiHandler handler = clientGuiHandlers.get(mc);
         return handler.getClientGuiElement(modGuiId, player, world, x, y, z);
+    }
+
+    /**
+     * INTERNAL method for accessing the Gui registry
+     * @param mc Mod Container
+     * @param player Player
+     * @param modGuiId guiId
+     * @param world World
+     * @param x X coord
+     * @param y Y coord
+     * @param z Z coord
+     * @param customData Custom Data
+     * @return The client side GUI object (An instance of {@link net.minecraft.client.gui.Gui})
+     */
+    @Nullable
+    public Object getLocalGuiContainer(ModContainer mc, EntityPlayer player, int modGuiId, World world, int x, int y, int z, ByteBuf customData)
+    {
+        IGuiHandler handler = clientGuiHandlers.get(mc);
+        return handler.getClientGuiElement(modGuiId, player, world, x, y, z, customData);
     }
 
     /**
