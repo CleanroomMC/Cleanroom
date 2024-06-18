@@ -419,7 +419,9 @@ public class CoreModManager {
                 {
                     // Not a coremod
                     FMLLog.log.debug("Not found coremod data in {}", coreMod.getName());
-                    continue;
+                    if (!MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker)) {
+                        continue;
+                    }
                 }
             }
             catch (IOException ioe)
