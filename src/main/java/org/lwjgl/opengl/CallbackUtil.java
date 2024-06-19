@@ -68,14 +68,17 @@ final class CallbackUtil {
      *
      * @return the GlobalRef memory address.
      */
-    private static native long ncreateGlobalRef(Object obj);
+    private static long ncreateGlobalRef(Object obj) {
+        return 0;
+    }
 
     /**
      * Deletes a global reference.
      *
      * @param ref the GlobalRef memory address.
      */
-    private static native void deleteGlobalRef(long ref);
+    private static void deleteGlobalRef(long ref) {
+    }
 
     // --------- [ XXX_debug_output ] ---------
 
@@ -130,7 +133,9 @@ final class CallbackUtil {
      *
      * @return the callback function address
      */
-    static native long getDebugOutputCallbackARB();
+    static long getDebugOutputCallbackARB() {
+        return 0;
+    }
 
     /**
      * Associates the current OpenGL context with the specified global reference. If there
@@ -150,7 +155,9 @@ final class CallbackUtil {
      *
      * @return the callback function address
      */
-    static native long getDebugOutputCallbackAMD();
+    static long getDebugOutputCallbackAMD() {
+        return 0;
+    }
 
     /**
      * Associates the current OpenGL context with the specified global reference. If there
@@ -170,7 +177,9 @@ final class CallbackUtil {
      *
      * @return the callback function address
      */
-    static native long getDebugCallbackKHR();
+    static long getDebugCallbackKHR() {
+        return 0;
+    }
 
     /**
      * Associates the current OpenGL context with the specified global reference. If there
