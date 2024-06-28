@@ -30,28 +30,46 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable;
  * This event is fired whenever an Entity sets a target to attack in
  * {@link EntityLiving#setAttackTarget(EntityLivingBase)}.<br>
  * <br>
- * This event is fired via the {@link ForgeHooks#onLivingSetAttackTarget(EntityLivingBase, EntityLivingBase)}.<br>
+ * This event is fired via the {@link ForgeHooks#onLivingSetAttackTarget(EntityLiving, EntityLivingBase)}.<br>
  * <br>
- * {@link #target} contains the newly targeted Entity.<br>
+ * {@link #originalTarget} contains the newly targeted Entity.<br>
  * <br>
- * This event is not {@link Cancelable}.<br>
+ * {@link #redirectedTarget} contains the redirected Targeted Entity.<br>
+ * <br>
+ * This event is {@link Cancelable}.<br>
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * <br>
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  **/
+@Cancelable
 public class LivingSetAttackTargetEvent extends LivingEvent
 {
 
-    private final EntityLivingBase target;
+    private final EntityLivingBase originalTarget;
+    private EntityLivingBase redirectedTarget;
+    private boolean isRedirected;
     public LivingSetAttackTargetEvent(EntityLivingBase entity, EntityLivingBase target)
     {
         super(entity);
-        this.target = target;
+        this.originalTarget = target;
+        this.redirectedTarget = null;
+        this.isRedirected = false;
     }
 
     public EntityLivingBase getTarget()
     {
-        return target;
+        return isRedirected?redirectedTarget:originalTarget;
     }
+    
+    public EntityLivingBase getOriginalTarget(){
+        return originalTarget;
+    }
+    
+    public void redirect(EntityLivingBase living){
+        this.redirectedTarget=living;
+        this.isRedirected=true;
+    }
+    
+    public boolean isRedirected(){ return this.isRedirected; }
 }
