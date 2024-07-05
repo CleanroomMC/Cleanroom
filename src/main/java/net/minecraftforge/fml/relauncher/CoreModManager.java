@@ -54,6 +54,7 @@ import java.util.jar.Manifest;
 
 public class CoreModManager {
     private static final Attributes.Name COREMODCONTAINSFMLMOD = new Attributes.Name("FMLCorePluginContainsFMLMod");
+    private static final Attributes.Name FORCELOADASMOD = new Attributes.Name("ForceLoadAsMod");
     private static final Attributes.Name MODTYPE = new Attributes.Name("ModType");
     private static String[] rootPlugins = { "net.minecraftforge.fml.relauncher.FMLCorePlugin", "net.minecraftforge.classloading.FMLForgePlugin", "net.minecraftforge.fml.relauncher.MixinBooterPlugin" };
     private static List<String> ignoredModFiles = Lists.newArrayList();
@@ -419,7 +420,7 @@ public class CoreModManager {
                 {
                     // Not a coremod
                     FMLLog.log.debug("Not found coremod data in {}", coreMod.getName());
-                    if (MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker) && mfAttributes.containsKey(COREMODCONTAINSFMLMOD)) {
+                    if (MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker) && (mfAttributes.containsKey(COREMODCONTAINSFMLMOD) || mfAttributes.containsKey(FORCELOADASMOD))) {
                         FMLLog.log.info("Found FMLCorePluginContainsFMLMod marker in mixin container {}.",
                                 coreMod.getName());
                         candidateModFiles.add(coreMod.getName());
@@ -448,7 +449,7 @@ public class CoreModManager {
                 classLoader.addURL(coreMod.toURI().toURL());
                 if (!Strings.isNullOrEmpty(configs))
                     mixin_configs.addAll(List.of(configs.split(",")));
-                if (!mfAttributes.containsKey(COREMODCONTAINSFMLMOD))
+                if (!(mfAttributes.containsKey(COREMODCONTAINSFMLMOD) || mfAttributes.containsKey(FORCELOADASMOD)))
                 {
                     FMLLog.log.trace("Adding {} to the list of known coremods, it will not be examined again", coreMod.getName());
                     ignoredModFiles.add(coreMod.getName());
