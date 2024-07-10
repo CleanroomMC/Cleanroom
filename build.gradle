@@ -497,7 +497,7 @@ project(':cleanroom') {
         installer 'org.openjdk.nashorn:nashorn-core:15.4'
 
         // Mixin
-        installer 'com.cleanroommc:sponge-mixin:0.20.3+mixin.0.8.7'
+        installer 'com.cleanroommc:sponge-mixin:0.20.4+mixin.0.8.7'
         installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.4.0')
 
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
