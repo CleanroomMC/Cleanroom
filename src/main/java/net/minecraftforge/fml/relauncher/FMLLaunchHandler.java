@@ -23,6 +23,7 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import com.cleanroommc.common.CleanroomVersion;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
@@ -95,6 +96,7 @@ public class FMLLaunchHandler
         redirectStdOutputToLog();
         FMLLog.log.info("Forge Mod Loader version {}.{}.{}.{} for Minecraft {} loading", FMLInjectionData.major, FMLInjectionData.minor,
                 FMLInjectionData.rev, FMLInjectionData.build, FMLInjectionData.mccversion);
+        FMLLog.log.info("Cleanroom version {}", CleanroomVersion.BUILD_VERSION);
         FMLLog.log.info("Java is {}, version {}, running on {}:{}:{}, installed at {}", System.getProperty("java.vm.name"), System.getProperty("java.version"), System.getProperty("os.name"), System.getProperty("os.arch"), System.getProperty("os.version"), System.getProperty("java.home"));
         FMLLog.log.debug("Removing LWJGL2 from Java classpath");
         System.setProperty("java.class.path", Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
