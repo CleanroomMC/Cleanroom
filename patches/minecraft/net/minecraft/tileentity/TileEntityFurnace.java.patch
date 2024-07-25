@@ -1,6 +1,40 @@
 --- before/net/minecraft/tileentity/TileEntityFurnace.java
 +++ after/net/minecraft/tileentity/TileEntityFurnace.java
-@@ -37,20 +37,18 @@
+@@ -3,6 +3,7 @@
+ import net.minecraft.block.Block;
+ import net.minecraft.block.BlockFurnace;
+ import net.minecraft.block.material.Material;
++import net.minecraft.block.state.IBlockState;
+ import net.minecraft.entity.player.EntityPlayer;
+ import net.minecraft.entity.player.InventoryPlayer;
+ import net.minecraft.init.Blocks;
+@@ -28,29 +29,48 @@
+ import net.minecraft.util.datafix.DataFixer;
+ import net.minecraft.util.datafix.FixTypes;
+ import net.minecraft.util.datafix.walkers.ItemStackDataLists;
++import net.minecraft.util.math.BlockPos;
+ import net.minecraft.util.math.MathHelper;
++import net.minecraft.world.World;
++import net.minecraftforge.fml.common.registry.GameRegistry;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
++import net.minecraftforge.items.ItemHandlerHelper;
++import net.minecraftforge.oredict.OreDictionary;
++
++import java.util.Map;
+ 
+ public class TileEntityFurnace extends TileEntityLockable implements ITickable, ISidedInventory
+ {
++    public static final int FUEL = 1;
++    public static final int OUTPUT = 2;
++
++    protected ItemStack recipeKey = ItemStack.field_190927_a;
++    protected ItemStack recipeOutput = ItemStack.field_190927_a;
++    protected ItemStack failedMatch = ItemStack.field_190927_a;
++
++    @GameRegistry.ItemStackHolder(value = "minecraft:sponge", meta = 1)
++    public static final ItemStack WET_SPONGE = ItemStack.field_190927_a;
++
      private static final int[] field_145962_k = new int[] {0};
      private static final int[] field_145959_l = new int[] {2, 1};
      private static final int[] field_145960_m = new int[] {1};
@@ -13,6 +47,10 @@
      private String field_145958_o;
  
 -    @Override
++    public TileEntityFurnace() {
++        this.field_174905_l = 200;
++    }
++
      public int func_70302_i_()
      {
          return this.field_145957_n.size();
@@ -22,7 +60,7 @@
      public boolean func_191420_l()
      {
          for (ItemStack itemstack : this.field_145957_n)
-@@ -64,25 +62,21 @@
+@@ -64,25 +84,21 @@
          return true;
      }
  
@@ -48,7 +86,7 @@
      public void func_70299_a(int p_70299_1_, ItemStack p_70299_2_)
      {
          ItemStack itemstack = this.field_145957_n.get(p_70299_1_);
-@@ -102,13 +96,11 @@
+@@ -102,13 +118,11 @@
          }
      }
  
@@ -62,7 +100,7 @@
      public boolean func_145818_k_()
      {
          return this.field_145958_o != null && !this.field_145958_o.isEmpty();
-@@ -121,18 +113,17 @@
+@@ -121,18 +135,17 @@
  
      public static void func_189676_a(DataFixer p_189676_0_)
      {
@@ -86,7 +124,7 @@
          this.field_145963_i = func_145952_a(this.field_145957_n.get(1));
  
          if (p_145839_1_.func_150297_b("CustomName", 8))
-@@ -141,13 +132,12 @@
+@@ -141,13 +154,12 @@
          }
      }
  
@@ -97,13 +135,13 @@
 -        p_189515_1_.func_74777_a("BurnTime", (short)this.field_145956_a);
 -        p_189515_1_.func_74777_a("CookTime", (short)this.field_174906_k);
 -        p_189515_1_.func_74777_a("CookTimeTotal", (short)this.field_174905_l);
-+        p_189515_1_.func_74768_a("BurnTime", (short)this.field_145956_a);
-+        p_189515_1_.func_74768_a("CookTime", (short)this.field_174906_k);
-+        p_189515_1_.func_74768_a("CookTimeTotal", (short)this.field_174905_l);
++        p_189515_1_.func_74768_a("BurnTime", this.field_145956_a);
++        p_189515_1_.func_74768_a("CookTime", this.field_174906_k);
++        p_189515_1_.func_74768_a("CookTimeTotal", this.field_174905_l);
          ItemStackHelper.func_191282_a(p_189515_1_, this.field_145957_n);
  
          if (this.func_145818_k_())
-@@ -158,7 +148,6 @@
+@@ -158,7 +170,6 @@
          return p_189515_1_;
      }
  
@@ -111,76 +149,244 @@
      public int func_70297_j_()
      {
          return 64;
-@@ -175,7 +164,6 @@
+@@ -175,78 +186,55 @@
          return p_174903_0_.func_174887_a_(0) > 0;
      }
  
 -    @Override
      public void func_73660_a()
      {
-         boolean flag = this.func_145950_i();
-@@ -190,7 +178,7 @@
-         {
-             ItemStack itemstack = this.field_145957_n.get(1);
- 
+-        boolean flag = this.func_145950_i();
+-        boolean flag1 = false;
+-
+-        if (this.func_145950_i())
+-        {
+-            --this.field_145956_a;
+-        }
+-
+-        if (!this.field_145850_b.field_72995_K)
+-        {
+-            ItemStack itemstack = this.field_145957_n.get(1);
+-
 -            if (this.func_145950_i() || !itemstack.func_190926_b() && !this.field_145957_n.get(0).func_190926_b())
-+            if (this.func_145950_i() || !itemstack.func_190926_b() && !((ItemStack)this.field_145957_n.get(0)).func_190926_b())
-             {
-                 if (!this.func_145950_i() && this.func_145948_k())
-                 {
-@@ -208,8 +196,8 @@
- 
-                             if (itemstack.func_190926_b())
-                             {
+-            {
+-                if (!this.func_145950_i() && this.func_145948_k())
+-                {
+-                    this.field_145956_a = func_145952_a(itemstack);
+-                    this.field_145963_i = this.field_145956_a;
+-
+-                    if (this.func_145950_i())
+-                    {
+-                        flag1 = true;
+-
+-                        if (!itemstack.func_190926_b())
+-                        {
+-                            Item item = itemstack.func_77973_b();
+-                            itemstack.func_190918_g(1);
+-
+-                            if (itemstack.func_190926_b())
+-                            {
 -                                Item item1 = item.func_77668_q();
 -                                this.field_145957_n.set(1, item1 == null ? ItemStack.field_190927_a : new ItemStack(item1));
-+                                ItemStack item1 = item.getContainerItem(itemstack);
-+                                this.field_145957_n.set(1, item1);
-                             }
-                         }
-                     }
-@@ -257,7 +245,7 @@
+-                            }
+-                        }
+-                    }
+-                }
+-
+-                if (this.func_145950_i() && this.func_145948_k())
+-                {
+-                    ++this.field_174906_k;
+-
+-                    if (this.field_174906_k == this.field_174905_l)
+-                    {
+-                        this.field_174906_k = 0;
+-                        this.field_174905_l = this.func_174904_a(this.field_145957_n.get(0));
+-                        this.func_145949_j();
+-                        flag1 = true;
+-                    }
+-                }
+-                else
+-                {
+-                    this.field_174906_k = 0;
+-                }
+-            }
+-            else if (!this.func_145950_i() && this.field_174906_k > 0)
+-            {
+-                this.field_174906_k = MathHelper.func_76125_a(this.field_174906_k - 2, 0, this.field_174905_l);
+-            }
+-
+-            if (flag != this.func_145950_i())
+-            {
+-                flag1 = true;
+-                BlockFurnace.func_176446_a(this.func_145950_i(), this.field_145850_b, this.field_174879_c);
+-            }
+-        }
+-
+-        if (flag1)
+-        {
+-            this.func_70296_d();
++        if (field_145850_b.field_72995_K && func_145950_i()) {
++            field_145956_a--;
++            return;
++        } else if (field_145850_b.field_72995_K) return;
++
++        ItemStack fuel = ItemStack.field_190927_a;
++        boolean canSmelt = func_145948_k();
++
++        if (!this.func_145950_i() && !(fuel = field_145957_n.get(FUEL)).func_190926_b()) {
++            if (canSmelt) burnFuel(fuel, false);
++        }
++
++        boolean wasBurning = func_145950_i();
++
++        if (this.func_145950_i()) {
++            field_145956_a--;
++            if (canSmelt) smelt();
++            else field_174906_k = 0;
++        }
++
++        if (!this.func_145950_i()) {
++            if (!(fuel = field_145957_n.get(FUEL)).func_190926_b()) {
++                if (func_145948_k()) burnFuel(fuel, wasBurning);
++            } else if (field_174906_k > 0) {
++                field_174906_k = MathHelper.func_76125_a(field_174906_k - 2, 0, field_174905_l);
++            }
++        }
++
++        if (wasBurning && !func_145950_i()) BlockFurnace.func_176446_a(false, field_145850_b, field_174879_c);
++    }
++
++    protected void smelt() {
++        field_174906_k++;
++        if (this.field_174906_k == this.field_174905_l) {
++            this.field_174906_k = 0;
++            this.field_174905_l = this.func_174904_a(this.field_145957_n.getFirst());
++            this.func_145949_j();
++        }
++    }
++
++    protected void burnFuel(ItemStack fuel, boolean burnedThisTick) {
++        field_145963_i = (field_145956_a = func_145952_a(fuel));
++        if (this.func_145950_i()) {
++            Item item = fuel.func_77973_b();
++            fuel.func_190918_g(1);
++            if (fuel.func_190926_b()) field_145957_n.set(FUEL, item.getContainerItem(fuel));
++            if (!burnedThisTick) BlockFurnace.func_176446_a(true, field_145850_b, field_174879_c);
+         }
+     }
+ 
+@@ -257,69 +245,55 @@
  
      private boolean func_145948_k()
      {
 -        if (this.field_145957_n.get(0).func_190926_b())
-+        if (((ItemStack)this.field_145957_n.get(0)).func_190926_b())
-         {
-             return false;
-         }
-@@ -281,13 +269,13 @@
-                 {
-                     return false;
-                 }
--                else if (itemstack1.func_190916_E() < this.func_70297_j_() && itemstack1.func_190916_E() < itemstack1.func_77976_d())
-+                else if (itemstack1.func_190916_E() + itemstack.func_190916_E() <= this.func_70297_j_() && itemstack1.func_190916_E() + itemstack.func_190916_E() <= itemstack1.func_77976_d())  // Forge fix: make furnace respect stack sizes in furnace recipes
-                 {
-                     return true;
-                 }
-                 else
-                 {
--                    return itemstack1.func_190916_E() < itemstack.func_77976_d();
-+                    return itemstack1.func_190916_E() + itemstack.func_190916_E() <= itemstack.func_77976_d(); // Forge fix: make furnace respect stack sizes in furnace recipes
-                 }
-             }
-         }
-@@ -307,13 +295,10 @@
-             }
-             else if (itemstack2.func_77973_b() == itemstack1.func_77973_b())
-             {
--                itemstack2.func_190917_f(1);
-+                itemstack2.func_190917_f(itemstack1.func_190916_E());
-             }
+-        {
+-            return false;
+-        }
+-        else
+-        {
+-            ItemStack itemstack = FurnaceRecipes.func_77602_a().func_151395_a(this.field_145957_n.get(0));
++        ItemStack input = field_145957_n.getFirst();
++        ItemStack output = field_145957_n.get(OUTPUT);
++        if (input.func_190926_b() || input == failedMatch) return false;
  
+-            if (itemstack.func_190926_b())
+-            {
++        if (recipeKey.func_190926_b() || !OreDictionary.itemMatches(recipeKey, input, false)) {
++            boolean matched = false;
++            for (Map.Entry<ItemStack, ItemStack> e : FurnaceRecipes.func_77602_a().func_77599_b().entrySet()) {
++                if (OreDictionary.itemMatches(e.getKey(), input, false)) {
++                    recipeKey = e.getKey();
++                    recipeOutput = e.getValue();
++                    matched = true;
++                    failedMatch = ItemStack.field_190927_a;
++                    break;
++                }
++            }
++            if (!matched) {
++                recipeKey = ItemStack.field_190927_a;
++                recipeOutput = ItemStack.field_190927_a;
++                failedMatch = input;
+                 return false;
+             }
+-            else
+-            {
+-                ItemStack itemstack1 = this.field_145957_n.get(2);
+-
+-                if (itemstack1.func_190926_b())
+-                {
+-                    return true;
+-                }
+-                else if (!itemstack1.func_77969_a(itemstack))
+-                {
+-                    return false;
+-                }
+-                else if (itemstack1.func_190916_E() < this.func_70297_j_() && itemstack1.func_190916_E() < itemstack1.func_77976_d())
+-                {
+-                    return true;
+-                }
+-                else
+-                {
+-                    return itemstack1.func_190916_E() < itemstack.func_77976_d();
+-                }
+-            }
+         }
++
++        return !recipeOutput.func_190926_b() && (output.func_190926_b() || (itemsMatch(recipeOutput, output) && (recipeOutput.func_190916_E() + output.func_190916_E() <= output.func_77976_d())));
++    }
++
++    boolean itemsMatch(ItemStack a, ItemStack b) {
++        return ItemHandlerHelper.canItemStacksStack(a, b);
+     }
+ 
+     public void func_145949_j()
+     {
+-        if (this.func_145948_k())
+-        {
+-            ItemStack itemstack = this.field_145957_n.get(0);
+-            ItemStack itemstack1 = FurnaceRecipes.func_77602_a().func_151395_a(itemstack);
+-            ItemStack itemstack2 = this.field_145957_n.get(2);
+-
+-            if (itemstack2.func_190926_b())
+-            {
+-                this.field_145957_n.set(2, itemstack1.func_77946_l());
+-            }
+-            else if (itemstack2.func_77973_b() == itemstack1.func_77973_b())
+-            {
+-                itemstack2.func_190917_f(1);
+-            }
+-
 -            if (itemstack.func_77973_b() == Item.func_150898_a(Blocks.field_150360_v)
 -                    && itemstack.func_77960_j() == 1
 -                    && !this.field_145957_n.get(1).func_190926_b()
 -                    && this.field_145957_n.get(1).func_77973_b() == Items.field_151133_ar)
-+            if (itemstack.func_77973_b() == Item.func_150898_a(Blocks.field_150360_v) && itemstack.func_77960_j() == 1 && !((ItemStack)this.field_145957_n.get(1)).func_190926_b() && ((ItemStack)this.field_145957_n.get(1)).func_77973_b() == Items.field_151133_ar)
-             {
-                 this.field_145957_n.set(1, new ItemStack(Items.field_151131_as));
-             }
-@@ -330,6 +315,8 @@
+-            {
+-                this.field_145957_n.set(1, new ItemStack(Items.field_151131_as));
+-            }
+-
+-            itemstack.func_190918_g(1);
+-        }
++        ItemStack input = this.field_145957_n.getFirst();
++        ItemStack recipeOutput = FurnaceRecipes.func_77602_a().func_77599_b().get(recipeKey);
++        ItemStack output = this.field_145957_n.get(OUTPUT);
++
++        if (output.func_190926_b()) this.field_145957_n.set(OUTPUT, recipeOutput.func_77946_l());
++        else if (itemsMatch(output, recipeOutput)) output.func_190917_f(recipeOutput.func_190916_E());
++
++        if (input.func_77969_a(WET_SPONGE) && this.field_145957_n.get(FUEL).func_77973_b() == Items.field_151133_ar) this.field_145957_n.set(FUEL, new ItemStack(Items.field_151131_as));
++
++        input.func_190918_g(1);
++    }
++
++    @Override
++    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
++        if (oldState.func_177230_c() == Blocks.field_150460_al && newState.func_177230_c() == Blocks.field_150470_am) return false;
++        else if (oldState.func_177230_c() == Blocks.field_150470_am && newState.func_177230_c() == Blocks.field_150460_al) return false;
++        else return oldState.func_177230_c() != newState.func_177230_c();
+     }
+ 
+     public static int func_145952_a(ItemStack p_145952_0_)
+@@ -330,6 +304,8 @@
          }
          else
          {
@@ -189,7 +395,7 @@
              Item item = p_145952_0_.func_77973_b();
  
              if (item == Item.func_150898_a(Blocks.field_150376_bx))
-@@ -376,37 +363,43 @@
+@@ -376,37 +352,43 @@
              {
                  return 100;
              }
@@ -261,7 +467,7 @@
              }
          }
      }
-@@ -416,7 +409,6 @@
+@@ -416,7 +398,6 @@
          return func_145952_a(p_145954_0_) > 0;
      }
  
@@ -269,7 +475,7 @@
      public boolean func_70300_a(EntityPlayer p_70300_1_)
      {
          if (this.field_145850_b.func_175625_s(this.field_174879_c) != this)
-@@ -425,28 +417,18 @@
+@@ -425,28 +406,18 @@
          }
          else
          {
@@ -299,7 +505,7 @@
      public boolean func_94041_b(int p_94041_1_, ItemStack p_94041_2_)
      {
          if (p_94041_1_ == 2)
-@@ -464,7 +446,6 @@
+@@ -464,7 +435,6 @@
          }
      }
  
@@ -307,7 +513,7 @@
      public int[] func_180463_a(EnumFacing p_180463_1_)
      {
          if (p_180463_1_ == EnumFacing.DOWN)
-@@ -477,13 +458,11 @@
+@@ -477,13 +447,11 @@
          }
      }
  
@@ -321,7 +527,7 @@
      public boolean func_180461_b(int p_180461_1_, ItemStack p_180461_2_, EnumFacing p_180461_3_)
      {
          if (p_180461_3_ == EnumFacing.DOWN && p_180461_1_ == 1)
-@@ -499,19 +478,16 @@
+@@ -499,19 +467,16 @@
          return true;
      }
  
@@ -341,7 +547,7 @@
      public int func_174887_a_(int p_174887_1_)
      {
          switch (p_174887_1_)
-@@ -529,7 +505,6 @@
+@@ -529,7 +494,6 @@
          }
      }
  
@@ -349,7 +555,7 @@
      public void func_174885_b(int p_174885_1_, int p_174885_2_)
      {
          switch (p_174885_1_)
-@@ -548,15 +523,32 @@
+@@ -548,15 +512,32 @@
          }
      }
  
