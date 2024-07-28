@@ -1,27 +1,6 @@
 --- before/net/minecraft/tileentity/TileEntityFurnace.java
 +++ after/net/minecraft/tileentity/TileEntityFurnace.java
-@@ -3,6 +3,7 @@
- import net.minecraft.block.Block;
- import net.minecraft.block.BlockFurnace;
- import net.minecraft.block.material.Material;
-+import net.minecraft.block.state.IBlockState;
- import net.minecraft.entity.player.EntityPlayer;
- import net.minecraft.entity.player.InventoryPlayer;
- import net.minecraft.init.Blocks;
-@@ -28,29 +29,48 @@
- import net.minecraft.util.datafix.DataFixer;
- import net.minecraft.util.datafix.FixTypes;
- import net.minecraft.util.datafix.walkers.ItemStackDataLists;
-+import net.minecraft.util.math.BlockPos;
- import net.minecraft.util.math.MathHelper;
-+import net.minecraft.world.World;
-+import net.minecraftforge.fml.common.registry.GameRegistry;
- import net.minecraftforge.fml.relauncher.Side;
- import net.minecraftforge.fml.relauncher.SideOnly;
-+import net.minecraftforge.items.ItemHandlerHelper;
-+import net.minecraftforge.oredict.OreDictionary;
-+
-+import java.util.Map;
+@@ -34,23 +34,35 @@
  
  public class TileEntityFurnace extends TileEntityLockable implements ITickable, ISidedInventory
  {
@@ -32,7 +11,7 @@
 +    protected ItemStack recipeOutput = ItemStack.field_190927_a;
 +    protected ItemStack failedMatch = ItemStack.field_190927_a;
 +
-+    @GameRegistry.ItemStackHolder(value = "minecraft:sponge", meta = 1)
++    @net.minecraftforge.fml.common.registry.GameRegistry.ItemStackHolder(value = "minecraft:sponge", meta = 1)
 +    public static final ItemStack WET_SPONGE = ItemStack.field_190927_a;
 +
      private static final int[] field_145962_k = new int[] {0};
@@ -60,7 +39,7 @@
      public boolean func_191420_l()
      {
          for (ItemStack itemstack : this.field_145957_n)
-@@ -64,25 +84,21 @@
+@@ -64,25 +76,21 @@
          return true;
      }
  
@@ -86,7 +65,7 @@
      public void func_70299_a(int p_70299_1_, ItemStack p_70299_2_)
      {
          ItemStack itemstack = this.field_145957_n.get(p_70299_1_);
-@@ -102,13 +118,11 @@
+@@ -102,13 +110,11 @@
          }
      }
  
@@ -100,7 +79,7 @@
      public boolean func_145818_k_()
      {
          return this.field_145958_o != null && !this.field_145958_o.isEmpty();
-@@ -121,18 +135,17 @@
+@@ -121,18 +127,17 @@
  
      public static void func_189676_a(DataFixer p_189676_0_)
      {
@@ -124,7 +103,7 @@
          this.field_145963_i = func_145952_a(this.field_145957_n.get(1));
  
          if (p_145839_1_.func_150297_b("CustomName", 8))
-@@ -141,13 +154,12 @@
+@@ -141,13 +146,12 @@
          }
      }
  
@@ -141,7 +120,7 @@
          ItemStackHelper.func_191282_a(p_189515_1_, this.field_145957_n);
  
          if (this.func_145818_k_())
-@@ -158,7 +170,6 @@
+@@ -158,7 +162,6 @@
          return p_189515_1_;
      }
  
@@ -149,7 +128,7 @@
      public int func_70297_j_()
      {
          return 64;
-@@ -175,78 +186,55 @@
+@@ -175,78 +178,55 @@
          return p_174903_0_.func_174887_a_(0) > 0;
      }
  
@@ -275,7 +254,7 @@
          }
      }
  
-@@ -257,69 +245,55 @@
+@@ -257,69 +237,55 @@
  
      private boolean func_145948_k()
      {
@@ -292,10 +271,10 @@
  
 -            if (itemstack.func_190926_b())
 -            {
-+        if (recipeKey.func_190926_b() || !OreDictionary.itemMatches(recipeKey, input, false)) {
++        if (recipeKey.func_190926_b() || !net.minecraftforge.oredict.OreDictionary.itemMatches(recipeKey, input, false)) {
 +            boolean matched = false;
-+            for (Map.Entry<ItemStack, ItemStack> e : FurnaceRecipes.func_77602_a().func_77599_b().entrySet()) {
-+                if (OreDictionary.itemMatches(e.getKey(), input, false)) {
++            for (java.util.Map.Entry<ItemStack, ItemStack> e : FurnaceRecipes.func_77602_a().func_77599_b().entrySet()) {
++                if (net.minecraftforge.oredict.OreDictionary.itemMatches(e.getKey(), input, false)) {
 +                    recipeKey = e.getKey();
 +                    recipeOutput = e.getValue();
 +                    matched = true;
@@ -336,7 +315,7 @@
 +    }
 +
 +    boolean itemsMatch(ItemStack a, ItemStack b) {
-+        return ItemHandlerHelper.canItemStacksStack(a, b);
++        return net.minecraftforge.items.ItemHandlerHelper.canItemStacksStack(a, b);
      }
  
      public void func_145949_j()
@@ -379,14 +358,14 @@
 +    }
 +
 +    @Override
-+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
++    public boolean shouldRefresh(net.minecraft.world.World world, net.minecraft.util.math.BlockPos pos, net.minecraft.block.state.IBlockState oldState, net.minecraft.block.state.IBlockState newState) {
 +        if (oldState.func_177230_c() == Blocks.field_150460_al && newState.func_177230_c() == Blocks.field_150470_am) return false;
 +        else if (oldState.func_177230_c() == Blocks.field_150470_am && newState.func_177230_c() == Blocks.field_150460_al) return false;
 +        else return oldState.func_177230_c() != newState.func_177230_c();
      }
  
      public static int func_145952_a(ItemStack p_145952_0_)
-@@ -330,6 +304,8 @@
+@@ -330,6 +296,8 @@
          }
          else
          {
@@ -395,7 +374,7 @@
              Item item = p_145952_0_.func_77973_b();
  
              if (item == Item.func_150898_a(Blocks.field_150376_bx))
-@@ -376,37 +352,43 @@
+@@ -376,37 +344,43 @@
              {
                  return 100;
              }
@@ -467,7 +446,7 @@
              }
          }
      }
-@@ -416,7 +398,6 @@
+@@ -416,7 +390,6 @@
          return func_145952_a(p_145954_0_) > 0;
      }
  
@@ -475,7 +454,7 @@
      public boolean func_70300_a(EntityPlayer p_70300_1_)
      {
          if (this.field_145850_b.func_175625_s(this.field_174879_c) != this)
-@@ -425,28 +406,18 @@
+@@ -425,28 +398,18 @@
          }
          else
          {
@@ -505,7 +484,7 @@
      public boolean func_94041_b(int p_94041_1_, ItemStack p_94041_2_)
      {
          if (p_94041_1_ == 2)
-@@ -464,7 +435,6 @@
+@@ -464,7 +427,6 @@
          }
      }
  
@@ -513,7 +492,7 @@
      public int[] func_180463_a(EnumFacing p_180463_1_)
      {
          if (p_180463_1_ == EnumFacing.DOWN)
-@@ -477,13 +447,11 @@
+@@ -477,13 +439,11 @@
          }
      }
  
@@ -527,7 +506,7 @@
      public boolean func_180461_b(int p_180461_1_, ItemStack p_180461_2_, EnumFacing p_180461_3_)
      {
          if (p_180461_3_ == EnumFacing.DOWN && p_180461_1_ == 1)
-@@ -499,19 +467,16 @@
+@@ -499,19 +459,16 @@
          return true;
      }
  
@@ -547,7 +526,7 @@
      public int func_174887_a_(int p_174887_1_)
      {
          switch (p_174887_1_)
-@@ -529,7 +494,6 @@
+@@ -529,7 +486,6 @@
          }
      }
  
@@ -555,7 +534,7 @@
      public void func_174885_b(int p_174885_1_, int p_174885_2_)
      {
          switch (p_174885_1_)
-@@ -548,15 +512,32 @@
+@@ -548,15 +504,32 @@
          }
      }
  
