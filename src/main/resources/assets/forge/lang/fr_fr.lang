@@ -241,3 +241,16 @@ forge.container.enchant.limitedEnchantability=Capacité d'enchantement limitée
 attribute.name.generic.reachDistance=Distance de portée
 attribute.name.forge.swimSpeed=Vitesse de nage
 
+options.search=Chercher
+options.showAll=Tout
+options.showConflicts=Conflits
+options.showNone=Non-liées
+options.availableKeys=Touches disp.
+options.sort=Tri
+options.category=Catégorie
+options.key=Touche
+options.sortNone=Aucun
+options.sortAZ=A->Z
+options.sortZA=Z->A
+options.toggleFree=Touches disp.
+options.confirmReset=Confirmer ?

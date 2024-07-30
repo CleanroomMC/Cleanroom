@@ -272,3 +272,17 @@ fml.button.open.file=Open %s
 forge.container.enchant.limitedEnchantability=Limited Enchantability
 attribute.name.generic.reachDistance=Reach Distance
 attribute.name.forge.swimSpeed=Swim Speed
+
+options.search=Search
+options.showAll=Show All
+options.showConflicts=Show Conflicts
+options.showNone=Show Unbound
+options.availableKeys=Available Keys
+options.sort=Sort
+options.category=Category
+options.key=Key
+options.sortNone=None
+options.sortAZ=A->Z
+options.sortZA=Z->A
+options.toggleFree=Toggle Free
+options.confirmReset=Confirm?

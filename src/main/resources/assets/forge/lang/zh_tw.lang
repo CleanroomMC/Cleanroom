@@ -241,3 +241,16 @@ forge.container.enchant.limitedEnchantability=附魔能力限制
 attribute.name.generic.reachDistance=觸及半徑
 attribute.name.forge.swimSpeed=游泳速度
 
+options.search=搜尋
+options.showAll=顯示全部
+options.showConflicts=顯示衝突
+options.showNone=顯示未綁定
+options.availableKeys=可用按鍵
+options.sort=排序
+options.category=分類
+options.key=按鍵
+options.sortNone=無
+options.sortAZ=A 至 Z
+options.sortZA=Z 至 A
+options.toggleFree=自由綁定
+options.confirmReset=確認？
