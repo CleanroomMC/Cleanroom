@@ -12,36 +12,63 @@
      private final GuiScreen field_146496_h;
      protected String field_146495_a = "Controls";
      private final GameSettings field_146497_i;
-@@ -29,14 +26,11 @@
+@@ -23,152 +20,449 @@
+     private GuiKeyBindingList field_146494_r;
+     private GuiButton field_146493_s;
+ 
++    private GuiTextField search;
++    private String lastFilterText = "";
++
++    private boolean conflicts = false;
++    private boolean none = false;
++    private boolean toggleFreeKeys = false;
++
++    private us.getfluxed.controlsearch.client.gui.EnumSortingType sortingType = us.getfluxed.controlsearch.client.gui.EnumSortingType.DEFAULT;
++
++    public GuiButton buttonConflict;
++    public GuiButton buttonNone;
++    public GuiButton buttonSorting;
++    public GuiButton buttonToggleKeys;
++
++    public net.minecraftforge.fml.client.config.GuiCheckBox boxSearchCategory;
++    public net.minecraftforge.fml.client.config.GuiCheckBox boxSearchKey;
++
+     public GuiControls(GuiScreen p_i1027_1_, GameSettings p_i1027_2_)
+     {
+         this.field_146496_h = p_i1027_1_;
          this.field_146497_i = p_i1027_2_;
      }
  
 -    @Override
      public void func_73866_w_()
      {
++        this.conflicts = false;
++        this.none = false;
++        this.sortingType = us.getfluxed.controlsearch.client.gui.EnumSortingType.DEFAULT;
          this.field_146494_r = new GuiKeyBindingList(this, this.field_146297_k);
-         this.field_146292_n.add(new GuiButton(200, this.field_146294_l / 2 - 155 + 160, this.field_146295_m - 29, 150, 20, I18n.func_135052_a("gui.done")));
+-        this.field_146292_n.add(new GuiButton(200, this.field_146294_l / 2 - 155 + 160, this.field_146295_m - 29, 150, 20, I18n.func_135052_a("gui.done")));
 -        this.field_146493_s = this.func_189646_b(
 -                                  new GuiButton(201, this.field_146294_l / 2 - 155, this.field_146295_m - 29, 150, 20, I18n.func_135052_a("controls.resetAll"))
 -                              );
-+        this.field_146493_s = this.func_189646_b(new GuiButton(201, this.field_146294_l / 2 - 155, this.field_146295_m - 29, 150, 20, I18n.func_135052_a("controls.resetAll")));
-         this.field_146495_a = I18n.func_135052_a("controls.title");
+-        this.field_146495_a = I18n.func_135052_a("controls.title");
++        this.field_146292_n.add(new GuiButton(200, this.field_146294_l / 2 - 155, this.field_146295_m - 29, 150, 20, translate("gui.done")));
++        this.field_146493_s = this.func_189646_b(new GuiButton(201, this.field_146294_l / 2 - 155 + 160, this.field_146295_m - 29, 155, 20, translate("controls.resetAll")));
++        this.field_146495_a = translate("controls.title");
          int i = 0;
  
-@@ -44,39 +38,23 @@
-         {
-             if (gamesettings$options.func_74380_a())
-             {
+-        for (GameSettings.Options gamesettings$options : field_146492_g)
+-        {
+-            if (gamesettings$options.func_74380_a())
+-            {
 -                this.field_146292_n
 -                .add(
 -                    new GuiOptionSlider(
 -                        gamesettings$options.func_74381_c(), this.field_146294_l / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), gamesettings$options
 -                    )
 -                );
-+                this.field_146292_n.add(new GuiOptionSlider(gamesettings$options.func_74381_c(), this.field_146294_l / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), gamesettings$options));
-             }
-             else
-             {
+-            }
+-            else
+-            {
 -                this.field_146292_n
 -                .add(
 -                    new GuiOptionButton(
@@ -52,97 +79,484 @@
 -                        this.field_146497_i.func_74297_c(gamesettings$options)
 -                    )
 -                );
+-            }
+-
++        for(GameSettings.Options gamesettings$options : field_146492_g) {
++            if(gamesettings$options.func_74380_a()) {
++                this.field_146292_n.add(new GuiOptionSlider(gamesettings$options.func_74381_c(), this.field_146294_l / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), gamesettings$options));
++            } else {
 +                this.field_146292_n.add(new GuiOptionButton(gamesettings$options.func_74381_c(), this.field_146294_l / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), gamesettings$options, this.field_146497_i.func_74297_c(gamesettings$options)));
-             }
- 
++            }
              ++i;
          }
++
++        search = new GuiTextField(0, field_146297_k.field_71466_p, this.field_146294_l / 2 - 154, this.field_146295_m - 29 - 23, 148, 18);
++        search.func_146205_d(true);
++        buttonConflict = new GuiButton(2906, this.field_146294_l / 2 - 155 + 160, this.field_146295_m - 29 - 24, 150 / 2, 20, translate("options.showConflicts"));
++        buttonNone = new GuiButton(2907, this.field_146294_l / 2 - 155 + 160 + 80, this.field_146295_m - 29 - 24, 150 / 2, 20, translate("options.showNone"));
++        buttonSorting = new GuiButton(2908, this.field_146294_l / 2 - 155 + 160 + 80, this.field_146295_m - 29 - 24 - 24, 150 / 2, 20, translate("options.sort") + ": " + sortingType.getName());
++        boxSearchCategory = new net.minecraftforge.fml.client.config.GuiCheckBox(2909, this.field_146294_l / 2 - (155 / 2) + 20, this.field_146295_m - 29 - 37, translate("options.category"), false);
++        boxSearchKey = new net.minecraftforge.fml.client.config.GuiCheckBox(2910, this.field_146294_l / 2 - (155 / 2) + 20, this.field_146295_m - 29 - 50, translate("options.key"), false);
++        buttonToggleKeys = new GuiButton(2911, this.field_146294_l / 2 - 155 + 160, this.field_146295_m - 29 - 24 - 24, 150 / 2, 20, translate("options.toggleFree"));
++        this.field_146292_n.add(buttonConflict);
++        this.field_146292_n.add(buttonNone);
++        this.field_146292_n.add(buttonSorting);
++        this.field_146292_n.add(boxSearchCategory);
++        this.field_146292_n.add(boxSearchKey);
++        this.field_146292_n.add(buttonToggleKeys);
      }
  
--    @Override
-     public void func_146274_d() throws IOException
-     {
-         super.func_146274_d();
+     @Override
+-    public void func_146274_d() throws IOException
+-    {
+-        super.func_146274_d();
++    public void func_73876_c() {
++        search.func_146178_a();
++        if(!search.func_146179_b().equals(lastFilterText)) {
++            refreshKeys();
++        }
++    }
++
++    public void refreshKeys() {
++        java.util.LinkedList<GuiListExtended.IGuiListEntry> workingList = getAllEntries();
++        java.util.LinkedList<GuiListExtended.IGuiListEntry> newList = getEmptyList();
++        if(none) {
++            java.util.LinkedList<GuiListExtended.IGuiListEntry> unbound = new java.util.LinkedList<>();
++            for(GuiListExtended.IGuiListEntry entry : workingList) {
++                if(entry instanceof GuiKeyBindingList.KeyEntry ent) {
++                    if(ent.getKeybinding().func_151463_i() == 0) {
++                        unbound.add(ent);
++                    }
++                }
++            }
++            workingList = unbound;
++        } else if(conflicts) {
++            java.util.LinkedList<GuiListExtended.IGuiListEntry> conflicts = new java.util.LinkedList<>();
++            for(GuiListExtended.IGuiListEntry entry : workingList) {
++                if(entry instanceof GuiKeyBindingList.KeyEntry) {
++                    GuiKeyBindingList.KeyEntry ent = (GuiKeyBindingList.KeyEntry) entry;
++                    if(ent.getKeybinding().func_151463_i() == 0) {
++                        continue;
++                    }
++                    for(GuiListExtended.IGuiListEntry entry1 : ((GuiKeyBindingList) field_146494_r).getListEntriesAll()) {
++                        if(!entry.equals(entry1))
++                            if(entry1 instanceof GuiKeyBindingList.KeyEntry ent1) {
++                                if(ent1.getKeybinding().func_151463_i() == 0) {
++                                    continue;
++                                }
++                                if(ent.getKeybinding().conflicts(ent1.getKeybinding())) {
++                                    if(!conflicts.contains(ent))
++                                        conflicts.add(ent);
++                                    if(!conflicts.contains(ent1))
++                                        conflicts.add(ent1);
++                                }
++                            }
++                    }
++
++                }
++            }
++            workingList = conflicts;
++        }
++        boolean searched = false;
++        if(!search.func_146179_b().isEmpty()) {
++
++            for(GuiListExtended.IGuiListEntry entry : workingList) {
++                if(!isKeyEntry(entry)) {
++                    continue;
++                }
++                GuiKeyBindingList.KeyEntry ent = (GuiKeyBindingList.KeyEntry) entry;
++                String compareStr = translate(ent.getKeybinding().func_151464_g()).toLowerCase();
++                if(boxSearchCategory.isChecked()) {
++                    compareStr = translate(ent.getKeybinding().func_151466_e()).toLowerCase();
++                }
++                if(boxSearchKey.isChecked()) {
++                    compareStr = translate(ent.getKeybinding().getDisplayName()).toLowerCase();
++                }
++
++                if(compareStr.contains(search.func_146179_b().toLowerCase())) {
++                    newList.add(entry);
++                }
++            }
++            searched = true;
++        }
++        lastFilterText = search.func_146179_b();
++        if(!searched) {
++            newList = workingList;
++        }
++        newList = sort(newList, sortingType);
++        setEntries(newList);
++
++    }
++
++
++    public java.util.LinkedList<GuiListExtended.IGuiListEntry> sort(java.util.LinkedList<GuiListExtended.IGuiListEntry> list, us.getfluxed.controlsearch.client.gui.EnumSortingType type) {
++        if(sortingType != us.getfluxed.controlsearch.client.gui.EnumSortingType.DEFAULT) {
++            java.util.LinkedList<GuiListExtended.IGuiListEntry> filteredList = getEmptyList();
++            for(GuiListExtended.IGuiListEntry entry : list) {
++                if(isKeyEntry(entry)) {
++                    filteredList.add(entry);
++                }
++            }
++            filteredList.sort((o1, o2) -> {
++                if(o1 instanceof GuiKeyBindingList.KeyEntry ent1 && o2 instanceof GuiKeyBindingList.KeyEntry ent2) {
++                    if(type == us.getfluxed.controlsearch.client.gui.EnumSortingType.AZ) {
++                        return translate(ent1.getKeybinding().func_151464_g()).compareTo(translate(ent2.getKeybinding().func_151464_g()));
++                    } else if(type == us.getfluxed.controlsearch.client.gui.EnumSortingType.ZA) {
++                        return translate(ent2.getKeybinding().func_151464_g()).compareTo(translate(ent1.getKeybinding().func_151464_g()));
++                    }
++
++                }
++                return -1;
++            });
++            return filteredList;
++        }
++        return list;
++    }
++
++
++    public java.util.LinkedList<GuiListExtended.IGuiListEntry> getAllEntries() {
++        return ((GuiKeyBindingList) field_146494_r).getListEntriesAll();
++    }
++
++    public java.util.LinkedList<GuiListExtended.IGuiListEntry> getEmptyList() {
++        return new java.util.LinkedList<>();
++    }
++
++    public void setEntries(java.util.LinkedList<GuiListExtended.IGuiListEntry> entries) {
++        ((GuiKeyBindingList) field_146494_r).setListEntries(entries);
++    }
++
++    public boolean isKeyEntry(GuiListExtended.IGuiListEntry entry) {
++        return entry instanceof GuiKeyBindingList.KeyEntry;// || entry instanceof GuiKeyBindingList.KeyEntry; Vanilla class doesn't have the methods we need and reflection / AT would be tedious
++    }
++
++    public void func_146274_d() throws IOException {
++        superSuperHandleMouseInput();
          this.field_146494_r.func_178039_p();
      }
  
 -    @Override
-     protected void func_146284_a(GuiButton p_146284_1_) throws IOException
-     {
-         if (p_146284_1_.field_146127_k == 200)
-@@ -87,7 +65,7 @@
-         {
-             for (KeyBinding keybinding : this.field_146297_k.field_71474_y.field_74324_K)
-             {
+-    protected void func_146284_a(GuiButton p_146284_1_) throws IOException
+-    {
+-        if (p_146284_1_.field_146127_k == 200)
+-        {
++    public void superSuperHandleMouseInput() {
++        int i = org.lwjgl.input.Mouse.getEventX() * this.field_146294_l / this.field_146297_k.field_71443_c;
++        int j = this.field_146295_m - org.lwjgl.input.Mouse.getEventY() * this.field_146295_m / this.field_146297_k.field_71440_d - 1;
++        int k = org.lwjgl.input.Mouse.getEventButton();
++
++        if(org.lwjgl.input.Mouse.getEventButtonState()) {
++            if(this.field_146297_k.field_71474_y.field_85185_A && this.field_146298_h++ > 0) {
++                return;
++            }
++
++            this.field_146287_f = k;
++            this.field_146288_g = Minecraft.func_71386_F();
++            this.func_73864_a(i, j, this.field_146287_f);
++        } else if(k != -1) {
++            if(this.field_146297_k.field_71474_y.field_85185_A && --this.field_146298_h > 0) {
++                return;
++            }
++
++            this.field_146287_f = -1;
++            this.func_146286_b(i, j, k);
++        } else if(this.field_146287_f != -1 && this.field_146288_g > 0L) {
++            long l = Minecraft.func_71386_F() - this.field_146288_g;
++            this.func_146273_a(i, j, this.field_146287_f, l);
++        }
++    }
++
++    protected void func_146284_a(GuiButton p_146284_1_) {
++        if(p_146284_1_.field_146127_k == 200) {
+             this.field_146297_k.func_147108_a(this.field_146496_h);
+-        }
+-        else if (p_146284_1_.field_146127_k == 201)
+-        {
+-            for (KeyBinding keybinding : this.field_146297_k.field_71474_y.field_74324_K)
+-            {
 -                keybinding.func_151462_b(keybinding.func_151469_h());
++        } else if(p_146284_1_.field_146127_k == 201) {
++            for(KeyBinding keybinding : this.field_146297_k.field_71474_y.field_74324_K) {
 +                keybinding.setToDefault();
              }
- 
+-
              KeyBinding.func_74508_b();
-@@ -99,11 +77,11 @@
+-        }
+-        else if (p_146284_1_.field_146127_k < 100 && p_146284_1_ instanceof GuiOptionButton)
+-        {
+-            this.field_146497_i.func_74306_a(((GuiOptionButton)p_146284_1_).func_146136_c(), 1);
++            toggleFreeKeys = false;
++        } else if(p_146284_1_.field_146127_k < 100 && p_146284_1_ instanceof GuiOptionButton) {
++            this.field_146497_i.func_74306_a(((GuiOptionButton) p_146284_1_).func_146136_c(), 1);
+             p_146284_1_.field_146126_j = this.field_146497_i.func_74297_c(GameSettings.Options.func_74379_a(p_146284_1_.field_146127_k));
++        } else if(p_146284_1_.field_146127_k == 2906) {
++            toggleFreeKeys = false;
++            none = false;
++            buttonNone.field_146126_j = translate("options.showNone");
++            if(!conflicts) {
++                conflicts = true;
++                buttonConflict.field_146126_j = translate("options.showAll");
++                refreshKeys();
++            } else {
++                conflicts = false;
++                buttonConflict.field_146126_j = translate("options.showConflicts");
++                refreshKeys();
++            }
++        } else if(p_146284_1_.field_146127_k == 2907) {
++            toggleFreeKeys = false;
++            conflicts = false;
++            buttonConflict.field_146126_j = translate("options.showConflicts");
++            if(!none) {
++                none = true;
++                buttonNone.field_146126_j = translate("options.showAll");
++                refreshKeys();
++            } else {
++                none = false;
++                buttonNone.field_146126_j = translate("options.showNone");
++                refreshKeys();
++            }
++        } else if(p_146284_1_.field_146127_k == 2908) {
++            toggleFreeKeys = false;
++            sortingType = sortingType.cycle();
++            buttonSorting.field_146126_j = translate("options.sort") + ": " + sortingType.getName();
++            refreshKeys();
++        } else if(p_146284_1_.field_146127_k == 2909) {
++            toggleFreeKeys = false;
++            boxSearchKey.setIsChecked(false);
++            refreshKeys();
++        } else if(p_146284_1_.field_146127_k == 2910) {
++            toggleFreeKeys = false;
++            boxSearchCategory.setIsChecked(false);
++            refreshKeys();
++        } else if(p_146284_1_.field_146127_k == 2911) {
++            buttonToggleKeys.field_146126_j = translate("options.toggleFree");
++            toggleFreeKeys = !toggleFreeKeys;
          }
      }
  
 -    @Override
-     protected void func_73864_a(int p_73864_1_, int p_73864_2_, int p_73864_3_) throws IOException
+-    protected void func_73864_a(int p_73864_1_, int p_73864_2_, int p_73864_3_) throws IOException
++    protected void func_73864_a(int p_73864_1_, int p_73864_2_, int p_73864_3_)
      {
-         if (this.field_146491_f != null)
-         {
+-        if (this.field_146491_f != null)
+-        {
++        if(this.field_146491_f != null) {
 +            this.field_146491_f.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifier(), -100 + p_73864_3_);
              this.field_146497_i.func_151440_a(this.field_146491_f, -100 + p_73864_3_);
              this.field_146491_f = null;
              KeyBinding.func_74508_b();
-@@ -114,7 +92,6 @@
-         }
-     }
- 
+-        }
+-        else if (p_73864_3_ != 0 || !this.field_146494_r.func_148179_a(p_73864_1_, p_73864_2_, p_73864_3_))
+-        {
+-            super.func_73864_a(p_73864_1_, p_73864_2_, p_73864_3_);
+-        }
+-    }
+-
 -    @Override
++        } else if(p_73864_3_ != 0 || !this.field_146494_r.func_148179_a(p_73864_1_, p_73864_2_, p_73864_3_)) {
++            superSuperMouseClicked(p_73864_1_, p_73864_2_, p_73864_3_);
++        }
++        search.func_146192_a(p_73864_1_, p_73864_2_, p_73864_3_);
++        if(p_73864_3_ == 1 && p_73864_1_ >= search.field_146209_f && p_73864_1_ < search.field_146209_f + search.field_146218_h && p_73864_2_ >= search.field_146210_g && p_73864_2_ < search.field_146210_g + search.field_146219_i) {
++            search.func_146180_a("");
++        }
++    }
++
++    protected void superSuperMouseClicked(int mouseX, int mouseY, int mouseButton) {
++        if(mouseButton == 0) {
++            for(int i = 0; i < this.field_146292_n.size(); ++i) {
++                GuiButton guibutton = this.field_146292_n.get(i);
++
++                if(guibutton.func_146116_c(this.field_146297_k, mouseX, mouseY)) {
++                    net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Pre event = new net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Pre(this, guibutton, this.field_146292_n);
++                    if(net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event))
++                        break;
++                    guibutton = event.getButton();
++                    this.field_146290_a = guibutton;
++                    guibutton.func_146113_a(this.field_146297_k.func_147118_V());
++                    this.func_146284_a(guibutton);
++                    if(this.equals(this.field_146297_k.field_71462_r))
++                        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Post(this, event.getButton(), this.field_146292_n));
++                }
++            }
++        }
++    }
++
      protected void func_146286_b(int p_146286_1_, int p_146286_2_, int p_146286_3_)
      {
-         if (p_146286_3_ != 0 || !this.field_146494_r.func_148181_b(p_146286_1_, p_146286_2_, p_146286_3_))
-@@ -123,24 +100,27 @@
-         }
-     }
- 
+-        if (p_146286_3_ != 0 || !this.field_146494_r.func_148181_b(p_146286_1_, p_146286_2_, p_146286_3_))
+-        {
+-            super.func_146286_b(p_146286_1_, p_146286_2_, p_146286_3_);
+-        }
+-    }
+-
 -    @Override
-     protected void func_73869_a(char p_73869_1_, int p_73869_2_) throws IOException
-     {
-         if (this.field_146491_f != null)
-         {
-             if (p_73869_2_ == 1)
-             {
+-    protected void func_73869_a(char p_73869_1_, int p_73869_2_) throws IOException
+-    {
+-        if (this.field_146491_f != null)
+-        {
+-            if (p_73869_2_ == 1)
+-            {
++        if(p_146286_3_ != 0 || !this.field_146494_r.func_148181_b(p_146286_1_, p_146286_2_, p_146286_3_)) {
++            superSuperMouseReleased(p_146286_1_, p_146286_2_, p_146286_3_);
++        }
++    }
++
++    protected void superSuperMouseReleased(int mouseX, int mouseY, int state) {
++        if(this.field_146290_a != null && state == 0) {
++            this.field_146290_a.func_146118_a(mouseX, mouseY);
++            this.field_146290_a = null;
++        }
++    }
++
++    protected void func_73869_a(char p_73869_1_, int p_73869_2_) {
++        if(this.field_146491_f != null) {
++            if(p_73869_2_ == 1) {
 +                this.field_146491_f.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.NONE, 0);
                  this.field_146497_i.func_151440_a(this.field_146491_f, 0);
-             }
-             else if (p_73869_2_ != 0)
-             {
+-            }
+-            else if (p_73869_2_ != 0)
+-            {
++            } else if(p_73869_2_ != 0) {
 +                this.field_146491_f.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifier(), p_73869_2_);
                  this.field_146497_i.func_151440_a(this.field_146491_f, p_73869_2_);
-             }
-             else if (p_73869_1_ > 0)
-             {
+-            }
+-            else if (p_73869_1_ > 0)
+-            {
++            } else if(p_73869_1_ > 0) {
 +                this.field_146491_f.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifier(), p_73869_1_ + 256);
                  this.field_146497_i.func_151440_a(this.field_146491_f, p_73869_1_ + 256);
              }
- 
-+            if (!net.minecraftforge.client.settings.KeyModifier.isKeyCodeModifier(p_73869_2_))
-             this.field_146491_f = null;
+-
+-            this.field_146491_f = null;
++            if(!net.minecraftforge.client.settings.KeyModifier.isKeyCodeModifier(p_73869_2_)) {
++                this.field_146491_f = null;
++            }
              this.field_152177_g = Minecraft.func_71386_F();
              KeyBinding.func_74508_b();
-@@ -151,7 +131,6 @@
-         }
-     }
- 
+-        }
+-        else
+-        {
+-            super.func_73869_a(p_73869_1_, p_73869_2_);
+-        }
+-    }
+-
 -    @Override
-     public void func_73863_a(int p_73863_1_, int p_73863_2_, float p_73863_3_)
-     {
+-    public void func_73863_a(int p_73863_1_, int p_73863_2_, float p_73863_3_)
+-    {
++        } else {
++            if(search.func_146206_l())
++                search.func_146201_a(p_73869_1_, p_73869_2_);
++            else {
++                superSuperKeyTyped(p_73869_1_, p_73869_2_);
++            }
++        }
++    }
++
++    protected void superSuperKeyTyped(char typedChar, int keyCode) {
++        if(keyCode == 1) {
++            this.field_146297_k.func_147108_a(null);
++
++            if(this.field_146297_k.field_71462_r == null) {
++                this.field_146297_k.func_71381_h();
++            }
++        }
++    }
++
++    public void func_73863_a(int p_73863_1_, int p_73863_2_, float p_73863_3_) {
          this.func_146276_q_();
-@@ -161,7 +140,7 @@
+         this.field_146494_r.func_148128_a(p_73863_1_, p_73863_2_, p_73863_3_);
+         this.func_73732_a(this.field_146289_q, this.field_146495_a, this.field_146294_l / 2, 8, 16777215);
++        this.func_73732_a(this.field_146289_q, translate("options.search"), this.field_146294_l / 2 - (155 / 2), this.field_146295_m - 29 - 39, 16777215);
+         boolean flag = false;
  
-         for (KeyBinding keybinding : this.field_146497_i.field_74324_K)
-         {
+-        for (KeyBinding keybinding : this.field_146497_i.field_74324_K)
+-        {
 -            if (keybinding.func_151463_i() != keybinding.func_151469_h())
-+            if (!keybinding.isSetToDefaultValue())
-             {
+-            {
++        for(KeyBinding keybinding : this.field_146497_i.field_74324_K) {
++            if(!keybinding.isSetToDefaultValue()) {
                  flag = true;
                  break;
+             }
+         }
+ 
+         this.field_146493_s.field_146124_l = flag;
+-        super.func_73863_a(p_73863_1_, p_73863_2_, p_73863_3_);
++        superSuperDrawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
++        search.func_146194_f();
++
++        if(toggleFreeKeys) {
++            func_73734_a(field_146494_r.field_148152_e, field_146494_r.field_148153_b, field_146494_r.field_148151_d, field_146494_r.field_148154_c , 0xFF000000);
++            java.util.LinkedList<Integer> keyCodes = new java.util.LinkedList<>();
++            for(int i = 2; i < 256; i++) {
++                keyCodes.add(i);
++            }
++            keyCodes.add(-98);
++            keyCodes.add(-99);
++            keyCodes.add(-100);
++
++            java.util.List<Integer> removed = new java.util.ArrayList<>();
++            ((GuiKeyBindingList) field_146494_r).getListEntriesAll().forEach(i -> {
++                if(i instanceof GuiKeyBindingList.KeyEntry) {
++                    removed.add(((GuiKeyBindingList.KeyEntry) i).getKeybinding().func_151463_i());
++                }
++            });
++            int[] rem = new int[]{0xDB, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x70, 0x71, 0x29, 0x79, 0x57, 0x7B, 0x7D, 0x8D, 0x90, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x9C, 0xA7, 0xB3, 0xC5, 0x91, 0xC4, 0xDA};
++            for(int i : rem) {
++                removed.add(i);
++            }
++
++            keyCodes.forEach(i -> {
++                if(i >= 0)
++                    if(org.lwjgl.input.Keyboard.getKeyName(i) == null || org.lwjgl.input.Keyboard.getKeyName(i).isEmpty()) {
++                        removed.add(i);
++                    }
++            });
++            keyCodes.removeAll(removed);
++            java.util.Collections.sort(keyCodes);
++            final int[] x = {0};
++            final int[] y = {0};
++            final int[] count = {0};
++            field_146289_q.func_78276_b(translate("options.availableKeys") + ":", field_146294_l / 2, field_146494_r.field_148153_b + 2, 0xFFFFFF);
++            keyCodes.forEach(key -> {
++                if(key >= 0) {
++                    field_146289_q.func_78276_b(org.lwjgl.input.Keyboard.getKeyName(key), field_146494_r.field_148152_e + (x[0] * 65), field_146494_r.field_148153_b + 12 + (y[0]++ * field_146289_q.field_78288_b), 0xFF55FF);
++                } else {
++                    switch(key + 100) {
++                        case 0:
++                            field_146289_q.func_78276_b("Button 1", field_146494_r.field_148152_e + (x[0] * 65), field_146494_r.field_148153_b + 12 + (y[0]++ * field_146289_q.field_78288_b), 0x55FF55);
++                            break;
++                        case 1:
++                            field_146289_q.func_78276_b("Button 2", field_146494_r.field_148152_e + (x[0] * 65), field_146494_r.field_148153_b + 12 + (y[0]++ * field_146289_q.field_78288_b), 0x55FF55);
++                            break;
++                        case 2:
++                            field_146289_q.func_78276_b("Button 3", field_146494_r.field_148152_e + (x[0] * 65), field_146494_r.field_148153_b + 12 + (y[0]++ * field_146289_q.field_78288_b), 0x55FF55);
++                            break;
++
++                    }
++                }
++                count[0]++;
++                if(count[0] > field_146494_r.field_148158_l / 30) {
++                    count[0] = 0;
++                    x[0]++;
++                    y[0] = 0;
++                }
++            });
++        }
++    }
++
++    public void superSuperDrawScreen(int mouseX, int mouseY, float partialTicks) {
++        for(GuiButton aButtonList : this.field_146292_n) {
++            aButtonList.func_191745_a(this.field_146297_k, mouseX, mouseY, partialTicks);
++        }
++
++        for(GuiLabel aLabelList : this.field_146293_o) {
++            aLabelList.func_146159_a(this.field_146297_k, mouseX, mouseY);
++        }
++    }
++
++    protected String translate(String key) {
++        return I18n.func_135052_a(key);
+     }
+ }
