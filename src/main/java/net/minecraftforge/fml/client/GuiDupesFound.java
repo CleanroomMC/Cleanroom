@@ -42,7 +42,7 @@ public class GuiDupesFound extends GuiErrorBase
         int offset = Math.max(85 - dupes.dupes.size() * 10, 10);
         this.drawCenteredString(this.fontRenderer, "Forge Mod Loader has found a problem with your minecraft installation", this.width / 2, offset, 0xFFFFFF);
         offset+=10;
-        this.drawCenteredString(this.fontRenderer, "You have mod sources that are duplicate within your system", this.width / 2, offset, 0xFFFFFF);
+        this.drawCenteredString(this.fontRenderer, "You have duplicate mods installed. Please remove duplicates to avoid conflicts.", this.width / 2, offset, 0xFFFFFF);
         offset+=10;
         this.drawCenteredString(this.fontRenderer, "Mod Id : File name", this.width / 2, offset, 0xFFFFFF);
         offset+=5;
