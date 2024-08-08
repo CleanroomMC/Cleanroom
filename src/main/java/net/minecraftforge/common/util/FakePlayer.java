@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 
 import com.mojang.authlib.GameProfile;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,6 +37,8 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+
+import java.util.function.Consumer;
 
 //Preliminary, simple Fake Player class
 public class FakePlayer extends EntityPlayerMP
@@ -51,6 +54,8 @@ public class FakePlayer extends EntityPlayerMP
     @Override public void sendMessage(ITextComponent component) {}
     @Override public void addStat(StatBase par1StatBase, int par2){}
     @Override public void openGui(Object mod, int modGuiId, World world, int x, int y, int z){}
+    @Override public void openGui(Object mod, int modGuiId, World world, int x, int y, int z, Consumer<ByteBuf> encoder) {}
+    @Override public void openGui(Object mod, int modGuiId, World world, int x, int y, int z, ByteBuf customData) {}
     @Override public boolean isEntityInvulnerable(DamageSource source){ return true; }
     @Override public boolean canAttackPlayer(EntityPlayer player){ return false; }
     @Override public void onDeath(DamageSource source){ return; }
