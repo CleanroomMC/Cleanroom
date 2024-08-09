@@ -26,6 +26,16 @@ import net.minecraft.client.multiplayer.WorldClient;
 
 public abstract class IRenderHandler
 {
+    /**
+     * Renders the current frame. This method is called by the Minecraft client on every frame.
+     *
+     * @param partialTicks The time elapsed since the last frame, in ticks. This value is used to
+     *                     interpolate between frames for smoother animations.
+     * @param world        The client-side world object. This object provides access to the game's
+     *                     world data and entities.
+     * @param mc           The main Minecraft client object. This object provides access to various
+     *                     client-side functionalities.
+     */
     @SideOnly(Side.CLIENT)
     public abstract void render(float partialTicks, WorldClient world, Minecraft mc);
 }

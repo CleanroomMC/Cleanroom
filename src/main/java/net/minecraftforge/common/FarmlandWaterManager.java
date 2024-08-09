@@ -131,7 +131,10 @@ public class FarmlandWaterManager
 
     /**
      * Tests if a block is in a region that is watered by blocks. This does not check vanilla water, see {@link net.minecraft.block.BlockFarmland#hasWater(World, BlockPos)}
-     * @return true if there is a ticket with an AABB that includes your block
+     *
+     * @param world The world where the block is located.
+     * @param pos The position of the block.
+     * @return true if there is a ticket with an AABB that includes your block.
      */
     public static boolean hasBlockWaterTicket(World world, BlockPos pos)
     {

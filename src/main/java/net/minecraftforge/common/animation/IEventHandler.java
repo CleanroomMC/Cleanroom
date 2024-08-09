@@ -22,9 +22,19 @@ package net.minecraftforge.common.animation;
 
 
 /**
- * Handler for animation events;
+ * Handler for animation events. This interface is used to define a contract for classes that
+ * will handle animation events.
+ *
+ * @param <T> The type of the instance that will be passed to the handleEvents method.
  */
 public interface IEventHandler<T>
 {
+    /**
+     * Handles animation events for a specific instance.
+     *
+     * @param instance The instance for which the events are being handled.
+     * @param time The current time in the animation.
+     * @param pastEvents An iterable collection of events that have occurred in the past.
+     */
     void handleEvents(T instance, float time, Iterable<Event> pastEvents);
 }

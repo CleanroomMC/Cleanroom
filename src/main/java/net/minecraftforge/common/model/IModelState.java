@@ -21,16 +21,21 @@ package net.minecraftforge.common.model;
 
 import java.util.Optional;
 
-/*
+/**
  * Represents the dynamic information associated with the model.
  * Common use case is (possibly interpolated) animation frame.
  */
 public interface IModelState
 {
-    /*
+    /**
      * Returns the transformation that needs to be applied to the specific part of the model.
      * Coordinate system is determined by the part type.
-     * if no part is provided, global model transformation is returned.
+     * If no part is provided, global model transformation is returned.
+     *
+     * @param part Optional containing the specific part of the model for which the transformation is required.
+     *             If no part is provided, this should be an empty Optional.
+     * @return Optional containing the TRSRTransformation that needs to be applied.
+     *         If no transformation is required, this should be an empty Optional.
      */
     Optional<TRSRTransformation> apply(Optional<? extends IModelPart> part);
 }

@@ -82,10 +82,13 @@ public class DungeonHooks
     }
 
     /**
-     * Gets a random mob name from the list.
-     * @param rand World generation random number generator
-     * @return The mob name
-     */
+    * Gets a random mob name from the list.
+    * This method uses the WeightedRandom class to select a mob based on their rarity.
+    * The rarity is determined by the weight assigned to each mob when added to the dungeonMobs list.
+    *
+    * @param rand World generation random number generator. This is typically a Random instance from the world's random generator.
+    * @return The mob name as a ResourceLocation. This is the name used when registering the entity in Minecraft.
+    */
     public static ResourceLocation getRandomDungeonMob(Random rand)
     {
         DungeonMob mob = WeightedRandom.getRandomItem(rand, dungeonMobs);

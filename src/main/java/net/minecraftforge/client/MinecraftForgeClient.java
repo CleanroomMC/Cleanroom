@@ -45,22 +45,18 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
+
 public class MinecraftForgeClient
 {
     public static int getRenderPass()
     {
         return ForgeHooksClient.renderPass;
     }
-
     public static BlockRenderLayer getRenderLayer()
     {
         return ForgeHooksClient.renderLayer.get();
     }
 
-    /**
-     * returns the Locale set by the player in Minecraft.
-     * Useful for creating string and number formatters.
-     */
     public static Locale getLocale()
     {
         return Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getJavaLocale();
@@ -72,14 +68,6 @@ public class MinecraftForgeClient
         stencilBits.set(0,8);
     }
 
-    /**
-     * Reserve a stencil bit for use in rendering
-     *
-     * Note: you must check the Framebuffer you are working with to
-     * determine if stencil bits are enabled on it before use.
-     *
-     * @return A bit or -1 if no further stencil bits are available
-     */
     public static int reserveStencilBit()
     {
         int bit = stencilBits.nextSetBit(0);
@@ -90,11 +78,6 @@ public class MinecraftForgeClient
         return bit;
     }
 
-    /**
-     * Release the stencil bit for other use
-     *
-     * @param bit The bit from {@link #reserveStencilBit()}
-     */
     public static void releaseStencilBit(int bit)
     {
         if (bit >= 0 && bit < stencilBits.length())
@@ -140,7 +123,17 @@ public class MinecraftForgeClient
     {
         bufferedImageSuppliers.put(resourceLocation, supplier);
     }
-
+    
+    /**
+     * Returns a BufferedImage for the specified resource location.
+     * If a supplier has been registered for the resource location, it will be used to create the BufferedImage.
+     * Otherwise, the BufferedImage will be loaded from the resource manager.
+     *
+     * @param resourceLocation the resource location
+     * @param resourceManager the resource manager
+     * @return the BufferedImage for the specified resource location
+     * @throws IOException if an I/O error occurs
+     */
     @Nonnull
     public static BufferedImage getImageLayer(ResourceLocation resourceLocation, IResourceManager resourceManager) throws IOException
     {

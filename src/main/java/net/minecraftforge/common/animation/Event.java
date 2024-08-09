@@ -23,7 +23,9 @@ import com.google.common.base.MoreObjects;
 
 
 /**
- * Event stored in the clip
+ * Event stored in the clip. This class represents an event in an animation clip.
+ * It contains the name of the event and the time offset relative to the next event or the first query time.
+ * The events are stored in a sorted manner based on their offsets.
  */
 public final class Event implements Comparable<Event>
 {
@@ -36,17 +38,11 @@ public final class Event implements Comparable<Event>
         this.offset = offset;
     }
 
-    /**
-     * @return the name of the event.
-     */
     public String event()
     {
         return event;
     }
 
-    /**
-     * @return how long ago the event happened, relative to the next event / first query time
-     */
     public float offset()
     {
         return offset;
