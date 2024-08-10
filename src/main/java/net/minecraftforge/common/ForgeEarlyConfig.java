@@ -13,6 +13,8 @@ public class ForgeEarlyConfig {
     public static boolean OPENGL_SRGB_CONTEXT = false;
     public static boolean OPENGL_DOUBLEBUFFER = true;
     public static boolean OPENGL_CONTEXT_NO_ERROR = false;
+    @Config.Comment("Only use this if you have custom glfw natives")
+    public static boolean FORCE_WAYLAND = false;
     public static boolean INPUT_INVERT_WHEEL = false;
     public static double INPUT_SCROLL_SPEED = 1.0;
     public static String X11_CLASS_NAME = "minecraft";
