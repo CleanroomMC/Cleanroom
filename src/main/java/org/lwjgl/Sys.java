@@ -18,7 +18,7 @@ import org.lwjgl.opengl.Display;
 public class Sys {
 
     static {
-        if (ForgeEarlyConfig.FORCE_WAYLAND) {
+        if (ForgeEarlyConfig.FORCE_WAYLAND && GLFW.glfwPlatformSupported(GLFW.GLFW_PLATFORM_WAYLAND)) {
             GLFW.glfwInitHint(GLFW.GLFW_PLATFORM, GLFW.GLFW_PLATFORM_WAYLAND);
         }
         if (Platform.get() == Platform.MACOSX) {
