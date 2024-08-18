@@ -1,11 +1,6 @@
 --- before/net/minecraft/crash/CrashReport.java
 +++ after/net/minecraft/crash/CrashReport.java
-@@ -9,18 +9,26 @@
- import java.io.Writer;
- import java.lang.management.ManagementFactory;
- import java.lang.management.RuntimeMXBean;
-+import java.lang.reflect.Method;
- import java.nio.charset.StandardCharsets;
+@@ -13,6 +13,9 @@
  import java.text.SimpleDateFormat;
  import java.util.Date;
  import java.util.List;
@@ -14,10 +9,8 @@
 +import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
  import net.minecraft.util.ReportedException;
  import net.minecraft.world.gen.layer.IntCache;
-+import net.minecraftforge.fml.relauncher.MixinBooterPlugin;
  import net.minecraftforge.fml.relauncher.Side;
- import net.minecraftforge.fml.relauncher.SideOnly;
- import org.apache.commons.io.IOUtils;
+@@ -21,6 +24,9 @@
  import org.apache.commons.lang3.ArrayUtils;
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
@@ -27,7 +20,7 @@
  
  public class CrashReport
  {
-@@ -28,7 +36,7 @@
+@@ -28,7 +34,7 @@
      private final String field_71513_a;
      private final Throwable field_71511_b;
      private final CrashReportCategory field_85061_c = new CrashReportCategory(this, "System Details");
@@ -36,7 +29,21 @@
      private File field_71510_d;
      private boolean field_85059_f = true;
      private StackTraceElement[] field_85060_g = new StackTraceElement[0];
-@@ -116,6 +124,7 @@
+@@ -49,6 +55,13 @@
+                 return "1.12.2";
+             }
+         });
++        this.field_85061_c.func_189529_a("Cleanroom Version", new ICrashReportDetail<String>()
++        {
++            public String call() throws Exception
++            {
++                return com.cleanroommc.common.CleanroomVersion.BUILD_VERSION;
++            }
++        });
+         this.field_85061_c.func_189529_a("Operating System", new ICrashReportDetail<String>()
+         {
+             public String call()
+@@ -116,6 +129,7 @@
                  return IntCache.func_85144_b();
              }
          });
@@ -44,7 +51,7 @@
      }
  
      public String func_71501_a()
-@@ -132,7 +141,7 @@
+@@ -132,7 +146,7 @@
      {
          if ((this.field_85060_g == null || this.field_85060_g.length <= 0) && !this.field_71512_c.isEmpty())
          {
@@ -53,7 +60,7 @@
          }
  
          if (this.field_85060_g != null && this.field_85060_g.length > 0)
-@@ -143,7 +152,7 @@
+@@ -143,7 +157,7 @@
  
              for (StackTraceElement stacktraceelement : this.field_85060_g)
              {
@@ -62,7 +69,7 @@
                  p_71506_1_.append("\n");
              }
  
-@@ -198,6 +207,46 @@
+@@ -198,6 +212,46 @@
              IOUtils.closeQuietly((Writer)printwriter);
          }
  
@@ -109,7 +116,7 @@
          return s;
      }
  
-@@ -205,11 +254,12 @@
+@@ -205,11 +259,12 @@
      {
          StringBuilder stringbuilder = new StringBuilder();
          stringbuilder.append("---- Minecraft Crash Report ----\n");
@@ -123,7 +130,7 @@
          stringbuilder.append("\n");
          stringbuilder.append("Description: ");
          stringbuilder.append(this.field_71513_a);
-@@ -247,26 +297,27 @@
+@@ -247,26 +302,27 @@
              }
  
              Writer writer = null;
@@ -155,7 +162,7 @@
          }
      }
  
-@@ -331,49 +382,13 @@
+@@ -331,49 +387,13 @@
  
      private static String func_71503_h()
      {
