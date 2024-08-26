@@ -53,6 +53,9 @@ public class Mouse {
             ignoreNextMove--;
             return;
         }
+        float scale = Display.getPixelScaleFactor();
+        mouseX *= scale;
+        mouseY *= scale;
         dx += (int) mouseX - latestX;
         dy += Display.getHeight() - (int) mouseY - latestY;
         latestX = (int) mouseX;
@@ -280,7 +283,13 @@ public class Mouse {
         if (grabbed) {
             return;
         }
-        GLFW.glfwSetCursorPos(Display.getWindow(), new_x, new_y);
+        // convert back from framebuffer coordinates to screen-space coordinates
+        float inv_scale = 1.0f / Display.getPixelScaleFactor();
+        new_x *= inv_scale;
+        new_y *= inv_scale;
+        GLFW.glfwSetCursorPos(Display.getWindow(), new_x * inv_scale, new_y * inv_scale);
+        // this might lose accuracy, since we just went from fb->screen and this will
+        // undo that change. Yay floating point numbers!
         addMoveEvent(new_x, new_y);
     }
 

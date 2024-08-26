@@ -420,11 +420,11 @@ public class Display {
     }
 
     public static int getWidth() {
-        return displayWidth;
+        return displayFramebufferWidth;
     }
 
     public static int getHeight() {
-        return displayHeight;
+        return displayFramebufferHeight;
     }
 
     public static int getFramebufferWidth() {
@@ -437,6 +437,16 @@ public class Display {
 
     public static String getTitle() {
         return windowTitle;
+    }
+
+    public static float getPixelScaleFactor() {
+        if (!isCreated()) {
+            return 1.0f;
+        }
+        float[] xScale = new float[1];
+        float[] yScale = new float[1];
+        glfwGetWindowContentScale(getWindow(), xScale, yScale);
+        return Math.max(xScale[0], yScale[0]);
     }
 
     public static void setTitle(String title) {
