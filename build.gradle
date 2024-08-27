@@ -637,8 +637,8 @@ project(':cleanroom') {
 
     // TODO: Include?
     def extra_files = [
-            rootProject.file('CREDITS.txt'),
-            rootProject.file('LICENSE.txt'),
+            rootProject.file('FORGE-CREDITS.txt'),
+            rootProject.file('LICENSE'),
             rootProject.file('LICENSE-Paulscode IBXM Library.txt'),
             rootProject.file('LICENSE-Paulscode SoundSystem CodecIBXM.txt')
     ]
@@ -919,7 +919,7 @@ project(':cleanroom') {
                 spec: 0,
                 profile: project.name,
                 version: launcherJson.id,
-                icon: 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon.ico').toPath()))),
+                icon: 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon_x64.png').toPath()))),
                 json: '/version.json',
                 path: "${project.group}:${project.name}:${project.version}",
                 logo: '/big_logo.png',
@@ -1012,10 +1012,7 @@ project(':cleanroom') {
         archiveExtension = 'jar' //Needs to be Zip task to not override Manifest, so set extension
         destinationDirectory = file('build/libs')
         from(extra_files)
-        from(rootProject.file('/src/main/resources/forge_logo.png')) {
-            rename { 'big_logo.png' }
-        }
-        from(rootProject.file('/src/main/resources/url.png'))
+        from(rootProject.file('src/main/resources/url.png'))
         from(universalJar) {
             into("/maven/${project.group.replace('.', '/')}/${project.name}/${project.version}/")
             rename { "${project.name }-${project.version }.jar" }
@@ -1024,6 +1021,10 @@ project(':cleanroom') {
         from(launcherJson.output)
         from(zipTree(downloadInstaller.output)) {
             duplicatesStrategy = 'exclude'
+            exclude("big_logo.png") // Remove Forge Logo
+        }
+        from(rootProject.file('icon_x64.png')) {
+            rename { "big_logo.png" }
         }
     }
 
