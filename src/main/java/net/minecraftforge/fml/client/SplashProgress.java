@@ -745,7 +745,7 @@ public class SplashProgress
     private static final IntBuffer buf = BufferUtils.createIntBuffer(4 * 1024 * 1024);
 
     @SuppressWarnings("unused")
-    private static class Texture
+    private static class Texture implements Closeable 
     {
         private final ResourceLocation location;
         private final int name;
@@ -893,9 +893,14 @@ public class SplashProgress
         {
             glTexCoord2f(getU(frame, u), getV(frame, v));
         }
+
+        @Override
+        public void close(){
+            this.delete();
+        }
     }
 
-    public static class SplashFontRenderer extends FontRenderer
+    public static class SplashFontRenderer extends FontRenderer implements Closeable 
     {
         public HashMap<ResourceLocation, Texture> cachedImages;
         public SplashFontRenderer(boolean isForcedUnicode)
@@ -921,6 +926,7 @@ public class SplashProgress
             DefaultResourcePack pack = Minecraft.getMinecraft().defaultResourcePack;
             return new SimpleResource(pack.getPackName(), location, pack.getInputStream(location), null, null);
         }
+        
         public void clear(){
             if(cachedImages != null){
                 for(Texture texture : cachedImages.values()){
@@ -929,6 +935,11 @@ public class SplashProgress
                 cachedImages.clear();
                 cachedImages = null;
             }
+        }
+
+        @Override
+        public void close(){
+            this.clear();
         }
     }
 
