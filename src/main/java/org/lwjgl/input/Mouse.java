@@ -53,9 +53,9 @@ public class Mouse {
             ignoreNextMove--;
             return;
         }
-        float scale = Display.getPixelScaleFactor();
+        /*float scale = Display.getPixelScaleFactor();
         mouseX *= scale;
-        mouseY *= scale;
+        mouseY *= scale;*/
         dx += (int) mouseX - latestX;
         dy += Display.getHeight() - (int) mouseY - latestY;
         latestX = (int) mouseX;
