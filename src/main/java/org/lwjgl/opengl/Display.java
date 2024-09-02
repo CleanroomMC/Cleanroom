@@ -442,10 +442,20 @@ public class Display {
         if (!isCreated()) {
             return 1.0f;
         }
-        float[] xScale = new float[1];
-        float[] yScale = new float[1];
-        glfwGetWindowContentScale(getWindow(), xScale, yScale);
-        return Math.max(xScale[0], yScale[0]);
+        int[] windowWidth = new int[1];
+        int[] windowHeight = new int[1];
+        int[] framebufferWidth = new int[1];
+        int[] framebufferHeight = new int[1];
+        float xScale, yScale;
+        // via technicality we actually have to divide the framebuffer
+        // size by the window size here, since glfwGetWindowContentScale
+        // returns a value not equal to 1 even on platforms where the
+        // framebuffer size and window size always map 1:1
+        glfwGetWindowSize(getWindow(), windowWidth, windowHeight);
+        glfwGetFramebufferSize(getWindow(), framebufferWidth, framebufferHeight);
+        xScale = (float)framebufferWidth[0]/windowWidth[0];
+        yScale = (float)framebufferHeight[0]/windowHeight[0];
+        return Math.max(xScale, yScale);
     }
 
     public static void setTitle(String title) {
