@@ -323,7 +323,12 @@ public class Display {
     }
 
     public static void setLocation(int new_x, int new_y) {
-        System.out.println("TODO: Implement Display.setLocation(int, int)");
+        if (!displayCreated) {
+            displayX = new_x;
+            displayY = new_y;
+        } else {
+            GLFW.glfwSetWindowPos(Window.handle, new_x, new_y);
+        }
     }
 
     public static void setVSyncEnabled(boolean sync) {
