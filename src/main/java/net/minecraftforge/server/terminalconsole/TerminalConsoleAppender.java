@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Core;
@@ -240,7 +241,7 @@ public class TerminalConsoleAppender extends AbstractAppender
             {
                 try
                 {
-                    terminal = TerminalBuilder.builder().dumb(dumb).build();
+                    terminal = TerminalBuilder.builder().system(false).jna(true).dumb(dumb).build();
                 }
                 catch (IllegalStateException e)
                 {
