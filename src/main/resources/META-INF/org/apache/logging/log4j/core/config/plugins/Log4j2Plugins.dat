@@ -1,0 +1,5 @@
+net.minecraftforge.server.terminalconsole.TerminalConsoleAppender
+net.minecraftforge.server.terminalconsole.util.LoggerNamePatternSelector
+com.mojang.util.QueueLogAppender
+net.minecraftforge.server.terminalconsole.HighlightErrorConverter
+net.minecraftforge.server.terminalconsole.MinecraftFormattingConverter
