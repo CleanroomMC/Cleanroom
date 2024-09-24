@@ -241,7 +241,7 @@ public class TerminalConsoleAppender extends AbstractAppender
             {
                 try
                 {
-                    terminal = TerminalBuilder.builder().system(false).jna(true).dumb(dumb).build();
+                    terminal = TerminalBuilder.builder().dumb(dumb).build();
                 }
                 catch (IllegalStateException e)
                 {
