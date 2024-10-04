@@ -553,6 +553,11 @@ public class Display {
         // Do nothing as set parent not supported
     }
 
+    public static java.awt.Canvas getParent() {
+        // Since setParent is not supported, getParent is also expected to return null.
+        return null;
+    }
+
     public static void releaseContext() {
         glfwMakeContextCurrent(0);
     }
