@@ -19,12 +19,14 @@
 
 package net.minecraftforge.fml.common;
 
+import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.*;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.util.TextTable;
 import net.minecraftforge.fml.common.LoaderState.ModState;
 import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
@@ -33,6 +35,7 @@ import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.eventhandler.FMLThrowingEventBus;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 import net.minecraftforge.fml.relauncher.MixinBooterPlugin;
+import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 import net.minecraftforge.fml.relauncher.mixinfix.MixinFixer;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.message.FormattedMessage;
@@ -41,15 +44,18 @@ import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.transformer.Proxy;
 import org.spongepowered.asm.service.MixinService;
 import org.spongepowered.asm.service.mojang.MixinServiceLaunchWrapper;
+import org.spongepowered.asm.util.Constants;
 import zone.rong.mixinbooter.ILateMixinLoader;
 
 import javax.annotation.Nullable;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.net.URL;
+import java.util.*;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -133,13 +139,30 @@ public class LoadController
                 ModClassLoader modClassLoader = (ModClassLoader) eventData[0];
                 ASMDataTable asmDataTable = (ASMDataTable) eventData[1];
 
-
-
                 try {
 
                     // Add mods into the delegated ModClassLoader
                     for (ModContainer container : this.loader.getActiveModList()) {
                         modClassLoader.addFile(container.getSource());
+                    }
+                    // Handle Mixin Configs and non-mod libraries
+                    File mods_ver = new File(new File(Launch.minecraftHome, "mods"), ForgeVersion.mcVersion);
+                    for (ModContainer container : this.loader.getActiveModList()) {
+                        try (JarFile jarFile = new JarFile(container.getSource())) {
+                            Attributes mfAttributes = jarFile.getManifest() == null ? null : jarFile.getManifest().getMainAttributes();
+                            if (mfAttributes != null) {
+                                String configs = mfAttributes.getValue(Constants.ManifestAttributes.MIXINCONFIGS);
+                                if (!Strings.isNullOrEmpty(configs)) {
+                                    Mixins.addConfigurations(configs.split(","));
+                                }
+                                boolean containNonMods = Boolean.parseBoolean(mfAttributes.getValue("NonModDeps"));
+                                if (containNonMods) {
+                                    for (String file: mfAttributes.getValue(LibraryManager.MODCONTAINSDEPS).split(" ")) {
+                                        modClassLoader.addFile(new File(mods_ver, file));
+                                    }
+                                }
+                            }
+                        } catch (IOException ignored) {}
                     }
 
                     FMLContextQuery.init(); // Initialize FMLContextQuery and add it to the global list
@@ -190,6 +213,7 @@ public class LoadController
                 Proxy.transformer.processor.prepareConfigs(current, Proxy.transformer.processor.extensions);
 
             }
+            MixinEnvironment.gotoPhase(MixinEnvironment.Phase.MOD);
             masterChannel.post(state.getEvent(eventData));
         }
     }
@@ -413,9 +437,9 @@ public class LoadController
                         .filter(name -> name.lastIndexOf('.') != -1)
                         .map(name -> name.substring(0, name.lastIndexOf('.')))
                         .map(pkg -> packageOwners.get(pkg))
-                        .filter(l -> l != null && !l.isEmpty())
+                        .filter(l -> !l.isEmpty())
                         .findFirst()
-                        .map(l -> l.get(0))
+                        .map(List::getFirst)
                         .orElse(null)
                 );
     }

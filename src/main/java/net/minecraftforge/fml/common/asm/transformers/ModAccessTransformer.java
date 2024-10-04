@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.FMLLog;
 
 import com.google.common.collect.Maps;
@@ -42,7 +44,7 @@ public class ModAccessTransformer extends AccessTransformer
     {
         super(ModAccessTransformer.class);
         //We are in the new ClassLoader here, so we need to get the static field from the other ClassLoader.
-        ClassLoader classLoader = this.getClass().getClassLoader().getClass().getClassLoader(); //Bit odd but it gets the class loader that loaded our current class loader yay java!
+        ClassLoader classLoader = Launch.classLoader; //Bit odd but it gets the class loader that loaded our current class loader yay java!
         Class<?> otherClazz = Class.forName(this.getClass().getName(), true, classLoader);
         Field otherField = otherClazz.getDeclaredField("embedded");
         otherField.setAccessible(true);

@@ -199,7 +199,7 @@
          {
              p_78273_1_ = p_78273_1_.substring(0, p_78273_1_.length() - 1);
          }
-@@ -725,9 +738,95 @@
+@@ -725,9 +738,96 @@
  
      public List<String> func_78271_c(String p_78271_1_, int p_78271_2_)
      {
@@ -225,6 +225,7 @@
 +                    list.add(line.toString());
 +                    fed = i + 1;
 +                    line.delete(0, line.length()).append(format);
++                    prevFormat = format.length();
 +                    lineWidth = 0;
 +                    widths[0] = lineWidth;
 +                    formats[0] = format.toString();
@@ -264,7 +265,7 @@
 +            }
 +            widths[i - fed] = lineWidth;
 +            formats[i - fed] = format.toString();
-+            if (lineWidth >= p_78271_2_) {
++            if (lineWidth > p_78271_2_) {
 +                if (BreakIteratorHolder.BREAK_ITERATOR.isBoundary(i)) {
 +                    icui = i;
 +                } else {
@@ -278,7 +279,7 @@
 +                    lineWidth = func_78263_a(current);
 +                } else {
 +                    d = icui - fed;
-+                    if (line.charAt(d + prevFormat - 1) == '§') d++;
++                    if (line.charAt(d + prevFormat - 2) == '§') d++;
 +                    list.add(line.substring(0, d + prevFormat));
 +                    temp = line.substring(d + prevFormat);
 +                    fed += d;
@@ -296,7 +297,7 @@
      String func_78280_d(String p_78280_1_, int p_78280_2_)
      {
          int i = this.func_78259_e(p_78280_1_, p_78280_2_);
-@@ -746,6 +845,7 @@
+@@ -746,6 +846,7 @@
          }
      }
  
@@ -304,7 +305,7 @@
      private int func_78259_e(String p_78259_1_, int p_78259_2_)
      {
          int i = p_78259_1_.length();
-@@ -844,6 +944,26 @@
+@@ -844,6 +945,26 @@
      public boolean func_78260_a()
      {
          return this.field_78294_m;
