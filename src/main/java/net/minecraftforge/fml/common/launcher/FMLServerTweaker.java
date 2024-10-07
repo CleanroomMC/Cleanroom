@@ -51,14 +51,6 @@ public class FMLServerTweaker extends FMLTweaker {
     @Override
     public void injectIntoClassLoader(LaunchClassLoader classLoader)
     {
-        // The log4j2 queue is excluded so it is correctly visible from the obfuscated
-        // and deobfuscated parts of the code. Without, the UI won't show anything
-        classLoader.addClassLoaderExclusion("com.mojang.util.QueueLogAppender");
-
-        classLoader.addClassLoaderExclusion("org.jline.");
-        classLoader.addClassLoaderExclusion("com.sun.jna.");
-        classLoader.addClassLoaderExclusion("net.minecraftforge.server.terminalconsole.");
-
         FMLLaunchHandler.configureForServerLaunch(classLoader, this);
         FMLLaunchHandler.appendCoreMods();
     }
