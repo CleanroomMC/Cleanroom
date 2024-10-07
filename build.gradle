@@ -435,7 +435,7 @@ project(':cleanroom') {
         installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
 
         //installer "com.cleanroommc:bouncepad:$props.bouncepad_version"
-        installer "top.outlands:foundation:0.13.9"
+        installer "top.outlands:foundation:0.13.10"
         installer 'org.burningwave:jvm-driver:8.16.1'
         installer 'io.github.toolfactory:jvm-driver:9.7.1'
         installer 'io.github.toolfactory:narcissus:1.0.7'
@@ -445,6 +445,7 @@ project(':cleanroom') {
         installer 'com.ibm.icu:icu4j:75.1'
 
         installer 'org.jline:jline:3.27.0'
+        installer 'org.jline:jline-native:3.27.0'
 
         installer 'lzma:lzma:0.0.1'
         installer 'java3d:vecmath:1.5.2'
