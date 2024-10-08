@@ -582,7 +582,7 @@ public class Loader
         {
             if (nonMod.isFile())
             {
-                FMLLog.log.info("FML has found a non-mod file {} in your mods directory. It will now be injected into your classpath. This could severe stability issues, it should be removed if possible.", nonMod.getName());
+                FMLLog.log.info("FML has found a non-mod file {} in your mods directory. It will now be injected into your classpath.", nonMod.getName());
                 try
                 {
                     modClassLoader.addFile(nonMod);
