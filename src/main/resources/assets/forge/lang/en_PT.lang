@@ -1,0 +1,42 @@
+commands.forge.usage=Use /forge <subcommand>, ye landlubber!
+commands.forge.usage.tracking=Use /forge track <type> <duration>, matey! Valid types be "te" (Tile Entities). Time in seconds must be <= 60 or face Davy Jones' locker.
+commands.forge.usage.help=Arr! Use help [command] t' see the usages for that command, ye scallywag!
+commands.forge.tps.summary=%s : Mean tick time: %d ms. Mean TPS: %d. Don’t be wastin’ me time!
+commands.forge.tps.usage=Use /forge tps [dimension] or walk the plank!
+commands.forge.gen.usage=Use /forge gen <x> <y> <z> <chunkCount> [dimension] [interval], ye bilge rat!
+commands.forge.gen.dim_fail=Failed t' load world fer dimension %d. Task sent t’ the deep!
+commands.forge.gen.progress=Yarrr! Progress: %d/%d chunks
+commands.forge.gen.complete=Ye finished makin’ %d new chunks (outta %d) in dimension %d. Well done, ye salty dog!
+commands.forge.gen.start=Startin’ t' generate %d chunks around %d, %d in dimension %d. Avast ye!
+commands.forge.entity.usage=Use /forge entity help fer more details on subcommands, ye scurvy knave!
+commands.forge.entity.list.usage=Use /forge entity list [filter] [dim] t’ see details on entities, ye swab!
+commands.forge.entity.list.invalid=Ye be usin’ an invalid filter. No entities match! Use /forge entity list fer help, ye lubber.
+commands.forge.entity.list.invalidworld=Could not load world fer dimension %d. Better pick another one, matey!
+commands.forge.entity.list.none=Nay entities found here!
+commands.forge.entity.list.single.header=Entity: %s Total: %d scallywags
+commands.forge.entity.list.multiple.header=Total scallywags: %d
+commands.forge.setdim.usage=Use /forge setdim <entity> <dimension> [<x> <y> <z>] or ye’ll be marooned!
+commands.forge.setdim.invalid.entity=That entity (%s) ain’t valid, ye bilge-sucking swab.
+commands.forge.setdim.invalid.dim=Dimension ID %d be not valid either!
+commands.forge.setdim.invalid.nochange=That entity (%s) be already in dimension %d, ye fool!
+commands.forge.dimensions.usage=Use /forge dimensions or be keelhauled!
+commands.forge.dimensions.list=Dimensions registered be:
+
+commands.forge.tracking.te.enabled=Tile Entity trackin’ be on fer %d seconds.
+commands.forge.tracking.entity.enabled=Entity trackin’ be on fer %d seconds, matey!
+commands.forge.tracking.usage=Use /forge track help fer more info on the trackin’ subcommands, savvy?
+commands.forge.tracking.start.usage=Use /forge track start <te|entity> <duration>, ye scallywag!
+commands.forge.tracking.reset.usage=Use /forge track reset <te|entity> if ye need a fresh start.
+commands.forge.tracking.reset=All me timin’s data be cleared!
+commands.forge.tracking.te.usage=Use /forge track te t’ keep track o' them tile entities!
+
+commands.forge.tracking.timingEntry=%s - %s [%d, %d, %d]: %s, by thunder!
+commands.forge.tracking.noData=Nay data recorded yet, ye lazy dog!
+commands.tree_base.invalid_cmd=Invalid subcommand '%s', ye scurvy dog!
+commands.tree_base.invalid_cmd.list_subcommands=Arr! Invalid subcommand '%s'! Subcommands ye can use: %s
+commands.tree_base.available_subcommands=SubCommands ye can use be: %s
+forge.texture.preload.warning=Beware! Texture %s ain’t preloaded, and will cause renderin’ glitches, ye swab!
+forge.client.shutdown.internal=Shuttin’ down internal server... All hands abandon ship!
+forge.update.newversion=A new Cleanroom version be waitin’: %s
+forge.update.beta.1=%sArrr! %sCleanroom Beta
+forge.update.beta.2=Issues may arise, so check afore reportin’, ye scallywag!
