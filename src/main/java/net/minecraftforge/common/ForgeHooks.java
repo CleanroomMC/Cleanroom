@@ -656,6 +656,21 @@ public class ForgeHooks
         return value >= maxXZDistance ? maxXZDistance : value;
     }
 
+    /**
+     * Determines if the entity is on a ladder.
+     * 
+     * Checks if the block at the current position is a ladder or checks
+     * multiple block positions within the entity's bounding box if 
+     * {@code fullBoundingBoxLadders} is enabled. If the entity is a spectator it 
+     * will return false
+     *
+     * @param state   The current {@link IBlockState} of the block at the specified position.
+     * @param world   The {@link World} object representing the current world.
+     * @param pos     The {@link BlockPos} object representing the block position.
+     * @param entity  The {@link EntityLivingBase} entity whose ladder status is being checked.
+     * 
+     * @return {@code true} if the entity is standing on a ladder, {@code false} otherwise.
+     */
     public static boolean isLivingOnLadder(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EntityLivingBase entity)
     {
         boolean isSpectator = (entity instanceof EntityPlayer && ((EntityPlayer)entity).isSpectator());
@@ -1000,7 +1015,7 @@ public class ForgeHooks
 
     /**
      * Default implementation of IRecipe.func_179532_b {getRemainingItems} because
-     * this is just copy pasted over a lot of recipes.
+     * this is just copy-pasted over a lot of recipes.
      *
      * @param inv Crafting inventory
      * @return Crafting inventory contents after the recipe.
