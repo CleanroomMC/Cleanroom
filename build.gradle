@@ -606,7 +606,7 @@ project(':cleanroom') {
             zip.entries().findAll {
                 !it.directory && it.name.endsWith('.class')
             }.each { entry ->
-                new ClassReader(zip.getInputStream(entry)).accept(new ClassVisitor(Opcodes.ASM7) {
+                new ClassReader(zip.getInputStream(entry)).accept(new ClassVisitor(Opcodes.ASM9) {
 
                     String name
 
