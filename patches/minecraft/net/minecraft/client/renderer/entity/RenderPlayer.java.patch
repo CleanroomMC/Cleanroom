@@ -24,7 +24,21 @@
      }
  
      private void func_177137_d(AbstractClientPlayer p_177137_1_)
-@@ -128,6 +130,11 @@
+@@ -104,6 +106,7 @@
+                 if (p_177137_1_.func_184605_cv() > 0)
+                 {
+                     EnumAction enumaction = itemstack.func_77975_n();
++                    modelbiped$armpose=enumaction.getBipedArmPose();
+ 
+                     if (enumaction == EnumAction.BLOCK)
+                     {
+@@ -123,11 +126,17 @@
+                 if (p_177137_1_.func_184605_cv() > 0)
+                 {
+                     EnumAction enumaction1 = itemstack1.func_77975_n();
++                    modelbiped$armpose1=enumaction1.getBipedArmPose();
+ 
+                     if (enumaction1 == EnumAction.BLOCK)
                      {
                          modelbiped$armpose1 = ModelBiped.ArmPose.BLOCK;
                      }
@@ -36,7 +50,7 @@
                  }
              }
  
-@@ -149,7 +156,6 @@
+@@ -149,7 +158,6 @@
          return p_110775_1_.func_110306_p();
      }
  
@@ -44,7 +58,7 @@
      public void func_82422_c()
      {
          GlStateManager.func_179109_b(0.0F, 0.1875F, 0.0F);
-@@ -161,11 +167,9 @@
+@@ -161,11 +169,9 @@
          GlStateManager.func_179152_a(0.9375F, 0.9375F, 0.9375F);
      }
  
@@ -58,7 +72,7 @@
          {
              Scoreboard scoreboard = p_188296_1_.func_96123_co();
              ScoreObjective scoreobjective = scoreboard.func_96539_a(2);
-@@ -221,12 +225,7 @@
+@@ -221,12 +227,7 @@
      {
          if (p_77039_1_.func_70089_S() && p_77039_1_.func_70608_bn())
          {
@@ -72,7 +86,7 @@
          }
          else
          {
-@@ -252,11 +251,11 @@
+@@ -252,11 +253,11 @@
              double d0 = p_77043_1_.field_70159_w * p_77043_1_.field_70159_w + p_77043_1_.field_70179_y * p_77043_1_.field_70179_y;
              double d1 = vec3d.field_72450_a * vec3d.field_72450_a + vec3d.field_72449_c * vec3d.field_72449_c;
  
