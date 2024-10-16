@@ -480,7 +480,7 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
         if (DEBUG)
             FMLLog.log.debug("Registry {} Sync: {} -> {}", this.superType.getSimpleName(), this.stage.getName(), from.stage.getName());
         if (this == from)
-            throw new IllegalArgumentException("WTF We are the same!?!?!");
+            throw new IllegalArgumentException("Attempted to sync the same registry instance!");
         if (from.superType != this.superType)
             throw new IllegalArgumentException("Attempted to copy to incompatible registry: " + name + " " + from.superType + " -> " + this.superType);
 
