@@ -1,5 +1,8 @@
 package org.lwjgl.opengl;
 
+import org.lwjgl.BufferChecks;
+import org.lwjgl3.opengl.GLDebugMessageCallbackI;
+
 public class GL43 {
 
     public static final int GL_ACTIVE_RESOURCES = (int) 37621;
@@ -295,6 +298,12 @@ public class GL43 {
                 srcWidth,
                 srcHeight,
                 srcDepth);
+    }
+
+    public static void glDebugMessageCallback(KHRDebugCallback callback) {
+        long userParam = callback == null ? 0 : CallbackUtil.createGlobalRef(callback.getHandler());
+        CallbackUtil.registerContextCallbackKHR(userParam);
+        org.lwjgl3.opengl.GL43.nglDebugMessageCallback(callback == null ? 0 : callback.getPointer(), userParam);
     }
 
     public static void glDebugMessageControl(int source, int type, int severity, java.nio.IntBuffer ids,

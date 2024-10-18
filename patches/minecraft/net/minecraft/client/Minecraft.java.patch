@@ -358,7 +358,7 @@
 -        }
 +        Display.setTitle("Cleanroom Loader");
 +
-+        Display.create();
++        Display.create((new PixelFormat()).withDepthBits(24));
 +
      }
  
@@ -1366,7 +1366,23 @@
          }
      }
  
-@@ -2795,10 +2645,7 @@
+@@ -2778,7 +2628,14 @@
+         {
+             public String call()
+             {
+-                return GlStateManager.func_187416_u(7937) + " GL version " + GlStateManager.func_187416_u(7938) + ", " + GlStateManager.func_187416_u(7936);
++                if (Minecraft.func_71410_x().func_152345_ab())
++                {
++                    return GlStateManager.func_187416_u(7937) + " GL version " + GlStateManager.func_187416_u(7938) + ", " + GlStateManager.func_187416_u(7936);
++                }
++                else
++                {
++                    return "No OpenGL context found in the current thread";
++                }
+             }
+         });
+         p_71396_1_.func_85056_g().func_189529_a("GL Caps", new ICrashReportDetail<String>()
+@@ -2795,10 +2652,7 @@
                  return Minecraft.this.field_71474_y.field_178881_t ? "Yes" : "No";
              }
          });
@@ -1378,7 +1394,7 @@
          {
              public String call() throws Exception
              {
-@@ -2810,13 +2657,10 @@
+@@ -2810,13 +2664,10 @@
                  }
                  else
                  {
@@ -1394,7 +1410,7 @@
          p_71396_1_.func_85056_g().func_189529_a("Type", new ICrashReportDetail<String>()
          {
              public String call() throws Exception
-@@ -2883,11 +2727,11 @@
+@@ -2883,11 +2734,11 @@
          return field_71432_P;
      }
  
@@ -1407,7 +1423,7 @@
              public void run()
              {
                  Minecraft.this.func_110436_a();
-@@ -2895,21 +2739,20 @@
+@@ -2895,21 +2746,20 @@
          });
      }
  
@@ -1435,7 +1451,7 @@
          int i = 0;
  
          for (ResourcePackRepository.Entry resourcepackrepository$entry : this.field_110448_aq.func_110613_c())
-@@ -2939,7 +2782,6 @@
+@@ -2939,7 +2789,6 @@
          }
      }
  
@@ -1443,7 +1459,7 @@
      public void func_70001_b(Snooper p_70001_1_)
      {
          p_70001_1_.func_152767_b("opengl_version", GlStateManager.func_187416_u(7938));
-@@ -2947,110 +2789,110 @@
+@@ -2947,110 +2796,110 @@
          p_70001_1_.func_152767_b("client_brand", ClientBrandRetriever.getClientModName());
          p_70001_1_.func_152767_b("launched_version", this.field_110447_Z);
          ContextCapabilities contextcapabilities = GLContext.getCapabilities();
@@ -1658,7 +1674,7 @@
          GameProfile gameprofile = this.field_71449_j.func_148256_e();
  
          if (gameprofile != null && gameprofile.getId() != null)
-@@ -3061,21 +2903,10 @@
+@@ -3061,21 +2910,10 @@
  
      public static int func_71369_N()
      {
@@ -1682,7 +1698,7 @@
      public boolean func_70002_Q()
      {
          return this.field_71474_y.field_74355_t;
-@@ -3205,6 +3036,9 @@
+@@ -3205,6 +3043,9 @@
          }
          else if (this.field_71439_g != null)
          {
@@ -1692,7 +1708,7 @@
              if (this.field_71439_g.field_70170_p.field_73011_w instanceof WorldProviderHell)
              {
                  return MusicTicker.MusicType.NETHER;
-@@ -3215,9 +3049,7 @@
+@@ -3215,9 +3056,7 @@
              }
              else
              {
@@ -1703,7 +1719,7 @@
              }
          }
          else
-@@ -3236,19 +3068,15 @@
+@@ -3236,19 +3075,15 @@
              {
                  if (Keyboard.getEventKeyState())
                  {
@@ -1727,7 +1743,7 @@
                      {
                          this.field_71474_y.func_74306_a(GameSettings.Options.NARRATOR, 1);
  
-@@ -3258,6 +3086,7 @@
+@@ -3258,6 +3093,7 @@
                          }
                      }
                  }
@@ -1735,7 +1751,7 @@
              }
          }
      }
-@@ -3292,16 +3121,16 @@
+@@ -3292,16 +3128,16 @@
          {
              try
              {
@@ -1755,7 +1771,7 @@
  
              synchronized (this.field_152351_aB)
              {
-@@ -3311,14 +3140,12 @@
+@@ -3311,14 +3147,12 @@
          }
      }
  
@@ -1771,7 +1787,7 @@
      public boolean func_152345_ab()
      {
          return Thread.currentThread() == this.field_152352_aC;
-@@ -3346,7 +3173,7 @@
+@@ -3346,7 +3180,7 @@
  
      public <T> ISearchTree<T> func_193987_a(SearchTreeManager.Key<T> p_193987_1_)
      {
@@ -1780,7 +1796,7 @@
      }
  
      public static int func_175610_ah()
-@@ -3389,6 +3216,12 @@
+@@ -3389,6 +3223,12 @@
          return this.field_184127_aH;
      }
  
@@ -1793,7 +1809,7 @@
      public boolean func_189648_am()
      {
          return this.field_71439_g != null && this.field_71439_g.func_175140_cp() || this.field_71474_y.field_178879_v;
-@@ -3402,5 +3235,10 @@
+@@ -3402,5 +3242,10 @@
      public Tutorial func_193032_ao()
      {
          return this.field_193035_aW;

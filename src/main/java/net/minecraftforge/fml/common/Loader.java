@@ -48,6 +48,7 @@ import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fml.common.LoaderState.ModState;
 import net.minecraftforge.fml.common.ModContainer.Disableable;
 import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
+import net.minecraftforge.fml.common.asm.FMLSanityChecker;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.ContainerType;
 import net.minecraftforge.fml.common.discovery.ModCandidate;
@@ -373,8 +374,8 @@ public class Loader
         mods.add(minecraft);
         // Add in the MCP mod container
         mods.add(new InjectedModContainer(mcp,new File("minecraft.jar")));
-        mods.add(new InjectedModContainer(new ConfigAnytimeContainer(), new File("minecraft.jar")));
-        mods.add(new InjectedModContainer(new CleanroomContainer(), new File("minecraft.jar")));
+        mods.add(new InjectedModContainer(new ConfigAnytimeContainer(), FMLSanityChecker.fmlLocation));
+        mods.add(new InjectedModContainer(new CleanroomContainer(), FMLSanityChecker.fmlLocation));
         for (String cont : injectedContainers)
         {
             ModContainer mc;
@@ -581,7 +582,7 @@ public class Loader
         {
             if (nonMod.isFile())
             {
-                FMLLog.log.info("FML has found a non-mod file {} in your mods directory. It will now be injected into your classpath. This could severe stability issues, it should be removed if possible.", nonMod.getName());
+                FMLLog.log.info("FML has found a non-mod file {} in your mods directory. It will now be injected into your classpath.", nonMod.getName());
                 try
                 {
                     modClassLoader.addFile(nonMod);
@@ -908,7 +909,7 @@ public class Loader
             }
         }
 
-        if (difference.size() > 0)
+        if (!difference.isEmpty())
             FMLLog.log.info("Attempting connection with missing mods {} at {}", difference, side);
         return true;
     }

@@ -24,12 +24,12 @@ public class AL {
     }
 
     public static void create(String deviceArguments, int contextFrequency, int contextRefresh,
-                              boolean contextSynchronized) {
+                              boolean contextSynchronized) throws LWJGLException {
         create(deviceArguments, contextFrequency, contextRefresh, contextSynchronized, true);
     }
 
     public static void create(String deviceArguments, int contextFrequency, int contextRefresh,
-                              boolean contextSynchronized, boolean openDevice) {
+                              boolean contextSynchronized, boolean openDevice) throws LWJGLException {
         IntBuffer attribs = BufferUtils.createIntBuffer(16);
 
         attribs.put(org.lwjgl3.openal.ALC10.ALC_FREQUENCY);
@@ -61,6 +61,11 @@ public class AL {
         org.lwjgl3.openal.AL.createCapabilities(deviceCaps);
 
         created = true;
+
+        if (deviceHandle == 0) {
+            destroy();
+            throw new LWJGLException("Could not open ALC device");
+        }
     }
 
     public static boolean isCreated() {

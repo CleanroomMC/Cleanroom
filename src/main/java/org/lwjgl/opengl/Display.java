@@ -119,12 +119,11 @@ public class Display {
         glfwWindowHint(GLFW_CONTEXT_NO_ERROR, ForgeEarlyConfig.OPENGL_CONTEXT_NO_ERROR ? GLFW_TRUE : GLFW_FALSE);
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, ForgeEarlyConfig.OPENGL_DEBUG_CONTEXT ? GLFW_TRUE : GLFW_FALSE);
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, ForgeEarlyConfig.OPENGL_DEBUG_CONTEXT ? GLFW_TRUE : GLFW_FALSE);
+        glfwWindowHint(GLFW_DECORATED, ForgeEarlyConfig.DECORATED ? GLFW_TRUE : GLFW_FALSE);
 
         glfwWindowHintString(GLFW_X11_CLASS_NAME, ForgeEarlyConfig.X11_CLASS_NAME);
         glfwWindowHintString(GLFW_COCOA_FRAME_NAME, ForgeEarlyConfig.COCOA_FRAME_NAME);
 
-        glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_FALSE); // request a non-hidpi framebuffer on Retina displays
-        // on MacOS
 
         Window.handle = glfwCreateWindow(mode.getWidth(), mode.getHeight(), windowTitle, NULL, NULL);
         if (Window.handle == 0L) {
@@ -241,10 +240,11 @@ public class Display {
             @Override
             public void invoke(long window, int width, int height) {
 
-                boolean minimized = width == 0 && height == 0;
-                latestResized = true && !minimized;
-                latestWidth = width;
-                latestHeight = height;
+                if (width != 0 && height != 0) {
+                    latestResized = true;
+                    latestWidth = width;
+                    latestHeight = height;
+                }
             }
         };
 
@@ -323,7 +323,12 @@ public class Display {
     }
 
     public static void setLocation(int new_x, int new_y) {
-        System.out.println("TODO: Implement Display.setLocation(int, int)");
+        if (!displayCreated) {
+            displayX = new_x;
+            displayY = new_y;
+        } else {
+            GLFW.glfwSetWindowPos(Window.handle, new_x, new_y);
+        }
     }
 
     public static void setVSyncEnabled(boolean sync) {
@@ -419,11 +424,11 @@ public class Display {
     }
 
     public static int getWidth() {
-        return displayWidth;
+        return displayFramebufferWidth;
     }
 
     public static int getHeight() {
-        return displayHeight;
+        return displayFramebufferHeight;
     }
 
     public static int getFramebufferWidth() {
@@ -436,6 +441,26 @@ public class Display {
 
     public static String getTitle() {
         return windowTitle;
+    }
+
+    public static float getPixelScaleFactor() {
+        if (!isCreated()) {
+            return 1.0f;
+        }
+        int[] windowWidth = new int[1];
+        int[] windowHeight = new int[1];
+        int[] framebufferWidth = new int[1];
+        int[] framebufferHeight = new int[1];
+        float xScale, yScale;
+        // via technicality we actually have to divide the framebuffer
+        // size by the window size here, since glfwGetWindowContentScale
+        // returns a value not equal to 1 even on platforms where the
+        // framebuffer size and window size always map 1:1
+        glfwGetWindowSize(getWindow(), windowWidth, windowHeight);
+        glfwGetFramebufferSize(getWindow(), framebufferWidth, framebufferHeight);
+        xScale = (float)framebufferWidth[0]/windowWidth[0];
+        yScale = (float)framebufferHeight[0]/windowHeight[0];
+        return Math.max(xScale, yScale);
     }
 
     public static void setTitle(String title) {
@@ -526,6 +551,11 @@ public class Display {
 
     public static void setParent(java.awt.Canvas parent) {
         // Do nothing as set parent not supported
+    }
+
+    public static java.awt.Canvas getParent() {
+        // Since setParent is not supported, getParent is also expected to return null.
+        return null;
     }
 
     public static void releaseContext() {

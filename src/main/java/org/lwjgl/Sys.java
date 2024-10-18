@@ -8,6 +8,7 @@ import java.net.URI;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
+import net.minecraftforge.common.ForgeEarlyConfig;
 import org.lwjgl3.Version;
 import org.lwjgl3.glfw.GLFW;
 import org.lwjgl3.system.Configuration;
@@ -17,6 +18,9 @@ import org.lwjgl.opengl.Display;
 public class Sys {
 
     static {
+        if (ForgeEarlyConfig.FORCE_WAYLAND && GLFW.glfwPlatformSupported(GLFW.GLFW_PLATFORM_WAYLAND)) {
+            GLFW.glfwInitHint(GLFW.GLFW_PLATFORM, GLFW.GLFW_PLATFORM_WAYLAND);
+        }
         if (Platform.get() == Platform.MACOSX) {
             Configuration.GLFW_LIBRARY_NAME.set("glfw_async");
             Configuration.GLFW_CHECK_THREAD0.set(false);

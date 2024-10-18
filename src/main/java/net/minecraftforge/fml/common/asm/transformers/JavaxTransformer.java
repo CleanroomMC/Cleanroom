@@ -10,9 +10,12 @@ import org.objectweb.asm.commons.Remapper;
 
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 public class JavaxTransformer implements IClassTransformer {
     public static JavaxTransformer instance = null;
+    public static final Attributes.Name MANIFEST_SAFE_ATTRIBUTE = new Attributes.Name("Cleanroom-Compat");
     public static Set<String> javaxlist = new TreeSet<>();
     public JavaxTransformer () {
         instance = this;

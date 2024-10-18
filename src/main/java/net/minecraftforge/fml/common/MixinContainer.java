@@ -1,6 +1,9 @@
 package net.minecraftforge.fml.common;
 
 import com.google.common.eventbus.EventBus;
+import net.minecraftforge.fml.common.asm.FMLSanityChecker;
+
+import java.io.File;
 
 public final class MixinContainer extends DummyModContainer{
     public MixinContainer() {
@@ -17,5 +20,11 @@ public final class MixinContainer extends DummyModContainer{
     public boolean registerBus(EventBus bus, LoadController controller) {
         bus.register(this);
         return true;
+    }
+
+    @Override
+    public File getSource()
+    {
+        return FMLSanityChecker.fmlLocation;
     }
 }

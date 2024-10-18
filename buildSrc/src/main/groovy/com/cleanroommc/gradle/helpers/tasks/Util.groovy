@@ -151,7 +151,7 @@ class Util {
 				"https://maven.minecraftforge.net/",
 				"https://repo.maven.apache.org/maven2/",
 				"https://libraries.minecraft.net/",
-				"https://maven.outlands.top/releases/"
+				"https://maven.arcseekers.com/releases/"
 		]
 		try {
 			return urlList.stream().map(original -> original + path)

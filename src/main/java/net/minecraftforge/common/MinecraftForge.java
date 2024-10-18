@@ -19,6 +19,7 @@
 
 package net.minecraftforge.common;
 
+import com.cleanroommc.common.CleanroomVersion;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.ICrashCallable;
 import net.minecraftforge.fml.common.Loader;
@@ -83,7 +84,7 @@ public class MinecraftForge
     */
    public static void initialize()
    {
-       FMLLog.log.info("MinecraftForge v{} Initialized", ForgeVersion.getVersion());
+       FMLLog.log.info("Cleanroom v{} Initialized", CleanroomVersion.BUILD_VERSION);
 
        OreDictionary.getOreName(0);
 
