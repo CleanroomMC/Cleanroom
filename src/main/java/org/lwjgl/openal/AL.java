@@ -51,8 +51,6 @@ public class AL {
 
         long deviceHandle = org.lwjgl3.openal.ALC10.alcOpenDevice(defaultDevice);
 
-        if (deviceHandle == 0) throw new LWJGLException("Could not open ALC device");
-
         alcDevice = new ALCdevice(deviceHandle);
 
         final ALCCapabilities deviceCaps = org.lwjgl3.openal.ALC.createCapabilities(deviceHandle);
@@ -63,6 +61,11 @@ public class AL {
         org.lwjgl3.openal.AL.createCapabilities(deviceCaps);
 
         created = true;
+
+        if (deviceHandle == 0) {
+            destroy();
+            throw new LWJGLException("Could not open ALC device");
+        }
     }
 
     public static boolean isCreated() {
