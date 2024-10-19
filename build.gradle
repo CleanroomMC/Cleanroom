@@ -893,7 +893,7 @@ project(':cleanroom') {
     task installerJson(dependsOn: [launcherJson, genClientBinPatches/*, createClientSRG, createServerSRG*/]) {
         ext {
             output = file('build/install_profile.json')
-            installer_tools = "net.minecraftforge:installertools:$props.installer_tools_version"
+            installer_tools = "net.neoforged.installertools:installertools:$props.installer_tools_version"
         }
         inputs.file universalJar.archivePath
         inputs.file genClientBinPatches.toolJar
