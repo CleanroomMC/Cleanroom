@@ -1007,7 +1007,7 @@ project(':cleanroom') {
     }
 
     task downloadInstaller(type: DownloadMavenArtifact) {
-        artifact = 'net.minecraftforge:installer:2.2.+:fatjar'
+        artifact = 'net.neoforged:legacyinstaller:3.0.+:fatjar'
         changing = true
     }
 
