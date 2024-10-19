@@ -98,6 +98,10 @@ project(':mcp') {
             name 'MinecraftForge'
             url 'https://maven.minecraftforge.net/'
         }
+        maven {
+            name "NeoForge"
+            url = 'https://maven.neoforged.net/releases'
+        }
 
     }
     mcp {
@@ -122,6 +126,10 @@ project(':minecraft') {
         maven {
             name 'MinecraftForge'
             url 'https://maven.minecraftforge.net/'
+        }
+        maven {
+            name "NeoForge"
+            url = 'https://maven.neoforged.net/releases'
         }
 
     }
