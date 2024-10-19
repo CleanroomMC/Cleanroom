@@ -10,6 +10,10 @@ buildscript {
             name "Outlands"
             url "https://maven.outlands.top/releases/"
         }
+        maven {
+            name "NeoForge"
+            url = 'https://maven.neoforged.net/releases'
+        }
     }
     dependencies {
         classpath "net.minecraftforge.gradle:ForgeGradle:6.10.+"
