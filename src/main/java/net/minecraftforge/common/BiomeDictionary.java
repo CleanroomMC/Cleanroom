@@ -35,6 +35,11 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
+/**
+* BiomeDictionary provides tags for Biomes to use 
+* If tags are not specified, you imply an "average" biome 
+* (Think Oak forest, moderate temperature, temperate trees, and moderate humidity)
+*/
 public class BiomeDictionary
 {
     private static final boolean DEBUG = false;
@@ -49,18 +54,21 @@ public class BiomeDictionary
         public static final Type HOT = new Type("HOT");
         public static final Type COLD = new Type("COLD");
 
-        /*Tags specifying the amount of vegetation a biome has. Specifying neither implies a biome to have moderate amounts*/
+        /**Tag specifying a sparse amount of vegetation*/
         public static final Type SPARSE = new Type("SPARSE");
+        /**Tag specifying a dense amount of vegetation*/
         public static final Type DENSE = new Type("DENSE");
 
-        /*Tags specifying how moist a biome is. Specifying neither implies the biome as having moderate humidity*/
+        /**Tag specifying how moist a biome is*/
         public static final Type WET = new Type("WET");
+        /**Tag specifying how moist a biome is*/
         public static final Type DRY = new Type("DRY");
 
-        /*Tree-based tags, SAVANNA refers to dry, desert-like trees (Such as Acacia), CONIFEROUS refers to snowy trees (Such as Spruce) and JUNGLE refers to jungle trees.
-         * Specifying no tag implies a biome has temperate trees (Such as Oak)*/
+        /**Tree-based tag: refers to dry, desert-like trees (Such as Acacia)*/
         public static final Type SAVANNA = new Type("SAVANNA");
+        /**Tree-based tag: refers to snowy trees (Such as Spruce)*/
         public static final Type CONIFEROUS = new Type("CONIFEROUS");
+        /**Tree-based tag: refers to jungle trees*/
         public static final Type JUNGLE = new Type("JUNGLE");
 
         /*Tags specifying the nature of a biome*/
@@ -125,14 +133,14 @@ public class BiomeDictionary
         }
 
         /**
-         * Retrieves a Type instance by name,
-         * if one does not exist already it creates one.
+         * Retrieves a Type instance by name.
+         * If one does not exist already, it creates one.
          * This can be used as intermediate measure for modders to
          * add their own Biome types.
          * <p>
          * There are <i>no</i> naming conventions besides:
          * <ul><li><b>Must</b> be all upper case (enforced by name.toUpper())</li>
-         * <li><b>No</b> Special characters. {Unenforced, just don't be a pain, if it becomes a issue I WILL
+         * <li><b>No</b> Special characters. {Unenforced, just don't be a pain, if it becomes an issue I WILL
          * make this RTE with no worry about backwards compatibility}</li></ul>
          * <p>
          * Note: For performance sake, the return value of this function SHOULD be cached.

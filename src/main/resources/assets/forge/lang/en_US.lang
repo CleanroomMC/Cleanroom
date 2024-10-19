@@ -207,6 +207,8 @@ fml.menu.modoptions=Mod Options...
 
 item.forge.bucketFilled.name=%s Bucket
 
+
+fml.messages.load.problem.found=Forge Mod Loader has found a problem with your minecraft installation
 fml.messages.mod.missing.dependencies=%s is missing mods it depends on.
 fml.messages.mod.missing.dependencies.fix=Include the following mods or remove %s.
 fml.messages.mod.missing.dependencies.compatibility=You must include the right dependencies for %s:

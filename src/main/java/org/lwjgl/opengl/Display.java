@@ -73,7 +73,6 @@ public class Display {
      *
      * @param pixel_format    Describes the minimum specifications the context must fulfill.
      * @param shared_drawable The Drawable to share context with. (optional, may be null)
-     *
      * @throws org.lwjgl.LWJGLException
      */
     public static void create(PixelFormat pixel_format, Drawable shared_drawable) {
@@ -125,7 +124,7 @@ public class Display {
         glfwWindowHintString(GLFW_COCOA_FRAME_NAME, ForgeEarlyConfig.COCOA_FRAME_NAME);
 
         glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_FALSE); // request a non-hidpi framebuffer on Retina displays
-                                                                   // on MacOS
+        // on MacOS
 
         Window.handle = glfwCreateWindow(mode.getWidth(), mode.getHeight(), windowTitle, NULL, NULL);
         if (Window.handle == 0L) {
@@ -242,7 +241,8 @@ public class Display {
             @Override
             public void invoke(long window, int width, int height) {
 
-                latestResized = true;
+                boolean minimized = width == 0 && height == 0;
+                latestResized = true && !minimized;
                 latestWidth = width;
                 latestHeight = height;
             }
