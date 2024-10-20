@@ -1019,7 +1019,7 @@ project(':cleanroom') {
     }
 
     task downloadInstaller(type: DownloadMavenArtifact) {
-        artifact = 'net.neoforged:legacyinstaller:3.0.31:fatjar'
+        artifact = 'net.neoforged:legacyinstaller:3.0.31:shrunk'
         changing = true
     }
 
