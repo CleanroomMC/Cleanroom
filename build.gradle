@@ -247,6 +247,10 @@ project(':cleanroom') {
         maven {
             url "https://maven.outlands.top/releases/"
         }
+        maven {
+            name "NeoForge"
+            url = 'https://maven.neoforged.net/releases/'
+        }
     }
 
     ext {
