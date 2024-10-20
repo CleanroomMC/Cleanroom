@@ -12,7 +12,7 @@ buildscript {
         }
         maven {
             name "NeoForge"
-            url = 'https://maven.neoforged.net/releases'
+            url = 'https://maven.neoforged.net/releases/'
         }
     }
     dependencies {
@@ -100,7 +100,7 @@ project(':mcp') {
         }
         maven {
             name "NeoForge"
-            url = 'https://maven.neoforged.net/releases'
+            url = 'https://maven.neoforged.net/releases/'
         }
 
     }
@@ -129,7 +129,7 @@ project(':minecraft') {
         }
         maven {
             name "NeoForge"
-            url = 'https://maven.neoforged.net/releases'
+            url = 'https://maven.neoforged.net/releases/'
         }
 
     }
