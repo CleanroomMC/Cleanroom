@@ -1019,7 +1019,7 @@ project(':cleanroom') {
     }
 
     task downloadInstaller(type: DownloadMavenArtifact) {
-        artifact = 'net.neoforged:legacyinstaller:3.0.31'
+        artifact = 'net.neoforged:legacyinstaller:3.0.31:fatjar'
         changing = true
     }
 
@@ -1039,7 +1039,6 @@ project(':cleanroom') {
             duplicatesStrategy = 'exclude'
             exclude("big_logo.png") // Remove Forge Logo
         }
-        from(installerJson.installer_tools)
         from(rootProject.file('icon_x64.png')) {
             rename { "big_logo.png" }
         }
