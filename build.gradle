@@ -933,9 +933,10 @@ project(':cleanroom') {
             def json = [
                 _comment_: launcherJson.comment,
                 spec: 0,
-                profile: project.name,
+                profile: project.name.capitalize(),
                 version: launcherJson.id,
-                icon: 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon_x64.png').toPath()))),
+                //TODO : replace the icon
+                icon: 'invalid field',
                 json: '/version.json',
                 path: "${project.group}:${project.name}:${project.version}",
                 logo: '/big_logo.png',
