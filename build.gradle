@@ -10,9 +10,13 @@ buildscript {
             name "Outlands"
             url "https://maven.outlands.top/releases/"
         }
+        maven {
+            name "NeoForge"
+            url = 'https://maven.neoforged.net/releases/'
+        }
     }
     dependencies {
-        classpath "net.minecraftforge.gradle:ForgeGradle:6.10.+"
+        classpath "net.minecraftforge.gradle:ForgeGradle:6.0.+"
     }
 }
 
@@ -94,6 +98,10 @@ project(':mcp') {
             name 'MinecraftForge'
             url 'https://maven.minecraftforge.net/'
         }
+        maven {
+            name "NeoForge"
+            url = 'https://maven.neoforged.net/releases/'
+        }
 
     }
     mcp {
@@ -118,6 +126,10 @@ project(':minecraft') {
         maven {
             name 'MinecraftForge'
             url 'https://maven.minecraftforge.net/'
+        }
+        maven {
+            name "NeoForge"
+            url = 'https://maven.neoforged.net/releases/'
         }
 
     }
@@ -234,6 +246,10 @@ project(':cleanroom') {
         }
         maven {
             url "https://maven.outlands.top/releases/"
+        }
+        maven {
+            name "NeoForge"
+            url = 'https://maven.neoforged.net/releases/'
         }
     }
 
@@ -893,7 +909,7 @@ project(':cleanroom') {
     task installerJson(dependsOn: [launcherJson, genClientBinPatches/*, createClientSRG, createServerSRG*/]) {
         ext {
             output = file('build/install_profile.json')
-            installer_tools = "net.minecraftforge:installertools:$props.installer_tools_version"
+            installer_tools = "net.neoforged.installertools:installertools:$props.installer_tools_version"
         }
         inputs.file universalJar.archivePath
         inputs.file genClientBinPatches.toolJar
@@ -1003,7 +1019,7 @@ project(':cleanroom') {
     }
 
     task downloadInstaller(type: DownloadMavenArtifact) {
-        artifact = 'net.minecraftforge:installer:2.2.+:fatjar'
+        artifact = 'net.neoforged:legacyinstaller:3.0.31:shrunk'
         changing = true
     }
 
