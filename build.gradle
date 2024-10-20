@@ -1023,11 +1023,6 @@ project(':cleanroom') {
         changing = true
     }
 
-    task downloadInstallerTools(type: DownloadMavenArtifact) {
-        artifact = 'net.neoforged.installertools:installertools:2.1.7'
-        changing = true
-    }
-
     task installerJar(type: Zip, dependsOn: [downloadInstaller, installerJson, launcherJson, genClientBinPatches, genServerBinPatches/*, 'signUniversalJar'*/]) {
         archiveClassifier = 'installer'
         archiveExtension = 'jar' //Needs to be Zip task to not override Manifest, so set extension
@@ -1044,7 +1039,7 @@ project(':cleanroom') {
             duplicatesStrategy = 'exclude'
             exclude("big_logo.png") // Remove Forge Logo
         }
-        from(zipTree(downloadInstallerTools.output))
+        from(installerJson.installer_tools)
         from(rootProject.file('icon_x64.png')) {
             rename { "big_logo.png" }
         }
