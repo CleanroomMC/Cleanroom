@@ -1038,10 +1038,20 @@ project(':cleanroom') {
         from(launcherJson.output)
         from(zipTree(downloadInstaller.output)) {
             duplicatesStrategy = 'exclude'
-            exclude("big_logo.png") // Remove Forge Logo
+            exclude("icons/*")
         }
-        from(rootProject.file('icon_x64.png')) {
+        from(rootProject.file('cleanroom-logo_64.png')) {
             rename { "big_logo.png" }
+        }
+        // TODO : get from https://raw.githubusercontent.com/CleanroomMC/Resources/refs/heads/master/Art/cleanroom-logo.png and make the sizes automatic.
+        from(rootProject.file('cleanroom-logo_16.png')) {
+            rename { "icons/neoforged_background_16x16.png" }
+        }
+        from(rootProject.file('cleanroom-logo_32.png')) {
+            rename { "icons/neoforged_background_32x32.png" }
+        }
+        from(rootProject.file('cleanroom-logo_128.png')) {
+            rename { "icons/neoforged_background_128x128.png" }
         }
     }
 
