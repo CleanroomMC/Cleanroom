@@ -935,8 +935,7 @@ project(':cleanroom') {
                 spec: 0,
                 profile: project.name.capitalize(),
                 version: launcherJson.id,
-                //TODO : replace the icon
-                icon: 'invalid field',
+                icon: 'null',
                 json: '/version.json',
                 path: "${project.group}:${project.name}:${project.version}",
                 logo: '/big_logo.png',
