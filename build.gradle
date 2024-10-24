@@ -1035,7 +1035,14 @@ project(':cleanroom') {
         }
         from(installerJson.output)
         from(launcherJson.output)
-        from(zipTree(downloadInstaller.output))
+        from(zipTree(downloadInstaller.output)) {
+            duplicatesStrategy = 'exclude'
+            exclude(
+                [
+                    "icons/**",
+                    "big_logo.png""
+                ])
+        }
         from(rootProject.file('cleanroom-logo_64.png')) {
             rename { "big_logo.png" }
         }
