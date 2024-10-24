@@ -1040,7 +1040,7 @@ project(':cleanroom') {
             exclude(
                 [
                     "icons/**",
-                    "big_logo.png""
+                    "big_logo.png"
                 ])
         }
         from(rootProject.file('cleanroom-logo_64.png')) {
