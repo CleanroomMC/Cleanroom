@@ -1019,7 +1019,7 @@ project(':cleanroom') {
     }
 
     task downloadInstaller(type: DownloadMavenArtifact) {
-        artifact = 'net.neoforged:legacyinstaller:3.0.31:shrunk'
+        artifact = 'net.neoforged:legacyinstaller:3.0.+:shrunk'
         changing = true
     }
 
@@ -1043,17 +1043,17 @@ project(':cleanroom') {
                     "big_logo.png"
                 ])
         }
-        from(rootProject.file('cleanroom-logo_64.png')) {
+        from(rootProject.file('logos/cleanroom-logo_64.png')) {
             rename { "big_logo.png" }
         }
         // TODO : get from https://raw.githubusercontent.com/CleanroomMC/Resources/refs/heads/master/Art/cleanroom-logo.png and make the sizes automatic.
-        from(rootProject.file('cleanroom-logo_16.png')) {
+        from(rootProject.file('logos/cleanroom-logo_16.png')) {
             rename { "icons/neoforged_background_16x16.png" }
         }
-        from(rootProject.file('cleanroom-logo_32.png')) {
+        from(rootProject.file('logos/cleanroom-logo_32.png')) {
             rename { "icons/neoforged_background_32x32.png" }
         }
-        from(rootProject.file('cleanroom-logo_128.png')) {
+        from(rootProject.file('logos/cleanroom-logo_128.png')) {
             rename { "icons/neoforged_background_128x128.png" }
         }
     }
