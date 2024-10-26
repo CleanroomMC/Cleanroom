@@ -43,33 +43,46 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable;
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  **/
 @Cancelable
-public class LivingSetAttackTargetEvent extends LivingEvent
-{
-
+public class LivingSetAttackTargetEvent extends LivingEvent{
     private final EntityLivingBase originalTarget;
     private EntityLivingBase redirectedTarget;
-    private boolean isRedirected;
+    private boolean isModified;
+    
     public LivingSetAttackTargetEvent(EntityLivingBase entity, EntityLivingBase target)
     {
         super(entity);
         this.originalTarget = target;
         this.redirectedTarget = null;
-        this.isRedirected = false;
+        this.isModified = false;
     }
 
+    /**
+    * Get the target that will be actually applied
+    **/
     public EntityLivingBase getTarget()
     {
-        return isRedirected?redirectedTarget:originalTarget;
+        return isRedirected ? redirectedTarget : originalTarget;
     }
-    
+
+    /**
+    * return the original attack target
+    **/
     public EntityLivingBase getOriginalTarget(){
         return originalTarget;
     }
-    
-    public void redirect(EntityLivingBase living){
-        this.redirectedTarget=living;
-        this.isRedirected=true;
+
+    /**
+    * Set the attack target of the living's
+    **/
+    public void setTarget(EntityLivingBase living){
+        this.redirectedTarget = living;
+        this.isModified = true;
     }
-    
-    public boolean isRedirected(){ return this.isRedirected; }
+
+    /**
+    * Is the attack target is modified
+    **/
+    public boolean isModified(){
+        return this.isModified;
+    }
 }
