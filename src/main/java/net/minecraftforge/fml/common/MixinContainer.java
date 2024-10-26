@@ -9,8 +9,7 @@ public final class MixinContainer extends DummyModContainer{
         meta.modId = "mixinbooter";
         meta.name = "MixinBooter";
         meta.description = "A Mixin library and loader.";
-        meta.version = "100.0";
-        meta.logoFile = "/icon.png";
+        meta.version = "10.0";
         meta.authorList.add("Rongmario");
     }
 

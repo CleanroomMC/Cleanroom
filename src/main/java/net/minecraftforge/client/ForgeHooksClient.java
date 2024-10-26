@@ -338,32 +338,32 @@ public class ForgeHooksClient
     private static int updatescrollcounter = 0;
     public static String renderMainMenu(GuiMainMenu gui, FontRenderer font, int width, int height, String splashText)
     {
-        Status status = ForgeVersion.getStatus();
-        if (status == BETA || status == BETA_OUTDATED)
-        {
-            // render a warning at the top of the screen,
-            String line = I18n.format("forge.update.beta.1", TextFormatting.RED, TextFormatting.RESET);
-            gui.drawString(font, line, (width - font.getStringWidth(line)) / 2, 4 + (0 * (font.FONT_HEIGHT + 1)), -1);
-            line = I18n.format("forge.update.beta.2");
-            gui.drawString(font, line, (width - font.getStringWidth(line)) / 2, 4 + (1 * (font.FONT_HEIGHT + 1)), -1);
-        }
-
-        String line = null;
-        switch(status)
-        {
-            //case FAILED:        line = " Version check failed"; break;
-            //case UP_TO_DATE:    line = "Forge up to date"}; break;
-            //case AHEAD:         line = "Using non-recommended Forge build, issues may arise."}; break;
-            case OUTDATED:
-            case BETA_OUTDATED: line = I18n.format("forge.update.newversion", ForgeVersion.getTarget()); break;
-            default: break;
-        }
-
-        if (line != null)
-        {
-            // if we have a line, render it in the bottom right, above Mojang's copyright line
-            gui.drawString(font, line, width - font.getStringWidth(line) - 2, height - (2 * (font.FONT_HEIGHT + 1)), -1);
-        }
+//        Status status = ForgeVersion.getStatus();
+//        if (status == BETA || status == BETA_OUTDATED)
+//        {
+//            // render a warning at the top of the screen,
+//            String line = I18n.format("forge.update.beta.1", TextFormatting.RED, TextFormatting.RESET);
+//            gui.drawString(font, line, (width - font.getStringWidth(line)) / 2, 4 + (0 * (font.FONT_HEIGHT + 1)), -1);
+//            line = I18n.format("forge.update.beta.2");
+//            gui.drawString(font, line, (width - font.getStringWidth(line)) / 2, 4 + (1 * (font.FONT_HEIGHT + 1)), -1);
+//        }
+//
+//        String line = null;
+//        switch(status)
+//        {
+//            //case FAILED:        line = " Version check failed"; break;
+//            //case UP_TO_DATE:    line = "Forge up to date"}; break;
+//            //case AHEAD:         line = "Using non-recommended Forge build, issues may arise."}; break;
+//            case OUTDATED:
+//            case BETA_OUTDATED: line = I18n.format("forge.update.newversion", ForgeVersion.getTarget()); break;
+//            default: break;
+//        }
+//
+//        if (line != null)
+//        {
+//            // if we have a line, render it in the bottom right, above Mojang's copyright line
+//            gui.drawString(font, line, width - font.getStringWidth(line) - 2, height - (2 * (font.FONT_HEIGHT + 1)), -1);
+//        }
 
         return splashText;
     }

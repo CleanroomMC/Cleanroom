@@ -21,7 +21,7 @@ public class MixinSetup implements IFMLCallHook {
         try {
             MixinBooterPlugin.LOGGER.info("Initializing Mixins...");
             Class<?> clazz = Bouncepad.classLoader.findClass(MixinBootstrap.class.getName());
-            Method init = clazz.getMethod("init", new Class[0]);
+            Method init = clazz.getMethod("realInit", new Class[0]);
             init.invoke(null, new Object[0]);
             //MixinBootstrap.realInit();
             MixinBooterPlugin.LOGGER.info("Initializing MixinExtras...");

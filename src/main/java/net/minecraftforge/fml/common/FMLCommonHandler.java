@@ -38,6 +38,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
+import com.cleanroommc.common.CleanroomVersion;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.item.EntityItem;
@@ -231,7 +232,7 @@ public class FMLCommonHandler
             Builder<String> brd = ImmutableList.builder();
             brd.add(Loader.instance().getMCVersionString());
             brd.add(Loader.instance().getMCPVersionString());
-            brd.add("Powered by Cleanroom " + ForgeVersion.getVersion());
+            brd.add("Cleanroom " + CleanroomVersion.BUILD_VERSION);
             if (sidedDelegate!=null)
             {
                 brd.addAll(sidedDelegate.getAdditionalBrandingInformation());
@@ -434,10 +435,15 @@ public class FMLCommonHandler
             return;
         }
 
-        String text = "Forge Mod Loader detected that the backup level.dat is being used.\n\n" +
-                "This may happen due to a bug or corruption, continuing can damage\n" +
-                "your world beyond repair or lose data / progress.\n\n" +
-                "It's recommended to create a world backup before continuing.";
+        String text =
+                """
+                Forge Mod Loader detected that the backup level.dat is being used.
+                
+                This may happen due to a bug or corruption, continuing can damage
+                your world beyond repair or lose data / progress.
+                
+                It's recommended to create a world backup before continuing.
+                """;
 
         boolean confirmed = StartupQuery.confirm(text);
         if (!confirmed) StartupQuery.abort();

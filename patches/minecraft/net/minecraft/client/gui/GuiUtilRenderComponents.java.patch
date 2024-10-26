@@ -1,6 +1,18 @@
 --- before/net/minecraft/client/gui/GuiUtilRenderComponents.java
 +++ after/net/minecraft/client/gui/GuiUtilRenderComponents.java
-@@ -17,13 +17,11 @@
+@@ -1,9 +1,11 @@
+ package net.minecraft.client.gui;
+ 
++import com.cleanroommc.client.BreakIteratorHolder;
+ import com.google.common.collect.Lists;
+ import java.util.List;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.util.text.ITextComponent;
++import net.minecraft.util.text.Style;
+ import net.minecraft.util.text.TextComponentString;
+ import net.minecraft.util.text.TextFormatting;
+ import net.minecraftforge.fml.relauncher.Side;
+@@ -17,94 +19,111 @@
          return !p_178909_1_ && !Minecraft.func_71410_x().field_71474_y.field_74344_o ? TextFormatting.func_110646_a(p_178909_0_) : p_178909_0_;
      }
  
@@ -9,33 +21,162 @@
 -        )
 +    public static List<ITextComponent> func_178908_a(ITextComponent p_178908_0_, int p_178908_1_, FontRenderer p_178908_2_, boolean p_178908_3_, boolean p_178908_4_)
      {
-         int i = 0;
-         ITextComponent itextcomponent = new TextComponentString("");
--        List<ITextComponent> list = Lists.newArrayList();
-+        List<ITextComponent> list = Lists.<ITextComponent>newArrayList();
-         List<ITextComponent> list1 = Lists.newArrayList(p_178908_0_);
+-        int i = 0;
+-        ITextComponent itextcomponent = new TextComponentString("");
++        int accumlateWidth = 0;
+         List<ITextComponent> list = Lists.newArrayList();
+-        List<ITextComponent> list1 = Lists.newArrayList(p_178908_0_);
+-
+-        for (int j = 0; j < list1.size(); ++j)
+-        {
+-            ITextComponent itextcomponent1 = list1.get(j);
+-            String s = itextcomponent1.func_150261_e();
+-            boolean flag = false;
+-
+-            if (s.contains("\n"))
+-            {
+-                int k = s.indexOf(10);
+-                String s1 = s.substring(k + 1);
+-                s = s.substring(0, k + 1);
+-                ITextComponent itextcomponent2 = new TextComponentString(s1);
+-                itextcomponent2.func_150255_a(itextcomponent1.func_150256_b().func_150232_l());
+-                list1.add(j + 1, itextcomponent2);
+-                flag = true;
++        List<String> cache = Lists.newArrayList();
++        List<Style> styleCache = Lists.newArrayList();
++        List<Boolean> newLineCache = Lists.newArrayList();
++        List<ITextComponent> originList = Lists.newArrayList(p_178908_0_);
++        int j;
++        boolean wrapped;
++        for (j = 0; j < originList.size(); ++j) {
++            ITextComponent originLine = originList.get(j);
++            String unformattedOriginLine = originLine.func_150261_e();
++
++            if (unformattedOriginLine.contains("\n")) {
++                int k = unformattedOriginLine.indexOf('\n');
++                String stringAfter = unformattedOriginLine.substring(k + 1);
++                unformattedOriginLine = unformattedOriginLine.substring(0, k + 1);
++                ITextComponent textAfterN = new TextComponentString(stringAfter);
++                textAfterN.func_150255_a(originLine.func_150256_b().func_150232_l());
++                originList.add(j + 1, textAfterN);
++                wrapped = true;
++            } else {
++                wrapped = false;
+             }
  
-         for (int j = 0; j < list1.size(); ++j)
-@@ -51,18 +49,20 @@
+-            String s4 = func_178909_a(itextcomponent1.func_150256_b().func_150218_j() + s, p_178908_4_);
+-            String s5 = s4.endsWith("\n") ? s4.substring(0, s4.length() - 1) : s4;
+-            int i1 = p_178908_2_.func_78256_a(s5);
+-            TextComponentString textcomponentstring = new TextComponentString(s5);
+-            textcomponentstring.func_150255_a(itextcomponent1.func_150256_b().func_150232_l());
++            String rebuiltOriginLine = func_178909_a(originLine.func_150256_b().func_150218_j() + unformattedOriginLine, p_178908_4_);
++            String cleanedLine = rebuiltOriginLine.endsWith("\n") ? rebuiltOriginLine.substring(0, rebuiltOriginLine.length() - 1) : rebuiltOriginLine;
++            cache.add(cleanedLine);
++            styleCache.add(originLine.func_150256_b());
++            newLineCache.add(wrapped);
++        }
++        BreakIteratorHolder.BREAK_ITERATOR.setText(String.join("\n", cache));
++        int fed = 0;
++        ITextComponent lineToAdd = new TextComponentString("");
++        String cleanedLine;
++        Style style;
++        for (j = 0; j < cache.size(); j++) {
++            cleanedLine = cache.get(j);
++            style = styleCache.get(j);
++            wrapped = newLineCache.get(j);
++            int lineWidth = p_178908_2_.func_78256_a(cleanedLine);
++            TextComponentString line = new TextComponentString(cleanedLine);
++            line.func_150255_a(style.func_150232_l());
  
-             if (i + i1 > p_178908_1_)
+-            if (i + i1 > p_178908_1_)
++            if (accumlateWidth + lineWidth > p_178908_1_)
              {
-+                FontRenderer.BREAK_ITERATOR.setText(s4);
-                 String s2 = p_178908_2_.func_78262_a(s4, p_178908_1_ - i, false);
-                 String s3 = s2.length() < s4.length() ? s4.substring(s2.length()) : null;
- 
-                 if (s3 != null && !s3.isEmpty())
+-                String s2 = p_178908_2_.func_78262_a(s4, p_178908_1_ - i, false);
+-                String s3 = s2.length() < s4.length() ? s4.substring(s2.length()) : null;
+-
+-                if (s3 != null && !s3.isEmpty())
++
++                String firstHalf = p_178908_2_.func_78262_a(cleanedLine, p_178908_1_ - accumlateWidth, false);
++                String secondHalf = firstHalf.length() < cleanedLine.length() ? cleanedLine.substring(firstHalf.length()) : null;
++
++                if (secondHalf != null)
                  {
 -                    int l = s2.lastIndexOf(32);
-+                    FontRenderer.BREAK_ITERATOR.following(s2.length());
-+                    int l = FontRenderer.BREAK_ITERATOR.previous();
++                    int l = BreakIteratorHolder.BREAK_ITERATOR.preceding(fed + firstHalf.length()) - fed;
  
-                     if (l >= 0 && p_178908_2_.func_78256_a(s4.substring(0, l)) > 0)
+-                    if (l >= 0 && p_178908_2_.func_78256_a(s4.substring(0, l)) > 0)
++                    if (l >= 0 && p_178908_2_.func_78256_a(cleanedLine.substring(0, l)) > 0)
                      {
-                         s2 = s4.substring(0, l);
+-                        s2 = s4.substring(0, l);
++                        firstHalf = cleanedLine.substring(0, l);
  
 -                        if (p_178908_3_)
-+                        if (p_178908_3_ && s4.charAt(l) == ' ')
++                        if (p_178908_3_ && cleanedLine.charAt(l) == ' ')
                          {
                              ++l;
                          }
+ 
+-                        s3 = s4.substring(l);
++                        secondHalf = cleanedLine.substring(l);
+                     }
+-                    else if (i > 0 && !s4.contains(" "))
++                    else if (accumlateWidth > 0 && !cleanedLine.contains(" "))
+                     {
+-                        s2 = "";
+-                        s3 = s4;
++                        firstHalf = "";
++                        secondHalf = cleanedLine;
+                     }
+ 
+-                    TextComponentString textcomponentstring1 = new TextComponentString(s3);
+-                    textcomponentstring1.func_150255_a(itextcomponent1.func_150256_b().func_150232_l());
+-                    list1.add(j + 1, textcomponentstring1);
++                    secondHalf = FontRenderer.func_78282_e(firstHalf) + secondHalf; //Forge: Fix chat formatting not surviving line wrapping.
++
++                    cache.set(j, secondHalf);
++                    j--;
+                 }
+ 
+-                i1 = p_178908_2_.func_78256_a(s2);
+-                textcomponentstring = new TextComponentString(s2);
+-                textcomponentstring.func_150255_a(itextcomponent1.func_150256_b().func_150232_l());
+-                flag = true;
++                lineWidth = p_178908_2_.func_78256_a(firstHalf);
++                line = new TextComponentString(firstHalf);
++                line.func_150255_a(style.func_150232_l());
++                wrapped = true;
+             }
+ 
+-            if (i + i1 <= p_178908_1_)
++
++            if (accumlateWidth + lineWidth <= p_178908_1_)
+             {
+-                i += i1;
+-                itextcomponent.func_150257_a(textcomponentstring);
++                accumlateWidth += lineWidth;
++                lineToAdd.func_150257_a(line);
++                fed += line.func_150265_g().length();
+             }
+             else
+             {
+-                flag = true;
++                wrapped = true;
+             }
+ 
+-            if (flag)
++            if (wrapped)
+             {
+-                list.add(itextcomponent);
+-                i = 0;
+-                itextcomponent = new TextComponentString("");
++                list.add(lineToAdd);
++                accumlateWidth = 0;
++                lineToAdd = new TextComponentString("");
+             }
+         }
+ 
+-        list.add(itextcomponent);
++        list.add(lineToAdd);
+         return list;
+     }
+ }

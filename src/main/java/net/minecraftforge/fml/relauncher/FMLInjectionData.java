@@ -24,7 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.launchwrapper.LaunchClassLoader;
+import net.minecraftforge.common.ForgeEarlyConfig;
 import net.minecraftforge.common.ForgeVersion;
+import net.minecraftforge.common.config.ConfigManager;
 
 public class FMLInjectionData
 {
@@ -47,6 +49,7 @@ public class FMLInjectionData
         build = String.valueOf(ForgeVersion.buildVersion);
         mccversion = ForgeVersion.mcVersion;
         mcpversion = ForgeVersion.mcpVersion;
+        ConfigManager.register(ForgeEarlyConfig.class);
     }
 
     static String debfuscationDataName()

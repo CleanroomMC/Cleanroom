@@ -2,7 +2,7 @@ package org.lwjgl;
 
 import static org.lwjgl3.glfw.GLFW.glfwInit;
 
-import java.awt.Desktop;
+import java.awt.*;
 import java.net.URI;
 
 import javax.swing.JOptionPane;
@@ -10,13 +10,21 @@ import javax.swing.UIManager;
 
 import org.lwjgl3.Version;
 import org.lwjgl3.glfw.GLFW;
+import org.lwjgl3.system.Configuration;
 import org.lwjgl3.system.Platform;
 import org.lwjgl.opengl.Display;
 
 public class Sys {
 
     static {
-        if (!glfwInit()) throw new IllegalStateException("Unable to initialize glfw");
+        if (Platform.get() == Platform.MACOSX) {
+            Configuration.GLFW_LIBRARY_NAME.set("glfw_async");
+            Configuration.GLFW_CHECK_THREAD0.set(false);
+            Toolkit.getDefaultToolkit();
+        }
+        if (!glfwInit()) {
+            throw new IllegalStateException("Unable to initialize glfw");
+        }
     }
 
     public static void initialize() {}

@@ -23,10 +23,8 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.IntHashMap;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class KeyBindingMap
 {
@@ -40,6 +38,7 @@ public class KeyBindingMap
     }
 
     @Nullable
+    @Deprecated // Cleanroom: Use lookupActives
     public KeyBinding lookupActive(int keyCode)
     {
         KeyModifier activeModifier = KeyModifier.getActiveModifier();
@@ -52,6 +51,20 @@ public class KeyBindingMap
             }
         }
         return getBinding(keyCode, KeyModifier.NONE);
+    }
+
+    public Set<KeyBinding> lookupActives(int keyCode)
+    {
+        KeyModifier activeModifier = KeyModifier.getActiveModifier();
+        if (!activeModifier.matches(keyCode))
+        {
+            Set<KeyBinding> bindings = getBindings(keyCode, activeModifier);
+            if (!bindings.isEmpty())
+            {
+                return bindings;
+            }
+        }
+        return getBindings(keyCode, KeyModifier.NONE);
     }
 
     @Nullable
@@ -69,6 +82,16 @@ public class KeyBindingMap
             }
         }
         return null;
+    }
+
+    private Set<KeyBinding> getBindings(int keyCode, KeyModifier keyModifier)
+    {
+        Collection<KeyBinding> bindings = map.get(keyModifier).lookup(keyCode);
+        if (bindings == null)
+        {
+            return Collections.emptySet();
+        }
+        return bindings.stream().filter($ -> $.isActiveAndMatches(keyCode)).collect(Collectors.toSet());
     }
 
     public List<KeyBinding> lookupAll(int keyCode)

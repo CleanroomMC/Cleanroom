@@ -15,16 +15,21 @@
      private final String field_74515_c;
      private final int field_151472_e;
      private final String field_151471_f;
-@@ -29,7 +29,7 @@
+@@ -29,12 +29,7 @@
      {
          if (p_74507_0_ != 0)
          {
 -            KeyBinding keybinding = field_74514_b.func_76041_a(p_74507_0_);
-+            KeyBinding keybinding = field_74514_b.lookupActive(p_74507_0_);
+-
+-            if (keybinding != null)
+-            {
+-                ++keybinding.field_151474_i;
+-            }
++            field_74514_b.lookupActives(p_74507_0_).forEach($ -> ++$.field_151474_i);
+         }
+     }
  
-             if (keybinding != null)
-             {
-@@ -42,7 +42,7 @@
+@@ -42,7 +37,7 @@
      {
          if (p_74510_0_ != 0)
          {
@@ -33,7 +38,7 @@
  
              if (keybinding != null)
              {
-@@ -59,8 +59,9 @@
+@@ -59,8 +54,9 @@
              {
                  func_74510_a(keybinding.field_74512_d, keybinding.field_74512_d < 256 && Keyboard.isKeyDown(keybinding.field_74512_d));
              }
@@ -44,7 +49,7 @@
              }
          }
      }
-@@ -75,11 +76,11 @@
+@@ -75,11 +71,11 @@
  
      public static void func_74508_b()
      {
@@ -58,7 +63,7 @@
          }
      }
  
-@@ -95,13 +96,13 @@
+@@ -95,13 +91,13 @@
          this.field_151472_e = p_i45001_2_;
          this.field_151471_f = p_i45001_3_;
          field_74516_a.put(p_i45001_1_, this);
@@ -74,7 +79,7 @@
      }
  
      public String func_151466_e()
-@@ -150,25 +151,166 @@
+@@ -150,25 +146,166 @@
  
      public int compareTo(KeyBinding p_compareTo_1_)
      {

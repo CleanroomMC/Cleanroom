@@ -20,16 +20,16 @@ public class AL {
     }
 
     public static void create() throws LWJGLException {
-        create(org.lwjgl3.openal.ALC10.alcGetString(0, ALC10.ALC_DEFAULT_DEVICE_SPECIFIER), 44100, 60, false);
+        create(null, 44100, 60, false);
     }
 
-    public static void create(String deviceArguments, int contextFrequency, int contextRefresh, boolean contextSynchronized)
-            throws LWJGLException {
+    public static void create(String deviceArguments, int contextFrequency, int contextRefresh,
+                              boolean contextSynchronized) {
         create(deviceArguments, contextFrequency, contextRefresh, contextSynchronized, true);
     }
 
-    public static void create(String deviceArguments, int contextFrequency, int contextRefresh, boolean contextSynchronized, boolean openDevice)
-            throws LWJGLException {
+    public static void create(String deviceArguments, int contextFrequency, int contextRefresh,
+                              boolean contextSynchronized, boolean openDevice) {
         IntBuffer attribs = BufferUtils.createIntBuffer(16);
 
         attribs.put(org.lwjgl3.openal.ALC10.ALC_FREQUENCY);
@@ -40,11 +40,16 @@ public class AL {
 
         attribs.put(org.lwjgl3.openal.ALC10.ALC_SYNC);
         attribs.put(contextSynchronized ? org.lwjgl3.openal.ALC10.ALC_TRUE : org.lwjgl3.openal.ALC10.ALC_FALSE);
+        
+        attribs.put(org.lwjgl3.openal.EXTEfx.ALC_MAX_AUXILIARY_SENDS);
+        attribs.put(4);
 
         attribs.put(0);
         attribs.flip();
 
-        long deviceHandle = org.lwjgl3.openal.ALC10.alcOpenDevice(deviceArguments);
+        String defaultDevice = org.lwjgl3.openal.ALC10.alcGetString(0, ALC10.ALC_DEFAULT_DEVICE_SPECIFIER);
+
+        long deviceHandle = org.lwjgl3.openal.ALC10.alcOpenDevice(defaultDevice);
 
         alcDevice = new ALCdevice(deviceHandle);
 
@@ -68,6 +73,10 @@ public class AL {
         alcContext = null;
         alcDevice = null;
         created = false;
+    }
+
+    public static org.lwjgl.openal.ALCcontext getContext() {
+        return alcContext;
     }
 
     public static ALCdevice getDevice() {
