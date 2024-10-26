@@ -61,7 +61,7 @@ public class LivingSetAttackTargetEvent extends LivingEvent{
     **/
     public EntityLivingBase getTarget()
     {
-        return isRedirected ? redirectedTarget : originalTarget;
+        return isModified ? redirectedTarget : originalTarget;
     }
 
     /**
