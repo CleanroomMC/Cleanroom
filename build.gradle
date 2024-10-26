@@ -886,7 +886,7 @@ project(':cleanroom') {
                             artifact: [
                                 path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
                                 // Do not include the URL so that the installer/launcher won't grab it. This is also why we don't have the universal classifier
-                                url: '',
+                                url: ' ',
                                 sha1: Util.sha1(universalJar.archivePath),
                                 size: universalJar.archivePath.length()
                             ]
@@ -923,7 +923,7 @@ project(':cleanroom') {
                         artifact: [
                                 path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
                                 // Do not include the URL so that the installer/launcher won't grab it. This is also why we don't have the universal classifier
-                                url: '',
+                                url: ' ',
                                 sha1: Util.sha1(universalJar.archivePath),
                                 size: universalJar.archivePath.length()
                         ]
