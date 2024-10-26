@@ -19,18 +19,18 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4.1.1
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v3.10.0
+        uses: actions/setup-java@v4.2.1
         with:
           java-version: '21'
-          distribution: 'temurin'
+          distribution: 'semeru'
 
       - name: Setup Forge env
         run: ./gradlew.bat setup
       - name: Stop Gradle daemon
         run: ./gradlew.bat --stop
 
-      - name: Build Forge Installer Jar
-        run: ./gradlew.bat installerJar
+      - name: Build Jar
+        run: ./gradlew.bat build

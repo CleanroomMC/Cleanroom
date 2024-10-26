@@ -20,16 +20,34 @@
                  }
              }
          }
-@@ -72,7 +73,7 @@
-         }
+@@ -53,26 +54,6 @@
  
-         float f = (float)i / (float)j;
+     private void func_135024_b()
+     {
+-        this.field_135029_d = false;
+-        int i = 0;
+-        int j = 0;
+-
+-        for (String s : this.field_135032_a.values())
+-        {
+-            int k = s.length();
+-            j += k;
+-
+-            for (int l = 0; l < k; ++l)
+-            {
+-                if (s.charAt(l) >= 256)
+-                {
+-                    ++i;
+-                }
+-            }
+-        }
+-
+-        float f = (float)i / (float)j;
 -        this.field_135029_d = (double)f > 0.1;
-+        this.field_135029_d = (double)f > 0.1D;
      }
  
      private void func_135028_a(List<IResource> p_135028_1_) throws IOException
-@@ -94,11 +95,13 @@
+@@ -94,11 +75,13 @@
  
      private void func_135021_a(InputStream p_135021_1_) throws IOException
      {
@@ -44,7 +62,7 @@
  
                  if (astring != null && astring.length == 2)
                  {
-@@ -124,7 +127,7 @@
+@@ -124,7 +107,7 @@
          {
              return String.format(s, p_135023_2_);
          }

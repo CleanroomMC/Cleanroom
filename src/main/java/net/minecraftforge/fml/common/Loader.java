@@ -38,6 +38,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import com.cleanroommc.common.CleanroomContainer;
+import com.cleanroommc.common.ConfigAnytimeContainer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -371,12 +373,14 @@ public class Loader
         mods.add(minecraft);
         // Add in the MCP mod container
         mods.add(new InjectedModContainer(mcp,new File("minecraft.jar")));
+        mods.add(new InjectedModContainer(new ConfigAnytimeContainer(), new File("minecraft.jar")));
+        mods.add(new InjectedModContainer(new CleanroomContainer(), new File("minecraft.jar")));
         for (String cont : injectedContainers)
         {
             ModContainer mc;
             try
             {
-                mc = (ModContainer) Class.forName(cont,true,modClassLoader).newInstance();
+                mc = (ModContainer) Class.forName(cont,true,modClassLoader).getConstructor().newInstance();
             }
             catch (Exception e)
             {

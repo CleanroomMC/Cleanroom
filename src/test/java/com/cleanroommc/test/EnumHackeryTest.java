@@ -72,12 +72,18 @@ public class EnumHackeryTest {
     public void testAddEnumEntryWithParameters() {
         CtorTestEnum[] oldValues = CtorTestEnum.values();
         CtorTestEnum three = EnumHackery.addEnumEntry(CtorTestEnum.class, "THREE", new Class<?>[] { String.class }, new Object[] { "three" });
+        CtorTestEnum four = EnumHackery.addEnumEntry(CtorTestEnum.class, "FOUR", new Class<?>[] { String.class }, new Object[] { "four" });
         CtorTestEnum[] newValues = CtorTestEnum.values();
         Assert.assertNotNull(Enum.valueOf(CtorTestEnum.class, "THREE"));
         Assert.assertEquals(Enum.valueOf(CtorTestEnum.class, "THREE"), three);
+        Assert.assertNotNull(Enum.valueOf(CtorTestEnum.class, "FOUR"));
+        Assert.assertEquals(Enum.valueOf(CtorTestEnum.class, "FOUR"), four);
         Assert.assertNotNull(CtorTestEnum.valueOf("THREE"));
         Assert.assertEquals(CtorTestEnum.valueOf("THREE"), three);
+        Assert.assertNotNull(CtorTestEnum.valueOf("FOUR"));
+        Assert.assertEquals(CtorTestEnum.valueOf("FOUR"), four);
         Assert.assertNotEquals(oldValues, newValues);
+        Assert.assertEquals(2, newValues.length - oldValues.length);
     }
 
     @Test

@@ -1,0 +1,56 @@
+title: Proposal Name
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      placeholder: Present your proposal with a sentence or two...
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goals
+      placeholder: What are the goals for this proposal?
+    validations:
+      required: true
+  - type: textarea
+    id: non-goals
+    attributes:
+      label: Non Goals
+      placeholder: What are not the goals for this proposal? This can help eliminating feature creeping.
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      placeholder: What made you want to propose this idea?
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      placeholder: Write everything down to the tiniest detail!
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      placeholder: Does this proposal depend on any prior proposals and/or any external projects?
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      placeholder: Note down anything you referenced, whether that be links, papers etc.
+  - type: checkboxes
+    id: acknowledge
+    attributes:
+      label: Guidelines
+      description: |
+          View the guidelines here: [Cleanroom Feature Proposal Guidelines](../blob/main/CFP_GUIDELINES.md)
+      options:
+        - label: I have and will continue to adhere to the guidelines
+          required: true
