@@ -28,7 +28,7 @@
                  if (p_177137_1_.func_184605_cv() > 0)
                  {
                      EnumAction enumaction = itemstack.func_77975_n();
-+                    modelbiped$armpose=enumaction.getBipedArmPose();
++                    modelbiped$armpose = enumaction.getBipedArmPose();
  
                      if (enumaction == EnumAction.BLOCK)
                      {
@@ -36,7 +36,7 @@
                  if (p_177137_1_.func_184605_cv() > 0)
                  {
                      EnumAction enumaction1 = itemstack1.func_77975_n();
-+                    modelbiped$armpose1=enumaction1.getBipedArmPose();
++                    modelbiped$armpose1 = enumaction1.getBipedArmPose();
  
                      if (enumaction1 == EnumAction.BLOCK)
                      {

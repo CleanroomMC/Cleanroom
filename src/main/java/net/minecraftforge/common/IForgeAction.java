@@ -6,7 +6,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public interface IForgeAction {
-    IForgeAction EMPTY=new IForgeAction() {};
+    IForgeAction EMPTY = new IForgeAction() {};
 
     /**
      * @return The ArmPose used for render.<br>

@@ -7,7 +7,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public interface IForgeArmPose {
-    IForgeArmPose EMPTY=new IForgeArmPose() {};
+    IForgeArmPose EMPTY = new IForgeArmPose() {};
     default void setRotationAnglesLeftHand(ModelBiped modelBiped,float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
     }
     default void setRotationAnglesRightHand(ModelBiped modelBiped,float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
