@@ -1,7 +1,7 @@
 package org.lwjgl.opengl;
 
+import net.minecraftforge.common.ForgeEarlyConfig;
 import org.lwjgl.input.*;
-import org.lwjgl.lwjgl3ify.core.Config;
 import org.lwjgl3.glfw.GLFW;
 import org.lwjgl3.glfw.*;
 import org.lwjgl3.opengl.GL;
@@ -27,7 +27,7 @@ public class Display {
     private static boolean startFullscreen = false;
 
     private static DisplayMode mode = new DisplayMode(854, 480);
-    private static DisplayMode desktopDisplayMode = new DisplayMode(854, 480);
+    private static DisplayMode desktopDisplayMode;
 
     private static int latestEventKey = 0;
 
@@ -46,6 +46,7 @@ public class Display {
     private static ByteBuffer[] savedIcons;
     private static boolean cancelNextChar = false;
     private static KeyEvent ingredientKeyEvent;
+
     static {
         Sys.initialize(); // init using dummy sys method
 
@@ -72,7 +73,6 @@ public class Display {
      *
      * @param pixel_format    Describes the minimum specifications the context must fulfill.
      * @param shared_drawable The Drawable to share context with. (optional, may be null)
-     *
      * @throws org.lwjgl.LWJGLException
      */
     public static void create(PixelFormat pixel_format, Drawable shared_drawable) {
@@ -95,46 +95,43 @@ public class Display {
             return;
         }
 
-        long monitor = glfwGetPrimaryMonitor();
-        GLFWVidMode vidmode = glfwGetVideoMode(monitor);
-
-        int monitorWidth = vidmode.width();
-        int monitorHeight = vidmode.height();
-        int monitorBitPerPixel = vidmode.redBits() + vidmode.greenBits() + vidmode.blueBits();
-        int monitorRefreshRate = vidmode.refreshRate();
-
-        desktopDisplayMode = new DisplayMode(monitorWidth, monitorHeight, monitorBitPerPixel, monitorRefreshRate);
-
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-        glfwWindowHint(GLFW_MAXIMIZED, Config.WINDOW_START_MAXIMIZED ? GLFW_TRUE : GLFW_FALSE);
-        glfwWindowHint(GLFW_FOCUSED, Config.WINDOW_START_FOCUSED ? GLFW_TRUE : GLFW_FALSE);
-        displayFocused = Config.WINDOW_START_FOCUSED;
-        glfwWindowHint(GLFW_ICONIFIED, Config.WINDOW_START_ICONIFIED ? GLFW_TRUE : GLFW_FALSE);
-        displayVisible = !Config.WINDOW_START_ICONIFIED;
-        glfwWindowHint(GLFW_DECORATED, Config.WINDOW_DECORATED ? GLFW_TRUE : GLFW_FALSE);
+        glfwWindowHint(GLFW_MAXIMIZED, ForgeEarlyConfig.WINDOW_START_MAXIMIZED ? GLFW_TRUE : GLFW_FALSE);
+        glfwWindowHint(GLFW_FOCUSED, ForgeEarlyConfig.WINDOW_START_FOCUSED ? GLFW_TRUE : GLFW_FALSE);
+        displayFocused = ForgeEarlyConfig.WINDOW_START_FOCUSED;
+        glfwWindowHint(GLFW_ICONIFIED, ForgeEarlyConfig.WINDOW_START_ICONIFIED ? GLFW_TRUE : GLFW_FALSE);
+        displayVisible = !ForgeEarlyConfig.WINDOW_START_ICONIFIED;
+        glfwWindowHint(GLFW_DECORATED, ForgeEarlyConfig.WINDOW_DECORATED ? GLFW_TRUE : GLFW_FALSE);
 
-        glfwWindowHint(GLFW_SRGB_CAPABLE, Config.OPENGL_SRGB_CONTEXT ? GLFW_TRUE : GLFW_FALSE);
-        glfwWindowHint(GLFW_DOUBLEBUFFER, Config.OPENGL_DOUBLEBUFFER ? GLFW_TRUE : GLFW_FALSE);
-        glfwWindowHint(GLFW_CONTEXT_NO_ERROR, Config.OPENGL_CONTEXT_NO_ERROR ? GLFW_TRUE : GLFW_FALSE);
-        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, Config.OPENGL_DEBUG_CONTEXT ? GLFW_TRUE : GLFW_FALSE);
-        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, Config.OPENGL_DEBUG_CONTEXT ? GLFW_TRUE : GLFW_FALSE);
+        displayX = (desktopDisplayMode.getWidth() - mode.getWidth()) / 2;
+        displayY = (desktopDisplayMode.getHeight() - mode.getHeight()) / 2;
+        glfwWindowHint(GLFW_POSITION_X, displayX);
+        glfwWindowHint(GLFW_POSITION_Y, displayY);
+        glfwWindowHint(GLFW_REFRESH_RATE, desktopDisplayMode.getFrequency());
 
-        glfwWindowHintString(GLFW_X11_CLASS_NAME, Config.X11_CLASS_NAME);
-        glfwWindowHintString(GLFW_COCOA_FRAME_NAME, Config.COCOA_FRAME_NAME);
+        glfwWindowHint(GLFW_SRGB_CAPABLE, ForgeEarlyConfig.OPENGL_SRGB_CONTEXT ? GLFW_TRUE : GLFW_FALSE);
+        glfwWindowHint(GLFW_DOUBLEBUFFER, ForgeEarlyConfig.OPENGL_DOUBLEBUFFER ? GLFW_TRUE : GLFW_FALSE);
+        glfwWindowHint(GLFW_CONTEXT_NO_ERROR, ForgeEarlyConfig.OPENGL_CONTEXT_NO_ERROR ? GLFW_TRUE : GLFW_FALSE);
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, ForgeEarlyConfig.OPENGL_DEBUG_CONTEXT ? GLFW_TRUE : GLFW_FALSE);
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, ForgeEarlyConfig.OPENGL_DEBUG_CONTEXT ? GLFW_TRUE : GLFW_FALSE);
+
+        glfwWindowHintString(GLFW_X11_CLASS_NAME, ForgeEarlyConfig.X11_CLASS_NAME);
+        glfwWindowHintString(GLFW_COCOA_FRAME_NAME, ForgeEarlyConfig.COCOA_FRAME_NAME);
 
         glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_FALSE); // request a non-hidpi framebuffer on Retina displays
-                                                                   // on MacOS
+        // on MacOS
 
         Window.handle = glfwCreateWindow(mode.getWidth(), mode.getHeight(), windowTitle, NULL, NULL);
         if (Window.handle == 0L) {
             throw new IllegalStateException("Failed to create Display window");
         }
-        if (org.lwjgl3.glfw.GLFW.glfwRawMouseMotionSupported()) {
+
+        if (org.lwjgl3.glfw.GLFW.glfwRawMouseMotionSupported() && ForgeEarlyConfig.RAW_INPUT) {
             GLFW.glfwSetInputMode(Window.handle, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
         }
 
@@ -165,18 +162,32 @@ public class Display {
         };
 
         Window.charCallback = new GLFWCharCallback() {
-
             @Override
             public void invoke(long window, int codepoint) {
+                if (cancelNextChar) { // Char event being cancelled
+                    cancelNextChar = false;
+                } else {
+                    Keyboard.addCharEvent(0, (char) codepoint); // Non-ASCII chars
+                }
+            }
+        };
+
+        // TODO: Preferably handle with only GLFWCharCallback
+        // TODO: Perhaps recognise ALT keypresses in GLFWKeyCallback instead
+        Window.charModsCallback = new GLFWCharModsCallback() {
+
+            @Override
+            public void invoke(long window, int codepoint, int mods) {
                 if (cancelNextChar) { // Char event being cancelled
                     cancelNextChar = false;
                 } else if (ingredientKeyEvent != null) {
                     ingredientKeyEvent.aChar = (char) codepoint; // Send char with ASCII key event here
                     Keyboard.addKeyEvent(ingredientKeyEvent);
                     ingredientKeyEvent = null;
-                } else {
-                    Keyboard.addCharEvent(0, (char) codepoint); // Non-ASCII chars
+                    cancelNextChar = true; // Cancel char event for GLFWCharCallback
                 }
+
+                // Non-ASCII chars are handled in GLFWCharCallback
             }
         };
 
@@ -230,7 +241,8 @@ public class Display {
             @Override
             public void invoke(long window, int width, int height) {
 
-                latestResized = true;
+                boolean minimized = width == 0 && height == 0;
+                latestResized = true && !minimized;
                 latestWidth = width;
                 latestHeight = height;
             }
@@ -265,17 +277,14 @@ public class Display {
 
         Window.setCallbacks();
 
-        displayWidth = mode.getWidth();
-        displayHeight = mode.getHeight();
+        displayWidth = desktopDisplayMode.getWidth();
+        displayHeight = desktopDisplayMode.getHeight();
 
         IntBuffer fbw = BufferUtils.createIntBuffer(1);
         IntBuffer fbh = BufferUtils.createIntBuffer(1);
         GLFW.glfwGetFramebufferSize(Window.handle, fbw, fbh);
         displayFramebufferWidth = fbw.get(0);
         displayFramebufferHeight = fbh.get(0);
-
-        displayX = (monitorWidth - mode.getWidth()) / 2;
-        displayY = (monitorHeight - mode.getHeight()) / 2;
 
         glfwMakeContextCurrent(Window.handle);
         drawable = new DrawableGL();
@@ -430,6 +439,9 @@ public class Display {
     }
 
     public static void setTitle(String title) {
+        if (getWindow() != 0) {
+            org.lwjgl3.glfw.GLFW.glfwSetWindowTitle(Window.handle, title);
+        }
         windowTitle = title;
     }
 
@@ -567,6 +579,7 @@ public class Display {
 
         static GLFWKeyCallback keyCallback;
         static GLFWCharCallback charCallback;
+        static GLFWCharModsCallback charModsCallback;
         static GLFWCursorPosCallback cursorPosCallback;
         static GLFWMouseButtonCallback mouseButtonCallback;
         static GLFWScrollCallback scrollCallback;
@@ -580,6 +593,7 @@ public class Display {
         public static void setCallbacks() {
             GLFW.glfwSetKeyCallback(handle, keyCallback);
             GLFW.glfwSetCharCallback(handle, charCallback);
+            GLFW.glfwSetCharModsCallback(handle, charModsCallback);
             GLFW.glfwSetCursorPosCallback(handle, cursorPosCallback);
             GLFW.glfwSetMouseButtonCallback(handle, mouseButtonCallback);
             GLFW.glfwSetScrollCallback(handle, scrollCallback);
