@@ -149,6 +149,7 @@ public class ModClassLoader extends URLClassLoader
             "log4j-core-",
             "lwjgl-",
             "lwjgl_util-",
+            "lwjgl3-",
             "twitch-",
             "jline-",
             "jna-",

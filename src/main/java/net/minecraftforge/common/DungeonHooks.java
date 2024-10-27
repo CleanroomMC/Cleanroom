@@ -25,6 +25,13 @@ import java.util.Random;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.WeightedRandom;
 
+
+/**
+* DungeonHooks allows you to add or remove mobs 
+* to the spawners that generate in dungeons
+*
+* @author LexManos, cpw
+*/
 public class DungeonHooks
 {
     private static ArrayList<DungeonMob> dungeonMobs = new ArrayList<DungeonMob>();
@@ -34,7 +41,7 @@ public class DungeonHooks
      * If the mob is already in the spawn list, the rarity will be added to the existing one,
      * causing the mob to be more common.
      *
-     * @param name The name of the monster, use the same name used when registering the entity.
+     * @param name The name of the monster. This is the same name used when registering the entity.
      * @param rarity The rarity of selecting this mob over others. Must be greater then 0.
      *        Vanilla Minecraft has the following mobs:
      *        Spider   100
@@ -83,8 +90,9 @@ public class DungeonHooks
 
     /**
      * Gets a random mob name from the list.
-     * @param rand World generation random number generator
-     * @return The mob name
+     *
+     * @param rand The World generation random number
+     * @return The mobs name
      */
     public static ResourceLocation getRandomDungeonMob(Random rand)
     {
