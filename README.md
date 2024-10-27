@@ -35,6 +35,7 @@
 - For regular launcher (official launcher, AT launcher, FTB, HMCL), download the installer jar from release. You could use the installer like the Forge one.
 - **Remember to install Fugue!**
 - **And Scalar!**
+- **Do not generate a fat-installer as this is not supported.**
 
 ## Build Instructions:
 
