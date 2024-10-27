@@ -10,10 +10,6 @@ buildscript {
             name "Outlands"
             url "https://maven.outlands.top/releases/"
         }
-        maven {
-            name "NeoForge"
-            url = 'https://maven.neoforged.net/releases/'
-        }
     }
     dependencies {
         classpath "net.minecraftforge.gradle:ForgeGradle:6.0.+"
@@ -98,10 +94,6 @@ project(':mcp') {
             name 'MinecraftForge'
             url 'https://maven.minecraftforge.net/'
         }
-        maven {
-            name "NeoForge"
-            url = 'https://maven.neoforged.net/releases/'
-        }
 
     }
     mcp {
@@ -126,10 +118,6 @@ project(':minecraft') {
         maven {
             name 'MinecraftForge'
             url 'https://maven.minecraftforge.net/'
-        }
-        maven {
-            name "NeoForge"
-            url = 'https://maven.neoforged.net/releases/'
         }
 
     }
@@ -246,10 +234,6 @@ project(':cleanroom') {
         }
         maven {
             url "https://maven.outlands.top/releases/"
-        }
-        maven {
-            name "NeoForge"
-            url = 'https://maven.neoforged.net/releases/'
         }
     }
 
@@ -653,8 +637,8 @@ project(':cleanroom') {
 
     // TODO: Include?
     def extra_files = [
-            rootProject.file('FORGE-CREDITS.txt'),
-            rootProject.file('LICENSE'),
+            rootProject.file('CREDITS.txt'),
+            rootProject.file('LICENSE.txt'),
             rootProject.file('LICENSE-Paulscode IBXM Library.txt'),
             rootProject.file('LICENSE-Paulscode SoundSystem CodecIBXM.txt')
     ]
@@ -886,7 +870,7 @@ project(':cleanroom') {
                             artifact: [
                                 path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
                                 // Do not include the URL so that the installer/launcher won't grab it. This is also why we don't have the universal classifier
-                                url: ' ',
+                                url: '',
                                 sha1: Util.sha1(universalJar.archivePath),
                                 size: universalJar.archivePath.length()
                             ]
@@ -909,7 +893,7 @@ project(':cleanroom') {
     task installerJson(dependsOn: [launcherJson, genClientBinPatches/*, createClientSRG, createServerSRG*/]) {
         ext {
             output = file('build/install_profile.json')
-            installer_tools = "net.neoforged.installertools:installertools:$props.installer_tools_version"
+            installer_tools = "net.minecraftforge:installertools:$props.installer_tools_version"
         }
         inputs.file universalJar.archivePath
         inputs.file genClientBinPatches.toolJar
@@ -923,7 +907,7 @@ project(':cleanroom') {
                         artifact: [
                                 path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
                                 // Do not include the URL so that the installer/launcher won't grab it. This is also why we don't have the universal classifier
-                                url: ' ',
+                                url: '',
                                 sha1: Util.sha1(universalJar.archivePath),
                                 size: universalJar.archivePath.length()
                         ]
@@ -933,9 +917,9 @@ project(':cleanroom') {
             def json = [
                 _comment_: launcherJson.comment,
                 spec: 0,
-                profile: project.name.capitalize(),
+                profile: project.name,
                 version: launcherJson.id,
-                icon: 'null',
+                icon: 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon.ico').toPath()))),
                 json: '/version.json',
                 path: "${project.group}:${project.name}:${project.version}",
                 logo: '/big_logo.png',
@@ -1019,7 +1003,7 @@ project(':cleanroom') {
     }
 
     task downloadInstaller(type: DownloadMavenArtifact) {
-        artifact = 'net.neoforged:legacyinstaller:3.0.+:shrunk'
+        artifact = 'net.minecraftforge:installer:2.2.+:fatjar'
         changing = true
     }
 
@@ -1028,7 +1012,10 @@ project(':cleanroom') {
         archiveExtension = 'jar' //Needs to be Zip task to not override Manifest, so set extension
         destinationDirectory = file('build/libs')
         from(extra_files)
-        from(rootProject.file('src/main/resources/url.png'))
+        from(rootProject.file('/src/main/resources/forge_logo.png')) {
+            rename { 'big_logo.png' }
+        }
+        from(rootProject.file('/src/main/resources/url.png'))
         from(universalJar) {
             into("/maven/${project.group.replace('.', '/')}/${project.name}/${project.version}/")
             rename { "${project.name }-${project.version }.jar" }
@@ -1037,24 +1024,6 @@ project(':cleanroom') {
         from(launcherJson.output)
         from(zipTree(downloadInstaller.output)) {
             duplicatesStrategy = 'exclude'
-            exclude(
-                [
-                    "icons/**",
-                    "big_logo.png"
-                ])
-        }
-        from(rootProject.file('logos/cleanroom-logo_64.png')) {
-            rename { "big_logo.png" }
-        }
-        // TODO : get from https://raw.githubusercontent.com/CleanroomMC/Resources/refs/heads/master/Art/cleanroom-logo.png and make the sizes automatic.
-        from(rootProject.file('logos/cleanroom-logo_16.png')) {
-            rename { "icons/neoforged_background_16x16.png" }
-        }
-        from(rootProject.file('logos/cleanroom-logo_32.png')) {
-            rename { "icons/neoforged_background_32x32.png" }
-        }
-        from(rootProject.file('logos/cleanroom-logo_128.png')) {
-            rename { "icons/neoforged_background_128x128.png" }
         }
     }
 
