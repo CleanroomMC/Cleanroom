@@ -185,16 +185,16 @@ public class Keyboard {
                     int key = field.getInt(null);
                     String name = field.getName().substring(4);
                     unlocalizedKeyNameMiniLut[key] = name;
+                    reverseKeyMap.put(name, key);
                     keyCounter++;
                 }
             }
         } catch (Exception e) {}
         keyCount = keyCounter;
-        for (int i = 0; i < keyName.length; i++) {
-            if (keyName[i] == null) {
-                keyName[i] = "Key " + i;
+        for (int i = 0; i < unlocalizedKeyNameMiniLut.length; i++) {
+            if (unlocalizedKeyNameMiniLut[i] == null) {
+                unlocalizedKeyNameMiniLut[i] = "Key " + i;
             }
-            keyMap.put(keyName[i], i);
         }
         queue.add(new KeyEvent(0, '\0', KeyState.RELEASE, Sys.getNanoTime()));
     }
