@@ -9,8 +9,11 @@ import org.lwjgl3.opengl.GL11;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.Sys;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.HashMap;
 
 import static org.lwjgl3.glfw.GLFW.*;
 import static org.lwjgl3.system.MemoryUtil.NULL;
@@ -46,6 +49,8 @@ public class Display {
     private static ByteBuffer[] savedIcons;
     private static boolean cancelNextChar = false;
     private static KeyEvent ingredientKeyEvent;
+    private static boolean lastAltIsRightAlt = false;
+    private static HashMap<Integer, String> glfwKeycodeNames = new HashMap<>();
 
     static {
         Sys.initialize(); // init using dummy sys method
@@ -59,6 +64,20 @@ public class Display {
         int monitorRefreshRate = vidmode.refreshRate();
 
         desktopDisplayMode = new DisplayMode(monitorWidth, monitorHeight, monitorBitPerPixel, monitorRefreshRate);
+
+        try {
+            Class<GLFW> glfwClass = GLFW.class;
+            for (Field f : glfwClass.getFields()) {
+                if (f.getName()
+                    .startsWith("GLFW_KEY_") && f.getType() == int.class
+                    && Modifier.isStatic(f.getModifiers())) {
+                    int value = f.getInt(null);
+                    glfwKeycodeNames.put(value, f.getName());
+                }
+            }
+        } catch (ReflectiveOperationException e) {
+            // ignore
+        }
     }
 
     /**
@@ -139,9 +158,45 @@ public class Display {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
                 cancelNextChar = false;
+                if (action == GLFW_PRESS) {
+                    if (key == GLFW_KEY_LEFT_ALT) {
+                        lastAltIsRightAlt = false;
+                    } else if (key == GLFW_KEY_RIGHT_ALT) {
+                        lastAltIsRightAlt = true;
+                    }
+                }
                 if (key > GLFW_KEY_SPACE && key <= GLFW_KEY_GRAVE_ACCENT) { // Handle keys have a char. Exclude space to
                     // avoid extra input when switching IME
-                    if ((GLFW_MOD_CONTROL & mods) != 0) { // Handle ctrl + x/c/v.
+
+                    /*
+                     * AltGr and LAlt require special consideration.
+                     * On Windows, AltGr and Ctrl+Alt send the same `mods` value of ALT|CTRL in this event.
+                     * This means that to distinguish potential text input from special key combos we have to look at
+                     * the last pressed Alt key side.
+                     * Ctrl combos have to send a (key & 0x1f) ASCII Escape code to work correctly with a lot of older
+                     * mods, but this obviously breaks text input.
+                     * Therefore, we assume text input with AltGr, and control combination input with Left Alt, but both
+                     * can be switched in the config if the player desires.
+                     */
+                    final boolean isAlt = (GLFW_MOD_ALT & mods) != 0;
+                    final boolean isAltGr = lastAltIsRightAlt;
+                    final boolean ctrlGraphicalMode;
+                    if (isAlt) {
+                        if (isAltGr) {
+                            ctrlGraphicalMode = !ForgeEarlyConfig.INPUT_ALTGR_ESCAPE_CODES;
+                        } else {
+                            // is left alt
+                            ctrlGraphicalMode = ForgeEarlyConfig.INPUT_CTRL_ALT_TEXT;
+                        }
+                        if (ctrlGraphicalMode) {
+                            Keyboard.addGlfwKeyEvent(window, key, scancode, action, mods, (char) (key & 0x1f));
+                        }
+                    } else {
+                        ctrlGraphicalMode = false;
+                    }
+
+
+                    if ((GLFW_MOD_CONTROL & mods) != 0 && !ctrlGraphicalMode) { // Handle ctrl + x/c/v.
                         Keyboard.addGlfwKeyEvent(window, key, scancode, action, mods, (char) (key & 0x1f));
                         cancelNextChar = true; // Cancel char event from ctrl key since its already handled here
                     } else if (action > 0) { // Delay press and repeat key event to actual char input. There is ALWAYS a
@@ -556,6 +611,14 @@ public class Display {
     public static java.awt.Canvas getParent() {
         // Since setParent is not supported, getParent is also expected to return null.
         return null;
+    }
+
+    public static void setSwapInterval(int value) {
+        glfwSwapInterval(value);
+    }
+
+    public static void setDisplayConfiguration(float gamma, float brightness, float contrast) {
+        // ignore
     }
 
     public static void releaseContext() {

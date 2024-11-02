@@ -2,7 +2,6 @@ package org.lwjgl.input;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -159,6 +158,9 @@ public class Keyboard {
     public static final int KEY_SLEEP = 0xDF;
 
     public static final int keyCount;
+        
+    private static final Map<String, Integer> reverseKeyMap = new ConcurrentHashMap<>();
+    
     private static final Queue<KeyEvent> queue = new ArrayBlockingQueue<>(128);
 
 
@@ -166,8 +168,7 @@ public class Keyboard {
 
     public static final int KEYBOARD_SIZE = Short.MAX_VALUE;
 
-    private static final String[] keyName = new String[Short.MAX_VALUE];
-    private static final Map<String, Integer> keyMap = new HashMap<>(Short.MAX_VALUE);
+    private static final String[] unlocalizedKeyNameMiniLut = new String[Short.MAX_VALUE];
 
     static {
         // Use reflection to find out key names
@@ -183,7 +184,7 @@ public class Keyboard {
                     /* Don't use deprecated names */
                     int key = field.getInt(null);
                     String name = field.getName().substring(4);
-                    keyName[key] = name;
+                    unlocalizedKeyNameMiniLut[key] = name;
                     keyCounter++;
                 }
             }
@@ -196,6 +197,13 @@ public class Keyboard {
             keyMap.put(keyName[i], i);
         }
         queue.add(new KeyEvent(0, '\0', KeyState.RELEASE, Sys.getNanoTime()));
+    }
+
+    /** Populates the key name->index lookup table with the current keyboard layout based names. */
+    public static void populateKeyLookupTables() {
+        for (int key = 0; key <= 255; key++) {
+            getKeyName(key);
+        }
     }
 
     public static void addGlfwKeyEvent(long window, int key, int scancode, int action, int mods, char c) {
@@ -288,15 +296,30 @@ public class Keyboard {
     }
 
     public static String getKeyName(int key) {
-        if (key >= 0 && key < keyName.length) {
-            return keyName[key];
-        } else {
-            return "Key " + key;
+        if (key == KEY_NONE) {
+            return "NONE";
         }
+        // GLFW caches this internally, and knows when keyboard layouts switch.
+        final String glfwName = StringUtils.toRootUpperCase(GLFW.glfwGetKeyName(KeyCodes.lwjglToGlfw(key), 0));
+        final String name;
+        if (glfwName == null) {
+            if (key >= 0 && key < unlocalizedKeyNameMiniLut.length) {
+                name = unlocalizedKeyNameMiniLut[key];
+            } else {
+                name = "Key " + key;
+            }
+        } else {
+            name = glfwName;
+        }
+        reverseKeyMap.put(name, key);
+        return name;
     }
 
-    public static int getKeyIndex(java.lang.String keyName) {
-        Integer ret = keyMap.get(keyName);
+    public static int getKeyIndex(String keyName) {
+        if (keyName.equals("NONE")) {
+            return KEY_NONE;
+        }
+        Integer ret = reverseKeyMap.get(keyName);
         if (ret == null) {
             if (keyName.matches("Key -?[0-9]+]")) {
                 return Integer.parseInt(StringUtils.removeStart(keyName, "Key "));
