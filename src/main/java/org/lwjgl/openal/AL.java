@@ -46,9 +46,9 @@ public class AL {
         /////////////////////////////////////////////
         // HRTF
         if (!ForgeEarlyConfig.OPENAL_CONTEXT.ENABLE_HRTF) {
-            attribs.put(org.lwjgl.openal.SOFTHRTF.ALC_HRTF_SOFT);
-            attribs.put(org.lwjgl.openal.ALC10.ALC_FALSE);
-            attribs.put(org.lwjgl.openal.SOFTHRTF.ALC_HRTF_ID_SOFT);
+            attribs.put(org.lwjgl3.openal.SOFTHRTF.ALC_HRTF_SOFT);
+            attribs.put(org.lwjgl3.openal.ALC10.ALC_FALSE);
+            attribs.put(org.lwjgl3.openal.SOFTHRTF.ALC_HRTF_ID_SOFT);
             attribs.put(0);
         }
         /////////////////////////////////////////////

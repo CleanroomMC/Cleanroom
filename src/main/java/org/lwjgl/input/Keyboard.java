@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl3.glfw.GLFW;
@@ -300,7 +301,7 @@ public class Keyboard {
             return "NONE";
         }
         // GLFW caches this internally, and knows when keyboard layouts switch.
-        final String glfwName = StringUtils.toRootUpperCase(GLFW.glfwGetKeyName(KeyCodes.lwjglToGlfw(key), 0));
+        final String glfwName = StringUtils.toRootUpperCase(GLFW.glfwGetKeyName(KeyCodes.toGlfwKey(key), 0));
         final String name;
         if (glfwName == null) {
             if (key >= 0 && key < unlocalizedKeyNameMiniLut.length) {
