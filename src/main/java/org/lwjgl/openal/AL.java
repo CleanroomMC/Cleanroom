@@ -1,5 +1,7 @@
 package org.lwjgl.openal;
 
+import net.minecraftforge.common.ForgeEarlyConfig;
+
 import java.nio.IntBuffer;
 
 import org.lwjgl3.openal.ALC10;
@@ -40,6 +42,16 @@ public class AL {
 
         attribs.put(org.lwjgl3.openal.ALC10.ALC_SYNC);
         attribs.put(contextSynchronized ? org.lwjgl3.openal.ALC10.ALC_TRUE : org.lwjgl3.openal.ALC10.ALC_FALSE);
+
+        /////////////////////////////////////////////
+        // HRTF
+        if (!ForgeEarlyConfig.OPENAL_CONTEXT.ENABLE_HRTF) {
+            attribs.put(org.lwjgl3.openal.SOFTHRTF.ALC_HRTF_SOFT);
+            attribs.put(org.lwjgl3.openal.ALC10.ALC_FALSE);
+            attribs.put(org.lwjgl3.openal.SOFTHRTF.ALC_HRTF_ID_SOFT);
+            attribs.put(0);
+        }
+        /////////////////////////////////////////////
         
         attribs.put(org.lwjgl3.openal.EXTEfx.ALC_MAX_AUXILIARY_SENDS);
         attribs.put(4);

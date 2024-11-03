@@ -91,7 +91,7 @@ public class Sys {
         return Platform.getArchitecture().toString().endsWith("64");
     }
 
-    public String getClipboard() {
+    public static String getClipboard() {
         return GLFW.glfwGetClipboardString(Display.getWindow());
     }
 }
