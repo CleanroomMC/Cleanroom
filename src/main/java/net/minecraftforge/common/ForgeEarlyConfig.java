@@ -14,8 +14,16 @@ public class ForgeEarlyConfig {
     public static boolean WINDOW_START_FOCUSED = true;
     public static boolean WINDOW_START_ICONIFIED = false;
 
+    public static boolean WINDOW_CENTERED = true;
+
     @Config.Comment("Should the window have decorations (titlebar, border, close button)")
     public static boolean WINDOW_DECORATED = true;
+
+    @Config.Comment("Should exclusive fullscreen mode replaced with borderless fullscreen mode")
+    public static boolean WINDOW_BORDERLESS_REPLACES_FULLSCREEN = false;
+
+    @Config.Comment("Windows-only - should borderless window have height increased by 1 to solve flickering on un-focusing")
+    public static boolean WINDOW_BORDERLESS_WINDOWS_COMPATIBILITY = true;
 
     @Config.Comment("Enable KHR_debug in the OpenGL context for advanced debugging capabilities")
     public static boolean OPENGL_DEBUG_CONTEXT = false;

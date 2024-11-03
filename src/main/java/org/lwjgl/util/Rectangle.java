@@ -109,6 +109,13 @@ public final class Rectangle implements ReadableRectangle, WritableRectangle, Se
     }
 
     /*
+     * Returns the area of this rectangle
+     */
+    public int getArea() {
+        return width * height;
+    }
+
+    /*
      * (Overrides)
      * @see com.shavenpuppy.jglib.ReadableRectangle#getBounds(com.shavenpuppy.jglib.Rectangle)
      */
