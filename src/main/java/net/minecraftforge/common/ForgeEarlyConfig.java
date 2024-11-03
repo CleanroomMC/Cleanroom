@@ -62,8 +62,8 @@ public class ForgeEarlyConfig {
 
     public static String[] LOADING_PLUGIN_BLACKLIST = new String[] { "com.cleanroommc.configanytime.ConfigAnytimePlugin", "zone.rong.mixinbooter.MixinBooterPlugin"};
 
-    public static CategoryOpenglContext OPENAL_CONTEXT = new CategoryOpenglContext();
-    public static class CategoryOpenglContext{
+    public static CategoryOpenAlContext OPENAL_CONTEXT = new CategoryOpenAlContext();
+    public static class CategoryOpenAlContext{
         @Config.Comment("Enable HRTF sound support")
         public boolean ENABLE_HRTF = false;
     }
