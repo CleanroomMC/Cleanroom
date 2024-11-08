@@ -55,7 +55,7 @@ public class ASMModParser
         try
         {
             ClassReader reader = new ClassReader(stream);
-            reader.accept(new ModClassVisitor(this), 0);
+            reader.accept(new ModClassVisitor(this), ClassReader.SKIP_CODE);
         }
         catch (Exception ex)
         {
