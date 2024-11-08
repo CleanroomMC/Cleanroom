@@ -193,7 +193,7 @@ public class AccessTransformer implements IClassTransformer
 
         ClassNode classNode = new ClassNode();
         ClassReader classReader = new ClassReader(bytes);
-        classReader.accept(classNode, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+        classReader.accept(classNode, 0);
 
         Collection<Modifier> mods = modifiers.get(transformedName);
         for (Modifier m : mods)
