@@ -19,7 +19,6 @@
 
 package net.minecraftforge.client.event.sound;
 
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.SoundManager;
@@ -27,7 +26,7 @@ import net.minecraft.client.audio.SoundManager;
 /**
  * SoundEvent is fired when an event involving any Sound occurs.<br>
  * <br>
- * All children of this event are fired on the {@link MinecraftForge#EVENT_BUS}.<br>
+ * All children of this event are fired on the {@link net.minecraftforge.common.MinecraftForge#EVENT_BUS}.<br>
  **/
 public class SoundEvent extends Event
 {

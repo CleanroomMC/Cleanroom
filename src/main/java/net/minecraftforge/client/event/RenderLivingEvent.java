@@ -24,6 +24,14 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.entity.EntityLivingBase;
 
+/**
+ * RenderLivingEvent is fired whenever the client is about to render a living.<br>
+ * If a method utilizes this {@link EntityLivingBase} as its parameter, the method will receive every child event of this class.
+ * <br>
+ * All children of this event are fired on the {@link net.minecraftforge.common.MinecraftForge#EVENT_BUS}.<br>
+ *
+ * @param <T> the type of the living.
+ **/
 public abstract class RenderLivingEvent<T extends EntityLivingBase> extends Event
 {
     private final EntityLivingBase entity;
