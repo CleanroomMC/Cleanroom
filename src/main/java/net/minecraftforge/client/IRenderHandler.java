@@ -27,7 +27,7 @@ import net.minecraft.client.multiplayer.WorldClient;
 /**
  * Take over the rendering of world effects. For the vanilla, they are Cloud, Sky and Weather.
  * <br><br/>
- * Call <br>    {@link net.minecraft.world.WorldProvider#setCloudRenderer(IRenderHandler)}<br>   {@link net.minecraft.world.WorldProvider#setCloudRenderer(IRenderHandler)}<br>    {@link net.minecraft.world.WorldProvider#setWeatherRenderer(IRenderHandler)}
+ * Call <br>    {@link net.minecraft.world.WorldProvider#setCloudRenderer(IRenderHandler)}<br>   {@link net.minecraft.world.WorldProvider#setSkyRenderer(IRenderHandler)}<br>    {@link net.minecraft.world.WorldProvider#setWeatherRenderer(IRenderHandler)}
  * to enable them.
  */
 public abstract class IRenderHandler
