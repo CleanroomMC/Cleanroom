@@ -135,6 +135,7 @@ public class ASMModParser
 
         for (String intf : interfaces)
         {
+            if (intf.endsWith("ILateMixinLoader")) FMLLog.log.info("Found Late Mixin Loader {}", this.getASMType().getClassName());
             table.addASMData(candidate, intf, this.asmType.getInternalName(), null, null);
         }
     }
