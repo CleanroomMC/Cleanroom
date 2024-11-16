@@ -168,9 +168,9 @@ public class LoadController
                     FMLContextQuery.init(); // Initialize FMLContextQuery and add it to the global list
                     boolean log = false;
 
-                    MixinBooterPlugin.LOGGER.info("Instantiating all ILateMixinLoader implemented classes...");
-
-                    for (ASMDataTable.ASMData asmData : asmDataTable.getAll(ILateMixinLoader.class.getName().replace('.', '/'))) {
+                    Set<ASMDataTable.ASMData> implementations = asmDataTable.getAll(ILateMixinLoader.class.getName().replace('.', '/'));
+                    implementations.forEach(it -> FMLLog.log.info("Retrieving Late Mixin Loader: {}", it.getClassName()));
+                    for (ASMDataTable.ASMData asmData : implementations) {
                         if (!log) {
                             MixinBooterPlugin.LOGGER.info("Instantiating all ILateMixinLoader implemented classes...");
                             log = true;
