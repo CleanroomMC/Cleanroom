@@ -34,7 +34,7 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
 
     @Override
     public String getSetupClass() {
-        return "net.minecraftforge.fml.relauncher.MixinSetup";
+        return null;
     }
 
     @Override

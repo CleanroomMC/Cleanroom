@@ -36,7 +36,6 @@ import net.minecraftforge.fml.common.eventhandler.FMLThrowingEventBus;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 import net.minecraftforge.fml.relauncher.MixinBooterPlugin;
 import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
-import net.minecraftforge.fml.relauncher.mixinfix.MixinFixer;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.message.FormattedMessage;
 import org.spongepowered.asm.mixin.MixinEnvironment;
@@ -52,7 +51,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -166,15 +164,9 @@ public class LoadController
                     }
 
                     FMLContextQuery.init(); // Initialize FMLContextQuery and add it to the global list
-                    boolean log = false;
 
-                    Set<ASMDataTable.ASMData> implementations = asmDataTable.getAll(ILateMixinLoader.class.getName().replace('.', '/'));
-                    implementations.forEach(it -> FMLLog.log.info("Retrieving Late Mixin Loader: {}", it.getClassName()));
-                    for (ASMDataTable.ASMData asmData : implementations) {
-                        if (!log) {
-                            MixinBooterPlugin.LOGGER.info("Instantiating all ILateMixinLoader implemented classes...");
-                            log = true;
-                        }
+                    MixinBooterPlugin.LOGGER.info("Instantiating all ILateMixinLoader implemented classes...");
+                    for (ASMDataTable.ASMData asmData : asmDataTable.getAll(ILateMixinLoader.class.getName().replace('.', '/'))) {
                         modClassLoader.addFile(asmData.getCandidate().getModContainer()); // Add to path before `newInstance`
                         Class<?> clazz = Class.forName(asmData.getClassName().replace('/', '.'));
                         MixinBooterPlugin.LOGGER.info("Instantiating {} for its mixins.", clazz);
@@ -186,18 +178,6 @@ public class LoadController
                                 loader.onMixinConfigQueued(mixinConfig);
                             }
                         }
-                    }
-
-                    log = false;
-
-                    // Append all non-conventional mixin configurations gathered via MixinFixer
-                    for (String mixinConfig : MixinFixer.retrieveLateMixinConfigs()) {
-                        if (!log) {
-                            MixinBooterPlugin.LOGGER.info("Appending non-conventional mixin configurations...");
-                            log = true;
-                        }
-                        MixinBooterPlugin.LOGGER.info("Adding {} mixin configuration.", mixinConfig);
-                        Mixins.addConfiguration(mixinConfig);
                     }
 
                     for (ModContainer container : this.loader.getActiveModList()) {
