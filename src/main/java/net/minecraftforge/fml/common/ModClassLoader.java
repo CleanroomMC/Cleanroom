@@ -166,7 +166,7 @@ public class ModClassLoader extends URLClassLoader
     public ModAPITransformer addModAPITransformer(ASMDataTable dataTable)
     {
         ModAPITransformer modAPI = new ModAPITransformer();
-        TransformerDelegate.registerTransformerByInstance(modAPI);
+        TransformerDelegate.registerTransformer(modAPI);
         modAPI.initTable(dataTable);
         return modAPI;
     }
