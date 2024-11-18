@@ -12,13 +12,13 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4.1.4
+      - uses: actions/checkout@v4.2.2
         with:
           fetch-tags: true
           fetch-depth: 0
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v4.2.1
+        uses: actions/setup-java@v4.5.0
         with:
           java-version: '21'
           distribution: 'temurin'
@@ -45,13 +45,13 @@ jobs:
         run: ./gradlew publish -PoutlandUsername=${{ secrets.MAVEN_USERNAME }} -PoutlandPassword="${{ secrets.MAVEN_PASSWORD }}" -Prun_number=${{ github.run_number }} -Prelease=true
 
       - name: Checkout CleanroomMMC
-        uses: actions/checkout@v4.1.4
+        uses: actions/checkout@v4.2.2
         with:
           repository: CleanroomMC/CleanroomMMC
           path: mmc
 
       - name: setup python
-        uses: actions/setup-python@v5.1.0
+        uses: actions/setup-python@v5.3.0
         with:
           python-version: '3.12'
 
