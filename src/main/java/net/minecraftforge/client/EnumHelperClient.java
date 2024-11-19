@@ -21,10 +21,12 @@ package net.minecraftforge.client;
 
 import com.cleanroommc.hackery.enums.EnumHackery;
 import net.minecraft.client.audio.MusicTicker;
+import net.minecraft.client.model.ModelBiped;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.Util.EnumOS;
 import net.minecraft.world.GameType;
 import net.minecraft.client.settings.GameSettings.Options;
+import net.minecraftforge.client.model.IForgeArmPose;
 import net.minecraftforge.common.util.EnumHelper;
 
 import javax.annotation.Nullable;
@@ -38,6 +40,12 @@ public class EnumHelperClient extends EnumHelper
         {EnumOS.class},
         {MusicTicker.MusicType.class, SoundEvent.class, int.class, int.class}
     };
+
+    public static ModelBiped.ArmPose addArmPose(String name, IForgeArmPose pose){
+        return EnumHackery.addEnumEntry(ModelBiped.ArmPose.class, name,
+                new Class<?>[]{IForgeArmPose.class},
+                new Object[]{pose});
+    }
 
     @Nullable
     public static GameType addGameType(String name, int id, String displayName, String shortName)
