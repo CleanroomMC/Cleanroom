@@ -153,7 +153,7 @@
                      {
                          this.func_146279_a(TextFormatting.RED + "Invalid Entity!", p_175272_2_, p_175272_3_);
                      }
-@@ -303,11 +314,7 @@
+@@ -303,11 +314,9 @@
              }
              else if (hoverevent.func_150701_a() == HoverEvent.Action.SHOW_TEXT)
              {
@@ -163,10 +163,12 @@
 -                    p_175272_3_
 -                );
 +                this.func_146283_a(this.field_146297_k.field_71466_p.func_78271_c(hoverevent.func_150702_b().func_150254_d(), Math.max(this.field_146294_l / 2, 200)), p_175272_2_, p_175272_3_);
++            }else if (hoverevent.func_150701_a() != null){
++                hoverevent.func_150701_a().handle(hoverevent, this, p_175272_1_, p_175272_2_, p_175272_3_);
              }
  
              GlStateManager.func_179140_f();
-@@ -376,7 +383,7 @@
+@@ -376,7 +385,7 @@
                  }
                  else if (clickevent.func_150669_a() == ClickEvent.Action.OPEN_FILE)
                  {
@@ -175,16 +177,17 @@
                      this.func_175282_a(uri1);
                  }
                  else if (clickevent.func_150669_a() == ClickEvent.Action.SUGGEST_COMMAND)
-@@ -389,7 +396,7 @@
+@@ -389,7 +398,8 @@
                  }
                  else
                  {
 -                    field_175287_a.error("Don't know how to handle {}", clickevent);
-+                    field_175287_a.error("Don't know how to handle {}", (Object)clickevent);
++                    if (clickevent.func_150669_a() != null && clickevent.func_150669_a().handle(clickevent, this, p_175276_1_)) return true;
++                    else field_175287_a.error("Don't know how to handle {}", (Object)clickevent);
                  }
  
                  return true;
-@@ -406,10 +413,13 @@
+@@ -406,10 +416,13 @@
  
      public void func_175281_b(String p_175281_1_, boolean p_175281_2_)
      {
@@ -198,7 +201,7 @@
  
          this.field_146297_k.field_71439_g.func_71165_d(p_175281_1_);
      }
-@@ -424,9 +434,15 @@
+@@ -424,9 +437,15 @@
  
                  if (guibutton.func_146116_c(this.field_146297_k, p_73864_1_, p_73864_2_))
                  {
@@ -214,7 +217,7 @@
                  }
              }
          }
-@@ -456,8 +472,12 @@
+@@ -456,8 +475,12 @@
          this.field_146289_q = p_146280_1_.field_71466_p;
          this.field_146294_l = p_146280_2_;
          this.field_146295_m = p_146280_3_;
@@ -227,7 +230,7 @@
      }
  
      public void func_183500_a(int p_183500_1_, int p_183500_2_)
-@@ -476,7 +496,10 @@
+@@ -476,7 +499,10 @@
          {
              while (Mouse.next())
              {
@@ -238,7 +241,7 @@
              }
          }
  
-@@ -484,7 +507,10 @@
+@@ -484,7 +510,10 @@
          {
              while (Keyboard.next())
              {
@@ -249,7 +252,7 @@
              }
          }
      }
-@@ -546,6 +572,7 @@
+@@ -546,6 +575,7 @@
      public void func_146276_q_()
      {
          this.func_146270_b(0);
@@ -257,7 +260,7 @@
      }
  
      public void func_146270_b(int p_146270_1_)
-@@ -570,19 +597,10 @@
+@@ -570,19 +600,10 @@
          GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
          float f = 32.0F;
          bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181709_i);
@@ -281,7 +284,7 @@
          tessellator.func_78381_a();
      }
  
-@@ -591,7 +609,6 @@
+@@ -591,7 +612,6 @@
          return true;
      }
  
@@ -289,7 +292,7 @@
      public void func_73878_a(boolean p_73878_1_, int p_73878_2_)
      {
          if (p_73878_2_ == 31102009)
-@@ -611,13 +628,13 @@
+@@ -611,13 +631,13 @@
          try
          {
              Class<?> oclass = Class.forName("java.awt.Desktop");
