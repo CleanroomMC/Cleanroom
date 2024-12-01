@@ -61,7 +61,14 @@ public class ForgeEarlyConfig {
     public static String CONFIG_ANY_TIME_VERSION = "3.0";
     public static String MIXIN_BOOTER_VERSION = "10.1";
 
-    public static String[] LOADING_PLUGIN_BLACKLIST = new String[] {"com.cleanroommc.configanytime.ConfigAnytimePlugin", "zone.rong.mixinbooter.MixinBooterPlugin"};
+    public static String[] LOADING_PLUGIN_BLACKLIST = new String[] {
+            "com.cleanroommc.configanytime.ConfigAnytimePlugin",
+            "zone.rong.mixinbooter.MixinBooterPlugin",
+            "ilib.asm.Loader",
+            "org.dimdev.jeid.JEIDLoadingPlugin",
+            "lain.mods.skins.init.forge.asm.Plugin",
+            "advancedshader.core.Core",
+    };
 
     public static CategoryOpenAlContext OPENAL_CONTEXT = new CategoryOpenAlContext();
     public static class CategoryOpenAlContext{

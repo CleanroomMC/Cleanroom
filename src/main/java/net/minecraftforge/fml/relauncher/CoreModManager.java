@@ -425,6 +425,7 @@ public class CoreModManager {
                 }
                 if (ignoreMods) {
                     ignoredModFiles.add(coreMod.getName());
+                    FMLLog.log.warn("The mod with loading plugin {} is in blacklist and won't be loaded.", fmlCorePlugin);
                     continue;
                 }
                 if (fmlCorePlugin == null)
