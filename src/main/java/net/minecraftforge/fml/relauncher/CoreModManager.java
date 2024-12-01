@@ -425,7 +425,7 @@ public class CoreModManager {
                 }
                 if (ignoreMods) {
                     ignoredModFiles.add(coreMod.getName());
-                    FMLLog.log.warn("The mod with loading plugin {} is in blacklist and won't be loaded.", fmlCorePlugin);
+                    FMLLog.log.warn("The mod with loading plugin {} is in blacklist and won't be loaded. Check forge_early.cfg for more info.", fmlCorePlugin);
                     continue;
                 }
                 if (fmlCorePlugin == null)
