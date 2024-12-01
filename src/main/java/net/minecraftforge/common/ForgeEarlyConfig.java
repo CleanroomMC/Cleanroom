@@ -68,6 +68,7 @@ public class ForgeEarlyConfig {
             "org.dimdev.jeid.JEIDLoadingPlugin",
             "lain.mods.skins.init.forge.asm.Plugin",
             "advancedshader.core.Core",
+            "net.shadowfacts.forgelin.preloader.ForgelinPlugin",
     };
 
     public static CategoryOpenAlContext OPENAL_CONTEXT = new CategoryOpenAlContext();
