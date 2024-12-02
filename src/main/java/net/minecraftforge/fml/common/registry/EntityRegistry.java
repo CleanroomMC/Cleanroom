@@ -167,7 +167,10 @@ public class EntityRegistry
      * @param trackingRange The range at which MC will send tracking updates
      * @param updateFrequency The frequency of tracking updates
      * @param sendsVelocityUpdates Whether to send velocity information packets as well
+     * <p>
+     * Deprecated, use {@link net.minecraftforge.event.RegistryEvent.Register<EntityEntry>} instead.
      */
+    @Deprecated
     public static void registerModEntity(ResourceLocation registryName, Class<? extends Entity> entityClass, String entityName, int id, Object mod, int trackingRange, int updateFrequency, boolean sendsVelocityUpdates)
     {
         instance().doModEntityRegistration(registryName, entityClass, entityName, id, mod, trackingRange, updateFrequency, sendsVelocityUpdates);
@@ -186,7 +189,10 @@ public class EntityRegistry
      * @param sendsVelocityUpdates Whether to send velocity information packets as well
      * @param eggPrimary Primary egg color
      * @param eggSecondary Secondary egg color
+     * <p>
+     * Deprecated, use {@link net.minecraftforge.event.RegistryEvent.Register<EntityEntry>} instead.
      */
+    @Deprecated
     public static void registerModEntity(ResourceLocation registryName, Class<? extends Entity> entityClass, String entityName, int id, Object mod, int trackingRange, int updateFrequency, boolean sendsVelocityUpdates, int eggPrimary, int eggSecondary)
     {
         instance().doModEntityRegistration(registryName, entityClass, entityName, id, mod, trackingRange, updateFrequency, sendsVelocityUpdates);

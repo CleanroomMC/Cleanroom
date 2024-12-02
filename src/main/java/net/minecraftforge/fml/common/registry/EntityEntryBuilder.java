@@ -34,6 +34,7 @@ import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.relauncher.ReflectionHelper.UnknownConstructorException;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -290,22 +291,26 @@ public final class EntityEntryBuilder<E extends Entity>
 
     static abstract class ConstructorFactory<E extends Entity> implements Function<World, E>
     {
-        private final Constructor<? extends E> constructor;
+        private final MethodHandle constructor;
 
         ConstructorFactory(final Class<? extends E> entity)
         {
-            this.constructor = ObfuscationReflectionHelper.findConstructor(entity, World.class);
+            constructorIn = ObfuscationReflectionHelper.findConstructor(entity, World.class);
+            try {
+                this.constructor = MethodHandles.lookup().unreflectConstructor(constructorIn);
+            } catch (IllegalAccessException e) {
+                throw new UnknownConstructorException("Could not unreflect constructor '" + constructorIn.toString());
+            }
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public E apply(final World world)
         {
-            try
-            {
-                return this.constructor.newInstance(world);
-            }
-            catch (final IllegalAccessException | InstantiationException | InvocationTargetException e)
-            {
+
+            try {
+                return (T)this.constructor.invoke(world);
+            } catch (Throwable e) {
                 FMLLog.log.error("Encountered an exception while constructing entity '{}'", this.describeEntity(), e);
                 return null;
             }
