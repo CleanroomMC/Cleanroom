@@ -296,7 +296,7 @@ public final class EntityEntryBuilder<E extends Entity>
 
         ConstructorFactory(final Class<? extends E> entity)
         {
-            Constructor<E> constructorIn = ObfuscationReflectionHelper.findConstructor(entity, World.class);
+            var constructorIn = ObfuscationReflectionHelper.findConstructor(entity, World.class);
             try {
                 this.constructor = MethodHandles.lookup().unreflectConstructor(constructorIn);
             } catch (IllegalAccessException e) {
