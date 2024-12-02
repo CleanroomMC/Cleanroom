@@ -35,6 +35,7 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.relauncher.ReflectionHelper.UnknownConstructorException;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -109,7 +110,7 @@ public final class EntityEntryBuilder<E extends Entity>
     }
 
     /**
-     * Sets the factory of the entity.
+     * Sets the factory of the entity. Used for the client-side sync.
      *
      * @param factory The entity factory
      * @return This builder
@@ -295,7 +296,7 @@ public final class EntityEntryBuilder<E extends Entity>
 
         ConstructorFactory(final Class<? extends E> entity)
         {
-            constructorIn = ObfuscationReflectionHelper.findConstructor(entity, World.class);
+            Constructor<E> constructorIn = ObfuscationReflectionHelper.findConstructor(entity, World.class);
             try {
                 this.constructor = MethodHandles.lookup().unreflectConstructor(constructorIn);
             } catch (IllegalAccessException e) {
@@ -309,7 +310,7 @@ public final class EntityEntryBuilder<E extends Entity>
         {
 
             try {
-                return (T)this.constructor.invoke(world);
+                return (E)this.constructor.invoke(world);
             } catch (Throwable e) {
                 FMLLog.log.error("Encountered an exception while constructing entity '{}'", this.describeEntity(), e);
                 return null;
