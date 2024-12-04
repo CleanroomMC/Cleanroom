@@ -168,7 +168,7 @@ public class EntityRegistry
      * @param updateFrequency The frequency of tracking updates
      * @param sendsVelocityUpdates Whether to send velocity information packets as well
      * <p>
-     * Deprecated, subscribe {@link net.minecraftforge.event.RegistryEvent.Register<EntityEntry>} instead.
+     * @deprecated subscribe {@link net.minecraftforge.event.RegistryEvent.Register<EntityEntry>} instead.
      */
     @Deprecated
     public static void registerModEntity(ResourceLocation registryName, Class<? extends Entity> entityClass, String entityName, int id, Object mod, int trackingRange, int updateFrequency, boolean sendsVelocityUpdates)
@@ -190,7 +190,7 @@ public class EntityRegistry
      * @param eggPrimary Primary egg color
      * @param eggSecondary Secondary egg color
      * <p>
-     * Deprecated, subscribe {@link net.minecraftforge.event.RegistryEvent.Register<EntityEntry>} instead.
+     * @deprecated subscribe {@link net.minecraftforge.event.RegistryEvent.Register<EntityEntry>} instead.
      */
     @Deprecated
     public static void registerModEntity(ResourceLocation registryName, Class<? extends Entity> entityClass, String entityName, int id, Object mod, int trackingRange, int updateFrequency, boolean sendsVelocityUpdates, int eggPrimary, int eggSecondary)
