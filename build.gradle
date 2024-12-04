@@ -1012,7 +1012,7 @@ project(':cleanroom') {
             maven(MavenPublication) {
                 groupId = "com.cleanroommc"
                 artifactId = "cleanroom"
-                version = rootProject.version.toString().replace('+', '-')
+                version = rootProject.version
                 from components.java
                 artifact userdevJar
                 artifact universalJar
