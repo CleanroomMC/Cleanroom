@@ -109,6 +109,8 @@ public final class EntityEntryBuilder<E extends Entity>
 
     /**
      * Sets the factory of the entity. Used for the client-side sync.
+     *  Here, we just construct an instance. Datas will be passed elsewhere.
+     *  {@see IEntityAdditionalSpawnData}
      *
      * @param factory The entity factory
      * @return This builder
