@@ -2,6 +2,7 @@ package net.minecraftforge.fml.relauncher;
 
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.ForgeVersion;
+import net.minecraftforge.fml.common.FMLLog;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixins;
@@ -16,8 +17,6 @@ import java.util.Map;
 @IFMLLoadingPlugin.MCVersion(ForgeVersion.mcVersion)
 @IFMLLoadingPlugin.SortingIndex(1)
 public final class MixinBooterPlugin implements IFMLLoadingPlugin {
-
-    public static final Logger LOGGER = LogManager.getLogger("MixinBooter");
 
     public MixinBooterPlugin() {
     }
@@ -50,17 +49,17 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
                     }
                     Object theMod = fmlPluginWrapper$coreModInstance.get(coremod);
                     if (theMod instanceof IEarlyMixinLoader loader) {
-                        LOGGER.info("Grabbing {} for its mixins.", loader.getClass());
+                        FMLLog.log.info("Grabbing {} for its mixins.", loader.getClass());
                         for (String mixinConfig : loader.getMixinConfigs()) {
                             if (loader.shouldMixinConfigQueue(mixinConfig)) {
-                                LOGGER.info("Adding {} mixin configuration.", mixinConfig);
+                                FMLLog.log.info("Adding {} mixin configuration.", mixinConfig);
                                 Mixins.addConfiguration(mixinConfig);
                                 loader.onMixinConfigQueued(mixinConfig);;
                             }
                         }
                     }
                 } catch (Throwable t) {
-                    LOGGER.error("Unexpected error", t);
+                    FMLLog.log.error("Unexpected error handling early mixins", t);
                 }
             }
         }

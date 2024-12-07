@@ -165,17 +165,21 @@ public class LoadController
 
                     FMLContextQuery.init(); // Initialize FMLContextQuery and add it to the global list
 
-                    MixinBooterPlugin.LOGGER.info("Instantiating all ILateMixinLoader implemented classes...");
+                    FMLLog.log.info("Instantiating all ILateMixinLoader implemented classes...");
                     for (ASMDataTable.ASMData asmData : asmDataTable.getAll(ILateMixinLoader.class.getName().replace('.', '/'))) {
                         modClassLoader.addFile(asmData.getCandidate().getModContainer()); // Add to path before `newInstance`
                         Class<?> clazz = Class.forName(asmData.getClassName().replace('/', '.'));
-                        MixinBooterPlugin.LOGGER.info("Instantiating {} for its mixins.", clazz);
-                        ILateMixinLoader loader = (ILateMixinLoader) clazz.newInstance();
+                        FMLLog.log.info("Instantiating {} for its mixins.", clazz);
+                        ILateMixinLoader loader = (ILateMixinLoader) clazz.getConstructor().newInstance();
                         for (String mixinConfig : loader.getMixinConfigs()) {
                             if (loader.shouldMixinConfigQueue(mixinConfig)) {
-                                MixinBooterPlugin.LOGGER.info("Adding {} mixin configuration.", mixinConfig);
-                                Mixins.addConfiguration(mixinConfig);
-                                loader.onMixinConfigQueued(mixinConfig);
+                                FMLLog.log.info("Adding {} mixin configuration.", mixinConfig);
+                                try {
+                                    Mixins.addConfiguration(mixinConfig);
+                                    loader.onMixinConfigQueued(mixinConfig);
+                                } catch (Throwable t) {
+                                    FMLLog.log.error("Error adding mixin configuration for {}", mixinConfig, t);
+                                }
                             }
                         }
                     }
@@ -183,7 +187,9 @@ public class LoadController
                     for (ModContainer container : this.loader.getActiveModList()) {
                         modClassLoader.addFile(container.getSource());
                     }
-                } catch (Throwable ignored) {}
+                } catch (Throwable t) {
+                    FMLLog.log.error("Error loading Mods", t);
+                }
                 if (MixinService.getService() instanceof MixinServiceLaunchWrapper) {
                     ((MixinServiceLaunchWrapper) MixinService.getService()).setDelegatedTransformers(null);
                 }
