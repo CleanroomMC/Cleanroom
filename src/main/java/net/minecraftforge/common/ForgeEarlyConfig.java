@@ -61,7 +61,7 @@ public class ForgeEarlyConfig {
     public static String CONFIG_ANY_TIME_VERSION = "3.0";
     public static String MIXIN_BOOTER_VERSION = "10.2";
 
-    @Config.Name("""
+    @Config.Comment("""
             Mods in this list have one or more of the problems list below:
             - Integrated into Cleanroom so shouldn't load it from mods
             - Too invasive or hacky that it is unpatchable
