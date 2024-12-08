@@ -1,39 +1,5 @@
 --- before/net/minecraft/advancements/critereon/ItemPredicate.java
 +++ after/net/minecraft/advancements/critereon/ItemPredicate.java
-@@ -37,15 +37,7 @@
-         this.field_193445_h = NBTPredicate.field_193479_a;
-     }
- 
--    public ItemPredicate(
--        @Nullable Item p_i47540_1_,
--        @Nullable Integer p_i47540_2_,
--        MinMaxBounds p_i47540_3_,
--        MinMaxBounds p_i47540_4_,
--        EnchantmentPredicate[] p_i47540_5_,
--        @Nullable PotionType p_i47540_6_,
--        NBTPredicate p_i47540_7_
--    )
-+    public ItemPredicate(@Nullable Item p_i47540_1_, @Nullable Integer p_i47540_2_, MinMaxBounds p_i47540_3_, MinMaxBounds p_i47540_4_, EnchantmentPredicate[] p_i47540_5_, @Nullable PotionType p_i47540_6_, NBTPredicate p_i47540_7_)
-     {
-         this.field_192496_b = p_i47540_1_;
-         this.field_192497_c = p_i47540_2_;
-@@ -95,7 +87,15 @@
-             }
- 
-             PotionType potiontype = PotionUtils.func_185191_c(p_192493_1_);
--            return this.field_192500_f == null || this.field_192500_f == potiontype;
-+
-+            if (this.field_192500_f != null && this.field_192500_f != potiontype)
-+            {
-+                return false;
-+            }
-+            else
-+            {
-+                return true;
-+            }
-         }
-     }
- 
 @@ -104,6 +104,13 @@
          if (p_192492_0_ != null && !p_192492_0_.isJsonNull())
          {
