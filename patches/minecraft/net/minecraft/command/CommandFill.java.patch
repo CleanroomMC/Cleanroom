@@ -1,75 +1,6 @@
 --- before/net/minecraft/command/CommandFill.java
 +++ after/net/minecraft/command/CommandFill.java
-@@ -18,30 +18,26 @@
- 
- public class CommandFill extends CommandBase
- {
--    @Override
-     public String func_71517_b()
-     {
-         return "fill";
-     }
- 
--    @Override
-     public int func_82362_a()
-     {
-         return 2;
-     }
- 
--    @Override
-     public String func_71518_a(ICommandSender p_71518_1_)
-     {
-         return "commands.fill.usage";
-     }
- 
--    @Override
-     public void func_184881_a(MinecraftServer p_184881_1_, ICommandSender p_184881_2_, String[] p_184881_3_) throws CommandException
-     {
-         if (p_184881_3_.length < 7)
-         {
--            throw new WrongUsageException("commands.fill.usage");
-+            throw new WrongUsageException("commands.fill.usage", new Object[0]);
-         }
-         else
-         {
-@@ -60,23 +56,13 @@
-                 iblockstate = block.func_176223_P();
-             }
- 
--            BlockPos blockpos2 = new BlockPos(
--                Math.min(blockpos.func_177958_n(), blockpos1.func_177958_n()),
--                Math.min(blockpos.func_177956_o(), blockpos1.func_177956_o()),
--                Math.min(blockpos.func_177952_p(), blockpos1.func_177952_p())
--            );
--            BlockPos blockpos3 = new BlockPos(
--                Math.max(blockpos.func_177958_n(), blockpos1.func_177958_n()),
--                Math.max(blockpos.func_177956_o(), blockpos1.func_177956_o()),
--                Math.max(blockpos.func_177952_p(), blockpos1.func_177952_p())
--            );
--            int i = (blockpos3.func_177958_n() - blockpos2.func_177958_n() + 1)
--                    * (blockpos3.func_177956_o() - blockpos2.func_177956_o() + 1)
--                    * (blockpos3.func_177952_p() - blockpos2.func_177952_p() + 1);
-+            BlockPos blockpos2 = new BlockPos(Math.min(blockpos.func_177958_n(), blockpos1.func_177958_n()), Math.min(blockpos.func_177956_o(), blockpos1.func_177956_o()), Math.min(blockpos.func_177952_p(), blockpos1.func_177952_p()));
-+            BlockPos blockpos3 = new BlockPos(Math.max(blockpos.func_177958_n(), blockpos1.func_177958_n()), Math.max(blockpos.func_177956_o(), blockpos1.func_177956_o()), Math.max(blockpos.func_177952_p(), blockpos1.func_177952_p()));
-+            int i = (blockpos3.func_177958_n() - blockpos2.func_177958_n() + 1) * (blockpos3.func_177956_o() - blockpos2.func_177956_o() + 1) * (blockpos3.func_177952_p() - blockpos2.func_177952_p() + 1);
- 
-             if (i > 32768)
-             {
--                throw new CommandException("commands.fill.tooManyBlocks", i, 32768);
-+                throw new CommandException("commands.fill.tooManyBlocks", new Object[] {i, Integer.valueOf(32768)});
-             }
-             else if (blockpos2.func_177956_o() >= 0 && blockpos3.func_177956_o() < 256)
-             {
-@@ -88,7 +74,7 @@
-                     {
-                         if (!world.func_175667_e(new BlockPos(k, blockpos3.func_177956_o() - blockpos2.func_177956_o(), j)))
-                         {
--                            throw new CommandException("commands.fill.outOfWorld");
-+                            throw new CommandException("commands.fill.outOfWorld", new Object[0]);
-                         }
-                     }
-                 }
-@@ -96,7 +82,7 @@
+@@ -96,7 +96,7 @@
                  NBTTagCompound nbttagcompound = new NBTTagCompound();
                  boolean flag = false;
  
@@ -78,21 +9,7 @@
                  {
                      String s = func_180529_a(p_184881_3_, 9);
  
-@@ -107,11 +93,11 @@
-                     }
-                     catch (NBTException nbtexception)
-                     {
--                        throw new CommandException("commands.fill.tagError", nbtexception.getMessage());
-+                        throw new CommandException("commands.fill.tagError", new Object[] {nbtexception.getMessage()});
-                     }
-                 }
- 
--                List<BlockPos> list = Lists.newArrayList();
-+                List<BlockPos> list = Lists.<BlockPos>newArrayList();
-                 i = 0;
- 
-                 for (int l = blockpos2.func_177952_p(); l <= blockpos3.func_177952_p(); ++l)
-@@ -137,26 +123,17 @@
+@@ -137,7 +137,7 @@
                                              continue;
                                          }
                                      }
@@ -101,58 +18,3 @@
                                      {
                                          Block block1 = CommandBase.func_147180_g(p_184881_2_, p_184881_3_[9]);
  
--                                        if (world.func_180495_p(blockpos4).func_177230_c() != block1
--                                                || p_184881_3_.length > 10
--                                                && !"-1".equals(p_184881_3_[10])
--                                                && !"*".equals(p_184881_3_[10])
--                                                && !CommandBase.func_190791_b(block1, p_184881_3_[10]).apply(world.func_180495_p(blockpos4)))
-+                                        if (world.func_180495_p(blockpos4).func_177230_c() != block1 || p_184881_3_.length > 10 && !"-1".equals(p_184881_3_[10]) && !"*".equals(p_184881_3_[10]) && !CommandBase.func_190791_b(block1, p_184881_3_[10]).apply(world.func_180495_p(blockpos4)))
-                                         {
-                                             continue;
-                                         }
-                                     }
-                                 }
--                                else if (j1 != blockpos2.func_177958_n()
--                                         && j1 != blockpos3.func_177958_n()
--                                         && i1 != blockpos2.func_177956_o()
--                                         && i1 != blockpos3.func_177956_o()
--                                         && l != blockpos2.func_177952_p()
--                                         && l != blockpos3.func_177952_p())
-+                                else if (j1 != blockpos2.func_177958_n() && j1 != blockpos3.func_177958_n() && i1 != blockpos2.func_177956_o() && i1 != blockpos3.func_177956_o() && l != blockpos2.func_177952_p() && l != blockpos3.func_177952_p())
-                                 {
-                                     if ("hollow".equals(p_184881_3_[8]))
-                                     {
-@@ -205,7 +182,7 @@
- 
-                 if (i <= 0)
-                 {
--                    throw new CommandException("commands.fill.failed");
-+                    throw new CommandException("commands.fill.failed", new Object[0]);
-                 }
-                 else
-                 {
-@@ -215,12 +192,11 @@
-             }
-             else
-             {
--                throw new CommandException("commands.fill.outOfWorld");
-+                throw new CommandException("commands.fill.outOfWorld", new Object[0]);
-             }
-         }
-     }
- 
--    @Override
-     public List<String> func_184883_a(MinecraftServer p_184883_1_, ICommandSender p_184883_2_, String[] p_184883_3_, @Nullable BlockPos p_184883_4_)
-     {
-         if (p_184883_3_.length > 0 && p_184883_3_.length <= 3)
-@@ -241,9 +217,7 @@
-         }
-         else
-         {
--            return p_184883_3_.length == 10 && "replace".equals(p_184883_3_[8])
--                   ? func_175762_a(p_184883_3_, Block.field_149771_c.func_148742_b())
--                   : Collections.emptyList();
-+            return p_184883_3_.length == 10 && "replace".equals(p_184883_3_[8]) ? func_175762_a(p_184883_3_, Block.field_149771_c.func_148742_b()) : Collections.emptyList();
-         }
-     }
- }
