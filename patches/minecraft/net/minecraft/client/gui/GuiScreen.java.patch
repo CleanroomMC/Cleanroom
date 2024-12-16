@@ -8,6 +8,17 @@
  import java.awt.datatransfer.DataFlavor;
  import java.awt.datatransfer.StringSelection;
  import java.awt.datatransfer.Transferable;
+@@ -37,8 +38,8 @@
+ import org.apache.commons.lang3.StringUtils;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+-import org.lwjgl.input.Keyboard;
+-import org.lwjgl.input.Mouse;
++import org.lwjglx.input.Keyboard;
++import org.lwjglx.input.Mouse;
+ 
+ @SideOnly(Side.CLIENT)
+ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
 @@ -50,8 +51,8 @@
      protected RenderItem field_146296_j;
      public int field_146294_l;

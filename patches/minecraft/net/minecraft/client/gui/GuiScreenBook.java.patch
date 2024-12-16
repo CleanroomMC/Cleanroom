@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/gui/GuiScreenBook.java
 +++ after/net/minecraft/client/gui/GuiScreenBook.java
+@@ -27,7 +27,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+-import org.lwjgl.input.Keyboard;
++import org.lwjglx.input.Keyboard;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiScreenBook extends GuiScreen
 @@ -69,6 +69,7 @@
  
              if (this.field_146476_w < 1)

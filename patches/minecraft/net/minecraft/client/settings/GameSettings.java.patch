@@ -1,5 +1,18 @@
 --- before/net/minecraft/client/settings/GameSettings.java
 +++ after/net/minecraft/client/settings/GameSettings.java
+@@ -41,9 +41,9 @@
+ import org.apache.commons.lang3.ArrayUtils;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+-import org.lwjgl.input.Keyboard;
+-import org.lwjgl.input.Mouse;
+-import org.lwjgl.opengl.Display;
++import org.lwjglx.input.Keyboard;
++import org.lwjglx.input.Mouse;
++import org.lwjglx.opengl.Display;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GameSettings
 @@ -52,35 +52,26 @@
      private static final Gson field_151450_ay = new Gson();
      private static final Type field_151449_az = new ParameterizedType()

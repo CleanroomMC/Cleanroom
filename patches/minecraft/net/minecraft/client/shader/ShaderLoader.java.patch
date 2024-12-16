@@ -10,6 +10,15 @@
  import java.nio.ByteBuffer;
  import java.util.Map;
  import net.minecraft.client.renderer.OpenGlHelper;
+@@ -15,7 +15,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.commons.io.IOUtils;
+ import org.apache.commons.lang3.StringUtils;
+-import org.lwjgl.BufferUtils;
++import org.lwjglx.BufferUtils;
+ 
+ @SideOnly(Side.CLIENT)
+ public class ShaderLoader
 @@ -56,11 +56,12 @@
  
      public static ShaderLoader func_148057_a(IResourceManager p_148057_0_, ShaderLoader.ShaderType p_148057_1_, String p_148057_2_) throws IOException

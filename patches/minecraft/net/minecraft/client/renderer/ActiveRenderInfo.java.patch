@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/renderer/ActiveRenderInfo.java
 +++ after/net/minecraft/client/renderer/ActiveRenderInfo.java
+@@ -12,7 +12,7 @@
+ import net.minecraft.world.World;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.util.glu.GLU;
++import org.lwjglx.util.glu.GLU;
+ 
+ @SideOnly(Side.CLIENT)
+ public class ActiveRenderInfo
 @@ -21,7 +21,7 @@
      private static final FloatBuffer field_178812_b = GLAllocation.func_74529_h(16);
      private static final FloatBuffer field_178813_c = GLAllocation.func_74529_h(16);

@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/gui/GuiCreateWorld.java
 +++ after/net/minecraft/client/gui/GuiCreateWorld.java
+@@ -12,7 +12,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.commons.lang3.StringUtils;
+-import org.lwjgl.input.Keyboard;
++import org.lwjglx.input.Keyboard;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiCreateWorld extends GuiScreen
 @@ -43,33 +43,7 @@
      private String field_146330_J;
      private int field_146331_K;

@@ -13,10 +13,11 @@
  import net.minecraft.client.Minecraft;
  import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
  import net.minecraft.client.settings.GameSettings;
-@@ -16,23 +9,17 @@
+@@ -15,24 +8,20 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
- import org.lwjgl.Sys;
+-import org.lwjgl.Sys;
 -import org.lwjgl.opengl.ARBFramebufferObject;
 -import org.lwjgl.opengl.ARBMultitexture;
 -import org.lwjgl.opengl.ARBShaderObjects;
@@ -32,7 +33,10 @@
 -import org.lwjgl.opengl.GL20;
 -import org.lwjgl.opengl.GL30;
 -import org.lwjgl.opengl.GLContext;
-+import org.lwjgl.opengl.*;
++import org.lwjglx.Sys;
++import org.lwjglx.opengl.ContextCapabilities;
++import org.lwjglx.opengl.GL15;
++import org.lwjglx.opengl.GLContext;
  import oshi.SystemInfo;
 -import oshi.hardware.Processor;
 +import oshi.hardware.CentralProcessor;
@@ -47,7 +51,7 @@
  
  @SideOnly(Side.CLIENT)
  public class OpenGlHelper
-@@ -93,6 +80,10 @@
+@@ -93,6 +82,10 @@
      public static int field_176089_P;
      public static int field_148826_e;
  
@@ -58,7 +62,7 @@
      public static void func_77474_a()
      {
          ContextCapabilities contextcapabilities = GLContext.getCapabilities();
-@@ -163,8 +154,7 @@
+@@ -163,8 +156,7 @@
  
          field_153211_u = contextcapabilities.GL_EXT_blend_func_separate && !contextcapabilities.OpenGL14;
          field_148828_i = contextcapabilities.OpenGL14 || contextcapabilities.GL_EXT_blend_func_separate;
@@ -68,7 +72,7 @@
  
          if (field_148823_f)
          {
-@@ -224,8 +214,7 @@
+@@ -224,8 +216,7 @@
          }
  
          field_148827_a = contextcapabilities.OpenGL21;
@@ -78,7 +82,16 @@
          field_153196_B = field_153196_B + "Shaders are " + (field_153213_x ? "" : "not ") + "available because ";
  
          if (field_153213_x)
-@@ -296,11 +285,12 @@
+@@ -258,7 +249,7 @@
+         }
+ 
+         field_148824_g = field_148823_f && field_153213_x;
+-        String s = GL11.glGetString(GL11.GL_VENDOR).toLowerCase(Locale.ROOT);
++        String s = org.lwjglx.opengl.GL11.glGetString(org.lwjglx.opengl.GL11.GL_VENDOR).toLowerCase(Locale.ROOT);
+         field_153197_d = s.contains("nvidia");
+         field_176090_Y = !contextcapabilities.OpenGL15 && contextcapabilities.GL_ARB_vertex_buffer_object;
+         field_176083_O = contextcapabilities.OpenGL15 || field_176090_Y;
+@@ -296,11 +287,12 @@
  
          try
          {
@@ -94,54 +107,643 @@
          }
      }
  
-@@ -854,6 +844,12 @@
+@@ -316,18 +308,18 @@
+ 
+     public static int func_153175_a(int p_153175_0_, int p_153175_1_)
+     {
+-        return field_153214_y ? ARBShaderObjects.glGetObjectParameteriARB(p_153175_0_, p_153175_1_) : GL20.glGetProgrami(p_153175_0_, p_153175_1_);
++        return field_153214_y ? org.lwjglx.opengl.ARBShaderObjects.glGetObjectParameteriARB(p_153175_0_, p_153175_1_) : org.lwjglx.opengl.GL20.glGetProgrami(p_153175_0_, p_153175_1_);
+     }
+ 
+     public static void func_153178_b(int p_153178_0_, int p_153178_1_)
+     {
+         if (field_153214_y)
          {
-             GL13.glMultiTexCoord2f(p_77475_0_, p_77475_1_, p_77475_2_);
+-            ARBShaderObjects.glAttachObjectARB(p_153178_0_, p_153178_1_);
++            org.lwjglx.opengl.ARBShaderObjects.glAttachObjectARB(p_153178_0_, p_153178_1_);
          }
+         else
+         {
+-            GL20.glAttachShader(p_153178_0_, p_153178_1_);
++            org.lwjglx.opengl.GL20.glAttachShader(p_153178_0_, p_153178_1_);
+         }
+     }
+ 
+@@ -335,28 +327,28 @@
+     {
+         if (field_153214_y)
+         {
+-            ARBShaderObjects.glDeleteObjectARB(p_153180_0_);
++            org.lwjglx.opengl.ARBShaderObjects.glDeleteObjectARB(p_153180_0_);
+         }
+         else
+         {
+-            GL20.glDeleteShader(p_153180_0_);
++            org.lwjglx.opengl.GL20.glDeleteShader(p_153180_0_);
+         }
+     }
+ 
+     public static int func_153195_b(int p_153195_0_)
+     {
+-        return field_153214_y ? ARBShaderObjects.glCreateShaderObjectARB(p_153195_0_) : GL20.glCreateShader(p_153195_0_);
++        return field_153214_y ? org.lwjglx.opengl.ARBShaderObjects.glCreateShaderObjectARB(p_153195_0_) : org.lwjglx.opengl.GL20.glCreateShader(p_153195_0_);
+     }
+ 
+     public static void func_153169_a(int p_153169_0_, ByteBuffer p_153169_1_)
+     {
+         if (field_153214_y)
+         {
+-            ARBShaderObjects.glShaderSourceARB(p_153169_0_, p_153169_1_);
++            org.lwjglx.opengl.ARBShaderObjects.glShaderSourceARB(p_153169_0_, p_153169_1_);
+         }
+         else
+         {
+-            GL20.glShaderSource(p_153169_0_, p_153169_1_);
++            org.lwjglx.opengl.GL20.glShaderSource(p_153169_0_, p_153169_1_);
+         }
+     }
+ 
+@@ -364,55 +356,55 @@
+     {
+         if (field_153214_y)
+         {
+-            ARBShaderObjects.glCompileShaderARB(p_153170_0_);
++            org.lwjglx.opengl.ARBShaderObjects.glCompileShaderARB(p_153170_0_);
+         }
+         else
+         {
+-            GL20.glCompileShader(p_153170_0_);
++            org.lwjglx.opengl.GL20.glCompileShader(p_153170_0_);
+         }
+     }
+ 
+     public static int func_153157_c(int p_153157_0_, int p_153157_1_)
+     {
+-        return field_153214_y ? ARBShaderObjects.glGetObjectParameteriARB(p_153157_0_, p_153157_1_) : GL20.glGetShaderi(p_153157_0_, p_153157_1_);
++        return field_153214_y ? org.lwjglx.opengl.ARBShaderObjects.glGetObjectParameteriARB(p_153157_0_, p_153157_1_) : org.lwjglx.opengl.GL20.glGetShaderi(p_153157_0_, p_153157_1_);
+     }
+ 
+     public static String func_153158_d(int p_153158_0_, int p_153158_1_)
+     {
+-        return field_153214_y ? ARBShaderObjects.glGetInfoLogARB(p_153158_0_, p_153158_1_) : GL20.glGetShaderInfoLog(p_153158_0_, p_153158_1_);
++        return field_153214_y ? org.lwjglx.opengl.ARBShaderObjects.glGetInfoLogARB(p_153158_0_, p_153158_1_) : org.lwjglx.opengl.GL20.glGetShaderInfoLog(p_153158_0_, p_153158_1_);
+     }
+ 
+     public static String func_153166_e(int p_153166_0_, int p_153166_1_)
+     {
+-        return field_153214_y ? ARBShaderObjects.glGetInfoLogARB(p_153166_0_, p_153166_1_) : GL20.glGetProgramInfoLog(p_153166_0_, p_153166_1_);
++        return field_153214_y ? org.lwjglx.opengl.ARBShaderObjects.glGetInfoLogARB(p_153166_0_, p_153166_1_) : org.lwjglx.opengl.GL20.glGetProgramInfoLog(p_153166_0_, p_153166_1_);
+     }
+ 
+     public static void func_153161_d(int p_153161_0_)
+     {
+         if (field_153214_y)
+         {
+-            ARBShaderObjects.glUseProgramObjectARB(p_153161_0_);
++            org.lwjglx.opengl.ARBShaderObjects.glUseProgramObjectARB(p_153161_0_);
+         }
+         else
+         {
+-            GL20.glUseProgram(p_153161_0_);
++            org.lwjglx.opengl.GL20.glUseProgram(p_153161_0_);
+         }
+     }
+ 
+     public static int func_153183_d()
+     {
+-        return field_153214_y ? ARBShaderObjects.glCreateProgramObjectARB() : GL20.glCreateProgram();
++        return field_153214_y ? org.lwjglx.opengl.ARBShaderObjects.glCreateProgramObjectARB() : org.lwjglx.opengl.GL20.glCreateProgram();
+     }
+ 
+     public static void func_153187_e(int p_153187_0_)
+     {
+         if (field_153214_y)
+         {
+-            ARBShaderObjects.glDeleteObjectARB(p_153187_0_);
++            org.lwjglx.opengl.ARBShaderObjects.glDeleteObjectARB(p_153187_0_);
+         }
+         else
+         {
+-            GL20.glDeleteProgram(p_153187_0_);
++            org.lwjglx.opengl.GL20.glDeleteProgram(p_153187_0_);
+         }
+     }
+ 
+@@ -420,28 +412,28 @@
+     {
+         if (field_153214_y)
+         {
+-            ARBShaderObjects.glLinkProgramARB(p_153179_0_);
++            org.lwjglx.opengl.ARBShaderObjects.glLinkProgramARB(p_153179_0_);
+         }
+         else
+         {
+-            GL20.glLinkProgram(p_153179_0_);
++            org.lwjglx.opengl.GL20.glLinkProgram(p_153179_0_);
+         }
+     }
+ 
+     public static int func_153194_a(int p_153194_0_, CharSequence p_153194_1_)
+     {
+-        return field_153214_y ? ARBShaderObjects.glGetUniformLocationARB(p_153194_0_, p_153194_1_) : GL20.glGetUniformLocation(p_153194_0_, p_153194_1_);
++        return field_153214_y ? org.lwjglx.opengl.ARBShaderObjects.glGetUniformLocationARB(p_153194_0_, p_153194_1_) : org.lwjglx.opengl.GL20.glGetUniformLocation(p_153194_0_, p_153194_1_);
+     }
+ 
+     public static void func_153181_a(int p_153181_0_, IntBuffer p_153181_1_)
+     {
+         if (field_153214_y)
+         {
+-            ARBShaderObjects.glUniform1ARB(p_153181_0_, p_153181_1_);
++            org.lwjglx.opengl.ARBShaderObjects.glUniform1ARB(p_153181_0_, p_153181_1_);
+         }
+         else
+         {
+-            GL20.glUniform1(p_153181_0_, p_153181_1_);
++            org.lwjglx.opengl.GL20.glUniform1(p_153181_0_, p_153181_1_);
+         }
+     }
+ 
+@@ -449,11 +441,11 @@
+     {
+         if (field_153214_y)
+         {
+-            ARBShaderObjects.glUniform1iARB(p_153163_0_, p_153163_1_);
++            org.lwjglx.opengl.ARBShaderObjects.glUniform1iARB(p_153163_0_, p_153163_1_);
+         }
+         else
+         {
+-            GL20.glUniform1i(p_153163_0_, p_153163_1_);
++            org.lwjglx.opengl.GL20.glUniform1i(p_153163_0_, p_153163_1_);
+         }
+     }
+ 
+@@ -461,11 +453,11 @@
+     {
+         if (field_153214_y)
+         {
+-            ARBShaderObjects.glUniform1ARB(p_153168_0_, p_153168_1_);
++            org.lwjglx.opengl.ARBShaderObjects.glUniform1ARB(p_153168_0_, p_153168_1_);
+         }
+         else
+         {
+-            GL20.glUniform1(p_153168_0_, p_153168_1_);
++            org.lwjglx.opengl.GL20.glUniform1(p_153168_0_, p_153168_1_);
+         }
+     }
+ 
+@@ -473,11 +465,11 @@
+     {
+         if (field_153214_y)
+         {
+-            ARBShaderObjects.glUniform2ARB(p_153182_0_, p_153182_1_);
++            org.lwjglx.opengl.ARBShaderObjects.glUniform2ARB(p_153182_0_, p_153182_1_);
+         }
+         else
+         {
+-            GL20.glUniform2(p_153182_0_, p_153182_1_);
++            org.lwjglx.opengl.GL20.glUniform2(p_153182_0_, p_153182_1_);
+         }
+     }
+ 
+@@ -485,11 +477,11 @@
+     {
+         if (field_153214_y)
+         {
+-            ARBShaderObjects.glUniform2ARB(p_153177_0_, p_153177_1_);
++            org.lwjglx.opengl.ARBShaderObjects.glUniform2ARB(p_153177_0_, p_153177_1_);
+         }
+         else
+         {
+-            GL20.glUniform2(p_153177_0_, p_153177_1_);
++            org.lwjglx.opengl.GL20.glUniform2(p_153177_0_, p_153177_1_);
+         }
+     }
+ 
+@@ -497,11 +489,11 @@
+     {
+         if (field_153214_y)
+         {
+-            ARBShaderObjects.glUniform3ARB(p_153192_0_, p_153192_1_);
++            org.lwjglx.opengl.ARBShaderObjects.glUniform3ARB(p_153192_0_, p_153192_1_);
+         }
+         else
+         {
+-            GL20.glUniform3(p_153192_0_, p_153192_1_);
++            org.lwjglx.opengl.GL20.glUniform3(p_153192_0_, p_153192_1_);
+         }
+     }
+ 
+@@ -509,11 +501,11 @@
+     {
+         if (field_153214_y)
+         {
+-            ARBShaderObjects.glUniform3ARB(p_153191_0_, p_153191_1_);
++            org.lwjglx.opengl.ARBShaderObjects.glUniform3ARB(p_153191_0_, p_153191_1_);
+         }
+         else
+         {
+-            GL20.glUniform3(p_153191_0_, p_153191_1_);
++            org.lwjglx.opengl.GL20.glUniform3(p_153191_0_, p_153191_1_);
+         }
+     }
+ 
+@@ -521,11 +513,11 @@
+     {
+         if (field_153214_y)
+         {
+-            ARBShaderObjects.glUniform4ARB(p_153162_0_, p_153162_1_);
++            org.lwjglx.opengl.ARBShaderObjects.glUniform4ARB(p_153162_0_, p_153162_1_);
+         }
+         else
+         {
+-            GL20.glUniform4(p_153162_0_, p_153162_1_);
++            org.lwjglx.opengl.GL20.glUniform4(p_153162_0_, p_153162_1_);
+         }
+     }
+ 
+@@ -533,11 +525,11 @@
+     {
+         if (field_153214_y)
+         {
+-            ARBShaderObjects.glUniform4ARB(p_153159_0_, p_153159_1_);
++            org.lwjglx.opengl.ARBShaderObjects.glUniform4ARB(p_153159_0_, p_153159_1_);
+         }
+         else
+         {
+-            GL20.glUniform4(p_153159_0_, p_153159_1_);
++            org.lwjglx.opengl.GL20.glUniform4(p_153159_0_, p_153159_1_);
+         }
+     }
+ 
+@@ -545,11 +537,11 @@
+     {
+         if (field_153214_y)
+         {
+-            ARBShaderObjects.glUniformMatrix2ARB(p_153173_0_, p_153173_1_, p_153173_2_);
++            org.lwjglx.opengl.ARBShaderObjects.glUniformMatrix2ARB(p_153173_0_, p_153173_1_, p_153173_2_);
+         }
+         else
+         {
+-            GL20.glUniformMatrix2(p_153173_0_, p_153173_1_, p_153173_2_);
++            org.lwjglx.opengl.GL20.glUniformMatrix2(p_153173_0_, p_153173_1_, p_153173_2_);
+         }
+     }
+ 
+@@ -557,11 +549,11 @@
+     {
+         if (field_153214_y)
+         {
+-            ARBShaderObjects.glUniformMatrix3ARB(p_153189_0_, p_153189_1_, p_153189_2_);
++            org.lwjglx.opengl.ARBShaderObjects.glUniformMatrix3ARB(p_153189_0_, p_153189_1_, p_153189_2_);
+         }
+         else
+         {
+-            GL20.glUniformMatrix3(p_153189_0_, p_153189_1_, p_153189_2_);
++            org.lwjglx.opengl.GL20.glUniformMatrix3(p_153189_0_, p_153189_1_, p_153189_2_);
+         }
+     }
+ 
+@@ -569,33 +561,33 @@
+     {
+         if (field_153214_y)
+         {
+-            ARBShaderObjects.glUniformMatrix4ARB(p_153160_0_, p_153160_1_, p_153160_2_);
++            org.lwjglx.opengl.ARBShaderObjects.glUniformMatrix4ARB(p_153160_0_, p_153160_1_, p_153160_2_);
+         }
+         else
+         {
+-            GL20.glUniformMatrix4(p_153160_0_, p_153160_1_, p_153160_2_);
++            org.lwjglx.opengl.GL20.glUniformMatrix4(p_153160_0_, p_153160_1_, p_153160_2_);
+         }
+     }
+ 
+     public static int func_153164_b(int p_153164_0_, CharSequence p_153164_1_)
+     {
+-        return field_153214_y ? ARBVertexShader.glGetAttribLocationARB(p_153164_0_, p_153164_1_) : GL20.glGetAttribLocation(p_153164_0_, p_153164_1_);
++        return field_153214_y ? org.lwjglx.opengl.ARBVertexShader.glGetAttribLocationARB(p_153164_0_, p_153164_1_) : org.lwjglx.opengl.GL20.glGetAttribLocation(p_153164_0_, p_153164_1_);
+     }
+ 
+     public static int func_176073_e()
+     {
+-        return field_176090_Y ? ARBVertexBufferObject.glGenBuffersARB() : GL15.glGenBuffers();
++        return field_176090_Y ? org.lwjglx.opengl.ARBVertexBufferObject.glGenBuffersARB() : org.lwjglx.opengl.GL15.glGenBuffers();
+     }
+ 
+     public static void func_176072_g(int p_176072_0_, int p_176072_1_)
+     {
+         if (field_176090_Y)
+         {
+-            ARBVertexBufferObject.glBindBufferARB(p_176072_0_, p_176072_1_);
++            org.lwjglx.opengl.ARBVertexBufferObject.glBindBufferARB(p_176072_0_, p_176072_1_);
+         }
+         else
+         {
+-            GL15.glBindBuffer(p_176072_0_, p_176072_1_);
++            org.lwjglx.opengl.GL15.glBindBuffer(p_176072_0_, p_176072_1_);
+         }
+     }
+ 
+@@ -603,11 +595,11 @@
+     {
+         if (field_176090_Y)
+         {
+-            ARBVertexBufferObject.glBufferDataARB(p_176071_0_, p_176071_1_, p_176071_2_);
++            org.lwjglx.opengl.ARBVertexBufferObject.glBufferDataARB(p_176071_0_, p_176071_1_, p_176071_2_);
+         }
+         else
+         {
+-            GL15.glBufferData(p_176071_0_, p_176071_1_, p_176071_2_);
++            org.lwjglx.opengl.GL15.glBufferData(p_176071_0_, p_176071_1_, p_176071_2_);
+         }
+     }
+ 
+@@ -615,7 +607,7 @@
+     {
+         if (field_176090_Y)
+         {
+-            ARBVertexBufferObject.glDeleteBuffersARB(p_176074_0_);
++            org.lwjglx.opengl.ARBVertexBufferObject.glDeleteBuffersARB(p_176074_0_);
+         }
+         else
+         {
+@@ -635,13 +627,13 @@
+             switch (field_153212_w)
+             {
+                 case BASE:
+-                    GL30.glBindFramebuffer(p_153171_0_, p_153171_1_);
++                    org.lwjglx.opengl.GL30.glBindFramebuffer(p_153171_0_, p_153171_1_);
+                     break;
+                 case ARB:
+-                    ARBFramebufferObject.glBindFramebuffer(p_153171_0_, p_153171_1_);
++                    org.lwjglx.opengl.ARBFramebufferObject.glBindFramebuffer(p_153171_0_, p_153171_1_);
+                     break;
+                 case EXT:
+-                    EXTFramebufferObject.glBindFramebufferEXT(p_153171_0_, p_153171_1_);
++                    org.lwjglx.opengl.EXTFramebufferObject.glBindFramebufferEXT(p_153171_0_, p_153171_1_);
+             }
+         }
+     }
+@@ -653,13 +645,13 @@
+             switch (field_153212_w)
+             {
+                 case BASE:
+-                    GL30.glBindRenderbuffer(p_153176_0_, p_153176_1_);
++                    org.lwjglx.opengl.GL30.glBindRenderbuffer(p_153176_0_, p_153176_1_);
+                     break;
+                 case ARB:
+-                    ARBFramebufferObject.glBindRenderbuffer(p_153176_0_, p_153176_1_);
++                    org.lwjglx.opengl.ARBFramebufferObject.glBindRenderbuffer(p_153176_0_, p_153176_1_);
+                     break;
+                 case EXT:
+-                    EXTFramebufferObject.glBindRenderbufferEXT(p_153176_0_, p_153176_1_);
++                    org.lwjglx.opengl.EXTFramebufferObject.glBindRenderbufferEXT(p_153176_0_, p_153176_1_);
+             }
+         }
+     }
+@@ -671,13 +663,13 @@
+             switch (field_153212_w)
+             {
+                 case BASE:
+-                    GL30.glDeleteRenderbuffers(p_153184_0_);
++                    org.lwjglx.opengl.GL30.glDeleteRenderbuffers(p_153184_0_);
+                     break;
+                 case ARB:
+-                    ARBFramebufferObject.glDeleteRenderbuffers(p_153184_0_);
++                    org.lwjglx.opengl.ARBFramebufferObject.glDeleteRenderbuffers(p_153184_0_);
+                     break;
+                 case EXT:
+-                    EXTFramebufferObject.glDeleteRenderbuffersEXT(p_153184_0_);
++                    org.lwjglx.opengl.EXTFramebufferObject.glDeleteRenderbuffersEXT(p_153184_0_);
+             }
+         }
+     }
+@@ -689,13 +681,13 @@
+             switch (field_153212_w)
+             {
+                 case BASE:
+-                    GL30.glDeleteFramebuffers(p_153174_0_);
++                    org.lwjglx.opengl.GL30.glDeleteFramebuffers(p_153174_0_);
+                     break;
+                 case ARB:
+-                    ARBFramebufferObject.glDeleteFramebuffers(p_153174_0_);
++                    org.lwjglx.opengl.ARBFramebufferObject.glDeleteFramebuffers(p_153174_0_);
+                     break;
+                 case EXT:
+-                    EXTFramebufferObject.glDeleteFramebuffersEXT(p_153174_0_);
++                    org.lwjglx.opengl.EXTFramebufferObject.glDeleteFramebuffersEXT(p_153174_0_);
+             }
+         }
+     }
+@@ -711,11 +703,11 @@
+             switch (field_153212_w)
+             {
+                 case BASE:
+-                    return GL30.glGenFramebuffers();
++                    return org.lwjglx.opengl.GL30.glGenFramebuffers();
+                 case ARB:
+-                    return ARBFramebufferObject.glGenFramebuffers();
++                    return org.lwjglx.opengl.ARBFramebufferObject.glGenFramebuffers();
+                 case EXT:
+-                    return EXTFramebufferObject.glGenFramebuffersEXT();
++                    return org.lwjglx.opengl.EXTFramebufferObject.glGenFramebuffersEXT();
+                 default:
+                     return -1;
+             }
+@@ -733,11 +725,11 @@
+             switch (field_153212_w)
+             {
+                 case BASE:
+-                    return GL30.glGenRenderbuffers();
++                    return org.lwjglx.opengl.GL30.glGenRenderbuffers();
+                 case ARB:
+-                    return ARBFramebufferObject.glGenRenderbuffers();
++                    return org.lwjglx.opengl.ARBFramebufferObject.glGenRenderbuffers();
+                 case EXT:
+-                    return EXTFramebufferObject.glGenRenderbuffersEXT();
++                    return org.lwjglx.opengl.EXTFramebufferObject.glGenRenderbuffersEXT();
+                 default:
+                     return -1;
+             }
+@@ -751,13 +743,13 @@
+             switch (field_153212_w)
+             {
+                 case BASE:
+-                    GL30.glRenderbufferStorage(p_153186_0_, p_153186_1_, p_153186_2_, p_153186_3_);
++                    org.lwjglx.opengl.GL30.glRenderbufferStorage(p_153186_0_, p_153186_1_, p_153186_2_, p_153186_3_);
+                     break;
+                 case ARB:
+-                    ARBFramebufferObject.glRenderbufferStorage(p_153186_0_, p_153186_1_, p_153186_2_, p_153186_3_);
++                    org.lwjglx.opengl.ARBFramebufferObject.glRenderbufferStorage(p_153186_0_, p_153186_1_, p_153186_2_, p_153186_3_);
+                     break;
+                 case EXT:
+-                    EXTFramebufferObject.glRenderbufferStorageEXT(p_153186_0_, p_153186_1_, p_153186_2_, p_153186_3_);
++                    org.lwjglx.opengl.EXTFramebufferObject.glRenderbufferStorageEXT(p_153186_0_, p_153186_1_, p_153186_2_, p_153186_3_);
+             }
+         }
+     }
+@@ -769,13 +761,13 @@
+             switch (field_153212_w)
+             {
+                 case BASE:
+-                    GL30.glFramebufferRenderbuffer(p_153190_0_, p_153190_1_, p_153190_2_, p_153190_3_);
++                    org.lwjglx.opengl.GL30.glFramebufferRenderbuffer(p_153190_0_, p_153190_1_, p_153190_2_, p_153190_3_);
+                     break;
+                 case ARB:
+-                    ARBFramebufferObject.glFramebufferRenderbuffer(p_153190_0_, p_153190_1_, p_153190_2_, p_153190_3_);
++                    org.lwjglx.opengl.ARBFramebufferObject.glFramebufferRenderbuffer(p_153190_0_, p_153190_1_, p_153190_2_, p_153190_3_);
+                     break;
+                 case EXT:
+-                    EXTFramebufferObject.glFramebufferRenderbufferEXT(p_153190_0_, p_153190_1_, p_153190_2_, p_153190_3_);
++                    org.lwjglx.opengl.EXTFramebufferObject.glFramebufferRenderbufferEXT(p_153190_0_, p_153190_1_, p_153190_2_, p_153190_3_);
+             }
+         }
+     }
+@@ -791,11 +783,11 @@
+             switch (field_153212_w)
+             {
+                 case BASE:
+-                    return GL30.glCheckFramebufferStatus(p_153167_0_);
++                    return org.lwjglx.opengl.GL30.glCheckFramebufferStatus(p_153167_0_);
+                 case ARB:
+-                    return ARBFramebufferObject.glCheckFramebufferStatus(p_153167_0_);
++                    return org.lwjglx.opengl.ARBFramebufferObject.glCheckFramebufferStatus(p_153167_0_);
+                 case EXT:
+-                    return EXTFramebufferObject.glCheckFramebufferStatusEXT(p_153167_0_);
++                    return org.lwjglx.opengl.EXTFramebufferObject.glCheckFramebufferStatusEXT(p_153167_0_);
+                 default:
+                     return -1;
+             }
+@@ -809,13 +801,13 @@
+             switch (field_153212_w)
+             {
+                 case BASE:
+-                    GL30.glFramebufferTexture2D(p_153188_0_, p_153188_1_, p_153188_2_, p_153188_3_, p_153188_4_);
++                    org.lwjglx.opengl.GL30.glFramebufferTexture2D(p_153188_0_, p_153188_1_, p_153188_2_, p_153188_3_, p_153188_4_);
+                     break;
+                 case ARB:
+-                    ARBFramebufferObject.glFramebufferTexture2D(p_153188_0_, p_153188_1_, p_153188_2_, p_153188_3_, p_153188_4_);
++                    org.lwjglx.opengl.ARBFramebufferObject.glFramebufferTexture2D(p_153188_0_, p_153188_1_, p_153188_2_, p_153188_3_, p_153188_4_);
+                     break;
+                 case EXT:
+-                    EXTFramebufferObject.glFramebufferTexture2DEXT(p_153188_0_, p_153188_1_, p_153188_2_, p_153188_3_, p_153188_4_);
++                    org.lwjglx.opengl.EXTFramebufferObject.glFramebufferTexture2DEXT(p_153188_0_, p_153188_1_, p_153188_2_, p_153188_3_, p_153188_4_);
+             }
+         }
+     }
+@@ -824,11 +816,11 @@
+     {
+         if (field_153215_z)
+         {
+-            ARBMultitexture.glActiveTextureARB(p_77473_0_);
++            org.lwjglx.opengl.ARBMultitexture.glActiveTextureARB(p_77473_0_);
+         }
+         else
+         {
+-            GL13.glActiveTexture(p_77473_0_);
++            org.lwjglx.opengl.GL13.glActiveTexture(p_77473_0_);
+         }
+     }
+ 
+@@ -836,11 +828,11 @@
+     {
+         if (field_153215_z)
+         {
+-            ARBMultitexture.glClientActiveTextureARB(p_77472_0_);
++            org.lwjglx.opengl.ARBMultitexture.glClientActiveTextureARB(p_77472_0_);
+         }
+         else
+         {
+-            GL13.glClientActiveTexture(p_77472_0_);
++            org.lwjglx.opengl.GL13.glClientActiveTexture(p_77472_0_);
+         }
+     }
+ 
+@@ -848,11 +840,17 @@
+     {
+         if (field_153215_z)
+         {
+-            ARBMultitexture.glMultiTexCoord2fARB(p_77475_0_, p_77475_1_, p_77475_2_);
++            org.lwjglx.opengl.ARBMultitexture.glMultiTexCoord2fARB(p_77475_0_, p_77475_1_, p_77475_2_);
+         }
+         else
+         {
+-            GL13.glMultiTexCoord2f(p_77475_0_, p_77475_1_, p_77475_2_);
++            org.lwjglx.opengl.GL13.glMultiTexCoord2f(p_77475_0_, p_77475_1_, p_77475_2_);
++        }
 +
 +        if (p_77475_0_ == field_77476_b)
 +        {
 +            lastBrightnessX = p_77475_1_;
 +            lastBrightnessY = p_77475_2_;
-+        }
+         }
      }
  
-     public static void func_148821_a(int p_148821_0_, int p_148821_1_, int p_148821_2_, int p_148821_3_)
-@@ -893,21 +889,21 @@
+@@ -862,16 +860,16 @@
+         {
+             if (field_153211_u)
+             {
+-                EXTBlendFuncSeparate.glBlendFuncSeparateEXT(p_148821_0_, p_148821_1_, p_148821_2_, p_148821_3_);
++                org.lwjglx.opengl.EXTBlendFuncSeparate.glBlendFuncSeparateEXT(p_148821_0_, p_148821_1_, p_148821_2_, p_148821_3_);
+             }
+             else
+             {
+-                GL14.glBlendFuncSeparate(p_148821_0_, p_148821_1_, p_148821_2_, p_148821_3_);
++                org.lwjglx.opengl.GL14.glBlendFuncSeparate(p_148821_0_, p_148821_1_, p_148821_2_, p_148821_3_);
+             }
+         }
+         else
+         {
+-            GL11.glBlendFunc(p_148821_0_, p_148821_1_);
++            org.lwjglx.opengl.GL11.glBlendFunc(p_148821_0_, p_148821_1_);
+         }
+     }
+ 
+@@ -891,25 +889,25 @@
+         GlStateManager.func_179132_a(false);
+         Tessellator tessellator = Tessellator.func_178181_a();
          BufferBuilder bufferbuilder = tessellator.func_178180_c();
-         GL11.glLineWidth(4.0F);
-         bufferbuilder.func_181668_a(1, DefaultVertexFormats.field_181706_f);
+-        GL11.glLineWidth(4.0F);
+-        bufferbuilder.func_181668_a(1, DefaultVertexFormats.field_181706_f);
 -        bufferbuilder.func_181662_b(0.0, 0.0, 0.0).func_181669_b(0, 0, 0, 255).func_181675_d();
 -        bufferbuilder.func_181662_b((double)p_188785_0_, 0.0, 0.0).func_181669_b(0, 0, 0, 255).func_181675_d();
 -        bufferbuilder.func_181662_b(0.0, 0.0, 0.0).func_181669_b(0, 0, 0, 255).func_181675_d();
 -        bufferbuilder.func_181662_b(0.0, (double)p_188785_0_, 0.0).func_181669_b(0, 0, 0, 255).func_181675_d();
 -        bufferbuilder.func_181662_b(0.0, 0.0, 0.0).func_181669_b(0, 0, 0, 255).func_181675_d();
 -        bufferbuilder.func_181662_b(0.0, 0.0, (double)p_188785_0_).func_181669_b(0, 0, 0, 255).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, 0.0D, 0.0D).func_181669_b(0, 0, 0, 255).func_181675_d();
-+        bufferbuilder.func_181662_b((double)p_188785_0_, 0.0D, 0.0D).func_181669_b(0, 0, 0, 255).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, 0.0D, 0.0D).func_181669_b(0, 0, 0, 255).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, (double)p_188785_0_, 0.0D).func_181669_b(0, 0, 0, 255).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, 0.0D, 0.0D).func_181669_b(0, 0, 0, 255).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, 0.0D, (double)p_188785_0_).func_181669_b(0, 0, 0, 255).func_181675_d();
-         tessellator.func_78381_a();
-         GL11.glLineWidth(2.0F);
-         bufferbuilder.func_181668_a(1, DefaultVertexFormats.field_181706_f);
+-        tessellator.func_78381_a();
+-        GL11.glLineWidth(2.0F);
+-        bufferbuilder.func_181668_a(1, DefaultVertexFormats.field_181706_f);
 -        bufferbuilder.func_181662_b(0.0, 0.0, 0.0).func_181669_b(255, 0, 0, 255).func_181675_d();
 -        bufferbuilder.func_181662_b((double)p_188785_0_, 0.0, 0.0).func_181669_b(255, 0, 0, 255).func_181675_d();
 -        bufferbuilder.func_181662_b(0.0, 0.0, 0.0).func_181669_b(0, 255, 0, 255).func_181675_d();
 -        bufferbuilder.func_181662_b(0.0, (double)p_188785_0_, 0.0).func_181669_b(0, 255, 0, 255).func_181675_d();
 -        bufferbuilder.func_181662_b(0.0, 0.0, 0.0).func_181669_b(127, 127, 255, 255).func_181675_d();
 -        bufferbuilder.func_181662_b(0.0, 0.0, (double)p_188785_0_).func_181669_b(127, 127, 255, 255).func_181675_d();
+-        tessellator.func_78381_a();
+-        GL11.glLineWidth(1.0F);
++        org.lwjglx.opengl.GL11.glLineWidth(4.0F);
++        bufferbuilder.func_181668_a(1, DefaultVertexFormats.field_181706_f);
++        bufferbuilder.func_181662_b(0.0D, 0.0D, 0.0D).func_181669_b(0, 0, 0, 255).func_181675_d();
++        bufferbuilder.func_181662_b((double)p_188785_0_, 0.0D, 0.0D).func_181669_b(0, 0, 0, 255).func_181675_d();
++        bufferbuilder.func_181662_b(0.0D, 0.0D, 0.0D).func_181669_b(0, 0, 0, 255).func_181675_d();
++        bufferbuilder.func_181662_b(0.0D, (double)p_188785_0_, 0.0D).func_181669_b(0, 0, 0, 255).func_181675_d();
++        bufferbuilder.func_181662_b(0.0D, 0.0D, 0.0D).func_181669_b(0, 0, 0, 255).func_181675_d();
++        bufferbuilder.func_181662_b(0.0D, 0.0D, (double)p_188785_0_).func_181669_b(0, 0, 0, 255).func_181675_d();
++        tessellator.func_78381_a();
++        org.lwjglx.opengl.GL11.glLineWidth(2.0F);
++        bufferbuilder.func_181668_a(1, DefaultVertexFormats.field_181706_f);
 +        bufferbuilder.func_181662_b(0.0D, 0.0D, 0.0D).func_181669_b(255, 0, 0, 255).func_181675_d();
 +        bufferbuilder.func_181662_b((double)p_188785_0_, 0.0D, 0.0D).func_181669_b(255, 0, 0, 255).func_181675_d();
 +        bufferbuilder.func_181662_b(0.0D, 0.0D, 0.0D).func_181669_b(0, 255, 0, 255).func_181675_d();
 +        bufferbuilder.func_181662_b(0.0D, (double)p_188785_0_, 0.0D).func_181669_b(0, 255, 0, 255).func_181675_d();
 +        bufferbuilder.func_181662_b(0.0D, 0.0D, 0.0D).func_181669_b(127, 127, 255, 255).func_181675_d();
 +        bufferbuilder.func_181662_b(0.0D, 0.0D, (double)p_188785_0_).func_181669_b(127, 127, 255, 255).func_181675_d();
-         tessellator.func_78381_a();
-         GL11.glLineWidth(1.0F);
++        tessellator.func_78381_a();
++        org.lwjglx.opengl.GL11.glLineWidth(1.0F);
          GlStateManager.func_179132_a(true);
-@@ -951,7 +947,7 @@
+         GlStateManager.func_179098_w();
+     }
+@@ -951,7 +949,7 @@
          try
          {
              Class<?> oclass = Class.forName("java.awt.Desktop");

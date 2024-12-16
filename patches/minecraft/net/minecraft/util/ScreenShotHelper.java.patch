@@ -8,6 +8,15 @@
  import java.nio.IntBuffer;
  import java.text.DateFormat;
  import java.text.SimpleDateFormat;
+@@ -21,7 +20,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+-import org.lwjgl.BufferUtils;
++import org.lwjglx.BufferUtils;
+ 
+ @SideOnly(Side.CLIENT)
+ public class ScreenShotHelper
 @@ -33,7 +32,7 @@
  
      public static ITextComponent func_148260_a(File p_148260_0_, int p_148260_1_, int p_148260_2_, Framebuffer p_148260_3_)

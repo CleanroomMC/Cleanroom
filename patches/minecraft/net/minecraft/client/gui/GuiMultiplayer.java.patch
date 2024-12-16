@@ -1,5 +1,23 @@
 --- before/net/minecraft/client/gui/GuiMultiplayer.java
 +++ after/net/minecraft/client/gui/GuiMultiplayer.java
+@@ -4,7 +4,7 @@
+ import com.google.common.collect.Lists;
+ import java.io.IOException;
+ import java.util.List;
+-import net.minecraft.client.multiplayer.GuiConnecting;
++
+ import net.minecraft.client.multiplayer.ServerData;
+ import net.minecraft.client.multiplayer.ServerList;
+ import net.minecraft.client.network.LanServerDetector;
+@@ -15,7 +15,7 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+-import org.lwjgl.input.Keyboard;
++import org.lwjglx.input.Keyboard;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiMultiplayer extends GuiScreen
 @@ -41,9 +41,9 @@
      public GuiMultiplayer(GuiScreen p_i1040_1_)
      {

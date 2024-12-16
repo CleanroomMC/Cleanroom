@@ -25,7 +25,7 @@ import java.util.function.Predicate;
 
 import net.minecraftforge.client.resource.IResourceType;
 import net.minecraftforge.client.resource.VanillaResourceType;
-import org.lwjgl.opengl.GL11;
+import org.lwjglx.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;

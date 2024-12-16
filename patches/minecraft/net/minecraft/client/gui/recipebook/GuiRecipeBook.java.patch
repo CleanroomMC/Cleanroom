@@ -1,15 +1,21 @@
 --- before/net/minecraft/client/gui/recipebook/GuiRecipeBook.java
 +++ after/net/minecraft/client/gui/recipebook/GuiRecipeBook.java
-@@ -6,6 +6,8 @@
- import java.util.Iterator;
- import java.util.List;
- import java.util.Locale;
-+import java.util.function.Consumer;
-+import java.util.function.Predicate;
- import javax.annotation.Nullable;
- import net.minecraft.client.Minecraft;
- import net.minecraft.client.gui.Gui;
-@@ -43,13 +45,7 @@
+@@ -27,13 +27,12 @@
+ import net.minecraft.item.ItemStack;
+ import net.minecraft.item.crafting.IRecipe;
+ import net.minecraft.item.crafting.Ingredient;
+-import net.minecraft.item.crafting.ShapedRecipes;
+ import net.minecraft.network.play.client.CPacketRecipeInfo;
+ import net.minecraft.stats.RecipeBook;
+ import net.minecraft.util.ResourceLocation;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.input.Keyboard;
++import org.lwjglx.input.Keyboard;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiRecipeBook extends Gui implements IRecipeUpdateListener
+@@ -43,13 +42,7 @@
      private int field_191904_o;
      private int field_191905_p;
      private final GhostRecipe field_191915_z = new GhostRecipe();
@@ -24,7 +30,7 @@
      private GuiButtonRecipeTab field_191913_x;
      private GuiButtonToggle field_193960_m;
      private InventoryCrafting field_193961_o;
-@@ -159,28 +155,37 @@
+@@ -159,28 +152,37 @@
  
      private void func_193003_g(boolean p_193003_1_)
      {
@@ -75,7 +81,7 @@
          }
  
          this.field_193022_s.func_194192_a(list1, p_193003_1_);
-@@ -265,11 +270,11 @@
+@@ -265,11 +267,11 @@
  
              if (this.field_193960_m.func_146115_a())
              {
@@ -89,7 +95,7 @@
                  }
              }
  
-@@ -308,10 +313,7 @@
+@@ -308,10 +310,7 @@
      {
          if (this.func_191878_b() && !this.field_191888_F.field_71439_g.func_175149_v())
          {
@@ -101,7 +107,7 @@
              {
                  IRecipe irecipe = this.field_193022_s.func_194193_a();
                  RecipeList recipelist = this.field_193022_s.func_194199_b();
-@@ -324,11 +326,7 @@
+@@ -324,11 +323,7 @@
                      }
  
                      this.field_191915_z.func_192682_a();
@@ -114,7 +120,7 @@
  
                      if (!this.func_191880_f() && p_191862_3_ == 0)
                      {
-@@ -392,10 +390,7 @@
+@@ -392,10 +387,7 @@
          }
          else
          {
@@ -126,7 +132,7 @@
              boolean flag1 = p_193955_3_ - 147 < p_193955_1_ && p_193955_1_ < p_193955_3_ && p_193955_4_ < p_193955_2_ && p_193955_2_ < p_193955_4_ + p_193955_6_;
              return flag && !flag1 && !this.field_191913_x.func_146116_c(this.field_191888_F, p_193955_1_, p_193955_2_);
          }
-@@ -403,35 +398,38 @@
+@@ -403,35 +395,38 @@
  
      public boolean func_191859_a(char p_191859_1_, int p_191859_2_)
      {
@@ -192,7 +198,7 @@
              return false;
          }
      }
-@@ -450,10 +448,8 @@
+@@ -450,10 +445,8 @@
  
              languagemanager.func_135045_a(language);
              this.field_191888_F.field_71474_y.field_74363_ab = language.func_135034_a();
@@ -205,7 +211,7 @@
              this.field_191888_F.field_71466_p.func_78275_b(languagemanager.func_135044_b());
              this.field_191888_F.field_71474_y.func_74303_b();
          }
-@@ -474,7 +470,6 @@
+@@ -474,7 +467,6 @@
          }
      }
  
@@ -213,7 +219,7 @@
      public void func_193001_a(List<IRecipe> p_193001_1_)
      {
          for (IRecipe irecipe : p_193001_1_)
-@@ -487,10 +482,10 @@
+@@ -487,10 +479,10 @@
      {
          ItemStack itemstack = p_193951_1_.func_77571_b();
          this.field_191915_z.func_192685_a(p_193951_1_);
@@ -226,7 +232,7 @@
          int l = 1;
          Iterator<Ingredient> iterator = p_193951_1_.func_192400_c().iterator();
  
-@@ -505,7 +500,7 @@
+@@ -505,7 +497,7 @@
  
                  Ingredient ingredient = iterator.next();
  

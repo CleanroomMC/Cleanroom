@@ -1,5 +1,16 @@
 --- before/net/minecraft/client/gui/inventory/GuiContainerCreative.java
 +++ after/net/minecraft/client/gui/inventory/GuiContainerCreative.java
+@@ -40,8 +40,8 @@
+ import net.minecraft.util.text.TextFormatting;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.input.Keyboard;
+-import org.lwjgl.input.Mouse;
++import org.lwjglx.input.Keyboard;
++import org.lwjglx.input.Mouse;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiContainerCreative extends InventoryEffectRenderer
 @@ -57,6 +57,8 @@
      private Slot field_147064_C;
      private boolean field_147057_D;

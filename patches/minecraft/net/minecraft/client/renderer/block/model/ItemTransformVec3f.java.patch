@@ -1,8 +1,11 @@
 --- before/net/minecraft/client/renderer/block/model/ItemTransformVec3f.java
 +++ after/net/minecraft/client/renderer/block/model/ItemTransformVec3f.java
-@@ -13,9 +13,14 @@
+@@ -11,24 +11,28 @@
+ import net.minecraft.util.math.MathHelper;
+ import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
- import org.lwjgl.util.vector.Vector3f;
+-import org.lwjgl.util.vector.Vector3f;
++import org.lwjglx.util.vector.Vector3f;
  
 +/*
 + * @deprecated use {@link net.minecraftforge.client.model.IModelState} and {@link net.minecraftforge.client.model.TRSRTransformation}
@@ -16,8 +19,17 @@
      public static final ItemTransformVec3f field_178366_a = new ItemTransformVec3f(new Vector3f(), new Vector3f(), new Vector3f(1.0F, 1.0F, 1.0F));
      public final Vector3f field_178364_b;
      public final Vector3f field_178365_c;
-@@ -28,7 +33,6 @@
-         this.field_178363_d = new Vector3f(p_i46214_3_);
+     public final Vector3f field_178363_d;
+ 
+-    public ItemTransformVec3f(Vector3f p_i46214_1_, Vector3f p_i46214_2_, Vector3f p_i46214_3_)
++    public ItemTransformVec3f(Vector3f rotation, Vector3f translation, Vector3f scale)
+     {
+-        this.field_178364_b = new Vector3f(p_i46214_1_);
+-        this.field_178365_c = new Vector3f(p_i46214_2_);
+-        this.field_178363_d = new Vector3f(p_i46214_3_);
++        this.field_178364_b = new Vector3f(rotation);
++        this.field_178365_c = new Vector3f(translation);
++        this.field_178363_d = new Vector3f(scale);
      }
  
 -    @Override
@@ -46,3 +58,53 @@
      }
  
      @SideOnly(Side.CLIENT)
+@@ -66,32 +68,32 @@
+             public ItemTransformVec3f deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_) throws JsonParseException
+             {
+                 JsonObject jsonobject = p_deserialize_1_.getAsJsonObject();
+-                Vector3f vector3f = this.func_178358_a(jsonobject, "rotation", field_178362_a);
+-                Vector3f vector3f1 = this.func_178358_a(jsonobject, "translation", field_178360_b);
++                Vector3f vector3f = this.parseVector3f(jsonobject, "rotation", field_178362_a);
++                Vector3f vector3f1 = this.parseVector3f(jsonobject, "translation", field_178360_b);
+                 vector3f1.scale(0.0625F);
+                 vector3f1.x = MathHelper.func_76131_a(vector3f1.x, -5.0F, 5.0F);
+                 vector3f1.y = MathHelper.func_76131_a(vector3f1.y, -5.0F, 5.0F);
+                 vector3f1.z = MathHelper.func_76131_a(vector3f1.z, -5.0F, 5.0F);
+-                Vector3f vector3f2 = this.func_178358_a(jsonobject, "scale", field_178361_c);
++                Vector3f vector3f2 = this.parseVector3f(jsonobject, "scale", field_178361_c);
+                 vector3f2.x = MathHelper.func_76131_a(vector3f2.x, -4.0F, 4.0F);
+                 vector3f2.y = MathHelper.func_76131_a(vector3f2.y, -4.0F, 4.0F);
+                 vector3f2.z = MathHelper.func_76131_a(vector3f2.z, -4.0F, 4.0F);
+                 return new ItemTransformVec3f(vector3f, vector3f1, vector3f2);
+             }
+ 
+-            private Vector3f func_178358_a(JsonObject p_178358_1_, String p_178358_2_, Vector3f p_178358_3_)
++            private Vector3f parseVector3f(JsonObject jsonObject, String key, Vector3f defaultValue)
+             {
+-                if (!p_178358_1_.has(p_178358_2_))
++                if (!jsonObject.has(key))
+                 {
+-                    return p_178358_3_;
++                    return defaultValue;
+                 }
+                 else
+                 {
+-                    JsonArray jsonarray = JsonUtils.func_151214_t(p_178358_1_, p_178358_2_);
++                    JsonArray jsonarray = JsonUtils.func_151214_t(jsonObject, key);
+ 
+                     if (jsonarray.size() != 3)
+                     {
+-                        throw new JsonParseException("Expected 3 " + p_178358_2_ + " values, found: " + jsonarray.size());
++                        throw new JsonParseException("Expected 3 " + key + " values, found: " + jsonarray.size());
+                     }
+                     else
+                     {
+@@ -99,7 +101,7 @@
+ 
+                         for (int i = 0; i < afloat.length; ++i)
+                         {
+-                            afloat[i] = JsonUtils.func_151220_d(jsonarray.get(i), p_178358_2_ + "[" + i + "]");
++                            afloat[i] = JsonUtils.func_151220_d(jsonarray.get(i), key + "[" + i + "]");
+                         }
+ 
+                         return new Vector3f(afloat[0], afloat[1], afloat[2]);

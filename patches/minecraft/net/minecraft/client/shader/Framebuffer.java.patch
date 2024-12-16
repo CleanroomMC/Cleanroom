@@ -7,7 +7,16 @@
  import net.minecraft.client.renderer.BufferBuilder;
  import net.minecraft.client.renderer.GlStateManager;
  import net.minecraft.client.renderer.OpenGlHelper;
-@@ -110,15 +111,24 @@
+@@ -8,6 +9,8 @@
+ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
++import org.lwjglx.opengl.EXTFramebufferObject;
++import org.lwjglx.opengl.EXTPackedDepthStencil;
+ 
+ @SideOnly(Side.CLIENT)
+ public class Framebuffer
+@@ -110,15 +113,24 @@
  
              this.func_147607_a(9728);
              GlStateManager.func_179144_i(this.field_147617_g);
@@ -26,14 +35,14 @@
 +                }
 +                else
 +                {
-+                    OpenGlHelper.func_153186_a(OpenGlHelper.field_153199_f, org.lwjgl.opengl.EXTPackedDepthStencil.GL_DEPTH24_STENCIL8_EXT, this.field_147622_a, this.field_147620_b);
-+                    OpenGlHelper.func_153190_b(OpenGlHelper.field_153198_e, org.lwjgl.opengl.EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT, OpenGlHelper.field_153199_f, this.field_147624_h);
-+                    OpenGlHelper.func_153190_b(OpenGlHelper.field_153198_e, org.lwjgl.opengl.EXTFramebufferObject.GL_STENCIL_ATTACHMENT_EXT, OpenGlHelper.field_153199_f, this.field_147624_h);
++                    OpenGlHelper.func_153186_a(OpenGlHelper.field_153199_f, EXTPackedDepthStencil.GL_DEPTH24_STENCIL8_EXT, this.field_147622_a, this.field_147620_b);
++                    OpenGlHelper.func_153190_b(OpenGlHelper.field_153198_e, EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT, OpenGlHelper.field_153199_f, this.field_147624_h);
++                    OpenGlHelper.func_153190_b(OpenGlHelper.field_153198_e, EXTFramebufferObject.GL_STENCIL_ATTACHMENT_EXT, OpenGlHelper.field_153199_f, this.field_147624_h);
 +                }
              }
  
              this.func_147614_f();
-@@ -228,7 +238,7 @@
+@@ -228,7 +240,7 @@
              GlStateManager.func_179132_a(false);
              GlStateManager.func_179128_n(5889);
              GlStateManager.func_179096_D();
@@ -42,7 +51,7 @@
              GlStateManager.func_179128_n(5888);
              GlStateManager.func_179096_D();
              GlStateManager.func_179109_b(0.0F, 0.0F, -2000.0F);
-@@ -252,10 +262,10 @@
+@@ -252,10 +264,10 @@
              Tessellator tessellator = Tessellator.func_178181_a();
              BufferBuilder bufferbuilder = tessellator.func_178180_c();
              bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181709_i);
@@ -57,7 +66,7 @@
              tessellator.func_78381_a();
              this.func_147606_d();
              GlStateManager.func_179132_a(true);
-@@ -271,11 +281,43 @@
+@@ -271,11 +283,43 @@
  
          if (this.field_147619_e)
          {

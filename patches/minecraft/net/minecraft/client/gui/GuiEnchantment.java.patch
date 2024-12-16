@@ -8,6 +8,15 @@
  import net.minecraft.entity.player.InventoryPlayer;
  import net.minecraft.inventory.ContainerEnchantment;
  import net.minecraft.item.ItemStack;
+@@ -21,7 +22,7 @@
+ import net.minecraft.world.World;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.util.glu.Project;
++import org.lwjglx.util.glu.Project;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiEnchantment extends GuiContainer
 @@ -50,21 +51,18 @@
          this.field_175380_I = p_i45502_3_;
      }

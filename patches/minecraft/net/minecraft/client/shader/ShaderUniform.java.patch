@@ -1,0 +1,56 @@
+--- before/net/minecraft/client/shader/ShaderUniform.java
++++ after/net/minecraft/client/shader/ShaderUniform.java
+@@ -8,8 +8,8 @@
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+-import org.lwjgl.BufferUtils;
+-import org.lwjgl.util.vector.Matrix4f;
++import org.lwjglx.BufferUtils;
++import org.lwjglx.util.vector.Matrix4f;
+ 
+ @SideOnly(Side.CLIENT)
+ public class ShaderUniform
+@@ -240,25 +240,25 @@
+         this.func_148096_h();
+     }
+ 
+-    public void func_148088_a(Matrix4f p_148088_1_)
++    public void set(Matrix4f matrix)
+     {
+         this.func_148094_a(
+-            p_148088_1_.m00,
+-            p_148088_1_.m01,
+-            p_148088_1_.m02,
+-            p_148088_1_.m03,
+-            p_148088_1_.m10,
+-            p_148088_1_.m11,
+-            p_148088_1_.m12,
+-            p_148088_1_.m13,
+-            p_148088_1_.m20,
+-            p_148088_1_.m21,
+-            p_148088_1_.m22,
+-            p_148088_1_.m23,
+-            p_148088_1_.m30,
+-            p_148088_1_.m31,
+-            p_148088_1_.m32,
+-            p_148088_1_.m33
++            matrix.m00,
++            matrix.m01,
++            matrix.m02,
++            matrix.m03,
++            matrix.m10,
++            matrix.m11,
++            matrix.m12,
++            matrix.m13,
++            matrix.m20,
++            matrix.m21,
++            matrix.m22,
++            matrix.m23,
++            matrix.m30,
++            matrix.m31,
++            matrix.m32,
++            matrix.m33
+         );
+     }
+ 

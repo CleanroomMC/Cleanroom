@@ -20,8 +20,6 @@
 package net.minecraftforge.client;
 
 import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.BOSSINFO;
-import static net.minecraftforge.common.ForgeVersion.Status.BETA;
-import static net.minecraftforge.common.ForgeVersion.Status.BETA_OUTDATED;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -81,7 +79,6 @@ import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.client.renderer.vertex.VertexFormatElement.EnumUsage;
 import net.minecraft.client.resources.FoliageColorReloadListener;
 import net.minecraft.client.resources.GrassColorReloadListener;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.client.resources.LanguageManager;
 import net.minecraft.client.settings.GameSettings;
@@ -103,7 +100,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.registry.IRegistry;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -130,8 +126,6 @@ import net.minecraftforge.client.resource.SelectiveReloadStateHandler;
 import net.minecraftforge.client.resource.VanillaResourceType;
 import net.minecraftforge.client.model.pipeline.QuadGatheringTransformer;
 import net.minecraftforge.common.ForgeModContainer;
-import net.minecraftforge.common.ForgeVersion;
-import net.minecraftforge.common.ForgeVersion.Status;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.model.IModelPart;
 import net.minecraftforge.common.model.ITransformation;
@@ -143,9 +137,9 @@ import net.minecraftforge.fml.common.FMLLog;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.core.async.ThreadNameCachingStrategy;
 import org.apache.logging.log4j.core.impl.ReusableLogEventFactory;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
+import org.lwjglx.BufferUtils;
+import org.lwjglx.opengl.GL11;
+import org.lwjglx.opengl.GL20;
 
 import java.util.function.Predicate;
 
@@ -521,7 +515,7 @@ public class ForgeHooksClient
         }
     }
 
-    public static void transform(org.lwjgl.util.vector.Vector3f vec, Matrix4f m)
+    public static void transform(org.lwjglx.util.vector.Vector3f vec, Matrix4f m)
     {
         Vector4f tmp = new Vector4f(vec.x, vec.y, vec.z, 1f);
         m.transform(tmp);

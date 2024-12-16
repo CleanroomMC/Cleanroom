@@ -245,8 +245,8 @@ project(':cleanroom') {
         // Do not change the order unless it is required so
         lwjglLibraries = [
             [
-                'lwjgl3-glfw', 'lwjgl3-jemalloc', 'lwjgl3-openal',
-                'lwjgl3-opengl', 'lwjgl3-stb', 'lwjgl3-tinyfd', 'lwjgl3'
+                'lwjgl-glfw', 'lwjgl-jemalloc', 'lwjgl-openal',
+                'lwjgl-opengl', 'lwjgl-stb', 'lwjgl-tinyfd', 'lwjgl'
             ],
 
             [
@@ -290,7 +290,7 @@ project(':cleanroom') {
                 environment 'FORGE_GROUP', project.group
                 environment 'FORGE_VERSION', props.last_forge_version
 
-                jvmArgs jvm_arguments + '-Dmixin.debug.export=true' + '-Dmixin.checks.interfaces=true' + '-Djava.system.class.loader=net.minecraft.launchwrapper.LaunchClassLoader'
+                jvmArgs jvm_arguments + '-Dmixin.debug.export=true' + '-Dmixin.checks.interfaces=true'
                 //jvmArgs jvm_arguments
 
                 // Lazily supply the Mappings target, createSrg2Mcp.getMappings() doesn't get populated until later
@@ -417,11 +417,11 @@ project(':cleanroom') {
 
     dependencies {
         lwjglLibraries[0].each {
-            installer "org.lwjgl3:$it:$props.lwjgl_version"
-            runtimeOnly "org.lwjgl3:$it::$lwjglArch"
+            installer "org.lwjgl:$it:$props.lwjgl_version"
+            runtimeOnly "org.lwjgl:$it::$lwjglArch"
 
             lwjglLibraries[1].each { arch ->
-                lwjglNatives "org.lwjgl3:$it:$props.lwjgl_version:$arch"
+                lwjglNatives "org.lwjgl:$it:$props.lwjgl_version:$arch"
             }
         }
 

@@ -45,7 +45,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.fml.relauncher.Side;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjglx.opengl.GL11.*;
 
 @Mod(modid = ItemTESRTest.MODID, name = "ForgeDebugItemTile", version = "1.0", acceptableRemoteVersions = "*")
 public class ItemTESRTest

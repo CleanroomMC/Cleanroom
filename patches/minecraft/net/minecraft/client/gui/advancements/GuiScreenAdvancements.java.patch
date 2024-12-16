@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/gui/advancements/GuiScreenAdvancements.java
 +++ after/net/minecraft/client/gui/advancements/GuiScreenAdvancements.java
+@@ -16,7 +16,7 @@
+ import net.minecraft.util.ResourceLocation;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.input.Mouse;
++import org.lwjglx.input.Mouse;
+ 
+ @SideOnly(Side.CLIENT)
+ public class GuiScreenAdvancements extends GuiScreen implements ClientAdvancementManager.IListener
 @@ -24,18 +24,18 @@
      private static final ResourceLocation field_191943_f = new ResourceLocation("textures/gui/advancements/window.png");
      private static final ResourceLocation field_191945_g = new ResourceLocation("textures/gui/advancements/tabs.png");

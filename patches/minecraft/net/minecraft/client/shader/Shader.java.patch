@@ -1,0 +1,32 @@
+--- before/net/minecraft/client/shader/Shader.java
++++ after/net/minecraft/client/shader/Shader.java
+@@ -12,7 +12,7 @@
+ import net.minecraft.client.util.JsonException;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.util.vector.Matrix4f;
++import org.lwjglx.util.vector.Matrix4f;
+ 
+ @SideOnly(Side.CLIENT)
+ public class Shader
+@@ -59,9 +59,9 @@
+         GlStateManager.func_179144_i(0);
+     }
+ 
+-    public void func_148045_a(Matrix4f p_148045_1_)
++    public void setProjectionMatrix(Matrix4f projectionMatrixIn)
+     {
+-        this.field_148053_h = p_148045_1_;
++        this.field_148053_h = projectionMatrixIn;
+     }
+ 
+     public void func_148042_a(float p_148042_1_)
+@@ -81,7 +81,7 @@
+             .func_148087_a((float)this.field_148046_f.get(i).intValue(), (float)this.field_148047_g.get(i).intValue());
+         }
+ 
+-        this.field_148051_c.func_147984_b("ProjMat").func_148088_a(this.field_148053_h);
++        this.field_148051_c.func_147984_b("ProjMat").set(this.field_148053_h);
+         this.field_148051_c.func_147984_b("InSize").func_148087_a((float)this.field_148052_a.field_147622_a, (float)this.field_148052_a.field_147620_b);
+         this.field_148051_c.func_147984_b("OutSize").func_148087_a(f, f1);
+         this.field_148051_c.func_147984_b("Time").func_148090_a(p_148042_1_);

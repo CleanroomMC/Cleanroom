@@ -118,10 +118,10 @@ import net.minecraftforge.registries.GameData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.FormattedMessage;
-import org.lwjgl.LWJGLUtil;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
+import org.lwjglx.LWJGLUtil;
+import org.lwjglx.input.Keyboard;
+import org.lwjglx.input.Mouse;
+import org.lwjglx.opengl.Display;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.MoreObjects;

@@ -1,6 +1,15 @@
 --- before/net/minecraft/client/settings/KeyBinding.java
 +++ after/net/minecraft/client/settings/KeyBinding.java
-@@ -14,10 +14,10 @@
+@@ -6,18 +6,17 @@
+ import java.util.Set;
+ import java.util.function.Supplier;
+ import net.minecraft.client.resources.I18n;
+-import net.minecraft.util.IntHashMap;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.input.Keyboard;
++import org.lwjglx.input.Keyboard;
+ 
  @SideOnly(Side.CLIENT)
  public class KeyBinding implements Comparable<KeyBinding>
  {
@@ -15,7 +24,7 @@
      private final String field_74515_c;
      private final int field_151472_e;
      private final String field_151471_f;
-@@ -29,12 +29,7 @@
+@@ -29,12 +28,7 @@
      {
          if (p_74507_0_ != 0)
          {
@@ -29,7 +38,7 @@
          }
      }
  
-@@ -42,7 +37,7 @@
+@@ -42,7 +36,7 @@
      {
          if (p_74510_0_ != 0)
          {
@@ -38,7 +47,7 @@
  
              if (keybinding != null)
              {
-@@ -59,8 +54,9 @@
+@@ -59,8 +53,9 @@
              {
                  func_74510_a(keybinding.field_74512_d, keybinding.field_74512_d < 256 && Keyboard.isKeyDown(keybinding.field_74512_d));
              }
@@ -49,7 +58,7 @@
              }
          }
      }
-@@ -75,11 +71,11 @@
+@@ -75,11 +70,11 @@
  
      public static void func_74508_b()
      {
@@ -63,7 +72,7 @@
          }
      }
  
-@@ -95,13 +91,13 @@
+@@ -95,13 +90,13 @@
          this.field_151472_e = p_i45001_2_;
          this.field_151471_f = p_i45001_3_;
          field_74516_a.put(p_i45001_1_, this);
@@ -79,7 +88,7 @@
      }
  
      public String func_151466_e()
-@@ -150,25 +146,166 @@
+@@ -150,25 +145,166 @@
  
      public int compareTo(KeyBinding p_compareTo_1_)
      {

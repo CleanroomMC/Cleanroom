@@ -46,7 +46,7 @@ import net.minecraftforge.common.model.animation.CapabilityAnimation;
 
 import net.minecraftforge.common.model.animation.IAnimationStateMachine;
 import org.apache.commons.lang3.tuple.Pair;
-import org.lwjgl.opengl.GL11;
+import org.lwjglx.opengl.GL11;
 
 /**
  * ModelBase that works with the Forge model system and animations.

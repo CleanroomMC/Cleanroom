@@ -1,0 +1,20 @@
+--- before/net/minecraft/client/shader/ShaderDefault.java
++++ after/net/minecraft/client/shader/ShaderDefault.java
+@@ -2,7 +2,7 @@
+ 
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+-import org.lwjgl.util.vector.Matrix4f;
++import org.lwjglx.util.vector.Matrix4f;
+ 
+ @SideOnly(Side.CLIENT)
+ public class ShaderDefault extends ShaderUniform
+@@ -70,7 +70,7 @@
+     }
+ 
+     @Override
+-    public void func_148088_a(Matrix4f p_148088_1_)
++    public void set(Matrix4f matrix)
+     {
+     }
+ }

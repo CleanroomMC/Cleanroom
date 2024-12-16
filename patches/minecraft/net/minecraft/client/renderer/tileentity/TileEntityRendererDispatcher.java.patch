@@ -1,6 +1,11 @@
 --- before/net/minecraft/client/renderer/tileentity/TileEntityRendererDispatcher.java
 +++ after/net/minecraft/client/renderer/tileentity/TileEntityRendererDispatcher.java
-@@ -37,7 +37,7 @@
+@@ -33,11 +33,12 @@
+ import net.minecraft.world.World;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
++import org.lwjglx.opengl.GL11;
+ 
  @SideOnly(Side.CLIENT)
  public class TileEntityRendererDispatcher
  {
@@ -9,7 +14,7 @@
      public static TileEntityRendererDispatcher field_147556_a = new TileEntityRendererDispatcher();
      public FontRenderer field_147557_n;
      public static double field_147554_b;
-@@ -78,7 +78,7 @@
+@@ -78,7 +79,7 @@
  
      public <T extends TileEntity> TileEntitySpecialRenderer<T> func_147546_a(Class <? extends TileEntity > p_147546_1_)
      {
@@ -18,7 +23,7 @@
  
          if (tileentityspecialrenderer == null && p_147546_1_ != TileEntity.class)
          {
-@@ -86,18 +86,16 @@
+@@ -86,18 +87,16 @@
              this.field_147559_m.put(p_147546_1_, tileentityspecialrenderer);
          }
  
@@ -40,7 +45,7 @@
      {
          if (this.field_147550_f != p_190056_1_)
          {
-@@ -119,22 +117,18 @@
+@@ -119,22 +118,18 @@
      {
          if (p_180546_1_.func_145835_a(this.field_147560_j, this.field_147561_k, this.field_147558_l) < p_180546_1_.func_145833_n())
          {
@@ -68,7 +73,7 @@
          }
      }
  
-@@ -148,16 +142,17 @@
+@@ -148,16 +143,17 @@
          this.func_192854_a(p_192855_1_, p_192855_2_, p_192855_4_, p_192855_6_, p_192855_8_, -1, p_192855_9_);
      }
  
@@ -90,7 +95,7 @@
                  tileentityspecialrenderer.func_192841_a(p_192854_1_, p_192854_2_, p_192854_4_, p_192854_6_, p_192854_8_, p_192854_9_, p_192854_10_);
              }
              catch (Throwable throwable)
-@@ -183,5 +178,54 @@
+@@ -183,5 +179,54 @@
      public FontRenderer func_147548_a()
      {
          return this.field_147557_n;
@@ -109,7 +114,7 @@
 +     */
 +    public void preDrawBatch()
 +    {
-+        batchBuffer.func_178180_c().func_181668_a(org.lwjgl.opengl.GL11.GL_QUADS, net.minecraft.client.renderer.vertex.DefaultVertexFormats.field_176600_a);
++        batchBuffer.func_178180_c().func_181668_a(GL11.GL_QUADS, net.minecraft.client.renderer.vertex.DefaultVertexFormats.field_176600_a);
 +        drawingBatch = true;
 +    }
 +
@@ -121,17 +126,17 @@
 +    {
 +        field_147553_e.func_110577_a(net.minecraft.client.renderer.texture.TextureMap.field_110575_b);
 +        net.minecraft.client.renderer.RenderHelper.func_74518_a();
-+        GlStateManager.func_179112_b(org.lwjgl.opengl.GL11.GL_SRC_ALPHA, org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA);
++        GlStateManager.func_179112_b(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 +        GlStateManager.func_179147_l();
 +        GlStateManager.func_179129_p();
 +
 +        if (net.minecraft.client.Minecraft.func_71379_u())
 +        {
-+            GlStateManager.func_179103_j(org.lwjgl.opengl.GL11.GL_SMOOTH);
++            GlStateManager.func_179103_j(GL11.GL_SMOOTH);
 +        }
 +        else
 +        {
-+            GlStateManager.func_179103_j(org.lwjgl.opengl.GL11.GL_FLAT);
++            GlStateManager.func_179103_j(GL11.GL_FLAT);
 +        }
 +
 +        if(pass > 0)
