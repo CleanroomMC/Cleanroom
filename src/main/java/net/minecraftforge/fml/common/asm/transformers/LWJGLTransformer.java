@@ -2,7 +2,6 @@ package net.minecraftforge.fml.common.asm.transformers;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraftforge.fml.common.FMLLog;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -21,7 +20,7 @@ public class LWJGLTransformer implements IClassTransformer {
         if (s1.startsWith("net.minecraft")) {
             ClassReader reader = new ClassReader(bytes);
             ClassWriter writer = new ClassWriter(0);
-            ClassVisitor visitor = new ClassRemapper(writer, new LWJGLXRemapper());
+            ClassVisitor visitor = new ClassRemapper(writer, INSTANCE);
             reader.accept(visitor, 0);
             return writer.toByteArray();
         }
@@ -40,7 +39,7 @@ public class LWJGLTransformer implements IClassTransformer {
         }
         ClassReader lwjglxReader = new ClassReader(lwjglxBytes);
         ClassWriter writer = new ClassWriter(0);
-        ClassVisitor classVisitor = new ClassRemapper(writer, new LWJGLXRemapper());
+        ClassVisitor classVisitor = new ClassRemapper(writer, INSTANCE);
         lwjglxReader.accept(classVisitor, 0);
         lwjglxBytes = writer.toByteArray();
         if (bytes == null) {

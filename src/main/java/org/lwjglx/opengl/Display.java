@@ -2,6 +2,7 @@ package org.lwjglx.opengl;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.ForgeEarlyConfig;
+import net.minecraftforge.fml.common.FMLLog;
 import org.lwjglx.LWJGLException;
 import org.lwjglx.input.*;
 import org.lwjglx.util.Rectangle;
@@ -17,10 +18,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Optional;
+import java.util.*;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -114,7 +112,12 @@ public class Display {
 
     public static void create(PixelFormat pixel_format) {
         System.out.println("TODO: Implement Display.create(PixelFormat)"); // TODO
-        create();
+        try {
+            create();
+        } catch (Throwable t) {
+            FMLLog.log.info(t.getCause().getMessage());
+            Arrays.stream(t.getStackTrace()).forEach(FMLLog.log::info);
+        }
     }
 
     public static void create() {
