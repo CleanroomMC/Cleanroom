@@ -15,6 +15,8 @@
  */
 package org.lwjglx;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
+
 import java.lang.reflect.Field;
 import java.nio.*;
 
@@ -26,11 +28,7 @@ public class PointerBuffer extends org.lwjgl.PointerBuffer {
 
     static {
         Class<org.lwjgl.PointerBuffer> pbClass = org.lwjgl.PointerBuffer.class;
-        try {
-            containerAccess = pbClass.getDeclaredField("container");
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
+        containerAccess = FieldUtils.getField(pbClass, "container", true);
     }
 
     private static ByteBuffer getContainer(org.lwjgl.PointerBuffer buffer) {

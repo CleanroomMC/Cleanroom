@@ -18,13 +18,9 @@ public class LWJGLTransformer implements IClassTransformer {
     @Override
     public byte[] transform(String s, String s1, byte[] bytes) {
         if (s1.startsWith("net.minecraft")) {
-            ClassReader reader = new ClassReader(bytes);
-            ClassWriter writer = new ClassWriter(0);
-            ClassVisitor visitor = new ClassRemapper(writer, INSTANCE);
-            reader.accept(visitor, 0);
-            return writer.toByteArray();
+            return bytes;
         }
-        if (!s1.startsWith("org.lwjgl")) {
+        if (!s1.startsWith("org.lwjgl.")) {
             return bytes;
         }
         String lwjglxName = s.replace("org.lwjgl", "org.lwjglx");
