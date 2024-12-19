@@ -139,6 +139,15 @@
      public String[] func_75754_f()
      {
          String[] astring = this.field_75771_c.list();
+@@ -247,7 +242,7 @@
+             astring = new String[0];
+         }
+ 
+-        for (int i = 0; i < astring.length; i++)
++        for (int i = 0; i < astring.length; ++i)
+         {
+             if (astring[i].endsWith(".dat"))
+             {
 @@ -258,20 +253,35 @@
          return astring;
      }

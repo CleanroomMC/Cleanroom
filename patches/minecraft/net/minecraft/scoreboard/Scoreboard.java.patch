@@ -121,7 +121,12 @@
          }
  
          return map;
-@@ -206,11 +206,11 @@
+@@ -202,15 +202,15 @@
+     {
+         this.field_96545_a.remove(p_96519_1_.func_96679_b());
+ 
+-        for (int i = 0; i < 19; i++)
++        for (int i = 0; i < 19; ++i)
          {
              if (this.func_96539_a(i) == p_96519_1_)
              {
@@ -135,6 +140,15 @@
  
          if (list != null)
          {
+@@ -445,7 +445,7 @@
+         {
+             field_178823_g = new String[19];
+ 
+-            for (int i = 0; i < 19; i++)
++            for (int i = 0; i < 19; ++i)
+             {
+                 field_178823_g[i] = func_96517_b(i);
+             }
 @@ -459,7 +459,7 @@
          if (p_181140_1_ != null && !(p_181140_1_ instanceof EntityPlayer) && !p_181140_1_.func_70089_S())
          {

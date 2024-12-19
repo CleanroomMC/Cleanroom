@@ -127,15 +127,43 @@
          {
              IBlockState iblockstate = p_176225_2_.func_180495_p(p_176225_3_.func_177972_a(p_176225_4_));
              boolean flag = func_185675_i(iblockstate) && iblockstate.func_177229_b(field_176554_a) == BlockSlab.EnumBlockHalf.TOP;
-@@ -172,6 +162,7 @@
-                 return !func_185675_i(iblockstate) || flag;
+@@ -150,24 +140,29 @@
+                 {
+                     return true;
+                 }
++                else if (p_176225_4_ == EnumFacing.UP && super.func_176225_a(p_176225_1_, p_176225_2_, p_176225_3_, p_176225_4_))
++                {
++                    return true;
++                }
+                 else
+                 {
+-                    return p_176225_4_ == EnumFacing.UP && super.func_176225_a(p_176225_1_, p_176225_2_, p_176225_3_, p_176225_4_)
+-                           ? true
+-                           : !func_185675_i(iblockstate) || !flag;
++                    return !func_185675_i(iblockstate) || !flag;
+                 }
+             }
+             else if (p_176225_4_ == EnumFacing.UP)
+             {
+                 return true;
+             }
++            else if (p_176225_4_ == EnumFacing.DOWN && super.func_176225_a(p_176225_1_, p_176225_2_, p_176225_3_, p_176225_4_))
++            {
++                return true;
++            }
+             else
+             {
+-                return p_176225_4_ == EnumFacing.DOWN && super.func_176225_a(p_176225_1_, p_176225_2_, p_176225_3_, p_176225_4_)
+-                       ? true
+-                       : !func_185675_i(iblockstate) || flag;
++                return !func_185675_i(iblockstate) || flag;
              }
          }
 +        return super.func_176225_a(p_176225_1_, p_176225_2_, p_176225_3_, p_176225_4_);
      }
  
      @SideOnly(Side.CLIENT)
-@@ -201,13 +192,11 @@
+@@ -197,13 +192,11 @@
              this.field_176988_c = p_i45713_3_;
          }
  

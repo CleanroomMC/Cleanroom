@@ -31,11 +31,13 @@
      {
          ItemStack itemstack = p_180614_1_.func_184586_b(p_180614_4_);
  
-@@ -67,30 +55,17 @@
+@@ -66,31 +54,18 @@
+             if (iblockstate.func_177230_c() == this.field_150949_c)
              {
                  IProperty<?> iproperty = this.field_150949_c.func_176551_l();
-                 Comparable<?> comparable1 = iblockstate.func_177229_b(iproperty);
+-                Comparable<?> comparable1 = iblockstate.func_177229_b((IProperty < Comparable<? >>)iproperty);
 -                BlockSlab.EnumBlockHalf blockslab$enumblockhalf = iblockstate.func_177229_b(BlockSlab.field_176554_a);
++                Comparable<?> comparable1 = iblockstate.func_177229_b(iproperty);
 +                BlockSlab.EnumBlockHalf blockslab$enumblockhalf = (BlockSlab.EnumBlockHalf)iblockstate.func_177229_b(BlockSlab.field_176554_a);
  
 -                if ((
@@ -104,7 +106,15 @@
      }
  
      private boolean func_180615_a(EntityPlayer p_180615_1_, ItemStack p_180615_2_, World p_180615_3_, BlockPos p_180615_4_, Object p_180615_5_)
-@@ -151,19 +122,10 @@
+@@ -144,26 +115,17 @@
+ 
+         if (iblockstate.func_177230_c() == this.field_150949_c)
+         {
+-            Comparable<?> comparable = iblockstate.func_177229_b((IProperty < Comparable<? >>)this.field_150949_c.func_176551_l());
++            Comparable<?> comparable = iblockstate.func_177229_b(this.field_150949_c.func_176551_l());
+ 
+             if (comparable == p_180615_5_)
+             {
                  IBlockState iblockstate1 = this.func_185055_a(this.field_150949_c.func_176551_l(), comparable);
                  AxisAlignedBB axisalignedbb = iblockstate1.func_185890_d(p_180615_3_, p_180615_4_);
  

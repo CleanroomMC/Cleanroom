@@ -39,6 +39,15 @@
      public void func_72835_b()
      {
          super.func_72835_b();
+@@ -84,7 +87,7 @@
+ 
+         this.field_72984_F.func_76320_a("reEntryProcessing");
+ 
+-        for (int i = 0; i < 10 && !this.field_73036_L.isEmpty(); i++)
++        for (int i = 0; i < 10 && !this.field_73036_L.isEmpty(); ++i)
+         {
+             Entity entity = this.field_73036_L.iterator().next();
+             this.field_73036_L.remove(entity);
 @@ -106,14 +109,12 @@
      {
      }
@@ -54,7 +63,7 @@
      protected boolean func_175680_a(int p_175680_1_, int p_175680_2_, boolean p_175680_3_)
      {
          return p_175680_3_ || !this.func_72863_F().func_186025_d(p_175680_1_, p_175680_2_).func_76621_g();
-@@ -124,8 +125,8 @@
+@@ -124,12 +125,12 @@
          this.field_184157_a.clear();
          int i = this.field_73037_M.field_71474_y.field_151451_c;
          this.field_72984_F.func_76320_a("buildList");
@@ -63,9 +72,15 @@
 +        int j = MathHelper.func_76128_c(this.field_73037_M.field_71439_g.field_70165_t / 16.0D);
 +        int k = MathHelper.func_76128_c(this.field_73037_M.field_71439_g.field_70161_v / 16.0D);
  
-         for (int l = -i; l <= i; ++l)
+-        for (int l = -i; l <= i; l++)
++        for (int l = -i; l <= i; ++l)
          {
-@@ -138,7 +139,6 @@
+-            for (int i1 = -i; i1 <= i; i1++)
++            for (int i1 = -i; i1 <= i; ++i1)
+             {
+                 this.field_184157_a.add(new ChunkPos(l + j, i1 + k));
+             }
+@@ -138,14 +139,13 @@
          this.field_72984_F.func_76319_b();
      }
  
@@ -73,6 +88,14 @@
      protected void func_147456_g()
      {
          this.func_184154_a();
+ 
+         if (this.field_184158_M > 0)
+         {
+-            this.field_184158_M--;
++            --this.field_184158_M;
+         }
+ 
+         this.field_73038_N.retainAll(this.field_184157_a);
 @@ -168,8 +168,9 @@
                  this.func_147467_a(j, k, chunk);
                  this.field_72984_F.func_76319_b();
@@ -180,7 +203,7 @@
                      this.field_184158_M = this.field_73012_v.nextInt(12000) + 6000;
                  }
              }
-@@ -354,9 +336,7 @@
+@@ -354,21 +336,17 @@
          int i = 32;
          Random random = new Random();
          ItemStack itemstack = this.field_73037_M.field_71439_g.func_184614_ca();
@@ -190,8 +213,11 @@
 +        boolean flag = this.field_73037_M.field_71442_b.func_178889_l() == GameType.CREATIVE && !itemstack.func_190926_b() && itemstack.func_77973_b() == Item.func_150898_a(Blocks.field_180401_cv);
          BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
-         for (int j = 0; j < 667; ++j)
-@@ -366,9 +346,7 @@
+-        for (int j = 0; j < 667; j++)
++        for (int j = 0; j < 667; ++j)
+         {
+             this.func_184153_a(p_73029_1_, p_73029_2_, p_73029_3_, 16, random, flag, blockpos$mutableblockpos);
+             this.func_184153_a(p_73029_1_, p_73029_2_, p_73029_3_, 32, random, flag, blockpos$mutableblockpos);
          }
      }
  
@@ -213,6 +239,32 @@
          }
      }
  
+@@ -389,7 +365,7 @@
+     {
+         this.field_72996_f.removeAll(this.field_72997_g);
+ 
+-        for (int i = 0; i < this.field_72997_g.size(); i++)
++        for (int i = 0; i < this.field_72997_g.size(); ++i)
+         {
+             Entity entity = this.field_72997_g.get(i);
+             int j = entity.field_70176_ah;
+@@ -401,14 +377,14 @@
+             }
+         }
+ 
+-        for (int i1 = 0; i1 < this.field_72997_g.size(); i1++)
++        for (int i1 = 0; i1 < this.field_72997_g.size(); ++i1)
+         {
+             this.func_72847_b(this.field_72997_g.get(i1));
+         }
+ 
+         this.field_72997_g.clear();
+ 
+-        for (int j1 = 0; j1 < this.field_72996_f.size(); j1++)
++        for (int j1 = 0; j1 < this.field_72996_f.size(); ++j1)
+         {
+             Entity entity1 = this.field_72996_f.get(j1);
+             Entity entity2 = entity1.func_184187_bx();
 @@ -439,7 +415,6 @@
          }
      }

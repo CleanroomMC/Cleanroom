@@ -34,7 +34,7 @@
      protected void func_186362_a(JsonObject p_186362_1_, JsonSerializationContext p_186362_2_)
      {
          if (this.field_186369_b != null && this.field_186369_b.length > 0)
-@@ -79,10 +77,9 @@
+@@ -79,22 +77,21 @@
          }
      }
  
@@ -47,7 +47,13 @@
          Item item = JsonUtils.func_188180_i(p_186367_0_, "name");
          LootFunction[] alootfunction;
  
-@@ -95,6 +92,6 @@
+         if (p_186367_0_.has("functions"))
+         {
+-            alootfunction = JsonUtils.func_188174_a(p_186367_0_, "functions", p_186367_1_, LootFunction[].class);
++            alootfunction = (LootFunction[])JsonUtils.func_188174_a(p_186367_0_, "functions", p_186367_1_, LootFunction[].class);
+         }
+         else
+         {
              alootfunction = new LootFunction[0];
          }
  

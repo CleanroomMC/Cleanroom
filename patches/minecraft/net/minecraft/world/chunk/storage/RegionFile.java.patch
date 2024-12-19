@@ -10,14 +10,23 @@
      private static final byte[] field_76720_a = new byte[4096];
      private final File field_76718_b;
      private RandomAccessFile field_76719_c;
-@@ -58,15 +61,15 @@
+@@ -51,39 +54,51 @@
+ 
+             if ((this.field_76719_c.length() & 4095L) != 0L)
+             {
+-                for (int i = 0; (long)i < (this.field_76719_c.length() & 4095L); i++)
++                for (int i = 0; (long)i < (this.field_76719_c.length() & 4095L); ++i)
+                 {
+                     this.field_76719_c.write(0);
+                 }
              }
  
              int i1 = (int)this.field_76719_c.length() / 4096;
 -            this.field_76714_f = Lists.newArrayListWithCapacity(i1);
 +            this.field_76714_f = Lists.<Boolean>newArrayListWithCapacity(i1);
  
-             for (int j = 0; j < i1; ++j)
+-            for (int j = 0; j < i1; j++)
++            for (int j = 0; j < i1; ++j)
              {
 -                this.field_76714_f.add(true);
 +                this.field_76714_f.add(Boolean.valueOf(true));
@@ -29,14 +38,15 @@
 +            this.field_76714_f.set(1, Boolean.valueOf(false));
              this.field_76719_c.seek(0L);
  
-             for (int j1 = 0; j1 < 1024; ++j1)
-@@ -74,13 +77,25 @@
+-            for (int j1 = 0; j1 < 1024; j1++)
++            for (int j1 = 0; j1 < 1024; ++j1)
+             {
                  int k = this.field_76719_c.readInt();
                  this.field_76716_d[j1] = k;
  
 -                if (k != 0 && (k >> 8) + (k & 0xFF) <= this.field_76714_f.size())
 -                {
--                    for (int l = 0; l < (k & 0xFF); ++l)
+-                    for (int l = 0; l < (k & 0xFF); l++)
 +                int length = k & 255;
 +                if (length == 255)
 +                {
@@ -59,7 +69,11 @@
 +                    net.minecraftforge.fml.common.FMLLog.log.warn("Invalid chunk: ({}, {}) Offset: {} Length: {} runs off end file. {}", j1 % 32, (int)(j1 / 32), k >> 8, length, p_i2001_1_);
              }
  
-             for (int k1 = 0; k1 < 1024; ++k1)
+-            for (int k1 = 0; k1 < 1024; k1++)
++            for (int k1 = 0; k1 < 1024; ++k1)
+             {
+                 int l1 = this.field_76719_c.readInt();
+                 this.field_76717_e[k1] = l1;
 @@ -95,6 +110,12 @@
          }
      }
@@ -141,9 +155,12 @@
              }
  
              if (j != 0 && k == l)
-@@ -196,10 +228,10 @@
+@@ -194,30 +226,30 @@
+             }
+             else
              {
-                 for (int i1 = 0; i1 < k; ++i1)
+-                for (int i1 = 0; i1 < k; i1++)
++                for (int i1 = 0; i1 < k; ++i1)
                  {
 -                    this.field_76714_f.set(j + i1, true);
 +                    this.field_76714_f.set(j + i1, Boolean.valueOf(true));
@@ -154,16 +171,20 @@
                  int j1 = 0;
  
                  if (l1 != -1)
-@@ -208,7 +240,7 @@
+                 {
+-                    for (int k1 = l1; k1 < this.field_76714_f.size(); k1++)
++                    for (int k1 = l1; k1 < this.field_76714_f.size(); ++k1)
                      {
                          if (j1 != 0)
                          {
 -                            if (this.field_76714_f.get(k1))
 +                            if (((Boolean)this.field_76714_f.get(k1)).booleanValue())
                              {
-                                 ++j1;
+-                                j1++;
++                                ++j1;
                              }
-@@ -217,7 +249,7 @@
+                             else
+                             {
                                  j1 = 0;
                              }
                          }
@@ -179,15 +200,20 @@
 -                    this.func_76711_a(p_76706_1_, p_76706_2_, l1 << 8 | l);
 +                    this.func_76711_a(p_76706_1_, p_76706_2_, l1 << 8 | (l > 255 ? 255 : l));
  
-                     for (int j2 = 0; j2 < l; ++j2)
+-                    for (int j2 = 0; j2 < l; j2++)
++                    for (int j2 = 0; j2 < l; ++j2)
                      {
 -                        this.field_76714_f.set(j + j2, false);
 +                        this.field_76714_f.set(j + j2, Boolean.valueOf(false));
                      }
  
                      this.func_76712_a(j, p_76706_3_, p_76706_4_);
-@@ -250,12 +282,12 @@
-                     for (int i2 = 0; i2 < l; ++i2)
+@@ -247,15 +279,15 @@
+                     this.field_76719_c.seek(this.field_76719_c.length());
+                     j = this.field_76714_f.size();
+ 
+-                    for (int i2 = 0; i2 < l; i2++)
++                    for (int i2 = 0; i2 < l; ++i2)
                      {
                          this.field_76719_c.write(field_76720_a);
 -                        this.field_76714_f.add(false);

@@ -416,7 +416,7 @@
      public int func_175580_aG()
      {
          int i = this.field_71340_o.func_73669_a("max-world-size", super.func_175580_aG());
-@@ -626,12 +587,14 @@
+@@ -626,17 +587,19 @@
          return i;
      }
  
@@ -432,6 +432,48 @@
      protected boolean func_152368_aE() throws IOException
      {
          boolean flag = false;
+ 
+-        for (int i = 0; !flag && i <= 2; i++)
++        for (int i = 0; !flag && i <= 2; ++i)
+         {
+             if (i > 0)
+             {
+@@ -649,7 +612,7 @@
+ 
+         boolean flag1 = false;
+ 
+-        for (int j = 0; !flag1 && j <= 2; j++)
++        for (int j = 0; !flag1 && j <= 2; ++j)
+         {
+             if (j > 0)
+             {
+@@ -662,7 +625,7 @@
+ 
+         boolean flag2 = false;
+ 
+-        for (int k = 0; !flag2 && k <= 2; k++)
++        for (int k = 0; !flag2 && k <= 2; ++k)
+         {
+             if (k > 0)
+             {
+@@ -675,7 +638,7 @@
+ 
+         boolean flag3 = false;
+ 
+-        for (int l = 0; !flag3 && l <= 2; l++)
++        for (int l = 0; !flag3 && l <= 2; ++l)
+         {
+             if (l > 0)
+             {
+@@ -688,7 +651,7 @@
+ 
+         boolean flag4 = false;
+ 
+-        for (int i1 = 0; !flag4 && i1 <= 2; i1++)
++        for (int i1 = 0; !flag4 && i1 <= 2; ++i1)
+         {
+             if (i1 > 0)
+             {
 @@ -708,8 +671,9 @@
          {
              Thread.sleep(5000L);

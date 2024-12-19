@@ -8,9 +8,12 @@
      protected void func_70184_a(RayTraceResult p_70184_1_)
      {
          EntityLivingBase entitylivingbase = this.func_85052_h();
-@@ -88,16 +87,7 @@
+@@ -86,18 +85,9 @@
+             }
+         }
  
-         for (int i = 0; i < 32; ++i)
+-        for (int i = 0; i < 32; i++)
++        for (int i = 0; i < 32; ++i)
          {
 -            this.field_70170_p
 -            .func_175688_a(

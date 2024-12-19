@@ -18,7 +18,22 @@
      public boolean func_75250_a()
      {
          if (this.field_151500_b.func_70681_au().nextInt(this.field_151500_b.func_70631_g_() ? 50 : 1000) != 0)
-@@ -48,7 +46,6 @@
+@@ -36,13 +34,18 @@
+         else
+         {
+             BlockPos blockpos = new BlockPos(this.field_151500_b.field_70165_t, this.field_151500_b.field_70163_u, this.field_151500_b.field_70161_v);
+-            return field_179505_b.apply(this.field_151501_c.func_180495_p(blockpos))
+-                   ? true
+-                   : this.field_151501_c.func_180495_p(blockpos.func_177977_b()).func_177230_c() == Blocks.field_150349_c;
++
++            if (field_179505_b.apply(this.field_151501_c.func_180495_p(blockpos)))
++            {
++                return true;
++            }
++            else
++            {
++                return this.field_151501_c.func_180495_p(blockpos.func_177977_b()).func_177230_c() == Blocks.field_150349_c;
++            }
          }
      }
  
@@ -26,7 +41,7 @@
      public void func_75249_e()
      {
          this.field_151502_a = 40;
-@@ -56,13 +53,11 @@
+@@ -50,13 +53,11 @@
          this.field_151500_b.func_70661_as().func_75499_g();
      }
  
@@ -40,7 +55,7 @@
      public boolean func_75253_b()
      {
          return this.field_151502_a > 0;
-@@ -73,7 +68,6 @@
+@@ -67,7 +68,6 @@
          return this.field_151502_a;
      }
  
@@ -48,7 +63,7 @@
      public void func_75246_d()
      {
          this.field_151502_a = Math.max(0, this.field_151502_a - 1);
-@@ -84,7 +78,7 @@
+@@ -78,7 +78,7 @@
  
              if (field_179505_b.apply(this.field_151501_c.func_180495_p(blockpos)))
              {
@@ -57,7 +72,7 @@
                  {
                      this.field_151501_c.func_175655_b(blockpos, false);
                  }
-@@ -97,7 +91,7 @@
+@@ -91,7 +91,7 @@
  
                  if (this.field_151501_c.func_180495_p(blockpos1).func_177230_c() == Blocks.field_150349_c)
                  {

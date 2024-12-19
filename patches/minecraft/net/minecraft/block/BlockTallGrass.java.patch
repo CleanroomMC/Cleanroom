@@ -72,7 +72,7 @@
          }
          else
          {
-@@ -78,13 +71,11 @@
+@@ -78,34 +71,29 @@
          }
      }
  
@@ -85,8 +85,10 @@
 -    @Override
      public void func_149666_a(CreativeTabs p_149666_1_, NonNullList<ItemStack> p_149666_2_)
      {
-         for (int i = 1; i < 3; ++i)
-@@ -93,19 +84,16 @@
+-        for (int i = 1; i < 3; i++)
++        for (int i = 1; i < 3; ++i)
+         {
+             p_149666_2_.add(new ItemStack(this, 1, i));
          }
      }
  

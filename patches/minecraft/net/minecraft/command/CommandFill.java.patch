@@ -9,6 +9,21 @@
                  {
                      String s = func_180529_a(p_184881_3_, 9);
  
+@@ -114,11 +114,11 @@
+                 List<BlockPos> list = Lists.newArrayList();
+                 i = 0;
+ 
+-                for (int l = blockpos2.func_177952_p(); l <= blockpos3.func_177952_p(); l++)
++                for (int l = blockpos2.func_177952_p(); l <= blockpos3.func_177952_p(); ++l)
+                 {
+-                    for (int i1 = blockpos2.func_177956_o(); i1 <= blockpos3.func_177956_o(); i1++)
++                    for (int i1 = blockpos2.func_177956_o(); i1 <= blockpos3.func_177956_o(); ++i1)
+                     {
+-                        for (int j1 = blockpos2.func_177958_n(); j1 <= blockpos3.func_177958_n(); j1++)
++                        for (int j1 = blockpos2.func_177958_n(); j1 <= blockpos3.func_177958_n(); ++j1)
+                         {
+                             BlockPos blockpos4 = new BlockPos(j1, i1, l);
+ 
 @@ -137,7 +137,7 @@
                                              continue;
                                          }
@@ -18,3 +33,12 @@
                                      {
                                          Block block1 = CommandBase.func_147180_g(p_184881_2_, p_184881_3_[9]);
  
+@@ -178,7 +178,7 @@
+                             if (world.func_180501_a(blockpos4, iblockstate, 2))
+                             {
+                                 list.add(blockpos4);
+-                                i++;
++                                ++i;
+ 
+                                 if (flag)
+                                 {

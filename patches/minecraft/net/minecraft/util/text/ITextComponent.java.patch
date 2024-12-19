@@ -8,6 +8,15 @@
      String func_150254_d();
  
      List<ITextComponent> func_150253_a();
+@@ -97,7 +96,7 @@
+                             JsonArray jsonarray = jsonobject.getAsJsonArray("with");
+                             Object[] aobject = new Object[jsonarray.size()];
+ 
+-                            for (int i = 0; i < aobject.length; i++)
++                            for (int i = 0; i < aobject.length; ++i)
+                             {
+                                 aobject[i] = this.deserialize(jsonarray.get(i), p_deserialize_2_, p_deserialize_3_);
+ 
 @@ -116,7 +115,7 @@
                          }
                          else
@@ -17,7 +26,14 @@
                          }
                      }
                      else if (jsonobject.has("score"))
-@@ -164,7 +163,7 @@
+@@ -158,13 +157,13 @@
+                             throw new JsonParseException("Unexpected empty array of components");
+                         }
+ 
+-                        for (int j = 0; j < jsonarray2.size(); j++)
++                        for (int j = 0; j < jsonarray2.size(); ++j)
+                         {
+                             itextcomponent.func_150257_a(this.deserialize(jsonarray2.get(j), p_deserialize_2_, p_deserialize_3_));
                          }
                      }
  

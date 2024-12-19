@@ -62,19 +62,14 @@
      }
  
      public boolean func_190926_b()
-@@ -135,17 +148,20 @@
+@@ -135,13 +148,20 @@
          {
              return true;
          }
 -        else if (this.field_151002_e == null || this.field_151002_e == Item.func_150898_a(Blocks.field_150350_a))
--        {
--            return true;
--        }
--        else if (this.field_77994_a <= 0)
--        {
--            return true;
 +        else if (this.getItemRaw() != null && this.getItemRaw() != Items.field_190931_a)
-+        {
+         {
+-            return true;
 +            if (this.field_77994_a <= 0)
 +            {
 +                return true;
@@ -86,12 +81,12 @@
          }
          else
          {
--            return this.field_77991_e < -32768 || this.field_77991_e > 65535;
+-            return this.field_77994_a <= 0 ? true : this.field_77991_e < -32768 || this.field_77991_e > 65535;
 +            return true;
          }
      }
  
-@@ -166,22 +182,13 @@
+@@ -162,22 +182,13 @@
  
      public Item func_77973_b()
      {
@@ -118,7 +113,7 @@
  
          if (enumactionresult == EnumActionResult.SUCCESS)
          {
-@@ -191,6 +198,19 @@
+@@ -187,6 +198,19 @@
          return enumactionresult;
      }
  
@@ -138,7 +133,7 @@
      public float func_150997_a(IBlockState p_150997_1_)
      {
          return this.func_77973_b().func_150893_a(this, p_150997_1_);
-@@ -218,12 +238,18 @@
+@@ -214,12 +238,18 @@
              p_77955_1_.func_74782_a("tag", this.field_77990_d);
          }
  
@@ -158,16 +153,22 @@
      }
  
      public boolean func_77985_e()
-@@ -237,7 +263,7 @@
+@@ -233,9 +263,13 @@
          {
              return false;
          }
--        else if (this.field_151002_e.func_77612_l() <= 0)
 +        else if (this.field_151002_e.getMaxDamage(this) <= 0)
++        {
++            return false;
++        }
+         else
          {
-             return false;
+-            return this.field_151002_e.func_77612_l() <= 0 ? false : !this.func_77942_o() || !this.func_77978_p().func_74767_n("Unbreakable");
++            return !this.func_77942_o() || !this.func_77978_p().func_74767_n("Unbreakable");
          }
-@@ -254,32 +280,27 @@
+     }
+ 
+@@ -246,32 +280,27 @@
  
      public boolean func_77951_h()
      {
@@ -205,7 +206,21 @@
      }
  
      public boolean func_96631_a(int p_96631_1_, Random p_96631_2_, @Nullable EntityPlayerMP p_96631_3_)
-@@ -316,8 +337,8 @@
+@@ -287,11 +316,11 @@
+                 int i = EnchantmentHelper.func_77506_a(Enchantments.field_185307_s, this);
+                 int j = 0;
+ 
+-                for (int k = 0; i > 0 && k < p_96631_1_; k++)
++                for (int k = 0; i > 0 && k < p_96631_1_; ++k)
+                 {
+                     if (EnchantmentDurability.func_92097_a(this, i, p_96631_2_))
+                     {
+-                        j++;
++                        ++j;
+                     }
+                 }
+ 
+@@ -308,8 +337,8 @@
                  CriteriaTriggers.field_193132_s.func_193158_a(p_96631_3_, this, this.field_77991_e + p_96631_1_);
              }
  
@@ -216,7 +231,7 @@
          }
      }
  
-@@ -366,7 +387,7 @@
+@@ -358,7 +387,7 @@
  
      public boolean func_150998_b(IBlockState p_150998_1_)
      {
@@ -225,7 +240,7 @@
      }
  
      public boolean func_111282_a(EntityPlayer p_111282_1_, EntityLivingBase p_111282_2_, EnumHand p_111282_3_)
-@@ -374,17 +395,27 @@
+@@ -366,17 +395,27 @@
          return this.func_77973_b().func_111207_a(this, p_111282_1_, p_111282_2_, p_111282_3_);
      }
  
@@ -264,19 +279,14 @@
      }
  
      public static boolean func_77970_a(ItemStack p_77970_0_, ItemStack p_77970_1_)
-@@ -393,17 +424,20 @@
+@@ -385,15 +424,20 @@
          {
              return true;
          }
 -        else if (p_77970_0_.func_190926_b() || p_77970_1_.func_190926_b())
--        {
--            return false;
--        }
--        else if (p_77970_0_.field_77990_d == null && p_77970_1_.field_77990_d != null)
--        {
--            return false;
 +        else if (!p_77970_0_.func_190926_b() && !p_77970_1_.func_190926_b())
-+        {
+         {
+-            return false;
 +            if (p_77970_0_.field_77990_d == null && p_77970_1_.field_77990_d != null)
 +            {
 +                return false;
@@ -288,29 +298,122 @@
          }
          else
          {
--            return p_77970_0_.field_77990_d == null || p_77970_0_.field_77990_d.equals(p_77970_1_.field_77990_d);
+-            return p_77970_0_.field_77990_d == null && p_77970_1_.field_77990_d != null
+-                   ? false
+-                   : p_77970_0_.field_77990_d == null || p_77970_0_.field_77990_d.equals(p_77970_1_.field_77990_d);
 +            return false;
          }
      }
  
-@@ -439,7 +473,7 @@
+@@ -423,11 +467,13 @@
+         {
+             return false;
          }
++        else if (this.field_77990_d == null && p_77959_1_.field_77990_d != null)
++        {
++            return false;
++        }
          else
          {
--            return this.field_77990_d == null || this.field_77990_d.equals(p_77959_1_.field_77990_d);
+-            return this.field_77990_d == null && p_77959_1_.field_77990_d != null
+-                   ? false
+-                   : this.field_77990_d == null || this.field_77990_d.equals(p_77959_1_.field_77990_d);
 +            return (this.field_77990_d == null || this.field_77990_d.equals(p_77959_1_.field_77990_d)) && this.areCapsCompatible(p_77959_1_);
          }
      }
  
-@@ -815,6 +849,7 @@
-                                 I18n.func_74838_a("attribute.name." + (String)entry.getKey())
+@@ -462,7 +508,14 @@
+ 
+     public boolean func_185136_b(ItemStack p_185136_1_)
+     {
+-        return !this.func_77984_f() ? this.func_77969_a(p_185136_1_) : !p_185136_1_.func_190926_b() && this.field_151002_e == p_185136_1_.field_151002_e;
++        if (!this.func_77984_f())
++        {
++            return this.func_77969_a(p_185136_1_);
++        }
++        else
++        {
++            return !p_185136_1_.func_190926_b() && this.field_151002_e == p_185136_1_.field_151002_e;
++        }
+     }
+ 
+     public String func_77977_a()
+@@ -480,7 +533,7 @@
+     {
+         if (this.field_77992_b > 0)
+         {
+-            this.field_77992_b--;
++            --this.field_77992_b;
+         }
+ 
+         if (this.field_151002_e != null)
+@@ -675,7 +728,7 @@
+             {
+                 NBTTagList nbttaglist = this.func_77986_q();
+ 
+-                for (int j = 0; j < nbttaglist.func_74745_c(); j++)
++                for (int j = 0; j < nbttaglist.func_74745_c(); ++j)
+                 {
+                     NBTTagCompound nbttagcompound = nbttaglist.func_150305_b(j);
+                     int k = nbttagcompound.func_74765_d("id");
+@@ -711,7 +764,7 @@
+ 
+                     if (!nbttaglist3.func_82582_d())
+                     {
+-                        for (int l1 = 0; l1 < nbttaglist3.func_74745_c(); l1++)
++                        for (int l1 = 0; l1 < nbttaglist3.func_74745_c(); ++l1)
+                         {
+                             list.add(TextFormatting.DARK_PURPLE + "" + TextFormatting.ITALIC + nbttaglist3.func_150307_f(l1));
+                         }
+@@ -768,7 +821,7 @@
+                             + I18n.func_74837_a(
+                                 "attribute.modifier.equals." + attributemodifier.func_111169_c(),
+                                 field_111284_a.format(d1),
+-                                I18n.func_74838_a("attribute.name." + entry.getKey())
++                                I18n.func_74838_a("attribute.name." + (String)entry.getKey())
+                             )
+                         );
+                     }
+@@ -780,7 +833,7 @@
+                             + I18n.func_74837_a(
+                                 "attribute.modifier.plus." + attributemodifier.func_111169_c(),
+                                 field_111284_a.format(d1),
+-                                I18n.func_74838_a("attribute.name." + entry.getKey())
++                                I18n.func_74838_a("attribute.name." + (String)entry.getKey())
+                             )
+                         );
+                     }
+@@ -793,9 +846,10 @@
+                             + I18n.func_74837_a(
+                                 "attribute.modifier.take." + attributemodifier.func_111169_c(),
+                                 field_111284_a.format(d1),
+-                                I18n.func_74838_a("attribute.name." + entry.getKey())
++                                I18n.func_74838_a("attribute.name." + (String)entry.getKey())
                              )
                          );
 +                        list.add(" " + I18n.func_74837_a("attribute.modifier.equals." + attributemodifier.func_111169_c(), field_111284_a.format(d1), I18n.func_74838_a("attribute.name." + (String)entry.getKey())));
                      }
                  }
              }
-@@ -890,6 +925,7 @@
+@@ -815,7 +869,7 @@
+                 list.add("");
+                 list.add(TextFormatting.GRAY + I18n.func_74838_a("item.canBreak"));
+ 
+-                for (int j1 = 0; j1 < nbttaglist1.func_74745_c(); j1++)
++                for (int j1 = 0; j1 < nbttaglist1.func_74745_c(); ++j1)
+                 {
+                     Block block = Block.func_149684_b(nbttaglist1.func_150307_f(j1));
+ 
+@@ -840,7 +894,7 @@
+                 list.add("");
+                 list.add(TextFormatting.GRAY + I18n.func_74838_a("item.canPlace"));
+ 
+-                for (int k1 = 0; k1 < nbttaglist2.func_74745_c(); k1++)
++                for (int k1 = 0; k1 < nbttaglist2.func_74745_c(); ++k1)
+                 {
+                     Block block1 = Block.func_149684_b(nbttaglist2.func_150307_f(k1));
+ 
+@@ -871,6 +925,7 @@
              }
          }
  
@@ -318,7 +421,7 @@
          return list;
      }
  
-@@ -899,6 +935,7 @@
+@@ -880,6 +935,7 @@
          return this.func_77973_b().func_77636_d(this);
      }
  
@@ -326,7 +429,48 @@
      public EnumRarity func_77953_t()
      {
          return this.func_77973_b().func_77613_e(this);
-@@ -1018,7 +1055,7 @@
+@@ -887,7 +943,14 @@
+ 
+     public boolean func_77956_u()
+     {
+-        return !this.func_77973_b().func_77616_k(this) ? false : !this.func_77948_v();
++        if (!this.func_77973_b().func_77616_k(this))
++        {
++            return false;
++        }
++        else
++        {
++            return !this.func_77948_v();
++        }
+     }
+ 
+     public void func_77966_a(Enchantment p_77966_1_, int p_77966_2_)
+@@ -911,7 +974,14 @@
+ 
+     public boolean func_77948_v()
+     {
+-        return this.field_77990_d != null && this.field_77990_d.func_150297_b("ench", 9) ? !this.field_77990_d.func_150295_c("ench", 10).func_82582_d() : false;
++        if (this.field_77990_d != null && this.field_77990_d.func_150297_b("ench", 9))
++        {
++            return !this.field_77990_d.func_150295_c("ench", 10).func_82582_d();
++        }
++        else
++        {
++            return false;
++        }
+     }
+ 
+     public void func_77983_a(String p_77983_1_, NBTBase p_77983_2_)
+@@ -969,7 +1039,7 @@
+             multimap = HashMultimap.create();
+             NBTTagList nbttaglist = this.field_77990_d.func_150295_c("AttributeModifiers", 10);
+ 
+-            for (int i = 0; i < nbttaglist.func_74745_c(); i++)
++            for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+             {
+                 NBTTagCompound nbttagcompound = nbttaglist.func_150305_b(i);
+                 AttributeModifier attributemodifier = SharedMonsterAttributes.func_111259_a(nbttagcompound);
+@@ -985,7 +1055,7 @@
          }
          else
          {
@@ -335,7 +479,7 @@
          }
  
          return multimap;
-@@ -1063,7 +1100,7 @@
+@@ -1030,7 +1100,7 @@
          {
              NBTTagCompound nbttagcompound = this.func_77955_b(new NBTTagCompound());
              itextcomponent.func_150256_b().func_150209_a(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new TextComponentString(nbttagcompound.toString())));
@@ -344,7 +488,25 @@
          }
  
          return itextcomponent;
-@@ -1160,5 +1197,129 @@
+@@ -1050,7 +1120,7 @@
+             {
+                 NBTTagList nbttaglist = this.field_77990_d.func_150295_c("CanDestroy", 8);
+ 
+-                for (int i = 0; i < nbttaglist.func_74745_c(); i++)
++                for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+                 {
+                     Block block = Block.func_149684_b(nbttaglist.func_150307_f(i));
+ 
+@@ -1081,7 +1151,7 @@
+             {
+                 NBTTagList nbttaglist = this.field_77990_d.func_150295_c("CanPlaceOn", 8);
+ 
+-                for (int i = 0; i < nbttaglist.func_74745_c(); i++)
++                for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+                 {
+                     Block block = Block.func_149684_b(nbttaglist.func_150307_f(i));
+ 
+@@ -1127,5 +1197,129 @@
      public void func_190918_g(int p_190918_1_)
      {
          this.func_190917_f(-p_190918_1_);

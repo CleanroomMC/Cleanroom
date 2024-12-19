@@ -25,6 +25,15 @@
      public void func_73863_a(int p_73863_1_, int p_73863_2_, float p_73863_3_)
      {
          int i = this.field_147003_i;
+@@ -91,7 +89,7 @@
+         OpenGlHelper.func_77475_a(OpenGlHelper.field_77476_b, 240.0F, 240.0F);
+         GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
+ 
+-        for (int i1 = 0; i1 < this.field_147002_h.field_75151_b.size(); i1++)
++        for (int i1 = 0; i1 < this.field_147002_h.field_75151_b.size(); ++i1)
+         {
+             Slot slot = this.field_147002_h.field_75151_b.get(i1);
+ 
 @@ -118,6 +116,7 @@
          RenderHelper.func_74518_a();
          this.func_146979_b(p_73863_1_, p_73863_2_);
@@ -83,6 +92,24 @@
                  this.func_175175_a(i, j, textureatlassprite, 16, 16);
                  GlStateManager.func_179145_e();
                  flag1 = true;
+@@ -300,7 +297,7 @@
+                         itemstack1.func_190920_e(j);
+                     }
+ 
+-                    this.field_146996_I = this.field_146996_I - (itemstack1.func_190916_E() - i);
++                    this.field_146996_I -= itemstack1.func_190916_E() - i;
+                 }
+             }
+         }
+@@ -308,7 +305,7 @@
+ 
+     private Slot func_146975_c(int p_146975_1_, int p_146975_2_)
+     {
+-        for (int i = 0; i < this.field_147002_h.field_75151_b.size(); i++)
++        for (int i = 0; i < this.field_147002_h.field_75151_b.size(); ++i)
+         {
+             Slot slot = this.field_147002_h.field_75151_b.get(i);
+ 
 @@ -321,11 +318,10 @@
          return null;
      }
@@ -259,9 +286,12 @@
              {
                  this.func_184098_a(this.field_147006_u, this.field_147006_u.field_75222_d, func_146271_m() ? 1 : 0, ClickType.THROW);
              }
-@@ -688,7 +666,7 @@
+@@ -686,9 +664,9 @@
+     {
+         if (this.field_146297_k.field_71439_g.field_71071_by.func_70445_o().func_190926_b() && this.field_147006_u != null)
          {
-             for (int i = 0; i < 9; ++i)
+-            for (int i = 0; i < 9; i++)
++            for (int i = 0; i < 9; ++i)
              {
 -                if (p_146983_1_ == this.field_146297_k.field_71474_y.field_151456_ac[i].func_151463_i())
 +                if (this.field_146297_k.field_71474_y.field_151456_ac[i].isActiveAndMatches(p_146983_1_))

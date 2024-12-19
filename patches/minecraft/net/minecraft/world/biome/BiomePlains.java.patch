@@ -30,15 +30,17 @@
          {
              this.field_76760_I.field_76802_A = 15;
              this.field_76760_I.field_76803_B = 5;
-@@ -82,6 +80,7 @@
+@@ -82,7 +80,8 @@
              this.field_76760_I.field_76803_B = 10;
              field_180280_ag.func_180710_a(BlockDoublePlant.EnumPlantType.GRASS);
  
+-            for (int i = 0; i < 7; i++)
 +            if(net.minecraftforge.event.terraingen.TerrainGen.decorate(p_180624_1_, p_180624_2_, new net.minecraft.util.math.ChunkPos(p_180624_3_), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.GRASS))
-             for (int i = 0; i < 7; ++i)
++            for (int i = 0; i < 7; ++i)
              {
                  int j = p_180624_2_.nextInt(16) + 8;
-@@ -91,7 +90,7 @@
+                 int k = p_180624_2_.nextInt(16) + 8;
+@@ -91,11 +90,11 @@
              }
          }
  
@@ -47,6 +49,11 @@
          {
              field_180280_ag.func_180710_a(BlockDoublePlant.EnumPlantType.SUNFLOWER);
  
+-            for (int i1 = 0; i1 < 10; i1++)
++            for (int i1 = 0; i1 < 10; ++i1)
+             {
+                 int j1 = p_180624_2_.nextInt(16) + 8;
+                 int k1 = p_180624_2_.nextInt(16) + 8;
 @@ -108,6 +107,20 @@
      }
  

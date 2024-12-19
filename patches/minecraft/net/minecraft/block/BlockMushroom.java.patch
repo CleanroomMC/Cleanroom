@@ -33,6 +33,15 @@
                      {
                          return;
                      }
+@@ -46,7 +46,7 @@
+ 
+             BlockPos blockpos1 = p_180650_2_.func_177982_a(p_180650_4_.nextInt(3) - 1, p_180650_4_.nextInt(2) - p_180650_4_.nextInt(2), p_180650_4_.nextInt(3) - 1);
+ 
+-            for (int k = 0; k < 4; k++)
++            for (int k = 0; k < 4; ++k)
+             {
+                 if (p_180650_1_.func_175623_d(blockpos1) && this.func_180671_f(p_180650_1_, blockpos1, this.func_176223_P()))
+                 {
 @@ -63,19 +63,16 @@
          }
      }
@@ -53,16 +62,24 @@
      public boolean func_180671_f(World p_180671_1_, BlockPos p_180671_2_, IBlockState p_180671_3_)
      {
          if (p_180671_2_.func_177956_o() >= 0 && p_180671_2_.func_177956_o() < 256)
-@@ -92,7 +89,7 @@
+@@ -86,11 +83,13 @@
+             {
+                 return true;
              }
++            else if (iblockstate.func_177230_c() == Blocks.field_150346_d && iblockstate.func_177229_b(BlockDirt.field_176386_a) == BlockDirt.DirtType.PODZOL)
++            {
++                return true;
++            }
              else
              {
--                return p_180671_1_.func_175699_k(p_180671_2_) < 13 && this.func_185514_i(iblockstate);
+-                return iblockstate.func_177230_c() == Blocks.field_150346_d && iblockstate.func_177229_b(BlockDirt.field_176386_a) == BlockDirt.DirtType.PODZOL
+-                       ? true
+-                       : p_180671_1_.func_175699_k(p_180671_2_) < 13 && this.func_185514_i(iblockstate);
 +                return p_180671_1_.func_175699_k(p_180671_2_) < 13 && iblockstate.func_177230_c().canSustainPlant(iblockstate, p_180671_1_, p_180671_2_.func_177977_b(), net.minecraft.util.EnumFacing.UP, this);
              }
          }
          else
-@@ -126,19 +123,16 @@
+@@ -124,19 +123,16 @@
          }
      }
  

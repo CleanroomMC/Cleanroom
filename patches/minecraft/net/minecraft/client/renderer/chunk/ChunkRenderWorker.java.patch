@@ -129,7 +129,7 @@
                  {
                      ChunkRenderWorker.this.func_178473_b(p_178474_1_);
                      p_178474_1_.func_178540_f().lock();
--                    label41:
+-                    label43:
 +                    label49:
                      {
                          try
@@ -137,7 +137,7 @@
                              if (p_178474_1_.func_178546_a() == ChunkCompileTaskGenerator.Status.UPLOADING)
                              {
                                  p_178474_1_.func_178535_a(ChunkCompileTaskGenerator.Status.DONE);
--                                break label41;
+-                                break label43;
 +                                break label49;
                              }
  

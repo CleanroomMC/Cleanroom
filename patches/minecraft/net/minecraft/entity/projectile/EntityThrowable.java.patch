@@ -23,7 +23,7 @@
          this.func_70105_a(0.25F, 0.25F);
      }
  
-@@ -52,35 +55,33 @@
+@@ -52,71 +55,67 @@
  
      public EntityThrowable(World p_i1777_1_, EntityLivingBase p_i1777_2_)
      {
@@ -64,9 +64,15 @@
 +        float f1 = -MathHelper.func_76126_a((p_184538_2_ + p_184538_4_) * 0.017453292F);
 +        float f2 = MathHelper.func_76134_b(p_184538_3_ * 0.017453292F) * MathHelper.func_76134_b(p_184538_2_ * 0.017453292F);
          this.func_70186_c((double)f, (double)f1, (double)f2, p_184538_5_, p_184538_6_);
-         this.field_70159_w += p_184538_1_.field_70159_w;
-         this.field_70179_y += p_184538_1_.field_70179_y;
-@@ -91,32 +92,30 @@
+-        this.field_70159_w = this.field_70159_w + p_184538_1_.field_70159_w;
+-        this.field_70179_y = this.field_70179_y + p_184538_1_.field_70179_y;
++        this.field_70159_w += p_184538_1_.field_70159_w;
++        this.field_70179_y += p_184538_1_.field_70179_y;
+ 
+         if (!p_184538_1_.field_70122_E)
+         {
+-            this.field_70181_x = this.field_70181_x + p_184538_1_.field_70181_x;
++            this.field_70181_x += p_184538_1_.field_70181_x;
          }
      }
  
@@ -127,7 +133,13 @@
      public void func_70071_h_()
      {
          this.field_70142_S = this.field_70165_t;
-@@ -148,8 +146,7 @@
+@@ -143,15 +141,14 @@
+ 
+         if (this.field_70191_b > 0)
+         {
+-            this.field_70191_b--;
++            --this.field_70191_b;
+         }
  
          if (this.field_174854_a)
          {
@@ -135,9 +147,32 @@
 -                    == this.field_174853_f)
 +            if (this.field_70170_p.func_180495_p(new BlockPos(this.field_145788_c, this.field_145786_d, this.field_145787_e)).func_177230_c() == this.field_174853_f)
              {
-                 ++this.field_70194_h;
+-                this.field_70194_h++;
++                ++this.field_70194_h;
  
-@@ -185,9 +182,8 @@
+                 if (this.field_70194_h == 1200)
+                 {
+@@ -162,15 +159,15 @@
+             }
+ 
+             this.field_174854_a = false;
+-            this.field_70159_w = this.field_70159_w * (double)(this.field_70146_Z.nextFloat() * 0.2F);
+-            this.field_70181_x = this.field_70181_x * (double)(this.field_70146_Z.nextFloat() * 0.2F);
+-            this.field_70179_y = this.field_70179_y * (double)(this.field_70146_Z.nextFloat() * 0.2F);
++            this.field_70159_w *= (double)(this.field_70146_Z.nextFloat() * 0.2F);
++            this.field_70181_x *= (double)(this.field_70146_Z.nextFloat() * 0.2F);
++            this.field_70179_y *= (double)(this.field_70146_Z.nextFloat() * 0.2F);
+             this.field_70194_h = 0;
+             this.field_70195_i = 0;
+         }
+         else
+         {
+-            this.field_70195_i++;
++            ++this.field_70195_i;
+         }
+ 
+         Vec3d vec3d = new Vec3d(this.field_70165_t, this.field_70163_u, this.field_70161_v);
+@@ -185,12 +182,11 @@
          }
  
          Entity entity = null;
@@ -148,7 +183,11 @@
 +        double d0 = 0.0D;
          boolean flag = false;
  
-         for (int i = 0; i < list.size(); ++i)
+-        for (int i = 0; i < list.size(); i++)
++        for (int i = 0; i < list.size(); ++i)
+         {
+             Entity entity1 = list.get(i);
+ 
 @@ -208,14 +204,14 @@
                  else
                  {
@@ -166,7 +205,7 @@
                          {
                              entity = entity1;
                              d0 = d1;
-@@ -244,12 +240,11 @@
+@@ -244,27 +240,25 @@
  
          if (raytraceresult != null)
          {
@@ -181,9 +220,14 @@
              {
                  this.func_70184_a(raytraceresult);
              }
-@@ -259,12 +254,11 @@
-         this.field_70163_u += this.field_70181_x;
-         this.field_70161_v += this.field_70179_y;
+         }
+ 
+-        this.field_70165_t = this.field_70165_t + this.field_70159_w;
+-        this.field_70163_u = this.field_70163_u + this.field_70181_x;
+-        this.field_70161_v = this.field_70161_v + this.field_70179_y;
++        this.field_70165_t += this.field_70159_w;
++        this.field_70163_u += this.field_70181_x;
++        this.field_70161_v += this.field_70179_y;
          float f = MathHelper.func_76133_a(this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y);
 -        this.field_70177_z = (float)(MathHelper.func_181159_b(this.field_70159_w, this.field_70179_y) * 180.0F / (float)Math.PI);
 -        this.field_70125_A = (float)(MathHelper.func_181159_b(this.field_70181_x, (double)f) * 180.0F / (float)Math.PI);
@@ -197,8 +241,12 @@
          }
  
          while (this.field_70125_A - this.field_70127_C >= 180.0F)
-@@ -292,16 +286,7 @@
-             for (int j = 0; j < 4; ++j)
+@@ -289,19 +283,10 @@
+ 
+         if (this.func_70090_H())
+         {
+-            for (int j = 0; j < 4; j++)
++            for (int j = 0; j < 4; ++j)
              {
                  float f3 = 0.25F;
 -                this.field_70170_p

@@ -22,6 +22,15 @@
      }
  
      public NBTTagCompound func_189515_b(NBTTagCompound p_189515_1_)
+@@ -69,7 +71,7 @@
+ 
+     private NBTTagCompound func_189516_d(NBTTagCompound p_189516_1_)
+     {
+-        ResourceLocation resourcelocation = field_190562_f.func_177774_c((Class <? extends TileEntity >)this.getClass());
++        ResourceLocation resourcelocation = field_190562_f.func_177774_c(this.getClass());
+ 
+         if (resourcelocation == null)
+         {
 @@ -81,6 +83,8 @@
              p_189516_1_.func_74768_a("x", this.field_174879_c.func_177958_n());
              p_189516_1_.func_74768_a("y", this.field_174879_c.func_177956_o());
@@ -93,7 +102,29 @@
      }
  
      public BlockPos func_174877_v()
-@@ -244,9 +252,9 @@
+@@ -225,18 +233,13 @@
+ 
+     public void func_145828_a(CrashReportCategory p_145828_1_)
+     {
+-        p_145828_1_.func_189529_a(
+-            "Name",
+-            new ICrashReportDetail<String>()
++        p_145828_1_.func_189529_a("Name", new ICrashReportDetail<String>()
+         {
+             public String call() throws Exception
+             {
+-                return TileEntity.field_190562_f.func_177774_c((Class <? extends TileEntity >)TileEntity.this.getClass())
+-                       + " // "
+-                       + TileEntity.this.getClass().getCanonicalName();
++                return TileEntity.field_190562_f.func_177774_c(TileEntity.this.getClass()) + " // " + TileEntity.this.getClass().getCanonicalName();
+             }
+-        }
+-        );
++        });
+ 
+         if (this.field_145850_b != null)
+         {
+@@ -249,9 +252,9 @@
  
                      try
                      {
@@ -105,7 +136,7 @@
                      {
                          return "ID #" + i;
                      }
-@@ -295,6 +303,204 @@
+@@ -300,6 +303,204 @@
  
      public void func_189668_a(Mirror p_189668_1_)
      {

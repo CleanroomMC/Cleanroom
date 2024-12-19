@@ -14,7 +14,7 @@
      public int func_145832_p()
      {
          return 0;
-@@ -125,44 +123,29 @@
+@@ -125,46 +123,31 @@
      {
          p_184319_3_ = this.func_184320_e(p_184319_3_);
          IBlockState iblockstate = this.func_190606_j();
@@ -63,17 +63,23 @@
 -                boolean flag = this.field_174932_a.func_177230_c() == Blocks.field_180399_cE;
 +                boolean flag = this.field_174932_a.func_177230_c().isStickyBlock(this.field_174932_a);
  
-                 for (int i = 0; i < list1.size(); ++i)
+-                for (int i = 0; i < list1.size(); i++)
++                for (int i = 0; i < list1.size(); ++i)
                  {
-@@ -185,7 +168,7 @@
+                     Entity entity = list1.get(i);
+ 
+@@ -185,9 +168,9 @@
                              }
                          }
  
 -                        double d1 = 0.0;
 +                        double d1 = 0.0D;
  
-                         for (int j = 0; j < list.size(); ++j)
+-                        for (int j = 0; j < list.size(); j++)
++                        for (int j = 0; j < list.size(); ++j)
                          {
+                             AxisAlignedBB axisalignedbb1 = this.func_190610_a(this.func_190607_a(list.get(j)), enumfacing, d0);
+                             AxisAlignedBB axisalignedbb2 = entity.func_174813_aQ();
 @@ -203,16 +186,11 @@
                              }
                          }
@@ -300,9 +306,12 @@
              }
              else
              {
-@@ -493,7 +409,7 @@
+@@ -491,9 +407,9 @@
+             double d2 = (double)((float)this.field_174931_f.func_82599_e() * f);
+             iblockstate.func_185908_a(p_190609_1_, p_190609_2_, p_190609_3_.func_72317_d(-d0, -d1, -d2), p_190609_4_, p_190609_5_, true);
  
-             for (int j = i; j < p_190609_4_.size(); ++j)
+-            for (int j = i; j < p_190609_4_.size(); j++)
++            for (int j = i; j < p_190609_4_.size(); ++j)
              {
 -                p_190609_4_.set(j, p_190609_4_.get(j).func_72317_d(d0, d1, d2));
 +                p_190609_4_.set(j, ((AxisAlignedBB)p_190609_4_.get(j)).func_72317_d(d0, d1, d2));

@@ -107,7 +107,7 @@
      public void func_78785_a(float p_78785_1_)
      {
          if (!this.field_78807_k)
-@@ -130,64 +121,67 @@
+@@ -130,71 +121,75 @@
  
                  GlStateManager.func_179109_b(this.field_82906_o, this.field_82908_p, this.field_82907_q);
  
@@ -162,27 +162,30 @@
                      if (this.field_78795_f != 0.0F)
                      {
 -                        GlStateManager.func_179114_b(this.field_78795_f * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
--                    }
--
--                    GlStateManager.func_179148_o(this.field_78811_r);
--
--                    if (this.field_78805_m != null)
--                    {
--                        for (int k = 0; k < this.field_78805_m.size(); ++k)
--                        {
++                        GlStateManager.func_179114_b(this.field_78795_f * (180F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
+                     }
+ 
+                     GlStateManager.func_179148_o(this.field_78811_r);
+ 
+                     if (this.field_78805_m != null)
+                     {
+-                        for (int k = 0; k < this.field_78805_m.size(); k++)
++                        for (int i = 0; i < this.field_78805_m.size(); ++i)
+                         {
 -                            this.field_78805_m.get(k).func_78785_a(p_78785_1_);
--                        }
--                    }
--
--                    GlStateManager.func_179121_F();
--                }
++                            ((ModelRenderer)this.field_78805_m.get(i)).func_78785_a(p_78785_1_);
+                         }
+                     }
+ 
+                     GlStateManager.func_179121_F();
+                 }
 -                else if (this.field_78800_c == 0.0F && this.field_78797_d == 0.0F && this.field_78798_e == 0.0F)
 -                {
 -                    GlStateManager.func_179148_o(this.field_78811_r);
 -
 -                    if (this.field_78805_m != null)
 -                    {
--                        for (int j = 0; j < this.field_78805_m.size(); ++j)
+-                        for (int j = 0; j < this.field_78805_m.size(); j++)
 -                        {
 -                            this.field_78805_m.get(j).func_78785_a(p_78785_1_);
 -                        }
@@ -191,26 +194,21 @@
 -                else
 -                {
 -                    GlStateManager.func_179109_b(this.field_78800_c * p_78785_1_, this.field_78797_d * p_78785_1_, this.field_78798_e * p_78785_1_);
-+                        GlStateManager.func_179114_b(this.field_78795_f * (180F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
-+                    }
-+
-                     GlStateManager.func_179148_o(this.field_78811_r);
- 
-                     if (this.field_78805_m != null)
-                     {
-                         for (int i = 0; i < this.field_78805_m.size(); ++i)
-                         {
+-                    GlStateManager.func_179148_o(this.field_78811_r);
+-
+-                    if (this.field_78805_m != null)
+-                    {
+-                        for (int i = 0; i < this.field_78805_m.size(); i++)
+-                        {
 -                            this.field_78805_m.get(i).func_78785_a(p_78785_1_);
-+                            ((ModelRenderer)this.field_78805_m.get(i)).func_78785_a(p_78785_1_);
-                         }
-                     }
- 
+-                        }
+-                    }
+-
 -                    GlStateManager.func_179109_b(-this.field_78800_c * p_78785_1_, -this.field_78797_d * p_78785_1_, -this.field_78798_e * p_78785_1_);
-+                    GlStateManager.func_179121_F();
-                 }
+-                }
  
                  GlStateManager.func_179109_b(-this.field_82906_o, -this.field_82908_p, -this.field_82907_q);
-@@ -195,6 +189,7 @@
+             }
          }
      }
  
@@ -247,7 +245,7 @@
      public void func_78794_c(float p_78794_1_)
      {
          if (!this.field_78807_k)
-@@ -241,33 +237,37 @@
+@@ -241,42 +237,46 @@
                      this.func_78788_d(p_78794_1_);
                  }
  
@@ -293,9 +291,11 @@
      private void func_78788_d(float p_78788_1_)
      {
          this.field_78811_r = GLAllocation.func_74526_a(1);
-@@ -276,7 +276,7 @@
+         GlStateManager.func_187423_f(this.field_78811_r, 4864);
+         BufferBuilder bufferbuilder = Tessellator.func_178181_a().func_178180_c();
  
-         for (int i = 0; i < this.field_78804_l.size(); ++i)
+-        for (int i = 0; i < this.field_78804_l.size(); i++)
++        for (int i = 0; i < this.field_78804_l.size(); ++i)
          {
 -            this.field_78804_l.get(i).func_178780_a(bufferbuilder, p_78788_1_);
 +            ((ModelBox)this.field_78804_l.get(i)).func_178780_a(bufferbuilder, p_78788_1_);
