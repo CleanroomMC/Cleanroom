@@ -1,0 +1,17 @@
+--- before/net/minecraft/client/gui/GuiTextField.java
++++ after/net/minecraft/client/gui/GuiTextField.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.client.gui;
+ 
++import com.cleanroommc.client.IMEHandler;
+ import com.google.common.base.Predicate;
+ import com.google.common.base.Predicates;
+ import net.minecraft.client.Minecraft;
+@@ -631,6 +632,7 @@
+         }
+ 
+         this.field_146213_o = p_146195_1_;
++        IMEHandler.setIME(this.field_146213_o);
+ 
+         if (Minecraft.func_71410_x().field_71462_r != null)
+         {

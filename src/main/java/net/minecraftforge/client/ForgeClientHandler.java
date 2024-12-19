@@ -19,7 +19,12 @@
 
 package net.minecraftforge.client;
 
+import com.cleanroommc.client.IMEHandler;
+import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.gui.GuiScreenBook;
+import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ForgeModContainer;
@@ -45,5 +50,25 @@ public class ForgeClientHandler
         {
             event.getItemColors().registerItemColorHandler(new FluidContainerColorer(), ForgeModContainer.getInstance().universalBucket);
         }
+    }
+
+    @SubscribeEvent
+    public static void didChangeGui(GuiOpenEvent event) {
+        boolean canInput;
+        if (event.getGui() == null) {
+            // Ignore null GuiScreens
+            canInput = false;
+        } else if (event.getGui() instanceof GuiChat) {
+            // Skip, this should be handled by Focus
+            return;
+        } else {
+            // Vanilla GuiScreens
+            canInput = event.getGui() instanceof GuiScreenBook
+                    || event.getGui() instanceof GuiEditSign;
+
+            // TODO: Force enable map
+        }
+
+        IMEHandler.setIME(canInput);
     }
 }
