@@ -35,7 +35,7 @@
              if (iblockstate.func_177230_c() == this.field_150949_c)
              {
                  IProperty<?> iproperty = this.field_150949_c.func_176551_l();
--                Comparable<?> comparable1 = iblockstate.func_177229_b((IProperty <?>)iproperty);
+-                Comparable<?> comparable1 = iblockstate.func_177229_b((IProperty<?>)iproperty);
 -                BlockSlab.EnumBlockHalf blockslab$enumblockhalf = iblockstate.func_177229_b(BlockSlab.field_176554_a);
 +                Comparable<?> comparable1 = iblockstate.func_177229_b(iproperty);
 +                BlockSlab.EnumBlockHalf blockslab$enumblockhalf = (BlockSlab.EnumBlockHalf)iblockstate.func_177229_b(BlockSlab.field_176554_a);
@@ -110,7 +110,7 @@
  
          if (iblockstate.func_177230_c() == this.field_150949_c)
          {
--            Comparable<?> comparable = iblockstate.func_177229_b((IProperty <?>)this.field_150949_c.func_176551_l());
+-            Comparable<?> comparable = iblockstate.func_177229_b((IProperty<?>)this.field_150949_c.func_176551_l());
 +            Comparable<?> comparable = iblockstate.func_177229_b(this.field_150949_c.func_176551_l());
  
              if (comparable == p_180615_5_)
