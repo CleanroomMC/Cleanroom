@@ -21,6 +21,7 @@ package net.minecraftforge.client;
 
 import com.cleanroommc.client.IMEHandler;
 import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiScreenBook;
 import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraftforge.client.event.ColorHandlerEvent;
@@ -55,20 +56,31 @@ public class ForgeClientHandler
     @SubscribeEvent
     public static void didChangeGui(GuiOpenEvent event) {
         boolean canInput;
-        if (event.getGui() == null) {
+        GuiScreen gui = event.getGui();
+        if (gui == null) {
             // Ignore null GuiScreens
             canInput = false;
-        } else if (event.getGui() instanceof GuiChat) {
+        } else if (gui instanceof GuiChat) {
             // Skip, this should be handled by Focus
             return;
         } else {
             // Vanilla GuiScreens
-            canInput = event.getGui() instanceof GuiScreenBook
-                    || event.getGui() instanceof GuiEditSign;
+            canInput = gui instanceof GuiScreenBook
+                    || gui instanceof GuiEditSign
+                    || guiInWhiteList(gui);
 
-            // TODO: Force enable map
         }
 
         IMEHandler.setIME(canInput);
+    }
+
+    private static boolean guiInWhiteList(GuiScreen gui) {
+        String current = gui.getClass().getName();
+        for (String guiClazz : ForgeModContainer.inputMethodGuiWhiteList) {
+            if (guiClazz.equals(current)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

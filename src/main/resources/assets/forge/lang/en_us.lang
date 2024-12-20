@@ -91,6 +91,8 @@ forge.configgui.allowEmissiveItems=Allow Emissive Item Rendering
 forge.configgui.allowEmissiveItems.tooltip=Allow item rendering to detect emissive quads and draw them properly. This allows glowing blocks to look the same in item form, but incurs a very slight performance hit.
 forge.configgui.selectiveResourceReloadEnabled=Enable Selective Resource Loading
 forge.configgui.selectiveResourceReloadEnabled.tooltip=When enabled, makes specific reload tasks such as language changing quicker to run.
+forge.configgui.inputMethodGuiWhiteList=Input Method Gui White List
+forge.configgui.inputMethodGuiWhiteList.tooltip=Classes in this list will be considered as input method suitable and allows input through IME.
 
 forge.configgui.hud.category=HUD Settings
 forge.configgui.hud.category.tooltip=Controls rendering of various HUD elements.
