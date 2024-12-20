@@ -58,6 +58,10 @@ public class LWJGLTransformer implements IClassTransformer {
                 lwjglNode.fields.add(f);
             }
         });
+        if (s1.equals("org.lwjgl.openal.AL")) {
+            lwjglNode.methods.removeIf(m -> m.name.equals("destroy"));
+            lwjglxNode.methods.stream().filter(m -> m.name.equals("destroy")).forEach(m -> lwjglNode.methods.add(m));
+        }
         ClassWriter out = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         lwjglNode.accept(out);
         return out.toByteArray();
