@@ -61,7 +61,7 @@
                      break;
                  }
  
--                Comparable<?> comparable = func_190792_a((IProperty < Comparable<? >>)iproperty, iterator1.next());
+-                Comparable<?> comparable = func_190792_a((IProperty<?>)iproperty, iterator1.next());
 +                Comparable<?> comparable = func_190792_a(iproperty, iterator1.next());
  
                  if (comparable == null)
