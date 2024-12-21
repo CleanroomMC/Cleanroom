@@ -1,5 +1,6 @@
 package com.cleanroommc.client;
 
+import com.cleanroommc.client.ime.CocoaIMEHandler;
 import com.cleanroommc.client.ime.WindowsIMEHandler;
 import net.minecraftforge.fml.common.FMLLog;
 import org.lwjgl.glfw.GLFW;
@@ -11,7 +12,8 @@ public class IMEHandler {
     static {
         switch (GLFW.glfwGetPlatform()) {
             case GLFW.GLFW_PLATFORM_WIN32 -> instance = new WindowsIMEHandler();
-            default -> FMLLog.log.warn("Unsupported platform: " + GLFW.glfwGetPlatform());
+            case GLFW.GLFW_PLATFORM_COCOA -> instance = new CocoaIMEHandler();
+            default -> FMLLog.log.warn("Unsupported platform: {}", GLFW.glfwGetPlatform());
         }
     }
     public static void setIME(boolean active) {

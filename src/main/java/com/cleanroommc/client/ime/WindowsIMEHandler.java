@@ -6,8 +6,10 @@ import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
 
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
+/**
+ * Copied from <a href="https://github.com/reserveword/IMBlocker/blob/master/common/src/main/java/io/github/reserveword/imblocker/common/IMManagerWindows.java">IMBlocker</a>
+ */
 public class WindowsIMEHandler implements Consumer<Boolean> {
 
     private static native WinNT.HANDLE ImmGetContext(WinDef.HWND hwnd);
