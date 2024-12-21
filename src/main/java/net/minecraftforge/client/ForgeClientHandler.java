@@ -32,8 +32,13 @@ import net.minecraftforge.common.ForgeModContainer;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class ForgeClientHandler
 {
+    private static final Set<String> classList = Arrays.stream(ForgeModContainer.inputMethodGuiWhiteList).collect(Collectors.toSet());
     @SubscribeEvent
     public static void registerModels(ModelRegistryEvent event)
     {
@@ -76,11 +81,6 @@ public class ForgeClientHandler
 
     private static boolean guiInWhiteList(GuiScreen gui) {
         String current = gui.getClass().getName();
-        for (String guiClazz : ForgeModContainer.inputMethodGuiWhiteList) {
-            if (guiClazz.equals(current)) {
-                return true;
-            }
-        }
-        return false;
+        return classList.contains(current);
     }
 }
