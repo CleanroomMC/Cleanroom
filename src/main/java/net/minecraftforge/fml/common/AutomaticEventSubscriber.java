@@ -44,8 +44,8 @@ public class AutomaticEventSubscriber
     {
         FMLLog.log.debug("Attempting to inject @EventBusSubscriber classes into the eventbus for {}", mod.getModId());
         SetMultimap<String, ASMData> modData = data.getAnnotationsFor(mod);
-        Set<ASMDataTable.ASMData> mods = modData.get(Mod.class);
-        Set<ASMDataTable.ASMData> targets = modData.get(Mod.EventBusSubscriber.class);
+        Set<ASMDataTable.ASMData> mods = modData.get(Mod.class.getName());
+        Set<ASMDataTable.ASMData> targets = modData.get(Mod.EventBusSubscriber.class.getName());
         ClassLoader mcl = Loader.instance().getModClassLoader();
 
         for (ASMDataTable.ASMData targ : targets)
