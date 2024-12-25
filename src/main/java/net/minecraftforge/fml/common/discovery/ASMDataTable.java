@@ -150,7 +150,7 @@ public class ASMDataTable
             return this.getAll(type.getName().replace('.', '/'));
         } else if (type.isAnnotation()) {
             return this.getAll(type.getName());
-        } else throw new IllegalArgumentException(The type are trying to be got from ASMDataTable is neither annotation nor interface");
+        } else throw new IllegalArgumentException("The type are trying to be got from ASMDataTable is neither annotation nor interface");
     }
 
     public void addASMData(ModCandidate candidate, String annotation, String className, @Nullable String objectName, @Nullable Map<String,Object> annotationInfo)
