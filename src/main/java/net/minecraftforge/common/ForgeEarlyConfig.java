@@ -37,9 +37,6 @@ public class ForgeEarlyConfig {
     @Config.Comment("Enable GL_KHR_no_error to use faster driver code, but which can cause memory corruption in case of OpenGL errors")
     public static boolean OPENGL_CONTEXT_NO_ERROR = false;
 
-    @Config.Comment("Force enable wayland, only use this on supported DE")
-    public static boolean FORCE_WAYLAND = false;
-
     public static boolean DECORATED = true;
 
     public static boolean INPUT_INVERT_WHEEL = false;
