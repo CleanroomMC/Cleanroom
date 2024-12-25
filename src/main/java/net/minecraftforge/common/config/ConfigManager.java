@@ -106,7 +106,7 @@ public class ConfigManager
     public static void loadData(ASMDataTable data)
     {
         FMLLog.log.debug("Loading @Config anotation data");
-        for (ASMData target : data.getAll(Config.class.getName()))
+        for (ASMData target : data.getAll(Config.class))
         {
             String modid = (String)target.getAnnotationInfo().get("modid");
             Multimap<Config.Type, ASMData> map = asm_data.computeIfAbsent(modid, k -> ArrayListMultimap.create());

@@ -42,8 +42,8 @@ public class ProxyInjector
     {
         FMLLog.log.debug("Attempting to inject @SidedProxy classes into {}", mod.getModId());
         SetMultimap<String, ASMData> modData = data.getAnnotationsFor(mod);
-        Set<ASMData> mods = modData.get(Mod.class.getName());
-        Set<ASMData> targets = modData.get(SidedProxy.class.getName());
+        Set<ASMData> mods = modData.get(Mod.class);
+        Set<ASMData> targets = modData.get(SidedProxy.class);
         ClassLoader mcl = Loader.instance().getModClassLoader();
 
         for (ASMData targ : targets)
