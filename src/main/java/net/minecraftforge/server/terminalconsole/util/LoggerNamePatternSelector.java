@@ -19,6 +19,7 @@
 
 package net.minecraftforge.server.terminalconsole.util;
 
+import jakarta.annotation.Nullable;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.Node;
@@ -37,6 +38,8 @@ import org.apache.logging.log4j.util.PerformanceSensitive;
 
 import java.util.ArrayList;
 import java.util.List;
+
+// TODO: Consider moving this into a separate project
 
 /**
  * A {@link PatternSelector} that selects patterns based on the logger name.
@@ -61,6 +64,7 @@ public class LoggerNamePatternSelector implements PatternSelector
 {
     private static class LoggerNameSelector
     {
+
         private final String name;
         private final boolean isPackage;
         private final PatternFormatter[] formatters;
@@ -103,26 +107,22 @@ public class LoggerNamePatternSelector implements PatternSelector
                                         boolean alwaysWriteExceptions, boolean disableAnsi, boolean noConsoleNoAnsi, Configuration config)
     {
         PatternParser parser = PatternLayout.createPatternParser(config);
-        this.defaultFormatters = toArray(parser.parse(defaultPattern, alwaysWriteExceptions, disableAnsi, noConsoleNoAnsi));
-        for (PatternMatch property : properties)
-        {
-            PatternFormatter[] formatters = toArray(parser.parse(property.getPattern(), alwaysWriteExceptions, disableAnsi, noConsoleNoAnsi));
-            for (String name : property.getKey().split(","))
-            {
+        PatternFormatter[] emptyFormatters = new PatternFormatter[0];
+        this.defaultFormatters = parser.parse(defaultPattern, alwaysWriteExceptions, disableAnsi, noConsoleNoAnsi)
+                .toArray(emptyFormatters);
+        for (PatternMatch property : properties) {
+            PatternFormatter[] formatters = parser.parse(property.getPattern(), alwaysWriteExceptions, disableAnsi, noConsoleNoAnsi)
+                    .toArray(emptyFormatters);
+            for (String name : property.getKey().split(",")) {
                 this.formatters.add(new LoggerNameSelector(name, formatters));
             }
         }
     }
 
-    private static PatternFormatter[] toArray(List<PatternFormatter> formatters)
-    {
-        return formatters.toArray(new PatternFormatter[formatters.size()]);
-    }
-
     @Override
     public PatternFormatter[] getFormatters(LogEvent event)
     {
-        final String loggerName = event.getLoggerName();
+        final @Nullable String loggerName = event.getLoggerName();
         if (loggerName != null)
         {
             //noinspection ForLoopReplaceableByForEach

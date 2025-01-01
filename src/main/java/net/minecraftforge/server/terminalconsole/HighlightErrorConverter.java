@@ -38,7 +38,7 @@ import java.util.List;
 
 /**
  * A simplified version of {@link HighlightConverter} that uses
- * {@link TerminalConsoleAppender} to detect if Ansi escape codes can be used
+ * {@link TerminalConsoleAppender} to detect if ANSI escape codes can be used
  * to highlight errors and warnings in the console.
  *
  * <p>If configured, it will mark all logged errors with a red color and all
@@ -55,9 +55,9 @@ import java.util.List;
 @PerformanceSensitive("allocation")
 public class HighlightErrorConverter extends LogEventPatternConverter
 {
-    private static final String ANSI_RESET = "\u001B[39;0m";
-    private static final String ANSI_ERROR = "\u001B[31;1m";
-    private static final String ANSI_WARN = "\u001B[33;1m";
+    private static final String ANSI_RESET = "\u001B[m";
+    private static final String ANSI_ERROR = "\u001B[31;1m"; // Bold Red
+    private static final String ANSI_WARN = "\u001B[33;1m"; // Bold Yellow
 
     private final List<PatternFormatter> formatters;
 
@@ -142,8 +142,7 @@ public class HighlightErrorConverter extends LogEventPatternConverter
      * @param options The pattern options
      * @return The new instance
      */
-    @Nullable
-    public static HighlightErrorConverter newInstance(Configuration config, String[] options)
+    public static @Nullable HighlightErrorConverter newInstance(Configuration config, String[] options)
     {
         if (options.length != 1)
         {
