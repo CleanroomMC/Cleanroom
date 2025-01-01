@@ -1,5 +1,6 @@
 package zone.rong.mixinbooter;
 
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 
@@ -72,7 +73,7 @@ public final class Context {
      * @return whether the mod is present
      */
     public boolean isModPresent(String modId) {
-        return Loader.isModLoaded(modId);
+        return Launch.classLoader.isClassLoaded("net.minecraftforge.fml.common.Loader") && Loader.isModLoaded(modId);
     }
 
 }
