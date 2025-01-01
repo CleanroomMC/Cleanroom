@@ -122,16 +122,27 @@ public class FMLCommonHandler
 
     private FMLCommonHandler()
     {
+        registerCrashCallable(new ICrashCallable() {
+            @Override
+            public String call() {
+                return com.cleanroommc.common.CleanroomVersion.BUILD_VERSION;
+            }
+
+            @Override
+            public String getLabel() {
+                return "Cleanroom Version";
+            }
+        });
+
         registerCrashCallable(new ICrashCallable()
         {
             @Override
-            public String call() throws Exception
-            {
+            public String call() {
                 StringBuilder builder = new StringBuilder();
                 Joiner joiner = Joiner.on("\n  ");
                 for(String coreMod : CoreModManager.getTransformers().keySet())
                 {
-                    builder.append("\n" + coreMod + "\n  ").append(joiner.join(CoreModManager.getTransformers().get(coreMod)));
+                    builder.append("\n").append(coreMod).append("\n  ").append(joiner.join(CoreModManager.getTransformers().get(coreMod)));
                 }
                 return builder.toString();
             }
@@ -146,7 +157,7 @@ public class FMLCommonHandler
     /**
      * The FML event bus. Subscribe here for FML related events
      *
-     * @Deprecated Use {@link MinecraftForge#EVENT_BUS} they're the same thing now
+     * @deprecated Use {@link MinecraftForge#EVENT_BUS} they're the same thing now
      * @return the event bus
      */
     @Deprecated
