@@ -44,7 +44,9 @@ import org.spongepowered.asm.mixin.transformer.Proxy;
 import org.spongepowered.asm.service.MixinService;
 import org.spongepowered.asm.service.mojang.MixinServiceLaunchWrapper;
 import org.spongepowered.asm.util.Constants;
+import zone.rong.mixinbooter.Context;
 import zone.rong.mixinbooter.ILateMixinLoader;
+import zone.rong.mixinbooter.IMixinConfigHijacker;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -167,20 +169,33 @@ public class LoadController
 
                     FMLLog.log.info("Instantiating all ILateMixinLoader implemented classes...");
                     for (ASMDataTable.ASMData asmData : asmDataTable.getAll(ILateMixinLoader.class.getName().replace('.', '/'))) {
-                        modClassLoader.addFile(asmData.getCandidate().getModContainer()); // Add to path before `newInstance`
-                        Class<?> clazz = Class.forName(asmData.getClassName().replace('/', '.'));
-                        FMLLog.log.info("Instantiating {} for its mixins.", clazz);
-                        ILateMixinLoader loader = (ILateMixinLoader) clazz.getConstructor().newInstance();
-                        for (String mixinConfig : loader.getMixinConfigs()) {
-                            if (loader.shouldMixinConfigQueue(mixinConfig)) {
-                                FMLLog.log.info("Adding {} mixin configuration.", mixinConfig);
-                                try {
-                                    Mixins.addConfiguration(mixinConfig);
-                                    loader.onMixinConfigQueued(mixinConfig);
-                                } catch (Throwable t) {
-                                    FMLLog.log.error("Error adding mixin configuration for {}", mixinConfig, t);
+                        try {
+                            modClassLoader.addFile(asmData.getCandidate().getModContainer()); // Add to path before `newInstance`
+                            Class<?> clazz = Class.forName(asmData.getClassName().replace('/', '.'));
+                            FMLLog.log.info("Instantiating {} for its mixins.", clazz);
+                            @SuppressWarnings("deprecation")
+                            ILateMixinLoader loader = (ILateMixinLoader) clazz.getConstructor().newInstance();
+                            for (String mixinConfig : loader.getMixinConfigs()) {
+                                @SuppressWarnings("deprecation")
+                                Context context = new Context(mixinConfig);
+                                if (loader.shouldMixinConfigQueue(context)) {
+                                    try {
+                                        @SuppressWarnings("deprecation")
+                                        IMixinConfigHijacker hijacker = MixinBooterPlugin.getHijacker(mixinConfig);
+                                        if (hijacker != null) {
+                                            FMLLog.log.info("Mixin configuration {} intercepted by {}.", mixinConfig, hijacker.getClass().getName());
+                                        } else {
+                                            FMLLog.log.info("Adding {} mixin configuration.", mixinConfig);
+                                            Mixins.addConfiguration(mixinConfig);
+                                            loader.onMixinConfigQueued(context);
+                                        }
+                                    } catch (Throwable t) {
+                                        FMLLog.log.error("Error adding mixin configuration for {}", mixinConfig, t);
+                                    }
                                 }
                             }
+                        } catch (ClassNotFoundException | ClassCastException | InstantiationException | IllegalAccessException e) {
+                            FMLLog.log.error("Unable to load the ILateMixinLoader", e);
                         }
                     }
 
