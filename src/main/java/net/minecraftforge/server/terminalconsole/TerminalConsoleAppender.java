@@ -30,10 +30,8 @@ import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
-import org.apache.logging.log4j.core.config.plugins.Plugin;
-import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
-import org.apache.logging.log4j.core.config.plugins.PluginElement;
-import org.apache.logging.log4j.core.config.plugins.PluginFactory;
+import org.apache.logging.log4j.core.config.Property;
+import org.apache.logging.log4j.core.config.plugins.*;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.apache.logging.log4j.util.PropertiesUtil;
@@ -51,25 +49,18 @@ import org.jline.terminal.TerminalBuilder;
  * persistent input line, as well as command history and command completion.</p>
  *
  * <p>The {@code TerminalConsole} appender replaces the default {@code Console}
- * appender in your log4j configuration. By default, log4j will automatically
- * close the standard output when the original {@code Console} appender is
- * removed. Consequently, it is necessary to keep an unused {@code Console}
- * appender.</p>
+ * appender in your log4j configuration.</p>
  *
  * <p><b>Example usage:</b></p>
  * <pre>{@code  <TerminalConsole>
  *     <PatternLayout pattern="[%d{HH:mm:ss} %level]: %msg%n"/>
- * </TerminalConsole>
- *
- * <Console name="SysOut" target="SYSTEM_OUT"/>}</pre>
+ * </TerminalConsole>}</pre>
  *
  * <p>To use the enhanced console input it is necessary to set the
  * {@link LineReader} using {@link #setReader(LineReader)}. The appender will
  * then automatically redraw the current prompt. When creating the
  * {@link LineReader} it's important to use the {@link Terminal}
- * returned by {@link #getTerminal()}. Additionally, the reader should
- * be removed from the appender as soon as it's no longer accepting
- * input (for example when the user interrupted input using CTRL + C.</p>
+ * returned by {@link #getTerminal()}.</p>
  *
  * <p>By default, the JLine {@link Terminal} is enabled when the application
  * is started with an attached terminal session. Usually, this is only the
@@ -82,9 +73,9 @@ import org.jline.terminal.TerminalBuilder;
  * </p>
  *
  * <ul>
- *     <li>{@link TerminalConsoleAppender#JLINE_OVERRIDE_PROPERTY} - To enable the extended JLine
+ *     <li>{@link #JLINE_OVERRIDE_PROPERTY} - To enable the extended JLine
  *     input. By default this will also enable the ANSI escape codes.</li>
- *     <li>{@link TerminalConsoleAppender#ANSI_OVERRIDE_PROPERTY} - To enable the output of ANSI
+ *     <li>{@link #ANSI_OVERRIDE_PROPERTY} - To enable the output of ANSI
  *     escape codes. May be used to force the use of ANSI escape codes
  *     if JLine is disabled or to disable them if it is enabled.</li>
  * </ul>
@@ -92,6 +83,9 @@ import org.jline.terminal.TerminalBuilder;
 @Plugin(name = TerminalConsoleAppender.PLUGIN_NAME, category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE, printObject = true)
 public class TerminalConsoleAppender extends AbstractAppender
 {
+    /**
+     * The name of the appender in the configuration.
+     */
     public static final String PLUGIN_NAME = "TerminalConsole";
     /**
      * The prefix used for all system properties in TerminalConsoleAppender.
@@ -101,7 +95,7 @@ public class TerminalConsoleAppender extends AbstractAppender
      * System property that allows overriding the default detection of the
      * console to force enable or force disable the use of JLine. In some
      * environments the automatic detection might not work properly.
-     * <p>
+     *
      * <p>If this system property is not set, or set to an invalid value
      * (neither {@code true} nor {@code false}) then we will attempt
      * to detect the best option automatically.</p>
@@ -113,7 +107,7 @@ public class TerminalConsoleAppender extends AbstractAppender
      * environment. By default, ANSI color codes are only enabled if JLine
      * is enabled. Some systems might be able to handle ANSI escape codes
      * but are not capable of JLine's extended input mechanism.
-     * <p>
+     *
      * <p>If this system property is not set, or set to an invalid value
      * (neither {@code true} nor {@code false}) then we will attempt
      * to detect the best option automatically.</p>
@@ -129,23 +123,19 @@ public class TerminalConsoleAppender extends AbstractAppender
     private static final PrintStream stdout = System.out;
 
     private static boolean initialized;
-    @Nullable
-    private static Terminal terminal;
-    @Nullable
-    private static LineReader reader;
+    private static @Nullable Terminal terminal;
+    private static @Nullable LineReader reader;
 
     /**
      * Returns the {@link Terminal} that is used to print messages to the
      * console. Returns {@code null} in unsupported environments, unless
-     * overridden using the {@link TerminalConsoleAppender#JLINE_OVERRIDE_PROPERTY} system
+     * overridden using the {@link #JLINE_OVERRIDE_PROPERTY} system
      * property.
      *
      * @return The terminal, or null if not supported
      * @see TerminalConsoleAppender
      */
-    @Nullable
-    public static Terminal getTerminal()
-    {
+    public synchronized static @Nullable Terminal getTerminal() {
         return terminal;
     }
 
@@ -156,9 +146,7 @@ public class TerminalConsoleAppender extends AbstractAppender
      *
      * @return The current line reader, or null if none
      */
-    @Nullable
-    public static LineReader getReader()
-    {
+    public synchronized static @Nullable LineReader getReader() {
         return reader;
     }
 
@@ -172,8 +160,7 @@ public class TerminalConsoleAppender extends AbstractAppender
      *
      * @param newReader The new line reader
      */
-    public static void setReader(@Nullable LineReader newReader)
-    {
+    public synchronized static void setReader(@Nullable LineReader newReader) {
         if (newReader != null && newReader.getTerminal() != terminal)
         {
             throw new IllegalArgumentException("Reader was not created with TerminalConsoleAppender.getTerminal()");
@@ -188,39 +175,43 @@ public class TerminalConsoleAppender extends AbstractAppender
      *
      * <p>The return value is {@code true} by default if the JLine terminal
      * is enabled and {@code false} otherwise. It may be overridden using
-     * the {@link TerminalConsoleAppender#ANSI_OVERRIDE_PROPERTY} system property.</p>
+     * the {@link #ANSI_OVERRIDE_PROPERTY} system property.</p>
      *
      * @return true if ANSI escapes codes should be written to the console
      */
     public static boolean isAnsiSupported()
     {
+        if (!initialized)
+            initializeTerminal();
         return ANSI_OVERRIDE != null ? ANSI_OVERRIDE : terminal != null;
     }
 
     /**
      * Constructs a new {@link TerminalConsoleAppender}.
      *
-     * @param name             The name of the appender
-     * @param filter           The filter, can be {@code null}
-     * @param layout           The layout to use
+     * @param name The name of the appender
+     * @param filter The filter, can be {@code null}
+     * @param layout The layout to use
      * @param ignoreExceptions If {@code true} exceptions encountered when
-     *                         appending events are logged, otherwise they are propagated to the
-     *                         caller
+     *     appending events are logged, otherwise they are propagated to the
+     *     caller
+     * @param properties Optional properties
      */
-    protected TerminalConsoleAppender(String name, @Nullable Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions)
-    {
-        super(name, filter, layout, ignoreExceptions);
-        initializeTerminal();
+    protected TerminalConsoleAppender(String name, Filter filter, Layout<? extends Serializable> layout,
+                                      boolean ignoreExceptions, Property[] properties) {
+        super(name, filter, layout, ignoreExceptions, properties);
+        if (!initialized)
+            initializeTerminal();
     }
 
-    private static void initializeTerminal()
+    private synchronized static void initializeTerminal()
     {
         if (!initialized)
         {
             initialized = true;
 
             // A system property can be used to override our automatic detection
-            Boolean jlineOverride = getOptionalBooleanProperty(JLINE_OVERRIDE_PROPERTY);
+            @Nullable Boolean jlineOverride = getOptionalBooleanProperty(JLINE_OVERRIDE_PROPERTY);
 
             // By default, we disable JLine if there is no terminal attached
             // (e.g. if the program output is redirected to a file or if it's
@@ -238,8 +229,8 @@ public class TerminalConsoleAppender extends AbstractAppender
 
             if (jlineOverride != Boolean.FALSE)
             {
-                try
-                {
+                try {
+
                     terminal = TerminalBuilder.builder().dumb(dumb).build();
                 }
                 catch (IllegalStateException e)
@@ -252,68 +243,45 @@ public class TerminalConsoleAppender extends AbstractAppender
                     if (LOGGER.isDebugEnabled())
                     {
                         // Log with stacktrace
-                        LOGGER.warn("Disabling terminal, you're running in an unsupported environment.", e);
+                        LOGGER.warn("Advanced terminal features are not available in this environment", e);
                     }
                     else
                     {
-                        LOGGER.warn("Disabling terminal, you're running in an unsupported environment.");
+                        LOGGER.warn("Advanced terminal features are not available in this environment");
                     }
                 }
                 catch (IOException e)
                 {
-                    LOGGER.error("Failed to initialize terminal. Falling back to standard output", e);
+                    LOGGER.error("Failed to initialize terminal. Falling back to standard console", e);
                 }
             }
-        }
-    }
-
-    @Nullable
-    private static Boolean getOptionalBooleanProperty(String name)
-    {
-        String value = PropertiesUtil.getProperties().getStringProperty(name);
-        if (value == null)
-        {
-            return null;
-        }
-
-        if (value.equalsIgnoreCase("true"))
-        {
-            return Boolean.TRUE;
-        }
-        else if (value.equalsIgnoreCase("false"))
-        {
-            return Boolean.FALSE;
-        }
-        else
-        {
-            LOGGER.warn("Invalid value for boolean input property '{}': {}", name, value);
-            return null;
         }
     }
 
     @Override
     public void append(LogEvent event)
     {
+        print(getLayout().toSerializable(event).toString());
+    }
+
+    private synchronized static void print(String text)
+    {
         if (terminal != null)
         {
             if (reader != null)
             {
                 // Draw the prompt line again if a reader is available
-                reader.callWidget(LineReader.CLEAR);
-                terminal.writer().print(getLayout().toSerializable(event));
-                reader.callWidget(LineReader.REDRAW_LINE);
-                reader.callWidget(LineReader.REDISPLAY);
+                reader.printAbove(text);
             }
             else
             {
-                terminal.writer().print(getLayout().toSerializable(event));
+                terminal.writer().print(text);
+                terminal.writer().flush();
             }
-
-            terminal.writer().flush();
         }
         else
         {
-            stdout.print(getLayout().toSerializable(event));
+            stdout.print(text);
         }
     }
 
@@ -323,19 +291,15 @@ public class TerminalConsoleAppender extends AbstractAppender
      *
      * @throws IOException If an I/O error occurs
      */
-    public static void close() throws IOException
+    public synchronized static void close() throws IOException
     {
-        if (initialized)
-        {
+        if (initialized) {
             initialized = false;
-            if (terminal != null)
-            {
-                try
-                {
+            reader = null;
+            if (terminal != null) {
+                try {
                     terminal.close();
-                }
-                finally
-                {
+                } finally {
                     terminal = null;
                 }
             }
@@ -343,28 +307,49 @@ public class TerminalConsoleAppender extends AbstractAppender
     }
 
     /**
-     * Creates a new {@link TerminalConsoleAppender}.
+     * Creates a new {@link Builder} for {@link TerminalConsoleAppender}.
      *
-     * @param name             The name of the appender
-     * @param filter           The filter, can be {@code null}
-     * @param layout           The layout, can be {@code null}
-     * @param ignoreExceptions If {@code true} exceptions encountered when
-     *                         appending events are logged, otherwise they are propagated to the
-     *                         caller
-     * @return The new appender
+     * @param <B> The type to build
+     * @return The new builder
      */
-    @PluginFactory
-    public static TerminalConsoleAppender createAppender(
-            @Required(message = "No name provided for TerminalConsoleAppender") @PluginAttribute("name") String name,
-            @PluginElement("Filter") @Nullable Filter filter,
-            @PluginElement("Layout") @Nullable Layout<? extends Serializable> layout,
-            @PluginAttribute(value = "ignoreExceptions", defaultBoolean = true) boolean ignoreExceptions)
+    @PluginBuilderFactory
+    public static <B extends Builder<B>> B newBuilder()
     {
-        if (layout == null)
+        return new Builder<B>().asBuilder();
+    }
+
+    /**
+     * Builds {@link TerminalConsoleAppender} instances.
+     *
+     * @param <B> The type to build
+     */
+    public static class Builder<B extends Builder<B>> extends AbstractAppender.Builder<B>
+            implements org.apache.logging.log4j.core.util.Builder<TerminalConsoleAppender>
+    {
+
+        @Override
+        public TerminalConsoleAppender build()
         {
-            layout = PatternLayout.createDefaultLayout();
+            return new TerminalConsoleAppender(getName(), getFilter(), getOrCreateLayout(),
+                    isIgnoreExceptions(), getPropertyArray());
+        }
+    }
+
+    private static @Nullable Boolean getOptionalBooleanProperty(String name)
+    {
+        String value = PropertiesUtil.getProperties().getStringProperty(name);
+        if (value == null) {
+            return null;
         }
 
-        return new TerminalConsoleAppender(name, filter, layout, ignoreExceptions);
+        if (value.equalsIgnoreCase("true")) {
+            return Boolean.TRUE;
+        } else if (value.equalsIgnoreCase("false"))  {
+            return Boolean.FALSE;
+        } else {
+            LOGGER.warn("Invalid value for boolean input property '{}': {}", name, value);
+            return null;
+        }
     }
+
 }
