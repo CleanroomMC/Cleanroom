@@ -1469,7 +1469,7 @@
              public String call()
              {
 -                return GlStateManager.func_187416_u(7937) + " GL version " + GlStateManager.func_187416_u(7938) + ", " + GlStateManager.func_187416_u(7936);
-+                if (Minecraft.func_71410_x().func_152345_ab())
++                if (Minecraft.func_71410_x().func_152345_ab() && Display.isCreated())
 +                {
 +                    return GlStateManager.func_187416_u(7937) + " GL version " + GlStateManager.func_187416_u(7938) + ", " + GlStateManager.func_187416_u(7936);
 +                }
