@@ -38,15 +38,16 @@ import net.minecraftforge.fml.relauncher.MixinBooterPlugin;
 import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.message.FormattedMessage;
+
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
+import org.spongepowered.asm.mixin.ModUtil;
 import org.spongepowered.asm.mixin.transformer.Proxy;
 import org.spongepowered.asm.service.MixinService;
 import org.spongepowered.asm.service.mojang.MixinServiceLaunchWrapper;
 import org.spongepowered.asm.util.Constants;
 import zone.rong.mixinbooter.Context;
 import zone.rong.mixinbooter.ILateMixinLoader;
-import zone.rong.mixinbooter.IMixinConfigHijacker;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -167,6 +168,7 @@ public class LoadController
 
                     FMLContextQuery.init(); // Initialize FMLContextQuery and add it to the global list
 
+                    // Load late mixins
                     FMLLog.log.info("Instantiating all ILateMixinLoader implemented classes...");
                     for (ASMDataTable.ASMData asmData : asmDataTable.getAll(ILateMixinLoader.class.getName().replace('.', '/'))) {
                         try {
@@ -180,15 +182,9 @@ public class LoadController
                                 Context context = new Context(mixinConfig);
                                 if (loader.shouldMixinConfigQueue(context)) {
                                     try {
-                                        @SuppressWarnings("deprecation")
-                                        IMixinConfigHijacker hijacker = MixinBooterPlugin.getHijacker(mixinConfig);
-                                        if (hijacker != null) {
-                                            FMLLog.log.info("Mixin configuration {} intercepted by {}.", mixinConfig, hijacker.getClass().getName());
-                                        } else {
-                                            FMLLog.log.info("Adding {} mixin configuration.", mixinConfig);
-                                            Mixins.addConfiguration(mixinConfig);
-                                            loader.onMixinConfigQueued(context);
-                                        }
+                                        FMLLog.log.info("Adding {} mixin configuration.", mixinConfig);
+                                        Mixins.addConfiguration(mixinConfig);
+                                        loader.onMixinConfigQueued(context);
                                     } catch (Throwable t) {
                                         FMLLog.log.error("Error adding mixin configuration for {}", mixinConfig, t);
                                     }
@@ -196,6 +192,19 @@ public class LoadController
                             }
                         } catch (ClassNotFoundException | ClassCastException | InstantiationException | IllegalAccessException e) {
                             FMLLog.log.error("Unable to load the ILateMixinLoader", e);
+                        }
+                    }
+
+                    // mark config owners : for earlys, lates, and mfAttributes.
+                    for (Config config : Mixins.getConfigs()) {
+                        if (!config.getConfig().hasDecoration(ModUtil.OWNER_DECORATOR)) {
+                            List<ModContainer> owners = getPackageOwners();
+                            if (owners.isEmpty()) {
+                                config.getConfig().decorate(ModUtil.OWNER_DECORATOR, (Supplier) () -> ModUtil.UNKNOWN_OWNER);
+                            } else {
+                                final String owner = owner.getFirst().getModId(); // TODO : better assign ?
+                                config.getConfig().decorate(ModUtil.OWNER_DECORATOR, (Supplier) () -> owner);
+                            }
                         }
                     }
 
@@ -436,13 +445,18 @@ public class LoadController
         return StackWalker.getInstance()
                 .walk(frames -> frames.map(StackWalker.StackFrame::getClassName)
                         .filter(name -> name.lastIndexOf('.') != -1)
-                        .map(name -> name.substring(0, name.lastIndexOf('.')))
-                        .map(pkg -> packageOwners.get(pkg))
+                        .map(name -> packageOwners.get(name.substring(0, name.lastIndexOf('.'))))
                         .filter(l -> !l.isEmpty())
                         .findFirst()
                         .map(List::getFirst)
                         .orElse(null)
                 );
+    }
+
+    @Nullable
+    public List<ModContainer> getPackageOwners(String pkg)
+    {
+        return packageOwners.get(pkg);
     }
 
     LoaderState getState()

@@ -1,7 +1,5 @@
 package zone.rong.mixinbooter;
 
-import org.spongepowered.asm.mixin.transformer.Config;
-
 import java.util.Set;
 
 /**
@@ -19,12 +17,29 @@ import java.util.Set;
  * Group mixins by phase, add target env in config, use @env(MOD) for mod mixins.<br>
  * Add {"MixinConfigs": "modid.mod.mixin.json,modid.default.mixin.json"} to your jar manifest.<br>
  * Handle shouldApply in IMixinConfigPlugin. You can call {@link net.minecraftforge.fml.common.Loader#isModLoaded(String)} for {@link org.spongepowered.asm.mixin.MixinEnvironment.Phase#MOD} mixin.<br>
- * Recommend to group target mod name by package name. You can also get config instance from {@link org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin#injectConfig(Config)}.
+ * Recommend to group target mod name by package name. You can also get config instance from {@link org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin#injectConfig(org.spongepowered.asm.mixin.transformer.Config)}.
+ * 
+ * If you what to block a mixin config, {@code GlobalProperties.get(GlobalProperties.Keys.CLEANROOM_DISABLE_MIXIN_CONFIGS)#add(String)}
  */
 
 @Deprecated
 public interface IMixinConfigHijacker {
 
+    /**
+     * Return a set of mixin config names to not be loaded by the mixin environment.
+     *
+     * @since 9.0
+     */
     Set<String> getHijackedMixinConfigs();
+
+    /**
+     * Return a set of mixin config names to not be loaded by the mixin environment.
+     *
+     * @since 10.3
+     * @param context current context of the loading process. Mixin config will be null as it is not applicable.
+     */
+    default Set<String> getHijackedMixinConfigs(Context context) {
+        return getHijackedMixinConfigs();
+    }
 
 }

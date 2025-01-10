@@ -2,7 +2,7 @@ package net.minecraftforge.fml.relauncher;
 
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.FMLLog;
-import org.spongepowered.asm.launch.GlobalProperties;
+
 import org.spongepowered.asm.mixin.Mixins;
 import zone.rong.mixinbooter.Context;
 import zone.rong.mixinbooter.IEarlyMixinLoader;
@@ -20,11 +20,9 @@ import java.util.Map;
 @IFMLLoadingPlugin.SortingIndex(1)
 public final class MixinBooterPlugin implements IFMLLoadingPlugin {
 
-    static final Set<IEarlyMixinLoader> earlyMixinLoaders = new HashSet<>();
-    static final Map<String, IMixinConfigHijacker> configHijackers = new HashMap<>();
+    static Set<IEarlyMixinLoader> earlyMixinLoaders = new HashSet<>();
 
     public MixinBooterPlugin() {
-        GlobalProperties.put(GlobalProperties.Keys.CLEANROOM_DISABLE_MIXIN_CONFIGS, new HashSet<>());
     }
 
     @Override
@@ -45,6 +43,7 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
     @Override
     public void injectData(Map<String, Object> data) {
         loadEarlyLoaders(earlyMixinLoaders);
+        earlyMixinLoaders = null;
     }
 
     @Override
@@ -52,11 +51,15 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
         return null;
     }
 
-    static void loadEarlyMixinLoader(IFMLLoadingPlugin plugin) {
+    static void queneEarlyMixinLoader(IFMLLoadingPlugin plugin) {
         if (plugin instanceof IEarlyMixinLoader earlyMixinLoader) earlyMixinLoaders.add(earlyMixinLoader);
         if (plugin instanceof IMixinConfigHijacker hijacker) {
-            for (String hijacked : hijacker.getHijackedMixinConfigs()) {
-                configHijackers.put(hijacked, hijacker);
+            Collection<String> disabledConfigs = GlobalProperties.get(GlobalProperties.Keys.CLEANROOM_DISABLE_MIXIN_CONFIGS);
+            Context context = new Context(null);
+            FMLLog.log.info("Loading config hijacker {}.", interceptor.getClass().getName());
+            for (String hijacked : interceptor.getHijackedMixinConfigs(context)) {
+                disabledConfigs.add(hijacked);
+                FMLLog.log.info("{} will hijack the mixin config {}", interceptor.getClass().getName(), hijacked);
             }
         }
     }
@@ -67,21 +70,12 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
             for (String mixinConfig : queuedLoader.getMixinConfigs()) {
                 Context context = new Context(mixinConfig);
                 if (queuedLoader.shouldMixinConfigQueue(context)) {
-                    IMixinConfigHijacker hijacker = getHijacker(mixinConfig);
-                    if (hijacker != null) {
-                        FMLLog.log.info("Mixin configuration {} intercepted by {}.", mixinConfig, hijacker.getClass().getName());
-                    } else {
-                        FMLLog.log.info("Adding {} mixin configuration.", mixinConfig);
-                        Mixins.addConfiguration(mixinConfig);
-                        queuedLoader.onMixinConfigQueued(context);
-                    }
+                    FMLLog.log.info("Adding {} mixin configuration.", mixinConfig);
+                    Mixins.addConfiguration(mixinConfig);
+                    queuedLoader.onMixinConfigQueued(context);
                 }
             }
         }
-    }
-
-    public static IMixinConfigHijacker getHijacker(String configName) {
-        return configHijackers.get(configName);
     }
 
 
