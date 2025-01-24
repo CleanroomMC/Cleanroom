@@ -300,10 +300,17 @@ public class TerminalConsoleAppender extends AbstractAppender
             if (reader != null)
             {
                 // Draw the prompt line again if a reader is available
-                reader.callWidget(LineReader.CLEAR);
-                terminal.writer().print(getLayout().toSerializable(event));
-                reader.callWidget(LineReader.REDRAW_LINE);
-                reader.callWidget(LineReader.REDISPLAY);
+                synchronized (reader) {
+                    if (reader.isReading()) {
+                        reader.callWidget(LineReader.CLEAR);
+                        terminal.writer().println(getLayout().toSerializable(event));
+                        reader.callWidget(LineReader.REDRAW_LINE);
+                        reader.callWidget(LineReader.REDISPLAY);
+                    } else {
+                        // No need to redraw prompt
+                        terminal.writer().println(getLayout().toSerializable(event));
+                    }
+                }
             }
             else
             {
