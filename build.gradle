@@ -446,8 +446,8 @@ project(':cleanroom') {
 
         installer 'com.ibm.icu:icu4j:76.1'
 
-        installer 'org.jline:jline:3.27.1'
-        installer 'org.jline:jline-native:3.27.1'
+        installer 'org.jline:jline:3.28.0'
+        installer 'org.jline:jline-native:3.28.0'
 
         installer 'lzma:lzma:0.0.1'
         installer 'java3d:vecmath:1.5.2'
