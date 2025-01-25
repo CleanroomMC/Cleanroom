@@ -1,4 +1,4 @@
-/.idea/
+/.idea/*
 /.run/
 /.gradle/
 /projects/
@@ -8,3 +8,6 @@
 build/
 version.txt
 src/main/java/com/cleanroommc/common/CleanroomVersion.java
+build/
+
+!/.idea/icon.svg
