@@ -147,7 +147,7 @@ public class LoadController
 
                     MixinBooterPlugin.LOGGER.info("Instantiating all ILateMixinLoader implemented classes...");
 
-                    for (ASMDataTable.ASMData asmData : asmDataTable.getAll(ILateMixinLoader.class.getName().replace('.', '/'))) {
+                    for (ASMDataTable.ASMData asmData : asmDataTable.getAll(ILateMixinLoader.class)) {
                         if (!log) {
                             MixinBooterPlugin.LOGGER.info("Instantiating all ILateMixinLoader implemented classes...");
                             log = true;
