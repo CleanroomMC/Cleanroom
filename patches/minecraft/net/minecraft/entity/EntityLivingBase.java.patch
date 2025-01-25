@@ -1458,7 +1458,15 @@
      public void func_184206_a(DataParameter<?> p_184206_1_)
      {
          super.func_184206_a(p_184206_1_);
-@@ -2785,51 +2756,26 @@
+@@ -2776,6 +2747,7 @@
+     {
+         if (!p_184584_1_.func_190926_b() && this.func_184587_cr())
+         {
++            p_184584_1_.func_77975_n().updateItemUse(p_184584_1_,p_184584_2_);
+             if (p_184584_1_.func_77975_n() == EnumAction.DRINK)
+             {
+                 this.func_184185_a(SoundEvents.field_187664_bz, 0.5F, this.field_70170_p.field_73012_v.nextFloat() * 0.1F + 0.9F);
+@@ -2785,51 +2757,26 @@
              {
                  for (int i = 0; i < p_184584_2_; ++i)
                  {
@@ -1520,7 +1528,7 @@
              }
          }
      }
-@@ -2839,7 +2785,10 @@
+@@ -2839,7 +2786,10 @@
          if (!this.field_184627_bm.func_190926_b() && this.func_184587_cr())
          {
              this.func_184584_a(this.field_184627_bm, 16);
@@ -1532,7 +1540,7 @@
              this.func_184602_cy();
          }
      }
-@@ -2863,7 +2812,8 @@
+@@ -2863,7 +2813,8 @@
      {
          if (!this.field_184627_bm.func_190926_b())
          {
@@ -1542,7 +1550,7 @@
          }
  
          this.func_184602_cy();
-@@ -2873,7 +2823,7 @@
+@@ -2873,7 +2824,7 @@
      {
          if (!this.field_70170_p.field_72995_K)
          {
@@ -1551,7 +1559,7 @@
          }
  
          this.field_184627_bm = ItemStack.field_190927_a;
-@@ -2967,13 +2917,13 @@
+@@ -2967,13 +2918,13 @@
  
              for (int j = 0; j < 128; ++j)
              {
@@ -1568,7 +1576,7 @@
                  world.func_175688_a(EnumParticleTypes.PORTAL, d3, d4, d5, (double)f, (double)f1, (double)f2);
              }
  
-@@ -2991,6 +2941,31 @@
+@@ -2991,6 +2942,31 @@
          return true;
      }
  
@@ -1600,7 +1608,7 @@
      public boolean func_190631_cK()
      {
          return true;
-@@ -2999,5 +2974,31 @@
+@@ -2999,5 +2975,31 @@
      @SideOnly(Side.CLIENT)
      public void func_191987_a(BlockPos p_191987_1_, boolean p_191987_2_)
      {
