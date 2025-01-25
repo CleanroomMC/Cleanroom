@@ -1,42 +1,137 @@
 --- before/net/minecraft/client/gui/GuiKeyBindingList.java
 +++ after/net/minecraft/client/gui/GuiKeyBindingList.java
-@@ -23,7 +23,7 @@
+@@ -15,16 +15,28 @@
+ {
+     private final GuiControls field_148191_k;
+     private final Minecraft field_148189_l;
+-    private final GuiListExtended.IGuiListEntry[] field_148190_m;
++    @Deprecated private GuiListExtended.IGuiListEntry[] field_148190_m;
++    private java.util.LinkedList<IGuiListEntry> listEntries2;
++    private java.util.LinkedList<IGuiListEntry> listEntriesAll;
+     private int field_148188_n;
+ 
++    private static int wrapped = 0;
++    private static int fill = 0;
++
+     public GuiKeyBindingList(GuiControls p_i45031_1_, Minecraft p_i45031_2_)
+     {
          super(p_i45031_2_, p_i45031_1_.field_146294_l + 45, p_i45031_1_.field_146295_m, 63, p_i45031_1_.field_146295_m - 32, 20);
          this.field_148191_k = p_i45031_1_;
          this.field_148189_l = p_i45031_2_;
 -        KeyBinding[] akeybinding = ArrayUtils.clone(p_i45031_2_.field_71474_y.field_74324_K);
++        this.field_148155_a = p_i45031_1_.field_146294_l + 45;
++        this.field_148158_l = p_i45031_1_.field_146295_m + 80;
++        this.field_148153_b = 63;
++        this.field_148154_c = p_i45031_1_.field_146295_m - 80;
 +        KeyBinding[] akeybinding = (KeyBinding[])ArrayUtils.clone(p_i45031_2_.field_71474_y.field_74324_K);
          this.field_148190_m = new GuiListExtended.IGuiListEntry[akeybinding.length + KeyBinding.func_151467_c().size()];
++        listEntries2 = new java.util.LinkedList<>();
++        listEntriesAll = new java.util.LinkedList<>();
++        
          Arrays.sort((Object[])akeybinding);
          int i = 0;
-@@ -50,25 +50,21 @@
+         String s = null;
+@@ -36,7 +48,10 @@
+             if (!s1.equals(s))
+             {
+                 s = s1;
+-                this.field_148190_m[i++] = new GuiKeyBindingList.CategoryEntry(s1);
++                if(!s1.endsWith(".hidden")) {
++                    this.listEntries2.add(new GuiKeyBindingList.CategoryEntry(s1));
++                    this.listEntriesAll.add(new GuiKeyBindingList.CategoryEntry(s1));
++                }
+             }
+ 
+             int j = p_i45031_2_.field_71466_p.func_78256_a(I18n.func_135052_a(keybinding.func_151464_g()));
+@@ -45,32 +60,71 @@
+             {
+                 this.field_148188_n = j;
+             }
+-
+-            this.field_148190_m[i++] = new GuiKeyBindingList.KeyEntry(keybinding);
++            if(!s1.endsWith(".hidden")) {
++                this.listEntries2.add(new GuiKeyBindingList.KeyEntry(keybinding));
++                this.listEntriesAll.add(new GuiKeyBindingList.KeyEntry(keybinding));
++            }
          }
      }
  
--    @Override
+     @Override
++    protected void func_192638_a(int insideLeft, int insideTop, int mouseXIn, int mouseYIn, float partialTicks) {
++        int i = this.func_148127_b();
++        net.minecraft.client.renderer.Tessellator tessellator = net.minecraft.client.renderer.Tessellator.func_178181_a();
++        net.minecraft.client.renderer.BufferBuilder bufferbuilder = tessellator.func_178180_c();
++        fill = 0;
++        for(int j = 0; j < i; ++j) {
++
++            int k = insideTop + (j + fill) * this.field_148149_f + this.field_148160_j;
++            int l = this.field_148149_f - 4;
++            if (k > this.field_148154_c || k + l < this.field_148153_b) {
++                this.func_192639_a(j, insideLeft, k, partialTicks);
++            }
++
++            if (this.field_148166_t && this.func_148131_a(j)) {
++                int i1 = this.field_148152_e + (this.field_148155_a / 2 - this.func_148139_c() / 2);
++                int j1 = this.field_148152_e + this.field_148155_a / 2 + this.func_148139_c() / 2;
++                net.minecraft.client.renderer.GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
++                net.minecraft.client.renderer.GlStateManager.func_179090_x();
++                bufferbuilder.func_181668_a(7, net.minecraft.client.renderer.vertex.DefaultVertexFormats.field_181709_i);
++                bufferbuilder.func_181662_b((double)i1, (double)(k + l + 2), 0.0).func_187315_a(0.0, 1.0).func_181669_b(128, 128, 128, 255).func_181675_d();
++                bufferbuilder.func_181662_b((double)j1, (double)(k + l + 2), 0.0).func_187315_a(1.0, 1.0).func_181669_b(128, 128, 128, 255).func_181675_d();
++                bufferbuilder.func_181662_b((double)j1, (double)(k - 2), 0.0).func_187315_a(1.0, 0.0).func_181669_b(128, 128, 128, 255).func_181675_d();
++                bufferbuilder.func_181662_b((double)i1, (double)(k - 2), 0.0).func_187315_a(0.0, 0.0).func_181669_b(128, 128, 128, 255).func_181675_d();
++                bufferbuilder.func_181662_b((double)(i1 + 1), (double)(k + l + 1), 0.0).func_187315_a(0.0, 1.0).func_181669_b(0, 0, 0, 255).func_181675_d();
++                bufferbuilder.func_181662_b((double)(j1 - 1), (double)(k + l + 1), 0.0).func_187315_a(1.0, 1.0).func_181669_b(0, 0, 0, 255).func_181675_d();
++                bufferbuilder.func_181662_b((double)(j1 - 1), (double)(k - 1), 0.0).func_187315_a(1.0, 0.0).func_181669_b(0, 0, 0, 255).func_181675_d();
++                bufferbuilder.func_181662_b((double)(i1 + 1), (double)(k - 1), 0.0).func_187315_a(0.0, 0.0).func_181669_b(0, 0, 0, 255).func_181675_d();
++                tessellator.func_78381_a();
++                net.minecraft.client.renderer.GlStateManager.func_179098_w();
++            }
++
++            this.func_192637_a(j, insideLeft, k, l, mouseXIn, mouseYIn, partialTicks);
++
++            fill += wrapped;
++        }
++    }
++
      protected int func_148127_b()
      {
-         return this.field_148190_m.length;
+-        return this.field_148190_m.length;
++        return this.listEntries2.size();
      }
  
 -    @Override
      public GuiListExtended.IGuiListEntry func_148180_b(int p_148180_1_)
      {
-         return this.field_148190_m[p_148180_1_];
-     }
- 
+-        return this.field_148190_m[p_148180_1_];
+-    }
+-
 -    @Override
-     protected int func_148137_d()
-     {
+-    protected int func_148137_d()
+-    {
 -        return super.func_148137_d() + 15;
-+        return super.func_148137_d() + 35;
+-    }
+-
+-    @Override
+-    public int func_148139_c()
+-    {
++        return this.listEntries2.get(p_148180_1_);
++    }
++
++    @Override
++    protected int func_148138_e() {
++        return (this.func_148127_b() + fill) * this.field_148149_f + this.field_148160_j;
++    }
++
++    protected int func_148137_d() {
++        return GuiKeyBindingList.this.field_148189_l.field_71462_r.field_146294_l - 20;
++    }
++
++    public int func_148139_c() {
+         return super.func_148139_c() + 32;
      }
  
--    @Override
-     public int func_148139_c()
-     {
-         return super.func_148139_c() + 32;
-@@ -86,41 +82,20 @@
+@@ -86,41 +140,19 @@
              this.field_148286_c = GuiKeyBindingList.this.field_148189_l.field_71466_p.func_78256_a(this.field_148285_b);
          }
  
@@ -64,7 +159,7 @@
 -            );
 +            GuiKeyBindingList.this.field_148189_l.field_71466_p.func_78276_b(this.field_148285_b, GuiKeyBindingList.this.field_148189_l.field_71462_r.field_146294_l / 2 - this.field_148286_c / 2, p_192634_3_ + p_192634_5_ - GuiKeyBindingList.this.field_148189_l.field_71466_p.field_78288_b - 1, 16777215);
          }
- 
+-
 -        @Override
          public boolean func_148278_a(int p_148278_1_, int p_148278_2_, int p_148278_3_, int p_148278_4_, int p_148278_5_, int p_148278_6_)
          {
@@ -80,7 +175,7 @@
          public void func_192633_a(int p_192633_1_, int p_192633_2_, int p_192633_3_, float p_192633_4_)
          {
          }
-@@ -138,71 +113,48 @@
+@@ -138,100 +170,91 @@
          {
              this.field_148282_b = p_i45029_2_;
              this.field_148283_c = I18n.func_135052_a(p_i45029_2_.func_151464_g());
@@ -113,26 +208,35 @@
 -                16777215
 -            );
 -            this.field_148281_e.field_146128_h = p_192634_2_ + 190;
-+            GuiKeyBindingList.this.field_148189_l.field_71466_p.func_78276_b(this.field_148283_c, p_192634_2_ + 90 - GuiKeyBindingList.this.field_148188_n, p_192634_3_ + p_192634_5_ / 2 - GuiKeyBindingList.this.field_148189_l.field_71466_p.field_78288_b / 2, 16777215);
-+            this.field_148281_e.field_146128_h = p_192634_2_ + 210;
++            int halfScreen = GuiKeyBindingList.this.field_148189_l.field_71462_r.field_146294_l / 2;
++
++            GuiKeyBindingList.this.field_148189_l.field_71466_p.func_78279_b(this.field_148283_c, Math.max(p_192634_2_ + 90 - GuiKeyBindingList.this.field_148188_n, 20), p_192634_3_ + p_192634_5_ / 2 - GuiKeyBindingList.this.field_148189_l.field_71466_p.field_78288_b / 2, halfScreen - 20, 16777215);
++            wrapped = Math.max(GuiKeyBindingList.this.field_148189_l.field_71466_p.func_78271_c(this.field_148283_c, halfScreen - 20).size() / 2 - 1, 0);
++            field_148281_e.field_146125_m = !field_148282_b.isSetToDefaultValue();
++            this.field_148281_e.field_146128_h = halfScreen + 110;
              this.field_148281_e.field_146129_i = p_192634_3_;
 -            this.field_148281_e.field_146124_l = this.field_148282_b.func_151463_i() != this.field_148282_b.func_151469_h();
+-            this.field_148281_e.func_191745_a(GuiKeyBindingList.this.field_148189_l, p_192634_6_, p_192634_7_, p_192634_9_);
+-            this.field_148280_d.field_146128_h = p_192634_2_ + 105;
 +            this.field_148281_e.field_146124_l = !this.field_148282_b.isSetToDefaultValue();
-             this.field_148281_e.func_191745_a(GuiKeyBindingList.this.field_148189_l, p_192634_6_, p_192634_7_, p_192634_9_);
-             this.field_148280_d.field_146128_h = p_192634_2_ + 105;
++
++            this.field_148280_d.field_146128_h = halfScreen + 5;
              this.field_148280_d.field_146129_i = p_192634_3_;
 -            this.field_148280_d.field_146126_j = GameSettings.func_74298_c(this.field_148282_b.func_151463_i());
 +            this.field_148280_d.field_146126_j = this.field_148282_b.getDisplayName();
++
              boolean flag1 = false;
 +            boolean keyCodeModifierConflict = true; // less severe form of conflict, like SHIFT conflicting with SHIFT+G
  
-             if (this.field_148282_b.func_151463_i() != 0)
-             {
-                 for (KeyBinding keybinding : GuiKeyBindingList.this.field_148189_l.field_71474_y.field_74324_K)
-                 {
+-            if (this.field_148282_b.func_151463_i() != 0)
+-            {
+-                for (KeyBinding keybinding : GuiKeyBindingList.this.field_148189_l.field_71474_y.field_74324_K)
+-                {
 -                    if (keybinding != this.field_148282_b && keybinding.func_151463_i() == this.field_148282_b.func_151463_i())
-+                    if (keybinding != this.field_148282_b && keybinding.conflicts(this.field_148282_b))
-                     {
+-                    {
++            if(this.field_148282_b.func_151463_i() != 0) {
++                for(KeyBinding keybinding : GuiKeyBindingList.this.field_148189_l.field_71474_y.field_74324_K) {
++                    if(keybinding != this.field_148282_b && keybinding.conflicts(this.field_148282_b)) {
                          flag1 = true;
 -                        break;
 +                        keyCodeModifierConflict &= keybinding.hasKeyCodeModifierConflict(this.field_148282_b);
@@ -140,38 +244,55 @@
                  }
              }
  
-             if (flag)
-             {
+-            if (flag)
+-            {
 -                this.field_148280_d.field_146126_j = TextFormatting.WHITE
 -                                                     + "> "
 -                                                     + TextFormatting.YELLOW
 -                                                     + this.field_148280_d.field_146126_j
 -                                                     + TextFormatting.WHITE
 -                                                     + " <";
-+                this.field_148280_d.field_146126_j = TextFormatting.WHITE + "> " + TextFormatting.YELLOW + this.field_148280_d.field_146126_j + TextFormatting.WHITE + " <";
-             }
-             else if (flag1)
-             {
+-            }
+-            else if (flag1)
+-            {
 -                this.field_148280_d.field_146126_j = TextFormatting.RED + this.field_148280_d.field_146126_j;
+-            }
+-
++            if(flag) {
++                this.field_148280_d.field_146126_j = TextFormatting.WHITE + "> " + TextFormatting.YELLOW + this.field_148280_d.field_146126_j + TextFormatting.WHITE + " <";
++            } else if(flag1) {
 +                this.field_148280_d.field_146126_j = (keyCodeModifierConflict ? TextFormatting.GOLD : TextFormatting.RED) + this.field_148280_d.field_146126_j;
-             }
- 
++            }
              this.field_148280_d.func_191745_a(GuiKeyBindingList.this.field_148189_l, p_192634_6_, p_192634_7_, p_192634_9_);
++            this.field_148281_e.func_191745_a(GuiKeyBindingList.this.field_148189_l, p_192634_6_, p_192634_7_, p_192634_9_);
++            if(p_192634_7_ >= p_192634_3_ && p_192634_7_ <= p_192634_3_ + p_192634_5_ * (wrapped + 1)) {
++
++                field_148189_l.field_71466_p.func_78276_b(I18n.func_135052_a(field_148282_b.func_151466_e()), p_192634_6_ + 10, p_192634_7_, 0xFFFFFF);
++
++            }
          }
  
 -        @Override
          public boolean func_148278_a(int p_148278_1_, int p_148278_2_, int p_148278_3_, int p_148278_4_, int p_148278_5_, int p_148278_6_)
          {
-             if (this.field_148280_d.func_146116_c(GuiKeyBindingList.this.field_148189_l, p_148278_2_, p_148278_3_))
-@@ -212,6 +164,7 @@
-             }
-             else if (this.field_148281_e.func_146116_c(GuiKeyBindingList.this.field_148189_l, p_148278_2_, p_148278_3_))
-             {
+-            if (this.field_148280_d.func_146116_c(GuiKeyBindingList.this.field_148189_l, p_148278_2_, p_148278_3_))
+-            {
++            if(this.field_148280_d.func_146116_c(GuiKeyBindingList.this.field_148189_l, p_148278_2_, p_148278_3_)) {
+                 GuiKeyBindingList.this.field_148191_k.field_146491_f = this.field_148282_b;
+                 return true;
+-            }
+-            else if (this.field_148281_e.func_146116_c(GuiKeyBindingList.this.field_148189_l, p_148278_2_, p_148278_3_))
+-            {
++            } else if(this.field_148281_e.func_146116_c(GuiKeyBindingList.this.field_148189_l, p_148278_2_, p_148278_3_)) {
 +                this.field_148282_b.setToDefault();
                  GuiKeyBindingList.this.field_148189_l.field_71474_y.func_151440_a(this.field_148282_b, this.field_148282_b.func_151469_h());
                  KeyBinding.func_74508_b();
                  return true;
-@@ -222,14 +175,12 @@
+-            }
+-            else
+-            {
++            } else {
+                 return false;
              }
          }
  
@@ -186,3 +307,21 @@
          public void func_192633_a(int p_192633_1_, int p_192633_2_, int p_192633_3_, float p_192633_4_)
          {
          }
++
++        public KeyBinding getKeybinding() {
++            return field_148282_b;
++        }
++    }
++
++    public java.util.LinkedList<IGuiListEntry> getListEntries() {
++        return listEntries2;
++    }
++
++    public java.util.LinkedList<IGuiListEntry> getListEntriesAll() {
++        return listEntriesAll;
++    }
++
++    public void setListEntries(java.util.LinkedList<IGuiListEntry> listEntries) {
++        this.listEntries2 = listEntries;
+     }
+ }

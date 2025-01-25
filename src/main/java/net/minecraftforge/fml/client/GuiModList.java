@@ -72,7 +72,7 @@ import org.lwjgl.opengl.GL11;
  */
 public class GuiModList extends GuiScreen
 {
-    private enum SortType implements Comparator<ModContainer>
+    public enum SortType implements Comparator<ModContainer>
     {
         NORMAL(24),
         A_TO_Z(25){ @Override protected int compare(String name1, String name2){ return name1.compareTo(name2); }},
@@ -106,6 +106,22 @@ public class GuiModList extends GuiScreen
             String name1 = StringUtils.stripControlCodes(o1.getName()).toLowerCase();
             String name2 = StringUtils.stripControlCodes(o2.getName()).toLowerCase();
             return compare(name1, name2);
+        }
+
+        public SortType cycle() {
+            return switch (this) {
+                case NORMAL -> A_TO_Z;
+                case A_TO_Z -> Z_TO_A;
+                default -> NORMAL;
+            };
+        }
+
+        public String getName(){
+            return switch (this) {
+                case A_TO_Z -> "A->Z";
+                case Z_TO_A -> "Z->A";
+                default -> "Default";
+            };
         }
     }
 

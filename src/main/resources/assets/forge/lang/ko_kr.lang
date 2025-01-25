@@ -240,3 +240,17 @@ fml.button.open.file=%s 열기
 forge.container.enchant.limitedEnchantability=제한된 마법 부여
 attribute.name.generic.reachDistance=공격 범위
 attribute.name.forge.swimSpeed=수영 속도
+
+options.search=검색
+options.showAll=모두 표시
+options.showConflicts=충돌 표시
+options.showNone=미지정 표시
+options.availableKeys=사용 가능한 키
+options.sort=정렬
+options.category=범주
+options.key=키
+options.sortNone=없음
+options.sortAZ=A->Z
+options.sortZA=Z->A
+options.toggleFree=미사용 전환
+options.confirmReset=확실한가요?

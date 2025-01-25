@@ -8,7 +8,7 @@
  import java.awt.datatransfer.DataFlavor;
  import java.awt.datatransfer.StringSelection;
  import java.awt.datatransfer.Transferable;
-@@ -50,8 +51,8 @@
+@@ -50,27 +51,28 @@
      protected RenderItem field_146296_j;
      public int field_146294_l;
      public int field_146295_m;
@@ -19,8 +19,12 @@
      public boolean field_146291_p;
      protected FontRenderer field_146289_q;
      protected GuiButton field_146290_a;
-@@ -60,17 +61,18 @@
-     private int field_146298_h;
+-    private int field_146287_f;
+-    private long field_146288_g;
+-    private int field_146298_h;
++    protected int field_146287_f;
++    protected long field_146288_g;
++    protected int field_146298_h;
      private URI field_175286_t;
      private boolean field_193977_u;
 +    protected boolean keyHandled, mouseHandled; // Forge: allow canceling key and mouse Post events from handleMouseInput and handleKeyboardInput
