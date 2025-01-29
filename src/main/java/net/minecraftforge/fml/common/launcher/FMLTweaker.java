@@ -27,6 +27,8 @@ import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import org.apache.logging.log4j.LogManager;
+
+import org.spongepowered.asm.launch.GlobalProperties;
 import org.spongepowered.asm.launch.MixinBootstrap;
 
 import java.io.File;
@@ -35,6 +37,7 @@ import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -55,6 +58,8 @@ public class FMLTweaker implements ITweaker {
         MixinBootstrap.init();
         LogManager.getLogger("FML.TWEAK").info("Initializing MixinExtras...");
         MixinExtrasBootstrap.init();
+
+        GlobalProperties.put(GlobalProperties.Keys.CLEANROOM_DISABLE_MIXIN_CONFIGS, new HashSet<>());
     }
     @SuppressWarnings("unchecked")
     @Override
