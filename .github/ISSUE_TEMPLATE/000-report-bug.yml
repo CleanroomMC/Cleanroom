@@ -76,5 +76,7 @@ body:
           required: true
         - label: "I have installed [Scalar](https://www.curseforge.com/minecraft/mc-mods/scalar) and it does not fix this issue."
           required: true
+        - label: "I have switched my Forgelin and LibrarianLib to continuous versions(check readme for more detail)."
+          required: true
         - label: "I am running a test build from Cleanroom Github Actions.  (Or, if I've compiled it myself I plan to fix the issue)"
           required: true

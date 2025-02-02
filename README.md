@@ -28,6 +28,7 @@
 - [Fugue](https://www.curseforge.com/minecraft/mc-mods/fugue), a mod patches many incompatibilities.
 - Javassist
 - [Scalar](https://www.curseforge.com/minecraft/mc-mods/scalar), a Scala provider. We made Scala libraries become a standalone mod so it can be updated.
+- [Forgelin-Continuous](https://www.curseforge.com/minecraft/mc-mods/forgelin-continuous) and [LibrarianLib-Continuous](https://www.curseforge.com/minecraft/mc-mods/librarianlib-continuous)
 
 ## Download & Installation:
 
