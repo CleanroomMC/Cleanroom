@@ -102,7 +102,7 @@ public enum CapabilityManager
     private IdentityHashMap<String, List<Function<Capability<?>, Object>>> callbacks = Maps.newIdentityHashMap();
     public void injectCapabilities(ASMDataTable data)
     {
-        for (ASMDataTable.ASMData entry : data.getAll(CapabilityInject.class.getName()))
+        for (ASMDataTable.ASMData entry : data.getAll(CapabilityInject.class))
         {
             final String targetClass = entry.getClassName();
             final String targetName = entry.getObjectName();
