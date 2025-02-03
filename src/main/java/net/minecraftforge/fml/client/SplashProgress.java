@@ -23,6 +23,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
 
 import java.awt.image.BufferedImage;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -35,6 +36,7 @@ import java.io.Writer;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.concurrent.Semaphore;
@@ -260,7 +262,7 @@ public class SplashProgress
                 logoTexture = new Texture(logoLoc, null, false);
                 forgeTexture = new Texture(forgeLoc, forgeFallbackLoc);
                 glEnable(GL_TEXTURE_2D);
-                fontRenderer = new SplashFontRenderer();
+                fontRenderer = new SplashFontRenderer(false);
                 glDisable(GL_TEXTURE_2D);
                 while(!done)
                 {
@@ -405,6 +407,7 @@ public class SplashProgress
                         Display.sync(100);
                     }
                 }
+                fontRenderer.clear();
                 clearGL();
             }
 
@@ -743,7 +746,7 @@ public class SplashProgress
     private static final IntBuffer buf = BufferUtils.createIntBuffer(4 * 1024 * 1024);
 
     @SuppressWarnings("unused")
-    private static class Texture
+    private static class Texture implements Closeable 
     {
         private final ResourceLocation location;
         private final int name;
@@ -891,21 +894,30 @@ public class SplashProgress
         {
             glTexCoord2f(getU(frame, u), getV(frame, v));
         }
+
+        @Override
+        public void close(){
+            this.delete();
+        }
     }
 
-    private static class SplashFontRenderer extends FontRenderer
+    public static class SplashFontRenderer extends FontRenderer implements Closeable 
     {
-        public SplashFontRenderer()
+        public HashMap<ResourceLocation, Texture> cachedImages;
+        public SplashFontRenderer(boolean isForcedUnicode)
         {
-            super(Minecraft.getMinecraft().gameSettings, fontTexture.getLocation(), null, false);
+            super(Minecraft.getMinecraft().gameSettings, fontTexture.getLocation(), null, isForcedUnicode);
             super.onResourceManagerReload(null);
         }
 
         @Override
         protected void bindTexture(@Nonnull ResourceLocation location)
         {
-            if(location != locationFontTexture) throw new IllegalArgumentException();
-            fontTexture.bind();
+            if(cachedImages == null) cachedImages = new HashMap<>();
+            if (!cachedImages.containsKey(location)) {
+                cachedImages.put(location, new Texture(location, null));
+            }
+            cachedImages.get(location).bind();
         }
 
         @Nonnull
@@ -914,6 +926,21 @@ public class SplashProgress
         {
             DefaultResourcePack pack = Minecraft.getMinecraft().defaultResourcePack;
             return new SimpleResource(pack.getPackName(), location, pack.getInputStream(location), null, null);
+        }
+        
+        public void clear(){
+            if(cachedImages != null){
+                for(Texture texture : cachedImages.values()){
+                   texture.delete();
+                }
+                cachedImages.clear();
+                cachedImages = null;
+            }
+        }
+
+        @Override
+        public void close(){
+            this.clear();
         }
     }
 
