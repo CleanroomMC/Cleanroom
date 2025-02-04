@@ -41,7 +41,6 @@ import org.apache.logging.log4j.message.FormattedMessage;
 
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
-import org.spongepowered.asm.mixin.ModUtil;
 import org.spongepowered.asm.mixin.transformer.Proxy;
 import org.spongepowered.asm.service.MixinService;
 import org.spongepowered.asm.service.mojang.MixinServiceLaunchWrapper;
@@ -195,18 +194,19 @@ public class LoadController
                         }
                     }
 
-                    // mark config owners : for earlys, lates, and mfAttributes.
-                    for (Config config : Mixins.getConfigs()) {
-                        if (!config.getConfig().hasDecoration(ModUtil.OWNER_DECORATOR)) {
-                            List<ModContainer> owners = getPackageOwners();
-                            if (owners.isEmpty()) {
-                                config.getConfig().decorate(ModUtil.OWNER_DECORATOR, (Supplier) () -> ModUtil.UNKNOWN_OWNER);
-                            } else {
-                                final String owner = owner.getFirst().getModId(); // TODO : better assign ?
-                                config.getConfig().decorate(ModUtil.OWNER_DECORATOR, (Supplier) () -> owner);
-                            }
-                        }
-                    }
+                    // // org.spongepowered.asm.mixin.ModUtil
+                    // // mark config owners : for earlys, lates, and mfAttributes.
+                    // for (Config config : Mixins.getConfigs()) {
+                    //     if (!config.getConfig().hasDecoration(ModUtil.OWNER_DECORATOR)) {
+                    //         List<ModContainer> owners = getPackageOwners();
+                    //         if (owners.isEmpty()) {
+                    //             config.getConfig().decorate(ModUtil.OWNER_DECORATOR, (Supplier) () -> ModUtil.UNKNOWN_OWNER);
+                    //         } else {
+                    //             final String owner = owner.getFirst().getModId(); // TODO : better assign ?
+                    //             config.getConfig().decorate(ModUtil.OWNER_DECORATOR, (Supplier) () -> owner);
+                    //         }
+                    //     }
+                    // }
 
                     for (ModContainer container : this.loader.getActiveModList()) {
                         modClassLoader.addFile(container.getSource());

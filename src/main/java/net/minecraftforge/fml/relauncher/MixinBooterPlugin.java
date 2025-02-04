@@ -1,7 +1,10 @@
 package net.minecraftforge.fml.relauncher;
 
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.FMLLog;
+
+import com.google.gson.*;
 
 import org.spongepowered.asm.mixin.Mixins;
 import zone.rong.mixinbooter.Context;
@@ -9,10 +12,15 @@ import zone.rong.mixinbooter.IEarlyMixinLoader;
 import zone.rong.mixinbooter.IMixinConfigHijacker;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Map;
+import java.util.Enumeration;
+import java.io.InputStreamReader;
+import java.net.URL;
+
 
 @SuppressWarnings("deprecation")
 @IFMLLoadingPlugin.Name("MixinBooter")
@@ -64,11 +72,12 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
         }
     }
 
-    private void loadEarlyLoaders(Collection<IEarlyMixinLoader> queuedLoaders) {
+    private static void loadEarlyLoaders(Collection<IEarlyMixinLoader> queuedLoaders) {
+        Set<String> modlist = speculatedModList();
         for (IEarlyMixinLoader queuedLoader : queuedLoaders) {
             FMLLog.log.info("Loading early loader {} for its mixins.", queuedLoader.getClass().getName());
             for (String mixinConfig : queuedLoader.getMixinConfigs()) {
-                Context context = new Context(mixinConfig);
+                Context context = new Context(mixinConfig, modlist);
                 if (queuedLoader.shouldMixinConfigQueue(context)) {
                     FMLLog.log.info("Adding {} mixin configuration.", mixinConfig);
                     Mixins.addConfiguration(mixinConfig);
@@ -76,6 +85,57 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
                 }
             }
         }
+    }
+
+    public static Set<String> speculatedModList() {
+        HashSet<String> presentMods = new HashSet<>();
+
+        // buildIn mods :
+        presentMods.add("minecraft");
+        presentMods.add("fml");
+        presentMods.add("forge");
+        presentMods.add("mixinbooter");
+        presentMods.add("configanytime");
+
+        // mcmod.info
+        try {
+            Enumeration<URL> resources = Launch.classLoader.getResources("mcmod.info");
+            while (resources.hasMoreElements()) {
+                presentMods.addAll(parseMcmodInfo(resources.nextElement()));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to gather present mods from mcmod.info (s)", e);
+        }
+
+        // optifine :
+        if (Launch.classLoader.isClassExist("optifine.OptiFineTweaker")) {
+            presentMods.add("optifine");
+        }
+
+    }
+
+    private static Set<String> parseMcmodInfo(URL url) {
+        try {
+            HashSet<String> ids = new HashSet<>();
+            JsonElement root = JsonParser.parseReader(new InputStreamReader(url.openStream()));
+            if (root.isJsonArray()) {
+                for (JsonElement element : root.getAsJsonArray()) {
+                    if (element.isJsonObject()) {
+                        ids.add(element.getAsJsonObject().get("modid").getAsString());
+                    }
+                }
+            } else {
+                for (JsonElement element : root.getAsJsonObject().get("modList").getAsJsonArray()) {
+                    if (element.isJsonObject()) {
+                        ids.add(element.getAsJsonObject().get("modid").getAsString());
+                    }
+                }
+            }
+            return ids;
+        } catch (Throwable t) {
+            FMLLog.log.error("Failed to parse mcmod.info for " + url, t);
+        }
+        return Collections.emptySet();
     }
 
 

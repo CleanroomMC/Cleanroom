@@ -31,13 +31,15 @@ public final class Context {
     }
 
     private final String mixinConfig;
+    private final Collection<String> presentMods;
 
-    public Context(String mixinConfig, Collection<String> presentMods) {
-        this(mixinConfig); // TODO : better presentMods scan?
+    public Context(String mixinConfigIn, Collection<String> presentModsIn) {
+        this.mixinConfig = mixinConfigIn;
+        this.presentMods = presentModsIn;
     }
 
-    public Context(String mixinConfig) {
-        this.mixinConfig = mixinConfig;
+    public Context(String mixinConfigIn) {
+        this(mixinConfigIn, null);
     }
 
     /**
@@ -73,7 +75,7 @@ public final class Context {
      * @return whether the mod is present
      */
     public boolean isModPresent(String modId) {
-        return Launch.classLoader.isClassLoaded("net.minecraftforge.fml.common.Loader") && Loader.isModLoaded(modId);
+        return presentMods == null ? Loader.isModLoaded(modId) : presentMods.contains(modId);
     }
 
 }

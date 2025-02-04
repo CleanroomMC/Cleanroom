@@ -623,7 +623,7 @@ public class CoreModManager {
             FMLPluginWrapper wrap = new FMLPluginWrapper(coreModName, plugin, location, sortIndex, dependencies);
             loadPlugins.add(wrap);
             FMLLog.log.debug("Enqueued coremod {}", coreModName);
-            MixinBooterPlugin.loadEarlyMixinLoader(plugin);
+            MixinBooterPlugin.queneEarlyMixinLoader(plugin);
             return wrap;
         }
         catch (ClassNotFoundException cnfe)
