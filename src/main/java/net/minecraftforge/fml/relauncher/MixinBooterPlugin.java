@@ -7,6 +7,7 @@ import net.minecraftforge.fml.common.FMLLog;
 import com.google.gson.*;
 
 import org.spongepowered.asm.mixin.Mixins;
+import org.spongepowered.asm.launch.GlobalProperties;
 import zone.rong.mixinbooter.Context;
 import zone.rong.mixinbooter.IEarlyMixinLoader;
 import zone.rong.mixinbooter.IMixinConfigHijacker;
@@ -64,10 +65,10 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
         if (plugin instanceof IMixinConfigHijacker hijacker) {
             Collection<String> disabledConfigs = GlobalProperties.get(GlobalProperties.Keys.CLEANROOM_DISABLE_MIXIN_CONFIGS);
             Context context = new Context(null);
-            FMLLog.log.info("Loading config hijacker {}.", interceptor.getClass().getName());
-            for (String hijacked : interceptor.getHijackedMixinConfigs(context)) {
+            FMLLog.log.info("Loading config hijacker {}.", hijacker.getClass().getName());
+            for (String hijacked : hijacker.getHijackedMixinConfigs(context)) {
                 disabledConfigs.add(hijacked);
-                FMLLog.log.info("{} will hijack the mixin config {}", interceptor.getClass().getName(), hijacked);
+                FMLLog.log.info("{} will hijack the mixin config {}", hijacker.getClass().getName(), hijacked);
             }
         }
     }
