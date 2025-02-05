@@ -113,6 +113,8 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
             presentMods.add("optifine");
         }
 
+        return presentMods;
+
     }
 
     private static Set<String> parseMcmodInfo(URL url) {
