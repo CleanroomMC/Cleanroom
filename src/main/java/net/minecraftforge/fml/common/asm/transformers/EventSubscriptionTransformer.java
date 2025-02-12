@@ -64,6 +64,7 @@ public class EventSubscriptionTransformer implements IClassTransformer
 {
     public EventSubscriptionTransformer()
     {
+        new Event(); // make sure the base event class loaded and initialized.
     }
 
     @Override
