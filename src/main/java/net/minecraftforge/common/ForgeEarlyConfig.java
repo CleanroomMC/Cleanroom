@@ -14,9 +14,6 @@ public class ForgeEarlyConfig {
     public static boolean WINDOW_START_FOCUSED = true;
     public static boolean WINDOW_START_ICONIFIED = false;
 
-    public static int GL_VERSION_MAJOR = 2;
-    public static int GL_VERSION_MINOR = 1;
-
     public static boolean WINDOW_CENTERED = true;
 
     @Config.Comment("Should the window have decorations (titlebar, border, close button)")
