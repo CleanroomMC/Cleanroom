@@ -55,6 +55,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
@@ -198,11 +199,13 @@ public class LoadController
                     // mark config owners : for earlys, lates, and mfAttributes.
                     for (Config config : Mixins.getConfigs()) {
                         if (!config.getConfig().hasDecoration(ModUtil.OWNER_DECORATOR)) {
-                            List<ModContainer> owners = getPackageOwners();
+                            String pkg = config.getConfig().getMixinPackage();
+                            pkg = pkg.charAt(pkg.length() - 1) == '.' ? pkg.substring(0, pkg.length() - 1) : pkg;
+                            List<ModContainer> owners = getPackageOwners(pkg);
                             if (owners.isEmpty()) {
                                 config.getConfig().decorate(ModUtil.OWNER_DECORATOR, (Supplier) () -> ModUtil.UNKNOWN_OWNER);
                             } else {
-                                final String owner = owner.getFirst().getModId(); // TODO : better assign ?
+                                final String owner = owner.getFirst().getModId(); // better assign ?
                                 config.getConfig().decorate(ModUtil.OWNER_DECORATOR, (Supplier) () -> owner);
                             }
                         }
