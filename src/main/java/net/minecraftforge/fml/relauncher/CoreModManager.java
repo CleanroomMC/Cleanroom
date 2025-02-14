@@ -43,6 +43,8 @@ import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.service.mojang.MixinServiceLaunchWrapper;
 import org.spongepowered.asm.util.Constants;
+import zone.rong.mixinbooter.IEarlyMixinLoader;
+import zone.rong.mixinbooter.IMixinConfigHijacker;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -621,6 +623,7 @@ public class CoreModManager {
             FMLPluginWrapper wrap = new FMLPluginWrapper(coreModName, plugin, location, sortIndex, dependencies);
             loadPlugins.add(wrap);
             FMLLog.log.debug("Enqueued coremod {}", coreModName);
+            MixinBooterPlugin.queneEarlyMixinLoader(plugin);
             return wrap;
         }
         catch (ClassNotFoundException cnfe)
