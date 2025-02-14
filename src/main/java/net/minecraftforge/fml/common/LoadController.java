@@ -42,6 +42,7 @@ import org.apache.logging.log4j.message.FormattedMessage;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.ModUtil;
+import org.spongepowered.asm.mixin.transformer.Config;
 import org.spongepowered.asm.mixin.transformer.Proxy;
 import org.spongepowered.asm.service.MixinService;
 import org.spongepowered.asm.service.mojang.MixinServiceLaunchWrapper;
@@ -205,7 +206,7 @@ public class LoadController
                             if (owners.isEmpty()) {
                                 config.getConfig().decorate(ModUtil.OWNER_DECORATOR, (Supplier) () -> ModUtil.UNKNOWN_OWNER);
                             } else {
-                                final String owner = owner.getFirst().getModId(); // better assign ?
+                                final String owner = owner.get(0).getModId(); // better assign ?
                                 config.getConfig().decorate(ModUtil.OWNER_DECORATOR, (Supplier) () -> owner);
                             }
                         }
