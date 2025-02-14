@@ -206,7 +206,7 @@ public class LoadController
                             if (owners.isEmpty()) {
                                 config.getConfig().decorate(ModUtil.OWNER_DECORATOR, (Supplier) () -> ModUtil.UNKNOWN_OWNER);
                             } else {
-                                final String owner = owner.get(0).getModId(); // better assign ?
+                                final String owner = owners.get(0).getModId(); // better assign ?
                                 config.getConfig().decorate(ModUtil.OWNER_DECORATOR, (Supplier) () -> owner);
                             }
                         }
