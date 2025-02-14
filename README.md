@@ -28,15 +28,17 @@
 - [Fugue](https://www.curseforge.com/minecraft/mc-mods/fugue), a mod patches many incompatibilities.
 - Javassist
 - [Scalar](https://www.curseforge.com/minecraft/mc-mods/scalar), a Scala provider. We made Scala libraries become a standalone mod so it can be updated.
+- [Forgelin-Continuous](https://www.curseforge.com/minecraft/mc-mods/forgelin-continuous) and [LibrarianLib-Continuous](https://www.curseforge.com/minecraft/mc-mods/librarianlib-continuous)
 
 ## Download & Installation:
 
 - For MultiMC-based launchers (PolyMC, PrismLauncher), download the MMC instance from [release](https://github.com/CleanroomMC/Cleanroom/releases), import it in your launcher(alternatively unzip patches and json inside to your 1.12 instance).
 - For regular launcher (official launcher, AT launcher, FTB, HMCL), download the installer jar from release. You could use the installer like the Forge one.
+- **WARNING:** Only MultiMC-based launchers are officially supported. This is because of the limit on removing vanilla libraries in other launchers.
 - **Remember to install [Fugue](https://www.curseforge.com/minecraft/mc-mods/fugue)!**
 - **And [Scalar](https://www.curseforge.com/minecraft/mc-mods/scalar)!**
-- If you were told to use *action builds*, here: [Cleanroom jar](https://github.com/CleanroomMC/Cleanroom/actions), [Cleanroom MMC zip](https://github.com/CleanroomMC/CleanroomMMC/actions/), [Fugue](https://github.com/CleanroomMC/Fugue/actions)
-- You need to log-in into GitHub to download action artifacts. 
+- If you were told to use **action builds** (aka bleeding edge), here: [Cleanroom jar](https://github.com/CleanroomMC/Cleanroom/actions), [Cleanroom MMC zip](https://github.com/CleanroomMC/CleanroomMMC/actions/), [Fugue](https://github.com/CleanroomMC/Fugue/actions)
+- You need to log-in with a GitHub account to download action artifacts. 
 
 ## Build Instructions:
 

@@ -11,7 +11,6 @@ public class IMEHandler {
     static {
         switch (GLFW.glfwGetPlatform()) {
             case GLFW.GLFW_PLATFORM_WIN32 -> instance = new WindowsIMEHandler();
-            case GLFW.GLFW_PLATFORM_COCOA -> instance = new CocoaIMEHandler();
             case GLFW.GLFW_PLATFORM_X11 -> instance = new X11IMEHandler();
             case GLFW.GLFW_PLATFORM_WAYLAND -> instance = new WaylandIMEhandler();
             default -> {

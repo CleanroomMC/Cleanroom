@@ -15,7 +15,7 @@ body:
     attributes:
       label: Cleanroom Version
       description: "What version of the Cleanroom are you using?"
-      placeholder: "Example: 15.24.0.3000"
+      placeholder: "Example: 0.2.4-alpha"
     validations:
       required: true
   - type: dropdown
@@ -25,11 +25,6 @@ body:
       description: What Java version are you using? It's worth mentioning that if you play on Java9+ you should try update to latest minor release (e.g. prefer Java 17.0.6 over 17.0.2) of that version.
       options:
         - Java 8
-        - Java 9
-        - Java 11
-        - Java 17
-        - Java 19
-        - Java 20
         - Java 21
         - Java 22
         - Java 23
@@ -67,14 +62,6 @@ body:
       placeholder: "List of mods goes here"
     validations:
       required: true
-  - type: textarea
-    id: notes
-    attributes:
-      label: MMC Instance Notes
-      description: "Obtain from Notes sections if using MMC instance pack."
-      placeholder: "Notes goes here"
-    validations:
-      required: true
   - type: checkboxes
     id: final
     attributes:
@@ -83,11 +70,13 @@ body:
       options:
         - label: "I have searched the issues and haven't found a similar issue."
           required: true
-        - label: "I have read the known incompatibilities and this is not related to one of those."
+        - label: "I have read the readme and know that what is action build and non-MMC based launcher are unsupported."
           required: true
-        - label: "I have installed [Fugue](https://github.com/CleanroomMC/Fugue) and it does not fix this issue."
+        - label: "I have installed [Fugue](https://www.curseforge.com/minecraft/mc-mods/fugue) and it does not fix this issue."
           required: true
-        - label: "I am using experimental branch and have installed [Scalar](https://github.com/CleanroomMC/Scalar/releases/tag/2.11.1) and it does not fix this issue."
+        - label: "I have installed [Scalar](https://www.curseforge.com/minecraft/mc-mods/scalar) and it does not fix this issue."
+          required: true
+        - label: "I have switched my Forgelin and LibrarianLib to continuous versions(check readme for more detail)."
           required: true
         - label: "I am running a test build from Cleanroom Github Actions.  (Or, if I've compiled it myself I plan to fix the issue)"
           required: true
