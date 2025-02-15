@@ -56,7 +56,7 @@ public class ForgeEarlyConfig {
     public static String COCOA_FRAME_NAME = "minecraft";
 
     public static String CONFIG_ANY_TIME_VERSION = "3.0";
-    public static String MIXIN_BOOTER_VERSION = "10.3";
+    public static String MIXIN_BOOTER_VERSION = "10.5";
 
     @Config.Comment("""
             Mods in this list have one or more of the problems list below:
