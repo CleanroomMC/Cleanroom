@@ -496,7 +496,7 @@ public class LibraryManager
     }
 
     private static void scanningChildFolder(File directory, List<File> list) {
-        if (directory.isDirectory() && !(directory.getName().contains("optional") || directory.getName().contains("disabled"))) {
+        if (directory.isDirectory() && !(directory.getName().toLowerCase().contains("optional") || directory.getName().toLowerCase().contains("disabled"))) {
             for (File file : directory.listFiles()) {
                 if (file.isDirectory()) {
                     scanningChildFolder(file, list);
