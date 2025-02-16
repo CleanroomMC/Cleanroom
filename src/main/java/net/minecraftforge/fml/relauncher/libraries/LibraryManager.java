@@ -469,12 +469,15 @@ public class LibraryManager
 
         for (String dir : new String[]{"mods", "mods" + File.separatorChar + ForgeVersion.mcVersion})
         {
+            List<File> location = new ArrayList<>();
             File base = new File(mcDir, dir);
             if (!base.isDirectory() || !base.exists())
                 continue;
 
+            scanningChildFolder(base, location);
+
             FMLLog.log.info("Searching {} for mods", base.getAbsolutePath());
-            for (File f : base.listFiles(MOD_FILENAME_FILTER))
+            for (File f : location)
             {
                 if (!list.contains(f))
                 {
@@ -490,6 +493,18 @@ public class LibraryManager
 
         list.sort(FILE_NAME_SORTER_INSENSITVE);
         return list;
+    }
+
+    private static void scanningChildFolder(File directory, List<File> list) {
+        if (directory.isDirectory() && !(directory.getName().contains("optional") || directory.getName().contains("disabled"))) {
+            for (File file : directory.listFiles()) {
+                if (file.isDirectory()) {
+                    scanningChildFolder(file, list);
+                } else if (MOD_FILENAME_FILTER.accept(file, file.getName())) {
+                    list.add(file);
+                }
+            }
+        }
     }
 
     public static Repository getDefaultRepo()
