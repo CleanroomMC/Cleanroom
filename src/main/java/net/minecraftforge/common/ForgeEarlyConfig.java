@@ -18,4 +18,9 @@ public class ForgeEarlyConfig {
     public static String X11_CLASS_NAME = "minecraft";
     public static String COCOA_FRAME_NAME = "minecraft";
     public static String CONFIG_ANY_TIME_VERSION = "3.0";
+
+    public static String[] SPECIAL_MOD_FOLDER = new String[]{
+            "disabled", "optional"
+    };
+    public static boolean IS_WHITELIST = false;
 }
