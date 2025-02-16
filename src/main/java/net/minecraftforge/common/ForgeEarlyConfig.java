@@ -14,6 +14,9 @@ public class ForgeEarlyConfig {
     public static boolean WINDOW_START_FOCUSED = true;
     public static boolean WINDOW_START_ICONIFIED = false;
 
+    @Config.Comment("Enable this when the game has problem running on Wayland")
+    public static boolean FORCE_X11 = false;
+
     public static boolean WINDOW_CENTERED = true;
 
     @Config.Comment("Should the window have decorations (titlebar, border, close button)")
