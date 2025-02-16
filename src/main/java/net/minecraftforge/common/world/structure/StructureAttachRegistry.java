@@ -14,7 +14,7 @@ public final class StructureAttachRegistry {
     private static final HashMap<IChunkGenerator, StructureCollection> REGISTRY = new HashMap<>();
 
     public static StructureCollection newStructureCollectionFor(WorldServer worldServer, IChunkGenerator chunkGenerator){
-        StructureCollection collection = new StructureCollection(worldServer.getSeed(), worldServer);
+        StructureCollection collection = new StructureCollection("ForgeStructureCollection", worldServer.getSeed(), worldServer);
         REGISTRY.put(chunkGenerator, collection);
         return collection;
     }

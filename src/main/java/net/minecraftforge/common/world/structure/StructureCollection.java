@@ -17,7 +17,8 @@ import java.util.Random;
 public class StructureCollection implements IStructureProvider, Iterable<IStructureProvider>{
     public final HashMap<String,IStructureProvider> providers = new HashMap<>();
     public final Random random;
-    public StructureCollection(long seed, WorldServer worldServer) {
+    public final String name;
+    public StructureCollection(String name, long seed, WorldServer worldServer) {
         this.random = new Random(seed);
         MinecraftForge.EVENT_BUS.post(new StructureAttachEvent(this, worldServer));
     }
@@ -28,7 +29,7 @@ public class StructureCollection implements IStructureProvider, Iterable<IStruct
     }
     @Override
     public String getName() {
-        return "StructureCollection";
+        return name;
     }
 
     @Override
