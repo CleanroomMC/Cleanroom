@@ -64,7 +64,7 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
         if (plugin instanceof IEarlyMixinLoader earlyMixinLoader) earlyMixinLoaders.add(earlyMixinLoader);
         if (plugin instanceof IMixinConfigHijacker hijacker) {
             Collection<String> disabledConfigs = GlobalProperties.get(GlobalProperties.Keys.CLEANROOM_DISABLE_MIXIN_CONFIGS);
-            Context context = new Context(null);
+            Context context = new Context(null, Collections.emptySet());
             FMLLog.log.info("Loading config hijacker {}.", hijacker.getClass().getName());
             for (String hijacked : hijacker.getHijackedMixinConfigs(context)) {
                 disabledConfigs.add(hijacked);
