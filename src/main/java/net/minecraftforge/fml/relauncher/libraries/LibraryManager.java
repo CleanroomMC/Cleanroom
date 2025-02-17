@@ -477,10 +477,8 @@ public class LibraryManager
             if (!base.isDirectory() || !base.exists())
                 continue;
 
-            List<File> location = scanningModFiles(base.toPath());
-
             FMLLog.log.info("Searching {} for mods", base.getAbsolutePath());
-            for (File f : location)
+            for (File f : scanningModFiles(base.toPath()))
             {
                 if (!list.contains(f))
                 {
@@ -503,7 +501,7 @@ public class LibraryManager
             return stream
                     .filter(path -> {
                         Path parent = path.getParent();
-                        return parent == null || (Arrays.stream(ForgeEarlyConfig.SPECIAL_MOD_FOLDER).toList().contains(parent.getFileName().toString()) && ForgeEarlyConfig.IS_WHITELIST);
+                        return parent == null && !Arrays.stream(ForgeEarlyConfig.DISABLED_MOD_FOLDER).toList().contains(parent.getFileName().toString());
                     })
                     .filter(java.nio.file.Files::isRegularFile)
                     .map(Path::toFile)
