@@ -446,8 +446,8 @@ project(':cleanroom') {
 
         installer 'com.ibm.icu:icu4j:76.1'
 
-        installer 'org.jline:jline:3.28.0'
-        installer 'org.jline:jline-native:3.28.0'
+        installer 'org.jline:jline:3.29.0'
+        installer 'org.jline:jline-native:3.29.0'
 
         installer 'net.java.jinput:jinput:2.0.10'
 
