@@ -1,10 +1,26 @@
+pluginManagement {
+    repositories {
+        maven {
+            // Fixme: temp repo resolve here, for CleanroomGradle deps
+            name 'MinecraftForge'
+            url 'https://maven.minecraftforge.net/'
+        }
+        // Fixme: build CleanroomGradle locally for now
+        mavenLocal()
+        gradlePluginPortal()
+    }
+}
+
+plugins {
+    // Set default jvm toolchain resolver
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.9.0'
+}
+
 rootProject.name = 'Cleanroom'
 
-include ':mcp'
-include ':minecraft'
-include ':cleanroom'
+// These are subprojects when a Project object is resolved, for now they're only "children" ProjectDescriptors
+include 'forge', 'cleanroom', 'lwjgl', 'ibxm'
 
-project(":mcp").projectDir = file("projects/mcp")
-project(":minecraft").projectDir = file("projects/minecraft")
-project(":cleanroom").projectDir = file("projects/cleanroom")
-
+rootProject.children.each {
+    it.projectDir = file("projects/${it.name}")
+}

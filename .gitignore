@@ -1,12 +1,7 @@
-/.idea/*
-/.run/
+/.idea/
 /.gradle/
-/projects/
-/buildSrc/.gradle/
-/buildSrc/build/
-/logs/
-version.txt
-src/main/java/com/cleanroommc/common/CleanroomVersion.java
-build/
+
+/**/logs/
+/**/build/
 
 !/.idea/icon.svg

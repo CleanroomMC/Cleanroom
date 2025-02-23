@@ -1,0 +1,6 @@
+plugins {
+    id 'java'
+}
+
+group 'ibxm'
+version '1.0.0+a51'

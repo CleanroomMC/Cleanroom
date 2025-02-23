@@ -1,0 +1,6 @@
+plugins {
+    id 'java'
+}
+
+group 'lwjgl'
+version '3.3.6'

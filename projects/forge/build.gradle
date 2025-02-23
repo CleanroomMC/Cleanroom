@@ -1,0 +1,6 @@
+plugins {
+    id 'java'
+}
+
+group 'net.minecraftforge'
+version '14.23.5.2860'
