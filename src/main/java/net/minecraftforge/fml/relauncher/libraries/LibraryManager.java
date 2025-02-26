@@ -501,7 +501,7 @@ public class LibraryManager
             return stream
                     .filter(path -> {
                         Path parent = path.getParent();
-                        return parent == null && !Arrays.stream(ForgeEarlyConfig.DISABLED_MOD_FOLDER).toList().contains(parent.getFileName().toString());
+                        return parent != null && !Arrays.stream(ForgeEarlyConfig.DISABLED_MOD_FOLDER).toList().contains(parent.getFileName().toString());
                     })
                     .filter(java.nio.file.Files::isRegularFile)
                     .map(Path::toFile)
