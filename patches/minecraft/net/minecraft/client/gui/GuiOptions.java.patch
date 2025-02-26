@@ -1,20 +1,11 @@
 --- before/net/minecraft/client/gui/GuiOptions.java
 +++ after/net/minecraft/client/gui/GuiOptions.java
-@@ -87,16 +87,7 @@
+@@ -85,7 +85,7 @@
+                 this.field_175357_i.field_146124_l = false;
+             }
          }
-         else
+-        else
++        else if (false) // removed realms button
          {
--            this.field_146292_n
--            .add(
--                new GuiOptionButton(
--                    GameSettings.Options.REALMS_NOTIFICATIONS.func_74381_c(),
--                    this.field_146294_l / 2 - 155 + i % 2 * 160,
--                    this.field_146295_m / 6 - 12 + 24 * (i >> 1),
--                    GameSettings.Options.REALMS_NOTIFICATIONS,
--                    this.field_146443_h.func_74297_c(GameSettings.Options.REALMS_NOTIFICATIONS)
--                )
--            );
-+            // remove realms notification
-         }
- 
-         this.field_146292_n
+             this.field_146292_n
+             .add(
