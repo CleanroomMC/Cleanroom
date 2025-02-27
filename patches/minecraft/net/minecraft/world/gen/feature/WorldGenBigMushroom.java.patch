@@ -8,7 +8,24 @@
      public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
      {
          Block block = this.field_76523_a;
-@@ -63,9 +62,9 @@
+@@ -46,7 +45,7 @@
+ 
+         if (p_180709_3_.func_177956_o() >= 1 && p_180709_3_.func_177956_o() + i + 1 < 256)
+         {
+-            for (int j = p_180709_3_.func_177956_o(); j <= p_180709_3_.func_177956_o() + 1 + i; j++)
++            for (int j = p_180709_3_.func_177956_o(); j <= p_180709_3_.func_177956_o() + 1 + i; ++j)
+             {
+                 int k = 3;
+ 
+@@ -57,15 +56,15 @@
+ 
+                 BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+ 
+-                for (int l = p_180709_3_.func_177958_n() - k; l <= p_180709_3_.func_177958_n() + k && flag; l++)
++                for (int l = p_180709_3_.func_177958_n() - k; l <= p_180709_3_.func_177958_n() + k && flag; ++l)
+                 {
+-                    for (int i1 = p_180709_3_.func_177952_p() - k; i1 <= p_180709_3_.func_177952_p() + k && flag; i1++)
++                    for (int i1 = p_180709_3_.func_177952_p() - k; i1 <= p_180709_3_.func_177952_p() + k && flag; ++i1)
                      {
                          if (j >= 0 && j < 256)
                          {
@@ -20,7 +37,47 @@
                              {
                                  flag = false;
                              }
-@@ -197,16 +196,14 @@
+@@ -99,13 +98,13 @@
+                         k2 = p_180709_3_.func_177956_o() + i - 3;
+                     }
+ 
+-                    for (int l2 = k2; l2 <= p_180709_3_.func_177956_o() + i; l2++)
++                    for (int l2 = k2; l2 <= p_180709_3_.func_177956_o() + i; ++l2)
+                     {
+                         int j3 = 1;
+ 
+                         if (l2 < p_180709_3_.func_177956_o() + i)
+                         {
+-                            j3++;
++                            ++j3;
+                         }
+ 
+                         if (block == Blocks.field_150420_aW)
+@@ -118,19 +117,19 @@
+                         int j1 = p_180709_3_.func_177952_p() - j3;
+                         int k1 = p_180709_3_.func_177952_p() + j3;
+ 
+-                        for (int l1 = k3; l1 <= l3; l1++)
++                        for (int l1 = k3; l1 <= l3; ++l1)
+                         {
+-                            for (int i2 = j1; i2 <= k1; i2++)
++                            for (int i2 = j1; i2 <= k1; ++i2)
+                             {
+                                 int j2 = 5;
+ 
+                                 if (l1 == k3)
+                                 {
+-                                    j2--;
++                                    --j2;
+                                 }
+                                 else if (l1 == l3)
+                                 {
+-                                    j2++;
++                                    ++j2;
+                                 }
+ 
+                                 if (i2 == j1)
+@@ -197,33 +196,27 @@
                                      blockhugemushroom$enumtype = BlockHugeMushroom.EnumType.ALL_INSIDE;
                                  }
  
@@ -41,7 +98,11 @@
                                      }
                                  }
                              }
-@@ -217,13 +214,9 @@
+                         }
+                     }
+ 
+-                    for (int i3 = 0; i3 < i; i3++)
++                    for (int i3 = 0; i3 < i; ++i3)
                      {
                          IBlockState iblockstate = p_180709_1_.func_180495_p(p_180709_3_.func_177981_b(i3));
  

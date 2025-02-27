@@ -32,14 +32,16 @@
 +        this.field_175948_j = Lists.<WorldGenBigTree.FoliageCoordinates>newArrayList();
          this.field_175948_j.add(new WorldGenBigTree.FoliageCoordinates(this.field_175947_m.func_177981_b(k), j));
  
-         for (; k >= 0; --k)
+-        for (; k >= 0; k--)
++        for (; k >= 0; --k)
          {
              float f = this.func_76490_a(k);
  
 -            if (!(f < 0.0F))
 +            if (f >= 0.0F)
              {
-                 for (int l = 0; l < i; ++l)
+-                for (int l = 0; l < i; l++)
++                for (int l = 0; l < i; ++l)
                  {
 -                    double d0 = this.field_175945_e * (double)f * ((double)this.field_175949_k.nextFloat() + 0.328);
 +                    double d0 = this.field_175945_e * (double)f * ((double)this.field_175949_k.nextFloat() + 0.328D);
@@ -58,9 +60,11 @@
 -        int i = (int)((double)p_181631_2_ + 0.618);
 +        int i = (int)((double)p_181631_2_ + 0.618D);
  
-         for (int j = -i; j <= i; ++j)
+-        for (int j = -i; j <= i; j++)
++        for (int j = -i; j <= i; ++j)
          {
-             for (int k = -i; k <= i; ++k)
+-            for (int k = -i; k <= i; k++)
++            for (int k = -i; k <= i; ++k)
              {
 -                if (Math.pow((double)Math.abs(j) + 0.5, 2.0) + Math.pow((double)Math.abs(k) + 0.5, 2.0) <= (double)(p_181631_2_ * p_181631_2_))
 +                if (Math.pow((double)Math.abs(j) + 0.5D, 2.0D) + Math.pow((double)Math.abs(k) + 0.5D, 2.0D) <= (double)(p_181631_2_ * p_181631_2_))
@@ -95,7 +99,8 @@
  
      void func_175940_a(BlockPos p_175940_1_)
      {
-         for (int i = 0; i < this.field_76508_n; ++i)
+-        for (int i = 0; i < this.field_76508_n; i++)
++        for (int i = 0; i < this.field_76508_n; ++i)
          {
 -            this.func_181631_a(
 -                p_175940_1_.func_177981_b(i), this.func_76495_b(i), Blocks.field_150362_t.func_176223_P().func_177226_a(BlockLeaves.field_176236_b, false)
@@ -104,6 +109,15 @@
          }
      }
  
+@@ -165,7 +163,7 @@
+         float f1 = (float)blockpos.func_177956_o() / (float)i;
+         float f2 = (float)blockpos.func_177952_p() / (float)i;
+ 
+-        for (int j = 0; j <= i; j++)
++        for (int j = 0; j <= i; ++j)
+         {
+             BlockPos blockpos1 = p_175937_1_.func_177963_a((double)(0.5F + (float)j * f), (double)(0.5F + (float)j * f1), (double)(0.5F + (float)j * f2));
+             BlockLog.EnumAxis blocklog$enumaxis = this.func_175938_b(p_175937_1_, blockpos1);
 @@ -221,7 +219,7 @@
  
      boolean func_76493_c(int p_76493_1_)
@@ -113,7 +127,12 @@
      }
  
      void func_175942_c()
-@@ -271,7 +269,7 @@
+@@ -267,11 +265,11 @@
+         }
+         else
+         {
+-            for (int j = 0; j <= i; j++)
++            for (int j = 0; j <= i; ++j)
              {
                  BlockPos blockpos1 = p_175936_1_.func_177963_a((double)(0.5F + (float)j * f), (double)(0.5F + (float)j * f1), (double)(0.5F + (float)j * f2));
  

@@ -329,6 +329,15 @@
      protected void func_70619_bc()
      {
          if (--this.field_70955_e <= 0)
+@@ -442,7 +214,7 @@
+ 
+         if (!this.func_70940_q() && this.field_70961_j > 0)
+         {
+-            this.field_70961_j--;
++            --this.field_70961_j;
+ 
+             if (this.field_70961_j <= 0)
+             {
 @@ -462,7 +234,7 @@
                      if (this.field_70954_d != null && this.field_82189_bL != null)
                      {
@@ -346,16 +355,19 @@
      public boolean func_184645_a(EntityPlayer p_184645_1_, EnumHand p_184645_2_)
      {
          ItemStack itemstack = p_184645_1_.func_184586_b(p_184645_2_);
-@@ -484,7 +255,7 @@
+@@ -484,10 +255,7 @@
              itemstack.func_111282_a(p_184645_1_, this, p_184645_2_);
              return true;
          }
--        else if (!this.func_190669_a(itemstack, this.getClass()) && this.func_70089_S() && !this.func_70940_q() && !this.func_70631_g_())
+-        else if (!this.func_190669_a(itemstack, (Class <? extends Entity >)this.getClass())
+-                 && this.func_70089_S()
+-                 && !this.func_70940_q()
+-                 && !this.func_70631_g_())
 +        else if (!this.func_190669_a(itemstack, this.getClass()) && this.func_70089_S() && !this.func_70940_q() && !this.func_70631_g_() && !p_184645_1_.func_70093_af())
          {
              if (this.field_70963_i == null)
              {
-@@ -514,26 +285,21 @@
+@@ -517,26 +285,21 @@
          }
      }
  
@@ -386,7 +398,16 @@
                  {
                      NBTTagCompound nbttagcompound = p_188266_2_.func_74775_l("Offers");
  
-@@ -554,15 +320,14 @@
+@@ -544,7 +307,7 @@
+                     {
+                         NBTTagList nbttaglist = nbttagcompound.func_150295_c("Recipes", 10);
+ 
+-                        for (int i = 0; i < nbttaglist.func_74745_c(); i++)
++                        for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+                         {
+                             NBTTagCompound nbttagcompound1 = nbttaglist.func_150305_b(i);
+                             DataFixesManager.func_188277_a(p_188266_1_, nbttagcompound1, p_188266_3_, "buy");
+@@ -557,15 +320,14 @@
  
                  return p_188266_2_;
              }
@@ -404,7 +425,16 @@
          p_70014_1_.func_74768_a("Riches", this.field_70956_bz);
          p_70014_1_.func_74768_a("Career", this.field_175563_bv);
          p_70014_1_.func_74768_a("CareerLevel", this.field_175562_bw);
-@@ -588,11 +353,18 @@
+@@ -578,7 +340,7 @@
+ 
+         NBTTagList nbttaglist = new NBTTagList();
+ 
+-        for (int i = 0; i < this.field_175560_bz.func_70302_i_(); i++)
++        for (int i = 0; i < this.field_175560_bz.func_70302_i_(); ++i)
+         {
+             ItemStack itemstack = this.field_175560_bz.func_70301_a(i);
+ 
+@@ -591,11 +353,18 @@
          p_70014_1_.func_74782_a("Inventory", nbttaglist);
      }
  
@@ -424,7 +454,16 @@
          this.field_70956_bz = p_70037_1_.func_74762_e("Riches");
          this.field_175563_bv = p_70037_1_.func_74762_e("Career");
          this.field_175562_bw = p_70037_1_.func_74762_e("CareerLevel");
-@@ -620,32 +392,27 @@
+@@ -609,7 +378,7 @@
+ 
+         NBTTagList nbttaglist = p_70037_1_.func_150295_c("Inventory", 10);
+ 
+-        for (int i = 0; i < nbttaglist.func_74745_c(); i++)
++        for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+         {
+             ItemStack itemstack = new ItemStack(nbttaglist.func_150305_b(i));
+ 
+@@ -623,32 +392,27 @@
          this.func_175552_ct();
      }
  
@@ -457,7 +496,7 @@
      protected ResourceLocation func_184647_J()
      {
          return LootTableList.field_191184_at;
-@@ -653,12 +420,42 @@
+@@ -656,12 +420,42 @@
  
      public void func_70938_b(int p_70938_1_)
      {
@@ -502,7 +541,7 @@
      }
  
      public boolean func_70941_o()
-@@ -681,7 +478,6 @@
+@@ -684,7 +478,6 @@
          return this.field_70953_g;
      }
  
@@ -510,7 +549,7 @@
      public void func_70604_c(@Nullable EntityLivingBase p_70604_1_)
      {
          super.func_70604_c(p_70604_1_);
-@@ -699,7 +495,7 @@
+@@ -702,7 +495,7 @@
                      i = -3;
                  }
  
@@ -519,7 +558,7 @@
  
                  if (this.func_70089_S())
                  {
-@@ -709,7 +505,6 @@
+@@ -712,7 +505,6 @@
          }
      }
  
@@ -527,7 +566,7 @@
      public void func_70645_a(DamageSource p_70645_1_)
      {
          if (this.field_70954_d != null)
-@@ -720,7 +515,7 @@
+@@ -723,7 +515,7 @@
              {
                  if (entity instanceof EntityPlayer)
                  {
@@ -536,7 +575,7 @@
                  }
                  else if (entity instanceof IMob)
                  {
-@@ -729,7 +524,7 @@
+@@ -732,7 +524,7 @@
              }
              else
              {
@@ -545,7 +584,7 @@
  
                  if (entityplayer != null)
                  {
-@@ -741,14 +536,12 @@
+@@ -744,14 +536,12 @@
          super.func_70645_a(p_70645_1_);
      }
  
@@ -560,7 +599,16 @@
      public EntityPlayer func_70931_l_()
      {
          return this.field_70962_h;
-@@ -776,8 +569,7 @@
+@@ -768,7 +558,7 @@
+         {
+             boolean flag = false;
+ 
+-            for (int i = 0; i < this.field_175560_bz.func_70302_i_(); i++)
++            for (int i = 0; i < this.field_175560_bz.func_70302_i_(); ++i)
+             {
+                 ItemStack itemstack = this.field_175560_bz.func_70301_a(i);
+ 
+@@ -779,8 +569,7 @@
                          flag = true;
                          this.field_175560_bz.func_70298_a(i, 3);
                      }
@@ -570,7 +618,7 @@
                      {
                          flag = true;
                          this.field_175560_bz.func_70298_a(i, 12);
-@@ -801,7 +593,6 @@
+@@ -804,7 +593,6 @@
          this.field_175565_bs = p_175549_1_;
      }
  
@@ -578,7 +626,7 @@
      public void func_70933_a(MerchantRecipe p_70933_1_)
      {
          p_70933_1_.func_77399_f();
-@@ -817,7 +608,7 @@
+@@ -820,7 +608,7 @@
  
              if (this.field_70962_h != null)
              {
@@ -587,7 +635,13 @@
              }
              else
              {
-@@ -834,7 +625,7 @@
+@@ -832,12 +620,12 @@
+ 
+         if (p_70933_1_.func_77394_a().func_77973_b() == Items.field_151166_bC)
+         {
+-            this.field_70956_bz = this.field_70956_bz + p_70933_1_.func_77394_a().func_190916_E();
++            this.field_70956_bz += p_70933_1_.func_77394_a().func_190916_E();
+         }
  
          if (p_70933_1_.func_180322_j())
          {
@@ -596,7 +650,7 @@
          }
  
          if (this.field_70962_h instanceof EntityPlayerMP)
-@@ -843,7 +634,6 @@
+@@ -846,7 +634,6 @@
          }
      }
  
@@ -604,7 +658,7 @@
      public void func_110297_a_(ItemStack p_110297_1_)
      {
          if (!this.field_70170_p.field_72995_K && this.field_70757_a > -this.func_70627_aG() + 20)
-@@ -854,7 +644,6 @@
+@@ -857,7 +644,6 @@
      }
  
      @Nullable
@@ -612,7 +666,7 @@
      public MerchantRecipeList func_70934_b(EntityPlayer p_70934_1_)
      {
          if (this.field_70963_i == null)
-@@ -862,20 +651,18 @@
+@@ -865,20 +651,18 @@
              this.func_175554_cu();
          }
  
@@ -626,7 +680,8 @@
 -
          if (this.field_175563_bv != 0 && this.field_175562_bw != 0)
          {
-             ++this.field_175562_bw;
+-            this.field_175562_bw++;
++            ++this.field_175562_bw;
          }
          else
          {
@@ -635,7 +690,7 @@
              this.field_175562_bw = 1;
          }
  
-@@ -886,42 +673,32 @@
+@@ -889,42 +673,32 @@
  
          int i = this.field_175563_bv - 1;
          int j = this.field_175562_bw - 1;
@@ -682,7 +737,7 @@
      public ITextComponent func_145748_c_()
      {
          Team team = this.func_96124_cp();
-@@ -1012,9 +789,9 @@
+@@ -1015,9 +789,9 @@
                      s1 = "nitwit";
              }
  
@@ -694,7 +749,7 @@
                  itextcomponent.func_150256_b().func_150209_a(this.func_174823_aP());
                  itextcomponent.func_150256_b().func_179989_a(this.func_189512_bd());
  
-@@ -1025,21 +802,15 @@
+@@ -1028,21 +802,15 @@
  
                  return itextcomponent;
              }
@@ -716,9 +771,12 @@
      public void func_70103_a(byte p_70103_1_)
      {
          if (p_70103_1_ == 12)
-@@ -1065,24 +836,14 @@
+@@ -1066,26 +834,16 @@
+     @SideOnly(Side.CLIENT)
+     private void func_180489_a(EnumParticleTypes p_180489_1_)
      {
-         for (int i = 0; i < 5; ++i)
+-        for (int i = 0; i < 5; i++)
++        for (int i = 0; i < 5; ++i)
          {
 -            double d0 = this.field_70146_Z.nextGaussian() * 0.02;
 -            double d1 = this.field_70146_Z.nextGaussian() * 0.02;
@@ -745,7 +803,7 @@
      public IEntityLivingData func_180482_a(DifficultyInstance p_180482_1_, @Nullable IEntityLivingData p_180482_2_)
      {
          return this.func_190672_a(p_180482_1_, p_180482_2_, true);
-@@ -1094,7 +855,7 @@
+@@ -1097,7 +855,7 @@
  
          if (p_190672_3_)
          {
@@ -754,7 +812,7 @@
          }
  
          this.func_175552_ct();
-@@ -1110,24 +871,22 @@
+@@ -1113,24 +871,22 @@
      public EntityVillager func_90011_a(EntityAgeable p_90011_1_)
      {
          EntityVillager entityvillager = new EntityVillager(this.field_70170_p);
@@ -781,7 +839,7 @@
              entitywitch.func_94061_f(this.func_175446_cd());
  
              if (this.func_145818_k_())
-@@ -1146,7 +905,6 @@
+@@ -1149,7 +905,6 @@
          return this.field_175560_bz;
      }
  
@@ -789,7 +847,7 @@
      protected void func_175445_a(EntityItem p_175445_1_)
      {
          ItemStack itemstack = p_175445_1_.func_92059_d();
-@@ -1169,13 +927,7 @@
+@@ -1172,13 +927,7 @@
  
      private boolean func_175558_a(Item p_175558_1_)
      {
@@ -804,7 +862,30 @@
      }
  
      public boolean func_175553_cp()
-@@ -1212,10 +964,7 @@
+@@ -1194,23 +943,28 @@
+     public boolean func_175557_cr()
+     {
+         boolean flag = this.func_70946_n() == 0;
+-        return flag ? !this.func_175559_s(5) : !this.func_175559_s(1);
++
++        if (flag)
++        {
++            return !this.func_175559_s(5);
++        }
++        else
++        {
++            return !this.func_175559_s(1);
++        }
+     }
+ 
+     private boolean func_175559_s(int p_175559_1_)
+     {
+         boolean flag = this.func_70946_n() == 0;
+ 
+-        for (int i = 0; i < this.field_175560_bz.func_70302_i_(); i++)
++        for (int i = 0; i < this.field_175560_bz.func_70302_i_(); ++i)
+         {
+             ItemStack itemstack = this.field_175560_bz.func_70301_a(i);
  
              if (!itemstack.func_190926_b())
              {
@@ -816,7 +897,12 @@
                  {
                      return true;
                  }
-@@ -1236,13 +985,7 @@
+@@ -1227,17 +981,11 @@
+ 
+     public boolean func_175556_cs()
+     {
+-        for (int i = 0; i < this.field_175560_bz.func_70302_i_(); i++)
++        for (int i = 0; i < this.field_175560_bz.func_70302_i_(); ++i)
          {
              ItemStack itemstack = this.field_175560_bz.func_70301_a(i);
  
@@ -831,7 +917,7 @@
              {
                  return true;
              }
-@@ -1251,7 +994,6 @@
+@@ -1246,7 +994,6 @@
          return false;
      }
  
@@ -839,7 +925,7 @@
      public boolean func_174820_d(int p_174820_1_, ItemStack p_174820_2_)
      {
          if (super.func_174820_d(p_174820_1_, p_174820_2_))
-@@ -1285,7 +1027,6 @@
+@@ -1280,7 +1027,6 @@
                  this.field_179404_b = p_i45815_2_;
              }
  
@@ -847,7 +933,7 @@
              public void func_190888_a(IMerchant p_190888_1_, MerchantRecipeList p_190888_2_, Random p_190888_3_)
              {
                  int i = 1;
-@@ -1319,27 +1060,19 @@
+@@ -1314,27 +1060,19 @@
                  this.field_179408_d = p_i45813_4_;
              }
  
@@ -877,7 +963,7 @@
                  int i = MathHelper.func_76136_a(p_190888_3_, enchantment.func_77319_d(), enchantment.func_77325_b());
                  ItemStack itemstack = ItemEnchantedBook.func_92111_a(new EnchantmentData(enchantment, i));
                  int j = 2 + p_190888_3_.nextInt(5 + i * 10) + 3 * i;
-@@ -1369,7 +1102,6 @@
+@@ -1364,7 +1102,6 @@
                  this.field_179406_b = p_i45814_2_;
              }
  
@@ -885,7 +971,7 @@
              public void func_190888_a(IMerchant p_190888_1_, MerchantRecipeList p_190888_2_, Random p_190888_3_)
              {
                  int i = 1;
-@@ -1380,12 +1112,13 @@
+@@ -1375,12 +1112,13 @@
                  }
  
                  ItemStack itemstack = new ItemStack(Items.field_151166_bC, i, 0);
@@ -902,7 +988,7 @@
  
      public static class ListItemForEmeralds implements EntityVillager.ITradeList
          {
-@@ -1404,7 +1137,6 @@
+@@ -1399,7 +1137,6 @@
                  this.field_179402_b = p_i45812_2_;
              }
  
@@ -910,7 +996,7 @@
              public void func_190888_a(IMerchant p_190888_1_, MerchantRecipeList p_190888_2_, Random p_190888_3_)
              {
                  int i = 1;
-@@ -1436,19 +1168,17 @@
+@@ -1431,19 +1168,17 @@
          {
              public PriceInfo(int p_i45810_1_, int p_i45810_2_)
              {
@@ -933,7 +1019,7 @@
              }
          }
  
-@@ -1465,7 +1195,6 @@
+@@ -1460,7 +1195,6 @@
                  this.field_190891_c = p_i47340_3_;
              }
  

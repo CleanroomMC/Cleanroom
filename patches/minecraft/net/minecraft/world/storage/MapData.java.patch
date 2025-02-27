@@ -39,6 +39,22 @@
          this.field_76201_a = p_76184_1_.func_74762_e("xCenter");
          this.field_76199_b = p_76184_1_.func_74762_e("zCenter");
          this.field_76197_d = p_76184_1_.func_74771_c("scale");
+@@ -76,13 +75,13 @@
+             int k = (128 - i) / 2;
+             int l = (128 - j) / 2;
+ 
+-            for (int i1 = 0; i1 < j; i1++)
++            for (int i1 = 0; i1 < j; ++i1)
+             {
+                 int j1 = i1 + l;
+ 
+                 if (j1 >= 0 || j1 < 128)
+                 {
+-                    for (int k1 = 0; k1 < i; k1++)
++                    for (int k1 = 0; k1 < i; ++k1)
+                     {
+                         int l1 = k1 + k;
+ 
 @@ -96,10 +95,9 @@
          }
      }
@@ -51,7 +67,12 @@
          p_189551_1_.func_74768_a("xCenter", this.field_76201_a);
          p_189551_1_.func_74768_a("zCenter", this.field_76199_b);
          p_189551_1_.func_74774_a("scale", this.field_76197_d);
-@@ -129,19 +127,11 @@
+@@ -125,23 +123,15 @@
+             this.field_76203_h.remove(p_76191_1_.func_70005_c_());
+         }
+ 
+-        for (int i = 0; i < this.field_76196_g.size(); i++)
++        for (int i = 0; i < this.field_76196_g.size(); ++i)
          {
              MapData.MapInfo mapdata$mapinfo1 = this.field_76196_g.get(i);
  
@@ -73,7 +94,7 @@
                  }
              }
              else
-@@ -155,14 +145,7 @@
+@@ -155,34 +145,20 @@
          {
              EntityItemFrame entityitemframe = p_76191_2_.func_82836_z();
              BlockPos blockpos = entityitemframe.func_174857_n();
@@ -89,7 +110,13 @@
          }
  
          if (p_76191_2_.func_77942_o() && p_76191_2_.func_77978_p().func_150297_b("Decorations", 9))
-@@ -175,14 +158,7 @@
+         {
+             NBTTagList nbttaglist = p_76191_2_.func_77978_p().func_150295_c("Decorations", 10);
+ 
+-            for (int j = 0; j < nbttaglist.func_74745_c(); j++)
++            for (int j = 0; j < nbttaglist.func_74745_c(); ++j)
+             {
+                 NBTTagCompound nbttagcompound = nbttaglist.func_150305_b(j);
  
                  if (!this.field_76203_h.containsKey(nbttagcompound.func_74779_i("id")))
                  {

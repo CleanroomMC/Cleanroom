@@ -4,7 +4,7 @@
 ### Implemented
 
 - 1.12.2 on Java 21
-- LWJGL3
+- *Latest* LWJGL3
 - A working *mod development template/kit*
 - Patches for loading incompatible mods
 - Built-in Mixin w/ handy bootstrapping
@@ -25,16 +25,20 @@
 - Cleanroom Minecraft (Continuation + Revamp of MinecraftForge)
 - Customized Mixin
 - Bytecode Patcher (Coming Soon) \[Inspired by [Bansoukou](https://github.com/LoliKingdom/Bansoukou) and [Bytecode Patcher](https://github.com/jbredwards/Bytecode-Patcher)]
-- [Fugue](https://github.com/CleanroomMC/Fugue), a mod patches many incompatibilities.
+- [Fugue](https://www.curseforge.com/minecraft/mc-mods/fugue), a mod patches many incompatibilities.
 - Javassist
-- [Scalar](https://github.com/CleanroomMC/Scalar/releases/tag/2.11.1), a Scala provider. We made Scala libraries become a standalone mod so it can be updated.
+- [Scalar](https://www.curseforge.com/minecraft/mc-mods/scalar), a Scala provider. We made Scala libraries become a standalone mod so it can be updated.
+- [Forgelin-Continuous](https://www.curseforge.com/minecraft/mc-mods/forgelin-continuous) and [LibrarianLib-Continuous](https://www.curseforge.com/minecraft/mc-mods/librarianlib-continuous)
 
 ## Download & Installation:
 
 - For MultiMC-based launchers (PolyMC, PrismLauncher), download the MMC instance from [release](https://github.com/CleanroomMC/Cleanroom/releases), import it in your launcher(alternatively unzip patches and json inside to your 1.12 instance).
 - For regular launcher (official launcher, AT launcher, FTB, HMCL), download the installer jar from release. You could use the installer like the Forge one.
-- **Remember to install Fugue!**
-- **And Scalar!**
+- **WARNING:** Only MultiMC-based launchers are officially supported. This is because of the limit on removing vanilla libraries in other launchers.
+- **Remember to install [Fugue](https://www.curseforge.com/minecraft/mc-mods/fugue)!**
+- **And [Scalar](https://www.curseforge.com/minecraft/mc-mods/scalar)!**
+- If you were told to use **action builds** (aka bleeding edge), here: [Cleanroom jar](https://github.com/CleanroomMC/Cleanroom/actions), [Cleanroom MMC zip](https://github.com/CleanroomMC/CleanroomMMC/actions/), [Fugue](https://github.com/CleanroomMC/Fugue/actions)
+- You need to log-in with a GitHub account to download action artifacts. 
 
 ## Build Instructions:
 
@@ -49,7 +53,7 @@
 - Run `gradlew genPatches` before commit, or the changes won't exist
 - Modifications on `src/` doesn't need generating patches
 - [Tips from Forge](https://github.com/MinecraftForge/MinecraftForge/wiki/If-you-want-to-contribute-to-Forge) are still apply, keep the patches clean!
-- The current patches is full of useless hunks after we switched to VineFlower, we encourage contributors to manual clean up their patches
+- The current patches is full of useless hunks after we switched to VineFlower, we encourage contributors to clean up these patches manually.
 
 ## Mod Development:
 

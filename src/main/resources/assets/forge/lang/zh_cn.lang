@@ -91,6 +91,8 @@ forge.configgui.allowEmissiveItems=允许物品渲染发光效果
 forge.configgui.allowEmissiveItems.tooltip=允许物品在渲染时检测并正确绘制带发光效果的纹理。启用此选项允许发光的方块的物品形态有和方块类似的发光效果，但会略微影响性能。
 forge.configgui.selectiveResourceReloadEnabled=启用选择性资源加载
 forge.configgui.selectiveResourceReloadEnabled.tooltip=启用此选项可令某些资源重载过程（例如语言切换）速度更快。
+forge.configgui.inputMethodGuiWhiteList=输入法Gui白名单
+forge.configgui.inputMethodGuiWhiteList.tooltip=列表中的类会被游戏视作可开启输入法输入。
 
 forge.configgui.modID.tooltip=你想要定义设置覆盖的Mod ID。
 forge.configgui.modID=Mod ID

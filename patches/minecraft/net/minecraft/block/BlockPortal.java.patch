@@ -153,7 +153,18 @@
          boolean flag4 = flag || flag1 || enumfacing$axis == EnumFacing.Axis.X;
          boolean flag5 = flag2 || flag3 || enumfacing$axis == EnumFacing.Axis.Z;
  
-@@ -226,20 +207,17 @@
+@@ -216,26 +197,27 @@
+         {
+             return true;
+         }
++        else if (flag5 && p_176225_4_ == EnumFacing.NORTH)
++        {
++            return true;
++        }
+         else
+         {
+-            return flag5 && p_176225_4_ == EnumFacing.NORTH ? true : flag5 && p_176225_4_ == EnumFacing.SOUTH;
++            return flag5 && p_176225_4_ == EnumFacing.SOUTH;
          }
      }
  
@@ -174,7 +185,7 @@
      public void func_180634_a(World p_180634_1_, BlockPos p_180634_2_, IBlockState p_180634_3_, Entity p_180634_4_)
      {
          if (!p_180634_4_.func_184218_aH() && !p_180634_4_.func_184207_aI() && p_180634_4_.func_184222_aU())
-@@ -249,21 +227,11 @@
+@@ -245,42 +227,31 @@
      }
  
      @SideOnly(Side.CLIENT)
@@ -196,8 +207,9 @@
 +            p_180655_2_.func_184134_a((double)p_180655_3_.func_177958_n() + 0.5D, (double)p_180655_3_.func_177956_o() + 0.5D, (double)p_180655_3_.func_177952_p() + 0.5D, SoundEvents.field_187810_eg, SoundCategory.BLOCKS, 0.5F, p_180655_4_.nextFloat() * 0.4F + 0.8F, false);
          }
  
-         for (int i = 0; i < 4; ++i)
-@@ -271,20 +239,19 @@
+-        for (int i = 0; i < 4; i++)
++        for (int i = 0; i < 4; ++i)
+         {
              double d0 = (double)((float)p_180655_3_.func_177958_n() + p_180655_4_.nextFloat());
              double d1 = (double)((float)p_180655_3_.func_177956_o() + p_180655_4_.nextFloat());
              double d2 = (double)((float)p_180655_3_.func_177952_p() + p_180655_4_.nextFloat());
@@ -224,7 +236,7 @@
                  d5 = (double)(p_180655_4_.nextFloat() * 2.0F * (float)j);
              }
  
-@@ -292,25 +259,21 @@
+@@ -288,25 +259,21 @@
          }
      }
  
@@ -250,7 +262,7 @@
      public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
      {
          switch (p_185499_2_)
-@@ -333,10 +296,9 @@
+@@ -329,10 +296,9 @@
          }
      }
  
@@ -262,7 +274,7 @@
      }
  
      public BlockPattern.PatternHelper func_181089_f(World p_181089_1_, BlockPos p_181089_2_)
-@@ -363,17 +325,7 @@
+@@ -359,27 +325,17 @@
  
              for (EnumFacing.AxisDirection enumfacing$axisdirection : EnumFacing.AxisDirection.values())
              {
@@ -279,9 +291,13 @@
 -                );
 +                BlockPattern.PatternHelper blockpattern$patternhelper = new BlockPattern.PatternHelper(enumfacing.func_176743_c() == enumfacing$axisdirection ? blockpos : blockpos.func_177967_a(blockportal$size.field_150866_c, blockportal$size.func_181101_b() - 1), EnumFacing.func_181076_a(enumfacing$axisdirection, enumfacing$axis), EnumFacing.UP, loadingcache, blockportal$size.func_181101_b(), blockportal$size.func_181100_a(), 1);
  
-                 for (int i = 0; i < blockportal$size.func_181101_b(); ++i)
+-                for (int i = 0; i < blockportal$size.func_181101_b(); i++)
++                for (int i = 0; i < blockportal$size.func_181101_b(); ++i)
                  {
-@@ -383,7 +335,7 @@
+-                    for (int j = 0; j < blockportal$size.func_181100_a(); j++)
++                    for (int j = 0; j < blockportal$size.func_181100_a(); ++j)
+                     {
+                         BlockWorldState blockworldstate = blockpattern$patternhelper.func_177670_a(i, j, 1);
  
                          if (blockworldstate.func_177509_a() != null && blockworldstate.func_177509_a().func_185904_a() != Material.field_151579_a)
                          {
@@ -290,7 +306,7 @@
                          }
                      }
                  }
-@@ -399,21 +351,10 @@
+@@ -395,21 +351,10 @@
                  }
              }
  
@@ -313,7 +329,7 @@
      public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
      {
          return BlockFaceShape.UNDEFINED;
-@@ -446,15 +387,9 @@
+@@ -442,15 +387,9 @@
                      this.field_150866_c = EnumFacing.SOUTH;
                  }
  
@@ -331,7 +347,12 @@
                  }
  
                  int i = this.func_180120_a(p_i45694_2_, this.field_150863_d) - 1;
-@@ -485,8 +420,7 @@
+@@ -477,12 +416,11 @@
+             {
+                 int i;
+ 
+-                for (i = 0; i < 22; i++)
++                for (i = 0; i < 22; ++i)
                  {
                      BlockPos blockpos = p_180120_1_.func_177967_a(p_180120_2_, i);
  
@@ -341,9 +362,33 @@
                      {
                          break;
                      }
-@@ -550,8 +484,7 @@
+@@ -506,9 +444,9 @@
+             {
+                 label56:
  
-                 for (int j = 0; j < this.field_150868_h; ++j)
+-                for (this.field_150862_g = 0; this.field_150862_g < 21; this.field_150862_g++)
++                for (this.field_150862_g = 0; this.field_150862_g < 21; ++this.field_150862_g)
+                 {
+-                    for (int i = 0; i < this.field_150868_h; i++)
++                    for (int i = 0; i < this.field_150868_h; ++i)
+                     {
+                         BlockPos blockpos = this.field_150861_f.func_177967_a(this.field_150866_c, i).func_177981_b(this.field_150862_g);
+                         Block block = this.field_150867_a.func_180495_p(blockpos).func_177230_c();
+@@ -520,7 +458,7 @@
+ 
+                         if (block == Blocks.field_150427_aO)
+                         {
+-                            this.field_150864_e++;
++                            ++this.field_150864_e;
+                         }
+ 
+                         if (i == 0)
+@@ -544,10 +482,9 @@
+                     }
+                 }
+ 
+-                for (int j = 0; j < this.field_150868_h; j++)
++                for (int j = 0; j < this.field_150868_h; ++j)
                  {
 -                    if (this.field_150867_a.func_180495_p(this.field_150861_f.func_177967_a(this.field_150866_c, j).func_177981_b(this.field_150862_g)).func_177230_c()
 -                            != Blocks.field_150343_Z)
@@ -351,9 +396,17 @@
                      {
                          this.field_150862_g = 0;
                          break;
-@@ -589,10 +522,7 @@
+@@ -579,16 +516,13 @@
  
-                     for (int j = 0; j < this.field_150862_g; ++j)
+             public void func_150859_c()
+             {
+-                for (int i = 0; i < this.field_150868_h; i++)
++                for (int i = 0; i < this.field_150868_h; ++i)
+                 {
+                     BlockPos blockpos = this.field_150861_f.func_177967_a(this.field_150866_c, i);
+ 
+-                    for (int j = 0; j < this.field_150862_g; j++)
++                    for (int j = 0; j < this.field_150862_g; ++j)
                      {
 -                        this.field_150867_a
 -                        .func_180501_a(

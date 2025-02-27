@@ -1,6 +1,23 @@
 --- before/net/minecraft/inventory/ContainerBrewingStand.java
 +++ after/net/minecraft/inventory/ContainerBrewingStand.java
-@@ -43,14 +43,12 @@
+@@ -29,33 +29,31 @@
+         this.field_75186_f = this.func_75146_a(new ContainerBrewingStand.Ingredient(p_i45802_2_, 3, 79, 17));
+         this.func_75146_a(new ContainerBrewingStand.Fuel(p_i45802_2_, 4, 17, 17));
+ 
+-        for (int i = 0; i < 3; i++)
++        for (int i = 0; i < 3; ++i)
+         {
+-            for (int j = 0; j < 9; j++)
++            for (int j = 0; j < 9; ++j)
+             {
+                 this.func_75146_a(new Slot(p_i45802_1_, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+             }
+         }
+ 
+-        for (int k = 0; k < 9; k++)
++        for (int k = 0; k < 9; ++k)
+         {
+             this.func_75146_a(new Slot(p_i45802_1_, k, 8 + k * 18, 142));
          }
      }
  
@@ -15,6 +32,12 @@
      public void func_75142_b()
      {
          super.func_75142_b();
+ 
+-        for (int i = 0; i < this.field_75149_d.size(); i++)
++        for (int i = 0; i < this.field_75149_d.size(); ++i)
+         {
+             IContainerListener icontainerlistener = this.field_75149_d.get(i);
+ 
 @@ -75,19 +73,16 @@
      }
  

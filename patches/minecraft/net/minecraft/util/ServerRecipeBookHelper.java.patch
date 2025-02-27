@@ -29,7 +29,16 @@
                      {
                          this.func_194329_b();
                      }
-@@ -113,7 +119,7 @@
+@@ -83,7 +89,7 @@
+     {
+         InventoryPlayer inventoryplayer = this.field_194332_c.field_71071_by;
+ 
+-        for (int i = 0; i < this.field_194336_g.func_70302_i_(); i++)
++        for (int i = 0; i < this.field_194336_g.func_70302_i_(); ++i)
+         {
+             ItemStack itemstack = this.field_194336_g.func_70301_a(i);
+ 
+@@ -113,13 +119,13 @@
      private void func_194329_b()
      {
          boolean flag = this.field_194333_d.func_77569_a(this.field_194336_g, this.field_194332_c.field_70170_p);
@@ -38,6 +47,13 @@
  
          if (flag)
          {
+             boolean flag1 = true;
+ 
+-            for (int j = 0; j < this.field_194336_g.func_70302_i_(); j++)
++            for (int j = 0; j < this.field_194336_g.func_70302_i_(); ++j)
+             {
+                 ItemStack itemstack = this.field_194336_g.func_70301_a(j);
+ 
 @@ -141,9 +147,11 @@
          if (this.field_194331_b.func_194118_a(this.field_194333_d, intlist, i1))
          {
@@ -51,7 +67,25 @@
                  int l = RecipeItemHelper.func_194115_b(k).func_77976_d();
  
                  if (l < j1)
-@@ -196,11 +204,11 @@
+@@ -172,7 +180,7 @@
+         {
+             i = 64;
+ 
+-            for (int j = 0; j < this.field_194336_g.func_70302_i_(); j++)
++            for (int j = 0; j < this.field_194336_g.func_70302_i_(); ++j)
+             {
+                 ItemStack itemstack = this.field_194336_g.func_70301_a(j);
+ 
+@@ -184,7 +192,7 @@
+ 
+             if (i < 64)
+             {
+-                i++;
++                ++i;
+             }
+         }
+ 
+@@ -196,19 +204,19 @@
          int i = this.field_194336_g.func_174922_i();
          int j = this.field_194336_g.func_174923_h();
  
@@ -67,7 +101,17 @@
          }
  
          int j1 = 1;
-@@ -217,7 +225,7 @@
+         Iterator<Integer> iterator = p_194323_2_.iterator();
+ 
+-        for (int k = 0; k < this.field_194336_g.func_174922_i() && j != k; k++)
++        for (int k = 0; k < this.field_194336_g.func_174922_i() && j != k; ++k)
+         {
+-            for (int l = 0; l < this.field_194336_g.func_174923_h(); l++)
++            for (int l = 0; l < this.field_194336_g.func_174923_h(); ++l)
+             {
+                 if (i == l || !iterator.hasNext())
+                 {
+@@ -217,20 +225,20 @@
                  }
  
                  Slot slot = this.field_194337_h.get(j1);
@@ -76,3 +120,28 @@
  
                  if (itemstack.func_190926_b())
                  {
+-                    j1++;
++                    ++j1;
+                 }
+                 else
+                 {
+-                    for (int i1 = 0; i1 < p_194323_1_; i1++)
++                    for (int i1 = 0; i1 < p_194323_1_; ++i1)
+                     {
+                         this.func_194325_a(slot, itemstack);
+                     }
+ 
+-                    j1++;
++                    ++j1;
+                 }
+             }
+ 
+@@ -279,7 +287,7 @@
+     {
+         InventoryPlayer inventoryplayer = this.field_194332_c.field_71071_by;
+ 
+-        for (int i = 0; i < this.field_194336_g.func_70302_i_(); i++)
++        for (int i = 0; i < this.field_194336_g.func_70302_i_(); ++i)
+         {
+             ItemStack itemstack = this.field_194336_g.func_70301_a(i);
+ 

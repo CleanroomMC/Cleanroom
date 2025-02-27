@@ -35,7 +35,8 @@
 -        NonNullList<ItemStack> nonnulllist = NonNullList.func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
 +        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
  
-         for (int i = 0; i < nonnulllist.size(); ++i)
+-        for (int i = 0; i < nonnulllist.size(); i++)
++        for (int i = 0; i < nonnulllist.size(); ++i)
          {
              ItemStack itemstack = p_179532_1_.func_70301_a(i);
  
@@ -65,10 +66,10 @@
 -    @Override
      public boolean func_77569_a(InventoryCrafting p_77569_1_, World p_77569_2_)
      {
--        for (int i = 0; i <= 3 - this.field_77576_b; ++i)
+-        for (int i = 0; i <= 3 - this.field_77576_b; i++)
 +        for (int i = 0; i <= p_77569_1_.func_174922_i() - this.field_77576_b; ++i)
          {
--            for (int j = 0; j <= 3 - this.field_77577_c; ++j)
+-            for (int j = 0; j <= 3 - this.field_77577_c; j++)
 +            for (int j = 0; j <= p_77569_1_.func_174923_h() - this.field_77577_c; ++j)
              {
                  if (this.func_77573_a(p_77569_1_, i, j, true))
@@ -77,10 +78,10 @@
  
      private boolean func_77573_a(InventoryCrafting p_77573_1_, int p_77573_2_, int p_77573_3_, boolean p_77573_4_)
      {
--        for (int i = 0; i < 3; ++i)
+-        for (int i = 0; i < 3; i++)
 +        for (int i = 0; i < p_77573_1_.func_174922_i(); ++i)
          {
--            for (int j = 0; j < 3; ++j)
+-            for (int j = 0; j < 3; j++)
 +            for (int j = 0; j < p_77573_1_.func_174923_h(); ++j)
              {
                  int k = i - p_77573_2_;
@@ -93,7 +94,7 @@
      public ItemStack func_77572_b(InventoryCrafting p_77572_1_)
      {
          return this.func_77571_b().func_77946_l();
-@@ -167,7 +153,7 @@
+@@ -167,13 +153,13 @@
  
      private static NonNullList<Ingredient> func_192402_a(String[] p_192402_0_, Map<String, Ingredient> p_192402_1_, int p_192402_2_, int p_192402_3_)
      {
@@ -102,6 +103,45 @@
          Set<String> set = Sets.newHashSet(p_192402_1_.keySet());
          set.remove(" ");
  
+-        for (int i = 0; i < p_192402_0_.length; i++)
++        for (int i = 0; i < p_192402_0_.length; ++i)
+         {
+-            for (int j = 0; j < p_192402_0_[i].length(); j++)
++            for (int j = 0; j < p_192402_0_[i].length(); ++j)
+             {
+                 String s = p_192402_0_[i].substring(j, j + 1);
+                 Ingredient ingredient = p_192402_1_.get(s);
+@@ -206,7 +192,7 @@
+         int k = 0;
+         int l = 0;
+ 
+-        for (int i1 = 0; i1 < p_194134_0_.length; i1++)
++        for (int i1 = 0; i1 < p_194134_0_.length; ++i1)
+         {
+             String s = p_194134_0_[i1];
+             i = Math.min(i, func_194135_a(s));
+@@ -217,10 +203,10 @@
+             {
+                 if (k == i1)
+                 {
+-                    k++;
++                    ++k;
+                 }
+ 
+-                l++;
++                ++l;
+             }
+             else
+             {
+@@ -236,7 +222,7 @@
+         {
+             String[] astring = new String[p_194134_0_.length - l - k];
+ 
+-            for (int k1 = 0; k1 < astring.length; k1++)
++            for (int k1 = 0; k1 < astring.length; ++k1)
+             {
+                 astring[k1] = p_194134_0_[k1 + k].substring(i, j + 1);
+             }
 @@ -247,11 +233,11 @@
  
      private static int func_194135_a(String p_194135_0_)
@@ -112,7 +152,7 @@
 -        while (i < p_194135_0_.length() && p_194135_0_.charAt(i) == ' ')
 +        for (i = 0; i < p_194135_0_.length() && p_194135_0_.charAt(i) == ' '; ++i)
          {
--            ++i;
+-            i++;
 +            ;
          }
  
@@ -127,12 +167,21 @@
 -        while (i >= 0 && p_194136_0_.charAt(i) == ' ')
 +        for (i = p_194136_0_.length() - 1; i >= 0 && p_194136_0_.charAt(i) == ' '; --i)
          {
--            --i;
+-            i--;
 +            ;
          }
  
          return i;
-@@ -306,11 +292,11 @@
+@@ -283,7 +269,7 @@
+         }
+         else
+         {
+-            for (int i = 0; i < astring.length; i++)
++            for (int i = 0; i < astring.length; ++i)
+             {
+                 String s = JsonUtils.func_151206_a(p_192407_0_.get(i), "pattern[" + i + "]");
+ 
+@@ -306,13 +292,13 @@
  
      private static Map<String, Ingredient> func_192408_a(JsonObject p_192408_0_)
      {
@@ -144,8 +193,11 @@
 -            if (entry.getKey().length() != 1)
 +            if (((String)entry.getKey()).length() != 1)
              {
-                 throw new JsonSyntaxException("Invalid key entry: '" + (String)entry.getKey() + "' is an invalid symbol (must be 1 character only).");
+-                throw new JsonSyntaxException("Invalid key entry: '" + entry.getKey() + "' is an invalid symbol (must be 1 character only).");
++                throw new JsonSyntaxException("Invalid key entry: '" + (String)entry.getKey() + "' is an invalid symbol (must be 1 character only).");
              }
+ 
+             if (" ".equals(entry.getKey()))
 @@ -329,38 +315,41 @@
  
      public static Ingredient func_193361_a(@Nullable JsonElement p_193361_0_)
@@ -206,7 +258,7 @@
 -            {
 -                ItemStack[] aitemstack = new ItemStack[jsonarray.size()];
 -
--                for (int i = 0; i < jsonarray.size(); ++i)
+-                for (int i = 0; i < jsonarray.size(); i++)
 -                {
 -                    aitemstack[i] = func_192405_a(JsonUtils.func_151210_l(jsonarray.get(i), "item"), false);
 -                }

@@ -13,11 +13,11 @@
 -            int k = s.length();
 -            j += k;
 -
--            for (int l = 0; l < k; ++l)
+-            for (int l = 0; l < k; l++)
 -            {
 -                if (s.charAt(l) >= 256)
 -                {
--                    ++i;
+-                    i++;
 -                }
 -            }
 -        }

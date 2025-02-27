@@ -68,9 +68,12 @@
              list1.add(textureatlassprite);
          }
  
-@@ -111,7 +110,7 @@
+@@ -109,9 +108,9 @@
+         TextureAtlasSprite textureatlassprite = p_94310_1_.func_98150_a();
+         boolean flag = textureatlassprite.func_94211_a() != textureatlassprite.func_94216_b();
  
-         for (int i = 0; i < this.field_94317_b.size(); ++i)
+-        for (int i = 0; i < this.field_94317_b.size(); i++)
++        for (int i = 0; i < this.field_94317_b.size(); ++i)
          {
 -            if (this.field_94317_b.get(i).func_94182_a(p_94310_1_))
 +            if (((Stitcher.Slot)this.field_94317_b.get(i)).func_94182_a(p_94310_1_))
@@ -95,6 +98,21 @@
              }
              else
              {
+@@ -177,12 +176,12 @@
+                 }
+ 
+                 stitcher$slot = new Stitcher.Slot(this.field_94318_c, 0, p_94311_1_.func_94197_a(), this.field_94315_d);
+-                this.field_94318_c = this.field_94318_c + p_94311_1_.func_94197_a();
++                this.field_94318_c += p_94311_1_.func_94197_a();
+             }
+             else
+             {
+                 stitcher$slot = new Stitcher.Slot(0, this.field_94315_d, this.field_94318_c, p_94311_1_.func_94199_b());
+-                this.field_94315_d = this.field_94315_d + p_94311_1_.func_94199_b();
++                this.field_94315_d += p_94311_1_.func_94199_b();
+             }
+ 
+             stitcher$slot.func_94182_a(p_94311_1_);
 @@ -245,10 +244,9 @@
                  }
              }

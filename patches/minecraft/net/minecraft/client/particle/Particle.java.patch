@@ -84,7 +84,7 @@
              this.func_187112_i();
          }
  
--        this.field_187130_j -= 0.04 * (double)this.field_70545_g;
+-        this.field_187130_j = this.field_187130_j - 0.04 * (double)this.field_70545_g;
 +        this.field_187130_j -= 0.04D * (double)this.field_70545_g;
          this.func_187110_a(this.field_187129_i, this.field_187130_j, this.field_187131_k);
 -        this.field_187129_i *= 0.98F;
@@ -132,9 +132,12 @@
  
          if (this.field_190014_F != 0.0F)
          {
-@@ -214,32 +202,14 @@
+@@ -212,34 +200,16 @@
+             float f12 = MathHelper.func_76126_a(f8 * 0.5F) * (float)field_190016_K.field_72449_c;
+             Vec3d vec3d = new Vec3d((double)f10, (double)f11, (double)f12);
  
-             for (int l = 0; l < 4; ++l)
+-            for (int l = 0; l < 4; l++)
++            for (int l = 0; l < 4; ++l)
              {
 -                avec3d[l] = vec3d.func_186678_a(2.0 * avec3d[l].func_72430_b(vec3d))
 -                            .func_178787_e(avec3d[l].func_186678_a((double)(f9 * f9) - vec3d.func_72430_b(vec3d)))
@@ -170,8 +173,12 @@
      }
  
      public int func_70537_b()
-@@ -279,26 +249,9 @@
-         ++this.field_94054_b;
+@@ -276,29 +246,12 @@
+ 
+     public void func_94053_h()
+     {
+-        this.field_94054_b++;
++        ++this.field_94054_b;
      }
  
 -    @Override

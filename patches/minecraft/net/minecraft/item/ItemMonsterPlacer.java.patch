@@ -139,6 +139,15 @@
              }
          }
      }
+@@ -249,7 +224,7 @@
+         {
+             Entity entity = null;
+ 
+-            for (int i = 0; i < 1; i++)
++            for (int i = 0; i < 1; ++i)
+             {
+                 entity = EntityList.func_188429_b(p_77840_1_, p_77840_0_);
+ 
 @@ -259,7 +234,8 @@
                      entity.func_70012_b(p_77840_2_, p_77840_4_, p_77840_6_, MathHelper.func_76142_g(p_77840_0_.field_73012_v.nextFloat() * 360.0F), 0.0F);
                      entityliving.field_70759_as = entityliving.field_70177_z;

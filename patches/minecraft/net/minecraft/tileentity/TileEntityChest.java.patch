@@ -83,7 +83,7 @@
              this.field_145984_a = true;
              this.field_145991_k = this.func_174911_a(EnumFacing.WEST);
              this.field_145990_j = this.func_174911_a(EnumFacing.EAST);
-@@ -215,7 +210,6 @@
+@@ -215,32 +210,20 @@
          }
      }
  
@@ -91,7 +91,14 @@
      public void func_73660_a()
      {
          this.func_145979_i();
-@@ -229,18 +223,7 @@
+         int i = this.field_174879_c.func_177958_n();
+         int j = this.field_174879_c.func_177956_o();
+         int k = this.field_174879_c.func_177952_p();
+-        this.field_145983_q++;
++        ++this.field_145983_q;
+ 
+         if (!this.field_145850_b.field_72995_K && this.field_145987_o != 0 && (this.field_145983_q + i + j + k) % 200 == 0)
+         {
              this.field_145987_o = 0;
              float f = 5.0F;
  
@@ -111,6 +118,15 @@
              {
                  if (entityplayer.field_71070_bA instanceof ContainerChest)
                  {
+@@ -248,7 +231,7 @@
+ 
+                     if (iinventory == this || iinventory instanceof InventoryLargeChest && ((InventoryLargeChest)iinventory).func_90010_a(this))
+                     {
+-                        this.field_145987_o++;
++                        ++this.field_145987_o;
+                     }
+                 }
+             }
 @@ -259,30 +242,20 @@
  
          if (this.field_145987_o > 0 && this.field_145989_m == 0.0F && this.field_145992_i == null && this.field_145991_k == null)
@@ -199,7 +215,16 @@
      public void func_174889_b(EntityPlayer p_174889_1_)
      {
          if (!p_174889_1_.func_175149_v())
-@@ -375,7 +336,6 @@
+@@ -364,7 +325,7 @@
+                 this.field_145987_o = 0;
+             }
+ 
+-            this.field_145987_o++;
++            ++this.field_145987_o;
+             this.field_145850_b.func_175641_c(this.field_174879_c, this.func_145838_q(), 1, this.field_145987_o);
+             this.field_145850_b.func_175685_c(this.field_174879_c, this.func_145838_q(), false);
+ 
+@@ -375,12 +336,11 @@
          }
      }
  
@@ -207,6 +232,12 @@
      public void func_174886_c(EntityPlayer p_174886_1_)
      {
          if (!p_174886_1_.func_175149_v() && this.func_145838_q() instanceof BlockChest)
+         {
+-            this.field_145987_o--;
++            --this.field_145987_o;
+             this.field_145850_b.func_175641_c(this.field_174879_c, this.func_145838_q(), 1, this.field_145987_o);
+             this.field_145850_b.func_175685_c(this.field_174879_c, this.func_145838_q(), false);
+ 
 @@ -391,7 +351,29 @@
          }
      }

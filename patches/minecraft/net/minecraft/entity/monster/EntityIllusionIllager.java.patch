@@ -1,8 +1,11 @@
 --- before/net/minecraft/entity/monster/EntityIllusionIllager.java
 +++ after/net/minecraft/entity/monster/EntityIllusionIllager.java
-@@ -53,12 +53,11 @@
+@@ -51,14 +51,13 @@
+         this.field_70728_aV = 5;
+         this.field_193100_bx = new Vec3d[2][4];
  
-         for (int i = 0; i < 4; ++i)
+-        for (int i = 0; i < 4; i++)
++        for (int i = 0; i < 4; ++i)
          {
 -            this.field_193100_bx[0][i] = new Vec3d(0.0, 0.0, 0.0);
 -            this.field_193100_bx[1][i] = new Vec3d(0.0, 0.0, 0.0);
@@ -15,7 +18,7 @@
      protected void func_184651_r()
      {
          super.func_184651_r();
-@@ -66,52 +65,46 @@
+@@ -66,107 +65,90 @@
          this.field_70714_bg.func_75776_a(1, new EntitySpellcasterIllager.AICastingApell());
          this.field_70714_bg.func_75776_a(4, new EntityIllusionIllager.AIMirriorSpell());
          this.field_70714_bg.func_75776_a(5, new EntityIllusionIllager.AIBlindnessSpell());
@@ -78,7 +81,14 @@
      public void func_70636_d()
      {
          super.func_70636_d();
-@@ -125,48 +118,37 @@
+ 
+         if (this.field_70170_p.field_72995_K && this.func_82150_aj())
+         {
+-            this.field_193099_c--;
++            --this.field_193099_c;
+ 
+             if (this.field_193099_c < 0)
+             {
                  this.field_193099_c = 0;
              }
  
@@ -101,23 +111,19 @@
                  this.field_193099_c = 3;
                  float f = -6.0F;
 -                int j = 13;
-+                int i = 13;
- 
--                for (int k = 0; k < 4; ++k)
-+                for (int j = 0; j < 4; ++j)
-                 {
+-
+-                for (int k = 0; k < 4; k++)
+-                {
 -                    this.field_193100_bx[0][k] = this.field_193100_bx[1][k];
 -                    this.field_193100_bx[1][k] = new Vec3d(
 -                        (double)(-6.0F + (float)this.field_70146_Z.nextInt(13)) * 0.5,
 -                        (double)Math.max(0, this.field_70146_Z.nextInt(6) - 4),
 -                        (double)(-6.0F + (float)this.field_70146_Z.nextInt(13)) * 0.5
 -                    );
-+                    this.field_193100_bx[0][j] = this.field_193100_bx[1][j];
-+                    this.field_193100_bx[1][j] = new Vec3d((double)(-6.0F + (float)this.field_70146_Z.nextInt(13)) * 0.5D, (double)Math.max(0, this.field_70146_Z.nextInt(6) - 4), (double)(-6.0F + (float)this.field_70146_Z.nextInt(13)) * 0.5D);
-                 }
- 
-                 for (int l = 0; l < 16; ++l)
-                 {
+-                }
+-
+-                for (int l = 0; l < 16; l++)
+-                {
 -                    this.field_70170_p
 -                    .func_175688_a(
 -                        EnumParticleTypes.CLOUD,
@@ -137,11 +143,21 @@
 -            {
 -                this.field_193099_c = 3;
 -
--                for (int i = 0; i < 4; ++i)
+-                for (int i = 0; i < 4; i++)
 -                {
 -                    this.field_193100_bx[0][i] = this.field_193100_bx[1][i];
 -                    this.field_193100_bx[1][i] = new Vec3d(0.0, 0.0, 0.0);
 -                }
++                int i = 13;
++
++                for (int j = 0; j < 4; ++j)
++                {
++                    this.field_193100_bx[0][j] = this.field_193100_bx[1][j];
++                    this.field_193100_bx[1][j] = new Vec3d((double)(-6.0F + (float)this.field_70146_Z.nextInt(13)) * 0.5D, (double)Math.max(0, this.field_70146_Z.nextInt(6) - 4), (double)(-6.0F + (float)this.field_70146_Z.nextInt(13)) * 0.5D);
++                }
++
++                for (int l = 0; l < 16; ++l)
++                {
 +                    this.field_70170_p.func_175688_a(EnumParticleTypes.CLOUD, this.field_70165_t + (this.field_70146_Z.nextDouble() - 0.5D) * (double)this.field_70130_N, this.field_70163_u + this.field_70146_Z.nextDouble() * (double)this.field_70131_O, this.field_70161_v + (this.field_70146_Z.nextDouble() - 0.5D) * (double)this.field_70130_N, 0.0D, 0.0D, 0.0D);
 +                }
 +
@@ -149,7 +165,7 @@
              }
          }
      }
-@@ -181,19 +163,18 @@
+@@ -181,66 +163,64 @@
          else
          {
              double d0 = (double)(((float)this.field_193099_c - p_193098_1_) / 3.0F);
@@ -157,7 +173,8 @@
 +            d0 = Math.pow(d0, 0.25D);
              Vec3d[] avec3d = new Vec3d[4];
  
-             for (int i = 0; i < 4; ++i)
+-            for (int i = 0; i < 4; i++)
++            for (int i = 0; i < 4; ++i)
              {
 -                avec3d[i] = this.field_193100_bx[1][i].func_186678_a(1.0 - d0).func_178787_e(this.field_193100_bx[0][i].func_186678_a(d0));
 +                avec3d[i] = this.field_193100_bx[1][i].func_186678_a(1.0D - d0).func_178787_e(this.field_193100_bx[0][i].func_186678_a(d0));
@@ -171,7 +188,19 @@
      public boolean func_184191_r(Entity p_184191_1_)
      {
          if (super.func_184191_r(p_184191_1_))
-@@ -210,39 +191,36 @@
+         {
+             return true;
+         }
++        else if (p_184191_1_ instanceof EntityLivingBase && ((EntityLivingBase)p_184191_1_).func_70668_bt() == EnumCreatureAttribute.ILLAGER)
++        {
++            return this.func_96124_cp() == null && p_184191_1_.func_96124_cp() == null;
++        }
+         else
+         {
+-            return p_184191_1_ instanceof EntityLivingBase && ((EntityLivingBase)p_184191_1_).func_70668_bt() == EnumCreatureAttribute.ILLAGER
+-                   ? this.func_96124_cp() == null && p_184191_1_.func_96124_cp() == null
+-                   : false;
++            return false;
          }
      }
  
@@ -214,7 +243,7 @@
          this.func_184185_a(SoundEvents.field_187866_fi, 1.0F, 1.0F / (this.func_70681_au().nextFloat() * 0.4F + 0.8F));
          this.field_70170_p.func_72838_d(entityarrow);
      }
-@@ -260,14 +238,12 @@
+@@ -258,14 +238,12 @@
          return this.func_193078_a(1);
      }
  
@@ -229,7 +258,7 @@
      public AbstractIllager.IllagerArmPose func_193077_p()
      {
          if (this.func_193082_dl())
-@@ -288,7 +264,6 @@
+@@ -286,7 +264,6 @@
          {
          }
  
@@ -237,11 +266,19 @@
          public boolean func_75250_a()
          {
              if (!super.func_75250_a())
-@@ -305,44 +280,36 @@
+@@ -297,48 +274,42 @@
+             {
+                 return false;
              }
++            else if (EntityIllusionIllager.this.func_70638_az().func_145782_y() == this.field_193325_b)
++            {
++                return false;
++            }
              else
              {
--                return EntityIllusionIllager.this.field_70170_p
+-                return EntityIllusionIllager.this.func_70638_az().func_145782_y() == this.field_193325_b
+-                       ? false
+-                       : EntityIllusionIllager.this.field_70170_p
 -                       .func_175649_E(new BlockPos(EntityIllusionIllager.this))
 -                       .func_193845_a((float)EnumDifficulty.NORMAL.ordinal());
 +                return EntityIllusionIllager.this.field_70170_p.func_175649_E(new BlockPos(EntityIllusionIllager.this)).func_193845_a((float)EnumDifficulty.NORMAL.ordinal());
@@ -283,16 +320,22 @@
          protected EntitySpellcasterIllager.SpellType func_193320_l()
          {
              return EntitySpellcasterIllager.SpellType.BLINDNESS;
-@@ -355,7 +322,6 @@
+@@ -351,38 +322,39 @@
          {
          }
  
 -        @Override
          public boolean func_75250_a()
          {
-             if (!super.func_75250_a())
-@@ -368,32 +334,27 @@
-             }
+-            return !super.func_75250_a() ? false : !EntityIllusionIllager.this.func_70644_a(MobEffects.field_76441_p);
++            if (!super.func_75250_a())
++            {
++                return false;
++            }
++            else
++            {
++                return !EntityIllusionIllager.this.func_70644_a(MobEffects.field_76441_p);
++            }
          }
  
 -        @Override

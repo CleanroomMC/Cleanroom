@@ -293,13 +293,19 @@
      public void func_147259_a(SPacketEntity p_147259_1_)
      {
          PacketThreadUtil.func_180031_a(p_147259_1_, this, this.field_147299_f);
-@@ -698,9 +624,9 @@
-             entity.field_70118_ct += (long)p_147259_1_.func_186952_a();
-             entity.field_70117_cu += (long)p_147259_1_.func_186953_b();
-             entity.field_70116_cv += (long)p_147259_1_.func_186951_c();
+@@ -695,12 +621,12 @@
+ 
+         if (entity != null)
+         {
+-            entity.field_70118_ct = entity.field_70118_ct + (long)p_147259_1_.func_186952_a();
+-            entity.field_70117_cu = entity.field_70117_cu + (long)p_147259_1_.func_186953_b();
+-            entity.field_70116_cv = entity.field_70116_cv + (long)p_147259_1_.func_186951_c();
 -            double d0 = (double)entity.field_70118_ct / 4096.0;
 -            double d1 = (double)entity.field_70117_cu / 4096.0;
 -            double d2 = (double)entity.field_70116_cv / 4096.0;
++            entity.field_70118_ct += (long)p_147259_1_.func_186952_a();
++            entity.field_70117_cu += (long)p_147259_1_.func_186953_b();
++            entity.field_70116_cv += (long)p_147259_1_.func_186951_c();
 +            double d0 = (double)entity.field_70118_ct / 4096.0D;
 +            double d1 = (double)entity.field_70117_cu / 4096.0D;
 +            double d2 = (double)entity.field_70116_cv / 4096.0D;
@@ -314,7 +320,7 @@
      public void func_147267_a(SPacketEntityHeadLook p_147267_1_)
      {
          PacketThreadUtil.func_180031_a(p_147267_1_, this, this.field_147299_f);
-@@ -725,7 +650,6 @@
+@@ -725,18 +650,16 @@
          }
      }
  
@@ -322,7 +328,11 @@
      public void func_147238_a(SPacketDestroyEntities p_147238_1_)
      {
          PacketThreadUtil.func_180031_a(p_147238_1_, this, this.field_147299_f);
-@@ -736,7 +660,6 @@
+ 
+-        for (int i = 0; i < p_147238_1_.func_149098_c().length; i++)
++        for (int i = 0; i < p_147238_1_.func_149098_c().length; ++i)
+         {
+             this.field_147300_g.func_73028_b(p_147238_1_.func_149098_c()[i]);
          }
      }
  
@@ -680,9 +690,12 @@
 -        );
 +        Explosion explosion = new Explosion(this.field_147299_f.field_71441_e, (Entity)null, p_147283_1_.func_149148_f(), p_147283_1_.func_149143_g(), p_147283_1_.func_149145_h(), p_147283_1_.func_149146_i(), p_147283_1_.func_149150_j());
          explosion.func_77279_a(true);
-         this.field_147299_f.field_71439_g.field_70159_w += (double)p_147283_1_.func_149149_c();
-         this.field_147299_f.field_71439_g.field_70181_x += (double)p_147283_1_.func_149144_d();
-         this.field_147299_f.field_71439_g.field_70179_y += (double)p_147283_1_.func_149147_e();
+-        this.field_147299_f.field_71439_g.field_70159_w = this.field_147299_f.field_71439_g.field_70159_w + (double)p_147283_1_.func_149149_c();
+-        this.field_147299_f.field_71439_g.field_70181_x = this.field_147299_f.field_71439_g.field_70181_x + (double)p_147283_1_.func_149144_d();
+-        this.field_147299_f.field_71439_g.field_70179_y = this.field_147299_f.field_71439_g.field_70179_y + (double)p_147283_1_.func_149147_e();
++        this.field_147299_f.field_71439_g.field_70159_w += (double)p_147283_1_.func_149149_c();
++        this.field_147299_f.field_71439_g.field_70181_x += (double)p_147283_1_.func_149144_d();
++        this.field_147299_f.field_71439_g.field_70179_y += (double)p_147283_1_.func_149147_e();
      }
  
 -    @Override
@@ -1492,7 +1505,7 @@
          }
          else
          {
--            for (int i = 0; i < p_147289_1_.func_149222_k(); ++i)
+-            for (int i = 0; i < p_147289_1_.func_149222_k(); i++)
 +            for (int k = 0; k < p_147289_1_.func_149222_k(); ++k)
              {
                  double d1 = this.field_147306_l.nextGaussian() * (double)p_147289_1_.func_149221_g();

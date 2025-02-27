@@ -60,7 +60,7 @@
          this.func_190576_q().set(p_70299_1_, p_70299_2_);
  
          if (p_70299_2_.func_190916_E() > this.func_70297_j_())
-@@ -103,19 +99,16 @@
+@@ -103,24 +99,21 @@
          }
      }
  
@@ -80,6 +80,12 @@
      public void func_73660_a()
      {
          if (this.field_145850_b != null && !this.field_145850_b.field_72995_K)
+         {
+-            this.field_145901_j--;
++            --this.field_145901_j;
+             this.field_190578_g = this.field_145850_b.func_82737_E();
+ 
+             if (!this.func_145888_j())
 @@ -178,7 +171,6 @@
          return true;
      }
@@ -96,6 +102,15 @@
          IInventory iinventory = this.func_145895_l();
  
          if (iinventory == null)
+@@ -215,7 +208,7 @@
+             }
+             else
+             {
+-                for (int i = 0; i < this.func_70302_i_(); i++)
++                for (int i = 0; i < this.func_70302_i_(); ++i)
+                 {
+                     if (!this.func_70301_a(i).func_190926_b())
+                     {
 @@ -244,23 +237,9 @@
              ISidedInventory isidedinventory = (ISidedInventory)p_174919_1_;
              int[] aint = isidedinventory.func_180463_a(p_174919_2_);
@@ -114,7 +129,7 @@
 -        {
 -            int j = p_174919_1_.func_70302_i_();
 -
--            for (int k = 0; k < j; ++k)
+-            for (int k = 0; k < j; k++)
 -            {
 -                ItemStack itemstack1 = p_174919_1_.func_70301_a(k);
 +            for (int k : aint)
@@ -144,6 +159,15 @@
  
          return true;
      }
+@@ -291,7 +284,7 @@
+         {
+             int j = p_174917_0_.func_70302_i_();
+ 
+-            for (int k = 0; k < j; k++)
++            for (int k = 0; k < j; ++k)
+             {
+                 if (!p_174917_0_.func_70301_a(k).func_190926_b())
+                 {
 @@ -305,6 +298,8 @@
  
      public static boolean func_145891_a(IHopper p_145891_0_)
@@ -153,6 +177,15 @@
          IInventory iinventory = func_145884_b(p_145891_0_);
  
          if (iinventory != null)
+@@ -333,7 +328,7 @@
+             {
+                 int j = iinventory.func_70302_i_();
+ 
+-                for (int k = 0; k < j; k++)
++                for (int k = 0; k < j; ++k)
+                 {
+                     if (func_174915_a(p_145891_0_, iinventory, k, enumfacing))
+                     {
 @@ -344,11 +339,9 @@
          }
          else
@@ -198,7 +231,43 @@
      public static ItemStack func_174918_a(IInventory p_174918_0_, IInventory p_174918_1_, ItemStack p_174918_2_, @Nullable EnumFacing p_174918_3_)
      {
          if (p_174918_1_ instanceof ISidedInventory && p_174918_3_ != null)
-@@ -506,26 +505,17 @@
+@@ -413,7 +412,7 @@
+             ISidedInventory isidedinventory = (ISidedInventory)p_174918_1_;
+             int[] aint = isidedinventory.func_180463_a(p_174918_3_);
+ 
+-            for (int k = 0; k < aint.length && !p_174918_2_.func_190926_b(); k++)
++            for (int k = 0; k < aint.length && !p_174918_2_.func_190926_b(); ++k)
+             {
+                 p_174918_2_ = func_174916_c(p_174918_0_, p_174918_1_, p_174918_2_, aint[k], p_174918_3_);
+             }
+@@ -422,7 +421,7 @@
+         {
+             int i = p_174918_1_.func_70302_i_();
+ 
+-            for (int j = 0; j < i && !p_174918_2_.func_190926_b(); j++)
++            for (int j = 0; j < i && !p_174918_2_.func_190926_b(); ++j)
+             {
+                 p_174918_2_ = func_174916_c(p_174918_0_, p_174918_1_, p_174918_2_, j, p_174918_3_);
+             }
+@@ -433,9 +432,14 @@
+ 
+     private static boolean func_174920_a(IInventory p_174920_0_, ItemStack p_174920_1_, int p_174920_2_, EnumFacing p_174920_3_)
+     {
+-        return !p_174920_0_.func_94041_b(p_174920_2_, p_174920_1_)
+-               ? false
+-               : !(p_174920_0_ instanceof ISidedInventory) || ((ISidedInventory)p_174920_0_).func_180462_a(p_174920_2_, p_174920_1_, p_174920_3_);
++        if (!p_174920_0_.func_94041_b(p_174920_2_, p_174920_1_))
++        {
++            return false;
++        }
++        else
++        {
++            return !(p_174920_0_ instanceof ISidedInventory) || ((ISidedInventory)p_174920_0_).func_180462_a(p_174920_2_, p_174920_1_, p_174920_3_);
++        }
+     }
+ 
+     private static boolean func_174921_b(IInventory p_174921_0_, ItemStack p_174921_1_, int p_174921_2_, EnumFacing p_174921_3_)
+@@ -501,26 +505,17 @@
      private IInventory func_145895_l()
      {
          EnumFacing enumfacing = BlockHopper.func_176428_b(this.func_145832_p());
@@ -228,7 +297,7 @@
      }
  
      public static IInventory func_145893_b(World p_145893_0_, double p_145893_1_, double p_145893_3_, double p_145893_5_)
-@@ -535,9 +525,10 @@
+@@ -530,9 +525,10 @@
          int j = MathHelper.func_76128_c(p_145893_3_);
          int k = MathHelper.func_76128_c(p_145893_5_);
          BlockPos blockpos = new BlockPos(i, j, k);
@@ -241,7 +310,7 @@
          {
              TileEntity tileentity = p_145893_0_.func_175625_s(blockpos);
  
-@@ -554,11 +545,7 @@
+@@ -549,11 +545,7 @@
  
          if (iinventory == null)
          {
@@ -254,7 +323,18 @@
  
              if (!list.isEmpty())
              {
-@@ -589,22 +576,19 @@
+@@ -574,28 +566,29 @@
+         {
+             return false;
+         }
++        else if (p_145894_0_.func_190916_E() > p_145894_0_.func_77976_d())
++        {
++            return false;
++        }
+         else
+         {
+-            return p_145894_0_.func_190916_E() > p_145894_0_.func_77976_d() ? false : ItemStack.func_77970_a(p_145894_0_, p_145894_1_);
++            return ItemStack.func_77970_a(p_145894_0_, p_145894_1_);
          }
      }
  
@@ -280,7 +360,7 @@
      }
  
      public void func_145896_c(int p_145896_1_)
-@@ -622,22 +606,21 @@
+@@ -613,22 +606,21 @@
          return this.field_145901_j > 8;
      }
  

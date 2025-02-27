@@ -1,6 +1,7 @@
 package net.minecraftforge.fml.common;
 
 import com.google.common.eventbus.EventBus;
+import net.minecraftforge.common.ForgeEarlyConfig;
 import net.minecraftforge.fml.common.asm.FMLSanityChecker;
 
 import java.io.File;
@@ -12,19 +13,17 @@ public final class MixinContainer extends DummyModContainer{
         meta.modId = "mixinbooter";
         meta.name = "MixinBooter";
         meta.description = "A Mixin library and loader.";
-        meta.version = "10.0";
+        meta.version = ForgeEarlyConfig.MIXIN_BOOTER_VERSION;
         meta.authorList.add("Rongmario");
     }
 
     @Override
     public boolean registerBus(EventBus bus, LoadController controller) {
-        bus.register(this);
         return true;
     }
 
     @Override
-    public File getSource()
-    {
+    public File getSource() {
         return FMLSanityChecker.fmlLocation;
     }
 }

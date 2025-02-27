@@ -85,7 +85,7 @@
      public void func_70103_a(byte p_70103_1_)
      {
          if (p_70103_1_ == 10)
-@@ -193,43 +185,11 @@
+@@ -193,57 +185,23 @@
          }
      }
  
@@ -130,17 +130,25 @@
          {
              if (!this.field_70170_p.field_72995_K)
              {
-@@ -238,9 +198,7 @@
+                 this.func_70893_e(true);
+                 int i = 1 + this.field_70146_Z.nextInt(3);
  
-                 for (int j = 0; j < i; ++j)
+-                for (int j = 0; j < i; j++)
++                for (int j = 0; j < i; ++j)
                  {
 -                    EntityItem entityitem = this.func_70099_a(
 -                                                new ItemStack(Item.func_150898_a(Blocks.field_150325_L), 1, this.func_175509_cj().func_176765_a()), 1.0F
 -                                            );
+-                    entityitem.field_70181_x = entityitem.field_70181_x + (double)(this.field_70146_Z.nextFloat() * 0.05F);
+-                    entityitem.field_70159_w = entityitem.field_70159_w + (double)((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.1F);
+-                    entityitem.field_70179_y = entityitem.field_70179_y + (double)((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.1F);
 +                    EntityItem entityitem = this.func_70099_a(new ItemStack(Item.func_150898_a(Blocks.field_150325_L), 1, this.func_175509_cj().func_176765_a()), 1.0F);
-                     entityitem.field_70181_x += (double)(this.field_70146_Z.nextFloat() * 0.05F);
-                     entityitem.field_70159_w += (double)((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.1F);
-                     entityitem.field_70179_y += (double)((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.1F);
++                    entityitem.field_70181_x += (double)(this.field_70146_Z.nextFloat() * 0.05F);
++                    entityitem.field_70159_w += (double)((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.1F);
++                    entityitem.field_70179_y += (double)((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.1F);
+                 }
+             }
+ 
 @@ -259,7 +217,37 @@
          EntityLiving.func_189752_a(p_189802_0_, EntitySheep.class);
      }

@@ -271,16 +271,24 @@
              }
              else
              {
-@@ -382,7 +336,7 @@
+@@ -382,9 +336,9 @@
          else
          {
              List<BlockPos> list = blockpistonstructurehelper.func_177254_c();
 -            List<IBlockState> list1 = Lists.newArrayList();
 +            List<IBlockState> list1 = Lists.<IBlockState>newArrayList();
  
-             for (int i = 0; i < list.size(); ++i)
+-            for (int i = 0; i < list.size(); i++)
++            for (int i = 0; i < list.size(); ++i)
              {
-@@ -399,7 +353,9 @@
+                 BlockPos blockpos = list.get(i);
+                 list1.add(p_176319_1_.func_180495_p(blockpos).func_185899_b(p_176319_1_, blockpos));
+@@ -395,17 +349,19 @@
+             IBlockState[] aiblockstate = new IBlockState[k];
+             EnumFacing enumfacing = p_176319_4_ ? p_176319_3_ : p_176319_3_.func_176734_d();
+ 
+-            for (int j = list2.size() - 1; j >= 0; j--)
++            for (int j = list2.size() - 1; j >= 0; --j)
              {
                  BlockPos blockpos1 = list2.get(j);
                  IBlockState iblockstate = p_176319_1_.func_180495_p(blockpos1);
@@ -289,9 +297,26 @@
 +                float chance = iblockstate.func_177230_c() instanceof BlockSnow ? -1.0f : 1.0f;
 +                iblockstate.func_177230_c().func_180653_a(p_176319_1_, blockpos1, iblockstate, chance, 0);
                  p_176319_1_.func_180501_a(blockpos1, Blocks.field_150350_a.func_176223_P(), 4);
-                 --k;
+-                k--;
++                --k;
                  aiblockstate[k] = iblockstate;
-@@ -421,20 +377,9 @@
+             }
+ 
+-            for (int l = list.size() - 1; l >= 0; l--)
++            for (int l = list.size() - 1; l >= 0; --l)
+             {
+                 BlockPos blockpos3 = list.get(l);
+                 IBlockState iblockstate2 = p_176319_1_.func_180495_p(blockpos3);
+@@ -413,7 +369,7 @@
+                 blockpos3 = blockpos3.func_177972_a(enumfacing);
+                 p_176319_1_.func_180501_a(blockpos3, Blocks.field_180384_M.func_176223_P().func_177226_a(field_176387_N, p_176319_3_), 4);
+                 p_176319_1_.func_175690_a(blockpos3, BlockPistonMoving.func_185588_a(list1.get(l), p_176319_3_, p_176319_4_, false));
+-                k--;
++                --k;
+                 aiblockstate[k] = iblockstate2;
+             }
+ 
+@@ -421,30 +377,19 @@
  
              if (p_176319_4_)
              {
@@ -314,6 +339,18 @@
 +                IBlockState iblockstate1 = Blocks.field_180384_M.func_176223_P().func_177226_a(BlockPistonMoving.field_176426_a, p_176319_3_).func_177226_a(BlockPistonMoving.field_176425_b, this.field_150082_a ? BlockPistonExtension.EnumPistonType.STICKY : BlockPistonExtension.EnumPistonType.DEFAULT);
                  p_176319_1_.func_180501_a(blockpos2, iblockstate1, 4);
                  p_176319_1_.func_175690_a(blockpos2, BlockPistonMoving.func_185588_a(iblockstate3, p_176319_3_, true, true));
+             }
+ 
+-            for (int i1 = list2.size() - 1; i1 >= 0; i1--)
++            for (int i1 = list2.size() - 1; i1 >= 0; --i1)
+             {
+                 p_176319_1_.func_175685_c(list2.get(i1), aiblockstate[k++].func_177230_c(), false);
+             }
+ 
+-            for (int j1 = list.size() - 1; j1 >= 0; j1--)
++            for (int j1 = list.size() - 1; j1 >= 0; --j1)
+             {
+                 p_176319_1_.func_175685_c(list.get(j1), aiblockstate[k++].func_177230_c(), false);
              }
 @@ -458,19 +403,17 @@
          }

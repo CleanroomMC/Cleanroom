@@ -1,6 +1,6 @@
 --- before/net/minecraft/client/renderer/chunk/ChunkRenderDispatcher.java
 +++ after/net/minecraft/client/renderer/chunk/ChunkRenderDispatcher.java
-@@ -31,22 +31,28 @@
+@@ -31,26 +31,32 @@
  public class ChunkRenderDispatcher
  {
      private static final Logger field_178523_a = LogManager.getLogger();
@@ -36,15 +36,23 @@
  
          if (j > 1)
          {
-@@ -60,7 +66,7 @@
+-            for (int k = 0; k < j; k++)
++            for (int k = 0; k < j; ++k)
+             {
+                 ChunkRenderWorker chunkrenderworker = new ChunkRenderWorker(this);
+                 Thread thread = field_178521_b.newThread(chunkrenderworker);
+@@ -60,9 +66,9 @@
              }
          }
  
 -        this.field_178520_e = Queues.newArrayBlockingQueue(this.field_188249_c);
 +        this.field_178520_e = Queues.<RegionRenderCacheBuilder>newArrayBlockingQueue(this.field_188249_c);
  
-         for (int l = 0; l < this.field_188249_c; ++l)
+-        for (int l = 0; l < this.field_188249_c; l++)
++        for (int l = 0; l < this.field_188249_c; ++l)
          {
+             this.field_178520_e.add(new RegionRenderCacheBuilder());
+         }
 @@ -72,19 +78,16 @@
  
      public String func_178504_a()

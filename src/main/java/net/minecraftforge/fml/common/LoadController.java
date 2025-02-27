@@ -36,15 +36,18 @@ import net.minecraftforge.fml.common.eventhandler.FMLThrowingEventBus;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 import net.minecraftforge.fml.relauncher.MixinBooterPlugin;
 import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
-import net.minecraftforge.fml.relauncher.mixinfix.MixinFixer;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.message.FormattedMessage;
+
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
+import org.spongepowered.asm.mixin.ModUtil;
+import org.spongepowered.asm.mixin.transformer.Config;
 import org.spongepowered.asm.mixin.transformer.Proxy;
 import org.spongepowered.asm.service.MixinService;
 import org.spongepowered.asm.service.mojang.MixinServiceLaunchWrapper;
 import org.spongepowered.asm.util.Constants;
+import zone.rong.mixinbooter.Context;
 import zone.rong.mixinbooter.ILateMixinLoader;
 
 import javax.annotation.Nullable;
@@ -52,8 +55,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
@@ -166,44 +169,55 @@ public class LoadController
                     }
 
                     FMLContextQuery.init(); // Initialize FMLContextQuery and add it to the global list
-                    boolean log = false;
 
-                    MixinBooterPlugin.LOGGER.info("Instantiating all ILateMixinLoader implemented classes...");
-
+                    // Load late mixins
+                    FMLLog.log.info("Instantiating all ILateMixinLoader implemented classes...");
                     for (ASMDataTable.ASMData asmData : asmDataTable.getAll(ILateMixinLoader.class.getName().replace('.', '/'))) {
-                        if (!log) {
-                            MixinBooterPlugin.LOGGER.info("Instantiating all ILateMixinLoader implemented classes...");
-                            log = true;
-                        }
-                        modClassLoader.addFile(asmData.getCandidate().getModContainer()); // Add to path before `newInstance`
-                        Class<?> clazz = Class.forName(asmData.getClassName().replace('/', '.'));
-                        MixinBooterPlugin.LOGGER.info("Instantiating {} for its mixins.", clazz);
-                        ILateMixinLoader loader = (ILateMixinLoader) clazz.newInstance();
-                        for (String mixinConfig : loader.getMixinConfigs()) {
-                            if (loader.shouldMixinConfigQueue(mixinConfig)) {
-                                MixinBooterPlugin.LOGGER.info("Adding {} mixin configuration.", mixinConfig);
-                                Mixins.addConfiguration(mixinConfig);
-                                loader.onMixinConfigQueued(mixinConfig);
+                        try {
+                            modClassLoader.addFile(asmData.getCandidate().getModContainer()); // Add to path before `newInstance`
+                            Class<?> clazz = Class.forName(asmData.getClassName().replace('/', '.'));
+                            FMLLog.log.info("Instantiating {} for its mixins.", clazz);
+                            @SuppressWarnings("deprecation")
+                            ILateMixinLoader loader = (ILateMixinLoader) clazz.getConstructor().newInstance();
+                            for (String mixinConfig : loader.getMixinConfigs()) {
+                                @SuppressWarnings("deprecation")
+                                Context context = new Context(mixinConfig);
+                                if (loader.shouldMixinConfigQueue(context)) {
+                                    try {
+                                        FMLLog.log.info("Adding {} mixin configuration.", mixinConfig);
+                                        Mixins.addConfiguration(mixinConfig);
+                                        loader.onMixinConfigQueued(context);
+                                    } catch (Throwable t) {
+                                        FMLLog.log.error("Error adding mixin configuration for {}", mixinConfig, t);
+                                    }
+                                }
                             }
+                        } catch (ClassNotFoundException | ClassCastException | InstantiationException | IllegalAccessException e) {
+                            FMLLog.log.error("Unable to load the ILateMixinLoader", e);
                         }
                     }
 
-                    log = false;
-
-                    // Append all non-conventional mixin configurations gathered via MixinFixer
-                    for (String mixinConfig : MixinFixer.retrieveLateMixinConfigs()) {
-                        if (!log) {
-                            MixinBooterPlugin.LOGGER.info("Appending non-conventional mixin configurations...");
-                            log = true;
+                    // mark config owners : for earlys, lates, and mfAttributes.
+                    for (Config config : Mixins.getConfigs()) {
+                        if (!config.getConfig().hasDecoration(ModUtil.OWNER_DECORATOR)) {
+                            String pkg = config.getConfig().getMixinPackage();
+                            pkg = pkg.charAt(pkg.length() - 1) == '.' ? pkg.substring(0, pkg.length() - 1) : pkg;
+                            List<ModContainer> owners = getPackageOwners(pkg);
+                            if (owners.isEmpty()) {
+                                config.getConfig().decorate(ModUtil.OWNER_DECORATOR, (Supplier) () -> ModUtil.UNKNOWN_OWNER);
+                            } else {
+                                final String owner = owners.get(0).getModId(); // better assign ?
+                                config.getConfig().decorate(ModUtil.OWNER_DECORATOR, (Supplier) () -> owner);
+                            }
                         }
-                        MixinBooterPlugin.LOGGER.info("Adding {} mixin configuration.", mixinConfig);
-                        Mixins.addConfiguration(mixinConfig);
                     }
 
                     for (ModContainer container : this.loader.getActiveModList()) {
                         modClassLoader.addFile(container.getSource());
                     }
-                } catch (Throwable ignored) {}
+                } catch (Throwable t) {
+                    FMLLog.log.error("Error loading Mods", t);
+                }
                 if (MixinService.getService() instanceof MixinServiceLaunchWrapper) {
                     ((MixinServiceLaunchWrapper) MixinService.getService()).setDelegatedTransformers(null);
                 }
@@ -435,13 +449,18 @@ public class LoadController
         return StackWalker.getInstance()
                 .walk(frames -> frames.map(StackWalker.StackFrame::getClassName)
                         .filter(name -> name.lastIndexOf('.') != -1)
-                        .map(name -> name.substring(0, name.lastIndexOf('.')))
-                        .map(pkg -> packageOwners.get(pkg))
+                        .map(name -> packageOwners.get(name.substring(0, name.lastIndexOf('.'))))
                         .filter(l -> !l.isEmpty())
                         .findFirst()
                         .map(List::getFirst)
                         .orElse(null)
                 );
+    }
+
+    @Nullable
+    public List<ModContainer> getPackageOwners(String pkg)
+    {
+        return packageOwners.get(pkg);
     }
 
     LoaderState getState()

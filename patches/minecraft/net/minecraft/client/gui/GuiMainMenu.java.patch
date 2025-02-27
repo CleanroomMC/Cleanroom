@@ -227,7 +227,7 @@
                      oclass.getMethod("browse", URI.class).invoke(object, new URI(this.field_104024_v));
                  }
                  catch (Throwable throwable)
-@@ -359,9 +321,7 @@
+@@ -359,12 +321,10 @@
          GlStateManager.func_179118_c();
          GlStateManager.func_179129_p();
          GlStateManager.func_179132_a(false);
@@ -237,7 +237,20 @@
 +        GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
          int i = 8;
  
-         for (int j = 0; j < 64; ++j)
+-        for (int j = 0; j < 64; j++)
++        for (int j = 0; j < 64; ++j)
+         {
+             GlStateManager.func_179094_E();
+             float f = ((float)(j % 8) / 8.0F - 0.5F) / 64.0F;
+@@ -374,7 +334,7 @@
+             GlStateManager.func_179114_b(MathHelper.func_76126_a(this.field_73979_m / 400.0F) * 25.0F + 20.0F, 1.0F, 0.0F, 0.0F);
+             GlStateManager.func_179114_b(-this.field_73979_m * 0.1F, 0.0F, 1.0F, 0.0F);
+ 
+-            for (int k = 0; k < 6; k++)
++            for (int k = 0; k < 6; ++k)
+             {
+                 GlStateManager.func_179094_E();
+ 
 @@ -407,10 +367,10 @@
                  bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181709_i);
                  int l = 255 / (j + 1);
@@ -273,7 +286,14 @@
          GlStateManager.func_179135_a(true, true, true, false);
          Tessellator tessellator = Tessellator.func_178181_a();
          BufferBuilder bufferbuilder = tessellator.func_178180_c();
-@@ -453,22 +411,10 @@
+@@ -447,28 +405,16 @@
+         GlStateManager.func_179118_c();
+         int i = 3;
+ 
+-        for (int j = 0; j < 3; j++)
++        for (int j = 0; j < 3; ++j)
+         {
+             float f = 1.0F / (float)(j + 1);
              int k = this.field_146294_l;
              int l = this.field_146295_m;
              float f1 = (float)(j - 1) / 256.0F;

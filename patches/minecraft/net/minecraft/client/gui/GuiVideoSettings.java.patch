@@ -46,8 +46,12 @@
          }
          else
          {
-@@ -69,20 +48,16 @@
-                 ++i;
+@@ -66,23 +45,19 @@
+                 }
+ 
+                 agamesettings$options[i] = gamesettings$options;
+-                i++;
++                ++i;
              }
  
 -            this.field_146501_h = new GuiOptionsRowList(

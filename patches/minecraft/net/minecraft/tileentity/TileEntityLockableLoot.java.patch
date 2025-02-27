@@ -65,28 +65,31 @@
          this.func_190576_q().set(p_70299_1_, p_70299_2_);
  
          if (p_70299_2_.func_190916_E() > this.func_70297_j_())
-@@ -145,7 +139,6 @@
+@@ -145,58 +139,48 @@
          this.func_70296_d();
      }
  
 -    @Override
      public boolean func_70300_a(EntityPlayer p_70300_1_)
      {
-         if (this.field_145850_b.func_175625_s(this.field_174879_c) != this)
-@@ -154,54 +147,40 @@
-         }
-         else
-         {
--            return !(
--                       p_70300_1_.func_70092_e(
--                           (double)this.field_174879_c.func_177958_n() + 0.5,
--                           (double)this.field_174879_c.func_177956_o() + 0.5,
--                           (double)this.field_174879_c.func_177952_p() + 0.5
--                       )
--                       > 64.0
--                   );
+-        return this.field_145850_b.func_175625_s(this.field_174879_c) != this
+-               ? false
+-               : !(
+-                   p_70300_1_.func_70092_e(
+-                       (double)this.field_174879_c.func_177958_n() + 0.5,
+-                       (double)this.field_174879_c.func_177956_o() + 0.5,
+-                       (double)this.field_174879_c.func_177952_p() + 0.5
+-                   )
+-                   > 64.0
+-               );
++        if (this.field_145850_b.func_175625_s(this.field_174879_c) != this)
++        {
++            return false;
++        }
++        else
++        {
 +            return p_70300_1_.func_70092_e((double)this.field_174879_c.func_177958_n() + 0.5D, (double)this.field_174879_c.func_177956_o() + 0.5D, (double)this.field_174879_c.func_177952_p() + 0.5D) <= 64.0D;
-         }
++        }
      }
  
 -    @Override

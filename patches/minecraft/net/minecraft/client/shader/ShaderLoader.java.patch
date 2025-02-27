@@ -10,6 +10,22 @@
  import java.nio.ByteBuffer;
  import java.util.Map;
  import net.minecraft.client.renderer.OpenGlHelper;
+@@ -34,13 +34,13 @@
+ 
+     public void func_148056_a(ShaderManager p_148056_1_)
+     {
+-        this.field_148058_d++;
++        ++this.field_148058_d;
+         OpenGlHelper.func_153178_b(p_148056_1_.func_147986_h(), this.field_148060_c);
+     }
+ 
+     public void func_148054_b(ShaderManager p_148054_1_)
+     {
+-        this.field_148058_d--;
++        --this.field_148058_d;
+ 
+         if (this.field_148058_d <= 0)
+         {
 @@ -56,11 +56,12 @@
  
      public static ShaderLoader func_148057_a(IResourceManager p_148057_0_, ShaderLoader.ShaderType p_148057_1_, String p_148057_2_) throws IOException

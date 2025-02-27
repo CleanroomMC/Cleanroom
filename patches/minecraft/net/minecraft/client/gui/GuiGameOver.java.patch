@@ -9,3 +9,12 @@
                  }
                  else
                  {
+@@ -195,7 +195,7 @@
+     public void func_73876_c()
+     {
+         super.func_73876_c();
+-        this.field_146347_a++;
++        ++this.field_146347_a;
+ 
+         if (this.field_146347_a == 20)
+         {

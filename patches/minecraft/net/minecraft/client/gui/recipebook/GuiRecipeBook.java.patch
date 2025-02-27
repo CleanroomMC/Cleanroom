@@ -89,6 +89,15 @@
                  }
              }
  
+@@ -281,7 +286,7 @@
+     {
+         ItemStack itemstack = null;
+ 
+-        for (int i = 0; i < this.field_191915_z.func_192684_b(); i++)
++        for (int i = 0; i < this.field_191915_z.func_192684_b(); ++i)
+         {
+             GhostRecipe.GhostIngredient ghostrecipe$ghostingredient = this.field_191915_z.func_192681_a(i);
+             int j = ghostrecipe$ghostingredient.func_193713_b() + p_193015_1_;
 @@ -308,10 +313,7 @@
      {
          if (this.func_191878_b() && !this.field_191888_F.field_71439_g.func_175149_v())
@@ -213,7 +222,7 @@
      public void func_193001_a(List<IRecipe> p_193001_1_)
      {
          for (IRecipe irecipe : p_193001_1_)
-@@ -487,10 +482,10 @@
+@@ -487,16 +482,16 @@
      {
          ItemStack itemstack = p_193951_1_.func_77571_b();
          this.field_191915_z.func_192685_a(p_193951_1_);
@@ -226,7 +235,15 @@
          int l = 1;
          Iterator<Ingredient> iterator = p_193951_1_.func_192400_c().iterator();
  
-@@ -505,7 +500,7 @@
+-        for (int i1 = 0; i1 < j; i1++)
++        for (int i1 = 0; i1 < j; ++i1)
+         {
+-            for (int j1 = 0; j1 < k; j1++)
++            for (int j1 = 0; j1 < k; ++j1)
+             {
+                 if (!iterator.hasNext())
+                 {
+@@ -505,13 +500,13 @@
  
                  Ingredient ingredient = iterator.next();
  
@@ -235,3 +252,10 @@
                  {
                      Slot slot = p_193951_2_.get(l);
                      this.field_191915_z.func_194187_a(ingredient, slot.field_75223_e, slot.field_75221_f);
+                 }
+ 
+-                l++;
++                ++l;
+             }
+ 
+             if (k < i)

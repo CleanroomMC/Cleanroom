@@ -40,6 +40,32 @@
                  {
                      boolean flag = false;
                      boolean flag1 = false;
+@@ -71,7 +70,7 @@
+                     {
+                         int j = 1;
+ 
+-                        for (int k = 0; k < 4; k++)
++                        for (int k = 0; k < 4; ++k)
+                         {
+                             Block block1 = p_180650_1_.func_180495_p(p_180650_2_.func_177979_c(j + 1)).func_177230_c();
+ 
+@@ -85,14 +84,14 @@
+                                 break;
+                             }
+ 
+-                            j++;
++                            ++j;
+                         }
+ 
+                         int i1 = 4;
+ 
+                         if (flag1)
+                         {
+-                            i1++;
++                            ++i1;
+                         }
+ 
+                         if (j < 2 || p_180650_4_.nextInt(i1) >= j)
 @@ -105,7 +104,7 @@
                          flag = true;
                      }
@@ -49,7 +75,17 @@
                      {
                          p_180650_1_.func_180501_a(p_180650_2_, Blocks.field_185765_cR.func_176223_P(), 2);
                          this.func_185602_a(p_180650_1_, blockpos, i);
-@@ -125,9 +124,7 @@
+@@ -117,17 +116,15 @@
+ 
+                         if (flag1)
+                         {
+-                            l++;
++                            ++l;
+                         }
+ 
+-                        for (int j1 = 0; j1 < l; j1++)
++                        for (int j1 = 0; j1 < l; ++j1)
+                         {
                              EnumFacing enumfacing = EnumFacing.Plane.HORIZONTAL.func_179518_a(p_180650_4_);
                              BlockPos blockpos1 = p_180650_2_.func_177972_a(enumfacing);
  
@@ -110,6 +146,15 @@
      public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
      {
          if (!this.func_185606_b(p_189540_2_, p_189540_3_))
+@@ -222,7 +216,7 @@
+ 
+                     if (block1 == Blocks.field_185765_cR)
+                     {
+-                        i++;
++                        ++i;
+                     }
+                     else if (iblockstate1.func_185904_a() != Material.field_151579_a)
+                     {
 @@ -243,44 +237,36 @@
          }
      }
@@ -159,7 +204,16 @@
      }
  
      public static void func_185603_a(World p_185603_0_, BlockPos p_185603_1_, Random p_185603_2_, int p_185603_3_)
-@@ -302,7 +288,7 @@
+@@ -295,14 +281,14 @@
+ 
+         if (p_185601_5_ == 0)
+         {
+-            i++;
++            ++i;
+         }
+ 
+-        for (int j = 0; j < i; j++)
++        for (int j = 0; j < i; ++j)
          {
              BlockPos blockpos = p_185601_1_.func_177981_b(j + 1);
  
@@ -168,7 +222,17 @@
              {
                  return;
              }
-@@ -326,11 +312,7 @@
+@@ -318,19 +304,15 @@
+ 
+             if (p_185601_5_ == 0)
+             {
+-                l++;
++                ++l;
+             }
+ 
+-            for (int k = 0; k < l; k++)
++            for (int k = 0; k < l; ++k)
+             {
                  EnumFacing enumfacing = EnumFacing.Plane.HORIZONTAL.func_179518_a(p_185601_2_);
                  BlockPos blockpos1 = p_185601_1_.func_177981_b(i).func_177972_a(enumfacing);
  

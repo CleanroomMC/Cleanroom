@@ -126,7 +126,7 @@
              }
  
              return true;
-@@ -177,7 +200,7 @@
+@@ -177,18 +200,19 @@
  
              this.field_187288_h |= 1 << (p_187265_2_ >> 4);
  
@@ -135,7 +135,11 @@
              {
                  short short1 = (short)(p_187265_1_ << 12 | p_187265_3_ << 8 | p_187265_2_);
  
-@@ -188,7 +211,8 @@
+-                for (int i = 0; i < this.field_187287_g; i++)
++                for (int i = 0; i < this.field_187287_g; ++i)
+                 {
+                     if (this.field_187285_e[i] == short1)
+                     {
                          return;
                      }
                  }
@@ -145,9 +149,12 @@
                  this.field_187285_e[this.field_187287_g++] = short1;
              }
          }
-@@ -200,11 +224,12 @@
+@@ -198,13 +222,14 @@
+     {
+         if (this.field_187290_j)
          {
-             for (int i = 0; i < this.field_187283_c.size(); ++i)
+-            for (int i = 0; i < this.field_187283_c.size(); i++)
++            for (int i = 0; i < this.field_187283_c.size(); ++i)
              {
 -                this.field_187283_c.get(i).field_71135_a.func_147359_a(p_187267_1_);
 +                (this.field_187283_c.get(i)).field_71135_a.func_147359_a(p_187267_1_);
@@ -181,9 +188,10 @@
                  {
                      this.func_187267_a(new SPacketMultiBlockChange(this.field_187287_g, this.field_187285_e, this.field_187286_f));
 -
+-                    for (int l = 0; l < this.field_187287_g; l++)
 +                //} Keep this in the else until we figure out a fix for mojang's derpitude on the data packet so we don't double send crap.
 +                //{// Forge: Send only the tile entities that are updated, Adding this brace lets us keep the indent and the patch small
-                     for (int l = 0; l < this.field_187287_g; ++l)
++                    for (int l = 0; l < this.field_187287_g; ++l)
                      {
                          int i1 = (this.field_187285_e[l] >> 12 & 15) + this.field_187284_d.field_77276_a * 16;
                          int j1 = this.field_187285_e[l] & 255;
@@ -196,6 +204,15 @@
                          {
                              this.func_187273_a(this.field_187282_b.func_72688_a().func_175625_s(blockpos1));
                          }
+@@ -279,7 +308,7 @@
+     {
+         int i = 0;
+ 
+-        for (int j = this.field_187283_c.size(); i < j; i++)
++        for (int j = this.field_187283_c.size(); i < j; ++i)
+         {
+             EntityPlayerMP entityplayermp = this.field_187283_c.get(i);
+ 
 @@ -318,5 +347,10 @@
          }
  

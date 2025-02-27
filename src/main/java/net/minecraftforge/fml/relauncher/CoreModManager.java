@@ -25,6 +25,7 @@ import com.google.common.primitives.Ints;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
+import net.minecraftforge.common.ForgeEarlyConfig;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.CertificateHelper;
 import net.minecraftforge.fml.common.FMLLog;
@@ -42,6 +43,8 @@ import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.service.mojang.MixinServiceLaunchWrapper;
 import org.spongepowered.asm.util.Constants;
+import zone.rong.mixinbooter.IEarlyMixinLoader;
+import zone.rong.mixinbooter.IMixinConfigHijacker;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -351,7 +354,7 @@ public class CoreModManager {
             String configs;
             String cascadedTweaker;
             File mods_ver = new File(new File(Launch.minecraftHome, "mods"), ForgeVersion.mcVersion);
-            boolean containNonMods = false;
+            boolean containNonMods = false, ignoreMods = false;
             try
             {
                 File manifest = new File(coreMod.getAbsolutePath() + ".meta");
@@ -416,6 +419,17 @@ public class CoreModManager {
                     continue;
                 }
                 fmlCorePlugin = mfAttributes.getValue("FMLCorePlugin");
+                for (String plugin : ForgeEarlyConfig.LOADING_PLUGIN_BLACKLIST) {
+                    if (plugin.equals(fmlCorePlugin)) {
+                        ignoreMods = true;
+                        break;
+                    }
+                }
+                if (ignoreMods) {
+                    ignoredModFiles.add(coreMod.getName());
+                    FMLLog.log.warn("The mod with loading plugin {} is in blacklist and won't be loaded. Check forge_early.cfg for more info.", fmlCorePlugin);
+                    continue;
+                }
                 if (fmlCorePlugin == null)
                 {
                     // Not a coremod
@@ -609,6 +623,7 @@ public class CoreModManager {
             FMLPluginWrapper wrap = new FMLPluginWrapper(coreModName, plugin, location, sortIndex, dependencies);
             loadPlugins.add(wrap);
             FMLLog.log.debug("Enqueued coremod {}", coreModName);
+            MixinBooterPlugin.queneEarlyMixinLoader(plugin);
             return wrap;
         }
         catch (ClassNotFoundException cnfe)
