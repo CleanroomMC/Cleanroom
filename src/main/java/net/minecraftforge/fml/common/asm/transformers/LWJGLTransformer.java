@@ -19,7 +19,7 @@ import java.util.List;
 public class LWJGLTransformer implements IClassTransformer {
     private final HashMap<String, MergeTransformer> mergeTransformers = new HashMap<>();
 
-    public LWJGLXTransformer(){
+    public LWJGLTransformer(){
         mergeTransformers.put("org.lwjgl.openal.AL", (lwjgl, lwjglx, methods, fields) -> lwjglx.methods.stream().filter(m -> m.name.equals("destroy"))
                 .forEach(methodNode -> methods.put(methodNode.name + methodNode.desc, methodNode)));
     }
