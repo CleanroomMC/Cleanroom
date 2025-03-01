@@ -73,6 +73,8 @@ public class LWJGLTransformer implements IClassTransformer {
                 } catch (IOException e) {
                     return null;
                 }
+                if (lwjglxBytes == null) return bytes;
+                
                 ClassReader lwjglxReader = new ClassReader(lwjglxBytes);
                 ClassNode lwjglxNode = new ClassNode();
                 lwjglxReader.accept(lwjglxNode, 0);
