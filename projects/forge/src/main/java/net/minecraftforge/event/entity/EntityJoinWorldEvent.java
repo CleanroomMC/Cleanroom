@@ -21,7 +21,7 @@ package net.minecraftforge.event.entity;
 
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
-import minecraftforge.fml.common.eventhandler.Cancelable;
+import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 

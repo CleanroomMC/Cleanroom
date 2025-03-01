@@ -41,10 +41,10 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.io.ByteStreams;
 import com.google.gson.Gson;
 
-import minecraftforge.fml.common.InjectedModContainer;
-import minecraftforge.fml.common.Loader;
-import minecraftforge.fml.common.ModContainer;
-import minecraftforge.fml.common.versioning.ComparableVersion;
+import net.minecraftforge.fml.common.InjectedModContainer;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.versioning.ComparableVersion;
 
 import javax.annotation.Nullable;
 

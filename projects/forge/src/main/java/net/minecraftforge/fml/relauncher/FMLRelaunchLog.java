@@ -19,8 +19,8 @@
 
 package net.minecraftforge.fml.relauncher;
 
-import minecraftforge.fml.common.FMLLog;
-import minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;

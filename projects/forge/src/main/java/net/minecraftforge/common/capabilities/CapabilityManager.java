@@ -33,9 +33,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import minecraftforge.common.util.EnumHelper;
-import minecraftforge.fml.common.FMLLog;
-import minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.common.util.EnumHelper;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.discovery.ASMDataTable;
 
 public enum CapabilityManager
 {

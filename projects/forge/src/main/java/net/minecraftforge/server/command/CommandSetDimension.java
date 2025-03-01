@@ -27,8 +27,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import minecraftforge.common.DimensionManager;
-import minecraftforge.common.util.ITeleporter;
+import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.util.ITeleporter;
 
 import javax.annotation.Nullable;
 import java.util.Collections;

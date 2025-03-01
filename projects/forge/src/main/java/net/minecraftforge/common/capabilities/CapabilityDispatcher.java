@@ -30,7 +30,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.common.util.INBTSerializable;
 
 /**
  * A high-speed implementation of a capability delegator.

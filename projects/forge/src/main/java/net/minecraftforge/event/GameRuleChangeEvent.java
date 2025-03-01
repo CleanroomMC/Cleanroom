@@ -21,7 +21,7 @@ package net.minecraftforge.event;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.GameRules;
-import minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.Event;
 
 /**
  * Fired when a game rule is changed,

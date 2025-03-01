@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import net.minecraft.client.resources.I18n;
-import minecraftforge.fml.client.config.GuiConfigEntries.IConfigEntry;
+import net.minecraftforge.fml.client.config.GuiConfigEntries.IConfigEntry;
 import net.minecraftforge.fml.client.config.GuiEditArrayEntries.IArrayEntry;
 
 import javax.annotation.Nullable;

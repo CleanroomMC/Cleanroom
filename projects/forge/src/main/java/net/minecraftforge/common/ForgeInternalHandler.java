@@ -24,17 +24,17 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.WorldServer;
-import minecraftforge.common.util.FakePlayerFactory;
-import minecraftforge.event.entity.EntityJoinWorldEvent;
-import minecraftforge.event.world.ChunkEvent;
-import minecraftforge.event.world.WorldEvent;
-import minecraftforge.fml.client.FMLClientHandler;
-import minecraftforge.fml.common.eventhandler.EventPriority;
-import minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import minecraftforge.fml.common.gameevent.TickEvent;
-import minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
-import minecraftforge.fml.common.gameevent.TickEvent.Phase;
-import minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
+import net.minecraftforge.common.util.FakePlayerFactory;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.world.ChunkEvent;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 
 public class ForgeInternalHandler
 {

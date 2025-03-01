@@ -21,7 +21,7 @@ package net.minecraftforge.items;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityHopper;
-import minecraftforge.items.wrapper.InvWrapper;
+import net.minecraftforge.items.wrapper.InvWrapper;
 
 import javax.annotation.Nonnull;
 

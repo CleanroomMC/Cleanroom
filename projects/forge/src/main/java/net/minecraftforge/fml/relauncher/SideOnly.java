@@ -24,7 +24,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.SidedProxy;
 
 
 /**

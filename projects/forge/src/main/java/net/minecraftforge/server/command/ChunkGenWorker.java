@@ -32,8 +32,8 @@ import net.minecraft.world.MinecraftException;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
-import minecraftforge.common.DimensionManager;
-import minecraftforge.common.WorldWorkerManager.IWorker;
+import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.WorldWorkerManager.IWorker;
 
 public class ChunkGenWorker implements IWorker
 {

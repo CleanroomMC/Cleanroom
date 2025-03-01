@@ -31,9 +31,9 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
 import net.minecraft.util.ResourceLocation;
-import minecraftforge.fml.common.FMLLog;
-import minecraftforge.registries.ForgeRegistry.Snapshot;
-import minecraftforge.registries.IForgeRegistry.*;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.registries.ForgeRegistry.Snapshot;
+import net.minecraftforge.registries.IForgeRegistry.*;
 
 public class RegistryManager
 {

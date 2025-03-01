@@ -23,8 +23,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityBrewingStand;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.MinecraftForge;
-import minecraftforge.fml.common.eventhandler.Cancelable;
-import minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.Cancelable;
+import net.minecraftforge.fml.common.eventhandler.Event;
 
 import javax.annotation.Nonnull;
 

@@ -21,8 +21,8 @@ package net.minecraftforge.fluids;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import minecraftforge.common.MinecraftForge;
-import minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.Event;
 
 public class FluidEvent extends Event
 {

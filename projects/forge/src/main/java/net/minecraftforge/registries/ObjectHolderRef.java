@@ -28,9 +28,9 @@ import com.cleanroommc.hackery.ReflectionHackery;
 import sun.misc.Unsafe;
 import net.minecraft.util.ResourceLocation;
 
-import minecraftforge.fml.common.FMLLog;
-import minecraftforge.fml.common.registry.GameRegistry;
-import minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
 import javax.annotation.Nullable;
 

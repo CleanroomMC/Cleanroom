@@ -30,11 +30,11 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
-import minecraftforge.event.CommandEvent;
-import minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.event.CommandEvent;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
-import minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.FMLLog;
 
 import static net.minecraft.util.text.TextFormatting.*;
 

@@ -30,7 +30,7 @@ import org.apache.commons.lang3.Validate;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.RegistryNamespaced;
-import minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.FMLLog;
 
 class NamespacedWrapper<V extends IForgeRegistryEntry<V>> extends RegistryNamespaced<ResourceLocation, V> implements ILockableRegistry
 {

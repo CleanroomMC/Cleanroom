@@ -23,7 +23,7 @@ import com.google.common.base.Preconditions;
 import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import minecraftforge.fml.common.eventhandler.Cancelable;
+import net.minecraftforge.fml.common.eventhandler.Cancelable;
 
 import javax.annotation.Nonnegative;
 import java.util.List;

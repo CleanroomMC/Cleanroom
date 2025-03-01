@@ -22,8 +22,8 @@ package net.minecraftforge.fluids.capability;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import minecraftforge.common.capabilities.ICapabilityProvider;
-import minecraftforge.fluids.capability.templates.FluidHandlerItemStack;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

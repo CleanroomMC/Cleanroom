@@ -29,15 +29,15 @@ import com.google.common.collect.ImmutableSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
-import minecraftforge.fml.client.config.ConfigGuiType;
-import minecraftforge.fml.client.config.DummyConfigElement;
-import minecraftforge.fml.client.config.GuiConfig;
-import minecraftforge.fml.client.config.GuiEditArray;
-import minecraftforge.fml.client.config.GuiEditArrayEntries;
-import minecraftforge.fml.client.config.IConfigElement;
-import minecraftforge.fml.client.config.DummyConfigElement.DummyCategoryElement;
-import minecraftforge.fml.client.config.DummyConfigElement.DummyListElement;
-import minecraftforge.fml.client.config.GuiConfigEntries.NumberSliderEntry;
+import net.minecraftforge.fml.client.config.ConfigGuiType;
+import net.minecraftforge.fml.client.config.DummyConfigElement;
+import net.minecraftforge.fml.client.config.GuiConfig;
+import net.minecraftforge.fml.client.config.GuiEditArray;
+import net.minecraftforge.fml.client.config.GuiEditArrayEntries;
+import net.minecraftforge.fml.client.config.IConfigElement;
+import net.minecraftforge.fml.client.config.DummyConfigElement.DummyCategoryElement;
+import net.minecraftforge.fml.client.config.DummyConfigElement.DummyListElement;
+import net.minecraftforge.fml.client.config.GuiConfigEntries.NumberSliderEntry;
 
 public class FMLConfigGuiFactory implements IModGuiFactory
 {

@@ -25,8 +25,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import minecraftforge.fml.common.versioning.ArtifactVersion;
-import minecraftforge.fml.common.versioning.VersionParser;
+import net.minecraftforge.fml.common.versioning.ArtifactVersion;
+import net.minecraftforge.fml.common.versioning.VersionParser;
 
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;

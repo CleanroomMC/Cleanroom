@@ -39,11 +39,11 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformT
 import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
-import minecraftforge.client.model.BlockStateLoader.Marker;
-import minecraftforge.client.model.BlockStateLoader.SubModel;
+import net.minecraftforge.client.model.BlockStateLoader.Marker;
+import net.minecraftforge.client.model.BlockStateLoader.SubModel;
 import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.common.model.TRSRTransformation;
-import minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.FMLLog;
 
 import java.util.Objects;
 import java.util.Optional;

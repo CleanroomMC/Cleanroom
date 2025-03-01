@@ -29,8 +29,8 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 
 import net.minecraftforge.common.IRarity;
-import minecraftforge.fml.common.EnhancedRuntimeException;
-import minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.EnhancedRuntimeException;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraft.block.BlockPressurePlate.Sensitivity;
 import net.minecraft.block.material.Material;
 import net.minecraft.enchantment.EnumEnchantmentType;

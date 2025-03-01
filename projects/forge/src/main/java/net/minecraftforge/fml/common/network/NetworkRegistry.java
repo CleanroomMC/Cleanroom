@@ -40,10 +40,10 @@ import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.network.FMLOutboundHandler.OutboundTarget;
-import minecraftforge.fml.common.network.handshake.NetworkDispatcher;
-import minecraftforge.fml.common.network.internal.FMLProxyPacket;
-import minecraftforge.fml.common.network.internal.NetworkModHolder;
-import minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.network.handshake.NetworkDispatcher;
+import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
+import net.minecraftforge.fml.common.network.internal.NetworkModHolder;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
 import com.google.common.collect.ImmutableMap;

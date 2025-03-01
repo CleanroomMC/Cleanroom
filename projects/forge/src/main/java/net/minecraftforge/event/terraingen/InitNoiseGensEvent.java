@@ -25,7 +25,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.NoiseGeneratorOctaves;
 import net.minecraft.world.gen.NoiseGeneratorPerlin;
 import net.minecraft.world.gen.NoiseGeneratorSimplex;
-import minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.event.world.WorldEvent;
 
 public class InitNoiseGensEvent<T extends InitNoiseGensEvent.Context> extends WorldEvent
 {

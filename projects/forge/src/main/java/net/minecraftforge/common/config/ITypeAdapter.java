@@ -19,7 +19,7 @@
 
 package net.minecraftforge.common.config;
 
-import minecraftforge.common.config.Property.Type;
+import net.minecraftforge.common.config.Property.Type;
 
 /**
  * Abstracts the types of properties away. Higher level logic must prevent invalid data types.

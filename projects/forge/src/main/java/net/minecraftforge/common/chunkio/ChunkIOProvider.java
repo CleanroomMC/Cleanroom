@@ -25,7 +25,7 @@ import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraftforge.common.MinecraftForge;
-import minecraftforge.event.world.ChunkDataEvent;
+import net.minecraftforge.event.world.ChunkDataEvent;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;

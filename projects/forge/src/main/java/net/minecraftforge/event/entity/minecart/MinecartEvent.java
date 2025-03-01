@@ -22,7 +22,7 @@ package net.minecraftforge.event.entity.minecart;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityEvent;
-import minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.Event;
 
 /**
  * MinecartEvent is fired whenever an event involving minecart entities occurs. <br>

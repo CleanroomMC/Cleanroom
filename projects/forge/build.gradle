@@ -1,6 +1,33 @@
+import com.cleanroommc.gradle.env.PatchDevelopmentTasks
+
 plugins {
     id 'java'
+    id 'com.cleanroommc.gradle' version '0.0.1'
 }
 
 group 'net.minecraftforge'
 version '14.23.5.2860'
+
+evaluationDependsOn(':vanilla')
+
+cleanroom {
+    patchDev {
+        forge {
+            source = project(':vanilla').layout.buildDirectory.dir('cleanroom_gradle/sourceSets/mcp/sources').map { it.asFile }
+        }
+    }
+}
+
+afterEvaluate {
+
+    var vanillaProject = project(':vanilla')
+
+    configurations {
+        implementation.extendsFrom(vanillaProject.configurations.vanilla, vanillaProject.configurations.mcp)
+        forgePatchDevImplementation.extendsFrom(implementation)
+    }
+
+    dependencies {
+        implementation vanillaProject.sourceSets.mcpSource.output
+    }
+}

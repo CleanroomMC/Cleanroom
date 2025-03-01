@@ -51,7 +51,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.FMLOutboundHandler.OutboundTarget;
 import net.minecraftforge.fml.common.network.handshake.FMLHandshakeMessage;
 import net.minecraftforge.fml.common.network.handshake.NetworkDispatcher;
-import minecraftforge.fml.common.network.internal.FMLMessage.CompleteHandshake;
+import net.minecraftforge.fml.common.network.internal.FMLMessage.CompleteHandshake;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry.EntityRegistration;
 import net.minecraftforge.fml.relauncher.Side;

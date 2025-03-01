@@ -24,8 +24,8 @@ import java.util.Map.Entry;
 
 import com.google.common.collect.SetMultimap;
 import net.minecraft.client.gui.GuiScreen;
-import minecraftforge.fml.client.GuiDupesFound;
-import minecraftforge.fml.client.IDisplayableError;
+import net.minecraftforge.fml.client.GuiDupesFound;
+import net.minecraftforge.fml.client.IDisplayableError;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 

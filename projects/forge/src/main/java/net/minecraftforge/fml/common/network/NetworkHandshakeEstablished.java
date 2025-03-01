@@ -20,7 +20,7 @@
 package net.minecraftforge.fml.common.network;
 
 import net.minecraft.network.INetHandler;
-import minecraftforge.fml.common.network.handshake.NetworkDispatcher;
+import net.minecraftforge.fml.common.network.handshake.NetworkDispatcher;
 import net.minecraftforge.fml.relauncher.Side;
 
 /**

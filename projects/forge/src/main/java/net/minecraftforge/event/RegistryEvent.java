@@ -26,10 +26,10 @@ import org.apache.commons.lang3.Validate;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.util.ResourceLocation;
-import minecraftforge.fml.common.ModContainer;
-import minecraftforge.fml.common.eventhandler.Event;
-import minecraftforge.fml.common.eventhandler.GenericEvent;
-import minecraftforge.fml.common.eventhandler.IContextSetter;
+import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.GenericEvent;
+import net.minecraftforge.fml.common.eventhandler.IContextSetter;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 

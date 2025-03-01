@@ -52,7 +52,7 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.ForgeVersion;
-import minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 
 public class LibraryManager

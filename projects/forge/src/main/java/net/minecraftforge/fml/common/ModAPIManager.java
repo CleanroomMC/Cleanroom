@@ -26,14 +26,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import minecraftforge.fml.common.asm.transformers.ModAPITransformer;
-import minecraftforge.fml.common.discovery.ASMDataTable;
-import minecraftforge.fml.common.discovery.ModCandidate;
-import minecraftforge.fml.common.discovery.ModDiscoverer;
-import minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
-import minecraftforge.fml.common.versioning.ArtifactVersion;
-import minecraftforge.fml.common.versioning.DefaultArtifactVersion;
-import minecraftforge.fml.common.versioning.VersionParser;
+import net.minecraftforge.fml.common.asm.transformers.ModAPITransformer;
+import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.common.discovery.ModCandidate;
+import net.minecraftforge.fml.common.discovery.ModDiscoverer;
+import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
+import net.minecraftforge.fml.common.versioning.ArtifactVersion;
+import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion;
+import net.minecraftforge.fml.common.versioning.VersionParser;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;

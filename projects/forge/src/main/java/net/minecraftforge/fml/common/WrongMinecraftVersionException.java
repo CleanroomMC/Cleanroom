@@ -20,8 +20,8 @@
 package net.minecraftforge.fml.common;
 
 import net.minecraft.client.gui.GuiScreen;
-import minecraftforge.fml.client.GuiWrongMinecraft;
-import minecraftforge.fml.client.IDisplayableError;
+import net.minecraftforge.fml.client.GuiWrongMinecraft;
+import net.minecraftforge.fml.client.IDisplayableError;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 

@@ -20,7 +20,7 @@
 package net.minecraftforge.server.permission;
 
 import com.mojang.authlib.GameProfile;
-import minecraftforge.server.permission.context.IContext;
+import net.minecraftforge.server.permission.context.IContext;
 
 import javax.annotation.Nullable;
 import java.util.Collection;

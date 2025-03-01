@@ -19,8 +19,8 @@
 
 package net.minecraftforge.client.resource;
 
-import minecraftforge.fml.relauncher.Side;
-import minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Represents a generic type of reloadable resource. Used for resource reload filtering.

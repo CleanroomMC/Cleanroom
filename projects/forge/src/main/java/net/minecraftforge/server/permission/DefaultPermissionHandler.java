@@ -21,8 +21,8 @@ package net.minecraftforge.server.permission;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.MinecraftServer;
-import minecraftforge.fml.common.FMLCommonHandler;
-import minecraftforge.server.permission.context.IContext;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.server.permission.context.IContext;
 
 import javax.annotation.Nullable;
 import java.util.Collection;

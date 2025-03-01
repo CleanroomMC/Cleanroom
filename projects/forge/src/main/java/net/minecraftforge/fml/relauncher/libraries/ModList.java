@@ -38,7 +38,7 @@ import com.google.gson.JsonSyntaxException;
 
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.ForgeVersion;
-import minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.FMLLog;
 
 public class ModList
 {

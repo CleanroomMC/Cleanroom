@@ -48,13 +48,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
-import minecraftforge.event.RegistryEvent;
-import minecraftforge.event.RegistryEvent.MissingMappings;
-import minecraftforge.fml.common.FMLContainer;
-import minecraftforge.fml.common.FMLLog;
-import minecraftforge.fml.common.InjectedModContainer;
-import minecraftforge.fml.common.Loader;
-import minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.RegistryEvent.MissingMappings;
+import net.minecraftforge.fml.common.FMLContainer;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.InjectedModContainer;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
 
 public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRegistryInternal<V>, IForgeRegistryModifiable<V>
 {

@@ -28,10 +28,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeModContainer;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.ForgeVersion.Status;
-import minecraftforge.fml.common.Loader;
-import minecraftforge.fml.common.ModContainer;
-import minecraftforge.fml.relauncher.Side;
-import minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class NotificationModUpdateScreen extends GuiScreen

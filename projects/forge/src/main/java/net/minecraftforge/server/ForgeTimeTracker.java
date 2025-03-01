@@ -27,7 +27,7 @@ import com.google.common.collect.MapMaker;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
-import minecraftforge.server.timings.TimeTracker;
+import net.minecraftforge.server.timings.TimeTracker;
 
 /**
  * @deprecated To be removed in 1.13 - Implementation has been moved

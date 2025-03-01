@@ -31,7 +31,7 @@ import net.minecraft.util.WeightedRandom;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeProvider;
 import net.minecraft.world.gen.structure.MapGenVillage;
-import minecraftforge.common.util.EnumHelper;
+import net.minecraftforge.common.util.EnumHelper;
 
 import javax.annotation.Nullable;
 

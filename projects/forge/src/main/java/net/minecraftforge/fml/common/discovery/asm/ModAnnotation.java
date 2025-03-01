@@ -22,7 +22,7 @@ package net.minecraftforge.fml.common.discovery.asm;
 import java.util.ArrayList;
 import java.util.Map;
 
-import minecraftforge.fml.common.discovery.asm.ASMModParser.AnnotationType;
+import net.minecraftforge.fml.common.discovery.asm.ASMModParser.AnnotationType;
 
 import org.objectweb.asm.Type;
 

@@ -26,12 +26,12 @@ import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.util.ResourceLocation;
-import minecraftforge.fml.common.FMLLog;
-import minecraftforge.fml.common.Mod;
-import minecraftforge.fml.common.discovery.ASMDataTable;
-import minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
-import minecraftforge.fml.common.registry.GameRegistry;
-import minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

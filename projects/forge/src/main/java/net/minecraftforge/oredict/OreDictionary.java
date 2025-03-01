@@ -30,7 +30,7 @@ import java.util.Set;
 import net.minecraft.block.BlockPrismarine;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.ModContainer;
 import org.apache.logging.log4j.Level;
 
 import net.minecraft.block.Block;
@@ -43,15 +43,15 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
-import minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.MinecraftForge;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import minecraftforge.fml.common.FMLLog;
-import minecraftforge.fml.common.Loader;
-import minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.eventhandler.Event;
 
 import javax.annotation.Nonnull;
 

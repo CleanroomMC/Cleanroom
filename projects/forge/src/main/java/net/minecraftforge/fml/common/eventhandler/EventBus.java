@@ -29,8 +29,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nonnull;
 
-import minecraftforge.fml.common.FMLLog;
-import minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 
 import com.google.common.base.Preconditions;

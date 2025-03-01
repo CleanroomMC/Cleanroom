@@ -19,17 +19,17 @@
 
 package net.minecraftforge.fml.common;
 
-import minecraftforge.fml.common.event.FMLConstructionEvent;
-import minecraftforge.fml.common.event.FMLInitializationEvent;
-import minecraftforge.fml.common.event.FMLLoadCompleteEvent;
-import minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
-import minecraftforge.fml.common.event.FMLServerStartedEvent;
-import minecraftforge.fml.common.event.FMLServerStartingEvent;
-import minecraftforge.fml.common.event.FMLServerStoppedEvent;
-import minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import minecraftforge.fml.common.event.FMLStateEvent;
+import net.minecraftforge.fml.common.event.FMLConstructionEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.event.FMLStateEvent;
 
 /**
  * The state enum used to help track state progression for the loader

@@ -23,8 +23,8 @@ import java.io.File;
 import java.security.cert.Certificate;
 
 import com.google.common.eventbus.EventBus;
-import minecraftforge.fml.common.versioning.VersionParser;
-import minecraftforge.fml.common.versioning.VersionRange;
+import net.minecraftforge.fml.common.versioning.VersionParser;
+import net.minecraftforge.fml.common.versioning.VersionRange;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.Side;
 

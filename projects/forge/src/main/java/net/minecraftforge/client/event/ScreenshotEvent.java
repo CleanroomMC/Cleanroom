@@ -22,8 +22,8 @@ package net.minecraftforge.client.event;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
-import minecraftforge.fml.common.eventhandler.Cancelable;
-import minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.Cancelable;
+import net.minecraftforge.fml.common.eventhandler.Event;
 
 import java.awt.image.BufferedImage;
 import java.io.File;

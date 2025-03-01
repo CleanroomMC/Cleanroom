@@ -19,7 +19,7 @@ plugins {
 rootProject.name = 'Cleanroom'
 
 // These are subprojects when a Project object is resolved, for now they're only "children" ProjectDescriptors
-include 'forge', 'cleanroom', 'lwjgl', 'ibxm'
+include 'vanilla', 'cleanroom', 'forge', 'lwjgl', 'ibxm'
 
 rootProject.children.each {
     it.projectDir = file("projects/${it.name}")

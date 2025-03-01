@@ -32,9 +32,9 @@ import net.minecraftforge.fml.common.LoaderException;
 import net.minecraftforge.fml.common.MetadataCollection;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.ModContainerFactory;
-import minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
-import minecraftforge.fml.common.discovery.asm.ASMModParser;
-import minecraftforge.fml.common.discovery.json.JsonAnnotationLoader;
+import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
+import net.minecraftforge.fml.common.discovery.asm.ASMModParser;
+import net.minecraftforge.fml.common.discovery.json.JsonAnnotationLoader;
 
 import java.util.regex.Matcher;
 import java.util.zip.ZipEntry;

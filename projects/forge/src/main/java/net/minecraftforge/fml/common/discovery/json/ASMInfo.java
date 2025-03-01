@@ -31,7 +31,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import net.minecraftforge.fml.common.FMLLog;
-import minecraftforge.fml.common.discovery.asm.ModAnnotation.EnumHolder;
+import net.minecraftforge.fml.common.discovery.asm.ModAnnotation.EnumHolder;
 
 //Package private, modders shouldn't access this. Do it through ASMDataTable.
 class ASMInfo

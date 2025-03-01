@@ -22,8 +22,8 @@ package net.minecraftforge.fml.common.toposort;
 import java.util.Set;
 
 import net.minecraft.client.gui.GuiScreen;
-import minecraftforge.fml.client.GuiSortingProblem;
-import minecraftforge.fml.client.IDisplayableError;
+import net.minecraftforge.fml.client.GuiSortingProblem;
+import net.minecraftforge.fml.client.IDisplayableError;
 import net.minecraftforge.fml.common.EnhancedRuntimeException;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.relauncher.Side;

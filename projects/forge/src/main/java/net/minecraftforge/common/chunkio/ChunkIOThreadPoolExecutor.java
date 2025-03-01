@@ -25,7 +25,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import net.minecraft.crash.CrashReportCategory;
-import minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.FMLLog;
 
 class ChunkIOThreadPoolExecutor extends ThreadPoolExecutor {
 

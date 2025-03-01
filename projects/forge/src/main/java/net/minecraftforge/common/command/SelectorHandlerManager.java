@@ -31,7 +31,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
-import minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.Loader;
 
 /**
  * Allows registration of custom selector types by assigning a {@link SelectorHandler} to a prefix

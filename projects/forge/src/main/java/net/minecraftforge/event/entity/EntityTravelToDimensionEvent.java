@@ -21,7 +21,7 @@ package net.minecraftforge.event.entity;
 
 import net.minecraft.entity.Entity;
 import net.minecraftforge.common.MinecraftForge;
-import minecraftforge.fml.common.eventhandler.Cancelable;
+import net.minecraftforge.fml.common.eventhandler.Cancelable;
 
 /**
  * EntityTravelToDimensionEvent is fired before an Entity travels to a dimension.<br>

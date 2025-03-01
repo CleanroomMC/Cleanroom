@@ -28,7 +28,7 @@ import java.util.Map;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 
-import minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.FMLLog;
 
 public class Repository
 {

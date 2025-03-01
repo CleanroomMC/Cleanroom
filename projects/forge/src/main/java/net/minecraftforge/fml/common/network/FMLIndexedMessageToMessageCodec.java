@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.objects.Object2ByteOpenHashMap;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.FMLLog;
-import minecraftforge.fml.common.network.internal.FMLProxyPacket;
+import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 
 @Sharable
 public abstract class FMLIndexedMessageToMessageCodec<A> extends MessageToMessageCodec<FMLProxyPacket, A>

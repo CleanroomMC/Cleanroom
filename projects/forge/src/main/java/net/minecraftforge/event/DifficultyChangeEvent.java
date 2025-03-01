@@ -24,8 +24,8 @@ import javax.annotation.Nonnull;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
-import minecraftforge.fml.common.eventhandler.Cancelable;
-import minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.Cancelable;
+import net.minecraftforge.fml.common.eventhandler.Event;
 
 /**
  * DifficultyChangeEvent is fired when difficulty is changing. <br>

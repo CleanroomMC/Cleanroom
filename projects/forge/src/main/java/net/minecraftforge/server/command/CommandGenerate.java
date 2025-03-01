@@ -29,7 +29,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
-import minecraftforge.common.WorldWorkerManager;
+import net.minecraftforge.common.WorldWorkerManager;
 
 class CommandGenerate extends CommandBase
 {

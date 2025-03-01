@@ -31,7 +31,7 @@ import com.google.common.primitives.Floats;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Shorts;
 
-import minecraftforge.common.config.Property.Type;
+import net.minecraftforge.common.config.Property.Type;
 
 class TypeAdapters
 {

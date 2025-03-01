@@ -21,8 +21,8 @@ package net.minecraftforge.event.terraingen;
 
 import net.minecraft.world.biome.BiomeProvider;
 import net.minecraftforge.common.MinecraftForge;
-import minecraftforge.fml.common.eventhandler.Cancelable;
-import minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.Cancelable;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraft.world.gen.layer.GenLayer;
 import net.minecraft.world.WorldType;
 

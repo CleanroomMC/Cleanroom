@@ -22,8 +22,8 @@ package net.minecraftforge.client.resource;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import minecraftforge.fml.relauncher.Side;
-import minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import com.google.common.collect.Sets;
 

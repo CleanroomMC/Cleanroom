@@ -21,7 +21,7 @@ package net.minecraftforge.fml.relauncher;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-import minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;

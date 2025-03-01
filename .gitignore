@@ -3,5 +3,6 @@
 
 /**/logs/
 /**/build/
+/projects/forge/src/forgePatchDev/
 
 !/.idea/icon.svg

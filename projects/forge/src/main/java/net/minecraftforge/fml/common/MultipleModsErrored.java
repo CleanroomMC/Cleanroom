@@ -22,8 +22,8 @@ package net.minecraftforge.fml.common;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiScreen;
-import minecraftforge.fml.client.GuiMultipleModsErrored;
-import minecraftforge.fml.client.IDisplayableError;
+import net.minecraftforge.fml.client.GuiMultipleModsErrored;
+import net.minecraftforge.fml.client.IDisplayableError;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 

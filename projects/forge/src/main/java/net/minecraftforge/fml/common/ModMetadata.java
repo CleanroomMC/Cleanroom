@@ -22,7 +22,7 @@ package net.minecraftforge.fml.common;
 import java.util.List;
 import java.util.Set;
 
-import minecraftforge.fml.common.versioning.ArtifactVersion;
+import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;

@@ -51,13 +51,13 @@ import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableSet;
 
 import com.google.common.primitives.Floats;
-import minecraftforge.fml.client.config.GuiConfig;
-import minecraftforge.fml.client.config.GuiConfigEntries;
-import minecraftforge.fml.client.config.GuiConfigEntries.IConfigEntry;
-import minecraftforge.fml.client.config.IConfigElement;
-import minecraftforge.fml.common.FMLLog;
-import minecraftforge.fml.common.Loader;
-import minecraftforge.fml.relauncher.FMLInjectionData;
+import net.minecraftforge.fml.client.config.GuiConfig;
+import net.minecraftforge.fml.client.config.GuiConfigEntries;
+import net.minecraftforge.fml.client.config.GuiConfigEntries.IConfigEntry;
+import net.minecraftforge.fml.client.config.IConfigElement;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.relauncher.FMLInjectionData;
 import org.apache.commons.io.IOUtils;
 
 /**

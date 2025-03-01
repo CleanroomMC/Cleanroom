@@ -21,7 +21,7 @@ package net.minecraftforge.common.property;
 
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
-import minecraftforge.common.model.IModelState;
+import net.minecraftforge.common.model.IModelState;
 
 public class Properties
 {

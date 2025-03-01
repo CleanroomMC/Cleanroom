@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import minecraftforge.fml.common.versioning.ArtifactVersion;
-import minecraftforge.fml.common.versioning.VersionRange;
+import net.minecraftforge.fml.common.versioning.ArtifactVersion;
+import net.minecraftforge.fml.common.versioning.VersionRange;
 
 import com.google.common.eventbus.EventBus;
 

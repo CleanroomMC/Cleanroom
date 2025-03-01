@@ -1,6 +1,6 @@
 package net.minecraftforge.common;
 
-import minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.Config;
 
 @Config(modid = ForgeVersion.MOD_ID, name = ForgeVersion.MOD_ID + "_early")
 public class ForgeEarlyConfig {

@@ -29,7 +29,7 @@ import java.util.Map.Entry;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiListExtended;
-import minecraftforge.fml.client.config.GuiConfigEntries.SelectValueEntry;
+import net.minecraftforge.fml.client.config.GuiConfigEntries.SelectValueEntry;
 
 /**
  * This class implements the scrolling list functionality of the GuiSelectString screen.

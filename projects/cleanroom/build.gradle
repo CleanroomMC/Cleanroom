@@ -1,35 +1,10 @@
 plugins {
     id 'java'
-    id 'maven-publish'
-    id 'com.cleanroommc.gradle' version '0.0.1'
 }
 
-group = 'com.cleanroommc'
-version = cleanroom_version
-
-def task_group = 'cleanroom dev tasks'
-
-cleanroom {
-    developInitialPatches = false // Turn true to develop patches after srg decompilation
-}
-
-repositories {
-    mavenCentral()
-}
+group 'com.cleanroommc'
+version cleanroom_version
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-}
 
-test {
-    useJUnitPlatform()
-}
-
-// Auto-agreement for build-scans, useful when running RunMinecraft tasks (for the first time)
-if (hasProperty('buildScan')) {
-    buildScan {
-        termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-        termsOfServiceAgree = 'yes'
-    }
 }

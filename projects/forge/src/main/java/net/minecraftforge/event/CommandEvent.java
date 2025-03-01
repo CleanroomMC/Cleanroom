@@ -22,8 +22,8 @@ package net.minecraftforge.event;
 import net.minecraft.command.CommandHandler;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
-import minecraftforge.fml.common.eventhandler.Cancelable;
-import minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.Cancelable;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 

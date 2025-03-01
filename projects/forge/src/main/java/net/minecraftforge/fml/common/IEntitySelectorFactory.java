@@ -20,7 +20,7 @@
 package net.minecraftforge.fml.common;
 
 import com.google.common.base.Predicate;
-import minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;

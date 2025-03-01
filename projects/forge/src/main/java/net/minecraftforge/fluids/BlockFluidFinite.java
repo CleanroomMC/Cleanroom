@@ -29,7 +29,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
 

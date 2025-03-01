@@ -36,8 +36,8 @@ import com.google.gson.reflect.TypeToken;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
 import net.minecraftforge.fml.common.discovery.ModCandidate;
-import minecraftforge.fml.common.discovery.json.ASMInfo.Annotation;
-import minecraftforge.fml.common.discovery.json.ASMInfo.TargetType;
+import net.minecraftforge.fml.common.discovery.json.ASMInfo.Annotation;
+import net.minecraftforge.fml.common.discovery.json.ASMInfo.TargetType;
 
 public class JsonAnnotationLoader
 {

@@ -24,10 +24,10 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import net.minecraft.launchwrapper.LaunchClassLoader;
-import minecraftforge.fml.common.FMLLog;
-import minecraftforge.fml.common.TracingPrintStream;
-import minecraftforge.fml.common.launcher.FMLTweaker;
-import minecraftforge.fml.relauncher.libraries.LibraryManager;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.TracingPrintStream;
+import net.minecraftforge.fml.common.launcher.FMLTweaker;
+import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 
 import org.apache.logging.log4j.LogManager;
 

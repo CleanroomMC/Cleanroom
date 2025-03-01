@@ -20,11 +20,11 @@
 package net.minecraftforge.client.event;
 
 import net.minecraftforge.common.MinecraftForge;
-import minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.ITextComponent;
-import minecraftforge.fml.common.eventhandler.Cancelable;
-import minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.Cancelable;
+import net.minecraftforge.fml.common.eventhandler.Event;
 
 /**
  * ClientChatReceivedEvent is fired whenever the client received a chat message. <br>

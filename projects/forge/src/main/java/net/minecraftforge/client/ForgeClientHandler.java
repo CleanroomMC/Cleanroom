@@ -19,12 +19,12 @@
 
 package net.minecraftforge.client;
 
-import minecraftforge.client.event.ColorHandlerEvent;
-import minecraftforge.client.event.ModelRegistryEvent;
-import minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ForgeModContainer;
 import net.minecraftforge.fluids.FluidRegistry;
-import minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ForgeClientHandler
 {

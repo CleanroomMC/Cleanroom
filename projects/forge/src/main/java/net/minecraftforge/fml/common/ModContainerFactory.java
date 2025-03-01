@@ -23,9 +23,9 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.Map;
 
-import minecraftforge.fml.common.discovery.ModCandidate;
-import minecraftforge.fml.common.discovery.asm.ASMModParser;
-import minecraftforge.fml.common.discovery.asm.ModAnnotation;
+import net.minecraftforge.fml.common.discovery.ModCandidate;
+import net.minecraftforge.fml.common.discovery.asm.ASMModParser;
+import net.minecraftforge.fml.common.discovery.asm.ModAnnotation;
 
 import org.objectweb.asm.Type;
 

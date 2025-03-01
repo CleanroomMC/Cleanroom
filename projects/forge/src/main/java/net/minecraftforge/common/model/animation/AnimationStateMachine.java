@@ -47,10 +47,10 @@ import net.minecraftforge.common.animation.Event;
 import net.minecraftforge.common.animation.ITimeValue;
 import net.minecraftforge.common.animation.TimeValues;
 import net.minecraftforge.common.model.IModelState;
-import minecraftforge.common.util.JsonUtils;
-import minecraftforge.fml.common.FMLLog;
-import minecraftforge.fml.relauncher.Side;
-import minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.common.util.JsonUtils;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 

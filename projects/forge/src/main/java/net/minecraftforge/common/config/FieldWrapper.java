@@ -29,8 +29,8 @@ import java.util.regex.Pattern;
 
 import com.google.common.collect.Lists;
 
-import minecraftforge.common.config.Config.RangeDouble;
-import minecraftforge.common.config.Config.RangeInt;
+import net.minecraftforge.common.config.Config.RangeDouble;
+import net.minecraftforge.common.config.Config.RangeInt;
 import org.apache.commons.lang3.StringUtils;
 
 import static net.minecraftforge.common.config.ConfigManager.*;

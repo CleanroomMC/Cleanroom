@@ -21,7 +21,7 @@ package net.minecraftforge.event.entity.living;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import minecraftforge.fml.common.eventhandler.Cancelable;
+import net.minecraftforge.fml.common.eventhandler.Cancelable;
 
 /**
  * Event for when an entity drops experience on its death, can be used to change

@@ -28,11 +28,11 @@ import java.util.regex.Pattern;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
-import minecraftforge.fml.client.config.ConfigGuiType;
-import minecraftforge.fml.client.config.DummyConfigElement.DummyCategoryElement;
-import minecraftforge.fml.client.config.GuiConfigEntries.IConfigEntry;
-import minecraftforge.fml.client.config.GuiEditArrayEntries.IArrayEntry;
-import minecraftforge.fml.client.config.IConfigElement;
+import net.minecraftforge.fml.client.config.ConfigGuiType;
+import net.minecraftforge.fml.client.config.DummyConfigElement.DummyCategoryElement;
+import net.minecraftforge.fml.client.config.GuiConfigEntries.IConfigEntry;
+import net.minecraftforge.fml.client.config.GuiEditArrayEntries.IArrayEntry;
+import net.minecraftforge.fml.client.config.IConfigElement;
 
 /**
  * This class bridges the gap between the FML config GUI classes and the Forge Configuration classes.

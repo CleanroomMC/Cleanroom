@@ -3,7 +3,7 @@ package net.minecraftforge.fml.relauncher;
 import com.cleanroommc.bouncepad.Bouncepad;
 import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import net.minecraft.launchwrapper.Launch;
-import minecraftforge.fml.relauncher.mixinfix.MixinFixer;
+import net.minecraftforge.fml.relauncher.mixinfix.MixinFixer;
 import org.spongepowered.asm.launch.GlobalProperties;
 import org.spongepowered.asm.launch.MixinBootstrap;
 

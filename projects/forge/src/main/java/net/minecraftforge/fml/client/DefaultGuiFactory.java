@@ -23,7 +23,7 @@ import java.util.Set;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import minecraftforge.fml.client.config.GuiConfig;
+import net.minecraftforge.fml.client.config.GuiConfig;
 import net.minecraftforge.fml.common.ModContainer;
 
 public class DefaultGuiFactory implements IModGuiFactory

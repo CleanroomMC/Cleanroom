@@ -28,7 +28,7 @@ import net.minecraft.client.gui.GuiListExtended;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
-import minecraftforge.fml.client.config.GuiConfigEntries.ArrayEntry;
+import net.minecraftforge.fml.client.config.GuiConfigEntries.ArrayEntry;
 import net.minecraftforge.fml.common.FMLLog;
 
 import org.lwjgl.input.Keyboard;

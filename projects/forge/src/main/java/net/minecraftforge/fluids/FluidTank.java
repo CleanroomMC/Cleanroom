@@ -23,9 +23,9 @@ import javax.annotation.Nullable;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import minecraftforge.fluids.capability.FluidTankPropertiesWrapper;
-import minecraftforge.fluids.capability.IFluidHandler;
-import minecraftforge.fluids.capability.IFluidTankProperties;
+import net.minecraftforge.fluids.capability.FluidTankPropertiesWrapper;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 /**
  * Reference implementation of {@link IFluidTank}. Use/extend this or implement your own.

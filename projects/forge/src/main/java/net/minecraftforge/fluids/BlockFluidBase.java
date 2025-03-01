@@ -51,12 +51,12 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import minecraftforge.common.property.IExtendedBlockState;
-import minecraftforge.common.property.IUnlistedProperty;
-import minecraftforge.common.property.Properties;
-import minecraftforge.common.property.PropertyFloat;
-import minecraftforge.fml.relauncher.Side;
-import minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
+import net.minecraftforge.common.property.Properties;
+import net.minecraftforge.common.property.PropertyFloat;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * This is a base implementation for Fluid blocks.

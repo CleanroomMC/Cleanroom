@@ -20,8 +20,8 @@
 package net.minecraftforge.client.event;
 
 import net.minecraftforge.client.model.ModelLoader;
-import minecraftforge.fml.common.eventhandler.Event;
-import minecraftforge.fml.common.eventhandler.IContextSetter;
+import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.IContextSetter;
 
 /**
  * Fired when the {@link ModelLoader} is ready to receive registrations

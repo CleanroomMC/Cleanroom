@@ -20,7 +20,7 @@
 package net.minecraftforge.fml.common.network;
 
 import net.minecraftforge.fml.common.FMLLog;
-import minecraftforge.fml.common.network.internal.FMLProxyPacket;
+import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 
 import org.apache.logging.log4j.Level;
 

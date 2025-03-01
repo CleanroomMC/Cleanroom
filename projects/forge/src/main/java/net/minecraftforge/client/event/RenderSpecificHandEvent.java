@@ -22,8 +22,8 @@ package net.minecraftforge.client.event;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
-import minecraftforge.fml.common.eventhandler.Cancelable;
-import minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.Cancelable;
+import net.minecraftforge.fml.common.eventhandler.Event;
 
 import javax.annotation.Nonnull;
 

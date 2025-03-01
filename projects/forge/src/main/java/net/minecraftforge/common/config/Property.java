@@ -23,13 +23,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-import minecraftforge.fml.client.config.GuiConfig;
-import minecraftforge.fml.client.config.GuiConfigEntries;
-import minecraftforge.fml.client.config.GuiConfigEntries.IConfigEntry;
-import minecraftforge.fml.client.config.GuiEditArray;
-import minecraftforge.fml.client.config.GuiEditArrayEntries;
-import minecraftforge.fml.client.config.GuiEditArrayEntries.IArrayEntry;
-import minecraftforge.fml.client.config.IConfigElement;
+import net.minecraftforge.fml.client.config.GuiConfig;
+import net.minecraftforge.fml.client.config.GuiConfigEntries;
+import net.minecraftforge.fml.client.config.GuiConfigEntries.IConfigEntry;
+import net.minecraftforge.fml.client.config.GuiEditArray;
+import net.minecraftforge.fml.client.config.GuiEditArrayEntries;
+import net.minecraftforge.fml.client.config.GuiEditArrayEntries.IArrayEntry;
+import net.minecraftforge.fml.client.config.IConfigElement;
 
 public class Property
 {

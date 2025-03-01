@@ -30,9 +30,9 @@ import java.util.stream.Collectors;
 import com.google.common.base.Preconditions;
 
 import net.minecraft.client.gui.GuiScreen;
-import minecraftforge.fml.client.GuiModsMissing;
-import minecraftforge.fml.client.IDisplayableError;
-import minecraftforge.fml.common.versioning.ArtifactVersion;
+import net.minecraftforge.fml.client.GuiModsMissing;
+import net.minecraftforge.fml.client.IDisplayableError;
+import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 

@@ -21,7 +21,7 @@ package net.minecraftforge.client.event;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MovementInput;
-import minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 
 /**
  * This event is fired after player movement inputs are updated.<br>

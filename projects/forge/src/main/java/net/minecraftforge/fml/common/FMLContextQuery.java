@@ -2,8 +2,8 @@ package net.minecraftforge.fml.common;
 
 import com.google.common.base.Strings;
 import net.minecraft.launchwrapper.Launch;
-import minecraftforge.fml.common.discovery.ASMDataTable;
-import minecraftforge.fml.common.discovery.ModCandidate;
+import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.common.discovery.ModCandidate;
 import net.minecraftforge.fml.relauncher.MixinBooterPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfig;
 import org.spongepowered.asm.mixin.extensibility.MixinContextQuery;

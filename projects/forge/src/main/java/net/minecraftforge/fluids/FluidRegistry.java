@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import minecraftforge.fml.common.LoaderState;
+import net.minecraftforge.fml.common.LoaderState;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -33,7 +33,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.translation.I18n;
-import minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.MinecraftForge;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
@@ -41,10 +41,10 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import minecraftforge.fml.common.FMLLog;
-import minecraftforge.fml.common.Loader;
-import minecraftforge.fml.common.ModContainer;
-import minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.registries.IRegistryDelegate;
 
 import javax.annotation.Nullable;

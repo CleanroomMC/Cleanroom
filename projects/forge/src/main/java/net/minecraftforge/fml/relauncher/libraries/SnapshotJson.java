@@ -34,7 +34,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
-import minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.FMLLog;
 /**
  * This is different from the standard maven snapshot metadata.
  * Because none of that data is exposed to us as a user of gradle/maven/whatever.

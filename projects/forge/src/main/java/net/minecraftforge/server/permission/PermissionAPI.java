@@ -22,11 +22,11 @@ package net.minecraftforge.server.permission;
 import com.google.common.base.Preconditions;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.EntityPlayer;
-import minecraftforge.fml.common.FMLLog;
-import minecraftforge.fml.common.Loader;
-import minecraftforge.fml.common.LoaderState;
-import minecraftforge.server.permission.context.IContext;
-import minecraftforge.server.permission.context.PlayerContext;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.LoaderState;
+import net.minecraftforge.server.permission.context.IContext;
+import net.minecraftforge.server.permission.context.PlayerContext;
 import org.apache.logging.log4j.Level;
 
 import javax.annotation.Nullable;

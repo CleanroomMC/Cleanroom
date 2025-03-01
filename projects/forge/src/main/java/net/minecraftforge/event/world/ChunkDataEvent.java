@@ -24,8 +24,8 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraftforge.common.MinecraftForge;
-import minecraftforge.fml.common.eventhandler.Cancelable;
-import minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.Cancelable;
+import net.minecraftforge.fml.common.eventhandler.Event;
 
 /**
  * ChunkDataEvent is fired when an event involving chunk data occurs.<br>

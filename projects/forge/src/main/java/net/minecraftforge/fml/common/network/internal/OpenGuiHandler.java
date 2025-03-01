@@ -21,11 +21,11 @@ package net.minecraftforge.fml.common.network.internal;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
-import minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import minecraftforge.fml.common.network.internal.FMLMessage.OpenGui;
+import net.minecraftforge.fml.common.network.internal.FMLMessage.OpenGui;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 

@@ -21,7 +21,7 @@ package net.minecraftforge.fml.common.network.internal;
 
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.network.handshake.NetworkDispatcher;
-import minecraftforge.fml.common.network.internal.FMLMessage.CompleteHandshake;
+import net.minecraftforge.fml.common.network.internal.FMLMessage.CompleteHandshake;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;

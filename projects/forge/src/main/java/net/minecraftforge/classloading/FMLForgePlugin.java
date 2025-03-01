@@ -22,7 +22,7 @@ package net.minecraftforge.classloading;
 import java.io.File;
 import java.util.Map;
 
-import minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
 import javax.annotation.Nullable;
 

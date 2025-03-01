@@ -29,11 +29,11 @@ import net.minecraft.util.JsonUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import minecraftforge.common.crafting.CraftingHelper;
-import minecraftforge.common.crafting.CraftingHelper.ShapedPrimer;
-import minecraftforge.common.crafting.IShapedRecipe;
+import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.common.crafting.CraftingHelper.ShapedPrimer;
+import net.minecraftforge.common.crafting.IShapedRecipe;
 import net.minecraftforge.registries.IForgeRegistryEntry;
-import minecraftforge.common.crafting.JsonContext;
+import net.minecraftforge.common.crafting.JsonContext;
 
 import java.util.Map;
 import java.util.Set;

@@ -35,7 +35,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
-import minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.FMLLog;
 
 //Class used internally to provide the world specific data directories.
 

@@ -26,7 +26,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.DimensionType;
-import minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.DimensionManager;
 
 import java.util.Map;
 

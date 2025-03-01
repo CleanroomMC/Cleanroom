@@ -33,14 +33,14 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
-import minecraftforge.fml.common.*;
+import net.minecraftforge.fml.common.*;
 import net.minecraft.launchwrapper.Launch;
-import minecraftforge.common.config.Config.Comment;
-import minecraftforge.common.config.Config.LangKey;
-import minecraftforge.common.config.Config.Name;
-import minecraftforge.fml.common.discovery.ASMDataTable;
-import minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
-import minecraftforge.fml.common.discovery.asm.ModAnnotation.EnumHolder;
+import net.minecraftforge.common.config.Config.Comment;
+import net.minecraftforge.common.config.Config.LangKey;
+import net.minecraftforge.common.config.Config.Name;
+import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
+import net.minecraftforge.fml.common.discovery.asm.ModAnnotation.EnumHolder;
 
 import org.apache.commons.lang3.StringUtils;
 

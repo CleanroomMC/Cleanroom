@@ -29,8 +29,8 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.*;
 import static minecraftforge.common.BiomeDictionary.Type.*;
-import minecraftforge.fml.common.FMLLog;
-import minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;

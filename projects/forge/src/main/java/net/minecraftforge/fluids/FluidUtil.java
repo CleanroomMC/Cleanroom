@@ -39,16 +39,16 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import minecraftforge.common.ForgeModContainer;
-import minecraftforge.fluids.capability.CapabilityFluidHandler;
-import minecraftforge.fluids.capability.IFluidHandler;
-import minecraftforge.fluids.capability.IFluidHandlerItem;
-import minecraftforge.fluids.capability.wrappers.BlockLiquidWrapper;
-import minecraftforge.fluids.capability.wrappers.BlockWrapper;
-import minecraftforge.fluids.capability.wrappers.FluidBlockWrapper;
-import minecraftforge.items.CapabilityItemHandler;
-import minecraftforge.items.IItemHandler;
-import minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.common.ForgeModContainer;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.minecraftforge.fluids.capability.wrappers.BlockLiquidWrapper;
+import net.minecraftforge.fluids.capability.wrappers.BlockWrapper;
+import net.minecraftforge.fluids.capability.wrappers.FluidBlockWrapper;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 public class FluidUtil
 {

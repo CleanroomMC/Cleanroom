@@ -26,7 +26,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.item.ItemStack;
-import minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.OreDictionary;
 
 /**
  * An {@link ItemPredicate} that matches oredicts.
