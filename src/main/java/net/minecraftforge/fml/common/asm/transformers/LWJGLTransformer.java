@@ -77,8 +77,7 @@ public class LWJGLTransformer implements IClassTransformer {
 
                 ClassReader lwjglxReader = new ClassReader(lwjglxBytes);
                 ClassNode lwjglxNode = new ClassNode();
-                lwjglxReader.accept(lwjglxNode, 0);
-                lwjglxNode.accept(new ClassRemapper(lwjglxNode, INSTANCE));
+                lwjglxReader.accept(new ClassRemapper(lwjglxNode, INSTANCE), 0);
 
                 ClassNode lwjglNode = new ClassNode();
                 ClassReader lwjglReader = new ClassReader(bytes);
