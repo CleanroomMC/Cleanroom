@@ -112,16 +112,10 @@ public class LWJGLTransformer implements IClassTransformer {
         }
     }
 
-    public void runMergeTransform(ClassNode lwjgl, ClassNode lwjglx, HashMap<String, MethodNode> methods, HashMap<String, FieldNode> fields) {
-
-    }
-
     @FunctionalInterface
     private interface MergeTransformer {
         void runMergeTransform(ClassNode lwjgl, ClassNode lwjglx, HashMap<String, MethodNode> methods, HashMap<String, FieldNode> fields);
     }
-
-
 
     @Override
     public int getPriority() {
