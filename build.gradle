@@ -460,13 +460,13 @@ project(':cleanroom') {
         installer 'org.apache.commons:commons-compress:1.27.1'
         installer 'org.apache.httpcomponents:httpclient:4.5.14'
         installer 'org.apache.httpcomponents:httpcore:4.4.16'
-        installer 'com.github.oshi:oshi-core:6.6.6'
+        installer 'com.github.oshi:oshi-core:6.7.0'
         installer 'net.java.dev.jna:jna:5.16.0'
         installer 'net.java.dev.jna:jna-platform:5.16.0'
         installer 'it.unimi.dsi:fastutil:8.5.15'
-        installer 'commons-codec:commons-codec:1.17.2'
+        installer 'commons-codec:commons-codec:1.18.0'
         installer 'commons-io:commons-io:2.18.0'
-        installer 'commons-logging:commons-logging:1.3.4'
+        installer 'commons-logging:commons-logging:1.3.5'
         installer 'com.google.guava:guava:33.4.0-jre'
         installer 'com.google.guava:failureaccess:1.0.2'
         installer 'com.google.code.gson:gson:2.12.1'
@@ -487,10 +487,10 @@ project(':cleanroom') {
         installer "io.netty:netty-codec-dns:$props.netty_version"
         installer "io.netty:netty-resolver-dns:$props.netty_version"
 
-        installer 'org.apache.logging.log4j:log4j-api:2.24.1'
-        installer 'org.apache.logging.log4j:log4j-core:2.24.1'
-        installer 'org.apache.logging.log4j:log4j-slf4j2-impl:2.24.1'
-        installer 'org.slf4j:slf4j-api:2.0.16'
+        installer 'org.apache.logging.log4j:log4j-api:2.24.3'
+        installer 'org.apache.logging.log4j:log4j-core:2.24.3'
+        installer 'org.apache.logging.log4j:log4j-slf4j2-impl:2.24.3'
+        installer 'org.slf4j:slf4j-api:2.0.17'
         installer 'jakarta.annotation:jakarta.annotation-api:3.0.0'
         installer 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
         installer 'org.glassfish.jaxb:jaxb-core:4.0.5'
@@ -502,7 +502,7 @@ project(':cleanroom') {
         installer 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.2'
         installer 'jakarta.activation:jakarta.activation-api:2.1.3'
         installer 'org.glassfish.corba:glassfish-corba-omgapi:4.2.5'
-        installer 'org.openjdk.nashorn:nashorn-core:15.4'
+        installer 'org.openjdk.nashorn:nashorn-core:15.6'
         // installer 'ca.weblite:java-objc-bridge:1.2'
 
 
@@ -510,8 +510,8 @@ project(':cleanroom') {
         installer 'com.cleanroommc:sponge-mixin:0.20.10+mixin.0.8.7'
         installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.5.0-beta.5')
 
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.0'
-        testImplementation 'org.junit.vintage:junit-vintage-engine:5.11.0'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.12.0'
+        testImplementation 'org.junit.vintage:junit-vintage-engine:5.12.0'
         testImplementation 'org.opentest4j:opentest4j:1.3.0' // Needed for junit 5
         testImplementation 'org.hamcrest:hamcrest:3.0' // Needs advanced matching for list order
 
