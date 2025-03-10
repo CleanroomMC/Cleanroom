@@ -75,6 +75,7 @@ public class ForgeEarlyConfig {
             "lain.mods.skins.init.forge.asm.Plugin",
             "advancedshader.core.Core",
             "net.shadowfacts.forgelin.preloader.ForgelinPlugin",
+            "com.cleanroommc.relauncher.CleanroomEntrypoint",
     };
 
     public static CategoryOpenAlContext OPENAL_CONTEXT = new CategoryOpenAlContext();
