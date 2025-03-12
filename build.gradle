@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
         maven {
             name "MinecraftForge"
-            url "https://maven.creeperhost.net/"
+            url "https://maven.minecraftforge.net/"
         }
         maven {
             name "Outlands"
@@ -67,7 +67,7 @@ Util.init()
 // Post-Processing
 def post_processor = [
     tool: 'net.minecraftforge:mcpcleanup:2.3.2:fatjar',
-    repo: 'https://maven.creeperhost.net/',
+    repo: 'https://maven.minecraftforge.net/',
     args: ['--input', '{input}', '--output', '{output}']
 ]
 
@@ -94,7 +94,7 @@ project(':mcp') {
         }
         maven {
             name 'MinecraftForge'
-            url 'https://maven.creeperhost.net/'
+            url 'https://maven.minecraftforge.net/'
         }
 
     }
@@ -119,7 +119,7 @@ project(':minecraft') {
         }
         maven {
             name 'MinecraftForge'
-            url 'https://maven.creeperhost.net/'
+            url 'https://maven.minecraftforge.net/'
         }
 
     }
