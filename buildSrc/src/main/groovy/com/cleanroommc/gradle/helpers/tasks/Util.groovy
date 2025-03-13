@@ -146,12 +146,12 @@ class Util {
 	// TODO: Change to standard maven
 	static def getNativeURL(path, filename) {
 		def urlList = [
+				"https://repo.maven.apache.org/maven2/",
+				"https://libraries.minecraft.net/",
+				"https://maven.arcseekers.com/releases/",
 				"https://repo.cleanroommc.com/releases/",
 				"https://repo.cleanroommc.com/snapshots/", // In case we use snapshot/forked version of dependency
 				"https://maven.minecraftforge.net/",
-				"https://repo.maven.apache.org/maven2/",
-				"https://libraries.minecraft.net/",
-				"https://maven.arcseekers.com/releases/"
 		]
 		try {
 			return urlList.stream().map(original -> original + path)
