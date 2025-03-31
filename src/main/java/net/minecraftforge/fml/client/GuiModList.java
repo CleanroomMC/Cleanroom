@@ -161,7 +161,7 @@ public class GuiModList extends GuiScreen
     @Override
     public void initGui()
     {
-        int slotHeight = 35;
+        int slotHeight = 25;
         for (ModContainer mod : mods)
         {
             listWidth = Math.max(listWidth,getFontRenderer().getStringWidth(mod.getName()) + 10);

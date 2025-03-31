@@ -80,7 +80,7 @@ public class GuiSlotModList extends GuiScrollingList
     @Override
     protected int getContentHeight()
     {
-        return (this.getSize()) * 35 + 1;
+        return (this.getSize()) * 25 + 1;
     }
 
     ArrayList<ModContainer> getMods()
@@ -101,13 +101,11 @@ public class GuiSlotModList extends GuiScrollingList
         {
             font.drawString(font.trimStringToWidth(name,       listWidth - 10), this.left + 3 , top +  2, 0xFF2222);
             font.drawString(font.trimStringToWidth(version,    listWidth - (5 + height)), this.left + 3 , top + 12, 0xFF2222);
-            font.drawString(font.trimStringToWidth("DISABLED", listWidth - 10), this.left + 3 , top + 22, 0xFF2222);
         }
         else
         {
             font.drawString(font.trimStringToWidth(name,    listWidth - 10), this.left + 3 , top +  2, 0xFFFFFF);
             font.drawString(font.trimStringToWidth(version, listWidth - (5 + height)), this.left + 3 , top + 12, 0xCCCCCC);
-            font.drawString(font.trimStringToWidth(mc.getMetadata() != null ? mc.getMetadata().getChildModCountString() : "Metadata not found", listWidth - 10), this.left + 3 , top + 22, 0xCCCCCC);
 
             if (vercheck.status.shouldDraw())
             {
