@@ -9,7 +9,7 @@
      private RConThreadQuery field_71342_m;
      private final RConConsoleSource field_184115_n = new RConConsoleSource(this);
      private RConThreadMain field_71339_n;
-@@ -62,24 +62,17 @@
+@@ -62,24 +62,19 @@
      private boolean field_71338_p;
      private GameType field_71337_q;
      private boolean field_71335_s;
@@ -27,17 +27,19 @@
      {
          super(p_i47086_1_, Proxy.NO_PROXY, p_i47086_2_, p_i47086_3_, p_i47086_4_, p_i47086_5_, p_i47086_6_);
 -        new Thread("Server Infinisleeper")
++        if (!org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS) return;
 +        Thread thread = new Thread("Server Infinisleeper")
          {
              {
                  this.setDaemon(true);
++                this.setPriority(Thread.MIN_PRIORITY);
                  this.start();
              }
 -            @Override
              public void run()
              {
                  while (true)
-@@ -88,22 +81,22 @@
+@@ -88,22 +83,22 @@
                      {
                          Thread.sleep(2147483647L);
                      }
@@ -63,7 +65,7 @@
                  BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
                  String s4;
  
-@@ -129,6 +122,8 @@
+@@ -129,6 +124,8 @@
              field_155771_h.warn("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
          }
  
@@ -72,7 +74,7 @@
          field_155771_h.info("Loading properties");
          this.field_71340_o = new PropertyManager(new File("server.properties"));
          this.field_154332_n = new ServerEula(new File("eula.txt"));
-@@ -163,17 +158,17 @@
+@@ -163,17 +160,17 @@
  
              if (this.field_71340_o.func_73669_a("difficulty", 1) < 0)
              {
@@ -93,7 +95,7 @@
              InetAddress inetaddress = null;
  
              if (!this.func_71211_k().isEmpty())
-@@ -188,7 +183,7 @@
+@@ -188,7 +185,7 @@
  
              field_155771_h.info("Generating keypair");
              this.func_71253_a(CryptManager.func_75891_b());
@@ -102,7 +104,7 @@
  
              try
              {
-@@ -197,7 +192,7 @@
+@@ -197,7 +194,7 @@
              catch (IOException ioexception)
              {
                  field_155771_h.warn("**** FAILED TO BIND TO PORT!");
@@ -111,7 +113,7 @@
                  field_155771_h.warn("Perhaps a server is already running on that port?");
                  return false;
              }
-@@ -206,9 +201,7 @@
+@@ -206,9 +203,7 @@
              {
                  field_155771_h.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
                  field_155771_h.warn("The server will make no attempt to authenticate usernames. Beware.");
@@ -122,7 +124,7 @@
                  field_155771_h.warn("To change this, set \"online-mode\" to \"true\" in the server.properties file.");
              }
  
-@@ -223,6 +216,7 @@
+@@ -223,6 +218,7 @@
              }
              else
              {
@@ -130,7 +132,7 @@
                  this.func_184105_a(new DedicatedPlayerList(this));
                  long j = System.nanoTime();
  
-@@ -234,7 +228,7 @@
+@@ -234,7 +230,7 @@
                  String s = this.field_71340_o.func_73671_a("level-seed", "");
                  String s1 = this.field_71340_o.func_73671_a("level-type", "DEFAULT");
                  String s2 = this.field_71340_o.func_73671_a("generator-settings", "");
@@ -139,7 +141,7 @@
  
                  if (!s.isEmpty())
                  {
-@@ -247,7 +241,7 @@
+@@ -247,7 +243,7 @@
                              k = l;
                          }
                      }
@@ -148,7 +150,7 @@
                      {
                          k = (long)s.hashCode();
                      }
-@@ -267,21 +261,21 @@
+@@ -267,21 +263,21 @@
                  this.func_71191_d(this.field_71340_o.func_73669_a("max-build-height", 256));
                  this.func_71191_d((this.func_71207_Z() + 8) / 16 * 16);
                  this.func_71191_d(MathHelper.func_76125_a(this.func_71207_Z(), 64, 256));
@@ -177,7 +179,7 @@
                      this.field_71340_o.func_187238_b("announce-player-achievements");
                      this.field_71340_o.func_73668_b();
                  }
-@@ -309,7 +303,8 @@
+@@ -309,7 +305,8 @@
                  }
  
                  Items.field_190931_a.func_150895_a(CreativeTabs.field_78027_g, NonNullList.func_191196_a());
@@ -187,7 +189,7 @@
              }
          }
      }
-@@ -339,46 +334,38 @@
+@@ -339,46 +336,38 @@
  
          if (!this.field_71340_o.func_73671_a("resource-pack", "").isEmpty() && s.isEmpty())
          {
@@ -235,7 +237,7 @@
      public CrashReport func_71230_b(CrashReport p_71230_1_)
      {
          p_71230_1_ = super.func_71230_b(p_71230_1_);
-@@ -400,40 +387,34 @@
+@@ -400,40 +389,34 @@
          return p_71230_1_;
      }
  
@@ -278,7 +280,7 @@
      public boolean func_70002_Q()
      {
          return this.field_71340_o.func_73670_a("snooper-enabled", true);
-@@ -453,13 +434,11 @@
+@@ -453,13 +436,11 @@
          }
      }
  
@@ -292,7 +294,7 @@
      public boolean func_181035_ah()
      {
          return this.field_71340_o.func_73670_a("use-native-transport", true);
-@@ -470,13 +449,11 @@
+@@ -470,13 +451,11 @@
          return (DedicatedPlayerList)super.func_184103_al();
      }
  
@@ -306,7 +308,7 @@
      public String func_71330_a(String p_71330_1_, String p_71330_2_)
      {
          return this.field_71340_o.func_73671_a(p_71330_1_, p_71330_2_);
-@@ -487,38 +464,32 @@
+@@ -487,38 +466,32 @@
          return this.field_71340_o.func_73670_a(p_71332_1_, p_71332_2_);
      }
  
@@ -345,7 +347,7 @@
      public String func_71274_v()
      {
          return this.func_71273_Y();
-@@ -530,34 +501,29 @@
+@@ -530,34 +503,29 @@
          this.field_71335_s = true;
      }
  
@@ -381,7 +383,7 @@
          {
              return false;
          }
-@@ -583,33 +549,28 @@
+@@ -583,33 +551,28 @@
          }
      }
  
@@ -416,7 +418,7 @@
      public int func_175580_aG()
      {
          int i = this.field_71340_o.func_73669_a("max-world-size", super.func_175580_aG());
-@@ -626,17 +587,19 @@
+@@ -626,17 +589,19 @@
          return i;
      }
  
@@ -438,7 +440,7 @@
          {
              if (i > 0)
              {
-@@ -649,7 +612,7 @@
+@@ -649,7 +614,7 @@
  
          boolean flag1 = false;
  
@@ -447,7 +449,7 @@
          {
              if (j > 0)
              {
-@@ -662,7 +625,7 @@
+@@ -662,7 +627,7 @@
  
          boolean flag2 = false;
  
@@ -456,7 +458,7 @@
          {
              if (k > 0)
              {
-@@ -675,7 +638,7 @@
+@@ -675,7 +640,7 @@
  
          boolean flag3 = false;
  
@@ -465,7 +467,7 @@
          {
              if (l > 0)
              {
-@@ -688,7 +651,7 @@
+@@ -688,7 +653,7 @@
  
          boolean flag4 = false;
  
@@ -474,7 +476,7 @@
          {
              if (i1 > 0)
              {
-@@ -708,8 +671,9 @@
+@@ -708,8 +673,9 @@
          {
              Thread.sleep(5000L);
          }
@@ -485,7 +487,7 @@
          }
      }
  
-@@ -718,13 +682,11 @@
+@@ -718,13 +684,11 @@
          return this.field_71340_o.func_179885_a("max-tick-time", TimeUnit.MINUTES.toMillis(1L));
      }
  
