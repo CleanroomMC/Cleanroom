@@ -27,7 +27,7 @@
      {
          super(p_i47086_1_, Proxy.NO_PROXY, p_i47086_2_, p_i47086_3_, p_i47086_4_, p_i47086_5_, p_i47086_6_);
 -        new Thread("Server Infinisleeper")
-+        if (!System.getProperties().getProperty("os.name").toLowerCase().contains("windows")) return;
++        if (!org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS) return;
 +        Thread thread = new Thread("Server Infinisleeper")
          {
              {

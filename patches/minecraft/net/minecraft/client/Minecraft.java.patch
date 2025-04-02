@@ -367,7 +367,7 @@
  
      private void func_71389_H()
      {
-+        if (!System.getProperties().getProperty("os.name").toLowerCase().contains("windows")) return;
++        if (!org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS) return;
          Thread thread = new Thread("Timer hack thread")
          {
 -            @Override
