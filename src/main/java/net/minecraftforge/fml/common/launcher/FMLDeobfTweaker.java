@@ -29,6 +29,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.asm.transformers.DeobfuscationTransformer;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.FMLInjectionData;
+import org.spongepowered.asm.mixin.MixinEnvironment;
 import top.outlands.foundation.TransformerDelegate;
 
 public class FMLDeobfTweaker implements ITweaker {
@@ -52,7 +53,7 @@ public class FMLDeobfTweaker implements ITweaker {
         classLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.ItemBlockTransformer");
         classLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.ItemBlockSpecialTransformer");
         classLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.PotionEffectTransformer");
-        CoreModManager.beginMixinInitPhase();
+        MixinEnvironment.gotoPhase(MixinEnvironment.Phase.INIT);
         try
         {
             FMLLog.log.debug("Validating minecraft");

@@ -68,7 +68,6 @@ public class CoreModManager {
     private static List<String> candidateModFiles = Lists.newArrayList();
     private static List<String> accessTransformers = Lists.newArrayList();
     private static Set<String> rootNames = Sets.newHashSet();
-    private static Set<String> mixinConfigs = Sets.newHashSet();
 
     static boolean deobfuscatedEnvironment;
 
@@ -704,14 +703,6 @@ public class CoreModManager {
             if (closeable != null)
                 closeable.close();
         } catch (final IOException ioe){}
-    }
-
-    public static void beginMixinInitPhase() {
-        for (var config : mixinConfigs) {
-            FMLLog.log.debug("Adding Mixin configs: {}", config);
-            Mixins.addConfigurations(config.split(","));
-        }
-        MixinEnvironment.gotoPhase(MixinEnvironment.Phase.INIT);
     }
 
 }
