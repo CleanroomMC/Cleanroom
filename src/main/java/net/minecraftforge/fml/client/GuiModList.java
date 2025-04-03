@@ -421,7 +421,12 @@ public class GuiModList extends GuiScreen
                 configModButton.enabled = guiFactory.hasConfigGui();
             }
             lines.add(selectedMod.getMetadata().name);
-            lines.add(String.format("Version: %s (%s)", selectedMod.getDisplayVersion(), selectedMod.getVersion()));
+            if (selectedMod.getDisplayVersion().isEmpty())
+                lines.add(String.format("Version: %s (%s)", selectedMod.getVersion()));
+            else if (selectedMod.getVersion().equals(selectedMod.getDisplayVersion()))
+                lines.add(String.format("Version: %s", selectedMod.getDisplayVersion()));
+            else
+                lines.add(String.format("Version: %s (%s)", selectedMod.getDisplayVersion(), selectedMod.getVersion()));
             lines.add(String.format("Mod ID: '%s' Mod State: %s", selectedMod.getModId(), Loader.instance().getModState(selectedMod)));
 
             if (!selectedMod.getMetadata().credits.isEmpty())
@@ -429,12 +434,12 @@ public class GuiModList extends GuiScreen
                 lines.add("Credits: " + selectedMod.getMetadata().credits);
             }
 
-            lines.add("Authors: " + selectedMod.getMetadata().getAuthorList());
-            lines.add("URL: " + selectedMod.getMetadata().url);
+            if (!selectedMod.getMetadata().getAuthorList().isEmpty())
+                lines.add("Authors: " + selectedMod.getMetadata().getAuthorList());
+            if (!selectedMod.getMetadata().url.isEmpty())
+                lines.add("URL: " + selectedMod.getMetadata().url);
 
-            if (selectedMod.getMetadata().childMods.isEmpty())
-                lines.add("No child mods for this mod");
-            else
+            if (!selectedMod.getMetadata().childMods.isEmpty())
                 lines.add("Child mods: " + selectedMod.getMetadata().getChildModList());
 
             if (vercheck.status == Status.OUTDATED || vercheck.status == Status.BETA_OUTDATED)
