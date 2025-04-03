@@ -93,7 +93,7 @@ public class GuiSlotModList extends GuiScrollingList
     {
         ModContainer mc       = mods.get(idx);
         String       name     = StringUtils.stripControlCodes(mc.getName());
-        String       version  = StringUtils.stripControlCodes(mc.getDisplayVersion());
+        String       version  = StringUtils.stripControlCodes(mc.getDisplayVersion().isEmpty() ? mc.getVersion() : mc.getDisplayVersion());
         FontRenderer font     = this.parent.getFontRenderer();
         CheckResult  vercheck = ForgeVersion.getResult(mc);
 
