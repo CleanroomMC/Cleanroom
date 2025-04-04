@@ -483,7 +483,7 @@ public class GuiModList extends GuiScreen
         {
             lines.add(null);
             lines.add(RED + "No mod information found");
-            lines.add(RED + "Ask your mod author to provide a mod mcmod.info file");
+            lines.add(RED + "Ask the mod author to provide a mcmod.info file");
         }
 
         modInfo = new Info(this.width - this.listWidth - 30, lines, logoPath, logoDims);

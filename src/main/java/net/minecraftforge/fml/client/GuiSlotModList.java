@@ -28,11 +28,16 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.ForgeVersion.CheckResult;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState.ModState;
 import net.minecraftforge.fml.common.ModContainer;
+
+import static net.minecraft.util.text.TextFormatting.*;
 
 /**
  * @author cpw
@@ -40,9 +45,9 @@ import net.minecraftforge.fml.common.ModContainer;
  */
 public class GuiSlotModList extends GuiScrollingList
 {
-    
+
     private static final ResourceLocation VERSION_CHECK_ICONS = new ResourceLocation(ForgeVersion.MOD_ID, "textures/gui/version_check_icons.png");
-    
+
     private GuiModList parent;
     private ArrayList<ModContainer> mods;
 
@@ -99,13 +104,13 @@ public class GuiSlotModList extends GuiScrollingList
 
         if (Loader.instance().getModState(mc) == ModState.DISABLED)
         {
-            font.drawString(font.trimStringToWidth(name,       listWidth - 10), this.left + 3 , top +  2, 0x993333);
-            font.drawString(font.trimStringToWidth(version,    listWidth - (5 + height)), this.left + 3 , top + 12, 0x993333);
+            drawString(name, 10, top + 2, RED);
+            drawString(version, 5 + height, top + 12, RED);
         }
         else
         {
-            font.drawString(font.trimStringToWidth(name,    listWidth - 10), this.left + 3 , top +  2, 0xFFFFFF);
-            font.drawString(font.trimStringToWidth(version, listWidth - (5 + height)), this.left + 3 , top + 12, 0xCCCCCC);
+            drawString(name, 10, top + 2, WHITE);
+            drawString(version, 5 + height, top + 12, WHITE);
 
             if (vercheck != null && vercheck.status.shouldDraw())
             {
@@ -117,5 +122,12 @@ public class GuiSlotModList extends GuiScrollingList
                 GlStateManager.popMatrix();
             }
         }
+    }
+
+    protected void drawString(String text, int width, int y, TextFormatting color)
+    {
+        FontRenderer font = parent.getFontRenderer();
+        ITextComponent textComponent = new TextComponentString(color + font.trimStringToWidth(text, listWidth - width));
+        font.drawString(textComponent.getFormattedText(), left + 3, y, 0);
     }
 }
