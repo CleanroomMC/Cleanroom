@@ -456,8 +456,10 @@ public class GuiModList extends GuiScreen
                 lines.add(GOLD + "This version is a beta version");
             else if (vercheck.status == Status.AHEAD)
                 lines.add(LIGHT_PURPLE + "This version is ahead of the latest version found (" + LIGHT_PURPLE + vercheck.latestFound + ")");
+            else if (vercheck.status == Status.BETA_OUTDATED)
+                lines.add(GOLD + "Beta update (" + GOLD + vercheck.latestFound + ") available: " + (vercheck.homepage == null ? "" : vercheck.homepage));
             else
-                lines.add((vercheck.status == Status.OUTDATED ? GREEN : GOLD) + "Update Available: " + (vercheck.homepage == null ? "" : vercheck.homepage));
+                lines.add(GREEN + "Update (" + GREEN + vercheck.latestFound + ") available: " + (vercheck.homepage == null ? "" : vercheck.homepage));
 
             if (!vercheck.changes.isEmpty())
             {
