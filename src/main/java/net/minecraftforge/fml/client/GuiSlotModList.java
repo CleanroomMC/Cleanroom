@@ -114,7 +114,6 @@ public class GuiSlotModList extends GuiScrollingList
 
             if (vercheck != null && vercheck.status.shouldDraw())
             {
-                //TODO: Consider adding more icons for visualization
                 Minecraft.getMinecraft().getTextureManager().bindTexture(VERSION_CHECK_ICONS);
                 GlStateManager.color(1, 1, 1, 1);
                 GlStateManager.pushMatrix();
