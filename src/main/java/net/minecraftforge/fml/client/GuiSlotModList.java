@@ -95,7 +95,7 @@ public class GuiSlotModList extends GuiScrollingList
         String       name     = StringUtils.stripControlCodes(mc.getName());
         String       version  = StringUtils.stripControlCodes(mc.getDisplayVersion().isEmpty() ? mc.getVersion() : mc.getDisplayVersion());
         FontRenderer font     = this.parent.getFontRenderer();
-        CheckResult  vercheck = ForgeVersion.getResult(mc);
+        CheckResult  vercheck = ForgeVersion.getCleanResult(mc);
 
         if (Loader.instance().getModState(mc) == ModState.DISABLED)
         {
@@ -107,7 +107,7 @@ public class GuiSlotModList extends GuiScrollingList
             font.drawString(font.trimStringToWidth(name,    listWidth - 10), this.left + 3 , top +  2, 0xFFFFFF);
             font.drawString(font.trimStringToWidth(version, listWidth - (5 + height)), this.left + 3 , top + 12, 0xCCCCCC);
 
-            if (vercheck.status.shouldDraw())
+            if (vercheck != null && vercheck.status.shouldDraw())
             {
                 //TODO: Consider adding more icons for visualization
                 Minecraft.getMinecraft().getTextureManager().bindTexture(VERSION_CHECK_ICONS);

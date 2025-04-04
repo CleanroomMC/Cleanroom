@@ -112,36 +112,30 @@ public class ForgeVersion
 
     public static enum Status
     {
-        PENDING(),
-        FAILED(),
+        PENDING(0, true),
+        FAILED(1, true),
         UP_TO_DATE(),
         OUTDATED(3, true),
-        AHEAD(),
-        BETA(),
+        AHEAD(7, false),
+        BETA(6, false),
         BETA_OUTDATED(6, true);
 
         final int sheetOffset;
-        final boolean draw, animated;
+        final boolean animated;
 
         Status()
         {
-            this(0, false, false);
+            this(0, false);
         }
 
         Status(int sheetOffset)
         {
-            this(sheetOffset, true, false);
+            this(sheetOffset, false);
         }
 
         Status(int sheetOffset, boolean animated)
         {
-            this(sheetOffset, true, animated);
-        }
-
-        Status(int sheetOffset, boolean draw, boolean animated)
-        {
             this.sheetOffset = sheetOffset;
-            this.draw = draw;
             this.animated = animated;
         }
 
@@ -152,7 +146,7 @@ public class ForgeVersion
 
         public boolean shouldDraw()
         {
-            return draw;
+            return this != UP_TO_DATE;
         }
 
         public boolean isAnimated()
@@ -166,17 +160,23 @@ public class ForgeVersion
     {
         public final Status status;
         @Nullable
+        public final String latestFound;
+        @Nullable
         public final ComparableVersion target;
         public final Map<ComparableVersion, String> changes;
         @Nullable
         public final String url;
+        @Nullable
+        public final String homepage;
 
-        private CheckResult(Status status, @Nullable ComparableVersion target, @Nullable Map<ComparableVersion, String> changes, @Nullable String url)
+        private CheckResult(Status status, @Nullable String latestFound, @Nullable ComparableVersion target, @Nullable Map<ComparableVersion, String> changes, @Nullable String url, @Nullable String homepage)
         {
             this.status = status;
+            this.latestFound = latestFound;
             this.target = target;
             this.changes = changes == null ? Collections.<ComparableVersion, String>emptyMap() : Collections.unmodifiableMap(changes);
             this.url = url;
+            this.homepage = homepage;
         }
     }
 
@@ -260,7 +260,7 @@ public class ForgeVersion
                     Map<String, Object> json = new Gson().fromJson(data, Map.class);
                     @SuppressWarnings("unchecked")
                     Map<String, String> promos = (Map<String, String>)json.get("promos");
-                    String display_url = (String)json.get("homepage");
+                    String homepage = (String)json.get("homepage");
 
                     String rec = promos.get(MinecraftForge.MC_VERSION + "-recommended");
                     String lat = promos.get(MinecraftForge.MC_VERSION + "-latest");
@@ -339,7 +339,19 @@ public class ForgeVersion
                     }
                     if (mod instanceof InjectedModContainer)
                         mod = ((InjectedModContainer)mod).wrappedContainer;
-                    results.put(mod, new CheckResult(status, target, changes, display_url));
+                    String latestFound = null;
+                    if (latest != null && recommended != null)
+                    {
+                        if (latest.compareTo(recommended) > 0)
+                            latestFound = latest.toString();
+                        else
+                            latestFound = recommended.toString();
+                    }
+                    else if (latest != null)
+                        latestFound = latest.toString();
+                    else if (recommended != null)
+                        latestFound = recommended.toString();
+                    results.put(mod, new CheckResult(status, latestFound, target, changes, url.toString(), homepage));
                 }
                 catch (Exception e)
                 {
@@ -364,7 +376,7 @@ public class ForgeVersion
     }
 
     private static Map<ModContainer, CheckResult> results = new ConcurrentHashMap<ModContainer, CheckResult>();
-    private static final CheckResult PENDING_CHECK = new CheckResult(PENDING, null, null, null);
+    private static final CheckResult PENDING_CHECK = new CheckResult(PENDING, null, null, null, null, null);
 
     public static CheckResult getResult(ModContainer mod)
     {
@@ -373,6 +385,31 @@ public class ForgeVersion
             mod = ((InjectedModContainer)mod).wrappedContainer;
         CheckResult ret = results.get(mod);
         return ret == null ? PENDING_CHECK : ret;
+    }
+
+    public static CheckResult getCleanResult(ModContainer mod)
+    {
+        if (mod == null)
+            return null;
+        if (mod instanceof InjectedModContainer)
+            mod = ((InjectedModContainer)mod).wrappedContainer;
+        return results.get(mod);
+    }
+
+    public static boolean hasOutdatedMods()
+    {
+        for (CheckResult results : results.values())
+            if (results.status == OUTDATED)
+                return true;
+        return false;
+    }
+
+    public static boolean hasOutdatedBetaMods()
+    {
+        for (CheckResult results : results.values())
+            if (results.status == BETA_OUTDATED)
+                return true;
+        return false;
     }
 }
 
