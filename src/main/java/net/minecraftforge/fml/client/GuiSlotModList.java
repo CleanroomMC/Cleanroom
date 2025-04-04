@@ -99,8 +99,8 @@ public class GuiSlotModList extends GuiScrollingList
 
         if (Loader.instance().getModState(mc) == ModState.DISABLED)
         {
-            font.drawString(font.trimStringToWidth(name,       listWidth - 10), this.left + 3 , top +  2, 0xFF2222);
-            font.drawString(font.trimStringToWidth(version,    listWidth - (5 + height)), this.left + 3 , top + 12, 0xFF2222);
+            font.drawString(font.trimStringToWidth(name,       listWidth - 10), this.left + 3 , top +  2, 0x993333);
+            font.drawString(font.trimStringToWidth(version,    listWidth - (5 + height)), this.left + 3 , top + 12, 0x993333);
         }
         else
         {
