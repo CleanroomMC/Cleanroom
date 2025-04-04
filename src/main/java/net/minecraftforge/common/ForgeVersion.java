@@ -266,9 +266,16 @@ public class ForgeVersion
                     String lat = promos.get(MinecraftForge.MC_VERSION + "-latest");
                     ComparableVersion current = new ComparableVersion(mod.getVersion());
 
+                    ComparableVersion recommended = null;
+                    if (rec != null)
+                        recommended = new ComparableVersion(rec);
+
+                    ComparableVersion latest = null;
+                    if (lat != null)
+                        latest = new ComparableVersion(lat);
+
                     if (rec != null)
                     {
-                        ComparableVersion recommended = new ComparableVersion(rec);
                         int diff = recommended.compareTo(current);
 
                         if (diff == 0)
@@ -278,12 +285,14 @@ public class ForgeVersion
                             status = AHEAD;
                             if (lat != null)
                             {
-                                ComparableVersion latest = new ComparableVersion(lat);
-                                if (current.compareTo(latest) < 0)
+                                diff = current.compareTo(latest);
+                                if (diff < 0)
                                 {
                                     status = OUTDATED;
                                     target = latest;
                                 }
+                                else if (diff == 0)
+                                    status = BETA;
                             }
                         }
                         else
@@ -294,7 +303,6 @@ public class ForgeVersion
                     }
                     else if (lat != null)
                     {
-                        ComparableVersion latest = new ComparableVersion(lat);
                         if (current.compareTo(latest) < 0)
                         {
                             status = BETA_OUTDATED;
