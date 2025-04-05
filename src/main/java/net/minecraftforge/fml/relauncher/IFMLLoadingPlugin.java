@@ -40,7 +40,9 @@ public interface IFMLLoadingPlugin
      * @return a list of classes that implements the IClassTransformer interface
      */
     @Nullable
-    String[] getASMTransformerClass();
+    default String[] getASMTransformerClass() {
+        return null;
+    }
 
     /**
      * Return a class name that implements "ModContainer" for injection into the mod list
@@ -55,7 +57,9 @@ public interface IFMLLoadingPlugin
      * The {@return} will be injected into {@link FMLInjectionData#containers}.
      */
     @Nullable
-    String getModContainerClass();
+    default String getModContainerClass() {
+        return null;
+    }
 
     /**
      * Return the class name of an implementor of "IFMLCallHook", that will be run, in the
@@ -66,7 +70,9 @@ public interface IFMLLoadingPlugin
      * TODO: implement crash ;)
      */
     @Nullable
-    String getSetupClass();
+    default String getSetupClass() {
+        return null;
+    }
 
     /**
      * Inject coremod data into this coremod
@@ -75,7 +81,7 @@ public interface IFMLLoadingPlugin
      * "coremodList" : the list of coremods
      * "coremodLocation" : the file this coremod loaded from,
      */
-    void injectData(Map<String, Object> data);
+    default void injectData(Map<String, Object> data) {}
 
     /**
      * Return an optional access transformer class for this coremod. It will be injected post-deobf
@@ -83,7 +89,9 @@ public interface IFMLLoadingPlugin
      * @return the name of an access transformer class or null if none is provided
      */
     @Nullable
-    String getAccessTransformerClass();
+    default String getAccessTransformerClass() {
+        return null;
+    }
 
     /**
      * Annotate your load plugin with a list of package prefixes that will *not* be
