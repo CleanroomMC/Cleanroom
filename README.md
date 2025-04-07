@@ -56,7 +56,7 @@
 
 ### List of Obsoleted Mods
 
-- Phosphor: Use Hesperus or Valkyrie
+- Phosphor: Use Hesperus or Alfheim Lighting Engine
 - Forgelin: Use Forgelin-Continuous
 - LibrarianLib: Use LibrarianLib-Continuous
 - JustEnoughIds: Use RoughlyEnoughIDs
