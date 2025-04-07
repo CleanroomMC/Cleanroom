@@ -28,7 +28,7 @@ body:
         - Java 21
         - Java 22
         - Java 23
-        - Java 24 (Release Candidate)
+        - Java 24
         - Java 25 (Early Access)
         - Other (Please Specify)
     validations:
@@ -71,11 +71,11 @@ body:
       options:
         - label: "I have searched the issues and haven't found a similar issue."
           required: true
-        - label: "I have read the readme and know that what is action build and non-MMC based launcher are unsupported."
+        - label: "I have read the readme and know that what is action build."
           required: true
-        - label: "I have installed [Fugue](https://www.curseforge.com/minecraft/mc-mods/fugue) and it does not fix this issue."
+        - label: "I have installed [Fugue](https://www.curseforge.com/minecraft/mc-mods/fugue) and it didn't fix my issue."
           required: true
-        - label: "I have installed [Scalar](https://www.curseforge.com/minecraft/mc-mods/scalar) and it does not fix this issue."
+        - label: "I have installed [Scalar](https://www.curseforge.com/minecraft/mc-mods/scalar-legacy) and it didn't fix my issue."
           required: true
         - label: "I have switched my Forgelin and LibrarianLib to continuous versions(check readme for more detail)."
           required: true
