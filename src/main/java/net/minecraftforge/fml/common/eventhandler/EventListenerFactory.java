@@ -1,14 +1,11 @@
 package net.minecraftforge.fml.common.eventhandler;
 
-import org.jspecify.annotations.Nullable;
-
 import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -19,7 +16,7 @@ class EventListenerFactory {
 
     private static final Map<Method, MethodHandle> LISTENER_FACTORIES = new ConcurrentHashMap<>();
 
-    public static IEventListener createRawListener(Method method, boolean isStatic, @Nullable Object instance) {
+    public static IEventListener createRawListener(Method method, boolean isStatic, Object instance) {
         var listenerFactory = LISTENER_FACTORIES.computeIfAbsent(
             method,
             ignored -> createListenerFactory(
