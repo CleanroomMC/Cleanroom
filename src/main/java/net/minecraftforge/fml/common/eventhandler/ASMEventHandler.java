@@ -36,7 +36,6 @@ public class ASMEventHandler implements IEventListener
     private final SubscribeEvent subInfo;
     private ModContainer owner;
     private String readable;
-    private java.lang.reflect.Type filter = null;
 
     @Deprecated
     public ASMEventHandler(Object target, Method method, ModContainer owner) throws Exception
@@ -47,24 +46,26 @@ public class ASMEventHandler implements IEventListener
     public ASMEventHandler(Object target, Method method, ModContainer owner, boolean isGeneric) throws Exception
     {
         this.owner = owner;
-        handler = EventListenerFactory.createRawListener(
+        subInfo = method.getAnnotation(SubscribeEvent.class);
+        readable = "ASM: " + target + " " + method.getName() + Type.getMethodDescriptor(method);
+
+        var rawHandler = EventListenerFactory.createRawListener(
             method,
             Modifier.isStatic(method.getModifiers()),
             target
         );
-        subInfo = method.getAnnotation(SubscribeEvent.class);
-        readable = "ASM: " + target + " " + method.getName() + Type.getMethodDescriptor(method);
-        if (isGeneric)
-        {
-            java.lang.reflect.Type type = method.getGenericParameterTypes()[0];
-            if (type instanceof ParameterizedType)
-            {
-                filter = ((ParameterizedType)type).getActualTypeArguments()[0];
-            }
+        if (isGeneric && method.getGenericParameterTypes()[0] instanceof ParameterizedType parameterized) {
+            var filter = parameterized.getActualTypeArguments()[0];
+            this.handler = event -> {
+                if (filter == ((IGenericEvent<?>) event).getGenericType()) {
+                    rawHandler.invoke(event);
+                }
+            };
+        } else {
+            this.handler = rawHandler;
         }
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public void invoke(Event event)
     {
@@ -74,10 +75,7 @@ public class ASMEventHandler implements IEventListener
         {
             if (!event.isCancelable() || !event.isCanceled() || subInfo.receiveCanceled())
             {
-                if (filter == null || filter == ((IGenericEvent)event).getGenericType())
-                {
-                    handler.invoke(event);
-                }
+                handler.invoke(event);
             }
         }
         if (GETCONTEXT)
