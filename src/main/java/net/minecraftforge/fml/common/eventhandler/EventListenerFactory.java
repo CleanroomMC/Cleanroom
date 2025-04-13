@@ -30,9 +30,9 @@ class EventListenerFactory {
         );
 
         try {
-            return (IEventListener) (isStatic
-                ? listenerFactory.invokeExact()
-                : listenerFactory.invokeExact(instance));
+            return isStatic
+                ? (IEventListener) listenerFactory.invokeExact()
+                : (IEventListener) listenerFactory.invokeExact(instance);
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
