@@ -41,13 +41,16 @@ class EventListenerFactory {
     private static MethodHandle createListenerFactory(
         Method callback,
         boolean isStatic,
-        @Nullable Object instance
+        Object instance
     ) {
         try {
             var handle = LOOKUP.unreflect(callback);
+
             var factoryType = isStatic
                 ? Constants.RETURNS_IT
-                : Constants.RETURNS_IT.insertParameterTypes(0, Objects.requireNonNull(instance).getClass());
+                // implicit null check on "instance" via ".getClass()"
+                : Constants.RETURNS_IT.insertParameterTypes(0, instance.getClass());
+
             var factoryHandle = LambdaMetafactory.metafactory(
                 LOOKUP,
                 Constants.METHOD_NAME,
@@ -56,6 +59,7 @@ class EventListenerFactory {
                 handle,
                 isStatic ? handle.type() : handle.type().dropParameterTypes(0, 1)
             ).getTarget();
+
             return isStatic
                 ? factoryHandle
                 : factoryHandle.asType(factoryType.changeParameterType(0, Object.class));
