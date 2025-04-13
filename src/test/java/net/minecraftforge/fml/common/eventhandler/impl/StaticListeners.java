@@ -9,36 +9,36 @@ import java.util.List;
 /**
  * @author ZZZank
  */
-public class ExampleListeners {
-    public int recorded = -1;
-    public List<EventPriority> triggered = new ArrayList<>();
-    public EventPriority stage;
+public class StaticListeners {
+    public static int recorded = -1;
+    public static List<EventPriority> triggered = new ArrayList<>();
+    public static EventPriority stage;
 
     @SubscribeEvent
-    public void recordId(ExampleEvent event) {
+    public static void recordId(ExampleEvent event) {
         recorded = event.id;
         setStage(EventPriority.NORMAL);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void recordIdHigher(ExampleEvent event) {
+    public static void recordIdHigher(ExampleEvent event) {
         recorded = event.id;
         setStage(EventPriority.HIGHEST);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void recordIdLower(ExampleEvent event) {
+    public static void recordIdLower(ExampleEvent event) {
         recorded = event.id;
         setStage(EventPriority.LOWEST);
     }
 
-    public void shouldNotRegister(ExampleEvent event) {
+    public static void shouldNotRegister(ExampleEvent event) {
         recorded = -1;
         setStage(null);
     }
 
-    private void setStage(EventPriority stage) {
-        this.stage = stage;
-        this.triggered.add(stage);
+    private static void setStage(EventPriority stage) {
+        StaticListeners.stage = stage;
+        triggered.add(stage);
     }
 }
