@@ -7,8 +7,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,42 +19,7 @@ class EventListenerFactory {
 
     private static final Map<Method, MethodHandle> LISTENER_FACTORIES = new ConcurrentHashMap<>();
 
-    public static IEventListener createListener(
-        Object instance,
-        Method method,
-        boolean isGeneric
-    ) {
-        var isStatic = Modifier.isStatic(method.getModifiers());
-
-        var listener = createRawListener(method, isStatic, instance);
-
-        if (isGeneric) {
-            var type = method.getGenericParameterTypes()[0];
-            if (type instanceof ParameterizedType parameterized) {
-                var filter = parameterized.getActualTypeArguments()[0];
-                var originalListener = listener;
-                listener = event -> {
-                    if (!event.isCancelable()
-                        || !event.isCanceled()
-                        || filter == ((IGenericEvent<?>) event).getGenericType()
-                    ) {
-                        originalListener.invoke(event);
-                    }
-                };
-            }
-        } else {
-            var originalListener = listener;
-            listener = event -> {
-                if (!event.isCancelable() || !event.isCanceled()) {
-                    originalListener.invoke(event);
-                }
-            };
-        }
-
-        return listener;
-    }
-
-    private static IEventListener createRawListener(Method method, boolean isStatic, @Nullable Object instance) {
+    public static IEventListener createRawListener(Method method, boolean isStatic, @Nullable Object instance) {
         var listenerFactory = LISTENER_FACTORIES.computeIfAbsent(
             method,
             ignored -> createListenerFactory(
