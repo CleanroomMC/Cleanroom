@@ -76,14 +76,23 @@ public class EventBus implements IEventExceptionHandler
             activeModContainer = Loader.instance().getMinecraftModContainer();
         }
         listenerOwners.put(target, activeModContainer);
-        boolean isStatic = target.getClass() == Class.class;
-        @SuppressWarnings("unchecked")
-        Set<? extends Class<?>> supers = isStatic ? Sets.newHashSet((Class<?>)target) : TypeToken.of(target.getClass()).getTypes().rawTypes();
-        for (Method method : (isStatic ? (Class<?>)target : target.getClass()).getMethods())
+
+        boolean isStatic;
+        Set<? extends Class<?>> supers;
+        Class<?> scanTarget;
+        if (target instanceof Class<?> clazz) {
+            isStatic = true;
+            supers = Set.of(clazz);
+            scanTarget = clazz;
+        } else {
+            isStatic = false;
+            supers = TypeToken.of(target.getClass()).getTypes().rawTypes();
+            scanTarget = target.getClass();
+        }
+
+        for (Method method : scanTarget.getMethods())
         {
-            if (isStatic && !Modifier.isStatic(method.getModifiers()))
-                continue;
-            else if (!isStatic && Modifier.isStatic(method.getModifiers()))
+            if (isStatic != Modifier.isStatic(method.getModifiers()))
                 continue;
 
             for (Class<?> cls : supers)
@@ -133,17 +142,16 @@ public class EventBus implements IEventExceptionHandler
             IEventListener listener = asm;
             if (IContextSetter.class.isAssignableFrom(eventType))
             {
-                listener = new IEventListener()
-                {
-                    @Override
-                    public void invoke(Event event)
-                    {
-                        ModContainer old = Loader.instance().activeModContainer();
-                        Loader.instance().setActiveModContainer(owner);
-                        ((IContextSetter)event).setModContainer(owner);
-                        asm.invoke(event);
-                        Loader.instance().setActiveModContainer(old);
-                    }
+                listener = e -> {
+                    var loader = Loader.instance();
+                    var old = loader.activeModContainer();
+
+                    loader.setActiveModContainer(owner);
+                    ((IContextSetter) e).setModContainer(owner);
+
+                    asm.invoke(e);
+
+                    loader.setActiveModContainer(old);
                 };
             }
 
