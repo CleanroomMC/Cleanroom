@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -95,38 +96,48 @@ public class EventBus implements IEventExceptionHandler
             if (isStatic != Modifier.isStatic(method.getModifiers()))
                 continue;
 
-            for (Class<?> cls : supers)
-            {
-                try
-                {
-                    Method real = cls.getDeclaredMethod(method.getName(), method.getParameterTypes());
-                    if (real.isAnnotationPresent(SubscribeEvent.class))
-                    {
-                        Class<?>[] parameterTypes = method.getParameterTypes();
-                        if (parameterTypes.length != 1)
-                        {
-                            throw new IllegalArgumentException(
-                                "Method " + method + " has @SubscribeEvent annotation, but requires " + parameterTypes.length +
-                                " arguments.  Event handler methods must require a single argument."
-                            );
-                        }
-
-                        Class<?> eventType = parameterTypes[0];
-
-                        if (!Event.class.isAssignableFrom(eventType))
-                        {
-                            throw new IllegalArgumentException("Method " + method + " has @SubscribeEvent annotation, but takes a argument that is not an Event " + eventType);
-                        }
-
-                        register(eventType, target, real, activeModContainer);
-                        break;
+            var parameterTypes = method.getParameterTypes();
+            var matched = supers.stream()
+                .map(cls -> {
+                    if (cls == target) {
+                        // shortcut for most event handler classes with no explicit superclass
+                        return method;
                     }
-                }
-                catch (NoSuchMethodException e)
-                {
-                    ; // Eat the error, this is not unexpected
-                }
+                    try {
+                        return cls.getDeclaredMethod(method.getName(), parameterTypes);
+                    } catch (NoSuchMethodException e) {
+                        // Eat the error, this is not unexpected
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .filter(m -> m.isAnnotationPresent(SubscribeEvent.class))
+                .findFirst()
+                .orElse(null);
+
+            if (matched == null)
+            {
+                continue;
             }
+
+            if (parameterTypes.length != 1)
+            {
+                throw new IllegalArgumentException(
+                    "Method " + method + " has @SubscribeEvent annotation, but requires " + parameterTypes.length +
+                        " arguments.  Event handler methods must require a single argument."
+                );
+            }
+
+            Class<?> eventType = parameterTypes[0];
+
+            if (!Event.class.isAssignableFrom(eventType))
+            {
+                throw new IllegalArgumentException("Method " + method + " has @SubscribeEvent annotation, but takes a argument that is not an Event " + eventType);
+            }
+
+            // the method to be registered here is "matched", not "method", it should be a bug of
+            // the original event bus, since the exceptions above are all referencing "method"
+            register(eventType, target, matched, activeModContainer);
         }
     }
 
