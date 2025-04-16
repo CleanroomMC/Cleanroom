@@ -42,3 +42,12 @@
                      .addLast("legacy_query", new LegacyPingHandler(NetworkSystem.this))
                      .addLast("splitter", new NettyVarint21FrameDecoder())
                      .addLast("decoder", new NettyPacketDecoder(EnumPacketDirection.SERVERBOUND))
+@@ -154,7 +155,7 @@
+                     NetworkSystem.this.field_151272_f.add(networkmanager);
+                     p_initChannel_1_.pipeline().addLast("packet_handler", networkmanager);
+                 }
+-            }).group(field_151276_c.func_179281_c()).localAddress(LocalAddress.ANY).bind().syncUninterruptibly();
++            }).group(field_180232_b.func_179281_c()).localAddress(LocalAddress.ANY).bind().syncUninterruptibly();
+             this.field_151274_e.add(channelfuture);
+         }
+ 
