@@ -14,17 +14,11 @@ import java.util.concurrent.ConcurrentHashMap;
 class EventListenerFactory {
     private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
 
-    private static final Map<Method, MethodHandle> LISTENER_FACTORIES = new ConcurrentHashMap<>();
-
     public static IEventListener createRawListener(Method method, boolean isStatic, Object instance) {
-        var listenerFactory = LISTENER_FACTORIES.computeIfAbsent(
-            method,
-            ignored -> createListenerFactory(
-                method,
-                isStatic,
-                instance
-            )
-        );
+        // no caching is applied here because in EventBus scenario, caching will only be useful
+        // when two instance-based listeners of the same class are registered, which is an
+        // incredibly rare usage in 1.12 Forge environment
+        var listenerFactory = createListenerFactory(method, isStatic, instance);
 
         try {
             return isStatic
