@@ -99,7 +99,7 @@ public class EventBus implements IEventExceptionHandler
             var parameterTypes = method.getParameterTypes();
             var matched = supers.stream()
                 .map(cls -> {
-                    if (cls == target) {
+                    if (cls == method.getDeclaringClass()) {
                         // shortcut for most event handler classes with no explicit superclass
                         return method;
                     }
