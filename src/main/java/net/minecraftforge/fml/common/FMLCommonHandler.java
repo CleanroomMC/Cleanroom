@@ -111,7 +111,6 @@ public class FMLCommonHandler
      */
     private IFMLSidedHandler sidedDelegate;
 
-    private boolean noForge;
     private List<String> brandings;
     private List<String> brandingsNoMC;
     private List<ICrashCallable> crashCallables = Lists.newArrayList(Loader.instance().getCallableCrashInformation());
@@ -540,10 +539,8 @@ public class FMLCommonHandler
     {
         List<String> modNames = Lists.newArrayListWithExpectedSize(3);
         modNames.add("fml");
-        if (!noForge)
-        {
-            modNames.add(ForgeVersion.MOD_ID);
-        }
+        modNames.add(ForgeVersion.MOD_ID);
+        modNames.add(CleanroomVersion.MOD_ID);
 
         if (Loader.instance().getFMLBrandingProperties().containsKey("snooperbranding"))
         {
