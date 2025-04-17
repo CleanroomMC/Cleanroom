@@ -47,7 +47,7 @@ public enum ItemStackHolderInjector
 
     public void findHolders(ASMDataTable table) {
         FMLLog.log.info("Identifying ItemStackHolder annotations");
-        Set<ASMData> allItemStackHolders = table.getAll(GameRegistry.ItemStackHolder.class.getName());
+        Set<ASMData> allItemStackHolders = table.getAll(GameRegistry.ItemStackHolder.class);
         Map<String, Class<?>> classCache = Maps.newHashMap();
         for (ASMData data : allItemStackHolders)
         {
