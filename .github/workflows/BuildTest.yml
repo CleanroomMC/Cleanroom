@@ -9,6 +9,12 @@ name: Build and Upload Test Artifact
 
 on:
   push:
+    paths:
+      - 'src/**'
+      - 'buildSrc/**'
+      - 'patches/**'
+      - 'build.gradle'
+      - 'gradle.properties'
   pull_request:
   workflow_dispatch:
     inputs:
@@ -65,7 +71,7 @@ jobs:
         run: ./gradlew --stop
 
       - name: Build Jars
-        run: ./gradlew installerJar -Prun_number=${{ github.run_number }}
+        run: ./gradlew build -Prun_number=${{ github.run_number }}
 
       - name: Get version
         run: echo "CLEANROOM_VERSION=$(cat version.txt)" >> $GITHUB_ENV
