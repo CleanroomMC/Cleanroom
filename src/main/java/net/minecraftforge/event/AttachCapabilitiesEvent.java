@@ -31,7 +31,7 @@ import net.minecraftforge.fml.common.eventhandler.GenericEvent;
 /**
  * Fired whenever an object with Capabilities support {currently TileEntity/Item/Entity)
  * is created. Allowing for the attachment of arbitrary capability providers.
- *
+ * <p>
  * Please note that as this is fired for ALL object creations efficient code is recommended.
  * And if possible use one of the sub-classes to filter your intended objects.
  */
@@ -57,6 +57,7 @@ public class AttachCapabilitiesEvent<T> extends GenericEvent<T>
 
     /**
      * Adds a capability to be attached to this object.
+     * <p>
      * Keys MUST be unique, it is suggested that you set the domain to your mod ID.
      * If the capability is an instance of INBTSerializable, this key will be used when serializing this capability.
      *
@@ -71,7 +72,7 @@ public class AttachCapabilitiesEvent<T> extends GenericEvent<T>
     }
 
     /**
-     * A unmodifiable view of the capabilities that will be attached to this object.
+     * An unmodifiable view of the capabilities that will be attached to this object.
      */
     public Map<ResourceLocation, ICapabilityProvider> getCapabilities()
     {
