@@ -5,6 +5,11 @@ plugins {
 group 'com.cleanroommc'
 version cleanroom_version
 
-dependencies {
+tasks.register('setup') {
+    group 'setup'
+    dependsOn project(':forge').tasks.named('generateForgeDiffs')
 
+    doLast {
+        println 'Setting up workspace for Cleanroom...'
+    }
 }

@@ -1,5 +1,3 @@
-import com.cleanroommc.gradle.env.PatchDevelopmentTasks
-
 plugins {
     id 'java'
     id 'com.cleanroommc.gradle' version '0.0.1'
@@ -14,12 +12,12 @@ cleanroom {
     patchDev {
         forge {
             source = project(':vanilla').layout.buildDirectory.dir('cleanroom_gradle/sourceSets/mcp/sources').map { it.asFile }
+            dependsOn 'remapSrg2Mcp'
         }
     }
 }
 
 afterEvaluate {
-
     var vanillaProject = project(':vanilla')
 
     configurations {
