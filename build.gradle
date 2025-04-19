@@ -387,7 +387,7 @@ project(':cleanroom') {
 
     // Dependencies
     configurations {
-        all { // LWJGL2 isn't friendly with us, so pye pye
+        configureEach { // LWJGL2 isn't friendly with us, so pye pye
             exclude group: 'org.lwjgl.lwjgl'
             exclude group: 'com.ibm.icu', module: 'icu4j-core-mojang'
             /*exclude group: 'org.apache.commons'
@@ -537,14 +537,16 @@ project(':cleanroom') {
     ['Client', 'Server', 'Joined'].each { side ->
         def gen = tasks.getByName("gen${side}BinPatches")
         gen.tool = props.binary_patcher
-        task "apply${side}BinPatches"(type: ApplyBinPatches, dependsOn: gen) {
+        tasks.register("apply${side}BinPatches", ApplyBinPatches) {
+            dependsOn gen
             clean = gen.cleanJar
             patch = gen.output
             tool = props.binary_patcher
         }
     }
 
-    task genRuntimeBinPatches(type: GenerateBinPatches, dependsOn: [genClientBinPatches, genServerBinPatches]) {
+    tasks.register('genRuntimeBinPatches', GenerateBinPatches) {
+        dependsOn genClientBinPatches, genServerBinPatches
         tool = props.binary_patcher
     }
 
@@ -569,7 +571,8 @@ project(':cleanroom') {
         }
     }
 
-    task downloadLibraries(dependsOn: ':mcp:setupMCP') {
+    tasks.register('downloadLibraries') {
+        dependsOn ':mcp:setupMCP'
         inputs.file version_json
         doLast {
             def json = version_json.json()
@@ -588,7 +591,8 @@ project(':cleanroom') {
         }
     }
 
-    task extractInheritance(type: ExtractInheritance, dependsOn: [genJoinedBinPatches, downloadLibraries]) {
+    tasks.register('extractInheritance', ExtractInheritance) {
+        dependsOn genJoinedBinPatches, downloadLibraries
         input = genJoinedBinPatches.cleanJar
         doFirst {
             def json = version_json.json()
@@ -604,7 +608,8 @@ project(':cleanroom') {
         }
     }
 
-    task checkAccessTransformers(dependsOn: genJoinedBinPatches) {
+    tasks.register('checkAccessTransformers') {
+        dependsOn genJoinedBinPatches
         inputs.file {
             genJoinedBinPatches.cleanJar
         }
@@ -666,7 +671,8 @@ project(':cleanroom') {
         }
     }
 
-    task checkSAS(dependsOn: extractInheritance) {
+    tasks.register('checkSAS') {
+        dependsOn extractInheritance
         inputs.file {
             extractInheritance.output
         }
@@ -687,7 +693,7 @@ project(':cleanroom') {
                     def comment = idx == -1 ? null : line.substring(idx)
                     if (idx != -1) line = line.substring(0, idx - 1)
 
-                    def(cls, desc) = (line.trim() + '    ').split(' ', -1)
+                    def (cls, desc) = (line.trim() + '    ').split(' ', -1)
                     cls = cls.replaceAll('\\.', '/')
                     desc = desc.replace('(', ' (')
                     if (desc.isEmpty() || json[cls] == null || json[cls]['methods'] == null || json[cls]['methods'][desc] == null) {
@@ -705,7 +711,8 @@ project(':cleanroom') {
         }
     }
 
-    task launcherJson(dependsOn: universalJar /*['signUniversalJar']*/) {
+    tasks.register('launcherJson') {
+        dependsOn universalJar
         inputs.file {
             universalJar.archivePath
         }
@@ -773,7 +780,8 @@ project(':cleanroom') {
         }
     }
 
-    task installerJson(dependsOn: [launcherJson, genClientBinPatches/*, createClientSRG, createServerSRG*/]) {
+    tasks.register('installerJson') {
+        dependsOn launcherJson, genClientBinPatches/*, createClientSRG, createServerSRG*/
         ext {
             output = file('build/install_profile.json')
             installer_tools = "net.minecraftforge:installertools:$props.installer_tools_version"
@@ -818,11 +826,13 @@ project(':cleanroom') {
         }
     }
 
-    task extractObf2Srg(type: ExtractMCPData, dependsOn: [':mcp:downloadConfig']) {
+    tasks.register('extractObf2Srg', ExtractMCPData) {
+        dependsOn ':mcp:downloadConfig'
         config = project(':mcp').downloadConfig.output
     }
 
-    task deobfDataLzma(dependsOn: [extractObf2Srg]) {
+    tasks.register('deobfDataLzma') {
+        dependsOn extractObf2Srg
         ext {
             output_srg = file('build/deobfDataLzma/data.srg')
             output = file('build/deobfDataLzma/data.lzma')
@@ -885,12 +895,13 @@ project(':cleanroom') {
         archiveClassifier = 'universal'
     }
 
-    task downloadInstaller(type: DownloadMavenArtifact) {
+    tasks.register('downloadInstaller', DownloadMavenArtifact) {
         artifact = 'net.minecraftforge:installer:2.2.+:fatjar'
         changing = true
     }
 
-    task installerJar(type: Zip, dependsOn: [downloadInstaller, installerJson, launcherJson, genClientBinPatches, genServerBinPatches/*, 'signUniversalJar'*/]) {
+    tasks.register('installerJar', Zip) {
+        dependsOn downloadInstaller, installerJson, launcherJson, genClientBinPatches, genServerBinPatches/*, 'signUniversalJar'*/
         archiveClassifier = 'installer'
         archiveExtension = 'jar' //Needs to be Zip task to not override Manifest, so set extension
         destinationDirectory = file('build/libs')
@@ -906,7 +917,7 @@ project(':cleanroom') {
         from(installerJson.output)
         from(launcherJson.output)
         from(zipTree(downloadInstaller.output)) {
-            duplicatesStrategy = 'exclude'
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         }
     }
 
@@ -972,15 +983,15 @@ project(':cleanroom') {
         }
     }
 
-    task userdevExtras(type: Jar) {
+    tasks.register('userdevExtras', Jar) {
         dependsOn classes
         from sourceSets.userdev.output
         archiveClassifier = 'userdev-temp'
     }
 
-    task userdevExtrasReobf(type: ReobfuscateJar) {
+    tasks.register('userdevExtrasReobf', ReobfuscateJar) {
         dependsOn userdevExtras, createMcp2Srg
-        input = tasks.userdevExtras.archivePath
+        input = tasks.userdevExtras.archiveFile
         srg = tasks.createMcp2Srg.output
     }
 
@@ -1034,16 +1045,23 @@ project(':cleanroom') {
     test {
         jvmArgs jvm_arguments + compiler_jvm_arguments
     }
+
+    artifacts {
+        archives universalJar
+        archives installerJar
+    }
+
 }
 
-tasks.withType(JavaCompile) {
+
+tasks.withType(JavaCompile).configureEach {
     options.compilerArgs += compiler_jvm_arguments
     options.encoding = 'UTF-8'
 }
 
 idea.project.settings.compiler.javac.javacAdditionalOptions = compiler_jvm_arguments.join(' ')
 
-task setup() {
+tasks.register('setup') {
     group 'setup'
     // These must be strings so that we can do lazy resolution. Else we need evaluationDependsOnChildren above
     dependsOn ':minecraft:extractMapped'
@@ -1051,8 +1069,10 @@ task setup() {
 }
 
 subprojects {
-    tasks.withType(JavaCompile) {
-        options.compilerArgs += compiler_jvm_arguments
-        options.encoding = 'UTF-8'
+    tasks.withType(JavaCompile).tap {
+        configureEach {
+            options.compilerArgs += compiler_jvm_arguments
+            options.encoding = 'UTF-8'
+        }
     }
 }
