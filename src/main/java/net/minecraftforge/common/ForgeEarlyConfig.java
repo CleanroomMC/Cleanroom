@@ -59,6 +59,7 @@ public class ForgeEarlyConfig {
     public static String COCOA_FRAME_NAME = "minecraft";
 
     public static String CONFIG_ANY_TIME_VERSION = "3.0";
+
     public static String MIXIN_BOOTER_VERSION = "10.5";
 
     @Config.Comment("""
@@ -83,6 +84,8 @@ public class ForgeEarlyConfig {
         @Config.Comment("Enable HRTF sound support")
         public boolean ENABLE_HRTF = false;
     }
-
-
+                    
+    public static String[] DISABLED_MOD_FOLDER = new String[]{
+            "disabled", "optional"
+    };
 }
