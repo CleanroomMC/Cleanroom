@@ -14,8 +14,8 @@ public class ForgeEarlyConfig {
     public static boolean WINDOW_START_FOCUSED = true;
     public static boolean WINDOW_START_ICONIFIED = false;
 
-    @Config.Comment("Enable this when the game has problem running on Wayland")
-    public static boolean FORCE_X11 = false;
+    @Config.Comment("Enable this when you want to run the game on Wayland (WARNING: GLFW's wayland support is buggy)")
+    public static boolean FORCE_WAYLAND = false;
 
     public static boolean WINDOW_CENTERED = true;
 

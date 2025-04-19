@@ -74,7 +74,7 @@ public class LWJGLTransformer implements IClassTransformer {
             if (typeName == null) {
                 return null;
             }
-            if (typeName.startsWith("org/lwjgl3/") || typeName.startsWith("org/lwjglx/")) {
+            if (typeName.startsWith("org/lwjglx/")) {
                 return "org/lwjgl/" + typeName.substring(11);
             }
 
