@@ -473,7 +473,7 @@ project(':cleanroom') {
         installer 'com.google.code.findbugs:jsr305:3.0.2'
 
         // Netty
-        installer "io.netty:netty-codec-base:$props.netty_version"
+        installer "io.netty:netty-codec:$props.netty_version"
         installer "io.netty:netty-buffer:$props.netty_version"
         installer "io.netty:netty-common:$props.netty_version"
         installer "io.netty:netty-handler:$props.netty_version"
