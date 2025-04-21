@@ -21,8 +21,12 @@ afterEvaluate {
     var vanillaProject = project(':vanilla')
 
     configurations {
-        implementation.extendsFrom(vanillaProject.configurations.vanilla, vanillaProject.configurations.mcp)
-        forgePatchDevImplementation.extendsFrom(implementation)
+        implementation {
+            extendsFrom(vanillaProject.configurations.vanilla, vanillaProject.configurations.mcp)
+        }
+        forgePatchDevImplementation {
+            extendsFrom(implementation, main)
+        }
     }
 
     dependencies {
