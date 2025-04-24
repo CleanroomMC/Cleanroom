@@ -20,12 +20,19 @@ cleanroom {
 afterEvaluate {
     var vanillaProject = project(':vanilla')
 
+    sourceSets {
+        forgePatchDev {
+            compileClasspath += sourceSets.main.output
+            runtimeClasspath += sourceSets.main.output
+        }
+    }
+
     configurations {
         implementation {
             extendsFrom(vanillaProject.configurations.vanilla, vanillaProject.configurations.mcp)
         }
         forgePatchDevImplementation {
-            extendsFrom(implementation, main)
+            extendsFrom(implementation)
         }
     }
 
