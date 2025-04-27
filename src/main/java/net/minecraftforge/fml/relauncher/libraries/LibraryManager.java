@@ -27,6 +27,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,9 +43,12 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import net.minecraftforge.common.ForgeEarlyConfig;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 
@@ -474,7 +478,7 @@ public class LibraryManager
                 continue;
 
             FMLLog.log.info("Searching {} for mods", base.getAbsolutePath());
-            for (File f : base.listFiles(MOD_FILENAME_FILTER))
+            for (File f : scanningModFiles(base.toPath()))
             {
                 if (!list.contains(f))
                 {
@@ -490,6 +494,22 @@ public class LibraryManager
 
         list.sort(FILE_NAME_SORTER_INSENSITVE);
         return list;
+    }
+
+    public static List<File> scanningModFiles(Path rootDir) {
+        try (Stream<Path> stream = java.nio.file.Files.walk(rootDir)) {
+            return stream
+                    .filter(path -> {
+                        Path parent = path.getParent();
+                        return parent != null && !Arrays.stream(ForgeEarlyConfig.DISABLED_MOD_FOLDER).toList().contains(parent.getFileName().toString());
+                    })
+                    .filter(java.nio.file.Files::isRegularFile)
+                    .map(Path::toFile)
+                    .filter(File::isFile)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to scan mod folder", e);
+        }
     }
 
     public static Repository getDefaultRepo()
