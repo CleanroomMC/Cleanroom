@@ -54,13 +54,15 @@
 - Cleanroom integrated mods (MixinBooter, ConfigAnyTime) will be ignored by Cleanroom, then won't crash new players
 - The version of built-in MixinBooter is configurable in forge_early.cfg
 
-### List of Obsoleted Mods
+### List of Obsoleted/Incompatible Mods
 
 - Phosphor: Use Hesperus or Alfheim Lighting Engine
 - Forgelin: Use Forgelin-Continuous
 - LibrarianLib: Use LibrarianLib-Continuous
 - JustEnoughIds: Use RoughlyEnoughIDs
 - AdvancedShader: Binary patching, incompatible
+- Polyfrost series: Waiting for official fix
+- Essential.gg: Patched but still buggy
 
 ## Build Instructions:
 
