@@ -57,9 +57,11 @@ public class ForgeEarlyConfig {
 
     @Config.Comment("OSX-only - identifier used to save and restore the window position and size")
     public static String COCOA_FRAME_NAME = "minecraft";
+    @Config.Comment("OSX-only - Specifies whether to use full resolution framebuffers on Retina displays")
+    public static boolean COCOA_RETINA_FRAMEBUFFER = false;
 
     public static String CONFIG_ANY_TIME_VERSION = "3.0";
-    public static String MIXIN_BOOTER_VERSION = "10.5";
+    public static String MIXIN_BOOTER_VERSION = "10.6";
 
     @Config.Comment("""
             Mods in this list have one or more of the problems list below:
