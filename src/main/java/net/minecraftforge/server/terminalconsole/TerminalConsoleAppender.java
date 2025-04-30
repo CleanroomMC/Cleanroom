@@ -293,24 +293,23 @@ public class TerminalConsoleAppender extends AbstractAppender
     }
 
     @Override
-    public void append(LogEvent event)
+    public synchronized void append(LogEvent event)
     {
         if (terminal != null)
         {
             if (reader != null)
             {
                 // Draw the prompt line again if a reader is available
-                synchronized (reader) {
-                    if (reader.isReading()) {
-                        reader.callWidget(LineReader.CLEAR);
-                        terminal.writer().println(getLayout().toSerializable(event));
-                        reader.callWidget(LineReader.REDRAW_LINE);
-                        reader.callWidget(LineReader.REDISPLAY);
-                    } else {
-                        // No need to redraw prompt
-                        terminal.writer().println(getLayout().toSerializable(event));
-                    }
+                if (reader.isReading()) {
+                    reader.callWidget(LineReader.CLEAR);
+                    terminal.writer().println(getLayout().toSerializable(event));
+                    reader.callWidget(LineReader.REDRAW_LINE);
+                    reader.callWidget(LineReader.REDISPLAY);
+                } else {
+                    // No need to redraw prompt
+                    terminal.writer().println(getLayout().toSerializable(event));
                 }
+
             }
             else
             {
@@ -331,7 +330,7 @@ public class TerminalConsoleAppender extends AbstractAppender
      *
      * @throws IOException If an I/O error occurs
      */
-    public static void close() throws IOException
+    public synchronized static void close() throws IOException
     {
         if (initialized)
         {
