@@ -380,6 +380,11 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
     {
         if (this.isLocked())
             throw new IllegalStateException(String.format("Attempted to register the alias %s -> %s to late", from, to));
+        if (from.equals(to))
+        {
+            FMLLog.log.warn("Registry {} Ignoring invalid alias: {} -> {}", this.superType.getSimpleName(), from, to);
+            return;
+        }
         this.aliases.put(from, to);
         if (DEBUG)
             FMLLog.log.trace("Registry {} alias: {} -> {}", this.superType.getSimpleName(), from, to);
@@ -813,7 +818,7 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
             {
                 NBTTagCompound tag = new NBTTagCompound();
                 tag.setString("K", e.getKey().toString());
-                tag.setString("V", e.getKey().toString());
+                tag.setString("V", e.getValue().toString());
                 aliases.appendTag(tag);
             });
             data.setTag("aliases", aliases);
