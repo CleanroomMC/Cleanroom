@@ -145,7 +145,7 @@ public class TerminalConsoleAppender extends AbstractAppender
      * @see TerminalConsoleAppender
      */
     @Nullable
-    public static Terminal getTerminal()
+    public synchronized static Terminal getTerminal()
     {
         return terminal;
     }
@@ -158,7 +158,7 @@ public class TerminalConsoleAppender extends AbstractAppender
      * @return The current line reader, or null if none
      */
     @Nullable
-    public static LineReader getReader()
+    public synchronized static LineReader getReader()
     {
         return reader;
     }
@@ -173,7 +173,7 @@ public class TerminalConsoleAppender extends AbstractAppender
      *
      * @param newReader The new line reader
      */
-    public static void setReader(@Nullable LineReader newReader)
+    public synchronized static void setReader(@Nullable LineReader newReader)
     {
         if (newReader != null && newReader.getTerminal() != terminal)
         {
@@ -214,7 +214,7 @@ public class TerminalConsoleAppender extends AbstractAppender
         initializeTerminal();
     }
 
-    private static void initializeTerminal()
+    private synchronized static void initializeTerminal()
     {
         if (!initialized)
         {
@@ -293,34 +293,31 @@ public class TerminalConsoleAppender extends AbstractAppender
     }
 
     @Override
-    public synchronized void append(LogEvent event)
+
+    public void append(LogEvent event)
+    {
+        print(getLayout().toSerializable(event).toString());
+    }
+
+    private synchronized void print(String text)
     {
         if (terminal != null)
         {
             if (reader != null)
             {
-                // Draw the prompt line again if a reader is available
-                if (reader.isReading()) {
-                    reader.callWidget(LineReader.CLEAR);
-                    terminal.writer().println(getLayout().toSerializable(event));
-                    reader.callWidget(LineReader.REDRAW_LINE);
-                    reader.callWidget(LineReader.REDISPLAY);
-                } else {
-                    // No need to redraw prompt
-                    terminal.writer().println(getLayout().toSerializable(event));
-                }
-
+                reader.printAbove(text);
             }
             else
             {
-                terminal.writer().print(getLayout().toSerializable(event));
+                terminal.writer().print(text);
+                terminal.writer().flush();
             }
 
             terminal.writer().flush();
         }
         else
         {
-            stdout.print(getLayout().toSerializable(event));
+            stdout.print(text);
         }
     }
 
