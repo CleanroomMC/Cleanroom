@@ -384,11 +384,6 @@ public class ConfigManager
      * @param configClass configuration class that is annotated with {@link Config}
      */
     public static void register(Class<?> configClass) {
-        if (Launch.classLoader.isClassLoaded("net.minecraftforge.fml.common.Loader")) {
-            if (Loader.instance().hasReachedState(LoaderState.PREINITIALIZATION)) {
-                throw new RuntimeException("Please call this method before pre-init!");
-            }
-        }
         Config config = configClass.getAnnotation(Config.class);
         String modId = config.modid();
         Set<Class<?>> modConfigClasses = MOD_CONFIG_CLASSES.computeIfAbsent(modId, k -> Sets.newHashSet());
