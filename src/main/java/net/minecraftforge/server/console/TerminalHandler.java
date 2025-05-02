@@ -42,7 +42,7 @@ public final class TerminalHandler
             return false;
 
         LineReader reader = LineReaderBuilder.builder()
-                .appName("Cleanroom Loader")
+                .appName("Cleanroom")
                 .terminal(terminal)
                 .completer(new ConsoleCommandCompleter(server))
                 .build();
