@@ -356,7 +356,7 @@
 -
 -            Display.create();
 -        }
-+        Display.setTitle("Cleanroom Loader");
++        Display.setTitle("Cleanroom");
 +
 +        Display.create((new PixelFormat()).withDepthBits(24));
 +
