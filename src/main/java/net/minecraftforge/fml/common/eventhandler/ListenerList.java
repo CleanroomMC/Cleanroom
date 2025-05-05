@@ -141,29 +141,19 @@ public class ListenerList
     {
         private boolean rebuild = true;
         private IEventListener[] listeners;
-        private ArrayList<ArrayList<IEventListener>> priorities;
+        private final ArrayList<IEventListener>[] priorities;
         private ListenerListInst parent;
         private List<ListenerListInst> children;
 
 
         private ListenerListInst()
         {
-            int count = EventPriority.values().length;
-            priorities = new ArrayList<ArrayList<IEventListener>>(count);
-
-            for (int x = 0; x < count; x++)
-            {
-                priorities.add(new ArrayList<IEventListener>());
-            }
+            priorities = new ArrayList[EventPriority.values().length];
         }
 
         public void dispose()
         {
-            for (ArrayList<IEventListener> listeners : priorities)
-            {
-                listeners.clear();
-            }
-            priorities.clear();
+            Arrays.fill(priorities, null);
             parent = null;
             listeners = null;
             if (children != null)
@@ -186,14 +176,24 @@ public class ListenerList
          * @param priority The Priority to get
          * @return ArrayList containing listeners
          */
-        public ArrayList<IEventListener> getListeners(EventPriority priority)
+        public List<IEventListener> getListeners(EventPriority priority)
         {
-            ArrayList<IEventListener> ret = new ArrayList<IEventListener>(priorities.get(priority.ordinal()));
-            if (parent != null)
-            {
-                ret.addAll(parent.getListeners(priority));
+            if (parent == null) {
+                var byPriority = priorities[priority.ordinal()];
+                return byPriority != null ? byPriority : List.of();
             }
-            return ret;
+
+            var fromParent = parent.getListeners(priority);
+            var fromThis = priorities[priority.ordinal()];
+
+            if (fromThis == null) {
+                return fromParent;
+            }
+
+            var merged = new ArrayList<IEventListener>(fromParent.size() + fromThis.size());
+            merged.addAll(fromThis);
+            merged.addAll(fromParent);
+            return merged;
         }
 
         /**
@@ -248,19 +248,29 @@ public class ListenerList
             for (EventPriority value : EventPriority.values())
             {
                 List<IEventListener> listeners = getListeners(value);
-                if (listeners.size() > 0)
+                if (!listeners.isEmpty())
                 {
                     ret.add(value); //Add the priority to notify the event of it's current phase.
                     ret.addAll(listeners);
                 }
             }
-            listeners = ret.toArray(new IEventListener[ret.size()]);
+            listeners = ret.toArray(new IEventListener[0]);
             rebuild = false;
         }
 
         public void register(EventPriority priority, IEventListener listener)
         {
-            priorities.get(priority.ordinal()).add(listener);
+            var byPriority = priorities[priority.ordinal()];
+            if (byPriority == null) {
+                synchronized (priorities) {
+                    byPriority = priorities[priority.ordinal()];
+                    if (byPriority == null) {
+                        byPriority = new ArrayList<>();
+                        priorities[priority.ordinal()] = byPriority;
+                    }
+                }
+            }
+            byPriority.add(listener);
             this.forceRebuild();
         }
 
@@ -268,7 +278,7 @@ public class ListenerList
         {
             for(ArrayList<IEventListener> list : priorities)
             {
-                if (list.remove(listener))
+                if (list != null && list.remove(listener))
                 {
                     this.forceRebuild();
                 }
