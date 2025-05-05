@@ -137,7 +137,7 @@ public class ListenerList
         }
     }
 
-    private class ListenerListInst
+    private static class ListenerListInst
     {
         private boolean rebuild = true;
         private IEventListener[] listeners;
