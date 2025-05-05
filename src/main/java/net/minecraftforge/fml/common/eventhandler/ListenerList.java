@@ -139,6 +139,9 @@ public class ListenerList
 
     private static class ListenerListInst
     {
+        private static final EventPriority[] PRIORITIES = EventPriority.values();
+        private static final IEventListener[] EMPTY_LISTENER_ARRAY = new IEventListener[0];
+
         private boolean rebuild = true;
         private IEventListener[] listeners;
         private final ArrayList<IEventListener>[] priorities;
@@ -148,7 +151,7 @@ public class ListenerList
 
         private ListenerListInst()
         {
-            priorities = new ArrayList[EventPriority.values().length];
+            priorities = new ArrayList[PRIORITIES.length];
         }
 
         public void dispose()
@@ -230,7 +233,7 @@ public class ListenerList
         private void addChild(ListenerListInst child)
         {
             if (this.children == null)
-                this.children = Lists.newArrayList();
+                this.children = new ArrayList<>();
             this.children.add(child);
         }
 
@@ -245,7 +248,7 @@ public class ListenerList
             }
 
             ArrayList<IEventListener> ret = new ArrayList<IEventListener>();
-            for (EventPriority value : EventPriority.values())
+            for (EventPriority value : PRIORITIES)
             {
                 List<IEventListener> listeners = getListeners(value);
                 if (!listeners.isEmpty())
@@ -254,7 +257,7 @@ public class ListenerList
                     ret.addAll(listeners);
                 }
             }
-            listeners = ret.toArray(new IEventListener[0]);
+            listeners = ret.toArray(EMPTY_LISTENER_ARRAY);
             rebuild = false;
         }
 
