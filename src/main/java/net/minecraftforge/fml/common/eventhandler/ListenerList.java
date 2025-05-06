@@ -32,7 +32,7 @@ public class ListenerList
     private static int maxSize = 0;
 
     @Nullable
-    private ListenerList parent;
+    private final ListenerList parent;
     private ListenerListInst[] lists = new ListenerListInst[0];
 
     public ListenerList()
@@ -177,7 +177,7 @@ public class ListenerList
          * The list is returned with the listeners for the children events first.
          *
          * @param priority The Priority to get
-         * @return ArrayList containing listeners
+         * @return a list containing listeners for this event, with no guarantee on the mutability of ths list
          */
         public List<IEventListener> getListeners(EventPriority priority)
         {
@@ -264,15 +264,17 @@ public class ListenerList
         public void register(EventPriority priority, IEventListener listener)
         {
             var byPriority = priorities[priority.ordinal()];
+
             if (byPriority == null) {
                 synchronized (priorities) {
-                    byPriority = priorities[priority.ordinal()];
+                    byPriority = priorities[priority.ordinal()]; // in case another thread already triggered initialization
                     if (byPriority == null) {
                         byPriority = new ArrayList<>();
                         priorities[priority.ordinal()] = byPriority;
                     }
                 }
             }
+
             byPriority.add(listener);
             this.forceRebuild();
         }
