@@ -148,9 +148,8 @@ class Util {
 		def urlList = [
 				"https://repo.maven.apache.org/maven2/",
 				"https://libraries.minecraft.net/",
-				"https://maven.arcseekers.com/releases/",
 				"https://repo.cleanroommc.com/releases/",
-				"https://repo.cleanroommc.com/snapshots/", // In case we use snapshot/forked version of dependency
+				"https://maven.arcseekers.com/releases/",
 				"https://maven.minecraftforge.net/",
 		]
 		try {
