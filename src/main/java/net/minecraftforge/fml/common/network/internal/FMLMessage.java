@@ -25,6 +25,7 @@ import io.netty.buffer.Unpooled;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -65,7 +66,6 @@ public abstract class FMLMessage {
         int x;
         int y;
         int z;
-
         public OpenGui() {}
         OpenGui(int windowId, String modId, int modGuiId, int x, int y, int z)
         {
@@ -75,6 +75,47 @@ public abstract class FMLMessage {
             this.x = x;
             this.y = y;
             this.z = z;
+        }
+        @Override
+        void toBytes(ByteBuf buf)
+        {
+            buf.writeInt(windowId);
+            ByteBufUtils.writeUTF8String(buf, modId);
+            buf.writeInt(modGuiId);
+            buf.writeInt(x);
+            buf.writeInt(y);
+            buf.writeInt(z);
+        }
+        @Override
+        void fromBytes(ByteBuf buf)
+        {
+            windowId = buf.readInt();
+            modId = ByteBufUtils.readUTF8String(buf);
+            modGuiId = buf.readInt();
+            x = buf.readInt();
+            y = buf.readInt();
+            z = buf.readInt();
+        }
+    }
+    public static class OpenGuiExpand extends FMLMessage {
+        int windowId;
+        String modId;
+        int modGuiId;
+        int x;
+        int y;
+        int z;
+        ByteBuf customData;
+
+        public OpenGuiExpand() {}
+        OpenGuiExpand(int windowId, String modId, int modGuiId, int x, int y, int z, ByteBuf customData)
+        {
+            this.windowId = windowId;
+            this.modId = modId;
+            this.modGuiId = modGuiId;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.customData = customData;
         }
 
         @Override
@@ -86,6 +127,7 @@ public abstract class FMLMessage {
             buf.writeInt(x);
             buf.writeInt(y);
             buf.writeInt(z);
+            buf.writeBytes(customData);
         }
 
         @Override
@@ -97,6 +139,8 @@ public abstract class FMLMessage {
             x = buf.readInt();
             y = buf.readInt();
             z = buf.readInt();
+            customData=Unpooled.buffer();
+            buf.readBytes(customData);
         }
     }
 
