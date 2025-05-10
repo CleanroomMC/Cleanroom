@@ -1,6 +1,14 @@
 --- before/net/minecraft/network/NetworkSystem.java
 +++ after/net/minecraft/network/NetworkSystem.java
-@@ -49,21 +49,21 @@
+@@ -37,6 +37,7 @@
+ import net.minecraft.util.LazyLoadBase;
+ import net.minecraft.util.ReportedException;
+ import net.minecraft.util.text.TextComponentString;
++import net.minecraftforge.fml.common.thread.SidedThreadGroups;
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ import org.apache.logging.log4j.LogManager;
+@@ -49,21 +50,21 @@
      {
          protected NioEventLoopGroup func_179280_b()
          {
@@ -21,11 +29,11 @@
          protected LocalEventLoopGroup func_179280_b()
          {
 -            return new LocalEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Local Server IO #%d").setDaemon(true).build());
-+            return new LocalEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Local Server IO #%d").setDaemon(true).setThreadFactory(net.minecraftforge.fml.common.thread.SidedThreadGroups.CLIENT).build());
++            return new LocalEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Local Server IO #%d").setDaemon(true).setThreadFactory(SidedThreadGroups.SERVER).build());
          }
      };
      private final MinecraftServer field_151273_d;
-@@ -79,6 +79,7 @@
+@@ -79,6 +80,7 @@
  
      public void func_151265_a(InetAddress p_151265_1_, int p_151265_2_) throws IOException
      {
@@ -33,7 +41,7 @@
          synchronized (this.field_151274_e)
          {
              Class <? extends ServerSocketChannel > oclass;
-@@ -116,7 +117,7 @@
+@@ -116,7 +118,7 @@
                      }
  
                      p_initChannel_1_.pipeline()
@@ -42,3 +50,12 @@
                      .addLast("legacy_query", new LegacyPingHandler(NetworkSystem.this))
                      .addLast("splitter", new NettyVarint21FrameDecoder())
                      .addLast("decoder", new NettyPacketDecoder(EnumPacketDirection.SERVERBOUND))
+@@ -154,7 +156,7 @@
+                     NetworkSystem.this.field_151272_f.add(networkmanager);
+                     p_initChannel_1_.pipeline().addLast("packet_handler", networkmanager);
+                 }
+-            }).group(field_151276_c.func_179281_c()).localAddress(LocalAddress.ANY).bind().syncUninterruptibly();
++            }).group(field_180232_b.func_179281_c()).localAddress(LocalAddress.ANY).bind().syncUninterruptibly();
+             this.field_151274_e.add(channelfuture);
+         }
+ 
