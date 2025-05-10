@@ -96,6 +96,15 @@ public class EventBus implements IEventExceptionHandler
             if (isStatic != Modifier.isStatic(method.getModifiers()))
                 continue;
 
+            try {
+                // do `.getDeclaredMethod(...)` to force JVM to walk through declared methods and load their parameter
+                // types. This is for preventing shortcut below from skipping classloading
+                // related issue: https://github.com/CleanroomMC/Cleanroom/issues/349 , not strictly our fault, but :(
+                method.getDeclaringClass().getDeclaredMethod("forceClassLoadingForDeclaredMethods", Event.class);
+            } catch (NoSuchMethodException e) {
+                // swallow this specific exception, other exceptions, like ClassNotFoundException, will fall through
+            }
+
             var parameterTypes = method.getParameterTypes();
             var matched = supers.stream()
                 .map(cls -> {
