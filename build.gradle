@@ -437,10 +437,8 @@ project(':cleanroom') {
         installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
 
         //installer "com.cleanroommc:bouncepad:$props.bouncepad_version"
-        installer "top.outlands:foundation:0.14.14"
-        installer 'org.burningwave:jvm-driver:8.19.1'
-        installer 'io.github.toolfactory:jvm-driver:9.8.0'
-        installer 'io.github.toolfactory:narcissus:1.0.7'
+        installer "top.outlands:foundation:0.15.0"
+        installer 'net.lenni0451:Reflect:1.5.0'
         installer 'org.javassist:javassist:3.30.2-GA'
         installer "zone.rong:imaginebreaker:2.1"
 
@@ -465,12 +463,13 @@ project(':cleanroom') {
         installer 'net.java.dev.jna:jna-platform:5.17.0'
         installer 'it.unimi.dsi:fastutil:8.5.15'
         installer 'commons-codec:commons-codec:1.18.0'
-        installer 'commons-io:commons-io:2.18.0'
+        installer 'commons-io:commons-io:2.19.0'
         installer 'commons-logging:commons-logging:1.3.5'
-        installer 'com.google.guava:guava:33.4.0-jre'
+        installer 'com.google.guava:guava:33.4.8-jre'
         installer 'com.google.guava:failureaccess:1.0.2'
-        installer 'com.google.code.gson:gson:2.12.1'
+        installer 'com.google.code.gson:gson:2.13.1'
         installer 'com.google.code.findbugs:jsr305:3.0.2'
+        installer 'org.jspecify:jspecify:1.0.0'
 
         // Netty
         installer "io.netty:netty-codec-base:$props.netty_version"

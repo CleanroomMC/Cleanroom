@@ -4,7 +4,6 @@ import com.cleanroommc.hackery.ReflectionHackery;
 import jdk.internal.reflect.ReflectionFactory;
 import net.minecraftforge.fml.common.FMLLog;
 import org.apache.commons.lang3.ArrayUtils;
-import top.outlands.foundation.boot.JVMDriverHolder;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
