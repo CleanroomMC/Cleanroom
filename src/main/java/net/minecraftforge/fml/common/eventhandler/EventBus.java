@@ -99,7 +99,9 @@ public class EventBus implements IEventExceptionHandler
             try {
                 // do `.getDeclaredMethod(...)` to force JVM to walk through declared methods and load their parameter
                 // types. This is for preventing shortcut below from skipping classloading
-                // related issue: https://github.com/CleanroomMC/Cleanroom/issues/349 , not strictly our fault, but :(
+                //
+                // mod developers should be responsible for not loading non-existent class, but :(
+                // related issue: https://github.com/CleanroomMC/Cleanroom/issues/349
                 method.getDeclaringClass().getDeclaredMethod("forceClassLoadingForDeclaredMethods", Event.class);
             } catch (NoSuchMethodException e) {
                 // swallow this specific exception, other exceptions, like ClassNotFoundException, will fall through

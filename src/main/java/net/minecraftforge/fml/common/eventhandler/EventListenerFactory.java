@@ -48,7 +48,7 @@ class EventListenerFactory {
                 factoryType,
                 Constants.METHOD_TYPE,
                 handle,
-                isStatic ? handle.type() : handle.type().dropParameterTypes(0, 1)
+                MethodType.methodType(void.class, handle.type().parameterType(isStatic ? 0 : 1))
             ).getTarget();
 
             return isStatic
