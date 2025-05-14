@@ -39,7 +39,7 @@ public class AbnormalListeners {
         }
 
         @SubscribeEvent
-        private static Object nonVoidReturn(ExampleEvent event) {
+        private static void privateListener(ExampleEvent event) {
             nonVoid = true;
             return null;
         }
