@@ -41,7 +41,6 @@ public class AbnormalListeners {
         @SubscribeEvent
         private static void privateListener(ExampleEvent event) {
             isPrivate = true;
-            return null;
         }
     }
 }
