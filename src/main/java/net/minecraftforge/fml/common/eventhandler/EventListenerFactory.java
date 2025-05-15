@@ -8,13 +8,11 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import zone.rong.imaginebreaker.ImagineBreaker;
-
 /**
  * @author ZZZank
  */
 class EventListenerFactory {
-    private static final MethodHandles.Lookup LOOKUP = ImagineBreaker.lookup();
+    private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
 
     public static IEventListener createRawListener(Method method, boolean isStatic, Object instance) {
         // no caching is applied here because in EventBus scenario, caching will only be useful

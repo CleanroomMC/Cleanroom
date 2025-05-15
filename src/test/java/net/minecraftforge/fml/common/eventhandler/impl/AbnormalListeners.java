@@ -8,7 +8,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class AbnormalListeners {
 
     public static boolean nonVoid = false;
-    public static boolean isPrivate = false;
 
     static class Parent {
 
@@ -36,11 +35,6 @@ public class AbnormalListeners {
         public static Object nonVoidReturn(ExampleEvent event) {
             nonVoid = true;
             return null;
-        }
-
-        @SubscribeEvent
-        private static void privateListener(ExampleEvent event) {
-            isPrivate = true;
         }
     }
 }

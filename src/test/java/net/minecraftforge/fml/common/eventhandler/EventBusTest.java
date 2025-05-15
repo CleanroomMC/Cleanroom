@@ -57,6 +57,5 @@ public class EventBusTest {
         bus.post(event);
 
         Assertions.assertTrue(AbnormalListeners.nonVoid, "listener with non-void return type is valid");
-        Assertions.assertTrue(AbnormalListeners.isPrivate, "listener with private access is valid");
     }
 }
