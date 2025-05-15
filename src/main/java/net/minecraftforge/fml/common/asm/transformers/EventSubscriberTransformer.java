@@ -34,6 +34,10 @@ import org.objectweb.asm.tree.MethodNode;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
+/**
+ * @deprecated this transformer is deprecated. See {@link net.minecraftforge.fml.common.eventhandler.EventListenerFactory#LOOKUP}
+ */
+@Deprecated
 public class EventSubscriberTransformer implements IClassTransformer
 {
     @Override
