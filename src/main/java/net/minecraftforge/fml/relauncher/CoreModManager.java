@@ -555,7 +555,7 @@ public class CoreModManager {
             MCVersion requiredMCVersion = coreModClazz.getAnnotation(MCVersion.class);
             if (!Arrays.asList(rootPlugins).contains(coreModClass) && (requiredMCVersion == null || Strings.isNullOrEmpty(requiredMCVersion.value())))
             {
-                FMLLog.log.warn("The coremod {} does not have a MCVersion annotation, it may cause issues with this version of Minecraft",
+                FMLLog.log.debug("The coremod {} does not have a MCVersion annotation, it may cause issues with this version of Minecraft",
                         coreModClass);
             }
             else if (requiredMCVersion != null && !FMLInjectionData.mccversion.equals(requiredMCVersion.value()))
@@ -600,7 +600,7 @@ public class CoreModManager {
                 }
                 else // This is a probably a normal minecraft workspace - log at warn
                 {
-                    FMLLog.log.warn("The coremod {} ({}) is not signed!", coreModName, coreModClass);
+                    FMLLog.log.debug("The coremod {} ({}) is not signed!", coreModName, coreModClass);
                 }
             }
             else
