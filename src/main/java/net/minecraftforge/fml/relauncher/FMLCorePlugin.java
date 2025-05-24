@@ -53,10 +53,4 @@ public class FMLCorePlugin implements IFMLLoadingPlugin
     {
         return "net.minecraftforge.fml.common.asm.FMLSanityChecker";
     }
-
-    @Override
-    public void injectData(Map<String, Object> data)
-    {
-        // don't care about this data
-    }
 }
