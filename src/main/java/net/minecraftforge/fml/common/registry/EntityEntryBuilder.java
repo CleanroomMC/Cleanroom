@@ -262,6 +262,7 @@ public final class EntityEntryBuilder<E extends Entity>
         checkState(this.entity != null, "entity class not provided");
         checkState(this.id != null, "entity id not provided");
         checkState(this.name != null, "entity name not provided");
+        checkArgument(this.trackingUpdateFrequency != 0, "entity trackingUpdateFrequency could not be zero");
         if (this.spawns != null) checkState(EntityLiving.class.isAssignableFrom(EntityEntryBuilder.this.entity), "Cannot add spawns to a non-%s", EntityLiving.class.getSimpleName());
         final BuiltEntityEntry entry = new BuiltEntityEntry(this.entity, this.name);
         entry.factory = this.factory != null ? this.factory : new ConstructorFactory<E>(this.entity) {
