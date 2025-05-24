@@ -1,6 +1,7 @@
 package com.cleanroommc.common;
 
 import com.google.common.eventbus.EventBus;
+import net.minecraftforge.common.ForgeEarlyConfig;
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.ModMetadata;
