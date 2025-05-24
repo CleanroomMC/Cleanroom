@@ -45,7 +45,7 @@ public interface WorldAccessContainer
      *
      * @param handler     The SaveHandler instance managing the load operation
      * @param info        The current world's metadata
-     * @param propertyMap Additional properties map for world data, see {@ WorldInfo#setAdditionalProperties}
+     * @param propertyMap Additional properties map for world data, see {@link WorldInfo#setAdditionalProperties}
      * @param tag         The NBTTagCompound containing saved world data
      */
     void readData(SaveHandler handler, WorldInfo info, Map<String, NBTBase> propertyMap, NBTTagCompound tag);
