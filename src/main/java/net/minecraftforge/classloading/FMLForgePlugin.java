@@ -32,22 +32,9 @@ public class FMLForgePlugin implements IFMLLoadingPlugin
     public static File forgeLocation;
 
     @Override
-    public String[] getASMTransformerClass()
-    {
-        return null;
-    }
-
-    @Override
     public String getModContainerClass()
     {
         return "net.minecraftforge.common.ForgeModContainer";
-    }
-
-    @Override
-    @Nullable
-    public String getSetupClass()
-    {
-        return null;
     }
 
     @Override
@@ -55,11 +42,5 @@ public class FMLForgePlugin implements IFMLLoadingPlugin
     {
         RUNTIME_DEOBF = (Boolean)data.get("runtimeDeobfuscationEnabled");
         forgeLocation = (File)data.get("coremodLocation");
-    }
-
-    @Override
-    public String getAccessTransformerClass()
-    {
-        return null;
     }
 }
