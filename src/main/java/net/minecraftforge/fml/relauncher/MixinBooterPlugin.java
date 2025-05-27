@@ -31,34 +31,12 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
 
     static Set<IEarlyMixinLoader> earlyMixinLoaders = new HashSet<>();
 
-    public MixinBooterPlugin() {
-    }
-
-    @Override
-    public String[] getASMTransformerClass() {
-        return null;
-    }
-
-    @Override
-    public String getModContainerClass() {
-        return "net.minecraftforge.fml.common.MixinContainer";
-    }
-
-    @Override
-    public String getSetupClass() {
-        return null;
-    }
-
     @Override
     public void injectData(Map<String, Object> data) {
         loadEarlyLoaders(earlyMixinLoaders);
         earlyMixinLoaders = null;
     }
 
-    @Override
-    public String getAccessTransformerClass() {
-        return null;
-    }
 
     static void queneEarlyMixinLoader(IFMLLoadingPlugin plugin) {
         if (plugin instanceof IEarlyMixinLoader earlyMixinLoader) earlyMixinLoaders.add(earlyMixinLoader);

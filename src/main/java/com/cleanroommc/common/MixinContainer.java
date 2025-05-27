@@ -1,10 +1,10 @@
-package net.minecraftforge.fml.common;
+package com.cleanroommc.common;
 
 import com.google.common.eventbus.EventBus;
 import net.minecraftforge.common.ForgeEarlyConfig;
-import net.minecraftforge.fml.common.asm.FMLSanityChecker;
-
-import java.io.File;
+import net.minecraftforge.fml.common.DummyModContainer;
+import net.minecraftforge.fml.common.LoadController;
+import net.minecraftforge.fml.common.ModMetadata;
 
 public final class MixinContainer extends DummyModContainer{
     public MixinContainer() {
@@ -20,10 +20,5 @@ public final class MixinContainer extends DummyModContainer{
     @Override
     public boolean registerBus(EventBus bus, LoadController controller) {
         return true;
-    }
-
-    @Override
-    public File getSource() {
-        return FMLSanityChecker.fmlLocation;
     }
 }
