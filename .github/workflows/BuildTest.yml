@@ -91,7 +91,7 @@ jobs:
           if-no-files-found: error
 
       - name: Repository Dispatch
-        if: ${{ success() && github.event_name != 'pull_request' && secrets.CLEANROOMMC_DISPATCH_TOKEN != ''}}
+        if: ${{ success() && github.event_name != 'pull_request' && github.repository != 'CleanroomMC/Cleanroom'}}
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.CLEANROOMMC_DISPATCH_TOKEN }} # require PAT :shrug:
