@@ -56,10 +56,11 @@
 
 ### List of Obsoleted/Incompatible Mods
 
-- Phosphor: Use Hesperus or Alfheim Lighting Engine
-- Forgelin: Use Forgelin-Continuous
-- LibrarianLib: Use LibrarianLib-Continuous
-- JustEnoughIds: Use RoughlyEnoughIDs
+- SpongeForge: Use [SpongeForge LTS](https://www.curseforge.com/minecraft/mc-mods/spongeforge)
+- Phosphor: Use [Hesperus](https://www.curseforge.com/minecraft/mc-mods/hesperus) or [Alfheim Lighting Engine](https://www.curseforge.com/minecraft/mc-mods/alfheim-lighting-engine)
+- Forgelin: Use [Forgelin-Continuous](https://www.curseforge.com/minecraft/mc-mods/forgelin-continuous)
+- LibrarianLib: Use [LibrarianLib-Continuous](https://www.curseforge.com/minecraft/mc-mods/librarianlib-continuous)
+- JustEnoughIds: Use [RoughlyEnoughIDs](https://www.curseforge.com/minecraft/mc-mods/reid)
 - AdvancedShader: Binary patching, incompatible
 - Polyfrost series: Waiting for official fix
 - Essential.gg: Patched but still buggy
