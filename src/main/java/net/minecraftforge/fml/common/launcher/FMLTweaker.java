@@ -139,7 +139,7 @@ public class FMLTweaker implements ITweaker {
             } else {
                 jarLocation = location.toURI();
             }
-            LogManager.getLogger("FML.TWEAK").info("Jar location: " + jarLocation);
+            LogManager.getLogger("FML.TWEAK").info("Jar location: {}", jarLocation);
         }
         catch (URISyntaxException | IOException e)
         {
