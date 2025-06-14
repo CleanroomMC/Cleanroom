@@ -35,7 +35,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
 /**
- * @deprecated this transformer is deprecated. See {@link net.minecraftforge.fml.common.eventhandler.EventListenerFactory#LOOKUP}
+ * @deprecated Forcing public access is no longer required thanks to new Lookup with trusted member access, see {@link net.minecraftforge.fml.common.eventhandler.EventListenerFactory#LOOKUP}
  */
 @Deprecated
 public class EventSubscriberTransformer implements IClassTransformer
