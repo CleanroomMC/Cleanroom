@@ -46,7 +46,7 @@ public class NetworkModHolder
     /**
      * Validates that the mods versions on the client and server are compatible with mod.
      */
-    public abstract class NetworkChecker {
+    public static abstract class NetworkChecker {
         /**
          * @deprecated use {@link #checkCompatible(Map, Side)}
          */
