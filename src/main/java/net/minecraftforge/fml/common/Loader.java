@@ -605,6 +605,10 @@ public class Loader
         {
             if (mod.getSigningCertificate() == null)
                 FMLLog.log.debug("\t\t{}\t({}\t{})\t{}", mod.getModId(), mod.getName(), mod.getVersion(), mod.getSource().getName());
+        }
+        
+        for (ModContainer mod : getActiveModList())
+        {
             if (mod.getMetadata() == null)
                 FMLLog.log.warn("{} missing it's ModMetadata.", mod.getModId());
         }
