@@ -240,46 +240,43 @@
      }
  
      public boolean func_111282_a(EntityPlayer p_111282_1_, EntityLivingBase p_111282_2_, EnumHand p_111282_3_)
-@@ -366,17 +395,27 @@
-         return this.func_77973_b().func_111207_a(this, p_111282_1_, p_111282_2_, p_111282_3_);
-     }
+@@ -368,15 +397,30 @@
  
--    public ItemStack func_77946_l()
--    {
+     public ItemStack func_77946_l()
+     {
 -        ItemStack itemstack = new ItemStack(this.field_151002_e, this.field_77994_a, this.field_77991_e);
 -        itemstack.func_190915_d(this.func_190921_D());
 -
--        if (this.field_77990_d != null)
--        {
--            itemstack.field_77990_d = this.field_77990_d.func_74737_b();
--        }
--
--        return itemstack;
-+    public ItemStack func_77946_l() {
-+        if (this.func_190926_b()) {
++        if (this.func_190926_b())
++        {
 +            return field_190927_a;
 +        }
 +        ItemStack copy = new ItemStack(this.field_151002_e, null);
 +        copy.field_77994_a = this.field_77994_a;
 +        copy.field_77991_e = this.field_77991_e;
 +        copy.field_77992_b = this.field_77992_b;
-+        copy.delegate = this.delegate;
-+        if (this.field_77990_d != null) {
+         if (this.field_77990_d != null)
+         {
+-            itemstack.field_77990_d = this.field_77990_d.func_74737_b();
 +            copy.field_77990_d = this.field_77990_d.func_74737_b();
 +        }
-+        if (this.capabilities != null) {
++        if (this.capNBT != null)
++        {
 +            copy.capNBT = this.capabilities.serializeNBT();
-+            net.minecraftforge.common.capabilities.ICapabilityProvider provider = copy.field_151002_e.initCapabilities(copy, copy.capNBT);
-+            copy.capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(copy, provider);
-+            if (copy.capabilities != null) {
-+                copy.capabilities.deserializeNBT(copy.capNBT);
-+            }
 +        }
++        copy.delegate = this.delegate;
++        net.minecraftforge.common.capabilities.ICapabilityProvider provider = copy.field_151002_e.initCapabilities(copy, copy.capNBT);
++        copy.capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(copy, provider);
++        if (copy.capNBT != null && copy.capabilities != null) {
++            copy.capabilities.deserializeNBT(copy.capNBT);
+         }
+ 
+-        return itemstack;
 +        return copy;
      }
  
      public static boolean func_77970_a(ItemStack p_77970_0_, ItemStack p_77970_1_)
-@@ -385,15 +424,20 @@
+@@ -385,15 +429,20 @@
          {
              return true;
          }
@@ -305,7 +302,7 @@
          }
      }
  
-@@ -423,11 +467,13 @@
+@@ -423,11 +472,13 @@
          {
              return false;
          }
@@ -322,7 +319,7 @@
          }
      }
  
-@@ -462,7 +508,14 @@
+@@ -462,7 +513,14 @@
  
      public boolean func_185136_b(ItemStack p_185136_1_)
      {
@@ -338,7 +335,7 @@
      }
  
      public String func_77977_a()
-@@ -480,7 +533,7 @@
+@@ -480,7 +538,7 @@
      {
          if (this.field_77992_b > 0)
          {
@@ -347,7 +344,7 @@
          }
  
          if (this.field_151002_e != null)
-@@ -675,7 +728,7 @@
+@@ -675,7 +733,7 @@
              {
                  NBTTagList nbttaglist = this.func_77986_q();
  
@@ -356,7 +353,7 @@
                  {
                      NBTTagCompound nbttagcompound = nbttaglist.func_150305_b(j);
                      int k = nbttagcompound.func_74765_d("id");
-@@ -711,7 +764,7 @@
+@@ -711,7 +769,7 @@
  
                      if (!nbttaglist3.func_82582_d())
                      {
@@ -365,7 +362,7 @@
                          {
                              list.add(TextFormatting.DARK_PURPLE + "" + TextFormatting.ITALIC + nbttaglist3.func_150307_f(l1));
                          }
-@@ -768,7 +821,7 @@
+@@ -768,7 +826,7 @@
                              + I18n.func_74837_a(
                                  "attribute.modifier.equals." + attributemodifier.func_111169_c(),
                                  field_111284_a.format(d1),
@@ -374,7 +371,7 @@
                              )
                          );
                      }
-@@ -780,7 +833,7 @@
+@@ -780,7 +838,7 @@
                              + I18n.func_74837_a(
                                  "attribute.modifier.plus." + attributemodifier.func_111169_c(),
                                  field_111284_a.format(d1),
@@ -383,7 +380,7 @@
                              )
                          );
                      }
-@@ -793,9 +846,10 @@
+@@ -793,9 +851,10 @@
                              + I18n.func_74837_a(
                                  "attribute.modifier.take." + attributemodifier.func_111169_c(),
                                  field_111284_a.format(d1),
@@ -395,7 +392,7 @@
                      }
                  }
              }
-@@ -815,7 +869,7 @@
+@@ -815,7 +874,7 @@
                  list.add("");
                  list.add(TextFormatting.GRAY + I18n.func_74838_a("item.canBreak"));
  
@@ -404,7 +401,7 @@
                  {
                      Block block = Block.func_149684_b(nbttaglist1.func_150307_f(j1));
  
-@@ -840,7 +894,7 @@
+@@ -840,7 +899,7 @@
                  list.add("");
                  list.add(TextFormatting.GRAY + I18n.func_74838_a("item.canPlace"));
  
@@ -413,7 +410,7 @@
                  {
                      Block block1 = Block.func_149684_b(nbttaglist2.func_150307_f(k1));
  
-@@ -871,6 +925,7 @@
+@@ -871,6 +930,7 @@
              }
          }
  
@@ -421,7 +418,7 @@
          return list;
      }
  
-@@ -880,6 +935,7 @@
+@@ -880,6 +940,7 @@
          return this.func_77973_b().func_77636_d(this);
      }
  
@@ -429,7 +426,7 @@
      public EnumRarity func_77953_t()
      {
          return this.func_77973_b().func_77613_e(this);
-@@ -887,7 +943,14 @@
+@@ -887,7 +948,14 @@
  
      public boolean func_77956_u()
      {
@@ -445,7 +442,7 @@
      }
  
      public void func_77966_a(Enchantment p_77966_1_, int p_77966_2_)
-@@ -911,7 +974,14 @@
+@@ -911,7 +979,14 @@
  
      public boolean func_77948_v()
      {
@@ -461,7 +458,7 @@
      }
  
      public void func_77983_a(String p_77983_1_, NBTBase p_77983_2_)
-@@ -969,7 +1039,7 @@
+@@ -969,7 +1044,7 @@
              multimap = HashMultimap.create();
              NBTTagList nbttaglist = this.field_77990_d.func_150295_c("AttributeModifiers", 10);
  
@@ -470,7 +467,7 @@
              {
                  NBTTagCompound nbttagcompound = nbttaglist.func_150305_b(i);
                  AttributeModifier attributemodifier = SharedMonsterAttributes.func_111259_a(nbttagcompound);
-@@ -985,7 +1055,7 @@
+@@ -985,7 +1060,7 @@
          }
          else
          {
@@ -479,7 +476,7 @@
          }
  
          return multimap;
-@@ -1030,7 +1100,7 @@
+@@ -1030,7 +1105,7 @@
          {
              NBTTagCompound nbttagcompound = this.func_77955_b(new NBTTagCompound());
              itextcomponent.func_150256_b().func_150209_a(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new TextComponentString(nbttagcompound.toString())));
@@ -488,7 +485,7 @@
          }
  
          return itextcomponent;
-@@ -1050,7 +1120,7 @@
+@@ -1050,7 +1125,7 @@
              {
                  NBTTagList nbttaglist = this.field_77990_d.func_150295_c("CanDestroy", 8);
  
@@ -497,7 +494,7 @@
                  {
                      Block block = Block.func_149684_b(nbttaglist.func_150307_f(i));
  
-@@ -1081,7 +1151,7 @@
+@@ -1081,7 +1156,7 @@
              {
                  NBTTagList nbttaglist = this.field_77990_d.func_150295_c("CanPlaceOn", 8);
  
@@ -506,7 +503,7 @@
                  {
                      Block block = Block.func_149684_b(nbttaglist.func_150307_f(i));
  
-@@ -1127,5 +1197,129 @@
+@@ -1127,5 +1202,129 @@
      public void func_190918_g(int p_190918_1_)
      {
          this.func_190917_f(-p_190918_1_);
