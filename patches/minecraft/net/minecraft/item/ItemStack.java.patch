@@ -260,7 +260,7 @@
 -            itemstack.field_77990_d = this.field_77990_d.func_74737_b();
 +            copy.field_77990_d = this.field_77990_d.func_74737_b();
 +        }
-+        if (this.capNBT != null)
++        if (this.capNBT != null && this.capabilities != null)
 +        {
 +            copy.capNBT = this.capabilities.serializeNBT();
 +        }
