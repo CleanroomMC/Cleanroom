@@ -81,3 +81,7 @@ body:
           required: true
         - label: "I am running a test build from Cleanroom Github Actions.  (Or, if I've compiled it myself I plan to fix the issue)"
           required: true
+        - label: |
+            I did not use PCL/PCLCE or other unsupported launchers.
+            我没有使用 PCL/PCLCE 等其他未被支持的启动器。
+          required: true
