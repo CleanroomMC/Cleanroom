@@ -457,7 +457,7 @@ project(':cleanroom') {
         installer 'org.apache.commons:commons-compress:1.27.1'
         installer 'org.apache.httpcomponents:httpclient:4.5.14'
         installer 'org.apache.httpcomponents:httpcore:4.4.16'
-        installer 'com.github.oshi:oshi-core:6.8.1'
+        installer 'com.github.oshi:oshi-core:6.8.2'
         installer 'net.java.dev.jna:jna:5.17.0'
         installer 'net.java.dev.jna:jna-platform:5.17.0'
         installer 'it.unimi.dsi:fastutil:8.5.15'
