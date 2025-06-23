@@ -19,16 +19,11 @@
 
 package net.minecraftforge.fml.common.network.internal;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.embedded.EmbeddedChannel;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -37,16 +32,14 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.FMLContainer;
-import net.minecraftforge.fml.common.FMLLog;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.event.entity.player.PlayerContainerEvent;
+import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
 import net.minecraftforge.fml.common.network.FMLOutboundHandler;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.FMLOutboundHandler.OutboundTarget;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.handshake.FMLHandshakeMessage;
 import net.minecraftforge.fml.common.network.handshake.NetworkDispatcher;
 import net.minecraftforge.fml.common.network.internal.FMLMessage.CompleteHandshake;
@@ -54,12 +47,11 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry.EntityRegistration;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class FMLNetworkHandler
 {
@@ -99,7 +91,7 @@ public class FMLNetworkHandler
                 entityPlayerMP.openContainer = remoteGuiContainer;
                 entityPlayerMP.openContainer.windowId = windowId;
                 entityPlayerMP.openContainer.addListener(entityPlayerMP);
-                net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(entityPlayer, entityPlayer.openContainer));
+                MinecraftForge.EVENT_BUS.post(new PlayerContainerEvent.Open(entityPlayer, entityPlayer.openContainer));
             }
         }
         else if (entityPlayer instanceof FakePlayer)
@@ -109,6 +101,44 @@ public class FMLNetworkHandler
         else if (FMLCommonHandler.instance().getSide().equals(Side.CLIENT))
         {
             Object guiContainer = NetworkRegistry.INSTANCE.getLocalGuiContainer(mc, entityPlayer, modGuiId, world, x, y, z);
+            FMLCommonHandler.instance().showGuiScreen(guiContainer);
+        }
+        else
+        {
+            FMLLog.log.debug("Invalid attempt to open a local GUI on a dedicated server. This is likely a bug. GUI ID: {},{}", mc.getModId(), modGuiId);
+        }
+
+    }
+    public static void openGui(EntityPlayer entityPlayer, Object mod, int modGuiId, World world, int x, int y, int z, ByteBuf customData)
+    {
+        ModContainer mc = FMLCommonHandler.instance().findContainerFor(mod);
+        if (entityPlayer instanceof EntityPlayerMP && !(entityPlayer instanceof FakePlayer))
+        {
+            EntityPlayerMP entityPlayerMP = (EntityPlayerMP) entityPlayer;
+            Container remoteGuiContainer = NetworkRegistry.INSTANCE.getRemoteGuiContainer(mc, entityPlayerMP, modGuiId, world, x, y, z, customData);
+            if (remoteGuiContainer != null)
+            {
+                entityPlayerMP.getNextWindowId();
+                entityPlayerMP.closeContainer();
+                int windowId = entityPlayerMP.currentWindowId;
+                FMLMessage.OpenGuiExpand openGui = new FMLMessage.OpenGuiExpand(windowId, mc.getModId(), modGuiId, x, y, z, customData);
+                EmbeddedChannel embeddedChannel = channelPair.get(Side.SERVER);
+                embeddedChannel.attr(FMLOutboundHandler.FML_MESSAGETARGET).set(OutboundTarget.PLAYER);
+                embeddedChannel.attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(entityPlayerMP);
+                embeddedChannel.writeOutbound(openGui);
+                entityPlayerMP.openContainer = remoteGuiContainer;
+                entityPlayerMP.openContainer.windowId = windowId;
+                entityPlayerMP.openContainer.addListener(entityPlayerMP);
+                MinecraftForge.EVENT_BUS.post(new PlayerContainerEvent.Open(entityPlayer, entityPlayer.openContainer));
+            }
+        }
+        else if (entityPlayer instanceof FakePlayer)
+        {
+            // NO OP - I won't even log a message!
+        }
+        else if (FMLCommonHandler.instance().getSide().equals(Side.CLIENT))
+        {
+            Object guiContainer = NetworkRegistry.INSTANCE.getLocalGuiContainer(mc, entityPlayer, modGuiId, world, x, y, z, customData);
             FMLCommonHandler.instance().showGuiScreen(guiContainer);
         }
         else
@@ -179,6 +209,7 @@ public class FMLNetworkHandler
         String targetName = channelPair.get(Side.CLIENT).findChannelHandlerNameForType(FMLRuntimeCodec.class);
         pipeline.addAfter(targetName, "GuiHandler", new OpenGuiHandler());
         pipeline.addAfter(targetName, "EntitySpawnHandler", new EntitySpawnHandler());
+        pipeline.addAfter(targetName, "GuiExpandHandler", new OpenGuiExpandHandler());
     }
     public static void registerChannel(FMLContainer container, Side side)
     {
