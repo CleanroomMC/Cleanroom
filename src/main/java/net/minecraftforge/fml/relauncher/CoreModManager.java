@@ -39,12 +39,8 @@ import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 import net.minecraftforge.fml.relauncher.libraries.Repository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
-import org.spongepowered.asm.mixin.MixinEnvironment;
-import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.service.mojang.MixinServiceLaunchWrapper;
 import org.spongepowered.asm.util.Constants;
-import zone.rong.mixinbooter.IEarlyMixinLoader;
-import zone.rong.mixinbooter.IMixinConfigHijacker;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -480,7 +476,11 @@ public class CoreModManager {
             }
             loadCoreMod(classLoader, fmlCorePlugin, coreMod);
         }
-        Launch.blackboard.put("MixinConfigs", mixin_configs);
+        String devConfigs = System.getProperty("cleanroom.dev.mixin");
+        if (!Strings.isNullOrEmpty(devConfigs)) {
+            mixin_configs.addAll(List.of(devConfigs.split(",")));
+        }
+        Launch.blackboard.put(Constants.ManifestAttributes.MIXINCONFIGS, mixin_configs);
     }
     private static void handleCascadingTweak(File coreMod, JarFile jar, String cascadedTweaker, LaunchClassLoader classLoader, Integer sortingOrder) throws MalformedURLException {
         try
