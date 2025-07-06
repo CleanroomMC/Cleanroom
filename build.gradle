@@ -450,7 +450,7 @@ project(':cleanroom') {
 
         installer 'lzma:lzma:0.0.1'
         installer 'java3d:vecmath:1.5.2'
-        installer 'net.sf.trove4j:trove4j:3.0.3'
+        installer 'net.sf.trove4j:core:3.1.0'
         installer 'org.apache.maven:maven-artifact:3.9.9'
         installer 'net.sf.jopt-simple:jopt-simple:5.0.4'
         installer 'org.apache.commons:commons-lang3:3.17.0'
