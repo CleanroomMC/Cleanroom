@@ -496,11 +496,6 @@ project(':cleanroom') {
         installer 'org.glassfish.jaxb:jaxb-runtime:4.0.5'
         installer 'org.glassfish.jaxb:jaxb-core:4.0.5'
         installer 'com.sun.istack:istack-commons-runtime:4.2.0'
-        /*
-        installer 'org.glassfish.jaxb:txw2:4.0.5'
-        installer 'org.jvnet.staxex:stax-ex:2.1.0'
-        installer 'com.sun.xml.fastinfoset:FastInfoset:2.1.1'
-        */
         installer 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.2'
         installer 'jakarta.activation:jakarta.activation-api:2.1.3'
         installer 'org.glassfish.corba:glassfish-corba-omgapi:4.2.5'
