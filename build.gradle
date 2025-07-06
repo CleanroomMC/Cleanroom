@@ -455,12 +455,14 @@ project(':cleanroom') {
         installer 'net.sf.jopt-simple:jopt-simple:5.0.4'
         installer 'org.apache.commons:commons-lang3:3.17.0'
         installer 'org.apache.commons:commons-compress:1.27.1'
+        /*
         installer 'org.apache.httpcomponents:httpclient:4.5.14'
         installer 'org.apache.httpcomponents:httpcore:4.4.16'
+        */
         installer 'com.github.oshi:oshi-core:6.8.2'
         installer 'net.java.dev.jna:jna:5.17.0'
         installer 'net.java.dev.jna:jna-platform:5.17.0'
-        installer 'it.unimi.dsi:fastutil:8.5.15'
+        installer 'it.unimi.dsi:fastutil:8.5.16'
         installer 'commons-codec:commons-codec:1.18.0'
         installer 'commons-io:commons-io:2.19.0'
         installer 'commons-logging:commons-logging:1.3.5'
@@ -485,18 +487,20 @@ project(':cleanroom') {
         installer "io.netty:netty-codec-dns:$props.netty_version"
         installer "io.netty:netty-resolver-dns:$props.netty_version"
 
-        installer 'org.apache.logging.log4j:log4j-api:2.24.3'
-        installer 'org.apache.logging.log4j:log4j-core:2.24.3'
-        installer 'org.apache.logging.log4j:log4j-slf4j2-impl:2.24.3'
+        installer 'org.apache.logging.log4j:log4j-api:2.25.0'
+        installer 'org.apache.logging.log4j:log4j-core:2.25.0'
+        installer 'org.apache.logging.log4j:log4j-slf4j2-impl:2.25.0'
         installer 'org.slf4j:slf4j-api:2.0.17'
         installer 'jakarta.annotation:jakarta.annotation-api:3.0.0'
         installer 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
+        /*
         installer 'org.glassfish.jaxb:jaxb-core:4.0.5'
         installer 'org.glassfish.jaxb:txw2:4.0.5'
         installer 'com.sun.istack:istack-commons-runtime:4.2.0'
         installer 'org.glassfish.jaxb:jaxb-runtime:4.0.5'
         installer 'org.jvnet.staxex:stax-ex:2.1.0'
         installer 'com.sun.xml.fastinfoset:FastInfoset:2.1.1'
+        */
         installer 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.2'
         installer 'jakarta.activation:jakarta.activation-api:2.1.3'
         installer 'org.glassfish.corba:glassfish-corba-omgapi:4.2.5'
