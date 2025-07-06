@@ -493,11 +493,11 @@ project(':cleanroom') {
         installer 'org.slf4j:slf4j-api:2.0.17'
         installer 'jakarta.annotation:jakarta.annotation-api:3.0.0'
         installer 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
-        /*
+        installer 'org.glassfish.jaxb:jaxb-runtime:4.0.5'
         installer 'org.glassfish.jaxb:jaxb-core:4.0.5'
+        /*
         installer 'org.glassfish.jaxb:txw2:4.0.5'
         installer 'com.sun.istack:istack-commons-runtime:4.2.0'
-        installer 'org.glassfish.jaxb:jaxb-runtime:4.0.5'
         installer 'org.jvnet.staxex:stax-ex:2.1.0'
         installer 'com.sun.xml.fastinfoset:FastInfoset:2.1.1'
         */
