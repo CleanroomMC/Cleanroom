@@ -399,7 +399,8 @@ public class CoreModManager {
                     sortOrder = (sortOrder == null ? Integer.valueOf(0) : sortOrder);
                     handleCascadingTweak(coreMod, jar, cascadedTweaker, classLoader, sortOrder);
                     if (!Strings.isNullOrEmpty(configs))
-                        mixin_configs.addAll(List.of(configs.split(",")));
+                        for (String singleMixinConfig : configs.split(","))
+                            mixin_configs.add(singleMixinConfig.trim());
                     ignoredModFiles.add(coreMod.getName());
                     if (!MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker)) {
                         continue;
@@ -478,7 +479,8 @@ public class CoreModManager {
         }
         String devConfigs = System.getProperty("cleanroom.dev.mixin");
         if (!Strings.isNullOrEmpty(devConfigs)) {
-            mixin_configs.addAll(List.of(devConfigs.split(",")));
+            for (String singleMixinConfig : devConfigs.split(","))
+                mixin_configs.add(singleMixinConfig.trim());
         }
         Launch.blackboard.put(Constants.ManifestAttributes.MIXINCONFIGS, mixin_configs);
     }
