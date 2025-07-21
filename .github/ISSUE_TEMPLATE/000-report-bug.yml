@@ -75,9 +75,13 @@ body:
           required: true
         - label: "I have installed [Fugue](https://www.curseforge.com/minecraft/mc-mods/fugue) and it didn't fix my issue."
           required: true
-        - label: "I have installed [Scalar](https://www.curseforge.com/minecraft/mc-mods/scalar-legacy) and it didn't fix my issue."
+        - label: "I have installed [Scalar Legacy](https://www.curseforge.com/minecraft/mc-mods/scalar-legacy) and it didn't fix my issue."
           required: true
         - label: "I have switched my Forgelin and LibrarianLib to continuous versions(check readme for more detail)."
           required: true
         - label: "I am running a test build from Cleanroom Github Actions.  (Or, if I've compiled it myself I plan to fix the issue)"
+          required: true
+        - label: |
+            I did not use PCL/PCLCE or other unsupported launchers.
+            我没有使用 PCL/PCLCE 等其他未被支持的启动器。
           required: true

@@ -439,18 +439,13 @@ public class Loader
         return discoverer;
     }
 
-    private class ModIdComparator implements Comparator<ModContainer>
-    {
-        @Override
-        public int compare(ModContainer o1, ModContainer o2)
-        {
+    private static int compareModId(ModContainer o1, ModContainer o2){
             return o1.getModId().compareTo(o2.getModId());
-        }
     }
 
     private void identifyDuplicates(List<ModContainer> mods)
     {
-        TreeMultimap<ModContainer, File> dupsearch = TreeMultimap.create(new ModIdComparator(), Ordering.arbitrary());
+        TreeMultimap<ModContainer, File> dupsearch = TreeMultimap.create(Loader::compareModId, Ordering.arbitrary());
         for (ModContainer mc : mods)
         {
             if (mc.getSource() != null)
@@ -614,6 +609,12 @@ public class Loader
         {
             if (mod.getSigningCertificate() == null)
                 FMLLog.log.debug("\t\t{}\t({}\t{})\t{}", mod.getModId(), mod.getName(), mod.getVersion(), mod.getSource().getName());
+        }
+        
+        for (ModContainer mod : getActiveModList())
+        {
+            if (mod.getMetadata() == null)
+                FMLLog.log.warn("{} missing it's ModMetadata.", mod.getModId());
         }
         if (getActiveModList().isEmpty())
         {
