@@ -133,6 +133,9 @@ public class FMLEventChannel {
                 ctx.channel().attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.REPLY);
                 ctx.writeAndFlush(event.getReply()).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
             }
+            if (event.getPacket().payload().refCnt() == 0) {
+                event.getPacket().payload().release();
+            }
         }
     }
 
