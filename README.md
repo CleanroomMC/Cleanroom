@@ -1,3 +1,74 @@
+# Kirino Rendering
+
+[Proposal](https://github.com/CleanroomMC/Cleanroom/discussions/405)
+
+## MVP Goals
+### GL Abstraction
+
+- GL Resource Abstraction
+  - Resource manager
+- Shader Abstraction 
+  - Only support `vert` + `frag` for now, but design with `tess`, `compute`, etc. in mind
+  - Global shader registry
+    - Compile and store shaders
+    - Shader source hashing
+  - Uniform
+    - Parse uniforms from shader source
+    - Uniform location and type memorization
+    - UBO support
+  - ShaderProgram
+    - Uniform input type widening
+- Buffer Abstraction
+  - VAO + VBO + EBO -> Mesh
+  - UBO, SSBO
+  - PBO pack & unpack
+  - TBO
+  - Upload hint + access hint
+  - Persistent buffer
+  - Framebuffer
+    - Attachment
+- Mesh Abstraction
+  - Mesh
+  - InstancedMesh
+  - MultiDrawMesh
+  - Vertex attribute layout
+- Texture Abstraction
+  - Sampler
+  - Texture
+    - Texture2D (for common uses)
+    - Texture2DMultisample (for multisampling fbo)
+    - Texture2DArray (for texture atlas)
+    - ...
+- Sync / Fence Abstraction
+- Debug Abstraction
+  - KHR_debug
+- Material Abstraction
+  - MaterialTemplate to describe layout and shaders
+  - MaterialInstance to hold actual parameters
+- Camera Abstraction
+- Render Pass Abstraction
+
+### ECS
+
+- Overall ECS structure
+  - CleanWorld, CleanEntity, CleanComponent, CleanSystem
+- Component data
+  - Off-heap component data pool
+- Job system to coordinate different systems
+  - Execution priority
+  - Async execution. Fence
+- RenderSystem - a specialized system
+  - RenderPass
+  - ...
+
+### Pipeline
+
+- RenderPass
+- RenderCommand
+- Batching commands
+- Decorating commands
+- ...
+
 # Cleanroom Minecraft
 
 ## Features
