@@ -5,7 +5,7 @@ import com.cleanroommc.kirino.ecs.component.field.FieldDef;
 import java.util.Arrays;
 import java.util.List;
 
-public class StructDef {
+public final class StructDef {
     public final List<FieldDef> fields;
 
     public StructDef(FieldDef... fields) {

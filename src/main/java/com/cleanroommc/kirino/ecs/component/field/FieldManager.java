@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FieldManager {
-    private final StructManager structManager;
+    public final StructManager structManager;
 
     public FieldManager(StructManager structManager) {
         this.structManager = structManager;
@@ -24,11 +24,7 @@ public class FieldManager {
         return fieldDefMap.get(name);
     }
 
-    public FieldBuilder fieldBuilder() {
-        return new FieldBuilder();
-    }
-
     public FlattenedField flatten(FieldDef fieldDef) {
-        return null; //todo
+        return new FlattenedField(fieldDef, structManager);
     }
 }
