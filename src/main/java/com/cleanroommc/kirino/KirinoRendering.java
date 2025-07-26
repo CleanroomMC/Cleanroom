@@ -9,6 +9,7 @@ public class KirinoRendering {
     public static CleanECSRuntime ECS_RUNTIME;
 
     public static void init() {
+        LOGGER.info("Initialize Kirino Rendering");
         ECS_RUNTIME = new CleanECSRuntime();
     }
 }

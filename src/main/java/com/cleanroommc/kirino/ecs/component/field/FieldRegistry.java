@@ -15,12 +15,12 @@ public class FieldRegistry {
 
     private final Map<String, FieldDef> fieldDefMap = new HashMap<>();
 
-    public void registerField(String name, FieldDef fieldDef) {
+    public void registerFieldType(String name, FieldDef fieldDef) {
         fieldDefMap.put(name, fieldDef);
     }
 
     @Nullable
-    public FieldDef getField(String name) {
+    public FieldDef getFieldType(String name) {
         return fieldDefMap.get(name);
     }
 

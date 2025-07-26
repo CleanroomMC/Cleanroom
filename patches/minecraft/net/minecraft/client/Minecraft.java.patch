@@ -162,7 +162,7 @@
          }
      }
  
-@@ -446,24 +453,24 @@
+@@ -446,24 +453,23 @@
              this.field_71440_d = this.field_71474_y.field_92119_C;
          }
  
@@ -171,7 +171,6 @@
          this.func_175594_ao();
          this.func_175605_an();
          this.func_175609_am();
-+        KirinoRendering.LOGGER.info("Initialize Kirino Rendering");
 +        KirinoRendering.init();
          OpenGlHelper.func_77474_a();
          this.field_147124_at = new Framebuffer(this.field_71443_c, this.field_71440_d, true);
@@ -193,7 +192,7 @@
          this.field_152350_aA = new SkinManager(this.field_71446_o, new File(this.field_110446_Y, "skins"), this.field_152355_az);
          this.field_71469_aa = new AnvilSaveConverter(new File(this.field_71412_D, "saves"), this.field_184131_U);
          this.field_147127_av = new SoundHandler(this.field_110451_am, this.field_71474_y);
-@@ -483,10 +490,12 @@
+@@ -483,10 +489,12 @@
          this.field_110451_am.func_110542_a(new GrassColorReloadListener());
          this.field_110451_am.func_110542_a(new FoliageColorReloadListener());
          this.field_71417_B = new MouseHelper();
@@ -207,7 +206,7 @@
          GlStateManager.func_179126_j();
          GlStateManager.func_179143_c(515);
          GlStateManager.func_179141_d();
-@@ -496,19 +505,24 @@
+@@ -496,19 +504,24 @@
          GlStateManager.func_179096_D();
          GlStateManager.func_179128_n(5888);
          this.func_71361_d("Startup");
@@ -232,7 +231,7 @@
          this.field_71460_t = new EntityRenderer(this, this.field_110451_am);
          this.field_110451_am.func_110542_a(this.field_71460_t);
          this.field_175618_aM = new BlockRendererDispatcher(this.field_175617_aL.func_174954_c(), this.field_184127_aH);
-@@ -519,23 +533,27 @@
+@@ -519,23 +532,27 @@
          this.field_110451_am.func_110542_a(this.field_193995_ae);
          GlStateManager.func_179083_b(0, 0, this.field_71443_c, this.field_71440_d);
          this.field_71452_i = new ParticleManager(this.field_71441_e, this.field_71446_o);
@@ -263,7 +262,7 @@
          if (this.field_71474_y.field_74353_u && !this.field_71431_Q)
          {
              this.func_71352_k();
-@@ -545,7 +563,7 @@
+@@ -545,7 +562,7 @@
          {
              Display.setVSyncEnabled(this.field_71474_y.field_74352_v);
          }
@@ -272,7 +271,7 @@
          {
              this.field_71474_y.field_74352_v = false;
              this.field_71474_y.func_74303_b();
-@@ -556,16 +574,16 @@
+@@ -556,16 +573,16 @@
  
      public void func_193986_ar()
      {
@@ -299,7 +298,7 @@
  
          for (Item item : Item.field_150901_e)
          {
-@@ -573,19 +591,19 @@
+@@ -573,19 +590,19 @@
          }
  
          nonnulllist.forEach(searchtree::func_194043_a);
@@ -332,7 +331,7 @@
          RecipeBookClient.field_194087_f.forEach(searchtree1::func_194043_a);
          this.field_193995_ae.func_194009_a(SearchTreeManager.field_194011_a, searchtree);
          this.field_193995_ae.func_194009_a(SearchTreeManager.field_194012_b, searchtree1);
-@@ -600,34 +618,13 @@
+@@ -600,34 +617,13 @@
          this.field_110452_an.func_110504_a(new LanguageMetadataSectionSerializer(), LanguageMetadataSection.class);
      }
  
@@ -372,7 +371,7 @@
      }
  
      private void func_175605_an() throws LWJGLException
-@@ -710,9 +707,9 @@
+@@ -710,9 +706,9 @@
  
      private void func_71389_H()
      {
@@ -383,7 +382,7 @@
              public void run()
              {
                  while (Minecraft.this.field_71425_J)
-@@ -721,13 +718,15 @@
+@@ -721,13 +717,15 @@
                      {
                          Thread.sleep(2147483647L);
                      }
@@ -400,7 +399,7 @@
          thread.start();
      }
  
-@@ -740,24 +739,26 @@
+@@ -740,24 +738,26 @@
      public void func_71377_b(CrashReport p_71377_1_)
      {
          File file1 = new File(func_71410_x().field_71412_D, "crash-reports");
@@ -431,7 +430,7 @@
      }
  
      public boolean func_152349_b()
-@@ -765,6 +766,7 @@
+@@ -765,6 +765,7 @@
          return this.field_135017_as.func_135042_a() || this.field_71474_y.field_151455_aw;
      }
  
@@ -439,7 +438,7 @@
      public void func_110436_a()
      {
          List<IResourcePack> list = Lists.newArrayList(this.field_110449_ao);
-@@ -811,35 +813,35 @@
+@@ -811,35 +812,35 @@
      private ByteBuffer func_152340_a(InputStream p_152340_1_) throws IOException
      {
          BufferedImage bufferedimage = ImageIO.read(p_152340_1_);
@@ -482,7 +481,7 @@
                      {
                          flag = false;
                          break;
-@@ -848,16 +850,25 @@
+@@ -848,16 +849,25 @@
  
                  if (!flag)
                  {
@@ -514,7 +513,7 @@
                  }
              }
          }
-@@ -875,7 +886,7 @@
+@@ -875,7 +885,7 @@
          framebuffer.func_147610_a(false);
          GlStateManager.func_179128_n(5889);
          GlStateManager.func_179096_D();
@@ -523,7 +522,7 @@
          GlStateManager.func_179128_n(5888);
          GlStateManager.func_179096_D();
          GlStateManager.func_179109_b(0.0F, 0.0F, -2000.0F);
-@@ -903,13 +914,10 @@
+@@ -903,13 +913,10 @@
          Tessellator tessellator = Tessellator.func_178181_a();
          BufferBuilder bufferbuilder = tessellator.func_178180_c();
          bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181709_i);
@@ -541,7 +540,7 @@
          tessellator.func_78381_a();
          GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
          int j = 256;
-@@ -924,39 +932,16 @@
+@@ -924,39 +931,16 @@
          this.func_175601_h();
      }
  
@@ -586,7 +585,7 @@
          Tessellator.func_178181_a().func_78381_a();
      }
  
-@@ -967,18 +952,24 @@
+@@ -967,18 +951,24 @@
  
      public void func_147108_a(@Nullable GuiScreen p_147108_1_)
      {
@@ -617,7 +616,7 @@
          }
  
          if (p_147108_1_ instanceof GuiMainMenu || p_147108_1_ instanceof GuiMultiplayer)
-@@ -996,10 +987,12 @@
+@@ -996,10 +986,12 @@
  
              while (Mouse.next())
              {
@@ -630,7 +629,7 @@
              }
  
              ScaledResolution scaledresolution = new ScaledResolution(this);
-@@ -1023,8 +1016,8 @@
+@@ -1023,8 +1015,8 @@
          {
              String s = GLU.gluErrorString(i);
              field_147123_G.error("########## GL ERROR ##########");
@@ -641,7 +640,7 @@
          }
      }
  
-@@ -1036,10 +1029,11 @@
+@@ -1036,10 +1028,11 @@
  
              try
              {
@@ -655,7 +654,7 @@
              }
  
              this.field_147127_av.func_147685_d();
-@@ -1082,7 +1076,7 @@
+@@ -1082,7 +1075,7 @@
          long l = System.nanoTime();
          this.field_71424_I.func_76320_a("tick");
  
@@ -664,7 +663,7 @@
          {
              this.func_71407_l();
          }
-@@ -1091,7 +1085,7 @@
+@@ -1091,7 +1084,7 @@
          long i1 = System.nanoTime() - l;
          this.func_71361_d("Pre render");
          this.field_71424_I.func_76318_c("sound");
@@ -673,7 +672,7 @@
          this.field_71424_I.func_76319_b();
          this.field_71424_I.func_76320_a("render");
          GlStateManager.func_179094_E();
-@@ -1103,11 +1097,13 @@
+@@ -1103,11 +1096,13 @@
  
          if (!this.field_71454_w)
          {
@@ -687,7 +686,7 @@
          }
  
          this.field_71424_I.func_76319_b();
-@@ -1140,7 +1136,7 @@
+@@ -1140,7 +1135,7 @@
          this.func_175601_h();
          Thread.yield();
          this.func_71361_d("Post render");
@@ -696,7 +695,7 @@
          boolean flag = this.func_71356_B() && this.field_71462_r != null && this.field_71462_r.func_73868_f() && !this.field_71437_Z.func_71344_c();
  
          if (this.field_71445_n != flag)
-@@ -1164,17 +1160,7 @@
+@@ -1164,17 +1159,7 @@
          while (func_71386_F() >= this.field_71419_L + 1000L)
          {
              field_71470_ab = this.field_71420_M;
@@ -715,7 +714,7 @@
              RenderChunk.field_178592_a = 0;
              this.field_71419_L += 1000L;
              this.field_71420_M = 0;
-@@ -1247,17 +1233,19 @@
+@@ -1247,17 +1232,19 @@
              field_71444_a = new byte[0];
              this.field_71438_f.func_72728_f();
          }
@@ -738,7 +737,7 @@
          }
  
          System.gc();
-@@ -1285,16 +1273,16 @@
+@@ -1285,16 +1272,16 @@
              }
              else
              {
@@ -758,7 +757,7 @@
                  }
              }
          }
-@@ -1310,7 +1298,7 @@
+@@ -1310,7 +1297,7 @@
              GlStateManager.func_179128_n(5889);
              GlStateManager.func_179142_g();
              GlStateManager.func_179096_D();
@@ -767,7 +766,7 @@
              GlStateManager.func_179128_n(5888);
              GlStateManager.func_179096_D();
              GlStateManager.func_179109_b(0.0F, 0.0F, -2000.0F);
-@@ -1323,45 +1311,43 @@
+@@ -1323,45 +1310,43 @@
              int k = this.field_71440_d - 320;
              GlStateManager.func_179147_l();
              bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181706_f);
@@ -831,7 +830,7 @@
                  }
  
                  tessellator.func_78381_a();
-@@ -1391,7 +1377,7 @@
+@@ -1391,7 +1376,7 @@
              s = decimalformat.format(profiler$result.field_76330_b) + "%";
              this.field_71466_p.func_175063_a(s, (float)(j + 160 - this.field_71466_p.func_78256_a(s)), (float)(k - 80 - 16), 16777215);
  
@@ -840,7 +839,7 @@
              {
                  Profiler.Result profiler$result2 = list.get(k2);
                  StringBuilder stringbuilder = new StringBuilder();
-@@ -1408,11 +1394,9 @@
+@@ -1408,11 +1393,9 @@
                  String s1 = stringbuilder.append(profiler$result2.field_76331_c).toString();
                  this.field_71466_p.func_175063_a(s1, (float)(j - 160), (float)(k + 80 + k2 * 8 + 20), profiler$result2.func_76329_a());
                  s1 = decimalformat.format(profiler$result2.field_76332_a) + "%";
@@ -854,7 +853,7 @@
              }
          }
      }
-@@ -1435,7 +1419,7 @@
+@@ -1435,7 +1418,7 @@
  
                  this.field_71415_G = true;
                  this.field_71417_B.func_74372_a();
@@ -863,7 +862,7 @@
                  this.field_71429_W = 10000;
              }
          }
-@@ -1476,10 +1460,9 @@
+@@ -1476,10 +1459,9 @@
              {
                  BlockPos blockpos = this.field_71476_x.func_178782_a();
  
@@ -876,7 +875,7 @@
                      this.field_71439_g.func_184609_a(EnumHand.MAIN_HAND);
                  }
              }
-@@ -1513,7 +1496,7 @@
+@@ -1513,7 +1495,7 @@
                      case BLOCK:
                          BlockPos blockpos = this.field_71476_x.func_178782_a();
  
@@ -885,7 +884,7 @@
                          {
                              this.field_71442_b.func_180511_b(blockpos, this.field_71476_x.field_178784_b);
                              break;
-@@ -1527,6 +1510,7 @@
+@@ -1527,6 +1509,7 @@
                          }
  
                          this.field_71439_g.func_184821_cY();
@@ -893,7 +892,7 @@
                  }
  
                  this.field_71439_g.func_184609_a(EnumHand.MAIN_HAND);
-@@ -1558,8 +1542,7 @@
+@@ -1558,8 +1541,7 @@
                          {
                              case ENTITY:
  
@@ -903,7 +902,7 @@
                                  {
                                      return;
                                  }
-@@ -1576,15 +1559,7 @@
+@@ -1576,15 +1558,7 @@
                                  if (this.field_71441_e.func_180495_p(blockpos).func_185904_a() != Material.field_151579_a)
                                  {
                                      int i = itemstack.func_190916_E();
@@ -920,7 +919,7 @@
  
                                      if (enumactionresult == EnumActionResult.SUCCESS)
                                      {
-@@ -1601,8 +1576,8 @@
+@@ -1601,8 +1575,8 @@
                          }
                      }
  
@@ -931,7 +930,7 @@
                      {
                          this.field_71460_t.field_78516_c.func_187460_a(enumhand);
                          return;
-@@ -1614,6 +1589,10 @@
+@@ -1614,6 +1588,10 @@
  
      public void func_71352_k()
      {
@@ -942,7 +941,7 @@
          try
          {
              this.field_71431_Q = !this.field_71431_Q;
-@@ -1662,6 +1641,11 @@
+@@ -1662,6 +1640,11 @@
              }
  
              Display.setFullscreen(this.field_71431_Q);
@@ -954,7 +953,7 @@
              Display.setVSyncEnabled(this.field_71474_y.field_74352_v);
              this.func_175601_h();
          }
-@@ -1705,8 +1689,10 @@
+@@ -1705,8 +1688,10 @@
      {
          if (this.field_71467_ac > 0)
          {
@@ -966,7 +965,7 @@
  
          this.field_71424_I.func_76320_a("gui");
  
-@@ -1736,7 +1722,7 @@
+@@ -1736,7 +1721,7 @@
          {
              if (this.field_71439_g.func_110143_aJ() <= 0.0F && !(this.field_71462_r instanceof GuiGameOver))
              {
@@ -975,7 +974,7 @@
              }
              else if (this.field_71439_g.func_70608_bn() && this.field_71441_e != null)
              {
-@@ -1745,7 +1731,7 @@
+@@ -1745,7 +1730,7 @@
          }
          else if (this.field_71462_r != null && this.field_71462_r instanceof GuiSleepMP && !this.field_71439_g.func_70608_bn())
          {
@@ -984,7 +983,7 @@
          }
  
          if (this.field_71462_r != null)
-@@ -1802,7 +1788,7 @@
+@@ -1802,7 +1787,7 @@
  
              if (this.field_71429_W > 0)
              {
@@ -993,7 +992,7 @@
              }
  
              this.field_71424_I.func_76318_c("keyboard");
-@@ -1813,7 +1799,7 @@
+@@ -1813,7 +1798,7 @@
          {
              if (this.field_71439_g != null)
              {
@@ -1002,7 +1001,7 @@
  
                  if (this.field_71457_ai == 30)
                  {
-@@ -1892,12 +1878,7 @@
+@@ -1892,12 +1877,7 @@
  
              if (!this.field_71445_n && this.field_71441_e != null)
              {
@@ -1016,7 +1015,7 @@
              }
  
              this.field_71424_I.func_76318_c("particles");
-@@ -1914,6 +1895,7 @@
+@@ -1914,6 +1894,7 @@
          }
  
          this.field_71424_I.func_76319_b();
@@ -1024,7 +1023,7 @@
          this.field_71423_H = func_71386_F();
      }
  
-@@ -1992,7 +1974,7 @@
+@@ -1992,7 +1973,7 @@
                          this.func_71383_b(0);
                      }
  
@@ -1033,7 +1032,7 @@
                      {
                          if (i == 2 + j)
                          {
-@@ -2019,6 +2001,7 @@
+@@ -2019,6 +2000,7 @@
                      }
                  }
              }
@@ -1041,7 +1040,7 @@
          }
  
          this.func_184117_aA();
-@@ -2095,16 +2078,16 @@
+@@ -2095,16 +2077,16 @@
          {
              this.func_190521_a("debug.help.message");
              GuiNewChat guinewchat = this.field_71456_v.func_146158_b();
@@ -1068,7 +1067,7 @@
              return true;
          }
          else if (p_184122_1_ == 20)
-@@ -2121,9 +2104,9 @@
+@@ -2121,9 +2103,9 @@
  
      private void func_184117_aA()
      {
@@ -1080,7 +1079,7 @@
  
              if (this.field_71474_y.field_74320_O > 2)
              {
-@@ -2136,10 +2119,8 @@
+@@ -2136,10 +2118,8 @@
              }
              else if (this.field_71474_y.field_74320_O == 1)
              {
@@ -1092,7 +1091,7 @@
          }
  
          while (this.field_71474_y.field_151458_ab.func_151468_f())
-@@ -2147,7 +2128,7 @@
+@@ -2147,7 +2127,7 @@
              this.field_71474_y.field_74326_T = !this.field_71474_y.field_74326_T;
          }
  
@@ -1101,7 +1100,7 @@
          {
              boolean flag = this.field_71474_y.field_193629_ap.func_151470_d();
              boolean flag1 = this.field_71474_y.field_193630_aq.func_151470_d();
-@@ -2225,16 +2206,27 @@
+@@ -2225,16 +2205,27 @@
                  this.field_71442_b.func_78766_c(this.field_71439_g);
              }
  
@@ -1139,7 +1138,7 @@
              }
          }
          else
-@@ -2267,6 +2259,8 @@
+@@ -2267,6 +2258,8 @@
      {
          while (Mouse.next())
          {
@@ -1148,7 +1147,7 @@
              int i = Mouse.getEventButton();
              KeyBinding.func_74510_a(i - 100, Mouse.getEventButtonState());
  
-@@ -2322,24 +2316,19 @@
+@@ -2322,24 +2315,19 @@
                      this.field_71462_r.func_146274_d();
                  }
              }
@@ -1177,7 +1176,7 @@
          System.gc();
          ISaveHandler isavehandler = this.field_71469_aa.func_75804_a(p_71371_1_, false);
          WorldInfo worldinfo = isavehandler.func_75757_d();
-@@ -2360,15 +2349,11 @@
+@@ -2360,15 +2348,11 @@
              YggdrasilAuthenticationService yggdrasilauthenticationservice = new YggdrasilAuthenticationService(this.field_110453_aa, UUID.randomUUID().toString());
              MinecraftSessionService minecraftsessionservice = yggdrasilauthenticationservice.createMinecraftSessionService();
              GameProfileRepository gameprofilerepository = yggdrasilauthenticationservice.createProfileRepository();
@@ -1195,7 +1194,7 @@
              this.field_71437_Z.func_71256_s();
              this.field_71455_al = true;
          }
-@@ -2385,6 +2370,12 @@
+@@ -2385,6 +2369,12 @@
  
          while (!this.field_71437_Z.func_71200_ad())
          {
@@ -1208,7 +1207,7 @@
              String s = this.field_71437_Z.func_71195_b_();
  
              if (s != null)
-@@ -2400,17 +2391,24 @@
+@@ -2400,17 +2390,24 @@
              {
                  Thread.sleep(200L);
              }
@@ -1237,7 +1236,7 @@
          this.field_71453_ak = networkmanager;
      }
  
-@@ -2421,6 +2419,8 @@
+@@ -2421,6 +2418,8 @@
  
      public void func_71353_a(@Nullable WorldClient p_71353_1_, String p_71353_2_)
      {
@@ -1246,7 +1245,7 @@
          if (p_71353_1_ == null)
          {
              NetHandlerPlayClient nethandlerplayclient = this.func_147114_u();
-@@ -2433,6 +2433,18 @@
+@@ -2433,6 +2432,18 @@
              if (this.field_71437_Z != null && this.field_71437_Z.func_175578_N())
              {
                  this.field_71437_Z.func_71263_m();
@@ -1265,7 +1264,7 @@
              }
  
              this.field_71437_Z = null;
-@@ -2454,8 +2466,9 @@
+@@ -2454,8 +2465,9 @@
          {
              this.field_110448_aq.func_148529_f();
              this.field_71456_v.func_181029_i();
@@ -1276,7 +1275,7 @@
          }
  
          this.field_147127_av.func_147690_c();
-@@ -2472,6 +2485,7 @@
+@@ -2472,6 +2484,7 @@
          }
  
          TileEntityRendererDispatcher.field_147556_a.func_147543_a(p_71353_1_);
@@ -1284,7 +1283,7 @@
  
          if (p_71353_1_ != null)
          {
-@@ -2480,9 +2494,7 @@
+@@ -2480,9 +2493,7 @@
                  AuthenticationService authenticationservice = new YggdrasilAuthenticationService(this.field_110453_aa, UUID.randomUUID().toString());
                  MinecraftSessionService minecraftsessionservice = authenticationservice.createMinecraftSessionService();
                  GameProfileRepository gameprofilerepository = authenticationservice.createProfileRepository();
@@ -1295,7 +1294,7 @@
                  TileEntitySkull.func_184293_a(playerprofilecache);
                  TileEntitySkull.func_184294_a(minecraftsessionservice);
                  PlayerProfileCache.func_187320_a(false);
-@@ -2526,13 +2538,9 @@
+@@ -2526,13 +2537,9 @@
  
          this.field_175622_Z = null;
          EntityPlayerSP entityplayersp = this.field_71439_g;
@@ -1311,7 +1310,7 @@
          this.field_71439_g.field_71093_bK = p_71354_1_;
          this.field_175622_Z = this.field_71439_g;
          this.field_71439_g.func_70065_x();
-@@ -2546,7 +2554,7 @@
+@@ -2546,7 +2553,7 @@
  
          if (this.field_71462_r instanceof GuiGameOver)
          {
@@ -1320,7 +1319,7 @@
          }
      }
  
-@@ -2580,159 +2588,8 @@
+@@ -2580,159 +2587,8 @@
      {
          if (this.field_71476_x != null && this.field_71476_x.field_72313_a != RayTraceResult.Type.MISS)
          {
@@ -1482,7 +1481,7 @@
          }
      }
  
-@@ -2780,7 +2637,14 @@
+@@ -2780,7 +2636,14 @@
          {
              public String call()
              {
@@ -1498,7 +1497,7 @@
              }
          });
          p_71396_1_.func_85056_g().func_189529_a("GL Caps", new ICrashReportDetail<String>()
-@@ -2797,10 +2661,7 @@
+@@ -2797,10 +2660,7 @@
                  return Minecraft.this.field_71474_y.field_178881_t ? "Yes" : "No";
              }
          });
@@ -1510,7 +1509,7 @@
          {
              public String call() throws Exception
              {
-@@ -2812,13 +2673,10 @@
+@@ -2812,13 +2672,10 @@
                  }
                  else
                  {
@@ -1526,7 +1525,7 @@
          p_71396_1_.func_85056_g().func_189529_a("Type", new ICrashReportDetail<String>()
          {
              public String call() throws Exception
-@@ -2885,11 +2743,11 @@
+@@ -2885,11 +2742,11 @@
          return field_71432_P;
      }
  
@@ -1539,7 +1538,7 @@
              public void run()
              {
                  Minecraft.this.func_110436_a();
-@@ -2897,21 +2755,20 @@
+@@ -2897,21 +2754,20 @@
          });
      }
  
@@ -1567,7 +1566,7 @@
          int i = 0;
  
          for (ResourcePackRepository.Entry resourcepackrepository$entry : this.field_110448_aq.func_110613_c())
-@@ -2941,7 +2798,6 @@
+@@ -2941,7 +2797,6 @@
          }
      }
  
@@ -1575,7 +1574,7 @@
      public void func_70001_b(Snooper p_70001_1_)
      {
          p_70001_1_.func_152767_b("opengl_version", GlStateManager.func_187416_u(7938));
-@@ -2949,110 +2805,110 @@
+@@ -2949,110 +2804,110 @@
          p_70001_1_.func_152767_b("client_brand", ClientBrandRetriever.getClientModName());
          p_70001_1_.func_152767_b("launched_version", this.field_110447_Z);
          ContextCapabilities contextcapabilities = GLContext.getCapabilities();
@@ -1790,7 +1789,7 @@
          GameProfile gameprofile = this.field_71449_j.func_148256_e();
  
          if (gameprofile != null && gameprofile.getId() != null)
-@@ -3063,21 +2919,10 @@
+@@ -3063,21 +2918,10 @@
  
      public static int func_71369_N()
      {
@@ -1814,7 +1813,7 @@
      public boolean func_70002_Q()
      {
          return this.field_71474_y.field_74355_t;
-@@ -3207,6 +3052,9 @@
+@@ -3207,6 +3051,9 @@
          }
          else if (this.field_71439_g != null)
          {
@@ -1824,7 +1823,7 @@
              if (this.field_71439_g.field_70170_p.field_73011_w instanceof WorldProviderHell)
              {
                  return MusicTicker.MusicType.NETHER;
-@@ -3217,9 +3065,7 @@
+@@ -3217,9 +3064,7 @@
              }
              else
              {
@@ -1835,7 +1834,7 @@
              }
          }
          else
-@@ -3238,19 +3084,15 @@
+@@ -3238,19 +3083,15 @@
              {
                  if (Keyboard.getEventKeyState())
                  {
@@ -1859,7 +1858,7 @@
                      {
                          this.field_71474_y.func_74306_a(GameSettings.Options.NARRATOR, 1);
  
-@@ -3260,6 +3102,7 @@
+@@ -3260,6 +3101,7 @@
                          }
                      }
                  }
@@ -1867,7 +1866,7 @@
              }
          }
      }
-@@ -3294,16 +3137,16 @@
+@@ -3294,16 +3136,16 @@
          {
              try
              {
@@ -1887,7 +1886,7 @@
  
              synchronized (this.field_152351_aB)
              {
-@@ -3313,14 +3156,12 @@
+@@ -3313,14 +3155,12 @@
          }
      }
  
@@ -1903,7 +1902,7 @@
      public boolean func_152345_ab()
      {
          return Thread.currentThread() == this.field_152352_aC;
-@@ -3348,7 +3189,7 @@
+@@ -3348,7 +3188,7 @@
  
      public <T> ISearchTree<T> func_193987_a(SearchTreeManager.Key<T> p_193987_1_)
      {
@@ -1912,7 +1911,7 @@
      }
  
      public static int func_175610_ah()
-@@ -3391,6 +3232,12 @@
+@@ -3391,6 +3231,12 @@
          return this.field_184127_aH;
      }
  
@@ -1925,7 +1924,7 @@
      public boolean func_189648_am()
      {
          return this.field_71439_g != null && this.field_71439_g.func_175140_cp() || this.field_71474_y.field_178879_v;
-@@ -3404,5 +3251,10 @@
+@@ -3404,5 +3250,10 @@
      public Tutorial func_193032_ao()
      {
          return this.field_193035_aW;

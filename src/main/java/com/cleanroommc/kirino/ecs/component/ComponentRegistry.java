@@ -22,7 +22,7 @@ public class ComponentRegistry {
     public void register(String name, String... fieldTypeNames) {
         List<FieldDef> fields = new ArrayList<>();
         for (String fieldTypeName : fieldTypeNames) {
-            FieldDef field = fieldRegistry.getField(fieldTypeName);
+            FieldDef field = fieldRegistry.getFieldType(fieldTypeName);
             if (field == null) {
                 throw new IllegalStateException("Field type " + fieldTypeName + " doesn't exist.");
             }
