@@ -5,7 +5,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StructManager {
+public class StructRegistry {
     private final Map<String, StructDef> structDefMap = new HashMap<>();
 
     public void registerStruct(String name, StructDef structDef) {

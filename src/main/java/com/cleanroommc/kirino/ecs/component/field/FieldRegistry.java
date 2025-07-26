@@ -1,16 +1,16 @@
 package com.cleanroommc.kirino.ecs.component.field;
 
-import com.cleanroommc.kirino.ecs.component.field.struct.StructManager;
+import com.cleanroommc.kirino.ecs.component.field.struct.StructRegistry;
 import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class FieldManager {
-    public final StructManager structManager;
+public class FieldRegistry {
+    public final StructRegistry structRegistry;
 
-    public FieldManager(StructManager structManager) {
-        this.structManager = structManager;
+    public FieldRegistry(StructRegistry structRegistry) {
+        this.structRegistry = structRegistry;
     }
 
     private final Map<String, FieldDef> fieldDefMap = new HashMap<>();
@@ -25,6 +25,6 @@ public class FieldManager {
     }
 
     public FlattenedField flatten(FieldDef fieldDef) {
-        return new FlattenedField(fieldDef, structManager);
+        return new FlattenedField(fieldDef, structRegistry);
     }
 }

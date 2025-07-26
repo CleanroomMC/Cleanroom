@@ -52,14 +52,20 @@
 
 - Overall ECS structure
   - CleanWorld, CleanEntity, CleanComponent, CleanSystem
-- Component data
-  - Off-heap component data pool
-- Job system to coordinate different systems
-  - Execution priority
-  - Async execution. Fence
-- RenderSystem - a specialized system
-  - RenderPass
-  - ...
+- Entity
+- Component
+  - Component type
+    - Reflection scan
+- System
+  - RenderSystem - a specialized system
+    - RenderPass
+    - ...
+- Storage
+  - Archetype
+- Runtime
+  - Job system to coordinate different systems
+    - Execution priority
+    - Async execution. Fence
 
 ### Pipeline
 
