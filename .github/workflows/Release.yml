@@ -9,7 +9,6 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
     permissions:
       contents: write
     steps:
@@ -17,6 +16,14 @@ jobs:
         with:
           fetch-tags: true
           fetch-depth: 0
+
+      - name: Get branch name
+        id: branch-names
+        uses: tj-actions/branch-names@v9
+
+      - name: Exit if not on main branch
+        if: ${{ steps.branch-names.outputs.current_branch }} != 'main'
+        run: exit -1
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4.7.1

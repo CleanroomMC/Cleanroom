@@ -49,7 +49,7 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Get branch names.
+      - name: Get branch name
         id: branch-names
         uses: tj-actions/branch-names@v9
 
