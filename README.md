@@ -1,6 +1,9 @@
 # Kirino Rendering
 
+## Design Principles
 [Proposal](https://github.com/CleanroomMC/Cleanroom/discussions/405)
+- As independent of Minecraft as possible
+- Data/ID oriented
 
 ## MVP Goals
 ### GL Abstraction

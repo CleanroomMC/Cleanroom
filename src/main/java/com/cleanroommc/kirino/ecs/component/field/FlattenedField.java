@@ -14,7 +14,7 @@ public final class FlattenedField {
         if (fieldDef.fieldKind == FieldKind.SCALAR)
             return FlattenedScalarType.flatten(fieldDef.scalarType);
         else if (fieldDef.fieldKind == FieldKind.STRUCT) {
-            StructDef structDef = structRegistry.getStruct(fieldDef.structTypeName);
+            StructDef structDef = structRegistry.getStructType(fieldDef.structTypeName);
             if (structDef == null) {
                 throw new IllegalStateException("Struct type " + fieldDef.structTypeName + " doesn't exist.");
             }

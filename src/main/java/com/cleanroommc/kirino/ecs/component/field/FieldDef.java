@@ -26,11 +26,11 @@ public final class FieldDef {
             return "FieldDef{ scalarType=" + scalarType + " }";
         }
         else if (fieldKind == FieldKind.STRUCT) {
-            StructDef structDef = structRegistry.getStruct(structTypeName);
+            StructDef structDef = structRegistry.getStructType(structTypeName);
             if (structDef == null) {
                 throw new IllegalStateException("Struct type " + structTypeName + " doesn't exist.");
             }
-            return "FieldDef{ struct=" + structDef.toString(structRegistry) + " }";
+            return "FieldDef{ struct=(" + structTypeName + ")" + structDef.toString(structRegistry) + " }";
         }
         return "";
     }
