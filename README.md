@@ -117,7 +117,7 @@
 - **WARNING:** Only MultiMC-based launchers are officially supported. This is because of the limit on removing vanilla libraries in other launchers.
 - **Remember to install [Fugue](https://www.curseforge.com/minecraft/mc-mods/fugue)!**
 - **And [Scalar](https://www.curseforge.com/minecraft/mc-mods/scalar-legacy)!**
-- If you were told to use **action builds** (aka bleeding edge), here: [Cleanroom jar](https://github.com/CleanroomMC/Cleanroom/actions), [Cleanroom MMC zip](https://github.com/CleanroomMC/CleanroomMMC/actions/), [Fugue](https://github.com/CleanroomMC/Fugue/actions)
+- If you were told to use **action builds** (aka bleeding edge), here: [Cleanroom](https://github.com/CleanroomMC/Cleanroom/actions), [Fugue](https://github.com/CleanroomMC/Fugue/actions)
 - You need to log in your GitHub account to download action artifacts. 
 
 ## Pack-making with Cleanroom
