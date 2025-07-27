@@ -65,7 +65,9 @@ jobs:
         run: cp script/MMC-Builder/build/CleanroomMMC.zip ./projects/cleanroom/build/libs/Cleanroom-MMC-instance-${{ env.CLEANROOM_VERSION }}.zip
 
       - name: Remove userdev jars
-        run: rm projects/cleanroom/build/libs/*userdev*.jar
+        run: |
+          rm projects/cleanroom/build/libs/cleanroom-${{ env.CLEANROOM_VERSION }}-userdev.jar
+          rm projects/cleanroom/build/libs/cleanroom-${{ env.CLEANROOM_VERSION }}-userdev-temp.jar
 
       - uses: ncipollo/release-action@v1.14.0
         with:

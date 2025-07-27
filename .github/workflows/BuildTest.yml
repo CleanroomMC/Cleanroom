@@ -83,12 +83,6 @@ jobs:
       - name: Copy MMC Pack
         run: cp script/MMC-Builder/build/CleanroomMMC.zip ./projects/cleanroom/build/libs/Cleanroom-MMC-instance-${{ env.CLEANROOM_VERSION }}.zip
 
-      - name: Remove userdev jars
-        run: |
-          rm projects/cleanroom/build/libs/cleanroom-${{ env.CLEANROOM_VERSION }}-userdev.jar
-          rm projects/cleanroom/build/libs/cleanroom-${{ env.CLEANROOM_VERSION }}-userdev-temp.jar
-        
-
       - name: Upload Forge Universal
         uses: actions/upload-artifact@v4.3.3
         with:
