@@ -49,18 +49,7 @@ jobs:
 
       - name: Get branch names.
         id: branch-names
-        uses: tj-actions/branch-names@v8
-
-      # add more feat here if required
-      - name: Gather build info
-        id: vars
-        run: |
-          BRANCH_FEAT=$(echo "${{ steps.branch-names.outputs.current_branch }}" | cut -d'/' -f1 | awk '{print tolower($0)}')
-          if [ "$BRANCH_FEAT" = "experimental" ]; then
-            echo "BUILD_TYPE=Experimental" >> $GITHUB_OUTPUT
-          else
-            echo "BUILD_TYPE=Stable" >> $GITHUB_OUTPUT
-          fi
+        uses: tj-actions/branch-names@v9
 
       - name: Fix Gradle permission
         run: chmod +x ./gradlew
@@ -76,25 +65,27 @@ jobs:
       - name: Get version
         run: echo "CLEANROOM_VERSION=$(cat version.txt)" >> $GITHUB_ENV
 
+      - name: setup python
+        uses: actions/setup-python@v5.3.0
+        with:
+          python-version: '3.13'
+
+      - name: Generate MMC Pack
+        run: python main.py
+        working-directory: ./script/MMC-Builder
+        env:
+          PATH_TO_EXIST_INSTALLER: ../../projects/cleanroom/build/libs/cleanroom-${{ env.CLEANROOM_VERSION }}-installer.jar
+          BRANCH: ${{ steps.branch-names.outputs.current_branch }}
+          VERSION: ${{ env.CLEANROOM_VERSION }}
+
+      - name: Copy MMC Pack
+        run: cp script/MMC-Builder/build/CleanroomMMC.zip ./projects/cleanroom/build/libs/Cleanroom-MMC-instance-${{ env.CLEANROOM_VERSION }}.zip
+
+      - name: Remove userdev jars
+        run: rm projects/cleanroom/build/libs/*userdev*.jar
+
       - name: Upload Forge Universal
         uses: actions/upload-artifact@v4.3.3
         with:
-          name: universal-${{ env.CLEANROOM_VERSION }}
-          path: projects/cleanroom/build/libs/*-universal.jar
-
-      - name: Upload Forge Installer
-        id: upload-job
-        uses: actions/upload-artifact@v4.3.3
-        with:
-          name: installer-${{ env.CLEANROOM_VERSION }}
-          path: projects/cleanroom/build/libs/*-installer.jar
-          if-no-files-found: error
-
-      - name: Repository Dispatch
-        if: ${{ success() && github.event_name != 'pull_request' && github.repository == 'CleanroomMC/Cleanroom'}}
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.CLEANROOMMC_DISPATCH_TOKEN }} # require PAT :shrug:
-          repository: CleanroomMC/CleanroomMMC
-          event-type: cleanroom_upload_artifact
-          client-payload: '{"commit_hash": "${{ github.sha }}", "run_job_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}", "branch": "${{ steps.branch-names.outputs.current_branch }}", "build_type": "${{ inputs.environment || steps.vars.outputs.BUILD_TYPE }}", "actor": "${{ github.actor }}", "version": "${{ env.CLEANROOM_VERSION }}"}'
+          name: cleanroom-artifacts-${{ env.CLEANROOM_VERSION }}
+          path: projects/cleanroom/build/libs/*

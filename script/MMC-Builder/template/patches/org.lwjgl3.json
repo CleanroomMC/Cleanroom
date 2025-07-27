@@ -1,0 +1,10 @@
+{
+    "formatVersion": 1,
+    "libraries": [],
+    "name": "LWJGL 3",
+    "releaseTime": "2017-04-05T13:58:01+00:00",
+    "type": "release",
+    "uid": "org.lwjgl3",
+    "version": "0",
+    "volatile": true
+}
