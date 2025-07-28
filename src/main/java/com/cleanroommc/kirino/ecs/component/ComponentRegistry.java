@@ -1,15 +1,13 @@
 package com.cleanroommc.kirino.ecs.component;
 
-import com.cleanroommc.kirino.ecs.component.field.FieldDef;
-import com.cleanroommc.kirino.ecs.component.field.FieldRegistry;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldDef;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldRegistry;
+import com.cleanroommc.kirino.ecs.component.schema.meta.MemberDescriptor;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ComponentRegistry {
     private final FieldRegistry fieldRegistry;
@@ -20,10 +18,34 @@ public class ComponentRegistry {
 
     private final BiMap<String, Class<? extends ICleanComponent>> comNameClassMapping = HashBiMap.create();
     private final Map<String, ComponentDesc> componentDescMap = new HashMap<>();
-    private final Map<String, ComponentDescRuntime> componentDescRuntimeMap = new HashMap<>();
+    private final Map<String, ComponentDescFlattened> componentDescFlattenedMap = new HashMap<>();
+    private final Map<String, MemberDescriptor> classMemberDescMap = new HashMap<>();
 
-    public void register(String name, Class<? extends ICleanComponent> clazz, String... fieldTypeNames) {
+    /**
+     * This method is the entry point to register components.
+     * <code>memberDescriptor.fieldNames</code> must match <code>fieldTypeNames</code> one by one.
+     *
+     * @param name The registry name of the component
+     * @param clazz The corresponding class of the component
+     * @param memberDescriptor The metadata of the component class
+     * @param fieldTypeNames The field registry names of the component
+     */
+    public void register(String name, Class<? extends ICleanComponent> clazz, MemberDescriptor memberDescriptor, String... fieldTypeNames) {
+        register(name, clazz, memberDescriptor, Arrays.asList(fieldTypeNames));
+    }
+
+    /**
+     * This method is the entry point to register components.
+     * <code>memberDescriptor.fieldNames</code> must match <code>fieldTypeNames</code> one by one.
+     *
+     * @param name The registry name of the component
+     * @param clazz The corresponding class of the component
+     * @param memberDescriptor The metadata of the component class
+     * @param fieldTypeNames The field registry names of the component
+     */
+    public void register(String name, Class<? extends ICleanComponent> clazz, MemberDescriptor memberDescriptor, List<String> fieldTypeNames) {
         comNameClassMapping.put(name, clazz);
+        classMemberDescMap.put(name, memberDescriptor);
 
         List<FieldDef> fields = new ArrayList<>();
         for (String fieldTypeName : fieldTypeNames) {
@@ -34,9 +56,9 @@ public class ComponentRegistry {
             fields.add(field);
         }
 
-        ComponentDesc componentDesc = new ComponentDesc(fields);
+        ComponentDesc componentDesc = new ComponentDesc(name, fields);
         componentDescMap.put(name, componentDesc);
-        componentDescRuntimeMap.put(name, new ComponentDescRuntime(name, componentDesc, fieldRegistry));
+        componentDescFlattenedMap.put(name, new ComponentDescFlattened(componentDesc, fieldRegistry));
     }
 
     public boolean componentExists(Class<? extends ICleanComponent> clazz) {
@@ -45,6 +67,11 @@ public class ComponentRegistry {
 
     public boolean componentExists(String name) {
         return comNameClassMapping.containsKey(name);
+    }
+
+    @Nullable
+    public MemberDescriptor getClassMemberDescriptor(String name) {
+        return classMemberDescMap.get(name);
     }
 
     @Nullable
@@ -63,8 +90,8 @@ public class ComponentRegistry {
     }
 
     @Nullable
-    public ComponentDescRuntime getComponentDescRuntime(String name) {
-        return componentDescRuntimeMap.get(name);
+    public ComponentDescFlattened getComponentDescFlattened(String name) {
+        return componentDescFlattenedMap.get(name);
     }
 
     public String serializeComponentDesc(ComponentDesc componentDesc) {

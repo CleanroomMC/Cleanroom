@@ -2,13 +2,14 @@ package com.cleanroommc.kirino.ecs;
 
 import com.cleanroommc.kirino.KirinoRendering;
 import com.cleanroommc.kirino.ecs.component.ComponentRegistry;
-import com.cleanroommc.kirino.ecs.component.field.FieldDef;
-import com.cleanroommc.kirino.ecs.component.field.FieldRegistry;
-import com.cleanroommc.kirino.ecs.component.field.scalar.ScalarType;
-import com.cleanroommc.kirino.ecs.component.field.struct.StructDef;
-import com.cleanroommc.kirino.ecs.component.field.struct.StructRegistry;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldDef;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldRegistry;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarType;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructDef;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
 import com.cleanroommc.kirino.ecs.component.impl.PositionComponent;
 import com.cleanroommc.kirino.ecs.component.impl.struct.TestStruct;
+import com.cleanroommc.kirino.ecs.component.schema.meta.MemberDescriptor;
 import org.joml.*;
 
 public class CleanECSRuntime {
@@ -23,7 +24,11 @@ public class CleanECSRuntime {
         // todo: scan classes and register structs
 
         // todo: remove struct demo
-        structRegistry.registerStructType("Test", TestStruct.class, new StructDef(new FieldDef(ScalarType.INT)));
+        structRegistry.registerStructType(
+                "Test",
+                TestStruct.class,
+                new MemberDescriptor("test"),
+                new StructDef(new FieldDef(ScalarType.INT)));
 
         fieldRegistry = new FieldRegistry(structRegistry);
 
@@ -46,9 +51,13 @@ public class CleanECSRuntime {
 
         // todo: scan classes and register components
 
-        componentRegistry.register("Position", PositionComponent.class, "vec3", "Test");
+        componentRegistry.register(
+                "Position",
+                PositionComponent.class,
+                new MemberDescriptor("xyz", "test"),
+                "vec3", "Test");
 
         KirinoRendering.LOGGER.info("debug: " + componentRegistry.serializeComponentDesc(componentRegistry.getComponentDesc("Position")));
-        KirinoRendering.LOGGER.info("debug: " + componentRegistry.getComponentDescRuntime("Position").toString());
+        KirinoRendering.LOGGER.info("debug: " + componentRegistry.getComponentDescFlattened("Position").toString());
     }
 }

@@ -1,8 +1,8 @@
-package com.cleanroommc.kirino.ecs.component.field;
+package com.cleanroommc.kirino.ecs.component.schema.def.field;
 
-import com.cleanroommc.kirino.ecs.component.field.scalar.FlattenedScalarType;
-import com.cleanroommc.kirino.ecs.component.field.struct.StructDef;
-import com.cleanroommc.kirino.ecs.component.field.struct.StructRegistry;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.FlattenedScalarType;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructDef;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
 
 import java.util.ArrayList;
 import java.util.List;

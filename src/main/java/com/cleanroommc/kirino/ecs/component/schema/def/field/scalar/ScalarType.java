@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.ecs.component.field.scalar;
+package com.cleanroommc.kirino.ecs.component.schema.def.field.scalar;
 
 public enum ScalarType {
     INT,

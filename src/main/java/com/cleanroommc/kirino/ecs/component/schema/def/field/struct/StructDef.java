@@ -1,12 +1,16 @@
-package com.cleanroommc.kirino.ecs.component.field.struct;
+package com.cleanroommc.kirino.ecs.component.schema.def.field.struct;
 
-import com.cleanroommc.kirino.ecs.component.field.FieldDef;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldDef;
 
 import java.util.Arrays;
 import java.util.List;
 
 public final class StructDef {
     public final List<FieldDef> fields;
+
+    public StructDef(List<FieldDef> fields) {
+        this.fields = fields;
+    }
 
     public StructDef(FieldDef... fields) {
         this.fields = Arrays.asList(fields);

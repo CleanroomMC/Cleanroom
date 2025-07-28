@@ -1,18 +1,16 @@
 package com.cleanroommc.kirino.ecs.component;
 
-import com.cleanroommc.kirino.ecs.component.field.FieldDef;
-import com.cleanroommc.kirino.ecs.component.field.FieldRegistry;
-import com.cleanroommc.kirino.ecs.component.field.FlattenedField;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldDef;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldRegistry;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.FlattenedField;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public final class ComponentDescRuntime {
-    public final String name;
+public final class ComponentDescFlattened {
     public final List<FlattenedField> fields;
 
-    protected ComponentDescRuntime(String name, ComponentDesc componentDesc, FieldRegistry fieldRegistry) {
-        this.name = name;
+    protected ComponentDescFlattened(ComponentDesc componentDesc, FieldRegistry fieldRegistry) {
         fields = new ArrayList<>();
         for (FieldDef field : componentDesc.fields) {
             fields.add(fieldRegistry.flatten(field));
@@ -22,7 +20,7 @@ public final class ComponentDescRuntime {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("ComponentDescRuntime{ name=").append(name).append(", fields=");
+        builder.append("ComponentDescRuntime{ ");
         for (int i = 0; i < fields.size(); i++) {
             FlattenedField field = fields.get(i);
             if (i == fields.size() - 1){

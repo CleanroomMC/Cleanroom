@@ -1,8 +1,8 @@
-package com.cleanroommc.kirino.ecs.component.field;
+package com.cleanroommc.kirino.ecs.component.schema.def.field;
 
-import com.cleanroommc.kirino.ecs.component.field.scalar.ScalarType;
-import com.cleanroommc.kirino.ecs.component.field.struct.StructDef;
-import com.cleanroommc.kirino.ecs.component.field.struct.StructRegistry;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarType;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructDef;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
 
 public final class FieldDef {
     public final FieldKind fieldKind;
@@ -30,7 +30,7 @@ public final class FieldDef {
             if (structDef == null) {
                 throw new IllegalStateException("Struct type " + structTypeName + " doesn't exist.");
             }
-            return "FieldDef{ struct=(" + structTypeName + ")" + structDef.toString(structRegistry) + " }";
+            return "FieldDef{ structType=(" + structTypeName + ")" + structDef.toString(structRegistry) + " }";
         }
         return "";
     }
