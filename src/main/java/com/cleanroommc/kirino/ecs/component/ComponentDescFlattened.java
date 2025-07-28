@@ -17,10 +17,18 @@ public final class ComponentDescFlattened {
         }
     }
 
+    public int getUnitCount() {
+        int unitCount = 0;
+        for (FlattenedField field : fields) {
+            unitCount += field.getUnitCount();
+        }
+        return unitCount;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("ComponentDescRuntime{ ");
+        builder.append("ComponentDescFlattened{ ");
         for (int i = 0; i < fields.size(); i++) {
             FlattenedField field = fields.get(i);
             if (i == fields.size() - 1){

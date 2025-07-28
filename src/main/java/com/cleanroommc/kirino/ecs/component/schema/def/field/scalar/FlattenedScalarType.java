@@ -21,4 +21,17 @@ public enum FlattenedScalarType {
             case MAT4 -> Arrays.asList(FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT);
         };
     }
+
+    public static int flattenedUnitCount(ScalarType scalarType) {
+        return switch (scalarType) {
+            case INT -> 1;
+            case FLOAT -> 1;
+            case BOOL -> 1;
+            case VEC2 -> 2;
+            case VEC3 -> 3;
+            case VEC4 -> 4;
+            case MAT3 -> 9;
+            case MAT4 -> 16;
+        };
+    }
 }

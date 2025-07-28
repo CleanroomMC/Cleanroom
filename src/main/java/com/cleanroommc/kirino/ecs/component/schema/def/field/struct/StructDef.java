@@ -21,7 +21,7 @@ public final class StructDef {
         builder.append("StructDef{ ");
         for (int i = 0; i < fields.size(); i++) {
             FieldDef field = fields.get(i);
-            if (i == fields.size() - 1){
+            if (i == fields.size() - 1) {
                 builder.append(field.toString(structRegistry));
             } else {
                 builder.append(field.toString(structRegistry)).append(", ");

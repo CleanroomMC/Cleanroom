@@ -1,5 +1,6 @@
 package com.cleanroommc.kirino.ecs.component.schema.def.field;
 
+import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarConstructor;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -49,11 +50,28 @@ public class FieldRegistry {
     }
 
     @Nullable
-    public FieldDef getFieldType(String name) {
+    public FieldDef getFieldDef(String name) {
         return fieldDefMap.get(name);
     }
 
     public FlattenedField flatten(FieldDef fieldDef) {
         return new FlattenedField(fieldDef, structRegistry);
+    }
+
+    // -----Field Construction-----
+
+    @SuppressWarnings("DataFlowIssue")
+    @Nullable
+    public Object newField(String name, Object... args) {
+        if (!fieldTypeExists(name)) {
+            return null;
+        }
+        FieldDef fieldDef = getFieldDef(name);
+        if (fieldDef.fieldKind == FieldKind.SCALAR) {
+            return ScalarConstructor.newScalar(fieldDef.scalarType, args);
+        } else if (fieldDef.fieldKind == FieldKind.STRUCT) {
+            return structRegistry.newStruct(fieldDef.structTypeName, args);
+        }
+        return null;
     }
 }

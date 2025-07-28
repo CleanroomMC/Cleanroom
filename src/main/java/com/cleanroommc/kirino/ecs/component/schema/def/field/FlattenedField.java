@@ -11,10 +11,10 @@ public final class FlattenedField {
     public final List<FlattenedScalarType> scalarTypes;
 
     private static List<FlattenedScalarType> makeFlattenedField(FieldDef fieldDef, StructRegistry structRegistry) {
-        if (fieldDef.fieldKind == FieldKind.SCALAR)
+        if (fieldDef.fieldKind == FieldKind.SCALAR) {
             return FlattenedScalarType.flatten(fieldDef.scalarType);
-        else if (fieldDef.fieldKind == FieldKind.STRUCT) {
-            StructDef structDef = structRegistry.getStructType(fieldDef.structTypeName);
+        } else if (fieldDef.fieldKind == FieldKind.STRUCT) {
+            StructDef structDef = structRegistry.getStructDef(fieldDef.structTypeName);
             if (structDef == null) {
                 throw new IllegalStateException("Struct type " + fieldDef.structTypeName + " doesn't exist.");
             }
@@ -25,6 +25,10 @@ public final class FlattenedField {
             return output;
         }
         return new ArrayList<>();
+    }
+
+    public int getUnitCount() {
+        return scalarTypes.size();
     }
 
     protected FlattenedField(FieldDef fieldDef, StructRegistry structRegistry) {

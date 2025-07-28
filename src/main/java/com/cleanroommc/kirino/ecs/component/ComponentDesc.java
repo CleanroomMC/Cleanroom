@@ -8,10 +8,12 @@ import java.util.List;
 public final class ComponentDesc {
     public final String name;
     public final List<FieldDef> fields;
+    public final List<String> fieldTypeNames;
 
-    protected ComponentDesc(String name, List<FieldDef> fields) {
+    protected ComponentDesc(String name, List<FieldDef> fields, List<String> fieldTypeNames) {
         this.name = name;
         this.fields = fields;
+        this.fieldTypeNames = fieldTypeNames;
     }
 
     public String toString(StructRegistry structRegistry) {

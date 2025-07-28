@@ -2,14 +2,15 @@ package com.cleanroommc.kirino.ecs;
 
 import com.cleanroommc.kirino.KirinoRendering;
 import com.cleanroommc.kirino.ecs.component.ComponentRegistry;
+import com.cleanroommc.kirino.ecs.component.impl.TestStruct2;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldRegistry;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarType;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
 import com.cleanroommc.kirino.ecs.component.impl.PositionComponent;
-import com.cleanroommc.kirino.ecs.component.impl.struct.TestStruct;
-import com.cleanroommc.kirino.ecs.component.schema.meta.MemberDescriptor;
+import com.cleanroommc.kirino.ecs.component.impl.TestStruct;
+import com.cleanroommc.kirino.ecs.component.schema.meta.MemberLayout;
 import org.joml.*;
 
 public class CleanECSRuntime {
@@ -27,15 +28,20 @@ public class CleanECSRuntime {
         structRegistry.registerStructType(
                 "Test",
                 TestStruct.class,
-                new MemberDescriptor("test"),
+                new MemberLayout("test"),
                 new StructDef(new FieldDef(ScalarType.INT)));
+        structRegistry.registerStructType(
+                "Test2",
+                TestStruct2.class,
+                new MemberLayout("test2", "testStruct"),
+                new StructDef(new FieldDef(ScalarType.INT), new FieldDef("Test")));
 
         fieldRegistry = new FieldRegistry(structRegistry);
 
         // todo: register fields based on structs (field acts like a wrapper of struct)
 
         // todo: remove field demo
-        fieldRegistry.registerFieldType("Test", TestStruct.class, new FieldDef("Test"));
+        fieldRegistry.registerFieldType("Test2", TestStruct2.class, new FieldDef("Test2"));
 
         // hard coded fields
         fieldRegistry.registerFieldType("int", int.class, new FieldDef(ScalarType.INT));
@@ -54,10 +60,15 @@ public class CleanECSRuntime {
         componentRegistry.register(
                 "Position",
                 PositionComponent.class,
-                new MemberDescriptor("xyz", "test"),
-                "vec3", "Test");
+                new MemberLayout("xyz", "test"),
+                "vec3", "Test2");
 
-        KirinoRendering.LOGGER.info("debug: " + componentRegistry.serializeComponentDesc(componentRegistry.getComponentDesc("Position")));
-        KirinoRendering.LOGGER.info("debug: " + componentRegistry.getComponentDescFlattened("Position").toString());
+        // todo: remove debug
+        PositionComponent pos = (PositionComponent) componentRegistry.newComponent("Position", 1f, 2f, 3f, 123, 456);
+        KirinoRendering.LOGGER.info("debug Position.xyz.x: " + pos.xyz.x); // expect 1
+        KirinoRendering.LOGGER.info("debug Position.xyz.y: " + pos.xyz.y); // expect 2
+        KirinoRendering.LOGGER.info("debug Position.xyz.z: " + pos.xyz.z); // expect 3
+        KirinoRendering.LOGGER.info("debug Position.test.test2: " + pos.test.test2); // expect 123
+        KirinoRendering.LOGGER.info("debug Position.test.testStruct.test: " + pos.test.testStruct.test); // expect 456
     }
 }

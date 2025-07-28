@@ -24,9 +24,8 @@ public final class FieldDef {
     public String toString(StructRegistry structRegistry) {
         if (fieldKind == FieldKind.SCALAR) {
             return "FieldDef{ scalarType=" + scalarType + " }";
-        }
-        else if (fieldKind == FieldKind.STRUCT) {
-            StructDef structDef = structRegistry.getStructType(structTypeName);
+        } else if (fieldKind == FieldKind.STRUCT) {
+            StructDef structDef = structRegistry.getStructDef(structTypeName);
             if (structDef == null) {
                 throw new IllegalStateException("Struct type " + structTypeName + " doesn't exist.");
             }

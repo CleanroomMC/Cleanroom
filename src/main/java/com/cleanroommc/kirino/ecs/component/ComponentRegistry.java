@@ -2,7 +2,8 @@ package com.cleanroommc.kirino.ecs.component;
 
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldRegistry;
-import com.cleanroommc.kirino.ecs.component.schema.meta.MemberDescriptor;
+import com.cleanroommc.kirino.ecs.component.schema.meta.MemberLayout;
+import com.cleanroommc.kirino.ecs.component.schema.reflect.AccessHandlePool;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.jspecify.annotations.Nullable;
@@ -19,44 +20,44 @@ public class ComponentRegistry {
     private final BiMap<String, Class<? extends ICleanComponent>> comNameClassMapping = HashBiMap.create();
     private final Map<String, ComponentDesc> componentDescMap = new HashMap<>();
     private final Map<String, ComponentDescFlattened> componentDescFlattenedMap = new HashMap<>();
-    private final Map<String, MemberDescriptor> classMemberDescMap = new HashMap<>();
+    private final Map<String, MemberLayout> classMemberLayoutMap = new HashMap<>();
 
     /**
      * This method is the entry point to register components.
-     * <code>memberDescriptor.fieldNames</code> must match <code>fieldTypeNames</code> one by one.
+     * <code>memberLayout.fieldNames</code> must match <code>fieldTypeNames</code> one by one.
      *
      * @param name The registry name of the component
      * @param clazz The corresponding class of the component
-     * @param memberDescriptor The metadata of the component class
+     * @param memberLayout The metadata of the component class
      * @param fieldTypeNames The field registry names of the component
      */
-    public void register(String name, Class<? extends ICleanComponent> clazz, MemberDescriptor memberDescriptor, String... fieldTypeNames) {
-        register(name, clazz, memberDescriptor, Arrays.asList(fieldTypeNames));
+    public void register(String name, Class<? extends ICleanComponent> clazz, MemberLayout memberLayout, String... fieldTypeNames) {
+        register(name, clazz, memberLayout, Arrays.asList(fieldTypeNames));
     }
 
     /**
      * This method is the entry point to register components.
-     * <code>memberDescriptor.fieldNames</code> must match <code>fieldTypeNames</code> one by one.
+     * <code>memberLayout.fieldNames</code> must match <code>fieldTypeNames</code> one by one.
      *
      * @param name The registry name of the component
      * @param clazz The corresponding class of the component
-     * @param memberDescriptor The metadata of the component class
+     * @param memberLayout The metadata of the component class
      * @param fieldTypeNames The field registry names of the component
      */
-    public void register(String name, Class<? extends ICleanComponent> clazz, MemberDescriptor memberDescriptor, List<String> fieldTypeNames) {
+    public void register(String name, Class<? extends ICleanComponent> clazz, MemberLayout memberLayout, List<String> fieldTypeNames) {
         comNameClassMapping.put(name, clazz);
-        classMemberDescMap.put(name, memberDescriptor);
+        classMemberLayoutMap.put(name, memberLayout);
 
         List<FieldDef> fields = new ArrayList<>();
         for (String fieldTypeName : fieldTypeNames) {
-            FieldDef field = fieldRegistry.getFieldType(fieldTypeName);
+            FieldDef field = fieldRegistry.getFieldDef(fieldTypeName);
             if (field == null) {
                 throw new IllegalStateException("Field type " + fieldTypeName + " doesn't exist.");
             }
             fields.add(field);
         }
 
-        ComponentDesc componentDesc = new ComponentDesc(name, fields);
+        ComponentDesc componentDesc = new ComponentDesc(name, fields, fieldTypeNames);
         componentDescMap.put(name, componentDesc);
         componentDescFlattenedMap.put(name, new ComponentDescFlattened(componentDesc, fieldRegistry));
     }
@@ -70,8 +71,8 @@ public class ComponentRegistry {
     }
 
     @Nullable
-    public MemberDescriptor getClassMemberDescriptor(String name) {
-        return classMemberDescMap.get(name);
+    public MemberLayout getClassMemberLayout(String name) {
+        return classMemberLayoutMap.get(name);
     }
 
     @Nullable
@@ -96,5 +97,48 @@ public class ComponentRegistry {
 
     public String serializeComponentDesc(ComponentDesc componentDesc) {
         return componentDesc.toString(fieldRegistry.structRegistry);
+    }
+
+    // -----Component Construction-----
+
+    private final AccessHandlePool componentAccessHandlePool = new AccessHandlePool();
+
+    @SuppressWarnings("DataFlowIssue")
+    @Nullable
+    public ICleanComponent newComponent(String name, Object... args) {
+        if (!componentExists(name)) {
+            return null;
+        }
+
+        ComponentDesc componentDesc = getComponentDesc(name);
+        ComponentDescFlattened componentDescFlattened = getComponentDescFlattened(name);
+        Class<? extends ICleanComponent> componentClass = getComponentClass(name);
+        MemberLayout memberLayout = getClassMemberLayout(name);
+
+        if (!componentAccessHandlePool.classRegistered(componentClass)) {
+            componentAccessHandlePool.register(componentClass, memberLayout);
+        }
+
+        Object output;
+        try {
+            output = componentAccessHandlePool.newClass(componentClass);
+        } catch (Throwable e) {
+            return null;
+        }
+
+        int index = 0;
+        for (int i = 0; i < componentDesc.fields.size(); i++) {
+            String fieldTypeName = componentDesc.fieldTypeNames.get(i);
+            String fieldName = memberLayout.fieldNames.get(i);
+
+            Object value = null;
+            int unitCount = componentDescFlattened.fields.get(i).getUnitCount();
+            value = fieldRegistry.newField(fieldTypeName, Arrays.copyOfRange(args, index, index + unitCount));
+            index += unitCount;
+
+            componentAccessHandlePool.setFieldValue(componentClass, output, fieldName, value);
+        }
+
+        return (ICleanComponent) output;
     }
 }
