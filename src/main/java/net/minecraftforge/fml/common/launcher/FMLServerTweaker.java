@@ -22,6 +22,7 @@ package net.minecraftforge.fml.common.launcher;
 import java.io.File;
 import java.util.List;
 
+import net.minecraft.launchwrapper.Launch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 
@@ -29,6 +30,11 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 
 public class FMLServerTweaker extends FMLTweaker {
+
+    public FMLServerTweaker()
+    {
+        Launch.blackboard.put("fml.side", "server");
+    }
 
     @Override
     public void acceptOptions(List<String> args, File gameDir, File assetsDir, String profile)

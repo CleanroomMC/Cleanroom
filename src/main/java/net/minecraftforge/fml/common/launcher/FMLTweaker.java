@@ -50,6 +50,7 @@ public class FMLTweaker implements ITweaker {
 
     public FMLTweaker()
     {
+        Launch.blackboard.put("fml.side", "client");
         if (System.getProperty("java.net.preferIPv4Stack") == null)
         {
             System.setProperty("java.net.preferIPv4Stack", "true");
