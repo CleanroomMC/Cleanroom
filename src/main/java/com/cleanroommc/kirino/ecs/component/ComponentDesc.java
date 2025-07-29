@@ -2,18 +2,19 @@ package com.cleanroommc.kirino.ecs.component;
 
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
+import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 
 public final class ComponentDesc {
     public final String name;
-    public final List<FieldDef> fields;
-    public final List<String> fieldTypeNames;
+    public final ImmutableList<FieldDef> fields;
+    public final ImmutableList<String> fieldTypeNames;
 
     protected ComponentDesc(String name, List<FieldDef> fields, List<String> fieldTypeNames) {
         this.name = name;
-        this.fields = fields;
-        this.fieldTypeNames = fieldTypeNames;
+        this.fields = ImmutableList.copyOf(fields);
+        this.fieldTypeNames = ImmutableList.copyOf(fieldTypeNames);
     }
 
     public String toString(StructRegistry structRegistry) {

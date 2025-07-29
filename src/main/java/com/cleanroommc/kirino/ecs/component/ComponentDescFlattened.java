@@ -3,18 +3,20 @@ package com.cleanroommc.kirino.ecs.component;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldRegistry;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FlattenedField;
+import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class ComponentDescFlattened {
-    public final List<FlattenedField> fields;
+    public final ImmutableList<FlattenedField> fields;
 
     protected ComponentDescFlattened(ComponentDesc componentDesc, FieldRegistry fieldRegistry) {
-        fields = new ArrayList<>();
+        List<FlattenedField> fields = new ArrayList<>();
         for (FieldDef field : componentDesc.fields) {
             fields.add(fieldRegistry.flatten(field));
         }
+        this.fields = ImmutableList.copyOf(fields);
     }
 
     public int getUnitCount() {

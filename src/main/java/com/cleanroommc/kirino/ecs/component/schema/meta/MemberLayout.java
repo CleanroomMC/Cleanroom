@@ -1,16 +1,17 @@
 package com.cleanroommc.kirino.ecs.component.schema.meta;
 
-import java.util.Arrays;
+import com.google.common.collect.ImmutableList;
+
 import java.util.List;
 
 public class MemberLayout {
-    public final List<String> fieldNames;
+    public final ImmutableList<String> fieldNames;
 
     public MemberLayout(List<String> fieldNames) {
-        this.fieldNames = fieldNames;
+        this.fieldNames = ImmutableList.copyOf(fieldNames);
     }
 
     public MemberLayout(String... fieldNames) {
-        this.fieldNames = Arrays.asList(fieldNames);
+        this.fieldNames = ImmutableList.copyOf(fieldNames);
     }
 }

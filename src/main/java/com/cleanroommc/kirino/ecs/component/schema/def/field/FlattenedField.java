@@ -3,12 +3,13 @@ package com.cleanroommc.kirino.ecs.component.schema.def.field;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.FlattenedScalarType;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
+import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class FlattenedField {
-    public final List<FlattenedScalarType> scalarTypes;
+    public final ImmutableList<FlattenedScalarType> scalarTypes;
 
     private static List<FlattenedScalarType> makeFlattenedField(FieldDef fieldDef, StructRegistry structRegistry) {
         if (fieldDef.fieldKind == FieldKind.SCALAR) {
@@ -32,7 +33,7 @@ public final class FlattenedField {
     }
 
     protected FlattenedField(FieldDef fieldDef, StructRegistry structRegistry) {
-        scalarTypes = makeFlattenedField(fieldDef, structRegistry);
+        scalarTypes = ImmutableList.copyOf(makeFlattenedField(fieldDef, structRegistry));
     }
 
     @Override

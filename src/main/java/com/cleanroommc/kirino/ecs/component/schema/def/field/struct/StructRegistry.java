@@ -17,7 +17,7 @@ import java.util.Map;
 public class StructRegistry {
     private final BiMap<String, Class<?>> structTypeNameClassMapping = HashBiMap.create();
     private final Map<String, StructDef> structDefMap = new HashMap<>();
-    public final Map<String, Integer> structUnitCountMap = new HashMap<>();
+    private final Map<String, Integer> structUnitCountMap = new HashMap<>();
     private final Map<String, MemberLayout> classMemberLayoutMap = new HashMap<>();
 
     /**

@@ -1,19 +1,19 @@
 package com.cleanroommc.kirino.ecs.component.schema.def.field.struct;
 
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldDef;
+import com.google.common.collect.ImmutableList;
 
-import java.util.Arrays;
 import java.util.List;
 
 public final class StructDef {
-    public final List<FieldDef> fields;
+    public final ImmutableList<FieldDef> fields;
 
     public StructDef(List<FieldDef> fields) {
-        this.fields = fields;
+        this.fields = ImmutableList.copyOf(fields);
     }
 
     public StructDef(FieldDef... fields) {
-        this.fields = Arrays.asList(fields);
+        this.fields = ImmutableList.copyOf(fields);
     }
 
     public String toString(StructRegistry structRegistry) {

@@ -131,9 +131,8 @@ public class ComponentRegistry {
             String fieldTypeName = componentDesc.fieldTypeNames.get(i);
             String fieldName = memberLayout.fieldNames.get(i);
 
-            Object value = null;
             int unitCount = componentDescFlattened.fields.get(i).getUnitCount();
-            value = fieldRegistry.newField(fieldTypeName, Arrays.copyOfRange(args, index, index + unitCount));
+            Object value = fieldRegistry.newField(fieldTypeName, Arrays.copyOfRange(args, index, index + unitCount));
             index += unitCount;
 
             componentAccessHandlePool.setFieldValue(componentClass, output, fieldName, value);
