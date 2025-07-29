@@ -487,9 +487,9 @@ project(':cleanroom') {
         installer "io.netty:netty-codec-dns:$props.netty_version"
         installer "io.netty:netty-resolver-dns:$props.netty_version"
 
-        installer 'org.apache.logging.log4j:log4j-api:2.25.0'
-        installer 'org.apache.logging.log4j:log4j-core:2.25.0'
-        installer 'org.apache.logging.log4j:log4j-slf4j2-impl:2.25.0'
+        installer 'org.apache.logging.log4j:log4j-api:2.25.1'
+        installer 'org.apache.logging.log4j:log4j-core:2.25.1'
+        installer 'org.apache.logging.log4j:log4j-slf4j2-impl:2.25.1'
         installer 'org.slf4j:slf4j-api:2.0.17'
         installer 'jakarta.annotation:jakarta.annotation-api:3.0.0'
         installer 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
