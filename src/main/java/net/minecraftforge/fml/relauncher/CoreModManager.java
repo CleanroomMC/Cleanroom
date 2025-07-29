@@ -342,6 +342,10 @@ public class CoreModManager {
 
         for (File coreMod : file_canidates)
         {
+            if (coreMod.isDirectory())
+            {
+                continue;
+            }
             FMLLog.log.debug("Examining for coremod candidacy {}", coreMod.getName());
             JarFile jar = null;
             Attributes mfAttributes;
@@ -349,7 +353,7 @@ public class CoreModManager {
             String configs;
             String cascadedTweaker;
             File mods_ver = new File(new File(Launch.minecraftHome, "mods"), ForgeVersion.mcVersion);
-            boolean containNonMods = false, ignoreMods = false;
+            boolean containNonMods, ignoreMods = false;
             try
             {
                 File manifest = new File(coreMod.getAbsolutePath() + ".meta");
