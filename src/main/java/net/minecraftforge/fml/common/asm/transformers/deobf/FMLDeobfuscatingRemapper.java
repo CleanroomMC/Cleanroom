@@ -25,7 +25,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.patcher.ClassPatchManager;
@@ -116,6 +118,9 @@ public class FMLDeobfuscatingRemapper extends Remapper {
         methodNameMaps = Maps.newHashMapWithExpectedSize(rawMethodMaps.size());
         fieldNameMaps = Maps.newHashMapWithExpectedSize(rawFieldMaps.size());
 
+        // For Mixin usage
+        Launch.blackboard.put("fml.deobf.instance", INSTANCE);
+        Launch.blackboard.put("fml.deobf.unmap", (Function<String, String>) this::unmap);
     }
     public void setup(File mcDir, LaunchClassLoader classLoader, String deobfFileName, boolean liveEnv)
     {
