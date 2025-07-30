@@ -196,7 +196,7 @@ public abstract class GuiScrollingList
         int scroll = Mouse.getEventDWheel();
         if (scroll != 0)
         {
-            this.scrollDistance += (float)((-1 * scroll / 120.0F) * this.slotHeight / 2);
+            this.scrollDistance += (float)((-1 * scroll) * this.slotHeight / 2);
         }
     }
 
@@ -340,6 +340,26 @@ public abstract class GuiScrollingList
                 this.drawSlot(slotIdx, entryRight, slotTop, slotBuffer, tess);
             }
         }
+
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
+        GlStateManager.shadeModel(GL11.GL_SMOOTH);
+        worldr.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+        worldr.pos((double)this.left, (double)(this.top + 4), 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 0).endVertex();
+        worldr.pos((double)this.right, (double)(this.top + 4), 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 0).endVertex();
+        worldr.pos((double)this.right, (double)this.top, 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 255).endVertex();
+        worldr.pos((double)this.left, (double)this.top, 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
+        tess.draw();
+        worldr.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+        worldr.pos((double)this.left, (double)this.bottom, 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+        worldr.pos((double)this.right, (double)this.bottom, 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+        worldr.pos((double)this.right, (double)(this.bottom - 4), 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 0).endVertex();
+        worldr.pos((double)this.left, (double)(this.bottom - 4), 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 0).endVertex();
+        tess.draw();
+        GlStateManager.shadeModel(GL11.GL_FLAT);
+        GlStateManager.disableBlend();
+        GlStateManager.enableTexture2D();
 
         GlStateManager.disableDepth();
 

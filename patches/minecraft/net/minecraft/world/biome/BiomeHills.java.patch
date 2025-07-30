@@ -27,7 +27,7 @@
          super.func_180624_a(p_180624_1_, p_180624_2_, p_180624_3_);
 -        int i = 3 + p_180624_2_.nextInt(6);
 -
--        for (int j = 0; j < i; ++j)
+-        for (int j = 0; j < i; j++)
 -        {
 -            int k = p_180624_2_.nextInt(16);
 -            int l = p_180624_2_.nextInt(28) + 4;
@@ -39,13 +39,15 @@
 -                p_180624_1_.func_180501_a(blockpos, Blocks.field_150412_bA.func_176223_P(), 2);
 -            }
 -        }
+-
+-        for (int j1 = 0; j1 < 7; j1++)
 +
 +        net.minecraftforge.common.MinecraftForge.ORE_GEN_BUS.post(new net.minecraftforge.event.terraingen.OreGenEvent.Pre(p_180624_1_, p_180624_2_, p_180624_3_));
 +        WorldGenerator emeralds = new EmeraldGenerator();
 +        if (net.minecraftforge.event.terraingen.TerrainGen.generateOre(p_180624_1_, p_180624_2_, emeralds, p_180624_3_, net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable.EventType.EMERALD))
 +            emeralds.func_180709_b(p_180624_1_, p_180624_2_, p_180624_3_);
- 
-         for (int j1 = 0; j1 < 7; ++j1)
++
++        for (int j1 = 0; j1 < 7; ++j1)
          {
              int k1 = p_180624_2_.nextInt(16);
              int l1 = p_180624_2_.nextInt(64);

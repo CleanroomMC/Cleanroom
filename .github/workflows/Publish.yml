@@ -1,0 +1,43 @@
+name: Manually Publish
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          fetch-tags: true
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4.7.1
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Fix Gradle permission
+        run: chmod +x ./gradlew
+
+      - name: Setup Forge env
+        run: ./gradlew setup -Prun_number=${{ github.run_number }}
+
+      - name: Get version
+        run: echo "CLEANROOM_VERSION=$(cat version.txt)" >> $GITHUB_ENV
+
+      - name: Stop Gradle daemon
+        run: ./gradlew --stop
+
+      - name: Build Jars
+        run: ./gradlew installerJar -Prun_number=${{ github.run_number }}
+
+      - name: Stop Gradle daemon again
+        run: ./gradlew --stop
+
+      - name: Publish to maven for mod development
+        run: ./gradlew publish -PoutlandUsername=${{ secrets.MAVEN_USERNAME }} -PoutlandPassword="${{ secrets.MAVEN_PASSWORD }}" -Prun_number=${{ github.run_number }}

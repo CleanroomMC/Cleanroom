@@ -124,6 +124,24 @@
                  worldsettings.func_82750_a(this.field_146334_a);
  
                  if (this.field_146338_v && !this.field_146337_w)
+@@ -319,7 +285,7 @@
+             }
+             else if (p_146284_1_.field_146127_k == 5)
+             {
+-                this.field_146331_K++;
++                ++this.field_146331_K;
+ 
+                 if (this.field_146331_K >= WorldType.field_77139_a.length)
+                 {
+@@ -328,7 +294,7 @@
+ 
+                 while (!this.func_175299_g())
+                 {
+-                    this.field_146331_K++;
++                    ++this.field_146331_K;
+ 
+                     if (this.field_146331_K >= WorldType.field_77139_a.length)
+                     {
 @@ -348,14 +314,7 @@
              }
              else if (p_146284_1_.field_146127_k == 8)

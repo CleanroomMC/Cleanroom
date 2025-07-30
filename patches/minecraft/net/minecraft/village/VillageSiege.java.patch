@@ -20,7 +20,25 @@
                  {
                      return;
                  }
-@@ -89,16 +92,23 @@
+@@ -67,7 +70,7 @@
+ 
+                 if (this.field_75534_e > 0)
+                 {
+-                    this.field_75534_e--;
++                    --this.field_75534_e;
+                 }
+                 else
+                 {
+@@ -76,7 +79,7 @@
+                     if (this.field_75533_d > 0)
+                     {
+                         this.func_75530_c();
+-                        this.field_75533_d--;
++                        --this.field_75533_d;
+                     }
+                     else
+                     {
+@@ -89,27 +92,34 @@
  
      private boolean func_75529_b()
      {
@@ -49,9 +67,10 @@
                  {
                      BlockPos blockpos = this.field_75531_f.func_180608_a();
                      float f = (float)this.field_75531_f.func_75568_b();
-@@ -106,10 +116,10 @@
+                     boolean flag = false;
  
-                     for (int i = 0; i < 10; ++i)
+-                    for (int i = 0; i < 10; i++)
++                    for (int i = 0; i < 10; ++i)
                      {
 -                        float f1 = this.field_75537_a.field_73012_v.nextFloat() * (float)(Math.PI * 2);
 -                        this.field_75532_g = blockpos.func_177958_n() + (int)((double)(MathHelper.func_76134_b(f1) * f) * 0.9);
@@ -93,9 +112,12 @@
              }
              catch (Exception exception)
              {
-@@ -183,12 +194,9 @@
+@@ -181,14 +192,11 @@
+     @Nullable
+     private Vec3d func_179867_a(BlockPos p_179867_1_)
      {
-         for (int i = 0; i < 10; ++i)
+-        for (int i = 0; i < 10; i++)
++        for (int i = 0; i < 10; ++i)
          {
 -            BlockPos blockpos = p_179867_1_.func_177982_a(
 -                                    this.field_75537_a.field_73012_v.nextInt(16) - 8, this.field_75537_a.field_73012_v.nextInt(6) - 3, this.field_75537_a.field_73012_v.nextInt(16) - 8

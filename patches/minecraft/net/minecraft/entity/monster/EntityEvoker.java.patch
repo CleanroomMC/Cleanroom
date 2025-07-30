@@ -91,7 +91,20 @@
      public boolean func_184191_r(Entity p_184191_1_)
      {
          if (p_184191_1_ == null)
-@@ -141,19 +133,16 @@
+@@ -131,27 +123,26 @@
+         {
+             return this.func_184191_r(((EntityVex)p_184191_1_).func_190645_o());
+         }
++        else if (p_184191_1_ instanceof EntityLivingBase && ((EntityLivingBase)p_184191_1_).func_70668_bt() == EnumCreatureAttribute.ILLAGER)
++        {
++            return this.func_96124_cp() == null && p_184191_1_.func_96124_cp() == null;
++        }
+         else
+         {
+-            return p_184191_1_ instanceof EntityLivingBase && ((EntityLivingBase)p_184191_1_).func_70668_bt() == EnumCreatureAttribute.ILLAGER
+-                   ? this.func_96124_cp() == null && p_184191_1_.func_96124_cp() == null
+-                   : false;
++            return false;
          }
      }
  
@@ -111,7 +124,7 @@
      protected SoundEvent func_184601_bQ(DamageSource p_184601_1_)
      {
          return SoundEvents.field_191246_bp;
-@@ -170,7 +159,6 @@
+@@ -168,7 +159,6 @@
          return this.field_190763_bw;
      }
  
@@ -119,7 +132,7 @@
      protected SoundEvent func_193086_dk()
      {
          return SoundEvents.field_191244_bn;
-@@ -182,70 +170,44 @@
+@@ -180,70 +170,44 @@
          {
          }
  
@@ -150,7 +163,8 @@
 -            if (EntityEvoker.this.func_70068_e(entitylivingbase) < 9.0)
 +            if (EntityEvoker.this.func_70068_e(entitylivingbase) < 9.0D)
              {
-                 for (int i = 0; i < 5; ++i)
+-                for (int i = 0; i < 5; i++)
++                for (int i = 0; i < 5; ++i)
                  {
 -                    float f1 = f + (float)i * (float) Math.PI * 0.4F;
 -                    this.func_190876_a(
@@ -165,7 +179,8 @@
 +                    this.func_190876_a(EntityEvoker.this.field_70165_t + (double)MathHelper.func_76134_b(f1) * 1.5D, EntityEvoker.this.field_70161_v + (double)MathHelper.func_76126_a(f1) * 1.5D, d0, d1, f1, 0);
                  }
  
-                 for (int k = 0; k < 8; ++k)
+-                for (int k = 0; k < 8; k++)
++                for (int k = 0; k < 8; ++k)
                  {
 -                    float f2 = f + (float)k * (float) Math.PI * 2.0F / 8.0F + (float)(Math.PI * 2.0 / 5.0);
 -                    this.func_190876_a(
@@ -182,7 +197,8 @@
              }
              else
              {
-                 for (int l = 0; l < 16; ++l)
+-                for (int l = 0; l < 16; l++)
++                for (int l = 0; l < 16; ++l)
                  {
 -                    double d2 = 1.25 * (double)(l + 1);
 +                    double d2 = 1.25D * (double)(l + 1);
@@ -199,7 +215,7 @@
                  }
              }
          }
-@@ -254,12 +216,11 @@
+@@ -252,12 +216,11 @@
          {
              BlockPos blockpos = new BlockPos(p_190876_1_, p_190876_7_, p_190876_3_);
              boolean flag = false;
@@ -215,7 +231,7 @@
                  {
                      if (!EntityEvoker.this.field_70170_p.func_175623_d(blockpos))
                      {
-@@ -277,25 +238,25 @@
+@@ -275,25 +238,25 @@
                  }
  
                  blockpos = blockpos.func_177977_b();
@@ -247,7 +263,7 @@
          protected EntitySpellcasterIllager.SpellType func_193320_l()
          {
              return EntitySpellcasterIllager.SpellType.FANGS;
-@@ -308,18 +269,15 @@
+@@ -306,18 +269,15 @@
          {
          }
  
@@ -268,7 +284,7 @@
              }
          }
      }
-@@ -330,7 +288,6 @@
+@@ -328,7 +288,6 @@
          {
          }
  
@@ -276,7 +292,7 @@
          public boolean func_75250_a()
          {
              if (!super.func_75250_a())
-@@ -339,33 +296,29 @@
+@@ -337,33 +296,29 @@
              }
              else
              {
@@ -301,7 +317,8 @@
 -        @Override
          protected void func_190868_j()
          {
-             for (int i = 0; i < 3; ++i)
+-            for (int i = 0; i < 3; i++)
++            for (int i = 0; i < 3; ++i)
              {
 -                BlockPos blockpos = new BlockPos(EntityEvoker.this)
 -                .func_177982_a(-2 + EntityEvoker.this.field_70146_Z.nextInt(5), 1, -2 + EntityEvoker.this.field_70146_Z.nextInt(5));
@@ -313,7 +330,7 @@
                  entityvex.func_190658_a(EntityEvoker.this);
                  entityvex.func_190651_g(blockpos);
                  entityvex.func_190653_a(20 * (30 + EntityEvoker.this.field_70146_Z.nextInt(90)));
-@@ -373,13 +326,11 @@
+@@ -371,13 +326,11 @@
              }
          }
  
@@ -327,7 +344,7 @@
          protected EntitySpellcasterIllager.SpellType func_193320_l()
          {
              return EntitySpellcasterIllager.SpellType.SUMMON_VEX;
-@@ -396,7 +347,10 @@
+@@ -394,7 +347,10 @@
              }
          };
  
@@ -339,7 +356,7 @@
          public boolean func_75250_a()
          {
              if (EntityEvoker.this.func_70638_az() != null)
-@@ -411,14 +365,13 @@
+@@ -409,14 +365,13 @@
              {
                  return false;
              }
@@ -356,7 +373,7 @@
  
                  if (list.isEmpty())
                  {
-@@ -432,20 +385,17 @@
+@@ -430,20 +385,17 @@
              }
          }
  
@@ -378,7 +395,7 @@
          protected void func_190868_j()
          {
              EntitySheep entitysheep = EntityEvoker.this.func_190751_dj();
-@@ -456,31 +406,26 @@
+@@ -454,31 +406,26 @@
              }
          }
  

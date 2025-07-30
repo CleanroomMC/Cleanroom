@@ -29,7 +29,7 @@
      }
  
      public void func_98278_g()
-@@ -70,11 +68,11 @@
+@@ -70,19 +68,19 @@
  
              if (this.func_98271_a().field_72995_K)
              {
@@ -46,7 +46,8 @@
  
                  if (this.field_98286_b > 0)
                  {
-@@ -82,7 +80,7 @@
+-                    this.field_98286_b--;
++                    --this.field_98286_b;
                  }
  
                  this.field_98284_d = this.field_98287_c;
@@ -55,7 +56,21 @@
              }
              else
              {
-@@ -105,33 +103,17 @@
+@@ -93,45 +91,29 @@
+ 
+                 if (this.field_98286_b > 0)
+                 {
+-                    this.field_98286_b--;
++                    --this.field_98286_b;
+                     return;
+                 }
+ 
+                 boolean flag = false;
+ 
+-                for (int i = 0; i < this.field_98294_i; i++)
++                for (int i = 0; i < this.field_98294_i; ++i)
+                 {
+                     NBTTagCompound nbttagcompound = this.field_98282_f.func_185277_b();
                      NBTTagList nbttaglist = nbttagcompound.func_150295_c("Pos", 6);
                      World world = this.func_98271_a();
                      int j = nbttaglist.func_74745_c();
@@ -128,6 +143,15 @@
          }
  
          this.func_98267_a(1);
+@@ -199,7 +181,7 @@
+         {
+             NBTTagList nbttaglist = p_98270_1_.func_150295_c("SpawnPotentials", 10);
+ 
+-            for (int i = 0; i < nbttaglist.func_74745_c(); i++)
++            for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+             {
+                 this.field_98285_e.add(new WeightedSpawnerEntity(nbttaglist.func_150305_b(i)));
+             }
 @@ -211,7 +193,7 @@
          }
          else if (!this.field_98285_e.isEmpty())

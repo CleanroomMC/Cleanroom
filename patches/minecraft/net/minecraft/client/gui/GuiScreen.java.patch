@@ -27,13 +27,15 @@
  
      public void func_73863_a(int p_73863_1_, int p_73863_2_, float p_73863_3_)
      {
-         for (int i = 0; i < this.field_146292_n.size(); ++i)
+-        for (int i = 0; i < this.field_146292_n.size(); i++)
++        for (int i = 0; i < this.field_146292_n.size(); ++i)
          {
 -            this.field_146292_n.get(i).func_191745_a(this.field_146297_k, p_73863_1_, p_73863_2_, p_73863_3_);
 +            ((GuiButton)this.field_146292_n.get(i)).func_191745_a(this.field_146297_k, p_73863_1_, p_73863_2_, p_73863_3_);
          }
  
-         for (int j = 0; j < this.field_146293_o.size(); ++j)
+-        for (int j = 0; j < this.field_146293_o.size(); j++)
++        for (int j = 0; j < this.field_146293_o.size(); ++j)
          {
 -            this.field_146293_o.get(j).func_146159_a(this.field_146297_k, p_73863_1_, p_73863_2_);
 +            ((GuiLabel)this.field_146293_o.get(j)).func_146159_a(this.field_146297_k, p_73863_1_, p_73863_2_);
@@ -68,7 +70,7 @@
          }
  
          return "";
-@@ -118,31 +121,32 @@
+@@ -118,35 +121,36 @@
              try
              {
                  StringSelection stringselection = new StringSelection(p_146275_0_);
@@ -100,15 +102,21 @@
 -                            );
 +        List<String> list = p_191927_1_.func_82840_a(this.field_146297_k.field_71439_g, this.field_146297_k.field_71474_y.field_82882_x ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
  
-         for (int i = 0; i < list.size(); ++i)
+-        for (int i = 0; i < list.size(); i++)
++        for (int i = 0; i < list.size(); ++i)
          {
              if (i == 0)
              {
--                list.set(i, p_191927_1_.func_77953_t().field_77937_e + (String)list.get(i));
+-                list.set(i, p_191927_1_.func_77953_t().field_77937_e + list.get(i));
 +                list.set(i, p_191927_1_.func_77973_b().getForgeRarity(p_191927_1_).getColor() + (String)list.get(i));
              }
              else
              {
+-                list.set(i, TextFormatting.GRAY + list.get(i));
++                list.set(i, TextFormatting.GRAY + (String)list.get(i));
+             }
+         }
+ 
 @@ -170,7 +174,13 @@
  
      public void func_146283_a(List<String> p_146283_1_, int p_146283_2_, int p_146283_3_)
@@ -124,6 +132,15 @@
          {
              GlStateManager.func_179101_C();
              RenderHelper.func_74518_a();
+@@ -222,7 +232,7 @@
+             this.func_73733_a(l1 - 3, i2 - 3, l1 + i + 3, i2 - 3 + 1, 1347420415, 1347420415);
+             this.func_73733_a(l1 - 3, i2 + k + 2, l1 + i + 3, i2 + k + 3, 1344798847, 1344798847);
+ 
+-            for (int k1 = 0; k1 < p_146283_1_.size(); k1++)
++            for (int k1 = 0; k1 < p_146283_1_.size(); ++k1)
+             {
+                 String s1 = p_146283_1_.get(k1);
+                 this.field_146289_q.func_175063_a(s1, (float)l1, (float)i2, -1);
 @@ -263,8 +273,9 @@
                          itemstack = new ItemStack((NBTTagCompound)nbtbase);
                      }
@@ -198,7 +215,14 @@
  
          this.field_146297_k.field_71439_g.func_71165_d(p_175281_1_);
      }
-@@ -424,9 +434,15 @@
+@@ -418,15 +428,21 @@
+     {
+         if (p_73864_3_ == 0)
+         {
+-            for (int i = 0; i < this.field_146292_n.size(); i++)
++            for (int i = 0; i < this.field_146292_n.size(); ++i)
+             {
+                 GuiButton guibutton = this.field_146292_n.get(i);
  
                  if (guibutton.func_146116_c(this.field_146297_k, p_73864_1_, p_73864_2_))
                  {
@@ -289,7 +313,7 @@
      public void func_73878_a(boolean p_73878_1_, int p_73878_2_)
      {
          if (p_73878_2_ == 31102009)
-@@ -611,13 +628,13 @@
+@@ -611,19 +628,26 @@
          try
          {
              Class<?> oclass = Class.forName("java.awt.Desktop");
@@ -305,3 +329,17 @@
          }
      }
  
+     public static boolean func_146271_m()
+     {
+-        return Minecraft.field_142025_a ? Keyboard.isKeyDown(219) || Keyboard.isKeyDown(220) : Keyboard.isKeyDown(29) || Keyboard.isKeyDown(157);
++        if (Minecraft.field_142025_a)
++        {
++            return Keyboard.isKeyDown(219) || Keyboard.isKeyDown(220);
++        }
++        else
++        {
++            return Keyboard.isKeyDown(29) || Keyboard.isKeyDown(157);
++        }
+     }
+ 
+     public static boolean func_146272_n()

@@ -47,7 +47,7 @@
                  {
                      return EnumActionResult.FAIL;
                  }
-@@ -68,71 +64,73 @@
+@@ -68,89 +64,89 @@
  
              ItemStack itemstack = p_180614_1_.func_184586_b(p_180614_4_);
  
@@ -179,7 +179,12 @@
      public void func_150895_a(CreativeTabs p_150895_1_, NonNullList<ItemStack> p_150895_2_)
      {
          if (this.func_194125_a(p_150895_1_))
-@@ -144,13 +142,11 @@
+         {
+-            for (int i = 0; i < field_82807_a.length; i++)
++            for (int i = 0; i < field_82807_a.length; ++i)
+             {
+                 p_150895_2_.add(new ItemStack(this, 1, i));
+             }
          }
      }
  

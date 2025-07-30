@@ -120,6 +120,15 @@
                  crashreportcategory.func_71507_a("Generator", this.field_186029_c);
                  throw new ReportedException(crashreport);
              }
+@@ -186,7 +216,7 @@
+         int i = 0;
+         List<Chunk> list = Lists.newArrayList(this.field_73244_f.values());
+ 
+-        for (int j = 0; j < list.size(); j++)
++        for (int j = 0; j < list.size(); ++j)
+         {
+             Chunk chunk = list.get(j);
+ 
 @@ -199,8 +229,9 @@
              {
                  this.func_73242_b(chunk);
@@ -131,7 +140,7 @@
                  {
                      return false;
                  }
-@@ -215,23 +246,28 @@
+@@ -215,31 +246,38 @@
          this.field_73247_e.func_75818_b();
      }
  
@@ -162,7 +171,9 @@
                          this.func_73242_b(chunk);
                          this.func_73243_a(chunk);
                          this.field_73244_f.remove(olong);
-@@ -240,6 +276,8 @@
+-                        i++;
++                        ++i;
+                     }
                  }
              }
  

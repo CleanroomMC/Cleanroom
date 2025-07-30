@@ -223,7 +223,7 @@
      public boolean func_184645_a(EntityPlayer p_184645_1_, EnumHand p_184645_2_)
      {
          ItemStack itemstack = p_184645_1_.func_184586_b(p_184645_2_);
-@@ -339,7 +316,6 @@
+@@ -339,22 +316,22 @@
          }
      }
  
@@ -231,7 +231,19 @@
      public boolean func_70878_b(EntityAnimal p_70878_1_)
      {
          if (p_70878_1_ == this)
-@@ -356,7 +332,6 @@
+         {
+             return false;
+         }
++        else if (!(p_70878_1_ instanceof EntityDonkey) && !(p_70878_1_ instanceof EntityHorse))
++        {
++            return false;
++        }
+         else
+         {
+-            return !(p_70878_1_ instanceof EntityDonkey) && !(p_70878_1_ instanceof EntityHorse)
+-                   ? false
+-                   : this.func_110200_cJ() && ((AbstractHorse)p_70878_1_).func_110200_cJ();
++            return this.func_110200_cJ() && ((AbstractHorse)p_70878_1_).func_110200_cJ();
          }
      }
  
@@ -239,7 +251,7 @@
      public EntityAgeable func_90011_a(EntityAgeable p_90011_1_)
      {
          AbstractHorse abstracthorse;
-@@ -374,11 +349,11 @@
+@@ -372,11 +349,11 @@
  
              if (j < 4)
              {
@@ -253,7 +265,7 @@
              }
              else
              {
-@@ -389,15 +364,15 @@
+@@ -387,15 +364,15 @@
  
              if (k < 2)
              {
@@ -272,7 +284,7 @@
              }
  
              ((EntityHorse)abstracthorse).func_110235_q(i);
-@@ -407,20 +382,17 @@
+@@ -405,20 +382,17 @@
          return abstracthorse;
      }
  

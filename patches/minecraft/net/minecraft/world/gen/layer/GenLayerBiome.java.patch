@@ -54,7 +54,7 @@
              this.field_175973_g = null;
          }
          else
-@@ -38,7 +48,6 @@
+@@ -38,20 +48,19 @@
          }
      }
  
@@ -62,7 +62,14 @@
      public int[] func_75904_a(int p_75904_1_, int p_75904_2_, int p_75904_3_, int p_75904_4_)
      {
          int[] aint = this.field_75909_a.func_75904_a(p_75904_1_, p_75904_2_, p_75904_3_, p_75904_4_);
-@@ -51,7 +60,7 @@
+         int[] aint1 = IntCache.func_76445_a(p_75904_3_ * p_75904_4_);
+ 
+-        for (int i = 0; i < p_75904_4_; i++)
++        for (int i = 0; i < p_75904_4_; ++i)
+         {
+-            for (int j = 0; j < p_75904_3_; j++)
++            for (int j = 0; j < p_75904_3_; ++j)
+             {
                  this.func_75903_a((long)(j + p_75904_1_), (long)(i + p_75904_2_));
                  int k = aint[j + i * p_75904_3_];
                  int l = (k & 3840) >> 8;

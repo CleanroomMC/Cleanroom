@@ -25,6 +25,15 @@
      protected void func_184098_a(@Nullable Slot p_184098_1_, int p_184098_2_, int p_184098_3_, ClickType p_184098_4_)
      {
          this.field_147057_D = true;
+@@ -113,7 +113,7 @@
+ 
+             if (p_184098_1_ == this.field_147064_C && flag)
+             {
+-                for (int j = 0; j < this.field_146297_k.field_71439_g.field_71069_bz.func_75138_a().size(); j++)
++                for (int j = 0; j < this.field_146297_k.field_71439_g.field_71069_bz.func_75138_a().size(); ++j)
+                 {
+                     this.field_146297_k.field_71442_b.func_78761_a(ItemStack.field_190927_a, j);
+                 }
 @@ -140,15 +140,7 @@
                  }
                  else
@@ -54,7 +63,7 @@
                  {
                      if (p_184098_3_ == 0)
                      {
-@@ -239,8 +228,7 @@
+@@ -239,12 +228,11 @@
              else if (this.field_147002_h != null)
              {
                  ItemStack itemstack3 = p_184098_1_ == null ? ItemStack.field_190927_a : this.field_147002_h.func_75139_a(p_184098_1_.field_75222_d).func_75211_c();
@@ -64,6 +73,11 @@
  
                  if (Container.func_94532_c(p_184098_3_) == 2)
                  {
+-                    for (int k = 0; k < 9; k++)
++                    for (int k = 0; k < 9; ++k)
+                     {
+                         this.field_146297_k.field_71442_b.func_78761_a(this.field_147002_h.func_75139_a(45 + k).func_75211_c(), 36 + k);
+                     }
 @@ -273,7 +261,6 @@
          }
      }
@@ -227,6 +241,22 @@
          int i = field_147058_w;
          field_147058_w = p_147050_1_.func_78021_a();
          GuiContainerCreative.ContainerCreative guicontainercreative$containercreative = (GuiContainerCreative.ContainerCreative)this.field_147002_h;
+@@ -455,13 +466,13 @@
+ 
+         if (p_147050_1_ == CreativeTabs.field_192395_m)
+         {
+-            for (int j = 0; j < 9; j++)
++            for (int j = 0; j < 9; ++j)
+             {
+                 HotbarSnapshot hotbarsnapshot = this.field_146297_k.field_191950_u.func_192563_a(j);
+ 
+                 if (hotbarsnapshot.isEmpty())
+                 {
+-                    for (int k = 0; k < 9; k++)
++                    for (int k = 0; k < 9; ++k)
+                     {
+                         if (k == j)
+                         {
 @@ -469,7 +480,7 @@
                              itemstack.func_190925_c("CustomCreativeLock");
                              String s = GameSettings.func_74298_c(this.field_146297_k.field_71474_y.field_151456_ac[j].func_151463_i());
@@ -236,15 +266,18 @@
                              guicontainercreative$containercreative.field_148330_a.add(itemstack);
                          }
                          else
-@@ -498,7 +509,7 @@
+@@ -498,9 +509,9 @@
                  this.field_147063_B = guicontainercreative$containercreative.field_75151_b;
              }
  
 -            guicontainercreative$containercreative.field_75151_b = Lists.newArrayList();
 +            guicontainercreative$containercreative.field_75151_b = Lists.<Slot>newArrayList();
  
-             for (int l = 0; l < container.field_75151_b.size(); ++l)
+-            for (int l = 0; l < container.field_75151_b.size(); l++)
++            for (int l = 0; l < container.field_75151_b.size(); ++l)
              {
+                 Slot slot = new GuiContainerCreative.CreativeSlot(container.field_75151_b.get(l), l);
+                 guicontainercreative$containercreative.field_75151_b.add(slot);
 @@ -552,12 +563,14 @@
  
          if (this.field_147062_A != null)
@@ -340,16 +373,22 @@
              CreativeTabs creativetabs = p_146285_1_.func_77973_b().func_77640_w();
  
              if (creativetabs == null && p_146285_1_.func_77973_b() == Items.field_151134_bR)
-@@ -690,7 +719,7 @@
+@@ -686,19 +715,22 @@
+                 list.add(1, "" + TextFormatting.BOLD + TextFormatting.BLUE + I18n.func_135052_a(creativetabs.func_78024_c()));
+             }
+ 
+-            for (int i = 0; i < list.size(); i++)
++            for (int i = 0; i < list.size(); ++i)
              {
                  if (i == 0)
                  {
--                    list.set(i, p_146285_1_.func_77953_t().field_77937_e + (String)list.get(i));
+-                    list.set(i, p_146285_1_.func_77953_t().field_77937_e + list.get(i));
 +                    list.set(i, p_146285_1_.func_77973_b().getForgeRarity(p_146285_1_).getColor() + (String)list.get(i));
                  }
                  else
                  {
-@@ -698,7 +727,10 @@
+-                    list.set(i, TextFormatting.GRAY + list.get(i));
++                    list.set(i, TextFormatting.GRAY + (String)list.get(i));
                  }
              }
  
@@ -526,16 +565,27 @@
      }
  
      public int func_147056_g()
-@@ -889,7 +958,7 @@
+@@ -887,9 +956,9 @@
+ 
+         if (p_192044_2_)
          {
-             for (int i = 0; i < InventoryPlayer.func_70451_h(); ++i)
+-            for (int i = 0; i < InventoryPlayer.func_70451_h(); i++)
++            for (int i = 0; i < InventoryPlayer.func_70451_h(); ++i)
              {
 -                ItemStack itemstack = hotbarsnapshot.get(i).func_77946_l();
 +                ItemStack itemstack = ((ItemStack)hotbarsnapshot.get(i)).func_77946_l();
                  entityplayersp.field_71071_by.func_70299_a(i, itemstack);
                  p_192044_0_.field_71442_b.func_78761_a(itemstack, 36 + i);
              }
-@@ -905,7 +974,7 @@
+@@ -898,14 +967,14 @@
+         }
+         else if (p_192044_3_)
+         {
+-            for (int j = 0; j < InventoryPlayer.func_70451_h(); j++)
++            for (int j = 0; j < InventoryPlayer.func_70451_h(); ++j)
+             {
+                 hotbarsnapshot.set(j, entityplayersp.field_71071_by.func_70301_a(j).func_77946_l());
+             }
  
              String s = GameSettings.func_74298_c(p_192044_0_.field_71474_y.field_151456_ac[p_192044_1_].func_151463_i());
              String s1 = GameSettings.func_74298_c(p_192044_0_.field_71474_y.field_193630_aq.func_151463_i());
@@ -544,7 +594,7 @@
              creativesettings.func_192564_b();
          }
      }
-@@ -913,7 +982,7 @@
+@@ -913,21 +982,21 @@
      @SideOnly(Side.CLIENT)
      public static class ContainerCreative extends Container
          {
@@ -553,6 +603,23 @@
  
              public ContainerCreative(EntityPlayer p_i1086_1_)
              {
+                 InventoryPlayer inventoryplayer = p_i1086_1_.field_71071_by;
+ 
+-                for (int i = 0; i < 5; i++)
++                for (int i = 0; i < 5; ++i)
+                 {
+-                    for (int j = 0; j < 9; j++)
++                    for (int j = 0; j < 9; ++j)
+                     {
+                         this.func_75146_a(new GuiContainerCreative.LockedSlot(GuiContainerCreative.field_147060_v, i * 9 + j, 9 + j * 18, 18 + i * 18));
+                     }
+                 }
+ 
+-                for (int k = 0; k < 9; k++)
++                for (int k = 0; k < 9; ++k)
+                 {
+                     this.func_75146_a(new Slot(inventoryplayer, k, 9 + k * 18, 112));
+                 }
 @@ -935,7 +1004,6 @@
                  this.func_148329_a(0.0F);
              }
@@ -561,7 +628,7 @@
              public boolean func_75145_c(EntityPlayer p_75145_1_)
              {
                  return true;
-@@ -944,7 +1012,7 @@
+@@ -944,16 +1012,16 @@
              public void func_148329_a(float p_148329_1_)
              {
                  int i = (this.field_148330_a.size() + 9 - 1) / 9 - 5;
@@ -570,6 +637,17 @@
  
                  if (j < 0)
                  {
+                     j = 0;
+                 }
+ 
+-                for (int k = 0; k < 5; k++)
++                for (int k = 0; k < 5; ++k)
+                 {
+-                    for (int l = 0; l < 9; l++)
++                    for (int l = 0; l < 9; ++l)
+                     {
+                         int i1 = l + (k + j) * 9;
+ 
 @@ -974,7 +1042,6 @@
                  return this.field_148330_a.size() > 45;
              }
@@ -711,11 +789,22 @@
      }
  
      @SideOnly(Side.CLIENT)
-@@ -1103,7 +1188,6 @@
+@@ -1103,10 +1188,16 @@
                  super(p_i47453_1_, p_i47453_2_, p_i47453_3_, p_i47453_4_);
              }
  
 -            @Override
              public boolean func_82869_a(EntityPlayer p_82869_1_)
              {
-                 if (super.func_82869_a(p_82869_1_) && this.func_75216_d())
+-                return super.func_82869_a(p_82869_1_) && this.func_75216_d() ? this.func_75211_c().func_179543_a("CustomCreativeLock") == null : !this.func_75216_d();
++                if (super.func_82869_a(p_82869_1_) && this.func_75216_d())
++                {
++                    return this.func_75211_c().func_179543_a("CustomCreativeLock") == null;
++                }
++                else
++                {
++                    return !this.func_75216_d();
++                }
+             }
+         }
+ }

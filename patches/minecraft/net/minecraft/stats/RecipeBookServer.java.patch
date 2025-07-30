@@ -46,7 +46,15 @@
          }
  
          nbttagcompound.func_74782_a("toBeDisplayed", nbttaglist1);
-@@ -96,7 +95,7 @@
+@@ -89,14 +88,14 @@
+         this.field_192819_c = p_192825_1_.func_74767_n("isFilteringCraftable");
+         NBTTagList nbttaglist = p_192825_1_.func_150295_c("recipes", 8);
+ 
+-        for (int i = 0; i < nbttaglist.func_74745_c(); i++)
++        for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+         {
+             ResourceLocation resourcelocation = new ResourceLocation(nbttaglist.func_150307_f(i));
+             IRecipe irecipe = CraftingManager.func_193373_a(resourcelocation);
  
              if (irecipe == null)
              {
@@ -55,7 +63,15 @@
              }
              else
              {
-@@ -113,7 +112,7 @@
+@@ -106,14 +105,14 @@
+ 
+         NBTTagList nbttaglist1 = p_192825_1_.func_150295_c("toBeDisplayed", 8);
+ 
+-        for (int j = 0; j < nbttaglist1.func_74745_c(); j++)
++        for (int j = 0; j < nbttaglist1.func_74745_c(); ++j)
+         {
+             ResourceLocation resourcelocation1 = new ResourceLocation(nbttaglist1.func_150307_f(j));
+             IRecipe irecipe1 = CraftingManager.func_193373_a(resourcelocation1);
  
              if (irecipe1 == null)
              {

@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import com.cleanroommc.loader.LanguageAdapterRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -117,7 +118,8 @@ public class FMLModContainer implements ModContainer
         String languageAdapterType = (String)modDescriptor.get("modLanguageAdapter");
         if (Strings.isNullOrEmpty(languageAdapterType))
         {
-            this.languageAdapter = "scala".equals(modLanguage) ? new ILanguageAdapter.ScalaAdapter() : new ILanguageAdapter.JavaAdapter();
+            languageAdapter = LanguageAdapterRegistry.getAdapterFor(modLanguage);
+            FMLLog.log.trace("Using registered custom language adapter {} for {} (modid: {})", languageAdapterType, this.className, getModId());
         }
         else
         {
@@ -164,7 +166,7 @@ public class FMLModContainer implements ModContainer
         {
             try
             {
-                languageAdapter = (ILanguageAdapter)Class.forName((String)descriptor.get("modLanguageAdapter"), true, Loader.instance().getModClassLoader()).newInstance();
+                languageAdapter = (ILanguageAdapter)Class.forName((String)descriptor.get("modLanguageAdapter"), true, Loader.instance().getModClassLoader()).getConstructor().newInstance();
             }
             catch (Exception ex)
             {

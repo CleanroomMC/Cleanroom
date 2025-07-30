@@ -12,7 +12,7 @@
      private final int field_76533_a;
      private final boolean field_76531_b;
      private final IBlockState field_76532_c;
-@@ -42,13 +39,12 @@
+@@ -42,15 +39,14 @@
          this.field_76531_b = p_i46446_5_;
      }
  
@@ -25,11 +25,20 @@
 -        if (p_180709_3_.func_177956_o() >= 1 && p_180709_3_.func_177956_o() + i + 1 <= 256)
 +        if (p_180709_3_.func_177956_o() >= 1 && p_180709_3_.func_177956_o() + i + 1 <= p_180709_1_.func_72800_K())
          {
-             for (int j = p_180709_3_.func_177956_o(); j <= p_180709_3_.func_177956_o() + 1 + i; ++j)
+-            for (int j = p_180709_3_.func_177956_o(); j <= p_180709_3_.func_177956_o() + 1 + i; j++)
++            for (int j = p_180709_3_.func_177956_o(); j <= p_180709_3_.func_177956_o() + 1 + i; ++j)
              {
-@@ -70,11 +66,14 @@
+                 int k = 1;
+ 
+@@ -66,15 +62,18 @@
+ 
+                 BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+ 
+-                for (int l = p_180709_3_.func_177958_n() - k; l <= p_180709_3_.func_177958_n() + k && flag; l++)
++                for (int l = p_180709_3_.func_177958_n() - k; l <= p_180709_3_.func_177958_n() + k && flag; ++l)
                  {
-                     for (int i1 = p_180709_3_.func_177952_p() - k; i1 <= p_180709_3_.func_177952_p() + k && flag; ++i1)
+-                    for (int i1 = p_180709_3_.func_177952_p() - k; i1 <= p_180709_3_.func_177952_p() + k && flag; i1++)
++                    for (int i1 = p_180709_3_.func_177952_p() - k; i1 <= p_180709_3_.func_177952_p() + k && flag; ++i1)
                      {
 -                        if (j < 0 || j >= 256)
 +                        if (j >= 0 && j < p_180709_1_.func_72800_K())
@@ -45,7 +54,7 @@
                          {
                              flag = false;
                          }
-@@ -88,12 +87,11 @@
+@@ -88,34 +87,33 @@
              }
              else
              {
@@ -61,7 +70,22 @@
                      int k2 = 3;
                      int l2 = 0;
  
-@@ -113,9 +111,9 @@
+-                    for (int i3 = p_180709_3_.func_177956_o() - 3 + i; i3 <= p_180709_3_.func_177956_o() + i; i3++)
++                    for (int i3 = p_180709_3_.func_177956_o() - 3 + i; i3 <= p_180709_3_.func_177956_o() + i; ++i3)
+                     {
+                         int i4 = i3 - (p_180709_3_.func_177956_o() + i);
+                         int j1 = 1 - i4 / 2;
+ 
+-                        for (int k1 = p_180709_3_.func_177958_n() - j1; k1 <= p_180709_3_.func_177958_n() + j1; k1++)
++                        for (int k1 = p_180709_3_.func_177958_n() - j1; k1 <= p_180709_3_.func_177958_n() + j1; ++k1)
+                         {
+                             int l1 = k1 - p_180709_3_.func_177958_n();
+ 
+-                            for (int i2 = p_180709_3_.func_177952_p() - j1; i2 <= p_180709_3_.func_177952_p() + j1; i2++)
++                            for (int i2 = p_180709_3_.func_177952_p() - j1; i2 <= p_180709_3_.func_177952_p() + j1; ++i2)
+                             {
+                                 int j2 = i2 - p_180709_3_.func_177952_p();
+ 
                                  if (Math.abs(l1) != j1 || Math.abs(j2) != j1 || p_180709_2_.nextInt(2) != 0 && i4 != 0)
                                  {
                                      BlockPos blockpos = new BlockPos(k1, i3, i2);
@@ -73,9 +97,12 @@
                                      {
                                          this.func_175903_a(p_180709_1_, blockpos, this.field_76530_d);
                                      }
-@@ -126,9 +124,10 @@
+@@ -124,11 +122,12 @@
+                         }
+                     }
  
-                     for (int j3 = 0; j3 < i; ++j3)
+-                    for (int j3 = 0; j3 < i; j3++)
++                    for (int j3 = 0; j3 < i; ++j3)
                      {
 -                        Material material1 = p_180709_1_.func_180495_p(p_180709_3_.func_177981_b(j3)).func_185904_a();
 +                        BlockPos upN = p_180709_3_.func_177981_b(j3);
@@ -86,7 +113,22 @@
                          {
                              this.func_175903_a(p_180709_1_, p_180709_3_.func_177981_b(j3), this.field_76532_c);
  
-@@ -171,29 +170,30 @@
+@@ -159,41 +158,42 @@
+ 
+                     if (this.field_76531_b)
+                     {
+-                        for (int k3 = p_180709_3_.func_177956_o() - 3 + i; k3 <= p_180709_3_.func_177956_o() + i; k3++)
++                        for (int k3 = p_180709_3_.func_177956_o() - 3 + i; k3 <= p_180709_3_.func_177956_o() + i; ++k3)
+                         {
+                             int j4 = k3 - (p_180709_3_.func_177956_o() + i);
+                             int k4 = 2 - j4 / 2;
+                             BlockPos.MutableBlockPos blockpos$mutableblockpos1 = new BlockPos.MutableBlockPos();
+ 
+-                            for (int l4 = p_180709_3_.func_177958_n() - k4; l4 <= p_180709_3_.func_177958_n() + k4; l4++)
++                            for (int l4 = p_180709_3_.func_177958_n() - k4; l4 <= p_180709_3_.func_177958_n() + k4; ++l4)
+                             {
+-                                for (int i5 = p_180709_3_.func_177952_p() - k4; i5 <= p_180709_3_.func_177952_p() + k4; i5++)
++                                for (int i5 = p_180709_3_.func_177952_p() - k4; i5 <= p_180709_3_.func_177952_p() + k4; ++i5)
                                  {
                                      blockpos$mutableblockpos1.func_181079_c(l4, k3, i5);
  
@@ -122,7 +164,15 @@
                                          {
                                              this.func_181650_b(p_180709_1_, blockpos1, BlockVine.field_176273_b);
                                          }
-@@ -211,12 +211,7 @@
+@@ -204,19 +204,14 @@
+ 
+                         if (p_180709_2_.nextInt(5) == 0 && i > 5)
+                         {
+-                            for (int l3 = 0; l3 < 2; l3++)
++                            for (int l3 = 0; l3 < 2; ++l3)
+                             {
+                                 for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
+                                 {
                                      if (p_180709_2_.nextInt(4 - l3) == 0)
                                      {
                                          EnumFacing enumfacing1 = enumfacing.func_176734_d();
@@ -159,7 +209,7 @@
          this.func_181651_a(p_181650_1_, p_181650_2_, p_181650_3_);
          int i = 4;
  
--        for (BlockPos blockpos = p_181650_2_.func_177977_b(); p_181650_1_.func_180495_p(blockpos).func_185904_a() == Material.field_151579_a && i > 0; --i)
+-        for (BlockPos blockpos = p_181650_2_.func_177977_b(); p_181650_1_.func_180495_p(blockpos).func_185904_a() == Material.field_151579_a && i > 0; i--)
 +        for (BlockPos blockpos = p_181650_2_.func_177977_b(); p_181650_1_.func_175623_d(blockpos) && i > 0; --i)
          {
              this.func_181651_a(p_181650_1_, blockpos, p_181650_3_);

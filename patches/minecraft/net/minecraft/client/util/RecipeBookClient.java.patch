@@ -21,8 +21,8 @@
      {
          RecipeList recipelist = new RecipeList();
          field_194087_f.add(recipelist);
--        field_194086_e.computeIfAbsent(p_194082_0_, p_194085_0_ -> new ArrayList()).add(recipelist);
--        field_194086_e.computeIfAbsent(CreativeTabs.field_78027_g, p_194083_0_ -> new ArrayList()).add(recipelist);
+-        field_194086_e.computeIfAbsent(p_194082_0_, p_194085_0_ -> new ArrayList<>()).add(recipelist);
+-        field_194086_e.computeIfAbsent(CreativeTabs.field_78027_g, p_194083_0_ -> new ArrayList<>()).add(recipelist);
 +        (field_194086_e.computeIfAbsent(p_194082_0_, (p_194085_0_) ->
 +        {
 +            return new ArrayList();

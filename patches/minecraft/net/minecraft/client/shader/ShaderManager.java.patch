@@ -46,7 +46,12 @@
  
              if (jsonarray != null)
              {
-@@ -86,13 +88,13 @@
+@@ -82,17 +84,17 @@
+                         throw jsonexception1;
+                     }
+ 
+-                    i++;
++                    ++i;
                  }
              }
  
@@ -63,6 +68,15 @@
  
                  for (JsonElement jsonelement1 : jsonarray1)
                  {
+@@ -107,7 +109,7 @@
+                         throw jsonexception2;
+                     }
+ 
+-                    j++;
++                    ++j;
+                 }
+             }
+             else
 @@ -116,7 +118,7 @@
                  this.field_148014_r = null;
              }
@@ -72,7 +86,12 @@
  
              if (jsonarray2 != null)
              {
-@@ -139,7 +141,7 @@
+@@ -135,11 +137,11 @@
+                         throw jsonexception3;
+                     }
+ 
+-                    k++;
++                    ++k;
                  }
              }
  
@@ -99,6 +118,24 @@
          }
  
          this.func_147985_d();
+@@ -182,7 +184,7 @@
+         field_148002_c = null;
+         field_148000_e = true;
+ 
+-        for (int i = 0; i < this.field_148010_h.size(); i++)
++        for (int i = 0; i < this.field_148010_h.size(); ++i)
+         {
+             if (this.field_147997_f.get(this.field_147998_g.get(i)) != null)
+             {
+@@ -213,7 +215,7 @@
+             GlStateManager.func_179129_p();
+         }
+ 
+-        for (int i = 0; i < this.field_148010_h.size(); i++)
++        for (int i = 0; i < this.field_148010_h.size(); ++i)
+         {
+             if (this.field_147997_f.get(this.field_147998_g.get(i)) != null)
+             {
 @@ -232,7 +234,7 @@
                  }
                  else if (object instanceof Integer)
@@ -108,7 +145,21 @@
                  }
  
                  if (j != -1)
-@@ -284,7 +286,7 @@
+@@ -270,7 +272,7 @@
+     {
+         int i = 0;
+ 
+-        for (int j = 0; i < this.field_147998_g.size(); j++)
++        for (int j = 0; i < this.field_147998_g.size(); ++j)
+         {
+             String s = this.field_147998_g.get(i);
+             int k = OpenGlHelper.func_153194_a(this.field_148006_l, s);
+@@ -280,14 +282,14 @@
+                 field_148003_a.warn("Shader {}could not find sampler named {} in the specified shader program.", this.field_148007_m, s);
+                 this.field_147997_f.remove(s);
+                 this.field_147998_g.remove(j);
+-                j--;
++                --j;
              }
              else
              {
@@ -116,7 +167,11 @@
 +                this.field_148010_h.add(Integer.valueOf(k));
              }
  
-             ++i;
+-            i++;
++            ++i;
+         }
+ 
+         for (ShaderUniform shaderuniform : this.field_148011_i)
 @@ -297,11 +299,11 @@
  
              if (l == -1)
@@ -140,3 +195,21 @@
              this.field_147998_g.add(s);
          }
          else
+@@ -365,7 +367,7 @@
+                     throw jsonexception;
+                 }
+ 
+-                k++;
++                ++k;
+             }
+ 
+             if (j > 1 && jsonarray.size() == 1)
+@@ -373,7 +375,7 @@
+                 while (k < j)
+                 {
+                     afloat[k] = afloat[0];
+-                    k++;
++                    ++k;
+                 }
+             }
+ 

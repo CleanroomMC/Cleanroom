@@ -8,7 +8,19 @@
      public boolean equals(Object p_equals_1_)
      {
          if (this == p_equals_1_)
-@@ -84,13 +83,24 @@
+@@ -73,20 +72,35 @@
+             {
+                 return false;
+             }
++            else if (this.field_176115_b != mapdecoration.field_176115_b)
++            {
++                return false;
++            }
+             else
+             {
+-                return this.field_176115_b != mapdecoration.field_176115_b ? false : this.field_176116_c == mapdecoration.field_176116_c;
++                return this.field_176116_c == mapdecoration.field_176116_c;
+             }
          }
      }
  
@@ -35,7 +47,7 @@
      }
  
      public static enum Type
-@@ -106,7 +116,7 @@
+@@ -102,7 +116,7 @@
          MANSION(true, 5393476),
          MONUMENT(true, 3830373);
  
@@ -44,7 +56,7 @@
          private final boolean field_191176_l;
          private final int field_191177_m;
  
-@@ -117,6 +127,7 @@
+@@ -113,6 +127,7 @@
  
          private Type(boolean p_i47344_3_, int p_i47344_4_)
          {

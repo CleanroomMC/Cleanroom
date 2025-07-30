@@ -107,7 +107,8 @@
      {
          int[] aint = new int[28];
  
-         for (int i = 0; i < 4; ++i)
+-        for (int i = 0; i < 4; i++)
++        for (int i = 0; i < 4; ++i)
          {
 -            this.func_188015_a(aint, i, p_188012_3_, p_188012_1_, p_188012_4_, p_188012_2_, p_188012_5_, p_188012_6_, p_188012_7_);
 +            this.fillVertexData(aint, i, orientation, uvs, p_188012_4_, sprite, rotationIn, partRotation, shade);
@@ -220,6 +221,19 @@
          }
      }
  
+@@ -245,9 +226,9 @@
+     {
+         Vector4f vector4f = new Vector4f(p_178406_1_.x - p_178406_2_.x, p_178406_1_.y - p_178406_2_.y, p_178406_1_.z - p_178406_2_.z, 1.0F);
+         Matrix4f.transform(p_178406_3_, vector4f, vector4f);
+-        vector4f.x = vector4f.x * p_178406_4_.x;
+-        vector4f.y = vector4f.y * p_178406_4_.y;
+-        vector4f.z = vector4f.z * p_178406_4_.z;
++        vector4f.x *= p_178406_4_.x;
++        vector4f.y *= p_178406_4_.y;
++        vector4f.z *= p_178406_4_.z;
+         p_178406_1_.set(vector4f.x + p_178406_2_.x, vector4f.y + p_178406_2_.y, vector4f.z + p_178406_2_.z);
+     }
+ 
 @@ -289,7 +270,14 @@
              }
          }
@@ -236,3 +250,30 @@
      }
  
      private void func_178408_a(int[] p_178408_1_, EnumFacing p_178408_2_)
+@@ -304,7 +292,7 @@
+         afloat[EnumFaceDirection.Constants.field_179179_b] = -999.0F;
+         afloat[EnumFaceDirection.Constants.field_179181_a] = -999.0F;
+ 
+-        for (int i = 0; i < 4; i++)
++        for (int i = 0; i < 4; ++i)
+         {
+             int j = 7 * i;
+             float f = Float.intBitsToFloat(aint[j]);
+@@ -344,7 +332,7 @@
+ 
+         EnumFaceDirection enumfacedirection = EnumFaceDirection.func_179027_a(p_178408_2_);
+ 
+-        for (int i1 = 0; i1 < 4; i1++)
++        for (int i1 = 0; i1 < 4; ++i1)
+         {
+             int j1 = 7 * i1;
+             EnumFaceDirection.VertexInformation enumfacedirection$vertexinformation = enumfacedirection.func_179025_a(i1);
+@@ -355,7 +343,7 @@
+             p_178408_1_[j1 + 1] = Float.floatToRawIntBits(f3);
+             p_178408_1_[j1 + 2] = Float.floatToRawIntBits(f4);
+ 
+-            for (int k = 0; k < 4; k++)
++            for (int k = 0; k < 4; ++k)
+             {
+                 int l = 7 * k;
+                 float f5 = Float.intBitsToFloat(aint[l]);

@@ -122,7 +122,7 @@
  
          if (!this.field_70170_p.field_72995_K && this.func_82203_t(0) > 0)
          {
-@@ -169,32 +157,32 @@
+@@ -169,43 +157,43 @@
  
              if (entity != null)
              {
@@ -136,7 +136,7 @@
 +                        this.field_70181_x = 0.0D;
                      }
  
--                    this.field_70181_x += (0.5 - this.field_70181_x) * 0.6F;
+-                    this.field_70181_x = this.field_70181_x + (0.5 - this.field_70181_x) * 0.6F;
 +                    this.field_70181_x += (0.5D - this.field_70181_x) * 0.6000000238418579D;
                  }
  
@@ -148,8 +148,8 @@
 +                if (d3 > 9.0D)
                  {
                      double d5 = (double)MathHelper.func_76133_a(d3);
--                    this.field_70159_w += (d0 / d5 * 0.5 - this.field_70159_w) * 0.6F;
--                    this.field_70179_y += (d1 / d5 * 0.5 - this.field_70179_y) * 0.6F;
+-                    this.field_70159_w = this.field_70159_w + (d0 / d5 * 0.5 - this.field_70159_w) * 0.6F;
+-                    this.field_70179_y = this.field_70179_y + (d1 / d5 * 0.5 - this.field_70179_y) * 0.6F;
 +                    this.field_70159_w += (d0 / d5 * 0.5D - this.field_70159_w) * 0.6000000238418579D;
 +                    this.field_70179_y += (d1 / d5 * 0.5D - this.field_70179_y) * 0.6000000238418579D;
                  }
@@ -164,6 +164,19 @@
          }
  
          super.func_70636_d();
+ 
+-        for (int i = 0; i < 2; i++)
++        for (int i = 0; i < 2; ++i)
+         {
+             this.field_82218_g[i] = this.field_82221_e[i];
+             this.field_82217_f[i] = this.field_82220_d[i];
+         }
+ 
+-        for (int j = 0; j < 2; j++)
++        for (int j = 0; j < 2; ++j)
+         {
+             int k = this.func_82203_t(j + 1);
+             Entity entity1 = null;
 @@ -224,8 +212,8 @@
                  double d7 = entity1.field_70163_u + (double)entity1.func_70047_e() - d12;
                  double d8 = entity1.field_70161_v - d13;
@@ -175,7 +188,13 @@
                  this.field_82220_d[j] = this.func_82204_b(this.field_82220_d[j], f1, 40.0F);
                  this.field_82221_e[j] = this.func_82204_b(this.field_82221_e[j], f, 10.0F);
              }
-@@ -242,29 +230,11 @@
+@@ -237,56 +225,28 @@
+ 
+         boolean flag = this.func_82205_o();
+ 
+-        for (int l = 0; l < 3; l++)
++        for (int l = 0; l < 3; ++l)
+         {
              double d10 = this.func_82214_u(l);
              double d2 = this.func_82208_v(l);
              double d4 = this.func_82213_w(l);
@@ -207,9 +226,10 @@
              }
          }
  
-@@ -272,21 +242,11 @@
+         if (this.func_82212_n() > 0)
          {
-             for (int i1 = 0; i1 < 3; ++i1)
+-            for (int i1 = 0; i1 < 3; i1++)
++            for (int i1 = 0; i1 < 3; ++i1)
              {
 -                this.field_70170_p
 -                .func_175688_a(
@@ -248,7 +268,14 @@
                  this.field_70170_p.func_175669_a(1023, new BlockPos(this), 0);
              }
  
-@@ -325,16 +276,22 @@
+@@ -319,22 +270,28 @@
+         {
+             super.func_70619_bc();
+ 
+-            for (int i = 1; i < 3; i++)
++            for (int i = 1; i < 3; ++i)
+             {
+                 if (this.field_70173_aa >= this.field_82223_h[i - 1])
                  {
                      this.field_82223_h[i - 1] = this.field_70173_aa + 10 + this.field_70146_Z.nextInt(10);
  
@@ -280,7 +307,7 @@
                      }
  
                      int k1 = this.func_82203_t(i);
-@@ -343,29 +300,27 @@
+@@ -343,31 +300,29 @@
                      {
                          Entity entity = this.field_70170_p.func_73045_a(k1);
  
@@ -322,17 +349,37 @@
 -                                                      );
 +                        List<EntityLivingBase> list = this.field_70170_p.<EntityLivingBase>func_175647_a(EntityLivingBase.class, this.func_174813_aQ().func_72314_b(20.0D, 8.0D, 20.0D), Predicates.and(field_82219_bJ, EntitySelectors.field_180132_d));
  
-                         for (int j2 = 0; j2 < 10 && !list.isEmpty(); ++j2)
+-                        for (int j2 = 0; j2 < 10 && !list.isEmpty(); j2++)
++                        for (int j2 = 0; j2 < 10 && !list.isEmpty(); ++j2)
                          {
-@@ -407,7 +362,7 @@
+                             EntityLivingBase entitylivingbase = list.get(this.field_70146_Z.nextInt(list.size()));
+ 
+@@ -405,20 +360,20 @@
+ 
+             if (this.field_82222_j > 0)
              {
-                 --this.field_82222_j;
+-                this.field_82222_j--;
++                --this.field_82222_j;
  
 -                if (this.field_82222_j == 0 && this.field_70170_p.func_82736_K().func_82766_b("mobGriefing"))
 +                if (this.field_82222_j == 0 && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.field_70170_p, this))
                  {
                      int i1 = MathHelper.func_76128_c(this.field_70163_u);
                      int l1 = MathHelper.func_76128_c(this.field_70165_t);
+                     int i2 = MathHelper.func_76128_c(this.field_70161_v);
+                     boolean flag = false;
+ 
+-                    for (int k2 = -1; k2 <= 1; k2++)
++                    for (int k2 = -1; k2 <= 1; ++k2)
+                     {
+-                        for (int l2 = -1; l2 <= 1; l2++)
++                        for (int l2 = -1; l2 <= 1; ++l2)
+                         {
+-                            for (int j = 0; j <= 3; j++)
++                            for (int j = 0; j <= 3; ++j)
+                             {
+                                 int i3 = l1 + k2;
+                                 int k = i1 + j;
 @@ -427,7 +382,7 @@
                                  IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos);
                                  Block block = iblockstate.func_177230_c();
@@ -498,9 +545,9 @@
 -                    this.field_82222_j = 20;
 -                }
 -
--                for (int i = 0; i < this.field_82224_i.length; ++i)
+-                for (int i = 0; i < this.field_82224_i.length; i++)
 -                {
--                    this.field_82224_i[i] += 3;
+-                    this.field_82224_i[i] = this.field_82224_i[i] + 3;
 -                }
 -
 -                return super.func_70097_a(p_70097_1_, p_70097_2_);

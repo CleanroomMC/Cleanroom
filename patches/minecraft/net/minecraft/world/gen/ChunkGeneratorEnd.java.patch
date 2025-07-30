@@ -28,9 +28,18 @@
      }
  
      public void func_180518_a(int p_180518_1_, int p_180518_2_, ChunkPrimer p_180518_3_)
-@@ -72,35 +86,35 @@
+@@ -66,41 +80,41 @@
+         int l = 3;
+         this.field_185974_p = this.func_185963_a(this.field_185974_p, p_180518_1_ * 2, 0, p_180518_2_ * 2, 3, 33, 3);
+ 
+-        for (int i1 = 0; i1 < 2; i1++)
++        for (int i1 = 0; i1 < 2; ++i1)
+         {
+-            for (int j1 = 0; j1 < 2; j1++)
++            for (int j1 = 0; j1 < 2; ++j1)
              {
-                 for (int k1 = 0; k1 < 32; ++k1)
+-                for (int k1 = 0; k1 < 32; k1++)
++                for (int k1 = 0; k1 < 32; ++k1)
                  {
 -                    double d0 = 0.25;
 +                    double d0 = 0.25D;
@@ -47,7 +56,8 @@
 +                    double d7 = (this.field_185974_p[((i1 + 1) * 3 + j1 + 0) * 33 + k1 + 1] - d3) * 0.25D;
 +                    double d8 = (this.field_185974_p[((i1 + 1) * 3 + j1 + 1) * 33 + k1 + 1] - d4) * 0.25D;
  
-                     for (int l1 = 0; l1 < 4; ++l1)
+-                    for (int l1 = 0; l1 < 4; l1++)
++                    for (int l1 = 0; l1 < 4; ++l1)
                      {
 -                        double d9 = 0.125;
 +                        double d9 = 0.125D;
@@ -58,7 +68,8 @@
 +                        double d12 = (d3 - d1) * 0.125D;
 +                        double d13 = (d4 - d2) * 0.125D;
  
-                         for (int i2 = 0; i2 < 8; ++i2)
+-                        for (int i2 = 0; i2 < 8; i2++)
++                        for (int i2 = 0; i2 < 8; ++i2)
                          {
 -                            double d14 = 0.125;
 +                            double d14 = 0.125D;
@@ -66,7 +77,8 @@
 -                            double d16 = (d11 - d10) * 0.125;
 +                            double d16 = (d11 - d10) * 0.125D;
  
-                             for (int j2 = 0; j2 < 8; ++j2)
+-                            for (int j2 = 0; j2 < 8; j2++)
++                            for (int j2 = 0; j2 < 8; ++j2)
                              {
                                  IBlockState iblockstate = field_185965_b;
  
@@ -75,14 +87,36 @@
                                  {
                                      iblockstate = field_185964_a;
                                  }
-@@ -128,6 +142,7 @@
+@@ -128,16 +142,17 @@
  
      public void func_185962_a(ChunkPrimer p_185962_1_)
      {
+-        for (int i = 0; i < 16; i++)
 +        if (!net.minecraftforge.event.ForgeEventFactory.onReplaceBiomeBlocks(this, this.chunkX, this.chunkZ, p_185962_1_, this.field_73230_p)) return;
-         for (int i = 0; i < 16; ++i)
++        for (int i = 0; i < 16; ++i)
          {
-             for (int j = 0; j < 16; ++j)
+-            for (int j = 0; j < 16; j++)
++            for (int j = 0; j < 16; ++j)
+             {
+                 int k = 1;
+                 int l = -1;
+                 IBlockState iblockstate = field_185964_a;
+                 IBlockState iblockstate1 = field_185964_a;
+ 
+-                for (int i1 = 127; i1 >= 0; i1--)
++                for (int i1 = 127; i1 >= 0; --i1)
+                 {
+                     IBlockState iblockstate2 = p_185962_1_.func_177856_a(i, i1, j);
+ 
+@@ -162,7 +177,7 @@
+                         }
+                         else if (l > 0)
+                         {
+-                            l--;
++                            --l;
+                             p_185962_1_.func_177855_a(i, i1, j, iblockstate1);
+                         }
+                     }
 @@ -171,9 +186,9 @@
          }
      }
@@ -94,7 +128,25 @@
          this.field_73220_k.setSeed((long)p_185932_1_ * 341873128712L + (long)p_185932_2_ * 132897987541L);
          ChunkPrimer chunkprimer = new ChunkPrimer();
          this.field_73231_z = this.field_73230_p.func_72959_q().func_76933_b(this.field_73231_z, p_185932_1_ * 16, p_185932_2_ * 16, 16, 16);
-@@ -220,7 +235,7 @@
+@@ -188,7 +203,7 @@
+         Chunk chunk = new Chunk(this.field_73230_p, chunkprimer, p_185932_1_, p_185932_2_);
+         byte[] abyte = chunk.func_76605_m();
+ 
+-        for (int i = 0; i < abyte.length; i++)
++        for (int i = 0; i < abyte.length; ++i)
+         {
+             abyte[i] = (byte)Biome.func_185362_a(this.field_73231_z[i]);
+         }
+@@ -213,14 +228,14 @@
+             f2 = -100.0F;
+         }
+ 
+-        for (int i = -12; i <= 12; i++)
++        for (int i = -12; i <= 12; ++i)
+         {
+-            for (int j = -12; j <= 12; j++)
++            for (int j = -12; j <= 12; ++j)
+             {
                  long k = (long)(p_185960_1_ + i);
                  long l = (long)(p_185960_2_ + j);
  
@@ -103,7 +155,7 @@
                  {
                      float f3 = (MathHelper.func_76135_e((float)k) * 3439.0F + MathHelper.func_76135_e((float)l) * 147.0F) % 13.0F + 9.0F;
                      f = (float)(p_185960_3_ - i * 2);
-@@ -250,28 +265,26 @@
+@@ -250,50 +265,48 @@
  
      public boolean func_185961_c(int p_185961_1_, int p_185961_2_)
      {
@@ -143,9 +195,17 @@
          int i = p_185963_2_ / 2;
          int j = p_185963_4_ / 2;
          int k = 0;
-@@ -284,16 +297,16 @@
  
-                 for (int j1 = 0; j1 < p_185963_6_; ++j1)
+-        for (int l = 0; l < p_185963_5_; l++)
++        for (int l = 0; l < p_185963_5_; ++l)
+         {
+-            for (int i1 = 0; i1 < p_185963_7_; i1++)
++            for (int i1 = 0; i1 < p_185963_7_; ++i1)
+             {
+                 float f = this.func_185960_a(i, j, l, i1);
+ 
+-                for (int j1 = 0; j1 < p_185963_6_; j1++)
++                for (int j1 = 0; j1 < p_185963_6_; ++j1)
                  {
 -                    double d2 = this.field_185967_f[k] / 512.0;
 -                    double d3 = this.field_185968_g[k] / 512.0;
@@ -165,7 +225,7 @@
                      {
                          d4 = d3;
                      }
-@@ -302,23 +315,23 @@
+@@ -302,27 +315,27 @@
                          d4 = d2 + (d3 - d2) * d5;
                      }
  
@@ -197,6 +257,11 @@
                      }
  
                      p_185963_1_[k] = d4;
+-                    k++;
++                    ++k;
+                 }
+             }
+         }
 @@ -330,10 +343,10 @@
          return p_185963_1_;
      }
@@ -233,6 +298,15 @@
                  }
              }
  
+@@ -372,7 +375,7 @@
+             {
+                 int j = this.field_73220_k.nextInt(5);
+ 
+-                for (int k = 0; k < j; k++)
++                for (int k = 0; k < j; ++k)
+                 {
+                     int l = this.field_73220_k.nextInt(16) + 8;
+                     int i1 = this.field_73220_k.nextInt(16) + 8;
 @@ -382,8 +385,7 @@
                      {
                          int k1 = j1 - 1;

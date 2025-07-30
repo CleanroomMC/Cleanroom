@@ -46,6 +46,7 @@ import javax.annotation.Nonnull;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CraftingFactoriesRegisterEvent;
+import net.minecraft.launchwrapper.Launch;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -661,7 +662,7 @@ public class CraftingHelper {
 
             if (mod.getSource().isFile())
             {
-                fs = FileSystems.newFileSystem(mod.getSource().toPath(), (ClassLoader)null);
+                fs = FileSystems.newFileSystem(mod.getSource().toPath(), Launch.classLoader);
                 fPath = fs.getPath("/" + base, "_factories.json");
             }
             else if (mod.getSource().isDirectory())

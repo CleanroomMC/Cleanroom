@@ -46,3 +46,12 @@
      }
  
      @SideOnly(Side.CLIENT)
+@@ -97,7 +99,7 @@
+                     {
+                         float[] afloat = new float[3];
+ 
+-                        for (int i = 0; i < afloat.length; i++)
++                        for (int i = 0; i < afloat.length; ++i)
+                         {
+                             afloat[i] = JsonUtils.func_151220_d(jsonarray.get(i), p_178358_2_ + "[" + i + "]");
+                         }

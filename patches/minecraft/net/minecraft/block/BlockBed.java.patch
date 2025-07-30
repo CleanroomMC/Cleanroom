@@ -210,7 +210,7 @@
      public boolean func_190946_v(IBlockState p_190946_1_)
      {
          return true;
-@@ -256,7 +231,7 @@
+@@ -256,21 +231,21 @@
      @Nullable
      public static BlockPos func_176468_a(World p_176468_0_, BlockPos p_176468_1_, int p_176468_2_)
      {
@@ -219,6 +219,32 @@
          int i = p_176468_1_.func_177958_n();
          int j = p_176468_1_.func_177956_o();
          int k = p_176468_1_.func_177952_p();
+ 
+-        for (int l = 0; l <= 1; l++)
++        for (int l = 0; l <= 1; ++l)
+         {
+             int i1 = i - enumfacing.func_82601_c() * l - 1;
+             int j1 = k - enumfacing.func_82599_e() * l - 1;
+             int k1 = i1 + 2;
+             int l1 = j1 + 2;
+ 
+-            for (int i2 = i1; i2 <= k1; i2++)
++            for (int i2 = i1; i2 <= k1; ++i2)
+             {
+-                for (int j2 = j1; j2 <= l1; j2++)
++                for (int j2 = j1; j2 <= l1; ++j2)
+                 {
+                     BlockPos blockpos = new BlockPos(i2, j, j2);
+ 
+@@ -281,7 +256,7 @@
+                             return blockpos;
+                         }
+ 
+-                        p_176468_2_--;
++                        --p_176468_2_;
+                     }
+                 }
+             }
 @@ -292,12 +267,9 @@
  
      protected static boolean func_176469_d(World p_176469_0_, BlockPos p_176469_1_)
