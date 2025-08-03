@@ -12,7 +12,15 @@
          this.field_73092_a.func_72854_c();
      }
  
-@@ -91,7 +88,7 @@
+@@ -84,14 +81,14 @@
+ 
+     public void func_73075_a()
+     {
+-        this.field_73100_i++;
++        ++this.field_73100_i;
+ 
+         if (this.field_73097_j)
+         {
              int i = this.field_73100_i - this.field_73093_n;
              IBlockState iblockstate = this.field_73092_a.func_180495_p(this.field_180241_i);
  

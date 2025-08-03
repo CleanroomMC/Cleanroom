@@ -97,7 +97,7 @@
              if (i < this.field_75057_g.length)
              {
                  this.field_75057_g[i++] = new ChunkPos(structurestart.func_143019_e(), structurestart.func_143018_f());
-@@ -127,7 +139,7 @@
+@@ -127,16 +139,16 @@
  
          Random random = new Random();
          random.setSeed(this.field_75039_c.func_72905_C());
@@ -106,9 +106,11 @@
          int j = 0;
          int k = 0;
          int l = this.field_75053_d.size();
-@@ -136,7 +148,7 @@
+ 
+         if (l < this.field_75057_g.length)
          {
-             for (int i1 = 0; i1 < this.field_75057_g.length; ++i1)
+-            for (int i1 = 0; i1 < this.field_75057_g.length; i1++)
++            for (int i1 = 0; i1 < this.field_75057_g.length; ++i1)
              {
 -                double d0 = 4.0 * this.field_82671_h + this.field_82671_h * (double)j * 6.0 + (random.nextDouble() - 0.5) * this.field_82671_h * 2.5;
 +                double d0 = 4.0D * this.field_82671_h + this.field_82671_h * (double)j * 6.0D + (random.nextDouble() - 0.5D) * this.field_82671_h * 2.5D;
@@ -126,9 +128,11 @@
 -                if (++k == this.field_82672_i)
 +                if (k == this.field_82672_i)
                  {
-                     ++j;
+-                    j++;
++                    ++j;
                      k = 0;
-                     this.field_82672_i += 2 * this.field_82672_i / (j + 1);
+-                    this.field_82672_i = this.field_82672_i + 2 * this.field_82672_i / (j + 1);
++                    this.field_82672_i += 2 * this.field_82672_i / (j + 1);
                      this.field_82672_i = Math.min(this.field_82672_i, this.field_75057_g.length - i1);
 -                    d1 += random.nextDouble() * Math.PI * 2.0;
 +                    d1 += random.nextDouble() * Math.PI * 2.0D;

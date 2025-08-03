@@ -151,6 +151,24 @@
  
              if (this.field_184677_bJ.func_188756_a().func_188654_a())
              {
+@@ -246,7 +196,7 @@
+             {
+                 if (this.field_70976_f < 0)
+                 {
+-                    for (int i = 0; i < this.field_70979_e.length; i++)
++                    for (int i = 0; i < this.field_70979_e.length; ++i)
+                     {
+                         this.field_70979_e[i][0] = (double)this.field_70177_z;
+                         this.field_70979_e[i][1] = this.field_70163_u;
+@@ -271,7 +221,7 @@
+                         double d2 = MathHelper.func_76138_g(this.field_184626_bk - (double)this.field_70177_z);
+                         this.field_70177_z = (float)((double)this.field_70177_z + d2 / (double)this.field_70716_bi);
+                         this.field_70125_A = (float)((double)this.field_70125_A + (this.field_70709_bj - (double)this.field_70125_A) / (double)this.field_70716_bi);
+-                        this.field_70716_bi--;
++                        --this.field_70716_bi;
+                         this.func_70107_b(d5, d0, d1);
+                         this.func_70101_b(this.field_70177_z, this.field_70125_A);
+                     }
 @@ -299,44 +249,34 @@
                          double d3 = d6 * d6 + d7 * d7 + d8 * d8;
                          float f5 = iphase.func_188651_f();
@@ -177,8 +195,9 @@
                          float f7 = Math.max(((float)vec3d2.func_72430_b(vec3d1) + 0.5F) / 1.5F, 0.0F);
                          this.field_70704_bt *= 0.8F;
                          this.field_70704_bt = (float)((double)this.field_70704_bt + d4 * (double)iphase.func_188653_h());
-                         this.field_70177_z += this.field_70704_bt * 0.1F;
+-                        this.field_70177_z = this.field_70177_z + this.field_70704_bt * 0.1F;
 -                        float f8 = (float)(2.0 / (d3 + 1.0));
++                        this.field_70177_z += this.field_70704_bt * 0.1F;
 +                        float f8 = (float)(2.0D / (d3 + 1.0D));
                          float f9 = 0.06F;
                          this.func_191958_b(0.0F, 0.0F, -1.0F, 0.06F * (f7 * f8 + (1.0F - f8)));
@@ -204,7 +223,13 @@
                      }
                  }
  
-@@ -364,56 +304,35 @@
+@@ -359,63 +299,42 @@
+                 this.field_70990_bB.field_70130_N = 4.0F;
+                 Vec3d[] avec3d = new Vec3d[this.field_70977_g.length];
+ 
+-                for (int j = 0; j < this.field_70977_g.length; j++)
++                for (int j = 0; j < this.field_70977_g.length; ++j)
+                 {
                      avec3d[j] = new Vec3d(this.field_70977_g[j].field_70165_t, this.field_70977_g[j].field_70163_u, this.field_70977_g[j].field_70161_v);
                  }
  
@@ -272,8 +297,11 @@
 +                this.field_70986_h.func_70012_b(this.field_70165_t + (double)(f19 * 6.5F * f16), this.field_70163_u + (double)f20 + (double)(f2 * 6.5F), this.field_70161_v - (double)(f4 * 6.5F * f16), 0.0F, 0.0F);
 +                this.field_184673_bv.func_70012_b(this.field_70165_t + (double)(f19 * 5.5F * f16), this.field_70163_u + (double)f20 + (double)(f2 * 5.5F), this.field_70161_v - (double)(f4 * 5.5F * f16), 0.0F, 0.0F);
  
-                 for (int k = 0; k < 3; ++k)
+-                for (int k = 0; k < 3; k++)
++                for (int k = 0; k < 3; ++k)
                  {
+                     MultiPartEntityPart multipartentitypart = null;
+ 
 @@ -435,26 +354,18 @@
                      }
  
@@ -304,6 +332,15 @@
  
                      if (this.field_184676_bI != null)
                      {
+@@ -462,7 +373,7 @@
+                     }
+                 }
+ 
+-                for (int l = 0; l < this.field_70977_g.length; l++)
++                for (int l = 0; l < this.field_70977_g.length; ++l)
+                 {
+                     this.field_70977_g[l].field_70169_q = avec3d[l].field_72450_a;
+                     this.field_70977_g[l].field_70167_r = avec3d[l].field_72448_b;
 @@ -478,7 +389,7 @@
  
          if (this.field_184677_bJ.func_188756_a().func_188654_a())
@@ -342,7 +379,29 @@
  
                  if (!this.field_184677_bJ.func_188756_a().func_188654_a() && ((EntityLivingBase)entity).func_142015_aE() < entity.field_70173_aa - 2)
                  {
-@@ -588,28 +499,22 @@
+@@ -550,7 +461,7 @@
+ 
+     private void func_70971_b(List<Entity> p_70971_1_)
+     {
+-        for (int i = 0; i < p_70971_1_.size(); i++)
++        for (int i = 0; i < p_70971_1_.size(); ++i)
+         {
+             Entity entity = p_70971_1_.get(i);
+ 
+@@ -578,38 +489,32 @@
+         boolean flag = false;
+         boolean flag1 = false;
+ 
+-        for (int k1 = i; k1 <= l; k1++)
++        for (int k1 = i; k1 <= l; ++k1)
+         {
+-            for (int l1 = j; l1 <= i1; l1++)
++            for (int l1 = j; l1 <= i1; ++l1)
+             {
+-                for (int i2 = k; i2 <= j1; i2++)
++                for (int i2 = k; i2 <= j1; ++i2)
+                 {
+                     BlockPos blockpos = new BlockPos(k1, l1, i2);
                      IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos);
                      Block block = iblockstate.func_177230_c();
  
@@ -425,7 +484,15 @@
      protected void func_70609_aI()
      {
          if (this.field_184676_bI != null)
-@@ -717,16 +618,7 @@
+@@ -710,23 +611,14 @@
+             this.field_184676_bI.func_186099_b(this);
+         }
+ 
+-        this.field_70995_bG++;
++        ++this.field_70995_bG;
+ 
+         if (this.field_70995_bG >= 180 && this.field_70995_bG <= 200)
+         {
              float f = (this.field_70146_Z.nextFloat() - 0.5F) * 8.0F;
              float f1 = (this.field_70146_Z.nextFloat() - 0.5F) * 4.0F;
              float f2 = (this.field_70146_Z.nextFloat() - 0.5F) * 8.0F;
@@ -461,6 +528,15 @@
          while (p_184668_1_ > 0)
          {
              int i = EntityXPOrb.func_70527_a(p_184668_1_);
+@@ -784,7 +678,7 @@
+     {
+         if (this.field_184680_bM[0] == null)
+         {
+-            for (int i = 0; i < 24; i++)
++            for (int i = 0; i < 24; ++i)
+             {
+                 int j = 5;
+                 int l;
 @@ -792,21 +686,21 @@
  
                  if (i < 12)
@@ -489,6 +565,42 @@
                  }
  
                  int j1 = Math.max(this.field_70170_p.func_181545_F() + 10, this.field_70170_p.func_175672_r(new BlockPos(l, 0, i1)).func_177956_o() + j);
+@@ -854,7 +748,7 @@
+             j = 12;
+         }
+ 
+-        for (int k = j; k < 24; k++)
++        for (int k = j; k < 24; ++k)
+         {
+             if (this.field_184680_bM[k] != null)
+             {
+@@ -874,7 +768,7 @@
+     @Nullable
+     public Path func_184666_a(int p_184666_1_, int p_184666_2_, @Nullable PathPoint p_184666_3_)
+     {
+-        for (int i = 0; i < 24; i++)
++        for (int i = 0; i < 24; ++i)
+         {
+             PathPoint pathpoint = this.field_184680_bM[i];
+             pathpoint.field_75842_i = false;
+@@ -923,7 +817,7 @@
+             pathpoint2.field_75842_i = true;
+             int k = 0;
+ 
+-            for (int l = 0; l < 24; l++)
++            for (int l = 0; l < 24; ++l)
+             {
+                 if (this.field_184680_bM[l] == pathpoint2)
+                 {
+@@ -932,7 +826,7 @@
+                 }
+             }
+ 
+-            for (int i1 = j; i1 < 24; i1++)
++            for (int i1 = j; i1 < 24; ++i1)
+             {
+                 if ((this.field_184681_bN[k] & 1 << i1) > 0)
+                 {
 @@ -969,7 +863,7 @@
          }
          else
@@ -498,6 +610,27 @@
  
              if (p_184666_3_ != null)
              {
+@@ -987,17 +881,17 @@
+ 
+         for (PathPoint pathpoint = p_184669_2_; pathpoint.field_75841_h != null; pathpoint = pathpoint.field_75841_h)
+         {
+-            i++;
++            ++i;
+         }
+ 
+         PathPoint[] apathpoint = new PathPoint[i];
+         PathPoint pathpoint1 = p_184669_2_;
+-        i--;
++        --i;
+ 
+         for (apathpoint[i] = p_184669_2_; pathpoint1.field_75841_h != null; apathpoint[i] = pathpoint1)
+         {
+             pathpoint1 = pathpoint1.field_75841_h;
+-            i--;
++            --i;
+         }
+ 
+         return new Path(apathpoint);
 @@ -1008,14 +902,12 @@
          EntityLiving.func_189752_a(p_189755_0_, EntityDragon.class);
      }

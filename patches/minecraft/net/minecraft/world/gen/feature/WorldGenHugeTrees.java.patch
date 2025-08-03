@@ -1,8 +1,23 @@
 --- before/net/minecraft/world/gen/feature/WorldGenHugeTrees.java
 +++ after/net/minecraft/world/gen/feature/WorldGenHugeTrees.java
-@@ -59,9 +59,7 @@
+@@ -42,7 +42,7 @@
+ 
+         if (p_175926_2_.func_177956_o() >= 1 && p_175926_2_.func_177956_o() + p_175926_3_ + 1 <= 256)
+         {
+-            for (int i = 0; i <= 1 + p_175926_3_; i++)
++            for (int i = 0; i <= 1 + p_175926_3_; ++i)
+             {
+                 int j = 2;
+ 
+@@ -55,13 +55,11 @@
+                     j = 2;
+                 }
+ 
+-                for (int k = -j; k <= j && flag; k++)
++                for (int k = -j; k <= j && flag; ++k)
                  {
-                     for (int l = -j; l <= j && flag; ++l)
+-                    for (int l = -j; l <= j && flag; l++)
++                    for (int l = -j; l <= j && flag; ++l)
                      {
 -                        if (p_175926_2_.func_177956_o() + i < 0
 -                                || p_175926_2_.func_177956_o() + i >= 256
@@ -33,6 +48,18 @@
              return true;
          }
          else
+@@ -105,9 +104,9 @@
+     {
+         int i = p_175925_3_ * p_175925_3_;
+ 
+-        for (int j = -p_175925_3_; j <= p_175925_3_ + 1; j++)
++        for (int j = -p_175925_3_; j <= p_175925_3_ + 1; ++j)
+         {
+-            for (int k = -p_175925_3_; k <= p_175925_3_ + 1; k++)
++            for (int k = -p_175925_3_; k <= p_175925_3_ + 1; ++k)
+             {
+                 int l = j - 1;
+                 int i1 = k - 1;
 @@ -115,9 +114,9 @@
                  if (j * j + k * k <= i || l * l + i1 * i1 <= i || j * j + i1 * i1 <= i || l * l + k * k <= i)
                  {
@@ -45,7 +72,16 @@
                      {
                          this.func_175903_a(p_175925_1_, blockpos, this.field_76521_c);
                      }
-@@ -137,14 +136,21 @@
+@@ -130,21 +129,28 @@
+     {
+         int i = p_175928_3_ * p_175928_3_;
+ 
+-        for (int j = -p_175928_3_; j <= p_175928_3_; j++)
++        for (int j = -p_175928_3_; j <= p_175928_3_; ++j)
+         {
+-            for (int k = -p_175928_3_; k <= p_175928_3_; k++)
++            for (int k = -p_175928_3_; k <= p_175928_3_; ++k)
+             {
                  if (j * j + k * k <= i)
                  {
                      BlockPos blockpos = p_175928_2_.func_177982_a(j, 0, k);

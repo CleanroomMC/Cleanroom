@@ -32,7 +32,7 @@
      public void func_151367_b(EntityLivingBase p_151367_1_, Entity p_151367_2_, int p_151367_3_)
      {
          Random random = p_151367_1_.func_70681_au();
-@@ -56,12 +51,12 @@
+@@ -56,22 +51,50 @@
  
              if (!itemstack.func_190926_b())
              {
@@ -47,7 +47,19 @@
          }
      }
  
-@@ -80,5 +75,26 @@
+     public static boolean func_92094_a(int p_92094_0_, Random p_92094_1_)
+     {
+-        return p_92094_0_ <= 0 ? false : p_92094_1_.nextFloat() < 0.15F * (float)p_92094_0_;
++        if (p_92094_0_ <= 0)
++        {
++            return false;
++        }
++        else
++        {
++            return p_92094_1_.nextFloat() < 0.15F * (float)p_92094_0_;
++        }
+     }
+ 
      public static int func_92095_b(int p_92095_0_, Random p_92095_1_)
      {
          return p_92095_0_ > 10 ? p_92095_0_ - 10 : 1 + p_92095_1_.nextInt(4);

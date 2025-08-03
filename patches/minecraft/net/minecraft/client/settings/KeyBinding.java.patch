@@ -23,7 +23,7 @@
 -
 -            if (keybinding != null)
 -            {
--                ++keybinding.field_151474_i;
+-                keybinding.field_151474_i++;
 -            }
 +            field_74514_b.lookupActives(p_74507_0_).forEach($ -> ++$.field_151474_i);
          }
@@ -79,6 +79,15 @@
      }
  
      public String func_151466_e()
+@@ -117,7 +113,7 @@
+         }
+         else
+         {
+-            this.field_151474_i--;
++            --this.field_151474_i;
+             return true;
+         }
+     }
 @@ -150,25 +146,166 @@
  
      public int compareTo(KeyBinding p_compareTo_1_)

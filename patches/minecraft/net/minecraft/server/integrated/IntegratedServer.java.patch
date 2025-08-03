@@ -56,14 +56,16 @@
          ISaveHandler isavehandler = this.func_71254_M().func_75804_a(p_71247_1_, true);
          this.func_175584_a(this.func_71270_I(), isavehandler);
          WorldInfo worldinfo = isavehandler.func_75757_d();
-@@ -101,6 +81,7 @@
+@@ -101,7 +81,8 @@
              worldinfo.func_76062_a(p_71247_2_);
          }
  
+-        for (int i = 0; i < this.field_71305_c.length; i++)
 +        if (false) { //Forge: Dead Code, implement below.
-         for (int i = 0; i < this.field_71305_c.length; ++i)
++        for (int i = 0; i < this.field_71305_c.length; ++i)
          {
              int j = 0;
+ 
 @@ -119,26 +100,41 @@
              {
                  if (this.func_71242_L())

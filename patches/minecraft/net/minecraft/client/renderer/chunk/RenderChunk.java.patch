@@ -9,6 +9,24 @@
      private final int field_178596_j;
      private final FloatBuffer field_178597_k = GLAllocation.func_74529_h(16);
      private final VertexBuffer[] field_178594_l = new VertexBuffer[BlockRenderLayer.values().length];
+@@ -56,7 +56,7 @@
+ 
+     public RenderChunk(World p_i47120_1_, RenderGlobal p_i47120_2_, int p_i47120_3_)
+     {
+-        for (int i = 0; i < this.field_181702_p.length; i++)
++        for (int i = 0; i < this.field_181702_p.length; ++i)
+         {
+             this.field_181702_p[i] = new BlockPos.MutableBlockPos();
+         }
+@@ -67,7 +67,7 @@
+ 
+         if (OpenGlHelper.func_176075_f())
+         {
+-            for (int j = 0; j < BlockRenderLayer.values().length; j++)
++            for (int j = 0; j < BlockRenderLayer.values().length; ++j)
+             {
+                 this.field_178594_l[j] = new VertexBuffer(DefaultVertexFormats.field_176600_a);
+             }
 @@ -94,15 +94,11 @@
  
      public void func_189562_a(int p_189562_1_, int p_189562_2_, int p_189562_3_)
@@ -42,6 +60,15 @@
 +            this.func_178584_a(BlockRenderLayer.TRANSLUCENT, p_178570_1_, p_178570_2_, p_178570_3_, p_178570_4_.func_178545_d().func_179038_a(BlockRenderLayer.TRANSLUCENT), compiledchunk);
          }
      }
+ 
+@@ -159,7 +148,7 @@
+ 
+         if (!this.field_189564_r.func_72806_N())
+         {
+-            field_178592_a++;
++            ++field_178592_a;
+             boolean[] aboolean = new boolean[BlockRenderLayer.values().length];
+             BlockRendererDispatcher blockrendererdispatcher = Minecraft.func_71410_x().func_175602_ab();
  
 @@ -173,27 +162,29 @@
                      lvt_9_1_.func_178606_a(blockpos$mutableblockpos);
@@ -160,6 +187,15 @@
      {
          if (p_178584_1_ == BlockRenderLayer.TRANSLUCENT && !p_178584_6_.func_178491_b(p_178584_1_))
          {
+@@ -400,7 +392,7 @@
+         this.func_178585_h();
+         this.field_178588_d = null;
+ 
+-        for (int i = 0; i < BlockRenderLayer.values().length; i++)
++        for (int i = 0; i < BlockRenderLayer.values().length; ++i)
+         {
+             if (this.field_178594_l[i] != null)
+             {
 @@ -440,6 +432,26 @@
      {
          return this.field_178593_n && this.field_188284_q;

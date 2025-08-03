@@ -29,7 +29,7 @@
      public WorldGenAbstractTree func_150567_a(Random p_150567_1_)
      {
          if (p_150567_1_.nextInt(10) == 0)
-@@ -76,28 +67,28 @@
+@@ -76,29 +67,29 @@
          }
          else
          {
@@ -61,7 +61,9 @@
 +        (new WorldGenMelon()).func_180709_b(p_180624_1_, p_180624_2_, p_180624_3_.func_177982_a(i, k, j));
          WorldGenVines worldgenvines = new WorldGenVines();
  
+-        for (int j1 = 0; j1 < 50; j1++)
 +        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(p_180624_1_, p_180624_2_, new net.minecraft.util.math.ChunkPos(p_180624_3_), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.GRASS))
-         for (int j1 = 0; j1 < 50; ++j1)
++        for (int j1 = 0; j1 < 50; ++j1)
          {
              k = p_180624_2_.nextInt(16) + 8;
+             int l = 128;

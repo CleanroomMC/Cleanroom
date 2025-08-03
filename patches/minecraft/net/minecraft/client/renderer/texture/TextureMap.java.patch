@@ -259,7 +259,7 @@
      {
          ResourceLocation resourcelocation = this.func_184396_a(p_184397_2_);
          IResource iresource = null;
--        label52:
+-        label45:
 +        label62:
          {
 -            boolean lvt_6_1_;
@@ -270,7 +270,7 @@
              {
                  iresource = p_184397_1_.func_110536_a(resourcelocation);
                  p_184397_2_.func_188539_a(iresource, this.field_147636_j + 1);
--                break label52;
+-                break label45;
 +                break label62;
              }
              catch (RuntimeException runtimeexception)

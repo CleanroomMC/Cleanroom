@@ -28,7 +28,15 @@
      public abstract void func_186363_a(Collection<ItemStack> p_186363_1_, Random p_186363_2_, LootContext p_186363_3_);
  
      protected abstract void func_186362_a(JsonObject p_186362_1_, JsonSerializationContext p_186362_2_);
-@@ -57,6 +61,9 @@
+@@ -50,13 +54,16 @@
+ 
+                 if (jsonobject.has("conditions"))
+                 {
+-                    alootcondition = JsonUtils.func_188174_a(jsonobject, "conditions", p_deserialize_3_, LootCondition[].class);
++                    alootcondition = (LootCondition[])JsonUtils.func_188174_a(jsonobject, "conditions", p_deserialize_3_, LootCondition[].class);
+                 }
+                 else
+                 {
                      alootcondition = new LootCondition[0];
                  }
  

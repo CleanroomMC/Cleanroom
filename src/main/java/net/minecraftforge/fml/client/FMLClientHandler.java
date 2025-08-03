@@ -119,6 +119,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.FormattedMessage;
 import org.lwjgl.LWJGLUtil;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
@@ -265,6 +266,8 @@ public class FMLClientHandler implements IFMLSidedHandler
                 return;
             }
         }
+
+        Keyboard.populateKeyLookupTables();
 
         @SuppressWarnings("unchecked")
         Map<String,Map<String,String>> sharedModList = (Map<String, Map<String, String>>) Launch.blackboard.get("modList");

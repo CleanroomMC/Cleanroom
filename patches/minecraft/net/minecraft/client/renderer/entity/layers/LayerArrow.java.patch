@@ -19,6 +19,15 @@
      {
          int i = p_177141_1_.func_85035_bI();
  
+@@ -43,7 +33,7 @@
+             Random random = new Random((long)p_177141_1_.func_145782_y());
+             RenderHelper.func_74518_a();
+ 
+-            for (int j = 0; j < i; j++)
++            for (int j = 0; j < i; ++j)
+             {
+                 GlStateManager.func_179094_E();
+                 ModelRenderer modelrenderer = this.field_177168_a.func_177087_b().func_85181_a(random);
 @@ -59,18 +49,18 @@
                  f = f * 2.0F - 1.0F;
                  f1 = f1 * 2.0F - 1.0F;

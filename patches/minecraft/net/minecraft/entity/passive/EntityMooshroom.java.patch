@@ -39,9 +39,12 @@
  
              if (!this.field_70170_p.field_72995_K)
              {
-@@ -80,16 +70,7 @@
+@@ -78,18 +68,9 @@
  
-                 for (int i = 0; i < 5; ++i)
+                 this.field_70170_p.func_72838_d(entitycow);
+ 
+-                for (int i = 0; i < 5; i++)
++                for (int i = 0; i < 5; ++i)
                  {
 -                    this.field_70170_p
 -                    .func_72838_d(

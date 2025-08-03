@@ -36,9 +36,12 @@
  
              if (p_i46669_2_.func_74767_n("IsRespawning"))
              {
-@@ -110,23 +106,16 @@
+@@ -108,25 +104,18 @@
+         {
+             NBTTagList nbttaglist = p_i46669_2_.func_150295_c("Gateways", 3);
  
-             for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+-            for (int i = 0; i < nbttaglist.func_74745_c(); i++)
++            for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
              {
 -                this.field_186111_e.add(nbttaglist.func_186858_c(i));
 +                this.field_186111_e.add(Integer.valueOf(nbttaglist.func_186858_c(i)));
@@ -102,9 +105,36 @@
                      }
  
                      this.field_186113_g = 0;
-@@ -340,10 +332,7 @@
+@@ -286,9 +278,9 @@
  
-         for (int l = k; l >= 0; --l)
+     private boolean func_186104_g()
+     {
+-        for (int i = -8; i <= 8; i++)
++        for (int i = -8; i <= 8; ++i)
+         {
+-            for (int j = -8; j <= 8; j++)
++            for (int j = -8; j <= 8; ++j)
+             {
+                 Chunk chunk = this.field_186110_d.func_72964_e(i, j);
+ 
+@@ -308,9 +300,9 @@
+     @Nullable
+     private BlockPattern.PatternHelper func_186091_h()
+     {
+-        for (int i = -8; i <= 8; i++)
++        for (int i = -8; i <= 8; ++i)
+         {
+-            for (int j = -8; j <= 8; j++)
++            for (int j = -8; j <= 8; ++j)
+             {
+                 Chunk chunk = this.field_186110_d.func_72964_e(i, j);
+ 
+@@ -338,12 +330,9 @@
+ 
+         int k = this.field_186110_d.func_175645_m(WorldGenEndPodium.field_186139_a).func_177956_o();
+ 
+-        for (int l = k; l >= 0; l--)
++        for (int l = k; l >= 0; --l)
          {
 -            BlockPattern.PatternHelper blockpattern$patternhelper1 = this.field_186112_f
 -                    .func_177681_a(
@@ -114,6 +144,18 @@
  
              if (blockpattern$patternhelper1 != null)
              {
+@@ -361,9 +350,9 @@
+ 
+     private void func_186103_i()
+     {
+-        for (int i = -8; i <= 8; i++)
++        for (int i = -8; i <= 8; ++i)
+         {
+-            for (int j = -8; j <= 8; j++)
++            for (int j = -8; j <= 8; ++j)
+             {
+                 this.field_186110_d.func_72964_e(i, j);
+             }
 @@ -372,7 +361,7 @@
  
      private void func_186100_j()
@@ -123,8 +165,12 @@
  
          for (EntityPlayerMP entityplayermp : this.field_186110_d.func_175661_b(EntityPlayerMP.class, field_186108_b))
          {
-@@ -399,7 +388,7 @@
-             this.field_186114_h += this.field_186110_d.func_72872_a(EntityEnderCrystal.class, worldgenspikes$endspike.func_186153_f()).size();
+@@ -396,10 +385,10 @@
+ 
+         for (WorldGenSpikes.EndSpike worldgenspikes$endspike : BiomeEndDecorator.func_185426_a(this.field_186110_d))
+         {
+-            this.field_186114_h = this.field_186114_h + this.field_186110_d.func_72872_a(EntityEnderCrystal.class, worldgenspikes$endspike.func_186153_f()).size();
++            this.field_186114_h += this.field_186110_d.func_72872_a(EntityEnderCrystal.class, worldgenspikes$endspike.func_186153_f()).size();
          }
  
 -        field_186107_a.debug("Found {} end crystals still alive", this.field_186114_h);
@@ -196,7 +242,7 @@
  
                  if (list.isEmpty())
                  {
-@@ -564,10 +547,7 @@
+@@ -564,21 +547,17 @@
      {
          if (this.field_186117_k && this.field_186122_p == null)
          {
@@ -206,9 +252,14 @@
 -                )
 +            for (BlockPattern.PatternHelper blockpattern$patternhelper = this.func_186091_h(); blockpattern$patternhelper != null; blockpattern$patternhelper = this.func_186091_h())
              {
-                 for (int i = 0; i < this.field_186112_f.func_177684_c(); ++i)
+-                for (int i = 0; i < this.field_186112_f.func_177684_c(); i++)
++                for (int i = 0; i < this.field_186112_f.func_177684_c(); ++i)
                  {
-@@ -577,8 +557,7 @@
+-                    for (int j = 0; j < this.field_186112_f.func_177685_b(); j++)
++                    for (int j = 0; j < this.field_186112_f.func_177685_b(); ++j)
+                     {
+-                        for (int k = 0; k < this.field_186112_f.func_185922_a(); k++)
++                        for (int k = 0; k < this.field_186112_f.func_185922_a(); ++k)
                          {
                              BlockWorldState blockworldstate = blockpattern$patternhelper.func_177670_a(i, j, k);
  

@@ -67,7 +67,7 @@
              public int func_75219_a()
              {
                  return 1;
-@@ -72,10 +73,12 @@
+@@ -72,22 +73,24 @@
          });
          this.func_75146_a(new Slot(this.field_75168_e, 1, 35, 47)
          {
@@ -82,7 +82,22 @@
              }
          });
  
-@@ -107,14 +110,12 @@
+-        for (int i = 0; i < 3; i++)
++        for (int i = 0; i < 3; ++i)
+         {
+-            for (int j = 0; j < 9; j++)
++            for (int j = 0; j < 9; ++j)
+             {
+                 this.func_75146_a(new Slot(p_i45798_1_, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+             }
+         }
+ 
+-        for (int k = 0; k < 9; k++)
++        for (int k = 0; k < 9; ++k)
+         {
+             this.func_75146_a(new Slot(p_i45798_1_, k, 8 + k * 18, 142));
+         }
+@@ -107,19 +110,17 @@
          p_185000_1_.func_71112_a(this, 9, this.field_185002_i[2]);
      }
  
@@ -97,6 +112,12 @@
      public void func_75142_b()
      {
          super.func_75142_b();
+ 
+-        for (int i = 0; i < this.field_75149_d.size(); i++)
++        for (int i = 0; i < this.field_75149_d.size(); ++i)
+         {
+             IContainerListener icontainerlistener = this.field_75149_d.get(i);
+             this.func_185000_c(icontainerlistener);
 @@ -127,7 +128,6 @@
      }
  
@@ -119,9 +140,11 @@
                      int l = 0;
 +                    float power = 0;
  
-                     for (int j = -1; j <= 1; ++j)
+-                    for (int j = -1; j <= 1; j++)
++                    for (int j = -1; j <= 1; ++j)
                      {
-                         for (int k = -1; k <= 1; ++k)
+-                        for (int k = -1; k <= 1; k++)
++                        for (int k = -1; k <= 1; ++k)
                          {
 -                            if ((j != 0 || k != 0)
 -                                    && this.field_75172_h.func_175623_d(this.field_178150_j.func_177982_a(k, 0, j))
@@ -130,12 +153,12 @@
                              {
 -                                if (this.field_75172_h.func_180495_p(this.field_178150_j.func_177982_a(k * 2, 0, j * 2)).func_177230_c() == Blocks.field_150342_X)
 -                                {
--                                    ++l;
+-                                    l++;
 -                                }
 -
 -                                if (this.field_75172_h.func_180495_p(this.field_178150_j.func_177982_a(k * 2, 1, j * 2)).func_177230_c() == Blocks.field_150342_X)
 -                                {
--                                    ++l;
+-                                    l++;
 -                                }
 -
 +                                power += net.minecraftforge.common.ForgeHooks.getEnchantPower(field_75172_h, field_178150_j.func_177982_a(k * 2, 0, j * 2));
@@ -144,22 +167,22 @@
                                  {
 -                                    if (this.field_75172_h.func_180495_p(this.field_178150_j.func_177982_a(k * 2, 0, j)).func_177230_c() == Blocks.field_150342_X)
 -                                    {
--                                        ++l;
+-                                        l++;
 -                                    }
 -
 -                                    if (this.field_75172_h.func_180495_p(this.field_178150_j.func_177982_a(k * 2, 1, j)).func_177230_c() == Blocks.field_150342_X)
 -                                    {
--                                        ++l;
+-                                        l++;
 -                                    }
 -
 -                                    if (this.field_75172_h.func_180495_p(this.field_178150_j.func_177982_a(k, 0, j * 2)).func_177230_c() == Blocks.field_150342_X)
 -                                    {
--                                        ++l;
+-                                        l++;
 -                                    }
 -
 -                                    if (this.field_75172_h.func_180495_p(this.field_178150_j.func_177982_a(k, 1, j * 2)).func_177230_c() == Blocks.field_150342_X)
 -                                    {
--                                        ++l;
+-                                        l++;
 -                                    }
 +                                    power += net.minecraftforge.common.ForgeHooks.getEnchantPower(field_75172_h, field_178150_j.func_177982_a(k * 2, 0, j));
 +                                    power += net.minecraftforge.common.ForgeHooks.getEnchantPower(field_75172_h, field_178150_j.func_177982_a(k * 2, 1, j));
@@ -168,23 +191,39 @@
                                  }
                              }
                          }
-@@ -213,7 +188,7 @@
+@@ -211,9 +186,9 @@
  
-                     for (int i1 = 0; i1 < 3; ++i1)
+                     this.field_75169_l.setSeed((long)this.field_178149_f);
+ 
+-                    for (int i1 = 0; i1 < 3; i1++)
++                    for (int i1 = 0; i1 < 3; ++i1)
                      {
 -                        this.field_75167_g[i1] = EnchantmentHelper.func_77514_a(this.field_75169_l, i1, l, itemstack);
 +                        this.field_75167_g[i1] = EnchantmentHelper.func_77514_a(this.field_75169_l, i1, (int)power, itemstack);
                          this.field_185001_h[i1] = -1;
                          this.field_185002_i[i1] = -1;
  
-@@ -221,6 +196,7 @@
+@@ -221,9 +196,10 @@
                          {
                              this.field_75167_g[i1] = 0;
                          }
 +                        this.field_75167_g[i1] = net.minecraftforge.event.ForgeEventFactory.onEnchantmentLevelSet(field_75172_h, field_178150_j, i1, (int)power, itemstack, field_75167_g[i1]);
                      }
  
-                     for (int j1 = 0; j1 < 3; ++j1)
+-                    for (int j1 = 0; j1 < 3; j1++)
++                    for (int j1 = 0; j1 < 3; ++j1)
+                     {
+                         if (this.field_75167_g[j1] > 0)
+                         {
+@@ -243,7 +219,7 @@
+             }
+             else
+             {
+-                for (int i = 0; i < 3; i++)
++                for (int i = 0; i < 3; ++i)
+                 {
+                     this.field_75167_g[i] = 0;
+                     this.field_185001_h[i] = -1;
 @@ -253,7 +229,6 @@
          }
      }
@@ -204,6 +243,15 @@
          {
              if (!this.field_75172_h.field_72995_K)
              {
+@@ -283,7 +256,7 @@
+                         this.field_75168_e.func_70299_a(0, itemstack);
+                     }
+ 
+-                    for (int j = 0; j < list.size(); j++)
++                    for (int j = 0; j < list.size(); ++j)
+                     {
+                         EnchantmentData enchantmentdata = list.get(j);
+ 
 @@ -317,15 +290,7 @@
                      this.field_75168_e.func_70296_d();
                      this.field_178149_f = p_75140_1_.func_175138_ci();
@@ -229,35 +277,38 @@
      public void func_75134_a(EntityPlayer p_75134_1_)
      {
          super.func_75134_a(p_75134_1_);
-@@ -368,7 +332,6 @@
+@@ -368,22 +332,18 @@
          }
      }
  
 -    @Override
      public boolean func_75145_c(EntityPlayer p_75145_1_)
      {
-         if (this.field_75172_h.func_180495_p(this.field_178150_j).func_177230_c() != Blocks.field_150381_bn)
-@@ -377,18 +340,10 @@
-         }
-         else
-         {
--            return !(
--                       p_75145_1_.func_70092_e(
--                           (double)this.field_178150_j.func_177958_n() + 0.5,
--                           (double)this.field_178150_j.func_177956_o() + 0.5,
--                           (double)this.field_178150_j.func_177952_p() + 0.5
--                       )
--                       > 64.0
--                   );
+-        return this.field_75172_h.func_180495_p(this.field_178150_j).func_177230_c() != Blocks.field_150381_bn
+-               ? false
+-               : !(
+-                   p_75145_1_.func_70092_e(
+-                       (double)this.field_178150_j.func_177958_n() + 0.5,
+-                       (double)this.field_178150_j.func_177956_o() + 0.5,
+-                       (double)this.field_178150_j.func_177952_p() + 0.5
+-                   )
+-                   > 64.0
+-               );
++        if (this.field_75172_h.func_180495_p(this.field_178150_j).func_177230_c() != Blocks.field_150381_bn)
++        {
++            return false;
++        }
++        else
++        {
 +            return p_75145_1_.func_70092_e((double)this.field_178150_j.func_177958_n() + 0.5D, (double)this.field_178150_j.func_177956_o() + 0.5D, (double)this.field_178150_j.func_177952_p() + 0.5D) <= 64.0D;
-         }
++        }
      }
  
 -    @Override
      public ItemStack func_82846_b(EntityPlayer p_82846_1_, int p_82846_2_)
      {
          ItemStack itemstack = ItemStack.field_190927_a;
-@@ -422,19 +377,18 @@
+@@ -417,19 +377,18 @@
              }
              else
              {

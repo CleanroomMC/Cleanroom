@@ -51,14 +51,15 @@
  
          while (p_186463_2_ > 0 && !list.isEmpty())
          {
-@@ -130,19 +130,71 @@
+@@ -130,13 +130,13 @@
  
      private List<Integer> func_186459_a(IInventory p_186459_1_, Random p_186459_2_)
      {
 -        List<Integer> list = Lists.newArrayList();
 +        List<Integer> list = Lists.<Integer>newArrayList();
  
-         for (int i = 0; i < p_186459_1_.func_70302_i_(); ++i)
+-        for (int i = 0; i < p_186459_1_.func_70302_i_(); i++)
++        for (int i = 0; i < p_186459_1_.func_70302_i_(); ++i)
          {
              if (p_186459_1_.func_70301_a(i).func_190926_b())
              {
@@ -67,10 +68,10 @@
              }
          }
  
-         Collections.shuffle(list, p_186459_2_);
+@@ -144,12 +144,64 @@
          return list;
      }
-+
+ 
 +    //======================== FORGE START =============================================
 +    private boolean isFrozen = false;
 +    public void freeze()
@@ -122,6 +123,14 @@
 +        this.field_186466_c.add(pool);
 +    }
 +    //======================== FORGE END ===============================================
- 
++
      public static class Serializer implements JsonDeserializer<LootTable>, JsonSerializer<LootTable>
          {
+             public LootTable deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_) throws JsonParseException
+             {
+                 JsonObject jsonobject = JsonUtils.func_151210_l(p_deserialize_1_, "loot table");
+-                LootPool[] alootpool = JsonUtils.func_188177_a(jsonobject, "pools", new LootPool[0], p_deserialize_3_, LootPool[].class);
++                LootPool[] alootpool = (LootPool[])JsonUtils.func_188177_a(jsonobject, "pools", new LootPool[0], p_deserialize_3_, LootPool[].class);
+                 return new LootTable(alootpool);
+             }
+ 

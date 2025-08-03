@@ -9,7 +9,7 @@
      private int field_94110_c;
      public double field_94111_a;
      public double field_94109_b;
-@@ -41,20 +41,17 @@
+@@ -41,50 +41,45 @@
          EntityMinecart.func_189669_a(p_189671_0_, EntityMinecartFurnace.class);
      }
  
@@ -31,7 +31,12 @@
      public void func_70071_h_()
      {
          super.func_70071_h_();
-@@ -66,25 +63,23 @@
+ 
+         if (this.field_94110_c > 0)
+         {
+-            this.field_94110_c--;
++            --this.field_94110_c;
+         }
  
          if (this.field_94110_c <= 0)
          {
@@ -107,8 +112,8 @@
 -            this.field_70159_w *= 0.8F;
 -            this.field_70181_x *= 0.0;
 -            this.field_70179_y *= 0.8F;
--            this.field_70159_w += this.field_94111_a * 1.0;
--            this.field_70179_y += this.field_94109_b * 1.0;
+-            this.field_70159_w = this.field_70159_w + this.field_94111_a * 1.0;
+-            this.field_70179_y = this.field_70179_y + this.field_94109_b * 1.0;
 +            double d1 = 1.0D;
 +            this.field_70159_w *= 0.800000011920929D;
 +            this.field_70181_x *= 0.0D;

@@ -212,14 +212,18 @@
          }
  
          GlStateManager.func_179121_F();
-@@ -455,6 +442,7 @@
+@@ -455,9 +442,10 @@
          if (this.field_78455_a.field_71439_g.func_70094_T())
          {
              IBlockState iblockstate = this.field_78455_a.field_71441_e.func_180495_p(new BlockPos(this.field_78455_a.field_71439_g));
 +            BlockPos overlayPos = new BlockPos(this.field_78455_a.field_71439_g);
              EntityPlayer entityplayer = this.field_78455_a.field_71439_g;
  
-             for (int i = 0; i < 8; ++i)
+-            for (int i = 0; i < 8; i++)
++            for (int i = 0; i < 8; ++i)
+             {
+                 double d0 = entityplayer.field_70165_t + (double)(((float)((i >> 0) % 2) - 0.5F) * entityplayer.field_70130_N * 0.8F);
+                 double d1 = entityplayer.field_70163_u + (double)(((float)((i >> 1) % 2) - 0.5F) * 0.1F);
 @@ -468,11 +456,13 @@
                  if (iblockstate1.func_191058_s())
                  {
@@ -289,7 +293,7 @@
          tessellator.func_78381_a();
          GlStateManager.func_179121_F();
          GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
-@@ -559,9 +549,7 @@
+@@ -559,12 +549,10 @@
          GlStateManager.func_179143_c(519);
          GlStateManager.func_179132_a(false);
          GlStateManager.func_179147_l();
@@ -299,7 +303,11 @@
 +        GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
          float f = 1.0F;
  
-         for (int i = 0; i < 2; ++i)
+-        for (int i = 0; i < 2; i++)
++        for (int i = 0; i < 2; ++i)
+         {
+             GlStateManager.func_179094_E();
+             TextureAtlasSprite textureatlassprite = this.field_78455_a.func_147117_R().func_110572_b("minecraft:blocks/fire_layer_1");
 @@ -581,10 +569,10 @@
              GlStateManager.func_179109_b((float)(-(i * 2 - 1)) * 0.24F, -0.3F, 0.0F);
              GlStateManager.func_179114_b((float)(i * 2 - 1) * 10.0F, 0.0F, 1.0F, 0.0F);
@@ -315,12 +323,14 @@
              tessellator.func_78381_a();
              GlStateManager.func_179121_F();
          }
-@@ -611,8 +599,17 @@
+@@ -611,10 +599,17 @@
          else
          {
              float f = entityplayersp.func_184825_o(1.0F);
--            this.field_187469_f += MathHelper.func_76131_a((Objects.equals(this.field_187467_d, itemstack) ? f * f * f : 0.0F) - this.field_187469_f, -0.4F, 0.4F);
--            this.field_187471_h += MathHelper.func_76131_a((float)(Objects.equals(this.field_187468_e, itemstack1) ? 1 : 0) - this.field_187471_h, -0.4F, 0.4F);
+-            this.field_187469_f = this.field_187469_f
+-                                  + MathHelper.func_76131_a((Objects.equals(this.field_187467_d, itemstack) ? f * f * f : 0.0F) - this.field_187469_f, -0.4F, 0.4F);
+-            this.field_187471_h = this.field_187471_h
+-                                  + MathHelper.func_76131_a((float)(Objects.equals(this.field_187468_e, itemstack1) ? 1 : 0) - this.field_187471_h, -0.4F, 0.4F);
 +
 +            boolean requipM = net.minecraftforge.client.ForgeHooksClient.shouldCauseReequipAnimation(this.field_187467_d, itemstack, entityplayersp.field_71071_by.field_70461_c);
 +            boolean requipO = net.minecraftforge.client.ForgeHooksClient.shouldCauseReequipAnimation(this.field_187468_e, itemstack1, -1);
