@@ -173,7 +173,7 @@ public class LoadController
 
                     // Load late mixins
                     FMLLog.log.info("Instantiating all ILateMixinLoader implemented classes...");
-                    for (ASMDataTable.ASMData asmData : asmDataTable.getAll(ILateMixinLoader.class) {
+                    for (ASMDataTable.ASMData asmData : asmDataTable.getAll(ILateMixinLoader.class)) {
                         try {
                             modClassLoader.addFile(asmData.getCandidate().getModContainer()); // Add to path before `newInstance`
                             Class<?> clazz = Class.forName(asmData.getClassName().replace('/', '.'));
