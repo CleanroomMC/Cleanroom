@@ -22,14 +22,14 @@
              this.field_147559_m.put(p_147546_1_, tileentityspecialrenderer);
          }
  
--        return (TileEntitySpecialRenderer<T>) tileentityspecialrenderer;
+-        return (TileEntitySpecialRenderer<T>)tileentityspecialrenderer;
 +        return tileentityspecialrenderer;
      }
  
      @Nullable
      public <T extends TileEntity> TileEntitySpecialRenderer<T> func_147547_b(@Nullable TileEntity p_147547_1_)
      {
--        return p_147547_1_ == null ? null : this.func_147546_a(p_147547_1_.getClass());
+-        return p_147547_1_ == null ? null : this.func_147546_a((Class <? extends TileEntity >)p_147547_1_.getClass());
 +        return p_147547_1_ == null || p_147547_1_.func_145837_r() ? null : this.func_147546_a(p_147547_1_.getClass()); // Forge: fix MC-123363
      }
  

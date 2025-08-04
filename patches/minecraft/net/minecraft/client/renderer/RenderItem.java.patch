@@ -50,6 +50,15 @@
              }
              else
              {
+@@ -200,7 +206,7 @@
+         boolean flag = p_191970_3_ == -1 && !p_191970_4_.func_190926_b();
+         int i = 0;
+ 
+-        for (int j = p_191970_2_.size(); i < j; i++)
++        for (int j = p_191970_2_.size(); i < j; ++i)
+         {
+             BakedQuad bakedquad = p_191970_2_.get(i);
+             int k = p_191970_3_;
 @@ -214,10 +220,10 @@
                      k = TextureUtil.func_177054_c(k);
                  }

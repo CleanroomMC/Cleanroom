@@ -21,6 +21,24 @@
      private Matrix4f field_148030_g;
      private int field_148038_h;
      private int field_148039_i;
+@@ -81,7 +82,7 @@
+                         throw jsonexception1;
+                     }
+ 
+-                    i++;
++                    ++i;
+                 }
+             }
+ 
+@@ -103,7 +104,7 @@
+                         throw jsonexception2;
+                     }
+ 
+-                    j++;
++                    ++j;
+                 }
+             }
+         }
 @@ -115,7 +116,7 @@
          }
          finally
@@ -84,7 +102,12 @@
                          }
                          else
                          {
-@@ -229,7 +231,7 @@
+@@ -225,11 +227,11 @@
+                         throw jsonexception;
+                     }
+ 
+-                    i++;
++                    ++i;
                  }
              }
  
@@ -93,6 +116,15 @@
  
              if (jsonarray1 != null)
              {
+@@ -248,7 +250,7 @@
+                         throw jsonexception1;
+                     }
+ 
+-                    l++;
++                    ++l;
+                 }
+             }
+         }
 @@ -258,7 +260,7 @@
      {
          JsonObject jsonobject = JsonUtils.func_151210_l(p_148028_1_, "uniform");
@@ -102,8 +134,27 @@
  
          if (shaderuniform == null)
          {
-@@ -386,11 +388,9 @@
-             this.field_148036_j += p_148018_1_ - this.field_148037_k;
+@@ -282,7 +284,7 @@
+                     throw jsonexception;
+                 }
+ 
+-                i++;
++                ++i;
+             }
+ 
+             switch (i)
+@@ -378,19 +380,17 @@
+     {
+         if (p_148018_1_ < this.field_148037_k)
+         {
+-            this.field_148036_j = this.field_148036_j + (1.0F - this.field_148037_k);
++            this.field_148036_j += 1.0F - this.field_148037_k;
+             this.field_148036_j += p_148018_1_;
+         }
+         else
+         {
+-            this.field_148036_j = this.field_148036_j + (p_148018_1_ - this.field_148037_k);
++            this.field_148036_j += p_148018_1_ - this.field_148037_k;
          }
  
 -        this.field_148037_k = p_148018_1_;

@@ -161,7 +161,18 @@
              default:
                  return flag ? new Vec3d(d0, d1, d2) : p_186269_0_;
          }
-@@ -454,7 +437,6 @@
+@@ -426,8 +409,8 @@
+ 
+     public static BlockPos func_191157_a(BlockPos p_191157_0_, Mirror p_191157_1_, Rotation p_191157_2_, int p_191157_3_, int p_191157_4_)
+     {
+-        p_191157_3_--;
+-        p_191157_4_--;
++        --p_191157_3_;
++        --p_191157_4_;
+         int i = p_191157_1_ == Mirror.FRONT_BACK ? p_191157_3_ : 0;
+         int j = p_191157_1_ == Mirror.LEFT_RIGHT ? p_191157_4_ : 0;
+         BlockPos blockpos = p_191157_0_;
+@@ -454,14 +437,13 @@
      {
          p_191158_0_.func_188258_a(FixTypes.STRUCTURE, new IDataWalker()
          {
@@ -169,6 +180,23 @@
              public NBTTagCompound func_188266_a(IDataFixer p_188266_1_, NBTTagCompound p_188266_2_, int p_188266_3_)
              {
                  if (p_188266_2_.func_150297_b("entities", 9))
+                 {
+                     NBTTagList nbttaglist = p_188266_2_.func_150295_c("entities", 10);
+ 
+-                    for (int i = 0; i < nbttaglist.func_74745_c(); i++)
++                    for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+                     {
+                         NBTTagCompound nbttagcompound = (NBTTagCompound)nbttaglist.func_179238_g(i);
+ 
+@@ -476,7 +458,7 @@
+                 {
+                     NBTTagList nbttaglist1 = p_188266_2_.func_150295_c("blocks", 10);
+ 
+-                    for (int j = 0; j < nbttaglist1.func_74745_c(); j++)
++                    for (int j = 0; j < nbttaglist1.func_74745_c(); ++j)
+                     {
+                         NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist1.func_179238_g(j);
+ 
 @@ -500,14 +482,7 @@
          for (Template.BlockInfo template$blockinfo : this.field_186270_a)
          {
@@ -225,6 +253,32 @@
          p_189552_1_.func_74778_a("author", this.field_186273_d);
          p_189552_1_.func_74768_a("DataVersion", 1343);
          return p_189552_1_;
+@@ -576,14 +536,14 @@
+         Template.BasicPalette template$basicpalette = new Template.BasicPalette();
+         NBTTagList nbttaglist1 = p_186256_1_.func_150295_c("palette", 10);
+ 
+-        for (int i = 0; i < nbttaglist1.func_74745_c(); i++)
++        for (int i = 0; i < nbttaglist1.func_74745_c(); ++i)
+         {
+             template$basicpalette.func_189956_a(NBTUtil.func_190008_d(nbttaglist1.func_150305_b(i)), i);
+         }
+ 
+         NBTTagList nbttaglist3 = p_186256_1_.func_150295_c("blocks", 10);
+ 
+-        for (int j = 0; j < nbttaglist3.func_74745_c(); j++)
++        for (int j = 0; j < nbttaglist3.func_74745_c(); ++j)
+         {
+             NBTTagCompound nbttagcompound = nbttaglist3.func_150305_b(j);
+             NBTTagList nbttaglist2 = nbttagcompound.func_150295_c("pos", 3);
+@@ -605,7 +565,7 @@
+ 
+         NBTTagList nbttaglist4 = p_186256_1_.func_150295_c("entities", 10);
+ 
+-        for (int k = 0; k < nbttaglist4.func_74745_c(); k++)
++        for (int k = 0; k < nbttaglist4.func_74745_c(); ++k)
+         {
+             NBTTagCompound nbttagcompound3 = nbttaglist4.func_150305_b(k);
+             NBTTagList nbttaglist5 = nbttagcompound3.func_150295_c("pos", 6);
 @@ -648,11 +608,12 @@
      static class BasicPalette implements Iterable<IBlockState>
          {

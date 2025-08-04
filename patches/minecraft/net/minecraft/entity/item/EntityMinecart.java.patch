@@ -230,6 +230,24 @@
          {
              this.func_70076_C();
          }
+@@ -293,7 +289,7 @@
+ 
+             if (this.field_71088_bW > 0)
+             {
+-                this.field_71088_bW--;
++                --this.field_71088_bW;
+             }
+ 
+             this.field_70170_p.field_72984_F.func_76319_b();
+@@ -309,7 +305,7 @@
+                 double d1 = MathHelper.func_76138_g(this.field_70512_ao - (double)this.field_70177_z);
+                 this.field_70177_z = (float)((double)this.field_70177_z + d1 / (double)this.field_70510_h);
+                 this.field_70125_A = (float)((double)this.field_70125_A + (this.field_70513_ap - (double)this.field_70125_A) / (double)this.field_70510_h);
+-                this.field_70510_h--;
++                --this.field_70510_h;
+                 this.func_70107_b(d4, d5, d6);
+                 this.func_70101_b(this.field_70177_z, this.field_70125_A);
+             }
 @@ -327,7 +323,7 @@
  
              if (!this.func_189652_ae())
@@ -239,7 +257,14 @@
              }
  
              int k = MathHelper.func_76128_c(this.field_70165_t);
-@@ -342,13 +338,13 @@
+@@ -336,19 +332,19 @@
+ 
+             if (BlockRailBase.func_176562_d(this.field_70170_p, new BlockPos(k, l - 1, i1)))
+             {
+-                l--;
++                --l;
+             }
+ 
              BlockPos blockpos = new BlockPos(k, l, i1);
              IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos);
  
@@ -276,7 +301,7 @@
              {
                  this.field_70177_z += 180.0F;
                  this.field_70499_f = !this.field_70499_f;
-@@ -381,10 +377,13 @@
+@@ -381,22 +377,21 @@
  
              this.func_70101_b(this.field_70177_z, this.field_70125_A);
  
@@ -293,7 +318,8 @@
  
                  if (!list.isEmpty())
                  {
-@@ -392,11 +391,7 @@
+-                    for (int j1 = 0; j1 < list.size(); j1++)
++                    for (int j1 = 0; j1 < list.size(); ++j1)
                      {
                          Entity entity1 = list.get(j1);
  
@@ -374,7 +400,7 @@
          }
      }
  
-@@ -466,29 +473,29 @@
+@@ -466,30 +473,30 @@
  
          if (blockrailbase == Blocks.field_150318_D)
          {
@@ -392,25 +418,30 @@
          {
              case ASCENDING_EAST:
 -                this.field_70159_w -= 0.0078125;
+-                this.field_70163_u++;
 +                this.field_70159_w -= slopeAdjustment;
-                 ++this.field_70163_u;
++                ++this.field_70163_u;
                  break;
              case ASCENDING_WEST:
 -                this.field_70159_w += 0.0078125;
+-                this.field_70163_u++;
 +                this.field_70159_w += slopeAdjustment;
-                 ++this.field_70163_u;
++                ++this.field_70163_u;
                  break;
              case ASCENDING_NORTH:
 -                this.field_70179_y += 0.0078125;
+-                this.field_70163_u++;
 +                this.field_70179_y += slopeAdjustment;
-                 ++this.field_70163_u;
++                ++this.field_70163_u;
                  break;
              case ASCENDING_SOUTH:
 -                this.field_70179_y -= 0.0078125;
+-                this.field_70163_u++;
 +                this.field_70179_y -= slopeAdjustment;
-                 ++this.field_70163_u;
++                ++this.field_70163_u;
          }
  
+         int[][] aint = field_70500_g[blockrailbase$enumraildirection.func_177015_a()];
 @@ -498,7 +505,7 @@
          double d3 = Math.sqrt(d1 * d1 + d2 * d2);
          double d4 = this.field_70159_w * d1 + this.field_70179_y * d2;
@@ -586,8 +617,8 @@
 +            if (d15 > 0.01D)
              {
 -                double d16 = 0.06;
--                this.field_70159_w += this.field_70159_w / d15 * 0.06;
--                this.field_70179_y += this.field_70179_y / d15 * 0.06;
+-                this.field_70159_w = this.field_70159_w + this.field_70159_w / d15 * 0.06;
+-                this.field_70179_y = this.field_70179_y + this.field_70179_y / d15 * 0.06;
 +                double d16 = 0.06D;
 +                this.field_70159_w += this.field_70159_w / d15 * 0.06D;
 +                this.field_70179_y += this.field_70179_y / d15 * 0.06D;
@@ -656,7 +687,15 @@
      }
  
      @Nullable
-@@ -715,9 +709,7 @@
+@@ -708,16 +702,14 @@
+ 
+         if (BlockRailBase.func_176562_d(this.field_70170_p, new BlockPos(i, j - 1, k)))
+         {
+-            j--;
++            --j;
+         }
+ 
+         IBlockState iblockstate = this.field_70170_p.func_180495_p(new BlockPos(i, j, k));
  
          if (BlockRailBase.func_176563_d(iblockstate))
          {
@@ -682,7 +721,15 @@
  
              if (aint[0][1] != 0 && MathHelper.func_76128_c(p_70495_1_) - i == aint[0][0] && MathHelper.func_76128_c(p_70495_5_) - k == aint[0][2])
              {
-@@ -767,26 +759,24 @@
+@@ -760,33 +752,31 @@
+ 
+         if (BlockRailBase.func_176562_d(this.field_70170_p, new BlockPos(i, j - 1, k)))
+         {
+-            j--;
++            --j;
+         }
+ 
+         IBlockState iblockstate = this.field_70170_p.func_180495_p(new BlockPos(i, j, k));
  
          if (BlockRailBase.func_176563_d(iblockstate))
          {
@@ -734,7 +781,8 @@
 -            if (d7 < 0.0)
 +            if (d7 < 0.0D)
              {
-                 ++p_70489_3_;
+-                p_70489_3_++;
++                ++p_70489_3_;
              }
  
 -            if (d7 > 0.0)

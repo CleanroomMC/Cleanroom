@@ -380,6 +380,11 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
     {
         if (this.isLocked())
             throw new IllegalStateException(String.format("Attempted to register the alias %s -> %s to late", from, to));
+        if (from.equals(to))
+        {
+            FMLLog.log.warn("Registry {} Ignoring invalid alias: {} -> {}", this.superType.getSimpleName(), from, to);
+            return;
+        }
         this.aliases.put(from, to);
         if (DEBUG)
             FMLLog.log.trace("Registry {} alias: {} -> {}", this.superType.getSimpleName(), from, to);
@@ -480,7 +485,7 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
         if (DEBUG)
             FMLLog.log.debug("Registry {} Sync: {} -> {}", this.superType.getSimpleName(), this.stage.getName(), from.stage.getName());
         if (this == from)
-            throw new IllegalArgumentException("WTF We are the same!?!?!");
+            throw new IllegalArgumentException("Attempted to sync the same registry instance!");
         if (from.superType != this.superType)
             throw new IllegalArgumentException("Attempted to copy to incompatible registry: " + name + " " + from.superType + " -> " + this.superType);
 
@@ -813,7 +818,7 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
             {
                 NBTTagCompound tag = new NBTTagCompound();
                 tag.setString("K", e.getKey().toString());
-                tag.setString("V", e.getKey().toString());
+                tag.setString("V", e.getValue().toString());
                 aliases.appendTag(tag);
             });
             data.setTag("aliases", aliases);

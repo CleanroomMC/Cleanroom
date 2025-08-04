@@ -71,6 +71,18 @@
          this.field_78531_r = p_i45076_1_;
          this.field_147711_ac = p_i45076_2_;
          this.field_78516_c = p_i45076_1_.func_175597_ag();
+@@ -178,9 +154,9 @@
+         this.field_78504_Q = this.field_78513_d.func_110565_c();
+         this.field_147707_d = null;
+ 
+-        for (int i = 0; i < 32; i++)
++        for (int i = 0; i < 32; ++i)
+         {
+-            for (int j = 0; j < 32; j++)
++            for (int j = 0; j < 32; ++j)
+             {
+                 float f = (float)(j - 16);
+                 float f1 = (float)(i - 16);
 @@ -235,6 +211,7 @@
              {
                  this.func_175069_a(new ResourceLocation("shaders/post/invert.json"));
@@ -87,7 +99,7 @@
      public void func_110549_a(IResourceManager p_110549_1_)
      {
          if (this.field_147707_d != null)
-@@ -315,7 +291,7 @@
+@@ -315,11 +291,11 @@
              this.field_78531_r.func_175607_a(this.field_78531_r.field_71439_g);
          }
  
@@ -95,7 +107,22 @@
 +        float f3 = this.field_78531_r.field_71441_e.func_175724_o(new BlockPos(this.field_78531_r.func_175606_aa().func_174824_e(1F))); // Forge: fix MC-51150
          float f4 = (float)this.field_78531_r.field_71474_y.field_151451_c / 32.0F;
          float f2 = f3 * (1.0F - f4) + f4;
-         this.field_78539_ae += (f2 - this.field_78539_ae) * 0.1F;
+-        this.field_78539_ae = this.field_78539_ae + (f2 - this.field_78539_ae) * 0.1F;
+-        this.field_78529_t++;
++        this.field_78539_ae += (f2 - this.field_78539_ae) * 0.1F;
++        ++this.field_78529_t;
+         this.field_78516_c.func_78441_a();
+         this.func_78484_h();
+         this.field_82832_V = this.field_82831_U;
+@@ -340,7 +316,7 @@
+ 
+         if (this.field_190567_ac > 0)
+         {
+-            this.field_190567_ac--;
++            --this.field_190567_ac;
+ 
+             if (this.field_190567_ac == 0)
+             {
 @@ -386,12 +362,12 @@
  
                  if (this.field_78531_r.field_71442_b.func_78749_i())
@@ -111,7 +138,7 @@
                      {
                          flag = true;
                      }
-@@ -407,21 +383,13 @@
+@@ -407,24 +383,16 @@
                  this.field_78528_u = null;
                  Vec3d vec3d3 = null;
                  float f = 1.0F;
@@ -134,7 +161,11 @@
 +                }));
                  double d2 = d1;
  
-                 for (int j = 0; j < list.size(); ++j)
+-                for (int j = 0; j < list.size(); j++)
++                for (int j = 0; j < list.size(); ++j)
+                 {
+                     Entity entity1 = list.get(j);
+                     AxisAlignedBB axisalignedbb = entity1.func_174813_aQ().func_186662_g((double)entity1.func_70111_Y());
 @@ -432,22 +400,22 @@
  
                      if (axisalignedbb.func_72318_a(vec3d))
@@ -176,6 +207,15 @@
                  }
  
                  if (this.field_78528_u != null && (d2 < d1 || this.field_78531_r.field_71476_x == null))
+@@ -495,7 +463,7 @@
+         }
+ 
+         this.field_78506_S = this.field_78507_R;
+-        this.field_78507_R = this.field_78507_R + (f - this.field_78507_R) * 0.5F;
++        this.field_78507_R += (f - this.field_78507_R) * 0.5F;
+ 
+         if (this.field_78507_R > 1.5F)
+         {
 @@ -522,7 +490,7 @@
              if (p_78481_2_)
              {
@@ -254,7 +294,8 @@
 +                double d5 = (double)(MathHelper.func_76134_b(f1 * 0.017453292F) * MathHelper.func_76134_b(f2 * 0.017453292F)) * d3;
 +                double d6 = (double)(-MathHelper.func_76126_a(f2 * 0.017453292F)) * d3;
  
-                 for (int i = 0; i < 8; ++i)
+-                for (int i = 0; i < 8; i++)
++                for (int i = 0; i < 8; ++i)
                  {
                      float f3 = (float)((i & 1) * 2 - 1);
                      float f4 = (float)((i >> 1 & 1) * 2 - 1);
@@ -378,15 +419,26 @@
              {
                  this.func_180436_i();
                  this.field_78516_c.func_78440_a(p_78476_1_);
-@@ -879,7 +821,7 @@
+@@ -879,8 +821,8 @@
      private void func_78470_f()
      {
          this.field_175075_L = (float)((double)this.field_175075_L + (Math.random() - Math.random()) * Math.random() * Math.random());
 -        this.field_175075_L = (float)((double)this.field_175075_L * 0.9);
+-        this.field_78514_e = this.field_78514_e + (this.field_175075_L - this.field_78514_e);
 +        this.field_175075_L = (float)((double)this.field_175075_L * 0.9D);
-         this.field_78514_e += this.field_175075_L - this.field_78514_e;
++        this.field_78514_e += this.field_175075_L - this.field_78514_e;
          this.field_78536_aa = true;
      }
+ 
+@@ -896,7 +838,7 @@
+                 float f = world.func_72971_b(1.0F);
+                 float f1 = f * 0.95F + 0.05F;
+ 
+-                for (int i = 0; i < 256; i++)
++                for (int i = 0; i < 256; ++i)
+                 {
+                     float f2 = world.field_73011_w.func_177497_p()[i / 16] * f1;
+                     float f3 = world.field_73011_w.func_177497_p()[i % 16] * (this.field_78514_e * 0.1F + 1.5F);
 @@ -932,6 +874,15 @@
                          f10 = 0.25F + f7 * 0.75F;
                      }
@@ -669,9 +721,12 @@
              int j = 0;
              int k = (int)(100.0F * f * f);
  
-@@ -1558,60 +1494,36 @@
+@@ -1556,62 +1492,38 @@
+                 k = 0;
+             }
  
-             for (int l = 0; l < k; ++l)
+-            for (int l = 0; l < k; l++)
++            for (int l = 0; l < k; ++l)
              {
 -                BlockPos blockpos1 = world.func_175725_q(
 -                                         blockpos.func_177982_a(
@@ -791,8 +846,15 @@
              GlStateManager.func_179092_a(516, 0.1F);
              double d0 = entity.field_70142_S + (entity.field_70165_t - entity.field_70142_S) * (double)p_78474_1_;
              double d1 = entity.field_70137_T + (entity.field_70163_u - entity.field_70137_T) * (double)p_78474_1_;
-@@ -1679,8 +1592,8 @@
-                 for (int l1 = i - i1; l1 <= i + i1; ++l1)
+@@ -1674,13 +1587,13 @@
+             GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
+             BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+ 
+-            for (int k1 = k - i1; k1 <= k + i1; k1++)
++            for (int k1 = k - i1; k1 <= k + i1; ++k1)
+             {
+-                for (int l1 = i - i1; l1 <= i + i1; l1++)
++                for (int l1 = i - i1; l1 <= i + i1; ++l1)
                  {
                      int i2 = (k1 - k + 16) * 32 + l1 - i + 16;
 -                    double d3 = (double)this.field_175076_N[i2] * 0.5;
@@ -933,6 +995,19 @@
                      this.field_175080_Q = this.field_175080_Q * (1.0F - f5) + afloat[0] * f5;
                      this.field_175082_R = this.field_175082_R * (1.0F - f5) + afloat[1] * f5;
                      this.field_175081_S = this.field_175081_S * (1.0F - f5) + afloat[2] * f5;
+@@ -1875,9 +1754,9 @@
+             }
+         }
+ 
+-        this.field_175080_Q = this.field_175080_Q + (f1 - this.field_175080_Q) * f;
+-        this.field_175082_R = this.field_175082_R + (f2 - this.field_175082_R) * f;
+-        this.field_175081_S = this.field_175081_S + (f3 - this.field_175081_S) * f;
++        this.field_175080_Q += (f1 - this.field_175080_Q) * f;
++        this.field_175082_R += (f2 - this.field_175082_R) * f;
++        this.field_175081_S += (f3 - this.field_175081_S) * f;
+         float f8 = world.func_72867_j(p_78466_1_);
+ 
+         if (f8 > 0.0F)
 @@ -1908,29 +1787,16 @@
              this.field_175082_R = (float)vec3d3.field_72448_b;
              this.field_175081_S = (float)vec3d3.field_72449_c;

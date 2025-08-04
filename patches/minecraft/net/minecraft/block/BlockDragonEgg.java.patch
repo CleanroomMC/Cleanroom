@@ -96,9 +96,12 @@
      public void func_180649_a(World p_180649_1_, BlockPos p_180649_2_, EntityPlayer p_180649_3_)
      {
          this.func_180684_e(p_180649_1_, p_180649_2_);
-@@ -117,13 +93,9 @@
+@@ -115,36 +91,23 @@
+ 
+         if (iblockstate.func_177230_c() == this)
          {
-             for (int i = 0; i < 1000; ++i)
+-            for (int i = 0; i < 1000; i++)
++            for (int i = 0; i < 1000; ++i)
              {
 -                BlockPos blockpos = p_180684_2_.func_177982_a(
 -                                        p_180684_1_.field_73012_v.nextInt(16) - p_180684_1_.field_73012_v.nextInt(16),
@@ -112,7 +115,10 @@
                  {
                      if (p_180684_1_.field_72995_K)
                      {
-@@ -133,18 +105,9 @@
+-                        for (int j = 0; j < 128; j++)
++                        for (int j = 0; j < 128; ++j)
+                         {
+                             double d0 = p_180684_1_.field_73012_v.nextDouble();
                              float f = (p_180684_1_.field_73012_v.nextFloat() - 0.5F) * 0.2F;
                              float f1 = (p_180684_1_.field_73012_v.nextFloat() - 0.5F) * 0.2F;
                              float f2 = (p_180684_1_.field_73012_v.nextFloat() - 0.5F) * 0.2F;

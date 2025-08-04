@@ -1,0 +1,12 @@
+--- before/net/minecraft/client/particle/ParticleItemPickup.java
++++ after/net/minecraft/client/particle/ParticleItemPickup.java
+@@ -71,7 +71,9 @@
+         d7 -= field_70554_ao;
+         d8 -= field_70555_ap;
+         GlStateManager.func_179145_e();
++        GlStateManager.func_179089_o();
+         this.field_174842_aB.func_188391_a(this.field_174840_a, d6, d7, d8, this.field_174840_a.field_70177_z, p_180434_3_, false);
++        GlStateManager.func_179129_p();
+     }
+ 
+     @Override

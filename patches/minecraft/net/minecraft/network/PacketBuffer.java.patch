@@ -1,5 +1,32 @@
 --- before/net/minecraft/network/PacketBuffer.java
 +++ after/net/minecraft/network/PacketBuffer.java
+@@ -42,7 +42,7 @@
+ 
+     public static int func_150790_a(int p_150790_0_)
+     {
+-        for (int i = 1; i < 5; i++)
++        for (int i = 1; i < 5; ++i)
+         {
+             if ((p_150790_0_ & -1 << i * 7) == 0)
+             {
+@@ -110,7 +110,7 @@
+         {
+             int[] aint = new int[i];
+ 
+-            for (int j = 0; j < aint.length; j++)
++            for (int j = 0; j < aint.length; ++j)
+             {
+                 aint[j] = this.func_150792_a();
+             }
+@@ -152,7 +152,7 @@
+             p_189423_1_ = new long[i];
+         }
+ 
+-        for (int j = 0; j < p_189423_1_.length; j++)
++        for (int j = 0; j < p_189423_1_.length; ++j)
+         {
+             p_189423_1_[j] = this.readLong();
+         }
 @@ -183,7 +183,7 @@
  
      public <T extends Enum<T>> T func_179257_a(Class<T> p_179257_1_)

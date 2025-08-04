@@ -5,8 +5,8 @@
 /buildSrc/.gradle/
 /buildSrc/build/
 /logs/
+build/
 version.txt
 src/main/java/com/cleanroommc/common/CleanroomVersion.java
-build/
 
 !/.idea/icon.svg

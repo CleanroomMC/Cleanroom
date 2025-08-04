@@ -8,3 +8,12 @@
          WorldInfo.func_189967_a(datafixer);
          EntityPlayerMP.func_191522_a(datafixer);
          EntityPlayer.func_189806_a(datafixer);
+@@ -272,7 +273,7 @@
+         {
+             NBTTagList nbttaglist = p_188278_1_.func_150295_c(p_188278_3_, 10);
+ 
+-            for (int i = 0; i < nbttaglist.func_74745_c(); i++)
++            for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+             {
+                 nbttaglist.func_150304_a(i, p_188278_0_.func_188251_a(FixTypes.ITEM_INSTANCE, nbttaglist.func_150305_b(i), p_188278_2_));
+             }

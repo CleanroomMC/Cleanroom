@@ -23,6 +23,22 @@
      }
  
      public void func_148145_f(int p_148145_1_)
+@@ -159,13 +154,13 @@
+         {
+             if (p_148147_1_.field_146127_k == this.field_148159_m)
+             {
+-                this.field_148169_q = this.field_148169_q - (float)(this.field_148149_f * 2 / 3);
++                this.field_148169_q -= (float)(this.field_148149_f * 2 / 3);
+                 this.field_148157_o = -2;
+                 this.func_148121_k();
+             }
+             else if (p_148147_1_.field_146127_k == this.field_148156_n)
+             {
+-                this.field_148169_q = this.field_148169_q + (float)(this.field_148149_f * 2 / 3);
++                this.field_148169_q += (float)(this.field_148149_f * 2 / 3);
+                 this.field_148157_o = -2;
+                 this.func_148121_k();
+             }
 @@ -186,27 +181,8 @@
              GlStateManager.func_179106_n();
              Tessellator tessellator = Tessellator.func_178181_a();
@@ -217,7 +233,7 @@
 -                                     (float)((this.field_148154_c - this.field_148153_b) * (this.field_148154_c - this.field_148153_b)) / (float)this.func_148138_e()
 -                                 );
 -                        l1 = MathHelper.func_76125_a(l1, 32, this.field_148154_c - this.field_148153_b - 8);
--                        this.field_148170_p /= (float)(this.field_148154_c - this.field_148153_b - l1) / (float)k1;
+-                        this.field_148170_p = this.field_148170_p / ((float)(this.field_148154_c - this.field_148153_b - l1) / (float)k1);
 -                    }
 -                    else
 -                    {
@@ -296,12 +312,30 @@
 -            else if (this.field_148157_o >= 0)
 +            else
              {
--                this.field_148169_q -= (float)(this.field_148162_h - this.field_148157_o) * this.field_148170_p;
+-                this.field_148169_q = this.field_148169_q - (float)(this.field_148162_h - this.field_148157_o) * this.field_148170_p;
 -                this.field_148157_o = this.field_148162_h;
 +                this.field_148157_o = -1;
              }
  
              int i2 = Mouse.getEventDWheel();
+@@ -417,7 +362,7 @@
+                     i2 = 1;
+                 }
+ 
+-                this.field_148169_q = this.field_148169_q + (float)(i2 * this.field_148149_f / 2);
++                this.field_148169_q += (float)(i2 * this.field_148149_f / 2);
+             }
+         }
+     }
+@@ -443,7 +388,7 @@
+         Tessellator tessellator = Tessellator.func_178181_a();
+         BufferBuilder bufferbuilder = tessellator.func_178180_c();
+ 
+-        for (int j = 0; j < i; j++)
++        for (int j = 0; j < i; ++j)
+         {
+             int k = p_192638_2_ + j * this.field_148149_f + this.field_148160_j;
+             int l = this.field_148149_f - 4;
 @@ -460,14 +405,14 @@
                  GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
                  GlStateManager.func_179090_x();

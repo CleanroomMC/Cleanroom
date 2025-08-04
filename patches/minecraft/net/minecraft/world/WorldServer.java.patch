@@ -151,6 +151,20 @@
      public void func_72854_c()
      {
          this.field_73068_P = false;
+@@ -255,11 +266,11 @@
+             {
+                 if (entityplayer.func_175149_v())
+                 {
+-                    i++;
++                    ++i;
+                 }
+                 else if (entityplayer.func_70608_bn())
+                 {
+-                    j++;
++                    ++j;
+                 }
+             }
+ 
 @@ -284,10 +295,7 @@
  
      private void func_73051_P()
@@ -270,6 +284,15 @@
                      if (this.func_175662_w(blockpos2))
                      {
                          this.func_175656_a(blockpos2, Blocks.field_150432_aD.func_176223_P());
+@@ -461,7 +460,7 @@
+                     {
+                         if (extendedblockstorage != Chunk.field_186036_a && extendedblockstorage.func_76675_b())
+                         {
+-                            for (int i1 = 0; i1 < i; i1++)
++                            for (int i1 = 0; i1 < i; ++i1)
+                             {
+                                 this.field_73005_l = this.field_73005_l * 3 + 1013904223;
+                                 int j1 = this.field_73005_l >> 2;
 @@ -491,9 +490,8 @@
      protected BlockPos func_175736_a(BlockPos p_175736_1_)
      {
@@ -354,7 +377,7 @@
          {
              if (this.field_80004_Q++ >= 300)
              {
-@@ -617,7 +613,6 @@
+@@ -617,13 +613,12 @@
          super.func_72939_s();
      }
  
@@ -362,6 +385,13 @@
      protected void func_184147_l()
      {
          super.func_184147_l();
+         this.field_72984_F.func_76318_c("players");
+ 
+-        for (int i = 0; i < this.field_73010_i.size(); i++)
++        for (int i = 0; i < this.field_73010_i.size(); ++i)
+         {
+             Entity entity = this.field_73010_i.get(i);
+             Entity entity1 = entity.func_184187_bx();
 @@ -681,7 +676,6 @@
          this.field_80004_Q = 0;
      }
@@ -370,6 +400,15 @@
      public boolean func_72955_a(boolean p_72955_1_)
      {
          if (this.field_72986_A.func_76067_t() == WorldType.field_180272_g)
+@@ -705,7 +699,7 @@
+ 
+                 this.field_72984_F.func_76320_a("cleaning");
+ 
+-                for (int j = 0; j < i; j++)
++                for (int j = 0; j < i; ++j)
+                 {
+                     NextTickListEntry nextticklistentry = this.field_73065_O.first();
+ 
 @@ -727,14 +721,16 @@
                  {
                      NextTickListEntry nextticklistentry1 = iterator.next();
@@ -397,7 +436,7 @@
      public List<NextTickListEntry> func_72920_a(Chunk p_72920_1_, boolean p_72920_2_)
      {
          ChunkPos chunkpos = p_72920_1_.func_76632_l();
-@@ -775,7 +770,6 @@
+@@ -775,12 +770,11 @@
      }
  
      @Nullable
@@ -405,6 +444,12 @@
      public List<NextTickListEntry> func_175712_a(StructureBoundingBox p_175712_1_, boolean p_175712_2_)
      {
          List<NextTickListEntry> list = null;
+ 
+-        for (int i = 0; i < 2; i++)
++        for (int i = 0; i < 2; ++i)
+         {
+             Iterator<NextTickListEntry> iterator;
+ 
 @@ -798,10 +792,7 @@
                  NextTickListEntry nextticklistentry = iterator.next();
                  BlockPos blockpos = nextticklistentry.field_180282_a;
@@ -499,6 +544,15 @@
                  {
                      break;
                  }
+@@ -973,7 +967,7 @@
+     {
+         WorldGeneratorBonusChest worldgeneratorbonuschest = new WorldGeneratorBonusChest();
+ 
+-        for (int i = 0; i < 10; i++)
++        for (int i = 0; i < 10; ++i)
+         {
+             int j = this.field_72986_A.func_76079_c() + this.field_73012_v.nextInt(6) - this.field_73012_v.nextInt(6);
+             int k = this.field_72986_A.func_76074_e() + this.field_73012_v.nextInt(6) - this.field_73012_v.nextInt(6);
 @@ -1011,6 +1005,7 @@
              }
  
@@ -721,7 +775,7 @@
      public MinecraftServer func_73046_m()
      {
          return this.field_73061_a;
-@@ -1334,51 +1291,14 @@
+@@ -1334,98 +1291,34 @@
          return this.field_73019_z.func_186340_h();
      }
  
@@ -775,9 +829,11 @@
 -        );
 +        SPacketParticles spacketparticles = new SPacketParticles(p_180505_1_, p_180505_2_, (float)p_180505_3_, (float)p_180505_5_, (float)p_180505_7_, (float)p_180505_10_, (float)p_180505_12_, (float)p_180505_14_, (float)p_180505_16_, p_180505_9_, p_180505_18_);
  
-         for (int i = 0; i < this.field_73010_i.size(); ++i)
+-        for (int i = 0; i < this.field_73010_i.size(); i++)
++        for (int i = 0; i < this.field_73010_i.size(); ++i)
          {
-@@ -1387,45 +1307,18 @@
+             EntityPlayerMP entityplayermp = (EntityPlayerMP)this.field_73010_i.get(i);
+             this.func_184159_a(entityplayermp, p_180505_2_, p_180505_3_, p_180505_5_, p_180505_7_, spacketparticles);
          }
      }
  

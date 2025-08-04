@@ -94,15 +94,18 @@
      public void func_180655_c(IBlockState p_180655_1_, World p_180655_2_, BlockPos p_180655_3_, Random p_180655_4_)
      {
          if (this.field_150187_a)
-@@ -132,7 +116,7 @@
+@@ -132,9 +116,9 @@
      private void func_180691_e(World p_180691_1_, BlockPos p_180691_2_)
      {
          Random random = p_180691_1_.field_73012_v;
 -        double d0 = 0.0625;
 +        double d0 = 0.0625D;
  
-         for (int i = 0; i < 6; ++i)
+-        for (int i = 0; i < 6; i++)
++        for (int i = 0; i < 6; ++i)
          {
+             double d1 = (double)((float)p_180691_2_.func_177958_n() + random.nextFloat());
+             double d2 = (double)((float)p_180691_2_.func_177956_o() + random.nextFloat());
 @@ -142,53 +126,46 @@
  
              if (i == 0 && !p_180691_1_.func_180495_p(p_180691_2_.func_177984_a()).func_185914_p())

@@ -9,7 +9,15 @@
  
      private ItemOverrideList()
      {
-@@ -29,6 +29,7 @@
+@@ -22,13 +22,14 @@
+ 
+     public ItemOverrideList(List<ItemOverride> p_i46570_1_)
+     {
+-        for (int i = p_i46570_1_.size() - 1; i >= 0; i--)
++        for (int i = p_i46570_1_.size() - 1; i >= 0; --i)
+         {
+             this.field_188023_b.add(p_i46570_1_.get(i));
+         }
      }
  
      @Nullable

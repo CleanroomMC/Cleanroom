@@ -1,6 +1,6 @@
 --- before/net/minecraft/item/crafting/RecipesBanners.java
 +++ after/net/minecraft/item/crafting/RecipesBanners.java
-@@ -12,14 +12,11 @@
+@@ -12,19 +12,16 @@
  import net.minecraft.tileentity.TileEntityBanner;
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
@@ -16,15 +16,43 @@
              public boolean func_77569_a(InventoryCrafting p_77569_1_, World p_77569_2_)
              {
                  boolean flag = false;
-@@ -54,7 +51,6 @@
+ 
+-                for (int i = 0; i < p_77569_1_.func_70302_i_(); i++)
++                for (int i = 0; i < p_77569_1_.func_70302_i_(); ++i)
+                 {
+                     ItemStack itemstack = p_77569_1_.func_70301_a(i);
+ 
+@@ -44,15 +41,21 @@
+                     }
                  }
+ 
+-                return !flag ? false : this.func_190933_c(p_77569_1_) != null;
++                if (!flag)
++                {
++                    return false;
++                }
++                else
++                {
++                    return this.func_190933_c(p_77569_1_) != null;
++                }
              }
  
 -            @Override
              public ItemStack func_77572_b(InventoryCrafting p_77572_1_)
              {
                  ItemStack itemstack = ItemStack.field_190927_a;
-@@ -81,9 +77,10 @@
+ 
+-                for (int i = 0; i < p_77572_1_.func_70302_i_(); i++)
++                for (int i = 0; i < p_77572_1_.func_70302_i_(); ++i)
+                 {
+                     ItemStack itemstack1 = p_77572_1_.func_70301_a(i);
+ 
+@@ -70,13 +73,14 @@
+                 {
+                     int k = 0;
+ 
+-                    for (int j = 0; j < p_77572_1_.func_70302_i_(); j++)
++                    for (int j = 0; j < p_77572_1_.func_70302_i_(); ++j)
                      {
                          ItemStack itemstack2 = p_77572_1_.func_70301_a(j);
  
@@ -37,7 +65,7 @@
                              break;
                          }
                      }
-@@ -110,25 +107,19 @@
+@@ -103,25 +107,19 @@
                  return itemstack;
              }
  
@@ -53,7 +81,8 @@
 -                NonNullList<ItemStack> nonnulllist = NonNullList.func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
 +                NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
  
-                 for (int i = 0; i < nonnulllist.size(); ++i)
+-                for (int i = 0; i < nonnulllist.size(); i++)
++                for (int i = 0; i < nonnulllist.size(); ++i)
                  {
                      ItemStack itemstack = p_179532_1_.func_70301_a(i);
 -
@@ -65,7 +94,14 @@
                  }
  
                  return nonnulllist;
-@@ -154,7 +145,7 @@
+@@ -141,13 +139,13 @@
+                             boolean flag1 = false;
+                             boolean flag2 = false;
+ 
+-                            for (int i = 0; i < p_190933_1_.func_70302_i_() && flag; i++)
++                            for (int i = 0; i < p_190933_1_.func_70302_i_() && flag; ++i)
+                             {
+                                 ItemStack itemstack = p_190933_1_.func_70301_a(i);
  
                                  if (!itemstack.func_190926_b() && itemstack.func_77973_b() != Items.field_179564_cE)
                                  {
@@ -74,7 +110,16 @@
                                      {
                                          if (flag2)
                                          {
-@@ -194,7 +185,7 @@
+@@ -179,7 +177,7 @@
+                         {
+                             int j = -1;
+ 
+-                            for (int k = 0; k < p_190933_1_.func_70302_i_() && flag; k++)
++                            for (int k = 0; k < p_190933_1_.func_70302_i_() && flag; ++k)
+                             {
+                                 int l = k / 3;
+                                 int i1 = k % 3;
+@@ -187,7 +185,7 @@
  
                                  if (!itemstack1.func_190926_b() && itemstack1.func_77973_b() != Items.field_179564_cE)
                                  {
@@ -83,7 +128,7 @@
                                      {
                                          flag = false;
                                          break;
-@@ -236,23 +227,19 @@
+@@ -229,29 +227,25 @@
                  return null;
              }
  
@@ -108,15 +153,26 @@
              public boolean func_77569_a(InventoryCrafting p_77569_1_, World p_77569_2_)
              {
                  ItemStack itemstack = ItemStack.field_190927_a;
-@@ -319,7 +306,6 @@
+                 ItemStack itemstack1 = ItemStack.field_190927_a;
+ 
+-                for (int i = 0; i < p_77569_1_.func_70302_i_(); i++)
++                for (int i = 0; i < p_77569_1_.func_70302_i_(); ++i)
+                 {
+                     ItemStack itemstack2 = p_77569_1_.func_70301_a(i);
+ 
+@@ -312,10 +306,9 @@
                  return !itemstack.func_190926_b() && !itemstack1.func_190926_b();
              }
  
 -            @Override
              public ItemStack func_77572_b(InventoryCrafting p_77572_1_)
              {
-                 for (int i = 0; i < p_77572_1_.func_70302_i_(); ++i)
-@@ -337,16 +323,14 @@
+-                for (int i = 0; i < p_77572_1_.func_70302_i_(); i++)
++                for (int i = 0; i < p_77572_1_.func_70302_i_(); ++i)
+                 {
+                     ItemStack itemstack = p_77572_1_.func_70301_a(i);
+ 
+@@ -330,26 +323,24 @@
                  return ItemStack.field_190927_a;
              }
  
@@ -132,9 +188,10 @@
 -                NonNullList<ItemStack> nonnulllist = NonNullList.func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
 +                NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
  
-                 for (int i = 0; i < nonnulllist.size(); ++i)
+-                for (int i = 0; i < nonnulllist.size(); i++)
++                for (int i = 0; i < nonnulllist.size(); ++i)
                  {
-@@ -354,9 +338,9 @@
+                     ItemStack itemstack = p_179532_1_.func_70301_a(i);
  
                      if (!itemstack.func_190926_b())
                      {
@@ -146,7 +203,7 @@
                          }
                          else if (itemstack.func_77942_o() && TileEntityBanner.func_175113_c(itemstack) > 0)
                          {
-@@ -370,14 +354,11 @@
+@@ -363,14 +354,11 @@
                  return nonnulllist;
              }
  

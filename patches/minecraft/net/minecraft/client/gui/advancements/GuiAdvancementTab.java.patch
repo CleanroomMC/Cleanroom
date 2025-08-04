@@ -27,6 +27,18 @@
      {
          this.field_191802_a = p_i47589_1_;
          this.field_193938_f = p_i47589_2_;
+@@ -106,9 +100,9 @@
+         int i = this.field_191811_n % 16;
+         int j = this.field_191812_o % 16;
+ 
+-        for (int k = -1; k <= 15; k++)
++        for (int k = -1; k <= 15; ++k)
+         {
+-            for (int l = -1; l <= 8; l++)
++            for (int l = -1; l <= 8; ++l)
+             {
+                 func_146110_a(i + 16 * k, j + 16 * l, 0.0F, 0.0F, 16, 16, 16.0F, 16.0F);
+             }
 @@ -167,9 +161,9 @@
          {
              for (AdvancementTabType advancementtabtype : AdvancementTabType.values())

@@ -9,7 +9,7 @@
      private final MetadataSerializer field_110539_b;
  
      public FallbackResourceManager(MetadataSerializer p_i1289_1_)
-@@ -33,13 +33,11 @@
+@@ -33,20 +33,18 @@
          this.field_110540_a.add(p_110538_1_);
      }
  
@@ -24,6 +24,14 @@
      public IResource func_110536_a(ResourceLocation p_110536_1_) throws IOException
      {
          this.func_188552_d(p_110536_1_);
+         IResourcePack iresourcepack = null;
+         ResourceLocation resourcelocation = func_110537_b(p_110536_1_);
+ 
+-        for (int i = this.field_110540_a.size() - 1; i >= 0; i--)
++        for (int i = this.field_110540_a.size() - 1; i >= 0; --i)
+         {
+             IResourcePack iresourcepack1 = this.field_110540_a.get(i);
+ 
 @@ -64,21 +62,18 @@
                      inputstream = this.func_177245_a(resourcelocation, iresourcepack);
                  }

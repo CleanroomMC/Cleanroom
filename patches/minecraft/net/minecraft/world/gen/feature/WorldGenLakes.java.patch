@@ -17,9 +17,12 @@
          }
  
          if (p_180709_3_.func_177956_o() <= 4)
-@@ -40,12 +37,12 @@
+@@ -38,27 +35,27 @@
+             boolean[] aboolean = new boolean[2048];
+             int i = p_180709_2_.nextInt(4) + 4;
  
-             for (int j = 0; j < i; ++j)
+-            for (int j = 0; j < i; j++)
++            for (int j = 0; j < i; ++j)
              {
 -                double d0 = p_180709_2_.nextDouble() * 6.0 + 3.0;
 -                double d1 = p_180709_2_.nextDouble() * 4.0 + 2.0;
@@ -34,11 +37,14 @@
 +                double d4 = p_180709_2_.nextDouble() * (8.0D - d1 - 4.0D) + 2.0D + d1 / 2.0D;
 +                double d5 = p_180709_2_.nextDouble() * (16.0D - d2 - 2.0D) + 1.0D + d2 / 2.0D;
  
-                 for (int l = 1; l < 15; ++l)
+-                for (int l = 1; l < 15; l++)
++                for (int l = 1; l < 15; ++l)
                  {
-@@ -53,12 +50,12 @@
+-                    for (int i1 = 1; i1 < 15; i1++)
++                    for (int i1 = 1; i1 < 15; ++i1)
                      {
-                         for (int j1 = 1; j1 < 7; ++j1)
+-                        for (int j1 = 1; j1 < 7; j1++)
++                        for (int j1 = 1; j1 < 7; ++j1)
                          {
 -                            double d6 = ((double)l - d3) / (d0 / 2.0);
 -                            double d7 = ((double)j1 - d4) / (d1 / 2.0);
@@ -53,9 +59,18 @@
                              {
                                  aboolean[(l * 16 + i1) * 8 + j1] = true;
                              }
-@@ -73,15 +70,7 @@
+@@ -67,21 +64,13 @@
+                 }
+             }
+ 
+-            for (int k1 = 0; k1 < 16; k1++)
++            for (int k1 = 0; k1 < 16; ++k1)
+             {
+-                for (int l2 = 0; l2 < 16; l2++)
++                for (int l2 = 0; l2 < 16; ++l2)
                  {
-                     for (int k = 0; k < 8; ++k)
+-                    for (int k = 0; k < 8; k++)
++                    for (int k = 0; k < 8; ++k)
                      {
 -                        boolean flag = !aboolean[(k1 * 16 + l2) * 8 + k]
 -                                       && (
@@ -81,7 +96,18 @@
                              {
                                  return false;
                              }
-@@ -111,9 +98,7 @@
+@@ -103,34 +90,31 @@
+                 }
+             }
+ 
+-            for (int l1 = 0; l1 < 16; l1++)
++            for (int l1 = 0; l1 < 16; ++l1)
+             {
+-                for (int i3 = 0; i3 < 16; i3++)
++                for (int i3 = 0; i3 < 16; ++i3)
+                 {
+-                    for (int i4 = 0; i4 < 8; i4++)
++                    for (int i4 = 0; i4 < 8; ++i4)
                      {
                          if (aboolean[(l1 * 16 + i3) * 8 + i4])
                          {
@@ -92,7 +118,18 @@
                          }
                      }
                  }
-@@ -129,8 +114,7 @@
+             }
+ 
+-            for (int i2 = 0; i2 < 16; i2++)
++            for (int i2 = 0; i2 < 16; ++i2)
+             {
+-                for (int j3 = 0; j3 < 16; j3++)
++                for (int j3 = 0; j3 < 16; ++j3)
+                 {
+-                    for (int j4 = 4; j4 < 8; j4++)
++                    for (int j4 = 4; j4 < 8; ++j4)
+                     {
+                         if (aboolean[(i2 * 16 + j3) * 8 + j4])
                          {
                              BlockPos blockpos = p_180709_3_.func_177982_a(i2, j4 - 1, j3);
  
@@ -102,9 +139,18 @@
                              {
                                  Biome biome = p_180709_1_.func_180494_b(blockpos);
  
-@@ -156,19 +140,9 @@
+@@ -150,25 +134,15 @@
+ 
+             if (this.field_150556_a.func_176223_P().func_185904_a() == Material.field_151587_i)
+             {
+-                for (int j2 = 0; j2 < 16; j2++)
++                for (int j2 = 0; j2 < 16; ++j2)
+                 {
+-                    for (int k3 = 0; k3 < 16; k3++)
++                    for (int k3 = 0; k3 < 16; ++k3)
                      {
-                         for (int k4 = 0; k4 < 8; ++k4)
+-                        for (int k4 = 0; k4 < 8; k4++)
++                        for (int k4 = 0; k4 < 8; ++k4)
                          {
 -                            boolean flag1 = !aboolean[(j2 * 16 + k3) * 8 + k4]
 -                                            && (
@@ -124,7 +170,17 @@
                              {
                                  p_180709_1_.func_180501_a(p_180709_3_.func_177982_a(j2, k4, k3), Blocks.field_150348_b.func_176223_P(), 2);
                              }
-@@ -187,7 +161,8 @@
+@@ -179,15 +153,16 @@
+ 
+             if (this.field_150556_a.func_176223_P().func_185904_a() == Material.field_151586_h)
+             {
+-                for (int k2 = 0; k2 < 16; k2++)
++                for (int k2 = 0; k2 < 16; ++k2)
+                 {
+-                    for (int l3 = 0; l3 < 16; l3++)
++                    for (int l3 = 0; l3 < 16; ++l3)
+                     {
+                         int l4 = 4;
  
                          if (p_180709_1_.func_175675_v(p_180709_3_.func_177982_a(k2, 4, l3)))
                          {
