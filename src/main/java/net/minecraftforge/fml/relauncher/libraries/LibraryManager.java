@@ -62,10 +62,10 @@ public class LibraryManager
     private static final String LIBRARY_DIRECTORY_OVERRIDE = System.getProperty("forge.lib_folder", null);
     private static final List<String> skipContainedDeps = Arrays.asList(System.getProperty("fml.skipContainedDeps","").split(",")); //TODO: Is this used by anyone in the real world? TODO: Remove in 1.13.
     private static final FilenameFilter MOD_FILENAME_FILTER  = (dir, name) -> name.endsWith(".jar") || name.endsWith(".zip"); //TODO: Disable support for zip in 1.13
-    private static final Comparator<File> FILE_NAME_SORTER_INSENSITVE = (o1, o2) -> o1.getName().toLowerCase(Locale.ENGLISH).compareTo(o2.getName().toLowerCase(Locale.ENGLISH));
+    private static final Comparator<File> FILE_NAME_SORTER_INSENSITVE = Comparator.comparing(o -> o.getName().toLowerCase(Locale.ENGLISH));
 
     public static final Attributes.Name MODSIDE = new Attributes.Name("ModSide");
-    private static final Attributes.Name MODCONTAINSDEPS = new Attributes.Name("ContainedDeps");
+    public static final Attributes.Name MODCONTAINSDEPS = new Attributes.Name("ContainedDeps");
     private static final Attributes.Name MAVEN_ARTIFACT = new Attributes.Name("Maven-Artifact");
     private static final Attributes.Name TIMESTAMP = new Attributes.Name("Timestamp");
     private static final Attributes.Name MD5 = new Attributes.Name("MD5");

@@ -16,7 +16,8 @@
              p_180709_3_ = p_180709_3_.func_177977_b();
          }
  
-         for (int i = 0; i < 4; ++i)
+-        for (int i = 0; i < 4; i++)
++        for (int i = 0; i < 4; ++i)
          {
 -            BlockPos blockpos = p_180709_3_.func_177982_a(
 -                                    p_180709_2_.nextInt(8) - p_180709_2_.nextInt(8), p_180709_2_.nextInt(4) - p_180709_2_.nextInt(4), p_180709_2_.nextInt(8) - p_180709_2_.nextInt(8)

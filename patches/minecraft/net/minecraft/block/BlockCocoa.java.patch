@@ -170,9 +170,12 @@
          int j = 1;
  
          if (i >= 2)
-@@ -180,62 +150,54 @@
+@@ -178,64 +148,56 @@
+             j = 3;
+         }
  
-         for (int k = 0; k < j; ++k)
+-        for (int k = 0; k < j; k++)
++        for (int k = 0; k < j; ++k)
          {
 -            func_180635_a(p_180653_1_, p_180653_2_, new ItemStack(Items.field_151100_aR, 1, EnumDyeColor.BROWN.func_176767_b()));
 +            drops.add(new ItemStack(Items.field_151100_aR, 1, EnumDyeColor.BROWN.func_176767_b()));

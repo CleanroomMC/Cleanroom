@@ -42,6 +42,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.advancements.FunctionManager;
@@ -168,6 +169,9 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
+import org.spongepowered.asm.mixin.transformer.ClassInfo;
+import org.spongepowered.asm.mixin.transformer.MixinInfo;
 
 public class ForgeHooks
 {
@@ -964,9 +968,9 @@ public class ForgeHooks
         return ret;
     }
 
-    public static boolean onAnvilChange(ContainerRepair container, @Nonnull ItemStack left, @Nonnull ItemStack right, IInventory outputSlot, String name, int baseCost)
+    public static boolean onAnvilChange(ContainerRepair container, @Nonnull ItemStack left, @Nonnull ItemStack right, IInventory outputSlot, String name, int baseCost, EntityPlayer player)
     {
-        AnvilUpdateEvent e = new AnvilUpdateEvent(left, right, name, baseCost);
+        AnvilUpdateEvent e = new AnvilUpdateEvent(left, right, name, baseCost, player);
         if (MinecraftForge.EVENT_BUS.post(e)) return false;
         if (e.getOutput().isEmpty()) return true;
 
@@ -974,6 +978,12 @@ public class ForgeHooks
         container.maximumCost = e.getCost();
         container.materialCost = e.getMaterialCost();
         return false;
+    }
+
+    @Deprecated
+    public static boolean onAnvilChange(ContainerRepair container, @Nonnull ItemStack left, @Nonnull ItemStack right, IInventory outputSlot, String name, int baseCost)
+    {
+        return onAnvilChange(container, left, right, outputSlot, name, baseCost, null);
     }
 
     public static float onAnvilRepair(EntityPlayer player, @Nonnull ItemStack output, @Nonnull ItemStack left, @Nonnull ItemStack right)
@@ -1517,5 +1527,49 @@ public class ForgeHooks
             if (entry != null) id = serializerRegistry.getID(entry);
         }
         return id;
+    }
+
+    public static String gatherMixinInfo(Throwable throwable){
+        StackTraceElement[] stacktrace = throwable.getStackTrace();
+        if (stacktrace.length > 0) {
+            try {
+                StringBuilder mixinMetadataBuilder = null;
+                ObjectOpenHashSet<String> classes = new ObjectOpenHashSet<>();
+                for (StackTraceElement stackTraceElement : stacktrace) {
+                    classes.add(stackTraceElement.getClassName());
+                }
+                for (String className : classes) {
+                    ClassInfo classInfo = ClassInfo.fromCache(className);
+                    if (classInfo != null) {
+                        java.util.Set<MixinInfo> mixinInfos = classInfo.getMixins();
+                        if (!mixinInfos.isEmpty()) {
+                            if (mixinMetadataBuilder == null) {
+                                mixinMetadataBuilder = new StringBuilder("\n(MixinBooter) Mixins in Stacktrace:");
+                            }
+                            mixinMetadataBuilder.append("\n\t");
+                            mixinMetadataBuilder.append(className);
+                            mixinMetadataBuilder.append(":");
+                            for (IMixinInfo mixinInfo : mixinInfos) {
+                                mixinMetadataBuilder.append("\n\t\t");
+                                mixinMetadataBuilder.append(mixinInfo.getClassName());
+                                mixinMetadataBuilder.append(" (");
+                                mixinMetadataBuilder.append(mixinInfo.getConfig().getName());
+                                mixinMetadataBuilder.append(")");
+                            }
+                        }
+                    }
+                }
+
+                if (mixinMetadataBuilder == null) {
+                    return "No Mixin Metadata is found in the Stacktrace.\n";
+                } else {
+                    return mixinMetadataBuilder.toString();
+                }
+            } catch (Throwable t) {
+                return "Failed to find Mixin Metadata in Stacktrace:\n" + t;
+            }
+        }
+
+        return "";
     }
 }

@@ -17,6 +17,18 @@
          this.field_185995_n = p_i46668_1_;
          this.field_185996_o = p_i46668_4_;
          this.field_185997_p = p_i46668_1_.func_72912_H().func_76067_t();
+@@ -75,9 +85,9 @@
+         this.field_185998_q = new double[825];
+         this.field_185999_r = new float[25];
+ 
+-        for (int i = -2; i <= 2; i++)
++        for (int i = -2; i <= 2; ++i)
+         {
+-            for (int j = -2; j <= 2; j++)
++            for (int j = -2; j <= 2; ++j)
+             {
+                 float f = 10.0F / MathHelper.func_76129_c((float)(i * i + j * j) + 0.2F);
+                 this.field_185999_r[i + 2 + (j + 2) * 5] = f;
 @@ -90,6 +100,17 @@
              this.field_186001_t = this.field_186000_s.field_177778_E ? Blocks.field_150353_l.func_176223_P() : Blocks.field_150355_j.func_176223_P();
              p_i46668_1_.func_181544_b(this.field_186000_s.field_177841_q);
@@ -35,9 +47,26 @@
      }
  
      public void func_185976_a(int p_185976_1_, int p_185976_2_, ChunkPrimer p_185976_3_)
-@@ -111,33 +132,33 @@
+@@ -97,47 +118,47 @@
+         this.field_185981_C = this.field_185995_n.func_72959_q().func_76937_a(this.field_185981_C, p_185976_1_ * 4 - 2, p_185976_2_ * 4 - 2, 10, 10);
+         this.func_185978_a(p_185976_1_ * 4, 0, p_185976_2_ * 4);
  
-                 for (int i2 = 0; i2 < 32; ++i2)
+-        for (int i = 0; i < 4; i++)
++        for (int i = 0; i < 4; ++i)
+         {
+             int j = i * 5;
+             int k = (i + 1) * 5;
+ 
+-            for (int l = 0; l < 4; l++)
++            for (int l = 0; l < 4; ++l)
+             {
+                 int i1 = (j + l) * 33;
+                 int j1 = (j + l + 1) * 33;
+                 int k1 = (k + l) * 33;
+                 int l1 = (k + l + 1) * 33;
+ 
+-                for (int i2 = 0; i2 < 32; i2++)
++                for (int i2 = 0; i2 < 32; ++i2)
                  {
 -                    double d0 = 0.125;
 +                    double d0 = 0.125D;
@@ -54,7 +83,8 @@
 +                    double d7 = (this.field_185998_q[k1 + i2 + 1] - d3) * 0.125D;
 +                    double d8 = (this.field_185998_q[l1 + i2 + 1] - d4) * 0.125D;
  
-                     for (int j2 = 0; j2 < 8; ++j2)
+-                    for (int j2 = 0; j2 < 8; j2++)
++                    for (int j2 = 0; j2 < 8; ++j2)
                      {
 -                        double d9 = 0.25;
 +                        double d9 = 0.25D;
@@ -65,7 +95,8 @@
 +                        double d12 = (d3 - d1) * 0.25D;
 +                        double d13 = (d4 - d2) * 0.25D;
  
-                         for (int k2 = 0; k2 < 4; ++k2)
+-                        for (int k2 = 0; k2 < 4; k2++)
++                        for (int k2 = 0; k2 < 4; ++k2)
                          {
 -                            double d14 = 0.25;
 -                            double d16 = (d11 - d10) * 0.25;
@@ -73,7 +104,8 @@
 +                            double d16 = (d11 - d10) * 0.25D;
                              double lvt_45_1_ = d10 - d16;
  
-                             for (int l2 = 0; l2 < 4; ++l2)
+-                            for (int l2 = 0; l2 < 4; l2++)
++                            for (int l2 = 0; l2 < 4; ++l2)
                              {
 -                                if ((lvt_45_1_ += d16) > 0.0)
 +                                if ((lvt_45_1_ += d16) > 0.0D)
@@ -91,9 +123,11 @@
 +        double d0 = 0.03125D;
 +        this.field_186002_u = this.field_185994_m.func_151599_a(this.field_186002_u, (double)(p_185977_1_ * 16), (double)(p_185977_2_ * 16), 16, 16, 0.0625D, 0.0625D, 1.0D);
  
-         for (int i = 0; i < 16; ++i)
+-        for (int i = 0; i < 16; i++)
++        for (int i = 0; i < 16; ++i)
          {
-             for (int j = 0; j < 16; ++j)
+-            for (int j = 0; j < 16; j++)
++            for (int j = 0; j < 16; ++j)
              {
                  Biome biome = p_185977_4_[j + i * 16];
 -                biome.func_180622_a(
@@ -108,7 +142,16 @@
      public Chunk func_185932_a(int p_185932_1_, int p_185932_2_)
      {
          this.field_185990_i.setSeed((long)p_185932_1_ * 341873128712L + (long)p_185932_2_ * 132897987541L);
-@@ -245,36 +263,12 @@
+@@ -234,7 +252,7 @@
+         Chunk chunk = new Chunk(this.field_185995_n, chunkprimer, p_185932_1_, p_185932_2_);
+         byte[] abyte = chunk.func_76605_m();
+ 
+-        for (int i = 0; i < abyte.length; i++)
++        for (int i = 0; i < abyte.length; ++i)
+         {
+             abyte[i] = (byte)Biome.func_185362_a(this.field_185981_C[i]);
+         }
+@@ -245,42 +263,18 @@
  
      private void func_185978_a(int p_185978_1_, int p_185978_2_, int p_185978_3_)
      {
@@ -149,7 +192,27 @@
          int i = 0;
          int j = 0;
  
-@@ -315,66 +309,66 @@
+-        for (int k = 0; k < 5; k++)
++        for (int k = 0; k < 5; ++k)
+         {
+-            for (int l = 0; l < 5; l++)
++            for (int l = 0; l < 5; ++l)
+             {
+                 float f2 = 0.0F;
+                 float f3 = 0.0F;
+@@ -288,9 +282,9 @@
+                 int i1 = 2;
+                 Biome biome = this.field_185981_C[k + 2 + (l + 2) * 10];
+ 
+-                for (int j1 = -2; j1 <= 2; j1++)
++                for (int j1 = -2; j1 <= 2; ++j1)
+                 {
+-                    for (int k1 = -2; k1 <= 2; k1++)
++                    for (int k1 = -2; k1 <= 2; ++k1)
+                     {
+                         Biome biome1 = this.field_185981_C[k + j1 + 2 + (l + k1 + 2) * 10];
+                         float f5 = this.field_186000_s.field_177813_n + biome1.func_185355_j() * this.field_186000_s.field_177819_m;
+@@ -315,76 +309,75 @@
                      }
                  }
  
@@ -203,7 +266,8 @@
 +                    d7 = d7 / 8.0D;
                  }
  
-                 ++j;
+-                j++;
++                ++j;
                  double d8 = (double)f3;
                  double d9 = (double)f2;
 -                d8 += d7 * 0.2;
@@ -213,7 +277,8 @@
 +                d8 = d8 * (double)this.field_186000_s.field_177823_k / 8.0D;
 +                double d0 = (double)this.field_186000_s.field_177823_k + d8 * 4.0D;
  
-                 for (int l1 = 0; l1 < 33; ++l1)
+-                for (int l1 = 0; l1 < 33; l1++)
++                for (int l1 = 0; l1 < 33; ++l1)
                  {
 -                    double d1 = ((double)l1 - d0) * (double)this.field_186000_s.field_177817_l * 128.0 / 256.0 / d9;
 +                    double d1 = ((double)l1 - d0) * (double)this.field_186000_s.field_177817_l * 128.0D / 256.0D / d9;
@@ -239,7 +304,10 @@
                      }
  
                      this.field_185998_q[i] = d5;
-@@ -384,7 +378,6 @@
+-                    i++;
++                    ++i;
+                 }
+             }
          }
      }
  
@@ -280,7 +348,7 @@
          {
              int i2 = this.field_185990_i.nextInt(16) + 8;
              int l2 = this.field_185990_i.nextInt(this.field_185990_i.nextInt(248) + 8);
-@@ -452,25 +445,29 @@
+@@ -452,28 +445,32 @@
  
              if (l2 < this.field_185995_n.func_181545_F() || this.field_185990_i.nextInt(this.field_186000_s.field_177777_D / 8) == 0)
              {
@@ -292,7 +360,8 @@
          if (this.field_186000_s.field_177837_s)
 +        if (net.minecraftforge.event.terraingen.TerrainGen.populate(this, this.field_185995_n, this.field_185990_i, p_185931_1_, p_185931_2_, flag, net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.DUNGEON))
          {
-             for (int j2 = 0; j2 < this.field_186000_s.field_177835_t; ++j2)
+-            for (int j2 = 0; j2 < this.field_186000_s.field_177835_t; j2++)
++            for (int j2 = 0; j2 < this.field_186000_s.field_177835_t; ++j2)
              {
                  int i3 = this.field_185990_i.nextInt(16) + 8;
                  int l3 = this.field_185990_i.nextInt(256);
@@ -307,11 +376,17 @@
          WorldEntitySpawner.func_77191_a(this.field_185995_n, biome, i + 8, j + 8, 16, 16, this.field_185990_i);
          blockpos = blockpos.func_177982_a(8, 0, 8);
  
+-        for (int k2 = 0; k2 < 16; k2++)
+-        {
+-            for (int j3 = 0; j3 < 16; j3++)
 +        if (net.minecraftforge.event.terraingen.TerrainGen.populate(this, this.field_185995_n, this.field_185990_i, p_185931_1_, p_185931_2_, flag, net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.ICE))
 +        {
-         for (int k2 = 0; k2 < 16; ++k2)
-         {
-             for (int j3 = 0; j3 < 16; ++j3)
++        for (int k2 = 0; k2 < 16; ++k2)
++        {
++            for (int j3 = 0; j3 < 16; ++j3)
+             {
+                 BlockPos blockpos1 = this.field_185995_n.func_175725_q(blockpos.func_177982_a(k2, 0, j3));
+                 BlockPos blockpos2 = blockpos1.func_177977_b();
 @@ -489,11 +486,13 @@
                  }
              }

@@ -112,7 +112,20 @@
      protected boolean func_176404_e(World p_176404_1_, BlockPos p_176404_2_, IBlockState p_176404_3_)
      {
          int i = this.func_176397_f(p_176404_1_, p_176404_2_, p_176404_3_);
-@@ -148,11 +124,10 @@
+@@ -136,15 +112,22 @@
+         else
+         {
+             int j = this.func_176407_c(p_176404_1_, p_176404_2_, p_176404_3_);
+-            return j == 0 ? true : i >= j;
++
++            if (j == 0)
++            {
++                return true;
++            }
++            else
++            {
++                return i >= j;
++            }
          }
      }
  
@@ -125,7 +138,7 @@
          BlockPos blockpos = p_176397_2_.func_177972_a(enumfacing);
          IBlockState iblockstate = p_176397_1_.func_180495_p(blockpos);
  
-@@ -186,39 +161,17 @@
+@@ -178,39 +161,17 @@
      @Nullable
      private EntityItemFrame func_176461_a(World p_176461_1_, final EnumFacing p_176461_2_, BlockPos p_176461_3_)
      {
@@ -169,7 +182,7 @@
      {
          if (!p_180639_4_.field_71075_bZ.field_75099_e)
          {
-@@ -235,7 +188,6 @@
+@@ -227,7 +188,6 @@
          }
      }
  
@@ -177,7 +190,7 @@
      protected void func_176398_g(World p_176398_1_, BlockPos p_176398_2_, IBlockState p_176398_3_)
      {
          if (!p_176398_1_.func_175691_a(p_176398_2_, this))
-@@ -278,36 +230,33 @@
+@@ -270,36 +230,33 @@
  
              if (flag && !flag1)
              {
@@ -217,7 +230,7 @@
      public void func_180663_b(World p_180663_1_, BlockPos p_180663_2_, IBlockState p_180663_3_)
      {
          super.func_180663_b(p_180663_1_, p_180663_2_, p_180663_3_);
-@@ -315,7 +264,6 @@
+@@ -307,7 +264,6 @@
          this.func_176400_h(p_180663_1_, p_180663_2_, p_180663_3_);
      }
  
@@ -225,7 +238,7 @@
      public boolean func_189539_a(IBlockState p_189539_1_, World p_189539_2_, BlockPos p_189539_3_, int p_189539_4_, int p_189539_5_)
      {
          super.func_189539_a(p_189539_1_, p_189539_2_, p_189539_3_, p_189539_4_, p_189539_5_);
-@@ -323,28 +271,22 @@
+@@ -315,28 +271,22 @@
          return tileentity == null ? false : tileentity.func_145842_c(p_189539_4_, p_189539_5_);
      }
  
@@ -257,7 +270,7 @@
          {
              i |= 8;
          }
-@@ -357,40 +299,39 @@
+@@ -349,40 +299,39 @@
          return i;
      }
  
@@ -321,7 +334,7 @@
      }
  
      public static enum Mode implements IStringSerializable
-@@ -405,13 +346,11 @@
+@@ -397,13 +346,11 @@
              this.field_177041_c = p_i45731_3_;
          }
  

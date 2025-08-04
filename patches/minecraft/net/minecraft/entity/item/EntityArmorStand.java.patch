@@ -144,7 +144,25 @@
      public void func_70037_a(NBTTagCompound p_70037_1_)
      {
          super.func_70037_a(p_70037_1_);
-@@ -347,18 +345,15 @@
+@@ -266,7 +264,7 @@
+         {
+             NBTTagList nbttaglist = p_70037_1_.func_150295_c("ArmorItems", 10);
+ 
+-            for (int i = 0; i < this.field_184800_bx.size(); i++)
++            for (int i = 0; i < this.field_184800_bx.size(); ++i)
+             {
+                 this.field_184800_bx.set(i, new ItemStack(nbttaglist.func_150305_b(i)));
+             }
+@@ -276,7 +274,7 @@
+         {
+             NBTTagList nbttaglist1 = p_70037_1_.func_150295_c("HandItems", 10);
+ 
+-            for (int j = 0; j < this.field_184799_bw.size(); j++)
++            for (int j = 0; j < this.field_184799_bw.size(); ++j)
+             {
+                 this.field_184799_bw.set(j, new ItemStack(nbttaglist1.func_150305_b(j)));
+             }
+@@ -347,99 +345,98 @@
          return nbttagcompound;
      }
  
@@ -163,7 +181,9 @@
      protected void func_85033_bc()
      {
          List<Entity> list = this.field_70170_p.func_175674_a(this, this.func_174813_aQ(), field_184798_bv);
-@@ -367,79 +362,81 @@
+ 
+-        for (int i = 0; i < list.size(); i++)
++        for (int i = 0; i < list.size(); ++i)
          {
              Entity entity = list.get(i);
  
@@ -546,7 +566,14 @@
  
          if (f <= 0.5F)
          {
-@@ -657,7 +647,7 @@
+@@ -651,24 +641,24 @@
+     {
+         this.func_190773_I();
+ 
+-        for (int i = 0; i < this.field_184799_bw.size(); i++)
++        for (int i = 0; i < this.field_184799_bw.size(); ++i)
+         {
+             ItemStack itemstack = this.field_184799_bw.get(i);
  
              if (!itemstack.func_190926_b())
              {
@@ -555,7 +582,11 @@
                  this.field_184799_bw.set(i, ItemStack.field_190927_a);
              }
          }
-@@ -668,7 +658,7 @@
+ 
+-        for (int j = 0; j < this.field_184800_bx.size(); j++)
++        for (int j = 0; j < this.field_184800_bx.size(); ++j)
+         {
+             ItemStack itemstack1 = this.field_184800_bx.get(j);
  
              if (!itemstack1.func_190926_b())
              {

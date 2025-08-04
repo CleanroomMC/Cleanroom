@@ -57,3 +57,12 @@
      public String func_150285_a_()
      {
          return this.field_74751_a;
+@@ -87,7 +79,7 @@
+     {
+         StringBuilder stringbuilder = new StringBuilder("\"");
+ 
+-        for (int i = 0; i < p_193588_0_.length(); i++)
++        for (int i = 0; i < p_193588_0_.length(); ++i)
+         {
+             char c0 = p_193588_0_.charAt(i);
+ 

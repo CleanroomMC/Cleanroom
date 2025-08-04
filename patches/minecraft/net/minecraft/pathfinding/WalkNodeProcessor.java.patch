@@ -209,6 +209,15 @@
  
                      if (this.field_186326_b.field_70170_p.func_184143_b(axisalignedbb3))
                      {
+@@ -296,7 +260,7 @@
+ 
+                     while (p_186332_2_ > 0 && pathnodetype == PathNodeType.OPEN)
+                     {
+-                        p_186332_2_--;
++                        --p_186332_2_;
+ 
+                         if (i++ >= this.field_186326_b.func_82143_as())
+                         {
 @@ -326,27 +290,15 @@
          }
      }
@@ -243,7 +252,7 @@
  
          if (enumset.contains(PathNodeType.FENCE))
          {
-@@ -369,24 +321,18 @@
+@@ -369,30 +321,24 @@
                  }
              }
  
@@ -275,8 +284,17 @@
 -    )
 +    public PathNodeType func_193577_a(IBlockAccess p_193577_1_, int p_193577_2_, int p_193577_3_, int p_193577_4_, int p_193577_5_, int p_193577_6_, int p_193577_7_, boolean p_193577_8_, boolean p_193577_9_, EnumSet<PathNodeType> p_193577_10_, PathNodeType p_193577_11_, BlockPos p_193577_12_)
      {
-         for (int i = 0; i < p_193577_5_; ++i)
+-        for (int i = 0; i < p_193577_5_; i++)
++        for (int i = 0; i < p_193577_5_; ++i)
          {
+-            for (int j = 0; j < p_193577_6_; j++)
++            for (int j = 0; j < p_193577_6_; ++j)
+             {
+-                for (int k = 0; k < p_193577_7_; k++)
++                for (int k = 0; k < p_193577_7_; ++k)
+                 {
+                     int l = i + p_193577_2_;
+                     int i1 = j + p_193577_3_;
 @@ -409,9 +355,7 @@
                          pathnodetype = PathNodeType.BLOCKED;
                      }
@@ -339,7 +357,15 @@
      }
  
      public PathNodeType func_193578_a(IBlockAccess p_193578_1_, int p_193578_2_, int p_193578_3_, int p_193578_4_, PathNodeType p_193578_5_)
-@@ -492,17 +422,19 @@
+@@ -486,23 +416,25 @@
+ 
+         if (p_193578_5_ == PathNodeType.WALKABLE)
+         {
+-            for (int i = -1; i <= 1; i++)
++            for (int i = -1; i <= 1; ++i)
+             {
+-                for (int j = -1; j <= 1; j++)
++                for (int j = -1; j <= 1; ++j)
                  {
                      if (i != 0 || j != 0)
                      {

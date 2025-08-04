@@ -27,7 +27,14 @@
  
          if (p_176598_3_)
          {
-@@ -46,7 +48,9 @@
+@@ -40,13 +42,15 @@
+ 
+         int i = 0;
+ 
+-        for (int j = 0; j < list.size(); j++)
++        for (int j = 0; j < list.size(); ++j)
+         {
+             BlockRedstoneTorch.Toggle blockredstonetorch$toggle = list.get(j);
  
              if (blockredstonetorch$toggle.field_180111_a.equals(p_176598_2_))
              {
@@ -119,7 +126,8 @@
 -                    );
 +                    p_180650_1_.func_184133_a((EntityPlayer)null, p_180650_2_, SoundEvents.field_187745_eA, SoundCategory.BLOCKS, 0.5F, 2.6F + (p_180650_1_.field_73012_v.nextFloat() - p_180650_1_.field_73012_v.nextFloat()) * 0.8F);
  
-                     for (int i = 0; i < 5; ++i)
+-                    for (int i = 0; i < 5; i++)
++                    for (int i = 0; i < 5; ++i)
                      {
 -                        double d0 = (double)p_180650_2_.func_177958_n() + p_180650_4_.nextDouble() * 0.6 + 0.2;
 -                        double d1 = (double)p_180650_2_.func_177956_o() + p_180650_4_.nextDouble() * 0.6 + 0.2;

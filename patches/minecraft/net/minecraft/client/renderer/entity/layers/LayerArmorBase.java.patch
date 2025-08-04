@@ -102,6 +102,15 @@
                          }
                  }
              }
+@@ -116,7 +91,7 @@
+ 
+     public T func_188360_a(EntityEquipmentSlot p_188360_1_)
+     {
+-        return this.func_188363_b(p_188360_1_) ? this.field_177189_c : this.field_177186_d;
++        return (T)(this.func_188363_b(p_188360_1_) ? this.field_177189_c : this.field_177186_d);
+     }
+ 
+     private boolean func_188363_b(EntityEquipmentSlot p_188363_1_)
 @@ -124,18 +99,7 @@
          return p_188363_1_ == EntityEquipmentSlot.LEGS;
      }
@@ -122,6 +131,15 @@
      {
          float f = (float)p_188364_1_.field_70173_aa + p_188364_5_;
          p_188364_0_.func_110776_a(field_177188_b);
+@@ -146,7 +110,7 @@
+         float f1 = 0.5F;
+         GlStateManager.func_179131_c(0.5F, 0.5F, 0.5F, 1.0F);
+ 
+-        for (int i = 0; i < 2; i++)
++        for (int i = 0; i < 2; ++i)
+         {
+             GlStateManager.func_179140_f();
+             GlStateManager.func_187401_a(GlStateManager.SourceFactor.SRC_COLOR, GlStateManager.DestFactor.ONE);
 @@ -173,19 +137,16 @@
          Minecraft.func_71410_x().field_71460_t.func_191514_d(false);
      }

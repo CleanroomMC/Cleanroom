@@ -69,13 +69,22 @@
      public void func_70071_h_()
      {
          if (!this.field_70170_p.field_72995_K && this.field_70170_p.func_175659_aa() == EnumDifficulty.PEACEFUL && this.func_70809_q() > 0)
-@@ -142,10 +137,10 @@
+@@ -135,17 +130,17 @@
+             this.field_70128_L = true;
+         }
+ 
+-        this.field_70811_b = this.field_70811_b + (this.field_70813_a - this.field_70811_b) * 0.5F;
++        this.field_70811_b += (this.field_70813_a - this.field_70811_b) * 0.5F;
+         this.field_70812_c = this.field_70811_b;
+         super.func_70071_h_();
+ 
          if (this.field_70122_E && !this.field_175452_bi)
          {
              int i = this.func_70809_q();
 -
+-            for (int j = 0; j < i * 8; j++)
 +            if (spawnCustomParticles()) { i = 0; } // don't spawn particles if it's handled by the implementation itself
-             for (int j = 0; j < i * 8; ++j)
++            for (int j = 0; j < i * 8; ++j)
              {
 -                float f = this.field_70146_Z.nextFloat() * (float)(Math.PI * 2);
 +                float f = this.field_70146_Z.nextFloat() * ((float)Math.PI * 2F);
@@ -113,6 +122,15 @@
      public void func_70106_y()
      {
          int i = this.func_70809_q();
+@@ -213,7 +204,7 @@
+         {
+             int j = 2 + this.field_70146_Z.nextInt(3);
+ 
+-            for (int k = 0; k < j; k++)
++            for (int k = 0; k < j; ++k)
+             {
+                 float f = ((float)(k % 2) - 0.5F) * (float)i / 4.0F;
+                 float f1 = ((float)(k / 2) - 0.5F) * (float)i / 4.0F;
 @@ -230,9 +221,7 @@
                  }
  
@@ -234,16 +252,16 @@
      public int func_70646_bf()
      {
          return 0;
-@@ -372,15 +344,13 @@
+@@ -372,22 +344,21 @@
          return this.func_70809_q() > 0;
      }
  
 -    @Override
      protected void func_70664_aZ()
      {
--        this.field_70181_x = 0.42F;
-+        this.field_70181_x = 0.41999998688697815D;
+         this.field_70181_x = 0.42F;
          this.field_70160_al = true;
++        net.minecraftforge.common.ForgeHooks.onLivingJump(this);
      }
  
      @Nullable
@@ -251,7 +269,15 @@
      public IEntityLivingData func_180482_a(DifficultyInstance p_180482_1_, @Nullable IEntityLivingData p_180482_2_)
      {
          int i = this.field_70146_Z.nextInt(3);
-@@ -400,6 +370,14 @@
+ 
+         if (i < 2 && this.field_70146_Z.nextFloat() < 0.5F * p_180482_1_.func_180170_c())
+         {
+-            i++;
++            ++i;
+         }
+ 
+         int j = 1 << i;
+@@ -400,6 +371,14 @@
          return this.func_189101_db() ? SoundEvents.field_189110_fE : SoundEvents.field_187882_fq;
      }
  
@@ -266,7 +292,7 @@
      static class AISlimeAttack extends EntityAIBase
          {
              private final EntitySlime field_179466_a;
-@@ -411,7 +389,6 @@
+@@ -411,7 +390,6 @@
                  this.func_75248_a(2);
              }
  
@@ -274,7 +300,20 @@
              public boolean func_75250_a()
              {
                  EntityLivingBase entitylivingbase = this.field_179466_a.func_70638_az();
-@@ -430,14 +407,12 @@
+@@ -420,22 +398,22 @@
+                 {
+                     return false;
+                 }
++                else if (!entitylivingbase.func_70089_S())
++                {
++                    return false;
++                }
+                 else
+                 {
+-                    return !entitylivingbase.func_70089_S()
+-                           ? false
+-                           : !(entitylivingbase instanceof EntityPlayer) || !((EntityPlayer)entitylivingbase).field_71075_bZ.field_75102_a;
++                    return !(entitylivingbase instanceof EntityPlayer) || !((EntityPlayer)entitylivingbase).field_71075_bZ.field_75102_a;
                  }
              }
  
@@ -289,7 +328,20 @@
              public boolean func_75253_b()
              {
                  EntityLivingBase entitylivingbase = this.field_179466_a.func_70638_az();
-@@ -460,12 +435,10 @@
+@@ -448,20 +426,20 @@
+                 {
+                     return false;
+                 }
++                else if (entitylivingbase instanceof EntityPlayer && ((EntityPlayer)entitylivingbase).field_71075_bZ.field_75102_a)
++                {
++                    return false;
++                }
+                 else
+                 {
+-                    return entitylivingbase instanceof EntityPlayer && ((EntityPlayer)entitylivingbase).field_71075_bZ.field_75102_a
+-                           ? false
+-                           : --this.field_179465_b > 0;
++                    return --this.field_179465_b > 0;
                  }
              }
  
@@ -303,7 +355,7 @@
              }
          }
  
-@@ -481,19 +454,11 @@
+@@ -477,19 +455,11 @@
                  this.func_75248_a(2);
              }
  
@@ -324,7 +376,7 @@
              public void func_75246_d()
              {
                  if (--this.field_179460_c <= 0)
-@@ -517,13 +482,11 @@
+@@ -513,13 +483,11 @@
                  ((PathNavigateGround)p_i45823_1_.func_70661_as()).func_179693_d(true);
              }
  
@@ -338,7 +390,7 @@
              public void func_75246_d()
              {
                  if (this.field_179457_a.func_70681_au().nextFloat() < 0.8F)
-@@ -531,7 +494,7 @@
+@@ -527,7 +495,7 @@
                      this.field_179457_a.func_70683_ar().func_75660_a();
                  }
  
@@ -347,7 +399,7 @@
              }
          }
  
-@@ -545,16 +508,14 @@
+@@ -541,16 +509,14 @@
                  this.func_75248_a(5);
              }
  
@@ -365,7 +417,7 @@
              }
          }
  
-@@ -569,7 +530,7 @@
+@@ -565,7 +531,7 @@
              {
                  super(p_i45821_1_);
                  this.field_179925_i = p_i45821_1_;
@@ -374,7 +426,7 @@
              }
  
              public void func_179920_a(float p_179920_1_, boolean p_179920_2_)
-@@ -584,7 +545,6 @@
+@@ -580,7 +546,6 @@
                  this.field_188491_h = EntityMoveHelper.Action.MOVE_TO;
              }
  
@@ -382,7 +434,7 @@
              public void func_75641_c()
              {
                  this.field_75648_a.field_70177_z = this.func_75639_a(this.field_75648_a.field_70177_z, this.field_179922_g, 90.0F);
-@@ -601,8 +561,7 @@
+@@ -597,8 +562,7 @@
  
                      if (this.field_75648_a.field_70122_E)
                      {
@@ -392,7 +444,7 @@
  
                          if (this.field_179924_h-- <= 0)
                          {
-@@ -617,12 +576,7 @@
+@@ -613,12 +577,7 @@
  
                              if (this.field_179925_i.func_70807_r())
                              {
@@ -406,7 +458,7 @@
                              }
                          }
                          else
-@@ -634,8 +588,7 @@
+@@ -630,8 +589,7 @@
                      }
                      else
                      {

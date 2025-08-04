@@ -1,0 +1,87 @@
+name: 🐛 Report Bug
+description: "Did something not work as expected?"
+body:
+  - type: markdown
+    attributes:
+      value: "A bug/crash report with sufficient information and logs to reproduce and track down."
+  - type: input
+    id: discord
+    attributes:
+      label: Your CleanroomMC Discord Username
+      description: Leave empty if you don't have one, but this will make it harder to contact you if we need additional info.
+      placeholder: "Example: Fake#1234"
+  - type: input
+    id: version
+    attributes:
+      label: Cleanroom Version
+      description: "What version of the Cleanroom are you using?"
+      placeholder: "Example: 0.2.4-alpha"
+    validations:
+      required: true
+  - type: dropdown
+    id: java
+    attributes:
+      label: Java Version
+      description: What Java version are you using? It's worth mentioning that if you play on Java9+ you should try update to latest minor release (e.g. prefer Java 17.0.6 over 17.0.2) of that version.
+      options:
+        - Java 8
+        - Java 21
+        - Java 22
+        - Java 23
+        - Java 24
+        - Java 25 (Early Access)
+        - Other (Please Specify)
+    validations:
+      required: true
+  - type: dropdown
+    id: graphics
+    attributes:
+      label: Graphics Card Vendor
+      description: What graphics card vendor are you using?
+      options:
+        - Other (Please Specify)
+        - NVidia
+        - AMD/ATI
+        - Intel iGPU
+        - AMD iGPU
+        - Mesa/Software
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: Bug Report
+      description: "Relevant information, as well as relevant logs attached such as `logs/latest.log` and `logs/debug.log`."
+      placeholder: "Example: https://mclo.gs/ OR submit the file to github by dragging it to this textbox."
+    validations:
+      required: true
+  - type: textarea
+    id: modlist
+    attributes:
+      label: Mod List
+      description: "List of mods, ideally a minimal reproducible set (can be retrieved from latest.log)."
+      placeholder: "List of mods goes here"
+    validations:
+      required: true
+  - type: checkboxes
+    id: final
+    attributes:
+      label: Final Checklist
+      description: Certify that you read things
+      options:
+        - label: "I have searched the issues and haven't found a similar issue."
+          required: true
+        - label: "I have read the readme and know that what is action build."
+          required: true
+        - label: "I have installed [Fugue](https://www.curseforge.com/minecraft/mc-mods/fugue) and it didn't fix my issue."
+          required: true
+        - label: "I have installed [Scalar Legacy](https://www.curseforge.com/minecraft/mc-mods/scalar-legacy) and it didn't fix my issue."
+          required: true
+        - label: "I have switched my Forgelin and LibrarianLib to continuous versions(check readme for more detail)."
+          required: true
+        - label: "I am running a test build from Cleanroom Github Actions.  (Or, if I've compiled it myself I plan to fix the issue)"
+          required: true
+        - label: |
+            I did not use PCL/PCLCE or other unsupported launchers.
+            我没有使用 PCL/PCLCE 等其他未被支持的启动器。
+          required: true

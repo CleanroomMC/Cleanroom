@@ -1,6 +1,6 @@
 --- before/net/minecraft/item/crafting/ShieldRecipes.java
 +++ after/net/minecraft/item/crafting/ShieldRecipes.java
-@@ -6,14 +6,11 @@
+@@ -6,20 +6,17 @@
  import net.minecraft.nbt.NBTTagCompound;
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
@@ -16,7 +16,14 @@
              public boolean func_77569_a(InventoryCrafting p_77569_1_, World p_77569_2_)
              {
                  ItemStack itemstack = ItemStack.field_190927_a;
-@@ -56,10 +53,16 @@
+                 ItemStack itemstack1 = ItemStack.field_190927_a;
+ 
+-                for (int i = 0; i < p_77569_1_.func_70302_i_(); i++)
++                for (int i = 0; i < p_77569_1_.func_70302_i_(); ++i)
+                 {
+                     ItemStack itemstack2 = p_77569_1_.func_70301_a(i);
+ 
+@@ -56,16 +53,22 @@
                      }
                  }
  
@@ -35,7 +42,14 @@
              public ItemStack func_77572_b(InventoryCrafting p_77572_1_)
              {
                  ItemStack itemstack = ItemStack.field_190927_a;
-@@ -96,16 +99,14 @@
+                 ItemStack itemstack1 = ItemStack.field_190927_a;
+ 
+-                for (int i = 0; i < p_77572_1_.func_70302_i_(); i++)
++                for (int i = 0; i < p_77572_1_.func_70302_i_(); ++i)
+                 {
+                     ItemStack itemstack2 = p_77572_1_.func_70301_a(i);
+ 
+@@ -96,18 +99,16 @@
                  }
              }
  
@@ -51,8 +65,11 @@
 -                NonNullList<ItemStack> nonnulllist = NonNullList.func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
 +                NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
  
-                 for (int i = 0; i < nonnulllist.size(); ++i)
+-                for (int i = 0; i < nonnulllist.size(); i++)
++                for (int i = 0; i < nonnulllist.size(); ++i)
                  {
+                     ItemStack itemstack = p_179532_1_.func_70301_a(i);
+ 
 @@ -120,14 +121,11 @@
                  return nonnulllist;
              }

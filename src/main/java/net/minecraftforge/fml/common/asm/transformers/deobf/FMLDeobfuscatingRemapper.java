@@ -181,7 +181,7 @@ public class FMLDeobfuscatingRemapper extends Remapper {
         String newName = parts[1];
         if (!rawFieldMaps.containsKey(cl))
         {
-            rawFieldMaps.put(cl, Maps.<String,String>newHashMap());
+            rawFieldMaps.put(cl, Maps.newHashMap());
         }
         String fieldType = getFieldType(cl, oldName);
         // We might be in mcp named land, where in fact the name is "new"
@@ -196,8 +196,8 @@ public class FMLDeobfuscatingRemapper extends Remapper {
     private final Map<String,Map<String,String>> fieldDescriptions = Maps.newHashMap();
 
     // Cache null values so we don't waste time trying to recompute classes with no field or method maps
-    private Set<String> negativeCacheMethods = Sets.newHashSet();
-    private Set<String> negativeCacheFields = Sets.newHashSet();
+    private final Set<String> negativeCacheMethods = Sets.newHashSet();
+    private final Set<String> negativeCacheFields = Sets.newHashSet();
 
     @Nullable
     private String getFieldType(String owner, String name)
@@ -487,4 +487,13 @@ public class FMLDeobfuscatingRemapper extends Remapper {
         newClassMap.put(newName, fType);
         return fType;
     }
+
+    public Map<String, Map<String, String>> getRawMethodMaps() {
+        return ImmutableMap.copyOf(rawMethodMaps);
+    }
+
+    public Map<String, Map<String, String>> getRawFieldMaps() {
+        return ImmutableMap.copyOf(rawFieldMaps);
+    }
+
 }

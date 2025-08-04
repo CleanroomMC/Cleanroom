@@ -24,9 +24,24 @@
      public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
      {
          int i = p_180709_2_.nextInt(3) + 5;
-@@ -62,11 +56,14 @@
+@@ -42,7 +36,7 @@
+ 
+         if (p_180709_3_.func_177956_o() >= 1 && p_180709_3_.func_177956_o() + i + 1 <= 256)
+         {
+-            for (int j = p_180709_3_.func_177956_o(); j <= p_180709_3_.func_177956_o() + 1 + i; j++)
++            for (int j = p_180709_3_.func_177956_o(); j <= p_180709_3_.func_177956_o() + 1 + i; ++j)
+             {
+                 int k = 1;
+ 
+@@ -58,15 +52,18 @@
+ 
+                 BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+ 
+-                for (int l = p_180709_3_.func_177958_n() - k; l <= p_180709_3_.func_177958_n() + k && flag; l++)
++                for (int l = p_180709_3_.func_177958_n() - k; l <= p_180709_3_.func_177958_n() + k && flag; ++l)
                  {
-                     for (int i1 = p_180709_3_.func_177952_p() - k; i1 <= p_180709_3_.func_177952_p() + k && flag; ++i1)
+-                    for (int i1 = p_180709_3_.func_177952_p() - k; i1 <= p_180709_3_.func_177952_p() + k && flag; i1++)
++                    for (int i1 = p_180709_3_.func_177952_p() - k; i1 <= p_180709_3_.func_177952_p() + k && flag; ++i1)
                      {
 -                        if (j < 0 || j >= 256)
 +                        if (j >= 0 && j < p_180709_1_.func_72800_K())
@@ -42,7 +57,7 @@
                          {
                              flag = false;
                          }
-@@ -80,12 +77,13 @@
+@@ -80,32 +77,33 @@
              }
              else
              {
@@ -58,9 +73,22 @@
 -                    this.func_175921_a(p_180709_1_, p_180709_3_.func_177977_b());
 +                    state.func_177230_c().onPlantGrow(state, p_180709_1_, down, p_180709_3_);
  
-                     for (int i2 = p_180709_3_.func_177956_o() - 3 + i; i2 <= p_180709_3_.func_177956_o() + i; ++i2)
+-                    for (int i2 = p_180709_3_.func_177956_o() - 3 + i; i2 <= p_180709_3_.func_177956_o() + i; i2++)
++                    for (int i2 = p_180709_3_.func_177956_o() - 3 + i; i2 <= p_180709_3_.func_177956_o() + i; ++i2)
                      {
-@@ -103,9 +101,9 @@
+                         int k2 = i2 - (p_180709_3_.func_177956_o() + i);
+                         int l2 = 1 - k2 / 2;
+ 
+-                        for (int i3 = p_180709_3_.func_177958_n() - l2; i3 <= p_180709_3_.func_177958_n() + l2; i3++)
++                        for (int i3 = p_180709_3_.func_177958_n() - l2; i3 <= p_180709_3_.func_177958_n() + l2; ++i3)
+                         {
+                             int j1 = i3 - p_180709_3_.func_177958_n();
+ 
+-                            for (int k1 = p_180709_3_.func_177952_p() - l2; k1 <= p_180709_3_.func_177952_p() + l2; k1++)
++                            for (int k1 = p_180709_3_.func_177952_p() - l2; k1 <= p_180709_3_.func_177952_p() + l2; ++k1)
+                             {
+                                 int l1 = k1 - p_180709_3_.func_177952_p();
+ 
                                  if (Math.abs(j1) != l2 || Math.abs(l1) != l2 || p_180709_2_.nextInt(2) != 0 && k2 != 0)
                                  {
                                      BlockPos blockpos = new BlockPos(i3, i2, k1);
@@ -72,9 +100,12 @@
                                      {
                                          this.func_175903_a(p_180709_1_, blockpos, field_181630_b);
                                      }
-@@ -116,9 +114,10 @@
+@@ -114,11 +112,12 @@
+                         }
+                     }
  
-                     for (int j2 = 0; j2 < i; ++j2)
+-                    for (int j2 = 0; j2 < i; j2++)
++                    for (int j2 = 0; j2 < i; ++j2)
                      {
 -                        Material material1 = p_180709_1_.func_180495_p(p_180709_3_.func_177981_b(j2)).func_185904_a();
 +                        BlockPos upN = p_180709_3_.func_177981_b(j2);

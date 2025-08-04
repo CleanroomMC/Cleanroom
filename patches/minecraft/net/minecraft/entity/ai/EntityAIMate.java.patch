@@ -1,5 +1,14 @@
 --- before/net/minecraft/entity/ai/EntityAIMate.java
 +++ after/net/minecraft/entity/ai/EntityAIMate.java
+@@ -22,7 +22,7 @@
+ 
+     public EntityAIMate(EntityAnimal p_i1619_1_, double p_i1619_2_)
+     {
+-        this(p_i1619_1_, p_i1619_2_, (Class <? extends EntityAnimal >)p_i1619_1_.getClass());
++        this(p_i1619_1_, p_i1619_2_, p_i1619_1_.getClass());
+     }
+ 
+     public EntityAIMate(EntityAnimal p_i47306_1_, double p_i47306_2_, Class <? extends EntityAnimal > p_i47306_4_)
 @@ -34,7 +34,6 @@
          this.func_75248_a(3);
      }
@@ -30,7 +39,8 @@
      {
          this.field_75390_d.func_70671_ap().func_75651_a(this.field_75391_e, 10.0F, (float)this.field_75390_d.func_70646_bf());
          this.field_75390_d.func_70661_as().func_75497_a(this.field_75391_e, this.field_75393_c);
-         ++this.field_75392_b;
+-        this.field_75392_b++;
++        ++this.field_75392_b;
  
 -        if (this.field_75392_b >= 60 && this.field_75390_d.func_70068_e(this.field_75391_e) < 9.0)
 +        if (this.field_75392_b >= 60 && this.field_75390_d.func_70068_e(this.field_75391_e) < 9.0D)
@@ -65,9 +75,12 @@
          if (entityageable != null)
          {
              EntityPlayerMP entityplayermp = this.field_75390_d.func_191993_do();
-@@ -122,36 +130,18 @@
+@@ -120,38 +128,20 @@
+             this.field_75394_a.func_72838_d(entityageable);
+             Random random = this.field_75390_d.func_70681_au();
  
-             for (int i = 0; i < 7; ++i)
+-            for (int i = 0; i < 7; i++)
++            for (int i = 0; i < 7; ++i)
              {
 -                double d0 = random.nextGaussian() * 0.02;
 -                double d1 = random.nextGaussian() * 0.02;

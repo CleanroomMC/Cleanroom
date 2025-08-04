@@ -32,6 +32,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
+import zone.rong.imaginebreaker.ImagineBreaker;
 
 import javax.annotation.Nullable;
 
@@ -87,7 +88,8 @@ class ObjectHolderRef
         }
         try
         {
-            FinalFieldHelper.makeWritable(field);
+            field.setAccessible(true);
+            ReflectionHackery.stripFieldOfFinalModifier(field);
         }
         catch (ReflectiveOperationException e)
         {
@@ -144,7 +146,7 @@ class ObjectHolderRef
         }
         try
         {
-            FinalFieldHelper.setField(field, null, thing);
+            ReflectionHackery.setField(field, null, thing);
         }
         catch (IllegalArgumentException | ReflectiveOperationException e)
         {
@@ -152,32 +154,4 @@ class ObjectHolderRef
         }
     }
 
-    @SuppressWarnings("removal")
-    private static class FinalFieldHelper
-    {
-        private static final Unsafe unsafe;
-        static {
-            Field f;
-            try {
-                f = Unsafe.class.getDeclaredField("theUnsafe");
-                f.setAccessible(true);
-                unsafe = (Unsafe) f.get(null);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        static Field makeWritable(Field f) throws ReflectiveOperationException
-        {
-            f.setAccessible(true);
-            ReflectionHackery.stripFieldOfFinalModifier(f);
-            return f;
-        }
-
-        static void setField(Field field, @Nullable Object instance, Object thing) throws ReflectiveOperationException
-        {
-
-            unsafe.ensureClassInitialized(field.getDeclaringClass());
-            unsafe.putObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), thing);
-        }
-    }
 }

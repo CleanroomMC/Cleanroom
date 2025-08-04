@@ -17,7 +17,7 @@
  {
      public static final PropertyBool field_176277_a = PropertyBool.func_177716_a("up");
      public static final PropertyBool field_176273_b = PropertyBool.func_177716_a("north");
-@@ -35,67 +36,57 @@
+@@ -35,103 +36,86 @@
      public static final PropertyBool field_176279_N = PropertyBool.func_177716_a("south");
      public static final PropertyBool field_176280_O = PropertyBool.func_177716_a("west");
      public static final PropertyBool[] field_176274_P = new PropertyBool[] {field_176277_a, field_176273_b, field_176279_N, field_176280_O, field_176278_M};
@@ -67,36 +67,42 @@
 +        if (((Boolean)p_185496_1_.func_177229_b(field_176277_a)).booleanValue())
          {
              axisalignedbb = field_185757_g;
-             ++i;
+-            i++;
++            ++i;
          }
  
 -        if (p_185496_1_.func_177229_b(field_176273_b))
 +        if (((Boolean)p_185496_1_.func_177229_b(field_176273_b)).booleanValue())
          {
              axisalignedbb = field_185755_D;
-             ++i;
+-            i++;
++            ++i;
          }
  
 -        if (p_185496_1_.func_177229_b(field_176278_M))
 +        if (((Boolean)p_185496_1_.func_177229_b(field_176278_M)).booleanValue())
          {
              axisalignedbb = field_185754_C;
-             ++i;
+-            i++;
++            ++i;
          }
  
 -        if (p_185496_1_.func_177229_b(field_176279_N))
 +        if (((Boolean)p_185496_1_.func_177229_b(field_176279_N)).booleanValue())
          {
              axisalignedbb = field_185756_E;
-             ++i;
+-            i++;
++            ++i;
          }
  
 -        if (p_185496_1_.func_177229_b(field_176280_O))
 +        if (((Boolean)p_185496_1_.func_177229_b(field_176280_O)).booleanValue())
          {
              axisalignedbb = field_185753_B;
-             ++i;
-@@ -104,34 +95,27 @@
+-            i++;
++            ++i;
+         }
+ 
          return i == 1 ? axisalignedbb : field_185505_j;
      }
  
@@ -184,7 +190,7 @@
      public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
      {
          if (!p_189540_2_.field_72995_K && !this.func_176269_e(p_189540_2_, p_189540_3_, p_189540_1_))
-@@ -207,17 +181,16 @@
+@@ -207,193 +181,168 @@
          }
      }
  
@@ -202,9 +208,14 @@
 -                label179:
 +                label181:
  
-                 for (int k = -4; k <= 4; ++k)
+-                for (int k = -4; k <= 4; k++)
++                for (int k = -4; k <= 4; ++k)
                  {
-@@ -227,173 +200,149 @@
+-                    for (int l = -4; l <= 4; l++)
++                    for (int l = -4; l <= 4; ++l)
+                     {
+-                        for (int i1 = -1; i1 <= 1; i1++)
++                        for (int i1 = -1; i1 <= 1; ++i1)
                          {
                              if (p_180650_1_.func_180495_p(p_180650_2_.func_177982_a(k, i1, l)).func_177230_c() == this)
                              {
@@ -566,16 +577,17 @@
              default:
                  return super.func_185471_a(p_185471_1_, p_185471_2_);
          }
-@@ -523,7 +451,7 @@
+@@ -523,16 +451,25 @@
  
          for (PropertyBool propertybool : field_176274_P)
          {
 -            if (p_176268_0_.func_177229_b(propertybool))
 +            if (((Boolean)p_176268_0_.func_177229_b(propertybool)).booleanValue())
              {
-                 ++i;
+-                i++;
++                ++i;
              }
-@@ -531,8 +459,17 @@
+         }
  
          return i;
      }

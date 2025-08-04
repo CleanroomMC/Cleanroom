@@ -620,7 +620,7 @@
  
 -                    if (ibakedmodel != null)
 -                    {
--                        ++i;
+-                        i++;
 -                        weightedbakedmodel$builder.func_177677_a(ibakedmodel, variant.func_188047_d());
 +                        if (ibakedmodel != null)
 +                        {
@@ -840,7 +840,23 @@
  
          for (ResourceLocation resourcelocation : this.field_177615_s.values())
          {
-@@ -1189,5 +941,24 @@
+@@ -1124,7 +876,14 @@
+ 
+     protected boolean func_177581_b(@Nullable ModelBlock p_177581_1_)
+     {
+-        return p_177581_1_ == null ? false : p_177581_1_.func_178310_f() == field_177606_o;
++        if (p_177581_1_ == null)
++        {
++            return false;
++        }
++        else
++        {
++            return p_177581_1_.func_178310_f() == field_177606_o;
++        }
+     }
+ 
+     protected boolean func_177587_c(@Nullable ModelBlock p_177587_1_)
+@@ -1182,5 +941,24 @@
          field_177600_d.put("missing", field_188641_d);
          field_177606_o.field_178317_b = "generation marker";
          field_177616_r.field_178317_b = "block entity marker";

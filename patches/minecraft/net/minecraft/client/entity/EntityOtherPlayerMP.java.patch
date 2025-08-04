@@ -44,15 +44,21 @@
      public void func_70071_h_()
      {
          this.field_71082_cx = 0.0F;
-@@ -80,7 +75,6 @@
-         this.field_184619_aG += this.field_70721_aZ;
+@@ -76,11 +71,10 @@
+             f = 1.0F;
+         }
+ 
+-        this.field_70721_aZ = this.field_70721_aZ + (f - this.field_70721_aZ) * 0.4F;
+-        this.field_184619_aG = this.field_184619_aG + this.field_70721_aZ;
++        this.field_70721_aZ += (f - this.field_70721_aZ) * 0.4F;
++        this.field_184619_aG += this.field_70721_aZ;
      }
  
 -    @Override
      public void func_70636_d()
      {
          if (this.field_71184_b > 0)
-@@ -88,16 +82,16 @@
+@@ -88,21 +82,21 @@
              double d0 = this.field_70165_t + (this.field_71185_c - this.field_70165_t) / (double)this.field_71184_b;
              double d1 = this.field_70163_u + (this.field_71182_d - this.field_70163_u) / (double)this.field_71184_b;
              double d2 = this.field_70161_v + (this.field_71183_e - this.field_70161_v) / (double)this.field_71184_b;
@@ -74,6 +80,12 @@
              }
  
              this.field_70177_z = (float)((double)this.field_70177_z + d3 / (double)this.field_71184_b);
+             this.field_70125_A = (float)((double)this.field_70125_A + (this.field_71181_g - (double)this.field_70125_A) / (double)this.field_71184_b);
+-            this.field_71184_b--;
++            --this.field_71184_b;
+             this.func_70107_b(d0, d1, d2);
+             this.func_70101_b(this.field_70177_z, this.field_70125_A);
+         }
 @@ -110,7 +104,7 @@
          this.field_71107_bF = this.field_71109_bG;
          this.func_82168_bl();
@@ -83,7 +95,16 @@
  
          if (f1 > 0.1F)
          {
-@@ -134,21 +128,18 @@
+@@ -127,28 +121,25 @@
+             f = 0.0F;
+         }
+ 
+-        this.field_71109_bG = this.field_71109_bG + (f1 - this.field_71109_bG) * 0.4F;
+-        this.field_70726_aT = this.field_70726_aT + (f - this.field_70726_aT) * 0.8F;
++        this.field_71109_bG += (f1 - this.field_71109_bG) * 0.4F;
++        this.field_70726_aT += (f - this.field_70726_aT) * 0.8F;
+         this.field_70170_p.field_72984_F.func_76320_a("push");
+         this.func_85033_bc();
          this.field_70170_p.field_72984_F.func_76319_b();
      }
  

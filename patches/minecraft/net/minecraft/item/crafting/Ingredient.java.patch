@@ -90,6 +90,15 @@
      public static Ingredient func_193367_a(Item p_193367_0_)
      {
          return func_193369_a(new ItemStack(p_193367_0_, 1, 32767));
+@@ -86,7 +119,7 @@
+     {
+         ItemStack[] aitemstack = new ItemStack[p_193368_0_.length];
+ 
+-        for (int i = 0; i < p_193368_0_.length; i++)
++        for (int i = 0; i < p_193368_0_.length; ++i)
+         {
+             aitemstack[i] = new ItemStack(p_193368_0_[i]);
+         }
 @@ -108,5 +141,23 @@
          }
  

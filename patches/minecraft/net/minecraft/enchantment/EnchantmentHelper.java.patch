@@ -1,6 +1,15 @@
 --- before/net/minecraft/enchantment/EnchantmentHelper.java
 +++ after/net/minecraft/enchantment/EnchantmentHelper.java
-@@ -58,7 +58,7 @@
+@@ -40,7 +40,7 @@
+         {
+             NBTTagList nbttaglist = p_77506_1_.func_77986_q();
+ 
+-            for (int i = 0; i < nbttaglist.func_74745_c(); i++)
++            for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+             {
+                 NBTTagCompound nbttagcompound = nbttaglist.func_150305_b(i);
+                 Enchantment enchantment = Enchantment.func_185262_c(nbttagcompound.func_74765_d("id"));
+@@ -58,15 +58,15 @@
  
      public static Map<Enchantment, Integer> func_82781_a(ItemStack p_82781_0_)
      {
@@ -8,8 +17,9 @@
 +        Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newLinkedHashMap();
          NBTTagList nbttaglist = p_82781_0_.func_77973_b() == Items.field_151134_bR ? ItemEnchantedBook.func_92110_g(p_82781_0_) : p_82781_0_.func_77986_q();
  
-         for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
-@@ -66,7 +66,7 @@
+-        for (int i = 0; i < nbttaglist.func_74745_c(); i++)
++        for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+         {
              NBTTagCompound nbttagcompound = nbttaglist.func_150305_b(i);
              Enchantment enchantment = Enchantment.func_185262_c(nbttagcompound.func_74765_d("id"));
              int j = nbttagcompound.func_74765_d("lvl");
@@ -27,6 +37,15 @@
                  NBTTagCompound nbttagcompound = new NBTTagCompound();
                  nbttagcompound.func_74777_a("id", (short)Enchantment.func_185258_b(enchantment));
                  nbttagcompound.func_74777_a("lvl", (short)i);
+@@ -114,7 +114,7 @@
+         {
+             NBTTagList nbttaglist = p_77518_1_.func_77986_q();
+ 
+-            for (int i = 0; i < nbttaglist.func_74745_c(); i++)
++            for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+             {
+                 int j = nbttaglist.func_150305_b(i).func_74765_d("id");
+                 int k = nbttaglist.func_150305_b(i).func_74765_d("lvl");
 @@ -140,6 +140,7 @@
          field_77520_b.field_77497_a = 0;
          field_77520_b.field_77496_b = p_77508_1_;
@@ -120,7 +139,7 @@
              {
                  iterator.remove();
              }
-@@ -407,13 +414,13 @@
+@@ -407,15 +414,15 @@
  
      public static List<EnchantmentData> func_185291_a(int p_185291_0_, ItemStack p_185291_1_, boolean p_185291_2_)
      {
@@ -134,8 +153,11 @@
 -            if ((!enchantment.func_185261_e() || p_185291_2_) && (enchantment.field_77351_y.func_77557_a(item) || flag))
 +            if ((!enchantment.func_185261_e() || p_185291_2_) && (enchantment.canApplyAtEnchantingTable(p_185291_1_) || (flag && enchantment.isAllowedOnBooks())))
              {
-                 for (int i = enchantment.func_77325_b(); i > enchantment.func_77319_d() - 1; --i)
+-                for (int i = enchantment.func_77325_b(); i > enchantment.func_77319_d() - 1; i--)
++                for (int i = enchantment.func_77325_b(); i > enchantment.func_77319_d() - 1; --i)
                  {
+                     if (p_185291_0_ >= enchantment.func_77321_a(i) && p_185291_0_ <= enchantment.func_77317_b(i))
+                     {
 @@ -438,7 +445,6 @@
              {
              }
@@ -152,19 +174,27 @@
              public void func_77493_a(Enchantment p_77493_1_, int p_77493_2_)
              {
                  p_77493_1_.func_151367_b(this.field_151364_a, this.field_151363_b, p_77493_2_);
-@@ -475,7 +480,6 @@
+@@ -475,10 +480,9 @@
              {
              }
  
 -            @Override
              public void func_77493_a(Enchantment p_77493_1_, int p_77493_2_)
              {
-                 this.field_77497_a += p_77493_1_.func_77318_a(p_77493_2_, this.field_77496_b);
-@@ -491,7 +495,6 @@
+-                this.field_77497_a = this.field_77497_a + p_77493_1_.func_77318_a(p_77493_2_, this.field_77496_b);
++                this.field_77497_a += p_77493_1_.func_77318_a(p_77493_2_, this.field_77496_b);
+             }
+         }
+ 
+@@ -491,10 +495,9 @@
              {
              }
  
 -            @Override
              public void func_77493_a(Enchantment p_77493_1_, int p_77493_2_)
              {
-                 this.field_77495_a += p_77493_1_.func_152376_a(p_77493_2_, this.field_77494_b);
+-                this.field_77495_a = this.field_77495_a + p_77493_1_.func_152376_a(p_77493_2_, this.field_77494_b);
++                this.field_77495_a += p_77493_1_.func_152376_a(p_77493_2_, this.field_77494_b);
+             }
+         }
+ }

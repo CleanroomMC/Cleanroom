@@ -1,6 +1,6 @@
 --- before/net/minecraft/client/renderer/vertex/VertexFormat.java
 +++ after/net/minecraft/client/renderer/vertex/VertexFormat.java
-@@ -11,12 +11,13 @@
+@@ -11,18 +11,19 @@
  public class VertexFormat
  {
      private static final Logger field_177357_a = LogManager.getLogger();
@@ -19,6 +19,13 @@
  
      public VertexFormat(VertexFormat p_i46097_1_)
      {
+         this();
+ 
+-        for (int i = 0; i < p_i46097_1_.func_177345_h(); i++)
++        for (int i = 0; i < p_i46097_1_.func_177345_h(); ++i)
+         {
+             this.func_181721_a(p_i46097_1_.func_177348_c(i));
+         }
 @@ -32,6 +33,11 @@
  
      public VertexFormat()
@@ -56,7 +63,8 @@
 +                    this.field_177351_f.add(p_181721_1_.func_177369_e(), Integer.valueOf(this.field_177353_d));
              }
  
-             this.field_177353_d += p_181721_1_.func_177368_f();
+-            this.field_177353_d = this.field_177353_d + p_181721_1_.func_177368_f();
++            this.field_177353_d += p_181721_1_.func_177368_f();
 +            this.hashCode = 0;
              return this;
          }
@@ -74,13 +82,23 @@
      {
          String s = "format: " + this.field_177355_b.size() + " elements: ";
  
-         for (int i = 0; i < this.field_177355_b.size(); ++i)
+-        for (int i = 0; i < this.field_177355_b.size(); i++)
++        for (int i = 0; i < this.field_177355_b.size(); ++i)
          {
 -            s = s + this.field_177355_b.get(i).toString();
 +            s = s + ((VertexFormatElement)this.field_177355_b.get(i)).toString();
  
              if (i != this.field_177355_b.size() - 1)
              {
+@@ -126,7 +133,7 @@
+     {
+         int i = 0;
+ 
+-        for (int j = this.field_177355_b.size(); i < j; i++)
++        for (int j = this.field_177355_b.size(); i < j; ++i)
+         {
+             VertexFormatElement vertexformatelement = this.field_177355_b.get(i);
+ 
 @@ -166,10 +173,9 @@
  
      public int func_181720_d(int p_181720_1_)
@@ -93,7 +111,22 @@
      public boolean equals(Object p_equals_1_)
      {
          if (this == p_equals_1_)
-@@ -199,11 +205,13 @@
+@@ -184,9 +190,13 @@
+             {
+                 return false;
+             }
++            else if (!this.field_177355_b.equals(vertexformat.field_177355_b))
++            {
++                return false;
++            }
+             else
+             {
+-                return !this.field_177355_b.equals(vertexformat.field_177355_b) ? false : this.field_177356_c.equals(vertexformat.field_177356_c);
++                return this.field_177356_c.equals(vertexformat.field_177356_c);
+             }
+         }
+         else
+@@ -195,11 +205,13 @@
          }
      }
  

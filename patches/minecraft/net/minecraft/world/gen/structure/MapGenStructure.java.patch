@@ -107,7 +107,7 @@
              }
              else
              {
-@@ -201,17 +221,7 @@
+@@ -201,29 +221,19 @@
  
      protected abstract StructureStart func_75049_b(int p_75049_1_, int p_75049_2_);
  
@@ -126,6 +126,21 @@
      {
          int i = p_191069_2_.func_177958_n() >> 4;
          int j = p_191069_2_.func_177952_p() >> 4;
+         int k = 0;
+ 
+-        for (Random random = new Random(); k <= p_191069_7_; k++)
++        for (Random random = new Random(); k <= p_191069_7_; ++k)
+         {
+-            for (int l = -k; l <= k; l++)
++            for (int l = -k; l <= k; ++l)
+             {
+                 boolean flag = l == -k || l == k;
+ 
+-                for (int i1 = -k; i1 <= k; i1++)
++                for (int i1 = -k; i1 <= k; ++i1)
+                 {
+                     boolean flag1 = i1 == -k || i1 == k;
+ 
 @@ -245,18 +255,18 @@
                          int l1 = j1 / p_191069_3_;
                          int i2 = k1 / p_191069_3_;

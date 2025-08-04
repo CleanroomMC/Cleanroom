@@ -1,6 +1,6 @@
 --- before/net/minecraft/item/crafting/RecipesMapCloning.java
 +++ after/net/minecraft/item/crafting/RecipesMapCloning.java
-@@ -5,12 +5,9 @@
+@@ -5,18 +5,15 @@
  import net.minecraft.item.ItemStack;
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
@@ -14,7 +14,23 @@
      public boolean func_77569_a(InventoryCrafting p_77569_1_, World p_77569_2_)
      {
          int i = 0;
-@@ -46,7 +43,6 @@
+         ItemStack itemstack = ItemStack.field_190927_a;
+ 
+-        for (int j = 0; j < p_77569_1_.func_70302_i_(); j++)
++        for (int j = 0; j < p_77569_1_.func_70302_i_(); ++j)
+         {
+             ItemStack itemstack1 = p_77569_1_.func_70301_a(j);
+ 
+@@ -38,7 +35,7 @@
+                         return false;
+                     }
+ 
+-                    i++;
++                    ++i;
+                 }
+             }
+         }
+@@ -46,13 +43,12 @@
          return !itemstack.func_190926_b() && i > 0;
      }
  
@@ -22,6 +38,22 @@
      public ItemStack func_77572_b(InventoryCrafting p_77572_1_)
      {
          int i = 0;
+         ItemStack itemstack = ItemStack.field_190927_a;
+ 
+-        for (int j = 0; j < p_77572_1_.func_70302_i_(); j++)
++        for (int j = 0; j < p_77572_1_.func_70302_i_(); ++j)
+         {
+             ItemStack itemstack1 = p_77572_1_.func_70301_a(j);
+ 
+@@ -74,7 +70,7 @@
+                         return ItemStack.field_190927_a;
+                     }
+ 
+-                    i++;
++                    ++i;
+                 }
+             }
+         }
 @@ -101,38 +97,29 @@
          }
      }
@@ -38,7 +70,8 @@
 -        NonNullList<ItemStack> nonnulllist = NonNullList.func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
 +        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
  
-         for (int i = 0; i < nonnulllist.size(); ++i)
+-        for (int i = 0; i < nonnulllist.size(); i++)
++        for (int i = 0; i < nonnulllist.size(); ++i)
          {
              ItemStack itemstack = p_179532_1_.func_70301_a(i);
 -

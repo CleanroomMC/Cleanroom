@@ -197,6 +197,24 @@
              public NBTTagCompound func_188266_a(IDataFixer p_188266_1_, NBTTagCompound p_188266_2_, int p_188266_3_)
              {
                  if (p_188266_2_.func_150297_b("Level", 10))
+@@ -244,7 +279,7 @@
+                     {
+                         NBTTagList nbttaglist = nbttagcompound.func_150295_c("Entities", 10);
+ 
+-                        for (int i = 0; i < nbttaglist.func_74745_c(); i++)
++                        for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+                         {
+                             nbttaglist.func_150304_a(i, p_188266_1_.func_188251_a(FixTypes.ENTITY, (NBTTagCompound)nbttaglist.func_179238_g(i), p_188266_3_));
+                         }
+@@ -254,7 +289,7 @@
+                     {
+                         NBTTagList nbttaglist1 = nbttagcompound.func_150295_c("TileEntities", 10);
+ 
+-                        for (int j = 0; j < nbttaglist1.func_74745_c(); j++)
++                        for (int j = 0; j < nbttaglist1.func_74745_c(); ++j)
+                         {
+                             nbttaglist1.func_150304_a(j, p_188266_1_.func_188251_a(FixTypes.BLOCK_ENTITY, (NBTTagCompound)nbttaglist1.func_179238_g(j), p_188266_3_));
+                         }
 @@ -284,7 +319,7 @@
              if (extendedblockstorage != Chunk.field_186036_a)
              {
@@ -206,7 +224,14 @@
                  byte[] abyte = new byte[4096];
                  NibbleArray nibblearray = new NibbleArray();
                  NibbleArray nibblearray1 = extendedblockstorage.func_186049_g().func_186017_a(abyte, nibblearray);
-@@ -322,11 +357,19 @@
+@@ -316,17 +351,25 @@
+         p_75820_1_.func_177409_g(false);
+         NBTTagList nbttaglist1 = new NBTTagList();
+ 
+-        for (int i = 0; i < p_75820_1_.func_177429_s().length; i++)
++        for (int i = 0; i < p_75820_1_.func_177429_s().length; ++i)
+         {
+             for (Entity entity : p_75820_1_.func_177429_s()[i])
              {
                  NBTTagCompound nbttagcompound2 = new NBTTagCompound();
  
@@ -262,7 +287,16 @@
      }
  
      private Chunk func_75823_a(World p_75823_1_, NBTTagCompound p_75823_2_)
-@@ -405,6 +468,16 @@
+@@ -378,7 +441,7 @@
+         ExtendedBlockStorage[] aextendedblockstorage = new ExtendedBlockStorage[16];
+         boolean flag = p_75823_1_.field_73011_w.func_191066_m();
+ 
+-        for (int l = 0; l < nbttaglist.func_74745_c(); l++)
++        for (int l = 0; l < nbttaglist.func_74745_c(); ++l)
+         {
+             NBTTagCompound nbttagcompound = nbttaglist.func_150305_b(l);
+             int i1 = nbttagcompound.func_74771_c("Y");
+@@ -405,9 +468,19 @@
              chunk.func_76616_a(p_75823_2_.func_74770_j("Biomes"));
          }
  
@@ -278,7 +312,29 @@
 +    {
          NBTTagList nbttaglist1 = p_75823_2_.func_150295_c("Entities", 10);
  
-         for (int j1 = 0; j1 < nbttaglist1.func_74745_c(); ++j1)
+-        for (int j1 = 0; j1 < nbttaglist1.func_74745_c(); j1++)
++        for (int j1 = 0; j1 < nbttaglist1.func_74745_c(); ++j1)
+         {
+             NBTTagCompound nbttagcompound1 = nbttaglist1.func_150305_b(j1);
+             func_186050_a(nbttagcompound1, p_75823_1_, chunk);
+@@ -416,7 +489,7 @@
+ 
+         NBTTagList nbttaglist2 = p_75823_2_.func_150295_c("TileEntities", 10);
+ 
+-        for (int k1 = 0; k1 < nbttaglist2.func_74745_c(); k1++)
++        for (int k1 = 0; k1 < nbttaglist2.func_74745_c(); ++k1)
+         {
+             NBTTagCompound nbttagcompound2 = nbttaglist2.func_150305_b(k1);
+             TileEntity tileentity = TileEntity.func_190200_a(p_75823_1_, nbttagcompound2);
+@@ -431,7 +504,7 @@
+         {
+             NBTTagList nbttaglist3 = p_75823_2_.func_150295_c("TileTicks", 10);
+ 
+-            for (int l1 = 0; l1 < nbttaglist3.func_74745_c(); l1++)
++            for (int l1 = 0; l1 < nbttaglist3.func_74745_c(); ++l1)
+             {
+                 NBTTagCompound nbttagcompound3 = nbttaglist3.func_150305_b(l1);
+                 Block block;
 @@ -445,16 +518,9 @@
                      block = Block.func_149729_e(nbttagcompound3.func_74762_e("i"));
                  }
@@ -297,6 +353,15 @@
      }
  
      @Nullable
+@@ -474,7 +540,7 @@
+             {
+                 NBTTagList nbttaglist = p_186050_0_.func_150295_c("Passengers", 10);
+ 
+-                for (int i = 0; i < nbttaglist.func_74745_c(); i++)
++                for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+                 {
+                     Entity entity1 = func_186050_a(nbttaglist.func_150305_b(i), p_186050_1_, p_186050_2_);
+ 
 @@ -490,9 +556,7 @@
      }
  
@@ -308,6 +373,15 @@
      {
          Entity entity = func_186053_a(p_186054_0_, p_186054_1_);
  
+@@ -514,7 +578,7 @@
+                 {
+                     NBTTagList nbttaglist = p_186054_0_.func_150295_c("Passengers", 10);
+ 
+-                    for (int i = 0; i < nbttaglist.func_74745_c(); i++)
++                    for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+                     {
+                         Entity entity1 = func_186054_a(nbttaglist.func_150305_b(i), p_186054_1_, p_186054_2_, p_186054_4_, p_186054_6_, p_186054_8_);
+ 
 @@ -537,7 +601,7 @@
          {
              return EntityList.func_75615_a(p_186053_0_, p_186053_1_);
@@ -317,6 +391,15 @@
          {
              return null;
          }
+@@ -573,7 +637,7 @@
+             {
+                 NBTTagList nbttaglist = p_186051_0_.func_150295_c("Passengers", 10);
+ 
+-                for (int i = 0; i < nbttaglist.func_74745_c(); i++)
++                for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+                 {
+                     Entity entity1 = func_186051_a(nbttaglist.func_150305_b(i), p_186051_1_, p_186051_2_);
+ 
 @@ -586,5 +650,10 @@
  
              return entity;

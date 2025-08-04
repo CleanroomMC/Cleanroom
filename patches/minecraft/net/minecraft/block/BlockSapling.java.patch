@@ -65,7 +65,19 @@
          WorldGenerator worldgenerator = (WorldGenerator)(p_176476_4_.nextInt(10) == 0 ? new WorldGenBigTree(true) : new WorldGenTrees(true));
          int i = 0;
          int j = 0;
-@@ -112,10 +112,7 @@
+@@ -86,9 +86,9 @@
+             case SPRUCE:
+                 label68:
+ 
+-                for (i = 0; i >= -1; i--)
++                for (i = 0; i >= -1; --i)
+                 {
+-                    for (j = 0; j >= -1; j--)
++                    for (j = 0; j >= -1; --j)
+                     {
+                         if (this.func_181624_a(p_176476_1_, p_176476_2_, i, j, BlockPlanks.EnumType.SPRUCE))
+                         {
+@@ -112,15 +112,12 @@
                  break;
              case JUNGLE:
                  IBlockState iblockstate = Blocks.field_150364_r.func_176223_P().func_177226_a(BlockOldLog.field_176301_b, BlockPlanks.EnumType.JUNGLE);
@@ -76,7 +88,26 @@
 +                IBlockState iblockstate1 = Blocks.field_150362_t.func_176223_P().func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.JUNGLE).func_177226_a(BlockLeaves.field_176236_b, Boolean.valueOf(false));
                  label82:
  
-                 for (i = 0; i >= -1; --i)
+-                for (i = 0; i >= -1; i--)
++                for (i = 0; i >= -1; --i)
+                 {
+-                    for (j = 0; j >= -1; j--)
++                    for (j = 0; j >= -1; --j)
+                     {
+                         if (this.func_181624_a(p_176476_1_, p_176476_2_, i, j, BlockPlanks.EnumType.JUNGLE))
+                         {
+@@ -145,9 +142,9 @@
+             case DARK_OAK:
+                 label96:
+ 
+-                for (i = 0; i >= -1; i--)
++                for (i = 0; i >= -1; --i)
+                 {
+-                    for (j = 0; j >= -1; j--)
++                    for (j = 0; j >= -1; --j)
+                     {
+                         if (this.func_181624_a(p_176476_1_, p_176476_2_, i, j, BlockPlanks.EnumType.DARK_OAK))
+                         {
 @@ -198,10 +195,7 @@
  
      private boolean func_181624_a(World p_181624_1_, BlockPos p_181624_2_, int p_181624_3_, int p_181624_4_, BlockPlanks.EnumType p_181624_5_)

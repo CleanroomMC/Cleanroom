@@ -193,7 +193,7 @@
                          this.field_75457_a.func_70656_aK();
                          this.field_75457_a.func_70106_y();
                      }
-@@ -273,13 +247,11 @@
+@@ -273,16 +247,14 @@
                  }
              }
  
@@ -206,7 +206,11 @@
 -            @Override
              public void func_75246_d()
              {
-                 --this.field_179463_b;
+-                this.field_179463_b--;
++                --this.field_179463_b;
+ 
+                 if (this.field_179463_b <= 0)
+                 {
 @@ -301,13 +273,13 @@
  
                                  if (iblockstate.func_177230_c() == Blocks.field_150418_aU)

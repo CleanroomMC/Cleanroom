@@ -24,8 +24,19 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 
+/**
+ * Take over the rendering of world effects. For the vanilla, they are Cloud, Sky and Weather.
+ * <br><br/>
+ * Call <br>    {@link net.minecraft.world.WorldProvider#setCloudRenderer(IRenderHandler)}<br>   {@link net.minecraft.world.WorldProvider#setSkyRenderer(IRenderHandler)}<br>    {@link net.minecraft.world.WorldProvider#setWeatherRenderer(IRenderHandler)}
+ * to enable them.
+ */
 public abstract class IRenderHandler
 {
+    /**
+     * @param partialTicks Fractional part of a tick
+     * @param world the world being rendered
+     * @param mc Current mc instance
+     */
     @SideOnly(Side.CLIENT)
     public abstract void render(float partialTicks, WorldClient world, Minecraft mc);
 }

@@ -16,7 +16,22 @@
      public boolean equals(Object p_equals_1_)
      {
          if (this == p_equals_1_)
-@@ -106,13 +104,13 @@
+@@ -91,9 +89,13 @@
+             {
+                 return false;
+             }
++            else if (this.field_177379_b != vertexformatelement.field_177379_b)
++            {
++                return false;
++            }
+             else
+             {
+-                return this.field_177379_b != vertexformatelement.field_177379_b ? false : this.field_177380_c == vertexformatelement.field_177380_c;
++                return this.field_177380_c == vertexformatelement.field_177380_c;
+             }
+         }
+         else
+@@ -102,13 +104,13 @@
          }
      }
  
@@ -32,7 +47,7 @@
      }
  
      @SideOnly(Side.CLIENT)
-@@ -160,9 +158,16 @@
+@@ -156,9 +158,16 @@
          NORMAL("Normal"),
          COLOR("Vertex Color"),
          UV("UV"),

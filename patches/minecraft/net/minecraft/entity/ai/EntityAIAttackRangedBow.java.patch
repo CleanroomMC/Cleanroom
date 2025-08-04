@@ -54,15 +54,28 @@
              boolean flag = this.field_188499_a.func_70635_at().func_75522_a(entitylivingbase);
              boolean flag1 = this.field_188504_f > 0;
  
-@@ -93,7 +87,7 @@
-                 --this.field_188504_f;
+@@ -86,17 +80,17 @@
+ 
+             if (flag)
+             {
+-                this.field_188504_f++;
++                ++this.field_188504_f;
+             }
+             else
+             {
+-                this.field_188504_f--;
++                --this.field_188504_f;
              }
  
 -            if (!(d0 > (double)this.field_188502_d) && this.field_188504_f >= 20)
 +            if (d0 <= (double)this.field_188502_d && this.field_188504_f >= 20)
              {
                  this.field_188499_a.func_70661_as().func_75499_g();
-                 ++this.field_188507_i;
+-                this.field_188507_i++;
++                ++this.field_188507_i;
+             }
+             else
+             {
 @@ -106,12 +100,12 @@
  
              if (this.field_188507_i >= 20)

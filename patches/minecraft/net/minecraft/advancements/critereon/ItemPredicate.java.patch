@@ -1,39 +1,14 @@
 --- before/net/minecraft/advancements/critereon/ItemPredicate.java
 +++ after/net/minecraft/advancements/critereon/ItemPredicate.java
-@@ -37,15 +37,7 @@
-         this.field_193445_h = NBTPredicate.field_193479_a;
-     }
+@@ -86,7 +86,7 @@
+         {
+             Map<Enchantment, Integer> map = EnchantmentHelper.func_82781_a(p_192493_1_);
  
--    public ItemPredicate(
--        @Nullable Item p_i47540_1_,
--        @Nullable Integer p_i47540_2_,
--        MinMaxBounds p_i47540_3_,
--        MinMaxBounds p_i47540_4_,
--        EnchantmentPredicate[] p_i47540_5_,
--        @Nullable PotionType p_i47540_6_,
--        NBTPredicate p_i47540_7_
--    )
-+    public ItemPredicate(@Nullable Item p_i47540_1_, @Nullable Integer p_i47540_2_, MinMaxBounds p_i47540_3_, MinMaxBounds p_i47540_4_, EnchantmentPredicate[] p_i47540_5_, @Nullable PotionType p_i47540_6_, NBTPredicate p_i47540_7_)
-     {
-         this.field_192496_b = p_i47540_1_;
-         this.field_192497_c = p_i47540_2_;
-@@ -95,7 +87,15 @@
-             }
- 
-             PotionType potiontype = PotionUtils.func_185191_c(p_192493_1_);
--            return this.field_192500_f == null || this.field_192500_f == potiontype;
-+
-+            if (this.field_192500_f != null && this.field_192500_f != potiontype)
-+            {
-+                return false;
-+            }
-+            else
-+            {
-+                return true;
-+            }
-         }
-     }
- 
+-            for (int i = 0; i < this.field_192499_e.length; i++)
++            for (int i = 0; i < this.field_192499_e.length; ++i)
+             {
+                 if (!this.field_192499_e[i].func_192463_a(map))
+                 {
 @@ -104,6 +104,13 @@
          if (p_192492_0_ != null && !p_192492_0_.isJsonNull())
          {
@@ -48,3 +23,12 @@
              MinMaxBounds minmaxbounds = MinMaxBounds.func_192515_a(jsonobject.get("count"));
              MinMaxBounds minmaxbounds1 = MinMaxBounds.func_192515_a(jsonobject.get("durability"));
              Integer integer = jsonobject.has("data") ? JsonUtils.func_151203_m(jsonobject, "data") : null;
+@@ -151,7 +158,7 @@
+             JsonArray jsonarray = JsonUtils.func_151207_m(p_192494_0_, "items");
+             ItemPredicate[] aitempredicate = new ItemPredicate[jsonarray.size()];
+ 
+-            for (int i = 0; i < aitempredicate.length; i++)
++            for (int i = 0; i < aitempredicate.length; ++i)
+             {
+                 aitempredicate[i] = func_192492_a(jsonarray.get(i));
+             }

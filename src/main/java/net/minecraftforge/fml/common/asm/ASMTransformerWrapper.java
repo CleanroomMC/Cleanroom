@@ -30,6 +30,7 @@ import java.security.Permission;
 import java.util.Map;
 
 import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
 import org.objectweb.asm.ClassVisitor;
@@ -166,7 +167,7 @@ public class ASMTransformerWrapper
 
             ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
-            writer.visit(Opcodes.V17, Opcodes.ACC_PUBLIC, name, null, wrapper.getInternalName(), null);
+            writer.visit(Opcodes.V21, Opcodes.ACC_PUBLIC, name, null, wrapper.getInternalName(), null);
 
             Method m = Method.getMethod("void <init> ()");
             GeneratorAdapter mg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, m, null, null, writer);
@@ -240,7 +241,7 @@ public class ASMTransformerWrapper
         {
             try
             {
-                this.parent = (IClassTransformer)this.getClass().getClassLoader().loadClass(getParentClass()).newInstance();
+                this.parent = (IClassTransformer) Launch.classLoader.loadClass(getParentClass()).newInstance();
             }
             catch(Exception e)
             {
@@ -265,6 +266,11 @@ public class ASMTransformerWrapper
         public String toString()
         {
             return "TransformerWrapper(" + getParentClass() + ", " + getCoreMod() + ")";
+        }
+
+        @Override
+        public int getPriority() {
+            return parent.getPriority();
         }
 
         protected abstract String getParentClass();

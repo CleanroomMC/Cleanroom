@@ -46,7 +46,8 @@
 -    @Override
      public void func_75246_d()
      {
-         --this.field_75449_e;
+-        this.field_75449_e--;
++        --this.field_75449_e;
          this.field_75450_b.func_70671_ap().func_75651_a(this.field_75451_c, 10.0F, 30.0F);
  
 -        if (this.field_75450_b.func_70068_e(this.field_75451_c) > 2.25)
