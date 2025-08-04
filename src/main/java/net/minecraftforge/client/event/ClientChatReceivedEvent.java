@@ -24,6 +24,22 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
+/**
+ * ClientChatReceivedEvent is fired whenever the client received a chat message. <br>
+ * This event is fired via {@link net.minecraftforge.event.ForgeEventFactory#onClientChat(ChatType, ITextComponent)},
+ * which is executed by {@link net.minecraft.client.network.NetHandlerPlayClient#handleChat(net.minecraft.network.play.server.SPacketChat)}<br>
+ * <br>
+ * {@link #message} contains the message that will be displayed. This can be changed by mods.<br>
+ * <br>
+ * {@link #type} is the type of the message. This field is read only.<br>
+ * <br>
+ * This event is {@link Cancelable}. <br>
+ * If this event is canceled, the chat message will be ignored and not displayed.<br>
+ * <br>
+ * This event does not have a result. {@link HasResult}<br>
+ * <br>
+ * This event is fired on the {@link net.minecraftforge.common.MinecraftForge#EVENT_BUS}.
+ **/
 @Cancelable
 public class ClientChatReceivedEvent extends Event
 {

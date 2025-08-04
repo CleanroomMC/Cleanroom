@@ -108,7 +108,8 @@
 -                    );
 +                    p_180616_2_.func_184133_a(p_180616_1_, p_180616_3_, SoundEvents.field_187646_bt, SoundCategory.BLOCKS, 0.5F, 2.6F + (p_180616_2_.field_73012_v.nextFloat() - p_180616_2_.field_73012_v.nextFloat()) * 0.8F);
  
-                     for (int k = 0; k < 8; ++k)
+-                    for (int k = 0; k < 8; k++)
++                    for (int k = 0; k < 8; ++k)
                      {
 -                        p_180616_2_.func_175688_a(
 -                            EnumParticleTypes.SMOKE_LARGE, (double)l + Math.random(), (double)i + Math.random(), (double)j + Math.random(), 0.0, 0.0, 0.0

@@ -129,3 +129,21 @@
      }
  
      public static class Deserializer implements JsonDeserializer<AdvancementRewards>
+@@ -187,7 +153,7 @@
+                 JsonArray jsonarray = JsonUtils.func_151213_a(jsonobject, "loot", new JsonArray());
+                 ResourceLocation[] aresourcelocation = new ResourceLocation[jsonarray.size()];
+ 
+-                for (int j = 0; j < aresourcelocation.length; j++)
++                for (int j = 0; j < aresourcelocation.length; ++j)
+                 {
+                     aresourcelocation[j] = new ResourceLocation(JsonUtils.func_151206_a(jsonarray.get(j), "loot[" + j + "]"));
+                 }
+@@ -195,7 +161,7 @@
+                 JsonArray jsonarray1 = JsonUtils.func_151213_a(jsonobject, "recipes", new JsonArray());
+                 ResourceLocation[] aresourcelocation1 = new ResourceLocation[jsonarray1.size()];
+ 
+-                for (int k = 0; k < aresourcelocation1.length; k++)
++                for (int k = 0; k < aresourcelocation1.length; ++k)
+                 {
+                     aresourcelocation1[k] = new ResourceLocation(JsonUtils.func_151206_a(jsonarray1.get(k), "recipes[" + k + "]"));
+                     IRecipe irecipe = CraftingManager.func_193373_a(aresourcelocation1[k]);

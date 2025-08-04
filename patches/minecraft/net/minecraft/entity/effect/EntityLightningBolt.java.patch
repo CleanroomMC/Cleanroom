@@ -8,7 +8,7 @@
  import net.minecraft.init.Blocks;
  import net.minecraft.init.SoundEvents;
  import net.minecraft.nbt.NBTTagCompound;
-@@ -29,11 +30,7 @@
+@@ -29,23 +30,18 @@
          this.field_184529_d = p_i46780_8_;
          BlockPos blockpos = new BlockPos(this);
  
@@ -21,7 +21,11 @@
          {
              if (p_i46780_1_.func_180495_p(blockpos).func_185904_a() == Material.field_151579_a && Blocks.field_150480_ab.func_176196_c(p_i46780_1_, blockpos))
              {
-@@ -44,8 +41,7 @@
+                 p_i46780_1_.func_175656_a(blockpos, Blocks.field_150480_ab.func_176223_P());
+             }
+ 
+-            for (int i = 0; i < 4; i++)
++            for (int i = 0; i < 4; ++i)
              {
                  BlockPos blockpos1 = blockpos.func_177982_a(this.field_70146_Z.nextInt(3) - 1, this.field_70146_Z.nextInt(3) - 1, this.field_70146_Z.nextInt(3) - 1);
  
@@ -31,7 +35,7 @@
                  {
                      p_i46780_1_.func_175656_a(blockpos1, Blocks.field_150480_ab.func_176223_P());
                  }
-@@ -53,41 +49,19 @@
+@@ -53,44 +49,22 @@
          }
      }
  
@@ -74,7 +78,20 @@
 +            this.field_70170_p.func_184148_a((EntityPlayer)null, this.field_70165_t, this.field_70163_u, this.field_70161_v, SoundEvents.field_187752_dd, SoundCategory.WEATHER, 2.0F, 0.5F + this.field_70146_Z.nextFloat() * 0.2F);
          }
  
-         --this.field_70262_b;
+-        this.field_70262_b--;
++        --this.field_70262_b;
+ 
+         if (this.field_70262_b < 0)
+         {
+@@ -100,7 +74,7 @@
+             }
+             else if (this.field_70262_b < -this.field_70146_Z.nextInt(10))
+             {
+-                this.field_70263_c--;
++                --this.field_70263_c;
+                 this.field_70262_b = 1;
+ 
+                 if (!this.field_184529_d && !this.field_70170_p.field_72995_K)
 @@ -108,10 +82,7 @@
                      this.field_70264_a = this.field_70146_Z.nextLong();
                      BlockPos blockpos = new BlockPos(this);
@@ -107,7 +124,8 @@
 +                double d0 = 3.0D;
 +                List<Entity> list = this.field_70170_p.func_72839_b(this, new AxisAlignedBB(this.field_70165_t - 3.0D, this.field_70163_u - 3.0D, this.field_70161_v - 3.0D, this.field_70165_t + 3.0D, this.field_70163_u + 6.0D + 3.0D, this.field_70161_v + 3.0D));
  
-                 for (int i = 0; i < list.size(); ++i)
+-                for (int i = 0; i < list.size(); i++)
++                for (int i = 0; i < list.size(); ++i)
                  {
                      Entity entity = list.get(i);
 -                    entity.func_70077_a(this);

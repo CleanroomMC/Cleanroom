@@ -1,6 +1,15 @@
 --- before/net/minecraft/world/WorldProvider.java
 +++ after/net/minecraft/world/WorldProvider.java
-@@ -55,45 +55,12 @@
+@@ -45,7 +45,7 @@
+     {
+         float f = 0.0F;
+ 
+-        for (int i = 0; i <= 15; i++)
++        for (int i = 0; i <= 15; ++i)
+         {
+             float f1 = 1.0F - (float)i / 15.0F;
+             this.field_76573_f[i] = (1.0F - f1) / (f1 * 3.0F + 1.0F) * 1.0F + 0.0F;
+@@ -55,53 +55,26 @@
      protected void func_76572_b()
      {
          this.field_191067_f = true;
@@ -48,8 +57,35 @@
      }
  
      public boolean func_76566_a(int p_76566_1_, int p_76566_2_)
-@@ -125,8 +92,9 @@
-             --f;
+     {
+         BlockPos blockpos = new BlockPos(p_76566_1_, 0, p_76566_2_);
+-        return this.field_76579_a.func_180494_b(blockpos).func_185352_i()
+-               ? true
+-               : this.field_76579_a.func_184141_c(blockpos).func_177230_c() == Blocks.field_150349_c;
++
++        if (this.field_76579_a.func_180494_b(blockpos).func_185352_i())
++        {
++            return true;
++        }
++        else
++        {
++            return this.field_76579_a.func_184141_c(blockpos).func_177230_c() == Blocks.field_150349_c;
++        }
+     }
+ 
+     public float func_76563_a(long p_76563_1_, float p_76563_3_)
+@@ -111,16 +84,17 @@
+ 
+         if (f < 0.0F)
+         {
+-            f++;
++            ++f;
+         }
+ 
+         if (f > 1.0F)
+         {
+-            f--;
++            --f;
          }
  
 -        float f1 = 1.0F - (float)((Math.cos((double)f * Math.PI) + 1.0) / 2.0);
@@ -60,7 +96,7 @@
      }
  
      public int func_76559_b(long p_76559_1_)
-@@ -144,14 +112,14 @@
+@@ -138,14 +112,14 @@
      public float[] func_76560_a(float p_76560_1_, float p_76560_2_)
      {
          float f = 0.4F;
@@ -78,7 +114,7 @@
              this.field_76580_h[0] = f3 * 0.3F + 0.7F;
              this.field_76580_h[1] = f3 * f3 * 0.7F + 0.2F;
              this.field_76580_h[2] = f3 * f3 * 0.0F + 0.2F;
-@@ -167,14 +135,14 @@
+@@ -161,14 +135,14 @@
      @SideOnly(Side.CLIENT)
      public Vec3d func_76562_b(float p_76562_1_, float p_76562_2_)
      {
@@ -97,7 +133,7 @@
          return new Vec3d((double)f1, (double)f2, (double)f3);
      }
  
-@@ -186,7 +154,7 @@
+@@ -180,7 +154,7 @@
      @SideOnly(Side.CLIENT)
      public float func_76571_f()
      {
@@ -106,7 +142,7 @@
      }
  
      @SideOnly(Side.CLIENT)
-@@ -203,13 +171,13 @@
+@@ -197,13 +171,13 @@
  
      public int func_76557_i()
      {
@@ -122,7 +158,7 @@
      }
  
      @SideOnly(Side.CLIENT)
-@@ -246,6 +214,371 @@
+@@ -240,6 +214,371 @@
      public WorldBorder func_177501_r()
      {
          return new WorldBorder();

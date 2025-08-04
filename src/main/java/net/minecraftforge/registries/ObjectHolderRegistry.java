@@ -164,12 +164,12 @@ public enum ObjectHolderRegistry
 
     public void applyObjectHolders()
     {
-        FMLLog.log.info("Applying holder lookups");
+        FMLLog.log.info("Setting Object Holders with value...");
         for (ObjectHolderRef ohr : objectHolders)
         {
             ohr.apply();
         }
-        FMLLog.log.info("Holder lookups applied");
+        FMLLog.log.info("Object Holders set.");
     }
 
 }

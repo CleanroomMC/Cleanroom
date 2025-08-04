@@ -11,7 +11,43 @@
          NBTTagCompound nbttagcompound = new NBTTagCompound();
          nbttagcompound.func_74778_a("id", MapGenStructureIO.func_143036_a(this));
          nbttagcompound.func_74782_a("BB", this.field_74887_e.func_151535_h());
-@@ -251,9 +255,7 @@
+@@ -107,9 +111,9 @@
+         int j1 = Math.min(this.field_74887_e.field_78892_f + 1, p_74860_2_.field_78892_f);
+         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+ 
+-        for (int k1 = i; k1 <= l; k1++)
++        for (int k1 = i; k1 <= l; ++k1)
+         {
+-            for (int l1 = k; l1 <= j1; l1++)
++            for (int l1 = k; l1 <= j1; ++l1)
+             {
+                 if (p_74860_1_.func_180495_p(blockpos$mutableblockpos.func_181079_c(k1, j, l1)).func_185904_a().func_76224_d())
+                 {
+@@ -123,9 +127,9 @@
+             }
+         }
+ 
+-        for (int i2 = i; i2 <= l; i2++)
++        for (int i2 = i; i2 <= l; ++i2)
+         {
+-            for (int k2 = j; k2 <= i1; k2++)
++            for (int k2 = j; k2 <= i1; ++k2)
+             {
+                 if (p_74860_1_.func_180495_p(blockpos$mutableblockpos.func_181079_c(i2, k2, k)).func_185904_a().func_76224_d())
+                 {
+@@ -139,9 +143,9 @@
+             }
+         }
+ 
+-        for (int j2 = k; j2 <= j1; j2++)
++        for (int j2 = k; j2 <= j1; ++j2)
+         {
+-            for (int l2 = j; l2 <= i1; l2++)
++            for (int l2 = j; l2 <= i1; ++l2)
+             {
+                 if (p_74860_1_.func_180495_p(blockpos$mutableblockpos.func_181079_c(i, l2, j2)).func_185904_a().func_76224_d())
+                 {
+@@ -251,15 +255,13 @@
          return !p_189916_5_.func_175898_b(blockpos) ? EnumSkyBlock.SKY.field_77198_c : p_189916_1_.func_175642_b(EnumSkyBlock.SKY, blockpos);
      }
  
@@ -20,9 +56,18 @@
 -    )
 +    protected void func_74878_a(World p_74878_1_, StructureBoundingBox p_74878_2_, int p_74878_3_, int p_74878_4_, int p_74878_5_, int p_74878_6_, int p_74878_7_, int p_74878_8_)
      {
-         for (int i = p_74878_4_; i <= p_74878_7_; ++i)
+-        for (int i = p_74878_4_; i <= p_74878_7_; i++)
++        for (int i = p_74878_4_; i <= p_74878_7_; ++i)
          {
-@@ -267,19 +269,7 @@
+-            for (int j = p_74878_3_; j <= p_74878_6_; j++)
++            for (int j = p_74878_3_; j <= p_74878_6_; ++j)
+             {
+-                for (int k = p_74878_5_; k <= p_74878_8_; k++)
++                for (int k = p_74878_5_; k <= p_74878_8_; ++k)
+                 {
+                     this.func_175811_a(p_74878_1_, Blocks.field_150350_a.func_176223_P(), j, i, k, p_74878_2_);
+                 }
+@@ -267,25 +269,13 @@
          }
      }
  
@@ -41,9 +86,18 @@
 -    )
 +    protected void func_175804_a(World p_175804_1_, StructureBoundingBox p_175804_2_, int p_175804_3_, int p_175804_4_, int p_175804_5_, int p_175804_6_, int p_175804_7_, int p_175804_8_, IBlockState p_175804_9_, IBlockState p_175804_10_, boolean p_175804_11_)
      {
-         for (int i = p_175804_4_; i <= p_175804_7_; ++i)
+-        for (int i = p_175804_4_; i <= p_175804_7_; i++)
++        for (int i = p_175804_4_; i <= p_175804_7_; ++i)
          {
-@@ -303,19 +293,7 @@
+-            for (int j = p_175804_3_; j <= p_175804_6_; j++)
++            for (int j = p_175804_3_; j <= p_175804_6_; ++j)
+             {
+-                for (int k = p_175804_5_; k <= p_175804_8_; k++)
++                for (int k = p_175804_5_; k <= p_175804_8_; ++k)
+                 {
+                     if (!p_175804_11_ || this.func_175807_a(p_175804_1_, j, i, k, p_175804_2_).func_185904_a() != Material.field_151579_a)
+                     {
+@@ -303,31 +293,17 @@
          }
      }
  
@@ -62,9 +116,14 @@
 -    )
 +    protected void func_74882_a(World p_74882_1_, StructureBoundingBox p_74882_2_, int p_74882_3_, int p_74882_4_, int p_74882_5_, int p_74882_6_, int p_74882_7_, int p_74882_8_, boolean p_74882_9_, Random p_74882_10_, StructureComponent.BlockSelector p_74882_11_)
      {
-         for (int i = p_74882_4_; i <= p_74882_7_; ++i)
+-        for (int i = p_74882_4_; i <= p_74882_7_; i++)
++        for (int i = p_74882_4_; i <= p_74882_7_; ++i)
          {
-@@ -325,9 +303,7 @@
+-            for (int j = p_74882_3_; j <= p_74882_6_; j++)
++            for (int j = p_74882_3_; j <= p_74882_6_; ++j)
+             {
+-                for (int k = p_74882_5_; k <= p_74882_8_; k++)
++                for (int k = p_74882_5_; k <= p_74882_8_; ++k)
                  {
                      if (!p_74882_9_ || this.func_175807_a(p_74882_1_, j, i, k, p_74882_2_).func_185904_a() != Material.field_151579_a)
                      {
@@ -75,7 +134,7 @@
                          this.func_175811_a(p_74882_1_, p_74882_11_.func_180780_a(), j, i, k, p_74882_2_);
                      }
                  }
-@@ -335,22 +311,7 @@
+@@ -335,32 +311,15 @@
          }
      }
  
@@ -97,11 +156,14 @@
 -    )
 +    protected void func_189914_a(World p_189914_1_, StructureBoundingBox p_189914_2_, Random p_189914_3_, float p_189914_4_, int p_189914_5_, int p_189914_6_, int p_189914_7_, int p_189914_8_, int p_189914_9_, int p_189914_10_, IBlockState p_189914_11_, IBlockState p_189914_12_, boolean p_189914_13_, int p_189914_14_)
      {
-         for (int i = p_189914_6_; i <= p_189914_9_; ++i)
+-        for (int i = p_189914_6_; i <= p_189914_9_; i++)
++        for (int i = p_189914_6_; i <= p_189914_9_; ++i)
          {
-@@ -358,9 +319,7 @@
+-            for (int j = p_189914_5_; j <= p_189914_8_; j++)
++            for (int j = p_189914_5_; j <= p_189914_8_; ++j)
              {
-                 for (int k = p_189914_7_; k <= p_189914_10_; ++k)
+-                for (int k = p_189914_7_; k <= p_189914_10_; k++)
++                for (int k = p_189914_7_; k <= p_189914_10_; ++k)
                  {
 -                    if (!(p_189914_3_.nextFloat() > p_189914_4_)
 -                            && (!p_189914_13_ || this.func_175807_a(p_189914_1_, j, i, k, p_189914_2_).func_185904_a() != Material.field_151579_a)
@@ -148,7 +210,32 @@
      {
          float f = (float)(p_180777_6_ - p_180777_3_ + 1);
          float f1 = (float)(p_180777_7_ - p_180777_4_ + 1);
-@@ -468,22 +407,13 @@
+@@ -412,15 +351,15 @@
+         float f3 = (float)p_180777_3_ + f / 2.0F;
+         float f4 = (float)p_180777_5_ + f2 / 2.0F;
+ 
+-        for (int i = p_180777_4_; i <= p_180777_7_; i++)
++        for (int i = p_180777_4_; i <= p_180777_7_; ++i)
+         {
+             float f5 = (float)(i - p_180777_4_) / f1;
+ 
+-            for (int j = p_180777_3_; j <= p_180777_6_; j++)
++            for (int j = p_180777_3_; j <= p_180777_6_; ++j)
+             {
+                 float f6 = ((float)j - f3) / (f * 0.5F);
+ 
+-                for (int k = p_180777_5_; k <= p_180777_8_; k++)
++                for (int k = p_180777_5_; k <= p_180777_8_; ++k)
+                 {
+                     float f7 = ((float)k - f4) / (f2 * 0.5F);
+ 
+@@ -463,27 +402,18 @@
+             while ((p_175808_1_.func_175623_d(new BlockPos(i, j, k)) || p_175808_1_.func_180495_p(new BlockPos(i, j, k)).func_185904_a().func_76224_d()) && j > 1)
+             {
+                 p_175808_1_.func_180501_a(new BlockPos(i, j, k), p_175808_2_, 2);
+-                j--;
++                --j;
+             }
          }
      }
  

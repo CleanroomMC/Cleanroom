@@ -8,7 +8,7 @@
  import com.google.common.collect.Sets;
  import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
  import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-@@ -84,17 +85,17 @@
+@@ -84,18 +85,17 @@
  
  public class EntityParrot extends EntityShoulderRiding implements EntityFlying
  {
@@ -18,7 +18,8 @@
      {
          public boolean apply(@Nullable EntityLiving p_apply_1_)
          {
--            return p_apply_1_ != null && EntityParrot.field_192017_bK.containsKey(EntityList.field_191308_b.func_148757_b(p_apply_1_.getClass()));
+-            return p_apply_1_ != null
+-                   && EntityParrot.field_192017_bK.containsKey(EntityList.field_191308_b.func_148757_b((Class <? extends Entity >)p_apply_1_.getClass()));
 +            return p_apply_1_ != null && EntityParrot.MIMIC_SOUNDS.containsKey(p_apply_1_.getClass());
          }
      };
@@ -29,7 +30,7 @@
      public float field_192008_bB;
      public float field_192009_bC;
      public float field_192010_bD;
-@@ -111,38 +112,34 @@
+@@ -112,38 +112,34 @@
      }
  
      @Nullable
@@ -75,7 +76,7 @@
      protected PathNavigate func_175447_b(World p_175447_1_)
      {
          PathNavigateFlying pathnavigateflying = new PathNavigateFlying(this, p_175447_1_);
-@@ -152,20 +149,16 @@
+@@ -153,20 +149,16 @@
          return pathnavigateflying;
      }
  
@@ -97,7 +98,7 @@
          {
              this.field_192018_bL = false;
              this.field_192019_bM = null;
-@@ -176,7 +169,6 @@
+@@ -177,7 +169,6 @@
      }
  
      @SideOnly(Side.CLIENT)
@@ -105,7 +106,7 @@
      public void func_191987_a(BlockPos p_191987_1_, boolean p_191987_2_)
      {
          this.field_192019_bM = p_191987_1_;
-@@ -193,7 +185,7 @@
+@@ -194,7 +185,7 @@
      {
          this.field_192011_bE = this.field_192008_bB;
          this.field_192010_bD = this.field_192009_bC;
@@ -114,7 +115,7 @@
          this.field_192009_bC = MathHelper.func_76131_a(this.field_192009_bC, 0.0F, 1.0F);
  
          if (!this.field_70122_E && this.field_192012_bF < 1.0F)
-@@ -201,11 +193,11 @@
+@@ -202,21 +193,21 @@
              this.field_192012_bF = 1.0F;
          }
  
@@ -128,8 +129,11 @@
 +            this.field_70181_x *= 0.6D;
          }
  
-         this.field_192008_bB += this.field_192012_bF * 2.0F;
-@@ -215,7 +207,7 @@
+-        this.field_192008_bB = this.field_192008_bB + this.field_192012_bF * 2.0F;
++        this.field_192008_bB += this.field_192012_bF * 2.0F;
+     }
+ 
+     private static boolean func_192006_b(World p_192006_0_, Entity p_192006_1_)
      {
          if (!p_192006_1_.func_174814_R() && p_192006_0_.field_73012_v.nextInt(50) == 0)
          {
@@ -138,11 +142,11 @@
  
              if (!list.isEmpty())
              {
-@@ -223,17 +215,8 @@
+@@ -224,17 +215,8 @@
  
                  if (!entityliving.func_174814_R())
                  {
--                    SoundEvent soundevent = func_191999_g(EntityList.field_191308_b.func_148757_b(entityliving.getClass()));
+-                    SoundEvent soundevent = func_191999_g(EntityList.field_191308_b.func_148757_b((Class <? extends Entity >)entityliving.getClass()));
 -                    p_192006_0_.func_184148_a(
 -                        null,
 -                        p_192006_1_.field_70165_t,
@@ -158,7 +162,7 @@
                      return true;
                  }
              }
-@@ -246,7 +229,6 @@
+@@ -247,7 +229,6 @@
          }
      }
  
@@ -166,7 +170,7 @@
      public boolean func_184645_a(EntityPlayer p_184645_1_, EnumHand p_184645_2_)
      {
          ItemStack itemstack = p_184645_1_.func_184586_b(p_184645_2_);
-@@ -260,22 +242,12 @@
+@@ -261,22 +242,12 @@
  
              if (!this.func_174814_R())
              {
@@ -191,7 +195,7 @@
                  {
                      this.func_193101_c(p_184645_1_);
                      this.func_70908_e(true);
-@@ -317,13 +289,11 @@
+@@ -318,13 +289,11 @@
          }
      }
  
@@ -205,7 +209,7 @@
      public boolean func_70601_bi()
      {
          int i = MathHelper.func_76128_c(this.field_70165_t);
-@@ -331,30 +301,23 @@
+@@ -332,30 +301,23 @@
          int k = MathHelper.func_76128_c(this.field_70161_v);
          BlockPos blockpos = new BlockPos(i, j, k);
          Block block = this.field_70170_p.func_180495_p(blockpos.func_177977_b()).func_177230_c();
@@ -237,7 +241,7 @@
      public EntityAgeable func_90011_a(EntityAgeable p_90011_1_)
      {
          return null;
-@@ -364,27 +327,16 @@
+@@ -365,27 +327,16 @@
      {
          if (!p_192005_1_.func_174814_R() && !func_192006_b(p_192005_0_, p_192005_1_) && p_192005_0_.field_73012_v.nextInt(200) == 0)
          {
@@ -266,7 +270,7 @@
      public SoundEvent func_184639_G()
      {
          return func_192003_a(this.field_70146_Z);
-@@ -394,8 +346,9 @@
+@@ -395,8 +346,9 @@
      {
          if (p_192003_0_.nextInt(1000) == 0)
          {
@@ -278,7 +282,7 @@
          }
          else
          {
-@@ -403,43 +356,32 @@
+@@ -404,43 +356,32 @@
          }
      }
  
@@ -322,7 +326,7 @@
      protected float func_70647_i()
      {
          return func_192000_b(this.field_70146_Z);
-@@ -450,19 +392,16 @@
+@@ -451,19 +392,16 @@
          return (p_192000_0_.nextFloat() - p_192000_0_.nextFloat()) * 0.2F + 1.0F;
      }
  
@@ -342,7 +346,7 @@
      protected void func_82167_n(Entity p_82167_1_)
      {
          if (!(p_82167_1_ instanceof EntityPlayer))
-@@ -471,7 +410,6 @@
+@@ -472,7 +410,6 @@
          }
      }
  
@@ -350,7 +354,7 @@
      public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
      {
          if (this.func_180431_b(p_70097_1_))
-@@ -491,29 +429,26 @@
+@@ -492,29 +429,26 @@
  
      public int func_191998_ds()
      {
@@ -383,7 +387,7 @@
      public void func_70037_a(NBTTagCompound p_70037_1_)
      {
          super.func_70037_a(p_70037_1_);
-@@ -521,7 +456,6 @@
+@@ -522,7 +456,6 @@
      }
  
      @Nullable
@@ -391,7 +395,7 @@
      protected ResourceLocation func_184647_J()
      {
          return LootTableList.field_192561_ax;
-@@ -534,33 +468,38 @@
+@@ -535,33 +468,38 @@
  
      static
      {

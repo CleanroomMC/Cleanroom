@@ -96,23 +96,29 @@
  
      public int func_145782_y()
      {
-@@ -258,7 +270,6 @@
+@@ -258,13 +270,18 @@
          return this.field_70180_af;
      }
  
 -    @Override
      public boolean equals(Object p_equals_1_)
      {
-         if (p_equals_1_ instanceof Entity)
-@@ -271,7 +282,6 @@
-         }
+-        return p_equals_1_ instanceof Entity ? ((Entity)p_equals_1_).field_145783_c == this.field_145783_c : false;
++        if (p_equals_1_ instanceof Entity)
++        {
++            return ((Entity)p_equals_1_).field_145783_c == this.field_145783_c;
++        }
++        else
++        {
++            return false;
++        }
      }
  
 -    @Override
      public int hashCode()
      {
          return this.field_145783_c;
-@@ -282,7 +292,7 @@
+@@ -275,7 +292,7 @@
      {
          if (this.field_70170_p != null)
          {
@@ -121,8 +127,12 @@
              {
                  this.func_70107_b(this.field_70165_t, this.field_70163_u, this.field_70161_v);
  
-@@ -294,9 +304,9 @@
-                 ++this.field_70163_u;
+@@ -284,12 +301,12 @@
+                     break;
+                 }
+ 
+-                this.field_70163_u++;
++                ++this.field_70163_u;
              }
  
 -            this.field_70159_w = 0.0;
@@ -134,7 +144,7 @@
              this.field_70125_A = 0.0F;
          }
      }
-@@ -320,35 +330,17 @@
+@@ -313,35 +330,17 @@
  
              if (this.field_70130_N < f)
              {
@@ -174,7 +184,7 @@
              }
          }
      }
-@@ -364,11 +356,10 @@
+@@ -357,11 +356,10 @@
          this.field_70165_t = p_70107_1_;
          this.field_70163_u = p_70107_3_;
          this.field_70161_v = p_70107_5_;
@@ -188,7 +198,7 @@
      }
  
      @SideOnly(Side.CLIENT)
-@@ -376,8 +367,8 @@
+@@ -369,11 +367,11 @@
      {
          float f = this.field_70125_A;
          float f1 = this.field_70177_z;
@@ -197,9 +207,32 @@
 +        this.field_70177_z = (float)((double)this.field_70177_z + (double)p_70082_1_ * 0.15D);
 +        this.field_70125_A = (float)((double)this.field_70125_A - (double)p_70082_2_ * 0.15D);
          this.field_70125_A = MathHelper.func_76131_a(this.field_70125_A, -90.0F, 90.0F);
-         this.field_70127_C += this.field_70125_A - f;
-         this.field_70126_B += this.field_70177_z - f1;
-@@ -507,7 +498,7 @@
+-        this.field_70127_C = this.field_70127_C + (this.field_70125_A - f);
+-        this.field_70126_B = this.field_70126_B + (this.field_70177_z - f1);
++        this.field_70127_C += this.field_70125_A - f;
++        this.field_70126_B += this.field_70177_z - f1;
+ 
+         if (this.field_184239_as != null)
+         {
+@@ -402,7 +400,7 @@
+ 
+         if (this.field_184245_j > 0)
+         {
+-            this.field_184245_j--;
++            --this.field_184245_j;
+         }
+ 
+         this.field_70141_P = this.field_70140_Q;
+@@ -490,7 +488,7 @@
+                     this.func_70097_a(DamageSource.field_76370_b, 1.0F);
+                 }
+ 
+-                this.field_190534_ay--;
++                --this.field_190534_ay;
+             }
+         }
+ 
+@@ -500,7 +498,7 @@
              this.field_70143_R *= 0.5F;
          }
  
@@ -208,7 +241,16 @@
          {
              this.func_70076_C();
          }
-@@ -594,47 +585,47 @@
+@@ -518,7 +516,7 @@
+     {
+         if (this.field_71088_bW > 0)
+         {
+-            this.field_71088_bW--;
++            --this.field_71088_bW;
+         }
+     }
+ 
+@@ -587,47 +585,47 @@
  
                  if (i != this.field_191506_aJ)
                  {
@@ -266,7 +308,7 @@
                      {
                          return;
                      }
-@@ -649,12 +640,12 @@
+@@ -642,12 +640,12 @@
              if (this.field_70134_J)
              {
                  this.field_70134_J = false;
@@ -285,7 +327,7 @@
              }
  
              double d2 = p_70091_2_;
-@@ -663,81 +654,66 @@
+@@ -656,81 +654,66 @@
  
              if ((p_70091_1_ == MoverType.SELF || p_70091_1_ == MoverType.PLAYER) && this.field_70122_E && this.func_70093_af() && this instanceof EntityPlayer)
              {
@@ -417,7 +459,7 @@
                      }
                  }
              }
-@@ -745,49 +721,49 @@
+@@ -738,49 +721,49 @@
              List<AxisAlignedBB> list1 = this.field_70170_p.func_184144_a(this, this.func_174813_aQ().func_72321_a(p_70091_2_, p_70091_4_, p_70091_6_));
              AxisAlignedBB axisalignedbb = this.func_174813_aQ();
  
@@ -426,7 +468,8 @@
              {
                  int k = 0;
  
-                 for (int l = list1.size(); k < l; ++k)
+-                for (int l = list1.size(); k < l; k++)
++                for (int l = list1.size(); k < l; ++k)
                  {
 -                    p_70091_4_ = list1.get(k).func_72323_b(this.func_174813_aQ(), p_70091_4_);
 +                    p_70091_4_ = ((AxisAlignedBB)list1.get(k)).func_72323_b(this.func_174813_aQ(), p_70091_4_);
@@ -441,7 +484,8 @@
              {
                  int j5 = 0;
  
-                 for (int l5 = list1.size(); j5 < l5; ++j5)
+-                for (int l5 = list1.size(); j5 < l5; j5++)
++                for (int l5 = list1.size(); j5 < l5; ++j5)
                  {
 -                    p_70091_2_ = list1.get(j5).func_72316_a(this.func_174813_aQ(), p_70091_2_);
 +                    p_70091_2_ = ((AxisAlignedBB)list1.get(j5)).func_72316_a(this.func_174813_aQ(), p_70091_2_);
@@ -460,7 +504,8 @@
              {
                  int k5 = 0;
  
-                 for (int i6 = list1.size(); k5 < i6; ++k5)
+-                for (int i6 = list1.size(); k5 < i6; k5++)
++                for (int i6 = list1.size(); k5 < i6; ++k5)
                  {
 -                    p_70091_6_ = list1.get(k5).func_72322_c(this.func_174813_aQ(), p_70091_6_);
 +                    p_70091_6_ = ((AxisAlignedBB)list1.get(k5)).func_72322_c(this.func_174813_aQ(), p_70091_6_);
@@ -479,7 +524,7 @@
  
              if (this.field_70138_W > 0.0F && flag && (d2 != p_70091_2_ || d4 != p_70091_6_))
              {
-@@ -799,62 +775,62 @@
+@@ -792,62 +775,62 @@
                  p_70091_4_ = (double)this.field_70138_W;
                  List<AxisAlignedBB> list = this.field_70170_p.func_184144_a(this, this.func_174813_aQ().func_72321_a(d2, p_70091_4_, d4));
                  AxisAlignedBB axisalignedbb2 = this.func_174813_aQ();
@@ -488,7 +533,8 @@
                  double d8 = p_70091_4_;
                  int j1 = 0;
  
-                 for (int k1 = list.size(); j1 < k1; ++j1)
+-                for (int k1 = list.size(); j1 < k1; j1++)
++                for (int k1 = list.size(); j1 < k1; ++j1)
                  {
 -                    d8 = list.get(j1).func_72323_b(axisalignedbb3, d8);
 +                    d8 = ((AxisAlignedBB)list.get(j1)).func_72323_b(axisalignedbb3, d8);
@@ -499,7 +545,8 @@
                  double d18 = d2;
                  int l1 = 0;
  
-                 for (int i2 = list.size(); l1 < i2; ++l1)
+-                for (int i2 = list.size(); l1 < i2; l1++)
++                for (int i2 = list.size(); l1 < i2; ++l1)
                  {
 -                    d18 = list.get(l1).func_72316_a(axisalignedbb2, d18);
 +                    d18 = ((AxisAlignedBB)list.get(l1)).func_72316_a(axisalignedbb2, d18);
@@ -510,7 +557,8 @@
                  double d19 = d4;
                  int j2 = 0;
  
-                 for (int k2 = list.size(); j2 < k2; ++j2)
+-                for (int k2 = list.size(); j2 < k2; j2++)
++                for (int k2 = list.size(); j2 < k2; ++j2)
                  {
 -                    d19 = list.get(j2).func_72322_c(axisalignedbb2, d19);
 +                    d19 = ((AxisAlignedBB)list.get(j2)).func_72322_c(axisalignedbb2, d19);
@@ -522,7 +570,8 @@
                  double d20 = p_70091_4_;
                  int l2 = 0;
  
-                 for (int i3 = list.size(); l2 < i3; ++l2)
+-                for (int i3 = list.size(); l2 < i3; l2++)
++                for (int i3 = list.size(); l2 < i3; ++l2)
                  {
 -                    d20 = list.get(l2).func_72323_b(axisalignedbb4, d20);
 +                    d20 = ((AxisAlignedBB)list.get(l2)).func_72323_b(axisalignedbb4, d20);
@@ -533,7 +582,8 @@
                  double d21 = d2;
                  int j3 = 0;
  
-                 for (int k3 = list.size(); j3 < k3; ++j3)
+-                for (int k3 = list.size(); j3 < k3; j3++)
++                for (int k3 = list.size(); j3 < k3; ++j3)
                  {
 -                    d21 = list.get(j3).func_72316_a(axisalignedbb5, d21);
 +                    d21 = ((AxisAlignedBB)list.get(j3)).func_72316_a(axisalignedbb4, d21);
@@ -544,7 +594,8 @@
                  double d22 = d4;
                  int l3 = 0;
  
-                 for (int i4 = list.size(); l3 < i4; ++l3)
+-                for (int i4 = list.size(); l3 < i4; l3++)
++                for (int i4 = list.size(); l3 < i4; ++l3)
                  {
 -                    d22 = list.get(l3).func_72322_c(axisalignedbb6, d22);
 +                    d22 = ((AxisAlignedBB)list.get(l3)).func_72322_c(axisalignedbb4, d22);
@@ -555,7 +606,7 @@
                  double d23 = d18 * d18 + d19 * d19;
                  double d9 = d21 * d21 + d22 * d22;
  
-@@ -870,17 +846,17 @@
+@@ -863,17 +846,17 @@
                      p_70091_2_ = d21;
                      p_70091_6_ = d22;
                      p_70091_4_ = -d20;
@@ -565,7 +616,8 @@
  
                  int j4 = 0;
  
-                 for (int k4 = list.size(); j4 < k4; ++j4)
+-                for (int k4 = list.size(); j4 < k4; j4++)
++                for (int k4 = list.size(); j4 < k4; ++j4)
                  {
 -                    p_70091_4_ = list.get(j4).func_72323_b(this.func_174813_aQ(), p_70091_4_);
 +                    p_70091_4_ = ((AxisAlignedBB)list.get(j4)).func_72323_b(this.func_174813_aQ(), p_70091_4_);
@@ -576,7 +628,7 @@
  
                  if (d14 * d14 + d7 * d7 >= p_70091_2_ * p_70091_2_ + p_70091_6_ * p_70091_6_)
                  {
-@@ -896,10 +872,10 @@
+@@ -889,10 +872,10 @@
              this.func_174829_m();
              this.field_70123_F = d2 != p_70091_2_ || d4 != p_70091_6_;
              this.field_70124_G = d3 != p_70091_4_;
@@ -589,7 +641,7 @@
              int k6 = MathHelper.func_76128_c(this.field_70161_v);
              BlockPos blockpos = new BlockPos(j6, i1, k6);
              IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos);
-@@ -921,12 +897,12 @@
+@@ -914,12 +897,12 @@
  
              if (d2 != p_70091_2_)
              {
@@ -604,7 +656,7 @@
              }
  
              Block block = iblockstate.func_177230_c();
-@@ -944,7 +920,7 @@
+@@ -937,7 +920,7 @@
  
                  if (block != Blocks.field_150468_ap)
                  {
@@ -613,7 +665,7 @@
                  }
  
                  if (block != null && this.field_70122_E)
-@@ -952,8 +928,8 @@
+@@ -945,8 +928,8 @@
                      block.func_176199_a(this.field_70170_p, blockpos, this);
                  }
  
@@ -624,7 +676,7 @@
  
                  if (this.field_82151_R > (float)this.field_70150_b && iblockstate.func_185904_a() != Material.field_151579_a)
                  {
-@@ -963,12 +939,7 @@
+@@ -956,12 +939,7 @@
                      {
                          Entity entity = this.func_184207_aI() && this.func_184179_bs() != null ? this.func_184179_bs() : this;
                          float f = entity == this ? 0.35F : 0.4F;
@@ -638,7 +690,7 @@
  
                          if (f1 > 1.0F)
                          {
-@@ -1002,7 +973,7 @@
+@@ -995,13 +973,13 @@
  
              boolean flag1 = this.func_70026_G();
  
@@ -647,7 +699,14 @@
              {
                  this.func_70081_e(1);
  
-@@ -1034,9 +1005,10 @@
+                 if (!flag1)
+                 {
+-                    this.field_190534_ay++;
++                    ++this.field_190534_ay;
+ 
+                     if (this.field_190534_ay == 0)
+                     {
+@@ -1027,9 +1005,10 @@
      public void func_174829_m()
      {
          AxisAlignedBB axisalignedbb = this.func_174813_aQ();
@@ -660,7 +719,7 @@
      }
  
      protected SoundEvent func_184184_Z()
-@@ -1052,12 +1024,8 @@
+@@ -1045,21 +1024,17 @@
      protected void func_145775_I()
      {
          AxisAlignedBB axisalignedbb = this.func_174813_aQ();
@@ -675,7 +734,19 @@
          BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos2 = BlockPos.PooledMutableBlockPos.func_185346_s();
  
          if (this.field_70170_p.func_175707_a(blockpos$pooledmutableblockpos, blockpos$pooledmutableblockpos1))
-@@ -1099,7 +1067,7 @@
+         {
+-            for (int i = blockpos$pooledmutableblockpos.func_177958_n(); i <= blockpos$pooledmutableblockpos1.func_177958_n(); i++)
++            for (int i = blockpos$pooledmutableblockpos.func_177958_n(); i <= blockpos$pooledmutableblockpos1.func_177958_n(); ++i)
+             {
+-                for (int j = blockpos$pooledmutableblockpos.func_177956_o(); j <= blockpos$pooledmutableblockpos1.func_177956_o(); j++)
++                for (int j = blockpos$pooledmutableblockpos.func_177956_o(); j <= blockpos$pooledmutableblockpos1.func_177956_o(); ++j)
+                 {
+-                    for (int k = blockpos$pooledmutableblockpos.func_177952_p(); k <= blockpos$pooledmutableblockpos1.func_177952_p(); k++)
++                    for (int k = blockpos$pooledmutableblockpos.func_177952_p(); k <= blockpos$pooledmutableblockpos1.func_177952_p(); ++k)
+                     {
+                         blockpos$pooledmutableblockpos2.func_181079_c(i, j, k);
+                         IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos$pooledmutableblockpos2);
+@@ -1092,7 +1067,7 @@
  
      protected void func_180429_a(BlockPos p_180429_1_, Block p_180429_2_)
      {
@@ -684,7 +755,7 @@
  
          if (this.field_70170_p.func_180495_p(p_180429_1_.func_177984_a()).func_177230_c() == Blocks.field_150431_aC)
          {
-@@ -1126,29 +1094,28 @@
+@@ -1119,29 +1094,28 @@
      {
          if (!this.func_174814_R())
          {
@@ -719,7 +790,7 @@
      }
  
      protected boolean func_70041_e_()
-@@ -1167,7 +1134,7 @@
+@@ -1160,7 +1134,7 @@
  
              this.field_70143_R = 0.0F;
          }
@@ -728,7 +799,7 @@
          {
              this.field_70143_R = (float)((double)this.field_70143_R - p_184231_1_);
          }
-@@ -1211,15 +1178,9 @@
+@@ -1204,15 +1178,9 @@
          }
          else
          {
@@ -746,7 +817,7 @@
              {
                  blockpos$pooledmutableblockpos.func_185344_t();
                  return false;
-@@ -1239,7 +1200,7 @@
+@@ -1232,7 +1200,7 @@
  
      public boolean func_191953_am()
      {
@@ -755,7 +826,7 @@
      }
  
      public boolean func_70072_I()
-@@ -1248,7 +1209,7 @@
+@@ -1241,7 +1209,7 @@
          {
              this.field_70171_ac = false;
          }
@@ -764,7 +835,7 @@
          {
              if (!this.field_70171_ac && !this.field_70148_d)
              {
-@@ -1271,12 +1232,7 @@
+@@ -1264,12 +1232,7 @@
      {
          Entity entity = this.func_184207_aI() && this.func_184179_bs() != null ? this.func_184179_bs() : this;
          float f = entity == this ? 0.2F : 0.9F;
@@ -778,7 +849,12 @@
  
          if (f1 > 1.0F)
          {
-@@ -1290,32 +1246,14 @@
+@@ -1279,36 +1242,18 @@
+         this.func_184185_a(this.func_184181_aa(), f1, 1.0F + (this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.4F);
+         float f2 = (float)MathHelper.func_76128_c(this.func_174813_aQ().field_72338_b);
+ 
+-        for (int i = 0; (float)i < 1.0F + this.field_70130_N * 20.0F; i++)
++        for (int i = 0; (float)i < 1.0F + this.field_70130_N * 20.0F; ++i)
          {
              float f3 = (this.field_70146_Z.nextFloat() * 2.0F - 1.0F) * this.field_70130_N;
              float f4 = (this.field_70146_Z.nextFloat() * 2.0F - 1.0F) * this.field_70130_N;
@@ -795,7 +871,8 @@
 +            this.field_70170_p.func_175688_a(EnumParticleTypes.WATER_BUBBLE, this.field_70165_t + (double)f3, (double)(f2 + 1.0F), this.field_70161_v + (double)f4, this.field_70159_w, this.field_70181_x - (double)(this.field_70146_Z.nextFloat() * 0.2F), this.field_70179_y);
          }
  
-         for (int j = 0; (float)j < 1.0F + this.field_70130_N * 20.0F; ++j)
+-        for (int j = 0; (float)j < 1.0F + this.field_70130_N * 20.0F; j++)
++        for (int j = 0; (float)j < 1.0F + this.field_70130_N * 20.0F; ++j)
          {
              float f5 = (this.field_70146_Z.nextFloat() * 2.0F - 1.0F) * this.field_70130_N;
              float f6 = (this.field_70146_Z.nextFloat() * 2.0F - 1.0F) * this.field_70130_N;
@@ -813,7 +890,7 @@
          }
      }
  
-@@ -1330,24 +1268,15 @@
+@@ -1323,24 +1268,15 @@
      protected void func_174808_Z()
      {
          int i = MathHelper.func_76128_c(this.field_70165_t);
@@ -841,7 +918,7 @@
          }
      }
  
-@@ -1363,12 +1292,12 @@
+@@ -1356,12 +1292,12 @@
              BlockPos blockpos = new BlockPos(this.field_70165_t, d0, this.field_70161_v);
              IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos);
  
@@ -858,7 +935,7 @@
              }
              else
              {
-@@ -1379,14 +1308,14 @@
+@@ -1372,14 +1308,14 @@
  
      public boolean func_180799_ab()
      {
@@ -875,7 +952,7 @@
          {
              f = MathHelper.func_76129_c(f);
  
-@@ -1396,11 +1325,11 @@
+@@ -1389,11 +1325,11 @@
              }
  
              f = p_191958_4_ / f;
@@ -892,7 +969,7 @@
              this.field_70159_w += (double)(p_191958_1_ * f2 - p_191958_3_ * f1);
              this.field_70181_x += (double)p_191958_2_;
              this.field_70179_y += (double)(p_191958_3_ * f2 + p_191958_1_ * f1);
-@@ -1410,9 +1339,7 @@
+@@ -1403,9 +1339,7 @@
      @SideOnly(Side.CLIENT)
      public int func_70070_b()
      {
@@ -903,7 +980,7 @@
  
          if (this.field_70170_p.func_175667_e(blockpos$mutableblockpos))
          {
-@@ -1427,9 +1354,7 @@
+@@ -1420,9 +1354,7 @@
  
      public float func_70013_c()
      {
@@ -914,7 +991,7 @@
  
          if (this.field_70170_p.func_175667_e(blockpos$mutableblockpos))
          {
-@@ -1449,9 +1374,9 @@
+@@ -1442,9 +1374,9 @@
  
      public void func_70080_a(double p_70080_1_, double p_70080_3_, double p_70080_5_, float p_70080_7_, float p_70080_8_)
      {
@@ -926,7 +1003,7 @@
          this.field_70169_q = this.field_70165_t;
          this.field_70167_r = this.field_70163_u;
          this.field_70166_s = this.field_70161_v;
-@@ -1462,25 +1387,24 @@
+@@ -1455,25 +1387,24 @@
          this.field_70127_C = this.field_70125_A;
          double d0 = (double)(this.field_70126_B - p_70080_7_);
  
@@ -956,7 +1033,7 @@
      }
  
      public void func_70012_b(double p_70012_1_, double p_70012_3_, double p_70012_5_, float p_70012_7_, float p_70012_8_)
-@@ -1555,33 +1479,33 @@
+@@ -1548,33 +1479,33 @@
                  double d1 = p_70108_1_.field_70161_v - this.field_70161_v;
                  double d2 = MathHelper.func_76132_a(d0, d1);
  
@@ -1004,7 +1081,7 @@
                      }
                  }
              }
-@@ -1630,10 +1554,10 @@
+@@ -1623,10 +1554,10 @@
  
      protected final Vec3d func_174806_f(float p_174806_1_, float p_174806_2_)
      {
@@ -1019,7 +1096,7 @@
          return new Vec3d((double)(f1 * f2), (double)f3, (double)(f * f2));
      }
  
-@@ -1697,10 +1621,10 @@
+@@ -1690,10 +1621,10 @@
  
          if (Double.isNaN(d0))
          {
@@ -1032,7 +1109,7 @@
          return p_70112_1_ < d0 * d0;
      }
  
-@@ -1740,7 +1664,6 @@
+@@ -1733,14 +1664,13 @@
      {
          p_190533_0_.func_188258_a(FixTypes.ENTITY, new IDataWalker()
          {
@@ -1040,7 +1117,15 @@
              public NBTTagCompound func_188266_a(IDataFixer p_188266_1_, NBTTagCompound p_188266_2_, int p_188266_3_)
              {
                  if (p_188266_2_.func_150297_b("Passengers", 9))
-@@ -1800,6 +1723,7 @@
+                 {
+                     NBTTagList nbttaglist = p_188266_2_.func_150295_c("Passengers", 10);
+ 
+-                    for (int i = 0; i < nbttaglist.func_74745_c(); i++)
++                    for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+                     {
+                         nbttaglist.func_150304_a(i, p_188266_1_.func_188251_a(FixTypes.ENTITY, nbttaglist.func_150305_b(i), p_188266_3_));
+                     }
+@@ -1793,6 +1723,7 @@
              {
                  p_189511_1_.func_74757_a("Glowing", this.field_184238_ar);
              }
@@ -1048,7 +1133,7 @@
  
              if (!this.field_184236_aF.isEmpty())
              {
-@@ -1813,6 +1737,9 @@
+@@ -1806,6 +1737,9 @@
                  p_189511_1_.func_74782_a("Tags", nbttaglist);
              }
  
@@ -1058,7 +1143,7 @@
              this.func_70014_b(p_189511_1_);
  
              if (this.func_184207_aI())
-@@ -1857,19 +1784,19 @@
+@@ -1850,19 +1784,19 @@
              this.field_70181_x = nbttaglist2.func_150309_d(1);
              this.field_70179_y = nbttaglist2.func_150309_d(2);
  
@@ -1091,7 +1176,7 @@
              }
  
              this.field_70165_t = nbttaglist.func_150309_d(0);
-@@ -1919,6 +1846,10 @@
+@@ -1912,6 +1846,10 @@
              this.func_174810_b(p_70020_1_.func_74767_n("Silent"));
              this.func_189654_d(p_70020_1_.func_74767_n("NoGravity"));
              this.func_184195_f(p_70020_1_.func_74767_n("Glowing"));
@@ -1102,7 +1187,16 @@
  
              if (p_70020_1_.func_150297_b("Tags", 9))
              {
-@@ -2011,7 +1942,10 @@
+@@ -1919,7 +1857,7 @@
+                 NBTTagList nbttaglist1 = p_70020_1_.func_150295_c("Tags", 8);
+                 int i = Math.min(nbttaglist1.func_74745_c(), 1024);
+ 
+-                for (int j = 0; j < i; j++)
++                for (int j = 0; j < i; ++j)
+                 {
+                     this.field_184236_aF.add(nbttaglist1.func_150307_f(j));
+                 }
+@@ -2004,7 +1942,10 @@
          {
              EntityItem entityitem = new EntityItem(this.field_70170_p, this.field_70165_t, this.field_70163_u + (double)p_70099_2_, this.field_70161_v, p_70099_1_);
              entityitem.func_174869_p();
@@ -1114,7 +1208,14 @@
              return entityitem;
          }
      }
-@@ -2037,9 +1971,7 @@
+@@ -2024,15 +1965,13 @@
+         {
+             BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.func_185346_s();
+ 
+-            for (int i = 0; i < 8; i++)
++            for (int i = 0; i < 8; ++i)
+             {
+                 int j = MathHelper.func_76128_c(this.field_70163_u + (double)(((float)((i >> 0) % 2) - 0.5F) * 0.1F) + (double)this.func_70047_e());
                  int k = MathHelper.func_76128_c(this.field_70165_t + (double)(((float)((i >> 1) % 2) - 0.5F) * this.field_70130_N * 0.8F));
                  int l = MathHelper.func_76128_c(this.field_70161_v + (double)(((float)((i >> 2) % 2) - 0.5F) * this.field_70130_N * 0.8F));
  
@@ -1125,7 +1226,7 @@
                  {
                      blockpos$pooledmutableblockpos.func_181079_c(k, j, l);
  
-@@ -2077,9 +2009,10 @@
+@@ -2070,9 +2009,10 @@
          }
          else
          {
@@ -1139,7 +1240,7 @@
              this.func_70071_h_();
  
              if (this.func_184218_aH())
-@@ -2104,12 +2037,12 @@
+@@ -2097,12 +2037,12 @@
  
      public double func_70033_W()
      {
@@ -1154,7 +1255,7 @@
      }
  
      public boolean func_184220_m(Entity p_184220_1_)
-@@ -2127,6 +2060,7 @@
+@@ -2120,6 +2060,7 @@
              }
          }
  
@@ -1162,16 +1263,19 @@
          if (p_184205_2_ || this.func_184228_n(p_184205_1_) && p_184205_1_.func_184219_q(this))
          {
              if (this.func_184218_aH())
-@@ -2153,7 +2087,7 @@
+@@ -2144,9 +2085,9 @@
+ 
+     public void func_184226_ay()
      {
-         for (int i = this.field_184244_h.size() - 1; i >= 0; --i)
+-        for (int i = this.field_184244_h.size() - 1; i >= 0; i--)
++        for (int i = this.field_184244_h.size() - 1; i >= 0; --i)
          {
 -            this.field_184244_h.get(i).func_184210_p();
 +            ((Entity)this.field_184244_h.get(i)).func_184210_p();
          }
      }
  
-@@ -2162,6 +2096,7 @@
+@@ -2155,6 +2096,7 @@
          if (this.field_184239_as != null)
          {
              Entity entity = this.field_184239_as;
@@ -1179,7 +1283,7 @@
              this.field_184239_as = null;
              entity.func_184225_p(this);
          }
-@@ -2205,9 +2140,7 @@
+@@ -2198,9 +2140,7 @@
      }
  
      @SideOnly(Side.CLIENT)
@@ -1190,7 +1294,7 @@
      {
          this.func_70107_b(p_180426_1_, p_180426_3_, p_180426_5_);
          this.func_70101_b(p_180426_7_, p_180426_8_);
-@@ -2247,23 +2180,11 @@
+@@ -2240,23 +2180,11 @@
              {
                  this.field_181016_an = new BlockPos(p_181015_1_);
                  BlockPattern.PatternHelper blockpattern$patternhelper = Blocks.field_150427_aO.func_181089_f(this.field_70170_p, this.field_181016_an);
@@ -1218,7 +1322,7 @@
                  this.field_181018_ap = blockpattern$patternhelper.func_177669_b();
              }
  
-@@ -2306,7 +2227,7 @@
+@@ -2299,7 +2227,7 @@
  
      public Iterable<ItemStack> func_184209_aF()
      {
@@ -1227,7 +1331,7 @@
      }
  
      public void func_184201_a(EntityEquipmentSlot p_184201_1_, ItemStack p_184201_2_)
-@@ -2406,31 +2327,31 @@
+@@ -2399,37 +2327,37 @@
  
      protected boolean func_70083_f(int p_70083_1_)
      {
@@ -1265,7 +1369,14 @@
      }
  
      public void func_70077_a(EntityLightningBolt p_70077_1_)
-@@ -2470,9 +2391,9 @@
+     {
+         this.func_70097_a(DamageSource.field_180137_b, 5.0F);
+-        this.field_190534_ay++;
++        ++this.field_190534_ay;
+ 
+         if (this.field_190534_ay == 0)
+         {
+@@ -2463,9 +2391,9 @@
                  enumfacing = EnumFacing.WEST;
              }
  
@@ -1277,7 +1388,7 @@
                  enumfacing = EnumFacing.EAST;
              }
  
-@@ -2482,15 +2403,15 @@
+@@ -2475,15 +2403,15 @@
                  enumfacing = EnumFacing.NORTH;
              }
  
@@ -1297,7 +1408,7 @@
                  enumfacing = EnumFacing.UP;
              }
  
-@@ -2500,19 +2421,19 @@
+@@ -2493,19 +2421,19 @@
              if (enumfacing.func_176740_k() == EnumFacing.Axis.X)
              {
                  this.field_70159_w = (double)(f1 * f);
@@ -1323,7 +1434,7 @@
                  this.field_70179_y = (double)(f1 * f);
              }
  
-@@ -2526,7 +2447,6 @@
+@@ -2519,7 +2447,6 @@
          this.field_70143_R = 0.0F;
      }
  
@@ -1331,7 +1442,7 @@
      public String func_70005_c_()
      {
          if (this.func_145818_k_())
-@@ -2580,19 +2500,9 @@
+@@ -2573,19 +2500,9 @@
          return false;
      }
  
@@ -1352,7 +1463,7 @@
      }
  
      public boolean func_180431_b(DamageSource p_180431_1_)
-@@ -2629,8 +2539,16 @@
+@@ -2622,8 +2539,16 @@
      @Nullable
      public Entity func_184204_a(int p_184204_1_)
      {
@@ -1369,7 +1480,7 @@
              this.field_70170_p.field_72984_F.func_76320_a("changeDimension");
              MinecraftServer minecraftserver = this.func_184102_h();
              int i = this.field_71093_bK;
-@@ -2638,7 +2556,7 @@
+@@ -2631,7 +2556,7 @@
              WorldServer worldserver1 = minecraftserver.func_71218_a(p_184204_1_);
              this.field_71093_bK = p_184204_1_;
  
@@ -1378,7 +1489,7 @@
              {
                  worldserver1 = minecraftserver.func_71218_a(0);
                  this.field_71093_bK = 0;
-@@ -2649,41 +2567,33 @@
+@@ -2642,53 +2567,45 @@
              this.field_70170_p.field_72984_F.func_76320_a("reposition");
              BlockPos blockpos;
  
@@ -1432,7 +1543,12 @@
                  blockpos = new BlockPos(this);
              }
  
-@@ -2695,7 +2605,7 @@
+             worldserver.func_72866_a(this, false);
+             this.field_70170_p.field_72984_F.func_76318_c("reloading");
+-            Entity entity = EntityList.func_191304_a((Class <? extends Entity >)this.getClass(), worldserver1);
++            Entity entity = EntityList.func_191304_a(this.getClass(), worldserver1);
+ 
+             if (entity != null)
              {
                  entity.func_180432_n(this);
  
@@ -1441,7 +1557,7 @@
                  {
                      BlockPos blockpos1 = worldserver1.func_175672_r(worldserver1.func_175694_M());
                      entity.func_174828_a(blockpos1, entity.field_70177_z, entity.field_70125_A);
-@@ -2732,7 +2642,7 @@
+@@ -2725,7 +2642,7 @@
  
      public float func_180428_a(Explosion p_180428_1_, World p_180428_2_, BlockPos p_180428_3_, IBlockState p_180428_4_)
      {
@@ -1450,7 +1566,7 @@
      }
  
      public boolean func_174816_a(Explosion p_174816_1_, World p_174816_2_, BlockPos p_174816_3_, IBlockState p_174816_4_, float p_174816_5_)
-@@ -2769,7 +2679,7 @@
+@@ -2762,7 +2679,7 @@
                  return EntityList.func_191301_a(Entity.this) + " (" + Entity.this.getClass().getCanonicalName() + ")";
              }
          });
@@ -1459,7 +1575,7 @@
          p_85029_1_.func_189529_a("Entity Name", new ICrashReportDetail<String>()
          {
              public String call() throws Exception
-@@ -2778,12 +2688,7 @@
+@@ -2771,12 +2688,7 @@
              }
          });
          p_85029_1_.func_71507_a("Entity's Exact location", String.format("%.2f, %.2f, %.2f", this.field_70165_t, this.field_70163_u, this.field_70161_v));
@@ -1473,7 +1589,7 @@
          p_85029_1_.func_71507_a("Entity's Momentum", String.format("%.2f, %.2f, %.2f", this.field_70159_w, this.field_70181_x, this.field_70179_y));
          p_85029_1_.func_189529_a("Entity's Passengers", new ICrashReportDetail<String>()
          {
-@@ -2801,18 +2706,18 @@
+@@ -2794,18 +2706,18 @@
          });
      }
  
@@ -1498,7 +1614,7 @@
      public UUID func_110124_au()
      {
          return this.field_96093_i;
-@@ -2840,7 +2745,6 @@
+@@ -2833,7 +2745,6 @@
          field_70155_l = p_184227_0_;
      }
  
@@ -1506,7 +1622,7 @@
      public ITextComponent func_145748_c_()
      {
          TextComponentString textcomponentstring = new TextComponentString(ScorePlayerTeam.func_96667_a(this.func_96124_cp(), this.func_70005_c_()));
-@@ -2856,22 +2760,22 @@
+@@ -2849,22 +2760,22 @@
  
      public String func_95999_t()
      {
@@ -1533,7 +1649,7 @@
      }
  
      public void func_70634_a(double p_70634_1_, double p_70634_3_, double p_70634_5_)
-@@ -2881,19 +2785,19 @@
+@@ -2874,19 +2785,19 @@
          this.field_70170_p.func_72866_a(this, false);
      }
  
@@ -1558,7 +1674,7 @@
      }
  
      public EnumFacing func_184172_bi()
-@@ -2957,48 +2861,40 @@
+@@ -2950,48 +2861,40 @@
          return false;
      }
  
@@ -1608,7 +1724,7 @@
      public void func_174794_a(CommandResultStats.Type p_174794_1_, int p_174794_2_)
      {
          if (this.field_70170_p != null && !this.field_70170_p.field_72995_K)
-@@ -3008,7 +2904,6 @@
+@@ -3001,7 +2904,6 @@
      }
  
      @Nullable
@@ -1616,7 +1732,7 @@
      public MinecraftServer func_184102_h()
      {
          return this.field_70170_p.func_73046_m();
-@@ -3044,6 +2939,218 @@
+@@ -3037,6 +2939,218 @@
          EnchantmentHelper.func_151385_b(p_174815_1_, p_174815_2_);
      }
  
@@ -1835,7 +1951,7 @@
      public void func_184178_b(EntityPlayerMP p_184178_1_)
      {
      }
-@@ -3122,14 +3229,14 @@
+@@ -3115,14 +3229,14 @@
  
      public Collection<Entity> func_184182_bu()
      {
@@ -1852,7 +1968,7 @@
          this.func_184175_a(p_184180_1_, set);
          return set;
      }
-@@ -3149,11 +3256,11 @@
+@@ -3142,11 +3256,11 @@
  
      public Entity func_184208_bv()
      {
@@ -1867,3 +1983,20 @@
          }
  
          return entity;
+@@ -3178,7 +3292,15 @@
+     public boolean func_184186_bw()
+     {
+         Entity entity = this.func_184179_bs();
+-        return entity instanceof EntityPlayer ? ((EntityPlayer)entity).func_175144_cb() : !this.field_70170_p.field_72995_K;
++
++        if (entity instanceof EntityPlayer)
++        {
++            return ((EntityPlayer)entity).func_175144_cb();
++        }
++        else
++        {
++            return !this.field_70170_p.field_72995_K;
++        }
+     }
+ 
+     @Nullable

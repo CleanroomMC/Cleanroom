@@ -11,7 +11,12 @@
  
      public BlockPistonStructureHelper(World p_i45664_1_, BlockPos p_i45664_2_, EnumFacing p_i45664_3_, boolean p_i45664_4_)
      {
-@@ -65,7 +65,7 @@
+@@ -61,11 +61,11 @@
+         }
+         else
+         {
+-            for (int i = 0; i < this.field_177258_e.size(); i++)
++            for (int i = 0; i < this.field_177258_e.size(); ++i)
              {
                  BlockPos blockpos = this.field_177258_e.get(i);
  
@@ -55,7 +60,25 @@
                      {
                          return false;
                      }
-@@ -148,7 +148,7 @@
+@@ -127,10 +127,10 @@
+ 
+                 int i1 = 0;
+ 
+-                for (int j = i - 1; j >= 0; j--)
++                for (int j = i - 1; j >= 0; --j)
+                 {
+                     this.field_177258_e.add(p_177251_1_.func_177967_a(this.field_177257_d.func_176734_d(), j));
+-                    i1++;
++                    ++i1;
+                 }
+ 
+                 int j1 = 1;
+@@ -144,11 +144,11 @@
+                     {
+                         this.func_177255_a(i1, k);
+ 
+-                        for (int l = 0; l <= k + i1; l++)
++                        for (int l = 0; l <= k + i1; ++l)
                          {
                              BlockPos blockpos2 = this.field_177258_e.get(l);
  
@@ -80,6 +103,17 @@
                      {
                          return false;
                      }
+@@ -182,8 +181,8 @@
+                     }
+ 
+                     this.field_177258_e.add(blockpos1);
+-                    i1++;
+-                    j1++;
++                    ++i1;
++                    ++j1;
+                 }
+             }
+         }
 @@ -191,9 +190,9 @@
  
      private void func_177255_a(int p_177255_1_, int p_177255_2_)

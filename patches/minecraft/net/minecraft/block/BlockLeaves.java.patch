@@ -17,7 +17,19 @@
      public void func_180663_b(World p_180663_1_, BlockPos p_180663_2_, IBlockState p_180663_3_)
      {
          int i = 1;
-@@ -54,9 +53,9 @@
+@@ -45,18 +44,18 @@
+ 
+         if (p_180663_1_.func_175707_a(new BlockPos(k - 2, l - 2, i1 - 2), new BlockPos(k + 2, l + 2, i1 + 2)))
+         {
+-            for (int j1 = -1; j1 <= 1; j1++)
++            for (int j1 = -1; j1 <= 1; ++j1)
+             {
+-                for (int k1 = -1; k1 <= 1; k1++)
++                for (int k1 = -1; k1 <= 1; ++k1)
+                 {
+-                    for (int l1 = -1; l1 <= 1; l1++)
++                    for (int l1 = -1; l1 <= 1; ++l1)
+                     {
                          BlockPos blockpos = p_180663_2_.func_177982_a(j1, k1, l1);
                          IBlockState iblockstate = p_180663_1_.func_180495_p(blockpos);
  
@@ -43,7 +55,7 @@
              {
                  int i = 4;
                  int j = 5;
-@@ -85,7 +83,8 @@
+@@ -85,22 +83,23 @@
                      this.field_150128_a = new int[32768];
                  }
  
@@ -53,7 +65,15 @@
                  {
                      BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
-@@ -98,9 +97,9 @@
+-                    for (int i2 = -4; i2 <= 4; i2++)
++                    for (int i2 = -4; i2 <= 4; ++i2)
+                     {
+-                        for (int j2 = -4; j2 <= 4; j2++)
++                        for (int j2 = -4; j2 <= 4; ++j2)
+                         {
+-                            for (int k2 = -4; k2 <= 4; k2++)
++                            for (int k2 = -4; k2 <= 4; ++k2)
+                             {
                                  IBlockState iblockstate = p_180650_1_.func_180495_p(blockpos$mutableblockpos.func_181079_c(k + i2, l + j2, i1 + k2));
                                  Block block = iblockstate.func_177230_c();
  
@@ -65,6 +85,24 @@
                                      {
                                          this.field_150128_a[(i2 + 16) * 1024 + (j2 + 16) * 32 + k2 + 16] = -2;
                                      }
+@@ -117,13 +116,13 @@
+                         }
+                     }
+ 
+-                    for (int i3 = 1; i3 <= 4; i3++)
++                    for (int i3 = 1; i3 <= 4; ++i3)
+                     {
+-                        for (int j3 = -4; j3 <= 4; j3++)
++                        for (int j3 = -4; j3 <= 4; ++j3)
+                         {
+-                            for (int k3 = -4; k3 <= 4; k3++)
++                            for (int k3 = -4; k3 <= 4; ++k3)
+                             {
+-                                for (int l3 = -4; l3 <= 4; l3++)
++                                for (int l3 = -4; l3 <= 4; ++l3)
+                                 {
+                                     if (this.field_150128_a[(j3 + 16) * 1024 + (k3 + 16) * 32 + l3 + 16] == i3 - 1)
+                                     {
 @@ -167,7 +166,7 @@
  
                  if (l2 >= 0)

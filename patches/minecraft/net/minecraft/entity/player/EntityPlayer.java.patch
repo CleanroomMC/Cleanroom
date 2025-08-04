@@ -70,6 +70,21 @@
          this.field_70145_X = this.func_175149_v();
  
          if (this.func_175149_v())
+@@ -192,12 +197,12 @@
+ 
+         if (this.field_71090_bL > 0)
+         {
+-            this.field_71090_bL--;
++            --this.field_71090_bL;
+         }
+ 
+         if (this.func_70608_bn())
+         {
+-            this.field_71076_b++;
++            ++this.field_71076_b;
+ 
+             if (this.field_71076_b > 100)
+             {
 @@ -210,7 +215,7 @@
                  {
                      this.func_70999_a(true, true, false);
@@ -79,7 +94,16 @@
                  {
                      this.func_70999_a(false, true, true);
                  }
-@@ -258,8 +263,8 @@
+@@ -218,7 +223,7 @@
+         }
+         else if (this.field_71076_b > 0)
+         {
+-            this.field_71076_b++;
++            ++this.field_71076_b;
+ 
+             if (this.field_71076_b >= 110)
+             {
+@@ -258,15 +263,15 @@
          }
  
          int i = 29999999;
@@ -90,6 +114,14 @@
  
          if (d0 != this.field_70165_t || d1 != this.field_70161_v)
          {
+             this.func_70107_b(d0, this.field_70163_u, d1);
+         }
+ 
+-        this.field_184617_aD++;
++        ++this.field_184617_aD;
+         ItemStack itemstack = this.func_184614_ca();
+ 
+         if (!ItemStack.func_77989_b(this.field_184831_bT, itemstack))
 @@ -291,47 +296,47 @@
          double d0 = this.field_70165_t - this.field_71094_bP;
          double d1 = this.field_70163_u - this.field_71095_bQ;
@@ -294,7 +326,7 @@
      protected void func_70626_be()
      {
          super.func_70626_be();
-@@ -502,7 +488,6 @@
+@@ -502,12 +488,11 @@
          this.field_70759_as = this.field_70177_z;
      }
  
@@ -302,6 +334,12 @@
      public void func_70636_d()
      {
          if (this.field_71101_bC > 0)
+         {
+-            this.field_71101_bC--;
++            --this.field_71101_bC;
+         }
+ 
+         if (this.field_70170_p.func_175659_aa() == EnumDifficulty.PEACEFUL && this.field_70170_p.func_82736_K().func_82766_b("naturalRegeneration"))
 @@ -537,12 +522,12 @@
  
          if (this.func_70051_ag())
@@ -317,7 +355,18 @@
  
          if (f > 0.1F)
          {
-@@ -568,11 +553,11 @@
+@@ -559,8 +544,8 @@
+             f1 = 0.0F;
+         }
+ 
+-        this.field_71109_bG = this.field_71109_bG + (f - this.field_71109_bG) * 0.4F;
+-        this.field_70726_aT = this.field_70726_aT + (f1 - this.field_70726_aT) * 0.8F;
++        this.field_71109_bG += (f - this.field_71109_bG) * 0.4F;
++        this.field_70726_aT += (f1 - this.field_70726_aT) * 0.8F;
+ 
+         if (this.func_110143_aJ() > 0.0F && !this.func_175149_v())
+         {
+@@ -568,16 +553,16 @@
  
              if (this.func_184218_aH() && !this.func_184187_bx().field_70128_L)
              {
@@ -331,6 +380,12 @@
              }
  
              List<Entity> list = this.field_70170_p.func_72839_b(this, axisalignedbb);
+ 
+-            for (int i = 0; i < list.size(); i++)
++            for (int i = 0; i < list.size(); ++i)
+             {
+                 Entity entity = list.get(i);
+ 
 @@ -591,8 +576,7 @@
          this.func_192028_j(this.func_192023_dk());
          this.func_192028_j(this.func_192025_dl());
@@ -400,6 +455,15 @@
          }
  
          this.func_71029_a(StatList.field_188069_A);
+@@ -670,7 +660,7 @@
+ 
+     protected void func_190776_cN()
+     {
+-        for (int i = 0; i < this.field_71071_by.func_70302_i_(); i++)
++        for (int i = 0; i < this.field_71071_by.func_70302_i_(); ++i)
+         {
+             ItemStack itemstack = this.field_71071_by.func_70301_a(i);
+ 
 @@ -681,7 +671,6 @@
          }
      }
@@ -460,7 +524,7 @@
              EntityItem entityitem = new EntityItem(this.field_70170_p, this.field_70165_t, d0, this.field_70161_v, p_146097_1_);
              entityitem.func_174867_a(40);
  
-@@ -741,26 +732,18 @@
+@@ -741,30 +732,22 @@
              if (p_146097_2_)
              {
                  float f = this.field_70146_Z.nextFloat() * 0.5F;
@@ -491,8 +555,15 @@
 +                entityitem.field_70181_x = (double)(-MathHelper.func_76126_a(this.field_70125_A * 0.017453292F) * f2 + 0.1F);
 +                float f3 = this.field_70146_Z.nextFloat() * ((float)Math.PI * 2F);
                  f2 = 0.02F * this.field_70146_Z.nextFloat();
-                 entityitem.field_70159_w += Math.cos((double)f3) * (double)f2;
-                 entityitem.field_70181_x += (double)((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.1F);
+-                entityitem.field_70159_w = entityitem.field_70159_w + Math.cos((double)f3) * (double)f2;
+-                entityitem.field_70181_x = entityitem.field_70181_x + (double)((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.1F);
+-                entityitem.field_70179_y = entityitem.field_70179_y + Math.sin((double)f3) * (double)f2;
++                entityitem.field_70159_w += Math.cos((double)f3) * (double)f2;
++                entityitem.field_70181_x += (double)((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.1F);
++                entityitem.field_70179_y += Math.sin((double)f3) * (double)f2;
+             }
+ 
+             ItemStack itemstack = this.func_184816_a(entityitem);
 @@ -785,13 +768,21 @@
  
      public ItemStack func_184816_a(EntityItem p_184816_1_)
@@ -685,7 +756,15 @@
  
                  if (enumhand == EnumHand.MAIN_HAND)
                  {
-@@ -1099,26 +1113,30 @@
+@@ -1092,33 +1106,37 @@
+         {
+             if (!itemstack.func_190926_b())
+             {
+-                i++;
++                ++i;
+             }
+         }
+ 
          return (float)i / (float)this.field_71071_by.field_70460_b.size();
      }
  
@@ -802,8 +881,9 @@
 -                        .func_184148_a(
 -                            null, this.field_70165_t, this.field_70163_u, this.field_70161_v, SoundEvents.field_187721_dT, this.func_184176_by(), 1.0F, 1.0F
 -                        );
+-                        i++;
 +                        this.field_70170_p.func_184148_a((EntityPlayer)null, this.field_70165_t, this.field_70163_u, this.field_70161_v, SoundEvents.field_187721_dT, this.func_184176_by(), 1.0F, 1.0F);
-                         ++i;
++                        ++i;
                          flag1 = true;
                      }
  
@@ -1338,6 +1418,18 @@
      public void func_70110_aj()
      {
          if (!this.field_71075_bZ.field_75100_b)
+@@ -2047,9 +1992,9 @@
+             p_71023_1_ = i;
+         }
+ 
+-        this.field_71106_cc = this.field_71106_cc + (float)p_71023_1_ / (float)this.func_71050_bK();
++        this.field_71106_cc += (float)p_71023_1_ / (float)this.func_71050_bK();
+ 
+-        for (this.field_71067_cb += p_71023_1_; this.field_71106_cc >= 1.0F; this.field_71106_cc = this.field_71106_cc / (float)this.func_71050_bK())
++        for (this.field_71067_cb += p_71023_1_; this.field_71106_cc >= 1.0F; this.field_71106_cc /= (float)this.func_71050_bK())
+         {
+             this.field_71106_cc = (this.field_71106_cc - 1.0F) * (float)this.func_71050_bK();
+             this.func_82242_a(1);
 @@ -2089,10 +2034,7 @@
          if (p_82242_1_ > 0 && this.field_71068_ca % 5 == 0 && (float)this.field_82249_h < (float)this.field_70173_aa - 100.0F)
          {

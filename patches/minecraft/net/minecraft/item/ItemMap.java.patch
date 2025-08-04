@@ -27,15 +27,28 @@
          {
              int i = 1 << p_77872_3_.field_76197_d;
              int j = p_77872_3_.field_76201_a;
-@@ -103,7 +103,7 @@
+@@ -95,17 +95,17 @@
+             }
+ 
+             MapData.MapInfo mapdata$mapinfo = p_77872_3_.func_82568_a((EntityPlayer)p_77872_2_);
+-            mapdata$mapinfo.field_82569_d++;
++            ++mapdata$mapinfo.field_82569_d;
+             boolean flag = false;
+ 
+-            for (int k1 = l - j1 + 1; k1 < l + j1; k1++)
++            for (int k1 = l - j1 + 1; k1 < l + j1; ++k1)
+             {
                  if ((k1 & 15) == (mapdata$mapinfo.field_82569_d & 15) || flag)
                  {
                      flag = false;
 -                    double d0 = 0.0;
 +                    double d0 = 0.0D;
  
-                     for (int l1 = i1 - j1 - 1; l1 < i1 + j1; ++l1)
+-                    for (int l1 = i1 - j1 - 1; l1 < i1 + j1; l1++)
++                    for (int l1 = i1 - j1 - 1; l1 < i1 + j1; ++l1)
                      {
+                         if (k1 >= 0 && l1 >= -1 && k1 < 128 && l1 < 128)
+                         {
 @@ -114,7 +114,7 @@
                              boolean flag1 = i2 * i2 + j2 * j2 > (j1 - 2) * (j1 - 2);
                              int k2 = (j / i + k1 - 64) * i;
@@ -54,7 +67,7 @@
  
                                  if (p_77872_1_.field_73011_w.func_177495_o())
                                  {
-@@ -131,26 +131,14 @@
+@@ -131,34 +131,22 @@
  
                                      if ((l3 >> 20 & 1) == 0)
                                      {
@@ -84,6 +97,16 @@
                                  }
                                  else
                                  {
+                                     BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+ 
+-                                    for (int i4 = 0; i4 < i; i4++)
++                                    for (int i4 = 0; i4 < i; ++i4)
+                                     {
+-                                        for (int j4 = 0; j4 < i; j4++)
++                                        for (int j4 = 0; j4 < i; ++j4)
+                                         {
+                                             int k4 = chunk.func_76611_b(i4 + i3, j4 + j3) + 1;
+                                             IBlockState iblockstate = Blocks.field_150350_a.func_176223_P();
 @@ -169,24 +157,35 @@
                                              }
                                              else
@@ -103,7 +126,7 @@
 -                                                    do
 -                                                    {
 -                                                        iblockstate1 = chunk.func_186032_a(i4 + i3, l4--, j4 + j3);
--                                                        ++k3;
+-                                                        k3++;
 -                                                    }
 -                                                    while (l4 > 0 && iblockstate1.func_185904_a().func_76224_d());
 +                                                label175:
@@ -180,7 +203,7 @@
                                      {
                                          i5 = 0;
                                      }
-@@ -252,18 +251,18 @@
+@@ -252,22 +251,22 @@
  
      public static void func_190905_a(World p_190905_0_, ItemStack p_190905_1_)
      {
@@ -201,8 +224,65 @@
 -                    Biome[] abiome = p_190905_0_.func_72959_q().func_76931_a(null, (j / i - 64) * i, (k / i - 64) * i, 128 * i, 128 * i, false);
 +                    Biome[] abiome = p_190905_0_.func_72959_q().func_76931_a((Biome[])null, (j / i - 64) * i, (k / i - 64) * i, 128 * i, 128 * i, false);
  
-                     for (int l = 0; l < 128; ++l)
+-                    for (int l = 0; l < 128; l++)
++                    for (int l = 0; l < 128; ++l)
                      {
+-                        for (int i1 = 0; i1 < 128; i1++)
++                        for (int i1 = 0; i1 < 128; ++i1)
+                         {
+                             int j1 = l * i;
+                             int k1 = i1 * i;
+@@ -280,42 +279,42 @@
+                             {
+                                 if (abiome[(l - 1) * i + (i1 - 1) * i * 128 * i].func_185355_j() >= 0.0F)
+                                 {
+-                                    i2--;
++                                    --i2;
+                                 }
+ 
+                                 if (abiome[(l - 1) * i + (i1 + 1) * i * 128 * i].func_185355_j() >= 0.0F)
+                                 {
+-                                    i2--;
++                                    --i2;
+                                 }
+ 
+                                 if (abiome[(l - 1) * i + i1 * i * 128 * i].func_185355_j() >= 0.0F)
+                                 {
+-                                    i2--;
++                                    --i2;
+                                 }
+ 
+                                 if (abiome[(l + 1) * i + (i1 - 1) * i * 128 * i].func_185355_j() >= 0.0F)
+                                 {
+-                                    i2--;
++                                    --i2;
+                                 }
+ 
+                                 if (abiome[(l + 1) * i + (i1 + 1) * i * 128 * i].func_185355_j() >= 0.0F)
+                                 {
+-                                    i2--;
++                                    --i2;
+                                 }
+ 
+                                 if (abiome[(l + 1) * i + i1 * i * 128 * i].func_185355_j() >= 0.0F)
+                                 {
+-                                    i2--;
++                                    --i2;
+                                 }
+ 
+                                 if (abiome[l * i + (i1 - 1) * i * 128 * i].func_185355_j() >= 0.0F)
+                                 {
+-                                    i2--;
++                                    --i2;
+                                 }
+ 
+                                 if (abiome[l * i + (i1 + 1) * i * 128 * i].func_185355_j() >= 0.0F)
+                                 {
+-                                    i2--;
++                                    --i2;
+                                 }
+ 
+                                 if (biome.func_185355_j() < 0.0F)
 @@ -379,7 +378,6 @@
          }
      }

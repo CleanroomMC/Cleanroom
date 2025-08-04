@@ -20,6 +20,7 @@
 package net.minecraftforge.fml.common.asm.transformers;
 
 import net.minecraftforge.fml.common.FMLLog;
+import org.jspecify.annotations.NonNull;
 import static org.objectweb.asm.Opcodes.ACC_FINAL;
 import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
 import static org.objectweb.asm.Opcodes.ACC_PROTECTED;
@@ -68,7 +69,7 @@ import com.google.common.io.Resources;
 public class AccessTransformer implements IClassTransformer
 {
     private static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("fml.debugAccessTransformer", "false"));
-    class Modifier
+    static class Modifier
     {
         public String name = "";
         public String desc = "";
@@ -98,7 +99,7 @@ public class AccessTransformer implements IClassTransformer
         }
     }
 
-    private Multimap<String, Modifier> modifiers = ArrayListMultimap.create();
+    private final Multimap<String, Modifier> modifiers = ArrayListMultimap.create();
 
     public AccessTransformer() throws IOException
     {
@@ -139,10 +140,10 @@ public class AccessTransformer implements IClassTransformer
             }
 
             @Override
-            public boolean processLine(String input) throws IOException
+            public boolean processLine(@NonNull String input) throws IOException
             {
                 String line = Iterables.getFirst(Splitter.on('#').limit(2).split(input), "").trim();
-                if (line.length()==0)
+                if (line.isEmpty())
                 {
                     return true;
                 }

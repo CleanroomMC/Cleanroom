@@ -162,3 +162,12 @@
      }
  
      protected boolean func_177070_b(T p_177070_1_)
+@@ -510,7 +514,7 @@
+     {
+         int[] aint = field_177096_e.func_110565_c();
+ 
+-        for (int i = 0; i < 256; i++)
++        for (int i = 0; i < 256; ++i)
+         {
+             aint[i] = -1;
+         }

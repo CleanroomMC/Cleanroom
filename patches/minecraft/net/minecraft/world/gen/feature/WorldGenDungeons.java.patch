@@ -17,7 +17,22 @@
      public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
      {
          int i = 3;
-@@ -63,10 +56,7 @@
+@@ -43,11 +36,11 @@
+         int i2 = k1 + 1;
+         int j2 = 0;
+ 
+-        for (int k2 = k; k2 <= l; k2++)
++        for (int k2 = k; k2 <= l; ++k2)
+         {
+-            for (int l2 = -1; l2 <= 4; l2++)
++            for (int l2 = -1; l2 <= 4; ++l2)
+             {
+-                for (int i3 = l1; i3 <= i2; i3++)
++                for (int i3 = l1; i3 <= i2; ++i3)
+                 {
+                     BlockPos blockpos = p_180709_3_.func_177982_a(k2, l2, i3);
+                     Material material = p_180709_1_.func_180495_p(blockpos).func_185904_a();
+@@ -63,12 +56,9 @@
                          return false;
                      }
  
@@ -27,8 +42,26 @@
 -                            && p_180709_1_.func_175623_d(blockpos.func_177984_a()))
 +                    if ((k2 == k || k2 == l || i3 == l1 || i3 == i2) && l2 == 0 && p_180709_1_.func_175623_d(blockpos) && p_180709_1_.func_175623_d(blockpos.func_177984_a()))
                      {
-                         ++j2;
+-                        j2++;
++                        ++j2;
                      }
+                 }
+             }
+@@ -76,11 +66,11 @@
+ 
+         if (j2 >= 1 && j2 <= 5)
+         {
+-            for (int k3 = k; k3 <= l; k3++)
++            for (int k3 = k; k3 <= l; ++k3)
+             {
+-                for (int i4 = 3; i4 >= -1; i4--)
++                for (int i4 = 3; i4 >= -1; --i4)
+                 {
+-                    for (int k4 = l1; k4 <= i2; k4++)
++                    for (int k4 = l1; k4 <= i2; ++k4)
+                     {
+                         BlockPos blockpos1 = p_180709_3_.func_177982_a(k3, i4, k4);
+ 
 @@ -95,8 +85,7 @@
                          {
                              p_180709_1_.func_175698_g(blockpos1);
@@ -39,7 +72,26 @@
                          {
                              if (i4 == -1 && p_180709_2_.nextInt(4) != 0)
                              {
-@@ -134,9 +123,7 @@
+@@ -111,9 +100,9 @@
+                 }
+             }
+ 
+-            for (int l3 = 0; l3 < 2; l3++)
++            for (int l3 = 0; l3 < 2; ++l3)
+             {
+-                for (int j4 = 0; j4 < 3; j4++)
++                for (int j4 = 0; j4 < 3; ++j4)
+                 {
+                     int l4 = p_180709_3_.func_177958_n() + p_180709_2_.nextInt(j * 2 + 1) - j;
+                     int i5 = p_180709_3_.func_177956_o();
+@@ -128,15 +117,13 @@
+                         {
+                             if (p_180709_1_.func_180495_p(blockpos2.func_177972_a(enumfacing)).func_185904_a().func_76220_a())
+                             {
+-                                j3++;
++                                ++j3;
+                             }
+                         }
  
                          if (j3 == 1)
                          {

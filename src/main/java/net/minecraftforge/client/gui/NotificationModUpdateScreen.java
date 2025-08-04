@@ -41,6 +41,7 @@ public class NotificationModUpdateScreen extends GuiScreen
 
     private final GuiButton modButton;
     private Status showNotification = null;
+    private Status showBetaNotification = null;
     private boolean hasCheckedForUpdates = false;
 
     public NotificationModUpdateScreen(GuiButton modButton)
@@ -55,16 +56,10 @@ public class NotificationModUpdateScreen extends GuiScreen
         {
             if (modButton != null)
             {
-                for (ModContainer mod : Loader.instance().getModList())
-                {
-                    Status status = ForgeVersion.getResult(mod).status;
-                    if (status == Status.OUTDATED || status == Status.BETA_OUTDATED)
-                    {
-                        // TODO: Needs better visualization, maybe stacked icons
-                        // drawn in a terrace-like pattern?
-                        showNotification = Status.OUTDATED;
-                    }
-                }
+                if (ForgeVersion.hasOutdatedMods())
+                    showNotification = Status.OUTDATED;
+                if (ForgeVersion.hasOutdatedBetaMods())
+                    showBetaNotification = Status.BETA_OUTDATED;
             }
             hasCheckedForUpdates = true;
         }
@@ -73,10 +68,15 @@ public class NotificationModUpdateScreen extends GuiScreen
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
-        if (showNotification == null || !showNotification.shouldDraw() || ForgeModContainer.disableVersionCheck)
-        {
+        if (ForgeModContainer.disableVersionCheck || (showNotification == null && showBetaNotification == null))
             return;
-        }
+
+		Status notification = Status.FAILED;
+
+        if (showNotification == null || showBetaNotification == null)
+			notification = showNotification == null ? showBetaNotification : showNotification;
+		else
+			notification = ((System.currentTimeMillis() / 3200 & 1) == 1) ? showBetaNotification : showNotification;
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(VERSION_CHECK_ICONS);
         GlStateManager.color(1, 1, 1, 1);
@@ -87,7 +87,7 @@ public class NotificationModUpdateScreen extends GuiScreen
         int w = modButton.width;
         int h = modButton.height;
 
-        drawModalRectWithCustomSizedTexture(x + w - (h / 2 + 4), y + (h / 2 - 4), showNotification.getSheetOffset() * 8, (showNotification.isAnimated() && ((System.currentTimeMillis() / 800 & 1) == 1)) ? 8 : 0, 8, 8, 64, 16);
+        drawModalRectWithCustomSizedTexture(x + w - (h / 2 + 4), y + (h / 2 - 4), notification.getSheetOffset() * 8, (notification.isAnimated() && ((System.currentTimeMillis() / 800 & 1) == 1)) ? 8 : 0, 8, 8, 64, 16);
         GlStateManager.popMatrix();
     }
 

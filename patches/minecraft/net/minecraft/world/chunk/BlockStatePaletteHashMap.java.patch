@@ -12,7 +12,7 @@
      public int func_186041_a(IBlockState p_186041_1_)
      {
          int i = this.field_186046_a.func_186815_a(p_186041_1_);
-@@ -40,14 +39,12 @@
+@@ -40,43 +39,39 @@
      }
  
      @Nullable
@@ -27,7 +27,12 @@
      public void func_186038_a(PacketBuffer p_186038_1_)
      {
          this.field_186046_a.func_186812_a();
-@@ -59,7 +56,6 @@
+         int i = p_186038_1_.func_150792_a();
+ 
+-        for (int j = 0; j < i; j++)
++        for (int j = 0; j < i; ++j)
+         {
+             this.field_186046_a.func_186808_c(Block.field_176229_d.func_148745_a(p_186038_1_.func_150792_a()));
          }
      }
  
@@ -35,7 +40,12 @@
      public void func_186037_b(PacketBuffer p_186037_1_)
      {
          int i = this.field_186046_a.func_186810_b();
-@@ -71,7 +67,6 @@
+         p_186037_1_.func_150787_b(i);
+ 
+-        for (int j = 0; j < i; j++)
++        for (int j = 0; j < i; ++j)
+         {
+             p_186037_1_.func_150787_b(Block.field_176229_d.func_148747_b(this.field_186046_a.func_186813_a(j)));
          }
      }
  
@@ -43,3 +53,9 @@
      public int func_186040_a()
      {
          int i = PacketBuffer.func_150790_a(this.field_186046_a.func_186810_b());
+ 
+-        for (int j = 0; j < this.field_186046_a.func_186810_b(); j++)
++        for (int j = 0; j < this.field_186046_a.func_186810_b(); ++j)
+         {
+             i += PacketBuffer.func_150790_a(Block.field_176229_d.func_148747_b(this.field_186046_a.func_186813_a(j)));
+         }

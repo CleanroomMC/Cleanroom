@@ -38,9 +38,12 @@
          }
      }
  
-@@ -74,14 +72,7 @@
+@@ -72,21 +70,14 @@
+         int i = this.field_178997_d / 4;
+         final float[] afloat = new float[i];
  
-         for (int j = 0; j < i; ++j)
+-        for (int j = 0; j < i; j++)
++        for (int j = 0; j < i; ++j)
          {
 -            afloat[j] = func_181665_a(
 -                            this.field_179000_c,
@@ -54,6 +57,12 @@
          }
  
          Integer[] ainteger = new Integer[i];
+ 
+-        for (int k = 0; k < ainteger.length; k++)
++        for (int k = 0; k < ainteger.length; ++k)
+         {
+             ainteger[k] = k;
+         }
 @@ -95,7 +86,7 @@
          {
              public int compare(Integer p_compare_1_, Integer p_compare_2_)
@@ -143,6 +152,15 @@
          }
      }
  
+@@ -280,7 +273,7 @@
+         int i = this.field_179011_q.func_181719_f();
+         int j = (this.field_178997_d - 4) * i;
+ 
+-        for (int k = 0; k < 4; k++)
++        for (int k = 0; k < 4; ++k)
+         {
+             int l = j + k * i;
+             int i1 = l + 1;
 @@ -307,19 +300,19 @@
  
              if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN)
@@ -200,7 +218,7 @@
          }
      }
  
-@@ -424,8 +417,8 @@
+@@ -424,15 +417,15 @@
  
      public void func_178981_a(int[] p_178981_1_)
      {
@@ -209,8 +227,28 @@
 +        this.func_181670_b(p_178981_1_.length * 4 + this.field_179011_q.func_177338_f());//Forge, fix MC-122110
 +        this.field_178999_b.position(this.func_181664_j());
          this.field_178999_b.put(p_178981_1_);
-         this.field_178997_d += p_178981_1_.length / this.field_179011_q.func_181719_f();
+-        this.field_178997_d = this.field_178997_d + p_178981_1_.length / this.field_179011_q.func_181719_f();
++        this.field_178997_d += p_178981_1_.length / this.field_179011_q.func_181719_f();
      }
+ 
+     public void func_181675_d()
+     {
+-        this.field_178997_d++;
++        ++this.field_178997_d;
+         this.func_181670_b(this.field_179011_q.func_177338_f());
+     }
+ 
+@@ -486,8 +479,8 @@
+ 
+     private void func_181667_k()
+     {
+-        this.field_181678_g++;
+-        this.field_181678_g = this.field_181678_g % this.field_179011_q.func_177345_h();
++        ++this.field_181678_g;
++        this.field_181678_g %= this.field_179011_q.func_177345_h();
+         this.field_181677_f = this.field_179011_q.func_177348_c(this.field_181678_g);
+ 
+         if (this.field_181677_f.func_177375_c() == VertexFormatElement.EnumUsage.PADDING)
 @@ -515,15 +508,15 @@
                  break;
              case USHORT:
@@ -244,6 +282,24 @@
          }
      }
  
+@@ -573,7 +566,7 @@
+ 
+     public void func_178968_d(int p_178968_1_)
+     {
+-        for (int i = 0; i < 4; i++)
++        for (int i = 0; i < 4; ++i)
+         {
+             this.func_192836_a(p_178968_1_, i + 1);
+         }
+@@ -581,7 +574,7 @@
+ 
+     public void func_178990_f(float p_178990_1_, float p_178990_2_, float p_178990_3_)
+     {
+-        for (int i = 0; i < 4; i++)
++        for (int i = 0; i < 4; ++i)
+         {
+             this.func_178994_b(p_178990_1_, p_178990_2_, p_178990_3_, i + 1);
+         }
 @@ -613,5 +606,28 @@
          {
              return this.field_179018_e;

@@ -1,0 +1,17 @@
+{
+    "+tweakers": ["net.minecraftforge.fml.common.launcher.FMLTweaker"],
+    "+jvmArgs": ["-Dfile.encoding=UTF-8"],
+    "formatVersion": 1,
+    "libraries": [],
+    "mainClass": "com.cleanroommc.bouncepad.Bouncepad",
+    "name": "Cleanroom",
+    "releaseTime": "2021-12-13T04:40:03+00:00",
+    "requires": [
+        {
+            "equals": "1.12.2",
+            "uid": "net.minecraft"
+        }
+    ],
+    "uid": "net.minecraftforge",
+    "version": "0"
+}

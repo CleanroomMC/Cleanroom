@@ -76,10 +76,12 @@
          if (iblockstate.func_177230_c() instanceof IGrowable)
          {
              IGrowable igrowable = (IGrowable)iblockstate.func_177230_c();
-@@ -153,23 +148,24 @@
+@@ -151,25 +146,26 @@
+ 
+         if (iblockstate.func_185904_a() != Material.field_151579_a)
          {
-             for (int i = 0; i < p_180617_2_; ++i)
-             {
+-            for (int i = 0; i < p_180617_2_; i++)
+-            {
 -                double d0 = field_77697_d.nextGaussian() * 0.02;
 -                double d1 = field_77697_d.nextGaussian() * 0.02;
 -                double d2 = field_77697_d.nextGaussian() * 0.02;
@@ -92,6 +94,8 @@
 -                    d1,
 -                    d2
 -                );
++            for (int i = 0; i < p_180617_2_; ++i)
++            {
 +                double d0 = field_77697_d.nextGaussian() * 0.02D;
 +                double d1 = field_77697_d.nextGaussian() * 0.02D;
 +                double d2 = field_77697_d.nextGaussian() * 0.02D;
@@ -114,7 +118,7 @@
      public boolean func_111207_a(ItemStack p_111207_1_, EntityPlayer p_111207_2_, EntityLivingBase p_111207_3_, EnumHand p_111207_4_)
      {
          if (p_111207_3_ instanceof EntitySheep)
-@@ -191,7 +187,6 @@
+@@ -191,12 +187,11 @@
          }
      }
  
@@ -122,3 +126,9 @@
      public void func_150895_a(CreativeTabs p_150895_1_, NonNullList<ItemStack> p_150895_2_)
      {
          if (this.func_194125_a(p_150895_1_))
+         {
+-            for (int i = 0; i < 16; i++)
++            for (int i = 0; i < 16; ++i)
+             {
+                 p_150895_2_.add(new ItemStack(this, 1, i));
+             }
