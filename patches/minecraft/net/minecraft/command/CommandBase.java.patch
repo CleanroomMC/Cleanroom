@@ -31,7 +31,15 @@
      }
  
      public static EntityPlayerMP func_71521_c(ICommandSender p_71521_0_) throws PlayerNotFoundException
-@@ -398,7 +401,7 @@
+@@ -391,14 +394,14 @@
+     {
+         ITextComponent itextcomponent = new TextComponentString("");
+ 
+-        for (int i = p_147176_2_; i < p_147176_1_.length; i++)
++        for (int i = p_147176_2_; i < p_147176_1_.length; ++i)
+         {
+             if (i > p_147176_2_)
+             {
                  itextcomponent.func_150258_a(" ");
              }
  
@@ -40,3 +48,48 @@
  
              if (p_147176_3_)
              {
+@@ -427,7 +430,7 @@
+     {
+         StringBuilder stringbuilder = new StringBuilder();
+ 
+-        for (int i = p_180529_1_; i < p_180529_0_.length; i++)
++        for (int i = p_180529_1_; i < p_180529_0_.length; ++i)
+         {
+             if (i > p_180529_1_)
+             {
+@@ -702,7 +705,7 @@
+                     break;
+                 }
+ 
+-                Comparable<?> comparable = func_190792_a((IProperty<?>)iproperty, iterator1.next());
++                Comparable<?> comparable = func_190792_a(iproperty, iterator1.next());
+ 
+                 if (comparable == null)
+                 {
+@@ -726,7 +729,7 @@
+     {
+         StringBuilder stringbuilder = new StringBuilder();
+ 
+-        for (int i = 0; i < p_71527_0_.length; i++)
++        for (int i = 0; i < p_71527_0_.length; ++i)
+         {
+             String s = p_71527_0_[i].toString();
+ 
+@@ -752,7 +755,7 @@
+     {
+         ITextComponent itextcomponent = new TextComponentString("");
+ 
+-        for (int i = 0; i < p_180530_0_.size(); i++)
++        for (int i = 0; i < p_180530_0_.size(); ++i)
+         {
+             if (i > 0)
+             {
+@@ -856,7 +859,7 @@
+ 
+         if (!p_175762_1_.isEmpty())
+         {
+-            for (String s1 : Iterables.transform((Iterable<Object>)p_175762_1_, Functions.toStringFunction()))
++            for (String s1 : Iterables.transform(p_175762_1_, Functions.toStringFunction()))
+             {
+                 if (func_71523_a(s, s1))
+                 {

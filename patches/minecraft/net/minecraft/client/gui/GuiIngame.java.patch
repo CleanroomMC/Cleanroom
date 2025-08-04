@@ -169,17 +169,20 @@
                  {
                      int k = p_184048_1_.func_78326_a();
                      int l = 1;
-@@ -491,12 +468,12 @@
+@@ -490,13 +467,13 @@
+ 
                      if (potion.func_188408_i())
                      {
-                         ++i;
+-                        i++;
 -                        k -= 25 * i;
++                        ++i;
 +                        k = k - 25 * i;
                      }
                      else
                      {
-                         ++j;
+-                        j++;
 -                        k -= 25 * j;
++                        ++j;
 +                        k = k - 25 * j;
                          l += 26;
                      }
@@ -203,7 +206,7 @@
                  }
              }
          }
-@@ -559,12 +537,7 @@
+@@ -559,15 +537,10 @@
              this.field_73735_i = f;
              GlStateManager.func_179091_B();
              GlStateManager.func_179147_l();
@@ -216,7 +219,11 @@
 +            GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
              RenderHelper.func_74520_c();
  
-             for (int l = 0; l < 9; ++l)
+-            for (int l = 0; l < 9; l++)
++            for (int l = 0; l < 9; ++l)
+             {
+                 int i1 = i - 90 + l * 20 + 2;
+                 int j1 = p_180479_1_.func_78328_b() - 16 - 3;
 @@ -702,12 +675,7 @@
              {
                  GlStateManager.func_179094_E();
@@ -231,7 +238,52 @@
                  this.func_175179_f().func_175063_a(s, (float)i, (float)j, 16777215 + (k << 24));
                  GlStateManager.func_179084_k();
                  GlStateManager.func_179121_F();
-@@ -997,8 +965,8 @@
+@@ -774,7 +742,7 @@
+ 
+         for (Score score1 : collection)
+         {
+-            j++;
++            ++j;
+             ScorePlayerTeam scoreplayerteam1 = scoreboard.func_96509_i(score1.func_96653_e());
+             String s1 = ScorePlayerTeam.func_96667_a(scoreplayerteam1, score1.func_96653_e());
+             String s2 = TextFormatting.RED + "" + score1.func_96652_c();
+@@ -846,7 +814,7 @@
+ 
+             this.field_73839_d.field_71424_I.func_76320_a("armor");
+ 
+-            for (int k3 = 0; k3 < 10; k3++)
++            for (int k3 = 0; k3 < 10; ++k3)
+             {
+                 if (i3 > 0)
+                 {
+@@ -871,7 +839,7 @@
+ 
+             this.field_73839_d.field_71424_I.func_76318_c("health");
+ 
+-            for (int j5 = MathHelper.func_76123_f((f + (float)k1) / 2.0F) - 1; j5 >= 0; j5--)
++            for (int j5 = MathHelper.func_76123_f((f + (float)k1) / 2.0F) - 1; j5 >= 0; --j5)
+             {
+                 int k5 = 16;
+ 
+@@ -932,7 +900,7 @@
+                     if (l2 == k1 && k1 % 2 == 1)
+                     {
+                         this.func_73729_b(k4, l4, k5 + 153, 9 * i5, 9, 9);
+-                        l2--;
++                        --l2;
+                     }
+                     else
+                     {
+@@ -960,7 +928,7 @@
+             {
+                 this.field_73839_d.field_71424_I.func_76318_c("food");
+ 
+-                for (int l5 = 0; l5 < 10; l5++)
++                for (int l5 = 0; l5 < 10; ++l5)
+                 {
+                     int j6 = j1;
+                     int l6 = 16;
+@@ -997,10 +965,10 @@
              if (entityplayer.func_70055_a(Material.field_151586_h))
              {
                  int i6 = this.field_73839_d.field_71439_g.func_70086_ai();
@@ -240,8 +292,20 @@
 +                int k6 = MathHelper.func_76143_f((double)(i6 - 2) * 10.0D / 300.0D);
 +                int i7 = MathHelper.func_76143_f((double)i6 * 10.0D / 300.0D) - k6;
  
-                 for (int k7 = 0; k7 < k6 + i7; ++k7)
+-                for (int k7 = 0; k7 < k6 + i7; k7++)
++                for (int k7 = 0; k7 < k6 + i7; ++k7)
                  {
+                     if (k7 < k6)
+                     {
+@@ -1047,7 +1015,7 @@
+                     int k1 = Math.min(j, 10);
+                     j -= k1;
+ 
+-                    for (int l1 = 0; l1 < k1; l1++)
++                    for (int l1 = 0; l1 < k1; ++l1)
+                     {
+                         int i2 = 52;
+                         int j2 = 0;
 @@ -1075,19 +1043,17 @@
      {
          GlStateManager.func_179097_i();
@@ -353,7 +417,31 @@
          tessellator.func_78381_a();
          GlStateManager.func_179132_a(true);
          GlStateManager.func_179126_j();
-@@ -1240,10 +1196,7 @@
+@@ -1216,12 +1172,12 @@
+     {
+         if (this.field_73845_h > 0)
+         {
+-            this.field_73845_h--;
++            --this.field_73845_h;
+         }
+ 
+         if (this.field_175195_w > 0)
+         {
+-            this.field_175195_w--;
++            --this.field_175195_w;
+ 
+             if (this.field_175195_w <= 0)
+             {
+@@ -1230,7 +1186,7 @@
+             }
+         }
+ 
+-        this.field_73837_f++;
++        ++this.field_73837_f;
+ 
+         if (this.field_73839_d.field_71439_g != null)
+         {
+@@ -1240,14 +1196,11 @@
              {
                  this.field_92017_k = 0;
              }
@@ -365,3 +453,8 @@
              {
                  if (this.field_92017_k > 0)
                  {
+-                    this.field_92017_k--;
++                    --this.field_92017_k;
+                 }
+             }
+             else

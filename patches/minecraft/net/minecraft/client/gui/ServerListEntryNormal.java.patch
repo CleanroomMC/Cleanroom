@@ -60,7 +60,8 @@
 -        List<String> list = this.field_148300_d.field_71466_p.func_78271_c(this.field_148301_e.field_78843_d, p_192634_4_ - 32 - 2);
 +        List<String> list = this.field_148300_d.field_71466_p.func_78271_c(net.minecraftforge.fml.client.FMLClientHandler.instance().fixDescription(this.field_148301_e.field_78843_d), p_192634_4_ - 32 - 2);
  
-         for (int i = 0; i < Math.min(list.size(), 2); ++i)
+-        for (int i = 0; i < Math.min(list.size(), 2); i++)
++        for (int i = 0; i < Math.min(list.size(), 2); ++i)
          {
 -            this.field_148300_d
 -            .field_71466_p

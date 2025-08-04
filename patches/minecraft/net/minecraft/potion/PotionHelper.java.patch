@@ -13,27 +13,52 @@
      private static final Predicate<ItemStack> field_185216_d = new Predicate<ItemStack>()
      {
          public boolean apply(ItemStack p_apply_1_)
-@@ -43,7 +43,7 @@
+@@ -41,9 +41,9 @@
+     {
+         int i = 0;
  
-         for (int j = field_185214_b.size(); i < j; ++i)
+-        for (int j = field_185214_b.size(); i < j; i++)
++        for (int j = field_185214_b.size(); i < j; ++i)
          {
 -            if (field_185214_b.get(i).field_185199_b.apply(p_185203_0_))
 +            if ((field_185214_b.get(i)).field_185199_b.apply(p_185203_0_))
              {
                  return true;
              }
-@@ -58,7 +58,7 @@
+@@ -56,9 +56,9 @@
+     {
+         int i = 0;
  
-         for (int j = field_185213_a.size(); i < j; ++i)
+-        for (int j = field_185213_a.size(); i < j; i++)
++        for (int j = field_185213_a.size(); i < j; ++i)
          {
 -            if (field_185213_a.get(i).field_185199_b.apply(p_185211_0_))
 +            if ((field_185213_a.get(i)).field_185199_b.apply(p_185211_0_))
              {
                  return true;
              }
-@@ -86,9 +86,9 @@
+@@ -69,7 +69,14 @@
  
-         for (int j = field_185214_b.size(); i < j; ++i)
+     public static boolean func_185208_a(ItemStack p_185208_0_, ItemStack p_185208_1_)
+     {
+-        return !field_185216_d.apply(p_185208_0_) ? false : func_185206_b(p_185208_0_, p_185208_1_) || func_185209_c(p_185208_0_, p_185208_1_);
++        if (!field_185216_d.apply(p_185208_0_))
++        {
++            return false;
++        }
++        else
++        {
++            return func_185206_b(p_185208_0_, p_185208_1_) || func_185209_c(p_185208_0_, p_185208_1_);
++        }
+     }
+ 
+     protected static boolean func_185206_b(ItemStack p_185206_0_, ItemStack p_185206_1_)
+@@ -77,11 +84,11 @@
+         Item item = p_185206_0_.func_77973_b();
+         int i = 0;
+ 
+-        for (int j = field_185214_b.size(); i < j; i++)
++        for (int j = field_185214_b.size(); i < j; ++i)
          {
 -            PotionHelper.MixPredicate<Item> mixpredicate = field_185214_b.get(i);
 +            PotionHelper.MixPredicate<Item> mixpredicate = (PotionHelper.MixPredicate)field_185214_b.get(i);
@@ -43,9 +68,12 @@
              {
                  return true;
              }
-@@ -104,9 +104,9 @@
+@@ -95,11 +102,11 @@
+         PotionType potiontype = PotionUtils.func_185191_c(p_185209_0_);
+         int i = 0;
  
-         for (int j = field_185213_a.size(); i < j; ++i)
+-        for (int j = field_185213_a.size(); i < j; i++)
++        for (int j = field_185213_a.size(); i < j; ++i)
          {
 -            PotionHelper.MixPredicate<PotionType> mixpredicate = field_185213_a.get(i);
 +            PotionHelper.MixPredicate<PotionType> mixpredicate = (PotionHelper.MixPredicate)field_185213_a.get(i);
@@ -55,9 +83,12 @@
              {
                  return true;
              }
-@@ -125,11 +125,11 @@
+@@ -116,25 +123,25 @@
+             Item item = p_185212_1_.func_77973_b();
+             int i = 0;
  
-             for (int j = field_185214_b.size(); i < j; ++i)
+-            for (int j = field_185214_b.size(); i < j; i++)
++            for (int j = field_185214_b.size(); i < j; ++i)
              {
 -                PotionHelper.MixPredicate<Item> mixpredicate = field_185214_b.get(i);
 +                PotionHelper.MixPredicate<Item> mixpredicate = (PotionHelper.MixPredicate)field_185214_b.get(i);
@@ -70,9 +101,10 @@
                  }
              }
  
-@@ -137,11 +137,11 @@
+             i = 0;
  
-             for (int k = field_185213_a.size(); i < k; ++i)
+-            for (int k = field_185213_a.size(); i < k; i++)
++            for (int k = field_185213_a.size(); i < k; ++i)
              {
 -                PotionHelper.MixPredicate<PotionType> mixpredicate1 = field_185213_a.get(i);
 +                PotionHelper.MixPredicate<PotionType> mixpredicate1 = (PotionHelper.MixPredicate)field_185213_a.get(i);
@@ -85,7 +117,7 @@
                  }
              }
          }
-@@ -184,11 +184,7 @@
+@@ -177,11 +184,7 @@
          func_193357_a(PotionTypes.field_185233_e, Items.field_151102_aT, PotionTypes.field_185243_o);
          func_193357_a(PotionTypes.field_185243_o, Items.field_151137_ax, PotionTypes.field_185244_p);
          func_193357_a(PotionTypes.field_185243_o, Items.field_151114_aO, PotionTypes.field_185245_q);
@@ -98,7 +130,7 @@
          func_193357_a(PotionTypes.field_185248_t, Items.field_151137_ax, PotionTypes.field_185249_u);
          func_193357_a(PotionTypes.field_185233_e, Items.field_151060_bw, PotionTypes.field_185250_v);
          func_193357_a(PotionTypes.field_185250_v, Items.field_151114_aO, PotionTypes.field_185251_w);
-@@ -213,7 +209,7 @@
+@@ -206,7 +209,7 @@
  
      public static void func_193355_a(ItemPotion p_193355_0_, Item p_193355_1_, ItemPotion p_193355_2_)
      {
@@ -107,7 +139,7 @@
      }
  
      public static void func_193354_a(ItemPotion p_193354_0_)
-@@ -228,20 +224,20 @@
+@@ -221,20 +224,20 @@
  
      public static void func_193356_a(PotionType p_193356_0_, Ingredient p_193356_1_, PotionType p_193356_2_)
      {

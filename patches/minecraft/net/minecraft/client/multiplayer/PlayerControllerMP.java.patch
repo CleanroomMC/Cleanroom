@@ -112,7 +112,14 @@
              this.field_78774_b.func_147297_a(new CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, this.field_178895_c, EnumFacing.DOWN));
              this.field_78778_j = false;
              this.field_78770_f = 0.0F;
-@@ -284,9 +287,7 @@
+@@ -278,15 +281,13 @@
+ 
+         if (this.field_78781_i > 0)
+         {
+-            this.field_78781_i--;
++            --this.field_78781_i;
+             return true;
+         }
          else if (this.field_78779_k.func_77145_d() && this.field_78776_a.field_71441_e.func_175723_af().func_177746_a(p_180512_1_))
          {
              this.field_78781_i = 5;
@@ -123,7 +130,13 @@
              this.field_78774_b.func_147297_a(new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, p_180512_1_, p_180512_2_));
              func_178891_a(this.field_78776_a, this, p_180512_1_, p_180512_2_);
              return true;
-@@ -307,24 +308,12 @@
+@@ -303,29 +304,16 @@
+             }
+             else
+             {
+-                this.field_78770_f = this.field_78770_f
+-                                     + iblockstate.func_185903_a(this.field_78776_a.field_71439_g, this.field_78776_a.field_71439_g.field_70170_p, p_180512_1_);
++                this.field_78770_f += iblockstate.func_185903_a(this.field_78776_a.field_71439_g, this.field_78776_a.field_71439_g.field_70170_p, p_180512_1_);
  
                  if (this.field_78780_h % 4.0F == 0.0F)
                  {
@@ -143,15 +156,16 @@
 +                    this.field_78776_a.func_147118_V().func_147682_a(new PositionedSoundRecord(soundtype.func_185846_f(), SoundCategory.NEUTRAL, (soundtype.func_185843_a() + 1.0F) / 8.0F, soundtype.func_185847_b() * 0.5F, p_180512_1_));
                  }
  
-                 ++this.field_78780_h;
+-                this.field_78780_h++;
 -                this.field_78776_a
 -                .func_193032_ao()
 -                .func_193294_a(this.field_78776_a.field_71441_e, p_180512_1_, iblockstate, MathHelper.func_76131_a(this.field_78770_f, 0.0F, 1.0F));
++                ++this.field_78780_h;
 +                this.field_78776_a.func_193032_ao().func_193294_a(this.field_78776_a.field_71441_e, p_180512_1_, iblockstate, MathHelper.func_76131_a(this.field_78770_f, 0.0F, 1.0F));
  
                  if (this.field_78770_f >= 1.0F)
                  {
-@@ -336,9 +325,7 @@
+@@ -337,9 +325,7 @@
                      this.field_78781_i = 5;
                  }
  
@@ -162,7 +176,7 @@
                  return true;
              }
          }
-@@ -350,7 +337,8 @@
+@@ -351,7 +337,8 @@
  
      public float func_78757_d()
      {
@@ -172,7 +186,7 @@
      }
  
      public void func_78765_e()
-@@ -374,9 +362,7 @@
+@@ -375,9 +362,7 @@
  
          if (!this.field_85183_f.func_190926_b() && !itemstack.func_190926_b())
          {
@@ -183,7 +197,7 @@
          }
  
          return p_178893_1_.equals(this.field_178895_c) && flag;
-@@ -393,9 +379,7 @@
+@@ -394,9 +379,7 @@
          }
      }
  
@@ -194,7 +208,7 @@
      {
          this.func_78750_j();
          ItemStack itemstack = p_187099_1_.func_184586_b(p_187099_6_);
-@@ -410,14 +394,34 @@
+@@ -411,14 +394,34 @@
          }
          else
          {
@@ -232,7 +246,7 @@
                  }
  
                  if (!flag && itemstack.func_77973_b() instanceof ItemBlock)
-@@ -433,44 +437,53 @@
+@@ -434,44 +437,53 @@
  
              this.field_78774_b.func_147297_a(new CPacketPlayerTryUseItemOnBlock(p_187099_3_, p_187099_4_, p_187099_6_, f, f1, f2));
  
@@ -321,7 +335,7 @@
          }
      }
  
-@@ -492,6 +505,8 @@
+@@ -493,6 +505,8 @@
              }
              else
              {
@@ -330,7 +344,7 @@
                  int i = itemstack.func_190916_E();
                  ActionResult<ItemStack> actionresult = itemstack.func_77957_a(p_187101_2_, p_187101_1_, p_187101_3_);
                  ItemStack itemstack1 = actionresult.func_188398_b();
-@@ -499,6 +514,10 @@
+@@ -500,6 +514,10 @@
                  if (itemstack1 != itemstack || itemstack1.func_190916_E() != i)
                  {
                      p_187101_1_.func_184611_a(p_187101_3_, itemstack1);
@@ -341,7 +355,7 @@
                  }
  
                  return actionresult.func_188397_a();
-@@ -533,12 +552,11 @@
+@@ -534,12 +552,11 @@
      public EnumActionResult func_187102_a(EntityPlayer p_187102_1_, Entity p_187102_2_, RayTraceResult p_187102_3_, EnumHand p_187102_4_)
      {
          this.func_78750_j();
@@ -358,7 +372,7 @@
          return this.field_78779_k == GameType.SPECTATOR ? EnumActionResult.PASS : p_187102_2_.func_184199_a(p_187102_1_, vec3d, p_187102_4_);
      }
  
-@@ -625,6 +643,6 @@
+@@ -626,6 +643,6 @@
  
      public void func_187100_a(int p_187100_1_)
      {

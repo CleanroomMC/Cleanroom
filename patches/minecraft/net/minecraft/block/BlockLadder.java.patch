@@ -51,7 +51,24 @@
      public boolean func_176198_a(World p_176198_1_, BlockPos p_176198_2_, EnumFacing p_176198_3_)
      {
          if (this.func_193392_c(p_176198_1_, p_176198_2_.func_177976_e(), p_176198_3_))
-@@ -90,17 +87,7 @@
+@@ -73,11 +70,13 @@
+         {
+             return true;
+         }
++        else if (this.func_193392_c(p_176198_1_, p_176198_2_.func_177978_c(), p_176198_3_))
++        {
++            return true;
++        }
+         else
+         {
+-            return this.func_193392_c(p_176198_1_, p_176198_2_.func_177978_c(), p_176198_3_)
+-                   ? true
+-                   : this.func_193392_c(p_176198_1_, p_176198_2_.func_177968_d(), p_176198_3_);
++            return this.func_193392_c(p_176198_1_, p_176198_2_.func_177968_d(), p_176198_3_);
+         }
+     }
+ 
+@@ -88,17 +87,7 @@
          return !flag && iblockstate.func_193401_d(p_193392_1_, p_193392_2_, p_193392_3_) == BlockFaceShape.SOLID && !iblockstate.func_185897_m();
      }
  
@@ -70,7 +87,7 @@
      {
          if (p_180642_3_.func_176740_k().func_176722_c() && this.func_193392_c(p_180642_1_, p_180642_2_.func_177972_a(p_180642_3_.func_176734_d()), p_180642_3_))
          {
-@@ -120,10 +107,9 @@
+@@ -118,10 +107,9 @@
          }
      }
  
@@ -82,7 +99,7 @@
  
          if (!this.func_193392_c(p_189540_2_, p_189540_3_.func_177972_a(enumfacing.func_176734_d()), enumfacing))
          {
-@@ -134,14 +120,6 @@
+@@ -132,14 +120,6 @@
          super.func_189540_a(p_189540_1_, p_189540_2_, p_189540_3_, p_189540_4_, p_189540_5_);
      }
  
@@ -97,7 +114,7 @@
      public IBlockState func_176203_a(int p_176203_1_)
      {
          EnumFacing enumfacing = EnumFacing.func_82600_a(p_176203_1_);
-@@ -154,31 +132,34 @@
+@@ -152,31 +132,34 @@
          return this.func_176223_P().func_177226_a(field_176382_a, enumfacing);
      }
  

@@ -152,7 +152,19 @@
      public boolean equals(Object p_equals_1_)
      {
          if (this == p_equals_1_)
-@@ -214,7 +198,6 @@
+@@ -203,14 +187,17 @@
+             {
+                 return false;
+             }
++            else if (Double.compare(vec3d.field_72448_b, this.field_72448_b) != 0)
++            {
++                return false;
++            }
+             else
+             {
+-                return Double.compare(vec3d.field_72448_b, this.field_72448_b) != 0 ? false : Double.compare(vec3d.field_72449_c, this.field_72449_c) == 0;
++                return Double.compare(vec3d.field_72449_c, this.field_72449_c) == 0;
+             }
          }
      }
  
@@ -160,7 +172,7 @@
      public int hashCode()
      {
          long j = Double.doubleToLongBits(this.field_72450_a);
-@@ -222,10 +205,10 @@
+@@ -218,10 +205,10 @@
          j = Double.doubleToLongBits(this.field_72448_b);
          i = 31 * i + (int)(j ^ j >>> 32);
          j = Double.doubleToLongBits(this.field_72449_c);
@@ -173,7 +185,7 @@
      public String toString()
      {
          return "(" + this.field_72450_a + ", " + this.field_72448_b + ", " + this.field_72449_c + ")";
-@@ -251,19 +234,17 @@
+@@ -247,19 +234,17 @@
          return new Vec3d(d0, d1, d2);
      }
  

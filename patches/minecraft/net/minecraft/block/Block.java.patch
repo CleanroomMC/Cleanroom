@@ -249,7 +249,7 @@
 +            List<ItemStack> drops = getDrops(p_180653_1_, p_180653_2_, p_180653_3_, p_180653_5_); // use the old method until it gets removed, for backward compatibility
 +            p_180653_4_ = net.minecraftforge.event.ForgeEventFactory.fireBlockHarvesting(drops, p_180653_1_, p_180653_2_, p_180653_3_, p_180653_5_, p_180653_4_, false, harvesters.get());
  
--            for (int j = 0; j < i; ++j)
+-            for (int j = 0; j < i; j++)
 +            for (ItemStack drop : drops)
              {
 -                if (!(p_180653_1_.field_73012_v.nextFloat() > p_180653_4_))
@@ -3036,7 +3036,7 @@
 -        {
 -            if (set.contains(block16))
 -            {
--                for (int i = 0; i < 15; ++i)
+-                for (int i = 0; i < 15; i++)
 -                {
 -                    int j = field_149771_c.func_148757_b(block16) << 4 | i;
 -                    field_176229_d.func_148746_a(block16.func_176203_a(i), j);

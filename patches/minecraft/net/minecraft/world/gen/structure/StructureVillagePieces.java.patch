@@ -176,7 +176,16 @@
      {
          int i = func_75079_a(p_176067_0_.field_74931_h);
  
-@@ -224,15 +172,12 @@
+@@ -215,7 +163,7 @@
+ 
+             while (j < 5)
+             {
+-                j++;
++                ++j;
+                 int k = p_176067_2_.nextInt(i);
+ 
+                 for (StructureVillagePieces.PieceWeight structurevillagepieces$pieceweight : p_176067_0_.field_74931_h)
+@@ -224,19 +172,16 @@
  
                      if (k < 0)
                      {
@@ -194,6 +203,11 @@
  
                          if (structurevillagepieces$village != null)
                          {
+-                            structurevillagepieces$pieceweight.field_75089_c++;
++                            ++structurevillagepieces$pieceweight.field_75089_c;
+                             p_176067_0_.field_74926_d = structurevillagepieces$pieceweight;
+ 
+                             if (!structurevillagepieces$pieceweight.func_75086_a())
 @@ -250,36 +195,28 @@
                  }
              }
@@ -302,6 +316,15 @@
              public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
              {
                  if (this.field_143015_k < 0)
+@@ -435,7 +348,7 @@
+                 this.func_189926_a(p_74875_1_, EnumFacing.NORTH, 2, 4, 5, p_74875_3_);
+                 IBlockState iblockstate4 = Blocks.field_150468_ap.func_176223_P().func_177226_a(BlockLadder.field_176382_a, EnumFacing.WEST);
+ 
+-                for (int i = 1; i <= 9; i++)
++                for (int i = 1; i <= 9; ++i)
+                 {
+                     this.func_175811_a(p_74875_1_, iblockstate4, 3, i, 3, p_74875_3_);
+                 }
 @@ -444,8 +357,7 @@
                  this.func_175811_a(p_74875_1_, Blocks.field_150350_a.func_176223_P(), 2, 2, 0, p_74875_3_);
                  this.func_189927_a(p_74875_1_, p_74875_3_, p_74875_2_, 2, 1, 0, EnumFacing.NORTH);
@@ -312,6 +335,18 @@
                  {
                      this.func_175811_a(p_74875_1_, iblockstate1, 2, 0, -1, p_74875_3_);
  
+@@ -455,9 +367,9 @@
+                     }
+                 }
+ 
+-                for (int k = 0; k < 9; k++)
++                for (int k = 0; k < 9; ++k)
+                 {
+-                    for (int j = 0; j < 5; j++)
++                    for (int j = 0; j < 5; ++j)
+                     {
+                         this.func_74871_b(p_74875_1_, j, 12, k, p_74875_3_);
+                         this.func_175808_b(p_74875_1_, iblockstate, j, -1, k, p_74875_3_);
 @@ -468,7 +380,6 @@
                  return true;
              }
@@ -363,6 +398,27 @@
              public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
              {
                  if (this.field_143015_k < 0)
+@@ -600,7 +497,7 @@
+                 this.func_175804_a(p_74875_1_, p_74875_3_, 3, 0, 1, 3, 0, 7, Blocks.field_150355_j.func_176223_P(), Blocks.field_150355_j.func_176223_P(), false);
+                 this.func_175804_a(p_74875_1_, p_74875_3_, 9, 0, 1, 9, 0, 7, Blocks.field_150355_j.func_176223_P(), Blocks.field_150355_j.func_176223_P(), false);
+ 
+-                for (int i = 1; i <= 7; i++)
++                for (int i = 1; i <= 7; ++i)
+                 {
+                     int j = ((BlockCrops)this.field_82679_b).func_185526_g();
+                     int k = j / 3;
+@@ -620,9 +517,9 @@
+                     this.func_175811_a(p_74875_1_, this.field_82681_h.func_176203_a(MathHelper.func_76136_a(p_74875_2_, i2, l1)), 11, 1, i, p_74875_3_);
+                 }
+ 
+-                for (int j2 = 0; j2 < 9; j2++)
++                for (int j2 = 0; j2 < 9; ++j2)
+                 {
+-                    for (int k2 = 0; k2 < 13; k2++)
++                    for (int k2 = 0; k2 < 13; ++k2)
+                     {
+                         this.func_74871_b(p_74875_1_, k2, 4, j2, p_74875_3_);
+                         this.func_175808_b(p_74875_1_, Blocks.field_150346_d.func_176223_P(), k2, -1, j2, p_74875_3_);
 @@ -651,7 +548,6 @@
                  this.field_82676_c = this.func_151560_a(p_i45569_3_);
              }
@@ -406,6 +462,27 @@
              public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
              {
                  if (this.field_143015_k < 0)
+@@ -726,7 +609,7 @@
+                 this.func_175804_a(p_74875_1_, p_74875_3_, 1, 0, 8, 5, 0, 8, iblockstate, iblockstate, false);
+                 this.func_175804_a(p_74875_1_, p_74875_3_, 3, 0, 1, 3, 0, 7, Blocks.field_150355_j.func_176223_P(), Blocks.field_150355_j.func_176223_P(), false);
+ 
+-                for (int i = 1; i <= 7; i++)
++                for (int i = 1; i <= 7; ++i)
+                 {
+                     int j = ((BlockCrops)this.field_82675_b).func_185526_g();
+                     int k = j / 3;
+@@ -738,9 +621,9 @@
+                     this.func_175811_a(p_74875_1_, this.field_82676_c.func_176203_a(MathHelper.func_76136_a(p_74875_2_, i1, l)), 5, 1, i, p_74875_3_);
+                 }
+ 
+-                for (int j1 = 0; j1 < 9; j1++)
++                for (int j1 = 0; j1 < 9; ++j1)
+                 {
+-                    for (int k1 = 0; k1 < 7; k1++)
++                    for (int k1 = 0; k1 < 7; ++k1)
+                     {
+                         this.func_74871_b(p_74875_1_, k1, 4, j1, p_74875_3_);
+                         this.func_175808_b(p_74875_1_, Blocks.field_150346_d.func_176223_P(), k1, -1, j1, p_74875_3_);
 @@ -764,24 +647,12 @@
                  this.field_74887_e = p_i45567_4_;
              }
@@ -433,6 +510,18 @@
              public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
              {
                  if (this.field_143015_k < 0)
+@@ -827,9 +698,9 @@
+                 IBlockState iblockstate7 = iblockstate1;
+                 IBlockState iblockstate8 = iblockstate2;
+ 
+-                for (int i = -1; i <= 2; i++)
++                for (int i = -1; i <= 2; ++i)
+                 {
+-                    for (int j = 0; j <= 8; j++)
++                    for (int j = 0; j <= 8; ++j)
+                     {
+                         this.func_175811_a(p_74875_1_, iblockstate7, j, 4 + i, i, p_74875_3_);
+                         this.func_175811_a(p_74875_1_, iblockstate8, j, 4 + i, 5 - i, p_74875_3_);
 @@ -861,8 +732,7 @@
                  this.func_189926_a(p_74875_1_, EnumFacing.NORTH, 2, 3, 1, p_74875_3_);
                  this.func_189927_a(p_74875_1_, p_74875_3_, p_74875_2_, 2, 1, 0, EnumFacing.NORTH);
@@ -443,6 +532,18 @@
                  {
                      this.func_175811_a(p_74875_1_, iblockstate7, 2, 0, -1, p_74875_3_);
  
+@@ -877,9 +747,9 @@
+                 this.func_189926_a(p_74875_1_, EnumFacing.SOUTH, 6, 3, 4, p_74875_3_);
+                 this.func_189927_a(p_74875_1_, p_74875_3_, p_74875_2_, 6, 1, 5, EnumFacing.SOUTH);
+ 
+-                for (int k = 0; k < 5; k++)
++                for (int k = 0; k < 5; ++k)
+                 {
+-                    for (int l = 0; l < 9; l++)
++                    for (int l = 0; l < 9; ++l)
+                     {
+                         this.func_74871_b(p_74875_1_, l, 7, k, p_74875_3_);
+                         this.func_175808_b(p_74875_1_, iblockstate, l, -1, k, p_74875_3_);
 @@ -890,7 +760,6 @@
                  return true;
              }
@@ -478,6 +579,18 @@
              public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
              {
                  if (this.field_143015_k < 0)
+@@ -955,9 +812,9 @@
+                 this.func_175804_a(p_74875_1_, p_74875_3_, 0, 6, 1, 8, 6, 4, iblockstate, iblockstate, false);
+                 this.func_175804_a(p_74875_1_, p_74875_3_, 0, 7, 2, 8, 7, 3, iblockstate, iblockstate, false);
+ 
+-                for (int i = -1; i <= 2; i++)
++                for (int i = -1; i <= 2; ++i)
+                 {
+-                    for (int j = 0; j <= 8; j++)
++                    for (int j = 0; j <= 8; ++j)
+                     {
+                         this.func_175811_a(p_74875_1_, iblockstate1, j, 6 + i, i, p_74875_3_);
+                         this.func_175811_a(p_74875_1_, iblockstate2, j, 6 + i, 5 - i, p_74875_3_);
 @@ -1012,8 +869,7 @@
                  this.func_175811_a(p_74875_1_, Blocks.field_150350_a.func_176223_P(), 1, 2, 0, p_74875_3_);
                  this.func_189927_a(p_74875_1_, p_74875_3_, p_74875_2_, 1, 1, 0, EnumFacing.NORTH);
@@ -488,6 +601,18 @@
                  {
                      this.func_175811_a(p_74875_1_, iblockstate5, 1, 0, -1, p_74875_3_);
  
+@@ -1023,9 +879,9 @@
+                     }
+                 }
+ 
+-                for (int l = 0; l < 6; l++)
++                for (int l = 0; l < 6; ++l)
+                 {
+-                    for (int k = 0; k < 9; k++)
++                    for (int k = 0; k < 9; ++k)
+                     {
+                         this.func_74871_b(p_74875_1_, k, 9, l, p_74875_3_);
+                         this.func_175808_b(p_74875_1_, iblockstate, k, -1, l, p_74875_3_);
 @@ -1036,7 +892,6 @@
                  return true;
              }
@@ -537,9 +662,12 @@
              public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
              {
                  if (this.field_143015_k < 0)
-@@ -1155,8 +996,7 @@
+@@ -1153,10 +994,9 @@
+                     this.func_186167_a(p_74875_1_, p_74875_3_, p_74875_2_, 5, 1, 5, LootTableList.field_186423_e);
+                 }
  
-                 for (int i = 6; i <= 8; ++i)
+-                for (int i = 6; i <= 8; i++)
++                for (int i = 6; i <= 8; ++i)
                  {
 -                    if (this.func_175807_a(p_74875_1_, i, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a
 -                            && this.func_175807_a(p_74875_1_, i, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
@@ -547,6 +675,18 @@
                      {
                          this.func_175811_a(p_74875_1_, iblockstate4, i, 0, -1, p_74875_3_);
  
+@@ -1167,9 +1007,9 @@
+                     }
+                 }
+ 
+-                for (int k = 0; k < 7; k++)
++                for (int k = 0; k < 7; ++k)
+                 {
+-                    for (int j = 0; j < 10; j++)
++                    for (int j = 0; j < 10; ++j)
+                     {
+                         this.func_74871_b(p_74875_1_, j, 6, k, p_74875_3_);
+                         this.func_175808_b(p_74875_1_, iblockstate, j, -1, k, p_74875_3_);
 @@ -1180,7 +1020,6 @@
                  return true;
              }
@@ -582,6 +722,44 @@
              public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
              {
                  if (this.field_143015_k < 0)
+@@ -1264,9 +1091,9 @@
+                 IBlockState iblockstate9 = iblockstate4;
+                 IBlockState iblockstate10 = iblockstate3;
+ 
+-                for (int i = -1; i <= 2; i++)
++                for (int i = -1; i <= 2; ++i)
+                 {
+-                    for (int j = 0; j <= 8; j++)
++                    for (int j = 0; j <= 8; ++j)
+                     {
+                         this.func_175811_a(p_74875_1_, iblockstate7, j, 4 + i, i, p_74875_3_);
+ 
+@@ -1283,11 +1110,11 @@
+                 this.func_175804_a(p_74875_1_, p_74875_3_, 6, 5, 4, 6, 5, 10, iblockstate5, iblockstate5, false);
+                 this.func_175804_a(p_74875_1_, p_74875_3_, 5, 6, 3, 5, 6, 10, iblockstate5, iblockstate5, false);
+ 
+-                for (int k = 4; k >= 1; k--)
++                for (int k = 4; k >= 1; --k)
+                 {
+                     this.func_175811_a(p_74875_1_, iblockstate5, k, 2 + k, 7 - k, p_74875_3_);
+ 
+-                    for (int k1 = 8 - k; k1 <= 10; k1++)
++                    for (int k1 = 8 - k; k1 <= 10; ++k1)
+                     {
+                         this.func_175811_a(p_74875_1_, iblockstate10, k, 2 + k, k1, p_74875_3_);
+                     }
+@@ -1297,9 +1124,9 @@
+                 this.func_175811_a(p_74875_1_, iblockstate5, 7, 5, 4, p_74875_3_);
+                 this.func_175811_a(p_74875_1_, iblockstate4, 6, 6, 4, p_74875_3_);
+ 
+-                for (int l = 6; l <= 8; l++)
++                for (int l = 6; l <= 8; ++l)
+                 {
+-                    for (int l1 = 5; l1 <= 10; l1++)
++                    for (int l1 = 5; l1 <= 10; ++l1)
+                     {
+                         this.func_175811_a(p_74875_1_, iblockstate9, l, 12 - l, l1, p_74875_3_);
+                     }
 @@ -1335,8 +1162,7 @@
                  this.func_189927_a(p_74875_1_, p_74875_3_, p_74875_2_, 2, 1, 0, EnumFacing.NORTH);
                  this.func_175804_a(p_74875_1_, p_74875_3_, 1, 0, -1, 3, 2, -1, Blocks.field_150350_a.func_176223_P(), Blocks.field_150350_a.func_176223_P(), false);
@@ -592,6 +770,29 @@
                  {
                      this.func_175811_a(p_74875_1_, iblockstate7, 2, 0, -1, p_74875_3_);
  
+@@ -1346,18 +1172,18 @@
+                     }
+                 }
+ 
+-                for (int i1 = 0; i1 < 5; i1++)
++                for (int i1 = 0; i1 < 5; ++i1)
+                 {
+-                    for (int i2 = 0; i2 < 9; i2++)
++                    for (int i2 = 0; i2 < 9; ++i2)
+                     {
+                         this.func_74871_b(p_74875_1_, i2, 7, i1, p_74875_3_);
+                         this.func_175808_b(p_74875_1_, iblockstate, i2, -1, i1, p_74875_3_);
+                     }
+                 }
+ 
+-                for (int j1 = 5; j1 < 11; j1++)
++                for (int j1 = 5; j1 < 11; ++j1)
+                 {
+-                    for (int j2 = 2; j2 < 9; j2++)
++                    for (int j2 = 2; j2 < 9; ++j2)
+                     {
+                         this.func_74871_b(p_74875_1_, j2, 7, j1, p_74875_3_);
+                         this.func_175808_b(p_74875_1_, iblockstate, j2, -1, j1, p_74875_3_);
 @@ -1377,9 +1203,7 @@
              {
              }
@@ -654,6 +855,18 @@
                  {
                      this.func_175811_a(p_74875_1_, iblockstate2, 2, 0, -1, p_74875_3_);
  
+@@ -1511,9 +1320,9 @@
+ 
+                 this.func_189926_a(p_74875_1_, EnumFacing.NORTH, 2, 3, 1, p_74875_3_);
+ 
+-                for (int j = 0; j < 5; j++)
++                for (int j = 0; j < 5; ++j)
+                 {
+-                    for (int i = 0; i < 5; i++)
++                    for (int i = 0; i < 5; ++i)
+                     {
+                         this.func_74871_b(p_74875_1_, i, 6, j, p_74875_3_);
+                         this.func_175808_b(p_74875_1_, iblockstate, i, -1, j, p_74875_3_);
 @@ -1541,21 +1350,18 @@
                  this.field_74934_a = Math.max(p_i45562_4_.func_78883_b(), p_i45562_4_.func_78880_d());
              }
@@ -812,6 +1025,18 @@
              public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
              {
                  IBlockState iblockstate = this.func_175847_a(Blocks.field_185774_da.func_176223_P());
+@@ -1726,9 +1451,9 @@
+                 IBlockState iblockstate2 = this.func_175847_a(Blocks.field_150351_n.func_176223_P());
+                 IBlockState iblockstate3 = this.func_175847_a(Blocks.field_150347_e.func_176223_P());
+ 
+-                for (int i = this.field_74887_e.field_78897_a; i <= this.field_74887_e.field_78893_d; i++)
++                for (int i = this.field_74887_e.field_78897_a; i <= this.field_74887_e.field_78893_d; ++i)
+                 {
+-                    for (int j = this.field_74887_e.field_78896_c; j <= this.field_74887_e.field_78892_f; j++)
++                    for (int j = this.field_74887_e.field_78896_c; j <= this.field_74887_e.field_78892_f; ++j)
+                     {
+                         BlockPos blockpos = new BlockPos(i, 64, j);
+ 
 @@ -1757,9 +1482,7 @@
                                      break;
                                  }
@@ -1040,7 +1265,24 @@
                      }
                  }
                  else
-@@ -2110,7 +1743,14 @@
+@@ -2096,21 +1729,28 @@
+                 int j = 0;
+                 BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+ 
+-                for (int k = this.field_74887_e.field_78896_c; k <= this.field_74887_e.field_78892_f; k++)
++                for (int k = this.field_74887_e.field_78896_c; k <= this.field_74887_e.field_78892_f; ++k)
+                 {
+-                    for (int l = this.field_74887_e.field_78897_a; l <= this.field_74887_e.field_78893_d; l++)
++                    for (int l = this.field_74887_e.field_78897_a; l <= this.field_74887_e.field_78893_d; ++l)
+                     {
+                         blockpos$mutableblockpos.func_181079_c(l, 64, k);
+ 
+                         if (p_74889_2_.func_175898_b(blockpos$mutableblockpos))
+                         {
+                             i += Math.max(p_74889_1_.func_175672_r(blockpos$mutableblockpos).func_177956_o(), p_74889_1_.field_73011_w.func_76557_i() - 1);
+-                            j++;
++                            ++j;
+                         }
                      }
                  }
  
@@ -1056,7 +1298,22 @@
              }
  
              protected static boolean func_74895_a(StructureBoundingBox p_74895_0_)
-@@ -2138,31 +1778,40 @@
+@@ -2122,7 +1762,7 @@
+             {
+                 if (this.field_74896_a < p_74893_6_)
+                 {
+-                    for (int i = this.field_74896_a; i < p_74893_6_; i++)
++                    for (int i = this.field_74896_a; i < p_74893_6_; ++i)
+                     {
+                         int j = this.func_74865_a(p_74893_3_ + i, p_74893_5_);
+                         int k = this.func_74862_a(p_74893_4_);
+@@ -2133,36 +1773,45 @@
+                             break;
+                         }
+ 
+-                        this.field_74896_a++;
++                        ++this.field_74896_a;
+ 
                          if (this.field_189929_i)
                          {
                              EntityZombieVillager entityzombievillager = new EntityZombieVillager(p_74893_1_);
@@ -1238,6 +1495,18 @@
              public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
              {
                  if (this.field_143015_k < 0)
+@@ -2410,9 +1998,9 @@
+                 this.func_175811_a(p_74875_1_, iblockstate1, 4, 14, 4, p_74875_3_);
+                 this.func_175804_a(p_74875_1_, p_74875_3_, 1, 15, 1, 4, 15, 4, iblockstate, iblockstate, false);
+ 
+-                for (int i = 0; i <= 5; i++)
++                for (int i = 0; i <= 5; ++i)
+                 {
+-                    for (int j = 0; j <= 5; j++)
++                    for (int j = 0; j <= 5; ++j)
+                     {
+                         if (j == 0 || j == 5 || i == 0 || i == 5)
+                         {
 @@ -2444,7 +2032,6 @@
                  this.field_74910_c = p_i45565_3_.nextInt(3);
              }
@@ -1291,3 +1560,15 @@
                  {
                      this.func_175811_a(p_74875_1_, iblockstate2, 1, 0, -1, p_74875_3_);
  
+@@ -2552,9 +2125,9 @@
+                     }
+                 }
+ 
+-                for (int i = 0; i < 5; i++)
++                for (int i = 0; i < 5; ++i)
+                 {
+-                    for (int j = 0; j < 4; j++)
++                    for (int j = 0; j < 4; ++j)
+                     {
+                         this.func_74871_b(p_74875_1_, j, 6, i, p_74875_3_);
+                         this.func_175808_b(p_74875_1_, iblockstate, j, -1, i, p_74875_3_);

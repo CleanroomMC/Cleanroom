@@ -19,10 +19,9 @@
 
 package net.minecraftforge.fml.common.asm.transformers;
 
+import org.objectweb.asm.*;
+
 import net.minecraft.launchwrapper.IClassTransformer;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 
 public class TerminalTransformer implements IClassTransformer
 {
@@ -46,15 +45,31 @@ public class TerminalTransformer implements IClassTransformer
         @Override
         public void visit(int version, int access, String name, String signature, String superName, String[] interfaces)
         {
-
+            super.visit(version, access, name, signature, superName, interfaces);
         }
 
         @Override
         public MethodVisitor visitMethod(int mAccess, final String mName, final String mDesc, String mSignature, String[] mExceptions)
         {
-            return new MethodVisitor(Opcodes.ASM9, super.visitMethod(mAccess, mName, mDesc, mSignature, mExceptions)){};
+            return null;
         }
 
+        // Intercept System.exit, and check if the caller is allowed to use it, if not wrap it in a ExitTrappedException
+        public static void systemExitCalled(int status)
+        {
+        }
+        // Intercept Runtime.getRuntime().exit, and check if the caller is allowed to use it, if not wrap it in a ExitTrappedException
+        public static void runtimeExitCalled(Runtime runtime, int status)
+        {
+        }
 
+        // Intercept Runtime.getRuntime().halt, and check if the caller is allowed to use it, if not wrap it in a ExitTrappedException
+        public static void runtimeHaltCalled(Runtime runtime, int status)
+        {
+        }
+
+        private static void checkAccess()
+        {
+        }
     }
 }

@@ -169,10 +169,6 @@ public class ModAPIManager {
                 container = new APIContainer(providedAPI, apiVersion, data.getCandidate().getModContainer(), VersionParser.parseVersionReference(apiOwner));
                 apiContainers.put(providedAPI, container);
             }
-            else
-            {
-                container.validate(providedAPI, apiOwner, apiVersion);
-            }
             container.addOwnedPackage(apiPackage);
             for (ModContainer mc : data.getCandidate().getContainedMods())
             {

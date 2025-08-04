@@ -8,7 +8,7 @@
      public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
      {
          int i = this.func_150533_a(p_180709_2_);
-@@ -31,7 +30,7 @@
+@@ -31,11 +30,11 @@
  
              for (int j = p_180709_3_.func_177956_o() + i - 2 - p_180709_2_.nextInt(4); j > p_180709_3_.func_177956_o() + i / 2; j -= 2 + p_180709_2_.nextInt(4))
              {
@@ -17,7 +17,25 @@
                  int k = p_180709_3_.func_177958_n() + (int)(0.5F + MathHelper.func_76134_b(f) * 4.0F);
                  int l = p_180709_3_.func_177952_p() + (int)(0.5F + MathHelper.func_76126_a(f) * 4.0F);
  
-@@ -56,7 +55,7 @@
+-                for (int i1 = 0; i1 < 5; i1++)
++                for (int i1 = 0; i1 < 5; ++i1)
+                 {
+                     k = p_180709_3_.func_177958_n() + (int)(1.5F + MathHelper.func_76134_b(f) * (float)i1);
+                     l = p_180709_3_.func_177952_p() + (int)(1.5F + MathHelper.func_76126_a(f) * (float)i1);
+@@ -45,18 +44,18 @@
+                 int j2 = 1 + p_180709_2_.nextInt(2);
+                 int j1 = j;
+ 
+-                for (int k1 = j - j2; k1 <= j1; k1++)
++                for (int k1 = j - j2; k1 <= j1; ++k1)
+                 {
+                     int l1 = k1 - j1;
+                     this.func_175928_b(p_180709_1_, new BlockPos(k, k1, l), 1 - l1);
+                 }
+             }
+ 
+-            for (int i2 = 0; i2 < i; i2++)
++            for (int i2 = 0; i2 < i; ++i2)
              {
                  BlockPos blockpos = p_180709_3_.func_177981_b(i2);
  
@@ -62,7 +80,12 @@
          }
      }
  
-@@ -130,5 +129,12 @@
+@@ -126,9 +125,16 @@
+     {
+         int i = 2;
+ 
+-        for (int j = -2; j <= 0; j++)
++        for (int j = -2; j <= 0; ++j)
          {
              this.func_175925_a(p_175930_1_, p_175930_2_.func_177981_b(j), p_175930_3_ + 1 - j);
          }

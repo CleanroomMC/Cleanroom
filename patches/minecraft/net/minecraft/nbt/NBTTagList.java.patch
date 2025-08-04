@@ -16,7 +16,7 @@
      void func_74734_a(DataOutput p_74734_1_) throws IOException
      {
          if (this.field_74747_a.isEmpty())
-@@ -24,7 +23,7 @@
+@@ -24,19 +23,18 @@
          }
          else
          {
@@ -25,9 +25,10 @@
          }
  
          p_74734_1_.writeByte(this.field_74746_b);
-@@ -32,11 +31,10 @@
+         p_74734_1_.writeInt(this.field_74747_a.size());
  
-         for (int i = 0; i < this.field_74747_a.size(); ++i)
+-        for (int i = 0; i < this.field_74747_a.size(); i++)
++        for (int i = 0; i < this.field_74747_a.size(); ++i)
          {
 -            this.field_74747_a.get(i).func_74734_a(p_74734_1_);
 +            ((NBTBase)this.field_74747_a.get(i)).func_74734_a(p_74734_1_);
@@ -38,16 +39,19 @@
      void func_152446_a(DataInput p_152446_1_, int p_152446_2_, NBTSizeTracker p_152446_3_) throws IOException
      {
          p_152446_3_.func_152450_a(296L);
-@@ -57,7 +55,7 @@
+@@ -57,9 +55,9 @@
              else
              {
                  p_152446_3_.func_152450_a(32L * (long)i);
 -                this.field_74747_a = Lists.newArrayListWithCapacity(i);
 +                this.field_74747_a = Lists.<NBTBase>newArrayListWithCapacity(i);
  
-                 for (int j = 0; j < i; ++j)
+-                for (int j = 0; j < i; j++)
++                for (int j = 0; j < i; ++j)
                  {
-@@ -69,13 +67,11 @@
+                     NBTBase nbtbase = NBTBase.func_150284_a(this.field_74746_b);
+                     nbtbase.func_152446_a(p_152446_1_, p_152446_2_ + 1, p_152446_3_);
+@@ -69,18 +67,16 @@
          }
      }
  
@@ -61,6 +65,12 @@
      public String toString()
      {
          StringBuilder stringbuilder = new StringBuilder("[");
+ 
+-        for (int i = 0; i < this.field_74747_a.size(); i++)
++        for (int i = 0; i < this.field_74747_a.size(); ++i)
+         {
+             if (i != 0)
+             {
 @@ -146,7 +142,6 @@
          return this.field_74747_a.remove(p_74744_1_);
      }

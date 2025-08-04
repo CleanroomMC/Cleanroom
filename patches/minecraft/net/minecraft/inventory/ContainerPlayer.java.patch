@@ -12,8 +12,22 @@
      public InventoryCrafting field_75181_e = new InventoryCrafting(this, 2, 2);
      public InventoryCraftResult field_75179_f = new InventoryCraftResult();
      public boolean field_75180_g;
-@@ -38,36 +35,28 @@
-         for (int k = 0; k < 4; ++k)
+@@ -27,58 +24,50 @@
+         this.field_82862_h = p_i1819_3_;
+         this.func_75146_a(new SlotCrafting(p_i1819_1_.field_70458_d, this.field_75181_e, this.field_75179_f, 0, 154, 28));
+ 
+-        for (int i = 0; i < 2; i++)
++        for (int i = 0; i < 2; ++i)
+         {
+-            for (int j = 0; j < 2; j++)
++            for (int j = 0; j < 2; ++j)
+             {
+                 this.func_75146_a(new Slot(this.field_75181_e, j + i * 2, 98 + j * 18, 18 + i * 18));
+             }
+         }
+ 
+-        for (int k = 0; k < 4; k++)
++        for (int k = 0; k < 4; ++k)
          {
              final EntityEquipmentSlot entityequipmentslot = field_185003_h[k];
 -            this.func_75146_a(
@@ -52,7 +66,21 @@
 +            });
          }
  
-         for (int l = 0; l < 3; ++l)
+-        for (int l = 0; l < 3; l++)
++        for (int l = 0; l < 3; ++l)
+         {
+-            for (int j1 = 0; j1 < 9; j1++)
++            for (int j1 = 0; j1 < 9; ++j1)
+             {
+                 this.func_75146_a(new Slot(p_i1819_1_, j1 + (l + 1) * 9, 8 + j1 * 18, 84 + l * 18));
+             }
+         }
+ 
+-        for (int i1 = 0; i1 < 9; i1++)
++        for (int i1 = 0; i1 < 9; ++i1)
+         {
+             this.func_75146_a(new Slot(p_i1819_1_, i1, 8 + i1 * 18, 142));
+         }
 @@ -87,7 +76,6 @@
          {
              @Nullable

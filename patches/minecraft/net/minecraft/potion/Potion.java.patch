@@ -46,7 +46,52 @@
              p_180793_3_.func_70691_i((float)i);
          }
      }
-@@ -204,6 +204,12 @@
+@@ -146,17 +146,41 @@
+         if (this == MobEffects.field_76428_l)
+         {
+             int k = 50 >> p_76397_2_;
+-            return k > 0 ? p_76397_1_ % k == 0 : true;
++
++            if (k > 0)
++            {
++                return p_76397_1_ % k == 0;
++            }
++            else
++            {
++                return true;
++            }
+         }
+         else if (this == MobEffects.field_76436_u)
+         {
+             int j = 25 >> p_76397_2_;
+-            return j > 0 ? p_76397_1_ % j == 0 : true;
++
++            if (j > 0)
++            {
++                return p_76397_1_ % j == 0;
++            }
++            else
++            {
++                return true;
++            }
+         }
+         else if (this == MobEffects.field_82731_v)
+         {
+             int i = 40 >> p_76397_2_;
+-            return i > 0 ? p_76397_1_ % i == 0 : true;
++
++            if (i > 0)
++            {
++                return p_76397_1_ % i == 0;
++            }
++            else
++            {
++                return true;
++            }
+         }
+         else
+         {
+@@ -180,6 +204,12 @@
          return this.field_76416_I;
      }
  
@@ -59,7 +104,7 @@
      @SideOnly(Side.CLIENT)
      public boolean func_76400_d()
      {
-@@ -216,7 +222,6 @@
+@@ -192,7 +222,6 @@
          return this.field_76417_J;
      }
  
@@ -67,7 +112,7 @@
      public boolean func_76398_f()
      {
          return this.field_76418_K;
-@@ -236,12 +241,6 @@
+@@ -212,12 +241,6 @@
          }
      }
  
@@ -80,7 +125,7 @@
      public int func_76401_j()
      {
          return this.field_76414_N;
-@@ -254,12 +253,6 @@
+@@ -230,12 +253,6 @@
          return this;
      }
  
@@ -93,7 +138,7 @@
      public void func_111187_a(EntityLivingBase p_111187_1_, AbstractAttributeMap p_111187_2_, int p_111187_3_)
      {
          for (Entry<IAttribute, AttributeModifier> entry : this.field_111188_I.entrySet())
-@@ -273,6 +266,12 @@
+@@ -249,6 +266,12 @@
          }
      }
  
@@ -106,7 +151,7 @@
      public void func_111185_a(EntityLivingBase p_111185_1_, AbstractAttributeMap p_111185_2_, int p_111185_3_)
      {
          for (Entry<IAttribute, AttributeModifier> entry : this.field_111188_I.entrySet())
-@@ -283,14 +282,7 @@
+@@ -259,14 +282,7 @@
              {
                  AttributeModifier attributemodifier = entry.getValue();
                  iattributeinstance.func_111124_b(attributemodifier);
@@ -122,7 +167,7 @@
              }
          }
      }
-@@ -300,6 +292,121 @@
+@@ -276,6 +292,121 @@
          return p_111183_2_.func_111164_d() * (double)(p_111183_1_ + 1);
      }
  
@@ -244,7 +289,7 @@
      @SideOnly(Side.CLIENT)
      public boolean func_188408_i()
      {
-@@ -314,127 +421,32 @@
+@@ -290,127 +421,32 @@
  
      public static void func_188411_k()
      {

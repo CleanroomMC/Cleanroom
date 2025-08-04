@@ -34,7 +34,15 @@
  
      public static NBTTagList func_111257_a(AbstractAttributeMap p_111257_0_)
      {
-@@ -91,7 +84,7 @@
+@@ -84,14 +77,14 @@
+ 
+     public static void func_151475_a(AbstractAttributeMap p_151475_0_, NBTTagList p_151475_1_)
+     {
+-        for (int i = 0; i < p_151475_1_.func_74745_c(); i++)
++        for (int i = 0; i < p_151475_1_.func_74745_c(); ++i)
+         {
+             NBTTagCompound nbttagcompound = p_151475_1_.func_150305_b(i);
+             IAttributeInstance iattributeinstance = p_151475_0_.func_111152_a(nbttagcompound.func_74779_i("Name"));
  
              if (iattributeinstance == null)
              {
@@ -43,6 +51,15 @@
              }
              else
              {
+@@ -108,7 +101,7 @@
+         {
+             NBTTagList nbttaglist = p_111258_1_.func_150295_c("Modifiers", 10);
+ 
+-            for (int i = 0; i < nbttaglist.func_74745_c(); i++)
++            for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+             {
+                 AttributeModifier attributemodifier = func_111259_a(nbttaglist.func_150305_b(i));
+ 
 @@ -138,7 +131,7 @@
          }
          catch (Exception exception)

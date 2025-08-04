@@ -77,7 +77,18 @@
      public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)
      {
          for (EnumFacing enumfacing : field_176596_a.func_177700_c())
-@@ -134,17 +120,7 @@
+@@ -124,23 +110,17 @@
+         {
+             return true;
+         }
++        else if (p_176595_3_ != EnumFacing.UP && p_176595_3_ != EnumFacing.DOWN)
++        {
++            return !func_193382_c(block) && blockfaceshape == BlockFaceShape.SOLID;
++        }
+         else
+         {
+-            return p_176595_3_ != EnumFacing.UP && p_176595_3_ != EnumFacing.DOWN ? !func_193382_c(block) && blockfaceshape == BlockFaceShape.SOLID : false;
++            return false;
          }
      }
  
@@ -96,7 +107,7 @@
      {
          if (this.func_176595_b(p_180642_1_, p_180642_2_, p_180642_3_))
          {
-@@ -164,13 +140,11 @@
+@@ -160,13 +140,11 @@
          }
      }
  
@@ -110,7 +121,7 @@
      public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
      {
          this.func_176592_e(p_189540_2_, p_189540_3_, p_189540_1_);
-@@ -184,7 +158,7 @@
+@@ -180,7 +158,7 @@
          }
          else
          {
@@ -119,7 +130,7 @@
              EnumFacing.Axis enumfacing$axis = enumfacing.func_176740_k();
              EnumFacing enumfacing1 = enumfacing.func_176734_d();
              BlockPos blockpos = p_176592_2_.func_177972_a(enumfacing1);
-@@ -214,7 +188,7 @@
+@@ -210,7 +188,7 @@
  
      protected boolean func_176593_f(World p_176593_1_, BlockPos p_176593_2_, IBlockState p_176593_3_)
      {
@@ -128,7 +139,7 @@
          {
              return true;
          }
-@@ -231,47 +205,28 @@
+@@ -227,47 +205,28 @@
      }
  
      @SideOnly(Side.CLIENT)
@@ -186,7 +197,7 @@
      public IBlockState func_176203_a(int p_176203_1_)
      {
          IBlockState iblockstate = this.func_176223_P();
-@@ -298,7 +253,12 @@
+@@ -294,7 +253,12 @@
          return iblockstate;
      }
  
@@ -200,7 +211,7 @@
      public int func_176201_c(IBlockState p_176201_1_)
      {
          int i = 0;
-@@ -306,45 +266,41 @@
+@@ -302,45 +266,41 @@
          switch ((EnumFacing)p_176201_1_.func_177229_b(field_176596_a))
          {
              case EAST:

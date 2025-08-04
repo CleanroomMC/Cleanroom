@@ -185,16 +185,27 @@
      public boolean func_149662_c(IBlockState p_149662_1_)
      {
          return false;
-@@ -301,7 +276,7 @@
+@@ -301,9 +276,17 @@
  
      public boolean func_176402_i(World p_176402_1_, BlockPos p_176402_2_, IBlockState p_176402_3_)
      {
 -        EnumFacing enumfacing = p_176402_3_.func_177229_b(field_185512_D).func_176734_d();
 +        EnumFacing enumfacing = ((EnumFacing)p_176402_3_.func_177229_b(field_185512_D)).func_176734_d();
          BlockPos blockpos = p_176402_2_.func_177972_a(enumfacing);
+-        return func_185546_B(p_176402_1_.func_180495_p(blockpos)) ? p_176402_1_.func_180495_p(blockpos).func_177229_b(field_185512_D) != enumfacing : false;
++
++        if (func_185546_B(p_176402_1_.func_180495_p(blockpos)))
++        {
++            return p_176402_1_.func_180495_p(blockpos).func_177229_b(field_185512_D) != enumfacing;
++        }
++        else
++        {
++            return false;
++        }
+     }
  
-         if (func_185546_B(p_176402_1_.func_180495_p(blockpos)))
-@@ -325,20 +300,36 @@
+     protected int func_176399_m(IBlockState p_176399_1_)
+@@ -317,20 +300,36 @@
  
      protected abstract IBlockState func_180675_k(IBlockState p_180675_1_);
  

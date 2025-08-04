@@ -1,6 +1,6 @@
 --- before/net/minecraft/item/crafting/RecipeTippedArrow.java
 +++ after/net/minecraft/item/crafting/RecipeTippedArrow.java
-@@ -7,12 +7,9 @@
+@@ -7,19 +7,16 @@
  import net.minecraft.potion.PotionUtils;
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
@@ -14,6 +14,15 @@
      public boolean func_77569_a(InventoryCrafting p_77569_1_, World p_77569_2_)
      {
          if (p_77569_1_.func_174922_i() == 3 && p_77569_1_.func_174923_h() == 3)
+         {
+-            for (int i = 0; i < p_77569_1_.func_174922_i(); i++)
++            for (int i = 0; i < p_77569_1_.func_174922_i(); ++i)
+             {
+-                for (int j = 0; j < p_77569_1_.func_174923_h(); j++)
++                for (int j = 0; j < p_77569_1_.func_174923_h(); ++j)
+                 {
+                     ItemStack itemstack = p_77569_1_.func_70463_b(i, j);
+ 
 @@ -52,7 +49,6 @@
          }
      }

@@ -37,7 +37,14 @@
              {
                  p_180650_1_.func_175656_a(p_180650_2_, Blocks.field_150346_d.func_176223_P().func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.DIRT));
              }
-@@ -54,10 +54,7 @@
+@@ -48,16 +48,13 @@
+             {
+                 if (p_180650_1_.func_175671_l(p_180650_2_.func_177984_a()) >= 9)
+                 {
+-                    for (int i = 0; i < 4; i++)
++                    for (int i = 0; i < 4; ++i)
+                     {
+                         BlockPos blockpos = p_180650_2_.func_177982_a(p_180650_4_.nextInt(3) - 1, p_180650_4_.nextInt(5) - 3, p_180650_4_.nextInt(3) - 1);
                          IBlockState iblockstate = p_180650_1_.func_180495_p(blockpos);
                          IBlockState iblockstate1 = p_180650_1_.func_180495_p(blockpos.func_177984_a());
  

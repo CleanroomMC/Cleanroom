@@ -72,7 +72,7 @@
          int i = p_180624_2_.nextInt(5) - 3;
  
          if (this.field_150632_aF == BiomeForest.Type.FLOWER)
-@@ -100,11 +106,13 @@
+@@ -100,25 +106,27 @@
          }
  
          this.func_185378_a(p_180624_1_, p_180624_2_, p_180624_3_, i);
@@ -82,11 +82,14 @@
  
      public void func_185379_b(World p_185379_1_, Random p_185379_2_, BlockPos p_185379_3_)
      {
+-        for (int i = 0; i < 4; i++)
 +
-         for (int i = 0; i < 4; ++i)
++        for (int i = 0; i < 4; ++i)
          {
-             for (int j = 0; j < 4; ++j)
-@@ -113,12 +121,12 @@
+-            for (int j = 0; j < 4; j++)
++            for (int j = 0; j < 4; ++j)
+             {
+                 int k = i * 4 + 1 + 8 + p_185379_2_.nextInt(3);
                  int l = j * 4 + 1 + 8 + p_185379_2_.nextInt(3);
                  BlockPos blockpos = p_185379_1_.func_175645_m(p_185379_3_.func_177982_a(k, 0, l));
  
@@ -101,6 +104,24 @@
                  {
                      WorldGenAbstractTree worldgenabstracttree = this.func_150567_a(p_185379_2_);
                      worldgenabstracttree.func_175904_e();
+@@ -134,7 +142,7 @@
+ 
+     public void func_185378_a(World p_185378_1_, Random p_185378_2_, BlockPos p_185378_3_, int p_185378_4_)
+     {
+-        for (int i = 0; i < p_185378_4_; i++)
++        for (int i = 0; i < p_185378_4_; ++i)
+         {
+             int j = p_185378_2_.nextInt(3);
+ 
+@@ -151,7 +159,7 @@
+                 field_180280_ag.func_180710_a(BlockDoublePlant.EnumPlantType.PAEONIA);
+             }
+ 
+-            for (int k = 0; k < 5; k++)
++            for (int k = 0; k < 5; ++k)
+             {
+                 int l = p_185378_2_.nextInt(16) + 8;
+                 int i1 = p_185378_2_.nextInt(16) + 8;
 @@ -165,14 +173,12 @@
          }
      }

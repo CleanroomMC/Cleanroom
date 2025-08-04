@@ -8,6 +8,15 @@
  public class TexturedQuad
  {
      public PositionTextureVertex[] field_78239_a;
+@@ -35,7 +34,7 @@
+     {
+         PositionTextureVertex[] apositiontexturevertex = new PositionTextureVertex[this.field_78239_a.length];
+ 
+-        for (int i = 0; i < this.field_78239_a.length; i++)
++        for (int i = 0; i < this.field_78239_a.length; ++i)
+         {
+             apositiontexturevertex[i] = this.field_78239_a[this.field_78239_a.length - i - 1];
+         }
 @@ -43,6 +42,7 @@
          this.field_78239_a = apositiontexturevertex;
      }
@@ -16,8 +25,12 @@
      public void func_178765_a(BufferBuilder p_178765_1_, float p_178765_2_)
      {
          Vec3d vec3d = this.field_78239_a[1].field_78243_a.func_72444_a(this.field_78239_a[0].field_78243_a);
-@@ -64,14 +64,7 @@
-         for (int i = 0; i < 4; ++i)
+@@ -61,17 +61,10 @@
+ 
+         p_178765_1_.func_181668_a(7, DefaultVertexFormats.field_181703_c);
+ 
+-        for (int i = 0; i < 4; i++)
++        for (int i = 0; i < 4; ++i)
          {
              PositionTextureVertex positiontexturevertex = this.field_78239_a[i];
 -            p_178765_1_.func_181662_b(

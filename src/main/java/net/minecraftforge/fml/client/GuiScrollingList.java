@@ -196,7 +196,7 @@ public abstract class GuiScrollingList
         int scroll = Mouse.getEventDWheel();
         if (scroll != 0)
         {
-            this.scrollDistance += (float)((-1 * scroll / 120.0F) * this.slotHeight / 2);
+            this.scrollDistance += (float)((-1 * scroll) * this.slotHeight / 2);
         }
     }
 

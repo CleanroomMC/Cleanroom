@@ -46,7 +46,7 @@
      }
  
      public static ItemStack func_194115_b(int p_194115_0_)
-@@ -106,7 +113,10 @@
+@@ -106,17 +113,20 @@
          {
              this.field_194105_b = p_i47608_2_;
              this.field_194106_c.addAll(p_i47608_2_.func_192400_c());
@@ -58,6 +58,70 @@
              this.field_194107_d = this.field_194106_c.size();
              this.field_194108_e = this.func_194097_a();
              this.field_194109_f = this.field_194108_e.length;
+             this.field_194110_g = new BitSet(this.field_194107_d + this.field_194109_f + this.field_194107_d + this.field_194107_d * this.field_194109_f);
+ 
+-            for (int i = 0; i < this.field_194106_c.size(); i++)
++            for (int i = 0; i < this.field_194106_c.size(); ++i)
+             {
+                 IntList intlist = this.field_194106_c.get(i).func_194139_b();
+ 
+-                for (int j = 0; j < this.field_194109_f; j++)
++                for (int j = 0; j < this.field_194109_f; ++j)
+                 {
+                     if (intlist.contains(this.field_194108_e[j]))
+                     {
+@@ -136,13 +146,13 @@
+             {
+                 int i;
+ 
+-                for (i = 0; this.func_194098_a(p_194092_1_); i++)
++                for (i = 0; this.func_194098_a(p_194092_1_); ++i)
+                 {
+                     RecipeItemHelper.this.func_194122_a(this.field_194108_e[this.field_194111_h.getInt(0)], p_194092_1_);
+                     int j = this.field_194111_h.size() - 1;
+                     this.func_194096_c(this.field_194111_h.getInt(j));
+ 
+-                    for (int k = 0; k < j; k++)
++                    for (int k = 0; k < j; ++k)
+                     {
+                         this.func_194089_c((k & 1) == 0, this.field_194111_h.get(k), this.field_194111_h.get(k + 1));
+                     }
+@@ -163,7 +173,7 @@
+                 int l = 0;
+                 List<Ingredient> list = this.field_194105_b.func_192400_c();
+ 
+-                for (int i1 = 0; i1 < list.size(); i1++)
++                for (int i1 = 0; i1 < list.size(); ++i1)
+                 {
+                     if (flag1 && list.get(i1) == Ingredient.field_193370_a)
+                     {
+@@ -171,7 +181,7 @@
+                     }
+                     else
+                     {
+-                        for (int j1 = 0; j1 < this.field_194109_f; j1++)
++                        for (int j1 = 0; j1 < this.field_194109_f; ++j1)
+                         {
+                             if (this.func_194100_b(false, l, j1))
+                             {
+@@ -185,7 +195,7 @@
+                             }
+                         }
+ 
+-                        l++;
++                        ++l;
+                     }
+                 }
+ 
+@@ -219,7 +229,7 @@
+         {
+             int i = this.field_194109_f;
+ 
+-            for (int j = 0; j < i; j++)
++            for (int j = 0; j < i; ++j)
+             {
+                 if (RecipeItemHelper.this.field_194124_a.get(this.field_194108_e[j]) >= p_194098_1_)
+                 {
 @@ -237,29 +247,21 @@
                          }
  
@@ -72,7 +136,7 @@
                              {
 -                                if (this.func_194101_b(flag, j1) || !this.func_194093_a(flag, l, j1) || !this.func_194100_b(flag, l, j1))
 -                                {
--                                    ++j1;
+-                                    j1++;
 -                                    continue;
 -                                }
 -

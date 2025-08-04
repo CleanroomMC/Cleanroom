@@ -65,7 +65,7 @@
          this.field_94113_a.set(p_70299_1_, p_70299_2_);
  
          if (!p_70299_2_.func_190926_b() && p_70299_2_.func_190916_E() > this.func_70297_j_())
-@@ -109,12 +103,10 @@
+@@ -109,48 +103,47 @@
          }
      }
  
@@ -77,14 +77,15 @@
 -    @Override
      public boolean func_70300_a(EntityPlayer p_70300_1_)
      {
-         if (this.field_70128_L)
-@@ -123,41 +115,35 @@
-         }
-         else
-         {
--            return !(p_70300_1_.func_70068_e(this) > 64.0);
+-        return this.field_70128_L ? false : !(p_70300_1_.func_70068_e(this) > 64.0);
++        if (this.field_70128_L)
++        {
++            return false;
++        }
++        else
++        {
 +            return p_70300_1_.func_70068_e(this) <= 64.0D;
-         }
++        }
      }
  
 -    @Override
@@ -123,7 +124,7 @@
      public void func_70106_y()
      {
          if (this.field_94112_b)
-@@ -168,7 +154,6 @@
+@@ -161,7 +154,6 @@
          super.func_70106_y();
      }
  
@@ -131,7 +132,7 @@
      public void func_184174_b(boolean p_184174_1_)
      {
          this.field_94112_b = p_184174_1_;
-@@ -177,10 +162,9 @@
+@@ -170,10 +162,9 @@
      public static void func_190574_b(DataFixer p_190574_0_, Class<?> p_190574_1_)
      {
          EntityMinecart.func_189669_a(p_190574_0_, p_190574_1_);
@@ -143,7 +144,7 @@
      protected void func_70014_b(NBTTagCompound p_70014_1_)
      {
          super.func_70014_b(p_70014_1_);
-@@ -200,11 +184,10 @@
+@@ -193,11 +184,10 @@
          }
      }
  
@@ -156,7 +157,7 @@
  
          if (p_70037_1_.func_150297_b("LootTable", 8))
          {
-@@ -217,9 +200,9 @@
+@@ -210,9 +200,9 @@
          }
      }
  
@@ -167,7 +168,7 @@
          if (!this.field_70170_p.field_72995_K)
          {
              p_184230_1_.func_71007_a(this);
-@@ -228,7 +211,6 @@
+@@ -221,7 +211,6 @@
          return true;
      }
  
@@ -175,7 +176,7 @@
      protected void func_94101_h()
      {
          float f = 0.98F;
-@@ -240,39 +222,33 @@
+@@ -233,39 +222,33 @@
          }
  
          this.field_70159_w *= (double)f;
@@ -216,7 +217,7 @@
      public LockCode func_174891_i()
      {
          return LockCode.field_180162_a;
-@@ -295,21 +271,40 @@
+@@ -288,21 +271,40 @@
                  random = new Random(this.field_184291_d);
              }
  
@@ -261,7 +262,7 @@
          this.field_94113_a.clear();
      }
  
-@@ -319,7 +314,6 @@
+@@ -312,7 +314,6 @@
          this.field_184291_d = p_184289_2_;
      }
  

@@ -55,7 +55,8 @@
 +                this.field_146292_n.add(new GuiOptionButton(gamesettings$options.func_74381_c(), this.field_146294_l / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), gamesettings$options, this.field_146497_i.func_74297_c(gamesettings$options)));
              }
  
-             ++i;
+-            i++;
++            ++i;
          }
      }
  

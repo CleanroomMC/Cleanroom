@@ -41,6 +41,15 @@
  
          if (this.func_179487_f())
          {
+@@ -78,7 +67,7 @@
+             {
+                 InventoryBasic inventorybasic = this.field_179504_c.func_175551_co();
+ 
+-                for (int i = 0; i < inventorybasic.func_70302_i_(); i++)
++                for (int i = 0; i < inventorybasic.func_70302_i_(); ++i)
+                 {
+                     ItemStack itemstack = inventorybasic.func_70301_a(i);
+                     boolean flag = false;
 @@ -105,6 +94,12 @@
                              world.func_180501_a(blockpos, Blocks.field_185773_cZ.func_176223_P(), 3);
                              flag = true;

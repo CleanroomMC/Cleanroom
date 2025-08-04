@@ -20,14 +20,17 @@
 package net.minecraftforge.fml.common.launcher;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.List;
 
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.asm.transformers.DeobfuscationTransformer;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.FMLInjectionData;
+import org.spongepowered.asm.mixin.MixinEnvironment;
+import top.outlands.foundation.TransformerDelegate;
 
 public class FMLDeobfTweaker implements ITweaker {
     @Override
@@ -39,7 +42,7 @@ public class FMLDeobfTweaker implements ITweaker {
     public void injectIntoClassLoader(LaunchClassLoader classLoader)
     {
         // Deobfuscation transformer, always last, and the access transformer tweaker as well
-        classLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.DeobfuscationTransformer");
+        TransformerDelegate.registerRenameTransformer(new DeobfuscationTransformer());
         // Add all the access transformers now as well
         for (String transformer : CoreModManager.getAccessTransformers())
         {
@@ -50,14 +53,19 @@ public class FMLDeobfTweaker implements ITweaker {
         classLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.ItemBlockTransformer");
         classLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.ItemBlockSpecialTransformer");
         classLoader.registerTransformer("net.minecraftforge.fml.common.asm.transformers.PotionEffectTransformer");
+        MixinEnvironment.gotoPhase(MixinEnvironment.Phase.INIT);
         try
         {
             FMLLog.log.debug("Validating minecraft");
+            Loader.injectData(FMLInjectionData.data());
+            Loader.instance();
+            /*
             Class<?> loaderClazz = Class.forName("net.minecraftforge.fml.common.Loader", true, classLoader);
             Method m = loaderClazz.getMethod("injectData", Object[].class);
             m.invoke(null, (Object)FMLInjectionData.data());
             m = loaderClazz.getMethod("instance");
             m.invoke(null);
+            */
             FMLLog.log.debug("Minecraft validated, launching...");
         }
         catch (Exception e)

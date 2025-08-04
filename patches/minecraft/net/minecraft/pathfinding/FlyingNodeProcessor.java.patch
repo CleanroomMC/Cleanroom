@@ -82,7 +82,15 @@
      protected PathPoint func_176159_a(int p_176159_1_, int p_176159_2_, int p_176159_3_)
      {
          PathPoint pathpoint = null;
-@@ -279,26 +267,14 @@
+@@ -272,33 +260,21 @@
+ 
+             if (pathnodetype == PathNodeType.WALKABLE)
+             {
+-                pathpoint.field_186286_l++;
++                ++pathpoint.field_186286_l;
+             }
+         }
+ 
          return pathnodetype != PathNodeType.OPEN && pathnodetype != PathNodeType.WALKABLE ? pathpoint : pathpoint;
      }
  

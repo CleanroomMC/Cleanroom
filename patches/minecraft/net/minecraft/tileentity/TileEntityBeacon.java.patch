@@ -40,7 +40,15 @@
  
              for (EntityPlayer entityplayer : list)
              {
-@@ -133,34 +124,33 @@
+@@ -126,41 +117,40 @@
+         boolean flag = true;
+         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+ 
+-        for (int i1 = j + 1; i1 < 256; i1++)
++        for (int i1 = j + 1; i1 < 256; ++i1)
+         {
+             IBlockState iblockstate = this.field_145850_b.func_180495_p(blockpos$mutableblockpos.func_181079_c(i, i1, k));
+             float[] afloat;
  
              if (iblockstate.func_177230_c() == Blocks.field_150399_cn)
              {
@@ -85,7 +93,15 @@
              }
  
              if (Arrays.equals(afloat, tileentitybeacon$beamsegment.func_177263_b()))
-@@ -195,7 +185,7 @@
+@@ -189,13 +179,13 @@
+ 
+                 boolean flag1 = true;
+ 
+-                for (int j1 = i - l1; j1 <= i + l1 && flag1; j1++)
++                for (int j1 = i - l1; j1 <= i + l1 && flag1; ++j1)
+                 {
+-                    for (int k1 = k - l1; k1 <= k + l1; k1++)
++                    for (int k1 = k - l1; k1 <= k + l1; ++k1)
                      {
                          Block block = this.field_145850_b.func_180495_p(new BlockPos(j1, i2, k1)).func_177230_c();
  
@@ -227,7 +243,7 @@
      public boolean func_145818_k_()
      {
          return this.field_146008_p != null && !this.field_146008_p.isEmpty();
-@@ -395,13 +372,11 @@
+@@ -395,59 +372,46 @@
          this.field_146008_p = p_145999_1_;
      }
  
@@ -240,21 +256,24 @@
 -    @Override
      public boolean func_70300_a(EntityPlayer p_70300_1_)
      {
-         if (this.field_145850_b.func_175625_s(this.field_174879_c) != this)
-@@ -410,49 +385,33 @@
-         }
-         else
-         {
--            return !(
--                       p_70300_1_.func_70092_e(
--                           (double)this.field_174879_c.func_177958_n() + 0.5,
--                           (double)this.field_174879_c.func_177956_o() + 0.5,
--                           (double)this.field_174879_c.func_177952_p() + 0.5
--                       )
--                       > 64.0
--                   );
+-        return this.field_145850_b.func_175625_s(this.field_174879_c) != this
+-               ? false
+-               : !(
+-                   p_70300_1_.func_70092_e(
+-                       (double)this.field_174879_c.func_177958_n() + 0.5,
+-                       (double)this.field_174879_c.func_177956_o() + 0.5,
+-                       (double)this.field_174879_c.func_177952_p() + 0.5
+-                   )
+-                   > 64.0
+-               );
++        if (this.field_145850_b.func_175625_s(this.field_174879_c) != this)
++        {
++            return false;
++        }
++        else
++        {
 +            return p_70300_1_.func_70092_e((double)this.field_174879_c.func_177958_n() + 0.5D, (double)this.field_174879_c.func_177956_o() + 0.5D, (double)this.field_174879_c.func_177952_p() + 0.5D) <= 64.0D;
-         }
++        }
      }
  
 -    @Override
@@ -293,7 +312,7 @@
      public int func_174887_a_(int p_174887_1_)
      {
          switch (p_174887_1_)
-@@ -468,7 +427,6 @@
+@@ -463,7 +427,6 @@
          }
      }
  
@@ -301,7 +320,7 @@
      public void func_174885_b(int p_174885_1_, int p_174885_2_)
      {
          switch (p_174885_1_)
-@@ -484,19 +442,16 @@
+@@ -479,19 +442,16 @@
          }
      }
  
@@ -321,7 +340,7 @@
      public boolean func_145842_c(int p_145842_1_, int p_145842_2_)
      {
          if (p_145842_1_ == 1)
-@@ -510,19 +465,16 @@
+@@ -505,19 +465,16 @@
          }
      }
  
@@ -341,3 +360,12 @@
      public boolean func_180461_b(int p_180461_1_, ItemStack p_180461_2_, EnumFacing p_180461_3_)
      {
          return false;
+@@ -544,7 +501,7 @@
+ 
+             protected void func_177262_a()
+             {
+-                this.field_177265_b++;
++                ++this.field_177265_b;
+             }
+ 
+             public float[] func_177263_b()

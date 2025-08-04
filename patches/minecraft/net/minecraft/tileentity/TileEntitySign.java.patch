@@ -1,6 +1,6 @@
 --- before/net/minecraft/tileentity/TileEntitySign.java
 +++ after/net/minecraft/tileentity/TileEntitySign.java
-@@ -22,16 +22,12 @@
+@@ -22,21 +22,17 @@
  
  public class TileEntitySign extends TileEntity
  {
@@ -18,7 +18,13 @@
      public NBTTagCompound func_189515_b(NBTTagCompound p_189515_1_)
      {
          super.func_189515_b(p_189515_1_);
-@@ -46,49 +42,37 @@
+ 
+-        for (int i = 0; i < 4; i++)
++        for (int i = 0; i < 4; ++i)
+         {
+             String s = ITextComponent.Serializer.func_150696_a(this.field_145915_a[i]);
+             p_189515_1_.func_74778_a("Text" + (i + 1), s);
+@@ -46,65 +42,53 @@
          return p_189515_1_;
      }
  
@@ -70,7 +76,14 @@
              public MinecraftServer func_184102_h()
              {
                  return TileEntitySign.this.field_145850_b.func_73046_m();
-@@ -102,9 +86,9 @@
+             }
+         };
+ 
+-        for (int i = 0; i < 4; i++)
++        for (int i = 0; i < 4; ++i)
+         {
+             String s = p_145839_1_.func_74779_i("Text" + (i + 1));
+             ITextComponent itextcomponent = ITextComponent.Serializer.func_150699_a(s);
  
              try
              {

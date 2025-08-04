@@ -34,6 +34,15 @@
      }
  
      public void func_94217_a(TextureAtlasSprite p_94217_1_)
+@@ -141,7 +140,7 @@
+ 
+     public void func_94219_l()
+     {
+-        this.field_110983_h++;
++        ++this.field_110983_h;
+ 
+         if (this.field_110983_h >= this.field_110982_k.func_110472_a(this.field_110973_g))
+         {
 @@ -153,9 +152,7 @@
  
              if (i != k && k >= 0 && k < this.field_110976_a.size())
@@ -45,7 +54,7 @@
              }
          }
          else if (this.field_110982_k.func_177219_e())
-@@ -166,15 +163,15 @@
+@@ -166,7 +163,7 @@
  
      private void func_180599_n()
      {
@@ -54,17 +63,21 @@
          int i = this.field_110982_k.func_110468_c(this.field_110973_g);
          int j = this.field_110982_k.func_110473_c() == 0 ? this.field_110976_a.size() : this.field_110982_k.func_110473_c();
          int k = this.field_110982_k.func_110468_c((this.field_110973_g + 1) % j);
+@@ -181,7 +178,7 @@
+                 this.field_176605_b = new int[aint.length][];
+             }
  
-         if (i != k && k >= 0 && k < this.field_110976_a.size())
-         {
--            int[][] aint = (int[][])this.field_110976_a.get(i);
--            int[][] aint1 = (int[][])this.field_110976_a.get(k);
-+            int[][] aint = this.field_110976_a.get(i);
-+            int[][] aint1 = this.field_110976_a.get(k);
- 
-             if (this.field_176605_b == null || this.field_176605_b.length != aint.length)
+-            for (int l = 0; l < aint.length; l++)
++            for (int l = 0; l < aint.length; ++l)
              {
-@@ -194,10 +191,10 @@
+                 if (this.field_176605_b[l] == null)
+                 {
+@@ -190,14 +187,14 @@
+ 
+                 if (l < aint1.length && aint1[l].length == aint[l].length)
+                 {
+-                    for (int i1 = 0; i1 < aint[l].length; i1++)
++                    for (int i1 = 0; i1 < aint[l].length; ++i1)
                      {
                          int j1 = aint[l][i1];
                          int k1 = aint1[l][i1];
@@ -111,16 +124,17 @@
                      if (j >= i)
                      {
                          throw new RuntimeException("invalid frameindex " + j);
-@@ -280,7 +281,7 @@
+@@ -280,26 +281,24 @@
              }
              else
              {
 -                List<AnimationFrame> list = Lists.newArrayList();
 +                List<AnimationFrame> list = Lists.<AnimationFrame>newArrayList();
  
-                 for (int k = 0; k < i; ++k)
+-                for (int k = 0; k < i; k++)
++                for (int k = 0; k < i; ++k)
                  {
-@@ -288,20 +289,18 @@
+                     this.field_110976_a.add(func_147962_a(aint, this.field_130223_c, this.field_130223_c, k));
                      list.add(new AnimationFrame(k, -1));
                  }
  
@@ -137,13 +151,11 @@
 -        List<int[][]> list = Lists.newArrayList();
 +        List<int[][]> list = Lists.<int[][]>newArrayList();
  
-         for (int i = 0; i < this.field_110976_a.size(); ++i)
+-        for (int i = 0; i < this.field_110976_a.size(); i++)
++        for (int i = 0; i < this.field_110976_a.size(); ++i)
          {
--            final int[][] aint = (int[][])this.field_110976_a.get(i);
-+            final int[][] aint = this.field_110976_a.get(i);
+             final int[][] aint = this.field_110976_a.get(i);
  
-             if (aint != null)
-             {
 @@ -313,7 +312,7 @@
                  {
                      CrashReport crashreport = CrashReport.func_85055_a(throwable, "Generating mipmaps for frame");
@@ -153,6 +165,24 @@
                      crashreportcategory.func_189529_a("Frame sizes", new ICrashReportDetail<String>()
                      {
                          public String call() throws Exception
+@@ -345,7 +344,7 @@
+     {
+         if (this.field_110976_a.size() <= p_130099_1_)
+         {
+-            for (int i = this.field_110976_a.size(); i <= p_130099_1_; i++)
++            for (int i = this.field_110976_a.size(); i <= p_130099_1_; ++i)
+             {
+                 this.field_110976_a.add(null);
+             }
+@@ -356,7 +355,7 @@
+     {
+         int[][] aint = new int[p_147962_0_.length][];
+ 
+-        for (int i = 0; i < p_147962_0_.length; i++)
++        for (int i = 0; i < p_147962_0_.length; ++i)
+         {
+             int[] aint1 = p_147962_0_[i];
+ 
 @@ -393,32 +392,43 @@
          this.field_110983_h = 0;
      }
