@@ -103,12 +103,7 @@ public class StructRegistry {
             structAccessHandlePool.register(structClass, memberLayout);
         }
 
-        Object output;
-        try {
-            output = structAccessHandlePool.newClass(structClass);
-        } catch (Throwable e) {
-            return null;
-        }
+        Object output = structAccessHandlePool.newClass(structClass);
 
         int index = 0;
         for (int i = 0; i < structDef.fields.size(); i++) {

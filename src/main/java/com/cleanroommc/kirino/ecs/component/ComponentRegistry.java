@@ -119,12 +119,7 @@ public class ComponentRegistry {
             componentAccessHandlePool.register(componentClass, memberLayout);
         }
 
-        Object output;
-        try {
-            output = componentAccessHandlePool.newClass(componentClass);
-        } catch (Throwable e) {
-            return null;
-        }
+        Object output = componentAccessHandlePool.newClass(componentClass);
 
         int index = 0;
         for (int i = 0; i < componentDesc.fields.size(); i++) {
