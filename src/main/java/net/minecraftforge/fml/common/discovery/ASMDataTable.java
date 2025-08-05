@@ -55,22 +55,30 @@ public class ASMDataTable
             this.objectName = objectName;
             this.annotationInfo = info;
         }
+
         public ModCandidate getCandidate()
         {
             return candidate;
         }
+
         public String getAnnotationName()
         {
             return annotationName;
         }
+
+        /**
+         * @return the internal name
+         */
         public String getClassName()
         {
             return className;
         }
+
         public String getObjectName()
         {
             return objectName;
         }
+        
         public Map<String, Object> getAnnotationInfo()
         {
             return annotationInfo;
@@ -108,9 +116,9 @@ public class ASMDataTable
     private Map<ModContainer, SetMultimap<String,ASMData>> containerAnnotationData;
 
     private List<ModContainer> containers = Lists.newArrayList();
-    private SetMultimap<String,ModCandidate> packageMap = HashMultimap.create();
+    private SetMultimap<String, ModCandidate> packageMap = HashMultimap.create();
 
-    public SetMultimap<String,ASMData> getAnnotationsFor(ModContainer container)
+    public SetMultimap<String, ASMData> getAnnotationsFor(ModContainer container)
     {
         if (containerAnnotationData == null)
         {
@@ -122,9 +130,27 @@ public class ASMDataTable
         return containerAnnotationData.get(container);
     }
 
-    public Set<ASMData> getAll(String annotation)
+    /**
+     * @param type The canonical name of a annotation type
+     *              Or the internal name of a interface type
+     * @return the asm datas
+     */
+    public Set<ASMData> getAll(String type)
     {
-        return globalAnnotationData.get(annotation);
+        return globalAnnotationData.get(type);
+    }
+
+    /**
+     * @param type interface of annotation
+     * @return the asm datas
+     */
+    public Set<ASMData> getAll(Class<?> type)
+    {
+        if (type.isInterface()) {
+            return this.getAll(type.getName().replace('.', '/'));
+        } else if (type.isAnnotation()) {
+            return this.getAll(type.getName());
+        } else throw new IllegalArgumentException("The type are trying to be got from ASMDataTable is neither annotation nor interface");
     }
 
     public void addASMData(ModCandidate candidate, String annotation, String className, @Nullable String objectName, @Nullable Map<String,Object> annotationInfo)
