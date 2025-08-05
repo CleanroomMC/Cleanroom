@@ -30,28 +30,59 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable;
  * This event is fired whenever an Entity sets a target to attack in
  * {@link EntityLiving#setAttackTarget(EntityLivingBase)}.<br>
  * <br>
- * This event is fired via the {@link ForgeHooks#onLivingSetAttackTarget(EntityLivingBase, EntityLivingBase)}.<br>
+ * This event is fired via the {@link ForgeHooks#onLivingSetAttackTarget(EntityLiving, EntityLivingBase)}.<br>
  * <br>
- * {@link #target} contains the newly targeted Entity.<br>
+ * {@link #originalTarget} contains the newly targeted Entity.<br>
  * <br>
- * This event is not {@link Cancelable}.<br>
+ * {@link #redirectedTarget} contains the redirected Targeted Entity.<br>
+ * <br>
+ * This event is {@link Cancelable}.<br>
  * <br>
  * This event does not have a result. {@link HasResult}<br>
  * <br>
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  **/
-public class LivingSetAttackTargetEvent extends LivingEvent
-{
-
-    private final EntityLivingBase target;
+@Cancelable
+public class LivingSetAttackTargetEvent extends LivingEvent{
+    private final EntityLivingBase originalTarget;
+    private EntityLivingBase redirectedTarget;
+    private boolean isModified;
+    
     public LivingSetAttackTargetEvent(EntityLivingBase entity, EntityLivingBase target)
     {
         super(entity);
-        this.target = target;
+        this.originalTarget = target;
+        this.redirectedTarget = null;
+        this.isModified = false;
     }
 
+    /**
+    * Get the target that will be actually applied
+    **/
     public EntityLivingBase getTarget()
     {
-        return target;
+        return isModified ? redirectedTarget : originalTarget;
+    }
+
+    /**
+    * return the original attack target
+    **/
+    public EntityLivingBase getOriginalTarget(){
+        return originalTarget;
+    }
+
+    /**
+    * Set the attack target of the living's
+    **/
+    public void setTarget(EntityLivingBase living){
+        this.redirectedTarget = living;
+        this.isModified = true;
+    }
+
+    /**
+    * Is the attack target is modified
+    **/
+    public boolean isModified(){
+        return this.isModified;
     }
 }
