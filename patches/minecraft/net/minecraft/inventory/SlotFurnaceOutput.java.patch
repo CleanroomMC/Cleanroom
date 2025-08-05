@@ -1,6 +1,6 @@
 --- before/net/minecraft/inventory/SlotFurnaceOutput.java
 +++ after/net/minecraft/inventory/SlotFurnaceOutput.java
-@@ -17,13 +17,11 @@
+@@ -17,24 +17,21 @@
          this.field_75229_a = p_i45793_1_;
      }
  
@@ -14,7 +14,11 @@
      public ItemStack func_75209_a(int p_75209_1_)
      {
          if (this.func_75216_d())
-@@ -34,7 +32,6 @@
+         {
+-            this.field_75228_b = this.field_75228_b + Math.min(p_75209_1_, this.func_75211_c().func_190916_E());
++            this.field_75228_b += Math.min(p_75209_1_, this.func_75211_c().func_190916_E());
+         }
+ 
          return super.func_75209_a(p_75209_1_);
      }
  
@@ -37,6 +41,15 @@
      protected void func_75208_c(ItemStack p_75208_1_)
      {
          p_75208_1_.func_77980_a(this.field_75229_a.field_70170_p, this.field_75229_a, this.field_75228_b);
+@@ -69,7 +64,7 @@
+ 
+                 if (j < MathHelper.func_76123_f((float)i * f) && Math.random() < (double)((float)i * f - (float)j))
+                 {
+-                    j++;
++                    ++j;
+                 }
+ 
+                 i = j;
 @@ -79,20 +74,11 @@
              {
                  int k = EntityXPOrb.func_70527_a(i);

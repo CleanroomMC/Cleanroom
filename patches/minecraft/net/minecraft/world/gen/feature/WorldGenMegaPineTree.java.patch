@@ -24,9 +24,12 @@
      public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
      {
          int i = this.func_150533_a(p_180709_2_);
-@@ -47,32 +41,25 @@
+@@ -45,34 +39,27 @@
+         {
+             this.func_150541_c(p_180709_1_, p_180709_3_.func_177958_n(), p_180709_3_.func_177952_p(), p_180709_3_.func_177956_o() + i, 0, p_180709_2_);
  
-             for (int j = 0; j < i; ++j)
+-            for (int j = 0; j < i; j++)
++            for (int j = 0; j < i; ++j)
              {
 -                IBlockState iblockstate = p_180709_1_.func_180495_p(p_180709_3_.func_177981_b(j));
 -
@@ -61,6 +64,15 @@
                      {
                          this.func_175903_a(p_180709_1_, p_180709_3_.func_177982_a(0, j, 1), this.field_76520_b);
                      }
+@@ -88,7 +75,7 @@
+         int i = p_150541_6_.nextInt(5) + (this.field_150542_e ? this.field_76522_a : 3);
+         int j = 0;
+ 
+-        for (int k = p_150541_4_ - i; k <= p_150541_4_; k++)
++        for (int k = p_150541_4_ - i; k <= p_150541_4_; ++k)
+         {
+             int l = p_150541_4_ - k;
+             int i1 = p_150541_5_ + MathHelper.func_76141_d((float)l / (float)i * 3.5F);
 @@ -97,7 +84,6 @@
          }
      }
@@ -69,7 +81,35 @@
      public void func_180711_a(World p_180711_1_, Random p_180711_2_, BlockPos p_180711_3_)
      {
          this.func_175933_b(p_180711_1_, p_180711_3_.func_177976_e().func_177978_c());
-@@ -140,7 +126,7 @@
+@@ -105,7 +91,7 @@
+         this.func_175933_b(p_180711_1_, p_180711_3_.func_177976_e().func_177970_e(2));
+         this.func_175933_b(p_180711_1_, p_180711_3_.func_177965_g(2).func_177970_e(2));
+ 
+-        for (int i = 0; i < 5; i++)
++        for (int i = 0; i < 5; ++i)
+         {
+             int j = p_180711_2_.nextInt(64);
+             int k = j % 8;
+@@ -120,9 +106,9 @@
+ 
+     private void func_175933_b(World p_175933_1_, BlockPos p_175933_2_)
+     {
+-        for (int i = -2; i <= 2; i++)
++        for (int i = -2; i <= 2; ++i)
+         {
+-            for (int j = -2; j <= 2; j++)
++            for (int j = -2; j <= 2; ++j)
+             {
+                 if (Math.abs(i) != 2 || Math.abs(j) != 2)
+                 {
+@@ -134,13 +120,13 @@
+ 
+     private void func_175934_c(World p_175934_1_, BlockPos p_175934_2_)
+     {
+-        for (int i = 2; i >= -3; i--)
++        for (int i = 2; i >= -3; --i)
+         {
+             BlockPos blockpos = p_175934_2_.func_177981_b(i);
              IBlockState iblockstate = p_175934_1_.func_180495_p(blockpos);
              Block block = iblockstate.func_177230_c();
  

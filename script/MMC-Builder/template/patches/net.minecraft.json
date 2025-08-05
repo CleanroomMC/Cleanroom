@@ -1,0 +1,262 @@
+{
+    "assetIndex": {
+        "id": "1.12",
+        "sha1": "a21e1ded1a24ea1548dd8db0cf30b6acb02655a9",
+        "size": 143136,
+        "totalSize": 129843781,
+        "url": "https://piston-meta.mojang.com/v1/packages/a21e1ded1a24ea1548dd8db0cf30b6acb02655a9/1.12.json"
+    },
+    "compatibleJavaMajors": [
+        21,
+        22,
+        23,
+        24,
+        25
+    ],
+    "formatVersion": 1,
+    "libraries": [
+        {
+            "downloads": {
+                "artifact": {
+                    "sha1": "c73b5636faf089d9f00e8732a829577de25237ee",
+                    "size": 103871,
+                    "url": "https://libraries.minecraft.net/com/paulscode/codecjorbis/20101023/codecjorbis-20101023.jar"
+                }
+            },
+            "name": "com.paulscode:codecjorbis:20101023"
+        },
+        {
+            "downloads": {
+                "artifact": {
+                    "sha1": "12f031cfe88fef5c1dd36c563c0a3a69bd7261da",
+                    "size": 5618,
+                    "url": "https://libraries.minecraft.net/com/paulscode/codecwav/20101023/codecwav-20101023.jar"
+                }
+            },
+            "name": "com.paulscode:codecwav:20101023"
+        },
+        {
+            "downloads": {
+                "artifact": {
+                    "sha1": "5c5e304366f75f9eaa2e8cca546a1fb6109348b3",
+                    "size": 21679,
+                    "url": "https://libraries.minecraft.net/com/paulscode/libraryjavasound/20101123/libraryjavasound-20101123.jar"
+                }
+            },
+            "name": "com.paulscode:libraryjavasound:20101123"
+        },
+        {
+            "downloads": {
+                "artifact": {
+                    "sha1": "73e80d0794c39665aec3f62eee88ca91676674ef",
+                    "size": 18981,
+                    "url": "https://libraries.minecraft.net/com/paulscode/librarylwjglopenal/20100824/librarylwjglopenal-20100824.jar"
+                }
+            },
+            "name": "com.paulscode:librarylwjglopenal:20100824"
+        },
+        {
+            "downloads": {
+                "artifact": {
+                    "sha1": "419c05fe9be71f792b2d76cfc9b67f1ed0fec7f6",
+                    "size": 65020,
+                    "url": "https://libraries.minecraft.net/com/paulscode/soundsystem/20120107/soundsystem-20120107.jar"
+                }
+            },
+            "name": "com.paulscode:soundsystem:20120107"
+        },
+        {
+            "downloads": {
+                "artifact": {
+                    "sha1": "9834cdf236c22e84b946bba989e2f94ef5897c3c",
+                    "size": 65621,
+                    "url": "https://libraries.minecraft.net/com/mojang/authlib/1.5.25/authlib-1.5.25.jar"
+                }
+            },
+            "name": "com.mojang:authlib:1.5.25"
+        },
+        {
+            "downloads": {
+                "artifact": {
+                    "sha1": "bd0dccebdf3744c75f1ca20063f16e8f7d5e663f",
+                    "size": 7135057,
+                    "url": "https://libraries.minecraft.net/com/mojang/realms/1.10.22/realms-1.10.22.jar"
+                }
+            },
+            "name": "com.mojang:realms:1.10.22"
+        },
+        {
+            "downloads": {
+                "artifact": {
+                    "sha1": "48fd510879dff266c3815947de66e3d4809f8668",
+                    "size": 11055,
+                    "url": "https://libraries.minecraft.net/com/mojang/text2speech/1.10.3/text2speech-1.10.3.jar"
+                }
+            },
+            "name": "com.mojang:text2speech:1.10.3",
+            "rules": [
+                {
+                    "action": "allow"
+                },
+                {
+                    "action": "disallow",
+                    "os": {
+                        "name": "linux-arm64"
+                    }
+                },
+                {
+                    "action": "disallow",
+                    "os": {
+                        "name": "linux-arm32"
+                    }
+                }
+            ]
+        },
+        {
+            "downloads": {
+                "artifact": {
+                    "sha1": "48fd510879dff266c3815947de66e3d4809f8668",
+                    "size": 11055,
+                    "url": "https://libraries.minecraft.net/com/mojang/text2speech/1.10.3/text2speech-1.10.3.jar"
+                },
+                "classifiers": {
+                    "natives-linux": {
+                        "sha1": "ab7896aec3b3dd272b06194357f2d98f832c0cfc",
+                        "size": 7833,
+                        "url": "https://libraries.minecraft.net/com/mojang/text2speech/1.10.3/text2speech-1.10.3-natives-linux.jar"
+                    },
+                    "natives-windows": {
+                        "sha1": "84a4b856389cc4f485275b1f63497a95a857a443",
+                        "size": 81217,
+                        "url": "https://libraries.minecraft.net/com/mojang/text2speech/1.10.3/text2speech-1.10.3-natives-windows.jar"
+                    }
+                }
+            },
+            "extract": {
+                "exclude": [
+                    "META-INF/"
+                ]
+            },
+            "name": "com.mojang:text2speech:1.10.3",
+            "natives": {
+                "linux": "natives-linux",
+                "windows": "natives-windows"
+            },
+            "rules": [
+                {
+                    "action": "allow"
+                },
+                {
+                    "action": "disallow",
+                    "os": {
+                        "name": "osx-arm64"
+                    }
+                },
+                {
+                    "action": "disallow",
+                    "os": {
+                        "name": "linux-arm64"
+                    }
+                },
+                {
+                    "action": "disallow",
+                    "os": {
+                        "name": "linux-arm32"
+                    }
+                }
+            ]
+        },
+        {
+            "downloads": {
+                "artifact": {
+                    "sha1": "6ef160c3133a78de015830860197602ca1c855d3",
+                    "size": 40502,
+                    "url": "https://libraries.minecraft.net/ca/weblite/java-objc-bridge/1.0.0/java-objc-bridge-1.0.0.jar"
+                },
+                "classifiers": {
+                    "natives-osx": {
+                        "sha1": "08befab4894d55875f33c3d300f4f71e6e828f64",
+                        "size": 5629,
+                        "url": "https://libraries.minecraft.net/ca/weblite/java-objc-bridge/1.0.0/java-objc-bridge-1.0.0-natives-osx.jar"
+                    }
+                }
+            },
+            "extract": {
+                "exclude": [
+                    "META-INF/"
+                ]
+            },
+            "name": "ca.weblite:java-objc-bridge:1.0.0",
+            "natives": {
+                "osx": "natives-osx"
+            },
+            "rules": [
+                {
+                    "action": "allow",
+                    "os": {
+                        "name": "osx"
+                    }
+                }
+            ]
+        },
+        {
+            "downloads": {
+                "artifact": {
+                    "sha1": "6ef160c3133a78de015830860197602ca1c855d3",
+                    "size": 40502,
+                    "url": "https://libraries.minecraft.net/ca/weblite/java-objc-bridge/1.0.0/java-objc-bridge-1.0.0.jar"
+                }
+            },
+            "name": "ca.weblite:java-objc-bridge:1.0.0",
+            "rules": [
+                {
+                    "action": "allow",
+                    "os": {
+                        "name": "osx"
+                    }
+                }
+            ]
+        },
+        {
+            "downloads": {
+                "artifact": {
+                    "sha1": "369a83621e3c65496348491e533cb97fe5f2f37d",
+                    "size": 91947,
+                    "url": "https://github.com/MinecraftMachina/Java-Objective-C-Bridge/releases/download/1.1.0-mmachina.1/java-objc-bridge-1.1.jar"
+                }
+            },
+            "name": "ca.weblite:java-objc-bridge:1.1.0-mmachina.1",
+            "rules": [
+                {
+                    "action": "allow",
+                    "os": {
+                        "name": "osx-arm64"
+                    }
+                }
+            ]
+        }
+    ],
+    "mainClass": "net.minecraft.client.main.Main",
+    "mainJar": {
+        "downloads": {
+            "artifact": {
+                "sha1": "0f275bc1547d01fa5f56ba34bdc87d981ee12daf",
+                "size": 10180113,
+                "url": "https://piston-data.mojang.com/v1/objects/0f275bc1547d01fa5f56ba34bdc87d981ee12daf/client.jar"
+            }
+        },
+        "name": "com.mojang:minecraft:1.12.2:client"
+    },
+    "minecraftArguments": "--username ${auth_player_name} --version ${version_name} --gameDir ${game_directory} --assetsDir ${assets_root} --assetIndex ${assets_index_name} --uuid ${auth_uuid} --accessToken ${auth_access_token} --userType ${user_type} --versionType ${version_type}",
+    "name": "Minecraft",
+    "releaseTime": "2017-09-18T08:39:46+00:00",
+    "requires": [
+        {
+            "suggests": "3.3.1",
+            "uid": "org.lwjgl3"
+        }
+    ],
+    "type": "release",
+    "uid": "net.minecraft",
+    "version": "1.12.2"
+}

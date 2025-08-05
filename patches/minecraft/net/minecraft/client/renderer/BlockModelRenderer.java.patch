@@ -110,7 +110,15 @@
      {
          Vec3d vec3d = p_187492_2_.func_191059_e(p_187492_1_, p_187492_3_);
          double d0 = (double)p_187492_3_.func_177958_n() + vec3d.field_72450_a;
-@@ -165,7 +128,14 @@
+@@ -158,14 +121,21 @@
+         double d2 = (double)p_187492_3_.func_177952_p() + vec3d.field_72449_c;
+         int i = 0;
+ 
+-        for (int j = p_187492_5_.size(); i < j; i++)
++        for (int j = p_187492_5_.size(); i < j; ++i)
+         {
+             BakedQuad bakedquad = p_187492_5_.get(i);
+             this.func_187494_a(p_187492_2_, bakedquad.func_178209_a(), bakedquad.func_178210_d(), p_187492_6_, p_187492_7_);
              p_187492_8_.func_187491_a(p_187492_1_, p_187492_2_, p_187492_3_, bakedquad.func_178210_d(), p_187492_6_, p_187492_7_);
              p_187492_4_.func_178981_a(bakedquad.func_178209_a());
              p_187492_4_.func_178962_a(p_187492_8_.field_178207_c[0], p_187492_8_.field_178207_c[1], p_187492_8_.field_178207_c[2], p_187492_8_.field_178207_c[3]);
@@ -139,6 +147,15 @@
                  p_187492_4_.func_178978_a(p_187492_8_.field_178206_b[0] * f, p_187492_8_.field_178206_b[0] * f1, p_187492_8_.field_178206_b[0] * f2, 4);
                  p_187492_4_.func_178978_a(p_187492_8_.field_178206_b[1] * f, p_187492_8_.field_178206_b[1] * f1, p_187492_8_.field_178206_b[1] * f2, 3);
                  p_187492_4_.func_178978_a(p_187492_8_.field_178206_b[2] * f, p_187492_8_.field_178206_b[2] * f1, p_187492_8_.field_178206_b[2] * f2, 2);
+@@ -204,7 +174,7 @@
+         float f4 = -32.0F;
+         float f5 = -32.0F;
+ 
+-        for (int i = 0; i < 4; i++)
++        for (int i = 0; i < 4; ++i)
+         {
+             float f6 = Float.intBitsToFloat(p_187494_2_[i * 7]);
+             float f7 = Float.intBitsToFloat(p_187494_2_[i * 7 + 1]);
 @@ -265,16 +235,7 @@
          }
      }
@@ -157,7 +174,14 @@
      {
          Vec3d vec3d = p_187496_2_.func_191059_e(p_187496_1_, p_187496_3_);
          double d0 = (double)p_187496_3_.func_177958_n() + vec3d.field_72450_a;
-@@ -288,7 +249,7 @@
+@@ -282,13 +243,13 @@
+         double d2 = (double)p_187496_3_.func_177952_p() + vec3d.field_72449_c;
+         int i = 0;
+ 
+-        for (int j = p_187496_7_.size(); i < j; i++)
++        for (int j = p_187496_7_.size(); i < j; ++i)
+         {
+             BakedQuad bakedquad = p_187496_7_.get(i);
  
              if (p_187496_5_)
              {
@@ -237,6 +261,15 @@
  
          if (!p_178266_4_)
          {
+@@ -362,7 +338,7 @@
+         BufferBuilder bufferbuilder = tessellator.func_178180_c();
+         int i = 0;
+ 
+-        for (int j = p_178264_5_.size(); i < j; i++)
++        for (int j = p_178264_5_.size(); i < j; ++i)
+         {
+             BakedQuad bakedquad = p_178264_5_.get(i);
+             bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_176599_b);
 @@ -389,25 +365,15 @@
          private final float[] field_178206_b = new float[4];
          private final int[] field_178207_c = new int[4];

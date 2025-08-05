@@ -44,7 +44,7 @@ public interface IStructureProvider {
 
     /**
      * Get the nearest structure location.
-     * 
+     *
      * Command /locate or treasure map.
      *
      * @param generator
@@ -101,7 +101,7 @@ public interface IStructureProvider {
             {
                 IBlockState iblockstate = getBlockState(x, j, z);
 
-                if (iblockstate != null && iblockstate != DEFAULT_STATE)
+                if (iblockstate != DEFAULT_STATE)
                 {
                     return j;
                 }

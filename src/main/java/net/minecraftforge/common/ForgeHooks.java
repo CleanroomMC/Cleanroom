@@ -42,14 +42,17 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockFarmland;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.crash.CrashReport;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -107,16 +110,10 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.event.ClickEvent;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraft.world.WorldProvider;
-import net.minecraft.world.EnumDifficulty;
-import net.minecraft.world.GameType;
+import net.minecraft.world.*;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.IChunkLoader;
 import net.minecraft.world.gen.IChunkGenerator;
-import net.minecraft.world.gen.structure.MapGenStructureIO;
 import net.minecraft.world.storage.loot.LootEntry;
 import net.minecraft.world.storage.loot.LootTable;
 import net.minecraft.world.storage.loot.LootTableManager;
@@ -171,6 +168,9 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
+import org.spongepowered.asm.mixin.transformer.ClassInfo;
+import org.spongepowered.asm.mixin.transformer.MixinInfo;
 
 public class ForgeHooks
 {
@@ -967,9 +967,9 @@ public class ForgeHooks
         return ret;
     }
 
-    public static boolean onAnvilChange(ContainerRepair container, @Nonnull ItemStack left, @Nonnull ItemStack right, IInventory outputSlot, String name, int baseCost)
+    public static boolean onAnvilChange(ContainerRepair container, @Nonnull ItemStack left, @Nonnull ItemStack right, IInventory outputSlot, String name, int baseCost, EntityPlayer player)
     {
-        AnvilUpdateEvent e = new AnvilUpdateEvent(left, right, name, baseCost);
+        AnvilUpdateEvent e = new AnvilUpdateEvent(left, right, name, baseCost, player);
         if (MinecraftForge.EVENT_BUS.post(e)) return false;
         if (e.getOutput().isEmpty()) return true;
 
@@ -977,6 +977,12 @@ public class ForgeHooks
         container.maximumCost = e.getCost();
         container.materialCost = e.getMaterialCost();
         return false;
+    }
+
+    @Deprecated
+    public static boolean onAnvilChange(ContainerRepair container, @Nonnull ItemStack left, @Nonnull ItemStack right, IInventory outputSlot, String name, int baseCost)
+    {
+        return onAnvilChange(container, left, right, outputSlot, name, baseCost, null);
     }
 
     public static float onAnvilRepair(EntityPlayer player, @Nonnull ItemStack output, @Nonnull ItemStack left, @Nonnull ItemStack right)
@@ -1519,6 +1525,50 @@ public class ForgeHooks
         return id;
     }
 
+    public static String gatherMixinInfo(Throwable throwable){
+        StackTraceElement[] stacktrace = throwable.getStackTrace();
+        if (stacktrace.length > 0) {
+            try {
+                StringBuilder mixinMetadataBuilder = null;
+                ObjectOpenHashSet<String> classes = new ObjectOpenHashSet<>();
+                for (StackTraceElement stackTraceElement : stacktrace) {
+                    classes.add(stackTraceElement.getClassName());
+                }
+                for (String className : classes) {
+                    ClassInfo classInfo = ClassInfo.fromCache(className);
+                    if (classInfo != null) {
+                        java.util.Set<MixinInfo> mixinInfos = classInfo.getMixins();
+                        if (!mixinInfos.isEmpty()) {
+                            if (mixinMetadataBuilder == null) {
+                                mixinMetadataBuilder = new StringBuilder("\n(MixinBooter) Mixins in Stacktrace:");
+                            }
+                            mixinMetadataBuilder.append("\n\t");
+                            mixinMetadataBuilder.append(className);
+                            mixinMetadataBuilder.append(":");
+                            for (IMixinInfo mixinInfo : mixinInfos) {
+                                mixinMetadataBuilder.append("\n\t\t");
+                                mixinMetadataBuilder.append(mixinInfo.getClassName());
+                                mixinMetadataBuilder.append(" (");
+                                mixinMetadataBuilder.append(mixinInfo.getConfig().getName());
+                                mixinMetadataBuilder.append(")");
+                            }
+                        }
+                    }
+                }
+
+                if (mixinMetadataBuilder == null) {
+                    return "No Mixin Metadata is found in the Stacktrace.\n";
+                } else {
+                    return mixinMetadataBuilder.toString();
+                }
+            } catch (Throwable t) {
+                return "Failed to find Mixin Metadata in Stacktrace:\n" + t;
+            }
+        }
+
+        return "";
+    }
+
     public static void postGenerateChunk(IChunkGenerator generator, World world, Chunk chunk, int x, int z){
         StructureAttachRegistry.postGenerateChunk(generator, world, chunk, x, z);
     }
@@ -1536,7 +1586,7 @@ public class ForgeHooks
         return StructureAttachRegistry.isInsideStructure(generator, worldIn, structureName, pos);
     }
 
-    public static void onCreateChunkProvider(WorldServer worldServer, IChunkLoader loader ,WorldProvider provider, IChunkGenerator generator){
+    public static void onCreateChunkProvider(WorldServer worldServer, IChunkLoader loader , WorldProvider provider, IChunkGenerator generator){
         StructureAttachRegistry.newStructureCollectionFor(worldServer, generator);
     }
     public static void onRecreateStructures(IChunkGenerator generator, World world, int x , int z){

@@ -27,26 +27,22 @@ import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.FMLLog;
 
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteSource;
 import com.google.common.io.CharSource;
+import org.jspecify.annotations.NonNull;
 
 public class ModAccessTransformer extends AccessTransformer
 {
     public static final Attributes.Name FMLAT = new Attributes.Name("FMLAT");
-    private static Map<String, String> embedded = Maps.newHashMap(); //Needs to be primitive so that both classloaders get the same class.
-    @SuppressWarnings("unchecked")
+    private static final Map<String, String> embedded = Maps.newHashMap(); //Needs to be primitive so that both classloaders get the same class.
     public ModAccessTransformer() throws Exception
     {
         super(ModAccessTransformer.class);
-        //We are in the new ClassLoader here, so we need to get the static field from the other ClassLoader.
-        ClassLoader classLoader = this.getClass().getClassLoader().getClass().getClassLoader(); //Bit odd but it gets the class loader that loaded our current class loader yay java!
-        Class<?> otherClazz = Class.forName(this.getClass().getName(), true, classLoader);
-        Field otherField = otherClazz.getDeclaredField("embedded");
-        otherField.setAccessible(true);
-        embedded = (Map<String, String>)otherField.get(null);
 
         for (Map.Entry<String, String> e : embedded.entrySet())
         {
@@ -75,14 +71,15 @@ public class ModAccessTransformer extends AccessTransformer
 
     private static class JarByteSource extends ByteSource
     {
-        private JarFile jar;
-        private JarEntry entry;
+        private final JarFile jar;
+        private final JarEntry entry;
         public JarByteSource(JarFile jar, JarEntry entry)
         {
             this.jar = jar;
             this.entry = entry;
         }
         @Override
+        @NonNull
         public InputStream openStream() throws IOException
         {
             return jar.getInputStream(entry);

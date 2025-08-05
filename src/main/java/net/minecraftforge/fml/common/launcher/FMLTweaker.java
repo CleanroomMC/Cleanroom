@@ -19,22 +19,28 @@
 
 package net.minecraftforge.fml.common.launcher;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
-
 import org.apache.logging.log4j.LogManager;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import org.spongepowered.asm.launch.GlobalProperties;
+import org.spongepowered.asm.launch.MixinBootstrap;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.JarURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class FMLTweaker implements ITweaker {
     private File gameDir;
@@ -44,10 +50,17 @@ public class FMLTweaker implements ITweaker {
 
     public FMLTweaker()
     {
+        Launch.blackboard.put("fml.side", "client");
         if (System.getProperty("java.net.preferIPv4Stack") == null)
         {
             System.setProperty("java.net.preferIPv4Stack", "true");
         }
+        LogManager.getLogger("FML.TWEAK").info("Initializing Mixins...");
+        MixinBootstrap.init();
+        LogManager.getLogger("FML.TWEAK").info("Initializing MixinExtras...");
+        MixinExtrasBootstrap.init();
+
+        GlobalProperties.put(GlobalProperties.Keys.CLEANROOM_DISABLE_MIXIN_CONFIGS, new HashSet<>());
     }
     @SuppressWarnings("unchecked")
     @Override
@@ -117,9 +130,19 @@ public class FMLTweaker implements ITweaker {
 
         try
         {
-            jarLocation = getClass().getProtectionDomain().getCodeSource().getLocation().toURI();
+            URL location = getClass().getProtectionDomain().getCodeSource().getLocation();
+            String path = location.toString();
+            if (path.startsWith("jar")) {
+                JarURLConnection connection = (JarURLConnection) location.openConnection();
+                jarLocation = connection.getJarFileURL().toURI();
+            } else if (path.startsWith("file") && path.endsWith(".class")) {
+                jarLocation = URI.create(path.substring(0, path.indexOf("net/minecraftforge")));
+            } else {
+                jarLocation = location.toURI();
+            }
+            LogManager.getLogger("FML.TWEAK").info("Jar location: {}", jarLocation);
         }
-        catch (URISyntaxException e)
+        catch (URISyntaxException | IOException e)
         {
             LogManager.getLogger("FML.TWEAK").error("Missing URI information for FML tweak");
             throw new RuntimeException(e);
@@ -157,7 +180,7 @@ public class FMLTweaker implements ITweaker {
         }
         launchArgs.clear();
 
-        return args.toArray(new String[args.size()]);
+        return args.toArray(new String[0]);
     }
 
     public File getGameDir()

@@ -3,7 +3,6 @@ package net.minecraftforge.common.world.structure;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.gen.structure.MapGenStructure;
@@ -12,7 +11,7 @@ import javax.annotation.Nullable;
 import java.util.Random;
 
 public record SingleStructureProvider(MapGenStructure structure) implements IStructureProvider {
-    
+
     @Override
     public String getName() {
         return structure.getStructureName();

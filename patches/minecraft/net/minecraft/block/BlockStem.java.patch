@@ -136,7 +136,8 @@
 -                int i = p_180653_3_.func_177229_b(field_176484_a);
 +                int i = ((Integer)state.func_177229_b(field_176484_a)).intValue();
  
-                 for (int j = 0; j < 3; ++j)
+-                for (int j = 0; j < 3; j++)
++                for (int j = 0; j < 3; ++j)
                  {
 -                    if (p_180653_1_.field_73012_v.nextInt(15) <= i)
 +                    if (RANDOM.nextInt(15) <= i)

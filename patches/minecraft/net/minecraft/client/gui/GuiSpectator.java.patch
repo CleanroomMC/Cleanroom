@@ -11,6 +11,15 @@
          GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, p_175258_2_);
          this.field_175268_g.func_110434_K().func_110577_a(field_175267_f);
          this.func_175174_a((float)(p_175258_3_ - 91), p_175258_4_, 0, 0, 182, 22);
+@@ -88,7 +86,7 @@
+ 
+         RenderHelper.func_74520_c();
+ 
+-        for (int i = 0; i < 9; i++)
++        for (int i = 0; i < 9; ++i)
+         {
+             this.func_175266_a(i, p_175258_1_.func_78326_a() / 2 - 90 + i * 20 + 2, p_175258_4_ + 3.0F, p_175258_2_, p_175258_5_.func_178680_a(i));
+         }
 @@ -111,15 +109,11 @@
              GlStateManager.func_179131_c(f, f, f, p_175266_4_);
              p_175266_5_.func_178663_a(f, i);

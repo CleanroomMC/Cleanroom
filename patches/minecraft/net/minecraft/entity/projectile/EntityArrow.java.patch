@@ -57,7 +57,7 @@
          this.field_70250_c = p_i46777_2_;
  
          if (p_i46777_2_ instanceof EntityPlayer)
-@@ -88,31 +91,29 @@
+@@ -88,77 +91,70 @@
      }
  
      @SideOnly(Side.CLIENT)
@@ -94,9 +94,15 @@
 +        float f1 = -MathHelper.func_76126_a(p_184547_2_ * 0.017453292F);
 +        float f2 = MathHelper.func_76134_b(p_184547_3_ * 0.017453292F) * MathHelper.func_76134_b(p_184547_2_ * 0.017453292F);
          this.func_70186_c((double)f, (double)f1, (double)f2, p_184547_5_, p_184547_6_);
-         this.field_70159_w += p_184547_1_.field_70159_w;
-         this.field_70179_y += p_184547_1_.field_70179_y;
-@@ -123,42 +124,37 @@
+-        this.field_70159_w = this.field_70159_w + p_184547_1_.field_70159_w;
+-        this.field_70179_y = this.field_70179_y + p_184547_1_.field_70179_y;
++        this.field_70159_w += p_184547_1_.field_70159_w;
++        this.field_70179_y += p_184547_1_.field_70179_y;
+ 
+         if (!p_184547_1_.field_70122_E)
+         {
+-            this.field_70181_x = this.field_70181_x + p_184547_1_.field_70181_x;
++            this.field_70181_x += p_184547_1_.field_70181_x;
          }
      }
  
@@ -191,7 +197,15 @@
              {
                  this.field_70254_i = true;
              }
-@@ -215,7 +209,7 @@
+@@ -208,25 +202,25 @@
+ 
+         if (this.field_70249_b > 0)
+         {
+-            this.field_70249_b--;
++            --this.field_70249_b;
+         }
+ 
+         if (this.field_70254_i)
          {
              int j = block.func_176201_c(iblockstate);
  
@@ -199,7 +213,37 @@
 +            if ((block != this.field_145790_g || j != this.field_70253_h) && !this.field_70170_p.func_184143_b(this.func_174813_aQ().func_186662_g(0.05D)))
              {
                  this.field_70254_i = false;
-                 this.field_70159_w *= (double)(this.field_70146_Z.nextFloat() * 0.2F);
+-                this.field_70159_w = this.field_70159_w * (double)(this.field_70146_Z.nextFloat() * 0.2F);
+-                this.field_70181_x = this.field_70181_x * (double)(this.field_70146_Z.nextFloat() * 0.2F);
+-                this.field_70179_y = this.field_70179_y * (double)(this.field_70146_Z.nextFloat() * 0.2F);
++                this.field_70159_w *= (double)(this.field_70146_Z.nextFloat() * 0.2F);
++                this.field_70181_x *= (double)(this.field_70146_Z.nextFloat() * 0.2F);
++                this.field_70179_y *= (double)(this.field_70146_Z.nextFloat() * 0.2F);
+                 this.field_70252_j = 0;
+                 this.field_70257_an = 0;
+             }
+             else
+             {
+-                this.field_70252_j++;
++                ++this.field_70252_j;
+ 
+                 if (this.field_70252_j >= 1200)
+                 {
+@@ -234,12 +228,12 @@
+                 }
+             }
+ 
+-            this.field_184552_b++;
++            ++this.field_184552_b;
+         }
+         else
+         {
+             this.field_184552_b = 0;
+-            this.field_70257_an++;
++            ++this.field_70257_an;
+             Vec3d vec3d1 = new Vec3d(this.field_70165_t, this.field_70163_u, this.field_70161_v);
+             Vec3d vec3d = new Vec3d(this.field_70165_t + this.field_70159_w, this.field_70163_u + this.field_70181_x, this.field_70161_v + this.field_70179_y);
+             RayTraceResult raytraceresult = this.field_70170_p.func_147447_a(vec3d1, vec3d, false, true, false);
 @@ -248,9 +242,7 @@
  
              if (raytraceresult != null)
@@ -211,7 +255,7 @@
              }
  
              Entity entity = this.func_184551_a(vec3d1, vec3d);
-@@ -270,7 +262,7 @@
+@@ -270,38 +262,28 @@
                  }
              }
  
@@ -220,9 +264,11 @@
              {
                  this.func_184549_a(raytraceresult);
              }
-@@ -279,16 +271,7 @@
+ 
+             if (this.func_70241_g())
              {
-                 for (int k = 0; k < 4; ++k)
+-                for (int k = 0; k < 4; k++)
++                for (int k = 0; k < 4; ++k)
                  {
 -                    this.field_70170_p
 -                    .func_175688_a(
@@ -238,9 +284,12 @@
                  }
              }
  
-@@ -296,12 +279,11 @@
-             this.field_70163_u += this.field_70181_x;
-             this.field_70161_v += this.field_70179_y;
+-            this.field_70165_t = this.field_70165_t + this.field_70159_w;
+-            this.field_70163_u = this.field_70163_u + this.field_70181_x;
+-            this.field_70161_v = this.field_70161_v + this.field_70179_y;
++            this.field_70165_t += this.field_70159_w;
++            this.field_70163_u += this.field_70181_x;
++            this.field_70161_v += this.field_70179_y;
              float f4 = MathHelper.func_76133_a(this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y);
 -            this.field_70177_z = (float)(MathHelper.func_181159_b(this.field_70159_w, this.field_70179_y) * 180.0F / (float)Math.PI);
 -            this.field_70125_A = (float)(MathHelper.func_181159_b(this.field_70181_x, (double)f4) * 180.0F / (float)Math.PI);
@@ -254,8 +303,12 @@
              }
  
              while (this.field_70125_A - this.field_70127_C >= 180.0F)
-@@ -329,16 +311,7 @@
-                 for (int i = 0; i < 4; ++i)
+@@ -326,19 +308,10 @@
+ 
+             if (this.func_70090_H())
+             {
+-                for (int i = 0; i < 4; i++)
++                for (int i = 0; i < 4; ++i)
                  {
                      float f3 = 0.25F;
 -                    this.field_70170_p
@@ -344,9 +397,9 @@
 -            float f2 = MathHelper.func_76133_a(
 -                           this.field_70159_w * this.field_70159_w + this.field_70181_x * this.field_70181_x + this.field_70179_y * this.field_70179_y
 -                       );
--            this.field_70165_t -= this.field_70159_w / (double)f2 * 0.05F;
--            this.field_70163_u -= this.field_70181_x / (double)f2 * 0.05F;
--            this.field_70161_v -= this.field_70179_y / (double)f2 * 0.05F;
+-            this.field_70165_t = this.field_70165_t - this.field_70159_w / (double)f2 * 0.05F;
+-            this.field_70163_u = this.field_70163_u - this.field_70181_x / (double)f2 * 0.05F;
+-            this.field_70161_v = this.field_70161_v - this.field_70179_y / (double)f2 * 0.05F;
 +            float f2 = MathHelper.func_76133_a(this.field_70159_w * this.field_70159_w + this.field_70181_x * this.field_70181_x + this.field_70179_y * this.field_70179_y);
 +            this.field_70165_t -= this.field_70159_w / (double)f2 * 0.05000000074505806D;
 +            this.field_70163_u -= this.field_70181_x / (double)f2 * 0.05000000074505806D;
@@ -362,7 +415,7 @@
      public void func_70091_d(MoverType p_70091_1_, double p_70091_2_, double p_70091_4_, double p_70091_6_)
      {
          super.func_70091_d(p_70091_1_, p_70091_2_, p_70091_4_, p_70091_6_);
-@@ -516,9 +476,8 @@
+@@ -516,24 +476,23 @@
      protected Entity func_184551_a(Vec3d p_184551_1_, Vec3d p_184551_2_)
      {
          Entity entity = null;
@@ -372,9 +425,10 @@
 +        List<Entity> list = this.field_70170_p.func_175674_a(this, this.func_174813_aQ().func_72321_a(this.field_70159_w, this.field_70181_x, this.field_70179_y).func_186662_g(1.0D), field_184553_f);
 +        double d0 = 0.0D;
  
-         for (int i = 0; i < list.size(); ++i)
+-        for (int i = 0; i < list.size(); i++)
++        for (int i = 0; i < list.size(); ++i)
          {
-@@ -526,14 +485,14 @@
+             Entity entity1 = list.get(i);
  
              if (entity1 != this.field_70250_c || this.field_70257_an >= 5)
              {

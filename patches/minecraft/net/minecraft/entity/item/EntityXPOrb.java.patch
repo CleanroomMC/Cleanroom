@@ -42,7 +42,7 @@
          j += (int)(f * 15.0F * 16.0F);
  
          if (j > 240)
-@@ -74,7 +71,6 @@
+@@ -74,14 +71,13 @@
          return j | k << 16;
      }
  
@@ -50,6 +50,14 @@
      public void func_70071_h_()
      {
          super.func_70071_h_();
+ 
+         if (this.field_70532_c > 0)
+         {
+-            this.field_70532_c--;
++            --this.field_70532_c;
+         }
+ 
+         this.field_70169_q = this.field_70165_t;
 @@ -90,25 +86,25 @@
  
          if (!this.func_189652_ae())
@@ -109,7 +117,7 @@
              }
          }
  
-@@ -141,26 +137,18 @@
+@@ -141,30 +137,22 @@
  
          if (this.field_70122_E)
          {
@@ -140,7 +148,13 @@
 +            this.field_70181_x *= (double) - 0.9F;
          }
  
-         ++this.field_70533_a;
+-        this.field_70533_a++;
+-        this.field_70531_b++;
++        ++this.field_70533_a;
++        ++this.field_70531_b;
+ 
+         if (this.field_70531_b >= 6000)
+         {
 @@ -172,21 +160,19 @@
          }
      }
@@ -199,7 +213,7 @@
                  if (!itemstack.func_190926_b() && itemstack.func_77951_h())
                  {
 -                    int i = Math.min(this.func_184514_c(this.field_70530_e), itemstack.func_77952_i());
--                    this.field_70530_e -= this.func_184515_b(i);
+-                    this.field_70530_e = this.field_70530_e - this.func_184515_b(i);
 +                    float ratio = itemstack.func_77973_b().getXpRepairRatio(itemstack);
 +                    int i = Math.min(roundAverage(this.field_70530_e * ratio), itemstack.func_77952_i());
 +                    this.field_70530_e -= roundAverage(i / ratio);

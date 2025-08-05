@@ -12,7 +12,14 @@
          double d0 = (double)((float)(p_180709_3_.func_177958_n() + 8) + MathHelper.func_76126_a(f) * (float)this.field_76541_b / 8.0F);
          double d1 = (double)((float)(p_180709_3_.func_177958_n() + 8) - MathHelper.func_76126_a(f) * (float)this.field_76541_b / 8.0F);
          double d2 = (double)((float)(p_180709_3_.func_177952_p() + 8) + MathHelper.func_76134_b(f) * (float)this.field_76541_b / 8.0F);
-@@ -44,37 +43,38 @@
+@@ -38,43 +37,44 @@
+         double d4 = (double)(p_180709_3_.func_177956_o() + p_180709_2_.nextInt(3) - 2);
+         double d5 = (double)(p_180709_3_.func_177956_o() + p_180709_2_.nextInt(3) - 2);
+ 
+-        for (int i = 0; i < this.field_76541_b; i++)
++        for (int i = 0; i < this.field_76541_b; ++i)
+         {
+             float f1 = (float)i / (float)this.field_76541_b;
              double d6 = d0 + (d1 - d0) * (double)f1;
              double d7 = d4 + (d5 - d4) * (double)f1;
              double d8 = d2 + (d3 - d2) * (double)f1;
@@ -35,7 +42,8 @@
 +            int j1 = MathHelper.func_76128_c(d7 + d11 / 2.0D);
 +            int k1 = MathHelper.func_76128_c(d8 + d10 / 2.0D);
  
-             for (int l1 = j; l1 <= i1; ++l1)
+-            for (int l1 = j; l1 <= i1; l1++)
++            for (int l1 = j; l1 <= i1; ++l1)
              {
 -                double d12 = ((double)l1 + 0.5 - d6) / (d10 / 2.0);
 +                double d12 = ((double)l1 + 0.5D - d6) / (d10 / 2.0D);
@@ -43,7 +51,8 @@
 -                if (d12 * d12 < 1.0)
 +                if (d12 * d12 < 1.0D)
                  {
-                     for (int i2 = k; i2 <= j1; ++i2)
+-                    for (int i2 = k; i2 <= j1; i2++)
++                    for (int i2 = k; i2 <= j1; ++i2)
                      {
 -                        double d13 = ((double)i2 + 0.5 - d7) / (d11 / 2.0);
 +                        double d13 = ((double)i2 + 0.5D - d7) / (d11 / 2.0D);
@@ -51,7 +60,8 @@
 -                        if (d12 * d12 + d13 * d13 < 1.0)
 +                        if (d12 * d12 + d13 * d13 < 1.0D)
                          {
-                             for (int j2 = l; j2 <= k1; ++j2)
+-                            for (int j2 = l; j2 <= k1; j2++)
++                            for (int j2 = l; j2 <= k1; ++j2)
                              {
 -                                double d14 = ((double)j2 + 0.5 - d8) / (d10 / 2.0);
 +                                double d14 = ((double)j2 + 0.5D - d8) / (d10 / 2.0D);

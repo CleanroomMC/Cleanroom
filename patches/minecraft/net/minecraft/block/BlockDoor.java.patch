@@ -151,7 +151,7 @@
              {
                  p_189540_2_.func_175698_g(p_189540_3_);
                  flag1 = true;
-@@ -252,43 +225,39 @@
+@@ -252,38 +225,39 @@
              {
                  boolean flag = p_189540_2_.func_175640_z(p_189540_3_) || p_189540_2_.func_175640_z(blockpos1);
  
@@ -184,26 +184,27 @@
 -    @Override
      public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)
      {
--        if (p_176196_2_.func_177956_o() >= 255)
+-        return p_176196_2_.func_177956_o() >= 255
+-               ? false
+-               : p_176196_1_.func_180495_p(p_176196_2_.func_177977_b()).func_185896_q()
+-               && super.func_176196_c(p_176196_1_, p_176196_2_)
+-               && super.func_176196_c(p_176196_1_, p_176196_2_.func_177984_a());
 +        if (p_176196_2_.func_177956_o() >= p_176196_1_.func_72800_K() - 1)
-         {
-             return false;
-         }
-         else
-         {
--            return p_176196_1_.func_180495_p(p_176196_2_.func_177977_b()).func_185896_q()
--                   && super.func_176196_c(p_176196_1_, p_176196_2_)
--                   && super.func_176196_c(p_176196_1_, p_176196_2_.func_177984_a());
++        {
++            return false;
++        }
++        else
++        {
 +            IBlockState state = p_176196_1_.func_180495_p(p_176196_2_.func_177977_b());
 +            return (state.func_185896_q() || state.func_193401_d(p_176196_1_, p_176196_2_.func_177977_b(), EnumFacing.UP) == BlockFaceShape.SOLID) && super.func_176196_c(p_176196_1_, p_176196_2_) && super.func_176196_c(p_176196_1_, p_176196_2_.func_177984_a());
-         }
++        }
      }
  
 -    @Override
      public EnumPushReaction func_149656_h(IBlockState p_149656_1_)
      {
          return EnumPushReaction.DESTROY;
-@@ -310,7 +279,6 @@
+@@ -305,7 +279,6 @@
          return func_176510_b(k) | (flag ? 8 : 0) | (flag1 ? 16 : 0) | (flag2 ? 32 : 0);
      }
  
@@ -211,7 +212,7 @@
      public ItemStack func_185473_a(World p_185473_1_, BlockPos p_185473_2_, IBlockState p_185473_3_)
      {
          return new ItemStack(this.func_176509_j());
-@@ -344,15 +312,12 @@
+@@ -339,15 +312,12 @@
          }
      }
  
@@ -228,7 +229,7 @@
          {
              p_176208_1_.func_175698_g(blockpos);
          }
-@@ -369,13 +334,11 @@
+@@ -364,13 +334,11 @@
      }
  
      @SideOnly(Side.CLIENT)
@@ -242,7 +243,7 @@
      public IBlockState func_176221_a(IBlockState p_176221_1_, IBlockAccess p_176221_2_, BlockPos p_176221_3_)
      {
          if (p_176221_1_.func_177229_b(field_176523_O) == BlockDoor.EnumDoorHalf.LOWER)
-@@ -384,8 +347,7 @@
+@@ -379,8 +347,7 @@
  
              if (iblockstate.func_177230_c() == this)
              {
@@ -252,7 +253,7 @@
              }
          }
          else
-@@ -394,68 +356,51 @@
+@@ -389,68 +356,51 @@
  
              if (iblockstate1.func_177230_c() == this)
              {
@@ -329,7 +330,7 @@
              {
                  i |= 4;
              }
-@@ -494,13 +439,11 @@
+@@ -489,13 +439,11 @@
          return (p_176518_0_ & 8) != 0;
      }
  
@@ -344,7 +345,7 @@
      public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
      {
          return BlockFaceShape.UNDEFINED;
-@@ -511,13 +454,11 @@
+@@ -506,13 +454,11 @@
          UPPER,
          LOWER;
  
@@ -358,7 +359,7 @@
          public String func_176610_l()
          {
              return this == UPPER ? "upper" : "lower";
-@@ -529,13 +470,11 @@
+@@ -524,13 +470,11 @@
          LEFT,
          RIGHT;
  

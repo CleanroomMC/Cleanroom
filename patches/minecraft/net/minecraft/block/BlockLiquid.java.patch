@@ -88,9 +88,9 @@
 -    @SideOnly(Side.CLIENT)
 -    public boolean func_176364_g(IBlockAccess p_176364_1_, BlockPos p_176364_2_)
 -    {
--        for (int i = -1; i <= 1; ++i)
+-        for (int i = -1; i <= 1; i++)
 -        {
--            for (int j = -1; j <= 1; ++j)
+-            for (int j = -1; j <= 1; j++)
 -            {
 -                IBlockState iblockstate = p_176364_1_.func_180495_p(p_176364_2_.func_177982_a(i, 0, j));
 -
@@ -441,7 +441,8 @@
 -        );
 +        p_180688_1_.func_184133_a((EntityPlayer)null, p_180688_2_, SoundEvents.field_187659_cY, SoundCategory.BLOCKS, 0.5F, 2.6F + (p_180688_1_.field_73012_v.nextFloat() - p_180688_1_.field_73012_v.nextFloat()) * 0.8F);
  
-         for (int i = 0; i < 8; ++i)
+-        for (int i = 0; i < 8; i++)
++        for (int i = 0; i < 8; ++i)
          {
 -            p_180688_1_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d0 + Math.random(), d1 + 1.2, d2 + Math.random(), 0.0, 0.0, 0.0);
 +            p_180688_1_.func_175688_a(EnumParticleTypes.SMOKE_LARGE, d0 + Math.random(), d1 + 1.2D, d2 + Math.random(), 0.0D, 0.0D, 0.0D);

@@ -1,51 +1,6 @@
 --- before/net/minecraft/client/entity/AbstractClientPlayer.java
 +++ after/net/minecraft/client/entity/AbstractClientPlayer.java
-@@ -1,6 +1,7 @@
- package net.minecraft.client.entity;
- 
- import com.mojang.authlib.GameProfile;
-+import java.io.File;
- import javax.annotation.Nullable;
- import net.minecraft.client.Minecraft;
- import net.minecraft.client.network.NetworkPlayerInfo;
-@@ -33,14 +34,12 @@
-         super(p_i45074_1_, p_i45074_2_);
-     }
- 
--    @Override
-     public boolean func_175149_v()
-     {
-         NetworkPlayerInfo networkplayerinfo = Minecraft.func_71410_x().func_147114_u().func_175102_a(this.func_146103_bH().getId());
-         return networkplayerinfo != null && networkplayerinfo.func_178848_b() == GameType.SPECTATOR;
-     }
- 
--    @Override
-     public boolean func_184812_l_()
-     {
-         NetworkPlayerInfo networkplayerinfo = Minecraft.func_71410_x().func_147114_u().func_175102_a(this.func_146103_bH().getId());
-@@ -101,12 +100,7 @@
- 
-         if (itextureobject == null)
-         {
--            itextureobject = new ThreadDownloadImageData(
--                null,
--                String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", StringUtils.func_76338_a(p_110304_1_)),
--                DefaultPlayerSkin.func_177334_a(func_175147_b(p_110304_1_)),
--                new ImageBufferDownload()
--            );
-+            itextureobject = new ThreadDownloadImageData((File)null, String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", StringUtils.func_76338_a(p_110304_1_)), DefaultPlayerSkin.func_177334_a(func_175147_b(p_110304_1_)), new ImageBufferDownload());
-             texturemanager.func_110579_a(p_110304_0_, itextureobject);
-         }
- 
-@@ -134,14 +128,14 @@
-         }
- 
-         IAttributeInstance iattributeinstance = this.func_110148_a(SharedMonsterAttributes.field_111263_d);
--        f = (float)((double)f * ((iattributeinstance.func_111126_e() / (double)this.field_71075_bZ.func_75094_b() + 1.0) / 2.0));
-+        f = (float)((double)f * ((iattributeinstance.func_111126_e() / (double)this.field_71075_bZ.func_75094_b() + 1.0D) / 2.0D));
- 
-         if (this.field_71075_bZ.func_75094_b() == 0.0F || Float.isNaN(f) || Float.isInfinite(f))
-         {
+@@ -141,7 +141,7 @@
              f = 1.0F;
          }
  
@@ -54,14 +9,7 @@
          {
              int i = this.func_184612_cw();
              float f1 = (float)i / 20.0F;
-@@ -152,12 +146,12 @@
-             }
-             else
-             {
--                f1 *= f1;
-+                f1 = f1 * f1;
-             }
- 
+@@ -158,6 +158,6 @@
              f *= 1.0F - f1 * 0.15F;
          }
  

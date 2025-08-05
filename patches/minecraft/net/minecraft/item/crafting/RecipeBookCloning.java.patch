@@ -1,6 +1,6 @@
 --- before/net/minecraft/item/crafting/RecipeBookCloning.java
 +++ after/net/minecraft/item/crafting/RecipeBookCloning.java
-@@ -6,12 +6,9 @@
+@@ -6,18 +6,15 @@
  import net.minecraft.item.ItemWrittenBook;
  import net.minecraft.util.NonNullList;
  import net.minecraft.world.World;
@@ -14,7 +14,23 @@
      public boolean func_77569_a(InventoryCrafting p_77569_1_, World p_77569_2_)
      {
          int i = 0;
-@@ -47,7 +44,6 @@
+         ItemStack itemstack = ItemStack.field_190927_a;
+ 
+-        for (int j = 0; j < p_77569_1_.func_70302_i_(); j++)
++        for (int j = 0; j < p_77569_1_.func_70302_i_(); ++j)
+         {
+             ItemStack itemstack1 = p_77569_1_.func_70301_a(j);
+ 
+@@ -39,7 +36,7 @@
+                         return false;
+                     }
+ 
+-                    i++;
++                    ++i;
+                 }
+             }
+         }
+@@ -47,13 +44,12 @@
          return !itemstack.func_190926_b() && itemstack.func_77942_o() && i > 0;
      }
  
@@ -22,7 +38,23 @@
      public ItemStack func_77572_b(InventoryCrafting p_77572_1_)
      {
          int i = 0;
-@@ -99,16 +95,14 @@
+         ItemStack itemstack = ItemStack.field_190927_a;
+ 
+-        for (int j = 0; j < p_77572_1_.func_70302_i_(); j++)
++        for (int j = 0; j < p_77572_1_.func_70302_i_(); ++j)
+         {
+             ItemStack itemstack1 = p_77572_1_.func_70301_a(j);
+ 
+@@ -75,7 +71,7 @@
+                         return ItemStack.field_190927_a;
+                     }
+ 
+-                    i++;
++                    ++i;
+                 }
+             }
+         }
+@@ -99,18 +95,16 @@
          }
      }
  
@@ -38,8 +70,11 @@
 -        NonNullList<ItemStack> nonnulllist = NonNullList.func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
 +        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
  
-         for (int i = 0; i < nonnulllist.size(); ++i)
+-        for (int i = 0; i < nonnulllist.size(); i++)
++        for (int i = 0; i < nonnulllist.size(); ++i)
          {
+             ItemStack itemstack = p_179532_1_.func_70301_a(i);
+ 
 @@ -126,14 +120,11 @@
          return nonnulllist;
      }

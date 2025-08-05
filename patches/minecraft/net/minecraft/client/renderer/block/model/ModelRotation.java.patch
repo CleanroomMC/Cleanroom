@@ -32,6 +32,32 @@
          this.field_177542_u = MathHelper.func_76130_a(p_i46087_4_ / 90);
          Matrix4f.mul(matrix4f1, matrix4f, this.field_177544_s);
      }
+@@ -64,14 +64,14 @@
+     {
+         EnumFacing enumfacing = p_177523_1_;
+ 
+-        for (int i = 0; i < this.field_177543_t; i++)
++        for (int i = 0; i < this.field_177543_t; ++i)
+         {
+             enumfacing = enumfacing.func_176732_a(EnumFacing.Axis.X);
+         }
+ 
+         if (enumfacing.func_176740_k() != EnumFacing.Axis.Y)
+         {
+-            for (int j = 0; j < this.field_177542_u; j++)
++            for (int j = 0; j < this.field_177542_u; ++j)
+             {
+                 enumfacing = enumfacing.func_176732_a(EnumFacing.Axis.Y);
+             }
+@@ -91,7 +91,7 @@
+ 
+         EnumFacing enumfacing = p_177520_1_;
+ 
+-        for (int j = 0; j < this.field_177543_t; j++)
++        for (int j = 0; j < this.field_177543_t; ++j)
+         {
+             enumfacing = enumfacing.func_176732_a(EnumFacing.Axis.X);
+         }
 @@ -106,14 +106,19 @@
  
      public static ModelRotation func_177524_a(int p_177524_0_, int p_177524_1_)

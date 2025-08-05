@@ -24,15 +24,18 @@
  
  @SideOnly(Side.CLIENT)
  public class FontRenderer implements IResourceManagerReloadListener
-@@ -56,7 +60,7 @@
+@@ -56,9 +60,9 @@
          this.field_111273_g = p_i1035_2_;
          this.field_78298_i = p_i1035_3_;
          this.field_78293_l = p_i1035_4_;
 -        p_i1035_3_.func_110577_a(this.field_111273_g);
 +        bindTexture(this.field_111273_g);
  
-         for (int i = 0; i < 32; ++i)
+-        for (int i = 0; i < 32; i++)
++        for (int i = 0; i < 32; ++i)
          {
+             int j = (i >> 3 & 1) * 85;
+             int k = (i >> 2 & 1) * 170 + j;
 @@ -107,7 +111,7 @@
  
          try
@@ -42,6 +45,30 @@
              bufferedimage = TextureUtil.func_177053_a(iresource.func_110527_b());
          }
          catch (IOException ioexception)
+@@ -128,7 +132,7 @@
+         boolean lvt_8_1_ = true;
+         float lvt_9_1_ = 8.0F / (float)lvt_7_1_;
+ 
+-        for (int lvt_10_1_ = 0; lvt_10_1_ < 256; lvt_10_1_++)
++        for (int lvt_10_1_ = 0; lvt_10_1_ < 256; ++lvt_10_1_)
+         {
+             int j1 = lvt_10_1_ % 16;
+             int k1 = lvt_10_1_ / 16;
+@@ -140,12 +144,12 @@
+ 
+             int l1;
+ 
+-            for (l1 = lvt_7_1_ - 1; l1 >= 0; l1--)
++            for (l1 = lvt_7_1_ - 1; l1 >= 0; --l1)
+             {
+                 int i2 = j1 * lvt_7_1_ + l1;
+                 boolean flag1 = true;
+ 
+-                for (int j2 = 0; j2 < lvt_6_1_ && flag1; j2++)
++                for (int j2 = 0; j2 < lvt_6_1_ && flag1; ++j2)
+                 {
+                     int k2 = (k1 * lvt_7_1_ + j2) * lvt_3_2_;
+ 
 @@ -171,7 +175,7 @@
  
          try
@@ -86,34 +113,33 @@
          this.func_78265_b();
          int i;
  
-@@ -328,20 +333,19 @@
+@@ -322,11 +327,11 @@
  
-             if (c0 == 167 && i + 1 < p_78255_1_.length())
+     private void func_78255_a(String p_78255_1_, boolean p_78255_2_)
+     {
+-        for (int i = 0; i < p_78255_1_.length(); i++)
++        for (int i = 0; i < p_78255_1_.length(); ++i)
+         {
+             char c0 = p_78255_1_.charAt(i);
+ 
+-            if (c0 == 167 && i + 1 < p_78255_1_.length())
++            if (c0 == 167 && i + 1 < p_78255_1_.length() && (func_78272_b(p_78255_1_.charAt(i + 1)) || func_78270_c(p_78255_1_.charAt(i + 1))))
              {
--                int i1 = "0123456789abcdefklmnor".indexOf(String.valueOf(p_78255_1_.charAt(i + 1)).toLowerCase(Locale.ROOT).charAt(0));
-+                int i1 = "0123456789abcdefklmnor§".indexOf(String.valueOf(p_78255_1_.charAt(i + 1)).toLowerCase(Locale.ROOT).charAt(0));
+                 int i1 = "0123456789abcdefklmnor".indexOf(String.valueOf(p_78255_1_.charAt(i + 1)).toLowerCase(Locale.ROOT).charAt(0));
  
--                if (i1 < 16)
-+                if (i1 < 0)
-+                {
-+                    continue;
-+                }
-+                else if (i1 < 16)
-                 {
-                     this.field_78303_s = false;
-                     this.field_78302_t = false;
-                     this.field_78299_w = false;
+@@ -338,11 +343,6 @@
                      this.field_78300_v = false;
                      this.field_78301_u = false;
--
+ 
 -                    if (i1 < 0 || i1 > 15)
 -                    {
 -                        i1 = 15;
 -                    }
- 
+-
                      if (p_78255_2_)
                      {
-@@ -350,7 +354,7 @@
+                         i1 += 16;
+@@ -350,7 +350,7 @@
  
                      int j1 = this.field_78285_g[i1];
                      this.field_78304_r = j1;
@@ -122,20 +148,20 @@
                  }
                  else if (i1 == 16)
                  {
-@@ -379,7 +383,11 @@
+@@ -379,10 +379,10 @@
                      this.field_78299_w = false;
                      this.field_78300_v = false;
                      this.field_78301_u = false;
 -                    GlStateManager.func_179131_c(this.field_78291_n, this.field_78292_o, this.field_78306_p, this.field_78305_q);
 +                    setColor(this.field_78291_n, this.field_78292_o, this.field_78306_p, this.field_78305_q);
-+                }
-+                else
-+                {
-+                    i--;
                  }
  
-                 ++i;
-@@ -409,7 +417,7 @@
+-                i++;
++                ++i;
+             }
+             else
+             {
+@@ -409,7 +409,7 @@
                      c0 = c1;
                  }
  
@@ -144,9 +170,12 @@
                  boolean flag = (c0 == 0 || j == -1 || this.field_78293_l) && p_78255_2_;
  
                  if (flag)
-@@ -447,6 +455,15 @@
+@@ -445,8 +445,17 @@
+                         this.field_78296_k += f1;
+                     }
  
-                     ++f;
+-                    f++;
++                    ++f;
                  }
 +                doDraw(f);
 +            }
@@ -160,7 +189,34 @@
  
                  if (this.field_78299_w)
                  {
-@@ -580,6 +597,7 @@
+@@ -526,7 +535,7 @@
+             this.field_78292_o = (float)(p_180455_4_ >> 8 & 0xFF) / 255.0F;
+             this.field_78306_p = (float)(p_180455_4_ & 0xFF) / 255.0F;
+             this.field_78305_q = (float)(p_180455_4_ >> 24 & 0xFF) / 255.0F;
+-            GlStateManager.func_179131_c(this.field_78291_n, this.field_78292_o, this.field_78306_p, this.field_78305_q);
++            setColor(this.field_78291_n, this.field_78292_o, this.field_78306_p, this.field_78305_q);
+             this.field_78295_j = p_180455_2_;
+             this.field_78296_k = p_180455_3_;
+             this.func_78255_a(p_180455_1_, p_180455_5_);
+@@ -545,7 +554,7 @@
+             int i = 0;
+             boolean flag = false;
+ 
+-            for (int j = 0; j < p_78256_1_.length(); j++)
++            for (int j = 0; j < p_78256_1_.length(); ++j)
+             {
+                 char c0 = p_78256_1_.charAt(j);
+                 int k = this.func_78263_a(c0);
+@@ -570,7 +579,7 @@
+ 
+                 if (flag && k > 0)
+                 {
+-                    i++;
++                    ++i;
+                 }
+             }
+ 
+@@ -580,6 +589,7 @@
  
      public int func_78263_a(char p_78263_1_)
      {
@@ -168,7 +224,16 @@
          if (p_78263_1_ == 167)
          {
              return -1;
-@@ -635,14 +653,17 @@
+@@ -602,7 +612,7 @@
+                 int j = this.field_78287_e[p_78263_1_] & 255;
+                 int k = j >>> 4;
+                 int l = j & 15;
+-                l++;
++                ++l;
+                 return (l - k) / 2 + 1;
+             }
+             else
+@@ -635,14 +645,17 @@
              {
                  flag = false;
  
@@ -191,7 +256,16 @@
              }
              else if (i1 < 0)
              {
-@@ -678,7 +699,7 @@
+@@ -654,7 +667,7 @@
+ 
+                 if (flag1)
+                 {
+-                    i++;
++                    ++i;
+                 }
+             }
+ 
+@@ -678,7 +691,7 @@
  
      private String func_78273_d(String p_78273_1_)
      {
@@ -200,7 +274,7 @@
          {
              p_78273_1_ = p_78273_1_.substring(0, p_78273_1_.length() - 1);
          }
-@@ -725,9 +746,92 @@
+@@ -725,9 +738,96 @@
  
      public List<String> func_78271_c(String p_78271_1_, int p_78271_2_)
      {
@@ -210,9 +284,10 @@
 +        }
 +        BreakIteratorHolder.BREAK_ITERATOR.setText(p_78271_1_);
 +        List<String> list = new ArrayList<>();
-+        int lineWidth = 0, fed = 0, icui, d;
++        int lineWidth = 0, fed = 0, icui, d, prevFormat = 0;
 +        StringBuilder format = new StringBuilder(); // For next line's format since it should use format of previous line
-+        HashMap<Integer, Pair<Integer, String>> map = new HashMap<>();
++        int[] widths = new int[p_78271_1_.length()];
++        String[] formats = new String[p_78271_1_.length()];
 +        StringBuilder line = new StringBuilder();
 +        String temp;
 +        char[] chars = p_78271_1_.toCharArray();
@@ -223,40 +298,35 @@
 +            switch (current) {
 +                case '\n':
 +                    list.add(line.toString());
-+                    fed += line.length() + 1;
++                    fed = i + 1;
 +                    line.delete(0, line.length()).append(format);
++                    prevFormat = format.length();
 +                    lineWidth = 0;
-+                    map.put(i, Pair.of(lineWidth, format.toString()));
++                    widths[0] = lineWidth;
++                    formats[0] = format.toString();
 +                    continue;
 +                case '§':
 +                    if (i + 1 < chars.length) { // Prevent out of bound
 +                        f = chars[i + 1];
-+                        if (f != 'l' && f != 'L') { // Check start of bold style
-+                            if (f == 'r' || f == 'R' || func_78272_b(f)) { // Not Bold, check end of style
-+                                bold = false;
-+                                if (f == 'r' || f == 'R') {
++                        boolean isC = func_78272_b(f);
++                        if (isC || func_78270_c(f)) {
++                            if (f != 'l' && f != 'L') { // Check start of bold style
++                                if (f == 'r' || f == 'R') { // Not Bold, check end of style
++                                    bold = false;
 +                                    format.delete(0, format.length()); // Clear the format
-+                                } else {
-+                                    format.append('§').append(f); // Add to current format code
++                                } else if (isC) {
++                                    bold = false;
 +                                }
-+                                line.append('§').append(f);
-+                                map.put(i, Pair.of(lineWidth, format.toString()));
-+                                map.put(++i, Pair.of(lineWidth, format.toString()));
-+                                continue;
++                            } else {
++                                bold = true;
 +                            }
-+                            if (f >= 'k' && f <= 'o' || f >= 'K' && f <= 'O') {
-+                                format.append('§').append(f); // Add to current format code
-+                                line.append('§').append(f);
-+                                map.put(i, Pair.of(lineWidth, format.toString()));
-+                                map.put(++i, Pair.of(lineWidth, format.toString()));
-+                                continue;
-+                            }
-+                        } else {
-+                            bold = true;
 +                            format.append('§').append(f); // Add to current format code
 +                            line.append('§').append(f);
-+                            map.put(i, Pair.of(lineWidth, format.toString()));
-+                            map.put(++i, Pair.of(lineWidth, format.toString()));
++                            widths[i - fed] = lineWidth;
++                            widths[i - fed + 1] = lineWidth;
++                            formats[i - fed] = format.toString();
++                            formats[i - fed + 1] = format.toString();
++                            i++;
 +                            continue;
 +                        }
 +                    }
@@ -268,21 +338,29 @@
 +                    }
 +                    break;
 +            }
-+            map.put(i, Pair.of(lineWidth, format.toString()));
++            widths[i - fed] = lineWidth;
++            formats[i - fed] = format.toString();
 +            if (lineWidth > p_78271_2_) {
-+                icui = BreakIteratorHolder.BREAK_ITERATOR.preceding(i);
-+                if (icui <= fed) {
++                if (BreakIteratorHolder.BREAK_ITERATOR.isBoundary(i)) {
++                    icui = i;
++                } else {
++                    icui = BreakIteratorHolder.BREAK_ITERATOR.preceding(i);
++                }
++                if (icui <= fed + 1 || i == icui) {
 +                    list.add(line.substring(0,line.length() - 1));
-+                    fed += line.length() - 1;
++                    fed = i;
 +                    line.delete(0, line.length()).append(format).append(current);
++                    prevFormat = format.length();
 +                    lineWidth = func_78263_a(current);
 +                } else {
 +                    d = icui - fed;
-+                    list.add(line.substring(0, d));
-+                    temp = line.substring(d);
++                    if (line.charAt(d + prevFormat - 2) == '§') d++;
++                    list.add(line.substring(0, d + prevFormat));
++                    temp = line.substring(d + prevFormat);
 +                    fed += d;
-+                    line.delete(0, line.length()).append(map.get(icui).getRight()).append(temp);
-+                    lineWidth = lineWidth - map.get(icui - 1).getLeft();
++                    line.delete(0, line.length()).append(formats[d]).append(temp);
++                    prevFormat = formats[d].length();
++                    lineWidth = lineWidth - widths[d - 1];
 +                }
 +            }
 +        }
@@ -294,7 +372,7 @@
      String func_78280_d(String p_78280_1_, int p_78280_2_)
      {
          int i = this.func_78259_e(p_78280_1_, p_78280_2_);
-@@ -746,6 +850,7 @@
+@@ -746,6 +846,7 @@
          }
      }
  
@@ -302,7 +380,33 @@
      private int func_78259_e(String p_78259_1_, int p_78259_2_)
      {
          int i = p_78259_1_.length();
-@@ -844,6 +949,26 @@
+@@ -753,14 +854,14 @@
+         int k = 0;
+         int l = -1;
+ 
+-        for (boolean flag = false; k < i; k++)
++        for (boolean flag = false; k < i; ++k)
+         {
+             char c0 = p_78259_1_.charAt(k);
+ 
+             switch (c0)
+             {
+                 case '\n':
+-                    k--;
++                    --k;
+                     break;
+                 case ' ':
+                     l = k;
+@@ -769,7 +870,7 @@
+ 
+                     if (flag)
+                     {
+-                        j++;
++                        ++j;
+                     }
+ 
+                     break;
+@@ -844,6 +945,26 @@
      public boolean func_78260_a()
      {
          return this.field_78294_m;

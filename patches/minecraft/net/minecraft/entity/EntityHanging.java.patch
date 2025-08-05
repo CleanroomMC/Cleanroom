@@ -78,7 +78,18 @@
              }
          }
      }
-@@ -146,6 +144,9 @@
+@@ -137,15 +135,18 @@
+             EnumFacing enumfacing = this.field_174860_b.func_176735_f();
+             BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+ 
+-            for (int k = 0; k < i; k++)
++            for (int k = 0; k < i; ++k)
+             {
+-                for (int l = 0; l < j; l++)
++                for (int l = 0; l < j; ++l)
+                 {
+                     int i1 = (i - 1) / -2;
+                     int j1 = (j - 1) / -2;
                      blockpos$mutableblockpos.func_189533_g(blockpos).func_189534_c(enumfacing, k + i1).func_189534_c(EnumFacing.UP, l + j1);
                      IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos$mutableblockpos);
  
@@ -184,15 +195,16 @@
      public void func_70107_b(double p_70107_1_, double p_70107_3_, double p_70107_5_)
      {
          this.field_174861_a = new BlockPos(p_70107_1_, p_70107_3_, p_70107_5_);
-@@ -275,7 +259,6 @@
+@@ -274,7 +258,7 @@
+         return this.field_174861_a;
      }
  
-     @SuppressWarnings("incomplete-switch")
 -    @Override
++    @SuppressWarnings("incomplete-switch")
      public float func_184229_a(Rotation p_184229_1_)
      {
          if (this.field_174860_b != null && this.field_174860_b.func_176740_k() != EnumFacing.Axis.Y)
-@@ -308,13 +291,11 @@
+@@ -307,13 +291,11 @@
          }
      }
  

@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/gen/feature/WorldGenShrub.java
 +++ after/net/minecraft/world/gen/feature/WorldGenShrub.java
-@@ -20,20 +20,16 @@
+@@ -20,43 +20,39 @@
          this.field_150528_a = p_i46450_2_;
      }
  
@@ -24,7 +24,23 @@
          {
              p_180709_3_ = p_180709_3_.func_177984_a();
              this.func_175903_a(p_180709_1_, p_180709_3_, this.field_150527_b);
-@@ -54,9 +50,9 @@
+ 
+-            for (int i = p_180709_3_.func_177956_o(); i <= p_180709_3_.func_177956_o() + 2; i++)
++            for (int i = p_180709_3_.func_177956_o(); i <= p_180709_3_.func_177956_o() + 2; ++i)
+             {
+                 int j = i - p_180709_3_.func_177956_o();
+                 int k = 2 - j;
+ 
+-                for (int l = p_180709_3_.func_177958_n() - k; l <= p_180709_3_.func_177958_n() + k; l++)
++                for (int l = p_180709_3_.func_177958_n() - k; l <= p_180709_3_.func_177958_n() + k; ++l)
+                 {
+                     int i1 = l - p_180709_3_.func_177958_n();
+ 
+-                    for (int j1 = p_180709_3_.func_177952_p() - k; j1 <= p_180709_3_.func_177952_p() + k; j1++)
++                    for (int j1 = p_180709_3_.func_177952_p() - k; j1 <= p_180709_3_.func_177952_p() + k; ++j1)
+                     {
+                         int k1 = j1 - p_180709_3_.func_177952_p();
+ 
                          if (Math.abs(i1) != k || Math.abs(k1) != k || p_180709_2_.nextInt(2) != 0)
                          {
                              BlockPos blockpos = new BlockPos(l, i, j1);

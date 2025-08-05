@@ -16,7 +16,12 @@
      public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
      {
          if (this.field_149764_J == Material.field_151587_i)
-@@ -54,22 +52,22 @@
+@@ -50,26 +48,26 @@
+                 {
+                     BlockPos blockpos = p_180650_2_;
+ 
+-                    for (int j = 0; j < i; j++)
++                    for (int j = 0; j < i; ++j)
                      {
                          blockpos = blockpos.func_177982_a(p_180650_4_.nextInt(3) - 1, 1, p_180650_4_.nextInt(3) - 1);
  
@@ -44,6 +49,15 @@
                          {
                              return;
                          }
+@@ -77,7 +75,7 @@
+                 }
+                 else
+                 {
+-                    for (int k = 0; k < 3; k++)
++                    for (int k = 0; k < 3; ++k)
+                     {
+                         BlockPos blockpos1 = p_180650_2_.func_177982_a(p_180650_4_.nextInt(3) - 1, 0, p_180650_4_.nextInt(3) - 1);
+ 
 @@ -88,7 +86,7 @@
  
                          if (p_180650_1_.func_175623_d(blockpos1.func_177984_a()) && this.func_176368_m(p_180650_1_, blockpos1))

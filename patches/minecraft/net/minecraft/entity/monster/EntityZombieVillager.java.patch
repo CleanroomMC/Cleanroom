@@ -170,6 +170,34 @@
      }
  
      protected int func_190735_dq()
+@@ -238,11 +228,11 @@
+             int j = 0;
+             BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+ 
+-            for (int k = (int)this.field_70165_t - 4; k < (int)this.field_70165_t + 4 && j < 14; k++)
++            for (int k = (int)this.field_70165_t - 4; k < (int)this.field_70165_t + 4 && j < 14; ++k)
+             {
+-                for (int l = (int)this.field_70163_u - 4; l < (int)this.field_70163_u + 4 && j < 14; l++)
++                for (int l = (int)this.field_70163_u - 4; l < (int)this.field_70163_u + 4 && j < 14; ++l)
+                 {
+-                    for (int i1 = (int)this.field_70161_v - 4; i1 < (int)this.field_70161_v + 4 && j < 14; i1++)
++                    for (int i1 = (int)this.field_70161_v - 4; i1 < (int)this.field_70161_v + 4 && j < 14; ++i1)
+                     {
+                         Block block = this.field_70170_p.func_180495_p(blockpos$mutableblockpos.func_181079_c(k, l, i1)).func_177230_c();
+ 
+@@ -250,10 +240,10 @@
+                         {
+                             if (this.field_70146_Z.nextFloat() < 0.3F)
+                             {
+-                                i++;
++                                ++i;
+                             }
+ 
+-                            j++;
++                            ++j;
+                         }
+                     }
+                 }
 @@ -263,48 +253,72 @@
          return i;
      }

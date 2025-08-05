@@ -231,3 +231,11 @@
      }
  
      public boolean func_70650_aV()
+@@ -341,6 +313,6 @@
+ 
+     public void func_175493_co()
+     {
+-        this.field_175494_bm++;
++        ++this.field_175494_bm;
+     }
+ }

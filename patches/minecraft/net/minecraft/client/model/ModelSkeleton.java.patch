@@ -16,7 +16,7 @@
          {
              if (p_78086_1_.func_184591_cq() == EnumHandSide.RIGHT)
              {
-@@ -64,23 +63,22 @@
+@@ -64,33 +63,31 @@
          super.func_78086_a(p_78086_1_, p_78086_2_, p_78086_3_, p_78086_4_);
      }
  
@@ -44,8 +44,14 @@
 +            this.field_178724_i.field_78795_f = -((float)Math.PI / 2F);
              this.field_178723_h.field_78795_f -= f * 1.2F - f1 * 0.4F;
              this.field_178724_i.field_78795_f -= f * 1.2F - f1 * 0.4F;
-             this.field_178723_h.field_78808_h += MathHelper.func_76134_b(p_78087_3_ * 0.09F) * 0.05F + 0.05F;
-@@ -90,7 +88,6 @@
+-            this.field_178723_h.field_78808_h = this.field_178723_h.field_78808_h + MathHelper.func_76134_b(p_78087_3_ * 0.09F) * 0.05F + 0.05F;
+-            this.field_178724_i.field_78808_h = this.field_178724_i.field_78808_h - (MathHelper.func_76134_b(p_78087_3_ * 0.09F) * 0.05F + 0.05F);
+-            this.field_178723_h.field_78795_f = this.field_178723_h.field_78795_f + MathHelper.func_76126_a(p_78087_3_ * 0.067F) * 0.05F;
+-            this.field_178724_i.field_78795_f = this.field_178724_i.field_78795_f - MathHelper.func_76126_a(p_78087_3_ * 0.067F) * 0.05F;
++            this.field_178723_h.field_78808_h += MathHelper.func_76134_b(p_78087_3_ * 0.09F) * 0.05F + 0.05F;
++            this.field_178724_i.field_78808_h -= MathHelper.func_76134_b(p_78087_3_ * 0.09F) * 0.05F + 0.05F;
++            this.field_178723_h.field_78795_f += MathHelper.func_76126_a(p_78087_3_ * 0.067F) * 0.05F;
++            this.field_178724_i.field_78795_f -= MathHelper.func_76126_a(p_78087_3_ * 0.067F) * 0.05F;
          }
      }
  

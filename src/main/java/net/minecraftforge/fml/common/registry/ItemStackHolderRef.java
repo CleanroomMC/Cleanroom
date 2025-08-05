@@ -26,6 +26,7 @@ import java.lang.reflect.Modifier;
 import com.cleanroommc.hackery.ReflectionHackery;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.FMLLog;
+import zone.rong.imaginebreaker.ImagineBreaker;
 
 /**
  * Internal class used in tracking {@link GameRegistry.ItemStackHolder} references
@@ -76,7 +77,7 @@ class ItemStackHolderRef {
         }
         try
         {
-            ReflectionHackery.unsafe.ensureClassInitialized(field.getDeclaringClass());
+            ImagineBreaker.lookup().ensureInitialized(field.getDeclaringClass());
             ReflectionHackery.unsafe.putObject(ReflectionHackery.unsafe.staticFieldBase(field), ReflectionHackery.unsafe.staticFieldOffset(field), is);
             //field.set(null, is);
         }

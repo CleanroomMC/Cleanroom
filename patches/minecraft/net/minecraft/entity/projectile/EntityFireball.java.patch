@@ -74,8 +74,12 @@
          {
              super.func_70071_h_();
  
-@@ -97,7 +93,7 @@
-             ++this.field_70234_an;
+@@ -94,47 +90,38 @@
+                 this.func_70015_d(1);
+             }
+ 
+-            this.field_70234_an++;
++            ++this.field_70234_an;
              RayTraceResult raytraceresult = ProjectileHelper.func_188802_a(this, true, this.field_70234_an >= 25, this.field_70235_a);
  
 -            if (raytraceresult != null)
@@ -83,8 +87,20 @@
              {
                  this.func_70227_a(raytraceresult);
              }
-@@ -113,16 +109,7 @@
-                 for (int i = 0; i < 4; ++i)
+ 
+-            this.field_70165_t = this.field_70165_t + this.field_70159_w;
+-            this.field_70163_u = this.field_70163_u + this.field_70181_x;
+-            this.field_70161_v = this.field_70161_v + this.field_70179_y;
++            this.field_70165_t += this.field_70159_w;
++            this.field_70163_u += this.field_70181_x;
++            this.field_70161_v += this.field_70179_y;
+             ProjectileHelper.func_188803_a(this, 0.2F);
+             float f = this.func_82341_c();
+ 
+             if (this.func_70090_H())
+             {
+-                for (int i = 0; i < 4; i++)
++                for (int i = 0; i < 4; ++i)
                  {
                      float f1 = 0.25F;
 -                    this.field_70170_p
@@ -101,7 +117,14 @@
                  }
  
                  f = 0.8F;
-@@ -134,7 +121,7 @@
+             }
+ 
+-            this.field_70159_w = this.field_70159_w + this.field_70232_b;
+-            this.field_70181_x = this.field_70181_x + this.field_70233_c;
+-            this.field_70179_y = this.field_70179_y + this.field_70230_d;
++            this.field_70159_w += this.field_70232_b;
++            this.field_70181_x += this.field_70233_c;
++            this.field_70179_y += this.field_70230_d;
              this.field_70159_w *= (double)f;
              this.field_70181_x *= (double)f;
              this.field_70179_y *= (double)f;

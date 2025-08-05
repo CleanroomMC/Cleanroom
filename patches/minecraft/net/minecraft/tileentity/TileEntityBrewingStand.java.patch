@@ -44,18 +44,42 @@
      public void func_73660_a()
      {
          ItemStack itemstack = this.field_145945_j.get(4);
-@@ -133,7 +128,7 @@
+@@ -90,7 +85,7 @@
  
-                 for (int i = 0; i < BlockBrewingStand.field_176451_a.length; ++i)
+         if (flag1)
+         {
+-            this.field_145946_k--;
++            --this.field_145946_k;
+             boolean flag2 = this.field_145946_k == 0;
+ 
+             if (flag2 && flag)
+@@ -111,7 +106,7 @@
+         }
+         else if (flag && this.field_184278_m > 0)
+         {
+-            this.field_184278_m--;
++            --this.field_184278_m;
+             this.field_145946_k = 400;
+             this.field_145944_m = itemstack1.func_77973_b();
+             this.func_70296_d();
+@@ -131,9 +126,9 @@
+                     return;
+                 }
+ 
+-                for (int i = 0; i < BlockBrewingStand.field_176451_a.length; i++)
++                for (int i = 0; i < BlockBrewingStand.field_176451_a.length; ++i)
                  {
 -                    iblockstate = iblockstate.func_177226_a(BlockBrewingStand.field_176451_a[i], aboolean[i]);
 +                    iblockstate = iblockstate.func_177226_a(BlockBrewingStand.field_176451_a[i], Boolean.valueOf(aboolean[i]));
                  }
  
                  this.field_145850_b.func_180501_a(this.field_174879_c, iblockstate, 2);
-@@ -147,7 +142,7 @@
+@@ -145,9 +140,9 @@
+     {
+         boolean[] aboolean = new boolean[3];
  
-         for (int i = 0; i < 3; ++i)
+-        for (int i = 0; i < 3; i++)
++        for (int i = 0; i < 3; ++i)
          {
 -            if (!this.field_145945_j.get(i).func_190926_b())
 +            if (!((ItemStack)this.field_145945_j.get(i)).func_190926_b())
@@ -70,6 +94,15 @@
          ItemStack itemstack = this.field_145945_j.get(3);
  
          if (itemstack.func_190926_b())
+@@ -170,7 +166,7 @@
+         }
+         else
+         {
+-            for (int i = 0; i < 3; i++)
++            for (int i = 0; i < 3; ++i)
+             {
+                 ItemStack itemstack1 = this.field_145945_j.get(i);
+ 
 @@ -186,19 +182,17 @@
  
      private void func_145940_l()
@@ -77,7 +110,7 @@
 +        if (net.minecraftforge.event.ForgeEventFactory.onPotionAttemptBrew(field_145945_j)) return;
          ItemStack itemstack = this.field_145945_j.get(3);
  
--        for (int i = 0; i < 3; ++i)
+-        for (int i = 0; i < 3; i++)
 -        {
 -            this.field_145945_j.set(i, PotionHelper.func_185212_d(itemstack, this.field_145945_j.get(i)));
 -        }
@@ -160,7 +193,7 @@
      public void func_70299_a(int p_70299_1_, ItemStack p_70299_2_)
      {
          if (p_70299_1_ >= 0 && p_70299_1_ < this.field_145945_j.size())
-@@ -280,13 +267,11 @@
+@@ -280,55 +267,52 @@
          }
      }
  
@@ -173,21 +206,24 @@
 -    @Override
      public boolean func_70300_a(EntityPlayer p_70300_1_)
      {
-         if (this.field_145850_b.func_175625_s(this.field_174879_c) != this)
-@@ -295,33 +280,23 @@
-         }
-         else
-         {
--            return !(
--                       p_70300_1_.func_70092_e(
--                           (double)this.field_174879_c.func_177958_n() + 0.5,
--                           (double)this.field_174879_c.func_177956_o() + 0.5,
--                           (double)this.field_174879_c.func_177952_p() + 0.5
--                       )
--                       > 64.0
--                   );
+-        return this.field_145850_b.func_175625_s(this.field_174879_c) != this
+-               ? false
+-               : !(
+-                   p_70300_1_.func_70092_e(
+-                       (double)this.field_174879_c.func_177958_n() + 0.5,
+-                       (double)this.field_174879_c.func_177956_o() + 0.5,
+-                       (double)this.field_174879_c.func_177952_p() + 0.5
+-                   )
+-                   > 64.0
+-               );
++        if (this.field_145850_b.func_175625_s(this.field_174879_c) != this)
++        {
++            return false;
++        }
++        else
++        {
 +            return p_70300_1_.func_70092_e((double)this.field_174879_c.func_177958_n() + 0.5D, (double)this.field_174879_c.func_177956_o() + 0.5D, (double)this.field_174879_c.func_177952_p() + 0.5D) <= 64.0D;
-         }
++        }
      }
  
 -    @Override
@@ -210,14 +246,20 @@
          }
          else
          {
-@@ -333,13 +308,11 @@
-             }
-             else
-             {
--                return (item == Items.field_151068_bn || item == Items.field_185155_bH || item == Items.field_185156_bI || item == Items.field_151069_bo)
--                       && this.func_70301_a(p_94041_1_).func_190926_b();
+             Item item = p_94041_2_.func_77973_b();
+-            return p_94041_1_ == 4
+-                   ? item == Items.field_151065_br
+-                   : (item == Items.field_151068_bn || item == Items.field_185155_bH || item == Items.field_185156_bI || item == Items.field_151069_bo)
+-                   && this.func_70301_a(p_94041_1_).func_190926_b();
++
++            if (p_94041_1_ == 4)
++            {
++                return item == Items.field_151065_br;
++            }
++            else
++            {
 +                return net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidInput(p_94041_2_) && this.func_70301_a(p_94041_1_).func_190926_b();
-             }
++            }
          }
      }
  
@@ -225,7 +267,7 @@
      public int[] func_180463_a(EnumFacing p_180463_1_)
      {
          if (p_180463_1_ == EnumFacing.UP)
-@@ -352,13 +325,11 @@
+@@ -341,31 +325,33 @@
          }
      }
  
@@ -238,9 +280,15 @@
 -    @Override
      public boolean func_180461_b(int p_180461_1_, ItemStack p_180461_2_, EnumFacing p_180461_3_)
      {
-         if (p_180461_1_ == 3)
-@@ -371,19 +342,16 @@
-         }
+-        return p_180461_1_ == 3 ? p_180461_2_.func_77973_b() == Items.field_151069_bo : true;
++        if (p_180461_1_ == 3)
++        {
++            return p_180461_2_.func_77973_b() == Items.field_151069_bo;
++        }
++        else
++        {
++            return true;
++        }
      }
  
 -    @Override
@@ -259,7 +307,7 @@
      public int func_174887_a_(int p_174887_1_)
      {
          switch (p_174887_1_)
-@@ -397,7 +365,6 @@
+@@ -379,7 +365,6 @@
          }
      }
  
@@ -267,7 +315,7 @@
      public void func_174885_b(int p_174885_1_, int p_174885_2_)
      {
          switch (p_174885_1_)
-@@ -410,13 +377,32 @@
+@@ -392,13 +377,32 @@
          }
      }
  

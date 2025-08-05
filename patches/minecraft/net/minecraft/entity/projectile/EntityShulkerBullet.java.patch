@@ -90,6 +90,15 @@
  
              if (p_184569_1_ != EnumFacing.Axis.X)
              {
+@@ -219,7 +213,7 @@
+ 
+             if (list.isEmpty())
+             {
+-                for (int i = 5; !this.field_70170_p.func_175623_d(blockpos1.func_177972_a(enumfacing)) && i > 0; i--)
++                for (int i = 5; !this.field_70170_p.func_175623_d(blockpos1.func_177972_a(enumfacing)) && i > 0; --i)
+                 {
+                     enumfacing = EnumFacing.func_176741_a(this.field_70146_Z);
+                 }
 @@ -240,24 +234,23 @@
          double d4 = d3 - this.field_70161_v;
          double d5 = (double)MathHelper.func_76133_a(d6 * d6 + d7 * d7 + d4 * d4);
@@ -166,9 +175,9 @@
 -                    this.field_184577_e = MathHelper.func_151237_a(this.field_184577_e * 1.025, -1.0, 1.0);
 -                    this.field_184578_f = MathHelper.func_151237_a(this.field_184578_f * 1.025, -1.0, 1.0);
 -                    this.field_184579_g = MathHelper.func_151237_a(this.field_184579_g * 1.025, -1.0, 1.0);
--                    this.field_70159_w += (this.field_184577_e - this.field_70159_w) * 0.2;
--                    this.field_70181_x += (this.field_184578_f - this.field_70181_x) * 0.2;
--                    this.field_70179_y += (this.field_184579_g - this.field_70179_y) * 0.2;
+-                    this.field_70159_w = this.field_70159_w + (this.field_184577_e - this.field_70159_w) * 0.2;
+-                    this.field_70181_x = this.field_70181_x + (this.field_184578_f - this.field_70181_x) * 0.2;
+-                    this.field_70179_y = this.field_70179_y + (this.field_184579_g - this.field_70179_y) * 0.2;
 +                    this.field_184577_e = MathHelper.func_151237_a(this.field_184577_e * 1.025D, -1.0D, 1.0D);
 +                    this.field_184578_f = MathHelper.func_151237_a(this.field_184578_f * 1.025D, -1.0D, 1.0D);
 +                    this.field_184579_g = MathHelper.func_151237_a(this.field_184579_g * 1.025D, -1.0D, 1.0D);
@@ -184,7 +193,7 @@
                  {
                      this.func_184567_a(raytraceresult);
                  }
-@@ -336,16 +321,7 @@
+@@ -336,22 +321,13 @@
  
              if (this.field_70170_p.field_72995_K)
              {
@@ -202,6 +211,13 @@
              }
              else if (this.field_184571_b != null && !this.field_184571_b.field_70128_L)
              {
+                 if (this.field_184575_d > 0)
+                 {
+-                    this.field_184575_d--;
++                    --this.field_184575_d;
+ 
+                     if (this.field_184575_d == 0)
+                     {
 @@ -372,9 +348,7 @@
                      {
                          BlockPos blockpos1 = new BlockPos(this.field_184571_b);

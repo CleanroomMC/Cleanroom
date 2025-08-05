@@ -111,6 +111,15 @@
              this.field_148629_h.clear();
              this.field_148626_m.clear();
              this.field_148625_l.clear();
+@@ -222,7 +228,7 @@
+ 
+     public void func_148605_d()
+     {
+-        this.field_148618_g++;
++        ++this.field_148618_g;
+ 
+         for (ITickableSound itickablesound : this.field_148625_l)
+         {
 @@ -245,13 +251,13 @@
  
          while (iterator.hasNext())
@@ -164,16 +173,24 @@
              {
                  ISound isound1 = entry1.getKey();
  
-@@ -320,7 +327,7 @@
-             }
-             else
-             {
--                return this.field_148620_e.playing(s) || this.field_148624_n.containsKey(s) && this.field_148624_n.get(s) <= this.field_148618_g;
+@@ -313,7 +320,15 @@
+         else
+         {
+             String s = this.field_148630_i.get(p_148597_1_);
+-            return s == null ? false : this.field_148620_e.playing(s) || this.field_148624_n.containsKey(s) && this.field_148624_n.get(s) <= this.field_148618_g;
++
++            if (s == null)
++            {
++                return false;
++            }
++            else
++            {
 +                return this.field_148620_e.playing(s) || this.field_148624_n.containsKey(s) && ((Integer)this.field_148624_n.get(s)).intValue() <= this.field_148618_g;
-             }
++            }
          }
      }
-@@ -342,6 +349,9 @@
+ 
+@@ -334,6 +349,9 @@
      {
          if (this.field_148617_f)
          {
@@ -183,7 +200,7 @@
              SoundEventAccessor soundeventaccessor = p_148611_1_.func_184366_a(this.field_148622_c);
              ResourceLocation resourcelocation = p_148611_1_.func_147650_b();
  
-@@ -349,7 +359,7 @@
+@@ -341,7 +359,7 @@
              {
                  if (field_188775_c.add(resourcelocation))
                  {
@@ -192,7 +209,7 @@
                  }
              }
              else
-@@ -364,7 +374,7 @@
+@@ -356,7 +374,7 @@
  
                  if (this.field_148620_e.getMasterVolume() <= 0.0F)
                  {
@@ -201,7 +218,7 @@
                  }
                  else
                  {
-@@ -374,7 +384,7 @@
+@@ -366,7 +384,7 @@
                      {
                          if (field_188775_c.add(resourcelocation))
                          {
@@ -210,7 +227,7 @@
                          }
                      }
                      else
-@@ -393,7 +403,7 @@
+@@ -385,7 +403,7 @@
  
                          if (f1 == 0.0F)
                          {
@@ -219,7 +236,7 @@
                          }
                          else
                          {
-@@ -403,42 +413,20 @@
+@@ -395,42 +413,20 @@
  
                              if (sound.func_188723_h())
                              {
@@ -267,7 +284,7 @@
                              this.field_148629_h.put(s, p_148611_1_);
                              this.field_188776_k.put(soundcategory, s);
  
-@@ -472,7 +460,7 @@
+@@ -464,7 +460,7 @@
  
              if (flag)
              {
@@ -276,7 +293,7 @@
                  this.field_148620_e.pause(s);
                  this.field_189000_p.add(s);
              }
-@@ -483,7 +471,7 @@
+@@ -475,7 +471,7 @@
      {
          for (String s : this.field_189000_p)
          {
@@ -285,7 +302,7 @@
              this.field_148620_e.play(s);
          }
  
-@@ -492,7 +480,7 @@
+@@ -484,7 +480,7 @@
  
      public void func_148599_a(ISound p_148599_1_, int p_148599_2_)
      {
@@ -294,7 +311,7 @@
      }
  
      private static URL func_148612_a(final ResourceLocation p_148612_0_)
-@@ -500,16 +488,13 @@
+@@ -492,16 +488,13 @@
          String s = String.format("%s:%s:%s", "mcsounddomain", p_148612_0_.func_110624_b(), p_148612_0_.func_110623_a());
          URLStreamHandler urlstreamhandler = new URLStreamHandler()
          {
@@ -311,7 +328,7 @@
                      public InputStream getInputStream() throws IOException
                      {
                          return Minecraft.func_71410_x().func_110442_L().func_110536_a(p_148612_0_).func_110527_b();
-@@ -520,9 +505,9 @@
+@@ -512,9 +505,9 @@
  
          try
          {
@@ -323,7 +340,7 @@
          {
              throw new Error("TODO: Sanely handle url exception! :D");
          }
-@@ -530,21 +515,24 @@
+@@ -522,21 +515,24 @@
  
      public void func_148615_a(EntityPlayer p_148615_1_, float p_148615_2_)
      {
@@ -357,7 +374,7 @@
              float f8 = f2 * f4;
              float f9 = f3 * f4;
              float f10 = f2 * f6;
-@@ -595,7 +583,6 @@
+@@ -587,7 +583,6 @@
          {
          }
  
@@ -365,12 +382,22 @@
          public boolean playing(String p_playing_1_)
          {
              synchronized (SoundSystemConfig.THREAD_SYNC)
-@@ -606,7 +593,7 @@
+@@ -598,8 +593,16 @@
                  }
                  else
                  {
 -                    Source source = this.soundLibrary.getSources().get(p_playing_1_);
+-                    return source == null ? false : source.playing() || source.paused() || source.preLoad;
 +                    Source source = (Source)this.soundLibrary.getSources().get(p_playing_1_);
- 
-                     if (source == null)
-                     {
++
++                    if (source == null)
++                    {
++                        return false;
++                    }
++                    else
++                    {
++                        return source.playing() || source.paused() || source.preLoad;
++                    }
+                 }
+             }
+         }

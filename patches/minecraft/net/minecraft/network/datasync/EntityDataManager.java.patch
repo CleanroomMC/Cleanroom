@@ -115,9 +115,12 @@
  
          if (ObjectUtils.notEqual(p_187227_2_, dataentry.func_187206_b()))
          {
-@@ -179,7 +182,7 @@
+@@ -177,9 +180,9 @@
+         {
+             int i = 0;
  
-             for (int j = p_187229_0_.size(); i < j; ++i)
+-            for (int j = p_187229_0_.size(); i < j; i++)
++            for (int j = p_187229_0_.size(); i < j; ++i)
              {
 -                EntityDataManager.DataEntry<?> dataentry = p_187229_0_.get(i);
 +                EntityDataManager.DataEntry<?> dataentry = (EntityDataManager.DataEntry)p_187229_0_.get(i);
