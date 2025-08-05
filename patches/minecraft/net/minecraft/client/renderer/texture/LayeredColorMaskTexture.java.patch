@@ -41,7 +41,7 @@
                      }
  
                      IResource iresource1 = null;
-@@ -66,16 +67,12 @@
+@@ -66,26 +67,22 @@
                      try
                      {
                          String s = this.field_174949_h.get(j);
@@ -59,9 +59,11 @@
 +                            BufferedImage bufferedimage2 = net.minecraftforge.client.MinecraftForgeClient.getImageLayer(new ResourceLocation(s), p_110551_1_);
 +                            if (bufferedimage2.getWidth() == bufferedimage.getWidth() && bufferedimage2.getHeight() == bufferedimage.getHeight() && bufferedimage2.getType() == 6)
                              {
-                                 for (int l = 0; l < bufferedimage2.getHeight(); ++l)
+-                                for (int l = 0; l < bufferedimage2.getHeight(); l++)
++                                for (int l = 0; l < bufferedimage2.getHeight(); ++l)
                                  {
-@@ -83,9 +80,9 @@
+-                                    for (int i1 = 0; i1 < bufferedimage2.getWidth(); i1++)
++                                    for (int i1 = 0; i1 < bufferedimage2.getWidth(); ++i1)
                                      {
                                          int j1 = bufferedimage2.getRGB(i1, l);
  
@@ -73,7 +75,7 @@
                                              int l1 = bufferedimage1.getRGB(i1, l);
                                              int i2 = MathHelper.func_180188_d(l1, k) & 16777215;
                                              bufferedimage2.setRGB(i1, l, k1 | i2);
-@@ -93,13 +90,13 @@
+@@ -93,16 +90,16 @@
                                      }
                                  }
  
@@ -88,7 +90,11 @@
 +                        IOUtils.closeQuietly((Closeable)iresource1);
                      }
  
-                     ++j;
+-                    j++;
++                    ++j;
+                 }
+             }
+             catch (IOException ioexception)
 @@ -111,7 +108,7 @@
              }
              finally

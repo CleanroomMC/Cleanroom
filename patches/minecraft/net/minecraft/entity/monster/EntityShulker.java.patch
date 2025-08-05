@@ -170,6 +170,15 @@
  
                      if (this.field_70170_p.func_175623_d(blockpos.func_177972_a(enumfacing3)))
                      {
+@@ -316,7 +300,7 @@
+             {
+                 if (this.field_184708_bA > 0 && this.field_184707_bz != null)
+                 {
+-                    this.field_184708_bA--;
++                    --this.field_184708_bA;
+                 }
+                 else
+                 {
 @@ -324,105 +308,52 @@
                  }
              }
@@ -323,9 +332,12 @@
                  this.field_70160_al = true;
              }
          }
-@@ -480,14 +409,9 @@
+@@ -478,16 +407,11 @@
+         {
+             BlockPos blockpos = new BlockPos(this);
  
-             for (int i = 0; i < 5; ++i)
+-            for (int i = 0; i < 5; i++)
++            for (int i = 0; i < 5; ++i)
              {
 -                BlockPos blockpos1 = blockpos.func_177982_a(
 -                                         8 - this.field_70146_Z.nextInt(17), 8 - this.field_70146_Z.nextInt(17), 8 - this.field_70146_Z.nextInt(17)
@@ -511,7 +523,7 @@
      }
  
      class AIAttack extends EntityAIBase
-@@ -730,7 +648,6 @@
+@@ -730,57 +648,53 @@
              this.func_75248_a(3);
          }
  
@@ -519,8 +531,18 @@
          public boolean func_75250_a()
          {
              EntityLivingBase entitylivingbase = EntityShulker.this.func_70638_az();
-@@ -745,20 +662,17 @@
-             }
+-            return entitylivingbase != null && entitylivingbase.func_70089_S()
+-                   ? EntityShulker.this.field_70170_p.func_175659_aa() != EnumDifficulty.PEACEFUL
+-                   : false;
++
++            if (entitylivingbase != null && entitylivingbase.func_70089_S())
++            {
++                return EntityShulker.this.field_70170_p.func_175659_aa() != EnumDifficulty.PEACEFUL;
++            }
++            else
++            {
++                return false;
++            }
          }
  
 -        @Override
@@ -540,7 +562,10 @@
          public void func_75246_d()
          {
              if (EntityShulker.this.field_70170_p.func_175659_aa() != EnumDifficulty.PEACEFUL)
-@@ -768,25 +682,19 @@
+             {
+-                this.field_188520_b--;
++                --this.field_188520_b;
+                 EntityLivingBase entitylivingbase = EntityShulker.this.func_70638_az();
                  EntityShulker.this.func_70671_ap().func_75651_a(entitylivingbase, 180.0F, 180.0F);
                  double d0 = EntityShulker.this.func_70068_e(entitylivingbase);
  
@@ -570,7 +595,7 @@
                  }
  
                  super.func_75246_d();
-@@ -801,26 +709,22 @@
+@@ -795,26 +709,22 @@
              super(p_i47060_2_, EntityPlayer.class, true);
          }
  
@@ -599,7 +624,7 @@
              }
          }
      }
-@@ -838,26 +742,22 @@
+@@ -832,26 +742,22 @@
                  });
              }
  
@@ -628,7 +653,7 @@
                  }
              }
          }
-@@ -870,26 +770,22 @@
+@@ -864,26 +770,22 @@
          {
          }
  
@@ -655,15 +680,19 @@
          public void func_75251_c()
          {
              if (EntityShulker.this.func_70638_az() == null)
-@@ -898,7 +794,6 @@
+@@ -892,10 +794,9 @@
              }
          }
  
 -        @Override
          public void func_75246_d()
          {
-             --this.field_188522_b;
-@@ -912,7 +807,6 @@
+-            this.field_188522_b--;
++            --this.field_188522_b;
+         }
+     }
+ 
+@@ -906,7 +807,6 @@
              super(p_i47062_2_);
          }
  

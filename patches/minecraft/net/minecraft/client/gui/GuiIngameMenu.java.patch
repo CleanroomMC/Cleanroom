@@ -80,7 +80,8 @@
      public void func_73876_c()
      {
          super.func_73876_c();
-         ++this.field_146444_f;
+-        this.field_146444_f++;
++        ++this.field_146444_f;
      }
  
 -    @Override

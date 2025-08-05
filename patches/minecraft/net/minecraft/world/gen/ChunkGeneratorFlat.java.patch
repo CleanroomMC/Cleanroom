@@ -18,7 +18,16 @@
  
                  if (!map1.containsKey("size"))
                  {
-@@ -119,12 +119,9 @@
+@@ -96,7 +96,7 @@
+ 
+         for (FlatLayerInfo flatlayerinfo : this.field_82699_e.func_82650_c())
+         {
+-            for (int i = flatlayerinfo.func_82656_d(); i < flatlayerinfo.func_82656_d() + flatlayerinfo.func_82657_a(); i++)
++            for (int i = flatlayerinfo.func_82656_d(); i < flatlayerinfo.func_82656_d() + flatlayerinfo.func_82657_a(); ++i)
+             {
+                 IBlockState iblockstate = flatlayerinfo.func_175900_c();
+ 
+@@ -119,25 +119,22 @@
          }
  
          p_i2004_1_.func_181544_b(j);
@@ -32,7 +41,23 @@
      public Chunk func_185932_a(int p_185932_1_, int p_185932_2_)
      {
          ChunkPrimer chunkprimer = new ChunkPrimer();
-@@ -151,7 +148,7 @@
+ 
+-        for (int i = 0; i < this.field_82700_c.length; i++)
++        for (int i = 0; i < this.field_82700_c.length; ++i)
+         {
+             IBlockState iblockstate = this.field_82700_c[i];
+ 
+             if (iblockstate != null)
+             {
+-                for (int j = 0; j < 16; j++)
++                for (int j = 0; j < 16; ++j)
+                 {
+-                    for (int k = 0; k < 16; k++)
++                    for (int k = 0; k < 16; ++k)
+                     {
+                         chunkprimer.func_177855_a(j, i, k, iblockstate);
+                     }
+@@ -151,10 +148,10 @@
          }
  
          Chunk chunk = new Chunk(this.field_73163_a, chunkprimer, p_185932_1_, p_185932_2_);
@@ -40,7 +65,11 @@
 +        Biome[] abiome = this.field_73163_a.func_72959_q().func_76933_b((Biome[])null, p_185932_1_ * 16, p_185932_2_ * 16, 16, 16);
          byte[] abyte = chunk.func_76605_m();
  
-         for (int l = 0; l < abyte.length; ++l)
+-        for (int l = 0; l < abyte.length; l++)
++        for (int l = 0; l < abyte.length; ++l)
+         {
+             abyte[l] = (byte)Biome.func_185362_a(abiome[l]);
+         }
 @@ -163,9 +160,9 @@
          return chunk;
      }
@@ -83,9 +112,12 @@
  
              if (blockpos1.func_177956_o() < this.field_73163_a.func_181545_F() || this.field_73161_b.nextInt(10) == 0)
              {
-@@ -213,12 +205,7 @@
+@@ -211,14 +203,9 @@
+ 
+         if (this.field_82702_h)
          {
-             for (int i1 = 0; i1 < 8; ++i1)
+-            for (int i1 = 0; i1 < 8; i1++)
++            for (int i1 = 0; i1 < 8; ++i1)
              {
 -                new WorldGenDungeons()
 -                .func_180709_b(

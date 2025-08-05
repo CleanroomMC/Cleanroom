@@ -19,15 +19,26 @@
 
 package net.minecraftforge.client;
 
+import com.cleanroommc.client.IMEHandler;
+import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiScreenBook;
+import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ForgeModContainer;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class ForgeClientHandler
 {
+    private static final Set<String> classList = Arrays.stream(ForgeModContainer.inputMethodGuiWhiteList).collect(Collectors.toSet());
     @SubscribeEvent
     public static void registerModels(ModelRegistryEvent event)
     {
@@ -45,5 +56,31 @@ public class ForgeClientHandler
         {
             event.getItemColors().registerItemColorHandler(new FluidContainerColorer(), ForgeModContainer.getInstance().universalBucket);
         }
+    }
+
+    @SubscribeEvent
+    public static void didChangeGui(GuiOpenEvent event) {
+        boolean canInput;
+        GuiScreen gui = event.getGui();
+        if (gui == null) {
+            // Ignore null GuiScreens
+            canInput = false;
+        } else if (gui instanceof GuiChat) {
+            // Skip, this should be handled by Focus
+            return;
+        } else {
+            // Vanilla GuiScreens
+            canInput = gui instanceof GuiScreenBook
+                    || gui instanceof GuiEditSign
+                    || guiInWhiteList(gui);
+
+        }
+
+        IMEHandler.setIME(canInput);
+    }
+
+    private static boolean guiInWhiteList(GuiScreen gui) {
+        String current = gui.getClass().getName();
+        return classList.contains(current);
     }
 }

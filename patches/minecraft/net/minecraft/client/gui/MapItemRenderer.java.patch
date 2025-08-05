@@ -9,6 +9,24 @@
  
      public MapItemRenderer(TextureManager p_i45009_1_)
      {
+@@ -88,7 +88,7 @@
+             this.field_148241_e = this.field_148243_c.func_110565_c();
+             this.field_148240_d = MapItemRenderer.this.field_148251_b.func_110578_a("map/" + p_i45007_2_.field_76190_i, this.field_148243_c);
+ 
+-            for (int i = 0; i < this.field_148241_e.length; i++)
++            for (int i = 0; i < this.field_148241_e.length; ++i)
+             {
+                 this.field_148241_e[i] = 0;
+             }
+@@ -96,7 +96,7 @@
+ 
+         private void func_148236_a()
+         {
+-            for (int i = 0; i < 16384; i++)
++            for (int i = 0; i < 16384; ++i)
+             {
+                 int j = this.field_148242_b.field_76198_e[i] & 255;
+ 
 @@ -122,15 +122,13 @@
              float f = 0.0F;
              MapItemRenderer.this.field_148251_b.func_110577_a(this.field_148240_d);
@@ -44,7 +62,7 @@
                      GlStateManager.func_179114_b((float)(mapdecoration.func_176111_d() * 360) / 16.0F, 0.0F, 0.0F, 1.0F);
                      GlStateManager.func_179152_a(4.0F, 4.0F, 3.0F);
                      GlStateManager.func_179109_b(-0.125F, 0.125F, 0.0F);
-@@ -155,10 +153,10 @@
+@@ -155,13 +153,13 @@
                      float f4 = (float)(b0 / 4 + 1) / 4.0F;
                      bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181707_g);
                      float f5 = -0.001F;
@@ -58,4 +76,8 @@
 +                    bufferbuilder.func_181662_b(-1.0D, -1.0D, (double)((float)k * -0.001F)).func_187315_a((double)f1, (double)f4).func_181675_d();
                      tessellator.func_78381_a();
                      GlStateManager.func_179121_F();
-                     ++k;
+-                    k++;
++                    ++k;
+                 }
+             }
+ 

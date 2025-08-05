@@ -29,7 +29,7 @@ public final class FMLContextQuery extends MixinContextQuery {
             modApiManager$dataTable.setAccessible(true);
             asmDataTable = (ASMDataTable) modApiManager$dataTable.get(ModAPIManager.INSTANCE);
         } catch (ReflectiveOperationException e) {
-            MixinBooterPlugin.LOGGER.fatal("Not able to reflect ModAPIManager#dataTable", e);
+            FMLLog.log.fatal("Not able to reflect ModAPIManager#dataTable", e);
         }
         this.asmDataTable = asmDataTable;
     }

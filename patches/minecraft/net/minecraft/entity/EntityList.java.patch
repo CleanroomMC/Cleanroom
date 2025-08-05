@@ -1,6 +1,6 @@
 --- before/net/minecraft/entity/EntityList.java
 +++ after/net/minecraft/entity/EntityList.java
-@@ -107,10 +107,8 @@
+@@ -107,49 +107,63 @@
      public static final ResourceLocation field_191307_a = new ResourceLocation("lightning_bolt");
      private static final ResourceLocation field_191310_e = new ResourceLocation("player");
      private static final Logger field_151516_b = LogManager.getLogger();
@@ -13,7 +13,11 @@
  
      @Nullable
      public static ResourceLocation func_191301_a(Entity p_191301_0_)
-@@ -121,35 +119,51 @@
+     {
+-        return func_191306_a((Class <? extends Entity >)p_191301_0_.getClass());
++        return func_191306_a(p_191301_0_.getClass());
+     }
+ 
      @Nullable
      public static ResourceLocation func_191306_a(Class <? extends Entity > p_191306_0_)
      {
@@ -25,7 +29,7 @@
      @Nullable
      public static String func_75621_b(Entity p_75621_0_)
      {
--        int i = field_191308_b.func_148757_b(p_75621_0_.getClass());
+-        int i = field_191308_b.func_148757_b((Class <? extends Entity >)p_75621_0_.getClass());
 -        return i == -1 ? null : field_191311_g.get(i);
 +        net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(p_75621_0_.getClass());
 +        return entry == null ? null : entry.getName();
@@ -121,7 +125,7 @@
          }
  
          return entity;
-@@ -206,7 +233,7 @@
+@@ -206,12 +233,12 @@
  
      public static Set<ResourceLocation> func_180124_b()
      {
@@ -130,6 +134,12 @@
      }
  
      public static boolean func_180123_a(Entity p_180123_0_, ResourceLocation p_180123_1_)
+     {
+-        ResourceLocation resourcelocation = func_191306_a((Class <? extends Entity >)p_180123_0_.getClass());
++        ResourceLocation resourcelocation = func_191306_a(p_180123_0_.getClass());
+ 
+         if (resourcelocation != null)
+         {
 @@ -238,10 +265,10 @@
  
          for (ResourceLocation resourcelocation : func_180124_b())

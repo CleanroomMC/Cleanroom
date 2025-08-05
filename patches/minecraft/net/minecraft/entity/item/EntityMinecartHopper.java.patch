@@ -84,6 +84,15 @@
      public void func_70071_h_()
      {
          super.func_70071_h_();
+@@ -125,7 +116,7 @@
+ 
+             if (blockpos.equals(this.field_174900_c))
+             {
+-                this.field_98044_b--;
++                --this.field_98044_b;
+             }
+             else
+             {
 @@ -153,19 +144,17 @@
          }
          else

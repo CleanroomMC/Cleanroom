@@ -138,15 +138,18 @@
      {
          if (field_193380_a.func_148741_d(p_193372_0_))
          {
-@@ -216,7 +229,7 @@
+@@ -216,9 +229,9 @@
              }
          }
  
 -        NonNullList<ItemStack> nonnulllist = NonNullList.func_191197_a(p_180303_0_.func_70302_i_(), ItemStack.field_190927_a);
 +        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191197_a(p_180303_0_.func_70302_i_(), ItemStack.field_190927_a);
  
-         for (int i = 0; i < nonnulllist.size(); ++i)
+-        for (int i = 0; i < nonnulllist.size(); i++)
++        for (int i = 0; i < nonnulllist.size(); ++i)
          {
+             nonnulllist.set(i, p_180303_0_.func_70301_a(i));
+         }
 @@ -232,11 +245,13 @@
          return field_193380_a.func_82594_a(p_193373_0_);
      }

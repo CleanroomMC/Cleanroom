@@ -63,7 +63,7 @@
          this.field_77287_j = p_i45754_1_;
          this.field_77283_e = p_i45754_2_;
          this.field_77280_f = p_i45754_9_;
-@@ -86,11 +69,12 @@
+@@ -86,18 +69,19 @@
          this.field_77282_d = p_i45754_7_;
          this.field_77286_a = p_i45754_10_;
          this.field_82755_b = p_i45754_11_;
@@ -76,7 +76,17 @@
 +        Set<BlockPos> set = Sets.<BlockPos>newHashSet();
          int i = 16;
  
-         for (int j = 0; j < 16; ++j)
+-        for (int j = 0; j < 16; j++)
++        for (int j = 0; j < 16; ++j)
+         {
+-            for (int k = 0; k < 16; k++)
++            for (int k = 0; k < 16; ++k)
+             {
+-                for (int l = 0; l < 16; l++)
++                for (int l = 0; l < 16; ++l)
+                 {
+                     if (j == 0 || j == 15 || k == 0 || k == 15 || l == 0 || l == 15)
+                     {
 @@ -105,9 +89,9 @@
                          double d1 = (double)((float)k / 15.0F * 2.0F - 1.0F);
                          double d2 = (double)((float)l / 15.0F * 2.0F - 1.0F);
@@ -114,7 +124,7 @@
                          }
                      }
                  }
-@@ -142,14 +124,14 @@
+@@ -142,17 +124,17 @@
  
          this.field_77281_g.addAll(set);
          float f3 = this.field_77280_f * 2.0F;
@@ -136,7 +146,11 @@
 +        net.minecraftforge.event.ForgeEventFactory.onExplosionDetonate(this.field_77287_j, this, list, f3);
          Vec3d vec3d = new Vec3d(this.field_77284_b, this.field_77285_c, this.field_77282_d);
  
-         for (int k2 = 0; k2 < list.size(); ++k2)
+-        for (int k2 = 0; k2 < list.size(); k2++)
++        for (int k2 = 0; k2 < list.size(); ++k2)
+         {
+             Entity entity = list.get(k2);
+ 
 @@ -160,21 +142,21 @@
              {
                  double d12 = entity.func_70011_f(this.field_77284_b, this.field_77285_c, this.field_77282_d) / (double)f3;

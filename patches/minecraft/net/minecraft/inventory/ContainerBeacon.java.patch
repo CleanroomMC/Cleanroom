@@ -1,6 +1,23 @@
 --- before/net/minecraft/inventory/ContainerBeacon.java
 +++ after/net/minecraft/inventory/ContainerBeacon.java
-@@ -34,7 +34,6 @@
+@@ -20,21 +20,20 @@
+         int i = 36;
+         int j = 137;
+ 
+-        for (int k = 0; k < 3; k++)
++        for (int k = 0; k < 3; ++k)
+         {
+-            for (int l = 0; l < 9; l++)
++            for (int l = 0; l < 9; ++l)
+             {
+                 this.func_75146_a(new Slot(p_i45804_1_, l + k * 9 + 9, 36 + l * 18, 137 + k * 18));
+             }
+         }
+ 
+-        for (int i1 = 0; i1 < 9; i1++)
++        for (int i1 = 0; i1 < 9; ++i1)
+         {
+             this.func_75146_a(new Slot(p_i45804_1_, i1, 36 + i1 * 18, 195));
          }
      }
  

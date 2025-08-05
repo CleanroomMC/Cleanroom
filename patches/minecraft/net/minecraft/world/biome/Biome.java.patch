@@ -88,7 +88,7 @@
              return this.func_185353_n() - (f + (float)p_180626_1_.func_177956_o() - 64.0F) * 0.05F / 30.0F;
          }
          else
-@@ -222,34 +225,26 @@
+@@ -222,39 +225,31 @@
          this.field_76760_I.func_180292_a(p_180624_1_, p_180624_2_, this, p_180624_3_);
      }
  
@@ -132,7 +132,22 @@
          int l = p_180628_4_ & 15;
          int i1 = p_180628_5_ & 15;
          BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-@@ -328,6 +323,14 @@
+ 
+-        for (int j1 = 255; j1 >= 0; j1--)
++        for (int j1 = 255; j1 >= 0; --j1)
+         {
+             if (j1 <= p_180628_2_.nextInt(5))
+             {
+@@ -314,7 +309,7 @@
+                     }
+                     else if (j > 0)
+                     {
+-                        j--;
++                        --j;
+                         p_180628_3_.func_177855_a(i1, j1, l, iblockstate1);
+ 
+                         if (j == 0 && iblockstate1.func_177230_c() == Blocks.field_150354_m && k > 1)
+@@ -328,27 +323,35 @@
          }
      }
  
@@ -146,8 +161,9 @@
 +
      public Class <? extends Biome > func_150562_l()
      {
-         return this.getClass();
-@@ -335,20 +338,20 @@
+-        return (Class <? extends Biome >)this.getClass();
++        return this.getClass();
+     }
  
      public Biome.TempCategory func_150561_m()
      {

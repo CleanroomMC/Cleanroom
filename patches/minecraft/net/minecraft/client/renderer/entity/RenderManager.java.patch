@@ -51,6 +51,15 @@
      }
  
      public void func_178628_a(double p_178628_1_, double p_178628_3_, double p_178628_5_)
+@@ -245,7 +251,7 @@
+             this.field_78729_o.put(p_78715_1_, render);
+         }
+ 
+-        return (Render<T>)render;
++        return render;
+     }
+ 
+     @Nullable
 @@ -259,7 +265,7 @@
          }
          else

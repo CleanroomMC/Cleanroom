@@ -45,6 +45,8 @@ import net.minecraftforge.fml.relauncher.IFMLCallHook;
 import net.minecraftforge.fml.relauncher.Side;
 
 import com.google.common.io.ByteStreams;
+import org.spongepowered.asm.bridge.RemapperAdapterFML;
+import org.spongepowered.asm.launch.platform.MixinPlatformAgentFMLLegacy;
 
 public class FMLSanityChecker implements IFMLCallHook
 {
@@ -112,7 +114,7 @@ public class FMLSanityChecker implements IFMLCallHook
             {
                 String mcPath = codeSource.getLocation().getPath().substring(5);
                 mcPath = mcPath.substring(0, mcPath.lastIndexOf('!'));
-                mcPath = URLDecoder.decode(mcPath, StandardCharsets.UTF_8.name());
+                mcPath = URLDecoder.decode(mcPath, StandardCharsets.UTF_8);
                 mcJarFile = new JarFile(mcPath,true);
                 mcJarFile.getManifest();
                 JarEntry cbrEntry = mcJarFile.getJarEntry("net/minecraft/client/ClientBrandRetriever.class");
@@ -174,7 +176,7 @@ public class FMLSanityChecker implements IFMLCallHook
         }
         if (!goodFML)
         {
-            FMLLog.log.error("FML appears to be missing any signature data. This is not a good thing");
+            FMLLog.log.info("FML appears to be missing any signature data. This is expected, don't worry.");
         }
         return null;
     }
@@ -188,14 +190,7 @@ public class FMLSanityChecker implements IFMLCallHook
         fmlLocation = (File)data.get("coremodLocation");
         ClassPatchManager.INSTANCE.setup(FMLLaunchHandler.side());
         FMLDeobfuscatingRemapper.INSTANCE.setup(mcDir, cl, (String) data.get("deobfuscationFileName"), liveEnv);
-        try {
-            Class<?> deobf = cl.getClass().getClassLoader().loadClass(FMLDeobfuscatingRemapper.class.getName());
-            Field instanceType = deobf.getField("INSTANCE");
-            Method setup = deobf.getMethod("setup", File.class, LaunchClassLoader.class, String.class, boolean.class);
-            Object instance = instanceType.get(null);
-            setup.invoke(instance, mcDir, cl, (String) data.get("deobfuscationFileName"), liveEnv);
-        } catch (ClassNotFoundException | NoSuchFieldException | NoSuchMethodException | IllegalAccessException |
-                 InvocationTargetException ignored) {}
+        MixinPlatformAgentFMLLegacy.injectRemapper(RemapperAdapterFML.create(FMLDeobfuscatingRemapper.INSTANCE, FMLDeobfuscatingRemapper.INSTANCE::unmap));
     }
 
 }

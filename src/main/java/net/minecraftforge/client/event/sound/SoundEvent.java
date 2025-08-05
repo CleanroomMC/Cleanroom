@@ -23,6 +23,11 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.SoundManager;
 
+/**
+ * SoundEvent is fired when an event involving any Sound occurs.<br>
+ * <br>
+ * All children of this event are fired on the {@link net.minecraftforge.common.MinecraftForge#EVENT_BUS}.<br>
+ **/
 public class SoundEvent extends Event
 {
     private final SoundManager manager;
@@ -36,6 +41,9 @@ public class SoundEvent extends Event
         return manager;
     }
 
+    /**
+     * When a new sound source is passed to the SoundSystem
+     */
     public static class SoundSourceEvent extends SoundEvent
     {
         private final ISound sound;

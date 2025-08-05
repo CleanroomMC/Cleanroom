@@ -58,8 +58,7 @@ public class Main {
         }
         b.append(']');
         LOGGER.info("Running with arguments: " + b);
-
-        Class<?> cls = Class.forName(mainClass);
+        Class<?> cls = Class.forName(mainClass, true, getClass().getClassLoader());
         Method main = cls.getDeclaredMethod("main", String[].class);
         main.invoke(null, new Object[] { cleanArgs.toArray(new String[0]) });
     }

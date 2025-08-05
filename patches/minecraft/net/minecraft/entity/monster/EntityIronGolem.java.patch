@@ -79,7 +79,7 @@
      protected void func_82167_n(Entity p_82167_1_)
      {
          if (p_82167_1_ instanceof IMob && !(p_82167_1_ instanceof EntityCreeper) && this.func_70681_au().nextInt(20) == 0)
-@@ -131,7 +125,6 @@
+@@ -131,46 +125,34 @@
          super.func_82167_n(p_82167_1_);
      }
  
@@ -87,8 +87,17 @@
      public void func_70636_d()
      {
          super.func_70636_d();
-@@ -146,31 +139,20 @@
-             --this.field_70856_g;
+ 
+         if (this.field_70855_f > 0)
+         {
+-            this.field_70855_f--;
++            --this.field_70855_f;
+         }
+ 
+         if (this.field_70856_g > 0)
+         {
+-            this.field_70856_g--;
++            --this.field_70856_g;
          }
  
 -        if (this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y > 2.5000003E-7F && this.field_70146_Z.nextInt(5) == 0)

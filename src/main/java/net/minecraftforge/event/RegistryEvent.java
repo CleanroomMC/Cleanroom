@@ -22,6 +22,7 @@ package net.minecraftforge.event;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.commons.lang3.Validate;
 
 import com.google.common.collect.ImmutableList;
@@ -43,7 +44,7 @@ public class RegistryEvent<T extends IForgeRegistryEntry<T>> extends GenericEven
         super(clazz);
     }
     /**
-     * Register new registries when you receive this event, through the {@link RecipeBuilder}
+     * Register new registries when you receive this event, through the {@link RegistryBuilder#create()}
      */
     public static class NewRegistry extends Event
     {
@@ -51,12 +52,12 @@ public class RegistryEvent<T extends IForgeRegistryEntry<T>> extends GenericEven
 
     /**
      * Register your objects for the appropriate registry type when you receive this event.
-     *
+     * <p>
      * <code>event.getRegistry().register(...)</code>
-     *
+     * <p>
      * The registries will be visited in alphabetic order of their name, except blocks and items,
      * which will be visited FIRST and SECOND respectively.
-     *
+     * <p>
      * ObjectHolders will reload between Blocks and Items, and after all registries have been visited.
      * @param <T> The registry top level type
      */

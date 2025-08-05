@@ -50,3 +50,12 @@
  
          if (OpenGlHelper.func_148822_b())
          {
+@@ -118,7 +121,7 @@
+                 return file1;
+             }
+ 
+-            i++;
++            ++i;
+         }
+     }
+ }

@@ -1,6 +1,6 @@
 --- before/net/minecraft/block/BlockRailPowered.java
 +++ after/net/minecraft/block/BlockRailPowered.java
-@@ -14,28 +14,27 @@
+@@ -14,30 +14,30 @@
  
  public class BlockRailPowered extends BlockRailBase
  {
@@ -40,8 +40,11 @@
 +        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176568_b, BlockRailBase.EnumRailDirection.NORTH_SOUTH).func_177226_a(field_176569_M, Boolean.valueOf(false)));
      }
  
-     @SuppressWarnings("incomplete-switch")
-@@ -51,7 +50,7 @@
++    @SuppressWarnings("incomplete-switch")
+     protected boolean func_176566_a(World p_176566_1_, BlockPos p_176566_2_, IBlockState p_176566_3_, boolean p_176566_4_, int p_176566_5_)
+     {
+         if (p_176566_5_ >= 8)
+@@ -50,7 +50,7 @@
              int j = p_176566_2_.func_177956_o();
              int k = p_176566_2_.func_177952_p();
              boolean flag = true;
@@ -50,7 +53,117 @@
  
              switch (blockrailbase$enumraildirection)
              {
-@@ -155,34 +154,26 @@
+@@ -58,11 +58,11 @@
+ 
+                     if (p_176566_4_)
+                     {
+-                        k++;
++                        ++k;
+                     }
+                     else
+                     {
+-                        k--;
++                        --k;
+                     }
+ 
+                     break;
+@@ -70,11 +70,11 @@
+ 
+                     if (p_176566_4_)
+                     {
+-                        i--;
++                        --i;
+                     }
+                     else
+                     {
+-                        i++;
++                        ++i;
+                     }
+ 
+                     break;
+@@ -82,12 +82,12 @@
+ 
+                     if (p_176566_4_)
+                     {
+-                        i--;
++                        --i;
+                     }
+                     else
+                     {
+-                        i++;
+-                        j++;
++                        ++i;
++                        ++j;
+                         flag = false;
+                     }
+ 
+@@ -97,13 +97,13 @@
+ 
+                     if (p_176566_4_)
+                     {
+-                        i--;
+-                        j++;
++                        --i;
++                        ++j;
+                         flag = false;
+                     }
+                     else
+                     {
+-                        i++;
++                        ++i;
+                     }
+ 
+                     blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.EAST_WEST;
+@@ -112,12 +112,12 @@
+ 
+                     if (p_176566_4_)
+                     {
+-                        k++;
++                        ++k;
+                     }
+                     else
+                     {
+-                        k--;
+-                        j++;
++                        --k;
++                        ++j;
+                         flag = false;
+                     }
+ 
+@@ -127,21 +127,26 @@
+ 
+                     if (p_176566_4_)
+                     {
+-                        k++;
+-                        j++;
++                        ++k;
++                        ++j;
+                         flag = false;
+                     }
+                     else
+                     {
+-                        k--;
++                        --k;
+                     }
+ 
+                     blockrailbase$enumraildirection = BlockRailBase.EnumRailDirection.NORTH_SOUTH;
+             }
+ 
+-            return this.func_176567_a(p_176566_1_, new BlockPos(i, j, k), p_176566_4_, p_176566_5_, blockrailbase$enumraildirection)
+-                   ? true
+-                   : flag && this.func_176567_a(p_176566_1_, new BlockPos(i, j - 1, k), p_176566_4_, p_176566_5_, blockrailbase$enumraildirection);
++            if (this.func_176567_a(p_176566_1_, new BlockPos(i, j, k), p_176566_4_, p_176566_5_, blockrailbase$enumraildirection))
++            {
++                return true;
++            }
++            else
++            {
++                return flag && this.func_176567_a(p_176566_1_, new BlockPos(i, j - 1, k), p_176566_4_, p_176566_5_, blockrailbase$enumraildirection);
++            }
+         }
+     }
+ 
+@@ -149,34 +154,26 @@
      {
          IBlockState iblockstate = p_176567_1_.func_180495_p(p_176567_2_);
  
@@ -94,7 +207,7 @@
                  }
                  else
                  {
-@@ -196,47 +187,39 @@
+@@ -190,47 +187,39 @@
          }
      }
  
@@ -149,19 +262,21 @@
          {
              i |= 8;
          }
-@@ -245,7 +228,6 @@
+@@ -238,7 +227,7 @@
+         return i;
      }
  
-     @SuppressWarnings("incomplete-switch")
 -    @Override
++    @SuppressWarnings("incomplete-switch")
      public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
      {
          switch (p_185499_2_)
-@@ -330,10 +312,9 @@
+@@ -322,10 +311,10 @@
+         }
      }
  
-     @SuppressWarnings("incomplete-switch")
 -    @Override
++    @SuppressWarnings("incomplete-switch")
      public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
      {
 -        BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = p_185471_1_.func_177229_b(field_176568_b);
@@ -169,7 +284,7 @@
  
          switch (p_185471_2_)
          {
-@@ -383,9 +364,8 @@
+@@ -375,9 +364,8 @@
          return super.func_185471_a(p_185471_1_, p_185471_2_);
      }
  

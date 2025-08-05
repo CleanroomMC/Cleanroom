@@ -89,7 +89,7 @@
              }
          }
  
-@@ -129,8 +108,8 @@
+@@ -129,13 +108,13 @@
          int i2 = p_180622_1_.func_181545_F();
          IBlockState iblockstate = field_185382_B;
          IBlockState iblockstate3 = this.field_76753_B;
@@ -100,7 +100,13 @@
          int l = -1;
          boolean flag1 = false;
          int i1 = 0;
-@@ -178,49 +157,55 @@
+ 
+-        for (int j1 = 255; j1 >= 0; j1--)
++        for (int j1 = 255; j1 >= 0; --j1)
+         {
+             if (p_180622_3_.func_177856_a(l1, j1, k1).func_185904_a() == Material.field_151579_a && j1 < (int)d4)
+             {
+@@ -178,54 +157,60 @@
  
                          l = k + Math.max(0, j1 - i2);
  
@@ -187,6 +193,90 @@
                          }
                      }
                      else if (l > 0)
+                     {
+-                        l--;
++                        --l;
+ 
+                         if (flag1)
+                         {
+@@ -237,7 +222,7 @@
+                         }
+                     }
+ 
+-                    i1++;
++                    ++i1;
+                 }
+             }
+         }
+@@ -250,7 +235,7 @@
+         Random random = new Random(p_150619_1_);
+         this.field_150625_aG = new NoiseGeneratorPerlin(random, 1);
+ 
+-        for (int l1 = 0; l1 < 64; l1++)
++        for (int l1 = 0; l1 < 64; ++l1)
+         {
+             l1 += random.nextInt(5) + 1;
+ 
+@@ -262,12 +247,12 @@
+ 
+         int i2 = random.nextInt(4) + 2;
+ 
+-        for (int i = 0; i < i2; i++)
++        for (int i = 0; i < i2; ++i)
+         {
+             int j = random.nextInt(3) + 1;
+             int k = random.nextInt(64);
+ 
+-            for (int l = 0; k + l < 64 && l < j; l++)
++            for (int l = 0; k + l < 64 && l < j; ++l)
+             {
+                 this.field_150621_aC[k + l] = field_185382_B.func_177226_a(BlockColored.field_176581_a, EnumDyeColor.YELLOW);
+             }
+@@ -275,12 +260,12 @@
+ 
+         int j2 = random.nextInt(4) + 2;
+ 
+-        for (int k2 = 0; k2 < j2; k2++)
++        for (int k2 = 0; k2 < j2; ++k2)
+         {
+             int i3 = random.nextInt(3) + 2;
+             int l3 = random.nextInt(64);
+ 
+-            for (int i1 = 0; l3 + i1 < 64 && i1 < i3; i1++)
++            for (int i1 = 0; l3 + i1 < 64 && i1 < i3; ++i1)
+             {
+                 this.field_150621_aC[l3 + i1] = field_185382_B.func_177226_a(BlockColored.field_176581_a, EnumDyeColor.BROWN);
+             }
+@@ -288,12 +273,12 @@
+ 
+         int l2 = random.nextInt(4) + 2;
+ 
+-        for (int j3 = 0; j3 < l2; j3++)
++        for (int j3 = 0; j3 < l2; ++j3)
+         {
+             int i4 = random.nextInt(3) + 1;
+             int k4 = random.nextInt(64);
+ 
+-            for (int j1 = 0; k4 + j1 < 64 && j1 < i4; j1++)
++            for (int j1 = 0; k4 + j1 < 64 && j1 < i4; ++j1)
+             {
+                 this.field_150621_aC[k4 + j1] = field_185382_B.func_177226_a(BlockColored.field_176581_a, EnumDyeColor.RED);
+             }
+@@ -302,12 +287,12 @@
+         int k3 = random.nextInt(3) + 3;
+         int j4 = 0;
+ 
+-        for (int l4 = 0; l4 < k3; l4++)
++        for (int l4 = 0; l4 < k3; ++l4)
+         {
+             int i5 = 1;
+             j4 += random.nextInt(16) + 4;
+ 
+-            for (int k1 = 0; j4 + k1 < 64 && k1 < 1; k1++)
++            for (int k1 = 0; j4 + k1 < 64 && k1 < 1; ++k1)
+             {
+                 this.field_150621_aC[j4 + k1] = field_185382_B.func_177226_a(BlockColored.field_176581_a, EnumDyeColor.WHITE);
+ 
 @@ -326,20 +311,32 @@
  
      public IBlockState func_180629_a(int p_180629_1_, int p_180629_2_, int p_180629_3_)

@@ -41,7 +41,16 @@
  
                          if (JsonUtils.func_151202_d(jsonobject, "sample"))
                          {
-@@ -127,8 +129,8 @@
+@@ -110,7 +112,7 @@
+                             {
+                                 GameProfile[] agameprofile = new GameProfile[jsonarray.size()];
+ 
+-                                for (int i = 0; i < agameprofile.length; i++)
++                                for (int i = 0; i < agameprofile.length; ++i)
+                                 {
+                                     JsonObject jsonobject1 = JsonUtils.func_151210_l(jsonarray.get(i), "player[" + i + "]");
+                                     String s = JsonUtils.func_151200_h(jsonobject1, "id");
+@@ -127,14 +129,14 @@
                      public JsonElement serialize(ServerStatusResponse.Players p_serialize_1_, Type p_serialize_2_, JsonSerializationContext p_serialize_3_)
                      {
                          JsonObject jsonobject = new JsonObject();
@@ -52,6 +61,13 @@
  
                          if (p_serialize_1_.func_151331_c() != null && p_serialize_1_.func_151331_c().length > 0)
                          {
+                             JsonArray jsonarray = new JsonArray();
+ 
+-                            for (int i = 0; i < p_serialize_1_.func_151331_c().length; i++)
++                            for (int i = 0; i < p_serialize_1_.func_151331_c().length; ++i)
+                             {
+                                 JsonObject jsonobject1 = new JsonObject();
+                                 UUID uuid = p_serialize_1_.func_151331_c()[i].getId();
 @@ -160,17 +162,17 @@
  
                  if (jsonobject.has("description"))

@@ -24,15 +24,18 @@
  
  @SideOnly(Side.CLIENT)
  public class FontRenderer implements IResourceManagerReloadListener
-@@ -56,7 +60,7 @@
+@@ -56,9 +60,9 @@
          this.field_111273_g = p_i1035_2_;
          this.field_78298_i = p_i1035_3_;
          this.field_78293_l = p_i1035_4_;
 -        p_i1035_3_.func_110577_a(this.field_111273_g);
 +        bindTexture(this.field_111273_g);
  
-         for (int i = 0; i < 32; ++i)
+-        for (int i = 0; i < 32; i++)
++        for (int i = 0; i < 32; ++i)
          {
+             int j = (i >> 3 & 1) * 85;
+             int k = (i >> 2 & 1) * 170 + j;
 @@ -107,7 +111,7 @@
  
          try
@@ -42,6 +45,30 @@
              bufferedimage = TextureUtil.func_177053_a(iresource.func_110527_b());
          }
          catch (IOException ioexception)
+@@ -128,7 +132,7 @@
+         boolean lvt_8_1_ = true;
+         float lvt_9_1_ = 8.0F / (float)lvt_7_1_;
+ 
+-        for (int lvt_10_1_ = 0; lvt_10_1_ < 256; lvt_10_1_++)
++        for (int lvt_10_1_ = 0; lvt_10_1_ < 256; ++lvt_10_1_)
+         {
+             int j1 = lvt_10_1_ % 16;
+             int k1 = lvt_10_1_ / 16;
+@@ -140,12 +144,12 @@
+ 
+             int l1;
+ 
+-            for (l1 = lvt_7_1_ - 1; l1 >= 0; l1--)
++            for (l1 = lvt_7_1_ - 1; l1 >= 0; --l1)
+             {
+                 int i2 = j1 * lvt_7_1_ + l1;
+                 boolean flag1 = true;
+ 
+-                for (int j2 = 0; j2 < lvt_6_1_ && flag1; j2++)
++                for (int j2 = 0; j2 < lvt_6_1_ && flag1; ++j2)
+                 {
+                     int k2 = (k1 * lvt_7_1_ + j2) * lvt_3_2_;
+ 
 @@ -171,7 +175,7 @@
  
          try
@@ -86,7 +113,12 @@
          this.func_78265_b();
          int i;
  
-@@ -326,7 +331,7 @@
+@@ -322,11 +327,11 @@
+ 
+     private void func_78255_a(String p_78255_1_, boolean p_78255_2_)
+     {
+-        for (int i = 0; i < p_78255_1_.length(); i++)
++        for (int i = 0; i < p_78255_1_.length(); ++i)
          {
              char c0 = p_78255_1_.charAt(i);
  
@@ -116,7 +148,7 @@
                  }
                  else if (i1 == 16)
                  {
-@@ -379,7 +379,7 @@
+@@ -379,10 +379,10 @@
                      this.field_78299_w = false;
                      this.field_78300_v = false;
                      this.field_78301_u = false;
@@ -124,7 +156,11 @@
 +                    setColor(this.field_78291_n, this.field_78292_o, this.field_78306_p, this.field_78305_q);
                  }
  
-                 ++i;
+-                i++;
++                ++i;
+             }
+             else
+             {
 @@ -409,7 +409,7 @@
                      c0 = c1;
                  }
@@ -134,9 +170,12 @@
                  boolean flag = (c0 == 0 || j == -1 || this.field_78293_l) && p_78255_2_;
  
                  if (flag)
-@@ -447,6 +447,15 @@
+@@ -445,8 +445,17 @@
+                         this.field_78296_k += f1;
+                     }
  
-                     ++f;
+-                    f++;
++                    ++f;
                  }
 +                doDraw(f);
 +            }
@@ -159,6 +198,24 @@
              this.field_78295_j = p_180455_2_;
              this.field_78296_k = p_180455_3_;
              this.func_78255_a(p_180455_1_, p_180455_5_);
+@@ -545,7 +554,7 @@
+             int i = 0;
+             boolean flag = false;
+ 
+-            for (int j = 0; j < p_78256_1_.length(); j++)
++            for (int j = 0; j < p_78256_1_.length(); ++j)
+             {
+                 char c0 = p_78256_1_.charAt(j);
+                 int k = this.func_78263_a(c0);
+@@ -570,7 +579,7 @@
+ 
+                 if (flag && k > 0)
+                 {
+-                    i++;
++                    ++i;
+                 }
+             }
+ 
 @@ -580,6 +589,7 @@
  
      public int func_78263_a(char p_78263_1_)
@@ -167,6 +224,15 @@
          if (p_78263_1_ == 167)
          {
              return -1;
+@@ -602,7 +612,7 @@
+                 int j = this.field_78287_e[p_78263_1_] & 255;
+                 int k = j >>> 4;
+                 int l = j & 15;
+-                l++;
++                ++l;
+                 return (l - k) / 2 + 1;
+             }
+             else
 @@ -635,14 +645,17 @@
              {
                  flag = false;
@@ -190,6 +256,15 @@
              }
              else if (i1 < 0)
              {
+@@ -654,7 +667,7 @@
+ 
+                 if (flag1)
+                 {
+-                    i++;
++                    ++i;
+                 }
+             }
+ 
 @@ -678,7 +691,7 @@
  
      private String func_78273_d(String p_78273_1_)
@@ -199,7 +274,7 @@
          {
              p_78273_1_ = p_78273_1_.substring(0, p_78273_1_.length() - 1);
          }
-@@ -725,9 +738,95 @@
+@@ -725,9 +738,96 @@
  
      public List<String> func_78271_c(String p_78271_1_, int p_78271_2_)
      {
@@ -225,6 +300,7 @@
 +                    list.add(line.toString());
 +                    fed = i + 1;
 +                    line.delete(0, line.length()).append(format);
++                    prevFormat = format.length();
 +                    lineWidth = 0;
 +                    widths[0] = lineWidth;
 +                    formats[0] = format.toString();
@@ -264,7 +340,7 @@
 +            }
 +            widths[i - fed] = lineWidth;
 +            formats[i - fed] = format.toString();
-+            if (lineWidth >= p_78271_2_) {
++            if (lineWidth > p_78271_2_) {
 +                if (BreakIteratorHolder.BREAK_ITERATOR.isBoundary(i)) {
 +                    icui = i;
 +                } else {
@@ -278,7 +354,7 @@
 +                    lineWidth = func_78263_a(current);
 +                } else {
 +                    d = icui - fed;
-+                    if (line.charAt(d + prevFormat - 1) == '§') d++;
++                    if (line.charAt(d + prevFormat - 2) == '§') d++;
 +                    list.add(line.substring(0, d + prevFormat));
 +                    temp = line.substring(d + prevFormat);
 +                    fed += d;
@@ -296,7 +372,7 @@
      String func_78280_d(String p_78280_1_, int p_78280_2_)
      {
          int i = this.func_78259_e(p_78280_1_, p_78280_2_);
-@@ -746,6 +845,7 @@
+@@ -746,6 +846,7 @@
          }
      }
  
@@ -304,7 +380,33 @@
      private int func_78259_e(String p_78259_1_, int p_78259_2_)
      {
          int i = p_78259_1_.length();
-@@ -844,6 +944,26 @@
+@@ -753,14 +854,14 @@
+         int k = 0;
+         int l = -1;
+ 
+-        for (boolean flag = false; k < i; k++)
++        for (boolean flag = false; k < i; ++k)
+         {
+             char c0 = p_78259_1_.charAt(k);
+ 
+             switch (c0)
+             {
+                 case '\n':
+-                    k--;
++                    --k;
+                     break;
+                 case ' ':
+                     l = k;
+@@ -769,7 +870,7 @@
+ 
+                     if (flag)
+                     {
+-                        j++;
++                        ++j;
+                     }
+ 
+                     break;
+@@ -844,6 +945,26 @@
      public boolean func_78260_a()
      {
          return this.field_78294_m;

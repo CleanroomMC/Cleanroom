@@ -99,6 +99,8 @@ public class ProxyInjector
             catch (Exception e)
             {
                 FMLLog.log.error("An error occurred trying to load a proxy into {}.{}", targ.getClassName(), targ.getObjectName(), e);
+                System.out.println(targ.getClassName());
+                System.out.println(targ.getObjectName());
                 throw new LoaderException(e);
             }
         }

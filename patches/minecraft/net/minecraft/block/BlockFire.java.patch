@@ -151,7 +151,7 @@
                      {
                          p_180650_1_.func_175698_g(p_180650_2_);
                          return;
-@@ -204,12 +187,12 @@
+@@ -204,18 +187,18 @@
                      j = -50;
                  }
  
@@ -168,8 +168,17 @@
 +                this.tryCatchFire(p_180650_1_, p_180650_2_.func_177978_c(), 300 + j, p_180650_4_, i, EnumFacing.SOUTH);
 +                this.tryCatchFire(p_180650_1_, p_180650_2_.func_177968_d(), 300 + j, p_180650_4_, i, EnumFacing.NORTH);
  
-                 for (int k = -1; k <= 1; ++k)
+-                for (int k = -1; k <= 1; k++)
++                for (int k = -1; k <= 1; ++k)
                  {
+-                    for (int l = -1; l <= 1; l++)
++                    for (int l = -1; l <= 1; ++l)
+                     {
+-                        for (int i1 = -1; i1 <= 4; i1++)
++                        for (int i1 = -1; i1 <= 4; ++i1)
+                         {
+                             if (k != 0 || i1 != 0 || l != 0)
+                             {
 @@ -247,7 +230,7 @@
                                              i2 = 15;
                                          }
@@ -296,7 +305,7 @@
      public void func_176213_c(World p_176213_1_, BlockPos p_176213_2_, IBlockState p_176213_3_)
      {
          if (p_176213_1_.field_73011_w.func_186058_p().func_186068_a() > 0 || !Blocks.field_150427_aO.func_176548_d(p_176213_1_, p_176213_2_))
-@@ -390,79 +373,73 @@
+@@ -390,126 +373,124 @@
          }
      }
  
@@ -331,7 +340,8 @@
 -            if (Blocks.field_150480_ab.func_176535_e(p_180655_2_, p_180655_3_.func_177976_e()))
 +            if (Blocks.field_150480_ab.canCatchFire(p_180655_2_, p_180655_3_.func_177976_e(), EnumFacing.EAST))
              {
-                 for (int j = 0; j < 2; ++j)
+-                for (int j = 0; j < 2; j++)
++                for (int j = 0; j < 2; ++j)
                  {
 -                    double d3 = (double)p_180655_3_.func_177958_n() + p_180655_4_.nextDouble() * 0.1F;
 +                    double d3 = (double)p_180655_3_.func_177958_n() + p_180655_4_.nextDouble() * 0.10000000149011612D;
@@ -345,7 +355,8 @@
 -            if (Blocks.field_150480_ab.func_176535_e(p_180655_2_, p_180655_3_.func_177974_f()))
 +            if (Blocks.field_150480_ab.canCatchFire(p_180655_2_, p_180655_3_.func_177974_f(), EnumFacing.WEST))
              {
-                 for (int k = 0; k < 2; ++k)
+-                for (int k = 0; k < 2; k++)
++                for (int k = 0; k < 2; ++k)
                  {
 -                    double d4 = (double)(p_180655_3_.func_177958_n() + 1) - p_180655_4_.nextDouble() * 0.1F;
 +                    double d4 = (double)(p_180655_3_.func_177958_n() + 1) - p_180655_4_.nextDouble() * 0.10000000149011612D;
@@ -359,7 +370,8 @@
 -            if (Blocks.field_150480_ab.func_176535_e(p_180655_2_, p_180655_3_.func_177978_c()))
 +            if (Blocks.field_150480_ab.canCatchFire(p_180655_2_, p_180655_3_.func_177978_c(), EnumFacing.SOUTH))
              {
-                 for (int l = 0; l < 2; ++l)
+-                for (int l = 0; l < 2; l++)
++                for (int l = 0; l < 2; ++l)
                  {
                      double d5 = (double)p_180655_3_.func_177958_n() + p_180655_4_.nextDouble();
                      double d10 = (double)p_180655_3_.func_177956_o() + p_180655_4_.nextDouble();
@@ -373,7 +385,8 @@
 -            if (Blocks.field_150480_ab.func_176535_e(p_180655_2_, p_180655_3_.func_177968_d()))
 +            if (Blocks.field_150480_ab.canCatchFire(p_180655_2_, p_180655_3_.func_177968_d(), EnumFacing.NORTH))
              {
-                 for (int i1 = 0; i1 < 2; ++i1)
+-                for (int i1 = 0; i1 < 2; i1++)
++                for (int i1 = 0; i1 < 2; ++i1)
                  {
                      double d6 = (double)p_180655_3_.func_177958_n() + p_180655_4_.nextDouble();
                      double d11 = (double)p_180655_3_.func_177956_o() + p_180655_4_.nextDouble();
@@ -387,7 +400,8 @@
 -            if (Blocks.field_150480_ab.func_176535_e(p_180655_2_, p_180655_3_.func_177984_a()))
 +            if (Blocks.field_150480_ab.canCatchFire(p_180655_2_, p_180655_3_.func_177984_a(), EnumFacing.DOWN))
              {
-                 for (int j1 = 0; j1 < 2; ++j1)
+-                for (int j1 = 0; j1 < 2; j1++)
++                for (int j1 = 0; j1 < 2; ++j1)
                  {
                      double d7 = (double)p_180655_3_.func_177958_n() + p_180655_4_.nextDouble();
 -                    double d12 = (double)(p_180655_3_.func_177956_o() + 1) - p_180655_4_.nextDouble() * 0.1F;
@@ -398,8 +412,10 @@
                  }
              }
          }
-@@ -471,45 +448,49 @@
-             for (int i = 0; i < 3; ++i)
+         else
+         {
+-            for (int i = 0; i < 3; i++)
++            for (int i = 0; i < 3; ++i)
              {
                  double d0 = (double)p_180655_3_.func_177958_n() + p_180655_4_.nextDouble();
 -                double d1 = (double)p_180655_3_.func_177956_o() + p_180655_4_.nextDouble() * 0.5 + 0.5;

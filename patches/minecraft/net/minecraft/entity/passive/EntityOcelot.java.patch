@@ -197,7 +197,22 @@
      public boolean func_70878_b(EntityAnimal p_70878_1_)
      {
          if (p_70878_1_ == this)
-@@ -312,26 +293,22 @@
+@@ -298,32 +279,36 @@
+         else
+         {
+             EntityOcelot entityocelot = (EntityOcelot)p_70878_1_;
+-            return !entityocelot.func_70909_n() ? false : this.func_70880_s() && entityocelot.func_70880_s();
++
++            if (!entityocelot.func_70909_n())
++            {
++                return false;
++            }
++            else
++            {
++                return this.func_70880_s() && entityocelot.func_70880_s();
++            }
+         }
+     }
  
      public int func_70913_u()
      {
@@ -227,7 +242,7 @@
          {
              BlockPos blockpos = new BlockPos(this.field_70165_t, this.func_174813_aQ().field_72338_b, this.field_70161_v);
  
-@@ -343,7 +320,7 @@
+@@ -335,7 +320,7 @@
              IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos.func_177977_b());
              Block block = iblockstate.func_177230_c();
  
@@ -236,7 +251,7 @@
              {
                  return true;
              }
-@@ -352,7 +329,6 @@
+@@ -344,7 +329,6 @@
          return false;
      }
  
@@ -244,7 +259,7 @@
      public String func_70005_c_()
      {
          if (this.func_145818_k_())
-@@ -365,12 +341,11 @@
+@@ -357,12 +341,11 @@
          }
      }
  
@@ -258,7 +273,7 @@
          }
  
          this.field_70714_bg.func_85156_a(this.field_175545_bm);
-@@ -382,7 +357,6 @@
+@@ -374,14 +357,13 @@
      }
  
      @Nullable
@@ -266,3 +281,11 @@
      public IEntityLivingData func_180482_a(DifficultyInstance p_180482_1_, @Nullable IEntityLivingData p_180482_2_)
      {
          p_180482_2_ = super.func_180482_a(p_180482_1_, p_180482_2_);
+ 
+         if (this.func_70913_u() == 0 && this.field_70170_p.field_73012_v.nextInt(7) == 0)
+         {
+-            for (int i = 0; i < 2; i++)
++            for (int i = 0; i < 2; ++i)
+             {
+                 EntityOcelot entityocelot = new EntityOcelot(this.field_70170_p);
+                 entityocelot.func_70012_b(this.field_70165_t, this.field_70163_u, this.field_70161_v, this.field_70177_z, 0.0F);

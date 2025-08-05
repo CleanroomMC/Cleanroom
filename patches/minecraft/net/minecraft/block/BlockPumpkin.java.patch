@@ -16,7 +16,16 @@
      public void func_176213_c(World p_176213_1_, BlockPos p_176213_2_, IBlockState p_176213_3_)
      {
          super.func_176213_c(p_176213_1_, p_176213_2_, p_176213_3_);
-@@ -73,27 +73,17 @@
+@@ -65,7 +65,7 @@
+ 
+         if (blockpattern$patternhelper != null)
+         {
+-            for (int i = 0; i < this.func_176391_l().func_177685_b(); i++)
++            for (int i = 0; i < this.func_176391_l().func_177685_b(); ++i)
+             {
+                 BlockWorldState blockworldstate = blockpattern$patternhelper.func_177670_a(0, i, 0);
+                 p_180673_1_.func_180501_a(blockworldstate.func_177508_d(), Blocks.field_150350_a.func_176223_P(), 2);
+@@ -73,30 +73,20 @@
  
              EntitySnowman entitysnowman = new EntitySnowman(p_180673_1_);
              BlockPos blockpos1 = blockpattern$patternhelper.func_177670_a(0, 2, 0).func_177508_d();
@@ -32,7 +41,8 @@
                  CriteriaTriggers.field_192133_m.func_192229_a(entityplayermp, entitysnowman);
              }
  
-             for (int l = 0; l < 120; ++l)
+-            for (int l = 0; l < 120; l++)
++            for (int l = 0; l < 120; ++l)
              {
 -                p_180673_1_.func_175688_a(
 -                    EnumParticleTypes.SNOW_SHOVEL,
@@ -46,8 +56,24 @@
 +                p_180673_1_.func_175688_a(EnumParticleTypes.SNOW_SHOVEL, (double)blockpos1.func_177958_n() + p_180673_1_.field_73012_v.nextDouble(), (double)blockpos1.func_177956_o() + p_180673_1_.field_73012_v.nextDouble() * 2.5D, (double)blockpos1.func_177952_p() + p_180673_1_.field_73012_v.nextDouble(), 0.0D, 0.0D, 0.0D);
              }
  
-             for (int i1 = 0; i1 < this.func_176391_l().func_177685_b(); ++i1)
-@@ -119,27 +109,17 @@
+-            for (int i1 = 0; i1 < this.func_176391_l().func_177685_b(); i1++)
++            for (int i1 = 0; i1 < this.func_176391_l().func_177685_b(); ++i1)
+             {
+                 BlockWorldState blockworldstate2 = blockpattern$patternhelper.func_177670_a(0, i1, 0);
+                 p_180673_1_.func_175722_b(blockworldstate2.func_177508_d(), Blocks.field_150350_a, false);
+@@ -108,9 +98,9 @@
+ 
+             if (blockpattern$patternhelper != null)
+             {
+-                for (int j = 0; j < this.func_176388_T().func_177684_c(); j++)
++                for (int j = 0; j < this.func_176388_T().func_177684_c(); ++j)
+                 {
+-                    for (int k = 0; k < this.func_176388_T().func_177685_b(); k++)
++                    for (int k = 0; k < this.func_176388_T().func_177685_b(); ++k)
+                     {
+                         p_180673_1_.func_180501_a(blockpattern$patternhelper.func_177670_a(j, k, 0).func_177508_d(), Blocks.field_150350_a.func_176223_P(), 2);
+                     }
+@@ -119,32 +109,22 @@
                  BlockPos blockpos = blockpattern$patternhelper.func_177670_a(1, 2, 0).func_177508_d();
                  EntityIronGolem entityirongolem = new EntityIronGolem(p_180673_1_);
                  entityirongolem.func_70849_f(true);
@@ -63,7 +89,8 @@
                      CriteriaTriggers.field_192133_m.func_192229_a(entityplayermp1, entityirongolem);
                  }
  
-                 for (int j1 = 0; j1 < 120; ++j1)
+-                for (int j1 = 0; j1 < 120; j1++)
++                for (int j1 = 0; j1 < 120; ++j1)
                  {
 -                    p_180673_1_.func_175688_a(
 -                        EnumParticleTypes.SNOWBALL,
@@ -77,7 +104,14 @@
 +                    p_180673_1_.func_175688_a(EnumParticleTypes.SNOWBALL, (double)blockpos.func_177958_n() + p_180673_1_.field_73012_v.nextDouble(), (double)blockpos.func_177956_o() + p_180673_1_.field_73012_v.nextDouble() * 3.9D, (double)blockpos.func_177952_p() + p_180673_1_.field_73012_v.nextDouble(), 0.0D, 0.0D, 0.0D);
                  }
  
-                 for (int k1 = 0; k1 < this.func_176388_T().func_177684_c(); ++k1)
+-                for (int k1 = 0; k1 < this.func_176388_T().func_177684_c(); k1++)
++                for (int k1 = 0; k1 < this.func_176388_T().func_177684_c(); ++k1)
+                 {
+-                    for (int l1 = 0; l1 < this.func_176388_T().func_177685_b(); l1++)
++                    for (int l1 = 0; l1 < this.func_176388_T().func_177685_b(); ++l1)
+                     {
+                         BlockWorldState blockworldstate1 = blockpattern$patternhelper.func_177670_a(k1, l1, 0);
+                         p_180673_1_.func_175722_b(blockworldstate1.func_177508_d(), Blocks.field_150350_a, false);
 @@ -154,66 +134,46 @@
          }
      }
