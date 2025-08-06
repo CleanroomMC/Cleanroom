@@ -11,13 +11,18 @@ import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegist
 import com.cleanroommc.kirino.ecs.component.impl.PositionComponent;
 import com.cleanroommc.kirino.ecs.component.impl.TestStruct;
 import com.cleanroommc.kirino.ecs.component.schema.meta.MemberLayout;
+import com.cleanroommc.kirino.ecs.entity.EntityManager;
+import com.cleanroommc.kirino.ecs.system.render.RenderSystem;
+import com.cleanroommc.kirino.ecs.world.CleanWorld;
 import org.joml.*;
 
 public class CleanECSRuntime {
     public final StructRegistry structRegistry;
     public final FieldRegistry fieldRegistry;
-
     public final ComponentRegistry componentRegistry;
+    public final EntityManager entityManager;
+    public final CleanWorld world;
+    public final RenderSystem renderSystem;
 
     public CleanECSRuntime() {
         structRegistry = new StructRegistry();
@@ -38,7 +43,9 @@ public class CleanECSRuntime {
 
         fieldRegistry = new FieldRegistry(structRegistry);
 
-        // todo: register fields based on structs (field acts like a wrapper of struct)
+        // todo: register fields based on structs
+        //  - field acts like a wrapper of struct
+        //  - clients only care about struct
 
         // todo: remove field demo
         fieldRegistry.registerFieldType("Test2", TestStruct2.class, new FieldDef("Test2"));
@@ -70,5 +77,9 @@ public class CleanECSRuntime {
         KirinoRendering.LOGGER.info("debug Position.xyz.z: " + pos.xyz.z); // expect 3
         KirinoRendering.LOGGER.info("debug Position.test.test2: " + pos.test.test2); // expect 123
         KirinoRendering.LOGGER.info("debug Position.test.testStruct.test: " + pos.test.testStruct.test); // expect 456
+
+        entityManager = new EntityManager(componentRegistry);
+        world = new CleanWorld(entityManager);
+        renderSystem = new RenderSystem(world);
     }
 }

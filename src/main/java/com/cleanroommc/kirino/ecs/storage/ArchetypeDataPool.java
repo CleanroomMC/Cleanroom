@@ -11,7 +11,21 @@ import java.util.Map;
 public abstract class ArchetypeDataPool {
     public final ImmutableList<Class<? extends ICleanComponent>> components;
 
+    protected int currentSize;
+    public final int initSize;
+    public final int growStep;
+    public final int shrinkStep;
+
     protected final ComponentRegistry componentRegistry;
+
+    /**
+     * The number of entities this pool can contain
+     *
+     * @return The current pool size
+     */
+    public final int getCurrentSize() {
+        return currentSize;
+    }
 
     /**
      * <p>Prerequisite include:</p>
@@ -21,10 +35,17 @@ public abstract class ArchetypeDataPool {
      *
      * @param componentRegistry The component registry
      * @param components The component types for this archetype
+     * @param initSize The number entities this pool can contain initially
+     * @param growStep The size to grow when the pool is full
+     * @param shrinkStep The threshold to judge when the pool is too large; Also the size to shrink
      */
-    public ArchetypeDataPool(ComponentRegistry componentRegistry, List<Class<? extends ICleanComponent>> components) {
+    public ArchetypeDataPool(ComponentRegistry componentRegistry, List<Class<? extends ICleanComponent>> components, int initSize, int growStep, int shrinkStep) {
         this.componentRegistry = componentRegistry;
         this.components = ImmutableList.copyOf(components);
+        this.initSize = initSize;
+        this.growStep = growStep;
+        this.shrinkStep = shrinkStep;
+        currentSize = initSize;
     }
 
     /**
@@ -46,6 +67,7 @@ public abstract class ArchetypeDataPool {
      * <ul>
      *     <li>The entity represented by <code>entityID</code> is in this {@link ArchetypeDataPool}</li>
      *     <li>Entries from <code>componentArgs</code> corresponds to and establishes a bijection with {@link ArchetypeDataPool#components}</li>
+     *     <li>Component arguments are in correct types and length</li>
      * </ul>
      *
      * @param entityID The id of the entity
@@ -62,4 +84,6 @@ public abstract class ArchetypeDataPool {
      * @param entityID The id of the entity
      */
     public abstract void removeEntity(int entityID);
+
+    // todo: defragmentation?
 }

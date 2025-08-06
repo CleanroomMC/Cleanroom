@@ -103,8 +103,8 @@ public class ComponentRegistry {
 
     private final AccessHandlePool componentAccessHandlePool = new AccessHandlePool();
 
-    @SuppressWarnings("DataFlowIssue")
     @Nullable
+    @SuppressWarnings("DataFlowIssue")
     public ICleanComponent newComponent(String name, Object... args) {
         if (!componentExists(name)) {
             return null;

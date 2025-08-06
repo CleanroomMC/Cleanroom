@@ -60,8 +60,8 @@ public class FieldRegistry {
 
     // -----Field Construction-----
 
-    @SuppressWarnings("DataFlowIssue")
     @Nullable
+    @SuppressWarnings("DataFlowIssue")
     public Object newField(String name, Object... args) {
         if (!fieldTypeExists(name)) {
             return null;

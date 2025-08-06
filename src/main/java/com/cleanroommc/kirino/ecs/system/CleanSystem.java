@@ -1,4 +1,4 @@
 package com.cleanroommc.kirino.ecs.system;
 
-public class CleanSystem {
+public abstract class CleanSystem {
 }

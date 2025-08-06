@@ -88,8 +88,8 @@ public class StructRegistry {
 
     private final AccessHandlePool structAccessHandlePool = new AccessHandlePool();
 
-    @SuppressWarnings("DataFlowIssue")
     @Nullable
+    @SuppressWarnings("DataFlowIssue")
     public Object newStruct(String name, Object... args) {
         if (!structTypeExists(name)) {
             return null;
