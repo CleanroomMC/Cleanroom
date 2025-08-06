@@ -2,18 +2,25 @@ package com.cleanroommc.kirino.ecs;
 
 import com.cleanroommc.kirino.KirinoRendering;
 import com.cleanroommc.kirino.ecs.component.ComponentRegistry;
-import com.cleanroommc.kirino.ecs.component.impl.TestStruct2;
+import com.cleanroommc.kirino.mcbridge.ecs.component.TestStruct2;
+import com.cleanroommc.kirino.ecs.component.scan.ComponentScanEvent;
+import com.cleanroommc.kirino.ecs.component.scan.StructScanEvent;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldRegistry;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarType;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
-import com.cleanroommc.kirino.ecs.component.impl.PositionComponent;
-import com.cleanroommc.kirino.ecs.component.impl.TestStruct;
+import com.cleanroommc.kirino.mcbridge.ecs.component.PositionComponent;
+import com.cleanroommc.kirino.mcbridge.ecs.component.TestStruct;
 import com.cleanroommc.kirino.ecs.component.schema.meta.MemberLayout;
 import com.cleanroommc.kirino.ecs.entity.EntityManager;
 import com.cleanroommc.kirino.ecs.system.render.RenderSystem;
 import com.cleanroommc.kirino.ecs.world.CleanWorld;
+import com.cleanroommc.kirino.mcbridge.ecs.system.MinecraftRenderSystem;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ClassInfo;
+import io.github.classgraph.ScanResult;
+import net.minecraftforge.common.MinecraftForge;
 import org.joml.*;
 
 public class CleanECSRuntime {
@@ -27,7 +34,21 @@ public class CleanECSRuntime {
     public CleanECSRuntime() {
         structRegistry = new StructRegistry();
 
-        // todo: scan classes and register structs
+        StructScanEvent structScanEvent = new StructScanEvent();
+        MinecraftForge.EVENT_BUS.post(structScanEvent);
+
+        try (ScanResult scanResult = new ClassGraph()
+                .enableClassInfo()
+                .enableAnnotationInfo()
+                .acceptPackages(structScanEvent.scanPackageNames.toArray(new String[0]))
+                .scan()) {
+
+            for (ClassInfo classInfo : scanResult.getClassesWithAnnotation("com.cleanroommc.kirino.ecs.component.scan.CleanStruct")) {
+                Class<?> clazz = classInfo.loadClass();
+                KirinoRendering.LOGGER.info("Found and started scanning struct class: " + clazz.getName());
+                // todo: scan classes
+            }
+        }
 
         // todo: remove struct demo
         structRegistry.registerStructType(
@@ -62,7 +83,21 @@ public class CleanECSRuntime {
 
         componentRegistry = new ComponentRegistry(fieldRegistry);
 
-        // todo: scan classes and register components
+        ComponentScanEvent componentScanEvent = new ComponentScanEvent();
+        MinecraftForge.EVENT_BUS.post(componentScanEvent);
+
+        try (ScanResult scanResult = new ClassGraph()
+                .enableClassInfo()
+                .enableAnnotationInfo()
+                .acceptPackages(componentScanEvent.scanPackageNames.toArray(new String[0]))
+                .scan()) {
+
+            for (ClassInfo classInfo : scanResult.getClassesWithAnnotation("com.cleanroommc.kirino.ecs.component.scan.CleanComponent")) {
+                Class<?> clazz = classInfo.loadClass();
+                KirinoRendering.LOGGER.info("Found and started scanning component class: " + clazz.getName());
+                // todo: scan classes
+            }
+        }
 
         componentRegistry.register(
                 "Position",
@@ -80,6 +115,6 @@ public class CleanECSRuntime {
 
         entityManager = new EntityManager(componentRegistry);
         world = new CleanWorld(entityManager);
-        renderSystem = new RenderSystem(world);
+        renderSystem = new MinecraftRenderSystem(world);
     }
 }
