@@ -131,8 +131,8 @@ public class ASMDataTable
     }
 
     /**
-     * @param type The canonical name of a annotation type
-     *              Or the internal name of a interface type
+     * @param type The canonical name of an annotation type
+     *              Or the internal name of an interface type
      * @return the asm datas
      */
     public Set<ASMData> getAll(String type)
@@ -146,10 +146,10 @@ public class ASMDataTable
      */
     public Set<ASMData> getAll(Class<?> type)
     {
-        if (type.isInterface()) {
-            return this.getAll(type.getName().replace('.', '/'));
-        } else if (type.isAnnotation()) {
-            return this.getAll(type.getName());
+        if (type.isAnnotation()) {
+            return this.getAll(type.getCanonicalName());
+        } else if (type.isInterface()) {
+            return this.getAll(type.getCanonicalName().replace('.', '/'));
         } else throw new IllegalArgumentException("The type are trying to be got from ASMDataTable is neither annotation nor interface");
     }
 
