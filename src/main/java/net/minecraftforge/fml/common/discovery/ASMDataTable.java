@@ -147,9 +147,9 @@ public class ASMDataTable
     public Set<ASMData> getAll(Class<?> type)
     {
         if (type.isAnnotation()) {
-            return this.getAll(type.getCanonicalName());
+            return this.getAll(type.getName());
         } else if (type.isInterface()) {
-            return this.getAll(type.getCanonicalName().replace('.', '/'));
+            return this.getAll(type.getName().replace('.', '/'));
         } else throw new IllegalArgumentException("The type are trying to be got from ASMDataTable is neither annotation nor interface");
     }
 
