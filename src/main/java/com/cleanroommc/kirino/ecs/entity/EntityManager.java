@@ -20,7 +20,7 @@ public class EntityManager {
     }
 
     // key: entity id
-    private final BiMap<Integer, CleanEntity> entities = HashBiMap.create();
+    private final BiMap<Integer, CleanEntityHandle> entities = HashBiMap.create();
     private final Map<Integer, List<Class<? extends ICleanComponent>>> entityComponentMap = new HashMap<>();
     private final Map<Integer, ArchetypeKey> entityArchetypeLocationMap = new HashMap<>();
     private final Map<Integer, Integer> entityGenerationMap = new HashMap<>();

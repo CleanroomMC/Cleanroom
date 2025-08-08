@@ -8,11 +8,10 @@ import com.cleanroommc.kirino.ecs.component.schema.meta.MemberLayout;
 import com.cleanroommc.kirino.ecs.component.schema.reflect.AccessHandlePool;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableMap;
 import org.jspecify.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class StructRegistry {
     private final BiMap<String, Class<?>> structTypeNameClassMapping = HashBiMap.create();
@@ -33,6 +32,10 @@ public class StructRegistry {
         structTypeNameClassMapping.put(name, clazz);
         structDefMap.put(name, structDef);
         classMemberLayoutMap.put(name, memberLayout);
+    }
+
+    public ImmutableMap<String, StructDef> getStructDefMap() {
+        return ImmutableMap.copyOf(structDefMap);
     }
 
     public boolean structTypeExists(Class<?> clazz) {

@@ -31,8 +31,8 @@ public class ComponentRegistry {
      * @param memberLayout The metadata of the component class
      * @param fieldTypeNames The field registry names of the component
      */
-    public void register(String name, Class<? extends ICleanComponent> clazz, MemberLayout memberLayout, String... fieldTypeNames) {
-        register(name, clazz, memberLayout, Arrays.asList(fieldTypeNames));
+    public void registerComponent(String name, Class<? extends ICleanComponent> clazz, MemberLayout memberLayout, String... fieldTypeNames) {
+        registerComponent(name, clazz, memberLayout, Arrays.asList(fieldTypeNames));
     }
 
     /**
@@ -44,7 +44,7 @@ public class ComponentRegistry {
      * @param memberLayout The metadata of the component class
      * @param fieldTypeNames The field registry names of the component
      */
-    public void register(String name, Class<? extends ICleanComponent> clazz, MemberLayout memberLayout, List<String> fieldTypeNames) {
+    public void registerComponent(String name, Class<? extends ICleanComponent> clazz, MemberLayout memberLayout, List<String> fieldTypeNames) {
         comNameClassMapping.put(name, clazz);
         classMemberLayoutMap.put(name, memberLayout);
 

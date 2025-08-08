@@ -6,7 +6,9 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FieldRegistry {
@@ -31,12 +33,34 @@ public class FieldRegistry {
         fieldDefMap.put(name, fieldDef);
     }
 
+    // to avoid class loading
+    public boolean fieldTypeExists_ClassName(String className) {
+        return fieldTypeNameClassMapping
+                .inverse()
+                .keySet()
+                .stream()
+                .anyMatch(c -> c.getName().equals(className));
+    }
+
     public boolean fieldTypeExists(Class<?> clazz) {
         return fieldTypeNameClassMapping.inverse().containsKey(clazz);
     }
 
     public boolean fieldTypeExists(String name) {
         return fieldTypeNameClassMapping.containsKey(name);
+    }
+
+    // to avoid class loading
+    @Nullable
+    public String getFieldTypeName_ClassName(String className) {
+        return fieldTypeNameClassMapping
+                .inverse()
+                .entrySet()
+                .stream()
+                .filter(e -> e.getKey().getName().equals(className))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(null);
     }
 
     @Nullable

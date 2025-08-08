@@ -2,26 +2,24 @@ package com.cleanroommc.kirino.ecs;
 
 import com.cleanroommc.kirino.KirinoRendering;
 import com.cleanroommc.kirino.ecs.component.ComponentRegistry;
-import com.cleanroommc.kirino.mcbridge.ecs.component.TestStruct2;
-import com.cleanroommc.kirino.ecs.component.scan.ComponentScanEvent;
-import com.cleanroommc.kirino.ecs.component.scan.StructScanEvent;
+import com.cleanroommc.kirino.ecs.component.scan.RegisterStructPlan;
+import com.cleanroommc.kirino.ecs.component.scan.StructScanningHelper;
+import com.cleanroommc.kirino.ecs.component.scan.StructScanningEvent;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldRegistry;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarType;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
 import com.cleanroommc.kirino.mcbridge.ecs.component.PositionComponent;
-import com.cleanroommc.kirino.mcbridge.ecs.component.TestStruct;
 import com.cleanroommc.kirino.ecs.component.schema.meta.MemberLayout;
 import com.cleanroommc.kirino.ecs.entity.EntityManager;
 import com.cleanroommc.kirino.ecs.system.render.RenderSystem;
 import com.cleanroommc.kirino.ecs.world.CleanWorld;
 import com.cleanroommc.kirino.mcbridge.ecs.system.MinecraftRenderSystem;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ClassInfo;
-import io.github.classgraph.ScanResult;
 import net.minecraftforge.common.MinecraftForge;
 import org.joml.*;
+
+import java.util.Map;
 
 public class CleanECSRuntime {
     public final StructRegistry structRegistry;
@@ -31,45 +29,9 @@ public class CleanECSRuntime {
     public final CleanWorld world;
     public final RenderSystem renderSystem;
 
-    public CleanECSRuntime() {
+    private CleanECSRuntime() {
         structRegistry = new StructRegistry();
-
-        StructScanEvent structScanEvent = new StructScanEvent();
-        MinecraftForge.EVENT_BUS.post(structScanEvent);
-
-        try (ScanResult scanResult = new ClassGraph()
-                .enableClassInfo()
-                .enableAnnotationInfo()
-                .acceptPackages(structScanEvent.scanPackageNames.toArray(new String[0]))
-                .scan()) {
-
-            for (ClassInfo classInfo : scanResult.getClassesWithAnnotation("com.cleanroommc.kirino.ecs.component.scan.CleanStruct")) {
-                Class<?> clazz = classInfo.loadClass();
-                KirinoRendering.LOGGER.info("Found and started scanning struct class: " + clazz.getName());
-                // todo: scan classes
-            }
-        }
-
-        // todo: remove struct demo
-        structRegistry.registerStructType(
-                "Test",
-                TestStruct.class,
-                new MemberLayout("test"),
-                new StructDef(new FieldDef(ScalarType.INT)));
-        structRegistry.registerStructType(
-                "Test2",
-                TestStruct2.class,
-                new MemberLayout("test2", "testStruct"),
-                new StructDef(new FieldDef(ScalarType.INT), new FieldDef("Test")));
-
         fieldRegistry = new FieldRegistry(structRegistry);
-
-        // todo: register fields based on structs
-        //  - field acts like a wrapper of struct
-        //  - clients only care about struct
-
-        // todo: remove field demo
-        fieldRegistry.registerFieldType("Test2", TestStruct2.class, new FieldDef("Test2"));
 
         // hard coded fields
         fieldRegistry.registerFieldType("int", int.class, new FieldDef(ScalarType.INT));
@@ -81,29 +43,49 @@ public class CleanECSRuntime {
         fieldRegistry.registerFieldType("mat3", Matrix3f.class, new FieldDef(ScalarType.MAT3));
         fieldRegistry.registerFieldType("mat4", Matrix4f.class, new FieldDef(ScalarType.MAT4));
 
-        componentRegistry = new ComponentRegistry(fieldRegistry);
-
-        ComponentScanEvent componentScanEvent = new ComponentScanEvent();
-        MinecraftForge.EVENT_BUS.post(componentScanEvent);
-
-        try (ScanResult scanResult = new ClassGraph()
-                .enableClassInfo()
-                .enableAnnotationInfo()
-                .acceptPackages(componentScanEvent.scanPackageNames.toArray(new String[0]))
-                .scan()) {
-
-            for (ClassInfo classInfo : scanResult.getClassesWithAnnotation("com.cleanroommc.kirino.ecs.component.scan.CleanComponent")) {
-                Class<?> clazz = classInfo.loadClass();
-                KirinoRendering.LOGGER.info("Found and started scanning component class: " + clazz.getName());
-                // todo: scan classes
-            }
+        StructScanningEvent structScanningEvent = new StructScanningEvent();
+        MinecraftForge.EVENT_BUS.post(structScanningEvent);
+        for (RegisterStructPlan plan : StructScanningHelper.scanAndLoadStructClasses(structScanningEvent, fieldRegistry)) {
+            structRegistry.registerStructType(
+                    plan.structName(),
+                    plan.structClass(),
+                    plan.memberLayout(),
+                    plan.structDef());
+            fieldRegistry.registerFieldType(
+                    plan.structName(),
+                    plan.structClass(),
+                    new FieldDef(plan.structName()));
+            KirinoRendering.LOGGER.info("Registered struct " + plan.structName() + ": " + plan.structClass());
         }
 
-        componentRegistry.register(
+        KirinoRendering.LOGGER.info("Struct defs are as follows.");
+        for (Map.Entry<String, StructDef> entry : structRegistry.getStructDefMap().entrySet()) {
+            KirinoRendering.LOGGER.info(entry.getKey() + ": " + entry.getValue().toString(structRegistry));
+        }
+
+        componentRegistry = new ComponentRegistry(fieldRegistry);
+
+//        ComponentScanningEvent componentScanningEvent = new ComponentScanningEvent();
+//        MinecraftForge.EVENT_BUS.post(componentScanningEvent);
+//
+//        try (ScanResult scanResult = new ClassGraph()
+//                .enableClassInfo()
+//                .enableAnnotationInfo()
+//                .acceptPackages(componentScanningEvent.scanPackageNames.toArray(new String[0]))
+//                .scan()) {
+//
+//            for (ClassInfo classInfo : scanResult.getClassesWithAnnotation("com.cleanroommc.kirino.ecs.component.scan.CleanComponent")) {
+//                Class<?> clazz = classInfo.loadClass();
+//                KirinoRendering.LOGGER.info("Found and started scanning component class: " + clazz.getName());
+//                // todo: scan classes
+//            }
+//        }
+
+        componentRegistry.registerComponent(
                 "Position",
                 PositionComponent.class,
                 new MemberLayout("xyz", "test"),
-                "vec3", "Test2");
+                "vec3", "TestStruct2");
 
         // todo: remove debug
         PositionComponent pos = (PositionComponent) componentRegistry.newComponent("Position", 1f, 2f, 3f, 123, 456);
