@@ -56,9 +56,10 @@
 - Overall ECS structure
   - CleanWorld, CleanEntity, CleanComponent, CleanSystem
 - Entity
-- Component
-  - Component type
-    - Reflection scan
+  - Entity manager (utilizes archetype)
+- Component ✔
+  - Component schema ✔
+  - Reflection scan via ClassGraph ✔
 - System
   - RenderSystem - a specialized system
     - RenderPass
