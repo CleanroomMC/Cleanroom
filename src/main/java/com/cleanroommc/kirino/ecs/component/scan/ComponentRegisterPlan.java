@@ -2,9 +2,9 @@ package com.cleanroommc.kirino.ecs.component.scan;
 
 import com.cleanroommc.kirino.ecs.component.schema.meta.MemberLayout;
 
-public record RegisterComponentPlan(
+public record ComponentRegisterPlan(
         String componentName,
-        Class<?> componentClass,
+        String componentClass,
         MemberLayout memberLayout,
         String[] fieldTypeNames
 ) {

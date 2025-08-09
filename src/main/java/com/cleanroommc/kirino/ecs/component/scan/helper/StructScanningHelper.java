@@ -1,17 +1,27 @@
-package com.cleanroommc.kirino.ecs.component.scan;
+package com.cleanroommc.kirino.ecs.component.scan.helper;
 
+import com.cleanroommc.kirino.ecs.component.scan.StructRegisterPlan;
+import com.cleanroommc.kirino.ecs.component.scan.event.StructScanningEvent;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldRegistry;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructDef;
 import com.cleanroommc.kirino.ecs.component.schema.meta.MemberLayout;
-import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.FieldInfo;
-import io.github.classgraph.ScanResult;
 
 import java.util.*;
 
+/**
+ * Scan struct classes and generate a list of register plans.
+ * There is no class loading involved at all.
+ *
+ * @see com.cleanroommc.kirino.ecs.CleanECSRuntime
+ */
 public final class StructScanningHelper {
+    private StructScanningHelper() {
+        super();
+    }
+
     private static List<FieldInfo> getValidFields(Map<String, ClassInfo> allClassInfos, ClassInfo structClassInfo, FieldRegistry fieldRegistry) {
         List<FieldInfo> fields = new ArrayList<>();
 
@@ -51,27 +61,14 @@ public final class StructScanningHelper {
         fields.removeAll(fieldsToRemove);
     }
 
-    private static String getClassSimpleName(String className) {
-        int lastDot = className.lastIndexOf('.');
-        return lastDot == -1 ? className : className.substring(lastDot + 1);
-    }
-
-    private static Class<?> loadClassWithoutInit(String className) {
-        try {
-            return Class.forName(className, false, Thread.currentThread().getContextClassLoader());
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
-    }
-
-    private static List<RegisterStructPlan> generatePlans(Map<String, List<FieldInfo>> structs, FieldRegistry fieldRegistry) {
-        List<RegisterStructPlan> plans = new ArrayList<>();
+    private static List<StructRegisterPlan> generatePlans(Map<String, List<FieldInfo>> structs, FieldRegistry fieldRegistry) {
+        List<StructRegisterPlan> plans = new ArrayList<>();
 
         Map<String, Integer> structNameDuplicates = new HashMap<>();
         Map<String, String> structNames = new HashMap<>();
 
         for (Map.Entry<String, List<FieldInfo>> entry : structs.entrySet()) {
-            String structName = getClassSimpleName(entry.getKey());
+            String structName = ClassScanUtils.getClassSimpleName(entry.getKey());
             int duplicate = 0;
             if (structNameDuplicates.containsKey(structName)) {
                 duplicate = structNameDuplicates.get(structName);
@@ -86,12 +83,9 @@ public final class StructScanningHelper {
         }
 
         for (Map.Entry<String, List<FieldInfo>> entry : structs.entrySet()) {
-            // load class
-            Class<?> structClass = loadClassWithoutInit(entry.getKey());
-
+            String structClass = entry.getKey();
             String structName = structNames.get(entry.getKey());
             MemberLayout memberLayout = new MemberLayout(entry.getValue().stream().map(FieldInfo::getName).toList());
-
             List<FieldDef> fieldDefs = new ArrayList<>();
             for (FieldInfo field : entry.getValue()) {
                 String fieldClassName = field.getTypeDescriptor().toString();
@@ -103,22 +97,14 @@ public final class StructScanningHelper {
             }
             StructDef structDef = new StructDef(fieldDefs);
 
-            plans.add(new RegisterStructPlan(structName, structClass, memberLayout, structDef));
+            plans.add(new StructRegisterPlan(structName, structClass, memberLayout, structDef));
         }
 
         return plans;
     }
 
-    public static List<RegisterStructPlan> scanAndLoadStructClasses(StructScanningEvent event, FieldRegistry fieldRegistry) {
-        Map<String, ClassInfo> allClassInfos = new TreeMap<>();
-        try (ScanResult scanResult = new ClassGraph()
-                .enableAllInfo()
-                .acceptPackages(event.scanPackageNames.toArray(new String[0]))
-                .scan()) {
-            for (ClassInfo classInfo : scanResult.getClassesWithAnnotation("com.cleanroommc.kirino.ecs.component.scan.CleanStruct")) {
-                allClassInfos.put(classInfo.getName(), classInfo);
-            }
-        }
+    public static List<StructRegisterPlan> scanStructClasses(StructScanningEvent event, FieldRegistry fieldRegistry) {
+        Map<String, ClassInfo> allClassInfos = ClassScanUtils.scan(event.scanPackageNames, "com.cleanroommc.kirino.ecs.component.scan.CleanStruct");
 
         Map<String, List<FieldInfo>> structs = new TreeMap<>();
         for (Map.Entry<String, ClassInfo> entry : allClassInfos.entrySet()) {

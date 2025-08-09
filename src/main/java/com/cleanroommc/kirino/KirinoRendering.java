@@ -1,8 +1,8 @@
 package com.cleanroommc.kirino;
 
 import com.cleanroommc.kirino.ecs.CleanECSRuntime;
-import com.cleanroommc.kirino.ecs.component.scan.ComponentScanningEvent;
-import com.cleanroommc.kirino.ecs.component.scan.StructScanningEvent;
+import com.cleanroommc.kirino.ecs.component.scan.event.ComponentScanningEvent;
+import com.cleanroommc.kirino.ecs.component.scan.event.StructScanningEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;

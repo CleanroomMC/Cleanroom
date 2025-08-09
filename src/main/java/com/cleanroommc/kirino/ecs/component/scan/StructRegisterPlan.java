@@ -3,9 +3,9 @@ package com.cleanroommc.kirino.ecs.component.scan;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructDef;
 import com.cleanroommc.kirino.ecs.component.schema.meta.MemberLayout;
 
-public record RegisterStructPlan(
+public record StructRegisterPlan(
         String structName,
-        Class<?> structClass,
+        String structClass,
         MemberLayout memberLayout,
         StructDef structDef
 ) {

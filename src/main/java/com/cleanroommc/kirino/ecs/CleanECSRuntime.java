@@ -2,9 +2,9 @@ package com.cleanroommc.kirino.ecs;
 
 import com.cleanroommc.kirino.KirinoRendering;
 import com.cleanroommc.kirino.ecs.component.ComponentRegistry;
-import com.cleanroommc.kirino.ecs.component.scan.RegisterStructPlan;
-import com.cleanroommc.kirino.ecs.component.scan.StructScanningHelper;
-import com.cleanroommc.kirino.ecs.component.scan.StructScanningEvent;
+import com.cleanroommc.kirino.ecs.component.scan.StructRegisterPlan;
+import com.cleanroommc.kirino.ecs.component.scan.helper.StructScanningHelper;
+import com.cleanroommc.kirino.ecs.component.scan.event.StructScanningEvent;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldRegistry;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarType;
@@ -45,17 +45,26 @@ public class CleanECSRuntime {
 
         StructScanningEvent structScanningEvent = new StructScanningEvent();
         MinecraftForge.EVENT_BUS.post(structScanningEvent);
-        for (RegisterStructPlan plan : StructScanningHelper.scanAndLoadStructClasses(structScanningEvent, fieldRegistry)) {
+        for (StructRegisterPlan plan : StructScanningHelper.scanStructClasses(structScanningEvent, fieldRegistry)) {
+            // struct class loading
+            Class<?> structClass = null;
+            try {
+                structClass = Class.forName(plan.structClass(), false, Thread.currentThread().getContextClassLoader());
+            } catch (ClassNotFoundException e) { // impossible
+                continue;
+            }
+
             structRegistry.registerStructType(
                     plan.structName(),
-                    plan.structClass(),
+                    structClass,
                     plan.memberLayout(),
                     plan.structDef());
             fieldRegistry.registerFieldType(
                     plan.structName(),
-                    plan.structClass(),
+                    structClass,
                     new FieldDef(plan.structName()));
-            KirinoRendering.LOGGER.info("Registered struct " + plan.structName() + ": " + plan.structClass());
+
+            KirinoRendering.LOGGER.info("Registered struct " + plan.structName() + ". Loaded " + plan.structClass());
         }
 
         KirinoRendering.LOGGER.info("Struct defs are as follows.");
