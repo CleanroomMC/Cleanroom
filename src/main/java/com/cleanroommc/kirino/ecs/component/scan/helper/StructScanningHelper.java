@@ -37,6 +37,7 @@ public final class StructScanningHelper {
         return fields;
     }
 
+    // todo: more strict algorithm - not allowing one's subclasses to be included in the fields
     private static void removeSelfReference(Set<String> dirtyStructs, Map<String, List<FieldInfo>> structs, String structClass, List<String> prevStructClasses, List<FieldInfo> fields) {
         if (dirtyStructs.contains(structClass)) {
             return;
@@ -103,6 +104,13 @@ public final class StructScanningHelper {
         return plans;
     }
 
+    /**
+     * Retrieve a list of struct register plans.
+     *
+     * @param event The struct scanning event
+     * @param fieldRegistry The field registry
+     * @return A list of struct register plans
+     */
     public static List<StructRegisterPlan> scanStructClasses(StructScanningEvent event, FieldRegistry fieldRegistry) {
         Map<String, ClassInfo> allClassInfos = ClassScanUtils.scan(event.scanPackageNames, "com.cleanroommc.kirino.ecs.component.scan.CleanStruct");
 

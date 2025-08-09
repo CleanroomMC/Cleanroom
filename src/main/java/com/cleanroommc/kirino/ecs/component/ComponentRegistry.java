@@ -6,6 +6,7 @@ import com.cleanroommc.kirino.ecs.component.schema.meta.MemberLayout;
 import com.cleanroommc.kirino.ecs.component.schema.reflect.AccessHandlePool;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableMap;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
@@ -32,19 +33,6 @@ public class ComponentRegistry {
      * @param fieldTypeNames The field registry names of the component
      */
     public void registerComponent(String name, Class<? extends ICleanComponent> clazz, MemberLayout memberLayout, String... fieldTypeNames) {
-        registerComponent(name, clazz, memberLayout, Arrays.asList(fieldTypeNames));
-    }
-
-    /**
-     * This method is the entry point to register components.
-     * <code>memberLayout.fieldNames</code> must match <code>fieldTypeNames</code> one by one.
-     *
-     * @param name The registry name of the component
-     * @param clazz The corresponding class of the component
-     * @param memberLayout The metadata of the component class
-     * @param fieldTypeNames The field registry names of the component
-     */
-    public void registerComponent(String name, Class<? extends ICleanComponent> clazz, MemberLayout memberLayout, List<String> fieldTypeNames) {
         comNameClassMapping.put(name, clazz);
         classMemberLayoutMap.put(name, memberLayout);
 
@@ -60,6 +48,14 @@ public class ComponentRegistry {
         ComponentDesc componentDesc = new ComponentDesc(name, fields, fieldTypeNames);
         componentDescMap.put(name, componentDesc);
         componentDescFlattenedMap.put(name, new ComponentDescFlattened(componentDesc, fieldRegistry));
+    }
+
+    public ImmutableMap<String, ComponentDesc> getComponentDescMap() {
+        return ImmutableMap.copyOf(componentDescMap);
+    }
+
+    public ImmutableMap<String, ComponentDescFlattened> getComponentDescFlattenedMap() {
+        return ImmutableMap.copyOf(componentDescFlattenedMap);
     }
 
     public boolean componentExists(Class<? extends ICleanComponent> clazz) {

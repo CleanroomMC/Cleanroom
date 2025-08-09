@@ -7,11 +7,13 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
 
 public class KirinoRendering {
     public static final Logger LOGGER = LogManager.getLogger("Kirino Rendering");
@@ -34,6 +36,7 @@ public class KirinoRendering {
         }
 
         LOGGER.info("Initializing Kirino Rendering ECS Module.");
+        StopWatch stopWatch = StopWatch.createStarted();
 
         try {
             Constructor<CleanECSRuntime> ctor = CleanECSRuntime.class.getDeclaredConstructor();
@@ -42,7 +45,8 @@ public class KirinoRendering {
         } catch (Throwable ignore) {
         }
 
-        LOGGER.info("Kirino Rendering ECS Module Initialized.");
+        stopWatch.stop();
+        LOGGER.info("Kirino Rendering ECS Module Initialized. Time taken: " + stopWatch.getTime(TimeUnit.MILLISECONDS) + " ms");
     }
 
     @SubscribeEvent

@@ -1,21 +1,26 @@
 package com.cleanroommc.kirino.ecs;
 
 import com.cleanroommc.kirino.KirinoRendering;
+import com.cleanroommc.kirino.ecs.component.ComponentDesc;
+import com.cleanroommc.kirino.ecs.component.ComponentDescFlattened;
 import com.cleanroommc.kirino.ecs.component.ComponentRegistry;
+import com.cleanroommc.kirino.ecs.component.ICleanComponent;
+import com.cleanroommc.kirino.ecs.component.scan.ComponentRegisterPlan;
 import com.cleanroommc.kirino.ecs.component.scan.StructRegisterPlan;
-import com.cleanroommc.kirino.ecs.component.scan.helper.StructScanningHelper;
+import com.cleanroommc.kirino.ecs.component.scan.event.ComponentScanningEvent;
 import com.cleanroommc.kirino.ecs.component.scan.event.StructScanningEvent;
+import com.cleanroommc.kirino.ecs.component.scan.helper.ComponentScanningHelper;
+import com.cleanroommc.kirino.ecs.component.scan.helper.StructScanningHelper;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldRegistry;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarType;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
-import com.cleanroommc.kirino.mcbridge.ecs.component.PositionComponent;
-import com.cleanroommc.kirino.ecs.component.schema.meta.MemberLayout;
 import com.cleanroommc.kirino.ecs.entity.EntityManager;
 import com.cleanroommc.kirino.ecs.system.render.RenderSystem;
 import com.cleanroommc.kirino.ecs.world.CleanWorld;
 import com.cleanroommc.kirino.mcbridge.ecs.system.MinecraftRenderSystem;
+import com.google.common.collect.ImmutableMap;
 import net.minecraftforge.common.MinecraftForge;
 import org.joml.*;
 
@@ -29,6 +34,7 @@ public class CleanECSRuntime {
     public final CleanWorld world;
     public final RenderSystem renderSystem;
 
+    @SuppressWarnings("DataFlowIssue")
     private CleanECSRuntime() {
         structRegistry = new StructRegistry();
         fieldRegistry = new FieldRegistry(structRegistry);
@@ -47,7 +53,7 @@ public class CleanECSRuntime {
         MinecraftForge.EVENT_BUS.post(structScanningEvent);
         for (StructRegisterPlan plan : StructScanningHelper.scanStructClasses(structScanningEvent, fieldRegistry)) {
             // struct class loading
-            Class<?> structClass = null;
+            Class<?> structClass;
             try {
                 structClass = Class.forName(plan.structClass(), false, Thread.currentThread().getContextClassLoader());
             } catch (ClassNotFoundException e) { // impossible
@@ -74,35 +80,33 @@ public class CleanECSRuntime {
 
         componentRegistry = new ComponentRegistry(fieldRegistry);
 
-//        ComponentScanningEvent componentScanningEvent = new ComponentScanningEvent();
-//        MinecraftForge.EVENT_BUS.post(componentScanningEvent);
-//
-//        try (ScanResult scanResult = new ClassGraph()
-//                .enableClassInfo()
-//                .enableAnnotationInfo()
-//                .acceptPackages(componentScanningEvent.scanPackageNames.toArray(new String[0]))
-//                .scan()) {
-//
-//            for (ClassInfo classInfo : scanResult.getClassesWithAnnotation("com.cleanroommc.kirino.ecs.component.scan.CleanComponent")) {
-//                Class<?> clazz = classInfo.loadClass();
-//                KirinoRendering.LOGGER.info("Found and started scanning component class: " + clazz.getName());
-//                // todo: scan classes
-//            }
-//        }
+        ComponentScanningEvent componentScanningEvent = new ComponentScanningEvent();
+        MinecraftForge.EVENT_BUS.post(componentScanningEvent);
+        for (ComponentRegisterPlan plan : ComponentScanningHelper.scanComponentClasses(componentScanningEvent, fieldRegistry)) {
+            // component class loading
+            Class<? extends ICleanComponent> componentClass;
+            try {
+                componentClass = Class.forName(plan.componentClass(), false, Thread.currentThread().getContextClassLoader()).asSubclass(ICleanComponent.class);
+            } catch (ClassNotFoundException e) { // impossible
+                continue;
+            }
 
-        componentRegistry.registerComponent(
-                "Position",
-                PositionComponent.class,
-                new MemberLayout("xyz", "test"),
-                "vec3", "TestStruct2");
+            componentRegistry.registerComponent(
+                    plan.componentName(),
+                    componentClass,
+                    plan.memberLayout(),
+                    plan.fieldTypeNames());
 
-        // todo: remove debug
-        PositionComponent pos = (PositionComponent) componentRegistry.newComponent("Position", 1f, 2f, 3f, 123, 456);
-        KirinoRendering.LOGGER.info("debug Position.xyz.x: " + pos.xyz.x); // expect 1
-        KirinoRendering.LOGGER.info("debug Position.xyz.y: " + pos.xyz.y); // expect 2
-        KirinoRendering.LOGGER.info("debug Position.xyz.z: " + pos.xyz.z); // expect 3
-        KirinoRendering.LOGGER.info("debug Position.test.test2: " + pos.test.test2); // expect 123
-        KirinoRendering.LOGGER.info("debug Position.test.testStruct.test: " + pos.test.testStruct.test); // expect 456
+            KirinoRendering.LOGGER.info("Registered component " + plan.componentName() + ". Loaded " + plan.componentClass());
+        }
+
+        KirinoRendering.LOGGER.info("Component descs are as follows.");
+        ImmutableMap<String, ComponentDescFlattened> componentDescFlattenedMap = componentRegistry.getComponentDescFlattenedMap();
+        for (Map.Entry<String, ComponentDesc> entry : componentRegistry.getComponentDescMap().entrySet()) {
+            ComponentDescFlattened componentDescFlattened = componentDescFlattenedMap.get(entry.getKey());
+            KirinoRendering.LOGGER.info(entry.getKey() + ": " + entry.getValue().toString(structRegistry));
+            KirinoRendering.LOGGER.info(entry.getKey() + ": " + componentDescFlattened.toString());
+        }
 
         entityManager = new EntityManager(componentRegistry);
         world = new CleanWorld(entityManager);
