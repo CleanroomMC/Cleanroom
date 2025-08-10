@@ -59,7 +59,7 @@
   - Entity manager (utilizes archetype)
 - Component ✔
   - Component schema ✔
-  - Reflection scan via ClassGraph ✔
+  - Class scan via ClassGraph ✔
 - System
   - RenderSystem - a specialized system
     - RenderPass

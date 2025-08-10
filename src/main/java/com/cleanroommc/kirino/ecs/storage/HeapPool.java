@@ -127,7 +127,6 @@ public class HeapPool extends ArchetypeDataPool{
 
     @Override
     public void addEntity(int entityID, Map<Class<? extends ICleanComponent>, Object[]> componentArgs) {
-        boolean growIndexCounter = false;
         int index;
         if (freeIndexes.isEmpty()) {
             // grow pool
@@ -137,8 +136,7 @@ public class HeapPool extends ArchetypeDataPool{
                 floatPool.replaceAll(original -> Arrays.copyOf(original, currentSize));
                 booleanPool.replaceAll(original -> Arrays.copyOf(original, currentSize));
             }
-            index = indexCounter;
-            growIndexCounter = true;
+            index = indexCounter++;
         } else {
             index = freeIndexes.removeLast();
         }
@@ -166,10 +164,6 @@ public class HeapPool extends ArchetypeDataPool{
                 }
                 argIndex++;
             }
-        }
-
-        if (growIndexCounter) {
-            indexCounter++;
         }
     }
 
