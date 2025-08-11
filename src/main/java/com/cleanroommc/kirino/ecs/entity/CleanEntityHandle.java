@@ -13,12 +13,19 @@ public class CleanEntityHandle {
         this.generation = generation;
     }
 
+    /**
+     * Thread safety is guaranteed.
+     *
+     * @return Whether this entity handle is valid
+     */
     public boolean valid() {
         return generation == entityManager.getLatestGeneration(index);
     }
 
     /**
      * This method returns <code>false</code> if the entity handle is expired (i.e. corresponding entity is destroyed).
+     * </br></br>
+     * Thread safety is guaranteed.
      *
      * @return Whether you successfully executed the method
      */
@@ -40,6 +47,8 @@ public class CleanEntityHandle {
      * </ul>
      * <br/>
      * This method returns <code>false</code> if the entity handle is expired (i.e. corresponding entity is destroyed).
+     * </br></br>
+     * Thread safety is guaranteed.
      *
      * @param component The component
      * @return Whether you successfully executed the method
@@ -64,6 +73,8 @@ public class CleanEntityHandle {
      * </ul>
      * <br/>
      * This method returns <code>false</code> if the entity handle is expired (i.e. corresponding entity is destroyed).
+     * </br></br>
+     * Thread safety is guaranteed.
      *
      * @param component The component
      * @return Whether you successfully executed the method
@@ -83,6 +94,8 @@ public class CleanEntityHandle {
     /**
      * This method returns <code>false</code> if the entity handle is expired (i.e. corresponding entity is destroyed),
      * OR the entity doesn't have this type of component.
+     * </br></br>
+     * Thread safety is guaranteed.
      *
      * @param component The component type
      * @return Whether you successfully executed the method

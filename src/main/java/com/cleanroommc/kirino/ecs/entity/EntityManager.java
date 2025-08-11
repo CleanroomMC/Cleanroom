@@ -31,7 +31,11 @@ public class EntityManager {
      * Consume all buffered commands.
      */
     public void flush() {
+        for (EntityCommand command : commandBuffer) {
+            switch (command.type) {
 
+            }
+        }
     }
 
     /**
@@ -43,6 +47,8 @@ public class EntityManager {
      * </br>
      * This method will allocate an entity handle and generate a command for all side effects.
      * Buffered commands will be consumed at {@link #flush()}.
+     * </br></br>
+     * Thread safety is guaranteed.
      *
      * @see #flush()
      *
@@ -88,6 +94,15 @@ public class EntityManager {
         return new CleanEntityHandle(this, index, generation);
     }
 
+    /**
+     * This method will destroy an entity and generate a command for all side effects.
+     * Buffered commands will be consumed at {@link #flush()}.
+     * </br></br>
+     * Thread safety is guaranteed.
+     *
+     * @see #flush()
+     * @param index The index of the entity
+     */
     protected synchronized void destroyEntity(int index) {
         if (index < 0 || index > entityGenerations.size() - 1) {
             throw new IndexOutOfBoundsException("The index provided is invalid. Current array length is " + entityGenerations.size() + ".");
