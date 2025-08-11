@@ -4,6 +4,9 @@ import org.joml.*;
 import org.jspecify.annotations.Nullable;
 
 public final class ScalarConstructor {
+    private ScalarConstructor() {
+    }
+
     @Nullable
     public static Object newScalar(ScalarType scalarType, Object... args) {
         switch (scalarType) {

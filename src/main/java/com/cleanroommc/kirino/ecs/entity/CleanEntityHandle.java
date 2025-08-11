@@ -2,6 +2,8 @@ package com.cleanroommc.kirino.ecs.entity;
 
 import com.cleanroommc.kirino.ecs.component.ICleanComponent;
 
+import java.util.Objects;
+
 public class CleanEntityHandle {
     private final EntityManager entityManager;
     public final int index;
@@ -113,5 +115,17 @@ public class CleanEntityHandle {
         entityManager.commandBuffer.add(command);
 
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CleanEntityHandle that)) return false;
+        return index == that.index && generation == that.generation && Objects.equals(entityManager, that.entityManager);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(entityManager, index, generation);
     }
 }

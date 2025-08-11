@@ -16,6 +16,7 @@ public class AccessHandlePool {
     private final Map<Class<?>, MemberLayout> memberLayoutMap = new HashMap<>();
     private final Map<Class<?>, MethodHandle> constructorHandleMap = new HashMap<>();
     private final Map<Class<?>, Map<String, MethodHandle>> setterHandleMap = new HashMap<>();
+    private final Map<Class<?>, Map<String, MethodHandle>> getterHandleMap = new HashMap<>();
 
     public void register(Class<?> clazz, MemberLayout memberLayout) {
         try {
@@ -25,11 +26,14 @@ public class AccessHandlePool {
             constructorHandleMap.put(clazz, ctorHandle);
 
             Map<String, MethodHandle> setters = setterHandleMap.computeIfAbsent(clazz, (key) -> new HashMap<>());
+            Map<String, MethodHandle> getters = getterHandleMap.computeIfAbsent(clazz, (key) -> new HashMap<>());
             for (String fieldName: memberLayout.fieldNames) {
                 Field field = clazz.getDeclaredField(fieldName);
                 field.setAccessible(true);
                 MethodHandle setterHandle = LOOKUP.unreflectSetter(field);
                 setters.put(fieldName, setterHandle);
+                MethodHandle getterHandle = LOOKUP.unreflectGetter(field);
+                getters.put(fieldName, getterHandle);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -65,6 +69,22 @@ public class AccessHandlePool {
         try {
             setter.invoke(target, value);
         } catch (Throwable ignore) {
+        }
+    }
+
+    @Nullable
+    public Object getFieldValue(Class<?> clazz, Object target, String fieldName) {
+        if (!classRegistered(clazz)) {
+            return null;
+        }
+        MethodHandle getter = getterHandleMap.get(clazz).get(fieldName);
+        if (getter == null) {
+            return null;
+        }
+        try {
+            return getter.invoke(target);
+        } catch (Throwable e) {
+            return null;
         }
     }
 }

@@ -4,6 +4,7 @@ import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldKind;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.FlattenedScalarType;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarConstructor;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarDeconstructor;
 import com.cleanroommc.kirino.ecs.component.schema.meta.MemberLayout;
 import com.cleanroommc.kirino.ecs.component.schema.reflect.AccessHandlePool;
 import com.google.common.collect.BiMap;
@@ -128,5 +129,44 @@ public class StructRegistry {
         }
 
         return output;
+    }
+
+    // -----Struct Deconstruction-----
+
+    @SuppressWarnings("DataFlowIssue")
+    public Object[] flattenStruct(Object structInstance) {
+        if (!structTypeExists(structInstance.getClass())) {
+            throw new IllegalStateException("Struct class " + structInstance.getClass().getName() + " isn't registered.");
+        }
+        String name = getStructTypeName(structInstance.getClass());
+
+        StructDef structDef = getStructDef(name);
+        MemberLayout memberLayout = getClassMemberLayout(name);
+
+        if (!structAccessHandlePool.classRegistered(structInstance.getClass())) {
+            structAccessHandlePool.register(structInstance.getClass(), memberLayout);
+        }
+
+        Object[] args = new Object[flattenedUnitCount(name)];
+
+        int index = 0;
+        for (int i = 0; i < structDef.fields.size(); i++) {
+            FieldDef fieldDef = structDef.fields.get(i);
+            String fieldName = memberLayout.fieldNames.get(i);
+
+            int unitCount = 0;
+            Object[] _args = null;
+            if (fieldDef.fieldKind == FieldKind.SCALAR) {
+                unitCount = FlattenedScalarType.flattenedUnitCount(fieldDef.scalarType);
+                _args = ScalarDeconstructor.flattenScalar(fieldDef.scalarType, structAccessHandlePool.getFieldValue(structInstance.getClass(), structInstance, fieldName));
+            } else if (fieldDef.fieldKind == FieldKind.STRUCT) {
+                unitCount = flattenedUnitCount(fieldDef.structTypeName);
+                _args = flattenStruct(structAccessHandlePool.getFieldValue(structInstance.getClass(), structInstance, fieldName));
+            }
+            System.arraycopy(_args, 0, args, index, unitCount);
+            index += unitCount;
+        }
+
+        return args;
     }
 }

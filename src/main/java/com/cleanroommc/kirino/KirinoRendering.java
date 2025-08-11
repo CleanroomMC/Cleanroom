@@ -17,7 +17,11 @@ import java.util.concurrent.TimeUnit;
 
 public class KirinoRendering {
     public static final Logger LOGGER = LogManager.getLogger("Kirino Rendering");
-    public static CleanECSRuntime ECS_RUNTIME;
+    private static CleanECSRuntime ECS_RUNTIME;
+
+    public static CleanECSRuntime getEcsRuntime() {
+        return ECS_RUNTIME;
+    }
 
     public static void init() {
         // register default event listeners

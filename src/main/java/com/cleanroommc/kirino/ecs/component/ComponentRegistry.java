@@ -131,4 +131,37 @@ public class ComponentRegistry {
 
         return (ICleanComponent) output;
     }
+
+    // -----Component Deconstruction-----
+
+    @SuppressWarnings("DataFlowIssue")
+    public Object[] flattenComponent(ICleanComponent component) {
+        if (!componentExists(component.getClass())) {
+            throw new IllegalStateException("Component class " + component.getClass().getName() + " isn't registered.");
+        }
+
+        String name = getComponentName(component.getClass());
+
+        ComponentDesc componentDesc = getComponentDesc(name);
+        ComponentDescFlattened componentDescFlattened = getComponentDescFlattened(name);
+        MemberLayout memberLayout = getClassMemberLayout(name);
+
+        if (!componentAccessHandlePool.classRegistered(component.getClass())) {
+            componentAccessHandlePool.register(component.getClass(), memberLayout);
+        }
+
+        Object[] args = new Object[componentDescFlattened.getUnitCount()];
+
+        int index = 0;
+        for (int i = 0; i < componentDesc.fields.size(); i++) {
+            String fieldName = memberLayout.fieldNames.get(i);
+
+            int unitCount = componentDescFlattened.fields.get(i).getUnitCount();
+            Object[] _args = fieldRegistry.flattenField(componentAccessHandlePool.getFieldValue(component.getClass(), component, fieldName));
+            System.arraycopy(_args, 0, args, index, unitCount);
+            index += unitCount;
+        }
+
+        return args;
+    }
 }

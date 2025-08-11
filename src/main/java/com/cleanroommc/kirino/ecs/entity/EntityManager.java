@@ -4,6 +4,7 @@ import com.cleanroommc.kirino.ecs.component.ComponentRegistry;
 import com.cleanroommc.kirino.ecs.component.ICleanComponent;
 import com.cleanroommc.kirino.ecs.storage.ArchetypeDataPool;
 import com.cleanroommc.kirino.ecs.storage.ArchetypeKey;
+import com.cleanroommc.kirino.ecs.storage.HeapPool;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,11 +30,30 @@ public class EntityManager {
 
     /**
      * Consume all buffered commands.
+     * </br></br>
+     * Thread safety is not guaranteed. Call it from the main thread.
      */
     public void flush() {
         for (EntityCommand command : commandBuffer) {
             switch (command.type) {
+                case CREATE -> {
+                    List<Class<? extends ICleanComponent>> components = entityComponents.get(command.index);
+                    ArchetypeKey archetypeKey = entityArchetypeLocations.get(command.index);
+                    ArchetypeDataPool pool = archetypes.computeIfAbsent(archetypeKey, k -> new HeapPool(componentRegistry, components, 100, 50, 50));
 
+                    Map<Class<? extends ICleanComponent>, Object[]> componentArgs = new HashMap<>();
+                    for (Class<? extends ICleanComponent> component : components) {
+                        componentArgs.put(component, componentRegistry.flattenComponent(
+                                Objects.requireNonNull(command.newComponents
+                                        .stream()
+                                        .filter(c -> c.getClass().equals(component))
+                                        .findFirst()
+                                        .orElse(null))));
+                    }
+
+                    pool.addEntity(command.index, componentArgs);
+                }
+                // todo
             }
         }
     }

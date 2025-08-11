@@ -1,6 +1,7 @@
 package com.cleanroommc.kirino.ecs.component.schema.def.field;
 
 import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarConstructor;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarDeconstructor;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -95,5 +96,22 @@ public class FieldRegistry {
             return structRegistry.newStruct(fieldDef.structTypeName, args);
         }
         return null;
+    }
+
+    // -----Field Deconstruction-----
+
+    @SuppressWarnings("DataFlowIssue")
+    public Object[] flattenField(Object fieldInstance) {
+        if (!fieldTypeExists(fieldInstance.getClass())) {
+            throw new IllegalStateException("Field class " + fieldInstance.getClass().getName() + " isn't registered.");
+        }
+        String name = getFieldTypeName(fieldInstance.getClass());
+        FieldDef fieldDef = getFieldDef(name);
+        if (fieldDef.fieldKind == FieldKind.SCALAR) {
+            return ScalarDeconstructor.flattenScalar(fieldDef.scalarType, fieldInstance);
+        } else if (fieldDef.fieldKind == FieldKind.STRUCT) {
+            return structRegistry.flattenStruct(fieldInstance);
+        }
+        throw new IllegalStateException("Invalid field kind.");
     }
 }
