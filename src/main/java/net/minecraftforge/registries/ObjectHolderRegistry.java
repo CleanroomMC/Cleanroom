@@ -49,10 +49,10 @@ public enum ObjectHolderRegistry
     public void findObjectHolders(ASMDataTable table)
     {
         FMLLog.log.info("Processing ObjectHolder annotations");
-        Set<ASMData> allObjectHolders = table.getAll(GameRegistry.ObjectHolder.class.getName());
+        Set<ASMData> allObjectHolders = table.getAll(GameRegistry.ObjectHolder.class);
         Map<String, String> classModIds = Maps.newHashMap();
         Map<String, Class<?>> classCache = Maps.newHashMap();
-        for (ASMData data : table.getAll(Mod.class.getName()))
+        for (ASMData data : table.getAll(Mod.class))
         {
             String modid = (String)data.getAnnotationInfo().get("modid");
             classModIds.put(data.getClassName(), modid);

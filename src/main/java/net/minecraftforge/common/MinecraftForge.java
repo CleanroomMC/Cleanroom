@@ -104,9 +104,9 @@ public class MinecraftForge
    {
        //Find all ICrashReportDetail's handlers and preload them.
        List<String> all = Lists.newArrayList();
-       for (ASMData asm : table.getAll(ICrashReportDetail.class.getName().replace('.', '/')))
+       for (ASMData asm : table.getAll(ICrashReportDetail.class))
            all.add(asm.getClassName());
-       for (ASMData asm : table.getAll(ICrashCallable.class.getName().replace('.', '/')))
+       for (ASMData asm : table.getAll(ICrashCallable.class))
            all.add(asm.getClassName());
 
        all.retainAll(classes);
