@@ -29,6 +29,10 @@ import java.net.URL;
 @IFMLLoadingPlugin.SortingIndex(1)
 public final class MixinBooterPlugin implements IFMLLoadingPlugin {
 
+    public MixinBooterPlugin() {
+        GlobalProperties.put(GlobalProperties.Keys.CLEANROOM_DISABLE_MIXIN_CONFIGS, new HashSet<String>());
+    }
+
     static Set<IEarlyMixinLoader> earlyMixinLoaders = new HashSet<>();
 
     @Override
