@@ -190,7 +190,6 @@ public class FMLSanityChecker implements IFMLCallHook
         fmlLocation = (File)data.get("coremodLocation");
         ClassPatchManager.INSTANCE.setup(FMLLaunchHandler.side());
         FMLDeobfuscatingRemapper.INSTANCE.setup(mcDir, cl, (String) data.get("deobfuscationFileName"), liveEnv);
-        MixinPlatformAgentFMLLegacy.injectRemapper(RemapperAdapterFML.create(FMLDeobfuscatingRemapper.INSTANCE, FMLDeobfuscatingRemapper.INSTANCE::unmap));
     }
 
 }

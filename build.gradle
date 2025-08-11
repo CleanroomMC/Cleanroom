@@ -504,7 +504,7 @@ project(':cleanroom') {
 
 
         // Mixin
-        installer 'com.cleanroommc:sponge-mixin:0.20.10+mixin.0.8.7'
+        installer 'net.fabricmc:sponge-mixin:0.21.2+mixin.0.8.7-local:light'
         installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.5.0')
 
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.12.0'

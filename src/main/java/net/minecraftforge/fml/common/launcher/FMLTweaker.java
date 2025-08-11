@@ -60,7 +60,6 @@ public class FMLTweaker implements ITweaker {
         LogManager.getLogger("FML.TWEAK").info("Initializing MixinExtras...");
         MixinExtrasBootstrap.init();
 
-        GlobalProperties.put(GlobalProperties.Keys.CLEANROOM_DISABLE_MIXIN_CONFIGS, new HashSet<>());
     }
     @SuppressWarnings("unchecked")
     @Override

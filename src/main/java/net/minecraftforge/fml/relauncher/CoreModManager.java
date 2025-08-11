@@ -40,6 +40,7 @@ import net.minecraftforge.fml.relauncher.libraries.Repository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.spongepowered.asm.service.mojang.MixinServiceLaunchWrapper;
+import org.spongepowered.asm.service.outlands.MixinServiceFoundation;
 import org.spongepowered.asm.util.Constants;
 
 import java.io.*;
@@ -406,7 +407,7 @@ public class CoreModManager {
                         for (String singleMixinConfig : configs.split(","))
                             mixin_configs.add(singleMixinConfig.trim());
                     ignoredModFiles.add(coreMod.getName());
-                    if (!MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker)) {
+                    if (!MixinServiceFoundation.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker)) {
                         continue;
                     }
                 }
@@ -434,7 +435,7 @@ public class CoreModManager {
                 {
                     // Not a coremod
                     FMLLog.log.debug("Not found coremod data in {}", coreMod.getName());
-                    if (MixinServiceLaunchWrapper.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker) && (mfAttributes.containsKey(COREMODCONTAINSFMLMOD) || mfAttributes.containsKey(FORCELOADASMOD))) {
+                    if (MixinServiceFoundation.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker) && (mfAttributes.containsKey(COREMODCONTAINSFMLMOD) || mfAttributes.containsKey(FORCELOADASMOD))) {
                         FMLLog.log.info("Found FMLCorePluginContainsFMLMod marker in mixin container {}.",
                                 coreMod.getName());
                         candidateModFiles.add(coreMod.getName());
