@@ -39,6 +39,7 @@ import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.message.FormattedMessage;
 
 import org.spongepowered.asm.mixin.FabricUtil;
+import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.PhaseDelegate;
 import org.spongepowered.asm.mixin.transformer.Config;
@@ -209,7 +210,9 @@ public class LoadController {
                 }
 
             }
-            PhaseDelegate.goToNextPhase();
+            if (MixinEnvironment.getCurrentEnvironment().getPhase() == MixinEnvironment.Phase.DEFAULT) {
+                PhaseDelegate.goToNextPhase();
+            }
             masterChannel.post(state.getEvent(eventData));
         }
     }
