@@ -6,8 +6,13 @@ import com.google.common.collect.ImmutableList;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
-import java.util.Map;
 
+/**
+ * Besides the abstract methods, a pool must implement grow and shrink mechanism.
+ *
+ * @see #growStep
+ * @see #shrinkStep
+ */
 public abstract class ArchetypeDataPool {
     public final ImmutableList<Class<? extends ICleanComponent>> components;
 
@@ -48,32 +53,45 @@ public abstract class ArchetypeDataPool {
         currentSize = initSize;
     }
 
-    /**
-     * <p>Prerequisite include:</p>
-     * <ul>
-     *     <li>The entity represented by <code>entityID</code> is in this {@link ArchetypeDataPool}</li>
-     *     <li><code>clazz</code> is in {@link ArchetypeDataPool#components}</li>
-     * </ul>
-     *
-     * @param entityID The id of the entity
-     * @param clazz The component class
-     * @return The instantiated component
-     */
-    @NonNull
-    public abstract ICleanComponent getComponent(int entityID, Class<? extends ICleanComponent> clazz);
+    public abstract boolean containsEntity(int entityID);
 
     /**
      * <p>Prerequisite include:</p>
      * <ul>
      *     <li>The entity represented by <code>entityID</code> is in this {@link ArchetypeDataPool}</li>
-     *     <li>Entries from <code>componentArgs</code> corresponds to and establishes a bijection with {@link ArchetypeDataPool#components}</li>
-     *     <li>Component arguments are in correct types and length</li>
+     *     <li><code>component</code> is in {@link ArchetypeDataPool#components}</li>
      * </ul>
      *
      * @param entityID The id of the entity
-     * @param componentArgs The data for each component type
+     * @param component The component class
+     * @return The instantiated component
      */
-    public abstract void addEntity(int entityID, Map<Class<? extends ICleanComponent>, Object[]> componentArgs);
+    @NonNull
+    public abstract ICleanComponent getComponent(int entityID, Class<? extends ICleanComponent> component);
+
+    /**
+     * <p>Prerequisite include:</p>
+     * <ul>
+     *     <li>The entity represented by <code>entityID</code> is in this {@link ArchetypeDataPool}</li>
+     *     <li>The class of <code>component</code> is in {@link ArchetypeDataPool#components}</li>
+     * </ul>
+     *
+     * @param entityID The id of the entity
+     * @param component The component
+     */
+    public abstract void setComponent(int entityID, ICleanComponent component);
+
+    /**
+     * <p>Prerequisite include:</p>
+     * <ul>
+     *     <li>The entity represented by <code>entityID</code> is in this {@link ArchetypeDataPool}</li>
+     *     <li>Classes of <code>components</code> must correspond to and form a bijection with {@link ArchetypeDataPool#components}</li>
+     * </ul>
+     *
+     * @param entityID The id of the entity
+     * @param components The components
+     */
+    public abstract void addEntity(int entityID, List<ICleanComponent> components);
 
     /**
      * <p>Prerequisite include:</p>
@@ -85,5 +103,5 @@ public abstract class ArchetypeDataPool {
      */
     public abstract void removeEntity(int entityID);
 
-    // todo: defragmentation?
+    public abstract void defragmentize();
 }

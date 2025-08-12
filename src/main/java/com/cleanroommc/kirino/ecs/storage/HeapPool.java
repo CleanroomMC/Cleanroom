@@ -92,14 +92,19 @@ public class HeapPool extends ArchetypeDataPool{
         }
     }
 
+    @Override
+    public boolean containsEntity(int entityID) {
+        return entityDataIndexes.containsKey(entityID);
+    }
+
     @NonNull
     @Override
     @SuppressWarnings("DataFlowIssue")
-    public ICleanComponent getComponent(int entityID, Class<? extends ICleanComponent> clazz) {
-        ComDataLocation location = componentDataLocations.get(clazz);
+    public ICleanComponent getComponent(int entityID, Class<? extends ICleanComponent> component) {
+        ComDataLocation location = componentDataLocations.get(component);
         int index = entityDataIndexes.get(entityID);
 
-        String comName = componentRegistry.getComponentName(clazz);
+        String comName = componentRegistry.getComponentName(component);
         int unitCount = componentRegistry.getComponentDescFlattened(comName).getUnitCount();
 
         int argIndex = 0;
@@ -126,7 +131,33 @@ public class HeapPool extends ArchetypeDataPool{
     }
 
     @Override
-    public void addEntity(int entityID, Map<Class<? extends ICleanComponent>, Object[]> componentArgs) {
+    public void setComponent(int entityID, ICleanComponent component) {
+        Object[] args = componentRegistry.flattenComponent(component);
+
+        ComDataLocation location = componentDataLocations.get(component.getClass());
+        int index = entityDataIndexes.get(entityID);
+
+        int argIndex = 0;
+        int intArrIndex = location.intArrFrom;
+        int floatArrIndex = location.floatArrFrom;
+        int booleanArrIndex = location.booleanArrFrom;
+        for (FlattenedScalarType flattenedScalarType : location.order) {
+            if (flattenedScalarType == FlattenedScalarType.INT) {
+                intPool.get(intArrIndex)[index] = (Integer) args[argIndex];
+                intArrIndex++;
+            } else if (flattenedScalarType == FlattenedScalarType.FLOAT) {
+                floatPool.get(floatArrIndex)[index] = (Float) args[argIndex];
+                floatArrIndex++;
+            } else if (flattenedScalarType == FlattenedScalarType.BOOL) {
+                booleanPool.get(booleanArrIndex)[index] = (Boolean) args[argIndex];
+                booleanArrIndex++;
+            }
+            argIndex++;
+        }
+    }
+
+    @Override
+    public void addEntity(int entityID, List<ICleanComponent> components) {
         int index;
         if (freeIndexes.isEmpty()) {
             // grow pool
@@ -143,8 +174,10 @@ public class HeapPool extends ArchetypeDataPool{
 
         entityDataIndexes.put(entityID, index);
 
-        for (Class<? extends ICleanComponent> clazz : components) {
-            Object[] args = componentArgs.get(clazz);
+        for (Class<? extends ICleanComponent> clazz : this.components) {
+            ICleanComponent component = Objects.requireNonNull(components.stream().filter(c -> c.getClass().equals(clazz)).findFirst().orElse(null));
+
+            Object[] args = componentRegistry.flattenComponent(component);
             ComDataLocation location = componentDataLocations.get(clazz);
 
             int argIndex = 0;
@@ -180,14 +213,21 @@ public class HeapPool extends ArchetypeDataPool{
                 freeIndexes.remove(freeIndex);
             }
             // shrink pool
-            if (indexCounter + 1 + shrinkStep >= currentSize) {
-                currentSize -= shrinkStep;
-                intPool.replaceAll(original -> Arrays.copyOf(original, currentSize));
-                floatPool.replaceAll(original -> Arrays.copyOf(original, currentSize));
-                booleanPool.replaceAll(original -> Arrays.copyOf(original, currentSize));
+            if (indexCounter + 1 + shrinkStep <= currentSize) {
+                if (currentSize - shrinkStep >= initSize) {
+                    currentSize -= shrinkStep;
+                    intPool.replaceAll(original -> Arrays.copyOf(original, currentSize));
+                    floatPool.replaceAll(original -> Arrays.copyOf(original, currentSize));
+                    booleanPool.replaceAll(original -> Arrays.copyOf(original, currentSize));
+                }
             }
         } else {
             freeIndexes.add(index);
         }
+    }
+
+    @Override
+    public void defragmentize() {
+
     }
 }

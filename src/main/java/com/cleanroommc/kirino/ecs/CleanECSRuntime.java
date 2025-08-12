@@ -17,13 +17,18 @@ import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarType;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
 import com.cleanroommc.kirino.ecs.entity.EntityManager;
+import com.cleanroommc.kirino.ecs.storage.ArchetypeDataPool;
+import com.cleanroommc.kirino.ecs.storage.HeapPool;
 import com.cleanroommc.kirino.ecs.system.render.RenderSystem;
 import com.cleanroommc.kirino.ecs.world.CleanWorld;
+import com.cleanroommc.kirino.mcbridge.ecs.component.PositionComponent;
 import com.cleanroommc.kirino.mcbridge.ecs.system.MinecraftRenderSystem;
 import com.google.common.collect.ImmutableMap;
 import net.minecraftforge.common.MinecraftForge;
 import org.joml.*;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class CleanECSRuntime {
@@ -111,5 +116,16 @@ public class CleanECSRuntime {
         entityManager = new EntityManager(componentRegistry);
         world = new CleanWorld(entityManager);
         renderSystem = new MinecraftRenderSystem(world);
+
+        PositionComponent pos = (PositionComponent) componentRegistry.newComponent("PositionComponent", new Object[]{123, 456, 1f, 2f, 3f});
+        KirinoRendering.LOGGER.info("debug: " + Arrays.toString(componentRegistry.flattenComponent(pos)));
+        ArchetypeDataPool pool = new HeapPool(componentRegistry, List.of(PositionComponent.class), 100, 50, 50);
+        pool.addEntity(0, List.of(pos));
+        ICleanComponent component1 = pool.getComponent(0, PositionComponent.class);
+        KirinoRendering.LOGGER.info("debug: " + Arrays.toString(componentRegistry.flattenComponent(component1)));
+        pos.test.test2 = 789;
+        pool.setComponent(0, pos);
+        ICleanComponent component2 = pool.getComponent(0, PositionComponent.class);
+        KirinoRendering.LOGGER.info("debug: " + Arrays.toString(componentRegistry.flattenComponent(component2)));
     }
 }

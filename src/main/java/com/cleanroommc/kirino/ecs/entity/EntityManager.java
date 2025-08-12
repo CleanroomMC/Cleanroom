@@ -40,18 +40,7 @@ public class EntityManager {
                     List<Class<? extends ICleanComponent>> components = entityComponents.get(command.index);
                     ArchetypeKey archetypeKey = entityArchetypeLocations.get(command.index);
                     ArchetypeDataPool pool = archetypes.computeIfAbsent(archetypeKey, k -> new HeapPool(componentRegistry, components, 100, 50, 50));
-
-                    Map<Class<? extends ICleanComponent>, Object[]> componentArgs = new HashMap<>();
-                    for (Class<? extends ICleanComponent> component : components) {
-                        componentArgs.put(component, componentRegistry.flattenComponent(
-                                Objects.requireNonNull(command.newComponents
-                                        .stream()
-                                        .filter(c -> c.getClass().equals(component))
-                                        .findFirst()
-                                        .orElse(null))));
-                    }
-
-                    pool.addEntity(command.index, componentArgs);
+                    pool.addEntity(command.index, command.newComponents);
                 }
                 // todo
             }
