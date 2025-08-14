@@ -1717,7 +1717,7 @@
      public void func_70108_f(Entity p_70108_1_)
      {
          if (!this.func_70608_bn())
-@@ -2604,6 +2533,168 @@
+@@ -2604,6 +2533,192 @@
      {
          return this.field_71075_bZ.field_75098_d && this.func_70003_b(2, "");
      }
@@ -1736,6 +1736,30 @@
 +    public void openGui(Object mod, int modGuiId, World world, int x, int y, int z)
 +    {
 +        net.minecraftforge.fml.common.network.internal.FMLNetworkHandler.openGui(this, mod, modGuiId, world, x, y, z);
++    }
++
++    /**
++     * Opens a GUI with this player, uses FML's IGuiHandler system.
++     * Allows for extension by modders.
++     *
++     * @param mod The mod trying to open a GUI
++     * @param modGuiId GUI ID
++     * @param world Current World
++     * @param x Passed directly to IGuiHandler, data meaningless Typically world X position
++     * @param y Passed directly to IGuiHandler, data meaningless Typically world Y position
++     * @param z Passed directly to IGuiHandler, data meaningless Typically world Z position
++     * @param customData The custom data to IGuiHandler. For the information longer than 128 bits.
++     */
++    public void openGui(Object mod, int modGuiId, World world, int x, int y, int z, io.netty.buffer.ByteBuf customData)
++    {
++        net.minecraftforge.fml.common.network.internal.FMLNetworkHandler.openGui(this, mod, modGuiId, world, x, y, z, customData);
++    }
++
++    public void openGui(Object mod, int modGuiId, World world, int x, int y, int z, java.util.function.Consumer<io.netty.buffer.ByteBuf> encoder)
++    {
++        io.netty.buffer.ByteBuf buf = io.netty.buffer.Unpooled.buffer();
++        encoder.accept(buf);
++        this.openGui(mod, modGuiId, world, x, y, z, buf);
 +    }
 +
 +
