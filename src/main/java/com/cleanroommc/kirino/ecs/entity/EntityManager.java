@@ -5,6 +5,7 @@ import com.cleanroommc.kirino.ecs.component.ICleanComponent;
 import com.cleanroommc.kirino.ecs.storage.ArchetypeDataPool;
 import com.cleanroommc.kirino.ecs.storage.ArchetypeKey;
 import com.cleanroommc.kirino.ecs.storage.HeapPool;
+import net.minecraft.client.renderer.vertex.VertexBuffer;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,7 +43,58 @@ public class EntityManager {
                     ArchetypeDataPool pool = archetypes.computeIfAbsent(archetypeKey, k -> new HeapPool(componentRegistry, components, 100, 50, 50));
                     pool.addEntity(command.index, command.newComponents);
                 }
-                // todo
+                case DESTROY -> {
+                    ArchetypeKey archetypeKey = entityArchetypeLocations.get(command.index);
+                    ArchetypeDataPool pool = archetypes.get(archetypeKey);
+                    pool.removeEntity(command.index);
+                }
+                case SET_COM -> {
+                    ArchetypeKey archetypeKey = entityArchetypeLocations.get(command.index);
+                    ArchetypeDataPool pool = archetypes.get(archetypeKey);
+                    pool.setComponent(command.index, command.componentToSet);
+                }
+                case ADD_COM -> {
+                    List<Class<? extends ICleanComponent>> components = entityComponents.get(command.index);
+                    ArchetypeKey archetypeKey = entityArchetypeLocations.get(command.index);
+                    ArchetypeDataPool oldPool = archetypes.get(archetypeKey);
+
+                    List<ICleanComponent> newComponents = new ArrayList<>();
+                    for (Class<? extends ICleanComponent> component: components) {
+                        newComponents.add(oldPool.getComponent(command.index, component));
+                    }
+                    newComponents.add(command.componentToAdd);
+
+                    // update component info
+                    components.add(command.componentToAdd.getClass());
+                    // update archetype key
+                    archetypeKey = new ArchetypeKey(components);
+                    entityArchetypeLocations.set(command.index, archetypeKey);
+
+                    ArchetypeDataPool newPool = archetypes.computeIfAbsent(archetypeKey, k -> new HeapPool(componentRegistry, components, 100, 50, 50));
+                    oldPool.removeEntity(command.index);
+                    newPool.addEntity(command.index, newComponents);
+                }
+                case REMOVE_COM -> {
+                    List<Class<? extends ICleanComponent>> components = entityComponents.get(command.index);
+                    ArchetypeKey archetypeKey = entityArchetypeLocations.get(command.index);
+                    ArchetypeDataPool oldPool = archetypes.get(archetypeKey);
+
+                    List<ICleanComponent> newComponents = new ArrayList<>();
+                    for (Class<? extends ICleanComponent> component: components) {
+                        newComponents.add(oldPool.getComponent(command.index, component));
+                    }
+                    newComponents.removeIf(c -> c.getClass().equals(command.componentToRemove));
+
+                    // update component info
+                    components.removeIf(c -> c.equals(command.componentToRemove));
+                    // update archetype key
+                    archetypeKey = new ArchetypeKey(components);
+                    entityArchetypeLocations.set(command.index, archetypeKey);
+
+                    ArchetypeDataPool newPool = archetypes.computeIfAbsent(archetypeKey, k -> new HeapPool(componentRegistry, components, 100, 50, 50));
+                    oldPool.removeEntity(command.index);
+                    newPool.addEntity(command.index, newComponents);
+                }
             }
         }
     }
@@ -116,6 +168,7 @@ public class EntityManager {
         if (index < 0 || index > entityGenerations.size() - 1) {
             throw new IndexOutOfBoundsException("The index provided is invalid. Current array length is " + entityGenerations.size() + ".");
         }
+        // update generation
         entityGenerations.set(index, entityGenerations.get(index) + 1);
         freeIndexes.add(index);
 

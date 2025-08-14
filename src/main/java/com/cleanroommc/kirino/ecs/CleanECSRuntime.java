@@ -27,7 +27,6 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraftforge.common.MinecraftForge;
 import org.joml.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -118,14 +117,17 @@ public class CleanECSRuntime {
         renderSystem = new MinecraftRenderSystem(world);
 
         PositionComponent pos = (PositionComponent) componentRegistry.newComponent("PositionComponent", new Object[]{123, 456, 1f, 2f, 3f});
-        KirinoRendering.LOGGER.info("debug: " + Arrays.toString(componentRegistry.flattenComponent(pos)));
         ArchetypeDataPool pool = new HeapPool(componentRegistry, List.of(PositionComponent.class), 100, 50, 50);
-        pool.addEntity(0, List.of(pos));
-        ICleanComponent component1 = pool.getComponent(0, PositionComponent.class);
-        KirinoRendering.LOGGER.info("debug: " + Arrays.toString(componentRegistry.flattenComponent(component1)));
-        pos.test.test2 = 789;
-        pool.setComponent(0, pos);
-        ICleanComponent component2 = pool.getComponent(0, PositionComponent.class);
-        KirinoRendering.LOGGER.info("debug: " + Arrays.toString(componentRegistry.flattenComponent(component2)));
+        pool.addEntity(111, List.of(pos));
+        pool.addEntity(222, List.of(pos));
+        pool.addEntity(333, List.of(pos));
+        KirinoRendering.LOGGER.info(pool.getSnapshot());
+        pool.removeEntity(222);
+        pos.xyz.x = 10;
+        pos.xyz.y = 10;
+        pos.xyz.z = 10;
+        pool.addEntity(222, List.of(pos));
+        pool.addEntity(444, List.of(pos));
+        KirinoRendering.LOGGER.info(pool.getSnapshot());
     }
 }

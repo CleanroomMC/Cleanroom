@@ -10,6 +10,9 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 
+/**
+ * It guarantees SoA memory layout.
+ */
 public class HeapPool extends ArchetypeDataPool{
     private final List<int[]> intPool = new ArrayList<>();
     private final List<float[]> floatPool = new ArrayList<>();
@@ -213,7 +216,7 @@ public class HeapPool extends ArchetypeDataPool{
                 freeIndexes.remove(freeIndex);
             }
             // shrink pool
-            if (indexCounter + 1 + shrinkStep <= currentSize) {
+            if (indexCounter + shrinkStep <= currentSize) {
                 if (currentSize - shrinkStep >= initSize) {
                     currentSize -= shrinkStep;
                     intPool.replaceAll(original -> Arrays.copyOf(original, currentSize));
@@ -228,6 +231,57 @@ public class HeapPool extends ArchetypeDataPool{
 
     @Override
     public void defragmentize() {
+        // todo
+    }
 
+    @Override
+    public String getSnapshot() {
+        int snapshotLength = Math.min(currentSize, 10);
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("\n=====HeapPool Snapshot=====\n");
+        int i = 0;
+        for (Class<? extends ICleanComponent> clazz : components) {
+            ComDataLocation location = componentDataLocations.get(clazz);
+            builder.append("[").append(i++).append("] ")
+                    .append("Component name: ").append(componentRegistry.getComponentName(clazz))
+                    .append("; Component class: ").append(clazz.getName()).append("\n");
+
+            int intArrIndex = location.intArrFrom;
+            int floatArrIndex = location.floatArrFrom;
+            int booleanArrIndex = location.booleanArrFrom;
+            int j = 0;
+            for (FlattenedScalarType flattenedScalarType : location.order) {
+                builder.append("  [").append(j++).append(" ").append(flattenedScalarType).append("] ");
+                if (flattenedScalarType == FlattenedScalarType.INT) {
+                    for (int k = 0; k < snapshotLength; k++) {
+                        builder.append(intPool.get(intArrIndex)[k]);
+                        if (k != snapshotLength - 1) {
+                            builder.append(", ");
+                        }
+                    }
+                    intArrIndex++;
+                } else if (flattenedScalarType == FlattenedScalarType.FLOAT) {
+                    for (int k = 0; k < snapshotLength; k++) {
+                        builder.append(floatPool.get(floatArrIndex)[k]);
+                        if (k != snapshotLength - 1) {
+                            builder.append(", ");
+                        }
+                    }
+                    floatArrIndex++;
+                } else if (flattenedScalarType == FlattenedScalarType.BOOL) {
+                    for (int k = 0; k < snapshotLength; k++) {
+                        builder.append(booleanPool.get(booleanArrIndex)[k]);
+                        if (k != snapshotLength - 1) {
+                            builder.append(", ");
+                        }
+                    }
+                    booleanArrIndex++;
+                }
+                builder.append("\n");
+            }
+        }
+
+        return builder.toString();
     }
 }

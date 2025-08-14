@@ -26,12 +26,17 @@ public class CleanEntityHandle {
 
     /**
      * This method returns <code>false</code> if the entity handle is expired (i.e. corresponding entity is destroyed).
+     * </br>
+     * The action won't execute immediately but after {@link EntityManager#flush()}.
+     * However, this entity handle becomes invalid immediately after this call.
      * </br></br>
      * Thread safety is guaranteed.
      *
      * @return Whether you successfully executed the method
+     *
+     * @see EntityManager#flush()
      */
-    public boolean destroy() {
+    public boolean tryDestroy() {
         if (!valid()) {
             return false;
         }
@@ -48,15 +53,23 @@ public class CleanEntityHandle {
      *     <li>Stop modifying <code>component</code> from now on as the action is deferred</li>
      * </ul>
      * <br/>
-     * This method returns <code>false</code> if the entity handle is expired (i.e. corresponding entity is destroyed).
+     * This method returns <code>false</code> if the entity handle is expired (i.e. corresponding entity is destroyed),
+     * OR the entity doesn't have this type of component.
+     * </br>
+     * The action won't execute immediately but after {@link EntityManager#flush()}.
      * </br></br>
      * Thread safety is guaranteed.
      *
      * @param component The component
      * @return Whether you successfully executed the method
+     *
+     * @see EntityManager#flush()
      */
     public synchronized boolean trySetComponent(ICleanComponent component) {
         if (!valid()) {
+            return false;
+        }
+        if (!entityManager.getComponentTypes(index).contains(component.getClass())) {
             return false;
         }
 
@@ -75,11 +88,15 @@ public class CleanEntityHandle {
      * </ul>
      * <br/>
      * This method returns <code>false</code> if the entity handle is expired (i.e. corresponding entity is destroyed).
+     * </br>
+     * The action won't execute immediately but after {@link EntityManager#flush()}.
      * </br></br>
      * Thread safety is guaranteed.
      *
      * @param component The component
      * @return Whether you successfully executed the method
+     *
+     * @see EntityManager#flush()
      */
     public synchronized boolean tryAddComponent(ICleanComponent component) {
         if (!valid()) {
@@ -96,11 +113,15 @@ public class CleanEntityHandle {
     /**
      * This method returns <code>false</code> if the entity handle is expired (i.e. corresponding entity is destroyed),
      * OR the entity doesn't have this type of component.
+     * </br>
+     * The action won't execute immediately but after {@link EntityManager#flush()}.
      * </br></br>
      * Thread safety is guaranteed.
      *
      * @param component The component type
      * @return Whether you successfully executed the method
+     *
+     * @see EntityManager#flush()
      */
     public synchronized boolean tryRemoveComponent(Class<? extends ICleanComponent> component) {
         if (!valid()) {

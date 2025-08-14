@@ -55,8 +55,8 @@
 
 - Overall ECS structure
   - CleanWorld, CleanEntity, CleanComponent, CleanSystem
-- Entity
-  - Entity manager (utilizes archetype)
+- Entity ✔
+  - Entity manager (utilizes archetype) ✔
 - Component ✔
   - Component schema ✔
   - Class scan via ClassGraph ✔

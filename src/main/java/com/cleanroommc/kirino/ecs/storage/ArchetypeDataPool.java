@@ -104,4 +104,6 @@ public abstract class ArchetypeDataPool {
     public abstract void removeEntity(int entityID);
 
     public abstract void defragmentize();
+
+    public abstract String getSnapshot();
 }
