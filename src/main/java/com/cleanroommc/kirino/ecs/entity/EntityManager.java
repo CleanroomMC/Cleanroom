@@ -5,7 +5,6 @@ import com.cleanroommc.kirino.ecs.component.ICleanComponent;
 import com.cleanroommc.kirino.ecs.storage.ArchetypeDataPool;
 import com.cleanroommc.kirino.ecs.storage.ArchetypeKey;
 import com.cleanroommc.kirino.ecs.storage.HeapPool;
-import net.minecraft.client.renderer.vertex.VertexBuffer;
 
 import java.util.*;
 import java.util.stream.Collectors;

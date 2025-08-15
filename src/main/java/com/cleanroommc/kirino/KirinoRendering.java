@@ -3,6 +3,8 @@ package com.cleanroommc.kirino;
 import com.cleanroommc.kirino.ecs.CleanECSRuntime;
 import com.cleanroommc.kirino.ecs.component.scan.event.ComponentScanningEvent;
 import com.cleanroommc.kirino.ecs.component.scan.event.StructScanningEvent;
+import com.cleanroommc.kirino.ecs.system.render.RenderSystem;
+import com.cleanroommc.kirino.mcbridge.ecs.system.MinecraftRenderSystem;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
@@ -18,9 +20,14 @@ import java.util.concurrent.TimeUnit;
 public class KirinoRendering {
     public static final Logger LOGGER = LogManager.getLogger("Kirino Rendering");
     private static CleanECSRuntime ECS_RUNTIME;
+    private static RenderSystem RENDER_SYSTEM;
 
     public static CleanECSRuntime getEcsRuntime() {
         return ECS_RUNTIME;
+    }
+
+    public static RenderSystem getRenderSystem() {
+        return RENDER_SYSTEM;
     }
 
     public static void init() {
@@ -51,6 +58,8 @@ public class KirinoRendering {
 
         stopWatch.stop();
         LOGGER.info("Kirino Rendering ECS Module Initialized. Time taken: " + stopWatch.getTime(TimeUnit.MILLISECONDS) + " ms");
+
+        RENDER_SYSTEM = new MinecraftRenderSystem(ECS_RUNTIME.world);
     }
 
     @SubscribeEvent

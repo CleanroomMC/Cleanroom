@@ -17,17 +17,11 @@ import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarType;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
 import com.cleanroommc.kirino.ecs.entity.EntityManager;
-import com.cleanroommc.kirino.ecs.storage.ArchetypeDataPool;
-import com.cleanroommc.kirino.ecs.storage.HeapPool;
-import com.cleanroommc.kirino.ecs.system.render.RenderSystem;
 import com.cleanroommc.kirino.ecs.world.CleanWorld;
-import com.cleanroommc.kirino.mcbridge.ecs.component.PositionComponent;
-import com.cleanroommc.kirino.mcbridge.ecs.system.MinecraftRenderSystem;
 import com.google.common.collect.ImmutableMap;
 import net.minecraftforge.common.MinecraftForge;
 import org.joml.*;
 
-import java.util.List;
 import java.util.Map;
 
 public class CleanECSRuntime {
@@ -36,7 +30,6 @@ public class CleanECSRuntime {
     public final ComponentRegistry componentRegistry;
     public final EntityManager entityManager;
     public final CleanWorld world;
-    public final RenderSystem renderSystem;
 
     @SuppressWarnings("DataFlowIssue")
     private CleanECSRuntime() {
@@ -114,20 +107,5 @@ public class CleanECSRuntime {
 
         entityManager = new EntityManager(componentRegistry);
         world = new CleanWorld(entityManager);
-        renderSystem = new MinecraftRenderSystem(world);
-
-        PositionComponent pos = (PositionComponent) componentRegistry.newComponent("PositionComponent", new Object[]{123, 456, 1f, 2f, 3f});
-        ArchetypeDataPool pool = new HeapPool(componentRegistry, List.of(PositionComponent.class), 100, 50, 50);
-        pool.addEntity(111, List.of(pos));
-        pool.addEntity(222, List.of(pos));
-        pool.addEntity(333, List.of(pos));
-        KirinoRendering.LOGGER.info(pool.getSnapshot());
-        pool.removeEntity(222);
-        pos.xyz.x = 10;
-        pos.xyz.y = 10;
-        pos.xyz.z = 10;
-        pool.addEntity(222, List.of(pos));
-        pool.addEntity(444, List.of(pos));
-        KirinoRendering.LOGGER.info(pool.getSnapshot());
     }
 }
