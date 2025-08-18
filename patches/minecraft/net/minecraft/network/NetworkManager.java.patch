@@ -3,7 +3,7 @@
 @@ -88,7 +88,12 @@
          this.field_179294_g = p_i46004_1_;
      }
-
+ 
 +    public EnumPacketDirection getDirection()
 +    {
 +        return this.field_179294_g;
