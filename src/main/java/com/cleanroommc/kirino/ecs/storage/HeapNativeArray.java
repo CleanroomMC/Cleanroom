@@ -1,25 +1,31 @@
 package com.cleanroommc.kirino.ecs.storage;
 
-public class HeapNativeArray<T> implements INativeArray<T> {
+public final class HeapNativeArray<T> implements INativeArray<T> {
     private final T[] array;
 
     public HeapNativeArray(T[] array) {
         this.array = array;
     }
 
+    /**
+     * This method call will hopefully be inlined.
+     *
+     * @param index The index
+     * @return The value
+     */
     @Override
     public T get(int index) {
-        if (index < 0 || index > array.length - 1) {
-            throw new IndexOutOfBoundsException("Invalid index " + index + ". The array length is " + array.length + ".");
-        }
         return array[index];
     }
 
+    /**
+     * This method call will hopefully be inlined.
+     *
+     * @param index The index
+     * @param value The value
+     */
     @Override
     public void set(int index, T value) {
-        if (index < 0 || index > array.length - 1) {
-            throw new IndexOutOfBoundsException("Invalid index " + index + ". The array length is " + array.length + ".");
-        }
         array[index] = value;
     }
 

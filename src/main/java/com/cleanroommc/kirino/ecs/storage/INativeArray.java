@@ -3,7 +3,6 @@ package com.cleanroommc.kirino.ecs.storage;
 public interface INativeArray<T> {
     /**
      * Getter.
-     * Must throw exceptions if necessary.
      *
      * @param index The index
      * @return The value
@@ -12,7 +11,6 @@ public interface INativeArray<T> {
 
     /**
      * Setter.
-     * Must throw exceptions if necessary.
      *
      * @param index The index
      * @param value The value

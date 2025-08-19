@@ -1,4 +1,13 @@
 package com.cleanroommc.kirino.ecs.job;
 
-public class JobDataQuery {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface JobDataQuery {
+    Class<?> componentClass();
+    String[] fieldNameChain();
 }

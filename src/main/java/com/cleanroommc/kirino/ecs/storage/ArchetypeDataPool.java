@@ -103,6 +103,19 @@ public abstract class ArchetypeDataPool {
      */
     public abstract void removeEntity(int entityID);
 
+    /**
+     * <p>Prerequisite include:</p>
+     * <ul>
+     *     <li><code>component</code> is in {@link ArchetypeDataPool#components}</li>
+     *     <li><code>fieldNameChain</code> points to a valid field</li>
+     * </ul>
+     *
+     * @param component The component class
+     * @param fieldNameChain A list of field names to identify a field
+     * @return An array of field values
+     */
+    public abstract INativeArray<?> getArray(Class<? extends ICleanComponent> component, String[] fieldNameChain);
+
     public abstract void defragmentize();
 
     public abstract String getSnapshot();

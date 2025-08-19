@@ -230,6 +230,14 @@ public class HeapPool extends ArchetypeDataPool{
     }
 
     @Override
+    public INativeArray<?> getArray(Class<? extends ICleanComponent> component, String[] fieldNameChain) {
+        // todo
+        int length = 0;
+        Object[] array = new Object[length];
+        return new HeapNativeArray<>(array);
+    }
+
+    @Override
     public void defragmentize() {
         // todo
     }
