@@ -235,8 +235,20 @@ forge.controlsgui.control.mac=CMD + %s
 forge.controlsgui.alt=ALT + %s
 
 fml.menu.mods=Mods
-fml.menu.mods.normal=Normal
-fml.menu.mods.search=Search:
+fml.menu.mods.title=Mods
+fml.menu.mods.config=Config
+fml.menu.mods.website=Website
+fml.menu.mods.issue=Submit Bug
+fml.menu.mods.search=Search...
+fml.menu.mods.noselection=No mod selected...
+fml.menu.mods.openmodsfolder=Open mods folder
+fml.menu.mods.filterupdates=Show only mods with updates
+fml.menu.mods.info=This menu was redesigned by Catalogue. Click here to open the CurseForge page for this mod!
+fml.menu.mods.info.credits=Credits: %s
+fml.menu.mods.info.authors=Authors: %s
+fml.menu.mods.info.version=Version: %s
+fml.menu.mods.info.modid=Mod ID: %s
+fml.menu.mods.info.updateavailable=Update available: %s
 fml.menu.modoptions=Mod Options...
 
 item.forge.bucketFilled.name=%s Bucket

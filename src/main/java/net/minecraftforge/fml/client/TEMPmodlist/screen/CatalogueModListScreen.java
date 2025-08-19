@@ -94,13 +94,13 @@ public class CatalogueModListScreen extends GuiScreen {
         int contentWidth = this.width - contentLeft - padding;
         int buttonWidth = (contentWidth - padding) / 3;
 
-        this.configButton = this.addButton(new CatalogueIconButton(3, contentLeft, 105, 10, 0, buttonWidth, I18n.format("catalogue.gui.config")));
+        this.configButton = this.addButton(new CatalogueIconButton(3, contentLeft, 105, 10, 0, buttonWidth, I18n.format("fml.menu.mods.config")));
         this.configButton.visible = false;
 
-        this.websiteButton = this.addButton(new CatalogueIconButton(4, contentLeft + buttonWidth + 5, 105, 20, 0, buttonWidth, I18n.format("catalogue.gui.website")));
+        this.websiteButton = this.addButton(new CatalogueIconButton(4, contentLeft + buttonWidth + 5, 105, 20, 0, buttonWidth, I18n.format("fml.menu.mods.website")));
         this.websiteButton.visible = false;
 
-        this.issueButton = this.addButton(new CatalogueIconButton(5, contentLeft + buttonWidth + buttonWidth + 10, 105, 30, 0, buttonWidth, I18n.format("catalogue.gui.issue")));
+        this.issueButton = this.addButton(new CatalogueIconButton(5, contentLeft + buttonWidth + buttonWidth + 10, 105, 30, 0, buttonWidth, I18n.format("fml.menu.mods.issue")));
         this.issueButton.visible = false;
 
         this.descriptionList = new StringList(contentWidth, this.height - 135 - 55, contentLeft, 130);
@@ -177,7 +177,7 @@ public class CatalogueModListScreen extends GuiScreen {
         }
 
         if (ScreenUtil.isMouseWithin(10, 9, 10, 10, mouseX, mouseY)) {
-            this.setActiveTooltip(I18n.format("catalogue.gui.info"));
+            this.setActiveTooltip(I18n.format("fml.menu.mods.info"));
             this.tooltipYOffset = 10;
         }
 
@@ -498,7 +498,7 @@ public class CatalogueModListScreen extends GuiScreen {
         // Version check button
         if (this.selectedModInfo != null) {
             int contentLeft = this.modList.right + 12 + 10;
-            String version = I18n.format("catalogue.gui.version", this.selectedModInfo.getDisplayVersion());
+            String version = I18n.format("fml.menu.mods.info.version", this.selectedModInfo.getDisplayVersion());
             int versionWidth = this.fontRenderer.getStringWidth(version);
             if (ScreenUtil.isMouseWithin(contentLeft + versionWidth + 5, 92, 8, 8, mouseX, mouseY)) {
                 ForgeVersion.CheckResult result = ForgeVersion.getResult(this.selectedModInfo);
@@ -558,11 +558,11 @@ public class CatalogueModListScreen extends GuiScreen {
         GlStateManager.disableBlend();
 
         this.modList.drawScreen(mouseX, mouseY, partialTicks);
-        drawString(this.fontRenderer, TextFormatting.BOLD + I18n.format("catalogue.gui.title"), 70, 10, 0xFFFFFF);
+        drawString(this.fontRenderer, TextFormatting.BOLD + I18n.format("fml.menu.mods.title"), 70, 10, 0xFFFFFF);
         this.searchTextField.drawTextBox();
 
         if(ScreenUtil.isMouseWithin(this.modList.right - 14, 7, 14, 14, mouseX, mouseY)) {
-            this.setActiveTooltip(I18n.format("catalogue.gui.filter_updates"));
+            this.setActiveTooltip(I18n.format("fml.menu.mods.filterupdates"));
             this.tooltipYOffset = 10;
         }
     }
@@ -594,7 +594,7 @@ public class CatalogueModListScreen extends GuiScreen {
             GlStateManager.popMatrix();
 
             // Draw version
-            String modId = TextFormatting.DARK_GRAY + I18n.format("catalogue.gui.modid", this.selectedModInfo.getModId());
+            String modId = TextFormatting.DARK_GRAY + I18n.format("fml.menu.mods.info.modid", this.selectedModInfo.getModId());
             int modIdWidth = this.fontRenderer.getStringWidth(modId);
             drawString(this.fontRenderer, modId, contentLeft + contentWidth - modIdWidth, 92, 0xFFFFFF);
 
@@ -610,10 +610,10 @@ public class CatalogueModListScreen extends GuiScreen {
 
             // Draw version
             String displayVersion = this.selectedModInfo.getDisplayVersion();
-            this.drawStringWithLabel("catalogue.gui.version", displayVersion, contentLeft, 92, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
+            this.drawStringWithLabel("fml.menu.mods.info.version", displayVersion, contentLeft, 92, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
 
             // Draw inner version if the display version is different from it
-            int versionWidth = this.fontRenderer.getStringWidth(I18n.format("catalogue.gui.version", displayVersion));
+            int versionWidth = this.fontRenderer.getStringWidth(I18n.format("fml.menu.mods.info.version", displayVersion));
             String innerVersion = this.selectedModInfo.getVersion();
             if (!displayVersion.equals(innerVersion) && ScreenUtil.isMouseWithin(contentLeft, 92, versionWidth, this.fontRenderer.FONT_HEIGHT, mouseX, mouseY)) {
                 this.setActiveTooltip(innerVersion);
@@ -627,7 +627,7 @@ public class CatalogueModListScreen extends GuiScreen {
                 int vOffset = result.status.isAnimated() && (System.currentTimeMillis() / 800 & 1) == 1 ? 8 : 0;
                 ScreenUtil.blit(contentLeft + versionWidth + 5, 92, result.status.getSheetOffset() * 8, vOffset, 8, 8, 64, 16);
                 if(ScreenUtil.isMouseWithin(contentLeft + versionWidth + 5, 92, 8, 8, mouseX, mouseY)) {
-                    this.setActiveTooltip(I18n.format("catalogue.gui.update_available", result.url));
+                    this.setActiveTooltip(I18n.format("fml.menu.mods.info.updateavailable", result.url));
                 }
             }
 
@@ -644,18 +644,18 @@ public class CatalogueModListScreen extends GuiScreen {
                 // Draw credits
                 String credits = metadata.credits;
                 if(!credits.isEmpty()) {
-                    this.drawStringWithLabel("catalogue.gui.credits", credits, contentLeft, labelOffset, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
+                    this.drawStringWithLabel("fml.menu.mods.info.credits", credits, contentLeft, labelOffset, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
                     labelOffset -= 15;
                 }
 
                 // Draw authors
                 String authors = metadata.getAuthorList();
                 if(!authors.isEmpty()) {
-                    this.drawStringWithLabel("catalogue.gui.authors", authors, contentLeft, labelOffset, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
+                    this.drawStringWithLabel("fml.menu.mods.info.authors", authors, contentLeft, labelOffset, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
                 }
             }
         } else {
-            String message = TextFormatting.GRAY + I18n.format("catalogue.gui.no_selection");
+            String message = TextFormatting.GRAY + I18n.format("fml.menu.mods.noselection");
             drawCenteredString(this.fontRenderer, message, contentLeft + contentWidth / 2, this.height / 2 - 5, 0xFFFFFF);
         }
     }
@@ -902,7 +902,7 @@ public class CatalogueModListScreen extends GuiScreen {
 
     private void updateSearchField(String value) {
         if(value.isEmpty()) {
-            this.searchTextField.setSuggestion(I18n.format("catalogue.gui.search"));
+            this.searchTextField.setSuggestion(I18n.format("fml.menu.mods.search"));
         } else {
             Optional<ModContainer> optional = Loader.instance().getActiveModList().stream().filter(info -> {
                 return info.getName().toLowerCase(Locale.ENGLISH).startsWith(value.toLowerCase(Locale.ENGLISH));
