@@ -40,6 +40,11 @@
 - If you were told to use **action builds** (aka bleeding edge), here: [Cleanroom](https://github.com/CleanroomMC/Cleanroom/actions), [Fugue](https://github.com/CleanroomMC/Fugue/actions)
 - You need to log in your GitHub account to download action artifacts. 
 
+## Cleanroom on Server
+
+- Cleanroom can be installed on server.
+- Just use the installer mentioned in previous section, and run the jar with `--intallServer`. See [this page](https://minecraft.fandom.com/wiki/Tutorials/Setting_up_a_Minecraft_Forge_server) for more detail. 
+
 ## Pack-making with Cleanroom
 
 ### Steps of Migrating to Cleanroom
