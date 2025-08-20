@@ -7,7 +7,7 @@ import com.cleanroommc.kirino.mcbridge.ecs.component.PositionComponent;
 
 public class MyJob implements IParallelJob {
     // array will be injected before execution
-    @JobDataQuery(componentClass = PositionComponent.class, fieldNameChain = {"xyz", "x"})
+    @JobDataQuery(componentClass = PositionComponent.class, fieldAccessChain = {"xyz", "x"})
     INativeArray<Integer> array;
 
     @Override

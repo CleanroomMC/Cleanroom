@@ -230,11 +230,35 @@ public class HeapPool extends ArchetypeDataPool{
     }
 
     @Override
-    public INativeArray<?> getArray(Class<? extends ICleanComponent> component, String[] fieldNameChain) {
-        // todo
-        int length = 0;
-        Object[] array = new Object[length];
-        return new HeapNativeArray<>(array);
+    public INativeArray<?> getArray(Class<? extends ICleanComponent> component, String... fieldAccessChain) {
+        int ordinal = componentRegistry.getFieldOrdinal(componentRegistry.getComponentName(component), fieldAccessChain);
+        ComDataLocation location = componentDataLocations.get(component);
+
+        int index = 0;
+        int intArrIndex = location.intArrFrom;
+        int floatArrIndex = location.floatArrFrom;
+        int booleanArrIndex = location.booleanArrFrom;
+        for (FlattenedScalarType flattenedScalarType : location.order) {
+            if (flattenedScalarType == FlattenedScalarType.INT) {
+                if (index == ordinal) {
+                    return new HeapNativeArray<>(Integer.class, intPool.get(intArrIndex));
+                }
+                intArrIndex++;
+            } else if (flattenedScalarType == FlattenedScalarType.FLOAT) {
+                if (index == ordinal) {
+                    return new HeapNativeArray<>(Float.class, floatPool.get(floatArrIndex));
+                }
+                floatArrIndex++;
+            } else if (flattenedScalarType == FlattenedScalarType.BOOL) {
+                if (index == ordinal) {
+                    return new HeapNativeArray<>(Boolean.class, booleanPool.get(booleanArrIndex));
+                }
+                booleanArrIndex++;
+            }
+            index++;
+        }
+
+        throw new IllegalStateException("Unable to find such array.");
     }
 
     @Override

@@ -1,7 +1,9 @@
 package com.cleanroommc.kirino.ecs.component;
 
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldDef;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldKind;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldRegistry;
+import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarType;
 import com.cleanroommc.kirino.ecs.component.schema.meta.MemberLayout;
 import com.cleanroommc.kirino.ecs.component.schema.reflect.AccessHandlePool;
 import com.google.common.collect.BiMap;
@@ -91,8 +93,188 @@ public class ComponentRegistry {
         return componentDescFlattenedMap.get(name);
     }
 
-    public String serializeComponentDesc(ComponentDesc componentDesc) {
-        return componentDesc.toString(fieldRegistry.structRegistry);
+    @SuppressWarnings("DataFlowIssue")
+    public int getFieldOrdinal(String name, String... fieldAccessChain) {
+        if (!componentExists(name)) {
+            throw new IllegalStateException("Component type " + name + " doesn't exist.");
+        }
+        if (fieldAccessChain.length == 0) {
+            throw new IllegalStateException("The given fieldAccessChain must not be empty.");
+        }
+
+        MemberLayout memberLayout = getClassMemberLayout(name);
+        int index = 0;
+        boolean match = false;
+        while (!match && index < memberLayout.fieldNames.size()) {
+            if (memberLayout.fieldNames.get(index).equals(fieldAccessChain[0])) {
+                match = true;
+            } else {
+                index++;
+            }
+        }
+        if (!match) {
+            throw new IllegalStateException("Can't find a field that matches the fieldAccessChain.");
+        }
+
+        ComponentDescFlattened componentDescFlattened = getComponentDescFlattened(name);
+        int ordinal = 0;
+        for (int i = 0; i < index; i++) {
+            ordinal += componentDescFlattened.fields.get(i).getUnitCount();
+        }
+
+        ComponentDesc componentDesc = getComponentDesc(name);
+        // scalar field
+        if (componentDesc.fields.get(index).fieldKind == FieldKind.SCALAR) {
+            if (componentDesc.fields.get(index).scalarType == ScalarType.INT ||
+                    componentDesc.fields.get(index).scalarType == ScalarType.FLOAT ||
+                    componentDesc.fields.get(index).scalarType == ScalarType.BOOL) {
+                if (fieldAccessChain.length == 1) {
+                    return ordinal;
+                } else {
+                    throw new IllegalStateException("The given fieldAccessChain provides more redundant terms after the deepest field.");
+                }
+            } else {
+                if (fieldAccessChain.length == 1) {
+                    throw new IllegalStateException("The given fieldAccessChain can't reach the deepest field.");
+                } else if (fieldAccessChain.length == 2) {
+                    switch (componentDesc.fields.get(index).scalarType) {
+                        case VEC2 -> {
+                            switch (fieldAccessChain[1]) {
+                                case "x" -> {
+                                    return ordinal;
+                                }
+                                case "y" -> {
+                                    return ordinal + 1;
+                                }
+                            }
+                        }
+                        case VEC3 -> {
+                            switch (fieldAccessChain[1]) {
+                                case "x" -> {
+                                    return ordinal;
+                                }
+                                case "y" -> {
+                                    return ordinal + 1;
+                                }
+                                case "z" -> {
+                                    return ordinal + 2;
+                                }
+                            }
+                        }
+                        case VEC4 -> {
+                            switch (fieldAccessChain[1]) {
+                                case "x" -> {
+                                    return ordinal;
+                                }
+                                case "y" -> {
+                                    return ordinal + 1;
+                                }
+                                case "z" -> {
+                                    return ordinal + 2;
+                                }
+                                case "w" -> {
+                                    return ordinal + 3;
+                                }
+                            }
+                        }
+                        case MAT3 -> {
+                            switch (fieldAccessChain[1]) {
+                                case "m00" -> {
+                                    return ordinal;
+                                }
+                                case "m01" -> {
+                                    return ordinal + 1;
+                                }
+                                case "m02" -> {
+                                    return ordinal + 2;
+                                }
+                                case "m10" -> {
+                                    return ordinal + 3;
+                                }
+                                case "m11" -> {
+                                    return ordinal + 4;
+                                }
+                                case "m12" -> {
+                                    return ordinal + 5;
+                                }
+                                case "m20" -> {
+                                    return ordinal + 6;
+                                }
+                                case "m21" -> {
+                                    return ordinal + 7;
+                                }
+                                case "m22" -> {
+                                    return ordinal + 8;
+                                }
+                            }
+                        }
+                        case MAT4 -> {
+                            switch (fieldAccessChain[1]) {
+                                case "m00" -> {
+                                    return ordinal;
+                                }
+                                case "m01" -> {
+                                    return ordinal + 1;
+                                }
+                                case "m02" -> {
+                                    return ordinal + 2;
+                                }
+                                case "m03" -> {
+                                    return ordinal + 3;
+                                }
+                                case "m10" -> {
+                                    return ordinal + 4;
+                                }
+                                case "m11" -> {
+                                    return ordinal + 5;
+                                }
+                                case "m12" -> {
+                                    return ordinal + 6;
+                                }
+                                case "m13" -> {
+                                    return ordinal + 7;
+                                }
+                                case "m20" -> {
+                                    return ordinal + 8;
+                                }
+                                case "m21" -> {
+                                    return ordinal + 9;
+                                }
+                                case "m22" -> {
+                                    return ordinal + 10;
+                                }
+                                case "m23" -> {
+                                    return ordinal + 11;
+                                }
+                                case "m30" -> {
+                                    return ordinal + 12;
+                                }
+                                case "m31" -> {
+                                    return ordinal + 13;
+                                }
+                                case "m32" -> {
+                                    return ordinal + 14;
+                                }
+                                case "m33" -> {
+                                    return ordinal + 15;
+                                }
+                            }
+                        }
+                    }
+                    throw new IllegalStateException("Can't find a field that matches the fieldAccessChain.");
+                } else {
+                    throw new IllegalStateException("The given fieldAccessChain provides more redundant terms after the deepest field.");
+                }
+            }
+        // struct field
+        } else {
+            if (fieldAccessChain.length == 1) {
+                throw new IllegalStateException("The given fieldAccessChain can't reach the deepest field.");
+            }
+            String[] newFieldAccessChain = new String[fieldAccessChain.length - 1];
+            System.arraycopy(fieldAccessChain, 1, newFieldAccessChain, 0, newFieldAccessChain.length);
+            return ordinal + fieldRegistry.structRegistry.getFieldOrdinal(componentDesc.fields.get(index).structTypeName, newFieldAccessChain);
+        }
     }
 
     // -----Component Construction-----

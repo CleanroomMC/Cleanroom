@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface JobDataQuery {
     Class<?> componentClass();
-    String[] fieldNameChain();
+    String[] fieldAccessChain();
 }

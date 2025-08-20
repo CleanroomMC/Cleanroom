@@ -107,14 +107,14 @@ public abstract class ArchetypeDataPool {
      * <p>Prerequisite include:</p>
      * <ul>
      *     <li><code>component</code> is in {@link ArchetypeDataPool#components}</li>
-     *     <li><code>fieldNameChain</code> points to a valid field</li>
+     *     <li><code>fieldAccessChain</code> points to a valid field</li>
      * </ul>
      *
      * @param component The component class
-     * @param fieldNameChain A list of field names to identify a field
+     * @param fieldAccessChain A list of field names to identify a field
      * @return An array of field values
      */
-    public abstract INativeArray<?> getArray(Class<? extends ICleanComponent> component, String[] fieldNameChain);
+    public abstract INativeArray<?> getArray(Class<? extends ICleanComponent> component, String... fieldAccessChain);
 
     public abstract void defragmentize();
 

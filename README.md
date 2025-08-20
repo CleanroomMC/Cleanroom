@@ -64,8 +64,8 @@
   - RenderSystem - a specialized system
     - RenderPass
     - ...
-- Storage
-  - Archetype
+- Storage ✔
+  - Archetype ✔
 - Runtime
   - Job system to coordinate different systems
     - Execution priority
@@ -78,6 +78,12 @@
 - Batching commands
 - Decorating commands
 - ...
+
+### Drafts
+- Virtual geometry
+  - ChunkComponent -> contains MeshletComponent IDs
+  - MeshletComponent -> contains virtual geometry data, metadata (meshlet aabb etc.)
+  - Pass active meshlets to gpu to gen actual vertices and indices
 
 # Cleanroom Minecraft
 
