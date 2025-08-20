@@ -8,6 +8,7 @@ import com.google.gson.*;
 
 import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.launch.GlobalProperties;
+import org.spongepowered.asm.mixin.transformer.Config;
 import zone.rong.mixinbooter.Context;
 import zone.rong.mixinbooter.IEarlyMixinLoader;
 import zone.rong.mixinbooter.IMixinConfigHijacker;
@@ -30,7 +31,6 @@ import java.net.URL;
 public final class MixinBooterPlugin implements IFMLLoadingPlugin {
 
     public MixinBooterPlugin() {
-        GlobalProperties.put(GlobalProperties.Keys.CLEANROOM_DISABLE_MIXIN_CONFIGS, new HashSet<String>());
     }
 
     static Set<IEarlyMixinLoader> earlyMixinLoaders = new HashSet<>();
@@ -45,11 +45,10 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
     static void queneEarlyMixinLoader(IFMLLoadingPlugin plugin) {
         if (plugin instanceof IEarlyMixinLoader earlyMixinLoader) earlyMixinLoaders.add(earlyMixinLoader);
         if (plugin instanceof IMixinConfigHijacker hijacker) {
-            Collection<String> disabledConfigs = GlobalProperties.get(GlobalProperties.Keys.CLEANROOM_DISABLE_MIXIN_CONFIGS);
             Context context = new Context(null, Collections.emptySet());
             FMLLog.log.info("Loading config hijacker {}.", hijacker.getClass().getName());
             for (String hijacked : hijacker.getHijackedMixinConfigs(context)) {
-                disabledConfigs.add(hijacked);
+                Config.addBlackList(hijacked);
                 FMLLog.log.info("{} will hijack the mixin config {}", hijacker.getClass().getName(), hijacked);
             }
         }
