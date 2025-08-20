@@ -147,10 +147,12 @@ public class LoadController {
                                         mixins.add(config.trim());
                                     }
                                 }
-                                boolean containNonMods = Boolean.parseBoolean(mfAttributes.getValue("NonModDeps"));
-                                if (containNonMods) {
-                                    for (String file : mfAttributes.getValue(LibraryManager.MODCONTAINSDEPS).split(" ")) {
-                                        modClassLoader.addFile(new File(mods_ver, file));
+                                String nonModDeps = mfAttributes.getValue("NonModDeps");
+                                if (!Strings.isNullOrEmpty(nonModDeps)) {
+                                    if (Boolean.parseBoolean(nonModDeps)) {
+                                        for (String file : mfAttributes.getValue(LibraryManager.MODCONTAINSDEPS).split(" ")) {
+                                            modClassLoader.addFile(new File(mods_ver, file));
+                                        }
                                     }
                                 }
                             }
