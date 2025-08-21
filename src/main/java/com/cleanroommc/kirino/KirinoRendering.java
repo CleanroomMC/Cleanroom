@@ -73,11 +73,11 @@ public class KirinoRendering {
 
     @SubscribeEvent
     public static void onStructScan(StructScanningEvent event) {
-        event.scanPackageNames.add("com.cleanroommc.kirino.mcbridge.ecs.component");
+        event.scanPackageNames.add("com.cleanroommc.kirino.engine.ecs.component");
     }
 
     @SubscribeEvent
     public static void onComponentScan(ComponentScanningEvent event) {
-        event.scanPackageNames.add("com.cleanroommc.kirino.mcbridge.ecs.component");
+        event.scanPackageNames.add("com.cleanroommc.kirino.engine.ecs.component");
     }
 }

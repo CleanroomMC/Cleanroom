@@ -102,10 +102,23 @@ public class FieldRegistry {
 
     @SuppressWarnings("DataFlowIssue")
     public Object[] flattenField(Object fieldInstance) {
-        if (!fieldTypeExists(fieldInstance.getClass())) {
+        // force primitive types cuz we use primitive types by default
+        // also see CleanECSRuntime's constructor
+        Class<?> fieldClass = fieldInstance.getClass();
+        if (fieldClass == Integer.class) {
+            fieldClass = int.class;
+        }
+        if (fieldClass == Float.class) {
+            fieldClass = float.class;
+        }
+        if (fieldClass == Boolean.class) {
+            fieldClass = boolean.class;
+        }
+
+        if (!fieldTypeExists(fieldClass)) {
             throw new IllegalStateException("Field class " + fieldInstance.getClass().getName() + " isn't registered.");
         }
-        String name = getFieldTypeName(fieldInstance.getClass());
+        String name = getFieldTypeName(fieldClass);
         FieldDef fieldDef = getFieldDef(name);
         if (fieldDef.fieldKind == FieldKind.SCALAR) {
             return ScalarDeconstructor.flattenScalar(fieldDef.scalarType, fieldInstance);

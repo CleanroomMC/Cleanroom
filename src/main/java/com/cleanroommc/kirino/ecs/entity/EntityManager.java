@@ -1,6 +1,5 @@
 package com.cleanroommc.kirino.ecs.entity;
 
-import com.cleanroommc.kirino.KirinoRendering;
 import com.cleanroommc.kirino.ecs.component.ComponentRegistry;
 import com.cleanroommc.kirino.ecs.component.ICleanComponent;
 import com.cleanroommc.kirino.ecs.storage.ArchetypeDataPool;
@@ -64,72 +63,74 @@ public class EntityManager {
     /**
      * Consume all buffered commands.
      * </br></br>
-     * Thread safety is not guaranteed. Call it from the main thread.
+     * Thread safety is guaranteed.
      */
-    public void flush() {
-        for (EntityCommand command : commandBuffer) {
-            switch (command.type) {
-                case CREATE -> {
-                    List<Class<? extends ICleanComponent>> components = entityComponents.get(command.index);
-                    ArchetypeKey archetypeKey = entityArchetypeLocations.get(command.index);
-                    ArchetypeDataPool pool = archetypes.computeIfAbsent(archetypeKey, k -> new HeapPool(componentRegistry, components, 100, 50, 50));
-                    pool.addEntity(command.index, command.newComponents);
-                }
-                case DESTROY -> {
-                    ArchetypeKey archetypeKey = entityArchetypeLocations.get(command.index);
-                    ArchetypeDataPool pool = archetypes.get(archetypeKey);
-                    pool.removeEntity(command.index);
-                }
-                case SET_COM -> {
-                    ArchetypeKey archetypeKey = entityArchetypeLocations.get(command.index);
-                    ArchetypeDataPool pool = archetypes.get(archetypeKey);
-                    pool.setComponent(command.index, command.componentToSet);
-                }
-                case ADD_COM -> {
-                    List<Class<? extends ICleanComponent>> components = entityComponents.get(command.index);
-                    ArchetypeKey archetypeKey = entityArchetypeLocations.get(command.index);
-                    ArchetypeDataPool oldPool = archetypes.get(archetypeKey);
-
-                    List<ICleanComponent> newComponents = new ArrayList<>();
-                    for (Class<? extends ICleanComponent> component: components) {
-                        newComponents.add(oldPool.getComponent(command.index, component));
+    public synchronized void flush() {
+        synchronized (commandBuffer) {
+            for (EntityCommand command : commandBuffer) {
+                switch (command.type) {
+                    case CREATE -> {
+                        List<Class<? extends ICleanComponent>> components = entityComponents.get(command.index);
+                        ArchetypeKey archetypeKey = entityArchetypeLocations.get(command.index);
+                        ArchetypeDataPool pool = archetypes.computeIfAbsent(archetypeKey, k -> new HeapPool(componentRegistry, components, 100, 50, 50));
+                        pool.addEntity(command.index, command.newComponents);
                     }
-                    newComponents.add(command.componentToAdd);
-
-                    // update component info
-                    components.add(command.componentToAdd.getClass());
-                    // update archetype key
-                    archetypeKey = new ArchetypeKey(components);
-                    entityArchetypeLocations.set(command.index, archetypeKey);
-
-                    ArchetypeDataPool newPool = archetypes.computeIfAbsent(archetypeKey, k -> new HeapPool(componentRegistry, components, 100, 50, 50));
-                    oldPool.removeEntity(command.index);
-                    newPool.addEntity(command.index, newComponents);
-                }
-                case REMOVE_COM -> {
-                    List<Class<? extends ICleanComponent>> components = entityComponents.get(command.index);
-                    ArchetypeKey archetypeKey = entityArchetypeLocations.get(command.index);
-                    ArchetypeDataPool oldPool = archetypes.get(archetypeKey);
-
-                    List<ICleanComponent> newComponents = new ArrayList<>();
-                    for (Class<? extends ICleanComponent> component: components) {
-                        newComponents.add(oldPool.getComponent(command.index, component));
+                    case DESTROY -> {
+                        ArchetypeKey archetypeKey = entityArchetypeLocations.get(command.index);
+                        ArchetypeDataPool pool = archetypes.get(archetypeKey);
+                        pool.removeEntity(command.index);
                     }
-                    newComponents.removeIf(c -> c.getClass().equals(command.componentToRemove));
+                    case SET_COM -> {
+                        ArchetypeKey archetypeKey = entityArchetypeLocations.get(command.index);
+                        ArchetypeDataPool pool = archetypes.get(archetypeKey);
+                        pool.setComponent(command.index, command.componentToSet);
+                    }
+                    case ADD_COM -> {
+                        List<Class<? extends ICleanComponent>> components = entityComponents.get(command.index);
+                        ArchetypeKey archetypeKey = entityArchetypeLocations.get(command.index);
+                        ArchetypeDataPool oldPool = archetypes.get(archetypeKey);
 
-                    // update component info
-                    components.removeIf(c -> c.equals(command.componentToRemove));
-                    // update archetype key
-                    archetypeKey = new ArchetypeKey(components);
-                    entityArchetypeLocations.set(command.index, archetypeKey);
+                        List<ICleanComponent> newComponents = new ArrayList<>();
+                        for (Class<? extends ICleanComponent> component: components) {
+                            newComponents.add(oldPool.getComponent(command.index, component));
+                        }
+                        newComponents.add(command.componentToAdd);
 
-                    ArchetypeDataPool newPool = archetypes.computeIfAbsent(archetypeKey, k -> new HeapPool(componentRegistry, components, 100, 50, 50));
-                    oldPool.removeEntity(command.index);
-                    newPool.addEntity(command.index, newComponents);
+                        // update component info
+                        components.add(command.componentToAdd.getClass());
+                        // update archetype key
+                        archetypeKey = new ArchetypeKey(components);
+                        entityArchetypeLocations.set(command.index, archetypeKey);
+
+                        ArchetypeDataPool newPool = archetypes.computeIfAbsent(archetypeKey, k -> new HeapPool(componentRegistry, components, 100, 50, 50));
+                        oldPool.removeEntity(command.index);
+                        newPool.addEntity(command.index, newComponents);
+                    }
+                    case REMOVE_COM -> {
+                        List<Class<? extends ICleanComponent>> components = entityComponents.get(command.index);
+                        ArchetypeKey archetypeKey = entityArchetypeLocations.get(command.index);
+                        ArchetypeDataPool oldPool = archetypes.get(archetypeKey);
+
+                        List<ICleanComponent> newComponents = new ArrayList<>();
+                        for (Class<? extends ICleanComponent> component: components) {
+                            newComponents.add(oldPool.getComponent(command.index, component));
+                        }
+                        newComponents.removeIf(c -> c.getClass().equals(command.componentToRemove));
+
+                        // update component info
+                        components.removeIf(c -> c.equals(command.componentToRemove));
+                        // update archetype key
+                        archetypeKey = new ArchetypeKey(components);
+                        entityArchetypeLocations.set(command.index, archetypeKey);
+
+                        ArchetypeDataPool newPool = archetypes.computeIfAbsent(archetypeKey, k -> new HeapPool(componentRegistry, components, 100, 50, 50));
+                        oldPool.removeEntity(command.index);
+                        newPool.addEntity(command.index, newComponents);
+                    }
                 }
             }
+            commandBuffer.clear();
         }
-        commandBuffer.clear();
     }
 
     /**
@@ -181,9 +182,11 @@ public class EntityManager {
             generation = entityGenerations.get(index);
         }
 
-        EntityCommand command = new EntityCommand(index, EntityCommand.Type.CREATE);
-        command.newComponents = Arrays.asList(components);
-        commandBuffer.add(command);
+        synchronized (commandBuffer) {
+            EntityCommand command = new EntityCommand(index, EntityCommand.Type.CREATE);
+            command.newComponents = Arrays.asList(components);
+            commandBuffer.add(command);
+        }
 
         return new CleanEntityHandle(this, index, generation);
     }
@@ -205,8 +208,10 @@ public class EntityManager {
         entityGenerations.set(index, entityGenerations.get(index) + 1);
         freeIndexes.add(index);
 
-        EntityCommand command = new EntityCommand(index, EntityCommand.Type.DESTROY);
-        commandBuffer.add(command);
+        synchronized (commandBuffer) {
+            EntityCommand command = new EntityCommand(index, EntityCommand.Type.DESTROY);
+            commandBuffer.add(command);
+        }
     }
 
     protected int getLatestGeneration(int index) {

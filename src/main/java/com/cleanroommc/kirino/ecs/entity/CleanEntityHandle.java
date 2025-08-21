@@ -65,7 +65,7 @@ public class CleanEntityHandle {
      *
      * @see EntityManager#flush()
      */
-    public synchronized boolean trySetComponent(ICleanComponent component) {
+    public boolean trySetComponent(ICleanComponent component) {
         if (!valid()) {
             return false;
         }
@@ -73,9 +73,11 @@ public class CleanEntityHandle {
             return false;
         }
 
-        EntityCommand command = new EntityCommand(index, EntityCommand.Type.SET_COM);
-        command.componentToSet = component;
-        entityManager.commandBuffer.add(command);
+        synchronized (entityManager.commandBuffer) {
+            EntityCommand command = new EntityCommand(index, EntityCommand.Type.SET_COM);
+            command.componentToSet = component;
+            entityManager.commandBuffer.add(command);
+        }
 
         return true;
     }
@@ -98,14 +100,16 @@ public class CleanEntityHandle {
      *
      * @see EntityManager#flush()
      */
-    public synchronized boolean tryAddComponent(ICleanComponent component) {
+    public boolean tryAddComponent(ICleanComponent component) {
         if (!valid()) {
             return false;
         }
 
-        EntityCommand command = new EntityCommand(index, EntityCommand.Type.ADD_COM);
-        command.componentToAdd = component;
-        entityManager.commandBuffer.add(command);
+        synchronized (entityManager.commandBuffer) {
+            EntityCommand command = new EntityCommand(index, EntityCommand.Type.ADD_COM);
+            command.componentToAdd = component;
+            entityManager.commandBuffer.add(command);
+        }
 
         return true;
     }
@@ -123,7 +127,7 @@ public class CleanEntityHandle {
      *
      * @see EntityManager#flush()
      */
-    public synchronized boolean tryRemoveComponent(Class<? extends ICleanComponent> component) {
+    public boolean tryRemoveComponent(Class<? extends ICleanComponent> component) {
         if (!valid()) {
             return false;
         }
@@ -131,9 +135,11 @@ public class CleanEntityHandle {
             return false;
         }
 
-        EntityCommand command = new EntityCommand(index, EntityCommand.Type.REMOVE_COM);
-        command.componentToRemove = component;
-        entityManager.commandBuffer.add(command);
+        synchronized (entityManager.commandBuffer) {
+            EntityCommand command = new EntityCommand(index, EntityCommand.Type.REMOVE_COM);
+            command.componentToRemove = component;
+            entityManager.commandBuffer.add(command);
+        }
 
         return true;
     }

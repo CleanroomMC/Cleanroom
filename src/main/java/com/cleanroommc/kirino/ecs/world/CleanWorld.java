@@ -19,7 +19,7 @@ public class CleanWorld {
     }
 
     public void update() {
-        entityManager.flush();
         // update systems
+        entityManager.flush();
     }
 }
