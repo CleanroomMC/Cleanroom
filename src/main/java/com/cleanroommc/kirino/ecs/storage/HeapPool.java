@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * It guarantees SoA memory layout.
  */
-public class HeapPool extends ArchetypeDataPool{
+public final class HeapPool extends ArchetypeDataPool{
     private final List<int[]> intPool = new ArrayList<>();
     private final List<float[]> floatPool = new ArrayList<>();
     private final List<boolean[]> booleanPool = new ArrayList<>();
@@ -262,8 +262,8 @@ public class HeapPool extends ArchetypeDataPool{
     }
 
     @Override
-    public void defragmentize() {
-        // todo
+    public ArrayRange getArrayRange() {
+        return new ArrayRange(0, indexCounter, freeIndexes);
     }
 
     @Override

@@ -17,16 +17,11 @@ import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarType;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
 import com.cleanroommc.kirino.ecs.entity.EntityManager;
-import com.cleanroommc.kirino.ecs.storage.ArchetypeDataPool;
-import com.cleanroommc.kirino.ecs.storage.HeapPool;
-import com.cleanroommc.kirino.ecs.storage.INativeArray;
 import com.cleanroommc.kirino.ecs.world.CleanWorld;
-import com.cleanroommc.kirino.mcbridge.ecs.component.PositionComponent;
 import com.google.common.collect.ImmutableMap;
 import net.minecraftforge.common.MinecraftForge;
 import org.joml.*;
 
-import java.util.List;
 import java.util.Map;
 
 public class CleanECSRuntime {
@@ -112,30 +107,5 @@ public class CleanECSRuntime {
 
         entityManager = new EntityManager(componentRegistry);
         world = new CleanWorld(entityManager);
-
-        KirinoRendering.LOGGER.info(componentRegistry.getComponentDescFlattened("PositionComponent").toString());
-        KirinoRendering.LOGGER.info("debug test.test2: " + componentRegistry.getFieldOrdinal("PositionComponent", "test", "test2"));
-        KirinoRendering.LOGGER.info("debug test.testStruct.test: " + componentRegistry.getFieldOrdinal("PositionComponent", "test", "testStruct", "test"));
-        KirinoRendering.LOGGER.info("debug xyz.x: " + componentRegistry.getFieldOrdinal("PositionComponent", "xyz", "x"));
-
-        PositionComponent pos = (PositionComponent) componentRegistry.newComponent("PositionComponent", new Object[]{123, 456, 1f, 2f, 3f});
-        ArchetypeDataPool pool = new HeapPool(componentRegistry, List.of(PositionComponent.class), 100, 50, 50);
-        pool.addEntity(111, List.of(pos));
-        pool.addEntity(222, List.of(pos));
-        pool.addEntity(333, List.of(pos));
-        KirinoRendering.LOGGER.info(pool.getSnapshot());
-        pool.removeEntity(222);
-        pos.xyz.x = 10;
-        pos.xyz.y = 10;
-        pos.xyz.z = 10;
-        pool.addEntity(222, List.of(pos));
-        pool.addEntity(444, List.of(pos));
-        KirinoRendering.LOGGER.info(pool.getSnapshot());
-
-        INativeArray<?> array = pool.getArray(PositionComponent.class, "xyz", "x");
-        KirinoRendering.LOGGER.info("debug: " + array.get(0));
-        KirinoRendering.LOGGER.info("debug: " + array.get(1));
-        KirinoRendering.LOGGER.info("debug: " + array.get(2));
-        KirinoRendering.LOGGER.info("debug: " + array.get(3));
     }
 }

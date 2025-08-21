@@ -12,7 +12,7 @@ import java.util.Objects;
  * Must not be used for persistent or network related stuff.
  * Thread safety is guaranteed.
  */
-public class ArchetypeKey {
+public final class ArchetypeKey {
     private static final Map<String, Integer> map = new HashMap<>();
     private static int nextId = 0;
 
@@ -21,11 +21,13 @@ public class ArchetypeKey {
     }
 
     public final int id;
+    public final String key;
 
     public ArchetypeKey(List<Class<? extends ICleanComponent>> components) {
         List<String> names = components.stream().map(Class::getName).sorted().toList();
         String combined = String.join(",", names);
         id = getIdForKey(combined);
+        key = combined;
     }
 
     @Override
@@ -43,5 +45,9 @@ public class ArchetypeKey {
     @Override
     public String toString() {
         return "ArchetypeKey{ id=" + id + " }";
+    }
+
+    public boolean contains(Class<? extends ICleanComponent> component) {
+        return key.contains(component.getName());
     }
 }

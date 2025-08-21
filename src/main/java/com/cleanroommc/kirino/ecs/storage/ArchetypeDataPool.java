@@ -116,7 +116,7 @@ public abstract class ArchetypeDataPool {
      */
     public abstract INativeArray<?> getArray(Class<? extends ICleanComponent> component, String... fieldAccessChain);
 
-    public abstract void defragmentize();
+    public abstract ArrayRange getArrayRange();
 
     public abstract String getSnapshot();
 }

@@ -7,5 +7,4 @@ import org.joml.Vector3f;
 @CleanComponent
 public class PositionComponent implements ICleanComponent {
     public Vector3f xyz;
-    public TestStruct2 test;
 }

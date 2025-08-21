@@ -17,4 +17,9 @@ public class CleanWorld {
     public CleanWorld(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
+
+    public void update() {
+        entityManager.flush();
+        // update systems
+    }
 }

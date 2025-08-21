@@ -8,7 +8,7 @@ public final class HeapNativeArray<T> implements INativeArray<T> {
     private final float[] floatArray;
     private final boolean[] booleanArray;
 
-    public HeapNativeArray(Class<T> clazz, int[] array) {
+    protected HeapNativeArray(Class<T> clazz, int[] array) {
         this.clazz = clazz;
         length = array.length;
         intArray = array;
@@ -16,7 +16,7 @@ public final class HeapNativeArray<T> implements INativeArray<T> {
         booleanArray = null;
     }
 
-    public HeapNativeArray(Class<T> clazz, float[] array) {
+    protected HeapNativeArray(Class<T> clazz, float[] array) {
         this.clazz = clazz;
         length = array.length;
         intArray = null;
@@ -24,7 +24,7 @@ public final class HeapNativeArray<T> implements INativeArray<T> {
         booleanArray = null;
     }
 
-    public HeapNativeArray(Class<T> clazz, boolean[] array) {
+    protected HeapNativeArray(Class<T> clazz, boolean[] array) {
         this.clazz = clazz;
         length = array.length;
         intArray = null;
@@ -32,12 +32,6 @@ public final class HeapNativeArray<T> implements INativeArray<T> {
         booleanArray = array;
     }
 
-    /**
-     * This method call will hopefully be inlined.
-     *
-     * @param index The index
-     * @return The value
-     */
     @Override
     public T get(int index) {
         if (clazz == Integer.class) {
@@ -52,12 +46,6 @@ public final class HeapNativeArray<T> implements INativeArray<T> {
         return null;
     }
 
-    /**
-     * This method call will hopefully be inlined.
-     *
-     * @param index The index
-     * @param value The value
-     */
     @Override
     public void set(int index, T value) {
         if (clazz == Integer.class) {

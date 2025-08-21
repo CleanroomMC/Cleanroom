@@ -1,5 +1,6 @@
 package com.cleanroommc.kirino.ecs.entity;
 
+import com.cleanroommc.kirino.KirinoRendering;
 import com.cleanroommc.kirino.ecs.component.ComponentRegistry;
 import com.cleanroommc.kirino.ecs.component.ICleanComponent;
 import com.cleanroommc.kirino.ecs.storage.ArchetypeDataPool;
@@ -27,6 +28,38 @@ public class EntityManager {
     private final Map<ArchetypeKey, ArchetypeDataPool> archetypes = new HashMap<>();
 
     protected final List<EntityCommand> commandBuffer = new ArrayList<>();
+
+    public EntityQuery newQuery() {
+        return EntityQuery.query();
+    }
+
+    public List<ArchetypeDataPool> startQuery(EntityQuery query) {
+        List<ArchetypeDataPool> result = new ArrayList<>();
+        for (Map.Entry<ArchetypeKey, ArchetypeDataPool> entry : archetypes.entrySet()) {
+            boolean mustHave = true;
+            for (Class<? extends ICleanComponent> component : query.mustHave) {
+                if (!entry.getKey().contains(component)) {
+                    mustHave = false;
+                    break;
+                }
+            }
+            if (!mustHave) {
+                continue;
+            }
+            boolean mustNotHave = true;
+            for (Class<? extends ICleanComponent> component : query.mustNotHave) {
+                if (entry.getKey().contains(component)) {
+                    mustNotHave = false;
+                    break;
+                }
+            }
+            if (!mustNotHave) {
+                continue;
+            }
+            result.add(entry.getValue());
+        }
+        return result;
+    }
 
     /**
      * Consume all buffered commands.
@@ -96,6 +129,7 @@ public class EntityManager {
                 }
             }
         }
+        commandBuffer.clear();
     }
 
     /**
