@@ -80,10 +80,13 @@
 - ...
 
 ### Drafts
-- Virtual geometry
-  - ChunkComponent -> contains MeshletComponent IDs
-  - MeshletComponent -> contains virtual geometry data, metadata (meshlet aabb etc.)
-  - Pass active meshlets to gpu to gen actual vertices and indices
+- Meshlet
+  - A smaller object for better culling and more
+  - ChunkComponent -> contains many meshlets
+  - MeshletComponent -> contains geometry data, metadata (meshlet aabb etc.)
+- Probe & Surface cache card -> Diffuse GI
+  - Every meshlet has a card that contains a probe grid
+  - Every probe samples light sources and other cards (recursive indirect lighting)
 
 # Cleanroom Minecraft
 
