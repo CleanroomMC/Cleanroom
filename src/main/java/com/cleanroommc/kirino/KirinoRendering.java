@@ -3,8 +3,6 @@ package com.cleanroommc.kirino;
 import com.cleanroommc.kirino.ecs.CleanECSRuntime;
 import com.cleanroommc.kirino.ecs.component.scan.event.ComponentScanningEvent;
 import com.cleanroommc.kirino.ecs.component.scan.event.StructScanningEvent;
-import com.cleanroommc.kirino.ecs.system.render.RenderSystem;
-import com.cleanroommc.kirino.mcbridge.ecs.system.MinecraftRenderSystem;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
@@ -12,6 +10,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.opengl.GL11;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -20,17 +19,27 @@ import java.util.concurrent.TimeUnit;
 public class KirinoRendering {
     public static final Logger LOGGER = LogManager.getLogger("Kirino Rendering");
     private static CleanECSRuntime ECS_RUNTIME;
-    private static RenderSystem RENDER_SYSTEM;
 
     public static CleanECSRuntime getEcsRuntime() {
         return ECS_RUNTIME;
     }
 
-    public static RenderSystem getRenderSystem() {
-        return RENDER_SYSTEM;
+    private static boolean ENABLE_RENDER_DELEGATE;
+
+    public static boolean isEnableRenderDelegate() {
+        return ENABLE_RENDER_DELEGATE;
+    }
+
+    public static void update() {
+        GL11.glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+
+        ECS_RUNTIME.world.update();
     }
 
     public static void init() {
+        ENABLE_RENDER_DELEGATE = true;
+
         // register default event listeners
         try {
             Method registerMethod = MinecraftForge.EVENT_BUS.getClass().getDeclaredMethod("register", Class.class, Object.class, Method.class, ModContainer.class);
@@ -58,8 +67,6 @@ public class KirinoRendering {
 
         stopWatch.stop();
         LOGGER.info("Kirino Rendering ECS Module Initialized. Time taken: " + stopWatch.getTime(TimeUnit.MILLISECONDS) + " ms");
-
-        RENDER_SYSTEM = new MinecraftRenderSystem(ECS_RUNTIME.world);
     }
 
     @SubscribeEvent

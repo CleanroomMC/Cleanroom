@@ -473,7 +473,29 @@
      }
  
      public void func_181560_a(float p_181560_1_, long p_181560_2_)
-@@ -1158,6 +1109,10 @@
+@@ -1104,11 +1055,20 @@
+             if (this.field_78531_r.field_71441_e != null)
+             {
+                 this.field_78531_r.field_71424_I.func_76320_a("level");
++
+                 int j = Math.min(Minecraft.func_175610_ah(), i2);
+                 j = Math.max(j, 60);
+                 long k = System.nanoTime() - p_181560_2_;
+                 long l = Math.max((long)(1000000000 / j / 4) - k, 0L);
+-                this.func_78471_a(p_181560_1_, System.nanoTime() + l);
++
++                if (com.cleanroommc.kirino.KirinoRendering.isEnableRenderDelegate())
++                {
++                    com.cleanroommc.kirino.KirinoRendering.update();
++                }
++                else
++                {
++                    this.func_78471_a(p_181560_1_, System.nanoTime() + l);
++                }
+ 
+                 if (this.field_78531_r.func_71356_B() && this.field_184374_E < Minecraft.func_71386_F() - 1000L)
+                 {
+@@ -1158,6 +1118,10 @@
                  GlStateManager.func_179096_D();
                  this.func_78478_c();
                  this.field_78510_Z = System.nanoTime();
@@ -484,7 +506,7 @@
              }
  
              if (this.field_78531_r.field_71462_r != null)
-@@ -1166,7 +1121,7 @@
+@@ -1166,7 +1130,7 @@
  
                  try
                  {
@@ -493,7 +515,7 @@
                  }
                  catch (Throwable throwable)
                  {
-@@ -1186,23 +1141,13 @@
+@@ -1186,23 +1150,13 @@
                              return String.format("Scaled: (%d, %d). Absolute: (%d, %d)", k1, l1, Mouse.getX(), Mouse.getY());
                          }
                      });
@@ -520,7 +542,7 @@
                      throw new ReportedException(crashreport);
                  }
              }
-@@ -1211,13 +1156,9 @@
+@@ -1211,13 +1165,9 @@
  
      private void func_184373_n()
      {
@@ -536,7 +558,7 @@
              int i = bufferedimage.getWidth();
              int j = bufferedimage.getHeight();
              int k = 0;
-@@ -1237,7 +1178,7 @@
+@@ -1237,7 +1187,7 @@
              {
                  BufferedImage bufferedimage1 = new BufferedImage(64, 64, 1);
                  Graphics graphics = bufferedimage1.createGraphics();
@@ -545,7 +567,7 @@
                  graphics.dispose();
                  ImageIO.write(bufferedimage1, "png", this.field_78531_r.func_71401_C().func_184109_z());
              }
-@@ -1275,7 +1216,7 @@
+@@ -1275,7 +1225,7 @@
  
                      if (this.field_78531_r.field_71442_b.func_178889_l() == GameType.SPECTATOR)
                      {
@@ -554,7 +576,7 @@
                      }
                      else
                      {
-@@ -1333,7 +1274,7 @@
+@@ -1333,7 +1283,7 @@
          GlStateManager.func_179086_m(16640);
          this.field_78531_r.field_71424_I.func_76318_c("camera");
          this.func_78479_a(p_175068_2_, p_175068_1_);
@@ -563,7 +585,7 @@
          this.field_78531_r.field_71424_I.func_76318_c("frustum");
          ClippingHelperImpl.func_78558_a();
          this.field_78531_r.field_71424_I.func_76318_c("culling");
-@@ -1350,29 +1291,19 @@
+@@ -1350,29 +1300,19 @@
              this.field_78531_r.field_71424_I.func_76318_c("sky");
              GlStateManager.func_179128_n(5889);
              GlStateManager.func_179096_D();
@@ -596,7 +618,7 @@
          {
              this.func_180437_a(renderglobal, p_175068_2_, p_175068_1_, d0, d1, d2);
          }
-@@ -1396,7 +1327,9 @@
+@@ -1396,7 +1336,9 @@
          GlStateManager.func_179118_c();
          renderglobal.func_174977_a(BlockRenderLayer.SOLID, (double)p_175068_2_, p_175068_1_, entity);
          GlStateManager.func_179141_d();
@@ -606,7 +628,7 @@
          this.field_78531_r.func_110434_K().func_110581_b(TextureMap.field_110575_b).func_174936_b(false, false);
          renderglobal.func_174977_a(BlockRenderLayer.CUTOUT, (double)p_175068_2_, p_175068_1_, entity);
          this.field_78531_r.func_110434_K().func_110581_b(TextureMap.field_110575_b).func_174935_a();
-@@ -1410,7 +1343,9 @@
+@@ -1410,7 +1352,9 @@
              GlStateManager.func_179094_E();
              RenderHelper.func_74519_b();
              this.field_78531_r.field_71424_I.func_76318_c("entities");
@@ -616,7 +638,7 @@
              RenderHelper.func_74518_a();
              this.func_175072_h();
          }
-@@ -1423,6 +1358,7 @@
+@@ -1423,6 +1367,7 @@
              EntityPlayer entityplayer = (EntityPlayer)entity;
              GlStateManager.func_179118_c();
              this.field_78531_r.field_71424_I.func_76318_c("outline");
@@ -624,7 +646,7 @@
              renderglobal.func_72731_b(entityplayer, this.field_78531_r.field_71476_x, 0, p_175068_2_);
              GlStateManager.func_179141_d();
          }
-@@ -1434,9 +1370,7 @@
+@@ -1434,9 +1379,7 @@
  
          this.field_78531_r.field_71424_I.func_76318_c("destroyProgress");
          GlStateManager.func_179147_l();
@@ -635,7 +657,7 @@
          this.field_78531_r.func_110434_K().func_110581_b(TextureMap.field_110575_b).func_174936_b(false, false);
          renderglobal.func_174981_a(Tessellator.func_178181_a(), Tessellator.func_178181_a().func_178180_c(), entity, p_175068_2_);
          this.field_78531_r.func_110434_K().func_110581_b(TextureMap.field_110575_b).func_174935_a();
-@@ -1462,9 +1396,7 @@
+@@ -1462,9 +1405,7 @@
          renderglobal.func_180449_a(entity, p_175068_2_);
          GlStateManager.func_179084_k();
          GlStateManager.func_179089_o();
@@ -646,7 +668,7 @@
          GlStateManager.func_179092_a(516, 0.1F);
          this.func_78468_a(0, p_175068_2_);
          GlStateManager.func_179147_l();
-@@ -1473,18 +1405,32 @@
+@@ -1473,18 +1414,32 @@
          GlStateManager.func_179103_j(7425);
          this.field_78531_r.field_71424_I.func_76318_c("translucent");
          renderglobal.func_174977_a(BlockRenderLayer.TRANSLUCENT, (double)p_175068_2_, p_175068_1_, entity);
@@ -680,7 +702,7 @@
          this.field_78531_r.field_71424_I.func_76318_c("hand");
  
          if (this.field_175074_C)
-@@ -1501,12 +1447,7 @@
+@@ -1501,12 +1456,7 @@
              this.field_78531_r.field_71424_I.func_76318_c("clouds");
              GlStateManager.func_179128_n(5889);
              GlStateManager.func_179096_D();
@@ -694,7 +716,7 @@
              GlStateManager.func_179128_n(5888);
              GlStateManager.func_179094_E();
              this.func_78468_a(0, p_180437_2_);
-@@ -1515,12 +1456,7 @@
+@@ -1515,12 +1465,7 @@
              GlStateManager.func_179121_F();
              GlStateManager.func_179128_n(5889);
              GlStateManager.func_179096_D();
@@ -708,7 +730,7 @@
              GlStateManager.func_179128_n(5888);
          }
      }
-@@ -1541,9 +1477,9 @@
+@@ -1541,9 +1486,9 @@
              World world = this.field_78531_r.field_71441_e;
              BlockPos blockpos = new BlockPos(entity);
              int i = 10;
@@ -721,7 +743,7 @@
              int j = 0;
              int k = (int)(100.0F * f * f);
  
-@@ -1556,62 +1492,38 @@
+@@ -1556,62 +1501,38 @@
                  k = 0;
              }
  
@@ -804,7 +826,7 @@
                      }
                  }
              }
-@@ -1620,8 +1532,7 @@
+@@ -1620,8 +1541,7 @@
              {
                  this.field_78534_ac = 0;
  
@@ -814,7 +836,7 @@
                  {
                      this.field_78531_r.field_71441_e.func_184134_a(d0, d1, d2, SoundEvents.field_187919_gs, SoundCategory.WEATHER, 0.1F, 0.5F, false);
                  }
-@@ -1635,9 +1546,16 @@
+@@ -1635,9 +1555,16 @@
  
      protected void func_78474_d(float p_78474_1_)
      {
@@ -832,7 +854,7 @@
          {
              this.func_180436_i();
              Entity entity = this.field_78531_r.func_175606_aa();
-@@ -1650,12 +1568,7 @@
+@@ -1650,12 +1577,7 @@
              GlStateManager.func_179129_p();
              GlStateManager.func_187432_a(0.0F, 1.0F, 0.0F);
              GlStateManager.func_179147_l();
@@ -846,7 +868,7 @@
              GlStateManager.func_179092_a(516, 0.1F);
              double d0 = entity.field_70142_S + (entity.field_70165_t - entity.field_70142_S) * (double)p_78474_1_;
              double d1 = entity.field_70137_T + (entity.field_70163_u - entity.field_70137_T) * (double)p_78474_1_;
-@@ -1674,13 +1587,13 @@
+@@ -1674,13 +1596,13 @@
              GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
              BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
@@ -864,7 +886,7 @@
                      blockpos$mutableblockpos.func_181079_c(l1, 0, k1);
                      Biome biome = world.func_180494_b(blockpos$mutableblockpos);
  
-@@ -1727,9 +1640,7 @@
+@@ -1727,9 +1649,7 @@
                                      bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181704_d);
                                  }
  
@@ -875,7 +897,7 @@
                                  double d6 = (double)((float)l1 + 0.5F) - entity.field_70165_t;
                                  double d7 = (double)((float)k1 + 0.5F) - entity.field_70161_v;
                                  float f3 = MathHelper.func_76133_a(d6 * d6 + d7 * d7) / (float)i1;
-@@ -1738,26 +1649,10 @@
+@@ -1738,26 +1658,10 @@
                                  int j3 = world.func_175626_b(blockpos$mutableblockpos, 0);
                                  int k3 = j3 >> 16 & 65535;
                                  int l3 = j3 & 65535;
@@ -906,7 +928,7 @@
                              }
                              else
                              {
-@@ -1774,8 +1669,8 @@
+@@ -1774,8 +1678,8 @@
                                  }
  
                                  double d8 = (double)(-((float)(this.field_78529_t & 511) + p_78474_1_) / 512.0F);
@@ -917,7 +939,7 @@
                                  double d11 = (double)((float)l1 + 0.5F) - entity.field_70165_t;
                                  double d12 = (double)((float)k1 + 0.5F) - entity.field_70161_v;
                                  float f6 = MathHelper.func_76133_a(d11 * d11 + d12 * d12) / (float)i1;
-@@ -1784,26 +1679,10 @@
+@@ -1784,26 +1688,10 @@
                                  int i4 = (world.func_175626_b(blockpos$mutableblockpos, 0) * 3 + 15728880) / 4;
                                  int j4 = i4 >> 16 & 65535;
                                  int k4 = i4 & 65535;
@@ -948,7 +970,7 @@
                              }
                          }
                      }
-@@ -1815,7 +1694,7 @@
+@@ -1815,7 +1703,7 @@
                  tessellator.func_78381_a();
              }
  
@@ -957,7 +979,7 @@
              GlStateManager.func_179089_o();
              GlStateManager.func_179084_k();
              GlStateManager.func_179092_a(516, 0.1F);
-@@ -1829,7 +1708,7 @@
+@@ -1829,7 +1717,7 @@
          GlStateManager.func_179086_m(256);
          GlStateManager.func_179128_n(5889);
          GlStateManager.func_179096_D();
@@ -966,7 +988,7 @@
          GlStateManager.func_179128_n(5888);
          GlStateManager.func_179096_D();
          GlStateManager.func_179109_b(0.0F, 0.0F, -2000.0F);
-@@ -1840,7 +1719,7 @@
+@@ -1840,7 +1728,7 @@
          World world = this.field_78531_r.field_71441_e;
          Entity entity = this.field_78531_r.func_175606_aa();
          float f = 0.25F + 0.75F * (float)this.field_78531_r.field_71474_y.field_151451_c / 32.0F;
@@ -975,7 +997,7 @@
          Vec3d vec3d = world.func_72833_a(this.field_78531_r.func_175606_aa(), p_78466_1_);
          float f1 = (float)vec3d.field_72450_a;
          float f2 = (float)vec3d.field_72448_b;
-@@ -1852,8 +1731,8 @@
+@@ -1852,8 +1740,8 @@
  
          if (this.field_78531_r.field_71474_y.field_151451_c >= 4)
          {
@@ -986,7 +1008,7 @@
              float f5 = (float)entity.func_70676_i(p_78466_1_).func_72430_b(vec3d2);
  
              if (f5 < 0.0F)
-@@ -1867,7 +1746,7 @@
+@@ -1867,7 +1755,7 @@
  
                  if (afloat != null)
                  {
@@ -995,7 +1017,7 @@
                      this.field_175080_Q = this.field_175080_Q * (1.0F - f5) + afloat[0] * f5;
                      this.field_175082_R = this.field_175082_R * (1.0F - f5) + afloat[1] * f5;
                      this.field_175081_S = this.field_175081_S * (1.0F - f5) + afloat[2] * f5;
-@@ -1875,9 +1754,9 @@
+@@ -1875,9 +1763,9 @@
              }
          }
  
@@ -1008,7 +1030,7 @@
          float f8 = world.func_72867_j(p_78466_1_);
  
          if (f8 > 0.0F)
-@@ -1908,29 +1787,16 @@
+@@ -1908,29 +1796,16 @@
              this.field_175082_R = (float)vec3d3.field_72448_b;
              this.field_175081_S = (float)vec3d3.field_72449_c;
          }
@@ -1048,7 +1070,7 @@
          }
  
          float f13 = this.field_78535_ad + (this.field_78539_ae - this.field_78535_ad) * p_78466_1_;
-@@ -1949,18 +1815,18 @@
+@@ -1949,18 +1824,18 @@
              }
              else
              {
@@ -1072,7 +1094,7 @@
              this.field_175080_Q = (float)((double)this.field_175080_Q * d1);
              this.field_175082_R = (float)((double)this.field_175082_R * d1);
              this.field_175081_S = (float)((double)this.field_175081_S * d1);
-@@ -1989,6 +1855,9 @@
+@@ -1989,6 +1864,9 @@
                  f6 = 1.0F / this.field_175081_S;
              }
  
@@ -1082,7 +1104,7 @@
              this.field_175080_Q = this.field_175080_Q * (1.0F - f15) + this.field_175080_Q * f6 * f15;
              this.field_175082_R = this.field_175082_R * (1.0F - f15) + this.field_175082_R * f6 * f15;
              this.field_175081_S = this.field_175081_S * (1.0F - f15) + this.field_175081_S * f6 * f15;
-@@ -2004,6 +1873,13 @@
+@@ -2004,6 +1882,13 @@
              this.field_175081_S = f7;
          }
  
@@ -1096,7 +1118,7 @@
          GlStateManager.func_179082_a(this.field_175080_Q, this.field_175082_R, this.field_175081_S, 0.0F);
      }
  
-@@ -2014,7 +1890,9 @@
+@@ -2014,7 +1899,9 @@
          GlStateManager.func_187432_a(0.0F, -1.0F, 0.0F);
          GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
          IBlockState iblockstate = ActiveRenderInfo.func_186703_a(this.field_78531_r.field_71441_e, entity, p_78468_2_);
@@ -1107,7 +1129,7 @@
          if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).func_70644_a(MobEffects.field_76440_q))
          {
              float f1 = 5.0F;
-@@ -2094,12 +1972,12 @@
+@@ -2094,12 +1981,12 @@
                  GlStateManager.func_187412_c(34138, 34139);
              }
  
@@ -1122,7 +1144,7 @@
          }
  
          GlStateManager.func_179142_g();
-@@ -2121,9 +1999,9 @@
+@@ -2121,9 +2008,9 @@
  
      private FloatBuffer func_78469_a(float p_78469_1_, float p_78469_2_, float p_78469_3_, float p_78469_4_)
      {
@@ -1134,7 +1156,7 @@
          return this.field_78521_m;
      }
  
-@@ -2138,18 +2016,7 @@
+@@ -2138,18 +2025,7 @@
          return this.field_147709_v;
      }
  
@@ -1154,7 +1176,7 @@
      {
          GlStateManager.func_179094_E();
          GlStateManager.func_179109_b(p_189692_2_, p_189692_3_, p_189692_4_);
-@@ -2166,18 +2033,16 @@
+@@ -2166,18 +2042,16 @@
          }
  
          GlStateManager.func_179147_l();
@@ -1178,7 +1200,7 @@
          tessellator.func_78381_a();
          GlStateManager.func_179098_w();
  
-@@ -2212,7 +2077,7 @@
+@@ -2212,7 +2086,7 @@
              float f1 = f * f;
              float f2 = f * f1;
              float f3 = 10.25F * f2 * f1 + -24.95F * f1 * f1 + 25.5F * f2 + -13.8F * f1 + 4.0F * f;
@@ -1187,7 +1209,7 @@
              float f5 = this.field_190568_ad * (float)(p_190563_1_ / 4);
              float f6 = this.field_190569_ae * (float)(p_190563_2_ / 4);
              GlStateManager.func_179141_d();
-@@ -2221,11 +2086,7 @@
+@@ -2221,11 +2095,7 @@
              GlStateManager.func_179126_j();
              GlStateManager.func_179129_p();
              RenderHelper.func_74519_b();
