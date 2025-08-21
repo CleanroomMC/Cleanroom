@@ -3,6 +3,8 @@ package com.cleanroommc.kirino;
 import com.cleanroommc.kirino.ecs.CleanECSRuntime;
 import com.cleanroommc.kirino.ecs.component.scan.event.ComponentScanningEvent;
 import com.cleanroommc.kirino.ecs.component.scan.event.StructScanningEvent;
+import com.cleanroommc.kirino.engine.ecs.world.MinecraftWorld;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
@@ -19,10 +21,7 @@ import java.util.concurrent.TimeUnit;
 public class KirinoRendering {
     public static final Logger LOGGER = LogManager.getLogger("Kirino Rendering");
     private static CleanECSRuntime ECS_RUNTIME;
-
-    public static CleanECSRuntime getEcsRuntime() {
-        return ECS_RUNTIME;
-    }
+    private static MinecraftWorld MINECRAFT_ECS_WORLD;
 
     private static boolean ENABLE_RENDER_DELEGATE;
 
@@ -34,7 +33,8 @@ public class KirinoRendering {
         GL11.glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
-        ECS_RUNTIME.world.update();
+        MINECRAFT_ECS_WORLD.tryUpdateChunkProvider(Minecraft.getMinecraft().world.getChunkProvider());
+        MINECRAFT_ECS_WORLD.update();
     }
 
     public static void init() {
@@ -67,6 +67,8 @@ public class KirinoRendering {
 
         stopWatch.stop();
         LOGGER.info("Kirino Rendering ECS Module Initialized. Time taken: " + stopWatch.getTime(TimeUnit.MILLISECONDS) + " ms");
+
+        MINECRAFT_ECS_WORLD = new MinecraftWorld(ECS_RUNTIME.entityManager);
     }
 
     @SubscribeEvent

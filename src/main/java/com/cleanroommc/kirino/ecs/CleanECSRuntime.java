@@ -17,7 +17,6 @@ import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarType;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
 import com.cleanroommc.kirino.ecs.entity.EntityManager;
-import com.cleanroommc.kirino.ecs.world.CleanWorld;
 import com.google.common.collect.ImmutableMap;
 import net.minecraftforge.common.MinecraftForge;
 import org.joml.*;
@@ -29,7 +28,6 @@ public class CleanECSRuntime {
     public final FieldRegistry fieldRegistry;
     public final ComponentRegistry componentRegistry;
     public final EntityManager entityManager;
-    public final CleanWorld world;
 
     @SuppressWarnings("DataFlowIssue")
     private CleanECSRuntime() {
@@ -106,6 +104,5 @@ public class CleanECSRuntime {
         }
 
         entityManager = new EntityManager(componentRegistry);
-        world = new CleanWorld(entityManager);
     }
 }

@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CleanWorld {
-    private final EntityManager entityManager;
-    private final List<CleanSystem> systems = new ArrayList<>();
+    protected final EntityManager entityManager;
+    protected final List<CleanSystem> systems = new ArrayList<>();
 
     public void addSystem(CleanSystem system) {
         systems.add(system);
