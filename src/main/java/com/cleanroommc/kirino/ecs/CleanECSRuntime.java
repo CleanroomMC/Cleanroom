@@ -55,6 +55,12 @@ public class CleanECSRuntime {
                 continue;
             }
 
+            try {
+                structClass.getDeclaredConstructor();
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException("CleanStruct " + structClass.getName() + " is missing a default constructor with no parameters.", e);
+            }
+
             structRegistry.registerStructType(
                     plan.structName(),
                     structClass,
@@ -84,6 +90,12 @@ public class CleanECSRuntime {
                 componentClass = Class.forName(plan.componentClass(), false, Thread.currentThread().getContextClassLoader()).asSubclass(ICleanComponent.class);
             } catch (ClassNotFoundException e) { // impossible
                 continue;
+            }
+
+            try {
+                componentClass.getDeclaredConstructor();
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException("CleanComponent " + componentClass.getName() + " is missing a default constructor with no parameters.", e);
             }
 
             componentRegistry.registerComponent(

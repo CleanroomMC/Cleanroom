@@ -54,7 +54,8 @@ public class KirinoRendering {
             Method onComponentScan = KirinoRendering.class.getDeclaredMethod("onComponentScan", ComponentScanningEvent.class);
             registerMethod.invoke(MinecraftForge.EVENT_BUS, ComponentScanningEvent.class, KirinoRendering.class, onComponentScan, Loader.instance().getMinecraftModContainer());
             LOGGER.info("Registered default ComponentScanningEvent listener.");
-        } catch (Throwable ignore) {
+        } catch (Throwable throwable) {
+            throw new RuntimeException("Failed to register default event listeners.", throwable);
         }
 
         LOGGER.info("Initializing Kirino Rendering ECS Module.");
@@ -64,7 +65,8 @@ public class KirinoRendering {
             Constructor<CleanECSRuntime> ctor = CleanECSRuntime.class.getDeclaredConstructor();
             ctor.setAccessible(true);
             ECS_RUNTIME = ctor.newInstance();
-        } catch (Throwable ignore) {
+        } catch (Throwable throwable) {
+            throw new RuntimeException("ECS Runtime failed to initialize.", throwable);
         }
 
         stopWatch.stop();
@@ -75,7 +77,7 @@ public class KirinoRendering {
 
     @SubscribeEvent
     public static void onStructScan(StructScanningEvent event) {
-        event.scanPackageNames.add("com.cleanroommc.kirino.engine.geometry.component");
+        event.scanPackageNames.add("com.cleanroommc.kirino.engine.geometry");
     }
 
     @SubscribeEvent

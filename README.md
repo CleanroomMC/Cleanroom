@@ -88,6 +88,12 @@
   - Every meshlet has a card that contains a probe grid
   - Every probe samples light sources and other cards (recursive indirect lighting - temporal accumulation)
 
+### Current Todos
+- ECS world system coordinator (DAG). edge -> system; node -> barrier
+- Modify EntityManager - callback on flush
+- Finish JobScheduler
+- MeshletManager ?
+
 # Cleanroom Minecraft
 
 ## Features

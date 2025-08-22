@@ -20,7 +20,7 @@ public class AccessHandlePool {
 
     public void register(Class<?> clazz, MemberLayout memberLayout) {
         try {
-            Constructor<?> ctor = clazz.getConstructor();
+            Constructor<?> ctor = clazz.getDeclaredConstructor();
             ctor.setAccessible(true);
             MethodHandle ctorHandle = LOOKUP.unreflectConstructor(ctor);
             constructorHandleMap.put(clazz, ctorHandle);
