@@ -262,152 +262,153 @@ public class SplashProgress
                 logoTexture = new Texture(logoLoc, null, false);
                 forgeTexture = new Texture(forgeLoc, forgeFallbackLoc);
                 glEnable(GL_TEXTURE_2D);
-                fontRenderer = new SplashFontRenderer(false);
-                glDisable(GL_TEXTURE_2D);
-                while(!done)
-                {
-                    framecount++;
-                    ProgressBar first = null, penult = null, last = null;
-                    Iterator<ProgressBar> i = ProgressManager.barIterator();
-                    while(i.hasNext())
-                    {
-                        if(first == null) first = i.next();
-                        else
-                        {
-                            penult = last;
-                            last = i.next();
-                        }
-                    }
-
-                    glClear(GL_COLOR_BUFFER_BIT);
-
-                    // matrix setup
-                    int w = Display.getWidth();
-                    int h = Display.getHeight();
-                    glViewport(0, 0, w, h);
-                    glMatrixMode(GL_PROJECTION);
-                    glLoadIdentity();
-                    glOrtho(320 - w/2, 320 + w/2, 240 + h/2, 240 - h/2, -1, 1);
-                    glMatrixMode(GL_MODELVIEW);
-                    glLoadIdentity();
-
-                    // mojang logo
-                    setColor(backgroundColor);
-                    glEnable(GL_TEXTURE_2D);
-                    logoTexture.bind();
-                    glBegin(GL_QUADS);
-                    logoTexture.texCoord(0, 0, 0);
-                    glVertex2f(320 - 256, 240 - 256);
-                    logoTexture.texCoord(0, 0, 1);
-                    glVertex2f(320 - 256, 240 + 256);
-                    logoTexture.texCoord(0, 1, 1);
-                    glVertex2f(320 + 256, 240 + 256);
-                    logoTexture.texCoord(0, 1, 0);
-                    glVertex2f(320 + 256, 240 - 256);
-                    glEnd();
+                try (SplashFontRenderer splashFontRenderer = new SplashFontRenderer(false)){
+                    fontRenderer = splashFontRenderer;
                     glDisable(GL_TEXTURE_2D);
+                    while(!done)
+                    {
+                        framecount++;
+                        ProgressBar first = null, penult = null, last = null;
+                        Iterator<ProgressBar> i = ProgressManager.barIterator();
+                        while(i.hasNext())
+                        {
+                            if(first == null) first = i.next();
+                            else
+                            {
+                                penult = last;
+                                last = i.next();
+                            }
+                        }
+
+                        glClear(GL_COLOR_BUFFER_BIT);
+
+                        // matrix setup
+                        int w = Display.getWidth();
+                        int h = Display.getHeight();
+                        glViewport(0, 0, w, h);
+                        glMatrixMode(GL_PROJECTION);
+                        glLoadIdentity();
+                        glOrtho(320 - w/2, 320 + w/2, 240 + h/2, 240 - h/2, -1, 1);
+                        glMatrixMode(GL_MODELVIEW);
+                        glLoadIdentity();
+
+                        // mojang logo
+                        setColor(backgroundColor);
+                        glEnable(GL_TEXTURE_2D);
+                        logoTexture.bind();
+                        glBegin(GL_QUADS);
+                        logoTexture.texCoord(0, 0, 0);
+                        glVertex2f(320 - 256, 240 - 256);
+                        logoTexture.texCoord(0, 0, 1);
+                        glVertex2f(320 - 256, 240 + 256);
+                        logoTexture.texCoord(0, 1, 1);
+                        glVertex2f(320 + 256, 240 + 256);
+                        logoTexture.texCoord(0, 1, 0);
+                        glVertex2f(320 + 256, 240 - 256);
+                        glEnd();
+                        glDisable(GL_TEXTURE_2D);
 
                     // memory usage
-                    if (showMemory)
-                    {
-                        glPushMatrix();
-                        glTranslatef(320 - (float) barWidth / 2, 20, 0);
-                        drawMemoryBar();
-                        glPopMatrix();
-                    }
-
-                    // bars
-                    if(first != null)
-                    {
-                        glPushMatrix();
-                        glTranslatef(320 - (float)barWidth / 2, 310, 0);
-                        drawBar(first);
-                        if(penult != null)
+                        if (showMemory)
                         {
-                            glTranslatef(0, barOffset, 0);
-                            drawBar(penult);
+                            glPushMatrix();
+                            glTranslatef(320 - (float) barWidth / 2, 20, 0);
+                            drawMemoryBar();
+                            glPopMatrix();
                         }
-                        if(last != null)
+
+                        // bars
+                        if(first != null)
                         {
-                            glTranslatef(0, barOffset, 0);
-                            drawBar(last);
+                            glPushMatrix();
+                            glTranslatef(320 - (float)barWidth / 2, 310, 0);
+                            drawBar(first);
+                            if(penult != null)
+                            {
+                                glTranslatef(0, barOffset, 0);
+                                drawBar(penult);
+                            }
+                            if(last != null)
+                            {
+                                glTranslatef(0, barOffset, 0);
+                                drawBar(last);
+                            }
+                            glPopMatrix();
                         }
-                        glPopMatrix();
-                    }
 
-                    angle += 1;
+                        angle += 1;
 
-                    // forge logo
-                    glColor4f(1, 1, 1, 1);
-                    float fw = (float)forgeTexture.getWidth() / 2;
-                    float fh = (float)forgeTexture.getHeight() / 2;
-                    if(rotate)
-                    {
-                        float sh = Math.max(fw, fh);
-                        glTranslatef(320 + w/2 - sh - logoOffset, 240 + h/2 - sh - logoOffset, 0);
-                        glRotatef(angle, 0, 0, 1);
-                    }
-                    else
-                    {
-                        glTranslatef(320 + w/2 - fw - logoOffset, 240 + h/2 - fh - logoOffset, 0);
-                    }
-                    int f = (angle / 5) % forgeTexture.getFrames();
-                    glEnable(GL_TEXTURE_2D);
-                    forgeTexture.bind();
-                    glBegin(GL_QUADS);
-                    forgeTexture.texCoord(f, 0, 0);
-                    glVertex2f(-fw, -fh);
-                    forgeTexture.texCoord(f, 0, 1);
-                    glVertex2f(-fw, fh);
-                    forgeTexture.texCoord(f, 1, 1);
-                    glVertex2f(fw, fh);
-                    forgeTexture.texCoord(f, 1, 0);
-                    glVertex2f(fw, -fh);
-                    glEnd();
-                    glDisable(GL_TEXTURE_2D);
-
-                    // We use mutex to indicate safely to the main thread that we're taking the display global lock
-                    // So the main thread can skip processing messages while we're updating.
-                    // There are system setups where this call can pause for a while, because the GL implementation
-                    // is trying to impose a framerate or other thing is occurring. Without the mutex, the main
-                    // thread would delay waiting for the same global display lock
-                    mutex.acquireUninterruptibly();
-                    long updateStart = System.nanoTime();
-                    Display.update();
-                    // As soon as we're done, we release the mutex. The other thread can now ping the processmessages
-                    // call as often as it wants until we get get back here again
-                    long dur = System.nanoTime() - updateStart;
-                    if (framecount < TIMING_FRAME_COUNT) {
-                        updateTiming += dur;
-                    }
-                    mutex.release();
-                    if(pause)
-                    {
-                        clearGL();
-                        setGL();
-                    }
-                    // Such a hack - if the time taken is greater than 10 milliseconds, we're gonna guess that we're on a
-                    // system where vsync is forced through the swapBuffers call - so we have to force a sleep and let the
-                    // loading thread have a turn - some badly designed mods access Keyboard and therefore GlobalLock.lock
-                    // during splash screen, and mutex against the above Display.update call as a result.
-                    // 4 milliseconds is a guess - but it should be enough to trigger in most circumstances. (Maybe if
-                    // 240FPS is possible, this won't fire?)
-                    if (framecount >= TIMING_FRAME_COUNT && updateTiming > TIMING_FRAME_THRESHOLD) {
-                        if (!isDisplayVSyncForced)
+                        // forge logo
+                        glColor4f(1, 1, 1, 1);
+                        float fw = (float)forgeTexture.getWidth() / 2;
+                        float fh = (float)forgeTexture.getHeight() / 2;
+                        if(rotate)
                         {
-                            isDisplayVSyncForced = true;
-                            FMLLog.log.info("Using alternative sync timing : {} frames of Display.update took {} nanos", TIMING_FRAME_COUNT, updateTiming);
+                            float sh = Math.max(fw, fh);
+                            glTranslatef(320 + w/2 - sh - logoOffset, 240 + h/2 - sh - logoOffset, 0);
+                            glRotatef(angle, 0, 0, 1);
                         }
-                        try { Thread.sleep(16); } catch (InterruptedException ie) {}
-                    } else
-                    {
-                        if (framecount ==TIMING_FRAME_COUNT) {
-                            FMLLog.log.info("Using sync timing. {} frames of Display.update took {} nanos", TIMING_FRAME_COUNT, updateTiming);
+                        else
+                        {
+                            glTranslatef(320 + w/2 - fw - logoOffset, 240 + h/2 - fh - logoOffset, 0);
                         }
-                        Display.sync(100);
+                        int f = (angle / 5) % forgeTexture.getFrames();
+                        glEnable(GL_TEXTURE_2D);
+                        forgeTexture.bind();
+                        glBegin(GL_QUADS);
+                        forgeTexture.texCoord(f, 0, 0);
+                        glVertex2f(-fw, -fh);
+                        forgeTexture.texCoord(f, 0, 1);
+                        glVertex2f(-fw, fh);
+                        forgeTexture.texCoord(f, 1, 1);
+                        glVertex2f(fw, fh);
+                        forgeTexture.texCoord(f, 1, 0);
+                        glVertex2f(fw, -fh);
+                        glEnd();
+                        glDisable(GL_TEXTURE_2D);
+
+                        // We use mutex to indicate safely to the main thread that we're taking the display global lock
+                        // So the main thread can skip processing messages while we're updating.
+                        // There are system setups where this call can pause for a while, because the GL implementation
+                        // is trying to impose a framerate or other thing is occurring. Without the mutex, the main
+                        // thread would delay waiting for the same global display lock
+                        mutex.acquireUninterruptibly();
+                        long updateStart = System.nanoTime();
+                        Display.update();
+                        // As soon as we're done, we release the mutex. The other thread can now ping the processmessages
+                        // call as often as it wants until we get get back here again
+                        long dur = System.nanoTime() - updateStart;
+                        if (framecount < TIMING_FRAME_COUNT) {
+                            updateTiming += dur;
+                        }
+                        mutex.release();
+                        if(pause)
+                        {
+                            clearGL();
+                            setGL();
+                        }
+                        // Such a hack - if the time taken is greater than 10 milliseconds, we're gonna guess that we're on a
+                        // system where vsync is forced through the swapBuffers call - so we have to force a sleep and let the
+                        // loading thread have a turn - some badly designed mods access Keyboard and therefore GlobalLock.lock
+                        // during splash screen, and mutex against the above Display.update call as a result.
+                        // 4 milliseconds is a guess - but it should be enough to trigger in most circumstances. (Maybe if
+                        // 240FPS is possible, this won't fire?)
+                        if (framecount >= TIMING_FRAME_COUNT && updateTiming > TIMING_FRAME_THRESHOLD) {
+                            if (!isDisplayVSyncForced)
+                            {
+                                isDisplayVSyncForced = true;
+                                FMLLog.log.info("Using alternative sync timing : {} frames of Display.update took {} nanos", TIMING_FRAME_COUNT, updateTiming);
+                            }
+                            try { Thread.sleep(16); } catch (InterruptedException ie) {}
+                        } else
+                        {
+                            if (framecount ==TIMING_FRAME_COUNT) {
+                                FMLLog.log.info("Using sync timing. {} frames of Display.update took {} nanos", TIMING_FRAME_COUNT, updateTiming);
+                            }
+                            Display.sync(100);
+                        }
                     }
                 }
-                fontRenderer.clear();
                 clearGL();
             }
 
@@ -903,7 +904,8 @@ public class SplashProgress
 
     public static class SplashFontRenderer extends FontRenderer implements Closeable 
     {
-        public HashMap<ResourceLocation, Texture> cachedImages;
+        protected HashMap<ResourceLocation, Texture> cachedImages;
+        
         public SplashFontRenderer(boolean isForcedUnicode)
         {
             super(Minecraft.getMinecraft().gameSettings, fontTexture.getLocation(), null, isForcedUnicode);
@@ -913,11 +915,18 @@ public class SplashProgress
         @Override
         protected void bindTexture(@Nonnull ResourceLocation location)
         {
-            if(cachedImages == null) cachedImages = new HashMap<>();
-            if (!cachedImages.containsKey(location)) {
-                cachedImages.put(location, new Texture(location, null));
+            if (cachedImages == null) {
+                cachedImages = new HashMap<>();
+                var texture = new Texture(location, null)
+                cachedImages.put(location, texture = new Texture(location, null)); 
+                texture.bind();
+            } else {
+                var texture = cachedImages.get(location);
+                if (texture == null) {
+                    cachedImages.put(location, texture = new Texture(location, null)); 
+                }
+                texture.bind();
             }
-            cachedImages.get(location).bind();
         }
 
         @Nonnull
@@ -927,20 +936,16 @@ public class SplashProgress
             DefaultResourcePack pack = Minecraft.getMinecraft().defaultResourcePack;
             return new SimpleResource(pack.getPackName(), location, pack.getInputStream(location), null, null);
         }
-        
-        public void clear(){
+
+        @Override
+        public void close() {
             if(cachedImages != null){
-                for(Texture texture : cachedImages.values()){
+                for(Texture texture : cachedImages.values()) {
                    texture.delete();
                 }
                 cachedImages.clear();
                 cachedImages = null;
             }
-        }
-
-        @Override
-        public void close(){
-            this.clear();
         }
     }
 
