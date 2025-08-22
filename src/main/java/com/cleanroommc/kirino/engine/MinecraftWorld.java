@@ -1,9 +1,9 @@
-package com.cleanroommc.kirino.engine.ecs.world;
+package com.cleanroommc.kirino.engine;
 
 import com.cleanroommc.kirino.ecs.entity.CleanEntityHandle;
 import com.cleanroommc.kirino.ecs.entity.EntityManager;
 import com.cleanroommc.kirino.ecs.world.CleanWorld;
-import com.cleanroommc.kirino.engine.ecs.component.ChunkComponent;
+import com.cleanroommc.kirino.engine.geometry.component.ChunkComponent;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.util.math.ChunkPos;
 
@@ -34,7 +34,7 @@ public class MinecraftWorld extends CleanWorld {
                 chunkHandles.get(ChunkPos.asLong(x, z)).tryDestroy();
                 chunkHandles.remove(ChunkPos.asLong(x, z));
             };
-            // no need to flush immediately. it's fine that archetype data is not up to date
+            // no need to & must not flush immediately
         }
     }
 
@@ -56,7 +56,7 @@ public class MinecraftWorld extends CleanWorld {
                 chunkComponent.chunkPosZ = ChunkPos.getZ(chunkKey);
                 chunkHandles.put(chunkKey, entityManager.createEntity(chunkComponent));
             }
-            // no need to flush immediately. it's fine that archetype data is not up to date
+            // no need to & must not flush immediately
         }
 
         buildChunks();

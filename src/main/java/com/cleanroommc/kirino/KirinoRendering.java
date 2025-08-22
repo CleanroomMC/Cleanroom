@@ -3,7 +3,7 @@ package com.cleanroommc.kirino;
 import com.cleanroommc.kirino.ecs.CleanECSRuntime;
 import com.cleanroommc.kirino.ecs.component.scan.event.ComponentScanningEvent;
 import com.cleanroommc.kirino.ecs.component.scan.event.StructScanningEvent;
-import com.cleanroommc.kirino.engine.ecs.world.MinecraftWorld;
+import com.cleanroommc.kirino.engine.MinecraftWorld;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
@@ -30,6 +30,8 @@ public class KirinoRendering {
     }
 
     public static void update() {
+        // current framebuffer: minecraft
+        // background color
         GL11.glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
@@ -73,11 +75,11 @@ public class KirinoRendering {
 
     @SubscribeEvent
     public static void onStructScan(StructScanningEvent event) {
-        event.scanPackageNames.add("com.cleanroommc.kirino.engine.ecs.component");
+        event.scanPackageNames.add("com.cleanroommc.kirino.engine.geometry.component");
     }
 
     @SubscribeEvent
     public static void onComponentScan(ComponentScanningEvent event) {
-        event.scanPackageNames.add("com.cleanroommc.kirino.engine.ecs.component");
+        event.scanPackageNames.add("com.cleanroommc.kirino.engine.geometry.component");
     }
 }
