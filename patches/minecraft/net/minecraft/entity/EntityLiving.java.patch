@@ -86,7 +86,7 @@
      protected void func_184581_c(DamageSource p_184581_1_)
      {
          this.func_175456_n();
-@@ -231,7 +228,6 @@
+@@ -231,24 +228,23 @@
          this.field_70757_a = -this.func_70627_aG();
      }
  
@@ -94,27 +94,33 @@
      protected int func_70693_a(EntityPlayer p_70693_1_)
      {
          if (this.field_70728_aV > 0)
-@@ -240,7 +236,7 @@
+         {
+             int i = this.field_70728_aV;
  
-             for (int j = 0; j < this.field_184657_bw.size(); ++j)
+-            for (int j = 0; j < this.field_184657_bw.size(); j++)
++            for (int j = 0; j < this.field_184657_bw.size(); ++j)
              {
 -                if (!this.field_184657_bw.get(j).func_190926_b() && this.field_184655_bs[j] <= 1.0F)
 +                if (!((ItemStack)this.field_184657_bw.get(j)).func_190926_b() && this.field_184655_bs[j] <= 1.0F)
                  {
                      i += 1 + this.field_70146_Z.nextInt(3);
                  }
-@@ -248,7 +244,7 @@
+             }
  
-             for (int k = 0; k < this.field_184656_bv.size(); ++k)
+-            for (int k = 0; k < this.field_184656_bv.size(); k++)
++            for (int k = 0; k < this.field_184656_bv.size(); ++k)
              {
 -                if (!this.field_184656_bv.get(k).func_190926_b() && this.field_82174_bp[k] <= 1.0F)
 +                if (!((ItemStack)this.field_184656_bv.get(k)).func_190926_b() && this.field_82174_bp[k] <= 1.0F)
                  {
                      i += 1 + this.field_70146_Z.nextInt(3);
                  }
-@@ -268,20 +264,11 @@
+@@ -266,22 +262,13 @@
+     {
+         if (this.field_70170_p.field_72995_K)
          {
-             for (int i = 0; i < 20; ++i)
+-            for (int i = 0; i < 20; i++)
++            for (int i = 0; i < 20; ++i)
              {
 -                double d0 = this.field_70146_Z.nextGaussian() * 0.02;
 -                double d1 = this.field_70146_Z.nextGaussian() * 0.02;
@@ -170,6 +176,15 @@
      protected void func_70628_a(boolean p_70628_1_, int p_70628_2_)
      {
          Item item = this.func_146068_u();
+@@ -357,7 +340,7 @@
+                 i += this.field_70146_Z.nextInt(p_70628_2_ + 1);
+             }
+ 
+-            for (int j = 0; j < i; j++)
++            for (int j = 0; j < i; ++j)
+             {
+                 this.func_145779_a(item, 1);
+             }
 @@ -366,10 +349,9 @@
  
      public static void func_189752_a(DataFixer p_189752_0_, Class<?> p_189752_1_)
@@ -190,6 +205,42 @@
      public void func_70037_a(NBTTagCompound p_70037_1_)
      {
          super.func_70037_a(p_70037_1_);
+@@ -477,7 +458,7 @@
+         {
+             NBTTagList nbttaglist = p_70037_1_.func_150295_c("ArmorItems", 10);
+ 
+-            for (int i = 0; i < this.field_184657_bw.size(); i++)
++            for (int i = 0; i < this.field_184657_bw.size(); ++i)
+             {
+                 this.field_184657_bw.set(i, new ItemStack(nbttaglist.func_150305_b(i)));
+             }
+@@ -487,7 +468,7 @@
+         {
+             NBTTagList nbttaglist1 = p_70037_1_.func_150295_c("HandItems", 10);
+ 
+-            for (int j = 0; j < this.field_184656_bv.size(); j++)
++            for (int j = 0; j < this.field_184656_bv.size(); ++j)
+             {
+                 this.field_184656_bv.set(j, new ItemStack(nbttaglist1.func_150305_b(j)));
+             }
+@@ -497,7 +478,7 @@
+         {
+             NBTTagList nbttaglist2 = p_70037_1_.func_150295_c("ArmorDropChances", 5);
+ 
+-            for (int k = 0; k < nbttaglist2.func_74745_c(); k++)
++            for (int k = 0; k < nbttaglist2.func_74745_c(); ++k)
+             {
+                 this.field_184655_bs[k] = nbttaglist2.func_150308_e(k);
+             }
+@@ -507,7 +488,7 @@
+         {
+             NBTTagList nbttaglist3 = p_70037_1_.func_150295_c("HandDropChances", 5);
+ 
+-            for (int l = 0; l < nbttaglist3.func_74745_c(); l++)
++            for (int l = 0; l < nbttaglist3.func_74745_c(); ++l)
+             {
+                 this.field_82174_bp[l] = nbttaglist3.func_150308_e(l);
+             }
 @@ -537,7 +518,6 @@
          return null;
      }
@@ -309,14 +360,18 @@
                  {
                      this.field_70708_bq = 0;
                  }
-@@ -761,7 +747,6 @@
+@@ -761,10 +747,9 @@
          }
      }
  
 -    @Override
      protected final void func_70626_be()
      {
-         ++this.field_70708_bq;
+-        this.field_70708_bq++;
++        ++this.field_70708_bq;
+         this.field_70170_p.field_72984_F.func_76320_a("checkDespawn");
+         this.func_70623_bb();
+         this.field_70170_p.field_72984_F.func_76319_b();
 @@ -787,7 +772,7 @@
          if (this.func_184218_aH() && this.func_184187_bx() instanceof EntityLiving)
          {
@@ -443,6 +498,35 @@
                  }
  
                  this.func_70099_a(itemstack, 0.0F);
+@@ -989,17 +959,17 @@
+ 
+             if (this.field_70146_Z.nextFloat() < 0.095F)
+             {
+-                i++;
+-            }
+-
+-            if (this.field_70146_Z.nextFloat() < 0.095F)
+-            {
+-                i++;
+-            }
+-
+-            if (this.field_70146_Z.nextFloat() < 0.095F)
+-            {
+-                i++;
++                ++i;
++            }
++
++            if (this.field_70146_Z.nextFloat() < 0.095F)
++            {
++                ++i;
++            }
++
++            if (this.field_70146_Z.nextFloat() < 0.095F)
++            {
++                ++i;
+             }
+ 
+             boolean flag = true;
 @@ -1033,22 +1003,27 @@
  
      public static EntityEquipmentSlot func_184640_d(ItemStack p_184640_0_)

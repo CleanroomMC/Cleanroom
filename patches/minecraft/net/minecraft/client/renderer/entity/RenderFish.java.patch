@@ -95,8 +95,12 @@
              double d9 = p_76986_1_.field_70166_s + (p_76986_1_.field_70161_v - p_76986_1_.field_70166_s) * (double)p_76986_9_;
              double d10 = (double)((float)(d4 - d13));
              double d11 = (double)((float)(d5 - d8)) + d7;
-@@ -138,11 +128,7 @@
-             for (int i1 = 0; i1 <= 16; ++i1)
+@@ -135,14 +125,10 @@
+             bufferbuilder.func_181668_a(3, DefaultVertexFormats.field_181706_f);
+             int l = 16;
+ 
+-            for (int i1 = 0; i1 <= 16; i1++)
++            for (int i1 = 0; i1 <= 16; ++i1)
              {
                  float f11 = (float)i1 / 16.0F;
 -                bufferbuilder.func_181662_b(

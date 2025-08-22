@@ -121,7 +121,7 @@
      public void func_70636_d()
      {
          super.func_70636_d();
-@@ -188,16 +183,7 @@
+@@ -188,19 +183,10 @@
              {
                  if (this.field_175503_c % 4 == 0)
                  {
@@ -138,7 +138,11 @@
 +                    this.field_70170_p.func_175688_a(EnumParticleTypes.VILLAGER_HAPPY, this.field_70165_t + (double)(this.field_70146_Z.nextFloat() * this.field_70130_N * 2.0F) - (double)this.field_70130_N, this.field_70163_u + 0.5D + (double)(this.field_70146_Z.nextFloat() * this.field_70131_O), this.field_70161_v + (double)(this.field_70146_Z.nextFloat() * this.field_70130_N * 2.0F) - (double)this.field_70130_N, 0.0D, 0.0D, 0.0D);
                  }
  
-                 --this.field_175503_c;
+-                this.field_175503_c--;
++                --this.field_175503_c;
+             }
+         }
+         else
 @@ -209,7 +195,8 @@
  
              if (i < 0)

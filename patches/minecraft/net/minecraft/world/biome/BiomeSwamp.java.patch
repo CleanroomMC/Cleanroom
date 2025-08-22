@@ -1,6 +1,6 @@
 --- before/net/minecraft/world/biome/BiomeSwamp.java
 +++ after/net/minecraft/world/biome/BiomeSwamp.java
-@@ -34,39 +34,21 @@
+@@ -34,44 +34,26 @@
          this.field_76761_J.add(new Biome.SpawnListEntry(EntitySlime.class, 1, 1, 1));
      }
  
@@ -42,6 +42,12 @@
          {
              int i = p_180622_4_ & 15;
              int j = p_180622_5_ & 15;
+ 
+-            for (int k = 255; k >= 0; k--)
++            for (int k = 255; k >= 0; --k)
+             {
+                 if (p_180622_3_.func_177856_a(j, k, i).func_185904_a() != Material.field_151579_a)
+                 {
 @@ -79,7 +61,7 @@
                      {
                          p_180622_3_.func_177855_a(j, k, i, field_185372_h);

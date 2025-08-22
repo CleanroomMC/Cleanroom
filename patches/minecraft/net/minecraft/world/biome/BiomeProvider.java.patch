@@ -36,6 +36,15 @@
      }
  
      public Biome func_180300_a(BlockPos p_180300_1_, Biome p_180300_2_)
+@@ -81,7 +83,7 @@
+ 
+         try
+         {
+-            for (int i = 0; i < p_76937_4_ * p_76937_5_; i++)
++            for (int i = 0; i < p_76937_4_ * p_76937_5_; ++i)
+             {
+                 p_76937_1_[i] = Biome.func_180276_a(aint[i], Biomes.field_180279_ad);
+             }
 @@ -92,11 +94,11 @@
          {
              CrashReport crashreport = CrashReport.func_85055_a(throwable, "Invalid Biome id");
@@ -53,6 +62,24 @@
              throw new ReportedException(crashreport);
          }
      }
+@@ -125,7 +127,7 @@
+         {
+             int[] aint = this.field_76945_e.func_75904_a(p_76931_2_, p_76931_3_, p_76931_4_, p_76931_5_);
+ 
+-            for (int i = 0; i < p_76931_4_ * p_76931_5_; i++)
++            for (int i = 0; i < p_76931_4_ * p_76931_5_; ++i)
+             {
+                 p_76931_1_[i] = Biome.func_180276_a(aint[i], Biomes.field_180279_ad);
+             }
+@@ -147,7 +149,7 @@
+ 
+         try
+         {
+-            for (int k1 = 0; k1 < i1 * j1; k1++)
++            for (int k1 = 0; k1 < i1 * j1; ++k1)
+             {
+                 Biome biome = Biome.func_150568_d(aint[k1]);
+ 
 @@ -164,9 +166,9 @@
              CrashReport crashreport = CrashReport.func_85055_a(throwable, "Invalid Biome id");
              CrashReportCategory crashreportcategory = crashreport.func_85058_a("Layer");
@@ -66,6 +93,24 @@
              crashreportcategory.func_71507_a("allowed", p_76940_4_);
              throw new ReportedException(crashreport);
          }
+@@ -186,7 +188,7 @@
+         BlockPos blockpos = null;
+         int k1 = 0;
+ 
+-        for (int l1 = 0; l1 < i1 * j1; l1++)
++        for (int l1 = 0; l1 < i1 * j1; ++l1)
+         {
+             int i2 = i + l1 % i1 << 2;
+             int j2 = j + l1 / i1 << 2;
+@@ -195,7 +197,7 @@
+             if (p_180630_4_.contains(biome) && (blockpos == null || p_180630_5_.nextInt(k1 + 1) == 0))
+             {
+                 blockpos = new BlockPos(i2, 0, j2);
+-                k1++;
++                ++k1;
+             }
+         }
+ 
 @@ -205,6 +207,13 @@
      public void func_76938_b()
      {

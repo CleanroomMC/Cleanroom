@@ -27,6 +27,12 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 
 import javax.annotation.Nonnull;
 
+/**
+ * RenderLivingEvent is fired whenever the client is about to render a player.<br>
+ * When the rendered target is not the local user, {@link RenderLivingEvent} will be fired if {@link Pre} is not cancelled.
+ * <br>
+ * All children of this event are fired on the {@link net.minecraftforge.common.MinecraftForge#EVENT_BUS}.<br>
+ **/
 public abstract class RenderPlayerEvent extends PlayerEvent
 {
     private final RenderPlayer renderer;

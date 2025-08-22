@@ -1,5 +1,14 @@
 --- before/net/minecraft/entity/passive/EntityLlama.java
 +++ after/net/minecraft/entity/passive/EntityLlama.java
+@@ -449,7 +449,7 @@
+ 
+         if (this.field_70146_Z.nextFloat() < 0.03F)
+         {
+-            i++;
++            ++i;
+         }
+ 
+         entityllama.func_190706_p(i);
 @@ -488,6 +488,9 @@
      @Override
      public void func_180430_e(float p_180430_1_, float p_180430_2_)

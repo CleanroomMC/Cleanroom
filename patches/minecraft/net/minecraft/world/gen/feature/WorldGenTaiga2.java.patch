@@ -23,18 +23,27 @@
      public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
      {
          int i = p_180709_2_.nextInt(4) + 6;
-@@ -36,7 +30,7 @@
+@@ -36,9 +30,9 @@
          int l = 2 + p_180709_2_.nextInt(2);
          boolean flag = true;
  
 -        if (p_180709_3_.func_177956_o() >= 1 && p_180709_3_.func_177956_o() + i + 1 <= 256)
 +        if (p_180709_3_.func_177956_o() >= 1 && p_180709_3_.func_177956_o() + i + 1 <= p_180709_1_.func_72800_K())
          {
-             for (int i1 = p_180709_3_.func_177956_o(); i1 <= p_180709_3_.func_177956_o() + 1 + i && flag; ++i1)
+-            for (int i1 = p_180709_3_.func_177956_o(); i1 <= p_180709_3_.func_177956_o() + 1 + i && flag; i1++)
++            for (int i1 = p_180709_3_.func_177956_o(); i1 <= p_180709_3_.func_177956_o() + 1 + i && flag; ++i1)
              {
-@@ -57,11 +51,11 @@
+                 int j1;
+ 
+@@ -53,15 +47,15 @@
+ 
+                 BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+ 
+-                for (int k1 = p_180709_3_.func_177958_n() - j1; k1 <= p_180709_3_.func_177958_n() + j1 && flag; k1++)
++                for (int k1 = p_180709_3_.func_177958_n() - j1; k1 <= p_180709_3_.func_177958_n() + j1 && flag; ++k1)
                  {
-                     for (int l1 = p_180709_3_.func_177952_p() - j1; l1 <= p_180709_3_.func_177952_p() + j1 && flag; ++l1)
+-                    for (int l1 = p_180709_3_.func_177952_p() - j1; l1 <= p_180709_3_.func_177952_p() + j1 && flag; l1++)
++                    for (int l1 = p_180709_3_.func_177952_p() - j1; l1 <= p_180709_3_.func_177952_p() + j1 && flag; ++l1)
                      {
 -                        if (i1 >= 0 && i1 < 256)
 +                        if (i1 >= 0 && i1 < p_180709_1_.func_72800_K())
@@ -47,7 +56,7 @@
                              {
                                  flag = false;
                              }
-@@ -80,12 +74,12 @@
+@@ -80,33 +74,34 @@
              }
              else
              {
@@ -64,7 +73,22 @@
                      int i3 = p_180709_2_.nextInt(2);
                      int j3 = 1;
                      int k3 = 0;
-@@ -105,8 +99,9 @@
+ 
+-                    for (int l3 = 0; l3 <= k; l3++)
++                    for (int l3 = 0; l3 <= k; ++l3)
+                     {
+                         int j4 = p_180709_3_.func_177956_o() + i - l3;
+ 
+-                        for (int i2 = p_180709_3_.func_177958_n() - i3; i2 <= p_180709_3_.func_177958_n() + i3; i2++)
++                        for (int i2 = p_180709_3_.func_177958_n() - i3; i2 <= p_180709_3_.func_177958_n() + i3; ++i2)
+                         {
+                             int j2 = i2 - p_180709_3_.func_177958_n();
+ 
+-                            for (int k2 = p_180709_3_.func_177952_p() - i3; k2 <= p_180709_3_.func_177952_p() + i3; k2++)
++                            for (int k2 = p_180709_3_.func_177952_p() - i3; k2 <= p_180709_3_.func_177952_p() + i3; ++k2)
+                             {
+                                 int l2 = k2 - p_180709_3_.func_177952_p();
+ 
                                  if (Math.abs(j2) != i3 || Math.abs(l2) != i3 || i3 <= 0)
                                  {
                                      BlockPos blockpos = new BlockPos(i2, j4, k2);
@@ -75,7 +99,7 @@
                                      {
                                          this.func_175903_a(p_180709_1_, blockpos, field_181646_b);
                                      }
-@@ -118,8 +113,9 @@
+@@ -118,25 +113,27 @@
                          {
                              i3 = k3;
                              k3 = 1;
@@ -86,9 +110,18 @@
                              {
                                  j3 = l;
                              }
-@@ -134,9 +130,10 @@
+                         }
+                         else
+                         {
+-                            i3++;
++                            ++i3;
+                         }
+                     }
  
-                     for (int k4 = 0; k4 < i - i4; ++k4)
+                     int i4 = p_180709_2_.nextInt(3);
+ 
+-                    for (int k4 = 0; k4 < i - i4; k4++)
++                    for (int k4 = 0; k4 < i - i4; ++k4)
                      {
 -                        Material material1 = p_180709_1_.func_180495_p(p_180709_3_.func_177981_b(k4)).func_185904_a();
 +                        BlockPos upN = p_180709_3_.func_177981_b(k4);

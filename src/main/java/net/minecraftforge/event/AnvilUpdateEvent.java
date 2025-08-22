@@ -19,6 +19,7 @@
 
 package net.minecraftforge.event;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraft.item.ItemStack;
@@ -44,8 +45,9 @@ public class AnvilUpdateEvent extends Event
     private ItemStack output;      // Set this to set the output stack
     private int cost;              // The base cost, set this to change it if output != null
     private int materialCost; // The number of items from the right slot to be consumed during the repair. Leave as 0 to consume the entire stack.
+    private final EntityPlayer player;
 
-    public AnvilUpdateEvent(@Nonnull ItemStack left, @Nonnull ItemStack right, String name, int cost)
+    public AnvilUpdateEvent(@Nonnull ItemStack left, @Nonnull ItemStack right, String name, int cost, EntityPlayer player)
     {
         this.left = left;
         this.right = right;
@@ -53,6 +55,13 @@ public class AnvilUpdateEvent extends Event
         this.name = name;
         this.setCost(cost);
         this.setMaterialCost(0);
+        this.player = player;
+    }
+
+    @Deprecated
+    public AnvilUpdateEvent(@Nonnull ItemStack left, @Nonnull ItemStack right, String name, int cost)
+    {
+        this(left, right, name, cost, null);
     }
 
     @Nonnull
@@ -67,4 +76,5 @@ public class AnvilUpdateEvent extends Event
     public void setCost(int cost) { this.cost = cost; }
     public int getMaterialCost() { return materialCost; }
     public void setMaterialCost(int materialCost) { this.materialCost = materialCost; }
+    public EntityPlayer getPlayer() { return player; }
 }

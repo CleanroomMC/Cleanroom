@@ -24,12 +24,21 @@
          {
              boolean flag = false;
  
--            for (int i = 0; i < p_147949_2_.length; ++i)
+-            for (int i = 0; i < p_147949_2_.length; i++)
 +            for (int i = 0; i < p_147949_2_[0].length; ++i)
              {
                  if (p_147949_2_[0][i] >> 24 == 0)
                  {
-@@ -83,6 +83,7 @@
+@@ -72,7 +72,7 @@
+                 }
+             }
+ 
+-            for (int l1 = 1; l1 <= p_147949_0_; l1++)
++            for (int l1 = 1; l1 <= p_147949_0_; ++l1)
+             {
+                 if (p_147949_2_[l1] != null)
+                 {
+@@ -83,17 +83,19 @@
                      int[] aint1 = aint[l1 - 1];
                      int[] aint2 = new int[aint1.length >> 2];
                      int j = p_147949_1_ >> l1;
@@ -37,7 +46,13 @@
                      int k = aint2.length / j;
                      int l = j << 1;
  
-@@ -94,6 +95,7 @@
+-                    for (int i1 = 0; i1 < j; i1++)
++                    for (int i1 = 0; i1 < j; ++i1)
+                     {
+-                        for (int j1 = 0; j1 < k; j1++)
++                        for (int j1 = 0; j1 < k; ++j1)
+                         {
+                             int k1 = 2 * (i1 + j1 * l);
                              aint2[i1 + j1 * j] = func_147943_a(aint1[k1 + 0], aint1[k1 + 1], aint1[k1 + 0 + l], aint1[k1 + 1 + l], flag);
                          }
                      }
@@ -45,6 +60,15 @@
  
                      aint[l1] = aint2;
                  }
+@@ -116,7 +118,7 @@
+             float f2 = 0.0F;
+             float f3 = 0.0F;
+ 
+-            for (int i1 = 0; i1 < 4; i1++)
++            for (int i1 = 0; i1 < 4; ++i1)
+             {
+                 if (field_147957_g[i1] >> 24 != 0)
+                 {
 @@ -127,14 +129,14 @@
                  }
              }
@@ -68,7 +92,7 @@
  
              if (i2 < 96)
              {
-@@ -159,32 +161,21 @@
+@@ -159,46 +161,34 @@
          float f1 = func_188543_d(p_147944_1_ >> p_147944_4_);
          float f2 = func_188543_d(p_147944_2_ >> p_147944_4_);
          float f3 = func_188543_d(p_147944_3_ >> p_147944_4_);
@@ -83,7 +107,8 @@
 -        )
 +    public static void func_147955_a(int[][] p_147955_0_, int p_147955_1_, int p_147955_2_, int p_147955_3_, int p_147955_4_, boolean p_147955_5_, boolean p_147955_6_)
      {
-         for (int i = 0; i < p_147955_0_.length; ++i)
+-        for (int i = 0; i < p_147955_0_.length; i++)
++        for (int i = 0; i < p_147955_0_.length; ++i)
          {
              int[] aint = p_147955_0_[i];
 +            if ((p_147955_1_ >> i <= 0) || (p_147955_2_ >> i <= 0)) break;
@@ -106,7 +131,24 @@
      {
          int i = 4194304 / p_147947_2_;
          func_147954_b(p_147947_6_, p_147947_8_);
-@@ -214,9 +205,11 @@
+         func_110997_a(p_147947_7_);
+-        int j = 0;
++        int l;
+ 
+-        while (j < p_147947_2_ * p_147947_3_)
++        for (int j = 0; j < p_147947_2_ * p_147947_3_; j += p_147947_2_ * l)
+         {
+             int k = j / p_147947_2_;
+-            int l = Math.min(i, p_147947_3_ - k);
++            l = Math.min(i, p_147947_3_ - k);
+             int i1 = p_147947_2_ * l;
+             func_110994_a(p_147947_1_, j, i1);
+             GlStateManager.func_187414_b(3553, p_147947_0_, p_147947_4_, p_147947_5_ + k, p_147947_2_, l, 32993, 33639, field_111000_c);
+-            j += p_147947_2_ * l;
+         }
+     }
+ 
+@@ -215,9 +205,11 @@
  
      public static void func_180600_a(int p_180600_0_, int p_180600_1_, int p_180600_2_, int p_180600_3_)
      {
@@ -119,16 +161,19 @@
          if (p_180600_1_ >= 0)
          {
              GlStateManager.func_187421_b(3553, 33085, p_180600_1_);
-@@ -227,7 +220,7 @@
+@@ -226,9 +218,9 @@
+             GlStateManager.func_187403_b(3553, 34049, 0.0F);
+         }
  
-         for (int i = 0; i <= p_180600_1_; ++i)
+-        for (int i = 0; i <= p_180600_1_; i++)
++        for (int i = 0; i <= p_180600_1_; ++i)
          {
 -            GlStateManager.func_187419_a(3553, i, 6408, p_180600_2_ >> i, p_180600_3_ >> i, 0, 32993, 33639, null);
 +            GlStateManager.func_187419_a(3553, i, 6408, p_180600_2_ >> i, p_180600_3_ >> i, 0, 32993, 33639, (IntBuffer)null);
          }
      }
  
-@@ -305,9 +298,9 @@
+@@ -306,9 +298,9 @@
              aint = func_110985_a(p_110994_0_);
          }
  
@@ -140,7 +185,7 @@
      }
  
      static void func_94277_a(int p_94277_0_)
-@@ -332,7 +325,7 @@
+@@ -333,7 +325,7 @@
          }
          finally
          {
@@ -149,7 +194,16 @@
          }
  
          return aint1;
-@@ -368,10 +361,10 @@
+@@ -359,7 +351,7 @@
+     {
+         int[] aint = new int[p_110985_0_.length];
+ 
+-        for (int i = 0; i < p_110985_0_.length; i++)
++        for (int i = 0; i < p_110985_0_.length; ++i)
+         {
+             aint[i] = func_177054_c(p_110985_0_[i]);
+         }
+@@ -369,10 +361,10 @@
  
      public static int func_177054_c(int p_177054_0_)
      {
@@ -164,9 +218,30 @@
          int i1 = (j * 30 + k * 59 + l * 11) / 100;
          int j1 = (j * 30 + k * 70) / 100;
          int k1 = (j * 30 + l * 70) / 100;
-@@ -410,7 +403,7 @@
+@@ -384,7 +376,7 @@
+         int[] aint = new int[p_147953_1_];
+         int i = p_147953_2_ / 2;
  
-         for (int i1 = 0; i1 < field_188544_e.length; ++i1)
+-        for (int j = 0; j < i; j++)
++        for (int j = 0; j < i; ++j)
+         {
+             System.arraycopy(p_147953_0_, j * p_147953_1_, aint, 0, p_147953_1_);
+             System.arraycopy(p_147953_0_, (p_147953_2_ - 1 - j) * p_147953_1_, p_147953_0_, j * p_147953_1_, p_147953_1_);
+@@ -400,7 +392,7 @@
+         int[] aint1 = new int[] { -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216};
+         int k = aint.length;
+ 
+-        for (int l = 0; l < 16; l++)
++        for (int l = 0; l < 16; ++l)
+         {
+             System.arraycopy(l < k ? aint : aint1, 0, field_110999_b, 16 * l, k);
+             System.arraycopy(l < k ? aint1 : aint, 0, field_110999_b, 16 * l + k, k);
+@@ -409,9 +401,9 @@
+         field_111001_a.func_110564_a();
+         field_188544_e = new float[256];
+ 
+-        for (int i1 = 0; i1 < field_188544_e.length; i1++)
++        for (int i1 = 0; i1 < field_188544_e.length; ++i1)
          {
 -            field_188544_e[i1] = (float)Math.pow((double)((float)i1 / 255.0F), 2.2);
 +            field_188544_e[i1] = (float)Math.pow((double)((float)i1 / 255.0F), 2.2D);

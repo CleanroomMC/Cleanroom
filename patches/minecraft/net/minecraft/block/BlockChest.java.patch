@@ -148,6 +148,42 @@
      public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)
      {
          int i = 0;
+@@ -347,7 +330,7 @@
+                 return false;
+             }
+ 
+-            i++;
++            ++i;
+         }
+ 
+         if (p_176196_1_.func_180495_p(blockpos1).func_177230_c() == this)
+@@ -357,7 +340,7 @@
+                 return false;
+             }
+ 
+-            i++;
++            ++i;
+         }
+ 
+         if (p_176196_1_.func_180495_p(blockpos2).func_177230_c() == this)
+@@ -367,7 +350,7 @@
+                 return false;
+             }
+ 
+-            i++;
++            ++i;
+         }
+ 
+         if (p_176196_1_.func_180495_p(blockpos3).func_177230_c() == this)
+@@ -377,7 +360,7 @@
+                 return false;
+             }
+ 
+-            i++;
++            ++i;
+         }
+ 
+         return i <= 1;
 @@ -403,7 +386,6 @@
          }
      }

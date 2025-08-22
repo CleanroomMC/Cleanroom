@@ -66,7 +66,7 @@
      public void func_70636_d()
      {
          super.func_70636_d();
-@@ -110,7 +104,7 @@
+@@ -110,21 +104,19 @@
                  this.func_70097_a(DamageSource.field_76370_b, 1.0F);
              }
  
@@ -75,7 +75,12 @@
              {
                  return;
              }
-@@ -122,9 +116,7 @@
+ 
+-            for (int l = 0; l < 4; l++)
++            for (int l = 0; l < 4; ++l)
+             {
+                 i = MathHelper.func_76128_c(this.field_70165_t + (double)((float)(l % 2 * 2 - 1) * 0.25F));
+                 j = MathHelper.func_76128_c(this.field_70163_u);
                  k = MathHelper.func_76128_c(this.field_70161_v + (double)((float)(l / 2 % 2 * 2 - 1) * 0.25F));
                  BlockPos blockpos = new BlockPos(i, j, k);
  

@@ -1,0 +1,38 @@
+{
+    "components": [
+        {
+            "cachedName": "LWJGL 3",
+            "cachedVersion": "3.3.1",
+            "cachedVolatile": true,
+            "dependencyOnly": true,
+            "uid": "org.lwjgl3",
+            "version": "3.3.1"
+        },
+        {
+            "cachedName": "Minecraft",
+            "cachedRequires": [
+                {
+                    "suggests": "3.3.1",
+                    "uid": "org.lwjgl3"
+                }
+            ],
+            "cachedVersion": "1.12.2",
+            "important": true,
+            "uid": "net.minecraft",
+            "version": "1.12.2"
+        },
+        {
+            "cachedName": "Cleanroom",
+            "cachedRequires": [
+                {
+                    "equals": "1.12.2",
+                    "uid": "net.minecraft"
+                }
+            ],
+            "cachedVersion": "0.0.0.0",
+            "uid": "net.minecraftforge",
+            "version": "0.0.0.0"
+        }
+    ],
+    "formatVersion": 1
+}

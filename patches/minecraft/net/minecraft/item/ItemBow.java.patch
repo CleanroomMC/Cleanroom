@@ -34,6 +34,15 @@
              public float func_185085_a(ItemStack p_185085_1_, @Nullable World p_185085_2_, @Nullable EntityLivingBase p_185085_3_)
              {
                  return p_185085_3_ != null && p_185085_3_.func_184587_cr() && p_185085_3_.func_184607_cu() == p_185085_1_ ? 1.0F : 0.0F;
+@@ -70,7 +63,7 @@
+         }
+         else
+         {
+-            for (int i = 0; i < p_185060_1_.field_71071_by.func_70302_i_(); i++)
++            for (int i = 0; i < p_185060_1_.field_71071_by.func_70302_i_(); ++i)
+             {
+                 ItemStack itemstack = p_185060_1_.field_71071_by.func_70301_a(i);
+ 
 @@ -89,7 +82,6 @@
          return p_185058_1_.func_77973_b() instanceof ItemArrow;
      }

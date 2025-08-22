@@ -22,7 +22,6 @@ package net.minecraftforge.fml.common.asm.transformers;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
@@ -42,7 +41,7 @@ import org.objectweb.asm.tree.MethodNode;
 
 public class SideTransformer implements IClassTransformer
 {
-    private static String SIDE = FMLLaunchHandler.side().name();
+    private static final String SIDE = FMLLaunchHandler.side().name();
     private static final boolean DEBUG = false;
     @Override
     public byte[] transform(String name, String transformedName, byte[] bytes)
@@ -57,9 +56,9 @@ public class SideTransformer implements IClassTransformer
         {
             if (DEBUG)
             {
-                System.out.println(String.format("Attempted to load class %s for invalid side %s", classNode.name, SIDE));
+                System.out.printf("Attempted to load class %s/%s for invalid side %s%n", name, transformedName, SIDE);
             }
-            throw new RuntimeException(String.format("Attempted to load class %s for invalid side %s", classNode.name, SIDE));
+            throw new RuntimeException(String.format("Attempted to load class %s/%s for invalid side %s", name, transformedName, SIDE));
         }
 
         Iterator<FieldNode> fields = classNode.fields.iterator();
@@ -70,7 +69,7 @@ public class SideTransformer implements IClassTransformer
             {
                 if (DEBUG)
                 {
-                    System.out.println(String.format("Removing Field: %s.%s", classNode.name, field.name));
+                    System.out.printf("Removing Field: %s.%s%n", classNode.name, field.name);
                 }
                 fields.remove();
             }
@@ -85,7 +84,7 @@ public class SideTransformer implements IClassTransformer
             {
                 if (DEBUG)
                 {
-                    System.out.println(String.format("Removing Method: %s.%s%s", classNode.name, method.name, method.desc));
+                    System.out.printf("Removing Method: %s.%s%s%n", classNode.name, method.name, method.desc);
                 }
                 methods.remove();
                 lambdaGatherer.accept(method);
@@ -108,7 +107,7 @@ public class SideTransformer implements IClassTransformer
                     {
                         if (DEBUG)
                         {
-                            System.out.println(String.format("Removing Method: %s.%s%s", classNode.name, method.name, method.desc));
+                            System.out.printf("Removing Method: %s.%s%s%n", classNode.name, method.name, method.desc);
                         }
                         methods.remove();
                         lambdaGatherer.accept(method);
@@ -166,12 +165,8 @@ public class SideTransformer implements IClassTransformer
         }
 
         public void accept(MethodNode method) {
-            ListIterator<AbstractInsnNode> insnNodeIterator = method.instructions.iterator();
-            while (insnNodeIterator.hasNext())
-            {
-                AbstractInsnNode insnNode = insnNodeIterator.next();
-                if (insnNode.getType() == AbstractInsnNode.INVOKE_DYNAMIC_INSN)
-                {
+            for (AbstractInsnNode insnNode : method.instructions) {
+                if (insnNode.getType() == AbstractInsnNode.INVOKE_DYNAMIC_INSN) {
                     insnNode.accept(this);
                 }
             }

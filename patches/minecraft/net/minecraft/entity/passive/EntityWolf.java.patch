@@ -180,6 +180,20 @@
      public void func_70071_h_()
      {
          super.func_70071_h_();
+@@ -247,11 +232,11 @@
+ 
+         if (this.func_70922_bv())
+         {
+-            this.field_70926_e = this.field_70926_e + (1.0F - this.field_70926_e) * 0.4F;
++            this.field_70926_e += (1.0F - this.field_70926_e) * 0.4F;
+         }
+         else
+         {
+-            this.field_70926_e = this.field_70926_e + (0.0F - this.field_70926_e) * 0.4F;
++            this.field_70926_e += (0.0F - this.field_70926_e) * 0.4F;
+         }
+ 
+         if (this.func_70026_G())
 @@ -265,9 +250,7 @@
          {
              if (this.field_70929_i == 0.0F)
@@ -198,7 +212,8 @@
 -                int i = (int)(MathHelper.func_76126_a((this.field_70929_i - 0.4F) * (float) Math.PI) * 7.0F);
 +                int i = (int)(MathHelper.func_76126_a((this.field_70929_i - 0.4F) * (float)Math.PI) * 7.0F);
  
-                 for (int j = 0; j < i; ++j)
+-                for (int j = 0; j < i; j++)
++                for (int j = 0; j < i; ++j)
                  {
                      float f1 = (this.field_70146_Z.nextFloat() * 2.0F - 1.0F) * this.field_70130_N * 0.5F;
                      float f2 = (this.field_70146_Z.nextFloat() * 2.0F - 1.0F) * this.field_70130_N * 0.5F;
@@ -400,7 +415,21 @@
      public boolean func_70878_b(EntityAnimal p_70878_1_)
      {
          if (p_70878_1_ == this)
-@@ -618,10 +578,9 @@
+@@ -605,19 +565,22 @@
+             {
+                 return false;
+             }
++            else if (entitywolf.func_70906_o())
++            {
++                return false;
++            }
+             else
+             {
+-                return entitywolf.func_70906_o() ? false : this.func_70880_s() && entitywolf.func_70880_s();
++                return this.func_70880_s() && entitywolf.func_70880_s();
+             }
+         }
+     }
  
      public boolean func_70922_bv()
      {
@@ -412,17 +441,27 @@
      public boolean func_142018_a(EntityLivingBase p_142018_1_, EntityLivingBase p_142018_2_)
      {
          if (!(p_142018_1_ instanceof EntityCreeper) && !(p_142018_1_ instanceof EntityGhast))
-@@ -636,8 +595,7 @@
+@@ -632,11 +595,14 @@
                  }
              }
  
--            if (p_142018_1_ instanceof EntityPlayer && p_142018_2_ instanceof EntityPlayer && !((EntityPlayer)p_142018_2_).func_96122_a((EntityPlayer)p_142018_1_)
--               )
+-            return p_142018_1_ instanceof EntityPlayer
+-                   && p_142018_2_ instanceof EntityPlayer
+-                   && !((EntityPlayer)p_142018_2_).func_96122_a((EntityPlayer)p_142018_1_)
+-                   ? false
+-                   : !(p_142018_1_ instanceof AbstractHorse) || !((AbstractHorse)p_142018_1_).func_110248_bS();
 +            if (p_142018_1_ instanceof EntityPlayer && p_142018_2_ instanceof EntityPlayer && !((EntityPlayer)p_142018_2_).func_96122_a((EntityPlayer)p_142018_1_))
-             {
-                 return false;
-             }
-@@ -652,7 +610,6 @@
++            {
++                return false;
++            }
++            else
++            {
++                return !(p_142018_1_ instanceof AbstractHorse) || !((AbstractHorse)p_142018_1_).func_110248_bS();
++            }
+         }
+         else
+         {
+@@ -644,7 +610,6 @@
          }
      }
  
@@ -430,15 +469,28 @@
      public boolean func_184652_a(EntityPlayer p_184652_1_)
      {
          return !this.func_70919_bu() && super.func_184652_a(p_184652_1_);
-@@ -668,7 +625,6 @@
+@@ -660,12 +625,16 @@
              this.field_190856_d = p_i47251_2_;
          }
  
 -        @Override
          public boolean func_75250_a()
          {
-             if (super.func_75250_a() && this.field_75376_d instanceof EntityLlama)
-@@ -686,17 +642,15 @@
+-            return super.func_75250_a() && this.field_75376_d instanceof EntityLlama
+-                   ? !this.field_190856_d.func_70909_n() && this.func_190854_a((EntityLlama)this.field_75376_d)
+-                   : false;
++            if (super.func_75250_a() && this.field_75376_d instanceof EntityLlama)
++            {
++                return !this.field_190856_d.func_70909_n() && this.func_190854_a((EntityLlama)this.field_75376_d);
++            }
++            else
++            {
++                return false;
++            }
+         }
+ 
+         private boolean func_190854_a(EntityLlama p_190854_1_)
+@@ -673,17 +642,15 @@
              return p_190854_1_.func_190707_dL() >= EntityWolf.this.field_70146_Z.nextInt(5);
          }
  

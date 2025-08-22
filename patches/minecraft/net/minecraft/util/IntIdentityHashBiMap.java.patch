@@ -9,6 +9,24 @@
      }
  
      private int func_186805_c(int p_186805_1_)
+@@ -53,7 +53,7 @@
+     {
+         while (this.field_186821_e < this.field_186820_d.length && this.field_186820_d[this.field_186821_e] != null)
+         {
+-            this.field_186821_e++;
++            ++this.field_186821_e;
+         }
+ 
+         return this.field_186821_e;
+@@ -69,7 +69,7 @@
+         this.field_186821_e = 0;
+         this.field_186822_f = 0;
+ 
+-        for (int i = 0; i < ak.length; i++)
++        for (int i = 0; i < ak.length; ++i)
+         {
+             if (ak[i] != null)
+             {
 @@ -84,11 +84,11 @@
  
          if ((float)i >= (float)this.field_186818_b.length * 0.8F)
@@ -24,7 +42,19 @@
              }
  
              this.func_186807_d(j);
-@@ -108,7 +108,7 @@
+@@ -98,22 +98,22 @@
+         this.field_186818_b[k] = p_186814_1_;
+         this.field_186819_c[k] = p_186814_2_;
+         this.field_186820_d[p_186814_2_] = p_186814_1_;
+-        this.field_186822_f++;
++        ++this.field_186822_f;
+ 
+         if (p_186814_2_ == this.field_186821_e)
+         {
+-            this.field_186821_e++;
++            ++this.field_186821_e;
+         }
+     }
  
      private int func_186811_d(@Nullable K p_186811_1_)
      {
@@ -33,6 +63,39 @@
      }
  
      private int func_186816_b(@Nullable K p_186816_1_, int p_186816_2_)
+     {
+-        for (int i = p_186816_2_; i < this.field_186818_b.length; i++)
++        for (int i = p_186816_2_; i < this.field_186818_b.length; ++i)
+         {
+             if (this.field_186818_b[i] == p_186816_1_)
+             {
+@@ -126,7 +126,7 @@
+             }
+         }
+ 
+-        for (int j = 0; j < p_186816_2_; j++)
++        for (int j = 0; j < p_186816_2_; ++j)
+         {
+             if (this.field_186818_b[j] == p_186816_1_)
+             {
+@@ -144,7 +144,7 @@
+ 
+     private int func_186806_e(int p_186806_1_)
+     {
+-        for (int i = p_186806_1_; i < this.field_186818_b.length; i++)
++        for (int i = p_186806_1_; i < this.field_186818_b.length; ++i)
+         {
+             if (this.field_186818_b[i] == field_186817_a)
+             {
+@@ -152,7 +152,7 @@
+             }
+         }
+ 
+-        for (int j = 0; j < p_186806_1_; j++)
++        for (int j = 0; j < p_186806_1_; ++j)
+         {
+             if (this.field_186818_b[j] == field_186817_a)
+             {
 @@ -163,17 +163,15 @@
          throw new RuntimeException("Overflowed :(");
      }

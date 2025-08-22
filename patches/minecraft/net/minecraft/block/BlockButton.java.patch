@@ -83,17 +83,20 @@
      public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)
      {
          for (EnumFacing enumfacing : EnumFacing.values())
-@@ -103,7 +98,7 @@
- 
-         if (p_181088_2_ == EnumFacing.UP)
-         {
--            return block == Blocks.field_150438_bZ || !func_193384_b(block) && flag;
+@@ -100,30 +95,25 @@
+         IBlockState iblockstate = p_181088_0_.func_180495_p(blockpos);
+         boolean flag = iblockstate.func_193401_d(p_181088_0_, blockpos, p_181088_2_) == BlockFaceShape.SOLID;
+         Block block = iblockstate.func_177230_c();
+-        return p_181088_2_ == EnumFacing.UP ? block == Blocks.field_150438_bZ || !func_193384_b(block) && flag : !func_193382_c(block) && flag;
++
++        if (p_181088_2_ == EnumFacing.UP)
++        {
 +            return iblockstate.func_185896_q() || !func_193384_b(block) && flag;
-         }
-         else
-         {
-@@ -111,27 +106,14 @@
-         }
++        }
++        else
++        {
++            return !func_193382_c(block) && flag;
++        }
      }
  
 -    @Override
@@ -123,7 +126,7 @@
          {
              this.func_176226_b(p_189540_2_, p_189540_3_, p_189540_1_, 0);
              p_189540_2_.func_175698_g(p_189540_3_);
-@@ -152,11 +134,10 @@
+@@ -144,11 +134,10 @@
          }
      }
  
@@ -137,7 +140,7 @@
  
          switch (enumfacing)
          {
-@@ -176,29 +157,18 @@
+@@ -168,29 +157,18 @@
          }
      }
  
@@ -171,7 +174,7 @@
              p_180639_1_.func_175684_a(p_180639_2_, this, this.func_149738_a(p_180639_1_));
              return true;
          }
-@@ -208,27 +178,24 @@
+@@ -200,27 +178,24 @@
  
      protected abstract void func_185617_b(World p_185617_1_, BlockPos p_185617_2_);
  
@@ -203,7 +206,7 @@
          {
              return 0;
          }
-@@ -238,23 +205,20 @@
+@@ -230,23 +205,20 @@
          }
      }
  
@@ -228,7 +231,7 @@
              {
                  if (this.field_150047_a)
                  {
-@@ -262,8 +226,8 @@
+@@ -254,8 +226,8 @@
                  }
                  else
                  {
@@ -239,7 +242,7 @@
                      this.func_185617_b(p_180650_1_, p_180650_2_);
                      p_180650_1_.func_175704_b(p_180650_2_, p_180650_2_);
                  }
-@@ -271,14 +235,13 @@
+@@ -263,14 +235,13 @@
          }
      }
  
@@ -255,7 +258,7 @@
                  {
                      this.func_185616_e(p_180634_3_, p_180634_1_, p_180634_2_);
                  }
-@@ -288,22 +251,22 @@
+@@ -280,22 +251,22 @@
  
      private void func_185616_e(IBlockState p_185616_1_, World p_185616_2_, BlockPos p_185616_3_)
      {
@@ -285,7 +288,7 @@
              p_185616_2_.func_175704_b(p_185616_3_, p_185616_3_);
              this.func_185617_b(p_185616_2_, p_185616_3_);
          }
-@@ -320,7 +283,6 @@
+@@ -312,7 +283,6 @@
          p_176582_1_.func_175685_c(p_176582_2_.func_177972_a(p_176582_3_.func_176734_d()), this, false);
      }
  
@@ -293,7 +296,7 @@
      public IBlockState func_176203_a(int p_176203_1_)
      {
          EnumFacing enumfacing;
-@@ -347,10 +309,9 @@
+@@ -339,10 +309,9 @@
                  enumfacing = EnumFacing.UP;
          }
  
@@ -305,7 +308,7 @@
      public int func_176201_c(IBlockState p_176201_1_)
      {
          int i;
-@@ -377,7 +338,7 @@
+@@ -369,7 +338,7 @@
                  i = 0;
          }
  
@@ -314,7 +317,7 @@
          {
              i |= 8;
          }
-@@ -385,25 +346,21 @@
+@@ -377,25 +346,21 @@
          return i;
      }
  

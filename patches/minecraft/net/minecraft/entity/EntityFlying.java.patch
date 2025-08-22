@@ -83,8 +83,14 @@
              }
  
              this.func_70091_d(MoverType.SELF, this.field_70159_w, this.field_70181_x, this.field_70179_y);
-@@ -99,7 +80,6 @@
-         this.field_184619_aG += this.field_70721_aZ;
+@@ -95,11 +76,10 @@
+             f2 = 1.0F;
+         }
+ 
+-        this.field_70721_aZ = this.field_70721_aZ + (f2 - this.field_70721_aZ) * 0.4F;
+-        this.field_184619_aG = this.field_184619_aG + this.field_70721_aZ;
++        this.field_70721_aZ += (f2 - this.field_70721_aZ) * 0.4F;
++        this.field_184619_aG += this.field_70721_aZ;
      }
  
 -    @Override

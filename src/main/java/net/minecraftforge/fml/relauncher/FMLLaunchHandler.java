@@ -23,6 +23,8 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import com.cleanroommc.common.CleanroomVersion;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.TracingPrintStream;
@@ -65,18 +67,15 @@ public class FMLLaunchHandler
         this.tweaker = tweaker;
         this.minecraftHome = tweaker.getGameDir();
         this.classLoader.addTransformerExclusion("com.cleanroommc.loader.");
-        this.classLoader.addClassLoaderExclusion("net.minecraftforge.fml.relauncher.");
-        this.classLoader.addClassLoaderExclusion("net.minecraftforge.classloading.");
+        this.classLoader.addTransformerExclusion("net.minecraftforge.fml.relauncher.");
+        this.classLoader.addTransformerExclusion("net.minecraftforge.classloading.");
         this.classLoader.addTransformerExclusion("net.minecraftforge.fml.common.asm.transformers.");
         this.classLoader.addTransformerExclusion("net.minecraftforge.fml.common.patcher.");
         this.classLoader.addTransformerExclusion("net.minecraftforge.fml.repackage.");
-        this.classLoader.addTransformerExclusion("org.spongepowered.");
-        this.classLoader.addClassLoaderExclusion("org.apache.commons.");
-        this.classLoader.addClassLoaderExclusion("org.apache.http.");
-        this.classLoader.addClassLoaderExclusion("org.apache.maven.");
-        this.classLoader.addClassLoaderExclusion("com.google.common.");
-        this.classLoader.addClassLoaderExclusion("org.objectweb.asm.");
-        this.classLoader.addClassLoaderExclusion("LZMA.");
+        this.classLoader.addTransformerExclusion("LZMA.");
+        this.classLoader.addTransformerExclusion("scala.");
+        this.classLoader.addTransformerExclusion("it.unimi.dsi.");
+        this.classLoader.addTransformerExclusion("oshi.");
     }
 
     private void setupClient()
@@ -97,6 +96,7 @@ public class FMLLaunchHandler
         redirectStdOutputToLog();
         FMLLog.log.info("Forge Mod Loader version {}.{}.{}.{} for Minecraft {} loading", FMLInjectionData.major, FMLInjectionData.minor,
                 FMLInjectionData.rev, FMLInjectionData.build, FMLInjectionData.mccversion);
+        FMLLog.log.info("Cleanroom version {}", CleanroomVersion.BUILD_VERSION);
         FMLLog.log.info("Java is {}, version {}, running on {}:{}:{}, installed at {}", System.getProperty("java.vm.name"), System.getProperty("java.version"), System.getProperty("os.name"), System.getProperty("os.arch"), System.getProperty("os.version"), System.getProperty("java.home"));
         FMLLog.log.debug("Removing LWJGL2 from Java classpath");
         System.setProperty("java.class.path", Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))

@@ -110,7 +110,7 @@
      public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
      {
          if (super.func_70097_a(p_70097_1_, p_70097_2_))
-@@ -250,15 +239,24 @@
+@@ -250,37 +239,42 @@
                  entitylivingbase = (EntityLivingBase)p_70097_1_.func_76346_g();
              }
  
@@ -141,9 +141,10 @@
 +                    entityzombie = new EntityZombie(this.field_70170_p);
 +                }
  
-                 for (int l = 0; l < 50; ++l)
+-                for (int l = 0; l < 50; l++)
++                for (int l = 0; l < 50; ++l)
                  {
-@@ -266,21 +264,17 @@
+                     int i1 = i + MathHelper.func_76136_a(this.field_70146_Z, 7, 40) * MathHelper.func_76136_a(this.field_70146_Z, -1, 1);
                      int j1 = j + MathHelper.func_76136_a(this.field_70146_Z, 7, 40) * MathHelper.func_76136_a(this.field_70146_Z, -1, 1);
                      int k1 = k + MathHelper.func_76136_a(this.field_70146_Z, 7, 40) * MathHelper.func_76136_a(this.field_70146_Z, -1, 1);
  

@@ -128,6 +128,15 @@
      }
  
      protected int func_176371_a(World p_176371_1_, BlockPos p_176371_2_, int p_176371_3_)
+@@ -284,7 +281,7 @@
+         {
+             if (i == 0)
+             {
+-                this.field_149815_a++;
++                ++this.field_149815_a;
+             }
+ 
+             if (i >= 8)
 @@ -302,7 +299,6 @@
          return material != this.field_149764_J && material != Material.field_151587_i && !this.func_176372_g(p_176373_1_, p_176373_2_, p_176373_3_);
      }

@@ -27,7 +27,7 @@
          List<ITextComponent> list = Lists.newArrayList();
 -        List<ITextComponent> list1 = Lists.newArrayList(p_178908_0_);
 -
--        for (int j = 0; j < list1.size(); ++j)
+-        for (int j = 0; j < list1.size(); j++)
 -        {
 -            ITextComponent itextcomponent1 = list1.get(j);
 -            String s = itextcomponent1.func_150261_e();
@@ -113,7 +113,8 @@
 -                        if (p_178908_3_)
 +                        if (p_178908_3_ && cleanedLine.charAt(l) == ' ')
                          {
-                             ++l;
+-                            l++;
++                            ++l;
                          }
  
 -                        s3 = s4.substring(l);

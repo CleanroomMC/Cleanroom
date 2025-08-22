@@ -37,6 +37,15 @@
              {
                  p_180650_1_.func_175656_a(p_180650_2_, Blocks.field_150346_d.func_176223_P());
              }
+@@ -47,7 +47,7 @@
+             {
+                 if (p_180650_1_.func_175671_l(p_180650_2_.func_177984_a()) >= 9)
+                 {
+-                    for (int i = 0; i < 4; i++)
++                    for (int i = 0; i < 4; ++i)
+                     {
+                         BlockPos blockpos = p_180650_2_.func_177982_a(p_180650_4_.nextInt(3) - 1, p_180650_4_.nextInt(5) - 3, p_180650_4_.nextInt(3) - 1);
+ 
 @@ -59,10 +59,7 @@
                          IBlockState iblockstate = p_180650_1_.func_180495_p(blockpos.func_177984_a());
                          IBlockState iblockstate1 = p_180650_1_.func_180495_p(blockpos);
@@ -79,11 +88,12 @@
          BlockPos blockpos = p_176474_3_.func_177984_a();
 -        label38:
  
-         for (int i = 0; i < 128; ++i)
+-        for (int i = 0; i < 128; i++)
++        for (int i = 0; i < 128; ++i)
          {
              BlockPos blockpos1 = blockpos;
 -
--            for (int j = 0; j < i / 16; ++j)
+-            for (int j = 0; j < i / 16; j++)
 -            {
 -                blockpos1 = blockpos1.func_177982_a(
 -                                p_176474_2_.nextInt(3) - 1, (p_176474_2_.nextInt(3) - 1) * p_176474_2_.nextInt(3) / 2, p_176474_2_.nextInt(3) - 1

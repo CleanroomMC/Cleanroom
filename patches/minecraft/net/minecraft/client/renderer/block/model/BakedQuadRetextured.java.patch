@@ -1,6 +1,6 @@
 --- before/net/minecraft/client/renderer/block/model/BakedQuadRetextured.java
 +++ after/net/minecraft/client/renderer/block/model/BakedQuadRetextured.java
-@@ -12,12 +12,7 @@
+@@ -12,27 +12,25 @@
  
      public BakedQuadRetextured(BakedQuad p_i46217_1_, TextureAtlasSprite p_i46217_2_)
      {
@@ -14,9 +14,11 @@
          this.field_178218_d = p_i46217_2_;
          this.func_178217_e();
      }
-@@ -26,13 +21,16 @@
+ 
+     private void func_178217_e()
      {
-         for (int i = 0; i < 4; ++i)
+-        for (int i = 0; i < 4; i++)
++        for (int i = 0; i < 4; ++i)
          {
 -            int j = 7 * i;
 -            this.field_178215_a[j + 4] = Float.floatToRawIntBits(

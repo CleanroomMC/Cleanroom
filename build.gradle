@@ -3,21 +3,22 @@ buildscript {
         mavenLocal()
         mavenCentral()
         maven {
-            name 'MinecraftForge'
-            url 'https://maven.minecraftforge.net/'
+            name "MinecraftForge"
+            url "https://maven.minecraftforge.net/"
         }
         maven {
-            name 'Outlands'
-            url 'https://maven.outlands.top/releases/'
+            name "Outlands"
+            url "https://maven.outlands.top/releases/"
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:6.10.+'
+        classpath "net.minecraftforge.gradle:ForgeGradle:6.0.+"
     }
 }
 
 plugins {
-    id 'org.jetbrains.gradle.plugin.idea-ext' version '1.1.7'
+    id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.10"
+    id "com.palantir.git-version" version "3.1.0"
 }
 
 import com.cleanroommc.gradle.helpers.tasks.*
@@ -44,13 +45,20 @@ import org.objectweb.asm.Opcodes
 
 def props = project.properties
 def sysProps = System.getProperties()
+def details = versionDetails()
 
 group 'com.cleanroommc'
-version props.major_version << '.' << props.minor_version << '.' << props.patch_version
 
-def spec_version = props.new_forge_version.substring(props.new_forge_version.indexOf('.') + 1, props.new_forge_version.lastIndexOf('.'))
+version details.lastTag + (project.hasProperty("release") ?
+        "" : ("+build." + details.commitDistance + (project.hasProperty("run_number") ?
+                (".run." + props.run_number) : "")))
 
-println "Running Cleanroom $version"
+def version_txt = new File(project.projectDir, "version.txt")
+version_txt.write(version.toString())
+def spec_version = details.lastTag
+
+println "Setting up Cleanroom $version"
+if (project.hasProperty("run_number")) println("On GitHub runs #" + props.run_number)
 println "Java: ${ -> sysProps['java.version']} | JVM: ${ -> sysProps['java.vm.version']} | Vendor: ${ -> sysProps['java.vendor']} | Architecture: ${ -> sysProps['os.arch']}"
 
 // Initialize buildSrc
@@ -168,7 +176,22 @@ project(':cleanroom') {
 
     //  = 'net.minecraftforge'
     group = 'com.cleanroommc'
-    version = props.new_forge_version
+    version = rootProject.version
+
+    compileJava {
+        doFirst {
+            def target = new File("${rootProject.projectDir}/src/main/java/com/cleanroommc/common/CleanroomVersion.java")
+            def template = new File("${rootProject.projectDir}/templates/CleanroomVersion.java")
+
+            target.withWriter { def writer ->
+                template.eachLine { def line ->
+                    def newLine = line.replace("%VERSION%", versionDetails().lastTag)
+                            .replace("%BUILD_VERSION%", rootProject.version.toString())
+                    writer.write(newLine + "\n");
+                }
+            }
+        }
+    }
 
     sourceSets {
         main {
@@ -222,8 +245,8 @@ project(':cleanroom') {
         // Do not change the order unless it is required so
         lwjglLibraries = [
             [
-                'lwjgl3-glfw', 'lwjgl3-jemalloc', 'lwjgl3-openal',
-                'lwjgl3-opengl', 'lwjgl3-stb', 'lwjgl3-tinyfd', 'lwjgl3'
+                'lwjgl-glfw', 'lwjgl-jemalloc', 'lwjgl-openal',
+                'lwjgl-opengl', 'lwjgl-stb', 'lwjgl-tinyfd', 'lwjgl'
             ],
 
             [
@@ -256,7 +279,7 @@ project(':cleanroom') {
 
                 environment 'target', 'fmldevclient'
                 environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLTweaker'
-                environment 'mainClass', 'com.cleanroommc.bouncepad.Bouncepad'
+                environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
                 environment 'assetIndex', '{asset_index}'
                 environment 'assetDirectory', downloadAssets.output
                 environment 'nativesDirectory', extractNatives.output.get().asFile
@@ -265,7 +288,7 @@ project(':cleanroom') {
                 environment 'MCP_MAPPINGS', '{mcp_mappings}'
                 environment 'MCP_TO_SRG', createSrg2Mcp.getOutput().get().getAsFile().getAbsolutePath()
                 environment 'FORGE_GROUP', project.group
-                environment 'FORGE_VERSION', props.new_forge_version
+                environment 'FORGE_VERSION', props.last_forge_version
 
                 jvmArgs jvm_arguments + '-Dmixin.debug.export=true' + '-Dmixin.checks.interfaces=true'
                 //jvmArgs jvm_arguments
@@ -309,13 +332,13 @@ project(':cleanroom') {
 
                 environment 'target', 'fmldevserver'
                 environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLServerTweaker'
-                environment 'mainClass', 'com.cleanroommc.bouncepad.Bouncepad'
+                environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
                 environment 'MC_VERSION', props.minecraft_version
                 environment 'MCP_VERSION', props.mcp_version
                 environment 'MCP_MAPPINGS', '{mcp_mappings}'
                 environment 'MCP_TO_SRG', createSrg2Mcp.getOutput().get().getAsFile().getAbsolutePath()
                 environment 'FORGE_GROUP', project.group
-                environment 'FORGE_VERSION', props.new_forge_version
+                environment 'FORGE_VERSION', props.last_forge_version
 
                 // Lazily supply the Mappings target, createSrg2Mcp.getMappings() doesn't get populated until later
                 lazyToken 'mcp_mappings', { ->
@@ -364,7 +387,7 @@ project(':cleanroom') {
 
     // Dependencies
     configurations {
-        all { // LWJGL2 isn't friendly with us, so pye pye
+        configureEach { // LWJGL2 isn't friendly with us, so pye pye
             exclude group: 'org.lwjgl.lwjgl'
             exclude group: 'com.ibm.icu', module: 'icu4j-core-mojang'
             /*exclude group: 'org.apache.commons'
@@ -393,12 +416,14 @@ project(':cleanroom') {
     }
 
     dependencies {
+        compileOnly "com.cleanroommc:lwjglx:1.0.0"
+        installer "com.cleanroommc:lwjglxx:1.1.5"
         lwjglLibraries[0].each {
-            installer "org.lwjgl3:$it:$props.lwjgl_version"
-            runtimeOnly "org.lwjgl3:$it::$lwjglArch"
+            installer "org.lwjgl:$it:$props.lwjgl_version"
+            runtimeOnly "org.lwjgl:$it::$lwjglArch"
 
             lwjglLibraries[1].each { arch ->
-                lwjglNatives "org.lwjgl3:$it:$props.lwjgl_version:$arch"
+                lwjglNatives "org.lwjgl:$it:$props.lwjgl_version:$arch"
             }
         }
 
@@ -411,206 +436,83 @@ project(':cleanroom') {
         // Added back deprecated features for mods to load up properly
         installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
 
-        installer "com.cleanroommc:bouncepad:$props.bouncepad_version"
+        installer "top.outlands:foundation:0.15.4"
+        installer 'net.lenni0451:Reflect:1.5.0'
+        installer 'org.javassist:javassist:3.30.2-GA'
+        installer "zone.rong:imaginebreaker:2.1"
 
-        installer 'com.ibm.icu:icu4j:74.2'
+        installer 'com.ibm.icu:icu4j:77.1'
 
-        installer 'org.jline:jline:3.25.0'
-        installer 'com.typesafe.akka:akka-actor_2.12:2.8.5'
-        installer 'com.typesafe:config:1.4.3'
-        // TODO: Move scala away from being defaulted when installing (download on-demand?)
-        installer 'org.scala-lang:scala-actors-migration_2.11:1.1.0'
-        installer 'org.scala-lang:scala-compiler:2.11.1'
-        // We change the version so old installs don't break, as our clone of the jar is different the maven central
-        installer 'org.scala-lang.plugins:scala-continuations-library_2.11:1.0.2_mc'
-        installer 'org.scala-lang.plugins:scala-continuations-plugin_2.11.1:1.0.2_mc'
+        installer 'org.jline:jline:3.29.0'
+        installer 'org.jline:jline-native:3.29.0'
 
-        installer 'org.scala-lang:scala-library:2.11.1'
-        installer 'org.scala-lang:scala-parser-combinators_2.11:1.0.1'
-        installer 'org.scala-lang:scala-reflect:2.11.1'
-        installer 'org.scala-lang:scala-swing_2.11:1.0.1'
-        installer 'org.scala-lang:scala-xml_2.11:1.0.2'
+        installer 'net.java.jinput:jinput:2.0.10'
+
         installer 'lzma:lzma:0.0.1'
         installer 'java3d:vecmath:1.5.2'
-        installer 'net.sf.trove4j:trove4j:3.0.3'
-        installer 'org.apache.maven:maven-artifact:3.9.5'
-        installer 'net.sf.jopt-simple:jopt-simple:5.0.3'
-        installer 'org.apache.commons:commons-lang3:3.13.0'
-        installer 'org.apache.commons:commons-compress:1.24.0'
-        installer 'org.apache.httpcomponents:httpclient:4.5.14'
-        installer 'org.apache.httpcomponents:httpcore:4.4.16'
-        installer 'com.github.oshi:oshi-core:6.4.10'
-        installer 'net.java.dev.jna:jna:5.14.0'
-        installer 'net.java.dev.jna:jna-platform:5.14.0'
-        installer 'it.unimi.dsi:fastutil:8.5.12'
-        installer 'commons-codec:commons-codec:1.16.0'
-        installer 'commons-io:commons-io:2.15.1'
-        installer 'commons-logging:commons-logging:1.3.0'
-        installer 'com.google.guava:guava:33.0.0-jre'
+        installer 'net.sf.trove4j:core:3.1.0'
+        installer 'net.sf.trove4j:experimental:3.1.0'
+        installer 'org.apache.maven:maven-artifact:3.9.9'
+        installer 'net.sf.jopt-simple:jopt-simple:5.0.4'
+        installer 'org.apache.commons:commons-lang3:3.17.0'
+        installer 'org.apache.commons:commons-compress:1.27.1'
+        installer 'org.apache.httpcomponents.core5:httpcore5:5.3.4'
+        installer 'org.apache.httpcomponents.core5:httpcore5-h2:5.3.4'
+        installer 'org.apache.httpcomponents.client5:httpclient5:5.5'
+        installer 'com.github.oshi:oshi-core:6.8.2'
+        installer 'net.java.dev.jna:jna:5.17.0'
+        installer 'net.java.dev.jna:jna-platform:5.17.0'
+        installer 'it.unimi.dsi:fastutil:8.5.16'
+        installer 'commons-codec:commons-codec:1.18.0'
+        installer 'commons-io:commons-io:2.19.0'
+        installer 'commons-logging:commons-logging:1.3.5'
+        installer 'com.google.guava:guava:33.4.8-jre'
         installer 'com.google.guava:failureaccess:1.0.2'
-        installer 'com.google.code.gson:gson:2.10.1'
+        installer 'com.google.code.gson:gson:2.13.1'
         installer 'com.google.code.findbugs:jsr305:3.0.2'
+        installer 'org.jspecify:jspecify:1.0.0'
 
-        // TODO: Unpin in 1.18.1 or when Mojang bumps the Log4J version
-        installer 'org.apache.logging.log4j:log4j-api:2.22.1'
-        installer 'org.apache.logging.log4j:log4j-core:2.22.1'
-        installer 'jakarta.annotation:jakarta.annotation-api:2.1.1'
-        installer 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.1'
-        installer 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.1'
-        installer 'jakarta.activation:jakarta.activation-api:2.1.2'
+        // Netty
+        installer "io.netty:netty-codec-base:$props.netty_version"
+        installer "io.netty:netty-buffer:$props.netty_version"
+        installer "io.netty:netty-common:$props.netty_version"
+        installer "io.netty:netty-handler:$props.netty_version"
+        installer "io.netty:netty-resolver:$props.netty_version"
+        installer "io.netty:netty-transport:$props.netty_version"
+        installer "io.netty:netty-transport-native-unix-common:$props.netty_version:linux-x86_64"
+        installer "io.netty:netty-transport-classes-epoll:$props.netty_version"
+        installer "io.netty:netty-transport-native-epoll:$props.netty_version:linux-x86_64"
+        installer "io.netty:netty-codec-http:$props.netty_version"
+        installer "io.netty:netty-codec-http2:$props.netty_version"
+        installer "io.netty:netty-codec-dns:$props.netty_version"
+        installer "io.netty:netty-codec-compression:$props.netty_version"
+        installer "io.netty:netty-resolver-dns:$props.netty_version"
+
+        installer 'org.apache.logging.log4j:log4j-api:2.25.1'
+        installer 'org.apache.logging.log4j:log4j-core:2.25.1'
+        installer 'org.apache.logging.log4j:log4j-slf4j2-impl:2.25.1'
+        installer 'org.slf4j:slf4j-api:2.0.17'
+        installer 'jakarta.annotation:jakarta.annotation-api:3.0.0'
+        installer 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
+        installer 'org.glassfish.jaxb:jaxb-runtime:4.0.5'
+        installer 'org.glassfish.jaxb:jaxb-core:4.0.5'
+        installer 'com.sun.istack:istack-commons-runtime:4.2.0'
+        installer 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.2'
+        installer 'jakarta.activation:jakarta.activation-api:2.1.3'
         installer 'org.glassfish.corba:glassfish-corba-omgapi:4.2.5'
-        installer 'org.openjdk.nashorn:nashorn-core:15.4'
+        installer 'org.openjdk.nashorn:nashorn-core:15.6'
+        // installer 'ca.weblite:java-objc-bridge:1.2'
+
 
         // Mixin
-        installer 'com.cleanroommc:sponge-mixin:0.16.0+mixin.0.8.5'
-        installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.3.5')
+        installer 'com.cleanroommc:sponge-mixin:0.20.10+mixin.0.8.7'
+        installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.5.0')
 
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
-        testImplementation 'org.junit.vintage:junit-vintage-engine:5.10.1'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.12.0'
+        testImplementation 'org.junit.vintage:junit-vintage-engine:5.12.0'
         testImplementation 'org.opentest4j:opentest4j:1.3.0' // Needed for junit 5
-        testImplementation 'org.hamcrest:hamcrest:2.2' // Needs advanced matching for list order
+        testImplementation 'org.hamcrest:hamcrest:3.0' // Needs advanced matching for list order
 
-        /*
-        forgeGradleMcDeps
-        +--- com.google.code.findbugs:jsr305:3.0.1
-        +--- com.mojang:netty:1.6
-        +--- oshi-project:oshi-core:1.1
-        |    +--- net.java.dev.jna:jna:3.4.0
-        |    \--- net.java.dev.jna:platform:3.4.0
-        +--- net.java.dev.jna:jna:3.4.0
-        +--- net.java.dev.jna:platform:3.4.0
-        +--- com.ibm.icu:icu4j-core-mojang:51.2
-        +--- net.sf.jopt-simple:jopt-simple:4.6
-        +--- io.netty:netty-all:4.0.23.Final
-        +--- com.google.guava:guava:17.0
-        +--- org.apache.commons:commons-lang3:3.3.2
-        +--- commons-io:commons-io:2.4
-        +--- commons-codec:commons-codec:1.9
-        +--- net.java.jutils:jutils:1.0.0
-        +--- com.google.code.gson:gson:2.2.4
-        +--- com.mojang:authlib:1.5.24
-        |    +--- com.google.code.findbugs:jsr305:2.0.1 -> 3.0.1
-        |    +--- com.google.guava:guava:17.0
-        |    +--- org.apache.logging.log4j:log4j-core:2.0-beta9
-        |    |    \--- org.apache.logging.log4j:log4j-api:2.0-beta9
-        |    +--- commons-io:commons-io:2.4
-        |    +--- org.apache.commons:commons-lang3:3.3.2
-        |    +--- org.apache.logging.log4j:log4j-api:2.0-beta9
-        |    +--- com.google.code.gson:gson:2.2.4
-        |    \--- commons-codec:commons-codec:1.9
-        +--- com.mojang:realms:1.10.16
-        |    +--- org.apache.httpcomponents:httpcore:4.3.2
-        |    +--- org.apache.httpcomponents:httpclient:4.3.3
-        |    |    +--- org.apache.httpcomponents:httpcore:4.3.2
-        |    |    +--- commons-logging:commons-logging:1.1.3
-        |    |    \--- commons-codec:commons-codec:1.6 -> 1.9
-        |    +--- org.apache.commons:commons-compress:1.8.1
-        |    \--- commons-logging:commons-logging:1.1.3
-        +--- org.apache.commons:commons-compress:1.8.1
-        +--- org.apache.httpcomponents:httpclient:4.3.3 (*)
-        +--- commons-logging:commons-logging:1.1.3
-        +--- org.apache.httpcomponents:httpcore:4.3.2
-        +--- it.unimi.dsi:fastutil:7.0.12_mojang
-        +--- org.apache.logging.log4j:log4j-api:2.0-beta9
-        +--- org.apache.logging.log4j:log4j-core:2.0-beta9 (*)
-        +--- net.minecraft:launchwrapper:1.12
-        |    +--- org.ow2.asm:asm-debug-all:5.0.3
-        |    +--- org.apache.logging.log4j:log4j-core:2.0-beta9 (*)
-        |    +--- net.sf.jopt-simple:jopt-simple:4.5 -> 4.6
-        |    +--- org.lwjgl.lwjgl:lwjgl:2.9.1 -> 2.9.4-nightly-20150209
-        |    |    +--- org.lwjgl.lwjgl:lwjgl-platform:2.9.4-nightly-20150209
-        |    |    \--- net.java.jinput:jinput:2.0.5
-        |    |         +--- net.java.jutils:jutils:1.0.0
-        |    |         \--- net.java.jinput:jinput-platform:2.0.5
-        |    \--- org.apache.logging.log4j:log4j-api:2.0-beta9
-        +--- jline:jline:2.13
-        |    \--- org.fusesource.jansi:jansi:1.11
-        +--- com.google.code.findbugs:jsr305:1.3.9 -> 3.0.1
-        +--- org.ow2.asm:asm-debug-all:5.0.3
-        +--- com.typesafe.akka:akka-actor_2.11:2.3.3
-        |    +--- org.scala-lang:scala-library:2.11.1
-        |    \--- com.typesafe:config:1.2.1
-        +--- com.typesafe:config:1.2.1
-        +--- org.scala-lang:scala-actors-migration_2.11:1.1.0
-        |    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
-        |    +--- org.scala-lang:scala-actors:2.11.0
-        |    |    \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
-        |    \--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.1 -> 1.0.2
-        |         \--- org.scala-lang:scala-library:2.11.1
-        +--- org.scala-lang:scala-compiler:2.11.1
-        |    +--- org.scala-lang:scala-library:2.11.1
-        |    +--- org.scala-lang:scala-reflect:2.11.1
-        |    |    \--- org.scala-lang:scala-library:2.11.1
-        |    +--- org.scala-lang.modules:scala-xml_2.11:1.0.2
-        |    |    \--- org.scala-lang:scala-library:2.11.1
-        |    \--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1
-        |         \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
-        +--- org.scala-lang.plugins:scala-continuations-library_2.11:1.0.2 (*)
-        +--- org.scala-lang.plugins:scala-continuations-plugin_2.11.1:1.0.2
-        |    +--- org.scala-lang:scala-compiler:2.11.1 (*)
-        |    \--- org.scala-lang:scala-library:2.11.1
-        +--- org.scala-lang:scala-library:2.11.1
-        +--- org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1 (*)
-        +--- org.scala-lang:scala-reflect:2.11.1 (*)
-        +--- org.scala-lang.modules:scala-swing_2.11:1.0.1
-        |    \--- org.scala-lang:scala-library:2.11.0 -> 2.11.1
-        +--- org.scala-lang.modules:scala-xml_2.11:1.0.2 (*)
-        +--- lzma:lzma:0.0.1
-        +--- net.sf.trove4j:trove4j:3.0.3
-        +--- com.paulscode:codecjorbis:20101023
-        |    \--- com.paulscode:soundsystem:20120107
-        +--- com.paulscode:codecwav:20101023
-        |    \--- com.paulscode:soundsystem:20120107
-        +--- com.paulscode:libraryjavasound:20101123
-        |    \--- com.paulscode:soundsystem:20120107
-        +--- com.paulscode:librarylwjglopenal:20100824
-        |    +--- com.paulscode:soundsystem:20120107
-        |    \--- org.lwjgl.lwjgl:lwjgl:2.8.3 -> 2.9.4-nightly-20150209 (*)
-        +--- com.paulscode:soundsystem:20120107
-        +--- net.java.jinput:jinput:2.0.5 (*)
-        +--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209 (*)
-        +--- org.lwjgl.lwjgl:lwjgl_util:2.9.4-nightly-20150209
-        |    \--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209 (*)
-        \--- java3d:vecmath:1.5.2
-
-        forgeGradleMcDepsClient
-        +--- com.paulscode:codecjorbis:20101023
-        |    \--- com.paulscode:soundsystem:20120107
-        +--- com.paulscode:codecwav:20101023
-        |    \--- com.paulscode:soundsystem:20120107
-        +--- com.paulscode:libraryjavasound:20101123
-        |    \--- com.paulscode:soundsystem:20120107
-        +--- com.paulscode:librarylwjglopenal:20100824
-        |    +--- com.paulscode:soundsystem:20120107
-        |    \--- org.lwjgl.lwjgl:lwjgl:2.8.3 -> 2.9.4-nightly-20150209
-        |         +--- org.lwjgl.lwjgl:lwjgl-platform:2.9.4-nightly-20150209
-        |         \--- net.java.jinput:jinput:2.0.5
-        |              +--- net.java.jutils:jutils:1.0.0
-        |              \--- net.java.jinput:jinput-platform:2.0.5
-        +--- com.paulscode:soundsystem:20120107
-        +--- net.java.jinput:jinput:2.0.5 (*)
-        +--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209 (*)
-        +--- org.lwjgl.lwjgl:lwjgl_util:2.9.4-nightly-20150209
-        |    \--- org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209 (*)
-        \--- java3d:vecmath:1.5.2
-
-        forgeGradleMcNatives
-        +--- org.lwjgl.lwjgl:lwjgl-platform:2.9.4-nightly-20150209
-        \--- net.java.jinput:jinput-platform:2.0.5
-
-        forgeGradleMcpData
-        \--- de.oceanlabs.mcp:mcp:1.11.2
-
-        forgeGradleMcpMappings
-        \--- de.oceanlabs.mcp:mcp_snapshot_nodoc:20161220-1.11
-
-        launch4j - The launch4j configuration for this project.
-        No dependencies
-
-        BUILD SUCCESSFUL
-        */
-
-        // implementation 'net.minecraftforge:legacydev:0.2.3.+:fatjar' TODO: Not Needed
 
     }
 
@@ -633,14 +535,16 @@ project(':cleanroom') {
     ['Client', 'Server', 'Joined'].each { side ->
         def gen = tasks.getByName("gen${side}BinPatches")
         gen.tool = props.binary_patcher
-        task "apply${side}BinPatches"(type: ApplyBinPatches, dependsOn: gen) {
+        tasks.register("apply${side}BinPatches", ApplyBinPatches) {
+            dependsOn gen
             clean = gen.cleanJar
             patch = gen.output
             tool = props.binary_patcher
         }
     }
 
-    task genRuntimeBinPatches(type: GenerateBinPatches, dependsOn: [genClientBinPatches, genServerBinPatches]) {
+    tasks.register('genRuntimeBinPatches', GenerateBinPatches) {
+        dependsOn genClientBinPatches, genServerBinPatches
         tool = props.binary_patcher
     }
 
@@ -665,7 +569,8 @@ project(':cleanroom') {
         }
     }
 
-    task downloadLibraries(dependsOn: ':mcp:setupMCP') {
+    tasks.register('downloadLibraries') {
+        dependsOn ':mcp:setupMCP'
         inputs.file version_json
         doLast {
             def json = version_json.json()
@@ -684,7 +589,8 @@ project(':cleanroom') {
         }
     }
 
-    task extractInheritance(type: ExtractInheritance, dependsOn: [genJoinedBinPatches, downloadLibraries]) {
+    tasks.register('extractInheritance', ExtractInheritance) {
+        dependsOn genJoinedBinPatches, downloadLibraries
         input = genJoinedBinPatches.cleanJar
         doFirst {
             def json = version_json.json()
@@ -700,7 +606,8 @@ project(':cleanroom') {
         }
     }
 
-    task checkAccessTransformers(dependsOn: genJoinedBinPatches) {
+    tasks.register('checkAccessTransformers') {
+        dependsOn genJoinedBinPatches
         inputs.file {
             genJoinedBinPatches.cleanJar
         }
@@ -711,7 +618,7 @@ project(':cleanroom') {
             zip.entries().findAll {
                 !it.directory && it.name.endsWith('.class')
             }.each { entry ->
-                new ClassReader(zip.getInputStream(entry)).accept(new ClassVisitor(Opcodes.ASM7) {
+                new ClassReader(zip.getInputStream(entry)).accept(new ClassVisitor(Opcodes.ASM9) {
 
                     String name
 
@@ -762,7 +669,8 @@ project(':cleanroom') {
         }
     }
 
-    task checkSAS(dependsOn: extractInheritance) {
+    tasks.register('checkSAS') {
+        dependsOn extractInheritance
         inputs.file {
             extractInheritance.output
         }
@@ -783,7 +691,7 @@ project(':cleanroom') {
                     def comment = idx == -1 ? null : line.substring(idx)
                     if (idx != -1) line = line.substring(0, idx - 1)
 
-                    def(cls, desc) = (line.trim() + '    ').split(' ', -1)
+                    def (cls, desc) = (line.trim() + '    ').split(' ', -1)
                     cls = cls.replaceAll('\\.', '/')
                     desc = desc.replace('(', ' (')
                     if (desc.isEmpty() || json[cls] == null || json[cls]['methods'] == null || json[cls]['methods'][desc] == null) {
@@ -801,7 +709,8 @@ project(':cleanroom') {
         }
     }
 
-    task launcherJson(dependsOn: universalJar /*['signUniversalJar']*/) {
+    tasks.register('launcherJson') {
+        dependsOn universalJar
         inputs.file {
             universalJar.archivePath
         }
@@ -826,7 +735,7 @@ project(':cleanroom') {
                 time: timestamp,
                 releaseTime: timestamp,
                 type: 'release',
-                mainClass: 'com.cleanroommc.bouncepad.Bouncepad',
+                mainClass: 'top.outlands.foundation.boot.Foundation',
                 inheritsFrom: props.minecraft_version,
                 logging: { },
                 minecraftArguments: [
@@ -869,7 +778,8 @@ project(':cleanroom') {
         }
     }
 
-    task installerJson(dependsOn: [launcherJson, genClientBinPatches/*, createClientSRG, createServerSRG*/]) {
+    tasks.register('installerJson') {
+        dependsOn launcherJson, genClientBinPatches/*, createClientSRG, createServerSRG*/
         ext {
             output = file('build/install_profile.json')
             installer_tools = "net.minecraftforge:installertools:$props.installer_tools_version"
@@ -914,11 +824,13 @@ project(':cleanroom') {
         }
     }
 
-    task extractObf2Srg(type: ExtractMCPData, dependsOn: [':mcp:downloadConfig']) {
+    tasks.register('extractObf2Srg', ExtractMCPData) {
+        dependsOn ':mcp:downloadConfig'
         config = project(':mcp').downloadConfig.output
     }
 
-    task deobfDataLzma(dependsOn: [extractObf2Srg]) {
+    tasks.register('deobfDataLzma') {
+        dependsOn extractObf2Srg
         ext {
             output_srg = file('build/deobfDataLzma/data.srg')
             output = file('build/deobfDataLzma/data.lzma')
@@ -973,7 +885,7 @@ project(':cleanroom') {
                 'Specification-Vendor'  : props.vendor,
                 'Specification-Version' : spec_version,
                 'Implementation-Title'  : project.group,
-                'Implementation-Version': props.new_forge_version,
+                'Implementation-Version': props.last_forge_version,
                 'Implementation-Vendor' : props.vendor
             ], 'net/minecraftforge/common/')
         }
@@ -981,12 +893,13 @@ project(':cleanroom') {
         archiveClassifier = 'universal'
     }
 
-    task downloadInstaller(type: DownloadMavenArtifact) {
+    tasks.register('downloadInstaller', DownloadMavenArtifact) {
         artifact = 'net.minecraftforge:installer:2.2.+:fatjar'
         changing = true
     }
 
-    task installerJar(type: Zip, dependsOn: [downloadInstaller, installerJson, launcherJson, genClientBinPatches, genServerBinPatches/*, 'signUniversalJar'*/]) {
+    tasks.register('installerJar', Zip) {
+        dependsOn downloadInstaller, installerJson, launcherJson, genClientBinPatches, genServerBinPatches/*, 'signUniversalJar'*/
         archiveClassifier = 'installer'
         archiveExtension = 'jar' //Needs to be Zip task to not override Manifest, so set extension
         destinationDirectory = file('build/libs')
@@ -1002,7 +915,7 @@ project(':cleanroom') {
         from(installerJson.output)
         from(launcherJson.output)
         from(zipTree(downloadInstaller.output)) {
-            duplicatesStrategy = 'exclude'
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         }
     }
 
@@ -1043,7 +956,7 @@ project(':cleanroom') {
                 main 'com.cleanroommc.boot.MainClient'
 
                 environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLTweaker'
-                environment 'mainClass', 'com.cleanroommc.bouncepad.Bouncepad'
+                environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
                 environment 'assetIndex', '{asset_index}'
                 environment 'assetDirectory', '{assets_root}'
                 environment 'nativesDirectory', '{natives}'
@@ -1051,32 +964,32 @@ project(':cleanroom') {
                 environment 'MCP_MAPPINGS', '{mcp_mappings}'
                 environment 'MCP_TO_SRG', '{mcp_to_srg}'
                 environment 'FORGE_GROUP', project.group
-                environment 'FORGE_VERSION', props.new_forge_version
+                environment 'FORGE_VERSION', props.last_forge_version
             }
 
             server {
                 main 'com.cleanroommc.boot.MainServer'
 
                 environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLServerTweaker'
-                environment 'mainClass', 'com.cleanroommc.bouncepad.Bouncepad'
+                environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
                 environment 'MC_VERSION', props.minecraft_version
                 environment 'MCP_MAPPINGS', '{mcp_mappings}'
                 environment 'MCP_TO_SRG', '{mcp_to_srg}'
                 environment 'FORGE_GROUP', project.group
-                environment 'FORGE_VERSION', props.new_forge_version
+                environment 'FORGE_VERSION', props.last_forge_version
             }
         }
     }
 
-    task userdevExtras(type: Jar) {
+    tasks.register('userdevExtras', Jar) {
         dependsOn classes
         from sourceSets.userdev.output
         archiveClassifier = 'userdev-temp'
     }
 
-    task userdevExtrasReobf(type: ReobfuscateJar) {
+    tasks.register('userdevExtrasReobf', ReobfuscateJar) {
         dependsOn userdevExtras, createMcp2Srg
-        input = tasks.userdevExtras.archivePath
+        input = tasks.userdevExtras.archiveFile
         srg = tasks.createMcp2Srg.output
     }
 
@@ -1117,7 +1030,7 @@ project(':cleanroom') {
             maven(MavenPublication) {
                 groupId = "com.cleanroommc"
                 artifactId = "cleanroom"
-                version = project.new_forge_version
+                version = rootProject.version
                 from components.java
                 artifact userdevJar
                 artifact universalJar
@@ -1130,16 +1043,23 @@ project(':cleanroom') {
     test {
         jvmArgs jvm_arguments + compiler_jvm_arguments
     }
+
+    artifacts {
+        archives universalJar
+        archives installerJar
+    }
+
 }
 
-tasks.withType(JavaCompile) {
+
+tasks.withType(JavaCompile).configureEach {
     options.compilerArgs += compiler_jvm_arguments
     options.encoding = 'UTF-8'
 }
 
 idea.project.settings.compiler.javac.javacAdditionalOptions = compiler_jvm_arguments.join(' ')
 
-task setup() {
+tasks.register('setup') {
     group 'setup'
     // These must be strings so that we can do lazy resolution. Else we need evaluationDependsOnChildren above
     dependsOn ':minecraft:extractMapped'
@@ -1147,8 +1067,10 @@ task setup() {
 }
 
 subprojects {
-    tasks.withType(JavaCompile) {
-        options.compilerArgs += compiler_jvm_arguments
-        options.encoding = 'UTF-8'
+    tasks.withType(JavaCompile).tap {
+        configureEach {
+            options.compilerArgs += compiler_jvm_arguments
+            options.encoding = 'UTF-8'
+        }
     }
 }

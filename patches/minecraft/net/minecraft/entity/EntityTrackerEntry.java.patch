@@ -14,23 +14,31 @@
  
      public EntityTrackerEntry(Entity p_i46837_1_, int p_i46837_2_, int p_i46837_3_, int p_i46837_4_, boolean p_i46837_5_)
      {
-@@ -112,7 +112,6 @@
+@@ -112,15 +112,18 @@
          this.field_180234_y = p_i46837_1_.field_70122_E;
      }
  
 -    @Override
      public boolean equals(Object p_equals_1_)
      {
-         if (p_equals_1_ instanceof EntityTrackerEntry)
-@@ -125,7 +124,6 @@
-         }
+-        return p_equals_1_ instanceof EntityTrackerEntry
+-               ? ((EntityTrackerEntry)p_equals_1_).field_73132_a.func_145782_y() == this.field_73132_a.func_145782_y()
+-               : false;
++        if (p_equals_1_ instanceof EntityTrackerEntry)
++        {
++            return ((EntityTrackerEntry)p_equals_1_).field_73132_a.func_145782_y() == this.field_73132_a.func_145782_y();
++        }
++        else
++        {
++            return false;
++        }
      }
  
 -    @Override
      public int hashCode()
      {
          return this.field_73132_a.func_145782_y();
-@@ -135,7 +133,7 @@
+@@ -130,7 +133,7 @@
      {
          this.field_73133_n = false;
  
@@ -39,7 +47,7 @@
          {
              this.field_73147_p = this.field_73132_a.field_70165_t;
              this.field_73146_q = this.field_73132_a.field_70163_u;
-@@ -160,13 +158,13 @@
+@@ -155,13 +158,13 @@
  
              if (itemstack.func_77973_b() instanceof ItemMap)
              {
@@ -55,7 +63,7 @@
  
                      if (packet != null)
                      {
-@@ -188,9 +186,7 @@
+@@ -183,9 +186,7 @@
  
                  if (flag3)
                  {
@@ -66,7 +74,16 @@
                      this.field_73127_g = j1;
                      this.field_73139_h = l1;
                  }
-@@ -218,15 +214,7 @@
+@@ -198,7 +199,7 @@
+             }
+             else
+             {
+-                this.field_73142_u++;
++                ++this.field_73142_u;
+                 long i1 = EntityTracker.func_187253_a(this.field_73132_a.field_70165_t);
+                 long i2 = EntityTracker.func_187253_a(this.field_73132_a.field_70163_u);
+                 long j2 = EntityTracker.func_187253_a(this.field_73132_a.field_70161_v);
+@@ -213,15 +214,7 @@
  
                  if (this.field_73136_m > 0 || this.field_73132_a instanceof EntityArrow)
                  {
@@ -83,7 +100,7 @@
                      {
                          if ((!flag || !flag1) && !(this.field_73132_a instanceof EntityArrow))
                          {
-@@ -241,9 +229,7 @@
+@@ -236,9 +229,7 @@
                          }
                          else
                          {
@@ -94,7 +111,7 @@
                          }
                      }
                      else
-@@ -267,11 +253,10 @@
+@@ -262,11 +253,10 @@
                      double d0 = this.field_73132_a.field_70159_w - this.field_73137_j;
                      double d1 = this.field_73132_a.field_70181_x - this.field_73138_k;
                      double d2 = this.field_73132_a.field_70179_y - this.field_73135_l;
@@ -108,7 +125,16 @@
                      {
                          this.field_73137_j = this.field_73132_a.field_70159_w;
                          this.field_73138_k = this.field_73132_a.field_70181_x;
-@@ -397,8 +382,7 @@
+@@ -309,7 +299,7 @@
+             this.field_73132_a.field_70160_al = false;
+         }
+ 
+-        this.field_73136_m++;
++        ++this.field_73136_m;
+ 
+         if (this.field_73132_a.field_70133_I)
+         {
+@@ -392,8 +382,7 @@
  
                      if (!this.field_73132_a.func_184212_Q().func_187228_d())
                      {
@@ -118,7 +144,7 @@
                      }
  
                      boolean flag = this.field_73143_t;
-@@ -425,15 +409,7 @@
+@@ -420,15 +409,7 @@
  
                      if (flag && !(packet instanceof SPacketSpawnMob))
                      {
@@ -135,7 +161,7 @@
                      }
  
                      if (this.field_73132_a instanceof EntityLivingBase)
-@@ -481,6 +457,7 @@
+@@ -476,6 +457,7 @@
  
                      this.field_73132_a.func_184178_b(p_73117_1_);
                      p_73117_1_.func_184848_d(this.field_73132_a);
@@ -143,7 +169,7 @@
                  }
              }
              else if (this.field_73134_o.contains(p_73117_1_))
-@@ -488,14 +465,15 @@
+@@ -483,14 +465,15 @@
                  this.field_73134_o.remove(p_73117_1_);
                  this.field_73132_a.func_184203_c(p_73117_1_);
                  p_73117_1_.func_152339_d(this.field_73132_a);
@@ -161,7 +187,16 @@
          int i = Math.min(this.field_73130_b, this.field_187262_f);
          return d0 >= (double)(-i) && d0 <= (double)i && d1 >= (double)(-i) && d1 <= (double)i && this.field_73132_a.func_174827_a(p_180233_1_);
      }
-@@ -520,6 +498,9 @@
+@@ -502,7 +485,7 @@
+ 
+     public void func_73125_b(List<EntityPlayer> p_73125_1_)
+     {
+-        for (int i = 0; i < p_73125_1_.size(); i++)
++        for (int i = 0; i < p_73125_1_.size(); ++i)
+         {
+             this.func_73117_b((EntityPlayerMP)p_73125_1_.get(i));
+         }
+@@ -515,6 +498,9 @@
              field_151262_p.warn("Fetching addPacket for removed entity");
          }
  
@@ -171,7 +206,7 @@
          if (this.field_73132_a instanceof EntityPlayerMP)
          {
              return new SPacketSpawnPlayer((EntityPlayer)this.field_73132_a);
-@@ -621,17 +602,17 @@
+@@ -616,17 +602,17 @@
                  spacketspawnobject = new SPacketSpawnObject(this.field_73132_a, i, 0);
              }
  

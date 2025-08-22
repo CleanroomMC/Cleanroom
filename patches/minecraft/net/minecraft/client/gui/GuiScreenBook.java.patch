@@ -16,7 +16,8 @@
      public void func_73876_c()
      {
          super.func_73876_c();
-         ++this.field_146479_t;
+-        this.field_146479_t++;
++        ++this.field_146479_t;
      }
  
 -    @Override
@@ -54,7 +55,32 @@
                  this.func_146462_a(false);
              }
              else if (p_146284_1_.field_146127_k == 3 && this.field_146475_i)
-@@ -218,7 +215,7 @@
+@@ -196,7 +193,7 @@
+             {
+                 if (this.field_146484_x < this.field_146476_w - 1)
+                 {
+-                    this.field_146484_x++;
++                    ++this.field_146484_x;
+                 }
+                 else if (this.field_146475_i)
+                 {
+@@ -204,7 +201,7 @@
+ 
+                     if (this.field_146484_x < this.field_146476_w - 1)
+                     {
+-                        this.field_146484_x++;
++                        ++this.field_146484_x;
+                     }
+                 }
+             }
+@@ -212,13 +209,13 @@
+             {
+                 if (this.field_146484_x > 0)
+                 {
+-                    this.field_146484_x--;
++                    --this.field_146484_x;
+                 }
+             }
              else if (p_146284_1_.field_146127_k == 5 && this.field_146480_s)
              {
                  this.func_146462_a(true);
@@ -63,7 +89,13 @@
              }
              else if (p_146284_1_.field_146127_k == 4 && this.field_146480_s)
              {
-@@ -239,7 +236,6 @@
+@@ -234,12 +231,11 @@
+         if (this.field_146483_y != null && this.field_146483_y.func_74745_c() < 50)
+         {
+             this.field_146483_y.func_74742_a(new NBTTagString(""));
+-            this.field_146476_w++;
++            ++this.field_146476_w;
+             this.field_146481_r = true;
          }
      }
  
@@ -113,6 +145,15 @@
                      {
                          this.field_175386_A = null;
                      }
+@@ -449,7 +440,7 @@
+             {
+                 int k1 = Math.min(128 / this.field_146289_q.field_78288_b, this.field_175386_A.size());
+ 
+-                for (int l1 = 0; l1 < k1; l1++)
++                for (int l1 = 0; l1 < k1; ++l1)
+                 {
+                     ITextComponent itextcomponent2 = this.field_175386_A.get(l1);
+                     this.field_146289_q.func_78276_b(itextcomponent2.func_150260_c(), i + 36, 34 + l1 * this.field_146289_q.field_78288_b, 0);
 @@ -467,7 +458,6 @@
          super.func_73863_a(p_73863_1_, p_73863_2_, p_73863_3_);
      }

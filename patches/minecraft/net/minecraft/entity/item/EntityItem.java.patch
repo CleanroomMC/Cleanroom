@@ -71,6 +71,15 @@
          if (this.func_92059_d().func_190926_b())
          {
              this.func_70106_y();
+@@ -87,7 +95,7 @@
+ 
+             if (this.field_145804_b > 0 && this.field_145804_b != 32767)
+             {
+-                this.field_145804_b--;
++                --this.field_145804_b;
+             }
+ 
+             this.field_70169_q = this.field_70165_t;
 @@ -99,7 +107,7 @@
  
              if (!this.func_189652_ae())
@@ -105,7 +114,7 @@
                      this.field_70159_w = (double)((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.2F);
                      this.field_70179_y = (double)((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.2F);
                      this.func_184185_a(SoundEvents.field_187658_bx, 0.4F, 2.0F + this.field_70146_Z.nextFloat() * 0.4F);
-@@ -138,26 +142,18 @@
+@@ -138,31 +142,23 @@
  
              if (this.field_70122_E)
              {
@@ -137,6 +146,12 @@
              }
  
              if (this.field_70292_b != -32768)
+             {
+-                this.field_70292_b++;
++                ++this.field_70292_b;
+             }
+ 
+             this.func_70072_I();
 @@ -174,13 +170,21 @@
                  double d5 = this.field_70179_y - d2;
                  double d6 = d3 * d3 + d4 * d4 + d5 * d5;

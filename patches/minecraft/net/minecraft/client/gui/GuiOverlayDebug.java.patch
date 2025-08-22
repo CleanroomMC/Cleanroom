@@ -16,7 +16,7 @@
  import org.lwjgl.opengl.Display;
  
  @SideOnly(Side.CLIENT)
-@@ -59,12 +61,7 @@
+@@ -59,15 +61,10 @@
      {
          List<String> list = this.call();
          list.add("");
@@ -29,9 +29,25 @@
 +        list.add("Debug: Pie [shift]: " + (this.field_175242_a.field_71474_y.field_74329_Q ? "visible" : "hidden") + " FPS [alt]: " + (this.field_175242_a.field_71474_y.field_181657_aC ? "visible" : "hidden"));
          list.add("For help: press F3 + Q");
  
-         for (int i = 0; i < list.size(); ++i)
-@@ -106,24 +103,11 @@
-     @SuppressWarnings("incomplete-switch")
+-        for (int i = 0; i < list.size(); i++)
++        for (int i = 0; i < list.size(); ++i)
+         {
+             String s = list.get(i);
+ 
+@@ -87,7 +84,7 @@
+     {
+         List<String> list = this.func_175238_c();
+ 
+-        for (int i = 0; i < list.size(); i++)
++        for (int i = 0; i < list.size(); ++i)
+         {
+             String s = list.get(i);
+ 
+@@ -103,26 +100,14 @@
+         }
+     }
+ 
++    @SuppressWarnings("incomplete-switch")
      protected List<String> call()
      {
 -        BlockPos blockpos = new BlockPos(
@@ -57,7 +73,7 @@
          }
          else
          {
-@@ -146,87 +130,40 @@
+@@ -145,87 +130,40 @@
                      s = "Towards positive X";
              }
  
@@ -166,7 +182,7 @@
                  }
              }
  
-@@ -235,9 +172,7 @@
+@@ -234,9 +172,7 @@
                  list.add("Shader: " + this.field_175242_a.field_71460_t.func_147706_e().func_148022_b());
              }
  
@@ -177,7 +193,7 @@
              {
                  BlockPos blockpos1 = this.field_175242_a.field_71476_x.func_178782_a();
                  list.add(String.format("Looking at: %d %d %d", blockpos1.func_177958_n(), blockpos1.func_177956_o(), blockpos1.func_177952_p()));
-@@ -253,17 +188,10 @@
+@@ -252,17 +188,10 @@
          long j = Runtime.getRuntime().totalMemory();
          long k = Runtime.getRuntime().freeMemory();
          long l = j - k;
@@ -199,7 +215,7 @@
  
          if (this.field_175242_a.func_189648_am())
          {
-@@ -271,9 +199,7 @@
+@@ -270,9 +199,7 @@
          }
          else
          {
@@ -210,7 +226,7 @@
              {
                  BlockPos blockpos = this.field_175242_a.field_71476_x.func_178782_a();
                  IBlockState iblockstate = this.field_175242_a.field_71441_e.func_180495_p(blockpos);
-@@ -285,12 +211,15 @@
+@@ -284,12 +211,15 @@
  
                  list.add("");
                  list.add(String.valueOf(Block.field_149771_c.func_177774_c(iblockstate.func_177230_c())));
@@ -220,7 +236,7 @@
 -                for (Entry entry : iblockstate.func_177228_b().entrySet())
 +                for (UnmodifiableIterator unmodifiableiterator = iblockstate.func_177228_b().entrySet().iterator(); unmodifiableiterator.hasNext(); list.add(iproperty.func_177701_a() + ": " + s))
                  {
--                    IProperty<T> iproperty = (IProperty)entry.getKey();
+-                    IProperty<T> iproperty = (IProperty<T>)entry.getKey();
 +                    Entry < IProperty<?>, Comparable<? >> entry = (Entry)unmodifiableiterator.next();
 +                    iproperty = (IProperty)entry.getKey();
                      T t = (T)entry.getValue();
@@ -229,7 +245,7 @@
  
                      if (Boolean.TRUE.equals(t))
                      {
-@@ -300,8 +229,6 @@
+@@ -299,8 +229,6 @@
                      {
                          s = TextFormatting.RED + s;
                      }
@@ -238,7 +254,16 @@
                  }
              }
  
-@@ -350,21 +277,19 @@
+@@ -325,7 +253,7 @@
+             int i1 = frametimer.func_181748_a(along[k], 30);
+             int j1 = this.func_181552_c(MathHelper.func_76125_a(i1, 0, 60), 0, 30, 60);
+             this.func_73728_b(l, scaledresolution.func_78328_b(), scaledresolution.func_78328_b() - i1, j1);
+-            l++;
++            ++l;
+             k = frametimer.func_181751_b(k + 1);
+         }
+ 
+@@ -349,21 +277,19 @@
  
      private int func_181552_c(int p_181552_1_, int p_181552_2_, int p_181552_3_, int p_181552_4_)
      {

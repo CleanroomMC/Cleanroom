@@ -102,5 +102,6 @@ public class EnumHackeryTest {
         Assert.assertNotNull(MassiveTestEnum.CHAIN.repairMaterial);
         Assert.assertNotNull(obsidian.repairMaterial);
         Assert.assertEquals(obsidian.repairMaterial, MassiveTestEnum.valueOf("OBSIDIAN").repairMaterial);
+
     }
 }

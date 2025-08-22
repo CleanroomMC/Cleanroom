@@ -23,9 +23,24 @@
      public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
      {
          int i = p_180709_2_.nextInt(5) + 7;
-@@ -58,11 +52,14 @@
+@@ -39,7 +33,7 @@
+         {
+             boolean flag = true;
+ 
+-            for (int i1 = p_180709_3_.func_177956_o(); i1 <= p_180709_3_.func_177956_o() + 1 + i && flag; i1++)
++            for (int i1 = p_180709_3_.func_177956_o(); i1 <= p_180709_3_.func_177956_o() + 1 + i && flag; ++i1)
+             {
+                 int j1 = 1;
+ 
+@@ -54,15 +48,18 @@
+ 
+                 BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+ 
+-                for (int k1 = p_180709_3_.func_177958_n() - j1; k1 <= p_180709_3_.func_177958_n() + j1 && flag; k1++)
++                for (int k1 = p_180709_3_.func_177958_n() - j1; k1 <= p_180709_3_.func_177958_n() + j1 && flag; ++k1)
                  {
-                     for (int l1 = p_180709_3_.func_177952_p() - j1; l1 <= p_180709_3_.func_177952_p() + j1 && flag; ++l1)
+-                    for (int l1 = p_180709_3_.func_177952_p() - j1; l1 <= p_180709_3_.func_177952_p() + j1 && flag; l1++)
++                    for (int l1 = p_180709_3_.func_177952_p() - j1; l1 <= p_180709_3_.func_177952_p() + j1 && flag; ++l1)
                      {
 -                        if (i1 < 0 || i1 >= 256)
 +                        if (i1 >= 0 && i1 < 256)
@@ -41,7 +56,7 @@
                          {
                              flag = false;
                          }
-@@ -76,11 +73,13 @@
+@@ -76,28 +73,31 @@
              }
              else
              {
@@ -57,8 +72,19 @@
 +                    state.func_177230_c().onPlantGrow(state, p_180709_1_, down, p_180709_3_);
                      int k2 = 0;
  
-                     for (int l2 = p_180709_3_.func_177956_o() + i; l2 >= p_180709_3_.func_177956_o() + j; --l2)
-@@ -96,8 +95,9 @@
+-                    for (int l2 = p_180709_3_.func_177956_o() + i; l2 >= p_180709_3_.func_177956_o() + j; l2--)
++                    for (int l2 = p_180709_3_.func_177956_o() + i; l2 >= p_180709_3_.func_177956_o() + j; --l2)
+                     {
+-                        for (int j3 = p_180709_3_.func_177958_n() - k2; j3 <= p_180709_3_.func_177958_n() + k2; j3++)
++                        for (int j3 = p_180709_3_.func_177958_n() - k2; j3 <= p_180709_3_.func_177958_n() + k2; ++j3)
+                         {
+                             int k3 = j3 - p_180709_3_.func_177958_n();
+ 
+-                            for (int i2 = p_180709_3_.func_177952_p() - k2; i2 <= p_180709_3_.func_177952_p() + k2; i2++)
++                            for (int i2 = p_180709_3_.func_177952_p() - k2; i2 <= p_180709_3_.func_177952_p() + k2; ++i2)
+                             {
+                                 int j2 = i2 - p_180709_3_.func_177952_p();
+ 
                                  if (Math.abs(k3) != k2 || Math.abs(j2) != k2 || k2 <= 0)
                                  {
                                      BlockPos blockpos = new BlockPos(j3, l2, i2);
@@ -69,9 +95,22 @@
                                      {
                                          this.func_175903_a(p_180709_1_, blockpos, field_181637_b);
                                      }
-@@ -117,9 +117,10 @@
+@@ -107,19 +107,20 @@
  
-                     for (int i3 = 0; i3 < i - 1; ++i3)
+                         if (k2 >= 1 && l2 == p_180709_3_.func_177956_o() + j + 1)
+                         {
+-                            k2--;
++                            --k2;
+                         }
+                         else if (k2 < l)
+                         {
+-                            k2++;
++                            ++k2;
+                         }
+                     }
+ 
+-                    for (int i3 = 0; i3 < i - 1; i3++)
++                    for (int i3 = 0; i3 < i - 1; ++i3)
                      {
 -                        Material material = p_180709_1_.func_180495_p(p_180709_3_.func_177981_b(i3)).func_185904_a();
 +                        BlockPos upN = p_180709_3_.func_177981_b(i3);
