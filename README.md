@@ -1,7 +1,9 @@
 # Kirino Rendering
 
+## Contributing!
+Check [Contributing Page](https://github.com/CleanroomMC/Cleanroom/blob/proposal/render-system/CONTRIBUTING.md)!
+
 ## Design Principles
-[Proposal](https://github.com/CleanroomMC/Cleanroom/discussions/405)
 - As independent of Minecraft as possible
 - Data/ID oriented
 
@@ -93,6 +95,7 @@
 - Modify EntityManager - callback on flush
 - Finish JobScheduler
 - MeshletManager ?
+- Fix AccessHandlePool not able to find fields from parent classes
 
 # Cleanroom Minecraft
 
