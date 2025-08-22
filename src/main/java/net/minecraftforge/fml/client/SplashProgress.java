@@ -917,7 +917,7 @@ public class SplashProgress
         {
             if (cachedImages == null) {
                 cachedImages = new HashMap<>();
-                var texture = new Texture(location, null)
+                var texture = new Texture(location, null);
                 cachedImages.put(location, texture = new Texture(location, null)); 
                 texture.bind();
             } else {
