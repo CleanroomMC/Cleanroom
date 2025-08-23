@@ -5,6 +5,7 @@ import com.cleanroommc.kirino.ecs.component.ICleanComponent;
 import com.cleanroommc.kirino.ecs.storage.ArchetypeDataPool;
 import com.cleanroommc.kirino.ecs.storage.ArchetypeKey;
 import com.cleanroommc.kirino.ecs.storage.HeapPool;
+import com.cleanroommc.kirino.ecs.world.CleanWorld;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -63,7 +64,8 @@ public class EntityManager {
     /**
      * Consume all buffered commands.
      * </br></br>
-     * Thread safety is guaranteed.
+     * Thread safety is guaranteed, but never call it during job or system execution.
+     * The only place to call it is the end of {@link CleanWorld#update()}.
      */
     public synchronized void flush() {
         synchronized (commandBuffer) {
