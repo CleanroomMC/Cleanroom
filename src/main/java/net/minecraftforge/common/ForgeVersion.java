@@ -149,6 +149,11 @@ public class ForgeVersion
             return this != UP_TO_DATE;
         }
 
+        public boolean shouldUpdate()
+        {
+            return this == OUTDATED || this == BETA_OUTDATED;
+        }
+
         public boolean isAnimated()
         {
             return animated;

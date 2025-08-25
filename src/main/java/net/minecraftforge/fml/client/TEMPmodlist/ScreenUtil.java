@@ -1,6 +1,7 @@
 package net.minecraftforge.fml.client.TEMPmodlist;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -45,31 +46,12 @@ public class ScreenUtil {
         }
     }
 
-    /**
-     * A backport of AbstractGUI.blit. Should not be overused.
-     */
     public static void blit(int x, int y, int width, int height, float uOffset, float vOffset, int uWidth, int vHeight, int textureWidth, int textureHeight) {
-        float minU = uOffset / textureWidth;
-        float minV = vOffset / textureHeight;
-        float maxU = (uOffset + uWidth) / textureWidth;
-        float maxV = (vOffset + vHeight) / textureHeight;
-
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        buffer.pos(x, y + height, 0).tex(minU, maxV).endVertex();
-        buffer.pos(x + width, y + height, 0).tex(maxU, maxV).endVertex();
-        buffer.pos(x + width, y, 0).tex(maxU, minV).endVertex();
-        buffer.pos(x, y, 0).tex(minU, minV).endVertex();
-        tessellator.draw();
+        Gui.drawScaledCustomSizeModalRect(x, y, uOffset, vOffset, uWidth, vHeight, width, height, textureWidth, textureHeight);
     }
 
-    /**
-     * A backport of AbstractGUI.blit. Should not be overused.
-     */
     public static void blit(int x, int y, float uOffset, float vOffset, int width, int height, int textureWidth, int textureHeight) {
-        blit(x, y, width, height, uOffset, vOffset, width, height, textureWidth, textureHeight);
+        Gui.drawModalRectWithCustomSizedTexture(x, y, uOffset, vOffset, width, height, textureWidth, textureHeight);
     }
 
 }
