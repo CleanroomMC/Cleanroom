@@ -228,7 +228,7 @@ public class CatalogueModListScreen extends GuiScreen {
         public void filterAndUpdateList(String text) {
             List<ModEntry> entries = Loader.instance().getActiveModList().stream()
                     .filter(info -> info.getName().toLowerCase(Locale.ENGLISH).contains(text.toLowerCase(Locale.ENGLISH)))
-                    .filter(info -> !updatesButton.selected() || ForgeVersion.getResult(info).status.shouldDraw())
+                    .filter(info -> !updatesButton.selected() || shouldUpdate(ForgeVersion.getCleanResult(info)))
                     .map(info -> new ModEntry(info, this))
                     .sorted(Comparator.comparing(entry -> entry.info.getName()))
                     .collect(Collectors.toList());
@@ -331,8 +331,8 @@ public class CatalogueModListScreen extends GuiScreen {
             }
 
             // Draws an icon if there is an update for the mod
-            ForgeVersion.CheckResult result = ForgeVersion.getResult(this.info);
-            if (result.status.shouldDraw()) {
+            ForgeVersion.CheckResult result = ForgeVersion.getCleanResult(this.info);
+            if (shouldDraw(result)) {
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 mc.getTextureManager().bindTexture(VERSION_CHECK_ICONS);
                 int vOffset = result.status.isAnimated() && (System.currentTimeMillis() / 800 & 1) == 1 ? 8 : 0;
@@ -365,7 +365,7 @@ public class CatalogueModListScreen extends GuiScreen {
 //            // Gets the raw item icon resource string
 //            String itemIcon = this.info.getCustomModProperties().get("catalogueItemIcon");
 //
-//            if(!itemIcon.isEmpty()) {
+//            if (!itemIcon.isEmpty()) {
 //                try {
 //                    String[] parts = itemIcon.split(":");
 //                    Item item = Item.getByNameOrId(parts[0]);
@@ -512,9 +512,9 @@ public class CatalogueModListScreen extends GuiScreen {
             String version = I18n.format("fml.menu.mods.info.version", this.selectedModInfo.getDisplayVersion());
             int versionWidth = this.fontRenderer.getStringWidth(version);
             if (ScreenUtil.isMouseWithin(contentLeft + versionWidth + 5, 92, 8, 8, mouseX, mouseY)) {
-                ForgeVersion.CheckResult result = ForgeVersion.getResult(this.selectedModInfo);
-                if (result.status.shouldDraw() && result.url != null) {
-                    this.openLink(result.url);
+                ForgeVersion.CheckResult result = ForgeVersion.getCleanResult(this.selectedModInfo);
+                if (shouldUpdate(result) && result.homepage != null) {
+                    this.openLink(result.homepage);
                 }
             }
         }
@@ -572,7 +572,7 @@ public class CatalogueModListScreen extends GuiScreen {
         drawString(this.fontRenderer, TextFormatting.BOLD + I18n.format("fml.menu.mods.title"), 70, 10, 0xFFFFFF);
         this.searchTextField.drawTextBox();
 
-        if(ScreenUtil.isMouseWithin(this.modList.right - 14, 7, 14, 14, mouseX, mouseY)) {
+        if (ScreenUtil.isMouseWithin(this.modList.right - 14, 7, 14, 14, mouseX, mouseY)) {
             this.setActiveTooltip(I18n.format("fml.menu.mods.filterupdates"));
             this.tooltipYOffset = 10;
         }
@@ -610,8 +610,8 @@ public class CatalogueModListScreen extends GuiScreen {
             drawString(this.fontRenderer, modId, contentLeft + contentWidth - modIdWidth, 92, 0xFFFFFF);
 
 //            // Set tooltip for secure mod features forge has
-//            if(ScreenUtil.isMouseWithin(contentLeft + contentWidth - modIdWidth, 92, modIdWidth, this.font.lineHeight, mouseX, mouseY)) {
-//                if(FMLEnvironment.secureJarsEnabled) {
+//            if (ScreenUtil.isMouseWithin(contentLeft + contentWidth - modIdWidth, 92, modIdWidth, this.font.lineHeight, mouseX, mouseY)) {
+//                if (FMLEnvironment.secureJarsEnabled) {
 //                    this.setActiveTooltip(ForgeI18n.parseMessage("fml.menu.mods.info.signature", ((ModInfo) this.selectedModInfo).getOwningFile().getCodeSigningFingerprint().orElse(ForgeI18n.parseMessage("fml.menu.mods.info.signature.unsigned"))));
 //                    this.setActiveTooltip(ForgeI18n.parseMessage("fml.menu.mods.info.trust", ((ModInfo) this.selectedModInfo).getOwningFile().getTrustData().orElse(ForgeI18n.parseMessage("fml.menu.mods.info.trust.noauthority"))));
 //                } else {
@@ -631,14 +631,35 @@ public class CatalogueModListScreen extends GuiScreen {
             }
 
             // Draws an icon if there is an update for the mod
-            ForgeVersion.CheckResult result = ForgeVersion.getResult(this.selectedModInfo);
-            if(result.status.shouldDraw() && result.url != null) {
+            ForgeVersion.CheckResult result = ForgeVersion.getCleanResult(this.selectedModInfo);
+            if (shouldDraw(result) && result.url != null) {
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 mc.getTextureManager().bindTexture(VERSION_CHECK_ICONS);
                 int vOffset = result.status.isAnimated() && (System.currentTimeMillis() / 800 & 1) == 1 ? 8 : 0;
                 ScreenUtil.blit(contentLeft + versionWidth + 5, 92, result.status.getSheetOffset() * 8, vOffset, 8, 8, 64, 16);
-                if(ScreenUtil.isMouseWithin(contentLeft + versionWidth + 5, 92, 8, 8, mouseX, mouseY)) {
-                    this.setActiveTooltip(I18n.format("fml.menu.mods.info.updateavailable", result.url));
+                if (ScreenUtil.isMouseWithin(contentLeft + versionWidth + 5, 92, 8, 8, mouseX, mouseY)) {
+                    switch (result.status) {
+                        case BETA:
+                            this.setActiveTooltip(TextFormatting.GOLD + I18n.format("fml.menu.mods.info.beta"));
+                            break;
+                        case AHEAD:
+                            this.setActiveTooltip(TextFormatting.LIGHT_PURPLE + I18n.format("fml.menu.mods.info.ahead", result.latestFound));
+                            break;
+                        case BETA_OUTDATED:
+                            if (result.homepage != null) {
+                                this.setActiveTooltip(TextFormatting.GOLD + I18n.format("fml.menu.mods.info.betaupdateavailable", result.latestFound, result.homepage));
+                            } else {
+                                this.setActiveTooltip(TextFormatting.GOLD + I18n.format("fml.menu.mods.info.betaupdateavailablenopage", result.latestFound));
+                            }
+                            break;
+                        case OUTDATED:
+                            if (result.homepage != null) {
+                                this.setActiveTooltip(TextFormatting.GREEN + I18n.format("fml.menu.mods.info.updateavailable", result.latestFound, result.homepage));
+                            } else {
+                                this.setActiveTooltip(TextFormatting.GREEN + I18n.format("fml.menu.mods.info.updateavailablenopage", result.latestFound));
+                            }
+                            break;
+                    }
                 }
             }
 
@@ -654,14 +675,14 @@ public class CatalogueModListScreen extends GuiScreen {
 
                 // Draw credits
                 String credits = metadata.credits;
-                if(!credits.isEmpty()) {
+                if (!credits.isEmpty()) {
                     this.drawStringWithLabel("fml.menu.mods.info.credits", credits, contentLeft, labelOffset, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
                     labelOffset -= 15;
                 }
 
                 // Draw authors
                 String authors = metadata.getAuthorList();
-                if(!authors.isEmpty()) {
+                if (!authors.isEmpty()) {
                     this.drawStringWithLabel("fml.menu.mods.info.authors", authors, contentLeft, labelOffset, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
                 }
             }
@@ -715,7 +736,7 @@ public class CatalogueModListScreen extends GuiScreen {
         String s = metadata.logoFile;
         if (s.isEmpty()) return;
 
-//        if(s.contains("/") || s.contains("\\")) {
+//        if (s.contains("/") || s.contains("\\")) {
 //            Catalogue.LOGGER.warn("Skipped loading logo file from {}. The file name '{}' contained illegal characters '/' or '\\'", info.getName(), s);
 //            return;
 //        }
@@ -915,7 +936,7 @@ public class CatalogueModListScreen extends GuiScreen {
     }
 
     private void updateSearchField(String value) {
-        if(value.isEmpty()) {
+        if (value.isEmpty()) {
             this.searchTextField.setSuggestion(I18n.format("fml.menu.mods.search"));
         } else {
             Optional<ModContainer> optional = Loader.instance().getActiveModList().stream().filter(info -> {
@@ -945,5 +966,15 @@ public class CatalogueModListScreen extends GuiScreen {
     private void openLink(String url) {
         Style style = new Style().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
         this.handleComponentClick(new TextComponentString("").setStyle(style));
+    }
+
+    private boolean shouldDraw(ForgeVersion.CheckResult result) {
+        return result != null && result.status.shouldDraw();
+    }
+
+    private boolean shouldUpdate(ForgeVersion.CheckResult result) {
+        if (result == null) return false;
+        ForgeVersion.Status status = result.status;
+        return status == ForgeVersion.Status.OUTDATED || status == ForgeVersion.Status.BETA_OUTDATED;
     }
 }
