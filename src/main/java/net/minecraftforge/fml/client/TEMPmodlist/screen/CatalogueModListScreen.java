@@ -937,7 +937,7 @@ public class CatalogueModListScreen extends GuiScreen {
 
     private void updateSearchField(String value) {
         if (value.isEmpty()) {
-            this.searchTextField.setSuggestion(I18n.format("fml.menu.mods.search"));
+            this.searchTextField.setSuggestion(I18n.format("fml.menu.mods.searchwithdots"));
         } else {
             Optional<ModContainer> optional = Loader.instance().getActiveModList().stream().filter(info -> {
                 return info.getName().toLowerCase(Locale.ENGLISH).startsWith(value.toLowerCase(Locale.ENGLISH));
