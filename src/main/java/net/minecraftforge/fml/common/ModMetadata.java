@@ -47,11 +47,15 @@ public class ModMetadata
      * URL to update json file. Format is defined here: https://gist.github.com/LexManos/7aacb9aa991330523884
      */
     public String updateJSON = "";
+    public String issueTrackerUrl = "";
 
     public String logoFile = "";
+    public String iconFile = "";
+    public String iconItem = "";
     public String version = "";
     public List<String> authorList = Lists.newArrayList();
     public String credits = "";
+    public String license = "";
     public String parent = "";
     public String[] screenshots;
 
