@@ -4,12 +4,15 @@ import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.texture.TextureUtil;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.init.Blocks;
@@ -51,6 +54,7 @@ public class CatalogueModListScreen extends GuiScreen {
     private static final Map<String, Pair<ResourceLocation, Size2i>> LOGO_CACHE = new HashMap<>();
     private static final Map<String, Pair<ResourceLocation, Size2i>> ICON_CACHE = new HashMap<>();
     private static final Map<String, ItemStack> ITEM_CACHE = new HashMap<>();
+    private static ResourceLocation cachedBackground;
 
     private CatalogueTextField searchTextField;
     private ModList modList;
@@ -601,6 +605,8 @@ public class CatalogueModListScreen extends GuiScreen {
         int contentWidth = this.width - contentLeft - 10;
 
         if (this.selectedModInfo != null) {
+            this.drawBackground(this.width - contentLeft + 10, this.modList.right + 12, 0);
+
             // Draw mod logo
             this.drawLogo(contentWidth, contentLeft, 10, this.width - (this.modList.right + 12 + 10) - 10, 50);
 
@@ -830,6 +836,33 @@ public class CatalogueModListScreen extends GuiScreen {
         }
     }
 
+    private void loadAndCacheBackground(ModContainer info) {
+        // Deletes the last cached background since they are large images
+        if (cachedBackground != null) {
+            TextureManager textureManager = this.mc.getTextureManager();
+            textureManager.deleteTexture(cachedBackground);
+        }
+        cachedBackground = null;
+
+        ModMetadata metadata = info.getMetadata();
+        if (metadata == null) return;
+        String s = metadata.backgroundFile;
+        if(s.isEmpty()) return;
+
+        if (!s.startsWith("/")) {
+            s = "/" + s;
+        }
+
+        BufferedImage image = null;
+        try(InputStream is = getClass().getResourceAsStream(s)) {
+            if (is != null) image = TextureUtil.readBufferedImage(is);
+            if (image == null || image.getWidth() != 512 || image.getHeight() != 256) return;
+            TextureManager textureManager = this.mc.getTextureManager();
+            cachedBackground = textureManager.getDynamicTextureLocation("cataloguebackground", this.createLogoTexture(image, false));
+        } catch(IOException ignored) {
+        }
+    }
+
     private DynamicTexture createLogoTexture(BufferedImage image, boolean smooth) {
         return new DynamicTexture(image) {
             @Override
@@ -837,6 +870,26 @@ public class CatalogueModListScreen extends GuiScreen {
                 TextureUtil.uploadTextureImageAllocate(this.getGlTextureId(), image, smooth, false);
             }
         };
+    }
+
+    private void drawBackground(int contentWidth, int x, int y) {
+        if(this.selectedModInfo == null) return;
+        if(cachedBackground == null) return;
+
+        this.mc.renderEngine.bindTexture(cachedBackground);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.enableBlend();
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder builder = tessellator.getBuffer();
+        builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        builder.pos(x, y, this.zLevel).tex(0, 0).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
+        builder.pos(x, y + 128, this.zLevel).tex(0, 1).color(0.0F, 0.0F, 0.0F, 0.0F).endVertex();
+        builder.pos(x + contentWidth, y + 128, this.zLevel).tex(1, 1).color(0.0F, 0.0F, 0.0F, 0.0F).endVertex();
+        builder.pos(x + contentWidth, y, this.zLevel).tex(1, 0).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
+        tessellator.draw();
+
+        GlStateManager.disableBlend();
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -885,6 +938,7 @@ public class CatalogueModListScreen extends GuiScreen {
     private void setSelectedModInfo(ModContainer selectedModInfo) {
         this.selectedModInfo = selectedModInfo;
         this.loadAndCacheLogo(selectedModInfo);
+        this.loadAndCacheBackground(selectedModInfo);
         this.configButton.visible = true;
         this.websiteButton.visible = true;
         this.issueButton.visible = true;

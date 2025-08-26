@@ -54,6 +54,7 @@ public class ModMetadata
     public String iconFile = "";
     public boolean iconBlur = true;
     public String iconItem = ""; // Customized item or block as icon. Will not applied when iconFile is valid.
+    public String backgroundFile = "";
     public String version = "";
     public List<String> authorList = Lists.newArrayList();
     public String credits = "";
