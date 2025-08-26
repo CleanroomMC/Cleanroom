@@ -740,19 +740,19 @@ public class CatalogueModListScreen extends GuiScreen {
         // Attempts to load the real logo
         ModMetadata metadata = data.getMetadata();
         if (metadata == null) return;
-        String logoFile = metadata.logoFile;
-        if (logoFile.isEmpty()) return;
+        String banner = metadata.logoFile;
+        if (banner.isEmpty()) return;
 
         IResourcePack resourcePack = FMLClientHandler.instance().getResourcePackFor(data.getModId());
         BufferedImage image = null;
         try {
-            if (resourcePack != null && !logoFile.startsWith("/")) {
+            if (resourcePack != null && !banner.startsWith("/")) {
                 image = resourcePack.getPackImage();
             } else {
-                if (!logoFile.startsWith("/")) {
-                    logoFile = "/" + logoFile;
+                if (!banner.startsWith("/")) {
+                    banner = "/" + banner;
                 }
-                InputStream is = getClass().getResourceAsStream(logoFile);
+                InputStream is = getClass().getResourceAsStream(banner);
                 if (is != null) image = TextureUtil.readBufferedImage(is);
             }
             if (image == null) return;
