@@ -410,7 +410,7 @@ public class CatalogueModListScreen extends GuiScreen {
             if (CatalogueModListScreen.this.fontRenderer.getStringWidth(name) > width) {
                 name = CatalogueModListScreen.this.fontRenderer.trimStringToWidth(name, width - 10) + "...";
             }
-            if (this.info.getModId().equals("forge") || this.info.getModId().equals("minecraft")) {
+            if (this.info.getModId().equals("forge") || this.info.getModId().equals("minecraft") || this.info.getModId().equals("cleanroom")) {
                 return TextFormatting.DARK_GRAY + name;
             }
             return name;
