@@ -50,8 +50,10 @@ public class ModMetadata
     public String issueTrackerUrl = "";
 
     public String logoFile = "";
+    public boolean logoBlur = true; // Blur the border to make it smooth. True by default.
     public String iconFile = "";
-    public String iconItem = "";
+    public boolean iconBlur = true;
+    public String iconItem = ""; // Customized item or block as icon. Will not applied when iconFile is valid.
     public String version = "";
     public List<String> authorList = Lists.newArrayList();
     public String credits = "";

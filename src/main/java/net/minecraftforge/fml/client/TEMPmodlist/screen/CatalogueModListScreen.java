@@ -300,7 +300,6 @@ public class CatalogueModListScreen extends GuiScreen {
             drawString(fontRenderer, this.getFormattedModName(), left + 24, top + 2, 0xFFFFFF);
             drawString(fontRenderer, TextFormatting.GRAY + this.info.getDisplayVersion(), left + 24, top + 12, 0xFFFFFF);
 
-            // WIP
             CatalogueModListScreen.this.loadAndCacheIcon(this.info);
 
             // Draw icon
@@ -759,7 +758,7 @@ public class CatalogueModListScreen extends GuiScreen {
             }
             if (logo == null) return;
             TextureManager textureManager = this.mc.getTextureManager();
-            LOGO_CACHE.put(info.getModId(), Pair.of(textureManager.getDynamicTextureLocation("modlogo", this.createLogoTexture(logo, true)), new Size2i(logo.getWidth(), logo.getHeight())));
+            LOGO_CACHE.put(info.getModId(), Pair.of(textureManager.getDynamicTextureLocation("modlogo", this.createLogoTexture(logo, metadata.logoBlur)), new Size2i(logo.getWidth(), logo.getHeight())));
         } catch (IOException ignored) {
         }
     }
@@ -784,7 +783,7 @@ public class CatalogueModListScreen extends GuiScreen {
                 if (is != null) icon = TextureUtil.readBufferedImage(is);
                 if (icon != null) {
                     TextureManager textureManager = this.mc.getTextureManager();
-                    ICON_CACHE.put(info.getModId(), Pair.of(textureManager.getDynamicTextureLocation("catalogueicon", this.createLogoTexture(icon, false)), new Size2i(icon.getWidth(), icon.getHeight())));
+                    ICON_CACHE.put(info.getModId(), Pair.of(textureManager.getDynamicTextureLocation("catalogueicon", this.createLogoTexture(icon, metadata.iconBlur)), new Size2i(icon.getWidth(), icon.getHeight())));
                     return;
                 }
             } catch (IOException ignored) {
@@ -820,7 +819,7 @@ public class CatalogueModListScreen extends GuiScreen {
                     }
 
                     /* Since the icon will be same as the logo, we can cache into both icon and logo cache */
-                    DynamicTexture texture = this.createLogoTexture(logo, true);
+                    DynamicTexture texture = this.createLogoTexture(logo, metadata.logoBlur);
                     Size2i size = new Size2i(logo.getWidth(), logo.getHeight());
                     ResourceLocation textureId = textureManager.getDynamicTextureLocation("catalogueicon", texture);
                     ICON_CACHE.put(modId, Pair.of(textureId, size));
