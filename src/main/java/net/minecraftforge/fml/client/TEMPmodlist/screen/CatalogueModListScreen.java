@@ -745,10 +745,12 @@ public class CatalogueModListScreen extends GuiScreen {
         IResourcePack resourcePack = FMLClientHandler.instance().getResourcePackFor(info.getModId());
         BufferedImage logo = null;
         try {
-            // Amazing. Forge's banner cannot be loaded though its resource pack is not null.
-            if (resourcePack != null && !info.getModId().equals("forge")) {
+            if (resourcePack != null && !s.startsWith("/")) {
                 logo = resourcePack.getPackImage();
             } else {
+                if (!s.startsWith("/")) {
+                    s = "/" + s;
+                }
                 InputStream is = getClass().getResourceAsStream(s);
                 if (is != null) logo = TextureUtil.readBufferedImage(is);
             }
@@ -771,6 +773,9 @@ public class CatalogueModListScreen extends GuiScreen {
         // Attempts to load the real icon
         String iconString = metadata.iconFile;
         if (!iconString.isEmpty()) {
+            if (!iconString.startsWith("/")) {
+                iconString = "/" + iconString;
+            }
             BufferedImage icon = null;
             try (InputStream is = getClass().getResourceAsStream(iconString)) {
                 if (is != null) icon = TextureUtil.readBufferedImage(is);
@@ -789,9 +794,12 @@ public class CatalogueModListScreen extends GuiScreen {
             IResourcePack resourcePack = FMLClientHandler.instance().getResourcePackFor(info.getModId());
             BufferedImage logo = null;
             try {
-                if (resourcePack != null) {
+                if (resourcePack != null && !logoString.startsWith("/")) {
                     logo = resourcePack.getPackImage();
                 } else {
+                    if (!logoString.startsWith("/")) {
+                        logoString = "/" + logoString;
+                    }
                     InputStream is = getClass().getResourceAsStream(logoString);
                     if (is != null) logo = TextureUtil.readBufferedImage(is);
                 }
