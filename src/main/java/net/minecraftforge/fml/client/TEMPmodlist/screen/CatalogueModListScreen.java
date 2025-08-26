@@ -355,6 +355,9 @@ public class CatalogueModListScreen extends GuiScreen {
             // Put grass as default item icon
             ITEM_CACHE.put(this.info.getModId(), new ItemStack(Blocks.GRASS));
 
+            // Minecraft is a grass block
+            if (this.info.getModId().equals("minecraft")) return new ItemStack(Blocks.GRASS);
+
             // Special case for Forge to set item icon to anvil
             if (this.info.getModId().equals("forge")) {
                 ItemStack anvil = new ItemStack(Blocks.ANVIL);
