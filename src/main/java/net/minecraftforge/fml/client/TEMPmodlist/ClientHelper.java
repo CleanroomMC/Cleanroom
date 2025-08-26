@@ -3,15 +3,12 @@ package net.minecraftforge.fml.client.TEMPmodlist;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
 
 /**
  * Author: MrCrayfish
  */
-public class ScreenUtil {
+public class ClientHelper {
     /**
      * Creates a scissor test using minecraft screen coordinates instead of pixel coordinates.
      * @param screenX
@@ -35,15 +32,6 @@ public class ScreenUtil {
 
     public static boolean isMouseWithin(int x, int y, int width, int height, int mouseX, int mouseY) {
         return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
-    }
-
-    public static class Size2i {
-        public final int width, height;
-
-        public Size2i(int width, int height) {
-            this.width = width;
-            this.height = height;
-        }
     }
 
     public static void blit(int x, int y, int width, int height, float uOffset, float vOffset, int uWidth, int vHeight, int textureWidth, int textureHeight) {
