@@ -36,6 +36,8 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
@@ -219,6 +221,18 @@ public class CatalogueModListScreen extends GuiScreen {
         }
 
         super.keyTyped(typedChar, key);
+    }
+
+    @Override
+    public void handleKeyboardInput() throws IOException {
+        if (Keyboard.getEventKey() == Keyboard.KEY_F && (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))) {
+            if(!this.searchTextField.isFocused()) {
+                this.searchTextField.setFocused(true);
+            }
+            return;
+        }
+
+        super.handleKeyboardInput();
     }
 
     private class ModList extends CatalogueListExtended {
