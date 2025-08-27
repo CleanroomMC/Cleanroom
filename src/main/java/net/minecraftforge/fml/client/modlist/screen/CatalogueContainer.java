@@ -23,7 +23,6 @@ public class CatalogueContainer extends DummyModContainer {
         meta.logoBlur = false;
         meta.iconFile = "/catalogue_icon.png";
         meta.iconBlur = false;
-        meta.iconItem = "minecraft:diamond_sword";
         meta.backgroundFile = "/catalogue_background.png";
     }
 }
