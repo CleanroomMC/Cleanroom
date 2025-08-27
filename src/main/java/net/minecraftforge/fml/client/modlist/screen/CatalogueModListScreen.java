@@ -36,7 +36,6 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -248,6 +247,13 @@ public class CatalogueModListScreen extends GuiScreen {
             ClientHelper.scissor(this.getListLeft(), this.top, this.width, this.bottom - this.top);
             super.drawScreen(mouseX, mouseY, partialTicks);
             GL11.glDisable(GL11.GL_SCISSOR_TEST);
+
+            if (this.entries.isEmpty()) {
+                String text = I18n.format("fml.menu.mods.nomods");
+                int left = this.left + this.width / 2;
+                int top = this.top + (this.bottom - this.top - CatalogueModListScreen.this.fontRenderer.FONT_HEIGHT) / 2;
+                drawCenteredString(CatalogueModListScreen.this.fontRenderer, text, left, top, 0xFFFFFFFF);
+            }
         }
 
         @Override
@@ -668,8 +674,14 @@ public class CatalogueModListScreen extends GuiScreen {
         GlStateManager.disableBlend();
 
         this.modList.drawScreen(mouseX, mouseY, partialTicks);
-        drawString(this.fontRenderer, TextFormatting.BOLD + I18n.format("fml.menu.mods.title"), 70, 10, 0xFFFFFF);
         this.searchTextField.drawTextBox();
+
+        String modsLabel = TextFormatting.BOLD + I18n.format("fml.menu.mods.title");
+        String countLabel = TextFormatting.GRAY + "(" + CACHED_MODS.size() + ")";
+        String title = modsLabel + " " + countLabel;
+        int titleWidth = this.fontRenderer.getStringWidth(title);
+        int titleLeft = this.modList.left + (this.modList.width - titleWidth) / 2;
+        drawString(this.fontRenderer, title, titleLeft, 10, 0xFFFFFF);
 
         if (ClientHelper.isMouseWithin(this.modList.right - 14, 7, 14, 14, mouseX, mouseY)) {
             this.setActiveTooltip(I18n.format("fml.menu.mods.filterupdates"));
