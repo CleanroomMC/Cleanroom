@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
@@ -37,12 +36,10 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import java.awt.Desktop;
-import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,8 +51,9 @@ public class CatalogueModListScreen extends GuiScreen {
     private static final ResourceLocation MISSING_BACKGROUND = new ResourceLocation(ForgeVersion.MOD_ID, "textures/gui/missing_background.png");
     private static final ResourceLocation VERSION_CHECK_ICONS = new ResourceLocation(ForgeVersion.MOD_ID, "textures/gui/version_check_icons.png");
     private static final ResourceLocation MINECRAFT_LOGO = new ResourceLocation(ForgeVersion.MOD_ID, "textures/gui/minecraft.png");
-    private static final Map<String, Pair<ResourceLocation, Dimension>> BANNER_CACHE = new HashMap<>();
-    private static final Map<String, Pair<ResourceLocation, Dimension>> IMAGE_ICON_CACHE = new HashMap<>();
+    private static final ImageInfo MISSING_BANNER_INFO = new ImageInfo(MISSING_BANNER, new Dimension(120, 120));
+    private static final Map<String, ImageInfo> BANNER_CACHE = new HashMap<>();
+    private static final Map<String, ImageInfo> IMAGE_ICON_CACHE = new HashMap<>();
     private static final Map<String, ItemStack> ITEM_ICON_CACHE = new HashMap<>();
     private static final Map<String, ModContainer> CACHED_MODS = new HashMap<>();
     private static ResourceLocation cachedBackground;
@@ -85,6 +83,7 @@ public class CatalogueModListScreen extends GuiScreen {
             Loader.instance().getActiveModList().forEach(data -> CACHED_MODS.put(data.getModId(), data));
             CACHED_MODS.put("minecraft", new MinecraftContainer()); // Override minecraft
             CACHED_MODS.put("catalogue", new CatalogueContainer());
+            BANNER_CACHE.put("minecraft", new ImageInfo(MINECRAFT_LOGO, new Dimension(1024, 256)));
             loaded = true;
         }
     }
@@ -186,11 +185,10 @@ public class CatalogueModListScreen extends GuiScreen {
 
         Optional<ModContainer> optional = Optional.ofNullable(CACHED_MODS.get("catalogue"));
         optional.ifPresent(this::loadAndCacheLogo);
-        Pair<ResourceLocation, Dimension> pair = BANNER_CACHE.get("catalogue");
-        if (pair != null && pair.getLeft() != null) {
-            ResourceLocation textureId = pair.getLeft();
-            Dimension size = pair.getRight();
-            mc.getTextureManager().bindTexture(textureId);
+        ImageInfo imageInfo = BANNER_CACHE.get("catalogue");
+        if (imageInfo != null) {
+            Dimension size = imageInfo.size();
+            this.mc.getTextureManager().bindTexture(imageInfo.resource());
             ClientHelper.blit(10, 9, 10, 10, 0.0F, 0.0F, size.width, size.height, size.width, size.height);
         }
 
@@ -324,10 +322,12 @@ public class CatalogueModListScreen extends GuiScreen {
     private class ModListEntry implements CatalogueListExtended.IGuiListEntry {
         private final ModContainer data;
         private final ModList list;
+        private ItemStack icon;
 
         public ModListEntry(ModContainer data, ModList list) {
             this.data = data;
             this.list = list;
+            this.icon = this.getItemIcon();
         }
 
         @Override
@@ -336,35 +336,8 @@ public class CatalogueModListScreen extends GuiScreen {
             drawString(fontRenderer, this.getFormattedModName(), left + 24, top + 2, 0xFFFFFF);
             drawString(fontRenderer, TextFormatting.GRAY + this.data.getDisplayVersion(), left + 24, top + 12, 0xFFFFFF);
 
-            CatalogueModListScreen.this.loadAndCacheIcon(this.data);
-
-            // Draw icon
-            if (IMAGE_ICON_CACHE.containsKey(this.data.getModId()) && IMAGE_ICON_CACHE.get(this.data.getModId()).getLeft() != null) {
-                ResourceLocation logoResource = TextureMap.LOCATION_MISSING_TEXTURE;
-                Dimension size = new Dimension(16, 16);
-
-                Pair<ResourceLocation, Dimension> logoInfo = IMAGE_ICON_CACHE.get(this.data.getModId());
-                if (logoInfo != null && logoInfo.getLeft() != null) {
-                    logoResource = logoInfo.getLeft();
-                    size = logoInfo.getRight();
-                }
-
-                mc.getTextureManager().bindTexture(logoResource);
-                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                GlStateManager.enableBlend();
-                ClientHelper.blit(left + 4, top + 2, 16, 16, 0.0F, 0.0F, size.width, size.height, size.width, size.height);
-                GlStateManager.disableBlend();
-            } else {
-                try {
-                    GlStateManager.enableDepth();
-                    RenderHelper.enableGUIStandardItemLighting();
-                    CatalogueModListScreen.this.mc.getRenderItem().renderItemIntoGUI(this.getItemIcon(), left + 4, top + 2);
-                    GlStateManager.disableDepth();
-                    RenderHelper.disableStandardItemLighting();
-                } catch (Exception e) {
-                    ITEM_ICON_CACHE.put(this.data.getModId(), new ItemStack(Blocks.GRASS));
-                }
-            }
+            // Draw image icon or fallback to item icon
+            this.drawIcon(top, left);
 
             // Draws an icon if there is an update for the mod
             ForgeVersion.CheckResult update = ForgeVersion.getCleanResult(this.data);
@@ -373,6 +346,33 @@ public class CatalogueModListScreen extends GuiScreen {
                 mc.getTextureManager().bindTexture(VERSION_CHECK_ICONS);
                 int vOffset = update.status.isAnimated() && (System.currentTimeMillis() / 800 & 1) == 1 ? 8 : 0;
                 ClientHelper.blit(left + rowWidth - 8 - 10, top + 6, update.status.getSheetOffset() * 8, vOffset, 8, 8, 64, 16);
+            }
+        }
+
+        private void drawIcon(int top, int left) {
+            CatalogueModListScreen.this.loadAndCacheIcon(this.data);
+
+            ImageInfo iconInfo = IMAGE_ICON_CACHE.get(this.data.getModId());
+            if (iconInfo != null) {
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                GlStateManager.enableBlend();
+                Dimension size = iconInfo.size();
+                mc.getTextureManager().bindTexture(iconInfo.resource());
+                ClientHelper.blit(left + 4, top + 3, 16, 16, 0.0F, 0.0F, size.width, size.height, size.width, size.height);
+                GlStateManager.disableBlend();
+                return;
+            }
+            try {
+                GlStateManager.enableDepth();
+                RenderHelper.enableGUIStandardItemLighting();
+                CatalogueModListScreen.this.mc.getRenderItem().renderItemIntoGUI(this.icon, left + 4, top + 2);
+                GlStateManager.disableDepth();
+                RenderHelper.disableStandardItemLighting();
+            } catch (Exception e) {
+                // Attempt to catch exceptions when rendering item. Sometime level instance isn't checked for null
+                FMLLog.log.debug("Failed to draw icon for mod '{}'", this.data.getModId());
+                ITEM_ICON_CACHE.put(this.data.getModId(), new ItemStack(Blocks.GRASS));
+                this.icon = new ItemStack(Blocks.GRASS);
             }
         }
 
@@ -649,7 +649,7 @@ public class CatalogueModListScreen extends GuiScreen {
     private void drawModList(int mouseX, int mouseY, float partialTicks) {
         GlStateManager.enableBlend();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.getTextureManager().bindTexture(VERSION_CHECK_ICONS);
+        this.mc.getTextureManager().bindTexture(VERSION_CHECK_ICONS);
         ClientHelper.blit(this.modList.right - 24, 10, 24, 0, 8, 8, 64, 16);
         GlStateManager.disableBlend();
 
@@ -711,7 +711,7 @@ public class CatalogueModListScreen extends GuiScreen {
             ForgeVersion.CheckResult update = ForgeVersion.getCleanResult(this.selectedModData);
             if (shouldDraw(update) && update.url != null) {
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                mc.getTextureManager().bindTexture(VERSION_CHECK_ICONS);
+                this.mc.getTextureManager().bindTexture(VERSION_CHECK_ICONS);
                 int vOffset = update.status.isAnimated() && (System.currentTimeMillis() / 800 & 1) == 1 ? 8 : 0;
                 ClientHelper.blit(contentLeft + versionWidth + 5, 92, update.status.getSheetOffset() * 8, vOffset, 8, 8, 64, 16);
                 if (ClientHelper.isMouseWithin(contentLeft + versionWidth + 5, 92, 8, 8, mouseX, mouseY)) {
@@ -809,7 +809,7 @@ public class CatalogueModListScreen extends GuiScreen {
         if (BANNER_CACHE.containsKey(data.getModId())) return;
 
         // Fills an empty logo as logo may not be present
-        BANNER_CACHE.put(data.getModId(), Pair.of(null, new Dimension(0, 0)));
+        BANNER_CACHE.put(data.getModId(), null);
 
         // Attempts to load the real logo
         ModMetadata metadata = data.getMetadata();
@@ -830,8 +830,10 @@ public class CatalogueModListScreen extends GuiScreen {
                 if (is != null) image = TextureUtil.readBufferedImage(is);
             }
             if (image == null) return;
-            TextureManager textureManager = this.mc.getTextureManager();
-            BANNER_CACHE.put(data.getModId(), Pair.of(textureManager.getDynamicTextureLocation("modlogo", this.createLogoTexture(image, metadata.logoBlur)), new Dimension(image.getWidth(), image.getHeight())));
+            TextureManager manager = this.mc.getTextureManager();
+            ResourceLocation resource = manager.getDynamicTextureLocation("modlogo", this.createLogoTexture(image, metadata.logoBlur));
+            Dimension size = new Dimension(image.getWidth(), image.getHeight());
+            BANNER_CACHE.put(data.getModId(), new ImageInfo(resource, size));
         } catch (IOException ignored) {
         }
     }
@@ -840,7 +842,7 @@ public class CatalogueModListScreen extends GuiScreen {
         if (IMAGE_ICON_CACHE.containsKey(data.getModId())) return;
 
         // Fills an empty icon as icon may not be present
-        IMAGE_ICON_CACHE.put(data.getModId(), Pair.of(null, new Dimension(0, 0)));
+        IMAGE_ICON_CACHE.put(data.getModId(), null);
 
         ModMetadata metadata = data.getMetadata();
         if (metadata == null) return;
@@ -855,8 +857,10 @@ public class CatalogueModListScreen extends GuiScreen {
             try (InputStream is = getClass().getResourceAsStream(iconFile)) {
                 if (is != null) image = TextureUtil.readBufferedImage(is);
                 if (image != null) {
-                    TextureManager textureManager = this.mc.getTextureManager();
-                    IMAGE_ICON_CACHE.put(data.getModId(), Pair.of(textureManager.getDynamicTextureLocation("catalogueicon", this.createLogoTexture(image, metadata.iconBlur)), new Dimension(image.getWidth(), image.getHeight())));
+                    TextureManager manager = this.mc.getTextureManager();
+                    ResourceLocation resource = manager.getDynamicTextureLocation("catalogueicon", this.createLogoTexture(image, metadata.logoBlur));
+                    Dimension size = new Dimension(image.getWidth(), image.getHeight());
+                    IMAGE_ICON_CACHE.put(data.getModId(), new ImageInfo(resource, size));
                     return;
                 }
             } catch (IOException ignored) {
@@ -878,26 +882,23 @@ public class CatalogueModListScreen extends GuiScreen {
                     InputStream is = getClass().getResourceAsStream(logoFile);
                     if (is != null) image = TextureUtil.readBufferedImage(is);
                 }
-                if (image != null && image.getWidth() == image.getHeight()) {
-                    TextureManager textureManager = this.mc.getTextureManager();
-                    String modId = data.getModId();
+                if (image == null || image.getWidth() != image.getHeight()) return;
 
-                    /* The first selected mod will have its logo cached before the icon, so we
-                     * can just use the logo instead of loading the image again. */
-                    if (BANNER_CACHE.containsKey(modId)) {
-                        if (BANNER_CACHE.get(modId).getLeft() != null) {
-                            IMAGE_ICON_CACHE.put(modId, BANNER_CACHE.get(modId));
-                            return;
-                        }
-                    }
-
-                    /* Since the icon will be same as the logo, we can cache into both icon and logo cache */
-                    DynamicTexture texture = this.createLogoTexture(image, metadata.logoBlur);
-                    Dimension size = new Dimension(image.getWidth(), image.getHeight());
-                    ResourceLocation textureId = textureManager.getDynamicTextureLocation("catalogueicon", texture);
-                    IMAGE_ICON_CACHE.put(modId, Pair.of(textureId, size));
-                    BANNER_CACHE.put(modId, Pair.of(textureId, size));
+                /* The first selected mod will have its logo cached before the icon, so we
+                 * can just use the logo instead of loading the image again. */
+                String modId = data.getModId();
+                if (BANNER_CACHE.containsKey(modId)) {
+                    IMAGE_ICON_CACHE.put(modId, BANNER_CACHE.get(modId));
+                    return;
                 }
+
+                /* Since the icon will be same as the logo, we can cache into both icon and logo cache */
+                TextureManager manager = this.mc.getTextureManager();
+                DynamicTexture texture = this.createLogoTexture(image, metadata.logoBlur);
+                Dimension size = new Dimension(image.getWidth(), image.getHeight());
+                ResourceLocation resource = manager.getDynamicTextureLocation("catalogueicon", texture);
+                IMAGE_ICON_CACHE.put(modId, new ImageInfo(resource, size));
+                BANNER_CACHE.put(modId, new ImageInfo(resource, size));
             } catch (IOException ignored) {
             }
         }
@@ -906,8 +907,7 @@ public class CatalogueModListScreen extends GuiScreen {
     private void loadAndCacheBackground(ModContainer data) {
         // Deletes the last cached background since they are large images
         if (cachedBackground != null) {
-            TextureManager textureManager = this.mc.getTextureManager();
-            textureManager.deleteTexture(cachedBackground);
+            this.mc.getTextureManager().deleteTexture(cachedBackground);
         }
         cachedBackground = null;
 
@@ -944,7 +944,7 @@ public class CatalogueModListScreen extends GuiScreen {
         if(this.selectedModData == null) return;
 
         ResourceLocation texture = cachedBackground != null ? cachedBackground : MISSING_BACKGROUND;
-        this.mc.renderEngine.bindTexture(texture);
+        this.mc.getTextureManager().bindTexture(texture);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.enableBlend();
         GlStateManager.disableAlpha();
@@ -968,40 +968,10 @@ public class CatalogueModListScreen extends GuiScreen {
     @SuppressWarnings("SameParameterValue")
     private void drawBanner(int contentWidth, int x, int y, int maxWidth, int maxHeight) {
         if (this.selectedModData != null) {
-            ResourceLocation logoResource = MISSING_BANNER;
-            Dimension size = new Dimension(120, 120);
-
-            if (BANNER_CACHE.containsKey(this.selectedModData.getModId())) {
-                Pair<ResourceLocation, Dimension> logoInfo = BANNER_CACHE.get(this.selectedModData.getModId());
-                if (logoInfo.getLeft() != null) {
-                    logoResource = logoInfo.getLeft();
-                    size = logoInfo.getRight();
-                }
-            }
-
-            int scale = 1;
-            if (logoResource == MISSING_BANNER) {
-                Pair<ResourceLocation, Dimension> logoInfo = IMAGE_ICON_CACHE.get(this.selectedModData.getModId());
-                if (logoInfo.getLeft() != null) {
-                    logoResource = logoInfo.getLeft();
-                    size = logoInfo.getRight();
-                    scale = 10; // Hack to make icon fill max banner height
-                }
-            }
-
-            boolean offset = false;
-            if (this.selectedModData.getModId().equals("minecraft")) {
-                logoResource = MINECRAFT_LOGO;
-                size = new Dimension(1024, 256);
-                offset = true;
-            }
-
-            mc.getTextureManager().bindTexture(logoResource);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            GlStateManager.enableBlend();
-
-            int width = size.width * scale;
-            int height = size.height * scale;
+            ImageInfo bannerInfo = this.getBanner(this.selectedModData.getModId());
+            Dimension size = bannerInfo.size();
+            int width = size.width;
+            int height = size.height;
             if (size.width > maxWidth) {
                 width = maxWidth;
                 height = (width * size.height) / size.width;
@@ -1014,14 +984,36 @@ public class CatalogueModListScreen extends GuiScreen {
             x += (contentWidth - width) / 2;
             y += (maxHeight - height) / 2;
 
-            if (offset) { // Fix for minecraft logo
+            // Fix for minecraft logo
+            if (bannerInfo.resource() == MINECRAFT_LOGO) {
                 y += 8;
             }
 
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager.enableBlend();
+            this.mc.getTextureManager().bindTexture(bannerInfo.resource());
             ClientHelper.blit(x, y, width, height, 0.0F, 0.0F, size.width, size.height, size.width, size.height);
 
             GlStateManager.disableBlend();
         }
+    }
+
+    private ImageInfo getBanner(String modId) {
+        // Try getting the banner for the mod
+        ImageInfo bannerInfo = BANNER_CACHE.get(modId);
+        if (bannerInfo != null) return bannerInfo;
+
+        // Try using the icon image for the banner
+        ImageInfo iconInfo = IMAGE_ICON_CACHE.get(modId);
+        if (iconInfo != null) {
+            // Hack to make icon fill max banner height
+            Dimension size = iconInfo.size();
+            Dimension newSize = new Dimension(size.width * 10, size.height * 10);
+            return new ImageInfo(iconInfo.resource(), newSize);
+        }
+
+        // Fallback and just use missing banner
+        return MISSING_BANNER_INFO;
     }
 
     private void setActiveTooltip(String content) {
@@ -1120,6 +1112,10 @@ public class CatalogueModListScreen extends GuiScreen {
         Style style = new Style().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
         this.handleComponentClick(new TextComponentString("").setStyle(style));
     }
+
+    private record Dimension(int width, int height) {}
+
+    private record ImageInfo(ResourceLocation resource, Dimension size) {}
 
     private boolean shouldDraw(ForgeVersion.CheckResult update) {
         return update != null && update.status.shouldDraw();
