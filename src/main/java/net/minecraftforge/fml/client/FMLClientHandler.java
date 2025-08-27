@@ -91,7 +91,7 @@ import net.minecraftforge.client.resource.SelectiveReloadStateHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.common.util.CompoundDataFixer;
-import net.minecraftforge.fml.client.TEMPmodlist.screen.CatalogueModListScreen;
+import net.minecraftforge.fml.client.modlist.screen.CatalogueModListScreen;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.DuplicateModsFoundException;

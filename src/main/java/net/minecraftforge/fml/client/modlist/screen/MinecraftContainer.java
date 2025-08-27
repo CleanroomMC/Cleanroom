@@ -1,4 +1,4 @@
-package net.minecraftforge.fml.client.TEMPmodlist.screen;
+package net.minecraftforge.fml.client.modlist.screen;
 
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.DummyModContainer;

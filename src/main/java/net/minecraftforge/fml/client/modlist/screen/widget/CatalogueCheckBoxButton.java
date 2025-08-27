@@ -1,11 +1,11 @@
-package net.minecraftforge.fml.client.TEMPmodlist.screen.widget;
+package net.minecraftforge.fml.client.modlist.screen.widget;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeVersion;
-import net.minecraftforge.fml.client.TEMPmodlist.ClientHelper;
+import net.minecraftforge.fml.client.modlist.ClientHelper;
 
 /**
  * Author: MrCrayfish

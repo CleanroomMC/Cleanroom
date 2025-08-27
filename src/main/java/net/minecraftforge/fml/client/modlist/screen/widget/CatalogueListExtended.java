@@ -1,4 +1,4 @@
-package net.minecraftforge.fml.client.TEMPmodlist.screen.widget;
+package net.minecraftforge.fml.client.modlist.screen.widget;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiListExtended;

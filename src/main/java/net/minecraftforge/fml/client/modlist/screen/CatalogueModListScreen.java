@@ -1,4 +1,4 @@
-package net.minecraftforge.fml.client.TEMPmodlist.screen;
+package net.minecraftforge.fml.client.modlist.screen;
 
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
@@ -27,11 +27,11 @@ import net.minecraft.util.text.event.ClickEvent;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.IModGuiFactory;
-import net.minecraftforge.fml.client.TEMPmodlist.ClientHelper;
-import net.minecraftforge.fml.client.TEMPmodlist.screen.widget.CatalogueCheckBoxButton;
-import net.minecraftforge.fml.client.TEMPmodlist.screen.widget.CatalogueIconButton;
-import net.minecraftforge.fml.client.TEMPmodlist.screen.widget.CatalogueListExtended;
-import net.minecraftforge.fml.client.TEMPmodlist.screen.widget.CatalogueTextField;
+import net.minecraftforge.fml.client.modlist.ClientHelper;
+import net.minecraftforge.fml.client.modlist.screen.widget.CatalogueCheckBoxButton;
+import net.minecraftforge.fml.client.modlist.screen.widget.CatalogueIconButton;
+import net.minecraftforge.fml.client.modlist.screen.widget.CatalogueListExtended;
+import net.minecraftforge.fml.client.modlist.screen.widget.CatalogueTextField;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;

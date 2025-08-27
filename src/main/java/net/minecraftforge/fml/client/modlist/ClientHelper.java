@@ -1,4 +1,4 @@
-package net.minecraftforge.fml.client.TEMPmodlist;
+package net.minecraftforge.fml.client.modlist;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
