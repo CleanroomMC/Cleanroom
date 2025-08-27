@@ -12,8 +12,7 @@ import org.lwjgl.opengl.GL11;
 public abstract class CatalogueListExtended extends GuiListExtended {
     // Noting different from the original one, but allows you to remove the shadow on the bottom and top.
     // Created to avoid mixins.
-    private boolean shouldDrawTopAndBottom = true;
-    private boolean shouldDrawBackground = true;
+    private boolean scrollBarVisible;
 
     public CatalogueListExtended(Minecraft mcIn, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn) {
         super(mcIn, widthIn, heightIn, topIn, bottomIn, slotHeightIn);
@@ -30,32 +29,27 @@ public abstract class CatalogueListExtended extends GuiListExtended {
         // Customized background. Empty by default.
         this.drawBackground();
 
-        int scrollBarLeft = this.getScrollBarX();
-        int scrollBarRight = scrollBarLeft + 6;
-
         this.bindAmountScrolled();
+        int maxScroll = this.getMaxScroll();
+        this.scrollBarVisible = maxScroll > 0 && this.getContentHeight() != 0;
+
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder vertexBuffer = tessellator.getBuffer();
 
         // Shadowed dirt background. Scroll with the entries.
-        if (this.shouldDrawBackground) {
-            this.drawContainerBackground(tessellator);
-        }
+        this.drawContainerBackground(tessellator);
 
-        int contentLeft = this.left + (this.shouldDrawBackground ? this.width / 2 - this.getListWidth() / 2 + 2 : 0);
-        int contentTop = this.top + 4 - (int)this.amountScrolled;
-
+        // Customized header. Empty by default
         if (this.hasListHeader) {
-            this.drawListHeader(contentLeft, contentTop, tessellator);
+            this.drawListHeader(this.getListLeft(), this.getListTop(), tessellator);
         }
 
-        this.drawSelectionBox(contentLeft, contentTop, mouseX, mouseY, partialTicks);
+        this.drawSelectionBox(mouseX, mouseY, partialTicks);
 
         GlStateManager.disableDepth();
 
-        // Draw overlay to hide scrolled entries
+        // Draw overlay dirt to hide scrolled entries
         this.overlayBackground(0, this.top, 255, 255);
         this.overlayBackground(this.bottom, this.height, 255, 255);
 
@@ -66,41 +60,11 @@ public abstract class CatalogueListExtended extends GuiListExtended {
         GlStateManager.disableTexture2D();
 
         // Shadow the top and bottom
-        if (this.shouldDrawTopAndBottom) {
-            this.drawTopAndBottom(tessellator);
-        }
+        this.drawTopAndBottom(tessellator);
 
         // Scroll Bar
-        int maxScroll = this.getMaxScroll();
-        if (maxScroll > 0 && this.getContentHeight() != 0) {
-            int scrollThumbHeight = (this.bottom - this.top) * (this.bottom - this.top) / this.getContentHeight();
-            scrollThumbHeight = MathHelper.clamp(scrollThumbHeight, 32, this.bottom - this.top - 8);
-            int scrollThumbTop = (int)this.amountScrolled * (this.bottom - this.top - scrollThumbHeight) / maxScroll + this.top;
-            scrollThumbTop = Math.max(scrollThumbTop, this.top);
-
-            // Background
-            vertexBuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-            vertexBuffer.pos(scrollBarLeft, this.bottom, 0).tex(0, 1).color(0, 0, 0, 255).endVertex();
-            vertexBuffer.pos(scrollBarRight, this.bottom, 0).tex(1, 1).color(0, 0, 0, 255).endVertex();
-            vertexBuffer.pos(scrollBarRight, this.top, 0).tex(1, 0).color(0, 0, 0, 255).endVertex();
-            vertexBuffer.pos(scrollBarLeft, this.top, 0).tex(0, 0).color(0, 0, 0, 255).endVertex();
-            tessellator.draw();
-
-            // Main
-            vertexBuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-            vertexBuffer.pos(scrollBarLeft, scrollThumbTop + scrollThumbHeight, 0).tex(0, 1).color(128, 128, 128, 255).endVertex();
-            vertexBuffer.pos(scrollBarRight, scrollThumbTop + scrollThumbHeight, 0).tex(1, 1).color(128, 128, 128, 255).endVertex();
-            vertexBuffer.pos(scrollBarRight, scrollThumbTop, 0).tex(1, 0).color(128, 128, 128, 255).endVertex();
-            vertexBuffer.pos(scrollBarLeft, scrollThumbTop, 0).tex(0, 0).color(128, 128, 128, 255).endVertex();
-            tessellator.draw();
-
-            // Border
-            vertexBuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-            vertexBuffer.pos(scrollBarLeft, scrollThumbTop + scrollThumbHeight - 1, 0).tex(0, 1).color(192, 192, 192, 255).endVertex();
-            vertexBuffer.pos(scrollBarRight - 1, scrollThumbTop + scrollThumbHeight - 1, 0).tex(1, 1).color(192, 192, 192, 255).endVertex();
-            vertexBuffer.pos(scrollBarRight - 1, scrollThumbTop, 0).tex(1, 0).color(192, 192, 192, 255).endVertex();
-            vertexBuffer.pos(scrollBarLeft, scrollThumbTop, 0).tex(0, 0).color(192, 192, 192, 255).endVertex();
-            tessellator.draw();
+        if (this.scrollBarVisible) {
+            this.drawScrollBar(tessellator, maxScroll);
         }
 
         // Customized decorations. Empty by default.
@@ -115,17 +79,92 @@ public abstract class CatalogueListExtended extends GuiListExtended {
     protected void drawTopAndBottom(Tessellator tessellator) {
         BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-        buffer.pos((double)this.left, (double)(this.top + 4), 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 0).endVertex();
-        buffer.pos((double)this.right, (double)(this.top + 4), 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 0).endVertex();
-        buffer.pos((double)this.right, (double)this.top, 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 255).endVertex();
-        buffer.pos((double)this.left, (double)this.top, 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
+        buffer.pos(this.left, this.top + 4, 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 0).endVertex();
+        buffer.pos(this.right, this.top + 4, 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 0).endVertex();
+        buffer.pos(this.right, this.top, 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 255).endVertex();
+        buffer.pos(this.left, this.top, 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
         tessellator.draw();
         buffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-        buffer.pos((double)this.left, (double)this.bottom, 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-        buffer.pos((double)this.right, (double)this.bottom, 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-        buffer.pos((double)this.right, (double)(this.bottom - 4), 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 0).endVertex();
-        buffer.pos((double)this.left, (double)(this.bottom - 4), 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 0).endVertex();
+        buffer.pos(this.left, this.bottom, 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+        buffer.pos(this.right, this.bottom, 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+        buffer.pos(this.right, this.bottom - 4, 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 0).endVertex();
+        buffer.pos(this.left, this.bottom - 4, 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 0).endVertex();
         tessellator.draw();
+    }
+
+    protected void drawScrollBar(Tessellator tessellator, int maxScroll) {
+        BufferBuilder buffer = tessellator.getBuffer();
+
+        int scrollBarLeft = this.getScrollBarX();
+        int scrollBarRight = scrollBarLeft + 6;
+
+        int scrollThumbHeight = (this.bottom - this.top) * (this.bottom - this.top) / this.getContentHeight();
+        scrollThumbHeight = MathHelper.clamp(scrollThumbHeight, 32, this.bottom - this.top - 8);
+        int scrollThumbTop = (int)this.amountScrolled * (this.bottom - this.top - scrollThumbHeight) / maxScroll + this.top;
+        scrollThumbTop = Math.max(scrollThumbTop, this.top);
+
+        // Background
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        buffer.pos(scrollBarLeft, this.bottom, 0).tex(0, 1).color(0, 0, 0, 255).endVertex();
+        buffer.pos(scrollBarRight, this.bottom, 0).tex(1, 1).color(0, 0, 0, 255).endVertex();
+        buffer.pos(scrollBarRight, this.top, 0).tex(1, 0).color(0, 0, 0, 255).endVertex();
+        buffer.pos(scrollBarLeft, this.top, 0).tex(0, 0).color(0, 0, 0, 255).endVertex();
+        tessellator.draw();
+
+        // Main
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        buffer.pos(scrollBarLeft, scrollThumbTop + scrollThumbHeight, 0).tex(0, 1).color(128, 128, 128, 255).endVertex();
+        buffer.pos(scrollBarRight, scrollThumbTop + scrollThumbHeight, 0).tex(1, 1).color(128, 128, 128, 255).endVertex();
+        buffer.pos(scrollBarRight, scrollThumbTop, 0).tex(1, 0).color(128, 128, 128, 255).endVertex();
+        buffer.pos(scrollBarLeft, scrollThumbTop, 0).tex(0, 0).color(128, 128, 128, 255).endVertex();
+        tessellator.draw();
+
+        // Border
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        buffer.pos(scrollBarLeft, scrollThumbTop + scrollThumbHeight - 1, 0).tex(0, 1).color(192, 192, 192, 255).endVertex();
+        buffer.pos(scrollBarRight - 1, scrollThumbTop + scrollThumbHeight - 1, 0).tex(1, 1).color(192, 192, 192, 255).endVertex();
+        buffer.pos(scrollBarRight - 1, scrollThumbTop, 0).tex(1, 0).color(192, 192, 192, 255).endVertex();
+        buffer.pos(scrollBarLeft, scrollThumbTop, 0).tex(0, 0).color(192, 192, 192, 255).endVertex();
+        tessellator.draw();
+    }
+
+    protected void drawSelectionBox(int mouseX, int mouseY, float partialTicks) {
+        int size = this.getSize();
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+
+        for (int index = 0; index < size; ++index) {
+            int rowTop = this.getRowTop(index);
+            int rowBottom = this.getRowBottom(index) - 4;
+
+            if (rowTop > this.bottom || rowBottom < this.top) {
+                this.updateItemPos(index, this.getListLeft(), rowTop, partialTicks);
+            }
+
+            if (this.showSelectionBox && this.isSelected(index)) {
+                int left = this.getListLeft();
+                int right = this.getListRight();
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                GlStateManager.disableTexture2D();
+                buffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+                buffer.pos(left, rowBottom + 2, 0.0D).tex(0.0D, 1.0D).color(128, 128, 128, 255).endVertex();
+                buffer.pos(right, rowBottom + 2, 0.0D).tex(1.0D, 1.0D).color(128, 128, 128, 255).endVertex();
+                buffer.pos(right, rowTop - 2, 0.0D).tex(1.0D, 0.0D).color(128, 128, 128, 255).endVertex();
+                buffer.pos(left, rowTop - 2, 0.0D).tex(0.0D, 0.0D).color(128, 128, 128, 255).endVertex();
+                buffer.pos(left + 1, rowBottom + 1, 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+                buffer.pos(right - 1, rowBottom + 1, 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+                buffer.pos(right - 1, rowTop - 1, 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 255).endVertex();
+                buffer.pos(left + 1, rowTop - 1, 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
+                tessellator.draw();
+                GlStateManager.enableTexture2D();
+            }
+
+            this.drawSlot(index, this.getListLeft(), rowTop, rowBottom - rowTop, mouseX, mouseY, partialTicks);
+        }
+    }
+
+    @Deprecated
+    protected void drawSelectionBox(int contentLeft, int contentTop, int mouseXIn, int mouseYIn, float partialTicks) {
     }
 
     public void setAmountScrolled(int amountScrolled) {
@@ -134,24 +173,37 @@ public abstract class CatalogueListExtended extends GuiListExtended {
         this.initialClickY = -2;
     }
 
-    public void updateSize(int width, int height, int top, int bottom) {
+    public void setWidth(int width) {
         this.width = width;
+        this.right = this.left + this.width;
+    }
+
+    public void setHeight(int height) {
         this.height = height;
-        this.top = top;
-        this.bottom = bottom;
+        this.bottom = this.top + height;
     }
 
-    /**
-     * Sets whether draw the top and bottom shadow.
-     */
-    public void setDrawTopAndBottom(boolean shouldDraw) {
-        this.shouldDrawTopAndBottom = shouldDraw;
+    protected boolean isScrollBarVisible() {
+        return this.scrollBarVisible;
     }
 
-    /**
-     * Sets whether draw the shadowed dirt background, which scrolls with the entries.
-     */
-    public void setDrawBackground(boolean shouldDraw) {
-        this.shouldDrawBackground = shouldDraw;
+    protected int getListLeft() {
+        return this.width / 2 - this.getListWidth() / 2 + 2;
+    }
+
+    protected int getListRight() {
+        return this.getListLeft() + this.getListWidth();
+    }
+
+    protected int getListTop() {
+        return this.top + 4 - (int)this.amountScrolled;
+    }
+
+    protected int getRowTop(int pIndex) {
+        return this.top + 4 - (int)this.amountScrolled + pIndex * this.slotHeight + this.headerPadding;
+    }
+
+    protected int getRowBottom(int pIndex) {
+        return this.getRowTop(pIndex) + this.slotHeight;
     }
 }

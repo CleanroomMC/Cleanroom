@@ -1,12 +1,11 @@
-package com.cleanroommc.common;
+package net.minecraftforge.fml.client.TEMPmodlist.screen;
 
-import com.google.common.eventbus.EventBus;
 import net.minecraftforge.fml.common.DummyModContainer;
-import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.ModMetadata;
 
 import java.util.Arrays;
 
+// A dummy mod only displayed in list
 public class CatalogueContainer extends DummyModContainer {
     public CatalogueContainer() {
         super(new ModMetadata());
@@ -26,10 +25,5 @@ public class CatalogueContainer extends DummyModContainer {
         meta.iconBlur = false;
         meta.iconItem = "minecraft:diamond_sword";
         meta.backgroundFile = "/catalogue_background.png";
-    }
-
-    @Override
-    public boolean registerBus(EventBus bus, LoadController controller) {
-        return true;
     }
 }

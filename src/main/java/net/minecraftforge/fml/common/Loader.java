@@ -31,14 +31,12 @@ import java.io.Writer;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import com.cleanroommc.common.CatalogueContainer;
 import com.cleanroommc.common.CleanroomContainer;
 import com.cleanroommc.common.MixinContainer;
 import com.cleanroommc.common.ConfigAnytimeContainer;
@@ -379,7 +377,6 @@ public class Loader
         mods.add(new InjectedModContainer(new CleanroomContainer(), FMLSanityChecker.fmlLocation));
         mods.add(new InjectedModContainer(new MixinContainer(), FMLSanityChecker.fmlLocation));
         mods.add(new InjectedModContainer(new ConfigAnytimeContainer(), FMLSanityChecker.fmlLocation));
-        mods.add(new InjectedModContainer(new CatalogueContainer(), FMLSanityChecker.fmlLocation));
 
         for (String cont : injectedContainers)
         {

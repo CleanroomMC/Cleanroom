@@ -3,6 +3,7 @@ package net.minecraftforge.fml.client.TEMPmodlist.screen;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -50,13 +51,16 @@ import java.util.stream.Collectors;
 
 public class CatalogueModListScreen extends GuiScreen {
     private static final ResourceLocation MISSING_BANNER = new ResourceLocation(ForgeVersion.MOD_ID, "textures/gui/missing_banner.png");
+    private static final ResourceLocation MISSING_BACKGROUND = new ResourceLocation(ForgeVersion.MOD_ID, "textures/gui/missing_background.png");
     private static final ResourceLocation VERSION_CHECK_ICONS = new ResourceLocation(ForgeVersion.MOD_ID, "textures/gui/version_check_icons.png");
+    private static final ResourceLocation MINECRAFT_LOGO = new ResourceLocation(ForgeVersion.MOD_ID, "textures/gui/minecraft.png");
     private static final Map<String, Pair<ResourceLocation, Dimension>> BANNER_CACHE = new HashMap<>();
     private static final Map<String, Pair<ResourceLocation, Dimension>> IMAGE_ICON_CACHE = new HashMap<>();
     private static final Map<String, ItemStack> ITEM_ICON_CACHE = new HashMap<>();
     private static final Map<String, ModContainer> CACHED_MODS = new HashMap<>();
     private static ResourceLocation cachedBackground;
     private static boolean loaded = false;
+    private static String lastSearch = "";
 
     private final GuiScreen parentScreen;
     private CatalogueTextField searchTextField;
@@ -79,6 +83,8 @@ public class CatalogueModListScreen extends GuiScreen {
         this.parentScreen = parent;
         if(!loaded) {
             Loader.instance().getActiveModList().forEach(data -> CACHED_MODS.put(data.getModId(), data));
+            CACHED_MODS.put("minecraft", new MinecraftContainer()); // Override minecraft
+            CACHED_MODS.put("catalogue", new CatalogueContainer());
             loaded = true;
         }
     }
@@ -89,10 +95,11 @@ public class CatalogueModListScreen extends GuiScreen {
         this.searchTextField = new CatalogueTextField(0, this.fontRenderer, 11, 25, 148, 20);
         this.searchTextField.setCanLoseFocus(true);
         this.searchTextField.setEnableBackgroundDrawing(true);
+        this.searchTextField.setText(lastSearch);
 
         this.modList = new ModList();
         this.modList.setSlotXBoundsFromLeft(10);
-        this.modList.setDrawTopAndBottom(false);
+        this.modList.registerScrollButtons(7, 8);
 
         this.buttonList.add(new GuiButton(1, 10, modList.bottom + 8, 127, 20, I18n.format("gui.back")));
         this.modFolderButton = this.addButton(new CatalogueIconButton(2, 140, modList.bottom + 8, 0, 0));
@@ -111,9 +118,8 @@ public class CatalogueModListScreen extends GuiScreen {
         this.issueButton = this.addButton(new CatalogueIconButton(5, contentLeft + buttonWidth + buttonWidth + 10, 105, 30, 0, buttonWidth, I18n.format("fml.menu.mods.issue")));
         this.issueButton.visible = false;
 
-        this.descriptionList = new StringList(contentWidth, this.height - 135 - 55, contentLeft, 130);
-        this.descriptionList.setDrawTopAndBottom(false);
-        this.descriptionList.setDrawBackground(false);
+        this.descriptionList = new StringList(contentWidth + padding * 2, 50, contentLeft - padding, 130);
+        this.descriptionList.registerScrollButtons(9, 10);
 
         this.updatesButton = this.addButton(new CatalogueCheckBoxButton(6, this.modList.right - 14, 7, false));
 
@@ -145,12 +151,16 @@ public class CatalogueModListScreen extends GuiScreen {
                 }
                 break;
             case 3:
-                try {
-                    IModGuiFactory guiFactory = FMLClientHandler.instance().getGuiFactoryFor(selectedModData);
-                    GuiScreen newScreen = guiFactory.createConfigGui(this);
-                    this.mc.displayGuiScreen(newScreen);
-                } catch (Exception e) {
-                    FMLLog.log.error("There was a critical issue trying to build the config GUI for {}", selectedModData.getModId(), e);
+                if (!this.selectedModData.getModId().equals("minecraft")) {
+                    try {
+                        IModGuiFactory guiFactory = FMLClientHandler.instance().getGuiFactoryFor(this.selectedModData);
+                        GuiScreen newScreen = guiFactory.createConfigGui(this);
+                        this.mc.displayGuiScreen(newScreen);
+                    } catch (Exception e) {
+                        FMLLog.log.error("There was a critical issue trying to build the config GUI for {}", this.selectedModData.getModId(), e);
+                    }
+                } else {
+                    this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));
                 }
                 break;
             case 4:
@@ -205,6 +215,8 @@ public class CatalogueModListScreen extends GuiScreen {
             String s = this.searchTextField.getText();
             this.updateSearchField(s);
             this.modList.filterAndUpdateList(s);
+            this.updateSelectedModList();
+            lastSearch = s;
             return;
         }
 
@@ -221,7 +233,7 @@ public class CatalogueModListScreen extends GuiScreen {
 
         @Override
         public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-            ClientHelper.scissor(this.left, this.top, this.width, this.height);
+            ClientHelper.scissor(this.getListLeft(), this.top, this.width, this.bottom - this.top);
             super.drawScreen(mouseX, mouseY, partialTicks);
             GL11.glDisable(GL11.GL_SCISSOR_TEST);
         }
@@ -271,8 +283,23 @@ public class CatalogueModListScreen extends GuiScreen {
         }
 
         @Override
+        protected int getScrollBarX() {
+            return this.left + this.width - 6;
+        }
+
+        @Override
+        public int getListLeft() {
+            return this.left;
+        }
+
+        @Override
+        public int getListRight() {
+            return this.getListLeft() + this.getListWidth();
+        }
+
+        @Override
         public int getListWidth() {
-            return this.width; // Why it is 220 by default???
+            return this.width - (this.isScrollBarVisible() ? 6 : 0);
         }
 
         @Override
@@ -286,8 +313,11 @@ public class CatalogueModListScreen extends GuiScreen {
         }
 
         @Override
-        protected int getScrollBarX() {
-            return this.left + this.width - 6;
+        protected void drawTopAndBottom(Tessellator tessellator) {
+        }
+
+        @Override
+        protected void overlayBackground(int startY, int endY, int startAlpha, int endAlpha) {
         }
     }
 
@@ -302,7 +332,6 @@ public class CatalogueModListScreen extends GuiScreen {
 
         @Override
         public void drawEntry(int index, int left, int top, int rowWidth, int rowHeight, int mouseX, int mouseY, boolean hovered, float partialTicks) {
-            left -= 2; // Move 2px, the borders.
             // Draws mod name and version
             drawString(fontRenderer, this.getFormattedModName(), left + 24, top + 2, 0xFFFFFF);
             drawString(fontRenderer, TextFormatting.GRAY + this.data.getDisplayVersion(), left + 24, top + 12, 0xFFFFFF);
@@ -375,7 +404,7 @@ public class CatalogueModListScreen extends GuiScreen {
             ModMetadata metadata = this.data.getMetadata();
             if (metadata != null && !metadata.autogenerated) {
                 String itemIcon = metadata.iconItem;
-                if (!itemIcon.isEmpty()) {
+                if (!itemIcon.isBlank()) {
                     try {
                         // 0:mod id 1:item name (2:metadata)
                         String[] parts = itemIcon.split(":");
@@ -435,12 +464,18 @@ public class CatalogueModListScreen extends GuiScreen {
         private List<StringEntry> entries = Lists.<StringEntry>newArrayList();
 
         public StringList(int width, int height, int left, int top) {
-            super(CatalogueModListScreen.this.mc, width, CatalogueModListScreen.this.height, top, top + height, 10);
-            this.setSlotXBoundsFromLeft(left);
+            super(CatalogueModListScreen.this.mc, width, height, top, top + height, 10);
+            this.setSlotXBoundsFromLeft(left + 8);
+            this.visible = false;
         }
 
         public void setTextFromInfo(ModContainer data) {
             this.entries.clear();
+            this.visible = true;
+            if (data.getMetadata().description.trim().isBlank()) {
+                this.visible = false;
+                return;
+            }
             String description = data.getMetadata().description.trim();
             List<String> lines = CatalogueModListScreen.this.fontRenderer.listFormattedStringToWidth(description, this.getListWidth());
 
@@ -458,8 +493,39 @@ public class CatalogueModListScreen extends GuiScreen {
         }
 
         @Override
+        protected void drawContainerBackground(Tessellator tessellator) {
+            int x = this.left;
+            int y = this.top;
+            int width = this.width;
+            int height = this.height;
+            drawRect(x, y + 1, x + 1, y + height - 1, 0x77000000);
+            drawRect(x + 1, y, x + width - 1, y + height, 0x77000000);
+            drawRect(x + width - 1, y + 1, x + width, y + height - 1, 0x77000000);
+        }
+
+        @Override
         protected int getScrollBarX() {
             return this.left + this.width - 7;
+        }
+
+        @Override
+        public int getListLeft() {
+            return this.left + 8;
+        }
+
+        @Override
+        public int getListWidth() {
+            return this.width - 16;
+        }
+
+        @Override
+        protected int getRowTop(int $$0) {
+            return super.getRowTop($$0) + 4;
+        }
+
+        @Override
+        public int getMaxScroll() {
+            return Math.max(0, this.getContentHeight() - (this.height - 12));
         }
 
         @Override
@@ -468,13 +534,16 @@ public class CatalogueModListScreen extends GuiScreen {
         }
 
         @Override
-        public int getListWidth() {
-            return this.width - 10;
+        public IGuiListEntry getListEntry(int index) {
+            return this.entries.get(index);
         }
 
         @Override
-        public IGuiListEntry getListEntry(int index) {
-            return this.entries.get(index);
+        protected void drawTopAndBottom(Tessellator tessellator) {
+        }
+
+        @Override
+        protected void overlayBackground(int startY, int endY, int startAlpha, int endAlpha) {
         }
     }
 
@@ -540,6 +609,7 @@ public class CatalogueModListScreen extends GuiScreen {
                 this.searchTextField.setText("");
                 this.updateSearchField("");
                 this.modList.filterAndUpdateList("");
+                lastSearch = "";
                 return;
             }
             // Left click to apply suggestions
@@ -551,6 +621,7 @@ public class CatalogueModListScreen extends GuiScreen {
                     this.searchTextField.setText(text);
                     this.updateSearchField(text);
                     this.modList.filterAndUpdateList(text);
+                    lastSearch = text;
                     this.lastClickTime = currentTine;
                     return;
                 }
@@ -672,25 +743,28 @@ public class CatalogueModListScreen extends GuiScreen {
             ModMetadata metadata = selectedModData.getMetadata();
             if (metadata != null && !metadata.autogenerated) {
 
-                int labelOffset = this.height - 20;
+                // Draw fade from the bottom
+                drawGradientRect(this.modList.right + 12, this.height - 50, this.width, this.height, 0x00000000, 0x66000000);
+
+                int labelOffset = this.height - 18;
 
                 // Draw license
                 String license = metadata.license;
-                if (!license.isEmpty()) {
+                if (!license.isBlank()) {
                     this.drawStringWithLabel("fml.menu.mods.info.license", license, contentLeft, labelOffset, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
                     labelOffset -= 15;
                 }
 
                 // Draw credits
                 String credits = metadata.credits;
-                if (!credits.isEmpty()) {
+                if (!credits.isBlank()) {
                     this.drawStringWithLabel("fml.menu.mods.info.credits", credits, contentLeft, labelOffset, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
                     labelOffset -= 15;
                 }
 
                 // Draw authors
                 String authors = metadata.getAuthorList();
-                if (!authors.isEmpty()) {
+                if (!authors.isBlank()) {
                     this.drawStringWithLabel("fml.menu.mods.info.authors", authors, contentLeft, labelOffset, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
                 }
             }
@@ -741,7 +815,7 @@ public class CatalogueModListScreen extends GuiScreen {
         ModMetadata metadata = data.getMetadata();
         if (metadata == null) return;
         String banner = metadata.logoFile;
-        if (banner.isEmpty()) return;
+        if (banner.isBlank()) return;
 
         IResourcePack resourcePack = FMLClientHandler.instance().getResourcePackFor(data.getModId());
         BufferedImage image = null;
@@ -773,7 +847,7 @@ public class CatalogueModListScreen extends GuiScreen {
 
         // Attempts to load the real icon
         String iconFile = metadata.iconFile;
-        if (!iconFile.isEmpty()) {
+        if (!iconFile.isBlank()) {
             if (!iconFile.startsWith("/")) {
                 iconFile = "/" + iconFile;
             }
@@ -791,7 +865,7 @@ public class CatalogueModListScreen extends GuiScreen {
 
         // Attempts to use the logo file if it's a square
         String logoFile = metadata.logoFile;
-        if (!logoFile.isEmpty()) {
+        if (!logoFile.isBlank()) {
             IResourcePack resourcePack = FMLClientHandler.instance().getResourcePackFor(data.getModId());
             BufferedImage image = null;
             try {
@@ -840,7 +914,7 @@ public class CatalogueModListScreen extends GuiScreen {
         ModMetadata metadata = data.getMetadata();
         if (metadata == null) return;
         String background = metadata.backgroundFile;
-        if(background.isEmpty()) return;
+        if(background.isBlank()) return;
 
         if (!background.startsWith("/")) {
             background = "/" + background;
@@ -868,11 +942,14 @@ public class CatalogueModListScreen extends GuiScreen {
     @SuppressWarnings("SameParameterValue")
     private void drawBackground(int contentWidth, int x, int y) {
         if(this.selectedModData == null) return;
-        if(cachedBackground == null) return;
 
-        this.mc.renderEngine.bindTexture(cachedBackground);
+        ResourceLocation texture = cachedBackground != null ? cachedBackground : MISSING_BACKGROUND;
+        this.mc.renderEngine.bindTexture(texture);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.enableBlend();
+        GlStateManager.disableAlpha();
+        GlStateManager.shadeModel(GL11.GL_SMOOTH);
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder builder = tessellator.getBuffer();
@@ -884,13 +961,15 @@ public class CatalogueModListScreen extends GuiScreen {
         tessellator.draw();
 
         GlStateManager.disableBlend();
+        GlStateManager.enableAlpha();
+        GlStateManager.shadeModel(GL11.GL_FLAT);
     }
 
     @SuppressWarnings("SameParameterValue")
     private void drawBanner(int contentWidth, int x, int y, int maxWidth, int maxHeight) {
         if (this.selectedModData != null) {
             ResourceLocation logoResource = MISSING_BANNER;
-            Dimension size = new Dimension(600, 120);
+            Dimension size = new Dimension(120, 120);
 
             if (BANNER_CACHE.containsKey(this.selectedModData.getModId())) {
                 Pair<ResourceLocation, Dimension> logoInfo = BANNER_CACHE.get(this.selectedModData.getModId());
@@ -900,12 +979,29 @@ public class CatalogueModListScreen extends GuiScreen {
                 }
             }
 
+            int scale = 1;
+            if (logoResource == MISSING_BANNER) {
+                Pair<ResourceLocation, Dimension> logoInfo = IMAGE_ICON_CACHE.get(this.selectedModData.getModId());
+                if (logoInfo.getLeft() != null) {
+                    logoResource = logoInfo.getLeft();
+                    size = logoInfo.getRight();
+                    scale = 10; // Hack to make icon fill max banner height
+                }
+            }
+
+            boolean offset = false;
+            if (this.selectedModData.getModId().equals("minecraft")) {
+                logoResource = MINECRAFT_LOGO;
+                size = new Dimension(1024, 256);
+                offset = true;
+            }
+
             mc.getTextureManager().bindTexture(logoResource);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.enableBlend();
 
-            int width = size.width;
-            int height = size.height;
+            int width = size.width * scale;
+            int height = size.height * scale;
             if (size.width > maxWidth) {
                 width = maxWidth;
                 height = (width * size.height) / size.width;
@@ -917,6 +1013,10 @@ public class CatalogueModListScreen extends GuiScreen {
 
             x += (contentWidth - width) / 2;
             y += (maxHeight - height) / 2;
+
+            if (offset) { // Fix for minecraft logo
+                y += 8;
+            }
 
             ClientHelper.blit(x, y, width, height, 0.0F, 0.0F, size.width, size.height, size.width, size.height);
 
@@ -937,22 +1037,27 @@ public class CatalogueModListScreen extends GuiScreen {
         this.websiteButton.visible = true;
         this.issueButton.visible = true;
 
-        this.configButton.enabled = false;
-        IModGuiFactory guiFactory = FMLClientHandler.instance().getGuiFactoryFor(data);
-        if (guiFactory != null) {
-            this.configButton.enabled = guiFactory.hasConfigGui();
+        if (!this.selectedModData.getModId().equals("minecraft")) {
+            this.configButton.enabled = false;
+            IModGuiFactory guiFactory = FMLClientHandler.instance().getGuiFactoryFor(data);
+            if (guiFactory != null) {
+                this.configButton.enabled = guiFactory.hasConfigGui();
+            }
+        } else {
+            this.configButton.enabled = true;
         }
 
         ModMetadata metadata = data.getMetadata();
         if (metadata != null && !metadata.autogenerated) {
-            this.websiteButton.enabled = !metadata.url.isEmpty();
-            this.issueButton.enabled = !metadata.issueTrackerUrl.isEmpty();
+            this.websiteButton.enabled = !metadata.url.isBlank();
+            this.issueButton.enabled = !metadata.issueTrackerUrl.isBlank();
         }
 
         int contentLeft = this.modList.right + 12 + 10;
         int contentWidth = this.width - contentLeft - 10;
         int labelCount = this.getLabelCount(data);
-        this.descriptionList.updateSize(contentWidth, this.height - 135 - 10 - labelCount * 15, 130, this.height - 10 - labelCount * 15);
+        this.descriptionList.setWidth(contentWidth);
+        this.descriptionList.setHeight(this.height - 135 - labelCount * 15 - 9);
         this.descriptionList.setSlotXBoundsFromLeft(contentLeft);
         this.descriptionList.setTextFromInfo(data);
         this.descriptionList.setAmountScrolled(0);
@@ -962,8 +1067,8 @@ public class CatalogueModListScreen extends GuiScreen {
         int count = 0;
         ModMetadata metadata = selectedModInfo.getMetadata();
         if (metadata != null && !metadata.autogenerated) {
-            if (!metadata.license.isEmpty()) count++;
-            if (!metadata.credits.isEmpty()) count++;
+            if (!metadata.license.isBlank()) count++;
+            if (!metadata.credits.isBlank()) count++;
             if (!metadata.authorList.isEmpty()) count++;
         }
         return count;
