@@ -239,7 +239,7 @@ fml.menu.mods.title=Mods
 fml.menu.mods.config=Config
 fml.menu.mods.website=Website
 fml.menu.mods.issue=Submit Bug
-fml.menu.mods.searchwithdots=Search...
+fml.menu.mods.newsearch=Search
 fml.menu.mods.noselection=No mod selected...
 fml.menu.mods.nomods=No mods...
 fml.menu.mods.openmodsfolder=Open mods folder
@@ -247,16 +247,15 @@ fml.menu.mods.filterupdates=Show only mods with updates
 fml.menu.mods.info=This menu was redesigned by Catalogue. Click here to open the CurseForge page for this mod!
 fml.menu.mods.info.version=Version: %s
 fml.menu.mods.info.modid=Mod ID: %s
-fml.menu.mods.info.authors=Authors: %s
+fml.menu.mods.info.authors=Author(s): %s
 fml.menu.mods.info.credits=Credits: %s
-fml.menu.mods.info.license=License: %s
+fml.menu.mods.info.license=License(s): %s
 fml.menu.mods.info.beta=This version is a beta version
 fml.menu.mods.info.ahead=This version is ahead of the latest version found (%s)
 fml.menu.mods.info.updateavailable=Update (%s) Available: %s
 fml.menu.mods.info.updateavailablenopage=Update (%s) Available
 fml.menu.mods.info.betaupdateavailable=Beta Update (%s) Available: %s
 fml.menu.mods.info.betaupdateavailablenopage=Beta Update (%s) Available
-fml.menu.modoptions=Mod Options...
 
 item.forge.bucketFilled.name=%s Bucket
 

@@ -29,7 +29,7 @@
 -        GuiButton guibutton = this.func_189646_b(
 -                                  new GuiButton(7, this.field_146294_l / 2 + 2, this.field_146295_m / 4 + 96 + -16, 98, 20, I18n.func_135052_a("menu.shareToLan"))
 -                              );
-+        this.field_146292_n.add(new GuiButton(12, this.field_146294_l / 2 + 2, this.field_146295_m / 4 + 96 + i, 98, 20, I18n.func_135052_a("fml.menu.modoptions")));
++        this.field_146292_n.add(new GuiButton(12, this.field_146294_l / 2 + 2, this.field_146295_m / 4 + 96 + i, 98, 20, I18n.func_135052_a("fml.menu.mods")));
 +        GuiButton guibutton = this.func_189646_b(new GuiButton(7, this.field_146294_l / 2 - 100, this.field_146295_m / 4 + 72 + -16, 200, 20, I18n.func_135052_a("menu.shareToLan", new Object[0])));
          guibutton.field_146124_l = this.field_146297_k.func_71356_B() && !this.field_146297_k.func_71401_C().func_71344_c();
 -        this.field_146292_n

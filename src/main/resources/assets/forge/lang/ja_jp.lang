@@ -203,7 +203,6 @@ forge.controlsgui.alt=Alt + %s
 fml.menu.mods=Mod
 fml.menu.mods.normal=通常
 fml.menu.mods.search=検索：
-fml.menu.modoptions=Mod 設定…
 
 item.forge.bucketFilled.name=%s入りバケツ
 
