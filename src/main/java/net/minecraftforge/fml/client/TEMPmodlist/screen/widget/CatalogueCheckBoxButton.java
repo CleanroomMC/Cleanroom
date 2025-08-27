@@ -5,6 +5,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeVersion;
+import net.minecraftforge.fml.client.TEMPmodlist.ClientHelper;
 
 /**
  * Author: MrCrayfish
@@ -38,7 +39,7 @@ public class CatalogueCheckBoxButton extends GuiButton {
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-            this.drawTexturedModalRect(this.x, this.y, this.hovered ? 14 : 0, this.selected ? 14 : 0, this.width, this.height);
+            ClientHelper.blit(this.x, this.y, this.hovered ? 14 : 0, this.selected() ? 14 : 0, 14, 14, 64, 64);
             this.mouseDragged(minecraft, mouseX, mouseY);
         }
     }
