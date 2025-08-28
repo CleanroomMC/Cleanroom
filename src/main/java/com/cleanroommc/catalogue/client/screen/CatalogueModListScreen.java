@@ -188,7 +188,7 @@ public class CatalogueModListScreen extends GuiScreen {
         if (imageInfo != null) {
             Dimension size = imageInfo.size();
             this.mc.getTextureManager().bindTexture(imageInfo.resource());
-            ClientHelper.blit(10, 9, 10, 10, 0.0F, 0.0F, size.width, size.height, size.width, size.height);
+            drawScaledCustomSizeModalRect(10, 9, 0.0F, 0.0F, size.width, size.height, 10, 10, size.width, size.height);
         }
 
         if (ClientHelper.isMouseWithin(10, 9, 10, 10, mouseX, mouseY)) {
@@ -363,7 +363,7 @@ public class CatalogueModListScreen extends GuiScreen {
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 mc.getTextureManager().bindTexture(VERSION_CHECK_ICONS);
                 int vOffset = update.status.isAnimated() && (System.currentTimeMillis() / 800 & 1) == 1 ? 8 : 0;
-                ClientHelper.blit(left + rowWidth - 8 - 10, top + 6, update.status.getSheetOffset() * 8, vOffset, 8, 8, 64, 16);
+                drawModalRectWithCustomSizedTexture(left + rowWidth - 8 - 10, top + 6, update.status.getSheetOffset() * 8, vOffset, 8, 8, 64, 16);
             }
         }
 
@@ -376,7 +376,7 @@ public class CatalogueModListScreen extends GuiScreen {
                 GlStateManager.enableBlend();
                 Dimension size = iconInfo.size();
                 mc.getTextureManager().bindTexture(iconInfo.resource());
-                ClientHelper.blit(left + 4, top + 3, 16, 16, 0.0F, 0.0F, size.width, size.height, size.width, size.height);
+                drawScaledCustomSizeModalRect(left + 4, top + 3, 0.0F, 0.0F, size.width, size.height, 16, 16, size.width, size.height);
                 GlStateManager.disableBlend();
                 return;
             }
@@ -674,7 +674,7 @@ public class CatalogueModListScreen extends GuiScreen {
         GlStateManager.enableBlend();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         this.mc.getTextureManager().bindTexture(VERSION_CHECK_ICONS);
-        ClientHelper.blit(this.modList.right - 24, 10, 24, 0, 8, 8, 64, 16);
+        drawModalRectWithCustomSizedTexture(this.modList.right - 24, 10, 24, 0, 8, 8, 64, 16);
         GlStateManager.disableBlend();
 
         this.modList.drawScreen(mouseX, mouseY, partialTicks);
@@ -743,7 +743,7 @@ public class CatalogueModListScreen extends GuiScreen {
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 this.mc.getTextureManager().bindTexture(VERSION_CHECK_ICONS);
                 int vOffset = update.status.isAnimated() && (System.currentTimeMillis() / 800 & 1) == 1 ? 8 : 0;
-                ClientHelper.blit(contentLeft + versionWidth + 5, 92, update.status.getSheetOffset() * 8, vOffset, 8, 8, 64, 16);
+                drawModalRectWithCustomSizedTexture(contentLeft + versionWidth + 5, 92, update.status.getSheetOffset() * 8, vOffset, 8, 8, 64, 16);
                 if (ClientHelper.isMouseWithin(contentLeft + versionWidth + 5, 92, 8, 8, mouseX, mouseY)) {
                     switch (update.status) {
                         case BETA:
@@ -1022,7 +1022,7 @@ public class CatalogueModListScreen extends GuiScreen {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.enableBlend();
             this.mc.getTextureManager().bindTexture(bannerInfo.resource());
-            ClientHelper.blit(x, y, width, height, 0.0F, 0.0F, size.width, size.height, size.width, size.height);
+            drawScaledCustomSizeModalRect(x, y, 0.0F, 0.0F, size.width, size.height, width, height, size.width, size.height);
 
             GlStateManager.disableBlend();
         }

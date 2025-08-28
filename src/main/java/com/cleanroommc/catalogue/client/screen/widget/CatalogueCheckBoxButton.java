@@ -39,7 +39,7 @@ public class CatalogueCheckBoxButton extends GuiButton {
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-            ClientHelper.blit(this.x, this.y, this.hovered ? 14 : 0, this.selected() ? 14 : 0, 14, 14, 64, 64);
+            drawModalRectWithCustomSizedTexture(this.x, this.y, this.hovered ? 14 : 0, this.selected() ? 14 : 0, 14, 14, 64, 64);
             this.mouseDragged(minecraft, mouseX, mouseY);
         }
     }

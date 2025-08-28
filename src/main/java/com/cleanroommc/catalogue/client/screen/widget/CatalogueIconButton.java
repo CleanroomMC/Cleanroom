@@ -43,7 +43,7 @@ public class CatalogueIconButton extends GuiButton {
             int iconY = this.y + 5;
             float brightness = this.enabled ? 1.0F : 0.5F;
             GlStateManager.color(brightness, brightness, brightness, 1.0F);
-            ClientHelper.blit(iconX, iconY, this.u, this.v, 10, 10, 64, 64);
+            drawModalRectWithCustomSizedTexture(iconX, iconY, this.u, this.v, 10, 10, 64, 64);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             int textColor = this.getFGColor() | MathHelper.ceil(255.0F) << 24;
             drawString(fontrenderer, this.label, iconX + 14, iconY + 1, textColor);

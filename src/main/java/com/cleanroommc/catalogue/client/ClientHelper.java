@@ -33,13 +33,4 @@ public class ClientHelper {
     public static boolean isMouseWithin(int x, int y, int width, int height, int mouseX, int mouseY) {
         return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
     }
-
-    public static void blit(int x, int y, int width, int height, float uOffset, float vOffset, int uWidth, int vHeight, int textureWidth, int textureHeight) {
-        Gui.drawScaledCustomSizeModalRect(x, y, uOffset, vOffset, uWidth, vHeight, width, height, textureWidth, textureHeight);
-    }
-
-    public static void blit(int x, int y, float uOffset, float vOffset, int width, int height, int textureWidth, int textureHeight) {
-        Gui.drawModalRectWithCustomSizedTexture(x, y, uOffset, vOffset, width, height, textureWidth, textureHeight);
-    }
-
 }
