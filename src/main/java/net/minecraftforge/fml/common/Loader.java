@@ -40,6 +40,7 @@ import java.util.Set;
 import com.cleanroommc.common.CleanroomContainer;
 import com.cleanroommc.common.MixinContainer;
 import com.cleanroommc.common.ConfigAnytimeContainer;
+import com.mrcrayfish.catalogue.CatalogueContainer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -377,6 +378,7 @@ public class Loader
         mods.add(new InjectedModContainer(new CleanroomContainer(), FMLSanityChecker.fmlLocation));
         mods.add(new InjectedModContainer(new MixinContainer(), FMLSanityChecker.fmlLocation));
         mods.add(new InjectedModContainer(new ConfigAnytimeContainer(), FMLSanityChecker.fmlLocation));
+        mods.add(new InjectedModContainer(new CatalogueContainer(), FMLSanityChecker.fmlLocation));
 
         for (String cont : injectedContainers)
         {

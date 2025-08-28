@@ -1,7 +1,7 @@
 package net.minecraftforge.fml.client;
 
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraftforge.fml.client.modlist.screen.CatalogueModListScreen;
+import com.mrcrayfish.catalogue.client.screen.CatalogueModListScreen;
 
 @Deprecated
 public class GuiModList extends CatalogueModListScreen {

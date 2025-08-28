@@ -1,19 +1,19 @@
-package net.minecraftforge.fml.client.modlist.screen.widget;
+package com.mrcrayfish.catalogue.client.screen.widget;
 
+import com.mrcrayfish.catalogue.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.common.ForgeVersion;
-import net.minecraftforge.fml.client.modlist.ClientHelper;
+import com.mrcrayfish.catalogue.client.ClientHelper;
 
 /**
  * Author: MrCrayfish
  */
 public class CatalogueIconButton extends GuiButton {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(ForgeVersion.MOD_ID, "textures/gui/icons.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(Constants.MOD_ID, "textures/gui/icons.png");
 
     private final String label;
     private final int u, v;

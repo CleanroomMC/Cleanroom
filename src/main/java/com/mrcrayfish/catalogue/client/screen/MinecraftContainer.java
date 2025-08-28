@@ -1,4 +1,4 @@
-package net.minecraftforge.fml.client.modlist.screen;
+package com.mrcrayfish.catalogue.client.screen;
 
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.DummyModContainer;

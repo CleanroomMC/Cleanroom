@@ -203,27 +203,6 @@ forge.controlsgui.control.mac=CMD + %s
 forge.controlsgui.alt=ALT + %s
 
 fml.menu.mods=模组
-fml.menu.mods.title=模组
-fml.menu.mods.config=配置
-fml.menu.mods.website=网站
-fml.menu.mods.issue=提交 Bug
-fml.menu.mods.newsearch=搜索
-fml.menu.mods.noselection=没有选择模组……
-fml.menu.mods.nomods=没有模组……
-fml.menu.mods.openmodsfolder=打开 Mods 文件夹
-fml.menu.mods.filterupdates=仅显示有更新的模组
-fml.menu.mods.info=此菜单由 Catalogue 提供。单击此处打开此模组的 CurseForge 页面！
-fml.menu.mods.info.version=版本：%s
-fml.menu.mods.info.modid=Mod ID：%s
-fml.menu.mods.info.authors=作者：%s
-fml.menu.mods.info.credits=致谢：%s
-fml.menu.mods.info.license=许可协议：%s
-fml.menu.mods.info.beta=此版本为 Beta 版
-fml.menu.mods.info.ahead=此版本高于搜索到的最新版（%s）
-fml.menu.mods.info.updateavailable=更新（%s）可用：%s
-fml.menu.mods.info.updateavailablenopage=更新（%s）可用
-fml.menu.mods.info.betaupdateavailable=Beta 更新（%s）可用：%s
-fml.menu.mods.info.betaupdateavailablenopage=Beta 更新（%s）可用
 
 item.forge.bucketFilled.name=%s桶
 

@@ -1,4 +1,4 @@
-package net.minecraftforge.fml.client.modlist.screen.widget;
+package com.mrcrayfish.catalogue.client.screen.widget;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;

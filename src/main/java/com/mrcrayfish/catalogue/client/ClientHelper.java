@@ -1,4 +1,4 @@
-package net.minecraftforge.fml.client.modlist;
+package com.mrcrayfish.catalogue.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
