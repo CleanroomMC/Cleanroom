@@ -140,7 +140,7 @@ public class CatalogueModListScreen extends GuiScreen {
     public void actionPerformed(GuiButton button) {
         switch (button.id) {
             case 1:
-                mc.displayGuiScreen(parentScreen);
+                this.mc.displayGuiScreen(parentScreen);
                 break;
             case 2:
                 try {
@@ -389,7 +389,7 @@ public class CatalogueModListScreen extends GuiScreen {
                 RenderHelper.disableStandardItemLighting();
             } catch (Exception e) {
                 // Attempt to catch exceptions when rendering item. Sometime level instance isn't checked for null
-                Constants.LOG.debug("Failed to draw icon for mod '{}'", this.data.getModId());
+                Constants.LOG.debug("Failed to draw icon for mod '{}'", this.data.getModId(), e);
                 ITEM_ICON_CACHE.put(this.data.getModId(), new ItemStack(Blocks.GRASS));
                 this.icon = new ItemStack(Blocks.GRASS);
             }
@@ -434,7 +434,8 @@ public class CatalogueModListScreen extends GuiScreen {
                             ITEM_ICON_CACHE.put(this.data.getModId(), itemStack);
                             return itemStack;
                         }
-                    } catch (Exception ignored) {
+                    } catch (Exception e) {
+                        Constants.LOG.debug("Failed to get customized item icon for mod '{}'", this.data.getModId(), e);
                     }
                 }
             }
@@ -446,9 +447,13 @@ public class CatalogueModListScreen extends GuiScreen {
                 if (!item.isEmpty()) {
                     // If the item is in a creative tab, Catalogue will use the tab's icon
                     if (item.getItem().getCreativeTab() != null) {
-                        ItemStack tabItem = item.getItem().getCreativeTab().getIcon();
-                        if (tabItem != null && !tabItem.isEmpty() && tabItem.getItem().getRegistryName().getNamespace().equals(this.data.getModId())) {
-                            item = tabItem;
+                        try {
+                            ItemStack tabItem = item.getItem().getCreativeTab().getIcon();
+                            if (tabItem != null && !tabItem.isEmpty() && tabItem.getItem().getRegistryName().getNamespace().equals(this.data.getModId())) {
+                                item = tabItem;
+                            }
+                        } catch (Exception e) {
+                            Constants.LOG.debug("Failed to get creative tab icon for mod '{}'", this.data.getModId(), e);
                         }
                     }
                     ITEM_ICON_CACHE.put(this.data.getModId(), item);
