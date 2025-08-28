@@ -82,7 +82,6 @@ public class CatalogueModListScreen extends GuiScreen {
         this.parentScreen = parent;
         if (!loaded) {
             Loader.instance().getActiveModList().forEach(data -> CACHED_MODS.put(data.getModId(), data));
-            CACHED_MODS.put("minecraft", new MinecraftContainer()); // Override minecraft
             BANNER_CACHE.put("minecraft", new ImageInfo(MINECRAFT_LOGO, new Dimension(1024, 256)));
             loaded = true;
         }
