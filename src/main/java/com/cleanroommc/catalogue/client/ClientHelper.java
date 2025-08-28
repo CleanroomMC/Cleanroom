@@ -1,4 +1,4 @@
-package com.mrcrayfish.catalogue.client;
+package com.cleanroommc.catalogue.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;

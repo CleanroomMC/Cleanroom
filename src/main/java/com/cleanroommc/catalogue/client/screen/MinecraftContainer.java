@@ -1,4 +1,4 @@
-package com.mrcrayfish.catalogue.client.screen;
+package com.cleanroommc.catalogue.client.screen;
 
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.DummyModContainer;

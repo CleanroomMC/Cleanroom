@@ -1,11 +1,11 @@
-package com.mrcrayfish.catalogue.client.screen.widget;
+package com.cleanroommc.catalogue.client.screen.widget;
 
-import com.mrcrayfish.catalogue.Constants;
+import com.cleanroommc.catalogue.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
-import com.mrcrayfish.catalogue.client.ClientHelper;
+import com.cleanroommc.catalogue.client.ClientHelper;
 
 /**
  * Author: MrCrayfish

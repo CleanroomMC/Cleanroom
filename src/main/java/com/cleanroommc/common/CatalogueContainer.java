@@ -1,5 +1,6 @@
-package com.mrcrayfish.catalogue;
+package com.cleanroommc.common;
 
+import com.cleanroommc.catalogue.Constants;
 import com.google.common.eventbus.EventBus;
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;

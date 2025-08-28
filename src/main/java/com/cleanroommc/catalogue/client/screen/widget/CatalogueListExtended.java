@@ -1,4 +1,4 @@
-package com.mrcrayfish.catalogue.client.screen.widget;
+package com.cleanroommc.catalogue.client.screen.widget;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiListExtended;

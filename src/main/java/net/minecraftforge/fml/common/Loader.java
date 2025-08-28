@@ -40,7 +40,7 @@ import java.util.Set;
 import com.cleanroommc.common.CleanroomContainer;
 import com.cleanroommc.common.MixinContainer;
 import com.cleanroommc.common.ConfigAnytimeContainer;
-import com.mrcrayfish.catalogue.CatalogueContainer;
+import com.cleanroommc.common.CatalogueContainer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.capabilities.CapabilityManager;

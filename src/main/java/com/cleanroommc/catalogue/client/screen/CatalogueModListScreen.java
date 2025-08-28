@@ -1,7 +1,7 @@
-package com.mrcrayfish.catalogue.client.screen;
+package com.cleanroommc.catalogue.client.screen;
 
 import com.google.common.collect.Lists;
-import com.mrcrayfish.catalogue.Constants;
+import com.cleanroommc.catalogue.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptions;
@@ -27,11 +27,11 @@ import net.minecraft.util.text.event.ClickEvent;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.IModGuiFactory;
-import com.mrcrayfish.catalogue.client.ClientHelper;
-import com.mrcrayfish.catalogue.client.screen.widget.CatalogueCheckBoxButton;
-import com.mrcrayfish.catalogue.client.screen.widget.CatalogueIconButton;
-import com.mrcrayfish.catalogue.client.screen.widget.CatalogueListExtended;
-import com.mrcrayfish.catalogue.client.screen.widget.CatalogueTextField;
+import com.cleanroommc.catalogue.client.ClientHelper;
+import com.cleanroommc.catalogue.client.screen.widget.CatalogueCheckBoxButton;
+import com.cleanroommc.catalogue.client.screen.widget.CatalogueIconButton;
+import com.cleanroommc.catalogue.client.screen.widget.CatalogueListExtended;
+import com.cleanroommc.catalogue.client.screen.widget.CatalogueTextField;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.ModMetadata;
