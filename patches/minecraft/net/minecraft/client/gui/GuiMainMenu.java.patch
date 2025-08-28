@@ -21,7 +21,7 @@
  import net.minecraft.world.WorldServerDemo;
  import net.minecraft.world.storage.ISaveFormat;
  import net.minecraft.world.storage.WorldInfo;
-+import com.mrcrayfish.catalogue.client.screen.CatalogueModListScreen;
++import com.cleanroommc.catalogue.client.screen.CatalogueModListScreen;
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  import org.apache.commons.io.IOUtils;
