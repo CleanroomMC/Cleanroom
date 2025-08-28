@@ -1,6 +1,6 @@
 package com.cleanroommc.catalogue.client.screen.widget;
 
-import com.cleanroommc.catalogue.Constants;
+import com.cleanroommc.catalogue.CatalogueConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -13,7 +13,7 @@ import com.cleanroommc.catalogue.client.ClientHelper;
  * Author: MrCrayfish
  */
 public class CatalogueIconButton extends GuiButton {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Constants.MOD_ID, "textures/gui/icons.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(CatalogueConstants.MOD_ID, "textures/gui/icons.png");
 
     private final String label;
     private final int u, v;

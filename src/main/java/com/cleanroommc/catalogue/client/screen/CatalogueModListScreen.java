@@ -1,7 +1,7 @@
 package com.cleanroommc.catalogue.client.screen;
 
 import com.google.common.collect.Lists;
-import com.cleanroommc.catalogue.Constants;
+import com.cleanroommc.catalogue.CatalogueConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptions;
@@ -48,10 +48,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class CatalogueModListScreen extends GuiScreen {
-    private static final ResourceLocation MISSING_BANNER = new ResourceLocation(Constants.MOD_ID, "textures/gui/missing_banner.png");
-    private static final ResourceLocation MISSING_BACKGROUND = new ResourceLocation(Constants.MOD_ID, "textures/gui/missing_background.png");
+    private static final ResourceLocation MISSING_BANNER = new ResourceLocation(CatalogueConstants.MOD_ID, "textures/gui/missing_banner.png");
+    private static final ResourceLocation MISSING_BACKGROUND = new ResourceLocation(CatalogueConstants.MOD_ID, "textures/gui/missing_background.png");
     private static final ResourceLocation VERSION_CHECK_ICONS = new ResourceLocation(ForgeVersion.MOD_ID, "textures/gui/version_check_icons.png");
-    private static final ResourceLocation MINECRAFT_LOGO = new ResourceLocation(Constants.MOD_ID, "textures/gui/minecraft.png");
+    private static final ResourceLocation MINECRAFT_LOGO = new ResourceLocation(CatalogueConstants.MOD_ID, "textures/gui/minecraft.png");
     private static final ImageInfo MISSING_BANNER_INFO = new ImageInfo(MISSING_BANNER, new Dimension(120, 120));
     private static final Map<String, ImageInfo> BANNER_CACHE = new HashMap<>();
     private static final Map<String, ImageInfo> IMAGE_ICON_CACHE = new HashMap<>();
@@ -145,7 +145,7 @@ public class CatalogueModListScreen extends GuiScreen {
                 try {
                     Desktop.getDesktop().open(Loader.instance().getConfigDir().getParentFile().toPath().resolve("mods").toFile());
                 } catch (Exception e) {
-                    Constants.LOG.error("Problem opening mods folder", e);
+                    CatalogueConstants.LOG.error("Problem opening mods folder", e);
                 }
                 break;
             case 3:
@@ -155,7 +155,7 @@ public class CatalogueModListScreen extends GuiScreen {
                         GuiScreen newScreen = guiFactory.createConfigGui(this);
                         this.mc.displayGuiScreen(newScreen);
                     } catch (Exception e) {
-                        Constants.LOG.error("There was a critical issue trying to build the config GUI for {}", this.selectedModData.getModId(), e);
+                        CatalogueConstants.LOG.error("There was a critical issue trying to build the config GUI for {}", this.selectedModData.getModId(), e);
                     }
                 } else {
                     this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));
@@ -182,9 +182,9 @@ public class CatalogueModListScreen extends GuiScreen {
         this.drawModInfo(mouseX, mouseY, partialTicks);
         super.drawScreen(mouseX, mouseY, partialTicks);
 
-        Optional<ModContainer> optional = Optional.ofNullable(CACHED_MODS.get(Constants.MOD_ID));
+        Optional<ModContainer> optional = Optional.ofNullable(CACHED_MODS.get(CatalogueConstants.MOD_ID));
         optional.ifPresent(this::loadAndCacheLogo);
-        ImageInfo imageInfo = BANNER_CACHE.get(Constants.MOD_ID);
+        ImageInfo imageInfo = BANNER_CACHE.get(CatalogueConstants.MOD_ID);
         if (imageInfo != null) {
             Dimension size = imageInfo.size();
             this.mc.getTextureManager().bindTexture(imageInfo.resource());
@@ -388,7 +388,7 @@ public class CatalogueModListScreen extends GuiScreen {
                 RenderHelper.disableStandardItemLighting();
             } catch (Exception e) {
                 // Attempt to catch exceptions when rendering item. Sometime level instance isn't checked for null
-                Constants.LOG.debug("Failed to draw icon for mod '{}'", this.data.getModId(), e);
+                CatalogueConstants.LOG.debug("Failed to draw icon for mod '{}'", this.data.getModId(), e);
                 ITEM_ICON_CACHE.put(this.data.getModId(), new ItemStack(Blocks.GRASS));
                 this.icon = new ItemStack(Blocks.GRASS);
             }
@@ -434,7 +434,7 @@ public class CatalogueModListScreen extends GuiScreen {
                             return itemStack;
                         }
                     } catch (Exception e) {
-                        Constants.LOG.debug("Failed to get customized item icon for mod '{}'", this.data.getModId(), e);
+                        CatalogueConstants.LOG.debug("Failed to get customized item icon for mod '{}'", this.data.getModId(), e);
                     }
                 }
             }
@@ -452,7 +452,7 @@ public class CatalogueModListScreen extends GuiScreen {
                                 item = tabItem;
                             }
                         } catch (Exception e) {
-                            Constants.LOG.debug("Failed to get creative tab icon for mod '{}'", this.data.getModId(), e);
+                            CatalogueConstants.LOG.debug("Failed to get creative tab icon for mod '{}'", this.data.getModId(), e);
                         }
                     }
                     ITEM_ICON_CACHE.put(this.data.getModId(), item);

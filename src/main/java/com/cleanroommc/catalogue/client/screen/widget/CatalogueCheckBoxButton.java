@@ -1,6 +1,6 @@
 package com.cleanroommc.catalogue.client.screen.widget;
 
-import com.cleanroommc.catalogue.Constants;
+import com.cleanroommc.catalogue.CatalogueConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
@@ -11,7 +11,7 @@ import com.cleanroommc.catalogue.client.ClientHelper;
  * Author: MrCrayfish
  */
 public class CatalogueCheckBoxButton extends GuiButton {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Constants.MOD_ID, "textures/gui/checkbox.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(CatalogueConstants.MOD_ID, "textures/gui/checkbox.png");
     private boolean selected;
 
     public CatalogueCheckBoxButton(int id, int x, int y, boolean selectedDefault) {

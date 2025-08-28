@@ -1,6 +1,6 @@
 package com.cleanroommc.common;
 
-import com.cleanroommc.catalogue.Constants;
+import com.cleanroommc.catalogue.CatalogueConstants;
 import com.google.common.eventbus.EventBus;
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;
@@ -12,8 +12,8 @@ public class CatalogueContainer extends DummyModContainer {
     public CatalogueContainer() {
         super(new ModMetadata());
         ModMetadata meta = this.getMetadata();
-        meta.modId = Constants.MOD_ID;
-        meta.name = Constants.MOD_NAME;
+        meta.modId = CatalogueConstants.MOD_ID;
+        meta.name = CatalogueConstants.MOD_NAME;
         meta.description = "Updates Forge's mod list with a new and improved design";
         meta.version = "1.0.0";
         meta.authorList = Arrays.asList("MrCrayfish", "RuiXuqi");
