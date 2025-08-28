@@ -19,7 +19,7 @@ public class CatalogueContainer extends DummyModContainer {
         meta.authorList = Arrays.asList("MrCrayfish", "RuiXuqi");
         meta.credits = "Hatsondogs for creating icons";
         meta.license = "MIT";
-        meta.logoFile = "/assets/catalogue/banner.png";
+        meta.logoFile = "/assets/catalogue/icon.png";
         meta.logoBlur = false;
         meta.iconFile = "/assets/catalogue/icon.png";
         meta.iconBlur = false;
