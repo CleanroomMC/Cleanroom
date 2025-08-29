@@ -19,7 +19,8 @@ public class CatalogueConfig {
     public static String[] libraryList = new String[] {
             "minecraft",
             "forge",
-            "fml",
+            "FML",
+            "mcp",
             "cleanroom",
             "configanytime",
             "mixinbooter",
