@@ -220,7 +220,7 @@ public abstract class BufferView {
             }
         }
 
-        boolean success = GL15.glUnmapBuffer(GL15.GL_ARRAY_BUFFER);
+        boolean success = GL15.glUnmapBuffer(target());
         if (!success) {
             throw new RuntimeGLException("Persistent buffer unmap failed, data may be corrupted.");
         }
