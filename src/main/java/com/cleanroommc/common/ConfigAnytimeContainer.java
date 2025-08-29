@@ -6,8 +6,6 @@ import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.ModMetadata;
 
-import java.util.Arrays;
-
 public class ConfigAnytimeContainer extends DummyModContainer {
     public ConfigAnytimeContainer() {
         super(new ModMetadata());

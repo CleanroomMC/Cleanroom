@@ -19,3 +19,7 @@ catalogue.gui.update_available=Update (%s) Available: %s
 catalogue.gui.update_available_no_page=Update (%s) Available
 catalogue.gui.beta_update_available=Beta Update (%s) Available: %s
 catalogue.gui.beta_update_available_no_page=Beta Update (%s) Available
+catalogue.gui.mod_count=%s Mods
+catalogue.gui.library_count=%s Libraries
+
+catalogue.config.library_list=Library List

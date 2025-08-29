@@ -1,5 +1,7 @@
 package com.cleanroommc.catalogue.client.screen;
 
+import com.cleanroommc.catalogue.CatalogueConfig;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
 import com.cleanroommc.catalogue.CatalogueConstants;
 import net.minecraft.client.Minecraft;
@@ -36,6 +38,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -45,6 +48,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class CatalogueModListScreen extends GuiScreen {
@@ -57,6 +61,12 @@ public class CatalogueModListScreen extends GuiScreen {
     private static final Map<String, ImageInfo> IMAGE_ICON_CACHE = new HashMap<>();
     private static final Map<String, ItemStack> ITEM_ICON_CACHE = new HashMap<>();
     private static final Map<String, ModContainer> CACHED_MODS = new HashMap<>();
+    private static final List<String> LIB_MODS = Arrays.asList(CatalogueConfig.libraryList);
+    private static final Supplier<Pair<Integer, Integer>> COUNTS = Suppliers.memoize(() -> {
+        int[] counts = new int[2];
+        CACHED_MODS.forEach((modId, data) -> counts[LIB_MODS.contains(data.getModId()) ? 1 : 0]++);
+        return Pair.of(counts[0], counts[1]);
+    });
     private static ResourceLocation cachedBackground;
     private static boolean loaded = false;
     private static String lastSearch = "";
@@ -197,7 +207,7 @@ public class CatalogueModListScreen extends GuiScreen {
         }
 
         if (this.modFolderButton.isMouseOver()) {
-            this.setActiveTooltip(I18n.format("fml.button.open.mods.folder"));
+            this.setActiveTooltip(I18n.format("catalogue.gui.open_mods_folder"));
         }
 
         if (this.activeTooltip != null) {
@@ -469,7 +479,7 @@ public class CatalogueModListScreen extends GuiScreen {
             if (CatalogueModListScreen.this.fontRenderer.getStringWidth(name) > width) {
                 name = CatalogueModListScreen.this.fontRenderer.trimStringToWidth(name, width - 10) + "...";
             }
-            if (this.data.getModId().equals("forge") || this.data.getModId().equals("minecraft") || this.data.getModId().equals("cleanroom")) {
+            if (LIB_MODS.contains(this.data.getModId())) {
                 return TextFormatting.DARK_GRAY + name;
             }
             return name;
@@ -686,6 +696,17 @@ public class CatalogueModListScreen extends GuiScreen {
         int titleWidth = this.fontRenderer.getStringWidth(title);
         int titleLeft = this.modList.left + (this.modList.width - titleWidth) / 2;
         drawString(this.fontRenderer, title, titleLeft, 10, 0xFFFFFF);
+
+        int countLabelWidth = this.fontRenderer.getStringWidth(countLabel);
+        if (ClientHelper.isMouseWithin(titleLeft + titleWidth - countLabelWidth, 10, countLabelWidth, this.fontRenderer.FONT_HEIGHT, mouseX, mouseY)) {
+            Pair<Integer, Integer> counts = COUNTS.get();
+            List<String> lines = List.of(
+                    I18n.format("catalogue.gui.mod_count", counts.getLeft()),
+                    I18n.format("catalogue.gui.library_count", counts.getRight())
+            );
+            this.setActiveTooltip(lines);
+            this.tooltipYOffset = 10;
+        }
 
         if (ClientHelper.isMouseWithin(this.modList.right - 14, 7, 14, 14, mouseX, mouseY)) {
             this.setActiveTooltip(I18n.format("catalogue.gui.filter_updates"));
@@ -1048,6 +1069,11 @@ public class CatalogueModListScreen extends GuiScreen {
 
     private void setActiveTooltip(String content) {
         this.activeTooltip = this.fontRenderer.listFormattedStringToWidth(content, 200);
+        this.tooltipYOffset = 0;
+    }
+
+    private void setActiveTooltip(List<String> activeTooltip) {
+        this.activeTooltip = activeTooltip;
         this.tooltipYOffset = 0;
     }
 

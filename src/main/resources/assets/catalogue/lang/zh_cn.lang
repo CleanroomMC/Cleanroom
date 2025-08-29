@@ -19,3 +19,7 @@ catalogue.gui.update_available=更新（%s）可用：%s
 catalogue.gui.update_available_no_page=更新（%s）可用
 catalogue.gui.beta_update_available=Beta 更新（%s）可用：%s
 catalogue.gui.beta_update_available_no_page=Beta 更新（%s）可用
+catalogue.gui.mod_count=%s个模组
+catalogue.gui.library_count=%s个库
+
+catalogue.config.library_list=库列表
