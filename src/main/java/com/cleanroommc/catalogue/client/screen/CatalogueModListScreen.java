@@ -217,17 +217,62 @@ public class CatalogueModListScreen extends GuiScreen {
     }
 
     @Override
-    protected void keyTyped(char typedChar, int key) throws IOException {
-        if (this.searchTextField.textboxKeyTyped(typedChar, key)) {
-            String s = this.searchTextField.getText();
-            this.updateSearchField(s);
-            this.modList.filterAndUpdateList(s);
-            this.updateSelectedModList();
-            lastSearch = s;
+    public void handleMouseInput() throws IOException {
+        super.handleMouseInput();
+        this.modList.handleMouseInput();
+        this.descriptionList.handleMouseInput();
+    }
+
+    @Override
+    protected void mouseClicked(int mouseX, int mouseY, int button) throws IOException {
+        // Catalogue button
+        if (ClientHelper.isMouseWithin(10, 9, 10, 10, mouseX, mouseY) && button == 0) {
+            this.openLink("https://www.curseforge.com/minecraft/mc-mods/catalogue");
             return;
         }
 
-        super.keyTyped(typedChar, key);
+        // Version check button
+        if (this.selectedModData != null) {
+            int contentLeft = this.modList.right + 12 + 10;
+            String version = I18n.format("catalogue.gui.version", this.selectedModData.getDisplayVersion());
+            int versionWidth = this.fontRenderer.getStringWidth(version);
+            if (ClientHelper.isMouseWithin(contentLeft + versionWidth + 5, 92, 8, 8, mouseX, mouseY)) {
+                ForgeVersion.CheckResult update = ForgeVersion.getCleanResult(this.selectedModData);
+                if (shouldUpdate(update) && update.homepage != null) {
+                    this.openLink(update.homepage);
+                }
+            }
+        }
+
+        // Search Text Field
+        if (ClientHelper.isMouseWithin(this.searchTextField.x, this.searchTextField.y, this.searchTextField.width, this.searchTextField.height, mouseX, mouseY)) {
+            // Right click to empty
+            if (button == 1) {
+                this.searchTextField.setText("");
+                this.updateSearchField("");
+                this.modList.filterAndUpdateList("");
+                lastSearch = "";
+                return;
+            }
+            // Left click to apply suggestions
+            if (button == 0) {
+                String text = this.searchTextField.getText();
+                long currentTine = Minecraft.getSystemTime();
+                if (!text.isEmpty() && currentTine - this.lastClickTime < 250L && !this.searchTextField.getIsTextTruncated()) {
+                    text += this.searchTextField.getSuggestion();
+                    this.searchTextField.setText(text);
+                    this.updateSearchField(text);
+                    this.modList.filterAndUpdateList(text);
+                    lastSearch = text;
+                    this.lastClickTime = currentTine;
+                    return;
+                }
+                this.lastClickTime = currentTine;
+            }
+        }
+        this.searchTextField.mouseClicked(mouseX, mouseY, button);
+
+        super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
@@ -240,6 +285,66 @@ public class CatalogueModListScreen extends GuiScreen {
         }
 
         super.handleKeyboardInput();
+    }
+
+    @Override
+    protected void keyTyped(char typedChar, int key) throws IOException {
+        if (this.searchTextField.textboxKeyTyped(typedChar, key)) {
+            String s = this.searchTextField.getText();
+            this.updateSearchField(s);
+            this.modList.filterAndUpdateList(s);
+            this.updateSelectedModList();
+            lastSearch = s;
+            return;
+        }
+        super.keyTyped(typedChar, key);
+    }
+
+    @Override
+    public void updateScreen() {
+        super.updateScreen();
+        this.searchTextField.updateCursorCounter();
+    }
+
+    /**
+     * Draws everything considered left of the screen; title, search bar and mod list.
+     *
+     * @param mouseX       the current mouse x position
+     * @param mouseY       the current mouse y position
+     * @param partialTicks the partial ticks
+     */
+    private void drawModList(int mouseX, int mouseY, float partialTicks) {
+        GlStateManager.enableBlend();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        this.mc.getTextureManager().bindTexture(VERSION_CHECK_ICONS);
+        drawModalRectWithCustomSizedTexture(this.modList.right - 24, 10, 24, 0, 8, 8, 64, 16);
+        GlStateManager.disableBlend();
+
+        this.modList.drawScreen(mouseX, mouseY, partialTicks);
+        this.searchTextField.drawTextBox();
+
+        String modsLabel = TextFormatting.BOLD + I18n.format("catalogue.gui.title");
+        String countLabel = TextFormatting.GRAY + "(" + CACHED_MODS.size() + ")";
+        String title = modsLabel + " " + countLabel;
+        int titleWidth = this.fontRenderer.getStringWidth(title);
+        int titleLeft = this.modList.left + (this.modList.width - titleWidth) / 2;
+        drawString(this.fontRenderer, title, titleLeft, 10, 0xFFFFFF);
+
+        int countLabelWidth = this.fontRenderer.getStringWidth(countLabel);
+        if (ClientHelper.isMouseWithin(titleLeft + titleWidth - countLabelWidth, 10, countLabelWidth, this.fontRenderer.FONT_HEIGHT, mouseX, mouseY)) {
+            Pair<Integer, Integer> counts = COUNTS.get();
+            List<String> lines = List.of(
+                    I18n.format("catalogue.gui.mod_count", counts.getLeft()),
+                    I18n.format("catalogue.gui.library_count", counts.getRight())
+            );
+            this.setActiveTooltip(lines);
+            this.tooltipYOffset = 10;
+        }
+
+        if (ClientHelper.isMouseWithin(this.modList.right - 14, 7, 14, 14, mouseX, mouseY)) {
+            this.setActiveTooltip(I18n.format("catalogue.gui.filter_updates"));
+            this.tooltipYOffset = 10;
+        }
     }
 
     private class ModList extends CatalogueListExtended {
@@ -335,7 +440,7 @@ public class CatalogueModListScreen extends GuiScreen {
 
         @Override
         protected boolean isSelected(int slotIndex) {
-            return slotIndex == selectedIndex;
+            return this.selectedIndex == slotIndex;
         }
 
         @Override
@@ -402,12 +507,6 @@ public class CatalogueModListScreen extends GuiScreen {
                 ITEM_ICON_CACHE.put(this.data.getModId(), new ItemStack(Blocks.GRASS));
                 this.icon = new ItemStack(Blocks.GRASS);
             }
-        }
-
-        @Override
-        public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY) {
-            this.list.selectMod(slotIndex);
-            return true;
         }
 
         private ItemStack getItemIcon() {
@@ -486,11 +585,127 @@ public class CatalogueModListScreen extends GuiScreen {
         }
 
         @Override
+        public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY) {
+            return true;
+        }
+
+        @Override
         public void mouseReleased(int slotIndex, int x, int y, int mouseEvent, int relativeX, int relativeY) {
         }
 
         @Override
         public void updatePosition(int slotIndex, int x, int y, float partialTicks) {
+        }
+    }
+
+    /**
+     * Draws everything considered right of the screen; logo, mod title, description and more.
+     *
+     * @param mouseX       the current mouse x position
+     * @param mouseY       the current mouse y position
+     * @param partialTicks the partial ticks
+     */
+    private void drawModInfo(int mouseX, int mouseY, float partialTicks) {
+        this.drawVerticalLine(this.modList.right + 11, -1, this.height, 0xFF707070);
+        drawRect(this.modList.right + 12, 0, this.width, this.height, 0x66000000);
+        this.descriptionList.drawScreen(mouseX, mouseY, partialTicks);
+
+        int contentLeft = this.modList.right + 12 + 10;
+        int contentWidth = this.width - contentLeft - 10;
+
+        if (this.selectedModData != null) {
+            this.drawBackground(this.width - contentLeft + 10, this.modList.right + 12, 0);
+
+            // Draw mod logo
+            this.drawBanner(contentWidth, contentLeft, 10, this.width - (this.modList.right + 12 + 10) - 10, 50);
+
+            // Draw mod name
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(contentLeft, 70, 0);
+            GlStateManager.scale(2.0F, 2.0F, 2.0F);
+            drawString(this.fontRenderer, this.selectedModData.getName(), 0, 0, 0xFFFFFF);
+            GlStateManager.popMatrix();
+
+            // Draw version
+            String modId = TextFormatting.DARK_GRAY + I18n.format("catalogue.gui.mod_id", this.selectedModData.getModId());
+            int modIdWidth = this.fontRenderer.getStringWidth(modId);
+            drawString(this.fontRenderer, modId, contentLeft + contentWidth - modIdWidth, 92, 0xFFFFFF);
+
+            // Draw version
+            String displayVersion = this.selectedModData.getDisplayVersion();
+            this.drawStringWithLabel("catalogue.gui.version", displayVersion, contentLeft, 92, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
+
+            // Draw inner version if the display version is different from it
+            int versionWidth = this.fontRenderer.getStringWidth(I18n.format("catalogue.gui.version", displayVersion));
+            String innerVersion = this.selectedModData.getVersion();
+            if (!displayVersion.equals(innerVersion) && ClientHelper.isMouseWithin(contentLeft, 92, versionWidth, this.fontRenderer.FONT_HEIGHT, mouseX, mouseY)) {
+                this.setActiveTooltip(innerVersion);
+            }
+
+            // Draws an icon if there is an update for the mod
+            ForgeVersion.CheckResult update = ForgeVersion.getCleanResult(this.selectedModData);
+            if (shouldDraw(update) && update.url != null) {
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                this.mc.getTextureManager().bindTexture(VERSION_CHECK_ICONS);
+                int vOffset = update.status.isAnimated() && (System.currentTimeMillis() / 800 & 1) == 1 ? 8 : 0;
+                drawModalRectWithCustomSizedTexture(contentLeft + versionWidth + 5, 92, update.status.getSheetOffset() * 8, vOffset, 8, 8, 64, 16);
+                if (ClientHelper.isMouseWithin(contentLeft + versionWidth + 5, 92, 8, 8, mouseX, mouseY)) {
+                    switch (update.status) {
+                        case BETA:
+                            this.setActiveTooltip(TextFormatting.GOLD + I18n.format("catalogue.gui.beta"));
+                            break;
+                        case AHEAD:
+                            this.setActiveTooltip(TextFormatting.LIGHT_PURPLE + I18n.format("catalogue.gui.ahead", update.latestFound));
+                            break;
+                        case BETA_OUTDATED:
+                            if (update.homepage != null) {
+                                this.setActiveTooltip(TextFormatting.GOLD + I18n.format("catalogue.gui.beta_update_available", update.latestFound, update.homepage));
+                            } else {
+                                this.setActiveTooltip(TextFormatting.GOLD + I18n.format("catalogue.gui.beta_update_available_no_page", update.latestFound));
+                            }
+                            break;
+                        case OUTDATED:
+                            if (update.homepage != null) {
+                                this.setActiveTooltip(TextFormatting.GREEN + I18n.format("catalogue.gui.update_available", update.latestFound, update.homepage));
+                            } else {
+                                this.setActiveTooltip(TextFormatting.GREEN + I18n.format("catalogue.gui.update_available_no_page", update.latestFound));
+                            }
+                            break;
+                    }
+                }
+            }
+
+            ModMetadata metadata = selectedModData.getMetadata();
+            if (metadata != null && !metadata.autogenerated) {
+
+                // Draw fade from the bottom
+                drawGradientRect(this.modList.right + 12, this.height - 50, this.width, this.height, 0x00000000, 0x66000000);
+
+                int labelOffset = this.height - 18;
+
+                // Draw license
+                String license = metadata.license;
+                if (!license.isBlank()) {
+                    this.drawStringWithLabel("catalogue.gui.license", license, contentLeft, labelOffset, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
+                    labelOffset -= 15;
+                }
+
+                // Draw credits
+                String credits = metadata.credits;
+                if (!credits.isBlank()) {
+                    this.drawStringWithLabel("catalogue.gui.credits", credits, contentLeft, labelOffset, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
+                    labelOffset -= 15;
+                }
+
+                // Draw authors
+                String authors = metadata.getAuthorList();
+                if (!authors.isBlank()) {
+                    this.drawStringWithLabel("catalogue.gui.authors", authors, contentLeft, labelOffset, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
+                }
+            }
+        } else {
+            String message = TextFormatting.GRAY + I18n.format("catalogue.gui.no_selection");
+            drawCenteredString(this.fontRenderer, message, contentLeft + contentWidth / 2, this.height / 2 - 5, 0xFFFFFF);
         }
     }
 
@@ -604,224 +819,6 @@ public class CatalogueModListScreen extends GuiScreen {
 
         @Override
         public void mouseReleased(int slotIndex, int x, int y, int mouseEvent, int relativeX, int relativeY) {
-        }
-    }
-
-
-    @Override
-    public void handleMouseInput() throws IOException {
-        super.handleMouseInput();
-        this.modList.handleMouseInput();
-        this.descriptionList.handleMouseInput();
-    }
-
-    @Override
-    protected void mouseClicked(int mouseX, int mouseY, int button) throws IOException {
-        // Catalogue button
-        if (ClientHelper.isMouseWithin(10, 9, 10, 10, mouseX, mouseY) && button == 0) {
-            this.openLink("https://www.curseforge.com/minecraft/mc-mods/catalogue");
-            return;
-        }
-
-        // Version check button
-        if (this.selectedModData != null) {
-            int contentLeft = this.modList.right + 12 + 10;
-            String version = I18n.format("catalogue.gui.version", this.selectedModData.getDisplayVersion());
-            int versionWidth = this.fontRenderer.getStringWidth(version);
-            if (ClientHelper.isMouseWithin(contentLeft + versionWidth + 5, 92, 8, 8, mouseX, mouseY)) {
-                ForgeVersion.CheckResult update = ForgeVersion.getCleanResult(this.selectedModData);
-                if (shouldUpdate(update) && update.homepage != null) {
-                    this.openLink(update.homepage);
-                }
-            }
-        }
-
-        // Search Text Field
-        if (ClientHelper.isMouseWithin(this.searchTextField.x, this.searchTextField.y, this.searchTextField.width, this.searchTextField.height, mouseX, mouseY)) {
-            // Right click to empty
-            if (button == 1) {
-                this.searchTextField.setText("");
-                this.updateSearchField("");
-                this.modList.filterAndUpdateList("");
-                lastSearch = "";
-                return;
-            }
-            // Left click to apply suggestions
-            if (button == 0) {
-                String text = this.searchTextField.getText();
-                long currentTine = Minecraft.getSystemTime();
-                if (!text.isEmpty() && currentTine - this.lastClickTime < 250L && !this.searchTextField.getIsTextTruncated()) {
-                    text += this.searchTextField.getSuggestion();
-                    this.searchTextField.setText(text);
-                    this.updateSearchField(text);
-                    this.modList.filterAndUpdateList(text);
-                    lastSearch = text;
-                    this.lastClickTime = currentTine;
-                    return;
-                }
-                this.lastClickTime = currentTine;
-            }
-        }
-        this.searchTextField.mouseClicked(mouseX, mouseY, button);
-
-        super.mouseClicked(mouseX, mouseY, button);
-    }
-
-    @Override
-    public void updateScreen() {
-        super.updateScreen();
-        this.searchTextField.updateCursorCounter();
-    }
-
-    /**
-     * Draws everything considered left of the screen; title, search bar and mod list.
-     *
-     * @param mouseX       the current mouse x position
-     * @param mouseY       the current mouse y position
-     * @param partialTicks the partial ticks
-     */
-    private void drawModList(int mouseX, int mouseY, float partialTicks) {
-        GlStateManager.enableBlend();
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(VERSION_CHECK_ICONS);
-        drawModalRectWithCustomSizedTexture(this.modList.right - 24, 10, 24, 0, 8, 8, 64, 16);
-        GlStateManager.disableBlend();
-
-        this.modList.drawScreen(mouseX, mouseY, partialTicks);
-        this.searchTextField.drawTextBox();
-
-        String modsLabel = TextFormatting.BOLD + I18n.format("catalogue.gui.title");
-        String countLabel = TextFormatting.GRAY + "(" + CACHED_MODS.size() + ")";
-        String title = modsLabel + " " + countLabel;
-        int titleWidth = this.fontRenderer.getStringWidth(title);
-        int titleLeft = this.modList.left + (this.modList.width - titleWidth) / 2;
-        drawString(this.fontRenderer, title, titleLeft, 10, 0xFFFFFF);
-
-        int countLabelWidth = this.fontRenderer.getStringWidth(countLabel);
-        if (ClientHelper.isMouseWithin(titleLeft + titleWidth - countLabelWidth, 10, countLabelWidth, this.fontRenderer.FONT_HEIGHT, mouseX, mouseY)) {
-            Pair<Integer, Integer> counts = COUNTS.get();
-            List<String> lines = List.of(
-                    I18n.format("catalogue.gui.mod_count", counts.getLeft()),
-                    I18n.format("catalogue.gui.library_count", counts.getRight())
-            );
-            this.setActiveTooltip(lines);
-            this.tooltipYOffset = 10;
-        }
-
-        if (ClientHelper.isMouseWithin(this.modList.right - 14, 7, 14, 14, mouseX, mouseY)) {
-            this.setActiveTooltip(I18n.format("catalogue.gui.filter_updates"));
-            this.tooltipYOffset = 10;
-        }
-    }
-
-    /**
-     * Draws everything considered right of the screen; logo, mod title, description and more.
-     *
-     * @param mouseX       the current mouse x position
-     * @param mouseY       the current mouse y position
-     * @param partialTicks the partial ticks
-     */
-    private void drawModInfo(int mouseX, int mouseY, float partialTicks) {
-        this.drawVerticalLine(this.modList.right + 11, -1, this.height, 0xFF707070);
-        drawRect(this.modList.right + 12, 0, this.width, this.height, 0x66000000);
-        this.descriptionList.drawScreen(mouseX, mouseY, partialTicks);
-
-        int contentLeft = this.modList.right + 12 + 10;
-        int contentWidth = this.width - contentLeft - 10;
-
-        if (this.selectedModData != null) {
-            this.drawBackground(this.width - contentLeft + 10, this.modList.right + 12, 0);
-
-            // Draw mod logo
-            this.drawBanner(contentWidth, contentLeft, 10, this.width - (this.modList.right + 12 + 10) - 10, 50);
-
-            // Draw mod name
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(contentLeft, 70, 0);
-            GlStateManager.scale(2.0F, 2.0F, 2.0F);
-            drawString(this.fontRenderer, this.selectedModData.getName(), 0, 0, 0xFFFFFF);
-            GlStateManager.popMatrix();
-
-            // Draw version
-            String modId = TextFormatting.DARK_GRAY + I18n.format("catalogue.gui.mod_id", this.selectedModData.getModId());
-            int modIdWidth = this.fontRenderer.getStringWidth(modId);
-            drawString(this.fontRenderer, modId, contentLeft + contentWidth - modIdWidth, 92, 0xFFFFFF);
-
-            // Draw version
-            String displayVersion = this.selectedModData.getDisplayVersion();
-            this.drawStringWithLabel("catalogue.gui.version", displayVersion, contentLeft, 92, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
-
-            // Draw inner version if the display version is different from it
-            int versionWidth = this.fontRenderer.getStringWidth(I18n.format("catalogue.gui.version", displayVersion));
-            String innerVersion = this.selectedModData.getVersion();
-            if (!displayVersion.equals(innerVersion) && ClientHelper.isMouseWithin(contentLeft, 92, versionWidth, this.fontRenderer.FONT_HEIGHT, mouseX, mouseY)) {
-                this.setActiveTooltip(innerVersion);
-            }
-
-            // Draws an icon if there is an update for the mod
-            ForgeVersion.CheckResult update = ForgeVersion.getCleanResult(this.selectedModData);
-            if (shouldDraw(update) && update.url != null) {
-                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                this.mc.getTextureManager().bindTexture(VERSION_CHECK_ICONS);
-                int vOffset = update.status.isAnimated() && (System.currentTimeMillis() / 800 & 1) == 1 ? 8 : 0;
-                drawModalRectWithCustomSizedTexture(contentLeft + versionWidth + 5, 92, update.status.getSheetOffset() * 8, vOffset, 8, 8, 64, 16);
-                if (ClientHelper.isMouseWithin(contentLeft + versionWidth + 5, 92, 8, 8, mouseX, mouseY)) {
-                    switch (update.status) {
-                        case BETA:
-                            this.setActiveTooltip(TextFormatting.GOLD + I18n.format("catalogue.gui.beta"));
-                            break;
-                        case AHEAD:
-                            this.setActiveTooltip(TextFormatting.LIGHT_PURPLE + I18n.format("catalogue.gui.ahead", update.latestFound));
-                            break;
-                        case BETA_OUTDATED:
-                            if (update.homepage != null) {
-                                this.setActiveTooltip(TextFormatting.GOLD + I18n.format("catalogue.gui.beta_update_available", update.latestFound, update.homepage));
-                            } else {
-                                this.setActiveTooltip(TextFormatting.GOLD + I18n.format("catalogue.gui.beta_update_available_no_page", update.latestFound));
-                            }
-                            break;
-                        case OUTDATED:
-                            if (update.homepage != null) {
-                                this.setActiveTooltip(TextFormatting.GREEN + I18n.format("catalogue.gui.update_available", update.latestFound, update.homepage));
-                            } else {
-                                this.setActiveTooltip(TextFormatting.GREEN + I18n.format("catalogue.gui.update_available_no_page", update.latestFound));
-                            }
-                            break;
-                    }
-                }
-            }
-
-            ModMetadata metadata = selectedModData.getMetadata();
-            if (metadata != null && !metadata.autogenerated) {
-
-                // Draw fade from the bottom
-                drawGradientRect(this.modList.right + 12, this.height - 50, this.width, this.height, 0x00000000, 0x66000000);
-
-                int labelOffset = this.height - 18;
-
-                // Draw license
-                String license = metadata.license;
-                if (!license.isBlank()) {
-                    this.drawStringWithLabel("catalogue.gui.license", license, contentLeft, labelOffset, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
-                    labelOffset -= 15;
-                }
-
-                // Draw credits
-                String credits = metadata.credits;
-                if (!credits.isBlank()) {
-                    this.drawStringWithLabel("catalogue.gui.credits", credits, contentLeft, labelOffset, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
-                    labelOffset -= 15;
-                }
-
-                // Draw authors
-                String authors = metadata.getAuthorList();
-                if (!authors.isBlank()) {
-                    this.drawStringWithLabel("catalogue.gui.authors", authors, contentLeft, labelOffset, contentWidth, mouseX, mouseY, TextFormatting.GRAY, TextFormatting.WHITE);
-                }
-            }
-        } else {
-            String message = TextFormatting.GRAY + I18n.format("catalogue.gui.no_selection");
-            drawCenteredString(this.fontRenderer, message, contentLeft + contentWidth / 2, this.height / 2 - 5, 0xFFFFFF);
         }
     }
 
@@ -1169,12 +1166,6 @@ public class CatalogueModListScreen extends GuiScreen {
         this.handleComponentClick(new TextComponentString("").setStyle(style));
     }
 
-    private record Dimension(int width, int height) {
-    }
-
-    private record ImageInfo(ResourceLocation resource, Dimension size) {
-    }
-
     private boolean shouldDraw(ForgeVersion.CheckResult update) {
         return update != null && update.status.shouldDraw();
     }
@@ -1183,5 +1174,11 @@ public class CatalogueModListScreen extends GuiScreen {
         if (update == null) return false;
         ForgeVersion.Status status = update.status;
         return status == ForgeVersion.Status.OUTDATED || status == ForgeVersion.Status.BETA_OUTDATED;
+    }
+
+    private record Dimension(int width, int height) {
+    }
+
+    private record ImageInfo(ResourceLocation resource, Dimension size) {
     }
 }

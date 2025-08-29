@@ -10,8 +10,6 @@ import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 public abstract class CatalogueListExtended extends GuiListExtended {
-    // Noting different from the original one, but allows you to remove the shadow on the bottom and top.
-    // Created to avoid mixins.
     private boolean scrollBarVisible;
 
     public CatalogueListExtended(Minecraft mcIn, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn) {
