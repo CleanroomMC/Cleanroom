@@ -107,7 +107,6 @@ public class CatalogueModListScreen extends GuiScreen {
 
         this.modList = new ModList();
         this.modList.setSlotXBoundsFromLeft(10);
-        this.modList.registerScrollButtons(7, 8);
 
         this.buttonList.add(new GuiButton(1, 10, modList.bottom + 8, 127, 20, I18n.format("gui.back")));
         this.modFolderButton = this.addButton(new CatalogueIconButton(2, 140, modList.bottom + 8, 0, 0));
@@ -127,7 +126,6 @@ public class CatalogueModListScreen extends GuiScreen {
         this.issueButton.visible = false;
 
         this.descriptionList = new StringList(contentWidth + padding * 2, 50, contentLeft - padding, 130);
-        this.descriptionList.registerScrollButtons(9, 10);
 
         this.updatesButton = this.addButton(new CatalogueCheckBoxButton(6, this.modList.right - 14, 7, false));
 
