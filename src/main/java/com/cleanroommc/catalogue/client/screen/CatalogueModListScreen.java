@@ -627,7 +627,7 @@ public class CatalogueModListScreen extends GuiScreen {
             drawString(this.fontRenderer, this.selectedModData.getName(), 0, 0, 0xFFFFFF);
             GlStateManager.popMatrix();
 
-            // Draw version
+            // Draw mod id
             String modId = TextFormatting.DARK_GRAY + I18n.format("catalogue.gui.mod_id", this.selectedModData.getModId());
             int modIdWidth = this.fontRenderer.getStringWidth(modId);
             drawString(this.fontRenderer, modId, contentLeft + contentWidth - modIdWidth, 92, 0xFFFFFF);
@@ -839,8 +839,10 @@ public class CatalogueModListScreen extends GuiScreen {
     @SuppressWarnings("SameParameterValue")
     private void drawStringWithLabel(String format, String text, int x, int y, int maxWidth, int mouseX, int mouseY, TextFormatting labelColor, TextFormatting contentColor) {
         String formatted = I18n.format(format, text); // Attempting to keep Forge's lang since it's already support many languages
-        String label = formatted.substring(0, formatted.indexOf(":") + 1);
-        String content = formatted.substring(formatted.indexOf(":") + 1);
+        String colon = ":";
+        if (formatted.contains("：")) colon = "：";
+        String label = formatted.substring(0, formatted.indexOf(colon) + 1);
+        String content = formatted.substring(formatted.indexOf(colon) + 1);
         if (this.fontRenderer.getStringWidth(formatted) > maxWidth) {
             content = this.fontRenderer.trimStringToWidth(content, maxWidth - this.fontRenderer.getStringWidth(label) - 7) + "...";
             String credits = labelColor + label;
