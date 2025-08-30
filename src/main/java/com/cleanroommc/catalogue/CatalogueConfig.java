@@ -1,6 +1,5 @@
 package com.cleanroommc.catalogue;
 
-import com.cleanroommc.catalogue.client.screen.CatalogueModListScreen;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
