@@ -7,7 +7,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import com.cleanroommc.catalogue.client.ClientHelper;
 
 /**
  * Author: MrCrayfish
@@ -22,8 +21,16 @@ public class CatalogueIconButton extends GuiButton {
         this(id, x, y, u, v, 20, "");
     }
 
+    public CatalogueIconButton(int id, int x, int y, int u, int v, int width, int height) {
+        this(id, x, y, u, v, width, height, "");
+    }
+
     public CatalogueIconButton(int id, int x, int y, int u, int v, int width, String label) {
-        super(id, x, y, width, 20, "");
+        this(id, x, y, u, v, width, 20, label);
+    }
+
+    public CatalogueIconButton(int id, int x, int y, int u, int v, int width, int height, String label) {
+        super(id, x, y, width, height, "");
         this.label = label;
         this.u = u;
         this.v = v;
@@ -40,7 +47,7 @@ public class CatalogueIconButton extends GuiButton {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             int contentWidth = 10 + fontrenderer.getStringWidth(this.label) + (!this.label.isEmpty() ? 4 : 0);
             int iconX = this.x + (this.width - contentWidth) / 2;
-            int iconY = this.y + 5;
+            int iconY = this.y + (this.height - 10) / 2;
             float brightness = this.enabled ? 1.0F : 0.5F;
             GlStateManager.color(brightness, brightness, brightness, 1.0F);
             drawModalRectWithCustomSizedTexture(iconX, iconY, this.u, this.v, 10, 10, 64, 64);
@@ -51,7 +58,7 @@ public class CatalogueIconButton extends GuiButton {
 
     }
 
-    private int getFGColor(){
+    private int getFGColor() {
         if (packedFGColour != 0) {
             return packedFGColour;
         } else if (!this.enabled) {
