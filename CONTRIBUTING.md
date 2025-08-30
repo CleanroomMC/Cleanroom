@@ -12,13 +12,13 @@ Thanks for your interest! We welcome **all kinds of contributions** – code, do
 - `./gradlew build` to build the project.
 - `./gradlew genPatches` to generate patches if you modified Minecraft source code. 
 - `Cleanroom/projects/cleanroom/src/main/java/` is where you modify Minecraft source code.
-- `Cleanroom/src/main/java/com/cleanroom/kirino` is where you contribute to Kirino Rendering.
+- `Cleanroom/src/main/java/com/cleanroom/kirino/` is where you contribute to Kirino Rendering.
 
 ## Ways to Contribute
 
 - Report bugs via [Issue](https://github.com/CleanroomMC/Cleanroom/issues) (Mention Kirino Rendering in title)
 - Improve / add more java docs (typos, explanations, tutorials).
-- Add unit tests / coverage tests (`Cleanroom/src/main/java/com/cleanroom/kirino/test`).
+- Add unit tests / coverage tests (`Cleanroom/src/test/java/com/cleanroom/test/kirino/`).
 - Implement features. (Check Upcoming Features / Future Features / Propose your own). Contact me, tttsaurus, if you want to implement something but find it confusing.
 - Propose features you want to have / implement via [Proposal](https://github.com/CleanroomMC/Cleanroom/discussions/405).
 - Propose general ideas about Kirino Rendering via [Proposal](https://github.com/CleanroomMC/Cleanroom/discussions/405).
