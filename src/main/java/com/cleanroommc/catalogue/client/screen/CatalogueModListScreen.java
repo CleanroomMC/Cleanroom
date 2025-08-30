@@ -238,11 +238,13 @@ public class CatalogueModListScreen extends GuiScreen {
                 ForgeVersion.CheckResult update = ForgeVersion.getCleanResult(this.selectedModData);
                 if (shouldUpdate(update) && update.homepage != null) {
                     this.openLink(update.homepage);
+                    return;
                 }
             }
         }
 
         // Search Text Field
+        this.searchTextField.mouseClicked(mouseX, mouseY, button);
         if (ClientHelper.isMouseWithin(this.searchTextField.x, this.searchTextField.y, this.searchTextField.width, this.searchTextField.height, mouseX, mouseY)) {
             // Right click to empty
             if (button == 1) {
@@ -268,7 +270,6 @@ public class CatalogueModListScreen extends GuiScreen {
                 this.lastClickTime = currentTine;
             }
         }
-        this.searchTextField.mouseClicked(mouseX, mouseY, button);
 
         super.mouseClicked(mouseX, mouseY, button);
     }
