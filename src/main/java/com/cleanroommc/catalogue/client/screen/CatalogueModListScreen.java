@@ -42,6 +42,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Desktop;
 import java.awt.image.BufferedImage;
@@ -140,7 +141,7 @@ public class CatalogueModListScreen extends GuiScreen {
                 this.modList.centerScrollOn(entry);
             }
         }
-        this.updateSearchField(this.searchTextField.getText());
+        this.updateSearchFieldSuggestion(this.searchTextField.getText());
     }
 
     @Override
@@ -249,7 +250,7 @@ public class CatalogueModListScreen extends GuiScreen {
             // Right click to empty
             if (button == 1) {
                 this.searchTextField.setText("");
-                this.updateSearchField("");
+                this.updateSearchFieldSuggestion("");
                 this.modList.filterAndUpdateList("");
                 lastSearch = "";
                 return;
@@ -261,7 +262,7 @@ public class CatalogueModListScreen extends GuiScreen {
                 if (!text.isEmpty() && currentTine - this.lastClickTime < 250L && !this.searchTextField.getIsTextTruncated()) {
                     text += this.searchTextField.getSuggestion();
                     this.searchTextField.setText(text);
-                    this.updateSearchField(text);
+                    this.updateSearchFieldSuggestion(text);
                     this.modList.filterAndUpdateList(text);
                     lastSearch = text;
                     this.lastClickTime = currentTine;
@@ -282,7 +283,7 @@ public class CatalogueModListScreen extends GuiScreen {
         }
         if (this.searchTextField.textboxKeyTyped(typedChar, key)) {
             String s = this.searchTextField.getText();
-            this.updateSearchField(s);
+            this.updateSearchFieldSuggestion(s);
             this.modList.filterAndUpdateList(s);
             this.updateSelectedModList();
             lastSearch = s;
@@ -339,7 +340,7 @@ public class CatalogueModListScreen extends GuiScreen {
     }
 
     private class ModList extends CatalogueListExtended {
-        private List<ModListEntry> entries = Lists.<ModListEntry>newArrayList();
+        private List<ModListEntry> entries = Lists.newArrayList();
         private int selectedIndex = -1;
 
         public ModList() {
@@ -432,6 +433,15 @@ public class CatalogueModListScreen extends GuiScreen {
         @Override
         protected boolean isSelected(int slotIndex) {
             return this.selectedIndex == slotIndex;
+        }
+
+        @Override
+        protected void drawContainerBackground(@Nonnull Tessellator tessellator) {
+            if (ClientHelper.isPlayingGame()) {
+                drawRect(this.left, this.top, this.right, this.bottom, 0x66000000);
+                return;
+            }
+            super.drawContainerBackground(tessellator);
         }
 
         @Override
@@ -701,7 +711,7 @@ public class CatalogueModListScreen extends GuiScreen {
     }
 
     private class StringList extends CatalogueListExtended {
-        private List<StringEntry> entries = Lists.<StringEntry>newArrayList();
+        private List<StringEntry> entries = Lists.newArrayList();
 
         public StringList(int width, int height, int left, int top) {
             super(CatalogueModListScreen.this.mc, width, height, top, top + height, 10);
@@ -1117,7 +1127,7 @@ public class CatalogueModListScreen extends GuiScreen {
         }
     }
 
-    private void updateSearchField(String value) {
+    private void updateSearchFieldSuggestion(String value) {
         if (value.isEmpty()) {
             this.searchTextField.setSuggestion(I18n.format("catalogue.gui.search"));
         } else {
