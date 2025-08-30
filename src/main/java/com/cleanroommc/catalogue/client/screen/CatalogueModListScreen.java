@@ -1,9 +1,14 @@
 package com.cleanroommc.catalogue.client.screen;
 
 import com.cleanroommc.catalogue.CatalogueConfig;
+import com.cleanroommc.catalogue.CatalogueConstants;
+import com.cleanroommc.catalogue.client.ClientHelper;
+import com.cleanroommc.catalogue.client.screen.widget.CatalogueCheckBoxButton;
+import com.cleanroommc.catalogue.client.screen.widget.CatalogueIconButton;
+import com.cleanroommc.catalogue.client.screen.widget.CatalogueListExtended;
+import com.cleanroommc.catalogue.client.screen.widget.CatalogueTextField;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
-import com.cleanroommc.catalogue.CatalogueConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptions;
@@ -29,11 +34,6 @@ import net.minecraft.util.text.event.ClickEvent;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.IModGuiFactory;
-import com.cleanroommc.catalogue.client.ClientHelper;
-import com.cleanroommc.catalogue.client.screen.widget.CatalogueCheckBoxButton;
-import com.cleanroommc.catalogue.client.screen.widget.CatalogueIconButton;
-import com.cleanroommc.catalogue.client.screen.widget.CatalogueListExtended;
-import com.cleanroommc.catalogue.client.screen.widget.CatalogueTextField;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.ModMetadata;
@@ -274,19 +274,11 @@ public class CatalogueModListScreen extends GuiScreen {
     }
 
     @Override
-    public void handleKeyboardInput() throws IOException {
-        if (Keyboard.getEventKey() == Keyboard.KEY_F && (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))) {
-            if (!this.searchTextField.isFocused()) {
-                this.searchTextField.setFocused(true);
-            }
+    protected void keyTyped(char typedChar, int key) throws IOException {
+        if (isKeyComboCtrlF(key) && !this.searchTextField.isFocused()) {
+            this.searchTextField.setFocused(true);
             return;
         }
-
-        super.handleKeyboardInput();
-    }
-
-    @Override
-    protected void keyTyped(char typedChar, int key) throws IOException {
         if (this.searchTextField.textboxKeyTyped(typedChar, key)) {
             String s = this.searchTextField.getText();
             this.updateSearchField(s);
@@ -1164,14 +1156,18 @@ public class CatalogueModListScreen extends GuiScreen {
         this.handleComponentClick(new TextComponentString("").setStyle(style));
     }
 
-    private boolean shouldDraw(ForgeVersion.CheckResult update) {
+    private static boolean shouldDraw(ForgeVersion.CheckResult update) {
         return update != null && update.status.shouldDraw();
     }
 
-    private boolean shouldUpdate(ForgeVersion.CheckResult update) {
+    private static boolean shouldUpdate(ForgeVersion.CheckResult update) {
         if (update == null) return false;
         ForgeVersion.Status status = update.status;
         return status == ForgeVersion.Status.OUTDATED || status == ForgeVersion.Status.BETA_OUTDATED;
+    }
+
+    private static boolean isKeyComboCtrlF(int keyID) {
+        return keyID == Keyboard.KEY_F && isCtrlKeyDown() && !isShiftKeyDown() && !isAltKeyDown();
     }
 
     private record Dimension(int width, int height) {
