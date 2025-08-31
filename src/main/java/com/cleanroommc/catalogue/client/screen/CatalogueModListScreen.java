@@ -53,6 +53,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class CatalogueModListScreen extends GuiScreen {
+    private static final Comparator<ModListEntry> SORT = Comparator.comparing(o -> o.getData().getName());
     private static final ResourceLocation MISSING_BANNER = new ResourceLocation(CatalogueConstants.MOD_ID, "textures/gui/missing_banner.png");
     private static final ResourceLocation MISSING_BACKGROUND = new ResourceLocation(CatalogueConstants.MOD_ID, "textures/gui/missing_background.png");
     private static final ResourceLocation VERSION_CHECK_ICONS = new ResourceLocation(ForgeVersion.MOD_ID, "textures/gui/version_check_icons.png");
@@ -373,7 +374,7 @@ public class CatalogueModListScreen extends GuiScreen {
                     .filter(data -> data.getName().toLowerCase(Locale.ENGLISH).contains(text.toLowerCase(Locale.ENGLISH)))
                     .filter(data -> !updatesButton.selected() || shouldUpdate(ForgeVersion.getCleanResult(data)))
                     .map(data -> new ModListEntry(data, this))
-                    .sorted(Comparator.comparing(entry -> entry.data.getName()))
+                    .sorted(SORT)
                     .collect(Collectors.toList());
             this.entries = entries;
             this.selectMod(this.getEntryFromInfo(selectedModData));
@@ -588,6 +589,10 @@ public class CatalogueModListScreen extends GuiScreen {
         @Override
         public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY) {
             return true;
+        }
+
+        public ModContainer getData() {
+            return this.data;
         }
 
         @Override
