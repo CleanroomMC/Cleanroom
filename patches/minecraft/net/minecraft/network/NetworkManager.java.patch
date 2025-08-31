@@ -1,6 +1,6 @@
 --- before/net/minecraft/network/NetworkManager.java
 +++ after/net/minecraft/network/NetworkManager.java
-@@ -88,7 +88,12 @@
+@@ -88,6 +88,11 @@
          this.field_179294_g = p_i46004_1_;
      }
  
@@ -12,10 +12,7 @@
      @Override
      public void channelActive(ChannelHandlerContext p_channelActive_1_) throws Exception
      {
-         super.channelActive(p_channelActive_1_);
-@@ -208,9 +213,9 @@
-     private void func_150732_b(final Packet<?> p_150732_1_, @Nullable final GenericFutureListener <? extends Future <? super Void >> [] p_150732_2_)
-     {
+@@ -210,7 +215,7 @@
          final EnumConnectionState enumconnectionstate = EnumConnectionState.func_150752_a(p_150732_1_);
          final EnumConnectionState enumconnectionstate1 = this.field_150746_k.attr(field_150739_c).get();
  
@@ -33,10 +30,7 @@
              {
                  this.func_150723_a(enumconnectionstate);
              }
-@@ -236,10 +241,10 @@
-         {
-             this.field_150746_k.eventLoop().execute(new Runnable()
-             {
+@@ -239,7 +244,7 @@
                  @Override
                  public void run()
                  {
@@ -53,11 +47,7 @@
          final NetworkManager networkmanager = new NetworkManager(EnumPacketDirection.CLIENTBOUND);
          Class <? extends SocketChannel > oclass;
          LazyLoadBase <? extends EventLoopGroup > lazyloadbase;
-@@ -471,10 +477,15 @@
-                 }
-                 else if (this.func_150729_e() != null)
-                 {
-                     this.func_150729_e().func_147231_a(new TextComponentTranslation("multiplayer.disconnect.generic"));
+@@ -475,6 +481,11 @@
                  }
              }
          }
