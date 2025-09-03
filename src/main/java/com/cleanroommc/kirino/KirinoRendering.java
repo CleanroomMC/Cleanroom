@@ -4,6 +4,7 @@ import com.cleanroommc.kirino.ecs.CleanECSRuntime;
 import com.cleanroommc.kirino.ecs.component.scan.event.ComponentScanningEvent;
 import com.cleanroommc.kirino.ecs.component.scan.event.StructScanningEvent;
 import com.cleanroommc.kirino.engine.MinecraftWorld;
+import com.cleanroommc.kirino.gl.debug.*;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
@@ -16,6 +17,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class KirinoRendering {
@@ -41,6 +43,10 @@ public class KirinoRendering {
 
     public static void init() {
         ENABLE_RENDER_DELEGATE = true;
+
+        KHRDebugManager.enable(List.of(
+                new DebugMessageFilter(DebugMsgSource.ANY, DebugMsgType.ERROR, DebugMsgSeverity.ANY),
+                new DebugMessageFilter(DebugMsgSource.ANY, DebugMsgType.MARKER, DebugMsgSeverity.ANY)));
 
         // register default event listeners
         try {
