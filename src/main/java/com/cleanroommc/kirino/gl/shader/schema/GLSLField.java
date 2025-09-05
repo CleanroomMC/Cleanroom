@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.gl.shader.analysis.schema;
+package com.cleanroommc.kirino.gl.shader.schema;
 
 public class GLSLField {
     public String name;

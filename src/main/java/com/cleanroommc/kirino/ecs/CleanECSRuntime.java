@@ -1,6 +1,5 @@
 package com.cleanroommc.kirino.ecs;
 
-import com.cleanroommc.kirino.KirinoRendering;
 import com.cleanroommc.kirino.ecs.component.ComponentDesc;
 import com.cleanroommc.kirino.ecs.component.ComponentDescFlattened;
 import com.cleanroommc.kirino.ecs.component.ComponentRegistry;
@@ -18,7 +17,8 @@ import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
 import com.cleanroommc.kirino.ecs.entity.EntityManager;
 import com.google.common.collect.ImmutableMap;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.EventBus;
+import org.apache.logging.log4j.Logger;
 import org.joml.*;
 
 import java.util.Map;
@@ -30,7 +30,7 @@ public class CleanECSRuntime {
     public final EntityManager entityManager;
 
     @SuppressWarnings("DataFlowIssue")
-    private CleanECSRuntime() {
+    private CleanECSRuntime(EventBus eventBus, Logger logger) {
         structRegistry = new StructRegistry();
         fieldRegistry = new FieldRegistry(structRegistry);
 
@@ -45,7 +45,7 @@ public class CleanECSRuntime {
         fieldRegistry.registerFieldType("mat4", Matrix4f.class, new FieldDef(ScalarType.MAT4));
 
         StructScanningEvent structScanningEvent = new StructScanningEvent();
-        MinecraftForge.EVENT_BUS.post(structScanningEvent);
+        eventBus.post(structScanningEvent);
         for (StructRegisterPlan plan : StructScanningHelper.scanStructClasses(structScanningEvent, fieldRegistry)) {
             // struct class loading
             Class<?> structClass;
@@ -71,18 +71,18 @@ public class CleanECSRuntime {
                     structClass,
                     new FieldDef(plan.structName()));
 
-            KirinoRendering.LOGGER.info("Registered struct " + plan.structName() + ". Loaded " + plan.structClass());
+            logger.info("Registered struct " + plan.structName() + ". Loaded " + plan.structClass());
         }
 
-        KirinoRendering.LOGGER.info("Struct defs are as follows.");
+        logger.info("Struct defs are as follows:");
         for (Map.Entry<String, StructDef> entry : structRegistry.getStructDefMap().entrySet()) {
-            KirinoRendering.LOGGER.info(entry.getKey() + ": " + entry.getValue().toString(structRegistry));
+            logger.info("  - " + entry.getKey() + ": " + entry.getValue().toString(structRegistry));
         }
 
         componentRegistry = new ComponentRegistry(fieldRegistry);
 
         ComponentScanningEvent componentScanningEvent = new ComponentScanningEvent();
-        MinecraftForge.EVENT_BUS.post(componentScanningEvent);
+        eventBus.post(componentScanningEvent);
         for (ComponentRegisterPlan plan : ComponentScanningHelper.scanComponentClasses(componentScanningEvent, fieldRegistry)) {
             // component class loading
             Class<? extends ICleanComponent> componentClass;
@@ -104,15 +104,15 @@ public class CleanECSRuntime {
                     plan.memberLayout(),
                     plan.fieldTypeNames());
 
-            KirinoRendering.LOGGER.info("Registered component " + plan.componentName() + ". Loaded " + plan.componentClass());
+            logger.info("Registered component " + plan.componentName() + ". Loaded " + plan.componentClass());
         }
 
-        KirinoRendering.LOGGER.info("Component descs are as follows.");
+        logger.info("Component descs are as follows:");
         ImmutableMap<String, ComponentDescFlattened> componentDescFlattenedMap = componentRegistry.getComponentDescFlattenedMap();
         for (Map.Entry<String, ComponentDesc> entry : componentRegistry.getComponentDescMap().entrySet()) {
             ComponentDescFlattened componentDescFlattened = componentDescFlattenedMap.get(entry.getKey());
-            KirinoRendering.LOGGER.info(entry.getKey() + ": " + entry.getValue().toString(structRegistry));
-            KirinoRendering.LOGGER.info(entry.getKey() + ": " + componentDescFlattened.toString());
+            logger.info("  - " + entry.getKey() + ": " + entry.getValue().toString(structRegistry));
+            logger.info("  - " + entry.getKey() + ": " + componentDescFlattened.toString());
         }
 
         entityManager = new EntityManager(componentRegistry);

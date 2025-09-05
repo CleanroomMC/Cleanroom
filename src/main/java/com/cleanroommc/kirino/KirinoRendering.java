@@ -3,12 +3,12 @@ package com.cleanroommc.kirino;
 import com.cleanroommc.kirino.ecs.CleanECSRuntime;
 import com.cleanroommc.kirino.ecs.component.scan.event.ComponentScanningEvent;
 import com.cleanroommc.kirino.ecs.component.scan.event.StructScanningEvent;
-import com.cleanroommc.kirino.engine.MinecraftWorld;
+import com.cleanroommc.kirino.engine.KirinoEngine;
 import com.cleanroommc.kirino.gl.debug.*;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
@@ -22,8 +22,9 @@ import java.util.concurrent.TimeUnit;
 
 public class KirinoRendering {
     public static final Logger LOGGER = LogManager.getLogger("Kirino Rendering");
+    public static final EventBus KIRINO_EVENT_BUS = new EventBus();
     private static CleanECSRuntime ECS_RUNTIME;
-    private static MinecraftWorld MINECRAFT_ECS_WORLD;
+    private static KirinoEngine KIRINO_ENGINE;
 
     private static boolean ENABLE_RENDER_DELEGATE;
 
@@ -37,48 +38,62 @@ public class KirinoRendering {
         GL11.glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
-        MINECRAFT_ECS_WORLD.tryUpdateChunkProvider(Minecraft.getMinecraft().world.getChunkProvider());
-        MINECRAFT_ECS_WORLD.update();
+        KIRINO_ENGINE.world.tryUpdateChunkProvider(Minecraft.getMinecraft().world.getChunkProvider());
+        KIRINO_ENGINE.world.update();
     }
 
     public static void init() {
         ENABLE_RENDER_DELEGATE = true;
 
-        KHRDebugManager.enable(List.of(
+        KHRDebug.enable(List.of(
                 new DebugMessageFilter(DebugMsgSource.ANY, DebugMsgType.ERROR, DebugMsgSeverity.ANY),
                 new DebugMessageFilter(DebugMsgSource.ANY, DebugMsgType.MARKER, DebugMsgSeverity.ANY)));
 
-        // register default event listeners
+        // register default ecs runtime event listeners
         try {
-            Method registerMethod = MinecraftForge.EVENT_BUS.getClass().getDeclaredMethod("register", Class.class, Object.class, Method.class, ModContainer.class);
+            Method registerMethod = KIRINO_EVENT_BUS.getClass().getDeclaredMethod("register", Class.class, Object.class, Method.class, ModContainer.class);
             registerMethod.setAccessible(true);
 
             Method onStructScan = KirinoRendering.class.getDeclaredMethod("onStructScan", StructScanningEvent.class);
-            registerMethod.invoke(MinecraftForge.EVENT_BUS, StructScanningEvent.class, KirinoRendering.class, onStructScan, Loader.instance().getMinecraftModContainer());
-            LOGGER.info("Registered default StructScanningEvent listener.");
+            registerMethod.invoke(KIRINO_EVENT_BUS, StructScanningEvent.class, KirinoRendering.class, onStructScan, Loader.instance().getMinecraftModContainer());
+            LOGGER.info("Registered the default StructScanningEvent listener.");
 
             Method onComponentScan = KirinoRendering.class.getDeclaredMethod("onComponentScan", ComponentScanningEvent.class);
-            registerMethod.invoke(MinecraftForge.EVENT_BUS, ComponentScanningEvent.class, KirinoRendering.class, onComponentScan, Loader.instance().getMinecraftModContainer());
-            LOGGER.info("Registered default ComponentScanningEvent listener.");
+            registerMethod.invoke(KIRINO_EVENT_BUS, ComponentScanningEvent.class, KirinoRendering.class, onComponentScan, Loader.instance().getMinecraftModContainer());
+            LOGGER.info("Registered the default ComponentScanningEvent listener.");
         } catch (Throwable throwable) {
-            throw new RuntimeException("Failed to register default event listeners.", throwable);
+            throw new RuntimeException("Failed to register default ECS Runtime event listeners.", throwable);
         }
 
-        LOGGER.info("Initializing Kirino Rendering ECS Module.");
+        LOGGER.info("---------------");
+        LOGGER.info("Initializing ECS Runtime.");
         StopWatch stopWatch = StopWatch.createStarted();
 
         try {
-            Constructor<CleanECSRuntime> ctor = CleanECSRuntime.class.getDeclaredConstructor();
+            Constructor<CleanECSRuntime> ctor = CleanECSRuntime.class.getDeclaredConstructor(EventBus.class, Logger.class);
             ctor.setAccessible(true);
-            ECS_RUNTIME = ctor.newInstance();
+            ECS_RUNTIME = ctor.newInstance(KIRINO_EVENT_BUS, LOGGER);
         } catch (Throwable throwable) {
             throw new RuntimeException("ECS Runtime failed to initialize.", throwable);
         }
 
         stopWatch.stop();
-        LOGGER.info("Kirino Rendering ECS Module Initialized. Time taken: " + stopWatch.getTime(TimeUnit.MILLISECONDS) + " ms");
+        LOGGER.info("ECS Runtime Initialized. Time taken: " + stopWatch.getTime(TimeUnit.MILLISECONDS) + " ms");
 
-        MINECRAFT_ECS_WORLD = new MinecraftWorld(ECS_RUNTIME.entityManager);
+        LOGGER.info("---------------");
+        LOGGER.info("Initializing Kirino Engine.");
+        stopWatch = StopWatch.createStarted();
+
+        try {
+            Constructor<KirinoEngine> ctor = KirinoEngine.class.getDeclaredConstructor(EventBus.class, Logger.class, CleanECSRuntime.class);
+            ctor.setAccessible(true);
+            KIRINO_ENGINE = ctor.newInstance(KIRINO_EVENT_BUS, LOGGER, ECS_RUNTIME);
+        } catch (Throwable throwable) {
+            throw new RuntimeException("Kirino Engine failed to initialize.", throwable);
+        }
+
+        stopWatch.stop();
+        LOGGER.info("Kirino Engine Initialized. Time taken: " + stopWatch.getTime(TimeUnit.MILLISECONDS) + " ms");
     }
 
     @SubscribeEvent

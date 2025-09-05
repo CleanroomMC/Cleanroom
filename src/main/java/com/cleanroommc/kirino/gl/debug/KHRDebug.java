@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GLDebugMessageCallback;
 
 import java.util.List;
 
-public final class KHRDebugManager {
+public final class KHRDebug {
     private static boolean enable = false;
 
     public static boolean isEnable() {

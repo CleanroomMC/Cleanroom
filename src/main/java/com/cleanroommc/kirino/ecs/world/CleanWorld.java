@@ -4,7 +4,6 @@ import com.cleanroommc.kirino.ecs.entity.EntityManager;
 import com.cleanroommc.kirino.ecs.system.CleanSystem;
 import com.cleanroommc.kirino.ecs.system.graph.SystemExeGraph;
 
-
 public class CleanWorld {
     protected final EntityManager entityManager;
 

@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.engine;
+package com.cleanroommc.kirino.engine.world;
 
 import com.cleanroommc.kirino.ecs.entity.CleanEntityHandle;
 import com.cleanroommc.kirino.ecs.entity.EntityManager;
