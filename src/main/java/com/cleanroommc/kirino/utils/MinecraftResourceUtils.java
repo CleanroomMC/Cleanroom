@@ -9,7 +9,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class MinecraftResourceUtils {
+public final class MinecraftResourceUtils {
     @NonNull
     public static String read(ResourceLocation rl, boolean keepNewLineSymbol) {
         InputStream stream = null;

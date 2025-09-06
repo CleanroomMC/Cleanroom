@@ -1,6 +1,7 @@
 package com.cleanroommc.kirino.engine;
 
 import com.cleanroommc.kirino.ecs.CleanECSRuntime;
+import com.cleanroommc.kirino.engine.camera.MinecraftCamera;
 import com.cleanroommc.kirino.engine.shader.ShaderRegistry;
 import com.cleanroommc.kirino.engine.shader.event.ShaderRegistrationEvent;
 import com.cleanroommc.kirino.engine.world.MinecraftWorld;
@@ -12,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 public class KirinoEngine {
     public final MinecraftWorld world;
+    public final MinecraftCamera camera;
 
     public final ShaderRegistry shaderRegistry;
     public final GLSLRegistry glslRegistry;
@@ -19,8 +21,9 @@ public class KirinoEngine {
 
     private KirinoEngine(EventBus eventBus, Logger logger, CleanECSRuntime ecsRuntime) {
         world = new MinecraftWorld(ecsRuntime.entityManager);
-        shaderRegistry = new ShaderRegistry();
+        camera = new MinecraftCamera();
 
+        shaderRegistry = new ShaderRegistry();
         ShaderRegistrationEvent shaderRegistrationEvent = new ShaderRegistrationEvent();
         eventBus.post(shaderRegistrationEvent);
         for (ResourceLocation rl : shaderRegistrationEvent.shaderResourceLocations) {

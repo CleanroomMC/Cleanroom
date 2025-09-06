@@ -3,6 +3,7 @@ package com.cleanroommc.kirino.ecs.component.schema.def.field;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarConstructor;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarDeconstructor;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
+import com.cleanroommc.kirino.utils.reflection.TypeUtils;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.jspecify.annotations.Nullable;
@@ -103,17 +104,8 @@ public class FieldRegistry {
     @SuppressWarnings("DataFlowIssue")
     public Object[] flattenField(Object fieldInstance) {
         // force primitive types cuz we use primitive types by default
-        // also see CleanECSRuntime's constructor
-        Class<?> fieldClass = fieldInstance.getClass();
-        if (fieldClass == Integer.class) {
-            fieldClass = int.class;
-        }
-        if (fieldClass == Float.class) {
-            fieldClass = float.class;
-        }
-        if (fieldClass == Boolean.class) {
-            fieldClass = boolean.class;
-        }
+        // see CleanECSRuntime's constructor
+        Class<?> fieldClass = TypeUtils.toPrimitive(fieldInstance.getClass());
 
         if (!fieldTypeExists(fieldClass)) {
             throw new IllegalStateException("Field class " + fieldInstance.getClass().getName() + " isn't registered.");

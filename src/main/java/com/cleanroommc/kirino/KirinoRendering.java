@@ -6,7 +6,11 @@ import com.cleanroommc.kirino.ecs.component.scan.event.StructScanningEvent;
 import com.cleanroommc.kirino.engine.KirinoEngine;
 import com.cleanroommc.kirino.engine.shader.event.ShaderRegistrationEvent;
 import com.cleanroommc.kirino.gl.debug.*;
+import com.cleanroommc.kirino.utils.reflection.ReflectionUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ActiveRenderInfo;
+import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.renderer.culling.ClippingHelperImpl;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
@@ -16,12 +20,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class KirinoRendering {
+    private static final Minecraft MINECRAFT = Minecraft.getMinecraft();
     public static final Logger LOGGER = LogManager.getLogger("Kirino Rendering");
     public static final EventBus KIRINO_EVENT_BUS = new EventBus();
     private static CleanECSRuntime ECS_RUNTIME;
@@ -33,11 +39,39 @@ public class KirinoRendering {
         return ENABLE_RENDER_DELEGATE;
     }
 
+    private static MethodHandle setupCameraTransform;
+    private static MethodHandle updateFogColor;
+
+    /**
+     * This method is a direct replacement of {@link net.minecraft.client.renderer.EntityRenderer#renderWorld(float, long)}.
+     * Specifically, <code>anaglyph</code> logic is removed and all other functions remain the same.
+     */
     public static void update() {
-        // current framebuffer: minecraft
-        // background color: (0.2f, 0.3f, 0.4f)
+        GL11.glViewport(0, 0, MINECRAFT.displayWidth, MINECRAFT.displayHeight);
         GL11.glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+
+        KIRINO_ENGINE.camera.getProjectionBuffer().clear();
+        KIRINO_ENGINE.camera.getViewRotationBuffer().clear();
+        float partialTicks = (float) KIRINO_ENGINE.camera.getPartialTicks();
+        if (MINECRAFT.getRenderViewEntity() == null) {
+            MINECRAFT.setRenderViewEntity(Minecraft.getMinecraft().player);
+        }
+        MINECRAFT.entityRenderer.getMouseOver(partialTicks);
+
+//        GlStateManager.enableDepth(); // todo: replace raw gl calls by immutable PipelineState
+//        GlStateManager.enableAlpha();
+//        GlStateManager.alphaFunc(516, 0.5F);
+//        GlStateManager.enableCull();
+
+        try {
+            setupCameraTransform.invoke(MINECRAFT.entityRenderer, partialTicks, 2);
+            updateFogColor.invoke(MINECRAFT.entityRenderer, partialTicks);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+        ActiveRenderInfo.updateRenderInfo(MINECRAFT.getRenderViewEntity(), MINECRAFT.gameSettings.thirdPersonView == 2);
+        ClippingHelperImpl.getInstance();
 
         KIRINO_ENGINE.world.tryUpdateChunkProvider(Minecraft.getMinecraft().world.getChunkProvider());
         KIRINO_ENGINE.world.update();
@@ -99,6 +133,9 @@ public class KirinoRendering {
 
         stopWatch.stop();
         LOGGER.info("Kirino Engine Initialized. Time taken: " + stopWatch.getTime(TimeUnit.MILLISECONDS) + " ms");
+
+        setupCameraTransform = ReflectionUtils.getDeclaredMethod(EntityRenderer.class, "setupCameraTransform", "func_78479_a(FI)V", float.class, int.class);
+        updateFogColor = ReflectionUtils.getDeclaredMethod(EntityRenderer.class, "updateFogColor", "func_78466_h(F)V", float.class);
     }
 
     @SubscribeEvent
