@@ -8,14 +8,8 @@ import org.jspecify.annotations.NonNull;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Locale;
 
 public class MinecraftResourceUtils {
-    @NonNull
-    public static String read(String rl, boolean keepNewLineSymbol) {
-        return read(new ResourceLocation(rl.toLowerCase(Locale.ROOT)), keepNewLineSymbol);
-    }
-
     @NonNull
     public static String read(ResourceLocation rl, boolean keepNewLineSymbol) {
         InputStream stream = null;

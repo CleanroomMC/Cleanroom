@@ -1,5 +1,6 @@
 package com.cleanroommc.kirino.gl.shader;
 
+import com.cleanroommc.kirino.gl.shader.schema.GLSLRegistry;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
@@ -13,7 +14,7 @@ public class Shader {
     private boolean setup;
     private ShaderMeta shaderMeta;
 
-    public String shaderName() {
+    public String getShaderName() {
         return shaderName;
     }
 
@@ -37,17 +38,17 @@ public class Shader {
         return shaderMeta;
     }
 
-    protected Shader(String shaderSource, String shaderName, ShaderType shaderType) {
+    public Shader(String shaderSource, String shaderName, ShaderType shaderType) {
         this.shaderName = shaderName;
         this.shaderSource = shaderSource;
         this.shaderType = shaderType;
     }
 
-    protected void analyze(IShaderAnalyzer analyzer) {
-        shaderMeta = analyzer.analyze(shaderSource);
+    public void analyze(GLSLRegistry glslRegistry, IShaderAnalyzer analyzer) {
+        shaderMeta = analyzer.analyze(glslRegistry, shaderSource);
     }
 
-    protected void compile() {
+    public void compile() {
         if (setup) {
             return;
         }

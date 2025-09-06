@@ -4,6 +4,7 @@ import com.cleanroommc.kirino.ecs.CleanECSRuntime;
 import com.cleanroommc.kirino.ecs.component.scan.event.ComponentScanningEvent;
 import com.cleanroommc.kirino.ecs.component.scan.event.StructScanningEvent;
 import com.cleanroommc.kirino.engine.KirinoEngine;
+import com.cleanroommc.kirino.engine.shader.event.ShaderRegistrationEvent;
 import com.cleanroommc.kirino.gl.debug.*;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.Loader;
@@ -34,7 +35,7 @@ public class KirinoRendering {
 
     public static void update() {
         // current framebuffer: minecraft
-        // background color
+        // background color: (0.2f, 0.3f, 0.4f)
         GL11.glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
@@ -49,7 +50,7 @@ public class KirinoRendering {
                 new DebugMessageFilter(DebugMsgSource.ANY, DebugMsgType.ERROR, DebugMsgSeverity.ANY),
                 new DebugMessageFilter(DebugMsgSource.ANY, DebugMsgType.MARKER, DebugMsgSeverity.ANY)));
 
-        // register default ecs runtime event listeners
+        // register default event listeners
         try {
             Method registerMethod = KIRINO_EVENT_BUS.getClass().getDeclaredMethod("register", Class.class, Object.class, Method.class, ModContainer.class);
             registerMethod.setAccessible(true);
@@ -61,8 +62,12 @@ public class KirinoRendering {
             Method onComponentScan = KirinoRendering.class.getDeclaredMethod("onComponentScan", ComponentScanningEvent.class);
             registerMethod.invoke(KIRINO_EVENT_BUS, ComponentScanningEvent.class, KirinoRendering.class, onComponentScan, Loader.instance().getMinecraftModContainer());
             LOGGER.info("Registered the default ComponentScanningEvent listener.");
+
+            Method onShaderRegister = KirinoRendering.class.getDeclaredMethod("onShaderRegister", ShaderRegistrationEvent.class);
+            registerMethod.invoke(KIRINO_EVENT_BUS, ShaderRegistrationEvent.class, KirinoRendering.class, onShaderRegister, Loader.instance().getMinecraftModContainer());
+            LOGGER.info("Registered the default ShaderRegistrationEvent listener.");
         } catch (Throwable throwable) {
-            throw new RuntimeException("Failed to register default ECS Runtime event listeners.", throwable);
+            throw new RuntimeException("Failed to register default event listeners.", throwable);
         }
 
         LOGGER.info("---------------");
@@ -104,5 +109,10 @@ public class KirinoRendering {
     @SubscribeEvent
     public static void onComponentScan(ComponentScanningEvent event) {
         event.scanPackageNames.add("com.cleanroommc.kirino.engine.geometry.component");
+    }
+
+    @SubscribeEvent
+    public static void onShaderRegister(ShaderRegistrationEvent event) {
+        LOGGER.info("Shaders registered.");
     }
 }
