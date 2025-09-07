@@ -60,36 +60,33 @@ Check [Contributing Page](https://github.com/CleanroomMC/Cleanroom/blob/proposal
 <details>
 <summary>ECS</summary>
 
-- Overall ECS structure
-  - CleanWorld, CleanEntity, CleanComponent, CleanSystem
+- Overall ECS structure ✔
+  - CleanWorld, CleanEntity, CleanComponent, CleanSystem ✔
 - Entity ✔
   - Entity manager (utilizes archetype) ✔
 - Component ✔
   - Component schema ✔
   - Class scan via ClassGraph ✔
-- System
-  - RenderSystem - a specialized system
-    - RenderPass
-    - ...
 - Storage ✔
   - Archetype ✔
 - Runtime
-  - Job system to coordinate different systems
+  - `SystemExeGraph` to coordinate different systems
     - Execution priority
-    - Async execution. Fence
+    - Async execution & barrier
+- Job
+  - Job is a unit of work that can be split and executed in parallel
 
 </details>
 
 <details>
 <summary>Engine</summary>
 
-- Mesh generation
-- Lighting
-- `RenderPipeline`
-- `RenderPass`
-- `RenderCommand`
-- Batching commands
-- Decorating commands
+- CPU & GPU hybrid dual pipeline
+- DrawCommand decorating mechanism
+- RenderPass / Subpass architecture
+- Built-in Multi-resolution & Super-sampling
+- Immutable Pipeline State Object
+- Scriptable pipeline
 - ...
 
 </details>
