@@ -49,12 +49,12 @@ public class KirinoEngine {
         mainCpuPass.addSubpass("Transparent Pass", new WhateverPass(renderer, PSOPresets.createTransparentPSO(null), new Framebuffer()));
     }
 
-    public void update(WorldClient minecraftWorld) {
+    public void updateWorld(WorldClient minecraftWorld) {
         world.tryUpdateChunkProvider(minecraftWorld.getChunkProvider());
         world.update();
     }
 
-    public void render() {
-        mainCpuPass.render();
+    public void renderWorld() {
+        //mainCpuPass.render();
     }
 }
