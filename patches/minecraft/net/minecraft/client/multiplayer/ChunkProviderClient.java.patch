@@ -20,8 +20,8 @@
      };
      private final World field_73235_d;
  
-+    public java.util.function.BiConsumer<Integer, Integer> loadChunkCallback;
-+    public java.util.function.BiConsumer<Integer, Integer> unloadChunkCallback;
++    public java.util.function.BiConsumer<Integer, Integer> loadChunkCallback = null;
++    public java.util.function.BiConsumer<Integer, Integer> unloadChunkCallback = null;
 +
 +    public Long2ObjectMap<Chunk> getLoadedChunks()
 +    {
@@ -31,11 +31,14 @@
      public ChunkProviderClient(World p_i1184_1_)
      {
          this.field_73238_a = new EmptyChunk(p_i1184_1_, 0, 0);
-@@ -48,54 +56,54 @@
+@@ -48,54 +56,60 @@
          }
  
          this.field_73236_b.remove(ChunkPos.func_77272_a(p_73234_1_, p_73234_2_));
-+        unloadChunkCallback.accept(p_73234_1_, p_73234_2_);
++        if (unloadChunkCallback != null)
++        {
++            unloadChunkCallback.accept(p_73234_1_, p_73234_2_);
++        }
      }
  
      @Nullable
@@ -52,7 +55,10 @@
          this.field_73236_b.put(ChunkPos.func_77272_a(p_73158_1_, p_73158_2_), chunk);
 +        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkEvent.Load(chunk));
          chunk.func_177417_c(true);
-+        loadChunkCallback.accept(p_73158_1_, p_73158_2_);
++        if (loadChunkCallback != null)
++        {
++            loadChunkCallback.accept(p_73158_1_, p_73158_2_);
++        }
          return chunk;
      }
  

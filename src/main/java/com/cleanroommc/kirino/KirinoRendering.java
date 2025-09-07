@@ -46,7 +46,7 @@ public class KirinoRendering {
      * This method is a direct replacement of {@link net.minecraft.client.renderer.EntityRenderer#renderWorld(float, long)}.
      * Specifically, <code>anaglyph</code> logic is removed and all other functions remain the same.
      */
-    public static void update() {
+    public static void updateAndRender() {
         GL11.glViewport(0, 0, MINECRAFT.displayWidth, MINECRAFT.displayHeight);
         GL11.glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
@@ -73,8 +73,8 @@ public class KirinoRendering {
         ActiveRenderInfo.updateRenderInfo(MINECRAFT.getRenderViewEntity(), MINECRAFT.gameSettings.thirdPersonView == 2);
         ClippingHelperImpl.getInstance();
 
-        KIRINO_ENGINE.world.tryUpdateChunkProvider(Minecraft.getMinecraft().world.getChunkProvider());
-        KIRINO_ENGINE.world.update();
+        KIRINO_ENGINE.update(MINECRAFT.world);
+        KIRINO_ENGINE.render();
     }
 
     public static void init() {
