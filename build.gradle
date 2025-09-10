@@ -994,6 +994,33 @@ project(':cleanroom') {
         srg = tasks.createMcp2Srg.output
     }
 
+    tasks.register("cleanroomClientRenderDoc", Exec) {
+        def javaExecTask = tasks.named('cleanroomClient', JavaExec).get()
+        def javaHome = javaExecTask.getJavaLauncher().get().getMetadata().getInstallationPath().asFile.absolutePath
+        def gradleWrapperJar = project.rootDir.toPath().resolve("gradle/wrapper/gradle-wrapper.jar").toFile().absolutePath
+
+        println "Java Home: $javaHome"
+        println "Gradle Wrapper Jar Path: $gradleWrapperJar"
+
+        commandLine = [
+                "C:\\Program Files\\RenderDoc\\renderdoccmd.exe",
+                "capture",
+                "--opt-hook-children",
+                "--wait-for-exit",
+                "--working-dir",
+                ".",
+                "$javaHome\\bin\\java.exe",
+                "-Xmx64m",
+                "-Xms64m",
+                "-Dorg.gradle.appname=gradlew",
+                "-Dorg.gradle.java.home=$javaHome",
+                "-classpath",
+                gradleWrapperJar,
+                "org.gradle.wrapper.GradleWrapperMain",
+                "cleanroomClient"
+        ]
+    }
+
     userdevJar {
         dependsOn userdevExtrasReobf
         from(zipTree(tasks.userdevExtrasReobf.output)) {
