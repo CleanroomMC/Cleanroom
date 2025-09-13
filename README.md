@@ -1,11 +1,10 @@
 # Kirino Rendering
 
+## How It Works?
+Check [Engine Overview Page](https://github.com/CleanroomMC/Cleanroom/blob/proposal/render-system/ENGINE_OVERVIEW.md)!
+
 ## Contributing
 Check [Contributing Page](https://github.com/CleanroomMC/Cleanroom/blob/proposal/render-system/CONTRIBUTING.md)!
-
-## Design Principles
-- As independent of Minecraft as possible
-- Data/ID oriented
 
 ## MVP Goals
 
