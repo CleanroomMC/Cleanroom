@@ -47,11 +47,18 @@ public class ModMetadata
      * URL to update json file. Format is defined here: https://gist.github.com/LexManos/7aacb9aa991330523884
      */
     public String updateJSON = "";
+    public String issueTrackerUrl = "";
 
     public String logoFile = "";
+    public boolean logoBlur = true; // Blur the edge of the logo to make it smooth. True by default.
+    public String iconFile = "";
+    public boolean iconBlur = true;
+    public String iconItem = ""; // Customized item or block as icon. Will not applied when iconFile is valid.
+    public String backgroundFile = "";
     public String version = "";
     public List<String> authorList = Lists.newArrayList();
     public String credits = "";
+    public String license = "";
     public String parent = "";
     public String[] screenshots;
 
