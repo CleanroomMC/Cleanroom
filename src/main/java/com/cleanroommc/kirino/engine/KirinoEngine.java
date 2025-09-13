@@ -10,6 +10,7 @@ import com.cleanroommc.kirino.engine.shader.ShaderRegistry;
 import com.cleanroommc.kirino.engine.shader.event.ShaderRegistrationEvent;
 import com.cleanroommc.kirino.engine.world.MinecraftWorld;
 import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
+import com.cleanroommc.kirino.gl.shader.ShaderProgram;
 import com.cleanroommc.kirino.gl.shader.analysis.DefaultShaderAnalyzer;
 import com.cleanroommc.kirino.gl.shader.schema.GLSLRegistry;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -26,6 +27,7 @@ public class KirinoEngine {
     private final DefaultShaderAnalyzer defaultShaderAnalyzer;
 
     private final RenderPass mainCpuPass;
+    private final RenderPass gizmosPass;
 
     private KirinoEngine(EventBus eventBus, Logger logger, CleanECSRuntime ecsRuntime) {
         world = new MinecraftWorld(ecsRuntime.entityManager);
@@ -42,11 +44,15 @@ public class KirinoEngine {
         defaultShaderAnalyzer = new DefaultShaderAnalyzer();
         shaderRegistry.analyze(glslRegistry, defaultShaderAnalyzer);
 
+        ShaderProgram shaderProgram = shaderRegistry.newShaderProgram("kirino:shaders/test.vert", "kirino:shaders/test.vert");
+
         Renderer renderer = new Renderer();
         mainCpuPass = new RenderPass("Main CPU Pass");
-        mainCpuPass.addSubpass("Opaque Pass", new WhateverPass(renderer, PSOPresets.createOpaquePSO(null), new Framebuffer()));
-        mainCpuPass.addSubpass("Cutout Pass", new WhateverPass(renderer, PSOPresets.createCutoutPSO(null), new Framebuffer()));
-        mainCpuPass.addSubpass("Transparent Pass", new WhateverPass(renderer, PSOPresets.createTransparentPSO(null), new Framebuffer()));
+        mainCpuPass.addSubpass("Opaque Pass", new WhateverPass(renderer, PSOPresets.createOpaquePSO(shaderProgram), new Framebuffer()));
+        mainCpuPass.addSubpass("Cutout Pass", new WhateverPass(renderer, PSOPresets.createCutoutPSO(shaderProgram), new Framebuffer()));
+        mainCpuPass.addSubpass("Transparent Pass", new WhateverPass(renderer, PSOPresets.createTransparentPSO(shaderProgram), new Framebuffer()));
+
+        gizmosPass = new RenderPass("Gizmos");
     }
 
     public void updateWorld(WorldClient minecraftWorld) {
@@ -54,7 +60,15 @@ public class KirinoEngine {
         world.update();
     }
 
-    public void renderWorld() {
+    public void renderWorldSolid() {
         //mainCpuPass.render();
+    }
+
+    public void renderWorldTransparent() {
+
+    }
+
+    public void renderGizmos() {
+        gizmosPass.render();
     }
 }

@@ -8,6 +8,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import java.nio.FloatBuffer;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -21,6 +22,10 @@ public class MinecraftCamera implements ICamera {
         projectionBuffer = (Supplier<FloatBuffer>) ReflectionUtils.getDeclaredFieldGetter(ActiveRenderInfo.class, "PROJECTION", "field_178813_c");
         viewRotationBuffer = (Supplier<FloatBuffer>) ReflectionUtils.getDeclaredFieldGetter(ActiveRenderInfo.class, "MODELVIEW", "field_178812_b");
         partialTicksPaused = (Function<Minecraft, Float>) ReflectionUtils.getDeclaredFieldGetter(Minecraft.class, "renderPartialTicksPaused", "field_193996_ah");
+
+        Objects.requireNonNull(projectionBuffer);
+        Objects.requireNonNull(viewRotationBuffer);
+        Objects.requireNonNull(partialTicksPaused);
     }
 
     public double getPartialTicks() {

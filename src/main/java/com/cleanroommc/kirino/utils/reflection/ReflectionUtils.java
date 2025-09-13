@@ -4,6 +4,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -389,6 +390,58 @@ public final class ReflectionUtils {
         method.setAccessible(true);
         try {
             return LOOKUP.unreflect(method);
+        } catch (IllegalAccessException e) {
+            return null;
+        }
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="find constructor">
+    @Nullable
+    public static <T> Constructor<T> findDeclaredConstructor(Class<T> clazz, Class<?>... params) {
+        Constructor<T> ctor = null;
+        try {
+            ctor = clazz.getDeclaredConstructor(params);
+        } catch (NoSuchMethodException ignored) {
+        }
+        return ctor;
+    }
+
+    @Nullable
+    public static <T> Constructor<T> findConstructor(Class<T> clazz, Class<?>... params) {
+        Constructor<T> ctor = null;
+        try {
+            ctor = clazz.getConstructor(params);
+        } catch (NoSuchMethodException ignored) {
+        }
+        return ctor;
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="get constructor handle">
+    @Nullable
+    public static MethodHandle getDeclaredConstructor(Class<?> clazz, Class<?>... params) {
+        Constructor<?> ctor = findDeclaredConstructor(clazz, params);
+        if (ctor == null) {
+            return null;
+        }
+        ctor.setAccessible(true);
+        try {
+            return LOOKUP.unreflectConstructor(ctor);
+        } catch (IllegalAccessException e) {
+            return null;
+        }
+    }
+
+    @Nullable
+    public static MethodHandle getConstructor(Class<?> clazz, Class<?>... params) {
+        Constructor<?> ctor = findConstructor(clazz, params);
+        if (ctor == null) {
+            return null;
+        }
+        ctor.setAccessible(true);
+        try {
+            return LOOKUP.unreflectConstructor(ctor);
         } catch (IllegalAccessException e) {
             return null;
         }

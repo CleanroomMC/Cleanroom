@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
@@ -66,6 +67,8 @@ public class KirinoRendering {
      * Specifically, <code>anaglyph</code> logic is removed and all other functions remain the same.
      */
     public static void updateAndRender(long finishTimeNano) {
+        // todo: replace vanilla logic one by one
+
         //<editor-fold desc="vanilla logic">
         KIRINO_ENGINE.camera.getProjectionBuffer().clear();
         KIRINO_ENGINE.camera.getViewRotationBuffer().clear();
@@ -156,9 +159,8 @@ public class KirinoRendering {
         MINECRAFT.profiler.endSection();
         //</editor-fold>
 
-        // world opaque & cutout pass
         KIRINO_ENGINE.updateWorld(MINECRAFT.world);
-        KIRINO_ENGINE.renderWorld();
+        KIRINO_ENGINE.renderWorldSolid();
 
         //<editor-fold desc="vanilla logic">
         boolean flag = false;
@@ -172,6 +174,7 @@ public class KirinoRendering {
         MINECRAFT.profiler.startSection("entities");
         if (!debugView.apply(MINECRAFT.entityRenderer)) {
             GlStateManager.shadeModel(7424);
+            GlStateManager.enableAlpha();
             GlStateManager.alphaFunc(516, 0.1F);
             GlStateManager.matrixMode(5888);
             GlStateManager.pushMatrix();
@@ -255,7 +258,7 @@ public class KirinoRendering {
         MINECRAFT.profiler.endSection();
         //</editor-fold>
 
-        // world translucent pass
+        KIRINO_ENGINE.renderWorldTransparent();
 
         //<editor-fold desc="vanilla logic">
         // ========== entities ==========
@@ -300,6 +303,8 @@ public class KirinoRendering {
         }
         MINECRAFT.profiler.endSection();
         //</editor-fold>
+
+        KIRINO_ENGINE.renderGizmos();
     }
 
     @SuppressWarnings("unchecked")
@@ -388,6 +393,7 @@ public class KirinoRendering {
         Objects.requireNonNull(isDrawBlockOutline);
         Objects.requireNonNull(updateLightmap);
         Objects.requireNonNull(renderRainSnow);
+        Objects.requireNonNull(renderHand);
         Objects.requireNonNull(farPlaneDistance);
         Objects.requireNonNull(debugView);
         Objects.requireNonNull(isRenderHand);
@@ -406,6 +412,6 @@ public class KirinoRendering {
 
     @SubscribeEvent
     public static void onShaderRegister(ShaderRegistrationEvent event) {
-        LOGGER.info("Shaders registered.");
+        event.shaderResourceLocations.add(new ResourceLocation("kirino:shaders/test.vert"));
     }
 }

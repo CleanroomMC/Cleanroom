@@ -38,7 +38,7 @@ public class Shader {
         return shaderMeta;
     }
 
-    public Shader(String shaderSource, String shaderName, ShaderType shaderType) {
+    private Shader(String shaderSource, String shaderName, ShaderType shaderType) {
         this.shaderName = shaderName;
         this.shaderSource = shaderSource;
         this.shaderType = shaderType;
