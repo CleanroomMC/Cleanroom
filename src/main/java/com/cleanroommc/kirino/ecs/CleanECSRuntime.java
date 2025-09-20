@@ -16,6 +16,10 @@ import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarType;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
 import com.cleanroommc.kirino.ecs.entity.EntityManager;
+import com.cleanroommc.kirino.ecs.job.IParallelJob;
+import com.cleanroommc.kirino.ecs.job.JobRegistry;
+import com.cleanroommc.kirino.ecs.job.JobScheduler;
+import com.cleanroommc.kirino.ecs.job.event.JobRegistrationEvent;
 import com.google.common.collect.ImmutableMap;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import org.apache.logging.log4j.Logger;
@@ -28,6 +32,8 @@ public class CleanECSRuntime {
     public final FieldRegistry fieldRegistry;
     public final ComponentRegistry componentRegistry;
     public final EntityManager entityManager;
+    public final JobRegistry jobRegistry;
+    public final JobScheduler jobScheduler;
 
     @SuppressWarnings("DataFlowIssue")
     private CleanECSRuntime(EventBus eventBus, Logger logger) {
@@ -116,5 +122,14 @@ public class CleanECSRuntime {
         }
 
         entityManager = new EntityManager(componentRegistry);
+
+        jobRegistry = new JobRegistry(componentRegistry);
+        jobScheduler = new JobScheduler(jobRegistry, entityManager);
+
+        JobRegistrationEvent jobRegistrationEvent = new JobRegistrationEvent();
+        eventBus.post(jobRegistrationEvent);
+        for (Class<? extends IParallelJob> clazz : jobRegistrationEvent.parallelJobClasses) {
+            jobRegistry.registerParallelJob(clazz);
+        }
     }
 }

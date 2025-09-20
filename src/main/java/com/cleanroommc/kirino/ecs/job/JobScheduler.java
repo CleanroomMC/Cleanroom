@@ -1,0 +1,70 @@
+package com.cleanroommc.kirino.ecs.job;
+
+import com.cleanroommc.kirino.ecs.component.ICleanComponent;
+import com.cleanroommc.kirino.ecs.entity.EntityManager;
+import com.cleanroommc.kirino.ecs.entity.EntityQuery;
+import com.cleanroommc.kirino.ecs.storage.ArchetypeDataPool;
+import com.cleanroommc.kirino.ecs.storage.ArrayRange;
+import com.cleanroommc.kirino.ecs.storage.INativeArray;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+
+public class JobScheduler {
+    private final JobRegistry jobRegistry;
+    private final EntityManager entityManager;
+
+    public JobScheduler(JobRegistry jobRegistry, EntityManager entityManager) {
+        this.jobRegistry = jobRegistry;
+        this.entityManager = entityManager;
+    }
+
+    public void executeParallel(Class<? extends IParallelJob> clazz, Executor executor) {
+        Map<JobDataQuery, IJobDataInjector> parallelJobInfo = jobRegistry.getParallelJobInfo(clazz);
+        IJobInstantiator instantiator = jobRegistry.getParallelJobInstantiator(clazz);
+        if (parallelJobInfo == null || instantiator == null) {
+            throw new IllegalStateException("Parallel job class " + clazz.getName() + " isn't registered.");
+        }
+
+        EntityQuery query = entityManager.newQuery();
+        ((IParallelJob) instantiator.instantiate()).query(query);
+        List<ArchetypeDataPool> archetypes = entityManager.startQuery(query);
+
+        List<CompletableFuture<?>> futures = new ArrayList<>();
+
+        for (ArchetypeDataPool archetype : archetypes) {
+            IParallelJob job = (IParallelJob) instantiator.instantiate();
+
+            // data injection
+            for (Map.Entry<JobDataQuery, IJobDataInjector> entry : parallelJobInfo.entrySet()) {
+                INativeArray<?> array = archetype.getArray(entry.getKey().componentClass().asSubclass(ICleanComponent.class), entry.getKey().fieldAccessChain());
+                entry.getValue().inject(job, array);
+            }
+
+            ArrayRange arrayRange = archetype.getArrayRange();
+
+            // todo: configurable & dynamic
+            int futureCount = 16;
+            int step = (arrayRange.end - arrayRange.start) / futureCount;
+
+            for (int i = 0; i < futureCount; i++) {
+                int finalI = i;
+                futures.add(CompletableFuture.runAsync(() -> {
+                    int start = arrayRange.start + finalI * step;
+                    int end = (finalI == futureCount - 1) ? arrayRange.end : arrayRange.start + (finalI + 1) * step;
+                    for (int j = start; j < end; j++) {
+                        if (arrayRange.deprecatedIndexes.contains(j)) {
+                            continue;
+                        }
+                        job.execute(j);
+                    }
+                }, executor));
+            }
+        }
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+    }
+}
