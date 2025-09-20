@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.engine.geometry.component;
+package com.cleanroommc.kirino.engine.render.geometry.component;
 
 import com.cleanroommc.kirino.ecs.component.ICleanComponent;
 import com.cleanroommc.kirino.ecs.component.scan.CleanComponent;

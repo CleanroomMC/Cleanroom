@@ -4,7 +4,7 @@ import com.cleanroommc.kirino.ecs.CleanECSRuntime;
 import com.cleanroommc.kirino.ecs.component.scan.event.ComponentScanningEvent;
 import com.cleanroommc.kirino.ecs.component.scan.event.StructScanningEvent;
 import com.cleanroommc.kirino.engine.KirinoEngine;
-import com.cleanroommc.kirino.engine.shader.event.ShaderRegistrationEvent;
+import com.cleanroommc.kirino.engine.render.shader.event.ShaderRegistrationEvent;
 import com.cleanroommc.kirino.gl.debug.*;
 import com.cleanroommc.kirino.utils.reflection.ReflectionUtils;
 import net.minecraft.block.material.Material;

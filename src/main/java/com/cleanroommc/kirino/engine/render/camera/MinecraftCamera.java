@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.engine.camera;
+package com.cleanroommc.kirino.engine.render.camera;
 
 import com.cleanroommc.kirino.utils.reflection.ReflectionUtils;
 import net.minecraft.client.Minecraft;

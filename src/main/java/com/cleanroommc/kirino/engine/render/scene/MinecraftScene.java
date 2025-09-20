@@ -1,17 +1,17 @@
-package com.cleanroommc.kirino.engine.world;
+package com.cleanroommc.kirino.engine.render.scene;
 
 import com.cleanroommc.kirino.ecs.entity.CleanEntityHandle;
 import com.cleanroommc.kirino.ecs.entity.EntityManager;
 import com.cleanroommc.kirino.ecs.world.CleanWorld;
-import com.cleanroommc.kirino.engine.geometry.component.ChunkComponent;
+import com.cleanroommc.kirino.engine.render.geometry.component.ChunkComponent;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.util.math.ChunkPos;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class MinecraftWorld extends CleanWorld {
-    public MinecraftWorld(EntityManager entityManager) {
+public class MinecraftScene extends CleanWorld {
+    public MinecraftScene(EntityManager entityManager) {
         super(entityManager);
     }
 

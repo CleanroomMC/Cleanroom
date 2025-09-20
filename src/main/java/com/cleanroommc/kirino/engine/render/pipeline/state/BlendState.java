@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.engine.pipeline.state;
+package com.cleanroommc.kirino.engine.render.pipeline.state;
 
 public record BlendState(
         boolean enabled,

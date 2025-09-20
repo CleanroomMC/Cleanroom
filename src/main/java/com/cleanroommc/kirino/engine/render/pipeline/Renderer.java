@@ -1,10 +1,10 @@
-package com.cleanroommc.kirino.engine.pipeline;
+package com.cleanroommc.kirino.engine.render.pipeline;
 
-import com.cleanroommc.kirino.engine.pipeline.command.DrawCommand;
-import com.cleanroommc.kirino.engine.pipeline.state.BlendState;
-import com.cleanroommc.kirino.engine.pipeline.state.DepthState;
-import com.cleanroommc.kirino.engine.pipeline.state.PipelineStateObject;
-import com.cleanroommc.kirino.engine.pipeline.state.RasterState;
+import com.cleanroommc.kirino.engine.render.pipeline.command.DrawCommand;
+import com.cleanroommc.kirino.engine.render.pipeline.state.BlendState;
+import com.cleanroommc.kirino.engine.render.pipeline.state.DepthState;
+import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
+import com.cleanroommc.kirino.engine.render.pipeline.state.RasterState;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL20;

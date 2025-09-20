@@ -1,14 +1,14 @@
 package com.cleanroommc.kirino.engine;
 
 import com.cleanroommc.kirino.ecs.CleanECSRuntime;
-import com.cleanroommc.kirino.engine.camera.MinecraftCamera;
-import com.cleanroommc.kirino.engine.pipeline.PSOPresets;
-import com.cleanroommc.kirino.engine.pipeline.Renderer;
-import com.cleanroommc.kirino.engine.pipeline.pass.RenderPass;
-import com.cleanroommc.kirino.engine.pipeline.pass.WhateverPass;
-import com.cleanroommc.kirino.engine.shader.ShaderRegistry;
-import com.cleanroommc.kirino.engine.shader.event.ShaderRegistrationEvent;
-import com.cleanroommc.kirino.engine.world.MinecraftWorld;
+import com.cleanroommc.kirino.engine.render.camera.MinecraftCamera;
+import com.cleanroommc.kirino.engine.render.pipeline.PSOPresets;
+import com.cleanroommc.kirino.engine.render.pipeline.Renderer;
+import com.cleanroommc.kirino.engine.render.pipeline.pass.RenderPass;
+import com.cleanroommc.kirino.engine.render.pipeline.pass.WhateverPass;
+import com.cleanroommc.kirino.engine.render.shader.ShaderRegistry;
+import com.cleanroommc.kirino.engine.render.shader.event.ShaderRegistrationEvent;
+import com.cleanroommc.kirino.engine.render.scene.MinecraftScene;
 import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;
 import com.cleanroommc.kirino.gl.shader.analysis.DefaultShaderAnalyzer;
@@ -19,7 +19,7 @@ import net.minecraftforge.fml.common.eventhandler.EventBus;
 import org.apache.logging.log4j.Logger;
 
 public class KirinoEngine {
-    public final MinecraftWorld world;
+    public final MinecraftScene scene;
     public final MinecraftCamera camera;
 
     private final ShaderRegistry shaderRegistry;
@@ -30,7 +30,7 @@ public class KirinoEngine {
     private final RenderPass gizmosPass;
 
     private KirinoEngine(EventBus eventBus, Logger logger, CleanECSRuntime ecsRuntime) {
-        world = new MinecraftWorld(ecsRuntime.entityManager);
+        scene = new MinecraftScene(ecsRuntime.entityManager);
         camera = new MinecraftCamera();
 
         shaderRegistry = new ShaderRegistry();
@@ -56,8 +56,8 @@ public class KirinoEngine {
     }
 
     public void updateWorld(WorldClient minecraftWorld) {
-        world.tryUpdateChunkProvider(minecraftWorld.getChunkProvider());
-        world.update();
+        scene.tryUpdateChunkProvider(minecraftWorld.getChunkProvider());
+        scene.update();
     }
 
     public void renderWorldSolid() {

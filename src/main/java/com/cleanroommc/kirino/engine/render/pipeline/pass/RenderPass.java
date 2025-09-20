@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.engine.pipeline.pass;
+package com.cleanroommc.kirino.engine.render.pipeline.pass;
 
 import com.cleanroommc.kirino.gl.debug.KHRDebug;
 

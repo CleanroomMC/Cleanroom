@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.engine.shader;
+package com.cleanroommc.kirino.engine.render.shader;
 
 import com.cleanroommc.kirino.gl.shader.IShaderAnalyzer;
 import com.cleanroommc.kirino.gl.shader.Shader;

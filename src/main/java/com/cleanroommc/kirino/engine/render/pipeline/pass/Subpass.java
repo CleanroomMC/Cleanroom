@@ -1,7 +1,7 @@
-package com.cleanroommc.kirino.engine.pipeline.pass;
+package com.cleanroommc.kirino.engine.render.pipeline.pass;
 
-import com.cleanroommc.kirino.engine.pipeline.Renderer;
-import com.cleanroommc.kirino.engine.pipeline.state.PipelineStateObject;
+import com.cleanroommc.kirino.engine.render.pipeline.Renderer;
+import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
 import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
 import org.lwjgl.opengl.GL11;
 

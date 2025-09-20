@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.engine.camera;
+package com.cleanroommc.kirino.engine.render.camera;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;

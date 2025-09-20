@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.engine.shader.event;
+package com.cleanroommc.kirino.engine.render.shader.event;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.eventhandler.Event;
