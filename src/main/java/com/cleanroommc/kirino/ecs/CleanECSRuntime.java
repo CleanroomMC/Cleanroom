@@ -17,6 +17,7 @@ import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
 import com.cleanroommc.kirino.ecs.entity.EntityManager;
 import com.cleanroommc.kirino.ecs.job.IParallelJob;
+import com.cleanroommc.kirino.ecs.job.JobDataQuery;
 import com.cleanroommc.kirino.ecs.job.JobRegistry;
 import com.cleanroommc.kirino.ecs.job.JobScheduler;
 import com.cleanroommc.kirino.ecs.job.event.JobRegistrationEvent;
@@ -58,7 +59,7 @@ public class CleanECSRuntime {
             try {
                 structClass = Class.forName(plan.structClass(), false, Thread.currentThread().getContextClassLoader());
             } catch (ClassNotFoundException e) { // impossible
-                continue;
+                throw new RuntimeException("Unexpected class not found.", e);
             }
 
             try {
@@ -80,7 +81,7 @@ public class CleanECSRuntime {
             logger.info("Registered struct " + plan.structName() + ". Loaded " + plan.structClass());
         }
 
-        logger.info("Struct defs are as follows:");
+        logger.info("Struct defs are as follows:" + (structRegistry.getStructDefMap().entrySet().isEmpty() ? " (Empty)" : ""));
         for (Map.Entry<String, StructDef> entry : structRegistry.getStructDefMap().entrySet()) {
             logger.info("  - " + entry.getKey() + ": " + entry.getValue().toString(structRegistry));
         }
@@ -95,7 +96,7 @@ public class CleanECSRuntime {
             try {
                 componentClass = Class.forName(plan.componentClass(), false, Thread.currentThread().getContextClassLoader()).asSubclass(ICleanComponent.class);
             } catch (ClassNotFoundException e) { // impossible
-                continue;
+                throw new RuntimeException("Unexpected class not found.", e);
             }
 
             try {
@@ -113,7 +114,7 @@ public class CleanECSRuntime {
             logger.info("Registered component " + plan.componentName() + ". Loaded " + plan.componentClass());
         }
 
-        logger.info("Component descs are as follows:");
+        logger.info("Component descs are as follows:" + (componentRegistry.getComponentDescMap().entrySet().isEmpty() ? " (Empty)" : ""));
         ImmutableMap<String, ComponentDescFlattened> componentDescFlattenedMap = componentRegistry.getComponentDescFlattenedMap();
         for (Map.Entry<String, ComponentDesc> entry : componentRegistry.getComponentDescMap().entrySet()) {
             ComponentDescFlattened componentDescFlattened = componentDescFlattenedMap.get(entry.getKey());
@@ -130,6 +131,10 @@ public class CleanECSRuntime {
         eventBus.post(jobRegistrationEvent);
         for (Class<? extends IParallelJob> clazz : jobRegistrationEvent.parallelJobClasses) {
             jobRegistry.registerParallelJob(clazz);
+            logger.info("Parallel job " + clazz.getName() + " registered. Array queries are as follows:" + (jobRegistry.getParallelJobInfo(clazz).keySet().isEmpty() ? " (Empty)" : ""));
+            for (JobDataQuery jobDataQuery : jobRegistry.getParallelJobInfo(clazz).keySet()) {
+                logger.info("  - Array query: " + componentRegistry.getComponentName(jobDataQuery.componentClass().asSubclass(ICleanComponent.class)) + "; " + String.join(".", jobDataQuery.fieldAccessChain()));
+            }
         }
     }
 }

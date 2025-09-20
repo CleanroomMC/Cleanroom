@@ -1,9 +1,12 @@
 package com.cleanroommc.kirino.engine.render.scene;
 
+import com.cleanroommc.kirino.KirinoRendering;
 import com.cleanroommc.kirino.ecs.entity.CleanEntityHandle;
 import com.cleanroommc.kirino.ecs.entity.EntityManager;
+import com.cleanroommc.kirino.ecs.job.JobScheduler;
 import com.cleanroommc.kirino.ecs.world.CleanWorld;
 import com.cleanroommc.kirino.engine.render.geometry.component.ChunkComponent;
+import com.cleanroommc.kirino.engine.render.task.system.ChunkMeshletGenSystem;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.util.math.ChunkPos;
 
@@ -11,8 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MinecraftScene extends CleanWorld {
-    public MinecraftScene(EntityManager entityManager) {
-        super(entityManager);
+    public MinecraftScene(EntityManager entityManager, JobScheduler jobScheduler) {
+        super(entityManager, jobScheduler);
     }
 
     private final Map<Long, CleanEntityHandle> chunkHandles = new HashMap<>();
@@ -62,5 +65,14 @@ public class MinecraftScene extends CleanWorld {
         buildChunks();
 
         super.update();
+
+        // test
+        if (c == 3) {
+            (new ChunkMeshletGenSystem()).update(jobScheduler);
+            KirinoRendering.LOGGER.info("executed!!!");
+        }
+        c++;
     }
+
+    static int c = 0;
 }

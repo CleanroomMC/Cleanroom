@@ -1,5 +1,6 @@
 package com.cleanroommc.kirino.ecs.job;
 
+import com.cleanroommc.kirino.KirinoRendering;
 import com.cleanroommc.kirino.ecs.component.ComponentRegistry;
 import com.cleanroommc.kirino.ecs.component.ICleanComponent;
 import com.cleanroommc.kirino.ecs.storage.INativeArray;
@@ -49,32 +50,34 @@ public class JobRegistry {
         try {
             clazz.getConstructor();
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException("Parallel job class " + clazz.getName() + " is missing a default constructor with no parameters", e);
+            throw new RuntimeException("Parallel job class " + clazz.getName() + " is missing a default constructor with no parameters.", e);
         }
 
         parallelJobInstantiatorMap.computeIfAbsent(clazz, this::genParallelJobInstantiator);
 
         Map<JobDataQuery, IJobDataInjector> map = parallelJobInfoMap.computeIfAbsent(clazz, k -> new HashMap<>());
 
+        String exception = "Parallel job class " + clazz.getName() + " contains invalid annotation entries.";
+
         for (Field field : clazz.getDeclaredFields()) {
             if (field.isAnnotationPresent(JobDataQuery.class) && !Modifier.isStatic(field.getModifiers())) {
-                if (field.getType().isArray() && INativeArray.class.isAssignableFrom(field.getType())) {
+                if (INativeArray.class.isAssignableFrom(field.getType())) {
                     JobDataQuery jobDataQuery = field.getAnnotation(JobDataQuery.class);
 
                     if (!ICleanComponent.class.isAssignableFrom(jobDataQuery.componentClass())) {
-                        throw new IllegalStateException("ICleanComponent isn't assignable from JobDataQuery#componentClass() " + jobDataQuery.componentClass().getName() + ".");
+                        throw new RuntimeException(exception, new IllegalStateException("ICleanComponent isn't assignable from JobDataQuery#componentClass() " + jobDataQuery.componentClass().getName() + "."));
                     }
                     if (jobDataQuery.componentClass() == ICleanComponent.class) {
-                        throw new IllegalStateException("JobDataQuery#componentClass() " + jobDataQuery.componentClass().getName() + " must not be ICleanComponent itself.");
+                        throw new RuntimeException(exception, new IllegalStateException("JobDataQuery#componentClass() " + jobDataQuery.componentClass().getName() + " must not be ICleanComponent itself."));
                     }
                     if (!componentRegistry.componentExists(jobDataQuery.componentClass().asSubclass(ICleanComponent.class))) {
-                        throw new IllegalStateException("JobDataQuery#componentClass() " + jobDataQuery.componentClass().getName() + " isn't registered in the component registry.");
+                        throw new RuntimeException(exception, new IllegalStateException("JobDataQuery#componentClass() " + jobDataQuery.componentClass().getName() + " isn't registered in the component registry."));
                     }
                     String componentName = componentRegistry.getComponentName(jobDataQuery.componentClass().asSubclass(ICleanComponent.class));
                     try {
                         componentRegistry.getFieldOrdinal(componentName, jobDataQuery.fieldAccessChain());
                     } catch (Throwable e) {
-                        throw new IllegalStateException("JobDataQuery#fieldAccessChain() is invalid.", e);
+                        throw new RuntimeException(exception, new IllegalStateException("JobDataQuery#fieldAccessChain() is invalid.", e));
                     }
 
                     IJobDataInjector jobDataInjector = genParallelJobDataInjector(clazz, field.getName(), field.getType());

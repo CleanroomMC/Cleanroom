@@ -30,7 +30,7 @@ public class KirinoEngine {
     private final RenderPass gizmosPass;
 
     private KirinoEngine(EventBus eventBus, Logger logger, CleanECSRuntime ecsRuntime) {
-        scene = new MinecraftScene(ecsRuntime.entityManager);
+        scene = new MinecraftScene(ecsRuntime.entityManager, ecsRuntime.jobScheduler);
         camera = new MinecraftCamera();
 
         shaderRegistry = new ShaderRegistry();

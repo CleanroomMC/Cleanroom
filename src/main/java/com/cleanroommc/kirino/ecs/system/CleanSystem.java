@@ -1,13 +1,7 @@
 package com.cleanroommc.kirino.ecs.system;
 
-import com.cleanroommc.kirino.ecs.world.CleanWorld;
+import com.cleanroommc.kirino.ecs.job.JobScheduler;
 
 public abstract class CleanSystem {
-    public abstract void update();
-
-    protected final CleanWorld world;
-
-    public CleanSystem(CleanWorld world) {
-        this.world = world;
-    }
+    public abstract void update(JobScheduler jobScheduler);
 }

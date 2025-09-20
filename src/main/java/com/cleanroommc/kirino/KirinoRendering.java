@@ -3,7 +3,9 @@ package com.cleanroommc.kirino;
 import com.cleanroommc.kirino.ecs.CleanECSRuntime;
 import com.cleanroommc.kirino.ecs.component.scan.event.ComponentScanningEvent;
 import com.cleanroommc.kirino.ecs.component.scan.event.StructScanningEvent;
+import com.cleanroommc.kirino.ecs.job.event.JobRegistrationEvent;
 import com.cleanroommc.kirino.engine.KirinoEngine;
+import com.cleanroommc.kirino.engine.render.task.job.ChunkMeshletGenJob;
 import com.cleanroommc.kirino.engine.render.shader.event.ShaderRegistrationEvent;
 import com.cleanroommc.kirino.gl.debug.*;
 import com.cleanroommc.kirino.utils.reflection.ReflectionUtils;
@@ -332,6 +334,10 @@ public class KirinoRendering {
             Method onShaderRegister = KirinoRendering.class.getDeclaredMethod("onShaderRegister", ShaderRegistrationEvent.class);
             registerMethod.invoke(KIRINO_EVENT_BUS, ShaderRegistrationEvent.class, KirinoRendering.class, onShaderRegister, Loader.instance().getMinecraftModContainer());
             LOGGER.info("Registered the default ShaderRegistrationEvent listener.");
+
+            Method onJobRegister = KirinoRendering.class.getDeclaredMethod("onJobRegister", JobRegistrationEvent.class);
+            registerMethod.invoke(KIRINO_EVENT_BUS, JobRegistrationEvent.class, KirinoRendering.class, onJobRegister, Loader.instance().getMinecraftModContainer());
+            LOGGER.info("Registered the default JobRegistrationEvent listener.");
         } catch (Throwable throwable) {
             throw new RuntimeException("Failed to register default event listeners.", throwable);
         }
@@ -402,16 +408,21 @@ public class KirinoRendering {
 
     @SubscribeEvent
     public static void onStructScan(StructScanningEvent event) {
-        event.scanPackageNames.add("com.cleanroommc.kirino.engine.geometry");
+        event.scanPackageNames.add("com.cleanroommc.kirino.engine.render.geometry");
     }
 
     @SubscribeEvent
     public static void onComponentScan(ComponentScanningEvent event) {
-        event.scanPackageNames.add("com.cleanroommc.kirino.engine.geometry.component");
+        event.scanPackageNames.add("com.cleanroommc.kirino.engine.render.geometry.component");
     }
 
     @SubscribeEvent
     public static void onShaderRegister(ShaderRegistrationEvent event) {
         event.shaderResourceLocations.add(new ResourceLocation("kirino:shaders/test.vert"));
+    }
+
+    @SubscribeEvent
+    public static void onJobRegister(JobRegistrationEvent event) {
+        event.parallelJobClasses.add(ChunkMeshletGenJob.class);
     }
 }
