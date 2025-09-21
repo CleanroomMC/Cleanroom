@@ -551,10 +551,6 @@ public class CoreModManager {
         if (loadedPlugins.contains(coreModClass)) 
         {
             return null;
-        } 
-        else 
-        {
-            loadedPlugins.add(coreModClass);
         }
         String coreModName = coreModClass.substring(coreModClass.lastIndexOf('.') + 1);
         try
@@ -637,6 +633,7 @@ public class CoreModManager {
             }
             FMLPluginWrapper wrap = new FMLPluginWrapper(coreModName, plugin, location, sortIndex, dependencies);
             loadPlugins.add(wrap);
+            loadedPlugins.add(coreModClass);
             FMLLog.log.debug("Enqueued coremod {}", coreModName);
             MixinBooterPlugin.queneEarlyMixinLoader(plugin);
             return wrap;
