@@ -649,15 +649,13 @@ public class CoreModManager {
         {
             FMLLog.log.error("Coremod {}: The plugin {} is not an implementor of IFMLLoadingPlugin", coreModName, coreModClass, cce);
         }
-        catch (InstantiationException ie)
+        catch (InstantiationException | InvocationTargetException | NoSuchMethodException ie)
         {
             FMLLog.log.error("Coremod {}: The plugin class {} was not instantiable", coreModName, coreModClass, ie);
         }
         catch (IllegalAccessException iae)
         {
             FMLLog.log.error("Coremod {}: The plugin class {} was not accessible", coreModName, coreModClass, iae);
-        } catch (InvocationTargetException | NoSuchMethodException e) {
-            throw new RuntimeException(e);
         }
         return null;
     }
