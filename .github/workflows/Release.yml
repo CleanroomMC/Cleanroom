@@ -42,7 +42,7 @@ jobs:
         run: ./gradlew --stop
 
       - name: Publish to maven for mod development
-        run: ./gradlew publish -PoutlandUsername=${{ secrets.CLEANROOM_MAVEN_USERNAME }} -PoutlandPassword="${{ secrets.CLEANROOM_MAVEN_PASSWORD }}" -Prun_number=${{ github.run_number }} -Prelease=true
+        run: ./gradlew publish -PcleanroomUsername=${{ secrets.CLEANROOM_MAVEN_USERNAME }} -PcleanroomPassword="${{ secrets.CLEANROOM_MAVEN_PASSWORD }}" -Prun_number=${{ github.run_number }} -Prelease=true
 
       - name: setup python
         uses: actions/setup-python@v5.6.0
