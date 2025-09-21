@@ -1018,8 +1018,8 @@ project(':cleanroom') {
     publishing {
         repositories {
             maven {
-                name = "outland"
-                url = "https://maven.outlands.top/releases"
+                name = "cleanroom"
+                url = 'https://repo.cleanroommc.com/releases'
                 credentials(PasswordCredentials)
                 authentication {
                     basic(BasicAuthentication)
