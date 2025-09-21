@@ -43,6 +43,7 @@ import org.spongepowered.asm.service.mojang.MixinServiceLaunchWrapper;
 import org.spongepowered.asm.util.Constants;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.security.cert.Certificate;
 import java.util.*;
@@ -55,6 +56,7 @@ public class CoreModManager {
     private static final Attributes.Name COREMODCONTAINSFMLMOD = new Attributes.Name("FMLCorePluginContainsFMLMod");
     private static final Attributes.Name FORCELOADASMOD = new Attributes.Name("ForceLoadAsMod");
     private static final Attributes.Name MODTYPE = new Attributes.Name("ModType");
+    private static final Set<String> loadedPlugins = new HashSet<>();
     private static String[] rootPlugins = { "net.minecraftforge.fml.relauncher.FMLCorePlugin", "net.minecraftforge.classloading.FMLForgePlugin", "net.minecraftforge.fml.relauncher.MixinBooterPlugin" };
     private static List<String> ignoredModFiles = Lists.newArrayList();
     private static Map<String, List<String>> transformers = Maps.newHashMap();
@@ -546,6 +548,10 @@ public class CoreModManager {
 
     private static FMLPluginWrapper loadCoreMod(LaunchClassLoader classLoader, String coreModClass, File location)
     {
+        if (loadedPlugins.contains(coreModClass)) 
+        {
+            return null;
+        }
         String coreModName = coreModClass.substring(coreModClass.lastIndexOf('.') + 1);
         try
         {
@@ -618,7 +624,7 @@ public class CoreModManager {
                 }
             }
 
-            IFMLLoadingPlugin plugin = (IFMLLoadingPlugin) coreModClazz.newInstance();
+            IFMLLoadingPlugin plugin = (IFMLLoadingPlugin) coreModClazz.getConstructor().newInstance();
             String accessTransformerClass = plugin.getAccessTransformerClass();
             if (accessTransformerClass != null)
             {
@@ -627,6 +633,7 @@ public class CoreModManager {
             }
             FMLPluginWrapper wrap = new FMLPluginWrapper(coreModName, plugin, location, sortIndex, dependencies);
             loadPlugins.add(wrap);
+            loadedPlugins.add(coreModClass);
             FMLLog.log.debug("Enqueued coremod {}", coreModName);
             MixinBooterPlugin.queneEarlyMixinLoader(plugin);
             return wrap;
@@ -642,7 +649,7 @@ public class CoreModManager {
         {
             FMLLog.log.error("Coremod {}: The plugin {} is not an implementor of IFMLLoadingPlugin", coreModName, coreModClass, cce);
         }
-        catch (InstantiationException ie)
+        catch (InstantiationException | InvocationTargetException | NoSuchMethodException ie)
         {
             FMLLog.log.error("Coremod {}: The plugin class {} was not instantiable", coreModName, coreModClass, ie);
         }
