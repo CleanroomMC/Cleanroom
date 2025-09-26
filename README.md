@@ -72,8 +72,8 @@ Check [Contributing Page](https://github.com/CleanroomMC/Cleanroom/blob/proposal
   - `SystemExeGraph` to coordinate different systems
     - Execution priority
     - Async execution & barrier
-- Job
-  - Job is a unit of work that can be split and executed in parallel
+- Job ✔
+  - Job is a unit of work that can be split and executed in parallel ✔
 
 </details>
 

@@ -6,6 +6,7 @@ import com.cleanroommc.kirino.ecs.entity.EntityQuery;
 import com.cleanroommc.kirino.ecs.storage.ArchetypeDataPool;
 import com.cleanroommc.kirino.ecs.storage.ArrayRange;
 import com.cleanroommc.kirino.ecs.storage.INativeArray;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +23,11 @@ public class JobScheduler {
         this.entityManager = entityManager;
     }
 
-    public void executeParallel(Class<? extends IParallelJob> clazz, Executor executor) {
-        Map<JobDataQuery, IJobDataInjector> parallelJobInfo = jobRegistry.getParallelJobInfo(clazz);
+    public void executeParallel(Class<? extends IParallelJob> clazz, @Nullable Map<String, Object> externalData, Executor executor) {
+        Map<JobDataQuery, IJobDataInjector> parallelJobDataQueries = jobRegistry.getParallelJobDataQueries(clazz);
+        Map<String, IJobDataInjector> parallelJobExternalDataQueries = jobRegistry.getParallelJobExternalDataQueries(clazz);
         IJobInstantiator instantiator = jobRegistry.getParallelJobInstantiator(clazz);
-        if (parallelJobInfo == null || instantiator == null) {
+        if (parallelJobDataQueries == null || parallelJobExternalDataQueries == null || instantiator == null) {
             throw new IllegalStateException("Parallel job class " + clazz.getName() + " isn't registered.");
         }
 
@@ -39,9 +41,14 @@ public class JobScheduler {
             IParallelJob job = (IParallelJob) instantiator.instantiate();
 
             // data injection
-            for (Map.Entry<JobDataQuery, IJobDataInjector> entry : parallelJobInfo.entrySet()) {
+            for (Map.Entry<JobDataQuery, IJobDataInjector> entry : parallelJobDataQueries.entrySet()) {
                 INativeArray<?> array = archetype.getArray(entry.getKey().componentClass().asSubclass(ICleanComponent.class), entry.getKey().fieldAccessChain());
                 entry.getValue().inject(job, array);
+            }
+            for (Map.Entry<String, IJobDataInjector> entry : parallelJobExternalDataQueries.entrySet()) {
+                if (externalData != null) {
+                    entry.getValue().inject(job, externalData.get(entry.getKey()));
+                }
             }
 
             ArrayRange arrayRange = archetype.getArrayRange();

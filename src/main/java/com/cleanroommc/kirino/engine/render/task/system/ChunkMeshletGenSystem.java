@@ -9,6 +9,6 @@ import java.util.concurrent.ForkJoinPool;
 public class ChunkMeshletGenSystem extends CleanSystem {
     @Override
     public void update(JobScheduler jobScheduler) {
-        jobScheduler.executeParallel(ChunkMeshletGenJob.class, ForkJoinPool.commonPool());
+        jobScheduler.executeParallel(ChunkMeshletGenJob.class, null, ForkJoinPool.commonPool());
     }
 }

@@ -1,6 +1,6 @@
 package com.cleanroommc.kirino.gl.debug;
 
-import com.cleanroommc.kirino.KirinoRendering;
+import com.cleanroommc.kirino.KirinoCore;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL43;
 import org.lwjgl.opengl.GL43C;
@@ -83,7 +83,7 @@ public final class KHRDebug {
                     .append('\n');
         }
 
-        KirinoRendering.LOGGER.warn(builder.toString());
+        KirinoCore.LOGGER.warn(builder.toString());
     }
 
     public static void pushGroup(String name) {

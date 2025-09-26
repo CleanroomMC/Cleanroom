@@ -1,6 +1,6 @@
 package com.cleanroommc.kirino.engine.render.scene;
 
-import com.cleanroommc.kirino.KirinoRendering;
+import com.cleanroommc.kirino.KirinoCore;
 import com.cleanroommc.kirino.ecs.entity.CleanEntityHandle;
 import com.cleanroommc.kirino.ecs.entity.EntityManager;
 import com.cleanroommc.kirino.ecs.job.JobScheduler;
@@ -69,7 +69,7 @@ public class MinecraftScene extends CleanWorld {
         // test
         if (c == 3) {
             (new ChunkMeshletGenSystem()).update(jobScheduler);
-            KirinoRendering.LOGGER.info("executed!!!");
+            KirinoCore.LOGGER.info("executed!!!");
         }
         c++;
     }

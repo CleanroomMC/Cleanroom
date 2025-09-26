@@ -38,9 +38,9 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-public class KirinoRendering {
+public class KirinoCore {
     private static final Minecraft MINECRAFT = Minecraft.getMinecraft();
-    public static final Logger LOGGER = LogManager.getLogger("Kirino Rendering");
+    public static final Logger LOGGER = LogManager.getLogger("Kirino Core");
     public static final EventBus KIRINO_EVENT_BUS = new EventBus();
     private static CleanECSRuntime ECS_RUNTIME;
     private static KirinoEngine KIRINO_ENGINE;
@@ -323,20 +323,20 @@ public class KirinoRendering {
             Method registerMethod = KIRINO_EVENT_BUS.getClass().getDeclaredMethod("register", Class.class, Object.class, Method.class, ModContainer.class);
             registerMethod.setAccessible(true);
 
-            Method onStructScan = KirinoRendering.class.getDeclaredMethod("onStructScan", StructScanningEvent.class);
-            registerMethod.invoke(KIRINO_EVENT_BUS, StructScanningEvent.class, KirinoRendering.class, onStructScan, Loader.instance().getMinecraftModContainer());
+            Method onStructScan = KirinoCore.class.getDeclaredMethod("onStructScan", StructScanningEvent.class);
+            registerMethod.invoke(KIRINO_EVENT_BUS, StructScanningEvent.class, KirinoCore.class, onStructScan, Loader.instance().getMinecraftModContainer());
             LOGGER.info("Registered the default StructScanningEvent listener.");
 
-            Method onComponentScan = KirinoRendering.class.getDeclaredMethod("onComponentScan", ComponentScanningEvent.class);
-            registerMethod.invoke(KIRINO_EVENT_BUS, ComponentScanningEvent.class, KirinoRendering.class, onComponentScan, Loader.instance().getMinecraftModContainer());
+            Method onComponentScan = KirinoCore.class.getDeclaredMethod("onComponentScan", ComponentScanningEvent.class);
+            registerMethod.invoke(KIRINO_EVENT_BUS, ComponentScanningEvent.class, KirinoCore.class, onComponentScan, Loader.instance().getMinecraftModContainer());
             LOGGER.info("Registered the default ComponentScanningEvent listener.");
 
-            Method onShaderRegister = KirinoRendering.class.getDeclaredMethod("onShaderRegister", ShaderRegistrationEvent.class);
-            registerMethod.invoke(KIRINO_EVENT_BUS, ShaderRegistrationEvent.class, KirinoRendering.class, onShaderRegister, Loader.instance().getMinecraftModContainer());
+            Method onShaderRegister = KirinoCore.class.getDeclaredMethod("onShaderRegister", ShaderRegistrationEvent.class);
+            registerMethod.invoke(KIRINO_EVENT_BUS, ShaderRegistrationEvent.class, KirinoCore.class, onShaderRegister, Loader.instance().getMinecraftModContainer());
             LOGGER.info("Registered the default ShaderRegistrationEvent listener.");
 
-            Method onJobRegister = KirinoRendering.class.getDeclaredMethod("onJobRegister", JobRegistrationEvent.class);
-            registerMethod.invoke(KIRINO_EVENT_BUS, JobRegistrationEvent.class, KirinoRendering.class, onJobRegister, Loader.instance().getMinecraftModContainer());
+            Method onJobRegister = KirinoCore.class.getDeclaredMethod("onJobRegister", JobRegistrationEvent.class);
+            registerMethod.invoke(KIRINO_EVENT_BUS, JobRegistrationEvent.class, KirinoCore.class, onJobRegister, Loader.instance().getMinecraftModContainer());
             LOGGER.info("Registered the default JobRegistrationEvent listener.");
         } catch (Throwable throwable) {
             throw new RuntimeException("Failed to register default event listeners.", throwable);

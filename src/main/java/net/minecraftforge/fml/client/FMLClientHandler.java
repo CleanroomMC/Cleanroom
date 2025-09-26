@@ -35,7 +35,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
-import com.cleanroommc.kirino.KirinoRendering;
+import com.cleanroommc.kirino.KirinoCore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.Gui;
@@ -287,7 +287,7 @@ public class FMLClientHandler implements IFMLSidedHandler
             }
         }
 
-        KirinoRendering.init();
+        KirinoCore.init();
     }
 
     private void detectOptifine()

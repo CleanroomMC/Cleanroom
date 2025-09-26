@@ -131,9 +131,13 @@ public class CleanECSRuntime {
         eventBus.post(jobRegistrationEvent);
         for (Class<? extends IParallelJob> clazz : jobRegistrationEvent.parallelJobClasses) {
             jobRegistry.registerParallelJob(clazz);
-            logger.info("Parallel job " + clazz.getName() + " registered. Array queries are as follows:" + (jobRegistry.getParallelJobInfo(clazz).keySet().isEmpty() ? " (Empty)" : ""));
-            for (JobDataQuery jobDataQuery : jobRegistry.getParallelJobInfo(clazz).keySet()) {
+            logger.info("Parallel job " + clazz.getName() + " registered. Data queries are as follows:" +
+                    (jobRegistry.getParallelJobDataQueries(clazz).keySet().isEmpty() && jobRegistry.getParallelJobExternalDataQueries(clazz).keySet().isEmpty() ? " (Empty)" : ""));
+            for (JobDataQuery jobDataQuery : jobRegistry.getParallelJobDataQueries(clazz).keySet()) {
                 logger.info("  - Array query: " + componentRegistry.getComponentName(jobDataQuery.componentClass().asSubclass(ICleanComponent.class)) + "; " + String.join(".", jobDataQuery.fieldAccessChain()));
+            }
+            for (String fieldName : jobRegistry.getParallelJobExternalDataQueries(clazz).keySet()) {
+                logger.info("  - External query: " +  fieldName);
             }
         }
     }
