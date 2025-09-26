@@ -45,8 +45,8 @@ public class JobScheduler {
                 INativeArray<?> array = archetype.getArray(entry.getKey().componentClass().asSubclass(ICleanComponent.class), entry.getKey().fieldAccessChain());
                 entry.getValue().inject(job, array);
             }
-            for (Map.Entry<String, IJobDataInjector> entry : parallelJobExternalDataQueries.entrySet()) {
-                if (externalData != null) {
+            if (externalData != null) {
+                for (Map.Entry<String, IJobDataInjector> entry : parallelJobExternalDataQueries.entrySet()) {
                     entry.getValue().inject(job, externalData.get(entry.getKey()));
                 }
             }
