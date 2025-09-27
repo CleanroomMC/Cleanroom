@@ -1,6 +1,6 @@
 package com.cleanroommc.kirino.engine.render.camera;
 
-import com.cleanroommc.kirino.utils.reflection.ReflectionUtils;
+import com.cleanroommc.kirino.utils.ReflectionUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.entity.Entity;

@@ -6,7 +6,7 @@ import com.cleanroommc.kirino.gl.shader.ShaderProgram;
 import com.cleanroommc.kirino.gl.shader.ShaderType;
 import com.cleanroommc.kirino.gl.shader.schema.GLSLRegistry;
 import com.cleanroommc.kirino.utils.MinecraftResourceUtils;
-import com.cleanroommc.kirino.utils.reflection.ReflectionUtils;
+import com.cleanroommc.kirino.utils.ReflectionUtils;
 import net.minecraft.util.ResourceLocation;
 
 import java.lang.invoke.MethodHandle;

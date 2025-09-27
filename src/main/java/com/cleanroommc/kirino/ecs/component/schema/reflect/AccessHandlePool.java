@@ -1,6 +1,7 @@
 package com.cleanroommc.kirino.ecs.component.schema.reflect;
 
 import com.cleanroommc.kirino.ecs.component.schema.meta.MemberLayout;
+import com.cleanroommc.kirino.utils.ReflectionUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.lang.invoke.MethodHandle;
@@ -28,7 +29,7 @@ public class AccessHandlePool {
             Map<String, MethodHandle> setters = setterHandleMap.computeIfAbsent(clazz, (key) -> new HashMap<>());
             Map<String, MethodHandle> getters = getterHandleMap.computeIfAbsent(clazz, (key) -> new HashMap<>());
             for (String fieldName: memberLayout.fieldNames) {
-                Field field = clazz.getDeclaredField(fieldName);
+                Field field = ReflectionUtils.getFieldByNameIncludingSuperclasses(clazz, fieldName);
                 field.setAccessible(true);
                 MethodHandle setterHandle = LOOKUP.unreflectSetter(field);
                 setters.put(fieldName, setterHandle);

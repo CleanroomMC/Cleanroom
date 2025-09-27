@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.utils.reflection;
+package com.cleanroommc.kirino.utils;
 
 import org.jspecify.annotations.Nullable;
 

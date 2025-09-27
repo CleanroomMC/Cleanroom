@@ -3,7 +3,7 @@ package com.cleanroommc.kirino.ecs.job;
 import com.cleanroommc.kirino.ecs.component.ComponentRegistry;
 import com.cleanroommc.kirino.ecs.component.ICleanComponent;
 import com.cleanroommc.kirino.ecs.storage.INativeArray;
-import com.cleanroommc.kirino.utils.reflection.ReflectionUtils;
+import com.cleanroommc.kirino.utils.ReflectionUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.lang.invoke.MethodHandle;

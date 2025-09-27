@@ -8,7 +8,7 @@ import com.cleanroommc.kirino.engine.KirinoEngine;
 import com.cleanroommc.kirino.engine.render.task.job.ChunkMeshletGenJob;
 import com.cleanroommc.kirino.engine.render.shader.event.ShaderRegistrationEvent;
 import com.cleanroommc.kirino.gl.debug.*;
-import com.cleanroommc.kirino.utils.reflection.ReflectionUtils;
+import com.cleanroommc.kirino.utils.ReflectionUtils;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;

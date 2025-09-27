@@ -140,8 +140,6 @@ Lighting: Semi-static Diffuse GI with Temporal Accumulation + SSRC
 
 - ECS world system coordinator (DAG). edge -> system; node -> barrier
 - Modify EntityManager - callback on flush
-- Finish JobScheduler
 - MeshletManager ?
-- Fix AccessHandlePool not able to find fields from parent classes
 
 </details>

@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.utils.reflection;
+package com.cleanroommc.kirino.utils;
 
 import org.jspecify.annotations.Nullable;
 
@@ -8,6 +8,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -15,6 +18,27 @@ import java.util.function.Supplier;
 
 public final class ReflectionUtils {
     private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
+
+    public static Field getFieldByNameIncludingSuperclasses(Class<?> clazz, String fieldName) throws NoSuchFieldException {
+        List<Field> fields = getAllFieldsIncludingSuperclasses(clazz);
+        for (Field field : fields) {
+            if (field.getName().equals(fieldName)) {
+                return field;
+            }
+        }
+        throw new NoSuchFieldException("Cannot find " + fieldName + " from " + clazz.getName() + " including its superclasses.");
+    }
+
+    public static List<Field> getAllFieldsIncludingSuperclasses(Class<?> clazz) {
+        List<Field> fields = new ArrayList<>();
+        Class<?> current = clazz;
+        while (current != null && current != Object.class) {
+            Field[] declaredFields = current.getDeclaredFields();
+            fields.addAll(Arrays.asList(declaredFields));
+            current = current.getSuperclass();
+        }
+        return fields;
+    }
 
     //<editor-fold desc="find field">
     @Nullable
