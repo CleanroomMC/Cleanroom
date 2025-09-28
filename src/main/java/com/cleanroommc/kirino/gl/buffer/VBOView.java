@@ -3,8 +3,8 @@ package com.cleanroommc.kirino.gl.buffer;
 import org.lwjgl.opengl.GL15;
 
 public class VBOView extends BufferView{
-    public VBOView(int bufferID) {
-        super(bufferID);
+    public VBOView(GLBuffer buffer) {
+        super(buffer);
     }
 
     @Override

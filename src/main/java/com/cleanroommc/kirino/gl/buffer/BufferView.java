@@ -23,10 +23,12 @@ public abstract class BufferView {
         return validation;
     }
 
-    public final int bufferID;
+    public final GLBuffer buffer;
+    private final int bufferID;
 
-    public BufferView(int bufferID) {
-        this.bufferID = bufferID;
+    public BufferView(GLBuffer buffer) {
+        this.buffer = buffer;
+        this.bufferID = buffer.bufferID;
     }
 
     public abstract int target();

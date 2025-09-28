@@ -204,7 +204,7 @@ public class EntityManager {
      */
     protected synchronized void destroyEntity(int index) {
         if (index < 0 || index > entityGenerations.size() - 1) {
-            throw new IndexOutOfBoundsException("The index provided is invalid. Current array length is " + entityGenerations.size() + ".");
+            throw new IndexOutOfBoundsException("The index provided is invalid. Current array length is " + entityGenerations.size() + ". Current array index is " + index + ".");
         }
         // update generation
         entityGenerations.set(index, entityGenerations.get(index) + 1);
@@ -218,14 +218,14 @@ public class EntityManager {
 
     protected int getLatestGeneration(int index) {
         if (index < 0 || index > entityGenerations.size() - 1) {
-            throw new IndexOutOfBoundsException("The index provided is invalid. Current array length is " + entityGenerations.size() + ".");
+            throw new IndexOutOfBoundsException("The index provided is invalid. Current array length is " + entityGenerations.size() + ". Current array index is " + index + ".");
         }
         return entityGenerations.get(index);
     }
 
     protected List<Class<? extends ICleanComponent>> getComponentTypes(int index) {
         if (index < 0 || index > entityComponents.size() - 1) {
-            throw new IndexOutOfBoundsException("The index provided is invalid. Current array length is " + entityGenerations.size() + ".");
+            throw new IndexOutOfBoundsException("The index provided is invalid. Current array length is " + entityGenerations.size() + ". Current array index is " + index + ".");
         }
         return entityComponents.get(index);
     }
