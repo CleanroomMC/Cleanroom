@@ -6,7 +6,7 @@ import net.minecraftforge.common.config.Config;
 public class ForgeEarlyConfig {
 
     public static int OPENGL_VERSION_MAJOR = 4;
-    public static int OPENGL_VERSION_MINOR = 4;
+    public static int OPENGL_VERSION_MINOR = 6;
     public static boolean OPENGL_COMPAT_PROFILE = true;
 
     public static boolean RAW_INPUT = true;
