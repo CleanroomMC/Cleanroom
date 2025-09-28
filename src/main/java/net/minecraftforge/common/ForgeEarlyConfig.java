@@ -5,6 +5,10 @@ import net.minecraftforge.common.config.Config;
 @Config(modid = ForgeVersion.MOD_ID, name = ForgeVersion.MOD_ID + "_early")
 public class ForgeEarlyConfig {
 
+    public static int OPENGL_VERSION_MAJOR = 4;
+    public static int OPENGL_VERSION_MINOR = 4;
+    public static boolean OPENGL_COMPAT_PROFILE = true;
+
     public static boolean RAW_INPUT = true;
 
     //TODO : make CATEGORY?
