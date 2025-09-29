@@ -417,7 +417,7 @@ project(':cleanroom') {
 
     dependencies {
         compileOnly "com.cleanroommc:lwjglx:1.0.0"
-        installer "com.cleanroommc:lwjglxx:1.1.6"
+        installer "com.cleanroommc:lwjglxx:1.1.7"
         lwjglLibraries[0].each {
             installer "org.lwjgl:$it:$props.lwjgl_version"
             runtimeOnly "org.lwjgl:$it::$lwjglArch"
