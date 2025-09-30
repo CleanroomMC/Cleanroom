@@ -45,7 +45,7 @@ public class KirinoCore {
     private static CleanECSRuntime ECS_RUNTIME;
     private static KirinoEngine KIRINO_ENGINE;
 
-    private static boolean ENABLE_RENDER_DELEGATE;
+    private final static boolean ENABLE_RENDER_DELEGATE = true;
 
     public static boolean isEnableRenderDelegate() {
         return ENABLE_RENDER_DELEGATE;
@@ -311,8 +311,6 @@ public class KirinoCore {
 
     @SuppressWarnings("unchecked")
     public static void init() {
-        ENABLE_RENDER_DELEGATE = true;
-
         KHRDebug.enable(List.of(
                 new DebugMessageFilter(DebugMsgSource.ANY, DebugMsgType.ERROR, DebugMsgSeverity.ANY),
                 new DebugMessageFilter(DebugMsgSource.ANY, DebugMsgType.MARKER, DebugMsgSeverity.ANY)));

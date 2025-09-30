@@ -34,8 +34,12 @@ public abstract class BufferView {
     public abstract int target();
     public abstract int bindingTarget();
 
-    public void bind() {
+    public void bind(int bufferID) {
         GL15.glBindBuffer(target(), bufferID);
+    }
+
+    public void bind() {
+        bind(bufferID);
     }
 
     public int fetchCurrentBufferID() {

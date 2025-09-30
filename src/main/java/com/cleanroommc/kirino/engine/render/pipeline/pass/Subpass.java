@@ -24,7 +24,7 @@ public abstract class Subpass {
 
     protected void bindTarget() {
         fbo.bind();
-        GL11.glViewport(0, 0, fbo.width(), fbo.height());
+        GL11.glViewport(0, 0, fbo.width, fbo.height);
     }
 
     protected abstract void execute();
