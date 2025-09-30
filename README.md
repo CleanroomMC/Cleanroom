@@ -11,9 +11,9 @@ Check [Contributing Page](https://github.com/CleanroomMC/Cleanroom/blob/proposal
 <details>
 <summary>GL Abstraction</summary>
 
-- GL Resource Abstraction
-  - Resource manager
-- Shader Abstraction 
+- GL Resource Abstraction 🚧
+  - Resource manager 🚧
+- Shader Abstraction 🚧
   - Only support `vert` + `frag` for now, but design with `tess`, `compute`, etc. in mind
   - Global shader registry
     - Compile and store shaders
@@ -24,56 +24,57 @@ Check [Contributing Page](https://github.com/CleanroomMC/Cleanroom/blob/proposal
     - UBO support
   - ShaderProgram
     - Uniform input type widening
-- Buffer Abstraction
+- Buffer Abstraction 🚧
+  - Generic buffer object + View ✅
   - VAO + VBO + EBO -> Mesh
   - UBO, SSBO
   - PBO pack & unpack
   - TBO
   - Upload hint + access hint
-  - Persistent buffer
-  - Framebuffer
-    - Attachment
-- Mesh Abstraction
+  - Persistent buffer ✅
+  - Framebuffer ✅
+    - Attachment ✅
+    - RenderBuffer ✅
+- Mesh Abstraction 🚧
   - Mesh
   - InstancedMesh
   - MultiDrawMesh
-  - Vertex attribute layout
-- Texture Abstraction
+  - Vertex attribute layout ✅
+- Texture Abstraction 🚧
   - Sampler
-  - Texture
-    - Texture2D (for common uses)
-    - Texture2DMultisample (for multisampling fbo)
+  - Generic texture object + View ✅
+  - Texture 🚧
+    - Texture2D (for common uses) ✅
+    - Texture2DMultisample (for multisampling fbo) 🚧
     - Texture2DArray (for texture atlas)
     - ...
 - Sync / Fence Abstraction
-- Debug Abstraction
-  - KHR_debug
+- Debug Abstraction ✅
+  - KHR_debug ✅
 - Material Abstraction
   - MaterialTemplate to describe layout and shaders
   - MaterialInstance to hold actual parameters
-- Camera Abstraction
-- Render Pass Abstraction
 
 </details>
 
 <details>
 <summary>ECS</summary>
 
-- Overall ECS structure ✔
-  - CleanWorld, CleanEntity, CleanComponent, CleanSystem ✔
-- Entity ✔
-  - Entity manager (utilizes archetype) ✔
-- Component ✔
-  - Component schema ✔
-  - Class scan via ClassGraph ✔
-- Storage ✔
-  - Archetype ✔
-- Runtime
+- Overall ECS structure ✅
+  - CleanWorld, CleanEntity, CleanComponent, CleanSystem ✅
+- Entity ✅
+  - Entity manager (utilizes archetype) ✅
+- Component ✅
+  - Component schema ✅
+  - Class scan via ClassGraph ✅
+- Storage ✅
+  - Archetype ✅
+- Runtime 🚧
   - `SystemExeGraph` to coordinate different systems
     - Execution priority
     - Async execution & barrier
-- Job ✔
-  - Job is a unit of work that can be split and executed in parallel ✔
+- Job ✅
+  - Job is a unit of work that can be split and executed in parallel ✅
 
 </details>
 
@@ -82,9 +83,9 @@ Check [Contributing Page](https://github.com/CleanroomMC/Cleanroom/blob/proposal
 
 - CPU & GPU hybrid dual pipeline
 - DrawCommand decorating mechanism
-- RenderPass / Subpass architecture
+- RenderPass / Subpass architecture 🚧
 - Built-in Multi-resolution & Super-sampling
-- Immutable Pipeline State Object
+- Immutable Pipeline State Object 🚧
 - Scriptable pipeline
 - ...
 
