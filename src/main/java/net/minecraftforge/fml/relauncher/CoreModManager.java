@@ -51,6 +51,12 @@ import java.util.function.ToIntFunction;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
+
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Opcodes;
 
 public class CoreModManager {
     private static final Attributes.Name COREMODCONTAINSFMLMOD = new Attributes.Name("FMLCorePluginContainsFMLMod");
@@ -251,9 +257,14 @@ public class CoreModManager {
                 continue;
             }
             FMLLog.log.info("Found a command line coremod : {}", coreModClassName);
-            loadCoreMod(classLoader, coreModClassName, null);
+            enqueueCoreModData(classLoader, coreModClassName, null);
         }
         discoverCoreMods(mcDir, classLoader);
+
+        for (CoreModData coreModData : sortCoreModData(enqueuedCoreModDataList)) {
+            loadCoreMod(classLoader, coreModData.pluginClass(), coreModData.location());
+        }
+        enqueuedCoreModDataList = null;
     }
 
     private static void findDerpMods(LaunchClassLoader classLoader, File modDir, File modDirVer)
@@ -481,7 +492,7 @@ public class CoreModManager {
                 FMLLog.log.error("Unable to convert file into a URL. weird", e);
                 continue;
             }
-            loadCoreMod(classLoader, fmlCorePlugin, coreMod);
+            enqueueCoreModData(classLoader, fmlCorePlugin, coreMod);
         }
         String devConfigs = System.getProperty("cleanroom.dev.mixin");
         if (!Strings.isNullOrEmpty(devConfigs)) {
@@ -716,6 +727,178 @@ public class CoreModManager {
             if (closeable != null)
                 closeable.close();
         } catch (final IOException ioe){}
+    }
+
+    private static List<CoreModData> enqueuedCoreModDataList = new ArrayList();
+
+    public static void enqueueCoreModData(LaunchClassLoader launchClassLoader, String coreModClass, File locationIn) {
+        enqueuedCoreModDataList.add(harvestCoreModData(launchClassLoader, coreModClass, locationIn));
+    }
+
+    public record CoreModData(String name, String pluginClass, File location, String[] dep, int idx) { }
+
+    public static CoreModData harvestCoreModData(LaunchClassLoader launchClassLoader, String coreModClass, File locationIn){
+        try {
+            byte[] pluginClass = launchClassLoader.getClassBytes(coreModClass);
+            Object[] values = getAnnotationValue(pluginClass, new String[]{
+                    "Ltest/CoremodAnn$SortIndex;",
+                    "Ltest/CoremodAnn$DependOn;",
+                    "Ltest/CoremodAnn$Name;"
+            });
+            String name;
+            String[] dep;
+            int idx;
+
+            if (values[2] == null) {
+                name = coreModClass;
+            } else name = (String) values[2];
+            if (values[1] == null) {
+                dep = new String[0];
+            } else {
+                dep = Arrays.stream((Object[]) values[1])
+                        .map(String.class::cast)
+                        .toArray(String[]::new);
+            }
+            if (values[0] == null) {
+                idx = 0;
+            } else idx = (Integer) values[0];
+            
+            return new CoreModData(name, coreModClass, locationIn, dep, idx);
+        } catch (IOException e) {
+            FMLLog.log.error("Unable to read coremod class", e);
+            return new CoreModData(coreModClass, coreModClass, locationIn, new String[0], 0);
+        }
+    }
+
+    public static List<CoreModData> sortCoreModData(List<CoreModData> coreMods) {
+        if (coreMods == null || coreMods.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        Map<String, CoreModData> nameToData = coreMods.stream()
+                .collect(Collectors.toMap(CoreModData::name, data -> data));
+
+        Map<String, List<String>> graph = new HashMap<>();
+        Map<String, Integer> inDegree = new HashMap<>();
+
+        for (CoreModData mod : coreMods) {
+            graph.put(mod.name(), new ArrayList<>());
+            inDegree.put(mod.name(), 0);
+        }
+
+        for (CoreModData mod : coreMods) {
+            if (mod.dep() != null) {
+                for (String depName : mod.dep()) {
+                    if (nameToData.containsKey(depName)) {
+                        graph.get(depName).add(mod.name());
+                        inDegree.put(mod.name(), inDegree.get(mod.name()) + 1);
+                    }
+                }
+            }
+        }
+
+        Queue<CoreModData> queue = new PriorityQueue<>(
+                (a, b) -> Integer.compare(b.idx(), a.idx())
+        );
+
+        for (CoreModData mod : coreMods) {
+            if (inDegree.get(mod.name()) == 0) {
+                queue.offer(mod);
+            }
+        }
+
+        List<CoreModData> result = new ArrayList<>();
+        while (!queue.isEmpty()) {
+            CoreModData current = queue.poll();
+            result.add(current);
+
+            for (String neighbor : graph.get(current.name())) {
+                inDegree.put(neighbor, inDegree.get(neighbor) - 1);
+                if (inDegree.get(neighbor) == 0) {
+                    queue.offer(nameToData.get(neighbor));
+                }
+            }
+        }
+
+        if (result.size() != coreMods.size()) {
+            List<CoreModData> remaining = coreMods.stream()
+                    .filter(mod -> !result.contains(mod))
+                    .sorted((a, b) -> Integer.compare(b.idx(), a.idx()))
+                    .toList();
+            result.addAll(remaining);
+        }
+
+        return result;
+    }
+    
+    public static Object[] getAnnotationValue(byte[] classBytes, String[] annotationDesc) {
+        Object[] values = new Object[annotationDesc.length];
+        try {
+            ClassReader classReader = new ClassReader(classBytes);
+            for (int i = 0; i < annotationDesc.length; i++) {
+                AnnotationValueVisitor annotationValueVisitor = new AnnotationValueVisitor(annotationDesc[i]);
+                classReader.accept(annotationValueVisitor, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+                values[i] = annotationValueVisitor.getAnnotationValue();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to read annotation value", e);
+        }
+        return values;
+    }
+
+    private static class AnnotationValueVisitor extends ClassVisitor {
+        private final String targetAnnotationDesc;
+        private Object annotationValue = null;
+
+        public AnnotationValueVisitor(String targetAnnotationDesc) {
+            super(Opcodes.ASM9);
+            this.targetAnnotationDesc = targetAnnotationDesc;
+        }
+
+        @Override
+        public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
+            if (targetAnnotationDesc.equals(descriptor)) {
+                return new ValueAnnotationVisitor();
+            }
+            return null;
+        }
+
+        public Object getAnnotationValue() {
+            return annotationValue;
+        }
+
+        private class ValueAnnotationVisitor extends AnnotationVisitor {
+            public ValueAnnotationVisitor() {
+                super(Opcodes.ASM9);
+            }
+
+            @Override
+            public void visit(String name, Object value) {
+                if (("value".equals(name) || name == null)) {
+                    annotationValue = value;
+                }
+            }
+
+            @Override
+            public void visitEnum(String name, String descriptor, String value) {
+            }
+
+            @Override
+            public AnnotationVisitor visitArray(String name) {
+                ArrayList<Object> arrayList = new ArrayList<>();
+                return new AnnotationVisitor(Opcodes.ASM9) {
+                    @Override
+                    public void visit(String name, Object value) {
+                        arrayList.add(value);
+                    }
+
+                    @Override
+                    public void visitEnd() {
+                        AnnotationValueVisitor.this.annotationValue = arrayList.toArray();
+                    }
+                };
+            }
+        }
     }
 
 }
