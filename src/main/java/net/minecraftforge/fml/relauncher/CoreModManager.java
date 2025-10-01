@@ -741,9 +741,9 @@ public class CoreModManager {
         try {
             byte[] pluginClass = launchClassLoader.getClassBytes(coreModClass);
             Object[] values = getAnnotationValue(pluginClass, new String[]{
-                    "Ltest/CoremodAnn$SortIndex;",
-                    "Ltest/CoremodAnn$DependOn;",
-                    "Ltest/CoremodAnn$Name;"
+                    "Lnet/minecraftforge/fml/relauncher/IFMLLoadingPlugin$SortingIndex;",
+                    "Lnet/minecraftforge/fml/relauncher/IFMLLoadingPlugin$DependsOn;",
+                    "Lnet/minecraftforge/fml/relauncher/IFMLLoadingPlugin$Name;"
             });
             String name;
             String[] dep;
