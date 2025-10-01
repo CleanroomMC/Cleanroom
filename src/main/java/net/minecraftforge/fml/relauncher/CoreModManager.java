@@ -775,6 +775,10 @@ public class CoreModManager {
             return new ArrayList<>();
         }
 
+        coreMods = coreMod.stream()
+            .sorted(Comparator.comparing(CoreModData::name))
+            .collect(Collectors.toList());
+
         Map<String, CoreModData> nameToData = coreMods.stream()
                 .collect(Collectors.toMap(CoreModData::name, data -> data));
 
