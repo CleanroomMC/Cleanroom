@@ -511,10 +511,11 @@
          if (this.func_177419_t())
          {
              if (p_186034_1_.func_185933_a(this, this.field_76635_g, this.field_76647_h))
-@@ -1012,8 +1017,10 @@
+@@ -1012,8 +1017,11 @@
          {
              this.func_150809_p();
              p_186034_1_.func_185931_b(this.field_76635_g, this.field_76647_h);
++            net.minecraftforge.common.ForgeHooks.postPopulateGenerate(p_186034_1_, this.field_76637_e, this.field_76635_g, this.field_76647_h);
 +            net.minecraftforge.fml.common.registry.GameRegistry.generateWorld(this.field_76635_g, this.field_76647_h, this.field_76637_e, p_186034_1_, this.field_76637_e.func_72863_F());
              this.func_76630_e();
          }
@@ -522,7 +523,7 @@
      }
  
      public BlockPos func_177440_h(BlockPos p_177440_1_)
-@@ -1068,7 +1075,7 @@
+@@ -1068,7 +1076,7 @@
          {
              BlockPos blockpos = this.field_177447_w.poll();
  
@@ -531,7 +532,7 @@
              {
                  TileEntity tileentity = this.func_177422_i(blockpos);
                  this.field_76637_e.func_175690_a(blockpos, tileentity);
-@@ -1121,7 +1128,7 @@
+@@ -1121,7 +1129,7 @@
      {
          if (this.field_76652_q.length != p_76602_1_.length)
          {
@@ -540,7 +541,7 @@
          }
          else
          {
-@@ -1132,9 +1139,16 @@
+@@ -1132,9 +1140,16 @@
      @SideOnly(Side.CLIENT)
      public void func_186033_a(PacketBuffer p_186033_1_, int p_186033_2_, boolean p_186033_3_)
      {
@@ -558,7 +559,7 @@
          {
              ExtendedBlockStorage extendedblockstorage = this.field_76652_q[i];
  
-@@ -1168,7 +1182,7 @@
+@@ -1168,7 +1183,7 @@
              p_186033_1_.readBytes(this.field_76651_r);
          }
  
@@ -567,7 +568,7 @@
          {
              if (this.field_76652_q[j] != field_186036_a && (p_186033_2_ & 1 << j) != 0)
              {
-@@ -1180,10 +1194,16 @@
+@@ -1180,10 +1195,16 @@
          this.field_76646_k = true;
          this.func_76590_a();
  
@@ -584,7 +585,7 @@
      }
  
      public Biome func_177411_a(BlockPos p_177411_1_, BiomeProvider p_177411_2_)
-@@ -1194,9 +1214,14 @@
+@@ -1194,9 +1215,14 @@
  
          if (k == 255)
          {
@@ -601,7 +602,7 @@
          }
  
          Biome biome1 = Biome.func_150568_d(k);
-@@ -1212,7 +1237,7 @@
+@@ -1212,7 +1238,7 @@
      {
          if (this.field_76651_r.length != p_76616_1_.length)
          {
@@ -610,7 +611,7 @@
          }
          else
          {
-@@ -1231,7 +1256,7 @@
+@@ -1231,7 +1257,7 @@
          {
              BlockPos blockpos = new BlockPos(this.field_76635_g << 4, 0, this.field_76647_h << 4);
  
@@ -619,7 +620,7 @@
              {
                  if (this.field_76649_t >= 4096)
                  {
-@@ -1241,21 +1266,20 @@
+@@ -1241,21 +1267,20 @@
                  int j = this.field_76649_t % 16;
                  int k = this.field_76649_t / 16 % 16;
                  int l = this.field_76649_t / 256;
@@ -645,7 +646,7 @@
                              {
                                  this.field_76637_e.func_175664_x(blockpos2);
                              }
-@@ -1280,9 +1304,9 @@
+@@ -1280,9 +1305,9 @@
              {
                  label44:
  
@@ -657,7 +658,7 @@
                      {
                          if (!this.func_150811_f(i, j))
                          {
-@@ -1312,7 +1336,7 @@
+@@ -1312,7 +1337,7 @@
  
      private void func_177441_y()
      {
@@ -666,7 +667,7 @@
          {
              this.field_76639_c[i] = true;
          }
-@@ -1326,28 +1350,28 @@
+@@ -1326,28 +1351,28 @@
          {
              if (p_180700_1_ == EnumFacing.EAST)
              {
@@ -699,7 +700,7 @@
                  {
                      this.func_150811_f(l, 0);
                  }
-@@ -1360,11 +1384,9 @@
+@@ -1360,11 +1385,9 @@
          int i = this.func_76625_h();
          boolean flag = false;
          boolean flag1 = false;
@@ -713,7 +714,7 @@
          {
              blockpos$mutableblockpos.func_181079_c(blockpos$mutableblockpos.func_177958_n(), j, blockpos$mutableblockpos.func_177952_p());
              int k = this.func_177437_b(blockpos$mutableblockpos);
-@@ -1384,11 +1406,11 @@
+@@ -1384,11 +1407,11 @@
              }
          }
  
@@ -727,7 +728,7 @@
              {
                  this.field_76637_e.func_175664_x(blockpos$mutableblockpos);
              }
-@@ -1422,11 +1444,12 @@
+@@ -1422,11 +1445,12 @@
      {
          if (this.field_76634_f.length != p_177420_1_.length)
          {
@@ -741,7 +742,7 @@
          }
      }
  
-@@ -1495,5 +1518,56 @@
+@@ -1495,5 +1519,56 @@
          IMMEDIATE,
          QUEUED,
          CHECK;

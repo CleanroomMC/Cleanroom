@@ -1,0 +1,13 @@
+--- before/net/minecraft/world/gen/structure/MapGenStructureIO.java
++++ after/net/minecraft/world/gen/structure/MapGenStructureIO.java
+@@ -120,4 +120,10 @@
+         StructureEndCityPieces.func_186200_a();
+         WoodlandMansionPieces.func_191153_a();
+     }
++
++    /* ======================================== FORGE START =====================================*/
++
++    public static String[] getStartNames(){
++            return field_143040_a.keySet().toArray(new String[0]);
++    }
+ }
