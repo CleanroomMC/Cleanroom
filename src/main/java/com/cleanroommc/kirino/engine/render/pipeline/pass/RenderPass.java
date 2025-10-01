@@ -1,5 +1,6 @@
 package com.cleanroommc.kirino.engine.render.pipeline.pass;
 
+import com.cleanroommc.kirino.engine.render.pipeline.command.DrawQueue;
 import com.cleanroommc.kirino.gl.debug.KHRDebug;
 
 import java.util.ArrayList;
@@ -9,7 +10,9 @@ import java.util.Map;
 
 public final class RenderPass {
     private final Map<String, Subpass> subpassMap = new HashMap<>();
+    private final Map<String, List<ISubpassDecorator>> subpassDecoratorMap = new HashMap<>();
     private final List<String> subpassOrder = new ArrayList<>();
+    private final DrawQueue drawQueue = new DrawQueue();
 
     public final String passName;
 
@@ -21,13 +24,12 @@ public final class RenderPass {
         return subpassMap.containsKey(subpassName);
     }
 
-    public boolean addSubpass(String subpassName, Subpass subpass) {
+    public void addSubpass(String subpassName, Subpass subpass) {
         if (subpassMap.containsKey(subpassName)) {
-            return false;
+            return;
         }
         subpassMap.put(subpassName, subpass);
         subpassOrder.add(subpassName);
-        return true;
     }
 
     public void removeSubpass(String subpassName) {
@@ -35,10 +37,26 @@ public final class RenderPass {
         subpassOrder.remove(subpassName);
     }
 
+    public void attachSubpassDecorator(String subpassName, ISubpassDecorator decorator) {
+        List<ISubpassDecorator> list = subpassDecoratorMap.computeIfAbsent(subpassName, k -> new ArrayList<>());
+        list.add(decorator);
+    }
+
     public void render() {
         for (String subpassName : subpassOrder) {
             KHRDebug.pushGroup(passName + " - " + subpassName);
-            subpassMap.get(subpassName).render();
+
+            drawQueue.clear();
+            Subpass subpass = subpassMap.get(subpassName);
+            subpass.collectCommands(drawQueue);
+            List<ISubpassDecorator> list = subpassDecoratorMap.get(subpassName);
+            if (list != null) {
+                for (ISubpassDecorator decorator : list) {
+                    subpass.decorateCommands(drawQueue, decorator);
+                }
+            }
+            subpass.render(drawQueue);
+
             KHRDebug.popGroup();
         }
     }

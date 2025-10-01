@@ -72,9 +72,9 @@ public class KirinoCore {
         // todo: replace vanilla logic one by one
 
         //<editor-fold desc="vanilla logic">
-        KIRINO_ENGINE.camera.getProjectionBuffer().clear();
-        KIRINO_ENGINE.camera.getViewRotationBuffer().clear();
-        float partialTicks = (float) KIRINO_ENGINE.camera.getPartialTicks();
+        KIRINO_ENGINE.renderingCoordinator.camera.getProjectionBuffer().clear();
+        KIRINO_ENGINE.renderingCoordinator.camera.getViewRotationBuffer().clear();
+        float partialTicks = (float) KIRINO_ENGINE.renderingCoordinator.camera.getPartialTicks();
         try {
             updateLightmap.invoke(MINECRAFT.entityRenderer, partialTicks);
         } catch (Throwable e) {
@@ -161,8 +161,8 @@ public class KirinoCore {
         MINECRAFT.profiler.endSection();
         //</editor-fold>
 
-        KIRINO_ENGINE.updateWorld(MINECRAFT.world);
-        KIRINO_ENGINE.renderWorldSolid();
+        KIRINO_ENGINE.renderingCoordinator.updateWorld(MINECRAFT.world);
+        KIRINO_ENGINE.renderingCoordinator.runChunkCpuPass();
 
         //<editor-fold desc="vanilla logic">
         boolean flag = false;
@@ -260,7 +260,7 @@ public class KirinoCore {
         MINECRAFT.profiler.endSection();
         //</editor-fold>
 
-        KIRINO_ENGINE.renderWorldTransparent();
+        //KIRINO_ENGINE.renderingCoordinator.renderWorldTransparent();
 
         //<editor-fold desc="vanilla logic">
         // ========== entities ==========
@@ -306,7 +306,7 @@ public class KirinoCore {
         MINECRAFT.profiler.endSection();
         //</editor-fold>
 
-        KIRINO_ENGINE.renderGizmos();
+        KIRINO_ENGINE.renderingCoordinator.runGizmosPass();
     }
 
     @SuppressWarnings("unchecked")
@@ -417,6 +417,8 @@ public class KirinoCore {
     @SubscribeEvent
     public static void onShaderRegister(ShaderRegistrationEvent event) {
         event.shaderResourceLocations.add(new ResourceLocation("kirino:shaders/test.vert"));
+        event.shaderResourceLocations.add(new ResourceLocation("kirino:shaders/gizmos_line.vert"));
+        event.shaderResourceLocations.add(new ResourceLocation("kirino:shaders/gizmos_line.frag"));
     }
 
     @SubscribeEvent

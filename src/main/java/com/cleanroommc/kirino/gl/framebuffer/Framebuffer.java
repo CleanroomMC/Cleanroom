@@ -10,7 +10,15 @@ import java.util.List;
 
 public class Framebuffer extends GLDisposable {
     public final int fboID;
-    public final int width, height;
+    private int width, height;
+
+    public int width() {
+        return width;
+    }
+
+    public int height() {
+        return height;
+    }
 
     private final List<IFramebufferAttachment> colorAttachments = new ArrayList<>();
     private IFramebufferAttachment depthAttachment;
@@ -47,6 +55,12 @@ public class Framebuffer extends GLDisposable {
             }
         }
         attachment.attach();
+    }
+
+    public void resize(int width, int height) {
+        this.width = width;
+        this.height = height;
+        // todo
     }
 
     @Override

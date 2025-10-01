@@ -9,6 +9,37 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
 public final class PSOPresets {
+    public static PipelineStateObject createGizmosLinePSO(ShaderProgram shaderProgram) {
+        return new PipelineStateObject(
+                new BlendState(
+                        true,
+                        false,
+                        GL11.GL_SRC_ALPHA,
+                        GL11.GL_ONE_MINUS_SRC_ALPHA,
+                        GL11.GL_ONE,
+                        GL11.GL_ZERO,
+                        GL14.GL_FUNC_ADD,
+                        GL14.GL_FUNC_ADD,
+                        0b1111
+                ),
+                new DepthState(
+                        true,
+                        false,
+                        GL11.GL_LEQUAL
+                ),
+                new RasterState(
+                        false,
+                        GL11.GL_BACK,
+                        GL11.GL_CCW,
+                        false,
+                        1.0f,
+                        1.0f,
+                        GL11.GL_LINE
+                ),
+                shaderProgram
+        );
+    }
+
     public static PipelineStateObject createOpaquePSO(ShaderProgram shaderProgram) {
         return new PipelineStateObject(
                 new BlendState(
