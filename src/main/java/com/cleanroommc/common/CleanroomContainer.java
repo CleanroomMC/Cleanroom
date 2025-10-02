@@ -19,7 +19,9 @@ public class CleanroomContainer extends DummyModContainer {
                 """;
         meta.version = CleanroomVersion.VERSION;
         meta.authorList = Arrays.asList("LexManos", "cpw", "fry", "Rongmario", "kappa_maintainer", "Li");
-        meta.logoFile = "/cleanroom_icon.png";
+        meta.logoFile = "/cleanroom_banner.png";
+        meta.iconFile = "/cleanroom_icon.png";
+        meta.backgroundFile = "/cleanroom_background.png";
     }
 
     @Override
