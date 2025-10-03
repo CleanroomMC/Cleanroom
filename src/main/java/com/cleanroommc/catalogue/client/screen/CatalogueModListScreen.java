@@ -444,7 +444,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
             if (OPTION_CONFIGS_ONLY.booleanValue() && !data.hasConfig()) {
                 return false;
             }
-            if (OPTION_UPDATES_ONLY.booleanValue() && (data.getUpdate() == null || data.getUpdate().updatable())) {
+            if (OPTION_UPDATES_ONLY.booleanValue() && (data.getUpdate() == null || !data.getUpdate().updatable())) {
                 return false;
             }
             if (OPTION_HIDE_LIBRARIES.booleanValue() && data.isLibrary()) {

@@ -56,4 +56,14 @@ public class CleanroomPlatformHelper implements IPlatformHelper {
     public Branding.BannerLimit getBannerLimit() {
         return new Branding.BannerLimit(CatalogueConfig.bannerMaxWidth, CatalogueConfig.bannerMaxHeight);
     }
+
+    @Override
+    public boolean getEnableIconLimit() {
+        return CatalogueConfig.enableIconLimit;
+    }
+
+    @Override
+    public int getIconLimit() {
+        return CatalogueConfig.iconMaxWidthHeight;
+    }
 }

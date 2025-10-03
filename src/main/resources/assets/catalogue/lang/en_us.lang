@@ -48,3 +48,7 @@ catalogue.config.banner_max_width=Banner Max Width
 catalogue.config.banner_max_width.tooltip=The maximum of banner's width. Will not work if Enable Banner Limit is false.
 catalogue.config.banner_max_height=Banner Max Height
 catalogue.config.banner_max_height.tooltip=The maximum of banner's height. Will not work if Enable Banner Limit is false.
+catalogue.config.enable_icon_limit=Enable Icon Limit
+catalogue.config.enable_icon_limit.tooltip=Whether limit the size of mods' icons.
+catalogue.config.icon_max_width_height=Icon Max Width/Height
+catalogue.config.icon_max_width_height.tooltip=The maximum of icon's width and height. Will not work if Enable Icon Limit is set false.

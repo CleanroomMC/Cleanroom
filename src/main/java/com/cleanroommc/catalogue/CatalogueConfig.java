@@ -64,6 +64,21 @@ public class CatalogueConfig {
     @Config.RangeInt(min = 0)
     public static int bannerMaxHeight = 256;
 
+    @Config.RequiresMcRestart
+    @Config.Comment({
+            "Whether limit the size of mods' icons."
+    })
+    @Config.LangKey("catalogue.config.enable_icon_limit")
+    public static boolean enableIconLimit = false;
+
+    @Config.RequiresMcRestart
+    @Config.Comment({
+            "The maximum of icon's width and height. Will not work if Enable Icon Limit is set false."
+    })
+    @Config.LangKey("catalogue.config.icon_max_width_height")
+    @Config.RangeInt(min = 0)
+    public static int iconMaxWidthHeight = 256;
+
     @SubscribeEvent
     public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
         if (event.getModID().equals(CatalogueConstants.MOD_ID)) {

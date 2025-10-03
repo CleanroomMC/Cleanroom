@@ -48,3 +48,7 @@ catalogue.config.banner_max_width=横幅最大宽度
 catalogue.config.banner_max_width.tooltip=横幅的最大宽度。当横幅限制被禁用时不会生效。
 catalogue.config.banner_max_height=横幅最大长度
 catalogue.config.banner_max_height.tooltip=横幅的最大长度。当横幅限制被禁用时不会生效。
+catalogue.config.enable_icon_limit=启用图标限制
+catalogue.config.enable_icon_limit.tooltip=控制是否限制图标尺寸。
+catalogue.config.icon_max_width_height=图标最大长度/宽度
+catalogue.config.icon_max_width_height.tooltip=图标的最大长度/宽度。当图标限制被禁用时不会生效。

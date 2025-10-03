@@ -23,4 +23,8 @@ public interface IPlatformHelper {
     boolean getEnableBannerLimit();
 
     Branding.BannerLimit getBannerLimit();
+
+    boolean getEnableIconLimit();
+
+    int getIconLimit();
 }
