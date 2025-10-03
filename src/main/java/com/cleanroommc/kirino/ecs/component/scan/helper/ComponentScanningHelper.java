@@ -82,7 +82,7 @@ public final class ComponentScanningHelper {
     @SuppressWarnings({"DataFlowIssue", "unchecked"})
     public static List<ComponentRegisterPlan> scanComponentClasses(ComponentScanningEvent event, FieldRegistry fieldRegistry) {
         Map<String, ClassInfo> allClassInfos = ClassScanUtils.scan(
-                (List<String>) ReflectionUtils.getField(ReflectionUtils.findDeclaredField(ComponentScanningEvent.class, "scanPackageNames"), event),
+                (List<String>) ReflectionUtils.getFieldValue(ReflectionUtils.findDeclaredField(ComponentScanningEvent.class, "scanPackageNames"), event),
                 "com.cleanroommc.kirino.ecs.component.scan.CleanComponent");
 
         Map<String, List<FieldInfo>> components = new TreeMap<>();

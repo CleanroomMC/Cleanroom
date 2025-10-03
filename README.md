@@ -11,6 +11,8 @@ If you would like to contribute, check out our [Contributing Page](https://githu
 <details>
 <summary>GL Abstraction</summary>
 
+**Goal**: a semantic abstraction layer that preserves the meaning of GL operations instead of a black-box GL wrapper 
+
 - GL Resource Abstraction 🚧
   - Resource manager 🚧
 - Shader Abstraction 🚧

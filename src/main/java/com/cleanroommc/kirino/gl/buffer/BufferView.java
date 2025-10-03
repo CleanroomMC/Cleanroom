@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public abstract class BufferView {
-    protected boolean validation;
+    private boolean validation = true;
 
     public final void turnOnValidation() {
         validation = true;

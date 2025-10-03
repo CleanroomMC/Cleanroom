@@ -131,7 +131,7 @@ public class CleanECSRuntime {
 
         JobRegistrationEvent jobRegistrationEvent = new JobRegistrationEvent();
         eventBus.post(jobRegistrationEvent);
-        for (Class<? extends IParallelJob> clazz : (List<Class<? extends IParallelJob>>) ReflectionUtils.getField(ReflectionUtils.findDeclaredField(JobRegistrationEvent.class, "parallelJobClasses"), jobRegistrationEvent)) {
+        for (Class<? extends IParallelJob> clazz : (List<Class<? extends IParallelJob>>) ReflectionUtils.getFieldValue(ReflectionUtils.findDeclaredField(JobRegistrationEvent.class, "parallelJobClasses"), jobRegistrationEvent)) {
             jobRegistry.registerParallelJob(clazz);
             logger.info("Parallel job " + clazz.getName() + " registered. Data queries are as follows:" +
                     (jobRegistry.getParallelJobDataQueries(clazz).keySet().isEmpty() && jobRegistry.getParallelJobExternalDataQueries(clazz).keySet().isEmpty() ? " (Empty)" : ""));

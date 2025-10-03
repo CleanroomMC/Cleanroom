@@ -40,7 +40,7 @@ public final class ReflectionUtils {
         return fields;
     }
 
-    public static void setField(Field field, Object owner, Object value) {
+    public static void setFieldValue(Field field, Object owner, Object value) {
         field.setAccessible(true);
         try {
             field.set(owner, value);
@@ -49,7 +49,7 @@ public final class ReflectionUtils {
     }
 
     @Nullable
-    public static Object getField(Field field, Object owner) {
+    public static Object getFieldValue(Field field, Object owner) {
         field.setAccessible(true);
         try {
             return field.get(owner);

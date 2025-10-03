@@ -49,7 +49,7 @@ public class RenderingCoordinator {
         shaderRegistry = new ShaderRegistry();
         ShaderRegistrationEvent shaderRegistrationEvent = new ShaderRegistrationEvent();
         eventBus.post(shaderRegistrationEvent);
-        for (ResourceLocation rl : (List<ResourceLocation>) ReflectionUtils.getField(ReflectionUtils.findDeclaredField(ShaderRegistrationEvent.class, "shaderResourceLocations"), shaderRegistrationEvent)) {
+        for (ResourceLocation rl : (List<ResourceLocation>) ReflectionUtils.getFieldValue(ReflectionUtils.findDeclaredField(ShaderRegistrationEvent.class, "shaderResourceLocations"), shaderRegistrationEvent)) {
             shaderRegistry.register(rl);
             logger.info("Registered shader " + rl + ".");
         }

@@ -115,7 +115,7 @@ public final class StructScanningHelper {
     @SuppressWarnings({"DataFlowIssue", "unchecked"})
     public static List<StructRegisterPlan> scanStructClasses(StructScanningEvent event, FieldRegistry fieldRegistry) {
         Map<String, ClassInfo> allClassInfos = ClassScanUtils.scan(
-                (List<String>) ReflectionUtils.getField(ReflectionUtils.findDeclaredField(StructScanningEvent.class, "scanPackageNames"), event),
+                (List<String>) ReflectionUtils.getFieldValue(ReflectionUtils.findDeclaredField(StructScanningEvent.class, "scanPackageNames"), event),
                 "com.cleanroommc.kirino.ecs.component.scan.CleanStruct");
 
         Map<String, List<FieldInfo>> structs = new TreeMap<>();
