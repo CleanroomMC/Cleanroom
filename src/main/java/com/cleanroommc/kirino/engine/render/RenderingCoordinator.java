@@ -15,11 +15,14 @@ import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;
 import com.cleanroommc.kirino.gl.shader.analysis.DefaultShaderAnalyzer;
 import com.cleanroommc.kirino.gl.shader.schema.GLSLRegistry;
+import com.cleanroommc.kirino.utils.ReflectionUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import org.apache.logging.log4j.Logger;
+
+import java.util.List;
 
 public class RenderingCoordinator {
     private static final Minecraft MINECRAFT = Minecraft.getMinecraft();
@@ -36,6 +39,7 @@ public class RenderingCoordinator {
     private final RenderPass chunkCpuPass;
     private final RenderPass gizmosPass;
 
+    @SuppressWarnings({"DataFlowIssue", "unchecked"})
     public RenderingCoordinator(EventBus eventBus, Logger logger, CleanECSRuntime ecsRuntime) {
         scene = new MinecraftScene(ecsRuntime.entityManager, ecsRuntime.jobScheduler);
         camera = new MinecraftCamera();
@@ -45,7 +49,7 @@ public class RenderingCoordinator {
         shaderRegistry = new ShaderRegistry();
         ShaderRegistrationEvent shaderRegistrationEvent = new ShaderRegistrationEvent();
         eventBus.post(shaderRegistrationEvent);
-        for (ResourceLocation rl : shaderRegistrationEvent.shaderResourceLocations) {
+        for (ResourceLocation rl : (List<ResourceLocation>) ReflectionUtils.getField(ReflectionUtils.findDeclaredField(ShaderRegistrationEvent.class, "shaderResourceLocations"), shaderRegistrationEvent)) {
             shaderRegistry.register(rl);
             logger.info("Registered shader " + rl + ".");
         }

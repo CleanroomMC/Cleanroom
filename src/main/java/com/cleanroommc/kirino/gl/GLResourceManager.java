@@ -16,10 +16,12 @@ public final class GLResourceManager {
     }
 
     public static void disposeAll() {
+        KirinoCore.LOGGER.info("Starts disposing OpenGL resources.");
         while (!disposables.isEmpty()) {
             GLDisposable disposable = disposables.poll();
-            KirinoCore.LOGGER.info("Disposing GL Resource " + disposable.getName());
+            KirinoCore.LOGGER.info("Disposing " + disposable.getName());
             disposable.dispose();
         }
+        KirinoCore.LOGGER.info("Finished.");
     }
 }

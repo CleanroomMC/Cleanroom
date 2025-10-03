@@ -40,6 +40,24 @@ public final class ReflectionUtils {
         return fields;
     }
 
+    public static void setField(Field field, Object owner, Object value) {
+        field.setAccessible(true);
+        try {
+            field.set(owner, value);
+        } catch (Throwable ignored) {
+        }
+    }
+
+    @Nullable
+    public static Object getField(Field field, Object owner) {
+        field.setAccessible(true);
+        try {
+            return field.get(owner);
+        } catch (Throwable ignored) {
+        }
+        return null;
+    }
+
     //<editor-fold desc="find field">
     @Nullable
     public static Field findDeclaredField(Class<?> clazz, String fieldName, String obfFieldName) {

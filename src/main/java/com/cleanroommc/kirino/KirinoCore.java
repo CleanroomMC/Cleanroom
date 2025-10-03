@@ -7,6 +7,7 @@ import com.cleanroommc.kirino.ecs.job.event.JobRegistrationEvent;
 import com.cleanroommc.kirino.engine.KirinoEngine;
 import com.cleanroommc.kirino.engine.render.task.job.ChunkMeshletGenJob;
 import com.cleanroommc.kirino.engine.render.shader.event.ShaderRegistrationEvent;
+import com.cleanroommc.kirino.gl.GLTest;
 import com.cleanroommc.kirino.gl.debug.*;
 import com.cleanroommc.kirino.utils.ReflectionUtils;
 import net.minecraft.block.material.Material;
@@ -45,10 +46,11 @@ public class KirinoCore {
     private static CleanECSRuntime ECS_RUNTIME;
     private static KirinoEngine KIRINO_ENGINE;
 
+    private static boolean unsupported = false;
     private final static boolean ENABLE_RENDER_DELEGATE = true;
 
     public static boolean isEnableRenderDelegate() {
-        return ENABLE_RENDER_DELEGATE;
+        return ENABLE_RENDER_DELEGATE && !unsupported;
     }
 
     private static MethodHandle setupCameraTransform;
@@ -311,9 +313,40 @@ public class KirinoCore {
 
     @SuppressWarnings("unchecked")
     public static void init() {
+        //<editor-fold desc="early escape">
+        String rawGLVersion = GL11.glGetString(GL11.GL_VERSION);
+        int majorGLVersion = -1;
+        int minorGLVersion = -1;
+
+        if (rawGLVersion != null) {
+            String[] parts = rawGLVersion.split("\\s+")[0].split("\\.");
+            if (parts.length >= 2) {
+                try {
+                    majorGLVersion = Integer.parseInt(parts[0]);
+                    minorGLVersion = Integer.parseInt(parts[1]);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        } else {
+            rawGLVersion = "";
+        }
+
+        if (rawGLVersion.isEmpty() || majorGLVersion == -1 || minorGLVersion == -1) {
+            unsupported = true;
+            return;
+        }
+
+        if (!(majorGLVersion == 4 && minorGLVersion == 6)) {
+            unsupported = true;
+            return;
+        }
+        //</editor-fold>
+
         KHRDebug.enable(List.of(
                 new DebugMessageFilter(DebugMsgSource.ANY, DebugMsgType.ERROR, DebugMsgSeverity.ANY),
                 new DebugMessageFilter(DebugMsgSource.ANY, DebugMsgType.MARKER, DebugMsgSeverity.ANY)));
+
+        GLTest.test();
 
         //<editor-fold desc="event listeners">
         // register default event listeners
@@ -406,23 +439,23 @@ public class KirinoCore {
 
     @SubscribeEvent
     public static void onStructScan(StructScanningEvent event) {
-        event.scanPackageNames.add("com.cleanroommc.kirino.engine.render.geometry");
+        event.register("com.cleanroommc.kirino.engine.render.geometry");
     }
 
     @SubscribeEvent
     public static void onComponentScan(ComponentScanningEvent event) {
-        event.scanPackageNames.add("com.cleanroommc.kirino.engine.render.geometry.component");
+        event.register("com.cleanroommc.kirino.engine.render.geometry.component");
     }
 
     @SubscribeEvent
     public static void onShaderRegister(ShaderRegistrationEvent event) {
-        event.shaderResourceLocations.add(new ResourceLocation("kirino:shaders/test.vert"));
-        event.shaderResourceLocations.add(new ResourceLocation("kirino:shaders/gizmos_line.vert"));
-        event.shaderResourceLocations.add(new ResourceLocation("kirino:shaders/gizmos_line.frag"));
+        event.register(new ResourceLocation("kirino:shaders/test.vert"));
+        event.register(new ResourceLocation("kirino:shaders/gizmos_line.vert"));
+        event.register(new ResourceLocation("kirino:shaders/gizmos_line.frag"));
     }
 
     @SubscribeEvent
     public static void onJobRegister(JobRegistrationEvent event) {
-        event.parallelJobClasses.add(ChunkMeshletGenJob.class);
+        event.register(ChunkMeshletGenJob.class);
     }
 }

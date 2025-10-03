@@ -7,5 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JobRegistrationEvent extends Event {
-    public final List<Class<? extends IParallelJob>> parallelJobClasses = new ArrayList<>();
+    private final List<Class<? extends IParallelJob>> parallelJobClasses = new ArrayList<>();
+
+    public void register(Class<? extends IParallelJob> parallelJobClass) {
+        parallelJobClasses.add(parallelJobClass);
+    }
 }

@@ -67,4 +67,9 @@ public class Framebuffer extends GLDisposable {
     public void dispose() {
         GL30.glDeleteFramebuffers(fboID);
     }
+
+    @Override
+    public int disposePriority() {
+        return -100; // later than textures / renderbuffers
+    }
 }

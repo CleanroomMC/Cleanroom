@@ -7,5 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShaderRegistrationEvent extends Event {
-    public final List<ResourceLocation> shaderResourceLocations = new ArrayList<>();
+    private final List<ResourceLocation> shaderResourceLocations = new ArrayList<>();
+
+    public void register(ResourceLocation resourceLocation) {
+        shaderResourceLocations.add(resourceLocation);
+    }
 }

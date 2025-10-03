@@ -6,6 +6,7 @@ import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldDef;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldRegistry;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructDef;
 import com.cleanroommc.kirino.ecs.component.schema.meta.MemberLayout;
+import com.cleanroommc.kirino.utils.ReflectionUtils;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.FieldInfo;
 
@@ -111,8 +112,11 @@ public final class StructScanningHelper {
      * @param fieldRegistry The field registry
      * @return A list of struct register plans
      */
+    @SuppressWarnings({"DataFlowIssue", "unchecked"})
     public static List<StructRegisterPlan> scanStructClasses(StructScanningEvent event, FieldRegistry fieldRegistry) {
-        Map<String, ClassInfo> allClassInfos = ClassScanUtils.scan(event.scanPackageNames, "com.cleanroommc.kirino.ecs.component.scan.CleanStruct");
+        Map<String, ClassInfo> allClassInfos = ClassScanUtils.scan(
+                (List<String>) ReflectionUtils.getField(ReflectionUtils.findDeclaredField(StructScanningEvent.class, "scanPackageNames"), event),
+                "com.cleanroommc.kirino.ecs.component.scan.CleanStruct");
 
         Map<String, List<FieldInfo>> structs = new TreeMap<>();
         for (Map.Entry<String, ClassInfo> entry : allClassInfos.entrySet()) {
