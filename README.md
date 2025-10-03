@@ -1,10 +1,10 @@
-# Kirino Rendering
+# Kirino Engine
 
 ## How It Works?
-Check [Engine Overview Page](https://github.com/CleanroomMC/Cleanroom/blob/proposal/render-system/ENGINE_OVERVIEW.md)!
+If you are curious about the tech/code details, check out [Engine Overview Page](https://github.com/CleanroomMC/Cleanroom/blob/proposal/render-system/ENGINE_OVERVIEW.md)!
 
 ## Contributing
-Check [Contributing Page](https://github.com/CleanroomMC/Cleanroom/blob/proposal/render-system/CONTRIBUTING.md)!
+If you would like to contribute, check out our [Contributing Page](https://github.com/CleanroomMC/Cleanroom/blob/proposal/render-system/CONTRIBUTING.md)!
 
 ## MVP Goals
 

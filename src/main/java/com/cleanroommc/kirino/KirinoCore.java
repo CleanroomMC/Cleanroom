@@ -333,11 +333,13 @@ public class KirinoCore {
 
         if (rawGLVersion.isEmpty() || majorGLVersion == -1 || minorGLVersion == -1) {
             unsupported = true;
+            LOGGER.warn("OpenGL 4.6 not supported. Aborting Kirino initialization.");
             return;
         }
 
         if (!(majorGLVersion == 4 && minorGLVersion == 6)) {
             unsupported = true;
+            LOGGER.warn("OpenGL 4.6 not supported. Aborting Kirino initialization.");
             return;
         }
         //</editor-fold>
