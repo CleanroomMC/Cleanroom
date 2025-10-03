@@ -98,7 +98,7 @@ public abstract class CatalogueListExtended extends GuiListExtended {
 
         int scrollThumbHeight = (this.bottom - this.top) * (this.bottom - this.top) / this.getContentHeight();
         scrollThumbHeight = MathHelper.clamp(scrollThumbHeight, 32, this.bottom - this.top - 8);
-        int scrollThumbTop = (int)this.amountScrolled * (this.bottom - this.top - scrollThumbHeight) / maxScroll + this.top;
+        int scrollThumbTop = (int) this.amountScrolled * (this.bottom - this.top - scrollThumbHeight) / maxScroll + this.top;
         scrollThumbTop = Math.max(scrollThumbTop, this.top);
 
         // Background
@@ -165,10 +165,16 @@ public abstract class CatalogueListExtended extends GuiListExtended {
     protected void drawSelectionBox(int contentLeft, int contentTop, int mouseXIn, int mouseYIn, float partialTicks) {
     }
 
-    public void setAmountScrolled(int amountScrolled) {
-        this.amountScrolled = (float)amountScrolled;
-        this.bindAmountScrolled();
-        this.initialClickY = -2;
+    public void setClampedAmountScrolled(float scroll) {
+        this.amountScrolled = MathHelper.clamp(scroll, 0.0F, this.getMaxScroll());
+    }
+
+    public void setAmountScrolled(float scroll) {
+        this.setClampedAmountScrolled(scroll);
+    }
+
+    public void clampAmountScrolled() {
+        this.setClampedAmountScrolled(this.getAmountScrolled());
     }
 
     public void setWidth(int width) {
@@ -194,11 +200,11 @@ public abstract class CatalogueListExtended extends GuiListExtended {
     }
 
     protected int getListTop() {
-        return this.top + 4 - (int)this.amountScrolled;
+        return this.top + 4 - (int) this.amountScrolled;
     }
 
     protected int getRowTop(int pIndex) {
-        return this.top + 4 - (int)this.amountScrolled + pIndex * this.slotHeight + this.headerPadding;
+        return this.top + 4 - (int) this.amountScrolled + pIndex * this.slotHeight + this.headerPadding;
     }
 
     protected int getRowBottom(int pIndex) {

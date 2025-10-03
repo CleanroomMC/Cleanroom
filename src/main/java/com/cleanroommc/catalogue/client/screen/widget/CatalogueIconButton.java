@@ -3,16 +3,14 @@ package com.cleanroommc.catalogue.client.screen.widget;
 import com.cleanroommc.catalogue.CatalogueConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
 
 /**
  * Author: MrCrayfish
  */
-public class CatalogueIconButton extends GuiButton {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(CatalogueConstants.MOD_ID, "textures/gui/icons.png");
+public class CatalogueIconButton extends CatalogueTextButton {
+    public static final ResourceLocation TEXTURE = new ResourceLocation(CatalogueConstants.MOD_ID, "textures/gui/icons.png");
 
     private final String label;
     private final int u, v;
@@ -52,22 +50,7 @@ public class CatalogueIconButton extends GuiButton {
             GlStateManager.color(brightness, brightness, brightness, 1.0F);
             drawModalRectWithCustomSizedTexture(iconX, iconY, this.u, this.v, 10, 10, 64, 64);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            int textColor = this.getFGColor() | MathHelper.ceil(255.0F) << 24;
-            drawString(fontrenderer, this.label, iconX + 14, iconY + 1, textColor);
-        }
-
-    }
-
-    private int getFGColor() {
-        if (packedFGColour != 0) {
-            return packedFGColour;
-        } else if (!this.enabled) {
-            return 10526880;
-        } else if (this.hovered) {
-            return 16777120;
-        } else {
-            return 14737632;
+            drawString(fontrenderer, this.label, iconX + 14, iconY + 1, this.getFGColor());
         }
     }
-
 }

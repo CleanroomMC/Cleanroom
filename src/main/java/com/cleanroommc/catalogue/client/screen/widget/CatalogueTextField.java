@@ -3,14 +3,19 @@ package com.cleanroommc.catalogue.client.screen.widget;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public class CatalogueTextField extends GuiTextField {
-    // GuiTextField with suggestions.
-    // Also, lit it!
-
     private final FontRenderer fontRenderer;
     private String suggestion = "";
     private boolean isTextTruncated;
+    @Nullable
+    private Consumer<String> responder;
+    @Nullable
+    private BiFunction<String, Integer, String> formatter;
 
     public CatalogueTextField(int id, FontRenderer fontRenderer, int x, int y, int width, int height) {
         super(id, fontRenderer, x, y, width, height);
@@ -48,8 +53,8 @@ public class CatalogueTextField extends GuiTextField {
 
         // Draw text before cursor
         if (!visibleText.isEmpty()) {
-            String text = isCursorVisible ? visibleText.substring(0, cursorPosRelative) : visibleText;
-            currentDrawX = this.fontRenderer.drawStringWithShadow(text, (float) textStartX, (float) textStartY, textColor);
+            String rawTextBeforeCursor = isCursorVisible ? visibleText.substring(0, cursorPosRelative) : visibleText;
+            currentDrawX = this.fontRenderer.drawStringWithShadow(formatText(rawTextBeforeCursor, this.lineScrollOffset), (float) textStartX, (float) textStartY, textColor);
         }
 
         isTextTruncated = this.cursorPosition < this.getText().length() || this.getText().length() >= this.getMaxStringLength();
@@ -64,7 +69,8 @@ public class CatalogueTextField extends GuiTextField {
 
         // Draw text after cursor
         if (!visibleText.isEmpty() && isCursorVisible && cursorPosRelative < visibleText.length()) {
-            currentDrawX = this.fontRenderer.drawStringWithShadow(visibleText.substring(cursorPosRelative), (float) currentDrawX, (float) textStartY, textColor);
+            String rawTextAfterCursor = visibleText.substring(cursorPosRelative);
+            currentDrawX = this.fontRenderer.drawStringWithShadow(formatText(rawTextAfterCursor, this.cursorPosition), (float) currentDrawX, (float) textStartY, textColor);
         }
 
         if (!isTextTruncated && this.suggestion != null) {
@@ -89,6 +95,49 @@ public class CatalogueTextField extends GuiTextField {
         }
     }
 
+    // Formatter
+    public void setFormatter(@Nullable BiFunction<String, Integer, String> pFormatter) {
+        this.formatter = pFormatter;
+    }
+
+    private String formatText(String text, int cursorPos) {
+        return formatter != null ? formatter.apply(text, cursorPos) : text;
+    }
+
+    // Responder
+    public void setResponder(@Nullable Consumer<String> pResponder) {
+        this.responder = pResponder;
+    }
+
+    private void onTextChange(String textIn) {
+        if (this.responder != null) {
+            this.responder.accept(textIn);
+        }
+    }
+
+    @Override
+    public void setText(String textIn) {
+        super.setText(textIn);
+        if (this.validator.apply(textIn)) {
+            this.onTextChange(textIn);
+        }
+    }
+
+    @Override
+    public void setMaxStringLength(int length) {
+        super.setMaxStringLength(length);
+        if (this.getText().length() > length) {
+            this.onTextChange(this.getText());
+        }
+    }
+
+    @Override
+    public void moveCursorBy(int num) {
+        super.moveCursorBy(num);
+        this.onTextChange(this.getText());
+    }
+
+    // Suggestion
     public void setSuggestion(String suggestion) {
         this.suggestion = suggestion;
     }

@@ -15,7 +15,7 @@ public class CatalogueConfig {
             "They will have grey names in the mod list."
     })
     @Config.LangKey("catalogue.config.library_list")
-    public static String[] libraryList = new String[] {
+    public static String[] libraryList = new String[]{
             "minecraft",
             "forge",
             "FML",
@@ -26,6 +26,43 @@ public class CatalogueConfig {
             "fugue",
             "scalar"
     };
+
+    @Config.RequiresMcRestart
+    @Config.Comment({
+            "The list of ignored dependencies' mod ids.",
+            "They will not be displayed when searching for dependencies/dependants."
+    })
+    @Config.LangKey("catalogue.config.ignored_dependencies_list")
+    public static String[] ignoredDependenciesList = new String[]{
+            "minecraft",
+            "forge",
+            "FML",
+            "mcp",
+            "cleanroom"
+    };
+
+    @Config.RequiresMcRestart
+    @Config.Comment({
+            "Whether limit the size of mods' banners."
+    })
+    @Config.LangKey("catalogue.config.enable_banner_limit")
+    public static boolean enableBannerLimit = false;
+
+    @Config.RequiresMcRestart
+    @Config.Comment({
+            "The maximum of banner's width. Will not work if Enable Banner Limit is set false."
+    })
+    @Config.LangKey("catalogue.config.banner_max_width")
+    @Config.RangeInt(min = 0)
+    public static int bannerMaxWidth = 1280;
+
+    @Config.RequiresMcRestart
+    @Config.Comment({
+            "The maximum of banner's height. Will not work if Enable Banner Limit is set false."
+    })
+    @Config.LangKey("catalogue.config.banner_max_height")
+    @Config.RangeInt(min = 0)
+    public static int bannerMaxHeight = 256;
 
     @SubscribeEvent
     public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {

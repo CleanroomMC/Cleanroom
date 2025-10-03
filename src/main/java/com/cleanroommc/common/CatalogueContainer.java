@@ -23,9 +23,7 @@ public class CatalogueContainer extends DummyModContainer {
         meta.credits = "Hatsondogs for creating icons";
         meta.license = "MIT";
         meta.logoFile = "/assets/catalogue/icon.png";
-        meta.logoBlur = false;
         meta.iconFile = "/assets/catalogue/icon.png";
-        meta.iconBlur = false;
         meta.backgroundFile = "/assets/catalogue/background.png";
         ConfigManager.register(CatalogueConfig.class);
         MinecraftForge.EVENT_BUS.register(CatalogueConfig.class);
