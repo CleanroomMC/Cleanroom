@@ -40,4 +40,4 @@ jobs:
         run: ./gradlew --stop
 
       - name: Publish to maven for mod development
-        run: ./gradlew publish -PoutlandUsername=${{ secrets.MAVEN_USERNAME }} -PoutlandPassword="${{ secrets.MAVEN_PASSWORD }}" -Prun_number=${{ github.run_number }}
+        run: ./gradlew publish -PcleanroomUsername=${{ secrets.CLEANROOM_MAVEN_USERNAME }} -PcleanroomPassword="${{ secrets.CLEANROOM_MAVEN_PASSWORD }}" -Prun_number=${{ github.run_number }}
