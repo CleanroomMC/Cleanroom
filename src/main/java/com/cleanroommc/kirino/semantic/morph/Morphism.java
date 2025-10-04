@@ -1,25 +1,18 @@
-package com.cleanroommc.kirino.gl.buffer.semantic.morph;
+package com.cleanroommc.kirino.semantic.morph;
 
-import com.cleanroommc.kirino.gl.buffer.semantic.entity.SpaceItem;
-import com.cleanroommc.kirino.gl.buffer.semantic.entity.SpaceItemType;
-import com.cleanroommc.kirino.gl.buffer.semantic.space.SpaceSet;
-import com.cleanroommc.kirino.utils.ReflectionUtils;
+import com.cleanroommc.kirino.semantic.entity.SpaceItem;
+import com.cleanroommc.kirino.semantic.entity.SpaceItemType;
+import com.cleanroommc.kirino.semantic.space.SpaceSet;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
+/**
+ * It represents a bijective morphism between two {@link SpaceItemType}s by maintaining the domain and codomain sets as well as a cached bidirectional mapping.
+ * That is, this is more like a container that runs your {@link BijectiveMapFunction}.
+ */
 public abstract class Morphism {
-    private final static Function<SpaceSet, List<SpaceItem>> SPACE_SET_ITEMS_GETTER;
-
-    static {
-        Object getter = Objects.requireNonNull(ReflectionUtils.getDeclaredFieldGetter(SpaceSet.class, "items"));
-        SPACE_SET_ITEMS_GETTER = (Function<SpaceSet, List<SpaceItem>>) getter;
-    }
-
     private boolean validation = true;
 
     public final void turnOnValidation() {
@@ -80,8 +73,11 @@ public abstract class Morphism {
             }
         }
 
-        for (SpaceItem item : SPACE_SET_ITEMS_GETTER.apply(domain)) {
-            resultBiMap.put(item, mapFunc.func.apply(item));
+        mapFunc.construct(domain);
+        for (SpaceItem item : domain) {
+            SpaceItem result = mapFunc.apply(item);
+            codomain.add(result);
+            resultBiMap.put(item, result);
         }
         resultCached = true;
         return this;
@@ -100,7 +96,7 @@ public abstract class Morphism {
         return resultBiMap.get(input);
     }
 
-    public final SpaceItem inverse(SpaceItem input) {
+    public final SpaceItem applyInverse(SpaceItem input) {
         if (validation) {
             if (!resultCached) {
                 throw new IllegalStateException("The mapping result isn't cached yet. Call mapAndCache() first.");

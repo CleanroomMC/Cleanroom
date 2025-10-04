@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.gl.buffer.semantic.entity;
+package com.cleanroommc.kirino.semantic.entity;
 
 public enum SpaceItemType {
     OBJECT,
