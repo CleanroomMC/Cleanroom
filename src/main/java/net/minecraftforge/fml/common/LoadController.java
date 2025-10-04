@@ -38,11 +38,11 @@ import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.message.FormattedMessage;
 
-import org.spongepowered.asm.mixin.FabricUtil;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
-import org.spongepowered.asm.mixin.PhaseDelegate;
+import org.spongepowered.asm.mixin.ModUtil;
 import org.spongepowered.asm.mixin.transformer.Config;
+import org.spongepowered.asm.mixin.transformer.Proxy;
 import org.spongepowered.asm.util.Constants;
 import zone.rong.mixinbooter.Context;
 import zone.rong.mixinbooter.ILateMixinLoader;
@@ -121,6 +121,7 @@ public class LoadController {
         eventChannels = eventBus.build();
     }
 
+    @SuppressWarnings("deprecation")
     public void distributeStateMessage(LoaderState state, Object... eventData) {
         if (state.hasEvent()) {
             if (state == LoaderState.CONSTRUCTING) { // This state is where Forge adds mod files to ModClassLoader
@@ -200,7 +201,7 @@ public class LoadController {
                         List<ModContainer> owners = getPackageOwners(pkg);
                         if (!owners.isEmpty()) {
                             final String owner = owners.get(0).getModId(); // better assign ?
-                            config.getConfig().decorate(FabricUtil.KEY_MOD_ID, owner);
+                            config.getConfig().decorate(ModUtil.KEY_MOD_ID, owner);
                         }
                     }
 
@@ -211,9 +212,8 @@ public class LoadController {
                     FMLLog.log.error("Error loading Mods", t);
                 }
 
-            }
-            if (MixinEnvironment.getCurrentEnvironment().getPhase() == MixinEnvironment.Phase.DEFAULT) {
-                PhaseDelegate.goToNextPhase();
+                Proxy.refreshMixins();
+
             }
             masterChannel.post(state.getEvent(eventData));
         }

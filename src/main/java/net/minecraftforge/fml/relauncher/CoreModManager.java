@@ -39,8 +39,6 @@ import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
 import net.minecraftforge.fml.relauncher.libraries.Repository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
-import org.spongepowered.asm.service.mojang.MixinServiceLaunchWrapper;
-import org.spongepowered.asm.service.outlands.MixinServiceFoundation;
 import org.spongepowered.asm.util.Constants;
 
 import java.io.*;
@@ -58,6 +56,7 @@ public class CoreModManager {
     private static final Attributes.Name FORCELOADASMOD = new Attributes.Name("ForceLoadAsMod");
     private static final Attributes.Name MODTYPE = new Attributes.Name("ModType");
     private static final Set<String> loadedPlugins = new HashSet<>();
+    public static final String MIXIN_TWEAKER_CLASS = "org.spongepowered.asm.launch.MixinTweaker";
     private static String[] rootPlugins = { "net.minecraftforge.fml.relauncher.FMLCorePlugin", "net.minecraftforge.classloading.FMLForgePlugin", "net.minecraftforge.fml.relauncher.MixinBooterPlugin" };
     private static List<String> ignoredModFiles = Lists.newArrayList();
     private static Map<String, List<String>> transformers = Maps.newHashMap();
@@ -409,7 +408,7 @@ public class CoreModManager {
                         for (String singleMixinConfig : configs.split(","))
                             mixin_configs.add(singleMixinConfig.trim());
                     ignoredModFiles.add(coreMod.getName());
-                    if (!MixinServiceFoundation.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker)) {
+                    if (!MIXIN_TWEAKER_CLASS.equals(cascadedTweaker)) {
                         continue;
                     }
                 }
@@ -437,7 +436,7 @@ public class CoreModManager {
                 {
                     // Not a coremod
                     FMLLog.log.debug("Not found coremod data in {}", coreMod.getName());
-                    if (MixinServiceFoundation.MIXIN_TWEAKER_CLASS.equals(cascadedTweaker) && (mfAttributes.containsKey(COREMODCONTAINSFMLMOD) || mfAttributes.containsKey(FORCELOADASMOD))) {
+                    if (MIXIN_TWEAKER_CLASS.equals(cascadedTweaker) && (mfAttributes.containsKey(COREMODCONTAINSFMLMOD) || mfAttributes.containsKey(FORCELOADASMOD))) {
                         FMLLog.log.info("Found FMLCorePluginContainsFMLMod marker in mixin container {}.",
                                 coreMod.getName());
                         candidateModFiles.add(coreMod.getName());

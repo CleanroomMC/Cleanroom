@@ -45,8 +45,6 @@ import net.minecraftforge.fml.relauncher.IFMLCallHook;
 import net.minecraftforge.fml.relauncher.Side;
 
 import com.google.common.io.ByteStreams;
-import org.spongepowered.asm.bridge.RemapperAdapterFML;
-import org.spongepowered.asm.launch.platform.MixinPlatformAgentFMLLegacy;
 
 public class FMLSanityChecker implements IFMLCallHook
 {

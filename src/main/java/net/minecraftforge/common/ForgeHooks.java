@@ -167,6 +167,7 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.spongepowered.asm.mixin.ModUtil;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import org.spongepowered.asm.mixin.transformer.ClassInfo;
 
@@ -1533,21 +1534,25 @@ public class ForgeHooks
                     classes.add(stackTraceElement.getClassName());
                 }
                 for (String className : classes) {
-                    Map<String, String> map = ClassInfo.getMixinsOfClass(className);
-                    if (!map.isEmpty()) {
-                        if (mixinMetadataBuilder == null) {
-                            mixinMetadataBuilder = new StringBuilder("\n(MixinBooter) Mixins in Stacktrace:");
-                        }
-                        mixinMetadataBuilder.append("\n\t");
-                        mixinMetadataBuilder.append(className);
-                        mixinMetadataBuilder.append(":");
-                        for (var clazz : map.keySet()) {
-                            mixinMetadataBuilder.append("\n\t\t");
-                            mixinMetadataBuilder.append(clazz);
-                            mixinMetadataBuilder.append(" (");
-                            mixinMetadataBuilder.append(map.get(clazz));
-                            mixinMetadataBuilder.append(")");
+                    ClassInfo classInfo = ClassInfo.forName(className);
+                    
+                    if (classInfo != null) {
+                        Set<IMixinInfo> mixinInfos = classInfo.getMixins();
+                        if (!mixinInfos.isEmpty()) {
+                            if (mixinMetadataBuilder == null) {
+                                mixinMetadataBuilder = new StringBuilder("\n(MixinBooter) Mixins in Stacktrace:");
+                            }
+                            mixinMetadataBuilder.append("\n\t");
+                            mixinMetadataBuilder.append(className);
+                            mixinMetadataBuilder.append(":");
+                            for (var mixinInfo : mixinInfos) {
+                                mixinMetadataBuilder.append("\n\t\t");
+                                mixinMetadataBuilder.append(mixinInfo.getClassName());
+                                mixinMetadataBuilder.append(" (");
+                                mixinMetadataBuilder.append(ModUtil.getModId(mixinInfo.getConfig()));
+                                mixinMetadataBuilder.append(")");
 
+                            }
                         }
                     }
                 }

@@ -48,7 +48,7 @@ public final class MixinBooterPlugin implements IFMLLoadingPlugin {
             Context context = new Context(null, Collections.emptySet());
             FMLLog.log.info("Loading config hijacker {}.", hijacker.getClass().getName());
             for (String hijacked : hijacker.getHijackedMixinConfigs(context)) {
-                Config.addBlackList(hijacked);
+                Config.blacklist(hijacked);
                 FMLLog.log.info("{} will hijack the mixin config {}", hijacker.getClass().getName(), hijacked);
             }
         }
