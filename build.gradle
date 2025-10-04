@@ -436,7 +436,7 @@ project(':cleanroom') {
         // Added back deprecated features for mods to load up properly
         installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
 
-        installer "top.outlands:foundation:0.16.2"
+        installer "top.outlands:foundation:0.16.3"
         installer 'net.lenni0451:Reflect:1.5.0'
         installer 'org.javassist:javassist:3.30.2-GA'
         installer "zone.rong:imaginebreaker:2.1"
@@ -505,7 +505,7 @@ project(':cleanroom') {
 
 
         // Mixin
-        installer 'net.fabricmc:sponge-mixin:0.21.7+mixin.0.8.7-local:light'
+        installer 'com.cleanroommc:cleanmix:0.1.0'
         installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.5.0')
 
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.13.4'
