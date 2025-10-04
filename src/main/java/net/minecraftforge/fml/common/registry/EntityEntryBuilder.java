@@ -28,6 +28,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.common.util.ResourceLocationHelper;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
@@ -151,7 +152,7 @@ public final class EntityEntryBuilder<E extends Entity>
     public final EntityEntryBuilder<E> id(@Nonnull final String id, final int network)
     {
         checkNotNull(id, "id");
-        return this.id(new ResourceLocation(id.indexOf(':') == -1 ? this.mod.getModId() + ':' + id : id), network);
+        return this.id(ResourceLocationHelper.create(this.mod.getModId(), id), network);
     }
 
     /**
