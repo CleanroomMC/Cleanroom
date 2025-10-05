@@ -34,4 +34,13 @@ public class DepthStencilAttachment implements IFramebufferAttachment{
     public AttachmentKind kind() {
         return AttachmentKind.DEPTH;
     }
+
+    @Override
+    public void resize(int width, int height) {
+        if (isTexture) {
+            texture2D.resizeAndAllocNull(width, height);
+        } else {
+            renderBuffer.resize(width, height);
+        }
+    }
 }

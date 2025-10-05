@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.semantic.entity;
+package com.cleanroommc.kirino.schemata.semantic.entity;
 
 public enum SpaceItemType {
     OBJECT,

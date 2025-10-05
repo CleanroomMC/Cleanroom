@@ -20,4 +20,9 @@ public class DepthAttachment implements IFramebufferAttachment{
     public AttachmentKind kind() {
         return AttachmentKind.DEPTH;
     }
+
+    @Override
+    public void resize(int width, int height) {
+        texture2D.resizeAndAllocNull(width, height);
+    }
 }

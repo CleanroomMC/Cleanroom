@@ -1,14 +1,14 @@
-package com.cleanroommc.kirino.semantic.morph;
+package com.cleanroommc.kirino.schemata.semantic.morph;
 
-import com.cleanroommc.kirino.semantic.entity.SpaceItem;
-import com.cleanroommc.kirino.semantic.entity.SpaceItemType;
-import com.cleanroommc.kirino.semantic.space.SpaceSet;
+import com.cleanroommc.kirino.schemata.semantic.entity.SpaceItem;
+import com.cleanroommc.kirino.schemata.semantic.entity.SpaceItemType;
+import com.cleanroommc.kirino.schemata.semantic.space.SpaceSet;
 
 import java.util.function.Function;
 
 /**
  * It represents a bijective (one-to-one and onto) mapping between two {@link SpaceItemType}s.
- * You don't need to worry about the "onto" propertu since we construct our codomain afterward (see {@link #construct(SpaceSet)}).
+ * You don't need to worry about the "onto" property since we construct our codomain afterward (see {@link #construct(SpaceSet)}).
  * However, you must guarantee that the function is one-to-one.
  */
 public abstract class BijectiveMapFunction {
@@ -50,7 +50,7 @@ public abstract class BijectiveMapFunction {
 
     /**
      * Performs any domain-dependent initialization and returns the corresponding codomain {@link SpaceSet}.
-     * That is, you are forced to create stateless functions.
+     * That is, you are not forced to create stateless/closed-form functions.
      * This method is guaranteed to be called before {@link #apply(SpaceItem)}.
      *
      * @param domain The domain

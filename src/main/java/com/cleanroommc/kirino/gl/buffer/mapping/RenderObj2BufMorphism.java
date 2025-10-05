@@ -1,10 +1,10 @@
 package com.cleanroommc.kirino.gl.buffer.mapping;
 
-import com.cleanroommc.kirino.semantic.entity.SpaceItem;
-import com.cleanroommc.kirino.semantic.entity.SpaceItemType;
-import com.cleanroommc.kirino.semantic.morph.BijectiveMapFunction;
-import com.cleanroommc.kirino.semantic.morph.Morphism;
-import com.cleanroommc.kirino.semantic.space.SpaceSet;
+import com.cleanroommc.kirino.schemata.semantic.entity.SpaceItem;
+import com.cleanroommc.kirino.schemata.semantic.entity.SpaceItemType;
+import com.cleanroommc.kirino.schemata.semantic.morph.BijectiveMapFunction;
+import com.cleanroommc.kirino.schemata.semantic.morph.Morphism;
+import com.cleanroommc.kirino.schemata.semantic.space.SpaceSet;
 
 import java.util.function.Consumer;
 

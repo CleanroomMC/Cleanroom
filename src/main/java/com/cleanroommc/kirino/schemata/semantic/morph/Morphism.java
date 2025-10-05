@@ -1,8 +1,8 @@
-package com.cleanroommc.kirino.semantic.morph;
+package com.cleanroommc.kirino.schemata.semantic.morph;
 
-import com.cleanroommc.kirino.semantic.entity.SpaceItem;
-import com.cleanroommc.kirino.semantic.entity.SpaceItemType;
-import com.cleanroommc.kirino.semantic.space.SpaceSet;
+import com.cleanroommc.kirino.schemata.semantic.entity.SpaceItem;
+import com.cleanroommc.kirino.schemata.semantic.entity.SpaceItemType;
+import com.cleanroommc.kirino.schemata.semantic.space.SpaceSet;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 

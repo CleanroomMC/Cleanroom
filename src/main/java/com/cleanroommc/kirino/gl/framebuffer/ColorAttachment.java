@@ -22,4 +22,9 @@ public class ColorAttachment implements IFramebufferAttachment{
     public AttachmentKind kind() {
         return AttachmentKind.COLOR;
     }
+
+    @Override
+    public void resize(int width, int height) {
+        texture2D.resizeAndAllocNull(width, height);
+    }
 }

@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.semantic.entity;
+package com.cleanroommc.kirino.schemata.semantic.entity;
 
 import java.util.Objects;
 

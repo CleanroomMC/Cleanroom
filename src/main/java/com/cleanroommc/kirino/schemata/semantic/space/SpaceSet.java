@@ -1,7 +1,7 @@
-package com.cleanroommc.kirino.semantic.space;
+package com.cleanroommc.kirino.schemata.semantic.space;
 
-import com.cleanroommc.kirino.semantic.entity.SpaceItem;
-import com.cleanroommc.kirino.semantic.entity.SpaceItemType;
+import com.cleanroommc.kirino.schemata.semantic.entity.SpaceItem;
+import com.cleanroommc.kirino.schemata.semantic.entity.SpaceItemType;
 import org.jspecify.annotations.NonNull;
 
 import java.util.*;
