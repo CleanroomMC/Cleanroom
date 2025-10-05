@@ -114,6 +114,7 @@ with (open(installer_patches_path, 'r') as __in,
                     kd['downloads']['artifact']['url'] = ('https://repo.cleanroommc.com/releases/com/cleanroommc'
                                                           '/cleanroom/{version}/cleanroom-{'
                                                           'version}-universal.jar').format(version=VERSION)
+                    cleanroom_patches_json['libraries'].append(kd)
                 else:
                     dep = metautil.DependencyBuilder()
                     dep.set_name(f"{kd['name']}-universal")
