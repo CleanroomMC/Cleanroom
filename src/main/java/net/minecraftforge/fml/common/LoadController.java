@@ -170,9 +170,10 @@ public class LoadController
 
                     FMLContextQuery.init(); // Initialize FMLContextQuery and add it to the global list
 
+
                     // Load late mixins
                     FMLLog.log.info("Instantiating all ILateMixinLoader implemented classes...");
-                    for (ASMDataTable.ASMData asmData : asmDataTable.getAll(ILateMixinLoader.class.getName().replace('.', '/'))) {
+                    for (ASMDataTable.ASMData asmData : asmDataTable.getAll(ILateMixinLoader.class)) {
                         try {
                             modClassLoader.addFile(asmData.getCandidate().getModContainer()); // Add to path before `newInstance`
                             Class<?> clazz = Class.forName(asmData.getClassName().replace('/', '.'));

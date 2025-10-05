@@ -34,6 +34,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 import net.minecraft.launchwrapper.Launch;
+import net.minecraftforge.common.ForgeEarlyConfig;
 import net.minecraftforge.common.config.Config.Comment;
 import net.minecraftforge.common.config.Config.LangKey;
 import net.minecraftforge.common.config.Config.Name;
@@ -49,11 +50,12 @@ import org.apache.commons.lang3.StringUtils;
 
 public class ConfigManager
 {
-    private static Map<String, Multimap<Config.Type, ASMData>> asm_data = Maps.newHashMap();
+    private static final Map<String, Multimap<Config.Type, ASMData>> asm_data = Maps.newHashMap();
     static Map<Class<?>, ITypeAdapter> ADAPTERS = Maps.newHashMap();
     static Map<Class<?>, Class<?>> ARRAY_REMAP = Maps.newHashMap();
-    private static Map<String, Configuration> CONFIGS = Maps.newHashMap();
-    private static Map<String, Set<Class<?>>> MOD_CONFIG_CLASSES = Maps.newHashMap();
+    private static final Map<String, Configuration> CONFIGS = Maps.newHashMap();
+    private static final Map<String, Set<Class<?>>> MOD_CONFIG_CLASSES = Maps.newHashMap();
+    private static final Map<Class<?>, Configuration> CLASS_TO_CONFIG = Maps.newHashMap();
 
     static
     {
@@ -106,7 +108,7 @@ public class ConfigManager
     public static void loadData(ASMDataTable data)
     {
         FMLLog.log.debug("Loading @Config anotation data");
-        for (ASMData target : data.getAll(Config.class.getName()))
+        for (ASMData target : data.getAll(Config.class))
         {
             String modid = (String)target.getAnnotationInfo().get("modid");
             Multimap<Config.Type, ASMData> map = asm_data.computeIfAbsent(modid, k -> ArrayListMultimap.create());
@@ -363,10 +365,7 @@ public class ConfigManager
     {
         if (!propValue.equals(fieldValue))
         {
-            if (property.hasChanged())
-                return false;
-            else
-                return true;
+            return !property.hasChanged();
         }
         return false;
     }
@@ -398,8 +397,22 @@ public class ConfigManager
             CONFIGS.put(configFile.getAbsolutePath(), cfg);
         }
         sync(cfg, configClass, modId, config.category(), true, null);
-
         cfg.save();
+        
+        CLASS_TO_CONFIG.put(configClass, cfg);
     }
 
+    /**
+     * Write changed config value in the parameter configClass to the config file.
+     * Must be called after {@link ConfigManager#register(Class)}
+     * @param configClass configuration class that is annotated with {@link Config}
+     */
+    public static void sync(Class<?> configClass) {
+        Config config = configClass.getAnnotation(Config.class);
+        String modId = config.modid();
+        Configuration cfg = CLASS_TO_CONFIG.get(configClass);
+        sync(cfg, configClass, modId, config.category(), false, null);
+        cfg.save();
+    }
+    
 }

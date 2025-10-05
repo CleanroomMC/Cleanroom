@@ -71,11 +71,11 @@ import net.minecraftforge.registries.ForgeRegistry;
 // TODO build test suites to validate the behaviour of this stuff and make it less annoyingly magical
 public class NetworkDispatcher extends SimpleChannelInboundHandler<Packet<?>> implements ChannelOutboundHandler {
     private static final boolean DEBUG_HANDSHAKE = Boolean.parseBoolean(System.getProperty("fml.debugNetworkHandshake", "false"));
-    private static enum ConnectionState {
+    private enum ConnectionState {
         OPENING, AWAITING_HANDSHAKE, HANDSHAKING, HANDSHAKECOMPLETE, FINALIZING, CONNECTED
     }
 
-    public static enum ConnectionType {
+    public enum ConnectionType {
         MODDED, BUKKIT, VANILLA
     }
 

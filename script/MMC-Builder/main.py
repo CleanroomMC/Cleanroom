@@ -59,6 +59,9 @@ else:
 # Prepare installer and template
 print('---> Prepare installer and template')
 
+# print('-----> Download Icons from Github')
+# Util.download_file("https://raw.githubusercontent.com/CleanroomMC/Resources/refs/heads/master/Art/cleanroom-logo.png", "template/cleanroom.png")
+
 Util.extractArchive(installer_pattern[0], installer_pattern[1], os.path.join(cache_path, 'installer'))
 shutil.copytree('template', output_path, dirs_exist_ok=True, ignore=shutil.ignore_patterns('*net.minecraft.json'))
 
