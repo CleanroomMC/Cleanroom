@@ -13,6 +13,9 @@ print('---> Initialize')
 PATH_TO_EXIST_INSTALLER = os.getenv('PATH_TO_EXIST_INSTALLER')
 BRANCH = os.getenv('CLEANROOM_BRANCH')
 VERSION = os.getenv('CLEANROOM_VERSION')
+IS_RELEASE = True 
+if '+' in VERSION:
+    IS_RELEASE = False
 print('We are running on ' + (("local " + PATH_TO_EXIST_INSTALLER) if BRANCH is None else BRANCH))
 
 print('---> Get current working directory')
@@ -70,9 +73,10 @@ print('Cleanroom version: ' + VERSION)
 # Create libraries folder and copy required
 print('---> Create libraries folder and copy required files')
 os.mkdir(os.path.join(output_path, 'libraries'))
-shutil.copyfile(
-    glob.glob(os.path.join(cache_path, 'installer', '**', 'cleanroom*.jar'), recursive=True)[0],
-    os.path.join(output_path, 'libraries', 'cleanroom-{version}-universal.jar'.format(version=VERSION)))
+if not IS_RELEASE:
+    shutil.copyfile(
+        glob.glob(os.path.join(cache_path, 'installer', '**', 'cleanroom*.jar'), recursive=True)[0],
+        os.path.join(output_path, 'libraries', 'cleanroom-{version}-universal.jar'.format(version=VERSION)))
 
 # Create patch file for Cleanroom
 print('---> Create patch file for Cleanroom')
@@ -95,7 +99,7 @@ with (open(installer_patches_path, 'r') as __in,
     lwjgl_patches_json = json.load(lwjgl_patches_out)
 
     for kd in data:
-        if 'org.lwjgl3:' in kd['name'] or 'org.lwjgl:' in kd['name']:
+        if 'org.lwjgl:' in kd['name']:
             if not lwjgl_version:
                 lwjgl_version = str(kd['name']).split(':')[2]
             # Temp fix for prism launcher (allow ARM64 arch)
@@ -106,10 +110,15 @@ with (open(installer_patches_path, 'r') as __in,
             lwjgl_patches_json['libraries'].append(kd)
         else:
             if 'com.cleanroommc:cleanroom' in kd['name']:
-                dep = metautil.DependencyBuilder()
-                dep.set_name(f"{kd['name']}-universal")
-                dep.set_mmc_hint('local')
-                cleanroom_patches_json['libraries'].append(dep.build())
+                if IS_RELEASE:
+                    kd['downloads']['artifact']['url'] = ('https://repo.cleanroommc.com/releases/com/cleanroommc'
+                                                          '/cleanroom/{version}/cleanroom-{'
+                                                          'version}-universal.jar').format(version=VERSION)
+                else:
+                    dep = metautil.DependencyBuilder()
+                    dep.set_name(f"{kd['name']}-universal")
+                    dep.set_mmc_hint('local')
+                    cleanroom_patches_json['libraries'].append(dep.build())
             else:
                 cleanroom_patches_json['libraries'].append(kd)
 
