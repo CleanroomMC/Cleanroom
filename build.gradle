@@ -1014,10 +1014,6 @@ project(':cleanroom') {
         sourceSets.test.java.srcDirs.each { extractMappedNew.addTarget it }
     }
 
-    def mmcpackFile = layout.buildDirectory.file("Cleanroom-MMC-instance-${version}-alpha.zip")
-    def mmcpackArtfact = artifacts.add('conf', mmcpackFile.get().asFile) {
-        type = 'zip'
-    }
 
     publishing {
         repositories {
@@ -1040,7 +1036,6 @@ project(':cleanroom') {
                 artifact universalJar
                 artifact sourcesJar
                 artifact installerJar
-                artifact mmcpackArtifact
             }
         }
     }

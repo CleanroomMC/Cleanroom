@@ -36,10 +36,13 @@ jobs:
         run: ./gradlew --stop
 
       - name: Build Jars
-        run: ./gradlew build -Prun_number=${{ github.run_number }} -Prelease=true
+        run: ./gradlew installerJar -Prun_number=${{ github.run_number }} -Prelease=true
 
       - name: Stop Gradle daemon again
         run: ./gradlew --stop
+
+      - name: Publish to maven for mod development
+        run: ./gradlew publish -PcleanroomUsername=${{ secrets.CLEANROOM_MAVEN_USERNAME }} -PcleanroomPassword="${{ secrets.CLEANROOM_MAVEN_PASSWORD }}" -Prun_number=${{ github.run_number }} -Prelease=true
 
       - name: setup python
         uses: actions/setup-python@v5.6.0
@@ -56,9 +59,6 @@ jobs:
 
       - name: Copy MMC Pack
         run: cp script/MMC-Builder/build/CleanroomMMC.zip ./projects/cleanroom/build/libs/Cleanroom-MMC-instance-${{ env.CLEANROOM_VERSION }}.zip
-        
-      - name: Publish to maven for mod development
-        run: ./gradlew publish -PcleanroomUsername=${{ secrets.CLEANROOM_MAVEN_USERNAME }} -PcleanroomPassword="${{ secrets.CLEANROOM_MAVEN_PASSWORD }}" -Prun_number=${{ github.run_number }} -Prelease=true
 
       - name: Remove userdev jars
         run: |
