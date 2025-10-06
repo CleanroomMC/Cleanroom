@@ -1036,6 +1036,7 @@ project(':cleanroom') {
                 artifact universalJar
                 artifact sourcesJar
                 artifact installerJar
+                artifact new File(rootProject.rootDir, "./projects/cleanroom/build/libs/Cleanroom-MMC-instance-${version}.zip")
             }
         }
     }
