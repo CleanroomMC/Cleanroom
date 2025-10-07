@@ -2,7 +2,7 @@ package com.cleanroommc.kirino.ecs.job;
 
 import com.cleanroommc.kirino.ecs.component.ComponentRegistry;
 import com.cleanroommc.kirino.ecs.component.ICleanComponent;
-import com.cleanroommc.kirino.ecs.storage.INativeArray;
+import com.cleanroommc.kirino.ecs.storage.IPrimitiveArray;
 import com.cleanroommc.kirino.utils.ReflectionUtils;
 import org.jspecify.annotations.Nullable;
 
@@ -63,7 +63,7 @@ public class JobRegistry {
         for (Field field : clazz.getDeclaredFields()) {
             // scan JobDataQuery
             if (field.isAnnotationPresent(JobDataQuery.class) && !Modifier.isStatic(field.getModifiers())) {
-                if (!INativeArray.class.isAssignableFrom(field.getType())) {
+                if (!IPrimitiveArray.class.isAssignableFrom(field.getType())) {
                     throw new RuntimeException(exceptionText, new IllegalStateException("INativeArray must be assignable from the JobDataQuery-annotated field " + field.getName() + "."));
                 }
 

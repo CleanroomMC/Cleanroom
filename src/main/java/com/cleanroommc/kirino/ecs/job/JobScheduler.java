@@ -5,7 +5,7 @@ import com.cleanroommc.kirino.ecs.entity.EntityManager;
 import com.cleanroommc.kirino.ecs.entity.EntityQuery;
 import com.cleanroommc.kirino.ecs.storage.ArchetypeDataPool;
 import com.cleanroommc.kirino.ecs.storage.ArrayRange;
-import com.cleanroommc.kirino.ecs.storage.INativeArray;
+import com.cleanroommc.kirino.ecs.storage.IPrimitiveArray;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class JobScheduler {
 
             // data injection
             for (Map.Entry<JobDataQuery, IJobDataInjector> entry : parallelJobDataQueries.entrySet()) {
-                INativeArray<?> array = archetype.getArray(entry.getKey().componentClass().asSubclass(ICleanComponent.class), entry.getKey().fieldAccessChain());
+                IPrimitiveArray array = archetype.getArray(entry.getKey().componentClass().asSubclass(ICleanComponent.class), entry.getKey().fieldAccessChain());
                 entry.getValue().inject(job, array);
             }
             if (externalData != null) {

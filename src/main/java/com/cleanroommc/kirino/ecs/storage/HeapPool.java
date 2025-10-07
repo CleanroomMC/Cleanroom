@@ -230,7 +230,7 @@ public final class HeapPool extends ArchetypeDataPool{
     }
 
     @Override
-    public INativeArray<?> getArray(Class<? extends ICleanComponent> component, String... fieldAccessChain) {
+    public IPrimitiveArray getArray(Class<? extends ICleanComponent> component, String... fieldAccessChain) {
         int ordinal = componentRegistry.getFieldOrdinal(componentRegistry.getComponentName(component), fieldAccessChain);
         ComDataLocation location = componentDataLocations.get(component);
 
@@ -241,17 +241,17 @@ public final class HeapPool extends ArchetypeDataPool{
         for (FlattenedScalarType flattenedScalarType : location.order) {
             if (flattenedScalarType == FlattenedScalarType.INT) {
                 if (index == ordinal) {
-                    return new HeapNativeArray<>(Integer.class, intPool.get(intArrIndex));
+                    return new HeapPrimitiveArray(intPool.get(intArrIndex));
                 }
                 intArrIndex++;
             } else if (flattenedScalarType == FlattenedScalarType.FLOAT) {
                 if (index == ordinal) {
-                    return new HeapNativeArray<>(Float.class, floatPool.get(floatArrIndex));
+                    return new HeapPrimitiveArray(floatPool.get(floatArrIndex));
                 }
                 floatArrIndex++;
             } else if (flattenedScalarType == FlattenedScalarType.BOOL) {
                 if (index == ordinal) {
-                    return new HeapNativeArray<>(Boolean.class, booleanPool.get(booleanArrIndex));
+                    return new HeapPrimitiveArray(booleanPool.get(booleanArrIndex));
                 }
                 booleanArrIndex++;
             }

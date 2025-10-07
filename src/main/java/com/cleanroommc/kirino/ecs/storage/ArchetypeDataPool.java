@@ -114,7 +114,7 @@ public abstract class ArchetypeDataPool {
      * @param fieldAccessChain A list of field names to identify a field
      * @return An array of field values
      */
-    public abstract INativeArray<?> getArray(Class<? extends ICleanComponent> component, String... fieldAccessChain);
+    public abstract IPrimitiveArray getArray(Class<? extends ICleanComponent> component, String... fieldAccessChain);
 
     public abstract ArrayRange getArrayRange();
 
