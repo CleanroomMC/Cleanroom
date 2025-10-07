@@ -11,6 +11,7 @@ import com.cleanroommc.kirino.engine.render.pipeline.pass.subpasses.WhateverPass
 import com.cleanroommc.kirino.engine.render.scene.MinecraftScene;
 import com.cleanroommc.kirino.engine.render.shader.ShaderRegistry;
 import com.cleanroommc.kirino.engine.render.shader.event.ShaderRegistrationEvent;
+import com.cleanroommc.kirino.engine.render.utils.ResolutionContainer;
 import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;
 import com.cleanroommc.kirino.gl.shader.analysis.DefaultShaderAnalyzer;
@@ -22,10 +23,14 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RenderingCoordinator {
     private static final Minecraft MINECRAFT = Minecraft.getMinecraft();
+
+    private final ResolutionContainer resolution;
+    private final List<Framebuffer> framebuffers;
 
     public final MinecraftScene scene;
     public final MinecraftCamera camera;
@@ -41,6 +46,13 @@ public class RenderingCoordinator {
 
     @SuppressWarnings({"DataFlowIssue", "unchecked"})
     public RenderingCoordinator(EventBus eventBus, Logger logger, CleanECSRuntime ecsRuntime) {
+        framebuffers = new ArrayList<>();
+        resolution = new ResolutionContainer((width, height) -> {
+            for (Framebuffer framebuffer : framebuffers) {
+                framebuffer.resize(width, height);
+            }
+        });
+
         scene = new MinecraftScene(ecsRuntime.entityManager, ecsRuntime.jobScheduler);
         camera = new MinecraftCamera();
 
@@ -75,6 +87,14 @@ public class RenderingCoordinator {
                 PSOPresets.createGizmosLinePSO(shaderProgram),
                 new Framebuffer(MINECRAFT.displayWidth, MINECRAFT.displayHeight),
                 gizmosManager));
+    }
+
+    public void preUpdate() {
+        resolution.update();
+    }
+
+    public void postUpdate() {
+
     }
 
     public void updateWorld(WorldClient minecraftWorld) {

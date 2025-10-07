@@ -26,7 +26,7 @@ public final class MinecraftResourceUtils {
             while ((line = reader.readLine()) != null) {
                 builder.append(line);
                 if (keepNewLineSymbol) {
-                    builder.append("\n");
+                    builder.append(System.lineSeparator());
                 }
             }
             reader.close();

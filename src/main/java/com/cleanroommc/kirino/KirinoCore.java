@@ -71,6 +71,8 @@ public class KirinoCore {
      * Specifically, <code>anaglyph</code> logic is removed and all other functions remain the same.
      */
     public static void updateAndRender(long finishTimeNano) {
+        KIRINO_ENGINE.renderingCoordinator.preUpdate();
+
         // todo: replace vanilla logic one by one
 
         //<editor-fold desc="vanilla logic">
@@ -309,6 +311,8 @@ public class KirinoCore {
         //</editor-fold>
 
         KIRINO_ENGINE.renderingCoordinator.runGizmosPass();
+
+        KIRINO_ENGINE.renderingCoordinator.postUpdate();
     }
 
     @SuppressWarnings("unchecked")
