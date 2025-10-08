@@ -1,7 +1,5 @@
 package com.cleanroommc.kirino.schemata.fsm;
 
-import com.cleanroommc.kirino.utils.Pair;
-
 import java.util.Stack;
 
 class EnumStateMachine<S extends Enum<S>,I extends Enum<I>> implements FiniteStateMachine<S,I> {
@@ -12,7 +10,7 @@ class EnumStateMachine<S extends Enum<S>,I extends Enum<I>> implements FiniteSta
     protected final Rollback<S,I>[] rollbacks;
     protected final ErrorCallback<S,I> error;
     protected int state;
-    protected Stack<Pair<S,I>> backlog = new Stack<>();
+    protected Stack<FSMBacklogPair<S,I>> backlog = new Stack<>();
 
     EnumStateMachine(S initialState, S[] states,
                      int[] stateTable, StateTransitionCallback<S,I>[] transitions,
@@ -34,7 +32,7 @@ class EnumStateMachine<S extends Enum<S>,I extends Enum<I>> implements FiniteSta
     public S accept(I input) {
         int index = (states.length*input.ordinal())+state;
         if (stateTable[index] != -1) {
-            backlog.push(new Pair<>(states[state], input));
+            backlog.push(new FSMBacklogPair<>(states[state], input));
             if (this.transitions[index] != null) {
                 this.transitions[index].transition(states[state], input, states[stateTable[index]]);
             }
@@ -46,17 +44,17 @@ class EnumStateMachine<S extends Enum<S>,I extends Enum<I>> implements FiniteSta
     }
 
     @Override
-    public Pair<S, I> backtrack() {
+    public FSMBacklogPair<S, I> backtrack() {
         if (backlog.isEmpty()) {
             return null;
         }
-        Pair<S,I> pair = backlog.pop();
-        Rollback<S,I> rollback = rollbacks[(pair.second().ordinal() * states.length) + pair.first().ordinal()];
+        FSMBacklogPair<S,I> pair = backlog.pop();
+        Rollback<S,I> rollback = rollbacks[(pair.input().ordinal() * states.length) + pair.state().ordinal()];
         if (rollback != null) {
-            rollback.rollback(states[state], pair.second(), pair.first());
+            rollback.rollback(states[state], pair.input(), pair.state());
         }
-        Pair<S,I> result = new Pair<>(states[state], pair.second());
-        this.state = pair.first().ordinal();
+        FSMBacklogPair<S,I> result = new FSMBacklogPair<>(states[state], pair.input());
+        this.state = pair.state().ordinal();
         return result;
     }
 

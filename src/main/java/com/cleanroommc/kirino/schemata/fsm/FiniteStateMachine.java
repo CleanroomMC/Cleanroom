@@ -1,7 +1,5 @@
 package com.cleanroommc.kirino.schemata.fsm;
 
-import com.cleanroommc.kirino.utils.Pair;
-
 /**
  * Finite State Machine
  * @param <S> State type
@@ -31,7 +29,7 @@ public interface FiniteStateMachine<S,I> {
      * @implSpec The state machine has to store all it's previous inputs and states for backtracking purpose.
      * Execute rollback callback during backtracking.
      */
-    Pair<S,I> backtrack();
+    FSMBacklogPair<S,I> backtrack();
 
     @FunctionalInterface
     interface Rollback<S,I> {
@@ -65,5 +63,8 @@ public interface FiniteStateMachine<S,I> {
         public static <S,I> IBuilder<S,I> tableStateMachine() {
             return new TableFiniteStateMachine.Builder<>();
         }
+    }
+
+    record FSMBacklogPair<T1,T2>(T1 state, T2 input) {
     }
 }

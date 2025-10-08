@@ -1,6 +1,5 @@
 package com.cleanroommc.kirino.schemata.fsm;
 
-import com.cleanroommc.kirino.utils.Pair;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
 
@@ -13,7 +12,7 @@ class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
     protected final Table<I,S,Rollback<S,I>> rollbackTable;
     protected final ErrorCallback<S,I> errorCallback;
     private S state;
-    protected final Stack<Pair<S,I>> stack = new Stack<>();
+    protected final Stack<FSMBacklogPair<S,I>> stack = new Stack<>();
 
     TableFiniteStateMachine(Table<I,S,S> stateTransitionTable,
                             Table<I,S, FiniteStateMachine.StateTransitionCallback<S,I>> stateTransitionCallbackTable,
@@ -37,7 +36,7 @@ class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
         }
         S newState = stateTransitionTable.get(input, state);
         if (newState != null) {
-            stack.push(new Pair<S,I>(this.state, input));
+            stack.push(new FSMBacklogPair<S,I>(this.state, input));
             StateTransitionCallback<S, I> callback = stateTransitionCallbackTable.get(input, state);
             if (callback != null)
                 callback.transition(this.state, input, newState);
@@ -54,17 +53,17 @@ class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
     }
 
     @Override
-    public Pair<S,I> backtrack() {
+    public FSMBacklogPair<S,I> backtrack() {
         if (stack.isEmpty()) {
             return null;
         }
-        Pair<S,I> entry = stack.pop();
-        Rollback<S,I> rollback = this.rollbackTable.get(entry.second(), entry.first());
+        FSMBacklogPair<S,I> entry = stack.pop();
+        Rollback<S,I> rollback = this.rollbackTable.get(entry.input(), entry.state());
         if (rollback != null) {
-            rollback.rollback(state, entry.second(), entry.first());
+            rollback.rollback(state, entry.input(), entry.state());
         }
-        Pair<S,I> result = new Pair<>(state, entry.second());
-        this.state = entry.first();
+        FSMBacklogPair<S,I> result = new FSMBacklogPair<>(state, entry.input());
+        this.state = entry.state();
         return result;
     }
 

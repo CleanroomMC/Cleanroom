@@ -1,7 +1,6 @@
 package com.cleanroommc.test.kirino;
 
 import com.cleanroommc.kirino.schemata.fsm.FiniteStateMachine;
-import com.cleanroommc.kirino.utils.Pair;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -82,10 +81,10 @@ public class EnumFSMTest {
         State[] expectedStates = {State.STATE1,State.STATE2,State.STATE1,State.STATE3,State.STATE2};
         Input[] expectedInputs = {Input.FIRST, Input.SECOND, Input.FIRST, Input.THIRD, Input.SECOND};
         for (int i = 0; i < 5; i++) {
-            Pair<State, Input> pair = FSM.backtrack();
+            FiniteStateMachine.FSMBacklogPair<State, Input> pair = FSM.backtrack();
             //System.out.println(pair);
-            assertEquals(expectedStates[i], pair.first());
-            assertEquals(expectedInputs[i], pair.second());
+            assertEquals(expectedStates[i], pair.state());
+            assertEquals(expectedInputs[i], pair.input());
         }
     }
 
