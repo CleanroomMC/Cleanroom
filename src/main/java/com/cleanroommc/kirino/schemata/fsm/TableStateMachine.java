@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
 
 import java.util.ArrayDeque;
+import java.util.Deque;
 
 class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
 
@@ -12,7 +13,7 @@ class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
     protected final Table<I,S,Rollback<S,I>> rollbackTable;
     protected final ErrorCallback<S,I> errorCallback;
     private S state;
-    protected final ArrayDeque<FSMBacklogPair<S,I>> stack = new ArrayDeque<>();
+    protected final Deque<FSMBacklogPair<S,I>> stack = new ArrayDeque<>();
 
     TableFiniteStateMachine(Table<I,S,S> stateTransitionTable,
                             Table<I,S, FiniteStateMachine.StateTransitionCallback<S,I>> stateTransitionCallbackTable,
