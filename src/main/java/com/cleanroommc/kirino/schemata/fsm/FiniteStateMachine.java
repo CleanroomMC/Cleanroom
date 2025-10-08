@@ -56,4 +56,14 @@ public interface FiniteStateMachine<S,I> {
         IBuilder<S,I> error(ErrorCallback<S,I> errorCallback);
         FiniteStateMachine<S,I> build();
     }
+
+    class Builder {
+        public static <S extends Enum<S>, I extends Enum<I>> IBuilder<S,I> enumStateMachine(Class<S> stateClass, Class<I> inputClass) {
+            return new EnumStateMachine.Builder<>(stateClass, inputClass);
+        }
+
+        public static <S,I> IBuilder<S,I> tableStateMachine() {
+            return new TableFiniteStateMachine.Builder<>();
+        }
+    }
 }
