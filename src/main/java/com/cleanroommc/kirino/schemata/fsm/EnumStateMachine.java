@@ -1,6 +1,6 @@
 package com.cleanroommc.kirino.schemata.fsm;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
 
 class EnumStateMachine<S extends Enum<S>,I extends Enum<I>> implements FiniteStateMachine<S,I> {
 
@@ -10,7 +10,7 @@ class EnumStateMachine<S extends Enum<S>,I extends Enum<I>> implements FiniteSta
     protected final Rollback<S,I>[] rollbacks;
     protected final ErrorCallback<S,I> error;
     protected int state;
-    protected Stack<FSMBacklogPair<S,I>> backlog = new Stack<>();
+    protected ArrayDeque<FSMBacklogPair<S,I>> backlog = new ArrayDeque<>();
 
     EnumStateMachine(S initialState, S[] states,
                      int[] stateTable, StateTransitionCallback<S,I>[] transitions,
