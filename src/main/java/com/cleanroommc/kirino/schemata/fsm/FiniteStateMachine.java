@@ -63,6 +63,11 @@ public interface FiniteStateMachine<S,I> {
         public static <S,I> IBuilder<S,I> tableStateMachine() {
             return new TableFiniteStateMachine.Builder<>();
         }
+
+        public static IBuilder<Integer,Integer> intRangeStateMachine(int lowerStateBound, int upperStateBound,
+                                                                     int lowerInputBound, int upperInputBound) {
+            return new IntRangeStateMachine.Builder(lowerStateBound, upperStateBound, lowerInputBound, upperInputBound);
+        }
     }
 
     record FSMBacklogPair<T1,T2>(T1 state, T2 input) {
