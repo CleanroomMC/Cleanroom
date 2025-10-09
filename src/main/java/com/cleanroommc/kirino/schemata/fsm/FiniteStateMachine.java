@@ -47,6 +47,15 @@ public interface FiniteStateMachine<S,I> {
     }
 
     interface IBuilder<S,I> {
+        /**
+         * Adds a possible transition to the FSM
+         * @param state from
+         * @param input the input causing the transition
+         * @param nextState to
+         * @param stateTransitionCallback executed after the transition occurs
+         * @param rollbackCallback executed when the transition is undone
+         * @return the builder
+         */
         IBuilder<S,I> addTransition(S state,I input,S nextState,
                                     StateTransitionCallback<S,I> stateTransitionCallback,
                                     Rollback<S,I> rollbackCallback);
@@ -61,8 +70,22 @@ public interface FiniteStateMachine<S,I> {
                                             Rollback<S,I> rollbackCallback) {
             return addTransition(state,input,nextState,null,rollbackCallback);
         }
+        /**
+         * Sets the initial state, that the FSM will start in
+         * @param initialState the initial state
+         * @return the builder
+         */
         IBuilder<S,I> initialState(S initialState);
+        /**
+         * Sets the error callback, that will be executed when a transition fails
+         * @param errorCallback the error callback
+         * @return the builder
+         */
         IBuilder<S,I> error(ErrorCallback<S,I> errorCallback);
+        /**
+         * Finish instantiating the FSM
+         * @return the FSM
+         */
         FiniteStateMachine<S,I> build();
     }
 
