@@ -1,6 +1,6 @@
 package com.cleanroommc.kirino.schemata.fsm;
 
-import com.cleanroommc.kirino.errors.InputOutOfRangeException;
+import com.cleanroommc.kirino.schemata.exception.InputOutOfRangeException;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
