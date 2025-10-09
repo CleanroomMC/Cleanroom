@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.errors;
+package com.cleanroommc.kirino.schemata.exception;
 
 public final class InputOutOfRangeException extends RuntimeException {
     public InputOutOfRangeException(String message) {
