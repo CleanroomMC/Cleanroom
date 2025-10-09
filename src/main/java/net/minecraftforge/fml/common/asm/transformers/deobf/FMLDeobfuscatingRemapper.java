@@ -25,9 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
-import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.patcher.ClassPatchManager;
@@ -52,10 +50,11 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
+import org.spongepowered.asm.obfuscation.mapping.remap.Unmapper;
 
 import javax.annotation.Nullable;
 
-public class FMLDeobfuscatingRemapper extends Remapper {
+public class FMLDeobfuscatingRemapper extends Remapper implements Unmapper {
     public static final FMLDeobfuscatingRemapper INSTANCE = new FMLDeobfuscatingRemapper();
 
     private BiMap<String, String> classNameBiMap;
@@ -117,10 +116,6 @@ public class FMLDeobfuscatingRemapper extends Remapper {
         }
         methodNameMaps = Maps.newHashMapWithExpectedSize(rawMethodMaps.size());
         fieldNameMaps = Maps.newHashMapWithExpectedSize(rawFieldMaps.size());
-
-        // For Mixin usage
-        Launch.blackboard.put("fml.deobf.instance", INSTANCE);
-        Launch.blackboard.put("fml.deobf.unmap", (Function<String, String>) this::unmap);
     }
     public void setup(File mcDir, LaunchClassLoader classLoader, String deobfFileName, boolean liveEnv)
     {
@@ -313,6 +308,7 @@ public class FMLDeobfuscatingRemapper extends Remapper {
         return typeName;
     }
 
+    @Override
     public String unmap(String typeName)
     {
         if (classNameBiMap == null || classNameBiMap.isEmpty())
