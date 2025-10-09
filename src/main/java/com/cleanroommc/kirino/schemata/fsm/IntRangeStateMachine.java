@@ -101,7 +101,7 @@ class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer> {
         @Override
         public IBuilder<Integer, Integer> addTransition(Integer state, Integer input, Integer nextState, StateTransitionCallback<Integer, Integer> stateTransitionCallback, Rollback<Integer, Integer> rollbackCallback) {
             if (state < lowerStateBound || state > upperStateBound
-                    || nextState < lowerInputBound || nextState > upperInputBound) {
+                    || nextState < lowerStateBound || nextState > upperStateBound) {
                 throw new InputOutOfRangeException(String.format("State %d out of range [%d,%d]", state, lowerStateBound, upperStateBound));
             }
             if (input < lowerInputBound || input > upperInputBound){
