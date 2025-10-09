@@ -3,19 +3,19 @@ package com.cleanroommc.kirino.schemata.fsm;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-class EnumStateMachine<S extends Enum<S>,I extends Enum<I>> implements FiniteStateMachine<S,I> {
+class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements FiniteStateMachine<S, I> {
 
     protected final S[] states;
     private final int[] stateTable;
-    protected final StateTransitionCallback<S,I>[] transitions;
-    protected final Rollback<S,I>[] rollbacks;
-    protected final ErrorCallback<S,I> error;
+    protected final StateTransitionCallback<S, I>[] transitions;
+    protected final Rollback<S, I>[] rollbacks;
+    protected final ErrorCallback<S, I> error;
     protected int state;
-    protected Deque<FSMBacklogPair<S,I>> backlog = new ArrayDeque<>();
+    protected Deque<FSMBacklogPair<S, I>> backlog = new ArrayDeque<>();
 
     EnumStateMachine(S initialState, S[] states,
-                     int[] stateTable, StateTransitionCallback<S,I>[] transitions,
-                     Rollback<S,I>[] rollbacks, ErrorCallback<S,I> error) {
+                     int[] stateTable, StateTransitionCallback<S, I>[] transitions,
+                     Rollback<S, I>[] rollbacks, ErrorCallback<S, I> error) {
         this.state = initialState.ordinal();
         this.stateTable = stateTable;
         this.transitions = transitions;
@@ -49,23 +49,23 @@ class EnumStateMachine<S extends Enum<S>,I extends Enum<I>> implements FiniteSta
         if (backlog.isEmpty()) {
             return null;
         }
-        FSMBacklogPair<S,I> pair = backlog.pop();
-        Rollback<S,I> rollback = rollbacks[(pair.input().ordinal() * states.length) + pair.state().ordinal()];
+        FSMBacklogPair<S, I> pair = backlog.pop();
+        Rollback<S, I> rollback = rollbacks[(pair.input().ordinal() * states.length) + pair.state().ordinal()];
         if (rollback != null) {
             rollback.rollback(states[state], pair.input(), pair.state());
         }
-        FSMBacklogPair<S,I> result = new FSMBacklogPair<>(states[state], pair.input());
+        FSMBacklogPair<S, I> result = new FSMBacklogPair<>(states[state], pair.input());
         this.state = pair.state().ordinal();
         return result;
     }
 
-    static class Builder<S extends Enum<S>,I extends Enum<I>> implements IBuilder<S,I> {
+    static class Builder<S extends Enum<S>, I extends Enum<I>> implements IBuilder<S, I> {
 
         private final S[] states;
         private final int[] stateTable;
-        private final StateTransitionCallback<S,I>[] transitions;
-        private final Rollback<S,I>[] rollbacks;
-        private ErrorCallback<S,I> error;
+        private final StateTransitionCallback<S, I>[] transitions;
+        private final Rollback<S, I>[] rollbacks;
+        private ErrorCallback<S, I> error;
         private S initialState;
 
         Builder(Class<S> stateClass, Class<I> inputClass){

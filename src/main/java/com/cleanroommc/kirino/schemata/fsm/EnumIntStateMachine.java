@@ -1,7 +1,5 @@
 package com.cleanroommc.kirino.schemata.fsm;
 
-import com.cleanroommc.kirino.schemata.exception.InputOutOfRangeException;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -39,8 +37,11 @@ class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine<S, In
 
     @Override
     public S accept(Integer input) {
-        if (input < lowerInputBound || input > upperInputBound)
-            throw new InputOutOfRangeException(String.format("Input %d is out of range [%d,%d]", input, lowerInputBound, upperInputBound));
+        if (input < lowerInputBound || input > upperInputBound) {
+            throw new IllegalStateException(String.format(
+                    "Input %d is out of range [%d,%d]",
+                    input, lowerInputBound, upperInputBound));
+        }
         int index = (states.length*(input-lowerInputBound))+state;
         if (stateTable[index] != -1) {
             backlog.push(new FSMBacklogPair<>(states[state], input));
@@ -69,13 +70,13 @@ class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine<S, In
         return result;
     }
 
-    static class Builder<S extends Enum<S>> implements IBuilder<S,Integer> {
+    static class Builder<S extends Enum<S>> implements IBuilder<S, Integer> {
         private final int lowerInputBound, upperInputBound;
         private final int[] stateTable;
         protected final S[] states;
-        private final StateTransitionCallback<S,Integer>[] transitions;
-        private final Rollback<S,Integer>[] rollbacks;
-        private ErrorCallback<S,Integer> error;
+        private final StateTransitionCallback<S, Integer>[] transitions;
+        private final Rollback<S, Integer>[] rollbacks;
+        private ErrorCallback<S, Integer> error;
         private S initialState;
 
         Builder(Class<S> stateClass, int lowerInputBound, int upperInputBound) {
@@ -94,7 +95,9 @@ class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine<S, In
         @Override
         public IBuilder<S, Integer> addTransition(S state, Integer input, S nextState, StateTransitionCallback<S, Integer> stateTransitionCallback, Rollback<S, Integer> rollbackCallback) {
             if (input < lowerInputBound || input > upperInputBound){
-                throw new InputOutOfRangeException(String.format("Input %d is out of range [%d,%d]", input, lowerInputBound, upperInputBound));
+                throw new IllegalStateException(String.format(
+                        "Input %d is out of range [%d,%d]",
+                        input, lowerInputBound, upperInputBound));
             }
             int index = ((input-lowerInputBound)*states.length)+state.ordinal();
             stateTable[index] = nextState.ordinal();

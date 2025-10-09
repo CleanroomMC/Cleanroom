@@ -1,7 +1,5 @@
 package com.cleanroommc.kirino.schemata.fsm;
 
-import com.cleanroommc.kirino.schemata.exception.InputOutOfRangeException;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -43,7 +41,9 @@ class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer> {
     @Override
     public Integer accept(Integer input) {
         if (input < lowerInputBound || input > upperInputBound){
-            throw new InputOutOfRangeException(String.format("Input %d is out of range [%d,%d]", input, lowerInputBound, upperInputBound));
+            throw new IllegalStateException(String.format(
+                    "Input %d is out of range [%d,%d]",
+                    input, lowerInputBound, upperInputBound));
         }
         int states = upperStateBound - lowerStateBound + 1;
         int index = ((input - lowerInputBound)*states)+(state-lowerStateBound);
@@ -102,10 +102,14 @@ class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer> {
         public IBuilder<Integer, Integer> addTransition(Integer state, Integer input, Integer nextState, StateTransitionCallback<Integer, Integer> stateTransitionCallback, Rollback<Integer, Integer> rollbackCallback) {
             if (state < lowerStateBound || state > upperStateBound
                     || nextState < lowerStateBound || nextState > upperStateBound) {
-                throw new InputOutOfRangeException(String.format("State %d out of range [%d,%d]", state, lowerStateBound, upperStateBound));
+                throw new IllegalStateException(String.format(
+                        "State %d out of range [%d,%d]",
+                        state, lowerStateBound, upperStateBound));
             }
             if (input < lowerInputBound || input > upperInputBound){
-                throw new InputOutOfRangeException(String.format("Input %d is out of range [%d,%d]", input, lowerInputBound, upperInputBound));
+                throw new IllegalStateException(String.format(
+                        "Input %d is out of range [%d,%d]",
+                        input, lowerInputBound, upperInputBound));
             }
             int index = ((input-lowerInputBound)*(upperStateBound-lowerStateBound+1))+(state-lowerStateBound);
             stateTable[index] = nextState;
@@ -117,7 +121,9 @@ class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer> {
         @Override
         public IBuilder<Integer, Integer> initialState(Integer initialState) {
             if (initialState < lowerStateBound || initialState > upperStateBound) {
-                throw new InputOutOfRangeException(String.format("State %d out of range [%d,%d]", initialState, lowerStateBound, upperStateBound));
+                throw new IllegalStateException(String.format(
+                        "State %d out of range [%d,%d]",
+                        initialState, lowerStateBound, upperStateBound));
             }
             this.initialState = initialState;
             return this;

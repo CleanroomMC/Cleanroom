@@ -85,7 +85,12 @@ class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine<Integ
 
         @Override
         public IBuilder<Integer, I> addTransition(Integer state, I input, Integer nextState, StateTransitionCallback<Integer, I> stateTransitionCallback, Rollback<Integer, I> rollbackCallback) {
-
+            if (state < lowerStateBound || state > upperStateBound
+            || nextState < lowerStateBound || nextState > upperStateBound) {
+                throw new IllegalStateException(String.format(
+                        "State %d out of range [%d,%d]",
+                        initialState, lowerStateBound, upperStateBound));
+            }
             int index = (input.ordinal()*(upperStateBound-lowerStateBound+1))+(state-lowerStateBound);
             stateTable[index] = nextState;
             transitions[index] = stateTransitionCallback;
