@@ -71,6 +71,8 @@ public class LibraryManager
     private static final Attributes.Name MD5 = new Attributes.Name("MD5");
     private static Repository libraries_dir = null;
     private static Set<File> processed = new HashSet<File>();
+    private static List<File> legacyCandidates;
+    private static List<Artifact> mavenCandidates;
 
     public static void setup(File minecraftHome)
     {
@@ -418,7 +420,12 @@ public class LibraryManager
 
     public static List<Artifact> flattenLists(File mcDir)
     {
+        if (mavenCandidates != null)
+        {
+            return mavenCandidates;
+        }
         List<Artifact> merged = new ArrayList<>();
+        mavenCandidates = merged;
         for (ModList list : ModList.getBasicLists(mcDir))
         {
             for (Artifact art : list.flatten())
@@ -440,7 +447,12 @@ public class LibraryManager
 
     public static List<File> gatherLegacyCanidates(File mcDir)
     {
+        if (legacyCandidates != null)
+        {
+            return legacyCandidates;
+        }
         List<File> list = new ArrayList<>();
+        legacyCandidates = list;
 
         @SuppressWarnings("unchecked")
         Map<String,String> args = (Map<String, String>)Launch.blackboard.get("forgeLaunchArgs");
