@@ -79,6 +79,11 @@ public interface FiniteStateMachine<S,I> {
                                                                      int lowerInputBound, int upperInputBound) {
             return new IntRangeStateMachine.Builder(lowerStateBound, upperStateBound, lowerInputBound, upperInputBound);
         }
+
+        public static <S extends Enum<S>> IBuilder<S,Integer> enumIntStateMachine(Class<S> stateClass,
+                                                                                  int lowerInputBound, int upperInputBound) {
+            return new EnumIntStateMachine.Builder<>(stateClass, lowerInputBound, upperInputBound);
+        }
     }
 
     record FSMBacklogPair<T1,T2>(T1 state, T2 input) {
