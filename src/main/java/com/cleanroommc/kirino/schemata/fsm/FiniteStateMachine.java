@@ -50,6 +50,17 @@ public interface FiniteStateMachine<S,I> {
         IBuilder<S,I> addTransition(S state,I input,S nextState,
                                     StateTransitionCallback<S,I> stateTransitionCallback,
                                     Rollback<S,I> rollbackCallback);
+        default IBuilder<S,I> addTransition(S state,I input,S nextState) {
+            return addTransition(state,input,nextState,null,null);
+        }
+        default IBuilder<S,I> addTransition(S state,I input,S nextState,
+                                            StateTransitionCallback<S,I> stateTransitionCallback) {
+            return addTransition(state,input,nextState,stateTransitionCallback,null);
+        }
+        default IBuilder<S,I> addTransition(S state,I input,S nextState,
+                                            Rollback<S,I> rollbackCallback) {
+            return addTransition(state,input,nextState,null,rollbackCallback);
+        }
         IBuilder<S,I> initialState(S initialState);
         IBuilder<S,I> error(ErrorCallback<S,I> errorCallback);
         FiniteStateMachine<S,I> build();
