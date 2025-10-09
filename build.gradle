@@ -436,7 +436,7 @@ project(':cleanroom') {
         // Added back deprecated features for mods to load up properly
         installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
 
-        installer "top.outlands:foundation:0.16.3"
+        installer "top.outlands:foundation:0.17.0"
         installer 'net.lenni0451:Reflect:1.5.0'
         installer 'org.javassist:javassist:3.30.2-GA'
         installer "zone.rong:imaginebreaker:2.1"
