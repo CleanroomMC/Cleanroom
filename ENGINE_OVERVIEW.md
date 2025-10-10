@@ -1,6 +1,6 @@
 # Engine Overview
 
-## 1. Introduction
+## 0. Introduction
 
 Briefly describe the engine's design philosophy:
 - Designed to be as independent of Minecraft as possible
@@ -12,7 +12,27 @@ Briefly describe the engine's design philosophy:
 
 And the following is a walkthrough that guides you through the engine step by step.
 
-## 2. ECS Runtime and Kirino Engine Setup
+***
+
+**Table of Contents**
+- 1. ECS Runtime and Kirino Engine Setup
+  - 1.1 ECS Runtime Setup
+  - 1.2 Kirino Engine Setup
+- 2. Rendering Pipeline
+  - 2.1 Pipeline State Object
+  - 2.2 Framebuffer
+  - 2.3 Render Pass & Subpass
+  - 2.4 Draw Command
+  - 2.5 Command Decoration
+- 3. OpenGL Abstraction
+  - 3.1 Resource Disposal
+  - 3.2 Buffer Object
+  - 3.3 Texture
+  - 3.4 Shader
+
+***
+
+## 1. ECS Runtime and Kirino Engine Setup
 
 `KirinoCore.init()` will be executed at the end of `FMLClientHandler.beginMinecraftLoading()`, which occurs at the end of the `preInit` phase.
 
@@ -26,7 +46,7 @@ During `KirinoCore.init()`, the following steps will be performed:
 > - We pass `KirinoCore.KIRINO_EVENT_BUS` to the constructors of `CleanECSRuntime` & `KirinoEngine`, so all relevant events will be posted to `KirinoCore.KIRINO_EVENT_BUS`
 > - Please use `KirinoCore.KIRINO_EVENT_BUS` instead of `MinecraftForge.EVENT_BUS` for your event listeners
 
-## 2.1 ECS Runtime Setup
+## 1.1 ECS Runtime Setup
 
 Let's look at an example first
 ```java
@@ -93,7 +113,7 @@ public static void onComponentScan(ComponentScanningEvent event) {
 > - You can only use `S` in a struct
 > - Yan can only use `S` or the structs you defined in a component
 
-## 2.2 Kirino Engine Setup
+## 1.2 Kirino Engine Setup
 
 Kirino Engine contains:
 - `RenderingCoordinator`
@@ -148,7 +168,7 @@ public static void updateAndRender(long finishTimeNano) {
 
 > Note: `KirinoCore.updateAndRender()` is a direct replacement of `EntityRenderer.renderWorld(float, long)`. Specifically, `anaglyph` logic is removed and all other functions remain the same.
 
-## 3. Render Pass & Pipeline
+## 2. Rendering Pipeline
 
 `KIRINO_ENGINE.renderingCoordinator.run*Pass` runs render passes. A render pass is a container that contains several subpasses, and subpass is where we implement the true rendering logic.
 
@@ -166,7 +186,7 @@ mainCpuPass.render();
 
 As you can see, each subpass defines both its rendering logic and its associated `PSO` (Pipeline State Object) and `FBO` (Framebuffer).
 
-### 3.1 Pipeline State Object
+## 2.1 Pipeline State Object
 A `PSO` can be seen as an immutable value type that contains multiple GL states like `depth`, `raster` etc. 
 We introduce `PSO` to avoid `GL.turnOn* -> render -> GL.turnOff*`-ish operations. During each subpass, all GL states are fixed and immutable (i.e. `GL.enable*`/`GL.getInt*` will never be used by clients).
 
@@ -174,11 +194,19 @@ We introduce `PSO` to avoid `GL.turnOn* -> render -> GL.turnOff*`-ish operations
 > - `GL.getInt*` causes pipeline stall
 > - `PSO` makes every states predicatable so we drop manual `GL.enable*`/`GL.getInt*`
 
-### 3.2 Framebuffer
+## 2.2 Framebuffer
 A framebuffer, also known as a render target, is the target of a subpass.
 Multi-resolution support is enforced here to facilitate future upgrades.
 
-## 4. OpenGL Resource Abstraction
+## 2.3 Render Pass & Subpass
+
+## 2.4 Draw Command
+
+## 2.5 Command Decoration
+
+
+
+## 3. OpenGL Abstraction
 We adopt a buffer-view pattern for managing buffers/textures. For example, we use the untyped GL buffer container `GLBuffer` and views like `VBOView`.
 
 ```java
@@ -202,6 +230,12 @@ public class VBOView extends BufferView {
 As a result, we can use arbitrary many views to wrap a buffer/texture to modify them.
 Moreover, high-level views like `SegmentedVBOView`, `MorphismVBOView` etc. allow you to manage data without touching indexes.
 
-## 4.1 Resource Disposal
+## 3.1 Resource Disposal
 All disposable GL resources will be added to `GLResourceManager` automatically by calling their `ctor`.
 `GLResourceManager.disposeAll()` occurs at the end of the game, right before window destroy.
+
+## 3.2 Buffer Object
+
+## 3.3 Texture
+
+## 3.4 Shader
