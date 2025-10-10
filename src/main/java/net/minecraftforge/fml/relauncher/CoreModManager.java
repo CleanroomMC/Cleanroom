@@ -323,7 +323,7 @@ public class CoreModManager {
         //As well as the mods folders being cleaned up {any files that have maven info being moved to maven folder}
 
         FMLLog.log.debug("Discovering coremods");
-        List<File> candidates = LibraryManager.getCandidates(mcDir);
+        List<File> candidates = LibraryManager.getCandidates();
         Set<String> mixin_configs = new HashSet<>();
         //Do we want to sort the full list after resolving artifacts?
         //TODO: Add dependency gathering?
