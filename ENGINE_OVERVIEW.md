@@ -15,24 +15,29 @@ And the following is a walkthrough that guides you through the engine step by st
 ***
 
 **Table of Contents**
-- 1. ECS Runtime and Kirino Engine Setup
+- 1 ECS Runtime & Kirino Engine Setup
   - 1.1 ECS Runtime Setup
   - 1.2 Kirino Engine Setup
-- 2. Rendering Pipeline
+- 2 Rendering Pipeline
   - 2.1 Pipeline State Object
   - 2.2 Framebuffer
   - 2.3 Render Pass & Subpass
   - 2.4 Draw Command
   - 2.5 Command Decoration
-- 3. OpenGL Abstraction
+- 3 OpenGL Abstraction
   - 3.1 Resource Disposal
   - 3.2 Buffer Object
   - 3.3 Texture
   - 3.4 Shader
+- 4 Chunk Meshlet & Virtual Geometry
+- 5 Virtual Geometry & GPU Pipeline
+- 6 Global Illumination
+- 7 Hybrid & Final Gather
+- 8 Tile Entity Renderer API
 
 ***
 
-## 1. ECS Runtime and Kirino Engine Setup
+## 1. ECS Runtime & Kirino Engine Setup
 
 `KirinoCore.init()` will be executed at the end of `FMLClientHandler.beginMinecraftLoading()`, which occurs at the end of the `preInit` phase.
 
@@ -45,6 +50,46 @@ During `KirinoCore.init()`, the following steps will be performed:
 > Note: 
 > - We pass `KirinoCore.KIRINO_EVENT_BUS` to the constructors of `CleanECSRuntime` & `KirinoEngine`, so all relevant events will be posted to `KirinoCore.KIRINO_EVENT_BUS`
 > - Please use `KirinoCore.KIRINO_EVENT_BUS` instead of `MinecraftForge.EVENT_BUS` for your event listeners
+
+Here's a list of events you can listen from ECS Runtime setup:
+- `StructScanningEvent`
+- `ComponentScanningEvent`
+- `JobRegistrationEvent`
+
+Here's a list of events you can listen from Kirino Engine setup:
+- `ShaderRegistrationEvent`
+
+### Example: How do I register shaders?
+`shader.vert`
+```glsl
+#version 330 core
+
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec4 color;
+
+out vec4 Color;
+
+uniform vec3 worldOffset;
+
+uniform mat4 viewRot; // Minecraft doesn't use standard viewModel matrix
+uniform mat4 projection;
+
+void main(void)
+{
+    gl_Position = projection * viewRot * vec4(position - worldOffset, 1.0);
+    Color = color;
+}
+
+```
+```java
+@SubscribeEvent
+public static void onShaderRegister(ShaderRegistrationEvent event) {
+    event.register(new ResourceLocation("namespace:your/shader.vert"));
+}
+```
+
+> Note:
+> - Please use shader suffix `vert`, `frag`, `geom`, `tesc`, `tese`, `comp`
 
 ## 1.1 ECS Runtime Setup
 
@@ -84,7 +129,33 @@ As you can see, ECS is a way to manage entities and execute jobs on them effecti
 We'll use ECS to manage render targets, like `Chunk`, `Meshlet`, `Probe`, etc.
 Although raw chunk data can't be stored directly in ECS, ECS is still useful to manage the components that store metadata like `isDirty`, `pos`, `aabb` etc.
 
-### How do I register ECS components?
+### ECS Job usage example
+```java
+public class ChunkMeshletGenJob implements IParallelJob {
+    @JobExternalDataQuery
+    public ChunkProviderClient chunkProvider;
+
+    @JobDataQuery(componentClass = ChunkComponent.class, fieldAccessChain = {"chunkPosX"})
+    public IPrimitiveArray chunkPosXArray;
+
+    @JobDataQuery(componentClass = ChunkComponent.class, fieldAccessChain = {"chunkPosZ"})
+    public IPrimitiveArray chunkPosZArray;
+
+    @Override
+    public void execute(int index) {
+        int x = chunkPosXArray.getInt(index);
+        int z = chunkPosZArray.getInt(index);
+        KirinoCore.LOGGER.info("debug chunk xz: " + x + ", " + z);
+    }
+
+    @Override
+    public void query(EntityQuery entityQuery) {
+        entityQuery.with(ChunkComponent.class);
+    }
+}
+```
+
+### Example: How do I register ECS components?
 ```java
 @CleanComponent
 public class YourComponent implements ICleanComponent {
@@ -120,43 +191,12 @@ Kirino Engine contains:
 - More coordinators coming soon...
 
 `RenderingCoordinator` contains:
+- Framebuffers
 - An ECS world `MinecraftScene`
 - `MinecraftCamera` (which wraps Minecraft's `ActiveRenderInfo`)
 - `GizmosManager` (for debug visuals)
 - `ShaderRegistry` and all shader-related stuff
 - A bunch of `RenderPass`es
-
-### How do I register shaders?
-`shader.vert`
-```glsl
-#version 330 core
-
-layout(location = 0) in vec3 position;
-layout(location = 1) in vec4 color;
-
-out vec4 Color;
-
-uniform vec3 worldOffset;
-
-uniform mat4 viewRot; // Minecraft doesn't use standard viewModel matrix
-uniform mat4 projection;
-
-void main(void)
-{
-    gl_Position = projection * viewRot * vec4(position - worldOffset, 1.0);
-    Color = color;
-}
-
-```
-```java
-@SubscribeEvent
-public static void onShaderRegister(ShaderRegistrationEvent event) {
-    event.register(new ResourceLocation("namespace:your/shader.vert"));
-}
-```
-
-> Note:
-> - Please use shader suffix `vert`, `frag`, `geom`, `tesc`, `tese`, `comp`
 
 ### Engine's Lifecycle
 `KirinoCore.updateAndRender()` is the only entry point of the Kirino Engine
@@ -174,17 +214,14 @@ public static void updateAndRender(long finishTimeNano) {
 
 The following pseudocode illustrates the concept
 ```java
-ShaderProgram shaderProgram = shaderRegistry.newShaderProgram("kirino:shaders/test.vert", "kirino:shaders/test.vert");
-Renderer renderer = new Renderer();
-mainCpuPass = new RenderPass("Main CPU Pass");
-mainCpuPass.addSubpass("Opaque Pass", new WhateverPass(renderer, PSOPresets.createOpaquePSO(shaderProgram), new Framebuffer()));
-mainCpuPass.addSubpass("Cutout Pass", new WhateverPass(renderer, PSOPresets.createCutoutPSO(shaderProgram), new Framebuffer()));
-mainCpuPass.addSubpass("Transparent Pass", new WhateverPass(renderer, PSOPresets.createTransparentPSO(shaderProgram), new Framebuffer()));
-
-mainCpuPass.render();
+RenderPass pass = new RenderPass("Main Pass");
+pass.addSubpass("Opaque Pass", new OpaquePass(renderer, opaquePSO, framebuffer));
+pass.addSubpass("Cutout Pass", new CutoutPass(renderer, cutoutPSO, framebuffer));
+pass.addSubpass("Transparent Pass", new TransparentPass(renderer, transparentPSO, framebuffer));
+pass.render();
 ```
 
-As you can see, each subpass defines both its rendering logic and its associated `PSO` (Pipeline State Object) and `FBO` (Framebuffer).
+As you can see, each subpass (`OpaquePass`/`CutoutPass`/`TransparentPass`) defines both its rendering logic and its associated `PSO` (Pipeline State Object) and `FBO` (Framebuffer).
 
 ## 2.1 Pipeline State Object
 A `PSO` can be seen as an immutable value type that contains multiple GL states like `depth`, `raster` etc. 
@@ -198,16 +235,37 @@ We introduce `PSO` to avoid `GL.turnOn* -> render -> GL.turnOff*`-ish operations
 A framebuffer, also known as a render target, is the target of a subpass.
 Multi-resolution support is enforced here to facilitate future upgrades.
 
+It's not recommended to instantiate framebuffers and use them on your own.
+
 ## 2.3 Render Pass & Subpass
+`RenderPass` is a container that doesn't handle any of the rendering logic or implementations but stores `Subpass`es in an order.
+
+```java
+public class RenderPass {
+    public void render() {
+        for (Subpass subpass : subpasses) {
+            subpass.collectCommands(drawQueue);
+            subpass.decorateCommands(drawQueue, decorator);
+            subpass.render(drawQueue);
+        }
+    }
+}
+```
+
+As you can see, `RenderPass` acts like an entry point and we implement abstract `Subpass` classes to handle the rendering logic.
 
 ## 2.4 Draw Command
+`DrawCommand` is an element of `DrawQueue`, and `Subpass` accepts a `DrawQueue` as the input.
 
 ## 2.5 Command Decoration
 
 
 
 ## 3. OpenGL Abstraction
-We adopt a buffer-view pattern for managing buffers/textures. For example, we use the untyped GL buffer container `GLBuffer` and views like `VBOView`.
+**Goal and Philosophy**: a semantic abstraction layer that preserves the meaning of GL operations instead of a black-box GL wrapper.
+
+### Example: Buffer
+For exmaple, we adopt a buffer-view pattern for managing buffers/textures. We use the untyped GL buffer container `GLBuffer` and views like `VBOView`.
 
 ```java
 public class VBOView extends BufferView {
@@ -228,7 +286,22 @@ public class VBOView extends BufferView {
 ```
 
 As a result, we can use arbitrary many views to wrap a buffer/texture to modify them.
-Moreover, high-level views like `SegmentedVBOView`, `MorphismVBOView` etc. allow you to manage data without touching indexes.
+Moreover, we provide high-level mapping utilities like `RenderObj2BufMorphism`, `Buf2DrawMorphism` etc. to manage data without touching indexes, 
+which can be seen as a replacement to Minecraft's `BufferBuilder`.
+
+### Example: Attribute Layout
+```java
+public static final AttributeLayout BLOCK_ATTRIBUTE_LAYOUT = new AttributeLayout();
+static {
+    BLOCK_ATTRIBUTE_LAYOUT.push(new Stride(28)
+            .push(new Slot(Type.FLOAT, 3))
+            .push(new Slot(Type.UNSIGNED_BYTE, 4).setNormalize(true))
+            .push(new Slot(Type.FLOAT, 2))
+            .push(new Slot(Type.SHORT, 2)));
+}
+```
+
+When it comes to Vertex Attribute Layout, our abstraction aligns semantically with GL, allowing all possibilities.
 
 ## 3.1 Resource Disposal
 All disposable GL resources will be added to `GLResourceManager` automatically by calling their `ctor`.

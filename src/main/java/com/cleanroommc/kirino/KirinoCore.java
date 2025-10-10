@@ -454,14 +454,14 @@ public class KirinoCore {
     }
 
     @SubscribeEvent
+    public static void onJobRegister(JobRegistrationEvent event) {
+        event.register(ChunkMeshletGenJob.class);
+    }
+
+    @SubscribeEvent
     public static void onShaderRegister(ShaderRegistrationEvent event) {
         event.register(new ResourceLocation("kirino:shaders/test.vert"));
         event.register(new ResourceLocation("kirino:shaders/gizmos_line.vert"));
         event.register(new ResourceLocation("kirino:shaders/gizmos_line.frag"));
-    }
-
-    @SubscribeEvent
-    public static void onJobRegister(JobRegistrationEvent event) {
-        event.register(ChunkMeshletGenJob.class);
     }
 }

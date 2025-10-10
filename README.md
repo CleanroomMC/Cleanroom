@@ -4,7 +4,7 @@
 If you are curious about the tech/code details, check out [Engine Overview Page](https://github.com/CleanroomMC/Cleanroom/blob/proposal/render-system/ENGINE_OVERVIEW.md)!
 
 ## Contributing
-If you would like to contribute, check out our [Contributing Page](https://github.com/CleanroomMC/Cleanroom/blob/proposal/render-system/CONTRIBUTING.md)!
+If you would like to contribute, check out our [Contributing Page](https://github.com/CleanroomMC/Cleanroom/tree/proposal/render-system?tab=contributing-ov-file)!
 
 ## MVP Goals
 

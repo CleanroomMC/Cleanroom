@@ -1,6 +1,6 @@
 # Contributing to Kirino Rendering
 
-Kirino Engine is an ECS-based Rendering (general purpose) Engine ([See proposal](https://github.com/CleanroomMC/Cleanroom/discussions/405)).<br>
+Kirino Engine is an ECS-based Rendering (general purpose) Engine ([See proposal](https://github.com/CleanroomMC/Cleanroom/discussions/405)/[See engine overview](https://github.com/CleanroomMC/Cleanroom/blob/proposal/render-system/ENGINE_OVERVIEW.md)).<br>
 Thanks for your interest! We welcome **all kinds of contributions** – code, documentation, bug reports, and ideas.
 
 ***
@@ -13,7 +13,7 @@ Thanks for your interest! We welcome **all kinds of contributions** – code, do
 - `./gradlew genPatches` to generate patches if you modified Minecraft source code. 
 - Experimental: `./gradlew cleanroomClientRenderDoc` / `./gradlew cleanroomClientNsight` (check out `build.gradle`)
 - `Cleanroom/projects/cleanroom/src/main/java/` is where you modify Minecraft source code.
-- `Cleanroom/src/main/java/com/cleanroom/kirino/` is where you contribute to Kirino Rendering.
+- `Cleanroom/src/main/java/com/cleanroom/kirino/` is where you contribute to Kirino Engine.
 
 ## Ways to Contribute
 
@@ -24,7 +24,7 @@ Thanks for your interest! We welcome **all kinds of contributions** – code, do
 - Propose features you want to have / implement via [Proposal](https://github.com/CleanroomMC/Cleanroom/discussions/405).
 - Propose general ideas about Kirino Engine via [Proposal](https://github.com/CleanroomMC/Cleanroom/discussions/405).
 
-## Code Style
+## Code Style Convention
 
 - Use `camelCase` for methods / fields.
 - Use K&R brace styling
@@ -48,6 +48,10 @@ Thanks for your interest! We welcome **all kinds of contributions** – code, do
   ```java
   if (escape) return;
   ```
+  ```java
+  if (escape)
+      return;
+  ```
   **Good:**
   ```java
   if (escape) {
@@ -55,6 +59,7 @@ Thanks for your interest! We welcome **all kinds of contributions** – code, do
   }
   ```
 - Keep lines reasonably short to maintain readability, but there is no explicit char count limit.
+- Use `Jspecify` for `nullable`/`nonnull` annotations.
 
 ## Upcoming Features
 
@@ -85,7 +90,9 @@ Thanks for your interest! We welcome **all kinds of contributions** – code, do
 
 ## Future Features
 
-- Check MVP Goals in [Read Me](https://github.com/CleanroomMC/Cleanroom/blob/proposal/render-system/README.md)
+- Check MVP Goals in [Read Me](https://github.com/CleanroomMC/Cleanroom/tree/proposal/render-system?tab=readme-ov-file)
 
 ## What's Done
-- An ECS framework with basic functionalities. Check [Proposal/Progress on ECS](https://github.com/CleanroomMC/Cleanroom/discussions/405) so you'll understand what's ECS and how it works
+- An ECS framework with basic functionalities
+- Some GL abstractions
+- Part of the rendering pipeline
