@@ -6,7 +6,7 @@ public class CleanroomMixinServiceBootstrap implements IMixinServiceBootstrap {
 
     @Override
     public String getName() {
-        return "MixinBooter";
+        return "Cleanroom";
     }
 
     @Override
