@@ -71,10 +71,12 @@ public class LibraryManager
     private static final Attributes.Name MD5 = new Attributes.Name("MD5");
     private static Repository libraries_dir = null;
     private static Set<File> processed = new HashSet<File>();
+    private static File minecraftHome;
     private static List<File> candidates;
 
     public static void setup(File minecraftHome)
     {
+        LibraryManager.minecraftHome = minecraftHome;
         File libDir = findLibraryFolder(minecraftHome);
         FMLLog.log.debug("Determined Minecraft Libraries Root: {}", libDir);
         Repository old = Repository.replace(libDir, "libraries");
@@ -492,13 +494,13 @@ public class LibraryManager
         return list;
     }
 
-    public static List<File> getCandidates(File mcDir) {
+    public static List<File> getCandidates() {
         if (candidates != null)
         {
             return candidates;
         }
-        candidates = gatherLegacyCanidates(mcDir);
-        for (Artifact artifact : flattenLists(mcDir))
+        candidates = gatherLegacyCanidates(minecraftHome);
+        for (Artifact artifact : flattenLists(minecraftHome))
         {
             artifact = Repository.resolveAll(artifact);
             if (artifact != null)
