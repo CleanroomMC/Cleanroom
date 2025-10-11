@@ -78,6 +78,14 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
         return result;
     }
 
+    @Override
+    public void reset() {
+        if (!backlog.isEmpty()) {
+            this.state = backlog.pollLast().state();
+            backlog.clear();
+        }
+    }
+
     static class Builder<I extends Enum<I>> implements IBuilder<Integer,I> {
 
         private final int lowerStateBound, upperStateBound;

@@ -82,6 +82,14 @@ final class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
         return result;
     }
 
+    @Override
+    public void reset() {
+        if (!stack.isEmpty()) {
+            this.state = stack.pollLast().state();
+            stack.clear();
+        }
+    }
+
     static class Builder<S, I> implements IBuilder<S, I> {
         private final ImmutableTable.Builder<I, S, S> builder = ImmutableTable.builder();
         private final ImmutableMap.Builder<S,OnEnterStateCallback<S,I>> entryCallbackMapBuilder = ImmutableMap.builder();

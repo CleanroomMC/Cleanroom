@@ -75,6 +75,14 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
         return result;
     }
 
+    @Override
+    public void reset() {
+        if (!backlog.isEmpty()) {
+            this.state = backlog.pollLast().state().ordinal();
+            backlog.clear();
+        }
+    }
+
     static class Builder<S extends Enum<S>, I extends Enum<I>> implements IBuilder<S, I> {
 
         private final S[] states;

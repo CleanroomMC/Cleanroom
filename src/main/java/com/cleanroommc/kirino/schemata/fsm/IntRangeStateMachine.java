@@ -87,6 +87,14 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
         return result;
     }
 
+    @Override
+    public void reset() {
+        if (!backlog.isEmpty()) {
+            this.state = backlog.pollLast().state();
+            backlog.clear();
+        }
+    }
+
     static class Builder implements IBuilder<Integer,Integer> {
         private final int lowerStateBound, upperStateBound;
         private final int lowerInputBound, upperInputBound;

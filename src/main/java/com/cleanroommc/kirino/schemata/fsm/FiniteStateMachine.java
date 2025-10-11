@@ -36,27 +36,66 @@ public interface FiniteStateMachine<S, I> {
     @Nullable
     FSMBacklogPair<S, I> backtrack();
 
-    default void reset() {
-        while (backtrack() != null); // Might or might not end up as a temporary solution
+    /**
+     * Sets the state to the initial state and clears the backlog
+     * @implSpec <code>
+     *     if (!stack.isEmpty()) { <br/>
+     *         &emsp;    this.state = stack.pollLast().state(); <br/>
+     *         &emsp;    stack.clear(); <br/>
+     *         }
+     * </code>
+     */
+    void reset();
+
+    /**
+     * A quick way to undo all of the actions taken by the entire state machine
+     */
+    default void rewind() {
+        while (backtrack() != null);
     }
 
     @FunctionalInterface
     interface Rollback<S, I> {
+        /**
+         * Undo the changes made by the {@link OnEnterStateCallback} and {@link OnExitStateCallback}
+         * @param prevState State from which the function backtracks
+         * @param input the input that caused the backtracked transition
+         * @param currState the state that the FSM backtracks to
+         */
         void rollback(S prevState, I input, S currState);
     }
 
     @FunctionalInterface
     interface ErrorCallback<S, I> {
+        /**
+         * Transition failure callback
+         * @param state the current state
+         * @param input the input that caused the failure
+         */
         void error(S state, I input);
     }
 
     @FunctionalInterface
     interface OnEnterStateCallback<S, I> {
-        void transition(S currState, I input, S nextState);
+        /**
+         * Called while transitioning to a state
+         * @param prevState The state the FSM is transitioning from
+         * @param input the input causing the transition
+         * @param nextState the state the input is transitioning towards
+         * @apiNote executed after {@link OnExitStateCallback}
+         */
+        void transition(S prevState, I input, S nextState);
     }
 
     @FunctionalInterface
     interface OnExitStateCallback<S, I> {
+        /**
+         * Called while exiting a state
+         * @param currState The state the FSM is transitioning from
+         * @param input the input causing the transition
+         * @param nextState the state the input is transitioning towards
+         * @apiNote executed before {@link OnEnterStateCallback}
+         */
         void transition(S currState, I input, S nextState);
     }
 
