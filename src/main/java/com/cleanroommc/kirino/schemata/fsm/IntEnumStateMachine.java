@@ -103,8 +103,8 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
 
         @Override
         public IBuilder<Integer, I> addTransition(Integer state, I input, Integer nextState,
-                                                  OnEnterStateCallback<Integer, I> onEnterStateCallback,
-                                                  OnExitStateCallback<Integer, I> onExitStateCallback,
+                                                  @Nullable OnEnterStateCallback<Integer, I> onEnterStateCallback,
+                                                  @Nullable OnExitStateCallback<Integer, I> onExitStateCallback,
                                                   Rollback<Integer, I> rollbackCallback) {
             if (state < lowerStateBound || state > upperStateBound
             || nextState < lowerStateBound || nextState > upperStateBound) {

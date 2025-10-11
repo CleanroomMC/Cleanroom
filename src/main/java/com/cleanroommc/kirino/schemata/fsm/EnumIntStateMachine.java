@@ -114,10 +114,10 @@ final class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine
         }
 
         @Override
-        public IBuilder<S, Integer> addTransition(S state, Integer input, S nextState,
-                                                  OnEnterStateCallback<S, Integer> onEnterStateCallback,
-                                                  OnExitStateCallback<S, Integer> onExitStateCallback,
-                                                  Rollback<S, Integer> rollbackCallback) {
+        public IBuilder<S, Integer> addTransition(@NonNull S state, @NonNull Integer input, @NonNull S nextState,
+                                                  @Nullable OnEnterStateCallback<S, Integer> onEnterStateCallback,
+                                                  @Nullable OnExitStateCallback<S, Integer> onExitStateCallback,
+                                                  @Nullable Rollback<S, Integer> rollbackCallback) {
             if (input < lowerInputBound || input > upperInputBound){
                 throw new IllegalStateException(String.format(
                         "Input %d is out of range [%d,%d]",
@@ -125,8 +125,12 @@ final class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine
             }
             final int idx = this.index(input, state);
             transitionMap[idx] = nextState.ordinal();
-            stateEnterCallbackMap[nextState.ordinal()] = onEnterStateCallback;
-            stateExitCallbackMap[state.ordinal()] = onExitStateCallback;
+            if (onEnterStateCallback != null) {
+                stateEnterCallbackMap[nextState.ordinal()] = onEnterStateCallback;
+            }
+            if (onExitStateCallback != null) {
+                stateExitCallbackMap[state.ordinal()] = onExitStateCallback;
+            }
             rollbacks[idx] = rollbackCallback;
             return this;
         }
