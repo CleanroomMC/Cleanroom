@@ -5,6 +5,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayDeque;
+import java.util.BitSet;
 import java.util.Deque;
 
 final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements FiniteStateMachine<S, I> {
@@ -86,6 +87,7 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
     static class Builder<S extends Enum<S>, I extends Enum<I>> implements IBuilder<S, I> {
 
         private final S[] states;
+        private final I[] inputs; // only for validation
         private final int[] transitionMap;
         private final OnEnterStateCallback<S, I>[] entryCallbacks;
         private final OnExitStateCallback<S, I>[] exitCallbacks;
@@ -95,7 +97,8 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
 
         Builder(Class<S> stateClass, Class<I> inputClass){
             this.states = stateClass.getEnumConstants();
-            int length = states.length*inputClass.getEnumConstants().length;
+            this.inputs = inputClass.getEnumConstants();
+            int length = states.length*inputs.length;
             this.transitionMap = new int[length];
             for (int i = 0; i < length; i++) {
                 this.transitionMap[i] = -1;
@@ -136,6 +139,26 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
         public IBuilder<S, I> error(ErrorCallback<S, I> errorCallback) {
             this.error = errorCallback;
             return this;
+        }
+
+        @Override
+        public boolean validate() {
+            BitSet reachable = new BitSet(states.length);
+            Deque<S> stack = new ArrayDeque<>();
+            stack.push(initialState);
+            while (!stack.isEmpty()) {
+                S state = stack.pop();
+                if (!reachable.get(state.ordinal())) {
+                    reachable.set(state.ordinal());
+                    for (I input : inputs) {
+                        int next = transitionMap[index(input,state)];
+                        if (!(next == -1 || next == state.ordinal())) {
+                            stack.push(states[next]);
+                        }
+                    }
+                }
+            }
+            return reachable.cardinality() == states.length;
         }
 
         @Override

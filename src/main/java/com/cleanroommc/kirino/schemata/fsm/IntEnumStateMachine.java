@@ -5,6 +5,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayDeque;
+import java.util.BitSet;
 import java.util.Deque;
 
 final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine<Integer,I> {
@@ -89,6 +90,7 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
     static class Builder<I extends Enum<I>> implements IBuilder<Integer,I> {
 
         private final int lowerStateBound, upperStateBound;
+        private final I[] inputs;
         private final int[] transitionMap;
         private final OnEnterStateCallback<Integer,I>[] entryCallbacks;
         private final OnExitStateCallback<Integer, I>[] exitCallbacks;
@@ -99,7 +101,8 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
         Builder(int lowerStateBound, int upperStateBound, Class<I> inputClass) {
             this.lowerStateBound = lowerStateBound;
             this.upperStateBound = upperStateBound;
-            int length = (upperStateBound-lowerStateBound+1)*inputClass.getEnumConstants().length;
+            this.inputs = inputClass.getEnumConstants();
+            int length = (upperStateBound-lowerStateBound+1)*inputs.length;
             this.transitionMap = new int[length];
             for (int i = 0; i < length; i++) {
                 this.transitionMap[i] = -1;
@@ -107,6 +110,10 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
             this.entryCallbacks = new OnEnterStateCallback[(upperStateBound-lowerStateBound+1)];
             this.exitCallbacks = new OnExitStateCallback[(upperStateBound-lowerStateBound+1)];
             this.rollbacks = new Rollback[length];
+        }
+
+        private int index(I input, int state) {
+            return (input.ordinal()*(upperStateBound-lowerStateBound+1))+(state-lowerStateBound);
         }
 
         @Override
@@ -120,7 +127,7 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
                         "State %d out of range [%d,%d]",
                         initialState, lowerStateBound, upperStateBound));
             }
-            int index = (input.ordinal()*(upperStateBound-lowerStateBound+1))+(state-lowerStateBound);
+            int index = index(input,state);
             transitionMap[index] = nextState;
             if (onEnterStateCallback != null) {
                 entryCallbacks[nextState] = onEnterStateCallback;
@@ -142,6 +149,27 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
         public IBuilder<Integer, I> error(ErrorCallback<Integer, I> errorCallback) {
             this.error = errorCallback;
             return this;
+        }
+
+        @Override
+        public boolean validate() {
+            final int size = upperStateBound-lowerStateBound+1;
+            BitSet reachable = new BitSet(size);
+            Deque<Integer> stack = new ArrayDeque<>();
+            stack.push(initialState);
+            while (!stack.isEmpty()) {
+                int state = stack.pop();
+                if (!reachable.get(state)) {
+                    reachable.set(state);
+                    for (I input : inputs) {
+                        int next = transitionMap[index(input,state)];
+                        if (!(next == -1 || next == state)) {
+                            stack.push(next);
+                        }
+                    }
+                }
+            }
+            return reachable.cardinality() == size;
         }
 
         @Override

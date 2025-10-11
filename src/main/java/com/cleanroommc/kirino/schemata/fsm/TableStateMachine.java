@@ -6,9 +6,7 @@ import com.google.common.collect.Table;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Map;
+import java.util.*;
 
 final class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
 
@@ -129,6 +127,26 @@ final class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
         public IBuilder<S, I> error(@NonNull ErrorCallback<S, I> errorCallback) {
             this.error = errorCallback;
             return this;
+        }
+
+        @Override
+        public boolean validate() {
+            Table<I,S,S> table = this.builder.build();
+            Set<S> reachable = new HashSet<>();
+            Deque<S> stack = new ArrayDeque<>();
+            stack.push(initialState);
+            while (!stack.isEmpty()) {
+                S state = stack.pop();
+                if (!reachable.contains(state)) {
+                    reachable.add(state);
+                    for (I input : table.rowKeySet()) {
+                        if (table.contains(input,state)) {
+                            stack.push(table.get(input,state));
+                        }
+                    }
+                }
+            }
+            return reachable.size() == table.columnKeySet().size();
         }
 
         @Override

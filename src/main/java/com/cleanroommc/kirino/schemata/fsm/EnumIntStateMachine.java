@@ -1,10 +1,12 @@
 package com.cleanroommc.kirino.schemata.fsm;
 
+import org.apache.commons.lang3.BitField;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayDeque;
+import java.util.BitSet;
 import java.util.Deque;
 
 final class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine<S, Integer> {
@@ -153,6 +155,26 @@ final class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine
         public IBuilder<S, Integer> error(ErrorCallback<S, Integer> errorCallback) {
             this.error = errorCallback;
             return this;
+        }
+
+        @Override
+        public boolean validate() {
+            BitSet reachable = new BitSet(states.length);
+            Deque<S> stack = new ArrayDeque<>();
+            stack.push(initialState);
+            while (!stack.isEmpty()) {
+                S state = stack.pop();
+                if (!reachable.get(state.ordinal())) {
+                    reachable.set(state.ordinal());
+                    for (int input = lowerInputBound; input <= upperInputBound; input++) {
+                        int next = transitionMap[index(input,state)];
+                        if (!(next == -1 || next == state.ordinal())) {
+                            stack.push(states[next]);
+                        }
+                    }
+                }
+            }
+            return reachable.cardinality() == states.length;
         }
 
         @Override

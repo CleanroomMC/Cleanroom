@@ -5,6 +5,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayDeque;
+import java.util.BitSet;
 import java.util.Deque;
 
 final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer> {
@@ -98,7 +99,7 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
     static class Builder implements IBuilder<Integer,Integer> {
         private final int lowerStateBound, upperStateBound;
         private final int lowerInputBound, upperInputBound;
-        private final int[] stateTable;
+        private final int[] transitionMap;
         private final OnEnterStateCallback<Integer,Integer>[] entryCallbacks;
         private final OnExitStateCallback<Integer,Integer>[] exitCallbacks;
         private final Rollback<Integer,Integer>[] rollbacks;
@@ -112,9 +113,9 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
             this.upperInputBound = upperInputBound;
             int stateCount = (upperStateBound-lowerStateBound+1);
             int size = stateCount*(upperInputBound-lowerInputBound+1);
-            this.stateTable = new int[size];
+            this.transitionMap = new int[size];
             for (int i = 0; i < size; i++) {
-                this.stateTable[i] = -1;
+                this.transitionMap[i] = -1;
             }
             this.entryCallbacks = new OnEnterStateCallback[stateCount];
             this.exitCallbacks = new OnExitStateCallback[stateCount];
@@ -142,7 +143,7 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
                         input, lowerInputBound, upperInputBound));
             }
             int idx = this.index(input, state);
-            stateTable[idx] = nextState;
+            transitionMap[idx] = nextState;
             if (onEnterStateCallback != null) {
                 entryCallbacks[nextState] = onEnterStateCallback;
             }
@@ -171,10 +172,31 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
         }
 
         @Override
+        public boolean validate() {
+            final int size = upperStateBound-lowerStateBound+1;
+            BitSet reachable = new BitSet(size);
+            Deque<Integer> stack = new ArrayDeque<>();
+            stack.push(initialState);
+            while (!stack.isEmpty()) {
+                int state = stack.pop();
+                if (!reachable.get(state)) {
+                    reachable.set(state);
+                    for (int input = lowerInputBound; input <= upperInputBound; input++) {
+                        int next = transitionMap[index(input,state)];
+                        if (!(next == -1 || next == state)) {
+                            stack.push(next);
+                        }
+                    }
+                }
+            }
+            return reachable.cardinality() == size;
+        }
+
+        @Override
         public FiniteStateMachine<Integer, Integer> build() {
             return new IntRangeStateMachine(lowerStateBound, upperStateBound,
                     lowerInputBound, upperInputBound,
-                    stateTable,
+                    transitionMap,
                     entryCallbacks, exitCallbacks,
                     rollbacks, error, initialState);
         }

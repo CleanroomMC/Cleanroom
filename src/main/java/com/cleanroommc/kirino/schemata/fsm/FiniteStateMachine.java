@@ -146,6 +146,12 @@ public interface FiniteStateMachine<S, I> {
          */
         IBuilder<S, I> error(ErrorCallback<S,I> errorCallback);
         /**
+         * @return If the FSM has states that can't be reached from any other state while not being the initial state,
+         * return true, otherwise false
+         * @implSpec use DFS or another graph traversal algorithm
+         */
+        boolean validate();
+        /**
          * Finish instantiating the FSM
          * @return the FSM
          */
