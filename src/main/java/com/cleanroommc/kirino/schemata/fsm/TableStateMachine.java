@@ -3,6 +3,7 @@ package com.cleanroommc.kirino.schemata.fsm;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -33,7 +34,7 @@ final class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
     }
 
     @Override
-    public S accept(@NonNull I input) {
+    public Optional<S> accept(@NonNull I input) {
         if (!this.transitionMap.containsRow(input)) {
             throw new IllegalArgumentException(String.format("%s is not a valid input", input));
         }
@@ -41,7 +42,7 @@ final class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
             if (this.errorCallback != null) {
                 this.errorCallback.error(state, input);
             }
-            return null;
+            return Optional.empty();
         }
         S newState = transitionMap.get(input, state);
         if (newState != null) {
@@ -55,20 +56,21 @@ final class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
             this.state = newState;
         } else if (this.errorCallback != null) {
             this.errorCallback.error(state, input);
-            return null;
+            return Optional.empty();
         }
-        return this.state;
+        return Optional.of(this.state);
     }
 
+    @NotNull
     @Override
     public S state() {
         return this.state;
     }
 
     @Override
-    public FSMBacklogPair<S, I> backtrack() {
+    public Optional<FSMBacklogPair<S, I>> backtrack() {
         if (stack.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
         FSMBacklogPair<S, I> entry = stack.pop();
         Rollback<S, I> rollback = this.rollbackTable.get(entry.input(), entry.state());
@@ -77,7 +79,7 @@ final class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
         }
         FSMBacklogPair<S, I> result = new FSMBacklogPair<>(state, entry.input());
         this.state = entry.state();
-        return result;
+        return Optional.of(result);
     }
 
     @Override

@@ -7,6 +7,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.ArrayDeque;
 import java.util.BitSet;
 import java.util.Deque;
+import java.util.Optional;
 
 final class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine<S, Integer> {
 
@@ -38,6 +39,7 @@ final class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine
         this.state = initialState.ordinal();
     }
 
+    @NotNull
     @Override
     public S state() {
         return states[state];
@@ -48,7 +50,7 @@ final class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine
     }
 
     @Override
-    public @Nullable S accept(@NotNull Integer input) {
+    public @Nullable Optional<S> accept(@NotNull Integer input) {
         if (input < lowerInputBound || input > upperInputBound) {
             throw new IllegalStateException(String.format(
                     "Input %d is out of range [%d,%d]",
@@ -66,15 +68,15 @@ final class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine
             state = transitionMap[idx];
         } else if (error != null) {
             error.error(states[state], input);
-            return null;
+            return Optional.empty();
         }
-        return states[state];
+        return Optional.of(states[state]);
     }
 
     @Override
-    public FSMBacklogPair<S, Integer> backtrack() {
+    public Optional<FSMBacklogPair<S, Integer>> backtrack() {
         if (backlog.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
         FSMBacklogPair<S,Integer> pair = backlog.pop();
         Rollback<S,Integer> rollback = rollbacks[index(pair.input(), pair.state().ordinal())];
@@ -83,7 +85,7 @@ final class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine
         }
         FSMBacklogPair<S,Integer> result = new FSMBacklogPair<>(states[state], pair.input());
         this.state = pair.state().ordinal();
-        return result;
+        return Optional.of(result);
     }
 
     @Override

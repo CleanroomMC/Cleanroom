@@ -7,6 +7,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.ArrayDeque;
 import java.util.BitSet;
 import java.util.Deque;
+import java.util.Optional;
 
 final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer> {
 
@@ -41,6 +42,7 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
         this.state = initialState;
     }
 
+    @NotNull
     @Override
     public Integer state() {
         return this.state;
@@ -51,7 +53,7 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
     }
 
     @Override
-    public Integer accept(@NotNull Integer input) {
+    public Optional<Integer> accept(@NotNull Integer input) {
         if (input < lowerInputBound || input > upperInputBound){
             throw new IllegalStateException(String.format(
                     "Input %d is out of range [%d,%d]",
@@ -70,13 +72,13 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
         } else if (errorCallback != null){
             errorCallback.error(state, input);
         }
-        return state;
+        return Optional.of(state);
     }
 
     @Override
-    public FSMBacklogPair<Integer, Integer> backtrack() {
+    public Optional<FSMBacklogPair<Integer, Integer>> backtrack() {
         if (backlog.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
         FSMBacklogPair<Integer,Integer> pair = backlog.pop();
         Rollback<Integer,Integer> rollback = rollbackCallbacks[index(pair.input(),pair.state())];
@@ -85,7 +87,7 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
         }
         FSMBacklogPair<Integer,Integer> result = new FSMBacklogPair<>(state, pair.input());
         this.state = pair.state();
-        return result;
+        return Optional.of(result);
     }
 
     @Override

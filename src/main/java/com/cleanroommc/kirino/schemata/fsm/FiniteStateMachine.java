@@ -3,6 +3,8 @@ package com.cleanroommc.kirino.schemata.fsm;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Optional;
+
 /**
  * Finite State Machine
  * @param <S> State type
@@ -15,6 +17,7 @@ public interface FiniteStateMachine<S, I> {
      * State getter
      * @return Current State
      */
+    @NonNull
     S state();
 
     /**
@@ -22,10 +25,9 @@ public interface FiniteStateMachine<S, I> {
      * @param input Input to the state machine
      * @return next state the FSM transitions to
      * @implSpec if state transition is successful, execute the {@link OnEnterStateCallback transition callback},
-     * if it fails call the corresponding {@link ErrorCallback error callback} and return null
+     * if it fails call the corresponding {@link ErrorCallback error callback} and return an empty optional
      */
-    @Nullable
-    S accept(@NonNull I input);
+    Optional<S> accept(@NonNull I input);
 
     /**
      * Backtrack the state machine to its previous state
@@ -33,8 +35,8 @@ public interface FiniteStateMachine<S, I> {
      * @implSpec The state machine has to store all it's previous inputs and states for backtracking purpose.
      * Execute rollback callback during backtracking.
      */
-    @Nullable
-    FSMBacklogPair<S, I> backtrack();
+
+    Optional<FSMBacklogPair<S, I>> backtrack();
 
     /**
      * Sets the state to the initial state and clears the backlog
@@ -51,7 +53,7 @@ public interface FiniteStateMachine<S, I> {
      * A quick way to undo all the actions taken by the entire state machine
      */
     default void rewind() {
-        while (backtrack() != null);
+        while (backtrack().isPresent());
     }
 
     @FunctionalInterface
@@ -62,7 +64,7 @@ public interface FiniteStateMachine<S, I> {
          * @param input the input that caused the backtracked transition
          * @param currState the state that the FSM backtracks to
          */
-        void rollback(S prevState, I input, S currState);
+        void rollback(@NonNull S prevState, @NonNull I input, @NonNull S currState);
     }
 
     @FunctionalInterface
@@ -72,7 +74,7 @@ public interface FiniteStateMachine<S, I> {
          * @param state the current state
          * @param input the input that caused the failure
          */
-        void error(S state, I input);
+        void error(@NonNull S state, @NonNull I input);
     }
 
     @FunctionalInterface
@@ -84,7 +86,7 @@ public interface FiniteStateMachine<S, I> {
          * @param nextState the state the input is transitioning towards
          * @apiNote executed after {@link OnExitStateCallback}
          */
-        void transition(S prevState, I input, S nextState);
+        void transition(@NonNull S prevState, @NonNull I input, @NonNull S nextState);
     }
 
     @FunctionalInterface
@@ -96,7 +98,7 @@ public interface FiniteStateMachine<S, I> {
          * @param nextState the state the input is transitioning towards
          * @apiNote executed before {@link OnEnterStateCallback}
          */
-        void transition(S currState, I input, S nextState);
+        void transition(@NonNull S currState, @NonNull I input, @NonNull S nextState);
     }
 
     interface IBuilder<S, I> {
@@ -123,27 +125,6 @@ public interface FiniteStateMachine<S, I> {
                                     @Nullable OnEnterStateCallback<S,I> onEnterStateCallback,
                                     @Nullable OnExitStateCallback<S,I> onExitStateCallback,
                                     @Nullable Rollback<S,I> rollbackCallback);
-        default IBuilder<S, I> addTransition(S state,I input,S nextState) {
-            return addTransition(state,input,nextState,null,null,null);
-        }
-        default IBuilder<S, I> addTransition(@NonNull S state,@NonNull I input,@NonNull S nextState,
-                                            @NonNull OnEnterStateCallback<S,I> onEnterStateCallback,
-                                            @NonNull OnExitStateCallback<S,I> onExitStateCallback) {
-            return addTransition(state,input,nextState, onEnterStateCallback, onExitStateCallback, null);
-        }
-        default IBuilder<S, I> addTransition(@NonNull S state,@NonNull I input,@NonNull S nextState,
-                                             @NonNull OnEnterStateCallback<S,I> onEnterStateCallback) {
-            return addTransition(state,input,nextState, onEnterStateCallback, null, null);
-        }
-        default IBuilder<S, I> addTransition(@NonNull S state,@NonNull I input,@NonNull S nextState,
-                                             @NonNull OnExitStateCallback<S,I> onExitStateCallback) {
-            return addTransition(state,input,nextState, null, onExitStateCallback, null);
-        }
-        default IBuilder<S, I> addTransition(@NonNull S state,@NonNull I input,@NonNull S nextState,
-                                             @NonNull Rollback<S,I> rollbackCallback) {
-            return addTransition(state,input,nextState,null,null,rollbackCallback);
-        }
-
         /**
          * Sets the entry callback for a state
          * @param state The state for which the callback will be set.
@@ -192,6 +173,28 @@ public interface FiniteStateMachine<S, I> {
          * @return the FSM
          */
         FiniteStateMachine<S, I> build();
+
+        // Defaults
+        default IBuilder<S, I> addTransition(S state,I input,S nextState) {
+            return addTransition(state,input,nextState,null,null,null);
+        }
+        default IBuilder<S, I> addTransition(@NonNull S state,@NonNull I input,@NonNull S nextState,
+                                             @NonNull OnEnterStateCallback<S,I> onEnterStateCallback,
+                                             @NonNull OnExitStateCallback<S,I> onExitStateCallback) {
+            return addTransition(state,input,nextState, onEnterStateCallback, onExitStateCallback, null);
+        }
+        default IBuilder<S, I> addTransition(@NonNull S state,@NonNull I input,@NonNull S nextState,
+                                             @NonNull OnEnterStateCallback<S,I> onEnterStateCallback) {
+            return addTransition(state,input,nextState, onEnterStateCallback, null, null);
+        }
+        default IBuilder<S, I> addTransition(@NonNull S state,@NonNull I input,@NonNull S nextState,
+                                             @NonNull OnExitStateCallback<S,I> onExitStateCallback) {
+            return addTransition(state,input,nextState, null, onExitStateCallback, null);
+        }
+        default IBuilder<S, I> addTransition(@NonNull S state,@NonNull I input,@NonNull S nextState,
+                                             @NonNull Rollback<S,I> rollbackCallback) {
+            return addTransition(state,input,nextState,null,null,rollbackCallback);
+        }
     }
 
     class Builder {

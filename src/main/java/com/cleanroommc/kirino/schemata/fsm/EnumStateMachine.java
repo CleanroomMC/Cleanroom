@@ -7,6 +7,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.ArrayDeque;
 import java.util.BitSet;
 import java.util.Deque;
+import java.util.Optional;
 
 final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements FiniteStateMachine<S, I> {
 
@@ -32,6 +33,7 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
         this.states = states;
     }
 
+    @NotNull
     @Override
     public S state() {
         return states[state];
@@ -41,9 +43,8 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
         return (states.length*input.ordinal())+state;
     }
 
-    @Nullable
     @Override
-    public S accept(@NotNull I input) {
+    public Optional<S> accept(@NotNull I input) {
         int idx = this.index(input, state);
         if (transitionMap[idx] != -1) {
             backlog.push(new FSMBacklogPair<>(states[state], input));
@@ -56,15 +57,15 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
             state = transitionMap[idx];
         } else if (error != null) {
             error.error(states[state], input);
-            return null;
+            return Optional.empty();
         }
-        return states[state];
+        return Optional.of(states[state]);
     }
 
     @Override
-    public FSMBacklogPair<S, I> backtrack() {
+    public Optional<FSMBacklogPair<S, I>> backtrack() {
         if (backlog.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
         FSMBacklogPair<S, I> pair = backlog.pop();
         Rollback<S, I> rollback = rollbacks[index(pair.input(), pair.state().ordinal())];
@@ -73,7 +74,7 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
         }
         FSMBacklogPair<S, I> result = new FSMBacklogPair<>(states[state], pair.input());
         this.state = pair.state().ordinal();
-        return result;
+        return Optional.of(result);
     }
 
     @Override

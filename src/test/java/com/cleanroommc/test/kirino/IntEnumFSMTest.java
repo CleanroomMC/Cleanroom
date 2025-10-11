@@ -3,6 +3,7 @@ package com.cleanroommc.test.kirino;
 import com.cleanroommc.kirino.schemata.fsm.FiniteStateMachine;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -93,10 +94,10 @@ public class IntEnumFSMTest {
         int[] expectedStates = {1,2,1,3,2};
         Input[] expectedInputs = {Input.FIRST,Input.SECOND,Input.FIRST,Input.THIRD,Input.SECOND};
         for(int i = 0; i < 5; i++) {
-            FiniteStateMachine.FSMBacklogPair<Integer,Input> backlog = FSM.backtrack();
-            assertNotNull(backlog);
-            assertEquals(expectedStates[i], backlog.state());
-            assertEquals(expectedInputs[i], backlog.input());
+            Optional<FiniteStateMachine.FSMBacklogPair<Integer, Input>> backlog = FSM.backtrack();
+            assertTrue(backlog.isPresent());
+            assertEquals(expectedStates[i], backlog.get().state());
+            assertEquals(expectedInputs[i], backlog.get().input());
         }
     }
 

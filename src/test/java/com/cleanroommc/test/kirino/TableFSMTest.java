@@ -3,6 +3,7 @@ package com.cleanroommc.test.kirino;
 import com.cleanroommc.kirino.schemata.fsm.FiniteStateMachine;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -98,10 +99,10 @@ public class TableFSMTest {
         String[] expectedStates = {"state1","state2","state1","state3","state2"};
         int[] inputs = {1,2,1,3,2};
         for (int i = 0; i < 5; i++) {
-            FiniteStateMachine.FSMBacklogPair<String, Integer> pair = FSM.backtrack();
-            assertNotNull(pair);
-            assertEquals(expectedStates[i],pair.state());
-            assertEquals(inputs[i],pair.input());
+            Optional<FiniteStateMachine.FSMBacklogPair<String, Integer>> pair = FSM.backtrack();
+            assertTrue(pair.isPresent());
+            assertEquals(expectedStates[i],pair.get().state());
+            assertEquals(inputs[i],pair.get().input());
         }
     }
 

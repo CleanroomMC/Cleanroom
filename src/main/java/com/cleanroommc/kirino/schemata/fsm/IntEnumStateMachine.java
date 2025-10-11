@@ -7,6 +7,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.ArrayDeque;
 import java.util.BitSet;
 import java.util.Deque;
+import java.util.Optional;
 
 final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine<Integer,I> {
     private final int lowerStateBound, upperStateBound;
@@ -35,6 +36,7 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
         this.state = initialState;
     }
 
+    @NotNull
     @Override
     public Integer state() {
         return state;
@@ -44,9 +46,8 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
         return ((upperStateBound-lowerStateBound+1)*input.ordinal())+(state-lowerStateBound);
     }
 
-    @Nullable
     @Override
-    public Integer accept(@NotNull I input) {
+    public Optional<Integer> accept(@NotNull I input) {
         int idx = this.index(input, state);
         if (transitionMap[idx] != -1) {
             backlog.push(new FSMBacklogPair<>(state, input));
@@ -59,15 +60,15 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
             state = transitionMap[idx];
         } else if (error != null) {
             error.error(state, input);
-            return null;
+            return Optional.empty();
         }
-        return state;
+        return Optional.of(state);
     }
 
     @Override
-    public FSMBacklogPair<Integer, I> backtrack() {
+    public Optional<FSMBacklogPair<Integer, I>> backtrack() {
         if (backlog.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
         FSMBacklogPair<Integer,I> pair = backlog.pop();
         Rollback<Integer,I> rollback = rollbacks[index(pair.input(), pair.state())];
@@ -76,7 +77,7 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
         }
         FSMBacklogPair<Integer,I> result = new FSMBacklogPair<>(state, pair.input());
         this.state = pair.state();
-        return result;
+        return Optional.of(result);
     }
 
     @Override
