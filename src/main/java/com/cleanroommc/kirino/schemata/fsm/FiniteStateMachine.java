@@ -140,7 +140,9 @@ public interface FiniteStateMachine<S, I> {
          */
         IBuilder<S, I> initialState(S initialState);
         /**
-         * Sets the error callback, that will be executed when a transition fails
+         * Sets the error callback which will be executed if and only if a transition fails
+         * due to an input that leads to a non-existent route. An exception will be thrown if
+         * the input itself is invalid.
          * @param errorCallback the error callback
          * @return the builder
          */
