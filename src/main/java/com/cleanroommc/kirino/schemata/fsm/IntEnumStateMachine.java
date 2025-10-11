@@ -1,5 +1,6 @@
 package com.cleanroommc.kirino.schemata.fsm;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -48,6 +49,7 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
 
     @Override
     public Optional<Integer> accept(@NotNull I input) {
+        Preconditions.checkNotNull(input);
         int idx = this.index(input, state);
         if (transitionMap[idx] != -1) {
             backlog.push(new FSMBacklogPair<>(state, input));
@@ -122,6 +124,7 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
                                                   @Nullable OnEnterStateCallback<Integer, I> onEnterStateCallback,
                                                   @Nullable OnExitStateCallback<Integer, I> onExitStateCallback,
                                                   @Nullable Rollback<Integer, I> rollbackCallback) {
+            Preconditions.checkNotNull(input);
             if (state < lowerStateBound || state > upperStateBound
             || nextState < lowerStateBound || nextState > upperStateBound) {
                 throw new IllegalStateException(String.format(
@@ -164,12 +167,14 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
 
         @Override
         public IBuilder<Integer, I> initialState(@NotNull Integer initialState) {
+            Preconditions.checkNotNull(initialState);
             this.initialState = initialState;
             return this;
         }
 
         @Override
         public IBuilder<Integer, I> error(@NotNull ErrorCallback<Integer, I> errorCallback) {
+            Preconditions.checkNotNull(errorCallback);
             this.error = errorCallback;
             return this;
         }

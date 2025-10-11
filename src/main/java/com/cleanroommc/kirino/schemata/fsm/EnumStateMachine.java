@@ -1,5 +1,6 @@
 package com.cleanroommc.kirino.schemata.fsm;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -45,6 +46,7 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
 
     @Override
     public Optional<S> accept(@NotNull I input) {
+        Preconditions.checkNotNull(input);
         int idx = this.index(input, state);
         if (transitionMap[idx] != -1) {
             backlog.push(new FSMBacklogPair<>(states[state], input));
@@ -118,6 +120,9 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
                                             @Nullable OnEnterStateCallback<S, I> onEnterStateCallback,
                                             @Nullable OnExitStateCallback<S, I> onExitStateCallback,
                                             @Nullable Rollback<S, I> rollbackCallback) {
+            Preconditions.checkNotNull(state);
+            Preconditions.checkNotNull(input);
+            Preconditions.checkNotNull(nextState);
             int idx = this.index(input, state);
             transitionMap[idx] = nextState.ordinal();
             if (onEnterStateCallback != null) {
@@ -132,24 +137,28 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
 
         @Override
         public IBuilder<S, I> setEntryCallback(@NonNull S state, @Nullable OnEnterStateCallback<S, I> callback) {
+            Preconditions.checkNotNull(state);
             entryCallbacks[state.ordinal()] = callback;
             return this;
         }
 
         @Override
         public IBuilder<S, I> setExitCallback(@NonNull S state, @Nullable OnExitStateCallback<S, I> callback) {
+            Preconditions.checkNotNull(state);
             exitCallbacks[state.ordinal()] = callback;
             return this;
         }
 
         @Override
         public IBuilder<S, I> initialState(@NotNull S initialState) {
+            Preconditions.checkNotNull(initialState);
             this.initialState = initialState;
             return this;
         }
 
         @Override
         public IBuilder<S, I> error(@NotNull ErrorCallback<S, I> errorCallback) {
+            Preconditions.checkNotNull(errorCallback);
             this.error = errorCallback;
             return this;
         }

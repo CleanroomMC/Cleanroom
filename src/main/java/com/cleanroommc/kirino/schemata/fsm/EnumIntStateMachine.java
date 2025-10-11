@@ -1,5 +1,6 @@
 package com.cleanroommc.kirino.schemata.fsm;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -129,6 +130,8 @@ final class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine
                                                   @Nullable OnEnterStateCallback<S, Integer> onEnterStateCallback,
                                                   @Nullable OnExitStateCallback<S, Integer> onExitStateCallback,
                                                   @Nullable Rollback<S, Integer> rollbackCallback) {
+            Preconditions.checkNotNull(state);
+            Preconditions.checkNotNull(nextState);
             if (input < lowerInputBound || input > upperInputBound){
                 throw new IllegalStateException(String.format(
                         "Input %d is out of range [%d,%d]",
@@ -148,24 +151,28 @@ final class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine
 
         @Override
         public IBuilder<S, Integer> setEntryCallback(@NonNull S state, @Nullable OnEnterStateCallback<S, Integer> callback) {
+            Preconditions.checkNotNull(state);
             stateEnterCallbackMap[state.ordinal()] = callback;
             return this;
         }
 
         @Override
         public IBuilder<S, Integer> setExitCallback(@NonNull S state, @Nullable OnExitStateCallback<S, Integer> callback) {
+            Preconditions.checkNotNull(state);
             stateExitCallbackMap[state.ordinal()] = callback;
             return this;
         }
 
         @Override
         public IBuilder<S, Integer> initialState(@NotNull S initialState) {
+            Preconditions.checkNotNull(initialState);
             this.initialState = initialState;
             return this;
         }
 
         @Override
         public IBuilder<S, Integer> error(@NotNull ErrorCallback<S, Integer> errorCallback) {
+            Preconditions.checkNotNull(errorCallback);
             this.error = errorCallback;
             return this;
         }

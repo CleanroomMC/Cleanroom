@@ -1,5 +1,6 @@
 package com.cleanroommc.kirino.schemata.fsm;
 
+import com.google.common.base.Preconditions;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -175,24 +176,29 @@ public interface FiniteStateMachine<S, I> {
         FiniteStateMachine<S, I> build();
 
         // Defaults
-        default IBuilder<S, I> addTransition(S state,I input,S nextState) {
+        default IBuilder<S, I> addTransition(@NonNull S state, @NonNull I input, @NonNull S nextState) {
             return addTransition(state,input,nextState,null,null,null);
         }
         default IBuilder<S, I> addTransition(@NonNull S state,@NonNull I input,@NonNull S nextState,
                                              @NonNull OnEnterStateCallback<S,I> onEnterStateCallback,
                                              @NonNull OnExitStateCallback<S,I> onExitStateCallback) {
+            Preconditions.checkNotNull(onEnterStateCallback);
+            Preconditions.checkNotNull(onExitStateCallback);
             return addTransition(state,input,nextState, onEnterStateCallback, onExitStateCallback, null);
         }
         default IBuilder<S, I> addTransition(@NonNull S state,@NonNull I input,@NonNull S nextState,
                                              @NonNull OnEnterStateCallback<S,I> onEnterStateCallback) {
+            Preconditions.checkNotNull(onEnterStateCallback);
             return addTransition(state,input,nextState, onEnterStateCallback, null, null);
         }
         default IBuilder<S, I> addTransition(@NonNull S state,@NonNull I input,@NonNull S nextState,
                                              @NonNull OnExitStateCallback<S,I> onExitStateCallback) {
+            Preconditions.checkNotNull(onExitStateCallback);
             return addTransition(state,input,nextState, null, onExitStateCallback, null);
         }
         default IBuilder<S, I> addTransition(@NonNull S state,@NonNull I input,@NonNull S nextState,
                                              @NonNull Rollback<S,I> rollbackCallback) {
+            Preconditions.checkNotNull(rollbackCallback);
             return addTransition(state,input,nextState,null,null,rollbackCallback);
         }
     }

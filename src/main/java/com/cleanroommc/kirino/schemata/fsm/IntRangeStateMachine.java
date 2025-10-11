@@ -1,5 +1,6 @@
 package com.cleanroommc.kirino.schemata.fsm;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -191,6 +192,7 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
 
         @Override
         public IBuilder<Integer, Integer> error(@NonNull ErrorCallback<Integer, Integer> errorCallback) {
+            Preconditions.checkNotNull(errorCallback);
             this.error = errorCallback;
             return this;
         }
