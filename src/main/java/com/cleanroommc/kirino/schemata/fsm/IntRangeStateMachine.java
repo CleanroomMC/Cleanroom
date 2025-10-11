@@ -127,7 +127,7 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
         }
 
         @Override
-        public IBuilder<Integer, Integer> addTransition(Integer state, Integer input, Integer nextState,
+        public IBuilder<Integer, Integer> addTransition(@NotNull Integer state, @NotNull Integer input, @NotNull Integer nextState,
                                                         @Nullable OnEnterStateCallback<Integer, Integer> onEnterStateCallback,
                                                         @Nullable OnExitStateCallback<Integer, Integer> onExitStateCallback,
                                                         @Nullable Rollback<Integer, Integer> rollbackCallback) {
@@ -155,7 +155,7 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
         }
 
         @Override
-        public IBuilder<Integer, Integer> initialState(Integer initialState) {
+        public IBuilder<Integer, Integer> initialState(@NotNull Integer initialState) {
             if (initialState < lowerStateBound || initialState > upperStateBound) {
                 throw new IllegalStateException(String.format(
                         "State %d out of range [%d,%d]",

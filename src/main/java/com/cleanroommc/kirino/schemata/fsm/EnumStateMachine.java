@@ -130,13 +130,13 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
         }
 
         @Override
-        public IBuilder<S, I> initialState(S initialState) {
+        public IBuilder<S, I> initialState(@NotNull S initialState) {
             this.initialState = initialState;
             return this;
         }
 
         @Override
-        public IBuilder<S, I> error(ErrorCallback<S, I> errorCallback) {
+        public IBuilder<S, I> error(@NotNull ErrorCallback<S, I> errorCallback) {
             this.error = errorCallback;
             return this;
         }

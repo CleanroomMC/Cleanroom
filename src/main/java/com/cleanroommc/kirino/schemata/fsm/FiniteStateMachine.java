@@ -118,27 +118,27 @@ public interface FiniteStateMachine<S, I> {
          *                         it is different for each state and input combination.</b>
          * @return the builder
          */
-        IBuilder<S, I> addTransition(S state,I input,S nextState,
+        IBuilder<S, I> addTransition(@NonNull S state,@NonNull I input,@NonNull S nextState,
                                     @Nullable OnEnterStateCallback<S,I> onEnterStateCallback,
                                     @Nullable OnExitStateCallback<S,I> onExitStateCallback,
                                     @Nullable Rollback<S,I> rollbackCallback);
         default IBuilder<S, I> addTransition(S state,I input,S nextState) {
             return addTransition(state,input,nextState,null,null,null);
         }
-        default IBuilder<S, I> addTransition(S state,I input,S nextState,
+        default IBuilder<S, I> addTransition(@NonNull S state,@NonNull I input,@NonNull S nextState,
                                             @NonNull OnEnterStateCallback<S,I> onEnterStateCallback,
                                             @NonNull OnExitStateCallback<S,I> onExitStateCallback) {
             return addTransition(state,input,nextState, onEnterStateCallback, onExitStateCallback, null);
         }
-        default IBuilder<S, I> addTransition(S state,I input,S nextState,
+        default IBuilder<S, I> addTransition(@NonNull S state,@NonNull I input,@NonNull S nextState,
                                              @NonNull OnEnterStateCallback<S,I> onEnterStateCallback) {
             return addTransition(state,input,nextState, onEnterStateCallback, null, null);
         }
-        default IBuilder<S, I> addTransition(S state,I input,S nextState,
+        default IBuilder<S, I> addTransition(@NonNull S state,@NonNull I input,@NonNull S nextState,
                                              @NonNull OnExitStateCallback<S,I> onExitStateCallback) {
             return addTransition(state,input,nextState, null, onExitStateCallback, null);
         }
-        default IBuilder<S, I> addTransition(S state,I input,S nextState,
+        default IBuilder<S, I> addTransition(@NonNull S state,@NonNull I input,@NonNull S nextState,
                                              @NonNull Rollback<S,I> rollbackCallback) {
             return addTransition(state,input,nextState,null,null,rollbackCallback);
         }
@@ -148,7 +148,7 @@ public interface FiniteStateMachine<S, I> {
          * @param initialState the initial state
          * @return the builder
          */
-        IBuilder<S, I> initialState(S initialState);
+        IBuilder<S, I> initialState(@NonNull S initialState);
         /**
          * Sets the error callback which will be executed if and only if a transition fails
          * due to an input that leads to a non-existent route. An exception will be thrown if
@@ -156,7 +156,7 @@ public interface FiniteStateMachine<S, I> {
          * @param errorCallback the error callback
          * @return the builder
          */
-        IBuilder<S, I> error(ErrorCallback<S,I> errorCallback);
+        IBuilder<S, I> error(@NonNull ErrorCallback<S,I> errorCallback);
         /**
          * @return If the FSM has states that can't be reached from any other state while not being the initial state,
          * return true, otherwise false

@@ -117,7 +117,7 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
         }
 
         @Override
-        public IBuilder<Integer, I> addTransition(Integer state, I input, Integer nextState,
+        public IBuilder<Integer, I> addTransition(@NotNull Integer state, @NotNull I input, @NotNull Integer nextState,
                                                   @Nullable OnEnterStateCallback<Integer, I> onEnterStateCallback,
                                                   @Nullable OnExitStateCallback<Integer, I> onExitStateCallback,
                                                   @Nullable Rollback<Integer, I> rollbackCallback) {
@@ -140,13 +140,13 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
         }
 
         @Override
-        public IBuilder<Integer, I> initialState(Integer initialState) {
+        public IBuilder<Integer, I> initialState(@NotNull Integer initialState) {
             this.initialState = initialState;
             return this;
         }
 
         @Override
-        public IBuilder<Integer, I> error(ErrorCallback<Integer, I> errorCallback) {
+        public IBuilder<Integer, I> error(@NotNull ErrorCallback<Integer, I> errorCallback) {
             this.error = errorCallback;
             return this;
         }
