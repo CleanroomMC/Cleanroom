@@ -47,6 +47,7 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
         return ((upperStateBound-lowerStateBound+1)*input.ordinal())+(state-lowerStateBound);
     }
 
+    @NotNull
     @Override
     public Optional<Integer> accept(@NotNull I input) {
         Preconditions.checkNotNull(input);
@@ -67,6 +68,7 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
         return Optional.of(state);
     }
 
+    @NotNull
     @Override
     public Optional<FSMBacklogPair<Integer, I>> backtrack() {
         if (backlog.isEmpty()) {

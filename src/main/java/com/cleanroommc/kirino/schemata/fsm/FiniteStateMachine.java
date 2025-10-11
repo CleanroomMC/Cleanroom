@@ -28,6 +28,7 @@ public interface FiniteStateMachine<S, I> {
      * @implSpec if state transition is successful, execute the {@link OnEnterStateCallback transition callback},
      * if it fails call the corresponding {@link ErrorCallback error callback} and return an empty optional
      */
+    @NonNull
     Optional<S> accept(@NonNull I input);
 
     /**
@@ -36,7 +37,7 @@ public interface FiniteStateMachine<S, I> {
      * @implSpec The state machine has to store all it's previous inputs and states for backtracking purpose.
      * Execute rollback callback during backtracking.
      */
-
+    @NonNull
     Optional<FSMBacklogPair<S, I>> backtrack();
 
     /**

@@ -34,6 +34,7 @@ final class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
         this.state = initialState;
     }
 
+    @NotNull
     @Override
     public Optional<S> accept(@NonNull I input) {
         Preconditions.checkNotNull(input);
@@ -69,6 +70,7 @@ final class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
         return this.state;
     }
 
+    @NotNull
     @Override
     public Optional<FSMBacklogPair<S, I>> backtrack() {
         if (stack.isEmpty()) {

@@ -53,6 +53,7 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
         return ((input - lowerInputBound)*(upperStateBound - lowerStateBound + 1))+(state-lowerStateBound);
     }
 
+    @NotNull
     @Override
     public Optional<Integer> accept(@NotNull Integer input) {
         if (input < lowerInputBound || input > upperInputBound){
@@ -76,6 +77,7 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
         return Optional.of(state);
     }
 
+    @NotNull
     @Override
     public Optional<FSMBacklogPair<Integer, Integer>> backtrack() {
         if (backlog.isEmpty()) {

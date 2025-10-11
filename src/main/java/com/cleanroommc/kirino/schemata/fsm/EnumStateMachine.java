@@ -44,6 +44,7 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
         return (states.length*input.ordinal())+state;
     }
 
+    @NotNull
     @Override
     public Optional<S> accept(@NotNull I input) {
         Preconditions.checkNotNull(input);
@@ -64,6 +65,7 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
         return Optional.of(states[state]);
     }
 
+    @NotNull
     @Override
     public Optional<FSMBacklogPair<S, I>> backtrack() {
         if (backlog.isEmpty()) {
