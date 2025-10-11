@@ -105,8 +105,17 @@ public interface FiniteStateMachine<S, I> {
          * @param state from
          * @param input the input causing the transition
          * @param nextState to
-         * @param onEnterStateCallback executed after the transition occurs
-         * @param rollbackCallback executed when the transition is undone
+         * @param onEnterStateCallback executed during transition to nextState.
+         *                             If null is passed to this parameter. Nothing will change.
+         *                             If a value is passed to this parameter. The {@link OnEnterStateCallback}
+         *                             for this state will be changed. <b>This callback is stored per state</b>
+         * @param onExitStateCallback executed during transition from state.
+         *                            If null is passed to this parameter. Nothing will change.
+         *                            If a value is passed to this parameter. The {@link OnExitStateCallback}
+         *                            for this state will be changed. <b>This callback is stored per state</b>
+         * @param rollbackCallback executed during {@link FiniteStateMachine#backtrack()} to reverse changes caused by the other callbacks.
+         *                         <b>This callback is stored per transition,
+         *                         it is different for each state and input combination.</b>
          * @return the builder
          */
         IBuilder<S, I> addTransition(S state,I input,S nextState,
@@ -134,7 +143,8 @@ public interface FiniteStateMachine<S, I> {
             return addTransition(state,input,nextState,null,null,rollbackCallback);
         }
         /**
-         * Sets the initial state, that the FSM will start in
+         * Sets the initial state, that the FSM will start in. <br/>
+         * <b>MUST BE CALLED BEFORE {@link IBuilder#build()}!!!</b>
          * @param initialState the initial state
          * @return the builder
          */
@@ -154,7 +164,8 @@ public interface FiniteStateMachine<S, I> {
          */
         boolean validate();
         /**
-         * Finish instantiating the FSM
+         * Finish instantiating the FSM. <br/>
+         * <b>{@link IBuilder#initialState(Object)} must be called before this!!!</b>
          * @return the FSM
          */
         FiniteStateMachine<S, I> build();
