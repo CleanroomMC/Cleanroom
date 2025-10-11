@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EnumIntFSMTest {
     @Test
@@ -32,9 +31,32 @@ public class EnumIntFSMTest {
     }
 
     @Test
-    void transitionCallbackTest() {
+    void entryCallbackTest() {
         AtomicInteger tester = new AtomicInteger(0);
         FiniteStateMachine.OnEnterStateCallback<State, Integer> callback = (_, input, _) -> tester.set(input);
+        FiniteStateMachine<State, Integer> FSM = FiniteStateMachine.Builder.enumIntStateMachine(State.class, 1, 3)
+                .addTransition(State.STATE1, 2, State.STATE2, callback)
+                .addTransition(State.STATE2, 3, State.STATE3, callback)
+                .addTransition(State.STATE3, 1, State.STATE1, callback)
+                .addTransition(State.STATE2, 1, State.STATE1, callback)
+                .initialState(State.STATE1)
+                .build();
+        FSM.accept(2);
+        assertEquals(2, tester.get());
+        FSM.accept(3);
+        assertEquals(3, tester.get());
+        FSM.accept(1);
+        assertEquals(1, tester.get());
+        FSM.accept(2);
+        assertEquals(2, tester.get());
+        FSM.accept(1);
+        assertEquals(1, tester.get());
+    }
+
+    @Test
+    void exitCallbackTest() {
+        AtomicInteger tester = new AtomicInteger(0);
+        FiniteStateMachine.OnExitStateCallback<State, Integer> callback = (_, input, _) -> tester.set(input);
         FiniteStateMachine<State, Integer> FSM = FiniteStateMachine.Builder.enumIntStateMachine(State.class, 1, 3)
                 .addTransition(State.STATE1, 2, State.STATE2, callback)
                 .addTransition(State.STATE2, 3, State.STATE3, callback)
@@ -121,6 +143,20 @@ public class EnumIntFSMTest {
         FSM.accept(1);
         FSM.accept(3);
         assertEquals(3, tester.get());
+    }
+
+    @Test
+    void validateTest() {
+        assertTrue(FiniteStateMachine.Builder.enumIntStateMachine(State.class, 1, 3)
+                .addTransition(State.STATE1, 2, State.STATE2)
+                .addTransition(State.STATE2, 3, State.STATE3)
+                .addTransition(State.STATE3, 1, State.STATE1)
+                .addTransition(State.STATE2, 1, State.STATE1)
+                .initialState(State.STATE1).validate());
+        assertFalse(FiniteStateMachine.Builder.enumIntStateMachine(State.class, 1, 3)
+                .addTransition(State.STATE1, 2, State.STATE2)
+                .addTransition(State.STATE2, 1, State.STATE1)
+                .initialState(State.STATE1).validate());
     }
 
     private enum State {

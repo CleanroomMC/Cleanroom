@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class IntRangeFSMTest {
     @Test
@@ -32,9 +31,32 @@ public class IntRangeFSMTest {
     }
 
     @Test
-    void transitionCallbackTest() {
+    void entryCallbackTest() {
         AtomicInteger tester = new AtomicInteger(0);
         FiniteStateMachine.OnEnterStateCallback<Integer,Integer> callback = (_, input, _) -> tester.set(input);
+        FiniteStateMachine<Integer,Integer> FSM = FiniteStateMachine.Builder.intRangeStateMachine(1,3,
+                        4,6).addTransition(1,5,2,callback)
+                .addTransition(2,4,1,callback)
+                .addTransition(2,6,3,callback)
+                .addTransition(3,4,1,callback)
+                .initialState(1)
+                .build();
+        FSM.accept(5);
+        assertEquals(5, tester.get());
+        FSM.accept(6);
+        assertEquals(6, tester.get());
+        FSM.accept(4);
+        assertEquals(4, tester.get());
+        FSM.accept(5);
+        assertEquals(5, tester.get());
+        FSM.accept(4);
+        assertEquals(4, tester.get());
+    }
+
+    @Test
+    void exitCallbackTest() {
+        AtomicInteger tester = new AtomicInteger(0);
+        FiniteStateMachine.OnExitStateCallback<Integer,Integer> callback = (_, input, _) -> tester.set(input);
         FiniteStateMachine<Integer,Integer> FSM = FiniteStateMachine.Builder.intRangeStateMachine(1,3,
                         4,6).addTransition(1,5,2,callback)
                 .addTransition(2,4,1,callback)
@@ -122,5 +144,21 @@ public class IntRangeFSMTest {
         FSM.accept(4);
         FSM.accept(4);
         assertEquals(4, tester.get());
+    }
+
+    @Test
+    void validateTest() {
+        assertTrue(FiniteStateMachine.Builder.intRangeStateMachine(1,3,
+                        4,6).addTransition(1,5,2)
+                .addTransition(2,4,1)
+                .addTransition(2,6,3)
+                .addTransition(3,4,1)
+                .initialState(1).validate());
+        assertFalse(FiniteStateMachine.Builder.intRangeStateMachine(1,3,
+                        4,6).addTransition(1,5,2)
+                .addTransition(2,4,1)
+                .addTransition(2,6,3)
+                .addTransition(3,4,1)
+                .initialState(1).validate());
     }
 }

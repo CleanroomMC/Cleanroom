@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TableFSMTest {
 
@@ -33,9 +32,34 @@ public class TableFSMTest {
     }
 
     @Test
-    void transitionCallbackTest() {
+    void entryCallbackTest() {
         AtomicInteger tester = new AtomicInteger(0);
         FiniteStateMachine.OnEnterStateCallback<String, Integer> callback = (currState, input, nextState) -> {
+            tester.set(input);
+        };
+        FiniteStateMachine<String, Integer> FSM = FiniteStateMachine.Builder.<String, Integer>tableStateMachine()
+                .addTransition("state1",2,"state2",callback)
+                .addTransition("state2",1,"state1",callback)
+                .addTransition("state2",3,"state3",callback)
+                .addTransition("state3",1,"state1",callback)
+                .initialState("state1")
+                .build();
+        FSM.accept(2);
+        assertEquals(2,tester.get());
+        FSM.accept(3);
+        assertEquals(3,tester.get());
+        FSM.accept(1);
+        assertEquals(1,tester.get());
+        FSM.accept(2);
+        assertEquals(2,tester.get());
+        FSM.accept(1);
+        assertEquals(1,tester.get());
+    }
+
+    @Test
+    void exitCallbackTest() {
+        AtomicInteger tester = new AtomicInteger(0);
+        FiniteStateMachine.OnExitStateCallback<String, Integer> callback = (currState, input, nextState) -> {
             tester.set(input);
         };
         FiniteStateMachine<String, Integer> FSM = FiniteStateMachine.Builder.<String, Integer>tableStateMachine()
@@ -126,5 +150,20 @@ public class TableFSMTest {
         assertEquals(3,tester.get());
         FSM.accept(2);
         FSM.accept(1);
+    }
+
+    @Test
+    void validateTest(){
+        assertTrue(FiniteStateMachine.Builder.<String, Integer>tableStateMachine()
+                .addTransition("state1",2,"state2")
+                .addTransition("state2",1,"state1")
+                .addTransition("state2",3,"state3")
+                .addTransition("state3",1,"state1")
+                .initialState("state1").validate());
+        assertFalse(FiniteStateMachine.Builder.<String, Integer>tableStateMachine()
+                .addTransition("state1",2,"state2")
+                .addTransition("state2",1,"state1")
+                .addTransition("state3",1,"state1")
+                .initialState("state1").validate());
     }
 }

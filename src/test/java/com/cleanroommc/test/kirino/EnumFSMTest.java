@@ -33,9 +33,34 @@ public class EnumFSMTest {
     }
 
     @Test
-    void transitionCallbackTest() {
+    void entryCallbackTest() {
         AtomicReference<Input> tester = new AtomicReference<>();
-        FiniteStateMachine.OnEnterStateCallback<State,Input> callback = (currState, input, nextState) -> {
+        FiniteStateMachine.OnEnterStateCallback<State,Input> callback = (_, input, _) -> {
+            tester.set(input);
+        };
+        FiniteStateMachine<State, Input> FSM = FiniteStateMachine.Builder.
+                        <State,Input>enumStateMachine(State.class,Input.class)
+                .addTransition(State.STATE1,Input.SECOND,State.STATE2,callback)
+                .addTransition(State.STATE2,Input.THIRD,State.STATE3,callback)
+                .addTransition(State.STATE3,Input.FIRST,State.STATE1,callback)
+                .addTransition(State.STATE2,Input.FIRST,State.STATE1,callback)
+                .initialState(State.STATE1)
+                .build();
+        FSM.accept(Input.SECOND);
+        assertEquals(Input.SECOND,tester.get());
+        FSM.accept(Input.THIRD);
+        assertEquals(Input.THIRD,tester.get());
+        FSM.accept(Input.FIRST);
+        assertEquals(Input.FIRST,tester.get());
+        FSM.accept(Input.SECOND);
+        assertEquals(Input.SECOND,tester.get());
+        FSM.accept(Input.FIRST);
+    }
+
+    @Test
+    void exitCallbackTest() {
+        AtomicReference<Input> tester = new AtomicReference<>();
+        FiniteStateMachine.OnExitStateCallback<State,Input> callback = (_, input, _) -> {
             tester.set(input);
         };
         FiniteStateMachine<State, Input> FSM = FiniteStateMachine.Builder.
@@ -92,7 +117,7 @@ public class EnumFSMTest {
     @Test
     void rollbackTest() {
         AtomicReference<Input> tester = new AtomicReference<>();
-        FiniteStateMachine.Rollback<State,Input> rollback = (currState, input, nextState) -> {
+        FiniteStateMachine.Rollback<State,Input> rollback = (_, input, _) -> {
             tester.set(input);
         };
         FiniteStateMachine<State, Input> FSM = FiniteStateMachine.Builder.
@@ -118,7 +143,7 @@ public class EnumFSMTest {
     @Test
     void errorTest() {
         AtomicReference<Input> tester = new AtomicReference<>();
-        FiniteStateMachine.ErrorCallback<State,Input> errorCallback = (state, input) -> tester.set(input);
+        FiniteStateMachine.ErrorCallback<State,Input> errorCallback = (_, input) -> tester.set(input);
         FiniteStateMachine<State, Input> FSM = FiniteStateMachine.Builder.
                         <State,Input>enumStateMachine(State.class,Input.class)
                 .addTransition(State.STATE1,Input.SECOND,State.STATE2)
@@ -136,6 +161,22 @@ public class EnumFSMTest {
         assertEquals(Input.THIRD,tester.get());
         FSM.accept(Input.SECOND);
         FSM.accept(Input.FIRST);
+    }
+
+    @Test
+    void validateTest() {
+        assertTrue(FiniteStateMachine.Builder.
+                        <State,Input>enumStateMachine(State.class,Input.class)
+                .addTransition(State.STATE1,Input.SECOND,State.STATE2)
+                .addTransition(State.STATE2,Input.THIRD,State.STATE3)
+                .addTransition(State.STATE3,Input.FIRST,State.STATE1)
+                .addTransition(State.STATE2,Input.FIRST,State.STATE1)
+                .initialState(State.STATE1).validate());
+        assertFalse(FiniteStateMachine.Builder.
+                        <State,Input>enumStateMachine(State.class,Input.class)
+                .addTransition(State.STATE1,Input.SECOND,State.STATE2)
+                .addTransition(State.STATE2,Input.FIRST,State.STATE1)
+                .initialState(State.STATE1).validate());
     }
 
     private enum State {
