@@ -51,7 +51,7 @@ final class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine
     }
 
     @Override
-    public @Nullable Optional<S> accept(@NotNull Integer input) {
+    public Optional<S> accept(@NotNull Integer input) {
         if (input < lowerInputBound || input > upperInputBound) {
             throw new IllegalStateException(String.format(
                     "Input %d is out of range [%d,%d]",
