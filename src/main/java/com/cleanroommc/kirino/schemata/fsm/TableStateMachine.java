@@ -12,7 +12,7 @@ import java.util.Map;
 
 final class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
 
-    private final Table<I, S, S> stateTransitionTable;
+    private final Table<I, S, S> transitionMap;
     private final Map<S, OnEnterStateCallback<S,I>> entryCallbacks;
     private final Map<S, OnExitStateCallback<S,I>> exitCallbacks;
     private final Table<I,S,Rollback<S, I>> rollbackTable;
@@ -20,13 +20,13 @@ final class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
     private S state;
     private final Deque<FSMBacklogPair<S, I>> stack = new ArrayDeque<>();
 
-    TableFiniteStateMachine(@NonNull Table<I, S, S> stateTransitionTable,
+    TableFiniteStateMachine(@NonNull Table<I, S, S> transitionMap,
                             @NonNull Map<S, OnEnterStateCallback<S,I>> entryCallbacks,
                             @NonNull Map<S, OnExitStateCallback<S,I>> exitCallbacks,
                             @NonNull Table<I, S,Rollback<S, I>> rollbackTable,
                             @Nullable ErrorCallback<S, I> errorCallback,
                             @NonNull S initialState) {
-        this.stateTransitionTable = stateTransitionTable;
+        this.transitionMap = transitionMap;
         this.entryCallbacks = entryCallbacks;
         this.exitCallbacks = exitCallbacks;
         this.rollbackTable = rollbackTable;
@@ -36,16 +36,16 @@ final class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
 
     @Override
     public S accept(@NonNull I input) {
-        if (!this.stateTransitionTable.containsRow(input)) {
+        if (!this.transitionMap.containsRow(input)) {
             throw new IllegalArgumentException(String.format("%s is not a valid input", input));
         }
-        if (!this.stateTransitionTable.contains(input, state)) {
+        if (!this.transitionMap.contains(input, state)) {
             if (this.errorCallback != null) {
                 this.errorCallback.error(state, input);
             }
             return null;
         }
-        S newState = stateTransitionTable.get(input, state);
+        S newState = transitionMap.get(input, state);
         if (newState != null) {
             stack.push(new FSMBacklogPair<S, I>(this.state, input));
             if (exitCallbacks.containsKey(state)) {
