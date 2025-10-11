@@ -130,6 +130,18 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
         }
 
         @Override
+        public IBuilder<S, I> setEntryCallback(@NonNull S state, @Nullable OnEnterStateCallback<S, I> callback) {
+            entryCallbacks[state.ordinal()] = callback;
+            return this;
+        }
+
+        @Override
+        public IBuilder<S, I> setExitCallback(@NonNull S state, @Nullable OnExitStateCallback<S, I> callback) {
+            exitCallbacks[state.ordinal()] = callback;
+            return this;
+        }
+
+        @Override
         public IBuilder<S, I> initialState(@NotNull S initialState) {
             this.initialState = initialState;
             return this;

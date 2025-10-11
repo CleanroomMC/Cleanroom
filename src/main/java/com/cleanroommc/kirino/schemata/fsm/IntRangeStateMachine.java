@@ -155,6 +155,28 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
         }
 
         @Override
+        public IBuilder<Integer, Integer> setEntryCallback(@NonNull Integer state, @Nullable OnEnterStateCallback<Integer, Integer> callback) {
+            if (state < lowerStateBound || state > upperStateBound) {
+                throw new IllegalStateException(String.format(
+                        "State %d out of range [%d,%d]",
+                        state, lowerStateBound, upperStateBound));
+            }
+            entryCallbacks[state] = callback;
+            return this;
+        }
+
+        @Override
+        public IBuilder<Integer, Integer> setExitCallback(@NonNull Integer state, @Nullable OnExitStateCallback<Integer, Integer> callback) {
+            if (state < lowerStateBound || state > upperStateBound) {
+                throw new IllegalStateException(String.format(
+                        "State %d out of range [%d,%d]",
+                        state, lowerStateBound, upperStateBound));
+            }
+            exitCallbacks[state] = callback;
+            return this;
+        }
+
+        @Override
         public IBuilder<Integer, Integer> initialState(@NotNull Integer initialState) {
             if (initialState < lowerStateBound || initialState > upperStateBound) {
                 throw new IllegalStateException(String.format(

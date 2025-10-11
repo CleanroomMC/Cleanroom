@@ -116,6 +116,7 @@ public interface FiniteStateMachine<S, I> {
          * @param rollbackCallback executed during {@link FiniteStateMachine#backtrack()} to reverse changes caused by the other callbacks.
          *                         <b>This callback is stored per transition,
          *                         it is different for each state and input combination.</b>
+         * @throws IllegalStateException if the state or input are non-existent in the set of states/inputs this exception will be thrown
          * @return the builder
          */
         IBuilder<S, I> addTransition(@NonNull S state,@NonNull I input,@NonNull S nextState,
@@ -142,11 +143,33 @@ public interface FiniteStateMachine<S, I> {
                                              @NonNull Rollback<S,I> rollbackCallback) {
             return addTransition(state,input,nextState,null,null,rollbackCallback);
         }
+
+        /**
+         * Sets the entry callback for a state
+         * @param state The state for which the callback will be set.
+         * @param callback The callback to be set for the state, unlike
+         * {@link IBuilder#addTransition(Object, Object, Object, OnEnterStateCallback, OnExitStateCallback, Rollback)}
+         *                 this method <b>does in fact invalidate a callback when this parameter is equal to null.</b>
+         * @throws IllegalStateException if inputState is non-existent in the set of states this exception will be thrown
+         * @return the builder
+         */
+        IBuilder<S, I> setEntryCallback(@NonNull S state, @Nullable OnEnterStateCallback<S,I> callback);
+        /**
+         * Sets the exit callback for a state
+         * @param state The state for which the callback will be set.
+         * @param callback The callback to be set for the state, unlike
+         * {@link IBuilder#addTransition(Object, Object, Object, OnEnterStateCallback, OnExitStateCallback, Rollback)}
+         *                 this method <b>does in fact invalidate a callback when this parameter is equal to null.</b>
+         * @throws IllegalStateException if inputState is non-existent in the set of states this exception will be thrown
+         * @return the builder
+         */
+        IBuilder<S, I> setExitCallback(@NonNull S state, @Nullable OnExitStateCallback<S,I> callback);
         /**
          * Sets the initial state, that the FSM will start in. <br/>
          * <b>MUST BE CALLED BEFORE {@link IBuilder#build()}!!!</b>
          * @param initialState the initial state
          * @return the builder
+         * @throws IllegalStateException if inputState is non-existent in the set of states this exception will be thrown
          */
         IBuilder<S, I> initialState(@NonNull S initialState);
         /**

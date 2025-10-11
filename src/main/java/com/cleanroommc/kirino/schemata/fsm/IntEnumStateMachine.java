@@ -140,6 +140,28 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
         }
 
         @Override
+        public IBuilder<Integer, I> setEntryCallback(@NonNull Integer state, @Nullable OnEnterStateCallback<Integer, I> callback) {
+            if (state < lowerStateBound || state > upperStateBound) {
+                throw new IllegalStateException(String.format(
+                        "State %d out of range [%d,%d]",
+                        state, lowerStateBound, upperStateBound));
+            }
+            entryCallbacks[state] = callback;
+            return this;
+        }
+
+        @Override
+        public IBuilder<Integer, I> setExitCallback(@NonNull Integer state, @Nullable OnExitStateCallback<Integer, I> callback) {
+            if (state < lowerStateBound || state > upperStateBound) {
+                throw new IllegalStateException(String.format(
+                        "State %d out of range [%d,%d]",
+                        state, lowerStateBound, upperStateBound));
+            }
+            exitCallbacks[state] = callback;
+            return this;
+        }
+
+        @Override
         public IBuilder<Integer, I> initialState(@NotNull Integer initialState) {
             this.initialState = initialState;
             return this;

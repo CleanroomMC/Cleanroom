@@ -118,6 +118,18 @@ final class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
         }
 
         @Override
+        public IBuilder<S, I> setEntryCallback(@NonNull S state, @Nullable OnEnterStateCallback<S, I> callback) {
+            this.entryCallbackMapBuilder.put(state, callback); // Tell me if I am allowed to suppress this
+            return this;
+        }
+
+        @Override
+        public IBuilder<S, I> setExitCallback(@NonNull S state, @Nullable OnExitStateCallback<S, I> callback) {
+            this.exitCallbackMapBuilder.put(state, callback);
+            return this;
+        }
+
+        @Override
         public Builder<S, I> initialState(@NonNull S initialState) {
             this.initialState = initialState;
             return this;

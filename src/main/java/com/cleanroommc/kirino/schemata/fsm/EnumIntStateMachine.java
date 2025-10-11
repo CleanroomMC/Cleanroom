@@ -1,6 +1,5 @@
 package com.cleanroommc.kirino.schemata.fsm;
 
-import org.apache.commons.lang3.BitField;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -142,6 +141,18 @@ final class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine
                 stateExitCallbackMap[state.ordinal()] = onExitStateCallback;
             }
             rollbacks[idx] = rollbackCallback;
+            return this;
+        }
+
+        @Override
+        public IBuilder<S, Integer> setEntryCallback(@NonNull S state, @Nullable OnEnterStateCallback<S, Integer> callback) {
+            stateEnterCallbackMap[state.ordinal()] = callback;
+            return this;
+        }
+
+        @Override
+        public IBuilder<S, Integer> setExitCallback(@NonNull S state, @Nullable OnExitStateCallback<S, Integer> callback) {
+            stateExitCallbackMap[state.ordinal()] = callback;
             return this;
         }
 
