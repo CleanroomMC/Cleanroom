@@ -6,15 +6,16 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class IntRangeFSMTest {
     @Test
     void transitionTest() {
         FiniteStateMachine<Integer,Integer> FSM = FiniteStateMachine.Builder.intRangeStateMachine(1,3,
-                4,6).addTransition(1,5,2,null,null)
-                .addTransition(2,4,1,null,null)
-                .addTransition(2,6,3,null,null)
-                .addTransition(3,4,1,null,null)
+                4,6).addTransition(1,5,2)
+                .addTransition(2,4,1)
+                .addTransition(2,6,3)
+                .addTransition(3,4,1)
                 .initialState(1)
                 .build();
         assertEquals(1, FSM.state());
@@ -33,12 +34,12 @@ public class IntRangeFSMTest {
     @Test
     void transitionCallbackTest() {
         AtomicInteger tester = new AtomicInteger(0);
-        FiniteStateMachine.StateTransitionCallback<Integer,Integer> callback = (_, input, _) -> tester.set(input);
+        FiniteStateMachine.OnEnterStateCallback<Integer,Integer> callback = (_, input, _) -> tester.set(input);
         FiniteStateMachine<Integer,Integer> FSM = FiniteStateMachine.Builder.intRangeStateMachine(1,3,
-                        4,6).addTransition(1,5,2,callback,null)
-                .addTransition(2,4,1,callback,null)
-                .addTransition(2,6,3,callback,null)
-                .addTransition(3,4,1,callback,null)
+                        4,6).addTransition(1,5,2,callback)
+                .addTransition(2,4,1,callback)
+                .addTransition(2,6,3,callback)
+                .addTransition(3,4,1,callback)
                 .initialState(1)
                 .build();
         FSM.accept(5);
@@ -56,10 +57,10 @@ public class IntRangeFSMTest {
     @Test
     void backtrackTest() {
         FiniteStateMachine<Integer,Integer> FSM = FiniteStateMachine.Builder.intRangeStateMachine(1,3,
-                        4,6).addTransition(1,5,2,null,null)
-                .addTransition(2,4,1,null,null)
-                .addTransition(2,6,3,null,null)
-                .addTransition(3,4,1,null,null)
+                        4,6).addTransition(1,5,2)
+                .addTransition(2,4,1)
+                .addTransition(2,6,3)
+                .addTransition(3,4,1)
                 .initialState(1)
                 .build();
         FSM.accept(5);
@@ -71,6 +72,7 @@ public class IntRangeFSMTest {
         int[] expectedInputs = {4,5,4,6,5};
         for(int i = 0;i<5;i++) {
             FiniteStateMachine.FSMBacklogPair<Integer,Integer> backlog = FSM.backtrack();
+            assertNotNull(backlog);
             assertEquals(expectedStates[i], backlog.state());
             assertEquals(expectedInputs[i], backlog.input());
         }
@@ -82,10 +84,10 @@ public class IntRangeFSMTest {
         FiniteStateMachine.Rollback<Integer,Integer> rollback = (_, input, _) -> tester.set(input);
         FiniteStateMachine<Integer,Integer> FSM = FiniteStateMachine.Builder.intRangeStateMachine(1,3,
                         4,6)
-                .addTransition(1,5,2,null,rollback)
-                .addTransition(2,4,1,null,rollback)
-                .addTransition(2,6,3,null,rollback)
-                .addTransition(3,4,1,null,rollback)
+                .addTransition(1,5,2, rollback)
+                .addTransition(2,4,1, rollback)
+                .addTransition(2,6,3, rollback)
+                .addTransition(3,4,1, rollback)
                 .initialState(1)
                 .build();
         FSM.accept(5);
@@ -105,10 +107,10 @@ public class IntRangeFSMTest {
         AtomicInteger tester = new AtomicInteger(0);
         FiniteStateMachine.ErrorCallback<Integer,Integer> errorCallback = (state, input) -> tester.set(input);
         FiniteStateMachine<Integer,Integer> FSM = FiniteStateMachine.Builder.intRangeStateMachine(1,3,
-                        4,6).addTransition(1,5,2,null,null)
-                .addTransition(2,4,1,null,null)
-                .addTransition(2,6,3,null,null)
-                .addTransition(3,4,1,null,null)
+                        4,6).addTransition(1,5,2)
+                .addTransition(2,4,1)
+                .addTransition(2,6,3)
+                .addTransition(3,4,1)
                 .initialState(1).error(errorCallback)
                 .build();
         FSM.accept(5);

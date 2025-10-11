@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class EnumIntFSMTest {
     @Test
@@ -33,7 +34,7 @@ public class EnumIntFSMTest {
     @Test
     void transitionCallbackTest() {
         AtomicInteger tester = new AtomicInteger(0);
-        FiniteStateMachine.StateTransitionCallback<State, Integer> callback = (_, input, _) -> tester.set(input);
+        FiniteStateMachine.OnEnterStateCallback<State, Integer> callback = (_, input, _) -> tester.set(input);
         FiniteStateMachine<State, Integer> FSM = FiniteStateMachine.Builder.enumIntStateMachine(State.class, 1, 3)
                 .addTransition(State.STATE1, 2, State.STATE2, callback)
                 .addTransition(State.STATE2, 3, State.STATE3, callback)
@@ -71,6 +72,7 @@ public class EnumIntFSMTest {
         int[] expectedInputs = {1,2,1,3,2};
         for (int i = 0; i < 5; i++) {
             FiniteStateMachine.FSMBacklogPair<State,Integer> pair = FSM.backtrack();
+            assertNotNull(pair);
             assertEquals(expectedStates[i], pair.state());
             assertEquals(expectedInputs[i], pair.input());
         }

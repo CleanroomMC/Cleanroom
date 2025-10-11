@@ -1,5 +1,8 @@
 package com.cleanroommc.kirino.schemata.fsm;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 /**
  * Finite State Machine
  * @param <S> State type
@@ -17,11 +20,12 @@ public interface FiniteStateMachine<S, I> {
     /**
      * Accept input
      * @param input Input to the state machine
-     * @return next state, the FSM transitions to
-     * @implSpec if state transition is successful, execute the {@link StateTransitionCallback transition callback},
-     * if it fails call the corresponding {@link ErrorCallback error callback}
+     * @return next state the FSM transitions to
+     * @implSpec if state transition is successful, execute the {@link OnEnterStateCallback transition callback},
+     * if it fails call the corresponding {@link ErrorCallback error callback} and return null
      */
-    S accept(I input);
+    @Nullable
+    S accept(@NonNull I input);
 
     /**
      * Backtrack the state machine to its previous state
@@ -29,7 +33,12 @@ public interface FiniteStateMachine<S, I> {
      * @implSpec The state machine has to store all it's previous inputs and states for backtracking purpose.
      * Execute rollback callback during backtracking.
      */
+    @Nullable
     FSMBacklogPair<S, I> backtrack();
+
+    default void reset() {
+        while (backtrack() != null); // Might or might not end up as a temporary solution
+    }
 
     @FunctionalInterface
     interface Rollback<S, I> {
@@ -42,7 +51,12 @@ public interface FiniteStateMachine<S, I> {
     }
 
     @FunctionalInterface
-    interface StateTransitionCallback<S, I> {
+    interface OnEnterStateCallback<S, I> {
+        void transition(S currState, I input, S nextState);
+    }
+
+    @FunctionalInterface
+    interface OnExitStateCallback<S, I> {
         void transition(S currState, I input, S nextState);
     }
 
@@ -52,23 +66,33 @@ public interface FiniteStateMachine<S, I> {
          * @param state from
          * @param input the input causing the transition
          * @param nextState to
-         * @param stateTransitionCallback executed after the transition occurs
+         * @param onEnterStateCallback executed after the transition occurs
          * @param rollbackCallback executed when the transition is undone
          * @return the builder
          */
         IBuilder<S, I> addTransition(S state,I input,S nextState,
-                                    StateTransitionCallback<S,I> stateTransitionCallback,
-                                    Rollback<S,I> rollbackCallback);
+                                    @Nullable OnEnterStateCallback<S,I> onEnterStateCallback,
+                                    @Nullable OnExitStateCallback<S,I> onExitStateCallback,
+                                    @Nullable Rollback<S,I> rollbackCallback);
         default IBuilder<S, I> addTransition(S state,I input,S nextState) {
-            return addTransition(state,input,nextState,null,null);
+            return addTransition(state,input,nextState,null,null,null);
         }
         default IBuilder<S, I> addTransition(S state,I input,S nextState,
-                                            StateTransitionCallback<S,I> stateTransitionCallback) {
-            return addTransition(state,input,nextState,stateTransitionCallback,null);
+                                            @NonNull OnEnterStateCallback<S,I> onEnterStateCallback,
+                                            @NonNull OnExitStateCallback<S,I> onExitStateCallback) {
+            return addTransition(state,input,nextState, onEnterStateCallback, onExitStateCallback, null);
         }
         default IBuilder<S, I> addTransition(S state,I input,S nextState,
-                                            Rollback<S,I> rollbackCallback) {
-            return addTransition(state,input,nextState,null,rollbackCallback);
+                                             @NonNull OnEnterStateCallback<S,I> onEnterStateCallback) {
+            return addTransition(state,input,nextState, onEnterStateCallback, null, null);
+        }
+        default IBuilder<S, I> addTransition(S state,I input,S nextState,
+                                             @NonNull OnExitStateCallback<S,I> onExitStateCallback) {
+            return addTransition(state,input,nextState, null, onExitStateCallback, null);
+        }
+        default IBuilder<S, I> addTransition(S state,I input,S nextState,
+                                             @NonNull Rollback<S,I> rollbackCallback) {
+            return addTransition(state,input,nextState,null,null,rollbackCallback);
         }
         /**
          * Sets the initial state, that the FSM will start in

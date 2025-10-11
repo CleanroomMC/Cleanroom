@@ -1,30 +1,37 @@
 package com.cleanroommc.kirino.schemata.fsm;
 
+import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine<S, Integer> {
+final class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine<S, Integer> {
 
-    protected final int lowerInputBound, upperInputBound;
-    protected final S[] states;
-    private final int[] stateTable;
-    protected final StateTransitionCallback<S,Integer>[] transitions;
-    protected final Rollback<S,Integer>[] rollbacks;
-    protected final ErrorCallback<S,Integer> error;
-    protected int state;
-    protected final Deque<FSMBacklogPair<S,Integer>> backlog = new ArrayDeque<>();
+    private final int lowerInputBound, upperInputBound;
+    private final S[] states;
+    private final int[] transitionMap;
+    private final OnEnterStateCallback<S,Integer>[] stateEnterCallbackMap;
+    private final OnExitStateCallback<S,Integer>[] stateExitCallbackMap;
+    private final Rollback<S,Integer>[] rollbacks;
+    private final ErrorCallback<S,Integer> error;
+    private int state;
+    private final Deque<FSMBacklogPair<S,Integer>> backlog = new ArrayDeque<>();
 
     EnumIntStateMachine(int lowerInputBound, int upperInputBound,
-                        S[] states, int[] stateTable,
-                        StateTransitionCallback<S, Integer>[] transitions,
-                        Rollback<S, Integer>[] rollbacks,
-                        ErrorCallback<S, Integer> error,
-                        S initialState) {
+                        @NonNull S[] states, int @NonNull [] transitionMap,
+                        OnEnterStateCallback<S, Integer> @NonNull [] stateEnterCallbackMap,
+                        OnExitStateCallback<S,Integer> @NonNull [] stateExitCallbackMap,
+                        Rollback<S, Integer> @NonNull [] rollbacks,
+                        @Nullable ErrorCallback<S, Integer> error,
+                        @NonNull S initialState) {
         this.lowerInputBound = lowerInputBound;
         this.upperInputBound = upperInputBound;
         this.states = states;
-        this.stateTable = stateTable;
-        this.transitions = transitions;
+        this.transitionMap = transitionMap;
+        this.stateEnterCallbackMap = stateEnterCallbackMap;
+        this.stateExitCallbackMap = stateExitCallbackMap;
         this.rollbacks = rollbacks;
         this.error = error;
         this.state = initialState.ordinal();
@@ -35,22 +42,30 @@ class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine<S, In
         return states[state];
     }
 
+    private int index(Integer input, Integer state) {
+        return (states.length*(input-lowerInputBound))+state;
+    }
+
     @Override
-    public S accept(Integer input) {
+    public @Nullable S accept(@NotNull Integer input) {
         if (input < lowerInputBound || input > upperInputBound) {
             throw new IllegalStateException(String.format(
                     "Input %d is out of range [%d,%d]",
                     input, lowerInputBound, upperInputBound));
         }
-        int index = (states.length*(input-lowerInputBound))+state;
-        if (stateTable[index] != -1) {
+        final int idx = this.index(input, state);
+        if (transitionMap[idx] != -1) {
             backlog.push(new FSMBacklogPair<>(states[state], input));
-            if (this.transitions[index] != null) {
-                this.transitions[index].transition(states[state], input, states[stateTable[index]]);
+            if (this.stateExitCallbackMap[state] != null) {
+                this.stateExitCallbackMap[state].transition(states[state], input, states[transitionMap[idx]]);
             }
-            state = stateTable[index];
+            if (this.stateEnterCallbackMap[transitionMap[idx]] != null) {
+                this.stateEnterCallbackMap[transitionMap[idx]].transition(states[state], input, states[transitionMap[idx]]);
+            }
+            state = transitionMap[idx];
         } else if (error != null) {
             error.error(states[state], input);
+            return null;
         }
         return states[state];
     }
@@ -61,7 +76,7 @@ class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine<S, In
             return null;
         }
         FSMBacklogPair<S,Integer> pair = backlog.pop();
-        Rollback<S,Integer> rollback = rollbacks[((pair.input()-lowerInputBound) * states.length) + pair.state().ordinal()];
+        Rollback<S,Integer> rollback = rollbacks[index(pair.input(), pair.state().ordinal())];
         if (rollback != null) {
             rollback.rollback(states[state], pair.input(), pair.state());
         }
@@ -72,9 +87,10 @@ class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine<S, In
 
     static class Builder<S extends Enum<S>> implements IBuilder<S, Integer> {
         private final int lowerInputBound, upperInputBound;
-        private final int[] stateTable;
-        protected final S[] states;
-        private final StateTransitionCallback<S, Integer>[] transitions;
+        private final int[] transitionMap;
+        private final S[] states;
+        private final OnEnterStateCallback<S, Integer>[] stateEnterCallbackMap;
+        private final OnExitStateCallback<S, Integer>[] stateExitCallbackMap;
         private final Rollback<S, Integer>[] rollbacks;
         private ErrorCallback<S, Integer> error;
         private S initialState;
@@ -83,26 +99,35 @@ class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine<S, In
             this.lowerInputBound = lowerInputBound;
             this.upperInputBound = upperInputBound;
             this.states = stateClass.getEnumConstants();
-            int size = this.states.length*(upperInputBound-lowerInputBound+1);
-            this.stateTable = new int[size];
+            final int size = this.states.length*(upperInputBound-lowerInputBound+1);
+            this.transitionMap = new int[size];
             for (int i = 0; i < size; i++) {
-                this.stateTable[i] = -1;
+                this.transitionMap[i] = -1;
             }
-            this.transitions = new StateTransitionCallback[size];
+            this.stateEnterCallbackMap = new OnEnterStateCallback[states.length];
+            this.stateExitCallbackMap = new OnExitStateCallback[states.length];
             this.rollbacks = new Rollback[size];
         }
 
+        private int index(Integer input, S state) {
+            return ((input-lowerInputBound)*states.length)+state.ordinal();
+        }
+
         @Override
-        public IBuilder<S, Integer> addTransition(S state, Integer input, S nextState, StateTransitionCallback<S, Integer> stateTransitionCallback, Rollback<S, Integer> rollbackCallback) {
+        public IBuilder<S, Integer> addTransition(S state, Integer input, S nextState,
+                                                  OnEnterStateCallback<S, Integer> onEnterStateCallback,
+                                                  OnExitStateCallback<S, Integer> onExitStateCallback,
+                                                  Rollback<S, Integer> rollbackCallback) {
             if (input < lowerInputBound || input > upperInputBound){
                 throw new IllegalStateException(String.format(
                         "Input %d is out of range [%d,%d]",
                         input, lowerInputBound, upperInputBound));
             }
-            int index = ((input-lowerInputBound)*states.length)+state.ordinal();
-            stateTable[index] = nextState.ordinal();
-            transitions[index] = stateTransitionCallback;
-            rollbacks[index] = rollbackCallback;
+            final int idx = this.index(input, state);
+            transitionMap[idx] = nextState.ordinal();
+            stateEnterCallbackMap[nextState.ordinal()] = onEnterStateCallback;
+            stateExitCallbackMap[state.ordinal()] = onExitStateCallback;
+            rollbacks[idx] = rollbackCallback;
             return this;
         }
 
@@ -121,7 +146,7 @@ class EnumIntStateMachine<S extends Enum<S>> implements FiniteStateMachine<S, In
         @Override
         public FiniteStateMachine<S, Integer> build() {
             return new EnumIntStateMachine<S>(lowerInputBound,upperInputBound,
-                    states,stateTable,transitions,rollbacks,error,initialState);
+                    states, transitionMap, stateEnterCallbackMap, stateExitCallbackMap, rollbacks, error, initialState);
         }
     }
 }

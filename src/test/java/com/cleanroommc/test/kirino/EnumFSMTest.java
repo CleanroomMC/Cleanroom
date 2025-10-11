@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EnumFSMTest {
 
@@ -13,10 +13,10 @@ public class EnumFSMTest {
     void transitionTest() {
         FiniteStateMachine<State, Input> FSM = FiniteStateMachine.Builder.
                         <State,Input>enumStateMachine(State.class,Input.class)
-                .addTransition(State.STATE1,Input.SECOND,State.STATE2,null,null)
-                .addTransition(State.STATE2,Input.THIRD,State.STATE3,null,null)
-                .addTransition(State.STATE3,Input.FIRST,State.STATE1,null,null)
-                .addTransition(State.STATE2,Input.FIRST,State.STATE1,null,null)
+                .addTransition(State.STATE1,Input.SECOND,State.STATE2)
+                .addTransition(State.STATE2,Input.THIRD,State.STATE3)
+                .addTransition(State.STATE3,Input.FIRST,State.STATE1)
+                .addTransition(State.STATE2,Input.FIRST,State.STATE1)
                 .initialState(State.STATE1)
                 .build();
         assertEquals(State.STATE1,FSM.state());
@@ -35,15 +35,15 @@ public class EnumFSMTest {
     @Test
     void transitionCallbackTest() {
         AtomicReference<Input> tester = new AtomicReference<>();
-        FiniteStateMachine.StateTransitionCallback<State,Input> callback = (currState, input, nextState) -> {
+        FiniteStateMachine.OnEnterStateCallback<State,Input> callback = (currState, input, nextState) -> {
             tester.set(input);
         };
         FiniteStateMachine<State, Input> FSM = FiniteStateMachine.Builder.
                         <State,Input>enumStateMachine(State.class,Input.class)
-                .addTransition(State.STATE1,Input.SECOND,State.STATE2,callback,null)
-                .addTransition(State.STATE2,Input.THIRD,State.STATE3,callback,null)
-                .addTransition(State.STATE3,Input.FIRST,State.STATE1,callback,null)
-                .addTransition(State.STATE2,Input.FIRST,State.STATE1,callback,null)
+                .addTransition(State.STATE1,Input.SECOND,State.STATE2,callback)
+                .addTransition(State.STATE2,Input.THIRD,State.STATE3,callback)
+                .addTransition(State.STATE3,Input.FIRST,State.STATE1,callback)
+                .addTransition(State.STATE2,Input.FIRST,State.STATE1,callback)
                 .initialState(State.STATE1)
                 .build();
         FSM.accept(Input.SECOND);
@@ -61,10 +61,10 @@ public class EnumFSMTest {
     void backtrackTest() {
         FiniteStateMachine<State, Input> FSM = FiniteStateMachine.Builder.
                         <State,Input>enumStateMachine(State.class,Input.class)
-                .addTransition(State.STATE1,Input.SECOND,State.STATE2,null,null)
-                .addTransition(State.STATE2,Input.THIRD,State.STATE3,null,null)
-                .addTransition(State.STATE3,Input.FIRST,State.STATE1,null,null)
-                .addTransition(State.STATE2,Input.FIRST,State.STATE1,null,null)
+                .addTransition(State.STATE1,Input.SECOND,State.STATE2)
+                .addTransition(State.STATE2,Input.THIRD,State.STATE3)
+                .addTransition(State.STATE3,Input.FIRST,State.STATE1)
+                .addTransition(State.STATE2,Input.FIRST,State.STATE1)
                 .initialState(State.STATE1)
                 .build();
         //System.out.println(FSM.state());
@@ -82,6 +82,7 @@ public class EnumFSMTest {
         Input[] expectedInputs = {Input.FIRST, Input.SECOND, Input.FIRST, Input.THIRD, Input.SECOND};
         for (int i = 0; i < 5; i++) {
             FiniteStateMachine.FSMBacklogPair<State, Input> pair = FSM.backtrack();
+            assertNotNull(pair);
             //System.out.println(pair);
             assertEquals(expectedStates[i], pair.state());
             assertEquals(expectedInputs[i], pair.input());
@@ -96,10 +97,10 @@ public class EnumFSMTest {
         };
         FiniteStateMachine<State, Input> FSM = FiniteStateMachine.Builder.
                         <State,Input>enumStateMachine(State.class,Input.class)
-                .addTransition(State.STATE1,Input.SECOND,State.STATE2,null,rollback)
-                .addTransition(State.STATE2,Input.THIRD,State.STATE3,null,rollback)
-                .addTransition(State.STATE3,Input.FIRST,State.STATE1,null,rollback)
-                .addTransition(State.STATE2,Input.FIRST,State.STATE1,null,rollback)
+                .addTransition(State.STATE1,Input.SECOND,State.STATE2,rollback)
+                .addTransition(State.STATE2,Input.THIRD,State.STATE3,rollback)
+                .addTransition(State.STATE3,Input.FIRST,State.STATE1,rollback)
+                .addTransition(State.STATE2,Input.FIRST,State.STATE1,rollback)
                 .initialState(State.STATE1)
                 .build();
         FSM.accept(Input.SECOND);
@@ -120,10 +121,10 @@ public class EnumFSMTest {
         FiniteStateMachine.ErrorCallback<State,Input> errorCallback = (state, input) -> tester.set(input);
         FiniteStateMachine<State, Input> FSM = FiniteStateMachine.Builder.
                         <State,Input>enumStateMachine(State.class,Input.class)
-                .addTransition(State.STATE1,Input.SECOND,State.STATE2,null,null)
-                .addTransition(State.STATE2,Input.THIRD,State.STATE3,null,null)
-                .addTransition(State.STATE3,Input.FIRST,State.STATE1,null,null)
-                .addTransition(State.STATE2,Input.FIRST,State.STATE1,null,null)
+                .addTransition(State.STATE1,Input.SECOND,State.STATE2)
+                .addTransition(State.STATE2,Input.THIRD,State.STATE3)
+                .addTransition(State.STATE3,Input.FIRST,State.STATE1)
+                .addTransition(State.STATE2,Input.FIRST,State.STATE1)
                 .initialState(State.STATE1).error(errorCallback)
                 .build();
         FSM.accept(Input.SECOND);

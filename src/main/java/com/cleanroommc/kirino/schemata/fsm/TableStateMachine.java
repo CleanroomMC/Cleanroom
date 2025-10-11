@@ -1,52 +1,63 @@
 package com.cleanroommc.kirino.schemata.fsm;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Map;
 
-class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
+final class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
 
-    protected final Table<I, S, S> stateTransitionTable;
-    protected final Table<I,S, FiniteStateMachine.StateTransitionCallback<S, I>> stateTransitionCallbackTable;
-    protected final Table<I,S,Rollback<S, I>> rollbackTable;
-    protected final ErrorCallback<S, I> errorCallback;
+    private final Table<I, S, S> stateTransitionTable;
+    private final Map<S, OnEnterStateCallback<S,I>> entryCallbacks;
+    private final Map<S, OnExitStateCallback<S,I>> exitCallbacks;
+    private final Table<I,S,Rollback<S, I>> rollbackTable;
+    private final ErrorCallback<S, I> errorCallback;
     private S state;
-    protected final Deque<FSMBacklogPair<S, I>> stack = new ArrayDeque<>();
+    private final Deque<FSMBacklogPair<S, I>> stack = new ArrayDeque<>();
 
-    TableFiniteStateMachine(Table<I, S, S> stateTransitionTable,
-                            Table<I, S, FiniteStateMachine.StateTransitionCallback<S, I>> stateTransitionCallbackTable,
-                            Table<I, S,Rollback<S, I>> rollbackTable,
-                            ErrorCallback<S, I> errorCallback,
-                            S initialState) {
+    TableFiniteStateMachine(@NonNull Table<I, S, S> stateTransitionTable,
+                            @NonNull Map<S, OnEnterStateCallback<S,I>> entryCallbacks,
+                            @NonNull Map<S, OnExitStateCallback<S,I>> exitCallbacks,
+                            @NonNull Table<I, S,Rollback<S, I>> rollbackTable,
+                            @Nullable ErrorCallback<S, I> errorCallback,
+                            @NonNull S initialState) {
         this.stateTransitionTable = stateTransitionTable;
-        this.stateTransitionCallbackTable = stateTransitionCallbackTable;
+        this.entryCallbacks = entryCallbacks;
+        this.exitCallbacks = exitCallbacks;
         this.rollbackTable = rollbackTable;
         this.errorCallback = errorCallback;
         this.state = initialState;
     }
 
     @Override
-    public S accept(I input) {
+    public S accept(@NonNull I input) {
         if (!this.stateTransitionTable.containsRow(input)) {
-            throw new IllegalArgumentException(input.toString());
+            throw new IllegalArgumentException(String.format("%s is not a valid input", input));
         }
         if (!this.stateTransitionTable.contains(input, state)) {
             if (this.errorCallback != null) {
                 this.errorCallback.error(state, input);
             }
-            return this.state;
+            return null;
         }
         S newState = stateTransitionTable.get(input, state);
         if (newState != null) {
             stack.push(new FSMBacklogPair<S, I>(this.state, input));
-            StateTransitionCallback<S, I> callback = stateTransitionCallbackTable.get(input, state);
-            if (callback != null)
-                callback.transition(this.state, input, newState);
+            if (exitCallbacks.containsKey(state)) {
+                exitCallbacks.get(state).transition(this.state, input, newState);
+            }
+            if (entryCallbacks.containsKey(newState)) {
+                entryCallbacks.get(newState).transition(this.state, input, newState);
+            }
             this.state = newState;
         } else if (this.errorCallback != null) {
             this.errorCallback.error(state, input);
+            return null;
         }
         return this.state;
     }
@@ -73,7 +84,8 @@ class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
 
     static class Builder<S, I> implements IBuilder<S, I> {
         private final ImmutableTable.Builder<I, S, S> builder = ImmutableTable.builder();
-        private final ImmutableTable.Builder<I,S, FiniteStateMachine.StateTransitionCallback<S, I>> transitionCallbackTable = ImmutableTable.builder();
+        private final ImmutableMap.Builder<S,OnEnterStateCallback<S,I>> entryCallbackMapBuilder = ImmutableMap.builder();
+        private final ImmutableMap.Builder<S,OnExitStateCallback<S,I>> exitCallbackMapBuilder = ImmutableMap.builder();
         private final ImmutableTable.Builder<I,S,Rollback<S, I>> rollbackTable = ImmutableTable.builder();
         private S initialState = null;
         private ErrorCallback<S, I> error = null;
@@ -82,10 +94,16 @@ class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
         }
 
         @Override
-        public Builder<S, I> addTransition(S currentState, I input, S nextState, FiniteStateMachine.StateTransitionCallback<S, I> callback, FiniteStateMachine.Rollback<S, I> rollback) {
+        public Builder<S, I> addTransition(@NonNull S currentState, @NonNull I input, @NonNull S nextState,
+                                           @Nullable OnEnterStateCallback<S, I> onEnterStateCallback,
+                                           @Nullable OnExitStateCallback<S, I> onExitStateCallback,
+                                           FiniteStateMachine.@Nullable Rollback<S, I> rollback) {
             this.builder.put(input,currentState,nextState);
-            if (callback != null) {
-                this.transitionCallbackTable.put(input, currentState, callback);
+            if (onEnterStateCallback != null) {
+                entryCallbackMapBuilder.put(nextState,onEnterStateCallback);
+            }
+            if (onExitStateCallback != null) {
+                exitCallbackMapBuilder.put(nextState,onExitStateCallback);
             }
             if (rollback != null) {
                 this.rollbackTable.put(input,currentState,rollback);
@@ -94,13 +112,13 @@ class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
         }
 
         @Override
-        public Builder<S, I> initialState(S initialState) {
+        public Builder<S, I> initialState(@NonNull S initialState) {
             this.initialState = initialState;
             return this;
         }
 
         @Override
-        public IBuilder<S, I> error(ErrorCallback<S, I> errorCallback) {
+        public IBuilder<S, I> error(@NonNull ErrorCallback<S, I> errorCallback) {
             this.error = errorCallback;
             return this;
         }
@@ -108,7 +126,8 @@ class TableFiniteStateMachine<S, I> implements FiniteStateMachine<S, I> {
         @Override
         public FiniteStateMachine<S, I> build() {
             return new TableFiniteStateMachine<>(builder.buildOrThrow(),
-                    transitionCallbackTable.buildOrThrow(),
+                    entryCallbackMapBuilder.build(),
+                    exitCallbackMapBuilder.build(),
                     rollbackTable.buildOrThrow(), error, initialState);
         }
     }

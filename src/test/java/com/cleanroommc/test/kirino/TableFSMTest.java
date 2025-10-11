@@ -6,16 +6,17 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class TableFSMTest {
 
     @Test
     void transitionTest() {
         FiniteStateMachine<String, Integer> FSM = FiniteStateMachine.Builder.<String, Integer>tableStateMachine()
-                .addTransition("state1",2,"state2",null,null)
-                .addTransition("state2",1,"state1",null,null)
-                .addTransition("state2",3,"state3",null,null)
-                .addTransition("state3",1,"state1",null,null)
+                .addTransition("state1",2,"state2")
+                .addTransition("state2",1,"state1")
+                .addTransition("state2",3,"state3")
+                .addTransition("state3",1,"state1")
                 .initialState("state1")
                 .build();
         assertEquals("state1",FSM.state());
@@ -34,14 +35,14 @@ public class TableFSMTest {
     @Test
     void transitionCallbackTest() {
         AtomicInteger tester = new AtomicInteger(0);
-        FiniteStateMachine.StateTransitionCallback<String, Integer> callback = (currState, input, nextState) -> {
+        FiniteStateMachine.OnEnterStateCallback<String, Integer> callback = (currState, input, nextState) -> {
             tester.set(input);
         };
         FiniteStateMachine<String, Integer> FSM = FiniteStateMachine.Builder.<String, Integer>tableStateMachine()
-                .addTransition("state1",2,"state2",callback,null)
-                .addTransition("state2",1,"state1",callback,null)
-                .addTransition("state2",3,"state3",callback,null)
-                .addTransition("state3",1,"state1",callback,null)
+                .addTransition("state1",2,"state2",callback)
+                .addTransition("state2",1,"state1",callback)
+                .addTransition("state2",3,"state3",callback)
+                .addTransition("state3",1,"state1",callback)
                 .initialState("state1")
                 .build();
         FSM.accept(2);
@@ -59,10 +60,10 @@ public class TableFSMTest {
     @Test
     void backtrackTest() {
         FiniteStateMachine<String, Integer> FSM = FiniteStateMachine.Builder.<String, Integer>tableStateMachine()
-                .addTransition("state1",2,"state2",null,null)
-                .addTransition("state2",1,"state1",null,null)
-                .addTransition("state2",3,"state3",null,null)
-                .addTransition("state3",1,"state1",null,null)
+                .addTransition("state1",2,"state2")
+                .addTransition("state2",1,"state1")
+                .addTransition("state2",3,"state3")
+                .addTransition("state3",1,"state1")
                 .initialState("state1")
                 .build();
         FSM.accept(2);
@@ -74,6 +75,7 @@ public class TableFSMTest {
         int[] inputs = {1,2,1,3,2};
         for (int i = 0; i < 5; i++) {
             FiniteStateMachine.FSMBacklogPair<String, Integer> pair = FSM.backtrack();
+            assertNotNull(pair);
             assertEquals(expectedStates[i],pair.state());
             assertEquals(inputs[i],pair.input());
         }
@@ -86,10 +88,10 @@ public class TableFSMTest {
             tester.set(input);
         };
         FiniteStateMachine<String, Integer> FSM = FiniteStateMachine.Builder.<String, Integer>tableStateMachine()
-                .addTransition("state1",2,"state2",null,rollback)
-                .addTransition("state2",1,"state1",null,rollback)
-                .addTransition("state2",3,"state3",null,rollback)
-                .addTransition("state3",1,"state1",null,rollback)
+                .addTransition("state1",2,"state2",rollback)
+                .addTransition("state2",1,"state1",rollback)
+                .addTransition("state2",3,"state3",rollback)
+                .addTransition("state3",1,"state1",rollback)
                 .initialState("state1")
                 .build();
         FSM.accept(2);
@@ -109,10 +111,10 @@ public class TableFSMTest {
         AtomicInteger tester = new AtomicInteger(0);
         FiniteStateMachine.ErrorCallback<String,Integer> errorCallback = (state, input) -> tester.set(input);
         FiniteStateMachine<String, Integer> FSM = FiniteStateMachine.Builder.<String, Integer>tableStateMachine()
-                .addTransition("state1",2,"state2",null,null)
-                .addTransition("state2",1,"state1",null,null)
-                .addTransition("state2",3,"state3",null,null)
-                .addTransition("state3",1,"state1",null,null)
+                .addTransition("state1",2,"state2")
+                .addTransition("state2",1,"state1")
+                .addTransition("state2",3,"state3")
+                .addTransition("state3",1,"state1")
                 .initialState("state1").error(errorCallback)
                 .build();
         FSM.accept(2);
