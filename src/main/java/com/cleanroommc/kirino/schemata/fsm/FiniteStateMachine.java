@@ -48,7 +48,7 @@ public interface FiniteStateMachine<S, I> {
     void reset();
 
     /**
-     * A quick way to undo all of the actions taken by the entire state machine
+     * A quick way to undo all the actions taken by the entire state machine
      */
     default void rewind() {
         while (backtrack() != null);
