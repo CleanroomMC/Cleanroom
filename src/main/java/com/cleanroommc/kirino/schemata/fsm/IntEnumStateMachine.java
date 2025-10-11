@@ -129,11 +129,11 @@ final class IntEnumStateMachine<I extends Enum<I>> implements FiniteStateMachine
             }
             int index = index(input,state);
             transitionMap[index] = nextState;
-            if (onEnterStateCallback != null) {
-                entryCallbacks[nextState] = onEnterStateCallback;
-            }
             if (onExitStateCallback != null) {
                 exitCallbacks[state] = onExitStateCallback;
+            }
+            if (onEnterStateCallback != null) {
+                entryCallbacks[nextState] = onEnterStateCallback;
             }
             rollbacks[index] = rollbackCallback;
             return this;
