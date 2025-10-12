@@ -35,7 +35,7 @@ catalogue.gui.advanced_search.info=Advanced search queries will ignore any activ
 catalogue.gui.show_dependencies=Show Dependencies
 catalogue.gui.show_dependents=Show Dependents
 catalogue.gui.website=Website
-catalogue.gui.issue=Submit Bug
+catalogue.gui.submit_bug=Submit Bug
 catalogue.gui.mod_id=Mod ID: %s
 
 catalogue.config.library_list=Library List

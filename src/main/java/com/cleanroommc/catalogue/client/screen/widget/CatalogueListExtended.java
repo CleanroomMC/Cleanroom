@@ -57,9 +57,6 @@ public abstract class CatalogueListExtended extends GuiListExtended {
         GlStateManager.shadeModel(GL11.GL_SMOOTH);
         GlStateManager.disableTexture2D();
 
-        // Shadow the top and bottom
-        this.drawTopAndBottom(tessellator);
-
         // Scroll Bar
         if (this.scrollBarVisible) {
             this.drawScrollBar(tessellator, maxScroll);
@@ -72,22 +69,6 @@ public abstract class CatalogueListExtended extends GuiListExtended {
         GlStateManager.shadeModel(GL11.GL_FLAT);
         GlStateManager.enableAlpha();
         GlStateManager.disableBlend();
-    }
-
-    protected void drawTopAndBottom(Tessellator tessellator) {
-        BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-        buffer.pos(this.left, this.top + 4, 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 0).endVertex();
-        buffer.pos(this.right, this.top + 4, 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 0).endVertex();
-        buffer.pos(this.right, this.top, 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 255).endVertex();
-        buffer.pos(this.left, this.top, 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
-        tessellator.draw();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-        buffer.pos(this.left, this.bottom, 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-        buffer.pos(this.right, this.bottom, 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-        buffer.pos(this.right, this.bottom - 4, 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 0).endVertex();
-        buffer.pos(this.left, this.bottom - 4, 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 0).endVertex();
-        tessellator.draw();
     }
 
     protected void drawScrollBar(Tessellator tessellator, int maxScroll) {
@@ -162,7 +143,51 @@ public abstract class CatalogueListExtended extends GuiListExtended {
     }
 
     @Deprecated
+    @Override
     protected void drawSelectionBox(int contentLeft, int contentTop, int mouseXIn, int mouseYIn, float partialTicks) {
+        this.drawSelectionBox(mouseX, mouseY, partialTicks);
+    }
+
+    @Override
+    public boolean mouseClicked(int mouseX, int mouseY, int mouseEvent) {
+        if (this.isMouseYWithinSlotBounds(mouseY)) {
+            int slotIndex = this.getSlotIndexFromScreenCoords(mouseX, mouseY);
+            if (slotIndex >= 0) {
+                int j = this.left + this.getListLeft();
+                int k = this.top + 4 - this.getAmountScrolled() + slotIndex * this.slotHeight + this.headerPadding;
+                int relativeX = mouseX - j;
+                int relativeY = mouseY - k;
+                if (this.getListEntry(slotIndex).mousePressed(slotIndex, mouseX, mouseY, mouseEvent, relativeX, relativeY)) {
+                    this.setEnabled(false);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseReleased(int x, int y, int mouseEvent) {
+        for (int slotIndex = 0; slotIndex < this.getSize(); ++slotIndex) {
+            int j = this.left + this.getListLeft();
+            int k = this.top + 4 - this.getAmountScrolled() + slotIndex * this.slotHeight + this.headerPadding;
+            int relativeX = x - j;
+            int relativeY = y - k;
+            this.getListEntry(slotIndex).mouseReleased(slotIndex, x, y, mouseEvent, relativeX, relativeY);
+        }
+        this.setEnabled(true);
+        return false;
+    }
+
+    @Override
+    public int getSlotIndexFromScreenCoords(int mouseX, int mouseY) {
+        int i = this.getListWidth() / 2;
+        int j = this.left + this.width / 2;
+        int k = j - i;
+        int l = j + i;
+        int i1 = MathHelper.floor(mouseY - this.top) - this.headerPadding + this.getAmountScrolled() - 4;
+        int j1 = i1 / this.slotHeight;
+        return mouseX < this.getScrollBarX() && mouseX >= k && mouseX <= l && j1 >= 0 && i1 >= 0 && j1 < this.getSize() ? j1 : -1;
     }
 
     public void setClampedAmountScrolled(float scroll) {

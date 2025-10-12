@@ -34,8 +34,9 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import org.lwjglx.input.Keyboard;
 
 import java.awt.*;
 import java.io.IOException;
@@ -169,7 +170,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
         this.websiteButton = this.addButton(new CatalogueIconButton(4, contentLeft + buttonWidth + 5, 105, 20, 0, buttonWidth, I18n.format("catalogue.gui.website")));
         this.websiteButton.visible = false;
 
-        this.issueButton = this.addButton(new CatalogueIconButton(5, contentLeft + buttonWidth + buttonWidth + 10, 105, 30, 0, buttonWidth, I18n.format("catalogue.gui.issue")));
+        this.issueButton = this.addButton(new CatalogueIconButton(5, contentLeft + buttonWidth + buttonWidth + 10, 105, 30, 0, buttonWidth, I18n.format("catalogue.gui.submit_bug")));
         this.issueButton.visible = false;
 
         this.descriptionList = new StringList(contentWidth + padding * 2, 50, contentLeft - padding, 130);
@@ -380,6 +381,12 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
     }
 
     @Override
+    protected void mouseReleased(int mouseX, int mouseY, int button) {
+        if (this.modList.mouseReleased(mouseX, mouseY, button)) return;
+        super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
     protected void keyTyped(char typedChar, int key) throws IOException {
         if (isKeyComboCtrlF(key) && !this.searchTextField.isFocused()) {
             this.searchTextField.setFocused(true);
@@ -559,25 +566,18 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
         }
 
         @Override
-        protected void drawTopAndBottom(Tessellator tessellator) {
-        }
-
-        @Override
         protected void overlayBackground(int startY, int endY, int startAlpha, int endAlpha) {
         }
 
         @Override
-        public boolean mouseClicked(int mouseX, int mouseY, int button) {
-            if (super.mouseClicked(mouseX, mouseY, button)) {
-                this.hideFavourites = button == 0 && mouseX >= this.getScrollBarX() && mouseY < this.getScrollBarX() + 6;
-                return true;
-            }
-            return false;
+        public void handleMouseInput() {
+            this.hideFavourites = Mouse.getEventDWheel() != 0;
+            super.handleMouseInput();
         }
 
         @Override
         public boolean mouseReleased(int mouseX, int mouseY, int button) {
-            if (this.hideFavourites && button == 0) {
+            if (this.hideFavourites) {
                 this.hideFavourites = false;
             }
             return super.mouseReleased(mouseX, mouseY, button);
@@ -792,7 +792,6 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
 
         @Override
         public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY) {
-            if (this.button.mousePressed(CatalogueModListScreen.this.mc, mouseX, mouseY)) return false;
             if (mouseEvent == 1) {
                 DropdownMenu menu = DropdownMenu.builder(CatalogueModListScreen.this)
                         .setMinItemSize(0, 16)
@@ -806,8 +805,8 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
                             CatalogueModListScreen.this.searchTextField.setText(filter);
                         }).build();
                 menu.toggle(mouseX, mouseY);
-                return false;
-            } else if (mouseEvent == 0) {
+                return true;
+            } else if (mouseEvent == 0 && !this.button.mousePressed(CatalogueModListScreen.this.mc, mouseX, mouseY)) {
                 CatalogueModListScreen.this.setSelectedModData(this.data);
                 this.list.setSelected(this);
                 return true;
@@ -845,7 +844,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
 
             @Override
             public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
-                if (super.mousePressed(mc, mouseX, mouseY)) {
+                if (super.mousePressed(mc, mouseX, mouseY) && !CatalogueModListScreen.this.modList.hideFavourites) {
                     FAVOURITES.toggle(this.modId);
                     ModListEntry.this.list.filterAndUpdateList();
                     this.playPressSound(mc.getSoundHandler());
@@ -1019,10 +1018,6 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
         @Override
         public IGuiListEntry getListEntry(int index) {
             return this.entries.get(index);
-        }
-
-        @Override
-        protected void drawTopAndBottom(Tessellator tessellator) {
         }
 
         @Override

@@ -35,7 +35,7 @@ catalogue.gui.advanced_search.info=高级搜索查询将忽略任何激活的筛
 catalogue.gui.show_dependencies=显示前置模组
 catalogue.gui.show_dependents=显示依赖模组
 catalogue.gui.website=网站
-catalogue.gui.issue=提交Bug
+catalogue.gui.submit_bug=提交Bug
 catalogue.gui.mod_id=Mod ID：%s
 
 catalogue.config.library_list=库列表
