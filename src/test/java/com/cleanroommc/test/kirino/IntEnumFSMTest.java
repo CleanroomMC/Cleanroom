@@ -34,7 +34,7 @@ public class IntEnumFSMTest {
     @Test
     void entryCallbackTest() {
         AtomicReference<Input> tester = new AtomicReference<>();
-        FiniteStateMachine.OnEnterStateCallback<Integer,Input> callback = (_, input, _) -> tester.set(input);
+        FiniteStateMachine.OnEnterStateCallback<Integer,Input> callback = (_ignored0, input, _ignored1) -> tester.set(input);
         FiniteStateMachine<Integer, Input> FSM = FiniteStateMachine.Builder.enumIntStateMachine(1,3,Input.class)
                 .addTransition(1,Input.SECOND,2, callback)
                 .addTransition(2,Input.THIRD,3, callback)
@@ -57,7 +57,7 @@ public class IntEnumFSMTest {
     @Test
     void exitCallbackTest() {
         AtomicReference<Input> tester = new AtomicReference<>();
-        FiniteStateMachine.OnExitStateCallback<Integer,Input> callback = (_, input, _) -> tester.set(input);
+        FiniteStateMachine.OnExitStateCallback<Integer,Input> callback = (_ignored0, input, _ignored1) -> tester.set(input);
         FiniteStateMachine<Integer, Input> FSM = FiniteStateMachine.Builder.enumIntStateMachine(1,3,Input.class)
                 .addTransition(1,Input.SECOND,2, callback)
                 .addTransition(2,Input.THIRD,3, callback)
@@ -104,7 +104,7 @@ public class IntEnumFSMTest {
     @Test
     void rollbackTest() {
         AtomicReference<Input> tester = new AtomicReference<>();
-        FiniteStateMachine.Rollback<Integer,Input> rollback = (_, input, _) -> tester.set(input);
+        FiniteStateMachine.Rollback<Integer,Input> rollback = (_ignored0, input, _ignored1) -> tester.set(input);
         FiniteStateMachine<Integer, Input> FSM = FiniteStateMachine.Builder.enumIntStateMachine(1,3,Input.class)
                 .addTransition(1,Input.SECOND,2, rollback)
                 .addTransition(2,Input.THIRD,3, rollback)
@@ -127,7 +127,7 @@ public class IntEnumFSMTest {
     @Test
     void errorTest() {
         AtomicReference<Input> tester = new AtomicReference<>();
-        FiniteStateMachine.ErrorCallback<Integer,Input> errorCallback = (_, input) -> tester.set(input);
+        FiniteStateMachine.ErrorCallback<Integer,Input> errorCallback = (_ignored0, input) -> tester.set(input);
         FiniteStateMachine<Integer, Input> FSM = FiniteStateMachine.Builder.enumIntStateMachine(1,3,Input.class)
                 .addTransition(1,Input.SECOND,2)
                 .addTransition(2,Input.THIRD,3)

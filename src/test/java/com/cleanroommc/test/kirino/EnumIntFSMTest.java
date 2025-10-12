@@ -34,7 +34,7 @@ public class EnumIntFSMTest {
     @Test
     void entryCallbackTest() {
         AtomicInteger tester = new AtomicInteger(0);
-        FiniteStateMachine.OnEnterStateCallback<State, Integer> callback = (_, input, _) -> tester.set(input);
+        FiniteStateMachine.OnEnterStateCallback<State, Integer> callback = (_ignored0, input, _ignored1) -> tester.set(input);
         FiniteStateMachine<State, Integer> FSM = FiniteStateMachine.Builder.enumIntStateMachine(State.class, 1, 3)
                 .addTransition(State.STATE1, 2, State.STATE2, callback)
                 .addTransition(State.STATE2, 3, State.STATE3, callback)
@@ -57,7 +57,7 @@ public class EnumIntFSMTest {
     @Test
     void exitCallbackTest() {
         AtomicInteger tester = new AtomicInteger(0);
-        FiniteStateMachine.OnExitStateCallback<State, Integer> callback = (_, input, _) -> tester.set(input);
+        FiniteStateMachine.OnExitStateCallback<State, Integer> callback = (_ignored0, input, _ignored1) -> tester.set(input);
         FiniteStateMachine<State, Integer> FSM = FiniteStateMachine.Builder.enumIntStateMachine(State.class, 1, 3)
                 .addTransition(State.STATE1, 2, State.STATE2, callback)
                 .addTransition(State.STATE2, 3, State.STATE3, callback)
@@ -104,7 +104,7 @@ public class EnumIntFSMTest {
     @Test
     void rollbackTest() {
         AtomicInteger tester = new AtomicInteger(0);
-        FiniteStateMachine.Rollback<State, Integer> rollback = (_, input, _) -> tester.set(input);
+        FiniteStateMachine.Rollback<State, Integer> rollback = (_ignored0, input, _ignored1) -> tester.set(input);
         FiniteStateMachine<State, Integer> FSM = FiniteStateMachine.Builder.enumIntStateMachine(State.class, 1, 3)
                 .addTransition(State.STATE1, 2, State.STATE2, rollback)
                 .addTransition(State.STATE2, 3, State.STATE3, rollback)

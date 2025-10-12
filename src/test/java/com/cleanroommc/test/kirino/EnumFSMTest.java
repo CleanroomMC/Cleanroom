@@ -36,7 +36,7 @@ public class EnumFSMTest {
     @Test
     void entryCallbackTest() {
         AtomicReference<Input> tester = new AtomicReference<>();
-        FiniteStateMachine.OnEnterStateCallback<State,Input> callback = (_, input, _) -> {
+        FiniteStateMachine.OnEnterStateCallback<State,Input> callback = (_ignored0, input, _ignored1) -> {
             tester.set(input);
         };
         FiniteStateMachine<State, Input> FSM = FiniteStateMachine.Builder.
@@ -61,7 +61,7 @@ public class EnumFSMTest {
     @Test
     void exitCallbackTest() {
         AtomicReference<Input> tester = new AtomicReference<>();
-        FiniteStateMachine.OnExitStateCallback<State,Input> callback = (_, input, _) -> {
+        FiniteStateMachine.OnExitStateCallback<State,Input> callback = (_ignored0, input, _ignored1) -> {
             tester.set(input);
         };
         FiniteStateMachine<State, Input> FSM = FiniteStateMachine.Builder.
@@ -118,7 +118,7 @@ public class EnumFSMTest {
     @Test
     void rollbackTest() {
         AtomicReference<Input> tester = new AtomicReference<>();
-        FiniteStateMachine.Rollback<State,Input> rollback = (_, input, _) -> {
+        FiniteStateMachine.Rollback<State,Input> rollback = (_ignored0, input, _ignored1) -> {
             tester.set(input);
         };
         FiniteStateMachine<State, Input> FSM = FiniteStateMachine.Builder.
@@ -144,7 +144,7 @@ public class EnumFSMTest {
     @Test
     void errorTest() {
         AtomicReference<Input> tester = new AtomicReference<>();
-        FiniteStateMachine.ErrorCallback<State,Input> errorCallback = (_, input) -> tester.set(input);
+        FiniteStateMachine.ErrorCallback<State,Input> errorCallback = (_ignored0, input) -> tester.set(input);
         FiniteStateMachine<State, Input> FSM = FiniteStateMachine.Builder.
                         <State,Input>enumStateMachine(State.class,Input.class)
                 .addTransition(State.STATE1,Input.SECOND,State.STATE2)

@@ -34,7 +34,7 @@ public class IntRangeFSMTest {
     @Test
     void entryCallbackTest() {
         AtomicInteger tester = new AtomicInteger(0);
-        FiniteStateMachine.OnEnterStateCallback<Integer,Integer> callback = (_, input, _) -> tester.set(input);
+        FiniteStateMachine.OnEnterStateCallback<Integer,Integer> callback = (_ignored0, input, _ignored1) -> tester.set(input);
         FiniteStateMachine<Integer,Integer> FSM = FiniteStateMachine.Builder.intRangeStateMachine(1,3,
                         4,6).addTransition(1,5,2,callback)
                 .addTransition(2,4,1,callback)
@@ -57,7 +57,7 @@ public class IntRangeFSMTest {
     @Test
     void exitCallbackTest() {
         AtomicInteger tester = new AtomicInteger(0);
-        FiniteStateMachine.OnExitStateCallback<Integer,Integer> callback = (_, input, _) -> tester.set(input);
+        FiniteStateMachine.OnExitStateCallback<Integer,Integer> callback = (_ignored0, input, _ignored1) -> tester.set(input);
         FiniteStateMachine<Integer,Integer> FSM = FiniteStateMachine.Builder.intRangeStateMachine(1,3,
                         4,6).addTransition(1,5,2,callback)
                 .addTransition(2,4,1,callback)
@@ -104,7 +104,7 @@ public class IntRangeFSMTest {
     @Test
     void rollbackTest() {
         AtomicInteger tester = new AtomicInteger(0);
-        FiniteStateMachine.Rollback<Integer,Integer> rollback = (_, input, _) -> tester.set(input);
+        FiniteStateMachine.Rollback<Integer,Integer> rollback = (_ignored0, input, _ignored1) -> tester.set(input);
         FiniteStateMachine<Integer,Integer> FSM = FiniteStateMachine.Builder.intRangeStateMachine(1,3,
                         4,6)
                 .addTransition(1,5,2, rollback)
