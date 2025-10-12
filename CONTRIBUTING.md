@@ -61,7 +61,7 @@ Thanks for your interest! We welcome **all kinds of contributions** – code, do
 - Keep lines reasonably short to maintain readability, but there is no explicit char count limit.
 - Use `Jspecify` for `nullable`/`nonnull` annotations.
 - Don't use `this.` if not necessary.
-- Use google `Preconditions` to check preconditions instead of `Objects.requireNonNull()` etc.
+- Use google `Preconditions` to check argument/state/nonnull preconditions instead of `Objects.requireNonNull()` or manual if-statement etc.
 - Use `Preconditions` to check `nonnull` even after the `nonnull` annotations.
   
   **Example:**

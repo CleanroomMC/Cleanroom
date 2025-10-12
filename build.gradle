@@ -513,7 +513,9 @@ project(':cleanroom') {
         testImplementation 'org.opentest4j:opentest4j:1.3.0' // Needed for junit 5
         testImplementation 'org.hamcrest:hamcrest:3.0' // Needs advanced matching for list order
 
-
+        // Kirino Engine
+        installer 'org.joml:joml:1.10.8'
+        installer 'io.github.classgraph:classgraph:4.8.181'
     }
 
     // TODO: Include?
@@ -991,6 +993,58 @@ project(':cleanroom') {
         dependsOn userdevExtras, createMcp2Srg
         input = tasks.userdevExtras.archiveFile
         srg = tasks.createMcp2Srg.output
+    }
+
+    tasks.register("cleanroomClientRenderDoc", Exec) {
+        def javaExecTask = tasks.named('cleanroomClient', JavaExec).get()
+        def javaHome = javaExecTask.getJavaLauncher().get().getMetadata().getInstallationPath().asFile.absolutePath
+        def gradleWrapperJar = project.rootDir.toPath().resolve("gradle/wrapper/gradle-wrapper.jar").toFile().absolutePath
+
+        println "Java Home: $javaHome"
+        println "Gradle Wrapper Jar Path: $gradleWrapperJar"
+
+        commandLine = [
+                "C:\\Program Files\\RenderDoc\\renderdoccmd.exe",
+                "capture",
+                "--opt-hook-children",
+                "--wait-for-exit",
+                "--working-dir",
+                ".",
+                "$javaHome\\bin\\java.exe",
+                "-Xmx64m",
+                "-Xms64m",
+                "-Dorg.gradle.appname=gradlew",
+                "-Dorg.gradle.java.home=$javaHome",
+                "-classpath",
+                gradleWrapperJar,
+                "org.gradle.wrapper.GradleWrapperMain",
+                "cleanroomClient"
+        ]
+    }
+
+    tasks.register("cleanroomClientNsight", Exec) {
+        def javaExecTask = tasks.named('cleanroomClient', JavaExec).get()
+        def javaHome = javaExecTask.getJavaLauncher().get().getMetadata().getInstallationPath().asFile.absolutePath
+        def gradleWrapperJar = project.rootDir.toPath().resolve("gradle/wrapper/gradle-wrapper.jar").toFile().absolutePath
+
+        println "Java Home: $javaHome"
+        println "Gradle Wrapper Jar Path: $gradleWrapperJar"
+
+        commandLine = [
+                "C:\\Program Files\\NVIDIA Corporation\\Nsight Systems 2025.5.1\\target-windows-x64\\nsys.exe",
+                "profile",
+                "--output=cleanroomClientProfile",
+                "--trace=opengl",
+                "$javaHome\\bin\\java.exe",
+                "-Xmx64m",
+                "-Xms64m",
+                "-Dorg.gradle.appname=gradlew",
+                "-Dorg.gradle.java.home=$javaHome",
+                "-classpath",
+                gradleWrapperJar,
+                "org.gradle.wrapper.GradleWrapperMain",
+                "cleanroomClient"
+        ]
     }
 
     userdevJar {
