@@ -1,7 +1,6 @@
 package com.cleanroommc.kirino.schemata.fsm;
 
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -14,8 +13,7 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
 
     private final int lowerStateBound, upperStateBound;
     private final int lowerInputBound, upperInputBound;
-
-    private final int[] stateTable;
+    private final int[] transitionMap;
     private final OnEnterStateCallback<Integer,Integer>[] entryCallbacks;
     private final OnExitStateCallback<Integer,Integer>[] exitCallbacks;
     private final Rollback<Integer,Integer>[] rollbackCallbacks;
@@ -25,7 +23,7 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
 
     IntRangeStateMachine(int lowerStateBound, int upperStateBound,
                          int lowerInputBound, int upperInputBound,
-                         int @NonNull  [] stateTable,
+                         int @NonNull [] transitionMap,
                          OnEnterStateCallback<Integer, Integer> @NonNull [] entryCallbacks,
                          OnExitStateCallback<Integer,Integer> @NonNull [] exitCallbacks,
                          Rollback<Integer, Integer> @NonNull [] rollbackCallbacks,
@@ -35,68 +33,68 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
         this.upperStateBound = upperStateBound;
         this.lowerInputBound = lowerInputBound;
         this.upperInputBound = upperInputBound;
-        this.stateTable = stateTable;
+        this.transitionMap = transitionMap;
         this.entryCallbacks = entryCallbacks;
         this.exitCallbacks = exitCallbacks;
         this.rollbackCallbacks = rollbackCallbacks;
         this.errorCallback = errorCallback;
-        this.state = initialState;
+        state = initialState;
     }
 
-    @NotNull
+    @NonNull
     @Override
     public Integer state() {
-        return this.state;
+        return state;
     }
 
     private int index(int input, int state) {
-        return ((input - lowerInputBound)*(upperStateBound - lowerStateBound + 1))+(state-lowerStateBound);
+        return ((input - lowerInputBound) * (upperStateBound - lowerStateBound + 1)) + (state - lowerStateBound);
     }
 
-    @NotNull
+    @NonNull
     @Override
-    public Optional<Integer> accept(@NotNull Integer input) {
-        if (input < lowerInputBound || input > upperInputBound){
-            throw new IllegalStateException(String.format(
-                    "Input %d is out of range [%d,%d]",
-                    input, lowerInputBound, upperInputBound));
-        }
+    public Optional<Integer> accept(@NonNull Integer input) {
+        Preconditions.checkArgument(!(input < lowerInputBound || input > upperInputBound),
+                "Input %d is out of range [%d, %d].",
+                input, lowerInputBound, upperInputBound);
+
         int idx = index(input, state);
-        if (stateTable[idx] != -1) {
+        if (transitionMap[idx] != -1) {
             backlog.push(new FSMBacklogPair<>(state, input));
-            if (this.exitCallbacks[state] != null) {
-                this.exitCallbacks[state].transition(state,input,stateTable[idx]);
+            if (exitCallbacks[state] != null) {
+                exitCallbacks[state].transition(state, input, transitionMap[idx]);
             }
-            if (this.entryCallbacks[stateTable[idx]] != null) {
-                this.entryCallbacks[stateTable[idx]].transition(state,input,stateTable[idx]);
+            if (entryCallbacks[transitionMap[idx]] != null) {
+                entryCallbacks[transitionMap[idx]].transition(state, input, transitionMap[idx]);
             }
-            this.state = stateTable[idx];
+            state = transitionMap[idx];
         } else if (errorCallback != null){
             errorCallback.error(state, input);
         }
         return Optional.of(state);
     }
 
-    @NotNull
+    @NonNull
     @Override
     public Optional<FSMBacklogPair<Integer, Integer>> backtrack() {
         if (backlog.isEmpty()) {
             return Optional.empty();
         }
+
         FSMBacklogPair<Integer,Integer> pair = backlog.pop();
         Rollback<Integer,Integer> rollback = rollbackCallbacks[index(pair.input(),pair.state())];
         if (rollback != null) {
             rollback.rollback(state, pair.input(), pair.state());
         }
         FSMBacklogPair<Integer,Integer> result = new FSMBacklogPair<>(state, pair.input());
-        this.state = pair.state();
+        state = pair.state();
         return Optional.of(result);
     }
 
     @Override
     public void reset() {
         if (!backlog.isEmpty()) {
-            this.state = backlog.pollLast().state();
+            state = backlog.pollLast().state();
             backlog.clear();
         }
     }
@@ -111,6 +109,7 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
         private ErrorCallback<Integer,Integer> error;
         private Integer initialState;
 
+        @SuppressWarnings("unchecked")
         Builder(int lowerStateBound, int upperStateBound, int lowerInputBound, int upperInputBound) {
             this.lowerStateBound = lowerStateBound;
             this.upperStateBound = upperStateBound;
@@ -118,36 +117,32 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
             this.upperInputBound = upperInputBound;
             int stateCount = (upperStateBound-lowerStateBound+1);
             int size = stateCount*(upperInputBound-lowerInputBound+1);
-            this.transitionMap = new int[size];
+            transitionMap = new int[size];
             for (int i = 0; i < size; i++) {
-                this.transitionMap[i] = -1;
+                transitionMap[i] = -1;
             }
-            this.entryCallbacks = new OnEnterStateCallback[stateCount];
-            this.exitCallbacks = new OnExitStateCallback[stateCount];
-            this.rollbacks = new Rollback[size];
+            entryCallbacks = new OnEnterStateCallback[stateCount];
+            exitCallbacks = new OnExitStateCallback[stateCount];
+            rollbacks = new Rollback[size];
         }
 
         private int index(int input, int state) {
-            return ((input-lowerInputBound)*(upperStateBound-lowerStateBound+1))+(state-lowerStateBound);
+            return ((input - lowerInputBound) * (upperStateBound - lowerStateBound + 1)) + (state - lowerStateBound);
         }
 
         @Override
-        public IBuilder<Integer, Integer> addTransition(@NotNull Integer state, @NotNull Integer input, @NotNull Integer nextState,
+        public IBuilder<Integer, Integer> addTransition(@NonNull Integer state, @NonNull Integer input, @NonNull Integer nextState,
                                                         @Nullable OnEnterStateCallback<Integer, Integer> onEnterStateCallback,
                                                         @Nullable OnExitStateCallback<Integer, Integer> onExitStateCallback,
                                                         @Nullable Rollback<Integer, Integer> rollbackCallback) {
-            if (state < lowerStateBound || state > upperStateBound
-                    || nextState < lowerStateBound || nextState > upperStateBound) {
-                throw new IllegalStateException(String.format(
-                        "State %d out of range [%d,%d]",
-                        state, lowerStateBound, upperStateBound));
-            }
-            if (input < lowerInputBound || input > upperInputBound){
-                throw new IllegalStateException(String.format(
-                        "Input %d is out of range [%d,%d]",
-                        input, lowerInputBound, upperInputBound));
-            }
-            int idx = this.index(input, state);
+            Preconditions.checkArgument(!(state < lowerStateBound || state > upperStateBound || nextState < lowerStateBound || nextState > upperStateBound),
+                    "State %d out of range [%d, %d].",
+                    state, lowerStateBound, upperStateBound);
+            Preconditions.checkArgument(!(input < lowerInputBound || input > upperInputBound),
+                    "Input %d is out of range [%d, %d].",
+                    input, lowerInputBound, upperInputBound);
+
+            int idx = index(input, state);
             transitionMap[idx] = nextState;
             if (onEnterStateCallback != null) {
                 entryCallbacks[nextState] = onEnterStateCallback;
@@ -161,41 +156,40 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
 
         @Override
         public IBuilder<Integer, Integer> setEntryCallback(@NonNull Integer state, @Nullable OnEnterStateCallback<Integer, Integer> callback) {
-            if (state < lowerStateBound || state > upperStateBound) {
-                throw new IllegalStateException(String.format(
-                        "State %d out of range [%d,%d]",
-                        state, lowerStateBound, upperStateBound));
-            }
+            Preconditions.checkArgument(!(state < lowerStateBound || state > upperStateBound),
+                    "State %d out of range [%d, %d].",
+                    state, lowerStateBound, upperStateBound);
+
             entryCallbacks[state] = callback;
             return this;
         }
 
         @Override
         public IBuilder<Integer, Integer> setExitCallback(@NonNull Integer state, @Nullable OnExitStateCallback<Integer, Integer> callback) {
-            if (state < lowerStateBound || state > upperStateBound) {
-                throw new IllegalStateException(String.format(
-                        "State %d out of range [%d,%d]",
-                        state, lowerStateBound, upperStateBound));
-            }
+            Preconditions.checkArgument(!(state < lowerStateBound || state > upperStateBound),
+                    "State %d out of range [%d, %d].",
+                    state, lowerStateBound, upperStateBound);
+
             exitCallbacks[state] = callback;
             return this;
         }
 
         @Override
-        public IBuilder<Integer, Integer> initialState(@NotNull Integer initialState) {
-            if (initialState < lowerStateBound || initialState > upperStateBound) {
-                throw new IllegalStateException(String.format(
-                        "State %d out of range [%d,%d]",
-                        initialState, lowerStateBound, upperStateBound));
-            }
+        public IBuilder<Integer, Integer> initialState(@NonNull Integer initialState) {
+            Preconditions.checkArgument(!(initialState < lowerStateBound || initialState > upperStateBound),
+                    "State %d out of range [%d, %d].",
+                    initialState, lowerStateBound, upperStateBound);
+
             this.initialState = initialState;
             return this;
         }
 
         @Override
         public IBuilder<Integer, Integer> error(@NonNull ErrorCallback<Integer, Integer> errorCallback) {
-            Preconditions.checkNotNull(errorCallback);
-            this.error = errorCallback;
+            Preconditions.checkNotNull(errorCallback,
+                    "Provided \"errorCallback\" can't be null, if you don't want to use a failure callback don't call this function.");
+
+            error = errorCallback;
             return this;
         }
 
@@ -222,6 +216,8 @@ final class IntRangeStateMachine implements FiniteStateMachine<Integer, Integer>
 
         @Override
         public FiniteStateMachine<Integer, Integer> build() {
+            Preconditions.checkNotNull(initialState, "The Initial State must be set before the FSM is built.");
+
             return new IntRangeStateMachine(lowerStateBound, upperStateBound,
                     lowerInputBound, upperInputBound,
                     transitionMap,

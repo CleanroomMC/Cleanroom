@@ -60,6 +60,42 @@ Thanks for your interest! We welcome **all kinds of contributions** – code, do
   ```
 - Keep lines reasonably short to maintain readability, but there is no explicit char count limit.
 - Use `Jspecify` for `nullable`/`nonnull` annotations.
+- Don't use `this.` if not necessary.
+- Use google `Preconditions` to check preconditions instead of `Objects.requireNonNull()` etc.
+- Use `Preconditions` to check `nonnull` even after the `nonnull` annotations.
+  
+  **Example:**
+  ```java
+  @Override
+  public IBuilder<S, I> setEntryCallback(@NonNull S state, @Nullable OnEnterStateCallback<S, I> callback) {
+      Preconditions.checkNotNull(state, "Provided \"state\" can't be null.");
+  
+      ...
+  }
+  ```
+- Add blank line after precondition checks / chunks of code / early escape.
+- Start a setence/phrase with a capital letter in javadoc.
+- Line-comments begin with a lowercase letter.
+- Add space after line-comment (`//`).
+- All error messages end with a period (`.`).
+- Add a single space after each comma in a list of items, parameters, or arguments.
+- Avoid returning null and use `Optional<T>` instead.
+- Add a single space everywhere if possible.
+
+  **Bad:**
+  ```java
+  if(a==1){
+      return;
+  }
+  ```
+  **Good:**
+  ```java
+  if (a == 1) {
+      return;
+  }
+  ```
+- Use `//<editor-fold desc="your desc">` & `//</editor-fold>` if necessary.
+- **_Finally, while no style guide can cover every situation, maintaining consistency is critical!_**
 
 ## Upcoming Features
 

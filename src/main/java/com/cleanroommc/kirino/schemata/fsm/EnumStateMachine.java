@@ -1,7 +1,6 @@
 package com.cleanroommc.kirino.schemata.fsm;
 
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -25,37 +24,38 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
                      int @NonNull [] transitionMap, OnEnterStateCallback<S, I> @NonNull [] entryCallbacks,
                      OnExitStateCallback<S, I> @NonNull [] exitCallbacks,
                      Rollback<S, I> @NonNull [] rollbacks, @Nullable ErrorCallback<S, I> error) {
-        this.state = initialState.ordinal();
         this.transitionMap = transitionMap;
         this.entryCallbacks = entryCallbacks;
         this.exitCallbacks = exitCallbacks;
         this.rollbacks = rollbacks;
         this.error = error;
         this.states = states;
+        state = initialState.ordinal();
     }
 
-    @NotNull
+    @NonNull
     @Override
     public S state() {
         return states[state];
     }
 
     private int index(I input, int state) {
-        return (states.length*input.ordinal())+state;
+        return (states.length * input.ordinal()) + state;
     }
 
-    @NotNull
+    @NonNull
     @Override
-    public Optional<S> accept(@NotNull I input) {
-        Preconditions.checkNotNull(input, "Parameter \"input\" must not be null");
-        int idx = this.index(input, state);
+    public Optional<S> accept(@NonNull I input) {
+        Preconditions.checkNotNull(input, "Parameter \"input\" must not be null.");
+
+        int idx = index(input, state);
         if (transitionMap[idx] != -1) {
             backlog.push(new FSMBacklogPair<>(states[state], input));
-            if (this.exitCallbacks[state] != null) {
-                this.exitCallbacks[state].transition(states[state], input, states[transitionMap[idx]]);
+            if (exitCallbacks[state] != null) {
+                exitCallbacks[state].transition(states[state], input, states[transitionMap[idx]]);
             }
-            if (this.entryCallbacks[transitionMap[idx]] != null) {
-                this.entryCallbacks[transitionMap[idx]].transition(states[state], input, states[transitionMap[idx]]);
+            if (entryCallbacks[transitionMap[idx]] != null) {
+                entryCallbacks[transitionMap[idx]].transition(states[state], input, states[transitionMap[idx]]);
             }
             state = transitionMap[idx];
         } else if (error != null) {
@@ -65,26 +65,27 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
         return Optional.of(states[state]);
     }
 
-    @NotNull
+    @NonNull
     @Override
     public Optional<FSMBacklogPair<S, I>> backtrack() {
         if (backlog.isEmpty()) {
             return Optional.empty();
         }
+
         FSMBacklogPair<S, I> pair = backlog.pop();
         Rollback<S, I> rollback = rollbacks[index(pair.input(), pair.state().ordinal())];
         if (rollback != null) {
             rollback.rollback(states[state], pair.input(), pair.state());
         }
         FSMBacklogPair<S, I> result = new FSMBacklogPair<>(states[state], pair.input());
-        this.state = pair.state().ordinal();
+        state = pair.state().ordinal();
         return Optional.of(result);
     }
 
     @Override
     public void reset() {
         if (!backlog.isEmpty()) {
-            this.state = backlog.pollLast().state().ordinal();
+            state = backlog.pollLast().state().ordinal();
             backlog.clear();
         }
     }
@@ -100,21 +101,22 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
         private ErrorCallback<S, I> error;
         private S initialState;
 
+        @SuppressWarnings("unchecked")
         Builder(Class<S> stateClass, Class<I> inputClass){
-            this.states = stateClass.getEnumConstants();
-            this.inputs = inputClass.getEnumConstants();
-            int length = states.length*inputs.length;
-            this.transitionMap = new int[length];
+            states = stateClass.getEnumConstants();
+            inputs = inputClass.getEnumConstants();
+            int length = states.length * inputs.length;
+            transitionMap = new int[length];
             for (int i = 0; i < length; i++) {
-                this.transitionMap[i] = -1;
+                transitionMap[i] = -1;
             }
-            this.entryCallbacks = new OnEnterStateCallback[states.length];
-            this.exitCallbacks = new OnExitStateCallback[states.length];
-            this.rollbacks = new Rollback[length];
+            entryCallbacks = new OnEnterStateCallback[states.length];
+            exitCallbacks = new OnExitStateCallback[states.length];
+            rollbacks = new Rollback[length];
         }
 
         private int index(I input, S state) {
-            return (input.ordinal() * states.length) + state.ordinal();
+            return (states.length * input.ordinal()) + state.ordinal();
         }
 
         @Override
@@ -122,10 +124,11 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
                                             @Nullable OnEnterStateCallback<S, I> onEnterStateCallback,
                                             @Nullable OnExitStateCallback<S, I> onExitStateCallback,
                                             @Nullable Rollback<S, I> rollbackCallback) {
-            Preconditions.checkNotNull(state, "Parameter \"state\" must not be null");
-            Preconditions.checkNotNull(input, "Parameter \"input\" must not be null");
-            Preconditions.checkNotNull(nextState, "Parameter \"nextState\" must not be null");
-            int idx = this.index(input, state);
+            Preconditions.checkNotNull(state, "Parameter \"state\" must not be null.");
+            Preconditions.checkNotNull(input, "Parameter \"input\" must not be null.");
+            Preconditions.checkNotNull(nextState, "Parameter \"nextState\" must not be null.");
+
+            int idx = index(input, state);
             transitionMap[idx] = nextState.ordinal();
             if (onEnterStateCallback != null) {
                 entryCallbacks[nextState.ordinal()] = onEnterStateCallback;
@@ -139,30 +142,34 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
 
         @Override
         public IBuilder<S, I> setEntryCallback(@NonNull S state, @Nullable OnEnterStateCallback<S, I> callback) {
-            Preconditions.checkNotNull(state, "Parameter \"state\" must not be null");
+            Preconditions.checkNotNull(state, "Parameter \"state\" must not be null.");
+
             entryCallbacks[state.ordinal()] = callback;
             return this;
         }
 
         @Override
         public IBuilder<S, I> setExitCallback(@NonNull S state, @Nullable OnExitStateCallback<S, I> callback) {
-            Preconditions.checkNotNull(state, "Parameter \"state\" must not be null");
+            Preconditions.checkNotNull(state, "Parameter \"state\" must not be null.");
+
             exitCallbacks[state.ordinal()] = callback;
             return this;
         }
 
         @Override
-        public IBuilder<S, I> initialState(@NotNull S initialState) {
-            Preconditions.checkNotNull(initialState, "Parameter \"initialState\" must not be null");
+        public IBuilder<S, I> initialState(@NonNull S initialState) {
+            Preconditions.checkNotNull(initialState, "Parameter \"initialState\" must not be null.");
+
             this.initialState = initialState;
             return this;
         }
 
         @Override
-        public IBuilder<S, I> error(@NotNull ErrorCallback<S, I> errorCallback) {
+        public IBuilder<S, I> error(@NonNull ErrorCallback<S, I> errorCallback) {
             Preconditions.checkNotNull(errorCallback,
-                    "Provided \"errorCallback\" can't be null, if you don't want to use a failure callback don't call this function");
-            this.error = errorCallback;
+                    "Provided \"errorCallback\" can't be null, if you don't want to use a failure callback don't call this function.");
+
+            error = errorCallback;
             return this;
         }
 
@@ -188,7 +195,8 @@ final class EnumStateMachine<S extends Enum<S>, I extends Enum<I>> implements Fi
 
         @Override
         public FiniteStateMachine<S, I> build() {
-            Preconditions.checkNotNull(initialState, "The Initial State must be set before the FSM is built");
+            Preconditions.checkNotNull(initialState, "The Initial State must be set before the FSM is built.");
+
             return new EnumStateMachine<>(initialState, states, transitionMap,
                     entryCallbacks, exitCallbacks,
                     rollbacks, error);
