@@ -3,6 +3,7 @@ package com.cleanroommc.kirino.engine.render.pipeline.pass.subpasses;
 import com.cleanroommc.kirino.engine.render.gizmos.GizmosManager;
 import com.cleanroommc.kirino.engine.render.pipeline.Renderer;
 import com.cleanroommc.kirino.engine.render.pipeline.command.DrawQueue;
+import com.cleanroommc.kirino.engine.render.pipeline.command.LowLevelDC;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.Subpass;
 import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
 import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
@@ -17,7 +18,9 @@ public class GizmosPass extends Subpass {
 
     @Override
     protected void execute(DrawQueue drawQueue) {
-
+        if (drawQueue.dequeue() instanceof LowLevelDC command) {
+            renderer.draw(command);
+        }
     }
 
     @Override

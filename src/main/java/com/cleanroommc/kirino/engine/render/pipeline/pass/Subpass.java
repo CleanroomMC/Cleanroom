@@ -1,5 +1,6 @@
 package com.cleanroommc.kirino.engine.render.pipeline.pass;
 
+import com.cleanroommc.kirino.engine.render.pipeline.command.LowLevelDC;
 import com.cleanroommc.kirino.engine.render.pipeline.Renderer;
 import com.cleanroommc.kirino.engine.render.pipeline.command.DrawQueue;
 import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
@@ -20,7 +21,7 @@ public abstract class Subpass {
     public final void render(DrawQueue drawQueue) {
         renderer.bindPipeline(pso);
         bindTarget();
-        execute(drawQueue);
+        execute(drawQueue.compile().simplify());
     }
 
     protected void bindTarget() {
@@ -28,6 +29,12 @@ public abstract class Subpass {
         GL11.glViewport(0, 0, fbo.width(), fbo.height());
     }
 
+    /**
+     * All elements in {@link DrawQueue} is now guaranteed to be {@link LowLevelDC}.
+     *
+     * @implSpec <code>if (drawQueue.dequeue() instanceof LowLevelDC command) { ... }</code>
+     * @param drawQueue The queue that stores low-level draw commands
+     */
     protected abstract void execute(DrawQueue drawQueue);
 
     public abstract void collectCommands(DrawQueue drawQueue);

@@ -1,13 +1,11 @@
 package com.cleanroommc.kirino.engine.render.pipeline;
 
-import com.cleanroommc.kirino.engine.render.pipeline.command.DrawCommand;
+import com.cleanroommc.kirino.engine.render.pipeline.command.LowLevelDC;
 import com.cleanroommc.kirino.engine.render.pipeline.state.BlendState;
 import com.cleanroommc.kirino.engine.render.pipeline.state.DepthState;
 import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
 import com.cleanroommc.kirino.engine.render.pipeline.state.RasterState;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.*;
 
 public final class Renderer {
     public void bindPipeline(PipelineStateObject pso) {
@@ -65,11 +63,26 @@ public final class Renderer {
         GL11.glColorMask(r, g, _b, a);
     }
 
-    public void draw(DrawCommand command) {
+    public void draw(LowLevelDC command) {
+        if (command.type == LowLevelDC.DrawType.ELEMENTS ||
+                command.type == LowLevelDC.DrawType.ELEMENTS_INSTANCED ||
+                command.type == LowLevelDC.DrawType.MULTI_ELEMENTS_INDIRECT) {
 
-    }
+            GL30.glBindVertexArray(command.vao);
+            GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, command.ebo);
 
-    public void drawMultiIndirect() {
-
+            switch (command.type) {
+                case ELEMENTS -> {
+                    GL11.glDrawElements(command.mode, command.indicesCount, command.elementType, command.eboOffset);
+                }
+                case ELEMENTS_INSTANCED -> {
+                    GL31.glDrawElementsInstanced(command.mode, command.indicesCount, command.elementType, command.eboOffset, command.instanceCount);
+                }
+                case MULTI_ELEMENTS_INDIRECT -> {
+                    GL15.glBindBuffer(GL40.GL_DRAW_INDIRECT_BUFFER, command.idb);
+                    GL43.glMultiDrawElementsIndirect(command.mode, command.elementType, command.idbOffset, command.instanceCount, command.idbStride);
+                }
+            }
+        }
     }
 }
