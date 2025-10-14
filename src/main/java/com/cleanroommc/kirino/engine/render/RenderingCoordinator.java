@@ -11,6 +11,10 @@ import com.cleanroommc.kirino.engine.render.pipeline.pass.subpasses.WhateverPass
 import com.cleanroommc.kirino.engine.render.scene.MinecraftScene;
 import com.cleanroommc.kirino.engine.render.shader.ShaderRegistry;
 import com.cleanroommc.kirino.engine.render.shader.event.ShaderRegistrationEvent;
+import com.cleanroommc.kirino.engine.render.staging.StagingBufferManager;
+import com.cleanroommc.kirino.engine.render.staging.StagingCallback;
+import com.cleanroommc.kirino.engine.render.staging.StagingContext;
+import com.cleanroommc.kirino.engine.render.staging.handle.TemporaryVBOHandle;
 import com.cleanroommc.kirino.engine.render.utils.ResolutionContainer;
 import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;
@@ -40,6 +44,9 @@ public class RenderingCoordinator {
     private final ShaderRegistry shaderRegistry;
     private final GLSLRegistry glslRegistry;
     private final DefaultShaderAnalyzer defaultShaderAnalyzer;
+
+    private final StagingBufferManager stagingBufferManager;
+    private final List<StagingCallback> stagingCallbacks;
 
     private final RenderPass chunkCpuPass;
     private final RenderPass gizmosPass;
@@ -71,6 +78,17 @@ public class RenderingCoordinator {
         defaultShaderAnalyzer = new DefaultShaderAnalyzer();
         shaderRegistry.analyze(glslRegistry, defaultShaderAnalyzer);
 
+        stagingBufferManager = new StagingBufferManager();
+        stagingCallbacks = new ArrayList<>();
+
+        // test
+        stagingCallbacks.add(new StagingCallback() {
+            @Override
+            public void run(StagingContext context) {
+                TemporaryVBOHandle handle = context.getTemporaryVBO(4);
+            }
+        });
+
         ShaderProgram shaderProgram = shaderRegistry.newShaderProgram("kirino:shaders/test.vert", "kirino:shaders/test.vert");
 
         Renderer renderer = new Renderer();
@@ -100,6 +118,7 @@ public class RenderingCoordinator {
     public void updateWorld(WorldClient minecraftWorld) {
         scene.tryUpdateChunkProvider(minecraftWorld.getChunkProvider());
         scene.update();
+        stagingBufferManager.runStaging(stagingCallbacks);
     }
 
     public void runChunkCpuPass() {
