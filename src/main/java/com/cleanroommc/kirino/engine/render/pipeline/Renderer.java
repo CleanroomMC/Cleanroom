@@ -63,6 +63,12 @@ public final class Renderer {
         GL11.glColorMask(r, g, _b, a);
     }
 
+    /**
+     * Accepts a low-level draw command and submits the corresponding OpenGL command to GPU.
+     * Notice, {@link LowLevelDC} with type <code>MULTI_ELEMENTS_INDIRECT_UNIT</code> is an auxiliary command and will be ignored here.
+     *
+     * @param command The low-level draw command
+     */
     public void draw(LowLevelDC command) {
         if (command.type == LowLevelDC.DrawType.ELEMENTS ||
                 command.type == LowLevelDC.DrawType.ELEMENTS_INSTANCED ||

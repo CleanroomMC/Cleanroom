@@ -17,6 +17,16 @@ public class GizmosPass extends Subpass {
     }
 
     @Override
+    protected boolean hintCompileDrawQueue() {
+        return false;
+    }
+
+    @Override
+    protected boolean hintSimplifyDrawQueue() {
+        return false;
+    }
+
+    @Override
     protected void execute(DrawQueue drawQueue) {
         if (drawQueue.dequeue() instanceof LowLevelDC command) {
             renderer.draw(command);

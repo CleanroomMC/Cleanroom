@@ -41,8 +41,13 @@ public class DrawQueue {
     }
 
     /**
-     * Must be called after {@link #compile()}.
+     * <p>Prerequisite include:</p>
+     * <ul>
+     *     <li>All elements in this {@link DrawQueue} is a {@link LowLevelDC}</li>
+     * </ul>
+     *
      * It combines and simplifies {@link LowLevelDC}s, especially combines commands into <code>MULTI_ELEMENTS_INDIRECT</code> command.
+     * Usually it's called after {@link #compile()} which compiles everything into {@link LowLevelDC}s.
      *
      * @return The <code>DrawQueue</code> itself
      */

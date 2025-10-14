@@ -269,7 +269,7 @@ public final class LowLevelDC implements IDrawCommand {
             Preconditions.checkState(vao != -1 && ebo != -1 && idb != -1 && mode != -1 && elementType != -1 && idbOffset != -1 && idbStride != -1 && instanceCount != -1,
                     "Must set all parameters \"vao\", \"ebo\", \"idb\", \"mode\", \"elementType\", \"idbOffset\", \"idbStride\", \"instanceCount\".");
 
-            return new LowLevelDC(DrawType.ELEMENTS, vao, ebo, idb, mode, -1, elementType, -1, instanceCount, idbOffset, idbStride, -1, -1, -1, -1, -1);
+            return new LowLevelDC(DrawType.MULTI_ELEMENTS_INDIRECT, vao, ebo, idb, mode, -1, elementType, -1, instanceCount, idbOffset, idbStride, -1, -1, -1, -1, -1);
         }
     }
 
@@ -356,22 +356,46 @@ public final class LowLevelDC implements IDrawCommand {
             Preconditions.checkState(vao != -1 && ebo != -1 && mode != -1 && elementType != -1 && idIndicesCount != -1 && idInstanceCount != -1 && idEboFirstIndex != -1 && idBaseVertex != -1 && idBaseInstance != -1,
                     "Must set all parameters \"vao\", \"ebo\", \"mode\", \"elementType\", \"indicesCount\", \"instanceCount\", \"eboFirstIndex\", \"baseVertex\", \"baseInstance\".");
 
-            return new LowLevelDC(DrawType.ELEMENTS, vao, ebo, -1, mode, -1, elementType, -1, -1, -1, -1, idIndicesCount, idInstanceCount, idEboFirstIndex, idBaseVertex, idBaseInstance);
+            return new LowLevelDC(DrawType.MULTI_ELEMENTS_INDIRECT_UNIT, vao, ebo, -1, mode, -1, elementType, -1, -1, -1, -1, idIndicesCount, idInstanceCount, idEboFirstIndex, idBaseVertex, idBaseInstance);
         }
     }
 
+    /**
+     * <code>glDrawElements</code> command builder.
+     * Notice, you must set a value to all parameters and then <code>.build()</code>.
+     *
+     * @return The builder
+     */
     public static ElementBuilder element() {
         return new ElementBuilder();
     }
 
+    /**
+     * <code>glDrawElementsInstanced</code> command builder.
+     * Notice, you must set a value to all parameters and then <code>.build()</code>.
+     *
+     * @return The builder
+     */
     public static ElementInstancedBuilder elementInstanced() {
         return new ElementInstancedBuilder();
     }
 
+    /**
+     * <code>glMultiDrawElementsIndirect</code> command builder.
+     * Notice, you must set a value to all parameters and then <code>.build()</code>.
+     *
+     * @return The builder
+     */
     public static MultiElementIndirectBuilder multiElementIndirect() {
         return new MultiElementIndirectBuilder();
     }
 
+    /**
+     * <code>glMultiDrawElementsIndirect</code> command's component builder.
+     * Notice, you must set a value to all parameters and then <code>.build()</code>.
+     *
+     * @return The builder
+     */
     public static MultiElementIndirectUnitBuilder multiElementIndirectUnit() {
         return new MultiElementIndirectUnitBuilder();
     }

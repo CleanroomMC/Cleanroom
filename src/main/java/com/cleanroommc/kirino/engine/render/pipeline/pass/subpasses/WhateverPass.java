@@ -12,6 +12,16 @@ public class WhateverPass extends Subpass {
     }
 
     @Override
+    protected boolean hintCompileDrawQueue() {
+        return false;
+    }
+
+    @Override
+    protected boolean hintSimplifyDrawQueue() {
+        return false;
+    }
+
+    @Override
     protected void execute(DrawQueue drawQueue) {
 
     }
