@@ -1,5 +1,6 @@
 package com.cleanroommc.kirino.engine.render.pipeline.pass;
 
+import com.cleanroommc.kirino.engine.render.camera.ICamera;
 import com.cleanroommc.kirino.engine.render.pipeline.command.DrawQueue;
 import com.cleanroommc.kirino.gl.debug.KHRDebug;
 
@@ -42,7 +43,7 @@ public final class RenderPass {
         list.add(decorator);
     }
 
-    public void render() {
+    public void render(ICamera camera) {
         for (String subpassName : subpassOrder) {
             KHRDebug.pushGroup(passName + " - " + subpassName);
 
@@ -55,7 +56,7 @@ public final class RenderPass {
                     subpass.decorateCommands(drawQueue, decorator);
                 }
             }
-            subpass.render(drawQueue);
+            subpass.render(drawQueue, camera);
 
             KHRDebug.popGroup();
         }

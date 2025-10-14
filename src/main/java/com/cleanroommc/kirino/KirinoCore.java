@@ -461,7 +461,7 @@ public class KirinoCore {
     @SubscribeEvent
     public static void onShaderRegister(ShaderRegistrationEvent event) {
         event.register(new ResourceLocation("kirino:shaders/test.vert"));
-        event.register(new ResourceLocation("kirino:shaders/gizmos_line.vert"));
-        event.register(new ResourceLocation("kirino:shaders/gizmos_line.frag"));
+        event.register(new ResourceLocation("kirino:shaders/gizmos.vert"));
+        event.register(new ResourceLocation("kirino:shaders/gizmos.frag"));
     }
 }

@@ -9,7 +9,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
 public final class PSOPresets {
-    public static PipelineStateObject createGizmosLinePSO(ShaderProgram shaderProgram) {
+    public static PipelineStateObject createGizmosPSO(ShaderProgram shaderProgram) {
         return new PipelineStateObject(
                 new BlendState(
                         true,
@@ -34,7 +34,7 @@ public final class PSOPresets {
                         false,
                         1.0f,
                         1.0f,
-                        GL11.GL_LINE
+                        GL11.GL_FILL
                 ),
                 shaderProgram
         );

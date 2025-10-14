@@ -218,7 +218,7 @@ RenderPass pass = new RenderPass("Main Pass");
 pass.addSubpass("Opaque Pass", new OpaquePass(renderer, opaquePSO, framebuffer));
 pass.addSubpass("Cutout Pass", new CutoutPass(renderer, cutoutPSO, framebuffer));
 pass.addSubpass("Transparent Pass", new TransparentPass(renderer, transparentPSO, framebuffer));
-pass.render();
+pass.render(camera);
 ```
 
 As you can see, each subpass (`OpaquePass`/`CutoutPass`/`TransparentPass`) defines both its rendering logic and its associated `PSO` (Pipeline State Object) and `FBO` (Framebuffer).
@@ -253,6 +253,18 @@ public class RenderPass {
 ```
 
 As you can see, `RenderPass` acts like an entry point and we implement abstract `Subpass` classes to handle the rendering logic.
+
+### `Subpass` Procedure
+```mermaid
+graph TD
+    A[Collect Draw Commands] --> B[Decorate Draw Commands]
+    B --> C[Compile Draw Commands]
+    C --> D[Simplify Draw Commands]
+    D --> E[Bind Framebuffer]
+    E --> F[Bind Pipeline State Object]
+    F --> G[Update Shader Program / Uniforms]
+    G --> H[Execute Draw Commands / Upload to GPU]
+```
 
 ## 2.4 Draw Command
 `DrawCommand` is an element of `DrawQueue`, and `Subpass` accepts a `DrawQueue` as the input.

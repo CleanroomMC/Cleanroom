@@ -1,10 +1,12 @@
 package com.cleanroommc.kirino.gl.shader;
 
+import com.cleanroommc.kirino.gl.GLDisposable;
+import com.cleanroommc.kirino.gl.GLResourceManager;
 import com.cleanroommc.kirino.gl.shader.schema.GLSLRegistry;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
-public class Shader {
+public class Shader extends GLDisposable {
     private final String shaderName;
     private final String shaderSource;
     private final ShaderType shaderType;
@@ -67,7 +69,12 @@ public class Shader {
         setup = true;
 
         if (shaderID != 0) {
-            // todo: add disposable
+            GLResourceManager.addDisposable(this);
         }
+    }
+
+    @Override
+    public void dispose() {
+        GL20.glDeleteShader(shaderID);
     }
 }

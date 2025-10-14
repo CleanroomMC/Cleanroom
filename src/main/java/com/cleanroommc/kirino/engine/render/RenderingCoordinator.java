@@ -79,12 +79,12 @@ public class RenderingCoordinator {
         chunkCpuPass.addSubpass("Cutout Pass", new WhateverPass(renderer, PSOPresets.createCutoutPSO(shaderProgram), new Framebuffer(0, 0)));
         chunkCpuPass.addSubpass("Transparent Pass", new WhateverPass(renderer, PSOPresets.createTransparentPSO(shaderProgram), new Framebuffer(0, 0)));
 
-        shaderProgram = shaderRegistry.newShaderProgram("kirino:shaders/gizmos_line.vert", "kirino:shaders/gizmos_line.frag");
+        shaderProgram = shaderRegistry.newShaderProgram("kirino:shaders/gizmos.vert", "kirino:shaders/gizmos.frag");
 
         gizmosPass = new RenderPass("Gizmos Pass");
-        gizmosPass.addSubpass("Gizmos Line Pass", new GizmosPass(
+        gizmosPass.addSubpass("Gizmos Pass", new GizmosPass(
                 renderer,
-                PSOPresets.createGizmosLinePSO(shaderProgram),
+                PSOPresets.createGizmosPSO(shaderProgram),
                 new Framebuffer(MINECRAFT.displayWidth, MINECRAFT.displayHeight),
                 gizmosManager));
     }
@@ -103,10 +103,10 @@ public class RenderingCoordinator {
     }
 
     public void runChunkCpuPass() {
-        //chunkCpuPass.render();
+        //chunkCpuPass.render(camera);
     }
 
     public void runGizmosPass() {
-        gizmosPass.render();
+        gizmosPass.render(camera);
     }
 }
