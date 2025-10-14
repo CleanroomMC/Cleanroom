@@ -1,6 +1,7 @@
 package com.cleanroommc.kirino.engine.render.task.job;
 
 import com.cleanroommc.kirino.KirinoCore;
+import com.cleanroommc.kirino.ecs.entity.EntityManager;
 import com.cleanroommc.kirino.ecs.entity.EntityQuery;
 import com.cleanroommc.kirino.ecs.job.IParallelJob;
 import com.cleanroommc.kirino.ecs.job.JobDataQuery;
@@ -20,7 +21,7 @@ public class ChunkMeshletGenJob implements IParallelJob {
     public IPrimitiveArray chunkPosZArray;
 
     @Override
-    public void execute(int index) {
+    public void execute(EntityManager entityManager, int index) {
         int x = chunkPosXArray.getInt(index);
         int z = chunkPosZArray.getInt(index);
         KirinoCore.LOGGER.info("debug chunk xz: " + x + ", " + z);
