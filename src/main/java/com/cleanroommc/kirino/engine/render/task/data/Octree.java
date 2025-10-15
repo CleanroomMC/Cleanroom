@@ -10,7 +10,7 @@ import java.util.*;
 
 public class Octree {
     private final AABB boundingBox;
-    private final List<Node> children = new LinkedList<Node>();
+    private final List<Node> children = new LinkedList<>();
     Node root;
 
     public Octree(AABB boundingBox) {
@@ -24,7 +24,7 @@ public class Octree {
 
         final int maxInLeaf = 32;
 
-        Deque<Block> blocksToInsert = new ArrayDeque<Block>();
+        Deque<Block> blocksToInsert = new ArrayDeque<>();
         blocksToInsert.add(insertedBlock);
         while (!blocksToInsert.isEmpty()) {
             Block block = blocksToInsert.pop();
