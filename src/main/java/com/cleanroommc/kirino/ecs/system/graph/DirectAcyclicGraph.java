@@ -4,10 +4,9 @@ import com.google.common.graph.MutableNetwork;
 import com.google.common.graph.NetworkBuilder;
 import com.google.common.graph.Traverser;
 
-// I know, its beta after all
 @SuppressWarnings("UnstableApiUsage")
 public class DirectAcyclicGraph {
-    private final MutableNetwork<Node, Edge> graph;
+    final MutableNetwork<Node, Edge> graph;
 
     public DirectAcyclicGraph() {
         this.graph = NetworkBuilder.directed()
@@ -26,10 +25,6 @@ public class DirectAcyclicGraph {
 
     public void addNode(Node node) {
         graph.addNode(node);
-    }
-
-    public void execute() {
-
     }
 
 }
