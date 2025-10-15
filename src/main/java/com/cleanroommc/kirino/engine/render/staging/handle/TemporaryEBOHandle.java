@@ -8,16 +8,18 @@ import com.google.common.base.Preconditions;
 import java.nio.ByteBuffer;
 
 public class TemporaryEBOHandle extends StagingBufferHandle {
-    private final long generation;
-    private final EBOView eboView;  // turn off validation; handle preconditions manually here
+    public final long generation;
+    protected final EBOView eboView; // turn off validation; handle preconditions manually here
 
-    public TemporaryEBOHandle(StagingBufferManager stagingBufferManager, long generation, int offset, int maxLength, EBOView eboView) {
-        super(stagingBufferManager, offset, maxLength);
+    public TemporaryEBOHandle(StagingBufferManager stagingBufferManager, long generation, int maxLength, EBOView eboView) {
+        super(stagingBufferManager, 0, maxLength);
         this.generation = generation;
         this.eboView = eboView;
     }
 
-    public int getBufferID() {
+    public int getEboID() {
+        Preconditions.checkState(generation == stagingBufferManager.getTemporaryHandleGeneration(), "This temporary handle is expired.");
+
         return eboView.bufferID;
     }
 

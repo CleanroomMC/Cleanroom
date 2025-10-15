@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.gl.mesh.attribute;
+package com.cleanroommc.kirino.gl.vao.attribute;
 
 import org.lwjgl.opengl.GL11;
 

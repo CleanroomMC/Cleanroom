@@ -16,6 +16,9 @@ import org.lwjgl.opengl.GL20C;
 public class GizmosPass extends Subpass {
     private final GizmosManager gizmosManager;
 
+    public static int vao;
+    public static int ebo;
+
     public GizmosPass(Renderer renderer, PipelineStateObject pso, Framebuffer fbo, GizmosManager gizmosManager) {
         super(renderer, pso, fbo);
         this.gizmosManager = gizmosManager;

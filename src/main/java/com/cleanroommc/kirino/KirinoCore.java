@@ -165,6 +165,7 @@ public class KirinoCore {
         MINECRAFT.profiler.endSection();
         //</editor-fold>
 
+        KIRINO_ENGINE.renderingCoordinator.update();
         KIRINO_ENGINE.renderingCoordinator.updateWorld(MINECRAFT.world);
         KIRINO_ENGINE.renderingCoordinator.runChunkCpuPass();
 

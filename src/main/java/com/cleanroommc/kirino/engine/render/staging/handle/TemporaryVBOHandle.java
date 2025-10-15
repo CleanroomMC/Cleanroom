@@ -8,16 +8,18 @@ import com.google.common.base.Preconditions;
 import java.nio.ByteBuffer;
 
 public class TemporaryVBOHandle extends StagingBufferHandle {
-    private final long generation;
-    private final VBOView vboView; // turn off validation; handle preconditions manually here
+    public final long generation;
+    protected final VBOView vboView; // turn off validation; handle preconditions manually here
 
-    public TemporaryVBOHandle(StagingBufferManager stagingBufferManager, long generation, int offset, int maxLength, VBOView vboView) {
-        super(stagingBufferManager, offset, maxLength);
+    public TemporaryVBOHandle(StagingBufferManager stagingBufferManager, long generation, int maxLength, VBOView vboView) {
+        super(stagingBufferManager, 0, maxLength);
         this.generation = generation;
         this.vboView = vboView;
     }
 
-    public int getBufferID() {
+    public int getVboID() {
+        Preconditions.checkState(generation == stagingBufferManager.getTemporaryHandleGeneration(), "This temporary handle is expired.");
+
         return vboView.bufferID;
     }
 

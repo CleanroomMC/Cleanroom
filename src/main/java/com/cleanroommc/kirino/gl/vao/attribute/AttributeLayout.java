@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.gl.mesh.attribute;
+package com.cleanroommc.kirino.gl.vao.attribute;
 
 import com.cleanroommc.kirino.gl.buffer.VBOView;
 import org.jspecify.annotations.Nullable;

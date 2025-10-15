@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.gl.mesh.attribute;
+package com.cleanroommc.kirino.gl.vao.attribute;
 
 public enum InterpretationType {
     TO_FLOAT_KIND, // float, vec, etc.
