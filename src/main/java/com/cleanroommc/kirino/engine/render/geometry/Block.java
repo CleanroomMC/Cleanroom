@@ -8,12 +8,11 @@ import java.util.BitSet;
 @CleanStruct
 public class Block {
     public Vector3i position;
-    public BitSet faces;
+    public int faces;
 
     public Block() {
         position = new Vector3i();
-        faces = new BitSet(6);
-        faces.set(0, 6);
+        faces = 0b111111;
     }
 
     public Block(int x, int y, int z) {
@@ -22,16 +21,13 @@ public class Block {
 
     public Block(int x, int y, int z, int faces) {
         position = new Vector3i(x, y, z);
-        this.faces = new BitSet(6);
-        for (int i = 0; i < 6; i++) {
-            this.faces.set(i, (faces & (1 << i)) == 1);
-        }
+        this.faces = faces;
     }
 
     int compress() {
         return (position.x & 0b1111) << 14
                 | (position.y & 0b1111) << 10
                 | (position.z & 0b1111) << 6
-                | faces.toByteArray()[0];
+                | faces;
     }
 }
