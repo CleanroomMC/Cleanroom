@@ -538,7 +538,8 @@ public class LibraryManager
         {
             try
             {
-                List<Path> candidatesAsPaths = candidates.stream().map(File::toPath).toList();
+                // toList returns an immutable list
+                List<Path> candidatesAsPaths = candidates.stream().map(File::toPath).collect(Collectors.toList());
                 bansoukouMethod.invoke(null, candidatesAsPaths); // Modifies in-place
             }
             catch (Exception e)
