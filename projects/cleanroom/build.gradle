@@ -1,0 +1,907 @@
+import com.cleanroommc.gradle.helpers.ProjectConstants
+import com.cleanroommc.gradle.helpers.tasks.Util
+import groovy.json.JsonBuilder
+import net.minecraftforge.gradle.common.tasks.ApplyBinPatches
+import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
+import net.minecraftforge.gradle.common.tasks.ExtractInheritance
+import net.minecraftforge.gradle.common.tasks.ExtractMCPData
+import net.minecraftforge.gradle.patcher.tasks.GenerateBinPatches
+import net.minecraftforge.gradle.patcher.tasks.ReobfuscateJar
+import net.minecraftforge.srgutils.IMappingFile
+import org.apache.commons.compress.compressors.lzma.LZMACompressorOutputStream
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.ClassVisitor
+import org.objectweb.asm.FieldVisitor
+import org.objectweb.asm.MethodVisitor
+import org.objectweb.asm.Opcodes
+
+import java.nio.file.Files
+import java.util.zip.ZipFile
+
+def props = project.properties
+
+
+evaluationDependsOn(':minecraft')
+apply plugin: 'java-library'
+apply plugin: 'maven-publish'
+apply plugin: 'net.minecraftforge.gradle.patcher'
+
+//  = 'net.minecraftforge'
+group = 'com.cleanroommc'
+version = rootProject.version
+
+compileJava {
+    doFirst {
+        def target = new File("${rootProject.projectDir}/src/main/java/com/cleanroommc/common/CleanroomVersion.java")
+        def template = new File("${rootProject.projectDir}/templates/CleanroomVersion.java")
+
+        target.withWriter { def writer ->
+            template.eachLine { def line ->
+                def newLine = line.replace("%VERSION%", versionDetails().lastTag)
+                    .replace("%BUILD_VERSION%", rootProject.version.toString())
+                writer.write(newLine + "\n");
+            }
+        }
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ["$rootDir/src/main/java"]
+        }
+        resources {
+            srcDirs = ["$rootDir/src/main/resources"]
+        }
+    }
+    test {
+        compileClasspath += sourceSets.main.runtimeClasspath
+        runtimeClasspath += sourceSets.main.runtimeClasspath
+        java {
+            srcDirs = ["$rootDir/src/test/java"]
+        }
+        resources {
+            srcDirs = ["$rootDir/src/test/resources"]
+        }
+    }
+    userdev {
+        compileClasspath += sourceSets.main.runtimeClasspath
+        runtimeClasspath += sourceSets.main.runtimeClasspath
+    }
+    userdevTest {
+        compileClasspath += sourceSets.userdev.runtimeClasspath
+        runtimeClasspath += sourceSets.userdev.runtimeClasspath
+        compileClasspath += sourceSets.test.runtimeClasspath
+        runtimeClasspath += sourceSets.test.runtimeClasspath
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        name 'Cleanroom Maven'
+        url 'https://maven.cleanroommc.com/'
+    }
+    maven {
+        url "https://repo.cleanroommc.com/snapshots"
+    }
+    maven {
+        url "https://maven.outlands.top/releases/"
+    }
+}
+
+ext {
+    version_json = project(':mcp').file('build/mcp/downloadJson/version.json')
+    lwjglArch = Util.getCurrentArch()
+    // Do not change the order unless it is required so
+    lwjglLibraries = [
+        [
+            'lwjgl-glfw', 'lwjgl-jemalloc', 'lwjgl-openal',
+            'lwjgl-opengl', 'lwjgl-stb', 'lwjgl-tinyfd', 'lwjgl'
+        ],
+
+        [
+            'natives-linux-arm64', 'natives-linux-arm32', 'natives-linux',
+            'natives-macos-arm64', 'natives-macos',
+            'natives-windows-arm64', 'natives-windows-x86', 'natives-windows'
+        ]
+    ]
+}
+
+patcher {
+    excs.from file("$rootDir/src/main/resources/forge.exc")
+    parent = project(':minecraft')
+    patches = file("$rootDir/patches/minecraft")
+    patchedSrc = file('src/main/java')
+    srgPatches = true
+    notchObf = true
+    accessTransformer = file("$rootDir/src/main/resources/forge_at.cfg")
+    // sideAnnotationStripper = file("$rootDir/src/main/resources/forge.sas")
+    processor = ProjectConstants.PATCHER_POST_PROCESSOR
+
+    runs {
+
+        cleanroomClient {
+            client = true
+            taskName 'cleanroomClient'
+            ideaModule "${rootProject.name}.${project.name}.main"
+            main 'com.cleanroommc.boot.MainClient'
+            workingDirectory project.file('run')
+
+            environment 'target', 'fmldevclient'
+            environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLTweaker'
+            environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
+            environment 'assetIndex', '{asset_index}'
+            environment 'assetDirectory', downloadAssets.output
+            environment 'nativesDirectory', extractNatives.output.get().asFile
+            environment 'MC_VERSION', props.minecraft_version
+            environment 'MCP_VERSION', props.mcp_version
+            environment 'MCP_MAPPINGS', '{mcp_mappings}'
+            environment 'MCP_TO_SRG', createSrg2Mcp.getOutput().get().getAsFile().getAbsolutePath()
+            environment 'FORGE_GROUP', project.group
+            environment 'FORGE_VERSION', props.last_forge_version
+
+            jvmArgs ProjectConstants.JVM_ARGUMENTS + '-Dmixin.debug.export=true' + '-Dmixin.checks.interfaces=true'
+            //jvmArgs jvm_arguments
+
+            // Lazily supply the Mappings target, createSrg2Mcp.getMappings() doesn't get populated until later
+            lazyToken 'mcp_mappings', { ->
+                createSrg2Mcp.getMappings().get()
+            }
+
+            mods {
+                cleanroom {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        cleanroomTestClient {
+            parent runs.cleanroomClient
+            taskName 'cleanroomTestClient'
+
+            environment 'MOD_CLASSES', 'dummy' // Needed to work around FG limitation, FG will replace this!
+
+            ideaModule "${rootProject.name}.${project.name}.userdevTest"
+
+            mods {
+                cleanroom {
+                    source sourceSets.main
+                }
+                tests {
+                    sources sourceSets.test
+                }
+            }
+        }
+
+        cleanroomServer {
+            client false
+            taskName 'cleanroomServer'
+            ideaModule "${rootProject.name}.${project.name}.main"
+            main 'com.cleanroommc.boot.MainServer'
+            workingDirectory project.file('run')
+
+            environment 'target', 'fmldevserver'
+            environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLServerTweaker'
+            environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
+            environment 'MC_VERSION', props.minecraft_version
+            environment 'MCP_VERSION', props.mcp_version
+            environment 'MCP_MAPPINGS', '{mcp_mappings}'
+            environment 'MCP_TO_SRG', createSrg2Mcp.getOutput().get().getAsFile().getAbsolutePath()
+            environment 'FORGE_GROUP', project.group
+            environment 'FORGE_VERSION', props.last_forge_version
+
+            // Lazily supply the Mappings target, createSrg2Mcp.getMappings() doesn't get populated until later
+            lazyToken 'mcp_mappings', { ->
+                createSrg2Mcp.getMappings().get()
+            }
+
+            mods {
+                cleanroom {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        cleanroomTestServer {
+            parent runs.cleanroomServer
+            taskName 'cleanroomTestServer'
+
+            environment 'MOD_CLASSES', 'dummy' // Needed to work around FG limitation, FG will replace this!
+
+            ideaModule "${rootProject.name}.${project.name}.userdevTest"
+
+            mods {
+                cleanroom {
+                    source sourceSets.main
+                }
+                tests {
+                    sources sourceSets.test
+                }
+            }
+        }
+    }
+
+}
+
+// Patches
+applyPatches {
+    originalPrefix = 'before/'
+    modifiedPrefix = 'after/'
+    printSummary = true
+}
+
+genPatches {
+    originalPrefix = 'before/'
+    modifiedPrefix = 'after/'
+}
+
+// Dependencies
+configurations {
+    configureEach { // LWJGL2 isn't friendly with us, so pye pye
+        exclude group: 'org.lwjgl.lwjgl'
+        exclude group: 'com.ibm.icu', module: 'icu4j-core-mojang'
+        /*exclude group: 'org.apache.commons'
+        exclude group: 'org.apache.httpcomponents'
+        exclude group: 'it.unimi.dsi'
+        exclude group: 'oshi-project'
+        exclude group: 'commons-codec'
+        exclude group: 'commons-io'
+        exclude group: 'commons-logging'
+        exclude group: 'com.google.code.findbugs'
+        exclude group: 'com.google.code.gson'
+        exclude group: 'com.google.guava'*/
+    }
+
+    // Don't pull all libraries, if we're missing something, add it to the installer list so the installer knows to download it.
+    installer {
+        transitive = false
+    }
+    api.extendsFrom(installer)
+
+    lwjglNatives {
+        transitive = false
+    }
+
+    testCompile.extendsFrom(lwjglNatives)
+}
+
+dependencies {
+    compileOnly "com.cleanroommc:lwjglx:1.0.0"
+    installer "com.cleanroommc:lwjglxx:1.1.9"
+    lwjglLibraries[0].each {
+        installer "org.lwjgl:$it:$props.lwjgl_version"
+        runtimeOnly "org.lwjgl:$it::$lwjglArch"
+
+        lwjglLibraries[1].each { arch ->
+            lwjglNatives "org.lwjgl:$it:$props.lwjgl_version:$arch"
+        }
+    }
+
+    // TODO: ASM 9.4 required, breaks current Event System when creating classes on-the-fly
+    installer "org.ow2.asm:asm:$props.asm_version"
+    installer "org.ow2.asm:asm-commons:$props.asm_version"
+    installer "org.ow2.asm:asm-tree:$props.asm_version"
+    installer "org.ow2.asm:asm-util:$props.asm_version"
+    installer "org.ow2.asm:asm-analysis:$props.asm_version"
+    // Added back deprecated features for mods to load up properly
+    installer "org.ow2.asm:asm-deprecated:$props.asm_deprecated"
+
+    installer "top.outlands:foundation:0.17.1"
+    installer 'net.lenni0451:Reflect:1.5.0'
+    installer 'org.javassist:javassist:3.30.2-GA'
+    installer "zone.rong:imaginebreaker:2.1"
+
+    installer 'com.ibm.icu:icu4j:77.1'
+
+    installer 'org.jline:jline:3.30.6'
+    installer 'org.jline:jline-native:3.30.6'
+
+    installer 'net.java.jinput:jinput:2.0.10'
+
+    installer 'lzma:lzma:0.0.1'
+    installer 'java3d:vecmath:1.5.2'
+    installer 'net.sf.trove4j:core:3.1.0'
+    installer 'net.sf.trove4j:experimental:3.1.0'
+    installer 'org.apache.maven:maven-artifact:3.9.11'
+    installer 'net.sf.jopt-simple:jopt-simple:5.0.4'
+    installer 'org.apache.commons:commons-lang3:3.19.0'
+    installer 'org.apache.commons:commons-compress:1.28.0'
+    installer 'org.apache.httpcomponents.core5:httpcore5:5.3.6'
+    installer 'org.apache.httpcomponents.core5:httpcore5-h2:5.3.6'
+    installer 'org.apache.httpcomponents.client5:httpclient5:5.5.1'
+    installer 'com.github.oshi:oshi-core:6.9.0'
+    installer 'net.java.dev.jna:jna:5.18.1'
+    installer 'net.java.dev.jna:jna-platform:5.18.1'
+    installer 'it.unimi.dsi:fastutil:8.5.18'
+    installer 'commons-codec:commons-codec:1.19.0'
+    installer 'commons-io:commons-io:2.20.0'
+    installer 'commons-logging:commons-logging:1.3.5'
+    installer 'com.google.guava:guava:33.5.0-jre'
+    installer 'com.google.guava:failureaccess:1.0.2'
+    installer 'com.google.code.gson:gson:2.13.2'
+    installer 'com.google.code.findbugs:jsr305:3.0.2'
+    installer 'org.jspecify:jspecify:1.0.0'
+
+    // Netty
+    installer "io.netty:netty-codec-base:$props.netty_version"
+    installer "io.netty:netty-buffer:$props.netty_version"
+    installer "io.netty:netty-common:$props.netty_version"
+    installer "io.netty:netty-handler:$props.netty_version"
+    installer "io.netty:netty-resolver:$props.netty_version"
+    installer "io.netty:netty-transport:$props.netty_version"
+    installer "io.netty:netty-transport-native-unix-common:$props.netty_version:linux-x86_64"
+    installer "io.netty:netty-transport-classes-epoll:$props.netty_version"
+    installer "io.netty:netty-transport-native-epoll:$props.netty_version:linux-x86_64"
+    installer "io.netty:netty-codec-http:$props.netty_version"
+    installer "io.netty:netty-codec-http2:$props.netty_version"
+    installer "io.netty:netty-codec-dns:$props.netty_version"
+    installer "io.netty:netty-codec-compression:$props.netty_version"
+    installer "io.netty:netty-resolver-dns:$props.netty_version"
+
+    installer 'org.apache.logging.log4j:log4j-api:2.25.2'
+    installer 'org.apache.logging.log4j:log4j-core:2.25.2'
+    installer 'org.apache.logging.log4j:log4j-slf4j2-impl:2.25.2'
+    installer 'org.slf4j:slf4j-api:2.0.17'
+    installer 'jakarta.annotation:jakarta.annotation-api:3.0.0'
+    installer 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.4'
+    installer 'org.glassfish.jaxb:jaxb-runtime:4.0.6'
+    installer 'org.glassfish.jaxb:jaxb-core:4.0.6'
+    installer 'com.sun.istack:istack-commons-runtime:4.2.0'
+    installer 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.2'
+    installer 'jakarta.activation:jakarta.activation-api:2.1.4'
+    installer 'org.glassfish.corba:glassfish-corba-omgapi:5.0.0'
+    installer 'org.openjdk.nashorn:nashorn-core:15.7'
+    // installer 'ca.weblite:java-objc-bridge:1.2'
+
+
+    // Mixin
+    installer 'com.cleanroommc:sponge-mixin:0.20.12+mixin.0.8.7'
+    installer annotationProcessor('io.github.llamalad7:mixinextras-common:0.5.0')
+
+    testImplementation platform('org.junit:junit-bom:6.0.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'org.junit.vintage:junit-vintage-engine'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+    }
+    jvmArgs ProjectConstants.JVM_ARGUMENTS + ProjectConstants.COMPILER_JVM_ARGUMENTS
+}
+
+// TODO: Include?
+def extra_files = [
+    rootProject.file('CREDITS.txt'),
+    rootProject.file('LICENSE.txt'),
+    rootProject.file('LICENSE-Paulscode IBXM Library.txt'),
+    rootProject.file('LICENSE-Paulscode SoundSystem CodecIBXM.txt')
+]
+
+def changelog = rootProject.file('build/changelog.txt')
+if (changelog.exists()) {
+    extra_files += changelog
+}
+
+// Binary Patching
+
+// We apply the bin patches we just created to make a jar that is JUST our changes
+['Client', 'Server', 'Joined'].each { side ->
+    def gen = tasks.getByName("gen${side}BinPatches")
+    gen.tool = props.binary_patcher
+    tasks.register("apply${side}BinPatches", ApplyBinPatches) {
+        dependsOn gen
+        clean = gen.cleanJar
+        patch = gen.output
+        tool = props.binary_patcher
+    }
+}
+
+tasks.register('genRuntimeBinPatches', GenerateBinPatches) {
+    dependsOn genClientBinPatches, genServerBinPatches
+    tool = props.binary_patcher
+}
+
+afterEvaluate { p ->
+    genRuntimeBinPatches {
+        cleanJar = genClientBinPatches.cleanJar
+        dirtyJar = genClientBinPatches.dirtyJar
+        srg = genClientBinPatches.srg
+        patchSets.setFrom(genClientBinPatches.patchSets)
+        getArgs().set([
+            '--output', '{output}',
+            '--patches', '{patches}',
+            '--srg', '{srg}',
+            // '--legacy',
+            '--clean', '{clean}',
+            '--dirty', '{dirty}',
+            '--prefix', 'binpatch/client',
+            '--clean', genServerBinPatches.cleanJar.get().asFile.path,
+            '--dirty', genServerBinPatches.dirtyJar.get().asFile.path,
+            '--prefix', 'binpatch/server',
+        ])
+    }
+}
+
+tasks.register('downloadLibraries') {
+    dependsOn ':mcp:setupMCP'
+    inputs.file version_json
+    doLast {
+        def json = version_json.json()
+        json.libraries.each { lib ->
+            def artifacts = [lib.downloads.artifact] + lib.downloads.get('archiveClassifier', [:]).values()
+            artifacts.each { art ->
+                def target = file('build/libraries/' + art.path)
+                if (!target.exists()) {
+                    download {
+                        src art.url
+                        dest target
+                    }
+                }
+            }
+        }
+    }
+}
+
+tasks.register('extractInheritance', ExtractInheritance) {
+    dependsOn genJoinedBinPatches, downloadLibraries
+    input = genJoinedBinPatches.cleanJar
+    doFirst {
+        def json = version_json.json()
+        json.libraries.each { lib ->
+            def artifacts = [lib.downloads.artifact] + lib.downloads.get('archiveClassifier', [:]).values()
+            artifacts.each { art ->
+                def target = file('build/libraries/' + art.path)
+                if (target.exists()) {
+                    addLibrary(target)
+                }
+            }
+        }
+    }
+}
+
+tasks.register('checkAccessTransformers') {
+    dependsOn genJoinedBinPatches
+    inputs.file {
+        genJoinedBinPatches.cleanJar
+    }
+    inputs.files patcher.accessTransformers
+    doLast {
+        def vanilla = [:]
+        def zip = new ZipFile(genJoinedBinPatches.cleanJar.get().asFile)
+        zip.entries().findAll {
+            !it.directory && it.name.endsWith('.class')
+        }.each { entry ->
+            new ClassReader(zip.getInputStream(entry)).accept(new ClassVisitor(Opcodes.ASM9) {
+
+                String name
+
+                void visit(int version, int access, String name, String sig, String superName, String[] interfaces) {
+                    this.name = name
+                    vanilla[name] = access
+                }
+
+                FieldVisitor visitField(int access, String name, String desc, String sig, Object value) {
+                    vanilla[this.name + ' ' + name] = access
+                    return null
+                }
+
+                MethodVisitor visitMethod(int access, String name, String desc, String sig, String[] excs) {
+                    vanilla[this.name + ' ' + name + desc] = access
+                    return null
+                }
+
+            }, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES)
+        }
+        patcher.accessTransformers.each { f ->
+            TreeMap lines = [:]
+            f.eachLine { line ->
+                def idx = line.indexOf('#')
+                if (idx == 0 || line.isEmpty()) {
+                    return
+                }
+                def comment = idx == -1 ? null : line.substring(idx)
+                if (idx != -1) {
+                    line = line.substring(0, idx - 1)
+                }
+                def (modifier, cls, desc) = (line.trim() + '     ').split(' ', -1)
+                def key = cls + (desc.isEmpty() ? '' : ' ' + desc)
+                def access = vanilla[key.replace('.', '/')]
+                if (access == null) {
+                    if ((desc == '*' || desc == '*()') && vanilla[cls.replace('.', '/')] != null) {
+                        println('Warning: ' + line)
+                    } else {
+                        println('Invalid: ' + line)
+                        return
+                    }
+                }
+                // TODO: Check access actually changes, and expand inheritance?
+                lines[key] = [modifier: modifier, comment: comment]
+            }
+            f.text = lines.collect { it.value.modifier + ' ' + it.key + (it.value.comment == null ? '' : ' ' + it.value.comment) }.join('\n')
+        }
+    }
+}
+
+tasks.register('checkSAS') {
+    dependsOn extractInheritance
+    inputs.file {
+        extractInheritance.output
+    }
+    inputs.files patcher.sideAnnotationStrippers
+    doLast {
+        def json = extractInheritance.output.json()
+        patcher.sideAnnotationStrippers.each { f ->
+            def lines = []
+            f.eachLine { line ->
+                if (line[0] == '\t') {
+                    return // Skip any tabbed lines, those are ones we add
+                }
+                def idx = line.indexOf('#')
+                if (idx == 0 || line.isEmpty()) {
+                    lines.add(line)
+                    return
+                }
+                def comment = idx == -1 ? null : line.substring(idx)
+                if (idx != -1) line = line.substring(0, idx - 1)
+
+                def (cls, desc) = (line.trim() + '    ').split(' ', -1)
+                cls = cls.replaceAll('\\.', '/')
+                desc = desc.replace('(', ' (')
+                if (desc.isEmpty() || json[cls] == null || json[cls]['methods'] == null || json[cls]['methods'][desc] == null) {
+                    println('Invalid: ' + line)
+                    return
+                }
+                def mtd = json[cls]['methods'][desc]
+                lines.add(cls + ' ' + desc.replace(' ', '') + (comment == null ? '' : ' ' + comment))
+                def children = json.values().findAll { it.methods != null && it.methods[desc] != null && it.methods[desc].override == cls }
+                    .collect { it.name + ' ' + desc.replace(' ', '') } as TreeSet
+                children.each { lines.add('\t' + it) }
+            }
+            f.text = lines.join('\n')
+        }
+    }
+}
+
+tasks.register('launcherJson') {
+    dependsOn universalJar
+    inputs.file {
+        universalJar.archivePath
+    }
+    ext {
+        output = file('build/version.json')
+        vanilla = project(':mcp').file('build/mcp/downloadJson/version.json')
+        timestamp = Util.iso8601Now()
+        comment = [
+            'Please do not automate the download and installation of Cleanroom.',
+            'Our efforts are supported by ads from the download page.'
+            // TODO: Donation Page? (Was LexManos')
+        ]
+        id = "${project.name}-${project.version}"
+    }
+    inputs.file vanilla
+    outputs.file output
+    doLast {
+        def json_vanilla = vanilla.json()
+        def json = [
+            _comment_         : comment,
+            id                : id,
+            time              : timestamp,
+            releaseTime       : timestamp,
+            type              : 'release',
+            mainClass         : 'top.outlands.foundation.boot.Foundation',
+            inheritsFrom      : props.minecraft_version,
+            logging           : {},
+            minecraftArguments: [
+                '--username', '${auth_player_name}',
+                '--version', '${version_name}',
+                '--gameDir', '${game_directory}',
+                '--assetsDir', '${assets_root}',
+                '--assetIndex', '${assets_index_name}',
+                '--uuid', '${auth_uuid}',
+                '--accessToken', '${auth_access_token}',
+                '--userType', '${user_type}',
+                '--tweakClass', 'net.minecraftforge.fml.common.launcher.FMLTweaker',
+                '--versionType', 'Forge'
+            ].join(' '),
+            libraries         : [
+                [
+                    // Package our universal jar as the 'main' jar Mojang's launcher loads. It will in turn load Forge's regular jars itself.
+                    name     : "${project.group}:${project.name}:${project.version}",
+                    downloads: [
+                        artifact: [
+                            path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
+                            // Do not include the URL so that the installer/launcher won't grab it. This is also why we don't have the universal classifier
+                            url : '',
+                            sha1: Util.sha1(universalJar.archivePath),
+                            size: universalJar.archivePath.length()
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        Util.getArtifacts(project, project.configurations.installer, false)
+            .each { key, lib ->
+                json.libraries.add(lib)
+            }
+        Util.getLWJGLNatives(project.configurations.lwjglNatives, project.configurations.testCompile, lwjglLibraries[0], lwjglLibraries[1])
+            .each { key, lib ->
+                json.libraries.add(lib)
+            }
+        output.text = new JsonBuilder(json).toPrettyString()
+    }
+}
+
+tasks.register('installerJson') {
+    dependsOn launcherJson, genClientBinPatches/*, createClientSRG, createServerSRG*/
+    ext {
+        output = file('build/install_profile.json')
+        installer_tools = "net.minecraftforge:installertools:$props.installer_tools_version"
+    }
+    inputs.file universalJar.archivePath
+    inputs.file genClientBinPatches.toolJar
+    inputs.file launcherJson.output
+    outputs.file output
+    doLast {
+        def libs = [
+            "${project.group}:${project.name}:${project.version}": [
+                name     : "${project.group}:${project.name}:${project.version}",
+                downloads: [
+                    artifact: [
+                        path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
+                        // Do not include the URL so that the installer/launcher won't grab it. This is also why we don't have the universal classifier
+                        url : '',
+                        sha1: Util.sha1(universalJar.archivePath),
+                        size: universalJar.archivePath.length()
+                    ]
+                ]
+            ]
+        ]
+        def json = [
+            _comment_ : launcherJson.comment,
+            spec      : 0,
+            profile   : project.name,
+            version   : launcherJson.id,
+            icon      : 'data:image/png;base64,' + new String(Base64.getEncoder().encode(Files.readAllBytes(rootProject.file('icon.ico').toPath()))),
+            json      : '/version.json',
+            path      : "${project.group}:${project.name}:${project.version}",
+            logo      : '/big_logo.png',
+            minecraft : props.minecraft_version,
+            welcome   : "Welcome to the simple ${project.name.capitalize()} installer.",
+            data      : [] as Map,
+            processors: []
+        ]
+        Util.getClasspath(project, libs, project(':mcp').mcp.config.get().descriptor) // Tell it to download mcp_config
+        json.libraries = libs.values().sort { a, b -> a.name.compareTo(b.name) }
+
+        output.text = new JsonBuilder(json).toPrettyString()
+    }
+}
+
+tasks.register('extractObf2Srg', ExtractMCPData) {
+    dependsOn ':mcp:downloadConfig'
+    config = project(':mcp').downloadConfig.output
+}
+
+tasks.register('deobfDataLzma') {
+    dependsOn extractObf2Srg
+    ext {
+        output_srg = file('build/deobfDataLzma/data.srg')
+        output = file('build/deobfDataLzma/data.lzma')
+    }
+
+    doLast {
+        IMappingFile.load(extractObf2Srg.output.get().getAsFile()).write(output_srg.toPath(), IMappingFile.Format.SRG, false)
+        output_srg.withInputStream { ins ->
+            output.withOutputStream { outs ->
+                def lz = new LZMACompressorOutputStream(outs)
+
+                def i = -1
+                def buf = new byte[0x100]
+                while ((i = ins.read(buf)) != -1)
+                    lz.write(buf, 0, i)
+
+                lz.close()
+            }
+        }
+    }
+}
+
+universalJar {
+    from(extra_files)
+    dependsOn(extractObf2Srg)
+    from(extractObf2Srg.output) {
+        rename {
+            "deobf_data-${props.minecraft_version}.tsrg" // TODO: Spacing?
+        }
+    }
+    dependsOn(genRuntimeBinPatches)
+    from(genRuntimeBinPatches.output) {
+        rename {
+            'binpatches.pack.lzma'
+        }
+    }
+    doFirst {
+        def classpath = new StringBuilder()
+        def artifacts = Util.getArtifacts(project, project.configurations.installer, false)
+        artifacts.each { key, lib ->
+            classpath.append("libraries/${lib.downloads.artifact.path} ")
+        }
+        classpath += "minecraft_server.${props.minecraft_version}.jar"
+        manifest.attributes([
+            'Timestamp'  : new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+            'Main-Class' : 'net.minecraftforge.fml.relauncher.ServerLaunchWrapper',
+            'Class-Path' : classpath.toString(),
+            'Tweak-Class': 'net.minecraftforge.fml.common.launcher.FMLTweaker'
+        ])
+        manifest.attributes([
+            'Specification-Title'   : props.title,
+            'Specification-Vendor'  : props.vendor,
+            'Specification-Version' : spec_version,
+            'Implementation-Title'  : project.group,
+            'Implementation-Version': props.last_forge_version,
+            'Implementation-Vendor' : props.vendor
+        ], 'net/minecraftforge/common/')
+    }
+
+    archiveClassifier = 'universal'
+}
+
+tasks.register('downloadInstaller', DownloadMavenArtifact) {
+    artifact = 'net.minecraftforge:installer:2.2.+:fatjar'
+    changing = true
+}
+
+tasks.register('installerJar', Zip) {
+    dependsOn downloadInstaller, installerJson, launcherJson, genClientBinPatches, genServerBinPatches
+/*, 'signUniversalJar'*/
+    archiveClassifier = 'installer'
+    archiveExtension = 'jar' //Needs to be Zip task to not override Manifest, so set extension
+    destinationDirectory = file('build/libs')
+    from(extra_files)
+    from(rootProject.file('/src/main/resources/forge_logo.png')) {
+        rename { 'big_logo.png' }
+    }
+    from(rootProject.file('/src/main/resources/url.png'))
+    from(universalJar) {
+        into("/maven/${project.group.replace('.', '/')}/${project.name}/${project.version}/")
+        rename { "${project.name}-${project.version}.jar" }
+    }
+    from(installerJson.output)
+    from(launcherJson.output)
+    from(zipTree(downloadInstaller.output)) {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+}
+
+// TODO: Signing
+/*
+[universalJar, installerJar].each { t ->
+    task "sign${t.name.capitalize()}"(type: SignJar, dependsOn: t) {
+        onlyIf {
+            JAR_SIGNER != null && t.state.failure == null
+        }
+        def jarsigner = JAR_SIGNER == null ? [: ] : JAR_SIGNER
+        alias = 'forge'
+        storePass = jarsigner.storepass
+        keyPass = jarsigner.keypass
+        keyStore = jarsigner.keystore
+        inputFile = t.archivePath
+        outputFile = t.archivePath
+        doFirst {
+            project.logger.lifecycle('Signing: ' + inputFile)
+        }
+    }
+    t.finalizedBy(tasks.getByName("sign${t.name.capitalize()}"))
+}
+ */
+
+// TODO: MDK Task
+
+userdevConfig {
+    def artifacts = Util.getArtifacts(project, project.configurations.installer, true)
+    artifacts.each { key, lib ->
+        libraries.add(lib.name)
+    }
+    libraries.add('net.minecraftforge:legacydev:0.2.3.+:fatjar')
+    universalFilters.add('^(?!binpatches\\.pack\\.lzma$).*$')
+
+    runs {
+        client {
+            main 'com.cleanroommc.boot.MainClient'
+
+            environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLTweaker'
+            environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
+            environment 'assetIndex', '{asset_index}'
+            environment 'assetDirectory', '{assets_root}'
+            environment 'nativesDirectory', '{natives}'
+            environment 'MC_VERSION', props.minecraft_version
+            environment 'MCP_MAPPINGS', '{mcp_mappings}'
+            environment 'MCP_TO_SRG', '{mcp_to_srg}'
+            environment 'FORGE_GROUP', project.group
+            environment 'FORGE_VERSION', props.last_forge_version
+        }
+
+        server {
+            main 'com.cleanroommc.boot.MainServer'
+
+            environment 'tweakClass', 'net.minecraftforge.fml.common.launcher.FMLServerTweaker'
+            environment 'mainClass', 'top.outlands.foundation.boot.Foundation'
+            environment 'MC_VERSION', props.minecraft_version
+            environment 'MCP_MAPPINGS', '{mcp_mappings}'
+            environment 'MCP_TO_SRG', '{mcp_to_srg}'
+            environment 'FORGE_GROUP', project.group
+            environment 'FORGE_VERSION', props.last_forge_version
+        }
+    }
+}
+
+tasks.register('userdevExtras', Jar) {
+    dependsOn classes
+    from sourceSets.userdev.output
+    archiveClassifier = 'userdev-temp'
+}
+
+tasks.register('userdevExtrasReobf', ReobfuscateJar) {
+    dependsOn userdevExtras, createMcp2Srg
+    input = tasks.userdevExtras.archiveFile
+    srg = tasks.createMcp2Srg.output
+}
+
+userdevJar {
+    dependsOn userdevExtrasReobf
+    from(zipTree(tasks.userdevExtrasReobf.output)) {
+        into '/inject/'
+    }
+    from(sourceSets.userdev.output.resourcesDir) {
+        into '/inject/'
+    }
+    archiveClassifier = 'userdev' // Should be 'userdev' but FG5 hardcoded pre1.13 versions to userdev3
+}
+
+if (project.hasProperty('UPDATE_MAPPINGS')) {
+    extractRangeMap {
+        sources sourceSets.test.java.srcDirs
+    }
+    applyRangeMap {
+        sources sourceSets.test.java.srcDirs
+    }
+    sourceSets.test.java.srcDirs.each { extractMappedNew.addTarget it }
+}
+
+
+publishing {
+    repositories {
+        maven {
+            name = "cleanroom"
+            url = 'https://repo.cleanroommc.com/releases'
+            credentials(PasswordCredentials)
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            groupId = "com.cleanroommc"
+            artifactId = "cleanroom"
+            version = rootProject.version
+            from components.java
+            artifact userdevJar
+            artifact universalJar
+            artifact sourcesJar
+            artifact installerJar
+            artifact new File(rootProject.rootDir, "./projects/cleanroom/build/libs/Cleanroom-MMC-instance-${version}.zip")
+        }
+    }
+}
+
+artifacts {
+    archives universalJar
+    archives installerJar
+}

@@ -1,0 +1,62 @@
+import com.cleanroommc.gradle.helpers.ProjectConstants
+
+def props = project.properties
+
+evaluationDependsOn(':mcp')
+apply plugin: 'eclipse'
+apply plugin: 'net.minecraftforge.gradle.patcher'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        name "outlandsReleases"
+        url "https://maven.outlands.top/releases"
+    }
+    maven {
+        name 'MinecraftForge'
+        url 'https://maven.minecraftforge.net/'
+    }
+}
+dependencies {
+    implementation ('net.minecraftforge:mergetool:0.2.3.3:forge') {
+        exclude group: 'org.ow2.asm', module: 'asm-tree'
+        exclude group: 'org.ow2.asm', module: 'asm-util'
+        exclude group: 'org.ow2.asm', module: 'asm'
+    }
+}
+
+patcher {
+    parent = project(':mcp')
+    mcVersion = props.minecraft_version
+    patchedSrc = file('src/main/java')
+
+    mappings channel: props.mapping_channel, version: props.mapping_version
+    processor = ProjectConstants.PATCHER_POST_PROCESSOR
+
+    runs {
+        minecraftClient {
+            client true
+            taskName 'minecraftClient'
+            ideaModule "${rootProject.name}.${project.name}.main"
+
+            main 'net.minecraft.client.main.Main'
+            workingDirectory project.file('run')
+
+            args '--gameDir', '.'
+            args '--version', props.minecraft_version
+            args '--assetsDir', downloadAssets.output
+            args '--assetIndex', '{asset_index}'
+            args '--accessToken', '0'
+        }
+
+        minecraftServer {
+            client false
+            taskName 'minecraftServer'
+            ideaModule "${rootProject.name}.${project.name}.main"
+
+            main 'net.minecraft.server.MinecraftServer'
+            workingDirectory project.file('run')
+        }
+    }
+}

@@ -1,0 +1,20 @@
+
+def props = project.properties
+
+apply plugin: 'net.minecraftforge.gradle.mcp'
+
+repositories {
+    maven {
+        name "outlandsReleases"
+        url "https://maven.outlands.top/releases"
+    }
+    maven {
+        name 'MinecraftForge'
+        url 'https://maven.minecraftforge.net/'
+    }
+}
+
+mcp {
+    config = props.minecraft_version + '-' + props.mcp_version
+    pipeline = 'joined'
+}
