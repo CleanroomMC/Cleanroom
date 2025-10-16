@@ -33,7 +33,7 @@ public class KDTree {
     public void insert(@NonNull Block block) {
         Preconditions.checkNotNull(block);
 
-        record BlockInsertion(Block block, Node start) {}
+        record BlockInsertion(Block block, Node start, int depth) {}
         record Level(Node node, int depth) {}
 
         if (root == null) {
@@ -43,13 +43,13 @@ public class KDTree {
         }
 
         Deque<BlockInsertion> blockStack = new ArrayDeque<>();
-        blockStack.add(new BlockInsertion(block, root));
+        blockStack.add(new BlockInsertion(block, root, 0));
         while (!blockStack.isEmpty()) {
             BlockInsertion call = blockStack.pop();
             Block next = call.block;
 
             Deque<Level> recurrenceStack = new ArrayDeque<>();
-            recurrenceStack.add(new Level(call.start, 0));
+            recurrenceStack.add(new Level(call.start, call.depth));
             while (!recurrenceStack.isEmpty()) {
                 Level level = recurrenceStack.pop();
 
@@ -66,7 +66,7 @@ public class KDTree {
                     level.node.pivot = QuantileUtils.median(probe);
 
                     for (Block b : level.node.blocks) {
-                        blockStack.add(new BlockInsertion(b, level.node));
+                        blockStack.add(new BlockInsertion(b, level.node, level.depth));
                     }
 
                     level.node.blocks = null;
@@ -95,6 +95,8 @@ public class KDTree {
             }
         }
     }
+
+
 
     private static boolean inside(@NonNull Vector3i pos, @NonNull AABB boundingBox) {
         return     pos.x >= boundingBox.xMin
