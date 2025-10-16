@@ -399,7 +399,7 @@ public class Loader
             FMLLog.log.debug("Minecraft jar mods loaded successfully");
         }
 
-        List<File> candidates = LibraryManager.getCandidates(minecraftDir);
+        List<File> candidates = LibraryManager.getCandidates();
         //Do we want to sort the full list after resolving artifacts?
         //TODO: Add dependency gathering?
 
