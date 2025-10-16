@@ -29,7 +29,7 @@ public class ShaderRegistry {
         Objects.requireNonNull(shaderProgramCtor);
     }
 
-    public void register(ResourceLocation rl) {
+    public Shader register(ResourceLocation rl) {
         String rawRl = rl.toString();
         int lastDot = rawRl.lastIndexOf('.');
         if (lastDot == -1) {
@@ -40,7 +40,7 @@ public class ShaderRegistry {
         if (shaderType == null) {
             throw new IllegalStateException("Invalid Shader ResourceLocation " + rawRl + ". Can't parse the shader type.");
         }
-        String shaderSource = MinecraftResourceUtils.read(rl, true);
+        String shaderSource = MinecraftResourceUtils.readText(rl, true);
         Shader shader;
         try {
             shader = (Shader) shaderCtor.invoke(shaderSource, rawRl, shaderType);
@@ -48,6 +48,7 @@ public class ShaderRegistry {
             throw new RuntimeException(e);
         }
         shaders.put(rawRl, shader);
+        return shader;
     }
 
     public void compile() {

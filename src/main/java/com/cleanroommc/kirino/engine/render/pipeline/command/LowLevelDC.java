@@ -60,6 +60,17 @@ public final class LowLevelDC implements IDrawCommand {
         LowLevelDC build();
     }
 
+    /**
+     * <p>You must set:</p>
+     * <ul>
+     *     <li>vao</li>
+     *     <li>ebo</li>
+     *     <li>mode</li>
+     *     <li>indicesCount</li>
+     *     <li>elementType</li>
+     *     <li>eboOffset</li>
+     * </ul>
+     */
     public static class ElementBuilder implements CommandBuilder {
         private ElementBuilder() {
         }
@@ -123,6 +134,18 @@ public final class LowLevelDC implements IDrawCommand {
         }
     }
 
+    /**
+     * <p>You must set:</p>
+     * <ul>
+     *     <li>vao</li>
+     *     <li>ebo</li>
+     *     <li>mode</li>
+     *     <li>indicesCount</li>
+     *     <li>elementType</li>
+     *     <li>eboOffset</li>
+     *     <li>instanceCount</li>
+     * </ul>
+     */
     public static class ElementInstancedBuilder implements CommandBuilder {
         private ElementInstancedBuilder() {
         }
@@ -194,6 +217,19 @@ public final class LowLevelDC implements IDrawCommand {
         }
     }
 
+    /**
+     * <p>You must set:</p>
+     * <ul>
+     *     <li>vao</li>
+     *     <li>ebo</li>
+     *     <li>idb</li>
+     *     <li>mode</li>
+     *     <li>elementType</li>
+     *     <li>idbOffset</li>
+     *     <li>idbStride</li>
+     *     <li>instanceCount</li>
+     * </ul>
+     */
     public static class MultiElementIndirectBuilder implements CommandBuilder {
         private MultiElementIndirectBuilder() {
         }
@@ -273,6 +309,20 @@ public final class LowLevelDC implements IDrawCommand {
         }
     }
 
+    /**
+     * <p>You must set:</p>
+     * <ul>
+     *     <li>vao</li>
+     *     <li>ebo</li>
+     *     <li>mode</li>
+     *     <li>elementType</li>
+     *     <li>indicesCount</li>
+     *     <li>instanceCount</li>
+     *     <li>eboFirstIndex</li>
+     *     <li>baseVertex</li>
+     *     <li>baseInstance</li>
+     * </ul>
+     */
     public static class MultiElementIndirectUnitBuilder implements CommandBuilder {
         private MultiElementIndirectUnitBuilder() {
         }
@@ -364,6 +414,7 @@ public final class LowLevelDC implements IDrawCommand {
      * <code>glDrawElements</code> command builder.
      * Notice, you must set a value to all parameters and then <code>.build()</code>.
      *
+     * @see ElementBuilder
      * @return The builder
      */
     public static ElementBuilder element() {
@@ -374,6 +425,7 @@ public final class LowLevelDC implements IDrawCommand {
      * <code>glDrawElementsInstanced</code> command builder.
      * Notice, you must set a value to all parameters and then <code>.build()</code>.
      *
+     * @see ElementInstancedBuilder
      * @return The builder
      */
     public static ElementInstancedBuilder elementInstanced() {
@@ -384,6 +436,7 @@ public final class LowLevelDC implements IDrawCommand {
      * <code>glMultiDrawElementsIndirect</code> command builder.
      * Notice, you must set a value to all parameters and then <code>.build()</code>.
      *
+     * @see MultiElementIndirectBuilder
      * @return The builder
      */
     public static MultiElementIndirectBuilder multiElementIndirect() {
@@ -394,6 +447,7 @@ public final class LowLevelDC implements IDrawCommand {
      * <code>glMultiDrawElementsIndirect</code> command's component builder.
      * Notice, you must set a value to all parameters and then <code>.build()</code>.
      *
+     * @see MultiElementIndirectUnitBuilder
      * @return The builder
      */
     public static MultiElementIndirectUnitBuilder multiElementIndirectUnit() {

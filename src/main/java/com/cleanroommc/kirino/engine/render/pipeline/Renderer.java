@@ -1,5 +1,6 @@
 package com.cleanroommc.kirino.engine.render.pipeline;
 
+import com.cleanroommc.kirino.KirinoCore;
 import com.cleanroommc.kirino.engine.render.pipeline.command.LowLevelDC;
 import com.cleanroommc.kirino.engine.render.pipeline.state.BlendState;
 import com.cleanroommc.kirino.engine.render.pipeline.state.DepthState;
@@ -9,10 +10,10 @@ import org.lwjgl.opengl.*;
 
 public final class Renderer {
     public void bindPipeline(PipelineStateObject pso) {
-        pso.shaderProgram().use();
         applyBlend(pso.blendState());
         applyDepth(pso.depthState());
         applyRaster(pso.rasterState());
+        pso.shaderProgram().use();
     }
 
     private void applyRaster(RasterState r) {

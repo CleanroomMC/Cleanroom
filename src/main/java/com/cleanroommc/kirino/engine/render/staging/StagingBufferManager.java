@@ -1,5 +1,6 @@
 package com.cleanroommc.kirino.engine.render.staging;
 
+import com.cleanroommc.kirino.KirinoCore;
 import com.cleanroommc.kirino.engine.render.staging.handle.*;
 import com.cleanroommc.kirino.gl.GLResourceManager;
 import com.cleanroommc.kirino.gl.buffer.EBOView;
@@ -11,6 +12,8 @@ import com.cleanroommc.kirino.gl.vao.VAO;
 import com.cleanroommc.kirino.gl.vao.attribute.AttributeLayout;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.tuple.Triple;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL30;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -35,6 +38,11 @@ public class StagingBufferManager {
     protected boolean active = false;
 
     private void beginStaging() {
+        // avoid disposing buffers being used
+        GL30.glBindVertexArray(0);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
+
         temporaryHandleGeneration++;
         for (VAO vao : temporaryVaos) {
             GLResourceManager.disposeEarly(vao);

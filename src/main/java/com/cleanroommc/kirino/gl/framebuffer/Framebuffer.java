@@ -61,9 +61,13 @@ public class Framebuffer extends GLDisposable {
         this.width = width;
         this.height = height;
         for (IFramebufferAttachment attachment : colorAttachments) {
-            attachment.resize(width, height);
+            if (attachment != null) {
+                attachment.resize(width, height);
+            }
         }
-        depthAttachment.resize(width, height);
+        if (depthAttachment != null) {
+            depthAttachment.resize(width, height);
+        }
     }
 
     @Override
