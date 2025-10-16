@@ -75,12 +75,12 @@ public class ChunkMeshletGenJob implements IParallelJob {
                         continue;
                     }
                     int faceFlags = 0b000000;
-                    faceFlags |= isOpaqueBlockPresent(chunk, posX, chunkY, posZ, x, y-1, z) ? 0b000001 : 0;
-                    faceFlags |= isOpaqueBlockPresent(chunk, posX, chunkY, posZ, x, y+1, z) ? 0b000010 : 0;
-                    faceFlags |= isOpaqueBlockPresent(chunk, posX, chunkY, posZ, x, y, z-1) ? 0b000100 : 0;
-                    faceFlags |= isOpaqueBlockPresent(chunk, posX, chunkY, posZ, x, y, z+1) ? 0b001000 : 0;
-                    faceFlags |= isOpaqueBlockPresent(chunk, posX, chunkY, posZ, x-1, y, z) ? 0b010000 : 0;
-                    faceFlags |= isOpaqueBlockPresent(chunk, posX, chunkY, posZ, x+1, y, z) ? 0b100000 : 0;
+                    faceFlags |= !isOpaqueBlockPresent(chunk, posX, chunkY, posZ, x, y-1, z) ? 0b000001 : 0;
+                    faceFlags |= !isOpaqueBlockPresent(chunk, posX, chunkY, posZ, x, y+1, z) ? 0b000010 : 0;
+                    faceFlags |= !isOpaqueBlockPresent(chunk, posX, chunkY, posZ, x, y, z-1) ? 0b000100 : 0;
+                    faceFlags |= !isOpaqueBlockPresent(chunk, posX, chunkY, posZ, x, y, z+1) ? 0b001000 : 0;
+                    faceFlags |= !isOpaqueBlockPresent(chunk, posX, chunkY, posZ, x-1, y, z) ? 0b010000 : 0;
+                    faceFlags |= !isOpaqueBlockPresent(chunk, posX, chunkY, posZ, x+1, y, z) ? 0b100000 : 0;
                     if (faceFlags != 0) {
                         tree.insert(new Block(x, y, z, faceFlags));
                     }
