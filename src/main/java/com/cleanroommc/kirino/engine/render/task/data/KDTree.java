@@ -96,7 +96,14 @@ public class KDTree {
         }
     }
 
-
+    public Block[][] getLeaves() {
+        Block[][] result = new Block[leaves.size()][];
+        Node[] leafArray = leaves.toArray(new Node[0]);
+        for (int i = 0; i < leaves.size(); i++) {
+            result[i] = leafArray[i].blocks;
+        }
+        return result;
+    }
 
     private static boolean inside(@NonNull Vector3i pos, @NonNull AABB boundingBox) {
         return     pos.x >= boundingBox.xMin
