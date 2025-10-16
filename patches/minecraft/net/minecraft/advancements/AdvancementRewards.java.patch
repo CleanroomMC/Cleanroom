@@ -8,23 +8,12 @@
  import net.minecraft.entity.player.EntityPlayerMP;
  import net.minecraft.init.SoundEvents;
  import net.minecraft.item.ItemStack;
-@@ -31,9 +32,7 @@
- 
- public class AdvancementRewards
- {
--    public static final AdvancementRewards field_192114_a = new AdvancementRewards(
--            0, new ResourceLocation[0], new ResourceLocation[0], FunctionObject.CacheableFunction.field_193519_a
--        );
-+    public static final AdvancementRewards field_192114_a = new AdvancementRewards(0, new ResourceLocation[0], new ResourceLocation[0], FunctionObject.CacheableFunction.field_193519_a);
-     private final int field_192115_b;
-     private final ResourceLocation[] field_192116_c;
-     private final ResourceLocation[] field_192117_d;
-@@ -50,29 +49,16 @@
+@@ -50,29 +51,16 @@
      public void func_192113_a(final EntityPlayerMP p_192113_1_)
      {
          p_192113_1_.func_71023_q(this.field_192115_b);
 -        LootContext lootcontext = new LootContext.Builder(p_192113_1_.func_71121_q()).func_186472_a(p_192113_1_).func_186471_a();
-+        LootContext lootcontext = (new LootContext.Builder(p_192113_1_.func_71121_q())).func_186472_a(p_192113_1_).func_186470_a(p_192113_1_).func_186469_a(p_192113_1_.func_184817_da()).func_186471_a(); // Forge: add player & luck to LootContext
++        LootContext lootcontext = new LootContext.Builder(p_192113_1_.func_71121_q()).func_186472_a(p_192113_1_).func_186470_a(p_192113_1_).func_186469_a(p_192113_1_.func_184817_da()).func_186471_a(); // Forge: add player & luck to LootContext
          boolean flag = false;
  
          for (ResourceLocation resourcelocation : this.field_192116_c)
@@ -52,64 +41,7 @@
                      flag = true;
                  }
                  else
-@@ -105,56 +91,45 @@
-         {
-             ICommandSender icommandsender = new ICommandSender()
-             {
--                @Override
-                 public String func_70005_c_()
-                 {
-                     return p_192113_1_.func_70005_c_();
-                 }
--                @Override
-                 public ITextComponent func_145748_c_()
-                 {
-                     return p_192113_1_.func_145748_c_();
-                 }
--                @Override
-                 public void func_145747_a(ITextComponent p_145747_1_)
-                 {
-                 }
--                @Override
-                 public boolean func_70003_b(int p_70003_1_, String p_70003_2_)
-                 {
-                     return p_70003_1_ <= 2;
-                 }
--                @Override
-                 public BlockPos func_180425_c()
-                 {
-                     return p_192113_1_.func_180425_c();
-                 }
--                @Override
-                 public Vec3d func_174791_d()
-                 {
-                     return p_192113_1_.func_174791_d();
-                 }
--                @Override
-                 public World func_130014_f_()
-                 {
-                     return p_192113_1_.field_70170_p;
-                 }
--                @Override
-                 public Entity func_174793_f()
-                 {
-                     return p_192113_1_;
-                 }
--                @Override
-                 public boolean func_174792_t_()
-                 {
-                     return minecraftserver.field_71305_c[0].func_82736_K().func_82766_b("commandBlockOutput");
-                 }
--                @Override
-                 public void func_174794_a(CommandResultStats.Type p_174794_1_, int p_174794_2_)
-                 {
-                     p_192113_1_.func_174794_a(p_174794_1_, p_174794_2_);
-                 }
--                @Override
-                 public MinecraftServer func_184102_h()
-                 {
-                     return p_192113_1_.func_184102_h();
-@@ -164,18 +139,9 @@
+@@ -164,18 +152,9 @@
          }
      }
  
@@ -129,21 +61,3 @@
      }
  
      public static class Deserializer implements JsonDeserializer<AdvancementRewards>
-@@ -187,7 +153,7 @@
-                 JsonArray jsonarray = JsonUtils.func_151213_a(jsonobject, "loot", new JsonArray());
-                 ResourceLocation[] aresourcelocation = new ResourceLocation[jsonarray.size()];
- 
--                for (int j = 0; j < aresourcelocation.length; j++)
-+                for (int j = 0; j < aresourcelocation.length; ++j)
-                 {
-                     aresourcelocation[j] = new ResourceLocation(JsonUtils.func_151206_a(jsonarray.get(j), "loot[" + j + "]"));
-                 }
-@@ -195,7 +161,7 @@
-                 JsonArray jsonarray1 = JsonUtils.func_151213_a(jsonobject, "recipes", new JsonArray());
-                 ResourceLocation[] aresourcelocation1 = new ResourceLocation[jsonarray1.size()];
- 
--                for (int k = 0; k < aresourcelocation1.length; k++)
-+                for (int k = 0; k < aresourcelocation1.length; ++k)
-                 {
-                     aresourcelocation1[k] = new ResourceLocation(JsonUtils.func_151206_a(jsonarray1.get(k), "recipes[" + k + "]"));
-                     IRecipe irecipe = CraftingManager.func_193373_a(aresourcelocation1[k]);
