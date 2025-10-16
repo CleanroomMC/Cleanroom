@@ -71,6 +71,7 @@ public class LibraryManager
     private static final Attributes.Name MD5 = new Attributes.Name("MD5");
     private static Repository libraries_dir = null;
     private static Set<File> processed = new HashSet<File>();
+    private static List<File> candidates;
 
     public static void setup(File minecraftHome)
     {
@@ -441,7 +442,6 @@ public class LibraryManager
     public static List<File> gatherLegacyCanidates(File mcDir)
     {
         List<File> list = new ArrayList<>();
-
         @SuppressWarnings("unchecked")
         Map<String,String> args = (Map<String, String>)Launch.blackboard.get("forgeLaunchArgs");
         String extraMods = args.get("--mods");
@@ -490,6 +490,25 @@ public class LibraryManager
 
         list.sort(FILE_NAME_SORTER_INSENSITVE);
         return list;
+    }
+
+    public static List<File> getCandidates(File mcDir) {
+        if (candidates != null)
+        {
+            return candidates;
+        }
+        candidates = gatherLegacyCanidates(mcDir);
+        for (Artifact artifact : flattenLists(mcDir))
+        {
+            artifact = Repository.resolveAll(artifact);
+            if (artifact != null)
+            {
+                File target = artifact.getFile();
+                if (!candidates.contains(target))
+                    candidates.add(target);
+            }
+        }
+        return candidates;
     }
 
     public static Repository getDefaultRepo()

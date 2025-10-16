@@ -34,9 +34,7 @@ import net.minecraftforge.fml.common.asm.transformers.ModAccessTransformer;
 import net.minecraftforge.fml.common.launcher.FMLInjectionAndSortingTweaker;
 import net.minecraftforge.fml.common.launcher.FMLTweaker;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.*;
-import net.minecraftforge.fml.relauncher.libraries.Artifact;
 import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
-import net.minecraftforge.fml.relauncher.libraries.Repository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.spongepowered.asm.service.mojang.MixinServiceLaunchWrapper;
@@ -325,24 +323,12 @@ public class CoreModManager {
         //As well as the mods folders being cleaned up {any files that have maven info being moved to maven folder}
 
         FMLLog.log.debug("Discovering coremods");
-        List<Artifact> maven_canidates = LibraryManager.flattenLists(mcDir);
-        List<File> file_canidates = LibraryManager.gatherLegacyCanidates(mcDir);
+        List<File> candidates = LibraryManager.getCandidates(mcDir);
         Set<String> mixin_configs = new HashSet<>();
-
-        for (Artifact artifact : maven_canidates)
-        {
-            artifact = Repository.resolveAll(artifact);
-            if (artifact != null)
-            {
-                File target = artifact.getFile();
-                if (!file_canidates.contains(target))
-                    file_canidates.add(target);
-            }
-        }
         //Do we want to sort the full list after resolving artifacts?
         //TODO: Add dependency gathering?
 
-        for (File coreMod : file_canidates)
+        for (File coreMod : candidates)
         {
             if (coreMod.isDirectory())
             {
