@@ -323,11 +323,11 @@ public class CoreModManager {
         //As well as the mods folders being cleaned up {any files that have maven info being moved to maven folder}
 
         FMLLog.log.debug("Discovering coremods");
-        List<File> candidates = LibraryManager.getCandidates();
-        Set<String> mixin_configs = new HashSet<>();
         //Do we want to sort the full list after resolving artifacts?
         //TODO: Add dependency gathering?
-
+        List<File> candidates = LibraryManager.getCandidates();
+        Set<String> mixin_configs = new HashSet<>();
+        File mods_ver = new File(new File(Launch.minecraftHome, "mods"), ForgeVersion.mcVersion);
         for (File coreMod : candidates)
         {
             if (coreMod.isDirectory())
@@ -340,7 +340,6 @@ public class CoreModManager {
             String fmlCorePlugin;
             String configs;
             String cascadedTweaker;
-            File mods_ver = new File(new File(Launch.minecraftHome, "mods"), ForgeVersion.mcVersion);
             boolean containNonMods, ignoreMods = false;
             try
             {
