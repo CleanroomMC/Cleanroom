@@ -26,6 +26,10 @@ public class KDTree {
         this.bounds = bounds;
     }
 
+    public boolean isEmpty() {
+        return root == null;
+    }
+
     public void insert(@NonNull Block block) {
         Preconditions.checkNotNull(block);
 
