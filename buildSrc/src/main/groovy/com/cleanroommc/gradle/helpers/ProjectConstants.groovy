@@ -1,8 +1,5 @@
 package com.cleanroommc.gradle.helpers
 
-/**
- * @author ZZZank
- */
 interface ProjectConstants {
     List<String> JVM_ARGUMENTS = [
         '--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED',
