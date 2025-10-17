@@ -31,7 +31,6 @@ import java.io.Writer;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -67,9 +66,7 @@ import net.minecraftforge.fml.common.versioning.DependencyParser;
 import net.minecraftforge.fml.common.versioning.VersionParser;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.libraries.Artifact;
 import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
-import net.minecraftforge.fml.relauncher.libraries.Repository;
 import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.ObjectHolderRegistry;
 
@@ -402,23 +399,11 @@ public class Loader
             FMLLog.log.debug("Minecraft jar mods loaded successfully");
         }
 
-        List<Artifact> maven_canidates = LibraryManager.flattenLists(minecraftDir);
-        List<File> file_canidates = LibraryManager.gatherLegacyCanidates(minecraftDir);
-
-        for (Artifact artifact : maven_canidates)
-        {
-            artifact = Repository.resolveAll(artifact);
-            if (artifact != null)
-            {
-                File target = artifact.getFile();
-                if (!file_canidates.contains(target))
-                    file_canidates.add(target);
-            }
-        }
+        List<File> candidates = LibraryManager.getCandidates();
         //Do we want to sort the full list after resolving artifacts?
         //TODO: Add dependency gathering?
 
-        for (File mod : file_canidates)
+        for (File mod : candidates)
         {
             // skip loaded coremods
             if (CoreModManager.getIgnoredMods().contains(mod.getName()))

@@ -19,14 +19,10 @@
 
 package net.minecraftforge.fml.relauncher.libraries;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.lang.reflect.Method;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +38,7 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -71,9 +68,12 @@ public class LibraryManager
     private static final Attributes.Name MD5 = new Attributes.Name("MD5");
     private static Repository libraries_dir = null;
     private static Set<File> processed = new HashSet<File>();
+    private static File minecraftHome;
+    private static List<File> candidates;
 
     public static void setup(File minecraftHome)
     {
+        LibraryManager.minecraftHome = minecraftHome;
         File libDir = findLibraryFolder(minecraftHome);
         FMLLog.log.debug("Determined Minecraft Libraries Root: {}", libDir);
         Repository old = Repository.replace(libDir, "libraries");
@@ -441,7 +441,6 @@ public class LibraryManager
     public static List<File> gatherLegacyCanidates(File mcDir)
     {
         List<File> list = new ArrayList<>();
-
         @SuppressWarnings("unchecked")
         Map<String,String> args = (Map<String, String>)Launch.blackboard.get("forgeLaunchArgs");
         String extraMods = args.get("--mods");
@@ -492,8 +491,66 @@ public class LibraryManager
         return list;
     }
 
+    public static List<File> getCandidates() {
+        if (candidates != null)
+        {
+            return candidates;
+        }
+        candidates = gatherLegacyCanidates(minecraftHome);
+        // Query if Bansoukou exists in these files... This way we can replace from the root before any other mod has been added
+        Method bansoukouMethod = null;
+        for (File candidate : candidates)
+        {
+            if (candidate.isDirectory())
+            {
+                continue;
+            }
+            try (JarFile jar = new JarFile(candidate))
+            {
+                // Check for Bansoukou's existence
+                Attributes attributes = jar.getManifest().getMainAttributes();
+                String bansoukou = attributes.getValue("Bansoukou");
+                if (bansoukou != null) {
+                    Launch.classLoader.addURL(candidate.toURI().toURL());
+                    Launch.classLoader.addTransformerExclusion(bansoukou);
+                    Class<?> cleanBansoukou = Class.forName(bansoukou, true, Launch.classLoader);
+                    bansoukouMethod = cleanBansoukou.getMethod("bansoukou", List.class);
+                    break; // We found Bansoukou
+                }
+            }
+            catch (IOException ignore) { }
+            catch (ClassNotFoundException | NoSuchMethodException e)
+            {
+                throw new RuntimeException("Unable to instantiate linkage with Bansoukou", e);
+            }
+        }
+        for (Artifact artifact : flattenLists(minecraftHome))
+        {
+            artifact = Repository.resolveAll(artifact);
+            if (artifact != null)
+            {
+                File target = artifact.getFile();
+                if (!candidates.contains(target))
+                    candidates.add(target);
+            }
+        }
+        if (bansoukouMethod != null)
+        {
+            try
+            {
+                bansoukouMethod.invoke(null, candidates); // Modifies in-place
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException("Unable to invoke linkage with Bansoukou", e);
+            }
+        }
+        return candidates;
+    }
+
     public static Repository getDefaultRepo()
     {
         return libraries_dir;
     }
+
 }
