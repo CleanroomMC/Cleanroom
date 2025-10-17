@@ -1,19 +1,12 @@
-package com.cleanroommc.test;
+package com.cleanroommc.hackery;
 
 import com.cleanroommc.hackery.enums.EnumHackery;
-import net.minecraft.init.Items;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.SoundEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EnumHackeryTest {
 
@@ -61,11 +54,11 @@ public class EnumHackeryTest {
         TestEnum[] oldValues = TestEnum.values();
         TestEnum three = EnumHackery.addEnumEntry(TestEnum.class, "THREE");
         TestEnum[] newValues = TestEnum.values();
-        Assert.assertNotNull(Enum.valueOf(TestEnum.class, "THREE"));
-        Assert.assertEquals(Enum.valueOf(TestEnum.class, "THREE"), three);
-        Assert.assertNotNull(TestEnum.valueOf("THREE"));
-        Assert.assertEquals(TestEnum.valueOf("THREE"), three);
-        Assert.assertNotEquals(oldValues, newValues);
+        assertNotNull(Enum.valueOf(TestEnum.class, "THREE"));
+        assertEquals(Enum.valueOf(TestEnum.class, "THREE"), three);
+        assertNotNull(TestEnum.valueOf("THREE"));
+        assertEquals(TestEnum.valueOf("THREE"), three);
+        assertNotEquals(oldValues, newValues);
     }
 
     @Test
@@ -74,16 +67,16 @@ public class EnumHackeryTest {
         CtorTestEnum three = EnumHackery.addEnumEntry(CtorTestEnum.class, "THREE", new Class<?>[] { String.class }, new Object[] { "three" });
         CtorTestEnum four = EnumHackery.addEnumEntry(CtorTestEnum.class, "FOUR", new Class<?>[] { String.class }, new Object[] { "four" });
         CtorTestEnum[] newValues = CtorTestEnum.values();
-        Assert.assertNotNull(Enum.valueOf(CtorTestEnum.class, "THREE"));
-        Assert.assertEquals(Enum.valueOf(CtorTestEnum.class, "THREE"), three);
-        Assert.assertNotNull(Enum.valueOf(CtorTestEnum.class, "FOUR"));
-        Assert.assertEquals(Enum.valueOf(CtorTestEnum.class, "FOUR"), four);
-        Assert.assertNotNull(CtorTestEnum.valueOf("THREE"));
-        Assert.assertEquals(CtorTestEnum.valueOf("THREE"), three);
-        Assert.assertNotNull(CtorTestEnum.valueOf("FOUR"));
-        Assert.assertEquals(CtorTestEnum.valueOf("FOUR"), four);
-        Assert.assertNotEquals(oldValues, newValues);
-        Assert.assertEquals(2, newValues.length - oldValues.length);
+        assertNotNull(Enum.valueOf(CtorTestEnum.class, "THREE"));
+        assertEquals(Enum.valueOf(CtorTestEnum.class, "THREE"), three);
+        assertNotNull(Enum.valueOf(CtorTestEnum.class, "FOUR"));
+        assertEquals(Enum.valueOf(CtorTestEnum.class, "FOUR"), four);
+        assertNotNull(CtorTestEnum.valueOf("THREE"));
+        assertEquals(CtorTestEnum.valueOf("THREE"), three);
+        assertNotNull(CtorTestEnum.valueOf("FOUR"));
+        assertEquals(CtorTestEnum.valueOf("FOUR"), four);
+        assertNotEquals(oldValues, newValues);
+        assertEquals(2, newValues.length - oldValues.length);
     }
 
     @Test
@@ -91,17 +84,17 @@ public class EnumHackeryTest {
         MassiveTestEnum[] oldValues = MassiveTestEnum.values();
         MassiveTestEnum obsidian = EnumHackery.addEnumEntry(MassiveTestEnum.class, "OBSIDIAN", new Class<?>[] { String.class, int.class, int[].class }, new Object[] {"obsidian", 40, new int[]{1, 1, 1, 1}});
         MassiveTestEnum[] newValues = MassiveTestEnum.values();
-        Assert.assertNotNull(Enum.valueOf(MassiveTestEnum.class, "OBSIDIAN"));
-        Assert.assertEquals(Enum.valueOf(MassiveTestEnum.class, "OBSIDIAN"), obsidian);
-        Assert.assertNotNull(MassiveTestEnum.valueOf("OBSIDIAN"));
-        Assert.assertEquals(MassiveTestEnum.valueOf("OBSIDIAN"), obsidian);
-        Assert.assertEquals("obsidian", obsidian.name);
-        Assert.assertEquals(40, obsidian.maxDamageFactor);
-        Assert.assertTrue(Arrays.stream(obsidian.damageReductionAmountArray).allMatch((a) -> a == 1));
-        Assert.assertNotEquals(oldValues, newValues);
-        Assert.assertNotNull(MassiveTestEnum.CHAIN.repairMaterial);
-        Assert.assertNotNull(obsidian.repairMaterial);
-        Assert.assertEquals(obsidian.repairMaterial, MassiveTestEnum.valueOf("OBSIDIAN").repairMaterial);
+        assertNotNull(Enum.valueOf(MassiveTestEnum.class, "OBSIDIAN"));
+        assertEquals(Enum.valueOf(MassiveTestEnum.class, "OBSIDIAN"), obsidian);
+        assertNotNull(MassiveTestEnum.valueOf("OBSIDIAN"));
+        assertEquals(MassiveTestEnum.valueOf("OBSIDIAN"), obsidian);
+        assertEquals("obsidian", obsidian.name);
+        assertEquals(40, obsidian.maxDamageFactor);
+        assertTrue(Arrays.stream(obsidian.damageReductionAmountArray).allMatch((a) -> a == 1));
+        assertNotEquals(oldValues, newValues);
+        assertNotNull(MassiveTestEnum.CHAIN.repairMaterial);
+        assertNotNull(obsidian.repairMaterial);
+        assertEquals(obsidian.repairMaterial, MassiveTestEnum.valueOf("OBSIDIAN").repairMaterial);
 
     }
 }

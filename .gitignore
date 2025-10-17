@@ -4,6 +4,7 @@
 /projects/
 /buildSrc/.gradle/
 /buildSrc/build/
+/buildSrc/out/
 /logs/
 build/
 version.txt

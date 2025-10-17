@@ -323,11 +323,11 @@ public class CoreModManager {
         //As well as the mods folders being cleaned up {any files that have maven info being moved to maven folder}
 
         FMLLog.log.debug("Discovering coremods");
-        List<File> candidates = LibraryManager.getCandidates();
-        Set<String> mixin_configs = new HashSet<>();
         //Do we want to sort the full list after resolving artifacts?
         //TODO: Add dependency gathering?
-
+        List<File> candidates = LibraryManager.getCandidates();
+        Set<String> mixin_configs = new HashSet<>();
+        File mods_ver = new File(new File(Launch.minecraftHome, "mods"), ForgeVersion.mcVersion);
         for (File coreMod : candidates)
         {
             if (coreMod.isDirectory())
@@ -340,7 +340,6 @@ public class CoreModManager {
             String fmlCorePlugin;
             String configs;
             String cascadedTweaker;
-            File mods_ver = new File(new File(Launch.minecraftHome, "mods"), ForgeVersion.mcVersion);
             boolean containNonMods, ignoreMods = false;
             try
             {
@@ -381,8 +380,10 @@ public class CoreModManager {
                 containNonMods = Boolean.parseBoolean(mfAttributes.getValue("NonModDeps"));
                 if (cascadedTweaker != null)
                 {
-                    if (containNonMods) {
-                        for (String file: mfAttributes.getValue(LibraryManager.MODCONTAINSDEPS).split(" ")) {
+                    if (containNonMods)
+                    {
+                        for (String file: mfAttributes.getValue(LibraryManager.MODCONTAINSDEPS).split(" "))
+                        {
                             classLoader.addURL(new File(mods_ver, file).getAbsoluteFile().toURI().toURL());
                         }
                     }
@@ -407,13 +408,16 @@ public class CoreModManager {
                     continue;
                 }
                 fmlCorePlugin = mfAttributes.getValue("FMLCorePlugin");
-                for (String plugin : ForgeEarlyConfig.LOADING_PLUGIN_BLACKLIST) {
-                    if (plugin.equals(fmlCorePlugin)) {
+                for (String plugin : ForgeEarlyConfig.LOADING_PLUGIN_BLACKLIST)
+                {
+                    if (plugin.equals(fmlCorePlugin))
+                    {
                         ignoreMods = true;
                         break;
                     }
                 }
-                if (ignoreMods) {
+                if (ignoreMods)
+                {
                     ignoredModFiles.add(coreMod.getName());
                     FMLLog.log.warn("The mod with loading plugin {} is in blacklist and won't be loaded. Check forge_early.cfg for more info.", fmlCorePlugin);
                     continue;
@@ -443,8 +447,10 @@ public class CoreModManager {
             // Support things that are mod jars, but not FML mod jars
             try
             {
-                if (containNonMods) {
-                    for (String file: mfAttributes.getValue(LibraryManager.MODCONTAINSDEPS).split(" ")) {
+                if (containNonMods)
+                {
+                    for (String file: mfAttributes.getValue(LibraryManager.MODCONTAINSDEPS).split(" "))
+                    {
                         classLoader.addURL(new File(mods_ver, file).getAbsoluteFile().toURI().toURL());
                     }
                 }
@@ -455,7 +461,9 @@ public class CoreModManager {
                 {
                     FMLLog.log.trace("Adding {} to the list of known coremods, it will not be examined again", coreMod.getName());
                     ignoredModFiles.add(coreMod.getName());
-                } else {
+                }
+                else
+                {
                     FMLLog.log.info("Found FMLCorePluginContainsFMLMod marker in {}.",
                             coreMod.getName());
                     candidateModFiles.add(coreMod.getName());
@@ -470,12 +478,14 @@ public class CoreModManager {
             loadCoreMod(classLoader, fmlCorePlugin, coreMod);
         }
         String devConfigs = System.getProperty("cleanroom.dev.mixin");
-        if (!Strings.isNullOrEmpty(devConfigs)) {
+        if (!Strings.isNullOrEmpty(devConfigs))
+        {
             for (String singleMixinConfig : devConfigs.split(","))
                 mixin_configs.add(singleMixinConfig.trim());
         }
         Launch.blackboard.put(Constants.ManifestAttributes.MIXINCONFIGS, mixin_configs);
     }
+
     private static void handleCascadingTweak(File coreMod, JarFile jar, String cascadedTweaker, LaunchClassLoader classLoader, Integer sortingOrder) throws MalformedURLException {
         try
         {
