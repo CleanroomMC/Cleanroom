@@ -31,13 +31,16 @@ def details = versionDetails()
 
 group 'com.cleanroommc'
 
-version details.lastTag + (project.hasProperty("release") ?
-        "" : ("+build." + details.commitDistance + (project.hasProperty("run_number") ?
-                (".run." + props.run_number) : "")))
+if (project.hasProperty("release")) {
+    version(details.lastTag)
+} else if (!project.hasProperty("run_number")) {
+    version(details.lastTag + "+build." + details.commitDistance)
+} else {
+    version(details.lastTag + "+build." + details.commitDistance + ".run." + props.run_number)
+}
 
 def version_txt = new File(project.projectDir, "version.txt")
 version_txt.write(version.toString())
-def spec_version = details.lastTag
 
 println "Setting up Cleanroom $version"
 if (project.hasProperty("run_number")) println("On GitHub runs #" + props.run_number)
@@ -47,7 +50,7 @@ println "Java: ${ -> sysProps['java.version']} | JVM: ${ -> sysProps['java.vm.ve
 Util.init()
 
 tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs += ProjectConstants.COMPILER_JVM_ARGUMENTS
+    options.compilerArgs = options.compilerArgs + ProjectConstants.COMPILER_JVM_ARGUMENTS
     options.encoding = 'UTF-8'
 }
 

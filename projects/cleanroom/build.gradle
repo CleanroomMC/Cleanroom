@@ -39,7 +39,7 @@ compileJava {
             template.eachLine { def line ->
                 def newLine = line.replace("%VERSION%", versionDetails().lastTag)
                     .replace("%BUILD_VERSION%", rootProject.version.toString())
-                writer.write(newLine + "\n");
+                writer.write(newLine + "\n")
             }
         }
     }
@@ -557,10 +557,12 @@ tasks.register('checkSAS') {
                     println('Invalid: ' + line)
                     return
                 }
-                def mtd = json[cls]['methods'][desc]
+//                def mtd = json[cls]['methods'][desc]
                 lines.add(cls + ' ' + desc.replace(' ', '') + (comment == null ? '' : ' ' + comment))
-                def children = json.values().findAll { it.methods != null && it.methods[desc] != null && it.methods[desc].override == cls }
-                    .collect { it.name + ' ' + desc.replace(' ', '') } as TreeSet
+                def children = json.values()
+                    .findAll { it.methods?[desc]?.override == cls }
+                    .collect { it.name + ' ' + desc.replace(' ', '') }
+                    as TreeSet
                 children.each { lines.add('\t' + it) }
             }
             f.text = lines.join('\n')
@@ -587,7 +589,7 @@ tasks.register('launcherJson') {
     inputs.file vanilla
     outputs.file output
     doLast {
-        def json_vanilla = vanilla.json()
+//        def json_vanilla = vanilla.json()
         def json = [
             _comment_         : comment,
             id                : id,
@@ -701,7 +703,6 @@ tasks.register('deobfDataLzma') {
             output.withOutputStream { outs ->
                 def lz = new LZMACompressorOutputStream(outs)
 
-                def i = -1
                 def buf = new byte[0x100]
                 while ((i = ins.read(buf)) != -1)
                     lz.write(buf, 0, i)

@@ -18,6 +18,7 @@ repositories {
         url 'https://maven.minecraftforge.net/'
     }
 }
+
 dependencies {
     implementation ('net.minecraftforge:mergetool:0.2.3.3:forge') {
         exclude group: 'org.ow2.asm', module: 'asm-tree'
