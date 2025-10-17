@@ -19,7 +19,8 @@ import java.nio.file.Files
 import java.util.zip.ZipFile
 
 def props = project.properties
-
+def details = versionDetails()
+def spec_version = details.lastTag
 
 evaluationDependsOn(':minecraft')
 apply plugin: 'java-library'

@@ -1,6 +1,8 @@
 import com.cleanroommc.gradle.helpers.ProjectConstants
 
 def props = project.properties
+def details = versionDetails()
+def spec_version = details.lastTag
 
 evaluationDependsOn(':mcp')
 apply plugin: 'eclipse'
