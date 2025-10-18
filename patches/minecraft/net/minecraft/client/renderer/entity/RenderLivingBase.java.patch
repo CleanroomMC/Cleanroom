@@ -9,28 +9,28 @@
  import java.util.List;
  import net.minecraft.client.Minecraft;
 @@ -30,9 +29,12 @@
-     private static final DynamicTexture field_177096_e = new DynamicTexture(16, 16);
-     protected ModelBase field_77045_g;
-     protected FloatBuffer field_177095_g = GLAllocation.func_74529_h(4);
--    protected List<LayerRenderer<T>> field_177097_h = Lists.newArrayList();
-+    protected List<LayerRenderer<T>> field_177097_h = Lists.<LayerRenderer<T>>newArrayList();
-     protected boolean field_188323_j;
+     private static final DynamicTexture TEXTURE_BRIGHTNESS = new DynamicTexture(16, 16);
+     protected ModelBase mainModel;
+     protected FloatBuffer brightnessBuffer = GLAllocation.createDirectFloatBuffer(4);
+-    protected List<LayerRenderer<T>> layerRenderers = Lists.newArrayList();
++    protected List<LayerRenderer<T>> layerRenderers = Lists.<LayerRenderer<T>>newArrayList();
+     protected boolean renderMarker;
  
 +    public static float NAME_TAG_RANGE = 64.0f;
 +    public static float NAME_TAG_RANGE_SNEAK = 32.0f;
 +
-     public RenderLivingBase(RenderManager p_i46156_1_, ModelBase p_i46156_2_, float p_i46156_3_)
+     public RenderLivingBase(RenderManager renderManagerIn, ModelBase modelBaseIn, float shadowSizeIn)
      {
-         super(p_i46156_1_);
+         super(renderManagerIn);
 @@ -52,11 +54,11 @@
  
-     protected float func_77034_a(float p_77034_1_, float p_77034_2_, float p_77034_3_)
+     protected float interpolateRotation(float prevYawOffset, float yawOffset, float partialTicks)
      {
--        float f = p_77034_2_ - p_77034_1_;
+-        float f = yawOffset - prevYawOffset;
 +        float f;
  
 -        while (f < -180.0F)
-+        for (f = p_77034_2_ - p_77034_1_; f < -180.0F; f += 360.0F)
++        for (f = yawOffset - prevYawOffset; f < -180.0F; f += 360.0F)
          {
 -            f += 360.0F;
 +            ;
@@ -39,27 +39,27 @@
          while (f >= 180.0F)
 @@ -73,10 +75,12 @@
  
-     public void func_76986_a(T p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_, float p_76986_9_)
+     public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks)
      {
-+        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Pre<T>(p_76986_1_, this, p_76986_9_, p_76986_2_, p_76986_4_, p_76986_6_))) return;
-         GlStateManager.func_179094_E();
-         GlStateManager.func_179129_p();
-         this.field_77045_g.field_78095_p = this.func_77040_d(p_76986_1_, p_76986_9_);
--        this.field_77045_g.field_78093_q = p_76986_1_.func_184218_aH();
-+        boolean shouldSit = p_76986_1_.func_184218_aH() && (p_76986_1_.func_184187_bx() != null && p_76986_1_.func_184187_bx().shouldRiderSit());
-+        this.field_77045_g.field_78093_q = shouldSit;
-         this.field_77045_g.field_78091_s = p_76986_1_.func_70631_g_();
++        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Pre<T>(entity, this, partialTicks, x, y, z))) return;
+         GlStateManager.pushMatrix();
+         GlStateManager.disableCull();
+         this.mainModel.swingProgress = this.getSwingProgress(entity, partialTicks);
+-        this.mainModel.isRiding = entity.isRiding();
++        boolean shouldSit = entity.isRiding() && (entity.getRidingEntity() != null && entity.getRidingEntity().shouldRiderSit());
++        this.mainModel.isRiding = shouldSit;
+         this.mainModel.isChild = entity.isChild();
  
          try
 @@ -85,7 +89,7 @@
-             float f1 = this.func_77034_a(p_76986_1_.field_70758_at, p_76986_1_.field_70759_as, p_76986_9_);
+             float f1 = this.interpolateRotation(entity.prevRotationYawHead, entity.rotationYawHead, partialTicks);
              float f2 = f1 - f;
  
--            if (p_76986_1_.func_184218_aH() && p_76986_1_.func_184187_bx() instanceof EntityLivingBase)
-+            if (shouldSit && p_76986_1_.func_184187_bx() instanceof EntityLivingBase)
+-            if (entity.isRiding() && entity.getRidingEntity() instanceof EntityLivingBase)
++            if (shouldSit && entity.getRidingEntity() instanceof EntityLivingBase)
              {
-                 EntityLivingBase entitylivingbase = (EntityLivingBase)p_76986_1_.func_184187_bx();
-                 f = this.func_77034_a(entitylivingbase.field_70760_ar, entitylivingbase.field_70761_aq, p_76986_9_);
+                 EntityLivingBase entitylivingbase = (EntityLivingBase)entity.getRidingEntity();
+                 f = this.interpolateRotation(entitylivingbase.prevRenderYawOffset, entitylivingbase.renderYawOffset, partialTicks);
 @@ -134,6 +138,7 @@
                  {
                      f5 = 1.0F;
@@ -67,30 +67,30 @@
 +                f2 = f1 - f; // Forge: Fix MC-1207
              }
  
-             GlStateManager.func_179141_d();
+             GlStateManager.enableAlpha();
 @@ -195,6 +200,7 @@
-         GlStateManager.func_179089_o();
-         GlStateManager.func_179121_F();
-         super.func_76986_a(p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
-+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Post<T>(p_76986_1_, this, p_76986_9_, p_76986_2_, p_76986_4_, p_76986_6_));
+         GlStateManager.enableCull();
+         GlStateManager.popMatrix();
+         super.doRender(entity, x, y, z, entityYaw, partialTicks);
++        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Post<T>(entity, this, partialTicks, x, y, z));
      }
  
-     public float func_188322_c(T p_188322_1_, float p_188322_2_)
+     public float prepareScale(T entitylivingbaseIn, float partialTicks)
 @@ -264,7 +270,7 @@
      {
-         float f = p_177092_1_.func_70013_c();
-         int i = this.func_77030_a(p_177092_1_, f, p_177092_2_);
+         float f = entitylivingbaseIn.getBrightness();
+         int i = this.getColorMultiplier(entitylivingbaseIn, f, partialTicks);
 -        boolean flag = (i >> 24 & 0xFF) > 0;
 +        boolean flag = (i >> 24 & 255) > 0;
-         boolean flag1 = p_177092_1_.field_70737_aN > 0 || p_177092_1_.field_70725_aQ > 0;
+         boolean flag1 = entitylivingbaseIn.hurtTime > 0 || entitylivingbaseIn.deathTime > 0;
  
          if (!flag && !flag1)
 @@ -301,7 +307,7 @@
-             GlStateManager.func_187399_a(8960, OpenGlHelper.field_176077_E, 7681);
-             GlStateManager.func_187399_a(8960, OpenGlHelper.field_176078_F, OpenGlHelper.field_176091_w);
-             GlStateManager.func_187399_a(8960, OpenGlHelper.field_176085_I, 770);
--            ((Buffer)this.field_177095_g).position(0);
-+            this.field_177095_g.position(0);
+             GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_ALPHA, 7681);
+             GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_ALPHA, OpenGlHelper.GL_PREVIOUS);
+             GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
+-            ((Buffer)this.brightnessBuffer).position(0);
++            this.brightnessBuffer.position(0);
  
              if (flag1)
              {
@@ -106,65 +106,65 @@
 +                float f2 = (float)(i >> 16 & 255) / 255.0F;
 +                float f3 = (float)(i >> 8 & 255) / 255.0F;
 +                float f4 = (float)(i & 255) / 255.0F;
-                 this.field_177095_g.put(f2);
-                 this.field_177095_g.put(f3);
-                 this.field_177095_g.put(f4);
-                 this.field_177095_g.put(1.0F - f1);
+                 this.brightnessBuffer.put(f2);
+                 this.brightnessBuffer.put(f3);
+                 this.brightnessBuffer.put(f4);
+                 this.brightnessBuffer.put(1.0F - f1);
              }
  
--            ((Buffer)this.field_177095_g).flip();
-+            this.field_177095_g.flip();
-             GlStateManager.func_187448_b(8960, 8705, this.field_177095_g);
-             GlStateManager.func_179138_g(OpenGlHelper.field_176096_r);
-             GlStateManager.func_179098_w();
+-            ((Buffer)this.brightnessBuffer).flip();
++            this.brightnessBuffer.flip();
+             GlStateManager.glTexEnv(8960, 8705, this.brightnessBuffer);
+             GlStateManager.setActiveTexture(OpenGlHelper.GL_TEXTURE2);
+             GlStateManager.enableTexture2D();
 @@ -407,9 +413,7 @@
          {
-             String s = TextFormatting.func_110646_a(p_77043_1_.func_70005_c_());
+             String s = TextFormatting.getTextWithoutFormattingCodes(entityLiving.getName());
  
 -            if (s != null
 -                    && ("Dinnerbone".equals(s) || "Grumm".equals(s))
--                    && (!(p_77043_1_ instanceof EntityPlayer) || ((EntityPlayer)p_77043_1_).func_175148_a(EnumPlayerModelParts.CAPE)))
-+            if (s != null && ("Dinnerbone".equals(s) || "Grumm".equals(s)) && (!(p_77043_1_ instanceof EntityPlayer) || ((EntityPlayer)p_77043_1_).func_175148_a(EnumPlayerModelParts.CAPE)))
+-                    && (!(entityLiving instanceof EntityPlayer) || ((EntityPlayer)entityLiving).isWearing(EnumPlayerModelParts.CAPE)))
++            if (s != null && ("Dinnerbone".equals(s) || "Grumm".equals(s)) && (!(entityLiving instanceof EntityPlayer) || ((EntityPlayer)entityLiving).isWearing(EnumPlayerModelParts.CAPE)))
              {
-                 GlStateManager.func_179109_b(0.0F, p_77043_1_.field_70131_O + 0.1F, 0.0F);
-                 GlStateManager.func_179114_b(180.0F, 0.0F, 0.0F, 1.0F);
+                 GlStateManager.translate(0.0F, entityLiving.height + 0.1F, 0.0F);
+                 GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
 @@ -427,9 +431,7 @@
-         return (float)p_77044_1_.field_70173_aa + p_77044_2_;
+         return (float)livingBase.ticksExisted + partialTicks;
      }
  
--    protected void func_177093_a(
--        T p_177093_1_, float p_177093_2_, float p_177093_3_, float p_177093_4_, float p_177093_5_, float p_177093_6_, float p_177093_7_, float p_177093_8_
+-    protected void renderLayers(
+-        T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scaleIn
 -    )
-+    protected void func_177093_a(T p_177093_1_, float p_177093_2_, float p_177093_3_, float p_177093_4_, float p_177093_5_, float p_177093_6_, float p_177093_7_, float p_177093_8_)
++    protected void renderLayers(T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scaleIn)
      {
-         for (LayerRenderer<T> layerrenderer : this.field_177097_h)
+         for (LayerRenderer<T> layerrenderer : this.layerRenderers)
          {
 @@ -459,18 +461,20 @@
  
-     public void func_177067_a(T p_177067_1_, double p_177067_2_, double p_177067_4_, double p_177067_6_)
+     public void renderName(T entity, double x, double y, double z)
      {
-+        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Specials.Pre<T>(p_177067_1_, this, p_177067_2_, p_177067_4_, p_177067_6_))) return;
-         if (this.func_177070_b(p_177067_1_))
++        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Specials.Pre<T>(entity, this, x, y, z))) return;
+         if (this.canRenderName(entity))
          {
-             double d0 = p_177067_1_.func_70068_e(this.field_76990_c.field_78734_h);
--            float f = p_177067_1_.func_70093_af() ? 32.0F : 64.0F;
-+            float f = p_177067_1_.func_70093_af() ? NAME_TAG_RANGE_SNEAK : NAME_TAG_RANGE;
+             double d0 = entity.getDistanceSq(this.renderManager.renderViewEntity);
+-            float f = entity.isSneaking() ? 32.0F : 64.0F;
++            float f = entity.isSneaking() ? NAME_TAG_RANGE_SNEAK : NAME_TAG_RANGE;
  
 -            if (!(d0 >= (double)(f * f)))
 +            if (d0 < (double)(f * f))
              {
-                 String s = p_177067_1_.func_145748_c_().func_150254_d();
-                 GlStateManager.func_179092_a(516, 0.1F);
-                 this.func_188296_a(p_177067_1_, p_177067_2_, p_177067_4_, p_177067_6_, s, d0);
+                 String s = entity.getDisplayName().getFormattedText();
+                 GlStateManager.alphaFunc(516, 0.1F);
+                 this.renderEntityName(entity, x, y, z, s, d0);
              }
          }
-+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Specials.Post<T>(p_177067_1_, this, p_177067_2_, p_177067_4_, p_177067_6_));
++        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Specials.Post<T>(entity, this, x, y, z));
      }
  
-     protected boolean func_177070_b(T p_177070_1_)
+     protected boolean canRenderName(T entity)
 @@ -510,7 +514,7 @@
      {
-         int[] aint = field_177096_e.func_110565_c();
+         int[] aint = TEXTURE_BRIGHTNESS.getTextureData();
  
 -        for (int i = 0; i < 256; i++)
 +        for (int i = 0; i < 256; ++i)

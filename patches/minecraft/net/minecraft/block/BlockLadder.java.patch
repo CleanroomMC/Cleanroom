@@ -11,150 +11,150 @@
 @@ -21,10 +22,10 @@
  public class BlockLadder extends Block
  {
-     public static final PropertyDirection field_176382_a = BlockHorizontal.field_185512_D;
--    protected static final AxisAlignedBB field_185687_b = new AxisAlignedBB(0.0, 0.0, 0.0, 0.1875, 1.0, 1.0);
--    protected static final AxisAlignedBB field_185688_c = new AxisAlignedBB(0.8125, 0.0, 0.0, 1.0, 1.0, 1.0);
--    protected static final AxisAlignedBB field_185689_d = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 0.1875);
--    protected static final AxisAlignedBB field_185690_e = new AxisAlignedBB(0.0, 0.0, 0.8125, 1.0, 1.0, 1.0);
-+    protected static final AxisAlignedBB field_185687_b = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.1875D, 1.0D, 1.0D);
-+    protected static final AxisAlignedBB field_185688_c = new AxisAlignedBB(0.8125D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
-+    protected static final AxisAlignedBB field_185689_d = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 0.1875D);
-+    protected static final AxisAlignedBB field_185690_e = new AxisAlignedBB(0.0D, 0.0D, 0.8125D, 1.0D, 1.0D, 1.0D);
+     public static final PropertyDirection FACING = BlockHorizontal.FACING;
+-    protected static final AxisAlignedBB LADDER_EAST_AABB = new AxisAlignedBB(0.0, 0.0, 0.0, 0.1875, 1.0, 1.0);
+-    protected static final AxisAlignedBB LADDER_WEST_AABB = new AxisAlignedBB(0.8125, 0.0, 0.0, 1.0, 1.0, 1.0);
+-    protected static final AxisAlignedBB LADDER_SOUTH_AABB = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 0.1875);
+-    protected static final AxisAlignedBB LADDER_NORTH_AABB = new AxisAlignedBB(0.0, 0.0, 0.8125, 1.0, 1.0, 1.0);
++    protected static final AxisAlignedBB LADDER_EAST_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.1875D, 1.0D, 1.0D);
++    protected static final AxisAlignedBB LADDER_WEST_AABB = new AxisAlignedBB(0.8125D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
++    protected static final AxisAlignedBB LADDER_SOUTH_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 0.1875D);
++    protected static final AxisAlignedBB LADDER_NORTH_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.8125D, 1.0D, 1.0D, 1.0D);
  
      protected BlockLadder()
      {
 @@ -33,7 +34,6 @@
-         this.func_149647_a(CreativeTabs.field_78031_c);
+         this.setCreativeTab(CreativeTabs.DECORATIONS);
      }
  
 -    @Override
-     public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
+     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
      {
-         switch ((EnumFacing)p_185496_1_.func_177229_b(field_176382_a))
+         switch ((EnumFacing)state.getValue(FACING))
 @@ -50,19 +50,16 @@
          }
      }
  
 -    @Override
-     public boolean func_149662_c(IBlockState p_149662_1_)
+     public boolean isOpaqueCube(IBlockState state)
      {
          return false;
      }
  
 -    @Override
-     public boolean func_149686_d(IBlockState p_149686_1_)
+     public boolean isFullCube(IBlockState state)
      {
          return false;
      }
  
 -    @Override
-     public boolean func_176198_a(World p_176198_1_, BlockPos p_176198_2_, EnumFacing p_176198_3_)
+     public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side)
      {
-         if (this.func_193392_c(p_176198_1_, p_176198_2_.func_177976_e(), p_176198_3_))
+         if (this.canAttachTo(worldIn, pos.west(), side))
 @@ -73,11 +70,13 @@
          {
              return true;
          }
-+        else if (this.func_193392_c(p_176198_1_, p_176198_2_.func_177978_c(), p_176198_3_))
++        else if (this.canAttachTo(worldIn, pos.north(), side))
 +        {
 +            return true;
 +        }
          else
          {
--            return this.func_193392_c(p_176198_1_, p_176198_2_.func_177978_c(), p_176198_3_)
+-            return this.canAttachTo(worldIn, pos.north(), side)
 -                   ? true
--                   : this.func_193392_c(p_176198_1_, p_176198_2_.func_177968_d(), p_176198_3_);
-+            return this.func_193392_c(p_176198_1_, p_176198_2_.func_177968_d(), p_176198_3_);
+-                   : this.canAttachTo(worldIn, pos.south(), side);
++            return this.canAttachTo(worldIn, pos.south(), side);
          }
      }
  
 @@ -88,17 +87,7 @@
-         return !flag && iblockstate.func_193401_d(p_193392_1_, p_193392_2_, p_193392_3_) == BlockFaceShape.SOLID && !iblockstate.func_185897_m();
+         return !flag && iblockstate.getBlockFaceShape(p_193392_1_, p_193392_2_, p_193392_3_) == BlockFaceShape.SOLID && !iblockstate.canProvidePower();
      }
  
 -    @Override
--    public IBlockState func_180642_a(
--        World p_180642_1_,
--        BlockPos p_180642_2_,
--        EnumFacing p_180642_3_,
--        float p_180642_4_,
--        float p_180642_5_,
--        float p_180642_6_,
--        int p_180642_7_,
--        EntityLivingBase p_180642_8_
+-    public IBlockState getStateForPlacement(
+-        World worldIn,
+-        BlockPos pos,
+-        EnumFacing facing,
+-        float hitX,
+-        float hitY,
+-        float hitZ,
+-        int meta,
+-        EntityLivingBase placer
 -    )
-+    public IBlockState func_180642_a(World p_180642_1_, BlockPos p_180642_2_, EnumFacing p_180642_3_, float p_180642_4_, float p_180642_5_, float p_180642_6_, int p_180642_7_, EntityLivingBase p_180642_8_)
++    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
      {
-         if (p_180642_3_.func_176740_k().func_176722_c() && this.func_193392_c(p_180642_1_, p_180642_2_.func_177972_a(p_180642_3_.func_176734_d()), p_180642_3_))
+         if (facing.getAxis().isHorizontal() && this.canAttachTo(worldIn, pos.offset(facing.getOpposite()), facing))
          {
 @@ -118,10 +107,9 @@
          }
      }
  
 -    @Override
-     public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
+     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
      {
--        EnumFacing enumfacing = p_189540_1_.func_177229_b(field_176382_a);
-+        EnumFacing enumfacing = (EnumFacing)p_189540_1_.func_177229_b(field_176382_a);
+-        EnumFacing enumfacing = state.getValue(FACING);
++        EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
  
-         if (!this.func_193392_c(p_189540_2_, p_189540_3_.func_177972_a(enumfacing.func_176734_d()), enumfacing))
+         if (!this.canAttachTo(worldIn, pos.offset(enumfacing.getOpposite()), enumfacing))
          {
 @@ -132,14 +120,6 @@
-         super.func_189540_a(p_189540_1_, p_189540_2_, p_189540_3_, p_189540_4_, p_189540_5_);
+         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
      }
  
 -    @SideOnly(Side.CLIENT)
 -    @Override
--    public BlockRenderLayer func_180664_k()
+-    public BlockRenderLayer getRenderLayer()
 -    {
 -        return BlockRenderLayer.CUTOUT;
 -    }
 -
 -    @Override
-     public IBlockState func_176203_a(int p_176203_1_)
+     public IBlockState getStateFromMeta(int meta)
      {
-         EnumFacing enumfacing = EnumFacing.func_82600_a(p_176203_1_);
+         EnumFacing enumfacing = EnumFacing.byIndex(meta);
 @@ -152,31 +132,34 @@
-         return this.func_176223_P().func_177226_a(field_176382_a, enumfacing);
+         return this.getDefaultState().withProperty(FACING, enumfacing);
      }
  
 -    @Override
 +    @SideOnly(Side.CLIENT)
-+    public BlockRenderLayer func_180664_k()
++    public BlockRenderLayer getRenderLayer()
 +    {
 +        return BlockRenderLayer.CUTOUT;
 +    }
 +
-     public int func_176201_c(IBlockState p_176201_1_)
+     public int getMetaFromState(IBlockState state)
      {
--        return p_176201_1_.func_177229_b(field_176382_a).func_176745_a();
-+        return ((EnumFacing)p_176201_1_.func_177229_b(field_176382_a)).func_176745_a();
+-        return state.getValue(FACING).getIndex();
++        return ((EnumFacing)state.getValue(FACING)).getIndex();
      }
  
 -    @Override
-     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
+     public IBlockState withRotation(IBlockState state, Rotation rot)
      {
--        return p_185499_1_.func_177226_a(field_176382_a, p_185499_2_.func_185831_a(p_185499_1_.func_177229_b(field_176382_a)));
-+        return p_185499_1_.func_177226_a(field_176382_a, p_185499_2_.func_185831_a((EnumFacing)p_185499_1_.func_177229_b(field_176382_a)));
+-        return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
++        return state.withProperty(FACING, rot.rotate((EnumFacing)state.getValue(FACING)));
      }
  
 -    @Override
-     public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
+     public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
      {
--        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a(p_185471_1_.func_177229_b(field_176382_a)));
-+        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a((EnumFacing)p_185471_1_.func_177229_b(field_176382_a)));
+-        return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
++        return state.withRotation(mirrorIn.toRotation((EnumFacing)state.getValue(FACING)));
      }
  
 -    @Override
-     protected BlockStateContainer func_180661_e()
+     protected BlockStateContainer createBlockState()
      {
--        return new BlockStateContainer(this, field_176382_a);
-+        return new BlockStateContainer(this, new IProperty[] {field_176382_a});
+-        return new BlockStateContainer(this, FACING);
++        return new BlockStateContainer(this, new IProperty[] {FACING});
      }
  
 -    @Override
 +    @Override public boolean isLadder(IBlockState state, IBlockAccess world, BlockPos pos, EntityLivingBase entity) { return true; }
 +
-     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
      {
          return BlockFaceShape.UNDEFINED;

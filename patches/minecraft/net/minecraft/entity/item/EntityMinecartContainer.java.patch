@@ -4,233 +4,233 @@
  
  public abstract class EntityMinecartContainer extends EntityMinecart implements ILockableContainer, ILootContainer
  {
--    private NonNullList<ItemStack> field_94113_a = NonNullList.func_191197_a(36, ItemStack.field_190927_a);
-+    private NonNullList<ItemStack> field_94113_a = NonNullList.<ItemStack>func_191197_a(36, ItemStack.field_190927_a);
-     public boolean field_94112_b = true;
-     private ResourceLocation field_184290_c;
-     private long field_184291_d;
+-    private NonNullList<ItemStack> minecartContainerItems = NonNullList.withSize(36, ItemStack.EMPTY);
++    private NonNullList<ItemStack> minecartContainerItems = NonNullList.<ItemStack>withSize(36, ItemStack.EMPTY);
+     public boolean dropContentsWhenDead = true;
+     private ResourceLocation lootTable;
+     private long lootTableSeed;
 @@ -41,7 +41,6 @@
-         super(p_i1717_1_, p_i1717_2_, p_i1717_4_, p_i1717_6_);
+         super(worldIn, x, y, z);
      }
  
 -    @Override
-     public void func_94095_a(DamageSource p_94095_1_)
+     public void killMinecart(DamageSource source)
      {
-         super.func_94095_a(p_94095_1_);
+         super.killMinecart(source);
 @@ -52,7 +51,6 @@
          }
      }
  
 -    @Override
-     public boolean func_191420_l()
+     public boolean isEmpty()
      {
-         for (ItemStack itemstack : this.field_94113_a)
+         for (ItemStack itemstack : this.minecartContainerItems)
 @@ -66,24 +64,21 @@
          return true;
      }
  
 -    @Override
-     public ItemStack func_70301_a(int p_70301_1_)
+     public ItemStack getStackInSlot(int index)
      {
--        this.func_184288_f(null);
-+        this.func_184288_f((EntityPlayer)null);
-         return this.field_94113_a.get(p_70301_1_);
+-        this.addLoot(null);
++        this.addLoot((EntityPlayer)null);
+         return this.minecartContainerItems.get(index);
      }
  
 -    @Override
-     public ItemStack func_70298_a(int p_70298_1_, int p_70298_2_)
+     public ItemStack decrStackSize(int index, int count)
      {
--        this.func_184288_f(null);
-+        this.func_184288_f((EntityPlayer)null);
-         return ItemStackHelper.func_188382_a(this.field_94113_a, p_70298_1_, p_70298_2_);
+-        this.addLoot(null);
++        this.addLoot((EntityPlayer)null);
+         return ItemStackHelper.getAndSplit(this.minecartContainerItems, index, count);
      }
  
 -    @Override
-     public ItemStack func_70304_b(int p_70304_1_)
+     public ItemStack removeStackFromSlot(int index)
      {
--        this.func_184288_f(null);
-+        this.func_184288_f((EntityPlayer)null);
-         ItemStack itemstack = this.field_94113_a.get(p_70304_1_);
+-        this.addLoot(null);
++        this.addLoot((EntityPlayer)null);
+         ItemStack itemstack = this.minecartContainerItems.get(index);
  
-         if (itemstack.func_190926_b())
+         if (itemstack.isEmpty())
 @@ -97,10 +92,9 @@
          }
      }
  
 -    @Override
-     public void func_70299_a(int p_70299_1_, ItemStack p_70299_2_)
+     public void setInventorySlotContents(int index, ItemStack stack)
      {
--        this.func_184288_f(null);
-+        this.func_184288_f((EntityPlayer)null);
-         this.field_94113_a.set(p_70299_1_, p_70299_2_);
+-        this.addLoot(null);
++        this.addLoot((EntityPlayer)null);
+         this.minecartContainerItems.set(index, stack);
  
-         if (!p_70299_2_.func_190926_b() && p_70299_2_.func_190916_E() > this.func_70297_j_())
+         if (!stack.isEmpty() && stack.getCount() > this.getInventoryStackLimit())
 @@ -109,48 +103,47 @@
          }
      }
  
 -    @Override
-     public void func_70296_d()
+     public void markDirty()
      {
      }
  
 -    @Override
-     public boolean func_70300_a(EntityPlayer p_70300_1_)
+     public boolean isUsableByPlayer(EntityPlayer player)
      {
--        return this.field_70128_L ? false : !(p_70300_1_.func_70068_e(this) > 64.0);
-+        if (this.field_70128_L)
+-        return this.isDead ? false : !(player.getDistanceSq(this) > 64.0);
++        if (this.isDead)
 +        {
 +            return false;
 +        }
 +        else
 +        {
-+            return p_70300_1_.func_70068_e(this) <= 64.0D;
++            return player.getDistanceSq(this) <= 64.0D;
 +        }
      }
  
 -    @Override
-     public void func_174889_b(EntityPlayer p_174889_1_)
+     public void openInventory(EntityPlayer player)
      {
      }
  
 -    @Override
-     public void func_174886_c(EntityPlayer p_174886_1_)
+     public void closeInventory(EntityPlayer player)
      {
      }
  
 -    @Override
-     public boolean func_94041_b(int p_94041_1_, ItemStack p_94041_2_)
+     public boolean isItemValidForSlot(int index, ItemStack stack)
      {
          return true;
      }
  
 -    @Override
-     public int func_70297_j_()
+     public int getInventoryStackLimit()
      {
          return 64;
      }
  
      @Nullable
 -    @Override
--    public Entity func_184204_a(int p_184204_1_)
-+    public Entity changeDimension(int p_184204_1_, net.minecraftforge.common.util.ITeleporter teleporter)
+-    public Entity changeDimension(int dimensionIn)
++    public Entity changeDimension(int dimensionIn, net.minecraftforge.common.util.ITeleporter teleporter)
      {
-         this.field_94112_b = false;
--        return super.func_184204_a(p_184204_1_);
-+        return super.changeDimension(p_184204_1_, teleporter);
+         this.dropContentsWhenDead = false;
+-        return super.changeDimension(dimensionIn);
++        return super.changeDimension(dimensionIn, teleporter);
      }
  
 -    @Override
-     public void func_70106_y()
+     public void setDead()
      {
-         if (this.field_94112_b)
+         if (this.dropContentsWhenDead)
 @@ -161,7 +154,6 @@
-         super.func_70106_y();
+         super.setDead();
      }
  
 -    @Override
-     public void func_184174_b(boolean p_184174_1_)
+     public void setDropItemsWhenDead(boolean dropWhenDead)
      {
-         this.field_94112_b = p_184174_1_;
+         this.dropContentsWhenDead = dropWhenDead;
 @@ -170,10 +162,9 @@
-     public static void func_190574_b(DataFixer p_190574_0_, Class<?> p_190574_1_)
+     public static void addDataFixers(DataFixer p_190574_0_, Class<?> p_190574_1_)
      {
-         EntityMinecart.func_189669_a(p_190574_0_, p_190574_1_);
--        p_190574_0_.func_188258_a(FixTypes.ENTITY, new ItemStackDataLists(p_190574_1_, "Items"));
-+        p_190574_0_.func_188258_a(FixTypes.ENTITY, new ItemStackDataLists(p_190574_1_, new String[] {"Items"}));
+         EntityMinecart.registerFixesMinecart(p_190574_0_, p_190574_1_);
+-        p_190574_0_.registerWalker(FixTypes.ENTITY, new ItemStackDataLists(p_190574_1_, "Items"));
++        p_190574_0_.registerWalker(FixTypes.ENTITY, new ItemStackDataLists(p_190574_1_, new String[] {"Items"}));
      }
  
 -    @Override
-     protected void func_70014_b(NBTTagCompound p_70014_1_)
+     protected void writeEntityToNBT(NBTTagCompound compound)
      {
-         super.func_70014_b(p_70014_1_);
+         super.writeEntityToNBT(compound);
 @@ -193,11 +184,10 @@
          }
      }
  
 -    @Override
-     protected void func_70037_a(NBTTagCompound p_70037_1_)
+     protected void readEntityFromNBT(NBTTagCompound compound)
      {
-         super.func_70037_a(p_70037_1_);
--        this.field_94113_a = NonNullList.func_191197_a(this.func_70302_i_(), ItemStack.field_190927_a);
-+        this.field_94113_a = NonNullList.<ItemStack>func_191197_a(this.func_70302_i_(), ItemStack.field_190927_a);
+         super.readEntityFromNBT(compound);
+-        this.minecartContainerItems = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
++        this.minecartContainerItems = NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
  
-         if (p_70037_1_.func_150297_b("LootTable", 8))
+         if (compound.hasKey("LootTable", 8))
          {
 @@ -210,9 +200,9 @@
          }
      }
  
 -    @Override
-     public boolean func_184230_a(EntityPlayer p_184230_1_, EnumHand p_184230_2_)
+     public boolean processInitialInteract(EntityPlayer player, EnumHand hand)
      {
-+        if (super.func_184230_a(p_184230_1_, p_184230_2_)) return true;
-         if (!this.field_70170_p.field_72995_K)
++        if (super.processInitialInteract(player, hand)) return true;
+         if (!this.world.isRemote)
          {
-             p_184230_1_.func_71007_a(this);
+             player.displayGUIChest(this);
 @@ -221,7 +211,6 @@
          return true;
      }
  
 -    @Override
-     protected void func_94101_h()
+     protected void applyDrag()
      {
          float f = 0.98F;
 @@ -233,39 +222,33 @@
          }
  
-         this.field_70159_w *= (double)f;
--        this.field_70181_x *= 0.0;
-+        this.field_70181_x *= 0.0D;
-         this.field_70179_y *= (double)f;
+         this.motionX *= (double)f;
+-        this.motionY *= 0.0;
++        this.motionY *= 0.0D;
+         this.motionZ *= (double)f;
      }
  
 -    @Override
-     public int func_174887_a_(int p_174887_1_)
+     public int getField(int id)
      {
          return 0;
      }
  
 -    @Override
-     public void func_174885_b(int p_174885_1_, int p_174885_2_)
+     public void setField(int id, int value)
      {
      }
  
 -    @Override
-     public int func_174890_g()
+     public int getFieldCount()
      {
          return 0;
      }
  
 -    @Override
-     public boolean func_174893_q_()
+     public boolean isLocked()
      {
          return false;
      }
  
 -    @Override
-     public void func_174892_a(LockCode p_174892_1_)
+     public void setLockCode(LockCode code)
      {
      }
  
 -    @Override
-     public LockCode func_174891_i()
+     public LockCode getLockCode()
      {
-         return LockCode.field_180162_a;
+         return LockCode.EMPTY_CODE;
 @@ -288,21 +271,40 @@
-                 random = new Random(this.field_184291_d);
+                 random = new Random(this.lootTableSeed);
              }
  
--            LootContext.Builder lootcontext$builder = new LootContext.Builder((WorldServer)this.field_70170_p);
-+            LootContext.Builder lootcontext$builder = new LootContext.Builder((WorldServer)this.field_70170_p).func_186472_a(this); // Forge: add looted entity to LootContext
+-            LootContext.Builder lootcontext$builder = new LootContext.Builder((WorldServer)this.world);
++            LootContext.Builder lootcontext$builder = new LootContext.Builder((WorldServer)this.world).withLootedEntity(this); // Forge: add looted entity to LootContext
  
-             if (p_184288_1_ != null)
+             if (player != null)
              {
--                lootcontext$builder.func_186469_a(p_184288_1_.func_184817_da());
-+                lootcontext$builder.func_186469_a(p_184288_1_.func_184817_da()).func_186470_a(p_184288_1_); // Forge: add player to LootContext
+-                lootcontext$builder.withLuck(player.getLuck());
++                lootcontext$builder.withLuck(player.getLuck()).withPlayer(player); // Forge: add player to LootContext
              }
  
-             loottable.func_186460_a(this, random, lootcontext$builder.func_186471_a());
+             loottable.fillInventory(this, random, lootcontext$builder.build());
          }
      }
  
@@ -255,18 +255,18 @@
 +        return capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
 +    }
 +
-     public void func_174888_l()
+     public void clear()
      {
--        this.func_184288_f(null);
-+        this.func_184288_f((EntityPlayer)null);
-         this.field_94113_a.clear();
+-        this.addLoot(null);
++        this.addLoot((EntityPlayer)null);
+         this.minecartContainerItems.clear();
      }
  
 @@ -312,7 +314,6 @@
-         this.field_184291_d = p_184289_2_;
+         this.lootTableSeed = lootTableSeedIn;
      }
  
 -    @Override
-     public ResourceLocation func_184276_b()
+     public ResourceLocation getLootTable()
      {
-         return this.field_184290_c;
+         return this.lootTable;

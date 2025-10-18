@@ -1,14 +1,10 @@
 --- before/net/minecraft/block/state/BlockStateContainer.java
 +++ after/net/minecraft/block/state/BlockStateContainer.java
-@@ -57,12 +57,22 @@
+@@ -57,8 +57,18 @@
  
-     public BlockStateContainer(Block p_i45663_1_, IProperty<?>... p_i45663_2_)
+     public BlockStateContainer(Block blockIn, IProperty<?>... properties)
      {
--        this.field_177627_c = p_i45663_1_;
--        Map < String, IProperty<? >> map = Maps.newHashMap();
--
--        for (IProperty<?> iproperty : p_i45663_2_)
-+        this(p_i45663_1_, p_i45663_2_, null);
++        this(blockIn, properties, null);
 +    }
 +
 +    protected StateImplementation createState(Block block, ImmutableMap<IProperty<?>, Comparable<?>> properties, @Nullable ImmutableMap<net.minecraftforge.common.property.IUnlistedProperty<?>, java.util.Optional<?>> unlistedProperties)
@@ -18,44 +14,40 @@
 +
 +    protected BlockStateContainer(Block blockIn, IProperty<?>[] properties, ImmutableMap<net.minecraftforge.common.property.IUnlistedProperty<?>, java.util.Optional<?>> unlistedProperties)
 +    {
-+        this.field_177627_c = blockIn;
+         this.block = blockIn;
+-        Map < String, IProperty<? >> map = Maps.newHashMap();
 +        Map < String, IProperty<? >> map = Maps. < String, IProperty<? >> newHashMap();
-+
-+        for (IProperty<?> iproperty : properties)
-         {
--            func_185919_a(p_i45663_1_, iproperty);
-+            func_185919_a(blockIn, iproperty);
-             map.put(iproperty.func_177701_a(), iproperty);
-         }
  
-@@ -73,9 +83,7 @@
-         for (List < Comparable<? >> list : Cartesian.func_179321_a(this.func_177620_e()))
+         for (IProperty<?> iproperty : properties)
          {
-             Map < IProperty<?>, Comparable<? >> map1 = MapPopulator.func_179400_b(this.field_177624_d.values(), list);
+@@ -73,9 +83,7 @@
+         for (List < Comparable<? >> list : Cartesian.cartesianProduct(this.getAllowedValues()))
+         {
+             Map < IProperty<?>, Comparable<? >> map1 = MapPopulator.createMap(this.properties.values(), list);
 -            BlockStateContainer.StateImplementation blockstatecontainer$stateimplementation = new BlockStateContainer.StateImplementation(
--                p_i45663_1_, ImmutableMap.copyOf(map1)
+-                blockIn, ImmutableMap.copyOf(map1)
 -            );
 +            BlockStateContainer.StateImplementation blockstatecontainer$stateimplementation = createState(blockIn, ImmutableMap.copyOf(map1), unlistedProperties);
              map2.put(map1, blockstatecontainer$stateimplementation);
              list1.add(blockstatecontainer$stateimplementation);
          }
 @@ -170,6 +178,13 @@
-                 this.field_177239_a = p_i45660_1_;
-                 this.field_177237_b = p_i45660_2_;
+                 this.block = blockIn;
+                 this.properties = propertiesIn;
              }
 +            
 +            protected StateImplementation(Block blockIn, ImmutableMap<IProperty<?>, Comparable<?>> propertiesIn, ImmutableTable<IProperty<?>, Comparable<?>, IBlockState> propertyValueTable)
 +            {
-+                this.field_177239_a = blockIn;
-+                this.field_177237_b = propertiesIn;
-+                this.field_177238_c = propertyValueTable;
++                this.block = blockIn;
++                this.properties = propertiesIn;
++                this.propertyValueTable = propertyValueTable;
 +            }
  
              @Override
-             public Collection < IProperty<? >> func_177227_a()
+             public Collection < IProperty<? >> getPropertyKeys()
 @@ -528,5 +543,94 @@
              {
-                 return this.field_177239_a.func_193383_a(p_193401_1_, this, p_193401_2_, p_193401_3_);
+                 return this.block.getBlockFaceShape(worldIn, this, pos, facing);
              }
 -        }
 +
@@ -63,37 +55,37 @@
 +            @Override
 +            public ImmutableTable<IProperty<?>, Comparable<?>, IBlockState> getPropertyValueTable()
 +            {
-+                return field_177238_c;
++                return propertyValueTable;
 +            }
 +
 +            @Override
 +            public int getLightOpacity(IBlockAccess world, BlockPos pos)
 +            {
-+                return this.field_177239_a.getLightOpacity(this, world, pos);
++                return this.block.getLightOpacity(this, world, pos);
 +            }
 +
 +            @Override
 +            public int getLightValue(IBlockAccess world, BlockPos pos)
 +            {
-+                return this.field_177239_a.getLightValue(this, world, pos);
++                return this.block.getLightValue(this, world, pos);
 +            }
 +
 +            @Override
 +            public boolean isSideSolid(IBlockAccess world, BlockPos pos, EnumFacing side)
 +            {
-+                return this.field_177239_a.isSideSolid(this, world, pos, side);
++                return this.block.isSideSolid(this, world, pos, side);
 +            }
 +
 +            @Override
 +            public boolean doesSideBlockChestOpening(IBlockAccess world, BlockPos pos, EnumFacing side)
 +            {
-+                return this.field_177239_a.doesSideBlockChestOpening(this, world, pos, side);
++                return this.block.doesSideBlockChestOpening(this, world, pos, side);
 +            }
 +
 +            @Override
 +            public boolean doesSideBlockRendering(IBlockAccess world, BlockPos pos, EnumFacing side)
 +            {
-+                return this.field_177239_a.doesSideBlockRendering(this, world, pos, side);
++                return this.block.doesSideBlockRendering(this, world, pos, side);
 +            }
 +        }
 +

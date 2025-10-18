@@ -2,86 +2,86 @@
 +++ after/net/minecraft/client/gui/GuiSpectator.java
 @@ -74,9 +74,7 @@
      {
-         GlStateManager.func_179091_B();
-         GlStateManager.func_179147_l();
--        GlStateManager.func_187428_a(
+         GlStateManager.enableRescaleNormal();
+         GlStateManager.enableBlend();
+-        GlStateManager.tryBlendFuncSeparate(
 -            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 -        );
-+        GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-         GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, p_175258_2_);
-         this.field_175268_g.func_110434_K().func_110577_a(field_175267_f);
-         this.func_175174_a((float)(p_175258_3_ - 91), p_175258_4_, 0, 0, 182, 22);
++        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+         GlStateManager.color(1.0F, 1.0F, 1.0F, p_175258_2_);
+         this.mc.getTextureManager().bindTexture(WIDGETS);
+         this.drawTexturedModalRect((float)(p_175258_3_ - 91), p_175258_4_, 0, 0, 182, 22);
 @@ -88,7 +86,7 @@
  
-         RenderHelper.func_74520_c();
+         RenderHelper.enableGUIStandardItemLighting();
  
 -        for (int i = 0; i < 9; i++)
 +        for (int i = 0; i < 9; ++i)
          {
-             this.func_175266_a(i, p_175258_1_.func_78326_a() / 2 - 90 + i * 20 + 2, p_175258_4_ + 3.0F, p_175258_2_, p_175258_5_.func_178680_a(i));
+             this.renderSlot(i, p_175258_1_.getScaledWidth() / 2 - 90 + i * 20 + 2, p_175258_4_ + 3.0F, p_175258_2_, p_175258_5_.getObject(i));
          }
 @@ -111,15 +109,11 @@
-             GlStateManager.func_179131_c(f, f, f, p_175266_4_);
-             p_175266_5_.func_178663_a(f, i);
-             GlStateManager.func_179121_F();
--            String s = String.valueOf(GameSettings.func_74298_c(this.field_175268_g.field_71474_y.field_151456_ac[p_175266_1_].func_151463_i()));
-+            String s = String.valueOf(this.field_175268_g.field_71474_y.field_151456_ac[p_175266_1_].getDisplayName());
+             GlStateManager.color(f, f, f, p_175266_4_);
+             p_175266_5_.renderIcon(f, i);
+             GlStateManager.popMatrix();
+-            String s = String.valueOf(GameSettings.getKeyDisplayString(this.mc.gameSettings.keyBindsHotbar[p_175266_1_].getKeyCode()));
++            String s = String.valueOf(this.mc.gameSettings.keyBindsHotbar[p_175266_1_].getDisplayName());
  
-             if (i > 3 && p_175266_5_.func_178662_A_())
+             if (i > 3 && p_175266_5_.isEnabled())
              {
--                this.field_175268_g
--                .field_71466_p
--                .func_175063_a(
--                    s, (float)(p_175266_2_ + 19 - 2 - this.field_175268_g.field_71466_p.func_78256_a(s)), p_175266_3_ + 6.0F + 3.0F, 16777215 + (i << 24)
+-                this.mc
+-                .fontRenderer
+-                .drawStringWithShadow(
+-                    s, (float)(p_175266_2_ + 19 - 2 - this.mc.fontRenderer.getStringWidth(s)), p_175266_3_ + 6.0F + 3.0F, 16777215 + (i << 24)
 -                );
-+                this.field_175268_g.field_71466_p.func_175063_a(s, (float)(p_175266_2_ + 19 - 2 - this.field_175268_g.field_71466_p.func_78256_a(s)), p_175266_3_ + 6.0F + 3.0F, 16777215 + (i << 24));
++                this.mc.fontRenderer.drawStringWithShadow(s, (float)(p_175266_2_ + 19 - 2 - this.mc.fontRenderer.getStringWidth(s)), p_175266_3_ + 6.0F + 3.0F, 16777215 + (i << 24));
              }
          }
      }
 @@ -131,9 +125,7 @@
-         if (i > 3 && this.field_175271_i != null)
+         if (i > 3 && this.menu != null)
          {
-             ISpectatorMenuObject ispectatormenuobject = this.field_175271_i.func_178645_b();
--            String s = ispectatormenuobject == SpectatorMenu.field_178657_a
--                       ? this.field_175271_i.func_178650_c().func_178670_b().func_150254_d()
--                       : ispectatormenuobject.func_178664_z_().func_150254_d();
-+            String s = ispectatormenuobject == SpectatorMenu.field_178657_a ? this.field_175271_i.func_178650_c().func_178670_b().func_150254_d() : ispectatormenuobject.func_178664_z_().func_150254_d();
+             ISpectatorMenuObject ispectatormenuobject = this.menu.getSelectedItem();
+-            String s = ispectatormenuobject == SpectatorMenu.EMPTY_SLOT
+-                       ? this.menu.getSelectedCategory().getPrompt().getFormattedText()
+-                       : ispectatormenuobject.getSpectatorName().getFormattedText();
++            String s = ispectatormenuobject == SpectatorMenu.EMPTY_SLOT ? this.menu.getSelectedCategory().getPrompt().getFormattedText() : ispectatormenuobject.getSpectatorName().getFormattedText();
  
              if (s != null)
              {
 @@ -141,12 +133,7 @@
-                 int k = p_175263_1_.func_78328_b() - 35;
-                 GlStateManager.func_179094_E();
-                 GlStateManager.func_179147_l();
--                GlStateManager.func_187428_a(
+                 int k = p_175263_1_.getScaledHeight() - 35;
+                 GlStateManager.pushMatrix();
+                 GlStateManager.enableBlend();
+-                GlStateManager.tryBlendFuncSeparate(
 -                    GlStateManager.SourceFactor.SRC_ALPHA,
 -                    GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
 -                    GlStateManager.SourceFactor.ONE,
 -                    GlStateManager.DestFactor.ZERO
 -                );
-+                GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-                 this.field_175268_g.field_71466_p.func_175063_a(s, (float)j, (float)k, 16777215 + (i << 24));
-                 GlStateManager.func_179084_k();
-                 GlStateManager.func_179121_F();
++                GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                 this.mc.fontRenderer.drawStringWithShadow(s, (float)j, (float)k, 16777215 + (i << 24));
+                 GlStateManager.disableBlend();
+                 GlStateManager.popMatrix();
 @@ -154,7 +141,6 @@
          }
      }
  
 -    @Override
-     public void func_175257_a(SpectatorMenu p_175257_1_)
+     public void onSpectatorMenuClosed(SpectatorMenu menu)
      {
-         this.field_175271_i = null;
+         this.menu = null;
 @@ -168,13 +154,11 @@
  
-     public void func_175259_b(int p_175259_1_)
+     public void onMouseScroll(int p_175259_1_)
      {
--        int i = this.field_175271_i.func_178648_e() + p_175259_1_;
+-        int i = this.menu.getSelectedSlot() + p_175259_1_;
 +        int i;
  
 -        while (
--            i >= 0 && i <= 8 && (this.field_175271_i.func_178643_a(i) == SpectatorMenu.field_178657_a || !this.field_175271_i.func_178643_a(i).func_178662_A_())
+-            i >= 0 && i <= 8 && (this.menu.getItem(i) == SpectatorMenu.EMPTY_SLOT || !this.menu.getItem(i).isEnabled())
 -        )
-+        for (i = this.field_175271_i.func_178648_e() + p_175259_1_; i >= 0 && i <= 8 && (this.field_175271_i.func_178643_a(i) == SpectatorMenu.field_178657_a || !this.field_175271_i.func_178643_a(i).func_178662_A_()); i += p_175259_1_)
++        for (i = this.menu.getSelectedSlot() + p_175259_1_; i >= 0 && i <= 8 && (this.menu.getItem(i) == SpectatorMenu.EMPTY_SLOT || !this.menu.getItem(i).isEnabled()); i += p_175259_1_)
          {
 -            i += p_175259_1_;
 +            ;

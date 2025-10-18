@@ -9,55 +9,55 @@
  import net.minecraft.init.Blocks;
  import net.minecraft.nbt.NBTTagCompound;
 @@ -39,7 +40,6 @@
-         this.func_77637_a(CreativeTabs.field_78026_f);
+         this.setCreativeTab(CreativeTabs.MISC);
      }
  
 -    @Override
-     public String func_77653_i(ItemStack p_77653_1_)
+     public String getItemStackDisplayName(ItemStack stack)
      {
-         String s = ("" + I18n.func_74838_a(this.func_77658_a() + ".name")).trim();
+         String s = ("" + I18n.translateToLocal(this.getTranslationKey() + ".name")).trim();
 @@ -53,17 +53,7 @@
          return s;
      }
  
 -    @Override
--    public EnumActionResult func_180614_a(
--        EntityPlayer p_180614_1_,
--        World p_180614_2_,
--        BlockPos p_180614_3_,
--        EnumHand p_180614_4_,
--        EnumFacing p_180614_5_,
--        float p_180614_6_,
--        float p_180614_7_,
--        float p_180614_8_
+-    public EnumActionResult onItemUse(
+-        EntityPlayer player,
+-        World worldIn,
+-        BlockPos pos,
+-        EnumHand hand,
+-        EnumFacing facing,
+-        float hitX,
+-        float hitY,
+-        float hitZ
 -    )
-+    public EnumActionResult func_180614_a(EntityPlayer p_180614_1_, World p_180614_2_, BlockPos p_180614_3_, EnumHand p_180614_4_, EnumFacing p_180614_5_, float p_180614_6_, float p_180614_7_, float p_180614_8_)
++    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
      {
-         ItemStack itemstack = p_180614_1_.func_184586_b(p_180614_4_);
+         ItemStack itemstack = player.getHeldItem(hand);
  
 @@ -102,13 +92,7 @@
  
-             BlockPos blockpos = p_180614_3_.func_177972_a(p_180614_5_);
-             double d0 = this.func_190909_a(p_180614_2_, blockpos);
--            Entity entity = func_77840_a(
--                                p_180614_2_,
--                                func_190908_h(itemstack),
--                                (double)blockpos.func_177958_n() + 0.5,
--                                (double)blockpos.func_177956_o() + d0,
--                                (double)blockpos.func_177952_p() + 0.5
+             BlockPos blockpos = pos.offset(facing);
+             double d0 = this.getYOffset(worldIn, blockpos);
+-            Entity entity = spawnCreature(
+-                                worldIn,
+-                                getNamedIdFrom(itemstack),
+-                                (double)blockpos.getX() + 0.5,
+-                                (double)blockpos.getY() + d0,
+-                                (double)blockpos.getZ() + 0.5
 -                            );
-+            Entity entity = func_77840_a(p_180614_2_, func_190908_h(itemstack), (double)blockpos.func_177958_n() + 0.5D, (double)blockpos.func_177956_o() + d0, (double)blockpos.func_177952_p() + 0.5D);
++            Entity entity = spawnCreature(worldIn, getNamedIdFrom(itemstack), (double)blockpos.getX() + 0.5D, (double)blockpos.getY() + d0, (double)blockpos.getZ() + 0.5D);
  
              if (entity != null)
              {
 @@ -131,12 +115,12 @@
  
-     protected double func_190909_a(World p_190909_1_, BlockPos p_190909_2_)
+     protected double getYOffset(World p_190909_1_, BlockPos p_190909_2_)
      {
--        AxisAlignedBB axisalignedbb = new AxisAlignedBB(p_190909_2_).func_72321_a(0.0, -1.0, 0.0);
--        List<AxisAlignedBB> list = p_190909_1_.func_184144_a(null, axisalignedbb);
-+        AxisAlignedBB axisalignedbb = (new AxisAlignedBB(p_190909_2_)).func_72321_a(0.0D, -1.0D, 0.0D);
-+        List<AxisAlignedBB> list = p_190909_1_.func_184144_a((Entity)null, axisalignedbb);
+-        AxisAlignedBB axisalignedbb = new AxisAlignedBB(p_190909_2_).expand(0.0, -1.0, 0.0);
+-        List<AxisAlignedBB> list = p_190909_1_.getCollisionBoxes(null, axisalignedbb);
++        AxisAlignedBB axisalignedbb = (new AxisAlignedBB(p_190909_2_)).expand(0.0D, -1.0D, 0.0D);
++        List<AxisAlignedBB> list = p_190909_1_.getCollisionBoxes((Entity)null, axisalignedbb);
  
          if (list.isEmpty())
          {
@@ -68,12 +68,12 @@
          {
 @@ -161,9 +145,7 @@
  
-             if (nbttagcompound != null && nbttagcompound.func_150297_b("EntityTag", 10))
+             if (nbttagcompound != null && nbttagcompound.hasKey("EntityTag", 10))
              {
--                if (!p_185079_0_.field_72995_K
--                        && p_185079_3_.func_184213_bq()
--                        && (p_185079_1_ == null || !minecraftserver.func_184103_al().func_152596_g(p_185079_1_.func_146103_bH())))
-+                if (!p_185079_0_.field_72995_K && p_185079_3_.func_184213_bq() && (p_185079_1_ == null || !minecraftserver.func_184103_al().func_152596_g(p_185079_1_.func_146103_bH())))
+-                if (!entityWorld.isRemote
+-                        && targetEntity.ignoreItemEntityData()
+-                        && (player == null || !minecraftserver.getPlayerList().canSendCommands(player.getGameProfile())))
++                if (!entityWorld.isRemote && targetEntity.ignoreItemEntityData() && (player == null || !minecraftserver.getPlayerList().canSendCommands(player.getGameProfile())))
                  {
                      return;
                  }
@@ -82,11 +82,11 @@
      }
  
 -    @Override
-     public ActionResult<ItemStack> func_77659_a(World p_77659_1_, EntityPlayer p_77659_2_, EnumHand p_77659_3_)
+     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
      {
-         ItemStack itemstack = p_77659_2_.func_184586_b(p_77659_3_);
+         ItemStack itemstack = playerIn.getHeldItem(handIn);
  
-         if (p_77659_1_.field_72995_K)
+         if (worldIn.isRemote)
          {
 -            return new ActionResult<>(EnumActionResult.PASS, itemstack);
 +            return new ActionResult<ItemStack>(EnumActionResult.PASS, itemstack);
@@ -95,21 +95,21 @@
          {
 @@ -196,21 +177,15 @@
  
-                 if (!(p_77659_1_.func_180495_p(blockpos).func_177230_c() instanceof BlockLiquid))
+                 if (!(worldIn.getBlockState(blockpos).getBlock() instanceof BlockLiquid))
                  {
 -                    return new ActionResult<>(EnumActionResult.PASS, itemstack);
 +                    return new ActionResult<ItemStack>(EnumActionResult.PASS, itemstack);
                  }
-                 else if (p_77659_1_.func_175660_a(p_77659_2_, blockpos) && p_77659_2_.func_175151_a(blockpos, raytraceresult.field_178784_b, itemstack))
+                 else if (worldIn.isBlockModifiable(playerIn, blockpos) && playerIn.canPlayerEdit(blockpos, raytraceresult.sideHit, itemstack))
                  {
--                    Entity entity = func_77840_a(
--                                        p_77659_1_,
--                                        func_190908_h(itemstack),
--                                        (double)blockpos.func_177958_n() + 0.5,
--                                        (double)blockpos.func_177956_o() + 0.5,
--                                        (double)blockpos.func_177952_p() + 0.5
+-                    Entity entity = spawnCreature(
+-                                        worldIn,
+-                                        getNamedIdFrom(itemstack),
+-                                        (double)blockpos.getX() + 0.5,
+-                                        (double)blockpos.getY() + 0.5,
+-                                        (double)blockpos.getZ() + 0.5
 -                                    );
-+                    Entity entity = func_77840_a(p_77659_1_, func_190908_h(itemstack), (double)blockpos.func_177958_n() + 0.5D, (double)blockpos.func_177956_o() + 0.5D, (double)blockpos.func_177952_p() + 0.5D);
++                    Entity entity = spawnCreature(worldIn, getNamedIdFrom(itemstack), (double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.5D, (double)blockpos.getZ() + 0.5D);
  
                      if (entity == null)
                      {
@@ -121,7 +121,7 @@
 @@ -227,17 +202,17 @@
                          }
  
-                         p_77659_2_.func_71029_a(StatList.func_188057_b(this));
+                         playerIn.addStat(StatList.getObjectUseStats(this));
 -                        return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
 +                        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
                      }
@@ -146,23 +146,23 @@
 -            for (int i = 0; i < 1; i++)
 +            for (int i = 0; i < 1; ++i)
              {
-                 entity = EntityList.func_188429_b(p_77840_1_, p_77840_0_);
+                 entity = EntityList.createEntityByIDFromName(entityID, worldIn);
  
 @@ -259,7 +234,8 @@
-                     entity.func_70012_b(p_77840_2_, p_77840_4_, p_77840_6_, MathHelper.func_76142_g(p_77840_0_.field_73012_v.nextFloat() * 360.0F), 0.0F);
-                     entityliving.field_70759_as = entityliving.field_70177_z;
-                     entityliving.field_70761_aq = entityliving.field_70177_z;
--                    entityliving.func_180482_a(p_77840_0_.func_175649_E(new BlockPos(entityliving)), null);
-+                    if (net.minecraftforge.event.ForgeEventFactory.doSpecialSpawn(entityliving, p_77840_0_, (float) p_77840_2_, (float) p_77840_4_, (float) p_77840_6_, null)) return null;
-+                    entityliving.func_180482_a(p_77840_0_.func_175649_E(new BlockPos(entityliving)), (IEntityLivingData)null);
-                     p_77840_0_.func_72838_d(entity);
-                     entityliving.func_70642_aH();
+                     entity.setLocationAndAngles(x, y, z, MathHelper.wrapDegrees(worldIn.rand.nextFloat() * 360.0F), 0.0F);
+                     entityliving.rotationYawHead = entityliving.rotationYaw;
+                     entityliving.renderYawOffset = entityliving.rotationYaw;
+-                    entityliving.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityliving)), null);
++                    if (net.minecraftforge.event.ForgeEventFactory.doSpecialSpawn(entityliving, worldIn, (float) x, (float) y, (float) z, null)) return null;
++                    entityliving.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityliving)), (IEntityLivingData)null);
+                     worldIn.spawnEntity(entity);
+                     entityliving.playLivingSound();
                  }
 @@ -273,7 +249,6 @@
          }
      }
  
 -    @Override
-     public void func_150895_a(CreativeTabs p_150895_1_, NonNullList<ItemStack> p_150895_2_)
+     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
      {
-         if (this.func_194125_a(p_150895_1_))
+         if (this.isInCreativeTab(tab))

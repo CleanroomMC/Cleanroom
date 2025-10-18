@@ -4,121 +4,121 @@
  
  public abstract class AbstractSkeleton extends EntityMob implements IRangedAttackMob
  {
--    private static final DataParameter<Boolean> field_184728_b = EntityDataManager.func_187226_a(AbstractSkeleton.class, DataSerializers.field_187198_h);
--    private final EntityAIAttackRangedBow<AbstractSkeleton> field_85037_d = new EntityAIAttackRangedBow<>(this, 1.0, 20, 15.0F);
--    private final EntityAIAttackMelee field_85038_e = new EntityAIAttackMelee(this, 1.2, false)
-+    private static final DataParameter<Boolean> field_184728_b = EntityDataManager.<Boolean>func_187226_a(AbstractSkeleton.class, DataSerializers.field_187198_h);
-+    private final EntityAIAttackRangedBow<AbstractSkeleton> field_85037_d = new EntityAIAttackRangedBow<AbstractSkeleton>(this, 1.0D, 20, 15.0F);
-+    private final EntityAIAttackMelee field_85038_e = new EntityAIAttackMelee(this, 1.2D, false)
+-    private static final DataParameter<Boolean> SWINGING_ARMS = EntityDataManager.createKey(AbstractSkeleton.class, DataSerializers.BOOLEAN);
+-    private final EntityAIAttackRangedBow<AbstractSkeleton> aiArrowAttack = new EntityAIAttackRangedBow<>(this, 1.0, 20, 15.0F);
+-    private final EntityAIAttackMelee aiAttackOnCollide = new EntityAIAttackMelee(this, 1.2, false)
++    private static final DataParameter<Boolean> SWINGING_ARMS = EntityDataManager.<Boolean>createKey(AbstractSkeleton.class, DataSerializers.BOOLEAN);
++    private final EntityAIAttackRangedBow<AbstractSkeleton> aiArrowAttack = new EntityAIAttackRangedBow<AbstractSkeleton>(this, 1.0D, 20, 15.0F);
++    private final EntityAIAttackMelee aiAttackOnCollide = new EntityAIAttackMelee(this, 1.2D, false)
      {
 -        @Override
-         public void func_75251_c()
+         public void resetTask()
          {
-             super.func_75251_c();
-             AbstractSkeleton.this.func_184724_a(false);
+             super.resetTask();
+             AbstractSkeleton.this.setSwingingArms(false);
          }
 -        @Override
-         public void func_75249_e()
+         public void startExecuting()
          {
-             super.func_75249_e();
+             super.startExecuting();
 @@ -70,36 +68,32 @@
-         this.func_85036_m();
+         this.setCombatTask();
      }
  
 -    @Override
-     protected void func_184651_r()
+     protected void initEntityAI()
      {
-         this.field_70714_bg.func_75776_a(1, new EntityAISwimming(this));
-         this.field_70714_bg.func_75776_a(2, new EntityAIRestrictSun(this));
--        this.field_70714_bg.func_75776_a(3, new EntityAIFleeSun(this, 1.0));
--        this.field_70714_bg.func_75776_a(3, new EntityAIAvoidEntity<>(this, EntityWolf.class, 6.0F, 1.0, 1.2));
--        this.field_70714_bg.func_75776_a(5, new EntityAIWanderAvoidWater(this, 1.0));
-+        this.field_70714_bg.func_75776_a(3, new EntityAIFleeSun(this, 1.0D));
-+        this.field_70714_bg.func_75776_a(3, new EntityAIAvoidEntity(this, EntityWolf.class, 6.0F, 1.0D, 1.2D));
-+        this.field_70714_bg.func_75776_a(5, new EntityAIWanderAvoidWater(this, 1.0D));
-         this.field_70714_bg.func_75776_a(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-         this.field_70714_bg.func_75776_a(6, new EntityAILookIdle(this));
--        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, false));
--        this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
--        this.field_70715_bh.func_75776_a(3, new EntityAINearestAttackableTarget<>(this, EntityIronGolem.class, true));
-+        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, false, new Class[0]));
-+        this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
-+        this.field_70715_bh.func_75776_a(3, new EntityAINearestAttackableTarget(this, EntityIronGolem.class, true));
+         this.tasks.addTask(1, new EntityAISwimming(this));
+         this.tasks.addTask(2, new EntityAIRestrictSun(this));
+-        this.tasks.addTask(3, new EntityAIFleeSun(this, 1.0));
+-        this.tasks.addTask(3, new EntityAIAvoidEntity<>(this, EntityWolf.class, 6.0F, 1.0, 1.2));
+-        this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 1.0));
++        this.tasks.addTask(3, new EntityAIFleeSun(this, 1.0D));
++        this.tasks.addTask(3, new EntityAIAvoidEntity(this, EntityWolf.class, 6.0F, 1.0D, 1.2D));
++        this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 1.0D));
+         this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+         this.tasks.addTask(6, new EntityAILookIdle(this));
+-        this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
+-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
+-        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, EntityIronGolem.class, true));
++        this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false, new Class[0]));
++        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
++        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityIronGolem.class, true));
      }
  
 -    @Override
-     protected void func_110147_ax()
+     protected void applyEntityAttributes()
      {
-         super.func_110147_ax();
--        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.25);
-+        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.25D);
+         super.applyEntityAttributes();
+-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
++        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.25D);
      }
  
 -    @Override
-     protected void func_70088_a()
+     protected void entityInit()
      {
-         super.func_70088_a();
--        this.field_70180_af.func_187214_a(field_184728_b, false);
-+        this.field_70180_af.func_187214_a(field_184728_b, Boolean.valueOf(false));
+         super.entityInit();
+-        this.dataManager.register(SWINGING_ARMS, false);
++        this.dataManager.register(SWINGING_ARMS, Boolean.valueOf(false));
      }
  
 -    @Override
-     protected void func_180429_a(BlockPos p_180429_1_, Block p_180429_2_)
+     protected void playStepSound(BlockPos pos, Block blockIn)
      {
-         this.func_184185_a(this.func_190727_o(), 0.15F, 1.0F);
+         this.playSound(this.getStepSound(), 0.15F, 1.0F);
 @@ -107,21 +101,17 @@
  
-     protected abstract SoundEvent func_190727_o();
+     protected abstract SoundEvent getStepSound();
  
 -    @Override
-     public EnumCreatureAttribute func_70668_bt()
+     public EnumCreatureAttribute getCreatureAttribute()
      {
          return EnumCreatureAttribute.UNDEAD;
      }
  
 -    @Override
-     public void func_70636_d()
+     public void onLivingUpdate()
      {
-         if (this.field_70170_p.func_72935_r() && !this.field_70170_p.field_72995_K)
+         if (this.world.isDaytime() && !this.world.isRemote)
          {
-             float f = this.func_70013_c();
--            BlockPos blockpos = this.func_184187_bx() instanceof EntityBoat
--                                ? new BlockPos(this.field_70165_t, (double)Math.round(this.field_70163_u), this.field_70161_v).func_177984_a()
--                                : new BlockPos(this.field_70165_t, (double)Math.round(this.field_70163_u), this.field_70161_v);
-+            BlockPos blockpos = this.func_184187_bx() instanceof EntityBoat ? (new BlockPos(this.field_70165_t, (double)Math.round(this.field_70163_u), this.field_70161_v)).func_177984_a() : new BlockPos(this.field_70165_t, (double)Math.round(this.field_70163_u), this.field_70161_v);
+             float f = this.getBrightness();
+-            BlockPos blockpos = this.getRidingEntity() instanceof EntityBoat
+-                                ? new BlockPos(this.posX, (double)Math.round(this.posY), this.posZ).up()
+-                                : new BlockPos(this.posX, (double)Math.round(this.posY), this.posZ);
++            BlockPos blockpos = this.getRidingEntity() instanceof EntityBoat ? (new BlockPos(this.posX, (double)Math.round(this.posY), this.posZ)).up() : new BlockPos(this.posX, (double)Math.round(this.posY), this.posZ);
  
-             if (f > 0.5F && this.field_70146_Z.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && this.field_70170_p.func_175678_i(blockpos))
+             if (f > 0.5F && this.rand.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && this.world.canSeeSky(blockpos))
              {
 @@ -154,7 +144,6 @@
-         super.func_70636_d();
+         super.onLivingUpdate();
      }
  
 -    @Override
-     public void func_70098_U()
+     public void updateRidden()
      {
-         super.func_70098_U();
+         super.updateRidden();
 @@ -166,7 +155,6 @@
          }
      }
  
 -    @Override
-     protected void func_180481_a(DifficultyInstance p_180481_1_)
+     protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty)
      {
-         super.func_180481_a(p_180481_1_);
+         super.setEquipmentBasedOnDifficulty(difficulty);
 @@ -174,7 +162,6 @@
      }
  
      @Nullable
 -    @Override
-     public IEntityLivingData func_180482_a(DifficultyInstance p_180482_1_, @Nullable IEntityLivingData p_180482_2_)
+     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
      {
-         p_180482_2_ = super.func_180482_a(p_180482_1_, p_180482_2_);
+         livingdata = super.onInitialSpawn(difficulty, livingdata);
 @@ -205,7 +192,7 @@
-             this.field_70714_bg.func_85156_a(this.field_85037_d);
-             ItemStack itemstack = this.func_184614_ca();
+             this.tasks.removeTask(this.aiArrowAttack);
+             ItemStack itemstack = this.getHeldItemMainhand();
  
--            if (itemstack.func_77973_b() == Items.field_151031_f)
-+            if (itemstack.func_77973_b() instanceof net.minecraft.item.ItemBow)
+-            if (itemstack.getItem() == Items.BOW)
++            if (itemstack.getItem() instanceof net.minecraft.item.ItemBow)
              {
                  int i = 20;
  
@@ -127,63 +127,63 @@
      }
  
 -    @Override
-     public void func_82196_d(EntityLivingBase p_82196_1_, float p_82196_2_)
+     public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor)
      {
-         EntityArrow entityarrow = this.func_190726_a(p_82196_2_);
-+        if (this.func_184614_ca().func_77973_b() instanceof net.minecraft.item.ItemBow)
-+            entityarrow = ((net.minecraft.item.ItemBow) this.func_184614_ca().func_77973_b()).customizeArrow(entityarrow);
-         double d0 = p_82196_1_.field_70165_t - this.field_70165_t;
-         double d1 = p_82196_1_.func_174813_aQ().field_72338_b + (double)(p_82196_1_.field_70131_O / 3.0F) - entityarrow.field_70163_u;
-         double d2 = p_82196_1_.field_70161_v - this.field_70161_v;
-         double d3 = (double)MathHelper.func_76133_a(d0 * d0 + d2 * d2);
--        entityarrow.func_70186_c(d0, d1 + d3 * 0.2F, d2, 1.6F, (float)(14 - this.field_70170_p.func_175659_aa().func_151525_a() * 4));
-+        entityarrow.func_70186_c(d0, d1 + d3 * 0.20000000298023224D, d2, 1.6F, (float)(14 - this.field_70170_p.func_175659_aa().func_151525_a() * 4));
-         this.func_184185_a(SoundEvents.field_187866_fi, 1.0F, 1.0F / (this.func_70681_au().nextFloat() * 0.4F + 0.8F));
-         this.field_70170_p.func_72838_d(entityarrow);
+         EntityArrow entityarrow = this.getArrow(distanceFactor);
++        if (this.getHeldItemMainhand().getItem() instanceof net.minecraft.item.ItemBow)
++            entityarrow = ((net.minecraft.item.ItemBow) this.getHeldItemMainhand().getItem()).customizeArrow(entityarrow);
+         double d0 = target.posX - this.posX;
+         double d1 = target.getEntityBoundingBox().minY + (double)(target.height / 3.0F) - entityarrow.posY;
+         double d2 = target.posZ - this.posZ;
+         double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
+-        entityarrow.shoot(d0, d1 + d3 * 0.2F, d2, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
++        entityarrow.shoot(d0, d1 + d3 * 0.20000000298023224D, d2, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
+         this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+         this.world.spawnEntity(entityarrow);
      }
 @@ -244,14 +232,12 @@
          return entitytippedarrow;
      }
  
 -    @Override
-     public void func_70037_a(NBTTagCompound p_70037_1_)
+     public void readEntityFromNBT(NBTTagCompound compound)
      {
-         super.func_70037_a(p_70037_1_);
-         this.func_85036_m();
+         super.readEntityFromNBT(compound);
+         this.setCombatTask();
      }
  
 -    @Override
-     public void func_184201_a(EntityEquipmentSlot p_184201_1_, ItemStack p_184201_2_)
+     public void setItemStackToSlot(EntityEquipmentSlot slotIn, ItemStack stack)
      {
-         super.func_184201_a(p_184201_1_, p_184201_2_);
+         super.setItemStackToSlot(slotIn, stack);
 @@ -262,27 +248,24 @@
          }
      }
  
 -    @Override
-     public float func_70047_e()
+     public float getEyeHeight()
      {
          return 1.74F;
      }
  
 -    @Override
-     public double func_70033_W()
+     public double getYOffset()
      {
 -        return -0.6;
 +        return -0.6D;
      }
  
      @SideOnly(Side.CLIENT)
-     public boolean func_184725_db()
+     public boolean isSwingingArms()
      {
--        return this.field_70180_af.func_187225_a(field_184728_b);
-+        return ((Boolean)this.field_70180_af.func_187225_a(field_184728_b)).booleanValue();
+-        return this.dataManager.get(SWINGING_ARMS);
++        return ((Boolean)this.dataManager.get(SWINGING_ARMS)).booleanValue();
      }
  
 -    @Override
-     public void func_184724_a(boolean p_184724_1_)
+     public void setSwingingArms(boolean swingingArms)
      {
--        this.field_70180_af.func_187227_b(field_184728_b, p_184724_1_);
-+        this.field_70180_af.func_187227_b(field_184728_b, Boolean.valueOf(p_184724_1_));
+-        this.dataManager.set(SWINGING_ARMS, swingingArms);
++        this.dataManager.set(SWINGING_ARMS, Boolean.valueOf(swingingArms));
      }
  }

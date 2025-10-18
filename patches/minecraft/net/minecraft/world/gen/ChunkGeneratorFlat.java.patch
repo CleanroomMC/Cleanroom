@@ -1,14 +1,14 @@
 --- before/net/minecraft/world/gen/ChunkGeneratorFlat.java
 +++ after/net/minecraft/world/gen/ChunkGeneratorFlat.java
 @@ -30,7 +30,7 @@
-     private final Random field_73161_b;
-     private final IBlockState[] field_82700_c = new IBlockState[256];
-     private final FlatGeneratorInfo field_82699_e;
--    private final Map<String, MapGenStructure> field_82696_f = new HashMap<>();
-+    private final Map<String, MapGenStructure> field_82696_f = new HashMap<String, MapGenStructure>();
-     private final boolean field_82697_g;
-     private final boolean field_82702_h;
-     private WorldGenLakes field_82703_i;
+     private final Random random;
+     private final IBlockState[] cachedBlockIDs = new IBlockState[256];
+     private final FlatGeneratorInfo flatWorldGenInfo;
+-    private final Map<String, MapGenStructure> structureGenerators = new HashMap<>();
++    private final Map<String, MapGenStructure> structureGenerators = new HashMap<String, MapGenStructure>();
+     private final boolean hasDecoration;
+     private final boolean hasDungeons;
+     private WorldGenLakes waterLakeGenerator;
 @@ -48,7 +48,7 @@
  
              if (map.containsKey("village"))
@@ -20,32 +20,32 @@
                  {
 @@ -96,7 +96,7 @@
  
-         for (FlatLayerInfo flatlayerinfo : this.field_82699_e.func_82650_c())
+         for (FlatLayerInfo flatlayerinfo : this.flatWorldGenInfo.getFlatLayers())
          {
--            for (int i = flatlayerinfo.func_82656_d(); i < flatlayerinfo.func_82656_d() + flatlayerinfo.func_82657_a(); i++)
-+            for (int i = flatlayerinfo.func_82656_d(); i < flatlayerinfo.func_82656_d() + flatlayerinfo.func_82657_a(); ++i)
+-            for (int i = flatlayerinfo.getMinY(); i < flatlayerinfo.getMinY() + flatlayerinfo.getLayerCount(); i++)
++            for (int i = flatlayerinfo.getMinY(); i < flatlayerinfo.getMinY() + flatlayerinfo.getLayerCount(); ++i)
              {
-                 IBlockState iblockstate = flatlayerinfo.func_175900_c();
+                 IBlockState iblockstate = flatlayerinfo.getLayerMaterial();
  
 @@ -119,25 +119,22 @@
          }
  
-         p_i2004_1_.func_181544_b(j);
--        this.field_82697_g = flag && this.field_82699_e.func_82648_a() != Biome.func_185362_a(Biomes.field_185440_P)
+         worldIn.setSeaLevel(j);
+-        this.hasDecoration = flag && this.flatWorldGenInfo.getBiome() != Biome.getIdForBiome(Biomes.VOID)
 -                             ? false
--                             : this.field_82699_e.func_82644_b().containsKey("decoration");
-+        this.field_82697_g = flag && this.field_82699_e.func_82648_a() != Biome.func_185362_a(Biomes.field_185440_P) ? false : this.field_82699_e.func_82644_b().containsKey("decoration");
+-                             : this.flatWorldGenInfo.getWorldFeatures().containsKey("decoration");
++        this.hasDecoration = flag && this.flatWorldGenInfo.getBiome() != Biome.getIdForBiome(Biomes.VOID) ? false : this.flatWorldGenInfo.getWorldFeatures().containsKey("decoration");
      }
  
 -    @Override
-     public Chunk func_185932_a(int p_185932_1_, int p_185932_2_)
+     public Chunk generateChunk(int x, int z)
      {
          ChunkPrimer chunkprimer = new ChunkPrimer();
  
--        for (int i = 0; i < this.field_82700_c.length; i++)
-+        for (int i = 0; i < this.field_82700_c.length; ++i)
+-        for (int i = 0; i < this.cachedBlockIDs.length; i++)
++        for (int i = 0; i < this.cachedBlockIDs.length; ++i)
          {
-             IBlockState iblockstate = this.field_82700_c[i];
+             IBlockState iblockstate = this.cachedBlockIDs[i];
  
              if (iblockstate != null)
              {
@@ -55,124 +55,124 @@
 -                    for (int k = 0; k < 16; k++)
 +                    for (int k = 0; k < 16; ++k)
                      {
-                         chunkprimer.func_177855_a(j, i, k, iblockstate);
+                         chunkprimer.setBlockState(j, i, k, iblockstate);
                      }
 @@ -151,10 +148,10 @@
          }
  
-         Chunk chunk = new Chunk(this.field_73163_a, chunkprimer, p_185932_1_, p_185932_2_);
--        Biome[] abiome = this.field_73163_a.func_72959_q().func_76933_b(null, p_185932_1_ * 16, p_185932_2_ * 16, 16, 16);
-+        Biome[] abiome = this.field_73163_a.func_72959_q().func_76933_b((Biome[])null, p_185932_1_ * 16, p_185932_2_ * 16, 16, 16);
-         byte[] abyte = chunk.func_76605_m();
+         Chunk chunk = new Chunk(this.world, chunkprimer, x, z);
+-        Biome[] abiome = this.world.getBiomeProvider().getBiomes(null, x * 16, z * 16, 16, 16);
++        Biome[] abiome = this.world.getBiomeProvider().getBiomes((Biome[])null, x * 16, z * 16, 16, 16);
+         byte[] abyte = chunk.getBiomeArray();
  
 -        for (int l = 0; l < abyte.length; l++)
 +        for (int l = 0; l < abyte.length; ++l)
          {
-             abyte[l] = (byte)Biome.func_185362_a(abiome[l]);
+             abyte[l] = (byte)Biome.getIdForBiome(abiome[l]);
          }
 @@ -163,9 +160,9 @@
          return chunk;
      }
  
 -    @Override
-     public void func_185931_b(int p_185931_1_, int p_185931_2_)
+     public void populate(int x, int z)
      {
-+        net.minecraft.block.BlockFalling.field_149832_M = true;
-         int i = p_185931_1_ * 16;
-         int j = p_185931_2_ * 16;
++        net.minecraft.block.BlockFalling.fallInstantly = true;
+         int i = x * 16;
+         int j = z * 16;
          BlockPos blockpos = new BlockPos(i, 0, j);
 @@ -177,6 +174,8 @@
-         this.field_73161_b.setSeed((long)p_185931_1_ * k + (long)p_185931_2_ * l ^ this.field_73163_a.func_72905_C());
-         ChunkPos chunkpos = new ChunkPos(p_185931_1_, p_185931_2_);
+         this.random.setSeed((long)x * k + (long)z * l ^ this.world.getSeed());
+         ChunkPos chunkpos = new ChunkPos(x, z);
  
-+        net.minecraftforge.event.ForgeEventFactory.onChunkPopulate(true, this, this.field_73163_a, this.field_73161_b, p_185931_1_, p_185931_2_, flag);
++        net.minecraftforge.event.ForgeEventFactory.onChunkPopulate(true, this, this.world, this.random, x, z, flag);
 +
-         for (MapGenStructure mapgenstructure : this.field_82696_f.values())
+         for (MapGenStructure mapgenstructure : this.structureGenerators.values())
          {
-             boolean flag1 = mapgenstructure.func_175794_a(this.field_73163_a, this.field_73161_b, chunkpos);
+             boolean flag1 = mapgenstructure.generateStructure(this.world, this.random, chunkpos);
 @@ -189,19 +188,12 @@
  
-         if (this.field_82703_i != null && !flag && this.field_73161_b.nextInt(4) == 0)
+         if (this.waterLakeGenerator != null && !flag && this.random.nextInt(4) == 0)
          {
--            this.field_82703_i
--            .func_180709_b(
--                this.field_73163_a,
--                this.field_73161_b,
--                blockpos.func_177982_a(this.field_73161_b.nextInt(16) + 8, this.field_73161_b.nextInt(256), this.field_73161_b.nextInt(16) + 8)
+-            this.waterLakeGenerator
+-            .generate(
+-                this.world,
+-                this.random,
+-                blockpos.add(this.random.nextInt(16) + 8, this.random.nextInt(256), this.random.nextInt(16) + 8)
 -            );
-+            this.field_82703_i.func_180709_b(this.field_73163_a, this.field_73161_b, blockpos.func_177982_a(this.field_73161_b.nextInt(16) + 8, this.field_73161_b.nextInt(256), this.field_73161_b.nextInt(16) + 8));
++            this.waterLakeGenerator.generate(this.world, this.random, blockpos.add(this.random.nextInt(16) + 8, this.random.nextInt(256), this.random.nextInt(16) + 8));
          }
  
-         if (this.field_82701_j != null && !flag && this.field_73161_b.nextInt(8) == 0)
+         if (this.lavaLakeGenerator != null && !flag && this.random.nextInt(8) == 0)
          {
--            BlockPos blockpos1 = blockpos.func_177982_a(
--                                     this.field_73161_b.nextInt(16) + 8, this.field_73161_b.nextInt(this.field_73161_b.nextInt(248) + 8), this.field_73161_b.nextInt(16) + 8
+-            BlockPos blockpos1 = blockpos.add(
+-                                     this.random.nextInt(16) + 8, this.random.nextInt(this.random.nextInt(248) + 8), this.random.nextInt(16) + 8
 -                                 );
-+            BlockPos blockpos1 = blockpos.func_177982_a(this.field_73161_b.nextInt(16) + 8, this.field_73161_b.nextInt(this.field_73161_b.nextInt(248) + 8), this.field_73161_b.nextInt(16) + 8);
++            BlockPos blockpos1 = blockpos.add(this.random.nextInt(16) + 8, this.random.nextInt(this.random.nextInt(248) + 8), this.random.nextInt(16) + 8);
  
-             if (blockpos1.func_177956_o() < this.field_73163_a.func_181545_F() || this.field_73161_b.nextInt(10) == 0)
+             if (blockpos1.getY() < this.world.getSeaLevel() || this.random.nextInt(10) == 0)
              {
 @@ -211,14 +203,9 @@
  
-         if (this.field_82702_h)
+         if (this.hasDungeons)
          {
 -            for (int i1 = 0; i1 < 8; i1++)
 +            for (int i1 = 0; i1 < 8; ++i1)
              {
 -                new WorldGenDungeons()
--                .func_180709_b(
--                    this.field_73163_a,
--                    this.field_73161_b,
--                    blockpos.func_177982_a(this.field_73161_b.nextInt(16) + 8, this.field_73161_b.nextInt(256), this.field_73161_b.nextInt(16) + 8)
+-                .generate(
+-                    this.world,
+-                    this.random,
+-                    blockpos.add(this.random.nextInt(16) + 8, this.random.nextInt(256), this.random.nextInt(16) + 8)
 -                );
-+                (new WorldGenDungeons()).func_180709_b(this.field_73163_a, this.field_73161_b, blockpos.func_177982_a(this.field_73161_b.nextInt(16) + 8, this.field_73161_b.nextInt(256), this.field_73161_b.nextInt(16) + 8));
++                (new WorldGenDungeons()).generate(this.world, this.random, blockpos.add(this.random.nextInt(16) + 8, this.random.nextInt(256), this.random.nextInt(16) + 8));
              }
          }
  
 @@ -226,15 +213,16 @@
          {
-             biome.func_180624_a(this.field_73163_a, this.field_73161_b, blockpos);
+             biome.decorate(this.world, this.random, blockpos);
          }
 +
-+        net.minecraftforge.event.ForgeEventFactory.onChunkPopulate(false, this, this.field_73163_a, this.field_73161_b, p_185931_1_, p_185931_2_, flag);
-+        net.minecraft.block.BlockFalling.field_149832_M = false;
++        net.minecraftforge.event.ForgeEventFactory.onChunkPopulate(false, this, this.world, this.random, x, z, flag);
++        net.minecraft.block.BlockFalling.fallInstantly = false;
      }
  
 -    @Override
-     public boolean func_185933_a(Chunk p_185933_1_, int p_185933_2_, int p_185933_3_)
+     public boolean generateStructures(Chunk chunkIn, int x, int z)
      {
          return false;
      }
  
 -    @Override
-     public List<Biome.SpawnListEntry> func_177458_a(EnumCreatureType p_177458_1_, BlockPos p_177458_2_)
+     public List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos)
      {
-         Biome biome = this.field_73163_a.func_180494_b(p_177458_2_);
+         Biome biome = this.world.getBiome(pos);
 @@ -242,26 +230,23 @@
      }
  
      @Nullable
 -    @Override
-     public BlockPos func_180513_a(World p_180513_1_, String p_180513_2_, BlockPos p_180513_3_, boolean p_180513_4_)
+     public BlockPos getNearestStructurePos(World worldIn, String structureName, BlockPos position, boolean findUnexplored)
      {
-         MapGenStructure mapgenstructure = this.field_82696_f.get(p_180513_2_);
-         return mapgenstructure != null ? mapgenstructure.func_180706_b(p_180513_1_, p_180513_3_, p_180513_4_) : null;
+         MapGenStructure mapgenstructure = this.structureGenerators.get(structureName);
+         return mapgenstructure != null ? mapgenstructure.getNearestStructurePos(worldIn, position, findUnexplored) : null;
      }
  
 -    @Override
-     public boolean func_193414_a(World p_193414_1_, String p_193414_2_, BlockPos p_193414_3_)
+     public boolean isInsideStructure(World worldIn, String structureName, BlockPos pos)
      {
-         MapGenStructure mapgenstructure = this.field_82696_f.get(p_193414_2_);
-         return mapgenstructure != null ? mapgenstructure.func_175795_b(p_193414_3_) : false;
+         MapGenStructure mapgenstructure = this.structureGenerators.get(structureName);
+         return mapgenstructure != null ? mapgenstructure.isInsideStructure(pos) : false;
      }
  
 -    @Override
-     public void func_180514_a(Chunk p_180514_1_, int p_180514_2_, int p_180514_3_)
+     public void recreateStructures(Chunk chunkIn, int x, int z)
      {
-         for (MapGenStructure mapgenstructure : this.field_82696_f.values())
+         for (MapGenStructure mapgenstructure : this.structureGenerators.values())
          {
--            mapgenstructure.func_186125_a(this.field_73163_a, p_180514_2_, p_180514_3_, null);
-+            mapgenstructure.func_186125_a(this.field_73163_a, p_180514_2_, p_180514_3_, (ChunkPrimer)null);
+-            mapgenstructure.generate(this.world, x, z, null);
++            mapgenstructure.generate(this.world, x, z, (ChunkPrimer)null);
          }
      }
  }

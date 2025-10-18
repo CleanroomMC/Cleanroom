@@ -11,9 +11,9 @@
 -@SideOnly(Side.CLIENT)
  public class ModelResourceLocation extends ResourceLocation
  {
-     private final String field_177519_c;
+     private final String variant;
 @@ -57,7 +54,6 @@
-         return this.field_177519_c;
+         return this.variant;
      }
  
 -    @Override
@@ -27,10 +27,10 @@
 -    @Override
      public int hashCode()
      {
-         return 31 * super.hashCode() + this.field_177519_c.hashCode();
+         return 31 * super.hashCode() + this.variant.hashCode();
      }
  
 -    @Override
      public String toString()
      {
-         return super.toString() + '#' + this.field_177519_c;
+         return super.toString() + '#' + this.variant;

@@ -4,95 +4,95 @@
  
  public class WorldGenMegaPineTree extends WorldGenHugeTrees
  {
--    private static final IBlockState field_181633_e = Blocks.field_150364_r
--                .func_176223_P()
--                .func_177226_a(BlockOldLog.field_176301_b, BlockPlanks.EnumType.SPRUCE);
--    private static final IBlockState field_181634_f = Blocks.field_150362_t
--                .func_176223_P()
--                .func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.SPRUCE)
--                .func_177226_a(BlockLeaves.field_176236_b, false);
-+    private static final IBlockState field_181633_e = Blocks.field_150364_r.func_176223_P().func_177226_a(BlockOldLog.field_176301_b, BlockPlanks.EnumType.SPRUCE);
-+    private static final IBlockState field_181634_f = Blocks.field_150362_t.func_176223_P().func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.SPRUCE).func_177226_a(BlockLeaves.field_176236_b, Boolean.valueOf(false));
-     private static final IBlockState field_181635_g = Blocks.field_150346_d.func_176223_P().func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.PODZOL);
-     private final boolean field_150542_e;
+-    private static final IBlockState TRUNK = Blocks.LOG
+-                .getDefaultState()
+-                .withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.SPRUCE);
+-    private static final IBlockState LEAF = Blocks.LEAVES
+-                .getDefaultState()
+-                .withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.SPRUCE)
+-                .withProperty(BlockLeaves.CHECK_DECAY, false);
++    private static final IBlockState TRUNK = Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.SPRUCE);
++    private static final IBlockState LEAF = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.SPRUCE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
+     private static final IBlockState PODZOL = Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.PODZOL);
+     private final boolean useBaseHeight;
  
 @@ -32,7 +27,6 @@
-         this.field_150542_e = p_i45457_2_;
+         this.useBaseHeight = p_i45457_2_;
      }
  
 -    @Override
-     public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
+     public boolean generate(World worldIn, Random rand, BlockPos position)
      {
-         int i = this.func_150533_a(p_180709_2_);
+         int i = this.getHeight(rand);
 @@ -45,34 +39,27 @@
          {
-             this.func_150541_c(p_180709_1_, p_180709_3_.func_177958_n(), p_180709_3_.func_177952_p(), p_180709_3_.func_177956_o() + i, 0, p_180709_2_);
+             this.createCrown(worldIn, position.getX(), position.getZ(), position.getY() + i, 0, rand);
  
 -            for (int j = 0; j < i; j++)
 +            for (int j = 0; j < i; ++j)
              {
--                IBlockState iblockstate = p_180709_1_.func_180495_p(p_180709_3_.func_177981_b(j));
+-                IBlockState iblockstate = worldIn.getBlockState(position.up(j));
 -
--                if (iblockstate.func_185904_a() == Material.field_151579_a || iblockstate.func_185904_a() == Material.field_151584_j)
-+                if (isAirLeaves(p_180709_1_, p_180709_3_.func_177981_b(j)))
+-                if (iblockstate.getMaterial() == Material.AIR || iblockstate.getMaterial() == Material.LEAVES)
++                if (isAirLeaves(worldIn, position.up(j)))
                  {
-                     this.func_175903_a(p_180709_1_, p_180709_3_.func_177981_b(j), this.field_76520_b);
+                     this.setBlockAndNotifyAdequately(worldIn, position.up(j), this.woodMetadata);
                  }
  
                  if (j < i - 1)
                  {
--                    iblockstate = p_180709_1_.func_180495_p(p_180709_3_.func_177982_a(1, j, 0));
+-                    iblockstate = worldIn.getBlockState(position.add(1, j, 0));
 -
--                    if (iblockstate.func_185904_a() == Material.field_151579_a || iblockstate.func_185904_a() == Material.field_151584_j)
-+                    if (isAirLeaves(p_180709_1_, p_180709_3_.func_177982_a(1, j, 0)))
+-                    if (iblockstate.getMaterial() == Material.AIR || iblockstate.getMaterial() == Material.LEAVES)
++                    if (isAirLeaves(worldIn, position.add(1, j, 0)))
                      {
-                         this.func_175903_a(p_180709_1_, p_180709_3_.func_177982_a(1, j, 0), this.field_76520_b);
+                         this.setBlockAndNotifyAdequately(worldIn, position.add(1, j, 0), this.woodMetadata);
                      }
  
--                    iblockstate = p_180709_1_.func_180495_p(p_180709_3_.func_177982_a(1, j, 1));
+-                    iblockstate = worldIn.getBlockState(position.add(1, j, 1));
 -
--                    if (iblockstate.func_185904_a() == Material.field_151579_a || iblockstate.func_185904_a() == Material.field_151584_j)
-+                    if (isAirLeaves(p_180709_1_, p_180709_3_.func_177982_a(1, j, 1)))
+-                    if (iblockstate.getMaterial() == Material.AIR || iblockstate.getMaterial() == Material.LEAVES)
++                    if (isAirLeaves(worldIn, position.add(1, j, 1)))
                      {
-                         this.func_175903_a(p_180709_1_, p_180709_3_.func_177982_a(1, j, 1), this.field_76520_b);
+                         this.setBlockAndNotifyAdequately(worldIn, position.add(1, j, 1), this.woodMetadata);
                      }
  
--                    iblockstate = p_180709_1_.func_180495_p(p_180709_3_.func_177982_a(0, j, 1));
+-                    iblockstate = worldIn.getBlockState(position.add(0, j, 1));
  
--                    if (iblockstate.func_185904_a() == Material.field_151579_a || iblockstate.func_185904_a() == Material.field_151584_j)
-+                    if (isAirLeaves(p_180709_1_, p_180709_3_.func_177982_a(0, j, 1)))
+-                    if (iblockstate.getMaterial() == Material.AIR || iblockstate.getMaterial() == Material.LEAVES)
++                    if (isAirLeaves(worldIn, position.add(0, j, 1)))
                      {
-                         this.func_175903_a(p_180709_1_, p_180709_3_.func_177982_a(0, j, 1), this.field_76520_b);
+                         this.setBlockAndNotifyAdequately(worldIn, position.add(0, j, 1), this.woodMetadata);
                      }
 @@ -88,7 +75,7 @@
-         int i = p_150541_6_.nextInt(5) + (this.field_150542_e ? this.field_76522_a : 3);
+         int i = rand.nextInt(5) + (this.useBaseHeight ? this.baseHeight : 3);
          int j = 0;
  
--        for (int k = p_150541_4_ - i; k <= p_150541_4_; k++)
-+        for (int k = p_150541_4_ - i; k <= p_150541_4_; ++k)
+-        for (int k = y - i; k <= y; k++)
++        for (int k = y - i; k <= y; ++k)
          {
-             int l = p_150541_4_ - k;
-             int i1 = p_150541_5_ + MathHelper.func_76141_d((float)l / (float)i * 3.5F);
+             int l = y - k;
+             int i1 = p_150541_5_ + MathHelper.floor((float)l / (float)i * 3.5F);
 @@ -97,7 +84,6 @@
          }
      }
  
 -    @Override
-     public void func_180711_a(World p_180711_1_, Random p_180711_2_, BlockPos p_180711_3_)
+     public void generateSaplings(World worldIn, Random random, BlockPos pos)
      {
-         this.func_175933_b(p_180711_1_, p_180711_3_.func_177976_e().func_177978_c());
+         this.placePodzolCircle(worldIn, pos.west().north());
 @@ -105,7 +91,7 @@
-         this.func_175933_b(p_180711_1_, p_180711_3_.func_177976_e().func_177970_e(2));
-         this.func_175933_b(p_180711_1_, p_180711_3_.func_177965_g(2).func_177970_e(2));
+         this.placePodzolCircle(worldIn, pos.west().south(2));
+         this.placePodzolCircle(worldIn, pos.east(2).south(2));
  
 -        for (int i = 0; i < 5; i++)
 +        for (int i = 0; i < 5; ++i)
          {
-             int j = p_180711_2_.nextInt(64);
+             int j = random.nextInt(64);
              int k = j % 8;
 @@ -120,9 +106,9 @@
  
-     private void func_175933_b(World p_175933_1_, BlockPos p_175933_2_)
+     private void placePodzolCircle(World worldIn, BlockPos center)
      {
 -        for (int i = -2; i <= 2; i++)
 +        for (int i = -2; i <= 2; ++i)
@@ -104,19 +104,19 @@
                  {
 @@ -134,13 +120,13 @@
  
-     private void func_175934_c(World p_175934_1_, BlockPos p_175934_2_)
+     private void placePodzolAt(World worldIn, BlockPos pos)
      {
 -        for (int i = 2; i >= -3; i--)
 +        for (int i = 2; i >= -3; --i)
          {
-             BlockPos blockpos = p_175934_2_.func_177981_b(i);
-             IBlockState iblockstate = p_175934_1_.func_180495_p(blockpos);
-             Block block = iblockstate.func_177230_c();
+             BlockPos blockpos = pos.up(i);
+             IBlockState iblockstate = worldIn.getBlockState(blockpos);
+             Block block = iblockstate.getBlock();
  
--            if (block == Blocks.field_150349_c || block == Blocks.field_150346_d)
-+            if (block.canSustainPlant(iblockstate, p_175934_1_, blockpos, net.minecraft.util.EnumFacing.UP, ((net.minecraft.block.BlockSapling)Blocks.field_150345_g)))
+-            if (block == Blocks.GRASS || block == Blocks.DIRT)
++            if (block.canSustainPlant(iblockstate, worldIn, blockpos, net.minecraft.util.EnumFacing.UP, ((net.minecraft.block.BlockSapling)Blocks.SAPLING)))
              {
-                 this.func_175903_a(p_175934_1_, blockpos, field_181635_g);
+                 this.setBlockAndNotifyAdequately(worldIn, blockpos, PODZOL);
                  break;
 @@ -151,5 +137,12 @@
                  break;
@@ -127,7 +127,7 @@
 +    //Helper macro
 +    private boolean isAirLeaves(World world, BlockPos pos)
 +    {
-+        IBlockState state = world.func_180495_p(pos);
-+        return state.func_177230_c().isAir(state, world, pos) || state.func_177230_c().isLeaves(state, world, pos);
++        IBlockState state = world.getBlockState(pos);
++        return state.getBlock().isAir(state, world, pos) || state.getBlock().isLeaves(state, world, pos);
      }
  }

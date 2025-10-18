@@ -12,47 +12,47 @@
  @SideOnly(Side.CLIENT)
  public class RenderManager
  {
--    public final Map < Class <? extends Entity > , Render <? extends Entity >> field_78729_o = Maps.newHashMap();
--    private final Map<String, RenderPlayer> field_178636_l = Maps.newHashMap();
-+    public final Map < Class <? extends Entity > , Render <? extends Entity >> field_78729_o = Maps. < Class <? extends Entity > , Render <? extends Entity >> newHashMap();
-+    private final Map<String, RenderPlayer> field_178636_l = Maps.<String, RenderPlayer>newHashMap();
-     private final RenderPlayer field_178637_m;
-     private FontRenderer field_78736_p;
-     private double field_78725_b;
+-    public final Map < Class <? extends Entity > , Render <? extends Entity >> entityRenderMap = Maps.newHashMap();
+-    private final Map<String, RenderPlayer> skinMap = Maps.newHashMap();
++    public final Map < Class <? extends Entity > , Render <? extends Entity >> entityRenderMap = Maps. < Class <? extends Entity > , Render <? extends Entity >> newHashMap();
++    private final Map<String, RenderPlayer> skinMap = Maps.<String, RenderPlayer>newHashMap();
+     private final RenderPlayer playerRenderer;
+     private FontRenderer textRenderer;
+     private double renderPosX;
 @@ -191,13 +192,13 @@
-         this.field_78729_o.put(EntityLeashKnot.class, new RenderLeashKnot(this));
-         this.field_78729_o.put(EntityTippedArrow.class, new RenderTippedArrow(this));
-         this.field_78729_o.put(EntitySpectralArrow.class, new RenderSpectralArrow(this));
--        this.field_78729_o.put(EntitySnowball.class, new RenderSnowball<>(this, Items.field_151126_ay, p_i46180_2_));
--        this.field_78729_o.put(EntityEnderPearl.class, new RenderSnowball<>(this, Items.field_151079_bi, p_i46180_2_));
--        this.field_78729_o.put(EntityEnderEye.class, new RenderSnowball<>(this, Items.field_151061_bv, p_i46180_2_));
--        this.field_78729_o.put(EntityEgg.class, new RenderSnowball<>(this, Items.field_151110_aK, p_i46180_2_));
-+        this.field_78729_o.put(EntitySnowball.class, new RenderSnowball(this, Items.field_151126_ay, p_i46180_2_));
-+        this.field_78729_o.put(EntityEnderPearl.class, new RenderSnowball(this, Items.field_151079_bi, p_i46180_2_));
-+        this.field_78729_o.put(EntityEnderEye.class, new RenderSnowball(this, Items.field_151061_bv, p_i46180_2_));
-+        this.field_78729_o.put(EntityEgg.class, new RenderSnowball(this, Items.field_151110_aK, p_i46180_2_));
-         this.field_78729_o.put(EntityPotion.class, new RenderPotion(this, p_i46180_2_));
--        this.field_78729_o.put(EntityExpBottle.class, new RenderSnowball<>(this, Items.field_151062_by, p_i46180_2_));
--        this.field_78729_o.put(EntityFireworkRocket.class, new RenderSnowball<>(this, Items.field_151152_bP, p_i46180_2_));
-+        this.field_78729_o.put(EntityExpBottle.class, new RenderSnowball(this, Items.field_151062_by, p_i46180_2_));
-+        this.field_78729_o.put(EntityFireworkRocket.class, new RenderSnowball(this, Items.field_151152_bP, p_i46180_2_));
-         this.field_78729_o.put(EntityLargeFireball.class, new RenderFireball(this, 2.0F));
-         this.field_78729_o.put(EntitySmallFireball.class, new RenderFireball(this, 0.5F));
-         this.field_78729_o.put(EntityDragonFireball.class, new RenderDragonFireball(this));
+         this.entityRenderMap.put(EntityLeashKnot.class, new RenderLeashKnot(this));
+         this.entityRenderMap.put(EntityTippedArrow.class, new RenderTippedArrow(this));
+         this.entityRenderMap.put(EntitySpectralArrow.class, new RenderSpectralArrow(this));
+-        this.entityRenderMap.put(EntitySnowball.class, new RenderSnowball<>(this, Items.SNOWBALL, itemRendererIn));
+-        this.entityRenderMap.put(EntityEnderPearl.class, new RenderSnowball<>(this, Items.ENDER_PEARL, itemRendererIn));
+-        this.entityRenderMap.put(EntityEnderEye.class, new RenderSnowball<>(this, Items.ENDER_EYE, itemRendererIn));
+-        this.entityRenderMap.put(EntityEgg.class, new RenderSnowball<>(this, Items.EGG, itemRendererIn));
++        this.entityRenderMap.put(EntitySnowball.class, new RenderSnowball(this, Items.SNOWBALL, itemRendererIn));
++        this.entityRenderMap.put(EntityEnderPearl.class, new RenderSnowball(this, Items.ENDER_PEARL, itemRendererIn));
++        this.entityRenderMap.put(EntityEnderEye.class, new RenderSnowball(this, Items.ENDER_EYE, itemRendererIn));
++        this.entityRenderMap.put(EntityEgg.class, new RenderSnowball(this, Items.EGG, itemRendererIn));
+         this.entityRenderMap.put(EntityPotion.class, new RenderPotion(this, itemRendererIn));
+-        this.entityRenderMap.put(EntityExpBottle.class, new RenderSnowball<>(this, Items.EXPERIENCE_BOTTLE, itemRendererIn));
+-        this.entityRenderMap.put(EntityFireworkRocket.class, new RenderSnowball<>(this, Items.FIREWORKS, itemRendererIn));
++        this.entityRenderMap.put(EntityExpBottle.class, new RenderSnowball(this, Items.EXPERIENCE_BOTTLE, itemRendererIn));
++        this.entityRenderMap.put(EntityFireworkRocket.class, new RenderSnowball(this, Items.FIREWORKS, itemRendererIn));
+         this.entityRenderMap.put(EntityLargeFireball.class, new RenderFireball(this, 2.0F));
+         this.entityRenderMap.put(EntitySmallFireball.class, new RenderFireball(this, 0.5F));
+         this.entityRenderMap.put(EntityDragonFireball.class, new RenderDragonFireball(this));
 @@ -226,6 +227,11 @@
-         this.field_178637_m = new RenderPlayer(this);
-         this.field_178636_l.put("default", this.field_178637_m);
-         this.field_178636_l.put("slim", new RenderPlayer(this, true));
-+        net.minecraftforge.fml.client.registry.RenderingRegistry.loadEntityRenderers(this, this.field_78729_o);
+         this.playerRenderer = new RenderPlayer(this);
+         this.skinMap.put("default", this.playerRenderer);
+         this.skinMap.put("slim", new RenderPlayer(this, true));
++        net.minecraftforge.fml.client.registry.RenderingRegistry.loadEntityRenderers(this, this.entityRenderMap);
 +    }
 +
 +    public Map<String, RenderPlayer> getSkinMap() {
-+        return (Map<String, RenderPlayer>) java.util.Collections.unmodifiableMap(field_178636_l);
++        return (Map<String, RenderPlayer>) java.util.Collections.unmodifiableMap(skinMap);
      }
  
-     public void func_178628_a(double p_178628_1_, double p_178628_3_, double p_178628_5_)
+     public void setRenderPosition(double renderPosXIn, double renderPosYIn, double renderPosZIn)
 @@ -245,7 +251,7 @@
-             this.field_78729_o.put(p_78715_1_, render);
+             this.entityRenderMap.put(entityClass, render);
          }
  
 -        return (Render<T>)render;
@@ -64,141 +64,141 @@
          }
          else
          {
--            return this.func_78715_a(p_78713_1_.getClass());
-+            return this.<T>func_78715_a(p_78713_1_.getClass());
+-            return this.getEntityClassRenderObject(entityIn.getClass());
++            return this.<T>getEntityClassRenderObject(entityIn.getClass());
          }
      }
  
 @@ -276,9 +282,9 @@
-             IBlockState iblockstate = p_180597_1_.func_180495_p(new BlockPos(p_180597_3_));
-             Block block = iblockstate.func_177230_c();
+             IBlockState iblockstate = worldIn.getBlockState(new BlockPos(livingPlayerIn));
+             Block block = iblockstate.getBlock();
  
--            if (block == Blocks.field_150324_C)
-+            if (block.isBed(iblockstate, p_180597_1_, new BlockPos(p_180597_3_), (EntityLivingBase)p_180597_3_))
+-            if (block == Blocks.BED)
++            if (block.isBed(iblockstate, worldIn, new BlockPos(livingPlayerIn), (EntityLivingBase)livingPlayerIn))
              {
--                int i = iblockstate.func_177229_b(BlockBed.field_185512_D).func_176736_b();
-+                int i = block.getBedDirection(iblockstate, p_180597_1_, new BlockPos(p_180597_3_)).func_176736_b();
-                 this.field_78735_i = (float)(i * 90 + 180);
-                 this.field_78732_j = 0.0F;
+-                int i = iblockstate.getValue(BlockBed.FACING).getHorizontalIndex();
++                int i = block.getBedDirection(iblockstate, worldIn, new BlockPos(livingPlayerIn)).getHorizontalIndex();
+                 this.playerViewY = (float)(i * 90 + 180);
+                 this.playerViewX = 0.0F;
              }
 @@ -331,7 +337,7 @@
  
-     public boolean func_178635_a(Entity p_178635_1_, ICamera p_178635_2_, double p_178635_3_, double p_178635_5_, double p_178635_7_)
+     public boolean shouldRender(Entity entityIn, ICamera camera, double camX, double camY, double camZ)
      {
--        Render<Entity> render = this.func_78713_a(p_178635_1_);
-+        Render<Entity> render = this.<Entity>func_78713_a(p_178635_1_);
-         return render != null && render.func_177071_a(p_178635_1_, p_178635_2_, p_178635_3_, p_178635_5_, p_178635_7_);
+-        Render<Entity> render = this.getEntityRenderObject(entityIn);
++        Render<Entity> render = this.<Entity>getEntityRenderObject(entityIn);
+         return render != null && render.shouldRender(entityIn, camera, camX, camY, camZ);
      }
  
 @@ -362,15 +368,13 @@
-         this.func_188391_a(p_188388_1_, d0 - this.field_78725_b, d1 - this.field_78726_c, d2 - this.field_78723_d, f, p_188388_2_, p_188388_3_);
+         this.renderEntity(entityIn, d0 - this.renderPosX, d1 - this.renderPosY, d2 - this.renderPosZ, f, partialTicks, p_188388_3_);
      }
  
--    public void func_188391_a(
--        Entity p_188391_1_, double p_188391_2_, double p_188391_4_, double p_188391_6_, float p_188391_8_, float p_188391_9_, boolean p_188391_10_
+-    public void renderEntity(
+-        Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_
 -    )
-+    public void func_188391_a(Entity p_188391_1_, double p_188391_2_, double p_188391_4_, double p_188391_6_, float p_188391_8_, float p_188391_9_, boolean p_188391_10_)
++    public void renderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_)
      {
          Render<Entity> render = null;
  
          try
          {
--            render = this.func_78713_a(p_188391_1_);
-+            render = this.<Entity>func_78713_a(p_188391_1_);
+-            render = this.getEntityRenderObject(entityIn);
++            render = this.<Entity>getEntityRenderObject(entityIn);
  
-             if (render != null && this.field_78724_e != null)
+             if (render != null && this.renderEngine != null)
              {
 @@ -417,8 +421,8 @@
-             CrashReportCategory crashreportcategory1 = crashreport.func_85058_a("Renderer details");
-             crashreportcategory1.func_71507_a("Assigned renderer", render);
-             crashreportcategory1.func_71507_a("Location", CrashReportCategory.func_85074_a(p_188391_2_, p_188391_4_, p_188391_6_));
--            crashreportcategory1.func_71507_a("Rotation", p_188391_8_);
--            crashreportcategory1.func_71507_a("Delta", p_188391_9_);
-+            crashreportcategory1.func_71507_a("Rotation", Float.valueOf(p_188391_8_));
-+            crashreportcategory1.func_71507_a("Delta", Float.valueOf(p_188391_9_));
+             CrashReportCategory crashreportcategory1 = crashreport.makeCategory("Renderer details");
+             crashreportcategory1.addCrashSection("Assigned renderer", render);
+             crashreportcategory1.addCrashSection("Location", CrashReportCategory.getCoordinateInfo(x, y, z));
+-            crashreportcategory1.addCrashSection("Rotation", yaw);
+-            crashreportcategory1.addCrashSection("Delta", partialTicks);
++            crashreportcategory1.addCrashSection("Rotation", Float.valueOf(yaw));
++            crashreportcategory1.addCrashSection("Delta", Float.valueOf(partialTicks));
              throw new ReportedException(crashreport);
          }
      }
 @@ -447,7 +451,7 @@
          int k = i / 65536;
-         OpenGlHelper.func_77475_a(OpenGlHelper.field_77476_b, (float)j, (float)k);
-         GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
--        Render<Entity> render = this.func_78713_a(p_188389_1_);
-+        Render<Entity> render = this.<Entity>func_78713_a(p_188389_1_);
+         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
+         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+-        Render<Entity> render = this.getEntityRenderObject(entityIn);
++        Render<Entity> render = this.<Entity>getEntityRenderObject(entityIn);
  
-         if (render != null && this.field_78724_e != null)
+         if (render != null && this.renderEngine != null)
          {
 @@ -464,18 +468,7 @@
-         GlStateManager.func_179084_k();
-         float f = p_85094_1_.field_70130_N / 2.0F;
-         AxisAlignedBB axisalignedbb = p_85094_1_.func_174813_aQ();
--        RenderGlobal.func_189694_a(
--            axisalignedbb.field_72340_a - p_85094_1_.field_70165_t + p_85094_2_,
--            axisalignedbb.field_72338_b - p_85094_1_.field_70163_u + p_85094_4_,
--            axisalignedbb.field_72339_c - p_85094_1_.field_70161_v + p_85094_6_,
--            axisalignedbb.field_72336_d - p_85094_1_.field_70165_t + p_85094_2_,
--            axisalignedbb.field_72337_e - p_85094_1_.field_70163_u + p_85094_4_,
--            axisalignedbb.field_72334_f - p_85094_1_.field_70161_v + p_85094_6_,
+         GlStateManager.disableBlend();
+         float f = entityIn.width / 2.0F;
+         AxisAlignedBB axisalignedbb = entityIn.getEntityBoundingBox();
+-        RenderGlobal.drawBoundingBox(
+-            axisalignedbb.minX - entityIn.posX + x,
+-            axisalignedbb.minY - entityIn.posY + y,
+-            axisalignedbb.minZ - entityIn.posZ + z,
+-            axisalignedbb.maxX - entityIn.posX + x,
+-            axisalignedbb.maxY - entityIn.posY + y,
+-            axisalignedbb.maxZ - entityIn.posZ + z,
 -            1.0F,
 -            1.0F,
 -            1.0F,
 -            1.0F
 -        );
-+        RenderGlobal.func_189694_a(axisalignedbb.field_72340_a - p_85094_1_.field_70165_t + p_85094_2_, axisalignedbb.field_72338_b - p_85094_1_.field_70163_u + p_85094_4_, axisalignedbb.field_72339_c - p_85094_1_.field_70161_v + p_85094_6_, axisalignedbb.field_72336_d - p_85094_1_.field_70165_t + p_85094_2_, axisalignedbb.field_72337_e - p_85094_1_.field_70163_u + p_85094_4_, axisalignedbb.field_72334_f - p_85094_1_.field_70161_v + p_85094_6_, 1.0F, 1.0F, 1.0F, 1.0F);
-         Entity[] aentity = p_85094_1_.func_70021_al();
++        RenderGlobal.drawBoundingBox(axisalignedbb.minX - entityIn.posX + x, axisalignedbb.minY - entityIn.posY + y, axisalignedbb.minZ - entityIn.posZ + z, axisalignedbb.maxX - entityIn.posX + x, axisalignedbb.maxY - entityIn.posY + y, axisalignedbb.maxZ - entityIn.posZ + z, 1.0F, 1.0F, 1.0F, 1.0F);
+         Entity[] aentity = entityIn.getParts();
  
          if (aentity != null)
 @@ -486,36 +479,14 @@
-                 double d1 = (entity.field_70163_u - entity.field_70167_r) * (double)p_85094_9_;
-                 double d2 = (entity.field_70161_v - entity.field_70166_s) * (double)p_85094_9_;
-                 AxisAlignedBB axisalignedbb1 = entity.func_174813_aQ();
--                RenderGlobal.func_189694_a(
--                    axisalignedbb1.field_72340_a - this.field_78725_b + d0,
--                    axisalignedbb1.field_72338_b - this.field_78726_c + d1,
--                    axisalignedbb1.field_72339_c - this.field_78723_d + d2,
--                    axisalignedbb1.field_72336_d - this.field_78725_b + d0,
--                    axisalignedbb1.field_72337_e - this.field_78726_c + d1,
--                    axisalignedbb1.field_72334_f - this.field_78723_d + d2,
+                 double d1 = (entity.posY - entity.prevPosY) * (double)partialTicks;
+                 double d2 = (entity.posZ - entity.prevPosZ) * (double)partialTicks;
+                 AxisAlignedBB axisalignedbb1 = entity.getEntityBoundingBox();
+-                RenderGlobal.drawBoundingBox(
+-                    axisalignedbb1.minX - this.renderPosX + d0,
+-                    axisalignedbb1.minY - this.renderPosY + d1,
+-                    axisalignedbb1.minZ - this.renderPosZ + d2,
+-                    axisalignedbb1.maxX - this.renderPosX + d0,
+-                    axisalignedbb1.maxY - this.renderPosY + d1,
+-                    axisalignedbb1.maxZ - this.renderPosZ + d2,
 -                    0.25F,
 -                    1.0F,
 -                    0.0F,
 -                    1.0F
 -                );
-+                RenderGlobal.func_189694_a(axisalignedbb1.field_72340_a - this.field_78725_b + d0, axisalignedbb1.field_72338_b - this.field_78726_c + d1, axisalignedbb1.field_72339_c - this.field_78723_d + d2, axisalignedbb1.field_72336_d - this.field_78725_b + d0, axisalignedbb1.field_72337_e - this.field_78726_c + d1, axisalignedbb1.field_72334_f - this.field_78723_d + d2, 0.25F, 1.0F, 0.0F, 1.0F);
++                RenderGlobal.drawBoundingBox(axisalignedbb1.minX - this.renderPosX + d0, axisalignedbb1.minY - this.renderPosY + d1, axisalignedbb1.minZ - this.renderPosZ + d2, axisalignedbb1.maxX - this.renderPosX + d0, axisalignedbb1.maxY - this.renderPosY + d1, axisalignedbb1.maxZ - this.renderPosZ + d2, 0.25F, 1.0F, 0.0F, 1.0F);
              }
          }
  
-         if (p_85094_1_ instanceof EntityLivingBase)
+         if (entityIn instanceof EntityLivingBase)
          {
              float f1 = 0.01F;
--            RenderGlobal.func_189694_a(
--                p_85094_2_ - (double)f,
--                p_85094_4_ + (double)p_85094_1_.func_70047_e() - 0.01F,
--                p_85094_6_ - (double)f,
--                p_85094_2_ + (double)f,
--                p_85094_4_ + (double)p_85094_1_.func_70047_e() + 0.01F,
--                p_85094_6_ + (double)f,
+-            RenderGlobal.drawBoundingBox(
+-                x - (double)f,
+-                y + (double)entityIn.getEyeHeight() - 0.01F,
+-                z - (double)f,
+-                x + (double)f,
+-                y + (double)entityIn.getEyeHeight() + 0.01F,
+-                z + (double)f,
 -                1.0F,
 -                0.0F,
 -                0.0F,
 -                1.0F
 -            );
-+            RenderGlobal.func_189694_a(p_85094_2_ - (double)f, p_85094_4_ + (double)p_85094_1_.func_70047_e() - 0.009999999776482582D, p_85094_6_ - (double)f, p_85094_2_ + (double)f, p_85094_4_ + (double)p_85094_1_.func_70047_e() + 0.009999999776482582D, p_85094_6_ + (double)f, 1.0F, 0.0F, 0.0F, 1.0F);
++            RenderGlobal.drawBoundingBox(x - (double)f, y + (double)entityIn.getEyeHeight() - 0.009999999776482582D, z - (double)f, x + (double)f, y + (double)entityIn.getEyeHeight() + 0.009999999776482582D, z + (double)f, 1.0F, 0.0F, 0.0F, 1.0F);
          }
  
-         Tessellator tessellator = Tessellator.func_178181_a();
+         Tessellator tessellator = Tessellator.getInstance();
 @@ -523,13 +494,7 @@
-         Vec3d vec3d = p_85094_1_.func_70676_i(p_85094_9_);
-         bufferbuilder.func_181668_a(3, DefaultVertexFormats.field_181706_f);
-         bufferbuilder.func_181662_b(p_85094_2_, p_85094_4_ + (double)p_85094_1_.func_70047_e(), p_85094_6_).func_181669_b(0, 0, 255, 255).func_181675_d();
--        bufferbuilder.func_181662_b(
--            p_85094_2_ + vec3d.field_72450_a * 2.0,
--            p_85094_4_ + (double)p_85094_1_.func_70047_e() + vec3d.field_72448_b * 2.0,
--            p_85094_6_ + vec3d.field_72449_c * 2.0
+         Vec3d vec3d = entityIn.getLook(partialTicks);
+         bufferbuilder.begin(3, DefaultVertexFormats.POSITION_COLOR);
+         bufferbuilder.pos(x, y + (double)entityIn.getEyeHeight(), z).color(0, 0, 255, 255).endVertex();
+-        bufferbuilder.pos(
+-            x + vec3d.x * 2.0,
+-            y + (double)entityIn.getEyeHeight() + vec3d.y * 2.0,
+-            z + vec3d.z * 2.0
 -        )
--        .func_181669_b(0, 0, 255, 255)
--        .func_181675_d();
-+        bufferbuilder.func_181662_b(p_85094_2_ + vec3d.field_72450_a * 2.0D, p_85094_4_ + (double)p_85094_1_.func_70047_e() + vec3d.field_72448_b * 2.0D, p_85094_6_ + vec3d.field_72449_c * 2.0D).func_181669_b(0, 0, 255, 255).func_181675_d();
-         tessellator.func_78381_a();
-         GlStateManager.func_179098_w();
-         GlStateManager.func_179145_e();
+-        .color(0, 0, 255, 255)
+-        .endVertex();
++        bufferbuilder.pos(x + vec3d.x * 2.0D, y + (double)entityIn.getEyeHeight() + vec3d.y * 2.0D, z + vec3d.z * 2.0D).color(0, 0, 255, 255).endVertex();
+         tessellator.draw();
+         GlStateManager.enableTexture2D();
+         GlStateManager.enableLighting();

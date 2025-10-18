@@ -9,37 +9,37 @@
  import net.minecraft.item.Item;
  import net.minecraft.item.ItemStack;
 @@ -43,13 +44,13 @@
-             boolean flag = p_177077_9_.func_177556_c();
-             int i = this.func_177078_a(itemstack);
+             boolean flag = p_177077_9_.isGui3d();
+             int i = this.getModelCount(itemstack);
              float f = 0.25F;
--            float f1 = MathHelper.func_76126_a(((float)p_177077_1_.func_174872_o() + p_177077_8_) / 10.0F + p_177077_1_.field_70290_d) * 0.1F + 0.1F;
-+            float f1 = shouldBob() ? MathHelper.func_76126_a(((float)p_177077_1_.func_174872_o() + p_177077_8_) / 10.0F + p_177077_1_.field_70290_d) * 0.1F + 0.1F : 0;
-             float f2 = p_177077_9_.func_177552_f().func_181688_b(ItemCameraTransforms.TransformType.GROUND).field_178363_d.y;
-             GlStateManager.func_179109_b((float)p_177077_2_, (float)p_177077_4_ + f1 + 0.25F * f2, (float)p_177077_6_);
+-            float f1 = MathHelper.sin(((float)itemIn.getAge() + p_177077_8_) / 10.0F + itemIn.hoverStart) * 0.1F + 0.1F;
++            float f1 = shouldBob() ? MathHelper.sin(((float)itemIn.getAge() + p_177077_8_) / 10.0F + itemIn.hoverStart) * 0.1F + 0.1F : 0;
+             float f2 = p_177077_9_.getItemCameraTransforms().getTransform(ItemCameraTransforms.TransformType.GROUND).scale.y;
+             GlStateManager.translate((float)p_177077_2_, (float)p_177077_4_ + f1 + 0.25F * f2, (float)p_177077_6_);
  
-             if (flag || this.field_76990_c.field_78733_k != null)
+             if (flag || this.renderManager.options != null)
              {
--                float f3 = (((float)p_177077_1_.func_174872_o() + p_177077_8_) / 20.0F + p_177077_1_.field_70290_d) * (180.0F / (float)Math.PI);
-+                float f3 = (((float)p_177077_1_.func_174872_o() + p_177077_8_) / 20.0F + p_177077_1_.field_70290_d) * (180F / (float)Math.PI);
-                 GlStateManager.func_179114_b(f3, 0.0F, 1.0F, 0.0F);
+-                float f3 = (((float)itemIn.getAge() + p_177077_8_) / 20.0F + itemIn.hoverStart) * (180.0F / (float)Math.PI);
++                float f3 = (((float)itemIn.getAge() + p_177077_8_) / 20.0F + itemIn.hoverStart) * (180F / (float)Math.PI);
+                 GlStateManager.rotate(f3, 0.0F, 1.0F, 0.0F);
              }
  
 @@ -99,22 +100,17 @@
-         GlStateManager.func_179092_a(516, 0.1F);
-         GlStateManager.func_179147_l();
-         RenderHelper.func_74519_b();
--        GlStateManager.func_187428_a(
+         GlStateManager.alphaFunc(516, 0.1F);
+         GlStateManager.enableBlend();
+         RenderHelper.enableStandardItemLighting();
+-        GlStateManager.tryBlendFuncSeparate(
 -            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 -        );
-+        GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-         GlStateManager.func_179094_E();
--        IBakedModel ibakedmodel = this.field_177080_a.func_184393_a(itemstack, p_76986_1_.field_70170_p, null);
-+        IBakedModel ibakedmodel = this.field_177080_a.func_184393_a(itemstack, p_76986_1_.field_70170_p, (EntityLivingBase)null);
-         int j = this.func_177077_a(p_76986_1_, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_9_, ibakedmodel);
--        float f = ibakedmodel.func_177552_f().field_181699_o.field_178363_d.x;
--        float f1 = ibakedmodel.func_177552_f().field_181699_o.field_178363_d.y;
--        float f2 = ibakedmodel.func_177552_f().field_181699_o.field_178363_d.z;
-         boolean flag1 = ibakedmodel.func_177556_c();
++        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+         GlStateManager.pushMatrix();
+-        IBakedModel ibakedmodel = this.itemRenderer.getItemModelWithOverrides(itemstack, entity.world, null);
++        IBakedModel ibakedmodel = this.itemRenderer.getItemModelWithOverrides(itemstack, entity.world, (EntityLivingBase)null);
+         int j = this.transformModelCount(entity, x, y, z, partialTicks, ibakedmodel);
+-        float f = ibakedmodel.getItemCameraTransforms().ground.scale.x;
+-        float f1 = ibakedmodel.getItemCameraTransforms().ground.scale.y;
+-        float f2 = ibakedmodel.getItemCameraTransforms().ground.scale.z;
+         boolean flag1 = ibakedmodel.isGui3d();
  
          if (!flag1)
          {
@@ -49,11 +49,11 @@
 +            float f3 = -0.0F * (float)(j - 1) * 0.5F;
 +            float f4 = -0.0F * (float)(j - 1) * 0.5F;
 +            float f5 = -0.09375F * (float)(j - 1) * 0.5F;
-             GlStateManager.func_179109_b(f3, f4, f5);
+             GlStateManager.translate(f3, f4, f5);
          }
  
 @@ -124,7 +120,7 @@
-             GlStateManager.func_187431_e(this.func_188298_c(p_76986_1_));
+             GlStateManager.enableOutlineMode(this.getTeamColor(entity));
          }
  
 -        for (int k = 0; k < j; k++)
@@ -62,37 +62,37 @@
              if (flag1)
              {
 @@ -135,11 +131,11 @@
-                     float f7 = (this.field_177079_e.nextFloat() * 2.0F - 1.0F) * 0.15F;
-                     float f9 = (this.field_177079_e.nextFloat() * 2.0F - 1.0F) * 0.15F;
-                     float f6 = (this.field_177079_e.nextFloat() * 2.0F - 1.0F) * 0.15F;
--                    GlStateManager.func_179109_b(f7, f9, f6);
-+                    GlStateManager.func_179109_b(shouldSpreadItems() ? f7 : 0, shouldSpreadItems() ? f9 : 0, f6);
+                     float f7 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
+                     float f9 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
+                     float f6 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
+-                    GlStateManager.translate(f7, f9, f6);
++                    GlStateManager.translate(shouldSpreadItems() ? f7 : 0, shouldSpreadItems() ? f9 : 0, f6);
                  }
  
--                ibakedmodel.func_177552_f().func_181689_a(ItemCameraTransforms.TransformType.GROUND);
--                this.field_177080_a.func_180454_a(itemstack, ibakedmodel);
+-                ibakedmodel.getItemCameraTransforms().applyTransform(ItemCameraTransforms.TransformType.GROUND);
+-                this.itemRenderer.renderItem(itemstack, ibakedmodel);
 +                IBakedModel transformedModel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(ibakedmodel, ItemCameraTransforms.TransformType.GROUND, false);
-+                this.field_177080_a.func_180454_a(itemstack, transformedModel);
-                 GlStateManager.func_179121_F();
++                this.itemRenderer.renderItem(itemstack, transformedModel);
+                 GlStateManager.popMatrix();
              }
              else
 @@ -153,10 +149,10 @@
-                     GlStateManager.func_179109_b(f8, f10, 0.0F);
+                     GlStateManager.translate(f8, f10, 0.0F);
                  }
  
--                ibakedmodel.func_177552_f().func_181689_a(ItemCameraTransforms.TransformType.GROUND);
--                this.field_177080_a.func_180454_a(itemstack, ibakedmodel);
+-                ibakedmodel.getItemCameraTransforms().applyTransform(ItemCameraTransforms.TransformType.GROUND);
+-                this.itemRenderer.renderItem(itemstack, ibakedmodel);
 +                IBakedModel transformedModel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(ibakedmodel, ItemCameraTransforms.TransformType.GROUND, false);
-+                this.field_177080_a.func_180454_a(itemstack, transformedModel);
-                 GlStateManager.func_179121_F();
--                GlStateManager.func_179109_b(0.0F * f, 0.0F * f1, 0.09375F * f2);
-+                GlStateManager.func_179109_b(0.0F, 0.0F, 0.09375F);
++                this.itemRenderer.renderItem(itemstack, transformedModel);
+                 GlStateManager.popMatrix();
+-                GlStateManager.translate(0.0F * f, 0.0F * f1, 0.09375F * f2);
++                GlStateManager.translate(0.0F, 0.0F, 0.09375F);
              }
          }
  
 @@ -183,4 +179,25 @@
      {
-         return TextureMap.field_110575_b;
+         return TextureMap.LOCATION_BLOCKS_TEXTURE;
      }
 +
 +    /*==================================== FORGE START ===========================================*/

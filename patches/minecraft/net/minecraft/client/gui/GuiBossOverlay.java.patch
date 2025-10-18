@@ -2,42 +2,42 @@
 +++ after/net/minecraft/client/gui/GuiBossOverlay.java
 @@ -16,7 +16,7 @@
  {
-     private static final ResourceLocation field_184058_a = new ResourceLocation("textures/gui/bars.png");
-     private final Minecraft field_184059_f;
--    private final Map<UUID, BossInfoClient> field_184060_g = Maps.newLinkedHashMap();
-+    private final Map<UUID, BossInfoClient> field_184060_g = Maps.<UUID, BossInfoClient>newLinkedHashMap();
+     private static final ResourceLocation GUI_BARS_TEXTURES = new ResourceLocation("textures/gui/bars.png");
+     private final Minecraft client;
+-    private final Map<UUID, BossInfoClient> mapBossInfos = Maps.newLinkedHashMap();
++    private final Map<UUID, BossInfoClient> mapBossInfos = Maps.<UUID, BossInfoClient>newLinkedHashMap();
  
-     public GuiBossOverlay(Minecraft p_i46606_1_)
+     public GuiBossOverlay(Minecraft clientIn)
      {
 @@ -34,15 +34,18 @@
-             for (BossInfoClient bossinfoclient : this.field_184060_g.values())
+             for (BossInfoClient bossinfoclient : this.mapBossInfos.values())
              {
                  int k = i / 2 - 91;
 +                net.minecraftforge.client.event.RenderGameOverlayEvent.BossInfo event =
-+                        net.minecraftforge.client.ForgeHooksClient.bossBarRenderPre(scaledresolution, bossinfoclient, k, j, 10 + this.field_184059_f.field_71466_p.field_78288_b);
++                        net.minecraftforge.client.ForgeHooksClient.bossBarRenderPre(scaledresolution, bossinfoclient, k, j, 10 + this.client.fontRenderer.FONT_HEIGHT);
 +                if (!event.isCanceled()) {
-                 GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
-                 this.field_184059_f.func_110434_K().func_110577_a(field_184058_a);
-                 this.func_184052_a(k, j, bossinfoclient);
-                 String s = bossinfoclient.func_186744_e().func_150254_d();
--                this.field_184059_f
--                .field_71466_p
--                .func_175063_a(s, (float)(i / 2 - this.field_184059_f.field_71466_p.func_78256_a(s) / 2), (float)(j - 9), 16777215);
--                j += 10 + this.field_184059_f.field_71466_p.field_78288_b;
-+                this.field_184059_f.field_71466_p.func_175063_a(s, (float)(i / 2 - this.field_184059_f.field_71466_p.func_78256_a(s) / 2), (float)(j - 9), 16777215);
+                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                 this.client.getTextureManager().bindTexture(GUI_BARS_TEXTURES);
+                 this.render(k, j, bossinfoclient);
+                 String s = bossinfoclient.getName().getFormattedText();
+-                this.client
+-                .fontRenderer
+-                .drawStringWithShadow(s, (float)(i / 2 - this.client.fontRenderer.getStringWidth(s) / 2), (float)(j - 9), 16777215);
+-                j += 10 + this.client.fontRenderer.FONT_HEIGHT;
++                this.client.fontRenderer.drawStringWithShadow(s, (float)(i / 2 - this.client.fontRenderer.getStringWidth(s) / 2), (float)(j - 9), 16777215);
 +                }
 +                j += event.getIncrement();
  
 +                net.minecraftforge.client.ForgeHooksClient.bossBarRenderPost(scaledresolution);
-                 if (j >= scaledresolution.func_78328_b() / 3)
+                 if (j >= scaledresolution.getScaledHeight() / 3)
                  {
                      break;
 @@ -85,7 +88,7 @@
          }
          else
          {
--            this.field_184060_g.get(p_184055_1_.func_186908_a()).func_186765_a(p_184055_1_);
-+            ((BossInfoClient)this.field_184060_g.get(p_184055_1_.func_186908_a())).func_186765_a(p_184055_1_);
+-            this.mapBossInfos.get(packetIn.getUniqueId()).updateFromPacket(packetIn);
++            ((BossInfoClient)this.mapBossInfos.get(packetIn.getUniqueId())).updateFromPacket(packetIn);
          }
      }
  

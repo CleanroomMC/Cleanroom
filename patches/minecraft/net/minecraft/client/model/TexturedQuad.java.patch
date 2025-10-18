@@ -7,41 +7,41 @@
 -@SideOnly(Side.CLIENT)
  public class TexturedQuad
  {
-     public PositionTextureVertex[] field_78239_a;
+     public PositionTextureVertex[] vertexPositions;
 @@ -35,7 +34,7 @@
      {
-         PositionTextureVertex[] apositiontexturevertex = new PositionTextureVertex[this.field_78239_a.length];
+         PositionTextureVertex[] apositiontexturevertex = new PositionTextureVertex[this.vertexPositions.length];
  
--        for (int i = 0; i < this.field_78239_a.length; i++)
-+        for (int i = 0; i < this.field_78239_a.length; ++i)
+-        for (int i = 0; i < this.vertexPositions.length; i++)
++        for (int i = 0; i < this.vertexPositions.length; ++i)
          {
-             apositiontexturevertex[i] = this.field_78239_a[this.field_78239_a.length - i - 1];
+             apositiontexturevertex[i] = this.vertexPositions[this.vertexPositions.length - i - 1];
          }
 @@ -43,6 +42,7 @@
-         this.field_78239_a = apositiontexturevertex;
+         this.vertexPositions = apositiontexturevertex;
      }
  
 +    @SideOnly(Side.CLIENT)
-     public void func_178765_a(BufferBuilder p_178765_1_, float p_178765_2_)
+     public void draw(BufferBuilder renderer, float scale)
      {
-         Vec3d vec3d = this.field_78239_a[1].field_78243_a.func_72444_a(this.field_78239_a[0].field_78243_a);
+         Vec3d vec3d = this.vertexPositions[1].vector3D.subtractReverse(this.vertexPositions[0].vector3D);
 @@ -61,17 +61,10 @@
  
-         p_178765_1_.func_181668_a(7, DefaultVertexFormats.field_181703_c);
+         renderer.begin(7, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
  
 -        for (int i = 0; i < 4; i++)
 +        for (int i = 0; i < 4; ++i)
          {
-             PositionTextureVertex positiontexturevertex = this.field_78239_a[i];
--            p_178765_1_.func_181662_b(
--                positiontexturevertex.field_78243_a.field_72450_a * (double)p_178765_2_,
--                positiontexturevertex.field_78243_a.field_72448_b * (double)p_178765_2_,
--                positiontexturevertex.field_78243_a.field_72449_c * (double)p_178765_2_
+             PositionTextureVertex positiontexturevertex = this.vertexPositions[i];
+-            renderer.pos(
+-                positiontexturevertex.vector3D.x * (double)scale,
+-                positiontexturevertex.vector3D.y * (double)scale,
+-                positiontexturevertex.vector3D.z * (double)scale
 -            )
--            .func_187315_a((double)positiontexturevertex.field_78241_b, (double)positiontexturevertex.field_78242_c)
--            .func_181663_c(f, f1, f2)
--            .func_181675_d();
-+            p_178765_1_.func_181662_b(positiontexturevertex.field_78243_a.field_72450_a * (double)p_178765_2_, positiontexturevertex.field_78243_a.field_72448_b * (double)p_178765_2_, positiontexturevertex.field_78243_a.field_72449_c * (double)p_178765_2_).func_187315_a((double)positiontexturevertex.field_78241_b, (double)positiontexturevertex.field_78242_c).func_181663_c(f, f1, f2).func_181675_d();
+-            .tex((double)positiontexturevertex.texturePositionX, (double)positiontexturevertex.texturePositionY)
+-            .normal(f, f1, f2)
+-            .endVertex();
++            renderer.pos(positiontexturevertex.vector3D.x * (double)scale, positiontexturevertex.vector3D.y * (double)scale, positiontexturevertex.vector3D.z * (double)scale).tex((double)positiontexturevertex.texturePositionX, (double)positiontexturevertex.texturePositionY).normal(f, f1, f2).endVertex();
          }
  
-         Tessellator.func_178181_a().func_78381_a();
+         Tessellator.getInstance().draw();

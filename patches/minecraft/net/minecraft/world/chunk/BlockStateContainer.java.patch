@@ -2,57 +2,57 @@
 +++ after/net/minecraft/world/chunk/BlockStateContainer.java
 @@ -30,6 +30,10 @@
  
-     private void func_186012_b(int p_186012_1_)
+     private void setBits(int bitsIn)
      {
-+        setBits(p_186012_1_, false);
++        setBits(bitsIn, false);
 +    }
-+    private void setBits(int p_186012_1_, boolean forceBits)
++    private void setBits(int bitsIn, boolean forceBits)
 +    {
-         if (p_186012_1_ != this.field_186024_e)
+         if (bitsIn != this.bits)
          {
-             this.field_186024_e = p_186012_1_;
+             this.bits = bitsIn;
 @@ -47,6 +51,8 @@
              {
-                 this.field_186022_c = field_186023_d;
-                 this.field_186024_e = MathHelper.func_151241_e(Block.field_176229_d.func_186804_a());
+                 this.palette = REGISTRY_BASED_PALETTE;
+                 this.bits = MathHelper.log2DeBruijn(Block.BLOCK_STATE_IDS.size());
 +                if (forceBits)
-+                    this.field_186024_e = p_186012_1_;
++                    this.bits = bitsIn;
              }
  
-             this.field_186022_c.func_186041_a(field_186020_a);
+             this.palette.idFor(AIR_BLOCK_STATE);
 @@ -54,14 +60,13 @@
          }
      }
  
 -    @Override
-     public int func_186008_a(int p_186008_1_, IBlockState p_186008_2_)
+     public int onResize(int bits, IBlockState state)
      {
-         BitArray bitarray = this.field_186021_b;
-         IBlockStatePalette iblockstatepalette = this.field_186022_c;
-         this.func_186012_b(p_186008_1_);
+         BitArray bitarray = this.storage;
+         IBlockStatePalette iblockstatepalette = this.palette;
+         this.setBits(bits);
  
--        for (int i = 0; i < bitarray.func_188144_b(); i++)
-+        for (int i = 0; i < bitarray.func_188144_b(); ++i)
+-        for (int i = 0; i < bitarray.size(); i++)
++        for (int i = 0; i < bitarray.size(); ++i)
          {
-             IBlockState iblockstate = iblockstatepalette.func_186039_a(bitarray.func_188142_a(i));
+             IBlockState iblockstate = iblockstatepalette.getBlockState(bitarray.getAt(i));
  
 @@ -103,11 +108,15 @@
  
-         if (this.field_186024_e != i)
+         if (this.bits != i)
          {
--            this.func_186012_b(i);
+-            this.setBits(i);
 +            this.setBits(i, true); //Forge, Force bit density to fix network issues, resize below if needed.
          }
  
-         this.field_186022_c.func_186038_a(p_186010_1_);
-         p_186010_1_.func_186873_b(this.field_186021_b.func_188143_a());
+         this.palette.read(buf);
+         buf.readLongArray(this.storage.getBackingLongArray());
 +
-+        int regSize = MathHelper.func_151241_e(Block.field_176229_d.func_186804_a());
-+        if (this.field_186022_c == field_186023_d && this.field_186024_e != regSize) // Resize bits to fit registry.
-+            this.func_186008_a(regSize, field_186020_a);
++        int regSize = MathHelper.log2DeBruijn(Block.BLOCK_STATE_IDS.size());
++        if (this.palette == REGISTRY_BASED_PALETTE && this.bits != regSize) // Resize bits to fit registry.
++            this.onResize(regSize, AIR_BLOCK_STATE);
      }
  
-     public void func_186009_b(PacketBuffer p_186009_1_)
+     public void write(PacketBuffer buf)
 @@ -122,7 +131,7 @@
      {
          NibbleArray nibblearray = null;
@@ -60,20 +60,20 @@
 -        for (int i = 0; i < 4096; i++)
 +        for (int i = 0; i < 4096; ++i)
          {
-             int j = Block.field_176229_d.func_148747_b(this.func_186015_a(i));
+             int j = Block.BLOCK_STATE_IDS.get(this.get(i));
              int k = i & 15;
 @@ -139,7 +148,7 @@
-                 nibblearray.func_76581_a(k, l, i1, j >> 12 & 15);
+                 nibblearray.set(k, l, i1, j >> 12 & 15);
              }
  
--            p_186017_1_[i] = (byte)(j >> 4 & 0xFF);
-+            p_186017_1_[i] = (byte)(j >> 4 & 255);
-             p_186017_2_.func_76581_a(k, l, i1, j & 15);
+-            blockIds[i] = (byte)(j >> 4 & 0xFF);
++            blockIds[i] = (byte)(j >> 4 & 255);
+             data.set(k, l, i1, j & 15);
          }
  
 @@ -148,7 +157,7 @@
  
-     public void func_186019_a(byte[] p_186019_1_, NibbleArray p_186019_2_, @Nullable NibbleArray p_186019_3_)
+     public void setDataFromNBT(byte[] blockIds, NibbleArray data, @Nullable NibbleArray blockIdExtension)
      {
 -        for (int i = 0; i < 4096; i++)
 +        for (int i = 0; i < 4096; ++i)
@@ -82,12 +82,12 @@
              int k = i >> 8 & 15;
 @@ -161,9 +170,6 @@
  
-     public int func_186018_a()
+     public int getSerializedSize()
      {
 -        return 1
--               + this.field_186022_c.func_186040_a()
--               + PacketBuffer.func_150790_a(this.field_186021_b.func_188144_b())
--               + this.field_186021_b.func_188143_a().length * 8;
-+        return 1 + this.field_186022_c.func_186040_a() + PacketBuffer.func_150790_a(this.field_186021_b.func_188144_b()) + this.field_186021_b.func_188143_a().length * 8;
+-               + this.palette.getSerializedSize()
+-               + PacketBuffer.getVarIntSize(this.storage.size())
+-               + this.storage.getBackingLongArray().length * 8;
++        return 1 + this.palette.getSerializedSize() + PacketBuffer.getVarIntSize(this.storage.size()) + this.storage.getBackingLongArray().length * 8;
      }
  }

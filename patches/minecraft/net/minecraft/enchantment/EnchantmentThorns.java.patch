@@ -1,75 +1,75 @@
 --- before/net/minecraft/enchantment/EnchantmentThorns.java
 +++ after/net/minecraft/enchantment/EnchantmentThorns.java
 @@ -17,31 +17,26 @@
-         this.func_77322_b("thorns");
+         this.setName("thorns");
      }
  
 -    @Override
-     public int func_77321_a(int p_77321_1_)
+     public int getMinEnchantability(int enchantmentLevel)
      {
-         return 10 + 20 * (p_77321_1_ - 1);
+         return 10 + 20 * (enchantmentLevel - 1);
      }
  
 -    @Override
-     public int func_77317_b(int p_77317_1_)
+     public int getMaxEnchantability(int enchantmentLevel)
      {
-         return super.func_77321_a(p_77317_1_) + 50;
+         return super.getMinEnchantability(enchantmentLevel) + 50;
      }
  
 -    @Override
-     public int func_77325_b()
+     public int getMaxLevel()
      {
          return 3;
      }
  
 -    @Override
-     public boolean func_92089_a(ItemStack p_92089_1_)
+     public boolean canApply(ItemStack stack)
      {
-         return p_92089_1_.func_77973_b() instanceof ItemArmor ? true : super.func_92089_a(p_92089_1_);
+         return stack.getItem() instanceof ItemArmor ? true : super.canApply(stack);
      }
  
 -    @Override
-     public void func_151367_b(EntityLivingBase p_151367_1_, Entity p_151367_2_, int p_151367_3_)
+     public void onUserHurt(EntityLivingBase user, Entity attacker, int level)
      {
-         Random random = p_151367_1_.func_70681_au();
+         Random random = user.getRNG();
 @@ -56,22 +51,50 @@
  
-             if (!itemstack.func_190926_b())
+             if (!itemstack.isEmpty())
              {
--                itemstack.func_77972_a(3, p_151367_1_);
-+                damageArmor(itemstack, 3, p_151367_1_);
+-                itemstack.damageItem(3, user);
++                damageArmor(itemstack, 3, user);
              }
          }
-         else if (!itemstack.func_190926_b())
+         else if (!itemstack.isEmpty())
          {
--            itemstack.func_77972_a(1, p_151367_1_);
-+            damageArmor(itemstack, 1, p_151367_1_);
+-            itemstack.damageItem(1, user);
++            damageArmor(itemstack, 1, user);
          }
      }
  
-     public static boolean func_92094_a(int p_92094_0_, Random p_92094_1_)
+     public static boolean shouldHit(int level, Random rnd)
      {
--        return p_92094_0_ <= 0 ? false : p_92094_1_.nextFloat() < 0.15F * (float)p_92094_0_;
-+        if (p_92094_0_ <= 0)
+-        return level <= 0 ? false : rnd.nextFloat() < 0.15F * (float)level;
++        if (level <= 0)
 +        {
 +            return false;
 +        }
 +        else
 +        {
-+            return p_92094_1_.nextFloat() < 0.15F * (float)p_92094_0_;
++            return rnd.nextFloat() < 0.15F * (float)level;
 +        }
      }
  
-     public static int func_92095_b(int p_92095_0_, Random p_92095_1_)
+     public static int getDamage(int level, Random rnd)
      {
-         return p_92095_0_ > 10 ? p_92095_0_ - 10 : 1 + p_92095_1_.nextInt(4);
+         return level > 10 ? level - 10 : 1 + rnd.nextInt(4);
 +    }
 +
 +    private void damageArmor(ItemStack stack, int amount, EntityLivingBase entity)
 +    {
 +        int slot = -1;
 +        int x = 0;
-+        for (ItemStack i : entity.func_184193_aE())
++        for (ItemStack i : entity.getArmorInventoryList())
 +        {
 +            if (i == stack){
 +                slot = x;
@@ -77,12 +77,12 @@
 +            }
 +            x++;
 +        }
-+        if (slot == -1 || !(stack.func_77973_b() instanceof net.minecraftforge.common.ISpecialArmor))
++        if (slot == -1 || !(stack.getItem() instanceof net.minecraftforge.common.ISpecialArmor))
 +        {
-+            stack.func_77972_a(1, entity);
++            stack.damageItem(1, entity);
 +            return;
 +        }
-+        net.minecraftforge.common.ISpecialArmor armor = (net.minecraftforge.common.ISpecialArmor)stack.func_77973_b();
-+        armor.damageArmor(entity, stack, DamageSource.func_92087_a(entity), amount, slot);
++        net.minecraftforge.common.ISpecialArmor armor = (net.minecraftforge.common.ISpecialArmor)stack.getItem();
++        armor.damageArmor(entity, stack, DamageSource.causeThornsDamage(entity), amount, slot);
      }
  }

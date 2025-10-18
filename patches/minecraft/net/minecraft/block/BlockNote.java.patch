@@ -4,105 +4,105 @@
  
  public class BlockNote extends BlockContainer
  {
--    private static final List<SoundEvent> field_176434_a = Lists.newArrayList(
--                    SoundEvents.field_187682_dG,
--                    SoundEvents.field_187676_dE,
--                    SoundEvents.field_187688_dI,
--                    SoundEvents.field_187685_dH,
--                    SoundEvents.field_187679_dF,
--                    SoundEvents.field_193809_ey,
--                    SoundEvents.field_193807_ew,
--                    SoundEvents.field_193810_ez,
--                    SoundEvents.field_193808_ex,
--                    SoundEvents.field_193785_eE
+-    private static final List<SoundEvent> INSTRUMENTS = Lists.newArrayList(
+-                    SoundEvents.BLOCK_NOTE_HARP,
+-                    SoundEvents.BLOCK_NOTE_BASEDRUM,
+-                    SoundEvents.BLOCK_NOTE_SNARE,
+-                    SoundEvents.BLOCK_NOTE_HAT,
+-                    SoundEvents.BLOCK_NOTE_BASS,
+-                    SoundEvents.BLOCK_NOTE_FLUTE,
+-                    SoundEvents.BLOCK_NOTE_BELL,
+-                    SoundEvents.BLOCK_NOTE_GUITAR,
+-                    SoundEvents.BLOCK_NOTE_CHIME,
+-                    SoundEvents.BLOCK_NOTE_XYLOPHONE
 -                );
-+    private static final List<SoundEvent> field_176434_a = Lists.newArrayList(SoundEvents.field_187682_dG, SoundEvents.field_187676_dE, SoundEvents.field_187688_dI, SoundEvents.field_187685_dH, SoundEvents.field_187679_dF, SoundEvents.field_193809_ey, SoundEvents.field_193807_ew, SoundEvents.field_193810_ez, SoundEvents.field_193808_ex, SoundEvents.field_193785_eE);
++    private static final List<SoundEvent> INSTRUMENTS = Lists.newArrayList(SoundEvents.BLOCK_NOTE_HARP, SoundEvents.BLOCK_NOTE_BASEDRUM, SoundEvents.BLOCK_NOTE_SNARE, SoundEvents.BLOCK_NOTE_HAT, SoundEvents.BLOCK_NOTE_BASS, SoundEvents.BLOCK_NOTE_FLUTE, SoundEvents.BLOCK_NOTE_BELL, SoundEvents.BLOCK_NOTE_GUITAR, SoundEvents.BLOCK_NOTE_CHIME, SoundEvents.BLOCK_NOTE_XYLOPHONE);
  
      public BlockNote()
      {
 @@ -40,7 +29,6 @@
-         this.func_149647_a(CreativeTabs.field_78028_d);
+         this.setCreativeTab(CreativeTabs.REDSTONE);
      }
  
 -    @Override
-     public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
+     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
      {
-         boolean flag = p_189540_2_.func_175640_z(p_189540_3_);
+         boolean flag = worldIn.isBlockPowered(pos);
 @@ -62,18 +50,7 @@
          }
      }
  
 -    @Override
--    public boolean func_180639_a(
--        World p_180639_1_,
--        BlockPos p_180639_2_,
--        IBlockState p_180639_3_,
--        EntityPlayer p_180639_4_,
--        EnumHand p_180639_5_,
--        EnumFacing p_180639_6_,
--        float p_180639_7_,
--        float p_180639_8_,
--        float p_180639_9_
+-    public boolean onBlockActivated(
+-        World worldIn,
+-        BlockPos pos,
+-        IBlockState state,
+-        EntityPlayer playerIn,
+-        EnumHand hand,
+-        EnumFacing facing,
+-        float hitX,
+-        float hitY,
+-        float hitZ
 -    )
-+    public boolean func_180639_a(World p_180639_1_, BlockPos p_180639_2_, IBlockState p_180639_3_, EntityPlayer p_180639_4_, EnumHand p_180639_5_, EnumFacing p_180639_6_, float p_180639_7_, float p_180639_8_, float p_180639_9_)
++    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
      {
-         if (p_180639_1_.field_72995_K)
+         if (worldIn.isRemote)
          {
 @@ -86,7 +63,9 @@
              if (tileentity instanceof TileEntityNote)
              {
                  TileEntityNote tileentitynote = (TileEntityNote)tileentity;
-+                int old = tileentitynote.field_145879_a;
-                 tileentitynote.func_145877_a();
-+                if (old == tileentitynote.field_145879_a) return false;
-                 tileentitynote.func_175108_a(p_180639_1_, p_180639_2_);
-                 p_180639_4_.func_71029_a(StatList.field_188087_U);
++                int old = tileentitynote.note;
+                 tileentitynote.changePitch();
++                if (old == tileentitynote.note) return false;
+                 tileentitynote.triggerNote(worldIn, pos);
+                 playerIn.addStat(StatList.NOTEBLOCK_TUNED);
              }
 @@ -95,7 +74,6 @@
          }
      }
  
 -    @Override
-     public void func_180649_a(World p_180649_1_, BlockPos p_180649_2_, EntityPlayer p_180649_3_)
+     public void onBlockClicked(World worldIn, BlockPos pos, EntityPlayer playerIn)
      {
-         if (!p_180649_1_.field_72995_K)
+         if (!worldIn.isRemote)
 @@ -110,7 +88,6 @@
          }
      }
  
 -    @Override
-     public TileEntity func_149915_a(World p_149915_1_, int p_149915_2_)
+     public TileEntity createNewTileEntity(World worldIn, int meta)
      {
          return new TileEntityNote();
 @@ -126,24 +103,18 @@
-         return field_176434_a.get(p_185576_1_);
+         return INSTRUMENTS.get(eventId);
      }
  
 -    @Override
-     public boolean func_189539_a(IBlockState p_189539_1_, World p_189539_2_, BlockPos p_189539_3_, int p_189539_4_, int p_189539_5_)
+     public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int id, int param)
      {
--        float f = (float)Math.pow(2.0, (double)(p_189539_5_ - 12) / 12.0);
--        p_189539_2_.func_184133_a(null, p_189539_3_, this.func_185576_e(p_189539_4_), SoundCategory.RECORDS, 3.0F, f);
--        p_189539_2_.func_175688_a(
+-        float f = (float)Math.pow(2.0, (double)(param - 12) / 12.0);
+-        worldIn.playSound(null, pos, this.getInstrument(id), SoundCategory.RECORDS, 3.0F, f);
+-        worldIn.spawnParticle(
 -            EnumParticleTypes.NOTE,
--            (double)p_189539_3_.func_177958_n() + 0.5,
--            (double)p_189539_3_.func_177956_o() + 1.2,
--            (double)p_189539_3_.func_177952_p() + 0.5,
--            (double)p_189539_5_ / 24.0,
+-            (double)pos.getX() + 0.5,
+-            (double)pos.getY() + 1.2,
+-            (double)pos.getZ() + 0.5,
+-            (double)param / 24.0,
 -            0.0,
 -            0.0
 -        );
-+        net.minecraftforge.event.world.NoteBlockEvent.Play e = new net.minecraftforge.event.world.NoteBlockEvent.Play(p_189539_2_, p_189539_3_, p_189539_1_, p_189539_5_, p_189539_4_);
++        net.minecraftforge.event.world.NoteBlockEvent.Play e = new net.minecraftforge.event.world.NoteBlockEvent.Play(worldIn, pos, state, param, id);
 +        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(e)) return false;
-+        p_189539_4_ = e.getInstrument().ordinal();
-+        p_189539_5_ = e.getVanillaNoteId();
-+        float f = (float)Math.pow(2.0D, (double)(p_189539_5_ - 12) / 12.0D);
-+        p_189539_2_.func_184133_a((EntityPlayer)null, p_189539_3_, this.func_185576_e(p_189539_4_), SoundCategory.RECORDS, 3.0F, f);
-+        p_189539_2_.func_175688_a(EnumParticleTypes.NOTE, (double)p_189539_3_.func_177958_n() + 0.5D, (double)p_189539_3_.func_177956_o() + 1.2D, (double)p_189539_3_.func_177952_p() + 0.5D, (double)p_189539_5_ / 24.0D, 0.0D, 0.0D);
++        id = e.getInstrument().ordinal();
++        param = e.getVanillaNoteId();
++        float f = (float)Math.pow(2.0D, (double)(param - 12) / 12.0D);
++        worldIn.playSound((EntityPlayer)null, pos, this.getInstrument(id), SoundCategory.RECORDS, 3.0F, f);
++        worldIn.spawnParticle(EnumParticleTypes.NOTE, (double)pos.getX() + 0.5D, (double)pos.getY() + 1.2D, (double)pos.getZ() + 0.5D, (double)param / 24.0D, 0.0D, 0.0D);
          return true;
      }
  
 -    @Override
-     public EnumBlockRenderType func_149645_b(IBlockState p_149645_1_)
+     public EnumBlockRenderType getRenderType(IBlockState state)
      {
          return EnumBlockRenderType.MODEL;

@@ -11,145 +11,145 @@
 @@ -70,7 +71,7 @@
      public RenderItem(TextureManager p_i46552_1_, ModelManager p_i46552_2_, ItemColors p_i46552_3_)
      {
-         this.field_175057_n = p_i46552_1_;
--        this.field_175059_m = new ItemModelMesher(p_i46552_2_);
-+        this.field_175059_m = new net.minecraftforge.client.ItemModelMesherForge(p_i46552_2_);
-         this.func_175041_b();
-         this.field_184395_f = p_i46552_3_;
+         this.textureManager = p_i46552_1_;
+-        this.itemModelMesher = new ItemModelMesher(p_i46552_2_);
++        this.itemModelMesher = new net.minecraftforge.client.ItemModelMesherForge(p_i46552_2_);
+         this.registerItems();
+         this.itemColors = p_i46552_3_;
      }
 @@ -112,16 +113,21 @@
  
-     private void func_191967_a(IBakedModel p_191967_1_, int p_191967_2_, ItemStack p_191967_3_)
+     private void renderModel(IBakedModel model, int color, ItemStack stack)
      {
 +        if (net.minecraftforge.common.ForgeModContainer.allowEmissiveItems)
 +        {
-+            net.minecraftforge.client.ForgeHooksClient.renderLitItem(this, p_191967_1_, p_191967_2_, p_191967_3_);
++            net.minecraftforge.client.ForgeHooksClient.renderLitItem(this, model, color, stack);
 +            return;
 +        }
-         Tessellator tessellator = Tessellator.func_178181_a();
-         BufferBuilder bufferbuilder = tessellator.func_178180_c();
-         bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_176599_b);
+         Tessellator tessellator = Tessellator.getInstance();
+         BufferBuilder bufferbuilder = tessellator.getBuffer();
+         bufferbuilder.begin(7, DefaultVertexFormats.ITEM);
  
          for (EnumFacing enumfacing : EnumFacing.values())
          {
--            this.func_191970_a(bufferbuilder, p_191967_1_.func_188616_a(null, enumfacing, 0L), p_191967_2_, p_191967_3_);
-+            this.func_191970_a(bufferbuilder, p_191967_1_.func_188616_a((IBlockState)null, enumfacing, 0L), p_191967_2_, p_191967_3_);
+-            this.renderQuads(bufferbuilder, model.getQuads(null, enumfacing, 0L), color, stack);
++            this.renderQuads(bufferbuilder, model.getQuads((IBlockState)null, enumfacing, 0L), color, stack);
          }
  
--        this.func_191970_a(bufferbuilder, p_191967_1_.func_188616_a(null, null, 0L), p_191967_2_, p_191967_3_);
-+        this.func_191970_a(bufferbuilder, p_191967_1_.func_188616_a((IBlockState)null, (EnumFacing)null, 0L), p_191967_2_, p_191967_3_);
-         tessellator.func_78381_a();
+-        this.renderQuads(bufferbuilder, model.getQuads(null, null, 0L), color, stack);
++        this.renderQuads(bufferbuilder, model.getQuads((IBlockState)null, (EnumFacing)null, 0L), color, stack);
+         tessellator.draw();
      }
  
 @@ -136,7 +142,7 @@
              {
-                 GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
-                 GlStateManager.func_179091_B();
--                TileEntityItemStackRenderer.field_147719_a.func_179022_a(p_180454_1_);
-+                p_180454_1_.func_77973_b().getTileEntityItemStackRenderer().func_179022_a(p_180454_1_);
+                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                 GlStateManager.enableRescaleNormal();
+-                TileEntityItemStackRenderer.instance.renderByItem(stack);
++                stack.getItem().getTileEntityItemStackRenderer().renderByItem(stack);
              }
              else
              {
 @@ -200,7 +206,7 @@
-         boolean flag = p_191970_3_ == -1 && !p_191970_4_.func_190926_b();
+         boolean flag = color == -1 && !stack.isEmpty();
          int i = 0;
  
--        for (int j = p_191970_2_.size(); i < j; i++)
-+        for (int j = p_191970_2_.size(); i < j; ++i)
+-        for (int j = quads.size(); i < j; i++)
++        for (int j = quads.size(); i < j; ++i)
          {
-             BakedQuad bakedquad = p_191970_2_.get(i);
-             int k = p_191970_3_;
+             BakedQuad bakedquad = quads.get(i);
+             int k = color;
 @@ -214,10 +220,10 @@
-                     k = TextureUtil.func_177054_c(k);
+                     k = TextureUtil.anaglyphColor(k);
                  }
  
 -                k |= -16777216;
 +                k = k | -16777216;
              }
  
--            this.func_191969_a(p_191970_1_, bakedquad, k);
-+            net.minecraftforge.client.model.pipeline.LightUtil.renderQuadColor(p_191970_1_, bakedquad, k);
+-            this.renderQuad(renderer, bakedquad, k);
++            net.minecraftforge.client.model.pipeline.LightUtil.renderQuadColor(renderer, bakedquad, k);
          }
      }
  
 @@ -231,7 +237,7 @@
      {
-         if (!p_181564_1_.func_190926_b())
+         if (!stack.isEmpty())
          {
--            IBakedModel ibakedmodel = this.func_184393_a(p_181564_1_, null, null);
-+            IBakedModel ibakedmodel = this.func_184393_a(p_181564_1_, (World)null, (EntityLivingBase)null);
-             this.func_184394_a(p_181564_1_, ibakedmodel, p_181564_2_, false);
+-            IBakedModel ibakedmodel = this.getItemModelWithOverrides(stack, null, null);
++            IBakedModel ibakedmodel = this.getItemModelWithOverrides(stack, (World)null, (EntityLivingBase)null);
+             this.renderItemModel(stack, ibakedmodel, cameraTransformType, false);
          }
      }
 @@ -239,19 +245,7 @@
-     public IBakedModel func_184393_a(ItemStack p_184393_1_, @Nullable World p_184393_2_, @Nullable EntityLivingBase p_184393_3_)
+     public IBakedModel getItemModelWithOverrides(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entitylivingbaseIn)
      {
-         IBakedModel ibakedmodel = this.field_175059_m.func_178089_a(p_184393_1_);
--        Item item = p_184393_1_.func_77973_b();
+         IBakedModel ibakedmodel = this.itemModelMesher.getItemModel(stack);
+-        Item item = stack.getItem();
 -
--        if (item != null && item.func_185040_i())
+-        if (item != null && item.hasCustomProperties())
 -        {
--            ResourceLocation resourcelocation = ibakedmodel.func_188617_f().func_188021_a(p_184393_1_, p_184393_2_, p_184393_3_);
+-            ResourceLocation resourcelocation = ibakedmodel.getOverrides().applyOverride(stack, worldIn, entitylivingbaseIn);
 -            return resourcelocation == null
 -                   ? ibakedmodel
--                   : this.field_175059_m.func_178083_a().func_174953_a(new ModelResourceLocation(resourcelocation, "inventory"));
+-                   : this.itemModelMesher.getModelManager().getModel(new ModelResourceLocation(resourcelocation, "inventory"));
 -        }
 -        else
 -        {
 -            return ibakedmodel;
 -        }
-+        return ibakedmodel.func_188617_f().handleItemState(ibakedmodel, p_184393_1_, p_184393_2_, p_184393_3_);
++        return ibakedmodel.getOverrides().handleItemState(ibakedmodel, stack, worldIn, entitylivingbaseIn);
      }
  
-     public void func_184392_a(ItemStack p_184392_1_, EntityLivingBase p_184392_2_, ItemCameraTransforms.TransformType p_184392_3_, boolean p_184392_4_)
+     public void renderItem(ItemStack stack, EntityLivingBase entitylivingbaseIn, ItemCameraTransforms.TransformType transform, boolean leftHanded)
 @@ -273,20 +267,10 @@
-             GlStateManager.func_179091_B();
-             GlStateManager.func_179092_a(516, 0.1F);
-             GlStateManager.func_179147_l();
--            GlStateManager.func_187428_a(
+             GlStateManager.enableRescaleNormal();
+             GlStateManager.alphaFunc(516, 0.1F);
+             GlStateManager.enableBlend();
+-            GlStateManager.tryBlendFuncSeparate(
 -                GlStateManager.SourceFactor.SRC_ALPHA,
 -                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
 -                GlStateManager.SourceFactor.ONE,
 -                GlStateManager.DestFactor.ZERO
 -            );
-+            GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-             GlStateManager.func_179094_E();
--            ItemCameraTransforms itemcameratransforms = p_184394_2_.func_177552_f();
--            ItemCameraTransforms.func_188034_a(itemcameratransforms.func_181688_b(p_184394_3_), p_184394_4_);
++            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+             GlStateManager.pushMatrix();
+-            ItemCameraTransforms itemcameratransforms = bakedmodel.getItemCameraTransforms();
+-            ItemCameraTransforms.applyTransformSide(itemcameratransforms.getTransform(transform), leftHanded);
 -
--            if (this.func_183005_a(itemcameratransforms.func_181688_b(p_184394_3_)))
+-            if (this.isThereOneNegativeScale(itemcameratransforms.getTransform(transform)))
 -            {
--                GlStateManager.func_187407_a(GlStateManager.CullFace.FRONT);
+-                GlStateManager.cullFace(GlStateManager.CullFace.FRONT);
 -            }
 +            // TODO: check if negative scale is a thing
-+            p_184394_2_ = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(p_184394_2_, p_184394_3_, p_184394_4_);
++            bakedmodel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(bakedmodel, transform, leftHanded);
  
-             this.func_180454_a(p_184394_1_, p_184394_2_);
-             GlStateManager.func_187407_a(GlStateManager.CullFace.BACK);
+             this.renderItem(stack, bakedmodel);
+             GlStateManager.cullFace(GlStateManager.CullFace.BACK);
 @@ -305,7 +289,7 @@
  
-     public void func_175042_a(ItemStack p_175042_1_, int p_175042_2_, int p_175042_3_)
+     public void renderItemIntoGUI(ItemStack stack, int x, int y)
      {
--        this.func_191962_a(p_175042_1_, p_175042_2_, p_175042_3_, this.func_184393_a(p_175042_1_, null, null));
-+        this.func_191962_a(p_175042_1_, p_175042_2_, p_175042_3_, this.func_184393_a(p_175042_1_, (World)null, (EntityLivingBase)null));
+-        this.renderItemModelIntoGUI(stack, x, y, this.getItemModelWithOverrides(stack, null, null));
++        this.renderItemModelIntoGUI(stack, x, y, this.getItemModelWithOverrides(stack, (World)null, (EntityLivingBase)null));
      }
  
-     protected void func_191962_a(ItemStack p_191962_1_, int p_191962_2_, int p_191962_3_, IBakedModel p_191962_4_)
+     protected void renderItemModelIntoGUI(ItemStack stack, int x, int y, IBakedModel bakedmodel)
 @@ -320,7 +304,7 @@
-         GlStateManager.func_187401_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-         GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
-         this.func_180452_a(p_191962_2_, p_191962_3_, p_191962_4_.func_177556_c());
--        p_191962_4_.func_177552_f().func_181689_a(ItemCameraTransforms.TransformType.GUI);
-+        p_191962_4_ = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(p_191962_4_, ItemCameraTransforms.TransformType.GUI, false);
-         this.func_180454_a(p_191962_1_, p_191962_4_);
-         GlStateManager.func_179118_c();
-         GlStateManager.func_179101_C();
+         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+         this.setupGuiTransform(x, y, bakedmodel.isGui3d());
+-        bakedmodel.getItemCameraTransforms().applyTransform(ItemCameraTransforms.TransformType.GUI);
++        bakedmodel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(bakedmodel, ItemCameraTransforms.TransformType.GUI, false);
+         this.renderItem(stack, bakedmodel);
+         GlStateManager.disableAlpha();
+         GlStateManager.disableRescaleNormal();
 @@ -360,7 +344,7 @@
  
              try
              {
--                this.func_191962_a(p_184391_2_, p_184391_3_, p_184391_4_, this.func_184393_a(p_184391_2_, null, p_184391_1_));
-+                this.func_191962_a(p_184391_2_, p_184391_3_, p_184391_4_, this.func_184393_a(p_184391_2_, (World)null, p_184391_1_));
+-                this.renderItemModelIntoGUI(p_184391_2_, p_184391_3_, p_184391_4_, this.getItemModelWithOverrides(p_184391_2_, null, p_184391_1_));
++                this.renderItemModelIntoGUI(p_184391_2_, p_184391_3_, p_184391_4_, this.getItemModelWithOverrides(p_184391_2_, (World)null, p_184391_1_));
              }
              catch (Throwable throwable)
              {
@@ -157,188 +157,188 @@
                  {
                      public String call() throws Exception
                      {
--                        return String.valueOf(p_184391_2_.func_77973_b());
-+                        return String.valueOf((Object)p_184391_2_.func_77973_b());
+-                        return String.valueOf(p_184391_2_.getItem());
++                        return String.valueOf((Object)p_184391_2_.getItem());
                      }
                  });
-+                crashreportcategory.func_189529_a("Registry Name", () -> String.valueOf(p_184391_2_.func_77973_b().getRegistryName()));
-                 crashreportcategory.func_189529_a("Item Aux", new ICrashReportDetail<String>()
++                crashreportcategory.addDetail("Registry Name", () -> String.valueOf(p_184391_2_.getItem().getRegistryName()));
+                 crashreportcategory.addDetail("Item Aux", new ICrashReportDetail<String>()
                  {
                      public String call() throws Exception
 @@ -384,7 +369,7 @@
                  {
                      public String call() throws Exception
                      {
--                        return String.valueOf(p_184391_2_.func_77978_p());
-+                        return String.valueOf((Object)p_184391_2_.func_77978_p());
+-                        return String.valueOf(p_184391_2_.getTagCompound());
++                        return String.valueOf((Object)p_184391_2_.getTagCompound());
                      }
                  });
-                 crashreportcategory.func_189529_a("Item Foil", new ICrashReportDetail<String>()
+                 crashreportcategory.addDetail("Item Foil", new ICrashReportDetail<String>()
 @@ -403,7 +388,7 @@
  
-     public void func_175030_a(FontRenderer p_175030_1_, ItemStack p_175030_2_, int p_175030_3_, int p_175030_4_)
+     public void renderItemOverlays(FontRenderer fr, ItemStack stack, int xPosition, int yPosition)
      {
--        this.func_180453_a(p_175030_1_, p_175030_2_, p_175030_3_, p_175030_4_, null);
-+        this.func_180453_a(p_175030_1_, p_175030_2_, p_175030_3_, p_175030_4_, (String)null);
+-        this.renderItemOverlayIntoGUI(fr, stack, xPosition, yPosition, null);
++        this.renderItemOverlayIntoGUI(fr, stack, xPosition, yPosition, (String)null);
      }
  
-     public void func_180453_a(FontRenderer p_180453_1_, ItemStack p_180453_2_, int p_180453_3_, int p_180453_4_, @Nullable String p_180453_5_)
+     public void renderItemOverlayIntoGUI(FontRenderer fr, ItemStack stack, int xPosition, int yPosition, @Nullable String text)
 @@ -419,9 +404,12 @@
-                 p_180453_1_.func_175063_a(s, (float)(p_180453_3_ + 19 - 2 - p_180453_1_.func_78256_a(s)), (float)(p_180453_4_ + 6 + 3), 16777215);
-                 GlStateManager.func_179145_e();
-                 GlStateManager.func_179126_j();
+                 fr.drawStringWithShadow(s, (float)(xPosition + 19 - 2 - fr.getStringWidth(s)), (float)(yPosition + 6 + 3), 16777215);
+                 GlStateManager.enableLighting();
+                 GlStateManager.enableDepth();
 +                // Fixes opaque cooldown overlay a bit lower
 +                // TODO: check if enabled blending still screws things up down the line.
-+                GlStateManager.func_179147_l();
++                GlStateManager.enableBlend();
              }
  
--            if (p_180453_2_.func_77951_h())
-+            if (p_180453_2_.func_77973_b().showDurabilityBar(p_180453_2_))
+-            if (stack.isItemDamaged())
++            if (stack.getItem().showDurabilityBar(stack))
              {
-                 GlStateManager.func_179140_f();
-                 GlStateManager.func_179097_i();
+                 GlStateManager.disableLighting();
+                 GlStateManager.disableDepth();
 @@ -430,13 +418,12 @@
-                 GlStateManager.func_179084_k();
-                 Tessellator tessellator = Tessellator.func_178181_a();
-                 BufferBuilder bufferbuilder = tessellator.func_178180_c();
--                float f = (float)p_180453_2_.func_77952_i();
--                float f1 = (float)p_180453_2_.func_77958_k();
+                 GlStateManager.disableBlend();
+                 Tessellator tessellator = Tessellator.getInstance();
+                 BufferBuilder bufferbuilder = tessellator.getBuffer();
+-                float f = (float)stack.getItemDamage();
+-                float f1 = (float)stack.getMaxDamage();
 -                float f2 = Math.max(0.0F, (f1 - f) / f1);
 -                int i = Math.round(13.0F - f * 13.0F / f1);
--                int j = MathHelper.func_181758_c(f2 / 3.0F, 1.0F, 1.0F);
-+                double health = p_180453_2_.func_77973_b().getDurabilityForDisplay(p_180453_2_);
-+                int rgbfordisplay = p_180453_2_.func_77973_b().getRGBDurabilityForDisplay(p_180453_2_);
+-                int j = MathHelper.hsvToRGB(f2 / 3.0F, 1.0F, 1.0F);
++                double health = stack.getItem().getDurabilityForDisplay(stack);
++                int rgbfordisplay = stack.getItem().getRGBDurabilityForDisplay(stack);
 +                int i = Math.round(13.0F - (float)health * 13.0F);
 +                int j = rgbfordisplay;
-                 this.func_181565_a(bufferbuilder, p_180453_3_ + 2, p_180453_4_ + 13, 13, 2, 0, 0, 0, 255);
--                this.func_181565_a(bufferbuilder, p_180453_3_ + 2, p_180453_4_ + 13, i, 1, j >> 16 & 0xFF, j >> 8 & 0xFF, j & 0xFF, 255);
-+                this.func_181565_a(bufferbuilder, p_180453_3_ + 2, p_180453_4_ + 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
-                 GlStateManager.func_179147_l();
-                 GlStateManager.func_179141_d();
-                 GlStateManager.func_179098_w();
+                 this.draw(bufferbuilder, xPosition + 2, yPosition + 13, 13, 2, 0, 0, 0, 255);
+-                this.draw(bufferbuilder, xPosition + 2, yPosition + 13, i, 1, j >> 16 & 0xFF, j >> 8 & 0xFF, j & 0xFF, 255);
++                this.draw(bufferbuilder, xPosition + 2, yPosition + 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
+                 GlStateManager.enableBlend();
+                 GlStateManager.enableAlpha();
+                 GlStateManager.enableTexture2D();
 @@ -445,9 +432,7 @@
              }
  
-             EntityPlayerSP entityplayersp = Minecraft.func_71410_x().field_71439_g;
+             EntityPlayerSP entityplayersp = Minecraft.getMinecraft().player;
 -            float f3 = entityplayersp == null
 -                       ? 0.0F
--                       : entityplayersp.func_184811_cZ().func_185143_a(p_180453_2_.func_77973_b(), Minecraft.func_71410_x().func_184121_ak());
-+            float f3 = entityplayersp == null ? 0.0F : entityplayersp.func_184811_cZ().func_185143_a(p_180453_2_.func_77973_b(), Minecraft.func_71410_x().func_184121_ak());
+-                       : entityplayersp.getCooldownTracker().getCooldown(stack.getItem(), Minecraft.getMinecraft().getRenderPartialTicks());
++            float f3 = entityplayersp == null ? 0.0F : entityplayersp.getCooldownTracker().getCooldown(stack.getItem(), Minecraft.getMinecraft().getRenderPartialTicks());
  
              if (f3 > 0.0F)
              {
 @@ -456,17 +441,7 @@
-                 GlStateManager.func_179090_x();
-                 Tessellator tessellator1 = Tessellator.func_178181_a();
-                 BufferBuilder bufferbuilder1 = tessellator1.func_178180_c();
--                this.func_181565_a(
+                 GlStateManager.disableTexture2D();
+                 Tessellator tessellator1 = Tessellator.getInstance();
+                 BufferBuilder bufferbuilder1 = tessellator1.getBuffer();
+-                this.draw(
 -                    bufferbuilder1,
--                    p_180453_3_,
--                    p_180453_4_ + MathHelper.func_76141_d(16.0F * (1.0F - f3)),
+-                    xPosition,
+-                    yPosition + MathHelper.floor(16.0F * (1.0F - f3)),
 -                    16,
--                    MathHelper.func_76123_f(16.0F * f3),
+-                    MathHelper.ceil(16.0F * f3),
 -                    255,
 -                    255,
 -                    255,
 -                    127
 -                );
-+                this.func_181565_a(bufferbuilder1, p_180453_3_, p_180453_4_ + MathHelper.func_76141_d(16.0F * (1.0F - f3)), 16, MathHelper.func_76123_f(16.0F * f3), 255, 255, 255, 127);
-                 GlStateManager.func_179098_w();
-                 GlStateManager.func_179145_e();
-                 GlStateManager.func_179126_j();
++                this.draw(bufferbuilder1, xPosition, yPosition + MathHelper.floor(16.0F * (1.0F - f3)), 16, MathHelper.ceil(16.0F * f3), 255, 255, 255, 127);
+                 GlStateManager.enableTexture2D();
+                 GlStateManager.enableLighting();
+                 GlStateManager.enableDepth();
 @@ -474,31 +449,13 @@
          }
      }
  
--    private void func_181565_a(
--        BufferBuilder p_181565_1_,
--        int p_181565_2_,
--        int p_181565_3_,
--        int p_181565_4_,
--        int p_181565_5_,
--        int p_181565_6_,
--        int p_181565_7_,
--        int p_181565_8_,
--        int p_181565_9_
+-    private void draw(
+-        BufferBuilder renderer,
+-        int x,
+-        int y,
+-        int width,
+-        int height,
+-        int red,
+-        int green,
+-        int blue,
+-        int alpha
 -    )
-+    private void func_181565_a(BufferBuilder p_181565_1_, int p_181565_2_, int p_181565_3_, int p_181565_4_, int p_181565_5_, int p_181565_6_, int p_181565_7_, int p_181565_8_, int p_181565_9_)
++    private void draw(BufferBuilder renderer, int x, int y, int width, int height, int red, int green, int blue, int alpha)
      {
-         p_181565_1_.func_181668_a(7, DefaultVertexFormats.field_181706_f);
--        p_181565_1_.func_181662_b((double)(p_181565_2_ + 0), (double)(p_181565_3_ + 0), 0.0)
--        .func_181669_b(p_181565_6_, p_181565_7_, p_181565_8_, p_181565_9_)
--        .func_181675_d();
--        p_181565_1_.func_181662_b((double)(p_181565_2_ + 0), (double)(p_181565_3_ + p_181565_5_), 0.0)
--        .func_181669_b(p_181565_6_, p_181565_7_, p_181565_8_, p_181565_9_)
--        .func_181675_d();
--        p_181565_1_.func_181662_b((double)(p_181565_2_ + p_181565_4_), (double)(p_181565_3_ + p_181565_5_), 0.0)
--        .func_181669_b(p_181565_6_, p_181565_7_, p_181565_8_, p_181565_9_)
--        .func_181675_d();
--        p_181565_1_.func_181662_b((double)(p_181565_2_ + p_181565_4_), (double)(p_181565_3_ + 0), 0.0)
--        .func_181669_b(p_181565_6_, p_181565_7_, p_181565_8_, p_181565_9_)
--        .func_181675_d();
-+        p_181565_1_.func_181662_b((double)(p_181565_2_ + 0), (double)(p_181565_3_ + 0), 0.0D).func_181669_b(p_181565_6_, p_181565_7_, p_181565_8_, p_181565_9_).func_181675_d();
-+        p_181565_1_.func_181662_b((double)(p_181565_2_ + 0), (double)(p_181565_3_ + p_181565_5_), 0.0D).func_181669_b(p_181565_6_, p_181565_7_, p_181565_8_, p_181565_9_).func_181675_d();
-+        p_181565_1_.func_181662_b((double)(p_181565_2_ + p_181565_4_), (double)(p_181565_3_ + p_181565_5_), 0.0D).func_181669_b(p_181565_6_, p_181565_7_, p_181565_8_, p_181565_9_).func_181675_d();
-+        p_181565_1_.func_181662_b((double)(p_181565_2_ + p_181565_4_), (double)(p_181565_3_ + 0), 0.0D).func_181669_b(p_181565_6_, p_181565_7_, p_181565_8_, p_181565_9_).func_181675_d();
-         Tessellator.func_178181_a().func_78381_a();
+         renderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+-        renderer.pos((double)(x + 0), (double)(y + 0), 0.0)
+-        .color(red, green, blue, alpha)
+-        .endVertex();
+-        renderer.pos((double)(x + 0), (double)(y + height), 0.0)
+-        .color(red, green, blue, alpha)
+-        .endVertex();
+-        renderer.pos((double)(x + width), (double)(y + height), 0.0)
+-        .color(red, green, blue, alpha)
+-        .endVertex();
+-        renderer.pos((double)(x + width), (double)(y + 0), 0.0)
+-        .color(red, green, blue, alpha)
+-        .endVertex();
++        renderer.pos((double)(x + 0), (double)(y + 0), 0.0D).color(red, green, blue, alpha).endVertex();
++        renderer.pos((double)(x + 0), (double)(y + height), 0.0D).color(red, green, blue, alpha).endVertex();
++        renderer.pos((double)(x + width), (double)(y + height), 0.0D).color(red, green, blue, alpha).endVertex();
++        renderer.pos((double)(x + width), (double)(y + 0), 0.0D).color(red, green, blue, alpha).endVertex();
+         Tessellator.getInstance().draw();
      }
  
 @@ -1026,7 +983,6 @@
-         this.func_175047_a(Items.field_151060_bw, "speckled_melon");
-         this.field_175059_m.func_178080_a(Items.field_151063_bx, new ItemMeshDefinition()
+         this.registerItem(Items.SPECKLED_MELON, "speckled_melon");
+         this.itemModelMesher.register(Items.SPAWN_EGG, new ItemMeshDefinition()
          {
 -            @Override
-             public ModelResourceLocation func_178113_a(ItemStack p_178113_1_)
+             public ModelResourceLocation getModelLocation(ItemStack stack)
              {
                  return new ModelResourceLocation("spawn_egg", "inventory");
 @@ -1068,7 +1024,6 @@
-         this.func_175047_a(Items.field_151057_cb, "name_tag");
-         this.field_175059_m.func_178080_a(Items.field_179564_cE, new ItemMeshDefinition()
+         this.registerItem(Items.NAME_TAG, "name_tag");
+         this.itemModelMesher.register(Items.BANNER, new ItemMeshDefinition()
          {
 -            @Override
-             public ModelResourceLocation func_178113_a(ItemStack p_178113_1_)
+             public ModelResourceLocation getModelLocation(ItemStack stack)
              {
                  return new ModelResourceLocation("banner", "inventory");
 @@ -1076,7 +1031,6 @@
          });
-         this.field_175059_m.func_178080_a(Items.field_151104_aV, new ItemMeshDefinition()
+         this.itemModelMesher.register(Items.BED, new ItemMeshDefinition()
          {
 -            @Override
-             public ModelResourceLocation func_178113_a(ItemStack p_178113_1_)
+             public ModelResourceLocation getModelLocation(ItemStack stack)
              {
                  return new ModelResourceLocation("bed", "inventory");
 @@ -1084,7 +1038,6 @@
          });
-         this.field_175059_m.func_178080_a(Items.field_185159_cQ, new ItemMeshDefinition()
+         this.itemModelMesher.register(Items.SHIELD, new ItemMeshDefinition()
          {
 -            @Override
-             public ModelResourceLocation func_178113_a(ItemStack p_178113_1_)
+             public ModelResourceLocation getModelLocation(ItemStack stack)
              {
                  return new ModelResourceLocation("shield", "inventory");
 @@ -1112,7 +1065,6 @@
-         this.func_175047_a(Items.field_192397_db, "knowledge_book");
-         this.field_175059_m.func_178080_a(Items.field_151134_bR, new ItemMeshDefinition()
+         this.registerItem(Items.KNOWLEDGE_BOOK, "knowledge_book");
+         this.itemModelMesher.register(Items.ENCHANTED_BOOK, new ItemMeshDefinition()
          {
 -            @Override
-             public ModelResourceLocation func_178113_a(ItemStack p_178113_1_)
+             public ModelResourceLocation getModelLocation(ItemStack stack)
              {
                  return new ModelResourceLocation("enchanted_book", "inventory");
 @@ -1120,7 +1072,6 @@
          });
-         this.field_175059_m.func_178080_a(Items.field_151098_aY, new ItemMeshDefinition()
+         this.itemModelMesher.register(Items.FILLED_MAP, new ItemMeshDefinition()
          {
 -            @Override
-             public ModelResourceLocation func_178113_a(ItemStack p_178113_1_)
+             public ModelResourceLocation getModelLocation(ItemStack stack)
              {
                  return new ModelResourceLocation("filled_map", "inventory");
 @@ -1141,9 +1092,9 @@
-         this.func_175029_a(Blocks.field_185779_df, TileEntityStructure.Mode.LOAD.func_185110_a(), "structure_block");
-         this.func_175029_a(Blocks.field_185779_df, TileEntityStructure.Mode.CORNER.func_185110_a(), "structure_block");
-         this.func_175029_a(Blocks.field_185779_df, TileEntityStructure.Mode.DATA.func_185110_a(), "structure_block");
-+        net.minecraftforge.client.model.ModelLoader.onRegisterItems(this.field_175059_m);
+         this.registerBlock(Blocks.STRUCTURE_BLOCK, TileEntityStructure.Mode.LOAD.getModeId(), "structure_block");
+         this.registerBlock(Blocks.STRUCTURE_BLOCK, TileEntityStructure.Mode.CORNER.getModeId(), "structure_block");
+         this.registerBlock(Blocks.STRUCTURE_BLOCK, TileEntityStructure.Mode.DATA.getModeId(), "structure_block");
++        net.minecraftforge.client.model.ModelLoader.onRegisterItems(this.itemModelMesher);
      }
  
 -    @Override
-     public void func_110549_a(IResourceManager p_110549_1_)
+     public void onResourceManagerReload(IResourceManager resourceManager)
      {
-         this.field_175059_m.func_178085_b();
+         this.itemModelMesher.rebuildCache();

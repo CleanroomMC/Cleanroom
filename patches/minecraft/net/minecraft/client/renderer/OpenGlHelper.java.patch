@@ -48,44 +48,44 @@
  @SideOnly(Side.CLIENT)
  public class OpenGlHelper
 @@ -93,6 +80,10 @@
-     public static int field_176089_P;
-     public static int field_148826_e;
+     public static int GL_ARRAY_BUFFER;
+     public static int GL_STATIC_DRAW;
  
 +    /* Stores the last values sent into setLightmapTextureCoords */
 +    public static float lastBrightnessX = 0.0f;
 +    public static float lastBrightnessY = 0.0f;
 +
-     public static void func_77474_a()
+     public static void initializeTextures()
      {
          ContextCapabilities contextcapabilities = GLContext.getCapabilities();
 @@ -163,8 +154,7 @@
  
-         field_153211_u = contextcapabilities.GL_EXT_blend_func_separate && !contextcapabilities.OpenGL14;
-         field_148828_i = contextcapabilities.OpenGL14 || contextcapabilities.GL_EXT_blend_func_separate;
--        field_148823_f = field_148828_i
+         extBlendFuncSeparate = contextcapabilities.GL_EXT_blend_func_separate && !contextcapabilities.OpenGL14;
+         openGL14 = contextcapabilities.OpenGL14 || contextcapabilities.GL_EXT_blend_func_separate;
+-        framebufferSupported = openGL14
 -                         && (contextcapabilities.GL_ARB_framebuffer_object || contextcapabilities.GL_EXT_framebuffer_object || contextcapabilities.OpenGL30);
-+        field_148823_f = field_148828_i && (contextcapabilities.GL_ARB_framebuffer_object || contextcapabilities.GL_EXT_framebuffer_object || contextcapabilities.OpenGL30);
++        framebufferSupported = openGL14 && (contextcapabilities.GL_ARB_framebuffer_object || contextcapabilities.GL_EXT_framebuffer_object || contextcapabilities.OpenGL30);
  
-         if (field_148823_f)
+         if (framebufferSupported)
          {
 @@ -224,8 +214,7 @@
          }
  
-         field_148827_a = contextcapabilities.OpenGL21;
--        field_153213_x = field_148827_a
+         openGL21 = contextcapabilities.OpenGL21;
+-        shadersAvailable = openGL21
 -                         || contextcapabilities.GL_ARB_vertex_shader && contextcapabilities.GL_ARB_fragment_shader && contextcapabilities.GL_ARB_shader_objects;
-+        field_153213_x = field_148827_a || contextcapabilities.GL_ARB_vertex_shader && contextcapabilities.GL_ARB_fragment_shader && contextcapabilities.GL_ARB_shader_objects;
-         field_153196_B = field_153196_B + "Shaders are " + (field_153213_x ? "" : "not ") + "available because ";
++        shadersAvailable = openGL21 || contextcapabilities.GL_ARB_vertex_shader && contextcapabilities.GL_ARB_fragment_shader && contextcapabilities.GL_ARB_shader_objects;
+         logText = logText + "Shaders are " + (shadersAvailable ? "" : "not ") + "available because ";
  
-         if (field_153213_x)
+         if (shadersAvailable)
 @@ -296,11 +285,12 @@
  
          try
          {
 -            Processor[] aprocessor = new SystemInfo().getHardware().getProcessors();
--            field_183030_aa = String.format("%dx %s", aprocessor.length, aprocessor[0]).replaceAll("\\s+", " ");
+-            cpu = String.format("%dx %s", aprocessor.length, aprocessor[0]).replaceAll("\\s+", " ");
 +            CentralProcessor aprocessor = (new SystemInfo()).getHardware().getProcessor();
-+            field_183030_aa = String.format("%dx %s", aprocessor.getLogicalProcessorCount(), aprocessor.getProcessorIdentifier().getName()).replaceAll("\\s+", " ");
++            cpu = String.format("%dx %s", aprocessor.getLogicalProcessorCount(), aprocessor.getProcessorIdentifier().getName()).replaceAll("\\s+", " ");
          }
 -        catch (Throwable throwable)
 +        catch (Throwable var3)
@@ -96,57 +96,57 @@
  
 @@ -854,6 +844,12 @@
          {
-             GL13.glMultiTexCoord2f(p_77475_0_, p_77475_1_, p_77475_2_);
+             GL13.glMultiTexCoord2f(target, x, y);
          }
 +
-+        if (p_77475_0_ == field_77476_b)
++        if (target == lightmapTexUnit)
 +        {
-+            lastBrightnessX = p_77475_1_;
-+            lastBrightnessY = p_77475_2_;
++            lastBrightnessX = x;
++            lastBrightnessY = y;
 +        }
      }
  
-     public static void func_148821_a(int p_148821_0_, int p_148821_1_, int p_148821_2_, int p_148821_3_)
+     public static void glBlendFunc(int sFactorRGB, int dFactorRGB, int sfactorAlpha, int dfactorAlpha)
 @@ -893,21 +889,21 @@
-         BufferBuilder bufferbuilder = tessellator.func_178180_c();
+         BufferBuilder bufferbuilder = tessellator.getBuffer();
          GL11.glLineWidth(4.0F);
-         bufferbuilder.func_181668_a(1, DefaultVertexFormats.field_181706_f);
--        bufferbuilder.func_181662_b(0.0, 0.0, 0.0).func_181669_b(0, 0, 0, 255).func_181675_d();
--        bufferbuilder.func_181662_b((double)p_188785_0_, 0.0, 0.0).func_181669_b(0, 0, 0, 255).func_181675_d();
--        bufferbuilder.func_181662_b(0.0, 0.0, 0.0).func_181669_b(0, 0, 0, 255).func_181675_d();
--        bufferbuilder.func_181662_b(0.0, (double)p_188785_0_, 0.0).func_181669_b(0, 0, 0, 255).func_181675_d();
--        bufferbuilder.func_181662_b(0.0, 0.0, 0.0).func_181669_b(0, 0, 0, 255).func_181675_d();
--        bufferbuilder.func_181662_b(0.0, 0.0, (double)p_188785_0_).func_181669_b(0, 0, 0, 255).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, 0.0D, 0.0D).func_181669_b(0, 0, 0, 255).func_181675_d();
-+        bufferbuilder.func_181662_b((double)p_188785_0_, 0.0D, 0.0D).func_181669_b(0, 0, 0, 255).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, 0.0D, 0.0D).func_181669_b(0, 0, 0, 255).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, (double)p_188785_0_, 0.0D).func_181669_b(0, 0, 0, 255).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, 0.0D, 0.0D).func_181669_b(0, 0, 0, 255).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, 0.0D, (double)p_188785_0_).func_181669_b(0, 0, 0, 255).func_181675_d();
-         tessellator.func_78381_a();
+         bufferbuilder.begin(1, DefaultVertexFormats.POSITION_COLOR);
+-        bufferbuilder.pos(0.0, 0.0, 0.0).color(0, 0, 0, 255).endVertex();
+-        bufferbuilder.pos((double)p_188785_0_, 0.0, 0.0).color(0, 0, 0, 255).endVertex();
+-        bufferbuilder.pos(0.0, 0.0, 0.0).color(0, 0, 0, 255).endVertex();
+-        bufferbuilder.pos(0.0, (double)p_188785_0_, 0.0).color(0, 0, 0, 255).endVertex();
+-        bufferbuilder.pos(0.0, 0.0, 0.0).color(0, 0, 0, 255).endVertex();
+-        bufferbuilder.pos(0.0, 0.0, (double)p_188785_0_).color(0, 0, 0, 255).endVertex();
++        bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
++        bufferbuilder.pos((double)p_188785_0_, 0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
++        bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
++        bufferbuilder.pos(0.0D, (double)p_188785_0_, 0.0D).color(0, 0, 0, 255).endVertex();
++        bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
++        bufferbuilder.pos(0.0D, 0.0D, (double)p_188785_0_).color(0, 0, 0, 255).endVertex();
+         tessellator.draw();
          GL11.glLineWidth(2.0F);
-         bufferbuilder.func_181668_a(1, DefaultVertexFormats.field_181706_f);
--        bufferbuilder.func_181662_b(0.0, 0.0, 0.0).func_181669_b(255, 0, 0, 255).func_181675_d();
--        bufferbuilder.func_181662_b((double)p_188785_0_, 0.0, 0.0).func_181669_b(255, 0, 0, 255).func_181675_d();
--        bufferbuilder.func_181662_b(0.0, 0.0, 0.0).func_181669_b(0, 255, 0, 255).func_181675_d();
--        bufferbuilder.func_181662_b(0.0, (double)p_188785_0_, 0.0).func_181669_b(0, 255, 0, 255).func_181675_d();
--        bufferbuilder.func_181662_b(0.0, 0.0, 0.0).func_181669_b(127, 127, 255, 255).func_181675_d();
--        bufferbuilder.func_181662_b(0.0, 0.0, (double)p_188785_0_).func_181669_b(127, 127, 255, 255).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, 0.0D, 0.0D).func_181669_b(255, 0, 0, 255).func_181675_d();
-+        bufferbuilder.func_181662_b((double)p_188785_0_, 0.0D, 0.0D).func_181669_b(255, 0, 0, 255).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, 0.0D, 0.0D).func_181669_b(0, 255, 0, 255).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, (double)p_188785_0_, 0.0D).func_181669_b(0, 255, 0, 255).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, 0.0D, 0.0D).func_181669_b(127, 127, 255, 255).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, 0.0D, (double)p_188785_0_).func_181669_b(127, 127, 255, 255).func_181675_d();
-         tessellator.func_78381_a();
+         bufferbuilder.begin(1, DefaultVertexFormats.POSITION_COLOR);
+-        bufferbuilder.pos(0.0, 0.0, 0.0).color(255, 0, 0, 255).endVertex();
+-        bufferbuilder.pos((double)p_188785_0_, 0.0, 0.0).color(255, 0, 0, 255).endVertex();
+-        bufferbuilder.pos(0.0, 0.0, 0.0).color(0, 255, 0, 255).endVertex();
+-        bufferbuilder.pos(0.0, (double)p_188785_0_, 0.0).color(0, 255, 0, 255).endVertex();
+-        bufferbuilder.pos(0.0, 0.0, 0.0).color(127, 127, 255, 255).endVertex();
+-        bufferbuilder.pos(0.0, 0.0, (double)p_188785_0_).color(127, 127, 255, 255).endVertex();
++        bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(255, 0, 0, 255).endVertex();
++        bufferbuilder.pos((double)p_188785_0_, 0.0D, 0.0D).color(255, 0, 0, 255).endVertex();
++        bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(0, 255, 0, 255).endVertex();
++        bufferbuilder.pos(0.0D, (double)p_188785_0_, 0.0D).color(0, 255, 0, 255).endVertex();
++        bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(127, 127, 255, 255).endVertex();
++        bufferbuilder.pos(0.0D, 0.0D, (double)p_188785_0_).color(127, 127, 255, 255).endVertex();
+         tessellator.draw();
          GL11.glLineWidth(1.0F);
-         GlStateManager.func_179132_a(true);
+         GlStateManager.depthMask(true);
 @@ -951,7 +947,7 @@
          try
          {
              Class<?> oclass = Class.forName("java.awt.Desktop");
 -            Object object = oclass.getMethod("getDesktop").invoke(null);
 +            Object object = oclass.getMethod("getDesktop").invoke((Object)null);
-             oclass.getMethod("browse", URI.class).invoke(object, p_188786_0_.toURI());
+             oclass.getMethod("browse", URI.class).invoke(object, fileIn.toURI());
          }
          catch (Throwable throwable)

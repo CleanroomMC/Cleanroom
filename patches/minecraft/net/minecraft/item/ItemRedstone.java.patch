@@ -9,30 +9,30 @@
  import net.minecraft.entity.player.EntityPlayerMP;
  import net.minecraft.init.Blocks;
 @@ -18,25 +19,13 @@
-         this.func_77637_a(CreativeTabs.field_78028_d);
+         this.setCreativeTab(CreativeTabs.REDSTONE);
      }
  
 -    @Override
--    public EnumActionResult func_180614_a(
--        EntityPlayer p_180614_1_,
--        World p_180614_2_,
--        BlockPos p_180614_3_,
--        EnumHand p_180614_4_,
--        EnumFacing p_180614_5_,
--        float p_180614_6_,
--        float p_180614_7_,
--        float p_180614_8_
+-    public EnumActionResult onItemUse(
+-        EntityPlayer player,
+-        World worldIn,
+-        BlockPos pos,
+-        EnumHand hand,
+-        EnumFacing facing,
+-        float hitX,
+-        float hitY,
+-        float hitZ
 -    )
-+    public EnumActionResult func_180614_a(EntityPlayer p_180614_1_, World p_180614_2_, BlockPos p_180614_3_, EnumHand p_180614_4_, EnumFacing p_180614_5_, float p_180614_6_, float p_180614_7_, float p_180614_8_)
++    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
      {
-         boolean flag = p_180614_2_.func_180495_p(p_180614_3_).func_177230_c().func_176200_f(p_180614_2_, p_180614_3_);
-         BlockPos blockpos = flag ? p_180614_3_ : p_180614_3_.func_177972_a(p_180614_5_);
-         ItemStack itemstack = p_180614_1_.func_184586_b(p_180614_4_);
+         boolean flag = worldIn.getBlockState(pos).getBlock().isReplaceable(worldIn, pos);
+         BlockPos blockpos = flag ? pos : pos.offset(facing);
+         ItemStack itemstack = player.getHeldItem(hand);
  
--        if (p_180614_1_.func_175151_a(blockpos, p_180614_5_, itemstack)
--                && p_180614_2_.func_190527_a(p_180614_2_.func_180495_p(blockpos).func_177230_c(), blockpos, false, p_180614_5_, null)
--                && Blocks.field_150488_af.func_176196_c(p_180614_2_, blockpos))
-+        if (p_180614_1_.func_175151_a(blockpos, p_180614_5_, itemstack) && p_180614_2_.func_190527_a(p_180614_2_.func_180495_p(blockpos).func_177230_c(), blockpos, false, p_180614_5_, p_180614_1_) && Blocks.field_150488_af.func_176196_c(p_180614_2_, blockpos))
+-        if (player.canPlayerEdit(blockpos, facing, itemstack)
+-                && worldIn.mayPlace(worldIn.getBlockState(blockpos).getBlock(), blockpos, false, facing, null)
+-                && Blocks.REDSTONE_WIRE.canPlaceBlockAt(worldIn, blockpos))
++        if (player.canPlayerEdit(blockpos, facing, itemstack) && worldIn.mayPlace(worldIn.getBlockState(blockpos).getBlock(), blockpos, false, facing, player) && Blocks.REDSTONE_WIRE.canPlaceBlockAt(worldIn, blockpos))
          {
-             p_180614_2_.func_175656_a(blockpos, Blocks.field_150488_af.func_176223_P());
+             worldIn.setBlockState(blockpos, Blocks.REDSTONE_WIRE.getDefaultState());
  

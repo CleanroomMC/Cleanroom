@@ -1,53 +1,53 @@
 --- before/net/minecraft/client/gui/advancements/GuiScreenAdvancements.java
 +++ after/net/minecraft/client/gui/advancements/GuiScreenAdvancements.java
 @@ -24,18 +24,18 @@
-     private static final ResourceLocation field_191943_f = new ResourceLocation("textures/gui/advancements/window.png");
-     private static final ResourceLocation field_191945_g = new ResourceLocation("textures/gui/advancements/tabs.png");
-     private final ClientAdvancementManager field_191946_h;
--    private final Map<Advancement, GuiAdvancementTab> field_191947_i = Maps.newLinkedHashMap();
-+    private final Map<Advancement, GuiAdvancementTab> field_191947_i = Maps.<Advancement, GuiAdvancementTab>newLinkedHashMap();
-     private GuiAdvancementTab field_191940_s;
-     private int field_191941_t;
-     private int field_191942_u;
-     private boolean field_191944_v;
+     private static final ResourceLocation WINDOW = new ResourceLocation("textures/gui/advancements/window.png");
+     private static final ResourceLocation TABS = new ResourceLocation("textures/gui/advancements/tabs.png");
+     private final ClientAdvancementManager clientAdvancementManager;
+-    private final Map<Advancement, GuiAdvancementTab> tabs = Maps.newLinkedHashMap();
++    private final Map<Advancement, GuiAdvancementTab> tabs = Maps.<Advancement, GuiAdvancementTab>newLinkedHashMap();
+     private GuiAdvancementTab selectedTab;
+     private int scrollMouseX;
+     private int scrollMouseY;
+     private boolean isScrolling;
 +    private static int tabPage, maxPages;
  
      public GuiScreenAdvancements(ClientAdvancementManager p_i47383_1_)
      {
-         this.field_191946_h = p_i47383_1_;
+         this.clientAdvancementManager = p_i47383_1_;
      }
  
 -    @Override
-     public void func_73866_w_()
+     public void initGui()
      {
-         this.field_191947_i.clear();
+         this.tabs.clear();
 @@ -44,18 +44,25 @@
  
-         if (this.field_191940_s == null && !this.field_191947_i.isEmpty())
+         if (this.selectedTab == null && !this.tabs.isEmpty())
          {
--            this.field_191946_h.func_194230_a(this.field_191947_i.values().iterator().next().func_193935_c(), true);
-+            this.field_191946_h.func_194230_a(((GuiAdvancementTab)this.field_191947_i.values().iterator().next()).func_193935_c(), true);
+-            this.clientAdvancementManager.setSelectedTab(this.tabs.values().iterator().next().getAdvancement(), true);
++            this.clientAdvancementManager.setSelectedTab(((GuiAdvancementTab)this.tabs.values().iterator().next()).getAdvancement(), true);
          }
          else
          {
-             this.field_191946_h.func_194230_a(this.field_191940_s == null ? null : this.field_191940_s.func_193935_c(), true);
+             this.clientAdvancementManager.setSelectedTab(this.selectedTab == null ? null : this.selectedTab.getAdvancement(), true);
          }
-+        if (this.field_191947_i.size() > AdvancementTabType.field_192659_e)
++        if (this.tabs.size() > AdvancementTabType.MAX_TABS)
 +        {
-+            int guiLeft = (this.field_146294_l - 252) / 2;
-+            int guiTop = (this.field_146295_m - 140) / 2;
-+            this.field_146292_n.add(new net.minecraft.client.gui.GuiButton(101, guiLeft, guiTop - 50, 20, 20, "<"));
-+            this.field_146292_n.add(new net.minecraft.client.gui.GuiButton(102, guiLeft + 252 - 20, guiTop - 50, 20, 20, ">"));
-+            maxPages = this.field_191947_i.size() / AdvancementTabType.field_192659_e;
++            int guiLeft = (this.width - 252) / 2;
++            int guiTop = (this.height - 140) / 2;
++            this.buttonList.add(new net.minecraft.client.gui.GuiButton(101, guiLeft, guiTop - 50, 20, 20, "<"));
++            this.buttonList.add(new net.minecraft.client.gui.GuiButton(102, guiLeft + 252 - 20, guiTop - 50, 20, 20, ">"));
++            maxPages = this.tabs.size() / AdvancementTabType.MAX_TABS;
 +        }
      }
  
 -    @Override
-     public void func_146281_b()
+     public void onGuiClosed()
      {
--        this.field_191946_h.func_192798_a(null);
-+        this.field_191946_h.func_192798_a((ClientAdvancementManager.IListener)null);
-         NetHandlerPlayClient nethandlerplayclient = this.field_146297_k.func_147114_u();
+-        this.clientAdvancementManager.setListener(null);
++        this.clientAdvancementManager.setListener((ClientAdvancementManager.IListener)null);
+         NetHandlerPlayClient nethandlerplayclient = this.mc.getConnection();
  
          if (nethandlerplayclient != null)
 @@ -64,7 +71,6 @@
@@ -55,30 +55,30 @@
      }
  
 -    @Override
-     protected void func_73864_a(int p_73864_1_, int p_73864_2_, int p_73864_3_) throws IOException
+     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
      {
-         if (p_73864_3_ == 0)
+         if (mouseButton == 0)
 @@ -74,7 +80,7 @@
  
-             for (GuiAdvancementTab guiadvancementtab : this.field_191947_i.values())
+             for (GuiAdvancementTab guiadvancementtab : this.tabs.values())
              {
--                if (guiadvancementtab.func_191793_c(i, j, p_73864_1_, p_73864_2_))
-+                if (guiadvancementtab.getPage() == tabPage && guiadvancementtab.func_191793_c(i, j, p_73864_1_, p_73864_2_))
+-                if (guiadvancementtab.isMouseOver(i, j, mouseX, mouseY))
++                if (guiadvancementtab.getPage() == tabPage && guiadvancementtab.isMouseOver(i, j, mouseX, mouseY))
                  {
-                     this.field_191946_h.func_194230_a(guiadvancementtab.func_193935_c(), true);
+                     this.clientAdvancementManager.setSelectedTab(guiadvancementtab.getAdvancement(), true);
                      break;
 @@ -85,12 +91,11 @@
-         super.func_73864_a(p_73864_1_, p_73864_2_, p_73864_3_);
+         super.mouseClicked(mouseX, mouseY, mouseButton);
      }
  
 -    @Override
-     protected void func_73869_a(char p_73869_1_, int p_73869_2_) throws IOException
+     protected void keyTyped(char typedChar, int keyCode) throws IOException
      {
-         if (p_73869_2_ == this.field_146297_k.field_71474_y.field_194146_ao.func_151463_i())
+         if (keyCode == this.mc.gameSettings.keyBindAdvancements.getKeyCode())
          {
--            this.field_146297_k.func_147108_a(null);
-+            this.field_146297_k.func_147108_a((GuiScreen)null);
-             this.field_146297_k.func_71381_h();
+-            this.mc.displayGuiScreen(null);
++            this.mc.displayGuiScreen((GuiScreen)null);
+             this.mc.setIngameFocus();
          }
          else
 @@ -99,7 +104,6 @@
@@ -86,129 +86,129 @@
      }
  
 -    @Override
-     public void func_73863_a(int p_73863_1_, int p_73863_2_, float p_73863_3_)
+     public void drawScreen(int mouseX, int mouseY, float partialTicks)
      {
-         int i = (this.field_146294_l - 252) / 2;
+         int i = (this.width - 252) / 2;
 @@ -127,6 +131,14 @@
-         this.func_146276_q_();
-         this.func_191936_c(p_73863_1_, p_73863_2_, i, j);
-         this.func_191934_b(i, j);
-+        super.func_73863_a(p_73863_1_, p_73863_2_, p_73863_3_);
+         this.drawDefaultBackground();
+         this.renderInside(mouseX, mouseY, i, j);
+         this.renderWindow(i, j);
++        super.drawScreen(mouseX, mouseY, partialTicks);
 +        if (maxPages != 0)
 +        {
 +            String page = String.format("%d / %d", tabPage + 1, maxPages + 1);
-+            int width = this.field_146289_q.func_78256_a(page);
-+            GlStateManager.func_179140_f();
-+            this.field_146289_q.func_175063_a(page, i + (252 / 2) - (width / 2), j - 44, -1);
++            int width = this.fontRenderer.getStringWidth(page);
++            GlStateManager.disableLighting();
++            this.fontRenderer.drawStringWithShadow(page, i + (252 / 2) - (width / 2), j - 44, -1);
 +        }
-         this.func_191937_d(p_73863_1_, p_73863_2_, i, j);
+         this.renderToolTips(mouseX, mouseY, i, j);
      }
  
 @@ -140,10 +152,7 @@
-             String s = I18n.func_135052_a("advancements.empty");
-             int i = this.field_146289_q.func_78256_a(s);
-             this.field_146289_q.func_78276_b(s, p_191936_3_ + 9 + 117 - i / 2, p_191936_4_ + 18 + 56 - this.field_146289_q.field_78288_b / 2, -1);
--            this.field_146289_q
--            .func_78276_b(
--                ":(", p_191936_3_ + 9 + 117 - this.field_146289_q.func_78256_a(":(") / 2, p_191936_4_ + 18 + 113 - this.field_146289_q.field_78288_b, -1
+             String s = I18n.format("advancements.empty");
+             int i = this.fontRenderer.getStringWidth(s);
+             this.fontRenderer.drawString(s, p_191936_3_ + 9 + 117 - i / 2, p_191936_4_ + 18 + 56 - this.fontRenderer.FONT_HEIGHT / 2, -1);
+-            this.fontRenderer
+-            .drawString(
+-                ":(", p_191936_3_ + 9 + 117 - this.fontRenderer.getStringWidth(":(") / 2, p_191936_4_ + 18 + 113 - this.fontRenderer.FONT_HEIGHT, -1
 -            );
-+            this.field_146289_q.func_78276_b(":(", p_191936_3_ + 9 + 117 - this.field_146289_q.func_78256_a(":(") / 2, p_191936_4_ + 18 + 113 - this.field_146289_q.field_78288_b, -1);
++            this.fontRenderer.drawString(":(", p_191936_3_ + 9 + 117 - this.fontRenderer.getStringWidth(":(") / 2, p_191936_4_ + 18 + 113 - this.fontRenderer.FONT_HEIGHT, -1);
          }
          else
          {
 @@ -171,20 +180,17 @@
  
-             for (GuiAdvancementTab guiadvancementtab : this.field_191947_i.values())
+             for (GuiAdvancementTab guiadvancementtab : this.tabs.values())
              {
 +                if(guiadvancementtab.getPage() == tabPage)
-                 guiadvancementtab.func_191798_a(p_191934_1_, p_191934_2_, guiadvancementtab == this.field_191940_s);
+                 guiadvancementtab.drawTab(p_191934_1_, p_191934_2_, guiadvancementtab == this.selectedTab);
              }
  
-             GlStateManager.func_179091_B();
--            GlStateManager.func_187428_a(
+             GlStateManager.enableRescaleNormal();
+-            GlStateManager.tryBlendFuncSeparate(
 -                GlStateManager.SourceFactor.SRC_ALPHA,
 -                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
 -                GlStateManager.SourceFactor.ONE,
 -                GlStateManager.DestFactor.ZERO
 -            );
-+            GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-             RenderHelper.func_74520_c();
++            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+             RenderHelper.enableGUIStandardItemLighting();
  
-             for (GuiAdvancementTab guiadvancementtab1 : this.field_191947_i.values())
+             for (GuiAdvancementTab guiadvancementtab1 : this.tabs.values())
              {
 +                if(guiadvancementtab1.getPage() == tabPage)
-                 guiadvancementtab1.func_191796_a(p_191934_1_, p_191934_2_, this.field_146296_j);
+                 guiadvancementtab1.drawIcon(p_191934_1_, p_191934_2_, this.itemRender);
              }
  
 @@ -212,7 +218,7 @@
          {
-             for (GuiAdvancementTab guiadvancementtab : this.field_191947_i.values())
+             for (GuiAdvancementTab guiadvancementtab : this.tabs.values())
              {
--                if (guiadvancementtab.func_191793_c(p_191937_3_, p_191937_4_, p_191937_1_, p_191937_2_))
-+                if (guiadvancementtab.getPage() == tabPage && guiadvancementtab.func_191793_c(p_191937_3_, p_191937_4_, p_191937_1_, p_191937_2_))
+-                if (guiadvancementtab.isMouseOver(p_191937_3_, p_191937_4_, p_191937_1_, p_191937_2_))
++                if (guiadvancementtab.getPage() == tabPage && guiadvancementtab.isMouseOver(p_191937_3_, p_191937_4_, p_191937_1_, p_191937_2_))
                  {
-                     this.func_146279_a(guiadvancementtab.func_191795_d(), p_191937_1_, p_191937_2_);
+                     this.drawHoveringText(guiadvancementtab.getTitle(), p_191937_1_, p_191937_2_);
                  }
 @@ -220,7 +226,6 @@
          }
      }
  
 -    @Override
-     public void func_191931_a(Advancement p_191931_1_)
+     public void rootAdvancementAdded(Advancement advancementIn)
      {
-         GuiAdvancementTab guiadvancementtab = GuiAdvancementTab.func_193936_a(this.field_146297_k, this, this.field_191947_i.size(), p_191931_1_);
+         GuiAdvancementTab guiadvancementtab = GuiAdvancementTab.create(this.mc, this, this.tabs.size(), advancementIn);
 @@ -231,12 +236,10 @@
          }
      }
  
 -    @Override
-     public void func_191928_b(Advancement p_191928_1_)
+     public void rootAdvancementRemoved(Advancement advancementIn)
      {
      }
  
 -    @Override
-     public void func_191932_c(Advancement p_191932_1_)
+     public void nonRootAdvancementAdded(Advancement advancementIn)
      {
-         GuiAdvancementTab guiadvancementtab = this.func_191935_f(p_191932_1_);
+         GuiAdvancementTab guiadvancementtab = this.getTab(advancementIn);
 @@ -247,12 +250,10 @@
          }
      }
  
 -    @Override
-     public void func_191929_d(Advancement p_191929_1_)
+     public void nonRootAdvancementRemoved(Advancement advancementIn)
      {
      }
  
 -    @Override
-     public void func_191933_a(Advancement p_191933_1_, AdvancementProgress p_191933_2_)
+     public void onUpdateAdvancementProgress(Advancement advancementIn, AdvancementProgress progress)
      {
-         GuiAdvancement guiadvancement = this.func_191938_e(p_191933_1_);
+         GuiAdvancement guiadvancement = this.getAdvancementGui(advancementIn);
 @@ -263,13 +264,11 @@
          }
      }
  
 -    @Override
-     public void func_193982_e(@Nullable Advancement p_193982_1_)
+     public void setSelectedTab(@Nullable Advancement advancementIn)
      {
-         this.field_191940_s = this.field_191947_i.get(p_193982_1_);
+         this.selectedTab = this.tabs.get(advancementIn);
      }
  
 -    @Override
-     public void func_191930_a()
+     public void advancementsCleared()
      {
-         this.field_191947_i.clear();
+         this.tabs.clear();
 @@ -292,5 +291,14 @@
          }
  
-         return this.field_191947_i.get(p_191935_1_);
+         return this.tabs.get(p_191935_1_);
 +    }
 +
 +    @Override
-+    protected void func_146284_a(net.minecraft.client.gui.GuiButton button) throws IOException
++    protected void actionPerformed(net.minecraft.client.gui.GuiButton button) throws IOException
 +    {
-+        if(button.field_146127_k == 101)
++        if(button.id == 101)
 +            tabPage = Math.max(tabPage - 1, 0);
-+        else if(button.field_146127_k == 102)
++        else if(button.id == 102)
 +            tabPage = Math.min(tabPage + 1, maxPages);
      }
  }

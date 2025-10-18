@@ -7,43 +7,43 @@
 -public class Variant
 +public class Variant implements net.minecraftforge.client.model.ISmartVariant
  {
-     private final ResourceLocation field_188050_a;
-     private final ModelRotation field_188051_b;
+     private final ResourceLocation modelLocation;
+     private final ModelRotation rotation;
 @@ -32,11 +32,17 @@
-         return this.field_188050_a;
+         return this.modelLocation;
      }
  
 +    @Deprecated
-     public ModelRotation func_188048_b()
+     public ModelRotation getRotation()
      {
-         return this.field_188051_b;
+         return this.rotation;
      }
  
 +    public net.minecraftforge.common.model.IModelState getState()
 +    {
-+        return this.field_188051_b;
++        return this.rotation;
 +    }
 +
-     public boolean func_188049_c()
+     public boolean isUvLock()
      {
-         return this.field_188052_c;
+         return this.uvLock;
 @@ -47,21 +53,11 @@
-         return this.field_188053_d;
+         return this.weight;
      }
  
 -    @Override
      public String toString()
      {
 -        return "Variant{modelLocation="
--               + this.field_188050_a
+-               + this.modelLocation
 -               + ", rotation="
--               + this.field_188051_b
+-               + this.rotation
 -               + ", uvLock="
--               + this.field_188052_c
+-               + this.uvLock
 -               + ", weight="
--               + this.field_188053_d
+-               + this.weight
 -               + '}';
-+        return "Variant{modelLocation=" + this.field_188050_a + ", rotation=" + this.field_188051_b + ", uvLock=" + this.field_188052_c + ", weight=" + this.field_188053_d + '}';
++        return "Variant{modelLocation=" + this.modelLocation + ", rotation=" + this.rotation + ", uvLock=" + this.uvLock + ", weight=" + this.weight + '}';
      }
  
 -    @Override
@@ -54,36 +54,36 @@
          else
          {
              Variant variant = (Variant)p_equals_1_;
--            return this.field_188050_a.equals(variant.field_188050_a)
--                   && this.field_188051_b == variant.field_188051_b
--                   && this.field_188052_c == variant.field_188052_c
--                   && this.field_188053_d == variant.field_188053_d;
-+            return this.field_188050_a.equals(variant.field_188050_a) && this.field_188051_b == variant.field_188051_b && this.field_188052_c == variant.field_188052_c && this.field_188053_d == variant.field_188053_d;
+-            return this.modelLocation.equals(variant.modelLocation)
+-                   && this.rotation == variant.rotation
+-                   && this.uvLock == variant.uvLock
+-                   && this.weight == variant.weight;
++            return this.modelLocation.equals(variant.modelLocation) && this.rotation == variant.rotation && this.uvLock == variant.uvLock && this.weight == variant.weight;
          }
      }
  
 -    @Override
      public int hashCode()
      {
-         int i = this.field_188050_a.hashCode();
-         i = 31 * i + this.field_188051_b.hashCode();
-         i = 31 * i + Boolean.valueOf(this.field_188052_c).hashCode();
--        return 31 * i + this.field_188053_d;
-+        i = 31 * i + this.field_188053_d;
+         int i = this.modelLocation.hashCode();
+         i = 31 * i + this.rotation.hashCode();
+         i = 31 * i + Boolean.valueOf(this.uvLock).hashCode();
+-        return 31 * i + this.weight;
++        i = 31 * i + this.weight;
 +        return i;
      }
  
      @SideOnly(Side.CLIENT)
 @@ -107,7 +100,8 @@
-             private ResourceLocation func_188041_a(String p_188041_1_)
+             private ResourceLocation getResourceLocationBlock(String p_188041_1_)
              {
                  ResourceLocation resourcelocation = new ResourceLocation(p_188041_1_);
--                return new ResourceLocation(resourcelocation.func_110624_b(), "block/" + resourcelocation.func_110623_a());
-+                resourcelocation = new ResourceLocation(resourcelocation.func_110624_b(), "block/" + resourcelocation.func_110623_a());
+-                return new ResourceLocation(resourcelocation.getNamespace(), "block/" + resourcelocation.getPath());
++                resourcelocation = new ResourceLocation(resourcelocation.getNamespace(), "block/" + resourcelocation.getPath());
 +                return resourcelocation;
              }
  
-             private boolean func_188044_d(JsonObject p_188044_1_)
+             private boolean parseUvLock(JsonObject json)
 @@ -150,4 +144,9 @@
                  }
              }
@@ -91,6 +91,6 @@
 +
 +    public net.minecraftforge.client.model.IModel process(net.minecraftforge.client.model.IModel base)
 +    {
-+        return base.uvlock(func_188049_c());
++        return base.uvlock(isUvLock());
 +    }
  }

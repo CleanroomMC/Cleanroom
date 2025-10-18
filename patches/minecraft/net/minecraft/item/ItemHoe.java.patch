@@ -5,47 +5,47 @@
  
      @SuppressWarnings("incomplete-switch")
 -    @Override
--    public EnumActionResult func_180614_a(
--        EntityPlayer p_180614_1_,
--        World p_180614_2_,
--        BlockPos p_180614_3_,
--        EnumHand p_180614_4_,
--        EnumFacing p_180614_5_,
--        float p_180614_6_,
--        float p_180614_7_,
--        float p_180614_8_
+-    public EnumActionResult onItemUse(
+-        EntityPlayer player,
+-        World worldIn,
+-        BlockPos pos,
+-        EnumHand hand,
+-        EnumFacing facing,
+-        float hitX,
+-        float hitY,
+-        float hitZ
 -    )
-+    public EnumActionResult func_180614_a(EntityPlayer p_180614_1_, World p_180614_2_, BlockPos p_180614_3_, EnumHand p_180614_4_, EnumFacing p_180614_5_, float p_180614_6_, float p_180614_7_, float p_180614_8_)
++    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
      {
-         ItemStack itemstack = p_180614_1_.func_184586_b(p_180614_4_);
+         ItemStack itemstack = player.getHeldItem(hand);
  
 @@ -57,10 +47,13 @@
          }
          else
          {
-+            int hook = net.minecraftforge.event.ForgeEventFactory.onHoeUse(itemstack, p_180614_1_, p_180614_2_, p_180614_3_);
++            int hook = net.minecraftforge.event.ForgeEventFactory.onHoeUse(itemstack, player, worldIn, pos);
 +            if (hook != 0) return hook > 0 ? EnumActionResult.SUCCESS : EnumActionResult.FAIL;
 +
-             IBlockState iblockstate = p_180614_2_.func_180495_p(p_180614_3_);
-             Block block = iblockstate.func_177230_c();
+             IBlockState iblockstate = worldIn.getBlockState(pos);
+             Block block = iblockstate.getBlock();
  
--            if (p_180614_5_ != EnumFacing.DOWN && p_180614_2_.func_180495_p(p_180614_3_.func_177984_a()).func_185904_a() == Material.field_151579_a)
-+            if (p_180614_5_ != EnumFacing.DOWN && p_180614_2_.func_175623_d(p_180614_3_.func_177984_a()))
+-            if (facing != EnumFacing.DOWN && worldIn.getBlockState(pos.up()).getMaterial() == Material.AIR)
++            if (facing != EnumFacing.DOWN && worldIn.isAirBlock(pos.up()))
              {
-                 if (block == Blocks.field_150349_c || block == Blocks.field_185774_da)
+                 if (block == Blocks.GRASS || block == Blocks.GRASS_PATH)
                  {
 @@ -76,13 +69,7 @@
-                             this.func_185071_a(itemstack, p_180614_1_, p_180614_2_, p_180614_3_, Blocks.field_150458_ak.func_176223_P());
+                             this.setBlock(itemstack, player, worldIn, pos, Blocks.FARMLAND.getDefaultState());
                              return EnumActionResult.SUCCESS;
                          case COARSE_DIRT:
--                            this.func_185071_a(
+-                            this.setBlock(
 -                                itemstack,
--                                p_180614_1_,
--                                p_180614_2_,
--                                p_180614_3_,
--                                Blocks.field_150346_d.func_176223_P().func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.DIRT)
+-                                player,
+-                                worldIn,
+-                                pos,
+-                                Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.DIRT)
 -                            );
-+                            this.func_185071_a(itemstack, p_180614_1_, p_180614_2_, p_180614_3_, Blocks.field_150346_d.func_176223_P().func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.DIRT));
++                            this.setBlock(itemstack, player, worldIn, pos, Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.DIRT));
                              return EnumActionResult.SUCCESS;
                      }
                  }
@@ -54,35 +54,35 @@
      }
  
 -    @Override
-     public boolean func_77644_a(ItemStack p_77644_1_, EntityLivingBase p_77644_2_, EntityLivingBase p_77644_3_)
+     public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker)
      {
-         p_77644_1_.func_77972_a(1, p_77644_3_);
+         stack.damageItem(1, attacker);
 @@ -111,7 +97,6 @@
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public boolean func_77662_d()
+     public boolean isFull3D()
      {
          return true;
 @@ -122,18 +107,14 @@
-         return this.field_77843_a.toString();
+         return this.toolMaterial.toString();
      }
  
 -    @Override
-     public Multimap<String, AttributeModifier> func_111205_h(EntityEquipmentSlot p_111205_1_)
+     public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot equipmentSlot)
      {
-         Multimap<String, AttributeModifier> multimap = super.func_111205_h(p_111205_1_);
+         Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(equipmentSlot);
  
-         if (p_111205_1_ == EntityEquipmentSlot.MAINHAND)
+         if (equipmentSlot == EntityEquipmentSlot.MAINHAND)
          {
--            multimap.put(SharedMonsterAttributes.field_111264_e.func_111108_a(), new AttributeModifier(field_111210_e, "Weapon modifier", 0.0, 0));
+-            multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", 0.0, 0));
 -            multimap.put(
--                SharedMonsterAttributes.field_188790_f.func_111108_a(),
--                new AttributeModifier(field_185050_h, "Weapon modifier", (double)(this.field_185072_b - 4.0F), 0)
+-                SharedMonsterAttributes.ATTACK_SPEED.getName(),
+-                new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", (double)(this.speed - 4.0F), 0)
 -            );
-+            multimap.put(SharedMonsterAttributes.field_111264_e.func_111108_a(), new AttributeModifier(field_111210_e, "Weapon modifier", 0.0D, 0));
-+            multimap.put(SharedMonsterAttributes.field_188790_f.func_111108_a(), new AttributeModifier(field_185050_h, "Weapon modifier", (double)(this.field_185072_b - 4.0F), 0));
++            multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", 0.0D, 0));
++            multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", (double)(this.speed - 4.0F), 0));
          }
  
          return multimap;

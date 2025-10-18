@@ -1,105 +1,105 @@
 --- before/net/minecraft/client/particle/ParticleManager.java
 +++ after/net/minecraft/client/particle/ParticleManager.java
 @@ -41,22 +41,22 @@
-     private static final ResourceLocation field_110737_b = new ResourceLocation("textures/particle/particles.png");
-     protected World field_78878_a;
-     private final ArrayDeque<Particle>[][] field_78876_b = new ArrayDeque[4][];
--    private final Queue<ParticleEmitter> field_178933_d = Queues.newArrayDeque();
-+    private final Queue<ParticleEmitter> field_178933_d = Queues.<ParticleEmitter>newArrayDeque();
-     private final TextureManager field_78877_c;
-     private final Random field_78875_d = new Random();
--    private final Map<Integer, IParticleFactory> field_178932_g = Maps.newHashMap();
--    private final Queue<Particle> field_187241_h = Queues.newArrayDeque();
-+    private final Map<Integer, IParticleFactory> field_178932_g = Maps.<Integer, IParticleFactory>newHashMap();
-+    private final Queue<Particle> field_187241_h = Queues.<Particle>newArrayDeque();
+     private static final ResourceLocation PARTICLE_TEXTURES = new ResourceLocation("textures/particle/particles.png");
+     protected World world;
+     private final ArrayDeque<Particle>[][] fxLayers = new ArrayDeque[4][];
+-    private final Queue<ParticleEmitter> particleEmitters = Queues.newArrayDeque();
++    private final Queue<ParticleEmitter> particleEmitters = Queues.<ParticleEmitter>newArrayDeque();
+     private final TextureManager renderer;
+     private final Random rand = new Random();
+-    private final Map<Integer, IParticleFactory> particleTypes = Maps.newHashMap();
+-    private final Queue<Particle> queue = Queues.newArrayDeque();
++    private final Map<Integer, IParticleFactory> particleTypes = Maps.<Integer, IParticleFactory>newHashMap();
++    private final Queue<Particle> queue = Queues.<Particle>newArrayDeque();
  
-     public ParticleManager(World p_i1220_1_, TextureManager p_i1220_2_)
+     public ParticleManager(World worldIn, TextureManager rendererIn)
      {
-         this.field_78878_a = p_i1220_1_;
-         this.field_78877_c = p_i1220_2_;
+         this.world = worldIn;
+         this.renderer = rendererIn;
  
 -        for (int i = 0; i < 4; i++)
 +        for (int i = 0; i < 4; ++i)
          {
-             this.field_78876_b[i] = new ArrayDeque[2];
+             this.fxLayers[i] = new ArrayDeque[2];
  
 -            for (int j = 0; j < 2; j++)
 +            for (int j = 0; j < 2; ++j)
              {
-                 this.field_78876_b[i][j] = Queues.newArrayDeque();
+                 this.fxLayers[i][j] = Queues.newArrayDeque();
              }
 @@ -119,7 +119,7 @@
  
-     public void func_178929_a(int p_178929_1_, IParticleFactory p_178929_2_)
+     public void registerParticle(int id, IParticleFactory particleFactory)
      {
--        this.field_178932_g.put(p_178929_1_, p_178929_2_);
-+        this.field_178932_g.put(Integer.valueOf(p_178929_1_), p_178929_2_);
+-        this.particleTypes.put(id, particleFactory);
++        this.particleTypes.put(Integer.valueOf(id), particleFactory);
      }
  
-     public void func_178926_a(Entity p_178926_1_, EnumParticleTypes p_178926_2_)
+     public void emitParticleAtEntity(Entity entityIn, EnumParticleTypes particleTypes)
 @@ -133,24 +133,13 @@
      }
  
      @Nullable
--    public Particle func_178927_a(
--        int p_178927_1_,
--        double p_178927_2_,
--        double p_178927_4_,
--        double p_178927_6_,
--        double p_178927_8_,
--        double p_178927_10_,
--        double p_178927_12_,
--        int... p_178927_14_
+-    public Particle spawnEffectParticle(
+-        int particleId,
+-        double xCoord,
+-        double yCoord,
+-        double zCoord,
+-        double xSpeed,
+-        double ySpeed,
+-        double zSpeed,
+-        int... parameters
 -    )
-+    public Particle func_178927_a(int p_178927_1_, double p_178927_2_, double p_178927_4_, double p_178927_6_, double p_178927_8_, double p_178927_10_, double p_178927_12_, int... p_178927_14_)
++    public Particle spawnEffectParticle(int particleId, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters)
      {
--        IParticleFactory iparticlefactory = this.field_178932_g.get(p_178927_1_);
-+        IParticleFactory iparticlefactory = this.field_178932_g.get(Integer.valueOf(p_178927_1_));
+-        IParticleFactory iparticlefactory = this.particleTypes.get(particleId);
++        IParticleFactory iparticlefactory = this.particleTypes.get(Integer.valueOf(particleId));
  
          if (iparticlefactory != null)
          {
--            Particle particle = iparticlefactory.func_178902_a(
--                                    p_178927_1_, this.field_78878_a, p_178927_2_, p_178927_4_, p_178927_6_, p_178927_8_, p_178927_10_, p_178927_12_, p_178927_14_
+-            Particle particle = iparticlefactory.createParticle(
+-                                    particleId, this.world, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed, parameters
 -                                );
-+            Particle particle = iparticlefactory.func_178902_a(p_178927_1_, this.field_78878_a, p_178927_2_, p_178927_4_, p_178927_6_, p_178927_8_, p_178927_10_, p_178927_12_, p_178927_14_);
++            Particle particle = iparticlefactory.createParticle(particleId, this.world, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed, parameters);
  
              if (particle != null)
              {
 @@ -164,19 +153,20 @@
  
-     public void func_78873_a(Particle p_78873_1_)
+     public void addEffect(Particle effect)
      {
-+        if (p_78873_1_ == null) return; //Forge: Prevent modders from being bad and adding nulls causing untraceable NPEs.
-         this.field_187241_h.add(p_78873_1_);
++        if (effect == null) return; //Forge: Prevent modders from being bad and adding nulls causing untraceable NPEs.
+         this.queue.add(effect);
      }
  
-     public void func_78868_a()
+     public void updateEffects()
      {
 -        for (int i = 0; i < 4; i++)
 +        for (int i = 0; i < 4; ++i)
          {
-             this.func_178922_a(i);
+             this.updateEffectLayer(i);
          }
  
-         if (!this.field_178933_d.isEmpty())
+         if (!this.particleEmitters.isEmpty())
          {
 -            List<ParticleEmitter> list = Lists.newArrayList();
 +            List<ParticleEmitter> list = Lists.<ParticleEmitter>newArrayList();
  
-             for (ParticleEmitter particleemitter : this.field_178933_d)
+             for (ParticleEmitter particleemitter : this.particleEmitters)
              {
 @@ -212,7 +202,7 @@
      {
-         this.field_78878_a.field_72984_F.func_76320_a(String.valueOf(p_178922_1_));
+         this.world.profiler.startSection(String.valueOf(layer));
  
 -        for (int i = 0; i < 2; i++)
 +        for (int i = 0; i < 2; ++i)
          {
-             this.field_78878_a.field_72984_F.func_76320_a(String.valueOf(i));
-             this.func_187240_a(this.field_78876_b[p_178922_1_][i]);
+             this.world.profiler.startSection(String.valueOf(i));
+             this.tickParticleList(this.fxLayers[layer][i]);
 @@ -296,11 +286,11 @@
-         GlStateManager.func_187401_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-         GlStateManager.func_179092_a(516, 0.003921569F);
+         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+         GlStateManager.alphaFunc(516, 0.003921569F);
  
 -        for (int i_nf = 0; i_nf < 3; i_nf++)
 +        for (int i_nf = 0; i_nf < 3; ++i_nf)
@@ -109,33 +109,33 @@
 -            for (int j = 0; j < 2; j++)
 +            for (int j = 0; j < 2; ++j)
              {
-                 if (!this.field_78876_b[i][j].isEmpty())
+                 if (!this.fxLayers[i][j].isEmpty())
                  {
 @@ -379,14 +369,14 @@
  
-     public void func_78872_b(Entity p_78872_1_, float p_78872_2_)
+     public void renderLitParticles(Entity entityIn, float partialTick)
      {
 -        float f = (float)(Math.PI / 180.0);
--        float f1 = MathHelper.func_76134_b(p_78872_1_.field_70177_z * (float)(Math.PI / 180.0));
--        float f2 = MathHelper.func_76126_a(p_78872_1_.field_70177_z * (float)(Math.PI / 180.0));
--        float f3 = -f2 * MathHelper.func_76126_a(p_78872_1_.field_70125_A * (float)(Math.PI / 180.0));
--        float f4 = f1 * MathHelper.func_76126_a(p_78872_1_.field_70125_A * (float)(Math.PI / 180.0));
--        float f5 = MathHelper.func_76134_b(p_78872_1_.field_70125_A * (float)(Math.PI / 180.0));
+-        float f1 = MathHelper.cos(entityIn.rotationYaw * (float)(Math.PI / 180.0));
+-        float f2 = MathHelper.sin(entityIn.rotationYaw * (float)(Math.PI / 180.0));
+-        float f3 = -f2 * MathHelper.sin(entityIn.rotationPitch * (float)(Math.PI / 180.0));
+-        float f4 = f1 * MathHelper.sin(entityIn.rotationPitch * (float)(Math.PI / 180.0));
+-        float f5 = MathHelper.cos(entityIn.rotationPitch * (float)(Math.PI / 180.0));
 +        float f = 0.017453292F;
-+        float f1 = MathHelper.func_76134_b(p_78872_1_.field_70177_z * 0.017453292F);
-+        float f2 = MathHelper.func_76126_a(p_78872_1_.field_70177_z * 0.017453292F);
-+        float f3 = -f2 * MathHelper.func_76126_a(p_78872_1_.field_70125_A * 0.017453292F);
-+        float f4 = f1 * MathHelper.func_76126_a(p_78872_1_.field_70125_A * 0.017453292F);
-+        float f5 = MathHelper.func_76134_b(p_78872_1_.field_70125_A * 0.017453292F);
++        float f1 = MathHelper.cos(entityIn.rotationYaw * 0.017453292F);
++        float f2 = MathHelper.sin(entityIn.rotationYaw * 0.017453292F);
++        float f3 = -f2 * MathHelper.sin(entityIn.rotationPitch * 0.017453292F);
++        float f4 = f1 * MathHelper.sin(entityIn.rotationPitch * 0.017453292F);
++        float f5 = MathHelper.cos(entityIn.rotationPitch * 0.017453292F);
  
 -        for (int i = 0; i < 2; i++)
 +        for (int i = 0; i < 2; ++i)
          {
-             Queue<Particle> queue = this.field_78876_b[3][i];
+             Queue<Particle> queue = this.fxLayers[3][i];
  
 @@ -407,9 +397,9 @@
      {
-         this.field_78878_a = p_78870_1_;
+         this.world = worldIn;
  
 -        for (int i = 0; i < 4; i++)
 +        for (int i = 0; i < 4; ++i)
@@ -143,16 +143,16 @@
 -            for (int j = 0; j < 2; j++)
 +            for (int j = 0; j < 2; ++j)
              {
-                 this.field_78876_b[i][j].clear();
+                 this.fxLayers[i][j].clear();
              }
 @@ -420,33 +410,21 @@
  
-     public void func_180533_a(BlockPos p_180533_1_, IBlockState p_180533_2_)
+     public void addBlockDestroyEffects(BlockPos pos, IBlockState state)
      {
--        if (p_180533_2_.func_185904_a() != Material.field_151579_a)
-+        if (!p_180533_2_.func_177230_c().isAir(p_180533_2_, this.field_78878_a, p_180533_1_) && !p_180533_2_.func_177230_c().addDestroyEffects(field_78878_a, p_180533_1_, this))
+-        if (state.getMaterial() != Material.AIR)
++        if (!state.getBlock().isAir(state, this.world, pos) && !state.getBlock().addDestroyEffects(world, pos, this))
          {
-             p_180533_2_ = p_180533_2_.func_185899_b(this.field_78878_a, p_180533_1_);
+             state = state.getActualState(this.world, pos);
              int i = 4;
  
 -            for (int j = 0; j < 4; j++)
@@ -167,86 +167,86 @@
 -                        double d0 = ((double)j + 0.5) / 4.0;
 -                        double d1 = ((double)k + 0.5) / 4.0;
 -                        double d2 = ((double)l + 0.5) / 4.0;
--                        this.func_78873_a(
+-                        this.addEffect(
 -                            new ParticleDigging(
--                                this.field_78878_a,
--                                (double)p_180533_1_.func_177958_n() + d0,
--                                (double)p_180533_1_.func_177956_o() + d1,
--                                (double)p_180533_1_.func_177952_p() + d2,
+-                                this.world,
+-                                (double)pos.getX() + d0,
+-                                (double)pos.getY() + d1,
+-                                (double)pos.getZ() + d2,
 -                                d0 - 0.5,
 -                                d1 - 0.5,
 -                                d2 - 0.5,
--                                p_180533_2_
+-                                state
 -                            )
--                            .func_174846_a(p_180533_1_)
+-                            .setBlockPos(pos)
 -                        );
 +                        double d0 = ((double)j + 0.5D) / 4.0D;
 +                        double d1 = ((double)k + 0.5D) / 4.0D;
 +                        double d2 = ((double)l + 0.5D) / 4.0D;
-+                        this.func_78873_a((new ParticleDigging(this.field_78878_a, (double)p_180533_1_.func_177958_n() + d0, (double)p_180533_1_.func_177956_o() + d1, (double)p_180533_1_.func_177952_p() + d2, d0 - 0.5D, d1 - 0.5D, d2 - 0.5D, p_180533_2_)).func_174846_a(p_180533_1_));
++                        this.addEffect((new ParticleDigging(this.world, (double)pos.getX() + d0, (double)pos.getY() + d1, (double)pos.getZ() + d2, d0 - 0.5D, d1 - 0.5D, d2 - 0.5D, state)).setBlockPos(pos));
                      }
                  }
              }
 @@ -464,52 +442,41 @@
-             int k = p_180532_1_.func_177952_p();
+             int k = pos.getZ();
              float f = 0.1F;
-             AxisAlignedBB axisalignedbb = iblockstate.func_185900_c(this.field_78878_a, p_180532_1_);
+             AxisAlignedBB axisalignedbb = iblockstate.getBoundingBox(this.world, pos);
 -            double d0 = (double)i
--                        + this.field_78875_d.nextDouble() * (axisalignedbb.field_72336_d - axisalignedbb.field_72340_a - 0.2F)
+-                        + this.rand.nextDouble() * (axisalignedbb.maxX - axisalignedbb.minX - 0.2F)
 -                        + 0.1F
--                        + axisalignedbb.field_72340_a;
+-                        + axisalignedbb.minX;
 -            double d1 = (double)j
--                        + this.field_78875_d.nextDouble() * (axisalignedbb.field_72337_e - axisalignedbb.field_72338_b - 0.2F)
+-                        + this.rand.nextDouble() * (axisalignedbb.maxY - axisalignedbb.minY - 0.2F)
 -                        + 0.1F
--                        + axisalignedbb.field_72338_b;
+-                        + axisalignedbb.minY;
 -            double d2 = (double)k
--                        + this.field_78875_d.nextDouble() * (axisalignedbb.field_72334_f - axisalignedbb.field_72339_c - 0.2F)
+-                        + this.rand.nextDouble() * (axisalignedbb.maxZ - axisalignedbb.minZ - 0.2F)
 -                        + 0.1F
--                        + axisalignedbb.field_72339_c;
-+            double d0 = (double)i + this.field_78875_d.nextDouble() * (axisalignedbb.field_72336_d - axisalignedbb.field_72340_a - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.field_72340_a;
-+            double d1 = (double)j + this.field_78875_d.nextDouble() * (axisalignedbb.field_72337_e - axisalignedbb.field_72338_b - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.field_72338_b;
-+            double d2 = (double)k + this.field_78875_d.nextDouble() * (axisalignedbb.field_72334_f - axisalignedbb.field_72339_c - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.field_72339_c;
+-                        + axisalignedbb.minZ;
++            double d0 = (double)i + this.rand.nextDouble() * (axisalignedbb.maxX - axisalignedbb.minX - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minX;
++            double d1 = (double)j + this.rand.nextDouble() * (axisalignedbb.maxY - axisalignedbb.minY - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minY;
++            double d2 = (double)k + this.rand.nextDouble() * (axisalignedbb.maxZ - axisalignedbb.minZ - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minZ;
  
-             if (p_180532_2_ == EnumFacing.DOWN)
+             if (side == EnumFacing.DOWN)
              {
--                d1 = (double)j + axisalignedbb.field_72338_b - 0.1F;
-+                d1 = (double)j + axisalignedbb.field_72338_b - 0.10000000149011612D;
+-                d1 = (double)j + axisalignedbb.minY - 0.1F;
++                d1 = (double)j + axisalignedbb.minY - 0.10000000149011612D;
              }
  
-             if (p_180532_2_ == EnumFacing.UP)
+             if (side == EnumFacing.UP)
              {
--                d1 = (double)j + axisalignedbb.field_72337_e + 0.1F;
-+                d1 = (double)j + axisalignedbb.field_72337_e + 0.10000000149011612D;
+-                d1 = (double)j + axisalignedbb.maxY + 0.1F;
++                d1 = (double)j + axisalignedbb.maxY + 0.10000000149011612D;
              }
  
-             if (p_180532_2_ == EnumFacing.NORTH)
+             if (side == EnumFacing.NORTH)
              {
--                d2 = (double)k + axisalignedbb.field_72339_c - 0.1F;
-+                d2 = (double)k + axisalignedbb.field_72339_c - 0.10000000149011612D;
+-                d2 = (double)k + axisalignedbb.minZ - 0.1F;
++                d2 = (double)k + axisalignedbb.minZ - 0.10000000149011612D;
              }
  
-             if (p_180532_2_ == EnumFacing.SOUTH)
+             if (side == EnumFacing.SOUTH)
              {
--                d2 = (double)k + axisalignedbb.field_72334_f + 0.1F;
-+                d2 = (double)k + axisalignedbb.field_72334_f + 0.10000000149011612D;
+-                d2 = (double)k + axisalignedbb.maxZ + 0.1F;
++                d2 = (double)k + axisalignedbb.maxZ + 0.10000000149011612D;
              }
  
-             if (p_180532_2_ == EnumFacing.WEST)
+             if (side == EnumFacing.WEST)
              {
--                d0 = (double)i + axisalignedbb.field_72340_a - 0.1F;
-+                d0 = (double)i + axisalignedbb.field_72340_a - 0.10000000149011612D;
+-                d0 = (double)i + axisalignedbb.minX - 0.1F;
++                d0 = (double)i + axisalignedbb.minX - 0.10000000149011612D;
              }
  
-             if (p_180532_2_ == EnumFacing.EAST)
+             if (side == EnumFacing.EAST)
              {
--                d0 = (double)i + axisalignedbb.field_72336_d + 0.1F;
-+                d0 = (double)i + axisalignedbb.field_72336_d + 0.10000000149011612D;
+-                d0 = (double)i + axisalignedbb.maxX + 0.1F;
++                d0 = (double)i + axisalignedbb.maxX + 0.10000000149011612D;
              }
  
--            this.func_78873_a(
--                new ParticleDigging(this.field_78878_a, d0, d1, d2, 0.0, 0.0, 0.0, iblockstate).func_174846_a(p_180532_1_).func_70543_e(0.2F).func_70541_f(0.6F)
+-            this.addEffect(
+-                new ParticleDigging(this.world, d0, d1, d2, 0.0, 0.0, 0.0, iblockstate).setBlockPos(pos).multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F)
 -            );
-+            this.func_78873_a((new ParticleDigging(this.field_78878_a, d0, d1, d2, 0.0D, 0.0D, 0.0D, iblockstate)).func_174846_a(p_180532_1_).func_70543_e(0.2F).func_70541_f(0.6F));
++            this.addEffect((new ParticleDigging(this.world, d0, d1, d2, 0.0D, 0.0D, 0.0D, iblockstate)).setBlockPos(pos).multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F));
          }
      }
  
@@ -260,7 +260,7 @@
 -            for (int k = 0; k < 2; k++)
 +            for (int k = 0; k < 2; ++k)
              {
-                 i += this.field_78876_b[j][k].size();
+                 i += this.fxLayers[j][k].size();
              }
 @@ -527,4 +494,13 @@
  
@@ -269,10 +269,10 @@
 +
 +    public void addBlockHitEffects(BlockPos pos, net.minecraft.util.math.RayTraceResult target)
 +    {
-+        IBlockState state = field_78878_a.func_180495_p(pos);
-+        if (state != null && !state.func_177230_c().addHitEffects(state, field_78878_a, target, this))
++        IBlockState state = world.getBlockState(pos);
++        if (state != null && !state.getBlock().addHitEffects(state, world, target, this))
 +        {
-+            func_180532_a(pos, target.field_178784_b);
++            addBlockHitEffects(pos, target.sideHit);
 +        }
 +     }
  }

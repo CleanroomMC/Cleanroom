@@ -1,54 +1,54 @@
 --- before/net/minecraft/world/gen/feature/WorldGenShrub.java
 +++ after/net/minecraft/world/gen/feature/WorldGenShrub.java
 @@ -20,43 +20,39 @@
-         this.field_150528_a = p_i46450_2_;
+         this.leavesMetadata = p_i46450_2_;
      }
  
 -    @Override
-     public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
+     public boolean generate(World worldIn, Random rand, BlockPos position)
      {
--        for (IBlockState iblockstate = p_180709_1_.func_180495_p(p_180709_3_);
--                (iblockstate.func_185904_a() == Material.field_151579_a || iblockstate.func_185904_a() == Material.field_151584_j) && p_180709_3_.func_177956_o() > 0;
--                iblockstate = p_180709_1_.func_180495_p(p_180709_3_)
+-        for (IBlockState iblockstate = worldIn.getBlockState(position);
+-                (iblockstate.getMaterial() == Material.AIR || iblockstate.getMaterial() == Material.LEAVES) && position.getY() > 0;
+-                iblockstate = worldIn.getBlockState(position)
 -            )
-+        for (IBlockState iblockstate = p_180709_1_.func_180495_p(p_180709_3_); (iblockstate.func_177230_c().isAir(iblockstate, p_180709_1_, p_180709_3_) || iblockstate.func_177230_c().isLeaves(iblockstate, p_180709_1_, p_180709_3_)) && p_180709_3_.func_177956_o() > 0; iblockstate = p_180709_1_.func_180495_p(p_180709_3_))
++        for (IBlockState iblockstate = worldIn.getBlockState(position); (iblockstate.getBlock().isAir(iblockstate, worldIn, position) || iblockstate.getBlock().isLeaves(iblockstate, worldIn, position)) && position.getY() > 0; iblockstate = worldIn.getBlockState(position))
          {
-             p_180709_3_ = p_180709_3_.func_177977_b();
+             position = position.down();
          }
  
--        Block block = p_180709_1_.func_180495_p(p_180709_3_).func_177230_c();
-+        IBlockState state = p_180709_1_.func_180495_p(p_180709_3_);
+-        Block block = worldIn.getBlockState(position).getBlock();
++        IBlockState state = worldIn.getBlockState(position);
  
--        if (block == Blocks.field_150346_d || block == Blocks.field_150349_c)
-+        if (state.func_177230_c().canSustainPlant(state, p_180709_1_, p_180709_3_, net.minecraft.util.EnumFacing.UP, ((net.minecraft.block.BlockSapling)Blocks.field_150345_g)))
+-        if (block == Blocks.DIRT || block == Blocks.GRASS)
++        if (state.getBlock().canSustainPlant(state, worldIn, position, net.minecraft.util.EnumFacing.UP, ((net.minecraft.block.BlockSapling)Blocks.SAPLING)))
          {
-             p_180709_3_ = p_180709_3_.func_177984_a();
-             this.func_175903_a(p_180709_1_, p_180709_3_, this.field_150527_b);
+             position = position.up();
+             this.setBlockAndNotifyAdequately(worldIn, position, this.woodMetadata);
  
--            for (int i = p_180709_3_.func_177956_o(); i <= p_180709_3_.func_177956_o() + 2; i++)
-+            for (int i = p_180709_3_.func_177956_o(); i <= p_180709_3_.func_177956_o() + 2; ++i)
+-            for (int i = position.getY(); i <= position.getY() + 2; i++)
++            for (int i = position.getY(); i <= position.getY() + 2; ++i)
              {
-                 int j = i - p_180709_3_.func_177956_o();
+                 int j = i - position.getY();
                  int k = 2 - j;
  
--                for (int l = p_180709_3_.func_177958_n() - k; l <= p_180709_3_.func_177958_n() + k; l++)
-+                for (int l = p_180709_3_.func_177958_n() - k; l <= p_180709_3_.func_177958_n() + k; ++l)
+-                for (int l = position.getX() - k; l <= position.getX() + k; l++)
++                for (int l = position.getX() - k; l <= position.getX() + k; ++l)
                  {
-                     int i1 = l - p_180709_3_.func_177958_n();
+                     int i1 = l - position.getX();
  
--                    for (int j1 = p_180709_3_.func_177952_p() - k; j1 <= p_180709_3_.func_177952_p() + k; j1++)
-+                    for (int j1 = p_180709_3_.func_177952_p() - k; j1 <= p_180709_3_.func_177952_p() + k; ++j1)
+-                    for (int j1 = position.getZ() - k; j1 <= position.getZ() + k; j1++)
++                    for (int j1 = position.getZ() - k; j1 <= position.getZ() + k; ++j1)
                      {
-                         int k1 = j1 - p_180709_3_.func_177952_p();
+                         int k1 = j1 - position.getZ();
  
-                         if (Math.abs(i1) != k || Math.abs(k1) != k || p_180709_2_.nextInt(2) != 0)
+                         if (Math.abs(i1) != k || Math.abs(k1) != k || rand.nextInt(2) != 0)
                          {
                              BlockPos blockpos = new BlockPos(l, i, j1);
--                            Material material = p_180709_1_.func_180495_p(blockpos).func_185904_a();
-+                            state = p_180709_1_.func_180495_p(blockpos);
+-                            Material material = worldIn.getBlockState(blockpos).getMaterial();
++                            state = worldIn.getBlockState(blockpos);
  
--                            if (material == Material.field_151579_a || material == Material.field_151584_j)
-+                            if (state.func_177230_c().canBeReplacedByLeaves(state, p_180709_1_, blockpos))
+-                            if (material == Material.AIR || material == Material.LEAVES)
++                            if (state.getBlock().canBeReplacedByLeaves(state, worldIn, blockpos))
                              {
-                                 this.func_175903_a(p_180709_1_, blockpos, this.field_150528_a);
+                                 this.setBlockAndNotifyAdequately(worldIn, blockpos, this.leavesMetadata);
                              }

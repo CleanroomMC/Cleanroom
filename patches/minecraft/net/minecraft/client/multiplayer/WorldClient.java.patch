@@ -2,75 +2,75 @@
 +++ after/net/minecraft/client/multiplayer/WorldClient.java
 @@ -51,27 +51,30 @@
  {
-     private final NetHandlerPlayClient field_73035_a;
-     private ChunkProviderClient field_73033_b;
--    private final Set<Entity> field_73032_d = Sets.newHashSet();
--    private final Set<Entity> field_73036_L = Sets.newHashSet();
-+    private final Set<Entity> field_73032_d = Sets.<Entity>newHashSet();
-+    private final Set<Entity> field_73036_L = Sets.<Entity>newHashSet();
-     private final Minecraft field_73037_M = Minecraft.func_71410_x();
--    private final Set<ChunkPos> field_73038_N = Sets.newHashSet();
--    private int field_184158_M = this.field_73012_v.nextInt(12000);
--    protected Set<ChunkPos> field_184157_a = Sets.newHashSet();
-+    private final Set<ChunkPos> field_73038_N = Sets.<ChunkPos>newHashSet();
-+    private int field_184158_M;
-+    protected Set<ChunkPos> field_184157_a;
+     private final NetHandlerPlayClient connection;
+     private ChunkProviderClient clientChunkProvider;
+-    private final Set<Entity> entityList = Sets.newHashSet();
+-    private final Set<Entity> entitySpawnQueue = Sets.newHashSet();
++    private final Set<Entity> entityList = Sets.<Entity>newHashSet();
++    private final Set<Entity> entitySpawnQueue = Sets.<Entity>newHashSet();
+     private final Minecraft mc = Minecraft.getMinecraft();
+-    private final Set<ChunkPos> previousActiveChunkSet = Sets.newHashSet();
+-    private int ambienceTicks = this.rand.nextInt(12000);
+-    protected Set<ChunkPos> visibleChunks = Sets.newHashSet();
++    private final Set<ChunkPos> previousActiveChunkSet = Sets.<ChunkPos>newHashSet();
++    private int ambienceTicks;
++    protected Set<ChunkPos> visibleChunks;
  
-     public WorldClient(NetHandlerPlayClient p_i45063_1_, WorldSettings p_i45063_2_, int p_i45063_3_, EnumDifficulty p_i45063_4_, Profiler p_i45063_5_)
+     public WorldClient(NetHandlerPlayClient netHandler, WorldSettings settings, int dimension, EnumDifficulty difficulty, Profiler profilerIn)
      {
--        super(new SaveHandlerMP(), new WorldInfo(p_i45063_2_, "MpServer"), DimensionType.func_186069_a(p_i45063_3_).func_186070_d(), p_i45063_5_, true);
-+        super(new SaveHandlerMP(), new WorldInfo(p_i45063_2_, "MpServer"), net.minecraftforge.common.DimensionManager.createProviderFor(p_i45063_3_), p_i45063_5_, true);
-+        this.field_184158_M = this.field_73012_v.nextInt(12000);
-+        this.field_184157_a = Sets.<ChunkPos>newHashSet();
-         this.field_73035_a = p_i45063_1_;
-         this.func_72912_H().func_176144_a(p_i45063_4_);
--        this.func_175652_B(new BlockPos(8, 64, 8));
-         this.field_73011_w.func_76558_a(this);
-+        this.func_175652_B(new BlockPos(8, 64, 8)); //Forge: Moved below registerWorld to prevent NPE in our redirect.
-         this.field_73020_y = this.func_72970_h();
-         this.field_72988_C = new SaveDataMemoryStorage();
-         this.func_72966_v();
-         this.func_72947_a();
+-        super(new SaveHandlerMP(), new WorldInfo(settings, "MpServer"), DimensionType.getById(dimension).createDimension(), profilerIn, true);
++        super(new SaveHandlerMP(), new WorldInfo(settings, "MpServer"), net.minecraftforge.common.DimensionManager.createProviderFor(dimension), profilerIn, true);
++        this.ambienceTicks = this.rand.nextInt(12000);
++        this.visibleChunks = Sets.<ChunkPos>newHashSet();
+         this.connection = netHandler;
+         this.getWorldInfo().setDifficulty(difficulty);
+-        this.setSpawnPoint(new BlockPos(8, 64, 8));
+         this.provider.setWorld(this);
++        this.setSpawnPoint(new BlockPos(8, 64, 8)); //Forge: Moved below registerWorld to prevent NPE in our redirect.
+         this.chunkProvider = this.createChunkProvider();
+         this.mapStorage = new SaveDataMemoryStorage();
+         this.calculateInitialSkylight();
+         this.calculateInitialWeather();
 +        this.initCapabilities();
 +        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.WorldEvent.Load(this));
      }
  
 -    @Override
-     public void func_72835_b()
+     public void tick()
      {
-         super.func_72835_b();
+         super.tick();
 @@ -84,7 +87,7 @@
  
-         this.field_72984_F.func_76320_a("reEntryProcessing");
+         this.profiler.startSection("reEntryProcessing");
  
--        for (int i = 0; i < 10 && !this.field_73036_L.isEmpty(); i++)
-+        for (int i = 0; i < 10 && !this.field_73036_L.isEmpty(); ++i)
+-        for (int i = 0; i < 10 && !this.entitySpawnQueue.isEmpty(); i++)
++        for (int i = 0; i < 10 && !this.entitySpawnQueue.isEmpty(); ++i)
          {
-             Entity entity = this.field_73036_L.iterator().next();
-             this.field_73036_L.remove(entity);
+             Entity entity = this.entitySpawnQueue.iterator().next();
+             this.entitySpawnQueue.remove(entity);
 @@ -106,14 +109,12 @@
      {
      }
  
 -    @Override
-     protected IChunkProvider func_72970_h()
+     protected IChunkProvider createChunkProvider()
      {
-         this.field_73033_b = new ChunkProviderClient(this);
-         return this.field_73033_b;
+         this.clientChunkProvider = new ChunkProviderClient(this);
+         return this.clientChunkProvider;
      }
  
 -    @Override
-     protected boolean func_175680_a(int p_175680_1_, int p_175680_2_, boolean p_175680_3_)
+     protected boolean isChunkLoaded(int x, int z, boolean allowEmpty)
      {
-         return p_175680_3_ || !this.func_72863_F().func_186025_d(p_175680_1_, p_175680_2_).func_76621_g();
+         return allowEmpty || !this.getChunkProvider().provideChunk(x, z).isEmpty();
 @@ -124,12 +125,12 @@
-         this.field_184157_a.clear();
-         int i = this.field_73037_M.field_71474_y.field_151451_c;
-         this.field_72984_F.func_76320_a("buildList");
--        int j = MathHelper.func_76128_c(this.field_73037_M.field_71439_g.field_70165_t / 16.0);
--        int k = MathHelper.func_76128_c(this.field_73037_M.field_71439_g.field_70161_v / 16.0);
-+        int j = MathHelper.func_76128_c(this.field_73037_M.field_71439_g.field_70165_t / 16.0D);
-+        int k = MathHelper.func_76128_c(this.field_73037_M.field_71439_g.field_70161_v / 16.0D);
+         this.visibleChunks.clear();
+         int i = this.mc.gameSettings.renderDistanceChunks;
+         this.profiler.startSection("buildList");
+-        int j = MathHelper.floor(this.mc.player.posX / 16.0);
+-        int k = MathHelper.floor(this.mc.player.posZ / 16.0);
++        int j = MathHelper.floor(this.mc.player.posX / 16.0D);
++        int k = MathHelper.floor(this.mc.player.posZ / 16.0D);
  
 -        for (int l = -i; l <= i; l++)
 +        for (int l = -i; l <= i; ++l)
@@ -78,28 +78,28 @@
 -            for (int i1 = -i; i1 <= i; i1++)
 +            for (int i1 = -i; i1 <= i; ++i1)
              {
-                 this.field_184157_a.add(new ChunkPos(l + j, i1 + k));
+                 this.visibleChunks.add(new ChunkPos(l + j, i1 + k));
              }
 @@ -138,14 +139,13 @@
-         this.field_72984_F.func_76319_b();
+         this.profiler.endSection();
      }
  
 -    @Override
-     protected void func_147456_g()
+     protected void updateBlocks()
      {
-         this.func_184154_a();
+         this.refreshVisibleChunks();
  
-         if (this.field_184158_M > 0)
+         if (this.ambienceTicks > 0)
          {
--            this.field_184158_M--;
-+            --this.field_184158_M;
+-            this.ambienceTicks--;
++            --this.ambienceTicks;
          }
  
-         this.field_73038_N.retainAll(this.field_184157_a);
+         this.previousActiveChunkSet.retainAll(this.visibleChunks);
 @@ -168,8 +168,9 @@
-                 this.func_147467_a(j, k, chunk);
-                 this.field_72984_F.func_76319_b();
-                 this.field_73038_N.add(chunkpos);
+                 this.playMoodSoundAndCheckLight(j, k, chunk);
+                 this.profiler.endSection();
+                 this.previousActiveChunkSet.add(chunkpos);
 +                ++i;
  
 -                if (++i >= 10)
@@ -112,229 +112,229 @@
      }
  
 -    @Override
-     public boolean func_72838_d(Entity p_72838_1_)
+     public boolean spawnEntity(Entity entityIn)
      {
-         boolean flag = super.func_72838_d(p_72838_1_);
+         boolean flag = super.spawnEntity(entityIn);
 @@ -211,14 +211,12 @@
          return flag;
      }
  
 -    @Override
-     public void func_72900_e(Entity p_72900_1_)
+     public void removeEntity(Entity entityIn)
      {
-         super.func_72900_e(p_72900_1_);
-         this.field_73032_d.remove(p_72900_1_);
+         super.removeEntity(entityIn);
+         this.entityList.remove(entityIn);
      }
  
 -    @Override
-     public void func_72923_a(Entity p_72923_1_)
+     public void onEntityAdded(Entity entityIn)
      {
-         super.func_72923_a(p_72923_1_);
+         super.onEntityAdded(entityIn);
 @@ -229,7 +227,6 @@
          }
      }
  
 -    @Override
-     public void func_72847_b(Entity p_72847_1_)
+     public void onEntityRemoved(Entity entityIn)
      {
-         super.func_72847_b(p_72847_1_);
+         super.onEntityRemoved(entityIn);
 @@ -268,7 +265,6 @@
      }
  
      @Nullable
 -    @Override
-     public Entity func_73045_a(int p_73045_1_)
+     public Entity getEntityByID(int id)
      {
-         return (Entity)(p_73045_1_ == this.field_73037_M.field_71439_g.func_145782_y() ? this.field_73037_M.field_71439_g : super.func_73045_a(p_73045_1_));
+         return (Entity)(id == this.mc.player.getEntityId() ? this.mc.player : super.getEntityByID(id));
 @@ -297,18 +293,15 @@
-         return super.func_180501_a(p_180503_1_, p_180503_2_, 3);
+         return super.setBlockState(pos, state, 3);
      }
  
 -    @Override
-     public void func_72882_A()
+     public void sendQuittingDisconnectingPacket()
      {
-         this.field_73035_a.func_147298_b().func_150718_a(new TextComponentString("Quitting"));
+         this.connection.getNetworkManager().closeChannel(new TextComponentString("Quitting"));
      }
  
 -    @Override
-     protected void func_72979_l()
+     protected void updateWeather()
      {
      }
  
 -    @Override
-     protected void func_147467_a(int p_147467_1_, int p_147467_2_, Chunk p_147467_3_)
+     protected void playMoodSoundAndCheckLight(int x, int z, Chunk chunkIn)
      {
-         super.func_147467_a(p_147467_1_, p_147467_2_, p_147467_3_);
+         super.playMoodSoundAndCheckLight(x, z, chunkIn);
 @@ -319,30 +312,19 @@
-             int i = this.field_73005_l >> 2;
+             int i = this.updateLCG >> 2;
              int j = i & 15;
              int k = i >> 8 & 15;
 -            int l = i >> 16 & 0xFF;
 +            int l = i >> 16 & 255;
-             BlockPos blockpos = new BlockPos(j + p_147467_1_, l, k + p_147467_2_);
-             IBlockState iblockstate = p_147467_3_.func_177435_g(blockpos);
--            j += p_147467_1_;
--            k += p_147467_2_;
-+            j = j + p_147467_1_;
-+            k = k + p_147467_2_;
+             BlockPos blockpos = new BlockPos(j + x, l, k + z);
+             IBlockState iblockstate = chunkIn.getBlockState(blockpos);
+-            j += x;
+-            k += z;
++            j = j + x;
++            k = k + z;
  
--            if (iblockstate.func_185904_a() == Material.field_151579_a
--                    && this.func_175699_k(blockpos) <= this.field_73012_v.nextInt(8)
--                    && this.func_175642_b(EnumSkyBlock.SKY, blockpos) <= 0)
-+            if (iblockstate.func_185904_a() == Material.field_151579_a && this.func_175699_k(blockpos) <= this.field_73012_v.nextInt(8) && this.func_175642_b(EnumSkyBlock.SKY, blockpos) <= 0)
+-            if (iblockstate.getMaterial() == Material.AIR
+-                    && this.getLight(blockpos) <= this.rand.nextInt(8)
+-                    && this.getLightFor(EnumSkyBlock.SKY, blockpos) <= 0)
++            if (iblockstate.getMaterial() == Material.AIR && this.getLight(blockpos) <= this.rand.nextInt(8) && this.getLightFor(EnumSkyBlock.SKY, blockpos) <= 0)
              {
--                double d0 = this.field_73037_M.field_71439_g.func_70092_e((double)j + 0.5, (double)l + 0.5, (double)k + 0.5);
-+                double d0 = this.field_73037_M.field_71439_g.func_70092_e((double)j + 0.5D, (double)l + 0.5D, (double)k + 0.5D);
+-                double d0 = this.mc.player.getDistanceSq((double)j + 0.5, (double)l + 0.5, (double)k + 0.5);
++                double d0 = this.mc.player.getDistanceSq((double)j + 0.5D, (double)l + 0.5D, (double)k + 0.5D);
  
--                if (this.field_73037_M.field_71439_g != null && d0 > 4.0 && d0 < 256.0)
-+                if (this.field_73037_M.field_71439_g != null && d0 > 4.0D && d0 < 256.0D)
+-                if (this.mc.player != null && d0 > 4.0 && d0 < 256.0)
++                if (this.mc.player != null && d0 > 4.0D && d0 < 256.0D)
                  {
--                    this.func_184134_a(
+-                    this.playSound(
 -                        (double)j + 0.5,
 -                        (double)l + 0.5,
 -                        (double)k + 0.5,
--                        SoundEvents.field_187674_a,
+-                        SoundEvents.AMBIENT_CAVE,
 -                        SoundCategory.AMBIENT,
 -                        0.7F,
--                        0.8F + this.field_73012_v.nextFloat() * 0.2F,
+-                        0.8F + this.rand.nextFloat() * 0.2F,
 -                        false
 -                    );
-+                    this.func_184134_a((double)j + 0.5D, (double)l + 0.5D, (double)k + 0.5D, SoundEvents.field_187674_a, SoundCategory.AMBIENT, 0.7F, 0.8F + this.field_73012_v.nextFloat() * 0.2F, false);
-                     this.field_184158_M = this.field_73012_v.nextInt(12000) + 6000;
++                    this.playSound((double)j + 0.5D, (double)l + 0.5D, (double)k + 0.5D, SoundEvents.AMBIENT_CAVE, SoundCategory.AMBIENT, 0.7F, 0.8F + this.rand.nextFloat() * 0.2F, false);
+                     this.ambienceTicks = this.rand.nextInt(12000) + 6000;
                  }
              }
 @@ -354,21 +336,17 @@
          int i = 32;
          Random random = new Random();
-         ItemStack itemstack = this.field_73037_M.field_71439_g.func_184614_ca();
--        boolean flag = this.field_73037_M.field_71442_b.func_178889_l() == GameType.CREATIVE
--                       && !itemstack.func_190926_b()
--                       && itemstack.func_77973_b() == Item.func_150898_a(Blocks.field_180401_cv);
-+        boolean flag = this.field_73037_M.field_71442_b.func_178889_l() == GameType.CREATIVE && !itemstack.func_190926_b() && itemstack.func_77973_b() == Item.func_150898_a(Blocks.field_180401_cv);
+         ItemStack itemstack = this.mc.player.getHeldItemMainhand();
+-        boolean flag = this.mc.playerController.getCurrentGameType() == GameType.CREATIVE
+-                       && !itemstack.isEmpty()
+-                       && itemstack.getItem() == Item.getItemFromBlock(Blocks.BARRIER);
++        boolean flag = this.mc.playerController.getCurrentGameType() == GameType.CREATIVE && !itemstack.isEmpty() && itemstack.getItem() == Item.getItemFromBlock(Blocks.BARRIER);
          BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
 -        for (int j = 0; j < 667; j++)
 +        for (int j = 0; j < 667; ++j)
          {
-             this.func_184153_a(p_73029_1_, p_73029_2_, p_73029_3_, 16, random, flag, blockpos$mutableblockpos);
-             this.func_184153_a(p_73029_1_, p_73029_2_, p_73029_3_, 32, random, flag, blockpos$mutableblockpos);
+             this.showBarrierParticles(posX, posY, posZ, 16, random, flag, blockpos$mutableblockpos);
+             this.showBarrierParticles(posX, posY, posZ, 32, random, flag, blockpos$mutableblockpos);
          }
      }
  
--    public void func_184153_a(
--        int p_184153_1_, int p_184153_2_, int p_184153_3_, int p_184153_4_, Random p_184153_5_, boolean p_184153_6_, BlockPos.MutableBlockPos p_184153_7_
+-    public void showBarrierParticles(
+-        int x, int y, int z, int offset, Random random, boolean holdingBarrier, BlockPos.MutableBlockPos pos
 -    )
-+    public void func_184153_a(int p_184153_1_, int p_184153_2_, int p_184153_3_, int p_184153_4_, Random p_184153_5_, boolean p_184153_6_, BlockPos.MutableBlockPos p_184153_7_)
++    public void showBarrierParticles(int x, int y, int z, int offset, Random random, boolean holdingBarrier, BlockPos.MutableBlockPos pos)
      {
-         int i = p_184153_1_ + this.field_73012_v.nextInt(p_184153_4_) - this.field_73012_v.nextInt(p_184153_4_);
-         int j = p_184153_2_ + this.field_73012_v.nextInt(p_184153_4_) - this.field_73012_v.nextInt(p_184153_4_);
+         int i = x + this.rand.nextInt(offset) - this.rand.nextInt(offset);
+         int j = y + this.rand.nextInt(offset) - this.rand.nextInt(offset);
 @@ -379,9 +357,7 @@
  
-         if (p_184153_6_ && iblockstate.func_177230_c() == Blocks.field_180401_cv)
+         if (holdingBarrier && iblockstate.getBlock() == Blocks.BARRIER)
          {
--            this.func_175688_a(
+-            this.spawnParticle(
 -                EnumParticleTypes.BARRIER, (double)((float)i + 0.5F), (double)((float)j + 0.5F), (double)((float)k + 0.5F), 0.0, 0.0, 0.0, new int[0]
 -            );
-+            this.func_175688_a(EnumParticleTypes.BARRIER, (double)((float)i + 0.5F), (double)((float)j + 0.5F), (double)((float)k + 0.5F), 0.0D, 0.0D, 0.0D, new int[0]);
++            this.spawnParticle(EnumParticleTypes.BARRIER, (double)((float)i + 0.5F), (double)((float)j + 0.5F), (double)((float)k + 0.5F), 0.0D, 0.0D, 0.0D, new int[0]);
          }
      }
  
 @@ -389,7 +365,7 @@
      {
-         this.field_72996_f.removeAll(this.field_72997_g);
+         this.loadedEntityList.removeAll(this.unloadedEntityList);
  
--        for (int i = 0; i < this.field_72997_g.size(); i++)
-+        for (int i = 0; i < this.field_72997_g.size(); ++i)
+-        for (int i = 0; i < this.unloadedEntityList.size(); i++)
++        for (int i = 0; i < this.unloadedEntityList.size(); ++i)
          {
-             Entity entity = this.field_72997_g.get(i);
-             int j = entity.field_70176_ah;
+             Entity entity = this.unloadedEntityList.get(i);
+             int j = entity.chunkCoordX;
 @@ -401,14 +377,14 @@
              }
          }
  
--        for (int i1 = 0; i1 < this.field_72997_g.size(); i1++)
-+        for (int i1 = 0; i1 < this.field_72997_g.size(); ++i1)
+-        for (int i1 = 0; i1 < this.unloadedEntityList.size(); i1++)
++        for (int i1 = 0; i1 < this.unloadedEntityList.size(); ++i1)
          {
-             this.func_72847_b(this.field_72997_g.get(i1));
+             this.onEntityRemoved(this.unloadedEntityList.get(i1));
          }
  
-         this.field_72997_g.clear();
+         this.unloadedEntityList.clear();
  
--        for (int j1 = 0; j1 < this.field_72996_f.size(); j1++)
-+        for (int j1 = 0; j1 < this.field_72996_f.size(); ++j1)
+-        for (int j1 = 0; j1 < this.loadedEntityList.size(); j1++)
++        for (int j1 = 0; j1 < this.loadedEntityList.size(); ++j1)
          {
-             Entity entity1 = this.field_72996_f.get(j1);
-             Entity entity2 = entity1.func_184187_bx();
+             Entity entity1 = this.loadedEntityList.get(j1);
+             Entity entity2 = entity1.getRidingEntity();
 @@ -439,7 +415,6 @@
          }
      }
  
 -    @Override
-     public CrashReportCategory func_72914_a(CrashReport p_72914_1_)
+     public CrashReportCategory addWorldInfoToCrashReport(CrashReport report)
      {
-         CrashReportCategory crashreportcategory = super.func_72914_a(p_72914_1_);
+         CrashReportCategory crashreportcategory = super.addWorldInfoToCrashReport(report);
 @@ -474,17 +449,7 @@
          return crashreportcategory;
      }
  
 -    @Override
--    public void func_184148_a(
--        @Nullable EntityPlayer p_184148_1_,
--        double p_184148_2_,
--        double p_184148_4_,
--        double p_184148_6_,
--        SoundEvent p_184148_8_,
--        SoundCategory p_184148_9_,
--        float p_184148_10_,
--        float p_184148_11_
+-    public void playSound(
+-        @Nullable EntityPlayer player,
+-        double x,
+-        double y,
+-        double z,
+-        SoundEvent soundIn,
+-        SoundCategory category,
+-        float volume,
+-        float pitch
 -    )
-+    public void func_184148_a(@Nullable EntityPlayer p_184148_1_, double p_184148_2_, double p_184148_4_, double p_184148_6_, SoundEvent p_184148_8_, SoundCategory p_184148_9_, float p_184148_10_, float p_184148_11_)
++    public void playSound(@Nullable EntityPlayer player, double x, double y, double z, SoundEvent soundIn, SoundCategory category, float volume, float pitch)
      {
-         if (p_184148_1_ == this.field_73037_M.field_71439_g)
+         if (player == this.mc.player)
          {
 @@ -494,39 +459,18 @@
  
-     public void func_184156_a(BlockPos p_184156_1_, SoundEvent p_184156_2_, SoundCategory p_184156_3_, float p_184156_4_, float p_184156_5_, boolean p_184156_6_)
+     public void playSound(BlockPos pos, SoundEvent soundIn, SoundCategory category, float volume, float pitch, boolean distanceDelay)
      {
--        this.func_184134_a(
--            (double)p_184156_1_.func_177958_n() + 0.5,
--            (double)p_184156_1_.func_177956_o() + 0.5,
--            (double)p_184156_1_.func_177952_p() + 0.5,
--            p_184156_2_,
--            p_184156_3_,
--            p_184156_4_,
--            p_184156_5_,
--            p_184156_6_
+-        this.playSound(
+-            (double)pos.getX() + 0.5,
+-            (double)pos.getY() + 0.5,
+-            (double)pos.getZ() + 0.5,
+-            soundIn,
+-            category,
+-            volume,
+-            pitch,
+-            distanceDelay
 -        );
-+        this.func_184134_a((double)p_184156_1_.func_177958_n() + 0.5D, (double)p_184156_1_.func_177956_o() + 0.5D, (double)p_184156_1_.func_177952_p() + 0.5D, p_184156_2_, p_184156_3_, p_184156_4_, p_184156_5_, p_184156_6_);
++        this.playSound((double)pos.getX() + 0.5D, (double)pos.getY() + 0.5D, (double)pos.getZ() + 0.5D, soundIn, category, volume, pitch, distanceDelay);
      }
  
 -    @Override
--    public void func_184134_a(
--        double p_184134_1_,
--        double p_184134_3_,
--        double p_184134_5_,
--        SoundEvent p_184134_7_,
--        SoundCategory p_184134_8_,
--        float p_184134_9_,
--        float p_184134_10_,
--        boolean p_184134_11_
+-    public void playSound(
+-        double x,
+-        double y,
+-        double z,
+-        SoundEvent soundIn,
+-        SoundCategory category,
+-        float volume,
+-        float pitch,
+-        boolean distanceDelay
 -    )
-+    public void func_184134_a(double p_184134_1_, double p_184134_3_, double p_184134_5_, SoundEvent p_184134_7_, SoundCategory p_184134_8_, float p_184134_9_, float p_184134_10_, boolean p_184134_11_)
++    public void playSound(double x, double y, double z, SoundEvent soundIn, SoundCategory category, float volume, float pitch, boolean distanceDelay)
      {
-         double d0 = this.field_73037_M.func_175606_aa().func_70092_e(p_184134_1_, p_184134_3_, p_184134_5_);
+         double d0 = this.mc.getRenderViewEntity().getDistanceSq(x, y, z);
 -        PositionedSoundRecord positionedsoundrecord = new PositionedSoundRecord(
--            p_184134_7_, p_184134_8_, p_184134_9_, p_184134_10_, (float)p_184134_1_, (float)p_184134_3_, (float)p_184134_5_
+-            soundIn, category, volume, pitch, (float)x, (float)y, (float)z
 -        );
-+        PositionedSoundRecord positionedsoundrecord = new PositionedSoundRecord(p_184134_7_, p_184134_8_, p_184134_9_, p_184134_10_, (float)p_184134_1_, (float)p_184134_3_, (float)p_184134_5_);
++        PositionedSoundRecord positionedsoundrecord = new PositionedSoundRecord(soundIn, category, volume, pitch, (float)x, (float)y, (float)z);
  
--        if (p_184134_11_ && d0 > 100.0)
-+        if (p_184134_11_ && d0 > 100.0D)
+-        if (distanceDelay && d0 > 100.0)
++        if (distanceDelay && d0 > 100.0D)
          {
 -            double d1 = Math.sqrt(d0) / 40.0;
--            this.field_73037_M.func_147118_V().func_147681_a(positionedsoundrecord, (int)(d1 * 20.0));
+-            this.mc.getSoundHandler().playDelayedSound(positionedsoundrecord, (int)(d1 * 20.0));
 +            double d1 = Math.sqrt(d0) / 40.0D;
-+            this.field_73037_M.func_147118_V().func_147681_a(positionedsoundrecord, (int)(d1 * 20.0D));
++            this.mc.getSoundHandler().playDelayedSound(positionedsoundrecord, (int)(d1 * 20.0D));
          }
          else
          {
@@ -343,30 +343,30 @@
      }
  
 -    @Override
--    public void func_92088_a(
--        double p_92088_1_, double p_92088_3_, double p_92088_5_, double p_92088_7_, double p_92088_9_, double p_92088_11_, @Nullable NBTTagCompound p_92088_13_
+-    public void makeFireworks(
+-        double x, double y, double z, double motionX, double motionY, double motionZ, @Nullable NBTTagCompound compound
 -    )
-+    public void func_92088_a(double p_92088_1_, double p_92088_3_, double p_92088_5_, double p_92088_7_, double p_92088_9_, double p_92088_11_, @Nullable NBTTagCompound p_92088_13_)
++    public void makeFireworks(double x, double y, double z, double motionX, double motionY, double motionZ, @Nullable NBTTagCompound compound)
      {
--        this.field_73037_M
--        .field_71452_i
--        .func_78873_a(
+-        this.mc
+-        .effectRenderer
+-        .addEffect(
 -            new ParticleFirework.Starter(
--                this, p_92088_1_, p_92088_3_, p_92088_5_, p_92088_7_, p_92088_9_, p_92088_11_, this.field_73037_M.field_71452_i, p_92088_13_
+-                this, x, y, z, motionX, motionY, motionZ, this.mc.effectRenderer, compound
 -            )
 -        );
-+        this.field_73037_M.field_71452_i.func_78873_a(new ParticleFirework.Starter(this, p_92088_1_, p_92088_3_, p_92088_5_, p_92088_7_, p_92088_9_, p_92088_11_, this.field_73037_M.field_71452_i, p_92088_13_));
++        this.mc.effectRenderer.addEffect(new ParticleFirework.Starter(this, x, y, z, motionX, motionY, motionZ, this.mc.effectRenderer, compound));
      }
  
 -    @Override
-     public void func_184135_a(Packet<?> p_184135_1_)
+     public void sendPacketToServer(Packet<?> packetIn)
      {
-         this.field_73035_a.func_147297_a(p_184135_1_);
+         this.connection.sendPacket(packetIn);
 @@ -559,7 +493,6 @@
-         this.field_96442_D = p_96443_1_;
+         this.worldScoreboard = scoreboardIn;
      }
  
 -    @Override
-     public void func_72877_b(long p_72877_1_)
+     public void setWorldTime(long time)
      {
-         if (p_72877_1_ < 0L)
+         if (time < 0L)

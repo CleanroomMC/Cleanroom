@@ -11,134 +11,134 @@
 @@ -34,39 +35,33 @@
  public class BlockStairs extends Block
  {
-     public static final PropertyDirection field_176309_a = BlockHorizontal.field_185512_D;
--    public static final PropertyEnum<BlockStairs.EnumHalf> field_176308_b = PropertyEnum.func_177709_a("half", BlockStairs.EnumHalf.class);
--    public static final PropertyEnum<BlockStairs.EnumShape> field_176310_M = PropertyEnum.func_177709_a("shape", BlockStairs.EnumShape.class);
--    protected static final AxisAlignedBB field_185712_d = new AxisAlignedBB(0.0, 0.5, 0.0, 1.0, 1.0, 1.0);
--    protected static final AxisAlignedBB field_185714_e = new AxisAlignedBB(0.0, 0.5, 0.0, 0.5, 1.0, 1.0);
--    protected static final AxisAlignedBB field_185716_f = new AxisAlignedBB(0.5, 0.5, 0.0, 1.0, 1.0, 1.0);
--    protected static final AxisAlignedBB field_185718_g = new AxisAlignedBB(0.0, 0.5, 0.0, 1.0, 1.0, 0.5);
--    protected static final AxisAlignedBB field_185710_B = new AxisAlignedBB(0.0, 0.5, 0.5, 1.0, 1.0, 1.0);
--    protected static final AxisAlignedBB field_185711_C = new AxisAlignedBB(0.0, 0.5, 0.0, 0.5, 1.0, 0.5);
--    protected static final AxisAlignedBB field_185713_D = new AxisAlignedBB(0.5, 0.5, 0.0, 1.0, 1.0, 0.5);
--    protected static final AxisAlignedBB field_185715_E = new AxisAlignedBB(0.0, 0.5, 0.5, 0.5, 1.0, 1.0);
--    protected static final AxisAlignedBB field_185717_F = new AxisAlignedBB(0.5, 0.5, 0.5, 1.0, 1.0, 1.0);
--    protected static final AxisAlignedBB field_185719_G = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.5, 1.0);
--    protected static final AxisAlignedBB field_185720_H = new AxisAlignedBB(0.0, 0.0, 0.0, 0.5, 0.5, 1.0);
--    protected static final AxisAlignedBB field_185721_I = new AxisAlignedBB(0.5, 0.0, 0.0, 1.0, 0.5, 1.0);
--    protected static final AxisAlignedBB field_185722_J = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.5, 0.5);
--    protected static final AxisAlignedBB field_185723_K = new AxisAlignedBB(0.0, 0.0, 0.5, 1.0, 0.5, 1.0);
--    protected static final AxisAlignedBB field_185724_L = new AxisAlignedBB(0.0, 0.0, 0.0, 0.5, 0.5, 0.5);
--    protected static final AxisAlignedBB field_185725_M = new AxisAlignedBB(0.5, 0.0, 0.0, 1.0, 0.5, 0.5);
--    protected static final AxisAlignedBB field_185726_N = new AxisAlignedBB(0.0, 0.0, 0.5, 0.5, 0.5, 1.0);
--    protected static final AxisAlignedBB field_185727_O = new AxisAlignedBB(0.5, 0.0, 0.5, 1.0, 0.5, 1.0);
-+    public static final PropertyEnum<BlockStairs.EnumHalf> field_176308_b = PropertyEnum.<BlockStairs.EnumHalf>func_177709_a("half", BlockStairs.EnumHalf.class);
-+    public static final PropertyEnum<BlockStairs.EnumShape> field_176310_M = PropertyEnum.<BlockStairs.EnumShape>func_177709_a("shape", BlockStairs.EnumShape.class);
-+    protected static final AxisAlignedBB field_185712_d = new AxisAlignedBB(0.0D, 0.5D, 0.0D, 1.0D, 1.0D, 1.0D);
-+    protected static final AxisAlignedBB field_185714_e = new AxisAlignedBB(0.0D, 0.5D, 0.0D, 0.5D, 1.0D, 1.0D);
-+    protected static final AxisAlignedBB field_185716_f = new AxisAlignedBB(0.5D, 0.5D, 0.0D, 1.0D, 1.0D, 1.0D);
-+    protected static final AxisAlignedBB field_185718_g = new AxisAlignedBB(0.0D, 0.5D, 0.0D, 1.0D, 1.0D, 0.5D);
-+    protected static final AxisAlignedBB field_185710_B = new AxisAlignedBB(0.0D, 0.5D, 0.5D, 1.0D, 1.0D, 1.0D);
-+    protected static final AxisAlignedBB field_185711_C = new AxisAlignedBB(0.0D, 0.5D, 0.0D, 0.5D, 1.0D, 0.5D);
-+    protected static final AxisAlignedBB field_185713_D = new AxisAlignedBB(0.5D, 0.5D, 0.0D, 1.0D, 1.0D, 0.5D);
-+    protected static final AxisAlignedBB field_185715_E = new AxisAlignedBB(0.0D, 0.5D, 0.5D, 0.5D, 1.0D, 1.0D);
-+    protected static final AxisAlignedBB field_185717_F = new AxisAlignedBB(0.5D, 0.5D, 0.5D, 1.0D, 1.0D, 1.0D);
-+    protected static final AxisAlignedBB field_185719_G = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D);
-+    protected static final AxisAlignedBB field_185720_H = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.5D, 0.5D, 1.0D);
-+    protected static final AxisAlignedBB field_185721_I = new AxisAlignedBB(0.5D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D);
-+    protected static final AxisAlignedBB field_185722_J = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 0.5D);
-+    protected static final AxisAlignedBB field_185723_K = new AxisAlignedBB(0.0D, 0.0D, 0.5D, 1.0D, 0.5D, 1.0D);
-+    protected static final AxisAlignedBB field_185724_L = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.5D, 0.5D, 0.5D);
-+    protected static final AxisAlignedBB field_185725_M = new AxisAlignedBB(0.5D, 0.0D, 0.0D, 1.0D, 0.5D, 0.5D);
-+    protected static final AxisAlignedBB field_185726_N = new AxisAlignedBB(0.0D, 0.0D, 0.5D, 0.5D, 0.5D, 1.0D);
-+    protected static final AxisAlignedBB field_185727_O = new AxisAlignedBB(0.5D, 0.0D, 0.5D, 1.0D, 0.5D, 1.0D);
-     private final Block field_150149_b;
-     private final IBlockState field_150151_M;
+     public static final PropertyDirection FACING = BlockHorizontal.FACING;
+-    public static final PropertyEnum<BlockStairs.EnumHalf> HALF = PropertyEnum.create("half", BlockStairs.EnumHalf.class);
+-    public static final PropertyEnum<BlockStairs.EnumShape> SHAPE = PropertyEnum.create("shape", BlockStairs.EnumShape.class);
+-    protected static final AxisAlignedBB AABB_SLAB_TOP = new AxisAlignedBB(0.0, 0.5, 0.0, 1.0, 1.0, 1.0);
+-    protected static final AxisAlignedBB AABB_QTR_TOP_WEST = new AxisAlignedBB(0.0, 0.5, 0.0, 0.5, 1.0, 1.0);
+-    protected static final AxisAlignedBB AABB_QTR_TOP_EAST = new AxisAlignedBB(0.5, 0.5, 0.0, 1.0, 1.0, 1.0);
+-    protected static final AxisAlignedBB AABB_QTR_TOP_NORTH = new AxisAlignedBB(0.0, 0.5, 0.0, 1.0, 1.0, 0.5);
+-    protected static final AxisAlignedBB AABB_QTR_TOP_SOUTH = new AxisAlignedBB(0.0, 0.5, 0.5, 1.0, 1.0, 1.0);
+-    protected static final AxisAlignedBB AABB_OCT_TOP_NW = new AxisAlignedBB(0.0, 0.5, 0.0, 0.5, 1.0, 0.5);
+-    protected static final AxisAlignedBB AABB_OCT_TOP_NE = new AxisAlignedBB(0.5, 0.5, 0.0, 1.0, 1.0, 0.5);
+-    protected static final AxisAlignedBB AABB_OCT_TOP_SW = new AxisAlignedBB(0.0, 0.5, 0.5, 0.5, 1.0, 1.0);
+-    protected static final AxisAlignedBB AABB_OCT_TOP_SE = new AxisAlignedBB(0.5, 0.5, 0.5, 1.0, 1.0, 1.0);
+-    protected static final AxisAlignedBB AABB_SLAB_BOTTOM = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.5, 1.0);
+-    protected static final AxisAlignedBB AABB_QTR_BOT_WEST = new AxisAlignedBB(0.0, 0.0, 0.0, 0.5, 0.5, 1.0);
+-    protected static final AxisAlignedBB AABB_QTR_BOT_EAST = new AxisAlignedBB(0.5, 0.0, 0.0, 1.0, 0.5, 1.0);
+-    protected static final AxisAlignedBB AABB_QTR_BOT_NORTH = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.5, 0.5);
+-    protected static final AxisAlignedBB AABB_QTR_BOT_SOUTH = new AxisAlignedBB(0.0, 0.0, 0.5, 1.0, 0.5, 1.0);
+-    protected static final AxisAlignedBB AABB_OCT_BOT_NW = new AxisAlignedBB(0.0, 0.0, 0.0, 0.5, 0.5, 0.5);
+-    protected static final AxisAlignedBB AABB_OCT_BOT_NE = new AxisAlignedBB(0.5, 0.0, 0.0, 1.0, 0.5, 0.5);
+-    protected static final AxisAlignedBB AABB_OCT_BOT_SW = new AxisAlignedBB(0.0, 0.0, 0.5, 0.5, 0.5, 1.0);
+-    protected static final AxisAlignedBB AABB_OCT_BOT_SE = new AxisAlignedBB(0.5, 0.0, 0.5, 1.0, 0.5, 1.0);
++    public static final PropertyEnum<BlockStairs.EnumHalf> HALF = PropertyEnum.<BlockStairs.EnumHalf>create("half", BlockStairs.EnumHalf.class);
++    public static final PropertyEnum<BlockStairs.EnumShape> SHAPE = PropertyEnum.<BlockStairs.EnumShape>create("shape", BlockStairs.EnumShape.class);
++    protected static final AxisAlignedBB AABB_SLAB_TOP = new AxisAlignedBB(0.0D, 0.5D, 0.0D, 1.0D, 1.0D, 1.0D);
++    protected static final AxisAlignedBB AABB_QTR_TOP_WEST = new AxisAlignedBB(0.0D, 0.5D, 0.0D, 0.5D, 1.0D, 1.0D);
++    protected static final AxisAlignedBB AABB_QTR_TOP_EAST = new AxisAlignedBB(0.5D, 0.5D, 0.0D, 1.0D, 1.0D, 1.0D);
++    protected static final AxisAlignedBB AABB_QTR_TOP_NORTH = new AxisAlignedBB(0.0D, 0.5D, 0.0D, 1.0D, 1.0D, 0.5D);
++    protected static final AxisAlignedBB AABB_QTR_TOP_SOUTH = new AxisAlignedBB(0.0D, 0.5D, 0.5D, 1.0D, 1.0D, 1.0D);
++    protected static final AxisAlignedBB AABB_OCT_TOP_NW = new AxisAlignedBB(0.0D, 0.5D, 0.0D, 0.5D, 1.0D, 0.5D);
++    protected static final AxisAlignedBB AABB_OCT_TOP_NE = new AxisAlignedBB(0.5D, 0.5D, 0.0D, 1.0D, 1.0D, 0.5D);
++    protected static final AxisAlignedBB AABB_OCT_TOP_SW = new AxisAlignedBB(0.0D, 0.5D, 0.5D, 0.5D, 1.0D, 1.0D);
++    protected static final AxisAlignedBB AABB_OCT_TOP_SE = new AxisAlignedBB(0.5D, 0.5D, 0.5D, 1.0D, 1.0D, 1.0D);
++    protected static final AxisAlignedBB AABB_SLAB_BOTTOM = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D);
++    protected static final AxisAlignedBB AABB_QTR_BOT_WEST = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.5D, 0.5D, 1.0D);
++    protected static final AxisAlignedBB AABB_QTR_BOT_EAST = new AxisAlignedBB(0.5D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D);
++    protected static final AxisAlignedBB AABB_QTR_BOT_NORTH = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 0.5D);
++    protected static final AxisAlignedBB AABB_QTR_BOT_SOUTH = new AxisAlignedBB(0.0D, 0.0D, 0.5D, 1.0D, 0.5D, 1.0D);
++    protected static final AxisAlignedBB AABB_OCT_BOT_NW = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.5D, 0.5D, 0.5D);
++    protected static final AxisAlignedBB AABB_OCT_BOT_NE = new AxisAlignedBB(0.5D, 0.0D, 0.0D, 1.0D, 0.5D, 0.5D);
++    protected static final AxisAlignedBB AABB_OCT_BOT_SW = new AxisAlignedBB(0.0D, 0.0D, 0.5D, 0.5D, 0.5D, 1.0D);
++    protected static final AxisAlignedBB AABB_OCT_BOT_SE = new AxisAlignedBB(0.5D, 0.0D, 0.5D, 1.0D, 0.5D, 1.0D);
+     private final Block modelBlock;
+     private final IBlockState modelState;
  
-     protected BlockStairs(IBlockState p_i45684_1_)
+     protected BlockStairs(IBlockState modelState)
      {
-         super(p_i45684_1_.func_177230_c().field_149764_J);
--        this.func_180632_j(
--            this.field_176227_L
--            .func_177621_b()
--            .func_177226_a(field_176309_a, EnumFacing.NORTH)
--            .func_177226_a(field_176308_b, BlockStairs.EnumHalf.BOTTOM)
--            .func_177226_a(field_176310_M, BlockStairs.EnumShape.STRAIGHT)
+         super(modelState.getBlock().material);
+-        this.setDefaultState(
+-            this.blockState
+-            .getBaseState()
+-            .withProperty(FACING, EnumFacing.NORTH)
+-            .withProperty(HALF, BlockStairs.EnumHalf.BOTTOM)
+-            .withProperty(SHAPE, BlockStairs.EnumShape.STRAIGHT)
 -        );
-+        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176309_a, EnumFacing.NORTH).func_177226_a(field_176308_b, BlockStairs.EnumHalf.BOTTOM).func_177226_a(field_176310_M, BlockStairs.EnumShape.STRAIGHT));
-         this.field_150149_b = p_i45684_1_.func_177230_c();
-         this.field_150151_M = p_i45684_1_;
-         this.func_149711_c(this.field_150149_b.field_149782_v);
++        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(HALF, BlockStairs.EnumHalf.BOTTOM).withProperty(SHAPE, BlockStairs.EnumShape.STRAIGHT));
+         this.modelBlock = modelState.getBlock();
+         this.modelState = modelState;
+         this.setHardness(this.modelBlock.blockHardness);
 @@ -76,16 +71,7 @@
-         this.func_149647_a(CreativeTabs.field_78030_b);
+         this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
      }
  
 -    @Override
--    public void func_185477_a(
--        IBlockState p_185477_1_,
--        World p_185477_2_,
--        BlockPos p_185477_3_,
--        AxisAlignedBB p_185477_4_,
--        List<AxisAlignedBB> p_185477_5_,
--        @Nullable Entity p_185477_6_,
--        boolean p_185477_7_
+-    public void addCollisionBoxToList(
+-        IBlockState state,
+-        World worldIn,
+-        BlockPos pos,
+-        AxisAlignedBB entityBox,
+-        List<AxisAlignedBB> collidingBoxes,
+-        @Nullable Entity entityIn,
+-        boolean isActualState
 -    )
-+    public void func_185477_a(IBlockState p_185477_1_, World p_185477_2_, BlockPos p_185477_3_, AxisAlignedBB p_185477_4_, List<AxisAlignedBB> p_185477_5_, @Nullable Entity p_185477_6_, boolean p_185477_7_)
++    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState)
      {
-         if (!p_185477_7_)
+         if (!isActualState)
          {
 @@ -100,14 +86,12 @@
  
-     private static List<AxisAlignedBB> func_185708_x(IBlockState p_185708_0_)
+     private static List<AxisAlignedBB> getCollisionBoxList(IBlockState bstate)
      {
 -        List<AxisAlignedBB> list = Lists.newArrayList();
 +        List<AxisAlignedBB> list = Lists.<AxisAlignedBB>newArrayList();
-         boolean flag = p_185708_0_.func_177229_b(field_176308_b) == BlockStairs.EnumHalf.TOP;
-         list.add(flag ? field_185712_d : field_185719_G);
--        BlockStairs.EnumShape blockstairs$enumshape = p_185708_0_.func_177229_b(field_176310_M);
-+        BlockStairs.EnumShape blockstairs$enumshape = (BlockStairs.EnumShape)p_185708_0_.func_177229_b(field_176310_M);
+         boolean flag = bstate.getValue(HALF) == BlockStairs.EnumHalf.TOP;
+         list.add(flag ? AABB_SLAB_TOP : AABB_SLAB_BOTTOM);
+-        BlockStairs.EnumShape blockstairs$enumshape = bstate.getValue(SHAPE);
++        BlockStairs.EnumShape blockstairs$enumshape = (BlockStairs.EnumShape)bstate.getValue(SHAPE);
  
 -        if (blockstairs$enumshape == BlockStairs.EnumShape.STRAIGHT
 -                || blockstairs$enumshape == BlockStairs.EnumShape.INNER_LEFT
 -                || blockstairs$enumshape == BlockStairs.EnumShape.INNER_RIGHT)
 +        if (blockstairs$enumshape == BlockStairs.EnumShape.STRAIGHT || blockstairs$enumshape == BlockStairs.EnumShape.INNER_LEFT || blockstairs$enumshape == BlockStairs.EnumShape.INNER_RIGHT)
          {
-             list.add(func_185707_y(p_185708_0_));
+             list.add(getCollQuarterBlock(bstate));
          }
 @@ -140,7 +124,7 @@
  
-     private static AxisAlignedBB func_185705_z(IBlockState p_185705_0_)
+     private static AxisAlignedBB getCollEighthBlock(IBlockState bstate)
      {
--        EnumFacing enumfacing = p_185705_0_.func_177229_b(field_176309_a);
-+        EnumFacing enumfacing = (EnumFacing)p_185705_0_.func_177229_b(field_176309_a);
+-        EnumFacing enumfacing = bstate.getValue(FACING);
++        EnumFacing enumfacing = (EnumFacing)bstate.getValue(FACING);
          EnumFacing enumfacing1;
  
-         switch ((BlockStairs.EnumShape)p_185705_0_.func_177229_b(field_176310_M))
+         switch ((BlockStairs.EnumShape)bstate.getValue(SHAPE))
 @@ -175,24 +159,21 @@
          }
      }
  
 -    @Override
-     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
      {
-         p_193383_2_ = this.func_176221_a(p_193383_2_, p_193383_1_, p_193383_3_);
+         state = this.getActualState(state, worldIn, pos);
  
-         if (p_193383_4_.func_176740_k() == EnumFacing.Axis.Y)
+         if (face.getAxis() == EnumFacing.Axis.Y)
          {
--            return p_193383_4_ == EnumFacing.UP == (p_193383_2_.func_177229_b(field_176308_b) == BlockStairs.EnumHalf.TOP)
+-            return face == EnumFacing.UP == (state.getValue(HALF) == BlockStairs.EnumHalf.TOP)
 -                   ? BlockFaceShape.SOLID
 -                   : BlockFaceShape.UNDEFINED;
-+            return p_193383_4_ == EnumFacing.UP == (p_193383_2_.func_177229_b(field_176308_b) == BlockStairs.EnumHalf.TOP) ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
++            return face == EnumFacing.UP == (state.getValue(HALF) == BlockStairs.EnumHalf.TOP) ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
          }
          else
          {
--            BlockStairs.EnumShape blockstairs$enumshape = p_193383_2_.func_177229_b(field_176310_M);
-+            BlockStairs.EnumShape blockstairs$enumshape = (BlockStairs.EnumShape)p_193383_2_.func_177229_b(field_176310_M);
+-            BlockStairs.EnumShape blockstairs$enumshape = state.getValue(SHAPE);
++            BlockStairs.EnumShape blockstairs$enumshape = (BlockStairs.EnumShape)state.getValue(SHAPE);
  
              if (blockstairs$enumshape != BlockStairs.EnumShape.OUTER_LEFT && blockstairs$enumshape != BlockStairs.EnumShape.OUTER_RIGHT)
              {
--                EnumFacing enumfacing = p_193383_2_.func_177229_b(field_176309_a);
-+                EnumFacing enumfacing = (EnumFacing)p_193383_2_.func_177229_b(field_176309_a);
+-                EnumFacing enumfacing = state.getValue(FACING);
++                EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
  
                  switch (blockstairs$enumshape)
                  {
@@ -147,194 +147,194 @@
      }
  
 -    @Override
-     public boolean func_149662_c(IBlockState p_149662_1_)
+     public boolean isOpaqueCube(IBlockState state)
      {
          return false;
      }
  
 -    @Override
-     public boolean func_149686_d(IBlockState p_149686_1_)
+     public boolean isFullCube(IBlockState state)
      {
          return false;
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public void func_180655_c(IBlockState p_180655_1_, World p_180655_2_, BlockPos p_180655_3_, Random p_180655_4_)
+     public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
      {
-         this.field_150149_b.func_180655_c(p_180655_1_, p_180655_2_, p_180655_3_, p_180655_4_);
+         this.modelBlock.randomDisplayTick(stateIn, worldIn, pos, rand);
      }
  
 -    @Override
-     public void func_180649_a(World p_180649_1_, BlockPos p_180649_2_, EntityPlayer p_180649_3_)
+     public void onBlockClicked(World worldIn, BlockPos pos, EntityPlayer playerIn)
      {
-         this.field_150149_b.func_180649_a(p_180649_1_, p_180649_2_, p_180649_3_);
+         this.modelBlock.onBlockClicked(worldIn, pos, playerIn);
      }
  
 -    @Override
-     public void func_176206_d(World p_176206_1_, BlockPos p_176206_2_, IBlockState p_176206_3_)
+     public void onPlayerDestroy(World worldIn, BlockPos pos, IBlockState state)
      {
-         this.field_150149_b.func_176206_d(p_176206_1_, p_176206_2_, p_176206_3_);
+         this.modelBlock.onPlayerDestroy(worldIn, pos, state);
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public int func_185484_c(IBlockState p_185484_1_, IBlockAccess p_185484_2_, BlockPos p_185484_3_)
+     public int getPackedLightmapCoords(IBlockState state, IBlockAccess source, BlockPos pos)
      {
-         return this.field_150151_M.func_185889_a(p_185484_2_, p_185484_3_);
+         return this.modelState.getPackedLightmapCoords(source, pos);
      }
  
 -    @Override
-     public float func_149638_a(Entity p_149638_1_)
+     public float getExplosionResistance(Entity exploder)
      {
-         return this.field_150149_b.func_149638_a(p_149638_1_);
-     }
- 
--    @SideOnly(Side.CLIENT)
--    @Override
--    public BlockRenderLayer func_180664_k()
--    {
--        return this.field_150149_b.func_180664_k();
--    }
--
--    @Override
-     public int func_149738_a(World p_149738_1_)
-     {
-         return this.field_150149_b.func_149738_a(p_149738_1_);
+         return this.modelBlock.getExplosionResistance(exploder);
      }
  
 -    @SideOnly(Side.CLIENT)
 -    @Override
--    public AxisAlignedBB func_180640_a(IBlockState p_180640_1_, World p_180640_2_, BlockPos p_180640_3_)
+-    public BlockRenderLayer getRenderLayer()
 -    {
--        return this.field_150151_M.func_185918_c(p_180640_2_, p_180640_3_);
+-        return this.modelBlock.getRenderLayer();
 -    }
 -
 -    @Override
-     public Vec3d func_176197_a(World p_176197_1_, BlockPos p_176197_2_, Entity p_176197_3_, Vec3d p_176197_4_)
+     public int tickRate(World worldIn)
      {
-         return this.field_150149_b.func_176197_a(p_176197_1_, p_176197_2_, p_176197_3_, p_176197_4_);
+         return this.modelBlock.tickRate(worldIn);
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+-    @Override
+-    public AxisAlignedBB getSelectedBoundingBox(IBlockState state, World worldIn, BlockPos pos)
+-    {
+-        return this.modelState.getSelectedBoundingBox(worldIn, pos);
+-    }
+-
+-    @Override
+     public Vec3d modifyAcceleration(World worldIn, BlockPos pos, Entity entityIn, Vec3d motion)
+     {
+         return this.modelBlock.modifyAcceleration(worldIn, pos, entityIn, motion);
      }
  
 -    @Override
 +    @SideOnly(Side.CLIENT)
-+    public BlockRenderLayer func_180664_k()
++    public BlockRenderLayer getRenderLayer()
 +    {
-+        return this.field_150149_b.func_180664_k();
++        return this.modelBlock.getRenderLayer();
 +    }
 +
 +    @SideOnly(Side.CLIENT)
-+    public AxisAlignedBB func_180640_a(IBlockState p_180640_1_, World p_180640_2_, BlockPos p_180640_3_)
++    public AxisAlignedBB getSelectedBoundingBox(IBlockState state, World worldIn, BlockPos pos)
 +    {
-+        return this.field_150151_M.func_185918_c(p_180640_2_, p_180640_3_);
++        return this.modelState.getSelectedBoundingBox(worldIn, pos);
 +    }
 +
-     public boolean func_149703_v()
+     public boolean isCollidable()
      {
-         return this.field_150149_b.func_149703_v();
+         return this.modelBlock.isCollidable();
      }
  
 -    @Override
-     public boolean func_176209_a(IBlockState p_176209_1_, boolean p_176209_2_)
+     public boolean canCollideCheck(IBlockState state, boolean hitIfLiquid)
      {
-         return this.field_150149_b.func_176209_a(p_176209_1_, p_176209_2_);
+         return this.modelBlock.canCollideCheck(state, hitIfLiquid);
      }
  
 -    @Override
-     public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)
+     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
      {
-         return this.field_150149_b.func_176196_c(p_176196_1_, p_176196_2_);
+         return this.modelBlock.canPlaceBlockAt(worldIn, pos);
      }
  
 -    @Override
-     public void func_176213_c(World p_176213_1_, BlockPos p_176213_2_, IBlockState p_176213_3_)
+     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
      {
-         this.field_150151_M.func_189546_a(p_176213_1_, p_176213_2_, Blocks.field_150350_a, p_176213_2_);
-         this.field_150149_b.func_176213_c(p_176213_1_, p_176213_2_, this.field_150151_M);
+         this.modelState.neighborChanged(worldIn, pos, Blocks.AIR, pos);
+         this.modelBlock.onBlockAdded(worldIn, pos, this.modelState);
      }
  
 -    @Override
-     public void func_180663_b(World p_180663_1_, BlockPos p_180663_2_, IBlockState p_180663_3_)
+     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
      {
-         this.field_150149_b.func_180663_b(p_180663_1_, p_180663_2_, this.field_150151_M);
+         this.modelBlock.breakBlock(worldIn, pos, this.modelState);
      }
  
 -    @Override
-     public void func_176199_a(World p_176199_1_, BlockPos p_176199_2_, Entity p_176199_3_)
+     public void onEntityWalk(World worldIn, BlockPos pos, Entity entityIn)
      {
-         this.field_150149_b.func_176199_a(p_176199_1_, p_176199_2_, p_176199_3_);
+         this.modelBlock.onEntityWalk(worldIn, pos, entityIn);
      }
  
 -    @Override
-     public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
+     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
      {
-         this.field_150149_b.func_180650_b(p_180650_1_, p_180650_2_, p_180650_3_, p_180650_4_);
+         this.modelBlock.updateTick(worldIn, pos, state, rand);
      }
  
 -    @Override
--    public boolean func_180639_a(
--        World p_180639_1_,
--        BlockPos p_180639_2_,
--        IBlockState p_180639_3_,
--        EntityPlayer p_180639_4_,
--        EnumHand p_180639_5_,
--        EnumFacing p_180639_6_,
--        float p_180639_7_,
--        float p_180639_8_,
--        float p_180639_9_
+-    public boolean onBlockActivated(
+-        World worldIn,
+-        BlockPos pos,
+-        IBlockState state,
+-        EntityPlayer playerIn,
+-        EnumHand hand,
+-        EnumFacing facing,
+-        float hitX,
+-        float hitY,
+-        float hitZ
 -    )
-+    public boolean func_180639_a(World p_180639_1_, BlockPos p_180639_2_, IBlockState p_180639_3_, EntityPlayer p_180639_4_, EnumHand p_180639_5_, EnumFacing p_180639_6_, float p_180639_7_, float p_180639_8_, float p_180639_9_)
++    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
      {
-         return this.field_150149_b.func_180639_a(p_180639_1_, p_180639_2_, this.field_150151_M, p_180639_4_, p_180639_5_, EnumFacing.DOWN, 0.0F, 0.0F, 0.0F);
+         return this.modelBlock.onBlockActivated(worldIn, pos, this.modelState, playerIn, hand, EnumFacing.DOWN, 0.0F, 0.0F, 0.0F);
      }
  
 -    @Override
-     public void func_180652_a(World p_180652_1_, BlockPos p_180652_2_, Explosion p_180652_3_)
+     public void onExplosionDestroy(World worldIn, BlockPos pos, Explosion explosionIn)
      {
-         this.field_150149_b.func_180652_a(p_180652_1_, p_180652_2_, p_180652_3_);
+         this.modelBlock.onExplosionDestroy(worldIn, pos, explosionIn);
      }
  
 -    @Override
-     public boolean func_185481_k(IBlockState p_185481_1_)
+     public boolean isTopSolid(IBlockState state)
      {
-         return p_185481_1_.func_177229_b(field_176308_b) == BlockStairs.EnumHalf.TOP;
+         return state.getValue(HALF) == BlockStairs.EnumHalf.TOP;
      }
  
 -    @Override
-     public MapColor func_180659_g(IBlockState p_180659_1_, IBlockAccess p_180659_2_, BlockPos p_180659_3_)
+     public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos)
      {
-         return this.field_150149_b.func_180659_g(this.field_150151_M, p_180659_2_, p_180659_3_);
+         return this.modelBlock.getMapColor(this.modelState, worldIn, pos);
      }
  
 -    @Override
--    public IBlockState func_180642_a(
--        World p_180642_1_,
--        BlockPos p_180642_2_,
--        EnumFacing p_180642_3_,
--        float p_180642_4_,
--        float p_180642_5_,
--        float p_180642_6_,
--        int p_180642_7_,
--        EntityLivingBase p_180642_8_
+-    public IBlockState getStateForPlacement(
+-        World worldIn,
+-        BlockPos pos,
+-        EnumFacing facing,
+-        float hitX,
+-        float hitY,
+-        float hitZ,
+-        int meta,
+-        EntityLivingBase placer
 -    )
-+    public IBlockState func_180642_a(World p_180642_1_, BlockPos p_180642_2_, EnumFacing p_180642_3_, float p_180642_4_, float p_180642_5_, float p_180642_6_, int p_180642_7_, EntityLivingBase p_180642_8_)
++    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
      {
-         IBlockState iblockstate = super.func_180642_a(p_180642_1_, p_180642_2_, p_180642_3_, p_180642_4_, p_180642_5_, p_180642_6_, p_180642_7_, p_180642_8_);
-         iblockstate = iblockstate.func_177226_a(field_176309_a, p_180642_8_.func_174811_aO()).func_177226_a(field_176310_M, BlockStairs.EnumShape.STRAIGHT);
--        return p_180642_3_ != EnumFacing.DOWN && (p_180642_3_ == EnumFacing.UP || !((double)p_180642_5_ > 0.5))
--               ? iblockstate.func_177226_a(field_176308_b, BlockStairs.EnumHalf.BOTTOM)
--               : iblockstate.func_177226_a(field_176308_b, BlockStairs.EnumHalf.TOP);
-+        return p_180642_3_ != EnumFacing.DOWN && (p_180642_3_ == EnumFacing.UP || (double)p_180642_5_ <= 0.5D) ? iblockstate.func_177226_a(field_176308_b, BlockStairs.EnumHalf.BOTTOM) : iblockstate.func_177226_a(field_176308_b, BlockStairs.EnumHalf.TOP);
+         IBlockState iblockstate = super.getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer);
+         iblockstate = iblockstate.withProperty(FACING, placer.getHorizontalFacing()).withProperty(SHAPE, BlockStairs.EnumShape.STRAIGHT);
+-        return facing != EnumFacing.DOWN && (facing == EnumFacing.UP || !((double)hitY > 0.5))
+-               ? iblockstate.withProperty(HALF, BlockStairs.EnumHalf.BOTTOM)
+-               : iblockstate.withProperty(HALF, BlockStairs.EnumHalf.TOP);
++        return facing != EnumFacing.DOWN && (facing == EnumFacing.UP || (double)hitY <= 0.5D) ? iblockstate.withProperty(HALF, BlockStairs.EnumHalf.BOTTOM) : iblockstate.withProperty(HALF, BlockStairs.EnumHalf.TOP);
      }
  
      @Nullable
 -    @Override
-     public RayTraceResult func_180636_a(IBlockState p_180636_1_, World p_180636_2_, BlockPos p_180636_3_, Vec3d p_180636_4_, Vec3d p_180636_5_)
+     public RayTraceResult collisionRayTrace(IBlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end)
      {
 -        List<RayTraceResult> list = Lists.newArrayList();
 +        List<RayTraceResult> list = Lists.<RayTraceResult>newArrayList();
  
-         for (AxisAlignedBB axisalignedbb : func_185708_x(this.func_176221_a(p_180636_1_, p_180636_2_, p_180636_3_)))
+         for (AxisAlignedBB axisalignedbb : getCollisionBoxList(this.getActualState(blockState, worldIn, pos)))
          {
 @@ -391,7 +327,7 @@
          }
@@ -350,107 +350,107 @@
      }
  
 -    @Override
-     public IBlockState func_176203_a(int p_176203_1_)
+     public IBlockState getStateFromMeta(int meta)
      {
--        IBlockState iblockstate = this.func_176223_P()
--                                  .func_177226_a(field_176308_b, (p_176203_1_ & 4) > 0 ? BlockStairs.EnumHalf.TOP : BlockStairs.EnumHalf.BOTTOM);
--        return iblockstate.func_177226_a(field_176309_a, EnumFacing.func_82600_a(5 - (p_176203_1_ & 3)));
-+        IBlockState iblockstate = this.func_176223_P().func_177226_a(field_176308_b, (p_176203_1_ & 4) > 0 ? BlockStairs.EnumHalf.TOP : BlockStairs.EnumHalf.BOTTOM);
-+        iblockstate = iblockstate.func_177226_a(field_176309_a, EnumFacing.func_82600_a(5 - (p_176203_1_ & 3)));
+-        IBlockState iblockstate = this.getDefaultState()
+-                                  .withProperty(HALF, (meta & 4) > 0 ? BlockStairs.EnumHalf.TOP : BlockStairs.EnumHalf.BOTTOM);
+-        return iblockstate.withProperty(FACING, EnumFacing.byIndex(5 - (meta & 3)));
++        IBlockState iblockstate = this.getDefaultState().withProperty(HALF, (meta & 4) > 0 ? BlockStairs.EnumHalf.TOP : BlockStairs.EnumHalf.BOTTOM);
++        iblockstate = iblockstate.withProperty(FACING, EnumFacing.byIndex(5 - (meta & 3)));
 +        return iblockstate;
      }
  
 -    @Override
-     public int func_176201_c(IBlockState p_176201_1_)
+     public int getMetaFromState(IBlockState state)
      {
          int i = 0;
 @@ -428,10 +362,10 @@
              i |= 4;
          }
  
--        return i | 5 - p_176201_1_.func_177229_b(field_176309_a).func_176745_a();
-+        i = i | 5 - ((EnumFacing)p_176201_1_.func_177229_b(field_176309_a)).func_176745_a();
+-        return i | 5 - state.getValue(FACING).getIndex();
++        i = i | 5 - ((EnumFacing)state.getValue(FACING)).getIndex();
 +        return i;
      }
  
 -    @Override
-     public IBlockState func_176221_a(IBlockState p_176221_1_, IBlockAccess p_176221_2_, BlockPos p_176221_3_)
+     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
      {
-         return p_176221_1_.func_177226_a(field_176310_M, func_185706_d(p_176221_1_, p_176221_2_, p_176221_3_));
+         return state.withProperty(SHAPE, getStairsShape(state, worldIn, pos));
 @@ -439,15 +373,14 @@
  
-     private static BlockStairs.EnumShape func_185706_d(IBlockState p_185706_0_, IBlockAccess p_185706_1_, BlockPos p_185706_2_)
+     private static BlockStairs.EnumShape getStairsShape(IBlockState p_185706_0_, IBlockAccess p_185706_1_, BlockPos p_185706_2_)
      {
--        EnumFacing enumfacing = p_185706_0_.func_177229_b(field_176309_a);
-+        EnumFacing enumfacing = (EnumFacing)p_185706_0_.func_177229_b(field_176309_a);
-         IBlockState iblockstate = p_185706_1_.func_180495_p(p_185706_2_.func_177972_a(enumfacing));
+-        EnumFacing enumfacing = p_185706_0_.getValue(FACING);
++        EnumFacing enumfacing = (EnumFacing)p_185706_0_.getValue(FACING);
+         IBlockState iblockstate = p_185706_1_.getBlockState(p_185706_2_.offset(enumfacing));
  
-         if (func_185709_i(iblockstate) && p_185706_0_.func_177229_b(field_176308_b) == iblockstate.func_177229_b(field_176308_b))
+         if (isBlockStairs(iblockstate) && p_185706_0_.getValue(HALF) == iblockstate.getValue(HALF))
          {
--            EnumFacing enumfacing1 = iblockstate.func_177229_b(field_176309_a);
-+            EnumFacing enumfacing1 = (EnumFacing)iblockstate.func_177229_b(field_176309_a);
+-            EnumFacing enumfacing1 = iblockstate.getValue(FACING);
++            EnumFacing enumfacing1 = (EnumFacing)iblockstate.getValue(FACING);
  
--            if (enumfacing1.func_176740_k() != p_185706_0_.func_177229_b(field_176309_a).func_176740_k()
--                    && func_185704_d(p_185706_0_, p_185706_1_, p_185706_2_, enumfacing1.func_176734_d()))
-+            if (enumfacing1.func_176740_k() != ((EnumFacing)p_185706_0_.func_177229_b(field_176309_a)).func_176740_k() && func_185704_d(p_185706_0_, p_185706_1_, p_185706_2_, enumfacing1.func_176734_d()))
+-            if (enumfacing1.getAxis() != p_185706_0_.getValue(FACING).getAxis()
+-                    && isDifferentStairs(p_185706_0_, p_185706_1_, p_185706_2_, enumfacing1.getOpposite()))
++            if (enumfacing1.getAxis() != ((EnumFacing)p_185706_0_.getValue(FACING)).getAxis() && isDifferentStairs(p_185706_0_, p_185706_1_, p_185706_2_, enumfacing1.getOpposite()))
              {
-                 if (enumfacing1 == enumfacing.func_176735_f())
+                 if (enumfacing1 == enumfacing.rotateYCCW())
                  {
 @@ -462,10 +395,9 @@
  
-         if (func_185709_i(iblockstate1) && p_185706_0_.func_177229_b(field_176308_b) == iblockstate1.func_177229_b(field_176308_b))
+         if (isBlockStairs(iblockstate1) && p_185706_0_.getValue(HALF) == iblockstate1.getValue(HALF))
          {
--            EnumFacing enumfacing2 = iblockstate1.func_177229_b(field_176309_a);
-+            EnumFacing enumfacing2 = (EnumFacing)iblockstate1.func_177229_b(field_176309_a);
+-            EnumFacing enumfacing2 = iblockstate1.getValue(FACING);
++            EnumFacing enumfacing2 = (EnumFacing)iblockstate1.getValue(FACING);
  
--            if (enumfacing2.func_176740_k() != p_185706_0_.func_177229_b(field_176309_a).func_176740_k()
--                    && func_185704_d(p_185706_0_, p_185706_1_, p_185706_2_, enumfacing2))
-+            if (enumfacing2.func_176740_k() != ((EnumFacing)p_185706_0_.func_177229_b(field_176309_a)).func_176740_k() && func_185704_d(p_185706_0_, p_185706_1_, p_185706_2_, enumfacing2))
+-            if (enumfacing2.getAxis() != p_185706_0_.getValue(FACING).getAxis()
+-                    && isDifferentStairs(p_185706_0_, p_185706_1_, p_185706_2_, enumfacing2))
++            if (enumfacing2.getAxis() != ((EnumFacing)p_185706_0_.getValue(FACING)).getAxis() && isDifferentStairs(p_185706_0_, p_185706_1_, p_185706_2_, enumfacing2))
              {
-                 if (enumfacing2 == enumfacing.func_176735_f())
+                 if (enumfacing2 == enumfacing.rotateYCCW())
                  {
 @@ -482,9 +414,7 @@
-     private static boolean func_185704_d(IBlockState p_185704_0_, IBlockAccess p_185704_1_, BlockPos p_185704_2_, EnumFacing p_185704_3_)
+     private static boolean isDifferentStairs(IBlockState p_185704_0_, IBlockAccess p_185704_1_, BlockPos p_185704_2_, EnumFacing p_185704_3_)
      {
-         IBlockState iblockstate = p_185704_1_.func_180495_p(p_185704_2_.func_177972_a(p_185704_3_));
--        return !func_185709_i(iblockstate)
--               || iblockstate.func_177229_b(field_176309_a) != p_185704_0_.func_177229_b(field_176309_a)
--               || iblockstate.func_177229_b(field_176308_b) != p_185704_0_.func_177229_b(field_176308_b);
-+        return !func_185709_i(iblockstate) || iblockstate.func_177229_b(field_176309_a) != p_185704_0_.func_177229_b(field_176309_a) || iblockstate.func_177229_b(field_176308_b) != p_185704_0_.func_177229_b(field_176308_b);
+         IBlockState iblockstate = p_185704_1_.getBlockState(p_185704_2_.offset(p_185704_3_));
+-        return !isBlockStairs(iblockstate)
+-               || iblockstate.getValue(FACING) != p_185704_0_.getValue(FACING)
+-               || iblockstate.getValue(HALF) != p_185704_0_.getValue(HALF);
++        return !isBlockStairs(iblockstate) || iblockstate.getValue(FACING) != p_185704_0_.getValue(FACING) || iblockstate.getValue(HALF) != p_185704_0_.getValue(HALF);
      }
  
-     public static boolean func_185709_i(IBlockState p_185709_0_)
+     public static boolean isBlockStairs(IBlockState state)
 @@ -492,18 +422,16 @@
-         return p_185709_0_.func_177230_c() instanceof BlockStairs;
+         return state.getBlock() instanceof BlockStairs;
      }
  
 -    @Override
-     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
+     public IBlockState withRotation(IBlockState state, Rotation rot)
      {
--        return p_185499_1_.func_177226_a(field_176309_a, p_185499_2_.func_185831_a(p_185499_1_.func_177229_b(field_176309_a)));
-+        return p_185499_1_.func_177226_a(field_176309_a, p_185499_2_.func_185831_a((EnumFacing)p_185499_1_.func_177229_b(field_176309_a)));
+-        return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
++        return state.withProperty(FACING, rot.rotate((EnumFacing)state.getValue(FACING)));
      }
  
      @SuppressWarnings("incomplete-switch")
 -    @Override
-     public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
+     public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
      {
--        EnumFacing enumfacing = p_185471_1_.func_177229_b(field_176309_a);
--        BlockStairs.EnumShape blockstairs$enumshape = p_185471_1_.func_177229_b(field_176310_M);
-+        EnumFacing enumfacing = (EnumFacing)p_185471_1_.func_177229_b(field_176309_a);
-+        BlockStairs.EnumShape blockstairs$enumshape = (BlockStairs.EnumShape)p_185471_1_.func_177229_b(field_176310_M);
+-        EnumFacing enumfacing = state.getValue(FACING);
+-        BlockStairs.EnumShape blockstairs$enumshape = state.getValue(SHAPE);
++        EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
++        BlockStairs.EnumShape blockstairs$enumshape = (BlockStairs.EnumShape)state.getValue(SHAPE);
  
-         switch (p_185471_2_)
+         switch (mirrorIn)
          {
 @@ -550,10 +478,32 @@
-         return super.func_185471_a(p_185471_1_, p_185471_2_);
+         return super.withMirror(state, mirrorIn);
      }
  
 -    @Override
-     protected BlockStateContainer func_180661_e()
+     protected BlockStateContainer createBlockState()
      {
--        return new BlockStateContainer(this, field_176309_a, field_176308_b, field_176310_M);
-+        return new BlockStateContainer(this, new IProperty[] {field_176309_a, field_176308_b, field_176310_M});
+-        return new BlockStateContainer(this, FACING, HALF, SHAPE);
++        return new BlockStateContainer(this, new IProperty[] {FACING, HALF, SHAPE});
 +    }
 +
 +    @Override
@@ -459,49 +459,49 @@
 +        if (net.minecraftforge.common.ForgeModContainer.disableStairSlabCulling)
 +            return super.doesSideBlockRendering(state, world, pos, face);
 +
-+        if ( state.func_185914_p() )
++        if ( state.isOpaqueCube() )
 +            return true;
 +
-+        state = this.func_176221_a(state, world, pos);
++        state = this.getActualState(state, world, pos);
 +
-+        EnumHalf half = state.func_177229_b(field_176308_b);
-+        EnumFacing side = state.func_177229_b(field_176309_a);
-+        EnumShape shape = state.func_177229_b(field_176310_M);
++        EnumHalf half = state.getValue(HALF);
++        EnumFacing side = state.getValue(FACING);
++        EnumShape shape = state.getValue(SHAPE);
 +        if (face == EnumFacing.UP) return half == EnumHalf.TOP;
 +        if (face == EnumFacing.DOWN) return half == EnumHalf.BOTTOM;
 +        if (shape == EnumShape.OUTER_LEFT || shape == EnumShape.OUTER_RIGHT) return false;
 +        if (face == side) return true;
-+        if (shape == EnumShape.INNER_LEFT && face.func_176746_e() == side) return true;
-+        if (shape == EnumShape.INNER_RIGHT && face.func_176735_f() == side) return true;
++        if (shape == EnumShape.INNER_LEFT && face.rotateY() == side) return true;
++        if (shape == EnumShape.INNER_RIGHT && face.rotateYCCW() == side) return true;
 +        return false;
      }
  
      public static enum EnumHalf implements IStringSerializable
 @@ -568,13 +518,11 @@
-             this.field_176709_c = p_i45683_3_;
+             this.name = name;
          }
  
 -        @Override
          public String toString()
          {
-             return this.field_176709_c;
+             return this.name;
          }
  
 -        @Override
-         public String func_176610_l()
+         public String getName()
          {
-             return this.field_176709_c;
+             return this.name;
 @@ -596,13 +544,11 @@
-             this.field_176699_f = p_i45682_3_;
+             this.name = name;
          }
  
 -        @Override
          public String toString()
          {
-             return this.field_176699_f;
+             return this.name;
          }
  
 -        @Override
-         public String func_176610_l()
+         public String getName()
          {
-             return this.field_176699_f;
+             return this.name;

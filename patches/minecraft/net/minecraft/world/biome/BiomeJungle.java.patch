@@ -3,67 +3,67 @@
 @@ -25,17 +25,9 @@
  public class BiomeJungle extends Biome
  {
-     private final boolean field_150614_aC;
--    private static final IBlockState field_181620_aE = Blocks.field_150364_r
--                .func_176223_P()
--                .func_177226_a(BlockOldLog.field_176301_b, BlockPlanks.EnumType.JUNGLE);
--    private static final IBlockState field_181621_aF = Blocks.field_150362_t
--                .func_176223_P()
--                .func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.JUNGLE)
--                .func_177226_a(BlockLeaves.field_176236_b, false);
--    private static final IBlockState field_181622_aG = Blocks.field_150362_t
--                .func_176223_P()
--                .func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.OAK)
--                .func_177226_a(BlockLeaves.field_176236_b, false);
-+    private static final IBlockState field_181620_aE = Blocks.field_150364_r.func_176223_P().func_177226_a(BlockOldLog.field_176301_b, BlockPlanks.EnumType.JUNGLE);
-+    private static final IBlockState field_181621_aF = Blocks.field_150362_t.func_176223_P().func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.JUNGLE).func_177226_a(BlockLeaves.field_176236_b, Boolean.valueOf(false));
-+    private static final IBlockState field_181622_aG = Blocks.field_150362_t.func_176223_P().func_177226_a(BlockOldLeaf.field_176239_P, BlockPlanks.EnumType.OAK).func_177226_a(BlockLeaves.field_176236_b, Boolean.valueOf(false));
+     private final boolean isEdge;
+-    private static final IBlockState JUNGLE_LOG = Blocks.LOG
+-                .getDefaultState()
+-                .withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.JUNGLE);
+-    private static final IBlockState JUNGLE_LEAF = Blocks.LEAVES
+-                .getDefaultState()
+-                .withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.JUNGLE)
+-                .withProperty(BlockLeaves.CHECK_DECAY, false);
+-    private static final IBlockState OAK_LEAF = Blocks.LEAVES
+-                .getDefaultState()
+-                .withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK)
+-                .withProperty(BlockLeaves.CHECK_DECAY, false);
++    private static final IBlockState JUNGLE_LOG = Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.JUNGLE);
++    private static final IBlockState JUNGLE_LEAF = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.JUNGLE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
++    private static final IBlockState OAK_LEAF = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
  
-     public BiomeJungle(boolean p_i46705_1_, Biome.BiomeProperties p_i46705_2_)
+     public BiomeJungle(boolean isEdgeIn, Biome.BiomeProperties properties)
      {
 @@ -63,7 +55,6 @@
-         this.field_76762_K.add(new Biome.SpawnListEntry(EntityChicken.class, 10, 4, 4));
+         this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntityChicken.class, 10, 4, 4));
      }
  
 -    @Override
-     public WorldGenAbstractTree func_150567_a(Random p_150567_1_)
+     public WorldGenAbstractTree getRandomTreeFeature(Random rand)
      {
-         if (p_150567_1_.nextInt(10) == 0)
+         if (rand.nextInt(10) == 0)
 @@ -76,29 +67,29 @@
          }
          else
          {
--            return (WorldGenAbstractTree)(!this.field_150614_aC && p_150567_1_.nextInt(3) == 0
--                                          ? new WorldGenMegaJungle(false, 10, 20, field_181620_aE, field_181621_aF)
--                                          : new WorldGenTrees(false, 4 + p_150567_1_.nextInt(7), field_181620_aE, field_181621_aF, true));
-+            return (WorldGenAbstractTree)(!this.field_150614_aC && p_150567_1_.nextInt(3) == 0 ? new WorldGenMegaJungle(false, 10, 20, field_181620_aE, field_181621_aF) : new WorldGenTrees(false, 4 + p_150567_1_.nextInt(7), field_181620_aE, field_181621_aF, true));
+-            return (WorldGenAbstractTree)(!this.isEdge && rand.nextInt(3) == 0
+-                                          ? new WorldGenMegaJungle(false, 10, 20, JUNGLE_LOG, JUNGLE_LEAF)
+-                                          : new WorldGenTrees(false, 4 + rand.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, true));
++            return (WorldGenAbstractTree)(!this.isEdge && rand.nextInt(3) == 0 ? new WorldGenMegaJungle(false, 10, 20, JUNGLE_LOG, JUNGLE_LEAF) : new WorldGenTrees(false, 4 + rand.nextInt(7), JUNGLE_LOG, JUNGLE_LEAF, true));
          }
      }
  
 -    @Override
-     public WorldGenerator func_76730_b(Random p_76730_1_)
+     public WorldGenerator getRandomWorldGenForGrass(Random rand)
      {
-         return p_76730_1_.nextInt(4) == 0 ? new WorldGenTallGrass(BlockTallGrass.EnumType.FERN) : new WorldGenTallGrass(BlockTallGrass.EnumType.GRASS);
+         return rand.nextInt(4) == 0 ? new WorldGenTallGrass(BlockTallGrass.EnumType.FERN) : new WorldGenTallGrass(BlockTallGrass.EnumType.GRASS);
      }
  
 -    @Override
-     public void func_180624_a(World p_180624_1_, Random p_180624_2_, BlockPos p_180624_3_)
+     public void decorate(World worldIn, Random rand, BlockPos pos)
      {
-         super.func_180624_a(p_180624_1_, p_180624_2_, p_180624_3_);
-         int i = p_180624_2_.nextInt(16) + 8;
-         int j = p_180624_2_.nextInt(16) + 8;
--        int k = p_180624_2_.nextInt(p_180624_1_.func_175645_m(p_180624_3_.func_177982_a(i, 0, j)).func_177956_o() * 2);
--        new WorldGenMelon().func_180709_b(p_180624_1_, p_180624_2_, p_180624_3_.func_177982_a(i, k, j));
-+        int height = p_180624_1_.func_175645_m(p_180624_3_.func_177982_a(i, 0, j)).func_177956_o() * 2; // could == 0, which crashes nextInt
+         super.decorate(worldIn, rand, pos);
+         int i = rand.nextInt(16) + 8;
+         int j = rand.nextInt(16) + 8;
+-        int k = rand.nextInt(worldIn.getHeight(pos.add(i, 0, j)).getY() * 2);
+-        new WorldGenMelon().generate(worldIn, rand, pos.add(i, k, j));
++        int height = worldIn.getHeight(pos.add(i, 0, j)).getY() * 2; // could == 0, which crashes nextInt
 +        if (height < 1) height = 1;
-+        int k = p_180624_2_.nextInt(height);
-+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(p_180624_1_, p_180624_2_, new net.minecraft.util.math.ChunkPos(p_180624_3_), p_180624_3_.func_177982_a(i, k, j), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.PUMPKIN))
-+        (new WorldGenMelon()).func_180709_b(p_180624_1_, p_180624_2_, p_180624_3_.func_177982_a(i, k, j));
++        int k = rand.nextInt(height);
++        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), pos.add(i, k, j), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.PUMPKIN))
++        (new WorldGenMelon()).generate(worldIn, rand, pos.add(i, k, j));
          WorldGenVines worldgenvines = new WorldGenVines();
  
 -        for (int j1 = 0; j1 < 50; j1++)
-+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(p_180624_1_, p_180624_2_, new net.minecraft.util.math.ChunkPos(p_180624_3_), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.GRASS))
++        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.GRASS))
 +        for (int j1 = 0; j1 < 50; ++j1)
          {
-             k = p_180624_2_.nextInt(16) + 8;
+             k = rand.nextInt(16) + 8;
              int l = 128;

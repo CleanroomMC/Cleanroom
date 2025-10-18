@@ -10,13 +10,13 @@
  import java.util.List;
  import net.minecraft.client.resources.IResource;
 @@ -30,13 +32,12 @@
-         this.field_174950_i = p_i46101_3_;
+         this.listDyeColors = p_i46101_3_;
      }
  
 -    @Override
-     public void func_110551_a(IResourceManager p_110551_1_) throws IOException
+     public void loadTexture(IResourceManager resourceManager) throws IOException
      {
-         this.func_147631_c();
+         this.deleteGlTexture();
          IResource iresource = null;
          BufferedImage bufferedimage;
 -        label198:
@@ -34,7 +34,7 @@
  
                  while (true)
                  {
-                     if (j >= 17 || j >= this.field_174949_h.size() || j >= this.field_174950_i.size())
+                     if (j >= 17 || j >= this.listTextures.size() || j >= this.listDyeColors.size())
                      {
 -                        break label198;
 +                        break label255;
@@ -44,19 +44,19 @@
 @@ -66,26 +67,22 @@
                      try
                      {
-                         String s = this.field_174949_h.get(j);
--                        int k = this.field_174950_i.get(j).func_193350_e();
-+                        int k = ((EnumDyeColor)this.field_174950_i.get(j)).func_193350_e();
+                         String s = this.listTextures.get(j);
+-                        int k = this.listDyeColors.get(j).getColorValue();
++                        int k = ((EnumDyeColor)this.listDyeColors.get(j)).getColorValue();
  
                          if (s != null)
                          {
--                            iresource1 = p_110551_1_.func_110536_a(new ResourceLocation(s));
--                            BufferedImage bufferedimage2 = TextureUtil.func_177053_a(iresource1.func_110527_b());
+-                            iresource1 = resourceManager.getResource(new ResourceLocation(s));
+-                            BufferedImage bufferedimage2 = TextureUtil.readBufferedImage(iresource1.getInputStream());
 -
 -                            if (bufferedimage2.getWidth() == bufferedimage.getWidth()
 -                                    && bufferedimage2.getHeight() == bufferedimage.getHeight()
 -                                    && bufferedimage2.getType() == 6)
-+                            BufferedImage bufferedimage2 = net.minecraftforge.client.MinecraftForgeClient.getImageLayer(new ResourceLocation(s), p_110551_1_);
++                            BufferedImage bufferedimage2 = net.minecraftforge.client.MinecraftForgeClient.getImageLayer(new ResourceLocation(s), resourceManager);
 +                            if (bufferedimage2.getWidth() == bufferedimage.getWidth() && bufferedimage2.getHeight() == bufferedimage.getHeight() && bufferedimage2.getType() == 6)
                              {
 -                                for (int l = 0; l < bufferedimage2.getHeight(); l++)
@@ -73,7 +73,7 @@
 -                                            int k1 = (j1 & 0xFF0000) << 8 & 0xFF000000;
 +                                            int k1 = (j1 & 16711680) << 8 & -16777216;
                                              int l1 = bufferedimage1.getRGB(i1, l);
-                                             int i2 = MathHelper.func_180188_d(l1, k) & 16777215;
+                                             int i2 = MathHelper.multiplyColor(l1, k) & 16777215;
                                              bufferedimage2.setRGB(i1, l, k1 | i2);
 @@ -93,16 +90,16 @@
                                      }

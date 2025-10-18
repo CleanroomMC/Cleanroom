@@ -2,75 +2,75 @@
 +++ after/net/minecraft/world/Explosion.java
 @@ -32,52 +32,35 @@
  {
-     private final boolean field_77286_a;
-     private final boolean field_82755_b;
--    private final Random field_77290_i = new Random();
-+    private final Random field_77290_i;
-     private final World field_77287_j;
-     private final double field_77284_b;
-     private final double field_77285_c;
-     private final double field_77282_d;
-     private final Entity field_77283_e;
-     private final float field_77280_f;
--    private final List<BlockPos> field_77281_g = Lists.newArrayList();
--    private final Map<EntityPlayer, Vec3d> field_77288_k = Maps.newHashMap();
-+    private final List<BlockPos> field_77281_g;
-+    private final Map<EntityPlayer, Vec3d> field_77288_k;
+     private final boolean causesFire;
+     private final boolean damagesTerrain;
+-    private final Random random = new Random();
++    private final Random random;
+     private final World world;
+     private final double x;
+     private final double y;
+     private final double z;
+     private final Entity exploder;
+     private final float size;
+-    private final List<BlockPos> affectedBlockPositions = Lists.newArrayList();
+-    private final Map<EntityPlayer, Vec3d> playerKnockbackMap = Maps.newHashMap();
++    private final List<BlockPos> affectedBlockPositions;
++    private final Map<EntityPlayer, Vec3d> playerKnockbackMap;
 +    private final Vec3d position;
  
      @SideOnly(Side.CLIENT)
 -    public Explosion(
--        World p_i45752_1_, Entity p_i45752_2_, double p_i45752_3_, double p_i45752_5_, double p_i45752_7_, float p_i45752_9_, List<BlockPos> p_i45752_10_
+-        World worldIn, Entity entityIn, double x, double y, double z, float size, List<BlockPos> affectedPositions
 -    )
-+    public Explosion(World p_i45752_1_, Entity p_i45752_2_, double p_i45752_3_, double p_i45752_5_, double p_i45752_7_, float p_i45752_9_, List<BlockPos> p_i45752_10_)
++    public Explosion(World worldIn, Entity entityIn, double x, double y, double z, float size, List<BlockPos> affectedPositions)
      {
-         this(p_i45752_1_, p_i45752_2_, p_i45752_3_, p_i45752_5_, p_i45752_7_, p_i45752_9_, false, true, p_i45752_10_);
+         this(worldIn, entityIn, x, y, z, size, false, true, affectedPositions);
      }
  
      @SideOnly(Side.CLIENT)
 -    public Explosion(
--        World p_i45753_1_,
--        Entity p_i45753_2_,
--        double p_i45753_3_,
--        double p_i45753_5_,
--        double p_i45753_7_,
--        float p_i45753_9_,
--        boolean p_i45753_10_,
--        boolean p_i45753_11_,
--        List<BlockPos> p_i45753_12_
+-        World worldIn,
+-        Entity entityIn,
+-        double x,
+-        double y,
+-        double z,
+-        float size,
+-        boolean causesFire,
+-        boolean damagesTerrain,
+-        List<BlockPos> affectedPositions
 -    )
-+    public Explosion(World p_i45753_1_, Entity p_i45753_2_, double p_i45753_3_, double p_i45753_5_, double p_i45753_7_, float p_i45753_9_, boolean p_i45753_10_, boolean p_i45753_11_, List<BlockPos> p_i45753_12_)
++    public Explosion(World worldIn, Entity entityIn, double x, double y, double z, float size, boolean causesFire, boolean damagesTerrain, List<BlockPos> affectedPositions)
      {
-         this(p_i45753_1_, p_i45753_2_, p_i45753_3_, p_i45753_5_, p_i45753_7_, p_i45753_9_, p_i45753_10_, p_i45753_11_);
-         this.field_77281_g.addAll(p_i45753_12_);
+         this(worldIn, entityIn, x, y, z, size, causesFire, damagesTerrain);
+         this.affectedBlockPositions.addAll(affectedPositions);
      }
  
 -    public Explosion(
--        World p_i45754_1_,
--        Entity p_i45754_2_,
--        double p_i45754_3_,
--        double p_i45754_5_,
--        double p_i45754_7_,
--        float p_i45754_9_,
--        boolean p_i45754_10_,
--        boolean p_i45754_11_
+-        World worldIn,
+-        Entity entityIn,
+-        double x,
+-        double y,
+-        double z,
+-        float size,
+-        boolean causesFire,
+-        boolean damagesTerrain
 -    )
-+    public Explosion(World p_i45754_1_, Entity p_i45754_2_, double p_i45754_3_, double p_i45754_5_, double p_i45754_7_, float p_i45754_9_, boolean p_i45754_10_, boolean p_i45754_11_)
++    public Explosion(World worldIn, Entity entityIn, double x, double y, double z, float size, boolean causesFire, boolean damagesTerrain)
      {
-+        this.field_77290_i = new Random();
-+        this.field_77281_g = Lists.<BlockPos>newArrayList();
-+        this.field_77288_k = Maps.<EntityPlayer, Vec3d>newHashMap();
-         this.field_77287_j = p_i45754_1_;
-         this.field_77283_e = p_i45754_2_;
-         this.field_77280_f = p_i45754_9_;
++        this.random = new Random();
++        this.affectedBlockPositions = Lists.<BlockPos>newArrayList();
++        this.playerKnockbackMap = Maps.<EntityPlayer, Vec3d>newHashMap();
+         this.world = worldIn;
+         this.exploder = entityIn;
+         this.size = size;
 @@ -86,18 +69,19 @@
-         this.field_77282_d = p_i45754_7_;
-         this.field_77286_a = p_i45754_10_;
-         this.field_82755_b = p_i45754_11_;
-+        this.position = new Vec3d(this.field_77284_b, this.field_77285_c, this.field_77282_d);
+         this.z = z;
+         this.causesFire = causesFire;
+         this.damagesTerrain = damagesTerrain;
++        this.position = new Vec3d(this.x, this.y, this.z);
      }
  
-     public void func_77278_a()
+     public void doExplosionA()
      {
 -        Set<BlockPos> set = Sets.newHashSet();
 +        Set<BlockPos> set = Sets.<BlockPos>newHashSet();
@@ -97,17 +97,17 @@
 +                        d0 = d0 / d3;
 +                        d1 = d1 / d3;
 +                        d2 = d2 / d3;
-                         float f = this.field_77280_f * (0.7F + this.field_77287_j.field_73012_v.nextFloat() * 0.6F);
-                         double d4 = this.field_77284_b;
-                         double d6 = this.field_77285_c;
+                         float f = this.size * (0.7F + this.world.rand.nextFloat() * 0.6F);
+                         double d4 = this.x;
+                         double d6 = this.y;
 @@ -120,9 +104,7 @@
  
-                             if (iblockstate.func_185904_a() != Material.field_151579_a)
+                             if (iblockstate.getMaterial() != Material.AIR)
                              {
--                                float f2 = this.field_77283_e != null
--                                           ? this.field_77283_e.func_180428_a(this, this.field_77287_j, blockpos, iblockstate)
--                                           : iblockstate.func_177230_c().func_149638_a(null);
-+                                float f2 = this.field_77283_e != null ? this.field_77283_e.func_180428_a(this, this.field_77287_j, blockpos, iblockstate) : iblockstate.func_177230_c().getExplosionResistance(field_77287_j, blockpos, (Entity)null, this);
+-                                float f2 = this.exploder != null
+-                                           ? this.exploder.getExplosionResistance(this, this.world, blockpos, iblockstate)
+-                                           : iblockstate.getBlock().getExplosionResistance(null);
++                                float f2 = this.exploder != null ? this.exploder.getExplosionResistance(this, this.world, blockpos, iblockstate) : iblockstate.getBlock().getExplosionResistance(world, blockpos, (Entity)null, this);
                                  f -= (f2 + 0.3F) * 0.3F;
                              }
  
@@ -126,25 +126,25 @@
                  }
 @@ -142,17 +124,17 @@
  
-         this.field_77281_g.addAll(set);
-         float f3 = this.field_77280_f * 2.0F;
--        int k1 = MathHelper.func_76128_c(this.field_77284_b - (double)f3 - 1.0);
--        int l1 = MathHelper.func_76128_c(this.field_77284_b + (double)f3 + 1.0);
--        int i2 = MathHelper.func_76128_c(this.field_77285_c - (double)f3 - 1.0);
--        int i1 = MathHelper.func_76128_c(this.field_77285_c + (double)f3 + 1.0);
--        int j2 = MathHelper.func_76128_c(this.field_77282_d - (double)f3 - 1.0);
--        int j1 = MathHelper.func_76128_c(this.field_77282_d + (double)f3 + 1.0);
--        List<Entity> list = this.field_77287_j
--                            .func_72839_b(this.field_77283_e, new AxisAlignedBB((double)k1, (double)i2, (double)j2, (double)l1, (double)i1, (double)j1));
-+        int k1 = MathHelper.func_76128_c(this.field_77284_b - (double)f3 - 1.0D);
-+        int l1 = MathHelper.func_76128_c(this.field_77284_b + (double)f3 + 1.0D);
-+        int i2 = MathHelper.func_76128_c(this.field_77285_c - (double)f3 - 1.0D);
-+        int i1 = MathHelper.func_76128_c(this.field_77285_c + (double)f3 + 1.0D);
-+        int j2 = MathHelper.func_76128_c(this.field_77282_d - (double)f3 - 1.0D);
-+        int j1 = MathHelper.func_76128_c(this.field_77282_d + (double)f3 + 1.0D);
-+        List<Entity> list = this.field_77287_j.func_72839_b(this.field_77283_e, new AxisAlignedBB((double)k1, (double)i2, (double)j2, (double)l1, (double)i1, (double)j1));
-+        net.minecraftforge.event.ForgeEventFactory.onExplosionDetonate(this.field_77287_j, this, list, f3);
-         Vec3d vec3d = new Vec3d(this.field_77284_b, this.field_77285_c, this.field_77282_d);
+         this.affectedBlockPositions.addAll(set);
+         float f3 = this.size * 2.0F;
+-        int k1 = MathHelper.floor(this.x - (double)f3 - 1.0);
+-        int l1 = MathHelper.floor(this.x + (double)f3 + 1.0);
+-        int i2 = MathHelper.floor(this.y - (double)f3 - 1.0);
+-        int i1 = MathHelper.floor(this.y + (double)f3 + 1.0);
+-        int j2 = MathHelper.floor(this.z - (double)f3 - 1.0);
+-        int j1 = MathHelper.floor(this.z + (double)f3 + 1.0);
+-        List<Entity> list = this.world
+-                            .getEntitiesWithinAABBExcludingEntity(this.exploder, new AxisAlignedBB((double)k1, (double)i2, (double)j2, (double)l1, (double)i1, (double)j1));
++        int k1 = MathHelper.floor(this.x - (double)f3 - 1.0D);
++        int l1 = MathHelper.floor(this.x + (double)f3 + 1.0D);
++        int i2 = MathHelper.floor(this.y - (double)f3 - 1.0D);
++        int i1 = MathHelper.floor(this.y + (double)f3 + 1.0D);
++        int j2 = MathHelper.floor(this.z - (double)f3 - 1.0D);
++        int j1 = MathHelper.floor(this.z + (double)f3 + 1.0D);
++        List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this.exploder, new AxisAlignedBB((double)k1, (double)i2, (double)j2, (double)l1, (double)i1, (double)j1));
++        net.minecraftforge.event.ForgeEventFactory.onExplosionDetonate(this.world, this, list, f3);
+         Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
  
 -        for (int k2 = 0; k2 < list.size(); k2++)
 +        for (int k2 = 0; k2 < list.size(); ++k2)
@@ -153,15 +153,15 @@
  
 @@ -160,21 +142,21 @@
              {
-                 double d12 = entity.func_70011_f(this.field_77284_b, this.field_77285_c, this.field_77282_d) / (double)f3;
+                 double d12 = entity.getDistance(this.x, this.y, this.z) / (double)f3;
  
 -                if (d12 <= 1.0)
 +                if (d12 <= 1.0D)
                  {
-                     double d5 = entity.field_70165_t - this.field_77284_b;
-                     double d7 = entity.field_70163_u + (double)entity.func_70047_e() - this.field_77285_c;
-                     double d9 = entity.field_70161_v - this.field_77282_d;
-                     double d13 = (double)MathHelper.func_76133_a(d5 * d5 + d7 * d7 + d9 * d9);
+                     double d5 = entity.posX - this.x;
+                     double d7 = entity.posY + (double)entity.getEyeHeight() - this.y;
+                     double d9 = entity.posZ - this.z;
+                     double d13 = (double)MathHelper.sqrt(d5 * d5 + d7 * d7 + d9 * d9);
  
 -                    if (d13 != 0.0)
 +                    if (d13 != 0.0D)
@@ -172,62 +172,62 @@
 +                        d5 = d5 / d13;
 +                        d7 = d7 / d13;
 +                        d9 = d9 / d13;
-                         double d14 = (double)this.field_77287_j.func_72842_a(vec3d, entity.func_174813_aQ());
+                         double d14 = (double)this.world.getBlockDensity(vec3d, entity.getEntityBoundingBox());
 -                        double d10 = (1.0 - d12) * d14;
--                        entity.func_70097_a(DamageSource.func_94539_a(this), (float)((int)((d10 * d10 + d10) / 2.0 * 7.0 * (double)f3 + 1.0)));
+-                        entity.attackEntityFrom(DamageSource.causeExplosionDamage(this), (float)((int)((d10 * d10 + d10) / 2.0 * 7.0 * (double)f3 + 1.0)));
 +                        double d10 = (1.0D - d12) * d14;
-+                        entity.func_70097_a(DamageSource.func_94539_a(this), (float)((int)((d10 * d10 + d10) / 2.0D * 7.0D * (double)f3 + 1.0D)));
++                        entity.attackEntityFrom(DamageSource.causeExplosionDamage(this), (float)((int)((d10 * d10 + d10) / 2.0D * 7.0D * (double)f3 + 1.0D)));
                          double d11 = d10;
  
                          if (entity instanceof EntityLivingBase)
 @@ -203,25 +185,15 @@
  
-     public void func_77279_a(boolean p_77279_1_)
+     public void doExplosionB(boolean spawnParticles)
      {
--        this.field_77287_j
--        .func_184148_a(
+-        this.world
+-        .playSound(
 -            null,
--            this.field_77284_b,
--            this.field_77285_c,
--            this.field_77282_d,
--            SoundEvents.field_187539_bB,
+-            this.x,
+-            this.y,
+-            this.z,
+-            SoundEvents.ENTITY_GENERIC_EXPLODE,
 -            SoundCategory.BLOCKS,
 -            4.0F,
--            (1.0F + (this.field_77287_j.field_73012_v.nextFloat() - this.field_77287_j.field_73012_v.nextFloat()) * 0.2F) * 0.7F
+-            (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F
 -        );
-+        this.field_77287_j.func_184148_a((EntityPlayer)null, this.field_77284_b, this.field_77285_c, this.field_77282_d, SoundEvents.field_187539_bB, SoundCategory.BLOCKS, 4.0F, (1.0F + (this.field_77287_j.field_73012_v.nextFloat() - this.field_77287_j.field_73012_v.nextFloat()) * 0.2F) * 0.7F);
++        this.world.playSound((EntityPlayer)null, this.x, this.y, this.z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0F, (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F);
  
--        if (!(this.field_77280_f < 2.0F) && this.field_82755_b)
-+        if (this.field_77280_f >= 2.0F && this.field_82755_b)
+-        if (!(this.size < 2.0F) && this.damagesTerrain)
++        if (this.size >= 2.0F && this.damagesTerrain)
          {
--            this.field_77287_j.func_175688_a(EnumParticleTypes.EXPLOSION_HUGE, this.field_77284_b, this.field_77285_c, this.field_77282_d, 1.0, 0.0, 0.0);
-+            this.field_77287_j.func_175688_a(EnumParticleTypes.EXPLOSION_HUGE, this.field_77284_b, this.field_77285_c, this.field_77282_d, 1.0D, 0.0D, 0.0D);
+-            this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.x, this.y, this.z, 1.0, 0.0, 0.0);
++            this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.x, this.y, this.z, 1.0D, 0.0D, 0.0D);
          }
          else
          {
--            this.field_77287_j.func_175688_a(EnumParticleTypes.EXPLOSION_LARGE, this.field_77284_b, this.field_77285_c, this.field_77282_d, 1.0, 0.0, 0.0);
-+            this.field_77287_j.func_175688_a(EnumParticleTypes.EXPLOSION_LARGE, this.field_77284_b, this.field_77285_c, this.field_77282_d, 1.0D, 0.0D, 0.0D);
+-            this.world.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, this.x, this.y, this.z, 1.0, 0.0, 0.0);
++            this.world.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, this.x, this.y, this.z, 1.0D, 0.0D, 0.0D);
          }
  
-         if (this.field_82755_b)
+         if (this.damagesTerrain)
 @@ -240,24 +212,15 @@
-                     double d4 = d1 - this.field_77285_c;
-                     double d5 = d2 - this.field_77282_d;
-                     double d6 = (double)MathHelper.func_76133_a(d3 * d3 + d4 * d4 + d5 * d5);
+                     double d4 = d1 - this.y;
+                     double d5 = d2 - this.z;
+                     double d6 = (double)MathHelper.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
 -                    d3 /= d6;
 -                    d4 /= d6;
 -                    d5 /= d6;
--                    double d7 = 0.5 / (d6 / (double)this.field_77280_f + 0.1);
--                    d7 *= (double)(this.field_77287_j.field_73012_v.nextFloat() * this.field_77287_j.field_73012_v.nextFloat() + 0.3F);
+-                    double d7 = 0.5 / (d6 / (double)this.size + 0.1);
+-                    d7 *= (double)(this.world.rand.nextFloat() * this.world.rand.nextFloat() + 0.3F);
 -                    d3 *= d7;
 -                    d4 *= d7;
 -                    d5 *= d7;
--                    this.field_77287_j
--                    .func_175688_a(
+-                    this.world
+-                    .spawnParticle(
 -                        EnumParticleTypes.EXPLOSION_NORMAL,
--                        (d0 + this.field_77284_b) / 2.0,
--                        (d1 + this.field_77285_c) / 2.0,
--                        (d2 + this.field_77282_d) / 2.0,
+-                        (d0 + this.x) / 2.0,
+-                        (d1 + this.y) / 2.0,
+-                        (d2 + this.z) / 2.0,
 -                        d3,
 -                        d4,
 -                        d5
@@ -235,39 +235,39 @@
 +                    d3 = d3 / d6;
 +                    d4 = d4 / d6;
 +                    d5 = d5 / d6;
-+                    double d7 = 0.5D / (d6 / (double)this.field_77280_f + 0.1D);
-+                    d7 = d7 * (double)(this.field_77287_j.field_73012_v.nextFloat() * this.field_77287_j.field_73012_v.nextFloat() + 0.3F);
++                    double d7 = 0.5D / (d6 / (double)this.size + 0.1D);
++                    d7 = d7 * (double)(this.world.rand.nextFloat() * this.world.rand.nextFloat() + 0.3F);
 +                    d3 = d3 * d7;
 +                    d4 = d4 * d7;
 +                    d5 = d5 * d7;
-+                    this.field_77287_j.func_175688_a(EnumParticleTypes.EXPLOSION_NORMAL, (d0 + this.field_77284_b) / 2.0D, (d1 + this.field_77285_c) / 2.0D, (d2 + this.field_77282_d) / 2.0D, d3, d4, d5);
-                     this.field_77287_j.func_175688_a(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, d3, d4, d5);
++                    this.world.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, (d0 + this.x) / 2.0D, (d1 + this.y) / 2.0D, (d2 + this.z) / 2.0D, d3, d4, d5);
+                     this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, d3, d4, d5);
                  }
  
 @@ -268,8 +231,7 @@
-                         block.func_180653_a(this.field_77287_j, blockpos, this.field_77287_j.func_180495_p(blockpos), 1.0F / this.field_77280_f, 0);
+                         block.dropBlockAsItemWithChance(this.world, blockpos, this.world.getBlockState(blockpos), 1.0F / this.size, 0);
                      }
  
--                    this.field_77287_j.func_180501_a(blockpos, Blocks.field_150350_a.func_176223_P(), 3);
--                    block.func_180652_a(this.field_77287_j, blockpos, this);
-+                    block.onBlockExploded(this.field_77287_j, blockpos, this);
+-                    this.world.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 3);
+-                    block.onExplosionDestroy(this.world, blockpos, this);
++                    block.onBlockExploded(this.world, blockpos, this);
                  }
              }
          }
 @@ -278,9 +240,7 @@
          {
-             for (BlockPos blockpos1 : this.field_77281_g)
+             for (BlockPos blockpos1 : this.affectedBlockPositions)
              {
--                if (this.field_77287_j.func_180495_p(blockpos1).func_185904_a() == Material.field_151579_a
--                        && this.field_77287_j.func_180495_p(blockpos1.func_177977_b()).func_185913_b()
--                        && this.field_77290_i.nextInt(3) == 0)
-+                if (this.field_77287_j.func_180495_p(blockpos1).func_185904_a() == Material.field_151579_a && this.field_77287_j.func_180495_p(blockpos1.func_177977_b()).func_185913_b() && this.field_77290_i.nextInt(3) == 0)
+-                if (this.world.getBlockState(blockpos1).getMaterial() == Material.AIR
+-                        && this.world.getBlockState(blockpos1.down()).isFullBlock()
+-                        && this.random.nextInt(3) == 0)
++                if (this.world.getBlockState(blockpos1).getMaterial() == Material.AIR && this.world.getBlockState(blockpos1.down()).isFullBlock() && this.random.nextInt(3) == 0)
                  {
-                     this.field_77287_j.func_175656_a(blockpos1, Blocks.field_150480_ab.func_176223_P());
+                     this.world.setBlockState(blockpos1, Blocks.FIRE.getDefaultState());
                  }
 @@ -319,4 +279,6 @@
      {
-         return this.field_77281_g;
+         return this.affectedBlockPositions;
      }
 +
 +    public Vec3d getPosition(){ return this.position; }

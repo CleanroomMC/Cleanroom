@@ -4,32 +4,32 @@
  
  public class BlockEnchantmentTable extends BlockContainer
  {
--    protected static final AxisAlignedBB field_185567_a = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.75, 1.0);
-+    protected static final AxisAlignedBB field_185567_a = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.75D, 1.0D);
+-    protected static final AxisAlignedBB AABB = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.75, 1.0);
++    protected static final AxisAlignedBB AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.75D, 1.0D);
  
      protected BlockEnchantmentTable()
      {
 @@ -34,27 +34,24 @@
-         this.func_149647_a(CreativeTabs.field_78031_c);
+         this.setCreativeTab(CreativeTabs.DECORATIONS);
      }
  
 -    @Override
-     public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
+     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
      {
-         return field_185567_a;
+         return AABB;
      }
  
 -    @Override
-     public boolean func_149686_d(IBlockState p_149686_1_)
+     public boolean isFullCube(IBlockState state)
      {
          return false;
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public void func_180655_c(IBlockState p_180655_1_, World p_180655_2_, BlockPos p_180655_3_, Random p_180655_4_)
+     public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
      {
-         super.func_180655_c(p_180655_1_, p_180655_2_, p_180655_3_, p_180655_4_);
+         super.randomDisplayTick(stateIn, worldIn, pos, rand);
  
 -        for (int i = -2; i <= 2; i++)
 +        for (int i = -2; i <= 2; ++i)
@@ -41,31 +41,31 @@
                  {
 @@ -63,26 +60,18 @@
  
-                 if (p_180655_4_.nextInt(16) == 0)
+                 if (rand.nextInt(16) == 0)
                  {
 -                    for (int k = 0; k <= 1; k++)
 +                    for (int k = 0; k <= 1; ++k)
                      {
-                         BlockPos blockpos = p_180655_3_.func_177982_a(i, k, j);
+                         BlockPos blockpos = pos.add(i, k, j);
  
--                        if (p_180655_2_.func_180495_p(blockpos).func_177230_c() == Blocks.field_150342_X)
-+                        if (net.minecraftforge.common.ForgeHooks.getEnchantPower(p_180655_2_, blockpos) > 0)
+-                        if (worldIn.getBlockState(blockpos).getBlock() == Blocks.BOOKSHELF)
++                        if (net.minecraftforge.common.ForgeHooks.getEnchantPower(worldIn, blockpos) > 0)
                          {
-                             if (!p_180655_2_.func_175623_d(p_180655_3_.func_177982_a(i / 2, 0, j / 2)))
+                             if (!worldIn.isAirBlock(pos.add(i / 2, 0, j / 2)))
                              {
                                  break;
                              }
  
--                            p_180655_2_.func_175688_a(
+-                            worldIn.spawnParticle(
 -                                EnumParticleTypes.ENCHANTMENT_TABLE,
--                                (double)p_180655_3_.func_177958_n() + 0.5,
--                                (double)p_180655_3_.func_177956_o() + 2.0,
--                                (double)p_180655_3_.func_177952_p() + 0.5,
--                                (double)((float)i + p_180655_4_.nextFloat()) - 0.5,
--                                (double)((float)k - p_180655_4_.nextFloat() - 1.0F),
--                                (double)((float)j + p_180655_4_.nextFloat()) - 0.5
+-                                (double)pos.getX() + 0.5,
+-                                (double)pos.getY() + 2.0,
+-                                (double)pos.getZ() + 0.5,
+-                                (double)((float)i + rand.nextFloat()) - 0.5,
+-                                (double)((float)k - rand.nextFloat() - 1.0F),
+-                                (double)((float)j + rand.nextFloat()) - 0.5
 -                            );
-+                            p_180655_2_.func_175688_a(EnumParticleTypes.ENCHANTMENT_TABLE, (double)p_180655_3_.func_177958_n() + 0.5D, (double)p_180655_3_.func_177956_o() + 2.0D, (double)p_180655_3_.func_177952_p() + 0.5D, (double)((float)i + p_180655_4_.nextFloat()) - 0.5D, (double)((float)k - p_180655_4_.nextFloat() - 1.0F), (double)((float)j + p_180655_4_.nextFloat()) - 0.5D);
++                            worldIn.spawnParticle(EnumParticleTypes.ENCHANTMENT_TABLE, (double)pos.getX() + 0.5D, (double)pos.getY() + 2.0D, (double)pos.getZ() + 0.5D, (double)((float)i + rand.nextFloat()) - 0.5D, (double)((float)k - rand.nextFloat() - 1.0F), (double)((float)j + rand.nextFloat()) - 0.5D);
                          }
                      }
                  }
@@ -74,52 +74,52 @@
      }
  
 -    @Override
-     public boolean func_149662_c(IBlockState p_149662_1_)
+     public boolean isOpaqueCube(IBlockState state)
      {
          return false;
      }
  
 -    @Override
-     public EnumBlockRenderType func_149645_b(IBlockState p_149645_1_)
+     public EnumBlockRenderType getRenderType(IBlockState state)
      {
          return EnumBlockRenderType.MODEL;
      }
  
 -    @Override
-     public TileEntity func_149915_a(World p_149915_1_, int p_149915_2_)
+     public TileEntity createNewTileEntity(World worldIn, int meta)
      {
          return new TileEntityEnchantmentTable();
      }
  
 -    @Override
--    public boolean func_180639_a(
--        World p_180639_1_,
--        BlockPos p_180639_2_,
--        IBlockState p_180639_3_,
--        EntityPlayer p_180639_4_,
--        EnumHand p_180639_5_,
--        EnumFacing p_180639_6_,
--        float p_180639_7_,
--        float p_180639_8_,
--        float p_180639_9_
+-    public boolean onBlockActivated(
+-        World worldIn,
+-        BlockPos pos,
+-        IBlockState state,
+-        EntityPlayer playerIn,
+-        EnumHand hand,
+-        EnumFacing facing,
+-        float hitX,
+-        float hitY,
+-        float hitZ
 -    )
-+    public boolean func_180639_a(World p_180639_1_, BlockPos p_180639_2_, IBlockState p_180639_3_, EntityPlayer p_180639_4_, EnumHand p_180639_5_, EnumFacing p_180639_6_, float p_180639_7_, float p_180639_8_, float p_180639_9_)
++    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
      {
-         if (p_180639_1_.field_72995_K)
+         if (worldIn.isRemote)
          {
 @@ -138,7 +113,6 @@
          }
      }
  
 -    @Override
-     public void func_180633_a(World p_180633_1_, BlockPos p_180633_2_, IBlockState p_180633_3_, EntityLivingBase p_180633_4_, ItemStack p_180633_5_)
+     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
      {
-         super.func_180633_a(p_180633_1_, p_180633_2_, p_180633_3_, p_180633_4_, p_180633_5_);
+         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
 @@ -154,7 +128,6 @@
          }
      }
  
 -    @Override
-     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
      {
-         return p_193383_4_ == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
+         return face == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;

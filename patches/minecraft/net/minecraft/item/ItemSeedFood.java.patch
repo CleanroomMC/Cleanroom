@@ -7,36 +7,36 @@
 -public class ItemSeedFood extends ItemFood
 +public class ItemSeedFood extends ItemFood implements net.minecraftforge.common.IPlantable
  {
-     private final Block field_150908_b;
-     private final Block field_82809_c;
+     private final Block crops;
+     private final Block soilId;
 @@ -20,24 +20,11 @@
-         this.field_82809_c = p_i45351_4_;
+         this.soilId = soil;
      }
  
 -    @Override
--    public EnumActionResult func_180614_a(
--        EntityPlayer p_180614_1_,
--        World p_180614_2_,
--        BlockPos p_180614_3_,
--        EnumHand p_180614_4_,
--        EnumFacing p_180614_5_,
--        float p_180614_6_,
--        float p_180614_7_,
--        float p_180614_8_
+-    public EnumActionResult onItemUse(
+-        EntityPlayer player,
+-        World worldIn,
+-        BlockPos pos,
+-        EnumHand hand,
+-        EnumFacing facing,
+-        float hitX,
+-        float hitY,
+-        float hitZ
 -    )
-+    public EnumActionResult func_180614_a(EntityPlayer p_180614_1_, World p_180614_2_, BlockPos p_180614_3_, EnumHand p_180614_4_, EnumFacing p_180614_5_, float p_180614_6_, float p_180614_7_, float p_180614_8_)
++    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
      {
-         ItemStack itemstack = p_180614_1_.func_184586_b(p_180614_4_);
+         ItemStack itemstack = player.getHeldItem(hand);
 -
--        if (p_180614_5_ == EnumFacing.UP
--                && p_180614_1_.func_175151_a(p_180614_3_.func_177972_a(p_180614_5_), p_180614_5_, itemstack)
--                && p_180614_2_.func_180495_p(p_180614_3_).func_177230_c() == this.field_82809_c
--                && p_180614_2_.func_175623_d(p_180614_3_.func_177984_a()))
-+        net.minecraft.block.state.IBlockState state = p_180614_2_.func_180495_p(p_180614_3_);
-+        if (p_180614_5_ == EnumFacing.UP && p_180614_1_.func_175151_a(p_180614_3_.func_177972_a(p_180614_5_), p_180614_5_, itemstack) && state.func_177230_c().canSustainPlant(state, p_180614_2_, p_180614_3_, EnumFacing.UP, this) && p_180614_2_.func_175623_d(p_180614_3_.func_177984_a()))
+-        if (facing == EnumFacing.UP
+-                && player.canPlayerEdit(pos.offset(facing), facing, itemstack)
+-                && worldIn.getBlockState(pos).getBlock() == this.soilId
+-                && worldIn.isAirBlock(pos.up()))
++        net.minecraft.block.state.IBlockState state = worldIn.getBlockState(pos);
++        if (facing == EnumFacing.UP && player.canPlayerEdit(pos.offset(facing), facing, itemstack) && state.getBlock().canSustainPlant(state, worldIn, pos, EnumFacing.UP, this) && worldIn.isAirBlock(pos.up()))
          {
-             p_180614_2_.func_180501_a(p_180614_3_.func_177984_a(), this.field_150908_b.func_176223_P(), 11);
-             itemstack.func_190918_g(1);
+             worldIn.setBlockState(pos.up(), this.crops.getDefaultState(), 11);
+             itemstack.shrink(1);
 @@ -47,5 +34,17 @@
          {
              return EnumActionResult.FAIL;
@@ -52,6 +52,6 @@
 +    @Override
 +    public net.minecraft.block.state.IBlockState getPlant(net.minecraft.world.IBlockAccess world, BlockPos pos)
 +    {
-+        return this.field_150908_b.func_176223_P();
++        return this.crops.getDefaultState();
      }
  }

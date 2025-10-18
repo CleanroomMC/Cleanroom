@@ -7,82 +7,82 @@
 -public class Potion
 +public class Potion extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<Potion>
  {
--    public static final RegistryNamespaced<ResourceLocation, Potion> field_188414_b = new RegistryNamespaced<>();
--    private final Map<IAttribute, AttributeModifier> field_111188_I = Maps.newHashMap();
-+    public static final RegistryNamespaced<ResourceLocation, Potion> field_188414_b = net.minecraftforge.registries.GameData.getWrapper(Potion.class);
-+    private final Map<IAttribute, AttributeModifier> field_111188_I = Maps.<IAttribute, AttributeModifier>newHashMap();
-     private final boolean field_76418_K;
-     private final int field_76414_N;
-     private String field_76416_I = "";
+-    public static final RegistryNamespaced<ResourceLocation, Potion> REGISTRY = new RegistryNamespaced<>();
+-    private final Map<IAttribute, AttributeModifier> attributeModifierMap = Maps.newHashMap();
++    public static final RegistryNamespaced<ResourceLocation, Potion> REGISTRY = net.minecraftforge.registries.GameData.getWrapper(Potion.class);
++    private final Map<IAttribute, AttributeModifier> attributeModifierMap = Maps.<IAttribute, AttributeModifier>newHashMap();
+     private final boolean isBadEffect;
+     private final int liquidColor;
+     private String name = "";
 @@ -56,11 +56,11 @@
  
-         if (p_i46815_1_)
+         if (isBadEffectIn)
          {
--            this.field_76412_L = 0.5;
-+            this.field_76412_L = 0.5D;
+-            this.effectiveness = 0.5;
++            this.effectiveness = 0.5D;
          }
          else
          {
--            this.field_76412_L = 1.0;
-+            this.field_76412_L = 1.0D;
+-            this.effectiveness = 1.0;
++            this.effectiveness = 1.0D;
          }
  
-         this.field_76414_N = p_i46815_2_;
+         this.liquidColor = liquidColorIn;
 @@ -122,7 +122,7 @@
          {
-             if (this == MobEffects.field_76433_i && !p_180793_3_.func_70662_br() || this == MobEffects.field_76432_h && p_180793_3_.func_70662_br())
+             if (this == MobEffects.INSTANT_DAMAGE && !entityLivingBaseIn.isEntityUndead() || this == MobEffects.INSTANT_HEALTH && entityLivingBaseIn.isEntityUndead())
              {
--                int j = (int)(p_180793_5_ * (double)(6 << p_180793_4_) + 0.5);
-+                int j = (int)(p_180793_5_ * (double)(6 << p_180793_4_) + 0.5D);
+-                int j = (int)(health * (double)(6 << amplifier) + 0.5);
++                int j = (int)(health * (double)(6 << amplifier) + 0.5D);
  
-                 if (p_180793_1_ == null)
+                 if (source == null)
                  {
 @@ -136,7 +136,7 @@
          }
          else
          {
--            int i = (int)(p_180793_5_ * (double)(4 << p_180793_4_) + 0.5);
-+            int i = (int)(p_180793_5_ * (double)(4 << p_180793_4_) + 0.5D);
-             p_180793_3_.func_70691_i((float)i);
+-            int i = (int)(health * (double)(4 << amplifier) + 0.5);
++            int i = (int)(health * (double)(4 << amplifier) + 0.5D);
+             entityLivingBaseIn.heal((float)i);
          }
      }
 @@ -146,17 +146,41 @@
-         if (this == MobEffects.field_76428_l)
+         if (this == MobEffects.REGENERATION)
          {
-             int k = 50 >> p_76397_2_;
--            return k > 0 ? p_76397_1_ % k == 0 : true;
+             int k = 50 >> amplifier;
+-            return k > 0 ? duration % k == 0 : true;
 +
 +            if (k > 0)
 +            {
-+                return p_76397_1_ % k == 0;
++                return duration % k == 0;
 +            }
 +            else
 +            {
 +                return true;
 +            }
          }
-         else if (this == MobEffects.field_76436_u)
+         else if (this == MobEffects.POISON)
          {
-             int j = 25 >> p_76397_2_;
--            return j > 0 ? p_76397_1_ % j == 0 : true;
+             int j = 25 >> amplifier;
+-            return j > 0 ? duration % j == 0 : true;
 +
 +            if (j > 0)
 +            {
-+                return p_76397_1_ % j == 0;
++                return duration % j == 0;
 +            }
 +            else
 +            {
 +                return true;
 +            }
          }
-         else if (this == MobEffects.field_82731_v)
+         else if (this == MobEffects.WITHER)
          {
-             int i = 40 >> p_76397_2_;
--            return i > 0 ? p_76397_1_ % i == 0 : true;
+             int i = 40 >> amplifier;
+-            return i > 0 ? duration % i == 0 : true;
 +
 +            if (i > 0)
 +            {
-+                return p_76397_1_ % i == 0;
++                return duration % i == 0;
 +            }
 +            else
 +            {
@@ -92,83 +92,83 @@
          else
          {
 @@ -180,6 +204,12 @@
-         return this.field_76416_I;
+         return this.name;
      }
  
-+    protected Potion func_76404_a(double p_76404_1_)
++    protected Potion setEffectiveness(double effectivenessIn)
 +    {
-+        this.field_76412_L = p_76404_1_;
++        this.effectiveness = effectivenessIn;
 +        return this;
 +    }
 +
      @SideOnly(Side.CLIENT)
-     public boolean func_76400_d()
+     public boolean hasStatusIcon()
      {
 @@ -192,7 +222,6 @@
-         return this.field_76417_J;
+         return this.statusIconIndex;
      }
  
 -    @SideOnly(Side.CLIENT)
-     public boolean func_76398_f()
+     public boolean isBadEffect()
      {
-         return this.field_76418_K;
+         return this.isBadEffect;
 @@ -212,12 +241,6 @@
          }
      }
  
--    protected Potion func_76404_a(double p_76404_1_)
+-    protected Potion setEffectiveness(double effectivenessIn)
 -    {
--        this.field_76412_L = p_76404_1_;
+-        this.effectiveness = effectivenessIn;
 -        return this;
 -    }
 -
-     public int func_76401_j()
+     public int getLiquidColor()
      {
-         return this.field_76414_N;
+         return this.liquidColor;
 @@ -230,12 +253,6 @@
          return this;
      }
  
 -    @SideOnly(Side.CLIENT)
--    public Map<IAttribute, AttributeModifier> func_111186_k()
+-    public Map<IAttribute, AttributeModifier> getAttributeModifierMap()
 -    {
--        return this.field_111188_I;
+-        return this.attributeModifierMap;
 -    }
 -
-     public void func_111187_a(EntityLivingBase p_111187_1_, AbstractAttributeMap p_111187_2_, int p_111187_3_)
+     public void removeAttributesModifiersFromEntity(EntityLivingBase entityLivingBaseIn, AbstractAttributeMap attributeMapIn, int amplifier)
      {
-         for (Entry<IAttribute, AttributeModifier> entry : this.field_111188_I.entrySet())
+         for (Entry<IAttribute, AttributeModifier> entry : this.attributeModifierMap.entrySet())
 @@ -249,6 +266,12 @@
          }
      }
  
 +    @SideOnly(Side.CLIENT)
-+    public Map<IAttribute, AttributeModifier> func_111186_k()
++    public Map<IAttribute, AttributeModifier> getAttributeModifierMap()
 +    {
-+        return this.field_111188_I;
++        return this.attributeModifierMap;
 +    }
 +
-     public void func_111185_a(EntityLivingBase p_111185_1_, AbstractAttributeMap p_111185_2_, int p_111185_3_)
+     public void applyAttributesModifiersToEntity(EntityLivingBase entityLivingBaseIn, AbstractAttributeMap attributeMapIn, int amplifier)
      {
-         for (Entry<IAttribute, AttributeModifier> entry : this.field_111188_I.entrySet())
+         for (Entry<IAttribute, AttributeModifier> entry : this.attributeModifierMap.entrySet())
 @@ -259,14 +282,7 @@
              {
                  AttributeModifier attributemodifier = entry.getValue();
-                 iattributeinstance.func_111124_b(attributemodifier);
--                iattributeinstance.func_111121_a(
+                 iattributeinstance.removeModifier(attributemodifier);
+-                iattributeinstance.applyModifier(
 -                    new AttributeModifier(
--                        attributemodifier.func_111167_a(),
--                        this.func_76393_a() + " " + p_111185_3_,
--                        this.func_111183_a(p_111185_3_, attributemodifier),
--                        attributemodifier.func_111169_c()
+-                        attributemodifier.getID(),
+-                        this.getName() + " " + amplifier,
+-                        this.getAttributeModifierAmount(amplifier, attributemodifier),
+-                        attributemodifier.getOperation()
 -                    )
 -                );
-+                iattributeinstance.func_111121_a(new AttributeModifier(attributemodifier.func_111167_a(), this.func_76393_a() + " " + p_111185_3_, this.func_111183_a(p_111185_3_, attributemodifier), attributemodifier.func_111169_c()));
++                iattributeinstance.applyModifier(new AttributeModifier(attributemodifier.getID(), this.getName() + " " + amplifier, this.getAttributeModifierAmount(amplifier, attributemodifier), attributemodifier.getOperation()));
              }
          }
      }
 @@ -276,6 +292,121 @@
-         return p_111183_2_.func_111164_d() * (double)(p_111183_1_ + 1);
+         return modifier.getAmount() * (double)(amplifier + 1);
      }
  
 +    /* ======================================== FORGE START =====================================*/
@@ -226,7 +226,7 @@
 +    @SideOnly(Side.CLIENT)
 +    public void renderInventoryEffect(PotionEffect effect, net.minecraft.client.gui.Gui gui, int x, int y, float z)
 +    {
-+        renderInventoryEffect(x, y, effect, net.minecraft.client.Minecraft.func_71410_x());
++        renderInventoryEffect(x, y, effect, net.minecraft.client.Minecraft.getMinecraft());
 +    }
 +
 +    /**
@@ -257,7 +257,7 @@
 +    @SideOnly(Side.CLIENT)
 +    public void renderHUDEffect(PotionEffect effect, net.minecraft.client.gui.Gui gui, int x, int y, float z, float alpha)
 +    {
-+        renderHUDEffect(x, y, effect, net.minecraft.client.Minecraft.func_71410_x(), alpha);
++        renderHUDEffect(x, y, effect, net.minecraft.client.Minecraft.getMinecraft(), alpha);
 +    }
 +
 +    /**
@@ -269,7 +269,7 @@
 +    public java.util.List<net.minecraft.item.ItemStack> getCurativeItems()
 +    {
 +        java.util.ArrayList<net.minecraft.item.ItemStack> ret = new java.util.ArrayList<net.minecraft.item.ItemStack>();
-+        ret.add(new net.minecraft.item.ItemStack(net.minecraft.init.Items.field_151117_aB));
++        ret.add(new net.minecraft.item.ItemStack(net.minecraft.init.Items.MILK_BUCKET));
 +        return ret;
 +    }
 +    
@@ -281,166 +281,166 @@
 +     */
 +    public int getGuiSortColor(PotionEffect potionEffect)
 +    {
-+        return this.func_76401_j();
++        return this.getLiquidColor();
 +    }
 +
 +    /* ======================================== FORGE END =====================================*/
 +
      @SideOnly(Side.CLIENT)
-     public boolean func_188408_i()
+     public boolean isBeneficial()
      {
 @@ -290,127 +421,32 @@
  
-     public static void func_188411_k()
+     public static void registerPotions()
      {
--        field_188414_b.func_177775_a(
+-        REGISTRY.register(
 -            1,
 -            new ResourceLocation("speed"),
 -            new Potion(false, 8171462)
--            .func_76390_b("effect.moveSpeed")
--            .func_76399_b(0, 0)
--            .func_111184_a(SharedMonsterAttributes.field_111263_d, "91AEAA56-376B-4498-935B-2F7F68070635", 0.2F, 2)
--            .func_188413_j()
+-            .setPotionName("effect.moveSpeed")
+-            .setIconIndex(0, 0)
+-            .registerPotionAttributeModifier(SharedMonsterAttributes.MOVEMENT_SPEED, "91AEAA56-376B-4498-935B-2F7F68070635", 0.2F, 2)
+-            .setBeneficial()
 -        );
--        field_188414_b.func_177775_a(
+-        REGISTRY.register(
 -            2,
 -            new ResourceLocation("slowness"),
 -            new Potion(true, 5926017)
--            .func_76390_b("effect.moveSlowdown")
--            .func_76399_b(1, 0)
--            .func_111184_a(SharedMonsterAttributes.field_111263_d, "7107DE5E-7CE8-4030-940E-514C1F160890", -0.15F, 2)
+-            .setPotionName("effect.moveSlowdown")
+-            .setIconIndex(1, 0)
+-            .registerPotionAttributeModifier(SharedMonsterAttributes.MOVEMENT_SPEED, "7107DE5E-7CE8-4030-940E-514C1F160890", -0.15F, 2)
 -        );
--        field_188414_b.func_177775_a(
+-        REGISTRY.register(
 -            3,
 -            new ResourceLocation("haste"),
 -            new Potion(false, 14270531)
--            .func_76390_b("effect.digSpeed")
--            .func_76399_b(2, 0)
--            .func_76404_a(1.5)
--            .func_188413_j()
--            .func_111184_a(SharedMonsterAttributes.field_188790_f, "AF8B6E3F-3328-4C0A-AA36-5BA2BB9DBEF3", 0.1F, 2)
+-            .setPotionName("effect.digSpeed")
+-            .setIconIndex(2, 0)
+-            .setEffectiveness(1.5)
+-            .setBeneficial()
+-            .registerPotionAttributeModifier(SharedMonsterAttributes.ATTACK_SPEED, "AF8B6E3F-3328-4C0A-AA36-5BA2BB9DBEF3", 0.1F, 2)
 -        );
--        field_188414_b.func_177775_a(
+-        REGISTRY.register(
 -            4,
 -            new ResourceLocation("mining_fatigue"),
 -            new Potion(true, 4866583)
--            .func_76390_b("effect.digSlowDown")
--            .func_76399_b(3, 0)
--            .func_111184_a(SharedMonsterAttributes.field_188790_f, "55FCED67-E92A-486E-9800-B47F202C4386", -0.1F, 2)
+-            .setPotionName("effect.digSlowDown")
+-            .setIconIndex(3, 0)
+-            .registerPotionAttributeModifier(SharedMonsterAttributes.ATTACK_SPEED, "55FCED67-E92A-486E-9800-B47F202C4386", -0.1F, 2)
 -        );
--        field_188414_b.func_177775_a(
+-        REGISTRY.register(
 -            5,
 -            new ResourceLocation("strength"),
 -            new PotionAttackDamage(false, 9643043, 3.0)
--            .func_76390_b("effect.damageBoost")
--            .func_76399_b(4, 0)
--            .func_111184_a(SharedMonsterAttributes.field_111264_e, "648D7064-6A60-4F59-8ABE-C2C23A6DD7A9", 0.0, 0)
--            .func_188413_j()
+-            .setPotionName("effect.damageBoost")
+-            .setIconIndex(4, 0)
+-            .registerPotionAttributeModifier(SharedMonsterAttributes.ATTACK_DAMAGE, "648D7064-6A60-4F59-8ABE-C2C23A6DD7A9", 0.0, 0)
+-            .setBeneficial()
 -        );
--        field_188414_b.func_177775_a(6, new ResourceLocation("instant_health"), new PotionHealth(false, 16262179).func_76390_b("effect.heal").func_188413_j());
--        field_188414_b.func_177775_a(7, new ResourceLocation("instant_damage"), new PotionHealth(true, 4393481).func_76390_b("effect.harm").func_188413_j());
--        field_188414_b.func_177775_a(
--            8, new ResourceLocation("jump_boost"), new Potion(false, 2293580).func_76390_b("effect.jump").func_76399_b(2, 1).func_188413_j()
+-        REGISTRY.register(6, new ResourceLocation("instant_health"), new PotionHealth(false, 16262179).setPotionName("effect.heal").setBeneficial());
+-        REGISTRY.register(7, new ResourceLocation("instant_damage"), new PotionHealth(true, 4393481).setPotionName("effect.harm").setBeneficial());
+-        REGISTRY.register(
+-            8, new ResourceLocation("jump_boost"), new Potion(false, 2293580).setPotionName("effect.jump").setIconIndex(2, 1).setBeneficial()
 -        );
--        field_188414_b.func_177775_a(
--            9, new ResourceLocation("nausea"), new Potion(true, 5578058).func_76390_b("effect.confusion").func_76399_b(3, 1).func_76404_a(0.25)
+-        REGISTRY.register(
+-            9, new ResourceLocation("nausea"), new Potion(true, 5578058).setPotionName("effect.confusion").setIconIndex(3, 1).setEffectiveness(0.25)
 -        );
--        field_188414_b.func_177775_a(
+-        REGISTRY.register(
 -            10,
 -            new ResourceLocation("regeneration"),
--            new Potion(false, 13458603).func_76390_b("effect.regeneration").func_76399_b(7, 0).func_76404_a(0.25).func_188413_j()
+-            new Potion(false, 13458603).setPotionName("effect.regeneration").setIconIndex(7, 0).setEffectiveness(0.25).setBeneficial()
 -        );
--        field_188414_b.func_177775_a(
--            11, new ResourceLocation("resistance"), new Potion(false, 10044730).func_76390_b("effect.resistance").func_76399_b(6, 1).func_188413_j()
+-        REGISTRY.register(
+-            11, new ResourceLocation("resistance"), new Potion(false, 10044730).setPotionName("effect.resistance").setIconIndex(6, 1).setBeneficial()
 -        );
--        field_188414_b.func_177775_a(
--            12, new ResourceLocation("fire_resistance"), new Potion(false, 14981690).func_76390_b("effect.fireResistance").func_76399_b(7, 1).func_188413_j()
+-        REGISTRY.register(
+-            12, new ResourceLocation("fire_resistance"), new Potion(false, 14981690).setPotionName("effect.fireResistance").setIconIndex(7, 1).setBeneficial()
 -        );
--        field_188414_b.func_177775_a(
--            13, new ResourceLocation("water_breathing"), new Potion(false, 3035801).func_76390_b("effect.waterBreathing").func_76399_b(0, 2).func_188413_j()
+-        REGISTRY.register(
+-            13, new ResourceLocation("water_breathing"), new Potion(false, 3035801).setPotionName("effect.waterBreathing").setIconIndex(0, 2).setBeneficial()
 -        );
--        field_188414_b.func_177775_a(
--            14, new ResourceLocation("invisibility"), new Potion(false, 8356754).func_76390_b("effect.invisibility").func_76399_b(0, 1).func_188413_j()
+-        REGISTRY.register(
+-            14, new ResourceLocation("invisibility"), new Potion(false, 8356754).setPotionName("effect.invisibility").setIconIndex(0, 1).setBeneficial()
 -        );
--        field_188414_b.func_177775_a(
--            15, new ResourceLocation("blindness"), new Potion(true, 2039587).func_76390_b("effect.blindness").func_76399_b(5, 1).func_76404_a(0.25)
+-        REGISTRY.register(
+-            15, new ResourceLocation("blindness"), new Potion(true, 2039587).setPotionName("effect.blindness").setIconIndex(5, 1).setEffectiveness(0.25)
 -        );
--        field_188414_b.func_177775_a(
--            16, new ResourceLocation("night_vision"), new Potion(false, 2039713).func_76390_b("effect.nightVision").func_76399_b(4, 1).func_188413_j()
+-        REGISTRY.register(
+-            16, new ResourceLocation("night_vision"), new Potion(false, 2039713).setPotionName("effect.nightVision").setIconIndex(4, 1).setBeneficial()
 -        );
--        field_188414_b.func_177775_a(17, new ResourceLocation("hunger"), new Potion(true, 5797459).func_76390_b("effect.hunger").func_76399_b(1, 1));
--        field_188414_b.func_177775_a(
+-        REGISTRY.register(17, new ResourceLocation("hunger"), new Potion(true, 5797459).setPotionName("effect.hunger").setIconIndex(1, 1));
+-        REGISTRY.register(
 -            18,
 -            new ResourceLocation("weakness"),
 -            new PotionAttackDamage(true, 4738376, -4.0)
--            .func_76390_b("effect.weakness")
--            .func_76399_b(5, 0)
--            .func_111184_a(SharedMonsterAttributes.field_111264_e, "22653B89-116E-49DC-9B6B-9971489B5BE5", 0.0, 0)
+-            .setPotionName("effect.weakness")
+-            .setIconIndex(5, 0)
+-            .registerPotionAttributeModifier(SharedMonsterAttributes.ATTACK_DAMAGE, "22653B89-116E-49DC-9B6B-9971489B5BE5", 0.0, 0)
 -        );
--        field_188414_b.func_177775_a(
--            19, new ResourceLocation("poison"), new Potion(true, 5149489).func_76390_b("effect.poison").func_76399_b(6, 0).func_76404_a(0.25)
+-        REGISTRY.register(
+-            19, new ResourceLocation("poison"), new Potion(true, 5149489).setPotionName("effect.poison").setIconIndex(6, 0).setEffectiveness(0.25)
 -        );
--        field_188414_b.func_177775_a(
--            20, new ResourceLocation("wither"), new Potion(true, 3484199).func_76390_b("effect.wither").func_76399_b(1, 2).func_76404_a(0.25)
+-        REGISTRY.register(
+-            20, new ResourceLocation("wither"), new Potion(true, 3484199).setPotionName("effect.wither").setIconIndex(1, 2).setEffectiveness(0.25)
 -        );
--        field_188414_b.func_177775_a(
+-        REGISTRY.register(
 -            21,
 -            new ResourceLocation("health_boost"),
 -            new PotionHealthBoost(false, 16284963)
--            .func_76390_b("effect.healthBoost")
--            .func_76399_b(7, 2)
--            .func_111184_a(SharedMonsterAttributes.field_111267_a, "5D6F0BA2-1186-46AC-B896-C61C5CEE99CC", 4.0, 0)
--            .func_188413_j()
+-            .setPotionName("effect.healthBoost")
+-            .setIconIndex(7, 2)
+-            .registerPotionAttributeModifier(SharedMonsterAttributes.MAX_HEALTH, "5D6F0BA2-1186-46AC-B896-C61C5CEE99CC", 4.0, 0)
+-            .setBeneficial()
 -        );
--        field_188414_b.func_177775_a(
--            22, new ResourceLocation("absorption"), new PotionAbsorption(false, 2445989).func_76390_b("effect.absorption").func_76399_b(2, 2).func_188413_j()
+-        REGISTRY.register(
+-            22, new ResourceLocation("absorption"), new PotionAbsorption(false, 2445989).setPotionName("effect.absorption").setIconIndex(2, 2).setBeneficial()
 -        );
--        field_188414_b.func_177775_a(23, new ResourceLocation("saturation"), new PotionHealth(false, 16262179).func_76390_b("effect.saturation").func_188413_j());
--        field_188414_b.func_177775_a(24, new ResourceLocation("glowing"), new Potion(false, 9740385).func_76390_b("effect.glowing").func_76399_b(4, 2));
--        field_188414_b.func_177775_a(25, new ResourceLocation("levitation"), new Potion(true, 13565951).func_76390_b("effect.levitation").func_76399_b(3, 2));
--        field_188414_b.func_177775_a(
+-        REGISTRY.register(23, new ResourceLocation("saturation"), new PotionHealth(false, 16262179).setPotionName("effect.saturation").setBeneficial());
+-        REGISTRY.register(24, new ResourceLocation("glowing"), new Potion(false, 9740385).setPotionName("effect.glowing").setIconIndex(4, 2));
+-        REGISTRY.register(25, new ResourceLocation("levitation"), new Potion(true, 13565951).setPotionName("effect.levitation").setIconIndex(3, 2));
+-        REGISTRY.register(
 -            26,
 -            new ResourceLocation("luck"),
 -            new Potion(false, 3381504)
--            .func_76390_b("effect.luck")
--            .func_76399_b(5, 2)
--            .func_188413_j()
--            .func_111184_a(SharedMonsterAttributes.field_188792_h, "03C3C89D-7037-4B42-869F-B146BCB64D2E", 1.0, 0)
+-            .setPotionName("effect.luck")
+-            .setIconIndex(5, 2)
+-            .setBeneficial()
+-            .registerPotionAttributeModifier(SharedMonsterAttributes.LUCK, "03C3C89D-7037-4B42-869F-B146BCB64D2E", 1.0, 0)
 -        );
--        field_188414_b.func_177775_a(
+-        REGISTRY.register(
 -            27,
 -            new ResourceLocation("unluck"),
 -            new Potion(true, 12624973)
--            .func_76390_b("effect.unluck")
--            .func_76399_b(6, 2)
--            .func_111184_a(SharedMonsterAttributes.field_188792_h, "CC5AF142-2BD2-4215-B636-2605AED11727", -1.0, 0)
+-            .setPotionName("effect.unluck")
+-            .setIconIndex(6, 2)
+-            .registerPotionAttributeModifier(SharedMonsterAttributes.LUCK, "CC5AF142-2BD2-4215-B636-2605AED11727", -1.0, 0)
 -        );
-+        field_188414_b.func_177775_a(1, new ResourceLocation("speed"), (new Potion(false, 8171462)).func_76390_b("effect.moveSpeed").func_76399_b(0, 0).func_111184_a(SharedMonsterAttributes.field_111263_d, "91AEAA56-376B-4498-935B-2F7F68070635", 0.20000000298023224D, 2).func_188413_j());
-+        field_188414_b.func_177775_a(2, new ResourceLocation("slowness"), (new Potion(true, 5926017)).func_76390_b("effect.moveSlowdown").func_76399_b(1, 0).func_111184_a(SharedMonsterAttributes.field_111263_d, "7107DE5E-7CE8-4030-940E-514C1F160890", -0.15000000596046448D, 2));
-+        field_188414_b.func_177775_a(3, new ResourceLocation("haste"), (new Potion(false, 14270531)).func_76390_b("effect.digSpeed").func_76399_b(2, 0).func_76404_a(1.5D).func_188413_j().func_111184_a(SharedMonsterAttributes.field_188790_f, "AF8B6E3F-3328-4C0A-AA36-5BA2BB9DBEF3", 0.10000000149011612D, 2));
-+        field_188414_b.func_177775_a(4, new ResourceLocation("mining_fatigue"), (new Potion(true, 4866583)).func_76390_b("effect.digSlowDown").func_76399_b(3, 0).func_111184_a(SharedMonsterAttributes.field_188790_f, "55FCED67-E92A-486E-9800-B47F202C4386", -0.10000000149011612D, 2));
-+        field_188414_b.func_177775_a(5, new ResourceLocation("strength"), (new PotionAttackDamage(false, 9643043, 3.0D)).func_76390_b("effect.damageBoost").func_76399_b(4, 0).func_111184_a(SharedMonsterAttributes.field_111264_e, "648D7064-6A60-4F59-8ABE-C2C23A6DD7A9", 0.0D, 0).func_188413_j());
-+        field_188414_b.func_177775_a(6, new ResourceLocation("instant_health"), (new PotionHealth(false, 16262179)).func_76390_b("effect.heal").func_188413_j());
-+        field_188414_b.func_177775_a(7, new ResourceLocation("instant_damage"), (new PotionHealth(true, 4393481)).func_76390_b("effect.harm").func_188413_j());
-+        field_188414_b.func_177775_a(8, new ResourceLocation("jump_boost"), (new Potion(false, 2293580)).func_76390_b("effect.jump").func_76399_b(2, 1).func_188413_j());
-+        field_188414_b.func_177775_a(9, new ResourceLocation("nausea"), (new Potion(true, 5578058)).func_76390_b("effect.confusion").func_76399_b(3, 1).func_76404_a(0.25D));
-+        field_188414_b.func_177775_a(10, new ResourceLocation("regeneration"), (new Potion(false, 13458603)).func_76390_b("effect.regeneration").func_76399_b(7, 0).func_76404_a(0.25D).func_188413_j());
-+        field_188414_b.func_177775_a(11, new ResourceLocation("resistance"), (new Potion(false, 10044730)).func_76390_b("effect.resistance").func_76399_b(6, 1).func_188413_j());
-+        field_188414_b.func_177775_a(12, new ResourceLocation("fire_resistance"), (new Potion(false, 14981690)).func_76390_b("effect.fireResistance").func_76399_b(7, 1).func_188413_j());
-+        field_188414_b.func_177775_a(13, new ResourceLocation("water_breathing"), (new Potion(false, 3035801)).func_76390_b("effect.waterBreathing").func_76399_b(0, 2).func_188413_j());
-+        field_188414_b.func_177775_a(14, new ResourceLocation("invisibility"), (new Potion(false, 8356754)).func_76390_b("effect.invisibility").func_76399_b(0, 1).func_188413_j());
-+        field_188414_b.func_177775_a(15, new ResourceLocation("blindness"), (new Potion(true, 2039587)).func_76390_b("effect.blindness").func_76399_b(5, 1).func_76404_a(0.25D));
-+        field_188414_b.func_177775_a(16, new ResourceLocation("night_vision"), (new Potion(false, 2039713)).func_76390_b("effect.nightVision").func_76399_b(4, 1).func_188413_j());
-+        field_188414_b.func_177775_a(17, new ResourceLocation("hunger"), (new Potion(true, 5797459)).func_76390_b("effect.hunger").func_76399_b(1, 1));
-+        field_188414_b.func_177775_a(18, new ResourceLocation("weakness"), (new PotionAttackDamage(true, 4738376, -4.0D)).func_76390_b("effect.weakness").func_76399_b(5, 0).func_111184_a(SharedMonsterAttributes.field_111264_e, "22653B89-116E-49DC-9B6B-9971489B5BE5", 0.0D, 0));
-+        field_188414_b.func_177775_a(19, new ResourceLocation("poison"), (new Potion(true, 5149489)).func_76390_b("effect.poison").func_76399_b(6, 0).func_76404_a(0.25D));
-+        field_188414_b.func_177775_a(20, new ResourceLocation("wither"), (new Potion(true, 3484199)).func_76390_b("effect.wither").func_76399_b(1, 2).func_76404_a(0.25D));
-+        field_188414_b.func_177775_a(21, new ResourceLocation("health_boost"), (new PotionHealthBoost(false, 16284963)).func_76390_b("effect.healthBoost").func_76399_b(7, 2).func_111184_a(SharedMonsterAttributes.field_111267_a, "5D6F0BA2-1186-46AC-B896-C61C5CEE99CC", 4.0D, 0).func_188413_j());
-+        field_188414_b.func_177775_a(22, new ResourceLocation("absorption"), (new PotionAbsorption(false, 2445989)).func_76390_b("effect.absorption").func_76399_b(2, 2).func_188413_j());
-+        field_188414_b.func_177775_a(23, new ResourceLocation("saturation"), (new PotionHealth(false, 16262179)).func_76390_b("effect.saturation").func_188413_j());
-+        field_188414_b.func_177775_a(24, new ResourceLocation("glowing"), (new Potion(false, 9740385)).func_76390_b("effect.glowing").func_76399_b(4, 2));
-+        field_188414_b.func_177775_a(25, new ResourceLocation("levitation"), (new Potion(true, 13565951)).func_76390_b("effect.levitation").func_76399_b(3, 2));
-+        field_188414_b.func_177775_a(26, new ResourceLocation("luck"), (new Potion(false, 3381504)).func_76390_b("effect.luck").func_76399_b(5, 2).func_188413_j().func_111184_a(SharedMonsterAttributes.field_188792_h, "03C3C89D-7037-4B42-869F-B146BCB64D2E", 1.0D, 0));
-+        field_188414_b.func_177775_a(27, new ResourceLocation("unluck"), (new Potion(true, 12624973)).func_76390_b("effect.unluck").func_76399_b(6, 2).func_111184_a(SharedMonsterAttributes.field_188792_h, "CC5AF142-2BD2-4215-B636-2605AED11727", -1.0D, 0));
++        REGISTRY.register(1, new ResourceLocation("speed"), (new Potion(false, 8171462)).setPotionName("effect.moveSpeed").setIconIndex(0, 0).registerPotionAttributeModifier(SharedMonsterAttributes.MOVEMENT_SPEED, "91AEAA56-376B-4498-935B-2F7F68070635", 0.20000000298023224D, 2).setBeneficial());
++        REGISTRY.register(2, new ResourceLocation("slowness"), (new Potion(true, 5926017)).setPotionName("effect.moveSlowdown").setIconIndex(1, 0).registerPotionAttributeModifier(SharedMonsterAttributes.MOVEMENT_SPEED, "7107DE5E-7CE8-4030-940E-514C1F160890", -0.15000000596046448D, 2));
++        REGISTRY.register(3, new ResourceLocation("haste"), (new Potion(false, 14270531)).setPotionName("effect.digSpeed").setIconIndex(2, 0).setEffectiveness(1.5D).setBeneficial().registerPotionAttributeModifier(SharedMonsterAttributes.ATTACK_SPEED, "AF8B6E3F-3328-4C0A-AA36-5BA2BB9DBEF3", 0.10000000149011612D, 2));
++        REGISTRY.register(4, new ResourceLocation("mining_fatigue"), (new Potion(true, 4866583)).setPotionName("effect.digSlowDown").setIconIndex(3, 0).registerPotionAttributeModifier(SharedMonsterAttributes.ATTACK_SPEED, "55FCED67-E92A-486E-9800-B47F202C4386", -0.10000000149011612D, 2));
++        REGISTRY.register(5, new ResourceLocation("strength"), (new PotionAttackDamage(false, 9643043, 3.0D)).setPotionName("effect.damageBoost").setIconIndex(4, 0).registerPotionAttributeModifier(SharedMonsterAttributes.ATTACK_DAMAGE, "648D7064-6A60-4F59-8ABE-C2C23A6DD7A9", 0.0D, 0).setBeneficial());
++        REGISTRY.register(6, new ResourceLocation("instant_health"), (new PotionHealth(false, 16262179)).setPotionName("effect.heal").setBeneficial());
++        REGISTRY.register(7, new ResourceLocation("instant_damage"), (new PotionHealth(true, 4393481)).setPotionName("effect.harm").setBeneficial());
++        REGISTRY.register(8, new ResourceLocation("jump_boost"), (new Potion(false, 2293580)).setPotionName("effect.jump").setIconIndex(2, 1).setBeneficial());
++        REGISTRY.register(9, new ResourceLocation("nausea"), (new Potion(true, 5578058)).setPotionName("effect.confusion").setIconIndex(3, 1).setEffectiveness(0.25D));
++        REGISTRY.register(10, new ResourceLocation("regeneration"), (new Potion(false, 13458603)).setPotionName("effect.regeneration").setIconIndex(7, 0).setEffectiveness(0.25D).setBeneficial());
++        REGISTRY.register(11, new ResourceLocation("resistance"), (new Potion(false, 10044730)).setPotionName("effect.resistance").setIconIndex(6, 1).setBeneficial());
++        REGISTRY.register(12, new ResourceLocation("fire_resistance"), (new Potion(false, 14981690)).setPotionName("effect.fireResistance").setIconIndex(7, 1).setBeneficial());
++        REGISTRY.register(13, new ResourceLocation("water_breathing"), (new Potion(false, 3035801)).setPotionName("effect.waterBreathing").setIconIndex(0, 2).setBeneficial());
++        REGISTRY.register(14, new ResourceLocation("invisibility"), (new Potion(false, 8356754)).setPotionName("effect.invisibility").setIconIndex(0, 1).setBeneficial());
++        REGISTRY.register(15, new ResourceLocation("blindness"), (new Potion(true, 2039587)).setPotionName("effect.blindness").setIconIndex(5, 1).setEffectiveness(0.25D));
++        REGISTRY.register(16, new ResourceLocation("night_vision"), (new Potion(false, 2039713)).setPotionName("effect.nightVision").setIconIndex(4, 1).setBeneficial());
++        REGISTRY.register(17, new ResourceLocation("hunger"), (new Potion(true, 5797459)).setPotionName("effect.hunger").setIconIndex(1, 1));
++        REGISTRY.register(18, new ResourceLocation("weakness"), (new PotionAttackDamage(true, 4738376, -4.0D)).setPotionName("effect.weakness").setIconIndex(5, 0).registerPotionAttributeModifier(SharedMonsterAttributes.ATTACK_DAMAGE, "22653B89-116E-49DC-9B6B-9971489B5BE5", 0.0D, 0));
++        REGISTRY.register(19, new ResourceLocation("poison"), (new Potion(true, 5149489)).setPotionName("effect.poison").setIconIndex(6, 0).setEffectiveness(0.25D));
++        REGISTRY.register(20, new ResourceLocation("wither"), (new Potion(true, 3484199)).setPotionName("effect.wither").setIconIndex(1, 2).setEffectiveness(0.25D));
++        REGISTRY.register(21, new ResourceLocation("health_boost"), (new PotionHealthBoost(false, 16284963)).setPotionName("effect.healthBoost").setIconIndex(7, 2).registerPotionAttributeModifier(SharedMonsterAttributes.MAX_HEALTH, "5D6F0BA2-1186-46AC-B896-C61C5CEE99CC", 4.0D, 0).setBeneficial());
++        REGISTRY.register(22, new ResourceLocation("absorption"), (new PotionAbsorption(false, 2445989)).setPotionName("effect.absorption").setIconIndex(2, 2).setBeneficial());
++        REGISTRY.register(23, new ResourceLocation("saturation"), (new PotionHealth(false, 16262179)).setPotionName("effect.saturation").setBeneficial());
++        REGISTRY.register(24, new ResourceLocation("glowing"), (new Potion(false, 9740385)).setPotionName("effect.glowing").setIconIndex(4, 2));
++        REGISTRY.register(25, new ResourceLocation("levitation"), (new Potion(true, 13565951)).setPotionName("effect.levitation").setIconIndex(3, 2));
++        REGISTRY.register(26, new ResourceLocation("luck"), (new Potion(false, 3381504)).setPotionName("effect.luck").setIconIndex(5, 2).setBeneficial().registerPotionAttributeModifier(SharedMonsterAttributes.LUCK, "03C3C89D-7037-4B42-869F-B146BCB64D2E", 1.0D, 0));
++        REGISTRY.register(27, new ResourceLocation("unluck"), (new Potion(true, 12624973)).setPotionName("effect.unluck").setIconIndex(6, 2).registerPotionAttributeModifier(SharedMonsterAttributes.LUCK, "CC5AF142-2BD2-4215-B636-2605AED11727", -1.0D, 0));
      }
  }

@@ -9,13 +9,13 @@
  import net.minecraft.world.gen.layer.IntCache;
  import net.minecraftforge.fml.relauncher.Side;
 @@ -116,6 +117,7 @@
-                 return IntCache.func_85144_b();
+                 return IntCache.getCacheSizes();
              }
          });
-+        net.minecraftforge.fml.common.FMLCommonHandler.instance().enhanceCrashReport(this, this.field_85061_c);
++        net.minecraftforge.fml.common.FMLCommonHandler.instance().enhanceCrashReport(this, this.systemDetailsCategory);
      }
  
-     public String func_71501_a()
+     public String getDescription()
 @@ -198,18 +200,19 @@
              IOUtils.closeQuietly((Writer)printwriter);
          }
@@ -24,22 +24,22 @@
 +        return s + net.minecraftforge.common.ForgeHooks.gatherMixinInfo(throwable);
      }
  
-     public String func_71502_e()
+     public String getCompleteReport()
      {
          StringBuilder stringbuilder = new StringBuilder();
          stringbuilder.append("---- Minecraft Crash Report ----\n");
 +        net.minecraftforge.fml.relauncher.CoreModManager.onCrash(stringbuilder);
          stringbuilder.append("// ");
-         stringbuilder.append(func_71503_h());
+         stringbuilder.append(getWittyComment());
          stringbuilder.append("\n\n");
          stringbuilder.append("Time: ");
 -        stringbuilder.append(new SimpleDateFormat().format(new Date()));
 +        stringbuilder.append((new SimpleDateFormat()).format(new Date()));
          stringbuilder.append("\n");
          stringbuilder.append("Description: ");
-         stringbuilder.append(this.field_71513_a);
+         stringbuilder.append(this.description);
 @@ -217,7 +220,7 @@
-         stringbuilder.append(this.func_71498_d());
+         stringbuilder.append(this.getCauseStackTraceOrString());
          stringbuilder.append("\n\nA detailed walkthrough of the error, its code path and all known details is as follows:\n");
  
 -        for (int i = 0; i < 87; i++)
@@ -56,16 +56,16 @@
  
              try
              {
-                 writer = new OutputStreamWriter(new FileOutputStream(p_147149_1_), StandardCharsets.UTF_8);
-                 writer.write(this.func_71502_e());
-                 this.field_71510_d = p_147149_1_;
+                 writer = new OutputStreamWriter(new FileOutputStream(toFile), StandardCharsets.UTF_8);
+                 writer.write(this.getCompleteReport());
+                 this.crashReportFile = toFile;
 -                return true;
 +                boolean lvt_3_1_ = true;
 +                return lvt_3_1_;
              }
              catch (Throwable throwable)
              {
-                 field_147150_a.error("Could not save crash report to {}", p_147149_1_, throwable);
+                 LOGGER.error("Could not save crash report to {}", toFile, throwable);
 -                flag = false;
 +                flag1 = false;
              }
@@ -81,7 +81,7 @@
  
 @@ -331,49 +335,13 @@
  
-     private static String func_71503_h()
+     private static String getWittyComment()
      {
 -        String[] astring = new String[]
 -        {

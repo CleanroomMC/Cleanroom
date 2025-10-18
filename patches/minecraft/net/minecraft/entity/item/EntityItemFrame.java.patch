@@ -4,148 +4,148 @@
  
  public class EntityItemFrame extends EntityHanging
  {
--    private static final DataParameter<ItemStack> field_184525_c = EntityDataManager.func_187226_a(EntityItemFrame.class, DataSerializers.field_187196_f);
--    private static final DataParameter<Integer> field_184526_d = EntityDataManager.func_187226_a(EntityItemFrame.class, DataSerializers.field_187192_b);
-+    private static final DataParameter<ItemStack> field_184525_c = EntityDataManager.<ItemStack>func_187226_a(EntityItemFrame.class, DataSerializers.field_187196_f);
-+    private static final DataParameter<Integer> field_184526_d = EntityDataManager.<Integer>func_187226_a(EntityItemFrame.class, DataSerializers.field_187192_b);
-     private float field_82337_e = 1.0F;
+-    private static final DataParameter<ItemStack> ITEM = EntityDataManager.createKey(EntityItemFrame.class, DataSerializers.ITEM_STACK);
+-    private static final DataParameter<Integer> ROTATION = EntityDataManager.createKey(EntityItemFrame.class, DataSerializers.VARINT);
++    private static final DataParameter<ItemStack> ITEM = EntityDataManager.<ItemStack>createKey(EntityItemFrame.class, DataSerializers.ITEM_STACK);
++    private static final DataParameter<Integer> ROTATION = EntityDataManager.<Integer>createKey(EntityItemFrame.class, DataSerializers.VARINT);
+     private float itemDropChance = 1.0F;
  
-     public EntityItemFrame(World p_i1590_1_)
+     public EntityItemFrame(World worldIn)
 @@ -42,20 +42,17 @@
-         this.func_174859_a(p_i45852_3_);
+         this.updateFacingWithBoundingBox(p_i45852_3_);
      }
  
 -    @Override
-     protected void func_70088_a()
+     protected void entityInit()
      {
-         this.func_184212_Q().func_187214_a(field_184525_c, ItemStack.field_190927_a);
--        this.func_184212_Q().func_187214_a(field_184526_d, 0);
-+        this.func_184212_Q().func_187214_a(field_184526_d, Integer.valueOf(0));
+         this.getDataManager().register(ITEM, ItemStack.EMPTY);
+-        this.getDataManager().register(ROTATION, 0);
++        this.getDataManager().register(ROTATION, Integer.valueOf(0));
      }
  
 -    @Override
-     public float func_70111_Y()
+     public float getCollisionBorderSize()
      {
          return 0.0F;
      }
  
 -    @Override
-     public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
+     public boolean attackEntityFrom(DamageSource source, float amount)
      {
-         if (this.func_180431_b(p_70097_1_))
+         if (this.isEntityInvulnerable(source))
 @@ -79,35 +76,30 @@
          }
      }
  
 -    @Override
-     public int func_82329_d()
+     public int getWidthPixels()
      {
          return 12;
      }
  
 -    @Override
-     public int func_82330_g()
+     public int getHeightPixels()
      {
          return 12;
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public boolean func_70112_a(double p_70112_1_)
+     public boolean isInRangeToRenderDist(double distance)
      {
 -        double d0 = 16.0;
--        d0 *= 64.0 * func_184183_bd();
+-        d0 *= 64.0 * getRenderDistanceWeight();
 +        double d0 = 16.0D;
-+        d0 = d0 * 64.0D * func_184183_bd();
-         return p_70112_1_ < d0 * d0;
++        d0 = d0 * 64.0D * getRenderDistanceWeight();
+         return distance < d0 * d0;
      }
  
 -    @Override
-     public void func_110128_b(@Nullable Entity p_110128_1_)
+     public void onBroken(@Nullable Entity brokenEntity)
      {
-         this.func_184185_a(SoundEvents.field_187623_cM, 1.0F, 1.0F);
-         this.func_146065_b(p_110128_1_, true);
+         this.playSound(SoundEvents.ENTITY_ITEMFRAME_BREAK, 1.0F, 1.0F);
+         this.dropItemOrSelf(brokenEntity, true);
      }
  
 -    @Override
-     public void func_184523_o()
+     public void playPlaceSound()
      {
-         this.func_184185_a(SoundEvents.field_187626_cN, 1.0F, 1.0F);
+         this.playSound(SoundEvents.ENTITY_ITEMFRAME_PLACE, 1.0F, 1.0F);
 @@ -148,19 +140,20 @@
      {
-         if (!p_110131_1_.func_190926_b())
+         if (!stack.isEmpty())
          {
--            if (p_110131_1_.func_77973_b() == Items.field_151098_aY)
-+            if (p_110131_1_.func_77973_b() instanceof net.minecraft.item.ItemMap)
+-            if (stack.getItem() == Items.FILLED_MAP)
++            if (stack.getItem() instanceof net.minecraft.item.ItemMap)
              {
-                 MapData mapdata = ((ItemMap)p_110131_1_.func_77973_b()).func_77873_a(p_110131_1_, this.field_70170_p);
-                 mapdata.field_76203_h.remove("frame-" + this.func_145782_y());
+                 MapData mapdata = ((ItemMap)stack.getItem()).getMapData(stack, this.world);
+                 mapdata.mapDecorations.remove("frame-" + this.getEntityId());
              }
  
--            p_110131_1_.func_82842_a(null);
-+            p_110131_1_.func_82842_a((EntityItemFrame)null);
-+            this.func_82334_a(ItemStack.field_190927_a); //Forge: Fix MC-124833 Pistons duplicating Items.
+-            stack.setItemFrame(null);
++            stack.setItemFrame((EntityItemFrame)null);
++            this.setDisplayedItem(ItemStack.EMPTY); //Forge: Fix MC-124833 Pistons duplicating Items.
          }
      }
  
-     public ItemStack func_82335_i()
+     public ItemStack getDisplayedItem()
      {
--        return this.func_184212_Q().func_187225_a(field_184525_c);
-+        return (ItemStack)this.func_184212_Q().func_187225_a(field_184525_c);
+-        return this.getDataManager().get(ITEM);
++        return (ItemStack)this.getDataManager().get(ITEM);
      }
  
-     public void func_82334_a(ItemStack p_82334_1_)
+     public void setDisplayedItem(ItemStack stack)
 @@ -191,7 +184,6 @@
          }
      }
  
 -    @Override
-     public void func_184206_a(DataParameter<?> p_184206_1_)
+     public void notifyDataManagerChange(DataParameter<?> key)
      {
-         if (p_184206_1_.equals(field_184525_c))
+         if (key.equals(ITEM))
 @@ -207,7 +199,7 @@
  
-     public int func_82333_j()
+     public int getRotation()
      {
--        return this.func_184212_Q().func_187225_a(field_184526_d);
-+        return ((Integer)this.func_184212_Q().func_187225_a(field_184526_d)).intValue();
+-        return this.getDataManager().get(ROTATION);
++        return ((Integer)this.getDataManager().get(ROTATION)).intValue();
      }
  
-     public void func_82336_g(int p_82336_1_)
+     public void setItemRotation(int rotationIn)
 @@ -217,7 +209,7 @@
  
-     private void func_174865_a(int p_174865_1_, boolean p_174865_2_)
+     private void setRotation(int rotationIn, boolean p_174865_2_)
      {
--        this.func_184212_Q().func_187227_b(field_184526_d, p_174865_1_ % 8);
-+        this.func_184212_Q().func_187227_b(field_184526_d, Integer.valueOf(p_174865_1_ % 8));
+-        this.getDataManager().set(ROTATION, rotationIn % 8);
++        this.getDataManager().set(ROTATION, Integer.valueOf(rotationIn % 8));
  
-         if (p_174865_2_ && this.field_174861_a != null)
+         if (p_174865_2_ && this.hangingPosition != null)
          {
 @@ -227,10 +219,9 @@
  
-     public static void func_189738_a(DataFixer p_189738_0_)
+     public static void registerFixesItemFrame(DataFixer fixer)
      {
--        p_189738_0_.func_188258_a(FixTypes.ENTITY, new ItemStackData(EntityItemFrame.class, "Item"));
-+        p_189738_0_.func_188258_a(FixTypes.ENTITY, new ItemStackData(EntityItemFrame.class, new String[] {"Item"}));
+-        fixer.registerWalker(FixTypes.ENTITY, new ItemStackData(EntityItemFrame.class, "Item"));
++        fixer.registerWalker(FixTypes.ENTITY, new ItemStackData(EntityItemFrame.class, new String[] {"Item"}));
      }
  
 -    @Override
-     public void func_70014_b(NBTTagCompound p_70014_1_)
+     public void writeEntityToNBT(NBTTagCompound compound)
      {
-         if (!this.func_82335_i().func_190926_b())
+         if (!this.getDisplayedItem().isEmpty())
 @@ -243,7 +234,6 @@
-         super.func_70014_b(p_70014_1_);
+         super.writeEntityToNBT(compound);
      }
  
 -    @Override
-     public void func_70037_a(NBTTagCompound p_70037_1_)
+     public void readEntityFromNBT(NBTTagCompound compound)
      {
-         NBTTagCompound nbttagcompound = p_70037_1_.func_74775_l("Item");
+         NBTTagCompound nbttagcompound = compound.getCompoundTag("Item");
 @@ -262,7 +252,6 @@
-         super.func_70037_a(p_70037_1_);
+         super.readEntityFromNBT(compound);
      }
  
 -    @Override
-     public boolean func_184230_a(EntityPlayer p_184230_1_, EnumHand p_184230_2_)
+     public boolean processInitialInteract(EntityPlayer player, EnumHand hand)
      {
-         ItemStack itemstack = p_184230_1_.func_184586_b(p_184230_2_);
+         ItemStack itemstack = player.getHeldItem(hand);

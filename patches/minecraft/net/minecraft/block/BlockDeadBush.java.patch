@@ -7,65 +7,65 @@
 -public class BlockDeadBush extends BlockBush
 +public class BlockDeadBush extends BlockBush implements net.minecraftforge.common.IShearable
  {
--    protected static final AxisAlignedBB field_185516_a = new AxisAlignedBB(0.099999994F, 0.0, 0.099999994F, 0.9F, 0.8F, 0.9F);
-+    protected static final AxisAlignedBB field_185516_a = new AxisAlignedBB(0.09999999403953552D, 0.0D, 0.09999999403953552D, 0.8999999761581421D, 0.800000011920929D, 0.8999999761581421D);
+-    protected static final AxisAlignedBB DEAD_BUSH_AABB = new AxisAlignedBB(0.099999994F, 0.0, 0.099999994F, 0.9F, 0.8F, 0.9F);
++    protected static final AxisAlignedBB DEAD_BUSH_AABB = new AxisAlignedBB(0.09999999403953552D, 0.0D, 0.09999999403953552D, 0.8999999761581421D, 0.800000011920929D, 0.8999999761581421D);
  
      protected BlockDeadBush()
      {
-         super(Material.field_151582_l);
+         super(Material.VINE);
      }
  
 -    @Override
-     public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
+     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
      {
-         return field_185516_a;
+         return DEAD_BUSH_AABB;
      }
  
 -    @Override
-     public MapColor func_180659_g(IBlockState p_180659_1_, IBlockAccess p_180659_2_, BlockPos p_180659_3_)
+     public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos)
      {
-         return MapColor.field_151663_o;
+         return MapColor.WOOD;
      }
  
 -    @Override
-     protected boolean func_185514_i(IBlockState p_185514_1_)
+     protected boolean canSustainBush(IBlockState state)
      {
--        return p_185514_1_.func_177230_c() == Blocks.field_150354_m
--               || p_185514_1_.func_177230_c() == Blocks.field_150405_ch
--               || p_185514_1_.func_177230_c() == Blocks.field_150406_ce
--               || p_185514_1_.func_177230_c() == Blocks.field_150346_d;
-+        return p_185514_1_.func_177230_c() == Blocks.field_150354_m || p_185514_1_.func_177230_c() == Blocks.field_150405_ch || p_185514_1_.func_177230_c() == Blocks.field_150406_ce || p_185514_1_.func_177230_c() == Blocks.field_150346_d;
+-        return state.getBlock() == Blocks.SAND
+-               || state.getBlock() == Blocks.HARDENED_CLAY
+-               || state.getBlock() == Blocks.STAINED_HARDENED_CLAY
+-               || state.getBlock() == Blocks.DIRT;
++        return state.getBlock() == Blocks.SAND || state.getBlock() == Blocks.HARDENED_CLAY || state.getBlock() == Blocks.STAINED_HARDENED_CLAY || state.getBlock() == Blocks.DIRT;
      }
  
 -    @Override
-     public boolean func_176200_f(IBlockAccess p_176200_1_, BlockPos p_176200_2_)
+     public boolean isReplaceable(IBlockAccess worldIn, BlockPos pos)
      {
          return true;
      }
  
 -    @Override
-     public int func_149745_a(Random p_149745_1_)
+     public int quantityDropped(Random random)
      {
-         return p_149745_1_.nextInt(3);
+         return random.nextInt(3);
      }
  
 -    @Override
-     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
+     public Item getItemDropped(IBlockState state, Random rand, int fortune)
      {
-         return Items.field_151055_y;
+         return Items.STICK;
      }
  
 -    @Override
--    public void func_180657_a(
--        World p_180657_1_, EntityPlayer p_180657_2_, BlockPos p_180657_3_, IBlockState p_180657_4_, @Nullable TileEntity p_180657_5_, ItemStack p_180657_6_
+-    public void harvestBlock(
+-        World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack
 -    )
-+    public void func_180657_a(World p_180657_1_, EntityPlayer p_180657_2_, BlockPos p_180657_3_, IBlockState p_180657_4_, @Nullable TileEntity p_180657_5_, ItemStack p_180657_6_)
++    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack)
      {
-         if (!p_180657_1_.field_72995_K && p_180657_6_.func_77973_b() == Items.field_151097_aZ)
+         if (!worldIn.isRemote && stack.getItem() == Items.SHEARS)
          {
 @@ -79,5 +67,12 @@
          {
-             super.func_180657_a(p_180657_1_, p_180657_2_, p_180657_3_, p_180657_4_, p_180657_5_, p_180657_6_);
+             super.harvestBlock(worldIn, player, pos, state, te, stack);
          }
 +    }
 +
@@ -73,6 +73,6 @@
 +    @Override
 +    public java.util.List<ItemStack> onSheared(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune)
 +    {
-+        return java.util.Arrays.asList(new ItemStack(Blocks.field_150330_I));
++        return java.util.Arrays.asList(new ItemStack(Blocks.DEADBUSH));
      }
  }

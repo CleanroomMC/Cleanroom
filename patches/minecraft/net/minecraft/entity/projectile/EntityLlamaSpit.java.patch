@@ -2,44 +2,44 @@
 +++ after/net/minecraft/entity/projectile/EntityLlamaSpit.java
 @@ -32,27 +32,19 @@
      {
-         super(p_i47273_1_);
-         this.field_190539_a = p_i47273_2_;
--        this.func_70107_b(
--            p_i47273_2_.field_70165_t
--            - (double)(p_i47273_2_.field_70130_N + 1.0F) * 0.5 * (double)MathHelper.func_76126_a(p_i47273_2_.field_70761_aq * (float)(Math.PI / 180.0)),
--            p_i47273_2_.field_70163_u + (double)p_i47273_2_.func_70047_e() - 0.1F,
--            p_i47273_2_.field_70161_v
--            + (double)(p_i47273_2_.field_70130_N + 1.0F) * 0.5 * (double)MathHelper.func_76134_b(p_i47273_2_.field_70761_aq * (float)(Math.PI / 180.0))
+         super(worldIn);
+         this.owner = p_i47273_2_;
+-        this.setPosition(
+-            p_i47273_2_.posX
+-            - (double)(p_i47273_2_.width + 1.0F) * 0.5 * (double)MathHelper.sin(p_i47273_2_.renderYawOffset * (float)(Math.PI / 180.0)),
+-            p_i47273_2_.posY + (double)p_i47273_2_.getEyeHeight() - 0.1F,
+-            p_i47273_2_.posZ
+-            + (double)(p_i47273_2_.width + 1.0F) * 0.5 * (double)MathHelper.cos(p_i47273_2_.renderYawOffset * (float)(Math.PI / 180.0))
 -        );
-+        this.func_70107_b(p_i47273_2_.field_70165_t - (double)(p_i47273_2_.field_70130_N + 1.0F) * 0.5D * (double)MathHelper.func_76126_a(p_i47273_2_.field_70761_aq * 0.017453292F), p_i47273_2_.field_70163_u + (double)p_i47273_2_.func_70047_e() - 0.10000000149011612D, p_i47273_2_.field_70161_v + (double)(p_i47273_2_.field_70130_N + 1.0F) * 0.5D * (double)MathHelper.func_76134_b(p_i47273_2_.field_70761_aq * 0.017453292F));
-         this.func_70105_a(0.25F, 0.25F);
++        this.setPosition(p_i47273_2_.posX - (double)(p_i47273_2_.width + 1.0F) * 0.5D * (double)MathHelper.sin(p_i47273_2_.renderYawOffset * 0.017453292F), p_i47273_2_.posY + (double)p_i47273_2_.getEyeHeight() - 0.10000000149011612D, p_i47273_2_.posZ + (double)(p_i47273_2_.width + 1.0F) * 0.5D * (double)MathHelper.cos(p_i47273_2_.renderYawOffset * 0.017453292F));
+         this.setSize(0.25F, 0.25F);
      }
  
      @SideOnly(Side.CLIENT)
 -    public EntityLlamaSpit(
--        World p_i47274_1_, double p_i47274_2_, double p_i47274_4_, double p_i47274_6_, double p_i47274_8_, double p_i47274_10_, double p_i47274_12_
+-        World worldIn, double x, double y, double z, double p_i47274_8_, double p_i47274_10_, double p_i47274_12_
 -    )
-+    public EntityLlamaSpit(World p_i47274_1_, double p_i47274_2_, double p_i47274_4_, double p_i47274_6_, double p_i47274_8_, double p_i47274_10_, double p_i47274_12_)
++    public EntityLlamaSpit(World worldIn, double x, double y, double z, double p_i47274_8_, double p_i47274_10_, double p_i47274_12_)
      {
-         super(p_i47274_1_);
-         this.func_70107_b(p_i47274_2_, p_i47274_4_, p_i47274_6_);
+         super(worldIn);
+         this.setPosition(x, y, z);
  
 -        for (int i = 0; i < 7; i++)
 +        for (int i = 0; i < 7; ++i)
          {
 -            double d0 = 0.4 + 0.1 * (double)i;
 +            double d0 = 0.4D + 0.1D * (double)i;
-             p_i47274_1_.func_175688_a(EnumParticleTypes.SPIT, p_i47274_2_, p_i47274_4_, p_i47274_6_, p_i47274_8_ * d0, p_i47274_10_, p_i47274_12_ * d0);
+             worldIn.spawnParticle(EnumParticleTypes.SPIT, x, y, z, p_i47274_8_ * d0, p_i47274_10_, p_i47274_12_ * d0);
          }
  
 @@ -61,7 +53,6 @@
-         this.field_70179_y = p_i47274_12_;
+         this.motionZ = p_i47274_12_;
      }
  
 -    @Override
-     public void func_70071_h_()
+     public void onUpdate()
      {
-         super.func_70071_h_();
+         super.onUpdate();
 @@ -89,21 +80,20 @@
              raytraceresult = new RayTraceResult(entity);
          }
@@ -47,86 +47,86 @@
 -        if (raytraceresult != null)
 +        if (raytraceresult != null && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult))
          {
-             this.func_190536_a(raytraceresult);
+             this.onHit(raytraceresult);
          }
  
--        this.field_70165_t = this.field_70165_t + this.field_70159_w;
--        this.field_70163_u = this.field_70163_u + this.field_70181_x;
--        this.field_70161_v = this.field_70161_v + this.field_70179_y;
-+        this.field_70165_t += this.field_70159_w;
-+        this.field_70163_u += this.field_70181_x;
-+        this.field_70161_v += this.field_70179_y;
-         float f = MathHelper.func_76133_a(this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y);
--        this.field_70177_z = (float)(MathHelper.func_181159_b(this.field_70159_w, this.field_70179_y) * 180.0F / (float)Math.PI);
--        this.field_70125_A = (float)(MathHelper.func_181159_b(this.field_70181_x, (double)f) * 180.0F / (float)Math.PI);
-+        this.field_70177_z = (float)(MathHelper.func_181159_b(this.field_70159_w, this.field_70179_y) * (180D / Math.PI));
+-        this.posX = this.posX + this.motionX;
+-        this.posY = this.posY + this.motionY;
+-        this.posZ = this.posZ + this.motionZ;
++        this.posX += this.motionX;
++        this.posY += this.motionY;
++        this.posZ += this.motionZ;
+         float f = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+-        this.rotationYaw = (float)(MathHelper.atan2(this.motionX, this.motionZ) * 180.0F / (float)Math.PI);
+-        this.rotationPitch = (float)(MathHelper.atan2(this.motionY, (double)f) * 180.0F / (float)Math.PI);
++        this.rotationYaw = (float)(MathHelper.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
  
--        while (this.field_70125_A - this.field_70127_C < -180.0F)
-+        for (this.field_70125_A = (float)(MathHelper.func_181159_b(this.field_70181_x, (double)f) * (180D / Math.PI)); this.field_70125_A - this.field_70127_C < -180.0F; this.field_70127_C -= 360.0F)
+-        while (this.rotationPitch - this.prevRotationPitch < -180.0F)
++        for (this.rotationPitch = (float)(MathHelper.atan2(this.motionY, (double)f) * (180D / Math.PI)); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F)
          {
--            this.field_70127_C -= 360.0F;
+-            this.prevRotationPitch -= 360.0F;
 +            ;
          }
  
-         while (this.field_70125_A - this.field_70127_C >= 180.0F)
+         while (this.rotationPitch - this.prevRotationPitch >= 180.0F)
 @@ -136,13 +126,13 @@
          }
          else
          {
--            this.field_70159_w *= 0.99F;
--            this.field_70181_x *= 0.99F;
--            this.field_70179_y *= 0.99F;
-+            this.field_70159_w *= 0.9900000095367432D;
-+            this.field_70181_x *= 0.9900000095367432D;
-+            this.field_70179_y *= 0.9900000095367432D;
+-            this.motionX *= 0.99F;
+-            this.motionY *= 0.99F;
+-            this.motionZ *= 0.99F;
++            this.motionX *= 0.9900000095367432D;
++            this.motionY *= 0.9900000095367432D;
++            this.motionZ *= 0.9900000095367432D;
  
-             if (!this.func_189652_ae())
+             if (!this.hasNoGravity())
              {
--                this.field_70181_x -= 0.06F;
-+                this.field_70181_x -= 0.05999999865889549D;
+-                this.motionY -= 0.06F;
++                this.motionY -= 0.05999999865889549D;
              }
  
-             this.func_70107_b(this.field_70165_t, this.field_70163_u, this.field_70161_v);
+             this.setPosition(this.posX, this.posY, this.posZ);
 @@ -150,7 +140,6 @@
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public void func_70016_h(double p_70016_1_, double p_70016_3_, double p_70016_5_)
+     public void setVelocity(double x, double y, double z)
      {
-         this.field_70159_w = p_70016_1_;
+         this.motionX = x;
 @@ -160,8 +149,8 @@
-         if (this.field_70127_C == 0.0F && this.field_70126_B == 0.0F)
+         if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F)
          {
-             float f = MathHelper.func_76133_a(p_70016_1_ * p_70016_1_ + p_70016_5_ * p_70016_5_);
--            this.field_70125_A = (float)(MathHelper.func_181159_b(p_70016_3_, (double)f) * 180.0F / (float)Math.PI);
--            this.field_70177_z = (float)(MathHelper.func_181159_b(p_70016_1_, p_70016_5_) * 180.0F / (float)Math.PI);
-+            this.field_70125_A = (float)(MathHelper.func_181159_b(p_70016_3_, (double)f) * (180D / Math.PI));
-+            this.field_70177_z = (float)(MathHelper.func_181159_b(p_70016_1_, p_70016_5_) * (180D / Math.PI));
-             this.field_70127_C = this.field_70125_A;
-             this.field_70126_B = this.field_70177_z;
-             this.func_70012_b(this.field_70165_t, this.field_70163_u, this.field_70161_v, this.field_70177_z, this.field_70125_A);
+             float f = MathHelper.sqrt(x * x + z * z);
+-            this.rotationPitch = (float)(MathHelper.atan2(y, (double)f) * 180.0F / (float)Math.PI);
+-            this.rotationYaw = (float)(MathHelper.atan2(x, z) * 180.0F / (float)Math.PI);
++            this.rotationPitch = (float)(MathHelper.atan2(y, (double)f) * (180D / Math.PI));
++            this.rotationYaw = (float)(MathHelper.atan2(x, z) * (180D / Math.PI));
+             this.prevRotationPitch = this.rotationPitch;
+             this.prevRotationYaw = this.rotationYaw;
+             this.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
 @@ -172,22 +161,21 @@
-     private Entity func_190538_a(Vec3d p_190538_1_, Vec3d p_190538_2_)
+     private Entity getHitEntity(Vec3d p_190538_1_, Vec3d p_190538_2_)
      {
          Entity entity = null;
--        List<Entity> list = this.field_70170_p
--                            .func_72839_b(this, this.func_174813_aQ().func_72321_a(this.field_70159_w, this.field_70181_x, this.field_70179_y).func_186662_g(1.0));
+-        List<Entity> list = this.world
+-                            .getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().expand(this.motionX, this.motionY, this.motionZ).grow(1.0));
 -        double d0 = 0.0;
-+        List<Entity> list = this.field_70170_p.func_72839_b(this, this.func_174813_aQ().func_72321_a(this.field_70159_w, this.field_70181_x, this.field_70179_y).func_186662_g(1.0D));
++        List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().expand(this.motionX, this.motionY, this.motionZ).grow(1.0D));
 +        double d0 = 0.0D;
  
          for (Entity entity1 : list)
          {
-             if (entity1 != this.field_190539_a)
+             if (entity1 != this.owner)
              {
--                AxisAlignedBB axisalignedbb = entity1.func_174813_aQ().func_186662_g(0.3F);
-+                AxisAlignedBB axisalignedbb = entity1.func_174813_aQ().func_186662_g(0.30000001192092896D);
-                 RayTraceResult raytraceresult = axisalignedbb.func_72327_a(p_190538_1_, p_190538_2_);
+-                AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().grow(0.3F);
++                AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().grow(0.30000001192092896D);
+                 RayTraceResult raytraceresult = axisalignedbb.calculateIntercept(p_190538_1_, p_190538_2_);
  
                  if (raytraceresult != null)
                  {
-                     double d1 = p_190538_1_.func_72436_e(raytraceresult.field_72307_f);
+                     double d1 = p_190538_1_.squareDistanceTo(raytraceresult.hitVec);
  
 -                    if (d1 < d0 || d0 == 0.0)
 +                    if (d1 < d0 || d0 == 0.0D)
@@ -138,65 +138,65 @@
      }
  
 -    @Override
-     public void func_70186_c(double p_70186_1_, double p_70186_3_, double p_70186_5_, float p_70186_7_, float p_70186_8_)
+     public void shoot(double x, double y, double z, float velocity, float inaccuracy)
      {
-         float f = MathHelper.func_76133_a(p_70186_1_ * p_70186_1_ + p_70186_3_ * p_70186_3_ + p_70186_5_ * p_70186_5_);
--        p_70186_1_ /= (double)f;
--        p_70186_3_ /= (double)f;
--        p_70186_5_ /= (double)f;
--        p_70186_1_ += this.field_70146_Z.nextGaussian() * 0.0075F * (double)p_70186_8_;
--        p_70186_3_ += this.field_70146_Z.nextGaussian() * 0.0075F * (double)p_70186_8_;
--        p_70186_5_ += this.field_70146_Z.nextGaussian() * 0.0075F * (double)p_70186_8_;
--        p_70186_1_ *= (double)p_70186_7_;
--        p_70186_3_ *= (double)p_70186_7_;
--        p_70186_5_ *= (double)p_70186_7_;
-+        p_70186_1_ = p_70186_1_ / (double)f;
-+        p_70186_3_ = p_70186_3_ / (double)f;
-+        p_70186_5_ = p_70186_5_ / (double)f;
-+        p_70186_1_ = p_70186_1_ + this.field_70146_Z.nextGaussian() * 0.007499999832361937D * (double)p_70186_8_;
-+        p_70186_3_ = p_70186_3_ + this.field_70146_Z.nextGaussian() * 0.007499999832361937D * (double)p_70186_8_;
-+        p_70186_5_ = p_70186_5_ + this.field_70146_Z.nextGaussian() * 0.007499999832361937D * (double)p_70186_8_;
-+        p_70186_1_ = p_70186_1_ * (double)p_70186_7_;
-+        p_70186_3_ = p_70186_3_ * (double)p_70186_7_;
-+        p_70186_5_ = p_70186_5_ * (double)p_70186_7_;
-         this.field_70159_w = p_70186_1_;
-         this.field_70181_x = p_70186_3_;
-         this.field_70179_y = p_70186_5_;
-         float f1 = MathHelper.func_76133_a(p_70186_1_ * p_70186_1_ + p_70186_5_ * p_70186_5_);
--        this.field_70177_z = (float)(MathHelper.func_181159_b(p_70186_1_, p_70186_5_) * 180.0F / (float)Math.PI);
--        this.field_70125_A = (float)(MathHelper.func_181159_b(p_70186_3_, (double)f1) * 180.0F / (float)Math.PI);
-+        this.field_70177_z = (float)(MathHelper.func_181159_b(p_70186_1_, p_70186_5_) * (180D / Math.PI));
-+        this.field_70125_A = (float)(MathHelper.func_181159_b(p_70186_3_, (double)f1) * (180D / Math.PI));
-         this.field_70126_B = this.field_70177_z;
-         this.field_70127_C = this.field_70125_A;
+         float f = MathHelper.sqrt(x * x + y * y + z * z);
+-        x /= (double)f;
+-        y /= (double)f;
+-        z /= (double)f;
+-        x += this.rand.nextGaussian() * 0.0075F * (double)inaccuracy;
+-        y += this.rand.nextGaussian() * 0.0075F * (double)inaccuracy;
+-        z += this.rand.nextGaussian() * 0.0075F * (double)inaccuracy;
+-        x *= (double)velocity;
+-        y *= (double)velocity;
+-        z *= (double)velocity;
++        x = x / (double)f;
++        y = y / (double)f;
++        z = z / (double)f;
++        x = x + this.rand.nextGaussian() * 0.007499999832361937D * (double)inaccuracy;
++        y = y + this.rand.nextGaussian() * 0.007499999832361937D * (double)inaccuracy;
++        z = z + this.rand.nextGaussian() * 0.007499999832361937D * (double)inaccuracy;
++        x = x * (double)velocity;
++        y = y * (double)velocity;
++        z = z * (double)velocity;
+         this.motionX = x;
+         this.motionY = y;
+         this.motionZ = z;
+         float f1 = MathHelper.sqrt(x * x + z * z);
+-        this.rotationYaw = (float)(MathHelper.atan2(x, z) * 180.0F / (float)Math.PI);
+-        this.rotationPitch = (float)(MathHelper.atan2(y, (double)f1) * 180.0F / (float)Math.PI);
++        this.rotationYaw = (float)(MathHelper.atan2(x, z) * (180D / Math.PI));
++        this.rotationPitch = (float)(MathHelper.atan2(y, (double)f1) * (180D / Math.PI));
+         this.prevRotationYaw = this.rotationYaw;
+         this.prevRotationPitch = this.rotationPitch;
      }
 @@ -235,12 +222,10 @@
          }
      }
  
 -    @Override
-     protected void func_70088_a()
+     protected void entityInit()
      {
      }
  
 -    @Override
-     protected void func_70037_a(NBTTagCompound p_70037_1_)
+     protected void readEntityFromNBT(NBTTagCompound compound)
      {
-         if (p_70037_1_.func_150297_b("Owner", 10))
+         if (compound.hasKey("Owner", 10))
 @@ -249,7 +234,6 @@
          }
      }
  
 -    @Override
-     protected void func_70014_b(NBTTagCompound p_70014_1_)
+     protected void writeEntityToNBT(NBTTagCompound compound)
      {
-         if (this.field_190539_a != null)
+         if (this.owner != null)
 @@ -267,7 +251,7 @@
          {
-             UUID uuid = this.field_190540_b.func_186857_a("OwnerUUID");
+             UUID uuid = this.ownerNbt.getUniqueId("OwnerUUID");
  
--            for (EntityLlama entityllama : this.field_70170_p.func_72872_a(EntityLlama.class, this.func_174813_aQ().func_186662_g(15.0)))
-+            for (EntityLlama entityllama : this.field_70170_p.func_72872_a(EntityLlama.class, this.func_174813_aQ().func_186662_g(15.0D)))
+-            for (EntityLlama entityllama : this.world.getEntitiesWithinAABB(EntityLlama.class, this.getEntityBoundingBox().grow(15.0)))
++            for (EntityLlama entityllama : this.world.getEntitiesWithinAABB(EntityLlama.class, this.getEntityBoundingBox().grow(15.0D)))
              {
-                 if (entityllama.func_110124_au().equals(uuid))
+                 if (entityllama.getUniqueID().equals(uuid))
                  {

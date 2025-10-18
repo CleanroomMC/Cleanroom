@@ -1,79 +1,79 @@
 --- before/net/minecraft/tileentity/TileEntityBrewingStand.java
 +++ after/net/minecraft/tileentity/TileEntityBrewingStand.java
 @@ -28,20 +28,18 @@
-     private static final int[] field_145941_a = new int[] {3};
-     private static final int[] field_184277_f = new int[] {0, 1, 2, 3};
-     private static final int[] field_145947_i = new int[] {0, 1, 2, 4};
--    private NonNullList<ItemStack> field_145945_j = NonNullList.func_191197_a(5, ItemStack.field_190927_a);
-+    private NonNullList<ItemStack> field_145945_j = NonNullList.<ItemStack>func_191197_a(5, ItemStack.field_190927_a);
-     private int field_145946_k;
-     private boolean[] field_145943_l;
-     private Item field_145944_m;
-     private String field_145942_n;
-     private int field_184278_m;
+     private static final int[] SLOTS_FOR_UP = new int[] {3};
+     private static final int[] SLOTS_FOR_DOWN = new int[] {0, 1, 2, 3};
+     private static final int[] OUTPUT_SLOTS = new int[] {0, 1, 2, 4};
+-    private NonNullList<ItemStack> brewingItemStacks = NonNullList.withSize(5, ItemStack.EMPTY);
++    private NonNullList<ItemStack> brewingItemStacks = NonNullList.<ItemStack>withSize(5, ItemStack.EMPTY);
+     private int brewTime;
+     private boolean[] filledSlots;
+     private Item ingredientID;
+     private String customName;
+     private int fuel;
  
 -    @Override
-     public String func_70005_c_()
+     public String getName()
      {
-         return this.func_145818_k_() ? this.field_145942_n : "container.brewing";
+         return this.hasCustomName() ? this.customName : "container.brewing";
      }
  
 -    @Override
-     public boolean func_145818_k_()
+     public boolean hasCustomName()
      {
-         return this.field_145942_n != null && !this.field_145942_n.isEmpty();
+         return this.customName != null && !this.customName.isEmpty();
 @@ -52,13 +50,11 @@
-         this.field_145942_n = p_145937_1_;
+         this.customName = name;
      }
  
 -    @Override
-     public int func_70302_i_()
+     public int getSizeInventory()
      {
-         return this.field_145945_j.size();
+         return this.brewingItemStacks.size();
      }
  
 -    @Override
-     public boolean func_191420_l()
+     public boolean isEmpty()
      {
-         for (ItemStack itemstack : this.field_145945_j)
+         for (ItemStack itemstack : this.brewingItemStacks)
 @@ -72,7 +68,6 @@
          return true;
      }
  
 -    @Override
-     public void func_73660_a()
+     public void update()
      {
-         ItemStack itemstack = this.field_145945_j.get(4);
+         ItemStack itemstack = this.brewingItemStacks.get(4);
 @@ -90,7 +85,7 @@
  
          if (flag1)
          {
--            this.field_145946_k--;
-+            --this.field_145946_k;
-             boolean flag2 = this.field_145946_k == 0;
+-            this.brewTime--;
++            --this.brewTime;
+             boolean flag2 = this.brewTime == 0;
  
              if (flag2 && flag)
 @@ -111,7 +106,7 @@
          }
-         else if (flag && this.field_184278_m > 0)
+         else if (flag && this.fuel > 0)
          {
--            this.field_184278_m--;
-+            --this.field_184278_m;
-             this.field_145946_k = 400;
-             this.field_145944_m = itemstack1.func_77973_b();
-             this.func_70296_d();
+-            this.fuel--;
++            --this.fuel;
+             this.brewTime = 400;
+             this.ingredientID = itemstack1.getItem();
+             this.markDirty();
 @@ -131,9 +126,9 @@
                      return;
                  }
  
--                for (int i = 0; i < BlockBrewingStand.field_176451_a.length; i++)
-+                for (int i = 0; i < BlockBrewingStand.field_176451_a.length; ++i)
+-                for (int i = 0; i < BlockBrewingStand.HAS_BOTTLE.length; i++)
++                for (int i = 0; i < BlockBrewingStand.HAS_BOTTLE.length; ++i)
                  {
--                    iblockstate = iblockstate.func_177226_a(BlockBrewingStand.field_176451_a[i], aboolean[i]);
-+                    iblockstate = iblockstate.func_177226_a(BlockBrewingStand.field_176451_a[i], Boolean.valueOf(aboolean[i]));
+-                    iblockstate = iblockstate.withProperty(BlockBrewingStand.HAS_BOTTLE[i], aboolean[i]);
++                    iblockstate = iblockstate.withProperty(BlockBrewingStand.HAS_BOTTLE[i], Boolean.valueOf(aboolean[i]));
                  }
  
-                 this.field_145850_b.func_180501_a(this.field_174879_c, iblockstate, 2);
+                 this.world.setBlockState(this.pos, iblockstate, 2);
 @@ -145,9 +140,9 @@
      {
          boolean[] aboolean = new boolean[3];
@@ -81,19 +81,19 @@
 -        for (int i = 0; i < 3; i++)
 +        for (int i = 0; i < 3; ++i)
          {
--            if (!this.field_145945_j.get(i).func_190926_b())
-+            if (!((ItemStack)this.field_145945_j.get(i)).func_190926_b())
+-            if (!this.brewingItemStacks.get(i).isEmpty())
++            if (!((ItemStack)this.brewingItemStacks.get(i)).isEmpty())
              {
                  aboolean[i] = true;
              }
 @@ -158,6 +153,7 @@
  
-     private boolean func_145934_k()
+     private boolean canBrew()
      {
-+        if (1 == 1) return net.minecraftforge.common.brewing.BrewingRecipeRegistry.canBrew(field_145945_j, field_145945_j.get(3), field_145947_i); // divert to VanillaBrewingRegistry
-         ItemStack itemstack = this.field_145945_j.get(3);
++        if (1 == 1) return net.minecraftforge.common.brewing.BrewingRecipeRegistry.canBrew(brewingItemStacks, brewingItemStacks.get(3), OUTPUT_SLOTS); // divert to VanillaBrewingRegistry
+         ItemStack itemstack = this.brewingItemStacks.get(3);
  
-         if (itemstack.func_190926_b())
+         if (itemstack.isEmpty())
 @@ -170,7 +166,7 @@
          }
          else
@@ -101,189 +101,189 @@
 -            for (int i = 0; i < 3; i++)
 +            for (int i = 0; i < 3; ++i)
              {
-                 ItemStack itemstack1 = this.field_145945_j.get(i);
+                 ItemStack itemstack1 = this.brewingItemStacks.get(i);
  
 @@ -186,19 +182,17 @@
  
-     private void func_145940_l()
+     private void brewPotions()
      {
-+        if (net.minecraftforge.event.ForgeEventFactory.onPotionAttemptBrew(field_145945_j)) return;
-         ItemStack itemstack = this.field_145945_j.get(3);
++        if (net.minecraftforge.event.ForgeEventFactory.onPotionAttemptBrew(brewingItemStacks)) return;
+         ItemStack itemstack = this.brewingItemStacks.get(3);
  
 -        for (int i = 0; i < 3; i++)
 -        {
--            this.field_145945_j.set(i, PotionHelper.func_185212_d(itemstack, this.field_145945_j.get(i)));
+-            this.brewingItemStacks.set(i, PotionHelper.doReaction(itemstack, this.brewingItemStacks.get(i)));
 -        }
-+        net.minecraftforge.common.brewing.BrewingRecipeRegistry.brewPotions(field_145945_j, field_145945_j.get(3), field_145947_i);
++        net.minecraftforge.common.brewing.BrewingRecipeRegistry.brewPotions(brewingItemStacks, brewingItemStacks.get(3), OUTPUT_SLOTS);
  
-         itemstack.func_190918_g(1);
-         BlockPos blockpos = this.func_174877_v();
+         itemstack.shrink(1);
+         BlockPos blockpos = this.getPos();
  
--        if (itemstack.func_77973_b().func_77634_r())
-+        if (itemstack.func_77973_b().hasContainerItem(itemstack))
+-        if (itemstack.getItem().hasContainerItem())
++        if (itemstack.getItem().hasContainerItem(itemstack))
          {
--            ItemStack itemstack1 = new ItemStack(itemstack.func_77973_b().func_77668_q());
-+            ItemStack itemstack1 = itemstack.func_77973_b().getContainerItem(itemstack);
+-            ItemStack itemstack1 = new ItemStack(itemstack.getItem().getContainerItem());
++            ItemStack itemstack1 = itemstack.getItem().getContainerItem(itemstack);
  
-             if (itemstack.func_190926_b())
+             if (itemstack.isEmpty())
              {
 @@ -206,26 +200,24 @@
              }
              else
              {
--                InventoryHelper.func_180173_a(
--                    this.field_145850_b, (double)blockpos.func_177958_n(), (double)blockpos.func_177956_o(), (double)blockpos.func_177952_p(), itemstack1
+-                InventoryHelper.spawnItemStack(
+-                    this.world, (double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ(), itemstack1
 -                );
-+                InventoryHelper.func_180173_a(this.field_145850_b, (double)blockpos.func_177958_n(), (double)blockpos.func_177956_o(), (double)blockpos.func_177952_p(), itemstack1);
++                InventoryHelper.spawnItemStack(this.world, (double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ(), itemstack1);
              }
          }
  
-         this.field_145945_j.set(3, itemstack);
-         this.field_145850_b.func_175718_b(1035, blockpos, 0);
-+        net.minecraftforge.event.ForgeEventFactory.onPotionBrewed(field_145945_j);
+         this.brewingItemStacks.set(3, itemstack);
+         this.world.playEvent(1035, blockpos, 0);
++        net.minecraftforge.event.ForgeEventFactory.onPotionBrewed(brewingItemStacks);
      }
  
-     public static void func_189675_a(DataFixer p_189675_0_)
+     public static void registerFixesBrewingStand(DataFixer fixer)
      {
--        p_189675_0_.func_188258_a(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityBrewingStand.class, "Items"));
-+        p_189675_0_.func_188258_a(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityBrewingStand.class, new String[] {"Items"}));
+-        fixer.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityBrewingStand.class, "Items"));
++        fixer.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityBrewingStand.class, new String[] {"Items"}));
      }
  
 -    @Override
-     public void func_145839_a(NBTTagCompound p_145839_1_)
+     public void readFromNBT(NBTTagCompound compound)
      {
-         super.func_145839_a(p_145839_1_);
--        this.field_145945_j = NonNullList.func_191197_a(this.func_70302_i_(), ItemStack.field_190927_a);
-+        this.field_145945_j = NonNullList.<ItemStack>func_191197_a(this.func_70302_i_(), ItemStack.field_190927_a);
-         ItemStackHelper.func_191283_b(p_145839_1_, this.field_145945_j);
-         this.field_145946_k = p_145839_1_.func_74765_d("BrewTime");
+         super.readFromNBT(compound);
+-        this.brewingItemStacks = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
++        this.brewingItemStacks = NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
+         ItemStackHelper.loadAllItems(compound, this.brewingItemStacks);
+         this.brewTime = compound.getShort("BrewTime");
  
 @@ -237,7 +229,6 @@
-         this.field_184278_m = p_145839_1_.func_74771_c("Fuel");
+         this.fuel = compound.getByte("Fuel");
      }
  
 -    @Override
-     public NBTTagCompound func_189515_b(NBTTagCompound p_189515_1_)
+     public NBTTagCompound writeToNBT(NBTTagCompound compound)
      {
-         super.func_189515_b(p_189515_1_);
+         super.writeToNBT(compound);
 @@ -253,25 +244,21 @@
-         return p_189515_1_;
+         return compound;
      }
  
 -    @Override
-     public ItemStack func_70301_a(int p_70301_1_)
+     public ItemStack getStackInSlot(int index)
      {
--        return p_70301_1_ >= 0 && p_70301_1_ < this.field_145945_j.size() ? this.field_145945_j.get(p_70301_1_) : ItemStack.field_190927_a;
-+        return p_70301_1_ >= 0 && p_70301_1_ < this.field_145945_j.size() ? (ItemStack)this.field_145945_j.get(p_70301_1_) : ItemStack.field_190927_a;
+-        return index >= 0 && index < this.brewingItemStacks.size() ? this.brewingItemStacks.get(index) : ItemStack.EMPTY;
++        return index >= 0 && index < this.brewingItemStacks.size() ? (ItemStack)this.brewingItemStacks.get(index) : ItemStack.EMPTY;
      }
  
 -    @Override
-     public ItemStack func_70298_a(int p_70298_1_, int p_70298_2_)
+     public ItemStack decrStackSize(int index, int count)
      {
-         return ItemStackHelper.func_188382_a(this.field_145945_j, p_70298_1_, p_70298_2_);
+         return ItemStackHelper.getAndSplit(this.brewingItemStacks, index, count);
      }
  
 -    @Override
-     public ItemStack func_70304_b(int p_70304_1_)
+     public ItemStack removeStackFromSlot(int index)
      {
-         return ItemStackHelper.func_188383_a(this.field_145945_j, p_70304_1_);
+         return ItemStackHelper.getAndRemove(this.brewingItemStacks, index);
      }
  
 -    @Override
-     public void func_70299_a(int p_70299_1_, ItemStack p_70299_2_)
+     public void setInventorySlotContents(int index, ItemStack stack)
      {
-         if (p_70299_1_ >= 0 && p_70299_1_ < this.field_145945_j.size())
+         if (index >= 0 && index < this.brewingItemStacks.size())
 @@ -280,55 +267,52 @@
          }
      }
  
 -    @Override
-     public int func_70297_j_()
+     public int getInventoryStackLimit()
      {
          return 64;
      }
  
 -    @Override
-     public boolean func_70300_a(EntityPlayer p_70300_1_)
+     public boolean isUsableByPlayer(EntityPlayer player)
      {
--        return this.field_145850_b.func_175625_s(this.field_174879_c) != this
+-        return this.world.getTileEntity(this.pos) != this
 -               ? false
 -               : !(
--                   p_70300_1_.func_70092_e(
--                       (double)this.field_174879_c.func_177958_n() + 0.5,
--                       (double)this.field_174879_c.func_177956_o() + 0.5,
--                       (double)this.field_174879_c.func_177952_p() + 0.5
+-                   player.getDistanceSq(
+-                       (double)this.pos.getX() + 0.5,
+-                       (double)this.pos.getY() + 0.5,
+-                       (double)this.pos.getZ() + 0.5
 -                   )
 -                   > 64.0
 -               );
-+        if (this.field_145850_b.func_175625_s(this.field_174879_c) != this)
++        if (this.world.getTileEntity(this.pos) != this)
 +        {
 +            return false;
 +        }
 +        else
 +        {
-+            return p_70300_1_.func_70092_e((double)this.field_174879_c.func_177958_n() + 0.5D, (double)this.field_174879_c.func_177956_o() + 0.5D, (double)this.field_174879_c.func_177952_p() + 0.5D) <= 64.0D;
++            return player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
 +        }
      }
  
 -    @Override
-     public void func_174889_b(EntityPlayer p_174889_1_)
+     public void openInventory(EntityPlayer player)
      {
      }
  
 -    @Override
-     public void func_174886_c(EntityPlayer p_174886_1_)
+     public void closeInventory(EntityPlayer player)
      {
      }
  
 -    @Override
-     public boolean func_94041_b(int p_94041_1_, ItemStack p_94041_2_)
+     public boolean isItemValidForSlot(int index, ItemStack stack)
      {
-         if (p_94041_1_ == 3)
+         if (index == 3)
          {
--            return PotionHelper.func_185205_a(p_94041_2_);
-+            return net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidIngredient(p_94041_2_);
+-            return PotionHelper.isReagent(stack);
++            return net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidIngredient(stack);
          }
          else
          {
-             Item item = p_94041_2_.func_77973_b();
--            return p_94041_1_ == 4
--                   ? item == Items.field_151065_br
--                   : (item == Items.field_151068_bn || item == Items.field_185155_bH || item == Items.field_185156_bI || item == Items.field_151069_bo)
--                   && this.func_70301_a(p_94041_1_).func_190926_b();
+             Item item = stack.getItem();
+-            return index == 4
+-                   ? item == Items.BLAZE_POWDER
+-                   : (item == Items.POTIONITEM || item == Items.SPLASH_POTION || item == Items.LINGERING_POTION || item == Items.GLASS_BOTTLE)
+-                   && this.getStackInSlot(index).isEmpty();
 +
-+            if (p_94041_1_ == 4)
++            if (index == 4)
 +            {
-+                return item == Items.field_151065_br;
++                return item == Items.BLAZE_POWDER;
 +            }
 +            else
 +            {
-+                return net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidInput(p_94041_2_) && this.func_70301_a(p_94041_1_).func_190926_b();
++                return net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidInput(stack) && this.getStackInSlot(index).isEmpty();
 +            }
          }
      }
  
 -    @Override
-     public int[] func_180463_a(EnumFacing p_180463_1_)
+     public int[] getSlotsForFace(EnumFacing side)
      {
-         if (p_180463_1_ == EnumFacing.UP)
+         if (side == EnumFacing.UP)
 @@ -341,31 +325,33 @@
          }
      }
  
 -    @Override
-     public boolean func_180462_a(int p_180462_1_, ItemStack p_180462_2_, EnumFacing p_180462_3_)
+     public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction)
      {
-         return this.func_94041_b(p_180462_1_, p_180462_2_);
+         return this.isItemValidForSlot(index, itemStackIn);
      }
  
 -    @Override
-     public boolean func_180461_b(int p_180461_1_, ItemStack p_180461_2_, EnumFacing p_180461_3_)
+     public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction)
      {
--        return p_180461_1_ == 3 ? p_180461_2_.func_77973_b() == Items.field_151069_bo : true;
-+        if (p_180461_1_ == 3)
+-        return index == 3 ? stack.getItem() == Items.GLASS_BOTTLE : true;
++        if (index == 3)
 +        {
-+            return p_180461_2_.func_77973_b() == Items.field_151069_bo;
++            return stack.getItem() == Items.GLASS_BOTTLE;
 +        }
 +        else
 +        {
@@ -292,29 +292,29 @@
      }
  
 -    @Override
-     public String func_174875_k()
+     public String getGuiID()
      {
          return "minecraft:brewing_stand";
      }
  
 -    @Override
-     public Container func_174876_a(InventoryPlayer p_174876_1_, EntityPlayer p_174876_2_)
+     public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn)
      {
-         return new ContainerBrewingStand(p_174876_1_, this);
+         return new ContainerBrewingStand(playerInventory, this);
      }
  
 -    @Override
-     public int func_174887_a_(int p_174887_1_)
+     public int getField(int id)
      {
-         switch (p_174887_1_)
+         switch (id)
 @@ -379,7 +365,6 @@
          }
      }
  
 -    @Override
-     public void func_174885_b(int p_174885_1_, int p_174885_2_)
+     public void setField(int id, int value)
      {
-         switch (p_174885_1_)
+         switch (id)
 @@ -392,13 +377,32 @@
          }
      }
@@ -340,12 +340,12 @@
 +        return super.getCapability(capability, facing);
 +    }
 +
-     public int func_174890_g()
+     public int getFieldCount()
      {
          return 2;
      }
  
 -    @Override
-     public void func_174888_l()
+     public void clear()
      {
-         this.field_145945_j.clear();
+         this.brewingItemStacks.clear();

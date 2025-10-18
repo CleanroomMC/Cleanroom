@@ -1,45 +1,45 @@
 --- before/net/minecraft/client/renderer/entity/layers/LayerHeldItem.java
 +++ after/net/minecraft/client/renderer/entity/layers/LayerHeldItem.java
 @@ -21,17 +21,7 @@
-         this.field_177206_a = p_i46115_1_;
+         this.livingEntityRenderer = livingEntityRendererIn;
      }
  
 -    @Override
--    public void func_177141_a(
--        EntityLivingBase p_177141_1_,
--        float p_177141_2_,
--        float p_177141_3_,
--        float p_177141_4_,
--        float p_177141_5_,
--        float p_177141_6_,
--        float p_177141_7_,
--        float p_177141_8_
+-    public void doRenderLayer(
+-        EntityLivingBase entitylivingbaseIn,
+-        float limbSwing,
+-        float limbSwingAmount,
+-        float partialTicks,
+-        float ageInTicks,
+-        float netHeadYaw,
+-        float headPitch,
+-        float scale
 -    )
-+    public void func_177141_a(EntityLivingBase p_177141_1_, float p_177141_2_, float p_177141_3_, float p_177141_4_, float p_177141_5_, float p_177141_6_, float p_177141_7_, float p_177141_8_)
++    public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
      {
-         boolean flag = p_177141_1_.func_184591_cq() == EnumHandSide.RIGHT;
-         ItemStack itemstack = flag ? p_177141_1_.func_184592_cb() : p_177141_1_.func_184614_ca();
+         boolean flag = entitylivingbaseIn.getPrimaryHand() == EnumHandSide.RIGHT;
+         ItemStack itemstack = flag ? entitylivingbaseIn.getHeldItemOffhand() : entitylivingbaseIn.getHeldItemMainhand();
 @@ -59,13 +49,13 @@
-         if (!p_188358_2_.func_190926_b())
+         if (!p_188358_2_.isEmpty())
          {
-             GlStateManager.func_179094_E();
--            this.func_191361_a(p_188358_4_);
+             GlStateManager.pushMatrix();
+-            this.translateToHand(handSide);
  
-             if (p_188358_1_.func_70093_af())
+             if (p_188358_1_.isSneaking())
              {
-                 GlStateManager.func_179109_b(0.0F, 0.2F, 0.0F);
+                 GlStateManager.translate(0.0F, 0.2F, 0.0F);
              }
 -
 +            // Forge: moved this call down, fixes incorrect offset while sneaking.
-+            this.func_191361_a(p_188358_4_);
-             GlStateManager.func_179114_b(-90.0F, 1.0F, 0.0F, 0.0F);
-             GlStateManager.func_179114_b(180.0F, 0.0F, 1.0F, 0.0F);
-             boolean flag = p_188358_4_ == EnumHandSide.LEFT;
++            this.translateToHand(handSide);
+             GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
+             GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+             boolean flag = handSide == EnumHandSide.LEFT;
 @@ -80,7 +70,6 @@
-         ((ModelBiped)this.field_177206_a.func_177087_b()).func_187073_a(0.0625F, p_191361_1_);
+         ((ModelBiped)this.livingEntityRenderer.getMainModel()).postRenderArm(0.0625F, p_191361_1_);
      }
  
 -    @Override
-     public boolean func_177142_b()
+     public boolean shouldCombineTextures()
      {
          return false;

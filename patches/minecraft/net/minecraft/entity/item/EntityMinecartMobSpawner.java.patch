@@ -2,20 +2,20 @@
 +++ after/net/minecraft/entity/item/EntityMinecartMobSpawner.java
 @@ -21,21 +21,21 @@
  {
-     private final MobSpawnerBaseLogic field_98040_a = new MobSpawnerBaseLogic()
+     private final MobSpawnerBaseLogic mobSpawnerLogic = new MobSpawnerBaseLogic()
      {
 -        @Override
-         public void func_98267_a(int p_98267_1_)
+         public void broadcastEvent(int id)
          {
-             EntityMinecartMobSpawner.this.field_70170_p.func_72960_a(EntityMinecartMobSpawner.this, (byte)p_98267_1_);
+             EntityMinecartMobSpawner.this.world.setEntityState(EntityMinecartMobSpawner.this, (byte)id);
          }
 -        @Override
-         public World func_98271_a()
+         public World getSpawnerWorld()
          {
-             return EntityMinecartMobSpawner.this.field_70170_p;
+             return EntityMinecartMobSpawner.this.world;
          }
 -        @Override
-         public BlockPos func_177221_b()
+         public BlockPos getSpawnerPosition()
          {
              return new BlockPos(EntityMinecartMobSpawner.this);
          }
@@ -24,53 +24,53 @@
 +        }
      };
  
-     public EntityMinecartMobSpawner(World p_i46752_1_)
+     public EntityMinecartMobSpawner(World worldIn)
 @@ -53,7 +53,6 @@
-         func_189669_a(p_189672_0_, EntityMinecartMobSpawner.class);
-         p_189672_0_.func_188258_a(FixTypes.ENTITY, new IDataWalker()
+         registerFixesMinecart(fixer, EntityMinecartMobSpawner.class);
+         fixer.registerWalker(FixTypes.ENTITY, new IDataWalker()
          {
 -            @Override
-             public NBTTagCompound func_188266_a(IDataFixer p_188266_1_, NBTTagCompound p_188266_2_, int p_188266_3_)
+             public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
              {
-                 String s = p_188266_2_.func_74779_i("id");
+                 String s = compound.getString("id");
 @@ -70,26 +69,22 @@
          });
      }
  
 -    @Override
-     public EntityMinecart.Type func_184264_v()
+     public EntityMinecart.Type getType()
      {
          return EntityMinecart.Type.SPAWNER;
      }
  
 -    @Override
-     public IBlockState func_180457_u()
+     public IBlockState getDefaultDisplayTile()
      {
-         return Blocks.field_150474_ac.func_176223_P();
+         return Blocks.MOB_SPAWNER.getDefaultState();
      }
  
 -    @Override
-     protected void func_70037_a(NBTTagCompound p_70037_1_)
+     protected void readEntityFromNBT(NBTTagCompound compound)
      {
-         super.func_70037_a(p_70037_1_);
-         this.field_98040_a.func_98270_a(p_70037_1_);
+         super.readEntityFromNBT(compound);
+         this.mobSpawnerLogic.readFromNBT(compound);
      }
  
 -    @Override
-     protected void func_70014_b(NBTTagCompound p_70014_1_)
+     protected void writeEntityToNBT(NBTTagCompound compound)
      {
-         super.func_70014_b(p_70014_1_);
+         super.writeEntityToNBT(compound);
 @@ -97,13 +92,11 @@
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public void func_70103_a(byte p_70103_1_)
+     public void handleStatusUpdate(byte id)
      {
-         this.field_98040_a.func_98268_b(p_70103_1_);
+         this.mobSpawnerLogic.setDelayToMin(id);
      }
  
 -    @Override
-     public void func_70071_h_()
+     public void onUpdate()
      {
-         super.func_70071_h_();
+         super.onUpdate();

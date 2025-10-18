@@ -4,45 +4,45 @@
  
  public class EntityWitherSkull extends EntityFireball
  {
--    private static final DataParameter<Boolean> field_184565_e = EntityDataManager.func_187226_a(EntityWitherSkull.class, DataSerializers.field_187198_h);
-+    private static final DataParameter<Boolean> field_184565_e = EntityDataManager.<Boolean>func_187226_a(EntityWitherSkull.class, DataSerializers.field_187198_h);
+-    private static final DataParameter<Boolean> INVULNERABLE = EntityDataManager.createKey(EntityWitherSkull.class, DataSerializers.BOOLEAN);
++    private static final DataParameter<Boolean> INVULNERABLE = EntityDataManager.<Boolean>createKey(EntityWitherSkull.class, DataSerializers.BOOLEAN);
  
-     public EntityWitherSkull(World p_i1793_1_)
+     public EntityWitherSkull(World worldIn)
      {
 @@ -40,34 +40,29 @@
-         EntityFireball.func_189743_a(p_189746_0_, "WitherSkull");
+         EntityFireball.registerFixesFireball(fixer, "WitherSkull");
      }
  
 -    @Override
-     protected float func_82341_c()
+     protected float getMotionFactor()
      {
-         return this.func_82342_d() ? 0.73F : super.func_82341_c();
+         return this.isInvulnerable() ? 0.73F : super.getMotionFactor();
      }
  
      @SideOnly(Side.CLIENT)
 -    public EntityWitherSkull(
--        World p_i1795_1_, double p_i1795_2_, double p_i1795_4_, double p_i1795_6_, double p_i1795_8_, double p_i1795_10_, double p_i1795_12_
+-        World worldIn, double x, double y, double z, double accelX, double accelY, double accelZ
 -    )
-+    public EntityWitherSkull(World p_i1795_1_, double p_i1795_2_, double p_i1795_4_, double p_i1795_6_, double p_i1795_8_, double p_i1795_10_, double p_i1795_12_)
++    public EntityWitherSkull(World worldIn, double x, double y, double z, double accelX, double accelY, double accelZ)
      {
-         super(p_i1795_1_, p_i1795_2_, p_i1795_4_, p_i1795_6_, p_i1795_8_, p_i1795_10_, p_i1795_12_);
-         this.func_70105_a(0.3125F, 0.3125F);
+         super(worldIn, x, y, z, accelX, accelY, accelZ);
+         this.setSize(0.3125F, 0.3125F);
      }
  
 -    @Override
-     public boolean func_70027_ad()
+     public boolean isBurning()
      {
          return false;
      }
  
 -    @Override
-     public float func_180428_a(Explosion p_180428_1_, World p_180428_2_, BlockPos p_180428_3_, IBlockState p_180428_4_)
+     public float getExplosionResistance(Explosion explosionIn, World worldIn, BlockPos pos, IBlockState blockStateIn)
      {
-         float f = super.func_180428_a(p_180428_1_, p_180428_2_, p_180428_3_, p_180428_4_);
-         Block block = p_180428_4_.func_177230_c();
+         float f = super.getExplosionResistance(explosionIn, worldIn, pos, blockStateIn);
+         Block block = blockStateIn.getBlock();
  
--        if (this.func_82342_d() && EntityWither.func_181033_a(block))
-+        if (this.func_82342_d() && block.canEntityDestroy(p_180428_4_, p_180428_2_, p_180428_3_, this) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(this.field_70235_a, p_180428_3_, p_180428_4_))
+-        if (this.isInvulnerable() && EntityWither.canDestroyBlock(block))
++        if (this.isInvulnerable() && block.canEntityDestroy(blockStateIn, worldIn, pos, this) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(this.shootingEntity, pos, blockStateIn))
          {
              f = Math.min(0.8F, f);
          }
@@ -51,54 +51,54 @@
      }
  
 -    @Override
-     protected void func_70227_a(RayTraceResult p_70227_1_)
+     protected void onImpact(RayTraceResult result)
      {
-         if (!this.field_70170_p.field_72995_K)
+         if (!this.world.isRemote)
 @@ -121,43 +115,36 @@
                  }
              }
  
--            this.field_70170_p
--            .func_72885_a(
--                this, this.field_70165_t, this.field_70163_u, this.field_70161_v, 1.0F, false, this.field_70170_p.func_82736_K().func_82766_b("mobGriefing")
+-            this.world
+-            .newExplosion(
+-                this, this.posX, this.posY, this.posZ, 1.0F, false, this.world.getGameRules().getBoolean("mobGriefing")
 -            );
-+            this.field_70170_p.func_72885_a(this, this.field_70165_t, this.field_70163_u, this.field_70161_v, 1.0F, false, net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.field_70170_p, this.field_70235_a));
-             this.func_70106_y();
++            this.world.newExplosion(this, this.posX, this.posY, this.posZ, 1.0F, false, net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity));
+             this.setDead();
          }
      }
  
 -    @Override
-     public boolean func_70067_L()
+     public boolean canBeCollidedWith()
      {
          return false;
      }
  
 -    @Override
-     public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
+     public boolean attackEntityFrom(DamageSource source, float amount)
      {
          return false;
      }
  
 -    @Override
-     protected void func_70088_a()
+     protected void entityInit()
      {
--        this.field_70180_af.func_187214_a(field_184565_e, false);
-+        this.field_70180_af.func_187214_a(field_184565_e, Boolean.valueOf(false));
+-        this.dataManager.register(INVULNERABLE, false);
++        this.dataManager.register(INVULNERABLE, Boolean.valueOf(false));
      }
  
-     public boolean func_82342_d()
+     public boolean isInvulnerable()
      {
--        return this.field_70180_af.func_187225_a(field_184565_e);
-+        return ((Boolean)this.field_70180_af.func_187225_a(field_184565_e)).booleanValue();
+-        return this.dataManager.get(INVULNERABLE);
++        return ((Boolean)this.dataManager.get(INVULNERABLE)).booleanValue();
      }
  
-     public void func_82343_e(boolean p_82343_1_)
+     public void setInvulnerable(boolean invulnerable)
      {
--        this.field_70180_af.func_187227_b(field_184565_e, p_82343_1_);
-+        this.field_70180_af.func_187227_b(field_184565_e, Boolean.valueOf(p_82343_1_));
+-        this.dataManager.set(INVULNERABLE, invulnerable);
++        this.dataManager.set(INVULNERABLE, Boolean.valueOf(invulnerable));
      }
  
 -    @Override
-     protected boolean func_184564_k()
+     protected boolean isFireballFiery()
      {
          return false;

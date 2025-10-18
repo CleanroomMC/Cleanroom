@@ -2,30 +2,30 @@
 +++ after/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -53,7 +53,7 @@
  {
-     private static final Logger field_155771_h = LogManager.getLogger();
-     private static final Pattern field_189647_l = Pattern.compile("^[a-fA-F0-9]{40}$");
--    public final List<PendingCommand> field_71341_l = Collections.synchronizedList(Lists.newArrayList());
-+    public final List<PendingCommand> field_71341_l = Collections.<PendingCommand>synchronizedList(Lists.newArrayList());
-     private RConThreadQuery field_71342_m;
-     private final RConConsoleSource field_184115_n = new RConConsoleSource(this);
-     private RConThreadMain field_71339_n;
+     private static final Logger LOGGER = LogManager.getLogger();
+     private static final Pattern RESOURCE_PACK_SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
+-    public final List<PendingCommand> pendingCommandList = Collections.synchronizedList(Lists.newArrayList());
++    public final List<PendingCommand> pendingCommandList = Collections.<PendingCommand>synchronizedList(Lists.newArrayList());
+     private RConThreadQuery rconQueryThread;
+     private final RConConsoleSource rconConsoleSource = new RConConsoleSource(this);
+     private RConThreadMain rconThread;
 @@ -62,24 +62,19 @@
-     private boolean field_71338_p;
-     private GameType field_71337_q;
-     private boolean field_71335_s;
+     private boolean canSpawnStructures;
+     private GameType gameType;
+     private boolean guiIsEnabled;
 +    public static boolean allowPlayerLogins = false;
  
 -    public DedicatedServer(
--        File p_i47086_1_,
--        DataFixer p_i47086_2_,
--        YggdrasilAuthenticationService p_i47086_3_,
--        MinecraftSessionService p_i47086_4_,
--        GameProfileRepository p_i47086_5_,
--        PlayerProfileCache p_i47086_6_
+-        File anvilFileIn,
+-        DataFixer dataFixerIn,
+-        YggdrasilAuthenticationService authServiceIn,
+-        MinecraftSessionService sessionServiceIn,
+-        GameProfileRepository profileRepoIn,
+-        PlayerProfileCache profileCacheIn
 -    )
-+    public DedicatedServer(File p_i47086_1_, DataFixer p_i47086_2_, YggdrasilAuthenticationService p_i47086_3_, MinecraftSessionService p_i47086_4_, GameProfileRepository p_i47086_5_, PlayerProfileCache p_i47086_6_)
++    public DedicatedServer(File anvilFileIn, DataFixer dataFixerIn, YggdrasilAuthenticationService authServiceIn, MinecraftSessionService sessionServiceIn, GameProfileRepository profileRepoIn, PlayerProfileCache profileCacheIn)
      {
-         super(p_i47086_1_, Proxy.NO_PROXY, p_i47086_2_, p_i47086_3_, p_i47086_4_, p_i47086_5_, p_i47086_6_);
+         super(anvilFileIn, Proxy.NO_PROXY, dataFixerIn, authServiceIn, sessionServiceIn, profileRepoIn, profileCacheIn);
 -        new Thread("Server Infinisleeper")
 +        if (!org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS) return;
 +        Thread thread = new Thread("Server Infinisleeper")
@@ -54,7 +54,7 @@
      }
  
 -    @Override
-     public boolean func_71197_b() throws IOException
+     public boolean init() throws IOException
      {
          Thread thread = new Thread("Server console handler")
          {
@@ -66,62 +66,62 @@
                  String s4;
  
 @@ -129,6 +124,8 @@
-             field_155771_h.warn("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
+             LOGGER.warn("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
          }
  
 +        net.minecraftforge.fml.common.FMLCommonHandler.instance().onServerStart(this);
 +
-         field_155771_h.info("Loading properties");
-         this.field_71340_o = new PropertyManager(new File("server.properties"));
-         this.field_154332_n = new ServerEula(new File("eula.txt"));
+         LOGGER.info("Loading properties");
+         this.settings = new PropertyManager(new File("server.properties"));
+         this.eula = new ServerEula(new File("eula.txt"));
 @@ -163,17 +160,17 @@
  
-             if (this.field_71340_o.func_73669_a("difficulty", 1) < 0)
+             if (this.settings.getIntProperty("difficulty", 1) < 0)
              {
--                this.field_71340_o.func_73667_a("difficulty", 0);
-+                this.field_71340_o.func_73667_a("difficulty", Integer.valueOf(0));
+-                this.settings.setProperty("difficulty", 0);
++                this.settings.setProperty("difficulty", Integer.valueOf(0));
              }
-             else if (this.field_71340_o.func_73669_a("difficulty", 1) > 3)
+             else if (this.settings.getIntProperty("difficulty", 1) > 3)
              {
--                this.field_71340_o.func_73667_a("difficulty", 3);
-+                this.field_71340_o.func_73667_a("difficulty", Integer.valueOf(3));
+-                this.settings.setProperty("difficulty", 3);
++                this.settings.setProperty("difficulty", Integer.valueOf(3));
              }
  
-             this.field_71338_p = this.field_71340_o.func_73670_a("generate-structures", true);
-             int i = this.field_71340_o.func_73669_a("gamemode", GameType.SURVIVAL.func_77148_a());
-             this.field_71337_q = WorldSettings.func_77161_a(i);
--            field_155771_h.info("Default game type: {}", this.field_71337_q);
-+            field_155771_h.info("Default game type: {}", (Object)this.field_71337_q);
+             this.canSpawnStructures = this.settings.getBooleanProperty("generate-structures", true);
+             int i = this.settings.getIntProperty("gamemode", GameType.SURVIVAL.getID());
+             this.gameType = WorldSettings.getGameTypeById(i);
+-            LOGGER.info("Default game type: {}", this.gameType);
++            LOGGER.info("Default game type: {}", (Object)this.gameType);
              InetAddress inetaddress = null;
  
-             if (!this.func_71211_k().isEmpty())
+             if (!this.getServerHostname().isEmpty())
 @@ -188,7 +185,7 @@
  
-             field_155771_h.info("Generating keypair");
-             this.func_71253_a(CryptManager.func_75891_b());
--            field_155771_h.info("Starting Minecraft server on {}:{}", this.func_71211_k().isEmpty() ? "*" : this.func_71211_k(), this.func_71215_F());
-+            field_155771_h.info("Starting Minecraft server on {}:{}", this.func_71211_k().isEmpty() ? "*" : this.func_71211_k(), Integer.valueOf(this.func_71215_F()));
+             LOGGER.info("Generating keypair");
+             this.setKeyPair(CryptManager.generateKeyPair());
+-            LOGGER.info("Starting Minecraft server on {}:{}", this.getServerHostname().isEmpty() ? "*" : this.getServerHostname(), this.getServerPort());
++            LOGGER.info("Starting Minecraft server on {}:{}", this.getServerHostname().isEmpty() ? "*" : this.getServerHostname(), Integer.valueOf(this.getServerPort()));
  
              try
              {
 @@ -197,7 +194,7 @@
              catch (IOException ioexception)
              {
-                 field_155771_h.warn("**** FAILED TO BIND TO PORT!");
--                field_155771_h.warn("The exception was: {}", ioexception.toString());
-+                field_155771_h.warn("The exception was: {}", (Object)ioexception.toString());
-                 field_155771_h.warn("Perhaps a server is already running on that port?");
+                 LOGGER.warn("**** FAILED TO BIND TO PORT!");
+-                LOGGER.warn("The exception was: {}", ioexception.toString());
++                LOGGER.warn("The exception was: {}", (Object)ioexception.toString());
+                 LOGGER.warn("Perhaps a server is already running on that port?");
                  return false;
              }
 @@ -206,9 +203,7 @@
              {
-                 field_155771_h.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
-                 field_155771_h.warn("The server will make no attempt to authenticate usernames. Beware.");
--                field_155771_h.warn(
+                 LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
+                 LOGGER.warn("The server will make no attempt to authenticate usernames. Beware.");
+-                LOGGER.warn(
 -                    "While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose."
 -                );
-+                field_155771_h.warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
-                 field_155771_h.warn("To change this, set \"online-mode\" to \"true\" in the server.properties file.");
++                LOGGER.warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
+                 LOGGER.warn("To change this, set \"online-mode\" to \"true\" in the server.properties file.");
              }
  
 @@ -223,6 +218,7 @@
@@ -129,13 +129,13 @@
              else
              {
 +                net.minecraftforge.fml.common.FMLCommonHandler.instance().onServerStarted();
-                 this.func_184105_a(new DedicatedPlayerList(this));
+                 this.setPlayerList(new DedicatedPlayerList(this));
                  long j = System.nanoTime();
  
 @@ -234,7 +230,7 @@
-                 String s = this.field_71340_o.func_73671_a("level-seed", "");
-                 String s1 = this.field_71340_o.func_73671_a("level-type", "DEFAULT");
-                 String s2 = this.field_71340_o.func_73671_a("generator-settings", "");
+                 String s = this.settings.getStringProperty("level-seed", "");
+                 String s1 = this.settings.getStringProperty("level-type", "DEFAULT");
+                 String s2 = this.settings.getStringProperty("generator-settings", "");
 -                long k = new Random().nextLong();
 +                long k = (new Random()).nextLong();
  
@@ -151,38 +151,38 @@
                          k = (long)s.hashCode();
                      }
 @@ -267,21 +263,21 @@
-                 this.func_71191_d(this.field_71340_o.func_73669_a("max-build-height", 256));
-                 this.func_71191_d((this.func_71207_Z() + 8) / 16 * 16);
-                 this.func_71191_d(MathHelper.func_76125_a(this.func_71207_Z(), 64, 256));
--                this.field_71340_o.func_73667_a("max-build-height", this.func_71207_Z());
-+                this.field_71340_o.func_73667_a("max-build-height", Integer.valueOf(this.func_71207_Z()));
-                 TileEntitySkull.func_184293_a(this.func_152358_ax());
-                 TileEntitySkull.func_184294_a(this.func_147130_as());
-                 PlayerProfileCache.func_187320_a(this.func_71266_T());
--                field_155771_h.info("Preparing level \"{}\"", this.func_71270_I());
+                 this.setBuildLimit(this.settings.getIntProperty("max-build-height", 256));
+                 this.setBuildLimit((this.getBuildLimit() + 8) / 16 * 16);
+                 this.setBuildLimit(MathHelper.clamp(this.getBuildLimit(), 64, 256));
+-                this.settings.setProperty("max-build-height", this.getBuildLimit());
++                this.settings.setProperty("max-build-height", Integer.valueOf(this.getBuildLimit()));
+                 TileEntitySkull.setProfileCache(this.getPlayerProfileCache());
+                 TileEntitySkull.setSessionService(this.getMinecraftSessionService());
+                 PlayerProfileCache.setOnlineMode(this.isServerInOnlineMode());
+-                LOGGER.info("Preparing level \"{}\"", this.getFolderName());
 +                if (!net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerAboutToStart(this)) return false;
-+                field_155771_h.info("Preparing level \"{}\"", (Object)this.func_71270_I());
-                 this.func_71247_a(this.func_71270_I(), this.func_71270_I(), k, worldtype, s2);
++                LOGGER.info("Preparing level \"{}\"", (Object)this.getFolderName());
+                 this.loadAllWorlds(this.getFolderName(), this.getFolderName(), k, worldtype, s2);
                  long i1 = System.nanoTime() - j;
 -                String s3 = String.format("%.3fs", (double)i1 / 1.0E9);
--                field_155771_h.info("Done ({})! For help, type \"help\" or \"?\"", s3);
+-                LOGGER.info("Done ({})! For help, type \"help\" or \"?\"", s3);
 +                String s3 = String.format("%.3fs", (double)i1 / 1.0E9D);
-+                field_155771_h.info("Done ({})! For help, type \"help\" or \"?\"", (Object)s3);
-+                this.field_175591_ab = func_130071_aq();
++                LOGGER.info("Done ({})! For help, type \"help\" or \"?\"", (Object)s3);
++                this.currentTime = getCurrentTimeMillis();
  
-                 if (this.field_71340_o.func_187239_a("announce-player-achievements"))
+                 if (this.settings.hasProperty("announce-player-achievements"))
                  {
--                    this.field_71305_c[0]
--                    .func_82736_K()
--                    .func_82764_b("announceAdvancements", this.field_71340_o.func_73670_a("announce-player-achievements", true) ? "true" : "false");
-+                    this.field_71305_c[0].func_82736_K().func_82764_b("announceAdvancements", this.field_71340_o.func_73670_a("announce-player-achievements", true) ? "true" : "false");
-                     this.field_71340_o.func_187238_b("announce-player-achievements");
-                     this.field_71340_o.func_73668_b();
+-                    this.worlds[0]
+-                    .getGameRules()
+-                    .setOrCreateGameRule("announceAdvancements", this.settings.getBooleanProperty("announce-player-achievements", true) ? "true" : "false");
++                    this.worlds[0].getGameRules().setOrCreateGameRule("announceAdvancements", this.settings.getBooleanProperty("announce-player-achievements", true) ? "true" : "false");
+                     this.settings.removeProperty("announce-player-achievements");
+                     this.settings.saveProperties();
                  }
 @@ -309,7 +305,8 @@
                  }
  
-                 Items.field_190931_a.func_150895_a(CreativeTabs.field_78027_g, NonNullList.func_191196_a());
+                 Items.AIR.getSubItems(CreativeTabs.SEARCH, NonNullList.create());
 -                return true;
 +                // <3 you Grum for this, saves us ~30 patch files! --^
 +                return net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerStarting(this);
@@ -191,195 +191,195 @@
      }
 @@ -339,46 +336,38 @@
  
-         if (!this.field_71340_o.func_73671_a("resource-pack", "").isEmpty() && s.isEmpty())
+         if (!this.settings.getStringProperty("resource-pack", "").isEmpty() && s.isEmpty())
          {
--            field_155771_h.warn(
+-            LOGGER.warn(
 -                "You specified a resource pack without providing a sha1 hash. Pack will be updated on the client only if you change the name of the pack."
 -            );
-+            field_155771_h.warn("You specified a resource pack without providing a sha1 hash. Pack will be updated on the client only if you change the name of the pack.");
++            LOGGER.warn("You specified a resource pack without providing a sha1 hash. Pack will be updated on the client only if you change the name of the pack.");
          }
  
          return s;
      }
  
 -    @Override
-     public void func_71235_a(GameType p_71235_1_)
+     public void setGameType(GameType gameMode)
      {
-         super.func_71235_a(p_71235_1_);
-         this.field_71337_q = p_71235_1_;
+         super.setGameType(gameMode);
+         this.gameType = gameMode;
      }
  
 -    @Override
-     public boolean func_71225_e()
+     public boolean canStructuresSpawn()
      {
-         return this.field_71338_p;
+         return this.canSpawnStructures;
      }
  
 -    @Override
-     public GameType func_71265_f()
+     public GameType getGameType()
      {
-         return this.field_71337_q;
+         return this.gameType;
      }
  
 -    @Override
-     public EnumDifficulty func_147135_j()
+     public EnumDifficulty getDifficulty()
      {
-         return EnumDifficulty.func_151523_a(this.field_71340_o.func_73669_a("difficulty", EnumDifficulty.NORMAL.func_151525_a()));
+         return EnumDifficulty.byId(this.settings.getIntProperty("difficulty", EnumDifficulty.NORMAL.getId()));
      }
  
 -    @Override
-     public boolean func_71199_h()
+     public boolean isHardcore()
      {
-         return this.field_71340_o.func_73670_a("hardcore", false);
+         return this.settings.getBooleanProperty("hardcore", false);
      }
  
 -    @Override
-     public CrashReport func_71230_b(CrashReport p_71230_1_)
+     public CrashReport addServerInfoToCrashReport(CrashReport report)
      {
-         p_71230_1_ = super.func_71230_b(p_71230_1_);
+         report = super.addServerInfoToCrashReport(report);
 @@ -400,40 +389,34 @@
-         return p_71230_1_;
+         return report;
      }
  
 -    @Override
-     public void func_71240_o()
+     public void systemExitNow()
      {
          System.exit(0);
      }
  
 -    @Override
-     public void func_71190_q()
+     public void updateTimeLightAndEntities()
      {
-         super.func_71190_q();
-         this.func_71333_ah();
+         super.updateTimeLightAndEntities();
+         this.executePendingCommands();
      }
  
 -    @Override
-     public boolean func_71255_r()
+     public boolean getAllowNether()
      {
-         return this.field_71340_o.func_73670_a("allow-nether", true);
+         return this.settings.getBooleanProperty("allow-nether", true);
      }
  
 -    @Override
-     public boolean func_71193_K()
+     public boolean allowSpawnMonsters()
      {
-         return this.field_71340_o.func_73670_a("spawn-monsters", true);
+         return this.settings.getBooleanProperty("spawn-monsters", true);
      }
  
 -    @Override
-     public void func_70000_a(Snooper p_70000_1_)
+     public void addServerStatsToSnooper(Snooper playerSnooper)
      {
--        p_70000_1_.func_152768_a("whitelist_enabled", this.func_184103_al().func_72383_n());
--        p_70000_1_.func_152768_a("whitelist_count", this.func_184103_al().func_152598_l().length);
-+        p_70000_1_.func_152768_a("whitelist_enabled", Boolean.valueOf(this.func_184103_al().func_72383_n()));
-+        p_70000_1_.func_152768_a("whitelist_count", Integer.valueOf(this.func_184103_al().func_152598_l().length));
-         super.func_70000_a(p_70000_1_);
+-        playerSnooper.addClientStat("whitelist_enabled", this.getPlayerList().isWhiteListEnabled());
+-        playerSnooper.addClientStat("whitelist_count", this.getPlayerList().getWhitelistedPlayerNames().length);
++        playerSnooper.addClientStat("whitelist_enabled", Boolean.valueOf(this.getPlayerList().isWhiteListEnabled()));
++        playerSnooper.addClientStat("whitelist_count", Integer.valueOf(this.getPlayerList().getWhitelistedPlayerNames().length));
+         super.addServerStatsToSnooper(playerSnooper);
      }
  
 -    @Override
-     public boolean func_70002_Q()
+     public boolean isSnooperEnabled()
      {
-         return this.field_71340_o.func_73670_a("snooper-enabled", true);
+         return this.settings.getBooleanProperty("snooper-enabled", true);
 @@ -453,13 +436,11 @@
          }
      }
  
 -    @Override
-     public boolean func_71262_S()
+     public boolean isDedicatedServer()
      {
          return true;
      }
  
 -    @Override
-     public boolean func_181035_ah()
+     public boolean shouldUseNativeTransport()
      {
-         return this.field_71340_o.func_73670_a("use-native-transport", true);
+         return this.settings.getBooleanProperty("use-native-transport", true);
 @@ -470,13 +451,11 @@
-         return (DedicatedPlayerList)super.func_184103_al();
+         return (DedicatedPlayerList)super.getPlayerList();
      }
  
 -    @Override
-     public int func_71327_a(String p_71327_1_, int p_71327_2_)
+     public int getIntProperty(String key, int defaultValue)
      {
-         return this.field_71340_o.func_73669_a(p_71327_1_, p_71327_2_);
+         return this.settings.getIntProperty(key, defaultValue);
      }
  
 -    @Override
-     public String func_71330_a(String p_71330_1_, String p_71330_2_)
+     public String getStringProperty(String key, String defaultValue)
      {
-         return this.field_71340_o.func_73671_a(p_71330_1_, p_71330_2_);
+         return this.settings.getStringProperty(key, defaultValue);
 @@ -487,38 +466,32 @@
-         return this.field_71340_o.func_73670_a(p_71332_1_, p_71332_2_);
+         return this.settings.getBooleanProperty(key, defaultValue);
      }
  
 -    @Override
-     public void func_71328_a(String p_71328_1_, Object p_71328_2_)
+     public void setProperty(String key, Object value)
      {
-         this.field_71340_o.func_73667_a(p_71328_1_, p_71328_2_);
+         this.settings.setProperty(key, value);
      }
  
 -    @Override
-     public void func_71326_a()
+     public void saveProperties()
      {
-         this.field_71340_o.func_73668_b();
+         this.settings.saveProperties();
      }
  
 -    @Override
-     public String func_71329_c()
+     public String getSettingsFilename()
      {
-         File file1 = this.field_71340_o.func_73665_c();
+         File file1 = this.settings.getPropertiesFile();
          return file1 != null ? file1.getAbsolutePath() : "No settings file";
      }
  
 -    @Override
-     public String func_71277_t()
+     public String getHostname()
      {
-         return this.func_71211_k();
+         return this.getServerHostname();
      }
  
 -    @Override
-     public int func_71234_u()
+     public int getPort()
      {
-         return this.func_71215_F();
+         return this.getServerPort();
      }
  
 -    @Override
-     public String func_71274_v()
+     public String getMotd()
      {
-         return this.func_71273_Y();
+         return this.getMOTD();
 @@ -530,34 +503,29 @@
-         this.field_71335_s = true;
+         this.guiIsEnabled = true;
      }
  
 -    @Override
-     public boolean func_71279_ae()
+     public boolean getGuiEnabled()
      {
-         return this.field_71335_s;
+         return this.guiIsEnabled;
      }
  
 -    @Override
-     public String func_71206_a(GameType p_71206_1_, boolean p_71206_2_)
+     public String shareToLAN(GameType type, boolean allowCheats)
      {
          return "";
      }
  
 -    @Override
-     public boolean func_82356_Z()
+     public boolean isCommandBlockEnabled()
      {
-         return this.field_71340_o.func_73670_a("enable-command-block", false);
+         return this.settings.getBooleanProperty("enable-command-block", false);
      }
  
 -    @Override
-     public int func_82357_ak()
+     public int getSpawnProtectionSize()
      {
-         return this.field_71340_o.func_73669_a("spawn-protection", super.func_82357_ak());
+         return this.settings.getIntProperty("spawn-protection", super.getSpawnProtectionSize());
      }
  
 -    @Override
-     public boolean func_175579_a(World p_175579_1_, BlockPos p_175579_2_, EntityPlayer p_175579_3_)
+     public boolean isBlockProtected(World worldIn, BlockPos pos, EntityPlayer playerIn)
      {
--        if (p_175579_1_.field_73011_w.func_186058_p().func_186068_a() != 0)
-+        if (p_175579_1_.field_73011_w.getDimension() != 0)
+-        if (worldIn.provider.getDimensionType().getId() != 0)
++        if (worldIn.provider.getDimension() != 0)
          {
              return false;
          }
@@ -388,50 +388,50 @@
      }
  
 -    @Override
-     public int func_110455_j()
+     public int getOpPermissionLevel()
      {
-         return this.field_71340_o.func_73669_a("op-permission-level", 4);
+         return this.settings.getIntProperty("op-permission-level", 4);
      }
  
 -    @Override
-     public void func_143006_e(int p_143006_1_)
+     public void setPlayerIdleTimeout(int idleTimeout)
      {
-         super.func_143006_e(p_143006_1_);
--        this.field_71340_o.func_73667_a("player-idle-timeout", p_143006_1_);
-+        this.field_71340_o.func_73667_a("player-idle-timeout", Integer.valueOf(p_143006_1_));
-         this.func_71326_a();
+         super.setPlayerIdleTimeout(idleTimeout);
+-        this.settings.setProperty("player-idle-timeout", idleTimeout);
++        this.settings.setProperty("player-idle-timeout", Integer.valueOf(idleTimeout));
+         this.saveProperties();
      }
  
 -    @Override
-     public boolean func_181034_q()
+     public boolean shouldBroadcastRconToOps()
      {
-         return this.field_71340_o.func_73670_a("broadcast-rcon-to-ops", true);
+         return this.settings.getBooleanProperty("broadcast-rcon-to-ops", true);
      }
  
 -    @Override
-     public boolean func_183002_r()
+     public boolean shouldBroadcastConsoleToOps()
      {
-         return this.field_71340_o.func_73670_a("broadcast-console-to-ops", true);
+         return this.settings.getBooleanProperty("broadcast-console-to-ops", true);
      }
  
 -    @Override
-     public int func_175580_aG()
+     public int getMaxWorldSize()
      {
-         int i = this.field_71340_o.func_73669_a("max-world-size", super.func_175580_aG());
+         int i = this.settings.getIntProperty("max-world-size", super.getMaxWorldSize());
 @@ -626,17 +589,19 @@
          return i;
      }
  
 -    @Override
-     public int func_175577_aI()
+     public int getNetworkCompressionThreshold()
      {
-         return this.field_71340_o.func_73669_a("network-compression-threshold", super.func_175577_aI());
+         return this.settings.getIntProperty("network-compression-threshold", super.getNetworkCompressionThreshold());
      }
  
 +    //Forge: Enable formated text for colors in console.
-+    @Override public void func_145747_a(net.minecraft.util.text.ITextComponent message) { field_155771_h.info(message.func_150254_d()); }
++    @Override public void sendMessage(net.minecraft.util.text.ITextComponent message) { LOGGER.info(message.getFormattedText()); }
 +
-     protected boolean func_152368_aE() throws IOException
+     protected boolean convertFiles() throws IOException
      {
          boolean flag = false;
  
@@ -488,16 +488,16 @@
      }
  
 @@ -718,13 +684,11 @@
-         return this.field_71340_o.func_179885_a("max-tick-time", TimeUnit.MINUTES.toMillis(1L));
+         return this.settings.getLongProperty("max-tick-time", TimeUnit.MINUTES.toMillis(1L));
      }
  
 -    @Override
-     public String func_71258_A()
+     public String getPlugins()
      {
          return "";
      }
  
 -    @Override
-     public String func_71252_i(String p_71252_1_)
+     public String handleRConCommand(String command)
      {
-         this.field_184115_n.func_70007_b();
+         this.rconConsoleSource.resetLog();

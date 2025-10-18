@@ -12,13 +12,13 @@
  
  public class BlockNewLeaf extends BlockLeaves
  {
--    public static final PropertyEnum<BlockPlanks.EnumType> field_176240_P = PropertyEnum.func_177708_a(
+-    public static final PropertyEnum<BlockPlanks.EnumType> VARIANT = PropertyEnum.create(
 -                    "variant", BlockPlanks.EnumType.class, new Predicate<BlockPlanks.EnumType>()
-+    public static final PropertyEnum<BlockPlanks.EnumType> field_176240_P = PropertyEnum.<BlockPlanks.EnumType>func_177708_a("variant", BlockPlanks.EnumType.class, new Predicate<BlockPlanks.EnumType>()
++    public static final PropertyEnum<BlockPlanks.EnumType> VARIANT = PropertyEnum.<BlockPlanks.EnumType>create("variant", BlockPlanks.EnumType.class, new Predicate<BlockPlanks.EnumType>()
      {
          public boolean apply(@Nullable BlockPlanks.EnumType p_apply_1_)
          {
-             return p_apply_1_.func_176839_a() >= 4;
+             return p_apply_1_.getMetadata() >= 4;
          }
 -    }
 -            );
@@ -26,76 +26,76 @@
  
      public BlockNewLeaf()
      {
--        this.func_180632_j(
--            this.field_176227_L
--            .func_177621_b()
--            .func_177226_a(field_176240_P, BlockPlanks.EnumType.ACACIA)
--            .func_177226_a(field_176236_b, true)
--            .func_177226_a(field_176237_a, true)
+-        this.setDefaultState(
+-            this.blockState
+-            .getBaseState()
+-            .withProperty(VARIANT, BlockPlanks.EnumType.ACACIA)
+-            .withProperty(CHECK_DECAY, true)
+-            .withProperty(DECAYABLE, true)
 -        );
-+        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176240_P, BlockPlanks.EnumType.ACACIA).func_177226_a(field_176236_b, Boolean.valueOf(true)).func_177226_a(field_176237_a, Boolean.valueOf(true)));
++        this.setDefaultState(this.blockState.getBaseState().withProperty(VARIANT, BlockPlanks.EnumType.ACACIA).withProperty(CHECK_DECAY, Boolean.valueOf(true)).withProperty(DECAYABLE, Boolean.valueOf(true)));
      }
  
 -    @Override
-     protected void func_176234_a(World p_176234_1_, BlockPos p_176234_2_, IBlockState p_176234_3_, int p_176234_4_)
+     protected void dropApple(World worldIn, BlockPos pos, IBlockState state, int chance)
      {
-         if (p_176234_3_.func_177229_b(field_176240_P) == BlockPlanks.EnumType.DARK_OAK && p_176234_1_.field_73012_v.nextInt(p_176234_4_) == 0)
+         if (state.getValue(VARIANT) == BlockPlanks.EnumType.DARK_OAK && worldIn.rand.nextInt(chance) == 0)
 @@ -48,52 +40,43 @@
          }
      }
  
 -    @Override
-     public int func_180651_a(IBlockState p_180651_1_)
+     public int damageDropped(IBlockState state)
      {
--        return p_180651_1_.func_177229_b(field_176240_P).func_176839_a();
-+        return ((BlockPlanks.EnumType)p_180651_1_.func_177229_b(field_176240_P)).func_176839_a();
+-        return state.getValue(VARIANT).getMetadata();
++        return ((BlockPlanks.EnumType)state.getValue(VARIANT)).getMetadata();
      }
  
 -    @Override
-     public ItemStack func_185473_a(World p_185473_1_, BlockPos p_185473_2_, IBlockState p_185473_3_)
+     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
      {
-         return new ItemStack(this, 1, p_185473_3_.func_177230_c().func_176201_c(p_185473_3_) & 3);
+         return new ItemStack(this, 1, state.getBlock().getMetaFromState(state) & 3);
      }
  
 -    @Override
-     public void func_149666_a(CreativeTabs p_149666_1_, NonNullList<ItemStack> p_149666_2_)
+     public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items)
      {
-         p_149666_2_.add(new ItemStack(this, 1, 0));
-         p_149666_2_.add(new ItemStack(this, 1, 1));
+         items.add(new ItemStack(this, 1, 0));
+         items.add(new ItemStack(this, 1, 1));
      }
  
 -    @Override
-     protected ItemStack func_180643_i(IBlockState p_180643_1_)
+     protected ItemStack getSilkTouchDrop(IBlockState state)
      {
--        return new ItemStack(Item.func_150898_a(this), 1, p_180643_1_.func_177229_b(field_176240_P).func_176839_a() - 4);
-+        return new ItemStack(Item.func_150898_a(this), 1, ((BlockPlanks.EnumType)p_180643_1_.func_177229_b(field_176240_P)).func_176839_a() - 4);
+-        return new ItemStack(Item.getItemFromBlock(this), 1, state.getValue(VARIANT).getMetadata() - 4);
++        return new ItemStack(Item.getItemFromBlock(this), 1, ((BlockPlanks.EnumType)state.getValue(VARIANT)).getMetadata() - 4);
      }
  
 -    @Override
-     public IBlockState func_176203_a(int p_176203_1_)
+     public IBlockState getStateFromMeta(int meta)
      {
--        return this.func_176223_P()
--               .func_177226_a(field_176240_P, this.func_176233_b(p_176203_1_))
--               .func_177226_a(field_176237_a, (p_176203_1_ & 4) == 0)
--               .func_177226_a(field_176236_b, (p_176203_1_ & 8) > 0);
-+        return this.func_176223_P().func_177226_a(field_176240_P, this.func_176233_b(p_176203_1_)).func_177226_a(field_176237_a, Boolean.valueOf((p_176203_1_ & 4) == 0)).func_177226_a(field_176236_b, Boolean.valueOf((p_176203_1_ & 8) > 0));
+-        return this.getDefaultState()
+-               .withProperty(VARIANT, this.getWoodType(meta))
+-               .withProperty(DECAYABLE, (meta & 4) == 0)
+-               .withProperty(CHECK_DECAY, (meta & 8) > 0);
++        return this.getDefaultState().withProperty(VARIANT, this.getWoodType(meta)).withProperty(DECAYABLE, Boolean.valueOf((meta & 4) == 0)).withProperty(CHECK_DECAY, Boolean.valueOf((meta & 8) > 0));
      }
  
 -    @Override
-     public int func_176201_c(IBlockState p_176201_1_)
+     public int getMetaFromState(IBlockState state)
      {
          int i = 0;
--        i |= p_176201_1_.func_177229_b(field_176240_P).func_176839_a() - 4;
-+        i = i | ((BlockPlanks.EnumType)p_176201_1_.func_177229_b(field_176240_P)).func_176839_a() - 4;
+-        i |= state.getValue(VARIANT).getMetadata() - 4;
++        i = i | ((BlockPlanks.EnumType)state.getValue(VARIANT)).getMetadata() - 4;
  
--        if (!p_176201_1_.func_177229_b(field_176237_a))
-+        if (!((Boolean)p_176201_1_.func_177229_b(field_176237_a)).booleanValue())
+-        if (!state.getValue(DECAYABLE))
++        if (!((Boolean)state.getValue(DECAYABLE)).booleanValue())
          {
              i |= 4;
          }
  
--        if (p_176201_1_.func_177229_b(field_176236_b))
-+        if (((Boolean)p_176201_1_.func_177229_b(field_176236_b)).booleanValue())
+-        if (state.getValue(CHECK_DECAY))
++        if (((Boolean)state.getValue(CHECK_DECAY)).booleanValue())
          {
              i |= 8;
          }
@@ -104,39 +104,39 @@
      }
  
 -    @Override
-     public BlockPlanks.EnumType func_176233_b(int p_176233_1_)
+     public BlockPlanks.EnumType getWoodType(int meta)
      {
-         return BlockPlanks.EnumType.func_176837_a((p_176233_1_ & 3) + 4);
+         return BlockPlanks.EnumType.byMetadata((meta & 3) + 4);
      }
  
 -    @Override
-     protected BlockStateContainer func_180661_e()
+     protected BlockStateContainer createBlockState()
      {
--        return new BlockStateContainer(this, field_176240_P, field_176236_b, field_176237_a);
-+        return new BlockStateContainer(this, new IProperty[] {field_176240_P, field_176236_b, field_176237_a});
+-        return new BlockStateContainer(this, VARIANT, CHECK_DECAY, DECAYABLE);
++        return new BlockStateContainer(this, new IProperty[] {VARIANT, CHECK_DECAY, DECAYABLE});
      }
  
 -    @Override
--    public void func_180657_a(
--        World p_180657_1_, EntityPlayer p_180657_2_, BlockPos p_180657_3_, IBlockState p_180657_4_, @Nullable TileEntity p_180657_5_, ItemStack p_180657_6_
+-    public void harvestBlock(
+-        World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack
 -    )
-+    public void func_180657_a(World p_180657_1_, EntityPlayer p_180657_2_, BlockPos p_180657_3_, IBlockState p_180657_4_, @Nullable TileEntity p_180657_5_, ItemStack p_180657_6_)
++    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack)
      {
-         if (!p_180657_1_.field_72995_K && p_180657_6_.func_77973_b() == Items.field_151097_aZ)
+         if (!worldIn.isRemote && stack.getItem() == Items.SHEARS)
          {
-             p_180657_2_.func_71029_a(StatList.func_188055_a(this));
--            func_180635_a(p_180657_1_, p_180657_3_, new ItemStack(Item.func_150898_a(this), 1, p_180657_4_.func_177229_b(field_176240_P).func_176839_a() - 4));
-+            func_180635_a(p_180657_1_, p_180657_3_, new ItemStack(Item.func_150898_a(this), 1, ((BlockPlanks.EnumType)p_180657_4_.func_177229_b(field_176240_P)).func_176839_a() - 4));
+             player.addStat(StatList.getBlockStats(this));
+-            spawnAsEntity(worldIn, pos, new ItemStack(Item.getItemFromBlock(this), 1, state.getValue(VARIANT).getMetadata() - 4));
++            spawnAsEntity(worldIn, pos, new ItemStack(Item.getItemFromBlock(this), 1, ((BlockPlanks.EnumType)state.getValue(VARIANT)).getMetadata() - 4));
          }
          else
          {
-             super.func_180657_a(p_180657_1_, p_180657_2_, p_180657_3_, p_180657_4_, p_180657_5_, p_180657_6_);
+             super.harvestBlock(worldIn, player, pos, state, te, stack);
          }
 +    }
 +
 +    @Override
 +    public NonNullList<ItemStack> onSheared(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune)
 +    {
-+        return NonNullList.func_191197_a(1, new ItemStack(this, 1, world.func_180495_p(pos).func_177229_b(field_176240_P).func_176839_a() - 4));
++        return NonNullList.withSize(1, new ItemStack(this, 1, world.getBlockState(pos).getValue(VARIANT).getMetadata() - 4));
      }
  }

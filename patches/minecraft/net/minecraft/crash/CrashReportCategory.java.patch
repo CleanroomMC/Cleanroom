@@ -2,16 +2,16 @@
 +++ after/net/minecraft/crash/CrashReportCategory.java
 @@ -12,7 +12,7 @@
  {
-     private final CrashReport field_85078_a;
-     private final String field_85076_b;
--    private final List<CrashReportCategory.Entry> field_85077_c = Lists.newArrayList();
-+    private final List<CrashReportCategory.Entry> field_85077_c = Lists.<CrashReportCategory.Entry>newArrayList();
-     private StackTraceElement[] field_85075_d = new StackTraceElement[0];
+     private final CrashReport crashReport;
+     private final String name;
+-    private final List<CrashReportCategory.Entry> children = Lists.newArrayList();
++    private final List<CrashReportCategory.Entry> children = Lists.<CrashReportCategory.Entry>newArrayList();
+     private StackTraceElement[] stackTrace = new StackTraceElement[0];
  
-     public CrashReportCategory(CrashReport p_i1353_1_, String p_i1353_2_)
+     public CrashReportCategory(CrashReport report, String name)
 @@ -40,7 +40,7 @@
          {
-             stringbuilder.append(String.format("World: (%d,%d,%d)", p_184876_0_, p_184876_1_, p_184876_2_));
+             stringbuilder.append(String.format("World: (%d,%d,%d)", x, y, z));
          }
 -        catch (Throwable throwable2)
 +        catch (Throwable var16)
@@ -45,34 +45,34 @@
          }
          else
          {
--            this.field_85075_d = new StackTraceElement[astacktraceelement.length - 3 - p_85073_1_];
--            System.arraycopy(astacktraceelement, 3 + p_85073_1_, this.field_85075_d, 0, this.field_85075_d.length);
-+            int len = astacktraceelement.length - 3 - p_85073_1_;
+-            this.stackTrace = new StackTraceElement[astacktraceelement.length - 3 - size];
+-            System.arraycopy(astacktraceelement, 3 + size, this.stackTrace, 0, this.stackTrace.length);
++            int len = astacktraceelement.length - 3 - size;
 +            // Really Mojang, Still, god damn...
 +            if (len <= 0) len = astacktraceelement.length;
-+            this.field_85075_d = new StackTraceElement[len];
-+            System.arraycopy(astacktraceelement, astacktraceelement.length - len, this.field_85075_d, 0, this.field_85075_d.length);
-             return this.field_85075_d.length;
++            this.stackTrace = new StackTraceElement[len];
++            System.arraycopy(astacktraceelement, astacktraceelement.length - len, this.stackTrace, 0, this.stackTrace.length);
+             return this.stackTrace.length;
          }
      }
 @@ -135,10 +136,7 @@
          {
-             StackTraceElement stacktraceelement = this.field_85075_d[0];
+             StackTraceElement stacktraceelement = this.stackTrace[0];
  
--            if (stacktraceelement.isNativeMethod() == p_85069_1_.isNativeMethod()
--                    && stacktraceelement.getClassName().equals(p_85069_1_.getClassName())
--                    && stacktraceelement.getFileName().equals(p_85069_1_.getFileName())
--                    && stacktraceelement.getMethodName().equals(p_85069_1_.getMethodName()))
-+            if (stacktraceelement.isNativeMethod() == p_85069_1_.isNativeMethod() && stacktraceelement.getClassName().equals(p_85069_1_.getClassName()) && stacktraceelement.getFileName().equals(p_85069_1_.getFileName()) && stacktraceelement.getMethodName().equals(p_85069_1_.getMethodName()))
+-            if (stacktraceelement.isNativeMethod() == s1.isNativeMethod()
+-                    && stacktraceelement.getClassName().equals(s1.getClassName())
+-                    && stacktraceelement.getFileName().equals(s1.getFileName())
+-                    && stacktraceelement.getMethodName().equals(s1.getMethodName()))
++            if (stacktraceelement.isNativeMethod() == s1.isNativeMethod() && stacktraceelement.getClassName().equals(s1.getClassName()) && stacktraceelement.getFileName().equals(s1.getFileName()) && stacktraceelement.getMethodName().equals(s1.getMethodName()))
              {
-                 if (p_85069_2_ != null != this.field_85075_d.length > 1)
+                 if (s2 != null != this.stackTrace.length > 1)
                  {
 @@ -192,7 +190,7 @@
-             for (StackTraceElement stacktraceelement : this.field_85075_d)
+             for (StackTraceElement stacktraceelement : this.stackTrace)
              {
-                 p_85072_1_.append("\n\tat ");
--                p_85072_1_.append(stacktraceelement);
-+                p_85072_1_.append((Object)stacktraceelement);
+                 builder.append("\n\tat ");
+-                builder.append(stacktraceelement);
++                builder.append((Object)stacktraceelement);
              }
          }
      }
@@ -80,8 +80,8 @@
              {
                  try
                  {
--                    return String.format("ID #%d (%s // %s)", i, p_180523_2_.func_149739_a(), p_180523_2_.getClass().getCanonicalName());
-+                    return String.format("ID #%d (%s // %s // %s)", i, p_180523_2_.func_149739_a(), p_180523_2_.getClass().getName(), p_180523_2_.getRegistryName());
+-                    return String.format("ID #%d (%s // %s)", i, blockIn.getTranslationKey(), blockIn.getClass().getCanonicalName());
++                    return String.format("ID #%d (%s // %s // %s)", i, blockIn.getTranslationKey(), blockIn.getClass().getName(), blockIn.getRegistryName());
                  }
 -                catch (Throwable throwable)
 +                catch (Throwable var2)

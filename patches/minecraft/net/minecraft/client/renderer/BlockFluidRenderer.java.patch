@@ -1,25 +1,25 @@
 --- before/net/minecraft/client/renderer/BlockFluidRenderer.java
 +++ after/net/minecraft/client/renderer/BlockFluidRenderer.java
 @@ -46,18 +46,12 @@
-         boolean flag = p_178270_2_.func_185904_a() == Material.field_151587_i;
-         TextureAtlasSprite[] atextureatlassprite = flag ? this.field_178272_a : this.field_178271_b;
-         int i = this.field_187500_a.func_186724_a(p_178270_2_, p_178270_1_, p_178270_3_, 0);
+         boolean flag = blockStateIn.getMaterial() == Material.LAVA;
+         TextureAtlasSprite[] atextureatlassprite = flag ? this.atlasSpritesLava : this.atlasSpritesWater;
+         int i = this.blockColors.colorMultiplier(blockStateIn, blockAccess, blockPosIn, 0);
 -        float f = (float)(i >> 16 & 0xFF) / 255.0F;
 -        float f1 = (float)(i >> 8 & 0xFF) / 255.0F;
 -        float f2 = (float)(i & 0xFF) / 255.0F;
 +        float f = (float)(i >> 16 & 255) / 255.0F;
 +        float f1 = (float)(i >> 8 & 255) / 255.0F;
 +        float f2 = (float)(i & 255) / 255.0F;
-         boolean flag1 = p_178270_2_.func_185894_c(p_178270_1_, p_178270_3_, EnumFacing.UP);
-         boolean flag2 = p_178270_2_.func_185894_c(p_178270_1_, p_178270_3_, EnumFacing.DOWN);
+         boolean flag1 = blockStateIn.shouldSideBeRendered(blockAccess, blockPosIn, EnumFacing.UP);
+         boolean flag2 = blockStateIn.shouldSideBeRendered(blockAccess, blockPosIn, EnumFacing.DOWN);
 -        boolean[] aboolean = new boolean[]
 -        {
--            p_178270_2_.func_185894_c(p_178270_1_, p_178270_3_, EnumFacing.NORTH),
--            p_178270_2_.func_185894_c(p_178270_1_, p_178270_3_, EnumFacing.SOUTH),
--            p_178270_2_.func_185894_c(p_178270_1_, p_178270_3_, EnumFacing.WEST),
--            p_178270_2_.func_185894_c(p_178270_1_, p_178270_3_, EnumFacing.EAST)
+-            blockStateIn.shouldSideBeRendered(blockAccess, blockPosIn, EnumFacing.NORTH),
+-            blockStateIn.shouldSideBeRendered(blockAccess, blockPosIn, EnumFacing.SOUTH),
+-            blockStateIn.shouldSideBeRendered(blockAccess, blockPosIn, EnumFacing.WEST),
+-            blockStateIn.shouldSideBeRendered(blockAccess, blockPosIn, EnumFacing.EAST)
 -        };
-+        boolean[] aboolean = new boolean[] {p_178270_2_.func_185894_c(p_178270_1_, p_178270_3_, EnumFacing.NORTH), p_178270_2_.func_185894_c(p_178270_1_, p_178270_3_, EnumFacing.SOUTH), p_178270_2_.func_185894_c(p_178270_1_, p_178270_3_, EnumFacing.WEST), p_178270_2_.func_185894_c(p_178270_1_, p_178270_3_, EnumFacing.EAST)};
++        boolean[] aboolean = new boolean[] {blockStateIn.shouldSideBeRendered(blockAccess, blockPosIn, EnumFacing.NORTH), blockStateIn.shouldSideBeRendered(blockAccess, blockPosIn, EnumFacing.SOUTH), blockStateIn.shouldSideBeRendered(blockAccess, blockPosIn, EnumFacing.WEST), blockStateIn.shouldSideBeRendered(blockAccess, blockPosIn, EnumFacing.EAST)};
  
          if (!flag1 && !flag2 && !aboolean[0] && !aboolean[1] && !aboolean[2] && !aboolean[3])
          {
@@ -27,15 +27,15 @@
  
                  if (f12 < -999.0F)
                  {
--                    f13 = textureatlassprite.func_94214_a(0.0);
--                    f17 = textureatlassprite.func_94207_b(0.0);
-+                    f13 = textureatlassprite.func_94214_a(0.0D);
-+                    f17 = textureatlassprite.func_94207_b(0.0D);
+-                    f13 = textureatlassprite.getInterpolatedU(0.0);
+-                    f17 = textureatlassprite.getInterpolatedV(0.0);
++                    f13 = textureatlassprite.getInterpolatedU(0.0D);
++                    f17 = textureatlassprite.getInterpolatedV(0.0D);
                      f14 = f13;
--                    f18 = textureatlassprite.func_94207_b(16.0);
--                    f15 = textureatlassprite.func_94214_a(16.0);
-+                    f18 = textureatlassprite.func_94207_b(16.0D);
-+                    f15 = textureatlassprite.func_94214_a(16.0D);
+-                    f18 = textureatlassprite.getInterpolatedV(16.0);
+-                    f15 = textureatlassprite.getInterpolatedU(16.0);
++                    f18 = textureatlassprite.getInterpolatedV(16.0D);
++                    f15 = textureatlassprite.getInterpolatedU(16.0D);
                      f19 = f18;
                      f16 = f15;
                      f20 = f17;
@@ -43,88 +43,88 @@
                  float f24 = 1.0F * f;
                  float f25 = 1.0F * f1;
                  float f26 = 1.0F * f2;
--                p_178270_4_.func_181662_b(d0 + 0.0, d1 + (double)f7, d2 + 0.0)
--                .func_181666_a(f24, f25, f26, 1.0F)
--                .func_187315_a((double)f13, (double)f17)
--                .func_187314_a(l2, i3)
--                .func_181675_d();
--                p_178270_4_.func_181662_b(d0 + 0.0, d1 + (double)f8, d2 + 1.0)
--                .func_181666_a(f24, f25, f26, 1.0F)
--                .func_187315_a((double)f14, (double)f18)
--                .func_187314_a(l2, i3)
--                .func_181675_d();
--                p_178270_4_.func_181662_b(d0 + 1.0, d1 + (double)f9, d2 + 1.0)
--                .func_181666_a(f24, f25, f26, 1.0F)
--                .func_187315_a((double)f15, (double)f19)
--                .func_187314_a(l2, i3)
--                .func_181675_d();
--                p_178270_4_.func_181662_b(d0 + 1.0, d1 + (double)f10, d2 + 0.0)
--                .func_181666_a(f24, f25, f26, 1.0F)
--                .func_187315_a((double)f16, (double)f20)
--                .func_187314_a(l2, i3)
--                .func_181675_d();
-+                p_178270_4_.func_181662_b(d0 + 0.0D, d1 + (double)f7, d2 + 0.0D).func_181666_a(f24, f25, f26, 1.0F).func_187315_a((double)f13, (double)f17).func_187314_a(l2, i3).func_181675_d();
-+                p_178270_4_.func_181662_b(d0 + 0.0D, d1 + (double)f8, d2 + 1.0D).func_181666_a(f24, f25, f26, 1.0F).func_187315_a((double)f14, (double)f18).func_187314_a(l2, i3).func_181675_d();
-+                p_178270_4_.func_181662_b(d0 + 1.0D, d1 + (double)f9, d2 + 1.0D).func_181666_a(f24, f25, f26, 1.0F).func_187315_a((double)f15, (double)f19).func_187314_a(l2, i3).func_181675_d();
-+                p_178270_4_.func_181662_b(d0 + 1.0D, d1 + (double)f10, d2 + 0.0D).func_181666_a(f24, f25, f26, 1.0F).func_187315_a((double)f16, (double)f20).func_187314_a(l2, i3).func_181675_d();
+-                bufferBuilderIn.pos(d0 + 0.0, d1 + (double)f7, d2 + 0.0)
+-                .color(f24, f25, f26, 1.0F)
+-                .tex((double)f13, (double)f17)
+-                .lightmap(l2, i3)
+-                .endVertex();
+-                bufferBuilderIn.pos(d0 + 0.0, d1 + (double)f8, d2 + 1.0)
+-                .color(f24, f25, f26, 1.0F)
+-                .tex((double)f14, (double)f18)
+-                .lightmap(l2, i3)
+-                .endVertex();
+-                bufferBuilderIn.pos(d0 + 1.0, d1 + (double)f9, d2 + 1.0)
+-                .color(f24, f25, f26, 1.0F)
+-                .tex((double)f15, (double)f19)
+-                .lightmap(l2, i3)
+-                .endVertex();
+-                bufferBuilderIn.pos(d0 + 1.0, d1 + (double)f10, d2 + 0.0)
+-                .color(f24, f25, f26, 1.0F)
+-                .tex((double)f16, (double)f20)
+-                .lightmap(l2, i3)
+-                .endVertex();
++                bufferBuilderIn.pos(d0 + 0.0D, d1 + (double)f7, d2 + 0.0D).color(f24, f25, f26, 1.0F).tex((double)f13, (double)f17).lightmap(l2, i3).endVertex();
++                bufferBuilderIn.pos(d0 + 0.0D, d1 + (double)f8, d2 + 1.0D).color(f24, f25, f26, 1.0F).tex((double)f14, (double)f18).lightmap(l2, i3).endVertex();
++                bufferBuilderIn.pos(d0 + 1.0D, d1 + (double)f9, d2 + 1.0D).color(f24, f25, f26, 1.0F).tex((double)f15, (double)f19).lightmap(l2, i3).endVertex();
++                bufferBuilderIn.pos(d0 + 1.0D, d1 + (double)f10, d2 + 0.0D).color(f24, f25, f26, 1.0F).tex((double)f16, (double)f20).lightmap(l2, i3).endVertex();
  
-                 if (blockliquid.func_176364_g(p_178270_1_, p_178270_3_.func_177984_a()))
+                 if (blockliquid.shouldRenderSides(blockAccess, blockPosIn.up()))
                  {
--                    p_178270_4_.func_181662_b(d0 + 0.0, d1 + (double)f7, d2 + 0.0)
--                    .func_181666_a(f24, f25, f26, 1.0F)
--                    .func_187315_a((double)f13, (double)f17)
--                    .func_187314_a(l2, i3)
--                    .func_181675_d();
--                    p_178270_4_.func_181662_b(d0 + 1.0, d1 + (double)f10, d2 + 0.0)
--                    .func_181666_a(f24, f25, f26, 1.0F)
--                    .func_187315_a((double)f16, (double)f20)
--                    .func_187314_a(l2, i3)
--                    .func_181675_d();
--                    p_178270_4_.func_181662_b(d0 + 1.0, d1 + (double)f9, d2 + 1.0)
--                    .func_181666_a(f24, f25, f26, 1.0F)
--                    .func_187315_a((double)f15, (double)f19)
--                    .func_187314_a(l2, i3)
--                    .func_181675_d();
--                    p_178270_4_.func_181662_b(d0 + 0.0, d1 + (double)f8, d2 + 1.0)
--                    .func_181666_a(f24, f25, f26, 1.0F)
--                    .func_187315_a((double)f14, (double)f18)
--                    .func_187314_a(l2, i3)
--                    .func_181675_d();
-+                    p_178270_4_.func_181662_b(d0 + 0.0D, d1 + (double)f7, d2 + 0.0D).func_181666_a(f24, f25, f26, 1.0F).func_187315_a((double)f13, (double)f17).func_187314_a(l2, i3).func_181675_d();
-+                    p_178270_4_.func_181662_b(d0 + 1.0D, d1 + (double)f10, d2 + 0.0D).func_181666_a(f24, f25, f26, 1.0F).func_187315_a((double)f16, (double)f20).func_187314_a(l2, i3).func_181675_d();
-+                    p_178270_4_.func_181662_b(d0 + 1.0D, d1 + (double)f9, d2 + 1.0D).func_181666_a(f24, f25, f26, 1.0F).func_187315_a((double)f15, (double)f19).func_187314_a(l2, i3).func_181675_d();
-+                    p_178270_4_.func_181662_b(d0 + 0.0D, d1 + (double)f8, d2 + 1.0D).func_181666_a(f24, f25, f26, 1.0F).func_187315_a((double)f14, (double)f18).func_187314_a(l2, i3).func_181675_d();
+-                    bufferBuilderIn.pos(d0 + 0.0, d1 + (double)f7, d2 + 0.0)
+-                    .color(f24, f25, f26, 1.0F)
+-                    .tex((double)f13, (double)f17)
+-                    .lightmap(l2, i3)
+-                    .endVertex();
+-                    bufferBuilderIn.pos(d0 + 1.0, d1 + (double)f10, d2 + 0.0)
+-                    .color(f24, f25, f26, 1.0F)
+-                    .tex((double)f16, (double)f20)
+-                    .lightmap(l2, i3)
+-                    .endVertex();
+-                    bufferBuilderIn.pos(d0 + 1.0, d1 + (double)f9, d2 + 1.0)
+-                    .color(f24, f25, f26, 1.0F)
+-                    .tex((double)f15, (double)f19)
+-                    .lightmap(l2, i3)
+-                    .endVertex();
+-                    bufferBuilderIn.pos(d0 + 0.0, d1 + (double)f8, d2 + 1.0)
+-                    .color(f24, f25, f26, 1.0F)
+-                    .tex((double)f14, (double)f18)
+-                    .lightmap(l2, i3)
+-                    .endVertex();
++                    bufferBuilderIn.pos(d0 + 0.0D, d1 + (double)f7, d2 + 0.0D).color(f24, f25, f26, 1.0F).tex((double)f13, (double)f17).lightmap(l2, i3).endVertex();
++                    bufferBuilderIn.pos(d0 + 1.0D, d1 + (double)f10, d2 + 0.0D).color(f24, f25, f26, 1.0F).tex((double)f16, (double)f20).lightmap(l2, i3).endVertex();
++                    bufferBuilderIn.pos(d0 + 1.0D, d1 + (double)f9, d2 + 1.0D).color(f24, f25, f26, 1.0F).tex((double)f15, (double)f19).lightmap(l2, i3).endVertex();
++                    bufferBuilderIn.pos(d0 + 0.0D, d1 + (double)f8, d2 + 1.0D).color(f24, f25, f26, 1.0F).tex((double)f14, (double)f18).lightmap(l2, i3).endVertex();
                  }
              }
  
 @@ -185,52 +147,36 @@
-                 int l1 = p_178270_2_.func_185889_a(p_178270_1_, p_178270_3_.func_177977_b());
+                 int l1 = blockStateIn.getPackedLightmapCoords(blockAccess, blockPosIn.down());
                  int i2 = l1 >> 16 & 65535;
                  int j2 = l1 & 65535;
--                p_178270_4_.func_181662_b(d0, d1, d2 + 1.0)
--                .func_181666_a(0.5F, 0.5F, 0.5F, 1.0F)
--                .func_187315_a((double)f35, (double)f38)
--                .func_187314_a(i2, j2)
--                .func_181675_d();
--                p_178270_4_.func_181662_b(d0, d1, d2)
--                .func_181666_a(0.5F, 0.5F, 0.5F, 1.0F)
--                .func_187315_a((double)f35, (double)f37)
--                .func_187314_a(i2, j2)
--                .func_181675_d();
--                p_178270_4_.func_181662_b(d0 + 1.0, d1, d2)
--                .func_181666_a(0.5F, 0.5F, 0.5F, 1.0F)
--                .func_187315_a((double)f36, (double)f37)
--                .func_187314_a(i2, j2)
--                .func_181675_d();
--                p_178270_4_.func_181662_b(d0 + 1.0, d1, d2 + 1.0)
--                .func_181666_a(0.5F, 0.5F, 0.5F, 1.0F)
--                .func_187315_a((double)f36, (double)f38)
--                .func_187314_a(i2, j2)
--                .func_181675_d();
-+                p_178270_4_.func_181662_b(d0, d1, d2 + 1.0D).func_181666_a(0.5F, 0.5F, 0.5F, 1.0F).func_187315_a((double)f35, (double)f38).func_187314_a(i2, j2).func_181675_d();
-+                p_178270_4_.func_181662_b(d0, d1, d2).func_181666_a(0.5F, 0.5F, 0.5F, 1.0F).func_187315_a((double)f35, (double)f37).func_187314_a(i2, j2).func_181675_d();
-+                p_178270_4_.func_181662_b(d0 + 1.0D, d1, d2).func_181666_a(0.5F, 0.5F, 0.5F, 1.0F).func_187315_a((double)f36, (double)f37).func_187314_a(i2, j2).func_181675_d();
-+                p_178270_4_.func_181662_b(d0 + 1.0D, d1, d2 + 1.0D).func_181666_a(0.5F, 0.5F, 0.5F, 1.0F).func_187315_a((double)f36, (double)f38).func_187314_a(i2, j2).func_181675_d();
+-                bufferBuilderIn.pos(d0, d1, d2 + 1.0)
+-                .color(0.5F, 0.5F, 0.5F, 1.0F)
+-                .tex((double)f35, (double)f38)
+-                .lightmap(i2, j2)
+-                .endVertex();
+-                bufferBuilderIn.pos(d0, d1, d2)
+-                .color(0.5F, 0.5F, 0.5F, 1.0F)
+-                .tex((double)f35, (double)f37)
+-                .lightmap(i2, j2)
+-                .endVertex();
+-                bufferBuilderIn.pos(d0 + 1.0, d1, d2)
+-                .color(0.5F, 0.5F, 0.5F, 1.0F)
+-                .tex((double)f36, (double)f37)
+-                .lightmap(i2, j2)
+-                .endVertex();
+-                bufferBuilderIn.pos(d0 + 1.0, d1, d2 + 1.0)
+-                .color(0.5F, 0.5F, 0.5F, 1.0F)
+-                .tex((double)f36, (double)f38)
+-                .lightmap(i2, j2)
+-                .endVertex();
++                bufferBuilderIn.pos(d0, d1, d2 + 1.0D).color(0.5F, 0.5F, 0.5F, 1.0F).tex((double)f35, (double)f38).lightmap(i2, j2).endVertex();
++                bufferBuilderIn.pos(d0, d1, d2).color(0.5F, 0.5F, 0.5F, 1.0F).tex((double)f35, (double)f37).lightmap(i2, j2).endVertex();
++                bufferBuilderIn.pos(d0 + 1.0D, d1, d2).color(0.5F, 0.5F, 0.5F, 1.0F).tex((double)f36, (double)f37).lightmap(i2, j2).endVertex();
++                bufferBuilderIn.pos(d0 + 1.0D, d1, d2 + 1.0D).color(0.5F, 0.5F, 0.5F, 1.0F).tex((double)f36, (double)f38).lightmap(i2, j2).endVertex();
                  flag3 = true;
              }
  
@@ -158,18 +158,18 @@
 +                    ++j1;
                  }
  
-                 BlockPos blockpos = p_178270_3_.func_177982_a(j1, 0, k1);
+                 BlockPos blockpos = blockPosIn.add(j1, 0, k1);
 @@ -238,9 +184,9 @@
  
                  if (!flag)
                  {
--                    Block block = p_178270_1_.func_180495_p(blockpos).func_177230_c();
-+                    IBlockState state = p_178270_1_.func_180495_p(blockpos);
+-                    Block block = blockAccess.getBlockState(blockpos).getBlock();
++                    IBlockState state = blockAccess.getBlockState(blockpos);
  
--                    if (block == Blocks.field_150359_w || block == Blocks.field_150399_cn)
-+                    if (state.func_193401_d(p_178270_1_, blockpos, EnumFacing.field_82609_l[i1+2].func_176734_d()) == net.minecraft.block.state.BlockFaceShape.SOLID)
+-                    if (block == Blocks.GLASS || block == Blocks.STAINED_GLASS)
++                    if (state.getBlockFaceShape(blockAccess, blockpos, EnumFacing.VALUES[i1+2].getOpposite()) == net.minecraft.block.state.BlockFaceShape.SOLID)
                      {
-                         textureatlassprite1 = this.field_187501_d;
+                         textureatlassprite1 = this.atlasSpriteWaterOverlay;
                      }
 @@ -260,44 +206,44 @@
                          f39 = f7;
@@ -220,72 +220,72 @@
                      }
  
                      flag3 = true;
--                    float f41 = textureatlassprite1.func_94214_a(0.0);
--                    float f27 = textureatlassprite1.func_94214_a(8.0);
-+                    float f41 = textureatlassprite1.func_94214_a(0.0D);
-+                    float f27 = textureatlassprite1.func_94214_a(8.0D);
-                     float f28 = textureatlassprite1.func_94207_b((double)((1.0F - f39) * 16.0F * 0.5F));
-                     float f29 = textureatlassprite1.func_94207_b((double)((1.0F - f40) * 16.0F * 0.5F));
--                    float f30 = textureatlassprite1.func_94207_b(8.0);
-+                    float f30 = textureatlassprite1.func_94207_b(8.0D);
-                     int j = p_178270_2_.func_185889_a(p_178270_1_, blockpos);
+-                    float f41 = textureatlassprite1.getInterpolatedU(0.0);
+-                    float f27 = textureatlassprite1.getInterpolatedU(8.0);
++                    float f41 = textureatlassprite1.getInterpolatedU(0.0D);
++                    float f27 = textureatlassprite1.getInterpolatedU(8.0D);
+                     float f28 = textureatlassprite1.getInterpolatedV((double)((1.0F - f39) * 16.0F * 0.5F));
+                     float f29 = textureatlassprite1.getInterpolatedV((double)((1.0F - f40) * 16.0F * 0.5F));
+-                    float f30 = textureatlassprite1.getInterpolatedV(8.0);
++                    float f30 = textureatlassprite1.getInterpolatedV(8.0D);
+                     int j = blockStateIn.getPackedLightmapCoords(blockAccess, blockpos);
                      int k = j >> 16 & 65535;
                      int l = j & 65535;
 @@ -305,49 +251,17 @@
                      float f32 = 1.0F * f31 * f;
                      float f33 = 1.0F * f31 * f1;
                      float f34 = 1.0F * f31 * f2;
--                    p_178270_4_.func_181662_b(d3, d1 + (double)f39, d4)
--                    .func_181666_a(f32, f33, f34, 1.0F)
--                    .func_187315_a((double)f41, (double)f28)
--                    .func_187314_a(k, l)
--                    .func_181675_d();
--                    p_178270_4_.func_181662_b(d5, d1 + (double)f40, d6)
--                    .func_181666_a(f32, f33, f34, 1.0F)
--                    .func_187315_a((double)f27, (double)f29)
--                    .func_187314_a(k, l)
--                    .func_181675_d();
--                    p_178270_4_.func_181662_b(d5, d1 + 0.0, d6)
--                    .func_181666_a(f32, f33, f34, 1.0F)
--                    .func_187315_a((double)f27, (double)f30)
--                    .func_187314_a(k, l)
--                    .func_181675_d();
--                    p_178270_4_.func_181662_b(d3, d1 + 0.0, d4)
--                    .func_181666_a(f32, f33, f34, 1.0F)
--                    .func_187315_a((double)f41, (double)f30)
--                    .func_187314_a(k, l)
--                    .func_181675_d();
-+                    p_178270_4_.func_181662_b(d3, d1 + (double)f39, d4).func_181666_a(f32, f33, f34, 1.0F).func_187315_a((double)f41, (double)f28).func_187314_a(k, l).func_181675_d();
-+                    p_178270_4_.func_181662_b(d5, d1 + (double)f40, d6).func_181666_a(f32, f33, f34, 1.0F).func_187315_a((double)f27, (double)f29).func_187314_a(k, l).func_181675_d();
-+                    p_178270_4_.func_181662_b(d5, d1 + 0.0D, d6).func_181666_a(f32, f33, f34, 1.0F).func_187315_a((double)f27, (double)f30).func_187314_a(k, l).func_181675_d();
-+                    p_178270_4_.func_181662_b(d3, d1 + 0.0D, d4).func_181666_a(f32, f33, f34, 1.0F).func_187315_a((double)f41, (double)f30).func_187314_a(k, l).func_181675_d();
+-                    bufferBuilderIn.pos(d3, d1 + (double)f39, d4)
+-                    .color(f32, f33, f34, 1.0F)
+-                    .tex((double)f41, (double)f28)
+-                    .lightmap(k, l)
+-                    .endVertex();
+-                    bufferBuilderIn.pos(d5, d1 + (double)f40, d6)
+-                    .color(f32, f33, f34, 1.0F)
+-                    .tex((double)f27, (double)f29)
+-                    .lightmap(k, l)
+-                    .endVertex();
+-                    bufferBuilderIn.pos(d5, d1 + 0.0, d6)
+-                    .color(f32, f33, f34, 1.0F)
+-                    .tex((double)f27, (double)f30)
+-                    .lightmap(k, l)
+-                    .endVertex();
+-                    bufferBuilderIn.pos(d3, d1 + 0.0, d4)
+-                    .color(f32, f33, f34, 1.0F)
+-                    .tex((double)f41, (double)f30)
+-                    .lightmap(k, l)
+-                    .endVertex();
++                    bufferBuilderIn.pos(d3, d1 + (double)f39, d4).color(f32, f33, f34, 1.0F).tex((double)f41, (double)f28).lightmap(k, l).endVertex();
++                    bufferBuilderIn.pos(d5, d1 + (double)f40, d6).color(f32, f33, f34, 1.0F).tex((double)f27, (double)f29).lightmap(k, l).endVertex();
++                    bufferBuilderIn.pos(d5, d1 + 0.0D, d6).color(f32, f33, f34, 1.0F).tex((double)f27, (double)f30).lightmap(k, l).endVertex();
++                    bufferBuilderIn.pos(d3, d1 + 0.0D, d4).color(f32, f33, f34, 1.0F).tex((double)f41, (double)f30).lightmap(k, l).endVertex();
  
-                     if (textureatlassprite1 != this.field_187501_d)
+                     if (textureatlassprite1 != this.atlasSpriteWaterOverlay)
                      {
--                        p_178270_4_.func_181662_b(d3, d1 + 0.0, d4)
--                        .func_181666_a(f32, f33, f34, 1.0F)
--                        .func_187315_a((double)f41, (double)f30)
--                        .func_187314_a(k, l)
--                        .func_181675_d();
--                        p_178270_4_.func_181662_b(d5, d1 + 0.0, d6)
--                        .func_181666_a(f32, f33, f34, 1.0F)
--                        .func_187315_a((double)f27, (double)f30)
--                        .func_187314_a(k, l)
--                        .func_181675_d();
--                        p_178270_4_.func_181662_b(d5, d1 + (double)f40, d6)
--                        .func_181666_a(f32, f33, f34, 1.0F)
--                        .func_187315_a((double)f27, (double)f29)
--                        .func_187314_a(k, l)
--                        .func_181675_d();
--                        p_178270_4_.func_181662_b(d3, d1 + (double)f39, d4)
--                        .func_181666_a(f32, f33, f34, 1.0F)
--                        .func_187315_a((double)f41, (double)f28)
--                        .func_187314_a(k, l)
--                        .func_181675_d();
-+                        p_178270_4_.func_181662_b(d3, d1 + 0.0D, d4).func_181666_a(f32, f33, f34, 1.0F).func_187315_a((double)f41, (double)f30).func_187314_a(k, l).func_181675_d();
-+                        p_178270_4_.func_181662_b(d5, d1 + 0.0D, d6).func_181666_a(f32, f33, f34, 1.0F).func_187315_a((double)f27, (double)f30).func_187314_a(k, l).func_181675_d();
-+                        p_178270_4_.func_181662_b(d5, d1 + (double)f40, d6).func_181666_a(f32, f33, f34, 1.0F).func_187315_a((double)f27, (double)f29).func_187314_a(k, l).func_181675_d();
-+                        p_178270_4_.func_181662_b(d3, d1 + (double)f39, d4).func_181666_a(f32, f33, f34, 1.0F).func_187315_a((double)f41, (double)f28).func_187314_a(k, l).func_181675_d();
+-                        bufferBuilderIn.pos(d3, d1 + 0.0, d4)
+-                        .color(f32, f33, f34, 1.0F)
+-                        .tex((double)f41, (double)f30)
+-                        .lightmap(k, l)
+-                        .endVertex();
+-                        bufferBuilderIn.pos(d5, d1 + 0.0, d6)
+-                        .color(f32, f33, f34, 1.0F)
+-                        .tex((double)f27, (double)f30)
+-                        .lightmap(k, l)
+-                        .endVertex();
+-                        bufferBuilderIn.pos(d5, d1 + (double)f40, d6)
+-                        .color(f32, f33, f34, 1.0F)
+-                        .tex((double)f27, (double)f29)
+-                        .lightmap(k, l)
+-                        .endVertex();
+-                        bufferBuilderIn.pos(d3, d1 + (double)f39, d4)
+-                        .color(f32, f33, f34, 1.0F)
+-                        .tex((double)f41, (double)f28)
+-                        .lightmap(k, l)
+-                        .endVertex();
++                        bufferBuilderIn.pos(d3, d1 + 0.0D, d4).color(f32, f33, f34, 1.0F).tex((double)f41, (double)f30).lightmap(k, l).endVertex();
++                        bufferBuilderIn.pos(d5, d1 + 0.0D, d6).color(f32, f33, f34, 1.0F).tex((double)f27, (double)f30).lightmap(k, l).endVertex();
++                        bufferBuilderIn.pos(d5, d1 + (double)f40, d6).color(f32, f33, f34, 1.0F).tex((double)f27, (double)f29).lightmap(k, l).endVertex();
++                        bufferBuilderIn.pos(d3, d1 + (double)f39, d4).color(f32, f33, f34, 1.0F).tex((double)f41, (double)f28).lightmap(k, l).endVertex();
                      }
                  }
              }
@@ -296,18 +296,18 @@
 -        for (int j = 0; j < 4; j++)
 +        for (int j = 0; j < 4; ++j)
          {
-             BlockPos blockpos = p_178269_2_.func_177982_a(-(j & 1), 0, -(j >> 1 & 1));
+             BlockPos blockpos = blockPosIn.add(-(j & 1), 0, -(j >> 1 & 1));
  
 @@ -373,9 +287,17 @@
-             IBlockState iblockstate = p_178269_1_.func_180495_p(blockpos);
-             Material material = iblockstate.func_185904_a();
+             IBlockState iblockstate = blockAccess.getBlockState(blockpos);
+             Material material = iblockstate.getMaterial();
  
--            if (material == p_178269_3_)
+-            if (material == blockMaterial)
 -            {
--                int k = iblockstate.func_177229_b(BlockLiquid.field_176367_b);
-+            if (material != p_178269_3_)
+-                int k = iblockstate.getValue(BlockLiquid.LEVEL);
++            if (material != blockMaterial)
 +            {
-+                if (!material.func_76220_a())
++                if (!material.isSolid())
 +                {
 +                    ++f;
 +                    ++i;
@@ -315,17 +315,17 @@
 +            }
 +            else
 +            {
-+                int k = ((Integer)iblockstate.func_177229_b(BlockLiquid.field_176367_b)).intValue();
++                int k = ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue();
  
                  if (k >= 8 || k == 0)
                  {
 @@ -384,12 +306,7 @@
                  }
  
-                 f += BlockLiquid.func_149801_b(k);
+                 f += BlockLiquid.getLiquidHeightPercent(k);
 -                i++;
 -            }
--            else if (!material.func_76220_a())
+-            else if (!material.isSolid())
 -            {
 -                f++;
 -                i++;

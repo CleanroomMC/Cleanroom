@@ -9,65 +9,65 @@
  import net.minecraft.block.BlockChest;
  import net.minecraft.block.BlockShulkerBox;
 @@ -51,24 +52,19 @@
-         if (item == Items.field_179564_cE)
+         if (item == Items.BANNER)
          {
-             this.field_179024_e.func_175112_a(p_192838_1_, false);
--            TileEntityRendererDispatcher.field_147556_a.func_192855_a(this.field_179024_e, 0.0, 0.0, 0.0, 0.0F, p_192838_2_);
-+            TileEntityRendererDispatcher.field_147556_a.func_192855_a(this.field_179024_e, 0.0D, 0.0D, 0.0D, 0.0F, p_192838_2_);
+             this.banner.setItemValues(itemStackIn, false);
+-            TileEntityRendererDispatcher.instance.render(this.banner, 0.0, 0.0, 0.0, 0.0F, partialTicks);
++            TileEntityRendererDispatcher.instance.render(this.banner, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks);
          }
-         else if (item == Items.field_151104_aV)
+         else if (item == Items.BED)
          {
-             this.field_193843_g.func_193051_a(p_192838_1_);
--            TileEntityRendererDispatcher.field_147556_a.func_147549_a(this.field_193843_g, 0.0, 0.0, 0.0, 0.0F);
-+            TileEntityRendererDispatcher.field_147556_a.func_147549_a(this.field_193843_g, 0.0D, 0.0D, 0.0D, 0.0F);
+             this.bed.setItemValues(itemStackIn);
+-            TileEntityRendererDispatcher.instance.render(this.bed, 0.0, 0.0, 0.0, 0.0F);
++            TileEntityRendererDispatcher.instance.render(this.bed, 0.0D, 0.0D, 0.0D, 0.0F);
          }
-         else if (item == Items.field_185159_cQ)
+         else if (item == Items.SHIELD)
          {
-             if (p_192838_1_.func_179543_a("BlockEntityTag") != null)
+             if (itemStackIn.getSubCompound("BlockEntityTag") != null)
              {
-                 this.field_179024_e.func_175112_a(p_192838_1_, true);
--                Minecraft.func_71410_x()
--                .func_110434_K()
--                .func_110577_a(
--                    BannerTextures.field_187485_b
--                    .func_187478_a(this.field_179024_e.func_175116_e(), this.field_179024_e.func_175114_c(), this.field_179024_e.func_175110_d())
+                 this.banner.setItemValues(itemStackIn, true);
+-                Minecraft.getMinecraft()
+-                .getTextureManager()
+-                .bindTexture(
+-                    BannerTextures.SHIELD_DESIGNS
+-                    .getResourceLocation(this.banner.getPatternResourceLocation(), this.banner.getPatternList(), this.banner.getColorList())
 -                );
-+                Minecraft.func_71410_x().func_110434_K().func_110577_a(BannerTextures.field_187485_b.func_187478_a(this.field_179024_e.func_175116_e(), this.field_179024_e.func_175114_c(), this.field_179024_e.func_175110_d()));
++                Minecraft.getMinecraft().getTextureManager().bindTexture(BannerTextures.SHIELD_DESIGNS.getResourceLocation(this.banner.getPatternResourceLocation(), this.banner.getPatternList(), this.banner.getColorList()));
              }
              else
              {
 @@ -94,7 +90,7 @@
                  }
-                 else if (nbttagcompound.func_150297_b("SkullOwner", 8) && !StringUtils.isBlank(nbttagcompound.func_74779_i("SkullOwner")))
+                 else if (nbttagcompound.hasKey("SkullOwner", 8) && !StringUtils.isBlank(nbttagcompound.getString("SkullOwner")))
                  {
--                    GameProfile gameprofile1 = new GameProfile(null, nbttagcompound.func_74779_i("SkullOwner"));
-+                    GameProfile gameprofile1 = new GameProfile((UUID)null, nbttagcompound.func_74779_i("SkullOwner"));
-                     gameprofile = TileEntitySkull.func_174884_b(gameprofile1);
-                     nbttagcompound.func_82580_o("SkullOwner");
-                     nbttagcompound.func_74782_a("SkullOwner", NBTUtil.func_180708_a(new NBTTagCompound(), gameprofile));
+-                    GameProfile gameprofile1 = new GameProfile(null, nbttagcompound.getString("SkullOwner"));
++                    GameProfile gameprofile1 = new GameProfile((UUID)null, nbttagcompound.getString("SkullOwner"));
+                     gameprofile = TileEntitySkull.updateGameProfile(gameprofile1);
+                     nbttagcompound.removeTag("SkullOwner");
+                     nbttagcompound.setTag("SkullOwner", NBTUtil.writeGameProfile(new NBTTagCompound(), gameprofile));
 @@ -112,20 +108,20 @@
          }
-         else if (item == Item.func_150898_a(Blocks.field_150477_bB))
+         else if (item == Item.getItemFromBlock(Blocks.ENDER_CHEST))
          {
--            TileEntityRendererDispatcher.field_147556_a.func_192855_a(this.field_147716_d, 0.0, 0.0, 0.0, 0.0F, p_192838_2_);
-+            TileEntityRendererDispatcher.field_147556_a.func_192855_a(this.field_147716_d, 0.0D, 0.0D, 0.0D, 0.0F, p_192838_2_);
+-            TileEntityRendererDispatcher.instance.render(this.enderChest, 0.0, 0.0, 0.0, 0.0F, partialTicks);
++            TileEntityRendererDispatcher.instance.render(this.enderChest, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks);
          }
-         else if (item == Item.func_150898_a(Blocks.field_150447_bR))
+         else if (item == Item.getItemFromBlock(Blocks.TRAPPED_CHEST))
          {
--            TileEntityRendererDispatcher.field_147556_a.func_192855_a(this.field_147718_c, 0.0, 0.0, 0.0, 0.0F, p_192838_2_);
-+            TileEntityRendererDispatcher.field_147556_a.func_192855_a(this.field_147718_c, 0.0D, 0.0D, 0.0D, 0.0F, p_192838_2_);
+-            TileEntityRendererDispatcher.instance.render(this.chestTrap, 0.0, 0.0, 0.0, 0.0F, partialTicks);
++            TileEntityRendererDispatcher.instance.render(this.chestTrap, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks);
          }
-         else if (Block.func_149634_a(item) instanceof BlockShulkerBox)
+         else if (Block.getBlockFromItem(item) instanceof BlockShulkerBox)
          {
--            TileEntityRendererDispatcher.field_147556_a
--            .func_192855_a(field_191274_b[BlockShulkerBox.func_190955_b(item).func_176765_a()], 0.0, 0.0, 0.0, 0.0F, p_192838_2_);
-+            TileEntityRendererDispatcher.field_147556_a.func_192855_a(field_191274_b[BlockShulkerBox.func_190955_b(item).func_176765_a()], 0.0D, 0.0D, 0.0D, 0.0F, p_192838_2_);
+-            TileEntityRendererDispatcher.instance
+-            .render(SHULKER_BOXES[BlockShulkerBox.getColorFromItem(item).getMetadata()], 0.0, 0.0, 0.0, 0.0F, partialTicks);
++            TileEntityRendererDispatcher.instance.render(SHULKER_BOXES[BlockShulkerBox.getColorFromItem(item).getMetadata()], 0.0D, 0.0D, 0.0D, 0.0F, partialTicks);
          }
-+        else if (Block.func_149634_a(item) != Blocks.field_150486_ae) net.minecraftforge.client.ForgeHooksClient.renderTileItem(p_192838_1_.func_77973_b(), p_192838_1_.func_77960_j());
++        else if (Block.getBlockFromItem(item) != Blocks.CHEST) net.minecraftforge.client.ForgeHooksClient.renderTileItem(itemStackIn.getItem(), itemStackIn.getMetadata());
          else
          {
--            TileEntityRendererDispatcher.field_147556_a.func_192855_a(this.field_147717_b, 0.0, 0.0, 0.0, 0.0F, p_192838_2_);
-+            TileEntityRendererDispatcher.field_147556_a.func_192855_a(this.field_147717_b, 0.0D, 0.0D, 0.0D, 0.0F, p_192838_2_);
+-            TileEntityRendererDispatcher.instance.render(this.chestBasic, 0.0, 0.0, 0.0, 0.0F, partialTicks);
++            TileEntityRendererDispatcher.instance.render(this.chestBasic, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks);
          }
      }
  

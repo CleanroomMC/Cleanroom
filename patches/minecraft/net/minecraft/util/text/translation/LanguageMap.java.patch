@@ -20,14 +20,14 @@
 +
 +    public static void inject(InputStream inputstream)
 +    {
-+        inject(field_74817_a, inputstream);
++        inject(instance, inputstream);
 +    }
 +
 +    private static void inject(LanguageMap inst, InputStream inputstream)
 +    {
 +        Map<String, String> map = parseLangFile(inputstream);
-+        inst.field_74816_c.putAll(map);
-+        inst.field_150511_e = System.currentTimeMillis();
++        inst.languageList.putAll(map);
++        inst.lastUpdateTimeInMilliseconds = System.currentTimeMillis();
 +    }
 +
 +    public static Map<String, String> parseLangFile(InputStream inputstream)
@@ -43,14 +43,14 @@
 @@ -37,16 +64,18 @@
                      {
                          String s1 = astring[0];
-                         String s2 = field_111053_a.matcher(astring[1]).replaceAll("%$1s");
--                        this.field_74816_c.put(s1, s2);
+                         String s2 = NUMERIC_VARIABLE_PATTERN.matcher(astring[1]).replaceAll("%$1s");
+-                        this.languageList.put(s1, s2);
 +                        table.put(s1, s2);
                      }
                  }
              }
  
--            this.field_150511_e = System.currentTimeMillis();
+-            this.lastUpdateTimeInMilliseconds = System.currentTimeMillis();
          }
          catch (IOException ioexception)
          {
@@ -60,4 +60,4 @@
 +        return table;
      }
  
-     static LanguageMap func_74808_a()
+     static LanguageMap getInstance()

@@ -2,21 +2,21 @@
 +++ after/net/minecraft/nbt/NBTSizeTracker.java
 @@ -4,7 +4,6 @@
  {
-     public static final NBTSizeTracker field_152451_a = new NBTSizeTracker(0L)
+     public static final NBTSizeTracker INFINITE = new NBTSizeTracker(0L)
      {
 -        @Override
-         public void func_152450_a(long p_152450_1_)
+         public void read(long bits)
          {
          }
 @@ -23,9 +22,37 @@
  
-         if (this.field_152453_c > this.field_152452_b)
+         if (this.read > this.max)
          {
 -            throw new RuntimeException(
--                "Tried to read NBT tag that was too big; tried to allocate: " + this.field_152453_c + "bytes where max allowed: " + this.field_152452_b
+-                "Tried to read NBT tag that was too big; tried to allocate: " + this.read + "bytes where max allowed: " + this.max
 -            );
 -        }
-+            throw new RuntimeException("Tried to read NBT tag that was too big; tried to allocate: " + this.field_152453_c + "bytes where max allowed: " + this.field_152452_b);
++            throw new RuntimeException("Tried to read NBT tag that was too big; tried to allocate: " + this.read + "bytes where max allowed: " + this.max);
 +        }
 +    }
 +
@@ -33,7 +33,7 @@
 +     */
 +    public static void readUTF(NBTSizeTracker tracker, String data)
 +    {
-+        tracker.func_152450_a(16); //Header length
++        tracker.read(16); //Header length
 +        if (data == null)
 +            return;
 +
@@ -47,6 +47,6 @@
 +            else if (c > 0x07FF)                utflen += 3;
 +            else                                utflen += 2;
 +        }
-+        tracker.func_152450_a(8 * utflen);
++        tracker.read(8 * utflen);
      }
  }

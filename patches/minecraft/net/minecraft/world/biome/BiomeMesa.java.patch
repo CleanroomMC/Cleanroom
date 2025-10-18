@@ -4,78 +4,78 @@
  
  public class BiomeMesa extends Biome
  {
--    protected static final IBlockState field_185385_y = Blocks.field_150346_d
--                .func_176223_P()
--                .func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.COARSE_DIRT);
-+    protected static final IBlockState field_185385_y = Blocks.field_150346_d.func_176223_P().func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.COARSE_DIRT);
-     protected static final IBlockState field_185386_z = Blocks.field_150349_c.func_176223_P();
-     protected static final IBlockState field_185381_A = Blocks.field_150405_ch.func_176223_P();
-     protected static final IBlockState field_185382_B = Blocks.field_150406_ce.func_176223_P();
-     protected static final IBlockState field_185383_C = field_185382_B.func_177226_a(BlockColored.field_176581_a, EnumDyeColor.ORANGE);
--    protected static final IBlockState field_185384_D = Blocks.field_150354_m
--                .func_176223_P()
--                .func_177226_a(BlockSand.field_176504_a, BlockSand.EnumType.RED_SAND);
-+    protected static final IBlockState field_185384_D = Blocks.field_150354_m.func_176223_P().func_177226_a(BlockSand.field_176504_a, BlockSand.EnumType.RED_SAND);
-     private IBlockState[] field_150621_aC;
-     private long field_150622_aD;
-     private NoiseGeneratorPerlin field_150623_aE;
+-    protected static final IBlockState COARSE_DIRT = Blocks.DIRT
+-                .getDefaultState()
+-                .withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.COARSE_DIRT);
++    protected static final IBlockState COARSE_DIRT = Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.COARSE_DIRT);
+     protected static final IBlockState GRASS = Blocks.GRASS.getDefaultState();
+     protected static final IBlockState HARDENED_CLAY = Blocks.HARDENED_CLAY.getDefaultState();
+     protected static final IBlockState STAINED_HARDENED_CLAY = Blocks.STAINED_HARDENED_CLAY.getDefaultState();
+     protected static final IBlockState ORANGE_STAINED_HARDENED_CLAY = STAINED_HARDENED_CLAY.withProperty(BlockColored.COLOR, EnumDyeColor.ORANGE);
+-    protected static final IBlockState RED_SAND = Blocks.SAND
+-                .getDefaultState()
+-                .withProperty(BlockSand.VARIANT, BlockSand.EnumType.RED_SAND);
++    protected static final IBlockState RED_SAND = Blocks.SAND.getDefaultState().withProperty(BlockSand.VARIANT, BlockSand.EnumType.RED_SAND);
+     private IBlockState[] clayBands;
+     private long worldSeed;
+     private NoiseGeneratorPerlin pillarNoise;
 @@ -58,33 +54,16 @@
          }
      }
  
 -    @Override
-     public BiomeDecorator func_76729_a()
+     public BiomeDecorator createBiomeDecorator()
      {
          return new BiomeMesa.Decorator();
      }
  
 -    @Override
-     public WorldGenAbstractTree func_150567_a(Random p_150567_1_)
+     public WorldGenAbstractTree getRandomTreeFeature(Random rand)
      {
-         return field_76757_N;
+         return TREE_FEATURE;
      }
  
 -    @SideOnly(Side.CLIENT)
 -    @Override
--    public int func_180625_c(BlockPos p_180625_1_)
+-    public int getFoliageColorAtPos(BlockPos pos)
 -    {
 -        return 10387789;
 -    }
 -
 -    @SideOnly(Side.CLIENT)
 -    @Override
--    public int func_180627_b(BlockPos p_180627_1_)
+-    public int getGrassColorAtPos(BlockPos pos)
 -    {
 -        return 9470285;
 -    }
 -
 -    @Override
-     public void func_180622_a(World p_180622_1_, Random p_180622_2_, ChunkPrimer p_180622_3_, int p_180622_4_, int p_180622_5_, double p_180622_6_)
+     public void genTerrainBlocks(World worldIn, Random rand, ChunkPrimer chunkPrimerIn, int x, int z, double noiseVal)
      {
-         if (this.field_150621_aC == null || this.field_150622_aD != p_180622_1_.func_72905_C())
+         if (this.clayBands == null || this.worldSeed != worldIn.getSeed())
 @@ -100,27 +79,27 @@
          }
  
-         this.field_150622_aD = p_180622_1_.func_72905_C();
+         this.worldSeed = worldIn.getSeed();
 -        double d4 = 0.0;
 +        double d4 = 0.0D;
  
-         if (this.field_150626_aH)
+         if (this.brycePillars)
          {
-             int i = (p_180622_4_ & -16) + (p_180622_5_ & 15);
-             int j = (p_180622_5_ & -16) + (p_180622_4_ & 15);
--            double d0 = Math.min(Math.abs(p_180622_6_), this.field_150623_aE.func_151601_a((double)i * 0.25, (double)j * 0.25));
-+            double d0 = Math.min(Math.abs(p_180622_6_), this.field_150623_aE.func_151601_a((double)i * 0.25D, (double)j * 0.25D));
+             int i = (x & -16) + (z & 15);
+             int j = (z & -16) + (x & 15);
+-            double d0 = Math.min(Math.abs(noiseVal), this.pillarNoise.getValue((double)i * 0.25, (double)j * 0.25));
++            double d0 = Math.min(Math.abs(noiseVal), this.pillarNoise.getValue((double)i * 0.25D, (double)j * 0.25D));
  
 -            if (d0 > 0.0)
 +            if (d0 > 0.0D)
              {
 -                double d1 = 0.001953125;
--                double d2 = Math.abs(this.field_150624_aF.func_151601_a((double)i * 0.001953125, (double)j * 0.001953125));
+-                double d2 = Math.abs(this.pillarRoofNoise.getValue((double)i * 0.001953125, (double)j * 0.001953125));
 -                d4 = d0 * d0 * 2.5;
 -                double d3 = Math.ceil(d2 * 50.0) + 14.0;
 +                double d1 = 0.001953125D;
-+                double d2 = Math.abs(this.field_150624_aF.func_151601_a((double)i * 0.001953125D, (double)j * 0.001953125D));
++                double d2 = Math.abs(this.pillarRoofNoise.getValue((double)i * 0.001953125D, (double)j * 0.001953125D));
 +                d4 = d0 * d0 * 2.5D;
 +                double d3 = Math.ceil(d2 * 50.0D) + 14.0D;
  
@@ -90,13 +90,13 @@
          }
  
 @@ -129,13 +108,13 @@
-         int i2 = p_180622_1_.func_181545_F();
-         IBlockState iblockstate = field_185382_B;
-         IBlockState iblockstate3 = this.field_76753_B;
--        int k = (int)(p_180622_6_ / 3.0 + 3.0 + p_180622_2_.nextDouble() * 0.25);
--        boolean flag = Math.cos(p_180622_6_ / 3.0 * Math.PI) > 0.0;
-+        int k = (int)(p_180622_6_ / 3.0D + 3.0D + p_180622_2_.nextDouble() * 0.25D);
-+        boolean flag = Math.cos(p_180622_6_ / 3.0D * Math.PI) > 0.0D;
+         int i2 = worldIn.getSeaLevel();
+         IBlockState iblockstate = STAINED_HARDENED_CLAY;
+         IBlockState iblockstate3 = this.fillerBlock;
+-        int k = (int)(noiseVal / 3.0 + 3.0 + rand.nextDouble() * 0.25);
+-        boolean flag = Math.cos(noiseVal / 3.0 * Math.PI) > 0.0;
++        int k = (int)(noiseVal / 3.0D + 3.0D + rand.nextDouble() * 0.25D);
++        boolean flag = Math.cos(noiseVal / 3.0D * Math.PI) > 0.0D;
          int l = -1;
          boolean flag1 = false;
          int i1 = 0;
@@ -104,7 +104,7 @@
 -        for (int j1 = 255; j1 >= 0; j1--)
 +        for (int j1 = 255; j1 >= 0; --j1)
          {
-             if (p_180622_3_.func_177856_a(l1, j1, k1).func_185904_a() == Material.field_151579_a && j1 < (int)d4)
+             if (chunkPrimerIn.getBlockState(l1, j1, k1).getMaterial() == Material.AIR && j1 < (int)d4)
              {
 @@ -178,54 +157,60 @@
  
@@ -112,32 +112,32 @@
  
 -                        if (j1 < i2 - 1)
 -                        {
--                            p_180622_3_.func_177855_a(l1, j1, k1, iblockstate3);
+-                            chunkPrimerIn.setBlockState(l1, j1, k1, iblockstate3);
 -
--                            if (iblockstate3.func_177230_c() == Blocks.field_150406_ce)
+-                            if (iblockstate3.getBlock() == Blocks.STAINED_HARDENED_CLAY)
 -                            {
--                                p_180622_3_.func_177855_a(l1, j1, k1, field_185383_C);
+-                                chunkPrimerIn.setBlockState(l1, j1, k1, ORANGE_STAINED_HARDENED_CLAY);
 -                            }
 -                        }
--                        else if (!this.field_150620_aI || j1 <= 86 + k * 2)
+-                        else if (!this.hasForest || j1 <= 86 + k * 2)
 -                        {
 -                            if (j1 <= i2 + 3 + k)
 -                            {
--                                p_180622_3_.func_177855_a(l1, j1, k1, this.field_76752_A);
+-                                chunkPrimerIn.setBlockState(l1, j1, k1, this.topBlock);
 -                                flag1 = true;
 -                            }
 -                            else
 +                        if (j1 >= i2 - 1)
 +                        {
-+                            if (this.field_150620_aI && j1 > 86 + k * 2)
++                            if (this.hasForest && j1 > 86 + k * 2)
 +                            {
 +                                if (flag)
 +                                {
-+                                    p_180622_3_.func_177855_a(l1, j1, k1, field_185385_y);
++                                    chunkPrimerIn.setBlockState(l1, j1, k1, COARSE_DIRT);
 +                                }
 +                                else
 +                                {
-+                                    p_180622_3_.func_177855_a(l1, j1, k1, field_185386_z);
++                                    chunkPrimerIn.setBlockState(l1, j1, k1, GRASS);
 +                                }
 +                            }
 +                            else if (j1 > i2 + 3 + k)
@@ -149,46 +149,46 @@
 +                                {
 +                                    if (flag)
 +                                    {
-+                                        iblockstate2 = field_185381_A;
++                                        iblockstate2 = HARDENED_CLAY;
 +                                    }
 +                                    else
 +                                    {
-+                                        iblockstate2 = this.func_180629_a(p_180622_4_, j1, p_180622_5_);
++                                        iblockstate2 = this.getBand(x, j1, z);
 +                                    }
 +                                }
 +                                else
                                  {
-                                     iblockstate2 = field_185383_C;
+                                     iblockstate2 = ORANGE_STAINED_HARDENED_CLAY;
                                  }
 -                                else if (flag)
 -                                {
--                                    iblockstate2 = field_185381_A;
+-                                    iblockstate2 = HARDENED_CLAY;
 -                                }
 -                                else
 -                                {
--                                    iblockstate2 = this.func_180629_a(p_180622_4_, j1, p_180622_5_);
+-                                    iblockstate2 = this.getBand(x, j1, z);
 -                                }
  
-                                 p_180622_3_.func_177855_a(l1, j1, k1, iblockstate2);
+                                 chunkPrimerIn.setBlockState(l1, j1, k1, iblockstate2);
                              }
 -                        }
 -                        else if (flag)
 -                        {
--                            p_180622_3_.func_177855_a(l1, j1, k1, field_185385_y);
+-                            chunkPrimerIn.setBlockState(l1, j1, k1, COARSE_DIRT);
 +                            else
 +                            {
-+                                p_180622_3_.func_177855_a(l1, j1, k1, this.field_76752_A);
++                                chunkPrimerIn.setBlockState(l1, j1, k1, this.topBlock);
 +                                flag1 = true;
 +                            }
                          }
                          else
                          {
--                            p_180622_3_.func_177855_a(l1, j1, k1, field_185386_z);
-+                            p_180622_3_.func_177855_a(l1, j1, k1, iblockstate3);
+-                            chunkPrimerIn.setBlockState(l1, j1, k1, GRASS);
++                            chunkPrimerIn.setBlockState(l1, j1, k1, iblockstate3);
 +
-+                            if (iblockstate3.func_177230_c() == Blocks.field_150406_ce)
++                            if (iblockstate3.getBlock() == Blocks.STAINED_HARDENED_CLAY)
 +                            {
-+                                p_180622_3_.func_177855_a(l1, j1, k1, field_185383_C);
++                                chunkPrimerIn.setBlockState(l1, j1, k1, ORANGE_STAINED_HARDENED_CLAY);
 +                            }
                          }
                      }
@@ -210,7 +210,7 @@
          }
 @@ -250,7 +235,7 @@
          Random random = new Random(p_150619_1_);
-         this.field_150625_aG = new NoiseGeneratorPerlin(random, 1);
+         this.clayBandsOffsetNoise = new NoiseGeneratorPerlin(random, 1);
  
 -        for (int l1 = 0; l1 < 64; l1++)
 +        for (int l1 = 0; l1 < 64; ++l1)
@@ -230,7 +230,7 @@
 -            for (int l = 0; k + l < 64 && l < j; l++)
 +            for (int l = 0; k + l < 64 && l < j; ++l)
              {
-                 this.field_150621_aC[k + l] = field_185382_B.func_177226_a(BlockColored.field_176581_a, EnumDyeColor.YELLOW);
+                 this.clayBands[k + l] = STAINED_HARDENED_CLAY.withProperty(BlockColored.COLOR, EnumDyeColor.YELLOW);
              }
 @@ -275,12 +260,12 @@
  
@@ -245,7 +245,7 @@
 -            for (int i1 = 0; l3 + i1 < 64 && i1 < i3; i1++)
 +            for (int i1 = 0; l3 + i1 < 64 && i1 < i3; ++i1)
              {
-                 this.field_150621_aC[l3 + i1] = field_185382_B.func_177226_a(BlockColored.field_176581_a, EnumDyeColor.BROWN);
+                 this.clayBands[l3 + i1] = STAINED_HARDENED_CLAY.withProperty(BlockColored.COLOR, EnumDyeColor.BROWN);
              }
 @@ -288,12 +273,12 @@
  
@@ -260,7 +260,7 @@
 -            for (int j1 = 0; k4 + j1 < 64 && j1 < i4; j1++)
 +            for (int j1 = 0; k4 + j1 < 64 && j1 < i4; ++j1)
              {
-                 this.field_150621_aC[k4 + j1] = field_185382_B.func_177226_a(BlockColored.field_176581_a, EnumDyeColor.RED);
+                 this.clayBands[k4 + j1] = STAINED_HARDENED_CLAY.withProperty(BlockColored.COLOR, EnumDyeColor.RED);
              }
 @@ -302,12 +287,12 @@
          int k3 = random.nextInt(3) + 3;
@@ -275,25 +275,25 @@
 -            for (int k1 = 0; j4 + k1 < 64 && k1 < 1; k1++)
 +            for (int k1 = 0; j4 + k1 < 64 && k1 < 1; ++k1)
              {
-                 this.field_150621_aC[j4 + k1] = field_185382_B.func_177226_a(BlockColored.field_176581_a, EnumDyeColor.WHITE);
+                 this.clayBands[j4 + k1] = STAINED_HARDENED_CLAY.withProperty(BlockColored.COLOR, EnumDyeColor.WHITE);
  
 @@ -326,20 +311,32 @@
  
-     public IBlockState func_180629_a(int p_180629_1_, int p_180629_2_, int p_180629_3_)
+     public IBlockState getBand(int p_180629_1_, int p_180629_2_, int p_180629_3_)
      {
--        int i = (int)Math.round(this.field_150625_aG.func_151601_a((double)p_180629_1_ / 512.0, (double)p_180629_1_ / 512.0) * 2.0);
-+        int i = (int)Math.round(this.field_150625_aG.func_151601_a((double)p_180629_1_ / 512.0D, (double)p_180629_1_ / 512.0D) * 2.0D);
-         return this.field_150621_aC[(p_180629_2_ + i + 64) % 64];
+-        int i = (int)Math.round(this.clayBandsOffsetNoise.getValue((double)p_180629_1_ / 512.0, (double)p_180629_1_ / 512.0) * 2.0);
++        int i = (int)Math.round(this.clayBandsOffsetNoise.getValue((double)p_180629_1_ / 512.0D, (double)p_180629_1_ / 512.0D) * 2.0D);
+         return this.clayBands[(p_180629_2_ + i + 64) % 64];
      }
  
 +    @SideOnly(Side.CLIENT)
-+    public int func_180625_c(BlockPos p_180625_1_)
++    public int getFoliageColorAtPos(BlockPos pos)
 +    {
 +        return getModdedBiomeFoliageColor(10387789);
 +    }
 +
 +    @SideOnly(Side.CLIENT)
-+    public int func_180627_b(BlockPos p_180627_1_)
++    public int getGrassColorAtPos(BlockPos pos)
 +    {
 +        return getModdedBiomeGrassColor(9470285);
 +    }
@@ -305,10 +305,10 @@
          }
  
 -        @Override
-         protected void func_76797_b(World p_76797_1_, Random p_76797_2_)
+         protected void generateOres(World worldIn, Random random)
          {
-             super.func_76797_b(p_76797_1_, p_76797_2_);
-+            if (net.minecraftforge.event.terraingen.TerrainGen.generateOre(p_76797_1_, p_76797_2_, field_76819_m, field_180294_c, net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable.EventType.GOLD))
-             this.func_76795_a(p_76797_1_, p_76797_2_, 20, this.field_76819_m, 32, 80);
+             super.generateOres(worldIn, random);
++            if (net.minecraftforge.event.terraingen.TerrainGen.generateOre(worldIn, random, goldGen, chunkPos, net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable.EventType.GOLD))
+             this.genStandardOre1(worldIn, random, 20, this.goldGen, 32, 80);
          }
      }

@@ -1,63 +1,63 @@
 --- before/net/minecraft/world/storage/loot/LootEntryItem.java
 +++ after/net/minecraft/world/storage/loot/LootEntryItem.java
 @@ -18,14 +18,13 @@
-     protected final Item field_186368_a;
-     protected final LootFunction[] field_186369_b;
+     protected final Item item;
+     protected final LootFunction[] functions;
  
--    public LootEntryItem(Item p_i46644_1_, int p_i46644_2_, int p_i46644_3_, LootFunction[] p_i46644_4_, LootCondition[] p_i46644_5_)
-+    public LootEntryItem(Item p_i46644_1_, int p_i46644_2_, int p_i46644_3_, LootFunction[] p_i46644_4_, LootCondition[] p_i46644_5_, String entryName)
+-    public LootEntryItem(Item itemIn, int weightIn, int qualityIn, LootFunction[] functionsIn, LootCondition[] conditionsIn)
++    public LootEntryItem(Item itemIn, int weightIn, int qualityIn, LootFunction[] functionsIn, LootCondition[] conditionsIn, String entryName)
      {
--        super(p_i46644_2_, p_i46644_3_, p_i46644_5_);
-+        super(p_i46644_2_, p_i46644_3_, p_i46644_5_, entryName);
-         this.field_186368_a = p_i46644_1_;
-         this.field_186369_b = p_i46644_4_;
+-        super(weightIn, qualityIn, conditionsIn);
++        super(weightIn, qualityIn, conditionsIn, entryName);
+         this.item = itemIn;
+         this.functions = functionsIn;
      }
  
 -    @Override
-     public void func_186363_a(Collection<ItemStack> p_186363_1_, Random p_186363_2_, LootContext p_186363_3_)
+     public void addLoot(Collection<ItemStack> stacks, Random rand, LootContext context)
      {
-         ItemStack itemstack = new ItemStack(this.field_186368_a);
+         ItemStack itemstack = new ItemStack(this.item);
 @@ -40,7 +39,7 @@
  
-         if (!itemstack.func_190926_b())
+         if (!itemstack.isEmpty())
          {
--            if (itemstack.func_190916_E() < this.field_186368_a.func_77639_j())
-+            if (itemstack.func_190916_E() < this.field_186368_a.getItemStackLimit(itemstack))
+-            if (itemstack.getCount() < this.item.getItemStackLimit())
++            if (itemstack.getCount() < this.item.getItemStackLimit(itemstack))
              {
-                 p_186363_1_.add(itemstack);
+                 stacks.add(itemstack);
              }
 @@ -59,7 +58,6 @@
          }
      }
  
 -    @Override
-     protected void func_186362_a(JsonObject p_186362_1_, JsonSerializationContext p_186362_2_)
+     protected void serialize(JsonObject json, JsonSerializationContext context)
      {
-         if (this.field_186369_b != null && this.field_186369_b.length > 0)
+         if (this.functions != null && this.functions.length > 0)
 @@ -79,22 +77,21 @@
          }
      }
  
--    public static LootEntryItem func_186367_a(
--            JsonObject p_186367_0_, JsonDeserializationContext p_186367_1_, int p_186367_2_, int p_186367_3_, LootCondition[] p_186367_4_
+-    public static LootEntryItem deserialize(
+-            JsonObject object, JsonDeserializationContext deserializationContext, int weightIn, int qualityIn, LootCondition[] conditionsIn
 -        )
-+    public static LootEntryItem func_186367_a(JsonObject p_186367_0_, JsonDeserializationContext p_186367_1_, int p_186367_2_, int p_186367_3_, LootCondition[] p_186367_4_)
++    public static LootEntryItem deserialize(JsonObject object, JsonDeserializationContext deserializationContext, int weightIn, int qualityIn, LootCondition[] conditionsIn)
      {
-+        String name = net.minecraftforge.common.ForgeHooks.readLootEntryName(p_186367_0_, "item");
-         Item item = JsonUtils.func_188180_i(p_186367_0_, "name");
++        String name = net.minecraftforge.common.ForgeHooks.readLootEntryName(object, "item");
+         Item item = JsonUtils.getItem(object, "name");
          LootFunction[] alootfunction;
  
-         if (p_186367_0_.has("functions"))
+         if (object.has("functions"))
          {
--            alootfunction = JsonUtils.func_188174_a(p_186367_0_, "functions", p_186367_1_, LootFunction[].class);
-+            alootfunction = (LootFunction[])JsonUtils.func_188174_a(p_186367_0_, "functions", p_186367_1_, LootFunction[].class);
+-            alootfunction = JsonUtils.deserializeClass(object, "functions", deserializationContext, LootFunction[].class);
++            alootfunction = (LootFunction[])JsonUtils.deserializeClass(object, "functions", deserializationContext, LootFunction[].class);
          }
          else
          {
              alootfunction = new LootFunction[0];
          }
  
--        return new LootEntryItem(item, p_186367_2_, p_186367_3_, alootfunction, p_186367_4_);
-+        return new LootEntryItem(item, p_186367_2_, p_186367_3_, alootfunction, p_186367_4_, name);
+-        return new LootEntryItem(item, weightIn, qualityIn, alootfunction, conditionsIn);
++        return new LootEntryItem(item, weightIn, qualityIn, alootfunction, conditionsIn, name);
      }
  }

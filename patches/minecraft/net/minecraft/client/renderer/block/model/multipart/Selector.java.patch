@@ -1,7 +1,7 @@
 --- before/net/minecraft/client/renderer/block/model/multipart/Selector.java
 +++ after/net/minecraft/client/renderer/block/model/multipart/Selector.java
 @@ -53,7 +53,6 @@
-         return this.field_188167_a.func_188118_a(p_188166_1_);
+         return this.condition.getPredicate(state);
      }
  
 -    @Override
@@ -15,33 +15,33 @@
 -    @Override
      public int hashCode()
      {
-         return 31 * this.field_188167_a.hashCode() + this.field_188168_b.hashCode();
+         return 31 * this.condition.hashCode() + this.variantList.hashCode();
 @@ -105,7 +103,7 @@
              public Selector deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_) throws JsonParseException
              {
                  JsonObject jsonobject = p_deserialize_1_.getAsJsonObject();
--                return new Selector(this.func_188159_b(jsonobject), p_deserialize_3_.deserialize(jsonobject.get("apply"), VariantList.class));
-+                return new Selector(this.func_188159_b(jsonobject), (VariantList)p_deserialize_3_.deserialize(jsonobject.get("apply"), VariantList.class));
+-                return new Selector(this.getWhenCondition(jsonobject), p_deserialize_3_.deserialize(jsonobject.get("apply"), VariantList.class));
++                return new Selector(this.getWhenCondition(jsonobject), (VariantList)p_deserialize_3_.deserialize(jsonobject.get("apply"), VariantList.class));
              }
  
-             private ICondition func_188159_b(JsonObject p_188159_1_)
+             private ICondition getWhenCondition(JsonObject json)
 @@ -130,9 +128,7 @@
                      }
                      else
                      {
--                        return (ICondition)(p_188158_0_.has("AND")
--                                            ? new ConditionAnd(Iterables.transform(JsonUtils.func_151214_t(p_188158_0_, "AND"), field_188163_a))
--                                            : func_188161_b(set.iterator().next()));
-+                        return (ICondition)(p_188158_0_.has("AND") ? new ConditionAnd(Iterables.transform(JsonUtils.func_151214_t(p_188158_0_, "AND"), field_188163_a)) : func_188161_b(set.iterator().next()));
+-                        return (ICondition)(json.has("AND")
+-                                            ? new ConditionAnd(Iterables.transform(JsonUtils.getJsonArray(json, "AND"), FUNCTION_OR_AND))
+-                                            : makePropertyValue(set.iterator().next()));
++                        return (ICondition)(json.has("AND") ? new ConditionAnd(Iterables.transform(JsonUtils.getJsonArray(json, "AND"), FUNCTION_OR_AND)) : makePropertyValue(set.iterator().next()));
                      }
                  }
                  else
 @@ -143,7 +139,7 @@
  
-             private static ConditionPropertyValue func_188161_b(Entry<String, JsonElement> p_188161_0_)
+             private static ConditionPropertyValue makePropertyValue(Entry<String, JsonElement> entry)
              {
--                return new ConditionPropertyValue(p_188161_0_.getKey(), p_188161_0_.getValue().getAsString());
-+                return new ConditionPropertyValue(p_188161_0_.getKey(), ((JsonElement)p_188161_0_.getValue()).getAsString());
+-                return new ConditionPropertyValue(entry.getKey(), entry.getValue().getAsString());
++                return new ConditionPropertyValue(entry.getKey(), ((JsonElement)entry.getValue()).getAsString());
              }
          }
  }

@@ -2,18 +2,18 @@
 +++ after/net/minecraft/client/renderer/entity/RenderZombieVillager.java
 @@ -25,6 +25,7 @@
  
-     protected ResourceLocation func_110775_a(EntityZombieVillager p_110775_1_)
+     protected ResourceLocation getEntityTexture(EntityZombieVillager entity)
      {
-+        if (true) return p_110775_1_.getForgeProfession().getZombieSkin();
-         switch (p_110775_1_.func_190736_dl())
++        if (true) return entity.getForgeProfession().getZombieSkin();
+         switch (entity.getProfession())
          {
              case 0:
 @@ -47,7 +48,7 @@
      {
-         if (p_77043_1_.func_82230_o())
+         if (entityLiving.isConverting())
          {
--            p_77043_3_ += (float)(Math.cos((double)p_77043_1_.field_70173_aa * 3.25) * Math.PI * 0.25);
-+            p_77043_3_ += (float)(Math.cos((double)p_77043_1_.field_70173_aa * 3.25D) * Math.PI * 0.25D);
+-            rotationYaw += (float)(Math.cos((double)entityLiving.ticksExisted * 3.25) * Math.PI * 0.25);
++            rotationYaw += (float)(Math.cos((double)entityLiving.ticksExisted * 3.25D) * Math.PI * 0.25D);
          }
  
-         super.func_77043_a(p_77043_1_, p_77043_2_, p_77043_3_, p_77043_4_);
+         super.applyRotations(entityLiving, ageInTicks, rotationYaw, partialTicks);

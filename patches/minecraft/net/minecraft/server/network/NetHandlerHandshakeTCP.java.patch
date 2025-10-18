@@ -1,38 +1,38 @@
 --- before/net/minecraft/server/network/NetHandlerHandshakeTCP.java
 +++ after/net/minecraft/server/network/NetHandlerHandshakeTCP.java
 @@ -20,9 +20,10 @@
-         this.field_147386_b = p_i45295_2_;
+         this.networkManager = netManager;
      }
  
 -    @Override
-     public void func_147383_a(C00Handshake p_147383_1_)
+     public void processHandshake(C00Handshake packetIn)
      {
-+        if (!net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerHandshake(p_147383_1_, this.field_147386_b)) return;
++        if (!net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerHandshake(packetIn, this.networkManager)) return;
 +
-         switch (p_147383_1_.func_149594_c())
+         switch (packetIn.getRequestedState())
          {
              case LOGIN:
 @@ -30,13 +31,13 @@
  
-                 if (p_147383_1_.func_149595_d() > 340)
+                 if (packetIn.getProtocolVersion() > 340)
                  {
 -                    ITextComponent itextcomponent = new TextComponentTranslation("multiplayer.disconnect.outdated_server", "1.12.2");
 +                    ITextComponent itextcomponent = new TextComponentTranslation("multiplayer.disconnect.outdated_server", new Object[] {"1.12.2"});
-                     this.field_147386_b.func_179290_a(new SPacketDisconnect(itextcomponent));
-                     this.field_147386_b.func_150718_a(itextcomponent);
+                     this.networkManager.sendPacket(new SPacketDisconnect(itextcomponent));
+                     this.networkManager.closeChannel(itextcomponent);
                  }
-                 else if (p_147383_1_.func_149595_d() < 340)
+                 else if (packetIn.getProtocolVersion() < 340)
                  {
 -                    ITextComponent itextcomponent1 = new TextComponentTranslation("multiplayer.disconnect.outdated_client", "1.12.2");
 +                    ITextComponent itextcomponent1 = new TextComponentTranslation("multiplayer.disconnect.outdated_client", new Object[] {"1.12.2"});
-                     this.field_147386_b.func_179290_a(new SPacketDisconnect(itextcomponent1));
-                     this.field_147386_b.func_150718_a(itextcomponent1);
+                     this.networkManager.sendPacket(new SPacketDisconnect(itextcomponent1));
+                     this.networkManager.closeChannel(itextcomponent1);
                  }
 @@ -55,7 +56,6 @@
          }
      }
  
 -    @Override
-     public void func_147231_a(ITextComponent p_147231_1_)
+     public void onDisconnect(ITextComponent reason)
      {
      }

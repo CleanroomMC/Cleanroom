@@ -13,19 +13,19 @@
  
  public class BlockRedstoneTorch extends BlockTorch
  {
--    private static final Map<World, List<BlockRedstoneTorch.Toggle>> field_150112_b = Maps.newHashMap();
-+    private static final Map<World, List<BlockRedstoneTorch.Toggle>> field_150112_b = new java.util.WeakHashMap<World, List<Toggle>>(); // FORGE - fix vanilla MC-101233
-     private final boolean field_150113_a;
+-    private static final Map<World, List<BlockRedstoneTorch.Toggle>> toggles = Maps.newHashMap();
++    private static final Map<World, List<BlockRedstoneTorch.Toggle>> toggles = new java.util.WeakHashMap<World, List<Toggle>>(); // FORGE - fix vanilla MC-101233
+     private final boolean isOn;
  
-     private boolean func_176598_a(World p_176598_1_, BlockPos p_176598_2_, boolean p_176598_3_)
+     private boolean isBurnedOut(World worldIn, BlockPos pos, boolean turnOff)
 @@ -31,7 +33,7 @@
-             field_150112_b.put(p_176598_1_, Lists.newArrayList());
+             toggles.put(worldIn, Lists.newArrayList());
          }
  
--        List<BlockRedstoneTorch.Toggle> list = field_150112_b.get(p_176598_1_);
-+        List<BlockRedstoneTorch.Toggle> list = (List)field_150112_b.get(p_176598_1_);
+-        List<BlockRedstoneTorch.Toggle> list = toggles.get(worldIn);
++        List<BlockRedstoneTorch.Toggle> list = (List)toggles.get(worldIn);
  
-         if (p_176598_3_)
+         if (turnOff)
          {
 @@ -40,13 +42,15 @@
  
@@ -36,7 +36,7 @@
          {
              BlockRedstoneTorch.Toggle blockredstonetorch$toggle = list.get(j);
  
-             if (blockredstonetorch$toggle.field_180111_a.equals(p_176598_2_))
+             if (blockredstonetorch$toggle.pos.equals(pos))
              {
 -                if (++i >= 8)
 +                ++i;
@@ -47,61 +47,61 @@
                  }
 @@ -60,16 +64,14 @@
      {
-         this.field_150113_a = p_i45423_1_;
-         this.func_149675_a(true);
--        this.func_149647_a(null);
-+        this.func_149647_a((CreativeTabs)null);
+         this.isOn = isOn;
+         this.setTickRandomly(true);
+-        this.setCreativeTab(null);
++        this.setCreativeTab((CreativeTabs)null);
      }
  
 -    @Override
-     public int func_149738_a(World p_149738_1_)
+     public int tickRate(World worldIn)
      {
          return 2;
      }
  
 -    @Override
-     public void func_176213_c(World p_176213_1_, BlockPos p_176213_2_, IBlockState p_176213_3_)
+     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
      {
-         if (this.field_150113_a)
+         if (this.isOn)
 @@ -81,7 +83,6 @@
          }
      }
  
 -    @Override
-     public void func_180663_b(World p_180663_1_, BlockPos p_180663_2_, IBlockState p_180663_3_)
+     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
      {
-         if (this.field_150113_a)
+         if (this.isOn)
 @@ -93,7 +94,6 @@
          }
      }
  
 -    @Override
-     public int func_180656_a(IBlockState p_180656_1_, IBlockAccess p_180656_2_, BlockPos p_180656_3_, EnumFacing p_180656_4_)
+     public int getWeakPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
      {
-         return this.field_150113_a && p_180656_1_.func_177229_b(field_176596_a) != p_180656_4_ ? 15 : 0;
+         return this.isOn && blockState.getValue(FACING) != side ? 15 : 0;
 @@ -101,22 +101,20 @@
  
-     private boolean func_176597_g(World p_176597_1_, BlockPos p_176597_2_, IBlockState p_176597_3_)
+     private boolean shouldBeOff(World worldIn, BlockPos pos, IBlockState state)
      {
--        EnumFacing enumfacing = p_176597_3_.func_177229_b(field_176596_a).func_176734_d();
-+        EnumFacing enumfacing = ((EnumFacing)p_176597_3_.func_177229_b(field_176596_a)).func_176734_d();
-         return p_176597_1_.func_175709_b(p_176597_2_.func_177972_a(enumfacing), enumfacing);
+-        EnumFacing enumfacing = state.getValue(FACING).getOpposite();
++        EnumFacing enumfacing = ((EnumFacing)state.getValue(FACING)).getOpposite();
+         return worldIn.isSidePowered(pos.offset(enumfacing), enumfacing);
      }
  
 -    @Override
-     public void func_180645_a(World p_180645_1_, BlockPos p_180645_2_, IBlockState p_180645_3_, Random p_180645_4_)
+     public void randomTick(World worldIn, BlockPos pos, IBlockState state, Random random)
      {
      }
  
 -    @Override
-     public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
+     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
      {
-         boolean flag = this.func_176597_g(p_180650_1_, p_180650_2_, p_180650_3_);
--        List<BlockRedstoneTorch.Toggle> list = field_150112_b.get(p_180650_1_);
-+        List<BlockRedstoneTorch.Toggle> list = (List)field_150112_b.get(p_180650_1_);
+         boolean flag = this.shouldBeOff(worldIn, pos, state);
+-        List<BlockRedstoneTorch.Toggle> list = toggles.get(worldIn);
++        List<BlockRedstoneTorch.Toggle> list = (List)toggles.get(worldIn);
  
--        while (list != null && !list.isEmpty() && p_180650_1_.func_82737_E() - list.get(0).field_150844_d > 60L)
-+        while (list != null && !list.isEmpty() && p_180650_1_.func_82737_E() - (list.get(0)).field_150844_d > 60L)
+-        while (list != null && !list.isEmpty() && worldIn.getTotalWorldTime() - list.get(0).time > 60L)
++        while (list != null && !list.isEmpty() && worldIn.getTotalWorldTime() - (list.get(0)).time > 60L)
          {
              list.remove(0);
          }
@@ -109,114 +109,114 @@
          {
              if (flag)
              {
--                p_180650_1_.func_180501_a(
--                    p_180650_2_, Blocks.field_150437_az.func_176223_P().func_177226_a(field_176596_a, p_180650_3_.func_177229_b(field_176596_a)), 3
+-                worldIn.setBlockState(
+-                    pos, Blocks.UNLIT_REDSTONE_TORCH.getDefaultState().withProperty(FACING, state.getValue(FACING)), 3
 -                );
-+                p_180650_1_.func_180501_a(p_180650_2_, Blocks.field_150437_az.func_176223_P().func_177226_a(field_176596_a, p_180650_3_.func_177229_b(field_176596_a)), 3);
++                worldIn.setBlockState(pos, Blocks.UNLIT_REDSTONE_TORCH.getDefaultState().withProperty(FACING, state.getValue(FACING)), 3);
  
-                 if (this.func_176598_a(p_180650_1_, p_180650_2_, true))
+                 if (this.isBurnedOut(worldIn, pos, true))
                  {
--                    p_180650_1_.func_184133_a(
+-                    worldIn.playSound(
 -                        null,
--                        p_180650_2_,
--                        SoundEvents.field_187745_eA,
+-                        pos,
+-                        SoundEvents.BLOCK_REDSTONE_TORCH_BURNOUT,
 -                        SoundCategory.BLOCKS,
 -                        0.5F,
--                        2.6F + (p_180650_1_.field_73012_v.nextFloat() - p_180650_1_.field_73012_v.nextFloat()) * 0.8F
+-                        2.6F + (worldIn.rand.nextFloat() - worldIn.rand.nextFloat()) * 0.8F
 -                    );
-+                    p_180650_1_.func_184133_a((EntityPlayer)null, p_180650_2_, SoundEvents.field_187745_eA, SoundCategory.BLOCKS, 0.5F, 2.6F + (p_180650_1_.field_73012_v.nextFloat() - p_180650_1_.field_73012_v.nextFloat()) * 0.8F);
++                    worldIn.playSound((EntityPlayer)null, pos, SoundEvents.BLOCK_REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.5F, 2.6F + (worldIn.rand.nextFloat() - worldIn.rand.nextFloat()) * 0.8F);
  
 -                    for (int i = 0; i < 5; i++)
 +                    for (int i = 0; i < 5; ++i)
                      {
--                        double d0 = (double)p_180650_2_.func_177958_n() + p_180650_4_.nextDouble() * 0.6 + 0.2;
--                        double d1 = (double)p_180650_2_.func_177956_o() + p_180650_4_.nextDouble() * 0.6 + 0.2;
--                        double d2 = (double)p_180650_2_.func_177952_p() + p_180650_4_.nextDouble() * 0.6 + 0.2;
--                        p_180650_1_.func_175688_a(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, 0.0, 0.0, 0.0);
-+                        double d0 = (double)p_180650_2_.func_177958_n() + p_180650_4_.nextDouble() * 0.6D + 0.2D;
-+                        double d1 = (double)p_180650_2_.func_177956_o() + p_180650_4_.nextDouble() * 0.6D + 0.2D;
-+                        double d2 = (double)p_180650_2_.func_177952_p() + p_180650_4_.nextDouble() * 0.6D + 0.2D;
-+                        p_180650_1_.func_175688_a(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+-                        double d0 = (double)pos.getX() + rand.nextDouble() * 0.6 + 0.2;
+-                        double d1 = (double)pos.getY() + rand.nextDouble() * 0.6 + 0.2;
+-                        double d2 = (double)pos.getZ() + rand.nextDouble() * 0.6 + 0.2;
+-                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, 0.0, 0.0, 0.0);
++                        double d0 = (double)pos.getX() + rand.nextDouble() * 0.6D + 0.2D;
++                        double d1 = (double)pos.getY() + rand.nextDouble() * 0.6D + 0.2D;
++                        double d2 = (double)pos.getZ() + rand.nextDouble() * 0.6D + 0.2D;
++                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, 0.0D, 0.0D, 0.0D);
                      }
  
-                     p_180650_1_.func_175684_a(p_180650_2_, p_180650_1_.func_180495_p(p_180650_2_).func_177230_c(), 160);
+                     worldIn.scheduleUpdate(pos, worldIn.getBlockState(pos).getBlock(), 160);
 @@ -154,13 +143,10 @@
          }
-         else if (!flag && !this.func_176598_a(p_180650_1_, p_180650_2_, false))
+         else if (!flag && !this.isBurnedOut(worldIn, pos, false))
          {
--            p_180650_1_.func_180501_a(
--                p_180650_2_, Blocks.field_150429_aA.func_176223_P().func_177226_a(field_176596_a, p_180650_3_.func_177229_b(field_176596_a)), 3
+-            worldIn.setBlockState(
+-                pos, Blocks.REDSTONE_TORCH.getDefaultState().withProperty(FACING, state.getValue(FACING)), 3
 -            );
-+            p_180650_1_.func_180501_a(p_180650_2_, Blocks.field_150429_aA.func_176223_P().func_177226_a(field_176596_a, p_180650_3_.func_177229_b(field_176596_a)), 3);
++            worldIn.setBlockState(pos, Blocks.REDSTONE_TORCH.getDefaultState().withProperty(FACING, state.getValue(FACING)), 3);
          }
      }
  
 -    @Override
-     public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
+     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
      {
-         if (!this.func_176592_e(p_189540_2_, p_189540_3_, p_189540_1_))
+         if (!this.onNeighborChangeInternal(worldIn, pos, state))
 @@ -172,55 +158,49 @@
          }
      }
  
 -    @Override
-     public int func_176211_b(IBlockState p_176211_1_, IBlockAccess p_176211_2_, BlockPos p_176211_3_, EnumFacing p_176211_4_)
+     public int getStrongPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
      {
-         return p_176211_4_ == EnumFacing.DOWN ? p_176211_1_.func_185911_a(p_176211_2_, p_176211_3_, p_176211_4_) : 0;
+         return side == EnumFacing.DOWN ? blockState.getWeakPower(blockAccess, pos, side) : 0;
      }
  
 -    @Override
-     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
+     public Item getItemDropped(IBlockState state, Random rand, int fortune)
      {
-         return Item.func_150898_a(Blocks.field_150429_aA);
+         return Item.getItemFromBlock(Blocks.REDSTONE_TORCH);
      }
  
 -    @Override
-     public boolean func_149744_f(IBlockState p_149744_1_)
+     public boolean canProvidePower(IBlockState state)
      {
          return true;
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public void func_180655_c(IBlockState p_180655_1_, World p_180655_2_, BlockPos p_180655_3_, Random p_180655_4_)
+     public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
      {
-         if (this.field_150113_a)
+         if (this.isOn)
          {
--            double d0 = (double)p_180655_3_.func_177958_n() + 0.5 + (p_180655_4_.nextDouble() - 0.5) * 0.2;
--            double d1 = (double)p_180655_3_.func_177956_o() + 0.7 + (p_180655_4_.nextDouble() - 0.5) * 0.2;
--            double d2 = (double)p_180655_3_.func_177952_p() + 0.5 + (p_180655_4_.nextDouble() - 0.5) * 0.2;
--            EnumFacing enumfacing = p_180655_1_.func_177229_b(field_176596_a);
-+            double d0 = (double)p_180655_3_.func_177958_n() + 0.5D + (p_180655_4_.nextDouble() - 0.5D) * 0.2D;
-+            double d1 = (double)p_180655_3_.func_177956_o() + 0.7D + (p_180655_4_.nextDouble() - 0.5D) * 0.2D;
-+            double d2 = (double)p_180655_3_.func_177952_p() + 0.5D + (p_180655_4_.nextDouble() - 0.5D) * 0.2D;
-+            EnumFacing enumfacing = (EnumFacing)p_180655_1_.func_177229_b(field_176596_a);
+-            double d0 = (double)pos.getX() + 0.5 + (rand.nextDouble() - 0.5) * 0.2;
+-            double d1 = (double)pos.getY() + 0.7 + (rand.nextDouble() - 0.5) * 0.2;
+-            double d2 = (double)pos.getZ() + 0.5 + (rand.nextDouble() - 0.5) * 0.2;
+-            EnumFacing enumfacing = stateIn.getValue(FACING);
++            double d0 = (double)pos.getX() + 0.5D + (rand.nextDouble() - 0.5D) * 0.2D;
++            double d1 = (double)pos.getY() + 0.7D + (rand.nextDouble() - 0.5D) * 0.2D;
++            double d2 = (double)pos.getZ() + 0.5D + (rand.nextDouble() - 0.5D) * 0.2D;
++            EnumFacing enumfacing = (EnumFacing)stateIn.getValue(FACING);
  
-             if (enumfacing.func_176740_k().func_176722_c())
+             if (enumfacing.getAxis().isHorizontal())
              {
-                 EnumFacing enumfacing1 = enumfacing.func_176734_d();
+                 EnumFacing enumfacing1 = enumfacing.getOpposite();
 -                double d3 = 0.27;
--                d0 += 0.27 * (double)enumfacing1.func_82601_c();
+-                d0 += 0.27 * (double)enumfacing1.getXOffset();
 -                d1 += 0.22;
--                d2 += 0.27 * (double)enumfacing1.func_82599_e();
+-                d2 += 0.27 * (double)enumfacing1.getZOffset();
 +                double d3 = 0.27D;
-+                d0 += 0.27D * (double)enumfacing1.func_82601_c();
++                d0 += 0.27D * (double)enumfacing1.getXOffset();
 +                d1 += 0.22D;
-+                d2 += 0.27D * (double)enumfacing1.func_82599_e();
++                d2 += 0.27D * (double)enumfacing1.getZOffset();
              }
  
--            p_180655_2_.func_175688_a(EnumParticleTypes.REDSTONE, d0, d1, d2, 0.0, 0.0, 0.0);
-+            p_180655_2_.func_175688_a(EnumParticleTypes.REDSTONE, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+-            worldIn.spawnParticle(EnumParticleTypes.REDSTONE, d0, d1, d2, 0.0, 0.0, 0.0);
++            worldIn.spawnParticle(EnumParticleTypes.REDSTONE, d0, d1, d2, 0.0D, 0.0D, 0.0D);
          }
      }
  
 -    @Override
-     public ItemStack func_185473_a(World p_185473_1_, BlockPos p_185473_2_, IBlockState p_185473_3_)
+     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
      {
-         return new ItemStack(Blocks.field_150429_aA);
+         return new ItemStack(Blocks.REDSTONE_TORCH);
      }
  
 -    @Override
-     public boolean func_149667_c(Block p_149667_1_)
+     public boolean isAssociatedBlock(Block other)
      {
-         return p_149667_1_ == Blocks.field_150437_az || p_149667_1_ == Blocks.field_150429_aA;
+         return other == Blocks.UNLIT_REDSTONE_TORCH || other == Blocks.REDSTONE_TORCH;

@@ -2,19 +2,19 @@
 +++ after/net/minecraft/client/gui/GuiGameOver.java
 @@ -74,7 +74,7 @@
  
-                 if (this.field_146297_k.field_71441_e.func_72912_H().func_76093_s())
+                 if (this.mc.world.getWorldInfo().isHardcoreModeEnabled())
                  {
--                    this.field_146297_k.func_147108_a(new GuiMainMenu());
-+                    func_73878_a(true, 0); // Forge : Fix MC-30646
+-                    this.mc.displayGuiScreen(new GuiMainMenu());
++                    confirmClicked(true, 0); // Forge : Fix MC-30646
                  }
                  else
                  {
 @@ -195,7 +195,7 @@
-     public void func_73876_c()
+     public void updateScreen()
      {
-         super.func_73876_c();
--        this.field_146347_a++;
-+        ++this.field_146347_a;
+         super.updateScreen();
+-        this.enableButtonsTimer++;
++        ++this.enableButtonsTimer;
  
-         if (this.field_146347_a == 20)
+         if (this.enableButtonsTimer == 20)
          {

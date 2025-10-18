@@ -4,137 +4,137 @@
  
  public class EntityMinecartCommandBlock extends EntityMinecart
  {
--    private static final DataParameter<String> field_184273_a = EntityDataManager.func_187226_a(EntityMinecartCommandBlock.class, DataSerializers.field_187194_d);
--    private static final DataParameter<ITextComponent> field_184274_b = EntityDataManager.func_187226_a(
--                    EntityMinecartCommandBlock.class, DataSerializers.field_187195_e
+-    private static final DataParameter<String> COMMAND = EntityDataManager.createKey(EntityMinecartCommandBlock.class, DataSerializers.STRING);
+-    private static final DataParameter<ITextComponent> LAST_OUTPUT = EntityDataManager.createKey(
+-                    EntityMinecartCommandBlock.class, DataSerializers.TEXT_COMPONENT
 -                );
-+    private static final DataParameter<String> field_184273_a = EntityDataManager.<String>func_187226_a(EntityMinecartCommandBlock.class, DataSerializers.field_187194_d);
-+    private static final DataParameter<ITextComponent> field_184274_b = EntityDataManager.<ITextComponent>func_187226_a(EntityMinecartCommandBlock.class, DataSerializers.field_187195_e);
-     private final CommandBlockBaseLogic field_145824_a = new CommandBlockBaseLogic()
++    private static final DataParameter<String> COMMAND = EntityDataManager.<String>createKey(EntityMinecartCommandBlock.class, DataSerializers.STRING);
++    private static final DataParameter<ITextComponent> LAST_OUTPUT = EntityDataManager.<ITextComponent>createKey(EntityMinecartCommandBlock.class, DataSerializers.TEXT_COMPONENT);
+     private final CommandBlockBaseLogic commandBlockLogic = new CommandBlockBaseLogic()
      {
 -        @Override
-         public void func_145756_e()
+         public void updateCommand()
          {
-             EntityMinecartCommandBlock.this.func_184212_Q().func_187227_b(EntityMinecartCommandBlock.field_184273_a, this.func_145753_i());
-             EntityMinecartCommandBlock.this.func_184212_Q().func_187227_b(EntityMinecartCommandBlock.field_184274_b, this.func_145749_h());
+             EntityMinecartCommandBlock.this.getDataManager().set(EntityMinecartCommandBlock.COMMAND, this.getCommand());
+             EntityMinecartCommandBlock.this.getDataManager().set(EntityMinecartCommandBlock.LAST_OUTPUT, this.getLastOutput());
          }
          @SideOnly(Side.CLIENT)
 -        @Override
-         public int func_145751_f()
+         public int getCommandBlockType()
          {
              return 1;
          }
          @SideOnly(Side.CLIENT)
 -        @Override
-         public void func_145757_a(ByteBuf p_145757_1_)
+         public void fillInInfo(ByteBuf buf)
          {
-             p_145757_1_.writeInt(EntityMinecartCommandBlock.this.func_145782_y());
+             buf.writeInt(EntityMinecartCommandBlock.this.getEntityId());
          }
 -        @Override
-         public BlockPos func_180425_c()
+         public BlockPos getPosition()
          {
 -            return new BlockPos(
--                       EntityMinecartCommandBlock.this.field_70165_t, EntityMinecartCommandBlock.this.field_70163_u + 0.5, EntityMinecartCommandBlock.this.field_70161_v
+-                       EntityMinecartCommandBlock.this.posX, EntityMinecartCommandBlock.this.posY + 0.5, EntityMinecartCommandBlock.this.posZ
 -                   );
-+            return new BlockPos(EntityMinecartCommandBlock.this.field_70165_t, EntityMinecartCommandBlock.this.field_70163_u + 0.5D, EntityMinecartCommandBlock.this.field_70161_v);
++            return new BlockPos(EntityMinecartCommandBlock.this.posX, EntityMinecartCommandBlock.this.posY + 0.5D, EntityMinecartCommandBlock.this.posZ);
          }
 -        @Override
-         public Vec3d func_174791_d()
+         public Vec3d getPositionVector()
          {
 -            return new Vec3d(
--                       EntityMinecartCommandBlock.this.field_70165_t, EntityMinecartCommandBlock.this.field_70163_u, EntityMinecartCommandBlock.this.field_70161_v
+-                       EntityMinecartCommandBlock.this.posX, EntityMinecartCommandBlock.this.posY, EntityMinecartCommandBlock.this.posZ
 -                   );
-+            return new Vec3d(EntityMinecartCommandBlock.this.field_70165_t, EntityMinecartCommandBlock.this.field_70163_u, EntityMinecartCommandBlock.this.field_70161_v);
++            return new Vec3d(EntityMinecartCommandBlock.this.posX, EntityMinecartCommandBlock.this.posY, EntityMinecartCommandBlock.this.posZ);
          }
 -        @Override
-         public World func_130014_f_()
+         public World getEntityWorld()
          {
-             return EntityMinecartCommandBlock.this.field_70170_p;
+             return EntityMinecartCommandBlock.this.world;
          }
 -        @Override
-         public Entity func_174793_f()
+         public Entity getCommandSenderEntity()
          {
              return EntityMinecartCommandBlock.this;
          }
 -        @Override
-         public MinecraftServer func_184102_h()
+         public MinecraftServer getServer()
          {
-             return EntityMinecartCommandBlock.this.field_70170_p.func_73046_m();
+             return EntityMinecartCommandBlock.this.world.getMinecraftServer();
 @@ -100,7 +86,6 @@
-         EntityMinecart.func_189669_a(p_189670_0_, EntityMinecartCommandBlock.class);
-         p_189670_0_.func_188258_a(FixTypes.ENTITY, new IDataWalker()
+         EntityMinecart.registerFixesMinecart(fixer, EntityMinecartCommandBlock.class);
+         fixer.registerWalker(FixTypes.ENTITY, new IDataWalker()
          {
 -            @Override
-             public NBTTagCompound func_188266_a(IDataFixer p_188266_1_, NBTTagCompound p_188266_2_, int p_188266_3_)
+             public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
              {
-                 if (TileEntity.func_190559_a(TileEntityCommandBlock.class).equals(new ResourceLocation(p_188266_2_.func_74779_i("id"))))
+                 if (TileEntity.getKey(TileEntityCommandBlock.class).equals(new ResourceLocation(compound.getString("id"))))
 @@ -115,7 +100,6 @@
          });
      }
  
 -    @Override
-     protected void func_70088_a()
+     protected void entityInit()
      {
-         super.func_70088_a();
+         super.entityInit();
 @@ -123,7 +107,6 @@
-         this.func_184212_Q().func_187214_a(field_184274_b, new TextComponentString(""));
+         this.getDataManager().register(LAST_OUTPUT, new TextComponentString(""));
      }
  
 -    @Override
-     protected void func_70037_a(NBTTagCompound p_70037_1_)
+     protected void readEntityFromNBT(NBTTagCompound compound)
      {
-         super.func_70037_a(p_70037_1_);
+         super.readEntityFromNBT(compound);
 @@ -132,20 +115,17 @@
-         this.func_184212_Q().func_187227_b(field_184274_b, this.func_145822_e().func_145749_h());
+         this.getDataManager().set(LAST_OUTPUT, this.getCommandBlockLogic().getLastOutput());
      }
  
 -    @Override
-     protected void func_70014_b(NBTTagCompound p_70014_1_)
+     protected void writeEntityToNBT(NBTTagCompound compound)
      {
-         super.func_70014_b(p_70014_1_);
-         this.field_145824_a.func_189510_a(p_70014_1_);
+         super.writeEntityToNBT(compound);
+         this.commandBlockLogic.writeToNBT(compound);
      }
  
 -    @Override
-     public EntityMinecart.Type func_184264_v()
+     public EntityMinecart.Type getType()
      {
          return EntityMinecart.Type.COMMAND_BLOCK;
      }
  
 -    @Override
-     public IBlockState func_180457_u()
+     public IBlockState getDefaultDisplayTile()
      {
-         return Blocks.field_150483_bI.func_176223_P();
+         return Blocks.COMMAND_BLOCK.getDefaultState();
 @@ -156,7 +136,6 @@
-         return this.field_145824_a;
+         return this.commandBlockLogic;
      }
  
 -    @Override
-     public void func_96095_a(int p_96095_1_, int p_96095_2_, int p_96095_3_, boolean p_96095_4_)
+     public void onActivatorRailPass(int x, int y, int z, boolean receivingPower)
      {
-         if (p_96095_4_ && this.field_70173_aa - this.field_145823_b >= 4)
+         if (receivingPower && this.ticksExisted - this.activatorRailCooldown >= 4)
 @@ -166,14 +145,13 @@
          }
      }
  
 -    @Override
-     public boolean func_184230_a(EntityPlayer p_184230_1_, EnumHand p_184230_2_)
+     public boolean processInitialInteract(EntityPlayer player, EnumHand hand)
      {
-+        if (super.func_184230_a(p_184230_1_, p_184230_2_)) return true;
-         this.field_145824_a.func_175574_a(p_184230_1_);
++        if (super.processInitialInteract(player, hand)) return true;
+         this.commandBlockLogic.tryOpenEditCommandBlock(player);
          return false;
      }
  
 -    @Override
-     public void func_184206_a(DataParameter<?> p_184206_1_)
+     public void notifyDataManagerChange(DataParameter<?> key)
      {
-         super.func_184206_a(p_184206_1_);
+         super.notifyDataManagerChange(key);
 @@ -182,19 +160,19 @@
          {
              try
              {
--                this.field_145824_a.func_145750_b(this.func_184212_Q().func_187225_a(field_184274_b));
-+                this.field_145824_a.func_145750_b((ITextComponent)this.func_184212_Q().func_187225_a(field_184274_b));
+-                this.commandBlockLogic.setLastOutput(this.getDataManager().get(LAST_OUTPUT));
++                this.commandBlockLogic.setLastOutput((ITextComponent)this.getDataManager().get(LAST_OUTPUT));
              }
 -            catch (Throwable throwable)
 +            catch (Throwable var3)
@@ -142,14 +142,14 @@
 +                ;
              }
          }
-         else if (field_184273_a.equals(p_184206_1_))
+         else if (COMMAND.equals(key))
          {
--            this.field_145824_a.func_145752_a(this.func_184212_Q().func_187225_a(field_184273_a));
-+            this.field_145824_a.func_145752_a((String)this.func_184212_Q().func_187225_a(field_184273_a));
+-            this.commandBlockLogic.setCommand(this.getDataManager().get(COMMAND));
++            this.commandBlockLogic.setCommand((String)this.getDataManager().get(COMMAND));
          }
      }
  
 -    @Override
-     public boolean func_184213_bq()
+     public boolean ignoreItemEntityData()
      {
          return true;

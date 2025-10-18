@@ -10,79 +10,79 @@
 -            for (int l = 0; l < 9; l++)
 +            for (int l = 0; l < 9; ++l)
              {
-                 this.func_75146_a(new Slot(p_i45804_1_, l + k * 9 + 9, 36 + l * 18, 137 + k * 18));
+                 this.addSlotToContainer(new Slot(playerInventory, l + k * 9 + 9, 36 + l * 18, 137 + k * 18));
              }
          }
  
 -        for (int i1 = 0; i1 < 9; i1++)
 +        for (int i1 = 0; i1 < 9; ++i1)
          {
-             this.func_75146_a(new Slot(p_i45804_1_, i1, 36 + i1 * 18, 195));
+             this.addSlotToContainer(new Slot(playerInventory, i1, 36 + i1 * 18, 195));
          }
      }
  
 -    @Override
-     public void func_75132_a(IContainerListener p_75132_1_)
+     public void addListener(IContainerListener listener)
      {
-         super.func_75132_a(p_75132_1_);
+         super.addListener(listener);
 @@ -42,7 +41,6 @@
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public void func_75137_b(int p_75137_1_, int p_75137_2_)
+     public void updateProgressBar(int id, int data)
      {
-         this.field_82866_e.func_174885_b(p_75137_1_, p_75137_2_);
+         this.tileBeacon.setField(id, data);
 @@ -53,7 +51,6 @@
-         return this.field_82866_e;
+         return this.tileBeacon;
      }
  
 -    @Override
-     public void func_75134_a(EntityPlayer p_75134_1_)
+     public void onContainerClosed(EntityPlayer playerIn)
      {
-         super.func_75134_a(p_75134_1_);
+         super.onContainerClosed(playerIn);
 @@ -69,13 +66,11 @@
          }
      }
  
 -    @Override
-     public boolean func_75145_c(EntityPlayer p_75145_1_)
+     public boolean canInteractWith(EntityPlayer playerIn)
      {
-         return this.field_82866_e.func_70300_a(p_75145_1_);
+         return this.tileBeacon.isUsableByPlayer(playerIn);
      }
  
 -    @Override
-     public ItemStack func_82846_b(EntityPlayer p_82846_1_, int p_82846_2_)
+     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
      {
-         ItemStack itemstack = ItemStack.field_190927_a;
+         ItemStack itemstack = ItemStack.EMPTY;
 @@ -95,12 +90,9 @@
  
-                 slot.func_75220_a(itemstack1, itemstack);
+                 slot.onSlotChange(itemstack1, itemstack);
              }
--            else if (!this.field_82864_f.func_75216_d() && this.field_82864_f.func_75214_a(itemstack1) && itemstack1.func_190916_E() == 1)
-+            else if (this.func_75135_a(itemstack1, 0, 1, false)) //Forge Fix Shift Clicking in beacons with stacks larger then 1.
+-            else if (!this.beaconSlot.getHasStack() && this.beaconSlot.isItemValid(itemstack1) && itemstack1.getCount() == 1)
++            else if (this.mergeItemStack(itemstack1, 0, 1, false)) //Forge Fix Shift Clicking in beacons with stacks larger then 1.
              {
--                if (!this.func_75135_a(itemstack1, 0, 1, false))
+-                if (!this.mergeItemStack(itemstack1, 0, 1, false))
 -                {
--                    return ItemStack.field_190927_a;
+-                    return ItemStack.EMPTY;
 -                }
-+                return ItemStack.field_190927_a;
++                return ItemStack.EMPTY;
              }
-             else if (p_82846_2_ >= 1 && p_82846_2_ < 28)
+             else if (index >= 1 && index < 28)
              {
 @@ -148,14 +140,11 @@
-             super(p_i1801_2_, p_i1801_3_, p_i1801_4_, p_i1801_5_);
+             super(inventoryIn, index, xIn, yIn);
          }
  
 -        @Override
-         public boolean func_75214_a(ItemStack p_75214_1_)
+         public boolean isItemValid(ItemStack stack)
          {
--            Item item = p_75214_1_.func_77973_b();
--            return item == Items.field_151166_bC || item == Items.field_151045_i || item == Items.field_151043_k || item == Items.field_151042_j;
-+            return p_75214_1_.func_77973_b().isBeaconPayment(p_75214_1_);
+-            Item item = stack.getItem();
+-            return item == Items.EMERALD || item == Items.DIAMOND || item == Items.GOLD_INGOT || item == Items.IRON_INGOT;
++            return stack.getItem().isBeaconPayment(stack);
          }
  
 -        @Override
-         public int func_75219_a()
+         public int getSlotStackLimit()
          {
              return 1;

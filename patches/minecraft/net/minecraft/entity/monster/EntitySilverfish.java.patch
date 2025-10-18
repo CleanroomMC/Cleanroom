@@ -1,126 +1,126 @@
 --- before/net/minecraft/entity/monster/EntitySilverfish.java
 +++ after/net/minecraft/entity/monster/EntitySilverfish.java
 @@ -42,70 +42,60 @@
-         EntityLiving.func_189752_a(p_189767_0_, EntitySilverfish.class);
+         EntityLiving.registerFixesMob(fixer, EntitySilverfish.class);
      }
  
 -    @Override
-     protected void func_184651_r()
+     protected void initEntityAI()
      {
-         this.field_175460_b = new EntitySilverfish.AISummonSilverfish(this);
-         this.field_70714_bg.func_75776_a(1, new EntityAISwimming(this));
-         this.field_70714_bg.func_75776_a(3, this.field_175460_b);
--        this.field_70714_bg.func_75776_a(4, new EntityAIAttackMelee(this, 1.0, false));
-+        this.field_70714_bg.func_75776_a(4, new EntityAIAttackMelee(this, 1.0D, false));
-         this.field_70714_bg.func_75776_a(5, new EntitySilverfish.AIHideInStone(this));
--        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, true));
--        this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
-+        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, true, new Class[0]));
-+        this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
+         this.summonSilverfish = new EntitySilverfish.AISummonSilverfish(this);
+         this.tasks.addTask(1, new EntityAISwimming(this));
+         this.tasks.addTask(3, this.summonSilverfish);
+-        this.tasks.addTask(4, new EntityAIAttackMelee(this, 1.0, false));
++        this.tasks.addTask(4, new EntityAIAttackMelee(this, 1.0D, false));
+         this.tasks.addTask(5, new EntitySilverfish.AIHideInStone(this));
+-        this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
+-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
++        this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, new Class[0]));
++        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
      }
  
 -    @Override
-     public double func_70033_W()
+     public double getYOffset()
      {
 -        return 0.1;
 +        return 0.1D;
      }
  
 -    @Override
-     public float func_70047_e()
+     public float getEyeHeight()
      {
          return 0.1F;
      }
  
 -    @Override
-     protected void func_110147_ax()
+     protected void applyEntityAttributes()
      {
-         super.func_110147_ax();
--        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(8.0);
--        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.25);
--        this.func_110148_a(SharedMonsterAttributes.field_111264_e).func_111128_a(1.0);
-+        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(8.0D);
-+        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.25D);
-+        this.func_110148_a(SharedMonsterAttributes.field_111264_e).func_111128_a(1.0D);
+         super.applyEntityAttributes();
+-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(8.0);
+-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
+-        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1.0);
++        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(8.0D);
++        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.25D);
++        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1.0D);
      }
  
 -    @Override
-     protected boolean func_70041_e_()
+     protected boolean canTriggerWalking()
      {
          return false;
      }
  
 -    @Override
-     protected SoundEvent func_184639_G()
+     protected SoundEvent getAmbientSound()
      {
-         return SoundEvents.field_187793_eY;
+         return SoundEvents.ENTITY_SILVERFISH_AMBIENT;
      }
  
 -    @Override
-     protected SoundEvent func_184601_bQ(DamageSource p_184601_1_)
+     protected SoundEvent getHurtSound(DamageSource damageSourceIn)
      {
-         return SoundEvents.field_187850_fa;
+         return SoundEvents.ENTITY_SILVERFISH_HURT;
      }
  
 -    @Override
-     protected SoundEvent func_184615_bR()
+     protected SoundEvent getDeathSound()
      {
-         return SoundEvents.field_187795_eZ;
+         return SoundEvents.ENTITY_SILVERFISH_DEATH;
      }
  
 -    @Override
-     protected void func_180429_a(BlockPos p_180429_1_, Block p_180429_2_)
+     protected void playStepSound(BlockPos pos, Block blockIn)
      {
-         this.func_184185_a(SoundEvents.field_187852_fb, 0.15F, 1.0F);
+         this.playSound(SoundEvents.ENTITY_SILVERFISH_STEP, 0.15F, 1.0F);
      }
  
 -    @Override
-     public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
+     public boolean attackEntityFrom(DamageSource source, float amount)
      {
-         if (this.func_180431_b(p_70097_1_))
+         if (this.isEntityInvulnerable(source))
 @@ -124,44 +114,38 @@
      }
  
      @Nullable
 -    @Override
-     protected ResourceLocation func_184647_J()
+     protected ResourceLocation getLootTable()
      {
-         return LootTableList.field_186438_t;
+         return LootTableList.ENTITIES_SILVERFISH;
      }
  
 -    @Override
-     public void func_70071_h_()
+     public void onUpdate()
      {
-         this.field_70761_aq = this.field_70177_z;
-         super.func_70071_h_();
+         this.renderYawOffset = this.rotationYaw;
+         super.onUpdate();
      }
  
 -    @Override
-     public void func_181013_g(float p_181013_1_)
+     public void setRenderYawOffset(float offset)
      {
-         this.field_70177_z = p_181013_1_;
-         super.func_181013_g(p_181013_1_);
+         this.rotationYaw = offset;
+         super.setRenderYawOffset(offset);
      }
  
 -    @Override
-     public float func_180484_a(BlockPos p_180484_1_)
+     public float getBlockPathWeight(BlockPos pos)
      {
-         return this.field_70170_p.func_180495_p(p_180484_1_.func_177977_b()).func_177230_c() == Blocks.field_150348_b ? 10.0F : super.func_180484_a(p_180484_1_);
+         return this.world.getBlockState(pos.down()).getBlock() == Blocks.STONE ? 10.0F : super.getBlockPathWeight(pos);
      }
  
 -    @Override
-     protected boolean func_70814_o()
+     protected boolean isValidLightLevel()
      {
          return true;
      }
  
 -    @Override
-     public boolean func_70601_bi()
+     public boolean getCanSpawnHere()
      {
-         if (super.func_70601_bi())
+         if (super.getCanSpawnHere())
          {
--            EntityPlayer entityplayer = this.field_70170_p.func_184136_b(this, 5.0);
-+            EntityPlayer entityplayer = this.field_70170_p.func_184136_b(this, 5.0D);
+-            EntityPlayer entityplayer = this.world.getNearestPlayerNotCreative(this, 5.0);
++            EntityPlayer entityplayer = this.world.getNearestPlayerNotCreative(this, 5.0D);
              return entityplayer == null;
          }
          else
@@ -129,101 +129,101 @@
      }
  
 -    @Override
-     public EnumCreatureAttribute func_70668_bt()
+     public EnumCreatureAttribute getCreatureAttribute()
      {
          return EnumCreatureAttribute.ARTHROPOD;
 @@ -183,11 +166,10 @@
  
-             public AIHideInStone(EntitySilverfish p_i45827_1_)
+             public AIHideInStone(EntitySilverfish silverfishIn)
              {
--                super(p_i45827_1_, 1.0, 10);
-+                super(p_i45827_1_, 1.0D, 10);
-                 this.func_75248_a(1);
+-                super(silverfishIn, 1.0, 10);
++                super(silverfishIn, 1.0D, 10);
+                 this.setMutexBits(1);
              }
  
 -            @Override
-             public boolean func_75250_a()
+             public boolean shouldExecute()
              {
-                 if (this.field_75457_a.func_70638_az() != null)
+                 if (this.entity.getAttackTarget() != null)
 @@ -202,11 +184,10 @@
                  {
-                     Random random = this.field_75457_a.func_70681_au();
+                     Random random = this.entity.getRNG();
  
--                    if (this.field_75457_a.field_70170_p.func_82736_K().func_82766_b("mobGriefing") && random.nextInt(10) == 0)
-+                    if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.field_75457_a.field_70170_p, this.field_75457_a) && random.nextInt(10) == 0)
+-                    if (this.entity.world.getGameRules().getBoolean("mobGriefing") && random.nextInt(10) == 0)
++                    if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.entity.world, this.entity) && random.nextInt(10) == 0)
                      {
-                         this.field_179483_b = EnumFacing.func_176741_a(random);
--                        BlockPos blockpos = new BlockPos(this.field_75457_a.field_70165_t, this.field_75457_a.field_70163_u + 0.5, this.field_75457_a.field_70161_v)
--                        .func_177972_a(this.field_179483_b);
-+                        BlockPos blockpos = (new BlockPos(this.field_75457_a.field_70165_t, this.field_75457_a.field_70163_u + 0.5D, this.field_75457_a.field_70161_v)).func_177972_a(this.field_179483_b);
-                         IBlockState iblockstate = this.field_75457_a.field_70170_p.func_180495_p(blockpos);
+                         this.facing = EnumFacing.random(random);
+-                        BlockPos blockpos = new BlockPos(this.entity.posX, this.entity.posY + 0.5, this.entity.posZ)
+-                        .offset(this.facing);
++                        BlockPos blockpos = (new BlockPos(this.entity.posX, this.entity.posY + 0.5D, this.entity.posZ)).offset(this.facing);
+                         IBlockState iblockstate = this.entity.world.getBlockState(blockpos);
  
-                         if (BlockSilverfish.func_176377_d(iblockstate))
+                         if (BlockSilverfish.canContainSilverfish(iblockstate))
 @@ -221,13 +202,11 @@
                  }
              }
  
 -            @Override
-             public boolean func_75253_b()
+             public boolean shouldContinueExecuting()
              {
-                 return this.field_179484_c ? false : super.func_75253_b();
+                 return this.doMerge ? false : super.shouldContinueExecuting();
              }
  
 -            @Override
-             public void func_75249_e()
+             public void startExecuting()
              {
-                 if (!this.field_179484_c)
+                 if (!this.doMerge)
 @@ -237,17 +216,12 @@
                  else
                  {
-                     World world = this.field_75457_a.field_70170_p;
--                    BlockPos blockpos = new BlockPos(this.field_75457_a.field_70165_t, this.field_75457_a.field_70163_u + 0.5, this.field_75457_a.field_70161_v)
--                    .func_177972_a(this.field_179483_b);
-+                    BlockPos blockpos = (new BlockPos(this.field_75457_a.field_70165_t, this.field_75457_a.field_70163_u + 0.5D, this.field_75457_a.field_70161_v)).func_177972_a(this.field_179483_b);
-                     IBlockState iblockstate = world.func_180495_p(blockpos);
+                     World world = this.entity.world;
+-                    BlockPos blockpos = new BlockPos(this.entity.posX, this.entity.posY + 0.5, this.entity.posZ)
+-                    .offset(this.facing);
++                    BlockPos blockpos = (new BlockPos(this.entity.posX, this.entity.posY + 0.5D, this.entity.posZ)).offset(this.facing);
+                     IBlockState iblockstate = world.getBlockState(blockpos);
  
-                     if (BlockSilverfish.func_176377_d(iblockstate))
+                     if (BlockSilverfish.canContainSilverfish(iblockstate))
                      {
--                        world.func_180501_a(
+-                        world.setBlockState(
 -                            blockpos,
--                            Blocks.field_150418_aU.func_176223_P().func_177226_a(BlockSilverfish.field_176378_a, BlockSilverfish.EnumType.func_176878_a(iblockstate)),
+-                            Blocks.MONSTER_EGG.getDefaultState().withProperty(BlockSilverfish.VARIANT, BlockSilverfish.EnumType.forModelBlock(iblockstate)),
 -                            3
 -                        );
-+                        world.func_180501_a(blockpos, Blocks.field_150418_aU.func_176223_P().func_177226_a(BlockSilverfish.field_176378_a, BlockSilverfish.EnumType.func_176878_a(iblockstate)), 3);
-                         this.field_75457_a.func_70656_aK();
-                         this.field_75457_a.func_70106_y();
++                        world.setBlockState(blockpos, Blocks.MONSTER_EGG.getDefaultState().withProperty(BlockSilverfish.VARIANT, BlockSilverfish.EnumType.forModelBlock(iblockstate)), 3);
+                         this.entity.spawnExplosionParticle();
+                         this.entity.setDead();
                      }
 @@ -273,16 +247,14 @@
                  }
              }
  
 -            @Override
-             public boolean func_75250_a()
+             public boolean shouldExecute()
              {
-                 return this.field_179463_b > 0;
+                 return this.lookForFriends > 0;
              }
  
 -            @Override
-             public void func_75246_d()
+             public void updateTask()
              {
--                this.field_179463_b--;
-+                --this.field_179463_b;
+-                this.lookForFriends--;
++                --this.lookForFriends;
  
-                 if (this.field_179463_b <= 0)
+                 if (this.lookForFriends <= 0)
                  {
 @@ -301,13 +273,13 @@
  
-                                 if (iblockstate.func_177230_c() == Blocks.field_150418_aU)
+                                 if (iblockstate.getBlock() == Blocks.MONSTER_EGG)
                                  {
--                                    if (world.func_82736_K().func_82766_b("mobGriefing"))
-+                                    if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(world, this.field_179464_a))
+-                                    if (world.getGameRules().getBoolean("mobGriefing"))
++                                    if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(world, this.silverfish))
                                      {
-                                         world.func_175655_b(blockpos1, true);
+                                         world.destroyBlock(blockpos1, true);
                                      }
                                      else
                                      {
--                                        world.func_180501_a(blockpos1, iblockstate.func_177229_b(BlockSilverfish.field_176378_a).func_176883_d(), 3);
-+                                        world.func_180501_a(blockpos1, ((BlockSilverfish.EnumType)iblockstate.func_177229_b(BlockSilverfish.field_176378_a)).func_176883_d(), 3);
+-                                        world.setBlockState(blockpos1, iblockstate.getValue(BlockSilverfish.VARIANT).getModelBlock(), 3);
++                                        world.setBlockState(blockpos1, ((BlockSilverfish.EnumType)iblockstate.getValue(BlockSilverfish.VARIANT)).getModelBlock(), 3);
                                      }
  
                                      if (random.nextBoolean())

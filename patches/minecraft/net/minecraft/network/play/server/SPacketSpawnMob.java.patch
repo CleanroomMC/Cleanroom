@@ -10,21 +10,21 @@
  import net.minecraft.network.Packet;
 @@ -39,55 +38,54 @@
      {
-         this.field_149042_a = p_i46973_1_.func_145782_y();
-         this.field_186894_b = p_i46973_1_.func_110124_au();
--        this.field_149040_b = EntityList.field_191308_b.func_148757_b((Class <? extends Entity >)p_i46973_1_.getClass());
-+        this.field_149040_b = EntityList.getID(p_i46973_1_.getClass());
-         this.field_149041_c = p_i46973_1_.field_70165_t;
-         this.field_149038_d = p_i46973_1_.field_70163_u;
-         this.field_149039_e = p_i46973_1_.field_70161_v;
-         this.field_149048_i = (byte)((int)(p_i46973_1_.field_70177_z * 256.0F / 360.0F));
-         this.field_149045_j = (byte)((int)(p_i46973_1_.field_70125_A * 256.0F / 360.0F));
-         this.field_149046_k = (byte)((int)(p_i46973_1_.field_70759_as * 256.0F / 360.0F));
+         this.entityId = entityIn.getEntityId();
+         this.uniqueId = entityIn.getUniqueID();
+-        this.type = EntityList.REGISTRY.getIDForObject((Class <? extends Entity >)entityIn.getClass());
++        this.type = EntityList.getID(entityIn.getClass());
+         this.x = entityIn.posX;
+         this.y = entityIn.posY;
+         this.z = entityIn.posZ;
+         this.yaw = (byte)((int)(entityIn.rotationYaw * 256.0F / 360.0F));
+         this.pitch = (byte)((int)(entityIn.rotationPitch * 256.0F / 360.0F));
+         this.headPitch = (byte)((int)(entityIn.rotationYawHead * 256.0F / 360.0F));
 -        double d0 = 3.9;
 +        double d0 = 3.9D;
-         double d1 = p_i46973_1_.field_70159_w;
-         double d2 = p_i46973_1_.field_70181_x;
-         double d3 = p_i46973_1_.field_70179_y;
+         double d1 = entityIn.motionX;
+         double d2 = entityIn.motionY;
+         double d3 = entityIn.motionZ;
  
 -        if (d1 < -3.9)
 -        {
@@ -56,9 +56,9 @@
 -            d3 = 3.9;
 -        }
 -
--        this.field_149036_f = (int)(d1 * 8000.0);
--        this.field_149037_g = (int)(d2 * 8000.0);
--        this.field_149047_h = (int)(d3 * 8000.0);
+-        this.velocityX = (int)(d1 * 8000.0);
+-        this.velocityY = (int)(d2 * 8000.0);
+-        this.velocityZ = (int)(d3 * 8000.0);
 +        if (d1 < -3.9D)
 +        {
 +            d1 = -3.9D;
@@ -89,21 +89,21 @@
 +            d3 = 3.9D;
 +        }
 +
-+        this.field_149036_f = (int)(d1 * 8000.0D);
-+        this.field_149037_g = (int)(d2 * 8000.0D);
-+        this.field_149047_h = (int)(d3 * 8000.0D);
-         this.field_149043_l = p_i46973_1_.func_184212_Q();
++        this.velocityX = (int)(d1 * 8000.0D);
++        this.velocityY = (int)(d2 * 8000.0D);
++        this.velocityZ = (int)(d3 * 8000.0D);
+         this.dataManager = entityIn.getDataManager();
      }
  
 -    @Override
-     public void func_148837_a(PacketBuffer p_148837_1_) throws IOException
+     public void readPacketData(PacketBuffer buf) throws IOException
      {
-         this.field_149042_a = p_148837_1_.func_150792_a();
+         this.entityId = buf.readVarInt();
 @@ -105,7 +103,6 @@
-         this.field_149044_m = EntityDataManager.func_187215_b(p_148837_1_);
+         this.dataManagerEntries = EntityDataManager.readEntries(buf);
      }
  
 -    @Override
-     public void func_148840_b(PacketBuffer p_148840_1_) throws IOException
+     public void writePacketData(PacketBuffer buf) throws IOException
      {
-         p_148840_1_.func_150787_b(this.field_149042_a);
+         buf.writeVarInt(this.entityId);

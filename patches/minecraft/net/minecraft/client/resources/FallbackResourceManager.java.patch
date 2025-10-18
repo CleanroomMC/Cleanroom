@@ -3,106 +3,106 @@
 @@ -20,7 +20,7 @@
  public class FallbackResourceManager implements IResourceManager
  {
-     private static final Logger field_177246_b = LogManager.getLogger();
--    protected final List<IResourcePack> field_110540_a = Lists.newArrayList();
-+    protected final List<IResourcePack> field_110540_a = Lists.<IResourcePack>newArrayList();
-     private final MetadataSerializer field_110539_b;
+     private static final Logger LOGGER = LogManager.getLogger();
+-    protected final List<IResourcePack> resourcePacks = Lists.newArrayList();
++    protected final List<IResourcePack> resourcePacks = Lists.<IResourcePack>newArrayList();
+     private final MetadataSerializer frmMetadataSerializer;
  
-     public FallbackResourceManager(MetadataSerializer p_i1289_1_)
+     public FallbackResourceManager(MetadataSerializer frmMetadataSerializerIn)
 @@ -33,20 +33,18 @@
-         this.field_110540_a.add(p_110538_1_);
+         this.resourcePacks.add(resourcePack);
      }
  
 -    @Override
-     public Set<String> func_135055_a()
+     public Set<String> getResourceDomains()
      {
 -        return Collections.emptySet();
 +        return Collections.<String>emptySet();
      }
  
 -    @Override
-     public IResource func_110536_a(ResourceLocation p_110536_1_) throws IOException
+     public IResource getResource(ResourceLocation location) throws IOException
      {
-         this.func_188552_d(p_110536_1_);
+         this.checkResourcePath(location);
          IResourcePack iresourcepack = null;
-         ResourceLocation resourcelocation = func_110537_b(p_110536_1_);
+         ResourceLocation resourcelocation = getLocationMcmeta(location);
  
--        for (int i = this.field_110540_a.size() - 1; i >= 0; i--)
-+        for (int i = this.field_110540_a.size() - 1; i >= 0; --i)
+-        for (int i = this.resourcePacks.size() - 1; i >= 0; i--)
++        for (int i = this.resourcePacks.size() - 1; i >= 0; --i)
          {
-             IResourcePack iresourcepack1 = this.field_110540_a.get(i);
+             IResourcePack iresourcepack1 = this.resourcePacks.get(i);
  
 @@ -64,21 +62,18 @@
-                     inputstream = this.func_177245_a(resourcelocation, iresourcepack);
+                     inputstream = this.getInputStream(resourcelocation, iresourcepack);
                  }
  
 -                return new SimpleResource(
--                           iresourcepack1.func_130077_b(), p_110536_1_, this.func_177245_a(p_110536_1_, iresourcepack1), inputstream, this.field_110539_b
+-                           iresourcepack1.getPackName(), location, this.getInputStream(location, iresourcepack1), inputstream, this.frmMetadataSerializer
 -                       );
-+                return new SimpleResource(iresourcepack1.func_130077_b(), p_110536_1_, this.func_177245_a(p_110536_1_, iresourcepack1), inputstream, this.field_110539_b);
++                return new SimpleResource(iresourcepack1.getPackName(), location, this.getInputStream(location, iresourcepack1), inputstream, this.frmMetadataSerializer);
              }
          }
  
-         throw new FileNotFoundException(p_110536_1_.toString());
+         throw new FileNotFoundException(location.toString());
      }
  
 +    @SuppressWarnings("resource")
-     protected InputStream func_177245_a(ResourceLocation p_177245_1_, IResourcePack p_177245_2_) throws IOException
+     protected InputStream getInputStream(ResourceLocation location, IResourcePack resourcePack) throws IOException
      {
-         InputStream inputstream = p_177245_2_.func_110590_a(p_177245_1_);
--        return (InputStream)(field_177246_b.isDebugEnabled()
--                             ? new FallbackResourceManager.InputStreamLeakedResourceLogger(inputstream, p_177245_1_, p_177245_2_.func_130077_b())
+         InputStream inputstream = resourcePack.getInputStream(location);
+-        return (InputStream)(LOGGER.isDebugEnabled()
+-                             ? new FallbackResourceManager.InputStreamLeakedResourceLogger(inputstream, location, resourcePack.getPackName())
 -                             : inputstream);
-+        return (InputStream)(field_177246_b.isDebugEnabled() ? new FallbackResourceManager.InputStreamLeakedResourceLogger(inputstream, p_177245_1_, p_177245_2_.func_130077_b()) : inputstream);
++        return (InputStream)(LOGGER.isDebugEnabled() ? new FallbackResourceManager.InputStreamLeakedResourceLogger(inputstream, location, resourcePack.getPackName()) : inputstream);
      }
  
-     private void func_188552_d(ResourceLocation p_188552_1_) throws IOException
+     private void checkResourcePath(ResourceLocation p_188552_1_) throws IOException
 @@ -89,11 +84,10 @@
          }
      }
  
 -    @Override
-     public List<IResource> func_135056_b(ResourceLocation p_135056_1_) throws IOException
+     public List<IResource> getAllResources(ResourceLocation location) throws IOException
      {
-         this.func_188552_d(p_135056_1_);
+         this.checkResourcePath(location);
 -        List<IResource> list = Lists.newArrayList();
 +        List<IResource> list = Lists.<IResource>newArrayList();
-         ResourceLocation resourcelocation = func_110537_b(p_135056_1_);
+         ResourceLocation resourcelocation = getLocationMcmeta(location);
  
-         for (IResourcePack iresourcepack : this.field_110540_a)
+         for (IResourcePack iresourcepack : this.resourcePacks)
 @@ -101,9 +95,7 @@
-             if (iresourcepack.func_110589_b(p_135056_1_))
+             if (iresourcepack.resourceExists(location))
              {
-                 InputStream inputstream = iresourcepack.func_110589_b(resourcelocation) ? this.func_177245_a(resourcelocation, iresourcepack) : null;
+                 InputStream inputstream = iresourcepack.resourceExists(resourcelocation) ? this.getInputStream(resourcelocation, iresourcepack) : null;
 -                list.add(
--                    new SimpleResource(iresourcepack.func_130077_b(), p_135056_1_, this.func_177245_a(p_135056_1_, iresourcepack), inputstream, this.field_110539_b)
+-                    new SimpleResource(iresourcepack.getPackName(), location, this.getInputStream(location, iresourcepack), inputstream, this.frmMetadataSerializer)
 -                );
-+                list.add(new SimpleResource(iresourcepack.func_130077_b(), p_135056_1_, this.func_177245_a(p_135056_1_, iresourcepack), inputstream, this.field_110539_b));
++                list.add(new SimpleResource(iresourcepack.getPackName(), location, this.getInputStream(location, iresourcepack), inputstream, this.frmMetadataSerializer));
              }
          }
  
 @@ -133,29 +125,17 @@
              {
-                 this.field_177330_a = p_i46093_1_;
+                 this.inputStream = p_i46093_1_;
                  ByteArrayOutputStream bytearrayoutputstream = new ByteArrayOutputStream();
 -                new Exception().printStackTrace(new PrintStream(bytearrayoutputstream));
 +                (new Exception()).printStackTrace(new PrintStream(bytearrayoutputstream));
-                 this.field_177328_b = "Leaked resource: '" + p_i46093_2_ + "' loaded from pack: '" + p_i46093_3_ + "'\n" + bytearrayoutputstream;
+                 this.message = "Leaked resource: '" + location + "' loaded from pack: '" + resourcePack + "'\n" + bytearrayoutputstream;
              }
  
 -            @Override
              public void close() throws IOException
              {
-                 this.field_177330_a.close();
-                 this.field_177329_c = true;
+                 this.inputStream.close();
+                 this.isClosed = true;
              }
  
 -            @Override
 -            protected void finalize() throws Throwable
 -            {
--                if (!this.field_177329_c)
+-                if (!this.isClosed)
 -                {
--                    FallbackResourceManager.field_177246_b.warn(this.field_177328_b);
+-                    FallbackResourceManager.LOGGER.warn(this.message);
 -                }
 -
 -                super.finalize();
@@ -112,4 +112,4 @@
 +
              public int read() throws IOException
              {
-                 return this.field_177330_a.read();
+                 return this.inputStream.read();

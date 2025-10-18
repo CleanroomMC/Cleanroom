@@ -4,122 +4,122 @@
  
  public class TileEntityHopper extends TileEntityLockableLoot implements IHopper, ITickable
  {
--    private NonNullList<ItemStack> field_145900_a = NonNullList.func_191197_a(5, ItemStack.field_190927_a);
-+    private NonNullList<ItemStack> field_145900_a = NonNullList.<ItemStack>func_191197_a(5, ItemStack.field_190927_a);
-     private int field_145901_j = -1;
-     private long field_190578_g;
+-    private NonNullList<ItemStack> inventory = NonNullList.withSize(5, ItemStack.EMPTY);
++    private NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(5, ItemStack.EMPTY);
+     private int transferCooldown = -1;
+     private long tickedGameTime;
  
-     public static void func_189683_a(DataFixer p_189683_0_)
+     public static void registerFixesHopper(DataFixer fixer)
      {
--        p_189683_0_.func_188258_a(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityHopper.class, "Items"));
-+        p_189683_0_.func_188258_a(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityHopper.class, new String[] {"Items"}));
+-        fixer.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityHopper.class, "Items"));
++        fixer.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityHopper.class, new String[] {"Items"}));
      }
  
 -    @Override
-     public void func_145839_a(NBTTagCompound p_145839_1_)
+     public void readFromNBT(NBTTagCompound compound)
      {
-         super.func_145839_a(p_145839_1_);
--        this.field_145900_a = NonNullList.func_191197_a(this.func_70302_i_(), ItemStack.field_190927_a);
-+        this.field_145900_a = NonNullList.<ItemStack>func_191197_a(this.func_70302_i_(), ItemStack.field_190927_a);
+         super.readFromNBT(compound);
+-        this.inventory = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
++        this.inventory = NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
  
-         if (!this.func_184283_b(p_145839_1_))
+         if (!this.checkLootAndRead(compound))
          {
 @@ -58,7 +57,6 @@
-         this.field_145901_j = p_145839_1_.func_74762_e("TransferCooldown");
+         this.transferCooldown = compound.getInteger("TransferCooldown");
      }
  
 -    @Override
-     public NBTTagCompound func_189515_b(NBTTagCompound p_189515_1_)
+     public NBTTagCompound writeToNBT(NBTTagCompound compound)
      {
-         super.func_189515_b(p_189515_1_);
+         super.writeToNBT(compound);
 @@ -78,23 +76,21 @@
-         return p_189515_1_;
+         return compound;
      }
  
 -    @Override
-     public int func_70302_i_()
+     public int getSizeInventory()
      {
-         return this.field_145900_a.size();
+         return this.inventory.size();
      }
  
 -    @Override
-     public ItemStack func_70298_a(int p_70298_1_, int p_70298_2_)
+     public ItemStack decrStackSize(int index, int count)
      {
--        this.func_184281_d(null);
--        return ItemStackHelper.func_188382_a(this.func_190576_q(), p_70298_1_, p_70298_2_);
-+        this.func_184281_d((EntityPlayer)null);
-+        ItemStack itemstack = ItemStackHelper.func_188382_a(this.func_190576_q(), p_70298_1_, p_70298_2_);
+-        this.fillWithLoot(null);
+-        return ItemStackHelper.getAndSplit(this.getItems(), index, count);
++        this.fillWithLoot((EntityPlayer)null);
++        ItemStack itemstack = ItemStackHelper.getAndSplit(this.getItems(), index, count);
 +        return itemstack;
      }
  
 -    @Override
-     public void func_70299_a(int p_70299_1_, ItemStack p_70299_2_)
+     public void setInventorySlotContents(int index, ItemStack stack)
      {
--        this.func_184281_d(null);
-+        this.func_184281_d((EntityPlayer)null);
-         this.func_190576_q().set(p_70299_1_, p_70299_2_);
+-        this.fillWithLoot(null);
++        this.fillWithLoot((EntityPlayer)null);
+         this.getItems().set(index, stack);
  
-         if (p_70299_2_.func_190916_E() > this.func_70297_j_())
+         if (stack.getCount() > this.getInventoryStackLimit())
 @@ -103,24 +99,21 @@
          }
      }
  
 -    @Override
-     public String func_70005_c_()
+     public String getName()
      {
-         return this.func_145818_k_() ? this.field_190577_o : "container.hopper";
+         return this.hasCustomName() ? this.customName : "container.hopper";
      }
  
 -    @Override
-     public int func_70297_j_()
+     public int getInventoryStackLimit()
      {
          return 64;
      }
  
 -    @Override
-     public void func_73660_a()
+     public void update()
      {
-         if (this.field_145850_b != null && !this.field_145850_b.field_72995_K)
+         if (this.world != null && !this.world.isRemote)
          {
--            this.field_145901_j--;
-+            --this.field_145901_j;
-             this.field_190578_g = this.field_145850_b.func_82737_E();
+-            this.transferCooldown--;
++            --this.transferCooldown;
+             this.tickedGameTime = this.world.getTotalWorldTime();
  
-             if (!this.func_145888_j())
+             if (!this.isOnTransferCooldown())
 @@ -178,7 +171,6 @@
          return true;
      }
  
 -    @Override
-     public boolean func_191420_l()
+     public boolean isEmpty()
      {
-         return this.func_152104_k();
+         return this.isInventoryEmpty();
 @@ -199,6 +191,7 @@
  
-     private boolean func_145883_k()
+     private boolean transferItemsOut()
      {
 +        if (net.minecraftforge.items.VanillaInventoryCodeHooks.insertHook(this)) { return true; }
-         IInventory iinventory = this.func_145895_l();
+         IInventory iinventory = this.getInventoryForHopperTransfer();
  
          if (iinventory == null)
 @@ -215,7 +208,7 @@
              }
              else
              {
--                for (int i = 0; i < this.func_70302_i_(); i++)
-+                for (int i = 0; i < this.func_70302_i_(); ++i)
+-                for (int i = 0; i < this.getSizeInventory(); i++)
++                for (int i = 0; i < this.getSizeInventory(); ++i)
                  {
-                     if (!this.func_70301_a(i).func_190926_b())
+                     if (!this.getStackInSlot(i).isEmpty())
                      {
 @@ -244,23 +237,9 @@
-             ISidedInventory isidedinventory = (ISidedInventory)p_174919_1_;
-             int[] aint = isidedinventory.func_180463_a(p_174919_2_);
+             ISidedInventory isidedinventory = (ISidedInventory)inventoryIn;
+             int[] aint = isidedinventory.getSlotsForFace(side);
  
 -            for (int i : aint)
 -            {
--                ItemStack itemstack = isidedinventory.func_70301_a(i);
+-                ItemStack itemstack = isidedinventory.getStackInSlot(i);
 -
--                if (itemstack.func_190926_b() || itemstack.func_190916_E() != itemstack.func_77976_d())
+-                if (itemstack.isEmpty() || itemstack.getCount() != itemstack.getMaxStackSize())
 -                {
 -                    return false;
 -                }
@@ -127,16 +127,16 @@
 -        }
 -        else
 -        {
--            int j = p_174919_1_.func_70302_i_();
+-            int j = inventoryIn.getSizeInventory();
 -
 -            for (int k = 0; k < j; k++)
 -            {
--                ItemStack itemstack1 = p_174919_1_.func_70301_a(k);
+-                ItemStack itemstack1 = inventoryIn.getStackInSlot(k);
 +            for (int k : aint)
 +            {
-+                ItemStack itemstack1 = isidedinventory.func_70301_a(k);
++                ItemStack itemstack1 = isidedinventory.getStackInSlot(k);
  
-                 if (itemstack1.func_190926_b() || itemstack1.func_190916_E() != itemstack1.func_77976_d())
+                 if (itemstack1.isEmpty() || itemstack1.getCount() != itemstack1.getMaxStackSize())
                  {
 @@ -268,6 +247,20 @@
                  }
@@ -144,13 +144,13 @@
          }
 +        else
 +        {
-+            int i = p_174919_1_.func_70302_i_();
++            int i = inventoryIn.getSizeInventory();
 +
 +            for (int j = 0; j < i; ++j)
 +            {
-+                ItemStack itemstack = p_174919_1_.func_70301_a(j);
++                ItemStack itemstack = inventoryIn.getStackInSlot(j);
 +
-+                if (itemstack.func_190926_b() || itemstack.func_190916_E() != itemstack.func_77976_d())
++                if (itemstack.isEmpty() || itemstack.getCount() != itemstack.getMaxStackSize())
 +                {
 +                    return false;
 +                }
@@ -161,62 +161,62 @@
      }
 @@ -291,7 +284,7 @@
          {
-             int j = p_174917_0_.func_70302_i_();
+             int j = inventoryIn.getSizeInventory();
  
 -            for (int k = 0; k < j; k++)
 +            for (int k = 0; k < j; ++k)
              {
-                 if (!p_174917_0_.func_70301_a(k).func_190926_b())
+                 if (!inventoryIn.getStackInSlot(k).isEmpty())
                  {
 @@ -305,6 +298,8 @@
  
-     public static boolean func_145891_a(IHopper p_145891_0_)
+     public static boolean pullItems(IHopper hopper)
      {
-+        Boolean ret = net.minecraftforge.items.VanillaInventoryCodeHooks.extractHook(p_145891_0_);
++        Boolean ret = net.minecraftforge.items.VanillaInventoryCodeHooks.extractHook(hopper);
 +        if (ret != null) return ret;
-         IInventory iinventory = func_145884_b(p_145891_0_);
+         IInventory iinventory = getSourceInventory(hopper);
  
          if (iinventory != null)
 @@ -333,7 +328,7 @@
              {
-                 int j = iinventory.func_70302_i_();
+                 int j = iinventory.getSizeInventory();
  
 -                for (int k = 0; k < j; k++)
 +                for (int k = 0; k < j; ++k)
                  {
-                     if (func_174915_a(p_145891_0_, iinventory, k, enumfacing))
+                     if (pullItemFromSlot(hopper, iinventory, k, enumfacing))
                      {
 @@ -344,11 +339,9 @@
          }
          else
          {
--            for (EntityItem entityitem : func_184292_a(
--                        p_145891_0_.func_145831_w(), p_145891_0_.func_96107_aA(), p_145891_0_.func_96109_aB(), p_145891_0_.func_96108_aC()
+-            for (EntityItem entityitem : getCaptureItems(
+-                        hopper.getWorld(), hopper.getXPos(), hopper.getYPos(), hopper.getZPos()
 -                    ))
-+            for (EntityItem entityitem : func_184292_a(p_145891_0_.func_145831_w(), p_145891_0_.func_96107_aA(), p_145891_0_.func_96109_aB(), p_145891_0_.func_96108_aC()))
++            for (EntityItem entityitem : getCaptureItems(hopper.getWorld(), hopper.getXPos(), hopper.getYPos(), hopper.getZPos()))
              {
--                if (func_145898_a(null, p_145891_0_, entityitem))
-+                if (func_145898_a((IInventory)null, p_145891_0_, entityitem))
+-                if (putDropInInventoryAllSlots(null, hopper, entityitem))
++                if (putDropInInventoryAllSlots((IInventory)null, hopper, entityitem))
                  {
                      return true;
                  }
 @@ -365,7 +358,7 @@
-         if (!itemstack.func_190926_b() && func_174921_b(p_174915_1_, itemstack, p_174915_2_, p_174915_3_))
+         if (!itemstack.isEmpty() && canExtractItemFromSlot(inventoryIn, itemstack, index, direction))
          {
-             ItemStack itemstack1 = itemstack.func_77946_l();
--            ItemStack itemstack2 = func_174918_a(p_174915_1_, p_174915_0_, p_174915_1_.func_70298_a(p_174915_2_, 1), null);
-+            ItemStack itemstack2 = func_174918_a(p_174915_1_, p_174915_0_, p_174915_1_.func_70298_a(p_174915_2_, 1), (EnumFacing)null);
+             ItemStack itemstack1 = itemstack.copy();
+-            ItemStack itemstack2 = putStackInInventoryAllSlots(inventoryIn, hopper, inventoryIn.decrStackSize(index, 1), null);
++            ItemStack itemstack2 = putStackInInventoryAllSlots(inventoryIn, hopper, inventoryIn.decrStackSize(index, 1), (EnumFacing)null);
  
-             if (itemstack2.func_190926_b())
+             if (itemstack2.isEmpty())
              {
 @@ -390,7 +383,7 @@
          else
          {
-             ItemStack itemstack = p_145898_2_.func_92059_d().func_77946_l();
--            ItemStack itemstack1 = func_174918_a(p_145898_0_, p_145898_1_, itemstack, null);
-+            ItemStack itemstack1 = func_174918_a(p_145898_0_, p_145898_1_, itemstack, (EnumFacing)null);
+             ItemStack itemstack = entity.getItem().copy();
+-            ItemStack itemstack1 = putStackInInventoryAllSlots(source, destination, itemstack, null);
++            ItemStack itemstack1 = putStackInInventoryAllSlots(source, destination, itemstack, (EnumFacing)null);
  
-             if (itemstack1.func_190926_b())
+             if (itemstack1.isEmpty())
              {
 @@ -406,6 +399,12 @@
          }
@@ -228,98 +228,98 @@
 +        return new net.minecraftforge.items.VanillaHopperItemHandler(this);
 +    }
 +
-     public static ItemStack func_174918_a(IInventory p_174918_0_, IInventory p_174918_1_, ItemStack p_174918_2_, @Nullable EnumFacing p_174918_3_)
+     public static ItemStack putStackInInventoryAllSlots(IInventory source, IInventory destination, ItemStack stack, @Nullable EnumFacing direction)
      {
-         if (p_174918_1_ instanceof ISidedInventory && p_174918_3_ != null)
+         if (destination instanceof ISidedInventory && direction != null)
 @@ -413,7 +412,7 @@
-             ISidedInventory isidedinventory = (ISidedInventory)p_174918_1_;
-             int[] aint = isidedinventory.func_180463_a(p_174918_3_);
+             ISidedInventory isidedinventory = (ISidedInventory)destination;
+             int[] aint = isidedinventory.getSlotsForFace(direction);
  
--            for (int k = 0; k < aint.length && !p_174918_2_.func_190926_b(); k++)
-+            for (int k = 0; k < aint.length && !p_174918_2_.func_190926_b(); ++k)
+-            for (int k = 0; k < aint.length && !stack.isEmpty(); k++)
++            for (int k = 0; k < aint.length && !stack.isEmpty(); ++k)
              {
-                 p_174918_2_ = func_174916_c(p_174918_0_, p_174918_1_, p_174918_2_, aint[k], p_174918_3_);
+                 stack = insertStack(source, destination, stack, aint[k], direction);
              }
 @@ -422,7 +421,7 @@
          {
-             int i = p_174918_1_.func_70302_i_();
+             int i = destination.getSizeInventory();
  
--            for (int j = 0; j < i && !p_174918_2_.func_190926_b(); j++)
-+            for (int j = 0; j < i && !p_174918_2_.func_190926_b(); ++j)
+-            for (int j = 0; j < i && !stack.isEmpty(); j++)
++            for (int j = 0; j < i && !stack.isEmpty(); ++j)
              {
-                 p_174918_2_ = func_174916_c(p_174918_0_, p_174918_1_, p_174918_2_, j, p_174918_3_);
+                 stack = insertStack(source, destination, stack, j, direction);
              }
 @@ -433,9 +432,14 @@
  
-     private static boolean func_174920_a(IInventory p_174920_0_, ItemStack p_174920_1_, int p_174920_2_, EnumFacing p_174920_3_)
+     private static boolean canInsertItemInSlot(IInventory inventoryIn, ItemStack stack, int index, EnumFacing side)
      {
--        return !p_174920_0_.func_94041_b(p_174920_2_, p_174920_1_)
+-        return !inventoryIn.isItemValidForSlot(index, stack)
 -               ? false
--               : !(p_174920_0_ instanceof ISidedInventory) || ((ISidedInventory)p_174920_0_).func_180462_a(p_174920_2_, p_174920_1_, p_174920_3_);
-+        if (!p_174920_0_.func_94041_b(p_174920_2_, p_174920_1_))
+-               : !(inventoryIn instanceof ISidedInventory) || ((ISidedInventory)inventoryIn).canInsertItem(index, stack, side);
++        if (!inventoryIn.isItemValidForSlot(index, stack))
 +        {
 +            return false;
 +        }
 +        else
 +        {
-+            return !(p_174920_0_ instanceof ISidedInventory) || ((ISidedInventory)p_174920_0_).func_180462_a(p_174920_2_, p_174920_1_, p_174920_3_);
++            return !(inventoryIn instanceof ISidedInventory) || ((ISidedInventory)inventoryIn).canInsertItem(index, stack, side);
 +        }
      }
  
-     private static boolean func_174921_b(IInventory p_174921_0_, ItemStack p_174921_1_, int p_174921_2_, EnumFacing p_174921_3_)
+     private static boolean canExtractItemFromSlot(IInventory inventoryIn, ItemStack stack, int index, EnumFacing side)
 @@ -501,26 +505,17 @@
-     private IInventory func_145895_l()
+     private IInventory getInventoryForHopperTransfer()
      {
-         EnumFacing enumfacing = BlockHopper.func_176428_b(this.func_145832_p());
--        return func_145893_b(
--                   this.func_145831_w(),
--                   this.func_96107_aA() + (double)enumfacing.func_82601_c(),
--                   this.func_96109_aB() + (double)enumfacing.func_96559_d(),
--                   this.func_96108_aC() + (double)enumfacing.func_82599_e()
+         EnumFacing enumfacing = BlockHopper.getFacing(this.getBlockMetadata());
+-        return getInventoryAtPosition(
+-                   this.getWorld(),
+-                   this.getXPos() + (double)enumfacing.getXOffset(),
+-                   this.getYPos() + (double)enumfacing.getYOffset(),
+-                   this.getZPos() + (double)enumfacing.getZOffset()
 -               );
-+        return func_145893_b(this.func_145831_w(), this.func_96107_aA() + (double)enumfacing.func_82601_c(), this.func_96109_aB() + (double)enumfacing.func_96559_d(), this.func_96108_aC() + (double)enumfacing.func_82599_e());
++        return getInventoryAtPosition(this.getWorld(), this.getXPos() + (double)enumfacing.getXOffset(), this.getYPos() + (double)enumfacing.getYOffset(), this.getZPos() + (double)enumfacing.getZOffset());
      }
  
-     public static IInventory func_145884_b(IHopper p_145884_0_)
+     public static IInventory getSourceInventory(IHopper hopper)
      {
--        return func_145893_b(p_145884_0_.func_145831_w(), p_145884_0_.func_96107_aA(), p_145884_0_.func_96109_aB() + 1.0, p_145884_0_.func_96108_aC());
-+        return func_145893_b(p_145884_0_.func_145831_w(), p_145884_0_.func_96107_aA(), p_145884_0_.func_96109_aB() + 1.0D, p_145884_0_.func_96108_aC());
+-        return getInventoryAtPosition(hopper.getWorld(), hopper.getXPos(), hopper.getYPos() + 1.0, hopper.getZPos());
++        return getInventoryAtPosition(hopper.getWorld(), hopper.getXPos(), hopper.getYPos() + 1.0D, hopper.getZPos());
      }
  
-     public static List<EntityItem> func_184292_a(World p_184292_0_, double p_184292_1_, double p_184292_3_, double p_184292_5_)
+     public static List<EntityItem> getCaptureItems(World worldIn, double p_184292_1_, double p_184292_3_, double p_184292_5_)
      {
--        return p_184292_0_.func_175647_a(
+-        return worldIn.getEntitiesWithinAABB(
 -                   EntityItem.class,
 -                   new AxisAlignedBB(p_184292_1_ - 0.5, p_184292_3_, p_184292_5_ - 0.5, p_184292_1_ + 0.5, p_184292_3_ + 1.5, p_184292_5_ + 0.5),
--                   EntitySelectors.field_94557_a
+-                   EntitySelectors.IS_ALIVE
 -               );
-+        return p_184292_0_.<EntityItem>func_175647_a(EntityItem.class, new AxisAlignedBB(p_184292_1_ - 0.5D, p_184292_3_, p_184292_5_ - 0.5D, p_184292_1_ + 0.5D, p_184292_3_ + 1.5D, p_184292_5_ + 0.5D), EntitySelectors.field_94557_a);
++        return worldIn.<EntityItem>getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(p_184292_1_ - 0.5D, p_184292_3_, p_184292_5_ - 0.5D, p_184292_1_ + 0.5D, p_184292_3_ + 1.5D, p_184292_5_ + 0.5D), EntitySelectors.IS_ALIVE);
      }
  
-     public static IInventory func_145893_b(World p_145893_0_, double p_145893_1_, double p_145893_3_, double p_145893_5_)
+     public static IInventory getInventoryAtPosition(World worldIn, double x, double y, double z)
 @@ -530,9 +525,10 @@
-         int j = MathHelper.func_76128_c(p_145893_3_);
-         int k = MathHelper.func_76128_c(p_145893_5_);
+         int j = MathHelper.floor(y);
+         int k = MathHelper.floor(z);
          BlockPos blockpos = new BlockPos(i, j, k);
--        Block block = p_145893_0_.func_180495_p(blockpos).func_177230_c();
-+        net.minecraft.block.state.IBlockState state = p_145893_0_.func_180495_p(blockpos);
-+        Block block = state.func_177230_c();
+-        Block block = worldIn.getBlockState(blockpos).getBlock();
++        net.minecraft.block.state.IBlockState state = worldIn.getBlockState(blockpos);
++        Block block = state.getBlock();
  
--        if (block.func_149716_u())
+-        if (block.hasTileEntity())
 +        if (block.hasTileEntity(state))
          {
-             TileEntity tileentity = p_145893_0_.func_175625_s(blockpos);
+             TileEntity tileentity = worldIn.getTileEntity(blockpos);
  
 @@ -549,11 +545,7 @@
  
          if (iinventory == null)
          {
--            List<Entity> list = p_145893_0_.func_175674_a(
+-            List<Entity> list = worldIn.getEntitiesInAABBexcluding(
 -                                    null,
--                                    new AxisAlignedBB(p_145893_1_ - 0.5, p_145893_3_ - 0.5, p_145893_5_ - 0.5, p_145893_1_ + 0.5, p_145893_3_ + 0.5, p_145893_5_ + 0.5),
--                                    EntitySelectors.field_96566_b
+-                                    new AxisAlignedBB(x - 0.5, y - 0.5, z - 0.5, x + 0.5, y + 0.5, z + 0.5),
+-                                    EntitySelectors.HAS_INVENTORY
 -                                );
-+            List<Entity> list = p_145893_0_.func_175674_a((Entity)null, new AxisAlignedBB(p_145893_1_ - 0.5D, p_145893_3_ - 0.5D, p_145893_5_ - 0.5D, p_145893_1_ + 0.5D, p_145893_3_ + 0.5D, p_145893_5_ + 0.5D), EntitySelectors.field_96566_b);
++            List<Entity> list = worldIn.getEntitiesInAABBexcluding((Entity)null, new AxisAlignedBB(x - 0.5D, y - 0.5D, z - 0.5D, x + 0.5D, y + 0.5D, z + 0.5D), EntitySelectors.HAS_INVENTORY);
  
              if (!list.isEmpty())
              {
@@ -327,61 +327,61 @@
          {
              return false;
          }
-+        else if (p_145894_0_.func_190916_E() > p_145894_0_.func_77976_d())
++        else if (stack1.getCount() > stack1.getMaxStackSize())
 +        {
 +            return false;
 +        }
          else
          {
--            return p_145894_0_.func_190916_E() > p_145894_0_.func_77976_d() ? false : ItemStack.func_77970_a(p_145894_0_, p_145894_1_);
-+            return ItemStack.func_77970_a(p_145894_0_, p_145894_1_);
+-            return stack1.getCount() > stack1.getMaxStackSize() ? false : ItemStack.areItemStackTagsEqual(stack1, stack2);
++            return ItemStack.areItemStackTagsEqual(stack1, stack2);
          }
      }
  
 -    @Override
-     public double func_96107_aA()
+     public double getXPos()
      {
--        return (double)this.field_174879_c.func_177958_n() + 0.5;
-+        return (double)this.field_174879_c.func_177958_n() + 0.5D;
+-        return (double)this.pos.getX() + 0.5;
++        return (double)this.pos.getX() + 0.5D;
      }
  
 -    @Override
-     public double func_96109_aB()
+     public double getYPos()
      {
--        return (double)this.field_174879_c.func_177956_o() + 0.5;
-+        return (double)this.field_174879_c.func_177956_o() + 0.5D;
+-        return (double)this.pos.getY() + 0.5;
++        return (double)this.pos.getY() + 0.5D;
      }
  
 -    @Override
-     public double func_96108_aC()
+     public double getZPos()
      {
--        return (double)this.field_174879_c.func_177952_p() + 0.5;
-+        return (double)this.field_174879_c.func_177952_p() + 0.5D;
+-        return (double)this.pos.getZ() + 0.5;
++        return (double)this.pos.getZ() + 0.5D;
      }
  
-     public void func_145896_c(int p_145896_1_)
+     public void setTransferCooldown(int ticks)
 @@ -613,22 +606,21 @@
-         return this.field_145901_j > 8;
+         return this.transferCooldown > 8;
      }
  
 -    @Override
-     public String func_174875_k()
+     public String getGuiID()
      {
          return "minecraft:hopper";
      }
  
 -    @Override
-     public Container func_174876_a(InventoryPlayer p_174876_1_, EntityPlayer p_174876_2_)
+     public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn)
      {
-         this.func_184281_d(p_174876_2_);
-         return new ContainerHopper(p_174876_1_, this, p_174876_2_);
+         this.fillWithLoot(playerIn);
+         return new ContainerHopper(playerInventory, this, playerIn);
      }
  
 -    @Override
-     protected NonNullList<ItemStack> func_190576_q()
+     protected NonNullList<ItemStack> getItems()
      {
-         return this.field_145900_a;
+         return this.inventory;
      }
 +
-+    public long getLastUpdateTime() { return field_190578_g; } // Forge
++    public long getLastUpdateTime() { return tickedGameTime; } // Forge
  }

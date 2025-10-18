@@ -4,55 +4,55 @@
  @SideOnly(Side.CLIENT)
  public class GuiControls extends GuiScreen
  {
--    private static final GameSettings.Options[] field_146492_g = new GameSettings.Options[]
+-    private static final GameSettings.Options[] OPTIONS_ARR = new GameSettings.Options[]
 -        {
 -            GameSettings.Options.INVERT_MOUSE, GameSettings.Options.SENSITIVITY, GameSettings.Options.TOUCHSCREEN, GameSettings.Options.AUTO_JUMP
 -        };
-+    private static final GameSettings.Options[] field_146492_g = new GameSettings.Options[] {GameSettings.Options.INVERT_MOUSE, GameSettings.Options.SENSITIVITY, GameSettings.Options.TOUCHSCREEN, GameSettings.Options.AUTO_JUMP};
-     private final GuiScreen field_146496_h;
-     protected String field_146495_a = "Controls";
-     private final GameSettings field_146497_i;
++    private static final GameSettings.Options[] OPTIONS_ARR = new GameSettings.Options[] {GameSettings.Options.INVERT_MOUSE, GameSettings.Options.SENSITIVITY, GameSettings.Options.TOUCHSCREEN, GameSettings.Options.AUTO_JUMP};
+     private final GuiScreen parentScreen;
+     protected String screenTitle = "Controls";
+     private final GameSettings options;
 @@ -29,14 +26,11 @@
-         this.field_146497_i = p_i1027_2_;
+         this.options = settings;
      }
  
 -    @Override
-     public void func_73866_w_()
+     public void initGui()
      {
-         this.field_146494_r = new GuiKeyBindingList(this, this.field_146297_k);
-         this.field_146292_n.add(new GuiButton(200, this.field_146294_l / 2 - 155 + 160, this.field_146295_m - 29, 150, 20, I18n.func_135052_a("gui.done")));
--        this.field_146493_s = this.func_189646_b(
--                                  new GuiButton(201, this.field_146294_l / 2 - 155, this.field_146295_m - 29, 150, 20, I18n.func_135052_a("controls.resetAll"))
+         this.keyBindingList = new GuiKeyBindingList(this, this.mc);
+         this.buttonList.add(new GuiButton(200, this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.format("gui.done")));
+-        this.buttonReset = this.addButton(
+-                                  new GuiButton(201, this.width / 2 - 155, this.height - 29, 150, 20, I18n.format("controls.resetAll"))
 -                              );
-+        this.field_146493_s = this.func_189646_b(new GuiButton(201, this.field_146294_l / 2 - 155, this.field_146295_m - 29, 150, 20, I18n.func_135052_a("controls.resetAll")));
-         this.field_146495_a = I18n.func_135052_a("controls.title");
++        this.buttonReset = this.addButton(new GuiButton(201, this.width / 2 - 155, this.height - 29, 150, 20, I18n.format("controls.resetAll")));
+         this.screenTitle = I18n.format("controls.title");
          int i = 0;
  
 @@ -44,39 +38,23 @@
          {
-             if (gamesettings$options.func_74380_a())
+             if (gamesettings$options.isFloat())
              {
--                this.field_146292_n
+-                this.buttonList
 -                .add(
 -                    new GuiOptionSlider(
--                        gamesettings$options.func_74381_c(), this.field_146294_l / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), gamesettings$options
+-                        gamesettings$options.getOrdinal(), this.width / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), gamesettings$options
 -                    )
 -                );
-+                this.field_146292_n.add(new GuiOptionSlider(gamesettings$options.func_74381_c(), this.field_146294_l / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), gamesettings$options));
++                this.buttonList.add(new GuiOptionSlider(gamesettings$options.getOrdinal(), this.width / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), gamesettings$options));
              }
              else
              {
--                this.field_146292_n
+-                this.buttonList
 -                .add(
 -                    new GuiOptionButton(
--                        gamesettings$options.func_74381_c(),
--                        this.field_146294_l / 2 - 155 + i % 2 * 160,
+-                        gamesettings$options.getOrdinal(),
+-                        this.width / 2 - 155 + i % 2 * 160,
 -                        18 + 24 * (i >> 1),
 -                        gamesettings$options,
--                        this.field_146497_i.func_74297_c(gamesettings$options)
+-                        this.options.getKeyBinding(gamesettings$options)
 -                    )
 -                );
-+                this.field_146292_n.add(new GuiOptionButton(gamesettings$options.func_74381_c(), this.field_146294_l / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), gamesettings$options, this.field_146497_i.func_74297_c(gamesettings$options)));
++                this.buttonList.add(new GuiOptionButton(gamesettings$options.getOrdinal(), this.width / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), gamesettings$options, this.options.getKeyBinding(gamesettings$options)));
              }
  
 -            i++;
@@ -61,88 +61,88 @@
      }
  
 -    @Override
-     public void func_146274_d() throws IOException
+     public void handleMouseInput() throws IOException
      {
-         super.func_146274_d();
-         this.field_146494_r.func_178039_p();
+         super.handleMouseInput();
+         this.keyBindingList.handleMouseInput();
      }
  
 -    @Override
-     protected void func_146284_a(GuiButton p_146284_1_) throws IOException
+     protected void actionPerformed(GuiButton button) throws IOException
      {
-         if (p_146284_1_.field_146127_k == 200)
+         if (button.id == 200)
 @@ -87,7 +65,7 @@
          {
-             for (KeyBinding keybinding : this.field_146297_k.field_71474_y.field_74324_K)
+             for (KeyBinding keybinding : this.mc.gameSettings.keyBindings)
              {
--                keybinding.func_151462_b(keybinding.func_151469_h());
+-                keybinding.setKeyCode(keybinding.getKeyCodeDefault());
 +                keybinding.setToDefault();
              }
  
-             KeyBinding.func_74508_b();
+             KeyBinding.resetKeyBindingArrayAndHash();
 @@ -99,11 +77,11 @@
          }
      }
  
 -    @Override
-     protected void func_73864_a(int p_73864_1_, int p_73864_2_, int p_73864_3_) throws IOException
+     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
      {
-         if (this.field_146491_f != null)
+         if (this.buttonId != null)
          {
-+            this.field_146491_f.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifier(), -100 + p_73864_3_);
-             this.field_146497_i.func_151440_a(this.field_146491_f, -100 + p_73864_3_);
-             this.field_146491_f = null;
-             KeyBinding.func_74508_b();
++            this.buttonId.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifier(), -100 + mouseButton);
+             this.options.setOptionKeyBinding(this.buttonId, -100 + mouseButton);
+             this.buttonId = null;
+             KeyBinding.resetKeyBindingArrayAndHash();
 @@ -114,7 +92,6 @@
          }
      }
  
 -    @Override
-     protected void func_146286_b(int p_146286_1_, int p_146286_2_, int p_146286_3_)
+     protected void mouseReleased(int mouseX, int mouseY, int state)
      {
-         if (p_146286_3_ != 0 || !this.field_146494_r.func_148181_b(p_146286_1_, p_146286_2_, p_146286_3_))
+         if (state != 0 || !this.keyBindingList.mouseReleased(mouseX, mouseY, state))
 @@ -123,24 +100,27 @@
          }
      }
  
 -    @Override
-     protected void func_73869_a(char p_73869_1_, int p_73869_2_) throws IOException
+     protected void keyTyped(char typedChar, int keyCode) throws IOException
      {
-         if (this.field_146491_f != null)
+         if (this.buttonId != null)
          {
-             if (p_73869_2_ == 1)
+             if (keyCode == 1)
              {
-+                this.field_146491_f.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.NONE, 0);
-                 this.field_146497_i.func_151440_a(this.field_146491_f, 0);
++                this.buttonId.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.NONE, 0);
+                 this.options.setOptionKeyBinding(this.buttonId, 0);
              }
-             else if (p_73869_2_ != 0)
+             else if (keyCode != 0)
              {
-+                this.field_146491_f.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifier(), p_73869_2_);
-                 this.field_146497_i.func_151440_a(this.field_146491_f, p_73869_2_);
++                this.buttonId.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifier(), keyCode);
+                 this.options.setOptionKeyBinding(this.buttonId, keyCode);
              }
-             else if (p_73869_1_ > 0)
+             else if (typedChar > 0)
              {
-+                this.field_146491_f.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifier(), p_73869_1_ + 256);
-                 this.field_146497_i.func_151440_a(this.field_146491_f, p_73869_1_ + 256);
++                this.buttonId.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifier(), typedChar + 256);
+                 this.options.setOptionKeyBinding(this.buttonId, typedChar + 256);
              }
  
-+            if (!net.minecraftforge.client.settings.KeyModifier.isKeyCodeModifier(p_73869_2_))
-             this.field_146491_f = null;
-             this.field_152177_g = Minecraft.func_71386_F();
-             KeyBinding.func_74508_b();
++            if (!net.minecraftforge.client.settings.KeyModifier.isKeyCodeModifier(keyCode))
+             this.buttonId = null;
+             this.time = Minecraft.getSystemTime();
+             KeyBinding.resetKeyBindingArrayAndHash();
 @@ -151,7 +131,6 @@
          }
      }
  
 -    @Override
-     public void func_73863_a(int p_73863_1_, int p_73863_2_, float p_73863_3_)
+     public void drawScreen(int mouseX, int mouseY, float partialTicks)
      {
-         this.func_146276_q_();
+         this.drawDefaultBackground();
 @@ -161,7 +140,7 @@
  
-         for (KeyBinding keybinding : this.field_146497_i.field_74324_K)
+         for (KeyBinding keybinding : this.options.keyBindings)
          {
--            if (keybinding.func_151463_i() != keybinding.func_151469_h())
+-            if (keybinding.getKeyCode() != keybinding.getKeyCodeDefault())
 +            if (!keybinding.isSetToDefaultValue())
              {
                  flag = true;

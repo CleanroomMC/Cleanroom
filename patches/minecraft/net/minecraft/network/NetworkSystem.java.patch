@@ -10,35 +10,35 @@
  import org.apache.logging.log4j.LogManager;
 @@ -49,21 +50,21 @@
      {
-         protected NioEventLoopGroup func_179280_b()
+         protected NioEventLoopGroup load()
          {
 -            return new NioEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Server IO #%d").setDaemon(true).build());
 +            return new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Server IO #%d").setDaemon(true).setThreadFactory(net.minecraftforge.fml.common.thread.SidedThreadGroups.SERVER).build());
          }
      };
-     public static final LazyLoadBase<EpollEventLoopGroup> field_181141_b = new LazyLoadBase<EpollEventLoopGroup>()
+     public static final LazyLoadBase<EpollEventLoopGroup> SERVER_EPOLL_EVENTLOOP = new LazyLoadBase<EpollEventLoopGroup>()
      {
-         protected EpollEventLoopGroup func_179280_b()
+         protected EpollEventLoopGroup load()
          {
 -            return new EpollEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Epoll Server IO #%d").setDaemon(true).build());
 +            return new EpollEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Epoll Server IO #%d").setDaemon(true).setThreadFactory(net.minecraftforge.fml.common.thread.SidedThreadGroups.SERVER).build());
          }
      };
-     public static final LazyLoadBase<LocalEventLoopGroup> field_180232_b = new LazyLoadBase<LocalEventLoopGroup>()
+     public static final LazyLoadBase<LocalEventLoopGroup> SERVER_LOCAL_EVENTLOOP = new LazyLoadBase<LocalEventLoopGroup>()
      {
-         protected LocalEventLoopGroup func_179280_b()
+         protected LocalEventLoopGroup load()
          {
 -            return new LocalEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Local Server IO #%d").setDaemon(true).build());
 +            return new LocalEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Local Server IO #%d").setDaemon(true).setThreadFactory(SidedThreadGroups.SERVER).build());
          }
      };
-     private final MinecraftServer field_151273_d;
+     private final MinecraftServer server;
 @@ -79,6 +80,7 @@
  
-     public void func_151265_a(InetAddress p_151265_1_, int p_151265_2_) throws IOException
+     public void addEndpoint(InetAddress address, int port) throws IOException
      {
-+        if (p_151265_1_ instanceof java.net.Inet6Address) System.setProperty("java.net.preferIPv4Stack", "false");
-         synchronized (this.field_151274_e)
++        if (address instanceof java.net.Inet6Address) System.setProperty("java.net.preferIPv4Stack", "false");
+         synchronized (this.endpoints)
          {
              Class <? extends ServerSocketChannel > oclass;
 @@ -116,7 +118,7 @@
@@ -51,11 +51,11 @@
                      .addLast("splitter", new NettyVarint21FrameDecoder())
                      .addLast("decoder", new NettyPacketDecoder(EnumPacketDirection.SERVERBOUND))
 @@ -154,7 +156,7 @@
-                     NetworkSystem.this.field_151272_f.add(networkmanager);
+                     NetworkSystem.this.networkManagers.add(networkmanager);
                      p_initChannel_1_.pipeline().addLast("packet_handler", networkmanager);
                  }
--            }).group(field_151276_c.func_179281_c()).localAddress(LocalAddress.ANY).bind().syncUninterruptibly();
-+            }).group(field_180232_b.func_179281_c()).localAddress(LocalAddress.ANY).bind().syncUninterruptibly();
-             this.field_151274_e.add(channelfuture);
+-            }).group(SERVER_NIO_EVENTLOOP.getValue()).localAddress(LocalAddress.ANY).bind().syncUninterruptibly();
++            }).group(SERVER_LOCAL_EVENTLOOP.getValue()).localAddress(LocalAddress.ANY).bind().syncUninterruptibly();
+             this.endpoints.add(channelfuture);
          }
  

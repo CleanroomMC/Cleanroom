@@ -1,69 +1,69 @@
 --- before/net/minecraft/inventory/SlotCrafting.java
 +++ after/net/minecraft/inventory/SlotCrafting.java
 @@ -20,42 +20,38 @@
-         this.field_75239_a = p_i45790_2_;
+         this.craftMatrix = craftingInventory;
      }
  
 -    @Override
-     public boolean func_75214_a(ItemStack p_75214_1_)
+     public boolean isItemValid(ItemStack stack)
      {
          return false;
      }
  
 -    @Override
-     public ItemStack func_75209_a(int p_75209_1_)
+     public ItemStack decrStackSize(int amount)
      {
-         if (this.func_75216_d())
+         if (this.getHasStack())
          {
--            this.field_75237_g = this.field_75237_g + Math.min(p_75209_1_, this.func_75211_c().func_190916_E());
-+            this.field_75237_g += Math.min(p_75209_1_, this.func_75211_c().func_190916_E());
+-            this.amountCrafted = this.amountCrafted + Math.min(amount, this.getStack().getCount());
++            this.amountCrafted += Math.min(amount, this.getStack().getCount());
          }
  
-         return super.func_75209_a(p_75209_1_);
+         return super.decrStackSize(amount);
      }
  
 -    @Override
-     protected void func_75210_a(ItemStack p_75210_1_, int p_75210_2_)
+     protected void onCrafting(ItemStack stack, int amount)
      {
-         this.field_75237_g += p_75210_2_;
-         this.func_75208_c(p_75210_1_);
+         this.amountCrafted += amount;
+         this.onCrafting(stack);
      }
  
 -    @Override
-     protected void func_190900_b(int p_190900_1_)
+     protected void onSwapCraft(int p_190900_1_)
      {
-         this.field_75237_g += p_190900_1_;
+         this.amountCrafted += p_190900_1_;
      }
  
 -    @Override
-     protected void func_75208_c(ItemStack p_75208_1_)
+     protected void onCrafting(ItemStack stack)
      {
-         if (this.field_75237_g > 0)
+         if (this.amountCrafted > 0)
          {
-             p_75208_1_.func_77980_a(this.field_75238_b.field_70170_p, this.field_75238_b, this.field_75237_g);
-+            net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerCraftingEvent(this.field_75238_b, p_75208_1_, field_75239_a);
+             stack.onCrafting(this.player.world, this.player, this.amountCrafted);
++            net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerCraftingEvent(this.player, stack, craftMatrix);
          }
  
-         this.field_75237_g = 0;
+         this.amountCrafted = 0;
 @@ -65,17 +61,18 @@
-         if (irecipe != null && !irecipe.func_192399_d())
+         if (irecipe != null && !irecipe.isDynamic())
          {
-             this.field_75238_b.func_192021_a(Lists.newArrayList(irecipe));
--            inventorycraftresult.func_193056_a(null);
-+            inventorycraftresult.func_193056_a((IRecipe)null);
+             this.player.unlockRecipes(Lists.newArrayList(irecipe));
+-            inventorycraftresult.setRecipeUsed(null);
++            inventorycraftresult.setRecipeUsed((IRecipe)null);
          }
      }
  
 -    @Override
-     public ItemStack func_190901_a(EntityPlayer p_190901_1_, ItemStack p_190901_2_)
+     public ItemStack onTake(EntityPlayer thePlayer, ItemStack stack)
      {
-         this.func_75208_c(p_190901_2_);
-+        net.minecraftforge.common.ForgeHooks.setCraftingPlayer(p_190901_1_);
-         NonNullList<ItemStack> nonnulllist = CraftingManager.func_180303_b(this.field_75239_a, p_190901_1_.field_70170_p);
+         this.onCrafting(stack);
++        net.minecraftforge.common.ForgeHooks.setCraftingPlayer(thePlayer);
+         NonNullList<ItemStack> nonnulllist = CraftingManager.getRemainingItems(this.craftMatrix, thePlayer.world);
 +        net.minecraftforge.common.ForgeHooks.setCraftingPlayer(null);
  
 -        for (int i = 0; i < nonnulllist.size(); i++)
 +        for (int i = 0; i < nonnulllist.size(); ++i)
          {
-             ItemStack itemstack = this.field_75239_a.func_70301_a(i);
+             ItemStack itemstack = this.craftMatrix.getStackInSlot(i);
              ItemStack itemstack1 = nonnulllist.get(i);

@@ -19,19 +19,19 @@
  import net.minecraft.util.MouseFilter;
  import net.minecraft.util.ReportedException;
 @@ -127,7 +128,7 @@
-     private float field_78539_ae;
-     private int field_175079_V;
-     private boolean field_175078_W;
--    private double field_78503_V = 1.0;
-+    private double field_78503_V = 1.0D;
-     private double field_78502_W;
-     private double field_78509_X;
-     private ItemStack field_190566_ab;
+     private float fogColor1;
+     private int debugViewDirection;
+     private boolean debugView;
+-    private double cameraZoom = 1.0;
++    private double cameraZoom = 1.0D;
+     private double cameraYaw;
+     private double cameraPitch;
+     private ItemStack itemActivationItem;
 @@ -135,40 +136,15 @@
-     private float field_190568_ad;
-     private float field_190569_ae;
-     private ShaderGroup field_147707_d;
--    private static final ResourceLocation[] field_147712_ad = new ResourceLocation[]
+     private float itemActivationOffX;
+     private float itemActivationOffY;
+     private ShaderGroup shaderGroup;
+-    private static final ResourceLocation[] SHADERS_TEXTURES = new ResourceLocation[]
 -        {
 -            new ResourceLocation("shaders/post/notch.json"),
 -            new ResourceLocation("shaders/post/fxaa.json"),
@@ -58,22 +58,22 @@
 -            new ResourceLocation("shaders/post/creeper.json"),
 -            new ResourceLocation("shaders/post/spider.json")
 -        };
-+    private static final ResourceLocation[] field_147712_ad = new ResourceLocation[] {new ResourceLocation("shaders/post/notch.json"), new ResourceLocation("shaders/post/fxaa.json"), new ResourceLocation("shaders/post/art.json"), new ResourceLocation("shaders/post/bumpy.json"), new ResourceLocation("shaders/post/blobs2.json"), new ResourceLocation("shaders/post/pencil.json"), new ResourceLocation("shaders/post/color_convolve.json"), new ResourceLocation("shaders/post/deconverge.json"), new ResourceLocation("shaders/post/flip.json"), new ResourceLocation("shaders/post/invert.json"), new ResourceLocation("shaders/post/ntsc.json"), new ResourceLocation("shaders/post/outline.json"), new ResourceLocation("shaders/post/phosphor.json"), new ResourceLocation("shaders/post/scan_pincushion.json"), new ResourceLocation("shaders/post/sobel.json"), new ResourceLocation("shaders/post/bits.json"), new ResourceLocation("shaders/post/desaturate.json"), new ResourceLocation("shaders/post/green.json"), new ResourceLocation("shaders/post/blur.json"), new ResourceLocation("shaders/post/wobble.json"), new ResourceLocation("shaders/post/blobs.json"), new ResourceLocation("shaders/post/antialias.json"), new ResourceLocation("shaders/post/creeper.json"), new ResourceLocation("shaders/post/spider.json")};
-     public static final int field_147708_e = field_147712_ad.length;
--    private int field_147713_ae = field_147708_e;
-+    private int field_147713_ae;
-     private boolean field_175083_ad;
-     private int field_175084_ae;
++    private static final ResourceLocation[] SHADERS_TEXTURES = new ResourceLocation[] {new ResourceLocation("shaders/post/notch.json"), new ResourceLocation("shaders/post/fxaa.json"), new ResourceLocation("shaders/post/art.json"), new ResourceLocation("shaders/post/bumpy.json"), new ResourceLocation("shaders/post/blobs2.json"), new ResourceLocation("shaders/post/pencil.json"), new ResourceLocation("shaders/post/color_convolve.json"), new ResourceLocation("shaders/post/deconverge.json"), new ResourceLocation("shaders/post/flip.json"), new ResourceLocation("shaders/post/invert.json"), new ResourceLocation("shaders/post/ntsc.json"), new ResourceLocation("shaders/post/outline.json"), new ResourceLocation("shaders/post/phosphor.json"), new ResourceLocation("shaders/post/scan_pincushion.json"), new ResourceLocation("shaders/post/sobel.json"), new ResourceLocation("shaders/post/bits.json"), new ResourceLocation("shaders/post/desaturate.json"), new ResourceLocation("shaders/post/green.json"), new ResourceLocation("shaders/post/blur.json"), new ResourceLocation("shaders/post/wobble.json"), new ResourceLocation("shaders/post/blobs.json"), new ResourceLocation("shaders/post/antialias.json"), new ResourceLocation("shaders/post/creeper.json"), new ResourceLocation("shaders/post/spider.json")};
+     public static final int SHADER_COUNT = SHADERS_TEXTURES.length;
+-    private int shaderIndex = SHADER_COUNT;
++    private int shaderIndex;
+     private boolean useShader;
+     private int frameCount;
  
-     public EntityRenderer(Minecraft p_i45076_1_, IResourceManager p_i45076_2_)
+     public EntityRenderer(Minecraft mcIn, IResourceManager resourceManagerIn)
      {
-+        this.field_147713_ae = field_147708_e;
-         this.field_78531_r = p_i45076_1_;
-         this.field_147711_ac = p_i45076_2_;
-         this.field_78516_c = p_i45076_1_.func_175597_ag();
++        this.shaderIndex = SHADER_COUNT;
+         this.mc = mcIn;
+         this.resourceManager = resourceManagerIn;
+         this.itemRenderer = mcIn.getItemRenderer();
 @@ -178,9 +154,9 @@
-         this.field_78504_Q = this.field_78513_d.func_110565_c();
-         this.field_147707_d = null;
+         this.lightmapColors = this.lightmapTexture.getTextureData();
+         this.shaderGroup = null;
  
 -        for (int i = 0; i < 32; i++)
 +        for (int i = 0; i < 32; ++i)
@@ -85,9 +85,9 @@
                  float f1 = (float)(i - 16);
 @@ -235,6 +211,7 @@
              {
-                 this.func_175069_a(new ResourceLocation("shaders/post/invert.json"));
+                 this.loadShader(new ResourceLocation("shaders/post/invert.json"));
              }
-+            else net.minecraftforge.client.ForgeHooksClient.loadEntityShader(p_175066_1_, this);
++            else net.minecraftforge.client.ForgeHooksClient.loadEntityShader(entityIn, this);
          }
      }
  
@@ -96,36 +96,36 @@
      }
  
 -    @Override
-     public void func_110549_a(IResourceManager p_110549_1_)
+     public void onResourceManagerReload(IResourceManager resourceManager)
      {
-         if (this.field_147707_d != null)
+         if (this.shaderGroup != null)
 @@ -315,11 +291,11 @@
-             this.field_78531_r.func_175607_a(this.field_78531_r.field_71439_g);
+             this.mc.setRenderViewEntity(this.mc.player);
          }
  
--        float f3 = this.field_78531_r.field_71441_e.func_175724_o(new BlockPos(this.field_78531_r.func_175606_aa()));
-+        float f3 = this.field_78531_r.field_71441_e.func_175724_o(new BlockPos(this.field_78531_r.func_175606_aa().func_174824_e(1F))); // Forge: fix MC-51150
-         float f4 = (float)this.field_78531_r.field_71474_y.field_151451_c / 32.0F;
+-        float f3 = this.mc.world.getLightBrightness(new BlockPos(this.mc.getRenderViewEntity()));
++        float f3 = this.mc.world.getLightBrightness(new BlockPos(this.mc.getRenderViewEntity().getPositionEyes(1F))); // Forge: fix MC-51150
+         float f4 = (float)this.mc.gameSettings.renderDistanceChunks / 32.0F;
          float f2 = f3 * (1.0F - f4) + f4;
--        this.field_78539_ae = this.field_78539_ae + (f2 - this.field_78539_ae) * 0.1F;
--        this.field_78529_t++;
-+        this.field_78539_ae += (f2 - this.field_78539_ae) * 0.1F;
-+        ++this.field_78529_t;
-         this.field_78516_c.func_78441_a();
-         this.func_78484_h();
-         this.field_82832_V = this.field_82831_U;
+-        this.fogColor1 = this.fogColor1 + (f2 - this.fogColor1) * 0.1F;
+-        this.rendererUpdateCount++;
++        this.fogColor1 += (f2 - this.fogColor1) * 0.1F;
++        ++this.rendererUpdateCount;
+         this.itemRenderer.updateEquippedItem();
+         this.addRainParticles();
+         this.bossColorModifierPrev = this.bossColorModifier;
 @@ -340,7 +316,7 @@
  
-         if (this.field_190567_ac > 0)
+         if (this.itemActivationTicks > 0)
          {
--            this.field_190567_ac--;
-+            --this.field_190567_ac;
+-            this.itemActivationTicks--;
++            --this.itemActivationTicks;
  
-             if (this.field_190567_ac == 0)
+             if (this.itemActivationTicks == 0)
              {
 @@ -386,12 +362,12 @@
  
-                 if (this.field_78531_r.field_71442_b.func_78749_i())
+                 if (this.mc.playerController.extendedReach())
                  {
 -                    d1 = 6.0;
 +                    d1 = 6.0D;
@@ -139,22 +139,22 @@
                          flag = true;
                      }
 @@ -407,24 +383,16 @@
-                 this.field_78528_u = null;
+                 this.pointedEntity = null;
                  Vec3d vec3d3 = null;
                  float f = 1.0F;
--                List<Entity> list = this.field_78531_r
--                                    .field_71441_e
--                                    .func_175674_a(
+-                List<Entity> list = this.mc
+-                                    .world
+-                                    .getEntitiesInAABBexcluding(
 -                                        entity,
--                                        entity.func_174813_aQ()
--                                        .func_72321_a(vec3d1.field_72450_a * d0, vec3d1.field_72448_b * d0, vec3d1.field_72449_c * d0)
--                                        .func_72314_b(1.0, 1.0, 1.0),
--                                        Predicates.and(EntitySelectors.field_180132_d, new Predicate<Entity>()
-+                List<Entity> list = this.field_78531_r.field_71441_e.func_175674_a(entity, entity.func_174813_aQ().func_72321_a(vec3d1.field_72450_a * d0, vec3d1.field_72448_b * d0, vec3d1.field_72449_c * d0).func_72314_b(1.0D, 1.0D, 1.0D), Predicates.and(EntitySelectors.field_180132_d, new Predicate<Entity>()
+-                                        entity.getEntityBoundingBox()
+-                                        .expand(vec3d1.x * d0, vec3d1.y * d0, vec3d1.z * d0)
+-                                        .grow(1.0, 1.0, 1.0),
+-                                        Predicates.and(EntitySelectors.NOT_SPECTATING, new Predicate<Entity>()
++                List<Entity> list = this.mc.world.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().expand(vec3d1.x * d0, vec3d1.y * d0, vec3d1.z * d0).grow(1.0D, 1.0D, 1.0D), Predicates.and(EntitySelectors.NOT_SPECTATING, new Predicate<Entity>()
                  {
                      public boolean apply(@Nullable Entity p_apply_1_)
                      {
-                         return p_apply_1_ != null && p_apply_1_.func_70067_L();
+                         return p_apply_1_ != null && p_apply_1_.canBeCollidedWith();
                      }
 -                })
 -                                    );
@@ -165,72 +165,72 @@
 +                for (int j = 0; j < list.size(); ++j)
                  {
                      Entity entity1 = list.get(j);
-                     AxisAlignedBB axisalignedbb = entity1.func_174813_aQ().func_186662_g((double)entity1.func_70111_Y());
+                     AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().grow((double)entity1.getCollisionBorderSize());
 @@ -432,22 +400,22 @@
  
-                     if (axisalignedbb.func_72318_a(vec3d))
+                     if (axisalignedbb.contains(vec3d))
                      {
 -                        if (d2 >= 0.0)
 +                        if (d2 >= 0.0D)
                          {
-                             this.field_78528_u = entity1;
-                             vec3d3 = raytraceresult == null ? vec3d : raytraceresult.field_72307_f;
+                             this.pointedEntity = entity1;
+                             vec3d3 = raytraceresult == null ? vec3d : raytraceresult.hitVec;
 -                            d2 = 0.0;
 +                            d2 = 0.0D;
                          }
                      }
                      else if (raytraceresult != null)
                      {
-                         double d3 = vec3d.func_72438_d(raytraceresult.field_72307_f);
+                         double d3 = vec3d.distanceTo(raytraceresult.hitVec);
  
 -                        if (d3 < d2 || d2 == 0.0)
 +                        if (d3 < d2 || d2 == 0.0D)
                          {
--                            if (entity1.func_184208_bv() == entity.func_184208_bv())
-+                            if (entity1.func_184208_bv() == entity.func_184208_bv() && !entity1.canRiderInteract())
+-                            if (entity1.getLowestRidingEntity() == entity.getLowestRidingEntity())
++                            if (entity1.getLowestRidingEntity() == entity.getLowestRidingEntity() && !entity1.canRiderInteract())
                              {
 -                                if (d2 == 0.0)
 +                                if (d2 == 0.0D)
                                  {
-                                     this.field_78528_u = entity1;
-                                     vec3d3 = raytraceresult.field_72307_f;
+                                     this.pointedEntity = entity1;
+                                     vec3d3 = raytraceresult.hitVec;
 @@ -463,10 +431,10 @@
                      }
                  }
  
--                if (this.field_78528_u != null && flag && vec3d.func_72438_d(vec3d3) > 3.0)
-+                if (this.field_78528_u != null && flag && vec3d.func_72438_d(vec3d3) > 3.0D)
+-                if (this.pointedEntity != null && flag && vec3d.distanceTo(vec3d3) > 3.0)
++                if (this.pointedEntity != null && flag && vec3d.distanceTo(vec3d3) > 3.0D)
                  {
-                     this.field_78528_u = null;
--                    this.field_78531_r.field_71476_x = new RayTraceResult(RayTraceResult.Type.MISS, vec3d3, null, new BlockPos(vec3d3));
-+                    this.field_78531_r.field_71476_x = new RayTraceResult(RayTraceResult.Type.MISS, vec3d3, (EnumFacing)null, new BlockPos(vec3d3));
+                     this.pointedEntity = null;
+-                    this.mc.objectMouseOver = new RayTraceResult(RayTraceResult.Type.MISS, vec3d3, null, new BlockPos(vec3d3));
++                    this.mc.objectMouseOver = new RayTraceResult(RayTraceResult.Type.MISS, vec3d3, (EnumFacing)null, new BlockPos(vec3d3));
                  }
  
-                 if (this.field_78528_u != null && (d2 < d1 || this.field_78531_r.field_71476_x == null))
+                 if (this.pointedEntity != null && (d2 < d1 || this.mc.objectMouseOver == null))
 @@ -495,7 +463,7 @@
          }
  
-         this.field_78506_S = this.field_78507_R;
--        this.field_78507_R = this.field_78507_R + (f - this.field_78507_R) * 0.5F;
-+        this.field_78507_R += (f - this.field_78507_R) * 0.5F;
+         this.fovModifierHandPrev = this.fovModifierHand;
+-        this.fovModifierHand = this.fovModifierHand + (f - this.fovModifierHand) * 0.5F;
++        this.fovModifierHand += (f - this.fovModifierHand) * 0.5F;
  
-         if (this.field_78507_R > 1.5F)
+         if (this.fovModifierHand > 1.5F)
          {
 @@ -522,7 +490,7 @@
-             if (p_78481_2_)
+             if (useFOVSetting)
              {
-                 f = this.field_78531_r.field_71474_y.field_74334_X;
--                f *= this.field_78506_S + (this.field_78507_R - this.field_78506_S) * p_78481_1_;
-+                f = f * (this.field_78506_S + (this.field_78507_R - this.field_78506_S) * p_78481_1_);
+                 f = this.mc.gameSettings.fovSetting;
+-                f *= this.fovModifierHandPrev + (this.fovModifierHand - this.fovModifierHandPrev) * partialTicks;
++                f = f * (this.fovModifierHandPrev + (this.fovModifierHand - this.fovModifierHandPrev) * partialTicks);
              }
  
-             if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).func_110143_aJ() <= 0.0F)
+             if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).getHealth() <= 0.0F)
 @@ -538,7 +506,7 @@
                  f = f * 60.0F / 70.0F;
              }
  
 -            return f;
-+            return net.minecraftforge.client.ForgeHooksClient.getFOVModifier(this, entity, iblockstate, p_78481_1_, f);
++            return net.minecraftforge.client.ForgeHooksClient.getFOVModifier(this, entity, iblockstate, partialTicks, f);
          }
      }
  
@@ -238,61 +238,61 @@
                  return;
              }
  
--            f /= (float)entitylivingbase.field_70738_aO;
--            f = MathHelper.func_76126_a(f * f * f * f * (float) Math.PI);
-+            f = f / (float)entitylivingbase.field_70738_aO;
-+            f = MathHelper.func_76126_a(f * f * f * f * (float)Math.PI);
-             float f2 = entitylivingbase.field_70739_aP;
-             GlStateManager.func_179114_b(-f2, 0.0F, 1.0F, 0.0F);
-             GlStateManager.func_179114_b(-f * 14.0F, 0.0F, 0.0F, 1.0F);
+-            f /= (float)entitylivingbase.maxHurtTime;
+-            f = MathHelper.sin(f * f * f * f * (float) Math.PI);
++            f = f / (float)entitylivingbase.maxHurtTime;
++            f = MathHelper.sin(f * f * f * f * (float)Math.PI);
+             float f2 = entitylivingbase.attackedAtYaw;
+             GlStateManager.rotate(-f2, 0.0F, 1.0F, 0.0F);
+             GlStateManager.rotate(-f * 14.0F, 0.0F, 0.0F, 1.0F);
 @@ -578,11 +546,9 @@
-             float f1 = -(entityplayer.field_70140_Q + f * p_78475_1_);
-             float f2 = entityplayer.field_71107_bF + (entityplayer.field_71109_bG - entityplayer.field_71107_bF) * p_78475_1_;
-             float f3 = entityplayer.field_70727_aS + (entityplayer.field_70726_aT - entityplayer.field_70727_aS) * p_78475_1_;
--            GlStateManager.func_179109_b(
--                MathHelper.func_76126_a(f1 * (float) Math.PI) * f2 * 0.5F, -Math.abs(MathHelper.func_76134_b(f1 * (float) Math.PI) * f2), 0.0F
+             float f1 = -(entityplayer.distanceWalkedModified + f * partialTicks);
+             float f2 = entityplayer.prevCameraYaw + (entityplayer.cameraYaw - entityplayer.prevCameraYaw) * partialTicks;
+             float f3 = entityplayer.prevCameraPitch + (entityplayer.cameraPitch - entityplayer.prevCameraPitch) * partialTicks;
+-            GlStateManager.translate(
+-                MathHelper.sin(f1 * (float) Math.PI) * f2 * 0.5F, -Math.abs(MathHelper.cos(f1 * (float) Math.PI) * f2), 0.0F
 -            );
--            GlStateManager.func_179114_b(MathHelper.func_76126_a(f1 * (float) Math.PI) * f2 * 3.0F, 0.0F, 0.0F, 1.0F);
--            GlStateManager.func_179114_b(Math.abs(MathHelper.func_76134_b(f1 * (float) Math.PI - 0.2F) * f2) * 5.0F, 1.0F, 0.0F, 0.0F);
-+            GlStateManager.func_179109_b(MathHelper.func_76126_a(f1 * (float)Math.PI) * f2 * 0.5F, -Math.abs(MathHelper.func_76134_b(f1 * (float)Math.PI) * f2), 0.0F);
-+            GlStateManager.func_179114_b(MathHelper.func_76126_a(f1 * (float)Math.PI) * f2 * 3.0F, 0.0F, 0.0F, 1.0F);
-+            GlStateManager.func_179114_b(Math.abs(MathHelper.func_76134_b(f1 * (float)Math.PI - 0.2F) * f2) * 5.0F, 1.0F, 0.0F, 0.0F);
-             GlStateManager.func_179114_b(f3, 1.0F, 0.0F, 0.0F);
+-            GlStateManager.rotate(MathHelper.sin(f1 * (float) Math.PI) * f2 * 3.0F, 0.0F, 0.0F, 1.0F);
+-            GlStateManager.rotate(Math.abs(MathHelper.cos(f1 * (float) Math.PI - 0.2F) * f2) * 5.0F, 1.0F, 0.0F, 0.0F);
++            GlStateManager.translate(MathHelper.sin(f1 * (float)Math.PI) * f2 * 0.5F, -Math.abs(MathHelper.cos(f1 * (float)Math.PI) * f2), 0.0F);
++            GlStateManager.rotate(MathHelper.sin(f1 * (float)Math.PI) * f2 * 3.0F, 0.0F, 0.0F, 1.0F);
++            GlStateManager.rotate(Math.abs(MathHelper.cos(f1 * (float)Math.PI - 0.2F) * f2) * 5.0F, 1.0F, 0.0F, 0.0F);
+             GlStateManager.rotate(f3, 1.0F, 0.0F, 0.0F);
          }
      }
 @@ -597,20 +563,14 @@
  
-         if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).func_70608_bn())
+         if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPlayerSleeping())
          {
 -            f = (float)((double)f + 1.0);
 +            f = (float)((double)f + 1.0D);
-             GlStateManager.func_179109_b(0.0F, 0.3F, 0.0F);
+             GlStateManager.translate(0.0F, 0.3F, 0.0F);
  
-             if (!this.field_78531_r.field_71474_y.field_74325_U)
+             if (!this.mc.gameSettings.debugCamEnable)
              {
                  BlockPos blockpos = new BlockPos(entity);
-                 IBlockState iblockstate = this.field_78531_r.field_71441_e.func_180495_p(blockpos);
--                Block block = iblockstate.func_177230_c();
+                 IBlockState iblockstate = this.mc.world.getBlockState(blockpos);
+-                Block block = iblockstate.getBlock();
 -
--                if (block == Blocks.field_150324_C)
+-                if (block == Blocks.BED)
 -                {
--                    int j = iblockstate.func_177229_b(BlockBed.field_185512_D).func_176736_b();
--                    GlStateManager.func_179114_b((float)(j * 90), 0.0F, 1.0F, 0.0F);
+-                    int j = iblockstate.getValue(BlockBed.FACING).getHorizontalIndex();
+-                    GlStateManager.rotate((float)(j * 90), 0.0F, 1.0F, 0.0F);
 -                }
-+                net.minecraftforge.client.ForgeHooksClient.orientBedCamera(this.field_78531_r.field_71441_e, blockpos, iblockstate, entity);
++                net.minecraftforge.client.ForgeHooksClient.orientBedCamera(this.mc.world, blockpos, iblockstate, entity);
  
-                 GlStateManager.func_179114_b(entity.field_70126_B + (entity.field_70177_z - entity.field_70126_B) * p_78467_1_ + 180.0F, 0.0F, -1.0F, 0.0F);
-                 GlStateManager.func_179114_b(entity.field_70127_C + (entity.field_70125_A - entity.field_70127_C) * p_78467_1_, -1.0F, 0.0F, 0.0F);
+                 GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F, 0.0F, -1.0F, 0.0F);
+                 GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
 @@ -634,24 +594,19 @@
                      f2 += 180.0F;
                  }
  
--                double d4 = (double)(-MathHelper.func_76126_a(f1 * (float)(Math.PI / 180.0)) * MathHelper.func_76134_b(f2 * (float)(Math.PI / 180.0))) * d3;
--                double d5 = (double)(MathHelper.func_76134_b(f1 * (float)(Math.PI / 180.0)) * MathHelper.func_76134_b(f2 * (float)(Math.PI / 180.0))) * d3;
--                double d6 = (double)(-MathHelper.func_76126_a(f2 * (float)(Math.PI / 180.0))) * d3;
-+                double d4 = (double)(-MathHelper.func_76126_a(f1 * 0.017453292F) * MathHelper.func_76134_b(f2 * 0.017453292F)) * d3;
-+                double d5 = (double)(MathHelper.func_76134_b(f1 * 0.017453292F) * MathHelper.func_76134_b(f2 * 0.017453292F)) * d3;
-+                double d6 = (double)(-MathHelper.func_76126_a(f2 * 0.017453292F)) * d3;
+-                double d4 = (double)(-MathHelper.sin(f1 * (float)(Math.PI / 180.0)) * MathHelper.cos(f2 * (float)(Math.PI / 180.0))) * d3;
+-                double d5 = (double)(MathHelper.cos(f1 * (float)(Math.PI / 180.0)) * MathHelper.cos(f2 * (float)(Math.PI / 180.0))) * d3;
+-                double d6 = (double)(-MathHelper.sin(f2 * (float)(Math.PI / 180.0))) * d3;
++                double d4 = (double)(-MathHelper.sin(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F)) * d3;
++                double d5 = (double)(MathHelper.cos(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F)) * d3;
++                double d6 = (double)(-MathHelper.sin(f2 * 0.017453292F)) * d3;
  
 -                for (int i = 0; i < 8; i++)
 +                for (int i = 0; i < 8; ++i)
@@ -303,79 +303,79 @@
 -                    f3 *= 0.1F;
 -                    f4 *= 0.1F;
 -                    f5 *= 0.1F;
--                    RayTraceResult raytraceresult = this.field_78531_r
--                                                    .field_71441_e
--                                                    .func_72933_a(
+-                    RayTraceResult raytraceresult = this.mc
+-                                                    .world
+-                                                    .rayTraceBlocks(
 -                                                        new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5),
 -                                                        new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5)
 -                                                    );
 +                    f3 = f3 * 0.1F;
 +                    f4 = f4 * 0.1F;
 +                    f5 = f5 * 0.1F;
-+                    RayTraceResult raytraceresult = this.field_78531_r.field_71441_e.func_72933_a(new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5));
++                    RayTraceResult raytraceresult = this.mc.world.rayTraceBlocks(new Vec3d(d0 + (double)f3, d1 + (double)f4, d2 + (double)f5), new Vec3d(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5));
  
                      if (raytraceresult != null)
                      {
 @@ -683,19 +638,20 @@
  
-         if (!this.field_78531_r.field_71474_y.field_74325_U)
+         if (!this.mc.gameSettings.debugCamEnable)
          {
--            GlStateManager.func_179114_b(entity.field_70127_C + (entity.field_70125_A - entity.field_70127_C) * p_78467_1_, 1.0F, 0.0F, 0.0F);
+-            GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 1.0F, 0.0F, 0.0F);
 -
-+            float yaw = entity.field_70126_B + (entity.field_70177_z - entity.field_70126_B) * p_78467_1_ + 180.0F;
-+            float pitch = entity.field_70127_C + (entity.field_70125_A - entity.field_70127_C) * p_78467_1_;
++            float yaw = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F;
++            float pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
 +            float roll = 0.0F;
              if (entity instanceof EntityAnimal)
              {
                  EntityAnimal entityanimal = (EntityAnimal)entity;
--                GlStateManager.func_179114_b(
--                    entityanimal.field_70758_at + (entityanimal.field_70759_as - entityanimal.field_70758_at) * p_78467_1_ + 180.0F, 0.0F, 1.0F, 0.0F
+-                GlStateManager.rotate(
+-                    entityanimal.prevRotationYawHead + (entityanimal.rotationYawHead - entityanimal.prevRotationYawHead) * partialTicks + 180.0F, 0.0F, 1.0F, 0.0F
 -                );
 -            }
 -            else
 -            {
--                GlStateManager.func_179114_b(entity.field_70126_B + (entity.field_70177_z - entity.field_70126_B) * p_78467_1_ + 180.0F, 0.0F, 1.0F, 0.0F);
+-                GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F, 0.0F, 1.0F, 0.0F);
 -            }
-+                yaw = entityanimal.field_70758_at + (entityanimal.field_70759_as - entityanimal.field_70758_at) * p_78467_1_ + 180.0F;
++                yaw = entityanimal.prevRotationYawHead + (entityanimal.rotationYawHead - entityanimal.prevRotationYawHead) * partialTicks + 180.0F;
 +            }
-+            IBlockState state = ActiveRenderInfo.func_186703_a(this.field_78531_r.field_71441_e, entity, p_78467_1_);
-+            net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup event = new net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup(this, entity, state, p_78467_1_, yaw, pitch, roll);
++            IBlockState state = ActiveRenderInfo.getBlockStateAtEntityViewpoint(this.mc.world, entity, partialTicks);
++            net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup event = new net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup(this, entity, state, partialTicks, yaw, pitch, roll);
 +            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
-+            GlStateManager.func_179114_b(event.getRoll(), 0.0F, 0.0F, 1.0F);
-+            GlStateManager.func_179114_b(event.getPitch(), 1.0F, 0.0F, 0.0F);
-+            GlStateManager.func_179114_b(event.getYaw(), 0.0F, 1.0F, 0.0F);
++            GlStateManager.rotate(event.getRoll(), 0.0F, 0.0F, 1.0F);
++            GlStateManager.rotate(event.getPitch(), 1.0F, 0.0F, 0.0F);
++            GlStateManager.rotate(event.getYaw(), 0.0F, 1.0F, 0.0F);
          }
  
-         GlStateManager.func_179109_b(0.0F, -f, 0.0F);
+         GlStateManager.translate(0.0F, -f, 0.0F);
 @@ -717,18 +673,13 @@
-             GlStateManager.func_179109_b((float)(-(p_78479_2_ * 2 - 1)) * 0.07F, 0.0F, 0.0F);
+             GlStateManager.translate((float)(-(pass * 2 - 1)) * 0.07F, 0.0F, 0.0F);
          }
  
--        if (this.field_78503_V != 1.0)
-+        if (this.field_78503_V != 1.0D)
+-        if (this.cameraZoom != 1.0)
++        if (this.cameraZoom != 1.0D)
          {
-             GlStateManager.func_179109_b((float)this.field_78502_W, (float)(-this.field_78509_X), 0.0F);
--            GlStateManager.func_179139_a(this.field_78503_V, this.field_78503_V, 1.0);
-+            GlStateManager.func_179139_a(this.field_78503_V, this.field_78503_V, 1.0D);
+             GlStateManager.translate((float)this.cameraYaw, (float)(-this.cameraPitch), 0.0F);
+-            GlStateManager.scale(this.cameraZoom, this.cameraZoom, 1.0);
++            GlStateManager.scale(this.cameraZoom, this.cameraZoom, 1.0D);
          }
  
 -        Project.gluPerspective(
--            this.func_78481_a(p_78479_1_, true),
--            (float)this.field_78531_r.field_71443_c / (float)this.field_78531_r.field_71440_d,
+-            this.getFOVModifier(partialTicks, true),
+-            (float)this.mc.displayWidth / (float)this.mc.displayHeight,
 -            0.05F,
--            this.field_78530_s * MathHelper.field_180189_a
+-            this.farPlaneDistance * MathHelper.SQRT_2
 -        );
-+        Project.gluPerspective(this.func_78481_a(p_78479_1_, true), (float)this.field_78531_r.field_71443_c / (float)this.field_78531_r.field_71440_d, 0.05F, this.field_78530_s * MathHelper.field_180189_a);
-         GlStateManager.func_179128_n(5888);
-         GlStateManager.func_179096_D();
++        Project.gluPerspective(this.getFOVModifier(partialTicks, true), (float)this.mc.displayWidth / (float)this.mc.displayHeight, 0.05F, this.farPlaneDistance * MathHelper.SQRT_2);
+         GlStateManager.matrixMode(5888);
+         GlStateManager.loadIdentity();
  
 @@ -744,8 +695,7 @@
-             this.func_78475_f(p_78479_1_);
+             this.applyBobbing(partialTicks);
          }
  
--        float f1 = this.field_78531_r.field_71439_g.field_71080_cy
--                   + (this.field_78531_r.field_71439_g.field_71086_bY - this.field_78531_r.field_71439_g.field_71080_cy) * p_78479_1_;
-+        float f1 = this.field_78531_r.field_71439_g.field_71080_cy + (this.field_78531_r.field_71439_g.field_71086_bY - this.field_78531_r.field_71439_g.field_71080_cy) * p_78479_1_;
+-        float f1 = this.mc.player.prevTimeInPortal
+-                   + (this.mc.player.timeInPortal - this.mc.player.prevTimeInPortal) * partialTicks;
++        float f1 = this.mc.player.prevTimeInPortal + (this.mc.player.timeInPortal - this.mc.player.prevTimeInPortal) * partialTicks;
  
          if (f1 > 0.0F)
          {
@@ -385,111 +385,111 @@
              float f2 = 5.0F / (f1 * f1 + 5.0F) - f1 * 0.04F;
 -            f2 *= f2;
 +            f2 = f2 * f2;
-             GlStateManager.func_179114_b(((float)this.field_78529_t + p_78479_1_) * (float)i, 0.0F, 1.0F, 1.0F);
-             GlStateManager.func_179152_a(1.0F / f2, 1.0F, 1.0F);
-             GlStateManager.func_179114_b(-((float)this.field_78529_t + p_78479_1_) * (float)i, 0.0F, 1.0F, 1.0F);
+             GlStateManager.rotate(((float)this.rendererUpdateCount + partialTicks) * (float)i, 0.0F, 1.0F, 1.0F);
+             GlStateManager.scale(1.0F / f2, 1.0F, 1.0F);
+             GlStateManager.rotate(-((float)this.rendererUpdateCount + partialTicks) * (float)i, 0.0F, 1.0F, 1.0F);
 @@ -800,12 +750,7 @@
-                 GlStateManager.func_179109_b((float)(-(p_78476_2_ * 2 - 1)) * 0.07F, 0.0F, 0.0F);
+                 GlStateManager.translate((float)(-(pass * 2 - 1)) * 0.07F, 0.0F, 0.0F);
              }
  
 -            Project.gluPerspective(
--                this.func_78481_a(p_78476_1_, false),
--                (float)this.field_78531_r.field_71443_c / (float)this.field_78531_r.field_71440_d,
+-                this.getFOVModifier(partialTicks, false),
+-                (float)this.mc.displayWidth / (float)this.mc.displayHeight,
 -                0.05F,
--                this.field_78530_s * 2.0F
+-                this.farPlaneDistance * 2.0F
 -            );
-+            Project.gluPerspective(this.func_78481_a(p_78476_1_, false), (float)this.field_78531_r.field_71443_c / (float)this.field_78531_r.field_71440_d, 0.05F, this.field_78530_s * 2.0F);
-             GlStateManager.func_179128_n(5888);
-             GlStateManager.func_179096_D();
++            Project.gluPerspective(this.getFOVModifier(partialTicks, false), (float)this.mc.displayWidth / (float)this.mc.displayHeight, 0.05F, this.farPlaneDistance * 2.0F);
+             GlStateManager.matrixMode(5888);
+             GlStateManager.loadIdentity();
  
 @@ -822,13 +767,10 @@
-                 this.func_78475_f(p_78476_1_);
+                 this.applyBobbing(partialTicks);
              }
  
--            boolean flag = this.field_78531_r.func_175606_aa() instanceof EntityLivingBase
--                           && ((EntityLivingBase)this.field_78531_r.func_175606_aa()).func_70608_bn();
-+            boolean flag = this.field_78531_r.func_175606_aa() instanceof EntityLivingBase && ((EntityLivingBase)this.field_78531_r.func_175606_aa()).func_70608_bn();
+-            boolean flag = this.mc.getRenderViewEntity() instanceof EntityLivingBase
+-                           && ((EntityLivingBase)this.mc.getRenderViewEntity()).isPlayerSleeping();
++            boolean flag = this.mc.getRenderViewEntity() instanceof EntityLivingBase && ((EntityLivingBase)this.mc.getRenderViewEntity()).isPlayerSleeping();
  
--            if (this.field_78531_r.field_71474_y.field_74320_O == 0
+-            if (this.mc.gameSettings.thirdPersonView == 0
 -                    && !flag
--                    && !this.field_78531_r.field_71474_y.field_74319_N
--                    && !this.field_78531_r.field_71442_b.func_78747_a())
-+            if (!net.minecraftforge.client.ForgeHooksClient.renderFirstPersonHand(field_78531_r.field_71438_f, p_78476_1_, p_78476_2_))
-+            if (this.field_78531_r.field_71474_y.field_74320_O == 0 && !flag && !this.field_78531_r.field_71474_y.field_74319_N && !this.field_78531_r.field_71442_b.func_78747_a())
+-                    && !this.mc.gameSettings.hideGUI
+-                    && !this.mc.playerController.isSpectator())
++            if (!net.minecraftforge.client.ForgeHooksClient.renderFirstPersonHand(mc.renderGlobal, partialTicks, pass))
++            if (this.mc.gameSettings.thirdPersonView == 0 && !flag && !this.mc.gameSettings.hideGUI && !this.mc.playerController.isSpectator())
              {
-                 this.func_180436_i();
-                 this.field_78516_c.func_78440_a(p_78476_1_);
+                 this.enableLightmap();
+                 this.itemRenderer.renderItemInFirstPerson(partialTicks);
 @@ -879,8 +821,8 @@
-     private void func_78470_f()
+     private void updateTorchFlicker()
      {
-         this.field_175075_L = (float)((double)this.field_175075_L + (Math.random() - Math.random()) * Math.random() * Math.random());
--        this.field_175075_L = (float)((double)this.field_175075_L * 0.9);
--        this.field_78514_e = this.field_78514_e + (this.field_175075_L - this.field_78514_e);
-+        this.field_175075_L = (float)((double)this.field_175075_L * 0.9D);
-+        this.field_78514_e += this.field_175075_L - this.field_78514_e;
-         this.field_78536_aa = true;
+         this.torchFlickerDX = (float)((double)this.torchFlickerDX + (Math.random() - Math.random()) * Math.random() * Math.random());
+-        this.torchFlickerDX = (float)((double)this.torchFlickerDX * 0.9);
+-        this.torchFlickerX = this.torchFlickerX + (this.torchFlickerDX - this.torchFlickerX);
++        this.torchFlickerDX = (float)((double)this.torchFlickerDX * 0.9D);
++        this.torchFlickerX += this.torchFlickerDX - this.torchFlickerX;
+         this.lightmapUpdateNeeded = true;
      }
  
 @@ -896,7 +838,7 @@
-                 float f = world.func_72971_b(1.0F);
+                 float f = world.getSunBrightness(1.0F);
                  float f1 = f * 0.95F + 0.05F;
  
 -                for (int i = 0; i < 256; i++)
 +                for (int i = 0; i < 256; ++i)
                  {
-                     float f2 = world.field_73011_w.func_177497_p()[i / 16] * f1;
-                     float f3 = world.field_73011_w.func_177497_p()[i % 16] * (this.field_78514_e * 0.1F + 1.5F);
+                     float f2 = world.provider.getLightBrightnessTable()[i / 16] * f1;
+                     float f3 = world.provider.getLightBrightnessTable()[i % 16] * (this.torchFlickerX * 0.1F + 1.5F);
 @@ -932,6 +874,15 @@
                          f10 = 0.25F + f7 * 0.75F;
                      }
  
 +                    float[] colors = {f8, f9, f10};
-+                    world.field_73011_w.getLightmapColors(p_78472_1_, f, f2, f3, colors);
++                    world.provider.getLightmapColors(partialTicks, f, f2, f3, colors);
 +                    f8 = colors[0]; f9 = colors[1]; f10 = colors[2];
 +
 +                    // Forge: fix MC-58177
-+                    f8 = MathHelper.func_76131_a(f8, 0f, 1f);
-+                    f9 = MathHelper.func_76131_a(f9, 0f, 1f);
-+                    f10 = MathHelper.func_76131_a(f10, 0f, 1f);
++                    f8 = MathHelper.clamp(f8, 0f, 1f);
++                    f9 = MathHelper.clamp(f9, 0f, 1f);
++                    f10 = MathHelper.clamp(f10, 0f, 1f);
 +
-                     if (this.field_78531_r.field_71439_g.func_70644_a(MobEffects.field_76439_r))
+                     if (this.mc.player.isPotionActive(MobEffects.NIGHT_VISION))
                      {
-                         float f15 = this.func_180438_a(this.field_78531_r.field_71439_g, p_78472_1_);
+                         float f15 = this.getNightVisionBrightness(this.mc.player, partialTicks);
 @@ -1015,7 +966,7 @@
                      int k = (int)(f8 * 255.0F);
                      int l = (int)(f9 * 255.0F);
                      int i1 = (int)(f10 * 255.0F);
--                    this.field_78504_Q[i] = 0xFF000000 | k << 16 | l << 8 | i1;
-+                    this.field_78504_Q[i] = -16777216 | k << 16 | l << 8 | i1;
+-                    this.lightmapColors[i] = 0xFF000000 | k << 16 | l << 8 | i1;
++                    this.lightmapColors[i] = -16777216 | k << 16 | l << 8 | i1;
                  }
  
-                 this.field_78513_d.func_110564_a();
+                 this.lightmapTexture.updateDynamicTexture();
 @@ -1028,7 +979,7 @@
-     private float func_180438_a(EntityLivingBase p_180438_1_, float p_180438_2_)
+     private float getNightVisionBrightness(EntityLivingBase entitylivingbaseIn, float partialTicks)
      {
-         int i = p_180438_1_.func_70660_b(MobEffects.field_76439_r).func_76459_b();
--        return i > 200 ? 1.0F : 0.7F + MathHelper.func_76126_a(((float)i - p_180438_2_) * (float) Math.PI * 0.2F) * 0.3F;
-+        return i > 200 ? 1.0F : 0.7F + MathHelper.func_76126_a(((float)i - p_180438_2_) * (float)Math.PI * 0.2F) * 0.3F;
+         int i = entitylivingbaseIn.getActivePotionEffect(MobEffects.NIGHT_VISION).getDuration();
+-        return i > 200 ? 1.0F : 0.7F + MathHelper.sin(((float)i - partialTicks) * (float) Math.PI * 0.2F) * 0.3F;
++        return i > 200 ? 1.0F : 0.7F + MathHelper.sin(((float)i - partialTicks) * (float)Math.PI * 0.2F) * 0.3F;
      }
  
-     public void func_181560_a(float p_181560_1_, long p_181560_2_)
+     public void updateCameraAndRender(float partialTicks, long nanoTime)
 @@ -1158,6 +1109,10 @@
-                 GlStateManager.func_179096_D();
-                 this.func_78478_c();
-                 this.field_78510_Z = System.nanoTime();
+                 GlStateManager.loadIdentity();
+                 this.setupOverlayRendering();
+                 this.renderEndNanoTime = System.nanoTime();
 +                // Forge: Fix MC-112292
-+                net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher.field_147556_a.field_147553_e = this.field_78531_r.func_110434_K();
++                net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher.instance.renderEngine = this.mc.getTextureManager();
 +                // Forge: also fix rendering text before entering world (not part of MC-112292, but the same reason)
-+                net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher.field_147556_a.field_147557_n = this.field_78531_r.field_71466_p;
++                net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher.instance.fontRenderer = this.mc.fontRenderer;
              }
  
-             if (this.field_78531_r.field_71462_r != null)
+             if (this.mc.currentScreen != null)
 @@ -1166,7 +1121,7 @@
  
                  try
                  {
--                    this.field_78531_r.field_71462_r.func_73863_a(k1, l1, this.field_78531_r.func_193989_ak());
-+                    net.minecraftforge.client.ForgeHooksClient.drawScreen(this.field_78531_r.field_71462_r, k1, l1, this.field_78531_r.func_193989_ak());
+-                    this.mc.currentScreen.drawScreen(k1, l1, this.mc.getTickLength());
++                    net.minecraftforge.client.ForgeHooksClient.drawScreen(this.mc.currentScreen, k1, l1, this.mc.getTickLength());
                  }
                  catch (Throwable throwable)
                  {
@@ -497,22 +497,22 @@
                              return String.format("Scaled: (%d, %d). Absolute: (%d, %d)", k1, l1, Mouse.getX(), Mouse.getY());
                          }
                      });
--                    crashreportcategory.func_189529_a(
+-                    crashreportcategory.addDetail(
 -                        "Screen size",
 -                        new ICrashReportDetail<String>()
-+                    crashreportcategory.func_189529_a("Screen size", new ICrashReportDetail<String>()
++                    crashreportcategory.addDetail("Screen size", new ICrashReportDetail<String>()
                      {
                          public String call() throws Exception
                          {
 -                            return String.format(
 -                                       "Scaled: (%d, %d). Absolute: (%d, %d). Scale factor of %d",
--                                       scaledresolution.func_78326_a(),
--                                       scaledresolution.func_78328_b(),
--                                       EntityRenderer.this.field_78531_r.field_71443_c,
--                                       EntityRenderer.this.field_78531_r.field_71440_d,
--                                       scaledresolution.func_78325_e()
+-                                       scaledresolution.getScaledWidth(),
+-                                       scaledresolution.getScaledHeight(),
+-                                       EntityRenderer.this.mc.displayWidth,
+-                                       EntityRenderer.this.mc.displayHeight,
+-                                       scaledresolution.getScaleFactor()
 -                                   );
-+                            return String.format("Scaled: (%d, %d). Absolute: (%d, %d). Scale factor of %d", scaledresolution.func_78326_a(), scaledresolution.func_78328_b(), EntityRenderer.this.field_78531_r.field_71443_c, EntityRenderer.this.field_78531_r.field_71440_d, scaledresolution.func_78325_e());
++                            return String.format("Scaled: (%d, %d). Absolute: (%d, %d). Scale factor of %d", scaledresolution.getScaledWidth(), scaledresolution.getScaledHeight(), EntityRenderer.this.mc.displayWidth, EntityRenderer.this.mc.displayHeight, scaledresolution.getScaleFactor());
                          }
 -                    }
 -                    );
@@ -522,17 +522,17 @@
              }
 @@ -1211,13 +1156,9 @@
  
-     private void func_184373_n()
+     private void createWorldIcon()
      {
--        if (this.field_78531_r.field_71438_f.func_184382_g() > 10
--                && this.field_78531_r.field_71438_f.func_184384_n()
--                && !this.field_78531_r.func_71401_C().func_184106_y())
-+        if (this.field_78531_r.field_71438_f.func_184382_g() > 10 && this.field_78531_r.field_71438_f.func_184384_n() && !this.field_78531_r.func_71401_C().func_184106_y())
+-        if (this.mc.renderGlobal.getRenderedChunks() > 10
+-                && this.mc.renderGlobal.hasNoChunkUpdates()
+-                && !this.mc.getIntegratedServer().isWorldIconSet())
++        if (this.mc.renderGlobal.getRenderedChunks() > 10 && this.mc.renderGlobal.hasNoChunkUpdates() && !this.mc.getIntegratedServer().isWorldIconSet())
          {
--            BufferedImage bufferedimage = ScreenShotHelper.func_186719_a(
--                                              this.field_78531_r.field_71443_c, this.field_78531_r.field_71440_d, this.field_78531_r.func_147110_a()
+-            BufferedImage bufferedimage = ScreenShotHelper.createScreenshot(
+-                                              this.mc.displayWidth, this.mc.displayHeight, this.mc.getFramebuffer()
 -                                          );
-+            BufferedImage bufferedimage = ScreenShotHelper.func_186719_a(this.field_78531_r.field_71443_c, this.field_78531_r.field_71440_d, this.field_78531_r.func_147110_a());
++            BufferedImage bufferedimage = ScreenShotHelper.createScreenshot(this.mc.displayWidth, this.mc.displayHeight, this.mc.getFramebuffer());
              int i = bufferedimage.getWidth();
              int j = bufferedimage.getHeight();
              int k = 0;
@@ -543,173 +543,173 @@
 -                graphics.drawImage(bufferedimage, 0, 0, 64, 64, k, l, k + i, l + i, null);
 +                graphics.drawImage(bufferedimage, 0, 0, 64, 64, k, l, k + i, l + i, (ImageObserver)null);
                  graphics.dispose();
-                 ImageIO.write(bufferedimage1, "png", this.field_78531_r.func_71401_C().func_184109_z());
+                 ImageIO.write(bufferedimage1, "png", this.mc.getIntegratedServer().getWorldIconFile());
              }
 @@ -1275,7 +1216,7 @@
  
-                     if (this.field_78531_r.field_71442_b.func_178889_l() == GameType.SPECTATOR)
+                     if (this.mc.playerController.getCurrentGameType() == GameType.SPECTATOR)
                      {
--                        flag = block.func_149716_u() && this.field_78531_r.field_71441_e.func_175625_s(blockpos) instanceof IInventory;
-+                        flag = block.hasTileEntity(this.field_78531_r.field_71441_e.func_180495_p(blockpos)) && this.field_78531_r.field_71441_e.func_175625_s(blockpos) instanceof IInventory;
+-                        flag = block.hasTileEntity() && this.mc.world.getTileEntity(blockpos) instanceof IInventory;
++                        flag = block.hasTileEntity(this.mc.world.getBlockState(blockpos)) && this.mc.world.getTileEntity(blockpos) instanceof IInventory;
                      }
                      else
                      {
 @@ -1333,7 +1274,7 @@
-         GlStateManager.func_179086_m(16640);
-         this.field_78531_r.field_71424_I.func_76318_c("camera");
-         this.func_78479_a(p_175068_2_, p_175068_1_);
--        ActiveRenderInfo.func_74583_a(this.field_78531_r.field_71439_g, this.field_78531_r.field_71474_y.field_74320_O == 2);
-+        ActiveRenderInfo.updateRenderInfo(this.field_78531_r.func_175606_aa(), this.field_78531_r.field_71474_y.field_74320_O == 2); //Forge: MC-46445 Spectator mode particles and sounds computed from where you have been before
-         this.field_78531_r.field_71424_I.func_76318_c("frustum");
-         ClippingHelperImpl.func_78558_a();
-         this.field_78531_r.field_71424_I.func_76318_c("culling");
+         GlStateManager.clear(16640);
+         this.mc.profiler.endStartSection("camera");
+         this.setupCameraTransform(partialTicks, pass);
+-        ActiveRenderInfo.updateRenderInfo(this.mc.player, this.mc.gameSettings.thirdPersonView == 2);
++        ActiveRenderInfo.updateRenderInfo(this.mc.getRenderViewEntity(), this.mc.gameSettings.thirdPersonView == 2); //Forge: MC-46445 Spectator mode particles and sounds computed from where you have been before
+         this.mc.profiler.endStartSection("frustum");
+         ClippingHelperImpl.getInstance();
+         this.mc.profiler.endStartSection("culling");
 @@ -1350,29 +1291,19 @@
-             this.field_78531_r.field_71424_I.func_76318_c("sky");
-             GlStateManager.func_179128_n(5889);
-             GlStateManager.func_179096_D();
+             this.mc.profiler.endStartSection("sky");
+             GlStateManager.matrixMode(5889);
+             GlStateManager.loadIdentity();
 -            Project.gluPerspective(
--                this.func_78481_a(p_175068_2_, true),
--                (float)this.field_78531_r.field_71443_c / (float)this.field_78531_r.field_71440_d,
+-                this.getFOVModifier(partialTicks, true),
+-                (float)this.mc.displayWidth / (float)this.mc.displayHeight,
 -                0.05F,
--                this.field_78530_s * 2.0F
+-                this.farPlaneDistance * 2.0F
 -            );
-+            Project.gluPerspective(this.func_78481_a(p_175068_2_, true), (float)this.field_78531_r.field_71443_c / (float)this.field_78531_r.field_71440_d, 0.05F, this.field_78530_s * 2.0F);
-             GlStateManager.func_179128_n(5888);
-             renderglobal.func_174976_a(p_175068_2_, p_175068_1_);
-             GlStateManager.func_179128_n(5889);
-             GlStateManager.func_179096_D();
++            Project.gluPerspective(this.getFOVModifier(partialTicks, true), (float)this.mc.displayWidth / (float)this.mc.displayHeight, 0.05F, this.farPlaneDistance * 2.0F);
+             GlStateManager.matrixMode(5888);
+             renderglobal.renderSky(partialTicks, pass);
+             GlStateManager.matrixMode(5889);
+             GlStateManager.loadIdentity();
 -            Project.gluPerspective(
--                this.func_78481_a(p_175068_2_, true),
--                (float)this.field_78531_r.field_71443_c / (float)this.field_78531_r.field_71440_d,
+-                this.getFOVModifier(partialTicks, true),
+-                (float)this.mc.displayWidth / (float)this.mc.displayHeight,
 -                0.05F,
--                this.field_78530_s * MathHelper.field_180189_a
+-                this.farPlaneDistance * MathHelper.SQRT_2
 -            );
-+            Project.gluPerspective(this.func_78481_a(p_175068_2_, true), (float)this.field_78531_r.field_71443_c / (float)this.field_78531_r.field_71440_d, 0.05F, this.field_78530_s * MathHelper.field_180189_a);
-             GlStateManager.func_179128_n(5888);
++            Project.gluPerspective(this.getFOVModifier(partialTicks, true), (float)this.mc.displayWidth / (float)this.mc.displayHeight, 0.05F, this.farPlaneDistance * MathHelper.SQRT_2);
+             GlStateManager.matrixMode(5888);
          }
  
-         this.func_78468_a(0, p_175068_2_);
-         GlStateManager.func_179103_j(7425);
+         this.setupFog(0, partialTicks);
+         GlStateManager.shadeModel(7425);
  
--        if (entity.field_70163_u + (double)entity.func_70047_e() < 128.0)
-+        if (entity.field_70163_u + (double)entity.func_70047_e() < 128.0D)
+-        if (entity.posY + (double)entity.getEyeHeight() < 128.0)
++        if (entity.posY + (double)entity.getEyeHeight() < 128.0D)
          {
-             this.func_180437_a(renderglobal, p_175068_2_, p_175068_1_, d0, d1, d2);
+             this.renderCloudsCheck(renderglobal, partialTicks, pass, d0, d1, d2);
          }
 @@ -1396,7 +1327,9 @@
-         GlStateManager.func_179118_c();
-         renderglobal.func_174977_a(BlockRenderLayer.SOLID, (double)p_175068_2_, p_175068_1_, entity);
-         GlStateManager.func_179141_d();
-+        this.field_78531_r.func_110434_K().func_110581_b(TextureMap.field_110575_b).func_174936_b(false, this.field_78531_r.field_71474_y.field_151442_I > 0); // FORGE: fix flickering leaves when mods mess up the blurMipmap settings
-         renderglobal.func_174977_a(BlockRenderLayer.CUTOUT_MIPPED, (double)p_175068_2_, p_175068_1_, entity);
-+        this.field_78531_r.func_110434_K().func_110581_b(TextureMap.field_110575_b).func_174935_a();
-         this.field_78531_r.func_110434_K().func_110581_b(TextureMap.field_110575_b).func_174936_b(false, false);
-         renderglobal.func_174977_a(BlockRenderLayer.CUTOUT, (double)p_175068_2_, p_175068_1_, entity);
-         this.field_78531_r.func_110434_K().func_110581_b(TextureMap.field_110575_b).func_174935_a();
+         GlStateManager.disableAlpha();
+         renderglobal.renderBlockLayer(BlockRenderLayer.SOLID, (double)partialTicks, pass, entity);
+         GlStateManager.enableAlpha();
++        this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, this.mc.gameSettings.mipmapLevels > 0); // FORGE: fix flickering leaves when mods mess up the blurMipmap settings
+         renderglobal.renderBlockLayer(BlockRenderLayer.CUTOUT_MIPPED, (double)partialTicks, pass, entity);
++        this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
+         this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
+         renderglobal.renderBlockLayer(BlockRenderLayer.CUTOUT, (double)partialTicks, pass, entity);
+         this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
 @@ -1410,7 +1343,9 @@
-             GlStateManager.func_179094_E();
-             RenderHelper.func_74519_b();
-             this.field_78531_r.field_71424_I.func_76318_c("entities");
+             GlStateManager.pushMatrix();
+             RenderHelper.enableStandardItemLighting();
+             this.mc.profiler.endStartSection("entities");
 +            net.minecraftforge.client.ForgeHooksClient.setRenderPass(0);
-             renderglobal.func_180446_a(entity, icamera, p_175068_2_);
+             renderglobal.renderEntities(entity, icamera, partialTicks);
 +            net.minecraftforge.client.ForgeHooksClient.setRenderPass(0);
-             RenderHelper.func_74518_a();
-             this.func_175072_h();
+             RenderHelper.disableStandardItemLighting();
+             this.disableLightmap();
          }
 @@ -1423,6 +1358,7 @@
              EntityPlayer entityplayer = (EntityPlayer)entity;
-             GlStateManager.func_179118_c();
-             this.field_78531_r.field_71424_I.func_76318_c("outline");
-+            if (!net.minecraftforge.client.ForgeHooksClient.onDrawBlockHighlight(renderglobal, entityplayer, field_78531_r.field_71476_x, 0, p_175068_2_))
-             renderglobal.func_72731_b(entityplayer, this.field_78531_r.field_71476_x, 0, p_175068_2_);
-             GlStateManager.func_179141_d();
+             GlStateManager.disableAlpha();
+             this.mc.profiler.endStartSection("outline");
++            if (!net.minecraftforge.client.ForgeHooksClient.onDrawBlockHighlight(renderglobal, entityplayer, mc.objectMouseOver, 0, partialTicks))
+             renderglobal.drawSelectionBox(entityplayer, this.mc.objectMouseOver, 0, partialTicks);
+             GlStateManager.enableAlpha();
          }
 @@ -1434,9 +1370,7 @@
  
-         this.field_78531_r.field_71424_I.func_76318_c("destroyProgress");
-         GlStateManager.func_179147_l();
--        GlStateManager.func_187428_a(
+         this.mc.profiler.endStartSection("destroyProgress");
+         GlStateManager.enableBlend();
+-        GlStateManager.tryBlendFuncSeparate(
 -            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 -        );
-+        GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-         this.field_78531_r.func_110434_K().func_110581_b(TextureMap.field_110575_b).func_174936_b(false, false);
-         renderglobal.func_174981_a(Tessellator.func_178181_a(), Tessellator.func_178181_a().func_178180_c(), entity, p_175068_2_);
-         this.field_78531_r.func_110434_K().func_110581_b(TextureMap.field_110575_b).func_174935_a();
++        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+         this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
+         renderglobal.drawBlockDamageTexture(Tessellator.getInstance(), Tessellator.getInstance().getBuffer(), entity, partialTicks);
+         this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
 @@ -1462,9 +1396,7 @@
-         renderglobal.func_180449_a(entity, p_175068_2_);
-         GlStateManager.func_179084_k();
-         GlStateManager.func_179089_o();
--        GlStateManager.func_187428_a(
+         renderglobal.renderWorldBorder(entity, partialTicks);
+         GlStateManager.disableBlend();
+         GlStateManager.enableCull();
+-        GlStateManager.tryBlendFuncSeparate(
 -            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 -        );
-+        GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-         GlStateManager.func_179092_a(516, 0.1F);
-         this.func_78468_a(0, p_175068_2_);
-         GlStateManager.func_179147_l();
++        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+         GlStateManager.alphaFunc(516, 0.1F);
+         this.setupFog(0, partialTicks);
+         GlStateManager.enableBlend();
 @@ -1473,18 +1405,32 @@
-         GlStateManager.func_179103_j(7425);
-         this.field_78531_r.field_71424_I.func_76318_c("translucent");
-         renderglobal.func_174977_a(BlockRenderLayer.TRANSLUCENT, (double)p_175068_2_, p_175068_1_, entity);
-+        if (!this.field_175078_W) //Only render if render pass 0 happens as well.
+         GlStateManager.shadeModel(7425);
+         this.mc.profiler.endStartSection("translucent");
+         renderglobal.renderBlockLayer(BlockRenderLayer.TRANSLUCENT, (double)partialTicks, pass, entity);
++        if (!this.debugView) //Only render if render pass 0 happens as well.
 +        {
-+            RenderHelper.func_74519_b();
-+            this.field_78531_r.field_71424_I.func_76318_c("entities");
++            RenderHelper.enableStandardItemLighting();
++            this.mc.profiler.endStartSection("entities");
 +            net.minecraftforge.client.ForgeHooksClient.setRenderPass(1);
-+            renderglobal.func_180446_a(entity, icamera, p_175068_2_);
++            renderglobal.renderEntities(entity, icamera, partialTicks);
 +            // restore blending function changed by RenderGlobal.preRenderDamagedBlocks
-+            GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
++            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 +            net.minecraftforge.client.ForgeHooksClient.setRenderPass(-1);
-+            RenderHelper.func_74518_a();
++            RenderHelper.disableStandardItemLighting();
 +        }
-         GlStateManager.func_179103_j(7424);
-         GlStateManager.func_179132_a(true);
-         GlStateManager.func_179089_o();
-         GlStateManager.func_179084_k();
-         GlStateManager.func_179106_n();
+         GlStateManager.shadeModel(7424);
+         GlStateManager.depthMask(true);
+         GlStateManager.enableCull();
+         GlStateManager.disableBlend();
+         GlStateManager.disableFog();
  
--        if (entity.field_70163_u + (double)entity.func_70047_e() >= 128.0)
-+        if (entity.field_70163_u + (double)entity.func_70047_e() >= 128.0D)
+-        if (entity.posY + (double)entity.getEyeHeight() >= 128.0)
++        if (entity.posY + (double)entity.getEyeHeight() >= 128.0D)
          {
-             this.field_78531_r.field_71424_I.func_76318_c("aboveClouds");
-             this.func_180437_a(renderglobal, p_175068_2_, p_175068_1_, d0, d1, d2);
+             this.mc.profiler.endStartSection("aboveClouds");
+             this.renderCloudsCheck(renderglobal, partialTicks, pass, d0, d1, d2);
          }
  
-+        this.field_78531_r.field_71424_I.func_76318_c("forge_render_last");
-+        net.minecraftforge.client.ForgeHooksClient.dispatchRenderLast(renderglobal, p_175068_2_);
++        this.mc.profiler.endStartSection("forge_render_last");
++        net.minecraftforge.client.ForgeHooksClient.dispatchRenderLast(renderglobal, partialTicks);
 +
-         this.field_78531_r.field_71424_I.func_76318_c("hand");
+         this.mc.profiler.endStartSection("hand");
  
-         if (this.field_175074_C)
+         if (this.renderHand)
 @@ -1501,12 +1447,7 @@
-             this.field_78531_r.field_71424_I.func_76318_c("clouds");
-             GlStateManager.func_179128_n(5889);
-             GlStateManager.func_179096_D();
+             this.mc.profiler.endStartSection("clouds");
+             GlStateManager.matrixMode(5889);
+             GlStateManager.loadIdentity();
 -            Project.gluPerspective(
--                this.func_78481_a(p_180437_2_, true),
--                (float)this.field_78531_r.field_71443_c / (float)this.field_78531_r.field_71440_d,
+-                this.getFOVModifier(partialTicks, true),
+-                (float)this.mc.displayWidth / (float)this.mc.displayHeight,
 -                0.05F,
--                this.field_78530_s * 4.0F
+-                this.farPlaneDistance * 4.0F
 -            );
-+            Project.gluPerspective(this.func_78481_a(p_180437_2_, true), (float)this.field_78531_r.field_71443_c / (float)this.field_78531_r.field_71440_d, 0.05F, this.field_78530_s * 4.0F);
-             GlStateManager.func_179128_n(5888);
-             GlStateManager.func_179094_E();
-             this.func_78468_a(0, p_180437_2_);
++            Project.gluPerspective(this.getFOVModifier(partialTicks, true), (float)this.mc.displayWidth / (float)this.mc.displayHeight, 0.05F, this.farPlaneDistance * 4.0F);
+             GlStateManager.matrixMode(5888);
+             GlStateManager.pushMatrix();
+             this.setupFog(0, partialTicks);
 @@ -1515,12 +1456,7 @@
-             GlStateManager.func_179121_F();
-             GlStateManager.func_179128_n(5889);
-             GlStateManager.func_179096_D();
+             GlStateManager.popMatrix();
+             GlStateManager.matrixMode(5889);
+             GlStateManager.loadIdentity();
 -            Project.gluPerspective(
--                this.func_78481_a(p_180437_2_, true),
--                (float)this.field_78531_r.field_71443_c / (float)this.field_78531_r.field_71440_d,
+-                this.getFOVModifier(partialTicks, true),
+-                (float)this.mc.displayWidth / (float)this.mc.displayHeight,
 -                0.05F,
--                this.field_78530_s * MathHelper.field_180189_a
+-                this.farPlaneDistance * MathHelper.SQRT_2
 -            );
-+            Project.gluPerspective(this.func_78481_a(p_180437_2_, true), (float)this.field_78531_r.field_71443_c / (float)this.field_78531_r.field_71440_d, 0.05F, this.field_78530_s * MathHelper.field_180189_a);
-             GlStateManager.func_179128_n(5888);
++            Project.gluPerspective(this.getFOVModifier(partialTicks, true), (float)this.mc.displayWidth / (float)this.mc.displayHeight, 0.05F, this.farPlaneDistance * MathHelper.SQRT_2);
+             GlStateManager.matrixMode(5888);
          }
      }
 @@ -1541,9 +1477,9 @@
-             World world = this.field_78531_r.field_71441_e;
+             World world = this.mc.world;
              BlockPos blockpos = new BlockPos(entity);
              int i = 10;
 -            double d0 = 0.0;
@@ -728,70 +728,70 @@
 -            for (int l = 0; l < k; l++)
 +            for (int l = 0; l < k; ++l)
              {
--                BlockPos blockpos1 = world.func_175725_q(
--                                         blockpos.func_177982_a(
--                                             this.field_78537_ab.nextInt(10) - this.field_78537_ab.nextInt(10), 0, this.field_78537_ab.nextInt(10) - this.field_78537_ab.nextInt(10)
+-                BlockPos blockpos1 = world.getPrecipitationHeight(
+-                                         blockpos.add(
+-                                             this.random.nextInt(10) - this.random.nextInt(10), 0, this.random.nextInt(10) - this.random.nextInt(10)
 -                                         )
 -                                     );
-+                BlockPos blockpos1 = world.func_175725_q(blockpos.func_177982_a(this.field_78537_ab.nextInt(10) - this.field_78537_ab.nextInt(10), 0, this.field_78537_ab.nextInt(10) - this.field_78537_ab.nextInt(10)));
-                 Biome biome = world.func_180494_b(blockpos1);
-                 BlockPos blockpos2 = blockpos1.func_177977_b();
-                 IBlockState iblockstate = world.func_180495_p(blockpos2);
++                BlockPos blockpos1 = world.getPrecipitationHeight(blockpos.add(this.random.nextInt(10) - this.random.nextInt(10), 0, this.random.nextInt(10) - this.random.nextInt(10)));
+                 Biome biome = world.getBiome(blockpos1);
+                 BlockPos blockpos2 = blockpos1.down();
+                 IBlockState iblockstate = world.getBlockState(blockpos2);
  
--                if (blockpos1.func_177956_o() <= blockpos.func_177956_o() + 10
--                        && blockpos1.func_177956_o() >= blockpos.func_177956_o() - 10
--                        && biome.func_76738_d()
--                        && biome.func_180626_a(blockpos1) >= 0.15F)
-+                if (blockpos1.func_177956_o() <= blockpos.func_177956_o() + 10 && blockpos1.func_177956_o() >= blockpos.func_177956_o() - 10 && biome.func_76738_d() && biome.func_180626_a(blockpos1) >= 0.15F)
+-                if (blockpos1.getY() <= blockpos.getY() + 10
+-                        && blockpos1.getY() >= blockpos.getY() - 10
+-                        && biome.canRain()
+-                        && biome.getTemperature(blockpos1) >= 0.15F)
++                if (blockpos1.getY() <= blockpos.getY() + 10 && blockpos1.getY() >= blockpos.getY() - 10 && biome.canRain() && biome.getTemperature(blockpos1) >= 0.15F)
                  {
-                     double d3 = this.field_78537_ab.nextDouble();
-                     double d4 = this.field_78537_ab.nextDouble();
-                     AxisAlignedBB axisalignedbb = iblockstate.func_185900_c(world, blockpos2);
+                     double d3 = this.random.nextDouble();
+                     double d4 = this.random.nextDouble();
+                     AxisAlignedBB axisalignedbb = iblockstate.getBoundingBox(world, blockpos2);
  
--                    if (iblockstate.func_185904_a() == Material.field_151587_i || iblockstate.func_177230_c() == Blocks.field_189877_df)
+-                    if (iblockstate.getMaterial() == Material.LAVA || iblockstate.getBlock() == Blocks.MAGMA)
 -                    {
--                        this.field_78531_r
--                        .field_71441_e
--                        .func_175688_a(
+-                        this.mc
+-                        .world
+-                        .spawnParticle(
 -                            EnumParticleTypes.SMOKE_NORMAL,
--                            (double)blockpos1.func_177958_n() + d3,
--                            (double)((float)blockpos1.func_177956_o() + 0.1F) - axisalignedbb.field_72338_b,
--                            (double)blockpos1.func_177952_p() + d4,
+-                            (double)blockpos1.getX() + d3,
+-                            (double)((float)blockpos1.getY() + 0.1F) - axisalignedbb.minY,
+-                            (double)blockpos1.getZ() + d4,
 -                            0.0,
 -                            0.0,
 -                            0.0,
 -                            new int[0]
 -                        );
 -                    }
--                    else if (iblockstate.func_185904_a() != Material.field_151579_a)
+-                    else if (iblockstate.getMaterial() != Material.AIR)
 -                    {
--                        if (this.field_78537_ab.nextInt(++j) == 0)
-+                    if (iblockstate.func_185904_a() != Material.field_151587_i && iblockstate.func_177230_c() != Blocks.field_189877_df)
+-                        if (this.random.nextInt(++j) == 0)
++                    if (iblockstate.getMaterial() != Material.LAVA && iblockstate.getBlock() != Blocks.MAGMA)
 +                    {
-+                        if (iblockstate.func_185904_a() != Material.field_151579_a)
++                        if (iblockstate.getMaterial() != Material.AIR)
                          {
--                            d0 = (double)blockpos2.func_177958_n() + d3;
--                            d1 = (double)((float)blockpos2.func_177956_o() + 0.1F) + axisalignedbb.field_72337_e - 1.0;
--                            d2 = (double)blockpos2.func_177952_p() + d4;
+-                            d0 = (double)blockpos2.getX() + d3;
+-                            d1 = (double)((float)blockpos2.getY() + 0.1F) + axisalignedbb.maxY - 1.0;
+-                            d2 = (double)blockpos2.getZ() + d4;
 +                            ++j;
 +
-+                            if (this.field_78537_ab.nextInt(j) == 0)
++                            if (this.random.nextInt(j) == 0)
 +                            {
-+                                d0 = (double)blockpos2.func_177958_n() + d3;
-+                                d1 = (double)((float)blockpos2.func_177956_o() + 0.1F) + axisalignedbb.field_72337_e - 1.0D;
-+                                d2 = (double)blockpos2.func_177952_p() + d4;
++                                d0 = (double)blockpos2.getX() + d3;
++                                d1 = (double)((float)blockpos2.getY() + 0.1F) + axisalignedbb.maxY - 1.0D;
++                                d2 = (double)blockpos2.getZ() + d4;
 +                            }
 +
-+                            this.field_78531_r.field_71441_e.func_175688_a(EnumParticleTypes.WATER_DROP, (double)blockpos2.func_177958_n() + d3, (double)((float)blockpos2.func_177956_o() + 0.1F) + axisalignedbb.field_72337_e, (double)blockpos2.func_177952_p() + d4, 0.0D, 0.0D, 0.0D, new int[0]);
++                            this.mc.world.spawnParticle(EnumParticleTypes.WATER_DROP, (double)blockpos2.getX() + d3, (double)((float)blockpos2.getY() + 0.1F) + axisalignedbb.maxY, (double)blockpos2.getZ() + d4, 0.0D, 0.0D, 0.0D, new int[0]);
                          }
 -
--                        this.field_78531_r
--                        .field_71441_e
--                        .func_175688_a(
+-                        this.mc
+-                        .world
+-                        .spawnParticle(
 -                            EnumParticleTypes.WATER_DROP,
--                            (double)blockpos2.func_177958_n() + d3,
--                            (double)((float)blockpos2.func_177956_o() + 0.1F) + axisalignedbb.field_72337_e,
--                            (double)blockpos2.func_177952_p() + d4,
+-                            (double)blockpos2.getX() + d3,
+-                            (double)((float)blockpos2.getY() + 0.1F) + axisalignedbb.maxY,
+-                            (double)blockpos2.getZ() + d4,
 -                            0.0,
 -                            0.0,
 -                            0.0,
@@ -800,54 +800,54 @@
 +                    }
 +                    else
 +                    {
-+                        this.field_78531_r.field_71441_e.func_175688_a(EnumParticleTypes.SMOKE_NORMAL, (double)blockpos1.func_177958_n() + d3, (double)((float)blockpos1.func_177956_o() + 0.1F) - axisalignedbb.field_72338_b, (double)blockpos1.func_177952_p() + d4, 0.0D, 0.0D, 0.0D, new int[0]);
++                        this.mc.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, (double)blockpos1.getX() + d3, (double)((float)blockpos1.getY() + 0.1F) - axisalignedbb.minY, (double)blockpos1.getZ() + d4, 0.0D, 0.0D, 0.0D, new int[0]);
                      }
                  }
              }
 @@ -1620,8 +1532,7 @@
              {
-                 this.field_78534_ac = 0;
+                 this.rainSoundCounter = 0;
  
--                if (d1 > (double)(blockpos.func_177956_o() + 1)
--                        && world.func_175725_q(blockpos).func_177956_o() > MathHelper.func_76141_d((float)blockpos.func_177956_o()))
-+                if (d1 > (double)(blockpos.func_177956_o() + 1) && world.func_175725_q(blockpos).func_177956_o() > MathHelper.func_76141_d((float)blockpos.func_177956_o()))
+-                if (d1 > (double)(blockpos.getY() + 1)
+-                        && world.getPrecipitationHeight(blockpos).getY() > MathHelper.floor((float)blockpos.getY()))
++                if (d1 > (double)(blockpos.getY() + 1) && world.getPrecipitationHeight(blockpos).getY() > MathHelper.floor((float)blockpos.getY()))
                  {
-                     this.field_78531_r.field_71441_e.func_184134_a(d0, d1, d2, SoundEvents.field_187919_gs, SoundCategory.WEATHER, 0.1F, 0.5F, false);
+                     this.mc.world.playSound(d0, d1, d2, SoundEvents.WEATHER_RAIN_ABOVE, SoundCategory.WEATHER, 0.1F, 0.5F, false);
                  }
 @@ -1635,9 +1546,16 @@
  
-     protected void func_78474_d(float p_78474_1_)
+     protected void renderRainSnow(float partialTicks)
      {
-+        net.minecraftforge.client.IRenderHandler renderer = this.field_78531_r.field_71441_e.field_73011_w.getWeatherRenderer();
++        net.minecraftforge.client.IRenderHandler renderer = this.mc.world.provider.getWeatherRenderer();
 +        if (renderer != null)
 +        {
-+            renderer.render(p_78474_1_, this.field_78531_r.field_71441_e, field_78531_r);
++            renderer.render(partialTicks, this.mc.world, mc);
 +            return;
 +        }
 +
-         float f = this.field_78531_r.field_71441_e.func_72867_j(p_78474_1_);
+         float f = this.mc.world.getRainStrength(partialTicks);
  
 -        if (!(f <= 0.0F))
 +        if (f > 0.0F)
          {
-             this.func_180436_i();
-             Entity entity = this.field_78531_r.func_175606_aa();
+             this.enableLightmap();
+             Entity entity = this.mc.getRenderViewEntity();
 @@ -1650,12 +1568,7 @@
-             GlStateManager.func_179129_p();
-             GlStateManager.func_187432_a(0.0F, 1.0F, 0.0F);
-             GlStateManager.func_179147_l();
--            GlStateManager.func_187428_a(
+             GlStateManager.disableCull();
+             GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
+             GlStateManager.enableBlend();
+-            GlStateManager.tryBlendFuncSeparate(
 -                GlStateManager.SourceFactor.SRC_ALPHA,
 -                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
 -                GlStateManager.SourceFactor.ONE,
 -                GlStateManager.DestFactor.ZERO
 -            );
-+            GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-             GlStateManager.func_179092_a(516, 0.1F);
-             double d0 = entity.field_70142_S + (entity.field_70165_t - entity.field_70142_S) * (double)p_78474_1_;
-             double d1 = entity.field_70137_T + (entity.field_70163_u - entity.field_70137_T) * (double)p_78474_1_;
++            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+             GlStateManager.alphaFunc(516, 0.1F);
+             double d0 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)partialTicks;
+             double d1 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTicks;
 @@ -1674,13 +1587,13 @@
-             GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
+             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
              BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
 -            for (int k1 = k - i1; k1 <= k + i1; k1++)
@@ -857,133 +857,133 @@
 +                for (int l1 = i - i1; l1 <= i + i1; ++l1)
                  {
                      int i2 = (k1 - k + 16) * 32 + l1 - i + 16;
--                    double d3 = (double)this.field_175076_N[i2] * 0.5;
--                    double d4 = (double)this.field_175077_O[i2] * 0.5;
-+                    double d3 = (double)this.field_175076_N[i2] * 0.5D;
-+                    double d4 = (double)this.field_175077_O[i2] * 0.5D;
-                     blockpos$mutableblockpos.func_181079_c(l1, 0, k1);
-                     Biome biome = world.func_180494_b(blockpos$mutableblockpos);
+-                    double d3 = (double)this.rainXCoords[i2] * 0.5;
+-                    double d4 = (double)this.rainYCoords[i2] * 0.5;
++                    double d3 = (double)this.rainXCoords[i2] * 0.5D;
++                    double d4 = (double)this.rainYCoords[i2] * 0.5D;
+                     blockpos$mutableblockpos.setPos(l1, 0, k1);
+                     Biome biome = world.getBiome(blockpos$mutableblockpos);
  
 @@ -1727,9 +1640,7 @@
-                                     bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181704_d);
+                                     bufferbuilder.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
                                  }
  
--                                double d5 = -((double)(this.field_78529_t + l1 * l1 * 3121 + l1 * 45238971 + k1 * k1 * 418711 + k1 * 13761 & 31) + (double)p_78474_1_)
+-                                double d5 = -((double)(this.rendererUpdateCount + l1 * l1 * 3121 + l1 * 45238971 + k1 * k1 * 418711 + k1 * 13761 & 31) + (double)partialTicks)
 -                                            / 32.0
--                                            * (3.0 + this.field_78537_ab.nextDouble());
-+                                double d5 = -((double)(this.field_78529_t + l1 * l1 * 3121 + l1 * 45238971 + k1 * k1 * 418711 + k1 * 13761 & 31) + (double)p_78474_1_) / 32.0D * (3.0D + this.field_78537_ab.nextDouble());
-                                 double d6 = (double)((float)l1 + 0.5F) - entity.field_70165_t;
-                                 double d7 = (double)((float)k1 + 0.5F) - entity.field_70161_v;
-                                 float f3 = MathHelper.func_76133_a(d6 * d6 + d7 * d7) / (float)i1;
+-                                            * (3.0 + this.random.nextDouble());
++                                double d5 = -((double)(this.rendererUpdateCount + l1 * l1 * 3121 + l1 * 45238971 + k1 * k1 * 418711 + k1 * 13761 & 31) + (double)partialTicks) / 32.0D * (3.0D + this.random.nextDouble());
+                                 double d6 = (double)((float)l1 + 0.5F) - entity.posX;
+                                 double d7 = (double)((float)k1 + 0.5F) - entity.posZ;
+                                 float f3 = MathHelper.sqrt(d6 * d6 + d7 * d7) / (float)i1;
 @@ -1738,26 +1649,10 @@
-                                 int j3 = world.func_175626_b(blockpos$mutableblockpos, 0);
+                                 int j3 = world.getCombinedLight(blockpos$mutableblockpos, 0);
                                  int k3 = j3 >> 16 & 65535;
                                  int l3 = j3 & 65535;
--                                bufferbuilder.func_181662_b((double)l1 - d3 + 0.5, (double)l2, (double)k1 - d4 + 0.5)
--                                .func_187315_a(0.0, (double)k2 * 0.25 + d5)
--                                .func_181666_a(1.0F, 1.0F, 1.0F, f4)
--                                .func_187314_a(k3, l3)
--                                .func_181675_d();
--                                bufferbuilder.func_181662_b((double)l1 + d3 + 0.5, (double)l2, (double)k1 + d4 + 0.5)
--                                .func_187315_a(1.0, (double)k2 * 0.25 + d5)
--                                .func_181666_a(1.0F, 1.0F, 1.0F, f4)
--                                .func_187314_a(k3, l3)
--                                .func_181675_d();
--                                bufferbuilder.func_181662_b((double)l1 + d3 + 0.5, (double)k2, (double)k1 + d4 + 0.5)
--                                .func_187315_a(1.0, (double)l2 * 0.25 + d5)
--                                .func_181666_a(1.0F, 1.0F, 1.0F, f4)
--                                .func_187314_a(k3, l3)
--                                .func_181675_d();
--                                bufferbuilder.func_181662_b((double)l1 - d3 + 0.5, (double)k2, (double)k1 - d4 + 0.5)
--                                .func_187315_a(0.0, (double)l2 * 0.25 + d5)
--                                .func_181666_a(1.0F, 1.0F, 1.0F, f4)
--                                .func_187314_a(k3, l3)
--                                .func_181675_d();
-+                                bufferbuilder.func_181662_b((double)l1 - d3 + 0.5D, (double)l2, (double)k1 - d4 + 0.5D).func_187315_a(0.0D, (double)k2 * 0.25D + d5).func_181666_a(1.0F, 1.0F, 1.0F, f4).func_187314_a(k3, l3).func_181675_d();
-+                                bufferbuilder.func_181662_b((double)l1 + d3 + 0.5D, (double)l2, (double)k1 + d4 + 0.5D).func_187315_a(1.0D, (double)k2 * 0.25D + d5).func_181666_a(1.0F, 1.0F, 1.0F, f4).func_187314_a(k3, l3).func_181675_d();
-+                                bufferbuilder.func_181662_b((double)l1 + d3 + 0.5D, (double)k2, (double)k1 + d4 + 0.5D).func_187315_a(1.0D, (double)l2 * 0.25D + d5).func_181666_a(1.0F, 1.0F, 1.0F, f4).func_187314_a(k3, l3).func_181675_d();
-+                                bufferbuilder.func_181662_b((double)l1 - d3 + 0.5D, (double)k2, (double)k1 - d4 + 0.5D).func_187315_a(0.0D, (double)l2 * 0.25D + d5).func_181666_a(1.0F, 1.0F, 1.0F, f4).func_187314_a(k3, l3).func_181675_d();
+-                                bufferbuilder.pos((double)l1 - d3 + 0.5, (double)l2, (double)k1 - d4 + 0.5)
+-                                .tex(0.0, (double)k2 * 0.25 + d5)
+-                                .color(1.0F, 1.0F, 1.0F, f4)
+-                                .lightmap(k3, l3)
+-                                .endVertex();
+-                                bufferbuilder.pos((double)l1 + d3 + 0.5, (double)l2, (double)k1 + d4 + 0.5)
+-                                .tex(1.0, (double)k2 * 0.25 + d5)
+-                                .color(1.0F, 1.0F, 1.0F, f4)
+-                                .lightmap(k3, l3)
+-                                .endVertex();
+-                                bufferbuilder.pos((double)l1 + d3 + 0.5, (double)k2, (double)k1 + d4 + 0.5)
+-                                .tex(1.0, (double)l2 * 0.25 + d5)
+-                                .color(1.0F, 1.0F, 1.0F, f4)
+-                                .lightmap(k3, l3)
+-                                .endVertex();
+-                                bufferbuilder.pos((double)l1 - d3 + 0.5, (double)k2, (double)k1 - d4 + 0.5)
+-                                .tex(0.0, (double)l2 * 0.25 + d5)
+-                                .color(1.0F, 1.0F, 1.0F, f4)
+-                                .lightmap(k3, l3)
+-                                .endVertex();
++                                bufferbuilder.pos((double)l1 - d3 + 0.5D, (double)l2, (double)k1 - d4 + 0.5D).tex(0.0D, (double)k2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
++                                bufferbuilder.pos((double)l1 + d3 + 0.5D, (double)l2, (double)k1 + d4 + 0.5D).tex(1.0D, (double)k2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
++                                bufferbuilder.pos((double)l1 + d3 + 0.5D, (double)k2, (double)k1 + d4 + 0.5D).tex(1.0D, (double)l2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
++                                bufferbuilder.pos((double)l1 - d3 + 0.5D, (double)k2, (double)k1 - d4 + 0.5D).tex(0.0D, (double)l2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
                              }
                              else
                              {
 @@ -1774,8 +1669,8 @@
                                  }
  
-                                 double d8 = (double)(-((float)(this.field_78529_t & 511) + p_78474_1_) / 512.0F);
--                                double d9 = this.field_78537_ab.nextDouble() + (double)f1 * 0.01 * (double)((float)this.field_78537_ab.nextGaussian());
--                                double d10 = this.field_78537_ab.nextDouble() + (double)(f1 * (float)this.field_78537_ab.nextGaussian()) * 0.001;
-+                                double d9 = this.field_78537_ab.nextDouble() + (double)f1 * 0.01D * (double)((float)this.field_78537_ab.nextGaussian());
-+                                double d10 = this.field_78537_ab.nextDouble() + (double)(f1 * (float)this.field_78537_ab.nextGaussian()) * 0.001D;
-                                 double d11 = (double)((float)l1 + 0.5F) - entity.field_70165_t;
-                                 double d12 = (double)((float)k1 + 0.5F) - entity.field_70161_v;
-                                 float f6 = MathHelper.func_76133_a(d11 * d11 + d12 * d12) / (float)i1;
+                                 double d8 = (double)(-((float)(this.rendererUpdateCount & 511) + partialTicks) / 512.0F);
+-                                double d9 = this.random.nextDouble() + (double)f1 * 0.01 * (double)((float)this.random.nextGaussian());
+-                                double d10 = this.random.nextDouble() + (double)(f1 * (float)this.random.nextGaussian()) * 0.001;
++                                double d9 = this.random.nextDouble() + (double)f1 * 0.01D * (double)((float)this.random.nextGaussian());
++                                double d10 = this.random.nextDouble() + (double)(f1 * (float)this.random.nextGaussian()) * 0.001D;
+                                 double d11 = (double)((float)l1 + 0.5F) - entity.posX;
+                                 double d12 = (double)((float)k1 + 0.5F) - entity.posZ;
+                                 float f6 = MathHelper.sqrt(d11 * d11 + d12 * d12) / (float)i1;
 @@ -1784,26 +1679,10 @@
-                                 int i4 = (world.func_175626_b(blockpos$mutableblockpos, 0) * 3 + 15728880) / 4;
+                                 int i4 = (world.getCombinedLight(blockpos$mutableblockpos, 0) * 3 + 15728880) / 4;
                                  int j4 = i4 >> 16 & 65535;
                                  int k4 = i4 & 65535;
--                                bufferbuilder.func_181662_b((double)l1 - d3 + 0.5, (double)l2, (double)k1 - d4 + 0.5)
--                                .func_187315_a(0.0 + d9, (double)k2 * 0.25 + d8 + d10)
--                                .func_181666_a(1.0F, 1.0F, 1.0F, f5)
--                                .func_187314_a(j4, k4)
--                                .func_181675_d();
--                                bufferbuilder.func_181662_b((double)l1 + d3 + 0.5, (double)l2, (double)k1 + d4 + 0.5)
--                                .func_187315_a(1.0 + d9, (double)k2 * 0.25 + d8 + d10)
--                                .func_181666_a(1.0F, 1.0F, 1.0F, f5)
--                                .func_187314_a(j4, k4)
--                                .func_181675_d();
--                                bufferbuilder.func_181662_b((double)l1 + d3 + 0.5, (double)k2, (double)k1 + d4 + 0.5)
--                                .func_187315_a(1.0 + d9, (double)l2 * 0.25 + d8 + d10)
--                                .func_181666_a(1.0F, 1.0F, 1.0F, f5)
--                                .func_187314_a(j4, k4)
--                                .func_181675_d();
--                                bufferbuilder.func_181662_b((double)l1 - d3 + 0.5, (double)k2, (double)k1 - d4 + 0.5)
--                                .func_187315_a(0.0 + d9, (double)l2 * 0.25 + d8 + d10)
--                                .func_181666_a(1.0F, 1.0F, 1.0F, f5)
--                                .func_187314_a(j4, k4)
--                                .func_181675_d();
-+                                bufferbuilder.func_181662_b((double)l1 - d3 + 0.5D, (double)l2, (double)k1 - d4 + 0.5D).func_187315_a(0.0D + d9, (double)k2 * 0.25D + d8 + d10).func_181666_a(1.0F, 1.0F, 1.0F, f5).func_187314_a(j4, k4).func_181675_d();
-+                                bufferbuilder.func_181662_b((double)l1 + d3 + 0.5D, (double)l2, (double)k1 + d4 + 0.5D).func_187315_a(1.0D + d9, (double)k2 * 0.25D + d8 + d10).func_181666_a(1.0F, 1.0F, 1.0F, f5).func_187314_a(j4, k4).func_181675_d();
-+                                bufferbuilder.func_181662_b((double)l1 + d3 + 0.5D, (double)k2, (double)k1 + d4 + 0.5D).func_187315_a(1.0D + d9, (double)l2 * 0.25D + d8 + d10).func_181666_a(1.0F, 1.0F, 1.0F, f5).func_187314_a(j4, k4).func_181675_d();
-+                                bufferbuilder.func_181662_b((double)l1 - d3 + 0.5D, (double)k2, (double)k1 - d4 + 0.5D).func_187315_a(0.0D + d9, (double)l2 * 0.25D + d8 + d10).func_181666_a(1.0F, 1.0F, 1.0F, f5).func_187314_a(j4, k4).func_181675_d();
+-                                bufferbuilder.pos((double)l1 - d3 + 0.5, (double)l2, (double)k1 - d4 + 0.5)
+-                                .tex(0.0 + d9, (double)k2 * 0.25 + d8 + d10)
+-                                .color(1.0F, 1.0F, 1.0F, f5)
+-                                .lightmap(j4, k4)
+-                                .endVertex();
+-                                bufferbuilder.pos((double)l1 + d3 + 0.5, (double)l2, (double)k1 + d4 + 0.5)
+-                                .tex(1.0 + d9, (double)k2 * 0.25 + d8 + d10)
+-                                .color(1.0F, 1.0F, 1.0F, f5)
+-                                .lightmap(j4, k4)
+-                                .endVertex();
+-                                bufferbuilder.pos((double)l1 + d3 + 0.5, (double)k2, (double)k1 + d4 + 0.5)
+-                                .tex(1.0 + d9, (double)l2 * 0.25 + d8 + d10)
+-                                .color(1.0F, 1.0F, 1.0F, f5)
+-                                .lightmap(j4, k4)
+-                                .endVertex();
+-                                bufferbuilder.pos((double)l1 - d3 + 0.5, (double)k2, (double)k1 - d4 + 0.5)
+-                                .tex(0.0 + d9, (double)l2 * 0.25 + d8 + d10)
+-                                .color(1.0F, 1.0F, 1.0F, f5)
+-                                .lightmap(j4, k4)
+-                                .endVertex();
++                                bufferbuilder.pos((double)l1 - d3 + 0.5D, (double)l2, (double)k1 - d4 + 0.5D).tex(0.0D + d9, (double)k2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4).endVertex();
++                                bufferbuilder.pos((double)l1 + d3 + 0.5D, (double)l2, (double)k1 + d4 + 0.5D).tex(1.0D + d9, (double)k2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4).endVertex();
++                                bufferbuilder.pos((double)l1 + d3 + 0.5D, (double)k2, (double)k1 + d4 + 0.5D).tex(1.0D + d9, (double)l2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4).endVertex();
++                                bufferbuilder.pos((double)l1 - d3 + 0.5D, (double)k2, (double)k1 - d4 + 0.5D).tex(0.0D + d9, (double)l2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4).endVertex();
                              }
                          }
                      }
 @@ -1815,7 +1694,7 @@
-                 tessellator.func_78381_a();
+                 tessellator.draw();
              }
  
--            bufferbuilder.func_178969_c(0.0, 0.0, 0.0);
-+            bufferbuilder.func_178969_c(0.0D, 0.0D, 0.0D);
-             GlStateManager.func_179089_o();
-             GlStateManager.func_179084_k();
-             GlStateManager.func_179092_a(516, 0.1F);
+-            bufferbuilder.setTranslation(0.0, 0.0, 0.0);
++            bufferbuilder.setTranslation(0.0D, 0.0D, 0.0D);
+             GlStateManager.enableCull();
+             GlStateManager.disableBlend();
+             GlStateManager.alphaFunc(516, 0.1F);
 @@ -1829,7 +1708,7 @@
-         GlStateManager.func_179086_m(256);
-         GlStateManager.func_179128_n(5889);
-         GlStateManager.func_179096_D();
--        GlStateManager.func_179130_a(0.0, scaledresolution.func_78327_c(), scaledresolution.func_78324_d(), 0.0, 1000.0, 3000.0);
-+        GlStateManager.func_179130_a(0.0D, scaledresolution.func_78327_c(), scaledresolution.func_78324_d(), 0.0D, 1000.0D, 3000.0D);
-         GlStateManager.func_179128_n(5888);
-         GlStateManager.func_179096_D();
-         GlStateManager.func_179109_b(0.0F, 0.0F, -2000.0F);
+         GlStateManager.clear(256);
+         GlStateManager.matrixMode(5889);
+         GlStateManager.loadIdentity();
+-        GlStateManager.ortho(0.0, scaledresolution.getScaledWidth_double(), scaledresolution.getScaledHeight_double(), 0.0, 1000.0, 3000.0);
++        GlStateManager.ortho(0.0D, scaledresolution.getScaledWidth_double(), scaledresolution.getScaledHeight_double(), 0.0D, 1000.0D, 3000.0D);
+         GlStateManager.matrixMode(5888);
+         GlStateManager.loadIdentity();
+         GlStateManager.translate(0.0F, 0.0F, -2000.0F);
 @@ -1840,7 +1719,7 @@
-         World world = this.field_78531_r.field_71441_e;
-         Entity entity = this.field_78531_r.func_175606_aa();
-         float f = 0.25F + 0.75F * (float)this.field_78531_r.field_71474_y.field_151451_c / 32.0F;
+         World world = this.mc.world;
+         Entity entity = this.mc.getRenderViewEntity();
+         float f = 0.25F + 0.75F * (float)this.mc.gameSettings.renderDistanceChunks / 32.0F;
 -        f = 1.0F - (float)Math.pow((double)f, 0.25);
 +        f = 1.0F - (float)Math.pow((double)f, 0.25D);
-         Vec3d vec3d = world.func_72833_a(this.field_78531_r.func_175606_aa(), p_78466_1_);
-         float f1 = (float)vec3d.field_72450_a;
-         float f2 = (float)vec3d.field_72448_b;
+         Vec3d vec3d = world.getSkyColor(this.mc.getRenderViewEntity(), partialTicks);
+         float f1 = (float)vec3d.x;
+         float f2 = (float)vec3d.y;
 @@ -1852,8 +1731,8 @@
  
-         if (this.field_78531_r.field_71474_y.field_151451_c >= 4)
+         if (this.mc.gameSettings.renderDistanceChunks >= 4)
          {
--            double d0 = MathHelper.func_76126_a(world.func_72929_e(p_78466_1_)) > 0.0F ? -1.0 : 1.0;
+-            double d0 = MathHelper.sin(world.getCelestialAngleRadians(partialTicks)) > 0.0F ? -1.0 : 1.0;
 -            Vec3d vec3d2 = new Vec3d(d0, 0.0, 0.0);
-+            double d0 = MathHelper.func_76126_a(world.func_72929_e(p_78466_1_)) > 0.0F ? -1.0D : 1.0D;
++            double d0 = MathHelper.sin(world.getCelestialAngleRadians(partialTicks)) > 0.0F ? -1.0D : 1.0D;
 +            Vec3d vec3d2 = new Vec3d(d0, 0.0D, 0.0D);
-             float f5 = (float)entity.func_70676_i(p_78466_1_).func_72430_b(vec3d2);
+             float f5 = (float)entity.getLook(partialTicks).dotProduct(vec3d2);
  
              if (f5 < 0.0F)
 @@ -1867,7 +1746,7 @@
@@ -992,62 +992,62 @@
                  {
 -                    f5 *= afloat[3];
 +                    f5 = f5 * afloat[3];
-                     this.field_175080_Q = this.field_175080_Q * (1.0F - f5) + afloat[0] * f5;
-                     this.field_175082_R = this.field_175082_R * (1.0F - f5) + afloat[1] * f5;
-                     this.field_175081_S = this.field_175081_S * (1.0F - f5) + afloat[2] * f5;
+                     this.fogColorRed = this.fogColorRed * (1.0F - f5) + afloat[0] * f5;
+                     this.fogColorGreen = this.fogColorGreen * (1.0F - f5) + afloat[1] * f5;
+                     this.fogColorBlue = this.fogColorBlue * (1.0F - f5) + afloat[2] * f5;
 @@ -1875,9 +1754,9 @@
              }
          }
  
--        this.field_175080_Q = this.field_175080_Q + (f1 - this.field_175080_Q) * f;
--        this.field_175082_R = this.field_175082_R + (f2 - this.field_175082_R) * f;
--        this.field_175081_S = this.field_175081_S + (f3 - this.field_175081_S) * f;
-+        this.field_175080_Q += (f1 - this.field_175080_Q) * f;
-+        this.field_175082_R += (f2 - this.field_175082_R) * f;
-+        this.field_175081_S += (f3 - this.field_175081_S) * f;
-         float f8 = world.func_72867_j(p_78466_1_);
+-        this.fogColorRed = this.fogColorRed + (f1 - this.fogColorRed) * f;
+-        this.fogColorGreen = this.fogColorGreen + (f2 - this.fogColorGreen) * f;
+-        this.fogColorBlue = this.fogColorBlue + (f3 - this.fogColorBlue) * f;
++        this.fogColorRed += (f1 - this.fogColorRed) * f;
++        this.fogColorGreen += (f2 - this.fogColorGreen) * f;
++        this.fogColorBlue += (f3 - this.fogColorBlue) * f;
+         float f8 = world.getRainStrength(partialTicks);
  
          if (f8 > 0.0F)
 @@ -1908,29 +1787,16 @@
-             this.field_175082_R = (float)vec3d3.field_72448_b;
-             this.field_175081_S = (float)vec3d3.field_72449_c;
+             this.fogColorGreen = (float)vec3d3.y;
+             this.fogColorBlue = (float)vec3d3.z;
          }
--        else if (iblockstate.func_185904_a() == Material.field_151586_h)
+-        else if (iblockstate.getMaterial() == Material.WATER)
 -        {
 -            float f12 = 0.0F;
 -
 -            if (entity instanceof EntityLivingBase)
 -            {
--                f12 = (float)EnchantmentHelper.func_185292_c((EntityLivingBase)entity) * 0.2F;
+-                f12 = (float)EnchantmentHelper.getRespirationModifier((EntityLivingBase)entity) * 0.2F;
 -
--                if (((EntityLivingBase)entity).func_70644_a(MobEffects.field_76427_o))
+-                if (((EntityLivingBase)entity).isPotionActive(MobEffects.WATER_BREATHING))
 -                {
 -                    f12 = f12 * 0.3F + 0.6F;
 -                }
 -            }
 -
--            this.field_175080_Q = 0.02F + f12;
--            this.field_175082_R = 0.02F + f12;
--            this.field_175081_S = 0.2F + f12;
+-            this.fogColorRed = 0.02F + f12;
+-            this.fogColorGreen = 0.02F + f12;
+-            this.fogColorBlue = 0.2F + f12;
 -        }
--        else if (iblockstate.func_185904_a() == Material.field_151587_i)
+-        else if (iblockstate.getMaterial() == Material.LAVA)
 -        {
--            this.field_175080_Q = 0.6F;
--            this.field_175082_R = 0.1F;
--            this.field_175081_S = 0.0F;
+-            this.fogColorRed = 0.6F;
+-            this.fogColorGreen = 0.1F;
+-            this.fogColorBlue = 0.0F;
 +        else
 +        {
 +            //Forge Moved to Block.
-+            Vec3d viewport = ActiveRenderInfo.func_178806_a(entity, p_78466_1_);
++            Vec3d viewport = ActiveRenderInfo.projectViewFromEntity(entity, partialTicks);
 +            BlockPos viewportPos = new BlockPos(viewport);
-+            IBlockState viewportState = this.field_78531_r.field_71441_e.func_180495_p(viewportPos);
-+            Vec3d inMaterialColor = viewportState.func_177230_c().getFogColor(this.field_78531_r.field_71441_e, viewportPos, viewportState, entity, new Vec3d(field_175080_Q, field_175082_R, field_175081_S), p_78466_1_);
-+            this.field_175080_Q = (float)inMaterialColor.field_72450_a;
-+            this.field_175082_R = (float)inMaterialColor.field_72448_b;
-+            this.field_175081_S = (float)inMaterialColor.field_72449_c;
++            IBlockState viewportState = this.mc.world.getBlockState(viewportPos);
++            Vec3d inMaterialColor = viewportState.getBlock().getFogColor(this.mc.world, viewportPos, viewportState, entity, new Vec3d(fogColorRed, fogColorGreen, fogColorBlue), partialTicks);
++            this.fogColorRed = (float)inMaterialColor.x;
++            this.fogColorGreen = (float)inMaterialColor.y;
++            this.fogColorBlue = (float)inMaterialColor.z;
          }
  
-         float f13 = this.field_78535_ad + (this.field_78539_ae - this.field_78535_ad) * p_78466_1_;
+         float f13 = this.fogColor2 + (this.fogColor1 - this.fogColor2) * partialTicks;
 @@ -1949,18 +1815,18 @@
              }
              else
@@ -1069,114 +1069,114 @@
  
 -            d1 *= d1;
 +            d1 = d1 * d1;
-             this.field_175080_Q = (float)((double)this.field_175080_Q * d1);
-             this.field_175082_R = (float)((double)this.field_175082_R * d1);
-             this.field_175081_S = (float)((double)this.field_175081_S * d1);
+             this.fogColorRed = (float)((double)this.fogColorRed * d1);
+             this.fogColorGreen = (float)((double)this.fogColorGreen * d1);
+             this.fogColorBlue = (float)((double)this.fogColorBlue * d1);
 @@ -1989,6 +1855,9 @@
-                 f6 = 1.0F / this.field_175081_S;
+                 f6 = 1.0F / this.fogColorBlue;
              }
  
 +            // Forge: fix MC-4647 and MC-10480
 +            if (Float.isInfinite(f6)) f6 = Math.nextAfter(f6, 0.0);
 +
-             this.field_175080_Q = this.field_175080_Q * (1.0F - f15) + this.field_175080_Q * f6 * f15;
-             this.field_175082_R = this.field_175082_R * (1.0F - f15) + this.field_175082_R * f6 * f15;
-             this.field_175081_S = this.field_175081_S * (1.0F - f15) + this.field_175081_S * f6 * f15;
+             this.fogColorRed = this.fogColorRed * (1.0F - f15) + this.fogColorRed * f6 * f15;
+             this.fogColorGreen = this.fogColorGreen * (1.0F - f15) + this.fogColorGreen * f6 * f15;
+             this.fogColorBlue = this.fogColorBlue * (1.0F - f15) + this.fogColorBlue * f6 * f15;
 @@ -2004,6 +1873,13 @@
-             this.field_175081_S = f7;
+             this.fogColorBlue = f7;
          }
  
-+        net.minecraftforge.client.event.EntityViewRenderEvent.FogColors event = new net.minecraftforge.client.event.EntityViewRenderEvent.FogColors(this, entity, iblockstate, p_78466_1_, this.field_175080_Q, this.field_175082_R, this.field_175081_S);
++        net.minecraftforge.client.event.EntityViewRenderEvent.FogColors event = new net.minecraftforge.client.event.EntityViewRenderEvent.FogColors(this, entity, iblockstate, partialTicks, this.fogColorRed, this.fogColorGreen, this.fogColorBlue);
 +        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
 +
-+        this.field_175080_Q = event.getRed();
-+        this.field_175082_R = event.getGreen();
-+        this.field_175081_S = event.getBlue();
++        this.fogColorRed = event.getRed();
++        this.fogColorGreen = event.getGreen();
++        this.fogColorBlue = event.getBlue();
 +
-         GlStateManager.func_179082_a(this.field_175080_Q, this.field_175082_R, this.field_175081_S, 0.0F);
+         GlStateManager.clearColor(this.fogColorRed, this.fogColorGreen, this.fogColorBlue, 0.0F);
      }
  
 @@ -2014,7 +1890,9 @@
-         GlStateManager.func_187432_a(0.0F, -1.0F, 0.0F);
-         GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
-         IBlockState iblockstate = ActiveRenderInfo.func_186703_a(this.field_78531_r.field_71441_e, entity, p_78468_2_);
+         GlStateManager.glNormal3f(0.0F, -1.0F, 0.0F);
+         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+         IBlockState iblockstate = ActiveRenderInfo.getBlockStateAtEntityViewpoint(this.mc.world, entity, partialTicks);
 -
-+        float hook = net.minecraftforge.client.ForgeHooksClient.getFogDensity(this, entity, iblockstate, p_78468_2_, 0.1F);
-+        if (hook >= 0) GlStateManager.func_179095_a(hook);
++        float hook = net.minecraftforge.client.ForgeHooksClient.getFogDensity(this, entity, iblockstate, partialTicks, 0.1F);
++        if (hook >= 0) GlStateManager.setFogDensity(hook);
 +        else
-         if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).func_70644_a(MobEffects.field_76440_q))
+         if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPotionActive(MobEffects.BLINDNESS))
          {
              float f1 = 5.0F;
 @@ -2094,12 +1972,12 @@
-                 GlStateManager.func_187412_c(34138, 34139);
+                 GlStateManager.glFogi(34138, 34139);
              }
  
--            if (this.field_78531_r.field_71441_e.field_73011_w.func_76568_b((int)entity.field_70165_t, (int)entity.field_70161_v)
--                    || this.field_78531_r.field_71456_v.func_184046_j().func_184056_f())
-+            if (this.field_78531_r.field_71441_e.field_73011_w.func_76568_b((int)entity.field_70165_t, (int)entity.field_70161_v) || this.field_78531_r.field_71456_v.func_184046_j().func_184056_f())
+-            if (this.mc.world.provider.doesXZShowFog((int)entity.posX, (int)entity.posZ)
+-                    || this.mc.ingameGUI.getBossOverlay().shouldCreateFog())
++            if (this.mc.world.provider.doesXZShowFog((int)entity.posX, (int)entity.posZ) || this.mc.ingameGUI.getBossOverlay().shouldCreateFog())
              {
-                 GlStateManager.func_179102_b(f * 0.05F);
-                 GlStateManager.func_179153_c(Math.min(f, 192.0F) * 0.5F);
+                 GlStateManager.setFogStart(f * 0.05F);
+                 GlStateManager.setFogEnd(Math.min(f, 192.0F) * 0.5F);
              }
-+            net.minecraftforge.client.ForgeHooksClient.onFogRender(this, entity, iblockstate, p_78468_2_, p_78468_1_, f);
++            net.minecraftforge.client.ForgeHooksClient.onFogRender(this, entity, iblockstate, partialTicks, startCoords, f);
          }
  
-         GlStateManager.func_179142_g();
+         GlStateManager.enableColorMaterial();
 @@ -2121,9 +1999,9 @@
  
-     private FloatBuffer func_78469_a(float p_78469_1_, float p_78469_2_, float p_78469_3_, float p_78469_4_)
+     private FloatBuffer setFogColorBuffer(float red, float green, float blue, float alpha)
      {
--        ((Buffer)this.field_78521_m).clear();
-+        this.field_78521_m.clear();
-         this.field_78521_m.put(p_78469_1_).put(p_78469_2_).put(p_78469_3_).put(p_78469_4_);
--        ((Buffer)this.field_78521_m).flip();
-+        this.field_78521_m.flip();
-         return this.field_78521_m;
+-        ((Buffer)this.fogColorBuffer).clear();
++        this.fogColorBuffer.clear();
+         this.fogColorBuffer.put(red).put(green).put(blue).put(alpha);
+-        ((Buffer)this.fogColorBuffer).flip();
++        this.fogColorBuffer.flip();
+         return this.fogColorBuffer;
      }
  
 @@ -2138,18 +2016,7 @@
-         return this.field_147709_v;
+         return this.mapItemRenderer;
      }
  
--    public static void func_189692_a(
--            FontRenderer p_189692_0_,
--            String p_189692_1_,
--            float p_189692_2_,
--            float p_189692_3_,
--            float p_189692_4_,
--            int p_189692_5_,
--            float p_189692_6_,
--            float p_189692_7_,
--            boolean p_189692_8_,
--            boolean p_189692_9_
+-    public static void drawNameplate(
+-            FontRenderer fontRendererIn,
+-            String str,
+-            float x,
+-            float y,
+-            float z,
+-            int verticalShift,
+-            float viewerYaw,
+-            float viewerPitch,
+-            boolean isThirdPersonFrontal,
+-            boolean isSneaking
 -        )
-+    public static void func_189692_a(FontRenderer p_189692_0_, String p_189692_1_, float p_189692_2_, float p_189692_3_, float p_189692_4_, int p_189692_5_, float p_189692_6_, float p_189692_7_, boolean p_189692_8_, boolean p_189692_9_)
++    public static void drawNameplate(FontRenderer fontRendererIn, String str, float x, float y, float z, int verticalShift, float viewerYaw, float viewerPitch, boolean isThirdPersonFrontal, boolean isSneaking)
      {
-         GlStateManager.func_179094_E();
-         GlStateManager.func_179109_b(p_189692_2_, p_189692_3_, p_189692_4_);
+         GlStateManager.pushMatrix();
+         GlStateManager.translate(x, y, z);
 @@ -2166,18 +2033,16 @@
          }
  
-         GlStateManager.func_179147_l();
--        GlStateManager.func_187428_a(
+         GlStateManager.enableBlend();
+-        GlStateManager.tryBlendFuncSeparate(
 -            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 -        );
-+        GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-         int i = p_189692_0_.func_78256_a(p_189692_1_) / 2;
-         GlStateManager.func_179090_x();
-         Tessellator tessellator = Tessellator.func_178181_a();
-         BufferBuilder bufferbuilder = tessellator.func_178180_c();
-         bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181706_f);
--        bufferbuilder.func_181662_b((double)(-i - 1), (double)(-1 + p_189692_5_), 0.0).func_181666_a(0.0F, 0.0F, 0.0F, 0.25F).func_181675_d();
--        bufferbuilder.func_181662_b((double)(-i - 1), (double)(8 + p_189692_5_), 0.0).func_181666_a(0.0F, 0.0F, 0.0F, 0.25F).func_181675_d();
--        bufferbuilder.func_181662_b((double)(i + 1), (double)(8 + p_189692_5_), 0.0).func_181666_a(0.0F, 0.0F, 0.0F, 0.25F).func_181675_d();
--        bufferbuilder.func_181662_b((double)(i + 1), (double)(-1 + p_189692_5_), 0.0).func_181666_a(0.0F, 0.0F, 0.0F, 0.25F).func_181675_d();
-+        bufferbuilder.func_181662_b((double)(-i - 1), (double)(-1 + p_189692_5_), 0.0D).func_181666_a(0.0F, 0.0F, 0.0F, 0.25F).func_181675_d();
-+        bufferbuilder.func_181662_b((double)(-i - 1), (double)(8 + p_189692_5_), 0.0D).func_181666_a(0.0F, 0.0F, 0.0F, 0.25F).func_181675_d();
-+        bufferbuilder.func_181662_b((double)(i + 1), (double)(8 + p_189692_5_), 0.0D).func_181666_a(0.0F, 0.0F, 0.0F, 0.25F).func_181675_d();
-+        bufferbuilder.func_181662_b((double)(i + 1), (double)(-1 + p_189692_5_), 0.0D).func_181666_a(0.0F, 0.0F, 0.0F, 0.25F).func_181675_d();
-         tessellator.func_78381_a();
-         GlStateManager.func_179098_w();
++        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+         int i = fontRendererIn.getStringWidth(str) / 2;
+         GlStateManager.disableTexture2D();
+         Tessellator tessellator = Tessellator.getInstance();
+         BufferBuilder bufferbuilder = tessellator.getBuffer();
+         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+-        bufferbuilder.pos((double)(-i - 1), (double)(-1 + verticalShift), 0.0).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+-        bufferbuilder.pos((double)(-i - 1), (double)(8 + verticalShift), 0.0).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+-        bufferbuilder.pos((double)(i + 1), (double)(8 + verticalShift), 0.0).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+-        bufferbuilder.pos((double)(i + 1), (double)(-1 + verticalShift), 0.0).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
++        bufferbuilder.pos((double)(-i - 1), (double)(-1 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
++        bufferbuilder.pos((double)(-i - 1), (double)(8 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
++        bufferbuilder.pos((double)(i + 1), (double)(8 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
++        bufferbuilder.pos((double)(i + 1), (double)(-1 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+         tessellator.draw();
+         GlStateManager.enableTexture2D();
  
 @@ -2212,7 +2077,7 @@
              float f1 = f * f;
@@ -1184,19 +1184,19 @@
              float f3 = 10.25F * f2 * f1 + -24.95F * f1 * f1 + 25.5F * f2 + -13.8F * f1 + 4.0F * f;
 -            float f4 = f3 * (float) Math.PI;
 +            float f4 = f3 * (float)Math.PI;
-             float f5 = this.field_190568_ad * (float)(p_190563_1_ / 4);
-             float f6 = this.field_190569_ae * (float)(p_190563_2_ / 4);
-             GlStateManager.func_179141_d();
+             float f5 = this.itemActivationOffX * (float)(p_190563_1_ / 4);
+             float f6 = this.itemActivationOffY * (float)(p_190563_2_ / 4);
+             GlStateManager.enableAlpha();
 @@ -2221,11 +2086,7 @@
-             GlStateManager.func_179126_j();
-             GlStateManager.func_179129_p();
-             RenderHelper.func_74519_b();
--            GlStateManager.func_179109_b(
--                (float)(p_190563_1_ / 2) + f5 * MathHelper.func_76135_e(MathHelper.func_76126_a(f4 * 2.0F)),
--                (float)(p_190563_2_ / 2) + f6 * MathHelper.func_76135_e(MathHelper.func_76126_a(f4 * 2.0F)),
+             GlStateManager.enableDepth();
+             GlStateManager.disableCull();
+             RenderHelper.enableStandardItemLighting();
+-            GlStateManager.translate(
+-                (float)(p_190563_1_ / 2) + f5 * MathHelper.abs(MathHelper.sin(f4 * 2.0F)),
+-                (float)(p_190563_2_ / 2) + f6 * MathHelper.abs(MathHelper.sin(f4 * 2.0F)),
 -                -50.0F
 -            );
-+            GlStateManager.func_179109_b((float)(p_190563_1_ / 2) + f5 * MathHelper.func_76135_e(MathHelper.func_76126_a(f4 * 2.0F)), (float)(p_190563_2_ / 2) + f6 * MathHelper.func_76135_e(MathHelper.func_76126_a(f4 * 2.0F)), -50.0F);
-             float f7 = 50.0F + 175.0F * MathHelper.func_76126_a(f4);
-             GlStateManager.func_179152_a(f7, -f7, f7);
-             GlStateManager.func_179114_b(900.0F * MathHelper.func_76135_e(MathHelper.func_76126_a(f4)), 0.0F, 1.0F, 0.0F);
++            GlStateManager.translate((float)(p_190563_1_ / 2) + f5 * MathHelper.abs(MathHelper.sin(f4 * 2.0F)), (float)(p_190563_2_ / 2) + f6 * MathHelper.abs(MathHelper.sin(f4 * 2.0F)), -50.0F);
+             float f7 = 50.0F + 175.0F * MathHelper.sin(f4);
+             GlStateManager.scale(f7, -f7, f7);
+             GlStateManager.rotate(900.0F * MathHelper.abs(MathHelper.sin(f4)), 0.0F, 1.0F, 0.0F);
