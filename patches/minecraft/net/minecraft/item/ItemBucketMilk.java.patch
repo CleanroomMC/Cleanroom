@@ -1,36 +1,36 @@
 --- before/net/minecraft/item/ItemBucketMilk.java
 +++ after/net/minecraft/item/ItemBucketMilk.java
 @@ -20,9 +20,9 @@
-         this.func_77637_a(CreativeTabs.field_78026_f);
+         this.setCreativeTab(CreativeTabs.MISC);
      }
  
 -    @Override
-     public ItemStack func_77654_b(ItemStack p_77654_1_, World p_77654_2_, EntityLivingBase p_77654_3_)
+     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving)
      {
-+        if (!p_77654_2_.field_72995_K) p_77654_3_.curePotionEffects(p_77654_1_); // FORGE - move up so stack.shrink does not turn stack into air
-         if (p_77654_3_ instanceof EntityPlayerMP)
++        if (!worldIn.isRemote) entityLiving.curePotionEffects(stack); // FORGE - move up so stack.shrink does not turn stack into air
+         if (entityLiving instanceof EntityPlayerMP)
          {
-             EntityPlayerMP entityplayermp = (EntityPlayerMP)p_77654_3_;
+             EntityPlayerMP entityplayermp = (EntityPlayerMP)entityLiving;
 @@ -35,30 +35,27 @@
-             p_77654_1_.func_190918_g(1);
+             stack.shrink(1);
          }
  
--        if (!p_77654_2_.field_72995_K)
+-        if (!worldIn.isRemote)
 -        {
--            p_77654_3_.func_70674_bp();
+-            entityLiving.clearActivePotions();
 -        }
 -
-         return p_77654_1_.func_190926_b() ? new ItemStack(Items.field_151133_ar) : p_77654_1_;
+         return stack.isEmpty() ? new ItemStack(Items.BUCKET) : stack;
      }
  
 -    @Override
-     public int func_77626_a(ItemStack p_77626_1_)
+     public int getMaxItemUseDuration(ItemStack stack)
      {
          return 32;
      }
  
 -    @Override
-     public EnumAction func_77661_b(ItemStack p_77661_1_)
+     public EnumAction getItemUseAction(ItemStack stack)
      {
          return EnumAction.DRINK;
      }
@@ -40,10 +40,10 @@
 +        return new net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper(stack);
 +    }
 +
-     public ActionResult<ItemStack> func_77659_a(World p_77659_1_, EntityPlayer p_77659_2_, EnumHand p_77659_3_)
+     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
      {
-         p_77659_2_.func_184598_c(p_77659_3_);
--        return new ActionResult<>(EnumActionResult.SUCCESS, p_77659_2_.func_184586_b(p_77659_3_));
-+        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, p_77659_2_.func_184586_b(p_77659_3_));
+         playerIn.setActiveHand(handIn);
+-        return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
++        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
      }
  }

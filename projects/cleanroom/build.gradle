@@ -6,6 +6,7 @@ import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
 import net.minecraftforge.gradle.common.tasks.ExtractInheritance
 import net.minecraftforge.gradle.common.tasks.ExtractMCPData
 import net.minecraftforge.gradle.patcher.tasks.GenerateBinPatches
+import net.minecraftforge.gradle.patcher.tasks.GeneratePatches
 import net.minecraftforge.gradle.patcher.tasks.ReobfuscateJar
 import net.minecraftforge.srgutils.IMappingFile
 import org.apache.commons.compress.compressors.lzma.LZMACompressorOutputStream
@@ -115,7 +116,7 @@ patcher {
     parent = project(':minecraft')
     patches = file("$rootDir/patches/minecraft")
     patchedSrc = file('src/main/java')
-    srgPatches = true
+    srgPatches = false
     notchObf = true
     accessTransformer = file("$rootDir/src/main/resources/forge_at.cfg")
     // sideAnnotationStripper = file("$rootDir/src/main/resources/forge.sas")
@@ -426,6 +427,31 @@ afterEvaluate { p ->
             '--dirty', genServerBinPatches.dirtyJar.get().asFile.path,
             '--prefix', 'binpatch/server',
         ])
+    }
+
+    if (!patcher.srgPatches) {
+        srg2mcpClean {
+            dependsOn = []
+            input = project(':minecraft').postProcess.output
+        }
+        userdevJar {
+            onlyIf = { t -> true }
+        }
+        def patches = project.file('build/genPatchesForUserdev/output/')
+        patches.mkdirs()
+        def genPatchesForUserdev = tasks.register('genPatchesForUserdev', GeneratePatches){
+            base = project(':minecraft').postProcess.output
+            modified = applyRangeMapBase.output
+            originalPrefix = genPatches.originalPrefix
+            modifiedPrefix = genPatches.modifiedPrefix
+            output = patches
+            autoHeader true
+            lineEnding = '\n'
+        }
+        bakePatches {
+            dependsOn = []
+            input = genPatchesForUserdev.get().output
+        }
     }
 }
 

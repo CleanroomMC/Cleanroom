@@ -13,11 +13,11 @@
 +public class ItemTransformVec3f implements net.minecraftforge.common.model.IModelState
  {
 +    public java.util.Optional<net.minecraftforge.common.model.TRSRTransformation> apply(java.util.Optional<? extends net.minecraftforge.common.model.IModelPart> part) { return net.minecraftforge.client.ForgeHooksClient.applyTransform(this, part); }
-     public static final ItemTransformVec3f field_178366_a = new ItemTransformVec3f(new Vector3f(), new Vector3f(), new Vector3f(1.0F, 1.0F, 1.0F));
-     public final Vector3f field_178364_b;
-     public final Vector3f field_178365_c;
+     public static final ItemTransformVec3f DEFAULT = new ItemTransformVec3f(new Vector3f(), new Vector3f(), new Vector3f(1.0F, 1.0F, 1.0F));
+     public final Vector3f rotation;
+     public final Vector3f translation;
 @@ -28,7 +33,6 @@
-         this.field_178363_d = new Vector3f(p_i46214_3_);
+         this.scale = new Vector3f(scale);
      }
  
 -    @Override
@@ -28,20 +28,20 @@
          else
          {
              ItemTransformVec3f itemtransformvec3f = (ItemTransformVec3f)p_equals_1_;
--            return this.field_178364_b.equals(itemtransformvec3f.field_178364_b)
--                   && this.field_178363_d.equals(itemtransformvec3f.field_178363_d)
--                   && this.field_178365_c.equals(itemtransformvec3f.field_178365_c);
-+            return this.field_178364_b.equals(itemtransformvec3f.field_178364_b) && this.field_178363_d.equals(itemtransformvec3f.field_178363_d) && this.field_178365_c.equals(itemtransformvec3f.field_178365_c);
+-            return this.rotation.equals(itemtransformvec3f.rotation)
+-                   && this.scale.equals(itemtransformvec3f.scale)
+-                   && this.translation.equals(itemtransformvec3f.translation);
++            return this.rotation.equals(itemtransformvec3f.rotation) && this.scale.equals(itemtransformvec3f.scale) && this.translation.equals(itemtransformvec3f.translation);
          }
      }
  
 -    @Override
      public int hashCode()
      {
-         int i = this.field_178364_b.hashCode();
-         i = 31 * i + this.field_178365_c.hashCode();
--        return 31 * i + this.field_178363_d.hashCode();
-+        i = 31 * i + this.field_178363_d.hashCode();
+         int i = this.rotation.hashCode();
+         i = 31 * i + this.translation.hashCode();
+-        return 31 * i + this.scale.hashCode();
++        i = 31 * i + this.scale.hashCode();
 +        return i;
      }
  
@@ -53,5 +53,5 @@
 -                        for (int i = 0; i < afloat.length; i++)
 +                        for (int i = 0; i < afloat.length; ++i)
                          {
-                             afloat[i] = JsonUtils.func_151220_d(jsonarray.get(i), p_178358_2_ + "[" + i + "]");
+                             afloat[i] = JsonUtils.getFloat(jsonarray.get(i), key + "[" + i + "]");
                          }

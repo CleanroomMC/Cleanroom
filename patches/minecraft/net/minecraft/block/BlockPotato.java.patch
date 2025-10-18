@@ -4,7 +4,7 @@
  
  public class BlockPotato extends BlockCrops
  {
--    private static final AxisAlignedBB[] field_185534_a = new AxisAlignedBB[]
+-    private static final AxisAlignedBB[] POTATO_AABB = new AxisAlignedBB[]
 -        {
 -            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.125, 1.0),
 -            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.1875, 1.0),
@@ -15,46 +15,46 @@
 -            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.5, 1.0),
 -            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.5625, 1.0)
 -        };
-+    private static final AxisAlignedBB[] field_185534_a = new AxisAlignedBB[] {new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.125D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1875D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.25D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.3125D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.375D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.4375D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5625D, 1.0D)};
++    private static final AxisAlignedBB[] POTATO_AABB = new AxisAlignedBB[] {new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.125D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1875D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.25D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.3125D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.375D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.4375D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5625D, 1.0D)};
  
 -    @Override
-     protected Item func_149866_i()
+     protected Item getSeed()
      {
-         return Items.field_151174_bG;
+         return Items.POTATO;
      }
  
 -    @Override
-     protected Item func_149865_P()
+     protected Item getCrop()
      {
-         return Items.field_151174_bG;
+         return Items.POTATO;
      }
  
 -    @Override
-     public void func_180653_a(World p_180653_1_, BlockPos p_180653_2_, IBlockState p_180653_3_, float p_180653_4_, int p_180653_5_)
+     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
      {
-         super.func_180653_a(p_180653_1_, p_180653_2_, p_180653_3_, p_180653_4_, p_180653_5_);
+         super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);
  
--        if (!p_180653_1_.field_72995_K)
-+        if (false && !p_180653_1_.field_72995_K) //Forge: Moved to getDrops
+-        if (!worldIn.isRemote)
++        if (false && !worldIn.isRemote) //Forge: Moved to getDrops
          {
-             if (this.func_185525_y(p_180653_3_) && p_180653_1_.field_73012_v.nextInt(50) == 0)
+             if (this.isMaxAge(state) && worldIn.rand.nextInt(50) == 0)
              {
 @@ -49,9 +36,16 @@
          }
      }
  
 -    @Override
-     public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
+     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
      {
--        return field_185534_a[p_185496_1_.func_177229_b(this.func_185524_e())];
-+        return field_185534_a[((Integer)p_185496_1_.func_177229_b(this.func_185524_e())).intValue()];
+-        return POTATO_AABB[state.getValue(this.getAgeProperty())];
++        return POTATO_AABB[((Integer)state.getValue(this.getAgeProperty())).intValue()];
 +    }
 +
 +    @Override
 +    public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, net.minecraft.world.IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
 +    {
 +        super.getDrops(drops, world, pos, state, fortune);
-+        if (this.func_185525_y(state) && RANDOM.nextInt(50) == 0)
-+            drops.add(new ItemStack(Items.field_151170_bI));
++        if (this.isMaxAge(state) && RANDOM.nextInt(50) == 0)
++            drops.add(new ItemStack(Items.POISONOUS_POTATO));
      }
  }

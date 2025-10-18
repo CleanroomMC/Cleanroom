@@ -2,43 +2,43 @@
 +++ after/net/minecraft/block/BlockDropper.java
 @@ -16,23 +16,20 @@
  {
-     private final IBehaviorDispenseItem field_149947_P = new BehaviorDefaultDispenseItem();
+     private final IBehaviorDispenseItem dropBehavior = new BehaviorDefaultDispenseItem();
  
 -    @Override
-     protected IBehaviorDispenseItem func_149940_a(ItemStack p_149940_1_)
+     protected IBehaviorDispenseItem getBehavior(ItemStack stack)
      {
-         return this.field_149947_P;
+         return this.dropBehavior;
      }
  
 -    @Override
-     public TileEntity func_149915_a(World p_149915_1_, int p_149915_2_)
+     public TileEntity createNewTileEntity(World worldIn, int meta)
      {
          return new TileEntityDropper();
      }
  
 -    @Override
-     protected void func_176439_d(World p_176439_1_, BlockPos p_176439_2_)
+     protected void dispense(World worldIn, BlockPos pos)
      {
-         BlockSourceImpl blocksourceimpl = new BlockSourceImpl(p_176439_1_, p_176439_2_);
--        TileEntityDispenser tileentitydispenser = blocksourceimpl.func_150835_j();
-+        TileEntityDispenser tileentitydispenser = (TileEntityDispenser)blocksourceimpl.func_150835_j();
+         BlockSourceImpl blocksourceimpl = new BlockSourceImpl(worldIn, pos);
+-        TileEntityDispenser tileentitydispenser = blocksourceimpl.getBlockTileEntity();
++        TileEntityDispenser tileentitydispenser = (TileEntityDispenser)blocksourceimpl.getBlockTileEntity();
  
          if (tileentitydispenser != null)
          {
 @@ -46,13 +43,11 @@
              {
-                 ItemStack itemstack = tileentitydispenser.func_70301_a(i);
+                 ItemStack itemstack = tileentitydispenser.getStackInSlot(i);
  
--                if (!itemstack.func_190926_b())
-+                if (!itemstack.func_190926_b() && net.minecraftforge.items.VanillaInventoryCodeHooks.dropperInsertHook(p_176439_1_, p_176439_2_, tileentitydispenser, i, itemstack))
+-                if (!itemstack.isEmpty())
++                if (!itemstack.isEmpty() && net.minecraftforge.items.VanillaInventoryCodeHooks.dropperInsertHook(worldIn, pos, tileentitydispenser, i, itemstack))
                  {
--                    EnumFacing enumfacing = p_176439_1_.func_180495_p(p_176439_2_).func_177229_b(field_176441_a);
-+                    EnumFacing enumfacing = (EnumFacing)p_176439_1_.func_180495_p(p_176439_2_).func_177229_b(field_176441_a);
-                     BlockPos blockpos = p_176439_2_.func_177972_a(enumfacing);
--                    IInventory iinventory = TileEntityHopper.func_145893_b(
--                                                p_176439_1_, (double)blockpos.func_177958_n(), (double)blockpos.func_177956_o(), (double)blockpos.func_177952_p()
+-                    EnumFacing enumfacing = worldIn.getBlockState(pos).getValue(FACING);
++                    EnumFacing enumfacing = (EnumFacing)worldIn.getBlockState(pos).getValue(FACING);
+                     BlockPos blockpos = pos.offset(enumfacing);
+-                    IInventory iinventory = TileEntityHopper.getInventoryAtPosition(
+-                                                worldIn, (double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ()
 -                                            );
-+                    IInventory iinventory = TileEntityHopper.func_145893_b(p_176439_1_, (double)blockpos.func_177958_n(), (double)blockpos.func_177956_o(), (double)blockpos.func_177952_p());
++                    IInventory iinventory = TileEntityHopper.getInventoryAtPosition(worldIn, (double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ());
                      ItemStack itemstack1;
  
                      if (iinventory == null)
@@ -46,10 +46,10 @@
                      }
                      else
                      {
--                        itemstack1 = TileEntityHopper.func_174918_a(
--                                         tileentitydispenser, iinventory, itemstack.func_77946_l().func_77979_a(1), enumfacing.func_176734_d()
+-                        itemstack1 = TileEntityHopper.putStackInInventoryAllSlots(
+-                                         tileentitydispenser, iinventory, itemstack.copy().splitStack(1), enumfacing.getOpposite()
 -                                     );
-+                        itemstack1 = TileEntityHopper.func_174918_a(tileentitydispenser, iinventory, itemstack.func_77946_l().func_77979_a(1), enumfacing.func_176734_d());
++                        itemstack1 = TileEntityHopper.putStackInInventoryAllSlots(tileentitydispenser, iinventory, itemstack.copy().splitStack(1), enumfacing.getOpposite());
  
-                         if (itemstack1.func_190926_b())
+                         if (itemstack1.isEmpty())
                          {

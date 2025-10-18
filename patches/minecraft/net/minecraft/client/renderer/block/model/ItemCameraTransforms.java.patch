@@ -15,66 +15,66 @@
      private ItemCameraTransforms()
      {
 -        this(
--            ItemTransformVec3f.field_178366_a,
--            ItemTransformVec3f.field_178366_a,
--            ItemTransformVec3f.field_178366_a,
--            ItemTransformVec3f.field_178366_a,
--            ItemTransformVec3f.field_178366_a,
--            ItemTransformVec3f.field_178366_a,
--            ItemTransformVec3f.field_178366_a,
--            ItemTransformVec3f.field_178366_a
+-            ItemTransformVec3f.DEFAULT,
+-            ItemTransformVec3f.DEFAULT,
+-            ItemTransformVec3f.DEFAULT,
+-            ItemTransformVec3f.DEFAULT,
+-            ItemTransformVec3f.DEFAULT,
+-            ItemTransformVec3f.DEFAULT,
+-            ItemTransformVec3f.DEFAULT,
+-            ItemTransformVec3f.DEFAULT
 -        );
-+        this(ItemTransformVec3f.field_178366_a, ItemTransformVec3f.field_178366_a, ItemTransformVec3f.field_178366_a, ItemTransformVec3f.field_178366_a, ItemTransformVec3f.field_178366_a, ItemTransformVec3f.field_178366_a, ItemTransformVec3f.field_178366_a, ItemTransformVec3f.field_178366_a);
++        this(ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT);
      }
  
 +    @Deprecated
-     public ItemCameraTransforms(ItemCameraTransforms p_i46443_1_)
+     public ItemCameraTransforms(ItemCameraTransforms transforms)
      {
-         this.field_188036_k = p_i46443_1_.field_188036_k;
+         this.thirdperson_left = transforms.thirdperson_left;
 @@ -60,16 +55,8 @@
-         this.field_181700_p = p_i46443_1_.field_181700_p;
+         this.fixed = transforms.fixed;
      }
  
 -    public ItemCameraTransforms(
--        ItemTransformVec3f p_i46569_1_,
--        ItemTransformVec3f p_i46569_2_,
--        ItemTransformVec3f p_i46569_3_,
--        ItemTransformVec3f p_i46569_4_,
--        ItemTransformVec3f p_i46569_5_,
--        ItemTransformVec3f p_i46569_6_,
--        ItemTransformVec3f p_i46569_7_,
--        ItemTransformVec3f p_i46569_8_
+-        ItemTransformVec3f thirdperson_leftIn,
+-        ItemTransformVec3f thirdperson_rightIn,
+-        ItemTransformVec3f firstperson_leftIn,
+-        ItemTransformVec3f firstperson_rightIn,
+-        ItemTransformVec3f headIn,
+-        ItemTransformVec3f guiIn,
+-        ItemTransformVec3f groundIn,
+-        ItemTransformVec3f fixedIn
 -    )
 +    @Deprecated
-+    public ItemCameraTransforms(ItemTransformVec3f p_i46569_1_, ItemTransformVec3f p_i46569_2_, ItemTransformVec3f p_i46569_3_, ItemTransformVec3f p_i46569_4_, ItemTransformVec3f p_i46569_5_, ItemTransformVec3f p_i46569_6_, ItemTransformVec3f p_i46569_7_, ItemTransformVec3f p_i46569_8_)
++    public ItemCameraTransforms(ItemTransformVec3f thirdperson_leftIn, ItemTransformVec3f thirdperson_rightIn, ItemTransformVec3f firstperson_leftIn, ItemTransformVec3f firstperson_rightIn, ItemTransformVec3f headIn, ItemTransformVec3f guiIn, ItemTransformVec3f groundIn, ItemTransformVec3f fixedIn)
      {
-         this.field_188036_k = p_i46569_1_;
-         this.field_188037_l = p_i46569_2_;
+         this.thirdperson_left = thirdperson_leftIn;
+         this.thirdperson_right = thirdperson_rightIn;
 @@ -91,11 +78,7 @@
-         if (p_188034_0_ != ItemTransformVec3f.field_178366_a)
+         if (vec != ItemTransformVec3f.DEFAULT)
          {
-             int i = p_188034_1_ ? -1 : 1;
--            GlStateManager.func_179109_b(
--                (float)i * (field_181690_b + p_188034_0_.field_178365_c.x),
--                field_181691_c + p_188034_0_.field_178365_c.y,
--                field_181692_d + p_188034_0_.field_178365_c.z
+             int i = leftHand ? -1 : 1;
+-            GlStateManager.translate(
+-                (float)i * (offsetTranslateX + vec.translation.x),
+-                offsetTranslateY + vec.translation.y,
+-                offsetTranslateZ + vec.translation.z
 -            );
-+            GlStateManager.func_179109_b((float)i * (field_181690_b + p_188034_0_.field_178365_c.x), field_181691_c + p_188034_0_.field_178365_c.y, field_181692_d + p_188034_0_.field_178365_c.z);
-             float f = field_181693_e + p_188034_0_.field_178364_b.x;
-             float f1 = field_181694_f + p_188034_0_.field_178364_b.y;
-             float f2 = field_181695_g + p_188034_0_.field_178364_b.z;
++            GlStateManager.translate((float)i * (offsetTranslateX + vec.translation.x), offsetTranslateY + vec.translation.y, offsetTranslateZ + vec.translation.z);
+             float f = offsetRotationX + vec.rotation.x;
+             float f1 = offsetRotationY + vec.rotation.y;
+             float f2 = offsetRotationZ + vec.rotation.z;
 @@ -107,17 +90,15 @@
              }
  
-             GlStateManager.func_187444_a(func_188035_a(f, f1, f2));
--            GlStateManager.func_179152_a(
--                field_181696_h + p_188034_0_.field_178363_d.x, field_181697_i + p_188034_0_.field_178363_d.y, field_181698_j + p_188034_0_.field_178363_d.z
+             GlStateManager.rotate(makeQuaternion(f, f1, f2));
+-            GlStateManager.scale(
+-                offsetScaleX + vec.scale.x, offsetScaleY + vec.scale.y, offsetScaleZ + vec.scale.z
 -            );
-+            GlStateManager.func_179152_a(field_181696_h + p_188034_0_.field_178363_d.x, field_181697_i + p_188034_0_.field_178363_d.y, field_181698_j + p_188034_0_.field_178363_d.z);
++            GlStateManager.scale(offsetScaleX + vec.scale.x, offsetScaleY + vec.scale.y, offsetScaleZ + vec.scale.z);
          }
      }
  
-     private static Quaternion func_188035_a(float p_188035_0_, float p_188035_1_, float p_188035_2_)
+     private static Quaternion makeQuaternion(float p_188035_0_, float p_188035_1_, float p_188035_2_)
      {
 -        float f = p_188035_0_ * (float)(Math.PI / 180.0);
 -        float f1 = p_188035_1_ * (float)(Math.PI / 180.0);
@@ -82,21 +82,21 @@
 +        float f = p_188035_0_ * 0.017453292F;
 +        float f1 = p_188035_1_ * 0.017453292F;
 +        float f2 = p_188035_2_ * 0.017453292F;
-         float f3 = MathHelper.func_76126_a(0.5F * f);
-         float f4 = MathHelper.func_76134_b(0.5F * f);
-         float f5 = MathHelper.func_76126_a(0.5F * f1);
+         float f3 = MathHelper.sin(0.5F * f);
+         float f4 = MathHelper.cos(0.5F * f);
+         float f5 = MathHelper.sin(0.5F * f1);
 @@ -127,6 +108,7 @@
          return new Quaternion(f3 * f6 * f8 + f4 * f5 * f7, f4 * f5 * f8 - f3 * f6 * f7, f3 * f5 * f8 + f4 * f6 * f7, f4 * f6 * f8 - f3 * f5 * f7);
      }
  
 +    @Deprecated
-     public ItemTransformVec3f func_181688_b(ItemCameraTransforms.TransformType p_181688_1_)
+     public ItemTransformVec3f getTransform(ItemCameraTransforms.TransformType type)
      {
-         switch (p_181688_1_)
+         switch (type)
 @@ -183,28 +165,17 @@
-                 ItemTransformVec3f itemtransformvec3f5 = this.func_181683_a(p_deserialize_3_, jsonobject, "gui");
-                 ItemTransformVec3f itemtransformvec3f6 = this.func_181683_a(p_deserialize_3_, jsonobject, "ground");
-                 ItemTransformVec3f itemtransformvec3f7 = this.func_181683_a(p_deserialize_3_, jsonobject, "fixed");
+                 ItemTransformVec3f itemtransformvec3f5 = this.getTransform(p_deserialize_3_, jsonobject, "gui");
+                 ItemTransformVec3f itemtransformvec3f6 = this.getTransform(p_deserialize_3_, jsonobject, "ground");
+                 ItemTransformVec3f itemtransformvec3f7 = this.getTransform(p_deserialize_3_, jsonobject, "fixed");
 -                return new ItemCameraTransforms(
 -                           itemtransformvec3f1,
 -                           itemtransformvec3f,
@@ -110,12 +110,12 @@
 +                return new ItemCameraTransforms(itemtransformvec3f1, itemtransformvec3f, itemtransformvec3f3, itemtransformvec3f2, itemtransformvec3f4, itemtransformvec3f5, itemtransformvec3f6, itemtransformvec3f7);
              }
  
-             private ItemTransformVec3f func_181683_a(JsonDeserializationContext p_181683_1_, JsonObject p_181683_2_, String p_181683_3_)
+             private ItemTransformVec3f getTransform(JsonDeserializationContext p_181683_1_, JsonObject p_181683_2_, String p_181683_3_)
              {
 -                return p_181683_2_.has(p_181683_3_)
 -                       ? p_181683_1_.deserialize(p_181683_2_.get(p_181683_3_), ItemTransformVec3f.class)
--                       : ItemTransformVec3f.field_178366_a;
-+                return p_181683_2_.has(p_181683_3_) ? (ItemTransformVec3f)p_181683_1_.deserialize(p_181683_2_.get(p_181683_3_), ItemTransformVec3f.class) : ItemTransformVec3f.field_178366_a;
+-                       : ItemTransformVec3f.DEFAULT;
++                return p_181683_2_.has(p_181683_3_) ? (ItemTransformVec3f)p_181683_1_.deserialize(p_181683_2_.get(p_181683_3_), ItemTransformVec3f.class) : ItemTransformVec3f.DEFAULT;
              }
          }
  

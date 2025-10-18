@@ -7,298 +7,298 @@
 -@SideOnly(Side.CLIENT)
  public class ModelRenderer
  {
--    public float field_78801_a = 64.0F;
--    public float field_78799_b = 32.0F;
-+    public float field_78801_a;
-+    public float field_78799_b;
-     private int field_78803_o;
-     private int field_78813_p;
-     public float field_78800_c;
+-    public float textureWidth = 64.0F;
+-    public float textureHeight = 32.0F;
++    public float textureWidth;
++    public float textureHeight;
+     private int textureOffsetX;
+     private int textureOffsetY;
+     public float rotationPointX;
 @@ -25,9 +24,9 @@
-     private boolean field_78812_q;
-     private int field_78811_r;
-     public boolean field_78809_i;
--    public boolean field_78806_j = true;
-+    public boolean field_78806_j;
-     public boolean field_78807_k;
--    public List<ModelBox> field_78804_l = Lists.newArrayList();
-+    public List<ModelBox> field_78804_l;
-     public List<ModelRenderer> field_78805_m;
-     public final String field_78802_n;
-     private final ModelBase field_78810_s;
+     private boolean compiled;
+     private int displayList;
+     public boolean mirror;
+-    public boolean showModel = true;
++    public boolean showModel;
+     public boolean isHidden;
+-    public List<ModelBox> cubeList = Lists.newArrayList();
++    public List<ModelBox> cubeList;
+     public List<ModelRenderer> childModels;
+     public final String boxName;
+     private final ModelBase baseModel;
 @@ -37,6 +36,10 @@
  
-     public ModelRenderer(ModelBase p_i1172_1_, String p_i1172_2_)
+     public ModelRenderer(ModelBase model, String boxNameIn)
      {
-+        this.field_78801_a = 64.0F;
-+        this.field_78799_b = 32.0F;
-+        this.field_78806_j = true;
-+        this.field_78804_l = Lists.<ModelBox>newArrayList();
-         this.field_78810_s = p_i1172_1_;
-         p_i1172_1_.field_78092_r.add(this);
-         this.field_78802_n = p_i1172_2_;
++        this.textureWidth = 64.0F;
++        this.textureHeight = 32.0F;
++        this.showModel = true;
++        this.cubeList = Lists.<ModelBox>newArrayList();
+         this.baseModel = model;
+         model.boxList.add(this);
+         this.boxName = boxNameIn;
 @@ -45,7 +48,7 @@
  
-     public ModelRenderer(ModelBase p_i1173_1_)
+     public ModelRenderer(ModelBase model)
      {
--        this(p_i1173_1_, null);
-+        this(p_i1173_1_, (String)null);
+-        this(model, null);
++        this(model, (String)null);
      }
  
-     public ModelRenderer(ModelBase p_i46358_1_, int p_i46358_2_, int p_i46358_3_)
+     public ModelRenderer(ModelBase model, int texOffX, int texOffY)
 @@ -58,7 +61,7 @@
      {
-         if (this.field_78805_m == null)
+         if (this.childModels == null)
          {
--            this.field_78805_m = Lists.newArrayList();
-+            this.field_78805_m = Lists.<ModelRenderer>newArrayList();
+-            this.childModels = Lists.newArrayList();
++            this.childModels = Lists.<ModelRenderer>newArrayList();
          }
  
-         this.field_78805_m.add(p_78792_1_);
+         this.childModels.add(renderer);
 @@ -76,38 +79,25 @@
-         p_78786_1_ = this.field_78802_n + "." + p_78786_1_;
-         TextureOffset textureoffset = this.field_78810_s.func_78084_a(p_78786_1_);
-         this.func_78784_a(textureoffset.field_78783_a, textureoffset.field_78782_b);
--        this.field_78804_l
+         partName = this.boxName + "." + partName;
+         TextureOffset textureoffset = this.baseModel.getTextureOffset(partName);
+         this.setTextureOffset(textureoffset.textureOffsetX, textureoffset.textureOffsetY);
+-        this.cubeList
 -        .add(
--            new ModelBox(this, this.field_78803_o, this.field_78813_p, p_78786_2_, p_78786_3_, p_78786_4_, p_78786_5_, p_78786_6_, p_78786_7_, 0.0F)
--            .func_78244_a(p_78786_1_)
+-            new ModelBox(this, this.textureOffsetX, this.textureOffsetY, offX, offY, offZ, width, height, depth, 0.0F)
+-            .setBoxName(partName)
 -        );
-+        this.field_78804_l.add((new ModelBox(this, this.field_78803_o, this.field_78813_p, p_78786_2_, p_78786_3_, p_78786_4_, p_78786_5_, p_78786_6_, p_78786_7_, 0.0F)).func_78244_a(p_78786_1_));
++        this.cubeList.add((new ModelBox(this, this.textureOffsetX, this.textureOffsetY, offX, offY, offZ, width, height, depth, 0.0F)).setBoxName(partName));
          return this;
      }
  
-     public ModelRenderer func_78789_a(float p_78789_1_, float p_78789_2_, float p_78789_3_, int p_78789_4_, int p_78789_5_, int p_78789_6_)
+     public ModelRenderer addBox(float offX, float offY, float offZ, int width, int height, int depth)
      {
--        this.field_78804_l
--        .add(new ModelBox(this, this.field_78803_o, this.field_78813_p, p_78789_1_, p_78789_2_, p_78789_3_, p_78789_4_, p_78789_5_, p_78789_6_, 0.0F));
-+        this.field_78804_l.add(new ModelBox(this, this.field_78803_o, this.field_78813_p, p_78789_1_, p_78789_2_, p_78789_3_, p_78789_4_, p_78789_5_, p_78789_6_, 0.0F));
+-        this.cubeList
+-        .add(new ModelBox(this, this.textureOffsetX, this.textureOffsetY, offX, offY, offZ, width, height, depth, 0.0F));
++        this.cubeList.add(new ModelBox(this, this.textureOffsetX, this.textureOffsetY, offX, offY, offZ, width, height, depth, 0.0F));
          return this;
      }
  
--    public ModelRenderer func_178769_a(
--        float p_178769_1_, float p_178769_2_, float p_178769_3_, int p_178769_4_, int p_178769_5_, int p_178769_6_, boolean p_178769_7_
+-    public ModelRenderer addBox(
+-        float offX, float offY, float offZ, int width, int height, int depth, boolean mirrored
 -    )
-+    public ModelRenderer func_178769_a(float p_178769_1_, float p_178769_2_, float p_178769_3_, int p_178769_4_, int p_178769_5_, int p_178769_6_, boolean p_178769_7_)
++    public ModelRenderer addBox(float offX, float offY, float offZ, int width, int height, int depth, boolean mirrored)
      {
--        this.field_78804_l
+-        this.cubeList
 -        .add(
 -            new ModelBox(
--                this, this.field_78803_o, this.field_78813_p, p_178769_1_, p_178769_2_, p_178769_3_, p_178769_4_, p_178769_5_, p_178769_6_, 0.0F, p_178769_7_
+-                this, this.textureOffsetX, this.textureOffsetY, offX, offY, offZ, width, height, depth, 0.0F, mirrored
 -            )
 -        );
-+        this.field_78804_l.add(new ModelBox(this, this.field_78803_o, this.field_78813_p, p_178769_1_, p_178769_2_, p_178769_3_, p_178769_4_, p_178769_5_, p_178769_6_, 0.0F, p_178769_7_));
++        this.cubeList.add(new ModelBox(this, this.textureOffsetX, this.textureOffsetY, offX, offY, offZ, width, height, depth, 0.0F, mirrored));
          return this;
      }
  
-     public void func_78790_a(float p_78790_1_, float p_78790_2_, float p_78790_3_, int p_78790_4_, int p_78790_5_, int p_78790_6_, float p_78790_7_)
+     public void addBox(float offX, float offY, float offZ, int width, int height, int depth, float scaleFactor)
      {
--        this.field_78804_l
--        .add(new ModelBox(this, this.field_78803_o, this.field_78813_p, p_78790_1_, p_78790_2_, p_78790_3_, p_78790_4_, p_78790_5_, p_78790_6_, p_78790_7_));
-+        this.field_78804_l.add(new ModelBox(this, this.field_78803_o, this.field_78813_p, p_78790_1_, p_78790_2_, p_78790_3_, p_78790_4_, p_78790_5_, p_78790_6_, p_78790_7_));
+-        this.cubeList
+-        .add(new ModelBox(this, this.textureOffsetX, this.textureOffsetY, offX, offY, offZ, width, height, depth, scaleFactor));
++        this.cubeList.add(new ModelBox(this, this.textureOffsetX, this.textureOffsetY, offX, offY, offZ, width, height, depth, scaleFactor));
      }
  
-     public void func_78793_a(float p_78793_1_, float p_78793_2_, float p_78793_3_)
+     public void setRotationPoint(float rotationPointXIn, float rotationPointYIn, float rotationPointZIn)
 @@ -117,6 +107,7 @@
-         this.field_78798_e = p_78793_3_;
+         this.rotationPointZ = rotationPointZIn;
      }
  
 +    @SideOnly(Side.CLIENT)
-     public void func_78785_a(float p_78785_1_)
+     public void render(float scale)
      {
-         if (!this.field_78807_k)
+         if (!this.isHidden)
 @@ -130,71 +121,75 @@
  
-                 GlStateManager.func_179109_b(this.field_82906_o, this.field_82908_p, this.field_82907_q);
+                 GlStateManager.translate(this.offsetX, this.offsetY, this.offsetZ);
  
--                if (this.field_78795_f != 0.0F || this.field_78796_g != 0.0F || this.field_78808_h != 0.0F)
-+                if (this.field_78795_f == 0.0F && this.field_78796_g == 0.0F && this.field_78808_h == 0.0F)
+-                if (this.rotateAngleX != 0.0F || this.rotateAngleY != 0.0F || this.rotateAngleZ != 0.0F)
++                if (this.rotateAngleX == 0.0F && this.rotateAngleY == 0.0F && this.rotateAngleZ == 0.0F)
 +                {
-+                    if (this.field_78800_c == 0.0F && this.field_78797_d == 0.0F && this.field_78798_e == 0.0F)
++                    if (this.rotationPointX == 0.0F && this.rotationPointY == 0.0F && this.rotationPointZ == 0.0F)
 +                    {
-+                        GlStateManager.func_179148_o(this.field_78811_r);
++                        GlStateManager.callList(this.displayList);
 +
-+                        if (this.field_78805_m != null)
++                        if (this.childModels != null)
 +                        {
-+                            for (int k = 0; k < this.field_78805_m.size(); ++k)
++                            for (int k = 0; k < this.childModels.size(); ++k)
 +                            {
-+                                ((ModelRenderer)this.field_78805_m.get(k)).func_78785_a(p_78785_1_);
++                                ((ModelRenderer)this.childModels.get(k)).render(scale);
 +                            }
 +                        }
 +                    }
 +                    else
 +                    {
-+                        GlStateManager.func_179109_b(this.field_78800_c * p_78785_1_, this.field_78797_d * p_78785_1_, this.field_78798_e * p_78785_1_);
-+                        GlStateManager.func_179148_o(this.field_78811_r);
++                        GlStateManager.translate(this.rotationPointX * scale, this.rotationPointY * scale, this.rotationPointZ * scale);
++                        GlStateManager.callList(this.displayList);
 +
-+                        if (this.field_78805_m != null)
++                        if (this.childModels != null)
 +                        {
-+                            for (int j = 0; j < this.field_78805_m.size(); ++j)
++                            for (int j = 0; j < this.childModels.size(); ++j)
 +                            {
-+                                ((ModelRenderer)this.field_78805_m.get(j)).func_78785_a(p_78785_1_);
++                                ((ModelRenderer)this.childModels.get(j)).render(scale);
 +                            }
 +                        }
 +
-+                        GlStateManager.func_179109_b(-this.field_78800_c * p_78785_1_, -this.field_78797_d * p_78785_1_, -this.field_78798_e * p_78785_1_);
++                        GlStateManager.translate(-this.rotationPointX * scale, -this.rotationPointY * scale, -this.rotationPointZ * scale);
 +                    }
 +                }
 +                else
                  {
-                     GlStateManager.func_179094_E();
-                     GlStateManager.func_179109_b(this.field_78800_c * p_78785_1_, this.field_78797_d * p_78785_1_, this.field_78798_e * p_78785_1_);
+                     GlStateManager.pushMatrix();
+                     GlStateManager.translate(this.rotationPointX * scale, this.rotationPointY * scale, this.rotationPointZ * scale);
  
-                     if (this.field_78808_h != 0.0F)
+                     if (this.rotateAngleZ != 0.0F)
                      {
--                        GlStateManager.func_179114_b(this.field_78808_h * (180.0F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
-+                        GlStateManager.func_179114_b(this.field_78808_h * (180F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
+-                        GlStateManager.rotate(this.rotateAngleZ * (180.0F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
++                        GlStateManager.rotate(this.rotateAngleZ * (180F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
                      }
  
-                     if (this.field_78796_g != 0.0F)
+                     if (this.rotateAngleY != 0.0F)
                      {
--                        GlStateManager.func_179114_b(this.field_78796_g * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
-+                        GlStateManager.func_179114_b(this.field_78796_g * (180F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
+-                        GlStateManager.rotate(this.rotateAngleY * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
++                        GlStateManager.rotate(this.rotateAngleY * (180F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
                      }
  
-                     if (this.field_78795_f != 0.0F)
+                     if (this.rotateAngleX != 0.0F)
                      {
--                        GlStateManager.func_179114_b(this.field_78795_f * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
-+                        GlStateManager.func_179114_b(this.field_78795_f * (180F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
+-                        GlStateManager.rotate(this.rotateAngleX * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
++                        GlStateManager.rotate(this.rotateAngleX * (180F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
                      }
  
-                     GlStateManager.func_179148_o(this.field_78811_r);
+                     GlStateManager.callList(this.displayList);
  
-                     if (this.field_78805_m != null)
+                     if (this.childModels != null)
                      {
--                        for (int k = 0; k < this.field_78805_m.size(); k++)
-+                        for (int i = 0; i < this.field_78805_m.size(); ++i)
+-                        for (int k = 0; k < this.childModels.size(); k++)
++                        for (int i = 0; i < this.childModels.size(); ++i)
                          {
--                            this.field_78805_m.get(k).func_78785_a(p_78785_1_);
-+                            ((ModelRenderer)this.field_78805_m.get(i)).func_78785_a(p_78785_1_);
+-                            this.childModels.get(k).render(scale);
++                            ((ModelRenderer)this.childModels.get(i)).render(scale);
                          }
                      }
  
-                     GlStateManager.func_179121_F();
+                     GlStateManager.popMatrix();
                  }
--                else if (this.field_78800_c == 0.0F && this.field_78797_d == 0.0F && this.field_78798_e == 0.0F)
+-                else if (this.rotationPointX == 0.0F && this.rotationPointY == 0.0F && this.rotationPointZ == 0.0F)
 -                {
--                    GlStateManager.func_179148_o(this.field_78811_r);
+-                    GlStateManager.callList(this.displayList);
 -
--                    if (this.field_78805_m != null)
+-                    if (this.childModels != null)
 -                    {
--                        for (int j = 0; j < this.field_78805_m.size(); j++)
+-                        for (int j = 0; j < this.childModels.size(); j++)
 -                        {
--                            this.field_78805_m.get(j).func_78785_a(p_78785_1_);
+-                            this.childModels.get(j).render(scale);
 -                        }
 -                    }
 -                }
 -                else
 -                {
--                    GlStateManager.func_179109_b(this.field_78800_c * p_78785_1_, this.field_78797_d * p_78785_1_, this.field_78798_e * p_78785_1_);
--                    GlStateManager.func_179148_o(this.field_78811_r);
+-                    GlStateManager.translate(this.rotationPointX * scale, this.rotationPointY * scale, this.rotationPointZ * scale);
+-                    GlStateManager.callList(this.displayList);
 -
--                    if (this.field_78805_m != null)
+-                    if (this.childModels != null)
 -                    {
--                        for (int i = 0; i < this.field_78805_m.size(); i++)
+-                        for (int i = 0; i < this.childModels.size(); i++)
 -                        {
--                            this.field_78805_m.get(i).func_78785_a(p_78785_1_);
+-                            this.childModels.get(i).render(scale);
 -                        }
 -                    }
 -
--                    GlStateManager.func_179109_b(-this.field_78800_c * p_78785_1_, -this.field_78797_d * p_78785_1_, -this.field_78798_e * p_78785_1_);
+-                    GlStateManager.translate(-this.rotationPointX * scale, -this.rotationPointY * scale, -this.rotationPointZ * scale);
 -                }
  
-                 GlStateManager.func_179109_b(-this.field_82906_o, -this.field_82908_p, -this.field_82907_q);
+                 GlStateManager.translate(-this.offsetX, -this.offsetY, -this.offsetZ);
              }
          }
      }
  
 +    @SideOnly(Side.CLIENT)
-     public void func_78791_b(float p_78791_1_)
+     public void renderWithRotation(float scale)
      {
-         if (!this.field_78807_k)
+         if (!this.isHidden)
 @@ -211,17 +206,17 @@
  
-                 if (this.field_78796_g != 0.0F)
+                 if (this.rotateAngleY != 0.0F)
                  {
--                    GlStateManager.func_179114_b(this.field_78796_g * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
-+                    GlStateManager.func_179114_b(this.field_78796_g * (180F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
+-                    GlStateManager.rotate(this.rotateAngleY * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
++                    GlStateManager.rotate(this.rotateAngleY * (180F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
                  }
  
-                 if (this.field_78795_f != 0.0F)
+                 if (this.rotateAngleX != 0.0F)
                  {
--                    GlStateManager.func_179114_b(this.field_78795_f * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
-+                    GlStateManager.func_179114_b(this.field_78795_f * (180F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
+-                    GlStateManager.rotate(this.rotateAngleX * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
++                    GlStateManager.rotate(this.rotateAngleX * (180F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
                  }
  
-                 if (this.field_78808_h != 0.0F)
+                 if (this.rotateAngleZ != 0.0F)
                  {
--                    GlStateManager.func_179114_b(this.field_78808_h * (180.0F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
-+                    GlStateManager.func_179114_b(this.field_78808_h * (180F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
+-                    GlStateManager.rotate(this.rotateAngleZ * (180.0F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
++                    GlStateManager.rotate(this.rotateAngleZ * (180F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
                  }
  
-                 GlStateManager.func_179148_o(this.field_78811_r);
+                 GlStateManager.callList(this.displayList);
 @@ -230,6 +225,7 @@
          }
      }
  
 +    @SideOnly(Side.CLIENT)
-     public void func_78794_c(float p_78794_1_)
+     public void postRender(float scale)
      {
-         if (!this.field_78807_k)
+         if (!this.isHidden)
 @@ -241,42 +237,46 @@
-                     this.func_78788_d(p_78794_1_);
+                     this.compileDisplayList(scale);
                  }
  
--                if (this.field_78795_f != 0.0F || this.field_78796_g != 0.0F || this.field_78808_h != 0.0F)
-+                if (this.field_78795_f == 0.0F && this.field_78796_g == 0.0F && this.field_78808_h == 0.0F)
+-                if (this.rotateAngleX != 0.0F || this.rotateAngleY != 0.0F || this.rotateAngleZ != 0.0F)
++                if (this.rotateAngleX == 0.0F && this.rotateAngleY == 0.0F && this.rotateAngleZ == 0.0F)
 +                {
-+                    if (this.field_78800_c != 0.0F || this.field_78797_d != 0.0F || this.field_78798_e != 0.0F)
++                    if (this.rotationPointX != 0.0F || this.rotationPointY != 0.0F || this.rotationPointZ != 0.0F)
 +                    {
-+                        GlStateManager.func_179109_b(this.field_78800_c * p_78794_1_, this.field_78797_d * p_78794_1_, this.field_78798_e * p_78794_1_);
++                        GlStateManager.translate(this.rotationPointX * scale, this.rotationPointY * scale, this.rotationPointZ * scale);
 +                    }
 +                }
 +                else
                  {
-                     GlStateManager.func_179109_b(this.field_78800_c * p_78794_1_, this.field_78797_d * p_78794_1_, this.field_78798_e * p_78794_1_);
+                     GlStateManager.translate(this.rotationPointX * scale, this.rotationPointY * scale, this.rotationPointZ * scale);
  
-                     if (this.field_78808_h != 0.0F)
+                     if (this.rotateAngleZ != 0.0F)
                      {
--                        GlStateManager.func_179114_b(this.field_78808_h * (180.0F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
-+                        GlStateManager.func_179114_b(this.field_78808_h * (180F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
+-                        GlStateManager.rotate(this.rotateAngleZ * (180.0F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
++                        GlStateManager.rotate(this.rotateAngleZ * (180F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
                      }
  
-                     if (this.field_78796_g != 0.0F)
+                     if (this.rotateAngleY != 0.0F)
                      {
--                        GlStateManager.func_179114_b(this.field_78796_g * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
-+                        GlStateManager.func_179114_b(this.field_78796_g * (180F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
+-                        GlStateManager.rotate(this.rotateAngleY * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
++                        GlStateManager.rotate(this.rotateAngleY * (180F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
                      }
  
-                     if (this.field_78795_f != 0.0F)
+                     if (this.rotateAngleX != 0.0F)
                      {
--                        GlStateManager.func_179114_b(this.field_78795_f * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
-+                        GlStateManager.func_179114_b(this.field_78795_f * (180F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
+-                        GlStateManager.rotate(this.rotateAngleX * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
++                        GlStateManager.rotate(this.rotateAngleX * (180F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
                      }
 -                }
--                else if (this.field_78800_c != 0.0F || this.field_78797_d != 0.0F || this.field_78798_e != 0.0F)
+-                else if (this.rotationPointX != 0.0F || this.rotationPointY != 0.0F || this.rotationPointZ != 0.0F)
 -                {
--                    GlStateManager.func_179109_b(this.field_78800_c * p_78794_1_, this.field_78797_d * p_78794_1_, this.field_78798_e * p_78794_1_);
+-                    GlStateManager.translate(this.rotationPointX * scale, this.rotationPointY * scale, this.rotationPointZ * scale);
                  }
              }
          }
      }
  
 +    @SideOnly(Side.CLIENT)
-     private void func_78788_d(float p_78788_1_)
+     private void compileDisplayList(float scale)
      {
-         this.field_78811_r = GLAllocation.func_74526_a(1);
-         GlStateManager.func_187423_f(this.field_78811_r, 4864);
-         BufferBuilder bufferbuilder = Tessellator.func_178181_a().func_178180_c();
+         this.displayList = GLAllocation.generateDisplayLists(1);
+         GlStateManager.glNewList(this.displayList, 4864);
+         BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
  
--        for (int i = 0; i < this.field_78804_l.size(); i++)
-+        for (int i = 0; i < this.field_78804_l.size(); ++i)
+-        for (int i = 0; i < this.cubeList.size(); i++)
++        for (int i = 0; i < this.cubeList.size(); ++i)
          {
--            this.field_78804_l.get(i).func_178780_a(bufferbuilder, p_78788_1_);
-+            ((ModelBox)this.field_78804_l.get(i)).func_178780_a(bufferbuilder, p_78788_1_);
+-            this.cubeList.get(i).render(bufferbuilder, scale);
++            ((ModelBox)this.cubeList.get(i)).render(bufferbuilder, scale);
          }
  
-         GlStateManager.func_187415_K();
+         GlStateManager.glEndList();

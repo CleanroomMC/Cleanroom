@@ -10,54 +10,54 @@
  import net.minecraft.init.Biomes;
 @@ -57,41 +58,22 @@
  
-     public static List<StructureVillagePieces.PieceWeight> func_75084_a(Random p_75084_0_, int p_75084_1_)
+     public static List<StructureVillagePieces.PieceWeight> getStructureVillageWeightedPieceList(Random random, int size)
      {
 -        List<StructureVillagePieces.PieceWeight> list = Lists.newArrayList();
 -        list.add(
 -            new StructureVillagePieces.PieceWeight(
--                StructureVillagePieces.House4Garden.class, 4, MathHelper.func_76136_a(p_75084_0_, 2 + p_75084_1_, 4 + p_75084_1_ * 2)
+-                StructureVillagePieces.House4Garden.class, 4, MathHelper.getInt(random, 2 + size, 4 + size * 2)
 -            )
 -        );
 -        list.add(
--            new StructureVillagePieces.PieceWeight(StructureVillagePieces.Church.class, 20, MathHelper.func_76136_a(p_75084_0_, 0 + p_75084_1_, 1 + p_75084_1_))
+-            new StructureVillagePieces.PieceWeight(StructureVillagePieces.Church.class, 20, MathHelper.getInt(random, 0 + size, 1 + size))
 -        );
 -        list.add(
--            new StructureVillagePieces.PieceWeight(StructureVillagePieces.House1.class, 20, MathHelper.func_76136_a(p_75084_0_, 0 + p_75084_1_, 2 + p_75084_1_))
+-            new StructureVillagePieces.PieceWeight(StructureVillagePieces.House1.class, 20, MathHelper.getInt(random, 0 + size, 2 + size))
 -        );
 -        list.add(
 -            new StructureVillagePieces.PieceWeight(
--                StructureVillagePieces.WoodHut.class, 3, MathHelper.func_76136_a(p_75084_0_, 2 + p_75084_1_, 5 + p_75084_1_ * 3)
+-                StructureVillagePieces.WoodHut.class, 3, MathHelper.getInt(random, 2 + size, 5 + size * 3)
 -            )
 -        );
 -        list.add(
--            new StructureVillagePieces.PieceWeight(StructureVillagePieces.Hall.class, 15, MathHelper.func_76136_a(p_75084_0_, 0 + p_75084_1_, 2 + p_75084_1_))
+-            new StructureVillagePieces.PieceWeight(StructureVillagePieces.Hall.class, 15, MathHelper.getInt(random, 0 + size, 2 + size))
 -        );
 -        list.add(
--            new StructureVillagePieces.PieceWeight(StructureVillagePieces.Field1.class, 3, MathHelper.func_76136_a(p_75084_0_, 1 + p_75084_1_, 4 + p_75084_1_))
+-            new StructureVillagePieces.PieceWeight(StructureVillagePieces.Field1.class, 3, MathHelper.getInt(random, 1 + size, 4 + size))
 -        );
 -        list.add(
--            new StructureVillagePieces.PieceWeight(StructureVillagePieces.Field2.class, 3, MathHelper.func_76136_a(p_75084_0_, 2 + p_75084_1_, 4 + p_75084_1_ * 2))
+-            new StructureVillagePieces.PieceWeight(StructureVillagePieces.Field2.class, 3, MathHelper.getInt(random, 2 + size, 4 + size * 2))
 -        );
 +        List<StructureVillagePieces.PieceWeight> list = Lists.<StructureVillagePieces.PieceWeight>newArrayList();
-+        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.House4Garden.class, 4, MathHelper.func_76136_a(p_75084_0_, 2 + p_75084_1_, 4 + p_75084_1_ * 2)));
-+        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.Church.class, 20, MathHelper.func_76136_a(p_75084_0_, 0 + p_75084_1_, 1 + p_75084_1_)));
-+        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.House1.class, 20, MathHelper.func_76136_a(p_75084_0_, 0 + p_75084_1_, 2 + p_75084_1_)));
-+        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.WoodHut.class, 3, MathHelper.func_76136_a(p_75084_0_, 2 + p_75084_1_, 5 + p_75084_1_ * 3)));
-+        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.Hall.class, 15, MathHelper.func_76136_a(p_75084_0_, 0 + p_75084_1_, 2 + p_75084_1_)));
-+        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.Field1.class, 3, MathHelper.func_76136_a(p_75084_0_, 1 + p_75084_1_, 4 + p_75084_1_)));
-+        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.Field2.class, 3, MathHelper.func_76136_a(p_75084_0_, 2 + p_75084_1_, 4 + p_75084_1_ * 2)));
-         list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.House2.class, 15, MathHelper.func_76136_a(p_75084_0_, 0, 1 + p_75084_1_)));
++        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.House4Garden.class, 4, MathHelper.getInt(random, 2 + size, 4 + size * 2)));
++        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.Church.class, 20, MathHelper.getInt(random, 0 + size, 1 + size)));
++        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.House1.class, 20, MathHelper.getInt(random, 0 + size, 2 + size)));
++        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.WoodHut.class, 3, MathHelper.getInt(random, 2 + size, 5 + size * 3)));
++        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.Hall.class, 15, MathHelper.getInt(random, 0 + size, 2 + size)));
++        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.Field1.class, 3, MathHelper.getInt(random, 1 + size, 4 + size)));
++        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.Field2.class, 3, MathHelper.getInt(random, 2 + size, 4 + size * 2)));
+         list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.House2.class, 15, MathHelper.getInt(random, 0, 1 + size)));
 -        list.add(
--            new StructureVillagePieces.PieceWeight(StructureVillagePieces.House3.class, 8, MathHelper.func_76136_a(p_75084_0_, 0 + p_75084_1_, 3 + p_75084_1_ * 2))
+-            new StructureVillagePieces.PieceWeight(StructureVillagePieces.House3.class, 8, MathHelper.getInt(random, 0 + size, 3 + size * 2))
 -        );
-+        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.House3.class, 8, MathHelper.func_76136_a(p_75084_0_, 0 + p_75084_1_, 3 + p_75084_1_ * 2)));
-+        net.minecraftforge.fml.common.registry.VillagerRegistry.addExtraVillageComponents(list, p_75084_0_, p_75084_1_);
++        list.add(new StructureVillagePieces.PieceWeight(StructureVillagePieces.House3.class, 8, MathHelper.getInt(random, 0 + size, 3 + size * 2)));
++        net.minecraftforge.fml.common.registry.VillagerRegistry.addExtraVillageComponents(list, random, size);
          Iterator<StructureVillagePieces.PieceWeight> iterator = list.iterator();
  
          while (iterator.hasNext())
          {
--            if (iterator.next().field_75087_d == 0)
-+            if ((iterator.next()).field_75087_d == 0)
+-            if (iterator.next().villagePiecesLimit == 0)
++            if ((iterator.next()).villagePiecesLimit == 0)
              {
                  iterator.remove();
              }
@@ -65,9 +65,9 @@
  
          for (StructureVillagePieces.PieceWeight structurevillagepieces$pieceweight : p_75079_0_)
          {
--            if (structurevillagepieces$pieceweight.field_75087_d > 0
--                    && structurevillagepieces$pieceweight.field_75089_c < structurevillagepieces$pieceweight.field_75087_d)
-+            if (structurevillagepieces$pieceweight.field_75087_d > 0 && structurevillagepieces$pieceweight.field_75089_c < structurevillagepieces$pieceweight.field_75087_d)
+-            if (structurevillagepieces$pieceweight.villagePiecesLimit > 0
+-                    && structurevillagepieces$pieceweight.villagePiecesSpawned < structurevillagepieces$pieceweight.villagePiecesLimit)
++            if (structurevillagepieces$pieceweight.villagePiecesLimit > 0 && structurevillagepieces$pieceweight.villagePiecesSpawned < structurevillagepieces$pieceweight.villagePiecesLimit)
              {
                  flag = true;
              }
@@ -75,106 +75,106 @@
          return flag ? i : -1;
      }
  
--    private static StructureVillagePieces.Village func_176065_a(
--            StructureVillagePieces.Start p_176065_0_,
--            StructureVillagePieces.PieceWeight p_176065_1_,
--            List<StructureComponent> p_176065_2_,
--            Random p_176065_3_,
--            int p_176065_4_,
--            int p_176065_5_,
--            int p_176065_6_,
--            EnumFacing p_176065_7_,
--            int p_176065_8_
+-    private static StructureVillagePieces.Village findAndCreateComponentFactory(
+-            StructureVillagePieces.Start start,
+-            StructureVillagePieces.PieceWeight weight,
+-            List<StructureComponent> structureComponents,
+-            Random rand,
+-            int structureMinX,
+-            int structureMinY,
+-            int structureMinZ,
+-            EnumFacing facing,
+-            int componentType
 -        )
-+    private static StructureVillagePieces.Village func_176065_a(StructureVillagePieces.Start p_176065_0_, StructureVillagePieces.PieceWeight p_176065_1_, List<StructureComponent> p_176065_2_, Random p_176065_3_, int p_176065_4_, int p_176065_5_, int p_176065_6_, EnumFacing p_176065_7_, int p_176065_8_)
++    private static StructureVillagePieces.Village findAndCreateComponentFactory(StructureVillagePieces.Start start, StructureVillagePieces.PieceWeight weight, List<StructureComponent> structureComponents, Random rand, int structureMinX, int structureMinY, int structureMinZ, EnumFacing facing, int componentType)
      {
-         Class <? extends StructureVillagePieces.Village > oclass = p_176065_1_.field_75090_a;
+         Class <? extends StructureVillagePieces.Village > oclass = weight.villagePieceClass;
          StructureVillagePieces.Village structurevillagepieces$village = null;
  
          if (oclass == StructureVillagePieces.House4Garden.class)
          {
--            structurevillagepieces$village = StructureVillagePieces.House4Garden.func_175858_a(
--                                                 p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_
+-            structurevillagepieces$village = StructureVillagePieces.House4Garden.createPiece(
+-                                                 start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType
 -                                             );
-+            structurevillagepieces$village = StructureVillagePieces.House4Garden.func_175858_a(p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
++            structurevillagepieces$village = StructureVillagePieces.House4Garden.createPiece(start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType);
          }
          else if (oclass == StructureVillagePieces.Church.class)
          {
--            structurevillagepieces$village = StructureVillagePieces.Church.func_175854_a(
--                                                 p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_
+-            structurevillagepieces$village = StructureVillagePieces.Church.createPiece(
+-                                                 start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType
 -                                             );
-+            structurevillagepieces$village = StructureVillagePieces.Church.func_175854_a(p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
++            structurevillagepieces$village = StructureVillagePieces.Church.createPiece(start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType);
          }
          else if (oclass == StructureVillagePieces.House1.class)
          {
--            structurevillagepieces$village = StructureVillagePieces.House1.func_175850_a(
--                                                 p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_
+-            structurevillagepieces$village = StructureVillagePieces.House1.createPiece(
+-                                                 start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType
 -                                             );
-+            structurevillagepieces$village = StructureVillagePieces.House1.func_175850_a(p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
++            structurevillagepieces$village = StructureVillagePieces.House1.createPiece(start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType);
          }
          else if (oclass == StructureVillagePieces.WoodHut.class)
          {
--            structurevillagepieces$village = StructureVillagePieces.WoodHut.func_175853_a(
--                                                 p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_
+-            structurevillagepieces$village = StructureVillagePieces.WoodHut.createPiece(
+-                                                 start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType
 -                                             );
-+            structurevillagepieces$village = StructureVillagePieces.WoodHut.func_175853_a(p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
++            structurevillagepieces$village = StructureVillagePieces.WoodHut.createPiece(start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType);
          }
          else if (oclass == StructureVillagePieces.Hall.class)
          {
--            structurevillagepieces$village = StructureVillagePieces.Hall.func_175857_a(
--                                                 p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_
+-            structurevillagepieces$village = StructureVillagePieces.Hall.createPiece(
+-                                                 start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType
 -                                             );
-+            structurevillagepieces$village = StructureVillagePieces.Hall.func_175857_a(p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
++            structurevillagepieces$village = StructureVillagePieces.Hall.createPiece(start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType);
          }
          else if (oclass == StructureVillagePieces.Field1.class)
          {
--            structurevillagepieces$village = StructureVillagePieces.Field1.func_175851_a(
--                                                 p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_
+-            structurevillagepieces$village = StructureVillagePieces.Field1.createPiece(
+-                                                 start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType
 -                                             );
-+            structurevillagepieces$village = StructureVillagePieces.Field1.func_175851_a(p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
++            structurevillagepieces$village = StructureVillagePieces.Field1.createPiece(start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType);
          }
          else if (oclass == StructureVillagePieces.Field2.class)
          {
--            structurevillagepieces$village = StructureVillagePieces.Field2.func_175852_a(
--                                                 p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_
+-            structurevillagepieces$village = StructureVillagePieces.Field2.createPiece(
+-                                                 start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType
 -                                             );
-+            structurevillagepieces$village = StructureVillagePieces.Field2.func_175852_a(p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
++            structurevillagepieces$village = StructureVillagePieces.Field2.createPiece(start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType);
          }
          else if (oclass == StructureVillagePieces.House2.class)
          {
--            structurevillagepieces$village = StructureVillagePieces.House2.func_175855_a(
--                                                 p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_
+-            structurevillagepieces$village = StructureVillagePieces.House2.createPiece(
+-                                                 start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType
 -                                             );
-+            structurevillagepieces$village = StructureVillagePieces.House2.func_175855_a(p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
++            structurevillagepieces$village = StructureVillagePieces.House2.createPiece(start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType);
          }
          else if (oclass == StructureVillagePieces.House3.class)
          {
--            structurevillagepieces$village = StructureVillagePieces.House3.func_175849_a(
--                                                 p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_
+-            structurevillagepieces$village = StructureVillagePieces.House3.createPiece(
+-                                                 start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType
 -                                             );
-+            structurevillagepieces$village = StructureVillagePieces.House3.func_175849_a(p_176065_0_, p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
++            structurevillagepieces$village = StructureVillagePieces.House3.createPiece(start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType);
 +        }
 +        else
 +        {
-+            structurevillagepieces$village = net.minecraftforge.fml.common.registry.VillagerRegistry.getVillageComponent(p_176065_1_, p_176065_0_ , p_176065_2_, p_176065_3_, p_176065_4_, p_176065_5_, p_176065_6_, p_176065_7_, p_176065_8_);
++            structurevillagepieces$village = net.minecraftforge.fml.common.registry.VillagerRegistry.getVillageComponent(weight, start , structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType);
          }
  
          return structurevillagepieces$village;
      }
  
--    private static StructureVillagePieces.Village func_176067_c(
--            StructureVillagePieces.Start p_176067_0_,
--            List<StructureComponent> p_176067_1_,
--            Random p_176067_2_,
--            int p_176067_3_,
--            int p_176067_4_,
--            int p_176067_5_,
--            EnumFacing p_176067_6_,
--            int p_176067_7_
+-    private static StructureVillagePieces.Village generateComponent(
+-            StructureVillagePieces.Start start,
+-            List<StructureComponent> structureComponents,
+-            Random rand,
+-            int structureMinX,
+-            int structureMinY,
+-            int structureMinZ,
+-            EnumFacing facing,
+-            int componentType
 -        )
-+    private static StructureVillagePieces.Village func_176067_c(StructureVillagePieces.Start p_176067_0_, List<StructureComponent> p_176067_1_, Random p_176067_2_, int p_176067_3_, int p_176067_4_, int p_176067_5_, EnumFacing p_176067_6_, int p_176067_7_)
++    private static StructureVillagePieces.Village generateComponent(StructureVillagePieces.Start start, List<StructureComponent> structureComponents, Random rand, int structureMinX, int structureMinY, int structureMinZ, EnumFacing facing, int componentType)
      {
-         int i = func_75079_a(p_176067_0_.field_74931_h);
+         int i = updatePieceWeight(start.structureVillageWeightedPieceList);
  
 @@ -215,7 +163,7 @@
  
@@ -182,47 +182,47 @@
              {
 -                j++;
 +                ++j;
-                 int k = p_176067_2_.nextInt(i);
+                 int k = rand.nextInt(i);
  
-                 for (StructureVillagePieces.PieceWeight structurevillagepieces$pieceweight : p_176067_0_.field_74931_h)
+                 for (StructureVillagePieces.PieceWeight structurevillagepieces$pieceweight : start.structureVillageWeightedPieceList)
 @@ -224,19 +172,16 @@
  
                      if (k < 0)
                      {
--                        if (!structurevillagepieces$pieceweight.func_75085_a(p_176067_7_)
--                                || structurevillagepieces$pieceweight == p_176067_0_.field_74926_d && p_176067_0_.field_74931_h.size() > 1)
-+                        if (!structurevillagepieces$pieceweight.func_75085_a(p_176067_7_) || structurevillagepieces$pieceweight == p_176067_0_.field_74926_d && p_176067_0_.field_74931_h.size() > 1)
+-                        if (!structurevillagepieces$pieceweight.canSpawnMoreVillagePiecesOfType(componentType)
+-                                || structurevillagepieces$pieceweight == start.lastPlaced && start.structureVillageWeightedPieceList.size() > 1)
++                        if (!structurevillagepieces$pieceweight.canSpawnMoreVillagePiecesOfType(componentType) || structurevillagepieces$pieceweight == start.lastPlaced && start.structureVillageWeightedPieceList.size() > 1)
                          {
                              break;
                          }
  
--                        StructureVillagePieces.Village structurevillagepieces$village = func_176065_a(
--                                    p_176067_0_, structurevillagepieces$pieceweight, p_176067_1_, p_176067_2_, p_176067_3_, p_176067_4_, p_176067_5_, p_176067_6_, p_176067_7_
+-                        StructureVillagePieces.Village structurevillagepieces$village = findAndCreateComponentFactory(
+-                                    start, structurevillagepieces$pieceweight, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType
 -                                );
-+                        StructureVillagePieces.Village structurevillagepieces$village = func_176065_a(p_176067_0_, structurevillagepieces$pieceweight, p_176067_1_, p_176067_2_, p_176067_3_, p_176067_4_, p_176067_5_, p_176067_6_, p_176067_7_);
++                        StructureVillagePieces.Village structurevillagepieces$village = findAndCreateComponentFactory(start, structurevillagepieces$pieceweight, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType);
  
                          if (structurevillagepieces$village != null)
                          {
--                            structurevillagepieces$pieceweight.field_75089_c++;
-+                            ++structurevillagepieces$pieceweight.field_75089_c;
-                             p_176067_0_.field_74926_d = structurevillagepieces$pieceweight;
+-                            structurevillagepieces$pieceweight.villagePiecesSpawned++;
++                            ++structurevillagepieces$pieceweight.villagePiecesSpawned;
+                             start.lastPlaced = structurevillagepieces$pieceweight;
  
-                             if (!structurevillagepieces$pieceweight.func_75086_a())
+                             if (!structurevillagepieces$pieceweight.canSpawnMoreVillagePieces())
 @@ -250,36 +195,28 @@
                  }
              }
  
--            StructureBoundingBox structureboundingbox = StructureVillagePieces.Torch.func_175856_a(
--                        p_176067_0_, p_176067_1_, p_176067_2_, p_176067_3_, p_176067_4_, p_176067_5_, p_176067_6_
+-            StructureBoundingBox structureboundingbox = StructureVillagePieces.Torch.findPieceBox(
+-                        start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing
 -                    );
 -            return structureboundingbox != null
--                   ? new StructureVillagePieces.Torch(p_176067_0_, p_176067_7_, p_176067_2_, structureboundingbox, p_176067_6_)
+-                   ? new StructureVillagePieces.Torch(start, componentType, rand, structureboundingbox, facing)
 -                   : null;
-+            StructureBoundingBox structureboundingbox = StructureVillagePieces.Torch.func_175856_a(p_176067_0_, p_176067_1_, p_176067_2_, p_176067_3_, p_176067_4_, p_176067_5_, p_176067_6_);
++            StructureBoundingBox structureboundingbox = StructureVillagePieces.Torch.findPieceBox(start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing);
 +
 +            if (structureboundingbox != null)
 +            {
-+                return new StructureVillagePieces.Torch(p_176067_0_, p_176067_7_, p_176067_2_, structureboundingbox, p_176067_6_);
++                return new StructureVillagePieces.Torch(start, componentType, rand, structureboundingbox, facing);
 +            }
 +            else
 +            {
@@ -231,30 +231,30 @@
          }
      }
  
--    private static StructureComponent func_176066_d(
--            StructureVillagePieces.Start p_176066_0_,
--            List<StructureComponent> p_176066_1_,
--            Random p_176066_2_,
--            int p_176066_3_,
--            int p_176066_4_,
--            int p_176066_5_,
--            EnumFacing p_176066_6_,
--            int p_176066_7_
+-    private static StructureComponent generateAndAddComponent(
+-            StructureVillagePieces.Start start,
+-            List<StructureComponent> structureComponents,
+-            Random rand,
+-            int structureMinX,
+-            int structureMinY,
+-            int structureMinZ,
+-            EnumFacing facing,
+-            int componentType
 -        )
-+    private static StructureComponent func_176066_d(StructureVillagePieces.Start p_176066_0_, List<StructureComponent> p_176066_1_, Random p_176066_2_, int p_176066_3_, int p_176066_4_, int p_176066_5_, EnumFacing p_176066_6_, int p_176066_7_)
++    private static StructureComponent generateAndAddComponent(StructureVillagePieces.Start start, List<StructureComponent> structureComponents, Random rand, int structureMinX, int structureMinY, int structureMinZ, EnumFacing facing, int componentType)
      {
-         if (p_176066_7_ > 50)
+         if (componentType > 50)
          {
              return null;
          }
--        else if (Math.abs(p_176066_3_ - p_176066_0_.func_74874_b().field_78897_a) <= 112
--                 && Math.abs(p_176066_5_ - p_176066_0_.func_74874_b().field_78896_c) <= 112)
-+        else if (Math.abs(p_176066_3_ - p_176066_0_.func_74874_b().field_78897_a) <= 112 && Math.abs(p_176066_5_ - p_176066_0_.func_74874_b().field_78896_c) <= 112)
+-        else if (Math.abs(structureMinX - start.getBoundingBox().minX) <= 112
+-                 && Math.abs(structureMinZ - start.getBoundingBox().minZ) <= 112)
++        else if (Math.abs(structureMinX - start.getBoundingBox().minX) <= 112 && Math.abs(structureMinZ - start.getBoundingBox().minZ) <= 112)
          {
--            StructureComponent structurecomponent = func_176067_c(
--                                                        p_176066_0_, p_176066_1_, p_176066_2_, p_176066_3_, p_176066_4_, p_176066_5_, p_176066_6_, p_176066_7_ + 1
+-            StructureComponent structurecomponent = generateComponent(
+-                                                        start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType + 1
 -                                                    );
-+            StructureComponent structurecomponent = func_176067_c(p_176066_0_, p_176066_1_, p_176066_2_, p_176066_3_, p_176066_4_, p_176066_5_, p_176066_6_, p_176066_7_ + 1);
++            StructureComponent structurecomponent = generateComponent(start, structureComponents, rand, structureMinX, structureMinY, structureMinZ, facing, componentType + 1);
  
              if (structurecomponent != null)
              {
@@ -262,78 +262,78 @@
          }
      }
  
--    private static StructureComponent func_176069_e(
--            StructureVillagePieces.Start p_176069_0_,
+-    private static StructureComponent generateAndAddRoadPiece(
+-            StructureVillagePieces.Start start,
 -            List<StructureComponent> p_176069_1_,
--            Random p_176069_2_,
+-            Random rand,
 -            int p_176069_3_,
 -            int p_176069_4_,
 -            int p_176069_5_,
--            EnumFacing p_176069_6_,
+-            EnumFacing facing,
 -            int p_176069_7_
 -        )
-+    private static StructureComponent func_176069_e(StructureVillagePieces.Start p_176069_0_, List<StructureComponent> p_176069_1_, Random p_176069_2_, int p_176069_3_, int p_176069_4_, int p_176069_5_, EnumFacing p_176069_6_, int p_176069_7_)
++    private static StructureComponent generateAndAddRoadPiece(StructureVillagePieces.Start start, List<StructureComponent> p_176069_1_, Random rand, int p_176069_3_, int p_176069_4_, int p_176069_5_, EnumFacing facing, int p_176069_7_)
      {
-         if (p_176069_7_ > 3 + p_176069_0_.field_74928_c)
+         if (p_176069_7_ > 3 + start.terrainType)
          {
              return null;
          }
--        else if (Math.abs(p_176069_3_ - p_176069_0_.func_74874_b().field_78897_a) <= 112
--                 && Math.abs(p_176069_5_ - p_176069_0_.func_74874_b().field_78896_c) <= 112)
-+        else if (Math.abs(p_176069_3_ - p_176069_0_.func_74874_b().field_78897_a) <= 112 && Math.abs(p_176069_5_ - p_176069_0_.func_74874_b().field_78896_c) <= 112)
+-        else if (Math.abs(p_176069_3_ - start.getBoundingBox().minX) <= 112
+-                 && Math.abs(p_176069_5_ - start.getBoundingBox().minZ) <= 112)
++        else if (Math.abs(p_176069_3_ - start.getBoundingBox().minX) <= 112 && Math.abs(p_176069_5_ - start.getBoundingBox().minZ) <= 112)
          {
--            StructureBoundingBox structureboundingbox = StructureVillagePieces.Path.func_175848_a(
--                        p_176069_0_, p_176069_1_, p_176069_2_, p_176069_3_, p_176069_4_, p_176069_5_, p_176069_6_
+-            StructureBoundingBox structureboundingbox = StructureVillagePieces.Path.findPieceBox(
+-                        start, p_176069_1_, rand, p_176069_3_, p_176069_4_, p_176069_5_, facing
 -                    );
-+            StructureBoundingBox structureboundingbox = StructureVillagePieces.Path.func_175848_a(p_176069_0_, p_176069_1_, p_176069_2_, p_176069_3_, p_176069_4_, p_176069_5_, p_176069_6_);
++            StructureBoundingBox structureboundingbox = StructureVillagePieces.Path.findPieceBox(start, p_176069_1_, rand, p_176069_3_, p_176069_4_, p_176069_5_, facing);
  
-             if (structureboundingbox != null && structureboundingbox.field_78895_b > 10)
+             if (structureboundingbox != null && structureboundingbox.minY > 10)
              {
 @@ -351,24 +276,12 @@
-                 this.field_74887_e = p_i45564_4_;
+                 this.boundingBox = p_i45564_4_;
              }
  
--            public static StructureVillagePieces.Church func_175854_a(
--                    StructureVillagePieces.Start p_175854_0_,
+-            public static StructureVillagePieces.Church createPiece(
+-                    StructureVillagePieces.Start start,
 -                    List<StructureComponent> p_175854_1_,
--                    Random p_175854_2_,
+-                    Random rand,
 -                    int p_175854_3_,
 -                    int p_175854_4_,
 -                    int p_175854_5_,
--                    EnumFacing p_175854_6_,
+-                    EnumFacing facing,
 -                    int p_175854_7_
 -                )
-+            public static StructureVillagePieces.Church func_175854_a(StructureVillagePieces.Start p_175854_0_, List<StructureComponent> p_175854_1_, Random p_175854_2_, int p_175854_3_, int p_175854_4_, int p_175854_5_, EnumFacing p_175854_6_, int p_175854_7_)
++            public static StructureVillagePieces.Church createPiece(StructureVillagePieces.Start start, List<StructureComponent> p_175854_1_, Random rand, int p_175854_3_, int p_175854_4_, int p_175854_5_, EnumFacing facing, int p_175854_7_)
              {
-                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175854_3_, p_175854_4_, p_175854_5_, 0, 0, 0, 5, 12, 9, p_175854_6_);
--                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175854_1_, structureboundingbox) == null
--                       ? new StructureVillagePieces.Church(p_175854_0_, p_175854_7_, p_175854_2_, structureboundingbox, p_175854_6_)
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.getComponentToAddBoundingBox(p_175854_3_, p_175854_4_, p_175854_5_, 0, 0, 0, 5, 12, 9, facing);
+-                return canVillageGoDeeper(structureboundingbox) && StructureComponent.findIntersecting(p_175854_1_, structureboundingbox) == null
+-                       ? new StructureVillagePieces.Church(start, p_175854_7_, rand, structureboundingbox, facing)
 -                       : null;
-+                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175854_1_, structureboundingbox) == null ? new StructureVillagePieces.Church(p_175854_0_, p_175854_7_, p_175854_2_, structureboundingbox, p_175854_6_) : null;
++                return canVillageGoDeeper(structureboundingbox) && StructureComponent.findIntersecting(p_175854_1_, structureboundingbox) == null ? new StructureVillagePieces.Church(start, p_175854_7_, rand, structureboundingbox, facing) : null;
              }
  
 -            @Override
-             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             public boolean addComponentParts(World worldIn, Random randomIn, StructureBoundingBox structureBoundingBoxIn)
              {
-                 if (this.field_143015_k < 0)
+                 if (this.averageGroundLvl < 0)
 @@ -435,7 +348,7 @@
-                 this.func_189926_a(p_74875_1_, EnumFacing.NORTH, 2, 4, 5, p_74875_3_);
-                 IBlockState iblockstate4 = Blocks.field_150468_ap.func_176223_P().func_177226_a(BlockLadder.field_176382_a, EnumFacing.WEST);
+                 this.placeTorch(worldIn, EnumFacing.NORTH, 2, 4, 5, structureBoundingBoxIn);
+                 IBlockState iblockstate4 = Blocks.LADDER.getDefaultState().withProperty(BlockLadder.FACING, EnumFacing.WEST);
  
 -                for (int i = 1; i <= 9; i++)
 +                for (int i = 1; i <= 9; ++i)
                  {
-                     this.func_175811_a(p_74875_1_, iblockstate4, 3, i, 3, p_74875_3_);
+                     this.setBlockState(worldIn, iblockstate4, 3, i, 3, structureBoundingBoxIn);
                  }
 @@ -444,8 +357,7 @@
-                 this.func_175811_a(p_74875_1_, Blocks.field_150350_a.func_176223_P(), 2, 2, 0, p_74875_3_);
-                 this.func_189927_a(p_74875_1_, p_74875_3_, p_74875_2_, 2, 1, 0, EnumFacing.NORTH);
+                 this.setBlockState(worldIn, Blocks.AIR.getDefaultState(), 2, 2, 0, structureBoundingBoxIn);
+                 this.createVillageDoor(worldIn, structureBoundingBoxIn, randomIn, 2, 1, 0, EnumFacing.NORTH);
  
--                if (this.func_175807_a(p_74875_1_, 2, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a
--                        && this.func_175807_a(p_74875_1_, 2, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
-+                if (this.func_175807_a(p_74875_1_, 2, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a && this.func_175807_a(p_74875_1_, 2, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
+-                if (this.getBlockStateFromPos(worldIn, 2, 0, -1, structureBoundingBoxIn).getMaterial() == Material.AIR
+-                        && this.getBlockStateFromPos(worldIn, 2, -1, -1, structureBoundingBoxIn).getMaterial() != Material.AIR)
++                if (this.getBlockStateFromPos(worldIn, 2, 0, -1, structureBoundingBoxIn).getMaterial() == Material.AIR && this.getBlockStateFromPos(worldIn, 2, -1, -1, structureBoundingBoxIn).getMaterial() != Material.AIR)
                  {
-                     this.func_175811_a(p_74875_1_, iblockstate1, 2, 0, -1, p_74875_3_);
+                     this.setBlockState(worldIn, iblockstate1, 2, 0, -1, structureBoundingBoxIn);
  
 @@ -455,9 +367,9 @@
                      }
@@ -345,70 +345,70 @@
 -                    for (int j = 0; j < 5; j++)
 +                    for (int j = 0; j < 5; ++j)
                      {
-                         this.func_74871_b(p_74875_1_, j, 12, k, p_74875_3_);
-                         this.func_175808_b(p_74875_1_, iblockstate, j, -1, k, p_74875_3_);
+                         this.clearCurrentPositionBlocksUpwards(worldIn, j, 12, k, structureBoundingBoxIn);
+                         this.replaceAirAndLiquidDownwards(worldIn, iblockstate, j, -1, k, structureBoundingBoxIn);
 @@ -468,7 +380,6 @@
                  return true;
              }
  
 -            @Override
-             protected int func_180779_c(int p_180779_1_, int p_180779_2_)
+             protected int chooseProfession(int villagersSpawnedIn, int currentVillagerProfession)
              {
                  return 2;
 @@ -497,7 +408,6 @@
-                 this.field_82681_h = this.func_151559_a(p_i45570_3_);
+                 this.cropTypeD = this.getRandomCropType(rand);
              }
  
 -            @Override
-             protected void func_143012_a(NBTTagCompound p_143012_1_)
+             protected void writeStructureToNBT(NBTTagCompound tagCompound)
              {
-                 super.func_143012_a(p_143012_1_);
+                 super.writeStructureToNBT(tagCompound);
 @@ -507,7 +417,6 @@
-                 p_143012_1_.func_74768_a("CD", Block.field_149771_c.func_148757_b(this.field_82681_h));
+                 tagCompound.setInteger("CD", Block.REGISTRY.getIDForObject(this.cropTypeD));
              }
  
 -            @Override
-             protected void func_143011_b(NBTTagCompound p_143011_1_, TemplateManager p_143011_2_)
+             protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
              {
-                 super.func_143011_b(p_143011_1_, p_143011_2_);
+                 super.readStructureFromNBT(tagCompound, p_143011_2_);
 @@ -554,24 +463,12 @@
                  }
              }
  
--            public static StructureVillagePieces.Field1 func_175851_a(
--                    StructureVillagePieces.Start p_175851_0_,
+-            public static StructureVillagePieces.Field1 createPiece(
+-                    StructureVillagePieces.Start start,
 -                    List<StructureComponent> p_175851_1_,
--                    Random p_175851_2_,
+-                    Random rand,
 -                    int p_175851_3_,
 -                    int p_175851_4_,
 -                    int p_175851_5_,
--                    EnumFacing p_175851_6_,
+-                    EnumFacing facing,
 -                    int p_175851_7_
 -                )
-+            public static StructureVillagePieces.Field1 func_175851_a(StructureVillagePieces.Start p_175851_0_, List<StructureComponent> p_175851_1_, Random p_175851_2_, int p_175851_3_, int p_175851_4_, int p_175851_5_, EnumFacing p_175851_6_, int p_175851_7_)
++            public static StructureVillagePieces.Field1 createPiece(StructureVillagePieces.Start start, List<StructureComponent> p_175851_1_, Random rand, int p_175851_3_, int p_175851_4_, int p_175851_5_, EnumFacing facing, int p_175851_7_)
              {
-                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175851_3_, p_175851_4_, p_175851_5_, 0, 0, 0, 13, 4, 9, p_175851_6_);
--                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175851_1_, structureboundingbox) == null
--                       ? new StructureVillagePieces.Field1(p_175851_0_, p_175851_7_, p_175851_2_, structureboundingbox, p_175851_6_)
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.getComponentToAddBoundingBox(p_175851_3_, p_175851_4_, p_175851_5_, 0, 0, 0, 13, 4, 9, facing);
+-                return canVillageGoDeeper(structureboundingbox) && StructureComponent.findIntersecting(p_175851_1_, structureboundingbox) == null
+-                       ? new StructureVillagePieces.Field1(start, p_175851_7_, rand, structureboundingbox, facing)
 -                       : null;
-+                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175851_1_, structureboundingbox) == null ? new StructureVillagePieces.Field1(p_175851_0_, p_175851_7_, p_175851_2_, structureboundingbox, p_175851_6_) : null;
++                return canVillageGoDeeper(structureboundingbox) && StructureComponent.findIntersecting(p_175851_1_, structureboundingbox) == null ? new StructureVillagePieces.Field1(start, p_175851_7_, rand, structureboundingbox, facing) : null;
              }
  
 -            @Override
-             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             public boolean addComponentParts(World worldIn, Random randomIn, StructureBoundingBox structureBoundingBoxIn)
              {
-                 if (this.field_143015_k < 0)
+                 if (this.averageGroundLvl < 0)
 @@ -600,7 +497,7 @@
-                 this.func_175804_a(p_74875_1_, p_74875_3_, 3, 0, 1, 3, 0, 7, Blocks.field_150355_j.func_176223_P(), Blocks.field_150355_j.func_176223_P(), false);
-                 this.func_175804_a(p_74875_1_, p_74875_3_, 9, 0, 1, 9, 0, 7, Blocks.field_150355_j.func_176223_P(), Blocks.field_150355_j.func_176223_P(), false);
+                 this.fillWithBlocks(worldIn, structureBoundingBoxIn, 3, 0, 1, 3, 0, 7, Blocks.WATER.getDefaultState(), Blocks.WATER.getDefaultState(), false);
+                 this.fillWithBlocks(worldIn, structureBoundingBoxIn, 9, 0, 1, 9, 0, 7, Blocks.WATER.getDefaultState(), Blocks.WATER.getDefaultState(), false);
  
 -                for (int i = 1; i <= 7; i++)
 +                for (int i = 1; i <= 7; ++i)
                  {
-                     int j = ((BlockCrops)this.field_82679_b).func_185526_g();
+                     int j = ((BlockCrops)this.cropTypeA).getMaxAge();
                      int k = j / 3;
 @@ -620,9 +517,9 @@
-                     this.func_175811_a(p_74875_1_, this.field_82681_h.func_176203_a(MathHelper.func_76136_a(p_74875_2_, i2, l1)), 11, 1, i, p_74875_3_);
+                     this.setBlockState(worldIn, this.cropTypeD.getStateFromMeta(MathHelper.getInt(randomIn, i2, l1)), 11, 1, i, structureBoundingBoxIn);
                  }
  
 -                for (int j2 = 0; j2 < 9; j2++)
@@ -417,62 +417,62 @@
 -                    for (int k2 = 0; k2 < 13; k2++)
 +                    for (int k2 = 0; k2 < 13; ++k2)
                      {
-                         this.func_74871_b(p_74875_1_, k2, 4, j2, p_74875_3_);
-                         this.func_175808_b(p_74875_1_, Blocks.field_150346_d.func_176223_P(), k2, -1, j2, p_74875_3_);
+                         this.clearCurrentPositionBlocksUpwards(worldIn, k2, 4, j2, structureBoundingBoxIn);
+                         this.replaceAirAndLiquidDownwards(worldIn, Blocks.DIRT.getDefaultState(), k2, -1, j2, structureBoundingBoxIn);
 @@ -651,7 +548,6 @@
-                 this.field_82676_c = this.func_151560_a(p_i45569_3_);
+                 this.cropTypeB = this.getRandomCropType(rand);
              }
  
 -            @Override
-             protected void func_143012_a(NBTTagCompound p_143012_1_)
+             protected void writeStructureToNBT(NBTTagCompound tagCompound)
              {
-                 super.func_143012_a(p_143012_1_);
+                 super.writeStructureToNBT(tagCompound);
 @@ -659,7 +555,6 @@
-                 p_143012_1_.func_74768_a("CB", Block.field_149771_c.func_148757_b(this.field_82676_c));
+                 tagCompound.setInteger("CB", Block.REGISTRY.getIDForObject(this.cropTypeB));
              }
  
 -            @Override
-             protected void func_143011_b(NBTTagCompound p_143011_1_, TemplateManager p_143011_2_)
+             protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
              {
-                 super.func_143011_b(p_143011_1_, p_143011_2_);
+                 super.readStructureFromNBT(tagCompound, p_143011_2_);
 @@ -684,24 +579,12 @@
                  }
              }
  
--            public static StructureVillagePieces.Field2 func_175852_a(
--                    StructureVillagePieces.Start p_175852_0_,
+-            public static StructureVillagePieces.Field2 createPiece(
+-                    StructureVillagePieces.Start start,
 -                    List<StructureComponent> p_175852_1_,
--                    Random p_175852_2_,
+-                    Random rand,
 -                    int p_175852_3_,
 -                    int p_175852_4_,
 -                    int p_175852_5_,
--                    EnumFacing p_175852_6_,
+-                    EnumFacing facing,
 -                    int p_175852_7_
 -                )
-+            public static StructureVillagePieces.Field2 func_175852_a(StructureVillagePieces.Start p_175852_0_, List<StructureComponent> p_175852_1_, Random p_175852_2_, int p_175852_3_, int p_175852_4_, int p_175852_5_, EnumFacing p_175852_6_, int p_175852_7_)
++            public static StructureVillagePieces.Field2 createPiece(StructureVillagePieces.Start start, List<StructureComponent> p_175852_1_, Random rand, int p_175852_3_, int p_175852_4_, int p_175852_5_, EnumFacing facing, int p_175852_7_)
              {
-                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175852_3_, p_175852_4_, p_175852_5_, 0, 0, 0, 7, 4, 9, p_175852_6_);
--                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175852_1_, structureboundingbox) == null
--                       ? new StructureVillagePieces.Field2(p_175852_0_, p_175852_7_, p_175852_2_, structureboundingbox, p_175852_6_)
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.getComponentToAddBoundingBox(p_175852_3_, p_175852_4_, p_175852_5_, 0, 0, 0, 7, 4, 9, facing);
+-                return canVillageGoDeeper(structureboundingbox) && StructureComponent.findIntersecting(p_175852_1_, structureboundingbox) == null
+-                       ? new StructureVillagePieces.Field2(start, p_175852_7_, rand, structureboundingbox, facing)
 -                       : null;
-+                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175852_1_, structureboundingbox) == null ? new StructureVillagePieces.Field2(p_175852_0_, p_175852_7_, p_175852_2_, structureboundingbox, p_175852_6_) : null;
++                return canVillageGoDeeper(structureboundingbox) && StructureComponent.findIntersecting(p_175852_1_, structureboundingbox) == null ? new StructureVillagePieces.Field2(start, p_175852_7_, rand, structureboundingbox, facing) : null;
              }
  
 -            @Override
-             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             public boolean addComponentParts(World worldIn, Random randomIn, StructureBoundingBox structureBoundingBoxIn)
              {
-                 if (this.field_143015_k < 0)
+                 if (this.averageGroundLvl < 0)
 @@ -726,7 +609,7 @@
-                 this.func_175804_a(p_74875_1_, p_74875_3_, 1, 0, 8, 5, 0, 8, iblockstate, iblockstate, false);
-                 this.func_175804_a(p_74875_1_, p_74875_3_, 3, 0, 1, 3, 0, 7, Blocks.field_150355_j.func_176223_P(), Blocks.field_150355_j.func_176223_P(), false);
+                 this.fillWithBlocks(worldIn, structureBoundingBoxIn, 1, 0, 8, 5, 0, 8, iblockstate, iblockstate, false);
+                 this.fillWithBlocks(worldIn, structureBoundingBoxIn, 3, 0, 1, 3, 0, 7, Blocks.WATER.getDefaultState(), Blocks.WATER.getDefaultState(), false);
  
 -                for (int i = 1; i <= 7; i++)
 +                for (int i = 1; i <= 7; ++i)
                  {
-                     int j = ((BlockCrops)this.field_82675_b).func_185526_g();
+                     int j = ((BlockCrops)this.cropTypeA).getMaxAge();
                      int k = j / 3;
 @@ -738,9 +621,9 @@
-                     this.func_175811_a(p_74875_1_, this.field_82676_c.func_176203_a(MathHelper.func_76136_a(p_74875_2_, i1, l)), 5, 1, i, p_74875_3_);
+                     this.setBlockState(worldIn, this.cropTypeB.getStateFromMeta(MathHelper.getInt(randomIn, i1, l)), 5, 1, i, structureBoundingBoxIn);
                  }
  
 -                for (int j1 = 0; j1 < 9; j1++)
@@ -481,35 +481,35 @@
 -                    for (int k1 = 0; k1 < 7; k1++)
 +                    for (int k1 = 0; k1 < 7; ++k1)
                      {
-                         this.func_74871_b(p_74875_1_, k1, 4, j1, p_74875_3_);
-                         this.func_175808_b(p_74875_1_, Blocks.field_150346_d.func_176223_P(), k1, -1, j1, p_74875_3_);
+                         this.clearCurrentPositionBlocksUpwards(worldIn, k1, 4, j1, structureBoundingBoxIn);
+                         this.replaceAirAndLiquidDownwards(worldIn, Blocks.DIRT.getDefaultState(), k1, -1, j1, structureBoundingBoxIn);
 @@ -764,24 +647,12 @@
-                 this.field_74887_e = p_i45567_4_;
+                 this.boundingBox = p_i45567_4_;
              }
  
--            public static StructureVillagePieces.Hall func_175857_a(
--                    StructureVillagePieces.Start p_175857_0_,
+-            public static StructureVillagePieces.Hall createPiece(
+-                    StructureVillagePieces.Start start,
 -                    List<StructureComponent> p_175857_1_,
--                    Random p_175857_2_,
+-                    Random rand,
 -                    int p_175857_3_,
 -                    int p_175857_4_,
 -                    int p_175857_5_,
--                    EnumFacing p_175857_6_,
+-                    EnumFacing facing,
 -                    int p_175857_7_
 -                )
-+            public static StructureVillagePieces.Hall func_175857_a(StructureVillagePieces.Start p_175857_0_, List<StructureComponent> p_175857_1_, Random p_175857_2_, int p_175857_3_, int p_175857_4_, int p_175857_5_, EnumFacing p_175857_6_, int p_175857_7_)
++            public static StructureVillagePieces.Hall createPiece(StructureVillagePieces.Start start, List<StructureComponent> p_175857_1_, Random rand, int p_175857_3_, int p_175857_4_, int p_175857_5_, EnumFacing facing, int p_175857_7_)
              {
-                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175857_3_, p_175857_4_, p_175857_5_, 0, 0, 0, 9, 7, 11, p_175857_6_);
--                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175857_1_, structureboundingbox) == null
--                       ? new StructureVillagePieces.Hall(p_175857_0_, p_175857_7_, p_175857_2_, structureboundingbox, p_175857_6_)
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.getComponentToAddBoundingBox(p_175857_3_, p_175857_4_, p_175857_5_, 0, 0, 0, 9, 7, 11, facing);
+-                return canVillageGoDeeper(structureboundingbox) && StructureComponent.findIntersecting(p_175857_1_, structureboundingbox) == null
+-                       ? new StructureVillagePieces.Hall(start, p_175857_7_, rand, structureboundingbox, facing)
 -                       : null;
-+                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175857_1_, structureboundingbox) == null ? new StructureVillagePieces.Hall(p_175857_0_, p_175857_7_, p_175857_2_, structureboundingbox, p_175857_6_) : null;
++                return canVillageGoDeeper(structureboundingbox) && StructureComponent.findIntersecting(p_175857_1_, structureboundingbox) == null ? new StructureVillagePieces.Hall(start, p_175857_7_, rand, structureboundingbox, facing) : null;
              }
  
 -            @Override
-             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             public boolean addComponentParts(World worldIn, Random randomIn, StructureBoundingBox structureBoundingBoxIn)
              {
-                 if (this.field_143015_k < 0)
+                 if (this.averageGroundLvl < 0)
 @@ -827,9 +698,9 @@
                  IBlockState iblockstate7 = iblockstate1;
                  IBlockState iblockstate8 = iblockstate2;
@@ -520,21 +520,21 @@
 -                    for (int j = 0; j <= 8; j++)
 +                    for (int j = 0; j <= 8; ++j)
                      {
-                         this.func_175811_a(p_74875_1_, iblockstate7, j, 4 + i, i, p_74875_3_);
-                         this.func_175811_a(p_74875_1_, iblockstate8, j, 4 + i, 5 - i, p_74875_3_);
+                         this.setBlockState(worldIn, iblockstate7, j, 4 + i, i, structureBoundingBoxIn);
+                         this.setBlockState(worldIn, iblockstate8, j, 4 + i, 5 - i, structureBoundingBoxIn);
 @@ -861,8 +732,7 @@
-                 this.func_189926_a(p_74875_1_, EnumFacing.NORTH, 2, 3, 1, p_74875_3_);
-                 this.func_189927_a(p_74875_1_, p_74875_3_, p_74875_2_, 2, 1, 0, EnumFacing.NORTH);
+                 this.placeTorch(worldIn, EnumFacing.NORTH, 2, 3, 1, structureBoundingBoxIn);
+                 this.createVillageDoor(worldIn, structureBoundingBoxIn, randomIn, 2, 1, 0, EnumFacing.NORTH);
  
--                if (this.func_175807_a(p_74875_1_, 2, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a
--                        && this.func_175807_a(p_74875_1_, 2, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
-+                if (this.func_175807_a(p_74875_1_, 2, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a && this.func_175807_a(p_74875_1_, 2, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
+-                if (this.getBlockStateFromPos(worldIn, 2, 0, -1, structureBoundingBoxIn).getMaterial() == Material.AIR
+-                        && this.getBlockStateFromPos(worldIn, 2, -1, -1, structureBoundingBoxIn).getMaterial() != Material.AIR)
++                if (this.getBlockStateFromPos(worldIn, 2, 0, -1, structureBoundingBoxIn).getMaterial() == Material.AIR && this.getBlockStateFromPos(worldIn, 2, -1, -1, structureBoundingBoxIn).getMaterial() != Material.AIR)
                  {
-                     this.func_175811_a(p_74875_1_, iblockstate7, 2, 0, -1, p_74875_3_);
+                     this.setBlockState(worldIn, iblockstate7, 2, 0, -1, structureBoundingBoxIn);
  
 @@ -877,9 +747,9 @@
-                 this.func_189926_a(p_74875_1_, EnumFacing.SOUTH, 6, 3, 4, p_74875_3_);
-                 this.func_189927_a(p_74875_1_, p_74875_3_, p_74875_2_, 6, 1, 5, EnumFacing.SOUTH);
+                 this.placeTorch(worldIn, EnumFacing.SOUTH, 6, 3, 4, structureBoundingBoxIn);
+                 this.createVillageDoor(worldIn, structureBoundingBoxIn, randomIn, 6, 1, 5, EnumFacing.SOUTH);
  
 -                for (int k = 0; k < 5; k++)
 +                for (int k = 0; k < 5; ++k)
@@ -542,46 +542,46 @@
 -                    for (int l = 0; l < 9; l++)
 +                    for (int l = 0; l < 9; ++l)
                      {
-                         this.func_74871_b(p_74875_1_, l, 7, k, p_74875_3_);
-                         this.func_175808_b(p_74875_1_, iblockstate, l, -1, k, p_74875_3_);
+                         this.clearCurrentPositionBlocksUpwards(worldIn, l, 7, k, structureBoundingBoxIn);
+                         this.replaceAirAndLiquidDownwards(worldIn, iblockstate, l, -1, k, structureBoundingBoxIn);
 @@ -890,7 +760,6 @@
                  return true;
              }
  
 -            @Override
-             protected int func_180779_c(int p_180779_1_, int p_180779_2_)
+             protected int chooseProfession(int villagersSpawnedIn, int currentVillagerProfession)
              {
-                 return p_180779_1_ == 0 ? 4 : super.func_180779_c(p_180779_1_, p_180779_2_);
+                 return villagersSpawnedIn == 0 ? 4 : super.chooseProfession(villagersSpawnedIn, currentVillagerProfession);
 @@ -910,24 +779,12 @@
-                 this.field_74887_e = p_i45571_4_;
+                 this.boundingBox = p_i45571_4_;
              }
  
--            public static StructureVillagePieces.House1 func_175850_a(
--                    StructureVillagePieces.Start p_175850_0_,
+-            public static StructureVillagePieces.House1 createPiece(
+-                    StructureVillagePieces.Start start,
 -                    List<StructureComponent> p_175850_1_,
--                    Random p_175850_2_,
+-                    Random rand,
 -                    int p_175850_3_,
 -                    int p_175850_4_,
 -                    int p_175850_5_,
--                    EnumFacing p_175850_6_,
+-                    EnumFacing facing,
 -                    int p_175850_7_
 -                )
-+            public static StructureVillagePieces.House1 func_175850_a(StructureVillagePieces.Start p_175850_0_, List<StructureComponent> p_175850_1_, Random p_175850_2_, int p_175850_3_, int p_175850_4_, int p_175850_5_, EnumFacing p_175850_6_, int p_175850_7_)
++            public static StructureVillagePieces.House1 createPiece(StructureVillagePieces.Start start, List<StructureComponent> p_175850_1_, Random rand, int p_175850_3_, int p_175850_4_, int p_175850_5_, EnumFacing facing, int p_175850_7_)
              {
-                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175850_3_, p_175850_4_, p_175850_5_, 0, 0, 0, 9, 9, 6, p_175850_6_);
--                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175850_1_, structureboundingbox) == null
--                       ? new StructureVillagePieces.House1(p_175850_0_, p_175850_7_, p_175850_2_, structureboundingbox, p_175850_6_)
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.getComponentToAddBoundingBox(p_175850_3_, p_175850_4_, p_175850_5_, 0, 0, 0, 9, 9, 6, facing);
+-                return canVillageGoDeeper(structureboundingbox) && StructureComponent.findIntersecting(p_175850_1_, structureboundingbox) == null
+-                       ? new StructureVillagePieces.House1(start, p_175850_7_, rand, structureboundingbox, facing)
 -                       : null;
-+                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175850_1_, structureboundingbox) == null ? new StructureVillagePieces.House1(p_175850_0_, p_175850_7_, p_175850_2_, structureboundingbox, p_175850_6_) : null;
++                return canVillageGoDeeper(structureboundingbox) && StructureComponent.findIntersecting(p_175850_1_, structureboundingbox) == null ? new StructureVillagePieces.House1(start, p_175850_7_, rand, structureboundingbox, facing) : null;
              }
  
 -            @Override
-             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             public boolean addComponentParts(World worldIn, Random randomIn, StructureBoundingBox structureBoundingBoxIn)
              {
-                 if (this.field_143015_k < 0)
+                 if (this.averageGroundLvl < 0)
 @@ -955,9 +812,9 @@
-                 this.func_175804_a(p_74875_1_, p_74875_3_, 0, 6, 1, 8, 6, 4, iblockstate, iblockstate, false);
-                 this.func_175804_a(p_74875_1_, p_74875_3_, 0, 7, 2, 8, 7, 3, iblockstate, iblockstate, false);
+                 this.fillWithBlocks(worldIn, structureBoundingBoxIn, 0, 6, 1, 8, 6, 4, iblockstate, iblockstate, false);
+                 this.fillWithBlocks(worldIn, structureBoundingBoxIn, 0, 7, 2, 8, 7, 3, iblockstate, iblockstate, false);
  
 -                for (int i = -1; i <= 2; i++)
 +                for (int i = -1; i <= 2; ++i)
@@ -589,17 +589,17 @@
 -                    for (int j = 0; j <= 8; j++)
 +                    for (int j = 0; j <= 8; ++j)
                      {
-                         this.func_175811_a(p_74875_1_, iblockstate1, j, 6 + i, i, p_74875_3_);
-                         this.func_175811_a(p_74875_1_, iblockstate2, j, 6 + i, 5 - i, p_74875_3_);
+                         this.setBlockState(worldIn, iblockstate1, j, 6 + i, i, structureBoundingBoxIn);
+                         this.setBlockState(worldIn, iblockstate2, j, 6 + i, 5 - i, structureBoundingBoxIn);
 @@ -1012,8 +869,7 @@
-                 this.func_175811_a(p_74875_1_, Blocks.field_150350_a.func_176223_P(), 1, 2, 0, p_74875_3_);
-                 this.func_189927_a(p_74875_1_, p_74875_3_, p_74875_2_, 1, 1, 0, EnumFacing.NORTH);
+                 this.setBlockState(worldIn, Blocks.AIR.getDefaultState(), 1, 2, 0, structureBoundingBoxIn);
+                 this.createVillageDoor(worldIn, structureBoundingBoxIn, randomIn, 1, 1, 0, EnumFacing.NORTH);
  
--                if (this.func_175807_a(p_74875_1_, 1, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a
--                        && this.func_175807_a(p_74875_1_, 1, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
-+                if (this.func_175807_a(p_74875_1_, 1, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a && this.func_175807_a(p_74875_1_, 1, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
+-                if (this.getBlockStateFromPos(worldIn, 1, 0, -1, structureBoundingBoxIn).getMaterial() == Material.AIR
+-                        && this.getBlockStateFromPos(worldIn, 1, -1, -1, structureBoundingBoxIn).getMaterial() != Material.AIR)
++                if (this.getBlockStateFromPos(worldIn, 1, 0, -1, structureBoundingBoxIn).getMaterial() == Material.AIR && this.getBlockStateFromPos(worldIn, 1, -1, -1, structureBoundingBoxIn).getMaterial() != Material.AIR)
                  {
-                     this.func_175811_a(p_74875_1_, iblockstate5, 1, 0, -1, p_74875_3_);
+                     this.setBlockState(worldIn, iblockstate5, 1, 0, -1, structureBoundingBoxIn);
  
 @@ -1023,9 +879,9 @@
                      }
@@ -611,69 +611,69 @@
 -                    for (int k = 0; k < 9; k++)
 +                    for (int k = 0; k < 9; ++k)
                      {
-                         this.func_74871_b(p_74875_1_, k, 9, l, p_74875_3_);
-                         this.func_175808_b(p_74875_1_, iblockstate, k, -1, l, p_74875_3_);
+                         this.clearCurrentPositionBlocksUpwards(worldIn, k, 9, l, structureBoundingBoxIn);
+                         this.replaceAirAndLiquidDownwards(worldIn, iblockstate, k, -1, l, structureBoundingBoxIn);
 @@ -1036,7 +892,6 @@
                  return true;
              }
  
 -            @Override
-             protected int func_180779_c(int p_180779_1_, int p_180779_2_)
+             protected int chooseProfession(int villagersSpawnedIn, int currentVillagerProfession)
              {
                  return 1;
 @@ -1058,38 +913,24 @@
-                 this.field_74887_e = p_i45563_4_;
+                 this.boundingBox = p_i45563_4_;
              }
  
--            public static StructureVillagePieces.House2 func_175855_a(
--                    StructureVillagePieces.Start p_175855_0_,
+-            public static StructureVillagePieces.House2 createPiece(
+-                    StructureVillagePieces.Start start,
 -                    List<StructureComponent> p_175855_1_,
--                    Random p_175855_2_,
+-                    Random rand,
 -                    int p_175855_3_,
 -                    int p_175855_4_,
 -                    int p_175855_5_,
--                    EnumFacing p_175855_6_,
+-                    EnumFacing facing,
 -                    int p_175855_7_
 -                )
-+            public static StructureVillagePieces.House2 func_175855_a(StructureVillagePieces.Start p_175855_0_, List<StructureComponent> p_175855_1_, Random p_175855_2_, int p_175855_3_, int p_175855_4_, int p_175855_5_, EnumFacing p_175855_6_, int p_175855_7_)
++            public static StructureVillagePieces.House2 createPiece(StructureVillagePieces.Start start, List<StructureComponent> p_175855_1_, Random rand, int p_175855_3_, int p_175855_4_, int p_175855_5_, EnumFacing facing, int p_175855_7_)
              {
-                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175855_3_, p_175855_4_, p_175855_5_, 0, 0, 0, 10, 6, 7, p_175855_6_);
--                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175855_1_, structureboundingbox) == null
--                       ? new StructureVillagePieces.House2(p_175855_0_, p_175855_7_, p_175855_2_, structureboundingbox, p_175855_6_)
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.getComponentToAddBoundingBox(p_175855_3_, p_175855_4_, p_175855_5_, 0, 0, 0, 10, 6, 7, facing);
+-                return canVillageGoDeeper(structureboundingbox) && StructureComponent.findIntersecting(p_175855_1_, structureboundingbox) == null
+-                       ? new StructureVillagePieces.House2(start, p_175855_7_, rand, structureboundingbox, facing)
 -                       : null;
-+                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175855_1_, structureboundingbox) == null ? new StructureVillagePieces.House2(p_175855_0_, p_175855_7_, p_175855_2_, structureboundingbox, p_175855_6_) : null;
++                return canVillageGoDeeper(structureboundingbox) && StructureComponent.findIntersecting(p_175855_1_, structureboundingbox) == null ? new StructureVillagePieces.House2(start, p_175855_7_, rand, structureboundingbox, facing) : null;
              }
  
 -            @Override
-             protected void func_143012_a(NBTTagCompound p_143012_1_)
+             protected void writeStructureToNBT(NBTTagCompound tagCompound)
              {
-                 super.func_143012_a(p_143012_1_);
-                 p_143012_1_.func_74757_a("Chest", this.field_74917_c);
+                 super.writeStructureToNBT(tagCompound);
+                 tagCompound.setBoolean("Chest", this.hasMadeChest);
              }
  
 -            @Override
-             protected void func_143011_b(NBTTagCompound p_143011_1_, TemplateManager p_143011_2_)
+             protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
              {
-                 super.func_143011_b(p_143011_1_, p_143011_2_);
-                 this.field_74917_c = p_143011_1_.func_74767_n("Chest");
+                 super.readStructureFromNBT(tagCompound, p_143011_2_);
+                 this.hasMadeChest = tagCompound.getBoolean("Chest");
              }
  
 -            @Override
-             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             public boolean addComponentParts(World worldIn, Random randomIn, StructureBoundingBox structureBoundingBoxIn)
              {
-                 if (this.field_143015_k < 0)
+                 if (this.averageGroundLvl < 0)
 @@ -1153,10 +994,9 @@
-                     this.func_186167_a(p_74875_1_, p_74875_3_, p_74875_2_, 5, 1, 5, LootTableList.field_186423_e);
+                     this.generateChest(worldIn, structureBoundingBoxIn, randomIn, 5, 1, 5, LootTableList.CHESTS_VILLAGE_BLACKSMITH);
                  }
  
 -                for (int i = 6; i <= 8; i++)
 +                for (int i = 6; i <= 8; ++i)
                  {
--                    if (this.func_175807_a(p_74875_1_, i, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a
--                            && this.func_175807_a(p_74875_1_, i, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
-+                    if (this.func_175807_a(p_74875_1_, i, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a && this.func_175807_a(p_74875_1_, i, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
+-                    if (this.getBlockStateFromPos(worldIn, i, 0, -1, structureBoundingBoxIn).getMaterial() == Material.AIR
+-                            && this.getBlockStateFromPos(worldIn, i, -1, -1, structureBoundingBoxIn).getMaterial() != Material.AIR)
++                    if (this.getBlockStateFromPos(worldIn, i, 0, -1, structureBoundingBoxIn).getMaterial() == Material.AIR && this.getBlockStateFromPos(worldIn, i, -1, -1, structureBoundingBoxIn).getMaterial() != Material.AIR)
                      {
-                         this.func_175811_a(p_74875_1_, iblockstate4, i, 0, -1, p_74875_3_);
+                         this.setBlockState(worldIn, iblockstate4, i, 0, -1, structureBoundingBoxIn);
  
 @@ -1167,9 +1007,9 @@
                      }
@@ -685,43 +685,43 @@
 -                    for (int j = 0; j < 10; j++)
 +                    for (int j = 0; j < 10; ++j)
                      {
-                         this.func_74871_b(p_74875_1_, j, 6, k, p_74875_3_);
-                         this.func_175808_b(p_74875_1_, iblockstate, j, -1, k, p_74875_3_);
+                         this.clearCurrentPositionBlocksUpwards(worldIn, j, 6, k, structureBoundingBoxIn);
+                         this.replaceAirAndLiquidDownwards(worldIn, iblockstate, j, -1, k, structureBoundingBoxIn);
 @@ -1180,7 +1020,6 @@
                  return true;
              }
  
 -            @Override
-             protected int func_180779_c(int p_180779_1_, int p_180779_2_)
+             protected int chooseProfession(int villagersSpawnedIn, int currentVillagerProfession)
              {
                  return 3;
 @@ -1200,24 +1039,12 @@
-                 this.field_74887_e = p_i45561_4_;
+                 this.boundingBox = p_i45561_4_;
              }
  
--            public static StructureVillagePieces.House3 func_175849_a(
--                    StructureVillagePieces.Start p_175849_0_,
+-            public static StructureVillagePieces.House3 createPiece(
+-                    StructureVillagePieces.Start start,
 -                    List<StructureComponent> p_175849_1_,
--                    Random p_175849_2_,
+-                    Random rand,
 -                    int p_175849_3_,
 -                    int p_175849_4_,
 -                    int p_175849_5_,
--                    EnumFacing p_175849_6_,
+-                    EnumFacing facing,
 -                    int p_175849_7_
 -                )
-+            public static StructureVillagePieces.House3 func_175849_a(StructureVillagePieces.Start p_175849_0_, List<StructureComponent> p_175849_1_, Random p_175849_2_, int p_175849_3_, int p_175849_4_, int p_175849_5_, EnumFacing p_175849_6_, int p_175849_7_)
++            public static StructureVillagePieces.House3 createPiece(StructureVillagePieces.Start start, List<StructureComponent> p_175849_1_, Random rand, int p_175849_3_, int p_175849_4_, int p_175849_5_, EnumFacing facing, int p_175849_7_)
              {
-                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175849_3_, p_175849_4_, p_175849_5_, 0, 0, 0, 9, 7, 12, p_175849_6_);
--                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175849_1_, structureboundingbox) == null
--                       ? new StructureVillagePieces.House3(p_175849_0_, p_175849_7_, p_175849_2_, structureboundingbox, p_175849_6_)
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.getComponentToAddBoundingBox(p_175849_3_, p_175849_4_, p_175849_5_, 0, 0, 0, 9, 7, 12, facing);
+-                return canVillageGoDeeper(structureboundingbox) && StructureComponent.findIntersecting(p_175849_1_, structureboundingbox) == null
+-                       ? new StructureVillagePieces.House3(start, p_175849_7_, rand, structureboundingbox, facing)
 -                       : null;
-+                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175849_1_, structureboundingbox) == null ? new StructureVillagePieces.House3(p_175849_0_, p_175849_7_, p_175849_2_, structureboundingbox, p_175849_6_) : null;
++                return canVillageGoDeeper(structureboundingbox) && StructureComponent.findIntersecting(p_175849_1_, structureboundingbox) == null ? new StructureVillagePieces.House3(start, p_175849_7_, rand, structureboundingbox, facing) : null;
              }
  
 -            @Override
-             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             public boolean addComponentParts(World worldIn, Random randomIn, StructureBoundingBox structureBoundingBoxIn)
              {
-                 if (this.field_143015_k < 0)
+                 if (this.averageGroundLvl < 0)
 @@ -1264,9 +1091,9 @@
                  IBlockState iblockstate9 = iblockstate4;
                  IBlockState iblockstate10 = iblockstate3;
@@ -732,25 +732,25 @@
 -                    for (int j = 0; j <= 8; j++)
 +                    for (int j = 0; j <= 8; ++j)
                      {
-                         this.func_175811_a(p_74875_1_, iblockstate7, j, 4 + i, i, p_74875_3_);
+                         this.setBlockState(worldIn, iblockstate7, j, 4 + i, i, structureBoundingBoxIn);
  
 @@ -1283,11 +1110,11 @@
-                 this.func_175804_a(p_74875_1_, p_74875_3_, 6, 5, 4, 6, 5, 10, iblockstate5, iblockstate5, false);
-                 this.func_175804_a(p_74875_1_, p_74875_3_, 5, 6, 3, 5, 6, 10, iblockstate5, iblockstate5, false);
+                 this.fillWithBlocks(worldIn, structureBoundingBoxIn, 6, 5, 4, 6, 5, 10, iblockstate5, iblockstate5, false);
+                 this.fillWithBlocks(worldIn, structureBoundingBoxIn, 5, 6, 3, 5, 6, 10, iblockstate5, iblockstate5, false);
  
 -                for (int k = 4; k >= 1; k--)
 +                for (int k = 4; k >= 1; --k)
                  {
-                     this.func_175811_a(p_74875_1_, iblockstate5, k, 2 + k, 7 - k, p_74875_3_);
+                     this.setBlockState(worldIn, iblockstate5, k, 2 + k, 7 - k, structureBoundingBoxIn);
  
 -                    for (int k1 = 8 - k; k1 <= 10; k1++)
 +                    for (int k1 = 8 - k; k1 <= 10; ++k1)
                      {
-                         this.func_175811_a(p_74875_1_, iblockstate10, k, 2 + k, k1, p_74875_3_);
+                         this.setBlockState(worldIn, iblockstate10, k, 2 + k, k1, structureBoundingBoxIn);
                      }
 @@ -1297,9 +1124,9 @@
-                 this.func_175811_a(p_74875_1_, iblockstate5, 7, 5, 4, p_74875_3_);
-                 this.func_175811_a(p_74875_1_, iblockstate4, 6, 6, 4, p_74875_3_);
+                 this.setBlockState(worldIn, iblockstate5, 7, 5, 4, structureBoundingBoxIn);
+                 this.setBlockState(worldIn, iblockstate4, 6, 6, 4, structureBoundingBoxIn);
  
 -                for (int l = 6; l <= 8; l++)
 +                for (int l = 6; l <= 8; ++l)
@@ -758,17 +758,17 @@
 -                    for (int l1 = 5; l1 <= 10; l1++)
 +                    for (int l1 = 5; l1 <= 10; ++l1)
                      {
-                         this.func_175811_a(p_74875_1_, iblockstate9, l, 12 - l, l1, p_74875_3_);
+                         this.setBlockState(worldIn, iblockstate9, l, 12 - l, l1, structureBoundingBoxIn);
                      }
 @@ -1335,8 +1162,7 @@
-                 this.func_189927_a(p_74875_1_, p_74875_3_, p_74875_2_, 2, 1, 0, EnumFacing.NORTH);
-                 this.func_175804_a(p_74875_1_, p_74875_3_, 1, 0, -1, 3, 2, -1, Blocks.field_150350_a.func_176223_P(), Blocks.field_150350_a.func_176223_P(), false);
+                 this.createVillageDoor(worldIn, structureBoundingBoxIn, randomIn, 2, 1, 0, EnumFacing.NORTH);
+                 this.fillWithBlocks(worldIn, structureBoundingBoxIn, 1, 0, -1, 3, 2, -1, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
  
--                if (this.func_175807_a(p_74875_1_, 2, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a
--                        && this.func_175807_a(p_74875_1_, 2, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
-+                if (this.func_175807_a(p_74875_1_, 2, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a && this.func_175807_a(p_74875_1_, 2, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
+-                if (this.getBlockStateFromPos(worldIn, 2, 0, -1, structureBoundingBoxIn).getMaterial() == Material.AIR
+-                        && this.getBlockStateFromPos(worldIn, 2, -1, -1, structureBoundingBoxIn).getMaterial() != Material.AIR)
++                if (this.getBlockStateFromPos(worldIn, 2, 0, -1, structureBoundingBoxIn).getMaterial() == Material.AIR && this.getBlockStateFromPos(worldIn, 2, -1, -1, structureBoundingBoxIn).getMaterial() != Material.AIR)
                  {
-                     this.func_175811_a(p_74875_1_, iblockstate7, 2, 0, -1, p_74875_3_);
+                     this.setBlockState(worldIn, iblockstate7, 2, 0, -1, structureBoundingBoxIn);
  
 @@ -1346,18 +1172,18 @@
                      }
@@ -780,8 +780,8 @@
 -                    for (int i2 = 0; i2 < 9; i2++)
 +                    for (int i2 = 0; i2 < 9; ++i2)
                      {
-                         this.func_74871_b(p_74875_1_, i2, 7, i1, p_74875_3_);
-                         this.func_175808_b(p_74875_1_, iblockstate, i2, -1, i1, p_74875_3_);
+                         this.clearCurrentPositionBlocksUpwards(worldIn, i2, 7, i1, structureBoundingBoxIn);
+                         this.replaceAirAndLiquidDownwards(worldIn, iblockstate, i2, -1, i1, structureBoundingBoxIn);
                      }
                  }
  
@@ -791,73 +791,73 @@
 -                    for (int j2 = 2; j2 < 9; j2++)
 +                    for (int j2 = 2; j2 < 9; ++j2)
                      {
-                         this.func_74871_b(p_74875_1_, j2, 7, j1, p_74875_3_);
-                         this.func_175808_b(p_74875_1_, iblockstate, j2, -1, j1, p_74875_3_);
+                         this.clearCurrentPositionBlocksUpwards(worldIn, j2, 7, j1, structureBoundingBoxIn);
+                         this.replaceAirAndLiquidDownwards(worldIn, iblockstate, j2, -1, j1, structureBoundingBoxIn);
 @@ -1377,9 +1203,7 @@
              {
              }
  
 -            public House4Garden(
--                StructureVillagePieces.Start p_i45566_1_, int p_i45566_2_, Random p_i45566_3_, StructureBoundingBox p_i45566_4_, EnumFacing p_i45566_5_
+-                StructureVillagePieces.Start start, int p_i45566_2_, Random rand, StructureBoundingBox p_i45566_4_, EnumFacing facing
 -            )
-+            public House4Garden(StructureVillagePieces.Start p_i45566_1_, int p_i45566_2_, Random p_i45566_3_, StructureBoundingBox p_i45566_4_, EnumFacing p_i45566_5_)
++            public House4Garden(StructureVillagePieces.Start start, int p_i45566_2_, Random rand, StructureBoundingBox p_i45566_4_, EnumFacing facing)
              {
-                 super(p_i45566_1_, p_i45566_2_);
-                 this.func_186164_a(p_i45566_5_);
+                 super(start, p_i45566_2_);
+                 this.setCoordBaseMode(facing);
 @@ -1387,38 +1211,24 @@
-                 this.field_74913_b = p_i45566_3_.nextBoolean();
+                 this.isRoofAccessible = rand.nextBoolean();
              }
  
 -            @Override
-             protected void func_143012_a(NBTTagCompound p_143012_1_)
+             protected void writeStructureToNBT(NBTTagCompound tagCompound)
              {
-                 super.func_143012_a(p_143012_1_);
-                 p_143012_1_.func_74757_a("Terrace", this.field_74913_b);
+                 super.writeStructureToNBT(tagCompound);
+                 tagCompound.setBoolean("Terrace", this.isRoofAccessible);
              }
  
 -            @Override
-             protected void func_143011_b(NBTTagCompound p_143011_1_, TemplateManager p_143011_2_)
+             protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
              {
-                 super.func_143011_b(p_143011_1_, p_143011_2_);
-                 this.field_74913_b = p_143011_1_.func_74767_n("Terrace");
+                 super.readStructureFromNBT(tagCompound, p_143011_2_);
+                 this.isRoofAccessible = tagCompound.getBoolean("Terrace");
              }
  
--            public static StructureVillagePieces.House4Garden func_175858_a(
--                    StructureVillagePieces.Start p_175858_0_,
+-            public static StructureVillagePieces.House4Garden createPiece(
+-                    StructureVillagePieces.Start start,
 -                    List<StructureComponent> p_175858_1_,
--                    Random p_175858_2_,
+-                    Random rand,
 -                    int p_175858_3_,
 -                    int p_175858_4_,
 -                    int p_175858_5_,
--                    EnumFacing p_175858_6_,
+-                    EnumFacing facing,
 -                    int p_175858_7_
 -                )
-+            public static StructureVillagePieces.House4Garden func_175858_a(StructureVillagePieces.Start p_175858_0_, List<StructureComponent> p_175858_1_, Random p_175858_2_, int p_175858_3_, int p_175858_4_, int p_175858_5_, EnumFacing p_175858_6_, int p_175858_7_)
++            public static StructureVillagePieces.House4Garden createPiece(StructureVillagePieces.Start start, List<StructureComponent> p_175858_1_, Random rand, int p_175858_3_, int p_175858_4_, int p_175858_5_, EnumFacing facing, int p_175858_7_)
              {
-                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175858_3_, p_175858_4_, p_175858_5_, 0, 0, 0, 5, 6, 5, p_175858_6_);
--                return StructureComponent.func_74883_a(p_175858_1_, structureboundingbox) != null
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.getComponentToAddBoundingBox(p_175858_3_, p_175858_4_, p_175858_5_, 0, 0, 0, 5, 6, 5, facing);
+-                return StructureComponent.findIntersecting(p_175858_1_, structureboundingbox) != null
 -                       ? null
--                       : new StructureVillagePieces.House4Garden(p_175858_0_, p_175858_7_, p_175858_2_, structureboundingbox, p_175858_6_);
-+                return StructureComponent.func_74883_a(p_175858_1_, structureboundingbox) != null ? null : new StructureVillagePieces.House4Garden(p_175858_0_, p_175858_7_, p_175858_2_, structureboundingbox, p_175858_6_);
+-                       : new StructureVillagePieces.House4Garden(start, p_175858_7_, rand, structureboundingbox, facing);
++                return StructureComponent.findIntersecting(p_175858_1_, structureboundingbox) != null ? null : new StructureVillagePieces.House4Garden(start, p_175858_7_, rand, structureboundingbox, facing);
              }
  
 -            @Override
-             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             public boolean addComponentParts(World worldIn, Random randomIn, StructureBoundingBox structureBoundingBoxIn)
              {
-                 if (this.field_143015_k < 0)
+                 if (this.averageGroundLvl < 0)
 @@ -1467,8 +1277,7 @@
-                 this.func_175811_a(p_74875_1_, iblockstate1, 3, 2, 0, p_74875_3_);
-                 this.func_175811_a(p_74875_1_, iblockstate1, 3, 1, 0, p_74875_3_);
+                 this.setBlockState(worldIn, iblockstate1, 3, 2, 0, structureBoundingBoxIn);
+                 this.setBlockState(worldIn, iblockstate1, 3, 1, 0, structureBoundingBoxIn);
  
--                if (this.func_175807_a(p_74875_1_, 2, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a
--                        && this.func_175807_a(p_74875_1_, 2, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
-+                if (this.func_175807_a(p_74875_1_, 2, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a && this.func_175807_a(p_74875_1_, 2, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
+-                if (this.getBlockStateFromPos(worldIn, 2, 0, -1, structureBoundingBoxIn).getMaterial() == Material.AIR
+-                        && this.getBlockStateFromPos(worldIn, 2, -1, -1, structureBoundingBoxIn).getMaterial() != Material.AIR)
++                if (this.getBlockStateFromPos(worldIn, 2, 0, -1, structureBoundingBoxIn).getMaterial() == Material.AIR && this.getBlockStateFromPos(worldIn, 2, -1, -1, structureBoundingBoxIn).getMaterial() != Material.AIR)
                  {
-                     this.func_175811_a(p_74875_1_, iblockstate2, 2, 0, -1, p_74875_3_);
+                     this.setBlockState(worldIn, iblockstate2, 2, 0, -1, structureBoundingBoxIn);
  
 @@ -1511,9 +1320,9 @@
  
-                 this.func_189926_a(p_74875_1_, EnumFacing.NORTH, 2, 3, 1, p_74875_3_);
+                 this.placeTorch(worldIn, EnumFacing.NORTH, 2, 3, 1, structureBoundingBoxIn);
  
 -                for (int j = 0; j < 5; j++)
 +                for (int j = 0; j < 5; ++j)
@@ -865,84 +865,84 @@
 -                    for (int i = 0; i < 5; i++)
 +                    for (int i = 0; i < 5; ++i)
                      {
-                         this.func_74871_b(p_74875_1_, i, 6, j, p_74875_3_);
-                         this.func_175808_b(p_74875_1_, iblockstate, i, -1, j, p_74875_3_);
+                         this.clearCurrentPositionBlocksUpwards(worldIn, i, 6, j, structureBoundingBoxIn);
+                         this.replaceAirAndLiquidDownwards(worldIn, iblockstate, i, -1, j, structureBoundingBoxIn);
 @@ -1541,21 +1350,18 @@
-                 this.field_74934_a = Math.max(p_i45562_4_.func_78883_b(), p_i45562_4_.func_78880_d());
+                 this.length = Math.max(p_i45562_4_.getXSize(), p_i45562_4_.getZSize());
              }
  
 -            @Override
-             protected void func_143012_a(NBTTagCompound p_143012_1_)
+             protected void writeStructureToNBT(NBTTagCompound tagCompound)
              {
-                 super.func_143012_a(p_143012_1_);
-                 p_143012_1_.func_74768_a("Length", this.field_74934_a);
+                 super.writeStructureToNBT(tagCompound);
+                 tagCompound.setInteger("Length", this.length);
              }
  
 -            @Override
-             protected void func_143011_b(NBTTagCompound p_143011_1_, TemplateManager p_143011_2_)
+             protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
              {
-                 super.func_143011_b(p_143011_1_, p_143011_2_);
-                 this.field_74934_a = p_143011_1_.func_74762_e("Length");
+                 super.readStructureFromNBT(tagCompound, p_143011_2_);
+                 this.length = tagCompound.getInteger("Length");
              }
  
 -            @Override
-             public void func_74861_a(StructureComponent p_74861_1_, List<StructureComponent> p_74861_2_, Random p_74861_3_)
+             public void buildComponent(StructureComponent componentIn, List<StructureComponent> listIn, Random rand)
              {
                  boolean flag = false;
 @@ -1590,52 +1396,16 @@
                      {
                          case NORTH:
                          default:
--                            StructureVillagePieces.func_176069_e(
--                                (StructureVillagePieces.Start)p_74861_1_,
--                                p_74861_2_,
--                                p_74861_3_,
--                                this.field_74887_e.field_78897_a - 1,
--                                this.field_74887_e.field_78895_b,
--                                this.field_74887_e.field_78896_c,
+-                            StructureVillagePieces.generateAndAddRoadPiece(
+-                                (StructureVillagePieces.Start)componentIn,
+-                                listIn,
+-                                rand,
+-                                this.boundingBox.minX - 1,
+-                                this.boundingBox.minY,
+-                                this.boundingBox.minZ,
 -                                EnumFacing.WEST,
--                                this.func_74877_c()
+-                                this.getComponentType()
 -                            );
-+                            StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78897_a - 1, this.field_74887_e.field_78895_b, this.field_74887_e.field_78896_c, EnumFacing.WEST, this.func_74877_c());
++                            StructureVillagePieces.generateAndAddRoadPiece((StructureVillagePieces.Start)componentIn, listIn, rand, this.boundingBox.minX - 1, this.boundingBox.minY, this.boundingBox.minZ, EnumFacing.WEST, this.getComponentType());
                              break;
                          case SOUTH:
--                            StructureVillagePieces.func_176069_e(
--                                (StructureVillagePieces.Start)p_74861_1_,
--                                p_74861_2_,
--                                p_74861_3_,
--                                this.field_74887_e.field_78897_a - 1,
--                                this.field_74887_e.field_78895_b,
--                                this.field_74887_e.field_78892_f - 2,
+-                            StructureVillagePieces.generateAndAddRoadPiece(
+-                                (StructureVillagePieces.Start)componentIn,
+-                                listIn,
+-                                rand,
+-                                this.boundingBox.minX - 1,
+-                                this.boundingBox.minY,
+-                                this.boundingBox.maxZ - 2,
 -                                EnumFacing.WEST,
--                                this.func_74877_c()
+-                                this.getComponentType()
 -                            );
-+                            StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78897_a - 1, this.field_74887_e.field_78895_b, this.field_74887_e.field_78892_f - 2, EnumFacing.WEST, this.func_74877_c());
++                            StructureVillagePieces.generateAndAddRoadPiece((StructureVillagePieces.Start)componentIn, listIn, rand, this.boundingBox.minX - 1, this.boundingBox.minY, this.boundingBox.maxZ - 2, EnumFacing.WEST, this.getComponentType());
                              break;
                          case WEST:
--                            StructureVillagePieces.func_176069_e(
--                                (StructureVillagePieces.Start)p_74861_1_,
--                                p_74861_2_,
--                                p_74861_3_,
--                                this.field_74887_e.field_78897_a,
--                                this.field_74887_e.field_78895_b,
--                                this.field_74887_e.field_78896_c - 1,
+-                            StructureVillagePieces.generateAndAddRoadPiece(
+-                                (StructureVillagePieces.Start)componentIn,
+-                                listIn,
+-                                rand,
+-                                this.boundingBox.minX,
+-                                this.boundingBox.minY,
+-                                this.boundingBox.minZ - 1,
 -                                EnumFacing.NORTH,
--                                this.func_74877_c()
+-                                this.getComponentType()
 -                            );
-+                            StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78897_a, this.field_74887_e.field_78895_b, this.field_74887_e.field_78896_c - 1, EnumFacing.NORTH, this.func_74877_c());
++                            StructureVillagePieces.generateAndAddRoadPiece((StructureVillagePieces.Start)componentIn, listIn, rand, this.boundingBox.minX, this.boundingBox.minY, this.boundingBox.minZ - 1, EnumFacing.NORTH, this.getComponentType());
                              break;
                          case EAST:
--                            StructureVillagePieces.func_176069_e(
--                                (StructureVillagePieces.Start)p_74861_1_,
--                                p_74861_2_,
--                                p_74861_3_,
--                                this.field_74887_e.field_78893_d - 2,
--                                this.field_74887_e.field_78895_b,
--                                this.field_74887_e.field_78896_c - 1,
+-                            StructureVillagePieces.generateAndAddRoadPiece(
+-                                (StructureVillagePieces.Start)componentIn,
+-                                listIn,
+-                                rand,
+-                                this.boundingBox.maxX - 2,
+-                                this.boundingBox.minY,
+-                                this.boundingBox.minZ - 1,
 -                                EnumFacing.NORTH,
--                                this.func_74877_c()
+-                                this.getComponentType()
 -                            );
-+                            StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78893_d - 2, this.field_74887_e.field_78895_b, this.field_74887_e.field_78896_c - 1, EnumFacing.NORTH, this.func_74877_c());
++                            StructureVillagePieces.generateAndAddRoadPiece((StructureVillagePieces.Start)componentIn, listIn, rand, this.boundingBox.maxX - 2, this.boundingBox.minY, this.boundingBox.minZ - 1, EnumFacing.NORTH, this.getComponentType());
                      }
                  }
  
@@ -950,90 +950,90 @@
                      {
                          case NORTH:
                          default:
--                            StructureVillagePieces.func_176069_e(
--                                (StructureVillagePieces.Start)p_74861_1_,
--                                p_74861_2_,
--                                p_74861_3_,
--                                this.field_74887_e.field_78893_d + 1,
--                                this.field_74887_e.field_78895_b,
--                                this.field_74887_e.field_78896_c,
+-                            StructureVillagePieces.generateAndAddRoadPiece(
+-                                (StructureVillagePieces.Start)componentIn,
+-                                listIn,
+-                                rand,
+-                                this.boundingBox.maxX + 1,
+-                                this.boundingBox.minY,
+-                                this.boundingBox.minZ,
 -                                EnumFacing.EAST,
--                                this.func_74877_c()
+-                                this.getComponentType()
 -                            );
-+                            StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78893_d + 1, this.field_74887_e.field_78895_b, this.field_74887_e.field_78896_c, EnumFacing.EAST, this.func_74877_c());
++                            StructureVillagePieces.generateAndAddRoadPiece((StructureVillagePieces.Start)componentIn, listIn, rand, this.boundingBox.maxX + 1, this.boundingBox.minY, this.boundingBox.minZ, EnumFacing.EAST, this.getComponentType());
                              break;
                          case SOUTH:
--                            StructureVillagePieces.func_176069_e(
--                                (StructureVillagePieces.Start)p_74861_1_,
--                                p_74861_2_,
--                                p_74861_3_,
--                                this.field_74887_e.field_78893_d + 1,
--                                this.field_74887_e.field_78895_b,
--                                this.field_74887_e.field_78892_f - 2,
+-                            StructureVillagePieces.generateAndAddRoadPiece(
+-                                (StructureVillagePieces.Start)componentIn,
+-                                listIn,
+-                                rand,
+-                                this.boundingBox.maxX + 1,
+-                                this.boundingBox.minY,
+-                                this.boundingBox.maxZ - 2,
 -                                EnumFacing.EAST,
--                                this.func_74877_c()
+-                                this.getComponentType()
 -                            );
-+                            StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78893_d + 1, this.field_74887_e.field_78895_b, this.field_74887_e.field_78892_f - 2, EnumFacing.EAST, this.func_74877_c());
++                            StructureVillagePieces.generateAndAddRoadPiece((StructureVillagePieces.Start)componentIn, listIn, rand, this.boundingBox.maxX + 1, this.boundingBox.minY, this.boundingBox.maxZ - 2, EnumFacing.EAST, this.getComponentType());
                              break;
                          case WEST:
--                            StructureVillagePieces.func_176069_e(
--                                (StructureVillagePieces.Start)p_74861_1_,
--                                p_74861_2_,
--                                p_74861_3_,
--                                this.field_74887_e.field_78897_a,
--                                this.field_74887_e.field_78895_b,
--                                this.field_74887_e.field_78892_f + 1,
+-                            StructureVillagePieces.generateAndAddRoadPiece(
+-                                (StructureVillagePieces.Start)componentIn,
+-                                listIn,
+-                                rand,
+-                                this.boundingBox.minX,
+-                                this.boundingBox.minY,
+-                                this.boundingBox.maxZ + 1,
 -                                EnumFacing.SOUTH,
--                                this.func_74877_c()
+-                                this.getComponentType()
 -                            );
-+                            StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78897_a, this.field_74887_e.field_78895_b, this.field_74887_e.field_78892_f + 1, EnumFacing.SOUTH, this.func_74877_c());
++                            StructureVillagePieces.generateAndAddRoadPiece((StructureVillagePieces.Start)componentIn, listIn, rand, this.boundingBox.minX, this.boundingBox.minY, this.boundingBox.maxZ + 1, EnumFacing.SOUTH, this.getComponentType());
                              break;
                          case EAST:
--                            StructureVillagePieces.func_176069_e(
--                                (StructureVillagePieces.Start)p_74861_1_,
--                                p_74861_2_,
--                                p_74861_3_,
--                                this.field_74887_e.field_78893_d - 2,
--                                this.field_74887_e.field_78895_b,
--                                this.field_74887_e.field_78892_f + 1,
+-                            StructureVillagePieces.generateAndAddRoadPiece(
+-                                (StructureVillagePieces.Start)componentIn,
+-                                listIn,
+-                                rand,
+-                                this.boundingBox.maxX - 2,
+-                                this.boundingBox.minY,
+-                                this.boundingBox.maxZ + 1,
 -                                EnumFacing.SOUTH,
--                                this.func_74877_c()
+-                                this.getComponentType()
 -                            );
-+                            StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78893_d - 2, this.field_74887_e.field_78895_b, this.field_74887_e.field_78892_f + 1, EnumFacing.SOUTH, this.func_74877_c());
++                            StructureVillagePieces.generateAndAddRoadPiece((StructureVillagePieces.Start)componentIn, listIn, rand, this.boundingBox.maxX - 2, this.boundingBox.minY, this.boundingBox.maxZ + 1, EnumFacing.SOUTH, this.getComponentType());
                      }
                  }
              }
  
--            public static StructureBoundingBox func_175848_a(
--                    StructureVillagePieces.Start p_175848_0_,
+-            public static StructureBoundingBox findPieceBox(
+-                    StructureVillagePieces.Start start,
 -                    List<StructureComponent> p_175848_1_,
--                    Random p_175848_2_,
+-                    Random rand,
 -                    int p_175848_3_,
 -                    int p_175848_4_,
 -                    int p_175848_5_,
--                    EnumFacing p_175848_6_
+-                    EnumFacing facing
 -                )
-+            public static StructureBoundingBox func_175848_a(StructureVillagePieces.Start p_175848_0_, List<StructureComponent> p_175848_1_, Random p_175848_2_, int p_175848_3_, int p_175848_4_, int p_175848_5_, EnumFacing p_175848_6_)
++            public static StructureBoundingBox findPieceBox(StructureVillagePieces.Start start, List<StructureComponent> p_175848_1_, Random rand, int p_175848_3_, int p_175848_4_, int p_175848_5_, EnumFacing facing)
              {
-                 for (int i = 7 * MathHelper.func_76136_a(p_175848_2_, 3, 5); i >= 7; i -= 7)
+                 for (int i = 7 * MathHelper.getInt(rand, 3, 5); i >= 7; i -= 7)
                  {
 @@ -1718,7 +1444,6 @@
                  return null;
              }
  
 -            @Override
-             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             public boolean addComponentParts(World worldIn, Random randomIn, StructureBoundingBox structureBoundingBoxIn)
              {
-                 IBlockState iblockstate = this.func_175847_a(Blocks.field_185774_da.func_176223_P());
+                 IBlockState iblockstate = this.getBiomeSpecificBlockState(Blocks.GRASS_PATH.getDefaultState());
 @@ -1726,9 +1451,9 @@
-                 IBlockState iblockstate2 = this.func_175847_a(Blocks.field_150351_n.func_176223_P());
-                 IBlockState iblockstate3 = this.func_175847_a(Blocks.field_150347_e.func_176223_P());
+                 IBlockState iblockstate2 = this.getBiomeSpecificBlockState(Blocks.GRAVEL.getDefaultState());
+                 IBlockState iblockstate3 = this.getBiomeSpecificBlockState(Blocks.COBBLESTONE.getDefaultState());
  
--                for (int i = this.field_74887_e.field_78897_a; i <= this.field_74887_e.field_78893_d; i++)
-+                for (int i = this.field_74887_e.field_78897_a; i <= this.field_74887_e.field_78893_d; ++i)
+-                for (int i = this.boundingBox.minX; i <= this.boundingBox.maxX; i++)
++                for (int i = this.boundingBox.minX; i <= this.boundingBox.maxX; ++i)
                  {
--                    for (int j = this.field_74887_e.field_78896_c; j <= this.field_74887_e.field_78892_f; j++)
-+                    for (int j = this.field_74887_e.field_78896_c; j <= this.field_74887_e.field_78892_f; ++j)
+-                    for (int j = this.boundingBox.minZ; j <= this.boundingBox.maxZ; j++)
++                    for (int j = this.boundingBox.minZ; j <= this.boundingBox.maxZ; ++j)
                      {
                          BlockPos blockpos = new BlockPos(i, 64, j);
  
@@ -1041,21 +1041,21 @@
                                      break;
                                  }
  
--                                if (iblockstate4.func_177230_c() == Blocks.field_150354_m
--                                        || iblockstate4.func_177230_c() == Blocks.field_150322_A
--                                        || iblockstate4.func_177230_c() == Blocks.field_180395_cM)
-+                                if (iblockstate4.func_177230_c() == Blocks.field_150354_m || iblockstate4.func_177230_c() == Blocks.field_150322_A || iblockstate4.func_177230_c() == Blocks.field_180395_cM)
+-                                if (iblockstate4.getBlock() == Blocks.SAND
+-                                        || iblockstate4.getBlock() == Blocks.SANDSTONE
+-                                        || iblockstate4.getBlock() == Blocks.RED_SANDSTONE)
++                                if (iblockstate4.getBlock() == Blocks.SAND || iblockstate4.getBlock() == Blocks.SANDSTONE || iblockstate4.getBlock() == Blocks.RED_SANDSTONE)
                                  {
-                                     p_74875_1_.func_180501_a(blockpos, iblockstate2, 2);
-                                     p_74875_1_.func_180501_a(blockpos.func_177977_b(), iblockstate3, 2);
+                                     worldIn.setBlockState(blockpos, iblockstate2, 2);
+                                     worldIn.setBlockState(blockpos.down(), iblockstate3, 2);
 @@ -1819,28 +1542,23 @@
-             public int field_74928_c;
-             public StructureVillagePieces.PieceWeight field_74926_d;
-             public List<StructureVillagePieces.PieceWeight> field_74931_h;
--            public List<StructureComponent> field_74932_i = Lists.newArrayList();
--            public List<StructureComponent> field_74930_j = Lists.newArrayList();
-+            public List<StructureComponent> field_74932_i = Lists.<StructureComponent>newArrayList();
-+            public List<StructureComponent> field_74930_j = Lists.<StructureComponent>newArrayList();
+             public int terrainType;
+             public StructureVillagePieces.PieceWeight lastPlaced;
+             public List<StructureVillagePieces.PieceWeight> structureVillageWeightedPieceList;
+-            public List<StructureComponent> pendingHouses = Lists.newArrayList();
+-            public List<StructureComponent> pendingRoads = Lists.newArrayList();
++            public List<StructureComponent> pendingHouses = Lists.<StructureComponent>newArrayList();
++            public List<StructureComponent> pendingRoads = Lists.<StructureComponent>newArrayList();
 +            public Biome biome;
  
              public Start()
@@ -1063,140 +1063,140 @@
              }
  
 -            public Start(
--                BiomeProvider p_i2104_1_,
+-                BiomeProvider biomeProviderIn,
 -                int p_i2104_2_,
--                Random p_i2104_3_,
+-                Random rand,
 -                int p_i2104_4_,
 -                int p_i2104_5_,
 -                List<StructureVillagePieces.PieceWeight> p_i2104_6_,
 -                int p_i2104_7_
 -            )
-+            public Start(BiomeProvider p_i2104_1_, int p_i2104_2_, Random p_i2104_3_, int p_i2104_4_, int p_i2104_5_, List<StructureVillagePieces.PieceWeight> p_i2104_6_, int p_i2104_7_)
++            public Start(BiomeProvider biomeProviderIn, int p_i2104_2_, Random rand, int p_i2104_4_, int p_i2104_5_, List<StructureVillagePieces.PieceWeight> p_i2104_6_, int p_i2104_7_)
              {
--                super(null, 0, p_i2104_3_, p_i2104_4_, p_i2104_5_);
-+                super((StructureVillagePieces.Start)null, 0, p_i2104_3_, p_i2104_4_, p_i2104_5_);
-                 this.field_74929_a = p_i2104_1_;
-                 this.field_74931_h = p_i2104_6_;
-                 this.field_74928_c = p_i2104_7_;
-                 Biome biome = p_i2104_1_.func_180300_a(new BlockPos(p_i2104_4_, 0, p_i2104_5_), Biomes.field_180279_ad);
+-                super(null, 0, rand, p_i2104_4_, p_i2104_5_);
++                super((StructureVillagePieces.Start)null, 0, rand, p_i2104_4_, p_i2104_5_);
+                 this.biomeProvider = biomeProviderIn;
+                 this.structureVillageWeightedPieceList = p_i2104_6_;
+                 this.terrainType = p_i2104_7_;
+                 Biome biome = biomeProviderIn.getBiome(new BlockPos(p_i2104_4_, 0, p_i2104_5_), Biomes.DEFAULT);
 +                this.biome = biome;
 +                this.startPiece = this;
  
                  if (biome instanceof BiomeDesert)
                  {
 @@ -1873,21 +1591,12 @@
-                 this.field_74887_e = p_i45568_4_;
+                 this.boundingBox = p_i45568_4_;
              }
  
--            public static StructureBoundingBox func_175856_a(
--                    StructureVillagePieces.Start p_175856_0_,
+-            public static StructureBoundingBox findPieceBox(
+-                    StructureVillagePieces.Start start,
 -                    List<StructureComponent> p_175856_1_,
--                    Random p_175856_2_,
+-                    Random rand,
 -                    int p_175856_3_,
 -                    int p_175856_4_,
 -                    int p_175856_5_,
--                    EnumFacing p_175856_6_
+-                    EnumFacing facing
 -                )
-+            public static StructureBoundingBox func_175856_a(StructureVillagePieces.Start p_175856_0_, List<StructureComponent> p_175856_1_, Random p_175856_2_, int p_175856_3_, int p_175856_4_, int p_175856_5_, EnumFacing p_175856_6_)
++            public static StructureBoundingBox findPieceBox(StructureVillagePieces.Start start, List<StructureComponent> p_175856_1_, Random rand, int p_175856_3_, int p_175856_4_, int p_175856_5_, EnumFacing facing)
              {
-                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175856_3_, p_175856_4_, p_175856_5_, 0, 0, 0, 3, 4, 2, p_175856_6_);
-                 return StructureComponent.func_74883_a(p_175856_1_, structureboundingbox) != null ? null : structureboundingbox;
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.getComponentToAddBoundingBox(p_175856_3_, p_175856_4_, p_175856_5_, 0, 0, 0, 3, 4, 2, facing);
+                 return StructureComponent.findIntersecting(p_175856_1_, structureboundingbox) != null ? null : structureboundingbox;
              }
  
 -            @Override
-             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             public boolean addComponentParts(World worldIn, Random randomIn, StructureBoundingBox structureBoundingBoxIn)
              {
-                 if (this.field_143015_k < 0)
+                 if (this.averageGroundLvl < 0)
 @@ -1922,6 +1631,7 @@
-             private int field_74896_a;
-             protected int field_189928_h;
-             protected boolean field_189929_i;
+             private int villagersSpawned;
+             protected int structureType;
+             protected boolean isZombieInfested;
 +            protected StructureVillagePieces.Start startPiece;
  
              public Village()
              {
 @@ -1935,10 +1645,10 @@
                  {
-                     this.field_189928_h = p_i2107_1_.field_189928_h;
-                     this.field_189929_i = p_i2107_1_.field_189929_i;
-+                    startPiece = p_i2107_1_;
+                     this.structureType = start.structureType;
+                     this.isZombieInfested = start.isZombieInfested;
++                    startPiece = start;
                  }
              }
  
 -            @Override
-             protected void func_143012_a(NBTTagCompound p_143012_1_)
+             protected void writeStructureToNBT(NBTTagCompound tagCompound)
              {
-                 p_143012_1_.func_74768_a("HPos", this.field_143015_k);
+                 tagCompound.setInteger("HPos", this.averageGroundLvl);
 @@ -1947,7 +1657,6 @@
-                 p_143012_1_.func_74757_a("Zombie", this.field_189929_i);
+                 tagCompound.setBoolean("Zombie", this.isZombieInfested);
              }
  
 -            @Override
-             protected void func_143011_b(NBTTagCompound p_143011_1_, TemplateManager p_143011_2_)
+             protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
              {
-                 this.field_143015_k = p_143011_1_.func_74762_e("HPos");
+                 this.averageGroundLvl = tagCompound.getInteger("HPos");
 @@ -1963,9 +1672,7 @@
              }
  
              @Nullable
--            protected StructureComponent func_74891_a(
--                StructureVillagePieces.Start p_74891_1_, List<StructureComponent> p_74891_2_, Random p_74891_3_, int p_74891_4_, int p_74891_5_
+-            protected StructureComponent getNextComponentNN(
+-                StructureVillagePieces.Start start, List<StructureComponent> structureComponents, Random rand, int p_74891_4_, int p_74891_5_
 -            )
-+            protected StructureComponent func_74891_a(StructureVillagePieces.Start p_74891_1_, List<StructureComponent> p_74891_2_, Random p_74891_3_, int p_74891_4_, int p_74891_5_)
++            protected StructureComponent getNextComponentNN(StructureVillagePieces.Start start, List<StructureComponent> structureComponents, Random rand, int p_74891_4_, int p_74891_5_)
              {
-                 EnumFacing enumfacing = this.func_186165_e();
+                 EnumFacing enumfacing = this.getCoordBaseMode();
  
 @@ -1975,49 +1682,13 @@
                      {
                          case NORTH:
                          default:
--                            return StructureVillagePieces.func_176066_d(
--                                       p_74891_1_,
--                                       p_74891_2_,
--                                       p_74891_3_,
--                                       this.field_74887_e.field_78897_a - 1,
--                                       this.field_74887_e.field_78895_b + p_74891_4_,
--                                       this.field_74887_e.field_78896_c + p_74891_5_,
+-                            return StructureVillagePieces.generateAndAddComponent(
+-                                       start,
+-                                       structureComponents,
+-                                       rand,
+-                                       this.boundingBox.minX - 1,
+-                                       this.boundingBox.minY + p_74891_4_,
+-                                       this.boundingBox.minZ + p_74891_5_,
 -                                       EnumFacing.WEST,
--                                       this.func_74877_c()
+-                                       this.getComponentType()
 -                                   );
-+                            return StructureVillagePieces.func_176066_d(p_74891_1_, p_74891_2_, p_74891_3_, this.field_74887_e.field_78897_a - 1, this.field_74887_e.field_78895_b + p_74891_4_, this.field_74887_e.field_78896_c + p_74891_5_, EnumFacing.WEST, this.func_74877_c());
++                            return StructureVillagePieces.generateAndAddComponent(start, structureComponents, rand, this.boundingBox.minX - 1, this.boundingBox.minY + p_74891_4_, this.boundingBox.minZ + p_74891_5_, EnumFacing.WEST, this.getComponentType());
                          case SOUTH:
--                            return StructureVillagePieces.func_176066_d(
--                                       p_74891_1_,
--                                       p_74891_2_,
--                                       p_74891_3_,
--                                       this.field_74887_e.field_78897_a - 1,
--                                       this.field_74887_e.field_78895_b + p_74891_4_,
--                                       this.field_74887_e.field_78896_c + p_74891_5_,
+-                            return StructureVillagePieces.generateAndAddComponent(
+-                                       start,
+-                                       structureComponents,
+-                                       rand,
+-                                       this.boundingBox.minX - 1,
+-                                       this.boundingBox.minY + p_74891_4_,
+-                                       this.boundingBox.minZ + p_74891_5_,
 -                                       EnumFacing.WEST,
--                                       this.func_74877_c()
+-                                       this.getComponentType()
 -                                   );
-+                            return StructureVillagePieces.func_176066_d(p_74891_1_, p_74891_2_, p_74891_3_, this.field_74887_e.field_78897_a - 1, this.field_74887_e.field_78895_b + p_74891_4_, this.field_74887_e.field_78896_c + p_74891_5_, EnumFacing.WEST, this.func_74877_c());
++                            return StructureVillagePieces.generateAndAddComponent(start, structureComponents, rand, this.boundingBox.minX - 1, this.boundingBox.minY + p_74891_4_, this.boundingBox.minZ + p_74891_5_, EnumFacing.WEST, this.getComponentType());
                          case WEST:
--                            return StructureVillagePieces.func_176066_d(
--                                       p_74891_1_,
--                                       p_74891_2_,
--                                       p_74891_3_,
--                                       this.field_74887_e.field_78897_a + p_74891_5_,
--                                       this.field_74887_e.field_78895_b + p_74891_4_,
--                                       this.field_74887_e.field_78896_c - 1,
+-                            return StructureVillagePieces.generateAndAddComponent(
+-                                       start,
+-                                       structureComponents,
+-                                       rand,
+-                                       this.boundingBox.minX + p_74891_5_,
+-                                       this.boundingBox.minY + p_74891_4_,
+-                                       this.boundingBox.minZ - 1,
 -                                       EnumFacing.NORTH,
--                                       this.func_74877_c()
+-                                       this.getComponentType()
 -                                   );
-+                            return StructureVillagePieces.func_176066_d(p_74891_1_, p_74891_2_, p_74891_3_, this.field_74887_e.field_78897_a + p_74891_5_, this.field_74887_e.field_78895_b + p_74891_4_, this.field_74887_e.field_78896_c - 1, EnumFacing.NORTH, this.func_74877_c());
++                            return StructureVillagePieces.generateAndAddComponent(start, structureComponents, rand, this.boundingBox.minX + p_74891_5_, this.boundingBox.minY + p_74891_4_, this.boundingBox.minZ - 1, EnumFacing.NORTH, this.getComponentType());
                          case EAST:
--                            return StructureVillagePieces.func_176066_d(
--                                       p_74891_1_,
--                                       p_74891_2_,
--                                       p_74891_3_,
--                                       this.field_74887_e.field_78897_a + p_74891_5_,
--                                       this.field_74887_e.field_78895_b + p_74891_4_,
--                                       this.field_74887_e.field_78896_c - 1,
+-                            return StructureVillagePieces.generateAndAddComponent(
+-                                       start,
+-                                       structureComponents,
+-                                       rand,
+-                                       this.boundingBox.minX + p_74891_5_,
+-                                       this.boundingBox.minY + p_74891_4_,
+-                                       this.boundingBox.minZ - 1,
 -                                       EnumFacing.NORTH,
--                                       this.func_74877_c()
+-                                       this.getComponentType()
 -                                   );
-+                            return StructureVillagePieces.func_176066_d(p_74891_1_, p_74891_2_, p_74891_3_, this.field_74887_e.field_78897_a + p_74891_5_, this.field_74887_e.field_78895_b + p_74891_4_, this.field_74887_e.field_78896_c - 1, EnumFacing.NORTH, this.func_74877_c());
++                            return StructureVillagePieces.generateAndAddComponent(start, structureComponents, rand, this.boundingBox.minX + p_74891_5_, this.boundingBox.minY + p_74891_4_, this.boundingBox.minZ - 1, EnumFacing.NORTH, this.getComponentType());
                      }
                  }
                  else
@@ -1204,64 +1204,64 @@
              }
  
              @Nullable
--            protected StructureComponent func_74894_b(
--                StructureVillagePieces.Start p_74894_1_, List<StructureComponent> p_74894_2_, Random p_74894_3_, int p_74894_4_, int p_74894_5_
+-            protected StructureComponent getNextComponentPP(
+-                StructureVillagePieces.Start start, List<StructureComponent> structureComponents, Random rand, int p_74894_4_, int p_74894_5_
 -            )
-+            protected StructureComponent func_74894_b(StructureVillagePieces.Start p_74894_1_, List<StructureComponent> p_74894_2_, Random p_74894_3_, int p_74894_4_, int p_74894_5_)
++            protected StructureComponent getNextComponentPP(StructureVillagePieces.Start start, List<StructureComponent> structureComponents, Random rand, int p_74894_4_, int p_74894_5_)
              {
-                 EnumFacing enumfacing = this.func_186165_e();
+                 EnumFacing enumfacing = this.getCoordBaseMode();
  
 @@ -2039,49 +1708,13 @@
                      {
                          case NORTH:
                          default:
--                            return StructureVillagePieces.func_176066_d(
--                                       p_74894_1_,
--                                       p_74894_2_,
--                                       p_74894_3_,
--                                       this.field_74887_e.field_78893_d + 1,
--                                       this.field_74887_e.field_78895_b + p_74894_4_,
--                                       this.field_74887_e.field_78896_c + p_74894_5_,
+-                            return StructureVillagePieces.generateAndAddComponent(
+-                                       start,
+-                                       structureComponents,
+-                                       rand,
+-                                       this.boundingBox.maxX + 1,
+-                                       this.boundingBox.minY + p_74894_4_,
+-                                       this.boundingBox.minZ + p_74894_5_,
 -                                       EnumFacing.EAST,
--                                       this.func_74877_c()
+-                                       this.getComponentType()
 -                                   );
-+                            return StructureVillagePieces.func_176066_d(p_74894_1_, p_74894_2_, p_74894_3_, this.field_74887_e.field_78893_d + 1, this.field_74887_e.field_78895_b + p_74894_4_, this.field_74887_e.field_78896_c + p_74894_5_, EnumFacing.EAST, this.func_74877_c());
++                            return StructureVillagePieces.generateAndAddComponent(start, structureComponents, rand, this.boundingBox.maxX + 1, this.boundingBox.minY + p_74894_4_, this.boundingBox.minZ + p_74894_5_, EnumFacing.EAST, this.getComponentType());
                          case SOUTH:
--                            return StructureVillagePieces.func_176066_d(
--                                       p_74894_1_,
--                                       p_74894_2_,
--                                       p_74894_3_,
--                                       this.field_74887_e.field_78893_d + 1,
--                                       this.field_74887_e.field_78895_b + p_74894_4_,
--                                       this.field_74887_e.field_78896_c + p_74894_5_,
+-                            return StructureVillagePieces.generateAndAddComponent(
+-                                       start,
+-                                       structureComponents,
+-                                       rand,
+-                                       this.boundingBox.maxX + 1,
+-                                       this.boundingBox.minY + p_74894_4_,
+-                                       this.boundingBox.minZ + p_74894_5_,
 -                                       EnumFacing.EAST,
--                                       this.func_74877_c()
+-                                       this.getComponentType()
 -                                   );
-+                            return StructureVillagePieces.func_176066_d(p_74894_1_, p_74894_2_, p_74894_3_, this.field_74887_e.field_78893_d + 1, this.field_74887_e.field_78895_b + p_74894_4_, this.field_74887_e.field_78896_c + p_74894_5_, EnumFacing.EAST, this.func_74877_c());
++                            return StructureVillagePieces.generateAndAddComponent(start, structureComponents, rand, this.boundingBox.maxX + 1, this.boundingBox.minY + p_74894_4_, this.boundingBox.minZ + p_74894_5_, EnumFacing.EAST, this.getComponentType());
                          case WEST:
--                            return StructureVillagePieces.func_176066_d(
--                                       p_74894_1_,
--                                       p_74894_2_,
--                                       p_74894_3_,
--                                       this.field_74887_e.field_78897_a + p_74894_5_,
--                                       this.field_74887_e.field_78895_b + p_74894_4_,
--                                       this.field_74887_e.field_78892_f + 1,
+-                            return StructureVillagePieces.generateAndAddComponent(
+-                                       start,
+-                                       structureComponents,
+-                                       rand,
+-                                       this.boundingBox.minX + p_74894_5_,
+-                                       this.boundingBox.minY + p_74894_4_,
+-                                       this.boundingBox.maxZ + 1,
 -                                       EnumFacing.SOUTH,
--                                       this.func_74877_c()
+-                                       this.getComponentType()
 -                                   );
-+                            return StructureVillagePieces.func_176066_d(p_74894_1_, p_74894_2_, p_74894_3_, this.field_74887_e.field_78897_a + p_74894_5_, this.field_74887_e.field_78895_b + p_74894_4_, this.field_74887_e.field_78892_f + 1, EnumFacing.SOUTH, this.func_74877_c());
++                            return StructureVillagePieces.generateAndAddComponent(start, structureComponents, rand, this.boundingBox.minX + p_74894_5_, this.boundingBox.minY + p_74894_4_, this.boundingBox.maxZ + 1, EnumFacing.SOUTH, this.getComponentType());
                          case EAST:
--                            return StructureVillagePieces.func_176066_d(
--                                       p_74894_1_,
--                                       p_74894_2_,
--                                       p_74894_3_,
--                                       this.field_74887_e.field_78897_a + p_74894_5_,
--                                       this.field_74887_e.field_78895_b + p_74894_4_,
--                                       this.field_74887_e.field_78892_f + 1,
+-                            return StructureVillagePieces.generateAndAddComponent(
+-                                       start,
+-                                       structureComponents,
+-                                       rand,
+-                                       this.boundingBox.minX + p_74894_5_,
+-                                       this.boundingBox.minY + p_74894_4_,
+-                                       this.boundingBox.maxZ + 1,
 -                                       EnumFacing.SOUTH,
--                                       this.func_74877_c()
+-                                       this.getComponentType()
 -                                   );
-+                            return StructureVillagePieces.func_176066_d(p_74894_1_, p_74894_2_, p_74894_3_, this.field_74887_e.field_78897_a + p_74894_5_, this.field_74887_e.field_78895_b + p_74894_4_, this.field_74887_e.field_78892_f + 1, EnumFacing.SOUTH, this.func_74877_c());
++                            return StructureVillagePieces.generateAndAddComponent(start, structureComponents, rand, this.boundingBox.minX + p_74894_5_, this.boundingBox.minY + p_74894_4_, this.boundingBox.maxZ + 1, EnumFacing.SOUTH, this.getComponentType());
                      }
                  }
                  else
@@ -1269,17 +1269,17 @@
                  int j = 0;
                  BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
--                for (int k = this.field_74887_e.field_78896_c; k <= this.field_74887_e.field_78892_f; k++)
-+                for (int k = this.field_74887_e.field_78896_c; k <= this.field_74887_e.field_78892_f; ++k)
+-                for (int k = this.boundingBox.minZ; k <= this.boundingBox.maxZ; k++)
++                for (int k = this.boundingBox.minZ; k <= this.boundingBox.maxZ; ++k)
                  {
--                    for (int l = this.field_74887_e.field_78897_a; l <= this.field_74887_e.field_78893_d; l++)
-+                    for (int l = this.field_74887_e.field_78897_a; l <= this.field_74887_e.field_78893_d; ++l)
+-                    for (int l = this.boundingBox.minX; l <= this.boundingBox.maxX; l++)
++                    for (int l = this.boundingBox.minX; l <= this.boundingBox.maxX; ++l)
                      {
-                         blockpos$mutableblockpos.func_181079_c(l, 64, k);
+                         blockpos$mutableblockpos.setPos(l, 64, k);
  
-                         if (p_74889_2_.func_175898_b(blockpos$mutableblockpos))
+                         if (structurebb.isVecInside(blockpos$mutableblockpos))
                          {
-                             i += Math.max(p_74889_1_.func_175672_r(blockpos$mutableblockpos).func_177956_o(), p_74889_1_.field_73011_w.func_76557_i() - 1);
+                             i += Math.max(worldIn.getTopSolidOrLiquidBlock(blockpos$mutableblockpos).getY(), worldIn.provider.getAverageGroundLevel() - 1);
 -                            j++;
 +                            ++j;
                          }
@@ -1297,207 +1297,207 @@
 +                }
              }
  
-             protected static boolean func_74895_a(StructureBoundingBox p_74895_0_)
+             protected static boolean canVillageGoDeeper(StructureBoundingBox structurebb)
 @@ -2122,7 +1762,7 @@
              {
-                 if (this.field_74896_a < p_74893_6_)
+                 if (this.villagersSpawned < count)
                  {
--                    for (int i = this.field_74896_a; i < p_74893_6_; i++)
-+                    for (int i = this.field_74896_a; i < p_74893_6_; ++i)
+-                    for (int i = this.villagersSpawned; i < count; i++)
++                    for (int i = this.villagersSpawned; i < count; ++i)
                      {
-                         int j = this.func_74865_a(p_74893_3_ + i, p_74893_5_);
-                         int k = this.func_74862_a(p_74893_4_);
+                         int j = this.getXWithOffset(x + i, z);
+                         int k = this.getYWithOffset(y);
 @@ -2133,36 +1773,45 @@
                              break;
                          }
  
--                        this.field_74896_a++;
-+                        ++this.field_74896_a;
+-                        this.villagersSpawned++;
++                        ++this.villagersSpawned;
  
-                         if (this.field_189929_i)
+                         if (this.isZombieInfested)
                          {
-                             EntityZombieVillager entityzombievillager = new EntityZombieVillager(p_74893_1_);
--                            entityzombievillager.func_70012_b((double)j + 0.5, (double)k, (double)l + 0.5, 0.0F, 0.0F);
--                            entityzombievillager.func_180482_a(p_74893_1_.func_175649_E(new BlockPos(entityzombievillager)), null);
--                            entityzombievillager.func_190733_a(this.func_180779_c(i, 0));
-+                            entityzombievillager.func_70012_b((double)j + 0.5D, (double)k, (double)l + 0.5D, 0.0F, 0.0F);
-+                            entityzombievillager.func_180482_a(p_74893_1_.func_175649_E(new BlockPos(entityzombievillager)), (IEntityLivingData)null);
+                             EntityZombieVillager entityzombievillager = new EntityZombieVillager(worldIn);
+-                            entityzombievillager.setLocationAndAngles((double)j + 0.5, (double)k, (double)l + 0.5, 0.0F, 0.0F);
+-                            entityzombievillager.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityzombievillager)), null);
+-                            entityzombievillager.setProfession(this.chooseProfession(i, 0));
++                            entityzombievillager.setLocationAndAngles((double)j + 0.5D, (double)k, (double)l + 0.5D, 0.0F, 0.0F);
++                            entityzombievillager.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityzombievillager)), (IEntityLivingData)null);
 +                            entityzombievillager.setForgeProfession(this.chooseForgeProfession(i, net.minecraftforge.fml.common.registry.VillagerRegistry.FARMER));
-                             entityzombievillager.func_110163_bv();
-                             p_74893_1_.func_72838_d(entityzombievillager);
+                             entityzombievillager.enablePersistence();
+                             worldIn.spawnEntity(entityzombievillager);
                          }
                          else
                          {
-                             EntityVillager entityvillager = new EntityVillager(p_74893_1_);
--                            entityvillager.func_70012_b((double)j + 0.5, (double)k, (double)l + 0.5, 0.0F, 0.0F);
--                            entityvillager.func_70938_b(this.func_180779_c(i, p_74893_1_.field_73012_v.nextInt(6)));
--                            entityvillager.func_190672_a(p_74893_1_.func_175649_E(new BlockPos(entityvillager)), null, false);
-+                            entityvillager.func_70012_b((double)j + 0.5D, (double)k, (double)l + 0.5D, 0.0F, 0.0F);
-+                            net.minecraftforge.fml.common.registry.VillagerRegistry.setRandomProfession(entityvillager, p_74893_1_.field_73012_v);
+                             EntityVillager entityvillager = new EntityVillager(worldIn);
+-                            entityvillager.setLocationAndAngles((double)j + 0.5, (double)k, (double)l + 0.5, 0.0F, 0.0F);
+-                            entityvillager.setProfession(this.chooseProfession(i, worldIn.rand.nextInt(6)));
+-                            entityvillager.finalizeMobSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityvillager)), null, false);
++                            entityvillager.setLocationAndAngles((double)j + 0.5D, (double)k, (double)l + 0.5D, 0.0F, 0.0F);
++                            net.minecraftforge.fml.common.registry.VillagerRegistry.setRandomProfession(entityvillager, worldIn.rand);
 +                            entityvillager.setProfession(this.chooseForgeProfession(i, entityvillager.getProfessionForge()));
-+                            entityvillager.func_190672_a(p_74893_1_.func_175649_E(new BlockPos(entityvillager)), (IEntityLivingData)null, false);
-                             p_74893_1_.func_72838_d(entityvillager);
++                            entityvillager.finalizeMobSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityvillager)), (IEntityLivingData)null, false);
+                             worldIn.spawnEntity(entityvillager);
                          }
                      }
                  }
              }
  
 +            @Deprecated // Use Forge version below.
-             protected int func_180779_c(int p_180779_1_, int p_180779_2_)
+             protected int chooseProfession(int villagersSpawnedIn, int currentVillagerProfession)
              {
-                 return p_180779_2_;
+                 return currentVillagerProfession;
              }
 +            protected net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession chooseForgeProfession(int count, net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession prof)
 +            {
-+                return net.minecraftforge.fml.common.registry.VillagerRegistry.getById(func_180779_c(count, net.minecraftforge.fml.common.registry.VillagerRegistry.getId(prof)));
++                return net.minecraftforge.fml.common.registry.VillagerRegistry.getById(chooseProfession(count, net.minecraftforge.fml.common.registry.VillagerRegistry.getId(prof)));
 +            }
  
-             protected IBlockState func_175847_a(IBlockState p_175847_1_)
+             protected IBlockState getBiomeSpecificBlockState(IBlockState blockstateIn)
              {
-+                net.minecraftforge.event.terraingen.BiomeEvent.GetVillageBlockID event = new net.minecraftforge.event.terraingen.BiomeEvent.GetVillageBlockID(startPiece == null ? null : startPiece.biome, p_175847_1_);
++                net.minecraftforge.event.terraingen.BiomeEvent.GetVillageBlockID event = new net.minecraftforge.event.terraingen.BiomeEvent.GetVillageBlockID(startPiece == null ? null : startPiece.biome, blockstateIn);
 +                net.minecraftforge.common.MinecraftForge.TERRAIN_GEN_BUS.post(event);
 +                if (event.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) return event.getReplacement();
-                 if (this.field_189928_h == 1)
+                 if (this.structureType == 1)
                  {
-                     if (p_175847_1_.func_177230_c() == Blocks.field_150364_r || p_175847_1_.func_177230_c() == Blocks.field_150363_s)
+                     if (blockstateIn.getBlock() == Blocks.LOG || blockstateIn.getBlock() == Blocks.LOG2)
 @@ -2199,10 +1848,7 @@
                  {
-                     if (p_175847_1_.func_177230_c() == Blocks.field_150364_r || p_175847_1_.func_177230_c() == Blocks.field_150363_s)
+                     if (blockstateIn.getBlock() == Blocks.LOG || blockstateIn.getBlock() == Blocks.LOG2)
                      {
--                        return Blocks.field_150364_r
--                               .func_176223_P()
--                               .func_177226_a(BlockOldLog.field_176301_b, BlockPlanks.EnumType.SPRUCE)
--                               .func_177226_a(BlockLog.field_176299_a, p_175847_1_.func_177229_b(BlockLog.field_176299_a));
-+                        return Blocks.field_150364_r.func_176223_P().func_177226_a(BlockOldLog.field_176301_b, BlockPlanks.EnumType.SPRUCE).func_177226_a(BlockLog.field_176299_a, p_175847_1_.func_177229_b(BlockLog.field_176299_a));
+-                        return Blocks.LOG
+-                               .getDefaultState()
+-                               .withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.SPRUCE)
+-                               .withProperty(BlockLog.LOG_AXIS, blockstateIn.getValue(BlockLog.LOG_AXIS));
++                        return Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.SPRUCE).withProperty(BlockLog.LOG_AXIS, blockstateIn.getValue(BlockLog.LOG_AXIS));
                      }
  
-                     if (p_175847_1_.func_177230_c() == Blocks.field_150344_f)
+                     if (blockstateIn.getBlock() == Blocks.PLANKS)
 @@ -2224,10 +1870,7 @@
                  {
-                     if (p_175847_1_.func_177230_c() == Blocks.field_150364_r || p_175847_1_.func_177230_c() == Blocks.field_150363_s)
+                     if (blockstateIn.getBlock() == Blocks.LOG || blockstateIn.getBlock() == Blocks.LOG2)
                      {
--                        return Blocks.field_150363_s
--                               .func_176223_P()
--                               .func_177226_a(BlockNewLog.field_176300_b, BlockPlanks.EnumType.ACACIA)
--                               .func_177226_a(BlockLog.field_176299_a, p_175847_1_.func_177229_b(BlockLog.field_176299_a));
-+                        return Blocks.field_150363_s.func_176223_P().func_177226_a(BlockNewLog.field_176300_b, BlockPlanks.EnumType.ACACIA).func_177226_a(BlockLog.field_176299_a, p_175847_1_.func_177229_b(BlockLog.field_176299_a));
+-                        return Blocks.LOG2
+-                               .getDefaultState()
+-                               .withProperty(BlockNewLog.VARIANT, BlockPlanks.EnumType.ACACIA)
+-                               .withProperty(BlockLog.LOG_AXIS, blockstateIn.getValue(BlockLog.LOG_AXIS));
++                        return Blocks.LOG2.getDefaultState().withProperty(BlockNewLog.VARIANT, BlockPlanks.EnumType.ACACIA).withProperty(BlockLog.LOG_AXIS, blockstateIn.getValue(BlockLog.LOG_AXIS));
                      }
  
-                     if (p_175847_1_.func_177230_c() == Blocks.field_150344_f)
+                     if (blockstateIn.getBlock() == Blocks.PLANKS)
 @@ -2242,10 +1885,7 @@
  
-                     if (p_175847_1_.func_177230_c() == Blocks.field_150347_e)
+                     if (blockstateIn.getBlock() == Blocks.COBBLESTONE)
                      {
--                        return Blocks.field_150363_s
--                               .func_176223_P()
--                               .func_177226_a(BlockNewLog.field_176300_b, BlockPlanks.EnumType.ACACIA)
--                               .func_177226_a(BlockLog.field_176299_a, BlockLog.EnumAxis.Y);
-+                        return Blocks.field_150363_s.func_176223_P().func_177226_a(BlockNewLog.field_176300_b, BlockPlanks.EnumType.ACACIA).func_177226_a(BlockLog.field_176299_a, BlockLog.EnumAxis.Y);
+-                        return Blocks.LOG2
+-                               .getDefaultState()
+-                               .withProperty(BlockNewLog.VARIANT, BlockPlanks.EnumType.ACACIA)
+-                               .withProperty(BlockLog.LOG_AXIS, BlockLog.EnumAxis.Y);
++                        return Blocks.LOG2.getDefaultState().withProperty(BlockNewLog.VARIANT, BlockPlanks.EnumType.ACACIA).withProperty(BlockLog.LOG_AXIS, BlockLog.EnumAxis.Y);
                      }
  
-                     if (p_175847_1_.func_177230_c() == Blocks.field_180407_aO)
+                     if (blockstateIn.getBlock() == Blocks.OAK_FENCE)
 @@ -2270,9 +1910,7 @@
                  }
              }
  
--            protected void func_189927_a(
+-            protected void createVillageDoor(
 -                World p_189927_1_, StructureBoundingBox p_189927_2_, Random p_189927_3_, int p_189927_4_, int p_189927_5_, int p_189927_6_, EnumFacing p_189927_7_
 -            )
-+            protected void func_189927_a(World p_189927_1_, StructureBoundingBox p_189927_2_, Random p_189927_3_, int p_189927_4_, int p_189927_5_, int p_189927_6_, EnumFacing p_189927_7_)
++            protected void createVillageDoor(World p_189927_1_, StructureBoundingBox p_189927_2_, Random p_189927_3_, int p_189927_4_, int p_189927_5_, int p_189927_6_, EnumFacing p_189927_7_)
              {
-                 if (!this.field_189929_i)
+                 if (!this.isZombieInfested)
                  {
 @@ -2280,27 +1918,15 @@
                  }
              }
  
--            protected void func_189926_a(
+-            protected void placeTorch(
 -                World p_189926_1_, EnumFacing p_189926_2_, int p_189926_3_, int p_189926_4_, int p_189926_5_, StructureBoundingBox p_189926_6_
 -            )
-+            protected void func_189926_a(World p_189926_1_, EnumFacing p_189926_2_, int p_189926_3_, int p_189926_4_, int p_189926_5_, StructureBoundingBox p_189926_6_)
++            protected void placeTorch(World p_189926_1_, EnumFacing p_189926_2_, int p_189926_3_, int p_189926_4_, int p_189926_5_, StructureBoundingBox p_189926_6_)
              {
-                 if (!this.field_189929_i)
+                 if (!this.isZombieInfested)
                  {
--                    this.func_175811_a(
+-                    this.setBlockState(
 -                        p_189926_1_,
--                        Blocks.field_150478_aa.func_176223_P().func_177226_a(BlockTorch.field_176596_a, p_189926_2_),
+-                        Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, p_189926_2_),
 -                        p_189926_3_,
 -                        p_189926_4_,
 -                        p_189926_5_,
 -                        p_189926_6_
 -                    );
-+                    this.func_175811_a(p_189926_1_, Blocks.field_150478_aa.func_176223_P().func_177226_a(BlockTorch.field_176596_a, p_189926_2_), p_189926_3_, p_189926_4_, p_189926_5_, p_189926_6_);
++                    this.setBlockState(p_189926_1_, Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, p_189926_2_), p_189926_3_, p_189926_4_, p_189926_5_, p_189926_6_);
                  }
              }
  
 -            @Override
--            protected void func_175808_b(
--                World p_175808_1_, IBlockState p_175808_2_, int p_175808_3_, int p_175808_4_, int p_175808_5_, StructureBoundingBox p_175808_6_
+-            protected void replaceAirAndLiquidDownwards(
+-                World worldIn, IBlockState blockstateIn, int x, int y, int z, StructureBoundingBox boundingboxIn
 -            )
-+            protected void func_175808_b(World p_175808_1_, IBlockState p_175808_2_, int p_175808_3_, int p_175808_4_, int p_175808_5_, StructureBoundingBox p_175808_6_)
++            protected void replaceAirAndLiquidDownwards(World worldIn, IBlockState blockstateIn, int x, int y, int z, StructureBoundingBox boundingboxIn)
              {
-                 IBlockState iblockstate = this.func_175847_a(p_175808_2_);
-                 super.func_175808_b(p_175808_1_, iblockstate, p_175808_3_, p_175808_4_, p_175808_5_, p_175808_6_);
+                 IBlockState iblockstate = this.getBiomeSpecificBlockState(blockstateIn);
+                 super.replaceAirAndLiquidDownwards(worldIn, iblockstate, x, y, z, boundingboxIn);
 @@ -2333,52 +1959,14 @@
                  }
              }
  
 -            @Override
-             public void func_74861_a(StructureComponent p_74861_1_, List<StructureComponent> p_74861_2_, Random p_74861_3_)
+             public void buildComponent(StructureComponent componentIn, List<StructureComponent> listIn, Random rand)
              {
--                StructureVillagePieces.func_176069_e(
--                    (StructureVillagePieces.Start)p_74861_1_,
--                    p_74861_2_,
--                    p_74861_3_,
--                    this.field_74887_e.field_78897_a - 1,
--                    this.field_74887_e.field_78894_e - 4,
--                    this.field_74887_e.field_78896_c + 1,
+-                StructureVillagePieces.generateAndAddRoadPiece(
+-                    (StructureVillagePieces.Start)componentIn,
+-                    listIn,
+-                    rand,
+-                    this.boundingBox.minX - 1,
+-                    this.boundingBox.maxY - 4,
+-                    this.boundingBox.minZ + 1,
 -                    EnumFacing.WEST,
--                    this.func_74877_c()
+-                    this.getComponentType()
 -                );
--                StructureVillagePieces.func_176069_e(
--                    (StructureVillagePieces.Start)p_74861_1_,
--                    p_74861_2_,
--                    p_74861_3_,
--                    this.field_74887_e.field_78893_d + 1,
--                    this.field_74887_e.field_78894_e - 4,
--                    this.field_74887_e.field_78896_c + 1,
+-                StructureVillagePieces.generateAndAddRoadPiece(
+-                    (StructureVillagePieces.Start)componentIn,
+-                    listIn,
+-                    rand,
+-                    this.boundingBox.maxX + 1,
+-                    this.boundingBox.maxY - 4,
+-                    this.boundingBox.minZ + 1,
 -                    EnumFacing.EAST,
--                    this.func_74877_c()
+-                    this.getComponentType()
 -                );
--                StructureVillagePieces.func_176069_e(
--                    (StructureVillagePieces.Start)p_74861_1_,
--                    p_74861_2_,
--                    p_74861_3_,
--                    this.field_74887_e.field_78897_a + 1,
--                    this.field_74887_e.field_78894_e - 4,
--                    this.field_74887_e.field_78896_c - 1,
+-                StructureVillagePieces.generateAndAddRoadPiece(
+-                    (StructureVillagePieces.Start)componentIn,
+-                    listIn,
+-                    rand,
+-                    this.boundingBox.minX + 1,
+-                    this.boundingBox.maxY - 4,
+-                    this.boundingBox.minZ - 1,
 -                    EnumFacing.NORTH,
--                    this.func_74877_c()
+-                    this.getComponentType()
 -                );
--                StructureVillagePieces.func_176069_e(
--                    (StructureVillagePieces.Start)p_74861_1_,
--                    p_74861_2_,
--                    p_74861_3_,
--                    this.field_74887_e.field_78897_a + 1,
--                    this.field_74887_e.field_78894_e - 4,
--                    this.field_74887_e.field_78892_f + 1,
+-                StructureVillagePieces.generateAndAddRoadPiece(
+-                    (StructureVillagePieces.Start)componentIn,
+-                    listIn,
+-                    rand,
+-                    this.boundingBox.minX + 1,
+-                    this.boundingBox.maxY - 4,
+-                    this.boundingBox.maxZ + 1,
 -                    EnumFacing.SOUTH,
--                    this.func_74877_c()
+-                    this.getComponentType()
 -                );
-+                StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78897_a - 1, this.field_74887_e.field_78894_e - 4, this.field_74887_e.field_78896_c + 1, EnumFacing.WEST, this.func_74877_c());
-+                StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78893_d + 1, this.field_74887_e.field_78894_e - 4, this.field_74887_e.field_78896_c + 1, EnumFacing.EAST, this.func_74877_c());
-+                StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78897_a + 1, this.field_74887_e.field_78894_e - 4, this.field_74887_e.field_78896_c - 1, EnumFacing.NORTH, this.func_74877_c());
-+                StructureVillagePieces.func_176069_e((StructureVillagePieces.Start)p_74861_1_, p_74861_2_, p_74861_3_, this.field_74887_e.field_78897_a + 1, this.field_74887_e.field_78894_e - 4, this.field_74887_e.field_78892_f + 1, EnumFacing.SOUTH, this.func_74877_c());
++                StructureVillagePieces.generateAndAddRoadPiece((StructureVillagePieces.Start)componentIn, listIn, rand, this.boundingBox.minX - 1, this.boundingBox.maxY - 4, this.boundingBox.minZ + 1, EnumFacing.WEST, this.getComponentType());
++                StructureVillagePieces.generateAndAddRoadPiece((StructureVillagePieces.Start)componentIn, listIn, rand, this.boundingBox.maxX + 1, this.boundingBox.maxY - 4, this.boundingBox.minZ + 1, EnumFacing.EAST, this.getComponentType());
++                StructureVillagePieces.generateAndAddRoadPiece((StructureVillagePieces.Start)componentIn, listIn, rand, this.boundingBox.minX + 1, this.boundingBox.maxY - 4, this.boundingBox.minZ - 1, EnumFacing.NORTH, this.getComponentType());
++                StructureVillagePieces.generateAndAddRoadPiece((StructureVillagePieces.Start)componentIn, listIn, rand, this.boundingBox.minX + 1, this.boundingBox.maxY - 4, this.boundingBox.maxZ + 1, EnumFacing.SOUTH, this.getComponentType());
              }
  
 -            @Override
-             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             public boolean addComponentParts(World worldIn, Random randomIn, StructureBoundingBox structureBoundingBoxIn)
              {
-                 if (this.field_143015_k < 0)
+                 if (this.averageGroundLvl < 0)
 @@ -2410,9 +1998,9 @@
-                 this.func_175811_a(p_74875_1_, iblockstate1, 4, 14, 4, p_74875_3_);
-                 this.func_175804_a(p_74875_1_, p_74875_3_, 1, 15, 1, 4, 15, 4, iblockstate, iblockstate, false);
+                 this.setBlockState(worldIn, iblockstate1, 4, 14, 4, structureBoundingBoxIn);
+                 this.fillWithBlocks(worldIn, structureBoundingBoxIn, 1, 15, 1, 4, 15, 4, iblockstate, iblockstate, false);
  
 -                for (int i = 0; i <= 5; i++)
 +                for (int i = 0; i <= 5; ++i)
@@ -1508,57 +1508,57 @@
                          if (j == 0 || j == 5 || i == 0 || i == 5)
                          {
 @@ -2444,7 +2032,6 @@
-                 this.field_74910_c = p_i45565_3_.nextInt(3);
+                 this.tablePosition = rand.nextInt(3);
              }
  
 -            @Override
-             protected void func_143012_a(NBTTagCompound p_143012_1_)
+             protected void writeStructureToNBT(NBTTagCompound tagCompound)
              {
-                 super.func_143012_a(p_143012_1_);
+                 super.writeStructureToNBT(tagCompound);
 @@ -2452,7 +2039,6 @@
-                 p_143012_1_.func_74757_a("C", this.field_74909_b);
+                 tagCompound.setBoolean("C", this.isTallHouse);
              }
  
 -            @Override
-             protected void func_143011_b(NBTTagCompound p_143011_1_, TemplateManager p_143011_2_)
+             protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
              {
-                 super.func_143011_b(p_143011_1_, p_143011_2_);
+                 super.readStructureFromNBT(tagCompound, p_143011_2_);
 @@ -2460,24 +2046,12 @@
-                 this.field_74909_b = p_143011_1_.func_74767_n("C");
+                 this.isTallHouse = tagCompound.getBoolean("C");
              }
  
--            public static StructureVillagePieces.WoodHut func_175853_a(
--                    StructureVillagePieces.Start p_175853_0_,
+-            public static StructureVillagePieces.WoodHut createPiece(
+-                    StructureVillagePieces.Start start,
 -                    List<StructureComponent> p_175853_1_,
--                    Random p_175853_2_,
+-                    Random rand,
 -                    int p_175853_3_,
 -                    int p_175853_4_,
 -                    int p_175853_5_,
--                    EnumFacing p_175853_6_,
+-                    EnumFacing facing,
 -                    int p_175853_7_
 -                )
-+            public static StructureVillagePieces.WoodHut func_175853_a(StructureVillagePieces.Start p_175853_0_, List<StructureComponent> p_175853_1_, Random p_175853_2_, int p_175853_3_, int p_175853_4_, int p_175853_5_, EnumFacing p_175853_6_, int p_175853_7_)
++            public static StructureVillagePieces.WoodHut createPiece(StructureVillagePieces.Start start, List<StructureComponent> p_175853_1_, Random rand, int p_175853_3_, int p_175853_4_, int p_175853_5_, EnumFacing facing, int p_175853_7_)
              {
-                 StructureBoundingBox structureboundingbox = StructureBoundingBox.func_175897_a(p_175853_3_, p_175853_4_, p_175853_5_, 0, 0, 0, 4, 6, 5, p_175853_6_);
--                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175853_1_, structureboundingbox) == null
--                       ? new StructureVillagePieces.WoodHut(p_175853_0_, p_175853_7_, p_175853_2_, structureboundingbox, p_175853_6_)
+                 StructureBoundingBox structureboundingbox = StructureBoundingBox.getComponentToAddBoundingBox(p_175853_3_, p_175853_4_, p_175853_5_, 0, 0, 0, 4, 6, 5, facing);
+-                return canVillageGoDeeper(structureboundingbox) && StructureComponent.findIntersecting(p_175853_1_, structureboundingbox) == null
+-                       ? new StructureVillagePieces.WoodHut(start, p_175853_7_, rand, structureboundingbox, facing)
 -                       : null;
-+                return func_74895_a(structureboundingbox) && StructureComponent.func_74883_a(p_175853_1_, structureboundingbox) == null ? new StructureVillagePieces.WoodHut(p_175853_0_, p_175853_7_, p_175853_2_, structureboundingbox, p_175853_6_) : null;
++                return canVillageGoDeeper(structureboundingbox) && StructureComponent.findIntersecting(p_175853_1_, structureboundingbox) == null ? new StructureVillagePieces.WoodHut(start, p_175853_7_, rand, structureboundingbox, facing) : null;
              }
  
 -            @Override
-             public boolean func_74875_a(World p_74875_1_, Random p_74875_2_, StructureBoundingBox p_74875_3_)
+             public boolean addComponentParts(World worldIn, Random randomIn, StructureBoundingBox structureBoundingBoxIn)
              {
-                 if (this.field_143015_k < 0)
+                 if (this.averageGroundLvl < 0)
 @@ -2541,8 +2115,7 @@
-                 this.func_175811_a(p_74875_1_, Blocks.field_150350_a.func_176223_P(), 1, 2, 0, p_74875_3_);
-                 this.func_189927_a(p_74875_1_, p_74875_3_, p_74875_2_, 1, 1, 0, EnumFacing.NORTH);
+                 this.setBlockState(worldIn, Blocks.AIR.getDefaultState(), 1, 2, 0, structureBoundingBoxIn);
+                 this.createVillageDoor(worldIn, structureBoundingBoxIn, randomIn, 1, 1, 0, EnumFacing.NORTH);
  
--                if (this.func_175807_a(p_74875_1_, 1, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a
--                        && this.func_175807_a(p_74875_1_, 1, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
-+                if (this.func_175807_a(p_74875_1_, 1, 0, -1, p_74875_3_).func_185904_a() == Material.field_151579_a && this.func_175807_a(p_74875_1_, 1, -1, -1, p_74875_3_).func_185904_a() != Material.field_151579_a)
+-                if (this.getBlockStateFromPos(worldIn, 1, 0, -1, structureBoundingBoxIn).getMaterial() == Material.AIR
+-                        && this.getBlockStateFromPos(worldIn, 1, -1, -1, structureBoundingBoxIn).getMaterial() != Material.AIR)
++                if (this.getBlockStateFromPos(worldIn, 1, 0, -1, structureBoundingBoxIn).getMaterial() == Material.AIR && this.getBlockStateFromPos(worldIn, 1, -1, -1, structureBoundingBoxIn).getMaterial() != Material.AIR)
                  {
-                     this.func_175811_a(p_74875_1_, iblockstate2, 1, 0, -1, p_74875_3_);
+                     this.setBlockState(worldIn, iblockstate2, 1, 0, -1, structureBoundingBoxIn);
  
 @@ -2552,9 +2125,9 @@
                      }
@@ -1570,5 +1570,5 @@
 -                    for (int j = 0; j < 4; j++)
 +                    for (int j = 0; j < 4; ++j)
                      {
-                         this.func_74871_b(p_74875_1_, j, 6, i, p_74875_3_);
-                         this.func_175808_b(p_74875_1_, iblockstate, j, -1, i, p_74875_3_);
+                         this.clearCurrentPositionBlocksUpwards(worldIn, j, 6, i, structureBoundingBoxIn);
+                         this.replaceAirAndLiquidDownwards(worldIn, iblockstate, j, -1, i, structureBoundingBoxIn);

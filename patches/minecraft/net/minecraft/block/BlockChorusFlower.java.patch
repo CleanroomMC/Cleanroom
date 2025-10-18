@@ -11,32 +11,32 @@
 @@ -30,18 +31,16 @@
      protected BlockChorusFlower()
      {
-         super(Material.field_151585_k, MapColor.field_151678_z);
--        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_185607_a, 0));
-+        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_185607_a, Integer.valueOf(0)));
-         this.func_149647_a(CreativeTabs.field_78031_c);
-         this.func_149675_a(true);
+         super(Material.PLANTS, MapColor.PURPLE);
+-        this.setDefaultState(this.blockState.getBaseState().withProperty(AGE, 0));
++        this.setDefaultState(this.blockState.getBaseState().withProperty(AGE, Integer.valueOf(0)));
+         this.setCreativeTab(CreativeTabs.DECORATIONS);
+         this.setTickRandomly(true);
      }
  
 -    @Override
-     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
+     public Item getItemDropped(IBlockState state, Random rand, int fortune)
      {
-         return Items.field_190931_a;
+         return Items.AIR;
      }
  
 -    @Override
-     public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
+     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
      {
-         if (!this.func_185606_b(p_180650_1_, p_180650_2_))
+         if (!this.canSurvive(worldIn, pos))
 @@ -54,9 +53,9 @@
  
-             if (p_180650_1_.func_175623_d(blockpos) && blockpos.func_177956_o() < 256)
+             if (worldIn.isAirBlock(blockpos) && blockpos.getY() < 256)
              {
--                int i = p_180650_3_.func_177229_b(field_185607_a);
-+                int i = ((Integer)p_180650_3_.func_177229_b(field_185607_a)).intValue();
+-                int i = state.getValue(AGE);
++                int i = ((Integer)state.getValue(AGE)).intValue();
  
--                if (i < 5 && p_180650_4_.nextInt(1) == 0)
-+                if (i < 5 &&  net.minecraftforge.common.ForgeHooks.onCropsGrowPre(p_180650_1_, blockpos, p_180650_3_, p_180650_4_.nextInt(1) == 0))
+-                if (i < 5 && rand.nextInt(1) == 0)
++                if (i < 5 &&  net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, blockpos, state, rand.nextInt(1) == 0))
                  {
                      boolean flag = false;
                      boolean flag1 = false;
@@ -47,7 +47,7 @@
 -                        for (int k = 0; k < 4; k++)
 +                        for (int k = 0; k < 4; ++k)
                          {
-                             Block block1 = p_180650_1_.func_180495_p(p_180650_2_.func_177979_c(j + 1)).func_177230_c();
+                             Block block1 = worldIn.getBlockState(pos.down(j + 1)).getBlock();
  
 @@ -85,14 +84,14 @@
                                  break;
@@ -65,16 +65,16 @@
 +                            ++i1;
                          }
  
-                         if (j < 2 || p_180650_4_.nextInt(i1) >= j)
+                         if (j < 2 || rand.nextInt(i1) >= j)
 @@ -105,7 +104,7 @@
                          flag = true;
                      }
  
--                    if (flag && func_185604_a(p_180650_1_, blockpos, null) && p_180650_1_.func_175623_d(p_180650_2_.func_177981_b(2)))
-+                    if (flag && func_185604_a(p_180650_1_, blockpos, (EnumFacing)null) && p_180650_1_.func_175623_d(p_180650_2_.func_177981_b(2)))
+-                    if (flag && areAllNeighborsEmpty(worldIn, blockpos, null) && worldIn.isAirBlock(pos.up(2)))
++                    if (flag && areAllNeighborsEmpty(worldIn, blockpos, (EnumFacing)null) && worldIn.isAirBlock(pos.up(2)))
                      {
-                         p_180650_1_.func_180501_a(p_180650_2_, Blocks.field_185765_cR.func_176223_P(), 2);
-                         this.func_185602_a(p_180650_1_, blockpos, i);
+                         worldIn.setBlockState(pos, Blocks.CHORUS_PLANT.getDefaultState(), 2);
+                         this.placeGrownFlower(worldIn, blockpos, i);
 @@ -117,17 +116,15 @@
  
                          if (flag1)
@@ -86,38 +86,38 @@
 -                        for (int j1 = 0; j1 < l; j1++)
 +                        for (int j1 = 0; j1 < l; ++j1)
                          {
-                             EnumFacing enumfacing = EnumFacing.Plane.HORIZONTAL.func_179518_a(p_180650_4_);
-                             BlockPos blockpos1 = p_180650_2_.func_177972_a(enumfacing);
+                             EnumFacing enumfacing = EnumFacing.Plane.HORIZONTAL.random(rand);
+                             BlockPos blockpos1 = pos.offset(enumfacing);
  
--                            if (p_180650_1_.func_175623_d(blockpos1)
--                                    && p_180650_1_.func_175623_d(blockpos1.func_177977_b())
--                                    && func_185604_a(p_180650_1_, blockpos1, enumfacing.func_176734_d()))
-+                            if (p_180650_1_.func_175623_d(blockpos1) && p_180650_1_.func_175623_d(blockpos1.func_177977_b()) && func_185604_a(p_180650_1_, blockpos1, enumfacing.func_176734_d()))
+-                            if (worldIn.isAirBlock(blockpos1)
+-                                    && worldIn.isAirBlock(blockpos1.down())
+-                                    && areAllNeighborsEmpty(worldIn, blockpos1, enumfacing.getOpposite()))
++                            if (worldIn.isAirBlock(blockpos1) && worldIn.isAirBlock(blockpos1.down()) && areAllNeighborsEmpty(worldIn, blockpos1, enumfacing.getOpposite()))
                              {
-                                 this.func_185602_a(p_180650_1_, blockpos1, i + 1);
+                                 this.placeGrownFlower(worldIn, blockpos1, i + 1);
                                  flag2 = true;
 @@ -147,6 +144,7 @@
                      {
-                         this.func_185605_c(p_180650_1_, p_180650_2_);
+                         this.placeDeadFlower(worldIn, pos);
                      }
-+                    net.minecraftforge.common.ForgeHooks.onCropsGrowPost(p_180650_1_, p_180650_2_, p_180650_3_, p_180650_1_.func_180495_p(p_180650_2_));
++                    net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
                  }
              }
          }
 @@ -154,13 +152,13 @@
  
-     private void func_185602_a(World p_185602_1_, BlockPos p_185602_2_, int p_185602_3_)
+     private void placeGrownFlower(World worldIn, BlockPos pos, int age)
      {
--        p_185602_1_.func_180501_a(p_185602_2_, this.func_176223_P().func_177226_a(field_185607_a, p_185602_3_), 2);
-+        p_185602_1_.func_180501_a(p_185602_2_, this.func_176223_P().func_177226_a(field_185607_a, Integer.valueOf(p_185602_3_)), 2);
-         p_185602_1_.func_175718_b(1033, p_185602_2_, 0);
+-        worldIn.setBlockState(pos, this.getDefaultState().withProperty(AGE, age), 2);
++        worldIn.setBlockState(pos, this.getDefaultState().withProperty(AGE, Integer.valueOf(age)), 2);
+         worldIn.playEvent(1033, pos, 0);
      }
  
-     private void func_185605_c(World p_185605_1_, BlockPos p_185605_2_)
+     private void placeDeadFlower(World worldIn, BlockPos pos)
      {
--        p_185605_1_.func_180501_a(p_185605_2_, this.func_176223_P().func_177226_a(field_185607_a, 5), 2);
-+        p_185605_1_.func_180501_a(p_185605_2_, this.func_176223_P().func_177226_a(field_185607_a, Integer.valueOf(5)), 2);
-         p_185605_1_.func_175718_b(1034, p_185605_2_, 0);
+-        worldIn.setBlockState(pos, this.getDefaultState().withProperty(AGE, 5), 2);
++        worldIn.setBlockState(pos, this.getDefaultState().withProperty(AGE, Integer.valueOf(5)), 2);
+         worldIn.playEvent(1034, pos, 0);
      }
  
 @@ -177,25 +175,21 @@
@@ -125,85 +125,85 @@
      }
  
 -    @Override
-     public boolean func_149686_d(IBlockState p_149686_1_)
+     public boolean isFullCube(IBlockState state)
      {
          return false;
      }
  
 -    @Override
-     public boolean func_149662_c(IBlockState p_149662_1_)
+     public boolean isOpaqueCube(IBlockState state)
      {
          return false;
      }
  
 -    @Override
-     public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)
+     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
      {
-         return super.func_176196_c(p_176196_1_, p_176196_2_) && this.func_185606_b(p_176196_1_, p_176196_2_);
+         return super.canPlaceBlockAt(worldIn, pos) && this.canSurvive(worldIn, pos);
      }
  
 -    @Override
-     public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
+     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
      {
-         if (!this.func_185606_b(p_189540_2_, p_189540_3_))
+         if (!this.canSurvive(worldIn, pos))
 @@ -222,7 +216,7 @@
  
-                     if (block1 == Blocks.field_185765_cR)
+                     if (block1 == Blocks.CHORUS_PLANT)
                      {
 -                        i++;
 +                        ++i;
                      }
-                     else if (iblockstate1.func_185904_a() != Material.field_151579_a)
+                     else if (iblockstate1.getMaterial() != Material.AIR)
                      {
 @@ -243,44 +237,36 @@
          }
      }
  
 -    @Override
--    public void func_180657_a(
--        World p_180657_1_, EntityPlayer p_180657_2_, BlockPos p_180657_3_, IBlockState p_180657_4_, @Nullable TileEntity p_180657_5_, ItemStack p_180657_6_
+-    public void harvestBlock(
+-        World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack
 -    )
-+    public void func_180657_a(World p_180657_1_, EntityPlayer p_180657_2_, BlockPos p_180657_3_, IBlockState p_180657_4_, @Nullable TileEntity p_180657_5_, ItemStack p_180657_6_)
++    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack)
      {
-         super.func_180657_a(p_180657_1_, p_180657_2_, p_180657_3_, p_180657_4_, p_180657_5_, p_180657_6_);
-         func_180635_a(p_180657_1_, p_180657_3_, new ItemStack(Item.func_150898_a(this)));
+         super.harvestBlock(worldIn, player, pos, state, te, stack);
+         spawnAsEntity(worldIn, pos, new ItemStack(Item.getItemFromBlock(this)));
      }
  
 -    @Override
-     protected ItemStack func_180643_i(IBlockState p_180643_1_)
+     protected ItemStack getSilkTouchDrop(IBlockState state)
      {
-         return ItemStack.field_190927_a;
+         return ItemStack.EMPTY;
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public BlockRenderLayer func_180664_k()
+     public BlockRenderLayer getRenderLayer()
      {
          return BlockRenderLayer.CUTOUT;
      }
  
 -    @Override
-     public IBlockState func_176203_a(int p_176203_1_)
+     public IBlockState getStateFromMeta(int meta)
      {
--        return this.func_176223_P().func_177226_a(field_185607_a, p_176203_1_);
-+        return this.func_176223_P().func_177226_a(field_185607_a, Integer.valueOf(p_176203_1_));
+-        return this.getDefaultState().withProperty(AGE, meta);
++        return this.getDefaultState().withProperty(AGE, Integer.valueOf(meta));
      }
  
 -    @Override
-     public int func_176201_c(IBlockState p_176201_1_)
+     public int getMetaFromState(IBlockState state)
      {
--        return p_176201_1_.func_177229_b(field_185607_a);
-+        return ((Integer)p_176201_1_.func_177229_b(field_185607_a)).intValue();
+-        return state.getValue(AGE);
++        return ((Integer)state.getValue(AGE)).intValue();
      }
  
 -    @Override
-     protected BlockStateContainer func_180661_e()
+     protected BlockStateContainer createBlockState()
      {
--        return new BlockStateContainer(this, field_185607_a);
-+        return new BlockStateContainer(this, new IProperty[] {field_185607_a});
+-        return new BlockStateContainer(this, AGE);
++        return new BlockStateContainer(this, new IProperty[] {AGE});
      }
  
-     public static void func_185603_a(World p_185603_0_, BlockPos p_185603_1_, Random p_185603_2_, int p_185603_3_)
+     public static void generatePlant(World worldIn, BlockPos pos, Random rand, int p_185603_3_)
 @@ -295,14 +281,14 @@
  
          if (p_185601_5_ == 0)
@@ -215,10 +215,10 @@
 -        for (int j = 0; j < i; j++)
 +        for (int j = 0; j < i; ++j)
          {
-             BlockPos blockpos = p_185601_1_.func_177981_b(j + 1);
+             BlockPos blockpos = p_185601_1_.up(j + 1);
  
--            if (!func_185604_a(p_185601_0_, blockpos, null))
-+            if (!func_185604_a(p_185601_0_, blockpos, (EnumFacing)null))
+-            if (!areAllNeighborsEmpty(worldIn, blockpos, null))
++            if (!areAllNeighborsEmpty(worldIn, blockpos, (EnumFacing)null))
              {
                  return;
              }
@@ -233,28 +233,28 @@
 -            for (int k = 0; k < l; k++)
 +            for (int k = 0; k < l; ++k)
              {
-                 EnumFacing enumfacing = EnumFacing.Plane.HORIZONTAL.func_179518_a(p_185601_2_);
-                 BlockPos blockpos1 = p_185601_1_.func_177981_b(i).func_177972_a(enumfacing);
+                 EnumFacing enumfacing = EnumFacing.Plane.HORIZONTAL.random(rand);
+                 BlockPos blockpos1 = p_185601_1_.up(i).offset(enumfacing);
  
--                if (Math.abs(blockpos1.func_177958_n() - p_185601_3_.func_177958_n()) < p_185601_4_
--                        && Math.abs(blockpos1.func_177952_p() - p_185601_3_.func_177952_p()) < p_185601_4_
--                        && p_185601_0_.func_175623_d(blockpos1)
--                        && p_185601_0_.func_175623_d(blockpos1.func_177977_b())
--                        && func_185604_a(p_185601_0_, blockpos1, enumfacing.func_176734_d()))
-+                if (Math.abs(blockpos1.func_177958_n() - p_185601_3_.func_177958_n()) < p_185601_4_ && Math.abs(blockpos1.func_177952_p() - p_185601_3_.func_177952_p()) < p_185601_4_ && p_185601_0_.func_175623_d(blockpos1) && p_185601_0_.func_175623_d(blockpos1.func_177977_b()) && func_185604_a(p_185601_0_, blockpos1, enumfacing.func_176734_d()))
+-                if (Math.abs(blockpos1.getX() - p_185601_3_.getX()) < p_185601_4_
+-                        && Math.abs(blockpos1.getZ() - p_185601_3_.getZ()) < p_185601_4_
+-                        && worldIn.isAirBlock(blockpos1)
+-                        && worldIn.isAirBlock(blockpos1.down())
+-                        && areAllNeighborsEmpty(worldIn, blockpos1, enumfacing.getOpposite()))
++                if (Math.abs(blockpos1.getX() - p_185601_3_.getX()) < p_185601_4_ && Math.abs(blockpos1.getZ() - p_185601_3_.getZ()) < p_185601_4_ && worldIn.isAirBlock(blockpos1) && worldIn.isAirBlock(blockpos1.down()) && areAllNeighborsEmpty(worldIn, blockpos1, enumfacing.getOpposite()))
                  {
                      flag = true;
-                     p_185601_0_.func_180501_a(blockpos1, Blocks.field_185765_cR.func_176223_P(), 2);
+                     worldIn.setBlockState(blockpos1, Blocks.CHORUS_PLANT.getDefaultState(), 2);
 @@ -341,11 +323,10 @@
  
          if (!flag)
          {
--            p_185601_0_.func_180501_a(p_185601_1_.func_177981_b(i), Blocks.field_185766_cS.func_176223_P().func_177226_a(field_185607_a, 5), 2);
-+            p_185601_0_.func_180501_a(p_185601_1_.func_177981_b(i), Blocks.field_185766_cS.func_176223_P().func_177226_a(field_185607_a, Integer.valueOf(5)), 2);
+-            worldIn.setBlockState(p_185601_1_.up(i), Blocks.CHORUS_FLOWER.getDefaultState().withProperty(AGE, 5), 2);
++            worldIn.setBlockState(p_185601_1_.up(i), Blocks.CHORUS_FLOWER.getDefaultState().withProperty(AGE, Integer.valueOf(5)), 2);
          }
      }
  
 -    @Override
-     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
      {
          return BlockFaceShape.UNDEFINED;

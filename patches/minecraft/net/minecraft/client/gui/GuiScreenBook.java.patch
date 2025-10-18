@@ -2,10 +2,10 @@
 +++ after/net/minecraft/client/gui/GuiScreenBook.java
 @@ -69,6 +69,7 @@
  
-             if (this.field_146476_w < 1)
+             if (this.bookTotalPages < 1)
              {
-+                this.field_146483_y.func_74742_a(new NBTTagString("")); // Forge: fix MC-1685
-                 this.field_146476_w = 1;
++                this.bookPages.appendTag(new NBTTagString("")); // Forge: fix MC-1685
+                 this.bookTotalPages = 1;
              }
          }
 @@ -81,14 +82,12 @@
@@ -13,30 +13,30 @@
      }
  
 -    @Override
-     public void func_73876_c()
+     public void updateScreen()
      {
-         super.func_73876_c();
--        this.field_146479_t++;
-+        ++this.field_146479_t;
+         super.updateScreen();
+-        this.updateCount++;
++        ++this.updateCount;
      }
  
 -    @Override
-     public void func_73866_w_()
+     public void initGui()
      {
-         this.field_146292_n.clear();
+         this.buttonList.clear();
 @@ -108,12 +107,11 @@
  
-         int i = (this.field_146294_l - 192) / 2;
+         int i = (this.width - 192) / 2;
          int j = 2;
--        this.field_146470_A = this.func_189646_b(new GuiScreenBook.NextPageButton(1, i + 120, 156, true));
--        this.field_146471_B = this.func_189646_b(new GuiScreenBook.NextPageButton(2, i + 38, 156, false));
-+        this.field_146470_A = (GuiScreenBook.NextPageButton)this.func_189646_b(new GuiScreenBook.NextPageButton(1, i + 120, 156, true));
-+        this.field_146471_B = (GuiScreenBook.NextPageButton)this.func_189646_b(new GuiScreenBook.NextPageButton(2, i + 38, 156, false));
-         this.func_146464_h();
+-        this.buttonNextPage = this.addButton(new GuiScreenBook.NextPageButton(1, i + 120, 156, true));
+-        this.buttonPreviousPage = this.addButton(new GuiScreenBook.NextPageButton(2, i + 38, 156, false));
++        this.buttonNextPage = (GuiScreenBook.NextPageButton)this.addButton(new GuiScreenBook.NextPageButton(1, i + 120, 156, true));
++        this.buttonPreviousPage = (GuiScreenBook.NextPageButton)this.addButton(new GuiScreenBook.NextPageButton(2, i + 38, 156, false));
+         this.updateButtons();
      }
  
 -    @Override
-     public void func_146281_b()
+     public void onGuiClosed()
      {
          Keyboard.enableRepeatEvents(false);
 @@ -178,14 +176,13 @@
@@ -44,132 +44,132 @@
      }
  
 -    @Override
-     protected void func_146284_a(GuiButton p_146284_1_) throws IOException
+     protected void actionPerformed(GuiButton button) throws IOException
      {
-         if (p_146284_1_.field_146124_l)
+         if (button.enabled)
          {
-             if (p_146284_1_.field_146127_k == 0)
+             if (button.id == 0)
              {
--                this.field_146297_k.func_147108_a(null);
-+                this.field_146297_k.func_147108_a((GuiScreen)null);
-                 this.func_146462_a(false);
+-                this.mc.displayGuiScreen(null);
++                this.mc.displayGuiScreen((GuiScreen)null);
+                 this.sendBookToServer(false);
              }
-             else if (p_146284_1_.field_146127_k == 3 && this.field_146475_i)
+             else if (button.id == 3 && this.bookIsUnsigned)
 @@ -196,7 +193,7 @@
              {
-                 if (this.field_146484_x < this.field_146476_w - 1)
+                 if (this.currPage < this.bookTotalPages - 1)
                  {
--                    this.field_146484_x++;
-+                    ++this.field_146484_x;
+-                    this.currPage++;
++                    ++this.currPage;
                  }
-                 else if (this.field_146475_i)
+                 else if (this.bookIsUnsigned)
                  {
 @@ -204,7 +201,7 @@
  
-                     if (this.field_146484_x < this.field_146476_w - 1)
+                     if (this.currPage < this.bookTotalPages - 1)
                      {
--                        this.field_146484_x++;
-+                        ++this.field_146484_x;
+-                        this.currPage++;
++                        ++this.currPage;
                      }
                  }
              }
 @@ -212,13 +209,13 @@
              {
-                 if (this.field_146484_x > 0)
+                 if (this.currPage > 0)
                  {
--                    this.field_146484_x--;
-+                    --this.field_146484_x;
+-                    this.currPage--;
++                    --this.currPage;
                  }
              }
-             else if (p_146284_1_.field_146127_k == 5 && this.field_146480_s)
+             else if (button.id == 5 && this.bookGettingSigned)
              {
-                 this.func_146462_a(true);
--                this.field_146297_k.func_147108_a(null);
-+                this.field_146297_k.func_147108_a((GuiScreen)null);
+                 this.sendBookToServer(true);
+-                this.mc.displayGuiScreen(null);
++                this.mc.displayGuiScreen((GuiScreen)null);
              }
-             else if (p_146284_1_.field_146127_k == 4 && this.field_146480_s)
+             else if (button.id == 4 && this.bookGettingSigned)
              {
 @@ -234,12 +231,11 @@
-         if (this.field_146483_y != null && this.field_146483_y.func_74745_c() < 50)
+         if (this.bookPages != null && this.bookPages.tagCount() < 50)
          {
-             this.field_146483_y.func_74742_a(new NBTTagString(""));
--            this.field_146476_w++;
-+            ++this.field_146476_w;
-             this.field_146481_r = true;
+             this.bookPages.appendTag(new NBTTagString(""));
+-            this.bookTotalPages++;
++            ++this.bookTotalPages;
+             this.bookIsModified = true;
          }
      }
  
 -    @Override
-     protected void func_73869_a(char p_73869_1_, int p_73869_2_) throws IOException
+     protected void keyTyped(char typedChar, int keyCode) throws IOException
      {
-         super.func_73869_a(p_73869_1_, p_73869_2_);
+         super.keyTyped(typedChar, keyCode);
 @@ -309,7 +305,7 @@
-                 if (!this.field_146482_z.isEmpty())
+                 if (!this.bookTitle.isEmpty())
                  {
-                     this.func_146462_a(true);
--                    this.field_146297_k.func_147108_a(null);
-+                    this.field_146297_k.func_147108_a((GuiScreen)null);
+                     this.sendBookToServer(true);
+-                    this.mc.displayGuiScreen(null);
++                    this.mc.displayGuiScreen((GuiScreen)null);
                  }
  
                  return;
 @@ -326,9 +322,7 @@
  
-     private String func_146456_p()
+     private String pageGetCurrent()
      {
--        return this.field_146483_y != null && this.field_146484_x >= 0 && this.field_146484_x < this.field_146483_y.func_74745_c()
--               ? this.field_146483_y.func_150307_f(this.field_146484_x)
+-        return this.bookPages != null && this.currPage >= 0 && this.currPage < this.bookPages.tagCount()
+-               ? this.bookPages.getStringTagAt(this.currPage)
 -               : "";
-+        return this.field_146483_y != null && this.field_146484_x >= 0 && this.field_146484_x < this.field_146483_y.func_74745_c() ? this.field_146483_y.func_150307_f(this.field_146484_x) : "";
++        return this.bookPages != null && this.currPage >= 0 && this.currPage < this.bookPages.tagCount() ? this.bookPages.getStringTagAt(this.currPage) : "";
      }
  
-     private void func_146457_a(String p_146457_1_)
+     private void pageSetCurrent(String p_146457_1_)
 @@ -352,7 +346,6 @@
          }
      }
  
 -    @Override
-     public void func_73863_a(int p_73863_1_, int p_73863_2_, float p_73863_3_)
+     public void drawScreen(int mouseX, int mouseY, float partialTicks)
      {
-         GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
+         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 @@ -420,11 +413,9 @@
                      try
                      {
-                         ITextComponent itextcomponent = ITextComponent.Serializer.func_150699_a(s5);
--                        this.field_175386_A = itextcomponent != null
--                                              ? GuiUtilRenderComponents.func_178908_a(itextcomponent, 116, this.field_146289_q, true, true)
+                         ITextComponent itextcomponent = ITextComponent.Serializer.jsonToComponent(s5);
+-                        this.cachedComponents = itextcomponent != null
+-                                              ? GuiUtilRenderComponents.splitText(itextcomponent, 116, this.fontRenderer, true, true)
 -                                              : null;
-+                        this.field_175386_A = itextcomponent != null ? GuiUtilRenderComponents.func_178908_a(itextcomponent, 116, this.field_146289_q, true, true) : null;
++                        this.cachedComponents = itextcomponent != null ? GuiUtilRenderComponents.splitText(itextcomponent, 116, this.fontRenderer, true, true) : null;
                      }
 -                    catch (JsonParseException jsonparseexception)
 +                    catch (JsonParseException var13)
                      {
-                         this.field_175386_A = null;
+                         this.cachedComponents = null;
                      }
 @@ -449,7 +440,7 @@
              {
-                 int k1 = Math.min(128 / this.field_146289_q.field_78288_b, this.field_175386_A.size());
+                 int k1 = Math.min(128 / this.fontRenderer.FONT_HEIGHT, this.cachedComponents.size());
  
 -                for (int l1 = 0; l1 < k1; l1++)
 +                for (int l1 = 0; l1 < k1; ++l1)
                  {
-                     ITextComponent itextcomponent2 = this.field_175386_A.get(l1);
-                     this.field_146289_q.func_78276_b(itextcomponent2.func_150260_c(), i + 36, 34 + l1 * this.field_146289_q.field_78288_b, 0);
+                     ITextComponent itextcomponent2 = this.cachedComponents.get(l1);
+                     this.fontRenderer.drawString(itextcomponent2.getUnformattedText(), i + 36, 34 + l1 * this.fontRenderer.FONT_HEIGHT, 0);
 @@ -467,7 +458,6 @@
-         super.func_73863_a(p_73863_1_, p_73863_2_, p_73863_3_);
+         super.drawScreen(mouseX, mouseY, partialTicks);
      }
  
 -    @Override
-     protected void func_73864_a(int p_73864_1_, int p_73864_2_, int p_73864_3_) throws IOException
+     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
      {
-         if (p_73864_3_ == 0)
+         if (mouseButton == 0)
 @@ -483,7 +473,6 @@
-         super.func_73864_a(p_73864_1_, p_73864_2_, p_73864_3_);
+         super.mouseClicked(mouseX, mouseY, mouseButton);
      }
  
 -    @Override
-     public boolean func_175276_a(ITextComponent p_175276_1_)
+     public boolean handleComponentClick(ITextComponent component)
      {
-         ClickEvent clickevent = p_175276_1_.func_150256_b().func_150235_h();
+         ClickEvent clickevent = component.getStyle().getClickEvent();
 @@ -507,8 +496,9 @@
                      return true;
                  }
@@ -183,27 +183,27 @@
              return false;
 @@ -519,7 +509,7 @@
  
-             if (flag && clickevent.func_150669_a() == ClickEvent.Action.RUN_COMMAND)
+             if (flag && clickevent.getAction() == ClickEvent.Action.RUN_COMMAND)
              {
--                this.field_146297_k.func_147108_a(null);
-+                this.field_146297_k.func_147108_a((GuiScreen)null);
+-                this.mc.displayGuiScreen(null);
++                this.mc.displayGuiScreen((GuiScreen)null);
              }
  
              return flag;
 @@ -590,15 +580,11 @@
-                 this.field_146151_o = p_i46316_4_;
+                 this.isForward = isForwardIn;
              }
  
 -            @Override
-             public void func_191745_a(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
+             public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks)
              {
-                 if (this.field_146125_m)
+                 if (this.visible)
                  {
--                    boolean flag = p_191745_2_ >= this.field_146128_h
--                                   && p_191745_3_ >= this.field_146129_i
--                                   && p_191745_2_ < this.field_146128_h + this.field_146120_f
--                                   && p_191745_3_ < this.field_146129_i + this.field_146121_g;
-+                    boolean flag = p_191745_2_ >= this.field_146128_h && p_191745_3_ >= this.field_146129_i && p_191745_2_ < this.field_146128_h + this.field_146120_f && p_191745_3_ < this.field_146129_i + this.field_146121_g;
-                     GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
-                     p_191745_1_.func_110434_K().func_110577_a(GuiScreenBook.field_146466_f);
+-                    boolean flag = mouseX >= this.x
+-                                   && mouseY >= this.y
+-                                   && mouseX < this.x + this.width
+-                                   && mouseY < this.y + this.height;
++                    boolean flag = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+                     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                     mc.getTextureManager().bindTexture(GuiScreenBook.BOOK_GUI_TEXTURES);
                      int i = 0;

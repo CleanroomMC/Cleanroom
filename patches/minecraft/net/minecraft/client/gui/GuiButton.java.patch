@@ -3,65 +3,65 @@
 @@ -13,15 +13,16 @@
  public class GuiButton extends Gui
  {
-     protected static final ResourceLocation field_146122_a = new ResourceLocation("textures/gui/widgets.png");
--    public int field_146120_f = 200;
--    public int field_146121_g = 20;
-+    public int field_146120_f;
-+    public int field_146121_g;
-     public int field_146128_h;
-     public int field_146129_i;
-     public String field_146126_j;
-     public int field_146127_k;
--    public boolean field_146124_l = true;
--    public boolean field_146125_m = true;
-+    public boolean field_146124_l;
-+    public boolean field_146125_m;
-     protected boolean field_146123_n;
+     protected static final ResourceLocation BUTTON_TEXTURES = new ResourceLocation("textures/gui/widgets.png");
+-    public int width = 200;
+-    public int height = 20;
++    public int width;
++    public int height;
+     public int x;
+     public int y;
+     public String displayString;
+     public int id;
+-    public boolean enabled = true;
+-    public boolean visible = true;
++    public boolean enabled;
++    public boolean visible;
+     protected boolean hovered;
 +    public int packedFGColour; //FML
  
-     public GuiButton(int p_i1020_1_, int p_i1020_2_, int p_i1020_3_, String p_i1020_4_)
+     public GuiButton(int buttonId, int x, int y, String buttonText)
      {
 @@ -30,6 +31,10 @@
  
-     public GuiButton(int p_i46323_1_, int p_i46323_2_, int p_i46323_3_, int p_i46323_4_, int p_i46323_5_, String p_i46323_6_)
+     public GuiButton(int buttonId, int x, int y, int widthIn, int heightIn, String buttonText)
      {
-+        this.field_146120_f = 200;
-+        this.field_146121_g = 20;
-+        this.field_146124_l = true;
-+        this.field_146125_m = true;
-         this.field_146127_k = p_i46323_1_;
-         this.field_146128_h = p_i46323_2_;
-         this.field_146129_i = p_i46323_3_;
++        this.width = 200;
++        this.height = 20;
++        this.enabled = true;
++        this.visible = true;
+         this.id = buttonId;
+         this.x = x;
+         this.y = y;
 @@ -61,31 +66,21 @@
-             FontRenderer fontrenderer = p_191745_1_.field_71466_p;
-             p_191745_1_.func_110434_K().func_110577_a(field_146122_a);
-             GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
--            this.field_146123_n = p_191745_2_ >= this.field_146128_h
--                                  && p_191745_3_ >= this.field_146129_i
--                                  && p_191745_2_ < this.field_146128_h + this.field_146120_f
--                                  && p_191745_3_ < this.field_146129_i + this.field_146121_g;
-+            this.field_146123_n = p_191745_2_ >= this.field_146128_h && p_191745_3_ >= this.field_146129_i && p_191745_2_ < this.field_146128_h + this.field_146120_f && p_191745_3_ < this.field_146129_i + this.field_146121_g;
-             int i = this.func_146114_a(this.field_146123_n);
-             GlStateManager.func_179147_l();
--            GlStateManager.func_187428_a(
+             FontRenderer fontrenderer = mc.fontRenderer;
+             mc.getTextureManager().bindTexture(BUTTON_TEXTURES);
+             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+-            this.hovered = mouseX >= this.x
+-                                  && mouseY >= this.y
+-                                  && mouseX < this.x + this.width
+-                                  && mouseY < this.y + this.height;
++            this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+             int i = this.getHoverState(this.hovered);
+             GlStateManager.enableBlend();
+-            GlStateManager.tryBlendFuncSeparate(
 -                GlStateManager.SourceFactor.SRC_ALPHA,
 -                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
 -                GlStateManager.SourceFactor.ONE,
 -                GlStateManager.DestFactor.ZERO
 -            );
-+            GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-             GlStateManager.func_187401_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-             this.func_73729_b(this.field_146128_h, this.field_146129_i, 0, 46 + i * 20, this.field_146120_f / 2, this.field_146121_g);
--            this.func_73729_b(
--                this.field_146128_h + this.field_146120_f / 2,
--                this.field_146129_i,
--                200 - this.field_146120_f / 2,
++            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+             GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+             this.drawTexturedModalRect(this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
+-            this.drawTexturedModalRect(
+-                this.x + this.width / 2,
+-                this.y,
+-                200 - this.width / 2,
 -                46 + i * 20,
--                this.field_146120_f / 2,
--                this.field_146121_g
+-                this.width / 2,
+-                this.height
 -            );
-+            this.func_73729_b(this.field_146128_h + this.field_146120_f / 2, this.field_146129_i, 200 - this.field_146120_f / 2, 46 + i * 20, this.field_146120_f / 2, this.field_146121_g);
-             this.func_146119_b(p_191745_1_, p_191745_2_, p_191745_3_);
++            this.drawTexturedModalRect(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+             this.mouseDragged(mc, mouseX, mouseY);
              int j = 14737632;
  
 +            if (packedFGColour != 0)
@@ -69,31 +69,31 @@
 +                j = packedFGColour;
 +            }
 +            else
-             if (!this.field_146124_l)
+             if (!this.enabled)
              {
                  j = 10526880;
 @@ -95,9 +90,7 @@
                  j = 16777120;
              }
  
--            this.func_73732_a(
--                fontrenderer, this.field_146126_j, this.field_146128_h + this.field_146120_f / 2, this.field_146129_i + (this.field_146121_g - 8) / 2, j
+-            this.drawCenteredString(
+-                fontrenderer, this.displayString, this.x + this.width / 2, this.y + (this.height - 8) / 2, j
 -            );
-+            this.func_73732_a(fontrenderer, this.field_146126_j, this.field_146128_h + this.field_146120_f / 2, this.field_146129_i + (this.field_146121_g - 8) / 2, j);
++            this.drawCenteredString(fontrenderer, this.displayString, this.x + this.width / 2, this.y + (this.height - 8) / 2, j);
          }
      }
  
 @@ -111,12 +104,7 @@
  
-     public boolean func_146116_c(Minecraft p_146116_1_, int p_146116_2_, int p_146116_3_)
+     public boolean mousePressed(Minecraft mc, int mouseX, int mouseY)
      {
--        return this.field_146124_l
--               && this.field_146125_m
--               && p_146116_2_ >= this.field_146128_h
--               && p_146116_3_ >= this.field_146129_i
--               && p_146116_2_ < this.field_146128_h + this.field_146120_f
--               && p_146116_3_ < this.field_146129_i + this.field_146121_g;
-+        return this.field_146124_l && this.field_146125_m && p_146116_2_ >= this.field_146128_h && p_146116_3_ >= this.field_146129_i && p_146116_2_ < this.field_146128_h + this.field_146120_f && p_146116_3_ < this.field_146129_i + this.field_146121_g;
+-        return this.enabled
+-               && this.visible
+-               && mouseX >= this.x
+-               && mouseY >= this.y
+-               && mouseX < this.x + this.width
+-               && mouseY < this.y + this.height;
++        return this.enabled && this.visible && mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
      }
  
-     public boolean func_146115_a()
+     public boolean isMouseOver()

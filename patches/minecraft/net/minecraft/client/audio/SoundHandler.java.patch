@@ -10,14 +10,14 @@
  import java.io.InputStream;
 @@ -36,23 +37,17 @@
  {
-     public static final Sound field_147700_a = new Sound("meta:missing_sound", 1.0F, 1.0F, 1, Sound.Type.FILE, false);
-     private static final Logger field_147698_b = LogManager.getLogger();
--    private static final Gson field_147699_c = new GsonBuilder()
+     public static final Sound MISSING_SOUND = new Sound("meta:missing_sound", 1.0F, 1.0F, 1, Sound.Type.FILE, false);
+     private static final Logger LOGGER = LogManager.getLogger();
+-    private static final Gson GSON = new GsonBuilder()
 -        .registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer())
 -        .registerTypeAdapter(SoundList.class, new SoundListSerializer())
 -        .create();
-+    private static final Gson field_147699_c = (new GsonBuilder()).registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer()).registerTypeAdapter(SoundList.class, new SoundListSerializer()).create();
-     private static final ParameterizedType field_147696_d = new ParameterizedType()
++    private static final Gson GSON = (new GsonBuilder()).registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer()).registerTypeAdapter(SoundList.class, new SoundListSerializer()).create();
+     private static final ParameterizedType TYPE = new ParameterizedType()
      {
 -        @Override
          public Type[] getActualTypeArguments()
@@ -34,23 +34,23 @@
          {
              return null;
 @@ -68,11 +63,11 @@
-         this.field_147694_f = new SoundManager(this, p_i45122_2_);
+         this.sndManager = new SoundManager(this, gameSettingsIn);
      }
  
 -    @Override
-     public void func_110549_a(IResourceManager p_110549_1_)
+     public void onResourceManagerReload(IResourceManager resourceManager)
      {
-         this.field_147697_e.func_148763_c();
+         this.soundRegistry.clearMap();
  
 +        java.util.List<net.minecraft.util.Tuple<ResourceLocation, SoundList>> resources = new java.util.LinkedList<>();
-         for (String s : p_110549_1_.func_135055_a())
+         for (String s : resourceManager.getResourceDomains())
          {
              try
 @@ -85,7 +80,7 @@
  
                          for (Entry<String, SoundList> entry : map.entrySet())
                          {
--                            this.func_147693_a(new ResourceLocation(s, entry.getKey()), entry.getValue());
+-                            this.loadSoundResource(new ResourceLocation(s, entry.getKey()), entry.getValue());
 +                            resources.add(new net.minecraft.util.Tuple<>(new ResourceLocation(s, entry.getKey()), entry.getValue()));
                          }
                      }
@@ -69,30 +69,30 @@
 +        net.minecraftforge.fml.common.ProgressManager.ProgressBar resourcesBar = net.minecraftforge.fml.common.ProgressManager.push("Loading sounds", resources.size());
 +        resources.forEach(entry ->
 +        {
-+            resourcesBar.step(entry.func_76341_a().toString());
++            resourcesBar.step(entry.getFirst().toString());
 +            try
 +            {
-+                this.func_147693_a(entry.func_76341_a(), entry.func_76340_b());
++                this.loadSoundResource(entry.getFirst(), entry.getSecond());
 +            }
 +            catch (RuntimeException e)
 +            {
-+                field_147698_b.warn("Invalid sounds.json", e);
++                LOGGER.warn("Invalid sounds.json", e);
 +            }
 +        });
 +        net.minecraftforge.fml.common.ProgressManager.pop(resourcesBar);
-         for (ResourceLocation resourcelocation : this.field_147697_e.func_148742_b())
+         for (ResourceLocation resourcelocation : this.soundRegistry.getKeys())
          {
--            SoundEventAccessor soundeventaccessor = this.field_147697_e.func_82594_a(resourcelocation);
-+            SoundEventAccessor soundeventaccessor = (SoundEventAccessor)this.field_147697_e.func_82594_a(resourcelocation);
+-            SoundEventAccessor soundeventaccessor = this.soundRegistry.getObject(resourcelocation);
++            SoundEventAccessor soundeventaccessor = (SoundEventAccessor)this.soundRegistry.getObject(resourcelocation);
  
-             if (soundeventaccessor.func_188712_c() instanceof TextComponentTranslation)
+             if (soundeventaccessor.getSubtitle() instanceof TextComponentTranslation)
              {
 @@ -118,7 +128,7 @@
          {
-             if (SoundEvent.field_187505_a.func_82594_a(resourcelocation1) == null)
+             if (SoundEvent.REGISTRY.getObject(resourcelocation1) == null)
              {
--                field_147698_b.debug("Not having sound event for: {}", resourcelocation1);
-+                field_147698_b.debug("Not having sound event for: {}", (Object)resourcelocation1);
+-                LOGGER.debug("Not having sound event for: {}", resourcelocation1);
++                LOGGER.debug("Not having sound event for: {}", (Object)resourcelocation1);
              }
          }
  
@@ -100,76 +100,76 @@
  
          try
          {
--            map = JsonUtils.func_193841_a(field_147699_c, new InputStreamReader(p_175085_1_, StandardCharsets.UTF_8), field_147696_d);
-+            map = (Map)JsonUtils.func_193841_a(field_147699_c, new InputStreamReader(p_175085_1_, StandardCharsets.UTF_8), field_147696_d);
+-            map = JsonUtils.fromJson(GSON, new InputStreamReader(stream, StandardCharsets.UTF_8), TYPE);
++            map = (Map)JsonUtils.fromJson(GSON, new InputStreamReader(stream, StandardCharsets.UTF_8), TYPE);
          }
          finally
          {
 @@ -144,14 +154,14 @@
  
-     private void func_147693_a(ResourceLocation p_147693_1_, SoundList p_147693_2_)
+     private void loadSoundResource(ResourceLocation location, SoundList sounds)
      {
--        SoundEventAccessor soundeventaccessor = this.field_147697_e.func_82594_a(p_147693_1_);
-+        SoundEventAccessor soundeventaccessor = (SoundEventAccessor)this.field_147697_e.func_82594_a(p_147693_1_);
+-        SoundEventAccessor soundeventaccessor = this.soundRegistry.getObject(location);
++        SoundEventAccessor soundeventaccessor = (SoundEventAccessor)this.soundRegistry.getObject(location);
          boolean flag = soundeventaccessor == null;
  
-         if (flag || p_147693_2_.func_148574_b())
+         if (flag || sounds.canReplaceExisting())
          {
              if (!flag)
              {
--                field_147698_b.debug("Replaced sound event location {}", p_147693_1_);
-+                field_147698_b.debug("Replaced sound event location {}", (Object)p_147693_1_);
+-                LOGGER.debug("Replaced sound event location {}", location);
++                LOGGER.debug("Replaced sound event location {}", (Object)location);
              }
  
-             soundeventaccessor = new SoundEventAccessor(p_147693_1_, p_147693_2_.func_188701_c());
+             soundeventaccessor = new SoundEventAccessor(location, sounds.getSubtitle());
 @@ -177,15 +187,14 @@
                  case SOUND_EVENT:
                      isoundeventaccessor = new ISoundEventAccessor<Sound>()
                      {
 -                        @Override
-                         public int func_148721_a()
+                         public int getWeight()
                          {
--                            SoundEventAccessor soundeventaccessor1 = SoundHandler.this.field_147697_e.func_82594_a(resourcelocation);
-+                            SoundEventAccessor soundeventaccessor1 = (SoundEventAccessor)SoundHandler.this.field_147697_e.func_82594_a(resourcelocation);
-                             return soundeventaccessor1 == null ? 0 : soundeventaccessor1.func_148721_a();
+-                            SoundEventAccessor soundeventaccessor1 = SoundHandler.this.soundRegistry.getObject(resourcelocation);
++                            SoundEventAccessor soundeventaccessor1 = (SoundEventAccessor)SoundHandler.this.soundRegistry.getObject(resourcelocation);
+                             return soundeventaccessor1 == null ? 0 : soundeventaccessor1.getWeight();
                          }
-                         public Sound func_148720_g()
+                         public Sound cloneEntry()
                          {
--                            SoundEventAccessor soundeventaccessor1 = SoundHandler.this.field_147697_e.func_82594_a(resourcelocation);
-+                            SoundEventAccessor soundeventaccessor1 = (SoundEventAccessor)SoundHandler.this.field_147697_e.func_82594_a(resourcelocation);
+-                            SoundEventAccessor soundeventaccessor1 = SoundHandler.this.soundRegistry.getObject(resourcelocation);
++                            SoundEventAccessor soundeventaccessor1 = (SoundEventAccessor)SoundHandler.this.soundRegistry.getObject(resourcelocation);
  
                              if (soundeventaccessor1 == null)
                              {
 @@ -194,14 +203,7 @@
                              else
                              {
-                                 Sound sound1 = soundeventaccessor1.func_148720_g();
+                                 Sound sound1 = soundeventaccessor1.cloneEntry();
 -                                return new Sound(
--                                           sound1.func_188719_a().toString(),
--                                           sound1.func_188724_c() * sound.func_188724_c(),
--                                           sound1.func_188725_d() * sound.func_188725_d(),
--                                           sound.func_148721_a(),
+-                                           sound1.getSoundLocation().toString(),
+-                                           sound1.getVolume() * sound.getVolume(),
+-                                           sound1.getPitch() * sound.getPitch(),
+-                                           sound.getWeight(),
 -                                           Sound.Type.FILE,
--                                           sound1.func_188723_h() || sound.func_188723_h()
+-                                           sound1.isStreaming() || sound.isStreaming()
 -                                       );
-+                                return new Sound(sound1.func_188719_a().toString(), sound1.func_188724_c() * sound.func_188724_c(), sound1.func_188725_d() * sound.func_188725_d(), sound.func_148721_a(), Sound.Type.FILE, sound1.func_188723_h() || sound.func_188723_h());
++                                return new Sound(sound1.getSoundLocation().toString(), sound1.getVolume() * sound.getVolume(), sound1.getPitch() * sound.getPitch(), sound.getWeight(), Sound.Type.FILE, sound1.isStreaming() || sound.isStreaming());
                              }
                          }
                      };
 @@ -226,19 +228,20 @@
-             iresource.func_110527_b();
+             iresource.getInputStream();
              return true;
          }
 -        catch (FileNotFoundException filenotfoundexception)
 +        catch (FileNotFoundException var11)
          {
-             field_147698_b.warn("File {} does not exist, cannot add it to event {}", resourcelocation, p_184401_2_);
+             LOGGER.warn("File {} does not exist, cannot add it to event {}", resourcelocation, p_184401_2_);
 -            return false;
 +            flag = false;
          }
          catch (IOException ioexception)
          {
-             field_147698_b.warn("Could not load sound file {}, cannot add it to event {}", resourcelocation, p_184401_2_, ioexception);
+             LOGGER.warn("Could not load sound file {}, cannot add it to event {}", resourcelocation, p_184401_2_, ioexception);
              flag = false;
 +            return flag;
          }
@@ -182,30 +182,30 @@
          return flag;
 @@ -247,7 +250,7 @@
      @Nullable
-     public SoundEventAccessor func_184398_a(ResourceLocation p_184398_1_)
+     public SoundEventAccessor getAccessor(ResourceLocation location)
      {
--        return this.field_147697_e.func_82594_a(p_184398_1_);
-+        return (SoundEventAccessor)this.field_147697_e.func_82594_a(p_184398_1_);
+-        return this.soundRegistry.getObject(location);
++        return (SoundEventAccessor)this.soundRegistry.getObject(location);
      }
  
-     public void func_147682_a(ISound p_147682_1_)
+     public void playSound(ISound sound)
 @@ -265,6 +268,11 @@
-         this.field_147694_f.func_148615_a(p_147691_1_, p_147691_2_);
+         this.sndManager.setListener(player, p_147691_2_);
      }
  
 +    public void setListener(net.minecraft.entity.Entity entity, float partialTicks)
 +    {
-+        this.field_147694_f.setListener(entity, partialTicks);
++        this.sndManager.setListener(entity, partialTicks);
 +    }
 +
-     public void func_147689_b()
+     public void pauseSounds()
      {
-         this.field_147694_f.func_148610_e();
+         this.sndManager.pauseAllSounds();
 @@ -280,7 +288,6 @@
-         this.field_147694_f.func_148613_b();
+         this.sndManager.unloadSoundSystem();
      }
  
 -    @Override
-     public void func_73660_a()
+     public void update()
      {
-         this.field_147694_f.func_148605_d();
+         this.sndManager.updateAllSounds();

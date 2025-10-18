@@ -9,190 +9,190 @@
  import net.minecraft.entity.ai.EntityAIAvoidEntity;
  import net.minecraft.entity.ai.EntityAIHurtByTarget;
 @@ -43,35 +44,32 @@
-         this.field_70728_aV = 10;
+         this.experienceValue = 10;
      }
  
 -    @Override
-     protected void func_184651_r()
+     protected void initEntityAI()
      {
-         super.func_184651_r();
-         this.field_70714_bg.func_75776_a(0, new EntityAISwimming(this));
-         this.field_70714_bg.func_75776_a(1, new EntityEvoker.AICastingSpell());
--        this.field_70714_bg.func_75776_a(2, new EntityAIAvoidEntity<>(this, EntityPlayer.class, 8.0F, 0.6, 1.0));
-+        this.field_70714_bg.func_75776_a(2, new EntityAIAvoidEntity(this, EntityPlayer.class, 8.0F, 0.6D, 1.0D));
-         this.field_70714_bg.func_75776_a(4, new EntityEvoker.AISummonSpell());
-         this.field_70714_bg.func_75776_a(5, new EntityEvoker.AIAttackSpell());
-         this.field_70714_bg.func_75776_a(6, new EntityEvoker.AIWololoSpell());
--        this.field_70714_bg.func_75776_a(8, new EntityAIWander(this, 0.6));
-+        this.field_70714_bg.func_75776_a(8, new EntityAIWander(this, 0.6D));
-         this.field_70714_bg.func_75776_a(9, new EntityAIWatchClosest(this, EntityPlayer.class, 3.0F, 1.0F));
-         this.field_70714_bg.func_75776_a(10, new EntityAIWatchClosest(this, EntityLiving.class, 8.0F));
--        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, true, EntityEvoker.class));
--        this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true).func_190882_b(300));
--        this.field_70715_bh.func_75776_a(3, new EntityAINearestAttackableTarget<>(this, EntityVillager.class, false).func_190882_b(300));
--        this.field_70715_bh.func_75776_a(3, new EntityAINearestAttackableTarget<>(this, EntityIronGolem.class, false));
-+        this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, true, new Class[] {EntityEvoker.class}));
-+        this.field_70715_bh.func_75776_a(2, (new EntityAINearestAttackableTarget(this, EntityPlayer.class, true)).func_190882_b(300));
-+        this.field_70715_bh.func_75776_a(3, (new EntityAINearestAttackableTarget(this, EntityVillager.class, false)).func_190882_b(300));
-+        this.field_70715_bh.func_75776_a(3, new EntityAINearestAttackableTarget(this, EntityIronGolem.class, false));
+         super.initEntityAI();
+         this.tasks.addTask(0, new EntityAISwimming(this));
+         this.tasks.addTask(1, new EntityEvoker.AICastingSpell());
+-        this.tasks.addTask(2, new EntityAIAvoidEntity<>(this, EntityPlayer.class, 8.0F, 0.6, 1.0));
++        this.tasks.addTask(2, new EntityAIAvoidEntity(this, EntityPlayer.class, 8.0F, 0.6D, 1.0D));
+         this.tasks.addTask(4, new EntityEvoker.AISummonSpell());
+         this.tasks.addTask(5, new EntityEvoker.AIAttackSpell());
+         this.tasks.addTask(6, new EntityEvoker.AIWololoSpell());
+-        this.tasks.addTask(8, new EntityAIWander(this, 0.6));
++        this.tasks.addTask(8, new EntityAIWander(this, 0.6D));
+         this.tasks.addTask(9, new EntityAIWatchClosest(this, EntityPlayer.class, 3.0F, 1.0F));
+         this.tasks.addTask(10, new EntityAIWatchClosest(this, EntityLiving.class, 8.0F));
+-        this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, EntityEvoker.class));
+-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true).setUnseenMemoryTicks(300));
+-        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, EntityVillager.class, false).setUnseenMemoryTicks(300));
+-        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, EntityIronGolem.class, false));
++        this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, new Class[] {EntityEvoker.class}));
++        this.targetTasks.addTask(2, (new EntityAINearestAttackableTarget(this, EntityPlayer.class, true)).setUnseenMemoryTicks(300));
++        this.targetTasks.addTask(3, (new EntityAINearestAttackableTarget(this, EntityVillager.class, false)).setUnseenMemoryTicks(300));
++        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityIronGolem.class, false));
      }
  
 -    @Override
-     protected void func_110147_ax()
+     protected void applyEntityAttributes()
      {
-         super.func_110147_ax();
--        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.5);
--        this.func_110148_a(SharedMonsterAttributes.field_111265_b).func_111128_a(12.0);
--        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(24.0);
-+        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.5D);
-+        this.func_110148_a(SharedMonsterAttributes.field_111265_b).func_111128_a(12.0D);
-+        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(24.0D);
+         super.applyEntityAttributes();
+-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5);
+-        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(12.0);
+-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(24.0);
++        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
++        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(12.0D);
++        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(24.0D);
      }
  
 -    @Override
-     protected void func_70088_a()
+     protected void entityInit()
      {
-         super.func_70088_a();
+         super.entityInit();
 @@ -82,37 +80,31 @@
-         EntityLiving.func_189752_a(p_190759_0_, EntityEvoker.class);
+         EntityLiving.registerFixesMob(fixer, EntityEvoker.class);
      }
  
 -    @Override
-     public void func_70037_a(NBTTagCompound p_70037_1_)
+     public void readEntityFromNBT(NBTTagCompound compound)
      {
-         super.func_70037_a(p_70037_1_);
+         super.readEntityFromNBT(compound);
      }
  
 -    @Override
-     public void func_70014_b(NBTTagCompound p_70014_1_)
+     public void writeEntityToNBT(NBTTagCompound compound)
      {
-         super.func_70014_b(p_70014_1_);
+         super.writeEntityToNBT(compound);
      }
  
 -    @Override
-     protected ResourceLocation func_184647_J()
+     protected ResourceLocation getLootTable()
      {
-         return LootTableList.field_191185_au;
+         return LootTableList.ENTITIES_EVOCATION_ILLAGER;
      }
  
 -    @Override
-     protected void func_70619_bc()
+     protected void updateAITasks()
      {
-         super.func_70619_bc();
+         super.updateAITasks();
      }
  
 -    @Override
-     public void func_70071_h_()
+     public void onUpdate()
      {
-         super.func_70071_h_();
+         super.onUpdate();
      }
  
 -    @Override
-     public boolean func_184191_r(Entity p_184191_1_)
+     public boolean isOnSameTeam(Entity entityIn)
      {
-         if (p_184191_1_ == null)
+         if (entityIn == null)
 @@ -131,27 +123,26 @@
          {
-             return this.func_184191_r(((EntityVex)p_184191_1_).func_190645_o());
+             return this.isOnSameTeam(((EntityVex)entityIn).getOwner());
          }
-+        else if (p_184191_1_ instanceof EntityLivingBase && ((EntityLivingBase)p_184191_1_).func_70668_bt() == EnumCreatureAttribute.ILLAGER)
++        else if (entityIn instanceof EntityLivingBase && ((EntityLivingBase)entityIn).getCreatureAttribute() == EnumCreatureAttribute.ILLAGER)
 +        {
-+            return this.func_96124_cp() == null && p_184191_1_.func_96124_cp() == null;
++            return this.getTeam() == null && entityIn.getTeam() == null;
 +        }
          else
          {
--            return p_184191_1_ instanceof EntityLivingBase && ((EntityLivingBase)p_184191_1_).func_70668_bt() == EnumCreatureAttribute.ILLAGER
--                   ? this.func_96124_cp() == null && p_184191_1_.func_96124_cp() == null
+-            return entityIn instanceof EntityLivingBase && ((EntityLivingBase)entityIn).getCreatureAttribute() == EnumCreatureAttribute.ILLAGER
+-                   ? this.getTeam() == null && entityIn.getTeam() == null
 -                   : false;
 +            return false;
          }
      }
  
 -    @Override
-     protected SoundEvent func_184639_G()
+     protected SoundEvent getAmbientSound()
      {
-         return SoundEvents.field_191243_bm;
+         return SoundEvents.ENTITY_EVOCATION_ILLAGER_AMBIENT;
      }
  
 -    @Override
-     protected SoundEvent func_184615_bR()
+     protected SoundEvent getDeathSound()
      {
-         return SoundEvents.field_191245_bo;
+         return SoundEvents.EVOCATION_ILLAGER_DEATH;
      }
  
 -    @Override
-     protected SoundEvent func_184601_bQ(DamageSource p_184601_1_)
+     protected SoundEvent getHurtSound(DamageSource damageSourceIn)
      {
-         return SoundEvents.field_191246_bp;
+         return SoundEvents.ENTITY_EVOCATION_ILLAGER_HURT;
 @@ -168,7 +159,6 @@
-         return this.field_190763_bw;
+         return this.wololoTarget;
      }
  
 -    @Override
-     protected SoundEvent func_193086_dk()
+     protected SoundEvent getSpellSound()
      {
-         return SoundEvents.field_191244_bn;
+         return SoundEvents.EVOCATION_ILLAGER_CAST_SPELL;
 @@ -180,70 +170,44 @@
          {
          }
  
 -        @Override
-         protected int func_190869_f()
+         protected int getCastingTime()
          {
              return 40;
          }
  
 -        @Override
-         protected int func_190872_i()
+         protected int getCastingInterval()
          {
              return 100;
          }
  
 -        @Override
-         protected void func_190868_j()
+         protected void castSpell()
          {
-             EntityLivingBase entitylivingbase = EntityEvoker.this.func_70638_az();
-             double d0 = Math.min(entitylivingbase.field_70163_u, EntityEvoker.this.field_70163_u);
--            double d1 = Math.max(entitylivingbase.field_70163_u, EntityEvoker.this.field_70163_u) + 1.0;
--            float f = (float)MathHelper.func_181159_b(
--                          entitylivingbase.field_70161_v - EntityEvoker.this.field_70161_v, entitylivingbase.field_70165_t - EntityEvoker.this.field_70165_t
+             EntityLivingBase entitylivingbase = EntityEvoker.this.getAttackTarget();
+             double d0 = Math.min(entitylivingbase.posY, EntityEvoker.this.posY);
+-            double d1 = Math.max(entitylivingbase.posY, EntityEvoker.this.posY) + 1.0;
+-            float f = (float)MathHelper.atan2(
+-                          entitylivingbase.posZ - EntityEvoker.this.posZ, entitylivingbase.posX - EntityEvoker.this.posX
 -                      );
-+            double d1 = Math.max(entitylivingbase.field_70163_u, EntityEvoker.this.field_70163_u) + 1.0D;
-+            float f = (float)MathHelper.func_181159_b(entitylivingbase.field_70161_v - EntityEvoker.this.field_70161_v, entitylivingbase.field_70165_t - EntityEvoker.this.field_70165_t);
++            double d1 = Math.max(entitylivingbase.posY, EntityEvoker.this.posY) + 1.0D;
++            float f = (float)MathHelper.atan2(entitylivingbase.posZ - EntityEvoker.this.posZ, entitylivingbase.posX - EntityEvoker.this.posX);
  
--            if (EntityEvoker.this.func_70068_e(entitylivingbase) < 9.0)
-+            if (EntityEvoker.this.func_70068_e(entitylivingbase) < 9.0D)
+-            if (EntityEvoker.this.getDistanceSq(entitylivingbase) < 9.0)
++            if (EntityEvoker.this.getDistanceSq(entitylivingbase) < 9.0D)
              {
 -                for (int i = 0; i < 5; i++)
 +                for (int i = 0; i < 5; ++i)
                  {
 -                    float f1 = f + (float)i * (float) Math.PI * 0.4F;
--                    this.func_190876_a(
--                        EntityEvoker.this.field_70165_t + (double)MathHelper.func_76134_b(f1) * 1.5,
--                        EntityEvoker.this.field_70161_v + (double)MathHelper.func_76126_a(f1) * 1.5,
+-                    this.spawnFangs(
+-                        EntityEvoker.this.posX + (double)MathHelper.cos(f1) * 1.5,
+-                        EntityEvoker.this.posZ + (double)MathHelper.sin(f1) * 1.5,
 -                        d0,
 -                        d1,
 -                        f1,
 -                        0
 -                    );
 +                    float f1 = f + (float)i * (float)Math.PI * 0.4F;
-+                    this.func_190876_a(EntityEvoker.this.field_70165_t + (double)MathHelper.func_76134_b(f1) * 1.5D, EntityEvoker.this.field_70161_v + (double)MathHelper.func_76126_a(f1) * 1.5D, d0, d1, f1, 0);
++                    this.spawnFangs(EntityEvoker.this.posX + (double)MathHelper.cos(f1) * 1.5D, EntityEvoker.this.posZ + (double)MathHelper.sin(f1) * 1.5D, d0, d1, f1, 0);
                  }
  
 -                for (int k = 0; k < 8; k++)
 +                for (int k = 0; k < 8; ++k)
                  {
 -                    float f2 = f + (float)k * (float) Math.PI * 2.0F / 8.0F + (float)(Math.PI * 2.0 / 5.0);
--                    this.func_190876_a(
--                        EntityEvoker.this.field_70165_t + (double)MathHelper.func_76134_b(f2) * 2.5,
--                        EntityEvoker.this.field_70161_v + (double)MathHelper.func_76126_a(f2) * 2.5,
+-                    this.spawnFangs(
+-                        EntityEvoker.this.posX + (double)MathHelper.cos(f2) * 2.5,
+-                        EntityEvoker.this.posZ + (double)MathHelper.sin(f2) * 2.5,
 -                        d0,
 -                        d1,
 -                        f2,
 -                        3
 -                    );
 +                    float f2 = f + (float)k * (float)Math.PI * 2.0F / 8.0F + ((float)Math.PI * 2F / 5F);
-+                    this.func_190876_a(EntityEvoker.this.field_70165_t + (double)MathHelper.func_76134_b(f2) * 2.5D, EntityEvoker.this.field_70161_v + (double)MathHelper.func_76126_a(f2) * 2.5D, d0, d1, f2, 3);
++                    this.spawnFangs(EntityEvoker.this.posX + (double)MathHelper.cos(f2) * 2.5D, EntityEvoker.this.posZ + (double)MathHelper.sin(f2) * 2.5D, d0, d1, f2, 3);
                  }
              }
              else
@@ -203,15 +203,15 @@
 -                    double d2 = 1.25 * (double)(l + 1);
 +                    double d2 = 1.25D * (double)(l + 1);
                      int j = 1 * l;
--                    this.func_190876_a(
--                        EntityEvoker.this.field_70165_t + (double)MathHelper.func_76134_b(f) * d2,
--                        EntityEvoker.this.field_70161_v + (double)MathHelper.func_76126_a(f) * d2,
+-                    this.spawnFangs(
+-                        EntityEvoker.this.posX + (double)MathHelper.cos(f) * d2,
+-                        EntityEvoker.this.posZ + (double)MathHelper.sin(f) * d2,
 -                        d0,
 -                        d1,
 -                        f,
 -                        j
 -                    );
-+                    this.func_190876_a(EntityEvoker.this.field_70165_t + (double)MathHelper.func_76134_b(f) * d2, EntityEvoker.this.field_70161_v + (double)MathHelper.func_76126_a(f) * d2, d0, d1, f, j);
++                    this.spawnFangs(EntityEvoker.this.posX + (double)MathHelper.cos(f) * d2, EntityEvoker.this.posZ + (double)MathHelper.sin(f) * d2, d0, d1, f, j);
                  }
              }
          }
@@ -225,42 +225,42 @@
 -            do
 +            while (true)
              {
--                if (!EntityEvoker.this.field_70170_p.func_175677_d(blockpos, true) && EntityEvoker.this.field_70170_p.func_175677_d(blockpos.func_177977_b(), true)
+-                if (!EntityEvoker.this.world.isBlockNormalCube(blockpos, true) && EntityEvoker.this.world.isBlockNormalCube(blockpos.down(), true)
 -                   )
-+                if (!EntityEvoker.this.field_70170_p.func_175677_d(blockpos, true) && EntityEvoker.this.field_70170_p.func_175677_d(blockpos.func_177977_b(), true))
++                if (!EntityEvoker.this.world.isBlockNormalCube(blockpos, true) && EntityEvoker.this.world.isBlockNormalCube(blockpos.down(), true))
                  {
-                     if (!EntityEvoker.this.field_70170_p.func_175623_d(blockpos))
+                     if (!EntityEvoker.this.world.isAirBlock(blockpos))
                      {
 @@ -275,25 +238,25 @@
                  }
  
-                 blockpos = blockpos.func_177977_b();
+                 blockpos = blockpos.down();
 +
-+                if (blockpos.func_177956_o() < MathHelper.func_76128_c(p_190876_5_) - 1)
++                if (blockpos.getY() < MathHelper.floor(p_190876_5_) - 1)
 +                {
 +                    break;
 +                }
              }
--            while (blockpos.func_177956_o() >= MathHelper.func_76128_c(p_190876_5_) - 1);
+-            while (blockpos.getY() >= MathHelper.floor(p_190876_5_) - 1);
  
              if (flag)
              {
 -                EntityEvokerFangs entityevokerfangs = new EntityEvokerFangs(
--                    EntityEvoker.this.field_70170_p, p_190876_1_, (double)blockpos.func_177956_o() + d0, p_190876_3_, p_190876_9_, p_190876_10_, EntityEvoker.this
+-                    EntityEvoker.this.world, p_190876_1_, (double)blockpos.getY() + d0, p_190876_3_, p_190876_9_, p_190876_10_, EntityEvoker.this
 -                );
-+                EntityEvokerFangs entityevokerfangs = new EntityEvokerFangs(EntityEvoker.this.field_70170_p, p_190876_1_, (double)blockpos.func_177956_o() + d0, p_190876_3_, p_190876_9_, p_190876_10_, EntityEvoker.this);
-                 EntityEvoker.this.field_70170_p.func_72838_d(entityevokerfangs);
++                EntityEvokerFangs entityevokerfangs = new EntityEvokerFangs(EntityEvoker.this.world, p_190876_1_, (double)blockpos.getY() + d0, p_190876_3_, p_190876_9_, p_190876_10_, EntityEvoker.this);
+                 EntityEvoker.this.world.spawnEntity(entityevokerfangs);
              }
          }
  
 -        @Override
-         protected SoundEvent func_190871_k()
+         protected SoundEvent getSpellPrepareSound()
          {
-             return SoundEvents.field_191247_bq;
+             return SoundEvents.EVOCATION_ILLAGER_PREPARE_ATTACK;
          }
  
 -        @Override
-         protected EntitySpellcasterIllager.SpellType func_193320_l()
+         protected EntitySpellcasterIllager.SpellType getSpellType()
          {
              return EntitySpellcasterIllager.SpellType.FANGS;
 @@ -306,18 +269,15 @@
@@ -268,19 +268,19 @@
          }
  
 -        @Override
-         public void func_75246_d()
+         public void updateTask()
          {
-             if (EntityEvoker.this.func_70638_az() != null)
+             if (EntityEvoker.this.getAttackTarget() != null)
              {
--                EntityEvoker.this.func_70671_ap()
--                .func_75651_a(EntityEvoker.this.func_70638_az(), (float)EntityEvoker.this.func_184649_cE(), (float)EntityEvoker.this.func_70646_bf());
-+                EntityEvoker.this.func_70671_ap().func_75651_a(EntityEvoker.this.func_70638_az(), (float)EntityEvoker.this.func_184649_cE(), (float)EntityEvoker.this.func_70646_bf());
+-                EntityEvoker.this.getLookHelper()
+-                .setLookPositionWithEntity(EntityEvoker.this.getAttackTarget(), (float)EntityEvoker.this.getHorizontalFaceSpeed(), (float)EntityEvoker.this.getVerticalFaceSpeed());
++                EntityEvoker.this.getLookHelper().setLookPositionWithEntity(EntityEvoker.this.getAttackTarget(), (float)EntityEvoker.this.getHorizontalFaceSpeed(), (float)EntityEvoker.this.getVerticalFaceSpeed());
              }
-             else if (EntityEvoker.this.func_190751_dj() != null)
+             else if (EntityEvoker.this.getWololoTarget() != null)
              {
--                EntityEvoker.this.func_70671_ap()
--                .func_75651_a(EntityEvoker.this.func_190751_dj(), (float)EntityEvoker.this.func_184649_cE(), (float)EntityEvoker.this.func_70646_bf());
-+                EntityEvoker.this.func_70671_ap().func_75651_a(EntityEvoker.this.func_190751_dj(), (float)EntityEvoker.this.func_184649_cE(), (float)EntityEvoker.this.func_70646_bf());
+-                EntityEvoker.this.getLookHelper()
+-                .setLookPositionWithEntity(EntityEvoker.this.getWololoTarget(), (float)EntityEvoker.this.getHorizontalFaceSpeed(), (float)EntityEvoker.this.getVerticalFaceSpeed());
++                EntityEvoker.this.getLookHelper().setLookPositionWithEntity(EntityEvoker.this.getWololoTarget(), (float)EntityEvoker.this.getHorizontalFaceSpeed(), (float)EntityEvoker.this.getVerticalFaceSpeed());
              }
          }
      }
@@ -289,59 +289,59 @@
          }
  
 -        @Override
-         public boolean func_75250_a()
+         public boolean shouldExecute()
          {
-             if (!super.func_75250_a())
+             if (!super.shouldExecute())
 @@ -337,33 +296,29 @@
              }
              else
              {
--                int i = EntityEvoker.this.field_70170_p.func_72872_a(EntityVex.class, EntityEvoker.this.func_174813_aQ().func_186662_g(16.0)).size();
-+                int i = EntityEvoker.this.field_70170_p.func_72872_a(EntityVex.class, EntityEvoker.this.func_174813_aQ().func_186662_g(16.0D)).size();
-                 return EntityEvoker.this.field_70146_Z.nextInt(8) + 1 > i;
+-                int i = EntityEvoker.this.world.getEntitiesWithinAABB(EntityVex.class, EntityEvoker.this.getEntityBoundingBox().grow(16.0)).size();
++                int i = EntityEvoker.this.world.getEntitiesWithinAABB(EntityVex.class, EntityEvoker.this.getEntityBoundingBox().grow(16.0D)).size();
+                 return EntityEvoker.this.rand.nextInt(8) + 1 > i;
              }
          }
  
 -        @Override
-         protected int func_190869_f()
+         protected int getCastingTime()
          {
              return 100;
          }
  
 -        @Override
-         protected int func_190872_i()
+         protected int getCastingInterval()
          {
              return 340;
          }
  
 -        @Override
-         protected void func_190868_j()
+         protected void castSpell()
          {
 -            for (int i = 0; i < 3; i++)
 +            for (int i = 0; i < 3; ++i)
              {
 -                BlockPos blockpos = new BlockPos(EntityEvoker.this)
--                .func_177982_a(-2 + EntityEvoker.this.field_70146_Z.nextInt(5), 1, -2 + EntityEvoker.this.field_70146_Z.nextInt(5));
-+                BlockPos blockpos = (new BlockPos(EntityEvoker.this)).func_177982_a(-2 + EntityEvoker.this.field_70146_Z.nextInt(5), 1, -2 + EntityEvoker.this.field_70146_Z.nextInt(5));
-                 EntityVex entityvex = new EntityVex(EntityEvoker.this.field_70170_p);
-                 entityvex.func_174828_a(blockpos, 0.0F, 0.0F);
--                entityvex.func_180482_a(EntityEvoker.this.field_70170_p.func_175649_E(blockpos), null);
-+                entityvex.func_180482_a(EntityEvoker.this.field_70170_p.func_175649_E(blockpos), (IEntityLivingData)null);
-                 entityvex.func_190658_a(EntityEvoker.this);
-                 entityvex.func_190651_g(blockpos);
-                 entityvex.func_190653_a(20 * (30 + EntityEvoker.this.field_70146_Z.nextInt(90)));
+-                .add(-2 + EntityEvoker.this.rand.nextInt(5), 1, -2 + EntityEvoker.this.rand.nextInt(5));
++                BlockPos blockpos = (new BlockPos(EntityEvoker.this)).add(-2 + EntityEvoker.this.rand.nextInt(5), 1, -2 + EntityEvoker.this.rand.nextInt(5));
+                 EntityVex entityvex = new EntityVex(EntityEvoker.this.world);
+                 entityvex.moveToBlockPosAndAngles(blockpos, 0.0F, 0.0F);
+-                entityvex.onInitialSpawn(EntityEvoker.this.world.getDifficultyForLocation(blockpos), null);
++                entityvex.onInitialSpawn(EntityEvoker.this.world.getDifficultyForLocation(blockpos), (IEntityLivingData)null);
+                 entityvex.setOwner(EntityEvoker.this);
+                 entityvex.setBoundOrigin(blockpos);
+                 entityvex.setLimitedLife(20 * (30 + EntityEvoker.this.rand.nextInt(90)));
 @@ -371,13 +326,11 @@
              }
          }
  
 -        @Override
-         protected SoundEvent func_190871_k()
+         protected SoundEvent getSpellPrepareSound()
          {
-             return SoundEvents.field_191248_br;
+             return SoundEvents.EVOCATION_ILLAGER_PREPARE_SUMMON;
          }
  
 -        @Override
-         protected EntitySpellcasterIllager.SpellType func_193320_l()
+         protected EntitySpellcasterIllager.SpellType getSpellType()
          {
              return EntitySpellcasterIllager.SpellType.SUMMON_VEX;
 @@ -394,7 +347,10 @@
@@ -353,23 +353,23 @@
 +        {
 +        }
 +
-         public boolean func_75250_a()
+         public boolean shouldExecute()
          {
-             if (EntityEvoker.this.func_70638_az() != null)
+             if (EntityEvoker.this.getAttackTarget() != null)
 @@ -409,14 +365,13 @@
              {
                  return false;
              }
--            else if (!EntityEvoker.this.field_70170_p.func_82736_K().func_82766_b("mobGriefing"))
-+            else if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(EntityEvoker.this.field_70170_p, EntityEvoker.this))
+-            else if (!EntityEvoker.this.world.getGameRules().getBoolean("mobGriefing"))
++            else if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(EntityEvoker.this.world, EntityEvoker.this))
              {
                  return false;
              }
              else
              {
--                List<EntitySheep> list = EntityEvoker.this.field_70170_p
--                                         .func_175647_a(EntitySheep.class, EntityEvoker.this.func_174813_aQ().func_72314_b(16.0, 4.0, 16.0), this.field_190879_a);
-+                List<EntitySheep> list = EntityEvoker.this.field_70170_p.<EntitySheep>func_175647_a(EntitySheep.class, EntityEvoker.this.func_174813_aQ().func_72314_b(16.0D, 4.0D, 16.0D), this.field_190879_a);
+-                List<EntitySheep> list = EntityEvoker.this.world
+-                                         .getEntitiesWithinAABB(EntitySheep.class, EntityEvoker.this.getEntityBoundingBox().grow(16.0, 4.0, 16.0), this.wololoSelector);
++                List<EntitySheep> list = EntityEvoker.this.world.<EntitySheep>getEntitiesWithinAABB(EntitySheep.class, EntityEvoker.this.getEntityBoundingBox().grow(16.0D, 4.0D, 16.0D), this.wololoSelector);
  
                  if (list.isEmpty())
                  {
@@ -378,52 +378,52 @@
          }
  
 -        @Override
-         public boolean func_75253_b()
+         public boolean shouldContinueExecuting()
          {
-             return EntityEvoker.this.func_190751_dj() != null && this.field_193321_c > 0;
+             return EntityEvoker.this.getWololoTarget() != null && this.spellWarmup > 0;
          }
  
 -        @Override
-         public void func_75251_c()
+         public void resetTask()
          {
-             super.func_75251_c();
--            EntityEvoker.this.func_190748_a(null);
-+            EntityEvoker.this.func_190748_a((EntitySheep)null);
+             super.resetTask();
+-            EntityEvoker.this.setWololoTarget(null);
++            EntityEvoker.this.setWololoTarget((EntitySheep)null);
          }
  
 -        @Override
-         protected void func_190868_j()
+         protected void castSpell()
          {
-             EntitySheep entitysheep = EntityEvoker.this.func_190751_dj();
+             EntitySheep entitysheep = EntityEvoker.this.getWololoTarget();
 @@ -454,31 +406,26 @@
              }
          }
  
 -        @Override
-         protected int func_190867_m()
+         protected int getCastWarmupTime()
          {
              return 40;
          }
  
 -        @Override
-         protected int func_190869_f()
+         protected int getCastingTime()
          {
              return 60;
          }
  
 -        @Override
-         protected int func_190872_i()
+         protected int getCastingInterval()
          {
              return 140;
          }
  
 -        @Override
-         protected SoundEvent func_190871_k()
+         protected SoundEvent getSpellPrepareSound()
          {
-             return SoundEvents.field_191249_bs;
+             return SoundEvents.EVOCATION_ILLAGER_PREPARE_WOLOLO;
          }
  
 -        @Override
-         protected EntitySpellcasterIllager.SpellType func_193320_l()
+         protected EntitySpellcasterIllager.SpellType getSpellType()
          {
              return EntitySpellcasterIllager.SpellType.WOLOLO;

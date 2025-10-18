@@ -4,81 +4,81 @@
  @SideOnly(Side.CLIENT)
  public class TileEntityPistonRenderer extends TileEntitySpecialRenderer<TileEntityPiston>
  {
--    private final BlockRendererDispatcher field_178462_c = Minecraft.func_71410_x().func_175602_ab();
-+    private BlockRendererDispatcher field_178462_c;
+-    private final BlockRendererDispatcher blockRenderer = Minecraft.getMinecraft().getBlockRendererDispatcher();
++    private BlockRendererDispatcher blockRenderer;
  
--    public void func_192841_a(
--        TileEntityPiston p_192841_1_, double p_192841_2_, double p_192841_4_, double p_192841_6_, float p_192841_8_, int p_192841_9_, float p_192841_10_
+-    public void render(
+-        TileEntityPiston te, double x, double y, double z, float partialTicks, int destroyStage, float alpha
 -    )
-+    public void func_192841_a(TileEntityPiston p_192841_1_, double p_192841_2_, double p_192841_4_, double p_192841_6_, float p_192841_8_, int p_192841_9_, float p_192841_10_)
++    public void render(TileEntityPiston te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
      {
-+        if (field_178462_c == null) field_178462_c = Minecraft.func_71410_x().func_175602_ab(); //Forge: Delay this from constructor to allow us to change it later
-         BlockPos blockpos = p_192841_1_.func_174877_v();
-         IBlockState iblockstate = p_192841_1_.func_174927_b();
-         Block block = iblockstate.func_177230_c();
++        if (blockRenderer == null) blockRenderer = Minecraft.getMinecraft().getBlockRendererDispatcher(); //Forge: Delay this from constructor to allow us to change it later
+         BlockPos blockpos = te.getPos();
+         IBlockState iblockstate = te.getPistonState();
+         Block block = iblockstate.getBlock();
  
--        if (iblockstate.func_185904_a() != Material.field_151579_a && !(p_192841_1_.func_145860_a(p_192841_8_) >= 1.0F))
-+        if (iblockstate.func_185904_a() != Material.field_151579_a && p_192841_1_.func_145860_a(p_192841_8_) < 1.0F)
+-        if (iblockstate.getMaterial() != Material.AIR && !(te.getProgress(partialTicks) >= 1.0F))
++        if (iblockstate.getMaterial() != Material.AIR && te.getProgress(partialTicks) < 1.0F)
          {
-             Tessellator tessellator = Tessellator.func_178181_a();
-             BufferBuilder bufferbuilder = tessellator.func_178180_c();
+             Tessellator tessellator = Tessellator.getInstance();
+             BufferBuilder bufferbuilder = tessellator.getBuffer();
 @@ -53,33 +52,22 @@
              }
  
-             bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_176600_a);
--            bufferbuilder.func_178969_c(
--                p_192841_2_ - (double)blockpos.func_177958_n() + (double)p_192841_1_.func_174929_b(p_192841_8_),
--                p_192841_4_ - (double)blockpos.func_177956_o() + (double)p_192841_1_.func_174928_c(p_192841_8_),
--                p_192841_6_ - (double)blockpos.func_177952_p() + (double)p_192841_1_.func_174926_d(p_192841_8_)
+             bufferbuilder.begin(7, DefaultVertexFormats.BLOCK);
+-            bufferbuilder.setTranslation(
+-                x - (double)blockpos.getX() + (double)te.getOffsetX(partialTicks),
+-                y - (double)blockpos.getY() + (double)te.getOffsetY(partialTicks),
+-                z - (double)blockpos.getZ() + (double)te.getOffsetZ(partialTicks)
 -            );
-+            bufferbuilder.func_178969_c(p_192841_2_ - (double)blockpos.func_177958_n() + (double)p_192841_1_.func_174929_b(p_192841_8_), p_192841_4_ - (double)blockpos.func_177956_o() + (double)p_192841_1_.func_174928_c(p_192841_8_), p_192841_6_ - (double)blockpos.func_177952_p() + (double)p_192841_1_.func_174926_d(p_192841_8_));
-             World world = this.func_178459_a();
++            bufferbuilder.setTranslation(x - (double)blockpos.getX() + (double)te.getOffsetX(partialTicks), y - (double)blockpos.getY() + (double)te.getOffsetY(partialTicks), z - (double)blockpos.getZ() + (double)te.getOffsetZ(partialTicks));
+             World world = this.getWorld();
  
-             if (block == Blocks.field_150332_K && p_192841_1_.func_145860_a(p_192841_8_) <= 0.25F)
+             if (block == Blocks.PISTON_HEAD && te.getProgress(partialTicks) <= 0.25F)
              {
--                iblockstate = iblockstate.func_177226_a(BlockPistonExtension.field_176327_M, true);
-+                iblockstate = iblockstate.func_177226_a(BlockPistonExtension.field_176327_M, Boolean.valueOf(true));
-                 this.func_188186_a(blockpos, iblockstate, bufferbuilder, world, true);
+-                iblockstate = iblockstate.withProperty(BlockPistonExtension.SHORT, true);
++                iblockstate = iblockstate.withProperty(BlockPistonExtension.SHORT, Boolean.valueOf(true));
+                 this.renderStateModel(blockpos, iblockstate, bufferbuilder, world, true);
              }
-             else if (p_192841_1_.func_145867_d() && !p_192841_1_.func_145868_b())
+             else if (te.shouldPistonHeadBeRendered() && !te.isExtending())
              {
--                BlockPistonExtension.EnumPistonType blockpistonextension$enumpistontype = block == Blocks.field_150320_F
+-                BlockPistonExtension.EnumPistonType blockpistonextension$enumpistontype = block == Blocks.STICKY_PISTON
 -                        ? BlockPistonExtension.EnumPistonType.STICKY
 -                        : BlockPistonExtension.EnumPistonType.DEFAULT;
--                IBlockState iblockstate1 = Blocks.field_150332_K
--                                           .func_176223_P()
--                                           .func_177226_a(BlockPistonExtension.field_176325_b, blockpistonextension$enumpistontype)
--                                           .func_177226_a(BlockPistonExtension.field_176387_N, iblockstate.func_177229_b(BlockPistonBase.field_176387_N));
--                iblockstate1 = iblockstate1.func_177226_a(BlockPistonExtension.field_176327_M, p_192841_1_.func_145860_a(p_192841_8_) >= 0.5F);
-+                BlockPistonExtension.EnumPistonType blockpistonextension$enumpistontype = block == Blocks.field_150320_F ? BlockPistonExtension.EnumPistonType.STICKY : BlockPistonExtension.EnumPistonType.DEFAULT;
-+                IBlockState iblockstate1 = Blocks.field_150332_K.func_176223_P().func_177226_a(BlockPistonExtension.field_176325_b, blockpistonextension$enumpistontype).func_177226_a(BlockPistonExtension.field_176387_N, iblockstate.func_177229_b(BlockPistonBase.field_176387_N));
-+                iblockstate1 = iblockstate1.func_177226_a(BlockPistonExtension.field_176327_M, Boolean.valueOf(p_192841_1_.func_145860_a(p_192841_8_) >= 0.5F));
-                 this.func_188186_a(blockpos, iblockstate1, bufferbuilder, world, true);
--                bufferbuilder.func_178969_c(
--                    p_192841_2_ - (double)blockpos.func_177958_n(), p_192841_4_ - (double)blockpos.func_177956_o(), p_192841_6_ - (double)blockpos.func_177952_p()
+-                IBlockState iblockstate1 = Blocks.PISTON_HEAD
+-                                           .getDefaultState()
+-                                           .withProperty(BlockPistonExtension.TYPE, blockpistonextension$enumpistontype)
+-                                           .withProperty(BlockPistonExtension.FACING, iblockstate.getValue(BlockPistonBase.FACING));
+-                iblockstate1 = iblockstate1.withProperty(BlockPistonExtension.SHORT, te.getProgress(partialTicks) >= 0.5F);
++                BlockPistonExtension.EnumPistonType blockpistonextension$enumpistontype = block == Blocks.STICKY_PISTON ? BlockPistonExtension.EnumPistonType.STICKY : BlockPistonExtension.EnumPistonType.DEFAULT;
++                IBlockState iblockstate1 = Blocks.PISTON_HEAD.getDefaultState().withProperty(BlockPistonExtension.TYPE, blockpistonextension$enumpistontype).withProperty(BlockPistonExtension.FACING, iblockstate.getValue(BlockPistonBase.FACING));
++                iblockstate1 = iblockstate1.withProperty(BlockPistonExtension.SHORT, Boolean.valueOf(te.getProgress(partialTicks) >= 0.5F));
+                 this.renderStateModel(blockpos, iblockstate1, bufferbuilder, world, true);
+-                bufferbuilder.setTranslation(
+-                    x - (double)blockpos.getX(), y - (double)blockpos.getY(), z - (double)blockpos.getZ()
 -                );
--                iblockstate = iblockstate.func_177226_a(BlockPistonBase.field_176320_b, true);
-+                bufferbuilder.func_178969_c(p_192841_2_ - (double)blockpos.func_177958_n(), p_192841_4_ - (double)blockpos.func_177956_o(), p_192841_6_ - (double)blockpos.func_177952_p());
-+                iblockstate = iblockstate.func_177226_a(BlockPistonBase.field_176320_b, Boolean.valueOf(true));
-                 this.func_188186_a(blockpos, iblockstate, bufferbuilder, world, true);
+-                iblockstate = iblockstate.withProperty(BlockPistonBase.EXTENDED, true);
++                bufferbuilder.setTranslation(x - (double)blockpos.getX(), y - (double)blockpos.getY(), z - (double)blockpos.getZ());
++                iblockstate = iblockstate.withProperty(BlockPistonBase.EXTENDED, Boolean.valueOf(true));
+                 this.renderStateModel(blockpos, iblockstate, bufferbuilder, world, true);
              }
              else
 @@ -87,7 +75,7 @@
-                 this.func_188186_a(blockpos, iblockstate, bufferbuilder, world, false);
+                 this.renderStateModel(blockpos, iblockstate, bufferbuilder, world, false);
              }
  
--            bufferbuilder.func_178969_c(0.0, 0.0, 0.0);
-+            bufferbuilder.func_178969_c(0.0D, 0.0D, 0.0D);
-             tessellator.func_78381_a();
-             RenderHelper.func_74519_b();
+-            bufferbuilder.setTranslation(0.0, 0.0, 0.0);
++            bufferbuilder.setTranslation(0.0D, 0.0D, 0.0D);
+             tessellator.draw();
+             RenderHelper.enableStandardItemLighting();
          }
 @@ -95,8 +83,6 @@
  
-     private boolean func_188186_a(BlockPos p_188186_1_, IBlockState p_188186_2_, BufferBuilder p_188186_3_, World p_188186_4_, boolean p_188186_5_)
+     private boolean renderStateModel(BlockPos pos, IBlockState state, BufferBuilder buffer, World p_188186_4_, boolean checkSides)
      {
--        return this.field_178462_c
--               .func_175019_b()
--               .func_178267_a(p_188186_4_, this.field_178462_c.func_184389_a(p_188186_2_), p_188186_2_, p_188186_1_, p_188186_3_, p_188186_5_);
-+        return this.field_178462_c.func_175019_b().func_178267_a(p_188186_4_, this.field_178462_c.func_184389_a(p_188186_2_), p_188186_2_, p_188186_1_, p_188186_3_, p_188186_5_);
+-        return this.blockRenderer
+-               .getBlockModelRenderer()
+-               .renderModel(p_188186_4_, this.blockRenderer.getModelForState(state), state, pos, buffer, checkSides);
++        return this.blockRenderer.getBlockModelRenderer().renderModel(p_188186_4_, this.blockRenderer.getModelForState(state), state, pos, buffer, checkSides);
      }
  }

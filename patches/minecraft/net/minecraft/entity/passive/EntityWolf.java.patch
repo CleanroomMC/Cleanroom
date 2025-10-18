@@ -4,138 +4,138 @@
  
  public class EntityWolf extends EntityTameable
  {
--    private static final DataParameter<Float> field_184759_bz = EntityDataManager.func_187226_a(EntityWolf.class, DataSerializers.field_187193_c);
--    private static final DataParameter<Boolean> field_184760_bA = EntityDataManager.func_187226_a(EntityWolf.class, DataSerializers.field_187198_h);
--    private static final DataParameter<Integer> field_184758_bB = EntityDataManager.func_187226_a(EntityWolf.class, DataSerializers.field_187192_b);
-+    private static final DataParameter<Float> field_184759_bz = EntityDataManager.<Float>func_187226_a(EntityWolf.class, DataSerializers.field_187193_c);
-+    private static final DataParameter<Boolean> field_184760_bA = EntityDataManager.<Boolean>func_187226_a(EntityWolf.class, DataSerializers.field_187198_h);
-+    private static final DataParameter<Integer> field_184758_bB = EntityDataManager.<Integer>func_187226_a(EntityWolf.class, DataSerializers.field_187192_b);
-     private float field_70926_e;
-     private float field_70924_f;
-     private boolean field_70925_g;
+-    private static final DataParameter<Float> DATA_HEALTH_ID = EntityDataManager.createKey(EntityWolf.class, DataSerializers.FLOAT);
+-    private static final DataParameter<Boolean> BEGGING = EntityDataManager.createKey(EntityWolf.class, DataSerializers.BOOLEAN);
+-    private static final DataParameter<Integer> COLLAR_COLOR = EntityDataManager.createKey(EntityWolf.class, DataSerializers.VARINT);
++    private static final DataParameter<Float> DATA_HEALTH_ID = EntityDataManager.<Float>createKey(EntityWolf.class, DataSerializers.FLOAT);
++    private static final DataParameter<Boolean> BEGGING = EntityDataManager.<Boolean>createKey(EntityWolf.class, DataSerializers.BOOLEAN);
++    private static final DataParameter<Integer> COLLAR_COLOR = EntityDataManager.<Integer>createKey(EntityWolf.class, DataSerializers.VARINT);
+     private float headRotationCourse;
+     private float headRotationCourseOld;
+     private boolean isWet;
 @@ -71,53 +71,50 @@
-         this.func_70903_f(false);
+         this.setTamed(false);
      }
  
 -    @Override
-     protected void func_184651_r()
+     protected void initEntityAI()
      {
-         this.field_70911_d = new EntityAISit(this);
-         this.field_70714_bg.func_75776_a(1, new EntityAISwimming(this));
-         this.field_70714_bg.func_75776_a(2, this.field_70911_d);
--        this.field_70714_bg.func_75776_a(3, new EntityWolf.AIAvoidEntity<>(this, EntityLlama.class, 24.0F, 1.5, 1.5));
-+        this.field_70714_bg.func_75776_a(3, new EntityWolf.AIAvoidEntity(this, EntityLlama.class, 24.0F, 1.5D, 1.5D));
-         this.field_70714_bg.func_75776_a(4, new EntityAILeapAtTarget(this, 0.4F));
--        this.field_70714_bg.func_75776_a(5, new EntityAIAttackMelee(this, 1.0, true));
--        this.field_70714_bg.func_75776_a(6, new EntityAIFollowOwner(this, 1.0, 10.0F, 2.0F));
--        this.field_70714_bg.func_75776_a(7, new EntityAIMate(this, 1.0));
--        this.field_70714_bg.func_75776_a(8, new EntityAIWanderAvoidWater(this, 1.0));
-+        this.field_70714_bg.func_75776_a(5, new EntityAIAttackMelee(this, 1.0D, true));
-+        this.field_70714_bg.func_75776_a(6, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
-+        this.field_70714_bg.func_75776_a(7, new EntityAIMate(this, 1.0D));
-+        this.field_70714_bg.func_75776_a(8, new EntityAIWanderAvoidWater(this, 1.0D));
-         this.field_70714_bg.func_75776_a(9, new EntityAIBeg(this, 8.0F));
-         this.field_70714_bg.func_75776_a(10, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-         this.field_70714_bg.func_75776_a(10, new EntityAILookIdle(this));
-         this.field_70715_bh.func_75776_a(1, new EntityAIOwnerHurtByTarget(this));
-         this.field_70715_bh.func_75776_a(2, new EntityAIOwnerHurtTarget(this));
--        this.field_70715_bh.func_75776_a(3, new EntityAIHurtByTarget(this, true));
--        this.field_70715_bh.func_75776_a(4, new EntityAITargetNonTamed<>(this, EntityAnimal.class, false, new Predicate<Entity>()
-+        this.field_70715_bh.func_75776_a(3, new EntityAIHurtByTarget(this, true, new Class[0]));
-+        this.field_70715_bh.func_75776_a(4, new EntityAITargetNonTamed(this, EntityAnimal.class, false, new Predicate<Entity>()
+         this.aiSit = new EntityAISit(this);
+         this.tasks.addTask(1, new EntityAISwimming(this));
+         this.tasks.addTask(2, this.aiSit);
+-        this.tasks.addTask(3, new EntityWolf.AIAvoidEntity<>(this, EntityLlama.class, 24.0F, 1.5, 1.5));
++        this.tasks.addTask(3, new EntityWolf.AIAvoidEntity(this, EntityLlama.class, 24.0F, 1.5D, 1.5D));
+         this.tasks.addTask(4, new EntityAILeapAtTarget(this, 0.4F));
+-        this.tasks.addTask(5, new EntityAIAttackMelee(this, 1.0, true));
+-        this.tasks.addTask(6, new EntityAIFollowOwner(this, 1.0, 10.0F, 2.0F));
+-        this.tasks.addTask(7, new EntityAIMate(this, 1.0));
+-        this.tasks.addTask(8, new EntityAIWanderAvoidWater(this, 1.0));
++        this.tasks.addTask(5, new EntityAIAttackMelee(this, 1.0D, true));
++        this.tasks.addTask(6, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
++        this.tasks.addTask(7, new EntityAIMate(this, 1.0D));
++        this.tasks.addTask(8, new EntityAIWanderAvoidWater(this, 1.0D));
+         this.tasks.addTask(9, new EntityAIBeg(this, 8.0F));
+         this.tasks.addTask(10, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+         this.tasks.addTask(10, new EntityAILookIdle(this));
+         this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
+         this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
+-        this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, true));
+-        this.targetTasks.addTask(4, new EntityAITargetNonTamed<>(this, EntityAnimal.class, false, new Predicate<Entity>()
++        this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, true, new Class[0]));
++        this.targetTasks.addTask(4, new EntityAITargetNonTamed(this, EntityAnimal.class, false, new Predicate<Entity>()
          {
              public boolean apply(@Nullable Entity p_apply_1_)
              {
                  return p_apply_1_ instanceof EntitySheep || p_apply_1_ instanceof EntityRabbit;
              }
          }));
--        this.field_70715_bh.func_75776_a(5, new EntityAINearestAttackableTarget<>(this, AbstractSkeleton.class, false));
-+        this.field_70715_bh.func_75776_a(5, new EntityAINearestAttackableTarget(this, AbstractSkeleton.class, false));
+-        this.targetTasks.addTask(5, new EntityAINearestAttackableTarget<>(this, AbstractSkeleton.class, false));
++        this.targetTasks.addTask(5, new EntityAINearestAttackableTarget(this, AbstractSkeleton.class, false));
      }
  
 -    @Override
-     protected void func_110147_ax()
+     protected void applyEntityAttributes()
      {
-         super.func_110147_ax();
--        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.3F);
-+        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.30000001192092896D);
+         super.applyEntityAttributes();
+-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.3F);
++        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.30000001192092896D);
  
-         if (this.func_70909_n())
+         if (this.isTamed())
          {
--            this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(20.0);
-+            this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(20.0D);
+-            this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20.0);
++            this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20.0D);
          }
          else
          {
--            this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(8.0);
-+            this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(8.0D);
+-            this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(8.0);
++            this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(8.0D);
          }
  
--        this.func_110140_aT().func_111150_b(SharedMonsterAttributes.field_111264_e).func_111128_a(2.0);
-+        this.func_110140_aT().func_111150_b(SharedMonsterAttributes.field_111264_e).func_111128_a(2.0D);
+-        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(2.0);
++        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(2.0D);
      }
  
 -    @Override
-     public void func_70624_b(@Nullable EntityLivingBase p_70624_1_)
+     public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn)
      {
-         super.func_70624_b(p_70624_1_);
+         super.setAttackTarget(entitylivingbaseIn);
 @@ -132,22 +129,19 @@
          }
      }
  
 -    @Override
-     protected void func_70619_bc()
+     protected void updateAITasks()
      {
--        this.field_70180_af.func_187227_b(field_184759_bz, this.func_110143_aJ());
-+        this.field_70180_af.func_187227_b(field_184759_bz, Float.valueOf(this.func_110143_aJ()));
+-        this.dataManager.set(DATA_HEALTH_ID, this.getHealth());
++        this.dataManager.set(DATA_HEALTH_ID, Float.valueOf(this.getHealth()));
      }
  
 -    @Override
-     protected void func_70088_a()
+     protected void entityInit()
      {
-         super.func_70088_a();
--        this.field_70180_af.func_187214_a(field_184759_bz, this.func_110143_aJ());
--        this.field_70180_af.func_187214_a(field_184760_bA, false);
--        this.field_70180_af.func_187214_a(field_184758_bB, EnumDyeColor.RED.func_176767_b());
-+        this.field_70180_af.func_187214_a(field_184759_bz, Float.valueOf(this.func_110143_aJ()));
-+        this.field_70180_af.func_187214_a(field_184760_bA, Boolean.valueOf(false));
-+        this.field_70180_af.func_187214_a(field_184758_bB, Integer.valueOf(EnumDyeColor.RED.func_176767_b()));
+         super.entityInit();
+-        this.dataManager.register(DATA_HEALTH_ID, this.getHealth());
+-        this.dataManager.register(BEGGING, false);
+-        this.dataManager.register(COLLAR_COLOR, EnumDyeColor.RED.getDyeDamage());
++        this.dataManager.register(DATA_HEALTH_ID, Float.valueOf(this.getHealth()));
++        this.dataManager.register(BEGGING, Boolean.valueOf(false));
++        this.dataManager.register(COLLAR_COLOR, Integer.valueOf(EnumDyeColor.RED.getDyeDamage()));
      }
  
 -    @Override
-     protected void func_180429_a(BlockPos p_180429_1_, Block p_180429_2_)
+     protected void playStepSound(BlockPos pos, Block blockIn)
      {
-         this.func_184185_a(SoundEvents.field_187869_gK, 0.15F, 1.0F);
+         this.playSound(SoundEvents.ENTITY_WOLF_STEP, 0.15F, 1.0F);
 @@ -158,7 +152,6 @@
-         EntityLiving.func_189752_a(p_189788_0_, EntityWolf.class);
+         EntityLiving.registerFixesMob(fixer, EntityWolf.class);
      }
  
 -    @Override
-     public void func_70014_b(NBTTagCompound p_70014_1_)
+     public void writeEntityToNBT(NBTTagCompound compound)
      {
-         super.func_70014_b(p_70014_1_);
+         super.writeEntityToNBT(compound);
 @@ -166,7 +159,6 @@
-         p_70014_1_.func_74774_a("CollarColor", (byte)this.func_175546_cu().func_176767_b());
+         compound.setByte("CollarColor", (byte)this.getCollarColor().getDyeDamage());
      }
  
 -    @Override
-     public void func_70037_a(NBTTagCompound p_70037_1_)
+     public void readEntityFromNBT(NBTTagCompound compound)
      {
-         super.func_70037_a(p_70037_1_);
+         super.readEntityFromNBT(compound);
 @@ -178,7 +170,6 @@
          }
      }
  
 -    @Override
-     protected SoundEvent func_184639_G()
+     protected SoundEvent getAmbientSound()
      {
-         if (this.func_70919_bu())
+         if (this.isAngry())
 @@ -187,7 +178,7 @@
          }
-         else if (this.field_70146_Z.nextInt(3) == 0)
+         else if (this.rand.nextInt(3) == 0)
          {
--            return this.func_70909_n() && this.field_70180_af.func_187225_a(field_184759_bz) < 10.0F ? SoundEvents.field_187871_gL : SoundEvents.field_187865_gI;
-+            return this.func_70909_n() && ((Float)this.field_70180_af.func_187225_a(field_184759_bz)).floatValue() < 10.0F ? SoundEvents.field_187871_gL : SoundEvents.field_187865_gI;
+-            return this.isTamed() && this.dataManager.get(DATA_HEALTH_ID) < 10.0F ? SoundEvents.ENTITY_WOLF_WHINE : SoundEvents.ENTITY_WOLF_PANT;
++            return this.isTamed() && ((Float)this.dataManager.get(DATA_HEALTH_ID)).floatValue() < 10.0F ? SoundEvents.ENTITY_WOLF_WHINE : SoundEvents.ENTITY_WOLF_PANT;
          }
          else
          {
@@ -144,90 +144,90 @@
      }
  
 -    @Override
-     protected SoundEvent func_184601_bQ(DamageSource p_184601_1_)
+     protected SoundEvent getHurtSound(DamageSource damageSourceIn)
      {
-         return SoundEvents.field_187863_gH;
+         return SoundEvents.ENTITY_WOLF_HURT;
      }
  
 -    @Override
-     protected SoundEvent func_184615_bR()
+     protected SoundEvent getDeathSound()
      {
-         return SoundEvents.field_187859_gF;
+         return SoundEvents.ENTITY_WOLF_DEATH;
      }
  
 -    @Override
-     protected float func_70599_aP()
+     protected float getSoundVolume()
      {
          return 0.4F;
      }
  
      @Nullable
 -    @Override
-     protected ResourceLocation func_184647_J()
+     protected ResourceLocation getLootTable()
      {
-         return LootTableList.field_186401_I;
+         return LootTableList.ENTITIES_WOLF;
      }
  
 -    @Override
-     public void func_70636_d()
+     public void onLivingUpdate()
      {
-         super.func_70636_d();
+         super.onLivingUpdate();
 @@ -239,7 +225,6 @@
          }
      }
  
 -    @Override
-     public void func_70071_h_()
+     public void onUpdate()
      {
-         super.func_70071_h_();
+         super.onUpdate();
 @@ -247,11 +232,11 @@
  
-         if (this.func_70922_bv())
+         if (this.isBegging())
          {
--            this.field_70926_e = this.field_70926_e + (1.0F - this.field_70926_e) * 0.4F;
-+            this.field_70926_e += (1.0F - this.field_70926_e) * 0.4F;
+-            this.headRotationCourse = this.headRotationCourse + (1.0F - this.headRotationCourse) * 0.4F;
++            this.headRotationCourse += (1.0F - this.headRotationCourse) * 0.4F;
          }
          else
          {
--            this.field_70926_e = this.field_70926_e + (0.0F - this.field_70926_e) * 0.4F;
-+            this.field_70926_e += (0.0F - this.field_70926_e) * 0.4F;
+-            this.headRotationCourse = this.headRotationCourse + (0.0F - this.headRotationCourse) * 0.4F;
++            this.headRotationCourse += (0.0F - this.headRotationCourse) * 0.4F;
          }
  
-         if (this.func_70026_G())
+         if (this.isWet())
 @@ -265,9 +250,7 @@
          {
-             if (this.field_70929_i == 0.0F)
+             if (this.timeWolfIsShaking == 0.0F)
              {
--                this.func_184185_a(
--                    SoundEvents.field_187867_gJ, this.func_70599_aP(), (this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.2F + 1.0F
+-                this.playSound(
+-                    SoundEvents.ENTITY_WOLF_SHAKE, this.getSoundVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F
 -                );
-+                this.func_184185_a(SoundEvents.field_187867_gJ, this.func_70599_aP(), (this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.2F + 1.0F);
++                this.playSound(SoundEvents.ENTITY_WOLF_SHAKE, this.getSoundVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
              }
  
-             this.field_70927_j = this.field_70929_i;
+             this.prevTimeWolfIsShaking = this.timeWolfIsShaking;
 @@ -284,22 +267,13 @@
-             if (this.field_70929_i > 0.4F)
+             if (this.timeWolfIsShaking > 0.4F)
              {
-                 float f = (float)this.func_174813_aQ().field_72338_b;
--                int i = (int)(MathHelper.func_76126_a((this.field_70929_i - 0.4F) * (float) Math.PI) * 7.0F);
-+                int i = (int)(MathHelper.func_76126_a((this.field_70929_i - 0.4F) * (float)Math.PI) * 7.0F);
+                 float f = (float)this.getEntityBoundingBox().minY;
+-                int i = (int)(MathHelper.sin((this.timeWolfIsShaking - 0.4F) * (float) Math.PI) * 7.0F);
++                int i = (int)(MathHelper.sin((this.timeWolfIsShaking - 0.4F) * (float)Math.PI) * 7.0F);
  
 -                for (int j = 0; j < i; j++)
 +                for (int j = 0; j < i; ++j)
                  {
-                     float f1 = (this.field_70146_Z.nextFloat() * 2.0F - 1.0F) * this.field_70130_N * 0.5F;
-                     float f2 = (this.field_70146_Z.nextFloat() * 2.0F - 1.0F) * this.field_70130_N * 0.5F;
--                    this.field_70170_p
--                    .func_175688_a(
+                     float f1 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width * 0.5F;
+                     float f2 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width * 0.5F;
+-                    this.world
+-                    .spawnParticle(
 -                        EnumParticleTypes.WATER_SPLASH,
--                        this.field_70165_t + (double)f1,
+-                        this.posX + (double)f1,
 -                        (double)(f + 0.8F),
--                        this.field_70161_v + (double)f2,
--                        this.field_70159_w,
--                        this.field_70181_x,
--                        this.field_70179_y
+-                        this.posZ + (double)f2,
+-                        this.motionX,
+-                        this.motionY,
+-                        this.motionZ
 -                    );
-+                    this.field_70170_p.func_175688_a(EnumParticleTypes.WATER_SPLASH, this.field_70165_t + (double)f1, (double)(f + 0.8F), this.field_70161_v + (double)f2, this.field_70159_w, this.field_70181_x, this.field_70179_y);
++                    this.world.spawnParticle(EnumParticleTypes.WATER_SPLASH, this.posX + (double)f1, (double)(f + 0.8F), this.posZ + (double)f2, this.motionX, this.motionY, this.motionZ);
                  }
              }
          }
@@ -235,44 +235,44 @@
              f = 1.0F;
          }
  
--        return MathHelper.func_76126_a(f * (float) Math.PI) * MathHelper.func_76126_a(f * (float) Math.PI * 11.0F) * 0.15F * (float) Math.PI;
-+        return MathHelper.func_76126_a(f * (float)Math.PI) * MathHelper.func_76126_a(f * (float)Math.PI * 11.0F) * 0.15F * (float)Math.PI;
+-        return MathHelper.sin(f * (float) Math.PI) * MathHelper.sin(f * (float) Math.PI * 11.0F) * 0.15F * (float) Math.PI;
++        return MathHelper.sin(f * (float)Math.PI) * MathHelper.sin(f * (float)Math.PI * 11.0F) * 0.15F * (float)Math.PI;
      }
  
      @SideOnly(Side.CLIENT)
-     public float func_70917_k(float p_70917_1_)
+     public float getInterestedAngle(float p_70917_1_)
      {
--        return (this.field_70924_f + (this.field_70926_e - this.field_70924_f) * p_70917_1_) * 0.15F * (float) Math.PI;
-+        return (this.field_70924_f + (this.field_70926_e - this.field_70924_f) * p_70917_1_) * 0.15F * (float)Math.PI;
+-        return (this.headRotationCourseOld + (this.headRotationCourse - this.headRotationCourseOld) * p_70917_1_) * 0.15F * (float) Math.PI;
++        return (this.headRotationCourseOld + (this.headRotationCourse - this.headRotationCourseOld) * p_70917_1_) * 0.15F * (float)Math.PI;
      }
  
 -    @Override
-     public float func_70047_e()
+     public float getEyeHeight()
      {
-         return this.field_70131_O * 0.8F;
+         return this.height * 0.8F;
      }
  
 -    @Override
-     public int func_70646_bf()
+     public int getVerticalFaceSpeed()
      {
-         return this.func_70906_o() ? 20 : super.func_70646_bf();
+         return this.isSitting() ? 20 : super.getVerticalFaceSpeed();
      }
  
 -    @Override
-     public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
+     public boolean attackEntityFrom(DamageSource source, float amount)
      {
-         if (this.func_180431_b(p_70097_1_))
+         if (this.isEntityInvulnerable(source))
 @@ -377,12 +348,9 @@
          }
      }
  
 -    @Override
-     public boolean func_70652_k(Entity p_70652_1_)
+     public boolean attackEntityAsMob(Entity entityIn)
      {
--        boolean flag = p_70652_1_.func_70097_a(
--                           DamageSource.func_76358_a(this), (float)((int)this.func_110148_a(SharedMonsterAttributes.field_111264_e).func_111126_e())
+-        boolean flag = entityIn.attackEntityFrom(
+-                           DamageSource.causeMobDamage(this), (float)((int)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue())
 -                       );
-+        boolean flag = p_70652_1_.func_70097_a(DamageSource.func_76358_a(this), (float)((int)this.func_110148_a(SharedMonsterAttributes.field_111264_e).func_111126_e()));
++        boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), (float)((int)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue()));
  
          if (flag)
          {
@@ -281,182 +281,182 @@
      }
  
 -    @Override
-     public void func_70903_f(boolean p_70903_1_)
+     public void setTamed(boolean tamed)
      {
-         super.func_70903_f(p_70903_1_);
+         super.setTamed(tamed);
  
-         if (p_70903_1_)
+         if (tamed)
          {
--            this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(20.0);
-+            this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(20.0D);
+-            this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20.0);
++            this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20.0D);
          }
          else
          {
--            this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(8.0);
-+            this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(8.0D);
+-            this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(8.0);
++            this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(8.0D);
          }
  
--        this.func_110148_a(SharedMonsterAttributes.field_111264_e).func_111128_a(4.0);
-+        this.func_110148_a(SharedMonsterAttributes.field_111264_e).func_111128_a(4.0D);
+-        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0);
++        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0D);
      }
  
 -    @Override
-     public boolean func_184645_a(EntityPlayer p_184645_1_, EnumHand p_184645_2_)
+     public boolean processInteract(EntityPlayer player, EnumHand hand)
      {
-         ItemStack itemstack = p_184645_1_.func_184586_b(p_184645_2_);
+         ItemStack itemstack = player.getHeldItem(hand);
 @@ -422,7 +388,7 @@
                  {
-                     ItemFood itemfood = (ItemFood)itemstack.func_77973_b();
+                     ItemFood itemfood = (ItemFood)itemstack.getItem();
  
--                    if (itemfood.func_77845_h() && this.field_70180_af.func_187225_a(field_184759_bz) < 20.0F)
-+                    if (itemfood.func_77845_h() && ((Float)this.field_70180_af.func_187225_a(field_184759_bz)).floatValue() < 20.0F)
+-                    if (itemfood.isWolfsFavoriteMeat() && this.dataManager.get(DATA_HEALTH_ID) < 20.0F)
++                    if (itemfood.isWolfsFavoriteMeat() && ((Float)this.dataManager.get(DATA_HEALTH_ID)).floatValue() < 20.0F)
                      {
-                         if (!p_184645_1_.field_71075_bZ.field_75098_d)
+                         if (!player.capabilities.isCreativeMode)
                          {
 @@ -456,7 +422,7 @@
-                 this.field_70911_d.func_75270_a(!this.func_70906_o());
-                 this.field_70703_bu = false;
-                 this.field_70699_by.func_75499_g();
--                this.func_70624_b(null);
-+                this.func_70624_b((EntityLivingBase)null);
+                 this.aiSit.setSitting(!this.isSitting());
+                 this.isJumping = false;
+                 this.navigator.clearPath();
+-                this.setAttackTarget(null);
++                this.setAttackTarget((EntityLivingBase)null);
              }
          }
-         else if (itemstack.func_77973_b() == Items.field_151103_aS && !this.func_70919_bu())
+         else if (itemstack.getItem() == Items.BONE && !this.isAngry())
 @@ -468,11 +434,11 @@
  
-             if (!this.field_70170_p.field_72995_K)
+             if (!this.world.isRemote)
              {
--                if (this.field_70146_Z.nextInt(3) == 0)
-+                if (this.field_70146_Z.nextInt(3) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, p_184645_1_))
+-                if (this.rand.nextInt(3) == 0)
++                if (this.rand.nextInt(3) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, player))
                  {
-                     this.func_193101_c(p_184645_1_);
-                     this.field_70699_by.func_75499_g();
--                    this.func_70624_b(null);
-+                    this.func_70624_b((EntityLivingBase)null);
-                     this.field_70911_d.func_75270_a(true);
-                     this.func_70606_j(20.0F);
-                     this.func_70908_e(true);
+                     this.setTamedBy(player);
+                     this.navigator.clearPath();
+-                    this.setAttackTarget(null);
++                    this.setAttackTarget((EntityLivingBase)null);
+                     this.aiSit.setSitting(true);
+                     this.setHealth(20.0F);
+                     this.playTameEffect(true);
 @@ -492,7 +458,6 @@
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public void func_70103_a(byte p_70103_1_)
+     public void handleStatusUpdate(byte id)
      {
-         if (p_70103_1_ == 8)
+         if (id == 8)
 @@ -516,19 +481,15 @@
          }
          else
          {
--            return this.func_70909_n()
--                   ? (0.55F - (this.func_110138_aP() - this.field_70180_af.func_187225_a(field_184759_bz)) * 0.02F) * (float) Math.PI
+-            return this.isTamed()
+-                   ? (0.55F - (this.getMaxHealth() - this.dataManager.get(DATA_HEALTH_ID)) * 0.02F) * (float) Math.PI
 -                   : (float)(Math.PI / 5);
-+            return this.func_70909_n() ? (0.55F - (this.func_110138_aP() - ((Float)this.field_70180_af.func_187225_a(field_184759_bz)).floatValue()) * 0.02F) * (float)Math.PI : ((float)Math.PI / 5F);
++            return this.isTamed() ? (0.55F - (this.getMaxHealth() - ((Float)this.dataManager.get(DATA_HEALTH_ID)).floatValue()) * 0.02F) * (float)Math.PI : ((float)Math.PI / 5F);
          }
      }
  
 -    @Override
-     public boolean func_70877_b(ItemStack p_70877_1_)
+     public boolean isBreedingItem(ItemStack stack)
      {
-         return p_70877_1_.func_77973_b() instanceof ItemFood && ((ItemFood)p_70877_1_.func_77973_b()).func_77845_h();
+         return stack.getItem() instanceof ItemFood && ((ItemFood)stack.getItem()).isWolfsFavoriteMeat();
      }
  
 -    @Override
-     public int func_70641_bl()
+     public int getMaxSpawnedInChunk()
      {
          return 8;
 @@ -536,31 +497,31 @@
  
-     public boolean func_70919_bu()
+     public boolean isAngry()
      {
--        return (this.field_70180_af.func_187225_a(field_184755_bv) & 2) != 0;
-+        return (((Byte)this.field_70180_af.func_187225_a(field_184755_bv)).byteValue() & 2) != 0;
+-        return (this.dataManager.get(TAMED) & 2) != 0;
++        return (((Byte)this.dataManager.get(TAMED)).byteValue() & 2) != 0;
      }
  
-     public void func_70916_h(boolean p_70916_1_)
+     public void setAngry(boolean angry)
      {
--        byte b0 = this.field_70180_af.func_187225_a(field_184755_bv);
-+        byte b0 = ((Byte)this.field_70180_af.func_187225_a(field_184755_bv)).byteValue();
+-        byte b0 = this.dataManager.get(TAMED);
++        byte b0 = ((Byte)this.dataManager.get(TAMED)).byteValue();
  
-         if (p_70916_1_)
+         if (angry)
          {
--            this.field_70180_af.func_187227_b(field_184755_bv, (byte)(b0 | 2));
-+            this.field_70180_af.func_187227_b(field_184755_bv, Byte.valueOf((byte)(b0 | 2)));
+-            this.dataManager.set(TAMED, (byte)(b0 | 2));
++            this.dataManager.set(TAMED, Byte.valueOf((byte)(b0 | 2)));
          }
          else
          {
--            this.field_70180_af.func_187227_b(field_184755_bv, (byte)(b0 & -3));
-+            this.field_70180_af.func_187227_b(field_184755_bv, Byte.valueOf((byte)(b0 & -3)));
+-            this.dataManager.set(TAMED, (byte)(b0 & -3));
++            this.dataManager.set(TAMED, Byte.valueOf((byte)(b0 & -3)));
          }
      }
  
-     public EnumDyeColor func_175546_cu()
+     public EnumDyeColor getCollarColor()
      {
--        return EnumDyeColor.func_176766_a(this.field_70180_af.func_187225_a(field_184758_bB) & 15);
-+        return EnumDyeColor.func_176766_a(((Integer)this.field_70180_af.func_187225_a(field_184758_bB)).intValue() & 15);
+-        return EnumDyeColor.byDyeDamage(this.dataManager.get(COLLAR_COLOR) & 15);
++        return EnumDyeColor.byDyeDamage(((Integer)this.dataManager.get(COLLAR_COLOR)).intValue() & 15);
      }
  
-     public void func_175547_a(EnumDyeColor p_175547_1_)
+     public void setCollarColor(EnumDyeColor collarcolor)
      {
--        this.field_70180_af.func_187227_b(field_184758_bB, p_175547_1_.func_176767_b());
-+        this.field_70180_af.func_187227_b(field_184758_bB, Integer.valueOf(p_175547_1_.func_176767_b()));
+-        this.dataManager.set(COLLAR_COLOR, collarcolor.getDyeDamage());
++        this.dataManager.set(COLLAR_COLOR, Integer.valueOf(collarcolor.getDyeDamage()));
      }
  
-     public EntityWolf func_90011_a(EntityAgeable p_90011_1_)
+     public EntityWolf createChild(EntityAgeable ageable)
 @@ -579,10 +540,9 @@
  
-     public void func_70918_i(boolean p_70918_1_)
+     public void setBegging(boolean beg)
      {
--        this.field_70180_af.func_187227_b(field_184760_bA, p_70918_1_);
-+        this.field_70180_af.func_187227_b(field_184760_bA, Boolean.valueOf(p_70918_1_));
+-        this.dataManager.set(BEGGING, beg);
++        this.dataManager.set(BEGGING, Boolean.valueOf(beg));
      }
  
 -    @Override
-     public boolean func_70878_b(EntityAnimal p_70878_1_)
+     public boolean canMateWith(EntityAnimal otherAnimal)
      {
-         if (p_70878_1_ == this)
+         if (otherAnimal == this)
 @@ -605,19 +565,22 @@
              {
                  return false;
              }
-+            else if (entitywolf.func_70906_o())
++            else if (entitywolf.isSitting())
 +            {
 +                return false;
 +            }
              else
              {
--                return entitywolf.func_70906_o() ? false : this.func_70880_s() && entitywolf.func_70880_s();
-+                return this.func_70880_s() && entitywolf.func_70880_s();
+-                return entitywolf.isSitting() ? false : this.isInLove() && entitywolf.isInLove();
++                return this.isInLove() && entitywolf.isInLove();
              }
          }
      }
  
-     public boolean func_70922_bv()
+     public boolean isBegging()
      {
--        return this.field_70180_af.func_187225_a(field_184760_bA);
-+        return ((Boolean)this.field_70180_af.func_187225_a(field_184760_bA)).booleanValue();
+-        return this.dataManager.get(BEGGING);
++        return ((Boolean)this.dataManager.get(BEGGING)).booleanValue();
      }
  
 -    @Override
-     public boolean func_142018_a(EntityLivingBase p_142018_1_, EntityLivingBase p_142018_2_)
+     public boolean shouldAttackEntity(EntityLivingBase target, EntityLivingBase owner)
      {
-         if (!(p_142018_1_ instanceof EntityCreeper) && !(p_142018_1_ instanceof EntityGhast))
+         if (!(target instanceof EntityCreeper) && !(target instanceof EntityGhast))
 @@ -632,11 +595,14 @@
                  }
              }
  
--            return p_142018_1_ instanceof EntityPlayer
--                   && p_142018_2_ instanceof EntityPlayer
--                   && !((EntityPlayer)p_142018_2_).func_96122_a((EntityPlayer)p_142018_1_)
+-            return target instanceof EntityPlayer
+-                   && owner instanceof EntityPlayer
+-                   && !((EntityPlayer)owner).canAttackPlayer((EntityPlayer)target)
 -                   ? false
--                   : !(p_142018_1_ instanceof AbstractHorse) || !((AbstractHorse)p_142018_1_).func_110248_bS();
-+            if (p_142018_1_ instanceof EntityPlayer && p_142018_2_ instanceof EntityPlayer && !((EntityPlayer)p_142018_2_).func_96122_a((EntityPlayer)p_142018_1_))
+-                   : !(target instanceof AbstractHorse) || !((AbstractHorse)target).isTame();
++            if (target instanceof EntityPlayer && owner instanceof EntityPlayer && !((EntityPlayer)owner).canAttackPlayer((EntityPlayer)target))
 +            {
 +                return false;
 +            }
 +            else
 +            {
-+                return !(p_142018_1_ instanceof AbstractHorse) || !((AbstractHorse)p_142018_1_).func_110248_bS();
++                return !(target instanceof AbstractHorse) || !((AbstractHorse)target).isTame();
 +            }
          }
          else
@@ -466,22 +466,22 @@
      }
  
 -    @Override
-     public boolean func_184652_a(EntityPlayer p_184652_1_)
+     public boolean canBeLeashedTo(EntityPlayer player)
      {
-         return !this.func_70919_bu() && super.func_184652_a(p_184652_1_);
+         return !this.isAngry() && super.canBeLeashedTo(player);
 @@ -660,12 +625,16 @@
-             this.field_190856_d = p_i47251_2_;
+             this.wolf = wolfIn;
          }
  
 -        @Override
-         public boolean func_75250_a()
+         public boolean shouldExecute()
          {
--            return super.func_75250_a() && this.field_75376_d instanceof EntityLlama
--                   ? !this.field_190856_d.func_70909_n() && this.func_190854_a((EntityLlama)this.field_75376_d)
+-            return super.shouldExecute() && this.closestLivingEntity instanceof EntityLlama
+-                   ? !this.wolf.isTamed() && this.avoidLlama((EntityLlama)this.closestLivingEntity)
 -                   : false;
-+            if (super.func_75250_a() && this.field_75376_d instanceof EntityLlama)
++            if (super.shouldExecute() && this.closestLivingEntity instanceof EntityLlama)
 +            {
-+                return !this.field_190856_d.func_70909_n() && this.func_190854_a((EntityLlama)this.field_75376_d);
++                return !this.wolf.isTamed() && this.avoidLlama((EntityLlama)this.closestLivingEntity);
 +            }
 +            else
 +            {
@@ -489,24 +489,24 @@
 +            }
          }
  
-         private boolean func_190854_a(EntityLlama p_190854_1_)
+         private boolean avoidLlama(EntityLlama p_190854_1_)
 @@ -673,17 +642,15 @@
-             return p_190854_1_.func_190707_dL() >= EntityWolf.this.field_70146_Z.nextInt(5);
+             return p_190854_1_.getStrength() >= EntityWolf.this.rand.nextInt(5);
          }
  
 -        @Override
-         public void func_75249_e()
+         public void startExecuting()
          {
--            EntityWolf.this.func_70624_b(null);
-+            EntityWolf.this.func_70624_b((EntityLivingBase)null);
-             super.func_75249_e();
+-            EntityWolf.this.setAttackTarget(null);
++            EntityWolf.this.setAttackTarget((EntityLivingBase)null);
+             super.startExecuting();
          }
  
 -        @Override
-         public void func_75246_d()
+         public void updateTask()
          {
--            EntityWolf.this.func_70624_b(null);
-+            EntityWolf.this.func_70624_b((EntityLivingBase)null);
-             super.func_75246_d();
+-            EntityWolf.this.setAttackTarget(null);
++            EntityWolf.this.setAttackTarget((EntityLivingBase)null);
+             super.updateTask();
          }
      }

@@ -7,13 +7,13 @@
 -@SideOnly(Side.CLIENT)
  public abstract class ModelBase
  {
-     public float field_78095_p;
-     public boolean field_78093_q;
-     public boolean field_78091_s = true;
--    public List<ModelRenderer> field_78092_r = Lists.newArrayList();
--    private final Map<String, TextureOffset> field_78094_a = Maps.newHashMap();
-+    public List<ModelRenderer> field_78092_r = Lists.<ModelRenderer>newArrayList();
-+    private final Map<String, TextureOffset> field_78094_a = Maps.<String, TextureOffset>newHashMap();
-     public int field_78090_t = 64;
-     public int field_78089_u = 32;
+     public float swingProgress;
+     public boolean isRiding;
+     public boolean isChild = true;
+-    public List<ModelRenderer> boxList = Lists.newArrayList();
+-    private final Map<String, TextureOffset> modelTextureMap = Maps.newHashMap();
++    public List<ModelRenderer> boxList = Lists.<ModelRenderer>newArrayList();
++    private final Map<String, TextureOffset> modelTextureMap = Maps.<String, TextureOffset>newHashMap();
+     public int textureWidth = 64;
+     public int textureHeight = 32;
  

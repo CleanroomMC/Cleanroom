@@ -3,7 +3,7 @@
 @@ -28,4 +28,14 @@
  
      @SideOnly(Side.CLIENT)
-     WorldType func_175624_G();
+     WorldType getWorldType();
 +
 +    /**
 +     * FORGE: isSideSolid, pulled up from {@link World}

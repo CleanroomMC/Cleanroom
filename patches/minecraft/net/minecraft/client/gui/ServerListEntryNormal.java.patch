@@ -3,91 +3,91 @@
 @@ -29,9 +29,7 @@
  public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
  {
-     private static final Logger field_148304_a = LogManager.getLogger();
--    private static final ThreadPoolExecutor field_148302_b = new ScheduledThreadPoolExecutor(
+     private static final Logger LOGGER = LogManager.getLogger();
+-    private static final ThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(
 -            5, new ThreadFactoryBuilder().setNameFormat("Server Pinger #%d").setDaemon(true).build()
 -        );
-+    private static final ThreadPoolExecutor field_148302_b = new ScheduledThreadPoolExecutor(5, (new ThreadFactoryBuilder()).setNameFormat("Server Pinger #%d").setDaemon(true).build());
-     private static final ResourceLocation field_178015_c = new ResourceLocation("textures/misc/unknown_server.png");
-     private static final ResourceLocation field_178014_d = new ResourceLocation("textures/gui/server_selection.png");
-     private final GuiMultiplayer field_148303_c;
++    private static final ThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(5, (new ThreadFactoryBuilder()).setNameFormat("Server Pinger #%d").setDaemon(true).build());
+     private static final ResourceLocation UNKNOWN_SERVER = new ResourceLocation("textures/misc/unknown_server.png");
+     private static final ResourceLocation SERVER_SELECTION_BUTTONS = new ResourceLocation("textures/gui/server_selection.png");
+     private final GuiMultiplayer owner;
 @@ -51,18 +49,7 @@
-         this.field_148305_h = (DynamicTexture)this.field_148300_d.func_110434_K().func_110581_b(this.field_148306_i);
+         this.icon = (DynamicTexture)this.mc.getTextureManager().getTexture(this.serverIcon);
      }
  
 -    @Override
--    public void func_192634_a(
--        int p_192634_1_,
--        int p_192634_2_,
--        int p_192634_3_,
--        int p_192634_4_,
--        int p_192634_5_,
--        int p_192634_6_,
--        int p_192634_7_,
--        boolean p_192634_8_,
--        float p_192634_9_
+-    public void drawEntry(
+-        int slotIndex,
+-        int x,
+-        int y,
+-        int listWidth,
+-        int slotHeight,
+-        int mouseX,
+-        int mouseY,
+-        boolean isSelected,
+-        float partialTicks
 -    )
-+    public void func_192634_a(int p_192634_1_, int p_192634_2_, int p_192634_3_, int p_192634_4_, int p_192634_5_, int p_192634_6_, int p_192634_7_, boolean p_192634_8_, float p_192634_9_)
++    public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks)
      {
-         if (!this.field_148301_e.field_78841_f)
+         if (!this.server.pinged)
          {
 @@ -72,19 +59,18 @@
-             this.field_148301_e.field_78846_c = "";
-             field_148302_b.submit(new Runnable()
+             this.server.populationInfo = "";
+             EXECUTOR.submit(new Runnable()
              {
 -                @Override
                  public void run()
                  {
                      try
                      {
-                         ServerListEntryNormal.this.field_148303_c.func_146789_i().func_147224_a(ServerListEntryNormal.this.field_148301_e);
+                         ServerListEntryNormal.this.owner.getOldServerPinger().ping(ServerListEntryNormal.this.server);
                      }
 -                    catch (UnknownHostException unknownhostexception)
 +                    catch (UnknownHostException var2)
                      {
-                         ServerListEntryNormal.this.field_148301_e.field_78844_e = -1L;
-                         ServerListEntryNormal.this.field_148301_e.field_78843_d = TextFormatting.DARK_RED + I18n.func_135052_a("multiplayer.status.cannot_resolve");
+                         ServerListEntryNormal.this.server.pingToServer = -1L;
+                         ServerListEntryNormal.this.server.serverMOTD = TextFormatting.DARK_RED + I18n.format("multiplayer.status.cannot_resolve");
                      }
 -                    catch (Exception exception)
 +                    catch (Exception var3)
                      {
-                         ServerListEntryNormal.this.field_148301_e.field_78844_e = -1L;
-                         ServerListEntryNormal.this.field_148301_e.field_78843_d = TextFormatting.DARK_RED + I18n.func_135052_a("multiplayer.status.cannot_connect");
+                         ServerListEntryNormal.this.server.pingToServer = -1L;
+                         ServerListEntryNormal.this.server.serverMOTD = TextFormatting.DARK_RED + I18n.format("multiplayer.status.cannot_connect");
 @@ -97,13 +83,11 @@
-         boolean flag1 = this.field_148301_e.field_82821_f < 340;
+         boolean flag1 = this.server.version < 340;
          boolean flag2 = flag || flag1;
-         this.field_148300_d.field_71466_p.func_78276_b(this.field_148301_e.field_78847_a, p_192634_2_ + 32 + 3, p_192634_3_ + 1, 16777215);
--        List<String> list = this.field_148300_d.field_71466_p.func_78271_c(this.field_148301_e.field_78843_d, p_192634_4_ - 32 - 2);
-+        List<String> list = this.field_148300_d.field_71466_p.func_78271_c(net.minecraftforge.fml.client.FMLClientHandler.instance().fixDescription(this.field_148301_e.field_78843_d), p_192634_4_ - 32 - 2);
+         this.mc.fontRenderer.drawString(this.server.serverName, x + 32 + 3, y + 1, 16777215);
+-        List<String> list = this.mc.fontRenderer.listFormattedStringToWidth(this.server.serverMOTD, listWidth - 32 - 2);
++        List<String> list = this.mc.fontRenderer.listFormattedStringToWidth(net.minecraftforge.fml.client.FMLClientHandler.instance().fixDescription(this.server.serverMOTD), listWidth - 32 - 2);
  
 -        for (int i = 0; i < Math.min(list.size(), 2); i++)
 +        for (int i = 0; i < Math.min(list.size(), 2); ++i)
          {
--            this.field_148300_d
--            .field_71466_p
--            .func_78276_b(list.get(i), p_192634_2_ + 32 + 3, p_192634_3_ + 12 + this.field_148300_d.field_71466_p.field_78288_b * i, 8421504);
-+            this.field_148300_d.field_71466_p.func_78276_b(list.get(i), p_192634_2_ + 32 + 3, p_192634_3_ + 12 + this.field_148300_d.field_71466_p.field_78288_b * i, 8421504);
+-            this.mc
+-            .fontRenderer
+-            .drawString(list.get(i), x + 32 + 3, y + 12 + this.mc.fontRenderer.FONT_HEIGHT * i, 8421504);
++            this.mc.fontRenderer.drawString(list.get(i), x + 32 + 3, y + 12 + this.mc.fontRenderer.FONT_HEIGHT * i, 8421504);
          }
  
-         String s2 = flag2 ? TextFormatting.DARK_RED + this.field_148301_e.field_82822_g : this.field_148301_e.field_78846_c;
+         String s2 = flag2 ? TextFormatting.DARK_RED + this.server.gameVersion : this.server.populationInfo;
 @@ -193,6 +177,11 @@
-         int i1 = p_192634_6_ - p_192634_2_;
-         int j1 = p_192634_7_ - p_192634_3_;
+         int i1 = mouseX - x;
+         int j1 = mouseY - y;
  
-+        String tooltip = net.minecraftforge.fml.client.FMLClientHandler.instance().enhanceServerListEntry(this, this.field_148301_e, p_192634_2_, p_192634_4_, p_192634_3_, i1, j1);
++        String tooltip = net.minecraftforge.fml.client.FMLClientHandler.instance().enhanceServerListEntry(this, this.server, x, listWidth, y, i1, j1);
 +        if (tooltip != null)
 +        {
-+            this.field_148303_c.func_146793_a(tooltip);
++            this.owner.setHoveringText(tooltip);
 +        } else
-         if (i1 >= p_192634_4_ - 15 && i1 <= p_192634_4_ - 5 && j1 >= 0 && j1 <= 8)
+         if (i1 >= listWidth - 15 && i1 <= listWidth - 5 && j1 >= 0 && j1 <= 8)
          {
-             this.field_148303_c.func_146793_a(s1);
+             this.owner.setHoveringText(s1);
 @@ -270,10 +259,10 @@
          }
          else
          {
--            ByteBuf bytebuf = Unpooled.copiedBuffer(this.field_148301_e.func_147409_e(), StandardCharsets.UTF_8);
-+            ByteBuf bytebuf = Unpooled.copiedBuffer((CharSequence)this.field_148301_e.func_147409_e(), StandardCharsets.UTF_8);
+-            ByteBuf bytebuf = Unpooled.copiedBuffer(this.server.getBase64EncodedIconData(), StandardCharsets.UTF_8);
++            ByteBuf bytebuf = Unpooled.copiedBuffer((CharSequence)this.server.getBase64EncodedIconData(), StandardCharsets.UTF_8);
              ByteBuf bytebuf1 = null;
              BufferedImage bufferedimage;
 -            label80:
@@ -96,7 +96,7 @@
                  try
                  {
 @@ -281,12 +270,12 @@
-                     bufferedimage = TextureUtil.func_177053_a(new ByteBufInputStream(bytebuf1));
+                     bufferedimage = TextureUtil.readBufferedImage(new ByteBufInputStream(bytebuf1));
                      Validate.validState(bufferedimage.getWidth() == 64, "Must be 64 pixels wide");
                      Validate.validState(bufferedimage.getHeight() == 64, "Must be 64 pixels high");
 -                    break label80;
@@ -104,9 +104,9 @@
                  }
                  catch (Throwable throwable)
                  {
-                     field_148304_a.error("Invalid icon for server {} ({})", this.field_148301_e.field_78847_a, this.field_148301_e.field_78845_b, throwable);
--                    this.field_148301_e.func_147407_a(null);
-+                    this.field_148301_e.func_147407_a((String)null);
+                     LOGGER.error("Invalid icon for server {} ({})", this.server.serverName, this.server.serverIP, throwable);
+-                    this.server.setBase64EncodedIconData(null);
++                    this.server.setBase64EncodedIconData((String)null);
                  }
                  finally
                  {
@@ -115,19 +115,19 @@
      }
  
 -    @Override
-     public boolean func_148278_a(int p_148278_1_, int p_148278_2_, int p_148278_3_, int p_148278_4_, int p_148278_5_, int p_148278_6_)
+     public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY)
      {
-         if (p_148278_5_ <= 32)
+         if (relativeX <= 32)
 @@ -348,12 +336,10 @@
          return false;
      }
  
 -    @Override
-     public void func_192633_a(int p_192633_1_, int p_192633_2_, int p_192633_3_, float p_192633_4_)
+     public void updatePosition(int slotIndex, int x, int y, float partialTicks)
      {
      }
  
 -    @Override
-     public void func_148277_b(int p_148277_1_, int p_148277_2_, int p_148277_3_, int p_148277_4_, int p_148277_5_, int p_148277_6_)
+     public void mouseReleased(int slotIndex, int x, int y, int mouseEvent, int relativeX, int relativeY)
      {
      }

@@ -2,20 +2,20 @@
 +++ after/net/minecraft/entity/passive/EntityLlama.java
 @@ -449,7 +449,7 @@
  
-         if (this.field_70146_Z.nextFloat() < 0.03F)
+         if (this.rand.nextFloat() < 0.03F)
          {
 -            i++;
 +            ++i;
          }
  
-         entityllama.func_190706_p(i);
+         entityllama.setStrength(i);
 @@ -488,6 +488,9 @@
      @Override
-     public void func_180430_e(float p_180430_1_, float p_180430_2_)
+     public void fall(float distance, float damageMultiplier)
      {
-+        float[] ret = net.minecraftforge.common.ForgeHooks.onLivingFall(this, p_180430_1_, p_180430_2_);
++        float[] ret = net.minecraftforge.common.ForgeHooks.onLivingFall(this, distance, damageMultiplier);
 +        if (ret == null) return;
-+        p_180430_1_ = ret[0]; p_180430_2_ = ret[1];
-         int i = MathHelper.func_76123_f((p_180430_1_ * 0.5F - 3.0F) * p_180430_2_);
++        distance = ret[0]; damageMultiplier = ret[1];
+         int i = MathHelper.ceil((distance * 0.5F - 3.0F) * damageMultiplier);
  
          if (i > 0)

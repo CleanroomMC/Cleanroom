@@ -2,29 +2,29 @@
 +++ after/net/minecraft/block/state/IBlockProperties.java
 @@ -28,9 +28,13 @@
  
-     boolean func_189884_a(Entity p_189884_1_);
+     boolean canEntitySpawn(Entity entityIn);
  
 +    @Deprecated //Forge location aware version below
-     int func_185891_c();
+     int getLightOpacity();
 +    int getLightOpacity(IBlockAccess world, BlockPos pos);
  
 +    @Deprecated //Forge location aware version below
-     int func_185906_d();
+     int getLightValue();
 +    int getLightValue(IBlockAccess world, BlockPos pos);
  
      @SideOnly(Side.CLIENT)
-     boolean func_185895_e();
+     boolean isTranslucent();
 @@ -97,7 +101,13 @@
  
-     RayTraceResult func_185910_a(World p_185910_1_, BlockPos p_185910_2_, Vec3d p_185910_3_, Vec3d p_185910_4_);
+     RayTraceResult collisionRayTrace(World worldIn, BlockPos pos, Vec3d start, Vec3d end);
  
 +    @Deprecated // Forge: Use isSideSolid(IBlockAccess, BlockPos, EnumFacing.UP) instead
-     boolean func_185896_q();
+     boolean isTopSolid();
 +
 +    //Forge added functions
 +    boolean doesSideBlockRendering(IBlockAccess world, BlockPos pos, EnumFacing side);
 +    boolean isSideSolid(IBlockAccess world, BlockPos pos, EnumFacing side);
 +    boolean doesSideBlockChestOpening(IBlockAccess world, BlockPos pos, EnumFacing side);
  
-     Vec3d func_191059_e(IBlockAccess p_191059_1_, BlockPos p_191059_2_);
+     Vec3d getOffset(IBlockAccess access, BlockPos pos);
  

@@ -12,38 +12,38 @@
  @SideOnly(Side.CLIENT)
  public class RecipeToast implements IToast
  {
--    private final List<ItemStack> field_193666_c = Lists.newArrayList();
-+    private final List<ItemStack> field_193666_c = Lists.<ItemStack>newArrayList();
-     private long field_193667_d;
-     private boolean field_193668_e;
+-    private final List<ItemStack> recipesOutputs = Lists.newArrayList();
++    private final List<ItemStack> recipesOutputs = Lists.<ItemStack>newArrayList();
+     private long firstDrawTime;
+     private boolean hasNewOutputs;
  
 @@ -22,7 +23,6 @@
-         this.field_193666_c.add(p_i47489_1_);
+         this.recipesOutputs.add(p_i47489_1_);
      }
  
 -    @Override
-     public IToast.Visibility func_193653_a(GuiToast p_193653_1_, long p_193653_2_)
+     public IToast.Visibility draw(GuiToast toastGui, long delta)
      {
-         if (this.field_193668_e)
+         if (this.hasNewOutputs)
 @@ -43,11 +43,7 @@
-             p_193653_1_.func_192989_b().field_71466_p.func_78276_b(I18n.func_135052_a("recipe.toast.title"), 30, 7, -11534256);
-             p_193653_1_.func_192989_b().field_71466_p.func_78276_b(I18n.func_135052_a("recipe.toast.description"), 30, 18, -16777216);
-             RenderHelper.func_74520_c();
--            p_193653_1_.func_192989_b()
--            .func_175599_af()
--            .func_184391_a(
--                null, this.field_193666_c.get((int)(p_193653_2_ / (5000L / (long)this.field_193666_c.size()) % (long)this.field_193666_c.size())), 8, 8
+             toastGui.getMinecraft().fontRenderer.drawString(I18n.format("recipe.toast.title"), 30, 7, -11534256);
+             toastGui.getMinecraft().fontRenderer.drawString(I18n.format("recipe.toast.description"), 30, 18, -16777216);
+             RenderHelper.enableGUIStandardItemLighting();
+-            toastGui.getMinecraft()
+-            .getRenderItem()
+-            .renderItemAndEffectIntoGUI(
+-                null, this.recipesOutputs.get((int)(delta / (5000L / (long)this.recipesOutputs.size()) % (long)this.recipesOutputs.size())), 8, 8
 -            );
-+            p_193653_1_.func_192989_b().func_175599_af().func_184391_a((EntityLivingBase)null, this.field_193666_c.get((int)(p_193653_2_ * (long)this.field_193666_c.size() / 5000L % (long)this.field_193666_c.size())), 8, 8); //Forge: fix math so that it doesn't divide by 0 when there are more than 5000 recipes
-             return p_193653_2_ - this.field_193667_d >= 5000L ? IToast.Visibility.HIDE : IToast.Visibility.SHOW;
++            toastGui.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI((EntityLivingBase)null, this.recipesOutputs.get((int)(delta * (long)this.recipesOutputs.size() / 5000L % (long)this.recipesOutputs.size())), 8, 8); //Forge: fix math so that it doesn't divide by 0 when there are more than 5000 recipes
+             return delta - this.firstDrawTime >= 5000L ? IToast.Visibility.HIDE : IToast.Visibility.SHOW;
          }
      }
 @@ -62,7 +58,7 @@
  
-     public static void func_193665_a(GuiToast p_193665_0_, IRecipe p_193665_1_)
+     public static void addOrUpdate(GuiToast p_193665_0_, IRecipe p_193665_1_)
      {
--        RecipeToast recipetoast = p_193665_0_.func_192990_a(RecipeToast.class, field_193655_b);
-+        RecipeToast recipetoast = (RecipeToast)p_193665_0_.func_192990_a(RecipeToast.class, field_193655_b);
+-        RecipeToast recipetoast = p_193665_0_.getToast(RecipeToast.class, NO_TOKEN);
++        RecipeToast recipetoast = (RecipeToast)p_193665_0_.getToast(RecipeToast.class, NO_TOKEN);
  
          if (recipetoast == null)
          {

@@ -4,43 +4,43 @@
  @SideOnly(Side.CLIENT)
  public class ItemModelMesher
  {
--    private final Map<Integer, ModelResourceLocation> field_178093_a = Maps.newHashMap();
--    private final Map<Integer, IBakedModel> field_178091_b = Maps.newHashMap();
--    protected final Map<Item, ItemMeshDefinition> field_178092_c = Maps.newHashMap();
-+    private final Map<Integer, ModelResourceLocation> field_178093_a = Maps.<Integer, ModelResourceLocation>newHashMap();
-+    private final Map<Integer, IBakedModel> field_178091_b = Maps.<Integer, IBakedModel>newHashMap();
-+    protected final Map<Item, ItemMeshDefinition> field_178092_c = Maps.<Item, ItemMeshDefinition>newHashMap();
-     private final ModelManager field_178090_d;
+-    private final Map<Integer, ModelResourceLocation> simpleShapes = Maps.newHashMap();
+-    private final Map<Integer, IBakedModel> simpleShapesCache = Maps.newHashMap();
+-    protected final Map<Item, ItemMeshDefinition> shapers = Maps.newHashMap();
++    private final Map<Integer, ModelResourceLocation> simpleShapes = Maps.<Integer, ModelResourceLocation>newHashMap();
++    private final Map<Integer, IBakedModel> simpleShapesCache = Maps.<Integer, IBakedModel>newHashMap();
++    protected final Map<Item, ItemMeshDefinition> shapers = Maps.<Item, ItemMeshDefinition>newHashMap();
+     private final ModelManager modelManager;
  
-     public ItemModelMesher(ModelManager p_i46250_1_)
+     public ItemModelMesher(ModelManager modelManager)
 @@ -33,7 +33,9 @@
  
-     public TextureAtlasSprite func_178087_a(Item p_178087_1_, int p_178087_2_)
+     public TextureAtlasSprite getParticleIcon(Item item, int meta)
      {
--        return this.func_178089_a(new ItemStack(p_178087_1_, 1, p_178087_2_)).func_177554_e();
-+        ItemStack stack = new ItemStack(p_178087_1_, 1, p_178087_2_);
-+        IBakedModel model = this.func_178089_a(stack);
-+        return model.func_188617_f().handleItemState(model, stack, null, null).func_177554_e();
+-        return this.getItemModel(new ItemStack(item, 1, meta)).getParticleTexture();
++        ItemStack stack = new ItemStack(item, 1, meta);
++        IBakedModel model = this.getItemModel(stack);
++        return model.getOverrides().handleItemState(model, stack, null, null).getParticleTexture();
      }
  
-     public IBakedModel func_178089_a(ItemStack p_178089_1_)
+     public IBakedModel getItemModel(ItemStack stack)
 @@ -67,7 +69,7 @@
      @Nullable
-     protected IBakedModel func_178088_b(Item p_178088_1_, int p_178088_2_)
+     protected IBakedModel getItemModel(Item item, int meta)
      {
--        return this.field_178091_b.get(this.func_178081_c(p_178088_1_, p_178088_2_));
-+        return this.field_178091_b.get(Integer.valueOf(this.func_178081_c(p_178088_1_, p_178088_2_)));
+-        return this.simpleShapesCache.get(this.getIndex(item, meta));
++        return this.simpleShapesCache.get(Integer.valueOf(this.getIndex(item, meta)));
      }
  
-     private int func_178081_c(Item p_178081_1_, int p_178081_2_)
+     private int getIndex(Item item, int meta)
 @@ -77,8 +79,8 @@
  
-     public void func_178086_a(Item p_178086_1_, int p_178086_2_, ModelResourceLocation p_178086_3_)
+     public void register(Item item, int meta, ModelResourceLocation location)
      {
--        this.field_178093_a.put(this.func_178081_c(p_178086_1_, p_178086_2_), p_178086_3_);
--        this.field_178091_b.put(this.func_178081_c(p_178086_1_, p_178086_2_), this.field_178090_d.func_174953_a(p_178086_3_));
-+        this.field_178093_a.put(Integer.valueOf(this.func_178081_c(p_178086_1_, p_178086_2_)), p_178086_3_);
-+        this.field_178091_b.put(Integer.valueOf(this.func_178081_c(p_178086_1_, p_178086_2_)), this.field_178090_d.func_174953_a(p_178086_3_));
+-        this.simpleShapes.put(this.getIndex(item, meta), location);
+-        this.simpleShapesCache.put(this.getIndex(item, meta), this.modelManager.getModel(location));
++        this.simpleShapes.put(Integer.valueOf(this.getIndex(item, meta)), location);
++        this.simpleShapesCache.put(Integer.valueOf(this.getIndex(item, meta)), this.modelManager.getModel(location));
      }
  
-     public void func_178080_a(Item p_178080_1_, ItemMeshDefinition p_178080_2_)
+     public void register(Item item, ItemMeshDefinition definition)

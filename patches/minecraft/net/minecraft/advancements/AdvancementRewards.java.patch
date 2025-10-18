@@ -8,56 +8,12 @@
  import net.minecraft.entity.player.EntityPlayerMP;
  import net.minecraft.init.SoundEvents;
  import net.minecraft.item.ItemStack;
-@@ -50,29 +51,16 @@
-     public void func_192113_a(final EntityPlayerMP p_192113_1_)
+@@ -50,7 +51,7 @@
+     public void apply(final EntityPlayerMP player)
      {
-         p_192113_1_.func_71023_q(this.field_192115_b);
--        LootContext lootcontext = new LootContext.Builder(p_192113_1_.func_71121_q()).func_186472_a(p_192113_1_).func_186471_a();
-+        LootContext lootcontext = new LootContext.Builder(p_192113_1_.func_71121_q()).func_186472_a(p_192113_1_).func_186470_a(p_192113_1_).func_186469_a(p_192113_1_.func_184817_da()).func_186471_a(); // Forge: add player & luck to LootContext
+         player.addExperience(this.experience);
+-        LootContext lootcontext = new LootContext.Builder(player.getServerWorld()).withLootedEntity(player).build();
++        LootContext lootcontext = new LootContext.Builder(player.getServerWorld()).withLootedEntity(player).withPlayer(player).withLuck(player.getLuck()).build(); // Forge: add player & luck to LootContext
          boolean flag = false;
  
-         for (ResourceLocation resourcelocation : this.field_192116_c)
-         {
--            for (ItemStack itemstack : p_192113_1_.field_70170_p
--                    .func_184146_ak()
--                    .func_186521_a(resourcelocation)
--                    .func_186462_a(p_192113_1_.func_70681_au(), lootcontext))
-+            for (ItemStack itemstack : p_192113_1_.field_70170_p.func_184146_ak().func_186521_a(resourcelocation).func_186462_a(p_192113_1_.func_70681_au(), lootcontext))
-             {
-                 if (p_192113_1_.func_191521_c(itemstack))
-                 {
--                    p_192113_1_.field_70170_p
--                    .func_184148_a(
--                        null,
--                        p_192113_1_.field_70165_t,
--                        p_192113_1_.field_70163_u,
--                        p_192113_1_.field_70161_v,
--                        SoundEvents.field_187638_cR,
--                        SoundCategory.PLAYERS,
--                        0.2F,
--                        ((p_192113_1_.func_70681_au().nextFloat() - p_192113_1_.func_70681_au().nextFloat()) * 0.7F + 1.0F) * 2.0F
--                    );
-+                    p_192113_1_.field_70170_p.func_184148_a((EntityPlayer)null, p_192113_1_.field_70165_t, p_192113_1_.field_70163_u, p_192113_1_.field_70161_v, SoundEvents.field_187638_cR, SoundCategory.PLAYERS, 0.2F, ((p_192113_1_.func_70681_au().nextFloat() - p_192113_1_.func_70681_au().nextFloat()) * 0.7F + 1.0F) * 2.0F);
-                     flag = true;
-                 }
-                 else
-@@ -164,18 +152,9 @@
-         }
-     }
- 
--    @Override
-     public String toString()
-     {
--        return "AdvancementRewards{experience="
--               + this.field_192115_b
--               + ", loot="
--               + Arrays.toString((Object[])this.field_192116_c)
--               + ", recipes="
--               + Arrays.toString((Object[])this.field_192117_d)
--               + ", function="
--               + this.field_193129_e
--               + '}';
-+        return "AdvancementRewards{experience=" + this.field_192115_b + ", loot=" + Arrays.toString((Object[])this.field_192116_c) + ", recipes=" + Arrays.toString((Object[])this.field_192117_d) + ", function=" + this.field_193129_e + '}';
-     }
- 
-     public static class Deserializer implements JsonDeserializer<AdvancementRewards>
+         for (ResourceLocation resourcelocation : this.loot)

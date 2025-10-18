@@ -2,28 +2,28 @@
 +++ after/net/minecraft/client/renderer/entity/RenderPlayer.java
 @@ -56,13 +56,14 @@
  
-     public void func_76986_a(AbstractClientPlayer p_76986_1_, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_, float p_76986_9_)
+     public void doRender(AbstractClientPlayer entity, double x, double y, double z, float entityYaw, float partialTicks)
      {
-+        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderPlayerEvent.Pre(p_76986_1_, this, p_76986_9_, p_76986_2_, p_76986_4_, p_76986_6_))) return;
-         if (!p_76986_1_.func_175144_cb() || this.field_76990_c.field_78734_h == p_76986_1_)
++        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderPlayerEvent.Pre(entity, this, partialTicks, x, y, z))) return;
+         if (!entity.isUser() || this.renderManager.renderViewEntity == entity)
          {
-             double d0 = p_76986_4_;
+             double d0 = y;
  
-             if (p_76986_1_.func_70093_af())
+             if (entity.isSneaking())
              {
--                d0 = p_76986_4_ - 0.125;
-+                d0 = p_76986_4_ - 0.125D;
+-                d0 = y - 0.125;
++                d0 = y - 0.125D;
              }
  
-             this.func_177137_d(p_76986_1_);
+             this.setModelVisibilities(entity);
 @@ -70,6 +71,7 @@
-             super.func_76986_a(p_76986_1_, p_76986_2_, d0, p_76986_6_, p_76986_8_, p_76986_9_);
-             GlStateManager.func_187440_b(GlStateManager.Profile.PLAYER_SKIN);
+             super.doRender(entity, x, d0, z, entityYaw, partialTicks);
+             GlStateManager.disableBlendProfile(GlStateManager.Profile.PLAYER_SKIN);
          }
-+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderPlayerEvent.Post(p_76986_1_, this, p_76986_9_, p_76986_2_, p_76986_4_, p_76986_6_));
++        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderPlayerEvent.Post(entity, this, partialTicks, x, y, z));
      }
  
-     private void func_177137_d(AbstractClientPlayer p_177137_1_)
+     private void setModelVisibilities(AbstractClientPlayer clientPlayer)
 @@ -128,6 +130,11 @@
                      {
                          modelbiped$armpose1 = ModelBiped.ArmPose.BLOCK;
@@ -37,52 +37,52 @@
              }
  
 @@ -149,7 +156,6 @@
-         return p_110775_1_.func_110306_p();
+         return entity.getLocationSkin();
      }
  
 -    @Override
-     public void func_82422_c()
+     public void transformHeldFull3DItemLayer()
      {
-         GlStateManager.func_179109_b(0.0F, 0.1875F, 0.0F);
+         GlStateManager.translate(0.0F, 0.1875F, 0.0F);
 @@ -161,11 +167,9 @@
-         GlStateManager.func_179152_a(0.9375F, 0.9375F, 0.9375F);
+         GlStateManager.scale(0.9375F, 0.9375F, 0.9375F);
      }
  
--    protected void func_188296_a(
--        AbstractClientPlayer p_188296_1_, double p_188296_2_, double p_188296_4_, double p_188296_6_, String p_188296_8_, double p_188296_9_
+-    protected void renderEntityName(
+-        AbstractClientPlayer entityIn, double x, double y, double z, String name, double distanceSq
 -    )
-+    protected void func_188296_a(AbstractClientPlayer p_188296_1_, double p_188296_2_, double p_188296_4_, double p_188296_6_, String p_188296_8_, double p_188296_9_)
++    protected void renderEntityName(AbstractClientPlayer entityIn, double x, double y, double z, String name, double distanceSq)
      {
--        if (p_188296_9_ < 100.0)
-+        if (p_188296_9_ < 100.0D)
+-        if (distanceSq < 100.0)
++        if (distanceSq < 100.0D)
          {
-             Scoreboard scoreboard = p_188296_1_.func_96123_co();
-             ScoreObjective scoreobjective = scoreboard.func_96539_a(2);
+             Scoreboard scoreboard = entityIn.getWorldScoreboard();
+             ScoreObjective scoreobjective = scoreboard.getObjectiveInDisplaySlot(2);
 @@ -221,12 +225,7 @@
      {
-         if (p_77039_1_.func_70089_S() && p_77039_1_.func_70608_bn())
+         if (entityLivingBaseIn.isEntityAlive() && entityLivingBaseIn.isPlayerSleeping())
          {
--            super.func_77039_a(
--                p_77039_1_,
--                p_77039_2_ + (double)p_77039_1_.field_71079_bU,
--                p_77039_4_ + (double)p_77039_1_.field_71082_cx,
--                p_77039_6_ + (double)p_77039_1_.field_71089_bV
+-            super.renderLivingAt(
+-                entityLivingBaseIn,
+-                x + (double)entityLivingBaseIn.renderOffsetX,
+-                y + (double)entityLivingBaseIn.renderOffsetY,
+-                z + (double)entityLivingBaseIn.renderOffsetZ
 -            );
-+            super.func_77039_a(p_77039_1_, p_77039_2_ + (double)p_77039_1_.field_71079_bU, p_77039_4_ + (double)p_77039_1_.field_71082_cx, p_77039_6_ + (double)p_77039_1_.field_71089_bV);
++            super.renderLivingAt(entityLivingBaseIn, x + (double)entityLivingBaseIn.renderOffsetX, y + (double)entityLivingBaseIn.renderOffsetY, z + (double)entityLivingBaseIn.renderOffsetZ);
          }
          else
          {
 @@ -252,11 +251,11 @@
-             double d0 = p_77043_1_.field_70159_w * p_77043_1_.field_70159_w + p_77043_1_.field_70179_y * p_77043_1_.field_70179_y;
-             double d1 = vec3d.field_72450_a * vec3d.field_72450_a + vec3d.field_72449_c * vec3d.field_72449_c;
+             double d0 = entityLiving.motionX * entityLiving.motionX + entityLiving.motionZ * entityLiving.motionZ;
+             double d1 = vec3d.x * vec3d.x + vec3d.z * vec3d.z;
  
 -            if (d0 > 0.0 && d1 > 0.0)
 +            if (d0 > 0.0D && d1 > 0.0D)
              {
-                 double d2 = (p_77043_1_.field_70159_w * vec3d.field_72450_a + p_77043_1_.field_70179_y * vec3d.field_72449_c) / (Math.sqrt(d0) * Math.sqrt(d1));
-                 double d3 = p_77043_1_.field_70159_w * vec3d.field_72449_c - p_77043_1_.field_70179_y * vec3d.field_72450_a;
--                GlStateManager.func_179114_b((float)(Math.signum(d3) * Math.acos(d2)) * 180.0F / (float) Math.PI, 0.0F, 1.0F, 0.0F);
-+                GlStateManager.func_179114_b((float)(Math.signum(d3) * Math.acos(d2)) * 180.0F / (float)Math.PI, 0.0F, 1.0F, 0.0F);
+                 double d2 = (entityLiving.motionX * vec3d.x + entityLiving.motionZ * vec3d.z) / (Math.sqrt(d0) * Math.sqrt(d1));
+                 double d3 = entityLiving.motionX * vec3d.z - entityLiving.motionZ * vec3d.x;
+-                GlStateManager.rotate((float)(Math.signum(d3) * Math.acos(d2)) * 180.0F / (float) Math.PI, 0.0F, 1.0F, 0.0F);
++                GlStateManager.rotate((float)(Math.signum(d3) * Math.acos(d2)) * 180.0F / (float)Math.PI, 0.0F, 1.0F, 0.0F);
              }
          }
          else

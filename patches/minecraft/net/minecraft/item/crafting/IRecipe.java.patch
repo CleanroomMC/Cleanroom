@@ -10,33 +10,33 @@
 -public interface IRecipe
 +public interface IRecipe extends net.minecraftforge.registries.IForgeRegistryEntry<IRecipe>
  {
-     boolean func_77569_a(InventoryCrafting p_77569_1_, World p_77569_2_);
+     boolean matches(InventoryCrafting inv, World worldIn);
  
-     ItemStack func_77572_b(InventoryCrafting p_77572_1_);
+     ItemStack getCraftingResult(InventoryCrafting inv);
  
 -    @SideOnly(Side.CLIENT)
-     boolean func_194133_a(int p_194133_1_, int p_194133_2_);
+     boolean canFit(int width, int height);
  
-     ItemStack func_77571_b();
+     ItemStack getRecipeOutput();
  
--    NonNullList<ItemStack> func_179532_b(InventoryCrafting p_179532_1_);
-+    default NonNullList<ItemStack> func_179532_b(InventoryCrafting p_179532_1_)
+-    NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv);
++    default NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv)
 +    {
-+        return net.minecraftforge.common.ForgeHooks.defaultRecipeGetRemainingItems(p_179532_1_);
++        return net.minecraftforge.common.ForgeHooks.defaultRecipeGetRemainingItems(inv);
 +    }
  
- default NonNullList<Ingredient> func_192400_c()
+ default NonNullList<Ingredient> getIngredients()
      {
--        return NonNullList.func_191196_a();
-+        return NonNullList.<Ingredient>func_191196_a();
+-        return NonNullList.create();
++        return NonNullList.<Ingredient>create();
      }
  
- default boolean func_192399_d()
+ default boolean isDynamic()
 @@ -30,7 +30,6 @@
          return false;
      }
  
 -    @SideOnly(Side.CLIENT)
- default String func_193358_e()
+ default String getGroup()
      {
          return "";

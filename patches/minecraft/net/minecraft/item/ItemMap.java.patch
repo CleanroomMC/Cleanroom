@@ -1,44 +1,44 @@
 --- before/net/minecraft/item/ItemMap.java
 +++ after/net/minecraft/item/ItemMap.java
 @@ -42,7 +42,7 @@
-         p_190906_0_.func_72823_a(s, mapdata);
-         mapdata.field_76197_d = p_190906_5_;
-         mapdata.func_176054_a(p_190906_1_, p_190906_3_, mapdata.field_76197_d);
--        mapdata.field_76200_c = (byte)p_190906_0_.field_73011_w.func_186058_p().func_186068_a();
-+        mapdata.field_76200_c = p_190906_0_.field_73011_w.getDimension();
-         mapdata.field_186210_e = p_190906_6_;
-         mapdata.field_191096_f = p_190906_7_;
-         mapdata.func_76185_a();
+         worldIn.setData(s, mapdata);
+         mapdata.scale = scale;
+         mapdata.calculateMapCenter(worldX, worldZ, mapdata.scale);
+-        mapdata.dimension = (byte)worldIn.provider.getDimensionType().getId();
++        mapdata.dimension = worldIn.provider.getDimension();
+         mapdata.trackingPosition = trackingPosition;
+         mapdata.unlimitedTracking = unlimitedTracking;
+         mapdata.markDirty();
 @@ -70,7 +70,7 @@
              mapdata = new MapData(s);
-             mapdata.field_76197_d = 3;
-             mapdata.func_176054_a((double)p_77873_2_.func_72912_H().func_76079_c(), (double)p_77873_2_.func_72912_H().func_76074_e(), mapdata.field_76197_d);
--            mapdata.field_76200_c = (byte)p_77873_2_.field_73011_w.func_186058_p().func_186068_a();
-+            mapdata.field_76200_c = p_77873_2_.field_73011_w.getDimension();
-             mapdata.func_76185_a();
-             p_77873_2_.func_72823_a(s, mapdata);
+             mapdata.scale = 3;
+             mapdata.calculateMapCenter((double)worldIn.getWorldInfo().getSpawnX(), (double)worldIn.getWorldInfo().getSpawnZ(), mapdata.scale);
+-            mapdata.dimension = (byte)worldIn.provider.getDimensionType().getId();
++            mapdata.dimension = worldIn.provider.getDimension();
+             mapdata.markDirty();
+             worldIn.setData(s, mapdata);
          }
 @@ -80,7 +80,7 @@
  
-     public void func_77872_a(World p_77872_1_, Entity p_77872_2_, MapData p_77872_3_)
+     public void updateMapData(World worldIn, Entity viewer, MapData data)
      {
--        if (p_77872_1_.field_73011_w.func_186058_p().func_186068_a() == p_77872_3_.field_76200_c && p_77872_2_ instanceof EntityPlayer)
-+        if (p_77872_1_.field_73011_w.getDimension() == p_77872_3_.field_76200_c && p_77872_2_ instanceof EntityPlayer)
+-        if (worldIn.provider.getDimensionType().getId() == data.dimension && viewer instanceof EntityPlayer)
++        if (worldIn.provider.getDimension() == data.dimension && viewer instanceof EntityPlayer)
          {
-             int i = 1 << p_77872_3_.field_76197_d;
-             int j = p_77872_3_.field_76201_a;
+             int i = 1 << data.scale;
+             int j = data.xCenter;
 @@ -95,17 +95,17 @@
              }
  
-             MapData.MapInfo mapdata$mapinfo = p_77872_3_.func_82568_a((EntityPlayer)p_77872_2_);
--            mapdata$mapinfo.field_82569_d++;
-+            ++mapdata$mapinfo.field_82569_d;
+             MapData.MapInfo mapdata$mapinfo = data.getMapInfo((EntityPlayer)viewer);
+-            mapdata$mapinfo.step++;
++            ++mapdata$mapinfo.step;
              boolean flag = false;
  
 -            for (int k1 = l - j1 + 1; k1 < l + j1; k1++)
 +            for (int k1 = l - j1 + 1; k1 < l + j1; ++k1)
              {
-                 if ((k1 & 15) == (mapdata$mapinfo.field_82569_d & 15) || flag)
+                 if ((k1 & 15) == (mapdata$mapinfo.step & 15) || flag)
                  {
                      flag = false;
 -                    double d0 = 0.0;
@@ -55,9 +55,9 @@
                              int l2 = (k / i + l1 - 64) * i;
 -                            Multiset<MapColor> multiset = HashMultiset.create();
 +                            Multiset<MapColor> multiset = HashMultiset.<MapColor>create();
-                             Chunk chunk = p_77872_1_.func_175726_f(new BlockPos(k2, 0, l2));
+                             Chunk chunk = worldIn.getChunk(new BlockPos(k2, 0, l2));
  
-                             if (!chunk.func_76621_g())
+                             if (!chunk.isEmpty())
 @@ -122,7 +122,7 @@
                                  int i3 = k2 & 15;
                                  int j3 = l2 & 15;
@@ -65,31 +65,31 @@
 -                                double d1 = 0.0;
 +                                double d1 = 0.0D;
  
-                                 if (p_77872_1_.field_73011_w.func_177495_o())
+                                 if (worldIn.provider.isNether())
                                  {
 @@ -131,34 +131,22 @@
  
                                      if ((l3 >> 20 & 1) == 0)
                                      {
 -                                        multiset.add(
--                                            Blocks.field_150346_d
--                                            .func_176223_P()
--                                            .func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.DIRT)
--                                            .func_185909_g(p_77872_1_, BlockPos.field_177992_a),
+-                                            Blocks.DIRT
+-                                            .getDefaultState()
+-                                            .withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.DIRT)
+-                                            .getMapColor(worldIn, BlockPos.ORIGIN),
 -                                            10
 -                                        );
-+                                        multiset.add(Blocks.field_150346_d.func_176223_P().func_177226_a(BlockDirt.field_176386_a, BlockDirt.DirtType.DIRT).func_185909_g(p_77872_1_, BlockPos.field_177992_a), 10);
++                                        multiset.add(Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.DIRT).getMapColor(worldIn, BlockPos.ORIGIN), 10);
                                      }
                                      else
                                      {
 -                                        multiset.add(
--                                            Blocks.field_150348_b
--                                            .func_176223_P()
--                                            .func_177226_a(BlockStone.field_176247_a, BlockStone.EnumType.STONE)
--                                            .func_185909_g(p_77872_1_, BlockPos.field_177992_a),
+-                                            Blocks.STONE
+-                                            .getDefaultState()
+-                                            .withProperty(BlockStone.VARIANT, BlockStone.EnumType.STONE)
+-                                            .getMapColor(worldIn, BlockPos.ORIGIN),
 -                                            100
 -                                        );
-+                                        multiset.add(Blocks.field_150348_b.func_176223_P().func_177226_a(BlockStone.field_176247_a, BlockStone.EnumType.STONE).func_185909_g(p_77872_1_, BlockPos.field_177992_a), 100);
++                                        multiset.add(Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.STONE).getMapColor(worldIn, BlockPos.ORIGIN), 100);
                                      }
  
 -                                    d1 = 100.0;
@@ -105,54 +105,54 @@
 -                                        for (int j4 = 0; j4 < i; j4++)
 +                                        for (int j4 = 0; j4 < i; ++j4)
                                          {
-                                             int k4 = chunk.func_76611_b(i4 + i3, j4 + j3) + 1;
-                                             IBlockState iblockstate = Blocks.field_150350_a.func_176223_P();
+                                             int k4 = chunk.getHeightValue(i4 + i3, j4 + j3) + 1;
+                                             IBlockState iblockstate = Blocks.AIR.getDefaultState();
 @@ -169,24 +157,35 @@
                                              }
                                              else
                                              {
 -                                                do
 -                                                {
--                                                    iblockstate = chunk.func_186032_a(i4 + i3, --k4, j4 + j3);
--                                                    blockpos$mutableblockpos.func_181079_c((chunk.field_76635_g << 4) + i4 + i3, k4, (chunk.field_76647_h << 4) + j4 + j3);
+-                                                    iblockstate = chunk.getBlockState(i4 + i3, --k4, j4 + j3);
+-                                                    blockpos$mutableblockpos.setPos((chunk.x << 4) + i4 + i3, k4, (chunk.z << 4) + j4 + j3);
 -                                                }
--                                                while (iblockstate.func_185909_g(p_77872_1_, blockpos$mutableblockpos) == MapColor.field_151660_b && k4 > 0);
+-                                                while (iblockstate.getMapColor(worldIn, blockpos$mutableblockpos) == MapColor.AIR && k4 > 0);
 -
--                                                if (k4 > 0 && iblockstate.func_185904_a().func_76224_d())
+-                                                if (k4 > 0 && iblockstate.getMaterial().isLiquid())
 -                                                {
 -                                                    int l4 = k4 - 1;
 -                                                    IBlockState iblockstate1;
 -
 -                                                    do
 -                                                    {
--                                                        iblockstate1 = chunk.func_186032_a(i4 + i3, l4--, j4 + j3);
+-                                                        iblockstate1 = chunk.getBlockState(i4 + i3, l4--, j4 + j3);
 -                                                        k3++;
 -                                                    }
--                                                    while (l4 > 0 && iblockstate1.func_185904_a().func_76224_d());
+-                                                    while (l4 > 0 && iblockstate1.getMaterial().isLiquid());
 +                                                label175:
 +                                                {
 +                                                    while (true)
 +                                                    {
 +                                                        --k4;
-+                                                        iblockstate = chunk.func_186032_a(i4 + i3, k4, j4 + j3);
-+                                                        blockpos$mutableblockpos.func_181079_c((chunk.field_76635_g << 4) + i4 + i3, k4, (chunk.field_76647_h << 4) + j4 + j3);
++                                                        iblockstate = chunk.getBlockState(i4 + i3, k4, j4 + j3);
++                                                        blockpos$mutableblockpos.setPos((chunk.x << 4) + i4 + i3, k4, (chunk.z << 4) + j4 + j3);
 +
-+                                                        if (iblockstate.func_185909_g(p_77872_1_, blockpos$mutableblockpos) != MapColor.field_151660_b || k4 <= 0)
++                                                        if (iblockstate.getMapColor(worldIn, blockpos$mutableblockpos) != MapColor.AIR || k4 <= 0)
 +                                                        {
 +                                                            break;
 +                                                        }
 +                                                    }
 +
-+                                                    if (k4 > 0 && iblockstate.func_185904_a().func_76224_d())
++                                                    if (k4 > 0 && iblockstate.getMaterial().isLiquid())
 +                                                    {
 +                                                        int l4 = k4 - 1;
 +
 +                                                        while (true)
 +                                                        {
-+                                                            IBlockState iblockstate1 = chunk.func_186032_a(i4 + i3, l4--, j4 + j3);
++                                                            IBlockState iblockstate1 = chunk.getBlockState(i4 + i3, l4--, j4 + j3);
 +                                                            ++k3;
 +
-+                                                            if (l4 <= 0 || !iblockstate1.func_185904_a().func_76224_d())
++                                                            if (l4 <= 0 || !iblockstate1.getMaterial().isLiquid())
 +                                                            {
 +                                                                break label175;
 +                                                            }
@@ -183,10 +183,10 @@
                                      i5 = 0;
                                  }
  
--                                MapColor mapcolor = Iterables.getFirst(Multisets.copyHighestCountFirst(multiset), MapColor.field_151660_b);
-+                                MapColor mapcolor = (MapColor)Iterables.getFirst(Multisets.copyHighestCountFirst(multiset), MapColor.field_151660_b);
+-                                MapColor mapcolor = Iterables.getFirst(Multisets.copyHighestCountFirst(multiset), MapColor.AIR);
++                                MapColor mapcolor = (MapColor)Iterables.getFirst(Multisets.copyHighestCountFirst(multiset), MapColor.AIR);
  
-                                 if (mapcolor == MapColor.field_151662_n)
+                                 if (mapcolor == MapColor.WATER)
                                  {
 -                                    d2 = (double)k3 * 0.1 + (double)(k1 + l1 & 1) * 0.2;
 +                                    d2 = (double)k3 * 0.1D + (double)(k1 + l1 & 1) * 0.2D;
@@ -205,24 +205,24 @@
                                      }
 @@ -252,22 +251,22 @@
  
-     public static void func_190905_a(World p_190905_0_, ItemStack p_190905_1_)
+     public static void renderBiomePreviewMap(World worldIn, ItemStack map)
      {
--        if (p_190905_1_.func_77973_b() == Items.field_151098_aY)
-+        if (p_190905_1_.func_77973_b() instanceof ItemMap)
+-        if (map.getItem() == Items.FILLED_MAP)
++        if (map.getItem() instanceof ItemMap)
          {
--            MapData mapdata = Items.field_151098_aY.func_77873_a(p_190905_1_, p_190905_0_);
-+            MapData mapdata = ((ItemMap) p_190905_1_.func_77973_b()).func_77873_a(p_190905_1_, p_190905_0_);
+-            MapData mapdata = Items.FILLED_MAP.getMapData(map, worldIn);
++            MapData mapdata = ((ItemMap) map.getItem()).getMapData(map, worldIn);
  
              if (mapdata != null)
              {
--                if (p_190905_0_.field_73011_w.func_186058_p().func_186068_a() == mapdata.field_76200_c)
-+                if (p_190905_0_.field_73011_w.getDimension() == mapdata.field_76200_c)
+-                if (worldIn.provider.getDimensionType().getId() == mapdata.dimension)
++                if (worldIn.provider.getDimension() == mapdata.dimension)
                  {
-                     int i = 1 << mapdata.field_76197_d;
-                     int j = mapdata.field_76201_a;
-                     int k = mapdata.field_76199_b;
--                    Biome[] abiome = p_190905_0_.func_72959_q().func_76931_a(null, (j / i - 64) * i, (k / i - 64) * i, 128 * i, 128 * i, false);
-+                    Biome[] abiome = p_190905_0_.func_72959_q().func_76931_a((Biome[])null, (j / i - 64) * i, (k / i - 64) * i, 128 * i, 128 * i, false);
+                     int i = 1 << mapdata.scale;
+                     int j = mapdata.xCenter;
+                     int k = mapdata.zCenter;
+-                    Biome[] abiome = worldIn.getBiomeProvider().getBiomes(null, (j / i - 64) * i, (k / i - 64) * i, 128 * i, 128 * i, false);
++                    Biome[] abiome = worldIn.getBiomeProvider().getBiomes((Biome[])null, (j / i - 64) * i, (k / i - 64) * i, 128 * i, 128 * i, false);
  
 -                    for (int l = 0; l < 128; l++)
 +                    for (int l = 0; l < 128; ++l)
@@ -234,98 +234,98 @@
                              int k1 = i1 * i;
 @@ -280,42 +279,42 @@
                              {
-                                 if (abiome[(l - 1) * i + (i1 - 1) * i * 128 * i].func_185355_j() >= 0.0F)
+                                 if (abiome[(l - 1) * i + (i1 - 1) * i * 128 * i].getBaseHeight() >= 0.0F)
                                  {
 -                                    i2--;
 +                                    --i2;
                                  }
  
-                                 if (abiome[(l - 1) * i + (i1 + 1) * i * 128 * i].func_185355_j() >= 0.0F)
+                                 if (abiome[(l - 1) * i + (i1 + 1) * i * 128 * i].getBaseHeight() >= 0.0F)
                                  {
 -                                    i2--;
 +                                    --i2;
                                  }
  
-                                 if (abiome[(l - 1) * i + i1 * i * 128 * i].func_185355_j() >= 0.0F)
+                                 if (abiome[(l - 1) * i + i1 * i * 128 * i].getBaseHeight() >= 0.0F)
                                  {
 -                                    i2--;
 +                                    --i2;
                                  }
  
-                                 if (abiome[(l + 1) * i + (i1 - 1) * i * 128 * i].func_185355_j() >= 0.0F)
+                                 if (abiome[(l + 1) * i + (i1 - 1) * i * 128 * i].getBaseHeight() >= 0.0F)
                                  {
 -                                    i2--;
 +                                    --i2;
                                  }
  
-                                 if (abiome[(l + 1) * i + (i1 + 1) * i * 128 * i].func_185355_j() >= 0.0F)
+                                 if (abiome[(l + 1) * i + (i1 + 1) * i * 128 * i].getBaseHeight() >= 0.0F)
                                  {
 -                                    i2--;
 +                                    --i2;
                                  }
  
-                                 if (abiome[(l + 1) * i + i1 * i * 128 * i].func_185355_j() >= 0.0F)
+                                 if (abiome[(l + 1) * i + i1 * i * 128 * i].getBaseHeight() >= 0.0F)
                                  {
 -                                    i2--;
 +                                    --i2;
                                  }
  
-                                 if (abiome[l * i + (i1 - 1) * i * 128 * i].func_185355_j() >= 0.0F)
+                                 if (abiome[l * i + (i1 - 1) * i * 128 * i].getBaseHeight() >= 0.0F)
                                  {
 -                                    i2--;
 +                                    --i2;
                                  }
  
-                                 if (abiome[l * i + (i1 + 1) * i * 128 * i].func_185355_j() >= 0.0F)
+                                 if (abiome[l * i + (i1 + 1) * i * 128 * i].getBaseHeight() >= 0.0F)
                                  {
 -                                    i2--;
 +                                    --i2;
                                  }
  
-                                 if (biome.func_185355_j() < 0.0F)
+                                 if (biome.getBaseHeight() < 0.0F)
 @@ -379,7 +378,6 @@
          }
      }
  
 -    @Override
-     public void func_77663_a(ItemStack p_77663_1_, World p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_)
+     public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected)
      {
-         if (!p_77663_2_.field_72995_K)
+         if (!worldIn.isRemote)
 @@ -400,13 +398,11 @@
      }
  
      @Nullable
 -    @Override
-     public Packet<?> func_150911_c(ItemStack p_150911_1_, World p_150911_2_, EntityPlayer p_150911_3_)
+     public Packet<?> createMapDataPacket(ItemStack stack, World worldIn, EntityPlayer player)
      {
-         return this.func_77873_a(p_150911_1_, p_150911_2_).func_176052_a(p_150911_1_, p_150911_2_, p_150911_3_);
+         return this.getMapData(stack, worldIn).getMapPacket(stack, worldIn, player);
      }
  
 -    @Override
-     public void func_77622_d(ItemStack p_77622_1_, World p_77622_2_, EntityPlayer p_77622_3_)
+     public void onCreated(ItemStack stack, World worldIn, EntityPlayer playerIn)
      {
-         NBTTagCompound nbttagcompound = p_77622_1_.func_77978_p();
+         NBTTagCompound nbttagcompound = stack.getTagCompound();
 @@ -462,7 +458,6 @@
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public void func_77624_a(ItemStack p_77624_1_, @Nullable World p_77624_2_, List<String> p_77624_3_, ITooltipFlag p_77624_4_)
+     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
      {
-         if (p_77624_4_.func_194127_a())
+         if (flagIn.isAdvanced())
 @@ -472,7 +467,7 @@
              if (mapdata != null)
              {
-                 p_77624_3_.add(I18n.func_74837_a("filled_map.scale", 1 << mapdata.field_76197_d));
--                p_77624_3_.add(I18n.func_74837_a("filled_map.level", mapdata.field_76197_d, 4));
-+                p_77624_3_.add(I18n.func_74837_a("filled_map.level", mapdata.field_76197_d, Integer.valueOf(4)));
+                 tooltip.add(I18n.translateToLocalFormatted("filled_map.scale", 1 << mapdata.scale));
+-                tooltip.add(I18n.translateToLocalFormatted("filled_map.level", mapdata.scale, 4));
++                tooltip.add(I18n.translateToLocalFormatted("filled_map.level", mapdata.scale, Integer.valueOf(4)));
              }
              else
              {
 @@ -489,7 +484,7 @@
-         if (nbttagcompound != null && nbttagcompound.func_150297_b("MapColor", 99))
+         if (nbttagcompound != null && nbttagcompound.hasKey("MapColor", 99))
          {
-             int i = nbttagcompound.func_74762_e("MapColor");
+             int i = nbttagcompound.getInteger("MapColor");
 -            return 0xFF000000 | i & 16777215;
 +            return -16777216 | i & 16777215;
          }

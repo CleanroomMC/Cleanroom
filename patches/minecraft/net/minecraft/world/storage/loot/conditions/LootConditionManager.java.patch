@@ -4,12 +4,12 @@
  
  public class LootConditionManager
  {
--    private static final Map < ResourceLocation, LootCondition.Serializer<? >> field_186642_a = Maps.newHashMap();
--    private static final Map < Class <? extends LootCondition > , LootCondition.Serializer<? >> field_186643_b = Maps.newHashMap();
-+    private static final Map < ResourceLocation, LootCondition.Serializer<? >> field_186642_a = Maps. < ResourceLocation, LootCondition.Serializer<? >> newHashMap();
-+    private static final Map < Class <? extends LootCondition > , LootCondition.Serializer<? >> field_186643_b = Maps. < Class <? extends LootCondition > , LootCondition.Serializer<? >> newHashMap();
+-    private static final Map < ResourceLocation, LootCondition.Serializer<? >> NAME_TO_SERIALIZER_MAP = Maps.newHashMap();
+-    private static final Map < Class <? extends LootCondition > , LootCondition.Serializer<? >> CLASS_TO_SERIALIZER_MAP = Maps.newHashMap();
++    private static final Map < ResourceLocation, LootCondition.Serializer<? >> NAME_TO_SERIALIZER_MAP = Maps. < ResourceLocation, LootCondition.Serializer<? >> newHashMap();
++    private static final Map < Class <? extends LootCondition > , LootCondition.Serializer<? >> CLASS_TO_SERIALIZER_MAP = Maps. < Class <? extends LootCondition > , LootCondition.Serializer<? >> newHashMap();
  
-     public static <T extends LootCondition> void func_186639_a(LootCondition.Serializer <? extends T > p_186639_0_)
+     public static <T extends LootCondition> void registerCondition(LootCondition.Serializer <? extends T > condition)
      {
 @@ -42,6 +42,15 @@
          }
@@ -19,35 +19,35 @@
 +    {
 +        if (conditions == null) return true;
 +        for (LootCondition cond : conditions)
-+           if (!cond.func_186618_a(rand, context))
++           if (!cond.testCondition(rand, context))
 +                return false;
 +        return true;
 +    }
 +
-     public static boolean func_186638_a(@Nullable LootCondition[] p_186638_0_, Random p_186638_1_, LootContext p_186638_2_)
+     public static boolean testAllConditions(@Nullable LootCondition[] conditions, Random rand, LootContext context)
      {
-         if (p_186638_0_ == null)
+         if (conditions == null)
 @@ -64,7 +73,7 @@
  
-     public static LootCondition.Serializer<?> func_186641_a(ResourceLocation p_186641_0_)
+     public static LootCondition.Serializer<?> getSerializerForName(ResourceLocation location)
      {
--        LootCondition.Serializer<?> serializer = field_186642_a.get(p_186641_0_);
-+        LootCondition.Serializer<?> serializer = (LootCondition.Serializer)field_186642_a.get(p_186641_0_);
+-        LootCondition.Serializer<?> serializer = NAME_TO_SERIALIZER_MAP.get(location);
++        LootCondition.Serializer<?> serializer = (LootCondition.Serializer)NAME_TO_SERIALIZER_MAP.get(location);
  
          if (serializer == null)
          {
 @@ -78,7 +87,7 @@
  
-     public static <T extends LootCondition> LootCondition.Serializer<T> func_186640_a(T p_186640_0_)
+     public static <T extends LootCondition> LootCondition.Serializer<T> getSerializerFor(T conditionClass)
      {
--        LootCondition.Serializer<T> serializer = (LootCondition.Serializer<T>)field_186643_b.get(p_186640_0_.getClass());
-+        LootCondition.Serializer<T> serializer = (LootCondition.Serializer)field_186643_b.get(p_186640_0_.getClass());
+-        LootCondition.Serializer<T> serializer = (LootCondition.Serializer<T>)CLASS_TO_SERIALIZER_MAP.get(conditionClass.getClass());
++        LootCondition.Serializer<T> serializer = (LootCondition.Serializer)CLASS_TO_SERIALIZER_MAP.get(conditionClass.getClass());
  
          if (serializer == null)
          {
 @@ -111,7 +120,7 @@
                  {
-                     serializer = LootConditionManager.func_186641_a(resourcelocation);
+                     serializer = LootConditionManager.getSerializerForName(resourcelocation);
                  }
 -                catch (IllegalArgumentException illegalargumentexception)
 +                catch (IllegalArgumentException var8)
@@ -58,8 +58,8 @@
  
              public JsonElement serialize(LootCondition p_serialize_1_, Type p_serialize_2_, JsonSerializationContext p_serialize_3_)
              {
--                LootCondition.Serializer<LootCondition> serializer = LootConditionManager.func_186640_a(p_serialize_1_);
-+                LootCondition.Serializer<LootCondition> serializer = LootConditionManager.<LootCondition>func_186640_a(p_serialize_1_);
+-                LootCondition.Serializer<LootCondition> serializer = LootConditionManager.getSerializerFor(p_serialize_1_);
++                LootCondition.Serializer<LootCondition> serializer = LootConditionManager.<LootCondition>getSerializerFor(p_serialize_1_);
                  JsonObject jsonobject = new JsonObject();
-                 serializer.func_186605_a(jsonobject, p_serialize_1_, p_serialize_3_);
-                 jsonobject.addProperty("condition", serializer.func_186602_a().toString());
+                 serializer.serialize(jsonobject, p_serialize_1_, p_serialize_3_);
+                 jsonobject.addProperty("condition", serializer.getLootTableLocation().toString());

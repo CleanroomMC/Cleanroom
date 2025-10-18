@@ -1,10 +1,10 @@
 --- before/net/minecraft/world/gen/MapGenRavine.java
 +++ after/net/minecraft/world/gen/MapGenRavine.java
 @@ -14,21 +14,7 @@
-     protected static final IBlockState field_186136_b = Blocks.field_150350_a.func_176223_P();
-     private final float[] field_75046_d = new float[1024];
+     protected static final IBlockState AIR = Blocks.AIR.getDefaultState();
+     private final float[] rs = new float[1024];
  
--    protected void func_180707_a(
+-    protected void addTunnel(
 -        long p_180707_1_,
 -        int p_180707_3_,
 -        int p_180707_4_,
@@ -19,7 +19,7 @@
 -        int p_180707_16_,
 -        double p_180707_17_
 -    )
-+    protected void func_180707_a(long p_180707_1_, int p_180707_3_, int p_180707_4_, ChunkPrimer p_180707_5_, double p_180707_6_, double p_180707_8_, double p_180707_10_, float p_180707_12_, float p_180707_13_, float p_180707_14_, int p_180707_15_, int p_180707_16_, double p_180707_17_)
++    protected void addTunnel(long p_180707_1_, int p_180707_3_, int p_180707_4_, ChunkPrimer p_180707_5_, double p_180707_6_, double p_180707_8_, double p_180707_10_, float p_180707_12_, float p_180707_13_, float p_180707_14_, int p_180707_15_, int p_180707_16_, double p_180707_17_)
      {
          Random random = new Random(p_180707_1_);
          double d0 = (double)(p_180707_3_ * 16 + 8);
@@ -33,24 +33,24 @@
              if (j == 0 || random.nextInt(3) == 0)
              {
 @@ -62,24 +48,24 @@
-             this.field_75046_d[j] = f2 * f2;
+             this.rs[j] = f2 * f2;
          }
  
 -        for (; p_180707_15_ < p_180707_16_; p_180707_15_++)
 +        for (; p_180707_15_ < p_180707_16_; ++p_180707_15_)
          {
--            double d9 = 1.5 + (double)(MathHelper.func_76126_a((float)p_180707_15_ * (float) Math.PI / (float)p_180707_16_) * p_180707_12_);
-+            double d9 = 1.5D + (double)(MathHelper.func_76126_a((float)p_180707_15_ * (float)Math.PI / (float)p_180707_16_) * p_180707_12_);
+-            double d9 = 1.5 + (double)(MathHelper.sin((float)p_180707_15_ * (float) Math.PI / (float)p_180707_16_) * p_180707_12_);
++            double d9 = 1.5D + (double)(MathHelper.sin((float)p_180707_15_ * (float)Math.PI / (float)p_180707_16_) * p_180707_12_);
              double d2 = d9 * p_180707_17_;
 -            d9 *= (double)random.nextFloat() * 0.25 + 0.75;
 -            d2 *= (double)random.nextFloat() * 0.25 + 0.75;
 +            d9 = d9 * ((double)random.nextFloat() * 0.25D + 0.75D);
 +            d2 = d2 * ((double)random.nextFloat() * 0.25D + 0.75D);
-             float f3 = MathHelper.func_76134_b(p_180707_14_);
-             float f4 = MathHelper.func_76126_a(p_180707_14_);
-             p_180707_6_ += (double)(MathHelper.func_76134_b(p_180707_13_) * f3);
+             float f3 = MathHelper.cos(p_180707_14_);
+             float f4 = MathHelper.sin(p_180707_14_);
+             p_180707_6_ += (double)(MathHelper.cos(p_180707_13_) * f3);
              p_180707_8_ += (double)f4;
-             p_180707_10_ += (double)(MathHelper.func_76126_a(p_180707_13_) * f3);
+             p_180707_10_ += (double)(MathHelper.sin(p_180707_13_) * f3);
 -            p_180707_14_ *= 0.7F;
 -            p_180707_14_ += f1 * 0.05F;
 +            p_180707_14_ = p_180707_14_ * 0.7F;
@@ -77,8 +77,8 @@
 -                        && !(p_180707_10_ > d1 + 16.0 + d9 * 2.0))
 +                if (p_180707_6_ >= d0 - 16.0D - d9 * 2.0D && p_180707_10_ >= d1 - 16.0D - d9 * 2.0D && p_180707_6_ <= d0 + 16.0D + d9 * 2.0D && p_180707_10_ <= d1 + 16.0D + d9 * 2.0D)
                  {
-                     int k2 = MathHelper.func_76128_c(p_180707_6_ - d9) - p_180707_3_ * 16 - 1;
-                     int k = MathHelper.func_76128_c(p_180707_6_ + d9) - p_180707_3_ * 16 + 1;
+                     int k2 = MathHelper.floor(p_180707_6_ - d9) - p_180707_3_ * 16 - 1;
+                     int k = MathHelper.floor(p_180707_6_ + d9) - p_180707_3_ * 16 + 1;
 @@ -137,17 +120,15 @@
  
                      boolean flag2 = false;
@@ -94,9 +94,9 @@
                              {
                                  if (l1 >= 0 && l1 < 256)
                                  {
--                                    IBlockState iblockstate = p_180707_5_.func_177856_a(j1, l1, k1);
+-                                    IBlockState iblockstate = p_180707_5_.getBlockState(j1, l1, k1);
 -
--                                    if (iblockstate.func_177230_c() == Blocks.field_150358_i || iblockstate.func_177230_c() == Blocks.field_150355_j)
+-                                    if (iblockstate.getBlock() == Blocks.FLOWING_WATER || iblockstate.getBlock() == Blocks.WATER)
 +                                    if (isOceanBlock(p_180707_5_, j1, l1, k1, p_180707_3_, p_180707_4_))
                                      {
                                          flag2 = true;
@@ -129,33 +129,33 @@
 -                                        double d8 = ((double)(j2 - 1) + 0.5 - p_180707_8_) / d2;
 +                                        double d8 = ((double)(j2 - 1) + 0.5D - p_180707_8_) / d2;
  
--                                        if ((d10 * d10 + d7 * d7) * (double)this.field_75046_d[j2 - 1] + d8 * d8 / 6.0 < 1.0)
-+                                        if ((d10 * d10 + d7 * d7) * (double)this.field_75046_d[j2 - 1] + d8 * d8 / 6.0D < 1.0D)
+-                                        if ((d10 * d10 + d7 * d7) * (double)this.rs[j2 - 1] + d8 * d8 / 6.0 < 1.0)
++                                        if ((d10 * d10 + d7 * d7) * (double)this.rs[j2 - 1] + d8 * d8 / 6.0D < 1.0D)
                                          {
--                                            IBlockState iblockstate1 = p_180707_5_.func_177856_a(j3, j2, i2);
+-                                            IBlockState iblockstate1 = p_180707_5_.getBlockState(j3, j2, i2);
 -
--                                            if (iblockstate1.func_177230_c() == Blocks.field_150349_c)
+-                                            if (iblockstate1.getBlock() == Blocks.GRASS)
 +                                            if (isTopBlock(p_180707_5_, j3, j2, i2, p_180707_3_, p_180707_4_))
                                              {
                                                  flag = true;
                                              }
  
--                                            if (iblockstate1.func_177230_c() == Blocks.field_150348_b
--                                                    || iblockstate1.func_177230_c() == Blocks.field_150346_d
--                                                    || iblockstate1.func_177230_c() == Blocks.field_150349_c)
+-                                            if (iblockstate1.getBlock() == Blocks.STONE
+-                                                    || iblockstate1.getBlock() == Blocks.DIRT
+-                                                    || iblockstate1.getBlock() == Blocks.GRASS)
 -                                            {
 -                                                if (j2 - 1 < 10)
 -                                                {
--                                                    p_180707_5_.func_177855_a(j3, j2, i2, field_186135_a);
+-                                                    p_180707_5_.setBlockState(j3, j2, i2, FLOWING_LAVA);
 -                                                }
 -                                                else
 -                                                {
--                                                    p_180707_5_.func_177855_a(j3, j2, i2, field_186136_b);
+-                                                    p_180707_5_.setBlockState(j3, j2, i2, AIR);
 -
--                                                    if (flag && p_180707_5_.func_177856_a(j3, j2 - 1, i2).func_177230_c() == Blocks.field_150346_d)
+-                                                    if (flag && p_180707_5_.getBlockState(j3, j2 - 1, i2).getBlock() == Blocks.DIRT)
 -                                                    {
--                                                        blockpos$mutableblockpos.func_181079_c(j3 + p_180707_3_ * 16, 0, i2 + p_180707_4_ * 16);
--                                                        p_180707_5_.func_177855_a(j3, j2 - 1, i2, this.field_75039_c.func_180494_b(blockpos$mutableblockpos).field_76752_A);
+-                                                        blockpos$mutableblockpos.setPos(j3 + p_180707_3_ * 16, 0, i2 + p_180707_4_ * 16);
+-                                                        p_180707_5_.setBlockState(j3, j2 - 1, i2, this.world.getBiome(blockpos$mutableblockpos).topBlock);
 -                                                    }
 -                                                }
 -                                            }
@@ -168,38 +168,38 @@
      }
  
 -    @Override
-     protected void func_180701_a(World p_180701_1_, int p_180701_2_, int p_180701_3_, int p_180701_4_, int p_180701_5_, ChunkPrimer p_180701_6_)
+     protected void recursiveGenerate(World worldIn, int chunkX, int chunkZ, int originalX, int originalZ, ChunkPrimer chunkPrimerIn)
      {
-         if (this.field_75038_b.nextInt(50) == 0)
+         if (this.rand.nextInt(50) == 0)
 @@ -234,12 +192,76 @@
-             double d2 = (double)(p_180701_3_ * 16 + this.field_75038_b.nextInt(16));
+             double d2 = (double)(chunkZ * 16 + this.rand.nextInt(16));
              int i = 1;
  
 -            for (int j = 0; j < 1; j++)
 +            for (int j = 0; j < 1; ++j)
              {
--                float f = this.field_75038_b.nextFloat() * (float)(Math.PI * 2);
-+                float f = this.field_75038_b.nextFloat() * ((float)Math.PI * 2F);
-                 float f1 = (this.field_75038_b.nextFloat() - 0.5F) * 2.0F / 8.0F;
-                 float f2 = (this.field_75038_b.nextFloat() * 2.0F + this.field_75038_b.nextFloat()) * 2.0F;
--                this.func_180707_a(this.field_75038_b.nextLong(), p_180701_4_, p_180701_5_, p_180701_6_, d0, d1, d2, f2, f, f1, 0, 0, 3.0);
-+                this.func_180707_a(this.field_75038_b.nextLong(), p_180701_4_, p_180701_5_, p_180701_6_, d0, d1, d2, f2, f, f1, 0, 0, 3.0D);
+-                float f = this.rand.nextFloat() * (float)(Math.PI * 2);
++                float f = this.rand.nextFloat() * ((float)Math.PI * 2F);
+                 float f1 = (this.rand.nextFloat() - 0.5F) * 2.0F / 8.0F;
+                 float f2 = (this.rand.nextFloat() * 2.0F + this.rand.nextFloat()) * 2.0F;
+-                this.addTunnel(this.rand.nextLong(), originalX, originalZ, chunkPrimerIn, d0, d1, d2, f2, f, f1, 0, 0, 3.0);
++                this.addTunnel(this.rand.nextLong(), originalX, originalZ, chunkPrimerIn, d0, d1, d2, f2, f, f1, 0, 0, 3.0D);
 +            }
 +        }
 +    }
 +    protected boolean isOceanBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ)
 +    {
-+        net.minecraft.block.Block block = data.func_177856_a(x, y, z).func_177230_c();
-+        return block== Blocks.field_150358_i || block == Blocks.field_150355_j;
++        net.minecraft.block.Block block = data.getBlockState(x, y, z).getBlock();
++        return block== Blocks.FLOWING_WATER || block == Blocks.WATER;
 +    }
 +
 +    //Exception biomes to make sure we generate like vanilla
 +    private boolean isExceptionBiome(net.minecraft.world.biome.Biome biome)
 +    {
-+        if (biome == net.minecraft.init.Biomes.field_76787_r) return true;
-+        if (biome == net.minecraft.init.Biomes.field_76769_d) return true;
-+        if (biome == net.minecraft.init.Biomes.field_76789_p) return true;
-+        if (biome == net.minecraft.init.Biomes.field_76788_q) return true;
++        if (biome == net.minecraft.init.Biomes.BEACH) return true;
++        if (biome == net.minecraft.init.Biomes.DESERT) return true;
++        if (biome == net.minecraft.init.Biomes.MUSHROOM_ISLAND) return true;
++        if (biome == net.minecraft.init.Biomes.MUSHROOM_ISLAND_SHORE) return true;
 +        return false;
 +    }
 +
@@ -207,9 +207,9 @@
 +    //Vanilla bugs to make sure that we generate the map the same way vanilla does.
 +    private boolean isTopBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ)
 +    {
-+        net.minecraft.world.biome.Biome biome = field_75039_c.func_180494_b(new BlockPos(x + chunkX * 16, 0, z + chunkZ * 16));
-+        IBlockState state = data.func_177856_a(x, y, z);
-+        return (isExceptionBiome(biome) ? state.func_177230_c() == Blocks.field_150349_c : state.func_177230_c() == biome.field_76752_A);
++        net.minecraft.world.biome.Biome biome = world.getBiome(new BlockPos(x + chunkX * 16, 0, z + chunkZ * 16));
++        IBlockState state = data.getBlockState(x, y, z);
++        return (isExceptionBiome(biome) ? state.getBlock() == Blocks.GRASS : state.getBlock() == biome.topBlock);
 +    }
 +
 +    /**
@@ -229,24 +229,24 @@
 +     */
 +    protected void digBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ, boolean foundTop)
 +    {
-+        net.minecraft.world.biome.Biome biome = field_75039_c.func_180494_b(new BlockPos(x + chunkX * 16, 0, z + chunkZ * 16));
-+        IBlockState state = data.func_177856_a(x, y, z);
-+        IBlockState top = isExceptionBiome(biome) ? Blocks.field_150349_c.func_176223_P() : biome.field_76752_A;
-+        IBlockState filler = isExceptionBiome(biome) ? Blocks.field_150346_d.func_176223_P() : biome.field_76753_B;
++        net.minecraft.world.biome.Biome biome = world.getBiome(new BlockPos(x + chunkX * 16, 0, z + chunkZ * 16));
++        IBlockState state = data.getBlockState(x, y, z);
++        IBlockState top = isExceptionBiome(biome) ? Blocks.GRASS.getDefaultState() : biome.topBlock;
++        IBlockState filler = isExceptionBiome(biome) ? Blocks.DIRT.getDefaultState() : biome.fillerBlock;
 +
-+        if (state.func_177230_c() == Blocks.field_150348_b || state.func_177230_c() == top.func_177230_c() || state.func_177230_c() == filler.func_177230_c())
++        if (state.getBlock() == Blocks.STONE || state.getBlock() == top.getBlock() || state.getBlock() == filler.getBlock())
 +        {
 +            if (y - 1 < 10)
 +            {
-+                data.func_177855_a(x, y, z, field_186135_a);
++                data.setBlockState(x, y, z, FLOWING_LAVA);
 +            }
 +            else
 +            {
-+                data.func_177855_a(x, y, z, field_186136_b);
++                data.setBlockState(x, y, z, AIR);
 +
-+                if (foundTop && data.func_177856_a(x, y - 1, z).func_177230_c() == filler.func_177230_c())
++                if (foundTop && data.getBlockState(x, y - 1, z).getBlock() == filler.getBlock())
 +                {
-+                    data.func_177855_a(x, y - 1, z, top.func_177230_c().func_176223_P());
++                    data.setBlockState(x, y - 1, z, top.getBlock().getDefaultState());
 +                }
              }
          }

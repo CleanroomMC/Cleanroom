@@ -2,13 +2,13 @@
 +++ after/net/minecraft/client/resources/Locale.java
 @@ -53,26 +53,6 @@
  
-     private void func_135024_b()
+     private void checkUnicode()
      {
--        this.field_135029_d = false;
+-        this.unicode = false;
 -        int i = 0;
 -        int j = 0;
 -
--        for (String s : this.field_135032_a.values())
+-        for (String s : this.properties.values())
 -        {
 -            int k = s.length();
 -            j += k;
@@ -23,16 +23,16 @@
 -        }
 -
 -        float f = (float)i / (float)j;
--        this.field_135029_d = (double)f > 0.1;
+-        this.unicode = (double)f > 0.1;
      }
  
-     private void func_135028_a(List<IResource> p_135028_1_) throws IOException
+     private void loadLocaleData(List<IResource> resourcesList) throws IOException
 @@ -94,6 +74,8 @@
  
-     private void func_135021_a(InputStream p_135021_1_) throws IOException
+     private void loadLocaleData(InputStream inputStreamIn) throws IOException
      {
-+        p_135021_1_ = net.minecraftforge.fml.common.FMLCommonHandler.instance().loadLanguage(field_135032_a, p_135021_1_);
-+        if (p_135021_1_ == null) return;
-         for (String s : IOUtils.readLines(p_135021_1_, StandardCharsets.UTF_8))
++        inputStreamIn = net.minecraftforge.fml.common.FMLCommonHandler.instance().loadLanguage(properties, inputStreamIn);
++        if (inputStreamIn == null) return;
+         for (String s : IOUtils.readLines(inputStreamIn, StandardCharsets.UTF_8))
          {
              if (!s.isEmpty() && s.charAt(0) != '#')

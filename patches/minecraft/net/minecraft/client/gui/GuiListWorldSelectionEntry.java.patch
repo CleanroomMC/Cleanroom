@@ -9,54 +9,54 @@
  import net.minecraft.world.storage.ISaveHandler;
  import net.minecraft.world.storage.WorldInfo;
 @@ -58,18 +59,7 @@
-         this.func_186769_f();
+         this.loadServerIcon();
      }
  
 -    @Override
--    public void func_192634_a(
--        int p_192634_1_,
--        int p_192634_2_,
--        int p_192634_3_,
--        int p_192634_4_,
--        int p_192634_5_,
--        int p_192634_6_,
--        int p_192634_7_,
--        boolean p_192634_8_,
--        float p_192634_9_
+-    public void drawEntry(
+-        int slotIndex,
+-        int x,
+-        int y,
+-        int listWidth,
+-        int slotHeight,
+-        int mouseX,
+-        int mouseY,
+-        boolean isSelected,
+-        float partialTicks
 -    )
-+    public void func_192634_a(int p_192634_1_, int p_192634_2_, int p_192634_3_, int p_192634_4_, int p_192634_5_, int p_192634_6_, int p_192634_7_, boolean p_192634_8_, float p_192634_9_)
++    public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks)
      {
-         String s = this.field_186786_g.func_75788_b();
-         String s1 = this.field_186786_g.func_75786_a() + " (" + field_186781_b.format(new Date(this.field_186786_g.func_75784_e())) + ")";
+         String s = this.worldSummary.getDisplayName();
+         String s1 = this.worldSummary.getFileName() + " (" + DATE_FORMAT.format(new Date(this.worldSummary.getLastTimePlayed())) + ")";
 @@ -119,14 +109,7 @@
  
-         this.field_186784_e.field_71466_p.func_78276_b(s, p_192634_2_ + 32 + 3, p_192634_3_ + 1, 16777215);
-         this.field_186784_e.field_71466_p.func_78276_b(s1, p_192634_2_ + 32 + 3, p_192634_3_ + this.field_186784_e.field_71466_p.field_78288_b + 3, 8421504);
--        this.field_186784_e
--        .field_71466_p
--        .func_78276_b(
+         this.client.fontRenderer.drawString(s, x + 32 + 3, y + 1, 16777215);
+         this.client.fontRenderer.drawString(s1, x + 32 + 3, y + this.client.fontRenderer.FONT_HEIGHT + 3, 8421504);
+-        this.client
+-        .fontRenderer
+-        .drawString(
 -            s2,
--            p_192634_2_ + 32 + 3,
--            p_192634_3_ + this.field_186784_e.field_71466_p.field_78288_b + this.field_186784_e.field_71466_p.field_78288_b + 3,
+-            x + 32 + 3,
+-            y + this.client.fontRenderer.FONT_HEIGHT + this.client.fontRenderer.FONT_HEIGHT + 3,
 -            8421504
 -        );
-+        this.field_186784_e.field_71466_p.func_78276_b(s2, p_192634_2_ + 32 + 3, p_192634_3_ + this.field_186784_e.field_71466_p.field_78288_b + this.field_186784_e.field_71466_p.field_78288_b + 3, 8421504);
-         GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
-         this.field_186784_e.func_110434_K().func_110577_a(this.field_186790_k != null ? this.field_186787_h : field_186782_c);
-         GlStateManager.func_179147_l();
++        this.client.fontRenderer.drawString(s2, x + 32 + 3, y + this.client.fontRenderer.FONT_HEIGHT + this.client.fontRenderer.FONT_HEIGHT + 3, 8421504);
+         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+         this.client.getTextureManager().bindTexture(this.icon != null ? this.iconLocation : ICON_MISSING);
+         GlStateManager.enableBlend();
 @@ -151,14 +134,7 @@
  
                      if (j < 32)
                      {
--                        this.field_186785_f
--                        .func_184861_a(
+-                        this.worldSelScreen
+-                        .setVersionTooltip(
 -                            TextFormatting.RED
--                            + I18n.func_135052_a("selectWorld.tooltip.fromNewerVersion1")
+-                            + I18n.format("selectWorld.tooltip.fromNewerVersion1")
 -                            + "\n"
 -                            + TextFormatting.RED
--                            + I18n.func_135052_a("selectWorld.tooltip.fromNewerVersion2")
+-                            + I18n.format("selectWorld.tooltip.fromNewerVersion2")
 -                        );
-+                        this.field_186785_f.func_184861_a(TextFormatting.RED + I18n.func_135052_a("selectWorld.tooltip.fromNewerVersion1") + "\n" + TextFormatting.RED + I18n.func_135052_a("selectWorld.tooltip.fromNewerVersion2"));
++                        this.worldSelScreen.setVersionTooltip(TextFormatting.RED + I18n.format("selectWorld.tooltip.fromNewerVersion1") + "\n" + TextFormatting.RED + I18n.format("selectWorld.tooltip.fromNewerVersion2"));
                      }
                  }
                  else
@@ -64,15 +64,15 @@
  
                      if (j < 32)
                      {
--                        this.field_186785_f
--                        .func_184861_a(
+-                        this.worldSelScreen
+-                        .setVersionTooltip(
 -                            TextFormatting.GOLD
--                            + I18n.func_135052_a("selectWorld.tooltip.snapshot1")
+-                            + I18n.format("selectWorld.tooltip.snapshot1")
 -                            + "\n"
 -                            + TextFormatting.GOLD
--                            + I18n.func_135052_a("selectWorld.tooltip.snapshot2")
+-                            + I18n.format("selectWorld.tooltip.snapshot2")
 -                        );
-+                        this.field_186785_f.func_184861_a(TextFormatting.GOLD + I18n.func_135052_a("selectWorld.tooltip.snapshot1") + "\n" + TextFormatting.GOLD + I18n.func_135052_a("selectWorld.tooltip.snapshot2"));
++                        this.worldSelScreen.setVersionTooltip(TextFormatting.GOLD + I18n.format("selectWorld.tooltip.snapshot1") + "\n" + TextFormatting.GOLD + I18n.format("selectWorld.tooltip.snapshot2"));
                      }
                  }
              }
@@ -81,75 +81,75 @@
      }
  
 -    @Override
-     public boolean func_148278_a(int p_148278_1_, int p_148278_2_, int p_148278_3_, int p_148278_4_, int p_148278_5_, int p_148278_6_)
+     public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY)
      {
-         this.field_186788_i.func_186792_d(p_148278_1_);
+         this.containingListSel.selectWorld(slotIndex);
 @@ -211,12 +179,8 @@
      {
-         if (this.field_186786_g.func_186356_m())
+         if (this.worldSummary.askToOpenWorld())
          {
--            this.field_186784_e
--            .func_147108_a(
+-            this.client
+-            .displayGuiScreen(
 -                new GuiYesNo(
 -                    new GuiYesNoCallback()
-+            this.field_186784_e.func_147108_a(new GuiYesNo(new GuiYesNoCallback()
++            this.client.displayGuiScreen(new GuiYesNo(new GuiYesNoCallback()
              {
 -                @Override
-                 public void func_73878_a(boolean p_73878_1_, int p_73878_2_)
+                 public void confirmClicked(boolean result, int id)
                  {
-                     if (p_73878_1_)
+                     if (result)
 @@ -228,14 +192,7 @@
-                         GuiListWorldSelectionEntry.this.field_186784_e.func_147108_a(GuiListWorldSelectionEntry.this.field_186785_f);
+                         GuiListWorldSelectionEntry.this.client.displayGuiScreen(GuiListWorldSelectionEntry.this.worldSelScreen);
                      }
                  }
 -            },
--            I18n.func_135052_a("selectWorld.versionQuestion"),
--            I18n.func_135052_a("selectWorld.versionWarning", this.field_186786_g.func_186357_i()),
--            I18n.func_135052_a("selectWorld.versionJoinButton"),
--            I18n.func_135052_a("gui.cancel"),
+-            I18n.format("selectWorld.versionQuestion"),
+-            I18n.format("selectWorld.versionWarning", this.worldSummary.getVersionName()),
+-            I18n.format("selectWorld.versionJoinButton"),
+-            I18n.format("gui.cancel"),
 -            0
 -                )
 -            );
-+            }, I18n.func_135052_a("selectWorld.versionQuestion"), I18n.func_135052_a("selectWorld.versionWarning", this.field_186786_g.func_186357_i()), I18n.func_135052_a("selectWorld.versionJoinButton"), I18n.func_135052_a("gui.cancel"), 0));
++            }, I18n.format("selectWorld.versionQuestion"), I18n.format("selectWorld.versionWarning", this.worldSummary.getVersionName()), I18n.format("selectWorld.versionJoinButton"), I18n.format("gui.cancel"), 0));
          }
          else
          {
 @@ -245,12 +202,8 @@
  
-     public void func_186776_b()
+     public void deleteWorld()
      {
--        this.field_186784_e
--        .func_147108_a(
+-        this.client
+-        .displayGuiScreen(
 -            new GuiYesNo(
 -                new GuiYesNoCallback()
-+        this.field_186784_e.func_147108_a(new GuiYesNo(new GuiYesNoCallback()
++        this.client.displayGuiScreen(new GuiYesNo(new GuiYesNoCallback()
          {
 -            @Override
-             public void func_73878_a(boolean p_73878_1_, int p_73878_2_)
+             public void confirmClicked(boolean result, int id)
              {
-                 if (p_73878_1_)
+                 if (result)
 @@ -264,14 +217,7 @@
  
-                 GuiListWorldSelectionEntry.this.field_186784_e.func_147108_a(GuiListWorldSelectionEntry.this.field_186785_f);
+                 GuiListWorldSelectionEntry.this.client.displayGuiScreen(GuiListWorldSelectionEntry.this.worldSelScreen);
              }
 -        },
--        I18n.func_135052_a("selectWorld.deleteQuestion"),
--        "'" + this.field_186786_g.func_75788_b() + "' " + I18n.func_135052_a("selectWorld.deleteWarning"),
--        I18n.func_135052_a("selectWorld.deleteButton"),
--        I18n.func_135052_a("gui.cancel"),
+-        I18n.format("selectWorld.deleteQuestion"),
+-        "'" + this.worldSummary.getDisplayName() + "' " + I18n.format("selectWorld.deleteWarning"),
+-        I18n.format("selectWorld.deleteButton"),
+-        I18n.format("gui.cancel"),
 -        0
 -            )
 -        );
-+        }, I18n.func_135052_a("selectWorld.deleteQuestion"), "'" + this.field_186786_g.func_75788_b() + "' " + I18n.func_135052_a("selectWorld.deleteWarning"), I18n.func_135052_a("selectWorld.deleteButton"), I18n.func_135052_a("gui.cancel"), 0));
++        }, I18n.format("selectWorld.deleteQuestion"), "'" + this.worldSummary.getDisplayName() + "' " + I18n.format("selectWorld.deleteWarning"), I18n.format("selectWorld.deleteButton"), I18n.format("gui.cancel"), 0));
      }
  
-     public void func_186778_c()
+     public void editWorld()
 @@ -300,7 +246,7 @@
  
-         if (this.field_186784_e.func_71359_d().func_90033_f(this.field_186786_g.func_75786_a()))
+         if (this.client.getSaveLoader().canLoadWorld(this.worldSummary.getFileName()))
          {
--            this.field_186784_e.func_71371_a(this.field_186786_g.func_75786_a(), this.field_186786_g.func_75788_b(), null);
-+            net.minecraftforge.fml.client.FMLClientHandler.instance().tryLoadExistingWorld(field_186785_f, this.field_186786_g);
+-            this.client.launchIntegratedServer(this.worldSummary.getFileName(), this.worldSummary.getDisplayName(), null);
++            net.minecraftforge.fml.client.FMLClientHandler.instance().tryLoadExistingWorld(worldSelScreen, this.worldSummary);
          }
      }
  
@@ -158,11 +158,11 @@
      }
  
 -    @Override
-     public void func_148277_b(int p_148277_1_, int p_148277_2_, int p_148277_3_, int p_148277_4_, int p_148277_5_, int p_148277_6_)
+     public void mouseReleased(int slotIndex, int x, int y, int mouseEvent, int relativeX, int relativeY)
      {
      }
  
 -    @Override
-     public void func_192633_a(int p_192633_1_, int p_192633_2_, int p_192633_3_, float p_192633_4_)
+     public void updatePosition(int slotIndex, int x, int y, float partialTicks)
      {
      }

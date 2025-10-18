@@ -4,47 +4,47 @@
  
  public class Scoreboard
  {
--    private final Map<String, ScoreObjective> field_96545_a = Maps.newHashMap();
--    private final Map<IScoreCriteria, List<ScoreObjective>> field_96543_b = Maps.newHashMap();
--    private final Map<String, Map<ScoreObjective, Score>> field_96544_c = Maps.newHashMap();
-+    private final Map<String, ScoreObjective> field_96545_a = Maps.<String, ScoreObjective>newHashMap();
-+    private final Map<IScoreCriteria, List<ScoreObjective>> field_96543_b = Maps.<IScoreCriteria, List<ScoreObjective>>newHashMap();
-+    private final Map<String, Map<ScoreObjective, Score>> field_96544_c = Maps.<String, Map<ScoreObjective, Score>>newHashMap();
-     private final ScoreObjective[] field_96541_d = new ScoreObjective[19];
--    private final Map<String, ScorePlayerTeam> field_96542_e = Maps.newHashMap();
--    private final Map<String, ScorePlayerTeam> field_96540_f = Maps.newHashMap();
-+    private final Map<String, ScorePlayerTeam> field_96542_e = Maps.<String, ScorePlayerTeam>newHashMap();
-+    private final Map<String, ScorePlayerTeam> field_96540_f = Maps.<String, ScorePlayerTeam>newHashMap();
-     private static String[] field_178823_g;
+-    private final Map<String, ScoreObjective> scoreObjectives = Maps.newHashMap();
+-    private final Map<IScoreCriteria, List<ScoreObjective>> scoreObjectiveCriterias = Maps.newHashMap();
+-    private final Map<String, Map<ScoreObjective, Score>> entitiesScoreObjectives = Maps.newHashMap();
++    private final Map<String, ScoreObjective> scoreObjectives = Maps.<String, ScoreObjective>newHashMap();
++    private final Map<IScoreCriteria, List<ScoreObjective>> scoreObjectiveCriterias = Maps.<IScoreCriteria, List<ScoreObjective>>newHashMap();
++    private final Map<String, Map<ScoreObjective, Score>> entitiesScoreObjectives = Maps.<String, Map<ScoreObjective, Score>>newHashMap();
+     private final ScoreObjective[] objectiveDisplaySlots = new ScoreObjective[19];
+-    private final Map<String, ScorePlayerTeam> teams = Maps.newHashMap();
+-    private final Map<String, ScorePlayerTeam> teamMemberships = Maps.newHashMap();
++    private final Map<String, ScorePlayerTeam> teams = Maps.<String, ScorePlayerTeam>newHashMap();
++    private final Map<String, ScorePlayerTeam> teamMemberships = Maps.<String, ScorePlayerTeam>newHashMap();
+     private static String[] displaySlots;
  
      @Nullable
 @@ -44,11 +44,11 @@
              else
              {
-                 scoreobjective = new ScoreObjective(this, p_96535_1_, p_96535_2_);
--                List<ScoreObjective> list = this.field_96543_b.get(p_96535_2_);
-+                List<ScoreObjective> list = (List)this.field_96543_b.get(p_96535_2_);
+                 scoreobjective = new ScoreObjective(this, name, criteria);
+-                List<ScoreObjective> list = this.scoreObjectiveCriterias.get(criteria);
++                List<ScoreObjective> list = (List)this.scoreObjectiveCriterias.get(criteria);
  
                  if (list == null)
                  {
 -                    list = Lists.newArrayList();
 +                    list = Lists.<ScoreObjective>newArrayList();
-                     this.field_96543_b.put(p_96535_2_, list);
+                     this.scoreObjectiveCriterias.put(criteria, list);
                  }
  
 @@ -62,13 +62,13 @@
  
-     public Collection<ScoreObjective> func_96520_a(IScoreCriteria p_96520_1_)
+     public Collection<ScoreObjective> getObjectivesFromCriteria(IScoreCriteria criteria)
      {
--        Collection<ScoreObjective> collection = this.field_96543_b.get(p_96520_1_);
-+        Collection<ScoreObjective> collection = (Collection)this.field_96543_b.get(p_96520_1_);
+-        Collection<ScoreObjective> collection = this.scoreObjectiveCriterias.get(criteria);
++        Collection<ScoreObjective> collection = (Collection)this.scoreObjectiveCriterias.get(criteria);
          return collection == null ? Lists.newArrayList() : Lists.newArrayList(collection);
      }
  
-     public boolean func_178819_b(String p_178819_1_, ScoreObjective p_178819_2_)
+     public boolean entityHasObjective(String name, ScoreObjective objective)
      {
--        Map<ScoreObjective, Score> map = this.field_96544_c.get(p_178819_1_);
-+        Map<ScoreObjective, Score> map = (Map)this.field_96544_c.get(p_178819_1_);
+-        Map<ScoreObjective, Score> map = this.entitiesScoreObjectives.get(name);
++        Map<ScoreObjective, Score> map = (Map)this.entitiesScoreObjectives.get(name);
  
          if (map == null)
          {
@@ -52,31 +52,31 @@
          }
          else
          {
--            Map<ScoreObjective, Score> map = this.field_96544_c.get(p_96529_1_);
-+            Map<ScoreObjective, Score> map = (Map)this.field_96544_c.get(p_96529_1_);
+-            Map<ScoreObjective, Score> map = this.entitiesScoreObjectives.get(username);
++            Map<ScoreObjective, Score> map = (Map)this.entitiesScoreObjectives.get(username);
  
              if (map == null)
              {
 -                map = Maps.newHashMap();
 +                map = Maps.<ScoreObjective, Score>newHashMap();
-                 this.field_96544_c.put(p_96529_1_, map);
+                 this.entitiesScoreObjectives.put(username, map);
              }
  
 @@ -111,7 +111,7 @@
  
-     public Collection<Score> func_96534_i(ScoreObjective p_96534_1_)
+     public Collection<Score> getSortedScores(ScoreObjective objective)
      {
 -        List<Score> list = Lists.newArrayList();
 +        List<Score> list = Lists.<Score>newArrayList();
  
-         for (Map<ScoreObjective, Score> map : this.field_96544_c.values())
+         for (Map<ScoreObjective, Score> map : this.entitiesScoreObjectives.values())
          {
 @@ -141,7 +141,7 @@
      {
-         if (p_178822_2_ == null)
+         if (objective == null)
          {
--            Map<ScoreObjective, Score> map = this.field_96544_c.remove(p_178822_1_);
-+            Map<ScoreObjective, Score> map = (Map)this.field_96544_c.remove(p_178822_1_);
+-            Map<ScoreObjective, Score> map = this.entitiesScoreObjectives.remove(name);
++            Map<ScoreObjective, Score> map = (Map)this.entitiesScoreObjectives.remove(name);
  
              if (map != null)
              {
@@ -84,8 +84,8 @@
          }
          else
          {
--            Map<ScoreObjective, Score> map2 = this.field_96544_c.get(p_178822_1_);
-+            Map<ScoreObjective, Score> map2 = (Map)this.field_96544_c.get(p_178822_1_);
+-            Map<ScoreObjective, Score> map2 = this.entitiesScoreObjectives.get(name);
++            Map<ScoreObjective, Score> map2 = (Map)this.entitiesScoreObjectives.get(name);
  
              if (map2 != null)
              {
@@ -93,15 +93,15 @@
  
                  if (map2.size() < 1)
                  {
--                    Map<ScoreObjective, Score> map1 = this.field_96544_c.remove(p_178822_1_);
-+                    Map<ScoreObjective, Score> map1 = (Map)this.field_96544_c.remove(p_178822_1_);
+-                    Map<ScoreObjective, Score> map1 = this.entitiesScoreObjectives.remove(name);
++                    Map<ScoreObjective, Score> map1 = (Map)this.entitiesScoreObjectives.remove(name);
  
                      if (map1 != null)
                      {
 @@ -176,7 +176,7 @@
-     public Collection<Score> func_96528_e()
+     public Collection<Score> getScores()
      {
-         Collection<Map<ScoreObjective, Score>> collection = this.field_96544_c.values();
+         Collection<Map<ScoreObjective, Score>> collection = this.entitiesScoreObjectives.values();
 -        List<Score> list = Lists.newArrayList();
 +        List<Score> list = Lists.<Score>newArrayList();
  
@@ -109,10 +109,10 @@
          {
 @@ -188,11 +188,11 @@
  
-     public Map<ScoreObjective, Score> func_96510_d(String p_96510_1_)
+     public Map<ScoreObjective, Score> getObjectivesForEntity(String name)
      {
--        Map<ScoreObjective, Score> map = this.field_96544_c.get(p_96510_1_);
-+        Map<ScoreObjective, Score> map = (Map)this.field_96544_c.get(p_96510_1_);
+-        Map<ScoreObjective, Score> map = this.entitiesScoreObjectives.get(name);
++        Map<ScoreObjective, Score> map = (Map)this.entitiesScoreObjectives.get(name);
  
          if (map == null)
          {
@@ -123,38 +123,38 @@
          return map;
 @@ -202,15 +202,15 @@
      {
-         this.field_96545_a.remove(p_96519_1_.func_96679_b());
+         this.scoreObjectives.remove(objective.getName());
  
 -        for (int i = 0; i < 19; i++)
 +        for (int i = 0; i < 19; ++i)
          {
-             if (this.func_96539_a(i) == p_96519_1_)
+             if (this.getObjectiveInDisplaySlot(i) == objective)
              {
--                this.func_96530_a(i, null);
-+                this.func_96530_a(i, (ScoreObjective)null);
+-                this.setObjectiveInDisplaySlot(i, null);
++                this.setObjectiveInDisplaySlot(i, (ScoreObjective)null);
              }
          }
  
--        List<ScoreObjective> list = this.field_96543_b.get(p_96519_1_.func_96680_c());
-+        List<ScoreObjective> list = (List)this.field_96543_b.get(p_96519_1_.func_96680_c());
+-        List<ScoreObjective> list = this.scoreObjectiveCriterias.get(objective.getCriteria());
++        List<ScoreObjective> list = (List)this.scoreObjectiveCriterias.get(objective.getCriteria());
  
          if (list != null)
          {
 @@ -445,7 +445,7 @@
          {
-             field_178823_g = new String[19];
+             displaySlots = new String[19];
  
 -            for (int i = 0; i < 19; i++)
 +            for (int i = 0; i < 19; ++i)
              {
-                 field_178823_g[i] = func_96517_b(i);
+                 displaySlots[i] = getObjectiveDisplaySlot(i);
              }
 @@ -459,7 +459,7 @@
-         if (p_181140_1_ != null && !(p_181140_1_ instanceof EntityPlayer) && !p_181140_1_.func_70089_S())
+         if (entityIn != null && !(entityIn instanceof EntityPlayer) && !entityIn.isEntityAlive())
          {
-             String s = p_181140_1_.func_189512_bd();
--            this.func_178822_d(s, null);
-+            this.func_178822_d(s, (ScoreObjective)null);
-             this.func_96524_g(s);
+             String s = entityIn.getCachedUniqueIdString();
+-            this.removeObjectiveFromEntity(s, null);
++            this.removeObjectiveFromEntity(s, (ScoreObjective)null);
+             this.removePlayerFromTeams(s);
          }
      }

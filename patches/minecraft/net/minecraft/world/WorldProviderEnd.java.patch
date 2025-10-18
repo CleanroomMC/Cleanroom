@@ -2,31 +2,31 @@
 +++ after/net/minecraft/world/WorldProviderEnd.java
 @@ -17,25 +17,18 @@
  {
-     private DragonFightManager field_186064_g;
+     private DragonFightManager dragonFightManager;
  
 -    @Override
-     public void func_76572_b()
+     public void init()
      {
-         this.field_76578_c = new BiomeProviderSingle(Biomes.field_76779_k);
--        NBTTagCompound nbttagcompound = this.field_76579_a.func_72912_H().func_186347_a(DimensionType.THE_END);
--        this.field_186064_g = this.field_76579_a instanceof WorldServer
--                              ? new DragonFightManager((WorldServer)this.field_76579_a, nbttagcompound.func_74775_l("DragonFight"))
+         this.biomeProvider = new BiomeProviderSingle(Biomes.SKY);
+-        NBTTagCompound nbttagcompound = this.world.getWorldInfo().getDimensionData(DimensionType.THE_END);
+-        this.dragonFightManager = this.world instanceof WorldServer
+-                              ? new DragonFightManager((WorldServer)this.world, nbttagcompound.getCompoundTag("DragonFight"))
 -                              : null;
-+        NBTTagCompound nbttagcompound = this.field_76579_a.func_72912_H().getDimensionData(this.field_76579_a.field_73011_w.getDimension());
-+        this.field_186064_g = this.field_76579_a instanceof WorldServer ? new DragonFightManager((WorldServer)this.field_76579_a, nbttagcompound.func_74775_l("DragonFight")) : null;
++        NBTTagCompound nbttagcompound = this.world.getWorldInfo().getDimensionData(this.world.provider.getDimension());
++        this.dragonFightManager = this.world instanceof WorldServer ? new DragonFightManager((WorldServer)this.world, nbttagcompound.getCompoundTag("DragonFight")) : null;
      }
  
 -    @Override
-     public IChunkGenerator func_186060_c()
+     public IChunkGenerator createChunkGenerator()
      {
 -        return new ChunkGeneratorEnd(
--                   this.field_76579_a, this.field_76579_a.func_72912_H().func_76089_r(), this.field_76579_a.func_72905_C(), this.func_177496_h()
+-                   this.world, this.world.getWorldInfo().isMapFeaturesEnabled(), this.world.getSeed(), this.getSpawnCoordinate()
 -               );
-+        return new ChunkGeneratorEnd(this.field_76579_a, this.field_76579_a.func_72912_H().func_76089_r(), this.field_76579_a.func_72905_C(), this.func_177496_h());
++        return new ChunkGeneratorEnd(this.world, this.world.getWorldInfo().isMapFeaturesEnabled(), this.world.getSeed(), this.getSpawnCoordinate());
      }
  
 -    @Override
-     public float func_76563_a(long p_76563_1_, float p_76563_3_)
+     public float calculateCelestialAngle(long worldTime, float partialTicks)
      {
          return 0.0F;
 @@ -43,86 +36,74 @@
@@ -34,19 +34,19 @@
      @Nullable
      @SideOnly(Side.CLIENT)
 -    @Override
-     public float[] func_76560_a(float p_76560_1_, float p_76560_2_)
+     public float[] calcSunriseSunsetColors(float celestialAngle, float partialTicks)
      {
          return null;
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public Vec3d func_76562_b(float p_76562_1_, float p_76562_2_)
+     public Vec3d getFogColor(float p_76562_1_, float p_76562_2_)
      {
          int i = 10518688;
--        float f = MathHelper.func_76134_b(p_76562_1_ * (float)(Math.PI * 2)) * 2.0F + 0.5F;
-+        float f = MathHelper.func_76134_b(p_76562_1_ * ((float)Math.PI * 2F)) * 2.0F + 0.5F;
-         f = MathHelper.func_76131_a(f, 0.0F, 1.0F);
+-        float f = MathHelper.cos(p_76562_1_ * (float)(Math.PI * 2)) * 2.0F + 0.5F;
++        float f = MathHelper.cos(p_76562_1_ * ((float)Math.PI * 2F)) * 2.0F + 0.5F;
+         f = MathHelper.clamp(f, 0.0F, 1.0F);
          float f1 = 0.627451F;
          float f2 = 0.5019608F;
          float f3 = 0.627451F;
@@ -61,98 +61,98 @@
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public boolean func_76561_g()
+     public boolean isSkyColored()
      {
          return false;
      }
  
 -    @Override
-     public boolean func_76567_e()
+     public boolean canRespawnHere()
      {
          return false;
      }
  
 -    @Override
-     public boolean func_76569_d()
+     public boolean isSurfaceWorld()
      {
          return false;
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public float func_76571_f()
+     public float getCloudHeight()
      {
          return 8.0F;
      }
  
 -    @Override
-     public boolean func_76566_a(int p_76566_1_, int p_76566_2_)
+     public boolean canCoordinateBeSpawn(int x, int z)
      {
-         return this.field_76579_a.func_184141_c(new BlockPos(p_76566_1_, 0, p_76566_2_)).func_185904_a().func_76230_c();
+         return this.world.getGroundAboveSeaLevel(new BlockPos(x, 0, z)).getMaterial().blocksMovement();
      }
  
 -    @Override
-     public BlockPos func_177496_h()
+     public BlockPos getSpawnCoordinate()
      {
          return new BlockPos(100, 50, 0);
      }
  
 -    @Override
-     public int func_76557_i()
+     public int getAverageGroundLevel()
      {
          return 50;
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public boolean func_76568_b(int p_76568_1_, int p_76568_2_)
+     public boolean doesXZShowFog(int x, int z)
      {
          return false;
      }
  
 -    @Override
-     public DimensionType func_186058_p()
+     public DimensionType getDimensionType()
      {
          return DimensionType.THE_END;
      }
  
 -    @Override
-     public void func_186057_q()
+     public void onWorldSave()
      {
          NBTTagCompound nbttagcompound = new NBTTagCompound();
 @@ -132,10 +113,9 @@
-             nbttagcompound.func_74782_a("DragonFight", this.field_186064_g.func_186088_a());
+             nbttagcompound.setTag("DragonFight", this.dragonFightManager.getCompound());
          }
  
--        this.field_76579_a.func_72912_H().func_186345_a(DimensionType.THE_END, nbttagcompound);
-+        this.field_76579_a.func_72912_H().setDimensionData(this.field_76579_a.field_73011_w.getDimension(), nbttagcompound);
+-        this.world.getWorldInfo().setDimensionData(DimensionType.THE_END, nbttagcompound);
++        this.world.getWorldInfo().setDimensionData(this.world.provider.getDimension(), nbttagcompound);
      }
  
 -    @Override
-     public void func_186059_r()
+     public void onWorldUpdateEntities()
      {
-         if (this.field_186064_g != null)
+         if (this.dragonFightManager != null)
 @@ -148,5 +128,23 @@
-     public DragonFightManager func_186063_s()
+     public DragonFightManager getDragonFightManager()
      {
-         return this.field_186064_g;
+         return this.dragonFightManager;
 +    }
 +
 +    @Override
-+    public void func_186061_a(net.minecraft.entity.player.EntityPlayerMP player)
++    public void onPlayerAdded(net.minecraft.entity.player.EntityPlayerMP player)
 +    {
-+        if (this.field_186064_g != null)
++        if (this.dragonFightManager != null)
 +        {
-+            this.field_186064_g.addPlayer(player);
++            this.dragonFightManager.addPlayer(player);
 +        }
 +    }
 +
 +    @Override
-+    public void func_186062_b(net.minecraft.entity.player.EntityPlayerMP player)
++    public void onPlayerRemoved(net.minecraft.entity.player.EntityPlayerMP player)
 +    {
-+        if (this.field_186064_g != null)
++        if (this.dragonFightManager != null)
 +        {
-+            this.field_186064_g.removePlayer(player);
++            this.dragonFightManager.removePlayer(player);
 +        }
      }
  }

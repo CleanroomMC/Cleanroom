@@ -1,30 +1,30 @@
 --- before/net/minecraft/entity/projectile/EntitySmallFireball.java
 +++ after/net/minecraft/entity/projectile/EntitySmallFireball.java
 @@ -23,9 +23,7 @@
-         this.func_70105_a(0.3125F, 0.3125F);
+         this.setSize(0.3125F, 0.3125F);
      }
  
 -    public EntitySmallFireball(
--        World p_i1772_1_, double p_i1772_2_, double p_i1772_4_, double p_i1772_6_, double p_i1772_8_, double p_i1772_10_, double p_i1772_12_
+-        World worldIn, double x, double y, double z, double accelX, double accelY, double accelZ
 -    )
-+    public EntitySmallFireball(World p_i1772_1_, double p_i1772_2_, double p_i1772_4_, double p_i1772_6_, double p_i1772_8_, double p_i1772_10_, double p_i1772_12_)
++    public EntitySmallFireball(World worldIn, double x, double y, double z, double accelX, double accelY, double accelZ)
      {
-         super(p_i1772_1_, p_i1772_2_, p_i1772_4_, p_i1772_6_, p_i1772_8_, p_i1772_10_, p_i1772_12_);
-         this.func_70105_a(0.3125F, 0.3125F);
+         super(worldIn, x, y, z, accelX, accelY, accelZ);
+         this.setSize(0.3125F, 0.3125F);
 @@ -36,7 +34,6 @@
-         EntityFireball.func_189743_a(p_189745_0_, "SmallFireball");
+         EntityFireball.registerFixesFireball(fixer, "SmallFireball");
      }
  
 -    @Override
-     protected void func_70227_a(RayTraceResult p_70227_1_)
+     protected void onImpact(RayTraceResult result)
      {
-         if (!this.field_70170_p.field_72995_K)
+         if (!this.world.isRemote)
 @@ -60,7 +57,7 @@
  
-                 if (this.field_70235_a != null && this.field_70235_a instanceof EntityLiving)
+                 if (this.shootingEntity != null && this.shootingEntity instanceof EntityLiving)
                  {
--                    flag1 = this.field_70170_p.func_82736_K().func_82766_b("mobGriefing");
-+                    flag1 = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.field_70170_p, this.field_70235_a);
+-                    flag1 = this.world.getGameRules().getBoolean("mobGriefing");
++                    flag1 = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity);
                  }
  
                  if (flag1)
@@ -33,12 +33,12 @@
      }
  
 -    @Override
-     public boolean func_70067_L()
+     public boolean canBeCollidedWith()
      {
          return false;
      }
  
 -    @Override
-     public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
+     public boolean attackEntityFrom(DamageSource source, float amount)
      {
          return false;

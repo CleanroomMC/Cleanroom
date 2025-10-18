@@ -28,7 +28,7 @@
 -            @Override
              public void windowClosing(WindowEvent p_windowClosing_1_)
              {
-                 p_120016_0_.func_71263_m();
+                 serverIn.initiateShutdown();
 @@ -75,6 +76,7 @@
                  System.exit(0);
              }
@@ -36,7 +36,7 @@
 +        minecraftservergui.latch.countDown();
      }
  
-     public MinecraftServerGui(DedicatedServer p_i2362_1_)
+     public MinecraftServerGui(DedicatedServer serverIn)
 @@ -121,7 +123,6 @@
          final JTextField jtextfield = new JTextField();
          jtextfield.addActionListener(new ActionListener()
@@ -66,7 +66,7 @@
      }
  
 +    private java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
-     public void func_164247_a(final JTextArea p_164247_1_, final JScrollPane p_164247_2_, final String p_164247_3_)
+     public void appendLine(final JTextArea textArea, final JScrollPane scrollPane, final String line)
      {
 +        try
 +        {
@@ -79,13 +79,13 @@
 -                @Override
                  public void run()
                  {
-                     MinecraftServerGui.this.func_164247_a(p_164247_1_, p_164247_2_, p_164247_3_);
+                     MinecraftServerGui.this.appendLine(textArea, scrollPane, line);
 @@ -188,7 +191,7 @@
  
              try
              {
--                document.insertString(document.getLength(), p_164247_3_, null);
-+                document.insertString(document.getLength(), p_164247_3_, (AttributeSet)null);
+-                document.insertString(document.getLength(), line, null);
++                document.insertString(document.getLength(), line, (AttributeSet)null);
              }
              catch (BadLocationException badlocationexception)
              {

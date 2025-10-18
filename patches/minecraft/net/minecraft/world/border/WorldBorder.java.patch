@@ -4,129 +4,129 @@
  
  public class WorldBorder
  {
--    private final List<IBorderListener> field_177758_a = Lists.newArrayList();
-+    private final List<IBorderListener> field_177758_a = Lists.<IBorderListener>newArrayList();
-     private double field_177756_b;
-     private double field_177757_c;
--    private double field_177754_d = 6.0E7;
--    private double field_177755_e = this.field_177754_d;
-+    private double field_177754_d = 6.0E7D;
-+    private double field_177755_e;
-     private long field_177752_f;
-     private long field_177753_g;
--    private int field_177762_h = 29999984;
--    private double field_177763_i = 0.2;
--    private double field_177760_j = 5.0;
--    private int field_177761_k = 15;
--    private int field_177759_l = 5;
-+    private int field_177762_h;
-+    private double field_177763_i;
-+    private double field_177760_j;
-+    private int field_177761_k;
-+    private int field_177759_l;
+-    private final List<IBorderListener> listeners = Lists.newArrayList();
++    private final List<IBorderListener> listeners = Lists.<IBorderListener>newArrayList();
+     private double centerX;
+     private double centerZ;
+-    private double startDiameter = 6.0E7;
+-    private double endDiameter = this.startDiameter;
++    private double startDiameter = 6.0E7D;
++    private double endDiameter;
+     private long endTime;
+     private long startTime;
+-    private int worldSize = 29999984;
+-    private double damageAmount = 0.2;
+-    private double damageBuffer = 5.0;
+-    private int warningTime = 15;
+-    private int warningDistance = 5;
++    private int worldSize;
++    private double damageAmount;
++    private double damageBuffer;
++    private int warningTime;
++    private int warningDistance;
 +
 +    public WorldBorder()
 +    {
-+        this.field_177755_e = this.field_177754_d;
-+        this.field_177762_h = 29999984;
-+        this.field_177763_i = 0.2D;
-+        this.field_177760_j = 5.0D;
-+        this.field_177761_k = 15;
-+        this.field_177759_l = 5;
++        this.endDiameter = this.startDiameter;
++        this.worldSize = 29999984;
++        this.damageAmount = 0.2D;
++        this.damageBuffer = 5.0D;
++        this.warningTime = 15;
++        this.warningDistance = 5;
 +    }
  
-     public boolean func_177746_a(BlockPos p_177746_1_)
+     public boolean contains(BlockPos pos)
      {
--        return (double)(p_177746_1_.func_177958_n() + 1) > this.func_177726_b()
--               && (double)p_177746_1_.func_177958_n() < this.func_177728_d()
--               && (double)(p_177746_1_.func_177952_p() + 1) > this.func_177736_c()
--               && (double)p_177746_1_.func_177952_p() < this.func_177733_e();
-+        return (double)(p_177746_1_.func_177958_n() + 1) > this.func_177726_b() && (double)p_177746_1_.func_177958_n() < this.func_177728_d() && (double)(p_177746_1_.func_177952_p() + 1) > this.func_177736_c() && (double)p_177746_1_.func_177952_p() < this.func_177733_e();
+-        return (double)(pos.getX() + 1) > this.minX()
+-               && (double)pos.getX() < this.maxX()
+-               && (double)(pos.getZ() + 1) > this.minZ()
+-               && (double)pos.getZ() < this.maxZ();
++        return (double)(pos.getX() + 1) > this.minX() && (double)pos.getX() < this.maxX() && (double)(pos.getZ() + 1) > this.minZ() && (double)pos.getZ() < this.maxZ();
      }
  
-     public boolean func_177730_a(ChunkPos p_177730_1_)
+     public boolean contains(ChunkPos range)
      {
--        return (double)p_177730_1_.func_180332_e() > this.func_177726_b()
--               && (double)p_177730_1_.func_180334_c() < this.func_177728_d()
--               && (double)p_177730_1_.func_180330_f() > this.func_177736_c()
--               && (double)p_177730_1_.func_180333_d() < this.func_177733_e();
-+        return (double)p_177730_1_.func_180332_e() > this.func_177726_b() && (double)p_177730_1_.func_180334_c() < this.func_177728_d() && (double)p_177730_1_.func_180330_f() > this.func_177736_c() && (double)p_177730_1_.func_180333_d() < this.func_177733_e();
+-        return (double)range.getXEnd() > this.minX()
+-               && (double)range.getXStart() < this.maxX()
+-               && (double)range.getZEnd() > this.minZ()
+-               && (double)range.getZStart() < this.maxZ();
++        return (double)range.getXEnd() > this.minX() && (double)range.getXStart() < this.maxX() && (double)range.getZEnd() > this.minZ() && (double)range.getZStart() < this.maxZ();
      }
  
-     public boolean func_177743_a(AxisAlignedBB p_177743_1_)
+     public boolean contains(AxisAlignedBB bb)
      {
--        return p_177743_1_.field_72336_d > this.func_177726_b()
--               && p_177743_1_.field_72340_a < this.func_177728_d()
--               && p_177743_1_.field_72334_f > this.func_177736_c()
--               && p_177743_1_.field_72339_c < this.func_177733_e();
-+        return p_177743_1_.field_72336_d > this.func_177726_b() && p_177743_1_.field_72340_a < this.func_177728_d() && p_177743_1_.field_72334_f > this.func_177736_c() && p_177743_1_.field_72339_c < this.func_177733_e();
+-        return bb.maxX > this.minX()
+-               && bb.minX < this.maxX()
+-               && bb.maxZ > this.minZ()
+-               && bb.minZ < this.maxZ();
++        return bb.maxX > this.minX() && bb.minX < this.maxX() && bb.maxZ > this.minZ() && bb.minZ < this.maxZ();
      }
  
-     public double func_177745_a(Entity p_177745_1_)
+     public double getClosestDistance(Entity entityIn)
 @@ -78,7 +79,7 @@
  
-     public double func_177726_b()
+     public double minX()
      {
--        double d0 = this.func_177731_f() - this.func_177741_h() / 2.0;
-+        double d0 = this.func_177731_f() - this.func_177741_h() / 2.0D;
+-        double d0 = this.getCenterX() - this.getDiameter() / 2.0;
++        double d0 = this.getCenterX() - this.getDiameter() / 2.0D;
  
-         if (d0 < (double)(-this.field_177762_h))
+         if (d0 < (double)(-this.worldSize))
          {
 @@ -90,7 +91,7 @@
  
-     public double func_177736_c()
+     public double minZ()
      {
--        double d0 = this.func_177721_g() - this.func_177741_h() / 2.0;
-+        double d0 = this.func_177721_g() - this.func_177741_h() / 2.0D;
+-        double d0 = this.getCenterZ() - this.getDiameter() / 2.0;
++        double d0 = this.getCenterZ() - this.getDiameter() / 2.0D;
  
-         if (d0 < (double)(-this.field_177762_h))
+         if (d0 < (double)(-this.worldSize))
          {
 @@ -102,7 +103,7 @@
  
-     public double func_177728_d()
+     public double maxX()
      {
--        double d0 = this.func_177731_f() + this.func_177741_h() / 2.0;
-+        double d0 = this.func_177731_f() + this.func_177741_h() / 2.0D;
+-        double d0 = this.getCenterX() + this.getDiameter() / 2.0;
++        double d0 = this.getCenterX() + this.getDiameter() / 2.0D;
  
-         if (d0 > (double)this.field_177762_h)
+         if (d0 > (double)this.worldSize)
          {
 @@ -114,7 +115,7 @@
  
-     public double func_177733_e()
+     public double maxZ()
      {
--        double d0 = this.func_177721_g() + this.func_177741_h() / 2.0;
-+        double d0 = this.func_177721_g() + this.func_177741_h() / 2.0D;
+-        double d0 = this.getCenterZ() + this.getDiameter() / 2.0;
++        double d0 = this.getCenterZ() + this.getDiameter() / 2.0D;
  
-         if (d0 > (double)this.field_177762_h)
+         if (d0 > (double)this.worldSize)
          {
 @@ -151,7 +152,7 @@
          {
-             double d0 = (double)((float)(System.currentTimeMillis() - this.field_177753_g) / (float)(this.field_177752_f - this.field_177753_g));
+             double d0 = (double)((float)(System.currentTimeMillis() - this.startTime) / (float)(this.endTime - this.startTime));
  
 -            if (!(d0 >= 1.0))
 +            if (d0 < 1.0D)
              {
-                 return this.field_177754_d + (this.field_177755_e - this.field_177754_d) * d0;
+                 return this.startDiameter + (this.endDiameter - this.startDiameter) * d0;
              }
 @@ -251,9 +252,7 @@
      @SideOnly(Side.CLIENT)
-     public double func_177749_o()
+     public double getResizeSpeed()
      {
--        return this.field_177752_f == this.field_177753_g
+-        return this.endTime == this.startTime
 -               ? 0.0
--               : Math.abs(this.field_177754_d - this.field_177755_e) / (double)(this.field_177752_f - this.field_177753_g);
-+        return this.field_177752_f == this.field_177753_g ? 0.0D : Math.abs(this.field_177754_d - this.field_177755_e) / (double)(this.field_177752_f - this.field_177753_g);
+-               : Math.abs(this.startDiameter - this.endDiameter) / (double)(this.endTime - this.startTime);
++        return this.endTime == this.startTime ? 0.0D : Math.abs(this.startDiameter - this.endDiameter) / (double)(this.endTime - this.startTime);
      }
  
-     public int func_177740_p()
+     public int getWarningTime()
 @@ -284,5 +283,10 @@
          {
-             iborderlistener.func_177690_b(this, p_177747_1_);
+             iborderlistener.onWarningDistanceChanged(this, warningDistance);
          }
 +    }
 +
 +    public void removeListener(IBorderListener listener)
 +    {
-+        this.field_177758_a.remove(listener);
++        this.listeners.remove(listener);
      }
  }

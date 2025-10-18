@@ -13,24 +13,24 @@
  import net.minecraft.util.text.TextFormatting;
  import net.minecraftforge.fml.relauncher.Side;
 @@ -17,94 +19,111 @@
-         return !p_178909_1_ && !Minecraft.func_71410_x().field_71474_y.field_74344_o ? TextFormatting.func_110646_a(p_178909_0_) : p_178909_0_;
+         return !forceColor && !Minecraft.getMinecraft().gameSettings.chatColours ? TextFormatting.getTextWithoutFormattingCodes(text) : text;
      }
  
--    public static List<ITextComponent> func_178908_a(
--            ITextComponent p_178908_0_, int p_178908_1_, FontRenderer p_178908_2_, boolean p_178908_3_, boolean p_178908_4_
+-    public static List<ITextComponent> splitText(
+-            ITextComponent textComponent, int maxTextLenght, FontRenderer fontRendererIn, boolean p_178908_3_, boolean forceTextColor
 -        )
-+    public static List<ITextComponent> func_178908_a(ITextComponent p_178908_0_, int p_178908_1_, FontRenderer p_178908_2_, boolean p_178908_3_, boolean p_178908_4_)
++    public static List<ITextComponent> splitText(ITextComponent textComponent, int maxTextLenght, FontRenderer fontRendererIn, boolean p_178908_3_, boolean forceTextColor)
      {
 -        int i = 0;
 -        ITextComponent itextcomponent = new TextComponentString("");
 +        int accumlateWidth = 0;
          List<ITextComponent> list = Lists.newArrayList();
--        List<ITextComponent> list1 = Lists.newArrayList(p_178908_0_);
+-        List<ITextComponent> list1 = Lists.newArrayList(textComponent);
 -
 -        for (int j = 0; j < list1.size(); j++)
 -        {
 -            ITextComponent itextcomponent1 = list1.get(j);
--            String s = itextcomponent1.func_150261_e();
+-            String s = itextcomponent1.getUnformattedComponentText();
 -            boolean flag = false;
 -
 -            if (s.contains("\n"))
@@ -39,40 +39,40 @@
 -                String s1 = s.substring(k + 1);
 -                s = s.substring(0, k + 1);
 -                ITextComponent itextcomponent2 = new TextComponentString(s1);
--                itextcomponent2.func_150255_a(itextcomponent1.func_150256_b().func_150232_l());
+-                itextcomponent2.setStyle(itextcomponent1.getStyle().createShallowCopy());
 -                list1.add(j + 1, itextcomponent2);
 -                flag = true;
 +        List<String> cache = Lists.newArrayList();
 +        List<Style> styleCache = Lists.newArrayList();
 +        List<Boolean> newLineCache = Lists.newArrayList();
-+        List<ITextComponent> originList = Lists.newArrayList(p_178908_0_);
++        List<ITextComponent> originList = Lists.newArrayList(textComponent);
 +        int j;
 +        boolean wrapped;
 +        for (j = 0; j < originList.size(); ++j) {
 +            ITextComponent originLine = originList.get(j);
-+            String unformattedOriginLine = originLine.func_150261_e();
++            String unformattedOriginLine = originLine.getUnformattedComponentText();
 +
 +            if (unformattedOriginLine.contains("\n")) {
 +                int k = unformattedOriginLine.indexOf('\n');
 +                String stringAfter = unformattedOriginLine.substring(k + 1);
 +                unformattedOriginLine = unformattedOriginLine.substring(0, k + 1);
 +                ITextComponent textAfterN = new TextComponentString(stringAfter);
-+                textAfterN.func_150255_a(originLine.func_150256_b().func_150232_l());
++                textAfterN.setStyle(originLine.getStyle().createShallowCopy());
 +                originList.add(j + 1, textAfterN);
 +                wrapped = true;
 +            } else {
 +                wrapped = false;
              }
  
--            String s4 = func_178909_a(itextcomponent1.func_150256_b().func_150218_j() + s, p_178908_4_);
+-            String s4 = removeTextColorsIfConfigured(itextcomponent1.getStyle().getFormattingCode() + s, forceTextColor);
 -            String s5 = s4.endsWith("\n") ? s4.substring(0, s4.length() - 1) : s4;
--            int i1 = p_178908_2_.func_78256_a(s5);
+-            int i1 = fontRendererIn.getStringWidth(s5);
 -            TextComponentString textcomponentstring = new TextComponentString(s5);
--            textcomponentstring.func_150255_a(itextcomponent1.func_150256_b().func_150232_l());
-+            String rebuiltOriginLine = func_178909_a(originLine.func_150256_b().func_150218_j() + unformattedOriginLine, p_178908_4_);
+-            textcomponentstring.setStyle(itextcomponent1.getStyle().createShallowCopy());
++            String rebuiltOriginLine = removeTextColorsIfConfigured(originLine.getStyle().getFormattingCode() + unformattedOriginLine, forceTextColor);
 +            String cleanedLine = rebuiltOriginLine.endsWith("\n") ? rebuiltOriginLine.substring(0, rebuiltOriginLine.length() - 1) : rebuiltOriginLine;
 +            cache.add(cleanedLine);
-+            styleCache.add(originLine.func_150256_b());
++            styleCache.add(originLine.getStyle());
 +            newLineCache.add(wrapped);
 +        }
 +        BreakIteratorHolder.BREAK_ITERATOR.setText(String.join("\n", cache));
@@ -84,19 +84,19 @@
 +            cleanedLine = cache.get(j);
 +            style = styleCache.get(j);
 +            wrapped = newLineCache.get(j);
-+            int lineWidth = p_178908_2_.func_78256_a(cleanedLine);
++            int lineWidth = fontRendererIn.getStringWidth(cleanedLine);
 +            TextComponentString line = new TextComponentString(cleanedLine);
-+            line.func_150255_a(style.func_150232_l());
++            line.setStyle(style.createShallowCopy());
  
--            if (i + i1 > p_178908_1_)
-+            if (accumlateWidth + lineWidth > p_178908_1_)
+-            if (i + i1 > maxTextLenght)
++            if (accumlateWidth + lineWidth > maxTextLenght)
              {
--                String s2 = p_178908_2_.func_78262_a(s4, p_178908_1_ - i, false);
+-                String s2 = fontRendererIn.trimStringToWidth(s4, maxTextLenght - i, false);
 -                String s3 = s2.length() < s4.length() ? s4.substring(s2.length()) : null;
 -
 -                if (s3 != null && !s3.isEmpty())
 +
-+                String firstHalf = p_178908_2_.func_78262_a(cleanedLine, p_178908_1_ - accumlateWidth, false);
++                String firstHalf = fontRendererIn.trimStringToWidth(cleanedLine, maxTextLenght - accumlateWidth, false);
 +                String secondHalf = firstHalf.length() < cleanedLine.length() ? cleanedLine.substring(firstHalf.length()) : null;
 +
 +                if (secondHalf != null)
@@ -104,8 +104,8 @@
 -                    int l = s2.lastIndexOf(32);
 +                    int l = BreakIteratorHolder.BREAK_ITERATOR.preceding(fed + firstHalf.length()) - fed;
  
--                    if (l >= 0 && p_178908_2_.func_78256_a(s4.substring(0, l)) > 0)
-+                    if (l >= 0 && p_178908_2_.func_78256_a(cleanedLine.substring(0, l)) > 0)
+-                    if (l >= 0 && fontRendererIn.getStringWidth(s4.substring(0, l)) > 0)
++                    if (l >= 0 && fontRendererIn.getStringWidth(cleanedLine.substring(0, l)) > 0)
                      {
 -                        s2 = s4.substring(0, l);
 +                        firstHalf = cleanedLine.substring(0, l);
@@ -130,33 +130,33 @@
                      }
  
 -                    TextComponentString textcomponentstring1 = new TextComponentString(s3);
--                    textcomponentstring1.func_150255_a(itextcomponent1.func_150256_b().func_150232_l());
+-                    textcomponentstring1.setStyle(itextcomponent1.getStyle().createShallowCopy());
 -                    list1.add(j + 1, textcomponentstring1);
-+                    secondHalf = FontRenderer.func_78282_e(firstHalf) + secondHalf; //Forge: Fix chat formatting not surviving line wrapping.
++                    secondHalf = FontRenderer.getFormatFromString(firstHalf) + secondHalf; //Forge: Fix chat formatting not surviving line wrapping.
 +
 +                    cache.set(j, secondHalf);
 +                    j--;
                  }
  
--                i1 = p_178908_2_.func_78256_a(s2);
+-                i1 = fontRendererIn.getStringWidth(s2);
 -                textcomponentstring = new TextComponentString(s2);
--                textcomponentstring.func_150255_a(itextcomponent1.func_150256_b().func_150232_l());
+-                textcomponentstring.setStyle(itextcomponent1.getStyle().createShallowCopy());
 -                flag = true;
-+                lineWidth = p_178908_2_.func_78256_a(firstHalf);
++                lineWidth = fontRendererIn.getStringWidth(firstHalf);
 +                line = new TextComponentString(firstHalf);
-+                line.func_150255_a(style.func_150232_l());
++                line.setStyle(style.createShallowCopy());
 +                wrapped = true;
              }
  
--            if (i + i1 <= p_178908_1_)
+-            if (i + i1 <= maxTextLenght)
 +
-+            if (accumlateWidth + lineWidth <= p_178908_1_)
++            if (accumlateWidth + lineWidth <= maxTextLenght)
              {
 -                i += i1;
--                itextcomponent.func_150257_a(textcomponentstring);
+-                itextcomponent.appendSibling(textcomponentstring);
 +                accumlateWidth += lineWidth;
-+                lineToAdd.func_150257_a(line);
-+                fed += line.func_150265_g().length();
++                lineToAdd.appendSibling(line);
++                fed += line.getText().length();
              }
              else
              {

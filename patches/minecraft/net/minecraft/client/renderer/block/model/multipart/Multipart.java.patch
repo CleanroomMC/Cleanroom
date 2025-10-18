@@ -2,15 +2,15 @@
 +++ after/net/minecraft/client/renderer/block/model/multipart/Multipart.java
 @@ -33,7 +33,7 @@
  
-     public Set<VariantList> func_188137_b()
+     public Set<VariantList> getVariants()
      {
 -        Set<VariantList> set = Sets.newHashSet();
 +        Set<VariantList> set = Sets.<VariantList>newHashSet();
  
-         for (Selector selector : this.field_188139_a)
+         for (Selector selector : this.selectors)
          {
 @@ -53,7 +53,6 @@
-         return this.field_188140_b;
+         return this.stateContainer;
      }
  
 -    @Override
@@ -24,18 +24,18 @@
 -    @Override
      public int hashCode()
      {
-         return 31 * this.field_188139_a.hashCode() + (this.field_188140_b == null ? 0 : this.field_188140_b.hashCode());
+         return 31 * this.selectors.hashCode() + (this.stateContainer == null ? 0 : this.stateContainer.hashCode());
 @@ -97,11 +95,11 @@
  
-             private List<Selector> func_188133_a(JsonDeserializationContext p_188133_1_, JsonArray p_188133_2_)
+             private List<Selector> getSelectors(JsonDeserializationContext context, JsonArray elements)
              {
 -                List<Selector> list = Lists.newArrayList();
 +                List<Selector> list = Lists.<Selector>newArrayList();
  
-                 for (JsonElement jsonelement : p_188133_2_)
+                 for (JsonElement jsonelement : elements)
                  {
--                    list.add(p_188133_1_.deserialize(jsonelement, Selector.class));
-+                    list.add((Selector)p_188133_1_.deserialize(jsonelement, Selector.class));
+-                    list.add(context.deserialize(jsonelement, Selector.class));
++                    list.add((Selector)context.deserialize(jsonelement, Selector.class));
                  }
  
                  return list;

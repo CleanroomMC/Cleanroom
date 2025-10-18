@@ -1,49 +1,49 @@
 --- before/net/minecraft/entity/ai/EntityAIBreakDoor.java
 +++ after/net/minecraft/entity/ai/EntityAIBreakDoor.java
 @@ -15,43 +15,55 @@
-         super(p_i1618_1_);
+         super(entityIn);
      }
  
 -    @Override
-     public boolean func_75250_a()
+     public boolean shouldExecute()
      {
-         if (!super.func_75250_a())
+         if (!super.shouldExecute())
          {
              return false;
          }
-+        else if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.field_75356_a.field_70170_p, this.field_75356_a) || !this.field_75356_a.field_70170_p.func_180495_p(this.field_179507_b).func_177230_c().canEntityDestroy(this.field_75356_a.field_70170_p.func_180495_p(this.field_179507_b), this.field_75356_a.field_70170_p, this.field_179507_b, this.field_75356_a) || !net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(this.field_75356_a, this.field_179507_b, this.field_75356_a.field_70170_p.func_180495_p(this.field_179507_b)))
++        else if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.entity.world, this.entity) || !this.entity.world.getBlockState(this.doorPosition).getBlock().canEntityDestroy(this.entity.world.getBlockState(this.doorPosition), this.entity.world, this.doorPosition, this.entity) || !net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(this.entity, this.doorPosition, this.entity.world.getBlockState(this.doorPosition)))
 +        {
 +            return false;
 +        }
          else
          {
--            return !this.field_75356_a.field_70170_p.func_82736_K().func_82766_b("mobGriefing")
+-            return !this.entity.world.getGameRules().getBoolean("mobGriefing")
 -                   ? false
--                   : !BlockDoor.func_176514_f(this.field_75356_a.field_70170_p, this.field_179507_b);
-+            BlockDoor blockdoor = this.field_151504_e;
-+            return !BlockDoor.func_176514_f(this.field_75356_a.field_70170_p, this.field_179507_b);
+-                   : !BlockDoor.isOpen(this.entity.world, this.doorPosition);
++            BlockDoor blockdoor = this.doorBlock;
++            return !BlockDoor.isOpen(this.entity.world, this.doorPosition);
          }
      }
  
 -    @Override
-     public void func_75249_e()
+     public void startExecuting()
      {
-         super.func_75249_e();
-         this.field_75359_i = 0;
+         super.startExecuting();
+         this.breakingTime = 0;
      }
  
 -    @Override
-     public boolean func_75253_b()
+     public boolean shouldContinueExecuting()
      {
-         double d0 = this.field_75356_a.func_174818_b(this.field_179507_b);
--        return this.field_75359_i <= 240 && !BlockDoor.func_176514_f(this.field_75356_a.field_70170_p, this.field_179507_b) && d0 < 4.0;
+         double d0 = this.entity.getDistanceSq(this.doorPosition);
+-        return this.breakingTime <= 240 && !BlockDoor.isOpen(this.entity.world, this.doorPosition) && d0 < 4.0;
 +        boolean flag;
 +
-+        if (this.field_75359_i <= 240)
++        if (this.breakingTime <= 240)
 +        {
-+            BlockDoor blockdoor = this.field_151504_e;
++            BlockDoor blockdoor = this.doorBlock;
 +
-+            if (!BlockDoor.func_176514_f(this.field_75356_a.field_70170_p, this.field_179507_b) && d0 < 4.0D)
++            if (!BlockDoor.isOpen(this.entity.world, this.doorPosition) && d0 < 4.0D)
 +            {
 +                flag = true;
 +                return flag;
@@ -55,22 +55,22 @@
      }
  
 -    @Override
-     public void func_75251_c()
+     public void resetTask()
      {
-         super.func_75251_c();
-         this.field_75356_a.field_70170_p.func_175715_c(this.field_75356_a.func_145782_y(), this.field_179507_b, -1);
+         super.resetTask();
+         this.entity.world.sendBlockBreakProgress(this.entity.getEntityId(), this.doorPosition, -1);
      }
  
 -    @Override
-     public void func_75246_d()
+     public void updateTask()
      {
-         super.func_75246_d();
+         super.updateTask();
 @@ -61,7 +73,7 @@
-             this.field_75356_a.field_70170_p.func_175718_b(1019, this.field_179507_b, 0);
+             this.entity.world.playEvent(1019, this.doorPosition, 0);
          }
  
--        this.field_75359_i++;
-+        ++this.field_75359_i;
-         int i = (int)((float)this.field_75359_i / 240.0F * 10.0F);
+-        this.breakingTime++;
++        ++this.breakingTime;
+         int i = (int)((float)this.breakingTime / 240.0F * 10.0F);
  
-         if (i != this.field_75358_j)
+         if (i != this.previousBreakProgress)

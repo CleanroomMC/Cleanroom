@@ -2,12 +2,12 @@
 +++ after/net/minecraft/network/PacketBuffer.java
 @@ -42,7 +42,7 @@
  
-     public static int func_150790_a(int p_150790_0_)
+     public static int getVarIntSize(int input)
      {
 -        for (int i = 1; i < 5; i++)
 +        for (int i = 1; i < 5; ++i)
          {
-             if ((p_150790_0_ & -1 << i * 7) == 0)
+             if ((input & -1 << i * 7) == 0)
              {
 @@ -110,7 +110,7 @@
          {
@@ -16,26 +16,26 @@
 -            for (int j = 0; j < aint.length; j++)
 +            for (int j = 0; j < aint.length; ++j)
              {
-                 aint[j] = this.func_150792_a();
+                 aint[j] = this.readVarInt();
              }
 @@ -152,7 +152,7 @@
-             p_189423_1_ = new long[i];
+             array = new long[i];
          }
  
--        for (int j = 0; j < p_189423_1_.length; j++)
-+        for (int j = 0; j < p_189423_1_.length; ++j)
+-        for (int j = 0; j < array.length; j++)
++        for (int j = 0; j < array.length; ++j)
          {
-             p_189423_1_[j] = this.readLong();
+             array[j] = this.readLong();
          }
 @@ -183,7 +183,7 @@
  
-     public <T extends Enum<T>> T func_179257_a(Class<T> p_179257_1_)
+     public <T extends Enum<T>> T readEnumValue(Class<T> enumClass)
      {
--        return p_179257_1_.getEnumConstants()[this.func_150792_a()];
-+        return (T)((Enum[])p_179257_1_.getEnumConstants())[this.func_150792_a()];
+-        return enumClass.getEnumConstants()[this.readVarInt()];
++        return (T)((Enum[])enumClass.getEnumConstants())[this.readVarInt()];
      }
  
-     public PacketBuffer func_179249_a(Enum<?> p_179249_1_)
+     public PacketBuffer writeEnumValue(Enum<?> value)
 @@ -195,19 +195,22 @@
      {
          int i = 0;
@@ -92,19 +92,19 @@
      }
 @@ -330,7 +336,7 @@
  
-             if (p_150788_1_.func_77973_b().func_77645_m() || p_150788_1_.func_77973_b().func_77651_p())
+             if (stack.getItem().isDamageable() || stack.getItem().getShareTag())
              {
--                nbttagcompound = p_150788_1_.func_77978_p();
-+                nbttagcompound = p_150788_1_.func_77973_b().getNBTShareTag(p_150788_1_);
+-                nbttagcompound = stack.getTagCompound();
++                nbttagcompound = stack.getItem().getNBTShareTag(stack);
              }
  
-             this.func_150786_a(nbttagcompound);
+             this.writeCompoundTag(nbttagcompound);
 @@ -352,7 +358,7 @@
              int j = this.readByte();
              int k = this.readShort();
-             ItemStack itemstack = new ItemStack(Item.func_150899_d(i), j, k);
--            itemstack.func_77982_d(this.func_150793_b());
-+            itemstack.func_77973_b().readNBTShareTag(itemstack, this.func_150793_b());
+             ItemStack itemstack = new ItemStack(Item.getItemById(i), j, k);
+-            itemstack.setTagCompound(this.readCompoundTag());
++            itemstack.getItem().readNBTShareTag(itemstack, this.readCompoundTag());
              return itemstack;
          }
      }
@@ -115,1096 +115,1096 @@
 -    @Override
      public int capacity()
      {
-         return this.field_150794_a.capacity();
+         return this.buf.capacity();
      }
  
 -    @Override
      public ByteBuf capacity(int p_capacity_1_)
      {
-         return this.field_150794_a.capacity(p_capacity_1_);
+         return this.buf.capacity(p_capacity_1_);
      }
  
 -    @Override
      public int maxCapacity()
      {
-         return this.field_150794_a.maxCapacity();
+         return this.buf.maxCapacity();
      }
  
 -    @Override
      public ByteBufAllocator alloc()
      {
-         return this.field_150794_a.alloc();
+         return this.buf.alloc();
      }
  
 -    @Override
      public ByteOrder order()
      {
-         return this.field_150794_a.order();
+         return this.buf.order();
      }
  
 -    @Override
      public ByteBuf order(ByteOrder p_order_1_)
      {
-         return this.field_150794_a.order(p_order_1_);
+         return this.buf.order(p_order_1_);
      }
  
 -    @Override
      public ByteBuf unwrap()
      {
-         return this.field_150794_a.unwrap();
+         return this.buf.unwrap();
      }
  
 -    @Override
      public boolean isDirect()
      {
-         return this.field_150794_a.isDirect();
+         return this.buf.isDirect();
      }
  
 -    @Override
      public boolean isReadOnly()
      {
-         return this.field_150794_a.isReadOnly();
+         return this.buf.isReadOnly();
      }
  
 -    @Override
      public ByteBuf asReadOnly()
      {
-         return this.field_150794_a.asReadOnly();
+         return this.buf.asReadOnly();
      }
  
 -    @Override
      public int readerIndex()
      {
-         return this.field_150794_a.readerIndex();
+         return this.buf.readerIndex();
      }
  
 -    @Override
      public ByteBuf readerIndex(int p_readerIndex_1_)
      {
-         return this.field_150794_a.readerIndex(p_readerIndex_1_);
+         return this.buf.readerIndex(p_readerIndex_1_);
      }
  
 -    @Override
      public int writerIndex()
      {
-         return this.field_150794_a.writerIndex();
+         return this.buf.writerIndex();
      }
  
 -    @Override
      public ByteBuf writerIndex(int p_writerIndex_1_)
      {
-         return this.field_150794_a.writerIndex(p_writerIndex_1_);
+         return this.buf.writerIndex(p_writerIndex_1_);
      }
  
 -    @Override
      public ByteBuf setIndex(int p_setIndex_1_, int p_setIndex_2_)
      {
-         return this.field_150794_a.setIndex(p_setIndex_1_, p_setIndex_2_);
+         return this.buf.setIndex(p_setIndex_1_, p_setIndex_2_);
      }
  
 -    @Override
      public int readableBytes()
      {
-         return this.field_150794_a.readableBytes();
+         return this.buf.readableBytes();
      }
  
 -    @Override
      public int writableBytes()
      {
-         return this.field_150794_a.writableBytes();
+         return this.buf.writableBytes();
      }
  
 -    @Override
      public int maxWritableBytes()
      {
-         return this.field_150794_a.maxWritableBytes();
+         return this.buf.maxWritableBytes();
      }
  
 -    @Override
      public boolean isReadable()
      {
-         return this.field_150794_a.isReadable();
+         return this.buf.isReadable();
      }
  
 -    @Override
      public boolean isReadable(int p_isReadable_1_)
      {
-         return this.field_150794_a.isReadable(p_isReadable_1_);
+         return this.buf.isReadable(p_isReadable_1_);
      }
  
 -    @Override
      public boolean isWritable()
      {
-         return this.field_150794_a.isWritable();
+         return this.buf.isWritable();
      }
  
 -    @Override
      public boolean isWritable(int p_isWritable_1_)
      {
-         return this.field_150794_a.isWritable(p_isWritable_1_);
+         return this.buf.isWritable(p_isWritable_1_);
      }
  
 -    @Override
      public ByteBuf clear()
      {
-         return this.field_150794_a.clear();
+         return this.buf.clear();
      }
  
 -    @Override
      public ByteBuf markReaderIndex()
      {
-         return this.field_150794_a.markReaderIndex();
+         return this.buf.markReaderIndex();
      }
  
 -    @Override
      public ByteBuf resetReaderIndex()
      {
-         return this.field_150794_a.resetReaderIndex();
+         return this.buf.resetReaderIndex();
      }
  
 -    @Override
      public ByteBuf markWriterIndex()
      {
-         return this.field_150794_a.markWriterIndex();
+         return this.buf.markWriterIndex();
      }
  
 -    @Override
      public ByteBuf resetWriterIndex()
      {
-         return this.field_150794_a.resetWriterIndex();
+         return this.buf.resetWriterIndex();
      }
  
 -    @Override
      public ByteBuf discardReadBytes()
      {
-         return this.field_150794_a.discardReadBytes();
+         return this.buf.discardReadBytes();
      }
  
 -    @Override
      public ByteBuf discardSomeReadBytes()
      {
-         return this.field_150794_a.discardSomeReadBytes();
+         return this.buf.discardSomeReadBytes();
      }
  
 -    @Override
      public ByteBuf ensureWritable(int p_ensureWritable_1_)
      {
-         return this.field_150794_a.ensureWritable(p_ensureWritable_1_);
+         return this.buf.ensureWritable(p_ensureWritable_1_);
      }
  
 -    @Override
      public int ensureWritable(int p_ensureWritable_1_, boolean p_ensureWritable_2_)
      {
-         return this.field_150794_a.ensureWritable(p_ensureWritable_1_, p_ensureWritable_2_);
+         return this.buf.ensureWritable(p_ensureWritable_1_, p_ensureWritable_2_);
      }
  
 -    @Override
      public boolean getBoolean(int p_getBoolean_1_)
      {
-         return this.field_150794_a.getBoolean(p_getBoolean_1_);
+         return this.buf.getBoolean(p_getBoolean_1_);
      }
  
 -    @Override
      public byte getByte(int p_getByte_1_)
      {
-         return this.field_150794_a.getByte(p_getByte_1_);
+         return this.buf.getByte(p_getByte_1_);
      }
  
 -    @Override
      public short getUnsignedByte(int p_getUnsignedByte_1_)
      {
-         return this.field_150794_a.getUnsignedByte(p_getUnsignedByte_1_);
+         return this.buf.getUnsignedByte(p_getUnsignedByte_1_);
      }
  
 -    @Override
      public short getShort(int p_getShort_1_)
      {
-         return this.field_150794_a.getShort(p_getShort_1_);
+         return this.buf.getShort(p_getShort_1_);
      }
  
 -    @Override
      public short getShortLE(int p_getShortLE_1_)
      {
-         return this.field_150794_a.getShortLE(p_getShortLE_1_);
+         return this.buf.getShortLE(p_getShortLE_1_);
      }
  
 -    @Override
      public int getUnsignedShort(int p_getUnsignedShort_1_)
      {
-         return this.field_150794_a.getUnsignedShort(p_getUnsignedShort_1_);
+         return this.buf.getUnsignedShort(p_getUnsignedShort_1_);
      }
  
 -    @Override
      public int getUnsignedShortLE(int p_getUnsignedShortLE_1_)
      {
-         return this.field_150794_a.getUnsignedShortLE(p_getUnsignedShortLE_1_);
+         return this.buf.getUnsignedShortLE(p_getUnsignedShortLE_1_);
      }
  
 -    @Override
      public int getMedium(int p_getMedium_1_)
      {
-         return this.field_150794_a.getMedium(p_getMedium_1_);
+         return this.buf.getMedium(p_getMedium_1_);
      }
  
 -    @Override
      public int getMediumLE(int p_getMediumLE_1_)
      {
-         return this.field_150794_a.getMediumLE(p_getMediumLE_1_);
+         return this.buf.getMediumLE(p_getMediumLE_1_);
      }
  
 -    @Override
      public int getUnsignedMedium(int p_getUnsignedMedium_1_)
      {
-         return this.field_150794_a.getUnsignedMedium(p_getUnsignedMedium_1_);
+         return this.buf.getUnsignedMedium(p_getUnsignedMedium_1_);
      }
  
 -    @Override
      public int getUnsignedMediumLE(int p_getUnsignedMediumLE_1_)
      {
-         return this.field_150794_a.getUnsignedMediumLE(p_getUnsignedMediumLE_1_);
+         return this.buf.getUnsignedMediumLE(p_getUnsignedMediumLE_1_);
      }
  
 -    @Override
      public int getInt(int p_getInt_1_)
      {
-         return this.field_150794_a.getInt(p_getInt_1_);
+         return this.buf.getInt(p_getInt_1_);
      }
  
 -    @Override
      public int getIntLE(int p_getIntLE_1_)
      {
-         return this.field_150794_a.getIntLE(p_getIntLE_1_);
+         return this.buf.getIntLE(p_getIntLE_1_);
      }
  
 -    @Override
      public long getUnsignedInt(int p_getUnsignedInt_1_)
      {
-         return this.field_150794_a.getUnsignedInt(p_getUnsignedInt_1_);
+         return this.buf.getUnsignedInt(p_getUnsignedInt_1_);
      }
  
 -    @Override
      public long getUnsignedIntLE(int p_getUnsignedIntLE_1_)
      {
-         return this.field_150794_a.getUnsignedIntLE(p_getUnsignedIntLE_1_);
+         return this.buf.getUnsignedIntLE(p_getUnsignedIntLE_1_);
      }
  
 -    @Override
      public long getLong(int p_getLong_1_)
      {
-         return this.field_150794_a.getLong(p_getLong_1_);
+         return this.buf.getLong(p_getLong_1_);
      }
  
 -    @Override
      public long getLongLE(int p_getLongLE_1_)
      {
-         return this.field_150794_a.getLongLE(p_getLongLE_1_);
+         return this.buf.getLongLE(p_getLongLE_1_);
      }
  
 -    @Override
      public char getChar(int p_getChar_1_)
      {
-         return this.field_150794_a.getChar(p_getChar_1_);
+         return this.buf.getChar(p_getChar_1_);
      }
  
 -    @Override
      public float getFloat(int p_getFloat_1_)
      {
-         return this.field_150794_a.getFloat(p_getFloat_1_);
+         return this.buf.getFloat(p_getFloat_1_);
      }
  
 -    @Override
      public double getDouble(int p_getDouble_1_)
      {
-         return this.field_150794_a.getDouble(p_getDouble_1_);
+         return this.buf.getDouble(p_getDouble_1_);
      }
  
 -    @Override
      public ByteBuf getBytes(int p_getBytes_1_, ByteBuf p_getBytes_2_)
      {
-         return this.field_150794_a.getBytes(p_getBytes_1_, p_getBytes_2_);
+         return this.buf.getBytes(p_getBytes_1_, p_getBytes_2_);
      }
  
 -    @Override
      public ByteBuf getBytes(int p_getBytes_1_, ByteBuf p_getBytes_2_, int p_getBytes_3_)
      {
-         return this.field_150794_a.getBytes(p_getBytes_1_, p_getBytes_2_, p_getBytes_3_);
+         return this.buf.getBytes(p_getBytes_1_, p_getBytes_2_, p_getBytes_3_);
      }
  
 -    @Override
      public ByteBuf getBytes(int p_getBytes_1_, ByteBuf p_getBytes_2_, int p_getBytes_3_, int p_getBytes_4_)
      {
-         return this.field_150794_a.getBytes(p_getBytes_1_, p_getBytes_2_, p_getBytes_3_, p_getBytes_4_);
+         return this.buf.getBytes(p_getBytes_1_, p_getBytes_2_, p_getBytes_3_, p_getBytes_4_);
      }
  
 -    @Override
      public ByteBuf getBytes(int p_getBytes_1_, byte[] p_getBytes_2_)
      {
-         return this.field_150794_a.getBytes(p_getBytes_1_, p_getBytes_2_);
+         return this.buf.getBytes(p_getBytes_1_, p_getBytes_2_);
      }
  
 -    @Override
      public ByteBuf getBytes(int p_getBytes_1_, byte[] p_getBytes_2_, int p_getBytes_3_, int p_getBytes_4_)
      {
-         return this.field_150794_a.getBytes(p_getBytes_1_, p_getBytes_2_, p_getBytes_3_, p_getBytes_4_);
+         return this.buf.getBytes(p_getBytes_1_, p_getBytes_2_, p_getBytes_3_, p_getBytes_4_);
      }
  
 -    @Override
      public ByteBuf getBytes(int p_getBytes_1_, ByteBuffer p_getBytes_2_)
      {
-         return this.field_150794_a.getBytes(p_getBytes_1_, p_getBytes_2_);
+         return this.buf.getBytes(p_getBytes_1_, p_getBytes_2_);
      }
  
 -    @Override
      public ByteBuf getBytes(int p_getBytes_1_, OutputStream p_getBytes_2_, int p_getBytes_3_) throws IOException
      {
-         return this.field_150794_a.getBytes(p_getBytes_1_, p_getBytes_2_, p_getBytes_3_);
+         return this.buf.getBytes(p_getBytes_1_, p_getBytes_2_, p_getBytes_3_);
      }
  
 -    @Override
      public int getBytes(int p_getBytes_1_, GatheringByteChannel p_getBytes_2_, int p_getBytes_3_) throws IOException
      {
-         return this.field_150794_a.getBytes(p_getBytes_1_, p_getBytes_2_, p_getBytes_3_);
+         return this.buf.getBytes(p_getBytes_1_, p_getBytes_2_, p_getBytes_3_);
      }
  
 -    @Override
      public int getBytes(int p_getBytes_1_, FileChannel p_getBytes_2_, long p_getBytes_3_, int p_getBytes_5_) throws IOException
      {
-         return this.field_150794_a.getBytes(p_getBytes_1_, p_getBytes_2_, p_getBytes_3_, p_getBytes_5_);
+         return this.buf.getBytes(p_getBytes_1_, p_getBytes_2_, p_getBytes_3_, p_getBytes_5_);
      }
  
 -    @Override
      public CharSequence getCharSequence(int p_getCharSequence_1_, int p_getCharSequence_2_, Charset p_getCharSequence_3_)
      {
-         return this.field_150794_a.getCharSequence(p_getCharSequence_1_, p_getCharSequence_2_, p_getCharSequence_3_);
+         return this.buf.getCharSequence(p_getCharSequence_1_, p_getCharSequence_2_, p_getCharSequence_3_);
      }
  
 -    @Override
      public ByteBuf setBoolean(int p_setBoolean_1_, boolean p_setBoolean_2_)
      {
-         return this.field_150794_a.setBoolean(p_setBoolean_1_, p_setBoolean_2_);
+         return this.buf.setBoolean(p_setBoolean_1_, p_setBoolean_2_);
      }
  
 -    @Override
      public ByteBuf setByte(int p_setByte_1_, int p_setByte_2_)
      {
-         return this.field_150794_a.setByte(p_setByte_1_, p_setByte_2_);
+         return this.buf.setByte(p_setByte_1_, p_setByte_2_);
      }
  
 -    @Override
      public ByteBuf setShort(int p_setShort_1_, int p_setShort_2_)
      {
-         return this.field_150794_a.setShort(p_setShort_1_, p_setShort_2_);
+         return this.buf.setShort(p_setShort_1_, p_setShort_2_);
      }
  
 -    @Override
      public ByteBuf setShortLE(int p_setShortLE_1_, int p_setShortLE_2_)
      {
-         return this.field_150794_a.setShortLE(p_setShortLE_1_, p_setShortLE_2_);
+         return this.buf.setShortLE(p_setShortLE_1_, p_setShortLE_2_);
      }
  
 -    @Override
      public ByteBuf setMedium(int p_setMedium_1_, int p_setMedium_2_)
      {
-         return this.field_150794_a.setMedium(p_setMedium_1_, p_setMedium_2_);
+         return this.buf.setMedium(p_setMedium_1_, p_setMedium_2_);
      }
  
 -    @Override
      public ByteBuf setMediumLE(int p_setMediumLE_1_, int p_setMediumLE_2_)
      {
-         return this.field_150794_a.setMediumLE(p_setMediumLE_1_, p_setMediumLE_2_);
+         return this.buf.setMediumLE(p_setMediumLE_1_, p_setMediumLE_2_);
      }
  
 -    @Override
      public ByteBuf setInt(int p_setInt_1_, int p_setInt_2_)
      {
-         return this.field_150794_a.setInt(p_setInt_1_, p_setInt_2_);
+         return this.buf.setInt(p_setInt_1_, p_setInt_2_);
      }
  
 -    @Override
      public ByteBuf setIntLE(int p_setIntLE_1_, int p_setIntLE_2_)
      {
-         return this.field_150794_a.setIntLE(p_setIntLE_1_, p_setIntLE_2_);
+         return this.buf.setIntLE(p_setIntLE_1_, p_setIntLE_2_);
      }
  
 -    @Override
      public ByteBuf setLong(int p_setLong_1_, long p_setLong_2_)
      {
-         return this.field_150794_a.setLong(p_setLong_1_, p_setLong_2_);
+         return this.buf.setLong(p_setLong_1_, p_setLong_2_);
      }
  
 -    @Override
      public ByteBuf setLongLE(int p_setLongLE_1_, long p_setLongLE_2_)
      {
-         return this.field_150794_a.setLongLE(p_setLongLE_1_, p_setLongLE_2_);
+         return this.buf.setLongLE(p_setLongLE_1_, p_setLongLE_2_);
      }
  
 -    @Override
      public ByteBuf setChar(int p_setChar_1_, int p_setChar_2_)
      {
-         return this.field_150794_a.setChar(p_setChar_1_, p_setChar_2_);
+         return this.buf.setChar(p_setChar_1_, p_setChar_2_);
      }
  
 -    @Override
      public ByteBuf setFloat(int p_setFloat_1_, float p_setFloat_2_)
      {
-         return this.field_150794_a.setFloat(p_setFloat_1_, p_setFloat_2_);
+         return this.buf.setFloat(p_setFloat_1_, p_setFloat_2_);
      }
  
 -    @Override
      public ByteBuf setDouble(int p_setDouble_1_, double p_setDouble_2_)
      {
-         return this.field_150794_a.setDouble(p_setDouble_1_, p_setDouble_2_);
+         return this.buf.setDouble(p_setDouble_1_, p_setDouble_2_);
      }
  
 -    @Override
      public ByteBuf setBytes(int p_setBytes_1_, ByteBuf p_setBytes_2_)
      {
-         return this.field_150794_a.setBytes(p_setBytes_1_, p_setBytes_2_);
+         return this.buf.setBytes(p_setBytes_1_, p_setBytes_2_);
      }
  
 -    @Override
      public ByteBuf setBytes(int p_setBytes_1_, ByteBuf p_setBytes_2_, int p_setBytes_3_)
      {
-         return this.field_150794_a.setBytes(p_setBytes_1_, p_setBytes_2_, p_setBytes_3_);
+         return this.buf.setBytes(p_setBytes_1_, p_setBytes_2_, p_setBytes_3_);
      }
  
 -    @Override
      public ByteBuf setBytes(int p_setBytes_1_, ByteBuf p_setBytes_2_, int p_setBytes_3_, int p_setBytes_4_)
      {
-         return this.field_150794_a.setBytes(p_setBytes_1_, p_setBytes_2_, p_setBytes_3_, p_setBytes_4_);
+         return this.buf.setBytes(p_setBytes_1_, p_setBytes_2_, p_setBytes_3_, p_setBytes_4_);
      }
  
 -    @Override
      public ByteBuf setBytes(int p_setBytes_1_, byte[] p_setBytes_2_)
      {
-         return this.field_150794_a.setBytes(p_setBytes_1_, p_setBytes_2_);
+         return this.buf.setBytes(p_setBytes_1_, p_setBytes_2_);
      }
  
 -    @Override
      public ByteBuf setBytes(int p_setBytes_1_, byte[] p_setBytes_2_, int p_setBytes_3_, int p_setBytes_4_)
      {
-         return this.field_150794_a.setBytes(p_setBytes_1_, p_setBytes_2_, p_setBytes_3_, p_setBytes_4_);
+         return this.buf.setBytes(p_setBytes_1_, p_setBytes_2_, p_setBytes_3_, p_setBytes_4_);
      }
  
 -    @Override
      public ByteBuf setBytes(int p_setBytes_1_, ByteBuffer p_setBytes_2_)
      {
-         return this.field_150794_a.setBytes(p_setBytes_1_, p_setBytes_2_);
+         return this.buf.setBytes(p_setBytes_1_, p_setBytes_2_);
      }
  
 -    @Override
      public int setBytes(int p_setBytes_1_, InputStream p_setBytes_2_, int p_setBytes_3_) throws IOException
      {
-         return this.field_150794_a.setBytes(p_setBytes_1_, p_setBytes_2_, p_setBytes_3_);
+         return this.buf.setBytes(p_setBytes_1_, p_setBytes_2_, p_setBytes_3_);
      }
  
 -    @Override
      public int setBytes(int p_setBytes_1_, ScatteringByteChannel p_setBytes_2_, int p_setBytes_3_) throws IOException
      {
-         return this.field_150794_a.setBytes(p_setBytes_1_, p_setBytes_2_, p_setBytes_3_);
+         return this.buf.setBytes(p_setBytes_1_, p_setBytes_2_, p_setBytes_3_);
      }
  
 -    @Override
      public int setBytes(int p_setBytes_1_, FileChannel p_setBytes_2_, long p_setBytes_3_, int p_setBytes_5_) throws IOException
      {
-         return this.field_150794_a.setBytes(p_setBytes_1_, p_setBytes_2_, p_setBytes_3_, p_setBytes_5_);
+         return this.buf.setBytes(p_setBytes_1_, p_setBytes_2_, p_setBytes_3_, p_setBytes_5_);
      }
  
 -    @Override
      public ByteBuf setZero(int p_setZero_1_, int p_setZero_2_)
      {
-         return this.field_150794_a.setZero(p_setZero_1_, p_setZero_2_);
+         return this.buf.setZero(p_setZero_1_, p_setZero_2_);
      }
  
 -    @Override
      public int setCharSequence(int p_setCharSequence_1_, CharSequence p_setCharSequence_2_, Charset p_setCharSequence_3_)
      {
-         return this.field_150794_a.setCharSequence(p_setCharSequence_1_, p_setCharSequence_2_, p_setCharSequence_3_);
+         return this.buf.setCharSequence(p_setCharSequence_1_, p_setCharSequence_2_, p_setCharSequence_3_);
      }
  
 -    @Override
      public boolean readBoolean()
      {
-         return this.field_150794_a.readBoolean();
+         return this.buf.readBoolean();
      }
  
 -    @Override
      public byte readByte()
      {
-         return this.field_150794_a.readByte();
+         return this.buf.readByte();
      }
  
 -    @Override
      public short readUnsignedByte()
      {
-         return this.field_150794_a.readUnsignedByte();
+         return this.buf.readUnsignedByte();
      }
  
 -    @Override
      public short readShort()
      {
-         return this.field_150794_a.readShort();
+         return this.buf.readShort();
      }
  
 -    @Override
      public short readShortLE()
      {
-         return this.field_150794_a.readShortLE();
+         return this.buf.readShortLE();
      }
  
 -    @Override
      public int readUnsignedShort()
      {
-         return this.field_150794_a.readUnsignedShort();
+         return this.buf.readUnsignedShort();
      }
  
 -    @Override
      public int readUnsignedShortLE()
      {
-         return this.field_150794_a.readUnsignedShortLE();
+         return this.buf.readUnsignedShortLE();
      }
  
 -    @Override
      public int readMedium()
      {
-         return this.field_150794_a.readMedium();
+         return this.buf.readMedium();
      }
  
 -    @Override
      public int readMediumLE()
      {
-         return this.field_150794_a.readMediumLE();
+         return this.buf.readMediumLE();
      }
  
 -    @Override
      public int readUnsignedMedium()
      {
-         return this.field_150794_a.readUnsignedMedium();
+         return this.buf.readUnsignedMedium();
      }
  
 -    @Override
      public int readUnsignedMediumLE()
      {
-         return this.field_150794_a.readUnsignedMediumLE();
+         return this.buf.readUnsignedMediumLE();
      }
  
 -    @Override
      public int readInt()
      {
-         return this.field_150794_a.readInt();
+         return this.buf.readInt();
      }
  
 -    @Override
      public int readIntLE()
      {
-         return this.field_150794_a.readIntLE();
+         return this.buf.readIntLE();
      }
  
 -    @Override
      public long readUnsignedInt()
      {
-         return this.field_150794_a.readUnsignedInt();
+         return this.buf.readUnsignedInt();
      }
  
 -    @Override
      public long readUnsignedIntLE()
      {
-         return this.field_150794_a.readUnsignedIntLE();
+         return this.buf.readUnsignedIntLE();
      }
  
 -    @Override
      public long readLong()
      {
-         return this.field_150794_a.readLong();
+         return this.buf.readLong();
      }
  
 -    @Override
      public long readLongLE()
      {
-         return this.field_150794_a.readLongLE();
+         return this.buf.readLongLE();
      }
  
 -    @Override
      public char readChar()
      {
-         return this.field_150794_a.readChar();
+         return this.buf.readChar();
      }
  
 -    @Override
      public float readFloat()
      {
-         return this.field_150794_a.readFloat();
+         return this.buf.readFloat();
      }
  
 -    @Override
      public double readDouble()
      {
-         return this.field_150794_a.readDouble();
+         return this.buf.readDouble();
      }
  
 -    @Override
      public ByteBuf readBytes(int p_readBytes_1_)
      {
-         return this.field_150794_a.readBytes(p_readBytes_1_);
+         return this.buf.readBytes(p_readBytes_1_);
      }
  
 -    @Override
      public ByteBuf readSlice(int p_readSlice_1_)
      {
-         return this.field_150794_a.readSlice(p_readSlice_1_);
+         return this.buf.readSlice(p_readSlice_1_);
      }
  
 -    @Override
      public ByteBuf readRetainedSlice(int p_readRetainedSlice_1_)
      {
-         return this.field_150794_a.readRetainedSlice(p_readRetainedSlice_1_);
+         return this.buf.readRetainedSlice(p_readRetainedSlice_1_);
      }
  
 -    @Override
      public ByteBuf readBytes(ByteBuf p_readBytes_1_)
      {
-         return this.field_150794_a.readBytes(p_readBytes_1_);
+         return this.buf.readBytes(p_readBytes_1_);
      }
  
 -    @Override
      public ByteBuf readBytes(ByteBuf p_readBytes_1_, int p_readBytes_2_)
      {
-         return this.field_150794_a.readBytes(p_readBytes_1_, p_readBytes_2_);
+         return this.buf.readBytes(p_readBytes_1_, p_readBytes_2_);
      }
  
 -    @Override
      public ByteBuf readBytes(ByteBuf p_readBytes_1_, int p_readBytes_2_, int p_readBytes_3_)
      {
-         return this.field_150794_a.readBytes(p_readBytes_1_, p_readBytes_2_, p_readBytes_3_);
+         return this.buf.readBytes(p_readBytes_1_, p_readBytes_2_, p_readBytes_3_);
      }
  
 -    @Override
      public ByteBuf readBytes(byte[] p_readBytes_1_)
      {
-         return this.field_150794_a.readBytes(p_readBytes_1_);
+         return this.buf.readBytes(p_readBytes_1_);
      }
  
 -    @Override
      public ByteBuf readBytes(byte[] p_readBytes_1_, int p_readBytes_2_, int p_readBytes_3_)
      {
-         return this.field_150794_a.readBytes(p_readBytes_1_, p_readBytes_2_, p_readBytes_3_);
+         return this.buf.readBytes(p_readBytes_1_, p_readBytes_2_, p_readBytes_3_);
      }
  
 -    @Override
      public ByteBuf readBytes(ByteBuffer p_readBytes_1_)
      {
-         return this.field_150794_a.readBytes(p_readBytes_1_);
+         return this.buf.readBytes(p_readBytes_1_);
      }
  
 -    @Override
      public ByteBuf readBytes(OutputStream p_readBytes_1_, int p_readBytes_2_) throws IOException
      {
-         return this.field_150794_a.readBytes(p_readBytes_1_, p_readBytes_2_);
+         return this.buf.readBytes(p_readBytes_1_, p_readBytes_2_);
      }
  
 -    @Override
      public int readBytes(GatheringByteChannel p_readBytes_1_, int p_readBytes_2_) throws IOException
      {
-         return this.field_150794_a.readBytes(p_readBytes_1_, p_readBytes_2_);
+         return this.buf.readBytes(p_readBytes_1_, p_readBytes_2_);
      }
  
 -    @Override
      public CharSequence readCharSequence(int p_readCharSequence_1_, Charset p_readCharSequence_2_)
      {
-         return this.field_150794_a.readCharSequence(p_readCharSequence_1_, p_readCharSequence_2_);
+         return this.buf.readCharSequence(p_readCharSequence_1_, p_readCharSequence_2_);
      }
  
 -    @Override
      public int readBytes(FileChannel p_readBytes_1_, long p_readBytes_2_, int p_readBytes_4_) throws IOException
      {
-         return this.field_150794_a.readBytes(p_readBytes_1_, p_readBytes_2_, p_readBytes_4_);
+         return this.buf.readBytes(p_readBytes_1_, p_readBytes_2_, p_readBytes_4_);
      }
  
 -    @Override
      public ByteBuf skipBytes(int p_skipBytes_1_)
      {
-         return this.field_150794_a.skipBytes(p_skipBytes_1_);
+         return this.buf.skipBytes(p_skipBytes_1_);
      }
  
 -    @Override
      public ByteBuf writeBoolean(boolean p_writeBoolean_1_)
      {
-         return this.field_150794_a.writeBoolean(p_writeBoolean_1_);
+         return this.buf.writeBoolean(p_writeBoolean_1_);
      }
  
 -    @Override
      public ByteBuf writeByte(int p_writeByte_1_)
      {
-         return this.field_150794_a.writeByte(p_writeByte_1_);
+         return this.buf.writeByte(p_writeByte_1_);
      }
  
 -    @Override
      public ByteBuf writeShort(int p_writeShort_1_)
      {
-         return this.field_150794_a.writeShort(p_writeShort_1_);
+         return this.buf.writeShort(p_writeShort_1_);
      }
  
 -    @Override
      public ByteBuf writeShortLE(int p_writeShortLE_1_)
      {
-         return this.field_150794_a.writeShortLE(p_writeShortLE_1_);
+         return this.buf.writeShortLE(p_writeShortLE_1_);
      }
  
 -    @Override
      public ByteBuf writeMedium(int p_writeMedium_1_)
      {
-         return this.field_150794_a.writeMedium(p_writeMedium_1_);
+         return this.buf.writeMedium(p_writeMedium_1_);
      }
  
 -    @Override
      public ByteBuf writeMediumLE(int p_writeMediumLE_1_)
      {
-         return this.field_150794_a.writeMediumLE(p_writeMediumLE_1_);
+         return this.buf.writeMediumLE(p_writeMediumLE_1_);
      }
  
 -    @Override
      public ByteBuf writeInt(int p_writeInt_1_)
      {
-         return this.field_150794_a.writeInt(p_writeInt_1_);
+         return this.buf.writeInt(p_writeInt_1_);
      }
  
 -    @Override
      public ByteBuf writeIntLE(int p_writeIntLE_1_)
      {
-         return this.field_150794_a.writeIntLE(p_writeIntLE_1_);
+         return this.buf.writeIntLE(p_writeIntLE_1_);
      }
  
 -    @Override
      public ByteBuf writeLong(long p_writeLong_1_)
      {
-         return this.field_150794_a.writeLong(p_writeLong_1_);
+         return this.buf.writeLong(p_writeLong_1_);
      }
  
 -    @Override
      public ByteBuf writeLongLE(long p_writeLongLE_1_)
      {
-         return this.field_150794_a.writeLongLE(p_writeLongLE_1_);
+         return this.buf.writeLongLE(p_writeLongLE_1_);
      }
  
 -    @Override
      public ByteBuf writeChar(int p_writeChar_1_)
      {
-         return this.field_150794_a.writeChar(p_writeChar_1_);
+         return this.buf.writeChar(p_writeChar_1_);
      }
  
 -    @Override
      public ByteBuf writeFloat(float p_writeFloat_1_)
      {
-         return this.field_150794_a.writeFloat(p_writeFloat_1_);
+         return this.buf.writeFloat(p_writeFloat_1_);
      }
  
 -    @Override
      public ByteBuf writeDouble(double p_writeDouble_1_)
      {
-         return this.field_150794_a.writeDouble(p_writeDouble_1_);
+         return this.buf.writeDouble(p_writeDouble_1_);
      }
  
 -    @Override
      public ByteBuf writeBytes(ByteBuf p_writeBytes_1_)
      {
-         return this.field_150794_a.writeBytes(p_writeBytes_1_);
+         return this.buf.writeBytes(p_writeBytes_1_);
      }
  
 -    @Override
      public ByteBuf writeBytes(ByteBuf p_writeBytes_1_, int p_writeBytes_2_)
      {
-         return this.field_150794_a.writeBytes(p_writeBytes_1_, p_writeBytes_2_);
+         return this.buf.writeBytes(p_writeBytes_1_, p_writeBytes_2_);
      }
  
 -    @Override
      public ByteBuf writeBytes(ByteBuf p_writeBytes_1_, int p_writeBytes_2_, int p_writeBytes_3_)
      {
-         return this.field_150794_a.writeBytes(p_writeBytes_1_, p_writeBytes_2_, p_writeBytes_3_);
+         return this.buf.writeBytes(p_writeBytes_1_, p_writeBytes_2_, p_writeBytes_3_);
      }
  
 -    @Override
      public ByteBuf writeBytes(byte[] p_writeBytes_1_)
      {
-         return this.field_150794_a.writeBytes(p_writeBytes_1_);
+         return this.buf.writeBytes(p_writeBytes_1_);
      }
  
 -    @Override
      public ByteBuf writeBytes(byte[] p_writeBytes_1_, int p_writeBytes_2_, int p_writeBytes_3_)
      {
-         return this.field_150794_a.writeBytes(p_writeBytes_1_, p_writeBytes_2_, p_writeBytes_3_);
+         return this.buf.writeBytes(p_writeBytes_1_, p_writeBytes_2_, p_writeBytes_3_);
      }
  
 -    @Override
      public ByteBuf writeBytes(ByteBuffer p_writeBytes_1_)
      {
-         return this.field_150794_a.writeBytes(p_writeBytes_1_);
+         return this.buf.writeBytes(p_writeBytes_1_);
      }
  
 -    @Override
      public int writeBytes(InputStream p_writeBytes_1_, int p_writeBytes_2_) throws IOException
      {
-         return this.field_150794_a.writeBytes(p_writeBytes_1_, p_writeBytes_2_);
+         return this.buf.writeBytes(p_writeBytes_1_, p_writeBytes_2_);
      }
  
 -    @Override
      public int writeBytes(ScatteringByteChannel p_writeBytes_1_, int p_writeBytes_2_) throws IOException
      {
-         return this.field_150794_a.writeBytes(p_writeBytes_1_, p_writeBytes_2_);
+         return this.buf.writeBytes(p_writeBytes_1_, p_writeBytes_2_);
      }
  
 -    @Override
      public int writeBytes(FileChannel p_writeBytes_1_, long p_writeBytes_2_, int p_writeBytes_4_) throws IOException
      {
-         return this.field_150794_a.writeBytes(p_writeBytes_1_, p_writeBytes_2_, p_writeBytes_4_);
+         return this.buf.writeBytes(p_writeBytes_1_, p_writeBytes_2_, p_writeBytes_4_);
      }
  
 -    @Override
      public ByteBuf writeZero(int p_writeZero_1_)
      {
-         return this.field_150794_a.writeZero(p_writeZero_1_);
+         return this.buf.writeZero(p_writeZero_1_);
      }
  
 -    @Override
      public int writeCharSequence(CharSequence p_writeCharSequence_1_, Charset p_writeCharSequence_2_)
      {
-         return this.field_150794_a.writeCharSequence(p_writeCharSequence_1_, p_writeCharSequence_2_);
+         return this.buf.writeCharSequence(p_writeCharSequence_1_, p_writeCharSequence_2_);
      }
  
 -    @Override
      public int indexOf(int p_indexOf_1_, int p_indexOf_2_, byte p_indexOf_3_)
      {
-         return this.field_150794_a.indexOf(p_indexOf_1_, p_indexOf_2_, p_indexOf_3_);
+         return this.buf.indexOf(p_indexOf_1_, p_indexOf_2_, p_indexOf_3_);
      }
  
 -    @Override
      public int bytesBefore(byte p_bytesBefore_1_)
      {
-         return this.field_150794_a.bytesBefore(p_bytesBefore_1_);
+         return this.buf.bytesBefore(p_bytesBefore_1_);
      }
  
 -    @Override
      public int bytesBefore(int p_bytesBefore_1_, byte p_bytesBefore_2_)
      {
-         return this.field_150794_a.bytesBefore(p_bytesBefore_1_, p_bytesBefore_2_);
+         return this.buf.bytesBefore(p_bytesBefore_1_, p_bytesBefore_2_);
      }
  
 -    @Override
      public int bytesBefore(int p_bytesBefore_1_, int p_bytesBefore_2_, byte p_bytesBefore_3_)
      {
-         return this.field_150794_a.bytesBefore(p_bytesBefore_1_, p_bytesBefore_2_, p_bytesBefore_3_);
+         return this.buf.bytesBefore(p_bytesBefore_1_, p_bytesBefore_2_, p_bytesBefore_3_);
      }
  
 -    @Override
      public int forEachByte(ByteProcessor p_forEachByte_1_)
      {
-         return this.field_150794_a.forEachByte(p_forEachByte_1_);
+         return this.buf.forEachByte(p_forEachByte_1_);
      }
  
 -    @Override
      public int forEachByte(int p_forEachByte_1_, int p_forEachByte_2_, ByteProcessor p_forEachByte_3_)
      {
-         return this.field_150794_a.forEachByte(p_forEachByte_1_, p_forEachByte_2_, p_forEachByte_3_);
+         return this.buf.forEachByte(p_forEachByte_1_, p_forEachByte_2_, p_forEachByte_3_);
      }
  
 -    @Override
      public int forEachByteDesc(ByteProcessor p_forEachByteDesc_1_)
      {
-         return this.field_150794_a.forEachByteDesc(p_forEachByteDesc_1_);
+         return this.buf.forEachByteDesc(p_forEachByteDesc_1_);
      }
  
 -    @Override
      public int forEachByteDesc(int p_forEachByteDesc_1_, int p_forEachByteDesc_2_, ByteProcessor p_forEachByteDesc_3_)
      {
-         return this.field_150794_a.forEachByteDesc(p_forEachByteDesc_1_, p_forEachByteDesc_2_, p_forEachByteDesc_3_);
+         return this.buf.forEachByteDesc(p_forEachByteDesc_1_, p_forEachByteDesc_2_, p_forEachByteDesc_3_);
      }
  
 -    @Override
      public ByteBuf copy()
      {
-         return this.field_150794_a.copy();
+         return this.buf.copy();
      }
  
 -    @Override
      public ByteBuf copy(int p_copy_1_, int p_copy_2_)
      {
-         return this.field_150794_a.copy(p_copy_1_, p_copy_2_);
+         return this.buf.copy(p_copy_1_, p_copy_2_);
      }
  
 -    @Override
      public ByteBuf slice()
      {
-         return this.field_150794_a.slice();
+         return this.buf.slice();
      }
  
 -    @Override
      public ByteBuf retainedSlice()
      {
-         return this.field_150794_a.retainedSlice();
+         return this.buf.retainedSlice();
      }
  
 -    @Override
      public ByteBuf slice(int p_slice_1_, int p_slice_2_)
      {
-         return this.field_150794_a.slice(p_slice_1_, p_slice_2_);
+         return this.buf.slice(p_slice_1_, p_slice_2_);
      }
  
 -    @Override
      public ByteBuf retainedSlice(int p_retainedSlice_1_, int p_retainedSlice_2_)
      {
-         return this.field_150794_a.retainedSlice(p_retainedSlice_1_, p_retainedSlice_2_);
+         return this.buf.retainedSlice(p_retainedSlice_1_, p_retainedSlice_2_);
      }
  
 -    @Override
      public ByteBuf duplicate()
      {
-         return this.field_150794_a.duplicate();
+         return this.buf.duplicate();
      }
  
 -    @Override
      public ByteBuf retainedDuplicate()
      {
-         return this.field_150794_a.retainedDuplicate();
+         return this.buf.retainedDuplicate();
      }
  
 -    @Override
      public int nioBufferCount()
      {
-         return this.field_150794_a.nioBufferCount();
+         return this.buf.nioBufferCount();
      }
  
 -    @Override
      public ByteBuffer nioBuffer()
      {
-         return this.field_150794_a.nioBuffer();
+         return this.buf.nioBuffer();
      }
  
 -    @Override
      public ByteBuffer nioBuffer(int p_nioBuffer_1_, int p_nioBuffer_2_)
      {
-         return this.field_150794_a.nioBuffer(p_nioBuffer_1_, p_nioBuffer_2_);
+         return this.buf.nioBuffer(p_nioBuffer_1_, p_nioBuffer_2_);
      }
  
 -    @Override
      public ByteBuffer internalNioBuffer(int p_internalNioBuffer_1_, int p_internalNioBuffer_2_)
      {
-         return this.field_150794_a.internalNioBuffer(p_internalNioBuffer_1_, p_internalNioBuffer_2_);
+         return this.buf.internalNioBuffer(p_internalNioBuffer_1_, p_internalNioBuffer_2_);
      }
  
 -    @Override
      public ByteBuffer[] nioBuffers()
      {
-         return this.field_150794_a.nioBuffers();
+         return this.buf.nioBuffers();
      }
  
 -    @Override
      public ByteBuffer[] nioBuffers(int p_nioBuffers_1_, int p_nioBuffers_2_)
      {
-         return this.field_150794_a.nioBuffers(p_nioBuffers_1_, p_nioBuffers_2_);
+         return this.buf.nioBuffers(p_nioBuffers_1_, p_nioBuffers_2_);
      }
  
 -    @Override
      public boolean hasArray()
      {
-         return this.field_150794_a.hasArray();
+         return this.buf.hasArray();
      }
  
 -    @Override
      public byte[] array()
      {
-         return this.field_150794_a.array();
+         return this.buf.array();
      }
  
 -    @Override
      public int arrayOffset()
      {
-         return this.field_150794_a.arrayOffset();
+         return this.buf.arrayOffset();
      }
  
 -    @Override
      public boolean hasMemoryAddress()
      {
-         return this.field_150794_a.hasMemoryAddress();
+         return this.buf.hasMemoryAddress();
      }
  
 -    @Override
      public long memoryAddress()
      {
-         return this.field_150794_a.memoryAddress();
+         return this.buf.memoryAddress();
      }
  
 -    @Override
      public String toString(Charset p_toString_1_)
      {
-         return this.field_150794_a.toString(p_toString_1_);
+         return this.buf.toString(p_toString_1_);
      }
  
 -    @Override
      public String toString(int p_toString_1_, int p_toString_2_, Charset p_toString_3_)
      {
-         return this.field_150794_a.toString(p_toString_1_, p_toString_2_, p_toString_3_);
+         return this.buf.toString(p_toString_1_, p_toString_2_, p_toString_3_);
      }
  
 -    @Override
      public int hashCode()
      {
-         return this.field_150794_a.hashCode();
+         return this.buf.hashCode();
      }
  
 -    @Override
      public boolean equals(Object p_equals_1_)
      {
-         return this.field_150794_a.equals(p_equals_1_);
+         return this.buf.equals(p_equals_1_);
      }
  
 -    @Override
      public int compareTo(ByteBuf p_compareTo_1_)
      {
-         return this.field_150794_a.compareTo(p_compareTo_1_);
+         return this.buf.compareTo(p_compareTo_1_);
      }
  
 -    @Override
      public String toString()
      {
-         return this.field_150794_a.toString();
+         return this.buf.toString();
      }
  
 -    @Override
      public ByteBuf retain(int p_retain_1_)
      {
-         return this.field_150794_a.retain(p_retain_1_);
+         return this.buf.retain(p_retain_1_);
      }
  
 -    @Override
      public ByteBuf retain()
      {
-         return this.field_150794_a.retain();
+         return this.buf.retain();
      }
  
 -    @Override
      public ByteBuf touch()
      {
-         return this.field_150794_a.touch();
+         return this.buf.touch();
      }
  
 -    @Override
      public ByteBuf touch(Object p_touch_1_)
      {
-         return this.field_150794_a.touch(p_touch_1_);
+         return this.buf.touch(p_touch_1_);
      }
  
 -    @Override
      public int refCnt()
      {
-         return this.field_150794_a.refCnt();
+         return this.buf.refCnt();
      }
  
 -    @Override
      public boolean release()
      {
-         return this.field_150794_a.release();
+         return this.buf.release();
      }
  
 -    @Override
      public boolean release(int p_release_1_)
      {
-         return this.field_150794_a.release(p_release_1_);
+         return this.buf.release(p_release_1_);

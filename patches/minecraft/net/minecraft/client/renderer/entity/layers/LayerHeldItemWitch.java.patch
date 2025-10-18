@@ -1,37 +1,37 @@
 --- before/net/minecraft/client/renderer/entity/layers/LayerHeldItemWitch.java
 +++ after/net/minecraft/client/renderer/entity/layers/LayerHeldItemWitch.java
 @@ -23,16 +23,7 @@
-         this.field_177144_a = p_i46106_1_;
+         this.witchRenderer = witchRendererIn;
      }
  
--    public void func_177141_a(
--        EntityWitch p_177141_1_,
--        float p_177141_2_,
--        float p_177141_3_,
--        float p_177141_4_,
--        float p_177141_5_,
--        float p_177141_6_,
--        float p_177141_7_,
--        float p_177141_8_
+-    public void doRenderLayer(
+-        EntityWitch entitylivingbaseIn,
+-        float limbSwing,
+-        float limbSwingAmount,
+-        float partialTicks,
+-        float ageInTicks,
+-        float netHeadYaw,
+-        float headPitch,
+-        float scale
 -    )
-+    public void func_177141_a(EntityWitch p_177141_1_, float p_177141_2_, float p_177141_3_, float p_177141_4_, float p_177141_5_, float p_177141_6_, float p_177141_7_, float p_177141_8_)
++    public void doRenderLayer(EntityWitch entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
      {
-         ItemStack itemstack = p_177141_1_.func_184614_ca();
+         ItemStack itemstack = entitylivingbaseIn.getHeldItemMainhand();
  
 @@ -62,7 +53,7 @@
                  float f1 = 0.375F;
-                 GlStateManager.func_179152_a(0.375F, -0.375F, 0.375F);
+                 GlStateManager.scale(0.375F, -0.375F, 0.375F);
              }
--            else if (item == Items.field_151031_f)
+-            else if (item == Items.BOW)
 +            else if (item instanceof net.minecraft.item.ItemBow)
              {
-                 GlStateManager.func_179109_b(0.0F, 0.125F, -0.125F);
-                 GlStateManager.func_179114_b(-45.0F, 0.0F, 1.0F, 0.0F);
+                 GlStateManager.translate(0.0F, 0.125F, -0.125F);
+                 GlStateManager.rotate(-45.0F, 0.0F, 1.0F, 0.0F);
 @@ -103,7 +94,6 @@
          }
      }
  
 -    @Override
-     public boolean func_177142_b()
+     public boolean shouldCombineTextures()
      {
          return false;

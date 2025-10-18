@@ -5,7 +5,7 @@
  {
      ALL {
 -        @Override
-         public boolean func_77557_a(Item p_77557_1_)
+         public boolean canEnchantItem(Item itemIn)
          {
              for (EnumEnchantmentType enumenchantmenttype : EnumEnchantmentType.values())
 @@ -30,77 +29,66 @@
@@ -13,91 +13,91 @@
      },
      ARMOR {
 -        @Override
-         public boolean func_77557_a(Item p_77557_1_)
+         public boolean canEnchantItem(Item itemIn)
          {
-             return p_77557_1_ instanceof ItemArmor;
+             return itemIn instanceof ItemArmor;
          }
      },
      ARMOR_FEET {
 -        @Override
-         public boolean func_77557_a(Item p_77557_1_)
+         public boolean canEnchantItem(Item itemIn)
          {
-             return p_77557_1_ instanceof ItemArmor && ((ItemArmor)p_77557_1_).field_77881_a == EntityEquipmentSlot.FEET;
+             return itemIn instanceof ItemArmor && ((ItemArmor)itemIn).armorType == EntityEquipmentSlot.FEET;
          }
      },
      ARMOR_LEGS {
 -        @Override
-         public boolean func_77557_a(Item p_77557_1_)
+         public boolean canEnchantItem(Item itemIn)
          {
-             return p_77557_1_ instanceof ItemArmor && ((ItemArmor)p_77557_1_).field_77881_a == EntityEquipmentSlot.LEGS;
+             return itemIn instanceof ItemArmor && ((ItemArmor)itemIn).armorType == EntityEquipmentSlot.LEGS;
          }
      },
      ARMOR_CHEST {
 -        @Override
-         public boolean func_77557_a(Item p_77557_1_)
+         public boolean canEnchantItem(Item itemIn)
          {
-             return p_77557_1_ instanceof ItemArmor && ((ItemArmor)p_77557_1_).field_77881_a == EntityEquipmentSlot.CHEST;
+             return itemIn instanceof ItemArmor && ((ItemArmor)itemIn).armorType == EntityEquipmentSlot.CHEST;
          }
      },
      ARMOR_HEAD {
 -        @Override
-         public boolean func_77557_a(Item p_77557_1_)
+         public boolean canEnchantItem(Item itemIn)
          {
-             return p_77557_1_ instanceof ItemArmor && ((ItemArmor)p_77557_1_).field_77881_a == EntityEquipmentSlot.HEAD;
+             return itemIn instanceof ItemArmor && ((ItemArmor)itemIn).armorType == EntityEquipmentSlot.HEAD;
          }
      },
      WEAPON {
 -        @Override
-         public boolean func_77557_a(Item p_77557_1_)
+         public boolean canEnchantItem(Item itemIn)
          {
-             return p_77557_1_ instanceof ItemSword;
+             return itemIn instanceof ItemSword;
          }
      },
      DIGGER {
 -        @Override
-         public boolean func_77557_a(Item p_77557_1_)
+         public boolean canEnchantItem(Item itemIn)
          {
-             return p_77557_1_ instanceof ItemTool;
+             return itemIn instanceof ItemTool;
          }
      },
      FISHING_ROD {
 -        @Override
-         public boolean func_77557_a(Item p_77557_1_)
+         public boolean canEnchantItem(Item itemIn)
          {
-             return p_77557_1_ instanceof ItemFishingRod;
+             return itemIn instanceof ItemFishingRod;
          }
      },
      BREAKABLE {
 -        @Override
-         public boolean func_77557_a(Item p_77557_1_)
+         public boolean canEnchantItem(Item itemIn)
          {
-             return p_77557_1_.func_77645_m();
+             return itemIn.isDamageable();
          }
      },
      BOW {
 -        @Override
-         public boolean func_77557_a(Item p_77557_1_)
+         public boolean canEnchantItem(Item itemIn)
          {
-             return p_77557_1_ instanceof ItemBow;
+             return itemIn instanceof ItemBow;
          }
      },
      WEARABLE {
 -        @Override
-         public boolean func_77557_a(Item p_77557_1_)
+         public boolean canEnchantItem(Item itemIn)
          {
-             boolean flag = p_77557_1_ instanceof ItemBlock && ((ItemBlock)p_77557_1_).func_179223_d() instanceof BlockPumpkin;
+             boolean flag = itemIn instanceof ItemBlock && ((ItemBlock)itemIn).getBlock() instanceof BlockPumpkin;
 @@ -112,5 +100,13 @@
      {
      }
  
--    public abstract boolean func_77557_a(Item p_77557_1_);
+-    public abstract boolean canEnchantItem(Item itemIn);
 +    private com.google.common.base.Predicate<Item> delegate = null;
 +    private EnumEnchantmentType(com.google.common.base.Predicate<Item> delegate)
 +    {
 +        this.delegate = delegate;
 +    }
-+    public boolean func_77557_a(Item p_77557_1_)
++    public boolean canEnchantItem(Item itemIn)
 +    {
-+        return this.delegate == null ? false : this.delegate.apply(p_77557_1_);
++        return this.delegate == null ? false : this.delegate.apply(itemIn);
 +    }
  }

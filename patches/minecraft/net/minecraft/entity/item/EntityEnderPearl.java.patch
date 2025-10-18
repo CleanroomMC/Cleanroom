@@ -1,13 +1,13 @@
 --- before/net/minecraft/entity/item/EntityEnderPearl.java
 +++ after/net/minecraft/entity/item/EntityEnderPearl.java
 @@ -45,7 +45,6 @@
-         EntityThrowable.func_189661_a(p_189663_0_, "ThrownEnderpearl");
+         EntityThrowable.registerFixesThrowable(fixer, "ThrownEnderpearl");
      }
  
 -    @Override
-     protected void func_70184_a(RayTraceResult p_70184_1_)
+     protected void onImpact(RayTraceResult result)
      {
-         EntityLivingBase entitylivingbase = this.func_85052_h();
+         EntityLivingBase entitylivingbase = this.getThrower();
 @@ -86,18 +85,9 @@
              }
          }
@@ -15,56 +15,56 @@
 -        for (int i = 0; i < 32; i++)
 +        for (int i = 0; i < 32; ++i)
          {
--            this.field_70170_p
--            .func_175688_a(
+-            this.world
+-            .spawnParticle(
 -                EnumParticleTypes.PORTAL,
--                this.field_70165_t,
--                this.field_70163_u + this.field_70146_Z.nextDouble() * 2.0,
--                this.field_70161_v,
--                this.field_70146_Z.nextGaussian(),
+-                this.posX,
+-                this.posY + this.rand.nextDouble() * 2.0,
+-                this.posZ,
+-                this.rand.nextGaussian(),
 -                0.0,
--                this.field_70146_Z.nextGaussian()
+-                this.rand.nextGaussian()
 -            );
-+            this.field_70170_p.func_175688_a(EnumParticleTypes.PORTAL, this.field_70165_t, this.field_70163_u + this.field_70146_Z.nextDouble() * 2.0D, this.field_70161_v, this.field_70146_Z.nextGaussian(), 0.0D, this.field_70146_Z.nextGaussian());
++            this.world.spawnParticle(EnumParticleTypes.PORTAL, this.posX, this.posY + this.rand.nextDouble() * 2.0D, this.posZ, this.rand.nextGaussian(), 0.0D, this.rand.nextGaussian());
          }
  
-         if (!this.field_70170_p.field_72995_K)
+         if (!this.world.isRemote)
 @@ -106,21 +96,16 @@
              {
                  EntityPlayerMP entityplayermp = (EntityPlayerMP)entitylivingbase;
  
--                if (entityplayermp.field_71135_a.func_147362_b().func_150724_d()
--                        && entityplayermp.field_70170_p == this.field_70170_p
--                        && !entityplayermp.func_70608_bn())
-+                if (entityplayermp.field_71135_a.func_147362_b().func_150724_d() && entityplayermp.field_70170_p == this.field_70170_p && !entityplayermp.func_70608_bn())
+-                if (entityplayermp.connection.getNetworkManager().isChannelOpen()
+-                        && entityplayermp.world == this.world
+-                        && !entityplayermp.isPlayerSleeping())
++                if (entityplayermp.connection.getNetworkManager().isChannelOpen() && entityplayermp.world == this.world && !entityplayermp.isPlayerSleeping())
                  {
-+                    net.minecraftforge.event.entity.living.EnderTeleportEvent event = new net.minecraftforge.event.entity.living.EnderTeleportEvent(entityplayermp, this.field_70165_t, this.field_70163_u, this.field_70161_v, 5.0F);
++                    net.minecraftforge.event.entity.living.EnderTeleportEvent event = new net.minecraftforge.event.entity.living.EnderTeleportEvent(entityplayermp, this.posX, this.posY, this.posZ, 5.0F);
 +                    if (!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event))
 +                    { // Don't indent to lower patch size
-                     if (this.field_70146_Z.nextFloat() < 0.05F && this.field_70170_p.func_82736_K().func_82766_b("doMobSpawning"))
+                     if (this.rand.nextFloat() < 0.05F && this.world.getGameRules().getBoolean("doMobSpawning"))
                      {
-                         EntityEndermite entityendermite = new EntityEndermite(this.field_70170_p);
-                         entityendermite.func_175496_a(true);
--                        entityendermite.func_70012_b(
--                            entitylivingbase.field_70165_t,
--                            entitylivingbase.field_70163_u,
--                            entitylivingbase.field_70161_v,
--                            entitylivingbase.field_70177_z,
--                            entitylivingbase.field_70125_A
+                         EntityEndermite entityendermite = new EntityEndermite(this.world);
+                         entityendermite.setSpawnedByPlayer(true);
+-                        entityendermite.setLocationAndAngles(
+-                            entitylivingbase.posX,
+-                            entitylivingbase.posY,
+-                            entitylivingbase.posZ,
+-                            entitylivingbase.rotationYaw,
+-                            entitylivingbase.rotationPitch
 -                        );
-+                        entityendermite.func_70012_b(entitylivingbase.field_70165_t, entitylivingbase.field_70163_u, entitylivingbase.field_70161_v, entitylivingbase.field_70177_z, entitylivingbase.field_70125_A);
-                         this.field_70170_p.func_72838_d(entityendermite);
++                        entityendermite.setLocationAndAngles(entitylivingbase.posX, entitylivingbase.posY, entitylivingbase.posZ, entitylivingbase.rotationYaw, entitylivingbase.rotationPitch);
+                         this.world.spawnEntity(entityendermite);
                      }
  
 @@ -129,9 +114,10 @@
-                         entitylivingbase.func_184210_p();
+                         entitylivingbase.dismountRidingEntity();
                      }
  
--                    entitylivingbase.func_70634_a(this.field_70165_t, this.field_70163_u, this.field_70161_v);
-+                    entitylivingbase.func_70634_a(event.getTargetX(), event.getTargetY(), event.getTargetZ());
-                     entitylivingbase.field_70143_R = 0.0F;
--                    entitylivingbase.func_70097_a(DamageSource.field_76379_h, 5.0F);
-+                    entitylivingbase.func_70097_a(DamageSource.field_76379_h, event.getAttackDamage());
+-                    entitylivingbase.setPositionAndUpdate(this.posX, this.posY, this.posZ);
++                    entitylivingbase.setPositionAndUpdate(event.getTargetX(), event.getTargetY(), event.getTargetZ());
+                     entitylivingbase.fallDistance = 0.0F;
+-                    entitylivingbase.attackEntityFrom(DamageSource.FALL, 5.0F);
++                    entitylivingbase.attackEntityFrom(DamageSource.FALL, event.getAttackDamage());
 +                    }
                  }
              }
@@ -74,23 +74,23 @@
      }
  
 -    @Override
-     public void func_70071_h_()
+     public void onUpdate()
      {
-         EntityLivingBase entitylivingbase = this.func_85052_h();
+         EntityLivingBase entitylivingbase = this.getThrower();
 @@ -160,14 +145,13 @@
      }
  
      @Nullable
 -    @Override
--    public Entity func_184204_a(int p_184204_1_)
-+    public Entity changeDimension(int p_184204_1_, net.minecraftforge.common.util.ITeleporter teleporter)
+-    public Entity changeDimension(int dimensionIn)
++    public Entity changeDimension(int dimensionIn, net.minecraftforge.common.util.ITeleporter teleporter)
      {
-         if (this.field_70192_c.field_71093_bK != p_184204_1_)
+         if (this.thrower.dimension != dimensionIn)
          {
-             this.field_70192_c = null;
+             this.thrower = null;
          }
  
--        return super.func_184204_a(p_184204_1_);
-+        return super.changeDimension(p_184204_1_, teleporter);
+-        return super.changeDimension(dimensionIn);
++        return super.changeDimension(dimensionIn, teleporter);
      }
  }

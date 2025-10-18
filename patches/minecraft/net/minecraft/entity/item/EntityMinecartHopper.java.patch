@@ -9,87 +9,87 @@
  import net.minecraft.nbt.NBTTagCompound;
  import net.minecraft.tileentity.IHopper;
 @@ -34,33 +35,29 @@
-         super(p_i1721_1_, p_i1721_2_, p_i1721_4_, p_i1721_6_);
+         super(worldIn, x, y, z);
      }
  
 -    @Override
-     public EntityMinecart.Type func_184264_v()
+     public EntityMinecart.Type getType()
      {
          return EntityMinecart.Type.HOPPER;
      }
  
 -    @Override
-     public IBlockState func_180457_u()
+     public IBlockState getDefaultDisplayTile()
      {
-         return Blocks.field_150438_bZ.func_176223_P();
+         return Blocks.HOPPER.getDefaultState();
      }
  
 -    @Override
-     public int func_94085_r()
+     public int getDefaultDisplayTileOffset()
      {
          return 1;
      }
  
 -    @Override
-     public int func_70302_i_()
+     public int getSizeInventory()
      {
          return 5;
      }
  
 -    @Override
-     public boolean func_184230_a(EntityPlayer p_184230_1_, EnumHand p_184230_2_)
+     public boolean processInitialInteract(EntityPlayer player, EnumHand hand)
      {
-+        if (super.func_184230_a(p_184230_1_, p_184230_2_)) return true;
-         if (!this.field_70170_p.field_72995_K)
++        if (super.processInitialInteract(player, hand)) return true;
+         if (!this.world.isRemote)
          {
-             p_184230_1_.func_71007_a(this);
+             player.displayGUIChest(this);
 @@ -69,7 +66,6 @@
          return true;
      }
  
 -    @Override
-     public void func_96095_a(int p_96095_1_, int p_96095_2_, int p_96095_3_, boolean p_96095_4_)
+     public void onActivatorRailPass(int x, int y, int z, boolean receivingPower)
      {
-         boolean flag = !p_96095_4_;
+         boolean flag = !receivingPower;
 @@ -90,31 +86,26 @@
-         this.field_96113_a = p_96110_1_;
+         this.isBlocked = p_96110_1_;
      }
  
 -    @Override
-     public World func_145831_w()
+     public World getWorld()
      {
-         return this.field_70170_p;
+         return this.world;
      }
  
 -    @Override
-     public double func_96107_aA()
+     public double getXPos()
      {
-         return this.field_70165_t;
+         return this.posX;
      }
  
 -    @Override
-     public double func_96109_aB()
+     public double getYPos()
      {
--        return this.field_70163_u + 0.5;
-+        return this.field_70163_u + 0.5D;
+-        return this.posY + 0.5;
++        return this.posY + 0.5D;
      }
  
 -    @Override
-     public double func_96108_aC()
+     public double getZPos()
      {
-         return this.field_70161_v;
+         return this.posZ;
      }
  
 -    @Override
-     public void func_70071_h_()
+     public void onUpdate()
      {
-         super.func_70071_h_();
+         super.onUpdate();
 @@ -125,7 +116,7 @@
  
-             if (blockpos.equals(this.field_174900_c))
+             if (blockpos.equals(this.lastPosition))
              {
--                this.field_98044_b--;
-+                --this.field_98044_b;
+-                this.transferTicker--;
++                --this.transferTicker;
              }
              else
              {
@@ -97,14 +97,14 @@
          }
          else
          {
--            List<EntityItem> list = this.field_70170_p
--                                    .func_175647_a(EntityItem.class, this.func_174813_aQ().func_72314_b(0.25, 0.0, 0.25), EntitySelectors.field_94557_a);
-+            List<EntityItem> list = this.field_70170_p.<EntityItem>func_175647_a(EntityItem.class, this.func_174813_aQ().func_72314_b(0.25D, 0.0D, 0.25D), EntitySelectors.field_94557_a);
+-            List<EntityItem> list = this.world
+-                                    .getEntitiesWithinAABB(EntityItem.class, this.getEntityBoundingBox().grow(0.25, 0.0, 0.25), EntitySelectors.IS_ALIVE);
++            List<EntityItem> list = this.world.<EntityItem>getEntitiesWithinAABB(EntityItem.class, this.getEntityBoundingBox().grow(0.25D, 0.0D, 0.25D), EntitySelectors.IS_ALIVE);
  
              if (!list.isEmpty())
              {
--                TileEntityHopper.func_145898_a(null, this, list.get(0));
-+                TileEntityHopper.func_145898_a((IInventory)null, this, list.get(0));
+-                TileEntityHopper.putDropInInventoryAllSlots(null, this, list.get(0));
++                TileEntityHopper.putDropInInventoryAllSlots((IInventory)null, this, list.get(0));
              }
  
              return false;
@@ -112,36 +112,36 @@
      }
  
 -    @Override
-     public void func_94095_a(DamageSource p_94095_1_)
+     public void killMinecart(DamageSource source)
      {
-         super.func_94095_a(p_94095_1_);
+         super.killMinecart(source);
 @@ -181,7 +170,6 @@
-         EntityMinecartContainer.func_190574_b(p_189682_0_, EntityMinecartHopper.class);
+         EntityMinecartContainer.addDataFixers(fixer, EntityMinecartHopper.class);
      }
  
 -    @Override
-     protected void func_70014_b(NBTTagCompound p_70014_1_)
+     protected void writeEntityToNBT(NBTTagCompound compound)
      {
-         super.func_70014_b(p_70014_1_);
+         super.writeEntityToNBT(compound);
 @@ -189,7 +177,6 @@
-         p_70014_1_.func_74757_a("Enabled", this.field_96113_a);
+         compound.setBoolean("Enabled", this.isBlocked);
      }
  
 -    @Override
-     protected void func_70037_a(NBTTagCompound p_70037_1_)
+     protected void readEntityFromNBT(NBTTagCompound compound)
      {
-         super.func_70037_a(p_70037_1_);
+         super.readEntityFromNBT(compound);
 @@ -207,13 +194,11 @@
-         return this.field_98044_b > 0;
+         return this.transferTicker > 0;
      }
  
 -    @Override
-     public String func_174875_k()
+     public String getGuiID()
      {
          return "minecraft:hopper";
      }
  
 -    @Override
-     public Container func_174876_a(InventoryPlayer p_174876_1_, EntityPlayer p_174876_2_)
+     public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn)
      {
-         return new ContainerHopper(p_174876_1_, this, p_174876_2_);
+         return new ContainerHopper(playerInventory, this, playerIn);

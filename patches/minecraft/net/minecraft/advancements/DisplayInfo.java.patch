@@ -1,30 +1,30 @@
 --- before/net/minecraft/advancements/DisplayInfo.java
 +++ after/net/minecraft/advancements/DisplayInfo.java
 @@ -27,16 +27,7 @@
-     private float field_192304_e;
-     private float field_192305_f;
+     private float x;
+     private float y;
  
 -    public DisplayInfo(
--        ItemStack p_i47586_1_,
--        ITextComponent p_i47586_2_,
--        ITextComponent p_i47586_3_,
--        @Nullable ResourceLocation p_i47586_4_,
--        FrameType p_i47586_5_,
--        boolean p_i47586_6_,
--        boolean p_i47586_7_,
--        boolean p_i47586_8_
+-        ItemStack icon,
+-        ITextComponent title,
+-        ITextComponent description,
+-        @Nullable ResourceLocation background,
+-        FrameType frame,
+-        boolean showToast,
+-        boolean announceToChat,
+-        boolean hidden
 -    )
-+    public DisplayInfo(ItemStack p_i47586_1_, ITextComponent p_i47586_2_, ITextComponent p_i47586_3_, @Nullable ResourceLocation p_i47586_4_, FrameType p_i47586_5_, boolean p_i47586_6_, boolean p_i47586_7_, boolean p_i47586_8_)
++    public DisplayInfo(ItemStack icon, ITextComponent title, ITextComponent description, @Nullable ResourceLocation background, FrameType frame, boolean showToast, boolean announceToChat, boolean hidden)
      {
-         this.field_192300_a = p_i47586_2_;
-         this.field_193225_b = p_i47586_3_;
+         this.title = title;
+         this.description = description;
 @@ -141,7 +132,9 @@
          {
-             Item item = JsonUtils.func_188180_i(p_193221_0_, "item");
-             int i = JsonUtils.func_151208_a(p_193221_0_, "data", 0);
+             Item item = JsonUtils.getItem(object, "item");
+             int i = JsonUtils.getInt(object, "data", 0);
 -            return new ItemStack(item, 1, i);
 +            ItemStack ret = new ItemStack(item, 1, i);
-+            ret.func_77982_d(net.minecraftforge.common.util.JsonUtils.readNBT(p_193221_0_, "nbt"));
++            ret.setTagCompound(net.minecraftforge.common.util.JsonUtils.readNBT(object, "nbt"));
 +            return ret;
          }
      }

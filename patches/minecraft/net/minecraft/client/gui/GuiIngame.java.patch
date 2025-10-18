@@ -1,136 +1,136 @@
 --- before/net/minecraft/client/gui/GuiIngame.java
 +++ after/net/minecraft/client/gui/GuiIngame.java
 @@ -90,7 +90,7 @@
-     protected int field_175189_D;
-     protected long field_175190_E;
-     protected long field_175191_F;
--    protected final Map<ChatType, List<IChatListener>> field_191743_I = Maps.newHashMap();
-+    protected final Map<ChatType, List<IChatListener>> field_191743_I = Maps.<ChatType, List<IChatListener>>newHashMap();
+     protected int lastPlayerHealth;
+     protected long lastSystemTime;
+     protected long healthUpdateCounter;
+-    protected final Map<ChatType, List<IChatListener>> chatListeners = Maps.newHashMap();
++    protected final Map<ChatType, List<IChatListener>> chatListeners = Maps.<ChatType, List<IChatListener>>newHashMap();
  
-     public GuiIngame(Minecraft p_i46325_1_)
+     public GuiIngame(Minecraft mcIn)
      {
 @@ -109,11 +109,11 @@
          }
  
-         IChatListener ichatlistener = NarratorChatListener.field_193643_a;
--        this.field_191743_I.get(ChatType.CHAT).add(new NormalChatListener(p_i46325_1_));
--        this.field_191743_I.get(ChatType.CHAT).add(ichatlistener);
--        this.field_191743_I.get(ChatType.SYSTEM).add(new NormalChatListener(p_i46325_1_));
--        this.field_191743_I.get(ChatType.SYSTEM).add(ichatlistener);
--        this.field_191743_I.get(ChatType.GAME_INFO).add(new OverlayChatListener(p_i46325_1_));
-+        (this.field_191743_I.get(ChatType.CHAT)).add(new NormalChatListener(p_i46325_1_));
-+        (this.field_191743_I.get(ChatType.CHAT)).add(ichatlistener);
-+        (this.field_191743_I.get(ChatType.SYSTEM)).add(new NormalChatListener(p_i46325_1_));
-+        (this.field_191743_I.get(ChatType.SYSTEM)).add(ichatlistener);
-+        (this.field_191743_I.get(ChatType.GAME_INFO)).add(new OverlayChatListener(p_i46325_1_));
-         this.func_175177_a();
+         IChatListener ichatlistener = NarratorChatListener.INSTANCE;
+-        this.chatListeners.get(ChatType.CHAT).add(new NormalChatListener(mcIn));
+-        this.chatListeners.get(ChatType.CHAT).add(ichatlistener);
+-        this.chatListeners.get(ChatType.SYSTEM).add(new NormalChatListener(mcIn));
+-        this.chatListeners.get(ChatType.SYSTEM).add(ichatlistener);
+-        this.chatListeners.get(ChatType.GAME_INFO).add(new OverlayChatListener(mcIn));
++        (this.chatListeners.get(ChatType.CHAT)).add(new NormalChatListener(mcIn));
++        (this.chatListeners.get(ChatType.CHAT)).add(ichatlistener);
++        (this.chatListeners.get(ChatType.SYSTEM)).add(new NormalChatListener(mcIn));
++        (this.chatListeners.get(ChatType.SYSTEM)).add(ichatlistener);
++        (this.chatListeners.get(ChatType.GAME_INFO)).add(new OverlayChatListener(mcIn));
+         this.setDefaultTitlesTimes();
      }
  
 @@ -139,12 +139,7 @@
          else
          {
-             GlStateManager.func_179126_j();
--            GlStateManager.func_187428_a(
+             GlStateManager.enableDepth();
+-            GlStateManager.tryBlendFuncSeparate(
 -                GlStateManager.SourceFactor.SRC_ALPHA,
 -                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
 -                GlStateManager.SourceFactor.ONE,
 -                GlStateManager.DestFactor.ZERO
 -            );
-+            GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
++            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
          }
  
-         ItemStack itemstack = this.field_73839_d.field_71439_g.field_71071_by.func_70440_f(3);
+         ItemStack itemstack = this.mc.player.inventory.armorItemInSlot(3);
 @@ -156,8 +151,7 @@
  
-         if (!this.field_73839_d.field_71439_g.func_70644_a(MobEffects.field_76431_k))
+         if (!this.mc.player.isPotionActive(MobEffects.NAUSEA))
          {
--            float f = this.field_73839_d.field_71439_g.field_71080_cy
--                      + (this.field_73839_d.field_71439_g.field_71086_bY - this.field_73839_d.field_71439_g.field_71080_cy) * p_175180_1_;
-+            float f = this.field_73839_d.field_71439_g.field_71080_cy + (this.field_73839_d.field_71439_g.field_71086_bY - this.field_73839_d.field_71439_g.field_71080_cy) * p_175180_1_;
+-            float f = this.mc.player.prevTimeInPortal
+-                      + (this.mc.player.timeInPortal - this.mc.player.prevTimeInPortal) * partialTicks;
++            float f = this.mc.player.prevTimeInPortal + (this.mc.player.timeInPortal - this.mc.player.prevTimeInPortal) * partialTicks;
  
              if (f > 0.0F)
              {
 @@ -178,9 +172,7 @@
-         this.field_73839_d.func_110434_K().func_110577_a(field_110324_m);
-         GlStateManager.func_179147_l();
-         this.func_184045_a(p_175180_1_, scaledresolution);
--        GlStateManager.func_187428_a(
+         this.mc.getTextureManager().bindTexture(ICONS);
+         GlStateManager.enableBlend();
+         this.renderAttackIndicator(partialTicks, scaledresolution);
+-        GlStateManager.tryBlendFuncSeparate(
 -            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 -        );
-+        GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-         this.field_73839_d.field_71424_I.func_76320_a("bossHealth");
-         this.field_184050_w.func_184051_a();
-         this.field_73839_d.field_71424_I.func_76319_b();
++        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+         this.mc.profiler.startSection("bossHealth");
+         this.overlayBoss.renderBossHealth();
+         this.mc.profiler.endSection();
 @@ -264,12 +256,7 @@
-                 GlStateManager.func_179094_E();
-                 GlStateManager.func_179109_b((float)(i / 2), (float)(j - 68), 0.0F);
-                 GlStateManager.func_179147_l();
--                GlStateManager.func_187428_a(
+                 GlStateManager.pushMatrix();
+                 GlStateManager.translate((float)(i / 2), (float)(j - 68), 0.0F);
+                 GlStateManager.enableBlend();
+-                GlStateManager.tryBlendFuncSeparate(
 -                    GlStateManager.SourceFactor.SRC_ALPHA,
 -                    GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
 -                    GlStateManager.SourceFactor.ONE,
 -                    GlStateManager.DestFactor.ZERO
 -                );
-+                GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
++                GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
                  int l = 16777215;
  
-                 if (this.field_73844_j)
+                 if (this.animateOverlayMessageColor)
 @@ -277,7 +264,7 @@
-                     l = MathHelper.func_181758_c(f2 / 50.0F, 0.7F, 0.6F) & 16777215;
+                     l = MathHelper.hsvToRGB(f2 / 50.0F, 0.7F, 0.6F) & 16777215;
                  }
  
--                fontrenderer.func_78276_b(this.field_73838_g, -fontrenderer.func_78256_a(this.field_73838_g) / 2, -4, l + (l1 << 24 & 0xFF000000));
-+                fontrenderer.func_78276_b(this.field_73838_g, -fontrenderer.func_78256_a(this.field_73838_g) / 2, -4, l + (l1 << 24 & -16777216));
-                 GlStateManager.func_179084_k();
-                 GlStateManager.func_179121_F();
+-                fontrenderer.drawString(this.overlayMessage, -fontrenderer.getStringWidth(this.overlayMessage) / 2, -4, l + (l1 << 24 & 0xFF000000));
++                fontrenderer.drawString(this.overlayMessage, -fontrenderer.getStringWidth(this.overlayMessage) / 2, -4, l + (l1 << 24 & -16777216));
+                 GlStateManager.disableBlend();
+                 GlStateManager.popMatrix();
              }
 @@ -311,15 +298,10 @@
-                 GlStateManager.func_179094_E();
-                 GlStateManager.func_179109_b((float)(i / 2), (float)(j / 2), 0.0F);
-                 GlStateManager.func_179147_l();
--                GlStateManager.func_187428_a(
+                 GlStateManager.pushMatrix();
+                 GlStateManager.translate((float)(i / 2), (float)(j / 2), 0.0F);
+                 GlStateManager.enableBlend();
+-                GlStateManager.tryBlendFuncSeparate(
 -                    GlStateManager.SourceFactor.SRC_ALPHA,
 -                    GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
 -                    GlStateManager.SourceFactor.ONE,
 -                    GlStateManager.DestFactor.ZERO
 -                );
-+                GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-                 GlStateManager.func_179094_E();
-                 GlStateManager.func_179152_a(4.0F, 4.0F, 4.0F);
++                GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                 GlStateManager.pushMatrix();
+                 GlStateManager.scale(4.0F, 4.0F, 4.0F);
 -                int j2 = i2 << 24 & 0xFF000000;
 +                int j2 = i2 << 24 & -16777216;
-                 fontrenderer.func_175065_a(this.field_175201_x, (float)(-fontrenderer.func_78256_a(this.field_175201_x) / 2), -10.0F, 16777215 | j2, true);
-                 GlStateManager.func_179121_F();
-                 GlStateManager.func_179094_E();
+                 fontrenderer.drawString(this.displayedTitle, (float)(-fontrenderer.getStringWidth(this.displayedTitle) / 2), -10.0F, 16777215 | j2, true);
+                 GlStateManager.popMatrix();
+                 GlStateManager.pushMatrix();
 @@ -355,9 +337,7 @@
          }
  
-         GlStateManager.func_179147_l();
--        GlStateManager.func_187428_a(
+         GlStateManager.enableBlend();
+-        GlStateManager.tryBlendFuncSeparate(
 -            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 -        );
-+        GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-         GlStateManager.func_179118_c();
-         GlStateManager.func_179094_E();
-         GlStateManager.func_179109_b(0.0F, (float)(j - 48), 0.0F);
++        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+         GlStateManager.disableAlpha();
+         GlStateManager.pushMatrix();
+         GlStateManager.translate(0.0F, (float)(j - 48), 0.0F);
 @@ -367,8 +347,7 @@
-         GlStateManager.func_179121_F();
-         scoreobjective1 = scoreboard.func_96539_a(0);
+         GlStateManager.popMatrix();
+         scoreobjective1 = scoreboard.getObjectiveInDisplaySlot(0);
  
--        if (!this.field_73839_d.field_71474_y.field_74321_H.func_151470_d()
--                || this.field_73839_d.func_71387_A() && this.field_73839_d.field_71439_g.field_71174_a.func_175106_d().size() <= 1 && scoreobjective1 == null)
-+        if (!this.field_73839_d.field_71474_y.field_74321_H.func_151470_d() || this.field_73839_d.func_71387_A() && this.field_73839_d.field_71439_g.field_71174_a.func_175106_d().size() <= 1 && scoreobjective1 == null)
+-        if (!this.mc.gameSettings.keyBindPlayerList.isKeyDown()
+-                || this.mc.isIntegratedServerRunning() && this.mc.player.connection.getPlayerInfoMap().size() <= 1 && scoreobjective1 == null)
++        if (!this.mc.gameSettings.keyBindPlayerList.isKeyDown() || this.mc.isIntegratedServerRunning() && this.mc.player.connection.getPlayerInfoMap().size() <= 1 && scoreobjective1 == null)
          {
-             this.field_175196_v.func_175246_a(false);
+             this.overlayPlayerList.updatePlayerList(false);
          }
 @@ -400,8 +379,8 @@
  
-                 BlockPos blockpos = raytraceresult.func_178782_a();
+                 BlockPos blockpos = raytraceresult.getBlockPos();
  
--                if (!this.field_73839_d.field_71441_e.func_180495_p(blockpos).func_177230_c().func_149716_u()
--                        || !(this.field_73839_d.field_71441_e.func_175625_s(blockpos) instanceof IInventory))
-+                net.minecraft.block.state.IBlockState state = this.field_73839_d.field_71441_e.func_180495_p(blockpos);
-+                if (!state.func_177230_c().hasTileEntity(state) || !(this.field_73839_d.field_71441_e.func_175625_s(blockpos) instanceof IInventory))
+-                if (!this.mc.world.getBlockState(blockpos).getBlock().hasTileEntity()
+-                        || !(this.mc.world.getTileEntity(blockpos) instanceof IInventory))
++                net.minecraft.block.state.IBlockState state = this.mc.world.getBlockState(blockpos);
++                if (!state.getBlock().hasTileEntity(state) || !(this.mc.world.getTileEntity(blockpos) instanceof IInventory))
                  {
                      return;
                  }
@@ -138,40 +138,40 @@
              }
              else
              {
--                GlStateManager.func_187428_a(
+-                GlStateManager.tryBlendFuncSeparate(
 -                    GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR,
 -                    GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR,
 -                    GlStateManager.SourceFactor.ONE,
 -                    GlStateManager.DestFactor.ZERO
 -                );
-+                GlStateManager.func_187428_a(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-                 GlStateManager.func_179141_d();
-                 this.func_73729_b(l / 2 - 7, i1 / 2 - 7, 0, 0, 16, 16);
++                GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                 GlStateManager.enableAlpha();
+                 this.drawTexturedModalRect(l / 2 - 7, i1 / 2 - 7, 0, 0, 16, 16);
  
 @@ -440,7 +414,7 @@
-                     if (this.field_73839_d.field_147125_j != null && this.field_73839_d.field_147125_j instanceof EntityLivingBase && f >= 1.0F)
+                     if (this.mc.pointedEntity != null && this.mc.pointedEntity instanceof EntityLivingBase && f >= 1.0F)
                      {
-                         flag = this.field_73839_d.field_71439_g.func_184818_cX() > 5.0F;
--                        flag &= ((EntityLivingBase)this.field_73839_d.field_147125_j).func_70089_S();
-+                        flag = flag & ((EntityLivingBase)this.field_73839_d.field_147125_j).func_70089_S();
+                         flag = this.mc.player.getCooldownPeriod() > 5.0F;
+-                        flag &= ((EntityLivingBase)this.mc.pointedEntity).isEntityAlive();
++                        flag = flag & ((EntityLivingBase)this.mc.pointedEntity).isEntityAlive();
                      }
  
                      int i = i1 / 2 - 7 + 16;
 @@ -476,7 +450,10 @@
              {
-                 Potion potion = potioneffect.func_188419_a();
+                 Potion potion = potioneffect.getPotion();
  
--                if (potion.func_76400_d() && potioneffect.func_188418_e())
+-                if (potion.hasStatusIcon() && potioneffect.doesShowParticles())
 +                if (!potion.shouldRenderHUD(potioneffect)) continue;
 +                // Rebind in case previous renderHUDEffect changed texture
-+                this.field_73839_d.func_110434_K().func_110577_a(GuiContainer.field_147001_a);
-+                if (potioneffect.func_188418_e())
++                this.mc.getTextureManager().bindTexture(GuiContainer.INVENTORY_BACKGROUND);
++                if (potioneffect.doesShowParticles())
                  {
-                     int k = p_184048_1_.func_78326_a();
+                     int k = resolution.getScaledWidth();
                      int l = 1;
 @@ -490,13 +467,13 @@
  
-                     if (potion.func_188408_i())
+                     if (potion.isBeneficial())
                      {
 -                        i++;
 -                        k -= 25 * i;
@@ -188,68 +188,68 @@
                      }
  
 @@ -514,14 +491,15 @@
-                         if (potioneffect.func_76459_b() <= 200)
+                         if (potioneffect.getDuration() <= 200)
                          {
-                             int j1 = 10 - potioneffect.func_76459_b() / 20;
--                            f = MathHelper.func_76131_a((float)potioneffect.func_76459_b() / 10.0F / 5.0F * 0.5F, 0.0F, 0.5F)
--                                + MathHelper.func_76134_b((float)potioneffect.func_76459_b() * (float) Math.PI / 5.0F)
--                                * MathHelper.func_76131_a((float)j1 / 10.0F * 0.25F, 0.0F, 0.25F);
-+                            f = MathHelper.func_76131_a((float)potioneffect.func_76459_b() / 10.0F / 5.0F * 0.5F, 0.0F, 0.5F) + MathHelper.func_76134_b((float)potioneffect.func_76459_b() * (float)Math.PI / 5.0F) * MathHelper.func_76131_a((float)j1 / 10.0F * 0.25F, 0.0F, 0.25F);
+                             int j1 = 10 - potioneffect.getDuration() / 20;
+-                            f = MathHelper.clamp((float)potioneffect.getDuration() / 10.0F / 5.0F * 0.5F, 0.0F, 0.5F)
+-                                + MathHelper.cos((float)potioneffect.getDuration() * (float) Math.PI / 5.0F)
+-                                * MathHelper.clamp((float)j1 / 10.0F * 0.25F, 0.0F, 0.25F);
++                            f = MathHelper.clamp((float)potioneffect.getDuration() / 10.0F / 5.0F * 0.5F, 0.0F, 0.5F) + MathHelper.cos((float)potioneffect.getDuration() * (float)Math.PI / 5.0F) * MathHelper.clamp((float)j1 / 10.0F * 0.25F, 0.0F, 0.25F);
                          }
                      }
  
-                     GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, f);
+                     GlStateManager.color(1.0F, 1.0F, 1.0F, f);
 +                    // FORGE - Move status icon check down from above so renderHUDEffect will still be called without a status icon
-+                    if (potion.func_76400_d())
-                     this.func_73729_b(k + 3, l + 3, i1 % 8 * 18, 198 + i1 / 8 * 18, 18, 18);
-+                    potion.renderHUDEffect(potioneffect, this, k, l, this.field_73735_i, f);
++                    if (potion.hasStatusIcon())
+                     this.drawTexturedModalRect(k + 3, l + 3, i1 % 8 * 18, 198 + i1 / 8 * 18, 18, 18);
++                    potion.renderHUDEffect(potioneffect, this, k, l, this.zLevel, f);
                  }
              }
          }
 @@ -559,15 +537,10 @@
-             this.field_73735_i = f;
-             GlStateManager.func_179091_B();
-             GlStateManager.func_179147_l();
--            GlStateManager.func_187428_a(
+             this.zLevel = f;
+             GlStateManager.enableRescaleNormal();
+             GlStateManager.enableBlend();
+-            GlStateManager.tryBlendFuncSeparate(
 -                GlStateManager.SourceFactor.SRC_ALPHA,
 -                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
 -                GlStateManager.SourceFactor.ONE,
 -                GlStateManager.DestFactor.ZERO
 -            );
-+            GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-             RenderHelper.func_74520_c();
++            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+             RenderHelper.enableGUIStandardItemLighting();
  
 -            for (int l = 0; l < 9; l++)
 +            for (int l = 0; l < 9; ++l)
              {
                  int i1 = i - 90 + l * 20 + 2;
-                 int j1 = p_180479_1_.func_78328_b() - 16 - 3;
+                 int j1 = sr.getScaledHeight() - 16 - 3;
 @@ -702,12 +675,7 @@
              {
-                 GlStateManager.func_179094_E();
-                 GlStateManager.func_179147_l();
--                GlStateManager.func_187428_a(
+                 GlStateManager.pushMatrix();
+                 GlStateManager.enableBlend();
+-                GlStateManager.tryBlendFuncSeparate(
 -                    GlStateManager.SourceFactor.SRC_ALPHA,
 -                    GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
 -                    GlStateManager.SourceFactor.ONE,
 -                    GlStateManager.DestFactor.ZERO
 -                );
-+                GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-                 this.func_175179_f().func_175063_a(s, (float)i, (float)j, 16777215 + (k << 24));
-                 GlStateManager.func_179084_k();
-                 GlStateManager.func_179121_F();
++                GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                 this.getFontRenderer().drawStringWithShadow(s, (float)i, (float)j, 16777215 + (k << 24));
+                 GlStateManager.disableBlend();
+                 GlStateManager.popMatrix();
 @@ -774,7 +742,7 @@
  
          for (Score score1 : collection)
          {
 -            j++;
 +            ++j;
-             ScorePlayerTeam scoreplayerteam1 = scoreboard.func_96509_i(score1.func_96653_e());
-             String s1 = ScorePlayerTeam.func_96667_a(scoreplayerteam1, score1.func_96653_e());
-             String s2 = TextFormatting.RED + "" + score1.func_96652_c();
+             ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(score1.getPlayerName());
+             String s1 = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score1.getPlayerName());
+             String s2 = TextFormatting.RED + "" + score1.getScorePoints();
 @@ -846,7 +814,7 @@
  
-             this.field_73839_d.field_71424_I.func_76320_a("armor");
+             this.mc.profiler.startSection("armor");
  
 -            for (int k3 = 0; k3 < 10; k3++)
 +            for (int k3 = 0; k3 < 10; ++k3)
@@ -258,17 +258,17 @@
                  {
 @@ -871,7 +839,7 @@
  
-             this.field_73839_d.field_71424_I.func_76318_c("health");
+             this.mc.profiler.endStartSection("health");
  
--            for (int j5 = MathHelper.func_76123_f((f + (float)k1) / 2.0F) - 1; j5 >= 0; j5--)
-+            for (int j5 = MathHelper.func_76123_f((f + (float)k1) / 2.0F) - 1; j5 >= 0; --j5)
+-            for (int j5 = MathHelper.ceil((f + (float)k1) / 2.0F) - 1; j5 >= 0; j5--)
++            for (int j5 = MathHelper.ceil((f + (float)k1) / 2.0F) - 1; j5 >= 0; --j5)
              {
                  int k5 = 16;
  
 @@ -932,7 +900,7 @@
                      if (l2 == k1 && k1 % 2 == 1)
                      {
-                         this.func_73729_b(k4, l4, k5 + 153, 9 * i5, 9, 9);
+                         this.drawTexturedModalRect(k4, l4, k5 + 153, 9 * i5, 9, 9);
 -                        l2--;
 +                        --l2;
                      }
@@ -276,7 +276,7 @@
                      {
 @@ -960,7 +928,7 @@
              {
-                 this.field_73839_d.field_71424_I.func_76318_c("food");
+                 this.mc.profiler.endStartSection("food");
  
 -                for (int l5 = 0; l5 < 10; l5++)
 +                for (int l5 = 0; l5 < 10; ++l5)
@@ -284,13 +284,13 @@
                      int j6 = j1;
                      int l6 = 16;
 @@ -997,10 +965,10 @@
-             if (entityplayer.func_70055_a(Material.field_151586_h))
+             if (entityplayer.isInsideOfMaterial(Material.WATER))
              {
-                 int i6 = this.field_73839_d.field_71439_g.func_70086_ai();
--                int k6 = MathHelper.func_76143_f((double)(i6 - 2) * 10.0 / 300.0);
--                int i7 = MathHelper.func_76143_f((double)i6 * 10.0 / 300.0) - k6;
-+                int k6 = MathHelper.func_76143_f((double)(i6 - 2) * 10.0D / 300.0D);
-+                int i7 = MathHelper.func_76143_f((double)i6 * 10.0D / 300.0D) - k6;
+                 int i6 = this.mc.player.getAir();
+-                int k6 = MathHelper.ceil((double)(i6 - 2) * 10.0 / 300.0);
+-                int i7 = MathHelper.ceil((double)i6 * 10.0 / 300.0) - k6;
++                int k6 = MathHelper.ceil((double)(i6 - 2) * 10.0D / 300.0D);
++                int i7 = MathHelper.ceil((double)i6 * 10.0D / 300.0D) - k6;
  
 -                for (int k7 = 0; k7 < k6 + i7; k7++)
 +                for (int k7 = 0; k7 < k6 + i7; ++k7)
@@ -308,153 +308,153 @@
                          int j2 = 0;
 @@ -1075,19 +1043,17 @@
      {
-         GlStateManager.func_179097_i();
-         GlStateManager.func_179132_a(false);
--        GlStateManager.func_187428_a(
+         GlStateManager.disableDepth();
+         GlStateManager.depthMask(false);
+-        GlStateManager.tryBlendFuncSeparate(
 -            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 -        );
-+        GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-         GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
-         GlStateManager.func_179118_c();
-         this.field_73839_d.func_110434_K().func_110577_a(field_110328_d);
-         Tessellator tessellator = Tessellator.func_178181_a();
-         BufferBuilder bufferbuilder = tessellator.func_178180_c();
-         bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181707_g);
--        bufferbuilder.func_181662_b(0.0, (double)p_180476_1_.func_78328_b(), -90.0).func_187315_a(0.0, 1.0).func_181675_d();
--        bufferbuilder.func_181662_b((double)p_180476_1_.func_78326_a(), (double)p_180476_1_.func_78328_b(), -90.0).func_187315_a(1.0, 1.0).func_181675_d();
--        bufferbuilder.func_181662_b((double)p_180476_1_.func_78326_a(), 0.0, -90.0).func_187315_a(1.0, 0.0).func_181675_d();
--        bufferbuilder.func_181662_b(0.0, 0.0, -90.0).func_187315_a(0.0, 0.0).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, (double)p_180476_1_.func_78328_b(), -90.0D).func_187315_a(0.0D, 1.0D).func_181675_d();
-+        bufferbuilder.func_181662_b((double)p_180476_1_.func_78326_a(), (double)p_180476_1_.func_78328_b(), -90.0D).func_187315_a(1.0D, 1.0D).func_181675_d();
-+        bufferbuilder.func_181662_b((double)p_180476_1_.func_78326_a(), 0.0D, -90.0D).func_187315_a(1.0D, 0.0D).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, 0.0D, -90.0D).func_187315_a(0.0D, 0.0D).func_181675_d();
-         tessellator.func_78381_a();
-         GlStateManager.func_179132_a(true);
-         GlStateManager.func_179126_j();
++        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+         GlStateManager.disableAlpha();
+         this.mc.getTextureManager().bindTexture(PUMPKIN_BLUR_TEX_PATH);
+         Tessellator tessellator = Tessellator.getInstance();
+         BufferBuilder bufferbuilder = tessellator.getBuffer();
+         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+-        bufferbuilder.pos(0.0, (double)scaledRes.getScaledHeight(), -90.0).tex(0.0, 1.0).endVertex();
+-        bufferbuilder.pos((double)scaledRes.getScaledWidth(), (double)scaledRes.getScaledHeight(), -90.0).tex(1.0, 1.0).endVertex();
+-        bufferbuilder.pos((double)scaledRes.getScaledWidth(), 0.0, -90.0).tex(1.0, 0.0).endVertex();
+-        bufferbuilder.pos(0.0, 0.0, -90.0).tex(0.0, 0.0).endVertex();
++        bufferbuilder.pos(0.0D, (double)scaledRes.getScaledHeight(), -90.0D).tex(0.0D, 1.0D).endVertex();
++        bufferbuilder.pos((double)scaledRes.getScaledWidth(), (double)scaledRes.getScaledHeight(), -90.0D).tex(1.0D, 1.0D).endVertex();
++        bufferbuilder.pos((double)scaledRes.getScaledWidth(), 0.0D, -90.0D).tex(1.0D, 0.0D).endVertex();
++        bufferbuilder.pos(0.0D, 0.0D, -90.0D).tex(0.0D, 0.0D).endVertex();
+         tessellator.draw();
+         GlStateManager.depthMask(true);
+         GlStateManager.enableDepth();
 @@ -1101,9 +1067,7 @@
-         p_180480_1_ = MathHelper.func_76131_a(p_180480_1_, 0.0F, 1.0F);
-         WorldBorder worldborder = this.field_73839_d.field_71441_e.func_175723_af();
-         float f = (float)worldborder.func_177745_a(this.field_73839_d.field_71439_g);
+         lightLevel = MathHelper.clamp(lightLevel, 0.0F, 1.0F);
+         WorldBorder worldborder = this.mc.world.getWorldBorder();
+         float f = (float)worldborder.getClosestDistance(this.mc.player);
 -        double d0 = Math.min(
--                        worldborder.func_177749_o() * (double)worldborder.func_177740_p() * 1000.0, Math.abs(worldborder.func_177751_j() - worldborder.func_177741_h())
+-                        worldborder.getResizeSpeed() * (double)worldborder.getWarningTime() * 1000.0, Math.abs(worldborder.getTargetSize() - worldborder.getDiameter())
 -                    );
-+        double d0 = Math.min(worldborder.func_177749_o() * (double)worldborder.func_177740_p() * 1000.0D, Math.abs(worldborder.func_177751_j() - worldborder.func_177741_h()));
-         double d1 = Math.max((double)worldborder.func_177748_q(), d0);
++        double d0 = Math.min(worldborder.getResizeSpeed() * (double)worldborder.getWarningTime() * 1000.0D, Math.abs(worldborder.getTargetSize() - worldborder.getDiameter()));
+         double d1 = Math.max((double)worldborder.getWarningDistance(), d0);
  
          if ((double)f < d1)
 @@ -1115,12 +1079,10 @@
              f = 0.0F;
          }
  
--        this.field_73843_a = (float)((double)this.field_73843_a + (double)(p_180480_1_ - this.field_73843_a) * 0.01);
-+        this.field_73843_a = (float)((double)this.field_73843_a + (double)(p_180480_1_ - this.field_73843_a) * 0.01D);
-         GlStateManager.func_179097_i();
-         GlStateManager.func_179132_a(false);
--        GlStateManager.func_187428_a(
+-        this.prevVignetteBrightness = (float)((double)this.prevVignetteBrightness + (double)(lightLevel - this.prevVignetteBrightness) * 0.01);
++        this.prevVignetteBrightness = (float)((double)this.prevVignetteBrightness + (double)(lightLevel - this.prevVignetteBrightness) * 0.01D);
+         GlStateManager.disableDepth();
+         GlStateManager.depthMask(false);
+-        GlStateManager.tryBlendFuncSeparate(
 -            GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 -        );
-+        GlStateManager.func_187428_a(GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
++        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
  
          if (f > 0.0F)
          {
 @@ -1135,34 +1097,30 @@
-         Tessellator tessellator = Tessellator.func_178181_a();
-         BufferBuilder bufferbuilder = tessellator.func_178180_c();
-         bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181707_g);
--        bufferbuilder.func_181662_b(0.0, (double)p_180480_2_.func_78328_b(), -90.0).func_187315_a(0.0, 1.0).func_181675_d();
--        bufferbuilder.func_181662_b((double)p_180480_2_.func_78326_a(), (double)p_180480_2_.func_78328_b(), -90.0).func_187315_a(1.0, 1.0).func_181675_d();
--        bufferbuilder.func_181662_b((double)p_180480_2_.func_78326_a(), 0.0, -90.0).func_187315_a(1.0, 0.0).func_181675_d();
--        bufferbuilder.func_181662_b(0.0, 0.0, -90.0).func_187315_a(0.0, 0.0).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, (double)p_180480_2_.func_78328_b(), -90.0D).func_187315_a(0.0D, 1.0D).func_181675_d();
-+        bufferbuilder.func_181662_b((double)p_180480_2_.func_78326_a(), (double)p_180480_2_.func_78328_b(), -90.0D).func_187315_a(1.0D, 1.0D).func_181675_d();
-+        bufferbuilder.func_181662_b((double)p_180480_2_.func_78326_a(), 0.0D, -90.0D).func_187315_a(1.0D, 0.0D).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, 0.0D, -90.0D).func_187315_a(0.0D, 0.0D).func_181675_d();
-         tessellator.func_78381_a();
-         GlStateManager.func_179132_a(true);
-         GlStateManager.func_179126_j();
-         GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
--        GlStateManager.func_187428_a(
+         Tessellator tessellator = Tessellator.getInstance();
+         BufferBuilder bufferbuilder = tessellator.getBuffer();
+         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+-        bufferbuilder.pos(0.0, (double)scaledRes.getScaledHeight(), -90.0).tex(0.0, 1.0).endVertex();
+-        bufferbuilder.pos((double)scaledRes.getScaledWidth(), (double)scaledRes.getScaledHeight(), -90.0).tex(1.0, 1.0).endVertex();
+-        bufferbuilder.pos((double)scaledRes.getScaledWidth(), 0.0, -90.0).tex(1.0, 0.0).endVertex();
+-        bufferbuilder.pos(0.0, 0.0, -90.0).tex(0.0, 0.0).endVertex();
++        bufferbuilder.pos(0.0D, (double)scaledRes.getScaledHeight(), -90.0D).tex(0.0D, 1.0D).endVertex();
++        bufferbuilder.pos((double)scaledRes.getScaledWidth(), (double)scaledRes.getScaledHeight(), -90.0D).tex(1.0D, 1.0D).endVertex();
++        bufferbuilder.pos((double)scaledRes.getScaledWidth(), 0.0D, -90.0D).tex(1.0D, 0.0D).endVertex();
++        bufferbuilder.pos(0.0D, 0.0D, -90.0D).tex(0.0D, 0.0D).endVertex();
+         tessellator.draw();
+         GlStateManager.depthMask(true);
+         GlStateManager.enableDepth();
+         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+-        GlStateManager.tryBlendFuncSeparate(
 -            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 -        );
-+        GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
++        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
      }
  
-     protected void func_180474_b(float p_180474_1_, ScaledResolution p_180474_2_)
+     protected void renderPortal(float timeInPortal, ScaledResolution scaledRes)
      {
-         if (p_180474_1_ < 1.0F)
+         if (timeInPortal < 1.0F)
          {
--            p_180474_1_ *= p_180474_1_;
--            p_180474_1_ *= p_180474_1_;
-+            p_180474_1_ = p_180474_1_ * p_180474_1_;
-+            p_180474_1_ = p_180474_1_ * p_180474_1_;
-             p_180474_1_ = p_180474_1_ * 0.8F + 0.2F;
+-            timeInPortal *= timeInPortal;
+-            timeInPortal *= timeInPortal;
++            timeInPortal = timeInPortal * timeInPortal;
++            timeInPortal = timeInPortal * timeInPortal;
+             timeInPortal = timeInPortal * 0.8F + 0.2F;
          }
  
-         GlStateManager.func_179118_c();
-         GlStateManager.func_179097_i();
-         GlStateManager.func_179132_a(false);
--        GlStateManager.func_187428_a(
+         GlStateManager.disableAlpha();
+         GlStateManager.disableDepth();
+         GlStateManager.depthMask(false);
+-        GlStateManager.tryBlendFuncSeparate(
 -            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 -        );
-+        GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-         GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, p_180474_1_);
-         this.field_73839_d.func_110434_K().func_110577_a(TextureMap.field_110575_b);
-         TextureAtlasSprite textureatlassprite = this.field_73839_d.func_175602_ab().func_175023_a().func_178122_a(Blocks.field_150427_aO.func_176223_P());
++        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+         GlStateManager.color(1.0F, 1.0F, 1.0F, timeInPortal);
+         this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+         TextureAtlasSprite textureatlassprite = this.mc.getBlockRendererDispatcher().getBlockModelShapes().getTexture(Blocks.PORTAL.getDefaultState());
 @@ -1173,12 +1131,10 @@
-         Tessellator tessellator = Tessellator.func_178181_a();
-         BufferBuilder bufferbuilder = tessellator.func_178180_c();
-         bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181707_g);
--        bufferbuilder.func_181662_b(0.0, (double)p_180474_2_.func_78328_b(), -90.0).func_187315_a((double)f, (double)f3).func_181675_d();
--        bufferbuilder.func_181662_b((double)p_180474_2_.func_78326_a(), (double)p_180474_2_.func_78328_b(), -90.0)
--        .func_187315_a((double)f2, (double)f3)
--        .func_181675_d();
--        bufferbuilder.func_181662_b((double)p_180474_2_.func_78326_a(), 0.0, -90.0).func_187315_a((double)f2, (double)f1).func_181675_d();
--        bufferbuilder.func_181662_b(0.0, 0.0, -90.0).func_187315_a((double)f, (double)f1).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, (double)p_180474_2_.func_78328_b(), -90.0D).func_187315_a((double)f, (double)f3).func_181675_d();
-+        bufferbuilder.func_181662_b((double)p_180474_2_.func_78326_a(), (double)p_180474_2_.func_78328_b(), -90.0D).func_187315_a((double)f2, (double)f3).func_181675_d();
-+        bufferbuilder.func_181662_b((double)p_180474_2_.func_78326_a(), 0.0D, -90.0D).func_187315_a((double)f2, (double)f1).func_181675_d();
-+        bufferbuilder.func_181662_b(0.0D, 0.0D, -90.0D).func_187315_a((double)f, (double)f1).func_181675_d();
-         tessellator.func_78381_a();
-         GlStateManager.func_179132_a(true);
-         GlStateManager.func_179126_j();
+         Tessellator tessellator = Tessellator.getInstance();
+         BufferBuilder bufferbuilder = tessellator.getBuffer();
+         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+-        bufferbuilder.pos(0.0, (double)scaledRes.getScaledHeight(), -90.0).tex((double)f, (double)f3).endVertex();
+-        bufferbuilder.pos((double)scaledRes.getScaledWidth(), (double)scaledRes.getScaledHeight(), -90.0)
+-        .tex((double)f2, (double)f3)
+-        .endVertex();
+-        bufferbuilder.pos((double)scaledRes.getScaledWidth(), 0.0, -90.0).tex((double)f2, (double)f1).endVertex();
+-        bufferbuilder.pos(0.0, 0.0, -90.0).tex((double)f, (double)f1).endVertex();
++        bufferbuilder.pos(0.0D, (double)scaledRes.getScaledHeight(), -90.0D).tex((double)f, (double)f3).endVertex();
++        bufferbuilder.pos((double)scaledRes.getScaledWidth(), (double)scaledRes.getScaledHeight(), -90.0D).tex((double)f2, (double)f3).endVertex();
++        bufferbuilder.pos((double)scaledRes.getScaledWidth(), 0.0D, -90.0D).tex((double)f2, (double)f1).endVertex();
++        bufferbuilder.pos(0.0D, 0.0D, -90.0D).tex((double)f, (double)f1).endVertex();
+         tessellator.draw();
+         GlStateManager.depthMask(true);
+         GlStateManager.enableDepth();
 @@ -1216,12 +1172,12 @@
      {
-         if (this.field_73845_h > 0)
+         if (this.overlayMessageTime > 0)
          {
--            this.field_73845_h--;
-+            --this.field_73845_h;
+-            this.overlayMessageTime--;
++            --this.overlayMessageTime;
          }
  
-         if (this.field_175195_w > 0)
+         if (this.titlesTimer > 0)
          {
--            this.field_175195_w--;
-+            --this.field_175195_w;
+-            this.titlesTimer--;
++            --this.titlesTimer;
  
-             if (this.field_175195_w <= 0)
+             if (this.titlesTimer <= 0)
              {
 @@ -1230,7 +1186,7 @@
              }
          }
  
--        this.field_73837_f++;
-+        ++this.field_73837_f;
+-        this.updateCounter++;
++        ++this.updateCounter;
  
-         if (this.field_73839_d.field_71439_g != null)
+         if (this.mc.player != null)
          {
 @@ -1240,14 +1196,11 @@
              {
-                 this.field_92017_k = 0;
+                 this.remainingHighlightTicks = 0;
              }
--            else if (!this.field_92016_l.func_190926_b()
--                     && itemstack.func_77973_b() == this.field_92016_l.func_77973_b()
--                     && ItemStack.func_77970_a(itemstack, this.field_92016_l)
--                     && (itemstack.func_77984_f() || itemstack.func_77960_j() == this.field_92016_l.func_77960_j()))
-+            else if (!this.field_92016_l.func_190926_b() && itemstack.func_77973_b() == this.field_92016_l.func_77973_b() && ItemStack.func_77970_a(itemstack, this.field_92016_l) && (itemstack.func_77984_f() || itemstack.func_77960_j() == this.field_92016_l.func_77960_j()))
+-            else if (!this.highlightingItemStack.isEmpty()
+-                     && itemstack.getItem() == this.highlightingItemStack.getItem()
+-                     && ItemStack.areItemStackTagsEqual(itemstack, this.highlightingItemStack)
+-                     && (itemstack.isItemStackDamageable() || itemstack.getMetadata() == this.highlightingItemStack.getMetadata()))
++            else if (!this.highlightingItemStack.isEmpty() && itemstack.getItem() == this.highlightingItemStack.getItem() && ItemStack.areItemStackTagsEqual(itemstack, this.highlightingItemStack) && (itemstack.isItemStackDamageable() || itemstack.getMetadata() == this.highlightingItemStack.getMetadata()))
              {
-                 if (this.field_92017_k > 0)
+                 if (this.remainingHighlightTicks > 0)
                  {
--                    this.field_92017_k--;
-+                    --this.field_92017_k;
+-                    this.remainingHighlightTicks--;
++                    --this.remainingHighlightTicks;
                  }
              }
              else

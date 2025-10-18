@@ -14,10 +14,10 @@
  import net.minecraft.init.Items;
  import net.minecraft.item.Item;
 @@ -23,36 +25,24 @@
-     public static final PropertyInteger field_176484_a = PropertyInteger.func_177719_a("age", 0, 7);
-     public static final PropertyDirection field_176483_b = BlockTorch.field_176596_a;
-     private final Block field_149877_a;
--    protected static final AxisAlignedBB[] field_185521_d = new AxisAlignedBB[]
+     public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 7);
+     public static final PropertyDirection FACING = BlockTorch.FACING;
+     private final Block crop;
+-    protected static final AxisAlignedBB[] STEM_AABB = new AxisAlignedBB[]
 -        {
 -            new AxisAlignedBB(0.375, 0.0, 0.375, 0.625, 0.125, 0.625),
 -            new AxisAlignedBB(0.375, 0.0, 0.375, 0.625, 0.25, 0.625),
@@ -28,121 +28,121 @@
 -            new AxisAlignedBB(0.375, 0.0, 0.375, 0.625, 0.875, 0.625),
 -            new AxisAlignedBB(0.375, 0.0, 0.375, 0.625, 1.0, 0.625)
 -        };
-+    protected static final AxisAlignedBB[] field_185521_d = new AxisAlignedBB[] {new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.125D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.25D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.375D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.5D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.625D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.75D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.875D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 1.0D, 0.625D)};
++    protected static final AxisAlignedBB[] STEM_AABB = new AxisAlignedBB[] {new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.125D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.25D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.375D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.5D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.625D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.75D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.875D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 1.0D, 0.625D)};
  
-     protected BlockStem(Block p_i45430_1_)
+     protected BlockStem(Block crop)
      {
--        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176484_a, 0).func_177226_a(field_176483_b, EnumFacing.UP));
-+        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176484_a, Integer.valueOf(0)).func_177226_a(field_176483_b, EnumFacing.UP));
-         this.field_149877_a = p_i45430_1_;
-         this.func_149675_a(true);
--        this.func_149647_a(null);
-+        this.func_149647_a((CreativeTabs)null);
+-        this.setDefaultState(this.blockState.getBaseState().withProperty(AGE, 0).withProperty(FACING, EnumFacing.UP));
++        this.setDefaultState(this.blockState.getBaseState().withProperty(AGE, Integer.valueOf(0)).withProperty(FACING, EnumFacing.UP));
+         this.crop = crop;
+         this.setTickRandomly(true);
+-        this.setCreativeTab(null);
++        this.setCreativeTab((CreativeTabs)null);
      }
  
 -    @Override
-     public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
+     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
      {
--        return field_185521_d[p_185496_1_.func_177229_b(field_176484_a)];
-+        return field_185521_d[((Integer)p_185496_1_.func_177229_b(field_176484_a)).intValue()];
+-        return STEM_AABB[state.getValue(AGE)];
++        return STEM_AABB[((Integer)state.getValue(AGE)).intValue()];
      }
  
 -    @Override
-     public IBlockState func_176221_a(IBlockState p_176221_1_, IBlockAccess p_176221_2_, BlockPos p_176221_3_)
+     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
      {
--        int i = p_176221_1_.func_177229_b(field_176484_a);
-+        int i = ((Integer)p_176221_1_.func_177229_b(field_176484_a)).intValue();
-         p_176221_1_ = p_176221_1_.func_177226_a(field_176483_b, EnumFacing.UP);
+-        int i = state.getValue(AGE);
++        int i = ((Integer)state.getValue(AGE)).intValue();
+         state = state.withProperty(FACING, EnumFacing.UP);
  
          for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
 @@ -67,29 +57,28 @@
-         return p_176221_1_;
+         return state;
      }
  
 -    @Override
-     protected boolean func_185514_i(IBlockState p_185514_1_)
+     protected boolean canSustainBush(IBlockState state)
      {
-         return p_185514_1_.func_177230_c() == Blocks.field_150458_ak;
+         return state.getBlock() == Blocks.FARMLAND;
      }
  
 -    @Override
-     public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
+     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
      {
-         super.func_180650_b(p_180650_1_, p_180650_2_, p_180650_3_, p_180650_4_);
+         super.updateTick(worldIn, pos, state, rand);
  
-+        if (!p_180650_1_.func_175697_a(p_180650_2_, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
-         if (p_180650_1_.func_175671_l(p_180650_2_.func_177984_a()) >= 9)
++        if (!worldIn.isAreaLoaded(pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
+         if (worldIn.getLightFromNeighbors(pos.up()) >= 9)
          {
-             float f = BlockCrops.func_180672_a(this, p_180650_1_, p_180650_2_);
+             float f = BlockCrops.getGrowthChance(this, worldIn, pos);
  
--            if (p_180650_4_.nextInt((int)(25.0F / f) + 1) == 0)
-+            if(net.minecraftforge.common.ForgeHooks.onCropsGrowPre(p_180650_1_, p_180650_2_, p_180650_3_, p_180650_4_.nextInt((int)(25.0F / f) + 1) == 0))
+-            if (rand.nextInt((int)(25.0F / f) + 1) == 0)
++            if(net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, pos, state, rand.nextInt((int)(25.0F / f) + 1) == 0))
              {
--                int i = p_180650_3_.func_177229_b(field_176484_a);
-+                int i = ((Integer)p_180650_3_.func_177229_b(field_176484_a)).intValue();
+-                int i = state.getValue(AGE);
++                int i = ((Integer)state.getValue(AGE)).intValue();
  
                  if (i < 7)
                  {
--                    p_180650_3_ = p_180650_3_.func_177226_a(field_176484_a, i + 1);
--                    p_180650_1_.func_180501_a(p_180650_2_, p_180650_3_, 2);
-+                    IBlockState newState = p_180650_3_.func_177226_a(field_176484_a, Integer.valueOf(i + 1));
-+                    p_180650_1_.func_180501_a(p_180650_2_, newState, 2);
+-                    state = state.withProperty(AGE, i + 1);
+-                    worldIn.setBlockState(pos, state, 2);
++                    IBlockState newState = state.withProperty(AGE, Integer.valueOf(i + 1));
++                    worldIn.setBlockState(pos, newState, 2);
                  }
                  else
                  {
 @@ -102,42 +91,45 @@
                      }
  
-                     p_180650_2_ = p_180650_2_.func_177972_a(EnumFacing.Plane.HORIZONTAL.func_179518_a(p_180650_4_));
--                    Block block = p_180650_1_.func_180495_p(p_180650_2_.func_177977_b()).func_177230_c();
-+                    IBlockState soil = p_180650_1_.func_180495_p(p_180650_2_.func_177977_b());
-+                    Block block = soil.func_177230_c();
+                     pos = pos.offset(EnumFacing.Plane.HORIZONTAL.random(rand));
+-                    Block block = worldIn.getBlockState(pos.down()).getBlock();
++                    IBlockState soil = worldIn.getBlockState(pos.down());
++                    Block block = soil.getBlock();
  
--                    if (p_180650_1_.func_180495_p(p_180650_2_).func_177230_c().field_149764_J == Material.field_151579_a
--                            && (block == Blocks.field_150458_ak || block == Blocks.field_150346_d || block == Blocks.field_150349_c))
-+                    if (p_180650_1_.func_175623_d(p_180650_2_) && (block.canSustainPlant(soil, p_180650_1_, p_180650_2_.func_177977_b(), EnumFacing.UP, this) || block == Blocks.field_150346_d || block == Blocks.field_150349_c))
+-                    if (worldIn.getBlockState(pos).getBlock().material == Material.AIR
+-                            && (block == Blocks.FARMLAND || block == Blocks.DIRT || block == Blocks.GRASS))
++                    if (worldIn.isAirBlock(pos) && (block.canSustainPlant(soil, worldIn, pos.down(), EnumFacing.UP, this) || block == Blocks.DIRT || block == Blocks.GRASS))
                      {
-                         p_180650_1_.func_175656_a(p_180650_2_, this.field_149877_a.func_176223_P());
+                         worldIn.setBlockState(pos, this.crop.getDefaultState());
                      }
                  }
-+                net.minecraftforge.common.ForgeHooks.onCropsGrowPost(p_180650_1_, p_180650_2_, p_180650_3_, p_180650_1_.func_180495_p(p_180650_2_));
++                net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
              }
          }
      }
  
-     public void func_176482_g(World p_176482_1_, BlockPos p_176482_2_, IBlockState p_176482_3_)
+     public void growStem(World worldIn, BlockPos pos, IBlockState state)
      {
--        int i = p_176482_3_.func_177229_b(field_176484_a) + MathHelper.func_76136_a(p_176482_1_.field_73012_v, 2, 5);
--        p_176482_1_.func_180501_a(p_176482_2_, p_176482_3_.func_177226_a(field_176484_a, Math.min(7, i)), 2);
-+        int i = ((Integer)p_176482_3_.func_177229_b(field_176484_a)).intValue() + MathHelper.func_76136_a(p_176482_1_.field_73012_v, 2, 5);
-+        p_176482_1_.func_180501_a(p_176482_2_, p_176482_3_.func_177226_a(field_176484_a, Integer.valueOf(Math.min(7, i))), 2);
+-        int i = state.getValue(AGE) + MathHelper.getInt(worldIn.rand, 2, 5);
+-        worldIn.setBlockState(pos, state.withProperty(AGE, Math.min(7, i)), 2);
++        int i = ((Integer)state.getValue(AGE)).intValue() + MathHelper.getInt(worldIn.rand, 2, 5);
++        worldIn.setBlockState(pos, state.withProperty(AGE, Integer.valueOf(Math.min(7, i))), 2);
      }
  
 -    @Override
-     public void func_180653_a(World p_180653_1_, BlockPos p_180653_2_, IBlockState p_180653_3_, float p_180653_4_, int p_180653_5_)
+     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
      {
-         super.func_180653_a(p_180653_1_, p_180653_2_, p_180653_3_, p_180653_4_, p_180653_5_);
+         super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);
 +    }
  
--        if (!p_180653_1_.field_72995_K)
+-        if (!worldIn.isRemote)
 +    @Override
 +    public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
 +    {
          {
-             Item item = this.func_176481_j();
+             Item item = this.getSeedItem();
  
              if (item != null)
              {
--                int i = p_180653_3_.func_177229_b(field_176484_a);
-+                int i = ((Integer)state.func_177229_b(field_176484_a)).intValue();
+-                int i = state.getValue(AGE);
++                int i = ((Integer)state.getValue(AGE)).intValue();
  
 -                for (int j = 0; j < 3; j++)
 +                for (int j = 0; j < 3; ++j)
                  {
--                    if (p_180653_1_.field_73012_v.nextInt(15) <= i)
+-                    if (worldIn.rand.nextInt(15) <= i)
 +                    if (RANDOM.nextInt(15) <= i)
                      {
--                        func_180635_a(p_180653_1_, p_180653_2_, new ItemStack(item));
+-                        spawnAsEntity(worldIn, pos, new ItemStack(item));
 +                        drops.add(new ItemStack(item));
                      }
                  }
@@ -152,55 +152,55 @@
      }
  
 -    @Override
-     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
+     public Item getItemDropped(IBlockState state, Random rand, int fortune)
      {
-         return Items.field_190931_a;
+         return Items.AIR;
      }
  
 -    @Override
-     public ItemStack func_185473_a(World p_185473_1_, BlockPos p_185473_2_, IBlockState p_185473_3_)
+     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
      {
-         Item item = this.func_176481_j();
-         return item == null ? ItemStack.field_190927_a : new ItemStack(item);
+         Item item = this.getSeedItem();
+         return item == null ? ItemStack.EMPTY : new ItemStack(item);
      }
  
 -    @Override
-     public boolean func_176473_a(World p_176473_1_, BlockPos p_176473_2_, IBlockState p_176473_3_, boolean p_176473_4_)
+     public boolean canGrow(World worldIn, BlockPos pos, IBlockState state, boolean isClient)
      {
--        return p_176473_3_.func_177229_b(field_176484_a) != 7;
-+        return ((Integer)p_176473_3_.func_177229_b(field_176484_a)).intValue() != 7;
+-        return state.getValue(AGE) != 7;
++        return ((Integer)state.getValue(AGE)).intValue() != 7;
      }
  
 -    @Override
-     public boolean func_180670_a(World p_180670_1_, Random p_180670_2_, BlockPos p_180670_3_, IBlockState p_180670_4_)
+     public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, IBlockState state)
      {
          return true;
      }
  
 -    @Override
-     public void func_176474_b(World p_176474_1_, Random p_176474_2_, BlockPos p_176474_3_, IBlockState p_176474_4_)
+     public void grow(World worldIn, Random rand, BlockPos pos, IBlockState state)
      {
-         this.func_176482_g(p_176474_1_, p_176474_3_, p_176474_4_);
+         this.growStem(worldIn, pos, state);
      }
  
 -    @Override
-     public IBlockState func_176203_a(int p_176203_1_)
+     public IBlockState getStateFromMeta(int meta)
      {
--        return this.func_176223_P().func_177226_a(field_176484_a, p_176203_1_);
-+        return this.func_176223_P().func_177226_a(field_176484_a, Integer.valueOf(p_176203_1_));
+-        return this.getDefaultState().withProperty(AGE, meta);
++        return this.getDefaultState().withProperty(AGE, Integer.valueOf(meta));
      }
  
 -    @Override
-     public int func_176201_c(IBlockState p_176201_1_)
+     public int getMetaFromState(IBlockState state)
      {
--        return p_176201_1_.func_177229_b(field_176484_a);
-+        return ((Integer)p_176201_1_.func_177229_b(field_176484_a)).intValue();
+-        return state.getValue(AGE);
++        return ((Integer)state.getValue(AGE)).intValue();
      }
  
 -    @Override
-     protected BlockStateContainer func_180661_e()
+     protected BlockStateContainer createBlockState()
      {
--        return new BlockStateContainer(this, field_176484_a, field_176483_b);
-+        return new BlockStateContainer(this, new IProperty[] {field_176484_a, field_176483_b});
+-        return new BlockStateContainer(this, AGE, FACING);
++        return new BlockStateContainer(this, new IProperty[] {AGE, FACING});
      }
  }

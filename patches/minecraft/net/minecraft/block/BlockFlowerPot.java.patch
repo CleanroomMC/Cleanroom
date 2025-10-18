@@ -11,173 +11,173 @@
 @@ -35,59 +36,41 @@
  public class BlockFlowerPot extends BlockContainer
  {
-     public static final PropertyInteger field_176444_a = PropertyInteger.func_177719_a("legacy_data", 0, 15);
--    public static final PropertyEnum<BlockFlowerPot.EnumFlowerType> field_176443_b = PropertyEnum.func_177709_a("contents", BlockFlowerPot.EnumFlowerType.class);
--    protected static final AxisAlignedBB field_185570_c = new AxisAlignedBB(0.3125, 0.0, 0.3125, 0.6875, 0.375, 0.6875);
-+    public static final PropertyEnum<BlockFlowerPot.EnumFlowerType> field_176443_b = PropertyEnum.<BlockFlowerPot.EnumFlowerType>func_177709_a("contents", BlockFlowerPot.EnumFlowerType.class);
-+    protected static final AxisAlignedBB field_185570_c = new AxisAlignedBB(0.3125D, 0.0D, 0.3125D, 0.6875D, 0.375D, 0.6875D);
+     public static final PropertyInteger LEGACY_DATA = PropertyInteger.create("legacy_data", 0, 15);
+-    public static final PropertyEnum<BlockFlowerPot.EnumFlowerType> CONTENTS = PropertyEnum.create("contents", BlockFlowerPot.EnumFlowerType.class);
+-    protected static final AxisAlignedBB FLOWER_POT_AABB = new AxisAlignedBB(0.3125, 0.0, 0.3125, 0.6875, 0.375, 0.6875);
++    public static final PropertyEnum<BlockFlowerPot.EnumFlowerType> CONTENTS = PropertyEnum.<BlockFlowerPot.EnumFlowerType>create("contents", BlockFlowerPot.EnumFlowerType.class);
++    protected static final AxisAlignedBB FLOWER_POT_AABB = new AxisAlignedBB(0.3125D, 0.0D, 0.3125D, 0.6875D, 0.375D, 0.6875D);
  
      public BlockFlowerPot()
      {
-         super(Material.field_151594_q);
--        this.func_180632_j(
--            this.field_176227_L.func_177621_b().func_177226_a(field_176443_b, BlockFlowerPot.EnumFlowerType.EMPTY).func_177226_a(field_176444_a, 0)
+         super(Material.CIRCUITS);
+-        this.setDefaultState(
+-            this.blockState.getBaseState().withProperty(CONTENTS, BlockFlowerPot.EnumFlowerType.EMPTY).withProperty(LEGACY_DATA, 0)
 -        );
-+        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176443_b, BlockFlowerPot.EnumFlowerType.EMPTY).func_177226_a(field_176444_a, Integer.valueOf(0)));
++        this.setDefaultState(this.blockState.getBaseState().withProperty(CONTENTS, BlockFlowerPot.EnumFlowerType.EMPTY).withProperty(LEGACY_DATA, Integer.valueOf(0)));
      }
  
 -    @Override
-     public String func_149732_F()
+     public String getLocalizedName()
      {
-         return I18n.func_74838_a("item.flowerPot.name");
+         return I18n.translateToLocal("item.flowerPot.name");
      }
  
 -    @Override
-     public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
+     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
      {
-         return field_185570_c;
+         return FLOWER_POT_AABB;
      }
  
 -    @Override
-     public boolean func_149662_c(IBlockState p_149662_1_)
+     public boolean isOpaqueCube(IBlockState state)
      {
          return false;
      }
  
 -    @Override
-     public EnumBlockRenderType func_149645_b(IBlockState p_149645_1_)
+     public EnumBlockRenderType getRenderType(IBlockState state)
      {
          return EnumBlockRenderType.MODEL;
      }
  
 -    @Override
-     public boolean func_149686_d(IBlockState p_149686_1_)
+     public boolean isFullCube(IBlockState state)
      {
          return false;
      }
  
 -    @Override
--    public boolean func_180639_a(
--        World p_180639_1_,
--        BlockPos p_180639_2_,
--        IBlockState p_180639_3_,
--        EntityPlayer p_180639_4_,
--        EnumHand p_180639_5_,
--        EnumFacing p_180639_6_,
--        float p_180639_7_,
--        float p_180639_8_,
--        float p_180639_9_
+-    public boolean onBlockActivated(
+-        World worldIn,
+-        BlockPos pos,
+-        IBlockState state,
+-        EntityPlayer playerIn,
+-        EnumHand hand,
+-        EnumFacing facing,
+-        float hitX,
+-        float hitY,
+-        float hitZ
 -    )
-+    public boolean func_180639_a(World p_180639_1_, BlockPos p_180639_2_, IBlockState p_180639_3_, EntityPlayer p_180639_4_, EnumHand p_180639_5_, EnumFacing p_180639_6_, float p_180639_7_, float p_180639_8_, float p_180639_9_)
++    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
      {
-         ItemStack itemstack = p_180639_4_.func_184586_b(p_180639_5_);
-         TileEntityFlowerPot tileentityflowerpot = this.func_176442_d(p_180639_1_, p_180639_2_);
+         ItemStack itemstack = playerIn.getHeldItem(hand);
+         TileEntityFlowerPot tileentityflowerpot = this.getTileEntity(worldIn, pos);
 @@ -139,13 +122,7 @@
      {
-         Block block = Block.func_149634_a(p_190951_1_.func_77973_b());
+         Block block = Block.getBlockFromItem(stack.getItem());
  
--        if (block != Blocks.field_150327_N
--                && block != Blocks.field_150328_O
--                && block != Blocks.field_150434_aF
--                && block != Blocks.field_150338_P
--                && block != Blocks.field_150337_Q
--                && block != Blocks.field_150345_g
--                && block != Blocks.field_150330_I)
-+        if (block != Blocks.field_150327_N && block != Blocks.field_150328_O && block != Blocks.field_150434_aF && block != Blocks.field_150338_P && block != Blocks.field_150337_Q && block != Blocks.field_150345_g && block != Blocks.field_150330_I)
+-        if (block != Blocks.YELLOW_FLOWER
+-                && block != Blocks.RED_FLOWER
+-                && block != Blocks.CACTUS
+-                && block != Blocks.BROWN_MUSHROOM
+-                && block != Blocks.RED_MUSHROOM
+-                && block != Blocks.SAPLING
+-                && block != Blocks.DEADBUSH)
++        if (block != Blocks.YELLOW_FLOWER && block != Blocks.RED_FLOWER && block != Blocks.CACTUS && block != Blocks.BROWN_MUSHROOM && block != Blocks.RED_MUSHROOM && block != Blocks.SAPLING && block != Blocks.DEADBUSH)
          {
-             int i = p_190951_1_.func_77960_j();
-             return block == Blocks.field_150329_H && i == BlockTallGrass.EnumType.FERN.func_177044_a();
+             int i = stack.getMetadata();
+             return block == Blocks.TALLGRASS && i == BlockTallGrass.EnumType.FERN.getMeta();
 @@ -156,7 +133,6 @@
          }
      }
  
 -    @Override
-     public ItemStack func_185473_a(World p_185473_1_, BlockPos p_185473_2_, IBlockState p_185473_3_)
+     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
      {
-         TileEntityFlowerPot tileentityflowerpot = this.func_176442_d(p_185473_1_, p_185473_2_);
+         TileEntityFlowerPot tileentityflowerpot = this.getTileEntity(worldIn, pos);
 @@ -174,36 +150,27 @@
-         return new ItemStack(Items.field_151162_bE);
+         return new ItemStack(Items.FLOWER_POT);
      }
  
 -    @Override
-     public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)
+     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
      {
--        return super.func_176196_c(p_176196_1_, p_176196_2_) && p_176196_1_.func_180495_p(p_176196_2_.func_177977_b()).func_185896_q();
-+        IBlockState downState = p_176196_1_.func_180495_p(p_176196_2_.func_177977_b());
-+        return super.func_176196_c(p_176196_1_, p_176196_2_) && (downState.func_185896_q() || downState.func_193401_d(p_176196_1_, p_176196_2_.func_177977_b(), EnumFacing.UP) == BlockFaceShape.SOLID);
+-        return super.canPlaceBlockAt(worldIn, pos) && worldIn.getBlockState(pos.down()).isTopSolid();
++        IBlockState downState = worldIn.getBlockState(pos.down());
++        return super.canPlaceBlockAt(worldIn, pos) && (downState.isTopSolid() || downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID);
      }
  
 -    @Override
-     public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
+     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
      {
--        if (!p_189540_2_.func_180495_p(p_189540_3_.func_177977_b()).func_185896_q())
-+        IBlockState downState = p_189540_2_.func_180495_p(p_189540_3_.func_177977_b());
-+        if (!downState.func_185896_q() && downState.func_193401_d(p_189540_2_, p_189540_3_.func_177977_b(), EnumFacing.UP) != BlockFaceShape.SOLID)
+-        if (!worldIn.getBlockState(pos.down()).isTopSolid())
++        IBlockState downState = worldIn.getBlockState(pos.down());
++        if (!downState.isTopSolid() && downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) != BlockFaceShape.SOLID)
          {
-             this.func_176226_b(p_189540_2_, p_189540_3_, p_189540_1_, 0);
-             p_189540_2_.func_175698_g(p_189540_3_);
+             this.dropBlockAsItem(worldIn, pos, state, 0);
+             worldIn.setBlockToAir(pos);
          }
      }
  
 -    @Override
-     public void func_180663_b(World p_180663_1_, BlockPos p_180663_2_, IBlockState p_180663_3_)
+     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
      {
--        TileEntityFlowerPot tileentityflowerpot = this.func_176442_d(p_180663_1_, p_180663_2_);
+-        TileEntityFlowerPot tileentityflowerpot = this.getTileEntity(worldIn, pos);
 -
--        if (tileentityflowerpot != null && tileentityflowerpot.func_145965_a() != null)
+-        if (tileentityflowerpot != null && tileentityflowerpot.getFlowerPotItem() != null)
 -        {
--            func_180635_a(p_180663_1_, p_180663_2_, new ItemStack(tileentityflowerpot.func_145965_a(), 1, tileentityflowerpot.func_145966_b()));
+-            spawnAsEntity(worldIn, pos, new ItemStack(tileentityflowerpot.getFlowerPotItem(), 1, tileentityflowerpot.getFlowerPotData()));
 -        }
 -
-         super.func_180663_b(p_180663_1_, p_180663_2_, p_180663_3_);
+         super.breakBlock(worldIn, pos, state);
      }
  
 -    @Override
-     public void func_176208_a(World p_176208_1_, BlockPos p_176208_2_, IBlockState p_176208_3_, EntityPlayer p_176208_4_)
+     public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player)
      {
-         super.func_176208_a(p_176208_1_, p_176208_2_, p_176208_3_, p_176208_4_);
+         super.onBlockHarvested(worldIn, pos, state, player);
 @@ -219,7 +186,6 @@
          }
      }
  
 -    @Override
-     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
+     public Item getItemDropped(IBlockState state, Random rand, int fortune)
      {
-         return Items.field_151162_bE;
+         return Items.FLOWER_POT;
 @@ -232,7 +198,6 @@
          return tileentity instanceof TileEntityFlowerPot ? (TileEntityFlowerPot)tileentity : null;
      }
  
 -    @Override
-     public TileEntity func_149915_a(World p_149915_1_, int p_149915_2_)
+     public TileEntity createNewTileEntity(World worldIn, int meta)
      {
          Block block = null;
 @@ -291,25 +256,20 @@
-         return new TileEntityFlowerPot(Item.func_150898_a(block), i);
+         return new TileEntityFlowerPot(Item.getItemFromBlock(block), i);
      }
  
 -    @Override
-     protected BlockStateContainer func_180661_e()
+     protected BlockStateContainer createBlockState()
      {
--        return new BlockStateContainer(this, field_176443_b, field_176444_a);
-+        return new BlockStateContainer(this, new IProperty[] {field_176443_b, field_176444_a});
+-        return new BlockStateContainer(this, CONTENTS, LEGACY_DATA);
++        return new BlockStateContainer(this, new IProperty[] {CONTENTS, LEGACY_DATA});
      }
  
 -    @Override
-     public int func_176201_c(IBlockState p_176201_1_)
+     public int getMetaFromState(IBlockState state)
      {
--        return p_176201_1_.func_177229_b(field_176444_a);
-+        return ((Integer)p_176201_1_.func_177229_b(field_176444_a)).intValue();
+-        return state.getValue(LEGACY_DATA);
++        return ((Integer)state.getValue(LEGACY_DATA)).intValue();
      }
  
 -    @Override
-     public IBlockState func_176221_a(IBlockState p_176221_1_, IBlockAccess p_176221_2_, BlockPos p_176221_3_)
+     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
      {
          BlockFlowerPot.EnumFlowerType blockflowerpot$enumflowertype = BlockFlowerPot.EnumFlowerType.EMPTY;
--        TileEntity tileentity = p_176221_2_ instanceof ChunkCache
--                                ? ((ChunkCache)p_176221_2_).func_190300_a(p_176221_3_, Chunk.EnumCreateEntityType.CHECK)
--                                : p_176221_2_.func_175625_s(p_176221_3_);
-+        TileEntity tileentity = p_176221_2_ instanceof ChunkCache ? ((ChunkCache)p_176221_2_).func_190300_a(p_176221_3_, Chunk.EnumCreateEntityType.CHECK) : p_176221_2_.func_175625_s(p_176221_3_);
+-        TileEntity tileentity = worldIn instanceof ChunkCache
+-                                ? ((ChunkCache)worldIn).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK)
+-                                : worldIn.getTileEntity(pos);
++        TileEntity tileentity = worldIn instanceof ChunkCache ? ((ChunkCache)worldIn).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) : worldIn.getTileEntity(pos);
  
          if (tileentity instanceof TileEntityFlowerPot)
          {
@@ -186,13 +186,13 @@
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public BlockRenderLayer func_180664_k()
+     public BlockRenderLayer getRenderLayer()
      {
          return BlockRenderLayer.CUTOUT;
      }
  
 -    @Override
-     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
      {
          return BlockFaceShape.UNDEFINED;
      }
@@ -203,9 +203,9 @@
 +    public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
 +    {
 +        super.getDrops(drops, world, pos, state, fortune);
-+        TileEntityFlowerPot te = world.func_175625_s(pos) instanceof TileEntityFlowerPot ? (TileEntityFlowerPot)world.func_175625_s(pos) : null;
-+        if (te != null && te.func_145965_a() != null)
-+            drops.add(new ItemStack(te.func_145965_a(), 1, te.func_145966_b()));
++        TileEntityFlowerPot te = world.getTileEntity(pos) instanceof TileEntityFlowerPot ? (TileEntityFlowerPot)world.getTileEntity(pos) : null;
++        if (te != null && te.getFlowerPotItem() != null)
++            drops.add(new ItemStack(te.getFlowerPotItem(), 1, te.getFlowerPotData()));
 +    }
 +    @Override
 +    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
@@ -214,10 +214,10 @@
 +        return super.removedByPlayer(state, world, pos, player, willHarvest);
 +    }
 +    @Override
-+    public void func_180657_a(World world, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack tool)
++    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack tool)
 +    {
-+        super.func_180657_a(world, player, pos, state, te, tool);
-+        world.func_175698_g(pos);
++        super.harvestBlock(world, player, pos, state, te, tool);
++        world.setBlockToAir(pos);
 +    }
 +    /*===========================FORGE END==========================================*/
 +
@@ -225,16 +225,16 @@
      {
          EMPTY("empty"),
 @@ -467,13 +449,11 @@
-             this.field_177006_w = p_i45715_3_;
+             this.name = name;
          }
  
 -        @Override
          public String toString()
          {
-             return this.field_177006_w;
+             return this.name;
          }
  
 -        @Override
-         public String func_176610_l()
+         public String getName()
          {
-             return this.field_177006_w;
+             return this.name;

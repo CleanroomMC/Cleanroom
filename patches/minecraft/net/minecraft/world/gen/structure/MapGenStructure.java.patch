@@ -12,51 +12,51 @@
 @@ -19,15 +21,11 @@
  public abstract class MapGenStructure extends MapGenBase
  {
-     private MapGenStructureData field_143029_e;
--    protected Long2ObjectMap<StructureStart> field_75053_d = new Long2ObjectOpenHashMap<>(1024);
-+    protected Long2ObjectMap<StructureStart> field_75053_d = new Long2ObjectOpenHashMap<StructureStart>(1024);
+     private MapGenStructureData structureData;
+-    protected Long2ObjectMap<StructureStart> structureMap = new Long2ObjectOpenHashMap<>(1024);
++    protected Long2ObjectMap<StructureStart> structureMap = new Long2ObjectOpenHashMap<StructureStart>(1024);
  
-     public abstract String func_143025_a();
+     public abstract String getStructureName();
  
 -    @Override
 -
--    protected final synchronized void func_180701_a(
--        World p_180701_1_, final int p_180701_2_, final int p_180701_3_, int p_180701_4_, int p_180701_5_, ChunkPrimer p_180701_6_
+-    protected final synchronized void recursiveGenerate(
+-        World worldIn, final int chunkX, final int chunkZ, int originalX, int originalZ, ChunkPrimer chunkPrimerIn
 -    )
-+    protected final synchronized void func_180701_a(World p_180701_1_, final int p_180701_2_, final int p_180701_3_, int p_180701_4_, int p_180701_5_, ChunkPrimer p_180701_6_)
++    protected final synchronized void recursiveGenerate(World worldIn, final int chunkX, final int chunkZ, int originalX, int originalZ, ChunkPrimer chunkPrimerIn)
      {
-         this.func_143027_a(p_180701_1_);
+         this.initializeStructureData(worldIn);
  
 @@ -85,9 +83,12 @@
-         int i = (p_175794_3_.field_77276_a << 4) + 8;
-         int j = (p_175794_3_.field_77275_b << 4) + 8;
+         int i = (chunkCoord.x << 4) + 8;
+         int j = (chunkCoord.z << 4) + 8;
          boolean flag = false;
-+        ObjectIterator objectiterator = this.field_75053_d.values().iterator();
++        ObjectIterator objectiterator = this.structureMap.values().iterator();
  
--        for (StructureStart structurestart : this.field_75053_d.values())
+-        for (StructureStart structurestart : this.structureMap.values())
 +        while (objectiterator.hasNext())
          {
 +            StructureStart structurestart = (StructureStart)objectiterator.next();
 +
-             if (structurestart.func_75069_d() && structurestart.func_175788_a(p_175794_3_) && structurestart.func_75071_a().func_78885_a(i, j, i + 15, j + 15))
+             if (structurestart.isSizeableStructure() && structurestart.isValidForPostProcess(chunkCoord) && structurestart.getBoundingBox().intersectsWith(i, j, i + 15, j + 15))
              {
-                 structurestart.func_75068_a(p_175794_1_, p_175794_2_, new StructureBoundingBox(i, j, i + 15, j + 15));
+                 structurestart.generateStructure(worldIn, randomIn, new StructureBoundingBox(i, j, i + 15, j + 15));
 @@ -116,17 +117,33 @@
      @Nullable
-     protected StructureStart func_175797_c(BlockPos p_175797_1_)
+     protected StructureStart getStructureAt(BlockPos pos)
      {
--        for (StructureStart structurestart : this.field_75053_d.values())
-+        ObjectIterator objectiterator = this.field_75053_d.values().iterator();
+-        for (StructureStart structurestart : this.structureMap.values())
++        ObjectIterator objectiterator = this.structureMap.values().iterator();
 +        label31:
 +
 +        while (objectiterator.hasNext())
          {
 +            StructureStart structurestart = (StructureStart)objectiterator.next();
 +
-             if (structurestart.func_75069_d() && structurestart.func_75071_a().func_175898_b(p_175797_1_))
+             if (structurestart.isSizeableStructure() && structurestart.getBoundingBox().isVecInside(pos))
              {
--                for (StructureComponent structurecomponent : structurestart.func_186161_c())
-+                Iterator<StructureComponent> iterator = structurestart.func_186161_c().iterator();
+-                for (StructureComponent structurecomponent : structurestart.getComponents())
++                Iterator<StructureComponent> iterator = structurestart.getComponents().iterator();
 +
 +                while (true)
                  {
@@ -67,7 +67,7 @@
 +
 +                    StructureComponent structurecomponent = iterator.next();
 +
-                     if (structurecomponent.func_74874_b().func_175898_b(p_175797_1_))
+                     if (structurecomponent.getBoundingBox().isVecInside(pos))
                      {
 -                        return structurestart;
 +                        break;
@@ -79,57 +79,57 @@
          }
  
 @@ -136,9 +153,12 @@
-     public boolean func_175796_a(World p_175796_1_, BlockPos p_175796_2_)
+     public boolean isPositionInStructure(World worldIn, BlockPos pos)
      {
-         this.func_143027_a(p_175796_1_);
-+        ObjectIterator objectiterator = this.field_75053_d.values().iterator();
+         this.initializeStructureData(worldIn);
++        ObjectIterator objectiterator = this.structureMap.values().iterator();
  
--        for (StructureStart structurestart : this.field_75053_d.values())
+-        for (StructureStart structurestart : this.structureMap.values())
 +        while (objectiterator.hasNext())
          {
 +            StructureStart structurestart = (StructureStart)objectiterator.next();
 +
-             if (structurestart.func_75069_d() && structurestart.func_75071_a().func_175898_b(p_175796_2_))
+             if (structurestart.isSizeableStructure() && structurestart.getBoundingBox().isVecInside(pos))
              {
                  return true;
 @@ -155,12 +175,12 @@
      {
-         if (this.field_143029_e == null && p_143027_1_ != null)
+         if (this.structureData == null && worldIn != null)
          {
--            this.field_143029_e = (MapGenStructureData)p_143027_1_.func_72943_a(MapGenStructureData.class, this.func_143025_a());
-+            this.field_143029_e = (MapGenStructureData)p_143027_1_.getPerWorldStorage().func_75742_a(MapGenStructureData.class, this.func_143025_a());
+-            this.structureData = (MapGenStructureData)worldIn.loadData(MapGenStructureData.class, this.getStructureName());
++            this.structureData = (MapGenStructureData)worldIn.getPerWorldStorage().getOrLoadData(MapGenStructureData.class, this.getStructureName());
  
-             if (this.field_143029_e == null)
+             if (this.structureData == null)
              {
-                 this.field_143029_e = new MapGenStructureData(this.func_143025_a());
--                p_143027_1_.func_72823_a(this.func_143025_a(), this.field_143029_e);
-+                p_143027_1_.getPerWorldStorage().func_75745_a(this.func_143025_a(), this.field_143029_e);
+                 this.structureData = new MapGenStructureData(this.getStructureName());
+-                worldIn.setData(this.getStructureName(), this.structureData);
++                worldIn.getPerWorldStorage().setData(this.getStructureName(), this.structureData);
              }
              else
              {
 @@ -201,29 +221,19 @@
  
-     protected abstract StructureStart func_75049_b(int p_75049_1_, int p_75049_2_);
+     protected abstract StructureStart getStructureStart(int chunkX, int chunkZ);
  
--    protected static BlockPos func_191069_a(
--            World p_191069_0_,
--            MapGenStructure p_191069_1_,
--            BlockPos p_191069_2_,
--            int p_191069_3_,
--            int p_191069_4_,
--            int p_191069_5_,
--            boolean p_191069_6_,
--            int p_191069_7_,
--            boolean p_191069_8_
+-    protected static BlockPos findNearestStructurePosBySpacing(
+-            World worldIn,
+-            MapGenStructure structureType,
+-            BlockPos startPos,
+-            int distanceStep,
+-            int stepOffset,
+-            int randomSeedZ,
+-            boolean addExtraRandomness,
+-            int maxAttempts,
+-            boolean findUnexplored
 -        )
-+    protected static BlockPos func_191069_a(World p_191069_0_, MapGenStructure p_191069_1_, BlockPos p_191069_2_, int p_191069_3_, int p_191069_4_, int p_191069_5_, boolean p_191069_6_, int p_191069_7_, boolean p_191069_8_)
++    protected static BlockPos findNearestStructurePosBySpacing(World worldIn, MapGenStructure structureType, BlockPos startPos, int distanceStep, int stepOffset, int randomSeedZ, boolean addExtraRandomness, int maxAttempts, boolean findUnexplored)
      {
-         int i = p_191069_2_.func_177958_n() >> 4;
-         int j = p_191069_2_.func_177952_p() >> 4;
+         int i = startPos.getX() >> 4;
+         int j = startPos.getZ() >> 4;
          int k = 0;
  
--        for (Random random = new Random(); k <= p_191069_7_; k++)
-+        for (Random random = new Random(); k <= p_191069_7_; ++k)
+-        for (Random random = new Random(); k <= maxAttempts; k++)
++        for (Random random = new Random(); k <= maxAttempts; ++k)
          {
 -            for (int l = -k; l <= k; l++)
 +            for (int l = -k; l <= k; ++l)
@@ -142,27 +142,27 @@
                      boolean flag1 = i1 == -k || i1 == k;
  
 @@ -245,18 +255,18 @@
-                         int l1 = j1 / p_191069_3_;
-                         int i2 = k1 / p_191069_3_;
-                         Random random1 = p_191069_0_.func_72843_D(l1, i2, p_191069_5_);
--                        l1 *= p_191069_3_;
--                        i2 *= p_191069_3_;
-+                        l1 = l1 * p_191069_3_;
-+                        i2 = i2 * p_191069_3_;
+                         int l1 = j1 / distanceStep;
+                         int i2 = k1 / distanceStep;
+                         Random random1 = worldIn.setRandomSeed(l1, i2, randomSeedZ);
+-                        l1 *= distanceStep;
+-                        i2 *= distanceStep;
++                        l1 = l1 * distanceStep;
++                        i2 = i2 * distanceStep;
  
-                         if (p_191069_6_)
+                         if (addExtraRandomness)
                          {
--                            l1 += (random1.nextInt(p_191069_3_ - p_191069_4_) + random1.nextInt(p_191069_3_ - p_191069_4_)) / 2;
--                            i2 += (random1.nextInt(p_191069_3_ - p_191069_4_) + random1.nextInt(p_191069_3_ - p_191069_4_)) / 2;
-+                            l1 = l1 + (random1.nextInt(p_191069_3_ - p_191069_4_) + random1.nextInt(p_191069_3_ - p_191069_4_)) / 2;
-+                            i2 = i2 + (random1.nextInt(p_191069_3_ - p_191069_4_) + random1.nextInt(p_191069_3_ - p_191069_4_)) / 2;
+-                            l1 += (random1.nextInt(distanceStep - stepOffset) + random1.nextInt(distanceStep - stepOffset)) / 2;
+-                            i2 += (random1.nextInt(distanceStep - stepOffset) + random1.nextInt(distanceStep - stepOffset)) / 2;
++                            l1 = l1 + (random1.nextInt(distanceStep - stepOffset) + random1.nextInt(distanceStep - stepOffset)) / 2;
++                            i2 = i2 + (random1.nextInt(distanceStep - stepOffset) + random1.nextInt(distanceStep - stepOffset)) / 2;
                          }
                          else
                          {
--                            l1 += random1.nextInt(p_191069_3_ - p_191069_4_);
--                            i2 += random1.nextInt(p_191069_3_ - p_191069_4_);
-+                            l1 = l1 + random1.nextInt(p_191069_3_ - p_191069_4_);
-+                            i2 = i2 + random1.nextInt(p_191069_3_ - p_191069_4_);
+-                            l1 += random1.nextInt(distanceStep - stepOffset);
+-                            i2 += random1.nextInt(distanceStep - stepOffset);
++                            l1 = l1 + random1.nextInt(distanceStep - stepOffset);
++                            i2 = i2 + random1.nextInt(distanceStep - stepOffset);
                          }
  
-                         MapGenBase.func_191068_a(p_191069_0_.func_72905_C(), random, l1, i2);
+                         MapGenBase.setupChunkSeed(worldIn.getSeed(), random, l1, i2);

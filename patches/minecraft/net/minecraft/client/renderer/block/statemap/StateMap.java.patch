@@ -9,34 +9,34 @@
  import net.minecraftforge.fml.relauncher.SideOnly;
  
 @@ -27,19 +28,18 @@
-         this.field_178140_d = p_i46210_3_;
+         this.ignored = ignored;
      }
  
 -    @Override
-     protected ModelResourceLocation func_178132_a(IBlockState p_178132_1_)
+     protected ModelResourceLocation getModelResourceLocation(IBlockState state)
      {
--        Map < IProperty<?>, Comparable<? >> map = Maps.newLinkedHashMap(p_178132_1_.func_177228_b());
-+        Map < IProperty<?>, Comparable<? >> map = Maps. < IProperty<?>, Comparable<? >> newLinkedHashMap(p_178132_1_.func_177228_b());
+-        Map < IProperty<?>, Comparable<? >> map = Maps.newLinkedHashMap(state.getProperties());
++        Map < IProperty<?>, Comparable<? >> map = Maps. < IProperty<?>, Comparable<? >> newLinkedHashMap(state.getProperties());
          String s;
  
-         if (this.field_178142_a == null)
+         if (this.name == null)
          {
--            s = Block.field_149771_c.func_177774_c(p_178132_1_.func_177230_c()).toString();
-+            s = ((ResourceLocation)Block.field_149771_c.func_177774_c(p_178132_1_.func_177230_c())).toString();
+-            s = Block.REGISTRY.getNameForObject(state.getBlock()).toString();
++            s = ((ResourceLocation)Block.REGISTRY.getNameForObject(state.getBlock())).toString();
          }
          else
          {
--            s = this.func_187490_a(this.field_178142_a, map);
-+            s = String.format("%s:%s", Block.field_149771_c.func_177774_c(p_178132_1_.func_177230_c()).func_110624_b(), this.func_187490_a(this.field_178142_a, map));
+-            s = this.removeName(this.name, map);
++            s = String.format("%s:%s", Block.REGISTRY.getNameForObject(state.getBlock()).getNamespace(), this.removeName(this.name, map));
          }
  
-         if (this.field_178141_c != null)
+         if (this.suffix != null)
 @@ -65,7 +65,7 @@
          {
-             private IProperty<?> field_178445_a;
-             private String field_178443_b;
--            private final List < IProperty<? >> field_178444_c = Lists.newArrayList();
-+            private final List < IProperty<? >> field_178444_c = Lists. < IProperty<? >> newArrayList();
+             private IProperty<?> name;
+             private String suffix;
+-            private final List < IProperty<? >> ignored = Lists.newArrayList();
++            private final List < IProperty<? >> ignored = Lists. < IProperty<? >> newArrayList();
  
-             public StateMap.Builder func_178440_a(IProperty<?> p_178440_1_)
+             public StateMap.Builder withName(IProperty<?> builderPropertyIn)
              {

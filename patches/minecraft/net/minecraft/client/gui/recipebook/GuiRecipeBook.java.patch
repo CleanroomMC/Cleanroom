@@ -10,82 +10,82 @@
  import net.minecraft.client.Minecraft;
  import net.minecraft.client.gui.Gui;
 @@ -43,13 +45,7 @@
-     private int field_191904_o;
-     private int field_191905_p;
-     private final GhostRecipe field_191915_z = new GhostRecipe();
--    private final List<GuiButtonRecipeTab> field_193018_j = Lists.newArrayList(
--                new GuiButtonRecipeTab(0, CreativeTabs.field_78027_g),
--                new GuiButtonRecipeTab(0, CreativeTabs.field_78040_i),
--                new GuiButtonRecipeTab(0, CreativeTabs.field_78030_b),
--                new GuiButtonRecipeTab(0, CreativeTabs.field_78026_f),
--                new GuiButtonRecipeTab(0, CreativeTabs.field_78028_d)
+     private int width;
+     private int height;
+     private final GhostRecipe ghostRecipe = new GhostRecipe();
+-    private final List<GuiButtonRecipeTab> recipeTabs = Lists.newArrayList(
+-                new GuiButtonRecipeTab(0, CreativeTabs.SEARCH),
+-                new GuiButtonRecipeTab(0, CreativeTabs.TOOLS),
+-                new GuiButtonRecipeTab(0, CreativeTabs.BUILDING_BLOCKS),
+-                new GuiButtonRecipeTab(0, CreativeTabs.MISC),
+-                new GuiButtonRecipeTab(0, CreativeTabs.REDSTONE)
 -            );
-+    private final List<GuiButtonRecipeTab> field_193018_j = Lists.newArrayList(new GuiButtonRecipeTab(0, CreativeTabs.field_78027_g), new GuiButtonRecipeTab(0, CreativeTabs.field_78040_i), new GuiButtonRecipeTab(0, CreativeTabs.field_78030_b), new GuiButtonRecipeTab(0, CreativeTabs.field_78026_f), new GuiButtonRecipeTab(0, CreativeTabs.field_78028_d));
-     private GuiButtonRecipeTab field_191913_x;
-     private GuiButtonToggle field_193960_m;
-     private InventoryCrafting field_193961_o;
++    private final List<GuiButtonRecipeTab> recipeTabs = Lists.newArrayList(new GuiButtonRecipeTab(0, CreativeTabs.SEARCH), new GuiButtonRecipeTab(0, CreativeTabs.TOOLS), new GuiButtonRecipeTab(0, CreativeTabs.BUILDING_BLOCKS), new GuiButtonRecipeTab(0, CreativeTabs.MISC), new GuiButtonRecipeTab(0, CreativeTabs.REDSTONE));
+     private GuiButtonRecipeTab currentTab;
+     private GuiButtonToggle toggleRecipesBtn;
+     private InventoryCrafting craftingSlots;
 @@ -159,28 +155,37 @@
  
-     private void func_193003_g(boolean p_193003_1_)
+     private void updateCollections(boolean p_193003_1_)
      {
--        List<RecipeList> list = RecipeBookClient.field_194086_e.get(this.field_191913_x.func_191764_e());
+-        List<RecipeList> list = RecipeBookClient.RECIPES_BY_TAB.get(this.currentTab.getCategory());
 -        list.forEach(
--            p_193944_1_ -> p_193944_1_.func_194210_a(
--                this.field_193965_u, this.field_193961_o.func_174922_i(), this.field_193961_o.func_174923_h(), this.field_193964_s
+-            p_193944_1_ -> p_193944_1_.canCraft(
+-                this.stackedContents, this.craftingSlots.getWidth(), this.craftingSlots.getHeight(), this.recipeBook
 -            )
 -        );
-+        List<RecipeList> list = (List)RecipeBookClient.field_194086_e.get(this.field_191913_x.func_191764_e());
++        List<RecipeList> list = (List)RecipeBookClient.RECIPES_BY_TAB.get(this.currentTab.getCategory());
 +        list.forEach((p_193944_1_) ->
 +        {
-+            p_193944_1_.func_194210_a(this.field_193965_u, this.field_193961_o.func_174922_i(), this.field_193961_o.func_174923_h(), this.field_193964_s);
++            p_193944_1_.canCraft(this.stackedContents, this.craftingSlots.getWidth(), this.craftingSlots.getHeight(), this.recipeBook);
 +        });
          List<RecipeList> list1 = Lists.newArrayList(list);
--        list1.removeIf(p_193952_0_ -> !p_193952_0_.func_194209_a());
--        list1.removeIf(p_193953_0_ -> !p_193953_0_.func_194212_c());
+-        list1.removeIf(p_193952_0_ -> !p_193952_0_.isNotEmpty());
+-        list1.removeIf(p_193953_0_ -> !p_193953_0_.containsValidRecipes());
 +        list1.removeIf((p_193952_0_) ->
 +        {
-+            return !p_193952_0_.func_194209_a();
++            return !p_193952_0_.isNotEmpty();
 +        });
 +        list1.removeIf((p_193953_0_) ->
 +        {
-+            return !p_193953_0_.func_194212_c();
++            return !p_193953_0_.containsValidRecipes();
 +        });
-         String s = this.field_193962_q.func_146179_b();
+         String s = this.searchBar.getText();
  
          if (!s.isEmpty())
          {
 -            ObjectSet<RecipeList> objectset = new ObjectLinkedOpenHashSet<>(
--                this.field_191888_F.func_193987_a(SearchTreeManager.field_194012_b).func_194038_a(s.toLowerCase(Locale.ROOT))
+-                this.mc.getSearchTree(SearchTreeManager.RECIPES).search(s.toLowerCase(Locale.ROOT))
 -            );
 -            list1.removeIf(p_193947_1_ -> !objectset.contains(p_193947_1_));
-+            ObjectSet<RecipeList> objectset = new ObjectLinkedOpenHashSet<RecipeList>(this.field_191888_F.func_193987_a(SearchTreeManager.field_194012_b).func_194038_a(s.toLowerCase(Locale.ROOT)));
++            ObjectSet<RecipeList> objectset = new ObjectLinkedOpenHashSet<RecipeList>(this.mc.getSearchTree(SearchTreeManager.RECIPES).search(s.toLowerCase(Locale.ROOT)));
 +            list1.removeIf((p_193947_1_) ->
 +            {
 +                return !objectset.contains(p_193947_1_);
 +            });
          }
  
-         if (this.field_193964_s.func_192815_c())
+         if (this.recipeBook.isFilteringCraftable())
          {
--            list1.removeIf(p_193958_0_ -> !p_193958_0_.func_192708_c());
+-            list1.removeIf(p_193958_0_ -> !p_193958_0_.containsCraftableRecipes());
 +            list1.removeIf((p_193958_0_) ->
 +            {
-+                return !p_193958_0_.func_192708_c();
++                return !p_193958_0_.containsCraftableRecipes();
 +            });
          }
  
-         this.field_193022_s.func_194192_a(list1, p_193003_1_);
+         this.recipeBookPage.updateLists(list1, p_193003_1_);
 @@ -265,11 +270,11 @@
  
-             if (this.field_193960_m.func_146115_a())
+             if (this.toggleRecipesBtn.isMouseOver())
              {
--                String s = I18n.func_135052_a(this.field_193960_m.func_191754_c() ? "gui.recipebook.toggleRecipes.craftable" : "gui.recipebook.toggleRecipes.all");
-+                String s1 = I18n.func_135052_a(this.field_193960_m.func_191754_c() ? "gui.recipebook.toggleRecipes.craftable" : "gui.recipebook.toggleRecipes.all");
+-                String s = I18n.format(this.toggleRecipesBtn.isStateTriggered() ? "gui.recipebook.toggleRecipes.craftable" : "gui.recipebook.toggleRecipes.all");
++                String s1 = I18n.format(this.toggleRecipesBtn.isStateTriggered() ? "gui.recipebook.toggleRecipes.craftable" : "gui.recipebook.toggleRecipes.all");
  
-                 if (this.field_191888_F.field_71462_r != null)
+                 if (this.mc.currentScreen != null)
                  {
--                    this.field_191888_F.field_71462_r.func_146279_a(s, p_191876_3_, p_191876_4_);
-+                    this.field_191888_F.field_71462_r.func_146279_a(s1, p_191876_3_, p_191876_4_);
+-                    this.mc.currentScreen.drawHoveringText(s, p_191876_3_, p_191876_4_);
++                    this.mc.currentScreen.drawHoveringText(s1, p_191876_3_, p_191876_4_);
                  }
              }
  
@@ -93,35 +93,35 @@
      {
          ItemStack itemstack = null;
  
--        for (int i = 0; i < this.field_191915_z.func_192684_b(); i++)
-+        for (int i = 0; i < this.field_191915_z.func_192684_b(); ++i)
+-        for (int i = 0; i < this.ghostRecipe.size(); i++)
++        for (int i = 0; i < this.ghostRecipe.size(); ++i)
          {
-             GhostRecipe.GhostIngredient ghostrecipe$ghostingredient = this.field_191915_z.func_192681_a(i);
-             int j = ghostrecipe$ghostingredient.func_193713_b() + p_193015_1_;
+             GhostRecipe.GhostIngredient ghostrecipe$ghostingredient = this.ghostRecipe.get(i);
+             int j = ghostrecipe$ghostingredient.getX() + p_193015_1_;
 @@ -308,10 +313,7 @@
      {
-         if (this.func_191878_b() && !this.field_191888_F.field_71439_g.func_175149_v())
+         if (this.isVisible() && !this.mc.player.isSpectator())
          {
--            if (this.field_193022_s
--                    .func_194196_a(
--                        p_191862_1_, p_191862_2_, p_191862_3_, (this.field_191904_o - 147) / 2 - this.field_191903_n, (this.field_191905_p - 166) / 2, 147, 166
+-            if (this.recipeBookPage
+-                    .mouseClicked(
+-                        p_191862_1_, p_191862_2_, p_191862_3_, (this.width - 147) / 2 - this.xOffset, (this.height - 166) / 2, 147, 166
 -                    ))
-+            if (this.field_193022_s.func_194196_a(p_191862_1_, p_191862_2_, p_191862_3_, (this.field_191904_o - 147) / 2 - this.field_191903_n, (this.field_191905_p - 166) / 2, 147, 166))
++            if (this.recipeBookPage.mouseClicked(p_191862_1_, p_191862_2_, p_191862_3_, (this.width - 147) / 2 - this.xOffset, (this.height - 166) / 2, 147, 166))
              {
-                 IRecipe irecipe = this.field_193022_s.func_194193_a();
-                 RecipeList recipelist = this.field_193022_s.func_194199_b();
+                 IRecipe irecipe = this.recipeBookPage.getLastClickedRecipe();
+                 RecipeList recipelist = this.recipeBookPage.getLastClickedRecipeList();
 @@ -324,11 +326,7 @@
                      }
  
-                     this.field_191915_z.func_192682_a();
--                    this.field_191888_F
--                    .field_71442_b
+                     this.ghostRecipe.clear();
+-                    this.mc
+-                    .playerController
 -                    .func_194338_a(
--                        this.field_191888_F.field_71439_g.field_71070_bA.field_75152_c, irecipe, GuiScreen.func_146272_n(), this.field_191888_F.field_71439_g
+-                        this.mc.player.openContainer.windowId, irecipe, GuiScreen.isShiftKeyDown(), this.mc.player
 -                    );
-+                    this.field_191888_F.field_71442_b.func_194338_a(this.field_191888_F.field_71439_g.field_71070_bA.field_75152_c, irecipe, GuiScreen.func_146272_n(), this.field_191888_F.field_71439_g);
++                    this.mc.playerController.func_194338_a(this.mc.player.openContainer.windowId, irecipe, GuiScreen.isShiftKeyDown(), this.mc.player);
  
-                     if (!this.func_191880_f() && p_191862_3_ == 0)
+                     if (!this.isOffsetNextToMainGUI() && p_191862_3_ == 0)
                      {
 @@ -392,10 +390,7 @@
          }
@@ -133,61 +133,61 @@
 -                           || p_193955_2_ >= p_193955_4_ + p_193955_6_;
 +            boolean flag = p_193955_1_ < p_193955_3_ || p_193955_2_ < p_193955_4_ || p_193955_1_ >= p_193955_3_ + p_193955_5_ || p_193955_2_ >= p_193955_4_ + p_193955_6_;
              boolean flag1 = p_193955_3_ - 147 < p_193955_1_ && p_193955_1_ < p_193955_3_ && p_193955_4_ < p_193955_2_ && p_193955_2_ < p_193955_4_ + p_193955_6_;
-             return flag && !flag1 && !this.field_191913_x.func_146116_c(this.field_191888_F, p_193955_1_, p_193955_2_);
+             return flag && !flag1 && !this.currentTab.mousePressed(this.mc, p_193955_1_, p_193955_2_);
          }
 @@ -403,35 +398,38 @@
  
-     public boolean func_191859_a(char p_191859_1_, int p_191859_2_)
+     public boolean keyPressed(char typedChar, int keycode)
      {
--        if (!this.func_191878_b() || this.field_191888_F.field_71439_g.func_175149_v())
+-        if (!this.isVisible() || this.mc.player.isSpectator())
 -        {
 -            return false;
 -        }
--        else if (p_191859_2_ == 1 && !this.func_191880_f())
+-        else if (keycode == 1 && !this.isOffsetNextToMainGUI())
 -        {
--            this.func_193006_a(false);
+-            this.setVisible(false);
 -            return true;
 -        }
 -        else
 -        {
--            if (GameSettings.func_100015_a(this.field_191888_F.field_71474_y.field_74310_D) && !this.field_193962_q.func_146206_l())
+-            if (GameSettings.isKeyDown(this.mc.gameSettings.keyBindChat) && !this.searchBar.isFocused())
 -            {
--                this.field_193962_q.func_146195_b(true);
+-                this.searchBar.setFocused(true);
 -            }
--            else if (this.field_193962_q.func_146201_a(p_191859_1_, p_191859_2_))
+-            else if (this.searchBar.textboxKeyTyped(typedChar, keycode))
 -            {
--                String s = this.field_193962_q.func_146179_b().toLowerCase(Locale.ROOT);
--                this.func_193716_a(s);
+-                String s = this.searchBar.getText().toLowerCase(Locale.ROOT);
+-                this.pirateRecipe(s);
 -
--                if (!s.equals(this.field_193963_r))
+-                if (!s.equals(this.lastSearch))
 -                {
--                    this.func_193003_g(false);
--                    this.field_193963_r = s;
+-                    this.updateCollections(false);
+-                    this.lastSearch = s;
 -                }
 -
-+        if (this.func_191878_b() && !this.field_191888_F.field_71439_g.func_175149_v())
++        if (this.isVisible() && !this.mc.player.isSpectator())
 +        {
-+            if (p_191859_2_ == 1 && !this.func_191880_f())
++            if (keycode == 1 && !this.isOffsetNextToMainGUI())
 +            {
-+                this.func_193006_a(false);
++                this.setVisible(false);
                  return true;
              }
 -
 +            else
 +            {
-+                if (GameSettings.func_100015_a(this.field_191888_F.field_71474_y.field_74310_D) && !this.field_193962_q.func_146206_l())
++                if (GameSettings.isKeyDown(this.mc.gameSettings.keyBindChat) && !this.searchBar.isFocused())
 +                {
-+                    this.field_193962_q.func_146195_b(true);
++                    this.searchBar.setFocused(true);
 +                }
-+                else if (this.field_193962_q.func_146201_a(p_191859_1_, p_191859_2_))
++                else if (this.searchBar.textboxKeyTyped(typedChar, keycode))
 +                {
-+                    String s1 = this.field_193962_q.func_146179_b().toLowerCase(Locale.ROOT);
-+                    this.func_193716_a(s1);
++                    String s1 = this.searchBar.getText().toLowerCase(Locale.ROOT);
++                    this.pirateRecipe(s1);
 +
-+                    if (!s1.equals(this.field_193963_r))
++                    if (!s1.equals(this.lastSearch))
 +                    {
-+                        this.func_193003_g(false);
-+                        this.field_193963_r = s1;
++                        this.updateCollections(false);
++                        this.lastSearch = s1;
 +                    }
 +
 +                    return true;
@@ -203,37 +203,37 @@
      }
 @@ -450,10 +448,8 @@
  
-             languagemanager.func_135045_a(language);
-             this.field_191888_F.field_71474_y.field_74363_ab = language.func_135034_a();
--            this.field_191888_F.func_110436_a();
--            this.field_191888_F
--            .field_71466_p
--            .func_78264_a(this.field_191888_F.func_135016_M().func_135042_a() || this.field_191888_F.field_71474_y.field_151455_aw);
+             languagemanager.setCurrentLanguage(language);
+             this.mc.gameSettings.language = language.getLanguageCode();
+-            this.mc.refreshResources();
+-            this.mc
+-            .fontRenderer
+-            .setUnicodeFlag(this.mc.getLanguageManager().isCurrentLocaleUnicode() || this.mc.gameSettings.forceUnicodeFont);
 +            net.minecraftforge.fml.client.FMLClientHandler.instance().refreshResources(net.minecraftforge.client.resource.VanillaResourceType.LANGUAGES);
-+            this.field_191888_F.field_71466_p.func_78264_a(this.field_191888_F.func_135016_M().func_135042_a() || this.field_191888_F.field_71474_y.field_151455_aw);
-             this.field_191888_F.field_71466_p.func_78275_b(languagemanager.func_135044_b());
-             this.field_191888_F.field_71474_y.func_74303_b();
++            this.mc.fontRenderer.setUnicodeFlag(this.mc.getLanguageManager().isCurrentLocaleUnicode() || this.mc.gameSettings.forceUnicodeFont);
+             this.mc.fontRenderer.setBidiFlag(languagemanager.isCurrentLanguageBidirectional());
+             this.mc.gameSettings.saveOptions();
          }
 @@ -474,7 +470,6 @@
          }
      }
  
 -    @Override
-     public void func_193001_a(List<IRecipe> p_193001_1_)
+     public void recipesShown(List<IRecipe> recipes)
      {
-         for (IRecipe irecipe : p_193001_1_)
+         for (IRecipe irecipe : recipes)
 @@ -487,16 +482,16 @@
      {
-         ItemStack itemstack = p_193951_1_.func_77571_b();
-         this.field_191915_z.func_192685_a(p_193951_1_);
--        this.field_191915_z.func_194187_a(Ingredient.func_193369_a(itemstack), p_193951_2_.get(0).field_75223_e, p_193951_2_.get(0).field_75221_f);
-+        this.field_191915_z.func_194187_a(Ingredient.func_193369_a(itemstack), (p_193951_2_.get(0)).field_75223_e, (p_193951_2_.get(0)).field_75221_f);
-         int i = this.field_193961_o.func_174922_i();
-         int j = this.field_193961_o.func_174923_h();
--        int k = p_193951_1_ instanceof ShapedRecipes ? ((ShapedRecipes)p_193951_1_).func_192403_f() : i;
+         ItemStack itemstack = p_193951_1_.getRecipeOutput();
+         this.ghostRecipe.setRecipe(p_193951_1_);
+-        this.ghostRecipe.addIngredient(Ingredient.fromStacks(itemstack), p_193951_2_.get(0).xPos, p_193951_2_.get(0).yPos);
++        this.ghostRecipe.addIngredient(Ingredient.fromStacks(itemstack), (p_193951_2_.get(0)).xPos, (p_193951_2_.get(0)).yPos);
+         int i = this.craftingSlots.getWidth();
+         int j = this.craftingSlots.getHeight();
+-        int k = p_193951_1_ instanceof ShapedRecipes ? ((ShapedRecipes)p_193951_1_).getWidth() : i;
 +        int k = p_193951_1_ instanceof net.minecraftforge.common.crafting.IShapedRecipe ? ((net.minecraftforge.common.crafting.IShapedRecipe)p_193951_1_).getRecipeWidth() : i;
          int l = 1;
-         Iterator<Ingredient> iterator = p_193951_1_.func_192400_c().iterator();
+         Iterator<Ingredient> iterator = p_193951_1_.getIngredients().iterator();
  
 -        for (int i1 = 0; i1 < j; i1++)
 +        for (int i1 = 0; i1 < j; ++i1)
@@ -247,11 +247,11 @@
  
                  Ingredient ingredient = iterator.next();
  
--                if (ingredient != Ingredient.field_193370_a)
-+                if (ingredient.func_193365_a().length > 0)
+-                if (ingredient != Ingredient.EMPTY)
++                if (ingredient.getMatchingStacks().length > 0)
                  {
                      Slot slot = p_193951_2_.get(l);
-                     this.field_191915_z.func_194187_a(ingredient, slot.field_75223_e, slot.field_75221_f);
+                     this.ghostRecipe.addIngredient(ingredient, slot.xPos, slot.yPos);
                  }
  
 -                l++;

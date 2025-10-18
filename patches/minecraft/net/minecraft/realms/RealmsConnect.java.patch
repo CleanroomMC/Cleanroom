@@ -19,8 +19,8 @@
                          return;
                      }
  
--                    RealmsConnect.this.connection = NetworkManager.func_181124_a(
--                                                        inetaddress, p_connect_2_, Minecraft.func_71410_x().field_71474_y.func_181148_f()
+-                    RealmsConnect.this.connection = NetworkManager.createNetworkManagerAndConnect(
+-                                                        inetaddress, p_connect_2_, Minecraft.getMinecraft().gameSettings.isUsingNativeTransport()
 -                                                    );
 -
 -                    if (RealmsConnect.this.aborted)
@@ -29,8 +29,8 @@
 -                    }
 -
 -                    RealmsConnect.this.connection
--                    .func_150719_a(
--                        new NetHandlerLoginClient(RealmsConnect.this.connection, Minecraft.func_71410_x(), RealmsConnect.this.onlineScreen.getProxy())
+-                    .setNetHandler(
+-                        new NetHandlerLoginClient(RealmsConnect.this.connection, Minecraft.getMinecraft(), RealmsConnect.this.onlineScreen.getProxy())
 -                    );
 -
 -                    if (RealmsConnect.this.aborted)
@@ -38,22 +38,22 @@
 -                        return;
 -                    }
 -
--                    RealmsConnect.this.connection.func_179290_a(new C00Handshake(p_connect_1_, p_connect_2_, EnumConnectionState.LOGIN));
-+                    RealmsConnect.this.connection = NetworkManager.func_181124_a(inetaddress, p_connect_2_, Minecraft.func_71410_x().field_71474_y.func_181148_f());
+-                    RealmsConnect.this.connection.sendPacket(new C00Handshake(p_connect_1_, p_connect_2_, EnumConnectionState.LOGIN));
++                    RealmsConnect.this.connection = NetworkManager.createNetworkManagerAndConnect(inetaddress, p_connect_2_, Minecraft.getMinecraft().gameSettings.isUsingNativeTransport());
 +
 +                    if (RealmsConnect.this.aborted)
 +                    {
 +                        return;
 +                    }
 +
-+                    RealmsConnect.this.connection.func_150719_a(new NetHandlerLoginClient(RealmsConnect.this.connection, Minecraft.func_71410_x(), RealmsConnect.this.onlineScreen.getProxy()));
++                    RealmsConnect.this.connection.setNetHandler(new NetHandlerLoginClient(RealmsConnect.this.connection, Minecraft.getMinecraft(), RealmsConnect.this.onlineScreen.getProxy()));
 +
 +                    if (RealmsConnect.this.aborted)
 +                    {
 +                        return;
 +                    }
 +
-+                    RealmsConnect.this.connection.func_179290_a(new C00Handshake(p_connect_1_, p_connect_2_, EnumConnectionState.LOGIN, true));
++                    RealmsConnect.this.connection.sendPacket(new C00Handshake(p_connect_1_, p_connect_2_, EnumConnectionState.LOGIN, true));
  
                      if (RealmsConnect.this.aborted)
                      {
@@ -92,10 +92,10 @@
      public void abort()
 @@ -127,7 +111,7 @@
  
-         if (this.connection != null && this.connection.func_150724_d())
+         if (this.connection != null && this.connection.isChannelOpen())
          {
--            this.connection.func_150718_a(new TextComponentTranslation("disconnect.genericReason"));
-+            this.connection.func_150718_a(new TextComponentTranslation("disconnect.genericReason", new Object[0]));
-             this.connection.func_179293_l();
+-            this.connection.closeChannel(new TextComponentTranslation("disconnect.genericReason"));
++            this.connection.closeChannel(new TextComponentTranslation("disconnect.genericReason", new Object[0]));
+             this.connection.handleDisconnection();
          }
      }

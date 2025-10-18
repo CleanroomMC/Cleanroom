@@ -12,130 +12,130 @@
              return p_apply_1_ != EnumFacing.DOWN;
          }
      });
--    protected static final AxisAlignedBB field_185738_b = new AxisAlignedBB(0.4F, 0.0, 0.4F, 0.6F, 0.6F, 0.6F);
--    protected static final AxisAlignedBB field_185739_c = new AxisAlignedBB(0.35F, 0.2F, 0.7F, 0.65F, 0.8F, 1.0);
--    protected static final AxisAlignedBB field_185740_d = new AxisAlignedBB(0.35F, 0.2F, 0.0, 0.65F, 0.8F, 0.3F);
--    protected static final AxisAlignedBB field_185741_e = new AxisAlignedBB(0.7F, 0.2F, 0.35F, 1.0, 0.8F, 0.65F);
--    protected static final AxisAlignedBB field_185742_f = new AxisAlignedBB(0.0, 0.2F, 0.35F, 0.3F, 0.8F, 0.65F);
-+    protected static final AxisAlignedBB field_185738_b = new AxisAlignedBB(0.4000000059604645D, 0.0D, 0.4000000059604645D, 0.6000000238418579D, 0.6000000238418579D, 0.6000000238418579D);
-+    protected static final AxisAlignedBB field_185739_c = new AxisAlignedBB(0.3499999940395355D, 0.20000000298023224D, 0.699999988079071D, 0.6499999761581421D, 0.800000011920929D, 1.0D);
-+    protected static final AxisAlignedBB field_185740_d = new AxisAlignedBB(0.3499999940395355D, 0.20000000298023224D, 0.0D, 0.6499999761581421D, 0.800000011920929D, 0.30000001192092896D);
-+    protected static final AxisAlignedBB field_185741_e = new AxisAlignedBB(0.699999988079071D, 0.20000000298023224D, 0.3499999940395355D, 1.0D, 0.800000011920929D, 0.6499999761581421D);
-+    protected static final AxisAlignedBB field_185742_f = new AxisAlignedBB(0.0D, 0.20000000298023224D, 0.3499999940395355D, 0.30000001192092896D, 0.800000011920929D, 0.6499999761581421D);
+-    protected static final AxisAlignedBB STANDING_AABB = new AxisAlignedBB(0.4F, 0.0, 0.4F, 0.6F, 0.6F, 0.6F);
+-    protected static final AxisAlignedBB TORCH_NORTH_AABB = new AxisAlignedBB(0.35F, 0.2F, 0.7F, 0.65F, 0.8F, 1.0);
+-    protected static final AxisAlignedBB TORCH_SOUTH_AABB = new AxisAlignedBB(0.35F, 0.2F, 0.0, 0.65F, 0.8F, 0.3F);
+-    protected static final AxisAlignedBB TORCH_WEST_AABB = new AxisAlignedBB(0.7F, 0.2F, 0.35F, 1.0, 0.8F, 0.65F);
+-    protected static final AxisAlignedBB TORCH_EAST_AABB = new AxisAlignedBB(0.0, 0.2F, 0.35F, 0.3F, 0.8F, 0.65F);
++    protected static final AxisAlignedBB STANDING_AABB = new AxisAlignedBB(0.4000000059604645D, 0.0D, 0.4000000059604645D, 0.6000000238418579D, 0.6000000238418579D, 0.6000000238418579D);
++    protected static final AxisAlignedBB TORCH_NORTH_AABB = new AxisAlignedBB(0.3499999940395355D, 0.20000000298023224D, 0.699999988079071D, 0.6499999761581421D, 0.800000011920929D, 1.0D);
++    protected static final AxisAlignedBB TORCH_SOUTH_AABB = new AxisAlignedBB(0.3499999940395355D, 0.20000000298023224D, 0.0D, 0.6499999761581421D, 0.800000011920929D, 0.30000001192092896D);
++    protected static final AxisAlignedBB TORCH_WEST_AABB = new AxisAlignedBB(0.699999988079071D, 0.20000000298023224D, 0.3499999940395355D, 1.0D, 0.800000011920929D, 0.6499999761581421D);
++    protected static final AxisAlignedBB TORCH_EAST_AABB = new AxisAlignedBB(0.0D, 0.20000000298023224D, 0.3499999940395355D, 0.30000001192092896D, 0.800000011920929D, 0.6499999761581421D);
  
      protected BlockTorch()
      {
 @@ -46,7 +47,6 @@
-         this.func_149647_a(CreativeTabs.field_78031_c);
+         this.setCreativeTab(CreativeTabs.DECORATIONS);
      }
  
 -    @Override
-     public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
+     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
      {
-         switch ((EnumFacing)p_185496_1_.func_177229_b(field_176596_a))
+         switch ((EnumFacing)state.getValue(FACING))
 @@ -65,19 +65,16 @@
      }
  
      @Nullable
 -    @Override
-     public AxisAlignedBB func_180646_a(IBlockState p_180646_1_, IBlockAccess p_180646_2_, BlockPos p_180646_3_)
+     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
      {
-         return field_185506_k;
+         return NULL_AABB;
      }
  
 -    @Override
-     public boolean func_149662_c(IBlockState p_149662_1_)
+     public boolean isOpaqueCube(IBlockState state)
      {
          return false;
      }
  
 -    @Override
-     public boolean func_149686_d(IBlockState p_149686_1_)
+     public boolean isFullCube(IBlockState state)
      {
          return false;
 @@ -85,21 +82,10 @@
  
-     private boolean func_176594_d(World p_176594_1_, BlockPos p_176594_2_)
+     private boolean canPlaceOn(World worldIn, BlockPos pos)
      {
--        Block block = p_176594_1_.func_180495_p(p_176594_2_).func_177230_c();
--        boolean flag = block == Blocks.field_185775_db || block == Blocks.field_150428_aP;
+-        Block block = worldIn.getBlockState(pos).getBlock();
+-        boolean flag = block == Blocks.END_GATEWAY || block == Blocks.LIT_PUMPKIN;
 -
--        if (p_176594_1_.func_180495_p(p_176594_2_).func_185896_q())
+-        if (worldIn.getBlockState(pos).isTopSolid())
 -        {
 -            return !flag;
 -        }
 -        else
 -        {
--            boolean flag1 = block instanceof BlockFence || block == Blocks.field_150359_w || block == Blocks.field_150463_bK || block == Blocks.field_150399_cn;
+-            boolean flag1 = block instanceof BlockFence || block == Blocks.GLASS || block == Blocks.COBBLESTONE_WALL || block == Blocks.STAINED_GLASS;
 -            return flag1 && !flag;
 -        }
-+        IBlockState state = p_176594_1_.func_180495_p(p_176594_2_);
-+        return state.func_177230_c().canPlaceTorchOnTop(state, p_176594_1_, p_176594_2_);
++        IBlockState state = worldIn.getBlockState(pos);
++        return state.getBlock().canPlaceTorchOnTop(state, worldIn, pos);
      }
  
 -    @Override
-     public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)
+     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
      {
-         for (EnumFacing enumfacing : field_176596_a.func_177700_c())
+         for (EnumFacing enumfacing : FACING.getAllowedValues())
 @@ -124,23 +110,17 @@
          {
              return true;
          }
-+        else if (p_176595_3_ != EnumFacing.UP && p_176595_3_ != EnumFacing.DOWN)
++        else if (facing != EnumFacing.UP && facing != EnumFacing.DOWN)
 +        {
-+            return !func_193382_c(block) && blockfaceshape == BlockFaceShape.SOLID;
++            return !isExceptBlockForAttachWithPiston(block) && blockfaceshape == BlockFaceShape.SOLID;
 +        }
          else
          {
--            return p_176595_3_ != EnumFacing.UP && p_176595_3_ != EnumFacing.DOWN ? !func_193382_c(block) && blockfaceshape == BlockFaceShape.SOLID : false;
+-            return facing != EnumFacing.UP && facing != EnumFacing.DOWN ? !isExceptBlockForAttachWithPiston(block) && blockfaceshape == BlockFaceShape.SOLID : false;
 +            return false;
          }
      }
  
 -    @Override
--    public IBlockState func_180642_a(
--        World p_180642_1_,
--        BlockPos p_180642_2_,
--        EnumFacing p_180642_3_,
--        float p_180642_4_,
--        float p_180642_5_,
--        float p_180642_6_,
--        int p_180642_7_,
--        EntityLivingBase p_180642_8_
+-    public IBlockState getStateForPlacement(
+-        World worldIn,
+-        BlockPos pos,
+-        EnumFacing facing,
+-        float hitX,
+-        float hitY,
+-        float hitZ,
+-        int meta,
+-        EntityLivingBase placer
 -    )
-+    public IBlockState func_180642_a(World p_180642_1_, BlockPos p_180642_2_, EnumFacing p_180642_3_, float p_180642_4_, float p_180642_5_, float p_180642_6_, int p_180642_7_, EntityLivingBase p_180642_8_)
++    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
      {
-         if (this.func_176595_b(p_180642_1_, p_180642_2_, p_180642_3_))
+         if (this.canPlaceAt(worldIn, pos, facing))
          {
 @@ -160,13 +140,11 @@
          }
      }
  
 -    @Override
-     public void func_176213_c(World p_176213_1_, BlockPos p_176213_2_, IBlockState p_176213_3_)
+     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
      {
-         this.func_176593_f(p_176213_1_, p_176213_2_, p_176213_3_);
+         this.checkForDrop(worldIn, pos, state);
      }
  
 -    @Override
-     public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
+     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
      {
-         this.func_176592_e(p_189540_2_, p_189540_3_, p_189540_1_);
+         this.onNeighborChangeInternal(worldIn, pos, state);
 @@ -180,7 +158,7 @@
          }
          else
          {
--            EnumFacing enumfacing = p_176592_3_.func_177229_b(field_176596_a);
-+            EnumFacing enumfacing = (EnumFacing)p_176592_3_.func_177229_b(field_176596_a);
-             EnumFacing.Axis enumfacing$axis = enumfacing.func_176740_k();
-             EnumFacing enumfacing1 = enumfacing.func_176734_d();
-             BlockPos blockpos = p_176592_2_.func_177972_a(enumfacing1);
+-            EnumFacing enumfacing = state.getValue(FACING);
++            EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
+             EnumFacing.Axis enumfacing$axis = enumfacing.getAxis();
+             EnumFacing enumfacing1 = enumfacing.getOpposite();
+             BlockPos blockpos = pos.offset(enumfacing1);
 @@ -210,7 +188,7 @@
  
-     protected boolean func_176593_f(World p_176593_1_, BlockPos p_176593_2_, IBlockState p_176593_3_)
+     protected boolean checkForDrop(World worldIn, BlockPos pos, IBlockState state)
      {
--        if (p_176593_3_.func_177230_c() == this && this.func_176595_b(p_176593_1_, p_176593_2_, p_176593_3_.func_177229_b(field_176596_a)))
-+        if (p_176593_3_.func_177230_c() == this && this.func_176595_b(p_176593_1_, p_176593_2_, (EnumFacing)p_176593_3_.func_177229_b(field_176596_a)))
+-        if (state.getBlock() == this && this.canPlaceAt(worldIn, pos, state.getValue(FACING)))
++        if (state.getBlock() == this && this.canPlaceAt(worldIn, pos, (EnumFacing)state.getValue(FACING)))
          {
              return true;
          }
@@ -144,75 +144,75 @@
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public void func_180655_c(IBlockState p_180655_1_, World p_180655_2_, BlockPos p_180655_3_, Random p_180655_4_)
+     public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
      {
--        EnumFacing enumfacing = p_180655_1_.func_177229_b(field_176596_a);
--        double d0 = (double)p_180655_3_.func_177958_n() + 0.5;
--        double d1 = (double)p_180655_3_.func_177956_o() + 0.7;
--        double d2 = (double)p_180655_3_.func_177952_p() + 0.5;
+-        EnumFacing enumfacing = stateIn.getValue(FACING);
+-        double d0 = (double)pos.getX() + 0.5;
+-        double d1 = (double)pos.getY() + 0.7;
+-        double d2 = (double)pos.getZ() + 0.5;
 -        double d3 = 0.22;
 -        double d4 = 0.27;
-+        EnumFacing enumfacing = (EnumFacing)p_180655_1_.func_177229_b(field_176596_a);
-+        double d0 = (double)p_180655_3_.func_177958_n() + 0.5D;
-+        double d1 = (double)p_180655_3_.func_177956_o() + 0.7D;
-+        double d2 = (double)p_180655_3_.func_177952_p() + 0.5D;
++        EnumFacing enumfacing = (EnumFacing)stateIn.getValue(FACING);
++        double d0 = (double)pos.getX() + 0.5D;
++        double d1 = (double)pos.getY() + 0.7D;
++        double d2 = (double)pos.getZ() + 0.5D;
 +        double d3 = 0.22D;
 +        double d4 = 0.27D;
  
-         if (enumfacing.func_176740_k().func_176722_c())
+         if (enumfacing.getAxis().isHorizontal())
          {
-             EnumFacing enumfacing1 = enumfacing.func_176734_d();
--            p_180655_2_.func_175688_a(
+             EnumFacing enumfacing1 = enumfacing.getOpposite();
+-            worldIn.spawnParticle(
 -                EnumParticleTypes.SMOKE_NORMAL,
--                d0 + 0.27 * (double)enumfacing1.func_82601_c(),
+-                d0 + 0.27 * (double)enumfacing1.getXOffset(),
 -                d1 + 0.22,
--                d2 + 0.27 * (double)enumfacing1.func_82599_e(),
+-                d2 + 0.27 * (double)enumfacing1.getZOffset(),
 -                0.0,
 -                0.0,
 -                0.0
 -            );
--            p_180655_2_.func_175688_a(
--                EnumParticleTypes.FLAME, d0 + 0.27 * (double)enumfacing1.func_82601_c(), d1 + 0.22, d2 + 0.27 * (double)enumfacing1.func_82599_e(), 0.0, 0.0, 0.0
+-            worldIn.spawnParticle(
+-                EnumParticleTypes.FLAME, d0 + 0.27 * (double)enumfacing1.getXOffset(), d1 + 0.22, d2 + 0.27 * (double)enumfacing1.getZOffset(), 0.0, 0.0, 0.0
 -            );
-+            p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_NORMAL, d0 + 0.27D * (double)enumfacing1.func_82601_c(), d1 + 0.22D, d2 + 0.27D * (double)enumfacing1.func_82599_e(), 0.0D, 0.0D, 0.0D);
-+            p_180655_2_.func_175688_a(EnumParticleTypes.FLAME, d0 + 0.27D * (double)enumfacing1.func_82601_c(), d1 + 0.22D, d2 + 0.27D * (double)enumfacing1.func_82599_e(), 0.0D, 0.0D, 0.0D);
++            worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + 0.27D * (double)enumfacing1.getXOffset(), d1 + 0.22D, d2 + 0.27D * (double)enumfacing1.getZOffset(), 0.0D, 0.0D, 0.0D);
++            worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + 0.27D * (double)enumfacing1.getXOffset(), d1 + 0.22D, d2 + 0.27D * (double)enumfacing1.getZOffset(), 0.0D, 0.0D, 0.0D);
          }
          else
          {
--            p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, 0.0, 0.0, 0.0);
--            p_180655_2_.func_175688_a(EnumParticleTypes.FLAME, d0, d1, d2, 0.0, 0.0, 0.0);
-+            p_180655_2_.func_175688_a(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, 0.0D, 0.0D, 0.0D);
-+            p_180655_2_.func_175688_a(EnumParticleTypes.FLAME, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+-            worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, 0.0, 0.0, 0.0);
+-            worldIn.spawnParticle(EnumParticleTypes.FLAME, d0, d1, d2, 0.0, 0.0, 0.0);
++            worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, 0.0D, 0.0D, 0.0D);
++            worldIn.spawnParticle(EnumParticleTypes.FLAME, d0, d1, d2, 0.0D, 0.0D, 0.0D);
          }
      }
  
 -    @SideOnly(Side.CLIENT)
 -    @Override
--    public BlockRenderLayer func_180664_k()
+-    public BlockRenderLayer getRenderLayer()
 -    {
 -        return BlockRenderLayer.CUTOUT;
 -    }
 -
 -    @Override
-     public IBlockState func_176203_a(int p_176203_1_)
+     public IBlockState getStateFromMeta(int meta)
      {
-         IBlockState iblockstate = this.func_176223_P();
+         IBlockState iblockstate = this.getDefaultState();
 @@ -294,7 +253,12 @@
          return iblockstate;
      }
  
 -    @Override
 +    @SideOnly(Side.CLIENT)
-+    public BlockRenderLayer func_180664_k()
++    public BlockRenderLayer getRenderLayer()
 +    {
 +        return BlockRenderLayer.CUTOUT;
 +    }
 +
-     public int func_176201_c(IBlockState p_176201_1_)
+     public int getMetaFromState(IBlockState state)
      {
          int i = 0;
 @@ -302,45 +266,41 @@
-         switch ((EnumFacing)p_176201_1_.func_177229_b(field_176596_a))
+         switch ((EnumFacing)state.getValue(FACING))
          {
              case EAST:
 -                i |= 1;
@@ -241,27 +241,27 @@
      }
  
 -    @Override
-     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
+     public IBlockState withRotation(IBlockState state, Rotation rot)
      {
--        return p_185499_1_.func_177226_a(field_176596_a, p_185499_2_.func_185831_a(p_185499_1_.func_177229_b(field_176596_a)));
-+        return p_185499_1_.func_177226_a(field_176596_a, p_185499_2_.func_185831_a((EnumFacing)p_185499_1_.func_177229_b(field_176596_a)));
+-        return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
++        return state.withProperty(FACING, rot.rotate((EnumFacing)state.getValue(FACING)));
      }
  
 -    @Override
-     public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
+     public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
      {
--        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a(p_185471_1_.func_177229_b(field_176596_a)));
-+        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a((EnumFacing)p_185471_1_.func_177229_b(field_176596_a)));
+-        return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
++        return state.withRotation(mirrorIn.toRotation((EnumFacing)state.getValue(FACING)));
      }
  
 -    @Override
-     protected BlockStateContainer func_180661_e()
+     protected BlockStateContainer createBlockState()
      {
--        return new BlockStateContainer(this, field_176596_a);
-+        return new BlockStateContainer(this, new IProperty[] {field_176596_a});
+-        return new BlockStateContainer(this, FACING);
++        return new BlockStateContainer(this, new IProperty[] {FACING});
      }
  
 -    @Override
-     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
      {
          return BlockFaceShape.UNDEFINED;

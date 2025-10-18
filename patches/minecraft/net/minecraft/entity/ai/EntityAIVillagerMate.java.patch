@@ -1,20 +1,20 @@
 --- before/net/minecraft/entity/ai/EntityAIVillagerMate.java
 +++ after/net/minecraft/entity/ai/EntityAIVillagerMate.java
 @@ -21,7 +21,6 @@
-         this.func_75248_a(3);
+         this.setMutexBits(3);
      }
  
 -    @Override
-     public boolean func_75250_a()
+     public boolean shouldExecute()
      {
-         if (this.field_75450_b.func_70874_b() != 0)
+         if (this.villager.getGrowingAge() != 0)
 @@ -42,8 +41,7 @@
              }
-             else if (this.func_75446_f() && this.field_75450_b.func_175550_n(true))
+             else if (this.checkSufficientDoorsPresentForNewVillager() && this.villager.getIsWillingToMate(true))
              {
--                Entity entity = this.field_75448_d
--                                .func_72857_a(EntityVillager.class, this.field_75450_b.func_174813_aQ().func_72314_b(8.0, 3.0, 8.0), this.field_75450_b);
-+                Entity entity = this.field_75448_d.func_72857_a(EntityVillager.class, this.field_75450_b.func_174813_aQ().func_72314_b(8.0D, 3.0D, 8.0D), this.field_75450_b);
+-                Entity entity = this.world
+-                                .findNearestEntityWithinAABB(EntityVillager.class, this.villager.getEntityBoundingBox().grow(8.0, 3.0, 8.0), this.villager);
++                Entity entity = this.world.findNearestEntityWithinAABB(EntityVillager.class, this.villager.getEntityBoundingBox().grow(8.0D, 3.0D, 8.0D), this.villager);
  
                  if (entity == null)
                  {
@@ -23,63 +23,63 @@
      }
  
 -    @Override
-     public void func_75249_e()
+     public void startExecuting()
      {
-         this.field_75449_e = 300;
-         this.field_75450_b.func_70947_e(true);
+         this.matingTimeout = 300;
+         this.villager.setMating(true);
      }
  
 -    @Override
-     public void func_75251_c()
+     public void resetTask()
      {
-         this.field_75452_a = null;
+         this.village = null;
 @@ -77,21 +73,19 @@
-         this.field_75450_b.func_70947_e(false);
+         this.villager.setMating(false);
      }
  
 -    @Override
-     public boolean func_75253_b()
+     public boolean shouldContinueExecuting()
      {
-         return this.field_75449_e >= 0 && this.func_75446_f() && this.field_75450_b.func_70874_b() == 0 && this.field_75450_b.func_175550_n(false);
+         return this.matingTimeout >= 0 && this.checkSufficientDoorsPresentForNewVillager() && this.villager.getGrowingAge() == 0 && this.villager.getIsWillingToMate(false);
      }
  
 -    @Override
-     public void func_75246_d()
+     public void updateTask()
      {
--        this.field_75449_e--;
-+        --this.field_75449_e;
-         this.field_75450_b.func_70671_ap().func_75651_a(this.field_75451_c, 10.0F, 30.0F);
+-        this.matingTimeout--;
++        --this.matingTimeout;
+         this.villager.getLookHelper().setLookPositionWithEntity(this.mate, 10.0F, 30.0F);
  
--        if (this.field_75450_b.func_70068_e(this.field_75451_c) > 2.25)
-+        if (this.field_75450_b.func_70068_e(this.field_75451_c) > 2.25D)
+-        if (this.villager.getDistanceSq(this.mate) > 2.25)
++        if (this.villager.getDistanceSq(this.mate) > 2.25D)
          {
--            this.field_75450_b.func_70661_as().func_75497_a(this.field_75451_c, 0.25);
-+            this.field_75450_b.func_70661_as().func_75497_a(this.field_75451_c, 0.25D);
+-            this.villager.getNavigator().tryMoveToEntityLiving(this.mate, 0.25);
++            this.villager.getNavigator().tryMoveToEntityLiving(this.mate, 0.25D);
          }
-         else if (this.field_75449_e == 0 && this.field_75451_c.func_70941_o())
+         else if (this.matingTimeout == 0 && this.mate.isMating())
          {
 @@ -112,18 +106,22 @@
          }
          else
          {
--            int i = (int)((double)((float)this.field_75452_a.func_75567_c()) * 0.35);
-+            int i = (int)((double)((float)this.field_75452_a.func_75567_c()) * 0.35D);
-             return this.field_75452_a.func_75562_e() < i;
+-            int i = (int)((double)((float)this.village.getNumVillageDoors()) * 0.35);
++            int i = (int)((double)((float)this.village.getNumVillageDoors()) * 0.35D);
+             return this.village.getNumVillagers() < i;
          }
      }
  
-     private void func_75447_i()
+     private void giveBirth()
      {
--        EntityVillager entityvillager = this.field_75450_b.func_90011_a(this.field_75451_c);
-+        net.minecraft.entity.EntityAgeable entityvillager = this.field_75450_b.func_90011_a(this.field_75451_c);
-         this.field_75451_c.func_70873_a(6000);
-         this.field_75450_b.func_70873_a(6000);
-         this.field_75451_c.func_175549_o(false);
-         this.field_75450_b.func_175549_o(false);
+-        EntityVillager entityvillager = this.villager.createChild(this.mate);
++        net.minecraft.entity.EntityAgeable entityvillager = this.villager.createChild(this.mate);
+         this.mate.setGrowingAge(6000);
+         this.villager.setGrowingAge(6000);
+         this.mate.setIsWillingToMate(false);
+         this.villager.setIsWillingToMate(false);
 +
-+        final net.minecraftforge.event.entity.living.BabyEntitySpawnEvent event = new net.minecraftforge.event.entity.living.BabyEntitySpawnEvent(field_75450_b, field_75451_c, entityvillager);
++        final net.minecraftforge.event.entity.living.BabyEntitySpawnEvent event = new net.minecraftforge.event.entity.living.BabyEntitySpawnEvent(villager, mate, entityvillager);
 +        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event) || event.getChild() == null) { return; }
 +        entityvillager = event.getChild();
-         entityvillager.func_70873_a(-24000);
-         entityvillager.func_70012_b(this.field_75450_b.field_70165_t, this.field_75450_b.field_70163_u, this.field_75450_b.field_70161_v, 0.0F, 0.0F);
-         this.field_75448_d.func_72838_d(entityvillager);
+         entityvillager.setGrowingAge(-24000);
+         entityvillager.setLocationAndAngles(this.villager.posX, this.villager.posY, this.villager.posZ, 0.0F, 0.0F);
+         this.world.spawnEntity(entityvillager);

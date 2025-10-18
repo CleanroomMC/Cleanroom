@@ -3,18 +3,18 @@
 @@ -21,15 +21,8 @@
  public class WorldGenDungeons extends WorldGenerator
  {
-     private static final Logger field_175918_a = LogManager.getLogger();
--    private static final ResourceLocation[] field_175916_b = new ResourceLocation[]
+     private static final Logger LOGGER = LogManager.getLogger();
+-    private static final ResourceLocation[] SPAWNERTYPES = new ResourceLocation[]
 -        {
--            EntityList.func_191306_a(EntitySkeleton.class),
--            EntityList.func_191306_a(EntityZombie.class),
--            EntityList.func_191306_a(EntityZombie.class),
--            EntityList.func_191306_a(EntitySpider.class)
+-            EntityList.getKey(EntitySkeleton.class),
+-            EntityList.getKey(EntityZombie.class),
+-            EntityList.getKey(EntityZombie.class),
+-            EntityList.getKey(EntitySpider.class)
 -        };
-+    private static final ResourceLocation[] field_175916_b = new ResourceLocation[] {EntityList.func_191306_a(EntitySkeleton.class), EntityList.func_191306_a(EntityZombie.class), EntityList.func_191306_a(EntityZombie.class), EntityList.func_191306_a(EntitySpider.class)};
++    private static final ResourceLocation[] SPAWNERTYPES = new ResourceLocation[] {EntityList.getKey(EntitySkeleton.class), EntityList.getKey(EntityZombie.class), EntityList.getKey(EntityZombie.class), EntityList.getKey(EntitySpider.class)};
  
 -    @Override
-     public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
+     public boolean generate(World worldIn, Random rand, BlockPos position)
      {
          int i = 3;
 @@ -43,11 +36,11 @@
@@ -30,17 +30,17 @@
 -                for (int i3 = l1; i3 <= i2; i3++)
 +                for (int i3 = l1; i3 <= i2; ++i3)
                  {
-                     BlockPos blockpos = p_180709_3_.func_177982_a(k2, l2, i3);
-                     Material material = p_180709_1_.func_180495_p(blockpos).func_185904_a();
+                     BlockPos blockpos = position.add(k2, l2, i3);
+                     Material material = worldIn.getBlockState(blockpos).getMaterial();
 @@ -63,12 +56,9 @@
                          return false;
                      }
  
 -                    if ((k2 == k || k2 == l || i3 == l1 || i3 == i2)
 -                            && l2 == 0
--                            && p_180709_1_.func_175623_d(blockpos)
--                            && p_180709_1_.func_175623_d(blockpos.func_177984_a()))
-+                    if ((k2 == k || k2 == l || i3 == l1 || i3 == i2) && l2 == 0 && p_180709_1_.func_175623_d(blockpos) && p_180709_1_.func_175623_d(blockpos.func_177984_a()))
+-                            && worldIn.isAirBlock(blockpos)
+-                            && worldIn.isAirBlock(blockpos.up()))
++                    if ((k2 == k || k2 == l || i3 == l1 || i3 == i2) && l2 == 0 && worldIn.isAirBlock(blockpos) && worldIn.isAirBlock(blockpos.up()))
                      {
 -                        j2++;
 +                        ++j2;
@@ -60,17 +60,17 @@
 -                    for (int k4 = l1; k4 <= i2; k4++)
 +                    for (int k4 = l1; k4 <= i2; ++k4)
                      {
-                         BlockPos blockpos1 = p_180709_3_.func_177982_a(k3, i4, k4);
+                         BlockPos blockpos1 = position.add(k3, i4, k4);
  
 @@ -95,8 +85,7 @@
                          {
-                             p_180709_1_.func_175698_g(blockpos1);
+                             worldIn.setBlockToAir(blockpos1);
                          }
--                        else if (p_180709_1_.func_180495_p(blockpos1).func_185904_a().func_76220_a()
--                                 && p_180709_1_.func_180495_p(blockpos1).func_177230_c() != Blocks.field_150486_ae)
-+                        else if (p_180709_1_.func_180495_p(blockpos1).func_185904_a().func_76220_a() && p_180709_1_.func_180495_p(blockpos1).func_177230_c() != Blocks.field_150486_ae)
+-                        else if (worldIn.getBlockState(blockpos1).getMaterial().isSolid()
+-                                 && worldIn.getBlockState(blockpos1).getBlock() != Blocks.CHEST)
++                        else if (worldIn.getBlockState(blockpos1).getMaterial().isSolid() && worldIn.getBlockState(blockpos1).getBlock() != Blocks.CHEST)
                          {
-                             if (i4 == -1 && p_180709_2_.nextInt(4) != 0)
+                             if (i4 == -1 && rand.nextInt(4) != 0)
                              {
 @@ -111,9 +100,9 @@
                  }
@@ -82,11 +82,11 @@
 -                for (int j4 = 0; j4 < 3; j4++)
 +                for (int j4 = 0; j4 < 3; ++j4)
                  {
-                     int l4 = p_180709_3_.func_177958_n() + p_180709_2_.nextInt(j * 2 + 1) - j;
-                     int i5 = p_180709_3_.func_177956_o();
+                     int l4 = position.getX() + rand.nextInt(j * 2 + 1) - j;
+                     int i5 = position.getY();
 @@ -128,15 +117,13 @@
                          {
-                             if (p_180709_1_.func_180495_p(blockpos2.func_177972_a(enumfacing)).func_185904_a().func_76220_a())
+                             if (worldIn.getBlockState(blockpos2.offset(enumfacing)).getMaterial().isSolid())
                              {
 -                                j3++;
 +                                ++j3;
@@ -95,29 +95,29 @@
  
                          if (j3 == 1)
                          {
--                            p_180709_1_.func_180501_a(
--                                blockpos2, Blocks.field_150486_ae.func_176458_f(p_180709_1_, blockpos2, Blocks.field_150486_ae.func_176223_P()), 2
+-                            worldIn.setBlockState(
+-                                blockpos2, Blocks.CHEST.correctFacing(worldIn, blockpos2, Blocks.CHEST.getDefaultState()), 2
 -                            );
-+                            p_180709_1_.func_180501_a(blockpos2, Blocks.field_150486_ae.func_176458_f(p_180709_1_, blockpos2, Blocks.field_150486_ae.func_176223_P()), 2);
-                             TileEntity tileentity1 = p_180709_1_.func_175625_s(blockpos2);
++                            worldIn.setBlockState(blockpos2, Blocks.CHEST.correctFacing(worldIn, blockpos2, Blocks.CHEST.getDefaultState()), 2);
+                             TileEntity tileentity1 = worldIn.getTileEntity(blockpos2);
  
                              if (tileentity1 instanceof TileEntityChest)
 @@ -159,9 +146,7 @@
              }
              else
              {
--                field_175918_a.error(
--                    "Failed to fetch mob spawner entity at ({}, {}, {})", p_180709_3_.func_177958_n(), p_180709_3_.func_177956_o(), p_180709_3_.func_177952_p()
+-                LOGGER.error(
+-                    "Failed to fetch mob spawner entity at ({}, {}, {})", position.getX(), position.getY(), position.getZ()
 -                );
-+                field_175918_a.error("Failed to fetch mob spawner entity at ({}, {}, {})", Integer.valueOf(p_180709_3_.func_177958_n()), Integer.valueOf(p_180709_3_.func_177956_o()), Integer.valueOf(p_180709_3_.func_177952_p()));
++                LOGGER.error("Failed to fetch mob spawner entity at ({}, {}, {})", Integer.valueOf(position.getX()), Integer.valueOf(position.getY()), Integer.valueOf(position.getZ()));
              }
  
              return true;
 @@ -174,6 +159,6 @@
  
-     private ResourceLocation func_76543_b(Random p_76543_1_)
+     private ResourceLocation pickMobSpawner(Random rand)
      {
--        return field_175916_b[p_76543_1_.nextInt(field_175916_b.length)];
-+        return net.minecraftforge.common.DungeonHooks.getRandomDungeonMob(p_76543_1_);
+-        return SPAWNERTYPES[rand.nextInt(SPAWNERTYPES.length)];
++        return net.minecraftforge.common.DungeonHooks.getRandomDungeonMob(rand);
      }
  }

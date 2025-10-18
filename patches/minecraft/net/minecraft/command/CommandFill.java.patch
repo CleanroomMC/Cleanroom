@@ -4,23 +4,23 @@
                  NBTTagCompound nbttagcompound = new NBTTagCompound();
                  boolean flag = false;
  
--                if (p_184881_3_.length >= 10 && block.func_149716_u())
-+                if (p_184881_3_.length >= 10 && block.hasTileEntity(iblockstate))
+-                if (args.length >= 10 && block.hasTileEntity())
++                if (args.length >= 10 && block.hasTileEntity(iblockstate))
                  {
-                     String s = func_180529_a(p_184881_3_, 9);
+                     String s = buildString(args, 9);
  
 @@ -114,11 +114,11 @@
                  List<BlockPos> list = Lists.newArrayList();
                  i = 0;
  
--                for (int l = blockpos2.func_177952_p(); l <= blockpos3.func_177952_p(); l++)
-+                for (int l = blockpos2.func_177952_p(); l <= blockpos3.func_177952_p(); ++l)
+-                for (int l = blockpos2.getZ(); l <= blockpos3.getZ(); l++)
++                for (int l = blockpos2.getZ(); l <= blockpos3.getZ(); ++l)
                  {
--                    for (int i1 = blockpos2.func_177956_o(); i1 <= blockpos3.func_177956_o(); i1++)
-+                    for (int i1 = blockpos2.func_177956_o(); i1 <= blockpos3.func_177956_o(); ++i1)
+-                    for (int i1 = blockpos2.getY(); i1 <= blockpos3.getY(); i1++)
++                    for (int i1 = blockpos2.getY(); i1 <= blockpos3.getY(); ++i1)
                      {
--                        for (int j1 = blockpos2.func_177958_n(); j1 <= blockpos3.func_177958_n(); j1++)
-+                        for (int j1 = blockpos2.func_177958_n(); j1 <= blockpos3.func_177958_n(); ++j1)
+-                        for (int j1 = blockpos2.getX(); j1 <= blockpos3.getX(); j1++)
++                        for (int j1 = blockpos2.getX(); j1 <= blockpos3.getX(); ++j1)
                          {
                              BlockPos blockpos4 = new BlockPos(j1, i1, l);
  
@@ -28,13 +28,13 @@
                                              continue;
                                          }
                                      }
--                                    else if ("replace".equals(p_184881_3_[8]) && !block.func_149716_u() && p_184881_3_.length > 9)
-+                                    else if ("replace".equals(p_184881_3_[8]) && !block.hasTileEntity(iblockstate) && p_184881_3_.length > 9)
+-                                    else if ("replace".equals(args[8]) && !block.hasTileEntity() && args.length > 9)
++                                    else if ("replace".equals(args[8]) && !block.hasTileEntity(iblockstate) && args.length > 9)
                                      {
-                                         Block block1 = CommandBase.func_147180_g(p_184881_2_, p_184881_3_[9]);
+                                         Block block1 = CommandBase.getBlockByText(sender, args[9]);
  
 @@ -178,7 +178,7 @@
-                             if (world.func_180501_a(blockpos4, iblockstate, 2))
+                             if (world.setBlockState(blockpos4, iblockstate, 2))
                              {
                                  list.add(blockpos4);
 -                                i++;

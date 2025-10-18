@@ -13,70 +13,70 @@
      X270_Y180(270, 180),
      X270_Y270(270, 270);
  
--    private static final Map<Integer, ModelRotation> field_177546_q = Maps.newHashMap();
-+    private static final Map<Integer, ModelRotation> field_177546_q = Maps.<Integer, ModelRotation>newHashMap();
-     private final int field_177545_r;
-     private final Matrix4f field_177544_s;
-     private final int field_177543_t;
+-    private static final Map<Integer, ModelRotation> MAP_ROTATIONS = Maps.newHashMap();
++    private static final Map<Integer, ModelRotation> MAP_ROTATIONS = Maps.<Integer, ModelRotation>newHashMap();
+     private final int combinedXY;
+     private final Matrix4f matrix;
+     private final int quartersX;
 @@ -46,11 +46,11 @@
-         this.field_177544_s = new Matrix4f();
+         this.matrix = new Matrix4f();
          Matrix4f matrix4f = new Matrix4f();
          matrix4f.setIdentity();
--        Matrix4f.rotate((float)(-p_i46087_3_) * (float)(Math.PI / 180.0), new Vector3f(1.0F, 0.0F, 0.0F), matrix4f, matrix4f);
-+        Matrix4f.rotate((float)(-p_i46087_3_) * 0.017453292F, new Vector3f(1.0F, 0.0F, 0.0F), matrix4f, matrix4f);
-         this.field_177543_t = MathHelper.func_76130_a(p_i46087_3_ / 90);
+-        Matrix4f.rotate((float)(-x) * (float)(Math.PI / 180.0), new Vector3f(1.0F, 0.0F, 0.0F), matrix4f, matrix4f);
++        Matrix4f.rotate((float)(-x) * 0.017453292F, new Vector3f(1.0F, 0.0F, 0.0F), matrix4f, matrix4f);
+         this.quartersX = MathHelper.abs(x / 90);
          Matrix4f matrix4f1 = new Matrix4f();
          matrix4f1.setIdentity();
--        Matrix4f.rotate((float)(-p_i46087_4_) * (float)(Math.PI / 180.0), new Vector3f(0.0F, 1.0F, 0.0F), matrix4f1, matrix4f1);
-+        Matrix4f.rotate((float)(-p_i46087_4_) * 0.017453292F, new Vector3f(0.0F, 1.0F, 0.0F), matrix4f1, matrix4f1);
-         this.field_177542_u = MathHelper.func_76130_a(p_i46087_4_ / 90);
-         Matrix4f.mul(matrix4f1, matrix4f, this.field_177544_s);
+-        Matrix4f.rotate((float)(-y) * (float)(Math.PI / 180.0), new Vector3f(0.0F, 1.0F, 0.0F), matrix4f1, matrix4f1);
++        Matrix4f.rotate((float)(-y) * 0.017453292F, new Vector3f(0.0F, 1.0F, 0.0F), matrix4f1, matrix4f1);
+         this.quartersY = MathHelper.abs(y / 90);
+         Matrix4f.mul(matrix4f1, matrix4f, this.matrix);
      }
 @@ -64,14 +64,14 @@
      {
-         EnumFacing enumfacing = p_177523_1_;
+         EnumFacing enumfacing = facing;
  
--        for (int i = 0; i < this.field_177543_t; i++)
-+        for (int i = 0; i < this.field_177543_t; ++i)
+-        for (int i = 0; i < this.quartersX; i++)
++        for (int i = 0; i < this.quartersX; ++i)
          {
-             enumfacing = enumfacing.func_176732_a(EnumFacing.Axis.X);
+             enumfacing = enumfacing.rotateAround(EnumFacing.Axis.X);
          }
  
-         if (enumfacing.func_176740_k() != EnumFacing.Axis.Y)
+         if (enumfacing.getAxis() != EnumFacing.Axis.Y)
          {
--            for (int j = 0; j < this.field_177542_u; j++)
-+            for (int j = 0; j < this.field_177542_u; ++j)
+-            for (int j = 0; j < this.quartersY; j++)
++            for (int j = 0; j < this.quartersY; ++j)
              {
-                 enumfacing = enumfacing.func_176732_a(EnumFacing.Axis.Y);
+                 enumfacing = enumfacing.rotateAround(EnumFacing.Axis.Y);
              }
 @@ -91,7 +91,7 @@
  
-         EnumFacing enumfacing = p_177520_1_;
+         EnumFacing enumfacing = facing;
  
--        for (int j = 0; j < this.field_177543_t; j++)
-+        for (int j = 0; j < this.field_177543_t; ++j)
+-        for (int j = 0; j < this.quartersX; j++)
++        for (int j = 0; j < this.quartersX; ++j)
          {
-             enumfacing = enumfacing.func_176732_a(EnumFacing.Axis.X);
+             enumfacing = enumfacing.rotateAround(EnumFacing.Axis.X);
          }
 @@ -106,14 +106,19 @@
  
-     public static ModelRotation func_177524_a(int p_177524_0_, int p_177524_1_)
+     public static ModelRotation getModelRotation(int x, int y)
      {
--        return field_177546_q.get(func_177521_b(MathHelper.func_180184_b(p_177524_0_, 360), MathHelper.func_180184_b(p_177524_1_, 360)));
-+        return field_177546_q.get(Integer.valueOf(func_177521_b(MathHelper.func_180184_b(p_177524_0_, 360), MathHelper.func_180184_b(p_177524_1_, 360))));
+-        return MAP_ROTATIONS.get(combineXY(MathHelper.normalizeAngle(x, 360), MathHelper.normalizeAngle(y, 360)));
++        return MAP_ROTATIONS.get(Integer.valueOf(combineXY(MathHelper.normalizeAngle(x, 360), MathHelper.normalizeAngle(y, 360))));
      }
  
      static
      {
          for (ModelRotation modelrotation : values())
          {
--            field_177546_q.put(modelrotation.field_177545_r, modelrotation);
-+            field_177546_q.put(Integer.valueOf(modelrotation.field_177545_r), modelrotation);
+-            MAP_ROTATIONS.put(modelrotation.combinedXY, modelrotation);
++            MAP_ROTATIONS.put(Integer.valueOf(modelrotation.combinedXY), modelrotation);
          }
      }
 +
 +    public java.util.Optional<net.minecraftforge.common.model.TRSRTransformation> apply(java.util.Optional<? extends net.minecraftforge.common.model.IModelPart> part) { return net.minecraftforge.client.ForgeHooksClient.applyTransform(this, part); }
 +    public javax.vecmath.Matrix4f getMatrix() { return net.minecraftforge.common.model.TRSRTransformation.from(this).getMatrix(); }
-+    public EnumFacing rotate(EnumFacing facing) { return func_177523_a(facing); }
-+    public int rotate(EnumFacing facing, int vertexIndex) { return func_177520_a(facing, vertexIndex); }
++    public EnumFacing rotate(EnumFacing facing) { return rotateFace(facing); }
++    public int rotate(EnumFacing facing, int vertexIndex) { return rotateVertex(facing, vertexIndex); }
  }

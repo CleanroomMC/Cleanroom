@@ -1,112 +1,112 @@
 --- before/net/minecraft/client/renderer/block/model/SimpleBakedModel.java
 +++ after/net/minecraft/client/renderer/block/model/SimpleBakedModel.java
 @@ -24,15 +24,7 @@
-     protected final ItemCameraTransforms field_177558_f;
-     protected final ItemOverrideList field_188620_g;
+     protected final ItemCameraTransforms cameraTransforms;
+     protected final ItemOverrideList itemOverrideList;
  
 -    public SimpleBakedModel(
--        List<BakedQuad> p_i46535_1_,
--        Map<EnumFacing, List<BakedQuad>> p_i46535_2_,
--        boolean p_i46535_3_,
--        boolean p_i46535_4_,
--        TextureAtlasSprite p_i46535_5_,
--        ItemCameraTransforms p_i46535_6_,
--        ItemOverrideList p_i46535_7_
+-        List<BakedQuad> generalQuadsIn,
+-        Map<EnumFacing, List<BakedQuad>> faceQuadsIn,
+-        boolean ambientOcclusionIn,
+-        boolean gui3dIn,
+-        TextureAtlasSprite textureIn,
+-        ItemCameraTransforms cameraTransformsIn,
+-        ItemOverrideList itemOverrideListIn
 -    )
-+    public SimpleBakedModel(List<BakedQuad> p_i46535_1_, Map<EnumFacing, List<BakedQuad>> p_i46535_2_, boolean p_i46535_3_, boolean p_i46535_4_, TextureAtlasSprite p_i46535_5_, ItemCameraTransforms p_i46535_6_, ItemOverrideList p_i46535_7_)
++    public SimpleBakedModel(List<BakedQuad> generalQuadsIn, Map<EnumFacing, List<BakedQuad>> faceQuadsIn, boolean ambientOcclusionIn, boolean gui3dIn, TextureAtlasSprite textureIn, ItemCameraTransforms cameraTransformsIn, ItemOverrideList itemOverrideListIn)
      {
-         this.field_177563_a = p_i46535_1_;
-         this.field_177561_b = p_i46535_2_;
+         this.generalQuads = generalQuadsIn;
+         this.faceQuads = faceQuadsIn;
 @@ -43,43 +35,36 @@
-         this.field_188620_g = p_i46535_7_;
+         this.itemOverrideList = itemOverrideListIn;
      }
  
 -    @Override
-     public List<BakedQuad> func_188616_a(@Nullable IBlockState p_188616_1_, @Nullable EnumFacing p_188616_2_, long p_188616_3_)
+     public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand)
      {
--        return p_188616_2_ == null ? this.field_177563_a : this.field_177561_b.get(p_188616_2_);
-+        return p_188616_2_ == null ? this.field_177563_a : (List)this.field_177561_b.get(p_188616_2_);
+-        return side == null ? this.generalQuads : this.faceQuads.get(side);
++        return side == null ? this.generalQuads : (List)this.faceQuads.get(side);
      }
  
 -    @Override
-     public boolean func_177555_b()
+     public boolean isAmbientOcclusion()
      {
-         return this.field_177562_c;
+         return this.ambientOcclusion;
      }
  
 -    @Override
-     public boolean func_177556_c()
+     public boolean isGui3d()
      {
-         return this.field_177559_d;
+         return this.gui3d;
      }
  
 -    @Override
-     public boolean func_188618_c()
+     public boolean isBuiltInRenderer()
      {
          return false;
      }
  
 -    @Override
-     public TextureAtlasSprite func_177554_e()
+     public TextureAtlasSprite getParticleTexture()
      {
-         return this.field_177560_e;
+         return this.texture;
      }
  
 -    @Override
-     public ItemCameraTransforms func_177552_f()
+     public ItemCameraTransforms getItemCameraTransforms()
      {
-         return this.field_177558_f;
+         return this.cameraTransforms;
      }
  
 -    @Override
-     public ItemOverrideList func_188617_f()
+     public ItemOverrideList getOverrides()
      {
-         return this.field_188620_g;
+         return this.itemOverrideList;
 @@ -88,8 +73,8 @@
      @SideOnly(Side.CLIENT)
      public static class Builder
          {
--            private final List<BakedQuad> field_177656_a = Lists.newArrayList();
--            private final Map<EnumFacing, List<BakedQuad>> field_177654_b = Maps.newEnumMap(EnumFacing.class);
-+            private final List<BakedQuad> field_177656_a;
-+            private final Map<EnumFacing, List<BakedQuad>> field_177654_b;
-             private final ItemOverrideList field_188646_c;
-             private final boolean field_177655_c;
-             private TextureAtlasSprite field_177652_d;
+-            private final List<BakedQuad> builderGeneralQuads = Lists.newArrayList();
+-            private final Map<EnumFacing, List<BakedQuad>> builderFaceQuads = Maps.newEnumMap(EnumFacing.class);
++            private final List<BakedQuad> builderGeneralQuads;
++            private final Map<EnumFacing, List<BakedQuad>> builderFaceQuads;
+             private final ItemOverrideList builderItemOverrideList;
+             private final boolean builderAmbientOcclusion;
+             private TextureAtlasSprite builderTexture;
 @@ -103,7 +88,7 @@
  
-             public Builder(IBlockState p_i46989_1_, IBakedModel p_i46989_2_, TextureAtlasSprite p_i46989_3_, BlockPos p_i46989_4_)
+             public Builder(IBlockState state, IBakedModel model, TextureAtlasSprite texture, BlockPos pos)
              {
--                this(p_i46989_2_.func_177555_b(), p_i46989_2_.func_177556_c(), p_i46989_2_.func_177552_f(), p_i46989_2_.func_188617_f());
-+                this(p_i46989_2_.isAmbientOcclusion(p_i46989_1_), p_i46989_2_.func_177556_c(), p_i46989_2_.func_177552_f(), p_i46989_2_.func_188617_f());
-                 this.field_177652_d = p_i46989_2_.func_177554_e();
-                 long i = MathHelper.func_180186_a(p_i46989_4_);
+-                this(model.isAmbientOcclusion(), model.isGui3d(), model.getItemCameraTransforms(), model.getOverrides());
++                this(model.isAmbientOcclusion(state), model.isGui3d(), model.getItemCameraTransforms(), model.getOverrides());
+                 this.builderTexture = model.getParticleTexture();
+                 long i = MathHelper.getPositionRandom(pos);
  
 @@ -117,6 +102,9 @@
  
-             private Builder(boolean p_i46990_1_, boolean p_i46990_2_, ItemCameraTransforms p_i46990_3_, ItemOverrideList p_i46990_4_)
+             private Builder(boolean ambientOcclusion, boolean gui3d, ItemCameraTransforms transforms, ItemOverrideList overrides)
              {
-+                this.field_177656_a = Lists.<BakedQuad>newArrayList();
-+                this.field_177654_b = Maps.newEnumMap(EnumFacing.class);
++                this.builderGeneralQuads = Lists.<BakedQuad>newArrayList();
++                this.builderFaceQuads = Maps.newEnumMap(EnumFacing.class);
 +
                  for (EnumFacing enumfacing : EnumFacing.values())
                  {
-                     this.field_177654_b.put(enumfacing, Lists.newArrayList());
+                     this.builderFaceQuads.put(enumfacing, Lists.newArrayList());
 @@ -138,7 +126,7 @@
  
-             private void func_188645_a(IBlockState p_188645_1_, IBakedModel p_188645_2_, TextureAtlasSprite p_188645_3_, long p_188645_4_)
+             private void addGeneralQuads(IBlockState p_188645_1_, IBakedModel p_188645_2_, TextureAtlasSprite p_188645_3_, long p_188645_4_)
              {
--                for (BakedQuad bakedquad : p_188645_2_.func_188616_a(p_188645_1_, null, p_188645_4_))
-+                for (BakedQuad bakedquad : p_188645_2_.func_188616_a(p_188645_1_, (EnumFacing)null, p_188645_4_))
+-                for (BakedQuad bakedquad : p_188645_2_.getQuads(p_188645_1_, null, p_188645_4_))
++                for (BakedQuad bakedquad : p_188645_2_.getQuads(p_188645_1_, (EnumFacing)null, p_188645_4_))
                  {
-                     this.func_177648_a(new BakedQuadRetextured(bakedquad, p_188645_3_));
+                     this.addGeneralQuad(new BakedQuadRetextured(bakedquad, p_188645_3_));
                  }
 @@ -146,7 +134,7 @@
  
-             public SimpleBakedModel.Builder func_177650_a(EnumFacing p_177650_1_, BakedQuad p_177650_2_)
+             public SimpleBakedModel.Builder addFaceQuad(EnumFacing facing, BakedQuad quad)
              {
--                this.field_177654_b.get(p_177650_1_).add(p_177650_2_);
-+                (this.field_177654_b.get(p_177650_1_)).add(p_177650_2_);
+-                this.builderFaceQuads.get(facing).add(quad);
++                (this.builderFaceQuads.get(facing)).add(quad);
                  return this;
              }
  
@@ -115,15 +115,15 @@
                  else
                  {
 -                    return new SimpleBakedModel(
--                               this.field_177656_a,
--                               this.field_177654_b,
--                               this.field_177655_c,
--                               this.field_177653_e,
--                               this.field_177652_d,
--                               this.field_177651_f,
--                               this.field_188646_c
+-                               this.builderGeneralQuads,
+-                               this.builderFaceQuads,
+-                               this.builderAmbientOcclusion,
+-                               this.builderGui3d,
+-                               this.builderTexture,
+-                               this.builderCameraTransforms,
+-                               this.builderItemOverrideList
 -                           );
-+                    return new SimpleBakedModel(this.field_177656_a, this.field_177654_b, this.field_177655_c, this.field_177653_e, this.field_177652_d, this.field_177651_f, this.field_188646_c);
++                    return new SimpleBakedModel(this.builderGeneralQuads, this.builderFaceQuads, this.builderAmbientOcclusion, this.builderGui3d, this.builderTexture, this.builderCameraTransforms, this.builderItemOverrideList);
                  }
              }
          }

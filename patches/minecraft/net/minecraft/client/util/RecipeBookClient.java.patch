@@ -12,22 +12,22 @@
  @SideOnly(Side.CLIENT)
  public class RecipeBookClient extends RecipeBook
  {
--    public static final Map<CreativeTabs, List<RecipeList>> field_194086_e = Maps.newHashMap();
--    public static final List<RecipeList> field_194087_f = Lists.newArrayList();
-+    public static final Map<CreativeTabs, List<RecipeList>> field_194086_e = Maps.<CreativeTabs, List<RecipeList>>newHashMap();
-+    public static final List<RecipeList> field_194087_f = Lists.<RecipeList>newArrayList();
+-    public static final Map<CreativeTabs, List<RecipeList>> RECIPES_BY_TAB = Maps.newHashMap();
+-    public static final List<RecipeList> ALL_RECIPES = Lists.newArrayList();
++    public static final Map<CreativeTabs, List<RecipeList>> RECIPES_BY_TAB = Maps.<CreativeTabs, List<RecipeList>>newHashMap();
++    public static final List<RecipeList> ALL_RECIPES = Lists.<RecipeList>newArrayList();
  
-     private static RecipeList func_194082_a(CreativeTabs p_194082_0_)
+     private static RecipeList newRecipeList(CreativeTabs srcTab)
      {
          RecipeList recipelist = new RecipeList();
-         field_194087_f.add(recipelist);
--        field_194086_e.computeIfAbsent(p_194082_0_, p_194085_0_ -> new ArrayList<>()).add(recipelist);
--        field_194086_e.computeIfAbsent(CreativeTabs.field_78027_g, p_194083_0_ -> new ArrayList<>()).add(recipelist);
-+        (field_194086_e.computeIfAbsent(p_194082_0_, (p_194085_0_) ->
+         ALL_RECIPES.add(recipelist);
+-        RECIPES_BY_TAB.computeIfAbsent(srcTab, p_194085_0_ -> new ArrayList<>()).add(recipelist);
+-        RECIPES_BY_TAB.computeIfAbsent(CreativeTabs.SEARCH, p_194083_0_ -> new ArrayList<>()).add(recipelist);
++        (RECIPES_BY_TAB.computeIfAbsent(srcTab, (p_194085_0_) ->
 +        {
 +            return new ArrayList();
 +        })).add(recipelist);
-+        (field_194086_e.computeIfAbsent(CreativeTabs.field_78027_g, (p_194083_0_) ->
++        (RECIPES_BY_TAB.computeIfAbsent(CreativeTabs.SEARCH, (p_194083_0_) ->
 +        {
 +            return new ArrayList();
 +        })).add(recipelist);
@@ -36,16 +36,16 @@
  
 @@ -35,19 +42,27 @@
      {
-         CreativeTabs creativetabs = p_194084_0_.func_77973_b().func_77640_w();
+         CreativeTabs creativetabs = stackIn.getItem().getCreativeTab();
  
--        if (creativetabs == CreativeTabs.field_78030_b || creativetabs == CreativeTabs.field_78040_i || creativetabs == CreativeTabs.field_78028_d)
+-        if (creativetabs == CreativeTabs.BUILDING_BLOCKS || creativetabs == CreativeTabs.TOOLS || creativetabs == CreativeTabs.REDSTONE)
 -        {
 -            return creativetabs;
 -        }
 -        else
-+        if (creativetabs != CreativeTabs.field_78030_b && creativetabs != CreativeTabs.field_78040_i && creativetabs != CreativeTabs.field_78028_d)
++        if (creativetabs != CreativeTabs.BUILDING_BLOCKS && creativetabs != CreativeTabs.TOOLS && creativetabs != CreativeTabs.REDSTONE)
          {
-             return creativetabs == CreativeTabs.field_78037_j ? CreativeTabs.field_78040_i : CreativeTabs.field_78026_f;
+             return creativetabs == CreativeTabs.COMBAT ? CreativeTabs.TOOLS : CreativeTabs.MISC;
          }
 +        else
 +        {
@@ -61,10 +61,10 @@
 +
 +    public static void rebuildTable()
 +    {
-+        field_194086_e.clear();
-+        field_194087_f.clear();
++        RECIPES_BY_TAB.clear();
++        ALL_RECIPES.clear();
 +
 +        Table<CreativeTabs, String, RecipeList> table = HashBasedTable.<CreativeTabs, String, RecipeList>create();
  
-         for (IRecipe irecipe : CraftingManager.field_193380_a)
+         for (IRecipe irecipe : CraftingManager.REGISTRY)
          {

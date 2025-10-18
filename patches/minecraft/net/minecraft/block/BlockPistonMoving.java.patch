@@ -11,221 +11,221 @@
 @@ -35,17 +36,11 @@
      public BlockPistonMoving()
      {
-         super(Material.field_76233_E);
--        this.func_180632_j(
--            this.field_176227_L
--            .func_177621_b()
--            .func_177226_a(field_176426_a, EnumFacing.NORTH)
--            .func_177226_a(field_176425_b, BlockPistonExtension.EnumPistonType.DEFAULT)
+         super(Material.PISTON);
+-        this.setDefaultState(
+-            this.blockState
+-            .getBaseState()
+-            .withProperty(FACING, EnumFacing.NORTH)
+-            .withProperty(TYPE, BlockPistonExtension.EnumPistonType.DEFAULT)
 -        );
-+        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176426_a, EnumFacing.NORTH).func_177226_a(field_176425_b, BlockPistonExtension.EnumPistonType.DEFAULT));
-         this.func_149711_c(-1.0F);
++        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(TYPE, BlockPistonExtension.EnumPistonType.DEFAULT));
+         this.setHardness(-1.0F);
      }
  
      @Nullable
 -    @Override
-     public TileEntity func_149915_a(World p_149915_1_, int p_149915_2_)
+     public TileEntity createNewTileEntity(World worldIn, int meta)
      {
          return null;
 @@ -56,7 +51,6 @@
-         return new TileEntityPiston(p_185588_0_, p_185588_1_, p_185588_2_, p_185588_3_);
+         return new TileEntityPiston(blockStateIn, facingIn, extendingIn, shouldHeadBeRenderedIn);
      }
  
 -    @Override
-     public void func_180663_b(World p_180663_1_, BlockPos p_180663_2_, IBlockState p_180663_3_)
+     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
      {
-         TileEntity tileentity = p_180663_1_.func_175625_s(p_180663_2_);
+         TileEntity tileentity = worldIn.getTileEntity(pos);
 @@ -71,54 +65,38 @@
          }
      }
  
 -    @Override
-     public boolean func_176196_c(World p_176196_1_, BlockPos p_176196_2_)
+     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
      {
          return false;
      }
  
 -    @Override
-     public boolean func_176198_a(World p_176198_1_, BlockPos p_176198_2_, EnumFacing p_176198_3_)
+     public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side)
      {
          return false;
      }
  
 -    @Override
-     public void func_176206_d(World p_176206_1_, BlockPos p_176206_2_, IBlockState p_176206_3_)
+     public void onPlayerDestroy(World worldIn, BlockPos pos, IBlockState state)
      {
--        BlockPos blockpos = p_176206_2_.func_177972_a(p_176206_3_.func_177229_b(field_176426_a).func_176734_d());
-+        BlockPos blockpos = p_176206_2_.func_177972_a(((EnumFacing)p_176206_3_.func_177229_b(field_176426_a)).func_176734_d());
-         IBlockState iblockstate = p_176206_1_.func_180495_p(blockpos);
+-        BlockPos blockpos = pos.offset(state.getValue(FACING).getOpposite());
++        BlockPos blockpos = pos.offset(((EnumFacing)state.getValue(FACING)).getOpposite());
+         IBlockState iblockstate = worldIn.getBlockState(blockpos);
  
--        if (iblockstate.func_177230_c() instanceof BlockPistonBase && iblockstate.func_177229_b(BlockPistonBase.field_176320_b))
-+        if (iblockstate.func_177230_c() instanceof BlockPistonBase && ((Boolean)iblockstate.func_177229_b(BlockPistonBase.field_176320_b)).booleanValue())
+-        if (iblockstate.getBlock() instanceof BlockPistonBase && iblockstate.getValue(BlockPistonBase.EXTENDED))
++        if (iblockstate.getBlock() instanceof BlockPistonBase && ((Boolean)iblockstate.getValue(BlockPistonBase.EXTENDED)).booleanValue())
          {
-             p_176206_1_.func_175698_g(blockpos);
+             worldIn.setBlockToAir(blockpos);
          }
      }
  
 -    @Override
-     public boolean func_149662_c(IBlockState p_149662_1_)
+     public boolean isOpaqueCube(IBlockState state)
      {
          return false;
      }
  
 -    @Override
-     public boolean func_149686_d(IBlockState p_149686_1_)
+     public boolean isFullCube(IBlockState state)
      {
          return false;
      }
  
 -    @Override
--    public boolean func_180639_a(
--        World p_180639_1_,
--        BlockPos p_180639_2_,
--        IBlockState p_180639_3_,
--        EntityPlayer p_180639_4_,
--        EnumHand p_180639_5_,
--        EnumFacing p_180639_6_,
--        float p_180639_7_,
--        float p_180639_8_,
--        float p_180639_9_
+-    public boolean onBlockActivated(
+-        World worldIn,
+-        BlockPos pos,
+-        IBlockState state,
+-        EntityPlayer playerIn,
+-        EnumHand hand,
+-        EnumFacing facing,
+-        float hitX,
+-        float hitY,
+-        float hitZ
 -    )
-+    public boolean func_180639_a(World p_180639_1_, BlockPos p_180639_2_, IBlockState p_180639_3_, EntityPlayer p_180639_4_, EnumHand p_180639_5_, EnumFacing p_180639_6_, float p_180639_7_, float p_180639_8_, float p_180639_9_)
++    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
      {
-         if (!p_180639_1_.field_72995_K && p_180639_1_.func_175625_s(p_180639_2_) == null)
+         if (!worldIn.isRemote && worldIn.getTileEntity(pos) == null)
          {
 @@ -131,16 +109,14 @@
          }
      }
  
 -    @Override
-     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
+     public Item getItemDropped(IBlockState state, Random rand, int fortune)
      {
-         return Items.field_190931_a;
+         return Items.AIR;
      }
  
 -    @Override
-     public void func_180653_a(World p_180653_1_, BlockPos p_180653_2_, IBlockState p_180653_3_, float p_180653_4_, int p_180653_5_)
+     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
      {
--        if (!p_180653_1_.field_72995_K)
-+        if (false && !p_180653_1_.field_72995_K) // Forge: Noop this out
+-        if (!worldIn.isRemote)
++        if (false && !worldIn.isRemote) // Forge: Noop this out
          {
-             TileEntityPiston tileentitypiston = this.func_185589_c(p_180653_1_, p_180653_2_);
+             TileEntityPiston tileentitypiston = this.getTilePistonAt(worldIn, pos);
  
 @@ -150,16 +126,15 @@
-                 iblockstate.func_177230_c().func_176226_b(p_180653_1_, p_180653_2_, iblockstate, 0);
+                 iblockstate.getBlock().dropBlockAsItem(worldIn, pos, iblockstate, 0);
              }
          }
-+        super.func_180653_a(p_180653_1_, p_180653_2_, p_180653_3_, 1, p_180653_5_); // mimic vanilla behavior from above and ignore chance
++        super.dropBlockAsItemWithChance(worldIn, pos, state, 1, fortune); // mimic vanilla behavior from above and ignore chance
      }
  
      @Nullable
 -    @Override
-     public RayTraceResult func_180636_a(IBlockState p_180636_1_, World p_180636_2_, BlockPos p_180636_3_, Vec3d p_180636_4_, Vec3d p_180636_5_)
+     public RayTraceResult collisionRayTrace(IBlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end)
      {
          return null;
      }
  
 -    @Override
-     public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
+     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
      {
-         if (!p_189540_2_.field_72995_K)
+         if (!worldIn.isRemote)
 @@ -169,23 +144,13 @@
      }
  
      @Nullable
 -    @Override
-     public AxisAlignedBB func_180646_a(IBlockState p_180646_1_, IBlockAccess p_180646_2_, BlockPos p_180646_3_)
+     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
      {
-         TileEntityPiston tileentitypiston = this.func_185589_c(p_180646_2_, p_180646_3_);
-         return tileentitypiston == null ? null : tileentitypiston.func_184321_a(p_180646_2_, p_180646_3_);
+         TileEntityPiston tileentitypiston = this.getTilePistonAt(worldIn, pos);
+         return tileentitypiston == null ? null : tileentitypiston.getAABB(worldIn, pos);
      }
  
 -    @Override
--    public void func_185477_a(
--        IBlockState p_185477_1_,
--        World p_185477_2_,
--        BlockPos p_185477_3_,
--        AxisAlignedBB p_185477_4_,
--        List<AxisAlignedBB> p_185477_5_,
--        @Nullable Entity p_185477_6_,
--        boolean p_185477_7_
+-    public void addCollisionBoxToList(
+-        IBlockState state,
+-        World worldIn,
+-        BlockPos pos,
+-        AxisAlignedBB entityBox,
+-        List<AxisAlignedBB> collidingBoxes,
+-        @Nullable Entity entityIn,
+-        boolean isActualState
 -    )
-+    public void func_185477_a(IBlockState p_185477_1_, World p_185477_2_, BlockPos p_185477_3_, AxisAlignedBB p_185477_4_, List<AxisAlignedBB> p_185477_5_, @Nullable Entity p_185477_6_, boolean p_185477_7_)
++    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState)
      {
-         TileEntityPiston tileentitypiston = this.func_185589_c(p_185477_2_, p_185477_3_);
+         TileEntityPiston tileentitypiston = this.getTilePistonAt(worldIn, pos);
  
 @@ -195,7 +160,6 @@
          }
      }
  
 -    @Override
-     public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
+     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
      {
-         TileEntityPiston tileentitypiston = this.func_185589_c(p_185496_2_, p_185496_3_);
+         TileEntityPiston tileentitypiston = this.getTilePistonAt(source, pos);
 @@ -209,37 +173,30 @@
          return tileentity instanceof TileEntityPiston ? (TileEntityPiston)tileentity : null;
      }
  
 -    @Override
-     public ItemStack func_185473_a(World p_185473_1_, BlockPos p_185473_2_, IBlockState p_185473_3_)
+     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
      {
-         return ItemStack.field_190927_a;
+         return ItemStack.EMPTY;
      }
  
 -    @Override
-     public IBlockState func_176203_a(int p_176203_1_)
+     public IBlockState getStateFromMeta(int meta)
      {
--        return this.func_176223_P()
--               .func_177226_a(field_176426_a, BlockPistonExtension.func_176322_b(p_176203_1_))
--               .func_177226_a(field_176425_b, (p_176203_1_ & 8) > 0 ? BlockPistonExtension.EnumPistonType.STICKY : BlockPistonExtension.EnumPistonType.DEFAULT);
-+        return this.func_176223_P().func_177226_a(field_176426_a, BlockPistonExtension.func_176322_b(p_176203_1_)).func_177226_a(field_176425_b, (p_176203_1_ & 8) > 0 ? BlockPistonExtension.EnumPistonType.STICKY : BlockPistonExtension.EnumPistonType.DEFAULT);
+-        return this.getDefaultState()
+-               .withProperty(FACING, BlockPistonExtension.getFacing(meta))
+-               .withProperty(TYPE, (meta & 8) > 0 ? BlockPistonExtension.EnumPistonType.STICKY : BlockPistonExtension.EnumPistonType.DEFAULT);
++        return this.getDefaultState().withProperty(FACING, BlockPistonExtension.getFacing(meta)).withProperty(TYPE, (meta & 8) > 0 ? BlockPistonExtension.EnumPistonType.STICKY : BlockPistonExtension.EnumPistonType.DEFAULT);
      }
  
 -    @Override
-     public IBlockState func_185499_a(IBlockState p_185499_1_, Rotation p_185499_2_)
+     public IBlockState withRotation(IBlockState state, Rotation rot)
      {
--        return p_185499_1_.func_177226_a(field_176426_a, p_185499_2_.func_185831_a(p_185499_1_.func_177229_b(field_176426_a)));
-+        return p_185499_1_.func_177226_a(field_176426_a, p_185499_2_.func_185831_a((EnumFacing)p_185499_1_.func_177229_b(field_176426_a)));
+-        return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
++        return state.withProperty(FACING, rot.rotate((EnumFacing)state.getValue(FACING)));
      }
  
 -    @Override
-     public IBlockState func_185471_a(IBlockState p_185471_1_, Mirror p_185471_2_)
+     public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
      {
--        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a(p_185471_1_.func_177229_b(field_176426_a)));
-+        return p_185471_1_.func_185907_a(p_185471_2_.func_185800_a((EnumFacing)p_185471_1_.func_177229_b(field_176426_a)));
+-        return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
++        return state.withRotation(mirrorIn.toRotation((EnumFacing)state.getValue(FACING)));
      }
  
 -    @Override
-     public int func_176201_c(IBlockState p_176201_1_)
+     public int getMetaFromState(IBlockState state)
      {
          int i = 0;
--        i |= p_176201_1_.func_177229_b(field_176426_a).func_176745_a();
-+        i = i | ((EnumFacing)p_176201_1_.func_177229_b(field_176426_a)).func_176745_a();
+-        i |= state.getValue(FACING).getIndex();
++        i = i | ((EnumFacing)state.getValue(FACING)).getIndex();
  
-         if (p_176201_1_.func_177229_b(field_176425_b) == BlockPistonExtension.EnumPistonType.STICKY)
+         if (state.getValue(TYPE) == BlockPistonExtension.EnumPistonType.STICKY)
          {
 @@ -249,13 +206,22 @@
          return i;
      }
  
 -    @Override
-     protected BlockStateContainer func_180661_e()
+     protected BlockStateContainer createBlockState()
      {
--        return new BlockStateContainer(this, field_176426_a, field_176425_b);
-+        return new BlockStateContainer(this, new IProperty[] {field_176426_a, field_176425_b});
+-        return new BlockStateContainer(this, FACING, TYPE);
++        return new BlockStateContainer(this, new IProperty[] {FACING, TYPE});
      }
  
      @Override
 +    public void getDrops(net.minecraft.util.NonNullList<net.minecraft.item.ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
 +    {
-+        TileEntityPiston tileentitypiston = this.func_185589_c(world, pos);
++        TileEntityPiston tileentitypiston = this.getTilePistonAt(world, pos);
 +        if (tileentitypiston != null)
 +        {
-+            IBlockState pushed = tileentitypiston.func_174927_b();
-+            drops.addAll(pushed.func_177230_c().getDrops(world, pos, pushed, fortune)); // use the old method until it gets removed, for backward compatibility
++            IBlockState pushed = tileentitypiston.getPistonState();
++            drops.addAll(pushed.getBlock().getDrops(world, pos, pushed, fortune)); // use the old method until it gets removed, for backward compatibility
 +        }
 +    }
 +
-     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
      {
          return BlockFaceShape.UNDEFINED;

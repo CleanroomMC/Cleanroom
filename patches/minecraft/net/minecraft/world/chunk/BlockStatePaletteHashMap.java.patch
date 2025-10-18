@@ -2,60 +2,60 @@
 +++ after/net/minecraft/world/chunk/BlockStatePaletteHashMap.java
 @@ -18,10 +18,9 @@
      {
-         this.field_186048_c = p_i47089_1_;
-         this.field_186047_b = p_i47089_2_;
--        this.field_186046_a = new IntIdentityHashBiMap<>(1 << p_i47089_1_);
-+        this.field_186046_a = new IntIdentityHashBiMap<IBlockState>(1 << p_i47089_1_);
+         this.bits = bitsIn;
+         this.paletteResizer = paletteResizerIn;
+-        this.statePaletteMap = new IntIdentityHashBiMap<>(1 << bitsIn);
++        this.statePaletteMap = new IntIdentityHashBiMap<IBlockState>(1 << bitsIn);
      }
  
 -    @Override
-     public int func_186041_a(IBlockState p_186041_1_)
+     public int idFor(IBlockState state)
      {
-         int i = this.field_186046_a.func_186815_a(p_186041_1_);
+         int i = this.statePaletteMap.getId(state);
 @@ -40,43 +39,39 @@
      }
  
      @Nullable
 -    @Override
-     public IBlockState func_186039_a(int p_186039_1_)
+     public IBlockState getBlockState(int indexKey)
      {
-         return this.field_186046_a.func_186813_a(p_186039_1_);
+         return this.statePaletteMap.get(indexKey);
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public void func_186038_a(PacketBuffer p_186038_1_)
+     public void read(PacketBuffer buf)
      {
-         this.field_186046_a.func_186812_a();
-         int i = p_186038_1_.func_150792_a();
+         this.statePaletteMap.clear();
+         int i = buf.readVarInt();
  
 -        for (int j = 0; j < i; j++)
 +        for (int j = 0; j < i; ++j)
          {
-             this.field_186046_a.func_186808_c(Block.field_176229_d.func_148745_a(p_186038_1_.func_150792_a()));
+             this.statePaletteMap.add(Block.BLOCK_STATE_IDS.getByValue(buf.readVarInt()));
          }
      }
  
 -    @Override
-     public void func_186037_b(PacketBuffer p_186037_1_)
+     public void write(PacketBuffer buf)
      {
-         int i = this.field_186046_a.func_186810_b();
-         p_186037_1_.func_150787_b(i);
+         int i = this.statePaletteMap.size();
+         buf.writeVarInt(i);
  
 -        for (int j = 0; j < i; j++)
 +        for (int j = 0; j < i; ++j)
          {
-             p_186037_1_.func_150787_b(Block.field_176229_d.func_148747_b(this.field_186046_a.func_186813_a(j)));
+             buf.writeVarInt(Block.BLOCK_STATE_IDS.get(this.statePaletteMap.get(j)));
          }
      }
  
 -    @Override
-     public int func_186040_a()
+     public int getSerializedSize()
      {
-         int i = PacketBuffer.func_150790_a(this.field_186046_a.func_186810_b());
+         int i = PacketBuffer.getVarIntSize(this.statePaletteMap.size());
  
--        for (int j = 0; j < this.field_186046_a.func_186810_b(); j++)
-+        for (int j = 0; j < this.field_186046_a.func_186810_b(); ++j)
+-        for (int j = 0; j < this.statePaletteMap.size(); j++)
++        for (int j = 0; j < this.statePaletteMap.size(); ++j)
          {
-             i += PacketBuffer.func_150790_a(Block.field_176229_d.func_148747_b(this.field_186046_a.func_186813_a(j)));
+             i += PacketBuffer.getVarIntSize(Block.BLOCK_STATE_IDS.get(this.statePaletteMap.get(j)));
          }

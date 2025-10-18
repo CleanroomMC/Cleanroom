@@ -11,51 +11,51 @@
 +public class RecipeTippedArrow extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe
  {
 -    @Override
-     public boolean func_77569_a(InventoryCrafting p_77569_1_, World p_77569_2_)
+     public boolean matches(InventoryCrafting inv, World worldIn)
      {
-         if (p_77569_1_.func_174922_i() == 3 && p_77569_1_.func_174923_h() == 3)
+         if (inv.getWidth() == 3 && inv.getHeight() == 3)
          {
--            for (int i = 0; i < p_77569_1_.func_174922_i(); i++)
-+            for (int i = 0; i < p_77569_1_.func_174922_i(); ++i)
+-            for (int i = 0; i < inv.getWidth(); i++)
++            for (int i = 0; i < inv.getWidth(); ++i)
              {
--                for (int j = 0; j < p_77569_1_.func_174923_h(); j++)
-+                for (int j = 0; j < p_77569_1_.func_174923_h(); ++j)
+-                for (int j = 0; j < inv.getHeight(); j++)
++                for (int j = 0; j < inv.getHeight(); ++j)
                  {
-                     ItemStack itemstack = p_77569_1_.func_70463_b(i, j);
+                     ItemStack itemstack = inv.getStackInRowAndColumn(i, j);
  
 @@ -52,7 +49,6 @@
          }
      }
  
 -    @Override
-     public ItemStack func_77572_b(InventoryCrafting p_77572_1_)
+     public ItemStack getCraftingResult(InventoryCrafting inv)
      {
-         ItemStack itemstack = p_77572_1_.func_70463_b(1, 1);
+         ItemStack itemstack = inv.getStackInRowAndColumn(1, 1);
 @@ -70,26 +66,21 @@
          }
      }
  
 -    @Override
-     public ItemStack func_77571_b()
+     public ItemStack getRecipeOutput()
      {
-         return ItemStack.field_190927_a;
+         return ItemStack.EMPTY;
      }
  
 -    @Override
-     public NonNullList<ItemStack> func_179532_b(InventoryCrafting p_179532_1_)
+     public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv)
      {
--        return NonNullList.func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
-+        return NonNullList.<ItemStack>func_191197_a(p_179532_1_.func_70302_i_(), ItemStack.field_190927_a);
+-        return NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
++        return NonNullList.<ItemStack>withSize(inv.getSizeInventory(), ItemStack.EMPTY);
      }
  
 -    @Override
-     public boolean func_192399_d()
+     public boolean isDynamic()
      {
          return true;
      }
  
 -    @SideOnly(Side.CLIENT)
 -    @Override
-     public boolean func_194133_a(int p_194133_1_, int p_194133_2_)
+     public boolean canFit(int width, int height)
      {
-         return p_194133_1_ >= 2 && p_194133_2_ >= 2;
+         return width >= 2 && height >= 2;

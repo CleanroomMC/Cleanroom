@@ -2,19 +2,19 @@
 +++ after/net/minecraft/block/state/BlockPistonStructureHelper.java
 @@ -65,7 +65,7 @@
              {
-                 BlockPos blockpos = this.field_177258_e.get(i);
+                 BlockPos blockpos = this.toMove.get(i);
  
--                if (this.field_177261_a.func_180495_p(blockpos).func_177230_c() == Blocks.field_180399_cE && !this.func_177250_b(blockpos))
-+                if (this.field_177261_a.func_180495_p(blockpos).func_177230_c().isStickyBlock(this.field_177261_a.func_180495_p(blockpos)) && !this.func_177250_b(blockpos))
+-                if (this.world.getBlockState(blockpos).getBlock() == Blocks.SLIME_BLOCK && !this.addBranchingBlocks(blockpos))
++                if (this.world.getBlockState(blockpos).getBlock().isStickyBlock(this.world.getBlockState(blockpos)) && !this.addBranchingBlocks(blockpos))
                  {
                      return false;
                  }
 @@ -80,7 +80,7 @@
-         IBlockState iblockstate = this.field_177261_a.func_180495_p(p_177251_1_);
-         Block block = iblockstate.func_177230_c();
+         IBlockState iblockstate = this.world.getBlockState(origin);
+         Block block = iblockstate.getBlock();
  
--        if (iblockstate.func_185904_a() == Material.field_151579_a)
-+        if (iblockstate.func_177230_c().isAir(iblockstate, this.field_177261_a, p_177251_1_))
+-        if (iblockstate.getMaterial() == Material.AIR)
++        if (iblockstate.getBlock().isAir(iblockstate, this.world, origin))
          {
              return true;
          }
@@ -22,26 +22,26 @@
              }
              else
              {
--                while (block == Blocks.field_180399_cE)
+-                while (block == Blocks.SLIME_BLOCK)
 +                while (block.isStickyBlock(iblockstate))
                  {
-                     BlockPos blockpos = p_177251_1_.func_177967_a(this.field_177257_d.func_176734_d(), i);
-                     iblockstate = this.field_177261_a.func_180495_p(blockpos);
+                     BlockPos blockpos = origin.offset(this.moveDirection.getOpposite(), i);
+                     iblockstate = this.world.getBlockState(blockpos);
 @@ -148,7 +148,7 @@
                          {
-                             BlockPos blockpos2 = this.field_177258_e.get(l);
+                             BlockPos blockpos2 = this.toMove.get(l);
  
--                            if (this.field_177261_a.func_180495_p(blockpos2).func_177230_c() == Blocks.field_180399_cE && !this.func_177250_b(blockpos2))
-+                            if (this.field_177261_a.func_180495_p(blockpos2).func_177230_c().isStickyBlock(this.field_177261_a.func_180495_p(blockpos2)) && !this.func_177250_b(blockpos2))
+-                            if (this.world.getBlockState(blockpos2).getBlock() == Blocks.SLIME_BLOCK && !this.addBranchingBlocks(blockpos2))
++                            if (this.world.getBlockState(blockpos2).getBlock().isStickyBlock(this.world.getBlockState(blockpos2)) && !this.addBranchingBlocks(blockpos2))
                              {
                                  return false;
                              }
 @@ -159,7 +159,7 @@
  
-                     iblockstate = this.field_177261_a.func_180495_p(blockpos1);
+                     iblockstate = this.world.getBlockState(blockpos1);
  
--                    if (iblockstate.func_185904_a() == Material.field_151579_a)
-+                    if (iblockstate.func_177230_c().isAir(iblockstate, this.field_177261_a, blockpos1))
+-                    if (iblockstate.getMaterial() == Material.AIR)
++                    if (iblockstate.getBlock().isAir(iblockstate, this.world, blockpos1))
                      {
                          return true;
                      }

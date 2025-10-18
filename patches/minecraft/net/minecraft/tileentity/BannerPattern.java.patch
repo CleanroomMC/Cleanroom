@@ -2,17 +2,17 @@
 +++ after/net/minecraft/tileentity/BannerPattern.java
 @@ -52,11 +52,13 @@
  
-     private final String field_191014_N;
-     private final String field_191015_O;
--    private final String[] field_191016_P = new String[3];
--    private ItemStack field_191017_Q = ItemStack.field_190927_a;
-+    private final String[] field_191016_P;
-+    private ItemStack field_191017_Q;
+     private final String fileName;
+     private final String hashname;
+-    private final String[] patterns = new String[3];
+-    private ItemStack patternItem = ItemStack.EMPTY;
++    private final String[] patterns;
++    private ItemStack patternItem;
  
      private BannerPattern(String p_i47245_3_, String p_i47245_4_)
      {
-+        this.field_191016_P = new String[3];
-+        this.field_191017_Q = ItemStack.field_190927_a;
-         this.field_191014_N = p_i47245_3_;
-         this.field_191015_O = p_i47245_4_;
++        this.patterns = new String[3];
++        this.patternItem = ItemStack.EMPTY;
+         this.fileName = p_i47245_3_;
+         this.hashname = p_i47245_4_;
      }

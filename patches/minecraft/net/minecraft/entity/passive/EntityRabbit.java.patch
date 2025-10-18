@@ -4,66 +4,66 @@
  
  public class EntityRabbit extends EntityAnimal
  {
--    private static final DataParameter<Integer> field_184773_bv = EntityDataManager.func_187226_a(EntityRabbit.class, DataSerializers.field_187192_b);
-+    private static final DataParameter<Integer> field_184773_bv = EntityDataManager.<Integer>func_187226_a(EntityRabbit.class, DataSerializers.field_187192_b);
-     private int field_175540_bm;
-     private int field_175535_bn;
-     private boolean field_175537_bp;
+-    private static final DataParameter<Integer> RABBIT_TYPE = EntityDataManager.createKey(EntityRabbit.class, DataSerializers.VARINT);
++    private static final DataParameter<Integer> RABBIT_TYPE = EntityDataManager.<Integer>createKey(EntityRabbit.class, DataSerializers.VARINT);
+     private int jumpTicks;
+     private int jumpDuration;
+     private boolean wasOnGround;
 @@ -68,30 +68,28 @@
-         this.func_70105_a(0.4F, 0.5F);
-         this.field_70767_i = new EntityRabbit.RabbitJumpHelper(this);
-         this.field_70765_h = new EntityRabbit.RabbitMoveHelper(this);
--        this.func_175515_b(0.0);
-+        this.func_175515_b(0.0D);
+         this.setSize(0.4F, 0.5F);
+         this.jumpHelper = new EntityRabbit.RabbitJumpHelper(this);
+         this.moveHelper = new EntityRabbit.RabbitMoveHelper(this);
+-        this.setMovementSpeed(0.0);
++        this.setMovementSpeed(0.0D);
      }
  
 -    @Override
-     protected void func_184651_r()
+     protected void initEntityAI()
      {
-         this.field_70714_bg.func_75776_a(1, new EntityAISwimming(this));
--        this.field_70714_bg.func_75776_a(1, new EntityRabbit.AIPanic(this, 2.2));
--        this.field_70714_bg.func_75776_a(2, new EntityAIMate(this, 0.8));
--        this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.0, Items.field_151172_bF, false));
--        this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.0, Items.field_151150_bK, false));
--        this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.0, Item.func_150898_a(Blocks.field_150327_N), false));
--        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity<>(this, EntityPlayer.class, 8.0F, 2.2, 2.2));
--        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity<>(this, EntityWolf.class, 10.0F, 2.2, 2.2));
--        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity<>(this, EntityMob.class, 4.0F, 2.2, 2.2));
-+        this.field_70714_bg.func_75776_a(1, new EntityRabbit.AIPanic(this, 2.2D));
-+        this.field_70714_bg.func_75776_a(2, new EntityAIMate(this, 0.8D));
-+        this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.0D, Items.field_151172_bF, false));
-+        this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.0D, Items.field_151150_bK, false));
-+        this.field_70714_bg.func_75776_a(3, new EntityAITempt(this, 1.0D, Item.func_150898_a(Blocks.field_150327_N), false));
-+        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity(this, EntityPlayer.class, 8.0F, 2.2D, 2.2D));
-+        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity(this, EntityWolf.class, 10.0F, 2.2D, 2.2D));
-+        this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIAvoidEntity(this, EntityMob.class, 4.0F, 2.2D, 2.2D));
-         this.field_70714_bg.func_75776_a(5, new EntityRabbit.AIRaidFarm(this));
--        this.field_70714_bg.func_75776_a(6, new EntityAIWanderAvoidWater(this, 0.6));
-+        this.field_70714_bg.func_75776_a(6, new EntityAIWanderAvoidWater(this, 0.6D));
-         this.field_70714_bg.func_75776_a(11, new EntityAIWatchClosest(this, EntityPlayer.class, 10.0F));
+         this.tasks.addTask(1, new EntityAISwimming(this));
+-        this.tasks.addTask(1, new EntityRabbit.AIPanic(this, 2.2));
+-        this.tasks.addTask(2, new EntityAIMate(this, 0.8));
+-        this.tasks.addTask(3, new EntityAITempt(this, 1.0, Items.CARROT, false));
+-        this.tasks.addTask(3, new EntityAITempt(this, 1.0, Items.GOLDEN_CARROT, false));
+-        this.tasks.addTask(3, new EntityAITempt(this, 1.0, Item.getItemFromBlock(Blocks.YELLOW_FLOWER), false));
+-        this.tasks.addTask(4, new EntityRabbit.AIAvoidEntity<>(this, EntityPlayer.class, 8.0F, 2.2, 2.2));
+-        this.tasks.addTask(4, new EntityRabbit.AIAvoidEntity<>(this, EntityWolf.class, 10.0F, 2.2, 2.2));
+-        this.tasks.addTask(4, new EntityRabbit.AIAvoidEntity<>(this, EntityMob.class, 4.0F, 2.2, 2.2));
++        this.tasks.addTask(1, new EntityRabbit.AIPanic(this, 2.2D));
++        this.tasks.addTask(2, new EntityAIMate(this, 0.8D));
++        this.tasks.addTask(3, new EntityAITempt(this, 1.0D, Items.CARROT, false));
++        this.tasks.addTask(3, new EntityAITempt(this, 1.0D, Items.GOLDEN_CARROT, false));
++        this.tasks.addTask(3, new EntityAITempt(this, 1.0D, Item.getItemFromBlock(Blocks.YELLOW_FLOWER), false));
++        this.tasks.addTask(4, new EntityRabbit.AIAvoidEntity(this, EntityPlayer.class, 8.0F, 2.2D, 2.2D));
++        this.tasks.addTask(4, new EntityRabbit.AIAvoidEntity(this, EntityWolf.class, 10.0F, 2.2D, 2.2D));
++        this.tasks.addTask(4, new EntityRabbit.AIAvoidEntity(this, EntityMob.class, 4.0F, 2.2D, 2.2D));
+         this.tasks.addTask(5, new EntityRabbit.AIRaidFarm(this));
+-        this.tasks.addTask(6, new EntityAIWanderAvoidWater(this, 0.6));
++        this.tasks.addTask(6, new EntityAIWanderAvoidWater(this, 0.6D));
+         this.tasks.addTask(11, new EntityAIWatchClosest(this, EntityPlayer.class, 10.0F));
      }
  
 -    @Override
-     protected float func_175134_bD()
+     protected float getJumpUpwardsMotion()
      {
--        if (!this.field_70123_F && (!this.field_70765_h.func_75640_a() || !(this.field_70765_h.func_179919_e() > this.field_70163_u + 0.5)))
-+        if (!this.field_70123_F && (!this.field_70765_h.func_75640_a() || this.field_70765_h.func_179919_e() <= this.field_70163_u + 0.5D))
+-        if (!this.collidedHorizontally && (!this.moveHelper.isUpdating() || !(this.moveHelper.getY() > this.posY + 0.5)))
++        if (!this.collidedHorizontally && (!this.moveHelper.isUpdating() || this.moveHelper.getY() <= this.posY + 0.5D))
          {
-             Path path = this.field_70699_by.func_75505_d();
+             Path path = this.navigator.getPath();
  
 @@ -99,13 +97,13 @@
              {
-                 Vec3d vec3d = path.func_75878_a(this);
+                 Vec3d vec3d = path.getPosition(this);
  
--                if (vec3d.field_72448_b > this.field_70163_u + 0.5)
-+                if (vec3d.field_72448_b > this.field_70163_u + 0.5D)
+-                if (vec3d.y > this.posY + 0.5)
++                if (vec3d.y > this.posY + 0.5D)
                  {
                      return 0.5F;
                  }
              }
  
--            return this.field_70765_h.func_75638_b() <= 0.6 ? 0.2F : 0.3F;
-+            return this.field_70765_h.func_75638_b() <= 0.6D ? 0.2F : 0.3F;
+-            return this.moveHelper.getSpeed() <= 0.6 ? 0.2F : 0.3F;
++            return this.moveHelper.getSpeed() <= 0.6D ? 0.2F : 0.3F;
          }
          else
          {
@@ -72,364 +72,364 @@
      }
  
 -    @Override
-     protected void func_70664_aZ()
+     protected void jump()
      {
-         super.func_70664_aZ();
-         double d0 = this.field_70765_h.func_75638_b();
+         super.jump();
+         double d0 = this.moveHelper.getSpeed();
  
 -        if (d0 > 0.0)
 +        if (d0 > 0.0D)
          {
-             double d1 = this.field_70159_w * this.field_70159_w + this.field_70179_y * this.field_70179_y;
+             double d1 = this.motionX * this.motionX + this.motionZ * this.motionZ;
  
 -            if (d1 < 0.010000000000000002)
 +            if (d1 < 0.010000000000000002D)
              {
-                 this.func_191958_b(0.0F, 0.0F, 1.0F, 0.1F);
+                 this.moveRelative(0.0F, 0.0F, 1.0F, 0.1F);
              }
 @@ -147,16 +144,13 @@
-         this.field_70765_h.func_75642_a(this.field_70765_h.func_179917_d(), this.field_70765_h.func_179919_e(), this.field_70765_h.func_179918_f(), p_175515_1_);
+         this.moveHelper.setMoveTo(this.moveHelper.getX(), this.moveHelper.getY(), this.moveHelper.getZ(), newSpeed);
      }
  
 -    @Override
-     public void func_70637_d(boolean p_70637_1_)
+     public void setJumping(boolean jumping)
      {
-         super.func_70637_d(p_70637_1_);
+         super.setJumping(jumping);
  
-         if (p_70637_1_)
+         if (jumping)
          {
--            this.func_184185_a(
--                this.func_184771_da(), this.func_70599_aP(), ((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.2F + 1.0F) * 0.8F
+-            this.playSound(
+-                this.getJumpSound(), this.getSoundVolume(), ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F) * 0.8F
 -            );
-+            this.func_184185_a(this.func_184771_da(), this.func_70599_aP(), ((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.2F + 1.0F) * 0.8F);
++            this.playSound(this.getJumpSound(), this.getSoundVolume(), ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F) * 0.8F);
          }
      }
  
 @@ -167,24 +161,22 @@
-         this.field_175540_bm = 0;
+         this.jumpTicks = 0;
      }
  
 -    @Override
-     protected void func_70088_a()
+     protected void entityInit()
      {
-         super.func_70088_a();
--        this.field_70180_af.func_187214_a(field_184773_bv, 0);
-+        this.field_70180_af.func_187214_a(field_184773_bv, Integer.valueOf(0));
+         super.entityInit();
+-        this.dataManager.register(RABBIT_TYPE, 0);
++        this.dataManager.register(RABBIT_TYPE, Integer.valueOf(0));
      }
  
 -    @Override
-     public void func_70619_bc()
+     public void updateAITasks()
      {
-         if (this.field_175538_bq > 0)
+         if (this.currentMoveTypeDuration > 0)
          {
--            this.field_175538_bq--;
-+            --this.field_175538_bq;
+-            this.currentMoveTypeDuration--;
++            --this.currentMoveTypeDuration;
          }
  
-         if (this.field_175541_bs > 0)
+         if (this.carrotTicks > 0)
          {
--            this.field_175541_bs = this.field_175541_bs - this.field_70146_Z.nextInt(3);
-+            this.field_175541_bs -= this.field_70146_Z.nextInt(3);
+-            this.carrotTicks = this.carrotTicks - this.rand.nextInt(3);
++            this.carrotTicks -= this.rand.nextInt(3);
  
-             if (this.field_175541_bs < 0)
+             if (this.carrotTicks < 0)
              {
 @@ -204,13 +196,10 @@
              {
-                 EntityLivingBase entitylivingbase = this.func_70638_az();
+                 EntityLivingBase entitylivingbase = this.getAttackTarget();
  
--                if (entitylivingbase != null && this.func_70068_e(entitylivingbase) < 16.0)
-+                if (entitylivingbase != null && this.func_70068_e(entitylivingbase) < 16.0D)
+-                if (entitylivingbase != null && this.getDistanceSq(entitylivingbase) < 16.0)
++                if (entitylivingbase != null && this.getDistanceSq(entitylivingbase) < 16.0D)
                  {
-                     this.func_175533_a(entitylivingbase.field_70165_t, entitylivingbase.field_70161_v);
--                    this.field_70765_h
--                    .func_75642_a(
--                        entitylivingbase.field_70165_t, entitylivingbase.field_70163_u, entitylivingbase.field_70161_v, this.field_70765_h.func_75638_b()
+                     this.calculateRotationYaw(entitylivingbase.posX, entitylivingbase.posZ);
+-                    this.moveHelper
+-                    .setMoveTo(
+-                        entitylivingbase.posX, entitylivingbase.posY, entitylivingbase.posZ, this.moveHelper.getSpeed()
 -                    );
-+                    this.field_70765_h.func_75642_a(entitylivingbase.field_70165_t, entitylivingbase.field_70163_u, entitylivingbase.field_70161_v, this.field_70765_h.func_75638_b());
-                     this.func_184770_cZ();
-                     this.field_175537_bp = true;
++                    this.moveHelper.setMoveTo(entitylivingbase.posX, entitylivingbase.posY, entitylivingbase.posZ, this.moveHelper.getSpeed());
+                     this.startJumping();
+                     this.wasOnGround = true;
                  }
 @@ -243,15 +232,13 @@
-         this.field_175537_bp = this.field_70122_E;
+         this.wasOnGround = this.onGround;
      }
  
 -    @Override
-     public void func_174830_Y()
+     public void spawnRunningParticles()
      {
      }
  
-     private void func_175533_a(double p_175533_1_, double p_175533_3_)
+     private void calculateRotationYaw(double x, double z)
      {
--        this.field_70177_z = (float)(MathHelper.func_181159_b(p_175533_3_ - this.field_70161_v, p_175533_1_ - this.field_70165_t) * 180.0F / (float)Math.PI)
+-        this.rotationYaw = (float)(MathHelper.atan2(z - this.posZ, x - this.posX) * 180.0F / (float)Math.PI)
 -                             - 90.0F;
-+        this.field_70177_z = (float)(MathHelper.func_181159_b(p_175533_3_ - this.field_70161_v, p_175533_1_ - this.field_70165_t) * (180D / Math.PI)) - 90.0F;
++        this.rotationYaw = (float)(MathHelper.atan2(z - this.posZ, x - this.posX) * (180D / Math.PI)) - 90.0F;
      }
  
-     private void func_175518_cr()
+     private void enableJumpControl()
 @@ -266,7 +253,7 @@
  
-     private void func_175530_ct()
+     private void updateMoveTypeDuration()
      {
--        if (this.field_70765_h.func_75638_b() < 2.2)
-+        if (this.field_70765_h.func_75638_b() < 2.2D)
+-        if (this.moveHelper.getSpeed() < 2.2)
++        if (this.moveHelper.getSpeed() < 2.2D)
          {
-             this.field_175538_bq = 10;
+             this.currentMoveTypeDuration = 10;
          }
 @@ -282,14 +269,13 @@
-         this.func_175520_cs();
+         this.disableJumpControl();
      }
  
 -    @Override
-     public void func_70636_d()
+     public void onLivingUpdate()
      {
-         super.func_70636_d();
+         super.onLivingUpdate();
  
-         if (this.field_175540_bm != this.field_175535_bn)
+         if (this.jumpTicks != this.jumpDuration)
          {
--            this.field_175540_bm++;
-+            ++this.field_175540_bm;
+-            this.jumpTicks++;
++            ++this.jumpTicks;
          }
-         else if (this.field_175535_bn != 0)
+         else if (this.jumpDuration != 0)
          {
 @@ -299,12 +285,11 @@
          }
      }
  
 -    @Override
-     protected void func_110147_ax()
+     protected void applyEntityAttributes()
      {
-         super.func_110147_ax();
--        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(3.0);
--        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.3F);
-+        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(3.0D);
-+        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.30000001192092896D);
+         super.applyEntityAttributes();
+-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(3.0);
+-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.3F);
++        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(3.0D);
++        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.30000001192092896D);
      }
  
-     public static void func_189801_b(DataFixer p_189801_0_)
+     public static void registerFixesRabbit(DataFixer fixer)
 @@ -312,7 +297,6 @@
-         EntityLiving.func_189752_a(p_189801_0_, EntityRabbit.class);
+         EntityLiving.registerFixesMob(fixer, EntityRabbit.class);
      }
  
 -    @Override
-     public void func_70014_b(NBTTagCompound p_70014_1_)
+     public void writeEntityToNBT(NBTTagCompound compound)
      {
-         super.func_70014_b(p_70014_1_);
+         super.writeEntityToNBT(compound);
 @@ -320,7 +304,6 @@
-         p_70014_1_.func_74768_a("MoreCarrotTicks", this.field_175541_bs);
+         compound.setInteger("MoreCarrotTicks", this.carrotTicks);
      }
  
 -    @Override
-     public void func_70037_a(NBTTagCompound p_70037_1_)
+     public void readEntityFromNBT(NBTTagCompound compound)
      {
-         super.func_70037_a(p_70037_1_);
+         super.readEntityFromNBT(compound);
 @@ -333,25 +316,21 @@
-         return SoundEvents.field_187824_en;
+         return SoundEvents.ENTITY_RABBIT_JUMP;
      }
  
 -    @Override
-     protected SoundEvent func_184639_G()
+     protected SoundEvent getAmbientSound()
      {
-         return SoundEvents.field_187816_ej;
+         return SoundEvents.ENTITY_RABBIT_AMBIENT;
      }
  
 -    @Override
-     protected SoundEvent func_184601_bQ(DamageSource p_184601_1_)
+     protected SoundEvent getHurtSound(DamageSource damageSourceIn)
      {
-         return SoundEvents.field_187822_em;
+         return SoundEvents.ENTITY_RABBIT_HURT;
      }
  
 -    @Override
-     protected SoundEvent func_184615_bR()
+     protected SoundEvent getDeathSound()
      {
-         return SoundEvents.field_187820_el;
+         return SoundEvents.ENTITY_RABBIT_DEATH;
      }
  
 -    @Override
-     public boolean func_70652_k(Entity p_70652_1_)
+     public boolean attackEntityAsMob(Entity entityIn)
      {
-         if (this.func_175531_cl() == 99)
+         if (this.getRabbitType() == 99)
 @@ -365,20 +344,17 @@
          }
      }
  
 -    @Override
-     public SoundCategory func_184176_by()
+     public SoundCategory getSoundCategory()
      {
-         return this.func_175531_cl() == 99 ? SoundCategory.HOSTILE : SoundCategory.NEUTRAL;
+         return this.getRabbitType() == 99 ? SoundCategory.HOSTILE : SoundCategory.NEUTRAL;
      }
  
 -    @Override
-     public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
+     public boolean attackEntityFrom(DamageSource source, float amount)
      {
-         return this.func_180431_b(p_70097_1_) ? false : super.func_70097_a(p_70097_1_, p_70097_2_);
+         return this.isEntityInvulnerable(source) ? false : super.attackEntityFrom(source, amount);
      }
  
      @Nullable
 -    @Override
-     protected ResourceLocation func_184647_J()
+     protected ResourceLocation getLootTable()
      {
-         return LootTableList.field_186393_A;
+         return LootTableList.ENTITIES_RABBIT;
 @@ -410,7 +386,6 @@
          return entityrabbit;
      }
  
 -    @Override
-     public boolean func_70877_b(ItemStack p_70877_1_)
+     public boolean isBreedingItem(ItemStack stack)
      {
-         return this.func_175525_a(p_70877_1_.func_77973_b());
+         return this.isRabbitBreedingItem(stack.getItem());
 @@ -418,18 +393,18 @@
  
-     public int func_175531_cl()
+     public int getRabbitType()
      {
--        return this.field_70180_af.func_187225_a(field_184773_bv);
-+        return ((Integer)this.field_70180_af.func_187225_a(field_184773_bv)).intValue();
+-        return this.dataManager.get(RABBIT_TYPE);
++        return ((Integer)this.dataManager.get(RABBIT_TYPE)).intValue();
      }
  
-     public void func_175529_r(int p_175529_1_)
+     public void setRabbitType(int rabbitTypeId)
      {
-         if (p_175529_1_ == 99)
+         if (rabbitTypeId == 99)
          {
--            this.func_110148_a(SharedMonsterAttributes.field_188791_g).func_111128_a(8.0);
-+            this.func_110148_a(SharedMonsterAttributes.field_188791_g).func_111128_a(8.0D);
-             this.field_70714_bg.func_75776_a(4, new EntityRabbit.AIEvilAttack(this));
--            this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, false));
--            this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
--            this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget<>(this, EntityWolf.class, true));
-+            this.field_70715_bh.func_75776_a(1, new EntityAIHurtByTarget(this, false, new Class[0]));
-+            this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
-+            this.field_70715_bh.func_75776_a(2, new EntityAINearestAttackableTarget(this, EntityWolf.class, true));
+-            this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(8.0);
++            this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(8.0D);
+             this.tasks.addTask(4, new EntityRabbit.AIEvilAttack(this));
+-            this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
+-            this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
+-            this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityWolf.class, true));
++            this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false, new Class[0]));
++            this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
++            this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityWolf.class, true));
  
-             if (!this.func_145818_k_())
+             if (!this.hasCustomName())
              {
 @@ -437,11 +412,10 @@
              }
          }
  
--        this.field_70180_af.func_187227_b(field_184773_bv, p_175529_1_);
-+        this.field_70180_af.func_187227_b(field_184773_bv, Integer.valueOf(p_175529_1_));
+-        this.dataManager.set(RABBIT_TYPE, rabbitTypeId);
++        this.dataManager.set(RABBIT_TYPE, Integer.valueOf(rabbitTypeId));
      }
  
      @Nullable
 -    @Override
-     public IEntityLivingData func_180482_a(DifficultyInstance p_180482_1_, @Nullable IEntityLivingData p_180482_2_)
+     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
      {
-         p_180482_2_ = super.func_180482_a(p_180482_1_, p_180482_2_);
+         livingdata = super.onInitialSpawn(difficulty, livingdata);
 @@ -496,22 +470,11 @@
      {
-         BlockCarrot blockcarrot = (BlockCarrot)Blocks.field_150459_bM;
-         IBlockState iblockstate = blockcarrot.func_185528_e(blockcarrot.func_185526_g());
--        this.field_70170_p
--        .func_175688_a(
+         BlockCarrot blockcarrot = (BlockCarrot)Blocks.CARROTS;
+         IBlockState iblockstate = blockcarrot.withAge(blockcarrot.getMaxAge());
+-        this.world
+-        .spawnParticle(
 -            EnumParticleTypes.BLOCK_DUST,
--            this.field_70165_t + (double)(this.field_70146_Z.nextFloat() * this.field_70130_N * 2.0F) - (double)this.field_70130_N,
--            this.field_70163_u + 0.5 + (double)(this.field_70146_Z.nextFloat() * this.field_70131_O),
--            this.field_70161_v + (double)(this.field_70146_Z.nextFloat() * this.field_70130_N * 2.0F) - (double)this.field_70130_N,
+-            this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width,
+-            this.posY + 0.5 + (double)(this.rand.nextFloat() * this.height),
+-            this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width,
 -            0.0,
 -            0.0,
 -            0.0,
--            Block.func_176210_f(iblockstate)
+-            Block.getStateId(iblockstate)
 -        );
-+        this.field_70170_p.func_175688_a(EnumParticleTypes.BLOCK_DUST, this.field_70165_t + (double)(this.field_70146_Z.nextFloat() * this.field_70130_N * 2.0F) - (double)this.field_70130_N, this.field_70163_u + 0.5D + (double)(this.field_70146_Z.nextFloat() * this.field_70131_O), this.field_70161_v + (double)(this.field_70146_Z.nextFloat() * this.field_70130_N * 2.0F) - (double)this.field_70130_N, 0.0D, 0.0D, 0.0D, Block.func_176210_f(iblockstate));
-         this.field_175541_bs = 40;
++        this.world.spawnParticle(EnumParticleTypes.BLOCK_DUST, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + 0.5D + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, 0.0D, 0.0D, 0.0D, Block.getStateId(iblockstate));
+         this.carrotTicks = 40;
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public void func_70103_a(byte p_70103_1_)
+     public void handleStatusUpdate(byte id)
      {
-         if (p_70103_1_ == 1)
+         if (id == 1)
 @@ -536,7 +499,6 @@
-                 this.field_179511_d = p_i46403_1_;
+                 this.rabbit = rabbit;
              }
  
 -            @Override
-             public boolean func_75250_a()
+             public boolean shouldExecute()
              {
-                 return this.field_179511_d.func_175531_cl() != 99 && super.func_75250_a();
+                 return this.rabbit.getRabbitType() != 99 && super.shouldExecute();
 @@ -547,10 +509,9 @@
          {
-             public AIEvilAttack(EntityRabbit p_i45867_1_)
+             public AIEvilAttack(EntityRabbit rabbit)
              {
--                super(p_i45867_1_, 1.4, true);
-+                super(p_i45867_1_, 1.4D, true);
+-                super(rabbit, 1.4, true);
++                super(rabbit, 1.4D, true);
              }
  
 -            @Override
-             protected double func_179512_a(EntityLivingBase p_179512_1_)
+             protected double getAttackReachSqr(EntityLivingBase attackTarget)
              {
-                 return (double)(4.0F + p_179512_1_.field_70130_N);
+                 return (double)(4.0F + attackTarget.width);
 @@ -567,7 +528,6 @@
-                 this.field_179486_b = p_i45861_1_;
+                 this.rabbit = rabbit;
              }
  
 -            @Override
-             public void func_75246_d()
+             public void updateTask()
              {
-                 super.func_75246_d();
+                 super.updateTask();
 @@ -583,16 +543,15 @@
  
-             public AIRaidFarm(EntityRabbit p_i45860_1_)
+             public AIRaidFarm(EntityRabbit rabbitIn)
              {
--                super(p_i45860_1_, 0.7F, 16);
-+                super(p_i45860_1_, 0.699999988079071D, 16);
-                 this.field_179500_c = p_i45860_1_;
+-                super(rabbitIn, 0.7F, 16);
++                super(rabbitIn, 0.699999988079071D, 16);
+                 this.rabbit = rabbitIn;
              }
  
 -            @Override
-             public boolean func_75250_a()
+             public boolean shouldExecute()
              {
-                 if (this.field_179496_a <= 0)
+                 if (this.runDelay <= 0)
                  {
--                    if (!this.field_179500_c.field_70170_p.func_82736_K().func_82766_b("mobGriefing"))
-+                    if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.field_179500_c.field_70170_p, this.field_179500_c))
+-                    if (!this.rabbit.world.getGameRules().getBoolean("mobGriefing"))
++                    if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.rabbit.world, this.rabbit))
                      {
                          return false;
                      }
 @@ -605,25 +564,15 @@
-                 return super.func_75250_a();
+                 return super.shouldExecute();
              }
  
 -            @Override
-             public boolean func_75253_b()
+             public boolean shouldContinueExecuting()
              {
-                 return this.field_179499_e && super.func_75253_b();
+                 return this.canRaid && super.shouldContinueExecuting();
              }
  
 -            @Override
-             public void func_75246_d()
+             public void updateTask()
              {
-                 super.func_75246_d();
--                this.field_179500_c
--                .func_70671_ap()
--                .func_75650_a(
--                    (double)this.field_179494_b.func_177958_n() + 0.5,
--                    (double)(this.field_179494_b.func_177956_o() + 1),
--                    (double)this.field_179494_b.func_177952_p() + 0.5,
+                 super.updateTask();
+-                this.rabbit
+-                .getLookHelper()
+-                .setLookPosition(
+-                    (double)this.destinationBlock.getX() + 0.5,
+-                    (double)(this.destinationBlock.getY() + 1),
+-                    (double)this.destinationBlock.getZ() + 0.5,
 -                    10.0F,
--                    (float)this.field_179500_c.func_70646_bf()
+-                    (float)this.rabbit.getVerticalFaceSpeed()
 -                );
-+                this.field_179500_c.func_70671_ap().func_75650_a((double)this.field_179494_b.func_177958_n() + 0.5D, (double)(this.field_179494_b.func_177956_o() + 1), (double)this.field_179494_b.func_177952_p() + 0.5D, 10.0F, (float)this.field_179500_c.func_70646_bf());
++                this.rabbit.getLookHelper().setLookPosition((double)this.destinationBlock.getX() + 0.5D, (double)(this.destinationBlock.getY() + 1), (double)this.destinationBlock.getZ() + 0.5D, 10.0F, (float)this.rabbit.getVerticalFaceSpeed());
  
-                 if (this.func_179487_f())
+                 if (this.getIsAboveDestination())
                  {
 @@ -634,16 +583,16 @@
  
-                     if (this.field_179499_e && block instanceof BlockCarrot)
+                     if (this.canRaid && block instanceof BlockCarrot)
                      {
--                        Integer integer = iblockstate.func_177229_b(BlockCarrot.field_176488_a);
-+                        Integer integer = (Integer)iblockstate.func_177229_b(BlockCarrot.field_176488_a);
+-                        Integer integer = iblockstate.getValue(BlockCarrot.AGE);
++                        Integer integer = (Integer)iblockstate.getValue(BlockCarrot.AGE);
  
 -                        if (integer == 0)
 +                        if (integer.intValue() == 0)
                          {
-                             world.func_180501_a(blockpos, Blocks.field_150350_a.func_176223_P(), 2);
-                             world.func_175655_b(blockpos, true);
+                             world.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 2);
+                             world.destroyBlock(blockpos, true);
                          }
                          else
                          {
--                            world.func_180501_a(blockpos, iblockstate.func_177226_a(BlockCarrot.field_176488_a, integer - 1), 2);
-+                            world.func_180501_a(blockpos, iblockstate.func_177226_a(BlockCarrot.field_176488_a, Integer.valueOf(integer.intValue() - 1)), 2);
-                             world.func_175718_b(2001, blockpos, Block.func_176210_f(iblockstate));
+-                            world.setBlockState(blockpos, iblockstate.withProperty(BlockCarrot.AGE, integer - 1), 2);
++                            world.setBlockState(blockpos, iblockstate.withProperty(BlockCarrot.AGE, Integer.valueOf(integer.intValue() - 1)), 2);
+                             world.playEvent(2001, blockpos, Block.getStateId(iblockstate));
                          }
  
 @@ -655,7 +604,6 @@
@@ -437,51 +437,51 @@
              }
  
 -            @Override
-             protected boolean func_179488_a(World p_179488_1_, BlockPos p_179488_2_)
+             protected boolean shouldMoveTo(World worldIn, BlockPos pos)
              {
-                 Block block = p_179488_1_.func_180495_p(p_179488_2_).func_177230_c();
+                 Block block = worldIn.getBlockState(pos).getBlock();
 @@ -703,7 +651,6 @@
-             this.field_180068_d = p_180066_1_;
+             this.canJump = canJumpIn;
          }
  
 -        @Override
-         public void func_75661_b()
+         public void doJump()
          {
-             if (this.field_75662_b)
+             if (this.isJumping)
 @@ -725,14 +672,11 @@
-                 this.field_179929_g = p_i45862_1_;
+                 this.rabbit = rabbit;
              }
  
 -            @Override
-             public void func_75641_c()
+             public void onUpdateMoveHelper()
              {
--                if (this.field_179929_g.field_70122_E
--                        && !this.field_179929_g.field_70703_bu
--                        && !((EntityRabbit.RabbitJumpHelper)this.field_179929_g.field_70767_i).func_180067_c())
-+                if (this.field_179929_g.field_70122_E && !this.field_179929_g.field_70703_bu && !((EntityRabbit.RabbitJumpHelper)this.field_179929_g.field_70767_i).func_180067_c())
+-                if (this.rabbit.onGround
+-                        && !this.rabbit.isJumping
+-                        && !((EntityRabbit.RabbitJumpHelper)this.rabbit.jumpHelper).getIsJumping())
++                if (this.rabbit.onGround && !this.rabbit.isJumping && !((EntityRabbit.RabbitJumpHelper)this.rabbit.jumpHelper).getIsJumping())
                  {
--                    this.field_179929_g.func_175515_b(0.0);
-+                    this.field_179929_g.func_175515_b(0.0D);
+-                    this.rabbit.setMovementSpeed(0.0);
++                    this.rabbit.setMovementSpeed(0.0D);
                  }
-                 else if (this.func_75640_a())
+                 else if (this.isUpdating())
                  {
 @@ -742,17 +686,16 @@
-                 super.func_75641_c();
+                 super.onUpdateMoveHelper();
              }
  
 -            @Override
-             public void func_75642_a(double p_75642_1_, double p_75642_3_, double p_75642_5_, double p_75642_7_)
+             public void setMoveTo(double x, double y, double z, double speedIn)
              {
-                 if (this.field_179929_g.func_70090_H())
+                 if (this.rabbit.isInWater())
                  {
--                    p_75642_7_ = 1.5;
-+                    p_75642_7_ = 1.5D;
+-                    speedIn = 1.5;
++                    speedIn = 1.5D;
                  }
  
-                 super.func_75642_a(p_75642_1_, p_75642_3_, p_75642_5_, p_75642_7_);
+                 super.setMoveTo(x, y, z, speedIn);
  
--                if (p_75642_7_ > 0.0)
-+                if (p_75642_7_ > 0.0D)
+-                if (speedIn > 0.0)
++                if (speedIn > 0.0D)
                  {
-                     this.field_188492_j = p_75642_7_;
+                     this.nextJumpSpeed = speedIn;
                  }

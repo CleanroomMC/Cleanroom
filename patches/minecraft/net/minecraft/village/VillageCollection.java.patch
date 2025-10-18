@@ -3,40 +3,40 @@
 @@ -19,9 +19,9 @@
  public class VillageCollection extends WorldSavedData
  {
-     private World field_75556_a;
--    private final List<BlockPos> field_75554_b = Lists.newArrayList();
--    private final List<VillageDoorInfo> field_75555_c = Lists.newArrayList();
--    private final List<Village> field_75552_d = Lists.newArrayList();
-+    private final List<BlockPos> field_75554_b = Lists.<BlockPos>newArrayList();
-+    private final List<VillageDoorInfo> field_75555_c = Lists.<VillageDoorInfo>newArrayList();
-+    private final List<Village> field_75552_d = Lists.<Village>newArrayList();
-     private int field_75553_e;
+     private World world;
+-    private final List<BlockPos> villagerPositionsList = Lists.newArrayList();
+-    private final List<VillageDoorInfo> newDoors = Lists.newArrayList();
+-    private final List<Village> villageList = Lists.newArrayList();
++    private final List<BlockPos> villagerPositionsList = Lists.<BlockPos>newArrayList();
++    private final List<VillageDoorInfo> newDoors = Lists.<VillageDoorInfo>newArrayList();
++    private final List<Village> villageList = Lists.<Village>newArrayList();
+     private int tickCounter;
  
-     public VillageCollection(String p_i1677_1_)
+     public VillageCollection(String name)
 @@ -59,7 +59,7 @@
  
-     public void func_75544_a()
+     public void tick()
      {
--        this.field_75553_e++;
-+        ++this.field_75553_e;
+-        this.tickCounter++;
++        ++this.tickCounter;
  
-         for (Village village : this.field_75552_d)
+         for (Village village : this.villageList)
          {
 @@ -100,17 +100,17 @@
-     public Village func_176056_a(BlockPos p_176056_1_, int p_176056_2_)
+     public Village getNearestVillage(BlockPos doorBlock, int radius)
      {
          Village village = null;
 -        double d0 = Float.MAX_VALUE;
 +        double d0 = 3.4028234663852886E38D;
  
-         for (Village village1 : this.field_75552_d)
+         for (Village village1 : this.villageList)
          {
-             double d1 = village1.func_180608_a().func_177951_i(p_176056_1_);
+             double d1 = village1.getCenter().distanceSq(doorBlock);
  
 -            if (!(d1 >= d0))
 +            if (d1 < d0)
              {
-                 float f = (float)(p_176056_2_ + village1.func_75568_b());
+                 float f = (float)(radius + village1.getVillageRadius());
  
 -                if (!(d1 > (double)(f * f)))
 +                if (d1 <= (double)(f * f))
@@ -45,18 +45,18 @@
                      d0 = d1;
 @@ -131,7 +131,7 @@
  
-     private void func_75545_e()
+     private void addNewDoorsToVillageOrCreateVillage()
      {
--        for (int i = 0; i < this.field_75555_c.size(); i++)
-+        for (int i = 0; i < this.field_75555_c.size(); ++i)
+-        for (int i = 0; i < this.newDoors.size(); i++)
++        for (int i = 0; i < this.newDoors.size(); ++i)
          {
-             VillageDoorInfo villagedoorinfo = this.field_75555_c.get(i);
-             Village village = this.func_176056_a(villagedoorinfo.func_179852_d(), 32);
+             VillageDoorInfo villagedoorinfo = this.newDoors.get(i);
+             Village village = this.getNearestVillage(villagedoorinfo.getDoorBlockPos(), 32);
 @@ -151,15 +151,16 @@
  
-     private void func_180609_b(BlockPos p_180609_1_)
+     private void addDoorsAround(BlockPos central)
      {
-+        if (!this.field_75556_a.func_175697_a(p_180609_1_, 16)) return; // Forge: prevent loading unloaded chunks when checking for doors
++        if (!this.world.isAreaLoaded(central, 16)) return; // Forge: prevent loading unloaded chunks when checking for doors
          int i = 16;
          int j = 4;
          int k = 16;
@@ -70,16 +70,16 @@
 -                for (int j1 = -16; j1 < 16; j1++)
 +                for (int j1 = -16; j1 < 16; ++j1)
                  {
-                     BlockPos blockpos = p_180609_1_.func_177982_a(l, i1, j1);
+                     BlockPos blockpos = central.add(l, i1, j1);
  
 @@ -186,9 +187,7 @@
      {
-         for (VillageDoorInfo villagedoorinfo : this.field_75555_c)
+         for (VillageDoorInfo villagedoorinfo : this.newDoors)
          {
--            if (villagedoorinfo.func_179852_d().func_177958_n() == p_176055_1_.func_177958_n()
--                    && villagedoorinfo.func_179852_d().func_177952_p() == p_176055_1_.func_177952_p()
--                    && Math.abs(villagedoorinfo.func_179852_d().func_177956_o() - p_176055_1_.func_177956_o()) <= 1)
-+            if (villagedoorinfo.func_179852_d().func_177958_n() == p_176055_1_.func_177958_n() && villagedoorinfo.func_179852_d().func_177952_p() == p_176055_1_.func_177952_p() && Math.abs(villagedoorinfo.func_179852_d().func_177956_o() - p_176055_1_.func_177956_o()) <= 1)
+-            if (villagedoorinfo.getDoorBlockPos().getX() == doorBlock.getX()
+-                    && villagedoorinfo.getDoorBlockPos().getZ() == doorBlock.getZ()
+-                    && Math.abs(villagedoorinfo.getDoorBlockPos().getY() - doorBlock.getY()) <= 1)
++            if (villagedoorinfo.getDoorBlockPos().getX() == doorBlock.getX() && villagedoorinfo.getDoorBlockPos().getZ() == doorBlock.getZ() && Math.abs(villagedoorinfo.getDoorBlockPos().getY() - doorBlock.getY()) <= 1)
              {
                  return villagedoorinfo;
              }
@@ -90,24 +90,24 @@
 -        for (int j = 1; j <= 5; j++)
 +        for (int j = 1; j <= 5; ++j)
          {
-             if (this.field_75556_a.func_175678_i(p_176061_1_.func_177967_a(p_176061_2_, j)))
+             if (this.world.canSeeSky(centerPos.offset(direction, j)))
              {
--                if (++i >= p_176061_3_)
+-                if (++i >= limitation)
 +                ++i;
 +
-+                if (i >= p_176061_3_)
++                if (i >= limitation)
                  {
                      return i;
                  }
 @@ -255,16 +256,23 @@
      {
-         IBlockState iblockstate = this.field_75556_a.func_180495_p(p_176058_1_);
-         Block block = iblockstate.func_177230_c();
--        return block instanceof BlockDoor ? iblockstate.func_185904_a() == Material.field_151575_d : false;
+         IBlockState iblockstate = this.world.getBlockState(doorPos);
+         Block block = iblockstate.getBlock();
+-        return block instanceof BlockDoor ? iblockstate.getMaterial() == Material.WOOD : false;
 +
 +        if (block instanceof BlockDoor)
 +        {
-+            return iblockstate.func_185904_a() == Material.field_151575_d;
++            return iblockstate.getMaterial() == Material.WOOD;
 +        }
 +        else
 +        {
@@ -116,21 +116,21 @@
      }
  
 -    @Override
-     public void func_76184_a(NBTTagCompound p_76184_1_)
+     public void readFromNBT(NBTTagCompound nbt)
      {
-         this.field_75553_e = p_76184_1_.func_74762_e("Tick");
-         NBTTagList nbttaglist = p_76184_1_.func_150295_c("Villages", 10);
+         this.tickCounter = nbt.getInteger("Tick");
+         NBTTagList nbttaglist = nbt.getTagList("Villages", 10);
  
--        for (int i = 0; i < nbttaglist.func_74745_c(); i++)
-+        for (int i = 0; i < nbttaglist.func_74745_c(); ++i)
+-        for (int i = 0; i < nbttaglist.tagCount(); i++)
++        for (int i = 0; i < nbttaglist.tagCount(); ++i)
          {
-             NBTTagCompound nbttagcompound = nbttaglist.func_150305_b(i);
+             NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
              Village village = new Village();
 @@ -273,7 +281,6 @@
          }
      }
  
 -    @Override
-     public NBTTagCompound func_189551_b(NBTTagCompound p_189551_1_)
+     public NBTTagCompound writeToNBT(NBTTagCompound compound)
      {
-         p_189551_1_.func_74768_a("Tick", this.field_75553_e);
+         compound.setInteger("Tick", this.tickCounter);

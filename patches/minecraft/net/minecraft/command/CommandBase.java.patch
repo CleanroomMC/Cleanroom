@@ -2,14 +2,14 @@
 +++ after/net/minecraft/command/CommandBase.java
 @@ -220,18 +220,21 @@
  
-     public static boolean func_180527_d(String p_180527_0_) throws CommandException
+     public static boolean parseBoolean(String input) throws CommandException
      {
--        if ("true".equals(p_180527_0_) || "1".equals(p_180527_0_))
-+        if (!"true".equals(p_180527_0_) && !"1".equals(p_180527_0_))
+-        if ("true".equals(input) || "1".equals(input))
++        if (!"true".equals(input) && !"1".equals(input))
 +        {
-+            if (!"false".equals(p_180527_0_) && !"0".equals(p_180527_0_))
++            if (!"false".equals(input) && !"0".equals(input))
 +            {
-+                throw new CommandException("commands.generic.boolean.invalid", new Object[] {p_180527_0_});
++                throw new CommandException("commands.generic.boolean.invalid", new Object[] {input});
 +            }
 +            else
 +            {
@@ -20,9 +20,9 @@
          {
              return true;
          }
--        else if (!"false".equals(p_180527_0_) && !"0".equals(p_180527_0_))
+-        else if (!"false".equals(input) && !"0".equals(input))
 -        {
--            throw new CommandException("commands.generic.boolean.invalid", p_180527_0_);
+-            throw new CommandException("commands.generic.boolean.invalid", input);
 -        }
 -        else
 -        {
@@ -30,21 +30,21 @@
 -        }
      }
  
-     public static EntityPlayerMP func_71521_c(ICommandSender p_71521_0_) throws PlayerNotFoundException
+     public static EntityPlayerMP getCommandSenderAsPlayer(ICommandSender sender) throws PlayerNotFoundException
 @@ -391,14 +394,14 @@
      {
          ITextComponent itextcomponent = new TextComponentString("");
  
--        for (int i = p_147176_2_; i < p_147176_1_.length; i++)
-+        for (int i = p_147176_2_; i < p_147176_1_.length; ++i)
+-        for (int i = index; i < args.length; i++)
++        for (int i = index; i < args.length; ++i)
          {
-             if (i > p_147176_2_)
+             if (i > index)
              {
-                 itextcomponent.func_150258_a(" ");
+                 itextcomponent.appendText(" ");
              }
  
--            ITextComponent itextcomponent1 = new TextComponentString(p_147176_1_[i]);
-+            ITextComponent itextcomponent1 = net.minecraftforge.common.ForgeHooks.newChatWithLinks(p_147176_1_[i]); // Forge: links for messages
+-            ITextComponent itextcomponent1 = new TextComponentString(args[i]);
++            ITextComponent itextcomponent1 = net.minecraftforge.common.ForgeHooks.newChatWithLinks(args[i]); // Forge: links for messages
  
              if (p_147176_3_)
              {
@@ -52,17 +52,17 @@
      {
          StringBuilder stringbuilder = new StringBuilder();
  
--        for (int i = p_180529_1_; i < p_180529_0_.length; i++)
-+        for (int i = p_180529_1_; i < p_180529_0_.length; ++i)
+-        for (int i = startPos; i < args.length; i++)
++        for (int i = startPos; i < args.length; ++i)
          {
-             if (i > p_180529_1_)
+             if (i > startPos)
              {
 @@ -702,7 +705,7 @@
                      break;
                  }
  
--                Comparable<?> comparable = func_190792_a((IProperty<?>)iproperty, iterator1.next());
-+                Comparable<?> comparable = func_190792_a(iproperty, iterator1.next());
+-                Comparable<?> comparable = getValueHelper((IProperty<?>)iproperty, iterator1.next());
++                Comparable<?> comparable = getValueHelper(iproperty, iterator1.next());
  
                  if (comparable == null)
                  {
@@ -70,26 +70,26 @@
      {
          StringBuilder stringbuilder = new StringBuilder();
  
--        for (int i = 0; i < p_71527_0_.length; i++)
-+        for (int i = 0; i < p_71527_0_.length; ++i)
+-        for (int i = 0; i < elements.length; i++)
++        for (int i = 0; i < elements.length; ++i)
          {
-             String s = p_71527_0_[i].toString();
+             String s = elements[i].toString();
  
 @@ -752,7 +755,7 @@
      {
          ITextComponent itextcomponent = new TextComponentString("");
  
--        for (int i = 0; i < p_180530_0_.size(); i++)
-+        for (int i = 0; i < p_180530_0_.size(); ++i)
+-        for (int i = 0; i < components.size(); i++)
++        for (int i = 0; i < components.size(); ++i)
          {
              if (i > 0)
              {
 @@ -856,7 +859,7 @@
  
-         if (!p_175762_1_.isEmpty())
+         if (!possibleCompletions.isEmpty())
          {
--            for (String s1 : Iterables.transform((Iterable<Object>)p_175762_1_, Functions.toStringFunction()))
-+            for (String s1 : Iterables.transform(p_175762_1_, Functions.toStringFunction()))
+-            for (String s1 : Iterables.transform((Iterable<Object>)possibleCompletions, Functions.toStringFunction()))
++            for (String s1 : Iterables.transform(possibleCompletions, Functions.toStringFunction()))
              {
-                 if (func_71523_a(s, s1))
+                 if (doesStringStartWith(s, s1))
                  {

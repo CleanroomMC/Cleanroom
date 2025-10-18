@@ -1,11 +1,11 @@
 --- before/net/minecraft/command/ServerCommandManager.java
 +++ after/net/minecraft/command/ServerCommandManager.java
 @@ -116,7 +116,6 @@
-         CommandBase.func_71529_a(this);
+         CommandBase.setCommandListener(this);
      }
  
 -    @Override
-     public void func_152372_a(ICommandSender p_152372_1_, ICommand p_152372_2_, int p_152372_3_, String p_152372_4_, Object... p_152372_5_)
+     public void notifyListener(ICommandSender sender, ICommand command, int flags, String translationKey, Object... translationArgs)
      {
          boolean flag = true;
 @@ -127,19 +126,15 @@
@@ -13,29 +13,29 @@
          }
  
 -        ITextComponent itextcomponent = new TextComponentTranslation(
--            "chat.type.admin", p_152372_1_.func_70005_c_(), new TextComponentTranslation(p_152372_4_, p_152372_5_)
+-            "chat.type.admin", sender.getName(), new TextComponentTranslation(translationKey, translationArgs)
 -        );
-+        ITextComponent itextcomponent = new TextComponentTranslation("chat.type.admin", new Object[] {p_152372_1_.func_70005_c_(), new TextComponentTranslation(p_152372_4_, p_152372_5_)});
-         itextcomponent.func_150256_b().func_150238_a(TextFormatting.GRAY);
--        itextcomponent.func_150256_b().func_150217_b(true);
-+        itextcomponent.func_150256_b().func_150217_b(Boolean.valueOf(true));
++        ITextComponent itextcomponent = new TextComponentTranslation("chat.type.admin", new Object[] {sender.getName(), new TextComponentTranslation(translationKey, translationArgs)});
+         itextcomponent.getStyle().setColor(TextFormatting.GRAY);
+-        itextcomponent.getStyle().setItalic(true);
++        itextcomponent.getStyle().setItalic(Boolean.valueOf(true));
  
          if (flag)
          {
-             for (EntityPlayer entityplayer : minecraftserver.func_184103_al().func_181057_v())
+             for (EntityPlayer entityplayer : minecraftserver.getPlayerList().getPlayers())
              {
--                if (entityplayer != p_152372_1_
--                        && minecraftserver.func_184103_al().func_152596_g(entityplayer.func_146103_bH())
--                        && p_152372_2_.func_184882_a(this.field_184880_a, p_152372_1_))
-+                if (entityplayer != p_152372_1_ && minecraftserver.func_184103_al().func_152596_g(entityplayer.func_146103_bH()) && p_152372_2_.func_184882_a(this.field_184880_a, p_152372_1_))
+-                if (entityplayer != sender
+-                        && minecraftserver.getPlayerList().canSendCommands(entityplayer.getGameProfile())
+-                        && command.checkPermission(this.server, sender))
++                if (entityplayer != sender && minecraftserver.getPlayerList().canSendCommands(entityplayer.getGameProfile()) && command.checkPermission(this.server, sender))
                  {
-                     boolean flag1 = p_152372_1_ instanceof MinecraftServer && this.field_184880_a.func_183002_r();
-                     boolean flag2 = p_152372_1_ instanceof RConConsoleSource && this.field_184880_a.func_181034_q();
+                     boolean flag1 = sender instanceof MinecraftServer && this.server.shouldBroadcastConsoleToOps();
+                     boolean flag2 = sender instanceof RConConsoleSource && this.server.shouldBroadcastRconToOps();
 @@ -170,7 +165,6 @@
          }
      }
  
 -    @Override
-     protected MinecraftServer func_184879_a()
+     protected MinecraftServer getServer()
      {
-         return this.field_184880_a;
+         return this.server;

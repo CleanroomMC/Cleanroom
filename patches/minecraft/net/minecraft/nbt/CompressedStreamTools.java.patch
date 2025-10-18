@@ -14,21 +14,21 @@
      }
  
 -    @SideOnly(Side.CLIENT)
-     public static void func_74793_a(NBTTagCompound p_74793_0_, File p_74793_1_) throws IOException
+     public static void safeWrite(NBTTagCompound compound, File fileIn) throws IOException
      {
-         File file1 = new File(p_74793_1_.getAbsolutePath() + "_tmp");
+         File file1 = new File(fileIn.getAbsolutePath() + "_tmp");
 @@ -81,47 +78,6 @@
          }
      }
  
 -    @SideOnly(Side.CLIENT)
--    public static void func_74795_b(NBTTagCompound p_74795_0_, File p_74795_1_) throws IOException
+-    public static void write(NBTTagCompound compound, File fileIn) throws IOException
 -    {
--        DataOutputStream dataoutputstream = new DataOutputStream(new FileOutputStream(p_74795_1_));
+-        DataOutputStream dataoutputstream = new DataOutputStream(new FileOutputStream(fileIn));
 -
 -        try
 -        {
--            func_74800_a(p_74795_0_, dataoutputstream);
+-            write(compound, dataoutputstream);
 -        }
 -        finally
 -        {
@@ -38,20 +38,20 @@
 -
 -    @Nullable
 -    @SideOnly(Side.CLIENT)
--    public static NBTTagCompound func_74797_a(File p_74797_0_) throws IOException
+-    public static NBTTagCompound read(File fileIn) throws IOException
 -    {
--        if (!p_74797_0_.exists())
+-        if (!fileIn.exists())
 -        {
 -            return null;
 -        }
 -        else
 -        {
--            DataInputStream datainputstream = new DataInputStream(new FileInputStream(p_74797_0_));
+-            DataInputStream datainputstream = new DataInputStream(new FileInputStream(fileIn));
 -            NBTTagCompound nbttagcompound;
 -
 -            try
 -            {
--                nbttagcompound = func_152456_a(datainputstream, NBTSizeTracker.field_152451_a);
+-                nbttagcompound = read(datainputstream, NBTSizeTracker.INFINITE);
 -            }
 -            finally
 -            {
@@ -62,14 +62,14 @@
 -        }
 -    }
 -
-     public static NBTTagCompound func_74794_a(DataInputStream p_74794_0_) throws IOException
+     public static NBTTagCompound read(DataInputStream inputStream) throws IOException
      {
-         return func_152456_a(p_74794_0_, NBTSizeTracker.field_152451_a);
+         return read(inputStream, NBTSizeTracker.INFINITE);
 @@ -160,6 +116,7 @@
-     private static NBTBase func_152455_a(DataInput p_152455_0_, int p_152455_1_, NBTSizeTracker p_152455_2_) throws IOException
+     private static NBTBase read(DataInput input, int depth, NBTSizeTracker accounter) throws IOException
      {
-         byte b0 = p_152455_0_.readByte();
-+        p_152455_2_.func_152450_a(8); // Forge: Count everything!
+         byte b0 = input.readByte();
++        accounter.read(8); // Forge: Count everything!
  
          if (b0 == 0)
          {
@@ -77,30 +77,30 @@
          }
          else
          {
--            p_152455_0_.readUTF();
-+            NBTSizeTracker.readUTF(p_152455_2_, p_152455_0_.readUTF()); //Forge: Count this string.
-+            p_152455_2_.func_152450_a(32); //Forge: 4 extra bytes for the object allocation.
-             NBTBase nbtbase = NBTBase.func_150284_a(b0);
+-            input.readUTF();
++            NBTSizeTracker.readUTF(accounter, input.readUTF()); //Forge: Count this string.
++            accounter.read(32); //Forge: 4 extra bytes for the object allocation.
+             NBTBase nbtbase = NBTBase.create(b0);
  
              try
 @@ -179,9 +137,48 @@
              {
-                 CrashReport crashreport = CrashReport.func_85055_a(ioexception, "Loading NBT data");
-                 CrashReportCategory crashreportcategory = crashreport.func_85058_a("NBT Tag");
--                crashreportcategory.func_71507_a("Tag type", b0);
-+                crashreportcategory.func_71507_a("Tag type", Byte.valueOf(b0));
+                 CrashReport crashreport = CrashReport.makeCrashReport(ioexception, "Loading NBT data");
+                 CrashReportCategory crashreportcategory = crashreport.makeCategory("NBT Tag");
+-                crashreportcategory.addCrashSection("Tag type", b0);
++                crashreportcategory.addCrashSection("Tag type", Byte.valueOf(b0));
                  throw new ReportedException(crashreport);
              }
 +        }
 +    }
 +
-+    public static void func_74795_b(NBTTagCompound p_74795_0_, File p_74795_1_) throws IOException
++    public static void write(NBTTagCompound compound, File fileIn) throws IOException
 +    {
-+        DataOutputStream dataoutputstream = new DataOutputStream(new FileOutputStream(p_74795_1_));
++        DataOutputStream dataoutputstream = new DataOutputStream(new FileOutputStream(fileIn));
 +
 +        try
 +        {
-+            func_74800_a(p_74795_0_, dataoutputstream);
++            write(compound, dataoutputstream);
 +        }
 +        finally
 +        {
@@ -109,20 +109,20 @@
 +    }
 +
 +    @Nullable
-+    public static NBTTagCompound func_74797_a(File p_74797_0_) throws IOException
++    public static NBTTagCompound read(File fileIn) throws IOException
 +    {
-+        if (!p_74797_0_.exists())
++        if (!fileIn.exists())
 +        {
 +            return null;
 +        }
 +        else
 +        {
-+            DataInputStream datainputstream = new DataInputStream(new FileInputStream(p_74797_0_));
++            DataInputStream datainputstream = new DataInputStream(new FileInputStream(fileIn));
 +            NBTTagCompound nbttagcompound;
 +
 +            try
 +            {
-+                nbttagcompound = func_152456_a(datainputstream, NBTSizeTracker.field_152451_a);
++                nbttagcompound = read(datainputstream, NBTSizeTracker.INFINITE);
 +            }
 +            finally
 +            {

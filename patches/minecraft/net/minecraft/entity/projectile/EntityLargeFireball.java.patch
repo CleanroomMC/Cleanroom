@@ -12,43 +12,43 @@
  
      @SideOnly(Side.CLIENT)
 -    public EntityLargeFireball(
--        World p_i1768_1_, double p_i1768_2_, double p_i1768_4_, double p_i1768_6_, double p_i1768_8_, double p_i1768_10_, double p_i1768_12_
+-        World worldIn, double x, double y, double z, double accelX, double accelY, double accelZ
 -    )
-+    public EntityLargeFireball(World p_i1768_1_, double p_i1768_2_, double p_i1768_4_, double p_i1768_6_, double p_i1768_8_, double p_i1768_10_, double p_i1768_12_)
++    public EntityLargeFireball(World worldIn, double x, double y, double z, double accelX, double accelY, double accelZ)
      {
-         super(p_i1768_1_, p_i1768_2_, p_i1768_4_, p_i1768_6_, p_i1768_8_, p_i1768_10_, p_i1768_12_);
+         super(worldIn, x, y, z, accelX, accelY, accelZ);
      }
 @@ -31,7 +30,6 @@
-         super(p_i1769_1_, p_i1769_2_, p_i1769_3_, p_i1769_5_, p_i1769_7_);
+         super(worldIn, shooter, accelX, accelY, accelZ);
      }
  
 -    @Override
-     protected void func_70227_a(RayTraceResult p_70227_1_)
+     protected void onImpact(RayTraceResult result)
      {
-         if (!this.field_70170_p.field_72995_K)
+         if (!this.world.isRemote)
 @@ -42,8 +40,8 @@
-                 this.func_174815_a(this.field_70235_a, p_70227_1_.field_72308_g);
+                 this.applyEnchantments(this.shootingEntity, result.entityHit);
              }
  
--            boolean flag = this.field_70170_p.func_82736_K().func_82766_b("mobGriefing");
--            this.field_70170_p.func_72885_a(null, this.field_70165_t, this.field_70163_u, this.field_70161_v, (float)this.field_92057_e, flag, flag);
-+            boolean flag = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.field_70170_p, this.field_70235_a);
-+            this.field_70170_p.func_72885_a((Entity)null, this.field_70165_t, this.field_70163_u, this.field_70161_v, (float)this.field_92057_e, flag, flag);
-             this.func_70106_y();
+-            boolean flag = this.world.getGameRules().getBoolean("mobGriefing");
+-            this.world.newExplosion(null, this.posX, this.posY, this.posZ, (float)this.explosionPower, flag, flag);
++            boolean flag = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity);
++            this.world.newExplosion((Entity)null, this.posX, this.posY, this.posZ, (float)this.explosionPower, flag, flag);
+             this.setDead();
          }
      }
 @@ -53,14 +51,12 @@
-         EntityFireball.func_189743_a(p_189744_0_, "Fireball");
+         EntityFireball.registerFixesFireball(fixer, "Fireball");
      }
  
 -    @Override
-     public void func_70014_b(NBTTagCompound p_70014_1_)
+     public void writeEntityToNBT(NBTTagCompound compound)
      {
-         super.func_70014_b(p_70014_1_);
-         p_70014_1_.func_74768_a("ExplosionPower", this.field_92057_e);
+         super.writeEntityToNBT(compound);
+         compound.setInteger("ExplosionPower", this.explosionPower);
      }
  
 -    @Override
-     public void func_70037_a(NBTTagCompound p_70037_1_)
+     public void readEntityFromNBT(NBTTagCompound compound)
      {
-         super.func_70037_a(p_70037_1_);
+         super.readEntityFromNBT(compound);

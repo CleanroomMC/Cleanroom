@@ -4,80 +4,80 @@
  
  public class EntityAIEatGrass extends EntityAIBase
  {
--    private static final Predicate<IBlockState> field_179505_b = BlockStateMatcher.func_177638_a(Blocks.field_150329_H)
--                .func_177637_a(BlockTallGrass.field_176497_a, Predicates.equalTo(BlockTallGrass.EnumType.GRASS));
-+    private static final Predicate<IBlockState> field_179505_b = BlockStateMatcher.func_177638_a(Blocks.field_150329_H).func_177637_a(BlockTallGrass.field_176497_a, Predicates.equalTo(BlockTallGrass.EnumType.GRASS));
-     private final EntityLiving field_151500_b;
-     private final World field_151501_c;
-     int field_151502_a;
+-    private static final Predicate<IBlockState> IS_TALL_GRASS = BlockStateMatcher.forBlock(Blocks.TALLGRASS)
+-                .where(BlockTallGrass.TYPE, Predicates.equalTo(BlockTallGrass.EnumType.GRASS));
++    private static final Predicate<IBlockState> IS_TALL_GRASS = BlockStateMatcher.forBlock(Blocks.TALLGRASS).where(BlockTallGrass.TYPE, Predicates.equalTo(BlockTallGrass.EnumType.GRASS));
+     private final EntityLiving grassEaterEntity;
+     private final World entityWorld;
+     int eatingGrassTimer;
 @@ -26,7 +25,6 @@
-         this.func_75248_a(7);
+         this.setMutexBits(7);
      }
  
 -    @Override
-     public boolean func_75250_a()
+     public boolean shouldExecute()
      {
-         if (this.field_151500_b.func_70681_au().nextInt(this.field_151500_b.func_70631_g_() ? 50 : 1000) != 0)
+         if (this.grassEaterEntity.getRNG().nextInt(this.grassEaterEntity.isChild() ? 50 : 1000) != 0)
 @@ -36,13 +34,18 @@
          else
          {
-             BlockPos blockpos = new BlockPos(this.field_151500_b.field_70165_t, this.field_151500_b.field_70163_u, this.field_151500_b.field_70161_v);
--            return field_179505_b.apply(this.field_151501_c.func_180495_p(blockpos))
+             BlockPos blockpos = new BlockPos(this.grassEaterEntity.posX, this.grassEaterEntity.posY, this.grassEaterEntity.posZ);
+-            return IS_TALL_GRASS.apply(this.entityWorld.getBlockState(blockpos))
 -                   ? true
--                   : this.field_151501_c.func_180495_p(blockpos.func_177977_b()).func_177230_c() == Blocks.field_150349_c;
+-                   : this.entityWorld.getBlockState(blockpos.down()).getBlock() == Blocks.GRASS;
 +
-+            if (field_179505_b.apply(this.field_151501_c.func_180495_p(blockpos)))
++            if (IS_TALL_GRASS.apply(this.entityWorld.getBlockState(blockpos)))
 +            {
 +                return true;
 +            }
 +            else
 +            {
-+                return this.field_151501_c.func_180495_p(blockpos.func_177977_b()).func_177230_c() == Blocks.field_150349_c;
++                return this.entityWorld.getBlockState(blockpos.down()).getBlock() == Blocks.GRASS;
 +            }
          }
      }
  
 -    @Override
-     public void func_75249_e()
+     public void startExecuting()
      {
-         this.field_151502_a = 40;
+         this.eatingGrassTimer = 40;
 @@ -50,13 +53,11 @@
-         this.field_151500_b.func_70661_as().func_75499_g();
+         this.grassEaterEntity.getNavigator().clearPath();
      }
  
 -    @Override
-     public void func_75251_c()
+     public void resetTask()
      {
-         this.field_151502_a = 0;
+         this.eatingGrassTimer = 0;
      }
  
 -    @Override
-     public boolean func_75253_b()
+     public boolean shouldContinueExecuting()
      {
-         return this.field_151502_a > 0;
+         return this.eatingGrassTimer > 0;
 @@ -67,7 +68,6 @@
-         return this.field_151502_a;
+         return this.eatingGrassTimer;
      }
  
 -    @Override
-     public void func_75246_d()
+     public void updateTask()
      {
-         this.field_151502_a = Math.max(0, this.field_151502_a - 1);
+         this.eatingGrassTimer = Math.max(0, this.eatingGrassTimer - 1);
 @@ -78,7 +78,7 @@
  
-             if (field_179505_b.apply(this.field_151501_c.func_180495_p(blockpos)))
+             if (IS_TALL_GRASS.apply(this.entityWorld.getBlockState(blockpos)))
              {
--                if (this.field_151501_c.func_82736_K().func_82766_b("mobGriefing"))
-+                if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.field_151501_c, this.field_151500_b))
+-                if (this.entityWorld.getGameRules().getBoolean("mobGriefing"))
++                if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.entityWorld, this.grassEaterEntity))
                  {
-                     this.field_151501_c.func_175655_b(blockpos, false);
+                     this.entityWorld.destroyBlock(blockpos, false);
                  }
 @@ -91,7 +91,7 @@
  
-                 if (this.field_151501_c.func_180495_p(blockpos1).func_177230_c() == Blocks.field_150349_c)
+                 if (this.entityWorld.getBlockState(blockpos1).getBlock() == Blocks.GRASS)
                  {
--                    if (this.field_151501_c.func_82736_K().func_82766_b("mobGriefing"))
-+                    if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.field_151501_c, this.field_151500_b))
+-                    if (this.entityWorld.getGameRules().getBoolean("mobGriefing"))
++                    if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.entityWorld, this.grassEaterEntity))
                      {
-                         this.field_151501_c.func_175718_b(2001, blockpos1, Block.func_149682_b(Blocks.field_150349_c));
-                         this.field_151501_c.func_180501_a(blockpos1, Blocks.field_150346_d.func_176223_P(), 2);
+                         this.entityWorld.playEvent(2001, blockpos1, Block.getIdFromBlock(Blocks.GRASS));
+                         this.entityWorld.setBlockState(blockpos1, Blocks.DIRT.getDefaultState(), 2);

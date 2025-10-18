@@ -9,8 +9,8 @@
  import net.minecraft.util.math.ChunkPos;
  import net.minecraft.world.World;
 @@ -21,7 +22,6 @@
-     private final Chunk field_73238_a;
-     private final Long2ObjectMap<Chunk> field_73236_b = new Long2ObjectOpenHashMap<Chunk>(8192)
+     private final Chunk blankChunk;
+     private final Long2ObjectMap<Chunk> loadedChunks = new Long2ObjectOpenHashMap<Chunk>(8192)
      {
 -        @Override
          protected void rehash(int p_rehash_1_)
@@ -21,57 +21,57 @@
  
      @Nullable
 -    @Override
-     public Chunk func_186026_b(int p_186026_1_, int p_186026_2_)
+     public Chunk getLoadedChunk(int x, int z)
      {
--        return this.field_73236_b.get(ChunkPos.func_77272_a(p_186026_1_, p_186026_2_));
-+        return (Chunk)this.field_73236_b.get(ChunkPos.func_77272_a(p_186026_1_, p_186026_2_));
+-        return this.loadedChunks.get(ChunkPos.asLong(x, z));
++        return (Chunk)this.loadedChunks.get(ChunkPos.asLong(x, z));
      }
  
-     public Chunk func_73158_c(int p_73158_1_, int p_73158_2_)
+     public Chunk loadChunk(int chunkX, int chunkZ)
      {
-         Chunk chunk = new Chunk(this.field_73235_d, p_73158_1_, p_73158_2_);
-         this.field_73236_b.put(ChunkPos.func_77272_a(p_73158_1_, p_73158_2_), chunk);
+         Chunk chunk = new Chunk(this.world, chunkX, chunkZ);
+         this.loadedChunks.put(ChunkPos.asLong(chunkX, chunkZ), chunk);
 +        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkEvent.Load(chunk));
-         chunk.func_177417_c(true);
+         chunk.markLoaded(true);
          return chunk;
      }
  
 -    @Override
-     public Chunk func_186025_d(int p_186025_1_, int p_186025_2_)
+     public Chunk provideChunk(int x, int z)
      {
--        return MoreObjects.firstNonNull(this.func_186026_b(p_186025_1_, p_186025_2_), this.field_73238_a);
-+        return (Chunk)MoreObjects.firstNonNull(this.func_186026_b(p_186025_1_, p_186025_2_), this.field_73238_a);
+-        return MoreObjects.firstNonNull(this.getLoadedChunk(x, z), this.blankChunk);
++        return (Chunk)MoreObjects.firstNonNull(this.getLoadedChunk(x, z), this.blankChunk);
      }
  
 -    @Override
-     public boolean func_73156_b()
+     public boolean tick()
      {
          long i = System.currentTimeMillis();
-+        ObjectIterator objectiterator = this.field_73236_b.values().iterator();
++        ObjectIterator objectiterator = this.loadedChunks.values().iterator();
  
--        for (Chunk chunk : this.field_73236_b.values())
+-        for (Chunk chunk : this.loadedChunks.values())
 +        while (objectiterator.hasNext())
          {
 +            Chunk chunk = (Chunk)objectiterator.next();
-             chunk.func_150804_b(System.currentTimeMillis() - i > 5L);
+             chunk.onTick(System.currentTimeMillis() - i > 5L);
          }
  
          if (System.currentTimeMillis() - i > 100L)
          {
--            field_147436_a.info("Warning: Clientside chunk ticking took {} ms", System.currentTimeMillis() - i);
-+            field_147436_a.info("Warning: Clientside chunk ticking took {} ms", (long)(System.currentTimeMillis() - i));
+-            LOGGER.info("Warning: Clientside chunk ticking took {} ms", System.currentTimeMillis() - i);
++            LOGGER.info("Warning: Clientside chunk ticking took {} ms", (long)(System.currentTimeMillis() - i));
          }
  
          return false;
      }
  
 -    @Override
-     public String func_73148_d()
+     public String makeString()
      {
-         return "MultiplayerChunkCache: " + this.field_73236_b.size() + ", " + this.field_73236_b.size();
+         return "MultiplayerChunkCache: " + this.loadedChunks.size() + ", " + this.loadedChunks.size();
      }
  
 -    @Override
-     public boolean func_191062_e(int p_191062_1_, int p_191062_2_)
+     public boolean isChunkGeneratedAt(int x, int z)
      {
-         return this.field_73236_b.containsKey(ChunkPos.func_77272_a(p_191062_1_, p_191062_2_));
+         return this.loadedChunks.containsKey(ChunkPos.asLong(x, z));

@@ -1,44 +1,44 @@
 --- before/net/minecraft/entity/EntityHanging.java
 +++ after/net/minecraft/entity/EntityHanging.java
 @@ -45,7 +45,6 @@
-         this.field_174861_a = p_i45853_2_;
+         this.hangingPosition = hangingPositionIn;
      }
  
 -    @Override
-     protected void func_70088_a()
+     protected void entityInit()
      {
      }
 @@ -64,18 +63,18 @@
      {
-         if (this.field_174860_b != null)
+         if (this.facingDirection != null)
          {
--            double d0 = (double)this.field_174861_a.func_177958_n() + 0.5;
--            double d1 = (double)this.field_174861_a.func_177956_o() + 0.5;
--            double d2 = (double)this.field_174861_a.func_177952_p() + 0.5;
+-            double d0 = (double)this.hangingPosition.getX() + 0.5;
+-            double d1 = (double)this.hangingPosition.getY() + 0.5;
+-            double d2 = (double)this.hangingPosition.getZ() + 0.5;
 -            double d3 = 0.46875;
-+            double d0 = (double)this.field_174861_a.func_177958_n() + 0.5D;
-+            double d1 = (double)this.field_174861_a.func_177956_o() + 0.5D;
-+            double d2 = (double)this.field_174861_a.func_177952_p() + 0.5D;
++            double d0 = (double)this.hangingPosition.getX() + 0.5D;
++            double d1 = (double)this.hangingPosition.getY() + 0.5D;
++            double d2 = (double)this.hangingPosition.getZ() + 0.5D;
 +            double d3 = 0.46875D;
-             double d4 = this.func_190202_a(this.func_82329_d());
-             double d5 = this.func_190202_a(this.func_82330_g());
--            d0 -= (double)this.field_174860_b.func_82601_c() * 0.46875;
--            d2 -= (double)this.field_174860_b.func_82599_e() * 0.46875;
+             double d4 = this.offs(this.getWidthPixels());
+             double d5 = this.offs(this.getHeightPixels());
+-            d0 -= (double)this.facingDirection.getXOffset() * 0.46875;
+-            d2 -= (double)this.facingDirection.getZOffset() * 0.46875;
 -            d1 += d5;
-+            d0 = d0 - (double)this.field_174860_b.func_82601_c() * 0.46875D;
-+            d2 = d2 - (double)this.field_174860_b.func_82599_e() * 0.46875D;
++            d0 = d0 - (double)this.facingDirection.getXOffset() * 0.46875D;
++            d2 = d2 - (double)this.facingDirection.getZOffset() * 0.46875D;
 +            d1 = d1 + d5;
-             EnumFacing enumfacing = this.field_174860_b.func_176735_f();
--            d0 += d4 * (double)enumfacing.func_82601_c();
--            d2 += d4 * (double)enumfacing.func_82599_e();
-+            d0 = d0 + d4 * (double)enumfacing.func_82601_c();
-+            d2 = d2 + d4 * (double)enumfacing.func_82599_e();
-             this.field_70165_t = d0;
-             this.field_70163_u = d1;
-             this.field_70161_v = d2;
+             EnumFacing enumfacing = this.facingDirection.rotateYCCW();
+-            d0 += d4 * (double)enumfacing.getXOffset();
+-            d2 += d4 * (double)enumfacing.getZOffset();
++            d0 = d0 + d4 * (double)enumfacing.getXOffset();
++            d2 = d2 + d4 * (double)enumfacing.getZOffset();
+             this.posX = d0;
+             this.posY = d1;
+             this.posZ = d2;
 @@ -85,26 +84,25 @@
  
-             if (this.field_174860_b.func_176740_k() == EnumFacing.Axis.Z)
+             if (this.facingDirection.getAxis() == EnumFacing.Axis.Z)
              {
 -                d8 = 1.0;
 +                d8 = 1.0D;
@@ -55,31 +55,31 @@
 +            d6 = d6 / 32.0D;
 +            d7 = d7 / 32.0D;
 +            d8 = d8 / 32.0D;
-             this.func_174826_a(new AxisAlignedBB(d0 - d6, d1 - d7, d2 - d8, d0 + d6, d1 + d7, d2 + d8));
+             this.setEntityBoundingBox(new AxisAlignedBB(d0 - d6, d1 - d7, d2 - d8, d0 + d6, d1 + d7, d2 + d8));
          }
      }
  
-     private double func_190202_a(int p_190202_1_)
+     private double offs(int p_190202_1_)
      {
 -        return p_190202_1_ % 32 == 0 ? 0.5 : 0.0;
 +        return p_190202_1_ % 32 == 0 ? 0.5D : 0.0D;
      }
  
 -    @Override
-     public void func_70071_h_()
+     public void onUpdate()
      {
-         this.field_70169_q = this.field_70165_t;
+         this.prevPosX = this.posX;
 @@ -118,7 +116,7 @@
-             if (!this.field_70128_L && !this.func_70518_d())
+             if (!this.isDead && !this.onValidSurface())
              {
-                 this.func_70106_y();
--                this.func_110128_b(null);
-+                this.func_110128_b((Entity)null);
+                 this.setDead();
+-                this.onBroken(null);
++                this.onBroken((Entity)null);
              }
          }
      }
 @@ -137,15 +135,18 @@
-             EnumFacing enumfacing = this.field_174860_b.func_176735_f();
+             EnumFacing enumfacing = this.facingDirection.rotateYCCW();
              BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
 -            for (int k = 0; k < i; k++)
@@ -90,13 +90,13 @@
                  {
                      int i1 = (i - 1) / -2;
                      int j1 = (j - 1) / -2;
-                     blockpos$mutableblockpos.func_189533_g(blockpos).func_189534_c(enumfacing, k + i1).func_189534_c(EnumFacing.UP, l + j1);
-                     IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos$mutableblockpos);
+                     blockpos$mutableblockpos.setPos(blockpos).move(enumfacing, k + i1).move(EnumFacing.UP, l + j1);
+                     IBlockState iblockstate = this.world.getBlockState(blockpos$mutableblockpos);
  
-+                    if (iblockstate.isSideSolid(this.field_70170_p, blockpos$mutableblockpos, this.field_174860_b))
++                    if (iblockstate.isSideSolid(this.world, blockpos$mutableblockpos, this.facingDirection))
 +                        continue;
 +
-                     if (!iblockstate.func_185904_a().func_76220_a() && !BlockRedstoneDiode.func_185546_B(iblockstate))
+                     if (!iblockstate.getMaterial().isSolid() && !BlockRedstoneDiode.isDiode(iblockstate))
                      {
                          return false;
 @@ -157,25 +158,21 @@
@@ -104,117 +104,117 @@
      }
  
 -    @Override
-     public boolean func_70067_L()
+     public boolean canBeCollidedWith()
      {
          return true;
      }
  
 -    @Override
-     public boolean func_85031_j(Entity p_85031_1_)
+     public boolean hitByEntity(Entity entityIn)
      {
-         return p_85031_1_ instanceof EntityPlayer ? this.func_70097_a(DamageSource.func_76365_a((EntityPlayer)p_85031_1_), 0.0F) : false;
+         return entityIn instanceof EntityPlayer ? this.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer)entityIn), 0.0F) : false;
      }
  
 -    @Override
-     public EnumFacing func_174811_aO()
+     public EnumFacing getHorizontalFacing()
      {
-         return this.field_174860_b;
+         return this.facingDirection;
      }
  
 -    @Override
-     public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
+     public boolean attackEntityFrom(DamageSource source, float amount)
      {
-         if (this.func_180431_b(p_70097_1_))
+         if (this.isEntityInvulnerable(source))
 @@ -195,27 +192,24 @@
          }
      }
  
 -    @Override
-     public void func_70091_d(MoverType p_70091_1_, double p_70091_2_, double p_70091_4_, double p_70091_6_)
+     public void move(MoverType type, double x, double y, double z)
      {
--        if (!this.field_70170_p.field_72995_K && !this.field_70128_L && p_70091_2_ * p_70091_2_ + p_70091_4_ * p_70091_4_ + p_70091_6_ * p_70091_6_ > 0.0)
-+        if (!this.field_70170_p.field_72995_K && !this.field_70128_L && p_70091_2_ * p_70091_2_ + p_70091_4_ * p_70091_4_ + p_70091_6_ * p_70091_6_ > 0.0D)
+-        if (!this.world.isRemote && !this.isDead && x * x + y * y + z * z > 0.0)
++        if (!this.world.isRemote && !this.isDead && x * x + y * y + z * z > 0.0D)
          {
-             this.func_70106_y();
--            this.func_110128_b(null);
-+            this.func_110128_b((Entity)null);
+             this.setDead();
+-            this.onBroken(null);
++            this.onBroken((Entity)null);
          }
      }
  
 -    @Override
-     public void func_70024_g(double p_70024_1_, double p_70024_3_, double p_70024_5_)
+     public void addVelocity(double x, double y, double z)
      {
--        if (!this.field_70170_p.field_72995_K && !this.field_70128_L && p_70024_1_ * p_70024_1_ + p_70024_3_ * p_70024_3_ + p_70024_5_ * p_70024_5_ > 0.0)
-+        if (!this.field_70170_p.field_72995_K && !this.field_70128_L && p_70024_1_ * p_70024_1_ + p_70024_3_ * p_70024_3_ + p_70024_5_ * p_70024_5_ > 0.0D)
+-        if (!this.world.isRemote && !this.isDead && x * x + y * y + z * z > 0.0)
++        if (!this.world.isRemote && !this.isDead && x * x + y * y + z * z > 0.0D)
          {
-             this.func_70106_y();
--            this.func_110128_b(null);
-+            this.func_110128_b((Entity)null);
+             this.setDead();
+-            this.onBroken(null);
++            this.onBroken((Entity)null);
          }
      }
  
 -    @Override
-     public void func_70014_b(NBTTagCompound p_70014_1_)
+     public void writeEntityToNBT(NBTTagCompound compound)
      {
-         p_70014_1_.func_74774_a("Facing", (byte)this.field_174860_b.func_176736_b());
+         compound.setByte("Facing", (byte)this.facingDirection.getHorizontalIndex());
 @@ -225,7 +219,6 @@
-         p_70014_1_.func_74768_a("TileZ", blockpos.func_177952_p());
+         compound.setInteger("TileZ", blockpos.getZ());
      }
  
 -    @Override
-     public void func_70037_a(NBTTagCompound p_70037_1_)
+     public void readEntityFromNBT(NBTTagCompound compound)
      {
-         this.field_174861_a = new BlockPos(p_70037_1_.func_74762_e("TileX"), p_70037_1_.func_74762_e("TileY"), p_70037_1_.func_74762_e("TileZ"));
+         this.hangingPosition = new BlockPos(compound.getInteger("TileX"), compound.getInteger("TileY"), compound.getInteger("TileZ"));
 @@ -240,28 +233,19 @@
  
-     public abstract void func_184523_o();
+     public abstract void playPlaceSound();
  
 -    @Override
-     public EntityItem func_70099_a(ItemStack p_70099_1_, float p_70099_2_)
+     public EntityItem entityDropItem(ItemStack stack, float offsetY)
      {
 -        EntityItem entityitem = new EntityItem(
--            this.field_70170_p,
--            this.field_70165_t + (double)((float)this.field_174860_b.func_82601_c() * 0.15F),
--            this.field_70163_u + (double)p_70099_2_,
--            this.field_70161_v + (double)((float)this.field_174860_b.func_82599_e() * 0.15F),
--            p_70099_1_
+-            this.world,
+-            this.posX + (double)((float)this.facingDirection.getXOffset() * 0.15F),
+-            this.posY + (double)offsetY,
+-            this.posZ + (double)((float)this.facingDirection.getZOffset() * 0.15F),
+-            stack
 -        );
-+        EntityItem entityitem = new EntityItem(this.field_70170_p, this.field_70165_t + (double)((float)this.field_174860_b.func_82601_c() * 0.15F), this.field_70163_u + (double)p_70099_2_, this.field_70161_v + (double)((float)this.field_174860_b.func_82599_e() * 0.15F), p_70099_1_);
-         entityitem.func_174869_p();
-         this.field_70170_p.func_72838_d(entityitem);
++        EntityItem entityitem = new EntityItem(this.world, this.posX + (double)((float)this.facingDirection.getXOffset() * 0.15F), this.posY + (double)offsetY, this.posZ + (double)((float)this.facingDirection.getZOffset() * 0.15F), stack);
+         entityitem.setDefaultPickupDelay();
+         this.world.spawnEntity(entityitem);
          return entityitem;
      }
  
 -    @Override
-     protected boolean func_142008_O()
+     protected boolean shouldSetPosAfterLoading()
      {
          return false;
      }
  
 -    @Override
-     public void func_70107_b(double p_70107_1_, double p_70107_3_, double p_70107_5_)
+     public void setPosition(double x, double y, double z)
      {
-         this.field_174861_a = new BlockPos(p_70107_1_, p_70107_3_, p_70107_5_);
+         this.hangingPosition = new BlockPos(x, y, z);
 @@ -274,7 +258,7 @@
-         return this.field_174861_a;
+         return this.hangingPosition;
      }
  
 -    @Override
 +    @SuppressWarnings("incomplete-switch")
-     public float func_184229_a(Rotation p_184229_1_)
+     public float getRotatedYaw(Rotation transformRotation)
      {
-         if (this.field_174860_b != null && this.field_174860_b.func_176740_k() != EnumFacing.Axis.Y)
+         if (this.facingDirection != null && this.facingDirection.getAxis() != EnumFacing.Axis.Y)
 @@ -307,13 +291,11 @@
          }
      }
  
 -    @Override
-     public float func_184217_a(Mirror p_184217_1_)
+     public float getMirroredYaw(Mirror transformMirror)
      {
-         return this.func_184229_a(p_184217_1_.func_185800_a(this.field_174860_b));
+         return this.getRotatedYaw(transformMirror.toRotation(this.facingDirection));
      }
  
 -    @Override
-     public void func_70077_a(EntityLightningBolt p_70077_1_)
+     public void onStruckByLightning(EntityLightningBolt lightningBolt)
      {
      }
