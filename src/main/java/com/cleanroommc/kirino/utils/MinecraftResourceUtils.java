@@ -10,7 +10,8 @@ import java.io.*;
 import java.lang.reflect.Field;
 
 public final class MinecraftResourceUtils {
-    private static FMLFolderResourcePack devEnvHack() {
+    @SuppressWarnings("DataFlowIssue")
+    private static FMLFolderResourcePack resourcePackDevEnvHack() {
         FMLFolderResourcePack resourcePack = new FMLFolderResourcePack(Loader.instance().getIndexedModList().get("forge"));
         try {
             Field field = ReflectionUtils.findDeclaredField(AbstractResourcePack.class, "resourcePackFile", "field_110597_b");
@@ -20,21 +21,37 @@ public final class MinecraftResourceUtils {
                 current = current.getParentFile();
             }
             File repo = current.getParentFile();
-            File assets = new File(repo, "src/main/resources");
-            field.set(resourcePack, assets);
+            File resources = new File(repo, "src/main/resources");
+            field.set(resourcePack, resources);
         } catch (Throwable throwable) {
             throw new RuntimeException(throwable);
         }
         return resourcePack;
     }
 
+    private static boolean isDevEnv() {
+        try {
+            String path = System.getProperty("user.dir");
+            File current = new File(path);
+            while (current != null && !current.getName().equals("projects")) {
+                current = current.getParentFile();
+            }
+            if (current == null) {
+                return false;
+            }
+            File repo = current.getParentFile();
+            File resources = new File(repo, "src/main/resources");
+            return resources.exists() && resources.isDirectory();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     @NonNull
     public static String readText(ResourceLocation rl, boolean keepNewLineSymbol) {
-
         InputStream stream;
         try {
-            //FMLFolderResourcePack resourcePack = new FMLFolderResourcePack(Loader.instance().getIndexedModList().get(rl.getNamespace()));
-            FMLFolderResourcePack resourcePack = devEnvHack();
+            FMLFolderResourcePack resourcePack = isDevEnv() ? resourcePackDevEnvHack() : new FMLFolderResourcePack(Loader.instance().getIndexedModList().get(rl.getNamespace()));
             stream = resourcePack.getInputStream(rl);
         } catch (Exception exception) {
             throw new RuntimeException(exception);

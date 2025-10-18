@@ -1,6 +1,5 @@
 package com.cleanroommc.kirino.engine.render.staging;
 
-import com.cleanroommc.kirino.KirinoCore;
 import com.cleanroommc.kirino.engine.render.staging.handle.*;
 import com.cleanroommc.kirino.gl.GLResourceManager;
 import com.cleanroommc.kirino.gl.buffer.EBOView;
@@ -10,8 +9,10 @@ import com.cleanroommc.kirino.gl.buffer.meta.BufferUploadHint;
 import com.cleanroommc.kirino.gl.buffer.meta.MapBufferAccessBit;
 import com.cleanroommc.kirino.gl.vao.VAO;
 import com.cleanroommc.kirino.gl.vao.attribute.AttributeLayout;
+import com.cleanroommc.kirino.utils.ReflectionUtils;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.tuple.Triple;
+import org.jspecify.annotations.NonNull;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
 
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class StagingBufferManager {
     // todo: ring buffer double buffering
@@ -35,6 +37,16 @@ public class StagingBufferManager {
         return temporaryHandleGeneration;
     }
 
+    /**
+     * Internal use only! Direct getter of {@link TemporaryVAOHandle#vao}.
+     */
+    private static final @NonNull Function<TemporaryVAOHandle, VAO> TEMPORARY_VAO_HANDLE_VAO_GETTER;
+
+    static {
+        TEMPORARY_VAO_HANDLE_VAO_GETTER = (Function<TemporaryVAOHandle, VAO>) ReflectionUtils.getDeclaredFieldGetter(TemporaryVAOHandle.class, "vao");
+    }
+
+    //<editor-fold desc="staging">
     protected boolean active = false;
 
     private void beginStaging() {
@@ -59,21 +71,20 @@ public class StagingBufferManager {
         active = true;
     }
 
-    private void finishStaging() {
+    private void endStaging() {
         active = false;
     }
 
     private final StagingContext stagingContext = new StagingContext();
 
-    public void runStaging(List<StagingCallback> callbacks) {
+    public void runStaging(StagingCallback callback) {
         beginStaging();
         stagingContext.manager = this;
-        for (StagingCallback callback : callbacks) {
-            callback.run(stagingContext);
-        }
-        finishStaging();
+        callback.run(stagingContext);
+        endStaging();
         flushPersistent();
     }
+    //</editor-fold>
 
     // todo
     public void flushPersistent() {
@@ -133,7 +144,7 @@ public class StagingBufferManager {
         }
 
         TemporaryVAOHandle vaoHandle = new TemporaryVAOHandle(this, temporaryHandleGeneration, attributeLayout, eboHandle, vboHandles);
-        temporaryVaos.add(vaoHandle.getVao()); // todo: don't expose vao object
+        temporaryVaos.add(TEMPORARY_VAO_HANDLE_VAO_GETTER.apply(vaoHandle));
         return vaoHandle;
     }
 

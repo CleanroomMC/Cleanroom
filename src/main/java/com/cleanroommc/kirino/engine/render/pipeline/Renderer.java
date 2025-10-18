@@ -76,7 +76,6 @@ public final class Renderer {
                 command.type == LowLevelDC.DrawType.MULTI_ELEMENTS_INDIRECT) {
 
             GL30.glBindVertexArray(command.vao);
-            GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, command.ebo);
 
             switch (command.type) {
                 case ELEMENTS -> {

@@ -62,9 +62,9 @@ public abstract class Subpass {
     protected abstract boolean hintSimplifyDrawQueue();
 
     /**
-     * Draw all {@link LowLevelDC}s here via {@link Renderer}.
+     * Draw all {@link LowLevelDC}s here via {@link Renderer} if it's a CPU-side pass.
      *
-     * @implSpec <code>if (drawQueue.dequeue() instanceof LowLevelDC command) { ... }</code>
+     * @implSpec If it's a CPU-side pass, then<br/><code>if (drawQueue.dequeue() instanceof LowLevelDC command) { ... }</code>
      * @param drawQueue The queue that stores low-level draw commands
      */
     protected abstract void execute(DrawQueue drawQueue);

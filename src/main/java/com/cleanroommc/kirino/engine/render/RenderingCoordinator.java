@@ -143,7 +143,6 @@ public class RenderingCoordinator {
 
             TemporaryVAOHandle vaoHandle = context.getTemporaryVAO(layout, eboHandle, vboHandle);
 
-            GizmosPass.ebo = eboHandle.getEboID();
             GizmosPass.vao = vaoHandle.getVaoID();
         });
 
@@ -168,7 +167,7 @@ public class RenderingCoordinator {
     public void update() {
         // ecs worlds update
 
-        stagingBufferManager.runStaging(stagingCallbacks);
+        stagingBufferManager.runStaging(stagingCallbacks.get(0));
 
         // fetch id and index from staging buffer manager
         // build render object to id & index map

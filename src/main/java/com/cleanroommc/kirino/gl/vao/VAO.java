@@ -34,7 +34,7 @@ public class VAO extends GLDisposable {
         this.vboViews.addAll(Arrays.asList(vboViews));
 
         bind();
-        eboView.bind();
+        eboView.bind(); // ebo will be remembered
         attributeLayout.upload(vboViews);
         bind(0);
         eboView.bind(0);

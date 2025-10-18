@@ -12,18 +12,18 @@ import java.util.Arrays;
 
 public class TemporaryVAOHandle extends StagingBufferHandle {
     public final long generation;
+
+    /**
+     * Access via reflection.
+     *
+     * @see StagingBufferManager#TEMPORARY_VAO_HANDLE_VAO_GETTER
+     */
     private final VAO vao;
 
     public TemporaryVAOHandle(StagingBufferManager stagingBufferManager, long generation, AttributeLayout attributeLayout, TemporaryEBOHandle eboHandle, TemporaryVBOHandle... vboHandles) {
         super(stagingBufferManager, 0, 0);
         this.generation = generation;
         vao = new VAO(attributeLayout, eboHandle.eboView, Arrays.stream(vboHandles).map(handle -> handle.vboView).toArray(VBOView[]::new));
-    }
-
-    public VAO getVao() {
-        Preconditions.checkState(generation == stagingBufferManager.getTemporaryHandleGeneration(), "This temporary handle is expired.");
-
-        return vao;
     }
 
     public int getVaoID() {
