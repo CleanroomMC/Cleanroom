@@ -432,7 +432,7 @@ afterEvaluate { p ->
     if (!patcher.srgPatches) {
         srg2mcpClean {
             dependsOn = []
-            input = project(':mcp').setupMCP.output
+            input = project(':minecraft').postProcess.output
         }
         userdevJar {
             onlyIf = { t -> true }
@@ -440,7 +440,7 @@ afterEvaluate { p ->
         def patches = project.file('build/genPatchesForUserdev/output/')
         patches.mkdirs()
         def genPatchesForUserdev = tasks.register('genPatchesForUserdev', GeneratePatches){
-            base = project(':mcp').setupMCP.output
+            base = project(':minecraft').postProcess.output
             modified = applyRangeMapBase.output
             originalPrefix = genPatches.originalPrefix
             modifiedPrefix = genPatches.modifiedPrefix
