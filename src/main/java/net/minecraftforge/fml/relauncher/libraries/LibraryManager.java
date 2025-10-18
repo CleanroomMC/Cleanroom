@@ -507,16 +507,22 @@ public class LibraryManager
             }
             try (JarFile jar = new JarFile(candidate))
             {
-                // Check for Bansoukou's existence
-                Attributes attributes = jar.getManifest().getMainAttributes();
-                String bansoukou = attributes.getValue("Bansoukou");
-                if (bansoukou != null) {
-                    Launch.classLoader.addURL(candidate.toURI().toURL());
-                    Launch.classLoader.addTransformerExclusion(bansoukou);
-                    Class<?> cleanBansoukou = Class.forName(bansoukou, true, Launch.classLoader);
-                    bansoukouMethod = cleanBansoukou.getMethod("bansoukou", List.class);
-                    break; // We found Bansoukou
+                Attributes attributes = jar.getManifest() == null ? null : jar.getManifest().getMainAttributes();
+                if (attributes == null)
+                {
+                    continue;
                 }
+                // Check for Bansoukou's existence
+                String bansoukou = attributes.getValue("Bansoukou");
+                if (bansoukou == null)
+                {
+                    continue;
+                }
+                Launch.classLoader.addURL(candidate.toURI().toURL());
+                Launch.classLoader.addTransformerExclusion(bansoukou);
+                Class<?> cleanBansoukou = Class.forName(bansoukou, true, Launch.classLoader);
+                bansoukouMethod = cleanBansoukou.getMethod("bansoukou", List.class);
+                break; // We found Bansoukou
             }
             catch (IOException ignore) { }
             catch (ClassNotFoundException | NoSuchMethodException e)
