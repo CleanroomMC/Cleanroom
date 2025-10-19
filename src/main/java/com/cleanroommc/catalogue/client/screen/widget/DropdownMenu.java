@@ -40,10 +40,10 @@ public class DropdownMenu extends Gui implements LayoutElement {
     public boolean active;
     public boolean visible;
 
-    public int x;
-    public int y;
-    public int width;
-    public int height;
+    private int x;
+    private int y;
+    private int width;
+    private int height;
 
     private DropdownMenu(DropdownMenuHandler handler) {
         super();
@@ -114,7 +114,7 @@ public class DropdownMenu extends Gui implements LayoutElement {
     public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float deltaTick) {
         GlStateManager.pushMatrix();
         drawRect(0, 0, minecraft.displayWidth, minecraft.displayHeight, 0x50000000);
-        drawRect(this.x, this.y, this.x + this.width, this.y + this.height, 0xAA000000);
+        drawRect(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0xAA000000);
         this.items.forEach(widget -> widget.drawWidget(minecraft, mouseX, mouseY, deltaTick));
         if (this.subMenu != null) {
             this.subMenu.drawScreen(minecraft, mouseX, mouseY, deltaTick);
@@ -137,6 +137,7 @@ public class DropdownMenu extends Gui implements LayoutElement {
         return clicked.get();
     }
 
+    @Override
     public void visitWidgets(Consumer<LayoutElement> consumer) {
         this.layout.visitWidgets(consumer);
     }
@@ -248,6 +249,19 @@ public class DropdownMenu extends Gui implements LayoutElement {
         @Override
         public int getHeight() {
             return this.height;
+        }
+
+        public void setWidth(int width) {
+            this.width = width;
+        }
+
+        public void setHeight(int height) {
+            this.height = height;
+        }
+
+        public void setSize(int width, int height) {
+            this.setWidth(width);
+            this.setHeight(height);
         }
 
         @Override
@@ -448,8 +462,7 @@ public class DropdownMenu extends Gui implements LayoutElement {
         public DropdownMenu build() {
             int maxWidth = this.items.stream().mapToInt(MenuItem::calculateWidth).max().orElse(100);
             this.items.forEach(widget -> {
-                widget.width = Math.max(maxWidth, this.minItemWidth);
-                widget.height = this.minItemHeight;
+                widget.setSize(Math.max(maxWidth, this.minItemWidth), this.minItemHeight);
                 this.base.addItem(widget);
             });
             return this.base;
