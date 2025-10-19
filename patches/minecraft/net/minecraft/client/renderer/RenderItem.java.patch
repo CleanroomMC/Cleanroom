@@ -1,14 +1,6 @@
 --- before/net/minecraft/client/renderer/RenderItem.java
 +++ after/net/minecraft/client/renderer/RenderItem.java
-@@ -20,6 +20,7 @@
- import net.minecraft.block.BlockStoneSlabNew;
- import net.minecraft.block.BlockTallGrass;
- import net.minecraft.block.BlockWall;
-+import net.minecraft.block.state.IBlockState;
- import net.minecraft.client.Minecraft;
- import net.minecraft.client.entity.EntityPlayerSP;
- import net.minecraft.client.gui.FontRenderer;
-@@ -70,7 +71,7 @@
+@@ -70,7 +70,7 @@
      public RenderItem(TextureManager p_i46552_1_, ModelManager p_i46552_2_, ItemColors p_i46552_3_)
      {
          this.textureManager = p_i46552_1_;
@@ -17,7 +9,7 @@
          this.registerItems();
          this.itemColors = p_i46552_3_;
      }
-@@ -112,16 +113,21 @@
+@@ -112,6 +112,11 @@
  
      private void renderModel(IBakedModel model, int color, ItemStack stack)
      {
@@ -29,19 +21,7 @@
          Tessellator tessellator = Tessellator.getInstance();
          BufferBuilder bufferbuilder = tessellator.getBuffer();
          bufferbuilder.begin(7, DefaultVertexFormats.ITEM);
- 
-         for (EnumFacing enumfacing : EnumFacing.values())
-         {
--            this.renderQuads(bufferbuilder, model.getQuads(null, enumfacing, 0L), color, stack);
-+            this.renderQuads(bufferbuilder, model.getQuads((IBlockState)null, enumfacing, 0L), color, stack);
-         }
- 
--        this.renderQuads(bufferbuilder, model.getQuads(null, null, 0L), color, stack);
-+        this.renderQuads(bufferbuilder, model.getQuads((IBlockState)null, (EnumFacing)null, 0L), color, stack);
-         tessellator.draw();
-     }
- 
-@@ -136,7 +142,7 @@
+@@ -136,7 +141,7 @@
              {
                  GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                  GlStateManager.enableRescaleNormal();
@@ -50,21 +30,8 @@
              }
              else
              {
-@@ -200,7 +206,7 @@
-         boolean flag = color == -1 && !stack.isEmpty();
-         int i = 0;
- 
--        for (int j = quads.size(); i < j; i++)
-+        for (int j = quads.size(); i < j; ++i)
-         {
-             BakedQuad bakedquad = quads.get(i);
-             int k = color;
-@@ -214,10 +220,10 @@
-                     k = TextureUtil.anaglyphColor(k);
-                 }
- 
--                k |= -16777216;
-+                k = k | -16777216;
+@@ -217,7 +222,7 @@
+                 k |= -16777216;
              }
  
 -            this.renderQuad(renderer, bakedquad, k);
@@ -72,16 +39,7 @@
          }
      }
  
-@@ -231,7 +237,7 @@
-     {
-         if (!stack.isEmpty())
-         {
--            IBakedModel ibakedmodel = this.getItemModelWithOverrides(stack, null, null);
-+            IBakedModel ibakedmodel = this.getItemModelWithOverrides(stack, (World)null, (EntityLivingBase)null);
-             this.renderItemModel(stack, ibakedmodel, cameraTransformType, false);
-         }
-     }
-@@ -239,19 +245,7 @@
+@@ -239,19 +244,7 @@
      public IBakedModel getItemModelWithOverrides(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entitylivingbaseIn)
      {
          IBakedModel ibakedmodel = this.itemModelMesher.getItemModel(stack);
@@ -102,17 +60,9 @@
      }
  
      public void renderItem(ItemStack stack, EntityLivingBase entitylivingbaseIn, ItemCameraTransforms.TransformType transform, boolean leftHanded)
-@@ -273,20 +267,10 @@
-             GlStateManager.enableRescaleNormal();
-             GlStateManager.alphaFunc(516, 0.1F);
-             GlStateManager.enableBlend();
--            GlStateManager.tryBlendFuncSeparate(
--                GlStateManager.SourceFactor.SRC_ALPHA,
--                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
--                GlStateManager.SourceFactor.ONE,
--                GlStateManager.DestFactor.ZERO
--            );
-+            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+@@ -280,13 +273,8 @@
+                 GlStateManager.DestFactor.ZERO
+             );
              GlStateManager.pushMatrix();
 -            ItemCameraTransforms itemcameratransforms = bakedmodel.getItemCameraTransforms();
 -            ItemCameraTransforms.applyTransformSide(itemcameratransforms.getTransform(transform), leftHanded);
@@ -126,16 +76,7 @@
  
              this.renderItem(stack, bakedmodel);
              GlStateManager.cullFace(GlStateManager.CullFace.BACK);
-@@ -305,7 +289,7 @@
- 
-     public void renderItemIntoGUI(ItemStack stack, int x, int y)
-     {
--        this.renderItemModelIntoGUI(stack, x, y, this.getItemModelWithOverrides(stack, null, null));
-+        this.renderItemModelIntoGUI(stack, x, y, this.getItemModelWithOverrides(stack, (World)null, (EntityLivingBase)null));
-     }
- 
-     protected void renderItemModelIntoGUI(ItemStack stack, int x, int y, IBakedModel bakedmodel)
-@@ -320,7 +304,7 @@
+@@ -320,7 +308,7 @@
          GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
          GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
          this.setupGuiTransform(x, y, bakedmodel.isGui3d());
@@ -144,46 +85,15 @@
          this.renderItem(stack, bakedmodel);
          GlStateManager.disableAlpha();
          GlStateManager.disableRescaleNormal();
-@@ -360,7 +344,7 @@
- 
-             try
-             {
--                this.renderItemModelIntoGUI(p_184391_2_, p_184391_3_, p_184391_4_, this.getItemModelWithOverrides(p_184391_2_, null, p_184391_1_));
-+                this.renderItemModelIntoGUI(p_184391_2_, p_184391_3_, p_184391_4_, this.getItemModelWithOverrides(p_184391_2_, (World)null, p_184391_1_));
-             }
-             catch (Throwable throwable)
-             {
-@@ -370,9 +354,10 @@
-                 {
-                     public String call() throws Exception
-                     {
--                        return String.valueOf(p_184391_2_.getItem());
-+                        return String.valueOf((Object)p_184391_2_.getItem());
+@@ -373,6 +361,7 @@
+                         return String.valueOf(p_184391_2_.getItem());
                      }
                  });
 +                crashreportcategory.addDetail("Registry Name", () -> String.valueOf(p_184391_2_.getItem().getRegistryName()));
                  crashreportcategory.addDetail("Item Aux", new ICrashReportDetail<String>()
                  {
                      public String call() throws Exception
-@@ -384,7 +369,7 @@
-                 {
-                     public String call() throws Exception
-                     {
--                        return String.valueOf(p_184391_2_.getTagCompound());
-+                        return String.valueOf((Object)p_184391_2_.getTagCompound());
-                     }
-                 });
-                 crashreportcategory.addDetail("Item Foil", new ICrashReportDetail<String>()
-@@ -403,7 +388,7 @@
- 
-     public void renderItemOverlays(FontRenderer fr, ItemStack stack, int xPosition, int yPosition)
-     {
--        this.renderItemOverlayIntoGUI(fr, stack, xPosition, yPosition, null);
-+        this.renderItemOverlayIntoGUI(fr, stack, xPosition, yPosition, (String)null);
-     }
- 
-     public void renderItemOverlayIntoGUI(FontRenderer fr, ItemStack stack, int xPosition, int yPosition, @Nullable String text)
-@@ -419,9 +404,12 @@
+@@ -419,9 +408,12 @@
                  fr.drawStringWithShadow(s, (float)(xPosition + 19 - 2 - fr.getStringWidth(s)), (float)(yPosition + 6 + 3), 16777215);
                  GlStateManager.enableLighting();
                  GlStateManager.enableDepth();
@@ -197,7 +107,7 @@
              {
                  GlStateManager.disableLighting();
                  GlStateManager.disableDepth();
-@@ -430,13 +418,12 @@
+@@ -430,11 +422,10 @@
                  GlStateManager.disableBlend();
                  Tessellator tessellator = Tessellator.getInstance();
                  BufferBuilder bufferbuilder = tessellator.getBuffer();
@@ -211,134 +121,13 @@
 +                int i = Math.round(13.0F - (float)health * 13.0F);
 +                int j = rgbfordisplay;
                  this.draw(bufferbuilder, xPosition + 2, yPosition + 13, 13, 2, 0, 0, 0, 255);
--                this.draw(bufferbuilder, xPosition + 2, yPosition + 13, i, 1, j >> 16 & 0xFF, j >> 8 & 0xFF, j & 0xFF, 255);
-+                this.draw(bufferbuilder, xPosition + 2, yPosition + 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
+                 this.draw(bufferbuilder, xPosition + 2, yPosition + 13, i, 1, j >> 16 & 0xFF, j >> 8 & 0xFF, j & 0xFF, 255);
                  GlStateManager.enableBlend();
-                 GlStateManager.enableAlpha();
-                 GlStateManager.enableTexture2D();
-@@ -445,9 +432,7 @@
-             }
- 
-             EntityPlayerSP entityplayersp = Minecraft.getMinecraft().player;
--            float f3 = entityplayersp == null
--                       ? 0.0F
--                       : entityplayersp.getCooldownTracker().getCooldown(stack.getItem(), Minecraft.getMinecraft().getRenderPartialTicks());
-+            float f3 = entityplayersp == null ? 0.0F : entityplayersp.getCooldownTracker().getCooldown(stack.getItem(), Minecraft.getMinecraft().getRenderPartialTicks());
- 
-             if (f3 > 0.0F)
-             {
-@@ -456,17 +441,7 @@
-                 GlStateManager.disableTexture2D();
-                 Tessellator tessellator1 = Tessellator.getInstance();
-                 BufferBuilder bufferbuilder1 = tessellator1.getBuffer();
--                this.draw(
--                    bufferbuilder1,
--                    xPosition,
--                    yPosition + MathHelper.floor(16.0F * (1.0F - f3)),
--                    16,
--                    MathHelper.ceil(16.0F * f3),
--                    255,
--                    255,
--                    255,
--                    127
--                );
-+                this.draw(bufferbuilder1, xPosition, yPosition + MathHelper.floor(16.0F * (1.0F - f3)), 16, MathHelper.ceil(16.0F * f3), 255, 255, 255, 127);
-                 GlStateManager.enableTexture2D();
-                 GlStateManager.enableLighting();
-                 GlStateManager.enableDepth();
-@@ -474,31 +449,13 @@
-         }
-     }
- 
--    private void draw(
--        BufferBuilder renderer,
--        int x,
--        int y,
--        int width,
--        int height,
--        int red,
--        int green,
--        int blue,
--        int alpha
--    )
-+    private void draw(BufferBuilder renderer, int x, int y, int width, int height, int red, int green, int blue, int alpha)
-     {
-         renderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
--        renderer.pos((double)(x + 0), (double)(y + 0), 0.0)
--        .color(red, green, blue, alpha)
--        .endVertex();
--        renderer.pos((double)(x + 0), (double)(y + height), 0.0)
--        .color(red, green, blue, alpha)
--        .endVertex();
--        renderer.pos((double)(x + width), (double)(y + height), 0.0)
--        .color(red, green, blue, alpha)
--        .endVertex();
--        renderer.pos((double)(x + width), (double)(y + 0), 0.0)
--        .color(red, green, blue, alpha)
--        .endVertex();
-+        renderer.pos((double)(x + 0), (double)(y + 0), 0.0D).color(red, green, blue, alpha).endVertex();
-+        renderer.pos((double)(x + 0), (double)(y + height), 0.0D).color(red, green, blue, alpha).endVertex();
-+        renderer.pos((double)(x + width), (double)(y + height), 0.0D).color(red, green, blue, alpha).endVertex();
-+        renderer.pos((double)(x + width), (double)(y + 0), 0.0D).color(red, green, blue, alpha).endVertex();
-         Tessellator.getInstance().draw();
-     }
- 
-@@ -1026,7 +983,6 @@
-         this.registerItem(Items.SPECKLED_MELON, "speckled_melon");
-         this.itemModelMesher.register(Items.SPAWN_EGG, new ItemMeshDefinition()
-         {
--            @Override
-             public ModelResourceLocation getModelLocation(ItemStack stack)
-             {
-                 return new ModelResourceLocation("spawn_egg", "inventory");
-@@ -1068,7 +1024,6 @@
-         this.registerItem(Items.NAME_TAG, "name_tag");
-         this.itemModelMesher.register(Items.BANNER, new ItemMeshDefinition()
-         {
--            @Override
-             public ModelResourceLocation getModelLocation(ItemStack stack)
-             {
-                 return new ModelResourceLocation("banner", "inventory");
-@@ -1076,7 +1031,6 @@
-         });
-         this.itemModelMesher.register(Items.BED, new ItemMeshDefinition()
-         {
--            @Override
-             public ModelResourceLocation getModelLocation(ItemStack stack)
-             {
-                 return new ModelResourceLocation("bed", "inventory");
-@@ -1084,7 +1038,6 @@
-         });
-         this.itemModelMesher.register(Items.SHIELD, new ItemMeshDefinition()
-         {
--            @Override
-             public ModelResourceLocation getModelLocation(ItemStack stack)
-             {
-                 return new ModelResourceLocation("shield", "inventory");
-@@ -1112,7 +1065,6 @@
-         this.registerItem(Items.KNOWLEDGE_BOOK, "knowledge_book");
-         this.itemModelMesher.register(Items.ENCHANTED_BOOK, new ItemMeshDefinition()
-         {
--            @Override
-             public ModelResourceLocation getModelLocation(ItemStack stack)
-             {
-                 return new ModelResourceLocation("enchanted_book", "inventory");
-@@ -1120,7 +1072,6 @@
-         });
-         this.itemModelMesher.register(Items.FILLED_MAP, new ItemMeshDefinition()
-         {
--            @Override
-             public ModelResourceLocation getModelLocation(ItemStack stack)
-             {
-                 return new ModelResourceLocation("filled_map", "inventory");
-@@ -1141,9 +1092,9 @@
+@@ -1141,6 +1132,7 @@
          this.registerBlock(Blocks.STRUCTURE_BLOCK, TileEntityStructure.Mode.LOAD.getModeId(), "structure_block");
          this.registerBlock(Blocks.STRUCTURE_BLOCK, TileEntityStructure.Mode.CORNER.getModeId(), "structure_block");
          this.registerBlock(Blocks.STRUCTURE_BLOCK, TileEntityStructure.Mode.DATA.getModeId(), "structure_block");
 +        net.minecraftforge.client.model.ModelLoader.onRegisterItems(this.itemModelMesher);
      }
  
--    @Override
-     public void onResourceManagerReload(IResourceManager resourceManager)
-     {
-         this.itemModelMesher.rebuildCache();
+     @Override

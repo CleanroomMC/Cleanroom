@@ -1,66 +1,6 @@
 --- before/net/minecraft/client/Minecraft.java
 +++ after/net/minecraft/client/Minecraft.java
-@@ -19,13 +19,14 @@
- import java.io.InputStream;
- import java.net.Proxy;
- import java.net.SocketAddress;
--import java.nio.Buffer;
- import java.nio.ByteBuffer;
- import java.nio.ByteOrder;
-+import java.nio.IntBuffer;
- import java.text.DecimalFormat;
- import java.text.SimpleDateFormat;
- import java.util.Collections;
- import java.util.Date;
-+import java.util.Iterator;
- import java.util.List;
- import java.util.Locale;
- import java.util.Queue;
-@@ -34,6 +35,9 @@
- import java.util.concurrent.Callable;
- import java.util.concurrent.Executors;
- import java.util.concurrent.FutureTask;
-+import java.util.function.Consumer;
-+import java.util.function.Function;
-+import java.util.function.Predicate;
- import java.util.stream.Collectors;
- import javax.annotation.Nullable;
- import javax.imageio.ImageIO;
-@@ -145,7 +149,6 @@
- import net.minecraft.item.Item;
- import net.minecraft.item.ItemMonsterPlacer;
- import net.minecraft.item.ItemStack;
--import net.minecraft.item.crafting.IRecipe;
- import net.minecraft.nbt.NBTTagCompound;
- import net.minecraft.nbt.NBTTagList;
- import net.minecraft.nbt.NBTTagString;
-@@ -184,6 +187,7 @@
- import net.minecraft.util.math.BlockPos;
- import net.minecraft.util.math.MathHelper;
- import net.minecraft.util.math.RayTraceResult;
-+import net.minecraft.util.text.ITextComponent;
- import net.minecraft.util.text.Style;
- import net.minecraft.util.text.TextComponentKeybind;
- import net.minecraft.util.text.TextComponentString;
-@@ -297,7 +301,7 @@
-     private long debugCrashKeyPressTime = -1L;
-     private IReloadableResourceManager resourceManager;
-     private final MetadataSerializer metadataSerializer = new MetadataSerializer();
--    private final List<IResourcePack> defaultResourcePacks = Lists.newArrayList();
-+    private final List<IResourcePack> defaultResourcePacks = Lists.<IResourcePack>newArrayList();
-     public final DefaultResourcePack defaultResourcePack;
-     private ResourcePackRepository resourcePackRepository;
-     private LanguageManager languageManager;
-@@ -310,7 +314,7 @@
-     private ResourceLocation mojangLogo;
-     private final MinecraftSessionService sessionService;
-     private SkinManager skinManager;
--    private final Queue < FutureTask<? >> scheduledTasks = Queues.newArrayDeque();
-+    private final Queue < FutureTask<? >> scheduledTasks = Queues. < FutureTask<? >> newArrayDeque();
-     private final Thread thread = Thread.currentThread();
-     private ModelManager modelManager;
-     private BlockRendererDispatcher blockRenderDispatcher;
-@@ -328,6 +332,7 @@
+@@ -328,6 +328,7 @@
      public Minecraft(GameConfiguration gameConfig)
      {
          instance = this;
@@ -68,110 +8,15 @@
          this.gameDir = gameConfig.folderInfo.gameDir;
          this.fileAssets = gameConfig.folderInfo.assetsDir;
          this.fileResourcepacks = gameConfig.folderInfo.resourcePacksDir;
-@@ -337,10 +342,9 @@
-         this.profileProperties = gameConfig.userInfo.profileProperties;
-         this.defaultResourcePack = new DefaultResourcePack(gameConfig.folderInfo.getAssetsIndex());
-         this.proxy = gameConfig.userInfo.proxy == null ? Proxy.NO_PROXY : gameConfig.userInfo.proxy;
--        this.sessionService = new YggdrasilAuthenticationService(this.proxy, UUID.randomUUID().toString()).createMinecraftSessionService();
-+        this.sessionService = (new YggdrasilAuthenticationService(this.proxy, UUID.randomUUID().toString())).createMinecraftSessionService();
+@@ -340,7 +341,6 @@
+         this.sessionService = new YggdrasilAuthenticationService(this.proxy, UUID.randomUUID().toString()).createMinecraftSessionService();
          this.session = gameConfig.userInfo.session;
--        LOGGER.info("Setting user: {}", this.session.getUsername());
+         LOGGER.info("Setting user: {}", this.session.getUsername());
 -        LOGGER.debug("(Session ID is {})", this.session.getSessionID());
-+        LOGGER.info("Setting user: {}", (Object)this.session.getUsername());
          this.isDemo = gameConfig.gameInfo.isDemo;
          this.displayWidth = gameConfig.displayInfo.width > 0 ? gameConfig.displayInfo.width : 1;
          this.displayHeight = gameConfig.displayInfo.height > 0 ? gameConfig.displayInfo.height : 1;
-@@ -381,36 +385,34 @@
-             return;
-         }
- 
--        try
-+        while (true)
-         {
-             try
-             {
-                 while (this.running)
-                 {
--                    if (this.hasCrashed && this.crashReporter != null)
--                    {
--                        this.displayCrashReport(this.crashReporter);
--                        return;
--                    }
--                    else
-+                    if (!this.hasCrashed || this.crashReporter == null)
-                     {
-                         try
-                         {
-                             this.runGameLoop();
-                         }
--                        catch (OutOfMemoryError outofmemoryerror)
-+                        catch (OutOfMemoryError var10)
-                         {
-                             this.freeMemory();
-                             this.displayGuiScreen(new GuiMemoryErrorScreen());
-                             System.gc();
-                         }
-                     }
-+                    else
-+                    {
-+                        this.displayCrashReport(this.crashReporter);
-+                    }
-                 }
--
--                return;
-             }
--            catch (MinecraftError minecrafterror)
-+            catch (MinecraftError var12)
-             {
-+                break;
-             }
-             catch (ReportedException reportedexception)
-             {
-@@ -418,6 +420,7 @@
-                 this.freeMemory();
-                 LOGGER.fatal("Reported exception thrown!", (Throwable)reportedexception);
-                 this.displayCrashReport(reportedexception.getCrashReport());
-+                break;
-             }
-             catch (Throwable throwable1)
-             {
-@@ -425,11 +428,14 @@
-                 this.freeMemory();
-                 LOGGER.fatal("Unreported exception thrown!", throwable1);
-                 this.displayCrashReport(crashreport1);
--            }
--        }
--        finally
--        {
--            this.shutdownMinecraftApplet();
-+                break;
-+            }
-+            finally
-+            {
-+                this.shutdownMinecraftApplet();
-+            }
-+
-+            return;
-         }
-     }
- 
-@@ -446,7 +452,7 @@
-             this.displayHeight = this.gameSettings.overrideHeight;
-         }
- 
--        LOGGER.info("LWJGL Version: {}", Sys.getVersion());
-+        LOGGER.info("LWJGL Version: {}", (Object)Sys.getVersion());
-         this.setWindowIcon();
-         this.setInitialDisplayMode();
-         this.createDisplay();
-@@ -454,16 +460,14 @@
-         this.framebuffer = new Framebuffer(this.displayWidth, this.displayHeight, true);
-         this.framebuffer.setFramebufferColor(0.0F, 0.0F, 0.0F, 0.0F);
-         this.registerMetadataSerializers();
--        this.resourcePackRepository = new ResourcePackRepository(
--            this.fileResourcepacks, new File(this.gameDir, "server-resource-packs"), this.defaultResourcePack, this.metadataSerializer, this.gameSettings
--        );
-+        this.resourcePackRepository = new ResourcePackRepository(this.fileResourcepacks, new File(this.gameDir, "server-resource-packs"), this.defaultResourcePack, this.metadataSerializer, this.gameSettings);
+@@ -460,10 +460,10 @@
          this.resourceManager = new SimpleReloadableResourceManager(this.metadataSerializer);
          this.languageManager = new LanguageManager(this.metadataSerializer, this.gameSettings.language);
          this.resourceManager.registerReloadListener(this.languageManager);
@@ -184,7 +29,7 @@
          this.skinManager = new SkinManager(this.renderEngine, new File(this.fileAssets, "skins"), this.sessionService);
          this.saveLoader = new AnvilSaveConverter(new File(this.gameDir, "saves"), this.dataFixer);
          this.soundHandler = new SoundHandler(this.resourceManager, this.gameSettings);
-@@ -483,10 +487,12 @@
+@@ -483,6 +483,8 @@
          this.resourceManager.registerReloadListener(new GrassColorReloadListener());
          this.resourceManager.registerReloadListener(new FoliageColorReloadListener());
          this.mouseHelper = new MouseHelper();
@@ -193,12 +38,7 @@
          this.checkGLError("Pre startup");
          GlStateManager.enableTexture2D();
          GlStateManager.shadeModel(7425);
--        GlStateManager.clearDepth(1.0);
-+        GlStateManager.clearDepth(1.0D);
-         GlStateManager.enableDepth();
-         GlStateManager.depthFunc(515);
-         GlStateManager.enableAlpha();
-@@ -496,19 +502,24 @@
+@@ -496,19 +498,24 @@
          GlStateManager.loadIdentity();
          GlStateManager.matrixMode(5888);
          this.checkGLError("Startup");
@@ -223,7 +63,7 @@
          this.entityRenderer = new EntityRenderer(this, this.resourceManager);
          this.resourceManager.registerReloadListener(this.entityRenderer);
          this.blockRenderDispatcher = new BlockRendererDispatcher(this.modelManager.getBlockModelShapes(), this.blockColors);
-@@ -519,23 +530,27 @@
+@@ -519,23 +526,27 @@
          this.resourceManager.registerReloadListener(this.searchTreeManager);
          GlStateManager.viewport(0, 0, this.displayWidth, this.displayHeight);
          this.effectRenderer = new ParticleManager(this.world, this.renderEngine);
@@ -254,76 +94,7 @@
          if (this.gameSettings.fullScreen && !this.fullscreen)
          {
              this.toggleFullscreen();
-@@ -545,7 +560,7 @@
-         {
-             Display.setVSyncEnabled(this.gameSettings.enableVsync);
-         }
--        catch (OpenGLException openglexception)
-+        catch (OpenGLException var2)
-         {
-             this.gameSettings.enableVsync = false;
-             this.gameSettings.saveOptions();
-@@ -556,16 +571,16 @@
- 
-     public void populateSearchTreeManager()
-     {
--        SearchTree<ItemStack> searchtree = new SearchTree<>(
--            p_193988_0_ -> p_193988_0_.getTooltip(null, ITooltipFlag.TooltipFlags.NORMAL)
--            .stream()
--            .map(TextFormatting::getTextWithoutFormattingCodes)
--            .map(String::trim)
--            .filter(p_193984_0_ -> !p_193984_0_.isEmpty())
--            .collect(Collectors.toList()),
--            p_193985_0_ -> Collections.singleton(Item.REGISTRY.getNameForObject(p_193985_0_.getItem()))
--        );
--        NonNullList<ItemStack> nonnulllist = NonNullList.create();
-+        SearchTree<ItemStack> searchtree = new SearchTree<ItemStack>((p_193988_0_) ->
-+        {
-+            return (List)p_193988_0_.getTooltip((EntityPlayer)null, ITooltipFlag.TooltipFlags.NORMAL).stream().map(TextFormatting::getTextWithoutFormattingCodes).map(String::trim).filter((p_193984_0_) -> {
-+                return !p_193984_0_.isEmpty();
-+            }).collect(Collectors.toList());
-+        }, (p_193985_0_) ->
-+        {
-+            return Collections.singleton(Item.REGISTRY.getNameForObject(p_193985_0_.getItem()));
-+        });
-+        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>create();
- 
-         for (Item item : Item.REGISTRY)
-         {
-@@ -573,19 +588,19 @@
-         }
- 
-         nonnulllist.forEach(searchtree::add);
--        SearchTree<RecipeList> searchtree1 = new SearchTree<>(
--            p_193990_0_ -> p_193990_0_.getRecipes()
--            .stream()
--            .flatMap(p_193993_0_ -> p_193993_0_.getRecipeOutput().getTooltip(null, ITooltipFlag.TooltipFlags.NORMAL).stream())
--            .map(TextFormatting::getTextWithoutFormattingCodes)
--            .map(String::trim)
--            .filter(p_193994_0_ -> !p_193994_0_.isEmpty())
--            .collect(Collectors.toList()),
--            p_193991_0_ -> p_193991_0_.getRecipes()
--            .stream()
--            .map(p_193992_0_ -> Item.REGISTRY.getNameForObject(p_193992_0_.getRecipeOutput().getItem()))
--            .collect(Collectors.toList())
--        );
-+        SearchTree<RecipeList> searchtree1 = new SearchTree<RecipeList>((p_193990_0_) ->
-+        {
-+            return (List)p_193990_0_.getRecipes().stream().flatMap((p_193993_0_) -> {
-+                return p_193993_0_.getRecipeOutput().getTooltip((EntityPlayer)null, ITooltipFlag.TooltipFlags.NORMAL).stream();
-+            }).map(TextFormatting::getTextWithoutFormattingCodes).map(String::trim).filter((p_193994_0_) -> {
-+                return !p_193994_0_.isEmpty();
-+            }).collect(Collectors.toList());
-+        }, (p_193991_0_) ->
-+        {
-+            return (List)p_193991_0_.getRecipes().stream().map((p_193992_0_) -> {
-+                return Item.REGISTRY.getNameForObject(p_193992_0_.getRecipeOutput().getItem());
-+            }).collect(Collectors.toList());
-+        });
-         RecipeBookClient.ALL_RECIPES.forEach(searchtree1::add);
-         this.searchTreeManager.register(SearchTreeManager.ITEMS, searchtree);
-         this.searchTreeManager.register(SearchTreeManager.RECIPES, searchtree1);
-@@ -600,34 +615,13 @@
+@@ -600,34 +611,13 @@
          this.metadataSerializer.registerMetadataSectionType(new LanguageMetadataSectionSerializer(), LanguageMetadataSection.class);
      }
  
@@ -363,27 +134,15 @@
      }
  
      private void setInitialDisplayMode() throws LWJGLException
-@@ -710,9 +704,9 @@
+@@ -710,6 +700,7 @@
  
      private void startTimerHackThread()
      {
 +        if (!org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS) return;
          Thread thread = new Thread("Timer hack thread")
          {
--            @Override
-             public void run()
-             {
-                 while (Minecraft.this.running)
-@@ -721,13 +715,15 @@
-                     {
-                         Thread.sleep(2147483647L);
-                     }
--                    catch (InterruptedException interruptedexception)
-+                    catch (InterruptedException var2)
-                     {
-+                        ;
-                     }
-                 }
+             @Override
+@@ -728,6 +719,7 @@
              }
          };
          thread.setDaemon(true);
@@ -391,12 +150,8 @@
          thread.start();
      }
  
-@@ -740,24 +736,26 @@
-     public void displayCrashReport(CrashReport crashReportIn)
-     {
-         File file1 = new File(getMinecraft().gameDir, "crash-reports");
--        File file2 = new File(file1, "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-client.txt");
-+        File file2 = new File(file1, "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-client.txt");
+@@ -743,21 +735,23 @@
+         File file2 = new File(file1, "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-client.txt");
          Bootstrap.printToSYSOUT(crashReportIn.getCompleteReport());
  
 +        int retVal;
@@ -422,7 +177,7 @@
      }
  
      public boolean isUnicode()
-@@ -765,6 +763,7 @@
+@@ -765,6 +759,7 @@
          return this.languageManager.isCurrentLocaleUnicode() || this.gameSettings.forceUnicodeFont;
      }
  
@@ -430,154 +185,7 @@
      public void refreshResources()
      {
          List<IResourcePack> list = Lists.newArrayList(this.defaultResourcePacks);
-@@ -811,35 +810,35 @@
-     private ByteBuffer readImageToBuffer(InputStream imageStream) throws IOException
-     {
-         BufferedImage bufferedimage = ImageIO.read(imageStream);
--        int[] aint = bufferedimage.getRGB(0, 0, bufferedimage.getWidth(), bufferedimage.getHeight(), null, 0, bufferedimage.getWidth());
-+        int[] aint = bufferedimage.getRGB(0, 0, bufferedimage.getWidth(), bufferedimage.getHeight(), (int[])null, 0, bufferedimage.getWidth());
-         ByteBuffer bytebuffer = ByteBuffer.allocate(4 * aint.length);
- 
-         for (int i : aint)
-         {
--            bytebuffer.putInt(i << 8 | i >> 24 & 0xFF);
-+            bytebuffer.putInt(i << 8 | i >> 24 & 255);
-         }
- 
--        ((Buffer)bytebuffer).flip();
-+        bytebuffer.flip();
-         return bytebuffer;
-     }
- 
-     private void updateDisplayMode() throws LWJGLException
-     {
--        Set<DisplayMode> set = Sets.newHashSet();
-+        Set<DisplayMode> set = Sets.<DisplayMode>newHashSet();
-         Collections.addAll(set, Display.getAvailableDisplayModes());
-         DisplayMode displaymode = Display.getDesktopDisplayMode();
- 
-         if (!set.contains(displaymode) && Util.getOSType() == Util.EnumOS.OSX)
-         {
-+            label52:
-+
-             for (DisplayMode displaymode1 : MAC_DISPLAY_MODES)
-             {
-                 boolean flag = true;
- 
-                 for (DisplayMode displaymode2 : set)
-                 {
--                    if (displaymode2.getBitsPerPixel() == 32
--                            && displaymode2.getWidth() == displaymode1.getWidth()
--                            && displaymode2.getHeight() == displaymode1.getHeight())
-+                    if (displaymode2.getBitsPerPixel() == 32 && displaymode2.getWidth() == displaymode1.getWidth() && displaymode2.getHeight() == displaymode1.getHeight())
-                     {
-                         flag = false;
-                         break;
-@@ -848,16 +847,25 @@
- 
-                 if (!flag)
-                 {
--                    for (DisplayMode displaymode3 : set)
-+                    Iterator iterator = set.iterator();
-+                    DisplayMode displaymode3;
-+
-+                    while (true)
-                     {
--                        if (displaymode3.getBitsPerPixel() == 32
--                                && displaymode3.getWidth() == displaymode1.getWidth() / 2
--                                && displaymode3.getHeight() == displaymode1.getHeight() / 2)
--                        {
--                            displaymode = displaymode3;
-+                        if (!iterator.hasNext())
-+                        {
-+                            continue label52;
-+                        }
-+
-+                        displaymode3 = (DisplayMode)iterator.next();
-+
-+                        if (displaymode3.getBitsPerPixel() == 32 && displaymode3.getWidth() == displaymode1.getWidth() / 2 && displaymode3.getHeight() == displaymode1.getHeight() / 2)
-+                        {
-                             break;
-                         }
-                     }
-+
-+                    displaymode = displaymode3;
-                 }
-             }
-         }
-@@ -875,7 +883,7 @@
-         framebuffer.bindFramebuffer(false);
-         GlStateManager.matrixMode(5889);
-         GlStateManager.loadIdentity();
--        GlStateManager.ortho(0.0, (double)scaledresolution.getScaledWidth(), (double)scaledresolution.getScaledHeight(), 0.0, 1000.0, 3000.0);
-+        GlStateManager.ortho(0.0D, (double)scaledresolution.getScaledWidth(), (double)scaledresolution.getScaledHeight(), 0.0D, 1000.0D, 3000.0D);
-         GlStateManager.matrixMode(5888);
-         GlStateManager.loadIdentity();
-         GlStateManager.translate(0.0F, 0.0F, -2000.0F);
-@@ -903,13 +911,10 @@
-         Tessellator tessellator = Tessellator.getInstance();
-         BufferBuilder bufferbuilder = tessellator.getBuffer();
-         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
--        bufferbuilder.pos(0.0, (double)this.displayHeight, 0.0).tex(0.0, 0.0).color(255, 255, 255, 255).endVertex();
--        bufferbuilder.pos((double)this.displayWidth, (double)this.displayHeight, 0.0)
--        .tex(0.0, 0.0)
--        .color(255, 255, 255, 255)
--        .endVertex();
--        bufferbuilder.pos((double)this.displayWidth, 0.0, 0.0).tex(0.0, 0.0).color(255, 255, 255, 255).endVertex();
--        bufferbuilder.pos(0.0, 0.0, 0.0).tex(0.0, 0.0).color(255, 255, 255, 255).endVertex();
-+        bufferbuilder.pos(0.0D, (double)this.displayHeight, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, 255).endVertex();
-+        bufferbuilder.pos((double)this.displayWidth, (double)this.displayHeight, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, 255).endVertex();
-+        bufferbuilder.pos((double)this.displayWidth, 0.0D, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, 255).endVertex();
-+        bufferbuilder.pos(0.0D, 0.0D, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, 255).endVertex();
-         tessellator.draw();
-         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-         int j = 256;
-@@ -924,39 +929,16 @@
-         this.updateDisplay();
-     }
- 
--    public void draw(
--        int posX,
--        int posY,
--        int texU,
--        int texV,
--        int width,
--        int height,
--        int red,
--        int green,
--        int blue,
--        int alpha
--    )
-+    public void draw(int posX, int posY, int texU, int texV, int width, int height, int red, int green, int blue, int alpha)
-     {
-         BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
-         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-         float f = 0.00390625F;
-         float f1 = 0.00390625F;
--        bufferbuilder.pos((double)posX, (double)(posY + height), 0.0)
--        .tex((double)((float)texU * 0.00390625F), (double)((float)(texV + height) * 0.00390625F))
--        .color(red, green, blue, alpha)
--        .endVertex();
--        bufferbuilder.pos((double)(posX + width), (double)(posY + height), 0.0)
--        .tex((double)((float)(texU + width) * 0.00390625F), (double)((float)(texV + height) * 0.00390625F))
--        .color(red, green, blue, alpha)
--        .endVertex();
--        bufferbuilder.pos((double)(posX + width), (double)posY, 0.0)
--        .tex((double)((float)(texU + width) * 0.00390625F), (double)((float)texV * 0.00390625F))
--        .color(red, green, blue, alpha)
--        .endVertex();
--        bufferbuilder.pos((double)posX, (double)posY, 0.0)
--        .tex((double)((float)texU * 0.00390625F), (double)((float)texV * 0.00390625F))
--        .color(red, green, blue, alpha)
--        .endVertex();
-+        bufferbuilder.pos((double)posX, (double)(posY + height), 0.0D).tex((double)((float)texU * 0.00390625F), (double)((float)(texV + height) * 0.00390625F)).color(red, green, blue, alpha).endVertex();
-+        bufferbuilder.pos((double)(posX + width), (double)(posY + height), 0.0D).tex((double)((float)(texU + width) * 0.00390625F), (double)((float)(texV + height) * 0.00390625F)).color(red, green, blue, alpha).endVertex();
-+        bufferbuilder.pos((double)(posX + width), (double)posY, 0.0D).tex((double)((float)(texU + width) * 0.00390625F), (double)((float)texV * 0.00390625F)).color(red, green, blue, alpha).endVertex();
-+        bufferbuilder.pos((double)posX, (double)posY, 0.0D).tex((double)((float)texU * 0.00390625F), (double)((float)texV * 0.00390625F)).color(red, green, blue, alpha).endVertex();
-         Tessellator.getInstance().draw();
-     }
- 
-@@ -967,18 +949,24 @@
+@@ -967,11 +962,6 @@
  
      public void displayGuiScreen(@Nullable GuiScreen guiScreenIn)
      {
@@ -589,13 +197,10 @@
          if (guiScreenIn == null && this.world == null)
          {
              guiScreenIn = new GuiMainMenu();
+@@ -981,6 +971,17 @@
+             guiScreenIn = new GuiGameOver(null);
          }
-         else if (guiScreenIn == null && this.player.getHealth() <= 0.0F)
-         {
--            guiScreenIn = new GuiGameOver(null);
-+            guiScreenIn = new GuiGameOver((ITextComponent)null);
-+        }
-+
+ 
 +        GuiScreen old = this.currentScreen;
 +        net.minecraftforge.client.event.GuiOpenEvent event = new net.minecraftforge.client.event.GuiOpenEvent(guiScreenIn);
 +
@@ -605,57 +210,12 @@
 +        if (old != null && guiScreenIn != old)
 +        {
 +            old.onGuiClosed();
-         }
- 
++        }
++
          if (guiScreenIn instanceof GuiMainMenu || guiScreenIn instanceof GuiMultiplayer)
-@@ -996,10 +984,12 @@
- 
-             while (Mouse.next())
-             {
-+                ;
-             }
- 
-             while (Keyboard.next())
-             {
-+                ;
-             }
- 
-             ScaledResolution scaledresolution = new ScaledResolution(this);
-@@ -1023,8 +1013,8 @@
          {
-             String s = GLU.gluErrorString(i);
-             LOGGER.error("########## GL ERROR ##########");
--            LOGGER.error("@ {}", message);
--            LOGGER.error("{}: {}", i, s);
-+            LOGGER.error("@ {}", (Object)message);
-+            LOGGER.error("{}: {}", Integer.valueOf(i), s);
-         }
-     }
- 
-@@ -1036,10 +1026,11 @@
- 
-             try
-             {
--                this.loadWorld(null);
-+                this.loadWorld((WorldClient)null);
-             }
--            catch (Throwable throwable)
-+            catch (Throwable var5)
-             {
-+                ;
-             }
- 
-             this.soundHandler.unloadSounds();
-@@ -1082,7 +1073,7 @@
-         long l = System.nanoTime();
-         this.profiler.startSection("tick");
- 
--        for (int j = 0; j < Math.min(10, this.timer.elapsedTicks); j++)
-+        for (int j = 0; j < Math.min(10, this.timer.elapsedTicks); ++j)
-         {
-             this.runTick();
-         }
-@@ -1091,7 +1082,7 @@
+             this.gameSettings.showDebugInfo = false;
+@@ -1091,7 +1092,7 @@
          long i1 = System.nanoTime() - l;
          this.checkGLError("Pre render");
          this.profiler.endStartSection("sound");
@@ -664,7 +224,7 @@
          this.profiler.endSection();
          this.profiler.startSection("render");
          GlStateManager.pushMatrix();
-@@ -1103,11 +1094,13 @@
+@@ -1103,11 +1104,13 @@
  
          if (!this.skipRenderWorld)
          {
@@ -678,183 +238,7 @@
          }
  
          this.profiler.endSection();
-@@ -1140,7 +1133,7 @@
-         this.updateDisplay();
-         Thread.yield();
-         this.checkGLError("Post render");
--        this.fpsCounter++;
-+        ++this.fpsCounter;
-         boolean flag = this.isSingleplayer() && this.currentScreen != null && this.currentScreen.doesGuiPauseGame() && !this.integratedServer.getPublic();
- 
-         if (this.isGamePaused != flag)
-@@ -1164,17 +1157,7 @@
-         while (getSystemTime() >= this.debugUpdateTime + 1000L)
-         {
-             debugFPS = this.fpsCounter;
--            this.debug = String.format(
--                                     "%d fps (%d chunk update%s) T: %s%s%s%s%s",
--                                     debugFPS,
--                                     RenderChunk.renderChunksUpdated,
--                                     RenderChunk.renderChunksUpdated == 1 ? "" : "s",
--                                     (float)this.gameSettings.limitFramerate == GameSettings.Options.FRAMERATE_LIMIT.getValueMax() ? "inf" : this.gameSettings.limitFramerate,
--                                     this.gameSettings.enableVsync ? " vsync" : "",
--                                     this.gameSettings.fancyGraphics ? "" : " fast",
--                                     this.gameSettings.clouds == 0 ? "" : (this.gameSettings.clouds == 1 ? " fast-clouds" : " fancy-clouds"),
--                                     OpenGlHelper.useVbo() ? " vbo" : ""
--                                 );
-+            this.debug = String.format("%d fps (%d chunk update%s) T: %s%s%s%s%s", debugFPS, RenderChunk.renderChunksUpdated, RenderChunk.renderChunksUpdated == 1 ? "" : "s", (float)this.gameSettings.limitFramerate == GameSettings.Options.FRAMERATE_LIMIT.getValueMax() ? "inf" : this.gameSettings.limitFramerate, this.gameSettings.enableVsync ? " vsync" : "", this.gameSettings.fancyGraphics ? "" : " fast", this.gameSettings.clouds == 0 ? "" : (this.gameSettings.clouds == 1 ? " fast-clouds" : " fancy-clouds"), OpenGlHelper.useVbo() ? " vbo" : "");
-             RenderChunk.renderChunksUpdated = 0;
-             this.debugUpdateTime += 1000L;
-             this.fpsCounter = 0;
-@@ -1247,17 +1230,19 @@
-             memoryReserve = new byte[0];
-             this.renderGlobal.deleteAllDisplayLists();
-         }
--        catch (Throwable throwable1)
-+        catch (Throwable var3)
-         {
-+            ;
-         }
- 
-         try
-         {
-             System.gc();
--            this.loadWorld(null);
-+            this.loadWorld((WorldClient)null);
-         }
--        catch (Throwable throwable)
-+        catch (Throwable var2)
-         {
-+            ;
-         }
- 
-         System.gc();
-@@ -1285,16 +1270,16 @@
-             }
-             else
-             {
--                keyCount--;
-+                --keyCount;
- 
--                if (keyCount < list.size() && !"unspecified".equals(list.get(keyCount).profilerName))
-+                if (keyCount < list.size() && !"unspecified".equals((list.get(keyCount)).profilerName))
-                 {
-                     if (!this.debugProfilerName.isEmpty())
-                     {
-                         this.debugProfilerName = this.debugProfilerName + ".";
-                     }
- 
--                    this.debugProfilerName = this.debugProfilerName + list.get(keyCount).profilerName;
-+                    this.debugProfilerName = this.debugProfilerName + (list.get(keyCount)).profilerName;
-                 }
-             }
-         }
-@@ -1310,7 +1295,7 @@
-             GlStateManager.matrixMode(5889);
-             GlStateManager.enableColorMaterial();
-             GlStateManager.loadIdentity();
--            GlStateManager.ortho(0.0, (double)this.displayWidth, (double)this.displayHeight, 0.0, 1000.0, 3000.0);
-+            GlStateManager.ortho(0.0D, (double)this.displayWidth, (double)this.displayHeight, 0.0D, 1000.0D, 3000.0D);
-             GlStateManager.matrixMode(5888);
-             GlStateManager.loadIdentity();
-             GlStateManager.translate(0.0F, 0.0F, -2000.0F);
-@@ -1323,45 +1308,43 @@
-             int k = this.displayHeight - 320;
-             GlStateManager.enableBlend();
-             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
--            bufferbuilder.pos((double)((float)j - 176.0F), (double)((float)k - 96.0F - 16.0F), 0.0).color(200, 0, 0, 0).endVertex();
--            bufferbuilder.pos((double)((float)j - 176.0F), (double)(k + 320), 0.0).color(200, 0, 0, 0).endVertex();
--            bufferbuilder.pos((double)((float)j + 176.0F), (double)(k + 320), 0.0).color(200, 0, 0, 0).endVertex();
--            bufferbuilder.pos((double)((float)j + 176.0F), (double)((float)k - 96.0F - 16.0F), 0.0).color(200, 0, 0, 0).endVertex();
-+            bufferbuilder.pos((double)((float)j - 176.0F), (double)((float)k - 96.0F - 16.0F), 0.0D).color(200, 0, 0, 0).endVertex();
-+            bufferbuilder.pos((double)((float)j - 176.0F), (double)(k + 320), 0.0D).color(200, 0, 0, 0).endVertex();
-+            bufferbuilder.pos((double)((float)j + 176.0F), (double)(k + 320), 0.0D).color(200, 0, 0, 0).endVertex();
-+            bufferbuilder.pos((double)((float)j + 176.0F), (double)((float)k - 96.0F - 16.0F), 0.0D).color(200, 0, 0, 0).endVertex();
-             tessellator.draw();
-             GlStateManager.disableBlend();
--            double d0 = 0.0;
-+            double d0 = 0.0D;
- 
--            for (int l = 0; l < list.size(); l++)
-+            for (int l = 0; l < list.size(); ++l)
-             {
-                 Profiler.Result profiler$result1 = list.get(l);
--                int i1 = MathHelper.floor(profiler$result1.usePercentage / 4.0) + 1;
-+                int i1 = MathHelper.floor(profiler$result1.usePercentage / 4.0D) + 1;
-                 bufferbuilder.begin(6, DefaultVertexFormats.POSITION_COLOR);
-                 int j1 = profiler$result1.getColor();
--                int k1 = j1 >> 16 & 0xFF;
--                int l1 = j1 >> 8 & 0xFF;
--                int i2 = j1 & 0xFF;
--                bufferbuilder.pos((double)j, (double)k, 0.0).color(k1, l1, i2, 255).endVertex();
-+                int k1 = j1 >> 16 & 255;
-+                int l1 = j1 >> 8 & 255;
-+                int i2 = j1 & 255;
-+                bufferbuilder.pos((double)j, (double)k, 0.0D).color(k1, l1, i2, 255).endVertex();
- 
--                for (int j2 = i1; j2 >= 0; j2--)
-+                for (int j2 = i1; j2 >= 0; --j2)
-                 {
--                    float f = (float)((d0 + profiler$result1.usePercentage * (double)j2 / (double)i1) * (float)(Math.PI * 2) / 100.0);
-+                    float f = (float)((d0 + profiler$result1.usePercentage * (double)j2 / (double)i1) * (Math.PI * 2D) / 100.0D);
-                     float f1 = MathHelper.sin(f) * 160.0F;
-                     float f2 = MathHelper.cos(f) * 160.0F * 0.5F;
--                    bufferbuilder.pos((double)((float)j + f1), (double)((float)k - f2), 0.0).color(k1, l1, i2, 255).endVertex();
-+                    bufferbuilder.pos((double)((float)j + f1), (double)((float)k - f2), 0.0D).color(k1, l1, i2, 255).endVertex();
-                 }
- 
-                 tessellator.draw();
-                 bufferbuilder.begin(5, DefaultVertexFormats.POSITION_COLOR);
- 
--                for (int i3 = i1; i3 >= 0; i3--)
-+                for (int i3 = i1; i3 >= 0; --i3)
-                 {
--                    float f3 = (float)((d0 + profiler$result1.usePercentage * (double)i3 / (double)i1) * (float)(Math.PI * 2) / 100.0);
-+                    float f3 = (float)((d0 + profiler$result1.usePercentage * (double)i3 / (double)i1) * (Math.PI * 2D) / 100.0D);
-                     float f4 = MathHelper.sin(f3) * 160.0F;
-                     float f5 = MathHelper.cos(f3) * 160.0F * 0.5F;
--                    bufferbuilder.pos((double)((float)j + f4), (double)((float)k - f5), 0.0).color(k1 >> 1, l1 >> 1, i2 >> 1, 255).endVertex();
--                    bufferbuilder.pos((double)((float)j + f4), (double)((float)k - f5 + 10.0F), 0.0)
--                    .color(k1 >> 1, l1 >> 1, i2 >> 1, 255)
--                    .endVertex();
-+                    bufferbuilder.pos((double)((float)j + f4), (double)((float)k - f5), 0.0D).color(k1 >> 1, l1 >> 1, i2 >> 1, 255).endVertex();
-+                    bufferbuilder.pos((double)((float)j + f4), (double)((float)k - f5 + 10.0F), 0.0D).color(k1 >> 1, l1 >> 1, i2 >> 1, 255).endVertex();
-                 }
- 
-                 tessellator.draw();
-@@ -1391,7 +1374,7 @@
-             s = decimalformat.format(profiler$result.totalUsePercentage) + "%";
-             this.fontRenderer.drawStringWithShadow(s, (float)(j + 160 - this.fontRenderer.getStringWidth(s)), (float)(k - 80 - 16), 16777215);
- 
--            for (int k2 = 0; k2 < list.size(); k2++)
-+            for (int k2 = 0; k2 < list.size(); ++k2)
-             {
-                 Profiler.Result profiler$result2 = list.get(k2);
-                 StringBuilder stringbuilder = new StringBuilder();
-@@ -1408,11 +1391,9 @@
-                 String s1 = stringbuilder.append(profiler$result2.profilerName).toString();
-                 this.fontRenderer.drawStringWithShadow(s1, (float)(j - 160), (float)(k + 80 + k2 * 8 + 20), profiler$result2.getColor());
-                 s1 = decimalformat.format(profiler$result2.usePercentage) + "%";
--                this.fontRenderer
--                .drawStringWithShadow(s1, (float)(j + 160 - 50 - this.fontRenderer.getStringWidth(s1)), (float)(k + 80 + k2 * 8 + 20), profiler$result2.getColor());
-+                this.fontRenderer.drawStringWithShadow(s1, (float)(j + 160 - 50 - this.fontRenderer.getStringWidth(s1)), (float)(k + 80 + k2 * 8 + 20), profiler$result2.getColor());
-                 s1 = decimalformat.format(profiler$result2.totalUsePercentage) + "%";
--                this.fontRenderer
--                .drawStringWithShadow(s1, (float)(j + 160 - this.fontRenderer.getStringWidth(s1)), (float)(k + 80 + k2 * 8 + 20), profiler$result2.getColor());
-+                this.fontRenderer.drawStringWithShadow(s1, (float)(j + 160 - this.fontRenderer.getStringWidth(s1)), (float)(k + 80 + k2 * 8 + 20), profiler$result2.getColor());
-             }
-         }
-     }
-@@ -1435,7 +1416,7 @@
- 
-                 this.inGameHasFocus = true;
-                 this.mouseHelper.grabMouseCursor();
--                this.displayGuiScreen(null);
-+                this.displayGuiScreen((GuiScreen)null);
-                 this.leftClickCounter = 10000;
-             }
-         }
-@@ -1476,10 +1457,9 @@
+@@ -1476,10 +1479,9 @@
              {
                  BlockPos blockpos = this.objectMouseOver.getBlockPos();
  
@@ -867,7 +251,7 @@
                      this.player.swingArm(EnumHand.MAIN_HAND);
                  }
              }
-@@ -1513,7 +1493,7 @@
+@@ -1513,7 +1515,7 @@
                      case BLOCK:
                          BlockPos blockpos = this.objectMouseOver.getBlockPos();
  
@@ -876,7 +260,7 @@
                          {
                              this.playerController.clickBlock(blockpos, this.objectMouseOver.sideHit);
                              break;
-@@ -1527,6 +1507,7 @@
+@@ -1527,6 +1529,7 @@
                          }
  
                          this.player.resetCooldown();
@@ -884,45 +268,15 @@
                  }
  
                  this.player.swingArm(EnumHand.MAIN_HAND);
-@@ -1558,8 +1539,7 @@
-                         {
-                             case ENTITY:
- 
--                                if (this.playerController.interactWithEntity(this.player, this.objectMouseOver.entityHit, this.objectMouseOver, enumhand)
--                                        == EnumActionResult.SUCCESS)
-+                                if (this.playerController.interactWithEntity(this.player, this.objectMouseOver.entityHit, this.objectMouseOver, enumhand) == EnumActionResult.SUCCESS)
-                                 {
-                                     return;
-                                 }
-@@ -1576,15 +1556,7 @@
-                                 if (this.world.getBlockState(blockpos).getMaterial() != Material.AIR)
-                                 {
-                                     int i = itemstack.getCount();
--                                    EnumActionResult enumactionresult = this.playerController
--                                                                        .processRightClickBlock(
--                                                                            this.player,
--                                                                            this.world,
--                                                                            blockpos,
--                                                                            this.objectMouseOver.sideHit,
--                                                                            this.objectMouseOver.hitVec,
--                                                                            enumhand
--                                                                        );
-+                                    EnumActionResult enumactionresult = this.playerController.processRightClickBlock(this.player, this.world, blockpos, this.objectMouseOver.sideHit, this.objectMouseOver.hitVec, enumhand);
- 
-                                     if (enumactionresult == EnumActionResult.SUCCESS)
-                                     {
-@@ -1601,8 +1573,8 @@
+@@ -1601,6 +1604,7 @@
                          }
                      }
  
--                    if (!itemstack.isEmpty() && this.playerController.processRightClick(this.player, this.world, enumhand) == EnumActionResult.SUCCESS
--                       )
 +                    if (itemstack.isEmpty() && (this.objectMouseOver == null || this.objectMouseOver.typeOfHit == RayTraceResult.Type.MISS)) net.minecraftforge.common.ForgeHooks.onEmptyClick(this.player, enumhand);
-+                    if (!itemstack.isEmpty() && this.playerController.processRightClick(this.player, this.world, enumhand) == EnumActionResult.SUCCESS)
+                     if (!itemstack.isEmpty() && this.playerController.processRightClick(this.player, this.world, enumhand) == EnumActionResult.SUCCESS
+                        )
                      {
-                         this.entityRenderer.itemRenderer.resetEquippedProgress(enumhand);
-                         return;
-@@ -1614,6 +1586,10 @@
+@@ -1614,6 +1618,10 @@
  
      public void toggleFullscreen()
      {
@@ -933,7 +287,7 @@
          try
          {
              this.fullscreen = !this.fullscreen;
-@@ -1662,6 +1638,11 @@
+@@ -1662,6 +1670,11 @@
              }
  
              Display.setFullscreen(this.fullscreen);
@@ -945,69 +299,16 @@
              Display.setVSyncEnabled(this.gameSettings.enableVsync);
              this.updateDisplay();
          }
-@@ -1705,8 +1686,10 @@
-     {
-         if (this.rightClickDelayTimer > 0)
-         {
--            this.rightClickDelayTimer--;
-+            --this.rightClickDelayTimer;
+@@ -1708,6 +1721,8 @@
+             this.rightClickDelayTimer--;
          }
-+
-+        net.minecraftforge.fml.common.FMLCommonHandler.instance().onPreClientTick();
  
++        net.minecraftforge.fml.common.FMLCommonHandler.instance().onPreClientTick();
++
          this.profiler.startSection("gui");
  
-@@ -1736,7 +1719,7 @@
-         {
-             if (this.player.getHealth() <= 0.0F && !(this.currentScreen instanceof GuiGameOver))
-             {
--                this.displayGuiScreen(null);
-+                this.displayGuiScreen((GuiScreen)null);
-             }
-             else if (this.player.isPlayerSleeping() && this.world != null)
-             {
-@@ -1745,7 +1728,7 @@
-         }
-         else if (this.currentScreen != null && this.currentScreen instanceof GuiSleepMP && !this.player.isPlayerSleeping())
-         {
--            this.displayGuiScreen(null);
-+            this.displayGuiScreen((GuiScreen)null);
-         }
- 
-         if (this.currentScreen != null)
-@@ -1802,7 +1785,7 @@
- 
-             if (this.leftClickCounter > 0)
-             {
--                this.leftClickCounter--;
-+                --this.leftClickCounter;
-             }
- 
-             this.profiler.endStartSection("keyboard");
-@@ -1813,7 +1796,7 @@
-         {
-             if (this.player != null)
-             {
--                this.joinPlayerCounter++;
-+                ++this.joinPlayerCounter;
- 
-                 if (this.joinPlayerCounter == 30)
-                 {
-@@ -1892,12 +1875,7 @@
- 
-             if (!this.isGamePaused && this.world != null)
-             {
--                this.world
--                .doVoidFogParticles(
--                    MathHelper.floor(this.player.posX),
--                    MathHelper.floor(this.player.posY),
--                    MathHelper.floor(this.player.posZ)
--                );
-+                this.world.doVoidFogParticles(MathHelper.floor(this.player.posX), MathHelper.floor(this.player.posY), MathHelper.floor(this.player.posZ));
-             }
- 
-             this.profiler.endStartSection("particles");
-@@ -1914,6 +1892,7 @@
+         if (!this.isGamePaused)
+@@ -1914,6 +1929,7 @@
          }
  
          this.profiler.endSection();
@@ -1015,16 +316,7 @@
          this.systemTime = getSystemTime();
      }
  
-@@ -1992,7 +1971,7 @@
-                         this.updateDebugProfilerName(0);
-                     }
- 
--                    for (int j = 0; j < 9; j++)
-+                    for (int j = 0; j < 9; ++j)
-                     {
-                         if (i == 2 + j)
-                         {
-@@ -2019,6 +1998,7 @@
+@@ -2019,6 +2035,7 @@
                      }
                  }
              }
@@ -1032,105 +324,7 @@
          }
  
          this.processKeyBinds();
-@@ -2095,16 +2075,16 @@
-         {
-             this.debugFeedbackTranslated("debug.help.message");
-             GuiNewChat guinewchat = this.ingameGUI.getChatGUI();
--            guinewchat.printChatMessage(new TextComponentTranslation("debug.reload_chunks.help"));
--            guinewchat.printChatMessage(new TextComponentTranslation("debug.show_hitboxes.help"));
--            guinewchat.printChatMessage(new TextComponentTranslation("debug.clear_chat.help"));
--            guinewchat.printChatMessage(new TextComponentTranslation("debug.cycle_renderdistance.help"));
--            guinewchat.printChatMessage(new TextComponentTranslation("debug.chunk_boundaries.help"));
--            guinewchat.printChatMessage(new TextComponentTranslation("debug.advanced_tooltips.help"));
--            guinewchat.printChatMessage(new TextComponentTranslation("debug.creative_spectator.help"));
--            guinewchat.printChatMessage(new TextComponentTranslation("debug.pause_focus.help"));
--            guinewchat.printChatMessage(new TextComponentTranslation("debug.help.help"));
--            guinewchat.printChatMessage(new TextComponentTranslation("debug.reload_resourcepacks.help"));
-+            guinewchat.printChatMessage(new TextComponentTranslation("debug.reload_chunks.help", new Object[0]));
-+            guinewchat.printChatMessage(new TextComponentTranslation("debug.show_hitboxes.help", new Object[0]));
-+            guinewchat.printChatMessage(new TextComponentTranslation("debug.clear_chat.help", new Object[0]));
-+            guinewchat.printChatMessage(new TextComponentTranslation("debug.cycle_renderdistance.help", new Object[0]));
-+            guinewchat.printChatMessage(new TextComponentTranslation("debug.chunk_boundaries.help", new Object[0]));
-+            guinewchat.printChatMessage(new TextComponentTranslation("debug.advanced_tooltips.help", new Object[0]));
-+            guinewchat.printChatMessage(new TextComponentTranslation("debug.creative_spectator.help", new Object[0]));
-+            guinewchat.printChatMessage(new TextComponentTranslation("debug.pause_focus.help", new Object[0]));
-+            guinewchat.printChatMessage(new TextComponentTranslation("debug.help.help", new Object[0]));
-+            guinewchat.printChatMessage(new TextComponentTranslation("debug.reload_resourcepacks.help", new Object[0]));
-             return true;
-         }
-         else if (auxKey == 20)
-@@ -2121,9 +2101,9 @@
- 
-     private void processKeyBinds()
-     {
--        while (this.gameSettings.keyBindTogglePerspective.isPressed())
-+        for (; this.gameSettings.keyBindTogglePerspective.isPressed(); this.renderGlobal.setDisplayListEntitiesDirty())
-         {
--            this.gameSettings.thirdPersonView++;
-+            ++this.gameSettings.thirdPersonView;
- 
-             if (this.gameSettings.thirdPersonView > 2)
-             {
-@@ -2136,10 +2116,8 @@
-             }
-             else if (this.gameSettings.thirdPersonView == 1)
-             {
--                this.entityRenderer.loadEntityShader(null);
-+                this.entityRenderer.loadEntityShader((Entity)null);
-             }
--
--            this.renderGlobal.setDisplayListEntitiesDirty();
-         }
- 
-         while (this.gameSettings.keyBindSmoothCamera.isPressed())
-@@ -2147,7 +2125,7 @@
-             this.gameSettings.smoothCamera = !this.gameSettings.smoothCamera;
-         }
- 
--        for (int i = 0; i < 9; i++)
-+        for (int i = 0; i < 9; ++i)
-         {
-             boolean flag = this.gameSettings.keyBindSaveToolbar.isKeyDown();
-             boolean flag1 = this.gameSettings.keyBindLoadToolbar.isKeyDown();
-@@ -2225,16 +2203,27 @@
-                 this.playerController.onStoppedUsingItem(this.player);
-             }
- 
--            while (this.gameSettings.keyBindAttack.isPressed())
--            {
--            }
--
--            while (this.gameSettings.keyBindUseItem.isPressed())
--            {
--            }
--
--            while (this.gameSettings.keyBindPickBlock.isPressed())
--            {
-+            label109:
-+
-+            while (true)
-+            {
-+                if (!this.gameSettings.keyBindAttack.isPressed())
-+                {
-+                    while (this.gameSettings.keyBindUseItem.isPressed())
-+                    {
-+                        ;
-+                    }
-+
-+                    while (true)
-+                    {
-+                        if (this.gameSettings.keyBindPickBlock.isPressed())
-+                        {
-+                            continue;
-+                        }
-+
-+                        break label109;
-+                    }
-+                }
-             }
-         }
-         else
-@@ -2267,6 +2256,8 @@
+@@ -2267,6 +2284,8 @@
      {
          while (Mouse.next())
          {
@@ -1139,7 +333,7 @@
              int i = Mouse.getEventButton();
              KeyBinding.setKeyBindState(i - 100, Mouse.getEventButtonState());
  
-@@ -2322,24 +2313,19 @@
+@@ -2322,6 +2341,7 @@
                      this.currentScreen.handleMouseInput();
                  }
              }
@@ -1147,46 +341,15 @@
          }
      }
  
-     private void debugFeedbackTranslated(String untranslatedTemplate, Object... objs)
-     {
--        this.ingameGUI
--        .getChatGUI()
--        .printChatMessage(
--            new TextComponentString("")
--            .appendSibling(new TextComponentTranslation("debug.prefix").setStyle(new Style().setColor(TextFormatting.YELLOW).setBold(true)))
--            .appendText(" ")
--            .appendSibling(new TextComponentTranslation(untranslatedTemplate, objs))
--        );
-+        this.ingameGUI.getChatGUI().printChatMessage((new TextComponentString("")).appendSibling((new TextComponentTranslation("debug.prefix", new Object[0])).setStyle((new Style()).setColor(TextFormatting.YELLOW).setBold(Boolean.valueOf(true)))).appendText(" ").appendSibling(new TextComponentTranslation(untranslatedTemplate, objs)));
-     }
+@@ -2339,6 +2359,7 @@
  
      public void launchIntegratedServer(String folderName, String worldName, @Nullable WorldSettings worldSettingsIn)
      {
--        this.loadWorld(null);
 +        net.minecraftforge.fml.client.FMLClientHandler.instance().startIntegratedServer(folderName, worldName, worldSettingsIn);
-+        this.loadWorld((WorldClient)null);
+         this.loadWorld(null);
          System.gc();
          ISaveHandler isavehandler = this.saveLoader.getSaveLoader(folderName, false);
-         WorldInfo worldinfo = isavehandler.loadWorldInfo();
-@@ -2360,15 +2346,11 @@
-             YggdrasilAuthenticationService yggdrasilauthenticationservice = new YggdrasilAuthenticationService(this.proxy, UUID.randomUUID().toString());
-             MinecraftSessionService minecraftsessionservice = yggdrasilauthenticationservice.createMinecraftSessionService();
-             GameProfileRepository gameprofilerepository = yggdrasilauthenticationservice.createProfileRepository();
--            PlayerProfileCache playerprofilecache = new PlayerProfileCache(
--                gameprofilerepository, new File(this.gameDir, MinecraftServer.USER_CACHE_FILE.getName())
--            );
-+            PlayerProfileCache playerprofilecache = new PlayerProfileCache(gameprofilerepository, new File(this.gameDir, MinecraftServer.USER_CACHE_FILE.getName()));
-             TileEntitySkull.setProfileCache(playerprofilecache);
-             TileEntitySkull.setSessionService(minecraftsessionservice);
-             PlayerProfileCache.setOnlineMode(false);
--            this.integratedServer = new IntegratedServer(
--                this, folderName, worldName, worldSettingsIn, yggdrasilauthenticationservice, minecraftsessionservice, gameprofilerepository, playerprofilecache
--            );
-+            this.integratedServer = new IntegratedServer(this, folderName, worldName, worldSettingsIn, yggdrasilauthenticationservice, minecraftsessionservice, gameprofilerepository, playerprofilecache);
-             this.integratedServer.startServerThread();
-             this.integratedServerIsRunning = true;
-         }
-@@ -2385,6 +2367,12 @@
+@@ -2385,6 +2406,12 @@
  
          while (!this.integratedServer.serverIsInRunLoop())
          {
@@ -1199,24 +362,12 @@
              String s = this.integratedServer.getUserMessage();
  
              if (s != null)
-@@ -2400,17 +2388,24 @@
-             {
-                 Thread.sleep(200L);
-             }
--            catch (InterruptedException interruptedexception)
-+            catch (InterruptedException var10)
-             {
-+                ;
-             }
-         }
- 
-         this.displayGuiScreen(new GuiScreenWorking());
+@@ -2409,8 +2436,14 @@
          SocketAddress socketaddress = this.integratedServer.getNetworkSystem().addLocalEndpoint();
          NetworkManager networkmanager = NetworkManager.provideLocalClient(socketaddress);
--        networkmanager.setNetHandler(new NetHandlerLoginClient(networkmanager, this, null));
+         networkmanager.setNetHandler(new NetHandlerLoginClient(networkmanager, this, null));
 -        networkmanager.sendPacket(new C00Handshake(socketaddress.toString(), 0, EnumConnectionState.LOGIN));
 -        networkmanager.sendPacket(new CPacketLoginStart(this.getSession().getProfile()));
-+        networkmanager.setNetHandler(new NetHandlerLoginClient(networkmanager, this, (GuiScreen)null));
 +        networkmanager.sendPacket(new C00Handshake(socketaddress.toString(), 0, EnumConnectionState.LOGIN, true));
 +        com.mojang.authlib.GameProfile gameProfile = this.getSession().getProfile();
 +        if (!this.getSession().hasCachedProperties())
@@ -1228,7 +379,7 @@
          this.networkManager = networkmanager;
      }
  
-@@ -2421,6 +2416,8 @@
+@@ -2421,6 +2454,8 @@
  
      public void loadWorld(@Nullable WorldClient worldClientIn, String loadingMessage)
      {
@@ -1237,7 +388,7 @@
          if (worldClientIn == null)
          {
              NetHandlerPlayClient nethandlerplayclient = this.getConnection();
-@@ -2433,6 +2430,18 @@
+@@ -2433,6 +2468,18 @@
              if (this.integratedServer != null && this.integratedServer.isAnvilFileSet())
              {
                  this.integratedServer.initiateShutdown();
@@ -1256,18 +407,15 @@
              }
  
              this.integratedServer = null;
-@@ -2454,8 +2463,9 @@
-         {
-             this.resourcePackRepository.clearResourcePack();
+@@ -2456,6 +2503,7 @@
              this.ingameGUI.resetPlayersOverlayFooterHeader();
--            this.setServerData(null);
-+            this.setServerData((ServerData)null);
+             this.setServerData(null);
              this.integratedServerIsRunning = false;
 +            net.minecraftforge.fml.client.FMLClientHandler.instance().handleClientWorldClosing(this.world);
          }
  
          this.soundHandler.stopSounds();
-@@ -2472,6 +2482,7 @@
+@@ -2472,6 +2520,7 @@
          }
  
          TileEntityRendererDispatcher.instance.setWorld(worldClientIn);
@@ -1275,43 +423,15 @@
  
          if (worldClientIn != null)
          {
-@@ -2480,9 +2491,7 @@
-                 AuthenticationService authenticationservice = new YggdrasilAuthenticationService(this.proxy, UUID.randomUUID().toString());
-                 MinecraftSessionService minecraftsessionservice = authenticationservice.createMinecraftSessionService();
-                 GameProfileRepository gameprofilerepository = authenticationservice.createProfileRepository();
--                PlayerProfileCache playerprofilecache = new PlayerProfileCache(
--                    gameprofilerepository, new File(this.gameDir, MinecraftServer.USER_CACHE_FILE.getName())
--                );
-+                PlayerProfileCache playerprofilecache = new PlayerProfileCache(gameprofilerepository, new File(this.gameDir, MinecraftServer.USER_CACHE_FILE.getName()));
-                 TileEntitySkull.setProfileCache(playerprofilecache);
-                 TileEntitySkull.setSessionService(minecraftsessionservice);
-                 PlayerProfileCache.setOnlineMode(false);
-@@ -2526,13 +2535,9 @@
- 
-         this.renderViewEntity = null;
-         EntityPlayerSP entityplayersp = this.player;
--        this.player = this.playerController
--                             .createPlayer(
--                                 this.world,
--                                 this.player == null ? new StatisticsManager() : this.player.getStatFileWriter(),
--                                 this.player == null ? new RecipeBook() : this.player.getRecipeBook()
--                             );
-+        this.player = this.playerController.createPlayer(this.world, this.player == null ? new StatisticsManager() : this.player.getStatFileWriter(), this.player == null ? new RecipeBook() : this.player.getRecipeBook());
+@@ -2533,6 +2582,7 @@
+                                  this.player == null ? new RecipeBook() : this.player.getRecipeBook()
+                              );
          this.player.getDataManager().setEntryValues(entityplayersp.getDataManager().getAll());
 +        this.player.updateSyncFields(entityplayersp); // Forge: fix MC-10657
          this.player.dimension = dimension;
          this.renderViewEntity = this.player;
          this.player.preparePlayerToSpawn();
-@@ -2546,7 +2551,7 @@
- 
-         if (this.currentScreen instanceof GuiGameOver)
-         {
--            this.displayGuiScreen(null);
-+            this.displayGuiScreen((GuiScreen)null);
-         }
-     }
- 
-@@ -2580,159 +2585,8 @@
+@@ -2580,159 +2630,8 @@
      {
          if (this.objectMouseOver != null && this.objectMouseOver.typeOfHit != RayTraceResult.Type.MISS)
          {
@@ -1473,7 +593,7 @@
          }
      }
  
-@@ -2780,7 +2634,14 @@
+@@ -2780,7 +2679,14 @@
          {
              public String call()
              {
@@ -1489,35 +609,7 @@
              }
          });
          theCrash.getCategory().addDetail("GL Caps", new ICrashReportDetail<String>()
-@@ -2797,10 +2658,7 @@
-                 return Minecraft.this.gameSettings.useVbo ? "Yes" : "No";
-             }
-         });
--        theCrash.getCategory()
--        .addDetail(
--            "Is Modded",
--            new ICrashReportDetail<String>()
-+        theCrash.getCategory().addDetail("Is Modded", new ICrashReportDetail<String>()
-         {
-             public String call() throws Exception
-             {
-@@ -2812,13 +2670,10 @@
-                 }
-                 else
-                 {
--                    return Minecraft.class.getSigners() == null
--                           ? "Very likely; Jar signature invalidated"
--                           : "Probably not. Jar signature remains and client brand is untouched.";
-+                    return Minecraft.class.getSigners() == null ? "Very likely; Jar signature invalidated" : "Probably not. Jar signature remains and client brand is untouched.";
-                 }
-             }
--        }
--        );
-+        });
-         theCrash.getCategory().addDetail("Type", new ICrashReportDetail<String>()
-         {
-             public String call() throws Exception
-@@ -2885,11 +2740,11 @@
+@@ -2885,6 +2791,7 @@
          return instance;
      }
  
@@ -1525,263 +617,7 @@
      public ListenableFuture<Object> scheduleResourcesRefresh()
      {
          return this.addScheduledTask(new Runnable()
-         {
--            @Override
-             public void run()
-             {
-                 Minecraft.this.refreshResources();
-@@ -2897,21 +2752,20 @@
-         });
-     }
- 
--    @Override
-     public void addServerStatsToSnooper(Snooper playerSnooper)
-     {
--        playerSnooper.addClientStat("fps", debugFPS);
--        playerSnooper.addClientStat("vsync_enabled", this.gameSettings.enableVsync);
--        playerSnooper.addClientStat("display_frequency", Display.getDisplayMode().getFrequency());
-+        playerSnooper.addClientStat("fps", Integer.valueOf(debugFPS));
-+        playerSnooper.addClientStat("vsync_enabled", Boolean.valueOf(this.gameSettings.enableVsync));
-+        playerSnooper.addClientStat("display_frequency", Integer.valueOf(Display.getDisplayMode().getFrequency()));
-         playerSnooper.addClientStat("display_type", this.fullscreen ? "fullscreen" : "windowed");
--        playerSnooper.addClientStat("run_time", (MinecraftServer.getCurrentTimeMillis() - playerSnooper.getMinecraftStartTimeMillis()) / 60L * 1000L);
-+        playerSnooper.addClientStat("run_time", Long.valueOf((MinecraftServer.getCurrentTimeMillis() - playerSnooper.getMinecraftStartTimeMillis()) / 60L * 1000L));
-         playerSnooper.addClientStat("current_action", this.getCurrentAction());
-         playerSnooper.addClientStat("language", this.gameSettings.language == null ? "en_us" : this.gameSettings.language);
-         String s = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN ? "little" : "big";
-         playerSnooper.addClientStat("endianness", s);
--        playerSnooper.addClientStat("subtitles", this.gameSettings.showSubtitles);
-+        playerSnooper.addClientStat("subtitles", Boolean.valueOf(this.gameSettings.showSubtitles));
-         playerSnooper.addClientStat("touch", this.gameSettings.touchscreen ? "touch" : "mouse");
--        playerSnooper.addClientStat("resource_packs", this.resourcePackRepository.getRepositoryEntries().size());
-+        playerSnooper.addClientStat("resource_packs", Integer.valueOf(this.resourcePackRepository.getRepositoryEntries().size()));
-         int i = 0;
- 
-         for (ResourcePackRepository.Entry resourcepackrepository$entry : this.resourcePackRepository.getRepositoryEntries())
-@@ -2941,7 +2795,6 @@
-         }
-     }
- 
--    @Override
-     public void addServerTypeToSnooper(Snooper playerSnooper)
-     {
-         playerSnooper.addStatToSnooper("opengl_version", GlStateManager.glGetString(7938));
-@@ -2949,110 +2802,110 @@
-         playerSnooper.addStatToSnooper("client_brand", ClientBrandRetriever.getClientModName());
-         playerSnooper.addStatToSnooper("launched_version", this.launchedVersion);
-         ContextCapabilities contextcapabilities = GLContext.getCapabilities();
--        playerSnooper.addStatToSnooper("gl_caps[ARB_arrays_of_arrays]", contextcapabilities.GL_ARB_arrays_of_arrays);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_base_instance]", contextcapabilities.GL_ARB_base_instance);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_blend_func_extended]", contextcapabilities.GL_ARB_blend_func_extended);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_clear_buffer_object]", contextcapabilities.GL_ARB_clear_buffer_object);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_color_buffer_float]", contextcapabilities.GL_ARB_color_buffer_float);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_compatibility]", contextcapabilities.GL_ARB_compatibility);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_compressed_texture_pixel_storage]", contextcapabilities.GL_ARB_compressed_texture_pixel_storage);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_compute_shader]", contextcapabilities.GL_ARB_compute_shader);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_copy_buffer]", contextcapabilities.GL_ARB_copy_buffer);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_copy_image]", contextcapabilities.GL_ARB_copy_image);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_depth_buffer_float]", contextcapabilities.GL_ARB_depth_buffer_float);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_compute_shader]", contextcapabilities.GL_ARB_compute_shader);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_copy_buffer]", contextcapabilities.GL_ARB_copy_buffer);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_copy_image]", contextcapabilities.GL_ARB_copy_image);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_depth_buffer_float]", contextcapabilities.GL_ARB_depth_buffer_float);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_depth_clamp]", contextcapabilities.GL_ARB_depth_clamp);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_depth_texture]", contextcapabilities.GL_ARB_depth_texture);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_draw_buffers]", contextcapabilities.GL_ARB_draw_buffers);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_draw_buffers_blend]", contextcapabilities.GL_ARB_draw_buffers_blend);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_draw_elements_base_vertex]", contextcapabilities.GL_ARB_draw_elements_base_vertex);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_draw_indirect]", contextcapabilities.GL_ARB_draw_indirect);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_draw_instanced]", contextcapabilities.GL_ARB_draw_instanced);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_explicit_attrib_location]", contextcapabilities.GL_ARB_explicit_attrib_location);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_explicit_uniform_location]", contextcapabilities.GL_ARB_explicit_uniform_location);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_fragment_layer_viewport]", contextcapabilities.GL_ARB_fragment_layer_viewport);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_fragment_program]", contextcapabilities.GL_ARB_fragment_program);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_fragment_shader]", contextcapabilities.GL_ARB_fragment_shader);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_fragment_program_shadow]", contextcapabilities.GL_ARB_fragment_program_shadow);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_framebuffer_object]", contextcapabilities.GL_ARB_framebuffer_object);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_framebuffer_sRGB]", contextcapabilities.GL_ARB_framebuffer_sRGB);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_geometry_shader4]", contextcapabilities.GL_ARB_geometry_shader4);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_gpu_shader5]", contextcapabilities.GL_ARB_gpu_shader5);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_half_float_pixel]", contextcapabilities.GL_ARB_half_float_pixel);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_half_float_vertex]", contextcapabilities.GL_ARB_half_float_vertex);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_instanced_arrays]", contextcapabilities.GL_ARB_instanced_arrays);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_map_buffer_alignment]", contextcapabilities.GL_ARB_map_buffer_alignment);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_map_buffer_range]", contextcapabilities.GL_ARB_map_buffer_range);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_multisample]", contextcapabilities.GL_ARB_multisample);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_multitexture]", contextcapabilities.GL_ARB_multitexture);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_occlusion_query2]", contextcapabilities.GL_ARB_occlusion_query2);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_pixel_buffer_object]", contextcapabilities.GL_ARB_pixel_buffer_object);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_seamless_cube_map]", contextcapabilities.GL_ARB_seamless_cube_map);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_shader_objects]", contextcapabilities.GL_ARB_shader_objects);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_shader_stencil_export]", contextcapabilities.GL_ARB_shader_stencil_export);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_shader_texture_lod]", contextcapabilities.GL_ARB_shader_texture_lod);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_shadow]", contextcapabilities.GL_ARB_shadow);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_shadow_ambient]", contextcapabilities.GL_ARB_shadow_ambient);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_stencil_texturing]", contextcapabilities.GL_ARB_stencil_texturing);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_sync]", contextcapabilities.GL_ARB_sync);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_tessellation_shader]", contextcapabilities.GL_ARB_tessellation_shader);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_texture_border_clamp]", contextcapabilities.GL_ARB_texture_border_clamp);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_texture_buffer_object]", contextcapabilities.GL_ARB_texture_buffer_object);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_texture_cube_map]", contextcapabilities.GL_ARB_texture_cube_map);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_texture_cube_map_array]", contextcapabilities.GL_ARB_texture_cube_map_array);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_texture_non_power_of_two]", contextcapabilities.GL_ARB_texture_non_power_of_two);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_uniform_buffer_object]", contextcapabilities.GL_ARB_uniform_buffer_object);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_vertex_blend]", contextcapabilities.GL_ARB_vertex_blend);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_vertex_buffer_object]", contextcapabilities.GL_ARB_vertex_buffer_object);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_vertex_program]", contextcapabilities.GL_ARB_vertex_program);
--        playerSnooper.addStatToSnooper("gl_caps[ARB_vertex_shader]", contextcapabilities.GL_ARB_vertex_shader);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_bindable_uniform]", contextcapabilities.GL_EXT_bindable_uniform);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_blend_equation_separate]", contextcapabilities.GL_EXT_blend_equation_separate);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_blend_func_separate]", contextcapabilities.GL_EXT_blend_func_separate);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_blend_minmax]", contextcapabilities.GL_EXT_blend_minmax);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_blend_subtract]", contextcapabilities.GL_EXT_blend_subtract);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_draw_instanced]", contextcapabilities.GL_EXT_draw_instanced);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_framebuffer_multisample]", contextcapabilities.GL_EXT_framebuffer_multisample);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_framebuffer_object]", contextcapabilities.GL_EXT_framebuffer_object);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_framebuffer_sRGB]", contextcapabilities.GL_EXT_framebuffer_sRGB);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_geometry_shader4]", contextcapabilities.GL_EXT_geometry_shader4);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_gpu_program_parameters]", contextcapabilities.GL_EXT_gpu_program_parameters);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_gpu_shader4]", contextcapabilities.GL_EXT_gpu_shader4);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_multi_draw_arrays]", contextcapabilities.GL_EXT_multi_draw_arrays);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_packed_depth_stencil]", contextcapabilities.GL_EXT_packed_depth_stencil);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_paletted_texture]", contextcapabilities.GL_EXT_paletted_texture);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_rescale_normal]", contextcapabilities.GL_EXT_rescale_normal);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_separate_shader_objects]", contextcapabilities.GL_EXT_separate_shader_objects);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_shader_image_load_store]", contextcapabilities.GL_EXT_shader_image_load_store);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_shadow_funcs]", contextcapabilities.GL_EXT_shadow_funcs);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_shared_texture_palette]", contextcapabilities.GL_EXT_shared_texture_palette);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_stencil_clear_tag]", contextcapabilities.GL_EXT_stencil_clear_tag);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_stencil_two_side]", contextcapabilities.GL_EXT_stencil_two_side);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_stencil_wrap]", contextcapabilities.GL_EXT_stencil_wrap);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_texture_3d]", contextcapabilities.GL_EXT_texture_3d);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_texture_array]", contextcapabilities.GL_EXT_texture_array);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_texture_buffer_object]", contextcapabilities.GL_EXT_texture_buffer_object);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_texture_integer]", contextcapabilities.GL_EXT_texture_integer);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_texture_lod_bias]", contextcapabilities.GL_EXT_texture_lod_bias);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_texture_sRGB]", contextcapabilities.GL_EXT_texture_sRGB);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_vertex_shader]", contextcapabilities.GL_EXT_vertex_shader);
--        playerSnooper.addStatToSnooper("gl_caps[EXT_vertex_weighting]", contextcapabilities.GL_EXT_vertex_weighting);
--        playerSnooper.addStatToSnooper("gl_caps[gl_max_vertex_uniforms]", GlStateManager.glGetInteger(35658));
--        GlStateManager.glGetError();
--        playerSnooper.addStatToSnooper("gl_caps[gl_max_fragment_uniforms]", GlStateManager.glGetInteger(35657));
--        GlStateManager.glGetError();
--        playerSnooper.addStatToSnooper("gl_caps[gl_max_vertex_attribs]", GlStateManager.glGetInteger(34921));
--        GlStateManager.glGetError();
--        playerSnooper.addStatToSnooper("gl_caps[gl_max_vertex_texture_image_units]", GlStateManager.glGetInteger(35660));
--        GlStateManager.glGetError();
--        playerSnooper.addStatToSnooper("gl_caps[gl_max_texture_image_units]", GlStateManager.glGetInteger(34930));
--        GlStateManager.glGetError();
--        playerSnooper.addStatToSnooper("gl_caps[gl_max_array_texture_layers]", GlStateManager.glGetInteger(35071));
--        GlStateManager.glGetError();
--        playerSnooper.addStatToSnooper("gl_max_texture_size", getGLMaximumTextureSize());
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_arrays_of_arrays]", Boolean.valueOf(contextcapabilities.GL_ARB_arrays_of_arrays));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_base_instance]", Boolean.valueOf(contextcapabilities.GL_ARB_base_instance));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_blend_func_extended]", Boolean.valueOf(contextcapabilities.GL_ARB_blend_func_extended));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_clear_buffer_object]", Boolean.valueOf(contextcapabilities.GL_ARB_clear_buffer_object));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_color_buffer_float]", Boolean.valueOf(contextcapabilities.GL_ARB_color_buffer_float));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_compatibility]", Boolean.valueOf(contextcapabilities.GL_ARB_compatibility));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_compressed_texture_pixel_storage]", Boolean.valueOf(contextcapabilities.GL_ARB_compressed_texture_pixel_storage));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_compute_shader]", Boolean.valueOf(contextcapabilities.GL_ARB_compute_shader));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_copy_buffer]", Boolean.valueOf(contextcapabilities.GL_ARB_copy_buffer));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_copy_image]", Boolean.valueOf(contextcapabilities.GL_ARB_copy_image));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_depth_buffer_float]", Boolean.valueOf(contextcapabilities.GL_ARB_depth_buffer_float));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_compute_shader]", Boolean.valueOf(contextcapabilities.GL_ARB_compute_shader));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_copy_buffer]", Boolean.valueOf(contextcapabilities.GL_ARB_copy_buffer));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_copy_image]", Boolean.valueOf(contextcapabilities.GL_ARB_copy_image));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_depth_buffer_float]", Boolean.valueOf(contextcapabilities.GL_ARB_depth_buffer_float));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_depth_clamp]", Boolean.valueOf(contextcapabilities.GL_ARB_depth_clamp));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_depth_texture]", Boolean.valueOf(contextcapabilities.GL_ARB_depth_texture));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_draw_buffers]", Boolean.valueOf(contextcapabilities.GL_ARB_draw_buffers));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_draw_buffers_blend]", Boolean.valueOf(contextcapabilities.GL_ARB_draw_buffers_blend));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_draw_elements_base_vertex]", Boolean.valueOf(contextcapabilities.GL_ARB_draw_elements_base_vertex));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_draw_indirect]", Boolean.valueOf(contextcapabilities.GL_ARB_draw_indirect));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_draw_instanced]", Boolean.valueOf(contextcapabilities.GL_ARB_draw_instanced));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_explicit_attrib_location]", Boolean.valueOf(contextcapabilities.GL_ARB_explicit_attrib_location));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_explicit_uniform_location]", Boolean.valueOf(contextcapabilities.GL_ARB_explicit_uniform_location));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_fragment_layer_viewport]", Boolean.valueOf(contextcapabilities.GL_ARB_fragment_layer_viewport));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_fragment_program]", Boolean.valueOf(contextcapabilities.GL_ARB_fragment_program));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_fragment_shader]", Boolean.valueOf(contextcapabilities.GL_ARB_fragment_shader));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_fragment_program_shadow]", Boolean.valueOf(contextcapabilities.GL_ARB_fragment_program_shadow));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_framebuffer_object]", Boolean.valueOf(contextcapabilities.GL_ARB_framebuffer_object));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_framebuffer_sRGB]", Boolean.valueOf(contextcapabilities.GL_ARB_framebuffer_sRGB));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_geometry_shader4]", Boolean.valueOf(contextcapabilities.GL_ARB_geometry_shader4));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_gpu_shader5]", Boolean.valueOf(contextcapabilities.GL_ARB_gpu_shader5));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_half_float_pixel]", Boolean.valueOf(contextcapabilities.GL_ARB_half_float_pixel));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_half_float_vertex]", Boolean.valueOf(contextcapabilities.GL_ARB_half_float_vertex));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_instanced_arrays]", Boolean.valueOf(contextcapabilities.GL_ARB_instanced_arrays));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_map_buffer_alignment]", Boolean.valueOf(contextcapabilities.GL_ARB_map_buffer_alignment));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_map_buffer_range]", Boolean.valueOf(contextcapabilities.GL_ARB_map_buffer_range));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_multisample]", Boolean.valueOf(contextcapabilities.GL_ARB_multisample));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_multitexture]", Boolean.valueOf(contextcapabilities.GL_ARB_multitexture));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_occlusion_query2]", Boolean.valueOf(contextcapabilities.GL_ARB_occlusion_query2));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_pixel_buffer_object]", Boolean.valueOf(contextcapabilities.GL_ARB_pixel_buffer_object));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_seamless_cube_map]", Boolean.valueOf(contextcapabilities.GL_ARB_seamless_cube_map));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_shader_objects]", Boolean.valueOf(contextcapabilities.GL_ARB_shader_objects));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_shader_stencil_export]", Boolean.valueOf(contextcapabilities.GL_ARB_shader_stencil_export));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_shader_texture_lod]", Boolean.valueOf(contextcapabilities.GL_ARB_shader_texture_lod));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_shadow]", Boolean.valueOf(contextcapabilities.GL_ARB_shadow));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_shadow_ambient]", Boolean.valueOf(contextcapabilities.GL_ARB_shadow_ambient));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_stencil_texturing]", Boolean.valueOf(contextcapabilities.GL_ARB_stencil_texturing));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_sync]", Boolean.valueOf(contextcapabilities.GL_ARB_sync));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_tessellation_shader]", Boolean.valueOf(contextcapabilities.GL_ARB_tessellation_shader));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_texture_border_clamp]", Boolean.valueOf(contextcapabilities.GL_ARB_texture_border_clamp));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_texture_buffer_object]", Boolean.valueOf(contextcapabilities.GL_ARB_texture_buffer_object));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_texture_cube_map]", Boolean.valueOf(contextcapabilities.GL_ARB_texture_cube_map));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_texture_cube_map_array]", Boolean.valueOf(contextcapabilities.GL_ARB_texture_cube_map_array));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_texture_non_power_of_two]", Boolean.valueOf(contextcapabilities.GL_ARB_texture_non_power_of_two));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_uniform_buffer_object]", Boolean.valueOf(contextcapabilities.GL_ARB_uniform_buffer_object));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_vertex_blend]", Boolean.valueOf(contextcapabilities.GL_ARB_vertex_blend));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_vertex_buffer_object]", Boolean.valueOf(contextcapabilities.GL_ARB_vertex_buffer_object));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_vertex_program]", Boolean.valueOf(contextcapabilities.GL_ARB_vertex_program));
-+        playerSnooper.addStatToSnooper("gl_caps[ARB_vertex_shader]", Boolean.valueOf(contextcapabilities.GL_ARB_vertex_shader));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_bindable_uniform]", Boolean.valueOf(contextcapabilities.GL_EXT_bindable_uniform));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_blend_equation_separate]", Boolean.valueOf(contextcapabilities.GL_EXT_blend_equation_separate));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_blend_func_separate]", Boolean.valueOf(contextcapabilities.GL_EXT_blend_func_separate));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_blend_minmax]", Boolean.valueOf(contextcapabilities.GL_EXT_blend_minmax));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_blend_subtract]", Boolean.valueOf(contextcapabilities.GL_EXT_blend_subtract));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_draw_instanced]", Boolean.valueOf(contextcapabilities.GL_EXT_draw_instanced));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_framebuffer_multisample]", Boolean.valueOf(contextcapabilities.GL_EXT_framebuffer_multisample));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_framebuffer_object]", Boolean.valueOf(contextcapabilities.GL_EXT_framebuffer_object));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_framebuffer_sRGB]", Boolean.valueOf(contextcapabilities.GL_EXT_framebuffer_sRGB));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_geometry_shader4]", Boolean.valueOf(contextcapabilities.GL_EXT_geometry_shader4));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_gpu_program_parameters]", Boolean.valueOf(contextcapabilities.GL_EXT_gpu_program_parameters));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_gpu_shader4]", Boolean.valueOf(contextcapabilities.GL_EXT_gpu_shader4));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_multi_draw_arrays]", Boolean.valueOf(contextcapabilities.GL_EXT_multi_draw_arrays));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_packed_depth_stencil]", Boolean.valueOf(contextcapabilities.GL_EXT_packed_depth_stencil));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_paletted_texture]", Boolean.valueOf(contextcapabilities.GL_EXT_paletted_texture));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_rescale_normal]", Boolean.valueOf(contextcapabilities.GL_EXT_rescale_normal));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_separate_shader_objects]", Boolean.valueOf(contextcapabilities.GL_EXT_separate_shader_objects));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_shader_image_load_store]", Boolean.valueOf(contextcapabilities.GL_EXT_shader_image_load_store));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_shadow_funcs]", Boolean.valueOf(contextcapabilities.GL_EXT_shadow_funcs));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_shared_texture_palette]", Boolean.valueOf(contextcapabilities.GL_EXT_shared_texture_palette));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_stencil_clear_tag]", Boolean.valueOf(contextcapabilities.GL_EXT_stencil_clear_tag));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_stencil_two_side]", Boolean.valueOf(contextcapabilities.GL_EXT_stencil_two_side));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_stencil_wrap]", Boolean.valueOf(contextcapabilities.GL_EXT_stencil_wrap));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_texture_3d]", Boolean.valueOf(contextcapabilities.GL_EXT_texture_3d));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_texture_array]", Boolean.valueOf(contextcapabilities.GL_EXT_texture_array));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_texture_buffer_object]", Boolean.valueOf(contextcapabilities.GL_EXT_texture_buffer_object));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_texture_integer]", Boolean.valueOf(contextcapabilities.GL_EXT_texture_integer));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_texture_lod_bias]", Boolean.valueOf(contextcapabilities.GL_EXT_texture_lod_bias));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_texture_sRGB]", Boolean.valueOf(contextcapabilities.GL_EXT_texture_sRGB));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_vertex_shader]", Boolean.valueOf(contextcapabilities.GL_EXT_vertex_shader));
-+        playerSnooper.addStatToSnooper("gl_caps[EXT_vertex_weighting]", Boolean.valueOf(contextcapabilities.GL_EXT_vertex_weighting));
-+        playerSnooper.addStatToSnooper("gl_caps[gl_max_vertex_uniforms]", Integer.valueOf(GlStateManager.glGetInteger(35658)));
-+        GlStateManager.glGetError();
-+        playerSnooper.addStatToSnooper("gl_caps[gl_max_fragment_uniforms]", Integer.valueOf(GlStateManager.glGetInteger(35657)));
-+        GlStateManager.glGetError();
-+        playerSnooper.addStatToSnooper("gl_caps[gl_max_vertex_attribs]", Integer.valueOf(GlStateManager.glGetInteger(34921)));
-+        GlStateManager.glGetError();
-+        playerSnooper.addStatToSnooper("gl_caps[gl_max_vertex_texture_image_units]", Integer.valueOf(GlStateManager.glGetInteger(35660)));
-+        GlStateManager.glGetError();
-+        playerSnooper.addStatToSnooper("gl_caps[gl_max_texture_image_units]", Integer.valueOf(GlStateManager.glGetInteger(34930)));
-+        GlStateManager.glGetError();
-+        playerSnooper.addStatToSnooper("gl_caps[gl_max_array_texture_layers]", Integer.valueOf(GlStateManager.glGetInteger(35071)));
-+        GlStateManager.glGetError();
-+        playerSnooper.addStatToSnooper("gl_max_texture_size", Integer.valueOf(getGLMaximumTextureSize()));
-         GameProfile gameprofile = this.session.getProfile();
- 
-         if (gameprofile != null && gameprofile.getId() != null)
-@@ -3063,21 +2916,10 @@
+@@ -3063,18 +2970,8 @@
  
      public static int getGLMaximumTextureSize()
      {
@@ -1801,11 +637,8 @@
 +        return net.minecraftforge.fml.client.SplashProgress.getMaxTextureSize();
      }
  
--    @Override
-     public boolean isSnooperEnabled()
-     {
-         return this.gameSettings.snooperEnabled;
-@@ -3207,6 +3049,9 @@
+     @Override
+@@ -3207,6 +3104,9 @@
          }
          else if (this.player != null)
          {
@@ -1815,18 +648,7 @@
              if (this.player.world.provider instanceof WorldProviderHell)
              {
                  return MusicTicker.MusicType.NETHER;
-@@ -3217,9 +3062,7 @@
-             }
-             else
-             {
--                return this.player.capabilities.isCreativeMode && this.player.capabilities.allowFlying
--                       ? MusicTicker.MusicType.CREATIVE
--                       : MusicTicker.MusicType.GAME;
-+                return this.player.capabilities.isCreativeMode && this.player.capabilities.allowFlying ? MusicTicker.MusicType.CREATIVE : MusicTicker.MusicType.GAME;
-             }
-         }
-         else
-@@ -3238,19 +3081,15 @@
+@@ -3238,11 +3138,11 @@
              {
                  if (Keyboard.getEventKeyState())
                  {
@@ -1838,19 +660,9 @@
 -                    else if (i == this.gameSettings.keyBindScreenshot.getKeyCode())
 +                    else if (this.gameSettings.keyBindScreenshot.isActiveAndMatches(i))
                      {
--                        this.ingameGUI
--                        .getChatGUI()
--                        .printChatMessage(ScreenShotHelper.saveScreenshot(this.gameDir, this.displayWidth, this.displayHeight, this.framebuffer));
-+                        this.ingameGUI.getChatGUI().printChatMessage(ScreenShotHelper.saveScreenshot(this.gameDir, this.displayWidth, this.displayHeight, this.framebuffer));
-                     }
--                    else if (i == 48
--                             && GuiScreen.isCtrlKeyDown()
--                             && (this.currentScreen == null || this.currentScreen != null && !this.currentScreen.isFocused()))
-+                    else if (i == 48 && GuiScreen.isCtrlKeyDown() && (this.currentScreen == null || this.currentScreen != null && !this.currentScreen.isFocused()))
-                     {
-                         this.gameSettings.setOptionValue(GameSettings.Options.NARRATOR, 1);
- 
-@@ -3260,6 +3099,7 @@
+                         this.ingameGUI
+                         .getChatGUI()
+@@ -3260,6 +3160,7 @@
                          }
                      }
                  }
@@ -1858,12 +670,7 @@
              }
          }
      }
-@@ -3294,16 +3134,16 @@
-         {
-             try
-             {
--                return Futures.immediateFuture(callableToSchedule.call());
-+                return Futures.<V>immediateFuture(callableToSchedule.call());
+@@ -3298,7 +3199,7 @@
              }
              catch (Exception exception)
              {
@@ -1872,38 +679,7 @@
              }
          }
          else
-         {
--            ListenableFutureTask<V> listenablefuturetask = ListenableFutureTask.create(callableToSchedule);
-+            ListenableFutureTask<V> listenablefuturetask = ListenableFutureTask.<V>create(callableToSchedule);
- 
-             synchronized (this.scheduledTasks)
-             {
-@@ -3313,14 +3153,12 @@
-         }
-     }
- 
--    @Override
-     public ListenableFuture<Object> addScheduledTask(Runnable runnableToSchedule)
-     {
-         Validate.notNull(runnableToSchedule);
--        return this.addScheduledTask(Executors.callable(runnableToSchedule));
-+        return this.<Object>addScheduledTask(Executors.callable(runnableToSchedule));
-     }
- 
--    @Override
-     public boolean isCallingFromMinecraftThread()
-     {
-         return Thread.currentThread() == this.thread;
-@@ -3348,7 +3186,7 @@
- 
-     public <T> ISearchTree<T> getSearchTree(SearchTreeManager.Key<T> key)
-     {
--        return this.searchTreeManager.get(key);
-+        return this.searchTreeManager.<T>get(key);
-     }
- 
-     public static int getDebugFPS()
-@@ -3391,6 +3229,12 @@
+@@ -3391,6 +3292,12 @@
          return this.blockColors;
      }
  
@@ -1916,7 +692,7 @@
      public boolean isReducedDebug()
      {
          return this.player != null && this.player.hasReducedDebug() || this.gameSettings.reducedDebugInfo;
-@@ -3404,5 +3248,10 @@
+@@ -3404,5 +3311,10 @@
      public Tutorial getTutorial()
      {
          return this.tutorial;

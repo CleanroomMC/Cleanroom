@@ -1,25 +1,6 @@
 --- before/net/minecraft/client/renderer/entity/layers/LayerHeldItem.java
 +++ after/net/minecraft/client/renderer/entity/layers/LayerHeldItem.java
-@@ -21,17 +21,7 @@
-         this.livingEntityRenderer = livingEntityRendererIn;
-     }
- 
--    @Override
--    public void doRenderLayer(
--        EntityLivingBase entitylivingbaseIn,
--        float limbSwing,
--        float limbSwingAmount,
--        float partialTicks,
--        float ageInTicks,
--        float netHeadYaw,
--        float headPitch,
--        float scale
--    )
-+    public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-     {
-         boolean flag = entitylivingbaseIn.getPrimaryHand() == EnumHandSide.RIGHT;
-         ItemStack itemstack = flag ? entitylivingbaseIn.getHeldItemOffhand() : entitylivingbaseIn.getHeldItemMainhand();
-@@ -59,13 +49,13 @@
+@@ -59,13 +59,13 @@
          if (!p_188358_2_.isEmpty())
          {
              GlStateManager.pushMatrix();
@@ -35,11 +16,3 @@
              GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
              GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
              boolean flag = handSide == EnumHandSide.LEFT;
-@@ -80,7 +70,6 @@
-         ((ModelBiped)this.livingEntityRenderer.getMainModel()).postRenderArm(0.0625F, p_191361_1_);
-     }
- 
--    @Override
-     public boolean shouldCombineTextures()
-     {
-         return false;

@@ -1,83 +1,11 @@
 --- before/net/minecraft/client/gui/MapItemRenderer.java
 +++ after/net/minecraft/client/gui/MapItemRenderer.java
-@@ -21,7 +21,7 @@
- {
-     private static final ResourceLocation TEXTURE_MAP_ICONS = new ResourceLocation("textures/map/map_icons.png");
-     private final TextureManager textureManager;
--    private final Map<String, MapItemRenderer.Instance> loadedMaps = Maps.newHashMap();
-+    private final Map<String, MapItemRenderer.Instance> loadedMaps = Maps.<String, MapItemRenderer.Instance>newHashMap();
- 
-     public MapItemRenderer(TextureManager textureManagerIn)
-     {
-@@ -88,7 +88,7 @@
-             this.mapTextureData = this.mapTexture.getTextureData();
-             this.location = MapItemRenderer.this.textureManager.getDynamicTextureLocation("map/" + mapdataIn.mapName, this.mapTexture);
- 
--            for (int i = 0; i < this.mapTextureData.length; i++)
-+            for (int i = 0; i < this.mapTextureData.length; ++i)
-             {
-                 this.mapTextureData[i] = 0;
-             }
-@@ -96,7 +96,7 @@
- 
-         private void updateMapTexture()
-         {
--            for (int i = 0; i < 16384; i++)
-+            for (int i = 0; i < 16384; ++i)
-             {
-                 int j = this.mapData.colors[i] & 255;
- 
-@@ -122,15 +122,13 @@
-             float f = 0.0F;
-             MapItemRenderer.this.textureManager.bindTexture(this.location);
-             GlStateManager.enableBlend();
--            GlStateManager.tryBlendFuncSeparate(
--                GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE
--            );
-+            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
-             GlStateManager.disableAlpha();
-             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
--            bufferbuilder.pos(0.0, 128.0, -0.01F).tex(0.0, 1.0).endVertex();
--            bufferbuilder.pos(128.0, 128.0, -0.01F).tex(1.0, 1.0).endVertex();
--            bufferbuilder.pos(128.0, 0.0, -0.01F).tex(1.0, 0.0).endVertex();
--            bufferbuilder.pos(0.0, 0.0, -0.01F).tex(0.0, 0.0).endVertex();
-+            bufferbuilder.pos(0.0D, 128.0D, -0.009999999776482582D).tex(0.0D, 1.0D).endVertex();
-+            bufferbuilder.pos(128.0D, 128.0D, -0.009999999776482582D).tex(1.0D, 1.0D).endVertex();
-+            bufferbuilder.pos(128.0D, 0.0D, -0.009999999776482582D).tex(1.0D, 0.0D).endVertex();
-+            bufferbuilder.pos(0.0D, 0.0D, -0.009999999776482582D).tex(0.0D, 0.0D).endVertex();
-             tessellator.draw();
-             GlStateManager.enableAlpha();
-             GlStateManager.disableBlend();
-@@ -141,10 +139,10 @@
+@@ -141,6 +141,8 @@
              {
                  if (!noOverlayRendering || mapdecoration.renderOnFrame())
                  {
 +                    if (mapdecoration.render(k)) { k++; continue; }
 +                    MapItemRenderer.this.textureManager.bindTexture(MapItemRenderer.TEXTURE_MAP_ICONS); // Rebind in case custom render changes it
                      GlStateManager.pushMatrix();
--                    GlStateManager.translate(
--                        0.0F + (float)mapdecoration.getX() / 2.0F + 64.0F, 0.0F + (float)mapdecoration.getY() / 2.0F + 64.0F, -0.02F
--                    );
-+                    GlStateManager.translate(0.0F + (float)mapdecoration.getX() / 2.0F + 64.0F, 0.0F + (float)mapdecoration.getY() / 2.0F + 64.0F, -0.02F);
-                     GlStateManager.rotate((float)(mapdecoration.getRotation() * 360) / 16.0F, 0.0F, 0.0F, 1.0F);
-                     GlStateManager.scale(4.0F, 4.0F, 3.0F);
-                     GlStateManager.translate(-0.125F, 0.125F, 0.0F);
-@@ -155,13 +153,13 @@
-                     float f4 = (float)(b0 / 4 + 1) / 4.0F;
-                     bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-                     float f5 = -0.001F;
--                    bufferbuilder.pos(-1.0, 1.0, (double)((float)k * -0.001F)).tex((double)f1, (double)f2).endVertex();
--                    bufferbuilder.pos(1.0, 1.0, (double)((float)k * -0.001F)).tex((double)f3, (double)f2).endVertex();
--                    bufferbuilder.pos(1.0, -1.0, (double)((float)k * -0.001F)).tex((double)f3, (double)f4).endVertex();
--                    bufferbuilder.pos(-1.0, -1.0, (double)((float)k * -0.001F)).tex((double)f1, (double)f4).endVertex();
-+                    bufferbuilder.pos(-1.0D, 1.0D, (double)((float)k * -0.001F)).tex((double)f1, (double)f2).endVertex();
-+                    bufferbuilder.pos(1.0D, 1.0D, (double)((float)k * -0.001F)).tex((double)f3, (double)f2).endVertex();
-+                    bufferbuilder.pos(1.0D, -1.0D, (double)((float)k * -0.001F)).tex((double)f3, (double)f4).endVertex();
-+                    bufferbuilder.pos(-1.0D, -1.0D, (double)((float)k * -0.001F)).tex((double)f1, (double)f4).endVertex();
-                     tessellator.draw();
-                     GlStateManager.popMatrix();
--                    k++;
-+                    ++k;
-                 }
-             }
- 
+                     GlStateManager.translate(
+                         0.0F + (float)mapdecoration.getX() / 2.0F + 64.0F, 0.0F + (float)mapdecoration.getY() / 2.0F + 64.0F, -0.02F

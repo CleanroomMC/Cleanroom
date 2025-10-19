@@ -1,75 +1,6 @@
 --- before/net/minecraft/client/renderer/chunk/ChunkRenderWorker.java
 +++ after/net/minecraft/client/renderer/chunk/ChunkRenderWorker.java
-@@ -27,20 +27,20 @@
-     private static final Logger LOGGER = LogManager.getLogger();
-     private final ChunkRenderDispatcher chunkRenderDispatcher;
-     private final RegionRenderCacheBuilder regionRenderCacheBuilder;
--    private boolean shouldRun = true;
-+    private boolean shouldRun;
- 
-     public ChunkRenderWorker(ChunkRenderDispatcher chunkRenderDispatcherIn)
-     {
--        this(chunkRenderDispatcherIn, null);
-+        this(chunkRenderDispatcherIn, (RegionRenderCacheBuilder)null);
-     }
- 
-     public ChunkRenderWorker(ChunkRenderDispatcher chunkRenderDispatcherIn, @Nullable RegionRenderCacheBuilder regionRenderCacheBuilderIn)
-     {
-+        this.shouldRun = true;
-         this.chunkRenderDispatcher = chunkRenderDispatcherIn;
-         this.regionRenderCacheBuilder = regionRenderCacheBuilderIn;
-     }
- 
--    @Override
-     public void run()
-     {
-         while (this.shouldRun)
-@@ -49,7 +49,7 @@
-             {
-                 this.processTask(this.chunkRenderDispatcher.getNextChunkUpdate());
-             }
--            catch (InterruptedException interruptedexception)
-+            catch (InterruptedException var3)
-             {
-                 LOGGER.debug("Stopping chunk worker due to interrupt");
-                 return;
-@@ -73,7 +73,7 @@
-             {
-                 if (!generator.isFinished())
-                 {
--                    LOGGER.warn("Chunk render task was {} when I expected it to be pending; ignoring task", generator.getStatus());
-+                    LOGGER.warn("Chunk render task was {} when I expected it to be pending; ignoring task", (Object)generator.getStatus());
-                 }
- 
-                 return;
-@@ -85,15 +85,12 @@
-             int j = 8;
-             int k = 24;
- 
--            if (blockpos1.add(8, 8, 8).distanceSq(blockpos) > 576.0)
-+            if (blockpos1.add(8, 8, 8).distanceSq(blockpos) > 576.0D)
-             {
-                 World world = generator.getRenderChunk().getWorld();
-                 BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(blockpos1);
- 
--                if (!this.isChunkExisting(blockpos$mutableblockpos.setPos(blockpos1).move(EnumFacing.WEST, 16), world)
--                        || !this.isChunkExisting(blockpos$mutableblockpos.setPos(blockpos1).move(EnumFacing.NORTH, 16), world)
--                        || !this.isChunkExisting(blockpos$mutableblockpos.setPos(blockpos1).move(EnumFacing.EAST, 16), world)
--                        || !this.isChunkExisting(blockpos$mutableblockpos.setPos(blockpos1).move(EnumFacing.SOUTH, 16), world))
-+                if (!this.isChunkExisting(blockpos$mutableblockpos.setPos(blockpos1).move(EnumFacing.WEST, 16), world) || !this.isChunkExisting(blockpos$mutableblockpos.setPos(blockpos1).move(EnumFacing.NORTH, 16), world) || !this.isChunkExisting(blockpos$mutableblockpos.setPos(blockpos1).move(EnumFacing.EAST, 16), world) || !this.isChunkExisting(blockpos$mutableblockpos.setPos(blockpos1).move(EnumFacing.SOUTH, 16), world))
-                 {
-                     return;
-                 }
-@@ -137,7 +134,7 @@
-                 {
-                     if (!generator.isFinished())
-                     {
--                        LOGGER.warn("Chunk render task was {} when I expected it to be compiling; aborting task", generator.getStatus());
-+                        LOGGER.warn("Chunk render task was {} when I expected it to be compiling; aborting task", (Object)generator.getStatus());
-                     }
- 
-                     this.freeRenderBuilder(generator);
-@@ -152,7 +149,7 @@
+@@ -152,7 +152,7 @@
              }
  
              final CompiledChunk compiledchunk = generator.getCompiledChunk();
@@ -78,92 +9,12 @@
  
              if (chunkcompiletaskgenerator$type == ChunkCompileTaskGenerator.Type.REBUILD_CHUNK)
              {
-@@ -160,64 +157,42 @@
-                 {
-                     if (compiledchunk.isLayerStarted(blockrenderlayer))
-                     {
--                        arraylist.add(
--                            this.chunkRenderDispatcher
--                            .uploadChunk(
--                                blockrenderlayer,
--                                generator.getRegionRenderCacheBuilder().getWorldRendererByLayer(blockrenderlayer),
--                                generator.getRenderChunk(),
--                                compiledchunk,
--                                generator.getDistanceSq()
--                            )
--                        );
-+                        arraylist.add(this.chunkRenderDispatcher.uploadChunk(blockrenderlayer, generator.getRegionRenderCacheBuilder().getWorldRendererByLayer(blockrenderlayer), generator.getRenderChunk(), compiledchunk, generator.getDistanceSq()));
-                     }
-                 }
-             }
-             else if (chunkcompiletaskgenerator$type == ChunkCompileTaskGenerator.Type.RESORT_TRANSPARENCY)
-             {
--                arraylist.add(
--                    this.chunkRenderDispatcher
--                    .uploadChunk(
--                        BlockRenderLayer.TRANSLUCENT,
--                        generator.getRegionRenderCacheBuilder().getWorldRendererByLayer(BlockRenderLayer.TRANSLUCENT),
--                        generator.getRenderChunk(),
--                        compiledchunk,
--                        generator.getDistanceSq()
--                    )
--                );
-+                arraylist.add(this.chunkRenderDispatcher.uploadChunk(BlockRenderLayer.TRANSLUCENT, generator.getRegionRenderCacheBuilder().getWorldRendererByLayer(BlockRenderLayer.TRANSLUCENT), generator.getRenderChunk(), compiledchunk, generator.getDistanceSq()));
-             }
- 
-             final ListenableFuture<List<Object>> listenablefuture = Futures.allAsList(arraylist);
-             generator.addFinishRunnable(new Runnable()
-             {
--                @Override
-                 public void run()
-                 {
-                     listenablefuture.cancel(false);
-                 }
-             });
--            Futures.addCallback(
--                listenablefuture,
--                new FutureCallback<List<Object>>()
-+            Futures.addCallback(listenablefuture, new FutureCallback<List<Object>>()
-             {
-                 public void onSuccess(@Nullable List<Object> p_onSuccess_1_)
-                 {
-                     ChunkRenderWorker.this.freeRenderBuilder(generator);
-                     generator.getLock().lock();
--                    label43:
-+                    label49:
-                     {
-                         try
-                         {
-                             if (generator.getStatus() == ChunkCompileTaskGenerator.Status.UPLOADING)
-                             {
-                                 generator.setStatus(ChunkCompileTaskGenerator.Status.DONE);
--                                break label43;
-+                                break label49;
-                             }
- 
-                             if (!generator.isFinished())
-                             {
--                                ChunkRenderWorker.LOGGER
--                                .warn("Chunk render task was {} when I expected it to be uploading; aborting task", generator.getStatus());
-+                                ChunkRenderWorker.LOGGER.warn("Chunk render task was {} when I expected it to be uploading; aborting task", (Object)generator.getStatus());
-                             }
-                         }
-                         finally
-@@ -229,7 +204,6 @@
-                     }
-                     generator.getRenderChunk().setCompiledChunk(compiledchunk);
-                 }
--                @Override
-                 public void onFailure(Throwable p_onFailure_1_)
-                 {
-                     ChunkRenderWorker.this.freeRenderBuilder(generator);
-@@ -239,8 +213,7 @@
+@@ -239,7 +239,7 @@
                          Minecraft.getMinecraft().crashed(CrashReport.makeCrashReport(p_onFailure_1_, "Rendering chunk"));
                      }
                  }
 -            }
--            );
-+            }, Runnable::run);
++            }, Runnable::run
+             );
          }
      }
- 

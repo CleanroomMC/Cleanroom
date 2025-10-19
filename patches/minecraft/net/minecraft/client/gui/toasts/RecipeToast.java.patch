@@ -1,49 +1,13 @@
 --- before/net/minecraft/client/gui/toasts/RecipeToast.java
 +++ after/net/minecraft/client/gui/toasts/RecipeToast.java
-@@ -5,6 +5,7 @@
- import net.minecraft.client.renderer.GlStateManager;
- import net.minecraft.client.renderer.RenderHelper;
- import net.minecraft.client.resources.I18n;
-+import net.minecraft.entity.EntityLivingBase;
- import net.minecraft.item.ItemStack;
- import net.minecraft.item.crafting.IRecipe;
- import net.minecraftforge.fml.relauncher.Side;
-@@ -13,7 +14,7 @@
- @SideOnly(Side.CLIENT)
- public class RecipeToast implements IToast
- {
--    private final List<ItemStack> recipesOutputs = Lists.newArrayList();
-+    private final List<ItemStack> recipesOutputs = Lists.<ItemStack>newArrayList();
-     private long firstDrawTime;
-     private boolean hasNewOutputs;
- 
-@@ -22,7 +23,6 @@
-         this.recipesOutputs.add(p_i47489_1_);
-     }
- 
--    @Override
-     public IToast.Visibility draw(GuiToast toastGui, long delta)
-     {
-         if (this.hasNewOutputs)
-@@ -43,11 +43,7 @@
-             toastGui.getMinecraft().fontRenderer.drawString(I18n.format("recipe.toast.title"), 30, 7, -11534256);
-             toastGui.getMinecraft().fontRenderer.drawString(I18n.format("recipe.toast.description"), 30, 18, -16777216);
-             RenderHelper.enableGUIStandardItemLighting();
--            toastGui.getMinecraft()
--            .getRenderItem()
--            .renderItemAndEffectIntoGUI(
+@@ -46,8 +46,8 @@
+             toastGui.getMinecraft()
+             .getRenderItem()
+             .renderItemAndEffectIntoGUI(
 -                null, this.recipesOutputs.get((int)(delta / (5000L / (long)this.recipesOutputs.size()) % (long)this.recipesOutputs.size())), 8, 8
 -            );
-+            toastGui.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI((EntityLivingBase)null, this.recipesOutputs.get((int)(delta * (long)this.recipesOutputs.size() / 5000L % (long)this.recipesOutputs.size())), 8, 8); //Forge: fix math so that it doesn't divide by 0 when there are more than 5000 recipes
++                null, this.recipesOutputs.get((int)(delta * (long)this.recipesOutputs.size() / 5000L % (long)this.recipesOutputs.size())), 8, 8
++            ); //Forge: fix math so that it doesn't divide by 0 when there are more than 5000 recipes
              return delta - this.firstDrawTime >= 5000L ? IToast.Visibility.HIDE : IToast.Visibility.SHOW;
          }
      }
-@@ -62,7 +58,7 @@
- 
-     public static void addOrUpdate(GuiToast p_193665_0_, IRecipe p_193665_1_)
-     {
--        RecipeToast recipetoast = p_193665_0_.getToast(RecipeToast.class, NO_TOKEN);
-+        RecipeToast recipetoast = (RecipeToast)p_193665_0_.getToast(RecipeToast.class, NO_TOKEN);
- 
-         if (recipetoast == null)
-         {

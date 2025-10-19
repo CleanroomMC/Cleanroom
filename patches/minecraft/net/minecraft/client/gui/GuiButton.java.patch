@@ -1,66 +1,14 @@
 --- before/net/minecraft/client/gui/GuiButton.java
 +++ after/net/minecraft/client/gui/GuiButton.java
-@@ -13,15 +13,16 @@
- public class GuiButton extends Gui
- {
-     protected static final ResourceLocation BUTTON_TEXTURES = new ResourceLocation("textures/gui/widgets.png");
--    public int width = 200;
--    public int height = 20;
-+    public int width;
-+    public int height;
-     public int x;
-     public int y;
-     public String displayString;
-     public int id;
--    public boolean enabled = true;
--    public boolean visible = true;
-+    public boolean enabled;
-+    public boolean visible;
+@@ -22,6 +22,7 @@
+     public boolean enabled = true;
+     public boolean visible = true;
      protected boolean hovered;
 +    public int packedFGColour; //FML
  
      public GuiButton(int buttonId, int x, int y, String buttonText)
      {
-@@ -30,6 +31,10 @@
- 
-     public GuiButton(int buttonId, int x, int y, int widthIn, int heightIn, String buttonText)
-     {
-+        this.width = 200;
-+        this.height = 20;
-+        this.enabled = true;
-+        this.visible = true;
-         this.id = buttonId;
-         this.x = x;
-         this.y = y;
-@@ -61,31 +66,21 @@
-             FontRenderer fontrenderer = mc.fontRenderer;
-             mc.getTextureManager().bindTexture(BUTTON_TEXTURES);
-             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
--            this.hovered = mouseX >= this.x
--                                  && mouseY >= this.y
--                                  && mouseX < this.x + this.width
--                                  && mouseY < this.y + this.height;
-+            this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
-             int i = this.getHoverState(this.hovered);
-             GlStateManager.enableBlend();
--            GlStateManager.tryBlendFuncSeparate(
--                GlStateManager.SourceFactor.SRC_ALPHA,
--                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
--                GlStateManager.SourceFactor.ONE,
--                GlStateManager.DestFactor.ZERO
--            );
-+            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-             GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-             this.drawTexturedModalRect(this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
--            this.drawTexturedModalRect(
--                this.x + this.width / 2,
--                this.y,
--                200 - this.width / 2,
--                46 + i * 20,
--                this.width / 2,
--                this.height
--            );
-+            this.drawTexturedModalRect(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+@@ -86,6 +87,11 @@
              this.mouseDragged(mc, mouseX, mouseY);
              int j = 14737632;
  
@@ -72,28 +20,3 @@
              if (!this.enabled)
              {
                  j = 10526880;
-@@ -95,9 +90,7 @@
-                 j = 16777120;
-             }
- 
--            this.drawCenteredString(
--                fontrenderer, this.displayString, this.x + this.width / 2, this.y + (this.height - 8) / 2, j
--            );
-+            this.drawCenteredString(fontrenderer, this.displayString, this.x + this.width / 2, this.y + (this.height - 8) / 2, j);
-         }
-     }
- 
-@@ -111,12 +104,7 @@
- 
-     public boolean mousePressed(Minecraft mc, int mouseX, int mouseY)
-     {
--        return this.enabled
--               && this.visible
--               && mouseX >= this.x
--               && mouseY >= this.y
--               && mouseX < this.x + this.width
--               && mouseY < this.y + this.height;
-+        return this.enabled && this.visible && mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
-     }
- 
-     public boolean isMouseOver()

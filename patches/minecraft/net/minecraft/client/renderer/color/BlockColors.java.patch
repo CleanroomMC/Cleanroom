@@ -1,6 +1,6 @@
 --- before/net/minecraft/client/renderer/color/BlockColors.java
 +++ after/net/minecraft/client/renderer/color/BlockColors.java
-@@ -27,38 +27,22 @@
+@@ -27,7 +27,8 @@
  @SideOnly(Side.CLIENT)
  public class BlockColors
  {
@@ -10,154 +10,7 @@
  
      public static BlockColors init()
      {
-         final BlockColors blockcolors = new BlockColors();
--        blockcolors.registerBlockColorHandler(
--            new IBlockColor()
-+        blockcolors.registerBlockColorHandler(new IBlockColor()
-         {
--            @Override
-             public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
-             {
--                BlockDoublePlant.EnumPlantType blockdoubleplant$enumplanttype = state.getValue(BlockDoublePlant.VARIANT);
--                return worldIn != null
--                       && pos != null
--                       && (
--                           blockdoubleplant$enumplanttype == BlockDoublePlant.EnumPlantType.GRASS
--                           || blockdoubleplant$enumplanttype == BlockDoublePlant.EnumPlantType.FERN
--                       )
--                       ? BiomeColorHelper.getGrassColorAtPos(
--                           worldIn,
--                           state.getValue(BlockDoublePlant.HALF) == BlockDoublePlant.EnumBlockHalf.UPPER
--                           ? pos.down()
--                           : pos
--                       )
--                       : -1;
-+                BlockDoublePlant.EnumPlantType blockdoubleplant$enumplanttype = (BlockDoublePlant.EnumPlantType)state.getValue(BlockDoublePlant.VARIANT);
-+                return worldIn != null && pos != null && (blockdoubleplant$enumplanttype == BlockDoublePlant.EnumPlantType.GRASS || blockdoubleplant$enumplanttype == BlockDoublePlant.EnumPlantType.FERN) ? BiomeColorHelper.getGrassColorAtPos(worldIn, state.getValue(BlockDoublePlant.HALF) == BlockDoublePlant.EnumBlockHalf.UPPER ? pos.down() : pos) : -1;
-             }
--        },
--        Blocks.DOUBLE_PLANT
--        );
-+        }, Blocks.DOUBLE_PLANT);
-         blockcolors.registerBlockColorHandler(new IBlockColor()
-         {
--            @Override
-             public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
-             {
-                 if (worldIn != null && pos != null)
-@@ -82,25 +66,18 @@
-                 }
-             }
-         }, Blocks.FLOWER_POT);
--        blockcolors.registerBlockColorHandler(
--            new IBlockColor()
-+        blockcolors.registerBlockColorHandler(new IBlockColor()
-         {
--            @Override
-             public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
-             {
--                return worldIn != null && pos != null
--                       ? BiomeColorHelper.getGrassColorAtPos(worldIn, pos)
--                       : ColorizerGrass.getGrassColor(0.5, 1.0);
-+                return worldIn != null && pos != null ? BiomeColorHelper.getGrassColorAtPos(worldIn, pos) : ColorizerGrass.getGrassColor(0.5D, 1.0D);
-             }
--        },
--        Blocks.GRASS
--        );
-+        }, Blocks.GRASS);
-         blockcolors.registerBlockColorHandler(new IBlockColor()
-         {
--            @Override
-             public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
-             {
--                BlockPlanks.EnumType blockplanks$enumtype = state.getValue(BlockOldLeaf.VARIANT);
-+                BlockPlanks.EnumType blockplanks$enumtype = (BlockPlanks.EnumType)state.getValue(BlockOldLeaf.VARIANT);
- 
-                 if (blockplanks$enumtype == BlockPlanks.EnumType.SPRUCE)
-                 {
-@@ -118,7 +95,6 @@
-         }, Blocks.LEAVES);
-         blockcolors.registerBlockColorHandler(new IBlockColor()
-         {
--            @Override
-             public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
-             {
-                 return worldIn != null && pos != null ? BiomeColorHelper.getFoliageColorAtPos(worldIn, pos) : ColorizerFoliage.getFoliageColorBasic();
-@@ -126,7 +102,6 @@
-         }, Blocks.LEAVES2);
-         blockcolors.registerBlockColorHandler(new IBlockColor()
-         {
--            @Override
-             public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
-             {
-                 return worldIn != null && pos != null ? BiomeColorHelper.getWaterColorAtPos(worldIn, pos) : -1;
-@@ -134,15 +109,13 @@
-         }, Blocks.WATER, Blocks.FLOWING_WATER);
-         blockcolors.registerBlockColorHandler(new IBlockColor()
-         {
--            @Override
-             public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
-             {
--                return BlockRedstoneWire.colorMultiplier(state.getValue(BlockRedstoneWire.POWER));
-+                return BlockRedstoneWire.colorMultiplier(((Integer)state.getValue(BlockRedstoneWire.POWER)).intValue());
-             }
-         }, Blocks.REDSTONE_WIRE);
-         blockcolors.registerBlockColorHandler(new IBlockColor()
-         {
--            @Override
-             public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
-             {
-                 return worldIn != null && pos != null ? BiomeColorHelper.getGrassColorAtPos(worldIn, pos) : -1;
-@@ -150,20 +123,17 @@
-         }, Blocks.REEDS);
-         blockcolors.registerBlockColorHandler(new IBlockColor()
-         {
--            @Override
-             public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
-             {
--                int i = state.getValue(BlockStem.AGE);
-+                int i = ((Integer)state.getValue(BlockStem.AGE)).intValue();
-                 int j = i * 32;
-                 int k = 255 - i * 8;
-                 int l = i * 4;
-                 return j << 16 | k << 8 | l;
-             }
-         }, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
--        blockcolors.registerBlockColorHandler(
--            new IBlockColor()
-+        blockcolors.registerBlockColorHandler(new IBlockColor()
-         {
--            @Override
-             public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
-             {
-                 if (worldIn != null && pos != null)
-@@ -172,17 +142,12 @@
-                 }
-                 else
-                 {
--                    return state.getValue(BlockTallGrass.TYPE) == BlockTallGrass.EnumType.DEAD_BUSH
--                           ? 16777215
--                           : ColorizerGrass.getGrassColor(0.5, 1.0);
-+                    return state.getValue(BlockTallGrass.TYPE) == BlockTallGrass.EnumType.DEAD_BUSH ? 16777215 : ColorizerGrass.getGrassColor(0.5D, 1.0D);
-                 }
-             }
--        },
--        Blocks.TALLGRASS
--        );
-+        }, Blocks.TALLGRASS);
-         blockcolors.registerBlockColorHandler(new IBlockColor()
-         {
--            @Override
-             public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
-             {
-                 return worldIn != null && pos != null ? BiomeColorHelper.getFoliageColorAtPos(worldIn, pos) : ColorizerFoliage.getFoliageColorBasic();
-@@ -190,22 +155,22 @@
-         }, Blocks.VINE);
-         blockcolors.registerBlockColorHandler(new IBlockColor()
-         {
--            @Override
-             public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
-             {
+@@ -196,12 +197,13 @@
                  return worldIn != null && pos != null ? 2129968 : 7455580;
              }
          }, Blocks.WATERLILY);
@@ -172,12 +25,7 @@
  
          if (iblockcolor != null)
          {
--            return iblockcolor.colorMultiplier(state, null, null, 0);
-+            return iblockcolor.colorMultiplier(state, (IBlockAccess)null, (BlockPos)null, 0);
-         }
-         else
-         {
-@@ -216,7 +181,7 @@
+@@ -216,7 +218,7 @@
  
      public int colorMultiplier(IBlockState state, @Nullable IBlockAccess blockAccess, @Nullable BlockPos pos, int tintIndex)
      {
@@ -186,7 +34,7 @@
          return iblockcolor == null ? -1 : iblockcolor.colorMultiplier(state, blockAccess, pos, tintIndex);
      }
  
-@@ -224,7 +189,9 @@
+@@ -224,7 +226,9 @@
      {
          for (Block block : blocksIn)
          {

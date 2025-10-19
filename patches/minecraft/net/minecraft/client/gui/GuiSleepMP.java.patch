@@ -1,21 +1,6 @@
 --- before/net/minecraft/client/gui/GuiSleepMP.java
 +++ after/net/minecraft/client/gui/GuiSleepMP.java
-@@ -10,14 +10,12 @@
- @SideOnly(Side.CLIENT)
- public class GuiSleepMP extends GuiChat
- {
--    @Override
-     public void initGui()
-     {
-         super.initGui();
-         this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height - 40, I18n.format("multiplayer.stopSleeping")));
-     }
- 
--    @Override
-     protected void keyTyped(char typedChar, int keyCode) throws IOException
-     {
-         if (keyCode == 1)
-@@ -34,7 +32,7 @@
+@@ -34,7 +34,7 @@
  
              if (!s.isEmpty())
              {
@@ -24,11 +9,3 @@
              }
  
              this.inputField.setText("");
-@@ -42,7 +40,6 @@
-         }
-     }
- 
--    @Override
-     protected void actionPerformed(GuiButton button) throws IOException
-     {
-         if (button.id == 1)
