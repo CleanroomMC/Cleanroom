@@ -1,5 +1,5 @@
 package com.cleanroommc.kirino.engine.render.staging;
 
-public interface StagingCallback {
+public interface IStagingCallback {
     void run(StagingContext context);
 }

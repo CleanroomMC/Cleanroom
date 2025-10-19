@@ -77,7 +77,7 @@ public class StagingBufferManager {
 
     private final StagingContext stagingContext = new StagingContext();
 
-    public void runStaging(StagingCallback callback) {
+    public void runStaging(IStagingCallback callback) {
         beginStaging();
         stagingContext.manager = this;
         callback.run(stagingContext);

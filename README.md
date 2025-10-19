@@ -95,3 +95,10 @@ If you would like to contribute, check out our [Contributing Page](https://githu
 - ...
 
 </details>
+
+## Credits
+
+Kirino Engine is made possible thanks to the efforts of all contributors!
+
+- [tttsaurus](https://github.com/tttsaurus) - Core maintainer
+- [Eerie](https://github.com/Kuba663) - Feature & algorithm contributions

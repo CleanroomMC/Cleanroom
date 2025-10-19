@@ -13,15 +13,42 @@ public class GResourceTicket<TP extends IResourcePayload<TP>, TR extends IResour
     protected GResourceStatus status;
     protected final IResourcePayload<TP> payload;
     protected final IResourceReceipt<TR> receipt;
-    protected int lifeFrame;
 
-    protected GResourceTicket(int lifeFrame, Class<TP> payloadClass, Class<TR> receiptClass, TP payload, TR receipt) {
+    private static final int DEFAULT_LIFE = 2;
+    protected int lifeFrame = DEFAULT_LIFE;
+
+    /**
+     * Zero side-effect compared to {@link #tickFrame()}.
+     *
+     * @return Whether this ticket is expired.
+     */
+    public final boolean isExpired() {
+        return lifeFrame <= 0 || status == GResourceStatus.TO_BE_DESTROYED;
+    }
+
+    /**
+     * @return Whether this ticket is expired.
+     */
+    protected final boolean tickFrame() {
+        if (status == GResourceStatus.GPU_READY) {
+            lifeFrame--;
+        } else if (status == GResourceStatus.UPLOADING) {
+            return false;
+        } else if (status == GResourceStatus.TO_BE_DESTROYED) {
+            return true;
+        }
+        return lifeFrame <= 0;
+    }
+
+    protected final void keepAlive() {
+        lifeFrame = DEFAULT_LIFE;
+    }
+
+    public GResourceTicket(Class<TP> payloadClass, Class<TR> receiptClass, TP payload, TR receipt) {
         Preconditions.checkArgument(payloadClass == MeshPayload.class || payloadClass == TexturePayload.class,
                 "Argument payloadClass " + payloadClass.getName() + " is invalid. Must use a built-in payload class.");
         Preconditions.checkArgument(receiptClass == MeshReceipt.class || receiptClass == TextureReceipt.class,
                 "Argument receiptClass " + receiptClass.getName() + " is invalid. Must use a built-in receipt class.");
-
-        this.lifeFrame = lifeFrame;
 
         if (payloadClass == MeshPayload.class) {
             type = GResourceType.MESH;
