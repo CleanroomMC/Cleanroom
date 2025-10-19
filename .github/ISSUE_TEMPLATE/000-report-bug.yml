@@ -29,7 +29,8 @@ body:
         - Java 22
         - Java 23
         - Java 24
-        - Java 25 (Early Access)
+        - Java 25
+        - Java 26 (Early Access)
         - Other (Please Specify)
     validations:
       required: true
