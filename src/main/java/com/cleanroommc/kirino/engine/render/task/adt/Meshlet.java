@@ -51,6 +51,6 @@ public class Meshlet implements Comparable<Meshlet> {
 
     @Override
     public int compareTo(@NotNull Meshlet o) {
-        return (int) median().dot(o.median());
+        return (int) (median().lengthSquared()-o.median().lengthSquared());
     }
 }

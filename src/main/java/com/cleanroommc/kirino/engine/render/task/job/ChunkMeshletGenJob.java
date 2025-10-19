@@ -6,18 +6,18 @@ import com.cleanroommc.kirino.ecs.job.IParallelJob;
 import com.cleanroommc.kirino.ecs.job.JobDataQuery;
 import com.cleanroommc.kirino.ecs.job.JobExternalDataQuery;
 import com.cleanroommc.kirino.ecs.storage.IPrimitiveArray;
-import com.cleanroommc.kirino.engine.render.geometry.AABB;
-import com.cleanroommc.kirino.engine.render.geometry.Block;
 import com.cleanroommc.kirino.engine.render.geometry.component.ChunkComponent;
-import com.cleanroommc.kirino.engine.render.task.data.KDTree;
-import com.google.common.base.Preconditions;
+import com.cleanroommc.kirino.engine.render.task.adt.Meshlet;
+import it.unimi.dsi.fastutil.Stack;
+import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.chunk.Chunk;
 import org.jspecify.annotations.NonNull;
 
-import java.util.Optional;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ChunkMeshletGenJob implements IParallelJob {
     @JobExternalDataQuery
@@ -37,69 +37,46 @@ public class ChunkMeshletGenJob implements IParallelJob {
         KirinoCore.LOGGER.info("debug chunk xz: {}, {}", x, z);
         // TODO: Replace 256 with a variable in case we ever want to give people an option to increase the world height
         for (int y = 0; y < 256; y += 16) {
-            Optional<KDTree> treeOptional = buildTree(chunk, y);
-            if (treeOptional.isEmpty()) {
-                continue;
-            }
-            KDTree tree = treeOptional.get();
+
         }
     }
 
-    private static Optional<KDTree> buildTree(@NonNull Chunk chunk, int chunkY) {
-        Preconditions.checkNotNull(chunk);
+    private static int index(int x, int y, int z) {
+        return (z*256)+(y*16)+x;
+    }
 
-        // Skip the useless shit
-        if (chunk.isEmptyBetween(chunkY, chunkY+16)) {
-            return Optional.empty();
-        }
+    private void generateMeshlets(@NonNull Chunk chunk, int chunkY, EnumFacing side) {
+        Set<Meshlet> meshlets = new HashSet<>(); // TODO: use a KDTree (mine night be improperly implemented)
+        Stack<Meshlet> stack = new ReferenceArrayList<>();
 
-        final int posX = chunk.x << 4;
-        final int posZ = chunk.z << 4;
+        int chunkX = chunk.x << 4;
+        int chunkZ = chunk.z << 4;
 
-        KDTree tree = new KDTree(
-                new AABB(
-                        posX,
-                        chunkY,
-                        posZ,
-                        posX+16,
-                        chunkY+16,
-                        posZ+16
-                )
-        );
-
-        for (int x = posX;x < posX+16; x++) {
-            for (int y = chunkY; y < chunkY+16; y++) {
-                for (int z = posZ; z < posZ+16; z++) {
-                    IBlockState state = chunk.getBlockState(x, y, z);
-                    if (state.getMaterial() == Material.AIR) {
-                        continue;
-                    }
-                    int faceFlags = 0b000000;
-                    faceFlags |= isOpaqueBlockPresent(chunk, posX, chunkY, posZ, x, y-1, z) ? 0 : 0b000001;
-                    faceFlags |= isOpaqueBlockPresent(chunk, posX, chunkY, posZ, x, y+1, z) ? 0 : 0b000010;
-                    faceFlags |= isOpaqueBlockPresent(chunk, posX, chunkY, posZ, x, y, z-1) ? 0 : 0b000100;
-                    faceFlags |= isOpaqueBlockPresent(chunk, posX, chunkY, posZ, x, y, z+1) ? 0 : 0b001000;
-                    faceFlags |= isOpaqueBlockPresent(chunk, posX, chunkY, posZ, x-1, y, z) ? 0 : 0b010000;
-                    faceFlags |= isOpaqueBlockPresent(chunk, posX, chunkY, posZ, x+1, y, z) ? 0 : 0b100000;
-                    if (faceFlags != 0) {
-                        tree.insert(new Block(x, y, z, faceFlags));
+        for (int x = chunkX; x < chunkX + 16; x++) {
+            for (int y = chunkY; y < chunkY + 16; y++) {
+                for (int z = chunkZ; z < chunkZ + 16; z++) {
+                    if (!isOpaqueBlockPresent(chunk,
+                            chunkX, chunkY, chunkZ,
+                            x + side.getXOffset(), y + side.getYOffset(), z + side.getZOffset())
+                    && chunk.getBlockState(x, y, z).getMaterial() != Material.AIR) {
+                        meshlets.add(new Meshlet(side, x, y, z));
                     }
                 }
             }
         }
 
-        return tree.isEmpty() ? Optional.of(tree) : Optional.empty();
+
     }
 
     private static boolean isOpaqueBlockPresent(@NonNull Chunk chunk, int cpX, int cpY, int cpZ, int x, int y, int z) {
         if (y < cpY || y >= cpY+16) {
-            return true;
+            return false;
         }
         if (x < cpX || x >= cpX+16) {
-            return true;
+            return false;
         }
         if (z < cpZ || z >= cpZ+16) {
-            return true;
+            return false;
         }
         return chunk.getBlockState(x,y,z).isOpaqueCube();
     }
