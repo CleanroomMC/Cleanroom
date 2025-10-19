@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.shorts.ShortHeapPriorityQueue;
 import net.minecraft.util.EnumFacing;
+import org.joml.Vector3f;
 
 public class Meshlet {
     EnumFacing normal;
@@ -28,11 +29,22 @@ public class Meshlet {
         }
     }
 
-    public float median() {
+    public Vector3f median() {
         if (maxHeap.size() > minHeap.size()) {
-            return maxHeap.first();
+            int x = maxHeap.first() & 0b000000001111;
+            int y = (maxHeap.first() & 0b000011110000) >> 4;
+            int z = (maxHeap.first() & 0b111100000000) >> 8;
+            return new Vector3f((float) x, (float) y, (float) z);
         } else {
-            return (maxHeap.size() + minHeap.size()) / 2.0f;
+            int x = maxHeap.first() & 0b000000001111;
+            int y = (maxHeap.first() & 0b000011110000) >> 4;
+            int z = (maxHeap.first() & 0b111100000000) >> 8;
+            Vector3f max = new Vector3f((float) x, (float) y, (float) z);
+            x = minHeap.first() & 0b000000001111;
+            y = (minHeap.first() & 0b000011110000) >> 4;
+            z = (minHeap.first() & 0b111100000000) >> 8;
+            Vector3f min = new Vector3f((float) x, (float) y, (float) z);
+            return max.add(min).div(2.f);
         }
     }
 }
