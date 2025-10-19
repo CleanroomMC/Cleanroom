@@ -5,9 +5,10 @@ import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.shorts.ShortHeapPriorityQueue;
 import net.minecraft.util.EnumFacing;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
-public class Meshlet {
+public class Meshlet implements Comparable<Meshlet> {
     EnumFacing normal;
     // Insertion-time median tracking
     PriorityQueue<Short> maxHeap = new ShortHeapPriorityQueue((a, b) -> b - a);
@@ -46,5 +47,10 @@ public class Meshlet {
             Vector3f min = new Vector3f((float) x, (float) y, (float) z);
             return max.add(min).div(2.f);
         }
+    }
+
+    @Override
+    public int compareTo(@NotNull Meshlet o) {
+        return (int) median().dot(o.median());
     }
 }
