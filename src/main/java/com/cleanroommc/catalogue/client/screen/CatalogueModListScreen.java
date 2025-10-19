@@ -100,11 +100,11 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
     private CatalogueIconButton configButton;
     private CatalogueIconButton websiteButton;
     private CatalogueIconButton issueButton;
+    private StringList descriptionList;
+    private @Nullable DropdownMenu menu;
 
     private List<String> activeTooltip;
     private int tooltipYOffset;
-    private StringList descriptionList;
-    private @Nullable DropdownMenu menu;
 
     private long lastClickTime;
 
@@ -195,7 +195,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
     public void actionPerformed(GuiButton button) {
         switch (button.id) {
             case 1:
-                this.mc.displayGuiScreen(parentScreen);
+                this.mc.displayGuiScreen(this.parentScreen);
                 break;
             case 2:
                 try {
@@ -593,16 +593,13 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
     }
 
     private static boolean performSearchFilter(String query, IModData data) {
-        if (!query.startsWith("@"))
-            return false;
+        if (!query.startsWith("@")) return false;
 
         int end = query.indexOf(":");
-        if (end == -1)
-            return false;
+        if (end == -1) return false;
 
         String type = query.substring(1, end).toLowerCase(Locale.ENGLISH);
-        if (!SEARCH_FILTERS.containsKey(type))
-            return false;
+        if (!SEARCH_FILTERS.containsKey(type)) return false;
 
         String value = query.substring(end + 1);
         return SEARCH_FILTERS.get(type).predicate().test(value, data);
@@ -687,7 +684,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
             if (iconInfo != null) {
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 GlStateManager.enableBlend();
-                mc.getTextureManager().bindTexture(iconInfo.resource());
+                CatalogueModListScreen.this.mc.getTextureManager().bindTexture(iconInfo.resource());
                 drawScaledCustomSizeModalRect(left + 4, top + 3, 0.0F, 0.0F, iconInfo.width(), iconInfo.height(), 16, 16, iconInfo.width(), iconInfo.height());
                 GlStateManager.disableBlend();
                 return;
@@ -747,7 +744,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
             if (optional.isPresent()) {
                 ItemStack item = optional.get();
                 if (!item.isEmpty()) {
-                    // If the item is in a creative tab, Catalogue will use the tab's icon
+                    // If the item is in a creative tab, Catalogue will attempt to use the tab's icon
                     if (item.getItem().getCreativeTab() != null) {
                         try {
                             ItemStack tabItem = item.getItem().getCreativeTab().getIcon();
@@ -806,7 +803,8 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
                         }).build();
                 menu.toggle(mouseX, mouseY);
                 return true;
-            } else if (mouseEvent == 0 && !this.button.mousePressed(CatalogueModListScreen.this.mc, mouseX, mouseY)) {
+            } else if (mouseEvent == 0) {
+                if (this.button.mousePressed(CatalogueModListScreen.this.mc, mouseX, mouseY)) return true;
                 CatalogueModListScreen.this.setSelectedModData(this.data);
                 this.list.setSelected(this);
                 return true;
@@ -848,6 +846,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
                     FAVOURITES.toggle(this.modId);
                     ModListEntry.this.list.filterAndUpdateList();
                     this.playPressSound(mc.getSoundHandler());
+                    CatalogueModListScreen.this.updateSelectedModList();
                     return true;
                 }
                 return false;
@@ -1067,8 +1066,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
     @SuppressWarnings("SameParameterValue")
     private void drawStringWithLabel(String format, String text, int x, int y, int maxWidth, int mouseX, int mouseY, TextFormatting labelColor, TextFormatting contentColor) {
         String formatted = I18n.format(format, text); // Attempting to keep Forge's lang since it's already support many languages
-        String colon = ":";
-        if (formatted.contains("：")) colon = "：";
+        String colon = formatted.contains("：") ? "：" : ":";
         String label = formatted.substring(0, formatted.indexOf(colon) + 1);
         String content = formatted.substring(formatted.indexOf(colon) + 1);
         if (this.fontRenderer.getStringWidth(formatted) > maxWidth) {
@@ -1387,8 +1385,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
         }
 
         private void save() {
-            if (!this.needsSave)
-                return;
+            if (!this.needsSave) return;
 
             try {
                 this.needsSave = false;

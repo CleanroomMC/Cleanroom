@@ -28,7 +28,7 @@ public class CleanroomPlatformHelper implements IPlatformHelper {
 
     @Override
     public File getModDirectory() {
-        return Loader.instance().getConfigDir().getParentFile().toPath().resolve("mods").toFile();
+        return Loader.instance().getModDir();
     }
 
     @Override

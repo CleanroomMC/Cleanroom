@@ -173,6 +173,9 @@ public class Loader
      * The canonical configuration directory
      */
     private File canonicalConfigDir;
+    /**
+     * The canonical mods directory
+     */
     private File canonicalModsDir;
     private LoadController modController;
     private MinecraftDummyContainer minecraft;
@@ -703,6 +706,11 @@ public class Loader
     public File getConfigDir()
     {
         return canonicalConfigDir;
+    }
+
+    public File getModDir()
+    {
+        return canonicalModsDir;
     }
 
     public String getCrashInformation()
