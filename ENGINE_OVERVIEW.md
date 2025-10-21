@@ -114,14 +114,14 @@ LOGGER.info("archetype num: " + archetypes.size()); // assert: 1
 
 // the array is fetched from archetype data pools directly. zero copy
 // providing a friendly structure to parallel jobs
-INativeArray<?> array = archetypes.get(0).getArray(PositionComponent.class, "xyz", "z");
+IPrimitiveArray<?> array = archetypes.get(0).getArray(PositionComponent.class, "xyz", "z");
 ArrayRange range = archetypes.get(0).getArrayRange();
 for (int i = range.start; i < range.end; i++) {
     // skip deleted entities
     if (range.deprecatedIndexes.contains(i)) {
         continue;
     }
-    LOGGER.info("debug: " + array.get(i));
+    LOGGER.info("debug: " + array.getFloat(i));
 } // assert: 3.0 3.0 3.0
 ```
 
@@ -180,9 +180,9 @@ public static void onComponentScan(ComponentScanningEvent event) {
 ```
 
 > Note:
-> - Available types `S` = {`int`, `float`, `boolean`, `org.joml.Vector2f`, `org.joml.Vector3f`, `org.joml.Vector4f`, `org.joml.Matrix3f`, `org.joml.Matrix4f`}
-> - You can only use `S` in a struct
-> - Yan can only use `S` or the structs you defined in a component
+> - Available types `T` = {`int`, `float`, `boolean`, `org.joml.Vector2f`, `org.joml.Vector3f`, `org.joml.Vector4f`, `org.joml.Matrix3f`, `org.joml.Matrix4f`}
+> - You can only use any of `T` or the structs you defined in a struct
+> - Yan can only use any of `T` or the structs you defined in a component
 
 ## 1.2 Kirino Engine Setup
 
@@ -192,10 +192,13 @@ Kirino Engine contains:
 
 `RenderingCoordinator` contains:
 - Framebuffers
+- A resolution container that handles automated framebuffer resize
 - An ECS world `MinecraftScene`
-- `MinecraftCamera` (which wraps Minecraft's `ActiveRenderInfo`)
-- `GizmosManager` (for debug visuals)
+- `MinecraftCamera` which wraps Minecraft's `ActiveRenderInfo`
 - `ShaderRegistry` and all shader-related stuff
+- `StagingBufferManager` to centralize CPU-to-GPU data uploading & handle buffering
+- `GraphicResourceManager` to manage resource tickets and their lifecycles (pure logic)
+- `GizmosManager` for debug visuals
 - A bunch of `RenderPass`es
 
 ### Engine's Lifecycle
@@ -252,9 +255,9 @@ public class RenderPass {
 }
 ```
 
-As you can see, `RenderPass` acts like an entry point and we implement abstract `Subpass` classes to handle the rendering logic.
+As you can see, `RenderPass` acts like an entry point and we implement abstract `Subpass` classes to handle the true rendering logic.
 
-### `Subpass` Procedure
+### `Subpass.render()` Procedure
 ```mermaid
 graph TD
     A[Collect Draw Commands] --> B[Decorate Draw Commands]
@@ -263,11 +266,63 @@ graph TD
     D --> E[Bind Framebuffer]
     E --> F[Bind Pipeline State Object]
     F --> G[Update Shader Program / Uniforms]
-    G --> H[Execute Draw Commands / Upload to GPU]
+    G --> H[Execute Draw Commands / Submit to GPU]
 ```
 
 ## 2.4 Draw Command
 `DrawCommand` is an element of `DrawQueue`, and `Subpass` accepts a `DrawQueue` as the input.
+
+There are only two types of `DrawCommand`:
+- `HighLevelDC`
+- `LowLevelDC`
+
+### `HighLevelDC`-to-`LowLevelDC` Procedure
+```mermaid
+graph TD
+    A0[New HighLevelDC] --> A[Request Resource Tickets]
+    A --> B[Pass Resource Ticket IDs to HighLevelDC]
+    B --> C[Compile HighLevelDC]
+    A --> A1[GraphicResourceManager Handles the Request]
+    A1 --> A2[GraphicResourceManager Uploads Tickets' Payload via StagingBufferManager During Updates]
+    A2 --> A3[Fetch Tickets From GraphicResourceManager]
+    A3 --> A4[Access Raw GPU Handles From Tickets' Receipt]
+    A4 --> C
+    C --> D[LowLevelDC]
+```
+
+And `LowLevelDC` stores the raw GPU handles that we use directly in raw GL draw calls.
+
+Usually, we do the following in a `Subpass` implementation.
+```java
+@Override
+public void collectCommands(DrawQueue drawQueue) {
+    drawQueue.enqueue(gizmosManager.getDrawCommand());
+}
+```
+This is where ticket request take place.
+
+To be more specific about ticket request.
+```java
+graphicResourceManager.requestMeshTicket("my_mesh").ifPresent(builder -> {
+    build(builder);
+    graphicResourceManager.submitMeshTicket(builder);
+});
+
+return HighLevelDC.passInternal()
+    .meshTicketID("my_mesh")
+    .mode(GL11.GL_TRIANGLES)
+    .elementType(GL11.GL_UNSIGNED_INT)
+    .build();
+```
+We don't care if a ticket's payload is already uploaded (because uploading is usually a async process) OR a ticket is expired.
+Every ticket's _status_ will be read carefully during the `HighLevelDC` compilation stage, which is during `Subpass.render()`, and bad tickets will be ignored.
+Therefore, there is a delay between generating the real `LowLevelDC`s and submitting the ticket requests (usually an one frame delay).
+
+Our design philosophy of `HighLevelDC` here is:
+- Independent of raw GPU handles (`vao`, `ebo`, etc.)
+- Independent of resource uploading (`glSubData` etc.)
+- Independent of resource lifecycle (is it `cpu only` OR `gpu ready` OR `to be destroyed` ???)
+- Just tell what you want to draw, like a simple keyword `my_mesh`
 
 ## 2.5 Command Decoration
 

@@ -45,7 +45,7 @@ public class GizmosPass extends Subpass {
 
     @Override
     protected void execute(DrawQueue drawQueue) {
-        if (drawQueue.dequeue() instanceof LowLevelDC command) {
+        while (drawQueue.dequeue() instanceof LowLevelDC command) {
             renderer.draw(command);
         }
     }
