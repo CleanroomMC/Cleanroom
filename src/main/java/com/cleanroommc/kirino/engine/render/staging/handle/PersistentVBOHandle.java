@@ -6,7 +6,7 @@ import com.google.common.base.Preconditions;
 
 import java.nio.ByteBuffer;
 
-public class PersistentVBOHandle extends StagingBufferHandle {
+public class PersistentVBOHandle extends StagingBufferHandle<PersistentVBOHandle> {
     private final ByteBuffer byteBuffer;
 
     public PersistentVBOHandle(StagingBufferManager stagingBufferManager, int offset, int maxLength, ByteBuffer byteBuffer) {

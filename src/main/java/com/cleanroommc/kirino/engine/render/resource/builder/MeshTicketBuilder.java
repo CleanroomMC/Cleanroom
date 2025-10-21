@@ -29,14 +29,16 @@ public class MeshTicketBuilder {
     }
 
     public void build(ByteBuffer vboByteBuffer, ByteBuffer eboByteBuffer, AttributeLayout attributeLayout) {
-        MeshPayload payload = new MeshPayload();
-        MeshReceipt receipt = new MeshReceipt();
+        if (!built) {
+            MeshPayload payload = new MeshPayload();
+            MeshReceipt receipt = new MeshReceipt();
 
-        payload.vboByteBuffer = vboByteBuffer;
-        payload.eboByteBuffer = eboByteBuffer;
-        payload.attributeLayout = attributeLayout;
+            payload.vboByteBuffer = vboByteBuffer;
+            payload.eboByteBuffer = eboByteBuffer;
+            payload.attributeLayout = attributeLayout;
 
-        ticket = new GResourceTicket<>(MeshPayload.class, MeshReceipt.class, payload, receipt);
-        built = true;
+            ticket = new GResourceTicket<>(MeshPayload.class, MeshReceipt.class, payload, receipt);
+            built = true;
+        }
     }
 }

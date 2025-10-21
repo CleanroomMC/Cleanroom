@@ -10,7 +10,7 @@ import com.google.common.base.Preconditions;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class TemporaryVAOHandle extends StagingBufferHandle {
+public class TemporaryVAOHandle extends StagingBufferHandle<TemporaryVAOHandle> {
     public final long generation;
 
     /**

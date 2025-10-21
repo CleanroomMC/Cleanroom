@@ -17,6 +17,14 @@ public class GResourceTicket<TP extends IResourcePayload<TP>, TR extends IResour
     private static final int DEFAULT_LIFE = 2;
     protected int lifeFrame = DEFAULT_LIFE;
 
+    public final TR getReceipt() {
+        return receipt.getReceipt();
+    }
+
+    public final boolean isResourceReady() {
+        return status == GResourceStatus.GPU_READY;
+    }
+
     /**
      * Zero side-effect compared to {@link #tickFrame()}.
      *

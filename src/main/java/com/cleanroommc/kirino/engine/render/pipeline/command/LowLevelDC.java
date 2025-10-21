@@ -143,7 +143,7 @@ public final class LowLevelDC implements IDrawCommand {
         private int indicesCount = -1;
         private int elementType = -1;
         private int eboOffset = -1;
-        private int instanceCount;
+        private int instanceCount = -1;
 
         public ElementInstancedBuilder vao(int vao) {
             Preconditions.checkArgument(vao >= 0, "Invalid \"vao\".");

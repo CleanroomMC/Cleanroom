@@ -6,7 +6,9 @@ public class MeshReceipt implements IResourceReceipt<MeshReceipt> {
     public MeshReceipt() {
     }
 
-    private int vao;
+    public int vao;
+    public int eboOffset;
+    public int eboLength;
 
     @NonNull
     @Override

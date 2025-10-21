@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 
 import java.nio.ByteBuffer;
 
-public abstract class StagingBufferHandle {
+public abstract class StagingBufferHandle<T extends StagingBufferHandle<T>> {
     protected final StagingBufferManager stagingBufferManager;
     protected final int offset;
     protected final int maxLength;
@@ -15,10 +15,11 @@ public abstract class StagingBufferHandle {
         this.maxLength = maxLength;
     }
 
-    public final void write(int offset, ByteBuffer byteBuffer) {
+    public final T write(int offset, ByteBuffer byteBuffer) {
         Preconditions.checkState(stagingBufferManager.active, "Must not access buffers from StagingBufferManager when the manager is inactive.");
 
         writeInternal(offset, byteBuffer);
+        return (T) this;
     }
 
     protected abstract void writeInternal(int offset, ByteBuffer byteBuffer);

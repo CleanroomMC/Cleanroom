@@ -7,7 +7,7 @@ import com.google.common.base.Preconditions;
 
 import java.nio.ByteBuffer;
 
-public class TemporaryEBOHandle extends StagingBufferHandle {
+public class TemporaryEBOHandle extends StagingBufferHandle<TemporaryEBOHandle> {
     public final long generation;
     protected final EBOView eboView; // turn off validation; handle preconditions manually here
 

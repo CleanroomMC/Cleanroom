@@ -41,14 +41,14 @@ public class RenderingCoordinator {
     public final MinecraftScene scene;
     public final MinecraftCamera camera;
 
-    public final GizmosManager gizmosManager;
-
     private final ShaderRegistry shaderRegistry;
     private final GLSLRegistry glslRegistry;
     private final DefaultShaderAnalyzer defaultShaderAnalyzer;
 
     private final StagingBufferManager stagingBufferManager;
     private final GraphicResourceManager graphicResourceManager;
+
+    public final GizmosManager gizmosManager;
 
     private final RenderPass chunkCpuPass;
     private final RenderPass gizmosPass;
@@ -64,8 +64,6 @@ public class RenderingCoordinator {
 
         scene = new MinecraftScene(ecsRuntime.entityManager, ecsRuntime.jobScheduler);
         camera = new MinecraftCamera();
-
-        gizmosManager = new GizmosManager();
 
         shaderRegistry = new ShaderRegistry();
         ShaderRegistrationEvent shaderRegistrationEvent = new ShaderRegistrationEvent();
@@ -86,19 +84,21 @@ public class RenderingCoordinator {
         stagingBufferManager = new StagingBufferManager();
         graphicResourceManager = new GraphicResourceManager(stagingBufferManager);
 
+        gizmosManager = new GizmosManager(graphicResourceManager);
+
         //stagingBufferManager.genPersistentBuffers("default", 256, 256);
 
         ShaderProgram shaderProgram = shaderRegistry.newShaderProgram("forge:shaders/gizmos.vert", "forge:shaders/gizmos.frag");
 
         Renderer renderer = new Renderer();
-        chunkCpuPass = new RenderPass("Chunk CPU Pass");
+        chunkCpuPass = new RenderPass(graphicResourceManager, "Chunk CPU Pass");
         chunkCpuPass.addSubpass("Opaque Pass", new WhateverPass(renderer, PSOPresets.createOpaquePSO(shaderProgram), new Framebuffer(0, 0)));
         chunkCpuPass.addSubpass("Cutout Pass", new WhateverPass(renderer, PSOPresets.createCutoutPSO(shaderProgram), new Framebuffer(0, 0)));
         chunkCpuPass.addSubpass("Transparent Pass", new WhateverPass(renderer, PSOPresets.createTransparentPSO(shaderProgram), new Framebuffer(0, 0)));
 
         Framebuffer framebuffer = new Framebuffer(MINECRAFT.displayWidth, MINECRAFT.displayHeight);
         framebuffers.add(framebuffer);
-        gizmosPass = new RenderPass("Gizmos Pass");
+        gizmosPass = new RenderPass(graphicResourceManager, "Gizmos Pass");
         gizmosPass.addSubpass("Gizmos Pass", new GizmosPass(
                 renderer,
                 PSOPresets.createGizmosPSO(shaderProgram),

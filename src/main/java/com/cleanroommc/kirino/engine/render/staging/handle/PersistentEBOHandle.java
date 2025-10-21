@@ -6,7 +6,7 @@ import com.google.common.base.Preconditions;
 
 import java.nio.ByteBuffer;
 
-public class PersistentEBOHandle extends StagingBufferHandle {
+public class PersistentEBOHandle extends StagingBufferHandle<PersistentEBOHandle> {
     private final ByteBuffer byteBuffer;
 
     public PersistentEBOHandle(StagingBufferManager stagingBufferManager, int offset, int maxLength, ByteBuffer byteBuffer) {

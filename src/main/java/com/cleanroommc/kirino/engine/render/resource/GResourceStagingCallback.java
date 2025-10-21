@@ -1,19 +1,14 @@
 package com.cleanroommc.kirino.engine.render.resource;
 
-import com.cleanroommc.kirino.KirinoCore;
-import com.cleanroommc.kirino.engine.render.pipeline.pass.subpasses.GizmosPass;
+import com.cleanroommc.kirino.engine.render.resource.payload.MeshPayload;
+import com.cleanroommc.kirino.engine.render.resource.receipt.MeshReceipt;
 import com.cleanroommc.kirino.engine.render.staging.IStagingCallback;
 import com.cleanroommc.kirino.engine.render.staging.StagingContext;
 import com.cleanroommc.kirino.engine.render.staging.handle.TemporaryEBOHandle;
-import com.cleanroommc.kirino.engine.render.staging.handle.TemporaryVAOHandle;
 import com.cleanroommc.kirino.engine.render.staging.handle.TemporaryVBOHandle;
-import com.cleanroommc.kirino.gl.vao.attribute.AttributeLayout;
-import com.cleanroommc.kirino.gl.vao.attribute.Slot;
-import com.cleanroommc.kirino.gl.vao.attribute.Stride;
-import com.cleanroommc.kirino.gl.vao.attribute.Type;
-import org.lwjgl.BufferUtils;
 
-import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class GResourceStagingCallback implements IStagingCallback {
     private final GraphicResourceManager graphicResourceManager;
@@ -22,52 +17,38 @@ public final class GResourceStagingCallback implements IStagingCallback {
         this.graphicResourceManager = graphicResourceManager;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void run(StagingContext context) {
+        Map<String, GResourceTicket<?, ?>> map = graphicResourceManager.resourceTickets.computeIfAbsent(GResourceType.MESH, k -> new HashMap<>());
+        for (GResourceTicket<?, ?> ticket : map.values()) {
+            GResourceTicket<MeshPayload, MeshReceipt> meshTicket = (GResourceTicket<MeshPayload, MeshReceipt>) ticket;
 
-        // test
-        AttributeLayout layout = new AttributeLayout();
-        layout.push(new Stride(16)
-                .push(new Slot(Type.FLOAT, 3))
-                .push(new Slot(Type.UNSIGNED_BYTE, 4).setNormalize(true)));
-        KirinoCore.LOGGER.info(layout.getDebugReport());
+            // must upload every time cuz i use temporary handles to test
+            //if (meshTicket.status == GResourceStatus.CPU_ONLY) {
+                // todo: combine vbo ebo if possible + make use of RenderObj2BufMorphism to compute indices automatically
 
-        ByteBuffer vboData = BufferUtils.createByteBuffer(4 * 16);
+                // todo: persistent upload + double buffering results in a deferred ticket status change (use UPLOADING instead)
 
-        float x = 0;
-        float y = 100;
-        float z = 0;
-        float halfSize = 1f;
+                // todo: hint to control temp/persistent upload ?
 
-        vboData.putFloat(x - halfSize).putFloat(y).putFloat(z - halfSize);
-        vboData.put((byte)255).put((byte)0).put((byte)0).put((byte)255);
-        vboData.putFloat(x + halfSize).putFloat(y).putFloat(z - halfSize);
-        vboData.put((byte)0).put((byte)255).put((byte)0).put((byte)255);
-        vboData.putFloat(x + halfSize).putFloat(y).putFloat(z + halfSize);
-        vboData.put((byte)0).put((byte)0).put((byte)255).put((byte)255);
-        vboData.putFloat(x - halfSize).putFloat(y).putFloat(z + halfSize);
-        vboData.put((byte)255).put((byte)255).put((byte)0).put((byte)255);
+                MeshPayload meshPayload = meshTicket.payload.getPayload();
+                MeshReceipt meshReceipt = meshTicket.receipt.getReceipt();
 
-        vboData.flip();
+                TemporaryVBOHandle vboHandle = context.getTemporaryVBO(meshPayload.vboByteBuffer.remaining()).write(0, meshPayload.vboByteBuffer);
+                TemporaryEBOHandle eboHandle = context.getTemporaryEBO(meshPayload.eboByteBuffer.remaining()).write(0, meshPayload.eboByteBuffer);
+                meshReceipt.vao = context.getTemporaryVAO(meshPayload.attributeLayout, eboHandle, vboHandle).getVaoID();
+                meshReceipt.eboOffset = 0;
+                meshReceipt.eboLength = meshPayload.eboByteBuffer.remaining();
 
-        ByteBuffer eboData = BufferUtils.createByteBuffer(6 * 4);
+                // todo: release payload
 
-        eboData.putInt(0);
-        eboData.putInt(1);
-        eboData.putInt(2);
-        eboData.putInt(0);
-        eboData.putInt(2);
-        eboData.putInt(3);
+                meshTicket.status = GResourceStatus.GPU_READY;
+            //}
 
-        eboData.flip();
+            meshTicket.tickFrame();
+        }
 
-        TemporaryVBOHandle vboHandle = context.getTemporaryVBO(4 * 16);
-        vboHandle.write(0, vboData);
-        TemporaryEBOHandle eboHandle = context.getTemporaryEBO(6 * 4);
-        eboHandle.write(0, eboData);
-
-        TemporaryVAOHandle vaoHandle = context.getTemporaryVAO(layout, eboHandle, vboHandle);
-
-        GizmosPass.vao = vaoHandle.getVaoID();
+        // todo: texture tickets
     }
 }

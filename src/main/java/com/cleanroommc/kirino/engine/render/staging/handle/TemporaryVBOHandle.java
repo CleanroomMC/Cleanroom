@@ -7,7 +7,7 @@ import com.google.common.base.Preconditions;
 
 import java.nio.ByteBuffer;
 
-public class TemporaryVBOHandle extends StagingBufferHandle {
+public class TemporaryVBOHandle extends StagingBufferHandle<TemporaryVBOHandle> {
     public final long generation;
     protected final VBOView vboView; // turn off validation; handle preconditions manually here
 

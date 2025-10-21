@@ -1,14 +1,22 @@
 package com.cleanroommc.kirino.engine.render.pipeline.command;
 
+import com.cleanroommc.kirino.KirinoCore;
+import com.cleanroommc.kirino.engine.render.resource.GResourceTicket;
+import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
+import com.cleanroommc.kirino.engine.render.resource.payload.MeshPayload;
+import com.cleanroommc.kirino.engine.render.resource.receipt.MeshReceipt;
 import org.jspecify.annotations.Nullable;
+import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
 
 public class DrawQueue {
+    private final GraphicResourceManager graphicResourceManager;
     private final Deque<IDrawCommand> deque = new ArrayDeque<>();
+
+    public DrawQueue(GraphicResourceManager graphicResourceManager) {
+        this.graphicResourceManager = graphicResourceManager;
+    }
 
     public void enqueue(IDrawCommand command) {
         deque.offerLast(command);
@@ -33,7 +41,43 @@ public class DrawQueue {
     public DrawQueue compile() {
         List<IDrawCommand> baked = new ArrayList<>();
 
-        baked.addAll(deque);
+        IDrawCommand drawCommand;
+        while ((drawCommand = dequeue()) != null) {
+            if (drawCommand instanceof LowLevelDC) {
+                baked.add(drawCommand);
+            } else if (drawCommand instanceof HighLevelDC highLevelDC) {
+                // todo: use multi draw indirect unit command if more than one commands have the same vao
+
+                Optional<GResourceTicket<MeshPayload, MeshReceipt>> optional = graphicResourceManager.getMeshTicket(highLevelDC.meshTicketID);
+                if (optional.isEmpty()) {
+                    continue;
+                }
+                if (!optional.get().isResourceReady() || optional.get().isExpired()) {
+                    continue;
+                }
+
+                MeshReceipt meshReceipt = optional.get().getReceipt();
+
+                LowLevelDC.ElementBuilder element = LowLevelDC.element().vao(meshReceipt.vao);
+                element.mode(highLevelDC.mode).elementType(highLevelDC.elementType);
+
+                int elementSize = 0;
+                if (highLevelDC.elementType == GL11.GL_UNSIGNED_BYTE) {
+                    elementSize = 1;
+                } else if (highLevelDC.elementType == GL11.GL_UNSIGNED_SHORT) {
+                    elementSize = 2;
+                } else if (highLevelDC.elementType == GL11.GL_UNSIGNED_INT) {
+                    elementSize = 4;
+                }
+
+                element.indicesCount(meshReceipt.eboLength / elementSize);
+                element.eboOffset(meshReceipt.eboOffset);
+
+                baked.add(element.build());
+            }
+        }
+
+        KirinoCore.LOGGER.info("baked draw queue size: " + baked.size());
 
         deque.clear();
         deque.addAll(baked);

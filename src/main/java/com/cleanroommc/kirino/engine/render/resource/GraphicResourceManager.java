@@ -76,4 +76,16 @@ public class GraphicResourceManager {
             ticket.status = GResourceStatus.TO_BE_DESTROYED;
         }
     }
+
+    /**
+     * @param meshID The ID of the mesh ticket
+     */
+    @SuppressWarnings("unchecked")
+    public Optional<GResourceTicket<MeshPayload, MeshReceipt>> getMeshTicket(String meshID) {
+        Map<String, GResourceTicket<?, ?>> map = resourceTickets.computeIfAbsent(GResourceType.MESH, k -> new HashMap<>());
+        GResourceTicket<MeshPayload, MeshReceipt> ticket = (GResourceTicket<MeshPayload, MeshReceipt>) map.get(meshID);
+        return Optional.ofNullable(ticket);
+    }
+
+    // todo: texture tickets
 }

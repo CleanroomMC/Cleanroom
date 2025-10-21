@@ -1,6 +1,5 @@
 package com.cleanroommc.kirino.engine.render.pipeline.pass.subpasses;
 
-import com.cleanroommc.kirino.KirinoCore;
 import com.cleanroommc.kirino.engine.render.camera.ICamera;
 import com.cleanroommc.kirino.engine.render.gizmos.GizmosManager;
 import com.cleanroommc.kirino.engine.render.pipeline.Renderer;
@@ -11,15 +10,11 @@ import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
 import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL20C;
 
 public class GizmosPass extends Subpass {
     private final GizmosManager gizmosManager;
-
-    // test
-    public static int vao;
 
     public GizmosPass(Renderer renderer, PipelineStateObject pso, Framebuffer fbo, GizmosManager gizmosManager) {
         super(renderer, pso, fbo);
@@ -40,7 +35,7 @@ public class GizmosPass extends Subpass {
 
     @Override
     protected boolean hintCompileDrawQueue() {
-        return false;
+        return true;
     }
 
     @Override
@@ -59,12 +54,6 @@ public class GizmosPass extends Subpass {
     public void collectCommands(DrawQueue drawQueue) {
         // todo: fetch from gizmosManager
 
-        drawQueue.enqueue(LowLevelDC.element()
-                .vao(vao)
-                .mode(GL11.GL_TRIANGLES)
-                .indicesCount(6)
-                .elementType(GL11.GL_UNSIGNED_INT)
-                .eboOffset(0)
-                .build());
+        drawQueue.enqueue(gizmosManager.getDrawCommand());
     }
 }
