@@ -6,11 +6,9 @@ import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.objects.*;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class KDTree {
 
@@ -39,7 +37,7 @@ public class KDTree {
                 recurrence.toInsert.remove(recurrence.node.meshlet);
             }
             for(Meshlet meshlet : recurrence.toInsert) {
-                if (isLeft(recurrence.node.meshlet, meshlet, dimension)) {
+                if (compareMeshletDimension(recurrence.node.meshlet, meshlet, dimension)) {
                     left.add(meshlet);
                 } else {
                     right.add(meshlet);
@@ -98,7 +96,77 @@ public class KDTree {
         return Optional.of(meshlets);
     }
 
-    private static boolean isLeft(Meshlet median, Meshlet meshlet, int dimension) {
+    // TODO: Rewrite to iterative
+    private static Optional<Node> _delete(@Nullable Node from, Meshlet point, int depth) {
+        if (from == null) {
+            return Optional.empty();
+        }
+
+        int dimension = depth % 3;
+
+        if (from.meshlet.median().distanceSquared(point.median()) == 0) {
+            if (from.right != null) {
+                Optional<Node> min = findMin(from.right, dimension, depth);
+                if (min.isPresent()) {
+                    from.meshlet = min.get().meshlet;
+                    from.right = _delete(from.right, min.get().meshlet, depth + 1).orElse(null);
+                }
+            } else if (from.left != null) {
+                Optional<Node> min = findMin(from.left, dimension, depth);
+                if (min.isPresent()) {
+                    from.meshlet = min.get().meshlet;
+                    from.left = _delete(from.left, min.get().meshlet, depth + 1).orElse(null);
+                }
+            } else {
+                from = null;
+            }
+            return Optional.ofNullable(from);
+        }
+
+        if (compareMeshletDimension(from.meshlet, point, dimension)) {
+            from.left = _delete(from.left, point, depth + 1).orElse(null);
+        } else {
+            from.right = _delete(from.right, point, depth + 1).orElse(null);
+        }
+
+        return Optional.of(from);
+    }
+
+    public void delete(@NonNull Meshlet meshlet) {
+        _delete(root, meshlet, 0);
+    }
+
+    // TODO: Rewrite to iterative
+    private static @NonNull Optional<Node> findMin(@Nullable Node from, int dimension, int depth) {
+        if (from == null) {
+            return Optional.empty();
+        }
+
+        int cd = depth % 3;
+
+        if (cd == dimension) {
+            if (from.left == null) {
+                return Optional.of(from);
+            }
+            return findMin(from.left, dimension, depth + 1);
+        }
+
+        Optional<Node> left = findMin(from.left, dimension, depth + 1);
+        Optional<Node> right = findMin(from.right, dimension, depth + 1);
+
+        Optional<Node> min = Optional.of(from);
+
+        if (left.isPresent() && compareMeshletDimension(from.meshlet, left.get().meshlet, dimension)) {
+            min = left;
+        }
+        if (right.isPresent() && compareMeshletDimension(from.meshlet, right.get().meshlet, dimension)) {
+            min = right;
+        }
+
+        return min;
+    }
+
+    private static boolean compareMeshletDimension(Meshlet median, Meshlet meshlet, int dimension) {
         return switch(dimension) {
             case 0 -> meshlet.median().x < median.median().x;
             case 1 -> meshlet.median().y < median.median().y;
