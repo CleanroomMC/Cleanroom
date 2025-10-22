@@ -102,3 +102,7 @@ Kirino Engine is made possible thanks to the efforts of all contributors!
 
 - [tttsaurus](https://github.com/tttsaurus) - Core maintainer
 - [Eerie](https://github.com/Kuba663) - Feature & algorithm contributions
+
+## License
+
+This project (Kirino Engine not Cleanroom) is licensed under [Mod Permissions License](https://github.com/CleanroomMC/Cleanroom/tree/proposal/render-system/kirino-engine/LICENSE) published by Jbredwards.
