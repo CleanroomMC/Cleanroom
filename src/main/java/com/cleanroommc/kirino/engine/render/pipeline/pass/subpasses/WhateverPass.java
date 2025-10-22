@@ -3,6 +3,7 @@ package com.cleanroommc.kirino.engine.render.pipeline.pass.subpasses;
 import com.cleanroommc.kirino.engine.render.camera.ICamera;
 import com.cleanroommc.kirino.engine.render.pipeline.Renderer;
 import com.cleanroommc.kirino.engine.render.pipeline.command.DrawQueue;
+import com.cleanroommc.kirino.engine.render.pipeline.pass.PassHint;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.Subpass;
 import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
 import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
@@ -26,6 +27,11 @@ public class WhateverPass extends Subpass {
     @Override
     protected boolean hintSimplifyDrawQueue() {
         return false;
+    }
+
+    @Override
+    public PassHint passHint() {
+        return PassHint.OTHER;
     }
 
     @Override

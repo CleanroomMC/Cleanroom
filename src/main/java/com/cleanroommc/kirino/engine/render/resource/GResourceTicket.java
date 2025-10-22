@@ -10,6 +10,7 @@ import com.google.common.base.Preconditions;
 
 public class GResourceTicket<TP extends IResourcePayload<TP>, TR extends IResourceReceipt<TR>> {
     public final GResourceType type;
+    public final UploadStrategy uploadStrategy;
     protected GResourceStatus status;
     protected final IResourcePayload<TP> payload;
     protected final IResourceReceipt<TR> receipt;
@@ -25,34 +26,25 @@ public class GResourceTicket<TP extends IResourcePayload<TP>, TR extends IResour
         return status == GResourceStatus.GPU_READY;
     }
 
-    /**
-     * Zero side-effect compared to {@link #tickFrame()}.
-     *
-     * @return Whether this ticket is expired.
-     */
     public final boolean isExpired() {
-        return lifeFrame <= 0 || status == GResourceStatus.TO_BE_DESTROYED;
+        if (status == GResourceStatus.UPLOADING) {
+            return false;
+        } else {
+            return lifeFrame <= 0 || status == GResourceStatus.TO_BE_DESTROYED;
+        }
     }
 
-    /**
-     * @return Whether this ticket is expired.
-     */
-    protected final boolean tickFrame() {
+    protected final void tickFrame() {
         if (status == GResourceStatus.GPU_READY) {
             lifeFrame--;
-        } else if (status == GResourceStatus.UPLOADING) {
-            return false;
-        } else if (status == GResourceStatus.TO_BE_DESTROYED) {
-            return true;
         }
-        return lifeFrame <= 0;
     }
 
     protected final void keepAlive() {
         lifeFrame = DEFAULT_LIFE;
     }
 
-    public GResourceTicket(Class<TP> payloadClass, Class<TR> receiptClass, TP payload, TR receipt) {
+    public GResourceTicket(UploadStrategy uploadStrategy, Class<TP> payloadClass, Class<TR> receiptClass, TP payload, TR receipt) {
         Preconditions.checkArgument(payloadClass == MeshPayload.class || payloadClass == TexturePayload.class,
                 "Argument payloadClass " + payloadClass.getName() + " is invalid. Must use a built-in payload class.");
         Preconditions.checkArgument(receiptClass == MeshReceipt.class || receiptClass == TextureReceipt.class,
@@ -81,5 +73,6 @@ public class GResourceTicket<TP extends IResourcePayload<TP>, TR extends IResour
         status = GResourceStatus.CPU_ONLY;
         this.payload = payload;
         this.receipt = receipt;
+        this.uploadStrategy = uploadStrategy;
     }
 }

@@ -40,7 +40,8 @@ public final class HighLevelDC implements IDrawCommand {
         private int elementType = -1;
 
         public PassInternalBuilder meshTicketID(@NonNull String meshTicketID) {
-            Preconditions.checkNotNull(meshTicketID);
+            Preconditions.checkNotNull(meshTicketID, "Invalid \"meshTicketID\".");
+            Preconditions.checkArgument(!meshTicketID.isEmpty(), "Invalid \"meshTicketID\".");
 
             this.meshTicketID = meshTicketID;
             return this;
@@ -80,14 +81,15 @@ public final class HighLevelDC implements IDrawCommand {
         private int elementType = -1;
 
         public SceneSubmittedBuilder passHint(@NonNull PassHint passHint) {
-            Preconditions.checkNotNull(passHint);
+            Preconditions.checkNotNull(passHint, "Invalid \"passHint\".");
 
             this.passHint = passHint;
             return this;
         }
 
         public SceneSubmittedBuilder meshTicketID(@NonNull String meshTicketID) {
-            Preconditions.checkNotNull(meshTicketID);
+            Preconditions.checkNotNull(meshTicketID, "Invalid \"meshTicketID\".");
+            Preconditions.checkArgument(!meshTicketID.isEmpty(), "Invalid \"meshTicketID\".");
 
             this.meshTicketID = meshTicketID;
             return this;

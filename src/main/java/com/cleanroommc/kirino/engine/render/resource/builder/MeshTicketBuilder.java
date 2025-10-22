@@ -1,23 +1,30 @@
 package com.cleanroommc.kirino.engine.render.resource.builder;
 
 import com.cleanroommc.kirino.engine.render.resource.GResourceTicket;
+import com.cleanroommc.kirino.engine.render.resource.UploadStrategy;
 import com.cleanroommc.kirino.engine.render.resource.payload.MeshPayload;
 import com.cleanroommc.kirino.engine.render.resource.receipt.MeshReceipt;
 import com.cleanroommc.kirino.gl.vao.attribute.AttributeLayout;
 
 import java.nio.ByteBuffer;
 
-public class MeshTicketBuilder {
+public final class MeshTicketBuilder {
     private final String meshID;
+    private final UploadStrategy uploadStrategy;
     private GResourceTicket<MeshPayload, MeshReceipt> ticket;
     private boolean built = false;
 
-    public MeshTicketBuilder(String meshID) {
+    public MeshTicketBuilder(String meshID, UploadStrategy uploadStrategy) {
         this.meshID = meshID;
+        this.uploadStrategy = uploadStrategy;
     }
 
     public String getMeshID() {
         return meshID;
+    }
+
+    public UploadStrategy getUploadStrategy() {
+        return uploadStrategy;
     }
 
     public GResourceTicket<MeshPayload, MeshReceipt> getTicket() {
@@ -37,7 +44,7 @@ public class MeshTicketBuilder {
             payload.eboByteBuffer = eboByteBuffer;
             payload.attributeLayout = attributeLayout;
 
-            ticket = new GResourceTicket<>(MeshPayload.class, MeshReceipt.class, payload, receipt);
+            ticket = new GResourceTicket<>(uploadStrategy, MeshPayload.class, MeshReceipt.class, payload, receipt);
             built = true;
         }
     }

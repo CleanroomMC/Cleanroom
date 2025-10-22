@@ -7,7 +7,9 @@ import com.cleanroommc.kirino.engine.render.staging.StagingContext;
 import com.cleanroommc.kirino.engine.render.staging.handle.TemporaryEBOHandle;
 import com.cleanroommc.kirino.engine.render.staging.handle.TemporaryVBOHandle;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class GResourceStagingCallback implements IStagingCallback {
@@ -20,35 +22,54 @@ public final class GResourceStagingCallback implements IStagingCallback {
     @SuppressWarnings("unchecked")
     @Override
     public void run(StagingContext context) {
+        // handle mesh tickets
         Map<String, GResourceTicket<?, ?>> map = graphicResourceManager.resourceTickets.computeIfAbsent(GResourceType.MESH, k -> new HashMap<>());
-        for (GResourceTicket<?, ?> ticket : map.values()) {
-            GResourceTicket<MeshPayload, MeshReceipt> meshTicket = (GResourceTicket<MeshPayload, MeshReceipt>) ticket;
 
-            // must upload every time cuz i use temporary handles to test
-            //if (meshTicket.status == GResourceStatus.CPU_ONLY) {
-                // todo: combine vbo ebo if possible + make use of RenderObj2BufMorphism to compute indices automatically
+        List<String> toBeRemoved = new ArrayList<>();
 
-                // todo: persistent upload + double buffering results in a deferred ticket status change (use UPLOADING instead)
+        for (Map.Entry<String, GResourceTicket<?, ?>> entry : map.entrySet()) {
+            GResourceTicket<MeshPayload, MeshReceipt> meshTicket = (GResourceTicket<MeshPayload, MeshReceipt>) entry.getValue();
 
-                // todo: hint to control temp/persistent upload ?
+            if (meshTicket.isExpired()) {
+                toBeRemoved.add(entry.getKey());
+                meshTicket.payload.release();
+                continue;
+            }
 
-                MeshPayload meshPayload = meshTicket.payload.getPayload();
-                MeshReceipt meshReceipt = meshTicket.receipt.getReceipt();
+            // all temporary handles will be disposed every frame
+            if (meshTicket.uploadStrategy == UploadStrategy.TEMPORARY) {
+                // we don't release payloads for temporary tickets
+                // so their payload is now cpu only
+                meshTicket.status = GResourceStatus.CPU_ONLY;
+            }
 
-                TemporaryVBOHandle vboHandle = context.getTemporaryVBO(meshPayload.vboByteBuffer.remaining()).write(0, meshPayload.vboByteBuffer);
-                TemporaryEBOHandle eboHandle = context.getTemporaryEBO(meshPayload.eboByteBuffer.remaining()).write(0, meshPayload.eboByteBuffer);
-                meshReceipt.vao = context.getTemporaryVAO(meshPayload.attributeLayout, eboHandle, vboHandle).getVaoID();
-                meshReceipt.eboOffset = 0;
-                meshReceipt.eboLength = meshPayload.eboByteBuffer.remaining();
+            if (meshTicket.status == GResourceStatus.CPU_ONLY) {
+                if (meshTicket.uploadStrategy == UploadStrategy.PERSISTENT) {
+                    // todo: combine vbo ebo if possible + make use of RenderObj2BufMorphism to compute indices automatically
 
-                // todo: release payload
+                    // todo: persistent upload + double buffering results in a deferred ticket status change (use UPLOADING instead)
 
-                meshTicket.status = GResourceStatus.GPU_READY;
-            //}
+                } else if (meshTicket.uploadStrategy == UploadStrategy.TEMPORARY) {
+                    MeshPayload meshPayload = meshTicket.payload.getPayload();
+                    MeshReceipt meshReceipt = meshTicket.receipt.getReceipt();
+
+                    TemporaryVBOHandle vboHandle = context.getTemporaryVBO(meshPayload.vboByteBuffer.remaining()).write(0, meshPayload.vboByteBuffer);
+                    TemporaryEBOHandle eboHandle = context.getTemporaryEBO(meshPayload.eboByteBuffer.remaining()).write(0, meshPayload.eboByteBuffer);
+                    meshReceipt.vao = context.getTemporaryVAO(meshPayload.attributeLayout, eboHandle, vboHandle).getVaoID();
+                    meshReceipt.eboOffset = 0;
+                    meshReceipt.eboLength = meshPayload.eboByteBuffer.remaining();
+
+                    // dont release payloads here
+
+                    meshTicket.status = GResourceStatus.GPU_READY;
+                }
+            }
 
             meshTicket.tickFrame();
         }
 
-        // todo: texture tickets
+        toBeRemoved.forEach(map::remove);
+
+        // todo: handle texture tickets
     }
 }

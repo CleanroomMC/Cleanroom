@@ -3,6 +3,7 @@ package com.cleanroommc.kirino.engine.render.gizmos;
 import com.cleanroommc.kirino.KirinoCore;
 import com.cleanroommc.kirino.engine.render.pipeline.command.HighLevelDC;
 import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
+import com.cleanroommc.kirino.engine.render.resource.UploadStrategy;
 import com.cleanroommc.kirino.engine.render.resource.builder.MeshTicketBuilder;
 import com.cleanroommc.kirino.gl.vao.attribute.AttributeLayout;
 import com.cleanroommc.kirino.gl.vao.attribute.Slot;
@@ -62,7 +63,7 @@ public class GizmosManager {
 
     public HighLevelDC getDrawCommand() {
         // request ticket or keep alive
-        graphicResourceManager.requestMeshTicket("my_mesh").ifPresent(builder -> {
+        graphicResourceManager.requestMeshTicket("my_mesh", UploadStrategy.TEMPORARY).ifPresent(builder -> {
             test(builder);
             graphicResourceManager.submitMeshTicket(builder);
         });

@@ -16,6 +16,8 @@ public class GraphicResourceManager {
     private final StagingBufferManager stagingBufferManager;
     private final IStagingCallback stagingCallback;
 
+    protected final Map<GResourceType, Map<String, GResourceTicket<?, ?>>> resourceTickets = new HashMap<>();
+
     public GraphicResourceManager(StagingBufferManager stagingBufferManager) {
         this.stagingBufferManager = stagingBufferManager;
         this.stagingCallback = new GResourceStagingCallback(this);
@@ -25,8 +27,6 @@ public class GraphicResourceManager {
         stagingBufferManager.runStaging(stagingCallback);
     }
 
-    protected final Map<GResourceType, Map<String, GResourceTicket<?, ?>>> resourceTickets = new HashMap<>();
-
     /**
      * If <code>meshID</code> already exists, this request keeps that ticket alive.
      * Otherwise, a {@link MeshTicketBuilder} will be returned and you need to {@link MeshTicketBuilder#build(ByteBuffer, ByteBuffer, AttributeLayout)} and then {@link #submitMeshTicket(MeshTicketBuilder)}.
@@ -35,11 +35,11 @@ public class GraphicResourceManager {
      * @return An optional mesh ticket builder
      */
     @SuppressWarnings("unchecked")
-    public Optional<MeshTicketBuilder> requestMeshTicket(String meshID) {
+    public Optional<MeshTicketBuilder> requestMeshTicket(String meshID, UploadStrategy uploadStrategy) {
         Map<String, GResourceTicket<?, ?>> map = resourceTickets.computeIfAbsent(GResourceType.MESH, k -> new HashMap<>());
         GResourceTicket<MeshPayload, MeshReceipt> ticket = (GResourceTicket<MeshPayload, MeshReceipt>) map.get(meshID);
         if (ticket == null) {
-            return Optional.of(new MeshTicketBuilder(meshID));
+            return Optional.of(new MeshTicketBuilder(meshID, uploadStrategy));
         } else {
             ticket.keepAlive();
             return Optional.empty();

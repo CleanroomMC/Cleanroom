@@ -1,6 +1,5 @@
 package com.cleanroommc.kirino.engine.render.pipeline.pass;
 
-import com.cleanroommc.kirino.KirinoCore;
 import com.cleanroommc.kirino.engine.render.camera.ICamera;
 import com.cleanroommc.kirino.engine.render.pipeline.command.HighLevelDC;
 import com.cleanroommc.kirino.engine.render.pipeline.command.LowLevelDC;
@@ -60,6 +59,8 @@ public abstract class Subpass {
      * @return The hint
      */
     protected abstract boolean hintSimplifyDrawQueue();
+
+    public abstract PassHint passHint();
 
     /**
      * Draw all {@link LowLevelDC}s here via {@link Renderer} if it's a CPU-side pass.
