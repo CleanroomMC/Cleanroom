@@ -48,6 +48,10 @@ public class Meshlet implements Comparable<Meshlet> {
         return blocks;
     }
 
+    public Vector3f normal() {
+        return new Vector3f(normal.getXOffset(), normal.getYOffset(), normal.getZOffset());
+    }
+
     public void addBlock(short block) {
         addBlock(block & MASK_X, (block & MASK_Y) >> 4, (block & MASK_Z) >> 8);
     }
