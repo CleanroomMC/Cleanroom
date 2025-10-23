@@ -55,8 +55,6 @@ public class ChunkMeshletGenJob implements IParallelJob {
             setMeshletComponent(meshlet, meshletComponent);
             entityManager.createEntity(meshletComponent);
         }
-
-        entityManager.flush();
     }
 
     private static int index(int x, int y, int z) {
