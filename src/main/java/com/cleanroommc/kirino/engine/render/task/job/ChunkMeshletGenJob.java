@@ -1,7 +1,6 @@
 package com.cleanroommc.kirino.engine.render.task.job;
 
 import com.cleanroommc.kirino.KirinoCore;
-import com.cleanroommc.kirino.ecs.component.ComponentDesc;
 import com.cleanroommc.kirino.ecs.entity.EntityQuery;
 import com.cleanroommc.kirino.ecs.job.IParallelJob;
 import com.cleanroommc.kirino.ecs.job.JobDataQuery;
@@ -132,6 +131,11 @@ public class ChunkMeshletGenJob implements IParallelJob {
 
     private static void setMeshletComponent(@NonNull Meshlet meshlet, @NonNull MeshletComponent component) {
         component.aabb = meshlet.aabb();
+        component.normal = meshlet.normal();
+        List<Block> blocks = meshlet.emptyBlocks();
+        for (int i = 0; i < blocks.size(); i++) {
+            setComponentBlock(component, i, blocks.get(i));
+        }
     }
 
     private static void setComponentBlock(@NonNull MeshletComponent component, int idx, @NonNull Block block) {
