@@ -4,7 +4,7 @@ import com.cleanroommc.kirino.engine.render.geometry.AABB;
 import com.cleanroommc.kirino.engine.render.geometry.Block;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.PriorityQueue;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.shorts.ShortHeapPriorityQueue;
 import net.minecraft.util.EnumFacing;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +12,7 @@ import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Meshlet implements Comparable<Meshlet> {
