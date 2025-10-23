@@ -1,21 +1,6 @@
 --- before/net/minecraft/client/shader/Framebuffer.java
 +++ after/net/minecraft/client/shader/Framebuffer.java
-@@ -1,5 +1,6 @@
- package net.minecraft.client.shader;
- 
-+import java.nio.IntBuffer;
- import net.minecraft.client.renderer.BufferBuilder;
- import net.minecraft.client.renderer.GlStateManager;
- import net.minecraft.client.renderer.OpenGlHelper;
-@@ -110,15 +111,24 @@
- 
-             this.setFramebufferFilter(9728);
-             GlStateManager.bindTexture(this.framebufferTexture);
--            GlStateManager.glTexImage2D(3553, 0, 32856, this.framebufferTextureWidth, this.framebufferTextureHeight, 0, 6408, 5121, null);
-+            GlStateManager.glTexImage2D(3553, 0, 32856, this.framebufferTextureWidth, this.framebufferTextureHeight, 0, 6408, 5121, (IntBuffer)null);
-             OpenGlHelper.glBindFramebuffer(OpenGlHelper.GL_FRAMEBUFFER, this.framebufferObject);
-             OpenGlHelper.glFramebufferTexture2D(OpenGlHelper.GL_FRAMEBUFFER, OpenGlHelper.GL_COLOR_ATTACHMENT0, 3553, this.framebufferTexture, 0);
- 
+@@ -117,8 +117,17 @@
              if (this.useDepth)
              {
                  OpenGlHelper.glBindRenderbuffer(OpenGlHelper.GL_RENDERBUFFER, this.depthBuffer);
@@ -33,39 +18,7 @@
              }
  
              this.framebufferClear();
-@@ -228,7 +238,7 @@
-             GlStateManager.depthMask(false);
-             GlStateManager.matrixMode(5889);
-             GlStateManager.loadIdentity();
--            GlStateManager.ortho(0.0, (double)width, (double)height, 0.0, 1000.0, 3000.0);
-+            GlStateManager.ortho(0.0D, (double)width, (double)height, 0.0D, 1000.0D, 3000.0D);
-             GlStateManager.matrixMode(5888);
-             GlStateManager.loadIdentity();
-             GlStateManager.translate(0.0F, 0.0F, -2000.0F);
-@@ -252,10 +262,10 @@
-             Tessellator tessellator = Tessellator.getInstance();
-             BufferBuilder bufferbuilder = tessellator.getBuffer();
-             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
--            bufferbuilder.pos(0.0, (double)f1, 0.0).tex(0.0, 0.0).color(255, 255, 255, 255).endVertex();
--            bufferbuilder.pos((double)f, (double)f1, 0.0).tex((double)f2, 0.0).color(255, 255, 255, 255).endVertex();
--            bufferbuilder.pos((double)f, 0.0, 0.0).tex((double)f2, (double)f3).color(255, 255, 255, 255).endVertex();
--            bufferbuilder.pos(0.0, 0.0, 0.0).tex(0.0, (double)f3).color(255, 255, 255, 255).endVertex();
-+            bufferbuilder.pos(0.0D, (double)f1, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, 255).endVertex();
-+            bufferbuilder.pos((double)f, (double)f1, 0.0D).tex((double)f2, 0.0D).color(255, 255, 255, 255).endVertex();
-+            bufferbuilder.pos((double)f, 0.0D, 0.0D).tex((double)f2, (double)f3).color(255, 255, 255, 255).endVertex();
-+            bufferbuilder.pos(0.0D, 0.0D, 0.0D).tex(0.0D, (double)f3).color(255, 255, 255, 255).endVertex();
-             tessellator.draw();
-             this.unbindFramebufferTexture();
-             GlStateManager.depthMask(true);
-@@ -271,11 +281,43 @@
- 
-         if (this.useDepth)
-         {
--            GlStateManager.clearDepth(1.0);
-+            GlStateManager.clearDepth(1.0D);
-             i |= 256;
-         }
- 
+@@ -278,4 +287,36 @@
          GlStateManager.clear(i);
          this.unbindFramebuffer();
      }

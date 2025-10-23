@@ -57,20 +57,15 @@
                  return flag;
              }
          }
-@@ -212,10 +217,9 @@
-         {
-             if (this.currentGameType.isCreative())
-             {
--                this.mc
--                .getTutorial()
--                .onHitBlock(this.mc.world, loc, this.mc.world.getBlockState(loc), 1.0F);
-+                this.mc.getTutorial().onHitBlock(this.mc.world, loc, this.mc.world.getBlockState(loc), 1.0F);
+@@ -216,6 +221,7 @@
+                 .getTutorial()
+                 .onHitBlock(this.mc.world, loc, this.mc.world.getBlockState(loc), 1.0F);
                  this.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, loc, face));
 +                if (!net.minecraftforge.common.ForgeHooks.onLeftClickBlock(this.mc.player, loc, face, net.minecraftforge.common.ForgeHooks.rayTraceEyeHitVec(this.mc.player, getBlockReachDistance() + 1)).isCanceled())
                  clickBlockCreative(this.mc, this, loc, face);
                  this.blockHitDelay = 5;
              }
-@@ -225,6 +229,7 @@
+@@ -225,6 +231,7 @@
                  {
                      this.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, this.currentBlock, face));
                  }
@@ -78,7 +73,7 @@
  
                  IBlockState iblockstate = this.mc.world.getBlockState(loc);
                  this.mc.getTutorial().onHitBlock(this.mc.world, loc, iblockstate, 0.0F);
-@@ -233,9 +238,11 @@
+@@ -233,9 +240,11 @@
  
                  if (flag && this.curBlockDamageMP == 0.0F)
                  {
@@ -90,93 +85,16 @@
                  if (flag && iblockstate.getPlayerRelativeBlockHardness(this.mc.player, this.mc.player.world, loc) >= 1.0F)
                  {
                      this.onPlayerDestroyBlock(loc);
-@@ -247,9 +254,7 @@
-                     this.currentItemHittingBlock = this.mc.player.getHeldItemMainhand();
-                     this.curBlockDamageMP = 0.0F;
-                     this.stepSoundTickCounter = 0.0F;
--                    this.mc
--                    .world
--                    .sendBlockBreakProgress(this.mc.player.getEntityId(), this.currentBlock, (int)(this.curBlockDamageMP * 10.0F) - 1);
-+                    this.mc.world.sendBlockBreakProgress(this.mc.player.getEntityId(), this.currentBlock, (int)(this.curBlockDamageMP * 10.0F) - 1);
-                 }
-             }
- 
-@@ -261,9 +266,7 @@
-     {
-         if (this.isHittingBlock)
-         {
--            this.mc
--            .getTutorial()
--            .onHitBlock(this.mc.world, this.currentBlock, this.mc.world.getBlockState(this.currentBlock), -1.0F);
-+            this.mc.getTutorial().onHitBlock(this.mc.world, this.currentBlock, this.mc.world.getBlockState(this.currentBlock), -1.0F);
-             this.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, this.currentBlock, EnumFacing.DOWN));
-             this.isHittingBlock = false;
-             this.curBlockDamageMP = 0.0F;
-@@ -278,15 +281,13 @@
- 
-         if (this.blockHitDelay > 0)
-         {
--            this.blockHitDelay--;
-+            --this.blockHitDelay;
-             return true;
-         }
-         else if (this.currentGameType.isCreative() && this.mc.world.getWorldBorder().contains(posBlock))
-         {
-             this.blockHitDelay = 5;
--            this.mc
--            .getTutorial()
--            .onHitBlock(this.mc.world, posBlock, this.mc.world.getBlockState(posBlock), 1.0F);
-+            this.mc.getTutorial().onHitBlock(this.mc.world, posBlock, this.mc.world.getBlockState(posBlock), 1.0F);
-             this.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, posBlock, directionFacing));
-             clickBlockCreative(this.mc, this, posBlock, directionFacing);
-             return true;
-@@ -303,29 +304,16 @@
-             }
-             else
-             {
--                this.curBlockDamageMP = this.curBlockDamageMP
--                                     + iblockstate.getPlayerRelativeBlockHardness(this.mc.player, this.mc.player.world, posBlock);
-+                this.curBlockDamageMP += iblockstate.getPlayerRelativeBlockHardness(this.mc.player, this.mc.player.world, posBlock);
+@@ -308,7 +317,7 @@
  
                  if (this.stepSoundTickCounter % 4.0F == 0.0F)
                  {
 -                    SoundType soundtype = block.getSoundType();
--                    this.mc
--                    .getSoundHandler()
--                    .playSound(
--                        new PositionedSoundRecord(
--                            soundtype.getHitSound(),
--                            SoundCategory.NEUTRAL,
--                            (soundtype.getVolume() + 1.0F) / 8.0F,
--                            soundtype.getPitch() * 0.5F,
--                            posBlock
--                        )
--                    );
 +                    SoundType soundtype = block.getSoundType(iblockstate, mc.world, posBlock, mc.player);
-+                    this.mc.getSoundHandler().playSound(new PositionedSoundRecord(soundtype.getHitSound(), SoundCategory.NEUTRAL, (soundtype.getVolume() + 1.0F) / 8.0F, soundtype.getPitch() * 0.5F, posBlock));
-                 }
- 
--                this.stepSoundTickCounter++;
--                this.mc
--                .getTutorial()
--                .onHitBlock(this.mc.world, posBlock, iblockstate, MathHelper.clamp(this.curBlockDamageMP, 0.0F, 1.0F));
-+                ++this.stepSoundTickCounter;
-+                this.mc.getTutorial().onHitBlock(this.mc.world, posBlock, iblockstate, MathHelper.clamp(this.curBlockDamageMP, 0.0F, 1.0F));
- 
-                 if (this.curBlockDamageMP >= 1.0F)
-                 {
-@@ -337,9 +325,7 @@
-                     this.blockHitDelay = 5;
-                 }
- 
--                this.mc
--                .world
--                .sendBlockBreakProgress(this.mc.player.getEntityId(), this.currentBlock, (int)(this.curBlockDamageMP * 10.0F) - 1);
-+                this.mc.world.sendBlockBreakProgress(this.mc.player.getEntityId(), this.currentBlock, (int)(this.curBlockDamageMP * 10.0F) - 1);
-                 return true;
-             }
-         }
-@@ -351,7 +337,8 @@
+                     this.mc
+                     .getSoundHandler()
+                     .playSound(
+@@ -351,7 +360,8 @@
  
      public float getBlockReachDistance()
      {
@@ -186,7 +104,7 @@
      }
  
      public void updateController()
-@@ -375,9 +362,7 @@
+@@ -375,9 +385,7 @@
  
          if (!this.currentItemHittingBlock.isEmpty() && !itemstack.isEmpty())
          {
@@ -197,18 +115,7 @@
          }
  
          return pos.equals(this.currentBlock) && flag;
-@@ -394,9 +379,7 @@
-         }
-     }
- 
--    public EnumActionResult processRightClickBlock(
--        EntityPlayerSP player, WorldClient worldIn, BlockPos pos, EnumFacing direction, Vec3d vec, EnumHand hand
--    )
-+    public EnumActionResult processRightClickBlock(EntityPlayerSP player, WorldClient worldIn, BlockPos pos, EnumFacing direction, Vec3d vec, EnumHand hand)
-     {
-         this.syncCurrentPlayItem();
-         ItemStack itemstack = player.getHeldItem(hand);
-@@ -411,14 +394,34 @@
+@@ -411,14 +419,34 @@
          }
          else
          {
@@ -246,7 +153,7 @@
                  }
  
                  if (!flag && itemstack.getItem() instanceof ItemBlock)
-@@ -434,44 +437,53 @@
+@@ -434,44 +462,53 @@
  
              this.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(pos, direction, hand, f, f1, f2));
  
@@ -335,7 +242,7 @@
          }
      }
  
-@@ -493,6 +505,8 @@
+@@ -493,6 +530,8 @@
              }
              else
              {
@@ -344,7 +251,7 @@
                  int i = itemstack.getCount();
                  ActionResult<ItemStack> actionresult = itemstack.useItemRightClick(worldIn, player, hand);
                  ItemStack itemstack1 = actionresult.getResult();
-@@ -500,6 +514,10 @@
+@@ -500,6 +539,10 @@
                  if (itemstack1 != itemstack || itemstack1.getCount() != i)
                  {
                      player.setHeldItem(hand, itemstack1);
@@ -355,16 +262,9 @@
                  }
  
                  return actionresult.getType();
-@@ -534,12 +552,11 @@
-     public EnumActionResult interactWithEntity(EntityPlayer player, Entity target, RayTraceResult ray, EnumHand hand)
-     {
-         this.syncCurrentPlayItem();
--        Vec3d vec3d = new Vec3d(
--            ray.hitVec.x - target.posX,
--            ray.hitVec.y - target.posY,
--            ray.hitVec.z - target.posZ
--        );
-+        Vec3d vec3d = new Vec3d(ray.hitVec.x - target.posX, ray.hitVec.y - target.posY, ray.hitVec.z - target.posZ);
+@@ -540,6 +583,9 @@
+             ray.hitVec.z - target.posZ
+         );
          this.connection.sendPacket(new CPacketUseEntity(target, hand, vec3d));
 +        if (this.currentGameType == GameType.SPECTATOR) return EnumActionResult.PASS; // don't fire for spectators to match non-specific EntityInteract
 +        EnumActionResult cancelResult = net.minecraftforge.common.ForgeHooks.onInteractEntityAt(player, target, ray, hand);
@@ -372,11 +272,3 @@
          return this.currentGameType == GameType.SPECTATOR ? EnumActionResult.PASS : target.applyPlayerInteraction(player, vec3d, hand);
      }
  
-@@ -626,6 +643,6 @@
- 
-     public void pickItem(int index)
-     {
--        this.connection.sendPacket(new CPacketCustomPayload("MC|PickItem", new PacketBuffer(Unpooled.buffer()).writeVarInt(index)));
-+        this.connection.sendPacket(new CPacketCustomPayload("MC|PickItem", (new PacketBuffer(Unpooled.buffer())).writeVarInt(index)));
-     }
- }

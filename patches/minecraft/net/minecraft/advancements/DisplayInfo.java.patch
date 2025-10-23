@@ -1,24 +1,6 @@
 --- before/net/minecraft/advancements/DisplayInfo.java
 +++ after/net/minecraft/advancements/DisplayInfo.java
-@@ -27,16 +27,7 @@
-     private float x;
-     private float y;
- 
--    public DisplayInfo(
--        ItemStack icon,
--        ITextComponent title,
--        ITextComponent description,
--        @Nullable ResourceLocation background,
--        FrameType frame,
--        boolean showToast,
--        boolean announceToChat,
--        boolean hidden
--    )
-+    public DisplayInfo(ItemStack icon, ITextComponent title, ITextComponent description, @Nullable ResourceLocation background, FrameType frame, boolean showToast, boolean announceToChat, boolean hidden)
-     {
-         this.title = title;
-         this.description = description;
-@@ -141,7 +132,9 @@
+@@ -141,7 +141,9 @@
          {
              Item item = JsonUtils.getItem(object, "item");
              int i = JsonUtils.getInt(object, "data", 0);

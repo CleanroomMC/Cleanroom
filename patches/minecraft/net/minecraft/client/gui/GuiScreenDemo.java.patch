@@ -1,84 +1,29 @@
 --- before/net/minecraft/client/gui/GuiScreenDemo.java
 +++ after/net/minecraft/client/gui/GuiScreenDemo.java
-@@ -17,18 +17,14 @@
-     private static final Logger LOGGER = LogManager.getLogger();
-     private static final ResourceLocation DEMO_BACKGROUND_LOCATION = new ResourceLocation("textures/gui/demo_background.png");
- 
--    @Override
-     public void initGui()
-     {
-         this.buttonList.clear();
-         int i = -16;
--        this.buttonList
--        .add(new GuiButton(1, this.width / 2 - 116, this.height / 2 + 62 + -16, 114, 20, I18n.format("demo.help.buy")));
--        this.buttonList
--        .add(new GuiButton(2, this.width / 2 + 2, this.height / 2 + 62 + -16, 114, 20, I18n.format("demo.help.later")));
-+        this.buttonList.add(new GuiButton(1, this.width / 2 - 116, this.height / 2 + 62 + -16, 114, 20, I18n.format("demo.help.buy")));
-+        this.buttonList.add(new GuiButton(2, this.width / 2 + 2, this.height / 2 + 62 + -16, 114, 20, I18n.format("demo.help.later")));
-     }
- 
--    @Override
-     protected void actionPerformed(GuiButton button) throws IOException
-     {
-         switch (button.id)
-@@ -39,7 +35,7 @@
-                 try
-                 {
-                     Class<?> oclass = Class.forName("java.awt.Desktop");
--                    Object object = oclass.getMethod("getDesktop").invoke(null);
-+                    Object object = oclass.getMethod("getDesktop").invoke((Object)null);
-                     oclass.getMethod("browse", URI.class).invoke(object, new URI("http://www.minecraft.net/store?source=demo"));
-                 }
-                 catch (Throwable throwable)
-@@ -49,12 +45,11 @@
- 
-                 break;
-             case 2:
--                this.mc.displayGuiScreen(null);
-+                this.mc.displayGuiScreen((GuiScreen)null);
-                 this.mc.setIngameFocus();
-         }
-     }
- 
--    @Override
-     public void drawDefaultBackground()
-     {
-         super.drawDefaultBackground();
-@@ -65,33 +60,18 @@
-         this.drawTexturedModalRect(i, j, 0, 0, 248, 166);
-     }
- 
--    @Override
-     public void drawScreen(int mouseX, int mouseY, float partialTicks)
-     {
-         this.drawDefaultBackground();
-         int i = (this.width - 248) / 2 + 10;
-         int j = (this.height - 166) / 2 + 8;
-         this.fontRenderer.drawString(I18n.format("demo.help.title"), i, j, 2039583);
--        j += 12;
-+        j = j + 12;
-         GameSettings gamesettings = this.mc.gameSettings;
--        this.fontRenderer
--        .drawString(
--            I18n.format(
--                "demo.help.movementShort",
+@@ -78,10 +78,10 @@
+         .drawString(
+             I18n.format(
+                 "demo.help.movementShort",
 -                GameSettings.getKeyDisplayString(gamesettings.keyBindForward.getKeyCode()),
 -                GameSettings.getKeyDisplayString(gamesettings.keyBindLeft.getKeyCode()),
 -                GameSettings.getKeyDisplayString(gamesettings.keyBindBack.getKeyCode()),
 -                GameSettings.getKeyDisplayString(gamesettings.keyBindRight.getKeyCode())
--            ),
--            i,
--            j,
--            5197647
--        );
-+        this.fontRenderer.drawString(I18n.format("demo.help.movementShort", gamesettings.keyBindForward.getDisplayName(), gamesettings.keyBindLeft.getDisplayName(), gamesettings.keyBindBack.getDisplayName(), gamesettings.keyBindRight.getDisplayName()), i, j, 5197647);
++                gamesettings.keyBindForward.getDisplayName(),
++                gamesettings.keyBindLeft.getDisplayName(),
++                gamesettings.keyBindBack.getDisplayName(),
++                gamesettings.keyBindRight.getDisplayName()
+             ),
+             i,
+             j,
+@@ -89,9 +89,9 @@
+         );
          this.fontRenderer.drawString(I18n.format("demo.help.movementMouse"), i, j + 12, 5197647);
--        this.fontRenderer
+         this.fontRenderer
 -        .drawString(I18n.format("demo.help.jump", GameSettings.getKeyDisplayString(gamesettings.keyBindJump.getKeyCode())), i, j + 24, 5197647);
--        this.fontRenderer
++        .drawString(I18n.format("demo.help.jump", gamesettings.keyBindJump.getDisplayName()), i, j + 24, 5197647);
+         this.fontRenderer
 -        .drawString(I18n.format("demo.help.inventory", GameSettings.getKeyDisplayString(gamesettings.keyBindInventory.getKeyCode())), i, j + 36, 5197647);
-+        this.fontRenderer.drawString(I18n.format("demo.help.jump", gamesettings.keyBindJump.getDisplayName()), i, j + 24, 5197647);
-+        this.fontRenderer.drawString(I18n.format("demo.help.inventory", gamesettings.keyBindInventory.getDisplayName()), i, j + 36, 5197647);
++        .drawString(I18n.format("demo.help.inventory", gamesettings.keyBindInventory.getDisplayName()), i, j + 36, 5197647);
          this.fontRenderer.drawSplitString(I18n.format("demo.help.fullWrapped"), i, j + 68, 218, 2039583);
          super.drawScreen(mouseX, mouseY, partialTicks);
      }

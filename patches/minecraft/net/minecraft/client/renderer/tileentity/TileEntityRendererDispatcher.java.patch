@@ -1,46 +1,6 @@
 --- before/net/minecraft/client/renderer/tileentity/TileEntityRendererDispatcher.java
 +++ after/net/minecraft/client/renderer/tileentity/TileEntityRendererDispatcher.java
-@@ -37,7 +37,7 @@
- @SideOnly(Side.CLIENT)
- public class TileEntityRendererDispatcher
- {
--    public final Map < Class <? extends TileEntity > , TileEntitySpecialRenderer <? extends TileEntity >> renderers = Maps.newHashMap();
-+    public final Map < Class <? extends TileEntity > , TileEntitySpecialRenderer <? extends TileEntity >> renderers = Maps. < Class <? extends TileEntity > , TileEntitySpecialRenderer <? extends TileEntity >> newHashMap();
-     public static TileEntityRendererDispatcher instance = new TileEntityRendererDispatcher();
-     public FontRenderer fontRenderer;
-     public static double staticPlayerX;
-@@ -78,7 +78,7 @@
- 
-     public <T extends TileEntity> TileEntitySpecialRenderer<T> getRenderer(Class <? extends TileEntity > teClass)
-     {
--        TileEntitySpecialRenderer <? extends TileEntity > tileentityspecialrenderer = this.renderers.get(teClass);
-+        TileEntitySpecialRenderer<T> tileentityspecialrenderer = (TileEntitySpecialRenderer)this.renderers.get(teClass);
- 
-         if (tileentityspecialrenderer == null && teClass != TileEntity.class)
-         {
-@@ -86,18 +86,16 @@
-             this.renderers.put(teClass, tileentityspecialrenderer);
-         }
- 
--        return (TileEntitySpecialRenderer<T>)tileentityspecialrenderer;
-+        return tileentityspecialrenderer;
-     }
- 
-     @Nullable
-     public <T extends TileEntity> TileEntitySpecialRenderer<T> getRenderer(@Nullable TileEntity tileEntityIn)
-     {
--        return tileEntityIn == null ? null : this.getRenderer((Class <? extends TileEntity >)tileEntityIn.getClass());
-+        return tileEntityIn == null || tileEntityIn.isInvalid() ? null : this.getRenderer(tileEntityIn.getClass()); // Forge: fix MC-123363
-     }
- 
--    public void prepare(
--        World worldIn, TextureManager renderEngineIn, FontRenderer fontRendererIn, Entity entityIn, RayTraceResult cameraHitResultIn, float p_190056_6_
--    )
-+    public void prepare(World worldIn, TextureManager renderEngineIn, FontRenderer fontRendererIn, Entity entityIn, RayTraceResult cameraHitResultIn, float p_190056_6_)
-     {
-         if (this.world != worldIn)
-         {
-@@ -119,22 +117,18 @@
+@@ -119,13 +119,17 @@
      {
          if (tileentityIn.getDistanceSq(this.entityX, this.entityY, this.entityZ) < tileentityIn.getMaxRenderDistanceSquared())
          {
@@ -54,33 +14,11 @@
              GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 +            }
              BlockPos blockpos = tileentityIn.getPos();
--            this.render(
--                tileentityIn,
--                (double)blockpos.getX() - staticPlayerX,
--                (double)blockpos.getY() - staticPlayerY,
--                (double)blockpos.getZ() - staticPlayerZ,
--                partialTicks,
--                destroyStage,
--                1.0F
--            );
 +            if (this.world.isBlockLoaded(blockpos, false)) // Forge: fix MC-123363
-+            this.render(tileentityIn, (double)blockpos.getX() - staticPlayerX, (double)blockpos.getY() - staticPlayerY, (double)blockpos.getZ() - staticPlayerZ, partialTicks, destroyStage, 1.0F);
-         }
-     }
- 
-@@ -148,16 +142,17 @@
-         this.render(p_192855_1_, p_192855_2_, p_192855_4_, p_192855_6_, p_192855_8_, -1, p_192855_9_);
-     }
- 
--    public void render(
--        TileEntity tileEntityIn, double x, double y, double z, float partialTicks, int destroyStage, float p_192854_10_
--    )
-+    public void render(TileEntity tileEntityIn, double x, double y, double z, float partialTicks, int destroyStage, float p_192854_10_)
-     {
--        TileEntitySpecialRenderer<TileEntity> tileentityspecialrenderer = this.getRenderer(tileEntityIn);
-+        TileEntitySpecialRenderer<TileEntity> tileentityspecialrenderer = this.<TileEntity>getRenderer(tileEntityIn);
- 
-         if (tileentityspecialrenderer != null)
+             this.render(
+                 tileentityIn,
+                 (double)blockpos.getX() - staticPlayerX,
+@@ -158,6 +162,9 @@
          {
              try
              {
@@ -90,7 +28,7 @@
                  tileentityspecialrenderer.render(tileEntityIn, x, y, z, partialTicks, destroyStage, p_192854_10_);
              }
              catch (Throwable throwable)
-@@ -183,5 +178,54 @@
+@@ -183,5 +190,54 @@
      public FontRenderer getFontRenderer()
      {
          return this.fontRenderer;

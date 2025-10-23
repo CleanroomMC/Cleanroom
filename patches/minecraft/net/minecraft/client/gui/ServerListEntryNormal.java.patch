@@ -1,76 +1,15 @@
 --- before/net/minecraft/client/gui/ServerListEntryNormal.java
 +++ after/net/minecraft/client/gui/ServerListEntryNormal.java
-@@ -29,9 +29,7 @@
- public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
- {
-     private static final Logger LOGGER = LogManager.getLogger();
--    private static final ThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(
--            5, new ThreadFactoryBuilder().setNameFormat("Server Pinger #%d").setDaemon(true).build()
--        );
-+    private static final ThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(5, (new ThreadFactoryBuilder()).setNameFormat("Server Pinger #%d").setDaemon(true).build());
-     private static final ResourceLocation UNKNOWN_SERVER = new ResourceLocation("textures/misc/unknown_server.png");
-     private static final ResourceLocation SERVER_SELECTION_BUTTONS = new ResourceLocation("textures/gui/server_selection.png");
-     private final GuiMultiplayer owner;
-@@ -51,18 +49,7 @@
-         this.icon = (DynamicTexture)this.mc.getTextureManager().getTexture(this.serverIcon);
-     }
- 
--    @Override
--    public void drawEntry(
--        int slotIndex,
--        int x,
--        int y,
--        int listWidth,
--        int slotHeight,
--        int mouseX,
--        int mouseY,
--        boolean isSelected,
--        float partialTicks
--    )
-+    public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks)
-     {
-         if (!this.server.pinged)
-         {
-@@ -72,19 +59,18 @@
-             this.server.populationInfo = "";
-             EXECUTOR.submit(new Runnable()
-             {
--                @Override
-                 public void run()
-                 {
-                     try
-                     {
-                         ServerListEntryNormal.this.owner.getOldServerPinger().ping(ServerListEntryNormal.this.server);
-                     }
--                    catch (UnknownHostException unknownhostexception)
-+                    catch (UnknownHostException var2)
-                     {
-                         ServerListEntryNormal.this.server.pingToServer = -1L;
-                         ServerListEntryNormal.this.server.serverMOTD = TextFormatting.DARK_RED + I18n.format("multiplayer.status.cannot_resolve");
-                     }
--                    catch (Exception exception)
-+                    catch (Exception var3)
-                     {
-                         ServerListEntryNormal.this.server.pingToServer = -1L;
-                         ServerListEntryNormal.this.server.serverMOTD = TextFormatting.DARK_RED + I18n.format("multiplayer.status.cannot_connect");
-@@ -97,13 +83,11 @@
+@@ -97,7 +97,7 @@
          boolean flag1 = this.server.version < 340;
          boolean flag2 = flag || flag1;
          this.mc.fontRenderer.drawString(this.server.serverName, x + 32 + 3, y + 1, 16777215);
 -        List<String> list = this.mc.fontRenderer.listFormattedStringToWidth(this.server.serverMOTD, listWidth - 32 - 2);
 +        List<String> list = this.mc.fontRenderer.listFormattedStringToWidth(net.minecraftforge.fml.client.FMLClientHandler.instance().fixDescription(this.server.serverMOTD), listWidth - 32 - 2);
  
--        for (int i = 0; i < Math.min(list.size(), 2); i++)
-+        for (int i = 0; i < Math.min(list.size(), 2); ++i)
+         for (int i = 0; i < Math.min(list.size(), 2); i++)
          {
--            this.mc
--            .fontRenderer
--            .drawString(list.get(i), x + 32 + 3, y + 12 + this.mc.fontRenderer.FONT_HEIGHT * i, 8421504);
-+            this.mc.fontRenderer.drawString(list.get(i), x + 32 + 3, y + 12 + this.mc.fontRenderer.FONT_HEIGHT * i, 8421504);
-         }
- 
-         String s2 = flag2 ? TextFormatting.DARK_RED + this.server.gameVersion : this.server.populationInfo;
-@@ -193,6 +177,11 @@
+@@ -193,6 +193,11 @@
          int i1 = mouseX - x;
          int j1 = mouseY - y;
  
@@ -82,52 +21,3 @@
          if (i1 >= listWidth - 15 && i1 <= listWidth - 5 && j1 >= 0 && j1 <= 8)
          {
              this.owner.setHoveringText(s1);
-@@ -270,10 +259,10 @@
-         }
-         else
-         {
--            ByteBuf bytebuf = Unpooled.copiedBuffer(this.server.getBase64EncodedIconData(), StandardCharsets.UTF_8);
-+            ByteBuf bytebuf = Unpooled.copiedBuffer((CharSequence)this.server.getBase64EncodedIconData(), StandardCharsets.UTF_8);
-             ByteBuf bytebuf1 = null;
-             BufferedImage bufferedimage;
--            label80:
-+            label99:
-             {
-                 try
-                 {
-@@ -281,12 +270,12 @@
-                     bufferedimage = TextureUtil.readBufferedImage(new ByteBufInputStream(bytebuf1));
-                     Validate.validState(bufferedimage.getWidth() == 64, "Must be 64 pixels wide");
-                     Validate.validState(bufferedimage.getHeight() == 64, "Must be 64 pixels high");
--                    break label80;
-+                    break label99;
-                 }
-                 catch (Throwable throwable)
-                 {
-                     LOGGER.error("Invalid icon for server {} ({})", this.server.serverName, this.server.serverIP, throwable);
--                    this.server.setBase64EncodedIconData(null);
-+                    this.server.setBase64EncodedIconData((String)null);
-                 }
-                 finally
-                 {
-@@ -312,7 +301,6 @@
-         }
-     }
- 
--    @Override
-     public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY)
-     {
-         if (relativeX <= 32)
-@@ -348,12 +336,10 @@
-         return false;
-     }
- 
--    @Override
-     public void updatePosition(int slotIndex, int x, int y, float partialTicks)
-     {
-     }
- 
--    @Override
-     public void mouseReleased(int slotIndex, int x, int y, int mouseEvent, int relativeX, int relativeY)
-     {
-     }

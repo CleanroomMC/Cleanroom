@@ -1,44 +1,15 @@
 --- before/net/minecraft/client/renderer/texture/TextureUtil.java
 +++ after/net/minecraft/client/renderer/texture/TextureUtil.java
-@@ -1,9 +1,9 @@
- package net.minecraft.client.renderer.texture;
- 
- import java.awt.image.BufferedImage;
-+import java.io.Closeable;
- import java.io.IOException;
- import java.io.InputStream;
--import java.nio.Buffer;
- import java.nio.IntBuffer;
- import javax.imageio.ImageIO;
- import net.minecraft.client.Minecraft;
-@@ -30,7 +30,7 @@
- 
-     private static float getColorGamma(int p_188543_0_)
-     {
--        return COLOR_GAMMAS[p_188543_0_ & 0xFF];
-+        return COLOR_GAMMAS[p_188543_0_ & 255];
-     }
- 
-     public static int glGenTextures()
 @@ -63,7 +63,7 @@
          {
              boolean flag = false;
  
 -            for (int i = 0; i < p_147949_2_.length; i++)
-+            for (int i = 0; i < p_147949_2_[0].length; ++i)
++            for (int i = 0; i < p_147949_2_[0].length; i++)
              {
                  if (p_147949_2_[0][i] >> 24 == 0)
                  {
-@@ -72,7 +72,7 @@
-                 }
-             }
- 
--            for (int l1 = 1; l1 <= p_147949_0_; l1++)
-+            for (int l1 = 1; l1 <= p_147949_0_; ++l1)
-             {
-                 if (p_147949_2_[l1] != null)
-                 {
-@@ -83,17 +83,19 @@
+@@ -83,6 +83,7 @@
                      int[] aint1 = aint[l1 - 1];
                      int[] aint2 = new int[aint1.length >> 2];
                      int j = p_147949_1_ >> l1;
@@ -46,13 +17,7 @@
                      int k = aint2.length / j;
                      int l = j << 1;
  
--                    for (int i1 = 0; i1 < j; i1++)
-+                    for (int i1 = 0; i1 < j; ++i1)
-                     {
--                        for (int j1 = 0; j1 < k; j1++)
-+                        for (int j1 = 0; j1 < k; ++j1)
-                         {
-                             int k1 = 2 * (i1 + j1 * l);
+@@ -94,6 +95,7 @@
                              aint2[i1 + j1 * j] = blendColors(aint1[k1 + 0], aint1[k1 + 1], aint1[k1 + 0 + l], aint1[k1 + 1 + l], flag);
                          }
                      }
@@ -60,95 +25,15 @@
  
                      aint[l1] = aint2;
                  }
-@@ -116,7 +118,7 @@
-             float f2 = 0.0F;
-             float f3 = 0.0F;
- 
--            for (int i1 = 0; i1 < 4; i1++)
-+            for (int i1 = 0; i1 < 4; ++i1)
-             {
-                 if (MIPMAP_BUFFER[i1] >> 24 != 0)
-                 {
-@@ -127,14 +129,14 @@
-                 }
-             }
- 
--            f /= 4.0F;
--            f1 /= 4.0F;
--            f2 /= 4.0F;
--            f3 /= 4.0F;
--            int i2 = (int)(Math.pow((double)f, 0.45454545454545453) * 255.0);
--            int j1 = (int)(Math.pow((double)f1, 0.45454545454545453) * 255.0);
--            int k1 = (int)(Math.pow((double)f2, 0.45454545454545453) * 255.0);
--            int l1 = (int)(Math.pow((double)f3, 0.45454545454545453) * 255.0);
-+            f = f / 4.0F;
-+            f1 = f1 / 4.0F;
-+            f2 = f2 / 4.0F;
-+            f3 = f3 / 4.0F;
-+            int i2 = (int)(Math.pow((double)f, 0.45454545454545453D) * 255.0D);
-+            int j1 = (int)(Math.pow((double)f1, 0.45454545454545453D) * 255.0D);
-+            int k1 = (int)(Math.pow((double)f2, 0.45454545454545453D) * 255.0D);
-+            int l1 = (int)(Math.pow((double)f3, 0.45454545454545453D) * 255.0D);
- 
-             if (i2 < 96)
-             {
-@@ -159,46 +161,34 @@
-         float f1 = getColorGamma(p_147944_1_ >> p_147944_4_);
-         float f2 = getColorGamma(p_147944_2_ >> p_147944_4_);
-         float f3 = getColorGamma(p_147944_3_ >> p_147944_4_);
--        float f4 = (float)((double)((float)Math.pow((double)(f + f1 + f2 + f3) * 0.25, 0.45454545454545453)));
--        return (int)((double)f4 * 255.0);
-+        float f4 = (float)((double)((float)Math.pow((double)(f + f1 + f2 + f3) * 0.25D, 0.45454545454545453D)));
-+        return (int)((double)f4 * 255.0D);
-     }
- 
--    public static void uploadTextureMipmap(
--            int[][] p_147955_0_, int p_147955_1_, int p_147955_2_, int p_147955_3_, int p_147955_4_, boolean p_147955_5_, boolean p_147955_6_
--        )
-+    public static void uploadTextureMipmap(int[][] p_147955_0_, int p_147955_1_, int p_147955_2_, int p_147955_3_, int p_147955_4_, boolean p_147955_5_, boolean p_147955_6_)
-     {
--        for (int i = 0; i < p_147955_0_.length; i++)
-+        for (int i = 0; i < p_147955_0_.length; ++i)
+@@ -170,6 +172,7 @@
+         for (int i = 0; i < p_147955_0_.length; i++)
          {
              int[] aint = p_147955_0_[i];
 +            if ((p_147955_1_ >> i <= 0) || (p_147955_2_ >> i <= 0)) break;
              uploadTextureSub(i, aint, p_147955_1_ >> i, p_147955_2_ >> i, p_147955_3_ >> i, p_147955_4_ >> i, p_147955_5_, p_147955_6_, p_147955_0_.length > 1);
          }
      }
- 
--    private static void uploadTextureSub(
--            int p_147947_0_,
--            int[] p_147947_1_,
--            int p_147947_2_,
--            int p_147947_3_,
--            int p_147947_4_,
--            int p_147947_5_,
--            boolean p_147947_6_,
--            boolean p_147947_7_,
--            boolean p_147947_8_
--        )
-+    private static void uploadTextureSub(int p_147947_0_, int[] p_147947_1_, int p_147947_2_, int p_147947_3_, int p_147947_4_, int p_147947_5_, boolean p_147947_6_, boolean p_147947_7_, boolean p_147947_8_)
-     {
-         int i = 4194304 / p_147947_2_;
-         setTextureBlurMipmap(p_147947_6_, p_147947_8_);
-         setTextureClamped(p_147947_7_);
--        int j = 0;
-+        int l;
- 
--        while (j < p_147947_2_ * p_147947_3_)
-+        for (int j = 0; j < p_147947_2_ * p_147947_3_; j += p_147947_2_ * l)
-         {
-             int k = j / p_147947_2_;
--            int l = Math.min(i, p_147947_3_ - k);
-+            l = Math.min(i, p_147947_3_ - k);
-             int i1 = p_147947_2_ * l;
-             copyToBufferPos(p_147947_1_, j, i1);
-             GlStateManager.glTexSubImage2D(3553, p_147947_0_, p_147947_4_, p_147947_5_ + k, p_147947_2_, l, 32993, 33639, DATA_BUFFER);
--            j += p_147947_2_ * l;
-         }
-     }
- 
-@@ -215,9 +205,11 @@
+@@ -215,9 +218,11 @@
  
      public static void allocateTextureImpl(int glTextureId, int mipmapLevels, int width, int height)
      {
@@ -161,90 +46,3 @@
          if (mipmapLevels >= 0)
          {
              GlStateManager.glTexParameteri(3553, 33085, mipmapLevels);
-@@ -226,9 +218,9 @@
-             GlStateManager.glTexParameterf(3553, 34049, 0.0F);
-         }
- 
--        for (int i = 0; i <= mipmapLevels; i++)
-+        for (int i = 0; i <= mipmapLevels; ++i)
-         {
--            GlStateManager.glTexImage2D(3553, i, 6408, width >> i, height >> i, 0, 32993, 33639, null);
-+            GlStateManager.glTexImage2D(3553, i, 6408, width >> i, height >> i, 0, 32993, 33639, (IntBuffer)null);
-         }
-     }
- 
-@@ -306,9 +298,9 @@
-             aint = updateAnaglyph(p_110994_0_);
-         }
- 
--        ((Buffer)DATA_BUFFER).clear();
-+        DATA_BUFFER.clear();
-         DATA_BUFFER.put(aint, p_110994_1_, p_110994_2_);
--        ((Buffer)DATA_BUFFER).position(0).limit(p_110994_2_);
-+        DATA_BUFFER.position(0).limit(p_110994_2_);
-     }
- 
-     static void bindTexture(int p_94277_0_)
-@@ -333,7 +325,7 @@
-         }
-         finally
-         {
--            IOUtils.closeQuietly(iresource);
-+            IOUtils.closeQuietly((Closeable)iresource);
-         }
- 
-         return aint1;
-@@ -359,7 +351,7 @@
-     {
-         int[] aint = new int[p_110985_0_.length];
- 
--        for (int i = 0; i < p_110985_0_.length; i++)
-+        for (int i = 0; i < p_110985_0_.length; ++i)
-         {
-             aint[i] = anaglyphColor(p_110985_0_[i]);
-         }
-@@ -369,10 +361,10 @@
- 
-     public static int anaglyphColor(int p_177054_0_)
-     {
--        int i = p_177054_0_ >> 24 & 0xFF;
--        int j = p_177054_0_ >> 16 & 0xFF;
--        int k = p_177054_0_ >> 8 & 0xFF;
--        int l = p_177054_0_ & 0xFF;
-+        int i = p_177054_0_ >> 24 & 255;
-+        int j = p_177054_0_ >> 16 & 255;
-+        int k = p_177054_0_ >> 8 & 255;
-+        int l = p_177054_0_ & 255;
-         int i1 = (j * 30 + k * 59 + l * 11) / 100;
-         int j1 = (j * 30 + k * 70) / 100;
-         int k1 = (j * 30 + l * 70) / 100;
-@@ -384,7 +376,7 @@
-         int[] aint = new int[p_147953_1_];
-         int i = p_147953_2_ / 2;
- 
--        for (int j = 0; j < i; j++)
-+        for (int j = 0; j < i; ++j)
-         {
-             System.arraycopy(p_147953_0_, j * p_147953_1_, aint, 0, p_147953_1_);
-             System.arraycopy(p_147953_0_, (p_147953_2_ - 1 - j) * p_147953_1_, p_147953_0_, j * p_147953_1_, p_147953_1_);
-@@ -400,7 +392,7 @@
-         int[] aint1 = new int[] { -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216};
-         int k = aint.length;
- 
--        for (int l = 0; l < 16; l++)
-+        for (int l = 0; l < 16; ++l)
-         {
-             System.arraycopy(l < k ? aint : aint1, 0, MISSING_TEXTURE_DATA, 16 * l, k);
-             System.arraycopy(l < k ? aint1 : aint, 0, MISSING_TEXTURE_DATA, 16 * l + k, k);
-@@ -409,9 +401,9 @@
-         MISSING_TEXTURE.updateDynamicTexture();
-         COLOR_GAMMAS = new float[256];
- 
--        for (int i1 = 0; i1 < COLOR_GAMMAS.length; i1++)
-+        for (int i1 = 0; i1 < COLOR_GAMMAS.length; ++i1)
-         {
--            COLOR_GAMMAS[i1] = (float)Math.pow((double)((float)i1 / 255.0F), 2.2);
-+            COLOR_GAMMAS[i1] = (float)Math.pow((double)((float)i1 / 255.0F), 2.2D);
-         }
- 
-         MIPMAP_BUFFER = new int[4];

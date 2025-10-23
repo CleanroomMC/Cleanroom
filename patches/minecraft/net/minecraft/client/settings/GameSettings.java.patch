@@ -1,173 +1,22 @@
 --- before/net/minecraft/client/settings/GameSettings.java
 +++ after/net/minecraft/client/settings/GameSettings.java
-@@ -52,35 +52,26 @@
-     private static final Gson GSON = new Gson();
-     private static final Type TYPE_LIST_STRING = new ParameterizedType()
-     {
--        @Override
-         public Type[] getActualTypeArguments()
-         {
-             return new Type[] {String.class};
-         }
--        @Override
-         public Type getRawType()
-         {
-             return List.class;
-         }
--        @Override
-         public Type getOwnerType()
-         {
-             return null;
-         }
-     };
-     public static final Splitter COLON_SPLITTER = Splitter.on(':');
--    private static final String[] GUISCALES = new String[]
--        {
--            "options.guiScale.auto", "options.guiScale.small", "options.guiScale.normal", "options.guiScale.large"
--        };
-+    private static final String[] GUISCALES = new String[] {"options.guiScale.auto", "options.guiScale.small", "options.guiScale.normal", "options.guiScale.large"};
-     private static final String[] PARTICLES = new String[] {"options.particles.all", "options.particles.decreased", "options.particles.minimal"};
-     private static final String[] AMBIENT_OCCLUSIONS = new String[] {"options.ao.off", "options.ao.min", "options.ao.max"};
-     private static final String[] CLOUDS_TYPES = new String[] {"options.off", "options.clouds.fast", "options.clouds.fancy"};
-     private static final String[] ATTACK_INDICATORS = new String[] {"options.off", "options.attack.crosshair", "options.attack.hotbar"};
--    public static final String[] NARRATOR_MODES = new String[]
--        {
--            "options.narrator.off", "options.narrator.all", "options.narrator.chat", "options.narrator.system"
--        };
-+    public static final String[] NARRATOR_MODES = new String[] {"options.narrator.off", "options.narrator.all", "options.narrator.chat", "options.narrator.system"};
-     public float mouseSensitivity = 0.5F;
-     public boolean invertMouse;
-     public int renderDistanceChunks = -1;
-@@ -91,8 +82,8 @@
-     public int clouds = 2;
-     public boolean fancyGraphics = true;
-     public int ambientOcclusion = 2;
--    public List<String> resourcePacks = Lists.newArrayList();
--    public List<String> incompatibleResourcePacks = Lists.newArrayList();
-+    public List<String> resourcePacks = Lists.<String>newArrayList();
-+    public List<String> incompatibleResourcePacks = Lists.<String>newArrayList();
-     public EntityPlayer.EnumChatVisibility chatVisibility = EntityPlayer.EnumChatVisibility.FULL;
-     public boolean chatColours = true;
-     public boolean chatLinks = true;
-@@ -148,72 +139,38 @@
-     public KeyBinding keyBindFullscreen = new KeyBinding("key.fullscreen", 87, "key.categories.misc");
-     public KeyBinding keyBindSpectatorOutlines = new KeyBinding("key.spectatorOutlines", 0, "key.categories.misc");
-     public KeyBinding keyBindAdvancements = new KeyBinding("key.advancements", 38, "key.categories.misc");
--    public KeyBinding[] keyBindsHotbar = new KeyBinding[]
--    {
--        new KeyBinding("key.hotbar.1", 2, "key.categories.inventory"),
--        new KeyBinding("key.hotbar.2", 3, "key.categories.inventory"),
--        new KeyBinding("key.hotbar.3", 4, "key.categories.inventory"),
--        new KeyBinding("key.hotbar.4", 5, "key.categories.inventory"),
--        new KeyBinding("key.hotbar.5", 6, "key.categories.inventory"),
--        new KeyBinding("key.hotbar.6", 7, "key.categories.inventory"),
--        new KeyBinding("key.hotbar.7", 8, "key.categories.inventory"),
--        new KeyBinding("key.hotbar.8", 9, "key.categories.inventory"),
--        new KeyBinding("key.hotbar.9", 10, "key.categories.inventory")
--    };
-+    public KeyBinding[] keyBindsHotbar = new KeyBinding[] {new KeyBinding("key.hotbar.1", 2, "key.categories.inventory"), new KeyBinding("key.hotbar.2", 3, "key.categories.inventory"), new KeyBinding("key.hotbar.3", 4, "key.categories.inventory"), new KeyBinding("key.hotbar.4", 5, "key.categories.inventory"), new KeyBinding("key.hotbar.5", 6, "key.categories.inventory"), new KeyBinding("key.hotbar.6", 7, "key.categories.inventory"), new KeyBinding("key.hotbar.7", 8, "key.categories.inventory"), new KeyBinding("key.hotbar.8", 9, "key.categories.inventory"), new KeyBinding("key.hotbar.9", 10, "key.categories.inventory")};
-     public KeyBinding keyBindSaveToolbar = new KeyBinding("key.saveToolbarActivator", 46, "key.categories.creative");
-     public KeyBinding keyBindLoadToolbar = new KeyBinding("key.loadToolbarActivator", 45, "key.categories.creative");
--    public KeyBinding[] keyBindings = ArrayUtils.addAll(
--                                            new KeyBinding[]
--                                            {
--                                                this.keyBindAttack,
--                                                this.keyBindUseItem,
--                                                this.keyBindForward,
--                                                this.keyBindLeft,
--                                                this.keyBindBack,
--                                                this.keyBindRight,
--                                                this.keyBindJump,
--                                                this.keyBindSneak,
--                                                this.keyBindSprint,
--                                                this.keyBindDrop,
--                                                this.keyBindInventory,
--                                                this.keyBindChat,
--                                                this.keyBindPlayerList,
--                                                this.keyBindPickBlock,
--                                                this.keyBindCommand,
--                                                this.keyBindScreenshot,
--                                                this.keyBindTogglePerspective,
--                                                this.keyBindSmoothCamera,
--                                                this.keyBindFullscreen,
--                                                this.keyBindSpectatorOutlines,
--                                                this.keyBindSwapHands,
--                                                this.keyBindSaveToolbar,
--                                                this.keyBindLoadToolbar,
--                                                this.keyBindAdvancements
--                                            },
--                                            this.keyBindsHotbar
--                                        );
-+    public KeyBinding[] keyBindings;
-     protected Minecraft mc;
-     private File optionsFile;
--    public EnumDifficulty difficulty = EnumDifficulty.NORMAL;
-+    public EnumDifficulty difficulty;
-     public boolean hideGUI;
-     public int thirdPersonView;
-     public boolean showDebugInfo;
-     public boolean showDebugProfilerChart;
-     public boolean showLagometer;
--    public String lastServer = "";
-+    public String lastServer;
-     public boolean smoothCamera;
-     public boolean debugCamEnable;
--    public float fovSetting = 70.0F;
-+    public float fovSetting;
-     public float gammaSetting;
-     public float saturation;
-     public int guiScale;
-     public int particleSetting;
-     public int narrator;
--    public String language = "en_us";
-+    public String language;
-     public boolean forceUnicodeFont;
+@@ -214,6 +214,7 @@
  
      public GameSettings(Minecraft mcIn, File mcDataDir)
      {
 +        setForgeKeybindProperties();
-+        this.keyBindings = (KeyBinding[])ArrayUtils.addAll(new KeyBinding[] {this.keyBindAttack, this.keyBindUseItem, this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindSneak, this.keyBindSprint, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindPlayerList, this.keyBindPickBlock, this.keyBindCommand, this.keyBindScreenshot, this.keyBindTogglePerspective, this.keyBindSmoothCamera, this.keyBindFullscreen, this.keyBindSpectatorOutlines, this.keyBindSwapHands, this.keyBindSaveToolbar, this.keyBindLoadToolbar, this.keyBindAdvancements}, this.keyBindsHotbar);
-+        this.difficulty = EnumDifficulty.NORMAL;
-+        this.lastServer = "";
-+        this.fovSetting = 70.0F;
-+        this.language = "en_us";
          this.mc = mcIn;
          this.optionsFile = new File(mcDataDir, "options.txt");
  
-@@ -232,6 +189,12 @@
+@@ -232,6 +233,7 @@
  
      public GameSettings()
      {
 +        setForgeKeybindProperties();
-+        this.keyBindings = (KeyBinding[])ArrayUtils.addAll(new KeyBinding[] {this.keyBindAttack, this.keyBindUseItem, this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindSneak, this.keyBindSprint, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindPlayerList, this.keyBindPickBlock, this.keyBindCommand, this.keyBindScreenshot, this.keyBindTogglePerspective, this.keyBindSmoothCamera, this.keyBindFullscreen, this.keyBindSpectatorOutlines, this.keyBindSwapHands, this.keyBindSaveToolbar, this.keyBindLoadToolbar, this.keyBindAdvancements}, this.keyBindsHotbar);
-+        this.difficulty = EnumDifficulty.NORMAL;
-+        this.lastServer = "";
-+        this.fovSetting = 70.0F;
-+        this.language = "en_us";
      }
  
      public static String getKeyDisplayString(int key)
-@@ -260,14 +223,14 @@
-     {
-         int i = key.getKeyCode();
- 
--        if (i == 0 || i >= 256)
--        {
--            return false;
--        }
--        else
-+        if (i != 0 && i < 256)
-         {
-             return i < 0 ? Mouse.isButtonDown(i + 100) : Keyboard.isKeyDown(i);
-         }
-+        else
-+        {
-+            return false;
-+        }
-     }
- 
-     public void setOptionKeyBinding(KeyBinding key, int keyCode)
-@@ -338,7 +301,7 @@
+@@ -338,7 +340,7 @@
                  this.mc.getTextureMapBlocks().setMipmapLevels(this.mipmapLevels);
                  this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
                  this.mc.getTextureMapBlocks().setBlurMipmapDirect(false, this.mipmapLevels > 0);
@@ -176,18 +25,7 @@
              }
          }
  
-@@ -353,9 +316,7 @@
-     {
-         if (settingsOption == GameSettings.Options.RENDER_DISTANCE)
-         {
--            this.setOptionFloatValue(
--                settingsOption, MathHelper.clamp((float)(this.renderDistanceChunks + value), settingsOption.getValueMin(), settingsOption.getValueMax())
--            );
-+            this.setOptionFloatValue(settingsOption, MathHelper.clamp((float)(this.renderDistanceChunks + value), settingsOption.getValueMin(), settingsOption.getValueMax()));
-         }
- 
-         if (settingsOption == GameSettings.Options.MAIN_HAND)
-@@ -402,7 +363,7 @@
+@@ -402,7 +404,7 @@
          if (settingsOption == GameSettings.Options.ANAGLYPH)
          {
              this.anaglyph = !this.anaglyph;
@@ -196,29 +34,7 @@
          }
  
          if (settingsOption == GameSettings.Options.GRAPHICS)
-@@ -658,9 +619,7 @@
-             }
-             else if (settingOption == GameSettings.Options.FRAMERATE_LIMIT)
-             {
--                return f1 == settingOption.valueMax
--                       ? s + I18n.format("options.framerateLimit.max")
--                       : s + I18n.format("options.framerate", (int)f1);
-+                return f1 == settingOption.valueMax ? s + I18n.format("options.framerateLimit.max") : s + I18n.format("options.framerate", (int)f1);
-             }
-             else if (settingOption == GameSettings.Options.RENDER_CLOUDS)
-             {
-@@ -757,9 +716,7 @@
-         }
-         else if (settingOption == GameSettings.Options.NARRATOR)
-         {
--            return NarratorChatListener.INSTANCE.isActive()
--                   ? s + getTranslation(NARRATOR_MODES, this.narrator)
--                   : s + I18n.format("options.narrator.notavailable");
-+            return NarratorChatListener.INSTANCE.isActive() ? s + getTranslation(NARRATOR_MODES, this.narrator) : s + I18n.format("options.narrator.notavailable");
-         }
-         else
-         {
-@@ -769,6 +726,7 @@
+@@ -769,6 +771,7 @@
  
      public void loadOptions()
      {
@@ -226,7 +42,7 @@
          try
          {
              if (!this.optionsFile.exists())
-@@ -777,7 +735,7 @@
+@@ -777,7 +780,7 @@
              }
  
              this.soundLevels.clear();
@@ -235,45 +51,7 @@
              NBTTagCompound nbttagcompound = new NBTTagCompound();
  
              for (String s : list)
-@@ -787,9 +745,9 @@
-                     Iterator<String> iterator = COLON_SPLITTER.omitEmptyStrings().limit(2).split(s).iterator();
-                     nbttagcompound.setString(iterator.next(), iterator.next());
-                 }
--                catch (Exception exception)
-+                catch (Exception var10)
-                 {
--                    LOGGER.warn("Skipping bad option: {}", s);
-+                    LOGGER.warn("Skipping bad option: {}", (Object)s);
-                 }
-             }
- 
-@@ -926,21 +884,21 @@
- 
-                     if ("resourcePacks".equals(s1))
-                     {
--                        this.resourcePacks = JsonUtils.gsonDeserialize(GSON, s2, TYPE_LIST_STRING);
-+                        this.resourcePacks = (List)JsonUtils.gsonDeserialize(GSON, s2, TYPE_LIST_STRING);
- 
-                         if (this.resourcePacks == null)
-                         {
--                            this.resourcePacks = Lists.newArrayList();
-+                            this.resourcePacks = Lists.<String>newArrayList();
-                         }
-                     }
- 
-                     if ("incompatibleResourcePacks".equals(s1))
-                     {
--                        this.incompatibleResourcePacks = JsonUtils.gsonDeserialize(GSON, s2, TYPE_LIST_STRING);
-+                        this.incompatibleResourcePacks = (List)JsonUtils.gsonDeserialize(GSON, s2, TYPE_LIST_STRING);
- 
-                         if (this.incompatibleResourcePacks == null)
-                         {
--                            this.incompatibleResourcePacks = Lists.newArrayList();
-+                            this.incompatibleResourcePacks = Lists.<String>newArrayList();
-                         }
-                     }
- 
-@@ -1113,7 +1071,12 @@
+@@ -1113,7 +1116,12 @@
                      {
                          if (s1.equals("key_" + keybinding.getKeyDescription()))
                          {
@@ -287,50 +65,15 @@
                          }
                      }
  
-@@ -1121,7 +1084,7 @@
-                     {
-                         if (s1.equals("soundCategory_" + soundcategory.getName()))
-                         {
--                            this.soundLevels.put(soundcategory, this.parseFloat(s2));
-+                            this.soundLevels.put(soundcategory, Float.valueOf(this.parseFloat(s2)));
-                         }
-                     }
- 
-@@ -1133,7 +1096,7 @@
-                         }
-                     }
-                 }
--                catch (Exception exception1)
-+                catch (Exception var11)
-                 {
-                     LOGGER.warn("Skipping bad option: {}:{}", s1, s2);
-                 }
-@@ -1141,10 +1104,11 @@
- 
-             KeyBinding.resetKeyBindingArrayAndHash();
-         }
--        catch (Exception exception2)
-+        catch (Exception exception)
+@@ -1145,6 +1153,7 @@
          {
--            LOGGER.error("Failed to load options", (Throwable)exception2);
-+            LOGGER.error("Failed to load options", (Throwable)exception);
+             LOGGER.error("Failed to load options", (Throwable)exception2);
          }
 +        finally { IOUtils.closeQuietly(fileInputStream); } // Forge: fix MC-151173
      }
  
      private NBTTagCompound dataFix(NBTTagCompound p_189988_1_)
-@@ -1155,8 +1119,9 @@
-         {
-             i = Integer.parseInt(p_189988_1_.getString("version"));
-         }
--        catch (RuntimeException runtimeexception)
-+        catch (RuntimeException var4)
-         {
-+            ;
-         }
- 
-         return this.mc.getDataFixer().process(FixTypes.OPTIONS, p_189988_1_, i);
-@@ -1176,6 +1141,7 @@
+@@ -1176,6 +1185,7 @@
  
      public void saveOptions()
      {
@@ -338,7 +81,7 @@
          PrintWriter printwriter = null;
  
          try
-@@ -1250,7 +1216,8 @@
+@@ -1250,7 +1260,8 @@
  
              for (KeyBinding keybinding : this.keyBindings)
              {
@@ -348,35 +91,7 @@
              }
  
              for (SoundCategory soundcategory : SoundCategory.values())
-@@ -1277,13 +1244,13 @@
- 
-     public float getSoundLevel(SoundCategory category)
-     {
--        return this.soundLevels.containsKey(category) ? this.soundLevels.get(category) : 1.0F;
-+        return this.soundLevels.containsKey(category) ? ((Float)this.soundLevels.get(category)).floatValue() : 1.0F;
-     }
- 
-     public void setSoundLevel(SoundCategory category, float volume)
-     {
-         this.mc.getSoundHandler().setSoundLevel(category, volume);
--        this.soundLevels.put(category, volume);
-+        this.soundLevels.put(category, Float.valueOf(volume));
-     }
- 
-     public void sendSettingsToServer()
-@@ -1297,10 +1264,7 @@
-                 i |= enumplayermodelparts.getPartMask();
-             }
- 
--            this.mc
--            .player
--            .connection
--            .sendPacket(new CPacketClientSettings(this.language, this.renderDistanceChunks, this.chatVisibility, this.chatColours, i, this.mainHand));
-+            this.mc.player.connection.sendPacket(new CPacketClientSettings(this.language, this.renderDistanceChunks, this.chatVisibility, this.chatColours, i, this.mainHand));
-         }
-     }
- 
-@@ -1487,4 +1451,35 @@
+@@ -1487,4 +1498,35 @@
              return value;
          }
      }

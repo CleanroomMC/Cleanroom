@@ -1,148 +1,15 @@
 --- before/net/minecraft/client/gui/GuiCreateWorld.java
 +++ after/net/minecraft/client/gui/GuiCreateWorld.java
-@@ -43,33 +43,7 @@
-     private String worldName;
-     private int selectedIndex;
-     public String chunkProviderSettingsJson = "";
--    private static final String[] DISALLOWED_FILENAMES = new String[]
--        {
--            "CON",
--            "COM",
--            "PRN",
--            "AUX",
--            "CLOCK$",
--            "NUL",
--            "COM1",
--            "COM2",
--            "COM3",
--            "COM4",
--            "COM5",
--            "COM6",
--            "COM7",
--            "COM8",
--            "COM9",
--            "LPT1",
--            "LPT2",
--            "LPT3",
--            "LPT4",
--            "LPT5",
--            "LPT6",
--            "LPT7",
--            "LPT8",
--            "LPT9"
--        };
-+    private static final String[] DISALLOWED_FILENAMES = new String[] {"CON", "COM", "PRN", "AUX", "CLOCK$", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"};
- 
-     public GuiCreateWorld(GuiScreen p_i46320_1_)
-     {
-@@ -78,14 +52,12 @@
-         this.worldName = I18n.format("selectWorld.newWorld");
-     }
- 
--    @Override
-     public void updateScreen()
-     {
-         this.worldNameField.updateCursorCounter();
-         this.worldSeedField.updateCursorCounter();
-     }
- 
--    @Override
-     public void initGui()
-     {
-         Keyboard.enableRepeatEvents(true);
-@@ -133,9 +105,7 @@
- 
-     private void updateDisplayState()
-     {
--        this.btnGameMode.displayString = I18n.format("selectWorld.gameMode")
--                                             + ": "
--                                             + I18n.format("selectWorld.gameMode." + this.gameMode);
-+        this.btnGameMode.displayString = I18n.format("selectWorld.gameMode") + ": " + I18n.format("selectWorld.gameMode." + this.gameMode);
-         this.gameModeDesc1 = I18n.format("selectWorld.gameMode." + this.gameMode + ".line1");
-         this.gameModeDesc2 = I18n.format("selectWorld.gameMode." + this.gameMode + ".line2");
-         this.btnMapFeatures.displayString = I18n.format("selectWorld.mapFeatures") + " ";
-@@ -160,9 +130,7 @@
-             this.btnBonusItems.displayString = this.btnBonusItems.displayString + I18n.format("options.off");
-         }
- 
--        this.btnMapType.displayString = I18n.format("selectWorld.mapType")
--                                             + " "
--                                             + I18n.format(WorldType.WORLD_TYPES[this.selectedIndex].getTranslationKey());
-+        this.btnMapType.displayString = I18n.format("selectWorld.mapType") + " " + I18n.format(WorldType.WORLD_TYPES[this.selectedIndex].getTranslationKey());
-         this.btnAllowCommands.displayString = I18n.format("selectWorld.allowCommands") + " ";
- 
-         if (this.allowCheats && !this.hardCoreMode)
-@@ -195,13 +163,11 @@
-         return name;
-     }
- 
--    @Override
-     public void onGuiClosed()
-     {
-         Keyboard.enableRepeatEvents(false);
-     }
- 
--    @Override
-     protected void actionPerformed(GuiButton button) throws IOException
-     {
-         if (button.enabled)
-@@ -212,7 +178,7 @@
-             }
-             else if (button.id == 0)
-             {
--                this.mc.displayGuiScreen(null);
-+                this.mc.displayGuiScreen((GuiScreen)null);
- 
-                 if (this.alreadyGenerated)
-                 {
-@@ -220,7 +186,7 @@
-                 }
- 
-                 this.alreadyGenerated = true;
--                long i = new Random().nextLong();
-+                long i = (new Random()).nextLong();
-                 String s = this.worldSeedField.getText();
- 
-                 if (!StringUtils.isEmpty(s))
-@@ -234,15 +200,15 @@
-                             i = j;
-                         }
-                     }
--                    catch (NumberFormatException numberformatexception)
-+                    catch (NumberFormatException var7)
-                     {
-                         i = (long)s.hashCode();
+@@ -240,6 +240,8 @@
                      }
                  }
  
--                WorldSettings worldsettings = new WorldSettings(
--                    i, GameType.getByName(this.gameMode), this.generateStructuresEnabled, this.hardCoreMode, WorldType.WORLD_TYPES[this.selectedIndex]
--                );
 +                WorldType.WORLD_TYPES[this.selectedIndex].onGUICreateWorldPress();
 +
-+                WorldSettings worldsettings = new WorldSettings(i, GameType.getByName(this.gameMode), this.generateStructuresEnabled, this.hardCoreMode, WorldType.WORLD_TYPES[this.selectedIndex]);
-                 worldsettings.setGeneratorOptions(this.chunkProviderSettingsJson);
- 
-                 if (this.bonusChestEnabled && !this.hardCoreMode)
-@@ -319,7 +285,7 @@
-             }
-             else if (button.id == 5)
-             {
--                this.selectedIndex++;
-+                ++this.selectedIndex;
- 
-                 if (this.selectedIndex >= WorldType.WORLD_TYPES.length)
-                 {
-@@ -328,7 +294,7 @@
- 
-                 while (!this.canSelectCurWorldType())
-                 {
--                    this.selectedIndex++;
-+                    ++this.selectedIndex;
- 
-                     if (this.selectedIndex >= WorldType.WORLD_TYPES.length)
-                     {
-@@ -348,14 +314,7 @@
+                 WorldSettings worldsettings = new WorldSettings(
+                     i, GameType.getByName(this.gameMode), this.generateStructuresEnabled, this.hardCoreMode, WorldType.WORLD_TYPES[this.selectedIndex]
+                 );
+@@ -348,14 +350,7 @@
              }
              else if (button.id == 8)
              {
@@ -158,27 +25,7 @@
              }
          }
      }
-@@ -364,14 +323,14 @@
-     {
-         WorldType worldtype = WorldType.WORLD_TYPES[this.selectedIndex];
- 
--        if (worldtype == null || !worldtype.canBeCreated())
--        {
--            return false;
--        }
--        else
-+        if (worldtype != null && worldtype.canBeCreated())
-         {
-             return worldtype == WorldType.DEBUG_ALL_BLOCK_STATES ? isShiftKeyDown() : true;
-         }
-+        else
-+        {
-+            return false;
-+        }
-     }
- 
-     private void toggleMoreWorldOptions()
-@@ -415,11 +374,7 @@
+@@ -415,11 +410,7 @@
              this.btnBonusItems.visible = this.inMoreWorldOptionsDisplay;
              this.btnMapType.visible = this.inMoreWorldOptionsDisplay;
              this.btnAllowCommands.visible = this.inMoreWorldOptionsDisplay;
@@ -191,24 +38,8 @@
          }
  
          this.updateDisplayState();
-@@ -434,7 +389,6 @@
-         }
-     }
- 
--    @Override
-     protected void keyTyped(char typedChar, int keyCode) throws IOException
-     {
-         if (this.worldNameField.isFocused() && !this.inMoreWorldOptionsDisplay)
-@@ -453,13 +407,37 @@
-             this.actionPerformed(this.buttonList.get(0));
-         }
- 
--        this.buttonList.get(0).enabled = !this.worldNameField.getText().isEmpty();
-+        (this.buttonList.get(0)).enabled = !this.worldNameField.getText().isEmpty();
-         this.calcSaveDirName();
-     }
- 
--    @Override
+@@ -460,6 +451,31 @@
+     @Override
      protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
      {
 +        if (this.btnMapType.mousePressed(this.mc, mouseX, mouseY)) {
@@ -239,36 +70,3 @@
          super.mouseClicked(mouseX, mouseY, mouseButton);
  
          if (this.inMoreWorldOptionsDisplay)
-@@ -472,7 +450,6 @@
-         }
-     }
- 
--    @Override
-     public void drawScreen(int mouseX, int mouseY, float partialTicks)
-     {
-         this.drawDefaultBackground();
-@@ -497,22 +474,13 @@
- 
-             if (WorldType.WORLD_TYPES[this.selectedIndex].hasInfoNotice())
-             {
--                this.fontRenderer
--                .drawSplitString(
--                    I18n.format(WorldType.WORLD_TYPES[this.selectedIndex].getInfoTranslationKey()),
--                    this.btnMapType.x + 2,
--                    this.btnMapType.y + 22,
--                    this.btnMapType.getButtonWidth(),
--                    10526880
--                );
-+                this.fontRenderer.drawSplitString(I18n.format(WorldType.WORLD_TYPES[this.selectedIndex].getInfoTranslationKey()), this.btnMapType.x + 2, this.btnMapType.y + 22, this.btnMapType.getButtonWidth(), 10526880);
-             }
-         }
-         else
-         {
-             this.drawString(this.fontRenderer, I18n.format("selectWorld.enterName"), this.width / 2 - 100, 47, -6250336);
--            this.drawString(
--                this.fontRenderer, I18n.format("selectWorld.resultFolder") + " " + this.saveDirName, this.width / 2 - 100, 85, -6250336
--            );
-+            this.drawString(this.fontRenderer, I18n.format("selectWorld.resultFolder") + " " + this.saveDirName, this.width / 2 - 100, 85, -6250336);
-             this.worldNameField.drawTextBox();
-             this.drawString(this.fontRenderer, this.gameModeDesc1, this.width / 2 - 100, 137, -6250336);
-             this.drawString(this.fontRenderer, this.gameModeDesc2, this.width / 2 - 100, 149, -6250336);

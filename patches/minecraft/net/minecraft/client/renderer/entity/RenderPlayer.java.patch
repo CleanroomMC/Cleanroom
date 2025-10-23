@@ -1,6 +1,6 @@
 --- before/net/minecraft/client/renderer/entity/RenderPlayer.java
 +++ after/net/minecraft/client/renderer/entity/RenderPlayer.java
-@@ -56,13 +56,14 @@
+@@ -56,6 +56,7 @@
  
      public void doRender(AbstractClientPlayer entity, double x, double y, double z, float entityYaw, float partialTicks)
      {
@@ -8,14 +8,6 @@
          if (!entity.isUser() || this.renderManager.renderViewEntity == entity)
          {
              double d0 = y;
- 
-             if (entity.isSneaking())
-             {
--                d0 = y - 0.125;
-+                d0 = y - 0.125D;
-             }
- 
-             this.setModelVisibilities(entity);
 @@ -70,6 +71,7 @@
              super.doRender(entity, x, d0, z, entityYaw, partialTicks);
              GlStateManager.disableBlendProfile(GlStateManager.Profile.PLAYER_SKIN);
@@ -24,65 +16,15 @@
      }
  
      private void setModelVisibilities(AbstractClientPlayer clientPlayer)
-@@ -128,6 +130,11 @@
+@@ -127,6 +129,11 @@
+                     if (enumaction1 == EnumAction.BLOCK)
                      {
                          modelbiped$armpose1 = ModelBiped.ArmPose.BLOCK;
-                     }
++                    }
 +                    // FORGE: fix MC-88356 allow offhand to use bow and arrow animation
 +                    else if (enumaction1 == EnumAction.BOW)
 +                    {
 +                        modelbiped$armpose1 = ModelBiped.ArmPose.BOW_AND_ARROW;
-+                    }
+                     }
                  }
              }
- 
-@@ -149,7 +156,6 @@
-         return entity.getLocationSkin();
-     }
- 
--    @Override
-     public void transformHeldFull3DItemLayer()
-     {
-         GlStateManager.translate(0.0F, 0.1875F, 0.0F);
-@@ -161,11 +167,9 @@
-         GlStateManager.scale(0.9375F, 0.9375F, 0.9375F);
-     }
- 
--    protected void renderEntityName(
--        AbstractClientPlayer entityIn, double x, double y, double z, String name, double distanceSq
--    )
-+    protected void renderEntityName(AbstractClientPlayer entityIn, double x, double y, double z, String name, double distanceSq)
-     {
--        if (distanceSq < 100.0)
-+        if (distanceSq < 100.0D)
-         {
-             Scoreboard scoreboard = entityIn.getWorldScoreboard();
-             ScoreObjective scoreobjective = scoreboard.getObjectiveInDisplaySlot(2);
-@@ -221,12 +225,7 @@
-     {
-         if (entityLivingBaseIn.isEntityAlive() && entityLivingBaseIn.isPlayerSleeping())
-         {
--            super.renderLivingAt(
--                entityLivingBaseIn,
--                x + (double)entityLivingBaseIn.renderOffsetX,
--                y + (double)entityLivingBaseIn.renderOffsetY,
--                z + (double)entityLivingBaseIn.renderOffsetZ
--            );
-+            super.renderLivingAt(entityLivingBaseIn, x + (double)entityLivingBaseIn.renderOffsetX, y + (double)entityLivingBaseIn.renderOffsetY, z + (double)entityLivingBaseIn.renderOffsetZ);
-         }
-         else
-         {
-@@ -252,11 +251,11 @@
-             double d0 = entityLiving.motionX * entityLiving.motionX + entityLiving.motionZ * entityLiving.motionZ;
-             double d1 = vec3d.x * vec3d.x + vec3d.z * vec3d.z;
- 
--            if (d0 > 0.0 && d1 > 0.0)
-+            if (d0 > 0.0D && d1 > 0.0D)
-             {
-                 double d2 = (entityLiving.motionX * vec3d.x + entityLiving.motionZ * vec3d.z) / (Math.sqrt(d0) * Math.sqrt(d1));
-                 double d3 = entityLiving.motionX * vec3d.z - entityLiving.motionZ * vec3d.x;
--                GlStateManager.rotate((float)(Math.signum(d3) * Math.acos(d2)) * 180.0F / (float) Math.PI, 0.0F, 1.0F, 0.0F);
-+                GlStateManager.rotate((float)(Math.signum(d3) * Math.acos(d2)) * 180.0F / (float)Math.PI, 0.0F, 1.0F, 0.0F);
-             }
-         }
-         else

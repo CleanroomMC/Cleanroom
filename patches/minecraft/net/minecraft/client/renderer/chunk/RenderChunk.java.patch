@@ -1,76 +1,6 @@
 --- before/net/minecraft/client/renderer/chunk/RenderChunk.java
 +++ after/net/minecraft/client/renderer/chunk/RenderChunk.java
-@@ -42,7 +42,7 @@
-     private final ReentrantLock lockCompileTask = new ReentrantLock();
-     private final ReentrantLock lockCompiledChunk = new ReentrantLock();
-     private ChunkCompileTaskGenerator compileTask;
--    private final Set<TileEntity> setTileEntities = Sets.newHashSet();
-+    private final Set<TileEntity> setTileEntities = Sets.<TileEntity>newHashSet();
-     private final int index;
-     private final FloatBuffer modelviewMatrix = GLAllocation.createDirectFloatBuffer(16);
-     private final VertexBuffer[] vertexBuffers = new VertexBuffer[BlockRenderLayer.values().length];
-@@ -56,7 +56,7 @@
- 
-     public RenderChunk(World worldIn, RenderGlobal renderGlobalIn, int indexIn)
-     {
--        for (int i = 0; i < this.mapEnumFacing.length; i++)
-+        for (int i = 0; i < this.mapEnumFacing.length; ++i)
-         {
-             this.mapEnumFacing[i] = new BlockPos.MutableBlockPos();
-         }
-@@ -67,7 +67,7 @@
- 
-         if (OpenGlHelper.useVbo())
-         {
--            for (int j = 0; j < BlockRenderLayer.values().length; j++)
-+            for (int j = 0; j < BlockRenderLayer.values().length; ++j)
-             {
-                 this.vertexBuffers[j] = new VertexBuffer(DefaultVertexFormats.BLOCK);
-             }
-@@ -94,15 +94,11 @@
- 
-     public void setPosition(int x, int y, int z)
-     {
--        if (x != this.position.getX()
--                || y != this.position.getY()
--                || z != this.position.getZ())
-+        if (x != this.position.getX() || y != this.position.getY() || z != this.position.getZ())
-         {
-             this.stopCompileTask();
-             this.position.setPos(x, y, z);
--            this.boundingBox = new AxisAlignedBB(
--                (double)x, (double)y, (double)z, (double)(x + 16), (double)(y + 16), (double)(z + 16)
--            );
-+            this.boundingBox = new AxisAlignedBB((double)x, (double)y, (double)z, (double)(x + 16), (double)(y + 16), (double)(z + 16));
- 
-             for (EnumFacing enumfacing : EnumFacing.values())
-             {
-@@ -121,14 +117,7 @@
-         {
-             this.preRenderBlocks(generator.getRegionRenderCacheBuilder().getWorldRendererByLayer(BlockRenderLayer.TRANSLUCENT), this.position);
-             generator.getRegionRenderCacheBuilder().getWorldRendererByLayer(BlockRenderLayer.TRANSLUCENT).setVertexState(compiledchunk.getState());
--            this.postRenderBlocks(
--                BlockRenderLayer.TRANSLUCENT,
--                x,
--                y,
--                z,
--                generator.getRegionRenderCacheBuilder().getWorldRendererByLayer(BlockRenderLayer.TRANSLUCENT),
--                compiledchunk
--            );
-+            this.postRenderBlocks(BlockRenderLayer.TRANSLUCENT, x, y, z, generator.getRegionRenderCacheBuilder().getWorldRendererByLayer(BlockRenderLayer.TRANSLUCENT), compiledchunk);
-         }
-     }
- 
-@@ -159,7 +148,7 @@
- 
-         if (!this.worldView.isEmpty())
-         {
--            renderChunksUpdated++;
-+            ++renderChunksUpdated;
-             boolean[] aboolean = new boolean[BlockRenderLayer.values().length];
-             BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
- 
-@@ -173,27 +162,29 @@
+@@ -173,7 +173,7 @@
                      lvt_9_1_.setOpaqueCube(blockpos$mutableblockpos);
                  }
  
@@ -79,10 +9,7 @@
                  {
                      TileEntity tileentity = this.worldView.getTileEntity(blockpos$mutableblockpos, Chunk.EnumCreateEntityType.CHECK);
  
-                     if (tileentity != null)
-                     {
--                        TileEntitySpecialRenderer<TileEntity> tileentityspecialrenderer = TileEntityRendererDispatcher.instance.getRenderer(tileentity);
-+                        TileEntitySpecialRenderer<TileEntity> tileentityspecialrenderer = TileEntityRendererDispatcher.instance.<TileEntity>getRenderer(tileentity);
+@@ -183,17 +183,19 @@
  
                          if (tileentityspecialrenderer != null)
                          {
@@ -104,7 +31,7 @@
                  int j = blockrenderlayer1.ordinal();
  
                  if (block.getDefaultState().getRenderType() != EnumBlockRenderType.INVISIBLE)
-@@ -208,6 +199,8 @@
+@@ -208,6 +210,8 @@
  
                      aboolean[j] |= blockrendererdispatcher.renderBlock(iblockstate, blockpos$mutableblockpos, this.worldView, bufferbuilder);
                  }
@@ -113,18 +40,7 @@
              }
  
              for (BlockRenderLayer blockrenderlayer : BlockRenderLayer.values())
-@@ -219,9 +212,7 @@
- 
-                 if (compiledchunk.isLayerStarted(blockrenderlayer))
-                 {
--                    this.postRenderBlocks(
--                        blockrenderlayer, x, y, z, generator.getRegionRenderCacheBuilder().getWorldRendererByLayer(blockrenderlayer), compiledchunk
--                    );
-+                    this.postRenderBlocks(blockrenderlayer, x, y, z, generator.getRegionRenderCacheBuilder().getWorldRendererByLayer(blockrenderlayer), compiledchunk);
-                 }
-             }
-         }
-@@ -291,14 +282,16 @@
+@@ -291,14 +295,16 @@
      private void rebuildWorldView()
      {
          int i = 1;
@@ -143,7 +59,7 @@
  
          try
          {
-@@ -312,25 +305,26 @@
+@@ -312,17 +318,18 @@
  
                  this.compileTask = new ChunkCompileTaskGenerator(this, ChunkCompileTaskGenerator.Type.RESORT_TRANSPARENCY, this.getDistanceSq());
                  this.compileTask.setCompiledChunk(this.compiledChunk);
@@ -165,38 +81,7 @@
      }
  
      protected double getDistanceSq()
-     {
-         EntityPlayerSP entityplayersp = Minecraft.getMinecraft().player;
--        double d0 = this.boundingBox.minX + 8.0 - entityplayersp.posX;
--        double d1 = this.boundingBox.minY + 8.0 - entityplayersp.posY;
--        double d2 = this.boundingBox.minZ + 8.0 - entityplayersp.posZ;
-+        double d0 = this.boundingBox.minX + 8.0D - entityplayersp.posX;
-+        double d1 = this.boundingBox.minY + 8.0D - entityplayersp.posY;
-+        double d2 = this.boundingBox.minZ + 8.0D - entityplayersp.posZ;
-         return d0 * d0 + d1 * d1 + d2 * d2;
-     }
- 
-@@ -340,9 +334,7 @@
-         bufferBuilderIn.setTranslation((double)(-pos.getX()), (double)(-pos.getY()), (double)(-pos.getZ()));
-     }
- 
--    private void postRenderBlocks(
--        BlockRenderLayer layer, float x, float y, float z, BufferBuilder bufferBuilderIn, CompiledChunk compiledChunkIn
--    )
-+    private void postRenderBlocks(BlockRenderLayer layer, float x, float y, float z, BufferBuilder bufferBuilderIn, CompiledChunk compiledChunkIn)
-     {
-         if (layer == BlockRenderLayer.TRANSLUCENT && !compiledChunkIn.isLayerEmpty(layer))
-         {
-@@ -400,7 +392,7 @@
-         this.stopCompileTask();
-         this.world = null;
- 
--        for (int i = 0; i < BlockRenderLayer.values().length; i++)
-+        for (int i = 0; i < BlockRenderLayer.values().length; ++i)
-         {
-             if (this.vertexBuffers[i] != null)
-             {
-@@ -440,6 +432,26 @@
+@@ -440,6 +447,26 @@
      {
          return this.needsUpdate && this.needsImmediateUpdate;
      }

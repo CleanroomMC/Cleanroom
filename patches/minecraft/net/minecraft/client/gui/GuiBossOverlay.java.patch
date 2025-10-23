@@ -1,15 +1,6 @@
 --- before/net/minecraft/client/gui/GuiBossOverlay.java
 +++ after/net/minecraft/client/gui/GuiBossOverlay.java
-@@ -16,7 +16,7 @@
- {
-     private static final ResourceLocation GUI_BARS_TEXTURES = new ResourceLocation("textures/gui/bars.png");
-     private final Minecraft client;
--    private final Map<UUID, BossInfoClient> mapBossInfos = Maps.newLinkedHashMap();
-+    private final Map<UUID, BossInfoClient> mapBossInfos = Maps.<UUID, BossInfoClient>newLinkedHashMap();
- 
-     public GuiBossOverlay(Minecraft clientIn)
-     {
-@@ -34,15 +34,18 @@
+@@ -34,6 +34,9 @@
              for (BossInfoClient bossinfoclient : this.mapBossInfos.values())
              {
                  int k = i / 2 - 91;
@@ -19,12 +10,11 @@
                  GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                  this.client.getTextureManager().bindTexture(GUI_BARS_TEXTURES);
                  this.render(k, j, bossinfoclient);
-                 String s = bossinfoclient.getName().getFormattedText();
--                this.client
--                .fontRenderer
--                .drawStringWithShadow(s, (float)(i / 2 - this.client.fontRenderer.getStringWidth(s) / 2), (float)(j - 9), 16777215);
+@@ -41,8 +44,10 @@
+                 this.client
+                 .fontRenderer
+                 .drawStringWithShadow(s, (float)(i / 2 - this.client.fontRenderer.getStringWidth(s) / 2), (float)(j - 9), 16777215);
 -                j += 10 + this.client.fontRenderer.FONT_HEIGHT;
-+                this.client.fontRenderer.drawStringWithShadow(s, (float)(i / 2 - this.client.fontRenderer.getStringWidth(s) / 2), (float)(j - 9), 16777215);
 +                }
 +                j += event.getIncrement();
  
@@ -32,12 +22,3 @@
                  if (j >= scaledresolution.getScaledHeight() / 3)
                  {
                      break;
-@@ -85,7 +88,7 @@
-         }
-         else
-         {
--            this.mapBossInfos.get(packetIn.getUniqueId()).updateFromPacket(packetIn);
-+            ((BossInfoClient)this.mapBossInfos.get(packetIn.getUniqueId())).updateFromPacket(packetIn);
-         }
-     }
- 

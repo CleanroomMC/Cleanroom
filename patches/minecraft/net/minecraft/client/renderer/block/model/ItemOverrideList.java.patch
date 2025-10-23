@@ -1,23 +1,6 @@
 --- before/net/minecraft/client/renderer/block/model/ItemOverrideList.java
 +++ after/net/minecraft/client/renderer/block/model/ItemOverrideList.java
-@@ -14,7 +14,7 @@
- public class ItemOverrideList
- {
-     public static final ItemOverrideList NONE = new ItemOverrideList();
--    private final List<ItemOverride> overrides = Lists.newArrayList();
-+    private final List<ItemOverride> overrides = Lists.<ItemOverride>newArrayList();
- 
-     private ItemOverrideList()
-     {
-@@ -22,13 +22,14 @@
- 
-     public ItemOverrideList(List<ItemOverride> overridesIn)
-     {
--        for (int i = overridesIn.size() - 1; i >= 0; i--)
-+        for (int i = overridesIn.size() - 1; i >= 0; --i)
-         {
-             this.overrides.add(overridesIn.get(i));
-         }
+@@ -29,6 +29,7 @@
      }
  
      @Nullable

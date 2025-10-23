@@ -1,53 +1,14 @@
 --- before/net/minecraft/client/renderer/OpenGlHelper.java
 +++ after/net/minecraft/client/renderer/OpenGlHelper.java
-@@ -1,12 +1,5 @@
- package net.minecraft.client.renderer;
- 
--import java.io.File;
--import java.io.IOException;
--import java.net.URI;
--import java.nio.ByteBuffer;
--import java.nio.FloatBuffer;
--import java.nio.IntBuffer;
--import java.util.Locale;
- import net.minecraft.client.Minecraft;
- import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
- import net.minecraft.client.settings.GameSettings;
-@@ -16,23 +9,17 @@
- import org.apache.logging.log4j.LogManager;
- import org.apache.logging.log4j.Logger;
- import org.lwjgl.Sys;
--import org.lwjgl.opengl.ARBFramebufferObject;
--import org.lwjgl.opengl.ARBMultitexture;
--import org.lwjgl.opengl.ARBShaderObjects;
--import org.lwjgl.opengl.ARBVertexBufferObject;
--import org.lwjgl.opengl.ARBVertexShader;
--import org.lwjgl.opengl.ContextCapabilities;
--import org.lwjgl.opengl.EXTBlendFuncSeparate;
--import org.lwjgl.opengl.EXTFramebufferObject;
--import org.lwjgl.opengl.GL11;
--import org.lwjgl.opengl.GL13;
--import org.lwjgl.opengl.GL14;
--import org.lwjgl.opengl.GL15;
--import org.lwjgl.opengl.GL20;
--import org.lwjgl.opengl.GL30;
--import org.lwjgl.opengl.GLContext;
-+import org.lwjgl.opengl.*;
+@@ -33,6 +33,7 @@
+ import org.lwjgl.opengl.GLContext;
  import oshi.SystemInfo;
--import oshi.hardware.Processor;
+ import oshi.hardware.Processor;
 +import oshi.hardware.CentralProcessor;
-+
-+import java.io.File;
-+import java.io.IOException;
-+import java.net.URI;
-+import java.nio.ByteBuffer;
-+import java.nio.FloatBuffer;
-+import java.nio.IntBuffer;
-+import java.util.Locale;
  
  @SideOnly(Side.CLIENT)
  public class OpenGlHelper
-@@ -93,6 +80,10 @@
+@@ -93,6 +94,10 @@
      public static int GL_ARRAY_BUFFER;
      public static int GL_STATIC_DRAW;
  
@@ -58,27 +19,7 @@
      public static void initializeTextures()
      {
          ContextCapabilities contextcapabilities = GLContext.getCapabilities();
-@@ -163,8 +154,7 @@
- 
-         extBlendFuncSeparate = contextcapabilities.GL_EXT_blend_func_separate && !contextcapabilities.OpenGL14;
-         openGL14 = contextcapabilities.OpenGL14 || contextcapabilities.GL_EXT_blend_func_separate;
--        framebufferSupported = openGL14
--                         && (contextcapabilities.GL_ARB_framebuffer_object || contextcapabilities.GL_EXT_framebuffer_object || contextcapabilities.OpenGL30);
-+        framebufferSupported = openGL14 && (contextcapabilities.GL_ARB_framebuffer_object || contextcapabilities.GL_EXT_framebuffer_object || contextcapabilities.OpenGL30);
- 
-         if (framebufferSupported)
-         {
-@@ -224,8 +214,7 @@
-         }
- 
-         openGL21 = contextcapabilities.OpenGL21;
--        shadersAvailable = openGL21
--                         || contextcapabilities.GL_ARB_vertex_shader && contextcapabilities.GL_ARB_fragment_shader && contextcapabilities.GL_ARB_shader_objects;
-+        shadersAvailable = openGL21 || contextcapabilities.GL_ARB_vertex_shader && contextcapabilities.GL_ARB_fragment_shader && contextcapabilities.GL_ARB_shader_objects;
-         logText = logText + "Shaders are " + (shadersAvailable ? "" : "not ") + "available because ";
- 
-         if (shadersAvailable)
-@@ -296,11 +285,12 @@
+@@ -296,8 +301,8 @@
  
          try
          {
@@ -87,66 +28,18 @@
 +            CentralProcessor aprocessor = (new SystemInfo()).getHardware().getProcessor();
 +            cpu = String.format("%dx %s", aprocessor.getLogicalProcessorCount(), aprocessor.getProcessorIdentifier().getName()).replaceAll("\\s+", " ");
          }
--        catch (Throwable throwable)
-+        catch (Throwable var3)
+         catch (Throwable throwable)
          {
-+            ;
-         }
-     }
- 
-@@ -854,6 +844,12 @@
+@@ -853,6 +858,12 @@
+         else
          {
              GL13.glMultiTexCoord2f(target, x, y);
-         }
++        }
 +
 +        if (target == lightmapTexUnit)
 +        {
 +            lastBrightnessX = x;
 +            lastBrightnessY = y;
-+        }
+         }
      }
  
-     public static void glBlendFunc(int sFactorRGB, int dFactorRGB, int sfactorAlpha, int dfactorAlpha)
-@@ -893,21 +889,21 @@
-         BufferBuilder bufferbuilder = tessellator.getBuffer();
-         GL11.glLineWidth(4.0F);
-         bufferbuilder.begin(1, DefaultVertexFormats.POSITION_COLOR);
--        bufferbuilder.pos(0.0, 0.0, 0.0).color(0, 0, 0, 255).endVertex();
--        bufferbuilder.pos((double)p_188785_0_, 0.0, 0.0).color(0, 0, 0, 255).endVertex();
--        bufferbuilder.pos(0.0, 0.0, 0.0).color(0, 0, 0, 255).endVertex();
--        bufferbuilder.pos(0.0, (double)p_188785_0_, 0.0).color(0, 0, 0, 255).endVertex();
--        bufferbuilder.pos(0.0, 0.0, 0.0).color(0, 0, 0, 255).endVertex();
--        bufferbuilder.pos(0.0, 0.0, (double)p_188785_0_).color(0, 0, 0, 255).endVertex();
-+        bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
-+        bufferbuilder.pos((double)p_188785_0_, 0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
-+        bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
-+        bufferbuilder.pos(0.0D, (double)p_188785_0_, 0.0D).color(0, 0, 0, 255).endVertex();
-+        bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
-+        bufferbuilder.pos(0.0D, 0.0D, (double)p_188785_0_).color(0, 0, 0, 255).endVertex();
-         tessellator.draw();
-         GL11.glLineWidth(2.0F);
-         bufferbuilder.begin(1, DefaultVertexFormats.POSITION_COLOR);
--        bufferbuilder.pos(0.0, 0.0, 0.0).color(255, 0, 0, 255).endVertex();
--        bufferbuilder.pos((double)p_188785_0_, 0.0, 0.0).color(255, 0, 0, 255).endVertex();
--        bufferbuilder.pos(0.0, 0.0, 0.0).color(0, 255, 0, 255).endVertex();
--        bufferbuilder.pos(0.0, (double)p_188785_0_, 0.0).color(0, 255, 0, 255).endVertex();
--        bufferbuilder.pos(0.0, 0.0, 0.0).color(127, 127, 255, 255).endVertex();
--        bufferbuilder.pos(0.0, 0.0, (double)p_188785_0_).color(127, 127, 255, 255).endVertex();
-+        bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(255, 0, 0, 255).endVertex();
-+        bufferbuilder.pos((double)p_188785_0_, 0.0D, 0.0D).color(255, 0, 0, 255).endVertex();
-+        bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(0, 255, 0, 255).endVertex();
-+        bufferbuilder.pos(0.0D, (double)p_188785_0_, 0.0D).color(0, 255, 0, 255).endVertex();
-+        bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(127, 127, 255, 255).endVertex();
-+        bufferbuilder.pos(0.0D, 0.0D, (double)p_188785_0_).color(127, 127, 255, 255).endVertex();
-         tessellator.draw();
-         GL11.glLineWidth(1.0F);
-         GlStateManager.depthMask(true);
-@@ -951,7 +947,7 @@
-         try
-         {
-             Class<?> oclass = Class.forName("java.awt.Desktop");
--            Object object = oclass.getMethod("getDesktop").invoke(null);
-+            Object object = oclass.getMethod("getDesktop").invoke((Object)null);
-             oclass.getMethod("browse", URI.class).invoke(object, fileIn.toURI());
-         }
-         catch (Throwable throwable)
