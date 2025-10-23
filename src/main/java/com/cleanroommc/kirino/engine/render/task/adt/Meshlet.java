@@ -1,8 +1,10 @@
 package com.cleanroommc.kirino.engine.render.task.adt;
 
 import com.cleanroommc.kirino.engine.render.geometry.AABB;
+import com.cleanroommc.kirino.engine.render.geometry.Block;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.PriorityQueue;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.shorts.ShortHeapPriorityQueue;
 import net.minecraft.util.EnumFacing;
 import org.jetbrains.annotations.NotNull;
@@ -27,6 +29,22 @@ public class Meshlet implements Comparable<Meshlet> {
     }
 
     public int size() {
+        return blocks;
+    }
+
+    public AABB aabb() {
+        return boundingBox;
+    }
+
+    // Empties the blocks onto the set
+    public Set<Block> emptyBlocks() {
+        Set<Block> blocks = new ObjectOpenHashSet<>();
+
+        while (!maxHeap.isEmpty()) {
+            short block = maxHeap.dequeue();
+            blocks.add(new Block(block & MASK_X, (block & MASK_Y) >> 4, (block & MASK_Z) >> 8));
+        }
+
         return blocks;
     }
 
@@ -70,9 +88,6 @@ public class Meshlet implements Comparable<Meshlet> {
 
         while(!m.maxHeap.isEmpty()) {
             toAdd.add(m.maxHeap.dequeue());
-        }
-        while(!minHeap.isEmpty()) {
-            toAdd.add(m.minHeap.dequeue());
         }
 
         for (short block : toAdd) {
