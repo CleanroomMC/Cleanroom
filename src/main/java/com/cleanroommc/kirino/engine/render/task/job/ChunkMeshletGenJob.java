@@ -57,6 +57,8 @@ public class ChunkMeshletGenJob implements IParallelJob {
             // TODO: Make ECS_RUNTIME usable
             ECS_RUNTIME.entityManager.createEntity(meshletComponent);
         }
+
+        ECS_RUNTIME.entityManager.flush();
     }
 
     private static int index(int x, int y, int z) {
