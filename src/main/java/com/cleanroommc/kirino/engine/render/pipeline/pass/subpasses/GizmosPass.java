@@ -41,7 +41,7 @@ public class GizmosPass extends Subpass {
 
     @Override
     protected boolean hintSimplifyDrawQueue() {
-        return false;
+        return true;
     }
 
     @Override
