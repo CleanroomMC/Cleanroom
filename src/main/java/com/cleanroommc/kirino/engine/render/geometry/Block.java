@@ -1,27 +1,21 @@
 package com.cleanroommc.kirino.engine.render.geometry;
 
 import com.cleanroommc.kirino.ecs.component.scan.CleanStruct;
-import org.joml.Vector3i;
-
-import java.util.BitSet;
+import org.joml.Vector3f;
 
 @CleanStruct
 public class Block {
-    public Vector3i position;
-    public int faces;
+    public Vector3f position;
+    // public int faces;
 
     public Block() {
-        position = new Vector3i();
-        faces = 0b111111;
+        position = new Vector3f();
+        // faces = 0b111111;
     }
 
     public Block(int x, int y, int z) {
-        this(x,y,z,0b111111);
-    }
-
-    public Block(int x, int y, int z, int faces) {
-        position = new Vector3i(x, y, z);
-        this.faces = faces;
+        position = new Vector3f(x, y, z);
+        // this.faces = faces;
     }
 
     /**
@@ -95,9 +89,8 @@ public class Block {
      * @return The integer as described above
      */
     int compress() {
-        return (position.x & 0b1111) << 14
-                | (position.y & 0b1111) << 10
-                | (position.z & 0b1111) << 6
-                | faces;
+        return ((int)position.x & 0b1111) << 14
+                | ((int)position.y & 0b1111) << 10
+                | ((int)position.z & 0b1111) << 6;
     }
 }
