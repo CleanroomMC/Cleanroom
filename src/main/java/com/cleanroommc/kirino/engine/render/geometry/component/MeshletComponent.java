@@ -9,7 +9,7 @@ import org.joml.Vector3f;
 @CleanComponent
 public class MeshletComponent implements ICleanComponent {
     public AABB aabb;
-    public int normal; // just use the face flags (like in block) for easier calculations down the line
+    public Vector3f normal;
     public Block block1;
     public Block block2;
     public Block block3;
