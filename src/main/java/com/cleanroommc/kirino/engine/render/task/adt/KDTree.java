@@ -14,6 +14,7 @@ import java.util.*;
 public class KDTree {
 
     private Node root = null;
+    private int len = 0;
 
     public void add(@NonNull List<Meshlet> meshlets) {
         Preconditions.checkNotNull(meshlets);
@@ -47,22 +48,24 @@ public class KDTree {
             recurrenceStack.push(new Recurrence(recurrence.node.left, left, recurrence.depth + 1));
             recurrenceStack.push(new Recurrence(recurrence.node.right, right, recurrence.depth + 1));
         }
+
+        len++;
     }
 
-    public Optional<Set<Meshlet>> knn(@NonNull Meshlet meshlet, float cutoff, int k) {
+    public Optional<List<Meshlet>> knn(@NonNull Meshlet meshlet, float cutoff, int k) {
         Preconditions.checkNotNull(meshlet);
 
         return this.knn(meshlet.median(), cutoff, k);
     }
 
-    public Optional<Set<Meshlet>> knn(@NonNull Vector3f vector, float cutoff, int k) {
+    public Optional<List<Meshlet>> knn(@NonNull Vector3f vector, float cutoff, int k) {
         Preconditions.checkNotNull(vector);
 
         if (root == null) {
             return Optional.empty();
         }
 
-        PriorityQueue<Meshlet> neighbours = new ObjectArrayPriorityQueue<>();
+        PriorityQueue<Meshlet> neighbours = new ObjectArrayPriorityQueue<>((a,b) -> (int) (a.median().distanceSquared(vector) - b.median().distanceSquared(vector)));
         float cutoffSquared = cutoff*cutoff;
 
         Stack<Node> stack = new ReferenceArrayList<>();
@@ -94,13 +97,38 @@ public class KDTree {
             }
         }
 
-        Set<Meshlet> meshlets = new ReferenceArraySet<>(k);
+        List<Meshlet> meshlets = new ReferenceArrayList<>();
 
         for (int i = 0; i < k; i++) {
             meshlets.add(neighbours.dequeue());
         }
 
         return Optional.of(meshlets);
+    }
+
+    public Optional<Meshlet> nearest(@NonNull Vector3f vector, float cutoff, boolean excludeEquals) {
+        Preconditions.checkNotNull(vector);
+
+        if (excludeEquals) {
+            Optional<List<Meshlet>> neighbours = knn(vector, cutoff, 2);
+            if (neighbours.isPresent()) {
+                if (!neighbours.get().isEmpty()) {
+                    if (neighbours.get().getFirst().median().distanceSquared(vector) != 0) {
+                        return Optional.of(neighbours.get().getFirst());
+                    } else {
+                        return Optional.of(neighbours.get().getLast());
+                    }
+                }
+            }
+        } else {
+            Optional<List<Meshlet>> neighbours = knn(vector, cutoff, 1);
+            if (neighbours.isPresent()) {
+                if (!neighbours.get().isEmpty()) {
+                    return Optional.of(neighbours.get().getFirst());
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     // TODO: Rewrite to iterative
@@ -141,6 +169,7 @@ public class KDTree {
 
     public void delete(@NonNull Meshlet meshlet) {
         _delete(root, meshlet, 0);
+        len--;
     }
 
     // TODO: Rewrite to iterative
@@ -221,6 +250,10 @@ public class KDTree {
             case 1 -> meshlet.median().y < median.median().y;
             default -> meshlet.median().z < median.median().z;
         };
+    }
+
+    public int size() {
+        return len;
     }
 
     private static class Node {

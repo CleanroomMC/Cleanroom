@@ -1,17 +1,23 @@
 package com.cleanroommc.kirino.engine.render.task.adt;
 
 import com.cleanroommc.kirino.engine.render.geometry.AABB;
+import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.shorts.ShortHeapPriorityQueue;
 import net.minecraft.util.EnumFacing;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
+import org.jspecify.annotations.NonNull;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class Meshlet implements Comparable<Meshlet> {
     EnumFacing normal;
     // Insertion-time median tracking
     PriorityQueue<Short> maxHeap = new ShortHeapPriorityQueue((a, b) -> b - a);
     PriorityQueue<Short> minHeap = new ShortHeapPriorityQueue();
+    int blocks = 0;
     AABB boundingBox;
 
     public Meshlet(EnumFacing normal, int x, int y, int z) {
@@ -20,9 +26,18 @@ public class Meshlet implements Comparable<Meshlet> {
         addBlock(x, y, z);
     }
 
+    public int size() {
+        return blocks;
+    }
+
+    public void addBlock(short block) {
+        addBlock(block & MASK_X, (block & MASK_Y) >> 4, (block & MASK_Z) >> 8);
+    }
+
     public void addBlock(int x, int y, int z) {
         maxHeap.enqueue((short) ((x & 0b1111) | ((y & 0b1111) << 4) | ((z & 0b1111) << 8)));
         minHeap.enqueue(maxHeap.first());
+        blocks++;
 
         if (minHeap.size() > maxHeap.size()) {
             maxHeap.enqueue(minHeap.first());
@@ -45,6 +60,23 @@ public class Meshlet implements Comparable<Meshlet> {
         }
         if (z + 1 > boundingBox.zMax) {
             boundingBox.zMax = z + 1;
+        }
+    }
+
+    public void merge(@NonNull Meshlet m) {
+        Preconditions.checkNotNull(m);
+
+        Set<Short> toAdd = new HashSet<>();
+
+        while(!m.maxHeap.isEmpty()) {
+            toAdd.add(m.maxHeap.dequeue());
+        }
+        while(!minHeap.isEmpty()) {
+            toAdd.add(m.minHeap.dequeue());
+        }
+
+        for (short block : toAdd) {
+            addBlock(block);
         }
     }
 

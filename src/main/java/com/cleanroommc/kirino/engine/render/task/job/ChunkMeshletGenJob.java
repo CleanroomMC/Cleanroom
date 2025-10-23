@@ -12,16 +12,15 @@ import com.cleanroommc.kirino.engine.render.task.adt.Meshlet;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.chunk.Chunk;
+import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 public class ChunkMeshletGenJob implements IParallelJob {
     @JobExternalDataQuery
@@ -41,7 +40,11 @@ public class ChunkMeshletGenJob implements IParallelJob {
         KirinoCore.LOGGER.info("debug chunk xz: {}, {}", x, z);
         // TODO: Replace 256 with a variable in case we ever want to give people an option to increase the world height
         for (int y = 0; y < 256; y += 16) {
-
+            if (!chunk.isEmptyBetween(y, y+16)) {
+                for (EnumFacing side : EnumFacing.values()) {
+                    List<Meshlet> meshlets = generateMeshlets(chunk, y, side);
+                }
+            }
         }
     }
 
@@ -49,15 +52,19 @@ public class ChunkMeshletGenJob implements IParallelJob {
         return (z*256)+(y*16)+x;
     }
 
-    private void generateMeshlets(@NonNull Chunk chunk, int chunkY, EnumFacing side) {
-        Stack<Meshlet> stack = new ReferenceArrayList<>();
-
+    private @NonNull List<Meshlet> generateMeshlets(@NonNull Chunk chunk, int chunkY, EnumFacing side) {
         int chunkX = chunk.x << 4;
         int chunkZ = chunk.z << 4;
 
-        KDTree meshlets = buildKDTree(chunk, chunkX, chunkY, chunkZ, side);
+        KDTree tree = buildKDTree(chunk, chunkX, chunkY, chunkZ, side);
+        List<Meshlet> meshlets = new ObjectArrayList<>();
 
+        while(tree.size() > 0) {
+            Optional<Meshlet> start = tree.size() % 2 == 1 ? tree.getLeftExtremity() : tree.getRightExtremity();
+            start.ifPresent(meshlet -> meshlets.add(nearestNeighbourChain(tree, meshlet)));
+        }
 
+        return meshlets;
     }
 
     public @NonNull KDTree buildKDTree(@NonNull Chunk chunk, int chunkX, int chunkY, int chunkZ, @NonNull EnumFacing side) {
@@ -95,6 +102,29 @@ public class ChunkMeshletGenJob implements IParallelJob {
             return false;
         }
         return chunk.getBlockState(x,y,z).isOpaqueCube();
+    }
+
+    // Ironically it's closer to BFS, but it has the main trait of NNC which is the clustering.
+    private static @NonNull Meshlet nearestNeighbourChain(@NonNull KDTree tree, @NonNull Meshlet meshlet) {
+        Preconditions.checkNotNull(meshlet);
+        Preconditions.checkNotNull(tree);
+
+        Stack<Vector3f> stack = new ObjectArrayList<>();
+        stack.push(meshlet.median());
+        tree.delete(meshlet);
+        while (!stack.isEmpty() && meshlet.size() < 32) {
+            // Get 4 at once instead of just one like in normal NNS because it's faster
+            Optional<List<Meshlet>> nearest = tree.knn(stack.pop(), 1.f, 4);
+            if (nearest.isPresent()) {
+                for(Meshlet m : nearest.get()) {
+                    stack.push(m.median());
+                    meshlet.merge(m);
+                    tree.delete(m);
+                }
+            }
+        }
+
+        return meshlet;
     }
 
     @Override
