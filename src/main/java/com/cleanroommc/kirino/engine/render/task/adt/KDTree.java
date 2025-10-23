@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.objects.*;
+import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -51,6 +52,12 @@ public class KDTree {
     public Optional<Set<Meshlet>> knn(@NonNull Meshlet meshlet, float cutoff, int k) {
         Preconditions.checkNotNull(meshlet);
 
+        return this.knn(meshlet.median(), cutoff, k);
+    }
+
+    public Optional<Set<Meshlet>> knn(@NonNull Vector3f vector, float cutoff, int k) {
+        Preconditions.checkNotNull(vector);
+
         if (root == null) {
             return Optional.empty();
         }
@@ -65,7 +72,7 @@ public class KDTree {
             if (node.meshlet == null) {
                 continue;
             }
-            if (node.meshlet.median().distanceSquared(meshlet.median()) <= cutoffSquared) {
+            if (node.meshlet.median().distanceSquared(vector) <= cutoffSquared) {
                 neighbours.enqueue(node.meshlet);
             }
 
@@ -73,10 +80,10 @@ public class KDTree {
             float distanceRight = Float.MAX_VALUE;
 
             if (node.left != null) {
-                distanceLeft = node.left.meshlet.median().distanceSquared(meshlet.median());
+                distanceLeft = node.left.meshlet.median().distanceSquared(vector);
             }
             if (node.right != null) {
-                distanceRight = node.right.meshlet.median().distanceSquared(meshlet.median());
+                distanceRight = node.right.meshlet.median().distanceSquared(vector);
             }
 
             if (distanceLeft < distanceRight || distanceLeft <= cutoff) {
