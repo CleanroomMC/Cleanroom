@@ -1,7 +1,7 @@
 package com.cleanroommc.kirino.engine.render.pipeline.command;
 
 /**
- * Never implement this interface. {@link HighLevelDC} and {@link LowLevelDC} are the only implementations.
+ * {@link HighLevelDC} and {@link LowLevelDC} are the only two implementations. Never implement this interface manually.
  */
 interface IDrawCommand {
 }

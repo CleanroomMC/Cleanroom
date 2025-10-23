@@ -11,8 +11,12 @@ public final class GLResourceManager {
         disposables.add(disposable);
     }
 
-    public static void removeDisposable(GLDisposable disposable) {
-        disposables.remove(disposable);
+    public static void disposeEarly(GLDisposable disposable) {
+        if (disposables.remove(disposable)) {
+            disposable.dispose();
+        } else {
+            throw new RuntimeException("Argument \"disposable\" is not in the disposable queue.");
+        }
     }
 
     public static void disposeAll() {

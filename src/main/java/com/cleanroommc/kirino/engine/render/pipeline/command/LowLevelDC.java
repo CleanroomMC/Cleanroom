@@ -14,7 +14,6 @@ public final class LowLevelDC implements IDrawCommand {
     public final DrawType type;
 
     public final int vao;
-    public final int ebo;
     public final int idb;
 
     public final int mode;
@@ -33,13 +32,12 @@ public final class LowLevelDC implements IDrawCommand {
     public final int idBaseVertex;
     public final int idBaseInstance;
 
-    private LowLevelDC(DrawType type, int vao, int ebo, int idb,
+    private LowLevelDC(DrawType type, int vao, int idb,
                        int mode, int indicesCount, int elementType, int eboOffset,
                        int instanceCount, int idbOffset, int idbStride,
                        int idIndicesCount, int idInstanceCount, int idEboFirstIndex, int idBaseVertex, int idBaseInstance) {
         this.type = type;
         this.vao = vao;
-        this.ebo = ebo;
         this.idb = idb;
         this.mode = mode;
         this.indicesCount = indicesCount;
@@ -60,12 +58,21 @@ public final class LowLevelDC implements IDrawCommand {
         LowLevelDC build();
     }
 
+    /**
+     * <p>You must set:</p>
+     * <ul>
+     *     <li>vao</li>
+     *     <li>mode</li>
+     *     <li>indicesCount</li>
+     *     <li>elementType</li>
+     *     <li>eboOffset</li>
+     * </ul>
+     */
     public static class ElementBuilder implements CommandBuilder {
         private ElementBuilder() {
         }
 
         private int vao = -1;
-        private int ebo = -1;
         private int mode = -1;
         private int indicesCount = -1;
         private int elementType = -1;
@@ -75,13 +82,6 @@ public final class LowLevelDC implements IDrawCommand {
             Preconditions.checkArgument(vao >= 0, "Invalid \"vao\".");
 
             this.vao = vao;
-            return this;
-        }
-
-        public ElementBuilder ebo(int ebo) {
-            Preconditions.checkArgument(ebo >= 0, "Invalid \"ebo\".");
-
-            this.ebo = ebo;
             return this;
         }
 
@@ -116,36 +116,39 @@ public final class LowLevelDC implements IDrawCommand {
         @NonNull
         @Override
         public LowLevelDC build() {
-            Preconditions.checkState(vao != -1 && ebo != -1 && mode != -1 && indicesCount != -1 && elementType != -1 && eboOffset != -1,
-                    "Must set all parameters \"vao\", \"ebo\", \"mode\", \"indicesCount\", \"elementType\", \"eboOffset\".");
+            Preconditions.checkState(vao != -1 && mode != -1 && indicesCount != -1 && elementType != -1 && eboOffset != -1,
+                    "Must set all parameters \"vao\", \"mode\", \"indicesCount\", \"elementType\", \"eboOffset\".");
 
-            return new LowLevelDC(DrawType.ELEMENTS, vao, ebo, -1, mode, indicesCount, elementType, eboOffset, -1, -1, -1, -1, -1, -1, -1, -1);
+            return new LowLevelDC(DrawType.ELEMENTS, vao, -1, mode, indicesCount, elementType, eboOffset, -1, -1, -1, -1, -1, -1, -1, -1);
         }
     }
 
+    /**
+     * <p>You must set:</p>
+     * <ul>
+     *     <li>vao</li>
+     *     <li>mode</li>
+     *     <li>indicesCount</li>
+     *     <li>elementType</li>
+     *     <li>eboOffset</li>
+     *     <li>instanceCount</li>
+     * </ul>
+     */
     public static class ElementInstancedBuilder implements CommandBuilder {
         private ElementInstancedBuilder() {
         }
 
         private int vao = -1;
-        private int ebo = -1;
         private int mode = -1;
         private int indicesCount = -1;
         private int elementType = -1;
         private int eboOffset = -1;
-        private int instanceCount;
+        private int instanceCount = -1;
 
         public ElementInstancedBuilder vao(int vao) {
             Preconditions.checkArgument(vao >= 0, "Invalid \"vao\".");
 
             this.vao = vao;
-            return this;
-        }
-
-        public ElementInstancedBuilder ebo(int ebo) {
-            Preconditions.checkArgument(ebo >= 0, "Invalid \"ebo\".");
-
-            this.ebo = ebo;
             return this;
         }
 
@@ -187,19 +190,30 @@ public final class LowLevelDC implements IDrawCommand {
         @NonNull
         @Override
         public LowLevelDC build() {
-            Preconditions.checkState(vao != -1 && ebo != -1 && mode != -1 && indicesCount != -1 && elementType != -1 && eboOffset != -1 && instanceCount != -1,
-                    "Must set all parameters \"vao\", \"ebo\", \"mode\", \"indicesCount\", \"elementType\", \"eboOffset\", \"instanceCount\".");
+            Preconditions.checkState(vao != -1 && mode != -1 && indicesCount != -1 && elementType != -1 && eboOffset != -1 && instanceCount != -1,
+                    "Must set all parameters \"vao\", \"mode\", \"indicesCount\", \"elementType\", \"eboOffset\", \"instanceCount\".");
 
-            return new LowLevelDC(DrawType.ELEMENTS_INSTANCED, vao, ebo, -1, mode, indicesCount, elementType, eboOffset, instanceCount, -1, -1, -1, -1, -1, -1, -1);
+            return new LowLevelDC(DrawType.ELEMENTS_INSTANCED, vao, -1, mode, indicesCount, elementType, eboOffset, instanceCount, -1, -1, -1, -1, -1, -1, -1);
         }
     }
 
+    /**
+     * <p>You must set:</p>
+     * <ul>
+     *     <li>vao</li>
+     *     <li>idb</li>
+     *     <li>mode</li>
+     *     <li>elementType</li>
+     *     <li>idbOffset</li>
+     *     <li>idbStride</li>
+     *     <li>instanceCount</li>
+     * </ul>
+     */
     public static class MultiElementIndirectBuilder implements CommandBuilder {
         private MultiElementIndirectBuilder() {
         }
 
         private int vao = -1;
-        private int ebo = -1;
         private int idb = -1;
         private int mode = -1;
         private int elementType = -1;
@@ -211,13 +225,6 @@ public final class LowLevelDC implements IDrawCommand {
             Preconditions.checkArgument(vao >= 0, "Invalid \"vao\".");
 
             this.vao = vao;
-            return this;
-        }
-
-        public MultiElementIndirectBuilder ebo(int ebo) {
-            Preconditions.checkArgument(ebo >= 0, "Invalid \"ebo\".");
-
-            this.ebo = ebo;
             return this;
         }
 
@@ -266,19 +273,31 @@ public final class LowLevelDC implements IDrawCommand {
         @NonNull
         @Override
         public LowLevelDC build() {
-            Preconditions.checkState(vao != -1 && ebo != -1 && idb != -1 && mode != -1 && elementType != -1 && idbOffset != -1 && idbStride != -1 && instanceCount != -1,
-                    "Must set all parameters \"vao\", \"ebo\", \"idb\", \"mode\", \"elementType\", \"idbOffset\", \"idbStride\", \"instanceCount\".");
+            Preconditions.checkState(vao != -1 && idb != -1 && mode != -1 && elementType != -1 && idbOffset != -1 && idbStride != -1 && instanceCount != -1,
+                    "Must set all parameters \"vao\", \"idb\", \"mode\", \"elementType\", \"idbOffset\", \"idbStride\", \"instanceCount\".");
 
-            return new LowLevelDC(DrawType.MULTI_ELEMENTS_INDIRECT, vao, ebo, idb, mode, -1, elementType, -1, instanceCount, idbOffset, idbStride, -1, -1, -1, -1, -1);
+            return new LowLevelDC(DrawType.MULTI_ELEMENTS_INDIRECT, vao, idb, mode, -1, elementType, -1, instanceCount, idbOffset, idbStride, -1, -1, -1, -1, -1);
         }
     }
 
+    /**
+     * <p>You must set:</p>
+     * <ul>
+     *     <li>vao</li>
+     *     <li>mode</li>
+     *     <li>elementType</li>
+     *     <li>indicesCount</li>
+     *     <li>instanceCount</li>
+     *     <li>eboFirstIndex</li>
+     *     <li>baseVertex</li>
+     *     <li>baseInstance</li>
+     * </ul>
+     */
     public static class MultiElementIndirectUnitBuilder implements CommandBuilder {
         private MultiElementIndirectUnitBuilder() {
         }
 
         private int vao = -1;
-        private int ebo = -1;
         private int mode = -1;
         private int elementType = -1;
         private int idIndicesCount = -1;
@@ -291,13 +310,6 @@ public final class LowLevelDC implements IDrawCommand {
             Preconditions.checkArgument(vao >= 0, "Invalid \"vao\".");
 
             this.vao = vao;
-            return this;
-        }
-
-        public MultiElementIndirectUnitBuilder ebo(int ebo) {
-            Preconditions.checkArgument(ebo >= 0, "Invalid \"ebo\".");
-
-            this.ebo = ebo;
             return this;
         }
 
@@ -353,10 +365,10 @@ public final class LowLevelDC implements IDrawCommand {
         @NonNull
         @Override
         public LowLevelDC build() {
-            Preconditions.checkState(vao != -1 && ebo != -1 && mode != -1 && elementType != -1 && idIndicesCount != -1 && idInstanceCount != -1 && idEboFirstIndex != -1 && idBaseVertex != -1 && idBaseInstance != -1,
-                    "Must set all parameters \"vao\", \"ebo\", \"mode\", \"elementType\", \"indicesCount\", \"instanceCount\", \"eboFirstIndex\", \"baseVertex\", \"baseInstance\".");
+            Preconditions.checkState(vao != -1 && mode != -1 && elementType != -1 && idIndicesCount != -1 && idInstanceCount != -1 && idEboFirstIndex != -1 && idBaseVertex != -1 && idBaseInstance != -1,
+                    "Must set all parameters \"vao\", \"mode\", \"elementType\", \"indicesCount\", \"instanceCount\", \"eboFirstIndex\", \"baseVertex\", \"baseInstance\".");
 
-            return new LowLevelDC(DrawType.MULTI_ELEMENTS_INDIRECT_UNIT, vao, ebo, -1, mode, -1, elementType, -1, -1, -1, -1, idIndicesCount, idInstanceCount, idEboFirstIndex, idBaseVertex, idBaseInstance);
+            return new LowLevelDC(DrawType.MULTI_ELEMENTS_INDIRECT_UNIT, vao, -1, mode, -1, elementType, -1, -1, -1, -1, idIndicesCount, idInstanceCount, idEboFirstIndex, idBaseVertex, idBaseInstance);
         }
     }
 
@@ -364,6 +376,7 @@ public final class LowLevelDC implements IDrawCommand {
      * <code>glDrawElements</code> command builder.
      * Notice, you must set a value to all parameters and then <code>.build()</code>.
      *
+     * @see ElementBuilder
      * @return The builder
      */
     public static ElementBuilder element() {
@@ -374,6 +387,7 @@ public final class LowLevelDC implements IDrawCommand {
      * <code>glDrawElementsInstanced</code> command builder.
      * Notice, you must set a value to all parameters and then <code>.build()</code>.
      *
+     * @see ElementInstancedBuilder
      * @return The builder
      */
     public static ElementInstancedBuilder elementInstanced() {
@@ -384,6 +398,7 @@ public final class LowLevelDC implements IDrawCommand {
      * <code>glMultiDrawElementsIndirect</code> command builder.
      * Notice, you must set a value to all parameters and then <code>.build()</code>.
      *
+     * @see MultiElementIndirectBuilder
      * @return The builder
      */
     public static MultiElementIndirectBuilder multiElementIndirect() {
@@ -394,6 +409,7 @@ public final class LowLevelDC implements IDrawCommand {
      * <code>glMultiDrawElementsIndirect</code> command's component builder.
      * Notice, you must set a value to all parameters and then <code>.build()</code>.
      *
+     * @see MultiElementIndirectUnitBuilder
      * @return The builder
      */
     public static MultiElementIndirectUnitBuilder multiElementIndirectUnit() {

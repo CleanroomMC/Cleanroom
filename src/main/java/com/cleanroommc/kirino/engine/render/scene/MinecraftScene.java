@@ -64,14 +64,14 @@ public class MinecraftScene extends CleanWorld {
 
         buildChunks();
 
-        super.update();
-
         // test
         if (c == 3) {
-            (new ChunkMeshletGenSystem()).update(jobScheduler);
+            (new ChunkMeshletGenSystem()).update(entityManager, jobScheduler);
             KirinoCore.LOGGER.info("executed!!!");
         }
         c++;
+
+        super.update();
     }
 
     static int c = 0;

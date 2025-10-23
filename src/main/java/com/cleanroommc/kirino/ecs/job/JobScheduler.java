@@ -23,7 +23,7 @@ public class JobScheduler {
         this.entityManager = entityManager;
     }
 
-    public void executeParallel(Class<? extends IParallelJob> clazz, @Nullable Map<String, Object> externalData, Executor executor) {
+    public void executeParallel(EntityManager entityManager, Class<? extends IParallelJob> clazz, @Nullable Map<String, Object> externalData, Executor executor) {
         Map<JobDataQuery, IJobDataInjector> parallelJobDataQueries = jobRegistry.getParallelJobDataQueries(clazz);
         Map<String, IJobDataInjector> parallelJobExternalDataQueries = jobRegistry.getParallelJobExternalDataQueries(clazz);
         IJobInstantiator instantiator = jobRegistry.getParallelJobInstantiator(clazz);
@@ -66,7 +66,7 @@ public class JobScheduler {
                         if (arrayRange.deprecatedIndexes.contains(j)) {
                             continue;
                         }
-                        job.execute(j);
+                        job.execute(entityManager, j);
                     }
                 }, executor));
             }

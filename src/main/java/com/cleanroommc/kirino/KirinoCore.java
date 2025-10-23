@@ -165,8 +165,9 @@ public class KirinoCore {
         MINECRAFT.profiler.endSection();
         //</editor-fold>
 
-        KIRINO_ENGINE.renderingCoordinator.updateWorld(MINECRAFT.world);
-        KIRINO_ENGINE.renderingCoordinator.runChunkCpuPass();
+        KIRINO_ENGINE.renderingCoordinator.update();
+        //KIRINO_ENGINE.renderingCoordinator.updateWorld(MINECRAFT.world);
+        //KIRINO_ENGINE.renderingCoordinator.runChunkCpuPass();
 
         //<editor-fold desc="vanilla logic">
         boolean flag = false;
@@ -460,8 +461,8 @@ public class KirinoCore {
 
     @SubscribeEvent
     public static void onShaderRegister(ShaderRegistrationEvent event) {
-        event.register(new ResourceLocation("kirino:shaders/test.vert"));
-        event.register(new ResourceLocation("kirino:shaders/gizmos.vert"));
-        event.register(new ResourceLocation("kirino:shaders/gizmos.frag"));
+        event.register(new ResourceLocation("forge:shaders/test.vert"));
+        event.register(new ResourceLocation("forge:shaders/gizmos.vert"));
+        event.register(new ResourceLocation("forge:shaders/gizmos.frag"));
     }
 }

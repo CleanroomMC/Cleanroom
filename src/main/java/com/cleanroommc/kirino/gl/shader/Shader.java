@@ -20,6 +20,10 @@ public class Shader extends GLDisposable {
         return shaderName;
     }
 
+    public String getShaderSource() {
+        return shaderSource;
+    }
+
     public ShaderType getShaderType() {
         return shaderType;
     }

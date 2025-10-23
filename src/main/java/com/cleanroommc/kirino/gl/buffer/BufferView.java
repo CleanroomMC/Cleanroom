@@ -24,7 +24,7 @@ public abstract class BufferView {
     }
 
     public final GLBuffer buffer;
-    private final int bufferID;
+    public final int bufferID;
 
     public BufferView(GLBuffer buffer) {
         this.buffer = buffer;
