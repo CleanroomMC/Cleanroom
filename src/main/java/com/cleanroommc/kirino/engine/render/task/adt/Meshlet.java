@@ -27,6 +27,25 @@ public class Meshlet implements Comparable<Meshlet> {
         if (minHeap.size() > maxHeap.size()) {
             maxHeap.enqueue(minHeap.first());
         }
+
+        if (x < boundingBox.xMin) {
+            boundingBox.xMin = x;
+        }
+        if (x + 1 > boundingBox.xMax) {
+            boundingBox.xMax = x + 1;
+        }
+        if (y < boundingBox.yMin) {
+            boundingBox.yMin = y;
+        }
+        if (y + 1 > boundingBox.yMax) {
+            boundingBox.yMax = y + 1;
+        }
+        if (z < boundingBox.zMin) {
+            boundingBox.zMin = z;
+        }
+        if (z + 1 > boundingBox.zMax) {
+            boundingBox.zMax = z + 1;
+        }
     }
 
     public Vector3f median() {
