@@ -173,6 +173,48 @@ public class KDTree {
         return min;
     }
 
+    /**
+     * Select the optimal point for building the meshlet
+     * @return Meshlet of the lowest node on the left branch
+     */
+    public Optional<Meshlet> getLeftExtremity() {
+        if (root == null) {
+            return Optional.empty();
+        }
+
+        Node curr = root;
+        while (curr.left != null || (curr.right != null && curr.right.left != null)) {
+            if (curr.left == null) {
+                curr = curr.right.left;
+            } else {
+                curr = curr.left;
+            }
+        }
+
+        return Optional.of(curr.meshlet);
+    }
+
+    /**
+     * Select the optimal point for building the meshlet
+     * @return Meshlet of the lowest node on the right branch
+     */
+    public Optional<Meshlet> getRightExtremity() {
+        if (root == null) {
+            return Optional.empty();
+        }
+
+        Node curr = root;
+        while (curr.right != null || (curr.left != null && curr.left.right != null)) {
+            if (curr.right == null) {
+                curr = curr.left.right;
+            } else {
+                curr = curr.right;
+            }
+        }
+
+        return Optional.of(curr.meshlet);
+    }
+
     private static boolean compareMeshletDimension(Meshlet median, Meshlet meshlet, int dimension) {
         return switch(dimension) {
             case 0 -> meshlet.median().x < median.median().x;
