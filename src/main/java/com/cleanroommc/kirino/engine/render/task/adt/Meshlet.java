@@ -37,8 +37,8 @@ public class Meshlet implements Comparable<Meshlet> {
     }
 
     // Empties the blocks onto the set
-    public Set<Block> emptyBlocks() {
-        Set<Block> blocks = new ObjectOpenHashSet<>();
+    public List<Block> emptyBlocks() {
+        List<Block> blocks = new ObjectArrayList<>();
 
         while (!maxHeap.isEmpty()) {
             short block = maxHeap.dequeue();
