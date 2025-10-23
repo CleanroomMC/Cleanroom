@@ -31,18 +31,18 @@ public class Meshlet implements Comparable<Meshlet> {
 
     public Vector3f median() {
         if (maxHeap.size() > minHeap.size()) {
-            int x = maxHeap.first() & 0b000000001111;
-            int y = (maxHeap.first() & 0b000011110000) >> 4;
-            int z = (maxHeap.first() & 0b111100000000) >> 8;
+            int x = maxHeap.first() & MASK_X;
+            int y = (maxHeap.first() & MASK_Y) >> 4;
+            int z = (maxHeap.first() & MASK_Z) >> 8;
             return new Vector3f((float) x, (float) y, (float) z);
         } else {
-            int x = maxHeap.first() & 0b000000001111;
-            int y = (maxHeap.first() & 0b000011110000) >> 4;
-            int z = (maxHeap.first() & 0b111100000000) >> 8;
+            int x = maxHeap.first() & MASK_X;
+            int y = (maxHeap.first() & MASK_Y) >> 4;
+            int z = (maxHeap.first() & MASK_Z) >> 8;
             Vector3f max = new Vector3f((float) x, (float) y, (float) z);
-            x = minHeap.first() & 0b000000001111;
-            y = (minHeap.first() & 0b000011110000) >> 4;
-            z = (minHeap.first() & 0b111100000000) >> 8;
+            x = minHeap.first() & MASK_X;
+            y = (minHeap.first() & MASK_Y) >> 4;
+            z = (minHeap.first() & MASK_Z) >> 8;
             Vector3f min = new Vector3f((float) x, (float) y, (float) z);
             return max.add(min).div(2.f);
         }
@@ -52,4 +52,8 @@ public class Meshlet implements Comparable<Meshlet> {
     public int compareTo(@NotNull Meshlet o) {
         return (int) (median().lengthSquared()-o.median().lengthSquared());
     }
+
+    private static final short MASK_X = 0b000000001111;
+    private static final short MASK_Y = 0b000011110000;
+    private static final short MASK_Z = 0b111100000000;
 }
