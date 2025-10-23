@@ -24,6 +24,8 @@ import org.jspecify.annotations.NonNull;
 import java.util.List;
 import java.util.Optional;
 
+import static com.cleanroommc.kirino.KirinoCore.ECS_RUNTIME;
+
 public class ChunkMeshletGenJob implements IParallelJob {
     @JobExternalDataQuery
     public ChunkProviderClient chunkProvider;
@@ -40,13 +42,20 @@ public class ChunkMeshletGenJob implements IParallelJob {
         int z = chunkPosZArray.getInt(index);
         Chunk chunk = chunkProvider.provideChunk(x, z);
         KirinoCore.LOGGER.info("debug chunk xz: {}, {}", x, z);
+        List<Meshlet> meshlets = new ObjectArrayList<>();
+        MeshletComponent meshletComponent = new MeshletComponent();
         // TODO: Replace 256 with a variable in case we ever want to give people an option to increase the world height
         for (int y = 0; y < 256; y += 16) {
             if (!chunk.isEmptyBetween(y, y+16)) {
                 for (EnumFacing side : EnumFacing.values()) {
-                    List<Meshlet> meshlets = generateMeshlets(chunk, y, side);
+                     meshlets.addAll(generateMeshlets(chunk, y, side));
                 }
             }
+        }
+        for (Meshlet meshlet : meshlets) {
+            setMeshletComponent(meshlet, meshletComponent);
+            // TODO: Make ECS_RUNTIME usable
+            ECS_RUNTIME.entityManager.createEntity(meshletComponent);
         }
     }
 
