@@ -4,6 +4,7 @@ import com.cleanroommc.kirino.gl.exception.RuntimeGLException;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
 
 public class Stride {
@@ -43,5 +44,28 @@ public class Stride {
         Slot slot = slotStack.pop();
         cumulativeSize -= slot.getSize();
         return slot;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Integer.hashCode(size);
+        result = 31 * result + Integer.hashCode(cumulativeSize);
+        result = 31 * result + Arrays.hashCode(slotStack.toArray());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Stride other = (Stride) obj;
+        return size == other.size &&
+                cumulativeSize == other.cumulativeSize &&
+                Arrays.equals(slotStack.toArray(), other.slotStack.toArray());
     }
 }

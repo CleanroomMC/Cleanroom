@@ -21,7 +21,7 @@ public class GizmosManager {
         this.graphicResourceManager = graphicResourceManager;
     }
 
-    void test(MeshTicketBuilder builder) {
+    void test(MeshTicketBuilder builder, float x, float z) {
         // test
         AttributeLayout layout = new AttributeLayout();
         layout.push(new Stride(16)
@@ -31,9 +31,7 @@ public class GizmosManager {
 
         ByteBuffer vboData = BufferUtils.createByteBuffer(4 * 16);
 
-        float x = 0;
         float y = 100;
-        float z = 0;
         float halfSize = 1f;
 
         vboData.putFloat(x - halfSize).putFloat(y).putFloat(z - halfSize);
@@ -61,15 +59,16 @@ public class GizmosManager {
         builder.build(vboData, eboData, layout);
     }
 
-    public HighLevelDC getDrawCommand() {
+    // test
+    public HighLevelDC getDrawCommand(int x, int z) {
         // request ticket or keep alive
-        graphicResourceManager.requestMeshTicket("my_mesh", UploadStrategy.TEMPORARY).ifPresent(builder -> {
-            test(builder);
+        graphicResourceManager.requestMeshTicket("my_mesh_" + x + "_" + z, UploadStrategy.TEMPORARY).ifPresent(builder -> {
+            test(builder, x, z);
             graphicResourceManager.submitMeshTicket(builder);
         });
 
         return HighLevelDC.passInternal()
-                .meshTicketID("my_mesh")
+                .meshTicketID("my_mesh_" + x + "_" + z)
                 .mode(GL11.GL_TRIANGLES)
                 .elementType(GL11.GL_UNSIGNED_INT)
                 .build();

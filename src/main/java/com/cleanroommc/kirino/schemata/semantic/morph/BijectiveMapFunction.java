@@ -22,17 +22,32 @@ public abstract class BijectiveMapFunction {
      */
     public final SpaceItemType to;
 
-    private final Function<SpaceItem, SpaceItem> func;
+    private Function<SpaceItem, SpaceItem> func;
+    private boolean valid = false;
+
+    public boolean isValid() {
+        return valid;
+    }
 
     /**
      * @param from The input {@link SpaceItemType} (domain)
      * @param to The output {@link SpaceItemType} (codomain)
-     * @param func A function that maps one {@link SpaceItem} to another
      */
-    public BijectiveMapFunction(SpaceItemType from, SpaceItemType to, Function<SpaceItem, SpaceItem> func) {
+    public BijectiveMapFunction(SpaceItemType from, SpaceItemType to) {
         this.from = from;
         this.to = to;
+    }
+
+    /**
+     * This method must be called after the constructor.
+     *
+     * @param func A function that maps one {@link SpaceItem} to another
+     * @return Itself
+     */
+    protected final BijectiveMapFunction setFunc(Function<SpaceItem, SpaceItem> func) {
         this.func = func;
+        valid = true;
+        return this;
     }
 
     public final BijectiveMapFunction compose(BijectiveMapFunction other) {
@@ -40,12 +55,12 @@ public abstract class BijectiveMapFunction {
             throw new IllegalStateException("Can't compose " + from + " -> " + to + " and " + other.from + " -> " + other.to + ".");
         }
         BijectiveMapFunction this0 = this;
-        return new BijectiveMapFunction(from, other.to, item -> other.func.apply(func.apply(item))) {
+        return (new BijectiveMapFunction(from, other.to) {
             @Override
             public SpaceSet construct(SpaceSet domain) {
                 return other.construct(this0.construct(domain));
             }
-        };
+        }).setFunc(item -> other.func.apply(func.apply(item)));
     }
 
     /**
@@ -58,6 +73,15 @@ public abstract class BijectiveMapFunction {
      */
     public abstract SpaceSet construct(SpaceSet domain);
 
+    /**
+     * <p>Prerequisite include:</p>
+     * <ul>
+     *     <li>The input item is in the domain that passed to {@link #construct(SpaceSet)}</li>
+     * </ul>
+     *
+     * @param item The input item
+     * @return The output item
+     */
     public final SpaceItem apply(SpaceItem item) {
         return func.apply(item);
     }

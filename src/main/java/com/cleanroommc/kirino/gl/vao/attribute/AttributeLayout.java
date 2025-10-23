@@ -5,14 +5,22 @@ import org.jspecify.annotations.Nullable;
 import org.lwjgl.opengl.*;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.Iterator;
 
+/**
+ * You must push at least one {@link Stride} to make this layout valid.
+ */
 public class AttributeLayout {
     private final Deque<Stride> strideStack = new ArrayDeque<>();
 
     public int getStrideCount() {
         return strideStack.size();
+    }
+
+    public Stride getFirstStride() {
+        return strideStack.descendingIterator().next();
     }
 
     public AttributeLayout push(Stride stride) {
@@ -125,5 +133,23 @@ public class AttributeLayout {
             }
             strideIndex++;
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(strideStack.toArray());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        AttributeLayout other = (AttributeLayout) obj;
+        return Arrays.equals(strideStack.toArray(), other.strideStack.toArray());
     }
 }

@@ -60,6 +60,7 @@ public class GizmosPass extends Subpass {
     public void collectCommands(DrawQueue drawQueue) {
         // todo: fetch from gizmosManager
 
-        drawQueue.enqueue(gizmosManager.getDrawCommand());
+        drawQueue.enqueue(gizmosManager.getDrawCommand(0, 0));
+        drawQueue.enqueue(gizmosManager.getDrawCommand(1, 1));
     }
 }

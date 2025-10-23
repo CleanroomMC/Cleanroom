@@ -67,6 +67,12 @@ public class SpaceSet implements Set<SpaceItem> {
 
     @Override
     public boolean addAll(@NonNull Collection<? extends SpaceItem> c) {
+        for (SpaceItem item : c) {
+            if (item.type != type) {
+                throw new IllegalStateException("Illegal SpaceItemType " + item.type + " from an item of the collection. This is a " + type + " set.");
+            }
+        }
+
         return items.addAll(c);
     }
 

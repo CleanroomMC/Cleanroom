@@ -2,6 +2,8 @@ package com.cleanroommc.kirino.gl.vao.attribute;
 
 import com.cleanroommc.kirino.gl.exception.RuntimeGLException;
 
+import java.util.Objects;
+
 public class Slot {
     private final Type type;
     private final int count;
@@ -64,5 +66,28 @@ public class Slot {
     public Slot setNormalize(boolean flag) {
         normalize = flag;
         return this;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, count, size, divisor, interpretationType, normalize);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Slot other = (Slot) obj;
+        return count == other.count &&
+                size == other.size &&
+                divisor == other.divisor &&
+                normalize == other.normalize &&
+                type == other.type &&
+                interpretationType == other.interpretationType;
     }
 }

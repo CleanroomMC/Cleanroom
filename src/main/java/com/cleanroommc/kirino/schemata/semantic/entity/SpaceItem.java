@@ -13,6 +13,7 @@ public class SpaceItem {
     public final int offset;
     public final int length;
 
+    // payload is part of the uniqueness of this SpaceItem
     public SpaceItem(int size, Object payload) {
         type = SpaceItemType.OBJECT;
         this.size = size;

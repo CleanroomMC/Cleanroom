@@ -47,7 +47,7 @@ public class GraphicResourceManager {
     }
 
     /**
-     * @param meshTicketBuilder The mesh ticket builder from {@link #requestMeshTicket(String)}
+     * @param meshTicketBuilder The mesh ticket builder from {@link #requestMeshTicket(String, UploadStrategy)}
      * @return Whether successfully submitted
      */
     public boolean submitMeshTicket(MeshTicketBuilder meshTicketBuilder) {

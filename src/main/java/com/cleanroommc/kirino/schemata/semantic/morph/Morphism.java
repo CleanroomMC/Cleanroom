@@ -30,7 +30,15 @@ public abstract class Morphism {
     public final SpaceItemType domainType;
     public final SpaceItemType codomainType;
     private final SpaceSet domain;
-    public final SpaceSet codomain;
+    private final SpaceSet codomain;
+
+    public SpaceItem[] getDomain() {
+        return domain.toArray(new SpaceItem[0]);
+    }
+
+    public SpaceItem[] getCodomain() {
+        return codomain.toArray(new SpaceItem[0]);
+    }
 
     protected Morphism(SpaceItemType domainType, SpaceItemType codomainType) {
         this.domainType = domainType;
@@ -56,6 +64,9 @@ public abstract class Morphism {
         if (validation) {
             if (mapFunc.from != domainType || mapFunc.to != codomainType) {
                 throw new IllegalStateException("Illegal mapping function " + mapFunc.from + " -> " + mapFunc.to + ". This morphism requires " + domainType + " -> " + codomainType + ".");
+            }
+            if (!mapFunc.isValid()) {
+                throw new IllegalStateException("Illegal mapping function.");
             }
         }
 
@@ -89,23 +100,23 @@ public abstract class Morphism {
                 throw new IllegalStateException("The mapping result isn't cached yet. Call mapAndCache() first.");
             }
             if (!domain.contains(input)) {
-                throw new IllegalStateException("Input isn't in the domain.");
+                throw new IllegalStateException("Argument input isn't in the domain.");
             }
         }
 
         return resultBiMap.get(input);
     }
 
-    public final SpaceItem applyInverse(SpaceItem input) {
+    public final SpaceItem applyInverse(SpaceItem output) {
         if (validation) {
             if (!resultCached) {
                 throw new IllegalStateException("The mapping result isn't cached yet. Call mapAndCache() first.");
             }
-            if (!codomain.contains(input)) {
-                throw new IllegalStateException("Input isn't in the codomain.");
+            if (!codomain.contains(output)) {
+                throw new IllegalStateException("Argument output isn't in the codomain.");
             }
         }
 
-        return resultBiMap.inverse().get(input);
+        return resultBiMap.inverse().get(output);
     }
 }

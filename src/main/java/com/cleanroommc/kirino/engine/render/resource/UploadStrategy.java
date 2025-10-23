@@ -6,7 +6,7 @@ public enum UploadStrategy {
      */
     PERSISTENT,
     /**
-     * Performance heavy strategy
+     * Performance heavy strategy. Only use it for debug purposes
      */
     TEMPORARY
 }
