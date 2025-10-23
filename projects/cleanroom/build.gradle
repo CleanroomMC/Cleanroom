@@ -244,16 +244,6 @@ configurations {
     configureEach { // LWJGL2 isn't friendly with us, so pye pye
         exclude group: 'org.lwjgl.lwjgl'
         exclude group: 'com.ibm.icu', module: 'icu4j-core-mojang'
-        /*exclude group: 'org.apache.commons'
-        exclude group: 'org.apache.httpcomponents'
-        exclude group: 'it.unimi.dsi'
-        exclude group: 'oshi-project'
-        exclude group: 'commons-codec'
-        exclude group: 'commons-io'
-        exclude group: 'commons-logging'
-        exclude group: 'com.google.code.findbugs'
-        exclude group: 'com.google.code.gson'
-        exclude group: 'com.google.guava'*/
     }
 
     // Don't pull all libraries, if we're missing something, add it to the installer list so the installer knows to download it.
@@ -271,7 +261,7 @@ configurations {
 
 dependencies {
     compileOnly "com.cleanroommc:lwjglx:1.0.0"
-    installer "com.cleanroommc:lwjglxx:1.1.9"
+    installer "com.cleanroommc:lwjglxx:1.1.10"
     lwjglLibraries[0].each {
         installer "org.lwjgl:$it:$props.lwjgl_version"
         runtimeOnly "org.lwjgl:$it::$lwjglArch"
