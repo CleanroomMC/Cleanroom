@@ -25,8 +25,6 @@ import org.jspecify.annotations.NonNull;
 import java.util.List;
 import java.util.Optional;
 
-import static com.cleanroommc.kirino.KirinoCore.ECS_RUNTIME;
-
 public class ChunkMeshletGenJob implements IParallelJob {
     @JobExternalDataQuery
     public ChunkProviderClient chunkProvider;
@@ -56,10 +54,10 @@ public class ChunkMeshletGenJob implements IParallelJob {
         for (Meshlet meshlet : meshlets) {
             setMeshletComponent(meshlet, meshletComponent);
             // TODO: Make ECS_RUNTIME usable
-            ECS_RUNTIME.entityManager.createEntity(meshletComponent);
+            entityManager.createEntity(meshletComponent);
         }
 
-        ECS_RUNTIME.entityManager.flush();
+        entityManager.flush();
     }
 
     private static int index(int x, int y, int z) {
