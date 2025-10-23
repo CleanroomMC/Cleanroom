@@ -7,8 +7,11 @@ import com.cleanroommc.kirino.ecs.job.JobDataQuery;
 import com.cleanroommc.kirino.ecs.job.JobExternalDataQuery;
 import com.cleanroommc.kirino.ecs.storage.IPrimitiveArray;
 import com.cleanroommc.kirino.engine.render.geometry.component.ChunkComponent;
+import com.cleanroommc.kirino.engine.render.task.adt.KDTree;
 import com.cleanroommc.kirino.engine.render.task.adt.Meshlet;
+import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.Stack;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
@@ -17,6 +20,7 @@ import net.minecraft.world.chunk.Chunk;
 import org.jspecify.annotations.NonNull;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ChunkMeshletGenJob implements IParallelJob {
@@ -46,11 +50,21 @@ public class ChunkMeshletGenJob implements IParallelJob {
     }
 
     private void generateMeshlets(@NonNull Chunk chunk, int chunkY, EnumFacing side) {
-        Set<Meshlet> meshlets = new HashSet<>(); // TODO: use a KDTree (mine night be improperly implemented)
         Stack<Meshlet> stack = new ReferenceArrayList<>();
 
         int chunkX = chunk.x << 4;
         int chunkZ = chunk.z << 4;
+
+        KDTree meshlets = buildKDTree(chunk, chunkX, chunkY, chunkZ, side);
+
+
+    }
+
+    public @NonNull KDTree buildKDTree(@NonNull Chunk chunk, int chunkX, int chunkY, int chunkZ, @NonNull EnumFacing side) {
+        Preconditions.checkNotNull(chunk);
+        Preconditions.checkNotNull(side);
+
+        List<Meshlet> toAdd = new ObjectArrayList<>();
 
         for (int x = chunkX; x < chunkX + 16; x++) {
             for (int y = chunkY; y < chunkY + 16; y++) {
@@ -58,14 +72,16 @@ public class ChunkMeshletGenJob implements IParallelJob {
                     if (!isOpaqueBlockPresent(chunk,
                             chunkX, chunkY, chunkZ,
                             x + side.getXOffset(), y + side.getYOffset(), z + side.getZOffset())
-                    && chunk.getBlockState(x, y, z).getMaterial() != Material.AIR) {
-                        meshlets.add(new Meshlet(side, x, y, z));
+                            && chunk.getBlockState(x, y, z).getMaterial() != Material.AIR) {
+                        toAdd.add(new Meshlet(side, x, y, z)); // the tree building function KDTree::add uses a list for maximizing the balance
                     }
                 }
             }
         }
 
-
+        KDTree tree = new KDTree();
+        tree.add(toAdd);
+        return tree;
     }
 
     private static boolean isOpaqueBlockPresent(@NonNull Chunk chunk, int cpX, int cpY, int cpZ, int x, int y, int z) {
