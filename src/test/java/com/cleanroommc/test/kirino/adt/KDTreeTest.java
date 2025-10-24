@@ -21,4 +21,17 @@ public class KDTreeTest {
         assertTrue(neighbours.isPresent());
         assertTrue(neighbours.get().contains(far));
     }
+
+    @Test
+    public void testDeletion() {
+        final EnumFacing normal = EnumFacing.NORTH;
+        Meshlet near = new Meshlet(normal, 0, 0, 0);
+        Meshlet far = new Meshlet(normal, 16, 16, 16);
+        KDTree kdTree = new KDTree();
+        kdTree.add(List.of(near, far));
+        kdTree.delete(far);
+        var neighbours = kdTree.knn(new Vector3f(14,14,14), 32, 1);
+        assertTrue(neighbours.isPresent());
+        assertTrue(neighbours.get().contains(near));
+    }
 }
