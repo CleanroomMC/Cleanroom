@@ -2,8 +2,8 @@ package com.cleanroommc.kirino.gl.vao;
 
 import com.cleanroommc.kirino.gl.GLDisposable;
 import com.cleanroommc.kirino.gl.GLResourceManager;
-import com.cleanroommc.kirino.gl.buffer.EBOView;
-import com.cleanroommc.kirino.gl.buffer.VBOView;
+import com.cleanroommc.kirino.gl.buffer.view.EBOView;
+import com.cleanroommc.kirino.gl.buffer.view.VBOView;
 import com.cleanroommc.kirino.gl.vao.attribute.AttributeLayout;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;

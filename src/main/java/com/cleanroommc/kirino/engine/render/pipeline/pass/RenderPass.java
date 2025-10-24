@@ -1,7 +1,7 @@
 package com.cleanroommc.kirino.engine.render.pipeline.pass;
 
 import com.cleanroommc.kirino.engine.render.camera.ICamera;
-import com.cleanroommc.kirino.engine.render.pipeline.command.DrawQueue;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.DrawQueue;
 import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
 import com.cleanroommc.kirino.gl.debug.KHRDebug;
 

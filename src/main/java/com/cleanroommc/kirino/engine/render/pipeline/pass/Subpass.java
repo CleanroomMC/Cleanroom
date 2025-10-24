@@ -1,10 +1,10 @@
 package com.cleanroommc.kirino.engine.render.pipeline.pass;
 
 import com.cleanroommc.kirino.engine.render.camera.ICamera;
-import com.cleanroommc.kirino.engine.render.pipeline.command.HighLevelDC;
-import com.cleanroommc.kirino.engine.render.pipeline.command.LowLevelDC;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.cmd.HighLevelDC;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.cmd.LowLevelDC;
 import com.cleanroommc.kirino.engine.render.pipeline.Renderer;
-import com.cleanroommc.kirino.engine.render.pipeline.command.DrawQueue;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.DrawQueue;
 import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
 import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;

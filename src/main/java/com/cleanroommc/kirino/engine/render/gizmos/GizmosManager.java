@@ -1,7 +1,6 @@
 package com.cleanroommc.kirino.engine.render.gizmos;
 
-import com.cleanroommc.kirino.KirinoCore;
-import com.cleanroommc.kirino.engine.render.pipeline.command.HighLevelDC;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.cmd.HighLevelDC;
 import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
 import com.cleanroommc.kirino.engine.render.resource.UploadStrategy;
 import com.cleanroommc.kirino.engine.render.resource.builder.MeshTicketBuilder;
@@ -27,7 +26,7 @@ public class GizmosManager {
         layout.push(new Stride(16)
                 .push(new Slot(Type.FLOAT, 3))
                 .push(new Slot(Type.UNSIGNED_BYTE, 4).setNormalize(true)));
-        KirinoCore.LOGGER.info(layout.getDebugReport());
+//        KirinoCore.LOGGER.info(layout.getDebugReport());
 
         ByteBuffer vboData = BufferUtils.createByteBuffer(4 * 16);
 

@@ -2,9 +2,9 @@ package com.cleanroommc.kirino.engine.render.staging;
 
 import com.cleanroommc.kirino.engine.render.staging.handle.*;
 import com.cleanroommc.kirino.gl.GLResourceManager;
-import com.cleanroommc.kirino.gl.buffer.EBOView;
+import com.cleanroommc.kirino.gl.buffer.view.EBOView;
 import com.cleanroommc.kirino.gl.buffer.GLBuffer;
-import com.cleanroommc.kirino.gl.buffer.VBOView;
+import com.cleanroommc.kirino.gl.buffer.view.VBOView;
 import com.cleanroommc.kirino.gl.buffer.meta.BufferUploadHint;
 import com.cleanroommc.kirino.gl.buffer.meta.MapBufferAccessBit;
 import com.cleanroommc.kirino.gl.vao.VAO;

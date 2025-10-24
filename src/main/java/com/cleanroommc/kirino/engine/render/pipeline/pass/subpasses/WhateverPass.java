@@ -2,7 +2,7 @@ package com.cleanroommc.kirino.engine.render.pipeline.pass.subpasses;
 
 import com.cleanroommc.kirino.engine.render.camera.ICamera;
 import com.cleanroommc.kirino.engine.render.pipeline.Renderer;
-import com.cleanroommc.kirino.engine.render.pipeline.command.DrawQueue;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.DrawQueue;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.PassHint;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.Subpass;
 import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;

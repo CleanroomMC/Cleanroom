@@ -1,6 +1,6 @@
 package com.cleanroommc.kirino.gl.vao.attribute;
 
-import com.cleanroommc.kirino.gl.buffer.VBOView;
+import com.cleanroommc.kirino.gl.buffer.view.VBOView;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.opengl.*;
 
