@@ -678,7 +678,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     @Override
     public Class<?> getCustomResourcePackClass()
     {
-        if (getSource().isDirectory())
+        if (getResource().isDirectory())
         {
             return FMLFolderResourcePack.class;
         }

@@ -20,6 +20,7 @@
 package net.minecraftforge.fml.common.discovery;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraftforge.fml.common.FMLLog;
@@ -49,35 +50,31 @@ public class ModDiscoverer
                 .addAll(CoreModManager.getReparseableCoremods())
                 .build();
         File[] minecraftSources = modClassLoader.getParentSources();
-        if (minecraftSources.length == 1 && minecraftSources[0].isFile())
+        List<File> devPaths = new ArrayList<>();
+        for (File source : minecraftSources)
         {
-            FMLLog.log.debug("Minecraft is a file at {}, loading", minecraftSources[0].getAbsolutePath());
-            addCandidate(new ModCandidate(minecraftSources[0], minecraftSources[0], ContainerType.JAR, true, true));
-        }
-        else
-        {
-            int i = 0;
-            for (File source : minecraftSources)
+            if (source.isFile())
             {
-                if (source.isFile())
+                if (knownLibraries.contains(source.getName()) || modClassLoader.isDefaultLibrary(source))
                 {
-                    if (knownLibraries.contains(source.getName()) || modClassLoader.isDefaultLibrary(source))
-                    {
-                        FMLLog.log.trace("Skipping known library file {}", source.getAbsolutePath());
-                    }
-                    else
-                    {
-                        FMLLog.log.debug("Found a minecraft related file at {}, examining for mod candidates", source.getAbsolutePath());
-                        addCandidate(new ModCandidate(source, source, ContainerType.JAR, i==0, true));
-                    }
+                    FMLLog.log.trace("Skipping known library file {}", source.getAbsolutePath());
                 }
-                else if (minecraftSources[i].isDirectory())
+                else
                 {
-                    FMLLog.log.debug("Found a minecraft related directory at {}, examining for mod candidates", source.getAbsolutePath());
-                    addCandidate(new ModCandidate(source, source, ContainerType.DIR, i==0, true));
+                    FMLLog.log.debug("Found a minecraft related file at {}, examining for mod candidates", source.getAbsolutePath());
+                    addCandidate(new ModCandidate(source, source, ContainerType.JAR, false, true));
                 }
-                i++;
             }
+            else if (source.isDirectory())
+            {
+                FMLLog.log.debug("Found a minecraft related directory at {}, collecting as developing mod", source.getAbsolutePath());
+                devPaths.add(source);
+            }
+        }
+        for (int i = 0 ; i < devPaths.size() - 1 ; i += 2)
+        {
+            FMLLog.log.debug("Adding path {} and {} as developing mod", devPaths.get(i), devPaths.get(i + 1));
+            addCandidate(new ModCandidate(devPaths.get(i), devPaths.get(i + 1)));
         }
 
     }

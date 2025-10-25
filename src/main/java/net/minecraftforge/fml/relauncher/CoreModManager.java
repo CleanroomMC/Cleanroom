@@ -478,7 +478,7 @@ public class CoreModManager {
             }
             loadCoreMod(classLoader, fmlCorePlugin, coreMod);
         }
-        String devConfigs = System.getProperty("cleanroom.dev.mixin");
+        String devConfigs = System.getProperty("crl.dev.mixin");
         if (!Strings.isNullOrEmpty(devConfigs))
         {
             for (String singleMixinConfig : devConfigs.split(","))
