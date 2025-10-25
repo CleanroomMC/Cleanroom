@@ -6,6 +6,7 @@ import com.cleanroommc.kirino.engine.render.gizmos.GizmosManager;
 import com.cleanroommc.kirino.engine.render.pipeline.GLStateBackup;
 import com.cleanroommc.kirino.engine.render.pipeline.PSOPresets;
 import com.cleanroommc.kirino.engine.render.pipeline.Renderer;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.IndirectDrawBufferManager;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.subpasses.GizmosPass;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.RenderPass;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.subpasses.WhateverPass;
@@ -50,6 +51,8 @@ public class RenderingCoordinator {
 
     public final GizmosManager gizmosManager;
 
+    private final IndirectDrawBufferManager idbManager;
+
     private final RenderPass chunkCpuPass;
     private final RenderPass gizmosPass;
 
@@ -86,20 +89,23 @@ public class RenderingCoordinator {
 
         gizmosManager = new GizmosManager(graphicResourceManager);
 
+        idbManager = new IndirectDrawBufferManager(1024 * 1024);
+
         //stagingBufferManager.genPersistentBuffers("default", 256, 256);
 
         ShaderProgram shaderProgram = shaderRegistry.newShaderProgram("forge:shaders/gizmos.vert", "forge:shaders/gizmos.frag");
 
         Renderer renderer = new Renderer();
-        chunkCpuPass = new RenderPass(graphicResourceManager, "Chunk CPU Pass");
-        chunkCpuPass.addSubpass("Opaque Pass", new WhateverPass(renderer, PSOPresets.createOpaquePSO(shaderProgram), new Framebuffer(0, 0)));
-        chunkCpuPass.addSubpass("Cutout Pass", new WhateverPass(renderer, PSOPresets.createCutoutPSO(shaderProgram), new Framebuffer(0, 0)));
-        chunkCpuPass.addSubpass("Transparent Pass", new WhateverPass(renderer, PSOPresets.createTransparentPSO(shaderProgram), new Framebuffer(0, 0)));
+        chunkCpuPass = new RenderPass("Chunk CPU Pass", idbManager);
+        chunkCpuPass.addSubpass("Opaque Pass", new WhateverPass(graphicResourceManager, renderer, PSOPresets.createOpaquePSO(shaderProgram), new Framebuffer(0, 0)));
+        chunkCpuPass.addSubpass("Cutout Pass", new WhateverPass(graphicResourceManager, renderer, PSOPresets.createCutoutPSO(shaderProgram), new Framebuffer(0, 0)));
+        chunkCpuPass.addSubpass("Transparent Pass", new WhateverPass(graphicResourceManager, renderer, PSOPresets.createTransparentPSO(shaderProgram), new Framebuffer(0, 0)));
 
         Framebuffer framebuffer = new Framebuffer(MINECRAFT.displayWidth, MINECRAFT.displayHeight);
         framebuffers.add(framebuffer);
-        gizmosPass = new RenderPass(graphicResourceManager, "Gizmos Pass");
+        gizmosPass = new RenderPass("Gizmos Pass", idbManager);
         gizmosPass.addSubpass("Gizmos Pass", new GizmosPass(
+                graphicResourceManager,
                 renderer,
                 PSOPresets.createGizmosPSO(shaderProgram),
                 framebuffer,

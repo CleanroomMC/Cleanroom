@@ -43,13 +43,13 @@ public class RingBuffer {
         this.sliceNumber = sliceNumber;
     }
 
-    public void write(ByteBuffer byteBuffer) {
-        Preconditions.checkArgument(byteBuffer.remaining() == sliceSize,
-                "The remaining of the \"byteBuffer\" must equal \"sliceSize\".");
+    public void write(int offset, ByteBuffer byteBuffer) {
+        Preconditions.checkArgument(offset + byteBuffer.remaining() <= sliceSize,
+                "Slice size must be greater than or equal to offset + byteBuffer.remaining().");
 
-        this.byteBuffer.position(getWriteOffset());
-        this.byteBuffer.put(byteBuffer);
+        this.byteBuffer.position(offset + getWriteOffset());
         this.byteBuffer.limit(getWriteOffset() + sliceSize);
+        this.byteBuffer.put(byteBuffer);
 
         writeSliceIndex++;
         if (!finishedFirstCycle && writeSliceIndex >= sliceNumber - 1) {

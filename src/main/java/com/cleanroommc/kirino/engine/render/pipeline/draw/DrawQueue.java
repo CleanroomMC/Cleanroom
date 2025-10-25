@@ -7,14 +7,9 @@ import com.cleanroommc.kirino.engine.render.resource.GResourceTicket;
 import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
 import com.cleanroommc.kirino.engine.render.resource.payload.MeshPayload;
 import com.cleanroommc.kirino.engine.render.resource.receipt.MeshReceipt;
-import com.cleanroommc.kirino.gl.buffer.GLBuffer;
-import com.cleanroommc.kirino.gl.buffer.view.IDBView;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.system.MemoryStack;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.*;
 
 public class DrawQueue {
@@ -85,25 +80,30 @@ public class DrawQueue {
             }
         }
 
-//        KirinoCore.LOGGER.info("compile count: " + baked.size());
-
         deque.clear();
         deque.addAll(baked);
         return this;
     }
 
     /**
+     * Only used by {@link #simplify(IndirectDrawBufferManager)}.
+     */
+    private record VAOKey(int vao, int mode, int elementType) {
+    }
+
+    /**
      * <p>Prerequisite include:</p>
      * <ul>
-     *     <li>All elements in this {@link DrawQueue} is a {@link LowLevelDC}</li>
+     *     <li>Every element in this {@link DrawQueue} is a {@link LowLevelDC}</li>
      * </ul>
      *
      * It combines and simplifies {@link LowLevelDC}s, especially combines commands into <code>MULTI_ELEMENTS_INDIRECT</code> command.
      * Usually it's called after {@link #compile()} which compiles everything into {@link LowLevelDC}s.
      *
+     * @param idbManager The indirect draw buffer manager
      * @return The <code>DrawQueue</code> itself
      */
-    public DrawQueue simplify() {
+    public DrawQueue simplify(IndirectDrawBufferManager idbManager) {
         Map<VAOKey, List<LowLevelDC>> grouped = new HashMap<>();
 
         IDrawCommand drawCommand;
@@ -127,53 +127,30 @@ public class DrawQueue {
                 }
             }
 
-            // combine units and upload idb
+            // combine units and upload to idb
             if (units.isEmpty()) {
                 continue;
             }
 
-            int idbBufferSize = units.size() * 5 * Integer.BYTES; // 5 ints per command
-
-            try (MemoryStack stack = MemoryStack.stackPush()) {
-                ByteBuffer byteBuffer = stack.malloc(4, idbBufferSize);
-
-                IntBuffer intView = byteBuffer.asIntBuffer();
-                for (LowLevelDC lowLevelDC : units) {
-                    intView.put(new int[] {
-                            lowLevelDC.idIndicesCount,
-                            lowLevelDC.idInstanceCount,
-                            lowLevelDC.idEboFirstIndex,
-                            lowLevelDC.idBaseVertex,
-                            lowLevelDC.idBaseInstance
-                    });
-                }
-
-                byteBuffer.limit(idbBufferSize);
-                byteBuffer.position(0);
-
-                idbView.bind();
-                idbView.uploadDirectly(byteBuffer);
-                idbView.bind(0);
-            }
-
-            LowLevelDC.MultiElementIndirectBuilder builder = LowLevelDC.multiElementIndirect().vao(entry.getKey().vao).idb(idbView.bufferID);
-            builder.mode(entry.getKey().mode).elementType(entry.getKey().elementType);
-            builder.idbOffset(0);
-            builder.idbStride(5 * Integer.BYTES);
-            builder.instanceCount(units.size());
-
-            baked.add(builder.build());
+            baked.add(idbManager.generate(units, entry.getKey().vao, entry.getKey().mode, entry.getKey().elementType));
         }
-
-//        KirinoCore.LOGGER.info("simplify count: " + baked.size());
 
         deque.addAll(baked);
         return this;
     }
 
-    // temp
-    private IDBView idbView = new IDBView(new GLBuffer());
+    /**
+     * <p>Prerequisite include:</p>
+     * <ul>
+     *     <li>Every element in this {@link DrawQueue} is a {@link LowLevelDC}</li>
+     * </ul>
+     *
+     * It sorts all {@link LowLevelDC}s, which is the final stage of command processing.
+     *
+     * @return The <code>DrawQueue</code> itself
+     */
+    public DrawQueue sort() {
 
-    private record VAOKey(int vao, int mode, int elementType) {
+        return this;
     }
 }

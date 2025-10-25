@@ -6,12 +6,13 @@ import com.cleanroommc.kirino.engine.render.pipeline.draw.DrawQueue;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.PassHint;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.Subpass;
 import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
+import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
 import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;
 
 public class WhateverPass extends Subpass {
-    public WhateverPass(Renderer renderer, PipelineStateObject pso, Framebuffer fbo) {
-        super(renderer, pso, fbo);
+    public WhateverPass(GraphicResourceManager graphicResourceManager, Renderer renderer, PipelineStateObject pso, Framebuffer fbo) {
+        super(graphicResourceManager, renderer, pso, fbo);
     }
 
     @Override

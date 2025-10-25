@@ -8,6 +8,7 @@ import com.cleanroommc.kirino.engine.render.pipeline.draw.cmd.LowLevelDC;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.PassHint;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.Subpass;
 import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
+import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
 import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;
 import org.joml.Vector3f;
@@ -17,8 +18,8 @@ import org.lwjgl.opengl.GL20C;
 public class GizmosPass extends Subpass {
     private final GizmosManager gizmosManager;
 
-    public GizmosPass(Renderer renderer, PipelineStateObject pso, Framebuffer fbo, GizmosManager gizmosManager) {
-        super(renderer, pso, fbo);
+    public GizmosPass(GraphicResourceManager graphicResourceManager, Renderer renderer, PipelineStateObject pso, Framebuffer fbo, GizmosManager gizmosManager) {
+        super(graphicResourceManager, renderer, pso, fbo);
         this.gizmosManager = gizmosManager;
     }
 

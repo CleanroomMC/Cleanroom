@@ -1,11 +1,13 @@
 package com.cleanroommc.kirino.engine.render.pipeline.pass;
 
 import com.cleanroommc.kirino.engine.render.camera.ICamera;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.IndirectDrawBufferManager;
 import com.cleanroommc.kirino.engine.render.pipeline.draw.cmd.HighLevelDC;
 import com.cleanroommc.kirino.engine.render.pipeline.draw.cmd.LowLevelDC;
 import com.cleanroommc.kirino.engine.render.pipeline.Renderer;
 import com.cleanroommc.kirino.engine.render.pipeline.draw.DrawQueue;
 import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
+import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
 import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;
 import org.lwjgl.opengl.GL11;
@@ -14,21 +16,24 @@ public abstract class Subpass {
     protected final Renderer renderer;
     protected final Framebuffer fbo;
     private final PipelineStateObject pso;
+    protected final DrawQueue drawQueue;
 
-    public Subpass(Renderer renderer, PipelineStateObject pso, Framebuffer fbo) {
+    public Subpass(GraphicResourceManager graphicResourceManager, Renderer renderer, PipelineStateObject pso, Framebuffer fbo) {
         this.renderer = renderer;
         this.pso = pso;
         this.fbo = fbo;
+        drawQueue = new DrawQueue(graphicResourceManager);
     }
 
-    public final void render(DrawQueue drawQueue, ICamera camera) {
+    public final void render(DrawQueue drawQueue, ICamera camera, IndirectDrawBufferManager idbManager) {
         DrawQueue dq = drawQueue;
         if (hintCompileDrawQueue()) {
             dq = dq.compile();
         }
         if (hintSimplifyDrawQueue()) {
-            dq = dq.simplify();
+            dq = dq.simplify(idbManager);
         }
+        dq = dq.sort();
 
         //bindTarget(); // test
         renderer.bindPipeline(pso);
@@ -53,9 +58,9 @@ public abstract class Subpass {
     protected abstract boolean hintCompileDrawQueue();
 
     /**
-     * Whether to run {@link DrawQueue#simplify()} before {@link #execute(DrawQueue)}.
+     * Whether to run {@link DrawQueue#simplify(IndirectDrawBufferManager)} before {@link #execute(DrawQueue)}.
      *
-     * @see DrawQueue#simplify()
+     * @see DrawQueue#simplify(IndirectDrawBufferManager)
      * @return The hint
      */
     protected abstract boolean hintSimplifyDrawQueue();
