@@ -263,10 +263,11 @@ graph TD
     A[Collect Draw Commands] --> B[Decorate Draw Commands]
     B --> C[Compile Draw Commands]
     C --> D[Simplify Draw Commands]
-    D --> E[Bind Framebuffer]
-    E --> F[Bind Pipeline State Object]
-    F --> G[Update Shader Program / Uniforms]
-    G --> H[Execute Draw Commands / Submit to GPU]
+    D --> E[Sort Draw Commands]
+    E --> F[Bind Framebuffer]
+    F --> G[Bind Pipeline State Object]
+    G --> H[Update Shader Program / Uniforms]
+    H --> I[Execute Draw Commands / Submit to GPU]
 ```
 
 ## 2.4 Draw Command

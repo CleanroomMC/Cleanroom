@@ -16,19 +16,17 @@ public abstract class Subpass {
     protected final Renderer renderer;
     protected final Framebuffer fbo;
     private final PipelineStateObject pso;
-    protected final DrawQueue drawQueue;
 
-    public Subpass(GraphicResourceManager graphicResourceManager, Renderer renderer, PipelineStateObject pso, Framebuffer fbo) {
+    public Subpass(Renderer renderer, PipelineStateObject pso, Framebuffer fbo) {
         this.renderer = renderer;
         this.pso = pso;
         this.fbo = fbo;
-        drawQueue = new DrawQueue(graphicResourceManager);
     }
 
-    public final void render(DrawQueue drawQueue, ICamera camera, IndirectDrawBufferManager idbManager) {
+    public final void render(DrawQueue drawQueue, ICamera camera, GraphicResourceManager graphicResourceManager, IndirectDrawBufferManager idbManager) {
         DrawQueue dq = drawQueue;
         if (hintCompileDrawQueue()) {
-            dq = dq.compile();
+            dq = dq.compile(graphicResourceManager);
         }
         if (hintSimplifyDrawQueue()) {
             dq = dq.simplify(idbManager);
@@ -50,9 +48,9 @@ public abstract class Subpass {
     protected abstract void updateShaderProgram(ShaderProgram shaderProgram, ICamera camera);
 
     /**
-     * Whether to run {@link DrawQueue#compile()} before {@link #execute(DrawQueue)}.
+     * Whether to run {@link DrawQueue#compile(GraphicResourceManager)} before {@link #execute(DrawQueue)}.
      *
-     * @see DrawQueue#compile()
+     * @see DrawQueue#compile(GraphicResourceManager)
      * @return The hint
      */
     protected abstract boolean hintCompileDrawQueue();

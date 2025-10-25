@@ -13,11 +13,9 @@ import org.lwjgl.opengl.GL11;
 import java.util.*;
 
 public class DrawQueue {
-    private final GraphicResourceManager graphicResourceManager;
     private final Deque<IDrawCommand> deque = new ArrayDeque<>();
 
-    public DrawQueue(GraphicResourceManager graphicResourceManager) {
-        this.graphicResourceManager = graphicResourceManager;
+    public DrawQueue() {
     }
 
     public void enqueue(IDrawCommand command) {
@@ -38,9 +36,10 @@ public class DrawQueue {
      * After calling this method, every element in this draw queue is guaranteed to be a {@link LowLevelDC}.
      * High-level commands are converted in-place. Low-level commands remain unchanged.
      *
+     * @param graphicResourceManager The graphic resource manager
      * @return The <code>DrawQueue</code> itself
      */
-    public DrawQueue compile() {
+    public DrawQueue compile(GraphicResourceManager graphicResourceManager) {
         List<IDrawCommand> baked = new ArrayList<>();
 
         IDrawCommand drawCommand;
@@ -98,7 +97,7 @@ public class DrawQueue {
      * </ul>
      *
      * It combines and simplifies {@link LowLevelDC}s, especially combines commands into <code>MULTI_ELEMENTS_INDIRECT</code> command.
-     * Usually it's called after {@link #compile()} which compiles everything into {@link LowLevelDC}s.
+     * Usually it's called after {@link #compile(GraphicResourceManager)} which compiles everything into {@link LowLevelDC}s.
      *
      * @param idbManager The indirect draw buffer manager
      * @return The <code>DrawQueue</code> itself

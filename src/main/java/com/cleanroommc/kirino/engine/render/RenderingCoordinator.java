@@ -96,16 +96,15 @@ public class RenderingCoordinator {
         ShaderProgram shaderProgram = shaderRegistry.newShaderProgram("forge:shaders/gizmos.vert", "forge:shaders/gizmos.frag");
 
         Renderer renderer = new Renderer();
-        chunkCpuPass = new RenderPass("Chunk CPU Pass", idbManager);
-        chunkCpuPass.addSubpass("Opaque Pass", new WhateverPass(graphicResourceManager, renderer, PSOPresets.createOpaquePSO(shaderProgram), new Framebuffer(0, 0)));
-        chunkCpuPass.addSubpass("Cutout Pass", new WhateverPass(graphicResourceManager, renderer, PSOPresets.createCutoutPSO(shaderProgram), new Framebuffer(0, 0)));
-        chunkCpuPass.addSubpass("Transparent Pass", new WhateverPass(graphicResourceManager, renderer, PSOPresets.createTransparentPSO(shaderProgram), new Framebuffer(0, 0)));
+        chunkCpuPass = new RenderPass("Chunk CPU Pass", graphicResourceManager, idbManager);
+        chunkCpuPass.addSubpass("Opaque Pass", new WhateverPass(renderer, PSOPresets.createOpaquePSO(shaderProgram), new Framebuffer(0, 0)));
+        chunkCpuPass.addSubpass("Cutout Pass", new WhateverPass(renderer, PSOPresets.createCutoutPSO(shaderProgram), new Framebuffer(0, 0)));
+        chunkCpuPass.addSubpass("Transparent Pass", new WhateverPass(renderer, PSOPresets.createTransparentPSO(shaderProgram), new Framebuffer(0, 0)));
 
         Framebuffer framebuffer = new Framebuffer(MINECRAFT.displayWidth, MINECRAFT.displayHeight);
         framebuffers.add(framebuffer);
-        gizmosPass = new RenderPass("Gizmos Pass", idbManager);
+        gizmosPass = new RenderPass("Gizmos Pass", graphicResourceManager, idbManager);
         gizmosPass.addSubpass("Gizmos Pass", new GizmosPass(
-                graphicResourceManager,
                 renderer,
                 PSOPresets.createGizmosPSO(shaderProgram),
                 framebuffer,

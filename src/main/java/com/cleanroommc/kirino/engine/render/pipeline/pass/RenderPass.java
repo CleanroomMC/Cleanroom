@@ -1,7 +1,9 @@
 package com.cleanroommc.kirino.engine.render.pipeline.pass;
 
 import com.cleanroommc.kirino.engine.render.camera.ICamera;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.DrawQueue;
 import com.cleanroommc.kirino.engine.render.pipeline.draw.IndirectDrawBufferManager;
+import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
 import com.cleanroommc.kirino.gl.debug.KHRDebug;
 
 import java.util.ArrayList;
@@ -13,12 +15,16 @@ public final class RenderPass {
     private final Map<String, Subpass> subpassMap = new HashMap<>();
     private final Map<String, List<ISubpassDecorator>> subpassDecoratorMap = new HashMap<>();
     private final List<String> subpassOrder = new ArrayList<>();
+    private final DrawQueue drawQueue = new DrawQueue();
+
+    private final GraphicResourceManager graphicResourceManager;
     private final IndirectDrawBufferManager idbManager;
 
     public final String passName;
 
-    public RenderPass(String passName, IndirectDrawBufferManager idbManager) {
+    public RenderPass(String passName, GraphicResourceManager graphicResourceManager, IndirectDrawBufferManager idbManager) {
         this.passName = passName;
+        this.graphicResourceManager = graphicResourceManager;
         this.idbManager = idbManager;
     }
 
@@ -48,16 +54,16 @@ public final class RenderPass {
         for (String subpassName : subpassOrder) {
             KHRDebug.pushGroup(passName + " - " + subpassName);
 
+            drawQueue.clear();
             Subpass subpass = subpassMap.get(subpassName);
-            subpass.drawQueue.clear();
-            subpass.collectCommands(subpass.drawQueue);
+            subpass.collectCommands(drawQueue);
             List<ISubpassDecorator> list = subpassDecoratorMap.get(subpassName);
             if (list != null) {
                 for (ISubpassDecorator decorator : list) {
-                    subpass.decorateCommands(subpass.drawQueue, decorator);
+                    subpass.decorateCommands(drawQueue, decorator);
                 }
             }
-            subpass.render(subpass.drawQueue, camera, idbManager);
+            subpass.render(drawQueue, camera, graphicResourceManager, idbManager);
 
             KHRDebug.popGroup();
         }
