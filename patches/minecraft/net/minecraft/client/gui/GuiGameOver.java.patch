@@ -9,12 +9,3 @@
                  }
                  else
                  {
-@@ -195,7 +195,7 @@
-     public void updateScreen()
-     {
-         super.updateScreen();
--        this.enableButtonsTimer++;
-+        ++this.enableButtonsTimer;
- 
-         if (this.enableButtonsTimer == 20)
-         {

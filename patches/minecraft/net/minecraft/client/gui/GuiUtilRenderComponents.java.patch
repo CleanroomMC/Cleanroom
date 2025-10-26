@@ -12,14 +12,9 @@
  import net.minecraft.util.text.TextComponentString;
  import net.minecraft.util.text.TextFormatting;
  import net.minecraftforge.fml.relauncher.Side;
-@@ -17,94 +19,111 @@
-         return !forceColor && !Minecraft.getMinecraft().gameSettings.chatColours ? TextFormatting.getTextWithoutFormattingCodes(text) : text;
-     }
- 
--    public static List<ITextComponent> splitText(
--            ITextComponent textComponent, int maxTextLenght, FontRenderer fontRendererIn, boolean p_178908_3_, boolean forceTextColor
--        )
-+    public static List<ITextComponent> splitText(ITextComponent textComponent, int maxTextLenght, FontRenderer fontRendererIn, boolean p_178908_3_, boolean forceTextColor)
+@@ -21,90 +23,109 @@
+             ITextComponent textComponent, int maxTextLenght, FontRenderer fontRendererIn, boolean p_178908_3_, boolean forceTextColor
+         )
      {
 -        int i = 0;
 -        ITextComponent itextcomponent = new TextComponentString("");
@@ -113,8 +108,7 @@
 -                        if (p_178908_3_)
 +                        if (p_178908_3_ && cleanedLine.charAt(l) == ' ')
                          {
--                            l++;
-+                            ++l;
+                             l++;
                          }
  
 -                        s3 = s4.substring(l);

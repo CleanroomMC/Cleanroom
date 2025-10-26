@@ -1,41 +1,6 @@
 --- before/net/minecraft/client/renderer/texture/TextureManager.java
 +++ after/net/minecraft/client/renderer/texture/TextureManager.java
-@@ -24,9 +24,9 @@
- {
-     private static final Logger LOGGER = LogManager.getLogger();
-     public static final ResourceLocation RESOURCE_LOCATION_EMPTY = new ResourceLocation("");
--    private final Map<ResourceLocation, ITextureObject> mapTextureObjects = Maps.newHashMap();
--    private final List<ITickable> listTickables = Lists.newArrayList();
--    private final Map<String, Integer> mapTextureCounters = Maps.newHashMap();
-+    private final Map<ResourceLocation, ITextureObject> mapTextureObjects = Maps.<ResourceLocation, ITextureObject>newHashMap();
-+    private final List<ITickable> listTickables = Lists.<ITickable>newArrayList();
-+    private final Map<String, Integer> mapTextureCounters = Maps.<String, Integer>newHashMap();
-     private final IResourceManager resourceManager;
- 
-     public TextureManager(IResourceManager resourceManager)
-@@ -110,11 +110,11 @@
- 
-         if (integer == null)
-         {
--            integer = 1;
-+            integer = Integer.valueOf(1);
-         }
-         else
-         {
--            integer = integer + 1;
-+            integer = integer.intValue() + 1;
-         }
- 
-         this.mapTextureCounters.put(name, integer);
-@@ -123,7 +123,6 @@
-         return resourcelocation;
-     }
- 
--    @Override
-     public void tick()
-     {
-         for (ITickable itickable : this.listTickables)
-@@ -138,18 +137,20 @@
+@@ -138,6 +138,7 @@
  
          if (itextureobject != null)
          {
@@ -43,8 +8,8 @@
              TextureUtil.deleteTexture(itextureobject.getGlTextureId());
          }
      }
- 
--    @Override
+@@ -145,11 +146,13 @@
+     @Override
      public void onResourceManagerReload(IResourceManager resourceManager)
      {
 +        net.minecraftforge.fml.common.ProgressManager.ProgressBar bar = net.minecraftforge.fml.common.ProgressManager.push("Reloading Texture Manager", this.mapTextureObjects.keySet().size(), true);
@@ -52,13 +17,12 @@
  
          while (iterator.hasNext())
          {
--            Entry<ResourceLocation, ITextureObject> entry = iterator.next();
-+            Entry<ResourceLocation, ITextureObject> entry = (Entry)iterator.next();
+             Entry<ResourceLocation, ITextureObject> entry = iterator.next();
 +            bar.step(entry.getKey().toString());
              ITextureObject itextureobject = entry.getValue();
  
              if (itextureobject == TextureUtil.MISSING_TEXTURE)
-@@ -161,5 +162,6 @@
+@@ -161,5 +164,6 @@
                  this.loadTexture(entry.getKey(), itextureobject);
              }
          }

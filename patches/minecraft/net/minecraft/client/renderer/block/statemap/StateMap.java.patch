@@ -1,28 +1,6 @@
 --- before/net/minecraft/client/renderer/block/statemap/StateMap.java
 +++ after/net/minecraft/client/renderer/block/statemap/StateMap.java
-@@ -10,6 +10,7 @@
- import net.minecraft.block.properties.IProperty;
- import net.minecraft.block.state.IBlockState;
- import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-+import net.minecraft.util.ResourceLocation;
- import net.minecraftforge.fml.relauncher.Side;
- import net.minecraftforge.fml.relauncher.SideOnly;
- 
-@@ -27,19 +28,18 @@
-         this.ignored = ignored;
-     }
- 
--    @Override
-     protected ModelResourceLocation getModelResourceLocation(IBlockState state)
-     {
--        Map < IProperty<?>, Comparable<? >> map = Maps.newLinkedHashMap(state.getProperties());
-+        Map < IProperty<?>, Comparable<? >> map = Maps. < IProperty<?>, Comparable<? >> newLinkedHashMap(state.getProperties());
-         String s;
- 
-         if (this.name == null)
-         {
--            s = Block.REGISTRY.getNameForObject(state.getBlock()).toString();
-+            s = ((ResourceLocation)Block.REGISTRY.getNameForObject(state.getBlock())).toString();
+@@ -39,7 +39,7 @@
          }
          else
          {
@@ -31,12 +9,3 @@
          }
  
          if (this.suffix != null)
-@@ -65,7 +65,7 @@
-         {
-             private IProperty<?> name;
-             private String suffix;
--            private final List < IProperty<? >> ignored = Lists.newArrayList();
-+            private final List < IProperty<? >> ignored = Lists. < IProperty<? >> newArrayList();
- 
-             public StateMap.Builder withName(IProperty<?> builderPropertyIn)
-             {

@@ -1,113 +1,9 @@
 --- before/net/minecraft/client/gui/GuiVideoSettings.java
 +++ after/net/minecraft/client/gui/GuiVideoSettings.java
-@@ -14,25 +14,7 @@
-     protected String screenTitle = "Video Settings";
-     private final GameSettings guiGameSettings;
-     private GuiListExtended optionsRowList;
--    private static final GameSettings.Options[] VIDEO_OPTIONS = new GameSettings.Options[]
--        {
--            GameSettings.Options.GRAPHICS,
--            GameSettings.Options.RENDER_DISTANCE,
--            GameSettings.Options.AMBIENT_OCCLUSION,
--            GameSettings.Options.FRAMERATE_LIMIT,
--            GameSettings.Options.ANAGLYPH,
--            GameSettings.Options.VIEW_BOBBING,
--            GameSettings.Options.GUI_SCALE,
--            GameSettings.Options.ATTACK_INDICATOR,
--            GameSettings.Options.GAMMA,
--            GameSettings.Options.RENDER_CLOUDS,
--            GameSettings.Options.PARTICLES,
--            GameSettings.Options.USE_FULLSCREEN,
--            GameSettings.Options.ENABLE_VSYNC,
--            GameSettings.Options.MIPMAP_LEVELS,
--            GameSettings.Options.USE_VBO,
--            GameSettings.Options.ENTITY_SHADOWS
--        };
-+    private static final GameSettings.Options[] VIDEO_OPTIONS = new GameSettings.Options[] {GameSettings.Options.GRAPHICS, GameSettings.Options.RENDER_DISTANCE, GameSettings.Options.AMBIENT_OCCLUSION, GameSettings.Options.FRAMERATE_LIMIT, GameSettings.Options.ANAGLYPH, GameSettings.Options.VIEW_BOBBING, GameSettings.Options.GUI_SCALE, GameSettings.Options.ATTACK_INDICATOR, GameSettings.Options.GAMMA, GameSettings.Options.RENDER_CLOUDS, GameSettings.Options.PARTICLES, GameSettings.Options.USE_FULLSCREEN, GameSettings.Options.ENABLE_VSYNC, GameSettings.Options.MIPMAP_LEVELS, GameSettings.Options.USE_VBO, GameSettings.Options.ENTITY_SHADOWS};
- 
-     public GuiVideoSettings(GuiScreen parentScreenIn, GameSettings gameSettingsIn)
-     {
-@@ -40,7 +22,6 @@
-         this.guiGameSettings = gameSettingsIn;
-     }
- 
--    @Override
-     public void initGui()
-     {
-         this.screenTitle = I18n.format("options.videoTitle");
-@@ -49,9 +30,7 @@
- 
-         if (OpenGlHelper.vboSupported)
-         {
--            this.optionsRowList = new GuiOptionsRowList(
--                this.mc, this.width, this.height, 32, this.height - 32, 25, VIDEO_OPTIONS
--            );
-+            this.optionsRowList = new GuiOptionsRowList(this.mc, this.width, this.height, 32, this.height - 32, 25, VIDEO_OPTIONS);
-         }
-         else
-         {
-@@ -66,23 +45,19 @@
-                 }
- 
-                 agamesettings$options[i] = gamesettings$options;
--                i++;
-+                ++i;
-             }
- 
--            this.optionsRowList = new GuiOptionsRowList(
--                this.mc, this.width, this.height, 32, this.height - 32, 25, agamesettings$options
--            );
-+            this.optionsRowList = new GuiOptionsRowList(this.mc, this.width, this.height, 32, this.height - 32, 25, agamesettings$options);
-         }
-     }
- 
--    @Override
-     public void handleMouseInput() throws IOException
-     {
-         super.handleMouseInput();
-         this.optionsRowList.handleMouseInput();
-     }
- 
--    @Override
-     protected void keyTyped(char typedChar, int keyCode) throws IOException
-     {
-         if (keyCode == 1)
-@@ -93,7 +68,6 @@
-         super.keyTyped(typedChar, keyCode);
-     }
- 
--    @Override
-     protected void actionPerformed(GuiButton button) throws IOException
-     {
-         if (button.enabled)
-@@ -106,7 +80,6 @@
-         }
-     }
- 
--    @Override
-     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-     {
-         int i = this.guiGameSettings.guiScale;
-@@ -122,7 +95,6 @@
-         }
-     }
- 
--    @Override
-     protected void mouseReleased(int mouseX, int mouseY, int state)
-     {
-         int i = this.guiGameSettings.guiScale;
-@@ -138,12 +110,19 @@
-         }
-     }
- 
--    @Override
-     public void drawScreen(int mouseX, int mouseY, float partialTicks)
-     {
-         this.drawDefaultBackground();
-         this.optionsRowList.drawScreen(mouseX, mouseY, partialTicks);
+@@ -146,4 +146,12 @@
          this.drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 5, 16777215);
          super.drawScreen(mouseX, mouseY, partialTicks);
-+    }
+     }
 +
 +    // FORGE: fix for MC-64581 very laggy mipmap slider
 +    @Override
@@ -115,5 +11,5 @@
 +    {
 +        super.onGuiClosed();
 +        this.mc.gameSettings.onGuiClosed();
-     }
++    }
  }

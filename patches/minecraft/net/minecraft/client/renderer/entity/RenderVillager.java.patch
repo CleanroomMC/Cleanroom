@@ -24,12 +24,3 @@
      }
  
      protected void preRenderCallback(EntityVillager entitylivingbaseIn, float partialTickTime)
-@@ -55,7 +40,7 @@
- 
-         if (entitylivingbaseIn.getGrowingAge() < 0)
-         {
--            f = (float)((double)f * 0.5);
-+            f = (float)((double)f * 0.5D);
-             this.shadowSize = 0.25F;
-         }
-         else

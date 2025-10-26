@@ -8,15 +8,6 @@
  public class TexturedQuad
  {
      public PositionTextureVertex[] vertexPositions;
-@@ -35,7 +34,7 @@
-     {
-         PositionTextureVertex[] apositiontexturevertex = new PositionTextureVertex[this.vertexPositions.length];
- 
--        for (int i = 0; i < this.vertexPositions.length; i++)
-+        for (int i = 0; i < this.vertexPositions.length; ++i)
-         {
-             apositiontexturevertex[i] = this.vertexPositions[this.vertexPositions.length - i - 1];
-         }
 @@ -43,6 +42,7 @@
          this.vertexPositions = apositiontexturevertex;
      }
@@ -25,23 +16,3 @@
      public void draw(BufferBuilder renderer, float scale)
      {
          Vec3d vec3d = this.vertexPositions[1].vector3D.subtractReverse(this.vertexPositions[0].vector3D);
-@@ -61,17 +61,10 @@
- 
-         renderer.begin(7, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
- 
--        for (int i = 0; i < 4; i++)
-+        for (int i = 0; i < 4; ++i)
-         {
-             PositionTextureVertex positiontexturevertex = this.vertexPositions[i];
--            renderer.pos(
--                positiontexturevertex.vector3D.x * (double)scale,
--                positiontexturevertex.vector3D.y * (double)scale,
--                positiontexturevertex.vector3D.z * (double)scale
--            )
--            .tex((double)positiontexturevertex.texturePositionX, (double)positiontexturevertex.texturePositionY)
--            .normal(f, f1, f2)
--            .endVertex();
-+            renderer.pos(positiontexturevertex.vector3D.x * (double)scale, positiontexturevertex.vector3D.y * (double)scale, positiontexturevertex.vector3D.z * (double)scale).tex((double)positiontexturevertex.texturePositionX, (double)positiontexturevertex.texturePositionY).normal(f, f1, f2).endVertex();
-         }
- 
-         Tessellator.getInstance().draw();

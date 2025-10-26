@@ -1,57 +1,6 @@
 --- before/net/minecraft/client/util/RecipeBookClient.java
 +++ after/net/minecraft/client/util/RecipeBookClient.java
-@@ -7,6 +7,7 @@
- import java.util.ArrayList;
- import java.util.List;
- import java.util.Map;
-+import java.util.function.Function;
- import net.minecraft.client.gui.recipebook.RecipeList;
- import net.minecraft.creativetab.CreativeTabs;
- import net.minecraft.item.ItemStack;
-@@ -19,15 +20,21 @@
- @SideOnly(Side.CLIENT)
- public class RecipeBookClient extends RecipeBook
- {
--    public static final Map<CreativeTabs, List<RecipeList>> RECIPES_BY_TAB = Maps.newHashMap();
--    public static final List<RecipeList> ALL_RECIPES = Lists.newArrayList();
-+    public static final Map<CreativeTabs, List<RecipeList>> RECIPES_BY_TAB = Maps.<CreativeTabs, List<RecipeList>>newHashMap();
-+    public static final List<RecipeList> ALL_RECIPES = Lists.<RecipeList>newArrayList();
- 
-     private static RecipeList newRecipeList(CreativeTabs srcTab)
-     {
-         RecipeList recipelist = new RecipeList();
-         ALL_RECIPES.add(recipelist);
--        RECIPES_BY_TAB.computeIfAbsent(srcTab, p_194085_0_ -> new ArrayList<>()).add(recipelist);
--        RECIPES_BY_TAB.computeIfAbsent(CreativeTabs.SEARCH, p_194083_0_ -> new ArrayList<>()).add(recipelist);
-+        (RECIPES_BY_TAB.computeIfAbsent(srcTab, (p_194085_0_) ->
-+        {
-+            return new ArrayList();
-+        })).add(recipelist);
-+        (RECIPES_BY_TAB.computeIfAbsent(CreativeTabs.SEARCH, (p_194083_0_) ->
-+        {
-+            return new ArrayList();
-+        })).add(recipelist);
-         return recipelist;
-     }
- 
-@@ -35,19 +42,27 @@
-     {
-         CreativeTabs creativetabs = stackIn.getItem().getCreativeTab();
- 
--        if (creativetabs == CreativeTabs.BUILDING_BLOCKS || creativetabs == CreativeTabs.TOOLS || creativetabs == CreativeTabs.REDSTONE)
--        {
--            return creativetabs;
--        }
--        else
-+        if (creativetabs != CreativeTabs.BUILDING_BLOCKS && creativetabs != CreativeTabs.TOOLS && creativetabs != CreativeTabs.REDSTONE)
-         {
-             return creativetabs == CreativeTabs.COMBAT ? CreativeTabs.TOOLS : CreativeTabs.MISC;
-         }
-+        else
-+        {
-+            return creativetabs;
-+        }
-     }
+@@ -47,7 +47,15 @@
  
      static
      {

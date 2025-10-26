@@ -1,18 +1,10 @@
 --- before/net/minecraft/client/network/NetHandlerHandshakeMemory.java
 +++ after/net/minecraft/client/network/NetHandlerHandshakeMemory.java
-@@ -21,14 +21,13 @@
-         this.networkManager = networkManagerIn;
-     }
- 
--    @Override
+@@ -24,6 +24,7 @@
+     @Override
      public void processHandshake(C00Handshake packetIn)
      {
 +        if (!net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerHandshake(packetIn, this.networkManager)) return;
          this.networkManager.setConnectionState(packetIn.getRequestedState());
          this.networkManager.setNetHandler(new NetHandlerLoginServer(this.server, this.networkManager));
-     }
- 
--    @Override
-     public void onDisconnect(ITextComponent reason)
-     {
      }

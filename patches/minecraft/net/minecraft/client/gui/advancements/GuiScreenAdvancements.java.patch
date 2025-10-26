@@ -1,12 +1,6 @@
 --- before/net/minecraft/client/gui/advancements/GuiScreenAdvancements.java
 +++ after/net/minecraft/client/gui/advancements/GuiScreenAdvancements.java
-@@ -24,18 +24,18 @@
-     private static final ResourceLocation WINDOW = new ResourceLocation("textures/gui/advancements/window.png");
-     private static final ResourceLocation TABS = new ResourceLocation("textures/gui/advancements/tabs.png");
-     private final ClientAdvancementManager clientAdvancementManager;
--    private final Map<Advancement, GuiAdvancementTab> tabs = Maps.newLinkedHashMap();
-+    private final Map<Advancement, GuiAdvancementTab> tabs = Maps.<Advancement, GuiAdvancementTab>newLinkedHashMap();
-     private GuiAdvancementTab selectedTab;
+@@ -29,6 +29,7 @@
      private int scrollMouseX;
      private int scrollMouseY;
      private boolean isScrolling;
@@ -14,21 +8,7 @@
  
      public GuiScreenAdvancements(ClientAdvancementManager p_i47383_1_)
      {
-         this.clientAdvancementManager = p_i47383_1_;
-     }
- 
--    @Override
-     public void initGui()
-     {
-         this.tabs.clear();
-@@ -44,18 +44,25 @@
- 
-         if (this.selectedTab == null && !this.tabs.isEmpty())
-         {
--            this.clientAdvancementManager.setSelectedTab(this.tabs.values().iterator().next().getAdvancement(), true);
-+            this.clientAdvancementManager.setSelectedTab(((GuiAdvancementTab)this.tabs.values().iterator().next()).getAdvancement(), true);
-         }
-         else
+@@ -50,6 +51,14 @@
          {
              this.clientAdvancementManager.setSelectedTab(this.selectedTab == null ? null : this.selectedTab.getAdvancement(), true);
          }
@@ -42,23 +22,8 @@
 +        }
      }
  
--    @Override
-     public void onGuiClosed()
-     {
--        this.clientAdvancementManager.setListener(null);
-+        this.clientAdvancementManager.setListener((ClientAdvancementManager.IListener)null);
-         NetHandlerPlayClient nethandlerplayclient = this.mc.getConnection();
- 
-         if (nethandlerplayclient != null)
-@@ -64,7 +71,6 @@
-         }
-     }
- 
--    @Override
-     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-     {
-         if (mouseButton == 0)
-@@ -74,7 +80,7 @@
+     @Override
+@@ -74,7 +83,7 @@
  
              for (GuiAdvancementTab guiadvancementtab : this.tabs.values())
              {
@@ -67,29 +32,7 @@
                  {
                      this.clientAdvancementManager.setSelectedTab(guiadvancementtab.getAdvancement(), true);
                      break;
-@@ -85,12 +91,11 @@
-         super.mouseClicked(mouseX, mouseY, mouseButton);
-     }
- 
--    @Override
-     protected void keyTyped(char typedChar, int keyCode) throws IOException
-     {
-         if (keyCode == this.mc.gameSettings.keyBindAdvancements.getKeyCode())
-         {
--            this.mc.displayGuiScreen(null);
-+            this.mc.displayGuiScreen((GuiScreen)null);
-             this.mc.setIngameFocus();
-         }
-         else
-@@ -99,7 +104,6 @@
-         }
-     }
- 
--    @Override
-     public void drawScreen(int mouseX, int mouseY, float partialTicks)
-     {
-         int i = (this.width - 252) / 2;
-@@ -127,6 +131,14 @@
+@@ -127,6 +136,14 @@
          this.drawDefaultBackground();
          this.renderInside(mouseX, mouseY, i, j);
          this.renderWindow(i, j);
@@ -104,19 +47,7 @@
          this.renderToolTips(mouseX, mouseY, i, j);
      }
  
-@@ -140,10 +152,7 @@
-             String s = I18n.format("advancements.empty");
-             int i = this.fontRenderer.getStringWidth(s);
-             this.fontRenderer.drawString(s, p_191936_3_ + 9 + 117 - i / 2, p_191936_4_ + 18 + 56 - this.fontRenderer.FONT_HEIGHT / 2, -1);
--            this.fontRenderer
--            .drawString(
--                ":(", p_191936_3_ + 9 + 117 - this.fontRenderer.getStringWidth(":(") / 2, p_191936_4_ + 18 + 113 - this.fontRenderer.FONT_HEIGHT, -1
--            );
-+            this.fontRenderer.drawString(":(", p_191936_3_ + 9 + 117 - this.fontRenderer.getStringWidth(":(") / 2, p_191936_4_ + 18 + 113 - this.fontRenderer.FONT_HEIGHT, -1);
-         }
-         else
-         {
-@@ -171,20 +180,17 @@
+@@ -171,6 +188,7 @@
  
              for (GuiAdvancementTab guiadvancementtab : this.tabs.values())
              {
@@ -124,15 +55,7 @@
                  guiadvancementtab.drawTab(p_191934_1_, p_191934_2_, guiadvancementtab == this.selectedTab);
              }
  
-             GlStateManager.enableRescaleNormal();
--            GlStateManager.tryBlendFuncSeparate(
--                GlStateManager.SourceFactor.SRC_ALPHA,
--                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
--                GlStateManager.SourceFactor.ONE,
--                GlStateManager.DestFactor.ZERO
--            );
-+            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-             RenderHelper.enableGUIStandardItemLighting();
+@@ -185,6 +203,7 @@
  
              for (GuiAdvancementTab guiadvancementtab1 : this.tabs.values())
              {
@@ -140,7 +63,7 @@
                  guiadvancementtab1.drawIcon(p_191934_1_, p_191934_2_, this.itemRender);
              }
  
-@@ -212,7 +218,7 @@
+@@ -212,7 +231,7 @@
          {
              for (GuiAdvancementTab guiadvancementtab : this.tabs.values())
              {
@@ -149,55 +72,7 @@
                  {
                      this.drawHoveringText(guiadvancementtab.getTitle(), p_191937_1_, p_191937_2_);
                  }
-@@ -220,7 +226,6 @@
-         }
-     }
- 
--    @Override
-     public void rootAdvancementAdded(Advancement advancementIn)
-     {
-         GuiAdvancementTab guiadvancementtab = GuiAdvancementTab.create(this.mc, this, this.tabs.size(), advancementIn);
-@@ -231,12 +236,10 @@
-         }
-     }
- 
--    @Override
-     public void rootAdvancementRemoved(Advancement advancementIn)
-     {
-     }
- 
--    @Override
-     public void nonRootAdvancementAdded(Advancement advancementIn)
-     {
-         GuiAdvancementTab guiadvancementtab = this.getTab(advancementIn);
-@@ -247,12 +250,10 @@
-         }
-     }
- 
--    @Override
-     public void nonRootAdvancementRemoved(Advancement advancementIn)
-     {
-     }
- 
--    @Override
-     public void onUpdateAdvancementProgress(Advancement advancementIn, AdvancementProgress progress)
-     {
-         GuiAdvancement guiadvancement = this.getAdvancementGui(advancementIn);
-@@ -263,13 +264,11 @@
-         }
-     }
- 
--    @Override
-     public void setSelectedTab(@Nullable Advancement advancementIn)
-     {
-         this.selectedTab = this.tabs.get(advancementIn);
-     }
- 
--    @Override
-     public void advancementsCleared()
-     {
-         this.tabs.clear();
-@@ -292,5 +291,14 @@
+@@ -292,5 +311,14 @@
          }
  
          return this.tabs.get(p_191935_1_);

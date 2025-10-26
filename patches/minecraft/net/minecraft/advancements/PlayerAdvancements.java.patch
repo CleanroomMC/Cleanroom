@@ -1,40 +1,6 @@
 --- before/net/minecraft/advancements/PlayerAdvancements.java
 +++ after/net/minecraft/advancements/PlayerAdvancements.java
-@@ -16,6 +16,7 @@
- import java.util.Map;
- import java.util.Set;
- import java.util.Map.Entry;
-+import java.util.function.Function;
- import java.util.stream.Collectors;
- import java.util.stream.Stream;
- import javax.annotation.Nullable;
-@@ -32,20 +33,16 @@
- public class PlayerAdvancements
- {
-     private static final Logger LOGGER = LogManager.getLogger();
--    private static final Gson GSON = new GsonBuilder()
--        .registerTypeAdapter(AdvancementProgress.class, new AdvancementProgress.Serializer())
--        .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
--        .setPrettyPrinting()
--        .create();
-+    private static final Gson GSON = (new GsonBuilder()).registerTypeAdapter(AdvancementProgress.class, new AdvancementProgress.Serializer()).registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer()).setPrettyPrinting().create();
-     private static final TypeToken<Map<ResourceLocation, AdvancementProgress>> MAP_TOKEN = new TypeToken<Map<ResourceLocation, AdvancementProgress>>()
-     {
-     };
-     private final MinecraftServer server;
-     private final File progressFile;
--    private final Map<Advancement, AdvancementProgress> progress = Maps.newLinkedHashMap();
--    private final Set<Advancement> visible = Sets.newLinkedHashSet();
--    private final Set<Advancement> visibilityChanged = Sets.newLinkedHashSet();
--    private final Set<Advancement> progressChanged = Sets.newLinkedHashSet();
-+    private final Map<Advancement, AdvancementProgress> progress = Maps.<Advancement, AdvancementProgress>newLinkedHashMap();
-+    private final Set<Advancement> visible = Sets.<Advancement>newLinkedHashSet();
-+    private final Set<Advancement> visibilityChanged = Sets.<Advancement>newLinkedHashSet();
-+    private final Set<Advancement> progressChanged = Sets.<Advancement>newLinkedHashSet();
-     private EntityPlayerMP player;
-     @Nullable
-     private Advancement lastSelectedTab;
-@@ -199,6 +196,9 @@
+@@ -199,6 +199,9 @@
  
      public boolean grantCriterion(Advancement p_192750_1_, String p_192750_2_)
      {
@@ -44,39 +10,12 @@
          boolean flag = false;
          AdvancementProgress advancementprogress = this.getProgress(p_192750_1_);
          boolean flag1 = advancementprogress.isDone();
-@@ -213,20 +213,12 @@
-             {
-                 p_192750_1_.getRewards().apply(this.player);
- 
--                if (p_192750_1_.getDisplay() != null
--                        && p_192750_1_.getDisplay().shouldAnnounceToChat()
--                        && this.player.world.getGameRules().getBoolean("announceAdvancements"))
-+                if (p_192750_1_.getDisplay() != null && p_192750_1_.getDisplay().shouldAnnounceToChat() && this.player.world.getGameRules().getBoolean("announceAdvancements"))
-                 {
--                    this.server
--                    .getPlayerList()
--                    .sendMessage(
--                        new TextComponentTranslation(
--                            "chat.type.advancement." + p_192750_1_.getDisplay().getFrame().getName(),
--                            this.player.getDisplayName(),
--                            p_192750_1_.getDisplayText()
--                        )
--                    );
-+                    this.server.getPlayerList().sendMessage(new TextComponentTranslation("chat.type.advancement." + p_192750_1_.getDisplay().getFrame().getName(), new Object[] {this.player.getDisplayName(), p_192750_1_.getDisplayText()}));
+@@ -227,6 +230,8 @@
+                         )
+                     );
                  }
 +
 +                net.minecraftforge.common.ForgeHooks.onAdvancement(this.player, p_192750_1_);
              }
          }
- 
-@@ -365,9 +357,7 @@
- 
-         if (advancement != this.lastSelectedTab)
-         {
--            this.player
--            .connection
--            .sendPacket(new SPacketSelectAdvancementsTab(this.lastSelectedTab == null ? null : this.lastSelectedTab.getId()));
-+            this.player.connection.sendPacket(new SPacketSelectAdvancementsTab(this.lastSelectedTab == null ? null : this.lastSelectedTab.getId()));
-         }
-     }
  

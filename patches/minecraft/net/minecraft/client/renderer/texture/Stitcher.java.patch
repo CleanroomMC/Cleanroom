@@ -1,22 +1,8 @@
 --- before/net/minecraft/client/renderer/texture/Stitcher.java
 +++ after/net/minecraft/client/renderer/texture/Stitcher.java
-@@ -14,8 +14,8 @@
- public class Stitcher
- {
-     private final int mipmapLevelStitcher;
--    private final Set<Stitcher.Holder> setStitchHolders = Sets.newHashSetWithExpectedSize(256);
--    private final List<Stitcher.Slot> stitchSlots = Lists.newArrayListWithCapacity(256);
-+    private final Set<Stitcher.Holder> setStitchHolders = Sets.<Stitcher.Holder>newHashSetWithExpectedSize(256);
-+    private final List<Stitcher.Slot> stitchSlots = Lists.<Stitcher.Slot>newArrayListWithCapacity(256);
-     private int currentWidth;
-     private int currentHeight;
-     private final int maxWidth;
-@@ -54,45 +54,44 @@
- 
-     public void doStitch()
+@@ -56,9 +56,11 @@
      {
--        Stitcher.Holder[] astitcher$holder = this.setStitchHolders.toArray(new Stitcher.Holder[this.setStitchHolders.size()]);
-+        Stitcher.Holder[] astitcher$holder = (Stitcher.Holder[])this.setStitchHolders.toArray(new Stitcher.Holder[this.setStitchHolders.size()]);
+         Stitcher.Holder[] astitcher$holder = this.setStitchHolders.toArray(new Stitcher.Holder[this.setStitchHolders.size()]);
          Arrays.sort((Object[])astitcher$holder);
 +        net.minecraftforge.fml.common.ProgressManager.ProgressBar bar = net.minecraftforge.fml.common.ProgressManager.push("Texture stitching", astitcher$holder.length);
  
@@ -25,14 +11,12 @@
 +            bar.step(stitcher$holder.getAtlasSprite().getIconName());
              if (!this.allocateSlot(stitcher$holder))
              {
--                String s = String.format(
--                               "Unable to fit: %s - size: %dx%d - Maybe try a lowerresolution resourcepack?",
--                               stitcher$holder.getAtlasSprite().getIconName(),
--                               stitcher$holder.getAtlasSprite().getIconWidth(),
--                               stitcher$holder.getAtlasSprite().getIconHeight()
--                           );
-+                String s = String.format("Unable to fit: %s - size: %dx%d - Maybe try a lowerresolution resourcepack?", stitcher$holder.getAtlasSprite().getIconName(), stitcher$holder.getAtlasSprite().getIconWidth(), stitcher$holder.getAtlasSprite().getIconHeight());
-+                net.minecraftforge.fml.common.FMLLog.log.info(s);
+                 String s = String.format(
+@@ -67,12 +69,16 @@
+                                stitcher$holder.getAtlasSprite().getIconWidth(),
+                                stitcher$holder.getAtlasSprite().getIconHeight()
+                            );
++               net.minecraftforge.fml.common.FMLLog.log.info(s);
 +                for (Stitcher.Holder h : astitcher$holder)
 +                    net.minecraftforge.fml.common.FMLLog.log.info("  {}", h);
                  throw new StitcherException(stitcher$holder, s);
@@ -45,51 +29,7 @@
      }
  
      public List<TextureAtlasSprite> getStichSlots()
-     {
--        List<Stitcher.Slot> list = Lists.newArrayList();
-+        List<Stitcher.Slot> list = Lists.<Stitcher.Slot>newArrayList();
- 
-         for (Stitcher.Slot stitcher$slot : this.stitchSlots)
-         {
-             stitcher$slot.getAllStitchSlots(list);
-         }
- 
--        List<TextureAtlasSprite> list1 = Lists.newArrayList();
-+        List<TextureAtlasSprite> list1 = Lists.<TextureAtlasSprite>newArrayList();
- 
-         for (Stitcher.Slot stitcher$slot1 : list)
-         {
-             Stitcher.Holder stitcher$holder = stitcher$slot1.getStitchHolder();
-             TextureAtlasSprite textureatlassprite = stitcher$holder.getAtlasSprite();
--            textureatlassprite.initSprite(
--                this.currentWidth, this.currentHeight, stitcher$slot1.getOriginX(), stitcher$slot1.getOriginY(), stitcher$holder.isRotated()
--            );
-+            textureatlassprite.initSprite(this.currentWidth, this.currentHeight, stitcher$slot1.getOriginX(), stitcher$slot1.getOriginY(), stitcher$holder.isRotated());
-             list1.add(textureatlassprite);
-         }
- 
-@@ -109,9 +108,9 @@
-         TextureAtlasSprite textureatlassprite = p_94310_1_.getAtlasSprite();
-         boolean flag = textureatlassprite.getIconWidth() != textureatlassprite.getIconHeight();
- 
--        for (int i = 0; i < this.stitchSlots.size(); i++)
-+        for (int i = 0; i < this.stitchSlots.size(); ++i)
-         {
--            if (this.stitchSlots.get(i).addSlot(p_94310_1_))
-+            if (((Stitcher.Slot)this.stitchSlots.get(i)).addSlot(p_94310_1_))
-             {
-                 return true;
-             }
-@@ -120,7 +119,7 @@
-             {
-                 p_94310_1_.rotate();
- 
--                if (this.stitchSlots.get(i).addSlot(p_94310_1_))
-+                if (((Stitcher.Slot)this.stitchSlots.get(i)).addSlot(p_94310_1_))
-                 {
-                     return true;
-                 }
-@@ -155,7 +154,7 @@
+@@ -155,7 +161,7 @@
  
              if (flag3 ^ flag4)
              {
@@ -98,63 +38,3 @@
              }
              else
              {
-@@ -177,12 +176,12 @@
-                 }
- 
-                 stitcher$slot = new Stitcher.Slot(this.currentWidth, 0, p_94311_1_.getWidth(), this.currentHeight);
--                this.currentWidth = this.currentWidth + p_94311_1_.getWidth();
-+                this.currentWidth += p_94311_1_.getWidth();
-             }
-             else
-             {
-                 stitcher$slot = new Stitcher.Slot(0, this.currentHeight, this.currentWidth, p_94311_1_.getHeight());
--                this.currentHeight = this.currentHeight + p_94311_1_.getHeight();
-+                this.currentHeight += p_94311_1_.getHeight();
-             }
- 
-             stitcher$slot.addSlot(p_94311_1_);
-@@ -245,10 +244,9 @@
-                 }
-             }
- 
--            @Override
-             public String toString()
-             {
--                return "Holder{width=" + this.width + ", height=" + this.height + '}';
-+                return "Holder{width=" + this.width + ", height=" + this.height + ", name=" + this.sprite.getIconName() + '}';
-             }
- 
-             public int compareTo(Stitcher.Holder p_compareTo_1_)
-@@ -333,7 +331,7 @@
-                         {
-                             if (this.subSlots == null)
-                             {
--                                this.subSlots = Lists.newArrayListWithCapacity(1);
-+                                this.subSlots = Lists.<Stitcher.Slot>newArrayListWithCapacity(1);
-                                 this.subSlots.add(new Stitcher.Slot(this.originX, this.originY, i, j));
-                                 int k = this.width - i;
-                                 int l = this.height - j;
-@@ -397,22 +395,9 @@
-                 }
-             }
- 
--            @Override
-             public String toString()
-             {
--                return "Slot{originX="
--                       + this.originX
--                       + ", originY="
--                       + this.originY
--                       + ", width="
--                       + this.width
--                       + ", height="
--                       + this.height
--                       + ", texture="
--                       + this.holder
--                       + ", subSlots="
--                       + this.subSlots
--                       + '}';
-+                return "Slot{originX=" + this.originX + ", originY=" + this.originY + ", width=" + this.width + ", height=" + this.height + ", texture=" + this.holder + ", subSlots=" + this.subSlots + '}';
-             }
-         }
- }

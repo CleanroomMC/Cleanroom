@@ -1,126 +1,14 @@
 --- before/net/minecraft/client/gui/GuiMultiplayer.java
 +++ after/net/minecraft/client/gui/GuiMultiplayer.java
-@@ -41,9 +41,9 @@
+@@ -41,6 +41,7 @@
      public GuiMultiplayer(GuiScreen parentScreen)
      {
          this.parentScreen = parentScreen;
 +        net.minecraftforge.fml.client.FMLClientHandler.instance().setupServerList();
      }
  
--    @Override
-     public void initGui()
-     {
-         Keyboard.enableRepeatEvents(true);
-@@ -67,7 +67,7 @@
-             }
-             catch (Exception exception)
-             {
--                LOGGER.warn("Unable to start LAN server detection: {}", exception.getMessage());
-+                LOGGER.warn("Unable to start LAN server detection: {}", (Object)exception.getMessage());
-             }
- 
-             this.serverListSelector = new ServerSelectionList(this, this.mc, this.width, this.height, 32, this.height - 64, 36);
-@@ -77,7 +77,6 @@
-         this.createButtons();
-     }
- 
--    @Override
-     public void handleMouseInput() throws IOException
-     {
-         super.handleMouseInput();
-@@ -86,15 +85,9 @@
- 
-     public void createButtons()
-     {
--        this.btnEditServer = this.addButton(
--                                  new GuiButton(7, this.width / 2 - 154, this.height - 28, 70, 20, I18n.format("selectServer.edit"))
--                              );
--        this.btnDeleteServer = this.addButton(
--                                  new GuiButton(2, this.width / 2 - 74, this.height - 28, 70, 20, I18n.format("selectServer.delete"))
--                              );
--        this.btnSelectServer = this.addButton(
--                                  new GuiButton(1, this.width / 2 - 154, this.height - 52, 100, 20, I18n.format("selectServer.select"))
--                              );
-+        this.btnEditServer = this.addButton(new GuiButton(7, this.width / 2 - 154, this.height - 28, 70, 20, I18n.format("selectServer.edit")));
-+        this.btnDeleteServer = this.addButton(new GuiButton(2, this.width / 2 - 74, this.height - 28, 70, 20, I18n.format("selectServer.delete")));
-+        this.btnSelectServer = this.addButton(new GuiButton(1, this.width / 2 - 154, this.height - 52, 100, 20, I18n.format("selectServer.select")));
-         this.buttonList.add(new GuiButton(4, this.width / 2 - 50, this.height - 52, 100, 20, I18n.format("selectServer.direct")));
-         this.buttonList.add(new GuiButton(3, this.width / 2 + 4 + 50, this.height - 52, 100, 20, I18n.format("selectServer.add")));
-         this.buttonList.add(new GuiButton(8, this.width / 2 + 4, this.height - 28, 70, 20, I18n.format("selectServer.refresh")));
-@@ -102,7 +95,6 @@
-         this.selectServer(this.serverListSelector.getSelected());
-     }
- 
--    @Override
-     public void updateScreen()
-     {
-         super.updateScreen();
-@@ -117,7 +109,6 @@
-         this.oldServerPinger.pingPendingNetworks();
-     }
- 
--    @Override
-     public void onGuiClosed()
-     {
-         Keyboard.enableRepeatEvents(false);
-@@ -131,14 +122,11 @@
-         this.oldServerPinger.clearPendingNetworks();
-     }
- 
--    @Override
-     protected void actionPerformed(GuiButton button) throws IOException
-     {
-         if (button.enabled)
-         {
--            GuiListExtended.IGuiListEntry guilistextended$iguilistentry = this.serverListSelector.getSelected() < 0
--                    ? null
--                    : this.serverListSelector.getListEntry(this.serverListSelector.getSelected());
-+            GuiListExtended.IGuiListEntry guilistextended$iguilistentry = this.serverListSelector.getSelected() < 0 ? null : this.serverListSelector.getListEntry(this.serverListSelector.getSelected());
- 
-             if (button.id == 2 && guilistextended$iguilistentry instanceof ServerListEntryNormal)
-             {
-@@ -195,12 +183,9 @@
-         this.mc.displayGuiScreen(new GuiMultiplayer(this.parentScreen));
-     }
- 
--    @Override
-     public void confirmClicked(boolean result, int id)
-     {
--        GuiListExtended.IGuiListEntry guilistextended$iguilistentry = this.serverListSelector.getSelected() < 0
--                ? null
--                : this.serverListSelector.getListEntry(this.serverListSelector.getSelected());
-+        GuiListExtended.IGuiListEntry guilistextended$iguilistentry = this.serverListSelector.getSelected() < 0 ? null : this.serverListSelector.getListEntry(this.serverListSelector.getSelected());
- 
-         if (this.deletingServer)
-         {
-@@ -261,7 +246,6 @@
-         }
-     }
- 
--    @Override
-     protected void keyTyped(char typedChar, int keyCode) throws IOException
-     {
-         int i = this.serverListSelector.getSelected();
-@@ -361,7 +345,6 @@
-         }
-     }
- 
--    @Override
-     public void drawScreen(int mouseX, int mouseY, float partialTicks)
-     {
-         this.hoveringText = null;
-@@ -378,9 +361,7 @@
- 
-     public void connectToSelected()
-     {
--        GuiListExtended.IGuiListEntry guilistextended$iguilistentry = this.serverListSelector.getSelected() < 0
--                ? null
--                : this.serverListSelector.getListEntry(this.serverListSelector.getSelected());
-+        GuiListExtended.IGuiListEntry guilistextended$iguilistentry = this.serverListSelector.getSelected() < 0 ? null : this.serverListSelector.getListEntry(this.serverListSelector.getSelected());
- 
-         if (guilistextended$iguilistentry instanceof ServerListEntryNormal)
-         {
-@@ -395,7 +376,7 @@
+     @Override
+@@ -395,7 +396,7 @@
  
      private void connectToServer(ServerData server)
      {
@@ -129,18 +17,3 @@
      }
  
      public void selectServer(int index)
-@@ -428,14 +409,12 @@
-         this.hoveringText = p_146793_1_;
-     }
- 
--    @Override
-     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-     {
-         super.mouseClicked(mouseX, mouseY, mouseButton);
-         this.serverListSelector.mouseClicked(mouseX, mouseY, mouseButton);
-     }
- 
--    @Override
-     protected void mouseReleased(int mouseX, int mouseY, int state)
-     {
-         super.mouseReleased(mouseX, mouseY, state);

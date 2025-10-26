@@ -1,84 +1,17 @@
 --- before/net/minecraft/client/renderer/tileentity/TileEntityPistonRenderer.java
 +++ after/net/minecraft/client/renderer/tileentity/TileEntityPistonRenderer.java
-@@ -23,17 +23,16 @@
+@@ -23,12 +23,13 @@
  @SideOnly(Side.CLIENT)
  public class TileEntityPistonRenderer extends TileEntitySpecialRenderer<TileEntityPiston>
  {
 -    private final BlockRendererDispatcher blockRenderer = Minecraft.getMinecraft().getBlockRendererDispatcher();
 +    private BlockRendererDispatcher blockRenderer;
  
--    public void render(
--        TileEntityPiston te, double x, double y, double z, float partialTicks, int destroyStage, float alpha
--    )
-+    public void render(TileEntityPiston te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
+     public void render(
+         TileEntityPiston te, double x, double y, double z, float partialTicks, int destroyStage, float alpha
+     )
      {
 +        if (blockRenderer == null) blockRenderer = Minecraft.getMinecraft().getBlockRendererDispatcher(); //Forge: Delay this from constructor to allow us to change it later
          BlockPos blockpos = te.getPos();
          IBlockState iblockstate = te.getPistonState();
          Block block = iblockstate.getBlock();
- 
--        if (iblockstate.getMaterial() != Material.AIR && !(te.getProgress(partialTicks) >= 1.0F))
-+        if (iblockstate.getMaterial() != Material.AIR && te.getProgress(partialTicks) < 1.0F)
-         {
-             Tessellator tessellator = Tessellator.getInstance();
-             BufferBuilder bufferbuilder = tessellator.getBuffer();
-@@ -53,33 +52,22 @@
-             }
- 
-             bufferbuilder.begin(7, DefaultVertexFormats.BLOCK);
--            bufferbuilder.setTranslation(
--                x - (double)blockpos.getX() + (double)te.getOffsetX(partialTicks),
--                y - (double)blockpos.getY() + (double)te.getOffsetY(partialTicks),
--                z - (double)blockpos.getZ() + (double)te.getOffsetZ(partialTicks)
--            );
-+            bufferbuilder.setTranslation(x - (double)blockpos.getX() + (double)te.getOffsetX(partialTicks), y - (double)blockpos.getY() + (double)te.getOffsetY(partialTicks), z - (double)blockpos.getZ() + (double)te.getOffsetZ(partialTicks));
-             World world = this.getWorld();
- 
-             if (block == Blocks.PISTON_HEAD && te.getProgress(partialTicks) <= 0.25F)
-             {
--                iblockstate = iblockstate.withProperty(BlockPistonExtension.SHORT, true);
-+                iblockstate = iblockstate.withProperty(BlockPistonExtension.SHORT, Boolean.valueOf(true));
-                 this.renderStateModel(blockpos, iblockstate, bufferbuilder, world, true);
-             }
-             else if (te.shouldPistonHeadBeRendered() && !te.isExtending())
-             {
--                BlockPistonExtension.EnumPistonType blockpistonextension$enumpistontype = block == Blocks.STICKY_PISTON
--                        ? BlockPistonExtension.EnumPistonType.STICKY
--                        : BlockPistonExtension.EnumPistonType.DEFAULT;
--                IBlockState iblockstate1 = Blocks.PISTON_HEAD
--                                           .getDefaultState()
--                                           .withProperty(BlockPistonExtension.TYPE, blockpistonextension$enumpistontype)
--                                           .withProperty(BlockPistonExtension.FACING, iblockstate.getValue(BlockPistonBase.FACING));
--                iblockstate1 = iblockstate1.withProperty(BlockPistonExtension.SHORT, te.getProgress(partialTicks) >= 0.5F);
-+                BlockPistonExtension.EnumPistonType blockpistonextension$enumpistontype = block == Blocks.STICKY_PISTON ? BlockPistonExtension.EnumPistonType.STICKY : BlockPistonExtension.EnumPistonType.DEFAULT;
-+                IBlockState iblockstate1 = Blocks.PISTON_HEAD.getDefaultState().withProperty(BlockPistonExtension.TYPE, blockpistonextension$enumpistontype).withProperty(BlockPistonExtension.FACING, iblockstate.getValue(BlockPistonBase.FACING));
-+                iblockstate1 = iblockstate1.withProperty(BlockPistonExtension.SHORT, Boolean.valueOf(te.getProgress(partialTicks) >= 0.5F));
-                 this.renderStateModel(blockpos, iblockstate1, bufferbuilder, world, true);
--                bufferbuilder.setTranslation(
--                    x - (double)blockpos.getX(), y - (double)blockpos.getY(), z - (double)blockpos.getZ()
--                );
--                iblockstate = iblockstate.withProperty(BlockPistonBase.EXTENDED, true);
-+                bufferbuilder.setTranslation(x - (double)blockpos.getX(), y - (double)blockpos.getY(), z - (double)blockpos.getZ());
-+                iblockstate = iblockstate.withProperty(BlockPistonBase.EXTENDED, Boolean.valueOf(true));
-                 this.renderStateModel(blockpos, iblockstate, bufferbuilder, world, true);
-             }
-             else
-@@ -87,7 +75,7 @@
-                 this.renderStateModel(blockpos, iblockstate, bufferbuilder, world, false);
-             }
- 
--            bufferbuilder.setTranslation(0.0, 0.0, 0.0);
-+            bufferbuilder.setTranslation(0.0D, 0.0D, 0.0D);
-             tessellator.draw();
-             RenderHelper.enableStandardItemLighting();
-         }
-@@ -95,8 +83,6 @@
- 
-     private boolean renderStateModel(BlockPos pos, IBlockState state, BufferBuilder buffer, World p_188186_4_, boolean checkSides)
-     {
--        return this.blockRenderer
--               .getBlockModelRenderer()
--               .renderModel(p_188186_4_, this.blockRenderer.getModelForState(state), state, pos, buffer, checkSides);
-+        return this.blockRenderer.getBlockModelRenderer().renderModel(p_188186_4_, this.blockRenderer.getModelForState(state), state, pos, buffer, checkSides);
-     }
- }

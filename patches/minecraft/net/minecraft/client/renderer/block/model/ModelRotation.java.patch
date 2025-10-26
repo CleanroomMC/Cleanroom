@@ -9,69 +9,8 @@
  {
      X0_Y0(0, 0),
      X0_Y90(0, 90),
-@@ -29,7 +29,7 @@
-     X270_Y180(270, 180),
-     X270_Y270(270, 270);
- 
--    private static final Map<Integer, ModelRotation> MAP_ROTATIONS = Maps.newHashMap();
-+    private static final Map<Integer, ModelRotation> MAP_ROTATIONS = Maps.<Integer, ModelRotation>newHashMap();
-     private final int combinedXY;
-     private final Matrix4f matrix;
-     private final int quartersX;
-@@ -46,11 +46,11 @@
-         this.matrix = new Matrix4f();
-         Matrix4f matrix4f = new Matrix4f();
-         matrix4f.setIdentity();
--        Matrix4f.rotate((float)(-x) * (float)(Math.PI / 180.0), new Vector3f(1.0F, 0.0F, 0.0F), matrix4f, matrix4f);
-+        Matrix4f.rotate((float)(-x) * 0.017453292F, new Vector3f(1.0F, 0.0F, 0.0F), matrix4f, matrix4f);
-         this.quartersX = MathHelper.abs(x / 90);
-         Matrix4f matrix4f1 = new Matrix4f();
-         matrix4f1.setIdentity();
--        Matrix4f.rotate((float)(-y) * (float)(Math.PI / 180.0), new Vector3f(0.0F, 1.0F, 0.0F), matrix4f1, matrix4f1);
-+        Matrix4f.rotate((float)(-y) * 0.017453292F, new Vector3f(0.0F, 1.0F, 0.0F), matrix4f1, matrix4f1);
-         this.quartersY = MathHelper.abs(y / 90);
-         Matrix4f.mul(matrix4f1, matrix4f, this.matrix);
-     }
-@@ -64,14 +64,14 @@
-     {
-         EnumFacing enumfacing = facing;
- 
--        for (int i = 0; i < this.quartersX; i++)
-+        for (int i = 0; i < this.quartersX; ++i)
-         {
-             enumfacing = enumfacing.rotateAround(EnumFacing.Axis.X);
-         }
- 
-         if (enumfacing.getAxis() != EnumFacing.Axis.Y)
-         {
--            for (int j = 0; j < this.quartersY; j++)
-+            for (int j = 0; j < this.quartersY; ++j)
-             {
-                 enumfacing = enumfacing.rotateAround(EnumFacing.Axis.Y);
-             }
-@@ -91,7 +91,7 @@
- 
-         EnumFacing enumfacing = facing;
- 
--        for (int j = 0; j < this.quartersX; j++)
-+        for (int j = 0; j < this.quartersX; ++j)
-         {
-             enumfacing = enumfacing.rotateAround(EnumFacing.Axis.X);
-         }
-@@ -106,14 +106,19 @@
- 
-     public static ModelRotation getModelRotation(int x, int y)
-     {
--        return MAP_ROTATIONS.get(combineXY(MathHelper.normalizeAngle(x, 360), MathHelper.normalizeAngle(y, 360)));
-+        return MAP_ROTATIONS.get(Integer.valueOf(combineXY(MathHelper.normalizeAngle(x, 360), MathHelper.normalizeAngle(y, 360))));
-     }
- 
-     static
-     {
-         for (ModelRotation modelrotation : values())
-         {
--            MAP_ROTATIONS.put(modelrotation.combinedXY, modelrotation);
-+            MAP_ROTATIONS.put(Integer.valueOf(modelrotation.combinedXY), modelrotation);
+@@ -116,4 +116,9 @@
+             MAP_ROTATIONS.put(modelrotation.combinedXY, modelrotation);
          }
      }
 +

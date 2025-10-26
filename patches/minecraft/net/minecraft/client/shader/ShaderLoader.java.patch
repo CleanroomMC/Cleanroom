@@ -1,37 +1,6 @@
 --- before/net/minecraft/client/shader/ShaderLoader.java
 +++ after/net/minecraft/client/shader/ShaderLoader.java
-@@ -2,8 +2,8 @@
- 
- import com.google.common.collect.Maps;
- import java.io.BufferedInputStream;
-+import java.io.Closeable;
- import java.io.IOException;
--import java.nio.Buffer;
- import java.nio.ByteBuffer;
- import java.util.Map;
- import net.minecraft.client.renderer.OpenGlHelper;
-@@ -34,13 +34,13 @@
- 
-     public void attachShader(ShaderManager manager)
-     {
--        this.shaderAttachCount++;
-+        ++this.shaderAttachCount;
-         OpenGlHelper.glAttachShader(manager.getProgram(), this.shader);
-     }
- 
-     public void deleteShader(ShaderManager manager)
-     {
--        this.shaderAttachCount--;
-+        --this.shaderAttachCount;
- 
-         if (this.shaderAttachCount <= 0)
-         {
-@@ -56,11 +56,12 @@
- 
-     public static ShaderLoader loadShader(IResourceManager resourceManager, ShaderLoader.ShaderType type, String filename) throws IOException
-     {
--        ShaderLoader shaderloader = type.getLoadedShaders().get(filename);
-+        ShaderLoader shaderloader = (ShaderLoader)type.getLoadedShaders().get(filename);
+@@ -60,7 +60,8 @@
  
          if (shaderloader == null)
          {
@@ -41,30 +10,3 @@
              IResource iresource = resourceManager.getResource(resourcelocation);
  
              try
-@@ -68,7 +69,7 @@
-                 byte[] abyte = IOUtils.toByteArray(new BufferedInputStream(iresource.getInputStream()));
-                 ByteBuffer bytebuffer = BufferUtils.createByteBuffer(abyte.length);
-                 bytebuffer.put(abyte);
--                ((Buffer)bytebuffer).position(0);
-+                bytebuffer.position(0);
-                 int i = OpenGlHelper.glCreateShader(type.getShaderMode());
-                 OpenGlHelper.glShaderSource(i, bytebuffer);
-                 OpenGlHelper.glCompileShader(i);
-@@ -86,7 +87,7 @@
-             }
-             finally
-             {
--                IOUtils.closeQuietly(iresource);
-+                IOUtils.closeQuietly((Closeable)iresource);
-             }
-         }
- 
-@@ -102,7 +103,7 @@
-         private final String shaderName;
-         private final String shaderExtension;
-         private final int shaderMode;
--        private final Map<String, ShaderLoader> loadedShaders = Maps.newHashMap();
-+        private final Map<String, ShaderLoader> loadedShaders = Maps.<String, ShaderLoader>newHashMap();
- 
-         private ShaderType(String shaderNameIn, String shaderExtensionIn, int shaderModeIn)
-         {

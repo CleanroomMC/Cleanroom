@@ -8,12 +8,3 @@
          switch (entity.getProfession())
          {
              case 0:
-@@ -47,7 +48,7 @@
-     {
-         if (entityLiving.isConverting())
-         {
--            rotationYaw += (float)(Math.cos((double)entityLiving.ticksExisted * 3.25) * Math.PI * 0.25);
-+            rotationYaw += (float)(Math.cos((double)entityLiving.ticksExisted * 3.25D) * Math.PI * 0.25D);
-         }
- 
-         super.applyRotations(entityLiving, ageInTicks, rotationYaw, partialTicks);
