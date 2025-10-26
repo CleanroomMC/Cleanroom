@@ -13,7 +13,7 @@ public final class MixinContainer extends DummyModContainer{
         meta.modId = "mixinbooter";
         meta.name = "MixinBooter";
         meta.description = "A Mixin library and loader.";
-        meta.version = ForgeEarlyConfig.CUSTOM_BUILT_IN_MOD_VERSION ? ForgeEarlyConfig.MIXIN_BOOTER_VERSION : "10.6";
+        meta.version = ForgeEarlyConfig.CUSTOM_BUILT_IN_MOD_VERSION ? ForgeEarlyConfig.MIXIN_BOOTER_VERSION : "10.7";
         meta.authorList.add("Rongmario");
     }
 
