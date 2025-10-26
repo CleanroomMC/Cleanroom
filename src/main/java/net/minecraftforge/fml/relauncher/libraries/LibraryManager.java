@@ -440,7 +440,7 @@ public class LibraryManager
     {
         List<File> list = new ArrayList<>();
         
-        String extrapath =System.getProperty("crl.dev.extrapath"); 
+        String extrapath = System.getProperty("crl.dev.extrapath");
         if (extrapath != null) 
         {
             for (String mod : extrapath.split(File.pathSeparator))

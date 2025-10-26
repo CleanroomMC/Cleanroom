@@ -332,6 +332,12 @@ public class CoreModManager {
         {
             if (coreMod.isDirectory())
             {
+                FMLLog.log.debug("Coremod candidacy {} is a directory, considering as folder mod", coreMod);
+                try {
+                    Launch.classLoader.addURL(coreMod.toURI().toURL());
+                } catch (MalformedURLException e) {
+                    FMLLog.log.error("Coremod candidacy {} has a malformed URL", coreMod);
+                }
                 continue;
             }
             FMLLog.log.debug("Examining for coremod candidacy {}", coreMod.getName());
