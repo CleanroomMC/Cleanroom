@@ -5,9 +5,10 @@ import com.google.common.base.Preconditions;
 
 public final class MainFramebuffer {
     public final Framebuffer framebuffer;
-    // between (0.0, 1.0] for upscaling purposes
+    // between (0.0, 2.0] for upscaling & downscaling purposes
     public final float defaultRatio;
     private float ratio;
+    private float targetRatio = 0;
     private boolean scheduledToResize = false;
 
     public boolean isScheduledToResize() {
@@ -16,21 +17,27 @@ public final class MainFramebuffer {
 
     public void finishResize() {
         scheduledToResize = false;
+        ratio = targetRatio;
+        targetRatio = 0;
     }
 
     public float getRatio() {
         return ratio;
     }
 
-    public void setRatio(float ratio) {
-        Preconditions.checkArgument(ratio > 0, "Ratio must be greater than zero.");
-        Preconditions.checkArgument(ratio <= 1, "Ratio must be smaller than or equal to one.");
+    public float getTargetRatio() {
+        return targetRatio;
+    }
 
+    public void setTargetRatio(float ratio) {
         if (ratio == this.ratio) {
             return;
         }
 
-        this.ratio = ratio;
+        Preconditions.checkArgument(ratio > 0, "Ratio must be greater than zero.");
+        Preconditions.checkArgument(ratio <= 2, "Ratio must be smaller than or equal to two.");
+
+        targetRatio = ratio;
         scheduledToResize = true;
     }
 

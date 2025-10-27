@@ -5,9 +5,10 @@ import com.cleanroommc.kirino.engine.render.camera.MinecraftCamera;
 import com.cleanroommc.kirino.engine.render.gizmos.GizmosManager;
 import com.cleanroommc.kirino.engine.render.pipeline.*;
 import com.cleanroommc.kirino.engine.render.pipeline.draw.IndirectDrawBufferGenerator;
+import com.cleanroommc.kirino.engine.render.pipeline.pass.subpasses.DownscalingPass;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.subpasses.GizmosPass;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.RenderPass;
-import com.cleanroommc.kirino.engine.render.pipeline.pass.subpasses.WhateverPass;
+import com.cleanroommc.kirino.engine.render.pipeline.pass.subpasses.UpscalingPass;
 import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
 import com.cleanroommc.kirino.engine.render.scene.MinecraftScene;
 import com.cleanroommc.kirino.engine.render.shader.ShaderRegistry;
@@ -44,6 +45,7 @@ public class RenderingCoordinator {
 
     private ResolutionContainer resolution;
     private MainFramebuffer mainFramebuffer;
+    private PingPongFramebuffer postProcessingFramebuffer;
     private final AtomicReference<IndirectDrawBufferGenerator> idbGenerator;
 
     // --------------------
@@ -64,6 +66,9 @@ public class RenderingCoordinator {
 
     private final RenderPass chunkCpuPass;
     private final RenderPass gizmosPass;
+    private final RenderPass upscalingPass;
+    private final RenderPass downscalingPass;
+    private final RenderPass postProcessingPass;
 
     @SuppressWarnings({"DataFlowIssue", "unchecked"})
     public RenderingCoordinator(EventBus eventBus, Logger logger, CleanECSRuntime ecsRuntime) {
@@ -102,17 +107,31 @@ public class RenderingCoordinator {
         ShaderProgram shaderProgram = shaderRegistry.newShaderProgram("forge:shaders/gizmos.vert", "forge:shaders/gizmos.frag");
 
         Renderer renderer = new Renderer();
-        chunkCpuPass = new RenderPass("Chunk CPU Pass", graphicResourceManager, idbGenerator);
-        chunkCpuPass.addSubpass("Opaque Pass", new WhateverPass(renderer, PSOPresets.createOpaquePSO(shaderProgram), null));
-        chunkCpuPass.addSubpass("Cutout Pass", new WhateverPass(renderer, PSOPresets.createCutoutPSO(shaderProgram), null));
-        chunkCpuPass.addSubpass("Transparent Pass", new WhateverPass(renderer, PSOPresets.createTransparentPSO(shaderProgram), null));
+        chunkCpuPass = new RenderPass("Chunk CPU", graphicResourceManager, idbGenerator);
+//        chunkCpuPass.addSubpass("Opaque Pass", new WhateverPass(renderer, PSOPresets.createOpaquePSO(shaderProgram), null));
+//        chunkCpuPass.addSubpass("Cutout Pass", new WhateverPass(renderer, PSOPresets.createCutoutPSO(shaderProgram), null));
+//        chunkCpuPass.addSubpass("Transparent Pass", new WhateverPass(renderer, PSOPresets.createTransparentPSO(shaderProgram), null));
 
-        gizmosPass = new RenderPass("Gizmos Pass", graphicResourceManager, idbGenerator);
+        gizmosPass = new RenderPass("Gizmos", graphicResourceManager, idbGenerator);
         gizmosPass.addSubpass("Gizmos Pass", new GizmosPass(
                 renderer,
                 PSOPresets.createGizmosPSO(shaderProgram),
                 null,
                 gizmosManager));
+
+        upscalingPass = new RenderPass("Upscaling", graphicResourceManager, idbGenerator);
+        upscalingPass.addSubpass("Upscaling Pass", new UpscalingPass(
+                renderer,
+                PSOPresets.createGizmosPSO(shaderProgram),
+                null));
+
+        downscalingPass = new RenderPass("Downscaling", graphicResourceManager, idbGenerator);
+        downscalingPass.addSubpass("Downscaling Pass", new DownscalingPass(
+                renderer,
+                PSOPresets.createGizmosPSO(shaderProgram),
+                null));
+
+        postProcessingPass = new RenderPass("Post-Processing", graphicResourceManager, idbGenerator);
     }
 
     private boolean deferredInit = true;
@@ -122,41 +141,120 @@ public class RenderingCoordinator {
      */
     private void deferredInit() {
         mainFramebuffer = new MainFramebuffer(MINECRAFT.displayWidth, MINECRAFT.displayHeight, 1f);
+        postProcessingFramebuffer = new PingPongFramebuffer(mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height());
+
         resolution = new ResolutionContainer((width, height) -> {
-            // this framebuffer is guaranteed to be bound when the callback runs
+
+            // display resized callback
             mainFramebuffer.framebuffer.resize(
                     (int) (width * mainFramebuffer.getRatio()),
                     (int) (height * mainFramebuffer.getRatio()));
+            postProcessingFramebuffer.resize(mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height());
 
+            logger.info("Display size updated. Current display width & height: " + width + ", " + height);
             logger.info("Main framebuffer resized: width=" + mainFramebuffer.framebuffer.width() + ", height=" + mainFramebuffer.framebuffer.height() + ", ratio=" + mainFramebuffer.getRatio());
-            logger.info("Current display width & height: " + width + ", " + height);
+            logger.info("Post-processing framebuffer resized: width=" + postProcessingFramebuffer.width() + ", height=" + postProcessingFramebuffer.height());
+
+        }, (width, height) -> {
+
+            // ratio changed callback
+            mainFramebuffer.framebuffer.resize(
+                    (int) (width * mainFramebuffer.getTargetRatio()),
+                    (int) (height * mainFramebuffer.getTargetRatio()));
+            postProcessingFramebuffer.resize(mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height());
+
+            logger.info("Main framebuffer ratio changed: " + mainFramebuffer.getRatio() + " -> " + mainFramebuffer.getTargetRatio());
+            logger.info("Main framebuffer resized: width=" + mainFramebuffer.framebuffer.width() + ", height=" + mainFramebuffer.framebuffer.height() + ", ratio=" + mainFramebuffer.getRatio());
+            logger.info("Post-processing framebuffer resized: width=" + postProcessingFramebuffer.width() + ", height=" + postProcessingFramebuffer.height());
+
         });
 
         mainFramebuffer.framebuffer.bind();
 
-        Texture2DView color0Tex = new Texture2DView(new GLTexture(mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height()));
-        color0Tex.bind();
-        color0Tex.alloc(null, TextureFormat.RGBA8_UNORM);
-        color0Tex.set(FilterMode.NEAREST, FilterMode.NEAREST, WrapMode.CLAMP, WrapMode.CLAMP);
-        color0Tex.bind(0);
-        mainFramebuffer.framebuffer.attach(new ColorAttachment(0, color0Tex));
+        // main framebuffer initialization
+        {
+            Texture2DView color0Tex = new Texture2DView(new GLTexture(mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height()));
+            color0Tex.bind();
+            color0Tex.alloc(null, TextureFormat.RGBA8_UNORM);
+            color0Tex.set(FilterMode.NEAREST, FilterMode.NEAREST, WrapMode.CLAMP, WrapMode.CLAMP);
+            color0Tex.bind(0);
+            mainFramebuffer.framebuffer.attach(new ColorAttachment(0, color0Tex));
 
-        Texture2DView depthTex = new Texture2DView(new GLTexture(mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height()));
-        depthTex.bind();
-        depthTex.alloc(null, TextureFormat.D24S8);
-        depthTex.set(FilterMode.NEAREST, FilterMode.NEAREST, WrapMode.CLAMP, WrapMode.CLAMP);
-        depthTex.bind(0);
-        mainFramebuffer.framebuffer.attach(new DepthStencilAttachment(depthTex));
+            Texture2DView depthTex = new Texture2DView(new GLTexture(mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height()));
+            depthTex.bind();
+            depthTex.alloc(null, TextureFormat.D24S8);
+            depthTex.set(FilterMode.NEAREST, FilterMode.NEAREST, WrapMode.CLAMP, WrapMode.CLAMP);
+            depthTex.bind(0);
+            mainFramebuffer.framebuffer.attach(new DepthStencilAttachment(depthTex));
 
-        mainFramebuffer.framebuffer.check();
+            mainFramebuffer.framebuffer.check();
 
-        GL11.glViewport(0, 0, mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height());
-        GL11.glClearColor(0, 0, 0, 0);
-        GL11.glClearDepth(1);
-        GL11.glClearStencil(0);
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
+            GL11.glViewport(0, 0, mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height());
+            GL11.glClearColor(0, 0, 0, 0);
+            GL11.glClearDepth(1);
+            GL11.glClearStencil(0);
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
 
-        logger.info("Main framebuffer created. ID: " + mainFramebuffer.framebuffer.fboID);
+            logger.info("Main framebuffer created. ID: " + mainFramebuffer.framebuffer.fboID);
+        }
+
+        postProcessingFramebuffer.framebufferA.bind();
+
+        // post-processing framebuffer A initialization
+        {
+            Texture2DView color0Tex = new Texture2DView(new GLTexture(postProcessingFramebuffer.width(), postProcessingFramebuffer.height()));
+            color0Tex.bind();
+            color0Tex.alloc(null, TextureFormat.RGBA8_UNORM);
+            color0Tex.set(FilterMode.NEAREST, FilterMode.NEAREST, WrapMode.CLAMP, WrapMode.CLAMP);
+            color0Tex.bind(0);
+            postProcessingFramebuffer.framebufferA.attach(new ColorAttachment(0, color0Tex));
+
+            Texture2DView depthTex = new Texture2DView(new GLTexture(postProcessingFramebuffer.width(), postProcessingFramebuffer.height()));
+            depthTex.bind();
+            depthTex.alloc(null, TextureFormat.D24S8);
+            depthTex.set(FilterMode.NEAREST, FilterMode.NEAREST, WrapMode.CLAMP, WrapMode.CLAMP);
+            depthTex.bind(0);
+            postProcessingFramebuffer.framebufferA.attach(new DepthStencilAttachment(depthTex));
+
+            postProcessingFramebuffer.framebufferA.check();
+
+            GL11.glViewport(0, 0, postProcessingFramebuffer.width(), postProcessingFramebuffer.height());
+            GL11.glClearColor(0, 0, 0, 0);
+            GL11.glClearDepth(1);
+            GL11.glClearStencil(0);
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
+
+            logger.info("Post-processing framebuffer A created. ID: " + postProcessingFramebuffer.framebufferA.fboID);
+        }
+
+        postProcessingFramebuffer.framebufferB.bind();
+
+        // post-processing framebuffer B initialization
+        {
+            Texture2DView color0Tex = new Texture2DView(new GLTexture(postProcessingFramebuffer.width(), postProcessingFramebuffer.height()));
+            color0Tex.bind();
+            color0Tex.alloc(null, TextureFormat.RGBA8_UNORM);
+            color0Tex.set(FilterMode.NEAREST, FilterMode.NEAREST, WrapMode.CLAMP, WrapMode.CLAMP);
+            color0Tex.bind(0);
+            postProcessingFramebuffer.framebufferB.attach(new ColorAttachment(0, color0Tex));
+
+            Texture2DView depthTex = new Texture2DView(new GLTexture(postProcessingFramebuffer.width(), postProcessingFramebuffer.height()));
+            depthTex.bind();
+            depthTex.alloc(null, TextureFormat.D24S8);
+            depthTex.set(FilterMode.NEAREST, FilterMode.NEAREST, WrapMode.CLAMP, WrapMode.CLAMP);
+            depthTex.bind(0);
+            postProcessingFramebuffer.framebufferB.attach(new DepthStencilAttachment(depthTex));
+
+            postProcessingFramebuffer.framebufferB.check();
+
+            GL11.glViewport(0, 0, postProcessingFramebuffer.width(), postProcessingFramebuffer.height());
+            GL11.glClearColor(0, 0, 0, 0);
+            GL11.glClearDepth(1);
+            GL11.glClearStencil(0);
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
+
+            logger.info("Post-processing framebuffer B created. ID: " + postProcessingFramebuffer.framebufferB.fboID);
+        }
 
         Framebuffer.bind(0);
 
@@ -189,11 +287,11 @@ public class RenderingCoordinator {
         }
 
         mainFramebuffer.framebuffer.bind();
-        resolution.update();
         if (mainFramebuffer.isScheduledToResize()) {
             resolution.synchronize();
             mainFramebuffer.finishResize();
         }
+        resolution.update();
         GL11.glViewport(0, 0, mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height());
     }
 
@@ -201,15 +299,41 @@ public class RenderingCoordinator {
         // upscale framebuffer
         // post process
 
-        // blit result to minecraft framebuffer and bind minecraft framebuffer
-        GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, mainFramebuffer.framebuffer.fboID);
-        GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, MINECRAFT.getFramebuffer().framebufferObject);
-        GL11.glReadBuffer(GL30.GL_COLOR_ATTACHMENT0);
-        GL11.glDrawBuffer(GL30.GL_COLOR_ATTACHMENT0);
-        GL30.glBlitFramebuffer(
-                0, 0, mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height(),
-                0, 0, MINECRAFT.getFramebuffer().framebufferWidth, MINECRAFT.getFramebuffer().framebufferHeight,
-                GL11.GL_COLOR_BUFFER_BIT, GL11.GL_LINEAR);
+        // blit result to minecraft framebuffer / post-processing framebuffer
+        if (mainFramebuffer.getRatio() == 1f) {
+            // simply blit
+            if (mainFramebuffer.framebuffer.width() != MINECRAFT.getFramebuffer().framebufferTextureWidth ||
+                    mainFramebuffer.framebuffer.height() != MINECRAFT.getFramebuffer().framebufferTextureHeight) {
+                // old blit method
+                GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, mainFramebuffer.framebuffer.fboID);
+                GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, MINECRAFT.getFramebuffer().framebufferObject);
+                GL11.glReadBuffer(GL30.GL_COLOR_ATTACHMENT0);
+                GL11.glDrawBuffer(GL30.GL_COLOR_ATTACHMENT0);
+                GL30.glBlitFramebuffer(
+                        0, 0, mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height(),
+                        0, 0, MINECRAFT.getFramebuffer().framebufferTextureWidth, MINECRAFT.getFramebuffer().framebufferTextureHeight,
+                        GL11.GL_COLOR_BUFFER_BIT, GL11.GL_LINEAR);
+            } else {
+                // straight up copy
+                ColorAttachment colorAttachment = ((ColorAttachment) mainFramebuffer.framebuffer.getColorAttachment(0));
+                GL43.glCopyImageSubData(
+                        colorAttachment.texture2D.texture.textureID,
+                        colorAttachment.texture2D.target(),
+                        0, 0, 0, 0,
+                        MINECRAFT.getFramebuffer().framebufferTexture,
+                        GL11.GL_TEXTURE_2D,
+                        0, 0, 0, 0,
+                        colorAttachment.texture2D.texture.width(),
+                        colorAttachment.texture2D.texture.height(),
+                        1);
+            }
+        } else if (mainFramebuffer.getRatio() < 1f) {
+            // upscale
+
+        } else if (mainFramebuffer.getRatio() > 1f) {
+            // downscale
+
+        }
 
         // reset everything to prevent any unexpected behavior
         Framebuffer.bind(MINECRAFT.getFramebuffer().framebufferObject);

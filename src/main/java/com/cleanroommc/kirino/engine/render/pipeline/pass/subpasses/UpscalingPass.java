@@ -1,54 +1,39 @@
 package com.cleanroommc.kirino.engine.render.pipeline.pass.subpasses;
 
 import com.cleanroommc.kirino.engine.render.camera.ICamera;
-import com.cleanroommc.kirino.engine.render.gizmos.GizmosManager;
 import com.cleanroommc.kirino.engine.render.pipeline.Renderer;
 import com.cleanroommc.kirino.engine.render.pipeline.draw.DrawQueue;
-import com.cleanroommc.kirino.engine.render.pipeline.draw.cmd.LowLevelDC;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.PassHint;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.Subpass;
 import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
 import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;
-import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL20C;
 
-public class GizmosPass extends Subpass {
-    private final GizmosManager gizmosManager;
-
+public class UpscalingPass extends Subpass {
     /**
      * @param renderer A global renderer
      * @param pso      A pipeline state object (pipeline parameters)
      * @param fbo      A nullable framebuffer (the built-in main framebuffer will be bound before any rendering so you can input <code>null</code> here)
      */
-    public GizmosPass(@NonNull Renderer renderer, @NonNull PipelineStateObject pso, @Nullable Framebuffer fbo, GizmosManager gizmosManager) {
+    public UpscalingPass(@NonNull Renderer renderer, @NonNull PipelineStateObject pso, @Nullable Framebuffer fbo) {
         super(renderer, pso, fbo);
-        this.gizmosManager = gizmosManager;
     }
 
     @Override
     protected void updateShaderProgram(ShaderProgram shaderProgram, ICamera camera) {
-        int worldOffset = GL20.glGetUniformLocation(shaderProgram.getProgramID(), "worldOffset");
-        int viewRot = GL20.glGetUniformLocation(shaderProgram.getProgramID(), "viewRot");
-        int projection = GL20.glGetUniformLocation(shaderProgram.getProgramID(), "projection");
 
-        Vector3f vec3 = camera.getWorldOffset();
-        GL20.glUniform3f(worldOffset, vec3.x, vec3.y, vec3.z);
-        GL20C.glUniformMatrix4fv(viewRot, false, camera.getViewRotationBuffer());
-        GL20C.glUniformMatrix4fv(projection, false, camera.getProjectionBuffer());
     }
 
     @Override
     protected boolean hintCompileDrawQueue() {
-        return true;
+        return false;
     }
 
     @Override
     protected boolean hintSimplifyDrawQueue() {
-        return true;
+        return false;
     }
 
     @NonNull
@@ -59,16 +44,11 @@ public class GizmosPass extends Subpass {
 
     @Override
     protected void execute(DrawQueue drawQueue) {
-        while (drawQueue.dequeue() instanceof LowLevelDC command) {
-            renderer.draw(command);
-        }
+
     }
 
     @Override
     public void collectCommands(DrawQueue drawQueue) {
-        // todo: fetch from gizmosManager
 
-        drawQueue.enqueue(gizmosManager.getDrawCommand(0, 0));
-        drawQueue.enqueue(gizmosManager.getDrawCommand(1, 1));
     }
 }

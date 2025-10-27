@@ -5,8 +5,8 @@ import com.cleanroommc.kirino.gl.texture.Texture2DView;
 import org.lwjgl.opengl.GL30;
 
 public class ColorAttachment implements IFramebufferAttachment{
-    private final int index;
-    private final Texture2DView texture2D;
+    public final int index;
+    public final Texture2DView texture2D;
 
     public ColorAttachment(int index, Texture2DView texture2D) {
         this.index = index;

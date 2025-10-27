@@ -72,6 +72,7 @@ public abstract class Subpass {
      */
     protected abstract boolean hintSimplifyDrawQueue();
 
+    @NonNull
     public abstract PassHint passHint();
 
     /**

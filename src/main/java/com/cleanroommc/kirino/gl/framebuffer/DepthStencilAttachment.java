@@ -5,9 +5,9 @@ import com.cleanroommc.kirino.gl.texture.Texture2DView;
 import org.lwjgl.opengl.GL30;
 
 public class DepthStencilAttachment implements IFramebufferAttachment{
-    private final Texture2DView texture2D;
-    private final GLRenderBuffer renderBuffer;
-    private final boolean isTexture;
+    public final Texture2DView texture2D;
+    public final GLRenderBuffer renderBuffer;
+    public final boolean isTexture;
 
     public DepthStencilAttachment(Texture2DView texture2D) {
         this.texture2D = texture2D;

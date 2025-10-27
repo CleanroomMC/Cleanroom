@@ -11,6 +11,7 @@ public class ResolutionContainer {
     private int height;
 
     private final BiConsumer<Integer, Integer> resizeCallback;
+    private final BiConsumer<Integer, Integer> synchronizeCallback;
 
     public int width() {
         return width;
@@ -20,10 +21,11 @@ public class ResolutionContainer {
         return height;
     }
 
-    public ResolutionContainer(BiConsumer<Integer, Integer> resizeCallback) {
+    public ResolutionContainer(BiConsumer<Integer, Integer> resizeCallback, BiConsumer<Integer, Integer> synchronizeCallback) {
         width = MINECRAFT.displayWidth;
         height = MINECRAFT.displayHeight;
         this.resizeCallback = resizeCallback;
+        this.synchronizeCallback = synchronizeCallback;
     }
 
     public void update() {
@@ -37,6 +39,6 @@ public class ResolutionContainer {
     public void synchronize() {
         width = MINECRAFT.displayWidth;
         height = MINECRAFT.displayHeight;
-        resizeCallback.accept(width, height);
+        synchronizeCallback.accept(width, height);
     }
 }

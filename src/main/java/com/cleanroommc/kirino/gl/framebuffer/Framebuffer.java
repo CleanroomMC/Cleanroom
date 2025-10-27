@@ -3,6 +3,9 @@ package com.cleanroommc.kirino.gl.framebuffer;
 import com.cleanroommc.kirino.gl.GLDisposable;
 import com.cleanroommc.kirino.gl.GLResourceManager;
 import com.cleanroommc.kirino.gl.exception.RuntimeGLException;
+import com.google.common.base.Preconditions;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
 
@@ -22,7 +25,22 @@ public class Framebuffer extends GLDisposable {
     }
 
     private final List<IFramebufferAttachment> colorAttachments = new ArrayList<>();
-    private IFramebufferAttachment depthAttachment;
+    private IFramebufferAttachment depthAttachment = null;
+
+    @NonNull
+    public IFramebufferAttachment getColorAttachment(int index) {
+        Preconditions.checkArgument(index >= 0,
+                "Index (%d) must be greater than or equal to 0.", index);
+        Preconditions.checkArgument(index < colorAttachments.size(),
+                "Index (%d) must be smaller than size (%d).", index, colorAttachments.size());
+
+        return colorAttachments.get(index);
+    }
+
+    @Nullable
+    public IFramebufferAttachment getDepthAttachment() {
+        return depthAttachment;
+    }
 
     public Framebuffer(int width, int height) {
         this.width = width;
@@ -66,6 +84,7 @@ public class Framebuffer extends GLDisposable {
         }
     }
 
+    // bind fbo first
     public void attach(IFramebufferAttachment attachment) {
         switch (attachment.kind()) {
             case COLOR -> {
@@ -78,6 +97,7 @@ public class Framebuffer extends GLDisposable {
         attachment.attach();
     }
 
+    // no need to bind fbo
     public void resize(int width, int height) {
         this.width = width;
         this.height = height;

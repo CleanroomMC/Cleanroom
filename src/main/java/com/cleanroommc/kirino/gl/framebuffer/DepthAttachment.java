@@ -5,7 +5,7 @@ import com.cleanroommc.kirino.gl.texture.Texture2DView;
 import org.lwjgl.opengl.GL30;
 
 public class DepthAttachment implements IFramebufferAttachment{
-    private final Texture2DView texture2D;
+    public final Texture2DView texture2D;
 
     public DepthAttachment(Texture2DView texture2D) {
         this.texture2D = texture2D;
