@@ -23,6 +23,8 @@ public class DepthAttachment implements IFramebufferAttachment{
 
     @Override
     public void resize(int width, int height) {
+        texture2D.bind();
         texture2D.resizeAndAllocNull(width, height);
+        texture2D.bind(0);
     }
 }

@@ -29,6 +29,8 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.glu.Project;
 
 import java.lang.invoke.MethodHandle;
@@ -95,7 +97,6 @@ public class KirinoCore {
 
         // ========== clear ==========
         MINECRAFT.profiler.startSection("clear");
-        GL11.glViewport(0, 0, MINECRAFT.displayWidth, MINECRAFT.displayHeight);
         try {
             updateFogColor.invoke(MINECRAFT.entityRenderer, partialTicks);
             GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);

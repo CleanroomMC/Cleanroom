@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.engine.render.utils;
+package com.cleanroommc.kirino.engine.render.pipeline;
 
 import net.minecraft.client.Minecraft;
 
@@ -32,5 +32,11 @@ public class ResolutionContainer {
             height = MINECRAFT.displayHeight;
             resizeCallback.accept(width, height);
         }
+    }
+
+    public void synchronize() {
+        width = MINECRAFT.displayWidth;
+        height = MINECRAFT.displayHeight;
+        resizeCallback.accept(width, height);
     }
 }

@@ -21,6 +21,7 @@ public class DepthStencilAttachment implements IFramebufferAttachment{
         isTexture = false;
     }
 
+    @SuppressWarnings("DataFlowIssue")
     @Override
     public void attach() {
         if (isTexture) {
@@ -35,12 +36,17 @@ public class DepthStencilAttachment implements IFramebufferAttachment{
         return AttachmentKind.DEPTH;
     }
 
+    @SuppressWarnings("DataFlowIssue")
     @Override
     public void resize(int width, int height) {
         if (isTexture) {
+            texture2D.bind();
             texture2D.resizeAndAllocNull(width, height);
+            texture2D.bind(0);
         } else {
+            renderBuffer.bind();
             renderBuffer.resize(width, height);
+            GLRenderBuffer.bind(0);
         }
     }
 }

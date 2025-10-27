@@ -1,5 +1,6 @@
 package com.cleanroommc.kirino.engine.render.pipeline;
 
+import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL11C;
@@ -10,7 +11,10 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-public class GLStateBackup {
+/**
+ * It covers all the options that {@link PipelineStateObject} provides.
+ */
+public final class GLStateBackup {
     private final IntBuffer intBuf = BufferUtils.createIntBuffer(1);
     private final FloatBuffer floatBuf = BufferUtils.createFloatBuffer(2);
     private final ByteBuffer colorMaskBuf = BufferUtils.createByteBuffer(4);
@@ -37,6 +41,12 @@ public class GLStateBackup {
     private final int[] polygonMode = new int[2]; // front, back
     private float polyOffsetFactor;
     private float polyOffsetUnits;
+
+    private boolean stored = false;
+
+    public boolean isStored() {
+        return stored;
+    }
 
     public void storeStates() {
         // blend
@@ -94,6 +104,8 @@ public class GLStateBackup {
         intBuf.clear();
         GL11C.glGetIntegerv(GL20.GL_CURRENT_PROGRAM, intBuf);
         shaderProgram = intBuf.get(0);
+
+        stored = true;
     }
 
     public void restoreStates() {

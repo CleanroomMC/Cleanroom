@@ -85,7 +85,7 @@ public class DrawQueue {
     }
 
     /**
-     * Only used by {@link #simplify(IndirectDrawBufferManager)}.
+     * Only used by {@link #simplify(IndirectDrawBufferGenerator)}.
      */
     private record VAOKey(int vao, int mode, int elementType) {
     }
@@ -99,10 +99,10 @@ public class DrawQueue {
      * It combines and simplifies {@link LowLevelDC}s, especially combines commands into <code>MULTI_ELEMENTS_INDIRECT</code> command.
      * Usually it's called after {@link #compile(GraphicResourceManager)} which compiles everything into {@link LowLevelDC}s.
      *
-     * @param idbManager The indirect draw buffer manager
+     * @param idbGenerator The indirect draw buffer manager
      * @return The <code>DrawQueue</code> itself
      */
-    public DrawQueue simplify(IndirectDrawBufferManager idbManager) {
+    public DrawQueue simplify(IndirectDrawBufferGenerator idbGenerator) {
         Map<VAOKey, List<LowLevelDC>> grouped = new HashMap<>();
 
         IDrawCommand drawCommand;
@@ -131,7 +131,7 @@ public class DrawQueue {
                 continue;
             }
 
-            baked.add(idbManager.generate(units, entry.getKey().vao, entry.getKey().mode, entry.getKey().elementType));
+            baked.add(idbGenerator.generate(units, entry.getKey().vao, entry.getKey().mode, entry.getKey().elementType));
         }
 
         deque.addAll(baked);

@@ -2,7 +2,7 @@ package com.cleanroommc.kirino.engine.render.pipeline.pass;
 
 import com.cleanroommc.kirino.engine.render.camera.ICamera;
 import com.cleanroommc.kirino.engine.render.pipeline.draw.DrawQueue;
-import com.cleanroommc.kirino.engine.render.pipeline.draw.IndirectDrawBufferManager;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.IndirectDrawBufferGenerator;
 import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
 import com.cleanroommc.kirino.gl.debug.KHRDebug;
 
@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public final class RenderPass {
     private final Map<String, Subpass> subpassMap = new HashMap<>();
@@ -18,14 +19,14 @@ public final class RenderPass {
     private final DrawQueue drawQueue = new DrawQueue();
 
     private final GraphicResourceManager graphicResourceManager;
-    private final IndirectDrawBufferManager idbManager;
+    private final AtomicReference<IndirectDrawBufferGenerator> idbGenerator;
 
     public final String passName;
 
-    public RenderPass(String passName, GraphicResourceManager graphicResourceManager, IndirectDrawBufferManager idbManager) {
+    public RenderPass(String passName, GraphicResourceManager graphicResourceManager, AtomicReference<IndirectDrawBufferGenerator> idbGenerator) {
         this.passName = passName;
         this.graphicResourceManager = graphicResourceManager;
-        this.idbManager = idbManager;
+        this.idbGenerator = idbGenerator;
     }
 
     public boolean hasSubpass(String subpassName) {
@@ -63,7 +64,7 @@ public final class RenderPass {
                     subpass.decorateCommands(drawQueue, decorator);
                 }
             }
-            subpass.render(drawQueue, camera, graphicResourceManager, idbManager);
+            subpass.render(drawQueue, camera, graphicResourceManager, idbGenerator.get());
 
             KHRDebug.popGroup();
         }

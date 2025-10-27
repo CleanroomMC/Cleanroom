@@ -12,14 +12,14 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.List;
 
-public class IndirectDrawBufferManager {
+public class IndirectDrawBufferGenerator {
     private final IDBView idbView;
     public final int bufferSize;
 
     public final static int IDB_STRIDE_BYTE = 5 * Integer.BYTES;
     public final static int MEMORY_STACK_LIMIT_BYTE = 1024 * 512;
 
-    public IndirectDrawBufferManager(int bufferSize) {
+    public IndirectDrawBufferGenerator(int bufferSize) {
         this.bufferSize = bufferSize;
         this.idbView = new IDBView(new GLBuffer());
         idbView.bind();
@@ -93,7 +93,7 @@ public class IndirectDrawBufferManager {
         LowLevelDC.MultiElementIndirectBuilder builder = LowLevelDC.multiElementIndirect().vao(vao).idb(idbView.bufferID);
         builder.mode(mode).elementType(elementType);
         builder.idbOffset(0);
-        builder.idbStride(IndirectDrawBufferManager.IDB_STRIDE_BYTE);
+        builder.idbStride(IndirectDrawBufferGenerator.IDB_STRIDE_BYTE);
         builder.instanceCount(units.size());
 
         return builder.build();

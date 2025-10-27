@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class StagingBufferManager {
-    // todo: ring buffer double buffering
+    // todo: ring buffer double/triple/n buffering & non-coherent persistent buffer with manual flush
     private final Map<String, Triple<Integer, VBOView, ByteBuffer>> persistentVbos = new HashMap<>();
     private final Map<String, Triple<Integer, EBOView, ByteBuffer>> persistentEbos = new HashMap<>();
 

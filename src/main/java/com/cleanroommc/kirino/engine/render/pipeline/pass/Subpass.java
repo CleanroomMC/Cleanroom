@@ -1,7 +1,7 @@
 package com.cleanroommc.kirino.engine.render.pipeline.pass;
 
 import com.cleanroommc.kirino.engine.render.camera.ICamera;
-import com.cleanroommc.kirino.engine.render.pipeline.draw.IndirectDrawBufferManager;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.IndirectDrawBufferGenerator;
 import com.cleanroommc.kirino.engine.render.pipeline.draw.cmd.HighLevelDC;
 import com.cleanroommc.kirino.engine.render.pipeline.draw.cmd.LowLevelDC;
 import com.cleanroommc.kirino.engine.render.pipeline.Renderer;
@@ -10,6 +10,8 @@ import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
 import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
 import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
 public abstract class Subpass {
@@ -17,23 +19,28 @@ public abstract class Subpass {
     protected final Framebuffer fbo;
     private final PipelineStateObject pso;
 
-    public Subpass(Renderer renderer, PipelineStateObject pso, Framebuffer fbo) {
+    /**
+     * @param renderer A global renderer
+     * @param pso A pipeline state object (pipeline parameters)
+     * @param fbo A nullable framebuffer (the built-in main framebuffer will be bound before any rendering so you can input <code>null</code> here)
+     */
+    public Subpass(@NonNull Renderer renderer, @NonNull PipelineStateObject pso, @Nullable Framebuffer fbo) {
         this.renderer = renderer;
         this.pso = pso;
         this.fbo = fbo;
     }
 
-    public final void render(DrawQueue drawQueue, ICamera camera, GraphicResourceManager graphicResourceManager, IndirectDrawBufferManager idbManager) {
+    public final void render(DrawQueue drawQueue, ICamera camera, GraphicResourceManager graphicResourceManager, IndirectDrawBufferGenerator idbGenerator) {
         DrawQueue dq = drawQueue;
         if (hintCompileDrawQueue()) {
             dq = dq.compile(graphicResourceManager);
         }
         if (hintSimplifyDrawQueue()) {
-            dq = dq.simplify(idbManager);
+            dq = dq.simplify(idbGenerator);
         }
         dq = dq.sort();
 
-        //bindTarget(); // test
+        bindTarget();
         renderer.bindPipeline(pso);
         updateShaderProgram(pso.shaderProgram(), camera);
 
@@ -41,8 +48,10 @@ public abstract class Subpass {
     }
 
     protected void bindTarget() {
-        fbo.bind();
-        GL11.glViewport(0, 0, fbo.width(), fbo.height());
+        if (fbo != null) {
+            fbo.bind();
+            GL11.glViewport(0, 0, fbo.width(), fbo.height());
+        }
     }
 
     protected abstract void updateShaderProgram(ShaderProgram shaderProgram, ICamera camera);
@@ -56,9 +65,9 @@ public abstract class Subpass {
     protected abstract boolean hintCompileDrawQueue();
 
     /**
-     * Whether to run {@link DrawQueue#simplify(IndirectDrawBufferManager)} before {@link #execute(DrawQueue)}.
+     * Whether to run {@link DrawQueue#simplify(IndirectDrawBufferGenerator)} before {@link #execute(DrawQueue)}.
      *
-     * @see DrawQueue#simplify(IndirectDrawBufferManager)
+     * @see DrawQueue#simplify(IndirectDrawBufferGenerator)
      * @return The hint
      */
     protected abstract boolean hintSimplifyDrawQueue();
