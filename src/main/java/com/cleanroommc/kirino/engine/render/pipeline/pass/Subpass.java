@@ -8,29 +8,29 @@ import com.cleanroommc.kirino.engine.render.pipeline.Renderer;
 import com.cleanroommc.kirino.engine.render.pipeline.draw.DrawQueue;
 import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
 import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
-import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import org.lwjgl.opengl.GL11;
 
 public abstract class Subpass {
     protected final Renderer renderer;
-    protected final Framebuffer fbo;
     private final PipelineStateObject pso;
 
     /**
      * @param renderer A global renderer
      * @param pso A pipeline state object (pipeline parameters)
-     * @param fbo A nullable framebuffer (the built-in main framebuffer will be bound before any rendering so you can input <code>null</code> here)
      */
-    public Subpass(@NonNull Renderer renderer, @NonNull PipelineStateObject pso, @Nullable Framebuffer fbo) {
+    public Subpass(@NonNull Renderer renderer, @NonNull PipelineStateObject pso) {
         this.renderer = renderer;
         this.pso = pso;
-        this.fbo = fbo;
     }
 
-    public final void render(DrawQueue drawQueue, ICamera camera, GraphicResourceManager graphicResourceManager, IndirectDrawBufferGenerator idbGenerator) {
+    public final void render(
+            @NonNull DrawQueue drawQueue,
+            @NonNull ICamera camera,
+            @NonNull GraphicResourceManager graphicResourceManager,
+            @NonNull IndirectDrawBufferGenerator idbGenerator,
+            @Nullable Object payload) {
         DrawQueue dq = drawQueue;
         if (hintCompileDrawQueue()) {
             dq = dq.compile(graphicResourceManager);
@@ -40,21 +40,13 @@ public abstract class Subpass {
         }
         dq = dq.sort();
 
-        bindTarget();
         renderer.bindPipeline(pso);
-        updateShaderProgram(pso.shaderProgram(), camera);
+        updateShaderProgram(pso.shaderProgram(), camera, payload);
 
-        execute(dq);
+        execute(dq, payload);
     }
 
-    protected void bindTarget() {
-        if (fbo != null) {
-            fbo.bind();
-            GL11.glViewport(0, 0, fbo.width(), fbo.height());
-        }
-    }
-
-    protected abstract void updateShaderProgram(ShaderProgram shaderProgram, ICamera camera);
+    protected abstract void updateShaderProgram(ShaderProgram shaderProgram, ICamera camera, Object payload);
 
     /**
      * Whether to run {@link DrawQueue#compile(GraphicResourceManager)} before {@link #execute(DrawQueue)}.
@@ -81,7 +73,7 @@ public abstract class Subpass {
      * @implSpec If it's a CPU-side pass, then<br/><code>while (drawQueue.dequeue() instanceof LowLevelDC command) { ... }</code>
      * @param drawQueue The queue that stores low-level draw commands
      */
-    protected abstract void execute(DrawQueue drawQueue);
+    protected abstract void execute(DrawQueue drawQueue, Object payload);
 
     /**
      * Enqueue draw commands, {@link LowLevelDC} or {@link HighLevelDC}, here.

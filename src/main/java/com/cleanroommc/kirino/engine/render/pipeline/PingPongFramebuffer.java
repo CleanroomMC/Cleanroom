@@ -18,8 +18,16 @@ public final class PingPongFramebuffer {
         }
     }
 
-    public final Framebuffer framebufferA;
-    public final Framebuffer framebufferB;
+    private Framebuffer framebufferA;
+    private Framebuffer framebufferB;
+
+    public Framebuffer framebufferA() {
+        return framebufferA;
+    }
+
+    public Framebuffer framebufferB() {
+        return framebufferB;
+    }
 
     public int width() {
         Preconditions.checkState(framebufferA.width() == framebufferB.width(),
@@ -33,6 +41,12 @@ public final class PingPongFramebuffer {
                 "The height of framebuffer A (%d) must equal to that of framebuffer B (%d).", framebufferA.height(), framebufferB.height());
 
         return framebufferA.height();
+    }
+
+    public void swap() {
+        Framebuffer oldA = framebufferA;
+        framebufferA = framebufferB;
+        framebufferB = oldA;
     }
 
     public void resize(int width, int height) {

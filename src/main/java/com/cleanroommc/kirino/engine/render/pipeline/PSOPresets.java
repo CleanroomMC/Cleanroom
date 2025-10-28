@@ -9,7 +9,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
 public final class PSOPresets {
-    public static PipelineStateObject createScalingPSO(ShaderProgram shaderProgram) {
+    public static PipelineStateObject createScreenOverwritePSO(ShaderProgram shaderProgram) {
         return new PipelineStateObject(
                 new BlendState(
                         false,

@@ -463,5 +463,7 @@ public class KirinoCore {
         event.register(new ResourceLocation("forge:shaders/test.vert"));
         event.register(new ResourceLocation("forge:shaders/gizmos.vert"));
         event.register(new ResourceLocation("forge:shaders/gizmos.frag"));
+        event.register(new ResourceLocation("forge:shaders/post_processing.vert"));
+        event.register(new ResourceLocation("forge:shaders/post_processing.frag"));
     }
 }

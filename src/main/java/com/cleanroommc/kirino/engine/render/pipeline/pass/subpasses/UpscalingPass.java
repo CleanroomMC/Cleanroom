@@ -6,23 +6,20 @@ import com.cleanroommc.kirino.engine.render.pipeline.draw.DrawQueue;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.PassHint;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.Subpass;
 import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
-import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 public class UpscalingPass extends Subpass {
     /**
      * @param renderer A global renderer
      * @param pso      A pipeline state object (pipeline parameters)
-     * @param fbo      A nullable framebuffer (the built-in main framebuffer will be bound before any rendering so you can input <code>null</code> here)
      */
-    public UpscalingPass(@NonNull Renderer renderer, @NonNull PipelineStateObject pso, @Nullable Framebuffer fbo) {
-        super(renderer, pso, fbo);
+    public UpscalingPass(@NonNull Renderer renderer, @NonNull PipelineStateObject pso) {
+        super(renderer, pso);
     }
 
     @Override
-    protected void updateShaderProgram(ShaderProgram shaderProgram, ICamera camera) {
+    protected void updateShaderProgram(ShaderProgram shaderProgram, ICamera camera, Object payload) {
 
     }
 
@@ -43,7 +40,7 @@ public class UpscalingPass extends Subpass {
     }
 
     @Override
-    protected void execute(DrawQueue drawQueue) {
+    protected void execute(DrawQueue drawQueue, Object payload) {
 
     }
 
