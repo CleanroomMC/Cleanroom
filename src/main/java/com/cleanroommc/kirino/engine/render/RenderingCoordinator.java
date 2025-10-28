@@ -318,13 +318,6 @@ public class RenderingCoordinator {
     }
 
     public void preUpdate() {
-        // current render target: minecraft framebuffer
-        GL11.glViewport(0, 0, MINECRAFT.getFramebuffer().framebufferWidth, MINECRAFT.getFramebuffer().framebufferHeight);
-        GL11.glClearColor(0, 0, 0, 0);
-        GL11.glClearDepth(1);
-        GL11.glClearStencil(0);
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
-
         // only read states once to prevent huge amount of pipeline stalls
         if (!stateBackup.isStored()) {
             stateBackup.storeStates();
@@ -343,10 +336,7 @@ public class RenderingCoordinator {
         mainFramebuffer.framebuffer.bind();
         // current render target: main framebuffer
         GL11.glViewport(0, 0, mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height());
-        GL11.glClearColor(0, 0, 0, 0);
-        GL11.glClearDepth(1);
-        GL11.glClearStencil(0);
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
+        // can't clear here cuz it breaks a few minecraft clear logic
     }
 
     public void postUpdate() {
@@ -393,6 +383,9 @@ public class RenderingCoordinator {
         int ppCount = postProcessingPass.size();
         if (ppCount == 1) {
             Framebuffer.bind(MINECRAFT.getFramebuffer().framebufferObject);
+            GL11.glViewport(0, 0, MINECRAFT.getFramebuffer().framebufferWidth, MINECRAFT.getFramebuffer().framebufferHeight);
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+
             postProcessingPass.render(camera, null, new Object[]{postProcessingFramebuffer.framebufferA()});
         } else {
             Object[] payloads = new Object[ppCount];
@@ -404,12 +397,18 @@ public class RenderingCoordinator {
                 }
             }
             postProcessingFramebuffer.framebufferB().bind();
+            GL11.glViewport(0, 0, postProcessingFramebuffer.width(), postProcessingFramebuffer.height());
+
             postProcessingPass.render(camera, (subpassName, index) -> {
                 if (index == ppCount - 2) {
                     Framebuffer.bind(MINECRAFT.getFramebuffer().framebufferObject);
+                    GL11.glViewport(0, 0, MINECRAFT.getFramebuffer().framebufferWidth, MINECRAFT.getFramebuffer().framebufferHeight);
+                    GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
                 } else if (index < ppCount - 2) {
                     postProcessingFramebuffer.swap();
                     postProcessingFramebuffer.framebufferB().bind();
+                    GL11.glViewport(0, 0, postProcessingFramebuffer.width(), postProcessingFramebuffer.height());
+                    GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
                 }
             }, payloads);
         }
