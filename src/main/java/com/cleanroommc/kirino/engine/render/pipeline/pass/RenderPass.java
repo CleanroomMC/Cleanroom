@@ -5,15 +5,14 @@ import com.cleanroommc.kirino.engine.render.pipeline.draw.DrawQueue;
 import com.cleanroommc.kirino.engine.render.pipeline.draw.IndirectDrawBufferGenerator;
 import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
 import com.cleanroommc.kirino.gl.debug.KHRDebug;
+import com.cleanroommc.kirino.utils.Reference;
 import com.google.common.base.Preconditions;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
 public final class RenderPass {
@@ -23,7 +22,7 @@ public final class RenderPass {
     private final DrawQueue drawQueue = new DrawQueue();
 
     private final GraphicResourceManager graphicResourceManager;
-    private final AtomicReference<IndirectDrawBufferGenerator> idbGenerator;
+    private final Reference<IndirectDrawBufferGenerator> idbGenerator;
 
     public final String passName;
 
@@ -31,7 +30,7 @@ public final class RenderPass {
         return subpassMap.size();
     }
 
-    public RenderPass(String passName, GraphicResourceManager graphicResourceManager, AtomicReference<IndirectDrawBufferGenerator> idbGenerator) {
+    public RenderPass(String passName, GraphicResourceManager graphicResourceManager, Reference<IndirectDrawBufferGenerator> idbGenerator) {
         this.passName = passName;
         this.graphicResourceManager = graphicResourceManager;
         this.idbGenerator = idbGenerator;

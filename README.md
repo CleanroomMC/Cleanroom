@@ -21,7 +21,7 @@ If you would like to contribute, check out our [Contributing Page](https://githu
 - Shader Abstraction 🚧
   - Only support `vert` + `frag` for now, but design with `tess`, `compute`, etc. in mind
   - Global shader registry
-    - Compile and store shaders
+    - Compile and store shaders ✅
     - Shader source hashing
   - Uniform
     - Parse uniforms from shader source
@@ -31,20 +31,16 @@ If you would like to contribute, check out our [Contributing Page](https://githu
     - Uniform input type widening
 - Buffer Abstraction 🚧
   - Generic buffer object + View ✅
-  - VAO + VBO + EBO -> Mesh
+  - VAO (VBO + EBO) ✅
+  - Vertex attribute layout ✅
   - UBO, SSBO
   - PBO pack & unpack
   - TBO
-  - Upload hint + access hint
+  - Upload hint + access hint ✅
   - Persistent buffer ✅
   - Framebuffer ✅
     - Attachment ✅
     - RenderBuffer ✅
-- Mesh Abstraction 🚧
-  - Mesh
-  - InstancedMesh
-  - MultiDrawMesh
-  - Vertex attribute layout ✅
 - Texture Abstraction 🚧
   - Sampler
   - Generic texture object + View ✅
@@ -53,7 +49,6 @@ If you would like to contribute, check out our [Contributing Page](https://githu
     - Texture2DMultisample (for multisampling fbo) 🚧
     - Texture2DArray (for texture atlas)
     - ...
-- Sync / Fence Abstraction
 - Debug Abstraction ✅
   - KHR_debug ✅
 - Material Abstraction
@@ -86,11 +81,11 @@ If you would like to contribute, check out our [Contributing Page](https://githu
 <details>
 <summary>Engine</summary>
 
-- CPU & GPU hybrid dual pipeline
-- DrawCommand decorating mechanism
-- RenderPass / Subpass architecture 🚧
-- Built-in Multi-resolution & Super-sampling
-- Immutable Pipeline State Object 🚧
+- CPU & GPU hybrid dual pipeline 🚧
+- DrawCommand decorating mechanism 🚧
+- RenderPass / Subpass architecture ✅
+- Built-in Multi-resolution & Super-sampling 🚧
+- Immutable Pipeline State Object ✅
 - Scriptable pipeline
 - ...
 

@@ -10,16 +10,17 @@ import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
 import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;
 import com.cleanroommc.kirino.gl.vao.VAO;
+import com.cleanroommc.kirino.utils.Reference;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.function.TriFunction;
 import org.lwjgl.opengl.GL11;
 
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
 /**
  * It must have at least one subpass at runtime to work as expected. Otherwise, disable post-processing instead.
- * <br/>
+ * It must have zero subpasses at runtime when post-processing is disabled.
+ * <br><br>
  * This class is highly coupled with {@link FrameFinalizer}, and the post-processing process is fully guided by {@link FrameFinalizer#finalizeFramebuffer()}.
  */
 public class PostProcessingPass {
@@ -29,12 +30,16 @@ public class PostProcessingPass {
 
     private final RenderPass postProcessingPass;
     private final Renderer renderer;
-    private final AtomicReference<VAO> fullscreenTriangleVao;
+    private final Reference<VAO> fullscreenTriangleVao;
 
-    private boolean init = false;
+    private boolean lock = false;
     private int subpassCount;
     private BiConsumer<String, Integer> subpassCallback = null;
     private Object[] renderPayloads = null;
+
+    public void lock() {
+        lock = true;
+    }
 
     /**
      * Must not add or remove or modify subpasses at this stage.
@@ -43,7 +48,6 @@ public class PostProcessingPass {
             net.minecraft.client.shader.Framebuffer minecraftFramebuffer,
             PingPongFramebuffer pingPongFramebuffer,
             Framebuffer intermediateFramebuffer) {
-        init = true;
         subpassCount = getSubpassCount();
 
         this.minecraftFramebuffer = minecraftFramebuffer;
@@ -77,7 +81,7 @@ public class PostProcessingPass {
         }
     }
 
-    public PostProcessingPass(RenderPass postProcessingPass, Renderer renderer, AtomicReference<VAO> fullscreenTriangleVao) {
+    public PostProcessingPass(RenderPass postProcessingPass, Renderer renderer, Reference<VAO> fullscreenTriangleVao) {
         this.postProcessingPass = postProcessingPass;
         this.renderer = renderer;
         this.fullscreenTriangleVao = fullscreenTriangleVao;
@@ -87,15 +91,18 @@ public class PostProcessingPass {
         return postProcessingPass.size();
     }
 
-    public void addSubpass(String subpassName, ShaderProgram shaderProgram, TriFunction<Renderer, PipelineStateObject, AtomicReference<VAO>, AbstractPostProcessingPass> subpassCtor) {
-        Preconditions.checkState(!init, "Only call this method before lateInit().");
+    /**
+     * Must use an unique <code>subpassName</code>. Otherwise the addition will be ignored silently.
+     */
+    public void addSubpass(String subpassName, ShaderProgram shaderProgram, TriFunction<Renderer, PipelineStateObject, Reference<VAO>, AbstractPostProcessingPass> subpassCtor) {
+        Preconditions.checkState(!lock, "Only call this method before the lock and lateInit().");
 
         AbstractPostProcessingPass subpass = subpassCtor.apply(renderer, PSOPresets.createScreenOverwritePSO(shaderProgram), fullscreenTriangleVao);
         postProcessingPass.addSubpass(subpassName, subpass);
     }
 
     public void removeSubpass(String subpassName) {
-        Preconditions.checkState(!init, "Only call this method before lateInit().");
+        Preconditions.checkState(!lock, "Only call this method before the lock and lateInit().");
 
         postProcessingPass.removeSubpass(subpassName);
     }
@@ -105,7 +112,7 @@ public class PostProcessingPass {
     }
 
     public void attachSubpassDecorator(String subpassName, ISubpassDecorator decorator) {
-        Preconditions.checkState(!init, "Only call this method before lateInit().");
+        Preconditions.checkState(!lock, "Only call this method before the lock and lateInit().");
 
         postProcessingPass.attachSubpassDecorator(subpassName, decorator);
     }

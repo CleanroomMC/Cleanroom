@@ -59,7 +59,7 @@ Thanks for your interest! We welcome **all kinds of contributions** – code, do
   }
   ```
 - Keep lines reasonably short to maintain readability, but there is no explicit char count limit.
-- Use `Jspecify` for `nullable`/`nonnull` annotations.
+- Use `Jspecify` for `nullable`/`nonnull` annotations; Use `nullable`/`nonnull` on public APIs and where you think necessary.
 - Don't use `this.` if not necessary.
 - Use google `Preconditions` to check argument/state/nonnull preconditions instead of `Objects.requireNonNull()` or manual if-statement etc.
 - Use `Preconditions` to check `nonnull` even after the `nonnull` annotations.
@@ -99,25 +99,19 @@ Thanks for your interest! We welcome **all kinds of contributions** – code, do
 
 ## Upcoming Features
 
-- GL Buffer Abstraction (I, tttsaurus, plan to do it)
-- Mesh & Vertex Layout Abstraction (I, tttsaurus, plan to do it)
-- GL Framebuffer Abstraction (_No one is in charge / Help wanted_)
-  - Flexible attachment support
-  - Keep MRT support in mind
-  - OR whatever that helps
 - GL Shader Abstraction (_No one is in charge / Help wanted_)
   - Read `uniform` / `ubo` / `ssbo` entries from raw shader source and record them
   - Easy `setUniform` / `bind` / `unbind`
   - Type inference and widening for `setUniform`
   - Compute shader support is needed
   - OR whatever that helps
-- ECS system coordinator (_No one is in charge / Help wanted_)
+- ECS system coordinator (_Default_)
   - It has nothing related to ECS itself, which is a separate module
   - It's essentially a Directed Acyclic Graph
   - Edge represents a system
   - Node represents a barrier that synchronizes systems that are running asynchronously
   - So a system coordinator handles the dependencies between systems, allowing systems to run asynchronously together but also with an order
-- Meshlet Algorithm (_No one is in charge / Help wanted_)
+- Meshlet Algorithm (_Eerie_)
   - A meshlet is a small piece of mesh (like ~32 vertices or less)
   - Every meshlet also needs an AABB
   - We use meshlets to do fine-grained culling and more

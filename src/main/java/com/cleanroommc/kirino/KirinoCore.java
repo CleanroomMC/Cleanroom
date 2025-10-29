@@ -412,6 +412,7 @@ public class KirinoCore {
 
         stopWatch.stop();
         LOGGER.info("Kirino Engine Initialized. Time taken: " + stopWatch.getTime(TimeUnit.MILLISECONDS) + " ms");
+        LOGGER.info("---------------");
         //</editor-fold>
 
         //<editor-fold desc="reflection">
@@ -440,6 +441,20 @@ public class KirinoCore {
         Objects.requireNonNull(farPlaneDistance);
         Objects.requireNonNull(debugView);
         Objects.requireNonNull(isRenderHand);
+        //</editor-fold>
+    }
+
+    public static void postInit() {
+        //<editor-fold desc="kirino engine">
+        LOGGER.info("---------------");
+        LOGGER.info("Post-Initializing Kirino Engine.");
+        StopWatch stopWatch = StopWatch.createStarted();
+
+        KIRINO_ENGINE.renderingCoordinator.deferredInit();
+
+        stopWatch.stop();
+        LOGGER.info("Kirino Engine Post-Initialized. Time taken: " + stopWatch.getTime(TimeUnit.MILLISECONDS) + " ms");
+        LOGGER.info("---------------");
         //</editor-fold>
     }
 

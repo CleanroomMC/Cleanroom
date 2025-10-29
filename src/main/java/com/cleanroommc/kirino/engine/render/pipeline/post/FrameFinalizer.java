@@ -71,14 +71,23 @@ public class FrameFinalizer {
     public void initResources(net.minecraft.client.shader.Framebuffer minecraftFramebuffer) {
         this.minecraftFramebuffer = minecraftFramebuffer;
 
+        logger.info("Framebuffer HDR: " + (enableHDR ? "ON" : "OFF"));
+        logger.info("Framebuffer Post-processing: " + (enablePostProcessing ? "ON" : "OFF") + "; Pass Count: " + postProcessingPass.getSubpassCount());
+
         mainFramebuffer = new ScalableFramebuffer(MINECRAFT.displayWidth, MINECRAFT.displayHeight, 1f);
+        logger.info("Initiated the main frambuffer: " + mainFramebuffer.framebuffer.width() + ", " + mainFramebuffer.framebuffer.height());
 
-        final boolean initIntermediate = enableHDR && (!enablePostProcessing || postProcessingPass.getSubpassCount() == 1);
+        // these two are mutually exclusive
+        final boolean useIntermediate = (enableHDR && !enablePostProcessing) || (enablePostProcessing && postProcessingPass.getSubpassCount() == 1);
+        final boolean usePingPong = enablePostProcessing && postProcessingPass.getSubpassCount() >= 2;
 
-        if (initIntermediate) {
+        if (useIntermediate) {
             intermediateFramebuffer = new Framebuffer(MINECRAFT.displayWidth, MINECRAFT.displayHeight);
-        } else {
+            logger.info("Initiated the intermediate frambuffer: " + intermediateFramebuffer.width() + ", " + intermediateFramebuffer.height());
+        }
+        if (usePingPong) {
             pingPongFramebuffer = new PingPongFramebuffer(MINECRAFT.displayWidth, MINECRAFT.displayHeight);
+            logger.info("Initiated the ping-pong frambuffer: " + pingPongFramebuffer.width() + ", " + pingPongFramebuffer.height());
         }
 
         //<editor-fold desc="resolution and callbacks">
@@ -89,19 +98,21 @@ public class FrameFinalizer {
                     (int) (width * mainFramebuffer.getRatio()),
                     (int) (height * mainFramebuffer.getRatio()));
 
-            if (initIntermediate) {
+            if (useIntermediate) {
                 intermediateFramebuffer.resize(width, height);
-            } else {
+            }
+            if (usePingPong) {
                 pingPongFramebuffer.resize(width, height);
             }
 
             logger.info("Display size updated. Current display width & height: " + width + ", " + height);
             logger.info("Main framebuffer resized: width=" + mainFramebuffer.framebuffer.width() + ", height=" + mainFramebuffer.framebuffer.height() + ", ratio=" + mainFramebuffer.getRatio());
 
-            if (initIntermediate) {
+            if (useIntermediate) {
                 logger.info("Intermediate framebuffer resized: width=" + intermediateFramebuffer.width() + ", height=" + intermediateFramebuffer.height());
-            } else {
-                logger.info("Post-processing framebuffer resized: width=" + pingPongFramebuffer.width() + ", height=" + pingPongFramebuffer.height());
+            }
+            if (usePingPong) {
+                logger.info("Ping-pong framebuffer resized: width=" + pingPongFramebuffer.width() + ", height=" + pingPongFramebuffer.height());
             }
 
         }, (width, height) -> {
@@ -111,19 +122,21 @@ public class FrameFinalizer {
                     (int) (width * mainFramebuffer.getTargetRatio()),
                     (int) (height * mainFramebuffer.getTargetRatio()));
 
-            if (initIntermediate) {
+            if (useIntermediate) {
                 intermediateFramebuffer.resize(width, height);
-            } else {
+            }
+            if (usePingPong) {
                 pingPongFramebuffer.resize(width, height);
             }
 
             logger.info("Main framebuffer ratio changed: " + mainFramebuffer.getRatio() + " -> " + mainFramebuffer.getTargetRatio());
             logger.info("Main framebuffer resized: width=" + mainFramebuffer.framebuffer.width() + ", height=" + mainFramebuffer.framebuffer.height() + ", ratio=" + mainFramebuffer.getTargetRatio());
 
-            if (initIntermediate) {
+            if (useIntermediate) {
                 logger.info("Intermediate framebuffer resized: width=" + intermediateFramebuffer.width() + ", height=" + intermediateFramebuffer.height());
-            } else {
-                logger.info("Post-processing framebuffer resized: width=" + pingPongFramebuffer.width() + ", height=" + pingPongFramebuffer.height());
+            }
+            if (usePingPong) {
+                logger.info("Ping-pong framebuffer resized: width=" + pingPongFramebuffer.width() + ", height=" + pingPongFramebuffer.height());
             }
 
         });
@@ -159,8 +172,38 @@ public class FrameFinalizer {
         }
         //</editor-fold>
 
+        //<editor-fold desc="intermediate framebuffer initialization">
+        if (useIntermediate) {
+            intermediateFramebuffer.bind();
+
+            Texture2DView color0Tex = new Texture2DView(new GLTexture(intermediateFramebuffer.width(), intermediateFramebuffer.height()));
+            color0Tex.bind();
+            color0Tex.alloc(null, enableHDR ? TextureFormat.RGBA16F : TextureFormat.RGBA8_UNORM);
+            color0Tex.set(FilterMode.NEAREST, FilterMode.NEAREST, WrapMode.CLAMP, WrapMode.CLAMP);
+            color0Tex.bind(0);
+            intermediateFramebuffer.attach(new ColorAttachment(0, color0Tex));
+
+            Texture2DView depthTex = new Texture2DView(new GLTexture(intermediateFramebuffer.width(), intermediateFramebuffer.height()));
+            depthTex.bind();
+            depthTex.alloc(null, TextureFormat.D24S8);
+            depthTex.set(FilterMode.NEAREST, FilterMode.NEAREST, WrapMode.CLAMP, WrapMode.CLAMP);
+            depthTex.bind(0);
+            intermediateFramebuffer.attach(new DepthStencilAttachment(depthTex));
+
+            intermediateFramebuffer.check();
+
+            GL11.glViewport(0, 0, intermediateFramebuffer.width(), intermediateFramebuffer.height());
+            GL11.glClearColor(0, 0, 0, 0);
+            GL11.glClearDepth(1);
+            GL11.glClearStencil(0);
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
+
+            logger.info("Intermediate framebuffer created. ID: " + intermediateFramebuffer.fboID);
+        }
+        //</editor-fold>
+
         //<editor-fold desc="ping-pong framebuffer A initialization">
-        if (!initIntermediate) {
+        if (usePingPong) {
             pingPongFramebuffer.framebufferA().bind();
 
             Texture2DView color0Tex = new Texture2DView(new GLTexture(pingPongFramebuffer.width(), pingPongFramebuffer.height()));
@@ -185,12 +228,12 @@ public class FrameFinalizer {
             GL11.glClearStencil(0);
             GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
 
-            logger.info("Post-processing framebuffer A created. ID: " + pingPongFramebuffer.framebufferA().fboID);
+            logger.info("Ping-pong framebuffer A created. ID: " + pingPongFramebuffer.framebufferA().fboID);
         }
         //</editor-fold>
 
         //<editor-fold desc="ping-pong framebuffer B initialization">
-        if (!initIntermediate) {
+        if (usePingPong) {
             pingPongFramebuffer.framebufferB().bind();
 
             Texture2DView color0Tex = new Texture2DView(new GLTexture(pingPongFramebuffer.width(), pingPongFramebuffer.height()));
@@ -215,37 +258,7 @@ public class FrameFinalizer {
             GL11.glClearStencil(0);
             GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
 
-            logger.info("Post-processing framebuffer B created. ID: " + pingPongFramebuffer.framebufferB().fboID);
-        }
-        //</editor-fold>
-
-        //<editor-fold desc="intermediate framebuffer initialization">
-        if (initIntermediate) {
-            intermediateFramebuffer.bind();
-
-            Texture2DView color0Tex = new Texture2DView(new GLTexture(intermediateFramebuffer.width(), intermediateFramebuffer.height()));
-            color0Tex.bind();
-            color0Tex.alloc(null, TextureFormat.RGBA16F); // HDR is always on in this situation
-            color0Tex.set(FilterMode.NEAREST, FilterMode.NEAREST, WrapMode.CLAMP, WrapMode.CLAMP);
-            color0Tex.bind(0);
-            intermediateFramebuffer.attach(new ColorAttachment(0, color0Tex));
-
-            Texture2DView depthTex = new Texture2DView(new GLTexture(intermediateFramebuffer.width(), intermediateFramebuffer.height()));
-            depthTex.bind();
-            depthTex.alloc(null, TextureFormat.D24S8);
-            depthTex.set(FilterMode.NEAREST, FilterMode.NEAREST, WrapMode.CLAMP, WrapMode.CLAMP);
-            depthTex.bind(0);
-            intermediateFramebuffer.attach(new DepthStencilAttachment(depthTex));
-
-            intermediateFramebuffer.check();
-
-            GL11.glViewport(0, 0, intermediateFramebuffer.width(), intermediateFramebuffer.height());
-            GL11.glClearColor(0, 0, 0, 0);
-            GL11.glClearDepth(1);
-            GL11.glClearStencil(0);
-            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
-
-            logger.info("Intermediate framebuffer created. ID: " + intermediateFramebuffer.fboID);
+            logger.info("Ping-pong framebuffer B created. ID: " + pingPongFramebuffer.framebufferB().fboID);
         }
         //</editor-fold>
     }
@@ -381,68 +394,9 @@ public class FrameFinalizer {
         }
         //</editor-fold>
 
-        // main framebuffer -> ping-pong framebuffer A -> post-process -> minecraft framebuffer
-        //<editor-fold desc="no hdr & post-processing">
-        if (!enableHDR && enablePostProcessing) {
-            if (mainFramebuffer.getRatio() == 1f) {
-                ColorAttachment colorAttachmentSrc = ((ColorAttachment) mainFramebuffer.framebuffer.getColorAttachment(0));
-                ColorAttachment colorAttachmentDest = ((ColorAttachment) pingPongFramebuffer.framebufferA().getColorAttachment(0));
-                GL43.glCopyImageSubData(
-                        colorAttachmentSrc.texture2D.texture.textureID,
-                        colorAttachmentSrc.texture2D.target(),
-                        0, 0, 0, 0,
-                        colorAttachmentDest.texture2D.texture.textureID,
-                        colorAttachmentDest.texture2D.target(),
-                        0, 0, 0, 0,
-                        colorAttachmentSrc.texture2D.texture.width(),
-                        colorAttachmentSrc.texture2D.texture.height(),
-                        1);
-                GL42.glMemoryBarrier(GL42.GL_TEXTURE_FETCH_BARRIER_BIT | GL42.GL_FRAMEBUFFER_BARRIER_BIT);
-
-                if (postProcessingPass.getSubpassCount() == 1) {
-                    postProcessingPass.postProcess(false);
-                } else if (postProcessingPass.getSubpassCount() >= 2) {
-                    postProcessingPass.postProcess();
-                }
-            } else if (mainFramebuffer.getRatio() < 1f) {
-                // todo: upscale impl
-                GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, mainFramebuffer.framebuffer.fboID);
-                GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, pingPongFramebuffer.framebufferA().fboID);
-                GL11.glReadBuffer(GL30.GL_COLOR_ATTACHMENT0);
-                GL11.glDrawBuffer(GL30.GL_COLOR_ATTACHMENT0);
-                GL30.glBlitFramebuffer(
-                        0, 0, mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height(),
-                        0, 0, pingPongFramebuffer.width(), pingPongFramebuffer.height(),
-                        GL11.GL_COLOR_BUFFER_BIT, GL11.GL_NEAREST);
-
-                if (postProcessingPass.getSubpassCount() == 1) {
-                    postProcessingPass.postProcess(false);
-                } else if (postProcessingPass.getSubpassCount() >= 2) {
-                    postProcessingPass.postProcess();
-                }
-            } else if (mainFramebuffer.getRatio() > 1f) {
-                // todo: downscale impl
-                GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, mainFramebuffer.framebuffer.fboID);
-                GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, pingPongFramebuffer.framebufferA().fboID);
-                GL11.glReadBuffer(GL30.GL_COLOR_ATTACHMENT0);
-                GL11.glDrawBuffer(GL30.GL_COLOR_ATTACHMENT0);
-                GL30.glBlitFramebuffer(
-                        0, 0, mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height(),
-                        0, 0, pingPongFramebuffer.width(), pingPongFramebuffer.height(),
-                        GL11.GL_COLOR_BUFFER_BIT, GL11.GL_NEAREST);
-
-                if (postProcessingPass.getSubpassCount() == 1) {
-                    postProcessingPass.postProcess(false);
-                } else if (postProcessingPass.getSubpassCount() >= 2) {
-                    postProcessingPass.postProcess();
-                }
-            }
-        }
-        //</editor-fold>
-
         // main framebuffer -> intermediate framebuffer / ping-pong framebuffer A -> post-process -> minecraft framebuffer
-        //<editor-fold desc="hdr & post-processing">
-        if (enableHDR && enablePostProcessing) {
+        //<editor-fold desc="hdr ANY & post-processing">
+        if (enablePostProcessing) {
             if (mainFramebuffer.getRatio() == 1f) {
                 if (postProcessingPass.getSubpassCount() == 1) {
                     ColorAttachment colorAttachmentSrc = ((ColorAttachment) mainFramebuffer.framebuffer.getColorAttachment(0));

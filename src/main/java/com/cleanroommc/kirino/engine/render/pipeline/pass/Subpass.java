@@ -49,7 +49,7 @@ public abstract class Subpass {
     protected abstract void updateShaderProgram(@NonNull ShaderProgram shaderProgram, @Nullable ICamera camera, @Nullable Object payload);
 
     /**
-     * Whether to run {@link DrawQueue#compile(GraphicResourceManager)} before {@link #execute(DrawQueue)}.
+     * Whether to run {@link DrawQueue#compile(GraphicResourceManager)} before {@link #execute(DrawQueue, Object)}.
      *
      * @see DrawQueue#compile(GraphicResourceManager)
      * @return The hint
@@ -57,7 +57,7 @@ public abstract class Subpass {
     protected abstract boolean hintCompileDrawQueue();
 
     /**
-     * Whether to run {@link DrawQueue#simplify(IndirectDrawBufferGenerator)} before {@link #execute(DrawQueue)}.
+     * Whether to run {@link DrawQueue#simplify(IndirectDrawBufferGenerator)} before {@link #execute(DrawQueue, Object)}.
      *
      * @see DrawQueue#simplify(IndirectDrawBufferGenerator)
      * @return The hint

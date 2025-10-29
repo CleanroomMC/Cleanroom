@@ -26,6 +26,7 @@ import com.cleanroommc.kirino.gl.vao.attribute.AttributeLayout;
 import com.cleanroommc.kirino.gl.vao.attribute.Slot;
 import com.cleanroommc.kirino.gl.vao.attribute.Stride;
 import com.cleanroommc.kirino.gl.vao.attribute.Type;
+import com.cleanroommc.kirino.utils.Reference;
 import com.cleanroommc.kirino.utils.ReflectionUtils;
 import com.google.common.base.Preconditions;
 import net.minecraft.client.Minecraft;
@@ -38,7 +39,6 @@ import org.lwjgl.opengl.*;
 
 import java.nio.ByteBuffer;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class RenderingCoordinator {
     public final boolean enableHDR;
@@ -46,8 +46,8 @@ public class RenderingCoordinator {
 
     // ---------- OpenGL Related Resources (initialization deferred) ----------
     private final FrameFinalizer frameFinalizer;
-    private final AtomicReference<IndirectDrawBufferGenerator> idbGenerator;
-    private final AtomicReference<VAO> fullscreenTriangleVao;
+    private final Reference<IndirectDrawBufferGenerator> idbGenerator;
+    private final Reference<VAO> fullscreenTriangleVao;
 
     // ---------- Utilities ----------
     private final GLStateBackup stateBackup;
@@ -78,8 +78,8 @@ public class RenderingCoordinator {
         this.enableHDR = enableHDR;
         this.enablePostProcessing = enablePostProcessing;
 
-        idbGenerator = new AtomicReference<>();
-        fullscreenTriangleVao = new AtomicReference<>();
+        idbGenerator = new Reference<>();
+        fullscreenTriangleVao = new Reference<>();
 
         stateBackup = new GLStateBackup();
 
@@ -107,7 +107,7 @@ public class RenderingCoordinator {
 
         gizmosManager = new GizmosManager(graphicResourceManager);
 
-        //stagingBufferManager.genPersistentBuffers("default", 256, 256);
+//        stagingBufferManager.genPersistentBuffers("default", 256, 256);
 
         ShaderProgram shaderProgram = shaderRegistry.newShaderProgram("forge:shaders/gizmos.vert", "forge:shaders/gizmos.frag");
 
@@ -139,7 +139,11 @@ public class RenderingCoordinator {
                 new RenderPass("Post-Processing", graphicResourceManager, idbGenerator),
                 renderer,
                 fullscreenTriangleVao);
-        postProcessingPass.addSubpass("Tone Mapping Pass", shaderProgram, ToneMappingPass::new);
+
+        // test
+        if (enablePostProcessing) {
+            postProcessingPass.addSubpass("Tone Mapping Pass", shaderProgram, ToneMappingPass::new);
+        }
 
         RenderPass toneMappingPass = new RenderPass("Tone Mapping", graphicResourceManager, idbGenerator);
         toneMappingPass.addSubpass("Tone Mapping Pass", new ToneMappingPass(
@@ -150,12 +154,21 @@ public class RenderingCoordinator {
         frameFinalizer = new FrameFinalizer(logger, postProcessingPass, toneMappingPass, enableHDR, enablePostProcessing);
     }
 
-    private boolean deferredInit = true;
-
     /**
      * Defer all OpenGL related allocation.
      */
-    private void deferredInit() {
+    public void deferredInit() {
+        //<editor-fold desc="post-processing runtime check">
+        postProcessingPass.lock();
+        if (enablePostProcessing) {
+            Preconditions.checkState(postProcessingPass.getSubpassCount() >= 1,
+                    "Post-processing is enabled. Post-processing pass must have at least one subpasses at runtime to work as expected.");
+        } else {
+            Preconditions.checkState(postProcessingPass.getSubpassCount() == 0,
+                    "Post-processing is disabled. Post-processing pass must have exactly zero subpasses at runtime to work as expected.");
+        }
+        //</editor-fold>
+
         //<editor-fold desc="frame finalizer initialization">
         int[] result = new int[1];
         GL11C.glGetIntegerv(GL30.GL_DRAW_FRAMEBUFFER_BINDING, result);
@@ -179,6 +192,15 @@ public class RenderingCoordinator {
         GL11.glClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
         GL11.glClearDepth(clearDepth[0]);
         GL11.glClearStencil(clearStencil[0]);
+        //</editor-fold>
+
+        //<editor-fold desc="post-processing manager late initialization">
+        if (enablePostProcessing) {
+            postProcessingPass.lateInit(
+                    frameFinalizer.getMinecraftFramebuffer(),
+                    frameFinalizer.getPingPongFramebuffer(),
+                    frameFinalizer.getIntermediateFramebuffer());
+        }
         //</editor-fold>
 
         //<editor-fold desc="idb generator initialization">
@@ -213,18 +235,6 @@ public class RenderingCoordinator {
         VAO fullscreenTriangleVao = new VAO(fullscreenTriangleLayout, eboView, vboView);
         this.fullscreenTriangleVao.set(fullscreenTriangleVao);
         //</editor-fold>
-
-        //<editor-fold desc="post-processing manager late initialization">
-        if (enablePostProcessing) {
-            Preconditions.checkState(postProcessingPass.getSubpassCount() >= 1,
-                    "Post-processing pass must have at least one subpass at runtime to work as expected");
-
-            postProcessingPass.lateInit(
-                    frameFinalizer.getMinecraftFramebuffer(),
-                    frameFinalizer.getPingPongFramebuffer(),
-                    frameFinalizer.getIntermediateFramebuffer());
-        }
-        //</editor-fold>
     }
 
     public void update() {
@@ -242,11 +252,6 @@ public class RenderingCoordinator {
         // only read states once to prevent huge amount of pipeline stalls
         if (!stateBackup.isStored()) {
             stateBackup.storeStates();
-        }
-
-        if (deferredInit) {
-            deferredInit();
-            deferredInit = false;
         }
 
         frameFinalizer.updateResolution();

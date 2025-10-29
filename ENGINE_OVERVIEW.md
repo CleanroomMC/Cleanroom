@@ -180,7 +180,7 @@ public static void onComponentScan(ComponentScanningEvent event) {
 ```
 
 > Note:
-> - Available types `T` = {`int`, `float`, `boolean`, `org.joml.Vector2f`, `org.joml.Vector3f`, `org.joml.Vector4f`, `org.joml.Matrix3f`, `org.joml.Matrix4f`}
+> - Built-in available types `T` = {`int`, `float`, `boolean`, `org.joml.Vector2f`, `org.joml.Vector3f`, `org.joml.Vector4f`, `org.joml.Matrix3f`, `org.joml.Matrix4f`}
 > - You can only use any of `T` or the structs you defined in a struct
 > - Yan can only use any of `T` or the structs you defined in a component
 
@@ -191,21 +191,28 @@ Kirino Engine contains:
 - More coordinators coming soon...
 
 `RenderingCoordinator` contains:
-- Framebuffers
-- A resolution container that handles automated framebuffer resize
-- An ECS world `MinecraftScene`
-- `MinecraftCamera` which wraps Minecraft's `ActiveRenderInfo`
-- `ShaderRegistry` and all shader-related stuff
-- `StagingBufferManager` to centralize CPU-to-GPU data uploading & handle buffering
-- `GraphicResourceManager` to manage resource tickets and their lifecycles (pure logic)
-- `GizmosManager` for debug visuals
-- A bunch of `RenderPass`es
+- **OpenGL related resources**
+  - Frame finalizer
+  - Indirect draw command generator
+  - Fullscreen triangle instance
+- **Utilities**
+  - OpenGL state backup util
+- **Logic**
+  - Minecraft scene (an ECS world)
+  - Minecraft camera
+- **Shaders**
+  - Shader registry
+- **Managers**
+  - Staging buffer manager (where to upload buffer)
+  - Graphic resource manager (where to manage resource lifecycle)
+  - Gizmos manager (where to manage debug visuals)
+- **Render Passes**
 
 ### Engine's Lifecycle
-`KirinoCore.updateAndRender()` is the only entry point of the Kirino Engine
+`KirinoCore.updateAndRender()` is the only entry point of the Kirino Engine (currently)
 ```java
 public static void updateAndRender(long finishTimeNano) {
-    // KIRINO_ENGINE.renderingCoordinator.run*Pass
+    // KIRINO_ENGINE.renderingCoordinator.doThings()
 }
 ```
 
@@ -218,13 +225,13 @@ public static void updateAndRender(long finishTimeNano) {
 The following pseudocode illustrates the concept
 ```java
 RenderPass pass = new RenderPass("Main Pass");
-pass.addSubpass("Opaque Pass", new OpaquePass(renderer, opaquePSO, framebuffer));
-pass.addSubpass("Cutout Pass", new CutoutPass(renderer, cutoutPSO, framebuffer));
-pass.addSubpass("Transparent Pass", new TransparentPass(renderer, transparentPSO, framebuffer));
+pass.addSubpass("Opaque Pass", new OpaquePass(renderer, opaquePSO));
+pass.addSubpass("Cutout Pass", new CutoutPass(renderer, cutoutPSO));
+pass.addSubpass("Transparent Pass", new TransparentPass(renderer, transparentPSO));
 pass.render(camera);
 ```
 
-As you can see, each subpass (`OpaquePass`/`CutoutPass`/`TransparentPass`) defines both its rendering logic and its associated `PSO` (Pipeline State Object) and `FBO` (Framebuffer).
+As you can see, each subpass (`OpaquePass`/`CutoutPass`/`TransparentPass`) defines both its rendering logic and its associated `PSO` (Pipeline State Object).
 
 ## 2.1 Pipeline State Object
 A `PSO` can be seen as an immutable value type that contains multiple GL states like `depth`, `raster` etc. 
@@ -236,9 +243,13 @@ We introduce `PSO` to avoid `GL.turnOn* -> render -> GL.turnOff*`-ish operations
 
 ## 2.2 Framebuffer
 A framebuffer, also known as a render target, is the target of a subpass.
-Multi-resolution support is enforced here to facilitate future upgrades.
+Multi-resolution and HDR support is enforced by `FrameFinalizer` to facilitate future upgrades.
 
-It's not recommended to instantiate framebuffers and use them on your own.
+Framebuffers are managed and initiated by our frame finalizer (`RenderingCoordinator.frameFinalizer`).
+`FrameFinalizer` can be seen as the simplified version of Frame Graph (Frame Graph is able to analyze the dependencies between render passes and framebuffers automatically),
+where we handle framebuffer dependencies and swaps manually and hide the complexity under simple interfaces.
+
+> Note: Render passes can't bind their target framebuffers. Every framebuffer-related thing is handled by `FrameFinalizer`.
 
 ## 2.3 Render Pass & Subpass
 `RenderPass` is a container that doesn't handle any of the rendering logic or implementations but stores `Subpass`es in an order.

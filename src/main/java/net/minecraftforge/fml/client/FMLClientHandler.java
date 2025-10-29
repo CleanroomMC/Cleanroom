@@ -395,6 +395,8 @@ public class FMLClientHandler implements IFMLSidedHandler
         if (!hasError())
             Loader.instance().loadingComplete();
         SplashProgress.finish();
+
+        KirinoCore.postInit();
     }
 
     public void extendModList()
