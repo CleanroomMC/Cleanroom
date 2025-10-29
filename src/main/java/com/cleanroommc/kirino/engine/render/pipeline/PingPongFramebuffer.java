@@ -18,6 +18,9 @@ public final class PingPongFramebuffer {
         }
     }
 
+    private final Framebuffer persistentA;
+    private final Framebuffer persistentB;
+
     private Framebuffer framebufferA;
     private Framebuffer framebufferB;
 
@@ -49,6 +52,11 @@ public final class PingPongFramebuffer {
         framebufferB = oldA;
     }
 
+    public void reset() {
+        framebufferA = persistentA;
+        framebufferB = persistentB;
+    }
+
     public void resize(int width, int height) {
         framebufferA.resizeInternal(width, height);
         framebufferB.resizeInternal(width, height);
@@ -57,5 +65,7 @@ public final class PingPongFramebuffer {
     public PingPongFramebuffer(int width, int height) {
         framebufferA = new Framebuffer(width, height);
         framebufferB = new Framebuffer(width, height);
+        persistentA = framebufferA;
+        persistentB = framebufferB;
     }
 }

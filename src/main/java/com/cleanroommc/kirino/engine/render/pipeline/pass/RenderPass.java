@@ -6,6 +6,7 @@ import com.cleanroommc.kirino.engine.render.pipeline.draw.IndirectDrawBufferGene
 import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
 import com.cleanroommc.kirino.gl.debug.KHRDebug;
 import com.google.common.base.Preconditions;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public final class RenderPass {
         render(camera, null, null);
     }
 
-    public void render(ICamera camera, @Nullable BiConsumer<String, Integer> subpassCallback, @Nullable Object[] payloads) {
+    public void render(@NonNull ICamera camera, @Nullable BiConsumer<String, Integer> subpassCallback, @Nullable Object[] payloads) {
         if (payloads != null) {
             Preconditions.checkArgument(payloads.length == size(),
                     "Payloads length (%d) must equal to the size (%d) of this render pass.", payloads.length, size());
