@@ -393,6 +393,9 @@ public class RenderingCoordinator {
     /**
      * Scale the {@link #mainFramebuffer} if necessary and then post-process if necessary.
      * Whichever combination it is, result will be blitted to minecraft framebuffer.
+     *
+     * <p><b>⚠ WARNING: Combinatorial logic here is a mess but it works! Must not touch this method and its related resources unless necessary,
+     * including {@link #mainFramebuffer}, {@link #postProcessingFramebuffer}, {@link #intermediateFramebuffer}, {@link #postProcessingManager}.</b></p>
      */
     private void scaleAndPostProcessAndBlit() {
         // todo: blit depth
