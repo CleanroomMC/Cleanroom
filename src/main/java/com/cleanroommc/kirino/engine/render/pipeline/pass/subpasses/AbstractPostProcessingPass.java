@@ -12,6 +12,7 @@ import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;
 import com.cleanroommc.kirino.gl.vao.VAO;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL13;
@@ -19,7 +20,7 @@ import org.lwjgl.opengl.GL20;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class PostProcessingPass extends Subpass {
+public abstract class AbstractPostProcessingPass extends Subpass {
     private final AtomicReference<VAO> fullscreenTriangleVao;
 
     /**
@@ -27,13 +28,14 @@ public abstract class PostProcessingPass extends Subpass {
      * @param pso                   A pipeline state object (pipeline parameters)
      * @param fullscreenTriangleVao The global fullscreen triangle VAO
      */
-    public PostProcessingPass(@NonNull Renderer renderer, @NonNull PipelineStateObject pso, @NonNull AtomicReference<VAO> fullscreenTriangleVao) {
+    public AbstractPostProcessingPass(@NonNull Renderer renderer, @NonNull PipelineStateObject pso, @NonNull AtomicReference<VAO> fullscreenTriangleVao) {
         super(renderer, pso);
         this.fullscreenTriangleVao = fullscreenTriangleVao;
     }
 
+    @SuppressWarnings("DataFlowIssue")
     @Override
-    protected void updateShaderProgram(ShaderProgram shaderProgram, ICamera camera, Object payload) {
+    protected void updateShaderProgram(@NonNull ShaderProgram shaderProgram, @Nullable ICamera camera, @Nullable Object payload) {
         Framebuffer framebuffer = (Framebuffer) payload;
         ColorAttachment colorAttachment = (ColorAttachment) framebuffer.getColorAttachment(0);
 

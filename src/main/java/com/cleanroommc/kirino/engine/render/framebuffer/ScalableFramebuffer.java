@@ -1,9 +1,9 @@
-package com.cleanroommc.kirino.engine.render.pipeline;
+package com.cleanroommc.kirino.engine.render.framebuffer;
 
 import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
 import com.google.common.base.Preconditions;
 
-public final class MainFramebuffer {
+public final class ScalableFramebuffer {
     public final Framebuffer framebuffer;
     // between (0.0, 2.0] for upscaling & downscaling purposes
     public final float defaultRatio;
@@ -41,7 +41,7 @@ public final class MainFramebuffer {
         scheduledToResize = true;
     }
 
-    public MainFramebuffer(int width, int height, float defaultRatio) {
+    public ScalableFramebuffer(int width, int height, float defaultRatio) {
         framebuffer = new Framebuffer((int) (width * defaultRatio), (int) (height * defaultRatio));
         this.defaultRatio = defaultRatio;
         ratio = defaultRatio;

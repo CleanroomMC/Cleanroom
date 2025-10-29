@@ -8,6 +8,7 @@ import com.cleanroommc.kirino.engine.render.pipeline.pass.Subpass;
 import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class UpscalingPass extends Subpass {
     /**
@@ -19,7 +20,7 @@ public class UpscalingPass extends Subpass {
     }
 
     @Override
-    protected void updateShaderProgram(ShaderProgram shaderProgram, ICamera camera, Object payload) {
+    protected void updateShaderProgram(@NonNull ShaderProgram shaderProgram, @Nullable ICamera camera, @Nullable Object payload) {
 
     }
 

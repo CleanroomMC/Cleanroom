@@ -7,7 +7,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ToneMappingPass extends PostProcessingPass {
+public class ToneMappingPass extends AbstractPostProcessingPass {
     /**
      * @param renderer              A global renderer
      * @param pso                   A pipeline state object (pipeline parameters)

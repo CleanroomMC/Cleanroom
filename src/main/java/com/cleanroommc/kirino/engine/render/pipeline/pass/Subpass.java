@@ -27,7 +27,7 @@ public abstract class Subpass {
 
     public final void render(
             @NonNull DrawQueue drawQueue,
-            @NonNull ICamera camera,
+            @Nullable ICamera camera,
             @NonNull GraphicResourceManager graphicResourceManager,
             @NonNull IndirectDrawBufferGenerator idbGenerator,
             @Nullable Object payload) {
@@ -46,7 +46,7 @@ public abstract class Subpass {
         execute(dq, payload);
     }
 
-    protected abstract void updateShaderProgram(ShaderProgram shaderProgram, ICamera camera, Object payload);
+    protected abstract void updateShaderProgram(@NonNull ShaderProgram shaderProgram, @Nullable ICamera camera, @Nullable Object payload);
 
     /**
      * Whether to run {@link DrawQueue#compile(GraphicResourceManager)} before {@link #execute(DrawQueue)}.

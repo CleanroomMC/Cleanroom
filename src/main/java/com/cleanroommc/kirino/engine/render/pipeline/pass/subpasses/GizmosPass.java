@@ -11,6 +11,7 @@ import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;
 import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL20C;
 
@@ -27,8 +28,9 @@ public class GizmosPass extends Subpass {
         this.gizmosManager = gizmosManager;
     }
 
+    @SuppressWarnings("DataFlowIssue")
     @Override
-    protected void updateShaderProgram(ShaderProgram shaderProgram, ICamera camera, Object payload) {
+    protected void updateShaderProgram(@NonNull ShaderProgram shaderProgram, @Nullable ICamera camera, @Nullable Object payload) {
         int worldOffset = GL20.glGetUniformLocation(shaderProgram.getProgramID(), "worldOffset");
         int viewRot = GL20.glGetUniformLocation(shaderProgram.getProgramID(), "viewRot");
         int projection = GL20.glGetUniformLocation(shaderProgram.getProgramID(), "projection");

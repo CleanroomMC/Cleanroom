@@ -59,11 +59,11 @@ public final class RenderPass {
         list.add(decorator);
     }
 
-    public void render(ICamera camera) {
+    public void render(@Nullable ICamera camera) {
         render(camera, null, null);
     }
 
-    public void render(@NonNull ICamera camera, @Nullable BiConsumer<String, Integer> subpassCallback, @Nullable Object[] payloads) {
+    public void render(@Nullable ICamera camera, @Nullable BiConsumer<String, Integer> subpassCallback, @Nullable Object[] payloads) {
         if (payloads != null) {
             Preconditions.checkArgument(payloads.length == size(),
                     "Payloads length (%d) must equal to the size (%d) of this render pass.", payloads.length, size());

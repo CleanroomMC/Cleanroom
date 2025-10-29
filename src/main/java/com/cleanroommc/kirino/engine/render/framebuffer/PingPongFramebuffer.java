@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.engine.render.pipeline;
+package com.cleanroommc.kirino.engine.render.framebuffer;
 
 import com.google.common.base.Preconditions;
 
