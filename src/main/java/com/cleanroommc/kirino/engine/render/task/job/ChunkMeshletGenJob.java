@@ -35,8 +35,13 @@ public class ChunkMeshletGenJob implements IParallelJob {
     @JobDataQuery(componentClass = ChunkComponent.class, fieldAccessChain = {"chunkPosZ"})
     public IPrimitiveArray chunkPosZArray;
 
+    @JobDataQuery(componentClass = ChunkComponent.class, fieldAccessChain = {"isDirty"})
+    public boolean isChunkDirty;
+
     @Override
     public void execute(EntityManager entityManager, int index) {
+        if (!isChunkDirty)
+            return;
         int x = chunkPosXArray.getInt(index);
         int z = chunkPosZArray.getInt(index);
         Chunk chunk = chunkProvider.provideChunk(x, z);
