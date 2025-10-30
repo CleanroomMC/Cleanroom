@@ -9,6 +9,12 @@ import com.cleanroommc.kirino.engine.render.pipeline.pass.subpasses.*;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.RenderPass;
 import com.cleanroommc.kirino.engine.render.pipeline.post.FrameFinalizer;
 import com.cleanroommc.kirino.engine.render.pipeline.post.PostProcessingPass;
+import com.cleanroommc.kirino.engine.render.pipeline.post.event.PostProcessingRegistrationEvent;
+import com.cleanroommc.kirino.engine.render.pipeline.post.subpasses.AbstractPostProcessingPass;
+import com.cleanroommc.kirino.engine.render.pipeline.post.subpasses.DownscalingPass;
+import com.cleanroommc.kirino.engine.render.pipeline.post.subpasses.DefaultPostProcessingPass;
+import com.cleanroommc.kirino.engine.render.pipeline.post.subpasses.UpscalingPass;
+import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
 import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
 import com.cleanroommc.kirino.engine.render.scene.MinecraftScene;
 import com.cleanroommc.kirino.engine.render.shader.ShaderRegistry;
@@ -33,11 +39,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
+import org.apache.commons.lang3.function.TriFunction;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RenderingCoordinator {
@@ -69,8 +78,6 @@ public class RenderingCoordinator {
     // ---------- Render Passes ----------
     private final RenderPass chunkCpuPass;
     private final RenderPass gizmosPass;
-    private final RenderPass upscalingPass;
-    private final RenderPass downscalingPass;
     public final PostProcessingPass postProcessingPass;
 
     @SuppressWarnings({"DataFlowIssue", "unchecked"})
@@ -123,35 +130,52 @@ public class RenderingCoordinator {
                 PSOPresets.createGizmosPSO(shaderProgram),
                 gizmosManager));
 
-        upscalingPass = new RenderPass("Upscaling", graphicResourceManager, idbGenerator);
-        upscalingPass.addSubpass("Upscaling Pass", new UpscalingPass(
-                renderer,
-                PSOPresets.createScreenOverwritePSO(shaderProgram)));
-
-        downscalingPass = new RenderPass("Downscaling", graphicResourceManager, idbGenerator);
-        downscalingPass.addSubpass("Downscaling Pass", new DownscalingPass(
-                renderer,
-                PSOPresets.createScreenOverwritePSO(shaderProgram)));
-
-        shaderProgram = shaderRegistry.newShaderProgram("forge:shaders/post_processing.vert", "forge:shaders/post_processing.frag");
-
         postProcessingPass = new PostProcessingPass(
                 new RenderPass("Post-Processing", graphicResourceManager, idbGenerator),
                 renderer,
                 fullscreenTriangleVao);
 
-        // test
         if (enablePostProcessing) {
-            postProcessingPass.addSubpass("Tone Mapping Pass", shaderProgram, ToneMappingPass::new);
+            PostProcessingRegistrationEvent postProcessingRegistrationEvent = new PostProcessingRegistrationEvent(shaderRegistry);
+            eventBus.post(postProcessingRegistrationEvent);
+            List<Triple<String, ShaderProgram, TriFunction<Renderer, PipelineStateObject, Reference<VAO>, AbstractPostProcessingPass>>> postProcessingEntries =
+                    (List<Triple<String, ShaderProgram, TriFunction<Renderer, PipelineStateObject, Reference<VAO>, AbstractPostProcessingPass>>>) ReflectionUtils.getFieldValue(ReflectionUtils.findDeclaredField(PostProcessingRegistrationEvent.class, "postProcessingEntries"), postProcessingRegistrationEvent);
+            if (postProcessingEntries.isEmpty()) {
+                ShaderProgram defaultShaderProgram = shaderRegistry.newShaderProgram("forge:shaders/post_processing.vert", "forge:shaders/pp_default.frag");
+                postProcessingPass.addSubpass("Default Pass", defaultShaderProgram, DefaultPostProcessingPass::new);
+            } else {
+                List<String> names = new ArrayList<>();
+                for (Triple<String, ShaderProgram, TriFunction<Renderer, PipelineStateObject, Reference<VAO>, AbstractPostProcessingPass>> entry: postProcessingEntries) {
+                    postProcessingPass.addSubpass(entry.getLeft(), entry.getMiddle(), entry.getRight());
+                    if (names.contains(entry.getLeft())) {
+                        logger.info("Warning! Post-processing pass name \"" + entry.getLeft() + "\" isn't unique. This registration will be ignored.");
+                    } else {
+                        logger.info("Registered post-processing pass \"" + entry.getLeft() + "\".");
+                        names.add(entry.getLeft());
+                    }
+                }
+            }
         }
 
+        shaderProgram = shaderRegistry.newShaderProgram("forge:shaders/post_processing.vert", "forge:shaders/pp_tone_mapping.frag");
+
         RenderPass toneMappingPass = new RenderPass("Tone Mapping", graphicResourceManager, idbGenerator);
-        toneMappingPass.addSubpass("Tone Mapping Pass", new ToneMappingPass(
+        toneMappingPass.addSubpass("Tone Mapping Pass", new DefaultPostProcessingPass(
                 renderer,
                 PSOPresets.createScreenOverwritePSO(shaderProgram),
                 fullscreenTriangleVao));
 
-        frameFinalizer = new FrameFinalizer(logger, postProcessingPass, toneMappingPass, enableHDR, enablePostProcessing);
+        RenderPass upscalingPass = new RenderPass("Upscaling", graphicResourceManager, idbGenerator);
+        upscalingPass.addSubpass("Upscaling Pass", new UpscalingPass(
+                renderer,
+                PSOPresets.createScreenOverwritePSO(shaderProgram)));
+
+        RenderPass downscalingPass = new RenderPass("Downscaling", graphicResourceManager, idbGenerator);
+        downscalingPass.addSubpass("Downscaling Pass", new DownscalingPass(
+                renderer,
+                PSOPresets.createScreenOverwritePSO(shaderProgram)));
+
+        frameFinalizer = new FrameFinalizer(logger, postProcessingPass, toneMappingPass, upscalingPass, downscalingPass, enableHDR, enablePostProcessing);
     }
 
     /**

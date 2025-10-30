@@ -5,6 +5,8 @@ import com.cleanroommc.kirino.ecs.component.scan.event.ComponentScanningEvent;
 import com.cleanroommc.kirino.ecs.component.scan.event.StructScanningEvent;
 import com.cleanroommc.kirino.ecs.job.event.JobRegistrationEvent;
 import com.cleanroommc.kirino.engine.KirinoEngine;
+import com.cleanroommc.kirino.engine.render.pipeline.post.event.PostProcessingRegistrationEvent;
+import com.cleanroommc.kirino.engine.render.pipeline.post.subpasses.DefaultPostProcessingPass;
 import com.cleanroommc.kirino.engine.render.task.job.ChunkMeshletGenJob;
 import com.cleanroommc.kirino.engine.render.shader.event.ShaderRegistrationEvent;
 import com.cleanroommc.kirino.gl.GLTest;
@@ -375,6 +377,10 @@ public class KirinoCore {
             Method onJobRegister = KirinoCore.class.getDeclaredMethod("onJobRegister", JobRegistrationEvent.class);
             registerMethod.invoke(KIRINO_EVENT_BUS, JobRegistrationEvent.class, KirinoCore.class, onJobRegister, Loader.instance().getMinecraftModContainer());
             LOGGER.info("Registered the default JobRegistrationEvent listener.");
+
+            Method onPostProcessingRegister = KirinoCore.class.getDeclaredMethod("onPostProcessingRegister", PostProcessingRegistrationEvent.class);
+            registerMethod.invoke(KIRINO_EVENT_BUS, PostProcessingRegistrationEvent.class, KirinoCore.class, onPostProcessingRegister, Loader.instance().getMinecraftModContainer());
+            LOGGER.info("Registered the default PostProcessingRegistrationEvent listener.");
         } catch (Throwable throwable) {
             throw new RuntimeException("Failed to register default event listeners.", throwable);
         }
@@ -479,6 +485,15 @@ public class KirinoCore {
         event.register(new ResourceLocation("forge:shaders/gizmos.vert"));
         event.register(new ResourceLocation("forge:shaders/gizmos.frag"));
         event.register(new ResourceLocation("forge:shaders/post_processing.vert"));
-        event.register(new ResourceLocation("forge:shaders/post_processing.frag"));
+        event.register(new ResourceLocation("forge:shaders/pp_tone_mapping.frag"));
+        event.register(new ResourceLocation("forge:shaders/pp_default.frag"));
+    }
+
+    @SubscribeEvent
+    public static void onPostProcessingRegister(PostProcessingRegistrationEvent event) {
+        event.register(
+                "Whatever Pass",
+                event.newShaderProgram("forge:shaders/post_processing.vert", "forge:shaders/pp_default.frag"),
+                DefaultPostProcessingPass::new);
     }
 }

@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.engine.render.pipeline.pass.subpasses;
+package com.cleanroommc.kirino.engine.render.pipeline.post.subpasses;
 
 import com.cleanroommc.kirino.engine.render.camera.ICamera;
 import com.cleanroommc.kirino.engine.render.pipeline.Renderer;
@@ -10,12 +10,12 @@ import com.cleanroommc.kirino.gl.shader.ShaderProgram;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-public class UpscalingPass extends Subpass {
+public class DownscalingPass extends Subpass {
     /**
      * @param renderer A global renderer
      * @param pso      A pipeline state object (pipeline parameters)
      */
-    public UpscalingPass(@NonNull Renderer renderer, @NonNull PipelineStateObject pso) {
+    public DownscalingPass(@NonNull Renderer renderer, @NonNull PipelineStateObject pso) {
         super(renderer, pso);
     }
 

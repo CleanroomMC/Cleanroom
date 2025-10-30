@@ -28,6 +28,8 @@ public class FrameFinalizer {
 
     private final PostProcessingPass postProcessingPass;
     private final RenderPass toneMappingPass;
+    private final RenderPass upscalingPass;
+    private final RenderPass downscalingPass;
 
     private ResolutionContainer resolution;
     private ScalableFramebuffer mainFramebuffer;
@@ -55,11 +57,20 @@ public class FrameFinalizer {
         return minecraftFramebuffer;
     }
 
-    public FrameFinalizer(Logger logger, PostProcessingPass postProcessingPass, RenderPass toneMappingPass, boolean enableHDR, boolean enablePostProcessing) {
+    public FrameFinalizer(
+            Logger logger,
+            PostProcessingPass postProcessingPass,
+            RenderPass toneMappingPass,
+            RenderPass upscalingPass,
+            RenderPass downscalingPass,
+            boolean enableHDR,
+            boolean enablePostProcessing) {
         this.enableHDR = enableHDR;
         this.enablePostProcessing = enablePostProcessing;
         this.postProcessingPass = postProcessingPass;
         this.toneMappingPass = toneMappingPass;
+        this.upscalingPass = upscalingPass;
+        this.downscalingPass = downscalingPass;
         this.logger = logger;
     }
 
