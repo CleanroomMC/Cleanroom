@@ -29,6 +29,9 @@ public class ChunkMeshletGenJob implements IParallelJob {
     @JobExternalDataQuery
     public ChunkProviderClient chunkProvider;
 
+    @JobExternalDataQuery
+    public int startY;
+
     @JobDataQuery(componentClass = ChunkComponent.class, fieldAccessChain = {"chunkPosX"})
     public IPrimitiveArray chunkPosXArray;
 
@@ -48,12 +51,9 @@ public class ChunkMeshletGenJob implements IParallelJob {
         KirinoCore.LOGGER.info("debug chunk xz: {}, {}", x, z);
         List<Meshlet> meshlets = new ObjectArrayList<>();
         MeshletComponent meshletComponent = new MeshletComponent();
-        // TODO: Replace 256 with a variable in case we ever want to give people an option to increase the world height
-        for (int y = 0; y < 256; y += 16) {
-            if (!chunk.isEmptyBetween(y, y+16)) {
-                for (EnumFacing side : EnumFacing.values()) {
-                     meshlets.addAll(generateMeshlets(chunk, y, side));
-                }
+        if (!chunk.isEmptyBetween(startY, startY+16)) {
+            for (EnumFacing side : EnumFacing.values()) {
+                meshlets.addAll(generateMeshlets(chunk, startY, side));
             }
         }
         for (Meshlet meshlet : meshlets) {
