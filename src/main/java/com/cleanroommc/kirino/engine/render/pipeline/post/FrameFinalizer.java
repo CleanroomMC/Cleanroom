@@ -85,7 +85,7 @@ public class FrameFinalizer {
         logger.info("Framebuffer HDR: " + (enableHDR ? "ON" : "OFF"));
         logger.info("Framebuffer Post-processing: " + (enablePostProcessing ? "ON" : "OFF") + "; Pass Count: " + postProcessingPass.getSubpassCount());
 
-        mainFramebuffer = new ScalableFramebuffer(MINECRAFT.displayWidth, MINECRAFT.displayHeight, 1f);
+        mainFramebuffer = new ScalableFramebuffer(MINECRAFT.displayWidth, MINECRAFT.displayHeight, 0.5f);
         logger.info("Initiated the main frambuffer: " + mainFramebuffer.framebuffer.width() + ", " + mainFramebuffer.framebuffer.height());
 
         // these two are mutually exclusive
@@ -194,20 +194,11 @@ public class FrameFinalizer {
             color0Tex.bind(0);
             intermediateFramebuffer.attach(new ColorAttachment(0, color0Tex));
 
-            Texture2DView depthTex = new Texture2DView(new GLTexture(intermediateFramebuffer.width(), intermediateFramebuffer.height()));
-            depthTex.bind();
-            depthTex.alloc(null, TextureFormat.D24S8);
-            depthTex.set(FilterMode.NEAREST, FilterMode.NEAREST, WrapMode.CLAMP, WrapMode.CLAMP);
-            depthTex.bind(0);
-            intermediateFramebuffer.attach(new DepthStencilAttachment(depthTex));
-
             intermediateFramebuffer.check();
 
             GL11.glViewport(0, 0, intermediateFramebuffer.width(), intermediateFramebuffer.height());
             GL11.glClearColor(0, 0, 0, 0);
-            GL11.glClearDepth(1);
-            GL11.glClearStencil(0);
-            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
             logger.info("Intermediate framebuffer created. ID: " + intermediateFramebuffer.fboID);
         }
@@ -224,20 +215,11 @@ public class FrameFinalizer {
             color0Tex.bind(0);
             pingPongFramebuffer.framebufferA().attach(new ColorAttachment(0, color0Tex));
 
-            Texture2DView depthTex = new Texture2DView(new GLTexture(pingPongFramebuffer.width(), pingPongFramebuffer.height()));
-            depthTex.bind();
-            depthTex.alloc(null, TextureFormat.D24S8);
-            depthTex.set(FilterMode.NEAREST, FilterMode.NEAREST, WrapMode.CLAMP, WrapMode.CLAMP);
-            depthTex.bind(0);
-            pingPongFramebuffer.framebufferA().attach(new DepthStencilAttachment(depthTex));
-
             pingPongFramebuffer.framebufferA().check();
 
             GL11.glViewport(0, 0, pingPongFramebuffer.width(), pingPongFramebuffer.height());
             GL11.glClearColor(0, 0, 0, 0);
-            GL11.glClearDepth(1);
-            GL11.glClearStencil(0);
-            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
             logger.info("Ping-pong framebuffer A created. ID: " + pingPongFramebuffer.framebufferA().fboID);
         }
@@ -254,20 +236,11 @@ public class FrameFinalizer {
             color0Tex.bind(0);
             pingPongFramebuffer.framebufferB().attach(new ColorAttachment(0, color0Tex));
 
-            Texture2DView depthTex = new Texture2DView(new GLTexture(pingPongFramebuffer.width(), pingPongFramebuffer.height()));
-            depthTex.bind();
-            depthTex.alloc(null, TextureFormat.D24S8);
-            depthTex.set(FilterMode.NEAREST, FilterMode.NEAREST, WrapMode.CLAMP, WrapMode.CLAMP);
-            depthTex.bind(0);
-            pingPongFramebuffer.framebufferB().attach(new DepthStencilAttachment(depthTex));
-
             pingPongFramebuffer.framebufferB().check();
 
             GL11.glViewport(0, 0, pingPongFramebuffer.width(), pingPongFramebuffer.height());
             GL11.glClearColor(0, 0, 0, 0);
-            GL11.glClearDepth(1);
-            GL11.glClearStencil(0);
-            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
             logger.info("Ping-pong framebuffer B created. ID: " + pingPongFramebuffer.framebufferB().fboID);
         }
@@ -308,7 +281,48 @@ public class FrameFinalizer {
      * <p><b>⚠ WARNING: Combinatorial logic here is over complicated but it works! Must not touch this method and its related resources unless necessary.</b></p>
      */
     public void finalizeFramebuffer() {
-        // todo: blit depth
+        //<editor-fold desc="blit depth to minecraft framebuffer">
+        if (mainFramebuffer.getRatio() == 1f) {
+            // just in case the size and format of main framebuffer and minecraft frambuffer mismatch
+            if (mainFramebuffer.framebuffer.width() != MINECRAFT.getFramebuffer().framebufferTextureWidth ||
+                    mainFramebuffer.framebuffer.height() != MINECRAFT.getFramebuffer().framebufferTextureHeight ||
+                    !MINECRAFT.getFramebuffer().isStencilEnabled()) {
+                GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, mainFramebuffer.framebuffer.fboID);
+                GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, MINECRAFT.getFramebuffer().framebufferObject);
+                GL30.glBlitFramebuffer(
+                        0, 0, mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height(),
+                        0, 0, MINECRAFT.getFramebuffer().framebufferTextureWidth, MINECRAFT.getFramebuffer().framebufferTextureHeight,
+                        MINECRAFT.getFramebuffer().isStencilEnabled() ? GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT : GL11.GL_DEPTH_BUFFER_BIT, GL11.GL_NEAREST);
+            } else {
+                ColorAttachment colorAttachmentSrc = ((ColorAttachment) mainFramebuffer.framebuffer.getColorAttachment(0));
+                GL43.glCopyImageSubData(
+                        colorAttachmentSrc.texture2D.texture.textureID,
+                        colorAttachmentSrc.texture2D.target(),
+                        0, 0, 0, 0,
+                        MINECRAFT.getFramebuffer().framebufferTexture,
+                        GL11.GL_TEXTURE_2D,
+                        0, 0, 0, 0,
+                        colorAttachmentSrc.texture2D.texture.width(),
+                        colorAttachmentSrc.texture2D.texture.height(),
+                        1);
+                GL42.glMemoryBarrier(GL42.GL_TEXTURE_FETCH_BARRIER_BIT | GL42.GL_FRAMEBUFFER_BARRIER_BIT);
+            }
+        } else if (mainFramebuffer.getRatio() < 1f) {
+            GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, mainFramebuffer.framebuffer.fboID);
+            GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, MINECRAFT.getFramebuffer().framebufferObject);
+            GL30.glBlitFramebuffer(
+                    0, 0, mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height(),
+                    0, 0, MINECRAFT.getFramebuffer().framebufferTextureWidth, MINECRAFT.getFramebuffer().framebufferTextureHeight,
+                    MINECRAFT.getFramebuffer().isStencilEnabled() ? GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT : GL11.GL_DEPTH_BUFFER_BIT, GL11.GL_NEAREST);
+        } else if (mainFramebuffer.getRatio() > 1f) {
+            GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, mainFramebuffer.framebuffer.fboID);
+            GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, MINECRAFT.getFramebuffer().framebufferObject);
+            GL30.glBlitFramebuffer(
+                    0, 0, mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height(),
+                    0, 0, MINECRAFT.getFramebuffer().framebufferTextureWidth, MINECRAFT.getFramebuffer().framebufferTextureHeight,
+                    MINECRAFT.getFramebuffer().isStencilEnabled() ? GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT : GL11.GL_DEPTH_BUFFER_BIT, GL11.GL_NEAREST);
+        }
+        //</editor-fold>
 
         // main framebuffer -> minecraft framebuffer
         //<editor-fold desc="no hdr & no post-processing">
