@@ -95,6 +95,7 @@ public class KirinoCore {
         GlStateManager.enableCull();
 
         // ========== clear ==========
+        // note: update fog color; bottom part of the sky
         MINECRAFT.profiler.startSection("clear");
         try {
             updateFogColor.invoke(MINECRAFT.entityRenderer, partialTicks);
@@ -127,6 +128,7 @@ public class KirinoCore {
 
         // ========== sky ==========
         MINECRAFT.profiler.endStartSection("sky");
+        // note: sun and moon etc.
         if (MINECRAFT.gameSettings.renderDistanceChunks >= 4) {
             try {
                 setupFog.invoke(MINECRAFT.entityRenderer, -1, partialTicks);
@@ -149,6 +151,8 @@ public class KirinoCore {
             Project.gluPerspective(fovModifier, (float) MINECRAFT.displayWidth / (float) MINECRAFT.displayHeight, 0.05F, farPlaneDistance.apply(MINECRAFT.entityRenderer) * MathHelper.SQRT_2);
             GlStateManager.matrixMode(5888);
         }
+
+        // note: cloud
         try {
             setupFog.invoke(MINECRAFT.entityRenderer, 0, partialTicks);
         } catch (Throwable e) {
@@ -163,6 +167,8 @@ public class KirinoCore {
             }
         }
         MINECRAFT.profiler.endSection();
+
+        // note: skybox and basic stuff are done
         //</editor-fold>
 
         KIRINO_ENGINE.renderingCoordinator.update();
@@ -179,10 +185,11 @@ public class KirinoCore {
 
         // ========== entities ==========
         MINECRAFT.profiler.startSection("entities");
+        // note: default value of debugView == false
+        GlStateManager.shadeModel(7424);
+        GlStateManager.enableAlpha();
+        GlStateManager.alphaFunc(516, 0.1F);
         if (!debugView.apply(MINECRAFT.entityRenderer)) {
-            GlStateManager.shadeModel(7424);
-            GlStateManager.enableAlpha();
-            GlStateManager.alphaFunc(516, 0.1F);
             GlStateManager.matrixMode(5888);
             GlStateManager.pushMatrix();
             RenderHelper.enableStandardItemLighting();
@@ -194,9 +201,11 @@ public class KirinoCore {
             GlStateManager.matrixMode(5888);
             GlStateManager.popMatrix();
         }
+        GlStateManager.matrixMode(5888);
 
         // ========== outline ==========
         MINECRAFT.profiler.endStartSection("outline");
+        // note: block select box; on by default
         if (flag && MINECRAFT.objectMouseOver != null && !entity.isInsideOfMaterial(Material.WATER)) {
             EntityPlayer entityplayer = (EntityPlayer) entity;
             GlStateManager.disableAlpha();
@@ -205,6 +214,7 @@ public class KirinoCore {
             }
             GlStateManager.enableAlpha();
         }
+        // note: debug visuals; off by default
         if (MINECRAFT.debugRenderer.shouldRender()) {
             MINECRAFT.debugRenderer.renderDebug(partialTicks, finishTimeNano);
         }
@@ -219,6 +229,7 @@ public class KirinoCore {
         GlStateManager.disableBlend();
         MINECRAFT.profiler.endSection();
 
+        // note: default value of debugView == false
         if (!debugView.apply(MINECRAFT.entityRenderer)) {
             // ========== litParticles ==========
             MINECRAFT.profiler.startSection("litParticles");
@@ -240,6 +251,7 @@ public class KirinoCore {
 
         // ========== weather ==========
         MINECRAFT.profiler.startSection("weather");
+        // note: weather like rain etc.
         GlStateManager.depthMask(false);
         GlStateManager.enableCull();
         try {
@@ -270,6 +282,7 @@ public class KirinoCore {
         //<editor-fold desc="vanilla logic">
         // ========== entities ==========
         MINECRAFT.profiler.startSection("entities");
+        // note: default value of debugView == false
         if (!debugView.apply(MINECRAFT.entityRenderer)) {
             RenderHelper.enableStandardItemLighting();
             net.minecraftforge.client.ForgeHooksClient.setRenderPass(1);

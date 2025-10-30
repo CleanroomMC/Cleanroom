@@ -33,8 +33,8 @@ public class FrameFinalizer {
 
     private ResolutionContainer resolution;
     private ScalableFramebuffer mainFramebuffer;
-    private PingPongFramebuffer pingPongFramebuffer; // postProcessingManager is the only place to swap and use this framebuffer
-    private Framebuffer intermediateFramebuffer; // use it to do scaling if (hdr is on AND (post-processing is disabled OR post-processing pass count == 1))
+    private PingPongFramebuffer pingPongFramebuffer;
+    private Framebuffer intermediateFramebuffer;
     private net.minecraft.client.shader.Framebuffer minecraftFramebuffer;
 
     public ResolutionContainer getResolution() {
@@ -85,7 +85,7 @@ public class FrameFinalizer {
         logger.info("Framebuffer HDR: " + (enableHDR ? "ON" : "OFF"));
         logger.info("Framebuffer Post-processing: " + (enablePostProcessing ? "ON" : "OFF") + "; Pass Count: " + postProcessingPass.getSubpassCount());
 
-        mainFramebuffer = new ScalableFramebuffer(MINECRAFT.displayWidth, MINECRAFT.displayHeight, 0.5f);
+        mainFramebuffer = new ScalableFramebuffer(MINECRAFT.displayWidth, MINECRAFT.displayHeight, 1f);
         logger.info("Initiated the main frambuffer: " + mainFramebuffer.framebuffer.width() + ", " + mainFramebuffer.framebuffer.height());
 
         // these two are mutually exclusive
