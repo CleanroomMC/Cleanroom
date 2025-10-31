@@ -3,6 +3,8 @@ package com.cleanroommc.kirino.engine.render;
 import com.cleanroommc.kirino.ecs.CleanECSRuntime;
 import com.cleanroommc.kirino.engine.render.camera.MinecraftCamera;
 import com.cleanroommc.kirino.engine.render.gizmos.GizmosManager;
+import com.cleanroommc.kirino.engine.render.patch.MinecraftEntityRendering;
+import com.cleanroommc.kirino.engine.render.patch.MinecraftTESRRendering;
 import com.cleanroommc.kirino.engine.render.pipeline.*;
 import com.cleanroommc.kirino.engine.render.pipeline.draw.IndirectDrawBufferGenerator;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.subpasses.*;
@@ -65,6 +67,10 @@ public class RenderingCoordinator {
     public final MinecraftScene scene;
     public final MinecraftCamera camera;
 
+    // ---------- Patch ----------
+    public final MinecraftEntityRendering entityRendering;
+    public final MinecraftTESRRendering tesrRendering;
+
     // ---------- Shaders ----------
     private final ShaderRegistry shaderRegistry;
     private final GLSLRegistry glslRegistry;
@@ -92,6 +98,9 @@ public class RenderingCoordinator {
 
         scene = new MinecraftScene(ecsRuntime.entityManager, ecsRuntime.jobScheduler);
         camera = new MinecraftCamera();
+
+        entityRendering = new MinecraftEntityRendering();
+        tesrRendering = new MinecraftTESRRendering();
 
         shaderRegistry = new ShaderRegistry();
         ShaderRegistrationEvent shaderRegistrationEvent = new ShaderRegistrationEvent();

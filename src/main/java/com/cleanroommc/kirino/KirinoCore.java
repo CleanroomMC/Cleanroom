@@ -22,6 +22,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
@@ -73,8 +75,6 @@ public class KirinoCore {
      */
     public static void updateAndRender(long finishTimeNano) {
         KIRINO_ENGINE.renderingCoordinator.preUpdate();
-
-        // todo: replace vanilla logic one by one
 
         //<editor-fold desc="vanilla logic">
         KIRINO_ENGINE.renderingCoordinator.camera.getProjectionBuffer().clear();
@@ -172,8 +172,8 @@ public class KirinoCore {
         //</editor-fold>
 
         KIRINO_ENGINE.renderingCoordinator.update();
-        //KIRINO_ENGINE.renderingCoordinator.updateWorld(MINECRAFT.world);
-        //KIRINO_ENGINE.renderingCoordinator.runChunkCpuPass();
+//        KIRINO_ENGINE.renderingCoordinator.updateWorld(MINECRAFT.world);
+//        KIRINO_ENGINE.renderingCoordinator.runChunkCpuPass();
 
         //<editor-fold desc="vanilla logic">
         boolean flag = false;
@@ -185,17 +185,29 @@ public class KirinoCore {
 
         // ========== entities ==========
         MINECRAFT.profiler.startSection("entities");
-        // note: default value of debugView == false
         GlStateManager.shadeModel(7424);
         GlStateManager.enableAlpha();
         GlStateManager.alphaFunc(516, 0.1F);
+        // note: default value of debugView == false
         if (!debugView.apply(MINECRAFT.entityRenderer)) {
             GlStateManager.matrixMode(5888);
             GlStateManager.pushMatrix();
             RenderHelper.enableStandardItemLighting();
-            net.minecraftforge.client.ForgeHooksClient.setRenderPass(0);
-            MINECRAFT.renderGlobal.renderEntities(entity, icamera, partialTicks);
-            net.minecraftforge.client.ForgeHooksClient.setRenderPass(0);
+            ForgeHooksClient.setRenderPass(0);
+//            MINECRAFT.renderGlobal.renderEntities(entity, icamera, partialTicks);
+            KIRINO_ENGINE.renderingCoordinator.entityRendering.renderEntities(
+                    MINECRAFT.getRenderViewEntity(),
+                    MINECRAFT.pointedEntity,
+                    MINECRAFT.player,
+                    icamera,
+                    MINECRAFT.gameSettings,
+                    MINECRAFT.world,
+                    MINECRAFT.fontRenderer,
+                    MINECRAFT.getRenderManager(),
+                    MINECRAFT.entityRenderer,
+                    partialTicks,
+                    MinecraftForgeClient.getRenderPass());
+            ForgeHooksClient.setRenderPass(0);
             RenderHelper.disableStandardItemLighting();
             MINECRAFT.entityRenderer.disableLightmap();
             GlStateManager.matrixMode(5888);
@@ -209,7 +221,7 @@ public class KirinoCore {
         if (flag && MINECRAFT.objectMouseOver != null && !entity.isInsideOfMaterial(Material.WATER)) {
             EntityPlayer entityplayer = (EntityPlayer) entity;
             GlStateManager.disableAlpha();
-            if (!net.minecraftforge.client.ForgeHooksClient.onDrawBlockHighlight(MINECRAFT.renderGlobal, entityplayer, MINECRAFT.objectMouseOver, 0, partialTicks)) {
+            if (!ForgeHooksClient.onDrawBlockHighlight(MINECRAFT.renderGlobal, entityplayer, MINECRAFT.objectMouseOver, 0, partialTicks)) {
                 MINECRAFT.renderGlobal.drawSelectionBox(entityplayer, MINECRAFT.objectMouseOver, 0, partialTicks);
             }
             GlStateManager.enableAlpha();
@@ -277,7 +289,7 @@ public class KirinoCore {
         MINECRAFT.profiler.endSection();
         //</editor-fold>
 
-        //KIRINO_ENGINE.renderingCoordinator.renderWorldTransparent();
+//        KIRINO_ENGINE.renderingCoordinator.renderWorldTransparent();
 
         //<editor-fold desc="vanilla logic">
         // ========== entities ==========
@@ -285,10 +297,22 @@ public class KirinoCore {
         // note: default value of debugView == false
         if (!debugView.apply(MINECRAFT.entityRenderer)) {
             RenderHelper.enableStandardItemLighting();
-            net.minecraftforge.client.ForgeHooksClient.setRenderPass(1);
-            MINECRAFT.renderGlobal.renderEntities(entity, icamera, partialTicks);
+            ForgeHooksClient.setRenderPass(1);
+//            MINECRAFT.renderGlobal.renderEntities(entity, icamera, partialTicks);
+            KIRINO_ENGINE.renderingCoordinator.entityRendering.renderEntities(
+                    MINECRAFT.getRenderViewEntity(),
+                    MINECRAFT.pointedEntity,
+                    MINECRAFT.player,
+                    icamera,
+                    MINECRAFT.gameSettings,
+                    MINECRAFT.world,
+                    MINECRAFT.fontRenderer,
+                    MINECRAFT.getRenderManager(),
+                    MINECRAFT.entityRenderer,
+                    partialTicks,
+                    MinecraftForgeClient.getRenderPass());
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            net.minecraftforge.client.ForgeHooksClient.setRenderPass(-1);
+            ForgeHooksClient.setRenderPass(-1);
             RenderHelper.disableStandardItemLighting();
         }
         GlStateManager.shadeModel(7424);
@@ -309,7 +333,7 @@ public class KirinoCore {
 
         // ========== forge_render_last ==========
         MINECRAFT.profiler.endStartSection("forge_render_last");
-        net.minecraftforge.client.ForgeHooksClient.dispatchRenderLast(MINECRAFT.renderGlobal, partialTicks);
+        ForgeHooksClient.dispatchRenderLast(MINECRAFT.renderGlobal, partialTicks);
 
         // ========== hand ==========
         MINECRAFT.profiler.endStartSection("hand");
