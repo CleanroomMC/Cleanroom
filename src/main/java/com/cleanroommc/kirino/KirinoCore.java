@@ -11,6 +11,7 @@ import com.cleanroommc.kirino.engine.render.shader.event.ShaderRegistrationEvent
 import com.cleanroommc.kirino.gl.GLTest;
 import com.cleanroommc.kirino.gl.debug.*;
 import com.cleanroommc.kirino.utils.ReflectionUtils;
+import com.google.common.base.Preconditions;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
@@ -38,7 +39,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
@@ -119,12 +119,12 @@ public class KirinoCore {
 
         // ========== culling ==========
         MINECRAFT.profiler.endStartSection("culling");
-        Entity entity = MINECRAFT.getRenderViewEntity();
-        double d0 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double) partialTicks;
-        double d1 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double) partialTicks;
-        double d2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double) partialTicks;
-        ICamera icamera = new Frustum();
-        icamera.setPosition(d0, d1, d2);
+        Entity renderViewEntity = MINECRAFT.getRenderViewEntity();
+        double d0 = renderViewEntity.lastTickPosX + (renderViewEntity.posX - renderViewEntity.lastTickPosX) * (double) partialTicks;
+        double d1 = renderViewEntity.lastTickPosY + (renderViewEntity.posY - renderViewEntity.lastTickPosY) * (double) partialTicks;
+        double d2 = renderViewEntity.lastTickPosZ + (renderViewEntity.posZ - renderViewEntity.lastTickPosZ) * (double) partialTicks;
+        ICamera cameraFrustum = new Frustum();
+        cameraFrustum.setPosition(d0, d1, d2);
 
         // ========== sky ==========
         MINECRAFT.profiler.endStartSection("sky");
@@ -176,6 +176,12 @@ public class KirinoCore {
 //        KIRINO_ENGINE.renderingCoordinator.runChunkCpuPass();
 
         //<editor-fold desc="vanilla logic">
+        KIRINO_ENGINE.renderingCoordinator.cullingPatch.collectEntitiesInView(
+                renderViewEntity,
+                cameraFrustum,
+                MINECRAFT.world.getChunkProvider(),
+                partialTicks);
+
         boolean flag = false;
         try {
             flag = (boolean) isDrawBlockOutline.invoke(MINECRAFT.entityRenderer);
@@ -194,17 +200,27 @@ public class KirinoCore {
             GlStateManager.pushMatrix();
             RenderHelper.enableStandardItemLighting();
             ForgeHooksClient.setRenderPass(0);
-//            MINECRAFT.renderGlobal.renderEntities(entity, icamera, partialTicks);
-            KIRINO_ENGINE.renderingCoordinator.entityRendering.renderEntities(
+            KIRINO_ENGINE.renderingCoordinator.entityRenderingPatch.renderEntities(
                     MINECRAFT.getRenderViewEntity(),
                     MINECRAFT.pointedEntity,
                     MINECRAFT.player,
-                    icamera,
+                    cameraFrustum,
                     MINECRAFT.gameSettings,
                     MINECRAFT.world,
                     MINECRAFT.fontRenderer,
                     MINECRAFT.getRenderManager(),
                     MINECRAFT.entityRenderer,
+                    partialTicks,
+                    MinecraftForgeClient.getRenderPass());
+            KIRINO_ENGINE.renderingCoordinator.tesrRenderingPatch.renderTESRs(
+                    MINECRAFT.getRenderViewEntity(),
+                    cameraFrustum,
+                    MINECRAFT.world,
+                    MINECRAFT.fontRenderer,
+                    MINECRAFT.entityRenderer,
+                    MINECRAFT.getTextureManager(),
+                    MINECRAFT.objectMouseOver,
+                    MINECRAFT.renderGlobal,
                     partialTicks,
                     MinecraftForgeClient.getRenderPass());
             ForgeHooksClient.setRenderPass(0);
@@ -218,8 +234,8 @@ public class KirinoCore {
         // ========== outline ==========
         MINECRAFT.profiler.endStartSection("outline");
         // note: block select box; on by default
-        if (flag && MINECRAFT.objectMouseOver != null && !entity.isInsideOfMaterial(Material.WATER)) {
-            EntityPlayer entityplayer = (EntityPlayer) entity;
+        if (flag && MINECRAFT.objectMouseOver != null && !renderViewEntity.isInsideOfMaterial(Material.WATER)) {
+            EntityPlayer entityplayer = (EntityPlayer) renderViewEntity;
             GlStateManager.disableAlpha();
             if (!ForgeHooksClient.onDrawBlockHighlight(MINECRAFT.renderGlobal, entityplayer, MINECRAFT.objectMouseOver, 0, partialTicks)) {
                 MINECRAFT.renderGlobal.drawSelectionBox(entityplayer, MINECRAFT.objectMouseOver, 0, partialTicks);
@@ -236,7 +252,7 @@ public class KirinoCore {
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         MINECRAFT.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
-        MINECRAFT.renderGlobal.drawBlockDamageTexture(Tessellator.getInstance(), Tessellator.getInstance().getBuffer(), entity, partialTicks);
+        MINECRAFT.renderGlobal.drawBlockDamageTexture(Tessellator.getInstance(), Tessellator.getInstance().getBuffer(), renderViewEntity, partialTicks);
         MINECRAFT.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
         GlStateManager.disableBlend();
         MINECRAFT.profiler.endSection();
@@ -246,7 +262,7 @@ public class KirinoCore {
             // ========== litParticles ==========
             MINECRAFT.profiler.startSection("litParticles");
             MINECRAFT.entityRenderer.enableLightmap();
-            MINECRAFT.effectRenderer.renderLitParticles(entity, partialTicks);
+            MINECRAFT.effectRenderer.renderLitParticles(renderViewEntity, partialTicks);
             RenderHelper.disableStandardItemLighting();
             try {
                 setupFog.invoke(MINECRAFT.entityRenderer, 0, partialTicks);
@@ -256,7 +272,7 @@ public class KirinoCore {
 
             // ========== particles ==========
             MINECRAFT.profiler.endStartSection("particles");
-            MINECRAFT.effectRenderer.renderParticles(entity, partialTicks);
+            MINECRAFT.effectRenderer.renderParticles(renderViewEntity, partialTicks);
             MINECRAFT.entityRenderer.disableLightmap();
             MINECRAFT.profiler.endSection();
         }
@@ -272,7 +288,7 @@ public class KirinoCore {
             throw new RuntimeException(e);
         }
         GlStateManager.depthMask(true);
-        MINECRAFT.renderGlobal.renderWorldBorder(entity, partialTicks);
+        MINECRAFT.renderGlobal.renderWorldBorder(renderViewEntity, partialTicks);
         GlStateManager.disableBlend();
         GlStateManager.enableCull();
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
@@ -298,17 +314,27 @@ public class KirinoCore {
         if (!debugView.apply(MINECRAFT.entityRenderer)) {
             RenderHelper.enableStandardItemLighting();
             ForgeHooksClient.setRenderPass(1);
-//            MINECRAFT.renderGlobal.renderEntities(entity, icamera, partialTicks);
-            KIRINO_ENGINE.renderingCoordinator.entityRendering.renderEntities(
+            KIRINO_ENGINE.renderingCoordinator.entityRenderingPatch.renderEntities(
                     MINECRAFT.getRenderViewEntity(),
                     MINECRAFT.pointedEntity,
                     MINECRAFT.player,
-                    icamera,
+                    cameraFrustum,
                     MINECRAFT.gameSettings,
                     MINECRAFT.world,
                     MINECRAFT.fontRenderer,
                     MINECRAFT.getRenderManager(),
                     MINECRAFT.entityRenderer,
+                    partialTicks,
+                    MinecraftForgeClient.getRenderPass());
+            KIRINO_ENGINE.renderingCoordinator.tesrRenderingPatch.renderTESRs(
+                    MINECRAFT.getRenderViewEntity(),
+                    cameraFrustum,
+                    MINECRAFT.world,
+                    MINECRAFT.fontRenderer,
+                    MINECRAFT.entityRenderer,
+                    MINECRAFT.getTextureManager(),
+                    MINECRAFT.objectMouseOver,
+                    MINECRAFT.renderGlobal,
                     partialTicks,
                     MinecraftForgeClient.getRenderPass());
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
@@ -323,7 +349,7 @@ public class KirinoCore {
 
         // ========== aboveClouds ==========
         MINECRAFT.profiler.endStartSection("aboveClouds");
-        if (entity.posY + (double) entity.getEyeHeight() >= 128.0D) {
+        if (renderViewEntity.posY + (double) renderViewEntity.getEyeHeight() >= 128.0D) {
             try {
                 renderCloudsCheck.invoke(MINECRAFT.entityRenderer, MINECRAFT.renderGlobal, partialTicks, 2, d0, d1, d2);
             } catch (Throwable e) {
@@ -471,18 +497,18 @@ public class KirinoCore {
         debugView = (Function<EntityRenderer, Boolean>) ReflectionUtils.getDeclaredFieldGetter(EntityRenderer.class, "debugView", "field_175078_W");
         isRenderHand = (Function<EntityRenderer, Boolean>) ReflectionUtils.getDeclaredFieldGetter(EntityRenderer.class, "renderHand", "field_175074_C");
 
-        Objects.requireNonNull(setupCameraTransform);
-        Objects.requireNonNull(updateFogColor);
-        Objects.requireNonNull(setupFog);
-        Objects.requireNonNull(getFOVModifier);
-        Objects.requireNonNull(renderCloudsCheck);
-        Objects.requireNonNull(isDrawBlockOutline);
-        Objects.requireNonNull(updateLightmap);
-        Objects.requireNonNull(renderRainSnow);
-        Objects.requireNonNull(renderHand);
-        Objects.requireNonNull(farPlaneDistance);
-        Objects.requireNonNull(debugView);
-        Objects.requireNonNull(isRenderHand);
+        Preconditions.checkNotNull(setupCameraTransform);
+        Preconditions.checkNotNull(updateFogColor);
+        Preconditions.checkNotNull(setupFog);
+        Preconditions.checkNotNull(getFOVModifier);
+        Preconditions.checkNotNull(renderCloudsCheck);
+        Preconditions.checkNotNull(isDrawBlockOutline);
+        Preconditions.checkNotNull(updateLightmap);
+        Preconditions.checkNotNull(renderRainSnow);
+        Preconditions.checkNotNull(renderHand);
+        Preconditions.checkNotNull(farPlaneDistance);
+        Preconditions.checkNotNull(debugView);
+        Preconditions.checkNotNull(isRenderHand);
         //</editor-fold>
     }
 

@@ -3,6 +3,7 @@ package com.cleanroommc.kirino.engine.render;
 import com.cleanroommc.kirino.ecs.CleanECSRuntime;
 import com.cleanroommc.kirino.engine.render.camera.MinecraftCamera;
 import com.cleanroommc.kirino.engine.render.gizmos.GizmosManager;
+import com.cleanroommc.kirino.engine.render.patch.MinecraftCulling;
 import com.cleanroommc.kirino.engine.render.patch.MinecraftEntityRendering;
 import com.cleanroommc.kirino.engine.render.patch.MinecraftTESRRendering;
 import com.cleanroommc.kirino.engine.render.pipeline.*;
@@ -67,9 +68,10 @@ public class RenderingCoordinator {
     public final MinecraftScene scene;
     public final MinecraftCamera camera;
 
-    // ---------- Patch ----------
-    public final MinecraftEntityRendering entityRendering;
-    public final MinecraftTESRRendering tesrRendering;
+    // ---------- Patches ----------
+    public final MinecraftCulling cullingPatch;
+    public final MinecraftEntityRendering entityRenderingPatch;
+    public final MinecraftTESRRendering tesrRenderingPatch;
 
     // ---------- Shaders ----------
     private final ShaderRegistry shaderRegistry;
@@ -99,8 +101,9 @@ public class RenderingCoordinator {
         scene = new MinecraftScene(ecsRuntime.entityManager, ecsRuntime.jobScheduler);
         camera = new MinecraftCamera();
 
-        entityRendering = new MinecraftEntityRendering();
-        tesrRendering = new MinecraftTESRRendering();
+        cullingPatch = new MinecraftCulling();
+        entityRenderingPatch = new MinecraftEntityRendering(cullingPatch);
+        tesrRenderingPatch = new MinecraftTESRRendering(cullingPatch);
 
         shaderRegistry = new ShaderRegistry();
         ShaderRegistrationEvent shaderRegistrationEvent = new ShaderRegistrationEvent();

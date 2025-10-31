@@ -11,37 +11,23 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ClassInheritanceMultiMap;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.chunk.Chunk;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class MinecraftEntityRendering {
+    private final MinecraftCulling cullingPatch;
+
+    public MinecraftEntityRendering(MinecraftCulling cullingPatch) {
+        this.cullingPatch = cullingPatch;
+    }
+
     private int renderEntitiesStartupCounter = 2;
+
     private int countEntitiesTotal = 0;
     private int countEntitiesRendered = 0;
     private int countEntitiesHidden = 0;
-
-    private final Set<Entity> entitiesInView = new HashSet<>();
-
-    // todo: integrate ECS-world and jobs
-    private void collectEntitiesInView(ChunkProviderClient chunkProvider) {
-        entitiesInView.clear();
-
-        List<Chunk> chunksInView = new ArrayList<>();
-
-        chunksInView.addAll(chunkProvider.getLoadedChunks().values());
-
-        for (Chunk chunk : chunksInView) {
-            for (ClassInheritanceMultiMap<Entity> entitiesInCubicChunk: chunk.getEntityLists()) {
-                entitiesInView.addAll(entitiesInCubicChunk);
-            }
-        }
-    }
 
     private boolean isEntityOutlineActive(Entity entityIn, Entity viewer, EntityPlayerSP player, ICamera camera, GameSettings gameSettings) {
         boolean flag = viewer instanceof EntityLivingBase && ((EntityLivingBase) viewer).isPlayerSleeping();
@@ -57,6 +43,9 @@ public class MinecraftEntityRendering {
         }
     }
 
+    /**
+     * Must call {@link MinecraftCulling#collectEntitiesInView(Entity, ICamera, ChunkProviderClient, float)} before this method call.
+     */
     public void renderEntities(
             Entity renderViewEntity,
             Entity pointedEntity,
@@ -79,7 +68,6 @@ public class MinecraftEntityRendering {
         }
 
         if (forgeRenderPass == 0) {
-            collectEntitiesInView(world.getChunkProvider());
             countEntitiesTotal = world.getLoadedEntityList().size();
             countEntitiesRendered = 0;
             countEntitiesHidden = 0;
@@ -90,10 +78,7 @@ public class MinecraftEntityRendering {
         double viewPosZ = renderViewEntity.prevPosZ + (renderViewEntity.posZ - renderViewEntity.prevPosZ) * (double) partialTicks;
 
         renderManager.cacheActiveRenderInfo(world, fontRenderer, renderViewEntity, pointedEntity, gameSettings, partialTicks);
-        renderManager.setRenderPosition(
-                renderViewEntity.lastTickPosX + (renderViewEntity.posX - renderViewEntity.lastTickPosX) * (double) partialTicks,
-                renderViewEntity.lastTickPosY + (renderViewEntity.posY - renderViewEntity.lastTickPosY) * (double) partialTicks,
-                renderViewEntity.lastTickPosZ + (renderViewEntity.posZ - renderViewEntity.lastTickPosZ) * (double) partialTicks);
+        renderManager.setRenderPosition(viewPosX, viewPosY, viewPosZ);
 
         entityRenderer.enableLightmap();
 
@@ -113,7 +98,7 @@ public class MinecraftEntityRendering {
         List<Entity> multipassEntities = new ArrayList<>();
 
         BlockPos.PooledMutableBlockPos blockPos = BlockPos.PooledMutableBlockPos.retain();
-        for (Entity entity : entitiesInView) {
+        for (Entity entity : cullingPatch.entitiesInView) {
             if (!entity.shouldRenderInPass(forgeRenderPass)) {
                 continue;
             }
@@ -181,5 +166,7 @@ public class MinecraftEntityRendering {
 //                this.mc.getFramebuffer().bindFramebuffer(false);
 //            }
 //        }
+
+        entityRenderer.disableLightmap();
     }
 }
