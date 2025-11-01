@@ -708,7 +708,7 @@ public class Loader
         return canonicalConfigDir;
     }
 
-    public File getModDir()
+    public File getModsDir()
     {
         return canonicalModsDir;
     }

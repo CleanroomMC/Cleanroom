@@ -59,8 +59,7 @@ public class GuiErrorBase extends GuiErrorScreen
         {
             try
             {
-                File modsDir = new File(minecraftDir, "mods");
-                Desktop.getDesktop().open(modsDir);
+                Desktop.getDesktop().open(Loader.instance().getModsDir());
             }
             catch (Exception e)
             {

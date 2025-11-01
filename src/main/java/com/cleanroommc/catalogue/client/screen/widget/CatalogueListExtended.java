@@ -59,7 +59,7 @@ public abstract class CatalogueListExtended extends GuiListExtended {
 
         // Scroll Bar
         if (this.scrollBarVisible) {
-            this.drawScrollBar(tessellator, maxScroll);
+            this.drawScrollBar(maxScroll);
         }
 
         // Customized decorations. Empty by default.
@@ -71,7 +71,8 @@ public abstract class CatalogueListExtended extends GuiListExtended {
         GlStateManager.disableBlend();
     }
 
-    protected void drawScrollBar(Tessellator tessellator, int maxScroll) {
+    protected void drawScrollBar(int maxScroll) {
+        Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
 
         int scrollBarLeft = this.getScrollBarX();
@@ -145,7 +146,7 @@ public abstract class CatalogueListExtended extends GuiListExtended {
     @Deprecated
     @Override
     protected void drawSelectionBox(int contentLeft, int contentTop, int mouseXIn, int mouseYIn, float partialTicks) {
-        this.drawSelectionBox(mouseX, mouseY, partialTicks);
+        this.drawSelectionBox(mouseXIn, mouseYIn, partialTicks);
     }
 
     @Override

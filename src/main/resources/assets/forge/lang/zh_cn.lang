@@ -203,6 +203,8 @@ forge.controlsgui.control.mac=CMD + %s
 forge.controlsgui.alt=ALT + %s
 
 fml.menu.mods=模组
+fml.menu.mods.normal=普通
+fml.menu.mods.search=搜索：
 
 item.forge.bucketFilled.name=%s桶
 

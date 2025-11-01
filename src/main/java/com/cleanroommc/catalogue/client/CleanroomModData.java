@@ -58,77 +58,88 @@ public class CleanroomModData implements IModData {
     }
 
     @Override
-    public @NotNull String getVersion() {
+    public String getVersion() {
         return this.info.getDisplayVersion();
     }
 
     @Override
-    public @NotNull String getInnerVersion() {
+    public String getInnerVersion() {
         return this.info.getVersion();
     }
 
+    @Nullable
     @Override
-    public @NotNull String getDescription() {
+    public String getDescription() {
         ModMetadata metadata = this.getMetadata();
-        return metadata != null ? metadata.description : "";
+        return metadata != null ? metadata.description : null;
     }
 
+    @Nullable
     @Override
-    public @NotNull String getItemIcon() {
+    public String getItemIcon() {
         ModMetadata metadata = this.getMetadata();
-        return metadata != null ? metadata.iconItem : "";
+        return metadata != null ? metadata.iconItem : null;
     }
 
+    @Nullable
     @Override
-    public @NotNull String getImageIcon() {
+    public String getImageIcon() {
         ModMetadata metadata = this.getMetadata();
-        return metadata != null ? metadata.iconFile : "";
+        return metadata != null ? metadata.iconFile : null;
     }
 
+    @Nullable
     @Override
-    public @NotNull String getLicense() {
+    public String getLicense() {
         ModMetadata metadata = this.getMetadata();
-        return metadata != null ? metadata.license : "";
+        return metadata != null ? metadata.license : null;
     }
 
+    @Nullable
     @Override
-    public @NotNull String getCredits() {
+    public String getCredits() {
         ModMetadata metadata = this.getMetadata();
-        return metadata != null ? metadata.credits : "";
+        return metadata != null ? metadata.credits : null;
     }
 
+    @Nullable
     @Override
-    public @NotNull String getAuthors() {
+    public String getAuthors() {
         ModMetadata metadata = this.getMetadata();
-        return metadata != null ? metadata.getAuthorList() : "";
+        return metadata != null ? metadata.getAuthorList() : null;
     }
 
+    @Nullable
     @Override
-    public @NotNull String getHomepage() {
+    public String getHomepage() {
         ModMetadata metadata = this.getMetadata();
-        return metadata != null ? metadata.url : "";
+        return metadata != null ? metadata.url : null;
     }
 
+    @Nullable
     @Override
-    public @NotNull String getIssueTracker() {
+    public String getIssueTracker() {
         ModMetadata metadata = this.getMetadata();
-        return metadata != null ? metadata.issueTrackerUrl : "";
+        return metadata != null ? metadata.issueTrackerUrl : null;
     }
 
+    @Nullable
     @Override
-    public @NotNull String getBanner() {
+    public String getBanner() {
         ModMetadata metadata = this.getMetadata();
-        return metadata != null ? metadata.logoFile : "";
+        return metadata != null ? metadata.logoFile : null;
     }
 
+    @Nullable
     @Override
-    public @NotNull String getBackground() {
+    public String getBackground() {
         ModMetadata metadata = this.getMetadata();
-        return metadata != null ? metadata.backgroundFile : "";
+        return metadata != null ? metadata.backgroundFile : null;
     }
 
+    @Nullable
     @Override
-    public @Nullable Update getUpdate() {
+    public Update getUpdate() {
         ForgeVersion.CheckResult result = ForgeVersion.getCleanResult(this.info);
         if (result != null && result.status.shouldDraw()) {
             return new Update(result.status.isAnimated(), result.url, result.status.getSheetOffset(), VERSION_CHECK_ICONS, result.status == ForgeVersion.Status.OUTDATED || result.status == ForgeVersion.Status.BETA_OUTDATED, result.latestFound, result.homepage);
@@ -173,10 +184,11 @@ public class CleanroomModData implements IModData {
         Gui.drawModalRectWithCustomSizedTexture(x, y, update.texOffset() * 8, vOffset, 8, 8, 64, 16);
     }
 
+    @Nullable
     @Override
-    public @NotNull String getUpdateText(Update update) {
+    public String getUpdateText(Update update) {
         ForgeVersion.CheckResult result = ForgeVersion.getCleanResult(this.info);
-        if (result == null) return "";
+        if (result == null) return null;
         switch (result.status) {
             case BETA:
                 return TextFormatting.GOLD + I18n.format("catalogue.gui.beta");
@@ -195,20 +207,22 @@ public class CleanroomModData implements IModData {
                     return TextFormatting.GREEN + I18n.format("catalogue.gui.update_available_no_page", update.latestFound());
                 }
         }
-        return "";
+        return null;
     }
 
+    @Nullable
     @Override
-    public @Nullable IResourcePack getResourcePack() {
+    public IResourcePack getResourcePack() {
         return FMLClientHandler.instance().getResourcePackFor(this.getModId());
     }
 
-    private @Nullable ModMetadata getMetadata() {
+    @Nullable
+    private ModMetadata getMetadata() {
         ModMetadata metadata = this.info.getMetadata();
         return metadata != null && !metadata.autogenerated ? metadata : null;
     }
 
-    private Type analyzeType(ModContainer info) {
+    private Type analyzeType(@NotNull ModContainer info) {
         if (LIB_MODS.contains(info.getModId())) {
             return Type.LIBRARY;
         } else {
@@ -216,7 +230,7 @@ public class CleanroomModData implements IModData {
         }
     }
 
-    private Set<String> analyzeDependencies(ModContainer source) {
+    private Set<String> analyzeDependencies(@NotNull ModContainer source) {
         List<? extends ArtifactVersion> versions = source.getDependencies();
         return versions.stream()
                 .map(ArtifactVersion::getLabel)

@@ -37,10 +37,6 @@ public class ClientHelper {
         return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
     }
 
-    public static boolean isPlayingGame() {
-        return Minecraft.getMinecraft().player != null;
-    }
-
     public static void blitNineSlicedSprite(NineSlice nineSlice, int x, int y, int width, int height) {
         blitNineSlicedSprite(nineSlice, x, y, 0, width, height);
     }

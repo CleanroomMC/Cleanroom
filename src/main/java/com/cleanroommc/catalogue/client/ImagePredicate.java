@@ -2,6 +2,7 @@ package com.cleanroommc.catalogue.client;
 
 import com.cleanroommc.catalogue.exception.InvalidBrandingImageException;
 import org.apache.commons.lang3.function.TriFunction;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.image.BufferedImage;
 import java.util.Objects;
@@ -19,7 +20,7 @@ public record ImagePredicate(TriFunction<BufferedImage, Integer, Integer, Boolea
     public static final ImagePredicate ANY = new ImagePredicate((image, maxWidth, maxHeight) -> true, (maxWidth, maxHeight) -> "");
 
     @Override
-    public boolean test(BufferedImage image, Branding branding) throws InvalidBrandingImageException {
+    public boolean test(@Nullable BufferedImage image, Branding branding) throws InvalidBrandingImageException {
         if (image == null) {
             throw new InvalidBrandingImageException("Image is null");
         }

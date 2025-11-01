@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.IResourcePack;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -31,73 +30,85 @@ public class MinecraftModData implements IModData {
     }
 
     @Override
-    public @NotNull String getVersion() {
+    public String getVersion() {
         return "1.12.2";
     }
 
     @Override
-    public @NotNull String getInnerVersion() {
+    public String getInnerVersion() {
         return this.getVersion();
     }
 
+    @Nullable
     @Override
-    public @NotNull String getDescription() {
+    public String getDescription() {
         // Description provided by minecraft.wiki (CC BY-NC-SA 3.0)
         return "Minecraft is a 3D sandbox adventure game developed by Mojang Studios where players can interact with a fully customizable three-dimensional world made of blocks and entities. Its diverse gameplay options allow players to choose the way they play, creating countless possibilities.";
     }
 
+    @Nullable
     @Override
-    public @NotNull String getItemIcon() {
-        return "";
-    }
-
-    @Override
-    public @NotNull String getImageIcon() {
-        return "";
-    }
-
-    @Override
-    public @NotNull String getLicense() {
-        return "All Rights Reserved";
-    }
-
-    @Override
-    public @NotNull String getCredits() {
-        return "";
-    }
-
-    @Override
-    public @NotNull String getAuthors() {
-        return "Mojang AB";
-    }
-
-    @Override
-    public @NotNull String getHomepage() {
-        return "https://www.minecraft.net";
-    }
-
-    @Override
-    public @NotNull String getIssueTracker() {
-        return "https://bugs.mojang.com/projects/MC/issues";
-    }
-
-    @Override
-    public @NotNull String getBanner() {
-        return "";
-    }
-
-    @Override
-    public @NotNull String getBackground() {
-        return "";
-    }
-
-    @Override
-    public @Nullable Update getUpdate() {
+    public String getItemIcon() {
         return null;
     }
 
+    @Nullable
     @Override
-    public @Nullable IResourcePack getResourcePack() {
+    public String getImageIcon() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public String getLicense() {
+        return "All Rights Reserved";
+    }
+
+    @Nullable
+    @Override
+    public String getCredits() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public String getAuthors() {
+        return "Mojang AB";
+    }
+
+    @Nullable
+    @Override
+    public String getHomepage() {
+        return "https://www.minecraft.net";
+    }
+
+    @Nullable
+    @Override
+    public String getIssueTracker() {
+        return "https://bugs.mojang.com/projects/MC/issues";
+    }
+
+    @Nullable
+    @Override
+    public String getBanner() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public String getBackground() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Update getUpdate() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public IResourcePack getResourcePack() {
         return null;
     }
 
@@ -123,11 +134,11 @@ public class MinecraftModData implements IModData {
 
     @Override
     public void drawUpdateIcon(Minecraft minecraft, Update update, int x, int y) {
-
     }
 
+    @Nullable
     @Override
-    public @NotNull String getUpdateText(Update update) {
-        return "";
+    public String getUpdateText(Update update) {
+        return null;
     }
 }

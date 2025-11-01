@@ -28,7 +28,7 @@ public record Branding(String prefix, int imageWidth, int imageHeight,
 
     public Optional<ImageInfo> loadResource(IModData data) {
         String resource = this.locator.apply(data);
-        if (resource.isBlank()) return Optional.empty();
+        if (resource == null || resource.isBlank()) return Optional.empty();
 
         String modId = data.getModId();
         BufferedImage image = null;

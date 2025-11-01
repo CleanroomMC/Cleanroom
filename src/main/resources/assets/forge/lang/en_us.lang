@@ -235,6 +235,8 @@ forge.controlsgui.control.mac=CMD + %s
 forge.controlsgui.alt=ALT + %s
 
 fml.menu.mods=Mods
+fml.menu.mods.normal=Normal
+fml.menu.mods.search=Search:
 
 item.forge.bucketFilled.name=%s Bucket
 

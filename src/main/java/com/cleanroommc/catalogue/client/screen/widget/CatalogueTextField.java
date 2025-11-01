@@ -3,6 +3,7 @@ package com.cleanroommc.catalogue.client.screen.widget;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiFunction;
@@ -57,12 +58,12 @@ public class CatalogueTextField extends GuiTextField {
             currentDrawX = this.fontRenderer.drawStringWithShadow(formatText(rawTextBeforeCursor, this.lineScrollOffset), (float) textStartX, (float) textStartY, textColor);
         }
 
-        isTextTruncated = this.cursorPosition < this.getText().length() || this.getText().length() >= this.getMaxStringLength();
+        this.isTextTruncated = this.cursorPosition < this.getText().length() || this.getText().length() >= this.getMaxStringLength();
         int cursorDrawX = currentDrawX;
 
         if (!isCursorVisible) {
             cursorDrawX = cursorPosRelative > 0 ? textStartX + this.width : textStartX;
-        } else if (isTextTruncated) {
+        } else if (this.isTextTruncated) {
             cursorDrawX = currentDrawX - 1;
             --currentDrawX;
         }
@@ -73,7 +74,7 @@ public class CatalogueTextField extends GuiTextField {
             currentDrawX = this.fontRenderer.drawStringWithShadow(formatText(rawTextAfterCursor, this.cursorPosition), (float) currentDrawX, (float) textStartY, textColor);
         }
 
-        if (!isTextTruncated && this.suggestion != null) {
+        if (!this.isTextTruncated && this.suggestion != null) {
             if (!this.getText().isEmpty()) {
                 this.fontRenderer.drawStringWithShadow(this.suggestion, (float) currentDrawX - 1, (float) textStartY, 0x808080);
             } else {
@@ -82,7 +83,7 @@ public class CatalogueTextField extends GuiTextField {
         }
 
         if (shouldDrawCursor) {
-            if (isTextTruncated) {
+            if (this.isTextTruncated) {
                 Gui.drawRect(cursorDrawX, textStartY - 1, cursorDrawX + 1, textStartY + 1 + this.fontRenderer.FONT_HEIGHT, 0xFFCFCFD0);
             } else {
                 this.fontRenderer.drawStringWithShadow("_", (float) cursorDrawX, (float) textStartY, textColor);
@@ -101,7 +102,7 @@ public class CatalogueTextField extends GuiTextField {
     }
 
     private String formatText(String text, int cursorPos) {
-        return formatter != null ? formatter.apply(text, cursorPos) : text;
+        return this.formatter != null ? this.formatter.apply(text, cursorPos) : text;
     }
 
     // Responder
@@ -109,17 +110,12 @@ public class CatalogueTextField extends GuiTextField {
         this.responder = pResponder;
     }
 
-    private void onTextChange(String textIn) {
-        if (this.responder != null) {
-            this.responder.accept(textIn);
-        }
-    }
-
+    // Patch vanilla missing methods
     @Override
-    public void setText(String textIn) {
+    public void setText(@NotNull String textIn) {
         super.setText(textIn);
         if (this.validator.apply(textIn)) {
-            this.onTextChange(textIn);
+            this.setResponderEntryValue(this.getId(), textIn);
         }
     }
 
@@ -127,18 +123,21 @@ public class CatalogueTextField extends GuiTextField {
     public void setMaxStringLength(int length) {
         super.setMaxStringLength(length);
         if (this.getText().length() > length) {
-            this.onTextChange(this.getText());
+            this.setResponderEntryValue(this.getId(), this.getText());
         }
     }
 
+    // Call consumer responder
     @Override
-    public void moveCursorBy(int num) {
-        super.moveCursorBy(num);
-        this.onTextChange(this.getText());
+    public void setResponderEntryValue(int idIn, String textIn) {
+        if (this.responder != null) {
+            this.responder.accept(textIn);
+        }
+        super.setResponderEntryValue(idIn, textIn);
     }
 
     // Suggestion
-    public void setSuggestion(String suggestion) {
+    public void setSuggestion(@NotNull String suggestion) {
         this.suggestion = suggestion;
     }
 
@@ -146,8 +145,7 @@ public class CatalogueTextField extends GuiTextField {
         return this.suggestion;
     }
 
-    public boolean getIsTextTruncated() {
+    public boolean isTextTruncated() {
         return this.isTextTruncated;
     }
-
 }
