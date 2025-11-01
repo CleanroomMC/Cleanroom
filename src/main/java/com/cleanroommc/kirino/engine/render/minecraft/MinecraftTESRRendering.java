@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.engine.render.patch;
+package com.cleanroommc.kirino.engine.render.minecraft;
 
 import com.cleanroommc.kirino.utils.ReflectionUtils;
 import com.google.common.base.Preconditions;

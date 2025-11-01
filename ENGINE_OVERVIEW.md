@@ -301,8 +301,7 @@ graph TD
     B --> C[Compile Draw Commands]
     C --> D[Simplify Draw Commands]
     D --> E[Sort Draw Commands]
-    E --> F[Bind Framebuffer]
-    F --> G[Bind Pipeline State Object]
+    E --> G[Bind Pipeline State Object]
     G --> H[Update Shader Program / Uniforms]
     H --> I[Execute Draw Commands / Submit to GPU]
 ```
@@ -311,8 +310,8 @@ graph TD
 `DrawCommand` is an element of `DrawQueue`, and `Subpass` accepts a `DrawQueue` as the input.
 
 There are only two types of `DrawCommand`:
-- `HighLevelDC` - stores the resource tickets
-- `LowLevelDC` - stores the actual GPU handles (like VAO IDs, indices, etc.)
+- `HighLevelDC` - stores the resource ticket IDs
+- `LowLevelDC` - stores the actual GPU handles (like `vao` IDs, indices, etc.)
 
 ### `HighLevelDC`-to-`LowLevelDC` Compilation Procedure
 ```mermaid
