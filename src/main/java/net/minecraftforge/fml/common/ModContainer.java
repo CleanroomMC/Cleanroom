@@ -49,7 +49,7 @@ import javax.annotation.Nullable;
 
 public interface ModContainer
 {
-    public static enum Disableable {
+    enum Disableable {
         YES, RESTART, NEVER, DEPENDENCIES;
     }
     /**
@@ -68,10 +68,22 @@ public interface ModContainer
      */
     String getVersion();
 
+    default String getModLanguage() {
+        return "java";
+    }
+
     /**
      * The location on the file system which this mod came from
      */
     File getSource();
+
+    /**
+     * The location on the file system of this mod's resource (should only
+     * be different to source on dev mod)
+     */
+    default File getResource() {
+        return getSource();
+    }
 
     /**
      * The metadata for this mod

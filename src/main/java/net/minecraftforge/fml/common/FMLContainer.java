@@ -208,7 +208,7 @@ public final class FMLContainer extends DummyModContainer implements WorldAccess
     @Override
     public Class<?> getCustomResourcePackClass()
     {
-        return getSource().isDirectory() ? FMLFolderResourcePack.class : FMLFileResourcePack.class;
+        return getResource().isDirectory() ? FMLFolderResourcePack.class : FMLFileResourcePack.class;
     }
 
     @Override

@@ -332,6 +332,12 @@ public class CoreModManager {
         {
             if (coreMod.isDirectory())
             {
+                FMLLog.log.debug("Coremod candidacy {} is a directory, considering as folder mod", coreMod);
+                try {
+                    Launch.classLoader.addURL(coreMod.toURI().toURL());
+                } catch (MalformedURLException e) {
+                    FMLLog.log.error("Coremod candidacy {} has a malformed URL", coreMod);
+                }
                 continue;
             }
             FMLLog.log.debug("Examining for coremod candidacy {}", coreMod.getName());
@@ -478,7 +484,7 @@ public class CoreModManager {
             }
             loadCoreMod(classLoader, fmlCorePlugin, coreMod);
         }
-        String devConfigs = System.getProperty("cleanroom.dev.mixin");
+        String devConfigs = System.getProperty("crl.dev.mixin");
         if (!Strings.isNullOrEmpty(devConfigs))
         {
             for (String singleMixinConfig : devConfigs.split(","))

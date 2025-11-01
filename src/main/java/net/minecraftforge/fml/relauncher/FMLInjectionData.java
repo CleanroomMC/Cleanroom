@@ -38,7 +38,7 @@ public class FMLInjectionData
     static String mccversion;
     static String mcpversion;
 
-    public static final List<String> containers = new ArrayList<String>();
+    public static final List<String> containers = new ArrayList<>();
 
     static void build(File mcHome, LaunchClassLoader classLoader)
     {

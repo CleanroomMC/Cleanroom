@@ -381,7 +381,7 @@ public class Loader
             ModContainer mc;
             try
             {
-                mc = (ModContainer) Class.forName(cont,true,modClassLoader).getConstructor().newInstance();
+                mc = (ModContainer) Class.forName(cont,true, modClassLoader).getConstructor().newInstance();
             }
             catch (Exception e)
             {
