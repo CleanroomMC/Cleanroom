@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraftforge.classloading.FMLForgePlugin;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.LoaderException;
 import net.minecraftforge.fml.common.ModClassLoader;
@@ -30,6 +31,7 @@ import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import net.minecraftforge.fml.relauncher.FMLCorePlugin;
 
 public class ModDiscoverer
 {
@@ -73,6 +75,10 @@ public class ModDiscoverer
         }
         for (int i = 0 ; i < devPaths.size() - 1 ; i += 2)
         {
+            if (devPaths.get(i).equals(FMLForgePlugin.forgeLocation))
+            {
+                continue;
+            }
             FMLLog.log.debug("Adding path {} and {} as developing mod", devPaths.get(i), devPaths.get(i + 1));
             addCandidate(new ModCandidate(devPaths.get(i), devPaths.get(i + 1)));
         }
