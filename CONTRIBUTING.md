@@ -118,11 +118,7 @@ Thanks for your interest! We welcome **all kinds of contributions** – code, do
   - This part is about how to get many meshlets from a voxel chunk
   - The algorithm itself should be as generic as possible
 
-## Future Features
+## Future Features & What's Done
 
 - Check MVP Goals in [Read Me](https://github.com/CleanroomMC/Cleanroom/tree/proposal/render-system?tab=readme-ov-file)
-
-## What's Done
-- An ECS framework with basic functionalities
-- Some GL abstractions
-- Part of the rendering pipeline
+- Check [Project Board](https://github.com/orgs/CleanroomMC/projects/13)
