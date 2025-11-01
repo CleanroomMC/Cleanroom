@@ -27,6 +27,8 @@ import static net.minecraftforge.common.config.Configuration.CATEGORY_GENERAL;
 import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.cert.Certificate;
 import java.util.*;
@@ -156,8 +158,8 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
         meta.screenshots = new String[0];
         meta.logoFile    = "/forge_logo.png";
         try {
-            updateJSONUrl    = new URL("http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json");
-        } catch (MalformedURLException e) {}
+            updateJSONUrl    = new URI("http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json").toURL();
+        } catch (MalformedURLException | URISyntaxException ignored) {}
 
         config = null;
         File cfgFile = new File(Loader.instance().getConfigDir(), "forge.cfg");
@@ -675,6 +677,21 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     {
         return FMLForgePlugin.forgeLocation;
     }
+
+    @Override
+    public File getResource()
+    {
+        File mainSource = FMLForgePlugin.forgeLocation;
+        if (mainSource.isDirectory())
+        {
+            return new File(System.getProperty("java.class.path").split(File.pathSeparator)[1]);
+        }
+        else
+        {
+            return FMLForgePlugin.forgeLocation;
+        }
+    }
+    
     @Override
     public Class<?> getCustomResourcePackClass()
     {

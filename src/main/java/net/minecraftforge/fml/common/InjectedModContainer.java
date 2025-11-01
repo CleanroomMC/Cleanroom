@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
 
 public class InjectedModContainer implements ModContainer
 {
-    private File source;
+    private final File source;
     public final ModContainer wrappedContainer;
 
     public InjectedModContainer(ModContainer mc, File source)
@@ -66,6 +66,16 @@ public class InjectedModContainer implements ModContainer
     public File getSource()
     {
         return source;
+    }
+
+    @Override
+    public File getResource()
+    {
+        if (wrappedContainer.getSource() == null)
+        {
+            return getSource();
+        }
+        return wrappedContainer.getResource();
     }
 
     @Override
