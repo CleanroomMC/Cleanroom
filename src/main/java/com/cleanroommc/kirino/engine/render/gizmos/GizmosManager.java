@@ -16,30 +16,32 @@ import java.nio.ByteBuffer;
 public class GizmosManager {
     private final GraphicResourceManager graphicResourceManager;
 
+    private final static AttributeLayout ATTRIBUTE_LAYOUT;
+
+    static {
+        ATTRIBUTE_LAYOUT = new AttributeLayout();
+        ATTRIBUTE_LAYOUT.push(new Stride(16)
+                .push(new Slot(Type.FLOAT, 3))
+                .push(new Slot(Type.UNSIGNED_BYTE, 4).setNormalize(true)));
+    }
+
     public GizmosManager(GraphicResourceManager graphicResourceManager) {
         this.graphicResourceManager = graphicResourceManager;
     }
 
     void test(MeshTicketBuilder builder, float x, float z) {
-        // test
-        AttributeLayout layout = new AttributeLayout();
-        layout.push(new Stride(16)
-                .push(new Slot(Type.FLOAT, 3))
-                .push(new Slot(Type.UNSIGNED_BYTE, 4).setNormalize(true)));
-//        KirinoCore.LOGGER.info(layout.getDebugReport());
-
         ByteBuffer vboData = BufferUtils.createByteBuffer(4 * 16);
 
         float y = 100;
         float halfSize = 1f;
 
-        vboData.putFloat(x - halfSize).putFloat(y).putFloat(z - halfSize);
+        vboData.putFloat(x - halfSize).putFloat(y + z).putFloat(z - halfSize);
         vboData.put((byte)255).put((byte)0).put((byte)0).put((byte)255);
-        vboData.putFloat(x + halfSize).putFloat(y).putFloat(z - halfSize);
+        vboData.putFloat(x + halfSize).putFloat(y + z).putFloat(z - halfSize);
         vboData.put((byte)0).put((byte)255).put((byte)0).put((byte)255);
-        vboData.putFloat(x + halfSize).putFloat(y).putFloat(z + halfSize);
+        vboData.putFloat(x + halfSize).putFloat(y + z).putFloat(z + halfSize);
         vboData.put((byte)0).put((byte)0).put((byte)255).put((byte)255);
-        vboData.putFloat(x - halfSize).putFloat(y).putFloat(z + halfSize);
+        vboData.putFloat(x - halfSize).putFloat(y + z).putFloat(z + halfSize);
         vboData.put((byte)255).put((byte)255).put((byte)0).put((byte)255);
 
         vboData.flip();
@@ -55,7 +57,7 @@ public class GizmosManager {
 
         eboData.flip();
 
-        builder.build(vboData, eboData, layout);
+        builder.build(vboData, eboData, ATTRIBUTE_LAYOUT);
     }
 
     // test

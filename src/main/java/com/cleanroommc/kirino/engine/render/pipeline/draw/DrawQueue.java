@@ -113,6 +113,7 @@ public class DrawQueue {
         }
 
         deque.clear();
+        idbGenerator.reset();
 
         List<IDrawCommand> baked = new ArrayList<>();
 

@@ -1,30 +1,161 @@
 --- before/net/minecraft/network/NetworkManager.java
 +++ after/net/minecraft/network/NetworkManager.java
-@@ -88,7 +88,12 @@
+@@ -51,30 +51,30 @@
+     private static final Logger field_150735_g = LogManager.getLogger();
+     public static final Marker field_150740_a = MarkerManager.getMarker("NETWORK");
+     public static final Marker field_150738_b = MarkerManager.getMarker("NETWORK_PACKETS", field_150740_a);
+-    public static final AttributeKey<EnumConnectionState> field_150739_c = AttributeKey.valueOf("protocol");
++    public static final AttributeKey<EnumConnectionState> field_150739_c = AttributeKey.<EnumConnectionState>valueOf("protocol");
+     public static final LazyLoadBase<NioEventLoopGroup> field_179295_d = new LazyLoadBase<NioEventLoopGroup>()
+     {
+         protected NioEventLoopGroup func_179280_b()
+         {
+-            return new NioEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Client IO #%d").setDaemon(true).build());
++            return new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Client IO #%d").setDaemon(true).build());
+         }
+     };
+     public static final LazyLoadBase<EpollEventLoopGroup> field_181125_e = new LazyLoadBase<EpollEventLoopGroup>()
+     {
+         protected EpollEventLoopGroup func_179280_b()
+         {
+-            return new EpollEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Epoll Client IO #%d").setDaemon(true).build());
++            return new EpollEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Epoll Client IO #%d").setDaemon(true).build());
+         }
+     };
+     public static final LazyLoadBase<LocalEventLoopGroup> field_179296_e = new LazyLoadBase<LocalEventLoopGroup>()
+     {
+         protected LocalEventLoopGroup func_179280_b()
+         {
+-            return new LocalEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Local Client IO #%d").setDaemon(true).build());
++            return new LocalEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Local Client IO #%d").setDaemon(true).build());
+         }
+     };
+     private final EnumPacketDirection field_179294_g;
+-    private final Queue<NetworkManager.InboundHandlerTuplePacketListener> field_150745_j = Queues.newConcurrentLinkedQueue();
++    private final Queue<NetworkManager.InboundHandlerTuplePacketListener> field_150745_j = Queues.<NetworkManager.InboundHandlerTuplePacketListener>newConcurrentLinkedQueue();
+     private final ReentrantReadWriteLock field_181680_j = new ReentrantReadWriteLock();
+     private Channel field_150746_k;
+     private SocketAddress field_150743_l;
+@@ -88,7 +88,11 @@
          this.field_179294_g = p_i46004_1_;
      }
  
+-    @Override
 +    public EnumPacketDirection getDirection()
 +    {
 +        return this.field_179294_g;
 +    }
 +
-     @Override
      public void channelActive(ChannelHandlerContext p_channelActive_1_) throws Exception
      {
          super.channelActive(p_channelActive_1_);
-@@ -208,9 +213,9 @@
+@@ -112,40 +116,39 @@
+         field_150735_g.debug("Enabled auto read");
+     }
+ 
+-    @Override
+     public void channelInactive(ChannelHandlerContext p_channelInactive_1_) throws Exception
+     {
+-        this.func_150718_a(new TextComponentTranslation("disconnect.endOfStream"));
++        this.func_150718_a(new TextComponentTranslation("disconnect.endOfStream", new Object[0]));
+     }
+ 
+-    @Override
+     public void exceptionCaught(ChannelHandlerContext p_exceptionCaught_1_, Throwable p_exceptionCaught_2_) throws Exception
+     {
+         TextComponentTranslation textcomponenttranslation;
+ 
+         if (p_exceptionCaught_2_ instanceof TimeoutException)
+         {
+-            textcomponenttranslation = new TextComponentTranslation("disconnect.timeout");
++            textcomponenttranslation = new TextComponentTranslation("disconnect.timeout", new Object[0]);
+         }
+         else
+         {
+-            textcomponenttranslation = new TextComponentTranslation("disconnect.genericReason", "Internal Exception: " + p_exceptionCaught_2_);
++            textcomponenttranslation = new TextComponentTranslation("disconnect.genericReason", new Object[] {"Internal Exception: " + p_exceptionCaught_2_});
+         }
+ 
+         field_150735_g.debug(textcomponenttranslation.func_150260_c(), p_exceptionCaught_2_);
+         this.func_150718_a(textcomponenttranslation);
+     }
+ 
+-    protected void channelRead0(ChannelHandlerContext p_channelRead0_1_, Packet p_channelRead0_2_) throws Exception
++    protected void channelRead0(ChannelHandlerContext p_channelRead0_1_, Packet<?> p_channelRead0_2_) throws Exception
+     {
+         if (this.field_150746_k.isOpen())
+         {
+             try
+             {
+-                p_channelRead0_2_.func_148833_a(this.field_150744_m);
++                ((Packet<INetHandler>)p_channelRead0_2_).func_148833_a(this.field_150744_m);
+             }
+-            catch (ThreadQuickExitException threadquickexitexception)
++            catch (ThreadQuickExitException var4)
+             {
++                ;
+             }
+         }
+     }
+@@ -162,7 +165,7 @@
+         if (this.func_150724_d())
+         {
+             this.func_150733_h();
+-            this.func_150732_b(p_179290_1_, null);
++            this.func_150732_b(p_179290_1_, (GenericFutureListener[])null);
+         }
+         else
+         {
+@@ -170,7 +173,7 @@
+ 
+             try
+             {
+-                this.field_150745_j.add(new NetworkManager.InboundHandlerTuplePacketListener(p_179290_1_));
++                this.field_150745_j.add(new NetworkManager.InboundHandlerTuplePacketListener(p_179290_1_, new GenericFutureListener[0]));
+             }
+             finally
+             {
+@@ -179,16 +182,12 @@
+         }
+     }
+ 
+-    public void func_179288_a(
+-        Packet<?> p_179288_1_,
+-        GenericFutureListener <? extends Future <? super Void >> p_179288_2_,
+-        GenericFutureListener <? extends Future <? super Void >> ... p_179288_3_
+-    )
++    public void func_179288_a(Packet<?> p_179288_1_, GenericFutureListener <? extends Future <? super Void >> p_179288_2_, GenericFutureListener <? extends Future <? super Void >> ... p_179288_3_)
+     {
+         if (this.func_150724_d())
+         {
+             this.func_150733_h();
+-            this.func_150732_b(p_179288_1_, ArrayUtils.add(p_179288_3_, 0, p_179288_2_));
++            this.func_150732_b(p_179288_1_, (GenericFutureListener[])ArrayUtils.add(p_179288_3_, 0, p_179288_2_));
+         }
+         else
+         {
+@@ -196,7 +195,7 @@
+ 
+             try
+             {
+-                this.field_150745_j.add(new NetworkManager.InboundHandlerTuplePacketListener(p_179288_1_, ArrayUtils.add(p_179288_3_, 0, p_179288_2_)));
++                this.field_150745_j.add(new NetworkManager.InboundHandlerTuplePacketListener(p_179288_1_, (GenericFutureListener[])ArrayUtils.add(p_179288_3_, 0, p_179288_2_)));
+             }
+             finally
+             {
+@@ -208,9 +207,9 @@
      private void func_150732_b(final Packet<?> p_150732_1_, @Nullable final GenericFutureListener <? extends Future <? super Void >> [] p_150732_2_)
      {
          final EnumConnectionState enumconnectionstate = EnumConnectionState.func_150752_a(p_150732_1_);
-         final EnumConnectionState enumconnectionstate1 = this.field_150746_k.attr(field_150739_c).get();
+-        final EnumConnectionState enumconnectionstate1 = this.field_150746_k.attr(field_150739_c).get();
++        final EnumConnectionState enumconnectionstate1 = (EnumConnectionState)this.field_150746_k.attr(field_150739_c).get();
  
 -        if (enumconnectionstate1 != enumconnectionstate)
 +        if (enumconnectionstate1 != enumconnectionstate && !( p_150732_1_ instanceof net.minecraftforge.fml.common.network.internal.FMLProxyPacket))
          {
              field_150735_g.debug("Disabled auto read");
              this.field_150746_k.config().setAutoRead(false);
-@@ -218,7 +223,7 @@
+@@ -218,7 +217,7 @@
  
          if (this.field_150746_k.eventLoop().inEventLoop())
          {
@@ -33,11 +164,11 @@
              {
                  this.func_150723_a(enumconnectionstate);
              }
-@@ -236,10 +241,10 @@
+@@ -236,10 +235,9 @@
          {
              this.field_150746_k.eventLoop().execute(new Runnable()
              {
-                 @Override
+-                @Override
                  public void run()
                  {
 -                    if (enumconnectionstate != enumconnectionstate1)
@@ -45,7 +176,18 @@
                      {
                          NetworkManager.this.func_150723_a(enumconnectionstate);
                      }
-@@ -317,6 +322,7 @@
+@@ -268,9 +266,7 @@
+                 while (!this.field_150745_j.isEmpty())
+                 {
+                     NetworkManager.InboundHandlerTuplePacketListener networkmanager$inboundhandlertuplepacketlistener = this.field_150745_j.poll();
+-                    this.func_150732_b(
+-                        networkmanager$inboundhandlertuplepacketlistener.field_150774_a, networkmanager$inboundhandlertuplepacketlistener.field_150773_b
+-                    );
++                    this.func_150732_b(networkmanager$inboundhandlertuplepacketlistener.field_150774_a, networkmanager$inboundhandlertuplepacketlistener.field_150773_b);
+                 }
+             }
+             finally
+@@ -317,6 +313,7 @@
      @SideOnly(Side.CLIENT)
      public static NetworkManager func_181124_a(InetAddress p_181124_0_, int p_181124_1_, boolean p_181124_2_)
      {
@@ -53,11 +195,71 @@
          final NetworkManager networkmanager = new NetworkManager(EnumPacketDirection.CLIENTBOUND);
          Class <? extends SocketChannel > oclass;
          LazyLoadBase <? extends EventLoopGroup > lazyloadbase;
-@@ -471,10 +477,15 @@
+@@ -332,35 +329,22 @@
+             lazyloadbase = field_179295_d;
+         }
+ 
+-        new Bootstrap()
+-        .group(lazyloadbase.func_179281_c())
+-        .handler(
+-            new ChannelInitializer<Channel>()
++        ((Bootstrap)((Bootstrap)((Bootstrap)(new Bootstrap()).group(lazyloadbase.func_179281_c())).handler(new ChannelInitializer<Channel>()
+         {
+-            @Override
+             protected void initChannel(Channel p_initChannel_1_) throws Exception
+             {
+                 try
+                 {
+-                    p_initChannel_1_.config().setOption(ChannelOption.TCP_NODELAY, true);
++                    p_initChannel_1_.config().setOption(ChannelOption.TCP_NODELAY, Boolean.valueOf(true));
+                 }
+-                catch (ChannelException channelexception)
++                catch (ChannelException var3)
+                 {
++                    ;
+                 }
+ 
+-                p_initChannel_1_.pipeline()
+-                .addLast("timeout", new ReadTimeoutHandler(30))
+-                .addLast("splitter", new NettyVarint21FrameDecoder())
+-                .addLast("decoder", new NettyPacketDecoder(EnumPacketDirection.CLIENTBOUND))
+-                .addLast("prepender", new NettyVarint21FrameEncoder())
+-                .addLast("encoder", new NettyPacketEncoder(EnumPacketDirection.SERVERBOUND))
+-                .addLast("packet_handler", networkmanager);
++                p_initChannel_1_.pipeline().addLast("timeout", new ReadTimeoutHandler(30)).addLast("splitter", new NettyVarint21FrameDecoder()).addLast("decoder", new NettyPacketDecoder(EnumPacketDirection.CLIENTBOUND)).addLast("prepender", new NettyVarint21FrameEncoder()).addLast("encoder", new NettyPacketEncoder(EnumPacketDirection.SERVERBOUND)).addLast("packet_handler", networkmanager);
+             }
+-        }
+-        )
+-        .channel(oclass)
+-        .connect(p_181124_0_, p_181124_1_)
+-        .syncUninterruptibly();
++        })).channel(oclass)).connect(p_181124_0_, p_181124_1_).syncUninterruptibly();
+         return networkmanager;
+     }
+ 
+@@ -368,14 +352,13 @@
+     public static NetworkManager func_150722_a(SocketAddress p_150722_0_)
+     {
+         final NetworkManager networkmanager = new NetworkManager(EnumPacketDirection.CLIENTBOUND);
+-        new Bootstrap().group(field_179296_e.func_179281_c()).handler(new ChannelInitializer<Channel>()
++        ((Bootstrap)((Bootstrap)((Bootstrap)(new Bootstrap()).group(field_179296_e.func_179281_c())).handler(new ChannelInitializer<Channel>()
+         {
+-            @Override
+             protected void initChannel(Channel p_initChannel_1_) throws Exception
+             {
+                 p_initChannel_1_.pipeline().addLast("packet_handler", networkmanager);
+             }
+-        }).channel(LocalChannel.class).connect(p_150722_0_).syncUninterruptibly();
++        })).channel(LocalChannel.class)).connect(p_150722_0_).syncUninterruptibly();
+         return networkmanager;
+     }
+ 
+@@ -471,10 +454,15 @@
                  }
                  else if (this.func_150729_e() != null)
                  {
-                     this.func_150729_e().func_147231_a(new TextComponentTranslation("multiplayer.disconnect.generic"));
+-                    this.func_150729_e().func_147231_a(new TextComponentTranslation("multiplayer.disconnect.generic"));
++                    this.func_150729_e().func_147231_a(new TextComponentTranslation("multiplayer.disconnect.generic", new Object[0]));
                  }
              }
          }

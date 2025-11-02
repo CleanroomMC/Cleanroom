@@ -173,7 +173,7 @@ public class KirinoCore {
 
         KIRINO_ENGINE.renderingCoordinator.update();
 //        KIRINO_ENGINE.renderingCoordinator.updateWorld(MINECRAFT.world);
-//        KIRINO_ENGINE.renderingCoordinator.runChunkCpuPass();
+//        KIRINO_ENGINE.renderingCoordinator.runChunkPass();
 
         //<editor-fold desc="vanilla logic">
         KIRINO_ENGINE.renderingCoordinator.cullingPatch.collectEntitiesInView(
@@ -307,6 +307,8 @@ public class KirinoCore {
 
 //        KIRINO_ENGINE.renderingCoordinator.renderWorldTransparent();
 
+        KIRINO_ENGINE.renderingCoordinator.runGizmosPass();
+
         //<editor-fold desc="vanilla logic">
         // ========== entities ==========
         MINECRAFT.profiler.startSection("entities");
@@ -373,8 +375,6 @@ public class KirinoCore {
         }
         MINECRAFT.profiler.endSection();
         //</editor-fold>
-
-        KIRINO_ENGINE.renderingCoordinator.runGizmosPass();
 
         KIRINO_ENGINE.renderingCoordinator.postUpdate();
     }

@@ -1,6 +1,76 @@
 --- before/net/minecraft/client/network/ServerPinger.java
 +++ after/net/minecraft/client/network/ServerPinger.java
-@@ -167,11 +167,12 @@
+@@ -50,30 +50,26 @@
+ {
+     private static final Splitter field_147230_a = Splitter.on('\u0000').limit(6);
+     private static final Logger field_147228_b = LogManager.getLogger();
+-    private final List<NetworkManager> field_147229_c = Collections.synchronizedList(Lists.newArrayList());
++    private final List<NetworkManager> field_147229_c = Collections.<NetworkManager>synchronizedList(Lists.newArrayList());
+ 
+     public void func_147224_a(final ServerData p_147224_1_) throws UnknownHostException
+     {
+         ServerAddress serveraddress = ServerAddress.func_78860_a(p_147224_1_.field_78845_b);
+-        final NetworkManager networkmanager = NetworkManager.func_181124_a(
+-                                                  InetAddress.getByName(serveraddress.func_78861_a()), serveraddress.func_78864_b(), false
+-                                              );
++        final NetworkManager networkmanager = NetworkManager.func_181124_a(InetAddress.getByName(serveraddress.func_78861_a()), serveraddress.func_78864_b(), false);
+         this.field_147229_c.add(networkmanager);
+         p_147224_1_.field_78843_d = I18n.func_135052_a("multiplayer.status.pinging");
+         p_147224_1_.field_78844_e = -1L;
+         p_147224_1_.field_147412_i = null;
+-        networkmanager.func_150719_a(
+-            new INetHandlerStatusClient()
++        networkmanager.func_150719_a(new INetHandlerStatusClient()
+         {
+             private boolean field_147403_d;
+             private boolean field_183009_e;
+             private long field_175092_e;
+-            @Override
+             public void func_147397_a(SPacketServerInfo p_147397_1_)
+             {
+                 if (this.field_183009_e)
+                 {
+-                    networkmanager.func_150718_a(new TextComponentTranslation("multiplayer.status.unrequested"));
++                    networkmanager.func_150718_a(new TextComponentTranslation("multiplayer.status.unrequested", new Object[0]));
+                 }
+                 else
+                 {
+@@ -102,14 +98,7 @@
+ 
+                     if (serverstatusresponse.func_151318_b() != null)
+                     {
+-                        p_147224_1_.field_78846_c = TextFormatting.GRAY
+-                                                    + ""
+-                                                    + serverstatusresponse.func_151318_b().func_151333_b()
+-                                                    + ""
+-                                                    + TextFormatting.DARK_GRAY
+-                                                    + "/"
+-                                                    + TextFormatting.GRAY
+-                                                    + serverstatusresponse.func_151318_b().func_151332_a();
++                        p_147224_1_.field_78846_c = TextFormatting.GRAY + "" + serverstatusresponse.func_151318_b().func_151333_b() + "" + TextFormatting.DARK_GRAY + "/" + TextFormatting.GRAY + serverstatusresponse.func_151318_b().func_151332_a();
+ 
+                         if (ArrayUtils.isNotEmpty(serverstatusresponse.func_151318_b().func_151331_c()))
+                         {
+@@ -132,12 +121,7 @@
+                                     stringbuilder.append("\n");
+                                 }
+ 
+-                                stringbuilder.append(
+-                                    I18n.func_135052_a(
+-                                        "multiplayer.status.and_more",
+-                                        serverstatusresponse.func_151318_b().func_151333_b() - serverstatusresponse.func_151318_b().func_151331_c().length
+-                                    )
+-                                );
++                                stringbuilder.append(I18n.func_135052_a("multiplayer.status.and_more", serverstatusresponse.func_151318_b().func_151333_b() - serverstatusresponse.func_151318_b().func_151331_c().length));
+                             }
+ 
+                             p_147224_1_.field_147412_i = stringbuilder.toString();
+@@ -163,15 +147,15 @@
+                     }
+                     else
+                     {
+-                        p_147224_1_.func_147407_a(null);
++                        p_147224_1_.func_147407_a((String)null);
                      }
  
 +                    net.minecraftforge.fml.client.FMLClientHandler.instance().bindServerListData(p_147224_1_, serverstatusresponse);
@@ -9,16 +79,25 @@
                      this.field_147403_d = true;
                  }
              }
-             @Override
+-            @Override
              public void func_147398_a(SPacketPong p_147398_1_)
              {
                  long i = this.field_175092_e;
-@@ -190,12 +191,12 @@
+@@ -179,7 +163,6 @@
+                 p_147224_1_.field_78844_e = j - i;
+                 networkmanager.func_150718_a(new TextComponentString("Finished"));
+             }
+-            @Override
+             public void func_147231_a(ITextComponent p_147231_1_)
+             {
+                 if (!this.field_147403_d)
+@@ -190,12 +173,11 @@
                      ServerPinger.this.func_147225_b(p_147224_1_);
                  }
              }
-         }
-         );
+-        }
+-        );
++        });
  
          try
          {
@@ -27,3 +106,64 @@
              networkmanager.func_179290_a(new CPacketServerQuery());
          }
          catch (Throwable throwable)
+@@ -207,22 +189,21 @@
+     private void func_147225_b(final ServerData p_147225_1_)
+     {
+         final ServerAddress serveraddress = ServerAddress.func_78860_a(p_147225_1_.field_78845_b);
+-        new Bootstrap().group(NetworkManager.field_179295_d.func_179281_c()).handler(new ChannelInitializer<Channel>()
++        ((Bootstrap)((Bootstrap)((Bootstrap)(new Bootstrap()).group(NetworkManager.field_179295_d.func_179281_c())).handler(new ChannelInitializer<Channel>()
+         {
+-            @Override
+             protected void initChannel(Channel p_initChannel_1_) throws Exception
+             {
+                 try
+                 {
+-                    p_initChannel_1_.config().setOption(ChannelOption.TCP_NODELAY, true);
++                    p_initChannel_1_.config().setOption(ChannelOption.TCP_NODELAY, Boolean.valueOf(true));
+                 }
+-                catch (ChannelException channelexception)
++                catch (ChannelException var3)
+                 {
++                    ;
+                 }
+ 
+                 p_initChannel_1_.pipeline().addLast(new SimpleChannelInboundHandler<ByteBuf>()
+                 {
+-                    @Override
+                     public void channelActive(ChannelHandlerContext p_channelActive_1_) throws Exception
+                     {
+                         super.channelActive(p_channelActive_1_);
+@@ -266,7 +247,7 @@
+                         if (short1 == 255)
+                         {
+                             String s = new String(p_channelRead0_2_.readBytes(p_channelRead0_2_.readShort() * 2).array(), StandardCharsets.UTF_16BE);
+-                            String[] astring = Iterables.toArray(ServerPinger.field_147230_a.split(s), String.class);
++                            String[] astring = (String[])Iterables.toArray(ServerPinger.field_147230_a.split(s), String.class);
+ 
+                             if ("\u00a71".equals(astring[0]))
+                             {
+@@ -284,14 +265,13 @@
+ 
+                         p_channelRead0_1_.close();
+                     }
+-                    @Override
+                     public void exceptionCaught(ChannelHandlerContext p_exceptionCaught_1_, Throwable p_exceptionCaught_2_) throws Exception
+                     {
+                         p_exceptionCaught_1_.close();
+                     }
+                 });
+             }
+-        }).channel(NioSocketChannel.class).connect(serveraddress.func_78861_a(), serveraddress.func_78864_b());
++        })).channel(NioSocketChannel.class)).connect(serveraddress.func_78861_a(), serveraddress.func_78864_b());
+     }
+ 
+     public void func_147223_a()
+@@ -330,7 +310,7 @@
+                 if (networkmanager.func_150724_d())
+                 {
+                     iterator.remove();
+-                    networkmanager.func_150718_a(new TextComponentTranslation("multiplayer.status.cancelled"));
++                    networkmanager.func_150718_a(new TextComponentTranslation("multiplayer.status.cancelled", new Object[0]));
+                 }
+             }
+         }

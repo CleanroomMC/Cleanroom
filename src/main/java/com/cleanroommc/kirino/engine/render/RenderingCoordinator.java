@@ -132,7 +132,7 @@ public class RenderingCoordinator {
 
         Renderer renderer = new Renderer();
         chunkCpuPass = new RenderPass("Chunk CPU", graphicResourceManager, idbGenerator);
-//        chunkCpuPass.addSubpass("Opaque Pass", new WhateverPass(renderer, PSOPresets.createOpaquePSO(shaderProgram), null));
+        chunkCpuPass.addSubpass("Opaque Pass", new GizmosPass(renderer, PSOPresets.createOpaquePSO(shaderProgram), gizmosManager));
 //        chunkCpuPass.addSubpass("Cutout Pass", new WhateverPass(renderer, PSOPresets.createCutoutPSO(shaderProgram), null));
 //        chunkCpuPass.addSubpass("Transparent Pass", new WhateverPass(renderer, PSOPresets.createTransparentPSO(shaderProgram), null));
 
@@ -310,11 +310,32 @@ public class RenderingCoordinator {
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
-    public void runChunkCpuPass() {
-        //chunkCpuPass.render(camera);
+    // test
+    private GLStateBackup glStateBackup = new GLStateBackup();
+
+    public void runChunkPass() {
+        // test
+        glStateBackup.storeStates();
+        int vbo = GL11.glGetInteger(GL15.GL_ARRAY_BUFFER_BINDING);
+
+        chunkCpuPass.render(camera);
+
+        glStateBackup.restoreStates();
+        GL30.glBindVertexArray(0);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
     public void runGizmosPass() {
+        // test
+        glStateBackup.storeStates();
+        int vbo = GL11.glGetInteger(GL15.GL_ARRAY_BUFFER_BINDING);
+
         gizmosPass.render(camera);
+
+        glStateBackup.restoreStates();
+        GL30.glBindVertexArray(0);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 }

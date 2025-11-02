@@ -17,7 +17,13 @@ public class IndirectDrawBufferGenerator {
     public final int bufferSize;
 
     public final static int IDB_STRIDE_BYTE = 5 * Integer.BYTES;
-    public final static int MEMORY_STACK_LIMIT_BYTE = 1024 * 512;
+    public final static int MEMORY_STACK_LIMIT_BYTE = 1024 * 512; // 0.5MB
+
+    private int offset = 0;
+
+    public void reset() {
+        offset = 0;
+    }
 
     public IndirectDrawBufferGenerator(int bufferSize) {
         this.bufferSize = bufferSize;
@@ -43,8 +49,8 @@ public class IndirectDrawBufferGenerator {
     public LowLevelDC generate(List<LowLevelDC> units, int vao, int mode, int elementType) {
         int idbBufferSize = units.size() * IDB_STRIDE_BYTE;
 
-        Preconditions.checkArgument(idbBufferSize <= bufferSize,
-                "Too many commands (%d) being passed at once, resulting in overflow.", units.size());
+        Preconditions.checkArgument(offset + idbBufferSize <= bufferSize,
+                "Too many commands (%d) being passed, resulting in overflow. Current offset: %d; Input size: %d; Buffer size: %d.", units.size(), offset, idbBufferSize, bufferSize);
 
         if (idbBufferSize < MEMORY_STACK_LIMIT_BYTE) {
             try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -63,8 +69,8 @@ public class IndirectDrawBufferGenerator {
                 byteBuffer.limit(idbBufferSize);
 
                 ByteBuffer persistent = idbView.getPersistentMappedBuffer();
-                persistent.position(0);
-                persistent.limit(idbBufferSize);
+                persistent.position(offset);
+                persistent.limit(offset + idbBufferSize);
                 persistent.put(byteBuffer);
             }
         } else {
@@ -83,8 +89,8 @@ public class IndirectDrawBufferGenerator {
             byteBuffer.limit(idbBufferSize);
 
             ByteBuffer persistent = idbView.getPersistentMappedBuffer();
-            persistent.position(0);
-            persistent.limit(idbBufferSize);
+            persistent.position(offset);
+            persistent.limit(offset + idbBufferSize);
             persistent.put(byteBuffer);
 
             MemoryUtil.memFree(byteBuffer);
@@ -92,9 +98,11 @@ public class IndirectDrawBufferGenerator {
 
         LowLevelDC.MultiElementIndirectBuilder builder = LowLevelDC.multiElementIndirect().vao(vao).idb(idbView.bufferID);
         builder.mode(mode).elementType(elementType);
-        builder.idbOffset(0);
+        builder.idbOffset(offset);
         builder.idbStride(IndirectDrawBufferGenerator.IDB_STRIDE_BYTE);
         builder.instanceCount(units.size());
+
+        offset += idbBufferSize;
 
         return builder.build();
     }
