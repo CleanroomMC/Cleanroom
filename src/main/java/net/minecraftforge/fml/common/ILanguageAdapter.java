@@ -33,7 +33,7 @@ public interface ILanguageAdapter {
     void setProxy(Field target, Class<?> proxyTarget, Object proxy) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException;
     void setInternalProxies(ModContainer mod, Side side, ClassLoader loader);
 
-    public static class JavaAdapter implements ILanguageAdapter {
+    class JavaAdapter implements ILanguageAdapter {
         @Override
         public Object getNewInstance(FMLModContainer container, Class<?> objectClass, ClassLoader classLoader, Method factoryMarkedMethod) throws Exception
         {
@@ -43,7 +43,7 @@ public interface ILanguageAdapter {
             }
             else
             {
-                return objectClass.newInstance();
+                return objectClass.getConstructor().newInstance();
             }
         }
 
