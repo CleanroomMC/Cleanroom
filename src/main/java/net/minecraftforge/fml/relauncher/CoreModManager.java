@@ -248,10 +248,10 @@ public class CoreModManager {
             {
                 try 
                 {
-                    Launch.classLoader.addURL(new URI(path).toURL());
+                    Launch.classLoader.addURL(new File(path).getAbsoluteFile().toURI().toURL());
                     FMLLog.log.debug("Adding extra path {} to class path", path);
                 }
-                catch (MalformedURLException | URISyntaxException e)
+                catch (MalformedURLException e)
                 {
                     FMLLog.log.error("Failed to add path {} to class path, this souldn't happen!", path, e);
                 }
