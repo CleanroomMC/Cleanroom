@@ -43,6 +43,8 @@ import org.spongepowered.asm.util.Constants;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.cert.Certificate;
 import java.util.*;
 import java.util.function.ToIntFunction;
@@ -239,6 +241,22 @@ public class CoreModManager {
         }
 
         FMLLog.log.debug("All fundamental core mods are successfully located");
+        // Add extra classpath in advanced so fml.coreMods.load works
+        if (System.getProperty("crl.dev.extrapath") != null)
+        {
+            for (String path : System.getProperty("crl.dev.extrapath").split(File.pathSeparator))
+            {
+                try 
+                {
+                    Launch.classLoader.addURL(new URI(path).toURL());
+                    FMLLog.log.debug("Adding extra path {} to class path", path);
+                }
+                catch (MalformedURLException | URISyntaxException e)
+                {
+                    FMLLog.log.error("Failed to add path {} to class path, this souldn't happen!", path, e);
+                }
+            }
+        }
         // Now that we have the root plugins loaded - lets see what else might
         // be around
         String commandLineCoremods = System.getProperty("fml.coreMods.load", "");
@@ -332,12 +350,7 @@ public class CoreModManager {
         {
             if (coreMod.isDirectory())
             {
-                FMLLog.log.debug("Coremod candidacy {} is a directory, considering as folder mod", coreMod);
-                try {
-                    Launch.classLoader.addURL(coreMod.toURI().toURL());
-                } catch (MalformedURLException e) {
-                    FMLLog.log.error("Coremod candidacy {} has a malformed URL", coreMod);
-                }
+                FMLLog.log.debug("Ignoring folder {} in coremod searching", coreMod);
                 continue;
             }
             FMLLog.log.debug("Examining for coremod candidacy {}", coreMod.getName());
