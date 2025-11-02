@@ -285,7 +285,7 @@ dependencies {
     installer 'org.javassist:javassist:3.30.2-GA'
     installer "zone.rong:imaginebreaker:2.1"
 
-    installer 'com.ibm.icu:icu4j:7.1'
+    installer 'com.ibm.icu:icu4j:78.1'
 
     installer 'org.jline:jline:3.30.6'
     installer 'org.jline:jline-native:3.30.6'
