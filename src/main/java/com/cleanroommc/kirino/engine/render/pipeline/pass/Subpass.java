@@ -1,65 +1,70 @@
 package com.cleanroommc.kirino.engine.render.pipeline.pass;
 
 import com.cleanroommc.kirino.engine.render.camera.ICamera;
-import com.cleanroommc.kirino.engine.render.pipeline.command.HighLevelDC;
-import com.cleanroommc.kirino.engine.render.pipeline.command.LowLevelDC;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.IndirectDrawBufferGenerator;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.cmd.HighLevelDC;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.cmd.LowLevelDC;
 import com.cleanroommc.kirino.engine.render.pipeline.Renderer;
-import com.cleanroommc.kirino.engine.render.pipeline.command.DrawQueue;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.DrawQueue;
 import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
-import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
+import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;
-import org.lwjgl.opengl.GL11;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public abstract class Subpass {
     protected final Renderer renderer;
-    protected final Framebuffer fbo;
     private final PipelineStateObject pso;
 
-    public Subpass(Renderer renderer, PipelineStateObject pso, Framebuffer fbo) {
+    /**
+     * @param renderer A global renderer
+     * @param pso A pipeline state object (pipeline parameters)
+     */
+    public Subpass(@NonNull Renderer renderer, @NonNull PipelineStateObject pso) {
         this.renderer = renderer;
         this.pso = pso;
-        this.fbo = fbo;
     }
 
-    public final void render(DrawQueue drawQueue, ICamera camera) {
+    public final void render(
+            @NonNull DrawQueue drawQueue,
+            @Nullable ICamera camera,
+            @NonNull GraphicResourceManager graphicResourceManager,
+            @NonNull IndirectDrawBufferGenerator idbGenerator,
+            @Nullable Object payload) {
         DrawQueue dq = drawQueue;
         if (hintCompileDrawQueue()) {
-            dq = dq.compile();
+            dq = dq.compile(graphicResourceManager);
         }
         if (hintSimplifyDrawQueue()) {
-            dq = dq.simplify();
+            dq = dq.simplify(idbGenerator);
         }
+        dq = dq.sort();
 
-        //bindTarget(); // test
         renderer.bindPipeline(pso);
-        updateShaderProgram(pso.shaderProgram(), camera);
+        updateShaderProgram(pso.shaderProgram(), camera, payload);
 
-        execute(dq);
+        execute(dq, payload);
     }
 
-    protected void bindTarget() {
-        fbo.bind();
-        GL11.glViewport(0, 0, fbo.width(), fbo.height());
-    }
-
-    protected abstract void updateShaderProgram(ShaderProgram shaderProgram, ICamera camera);
+    protected abstract void updateShaderProgram(@NonNull ShaderProgram shaderProgram, @Nullable ICamera camera, @Nullable Object payload);
 
     /**
-     * Whether to run {@link DrawQueue#compile()} before {@link #execute(DrawQueue)}.
+     * Whether to run {@link DrawQueue#compile(GraphicResourceManager)} before {@link #execute(DrawQueue, Object)}.
      *
-     * @see DrawQueue#compile()
+     * @see DrawQueue#compile(GraphicResourceManager)
      * @return The hint
      */
     protected abstract boolean hintCompileDrawQueue();
 
     /**
-     * Whether to run {@link DrawQueue#simplify()} before {@link #execute(DrawQueue)}.
+     * Whether to run {@link DrawQueue#simplify(IndirectDrawBufferGenerator)} before {@link #execute(DrawQueue, Object)}.
      *
-     * @see DrawQueue#simplify()
+     * @see DrawQueue#simplify(IndirectDrawBufferGenerator)
      * @return The hint
      */
     protected abstract boolean hintSimplifyDrawQueue();
 
+    @NonNull
     public abstract PassHint passHint();
 
     /**
@@ -68,7 +73,7 @@ public abstract class Subpass {
      * @implSpec If it's a CPU-side pass, then<br/><code>while (drawQueue.dequeue() instanceof LowLevelDC command) { ... }</code>
      * @param drawQueue The queue that stores low-level draw commands
      */
-    protected abstract void execute(DrawQueue drawQueue);
+    protected abstract void execute(DrawQueue drawQueue, Object payload);
 
     /**
      * Enqueue draw commands, {@link LowLevelDC} or {@link HighLevelDC}, here.

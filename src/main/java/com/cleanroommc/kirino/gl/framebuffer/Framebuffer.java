@@ -3,7 +3,11 @@ package com.cleanroommc.kirino.gl.framebuffer;
 import com.cleanroommc.kirino.gl.GLDisposable;
 import com.cleanroommc.kirino.gl.GLResourceManager;
 import com.cleanroommc.kirino.gl.exception.RuntimeGLException;
+import com.google.common.base.Preconditions;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL32;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +25,22 @@ public class Framebuffer extends GLDisposable {
     }
 
     private final List<IFramebufferAttachment> colorAttachments = new ArrayList<>();
-    private IFramebufferAttachment depthAttachment;
+    private IFramebufferAttachment depthAttachment = null;
+
+    @NonNull
+    public IFramebufferAttachment getColorAttachment(int index) {
+        Preconditions.checkArgument(index >= 0,
+                "Index (%d) must be greater than or equal to 0.", index);
+        Preconditions.checkArgument(index < colorAttachments.size(),
+                "Index (%d) must be smaller than size (%d).", index, colorAttachments.size());
+
+        return colorAttachments.get(index);
+    }
+
+    @Nullable
+    public IFramebufferAttachment getDepthAttachment() {
+        return depthAttachment;
+    }
 
     public Framebuffer(int width, int height) {
         this.width = width;
@@ -38,13 +57,34 @@ public class Framebuffer extends GLDisposable {
         bind(fboID);
     }
 
+    private static String getStatusString(int status) {
+        return switch (status) {
+            case GL30.GL_FRAMEBUFFER_COMPLETE -> "COMPLETE";
+            case GL30.GL_FRAMEBUFFER_UNDEFINED -> "UNDEFINED";
+            case GL30.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT -> "INCOMPLETE_ATTACHMENT";
+            case GL30.GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT -> "MISSING_ATTACHMENT";
+            case GL30.GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER -> "INCOMPLETE_DRAW_BUFFER";
+            case GL30.GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER -> "INCOMPLETE_READ_BUFFER";
+            case GL30.GL_FRAMEBUFFER_UNSUPPORTED -> "UNSUPPORTED";
+            case GL30.GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE -> "INCOMPLETE_MULTISAMPLE";
+            case GL32.GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS -> "INCOMPLETE_LAYER_TARGETS";
+            default -> "Unknown status: " + status;
+        };
+    }
+
     public void check() {
-        int status = GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER);
-        if (status != GL30.GL_FRAMEBUFFER_COMPLETE) {
-            throw new RuntimeGLException("Framebuffer incomplete: " + status);
+        int statusDraw = GL30.glCheckFramebufferStatus(GL30.GL_DRAW_FRAMEBUFFER);
+        if (statusDraw != GL30.GL_FRAMEBUFFER_COMPLETE) {
+            throw new RuntimeGLException("Framebuffer DRAW incomplete: " + getStatusString(statusDraw));
+        }
+
+        int statusRead = GL30.glCheckFramebufferStatus(GL30.GL_READ_FRAMEBUFFER);
+        if (statusRead != GL30.GL_FRAMEBUFFER_COMPLETE) {
+            throw new RuntimeGLException("Framebuffer READ incomplete: " + getStatusString(statusRead));
         }
     }
 
+    // bind fbo first
     public void attach(IFramebufferAttachment attachment) {
         switch (attachment.kind()) {
             case COLOR -> {
@@ -57,6 +97,7 @@ public class Framebuffer extends GLDisposable {
         attachment.attach();
     }
 
+    // no need to bind fbo
     public void resize(int width, int height) {
         this.width = width;
         this.height = height;

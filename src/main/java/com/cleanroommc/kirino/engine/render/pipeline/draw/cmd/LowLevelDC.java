@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.engine.render.pipeline.command;
+package com.cleanroommc.kirino.engine.render.pipeline.draw.cmd;
 
 import com.google.common.base.Preconditions;
 import org.jspecify.annotations.NonNull;

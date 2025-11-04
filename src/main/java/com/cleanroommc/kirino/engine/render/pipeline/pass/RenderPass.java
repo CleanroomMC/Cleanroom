@@ -1,26 +1,39 @@
 package com.cleanroommc.kirino.engine.render.pipeline.pass;
 
 import com.cleanroommc.kirino.engine.render.camera.ICamera;
-import com.cleanroommc.kirino.engine.render.pipeline.command.DrawQueue;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.DrawQueue;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.IndirectDrawBufferGenerator;
 import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
 import com.cleanroommc.kirino.gl.debug.KHRDebug;
+import com.cleanroommc.kirino.utils.Reference;
+import com.google.common.base.Preconditions;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 public final class RenderPass {
     private final Map<String, Subpass> subpassMap = new HashMap<>();
     private final Map<String, List<ISubpassDecorator>> subpassDecoratorMap = new HashMap<>();
     private final List<String> subpassOrder = new ArrayList<>();
-    private final DrawQueue drawQueue;
+    private final DrawQueue drawQueue = new DrawQueue();
+
+    private final GraphicResourceManager graphicResourceManager;
+    private final Reference<IndirectDrawBufferGenerator> idbGenerator;
 
     public final String passName;
 
-    public RenderPass(GraphicResourceManager graphicResourceManager, String passName) {
+    public int size() {
+        return subpassMap.size();
+    }
+
+    public RenderPass(String passName, GraphicResourceManager graphicResourceManager, Reference<IndirectDrawBufferGenerator> idbGenerator) {
         this.passName = passName;
-        drawQueue = new DrawQueue(graphicResourceManager);
+        this.graphicResourceManager = graphicResourceManager;
+        this.idbGenerator = idbGenerator;
     }
 
     public boolean hasSubpass(String subpassName) {
@@ -45,7 +58,17 @@ public final class RenderPass {
         list.add(decorator);
     }
 
-    public void render(ICamera camera) {
+    public void render(@Nullable ICamera camera) {
+        render(camera, null, null);
+    }
+
+    public void render(@Nullable ICamera camera, @Nullable BiConsumer<String, Integer> subpassCallback, @Nullable Object[] payloads) {
+        if (payloads != null) {
+            Preconditions.checkArgument(payloads.length == size(),
+                    "Payloads length (%d) must equal to the size (%d) of this render pass.", payloads.length, size());
+        }
+
+        int index = 0;
         for (String subpassName : subpassOrder) {
             KHRDebug.pushGroup(passName + " - " + subpassName);
 
@@ -58,9 +81,20 @@ public final class RenderPass {
                     subpass.decorateCommands(drawQueue, decorator);
                 }
             }
-            subpass.render(drawQueue, camera);
+
+            subpass.render(
+                    drawQueue,
+                    camera,
+                    graphicResourceManager,
+                    idbGenerator.get(),
+                    payloads == null ? null : payloads[index]);
+
+            if (subpassCallback != null) {
+                subpassCallback.accept(subpassName, index);
+            }
 
             KHRDebug.popGroup();
+            index++;
         }
     }
 }

@@ -1512,7 +1512,7 @@
 -                GlStateManager.SourceFactor.ONE,
 -                GlStateManager.DestFactor.ZERO
 -            );
-+            GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
++            GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
              GlStateManager.func_187441_d(2.0F);
              GlStateManager.func_179090_x();
              GlStateManager.func_179132_a(false);

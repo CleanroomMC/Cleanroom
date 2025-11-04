@@ -5,9 +5,9 @@ import com.cleanroommc.kirino.gl.texture.Texture2DView;
 import org.lwjgl.opengl.GL30;
 
 public class DepthStencilAttachment implements IFramebufferAttachment{
-    private final Texture2DView texture2D;
-    private final GLRenderBuffer renderBuffer;
-    private final boolean isTexture;
+    public final Texture2DView texture2D;
+    public final GLRenderBuffer renderBuffer;
+    public final boolean isTexture;
 
     public DepthStencilAttachment(Texture2DView texture2D) {
         this.texture2D = texture2D;
@@ -21,6 +21,7 @@ public class DepthStencilAttachment implements IFramebufferAttachment{
         isTexture = false;
     }
 
+    @SuppressWarnings("DataFlowIssue")
     @Override
     public void attach() {
         if (isTexture) {
@@ -35,12 +36,17 @@ public class DepthStencilAttachment implements IFramebufferAttachment{
         return AttachmentKind.DEPTH;
     }
 
+    @SuppressWarnings("DataFlowIssue")
     @Override
     public void resize(int width, int height) {
         if (isTexture) {
+            texture2D.bind();
             texture2D.resizeAndAllocNull(width, height);
+            texture2D.bind(0);
         } else {
+            renderBuffer.bind();
             renderBuffer.resize(width, height);
+            GLRenderBuffer.bind(0);
         }
     }
 }

@@ -2,9 +2,9 @@ package com.cleanroommc.kirino.engine.render.staging;
 
 import com.cleanroommc.kirino.engine.render.staging.handle.*;
 import com.cleanroommc.kirino.gl.GLResourceManager;
-import com.cleanroommc.kirino.gl.buffer.EBOView;
+import com.cleanroommc.kirino.gl.buffer.view.EBOView;
 import com.cleanroommc.kirino.gl.buffer.GLBuffer;
-import com.cleanroommc.kirino.gl.buffer.VBOView;
+import com.cleanroommc.kirino.gl.buffer.view.VBOView;
 import com.cleanroommc.kirino.gl.buffer.meta.BufferUploadHint;
 import com.cleanroommc.kirino.gl.buffer.meta.MapBufferAccessBit;
 import com.cleanroommc.kirino.gl.vao.VAO;
@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class StagingBufferManager {
-    // todo: ring buffer double buffering
+    // todo: ring buffer double/triple/n buffering & non-coherent persistent buffer with manual flush
     private final Map<String, Triple<Integer, VBOView, ByteBuffer>> persistentVbos = new HashMap<>();
     private final Map<String, Triple<Integer, EBOView, ByteBuffer>> persistentEbos = new HashMap<>();
 

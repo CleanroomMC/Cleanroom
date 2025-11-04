@@ -1,5 +1,6 @@
-package com.cleanroommc.kirino.gl.buffer;
+package com.cleanroommc.kirino.gl.buffer.view;
 
+import com.cleanroommc.kirino.gl.buffer.GLBuffer;
 import com.cleanroommc.kirino.gl.buffer.meta.BufferUploadHint;
 import com.cleanroommc.kirino.gl.buffer.meta.MapBufferAccessBit;
 import com.cleanroommc.kirino.gl.exception.RuntimeGLException;

@@ -1,21 +1,26 @@
-package com.cleanroommc.kirino.engine.render.pipeline.pass.subpasses;
+package com.cleanroommc.kirino.engine.render.pipeline.post.subpasses;
 
 import com.cleanroommc.kirino.engine.render.camera.ICamera;
 import com.cleanroommc.kirino.engine.render.pipeline.Renderer;
-import com.cleanroommc.kirino.engine.render.pipeline.command.DrawQueue;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.DrawQueue;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.PassHint;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.Subpass;
 import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
-import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-public class WhateverPass extends Subpass {
-    public WhateverPass(Renderer renderer, PipelineStateObject pso, Framebuffer fbo) {
-        super(renderer, pso, fbo);
+public class DownscalingPass extends Subpass {
+    /**
+     * @param renderer A global renderer
+     * @param pso      A pipeline state object (pipeline parameters)
+     */
+    public DownscalingPass(@NonNull Renderer renderer, @NonNull PipelineStateObject pso) {
+        super(renderer, pso);
     }
 
     @Override
-    protected void updateShaderProgram(ShaderProgram shaderProgram, ICamera camera) {
+    protected void updateShaderProgram(@NonNull ShaderProgram shaderProgram, @Nullable ICamera camera, @Nullable Object payload) {
 
     }
 
@@ -29,13 +34,14 @@ public class WhateverPass extends Subpass {
         return false;
     }
 
+    @NonNull
     @Override
     public PassHint passHint() {
         return PassHint.OTHER;
     }
 
     @Override
-    protected void execute(DrawQueue drawQueue) {
+    protected void execute(DrawQueue drawQueue, Object payload) {
 
     }
 

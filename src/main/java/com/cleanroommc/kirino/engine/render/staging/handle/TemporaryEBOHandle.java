@@ -2,7 +2,7 @@ package com.cleanroommc.kirino.engine.render.staging.handle;
 
 import com.cleanroommc.kirino.engine.render.staging.StagingBufferHandle;
 import com.cleanroommc.kirino.engine.render.staging.StagingBufferManager;
-import com.cleanroommc.kirino.gl.buffer.EBOView;
+import com.cleanroommc.kirino.gl.buffer.view.EBOView;
 import com.google.common.base.Preconditions;
 
 import java.nio.ByteBuffer;
