@@ -66,7 +66,7 @@ public class MinecraftScene extends CleanWorld {
 
         // test
         if (c == 3) {
-            (new ChunkMeshletGenSystem()).update(entityManager, jobScheduler);
+            (new ChunkMeshletGenSystem(chunkProvider)).update(entityManager, jobScheduler);
             KirinoCore.LOGGER.info("executed!!!");
         }
         c++;
