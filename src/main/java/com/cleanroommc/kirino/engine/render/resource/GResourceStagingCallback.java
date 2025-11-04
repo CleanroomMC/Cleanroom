@@ -13,7 +13,6 @@ import com.cleanroommc.kirino.schemata.semantic.entity.SpaceItem;
 
 import java.nio.ByteBuffer;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public final class GResourceStagingCallback implements IStagingCallback {
     private final GraphicResourceManager graphicResourceManager;

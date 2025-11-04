@@ -1,5 +1,6 @@
-package com.cleanroommc.kirino.gl.buffer;
+package com.cleanroommc.kirino.gl.buffer.view;
 
+import com.cleanroommc.kirino.gl.buffer.GLBuffer;
 import org.lwjgl.opengl.GL40;
 
 public class IDBView extends BufferView {

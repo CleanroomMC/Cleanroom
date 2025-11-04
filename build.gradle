@@ -1035,6 +1035,7 @@ project(':cleanroom') {
                 "profile",
                 "--output=cleanroomClientProfile",
                 "--trace=opengl",
+                "--stats=true",
                 "$javaHome\\bin\\java.exe",
                 "-Xmx64m",
                 "-Xms64m",

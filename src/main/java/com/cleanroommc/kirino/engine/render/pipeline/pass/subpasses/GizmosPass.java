@@ -3,27 +3,34 @@ package com.cleanroommc.kirino.engine.render.pipeline.pass.subpasses;
 import com.cleanroommc.kirino.engine.render.camera.ICamera;
 import com.cleanroommc.kirino.engine.render.gizmos.GizmosManager;
 import com.cleanroommc.kirino.engine.render.pipeline.Renderer;
-import com.cleanroommc.kirino.engine.render.pipeline.command.DrawQueue;
-import com.cleanroommc.kirino.engine.render.pipeline.command.LowLevelDC;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.DrawQueue;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.cmd.LowLevelDC;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.PassHint;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.Subpass;
 import com.cleanroommc.kirino.engine.render.pipeline.state.PipelineStateObject;
-import com.cleanroommc.kirino.gl.framebuffer.Framebuffer;
 import com.cleanroommc.kirino.gl.shader.ShaderProgram;
 import org.joml.Vector3f;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL20C;
 
 public class GizmosPass extends Subpass {
     private final GizmosManager gizmosManager;
 
-    public GizmosPass(Renderer renderer, PipelineStateObject pso, Framebuffer fbo, GizmosManager gizmosManager) {
-        super(renderer, pso, fbo);
+    /**
+     * @param renderer      A global renderer
+     * @param pso           A pipeline state object (pipeline parameters)
+     * @param gizmosManager The gizmos manager
+     */
+    public GizmosPass(@NonNull Renderer renderer, @NonNull PipelineStateObject pso, @NonNull GizmosManager gizmosManager) {
+        super(renderer, pso);
         this.gizmosManager = gizmosManager;
     }
 
+    @SuppressWarnings("DataFlowIssue")
     @Override
-    protected void updateShaderProgram(ShaderProgram shaderProgram, ICamera camera) {
+    protected void updateShaderProgram(@NonNull ShaderProgram shaderProgram, @Nullable ICamera camera, @Nullable Object payload) {
         int worldOffset = GL20.glGetUniformLocation(shaderProgram.getProgramID(), "worldOffset");
         int viewRot = GL20.glGetUniformLocation(shaderProgram.getProgramID(), "viewRot");
         int projection = GL20.glGetUniformLocation(shaderProgram.getProgramID(), "projection");
@@ -44,13 +51,14 @@ public class GizmosPass extends Subpass {
         return true;
     }
 
+    @NonNull
     @Override
     public PassHint passHint() {
         return PassHint.OTHER;
     }
 
     @Override
-    protected void execute(DrawQueue drawQueue) {
+    protected void execute(DrawQueue drawQueue, Object payload) {
         while (drawQueue.dequeue() instanceof LowLevelDC command) {
             renderer.draw(command);
         }

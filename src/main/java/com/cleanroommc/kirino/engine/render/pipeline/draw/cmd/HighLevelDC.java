@@ -1,4 +1,4 @@
-package com.cleanroommc.kirino.engine.render.pipeline.command;
+package com.cleanroommc.kirino.engine.render.pipeline.draw.cmd;
 
 import com.cleanroommc.kirino.engine.render.pipeline.pass.PassHint;
 import com.google.common.base.Preconditions;

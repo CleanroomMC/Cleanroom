@@ -9,6 +9,6 @@ public class KirinoEngine {
     public final RenderingCoordinator renderingCoordinator;
 
     private KirinoEngine(EventBus eventBus, Logger logger, CleanECSRuntime ecsRuntime) {
-        renderingCoordinator = new RenderingCoordinator(eventBus, logger, ecsRuntime);
+        renderingCoordinator = new RenderingCoordinator(eventBus, logger, ecsRuntime, true, true);
     }
 }
