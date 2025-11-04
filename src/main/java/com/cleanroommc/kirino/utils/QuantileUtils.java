@@ -46,7 +46,7 @@ public class QuantileUtils {
 
     private static <T extends Comparable<T>> int pivot(@NonNull T @NonNull [] array,
                                                        int left, int right) {
-        if (left - right < 5) {
+        if (right - left < 5) {
             return partition5(array, left, right);
         }
 
@@ -55,7 +55,7 @@ public class QuantileUtils {
             if (subRight > right) {
                 subRight = right;
             }
-            int median5 = partition5(array, left, subRight);
+            int median5 = partition5(array, i, subRight);
             swap(array, median5, left + Math.floorDiv(i - left, 5));
         }
 
