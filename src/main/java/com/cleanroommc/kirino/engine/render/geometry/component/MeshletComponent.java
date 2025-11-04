@@ -10,6 +10,7 @@ import org.joml.Vector3f;
 public class MeshletComponent implements ICleanComponent {
     public AABB aabb;
     public Vector3f normal;
+    public boolean transparent;
     public Block block1;
     public Block block2;
     public Block block3;

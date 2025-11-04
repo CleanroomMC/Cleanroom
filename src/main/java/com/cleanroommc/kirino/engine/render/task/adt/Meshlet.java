@@ -22,10 +22,12 @@ public class Meshlet implements Comparable<Meshlet> {
     PriorityQueue<Short> minHeap = new ShortHeapPriorityQueue();
     int blocks = 0;
     AABB boundingBox;
+    boolean transparent;
 
-    public Meshlet(EnumFacing normal, int x, int y, int z) {
+    public Meshlet(EnumFacing normal, int x, int y, int z, boolean transparent) {
         this.normal = normal;
         this.boundingBox = new AABB(x, y, z, x+1, y+1, z+1);
+        this.transparent = transparent;
         addBlock(x, y, z);
     }
 
@@ -35,6 +37,10 @@ public class Meshlet implements Comparable<Meshlet> {
 
     public AABB aabb() {
         return boundingBox;
+    }
+
+    public boolean transparent() {
+        return transparent;
     }
 
     // Empties the blocks onto the set

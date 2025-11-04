@@ -72,7 +72,10 @@ public class ChunkMeshletGenJob implements IParallelJob {
         int chunkX = chunk.x << 4;
         int chunkZ = chunk.z << 4;
 
-        KDTree tree = buildKDTree(chunk, chunkX, chunkY, chunkZ, side);
+        KDTree tree = new KDTree();
+        KDTree transparentTree = new KDTree();
+
+        buildKDTree(chunk, chunkX, chunkY, chunkZ, side, tree, transparentTree);
         List<Meshlet> meshlets = new ObjectArrayList<>();
 
         while(tree.size() > 0) {
@@ -80,31 +83,44 @@ public class ChunkMeshletGenJob implements IParallelJob {
             start.ifPresent(meshlet -> meshlets.add(nearestNeighbourChain(tree, meshlet)));
         }
 
+        while(transparentTree.size() > 0) {
+            Optional<Meshlet> start = transparentTree.size() % 2 == 1 ? transparentTree.getLeftExtremity() : transparentTree.getRightExtremity();
+            start.ifPresent(meshlet -> meshlets.add(nearestNeighbourChain(transparentTree, meshlet)));
+        }
+
         return meshlets;
     }
 
-    public @NonNull KDTree buildKDTree(@NonNull Chunk chunk, int chunkX, int chunkY, int chunkZ, @NonNull EnumFacing side) {
+    public void buildKDTree(@NonNull Chunk chunk, int chunkX, int chunkY, int chunkZ, @NonNull EnumFacing side, KDTree tree, KDTree transparentTree) {
         Preconditions.checkNotNull(chunk);
         Preconditions.checkNotNull(side);
 
         List<Meshlet> toAdd = new ObjectArrayList<>();
+        List<Meshlet> transparents = new ObjectArrayList<>();
 
         for (int x = chunkX; x < chunkX + 16; x++) {
             for (int y = chunkY; y < chunkY + 16; y++) {
                 for (int z = chunkZ; z < chunkZ + 16; z++) {
-                    if (!isOpaqueBlockPresent(chunk,
-                            chunkX, chunkY, chunkZ,
-                            x + side.getXOffset(), y + side.getYOffset(), z + side.getZOffset())
-                            && chunk.getBlockState(x, y, z).getMaterial() != Material.AIR) {
-                        toAdd.add(new Meshlet(side, x, y, z)); // the tree building function KDTree::add uses a list for maximizing the balance
+                    if (chunk.getBlockState(x,y,z).isFullCube() && chunk.getBlockState(x,y,z).getMaterial() != Material.AIR) {
+                        if (!isOpaqueBlockPresent(chunk,
+                                chunkX, chunkY, chunkZ,
+                                x + side.getXOffset(), y + side.getYOffset(), z + side.getZOffset())
+                                && chunk.getBlockState(x, y, z).getMaterial() != Material.AIR) {
+                            // The tree building function KDTree::add uses a list for maximizing the balance.
+                            if (chunk.getBlockState(x,y,z).isOpaqueCube()) {
+                                toAdd.add(new Meshlet(side, x, y, z, false));
+                            } else {
+                                transparents.add(new Meshlet(side, x, y, z, true));
+                            }
+                        }
                     }
                 }
             }
         }
 
-        KDTree tree = new KDTree();
         tree.add(toAdd);
-        return tree;
+
+        transparentTree.add(transparents);
     }
 
     private static boolean isOpaqueBlockPresent(@NonNull Chunk chunk, int cpX, int cpY, int cpZ, int x, int y, int z) {
@@ -146,6 +162,7 @@ public class ChunkMeshletGenJob implements IParallelJob {
     private static void setMeshletComponent(@NonNull Meshlet meshlet, @NonNull MeshletComponent component) {
         component.aabb = meshlet.aabb();
         component.normal = meshlet.normal();
+        component.transparent = meshlet.transparent();
         List<Block> blocks = meshlet.emptyBlocks();
         for (int i = 0; i < blocks.size(); i++) {
             setComponentBlock(component, i, blocks.get(i));
