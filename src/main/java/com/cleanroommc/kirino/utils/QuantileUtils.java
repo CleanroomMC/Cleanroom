@@ -11,7 +11,7 @@ public class QuantileUtils {
         Preconditions.checkNotNull(array);
 
         int len = array.length;
-        if (len % 2 == 0) {
+        if (len % 2 != 0) {
             return array[QuantileUtils.<Integer>select(array, 0, array.length - 1, array.length >> 1)];
         } else {
             return (array[QuantileUtils.<Integer>select(array, 0, array.length - 1, (array.length >> 1) - 1)] +
