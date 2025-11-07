@@ -6,16 +6,22 @@ import com.cleanroommc.kirino.ecs.entity.EntityManager;
 import com.cleanroommc.kirino.ecs.job.JobScheduler;
 import com.cleanroommc.kirino.ecs.world.CleanWorld;
 import com.cleanroommc.kirino.engine.render.geometry.component.ChunkComponent;
+import com.cleanroommc.kirino.engine.render.gizmos.GizmosManager;
 import com.cleanroommc.kirino.engine.render.task.system.ChunkMeshletGenSystem;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.util.math.ChunkPos;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MinecraftScene extends CleanWorld {
-    public MinecraftScene(EntityManager entityManager, JobScheduler jobScheduler) {
+    private final GizmosManager gizmosManager;
+
+    public MinecraftScene(EntityManager entityManager, JobScheduler jobScheduler, GizmosManager gizmosManager) {
         super(entityManager, jobScheduler);
+        this.gizmosManager = gizmosManager;
+        gizmosManager.addBlockSurface(0, 100, 0, 0b111000, (new Color(1f, 0f, 0f, 0.5f)).getRGB());
     }
 
     private final Map<Long, CleanEntityHandle> chunkHandles = new HashMap<>();
@@ -41,10 +47,6 @@ public class MinecraftScene extends CleanWorld {
         }
     }
 
-    private void buildChunks() {
-
-    }
-
     @Override
     public void update() {
         if (rebuildChunks) {
@@ -61,8 +63,6 @@ public class MinecraftScene extends CleanWorld {
             }
             // no need to & must not flush immediately
         }
-
-        buildChunks();
 
         // test
         if (c == 3) {
