@@ -12,6 +12,7 @@ import com.google.common.base.Preconditions;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -60,9 +61,10 @@ public class GizmosManager {
         Preconditions.checkArgument(faceCount > 0, "Must have at least one face to draw.");
 
         byte a = (byte) ((color >> 24) & 0xFF);
-        byte r = (byte) ((color >> 16) & 0xFF);
-        byte g = (byte) ((color >> 8) & 0xFF);
-        byte b = (byte) (color & 0xFF);
+        byte r;
+        byte g;
+        byte b;
+        Color color1 = new Color(color, true);
 
         ByteBuffer vboData = BufferUtils.createByteBuffer(faceCount * 4 * ATTRIBUTE_LAYOUT.getFirstStride().getSize());
         ByteBuffer eboData = BufferUtils.createByteBuffer(faceCount * 6);
@@ -70,6 +72,11 @@ public class GizmosManager {
         int vertexBase = 0;
 
         if ((faceMask & FACE_X_POS) != 0) {
+            float factor = 1.1f;
+            r = (byte) (int) Math.min(255, Math.max(0, color1.getRed() * factor));
+            g = (byte) (int) Math.min(255, Math.max(0, color1.getGreen() * factor));
+            b = (byte) (int) Math.min(255, Math.max(0, color1.getBlue() * factor));
+
             vboData.putFloat(x + 1f).putFloat(y).putFloat(z);
             vboData.put(r).put(g).put(b).put(a);
             vboData.putFloat(x + 1f).putFloat(y).putFloat(z + 1f);
@@ -85,6 +92,11 @@ public class GizmosManager {
         }
 
         if ((faceMask & FACE_X_NEG) != 0) {
+            float factor = 0.8f;
+            r = (byte) (int) Math.min(255, Math.max(0, color1.getRed() * factor));
+            g = (byte) (int) Math.min(255, Math.max(0, color1.getGreen() * factor));
+            b = (byte) (int) Math.min(255, Math.max(0, color1.getBlue() * factor));
+
             vboData.putFloat(x).putFloat(y).putFloat(z + 1f);
             vboData.put(r).put(g).put(b).put(a);
             vboData.putFloat(x).putFloat(y).putFloat(z);
@@ -100,6 +112,11 @@ public class GizmosManager {
         }
 
         if ((faceMask & FACE_Y_POS) != 0) {
+            float factor = 1.2f;
+            r = (byte) (int) Math.min(255, Math.max(0, color1.getRed() * factor));
+            g = (byte) (int) Math.min(255, Math.max(0, color1.getGreen() * factor));
+            b = (byte) (int) Math.min(255, Math.max(0, color1.getBlue() * factor));
+
             vboData.putFloat(x).putFloat(y + 1f).putFloat(z);
             vboData.put(r).put(g).put(b).put(a);
             vboData.putFloat(x + 1f).putFloat(y + 1f).putFloat(z);
@@ -115,6 +132,11 @@ public class GizmosManager {
         }
 
         if ((faceMask & FACE_Y_NEG) != 0) {
+            float factor = 0.6f;
+            r = (byte) (int) Math.min(255, Math.max(0, color1.getRed() * factor));
+            g = (byte) (int) Math.min(255, Math.max(0, color1.getGreen() * factor));
+            b = (byte) (int) Math.min(255, Math.max(0, color1.getBlue() * factor));
+
             vboData.putFloat(x).putFloat(y).putFloat(z + 1f);
             vboData.put(r).put(g).put(b).put(a);
             vboData.putFloat(x + 1f).putFloat(y).putFloat(z + 1f);
@@ -130,6 +152,11 @@ public class GizmosManager {
         }
 
         if ((faceMask & FACE_Z_POS) != 0) {
+            float factor = 1.05f;
+            r = (byte) (int) Math.min(255, Math.max(0, color1.getRed() * factor));
+            g = (byte) (int) Math.min(255, Math.max(0, color1.getGreen() * factor));
+            b = (byte) (int) Math.min(255, Math.max(0, color1.getBlue() * factor));
+
             vboData.putFloat(x).putFloat(y).putFloat(z + 1f);
             vboData.put(r).put(g).put(b).put(a);
             vboData.putFloat(x).putFloat(y + 1f).putFloat(z + 1f);
@@ -145,6 +172,11 @@ public class GizmosManager {
         }
 
         if ((faceMask & FACE_Z_NEG) != 0) {
+            float factor = 0.85f;
+            r = (byte) (int) Math.min(255, Math.max(0, color1.getRed() * factor));
+            g = (byte) (int) Math.min(255, Math.max(0, color1.getGreen() * factor));
+            b = (byte) (int) Math.min(255, Math.max(0, color1.getBlue() * factor));
+
             vboData.putFloat(x + 1f).putFloat(y).putFloat(z);
             vboData.put(r).put(g).put(b).put(a);
             vboData.putFloat(x + 1f).putFloat(y + 1f).putFloat(z);

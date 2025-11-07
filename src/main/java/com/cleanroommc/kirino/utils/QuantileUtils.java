@@ -5,7 +5,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
 
-public class QuantileUtils {
+public final class QuantileUtils {
 
     public static int median(Integer @NonNull [] array) {
         Preconditions.checkNotNull(array);

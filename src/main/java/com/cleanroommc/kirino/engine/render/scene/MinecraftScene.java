@@ -21,7 +21,7 @@ public class MinecraftScene extends CleanWorld {
     public MinecraftScene(EntityManager entityManager, JobScheduler jobScheduler, GizmosManager gizmosManager) {
         super(entityManager, jobScheduler);
         this.gizmosManager = gizmosManager;
-        gizmosManager.addBlockSurface(0, 100, 0, 0b111000, (new Color(1f, 0f, 0f, 0.5f)).getRGB());
+        gizmosManager.addBlockSurface(0, 100, 0, 0b111111, (new Color(0.8f, 0f, 0f, 0.5f)).getRGB());
     }
 
     private final Map<Long, CleanEntityHandle> chunkHandles = new HashMap<>();
