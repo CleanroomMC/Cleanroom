@@ -256,7 +256,7 @@
 -            itemstack.stackTagCompound = this.stackTagCompound.copy();
 +            copy.stackTagCompound = this.stackTagCompound.copy();
 +        }
-+        if (this.capNBT != null || this.capabilities != null)
++        if (this.capabilities != null)
 +        {
 +            copy.capNBT = this.capabilities.serializeNBT();
 +        }
