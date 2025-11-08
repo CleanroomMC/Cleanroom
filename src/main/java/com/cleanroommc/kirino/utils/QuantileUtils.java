@@ -9,6 +9,7 @@ public final class QuantileUtils {
 
     public static float median(Integer @NonNull [] array) {
         Preconditions.checkNotNull(array);
+        Preconditions.checkState(array.length > 0);
 
         int len = array.length;
         if (len % 2 != 0) {
@@ -22,11 +23,17 @@ public final class QuantileUtils {
 
     public static <T extends Comparable<T>> T median(@NonNull T @NonNull [] array) {
         Preconditions.checkNotNull(array);
+        Preconditions.checkState(array.length > 0);
 
         return array[select(array, 0, array.length - 1, array.length >> 1)];
     }
 
     private static <T extends Comparable<T>> int select(@NonNull T @NonNull [] array, int left, int right, int n) {
+        Preconditions.checkState(right > left);
+        Preconditions.checkPositionIndex(left, array.length);
+        Preconditions.checkPositionIndex(right, array.length);
+        Preconditions.checkPositionIndex(n, right);
+
         while (true) {
             if (left == right) {
                 return left;
@@ -46,6 +53,10 @@ public final class QuantileUtils {
 
     private static <T extends Comparable<T>> int pivot(@NonNull T @NonNull [] array,
                                                        int left, int right) {
+        Preconditions.checkState(right > left);
+        Preconditions.checkPositionIndex(left, array.length);
+        Preconditions.checkPositionIndex(right, array.length);
+
         if (right - left < 5) {
             return partition5(array, left, right);
         }
@@ -66,6 +77,10 @@ public final class QuantileUtils {
     private static <T extends Comparable<T>> int partition(@NonNull T @NonNull [] array,
                                                            int left, int right,
                                                            int pivotIdx, int n) {
+        Preconditions.checkState(right > left);
+        Preconditions.checkPositionIndex(left, array.length);
+        Preconditions.checkPositionIndex(right, array.length);
+
         T pivotValue = array[pivotIdx];
         swap(array, pivotIdx, right);
         int storeIdx = left;
@@ -99,6 +114,11 @@ public final class QuantileUtils {
 
     private static <T extends Comparable<T>> int partition5(@NonNull T @NonNull [] array,
                                                             int left, int right) {
+        Preconditions.checkState(right > left);
+        Preconditions.checkPositionIndex(left, array.length);
+        Preconditions.checkPositionIndex(right, array.length);
+
+
         switch (right-left) {
             case 0:
                 break;
@@ -144,6 +164,9 @@ public final class QuantileUtils {
     }
 
     public static <T extends Comparable<T>> void swap(@NonNull T @NonNull [] array, int left, int right) {
+        Preconditions.checkPositionIndex(left, array.length);
+        Preconditions.checkPositionIndex(right, array.length);
+
         T tmp = array[left];
         array[left] = array[right];
         array[right] = tmp;
