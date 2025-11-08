@@ -11,8 +11,9 @@ import java.util.function.Consumer;
 
 public class CatalogueTextField extends GuiTextField {
     private final FontRenderer fontRenderer;
-    private String suggestion = "";
     private boolean isTextTruncated;
+    @NotNull
+    private String suggestion = "";
     @Nullable
     private Consumer<String> responder;
     @Nullable
@@ -74,12 +75,10 @@ public class CatalogueTextField extends GuiTextField {
             currentDrawX = this.fontRenderer.drawStringWithShadow(formatText(rawTextAfterCursor, this.cursorPosition), (float) currentDrawX, (float) textStartY, textColor);
         }
 
-        if (!this.isTextTruncated && this.suggestion != null) {
-            if (!this.getText().isEmpty()) {
-                this.fontRenderer.drawStringWithShadow(this.suggestion, (float) currentDrawX - 1, (float) textStartY, 0x808080);
-            } else {
-                this.fontRenderer.drawStringWithShadow(this.suggestion, (float) currentDrawX, (float) textStartY, 0x808080);
-            }
+        if (!this.isTextTruncated && !this.suggestion.isEmpty()) {
+            int suggestionDrawX = this.getText().isEmpty() ? currentDrawX : currentDrawX - 1;
+            String suggestion = this.fontRenderer.trimStringToWidth(this.suggestion, textStartX + this.getWidth() - suggestionDrawX);
+            this.fontRenderer.drawStringWithShadow(suggestion, (float) suggestionDrawX, (float) textStartY, 0x808080);
         }
 
         if (shouldDrawCursor) {
