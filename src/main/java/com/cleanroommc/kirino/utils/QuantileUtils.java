@@ -7,14 +7,14 @@ import java.util.Arrays;
 
 public final class QuantileUtils {
 
-    public static int median(Integer @NonNull [] array) {
+    public static float median(Integer @NonNull [] array) {
         Preconditions.checkNotNull(array);
 
         int len = array.length;
         if (len % 2 != 0) {
             return array[QuantileUtils.<Integer>select(array, 0, array.length - 1, array.length >> 1)];
         } else {
-            return (array[QuantileUtils.<Integer>select(array, 0, array.length - 1, (array.length >> 1) - 1)] +
+            return (float) (array[QuantileUtils.<Integer>select(array, 0, array.length - 1, (array.length >> 1) - 1)] +
                     array[QuantileUtils.<Integer>select(array, 0, array.length - 1, array.length >> 1)])
                     / 2;
         }
@@ -59,7 +59,7 @@ public final class QuantileUtils {
             swap(array, median5, left + Math.floorDiv(i - left, 5));
         }
 
-        int mid = Math.floorDiv(right - left, 10) + left + 1;
+        int mid = Math.floorDiv(right - left, 10) + left;
         return select(array, left, left + Math.floorDiv(right - left, 5), mid);
     }
 
@@ -103,7 +103,9 @@ public final class QuantileUtils {
             case 0:
                 break;
             case 1:
-                swap(array, left, right);
+                if (array[left].compareTo(array[right]) > right) {
+                    swap(array, left, right);
+                }
                 break;
             case 2:
                 if (array[left].compareTo(array[right-1]) <= 0) {
@@ -134,12 +136,11 @@ public final class QuantileUtils {
                 break;
             case 3:
             case 4:
-            case 5:
                 Arrays.sort(array, left, right+1);
                 break;
         }
 
-        return left + (right - left) >> 1;
+        return left + ((right - left) >>> 1);
     }
 
     public static <T extends Comparable<T>> void swap(@NonNull T @NonNull [] array, int left, int right) {
