@@ -10,6 +10,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
+import java.util.random.RandomGenerator;
 
 public class KDTree {
 
@@ -19,9 +20,13 @@ public class KDTree {
     public void add(@NonNull List<Meshlet> meshlets) {
         Preconditions.checkNotNull(meshlets);
 
+        final int PROBE_SIZE = 24;
+
         if (root == null) {
             root = new Node();
         }
+
+        len += meshlets.size();
 
         record Recurrence(Node node, List<Meshlet> toInsert, int depth) {}
 
@@ -30,26 +35,41 @@ public class KDTree {
         while (!recurrenceStack.isEmpty()) {
             Recurrence recurrence = recurrenceStack.pop();
             int dimension = recurrence.depth % 3;
-            List<Meshlet> left = new ObjectArrayList<>();
-            List<Meshlet> right = new ObjectArrayList<>();
-            recurrence.node.left = new Node();
-            recurrence.node.right = new Node();
-            if (recurrence.node.meshlet == null) {
-                recurrence.node.meshlet = QuantileUtils.median(recurrence.toInsert.toArray(new Meshlet[0]));
-                recurrence.toInsert.remove(recurrence.node.meshlet);
-            }
-            for(Meshlet meshlet : recurrence.toInsert) {
-                if (compareMeshletDimension(recurrence.node.meshlet, meshlet, dimension)) {
-                    left.add(meshlet);
-                } else {
-                    right.add(meshlet);
+            if (recurrence.toInsert != null) {
+                if (recurrence.toInsert.size() == 1) {
+                    recurrence.node.meshlet = recurrence.toInsert.getFirst();
+                    recurrence.node.left = null;
+                    recurrence.node.right = null;
+                } else if (recurrence.toInsert.size() > 1) {
+                    List<Meshlet> left = new ObjectArrayList<>();
+                    List<Meshlet> right = new ObjectArrayList<>();
+                    recurrence.node.left = new Node();
+                    recurrence.node.right = new Node();
+                    Meshlet[] probe;
+                    if (recurrence.toInsert.size() > PROBE_SIZE) {
+                        probe = new Meshlet[PROBE_SIZE];
+                        for (int i = 0; i < PROBE_SIZE; i++) {
+                            probe[i] = recurrence.toInsert.get(RandomGenerator.getDefault().nextInt(recurrence.toInsert.size()));
+                        }
+                    } else {
+                        probe = recurrence.toInsert.toArray(new Meshlet[0]);
+                    }
+                    if (recurrence.node.meshlet == null) {
+                        recurrence.node.meshlet = QuantileUtils.median(probe);
+                        recurrence.toInsert.remove(recurrence.node.meshlet);
+                    }
+                    for(Meshlet meshlet : recurrence.toInsert) {
+                        if (compareMeshletDimension(recurrence.node.meshlet, meshlet, dimension)) {
+                            left.add(meshlet);
+                        } else {
+                            right.add(meshlet);
+                        }
+                    }
+                    recurrenceStack.push(new Recurrence(recurrence.node.left, left, recurrence.depth + 1));
+                    recurrenceStack.push(new Recurrence(recurrence.node.right, right, recurrence.depth + 1));
                 }
             }
-            recurrenceStack.push(new Recurrence(recurrence.node.left, left, recurrence.depth + 1));
-            recurrenceStack.push(new Recurrence(recurrence.node.right, right, recurrence.depth + 1));
         }
-
-        len++;
     }
 
     public Optional<List<Meshlet>> knn(@NonNull Meshlet meshlet, float cutoff, int k) {
