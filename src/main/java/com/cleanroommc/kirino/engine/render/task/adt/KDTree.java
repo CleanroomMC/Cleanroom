@@ -1,6 +1,5 @@
 package com.cleanroommc.kirino.engine.render.task.adt;
 
-import com.cleanroommc.kirino.utils.QuantileUtils;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.Stack;
@@ -20,7 +19,7 @@ public class KDTree {
     public void add(@NonNull List<Meshlet> meshlets) {
         Preconditions.checkNotNull(meshlets);
 
-        final int PROBE_SIZE = 24;
+        final int PROBE_SIZE = 21;
 
         if (root == null) {
             root = new Node();
@@ -45,17 +44,18 @@ public class KDTree {
                     List<Meshlet> right = new ObjectArrayList<>();
                     recurrence.node.left = new Node();
                     recurrence.node.right = new Node();
-                    Meshlet[] probe;
-                    if (recurrence.toInsert.size() > PROBE_SIZE) {
-                        probe = new Meshlet[PROBE_SIZE];
-                        for (int i = 0; i < PROBE_SIZE; i++) {
-                            probe[i] = recurrence.toInsert.get(RandomGenerator.getDefault().nextInt(recurrence.toInsert.size()));
-                        }
-                    } else {
-                        probe = recurrence.toInsert.toArray(new Meshlet[0]);
-                    }
                     if (recurrence.node.meshlet == null) {
-                        recurrence.node.meshlet = QuantileUtils.median(probe);
+                        Meshlet[] probe;
+                        if (recurrence.toInsert.size() > PROBE_SIZE) {
+                            probe = new Meshlet[PROBE_SIZE];
+                            for (int i = 0; i < PROBE_SIZE; i++) {
+                                probe[i] = recurrence.toInsert.get(RandomGenerator.getDefault().nextInt(recurrence.toInsert.size()));
+                            }
+                        } else {
+                            probe = recurrence.toInsert.toArray(new Meshlet[0]);
+                        }
+                        Arrays.sort(probe);
+                        recurrence.node.meshlet = probe[((probe.length - 2) >>> 1) + 1];
                         recurrence.toInsert.remove(recurrence.node.meshlet);
                     }
                     for(Meshlet meshlet : recurrence.toInsert) {
