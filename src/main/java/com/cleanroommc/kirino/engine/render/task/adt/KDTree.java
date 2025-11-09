@@ -102,10 +102,10 @@ public class KDTree {
             float distanceLeft = Float.MAX_VALUE;
             float distanceRight = Float.MAX_VALUE;
 
-            if (node.left != null) {
+            if (node.left != null && node.left.meshlet != null) {
                 distanceLeft = node.left.meshlet.median().distanceSquared(vector);
             }
-            if (node.right != null) {
+            if (node.right != null && node.right.meshlet != null) {
                 distanceRight = node.right.meshlet.median().distanceSquared(vector);
             }
 
@@ -119,7 +119,7 @@ public class KDTree {
 
         List<Meshlet> meshlets = new ReferenceArrayList<>();
 
-        for (int i = 0; i < k; i++) {
+        for (int i = 0; i < k || neighbours.isEmpty(); i++) {
             meshlets.add(neighbours.dequeue());
         }
 
@@ -261,7 +261,7 @@ public class KDTree {
             }
         }
 
-        return Optional.of(curr.meshlet);
+        return Optional.ofNullable(curr.meshlet);
     }
 
     private static boolean compareMeshletDimension(Meshlet median, Meshlet meshlet, int dimension) {
