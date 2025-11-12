@@ -6,6 +6,7 @@ import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldRegistry;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarType;
 import com.cleanroommc.kirino.ecs.component.schema.meta.MemberLayout;
 import com.cleanroommc.kirino.ecs.component.schema.reflect.AccessHandlePool;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
@@ -41,9 +42,9 @@ public class ComponentRegistry {
         List<FieldDef> fields = new ArrayList<>();
         for (String fieldTypeName : fieldTypeNames) {
             FieldDef field = fieldRegistry.getFieldDef(fieldTypeName);
-            if (field == null) {
-                throw new IllegalStateException("Field type " + fieldTypeName + " doesn't exist.");
-            }
+            Preconditions.checkArgument(field != null,
+                    "Field type %s doesn't exist.", fieldTypeName);
+
             fields.add(field);
         }
 
@@ -95,12 +96,10 @@ public class ComponentRegistry {
 
     @SuppressWarnings("DataFlowIssue")
     public int getFieldOrdinal(String name, String... fieldAccessChain) {
-        if (!componentExists(name)) {
-            throw new IllegalStateException("Component type " + name + " doesn't exist.");
-        }
-        if (fieldAccessChain.length == 0) {
-            throw new IllegalStateException("The given fieldAccessChain must not be empty.");
-        }
+        Preconditions.checkArgument(componentExists(name),
+                "Component type %s doesn't exist.", name);
+        Preconditions.checkArgument(fieldAccessChain.length != 0,
+                "The given \"fieldAccessChain\" must not be empty.");
 
         MemberLayout memberLayout = getClassMemberLayout(name);
         int index = 0;
@@ -112,9 +111,9 @@ public class ComponentRegistry {
                 index++;
             }
         }
-        if (!match) {
-            throw new IllegalStateException("Can't find a field that matches the fieldAccessChain.");
-        }
+
+        Preconditions.checkArgument(match,
+                "Can't find a field that matches the \"fieldAccessChain\".");
 
         ComponentDescFlattened componentDescFlattened = getComponentDescFlattened(name);
         int ordinal = 0;
@@ -131,12 +130,13 @@ public class ComponentRegistry {
                 if (fieldAccessChain.length == 1) {
                     return ordinal;
                 } else {
-                    throw new IllegalStateException("The given fieldAccessChain provides more redundant terms after the deepest field.");
+                    throw new IllegalArgumentException("The given \"fieldAccessChain\" provides redundant terms after the deepest field.");
                 }
             } else {
                 if (fieldAccessChain.length == 1) {
-                    throw new IllegalStateException("The given fieldAccessChain can't reach the deepest field.");
+                    throw new IllegalArgumentException("The given \"fieldAccessChain\" can't reach the deepest field.");
                 } else if (fieldAccessChain.length == 2) {
+                    // manually enumeration
                     switch (componentDesc.fields.get(index).scalarType) {
                         case VEC2 -> {
                             switch (fieldAccessChain[1]) {
@@ -261,15 +261,15 @@ public class ComponentRegistry {
                             }
                         }
                     }
-                    throw new IllegalStateException("Can't find a field that matches the fieldAccessChain.");
+                    throw new IllegalArgumentException("Can't find a field that matches the \"fieldAccessChain\".");
                 } else {
-                    throw new IllegalStateException("The given fieldAccessChain provides more redundant terms after the deepest field.");
+                    throw new IllegalArgumentException("The given \"fieldAccessChain\" provides redundant terms after the deepest field.");
                 }
             }
         // struct field
         } else {
             if (fieldAccessChain.length == 1) {
-                throw new IllegalStateException("The given fieldAccessChain can't reach the deepest field.");
+                throw new IllegalArgumentException("The given \"fieldAccessChain\" can't reach the deepest field.");
             }
             String[] newFieldAccessChain = new String[fieldAccessChain.length - 1];
             System.arraycopy(fieldAccessChain, 1, newFieldAccessChain, 0, newFieldAccessChain.length);
@@ -318,9 +318,8 @@ public class ComponentRegistry {
 
     @SuppressWarnings("DataFlowIssue")
     public Object[] flattenComponent(ICleanComponent component) {
-        if (!componentExists(component.getClass())) {
-            throw new IllegalStateException("Component class " + component.getClass().getName() + " isn't registered.");
-        }
+        Preconditions.checkArgument(componentExists(component.getClass()),
+                "Component class %s isn't registered.", component.getClass().getName());
 
         String name = getComponentName(component.getClass());
 

@@ -11,7 +11,7 @@ import java.util.List;
 public final class ComponentDescFlattened {
     public final ImmutableList<FlattenedField> fields;
 
-    protected ComponentDescFlattened(ComponentDesc componentDesc, FieldRegistry fieldRegistry) {
+    ComponentDescFlattened(ComponentDesc componentDesc, FieldRegistry fieldRegistry) {
         List<FlattenedField> fields = new ArrayList<>();
         for (FieldDef field : componentDesc.fields) {
             fields.add(fieldRegistry.flatten(field));

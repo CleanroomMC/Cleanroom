@@ -1,5 +1,7 @@
 package com.cleanroommc.kirino.ecs.storage;
 
+import org.jspecify.annotations.NonNull;
+
 public interface IPrimitiveArray {
     /**
      * Getter for integers.
@@ -61,5 +63,6 @@ public interface IPrimitiveArray {
      *
      * @return The type of the array.
      */
+    @NonNull
     PrimitiveArrayType type();
 }

@@ -1,5 +1,8 @@
 package com.cleanroommc.kirino.ecs.storage;
 
+import com.google.common.base.Preconditions;
+import org.jspecify.annotations.NonNull;
+
 public final class HeapPrimitiveArray implements IPrimitiveArray {
     private final PrimitiveArrayType type;
     private final int length;
@@ -7,7 +10,7 @@ public final class HeapPrimitiveArray implements IPrimitiveArray {
     private final float[] floatArray;
     private final boolean[] booleanArray;
 
-    protected HeapPrimitiveArray(int[] array) {
+    HeapPrimitiveArray(int[] array) {
         type = PrimitiveArrayType.INT;
         length = array.length;
         intArray = array;
@@ -15,7 +18,7 @@ public final class HeapPrimitiveArray implements IPrimitiveArray {
         booleanArray = null;
     }
 
-    protected HeapPrimitiveArray(float[] array) {
+    HeapPrimitiveArray(float[] array) {
         type = PrimitiveArrayType.FLOAT;
         length = array.length;
         intArray = null;
@@ -23,7 +26,7 @@ public final class HeapPrimitiveArray implements IPrimitiveArray {
         booleanArray = null;
     }
 
-    protected HeapPrimitiveArray(boolean[] array) {
+    HeapPrimitiveArray(boolean[] array) {
         type = PrimitiveArrayType.BOOL;
         length = array.length;
         intArray = null;
@@ -34,54 +37,54 @@ public final class HeapPrimitiveArray implements IPrimitiveArray {
     @SuppressWarnings("DataFlowIssue")
     @Override
     public int getInt(int index) {
-        if (type != PrimitiveArrayType.INT) {
-            throw new IllegalStateException("This is not a integer-typed array.");
-        }
+        Preconditions.checkState(type == PrimitiveArrayType.INT,
+                "This is not a integer-typed array.");
+
         return intArray[index];
     }
 
     @SuppressWarnings("DataFlowIssue")
     @Override
     public float getFloat(int index) {
-        if (type != PrimitiveArrayType.FLOAT) {
-            throw new IllegalStateException("This is not a float-typed array.");
-        }
+        Preconditions.checkState(type == PrimitiveArrayType.FLOAT,
+                "This is not a float-typed array.");
+
         return floatArray[index];
     }
 
     @SuppressWarnings("DataFlowIssue")
     @Override
     public boolean getBool(int index) {
-        if (type != PrimitiveArrayType.BOOL) {
-            throw new IllegalStateException("This is not a boolean-typed array.");
-        }
+        Preconditions.checkState(type == PrimitiveArrayType.BOOL,
+                "This is not a boolean-typed array.");
+
         return booleanArray[index];
     }
 
     @SuppressWarnings("DataFlowIssue")
     @Override
     public void setInt(int index, int value) {
-        if (type != PrimitiveArrayType.INT) {
-            throw new IllegalStateException("This is not a integer-typed array.");
-        }
+        Preconditions.checkState(type == PrimitiveArrayType.INT,
+                "This is not a integer-typed array.");
+
         intArray[index] = value;
     }
 
     @SuppressWarnings("DataFlowIssue")
     @Override
     public void setFloat(int index, float value) {
-        if (type != PrimitiveArrayType.FLOAT) {
-            throw new IllegalStateException("This is not a float-typed array.");
-        }
+        Preconditions.checkState(type == PrimitiveArrayType.FLOAT,
+                "This is not a float-typed array.");
+
         floatArray[index] = value;
     }
 
     @SuppressWarnings("DataFlowIssue")
     @Override
     public void setBool(int index, boolean value) {
-        if (type != PrimitiveArrayType.BOOL) {
-            throw new IllegalStateException("This is not a boolean-typed array.");
-        }
+        Preconditions.checkState(type == PrimitiveArrayType.BOOL,
+                "This is not a boolean-typed array.");
+
         booleanArray[index] = value;
     }
 
@@ -90,6 +93,7 @@ public final class HeapPrimitiveArray implements IPrimitiveArray {
         return length;
     }
 
+    @NonNull
     @Override
     public PrimitiveArrayType type() {
         return type;

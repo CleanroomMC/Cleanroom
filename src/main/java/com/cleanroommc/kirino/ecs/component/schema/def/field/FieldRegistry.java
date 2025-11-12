@@ -4,6 +4,7 @@ import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarConstr
 import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarDeconstructor;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
 import com.cleanroommc.kirino.utils.TypeUtils;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.jspecify.annotations.Nullable;
@@ -33,7 +34,9 @@ public class FieldRegistry {
         fieldDefMap.put(name, fieldDef);
     }
 
-    // to avoid class loading
+    /**
+     * Similar to {@link #fieldTypeExists(Class)} but accepts a class string instead to avoid class loading.
+     */
     public boolean fieldTypeExists_ClassName(String className) {
         return fieldTypeNameClassMapping
                 .inverse()
@@ -50,7 +53,9 @@ public class FieldRegistry {
         return fieldTypeNameClassMapping.containsKey(name);
     }
 
-    // to avoid class loading
+    /**
+     * Similar to {@link #getFieldTypeName(Class)} but accepts a class string instead to avoid class loading.
+     */
     @Nullable
     public String getFieldTypeName_ClassName(String className) {
         return fieldTypeNameClassMapping
@@ -90,12 +95,14 @@ public class FieldRegistry {
         if (!fieldTypeExists(name)) {
             return null;
         }
+
         FieldDef fieldDef = getFieldDef(name);
         if (fieldDef.fieldKind == FieldKind.SCALAR) {
             return ScalarConstructor.newScalar(fieldDef.scalarType, args);
         } else if (fieldDef.fieldKind == FieldKind.STRUCT) {
             return structRegistry.newStruct(fieldDef.structTypeName, args);
         }
+
         return null;
     }
 
@@ -107,9 +114,9 @@ public class FieldRegistry {
         // see CleanECSRuntime's constructor
         Class<?> fieldClass = TypeUtils.toPrimitive(fieldInstance.getClass());
 
-        if (!fieldTypeExists(fieldClass)) {
-            throw new IllegalStateException("Field class " + fieldInstance.getClass().getName() + " isn't registered.");
-        }
+        Preconditions.checkArgument(fieldTypeExists(fieldClass),
+                "Field class %s isn't registered.", fieldInstance.getClass().getName());
+
         String name = getFieldTypeName(fieldClass);
         FieldDef fieldDef = getFieldDef(name);
         if (fieldDef.fieldKind == FieldKind.SCALAR) {
@@ -117,6 +124,7 @@ public class FieldRegistry {
         } else if (fieldDef.fieldKind == FieldKind.STRUCT) {
             return structRegistry.flattenStruct(fieldInstance);
         }
-        throw new IllegalStateException("Invalid field kind.");
+
+        throw new IllegalStateException("Invalid field kind."); // impossible
     }
 }

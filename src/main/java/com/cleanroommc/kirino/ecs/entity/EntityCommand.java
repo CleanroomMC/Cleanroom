@@ -16,10 +16,10 @@ public class EntityCommand {
     public final int index;
     public final Type type;
 
-    public List<ICleanComponent> newComponents;
-    public ICleanComponent componentToSet;
-    public ICleanComponent componentToAdd;
-    public Class<? extends ICleanComponent> componentToRemove;
+    List<ICleanComponent> newComponents;
+    ICleanComponent componentToSet;
+    ICleanComponent componentToAdd;
+    Class<? extends ICleanComponent> componentToRemove;
 
     protected EntityCommand(int index, Type type) {
         this.index = index;

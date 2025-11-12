@@ -16,11 +16,9 @@ import java.util.concurrent.Executor;
 
 public class JobScheduler {
     private final JobRegistry jobRegistry;
-    private final EntityManager entityManager;
 
-    public JobScheduler(JobRegistry jobRegistry, EntityManager entityManager) {
+    public JobScheduler(JobRegistry jobRegistry) {
         this.jobRegistry = jobRegistry;
-        this.entityManager = entityManager;
     }
 
     public void executeParallel(EntityManager entityManager, Class<? extends IParallelJob> clazz, @Nullable Map<String, Object> externalData, Executor executor) {

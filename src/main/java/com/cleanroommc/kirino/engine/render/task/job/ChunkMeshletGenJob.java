@@ -9,6 +9,7 @@ import com.cleanroommc.kirino.ecs.job.JobExternalDataQuery;
 import com.cleanroommc.kirino.ecs.storage.IPrimitiveArray;
 import com.cleanroommc.kirino.engine.render.geometry.component.ChunkComponent;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
+import org.jspecify.annotations.NonNull;
 
 public class ChunkMeshletGenJob implements IParallelJob {
     @JobExternalDataQuery
@@ -21,14 +22,14 @@ public class ChunkMeshletGenJob implements IParallelJob {
     public IPrimitiveArray chunkPosZArray;
 
     @Override
-    public void execute(EntityManager entityManager, int index) {
+    public void execute(@NonNull EntityManager entityManager, int index) {
         int x = chunkPosXArray.getInt(index);
         int z = chunkPosZArray.getInt(index);
         KirinoCore.LOGGER.info("debug chunk xz: " + x + ", " + z);
     }
 
     @Override
-    public void query(EntityQuery entityQuery) {
+    public void query(@NonNull EntityQuery entityQuery) {
         entityQuery.with(ChunkComponent.class);
     }
 }

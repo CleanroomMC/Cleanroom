@@ -2,6 +2,7 @@ package com.cleanroommc.kirino.ecs.job;
 
 import com.cleanroommc.kirino.ecs.entity.EntityManager;
 import com.cleanroommc.kirino.ecs.entity.EntityQuery;
+import org.jspecify.annotations.NonNull;
 
 public interface IParallelJob {
     /**
@@ -10,6 +11,6 @@ public interface IParallelJob {
      * @param entityManager The entity manager
      * @param index The index
      */
-    void execute(EntityManager entityManager, int index);
-    void query(EntityQuery entityQuery);
+    void execute(@NonNull EntityManager entityManager, int index);
+    void query(@NonNull EntityQuery entityQuery);
 }

@@ -18,12 +18,12 @@ public final class ClassScanUtils {
     private ClassScanUtils() {
     }
 
-    protected static String getClassSimpleName(String className) {
+    static String getClassSimpleName(String className) {
         int lastDot = className.lastIndexOf('.');
         return lastDot == -1 ? className : className.substring(lastDot + 1);
     }
 
-    protected static Map<String, ClassInfo> scan(List<String> packages, String annotation) {
+    static Map<String, ClassInfo> scan(List<String> packages, String annotation) {
         Map<String, ClassInfo> allClassInfos = new TreeMap<>();
         try (ScanResult scanResult = new ClassGraph()
                 .enableAllInfo()

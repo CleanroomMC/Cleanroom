@@ -4,6 +4,8 @@ import com.cleanroommc.kirino.ecs.component.ComponentRegistry;
 import com.cleanroommc.kirino.ecs.component.ICleanComponent;
 import com.cleanroommc.kirino.ecs.storage.IPrimitiveArray;
 import com.cleanroommc.kirino.utils.ReflectionUtils;
+import com.google.common.base.Preconditions;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.lang.invoke.MethodHandle;
@@ -26,22 +28,26 @@ public class JobRegistry {
     }
 
     @SuppressWarnings({"unchecked"})
-    private <T extends IParallelJob, U> IJobDataInjector genParallelJobDataInjector(Class<T> clazz, String fieldName, Class<U> fieldClass) {
+    @NonNull
+    private <T extends IParallelJob, U> IJobDataInjector genParallelJobDataInjector(@NonNull Class<T> clazz, @NonNull String fieldName, @NonNull Class<U> fieldClass) {
         BiConsumer<T, U> setter = (BiConsumer<T, U>) ReflectionUtils.getFieldSetter(clazz, fieldName);
-        Objects.requireNonNull(setter);
+        Preconditions.checkNotNull(setter);
+
         return (owner, value) -> {
             setter.accept((T) owner, (U) value);
         };
     }
 
-    private IJobInstantiator genParallelJobInstantiator(Class<? extends IParallelJob> clazz) {
+    @NonNull
+    private IJobInstantiator genParallelJobInstantiator(@NonNull Class<? extends IParallelJob> clazz) {
         MethodHandle ctor = ReflectionUtils.getConstructor(clazz);
-        Objects.requireNonNull(ctor);
+        Preconditions.checkNotNull(ctor);
+
         return () -> {
             try {
                 return ctor.invoke();
             } catch (Throwable e) {
-                return null;
+                throw new RuntimeException(e);
             }
         };
     }

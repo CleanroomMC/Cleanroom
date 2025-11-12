@@ -1,5 +1,7 @@
 package com.cleanroommc.kirino.ecs.job;
 
+import org.jspecify.annotations.NonNull;
+
 public interface IJobInstantiator {
-    Object instantiate();
+    @NonNull Object instantiate();
 }

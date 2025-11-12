@@ -11,13 +11,13 @@ public final class ComponentDesc {
     public final ImmutableList<FieldDef> fields;
     public final ImmutableList<String> fieldTypeNames;
 
-    protected ComponentDesc(String name, List<FieldDef> fields, String... fieldTypeNames) {
+    ComponentDesc(String name, List<FieldDef> fields, String... fieldTypeNames) {
         this.name = name;
         this.fields = ImmutableList.copyOf(fields);
         this.fieldTypeNames = ImmutableList.copyOf(fieldTypeNames);
     }
 
-    protected ComponentDesc(String name, List<FieldDef> fields, List<String> fieldTypeNames) {
+    ComponentDesc(String name, List<FieldDef> fields, List<String> fieldTypeNames) {
         this.name = name;
         this.fields = ImmutableList.copyOf(fields);
         this.fieldTypeNames = ImmutableList.copyOf(fieldTypeNames);

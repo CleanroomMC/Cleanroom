@@ -127,7 +127,7 @@ public class CleanECSRuntime {
         entityManager = new EntityManager(componentRegistry);
 
         jobRegistry = new JobRegistry(componentRegistry);
-        jobScheduler = new JobScheduler(jobRegistry, entityManager);
+        jobScheduler = new JobScheduler(jobRegistry);
 
         JobRegistrationEvent jobRegistrationEvent = new JobRegistrationEvent();
         eventBus.post(jobRegistrationEvent);
