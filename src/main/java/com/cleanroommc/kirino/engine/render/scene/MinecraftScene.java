@@ -10,10 +10,12 @@ import com.cleanroommc.kirino.engine.render.gizmos.GizmosManager;
 import com.cleanroommc.kirino.engine.render.task.system.ChunkMeshletGenSystem;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.util.math.ChunkPos;
+import org.apache.commons.lang3.time.StopWatch;
 
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class MinecraftScene extends CleanWorld {
     private final GizmosManager gizmosManager;
@@ -66,8 +68,13 @@ public class MinecraftScene extends CleanWorld {
 
         // test
         if (c == 3) {
-            (new ChunkMeshletGenSystem(chunkProvider)).update(entityManager, jobScheduler);
-            KirinoCore.LOGGER.info("executed!!!");
+            StopWatch stopWatch = StopWatch.createStarted();
+
+            (new ChunkMeshletGenSystem(chunkProvider, gizmosManager)).update(entityManager, jobScheduler);
+
+            stopWatch.stop();
+            KirinoCore.LOGGER.info("executed!!! " + stopWatch.getTime(TimeUnit.MILLISECONDS) + " ms");
+            entityManager.abort();
         }
         c++;
 

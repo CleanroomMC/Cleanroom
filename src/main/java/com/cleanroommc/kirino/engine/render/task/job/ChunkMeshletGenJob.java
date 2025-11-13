@@ -10,6 +10,7 @@ import com.cleanroommc.kirino.ecs.storage.IPrimitiveArray;
 import com.cleanroommc.kirino.engine.render.geometry.Block;
 import com.cleanroommc.kirino.engine.render.geometry.component.ChunkComponent;
 import com.cleanroommc.kirino.engine.render.geometry.component.MeshletComponent;
+import com.cleanroommc.kirino.engine.render.gizmos.GizmosManager;
 import com.cleanroommc.kirino.engine.render.task.adt.KDTree;
 import com.cleanroommc.kirino.engine.render.task.adt.Meshlet;
 import com.cleanroommc.kirino.engine.render.task.adt.Vector3b;
@@ -32,6 +33,9 @@ public class ChunkMeshletGenJob implements IParallelJob {
     public ChunkProviderClient chunkProvider;
 
     @JobExternalDataQuery
+    public GizmosManager gizmosManager;
+
+    @JobExternalDataQuery
     public int startY;
 
     @JobDataQuery(componentClass = ChunkComponent.class, fieldAccessChain = {"chunkPosX"})
@@ -44,7 +48,7 @@ public class ChunkMeshletGenJob implements IParallelJob {
     public IPrimitiveArray isChunkDirty;
 
     @Override
-    public void execute(EntityManager entityManager, int index) {
+    public void execute(@NonNull EntityManager entityManager, int index) {
         if (!isChunkDirty.getBool(index)) {
             return;
         }
@@ -64,6 +68,7 @@ public class ChunkMeshletGenJob implements IParallelJob {
         for (Meshlet meshlet : meshlets) {
             setMeshletComponent(meshlet, meshletComponent);
             entityManager.createEntity(meshletComponent);
+            // todo: gizmosManager
         }
     }
 
