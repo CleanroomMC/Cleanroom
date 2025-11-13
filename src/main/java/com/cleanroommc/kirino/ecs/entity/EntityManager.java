@@ -1,5 +1,6 @@
 package com.cleanroommc.kirino.ecs.entity;
 
+import com.cleanroommc.kirino.KirinoCore;
 import com.cleanroommc.kirino.ecs.component.ComponentRegistry;
 import com.cleanroommc.kirino.ecs.component.ICleanComponent;
 import com.cleanroommc.kirino.ecs.storage.ArchetypeDataPool;
@@ -65,6 +66,13 @@ public class EntityManager {
         }
 
         return result;
+    }
+
+    // test only for now
+    public synchronized void abort() {
+        synchronized (commandBuffer) {
+            commandBuffer.clear();
+        }
     }
 
     /**
