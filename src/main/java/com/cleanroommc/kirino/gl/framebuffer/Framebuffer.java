@@ -2,7 +2,6 @@ package com.cleanroommc.kirino.gl.framebuffer;
 
 import com.cleanroommc.kirino.gl.GLDisposable;
 import com.cleanroommc.kirino.gl.GLResourceManager;
-import com.cleanroommc.kirino.gl.exception.RuntimeGLException;
 import com.google.common.base.Preconditions;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -29,10 +28,7 @@ public class Framebuffer extends GLDisposable {
 
     @NonNull
     public IFramebufferAttachment getColorAttachment(int index) {
-        Preconditions.checkArgument(index >= 0,
-                "Index (%d) must be greater than or equal to 0.", index);
-        Preconditions.checkArgument(index < colorAttachments.size(),
-                "Index (%d) must be smaller than size (%d).", index, colorAttachments.size());
+        Preconditions.checkPositionIndex(index, colorAttachments.size());
 
         return colorAttachments.get(index);
     }
@@ -75,12 +71,12 @@ public class Framebuffer extends GLDisposable {
     public void check() {
         int statusDraw = GL30.glCheckFramebufferStatus(GL30.GL_DRAW_FRAMEBUFFER);
         if (statusDraw != GL30.GL_FRAMEBUFFER_COMPLETE) {
-            throw new RuntimeGLException("Framebuffer DRAW incomplete: " + getStatusString(statusDraw));
+            throw new RuntimeException("Framebuffer DRAW incomplete: " + getStatusString(statusDraw));
         }
 
         int statusRead = GL30.glCheckFramebufferStatus(GL30.GL_READ_FRAMEBUFFER);
         if (statusRead != GL30.GL_FRAMEBUFFER_COMPLETE) {
-            throw new RuntimeGLException("Framebuffer READ incomplete: " + getStatusString(statusRead));
+            throw new RuntimeException("Framebuffer READ incomplete: " + getStatusString(statusRead));
         }
     }
 

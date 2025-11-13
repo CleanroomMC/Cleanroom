@@ -33,6 +33,7 @@ public class AttributeLayout {
         if (strideStack.peek() == null) {
             return null;
         }
+
         return strideStack.pop();
     }
 

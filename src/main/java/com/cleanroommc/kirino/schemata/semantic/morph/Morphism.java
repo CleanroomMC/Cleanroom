@@ -3,6 +3,7 @@ package com.cleanroommc.kirino.schemata.semantic.morph;
 import com.cleanroommc.kirino.schemata.semantic.entity.SpaceItem;
 import com.cleanroommc.kirino.schemata.semantic.entity.SpaceItemType;
 import com.cleanroommc.kirino.schemata.semantic.space.SpaceSet;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
@@ -62,12 +63,10 @@ public abstract class Morphism {
 
     protected final Morphism setMapFunc(BijectiveMapFunction mapFunc) {
         if (validation) {
-            if (mapFunc.from != domainType || mapFunc.to != codomainType) {
-                throw new IllegalStateException("Illegal mapping function " + mapFunc.from + " -> " + mapFunc.to + ". This morphism requires " + domainType + " -> " + codomainType + ".");
-            }
-            if (!mapFunc.isValid()) {
-                throw new IllegalStateException("Illegal mapping function.");
-            }
+            Preconditions.checkState(!(mapFunc.from != domainType || mapFunc.to != codomainType),
+                    "Illegal mapping function %s -> %s. This morphism requires %s -> %s.",
+                    mapFunc.from, mapFunc.to, domainType, codomainType);
+            Preconditions.checkState(mapFunc.isValid(), "Illegal mapping function.");
         }
 
         this.mapFunc = mapFunc;
@@ -79,9 +78,7 @@ public abstract class Morphism {
 
     protected final Morphism mapAndCache() {
         if (validation) {
-            if (mapFunc == null) {
-                throw new IllegalStateException("BijectiveMapFunction is null. Call setMapFunc() first.");
-            }
+            Preconditions.checkState(mapFunc != null, "BijectiveMapFunction is null. Call setMapFunc() first.");
         }
 
         mapFunc.construct(domain);
@@ -96,12 +93,8 @@ public abstract class Morphism {
 
     public final SpaceItem apply(SpaceItem input) {
         if (validation) {
-            if (!resultCached) {
-                throw new IllegalStateException("The mapping result isn't cached yet. Call mapAndCache() first.");
-            }
-            if (!domain.contains(input)) {
-                throw new IllegalStateException("Argument input isn't in the domain.");
-            }
+            Preconditions.checkState(resultCached, "The mapping result isn't cached yet. Call mapAndCache() first.");
+            Preconditions.checkState(domain.contains(input), "Argument \"input\" isn't in the domain.");
         }
 
         return resultBiMap.get(input);
@@ -109,12 +102,8 @@ public abstract class Morphism {
 
     public final SpaceItem applyInverse(SpaceItem output) {
         if (validation) {
-            if (!resultCached) {
-                throw new IllegalStateException("The mapping result isn't cached yet. Call mapAndCache() first.");
-            }
-            if (!codomain.contains(output)) {
-                throw new IllegalStateException("Argument output isn't in the codomain.");
-            }
+            Preconditions.checkState(resultCached, "The mapping result isn't cached yet. Call mapAndCache() first.");
+            Preconditions.checkState(codomain.contains(output), "Argument \"output\" isn't in the codomain.");
         }
 
         return resultBiMap.inverse().get(output);

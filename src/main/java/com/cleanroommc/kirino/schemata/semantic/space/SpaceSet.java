@@ -2,6 +2,7 @@ package com.cleanroommc.kirino.schemata.semantic.space;
 
 import com.cleanroommc.kirino.schemata.semantic.entity.SpaceItem;
 import com.cleanroommc.kirino.schemata.semantic.entity.SpaceItemType;
+import com.google.common.base.Preconditions;
 import org.jspecify.annotations.NonNull;
 
 import java.util.*;
@@ -49,9 +50,9 @@ public class SpaceSet implements Set<SpaceItem> {
 
     @Override
     public boolean add(SpaceItem item) {
-        if (item.type != type) {
-            throw new IllegalStateException("Illegal SpaceItemType " + item.type + " from the item. This is a " + type + " set.");
-        }
+        Preconditions.checkState(item.type == type,
+                "Illegal SpaceItemType %s from the item. This is a %s set.", item.type, type);
+
         return items.add(item);
     }
 
@@ -68,9 +69,8 @@ public class SpaceSet implements Set<SpaceItem> {
     @Override
     public boolean addAll(@NonNull Collection<? extends SpaceItem> c) {
         for (SpaceItem item : c) {
-            if (item.type != type) {
-                throw new IllegalStateException("Illegal SpaceItemType " + item.type + " from an item of the collection. This is a " + type + " set.");
-            }
+            Preconditions.checkState(item.type == type,
+                    "Illegal SpaceItemType %s from an item of the collection. This is a %s set.", item.type, type);
         }
 
         return items.addAll(c);

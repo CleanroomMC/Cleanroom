@@ -1,6 +1,6 @@
 package com.cleanroommc.kirino.gl.vao.attribute;
 
-import com.cleanroommc.kirino.gl.exception.RuntimeGLException;
+import com.google.common.base.Preconditions;
 
 import java.util.Objects;
 
@@ -38,9 +38,8 @@ public class Slot {
     }
 
     public Slot(Type type, int count) {
-        if (count < 0 || count > 4) {
-            throw new RuntimeGLException("Component count cannot be less than 0 or greater than 4.");
-        }
+        Preconditions.checkArgument(!(count < 0 || count > 4), "Component count cannot be less than 0 or greater than 4.");
+
         this.type = type;
         this.count = count;
         this.size = type.length * count;
@@ -49,9 +48,8 @@ public class Slot {
     // 0 for vertex data
     // 1 or more for instancing data
     public Slot setDivisor(int divisor) {
-        if (divisor < 0) {
-            throw new RuntimeGLException("Divisor cannot be less than 0.");
-        }
+        Preconditions.checkArgument(divisor >= 0, "Divisor cannot be less than 0.");
+
         this.divisor = divisor;
         return this;
     }

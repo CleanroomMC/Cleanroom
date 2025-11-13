@@ -2,7 +2,6 @@ package com.cleanroommc.kirino.gl.shader;
 
 import com.cleanroommc.kirino.gl.GLDisposable;
 import com.cleanroommc.kirino.gl.GLResourceManager;
-import com.cleanroommc.kirino.gl.exception.RuntimeGLException;
 import com.google.common.collect.ImmutableList;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -33,7 +32,7 @@ public class ShaderProgram extends GLDisposable {
         int status = GL20.glGetProgrami(programID, GL20.GL_LINK_STATUS);
         if (status == GL11.GL_FALSE) {
             String log = GL20.glGetProgramInfoLog(programID, 1024);
-            throw new RuntimeGLException("Shader program link failed: " + log);
+            throw new RuntimeException("Shader program link failed: " + log);
         }
 
         GLResourceManager.addDisposable(this);
