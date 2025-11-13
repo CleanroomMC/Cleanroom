@@ -8,8 +8,9 @@ public final class ScalarDeconstructor {
     private ScalarDeconstructor() {
     }
 
-    public static Object[] flattenScalar(@NonNull ScalarType scalarType, @NonNull Object scalarInstance) {
-        Preconditions.checkNotNull(scalarInstance, "Scalar instance is null.");
+    public static @NonNull Object[] flattenScalar(@NonNull ScalarType scalarType, @NonNull Object scalarInstance) {
+        Preconditions.checkNotNull(scalarType);
+        Preconditions.checkNotNull(scalarInstance);
 
         switch (scalarType) {
             case INT -> {

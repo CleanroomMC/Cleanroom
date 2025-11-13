@@ -12,6 +12,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
@@ -325,7 +326,8 @@ public class StructRegistry {
     // -----Struct Deconstruction-----
 
     @SuppressWarnings("DataFlowIssue")
-    public Object[] flattenStruct(Object structInstance) {
+    public @NonNull Object[] flattenStruct(@NonNull Object structInstance) {
+        Preconditions.checkNotNull(structInstance);
         Preconditions.checkArgument(structTypeExists(structInstance.getClass()),
                 "Struct class %s isn't registered.", structInstance.getClass().getName());
 
