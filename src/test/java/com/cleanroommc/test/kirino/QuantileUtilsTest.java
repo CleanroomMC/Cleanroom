@@ -3,7 +3,7 @@ package com.cleanroommc.test.kirino;
 import com.cleanroommc.kirino.engine.render.task.adt.Meshlet;
 import com.cleanroommc.kirino.utils.QuantileUtils;
 import net.minecraft.util.EnumFacing;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class QuantileUtilsTest {
 
@@ -21,9 +20,9 @@ public class QuantileUtilsTest {
         Random rng = new Random();
         rng.setSeed(114514);
         List<Integer> list = new java.util.ArrayList<>(IntStream.range(1, 4096).boxed().toList());
-        int median = list.get((list.size() / 2));
+        float median = (float) list.get((list.size() / 2));
         Collections.shuffle(list, rng);
-        assertEquals(median, QuantileUtils.median(list.toArray(new Integer[0])));
+        assertEquals(median, QuantileUtils.median(list.toArray(new Integer[0])), 0.f);
     }
 
     @Test
@@ -33,7 +32,7 @@ public class QuantileUtilsTest {
         List<Integer> list = new java.util.ArrayList<>(IntStream.range(1, 4097).boxed().toList());
         float median = (float) (list.get((list.size() / 2) - 1) + list.get((list.size() / 2))) / 2;
         Collections.shuffle(list, rng);
-        assertEquals(median, QuantileUtils.median(list.toArray(new Integer[0])));
+        assertEquals(median, QuantileUtils.median(list.toArray(new Integer[0])), 0.f);
     }
 
     @Test
@@ -58,6 +57,8 @@ public class QuantileUtilsTest {
             }
         }
 
-        assertDoesNotThrow(() -> QuantileUtils.median(list.toArray(new Meshlet[0])));
+        QuantileUtils.median(list.toArray(new Meshlet[0]));
+
+        //assertDoesNotThrow(() -> QuantileUtils.median(list.toArray(new Meshlet[0])));
     }
 }

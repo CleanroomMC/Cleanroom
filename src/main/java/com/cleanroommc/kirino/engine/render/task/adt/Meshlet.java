@@ -2,24 +2,22 @@ package com.cleanroommc.kirino.engine.render.task.adt;
 
 import com.cleanroommc.kirino.engine.render.geometry.AABB;
 import com.cleanroommc.kirino.engine.render.geometry.Block;
+import com.cleanroommc.kirino.utils.QuantileUtils;
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.shorts.ShortHeapPriorityQueue;
 import net.minecraft.util.EnumFacing;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
 
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 public class Meshlet implements Comparable<Meshlet> {
     EnumFacing normal;
-    // Insertion-time median tracking
-    PriorityQueue<Short> maxHeap = new ShortHeapPriorityQueue((a, b) -> b - a);
-    PriorityQueue<Short> minHeap = new ShortHeapPriorityQueue();
+    List<Vector3f> encodedBlocks = new LinkedList<>();
+    Vector3f median;
+    boolean isDirty;
     int blocks = 0;
     AABB boundingBox;
     boolean transparent;
@@ -28,7 +26,9 @@ public class Meshlet implements Comparable<Meshlet> {
         this.normal = normal;
         this.boundingBox = new AABB(x, y, z, x+1, y+1, z+1);
         this.transparent = transparent;
-        addBlock(x, y, z);
+        addBlock(new Vector3f(x, y, z));
+        median = encodedBlocks.getFirst();
+        isDirty = false;
     }
 
     public int size() {
@@ -44,12 +44,11 @@ public class Meshlet implements Comparable<Meshlet> {
     }
 
     // Empties the blocks onto the set
-    public List<Block> emptyBlocks() {
+    public List<Block> blockList() {
         List<Block> blocks = new ObjectArrayList<>();
 
-        while (!maxHeap.isEmpty()) {
-            short block = maxHeap.dequeue();
-            blocks.add(new Block(block & MASK_X, (block & MASK_Y) >> 4, (block & MASK_Z) >> 8));
+        for (Vector3f block : encodedBlocks) {
+            blocks.add(new Block((int) block.x, (int) block.y, (int) block.z));
         }
 
         return blocks;
@@ -59,70 +58,46 @@ public class Meshlet implements Comparable<Meshlet> {
         return new Vector3f(normal.getXOffset(), normal.getYOffset(), normal.getZOffset());
     }
 
-    public void addBlock(short block) {
-        addBlock(block & MASK_X, (block & MASK_Y) >> 4, (block & MASK_Z) >> 8);
-    }
-
-    public void addBlock(int x, int y, int z) {
-        maxHeap.enqueue((short) ((x & 0b1111) | ((y & 0b1111) << 4) | ((z & 0b1111) << 8)));
-        minHeap.enqueue(maxHeap.first());
+    public void addBlock(Vector3f block) {
+        isDirty = true;
+        encodedBlocks.add(block);
         blocks++;
 
-        if (minHeap.size() > maxHeap.size()) {
-            maxHeap.enqueue(minHeap.first());
+        if (block.x < boundingBox.xMin) {
+            boundingBox.xMin = block.x;
         }
-
-        if (x < boundingBox.xMin) {
-            boundingBox.xMin = x;
+        if (block.x + 1 > boundingBox.xMax) {
+            boundingBox.xMax = block.x + 1;
         }
-        if (x + 1 > boundingBox.xMax) {
-            boundingBox.xMax = x + 1;
+        if (block.y < boundingBox.yMin) {
+            boundingBox.yMin = block.y;
         }
-        if (y < boundingBox.yMin) {
-            boundingBox.yMin = y;
+        if (block.y + 1 > boundingBox.yMax) {
+            boundingBox.yMax = block.y + 1;
         }
-        if (y + 1 > boundingBox.yMax) {
-            boundingBox.yMax = y + 1;
+        if (block.z < boundingBox.zMin) {
+            boundingBox.zMin = block.z;
         }
-        if (z < boundingBox.zMin) {
-            boundingBox.zMin = z;
-        }
-        if (z + 1 > boundingBox.zMax) {
-            boundingBox.zMax = z + 1;
+        if (block.z + 1 > boundingBox.zMax) {
+            boundingBox.zMax = block.z + 1;
         }
     }
 
     public void merge(@NonNull Meshlet m) {
         Preconditions.checkNotNull(m);
+        Preconditions.checkState(!this.equals(m), "Recurrent addition");
 
-        Set<Short> toAdd = new HashSet<>();
-
-        while(!m.maxHeap.isEmpty()) {
-            toAdd.add(m.maxHeap.dequeue());
-        }
-
-        for (short block : toAdd) {
-            addBlock(block);
+        for (int i = 0; i < m.encodedBlocks.size(); i++) {
+            addBlock(m.encodedBlocks.get(i));
         }
     }
 
     public Vector3f median() {
-        if (maxHeap.size() > minHeap.size()) {
-            int x = maxHeap.first() & MASK_X;
-            int y = (maxHeap.first() & MASK_Y) >> 4;
-            int z = (maxHeap.first() & MASK_Z) >> 8;
-            return new Vector3f((float) x, (float) y, (float) z);
-        } else {
-            int x = maxHeap.first() & MASK_X;
-            int y = (maxHeap.first() & MASK_Y) >> 4;
-            int z = (maxHeap.first() & MASK_Z) >> 8;
-            Vector3f max = new Vector3f((float) x, (float) y, (float) z);
-            x = minHeap.first() & MASK_X;
-            y = (minHeap.first() & MASK_Y) >> 4;
-            z = (minHeap.first() & MASK_Z) >> 8;
-            Vector3f min = new Vector3f((float) x, (float) y, (float) z);
-            return max.add(min).div(2.f);
+        if (isDirty) {
+            median = QuantileUtils.median(encodedBlocks.toArray(new Vector3f[0]), (a, b) -> (int) (a.lengthSquared() - b.lengthSquared()));
+            isDirty = false;
         }
+        return median;
     }
 
     @Override
@@ -130,7 +105,14 @@ public class Meshlet implements Comparable<Meshlet> {
         return (int) (median().lengthSquared()-o.median().lengthSquared());
     }
 
-    private static final short MASK_X = 0b000000001111;
-    private static final short MASK_Y = 0b000011110000;
-    private static final short MASK_Z = 0b111100000000;
+    @Override
+    public String toString() {
+        return "Meshlet [" +
+                "normal=" + normal +
+                ", median=" + median +
+                ", encodedBlocks=" + encodedBlocks +
+                ", size=" + blocks +
+                ", transparent=" + transparent +
+                "]";
+    }
 }

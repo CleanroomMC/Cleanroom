@@ -1,10 +1,10 @@
 package com.cleanroommc.kirino.engine.render.task.adt;
 
+import com.cleanroommc.kirino.utils.QuantileUtils;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.objects.*;
-import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -15,9 +15,14 @@ public class KDTree {
 
     private Node root = null;
     private int len = 0;
+    private final long seed;
 
-    public void add(@NonNull List<Meshlet> meshlets) {
-        Preconditions.checkNotNull(meshlets);
+    public KDTree(long seed) {
+        this.seed = seed;
+    }
+
+    public void add(@NonNull List<Vector3b> points) {
+        Preconditions.checkNotNull(points);
 
         final int PROBE_SIZE = 21;
 
@@ -25,45 +30,53 @@ public class KDTree {
             root = new Node();
         }
 
-        len += meshlets.size();
+        len += points.size();
 
-        record Recurrence(Node node, List<Meshlet> toInsert, int depth) {}
+        record Recurrence(Node node, List<Vector3b> toInsert, int depth) {}
+
+        RandomGenerator rng = new Random(seed);
 
         Stack<Recurrence> recurrenceStack = new ObjectArrayList<>();
-        recurrenceStack.push(new Recurrence(root, meshlets, 0));
+        recurrenceStack.push(new Recurrence(root, points, 0));
         while (!recurrenceStack.isEmpty()) {
             Recurrence recurrence = recurrenceStack.pop();
-            int dimension = recurrence.depth % 3;
+            final int dimension = recurrence.depth % 3;
             if (recurrence.toInsert != null) {
                 if (recurrence.toInsert.size() == 1) {
-                    recurrence.node.meshlet = recurrence.toInsert.getFirst();
+                    recurrence.node.point = recurrence.toInsert.getFirst();
                     recurrence.node.left = null;
                     recurrence.node.right = null;
                 } else if (recurrence.toInsert.size() > 1) {
-                    List<Meshlet> left = new ObjectArrayList<>();
-                    List<Meshlet> right = new ObjectArrayList<>();
-                    recurrence.node.left = new Node();
-                    recurrence.node.right = new Node();
-                    if (recurrence.node.meshlet == null) {
-                        Meshlet[] probe;
+                    List<Vector3b> left = new ObjectArrayList<>();
+                    List<Vector3b> right = new ObjectArrayList<>();
+                    if (recurrence.node.point == null) {
+                        Vector3b[] probe;
                         if (recurrence.toInsert.size() > PROBE_SIZE) {
-                            probe = new Meshlet[PROBE_SIZE];
+                            probe = new Vector3b[PROBE_SIZE];
                             for (int i = 0; i < PROBE_SIZE; i++) {
-                                probe[i] = recurrence.toInsert.get(RandomGenerator.getDefault().nextInt(recurrence.toInsert.size()));
+                                probe[i] = recurrence.toInsert.get(rng.nextInt(recurrence.toInsert.size()));
                             }
                         } else {
-                            probe = recurrence.toInsert.toArray(new Meshlet[0]);
+                            probe = recurrence.toInsert.toArray(new Vector3b[0]);
                         }
-                        Arrays.sort(probe);
-                        recurrence.node.meshlet = probe[((probe.length - 2) >>> 1) + 1];
-                        recurrence.toInsert.remove(recurrence.node.meshlet);
+                        recurrence.node.point = QuantileUtils.median(probe, (a, b) -> compareMeshletDimension(a, b, dimension));
+                        //recurrence.toInsert.remove(recurrence.node.meshlet);
                     }
-                    for(Meshlet meshlet : recurrence.toInsert) {
-                        if (compareMeshletDimension(recurrence.node.meshlet, meshlet, dimension)) {
-                            left.add(meshlet);
-                        } else {
-                            right.add(meshlet);
+                    for(Vector3b point : recurrence.toInsert) {
+                        if (recurrence.node.point.equals(point)) {
+                            continue;
                         }
+                        if (compareMeshletDimension(recurrence.node.point, point, dimension) < 0) {
+                            left.add(point);
+                        } else {
+                            right.add(point);
+                        }
+                    }
+                    if (!left.isEmpty()) {
+                        recurrence.node.left = new Node();
+                    }
+                    if (!right.isEmpty()) {
+                        recurrence.node.right = new Node();
                     }
                     recurrenceStack.push(new Recurrence(recurrence.node.left, left, recurrence.depth + 1));
                     recurrenceStack.push(new Recurrence(recurrence.node.right, right, recurrence.depth + 1));
@@ -72,41 +85,35 @@ public class KDTree {
         }
     }
 
-    public Optional<List<Meshlet>> knn(@NonNull Meshlet meshlet, float cutoff, int k) {
-        Preconditions.checkNotNull(meshlet);
-
-        return this.knn(meshlet.median(), cutoff, k);
-    }
-
-    public Optional<List<Meshlet>> knn(@NonNull Vector3f vector, float cutoff, int k) {
+    public Optional<List<Vector3b>> knn(@NonNull Vector3b vector, float cutoff, int k, boolean removeEquals) {
         Preconditions.checkNotNull(vector);
 
         if (root == null) {
             return Optional.empty();
         }
 
-        PriorityQueue<Meshlet> neighbours = new ObjectArrayPriorityQueue<>((a,b) -> (int) (a.median().distanceSquared(vector) - b.median().distanceSquared(vector)));
+        PriorityQueue<Vector3b> neighbours = new ObjectArrayPriorityQueue<>((a,b) -> (a.distanceSquared(vector) - b.distanceSquared(vector)));
         float cutoffSquared = cutoff*cutoff;
 
         Stack<Node> stack = new ReferenceArrayList<>();
         stack.push(root);
         while (!stack.isEmpty()) {
             Node node = stack.pop();
-            if (node.meshlet == null) {
+            if (node.point == null) {
                 continue;
             }
-            if (node.meshlet.median().distanceSquared(vector) <= cutoffSquared) {
-                neighbours.enqueue(node.meshlet);
+            if (node.point.distanceSquared(vector) <= cutoffSquared) {
+                neighbours.enqueue(node.point);
             }
 
             float distanceLeft = Float.MAX_VALUE;
             float distanceRight = Float.MAX_VALUE;
 
-            if (node.left != null && node.left.meshlet != null) {
-                distanceLeft = node.left.meshlet.median().distanceSquared(vector);
+            if (node.left != null && node.left.point != null) {
+                distanceLeft = node.left.point.distanceSquared(vector);
             }
-            if (node.right != null && node.right.meshlet != null) {
-                distanceRight = node.right.meshlet.median().distanceSquared(vector);
+            if (node.right != null && node.right.point != null) {
+                distanceRight = node.right.point.distanceSquared(vector);
             }
 
             if (distanceLeft < distanceRight || distanceLeft <= cutoff) {
@@ -117,60 +124,43 @@ public class KDTree {
             }
         }
 
-        List<Meshlet> meshlets = new ReferenceArrayList<>();
-
-        for (int i = 0; i < k || neighbours.isEmpty(); i++) {
-            meshlets.add(neighbours.dequeue());
+        if (neighbours.isEmpty()) {
+            return Optional.empty();
         }
 
-        return Optional.of(meshlets);
-    }
+        List<Vector3b> meshlets = new ReferenceArrayList<>();
 
-    public Optional<Meshlet> nearest(@NonNull Vector3f vector, float cutoff, boolean excludeEquals) {
-        Preconditions.checkNotNull(vector);
-
-        if (excludeEquals) {
-            Optional<List<Meshlet>> neighbours = knn(vector, cutoff, 2);
-            if (neighbours.isPresent()) {
-                if (!neighbours.get().isEmpty()) {
-                    if (neighbours.get().getFirst().median().distanceSquared(vector) != 0) {
-                        return Optional.of(neighbours.get().getFirst());
-                    } else {
-                        return Optional.of(neighbours.get().getLast());
-                    }
-                }
+        while (meshlets.size() < k && !neighbours.isEmpty()) {
+            Vector3b found = neighbours.dequeue();
+            if (removeEquals && found.equals(vector)) {
+                continue;
             }
-        } else {
-            Optional<List<Meshlet>> neighbours = knn(vector, cutoff, 1);
-            if (neighbours.isPresent()) {
-                if (!neighbours.get().isEmpty()) {
-                    return Optional.of(neighbours.get().getFirst());
-                }
-            }
+            meshlets.add(found);
         }
-        return Optional.empty();
+
+        return !meshlets.isEmpty() ? Optional.of(meshlets) : Optional.empty();
     }
 
     // TODO: Rewrite to iterative
-    private static Optional<Node> _delete(@Nullable Node from, Meshlet point, int depth) {
-        if (from == null) {
+    private static Optional<Node> _delete(@Nullable Node from, Vector3b point, int depth) {
+        if (from == null || from.point == null) {
             return Optional.empty();
         }
 
         int dimension = depth % 3;
 
-        if (from.meshlet.median().distanceSquared(point.median()) == 0) {
+        if (from.point.distanceSquared(point) == 0) {
             if (from.right != null) {
                 Optional<Node> min = findMin(from.right, dimension, depth);
                 if (min.isPresent()) {
-                    from.meshlet = min.get().meshlet;
-                    from.right = _delete(from.right, min.get().meshlet, depth + 1).orElse(null);
+                    from.point = min.get().point;
+                    from.right = _delete(from.right, min.get().point, depth + 1).orElse(null);
                 }
             } else if (from.left != null) {
                 Optional<Node> min = findMin(from.left, dimension, depth);
                 if (min.isPresent()) {
-                    from.meshlet = min.get().meshlet;
-                    from.left = _delete(from.left, min.get().meshlet, depth + 1).orElse(null);
+                    from.point = min.get().point;
+                    from.left = _delete(from.left, min.get().point, depth + 1).orElse(null);
                 }
             } else {
                 from = null;
@@ -178,7 +168,7 @@ public class KDTree {
             return Optional.ofNullable(from);
         }
 
-        if (compareMeshletDimension(from.meshlet, point, dimension)) {
+        if (compareMeshletDimension(from.point, point, dimension) < 0) {
             from.left = _delete(from.left, point, depth + 1).orElse(null);
         } else {
             from.right = _delete(from.right, point, depth + 1).orElse(null);
@@ -187,7 +177,7 @@ public class KDTree {
         return Optional.of(from);
     }
 
-    public void delete(@NonNull Meshlet meshlet) {
+    public void delete(@NonNull Vector3b meshlet) {
         _delete(root, meshlet, 0);
         len--;
     }
@@ -212,10 +202,10 @@ public class KDTree {
 
         Optional<Node> min = Optional.of(from);
 
-        if (left.isPresent() && compareMeshletDimension(from.meshlet, left.get().meshlet, dimension)) {
+        if (left.isPresent() && compareMeshletDimension(from.point, left.get().point, dimension) < 0) {
             min = left;
         }
-        if (right.isPresent() && compareMeshletDimension(from.meshlet, right.get().meshlet, dimension)) {
+        if (right.isPresent() && compareMeshletDimension(from.point, right.get().point, dimension) < 0) {
             min = right;
         }
 
@@ -226,13 +216,15 @@ public class KDTree {
      * Select the optimal point for building the meshlet
      * @return Meshlet of the lowest node on the left branch
      */
-    public Optional<Meshlet> getLeftExtremity() {
+    public Optional<Vector3b> getLeftExtremity() {
         if (root == null) {
             return Optional.empty();
         }
 
         Node curr = root;
-        while (curr.left != null || (curr.right != null && curr.right.left != null)) {
+        while ((curr.left != null && curr.left.point != null)
+                || ((curr.right != null && curr.right.point != null)
+                && (curr.right.left != null && curr.right.left.point != null))) {
             if (curr.left == null) {
                 curr = curr.right.left;
             } else {
@@ -240,20 +232,22 @@ public class KDTree {
             }
         }
 
-        return Optional.of(curr.meshlet);
+        return Optional.of(curr.point);
     }
 
     /**
      * Select the optimal point for building the meshlet
      * @return Meshlet of the lowest node on the right branch
      */
-    public Optional<Meshlet> getRightExtremity() {
+    public Optional<Vector3b> getRightExtremity() {
         if (root == null) {
             return Optional.empty();
         }
 
         Node curr = root;
-        while (curr.right != null || (curr.left != null && curr.left.right != null)) {
+        while ((curr.right != null && curr.right.point != null)
+                || ((curr.left != null && curr.left.point != null)
+                && (curr.left.right != null && curr.left.right.point != null))) {
             if (curr.right == null) {
                 curr = curr.left.right;
             } else {
@@ -261,14 +255,14 @@ public class KDTree {
             }
         }
 
-        return Optional.ofNullable(curr.meshlet);
+        return Optional.ofNullable(curr.point);
     }
 
-    private static boolean compareMeshletDimension(Meshlet median, Meshlet meshlet, int dimension) {
+    private static int compareMeshletDimension(Vector3b median, Vector3b meshlet, int dimension) {
         return switch(dimension) {
-            case 0 -> meshlet.median().x < median.median().x;
-            case 1 -> meshlet.median().y < median.median().y;
-            default -> meshlet.median().z < median.median().z;
+            case 0 -> meshlet.x - median.x;
+            case 1 -> meshlet.y - median.y;
+            default -> meshlet.z - median.z;
         };
     }
 
@@ -276,8 +270,24 @@ public class KDTree {
         return len;
     }
 
+    @Override
+    public String toString() {
+        return this.root.toString();
+    }
+
     private static class Node {
-        Meshlet meshlet;
+        Vector3b point;
         Node left, right;
+
+        @Override
+        public String toString() {
+            return "Node [position=" +
+                    point +
+                    ", left=" +
+                    left +
+                    ", right=" +
+                    right +
+                    "]";
+        }
     }
 }
