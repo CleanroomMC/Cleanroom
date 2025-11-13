@@ -2,7 +2,7 @@ package com.cleanroommc.test.kirino.meshlet;
 
 import com.cleanroommc.kirino.engine.render.task.adt.KDTree;
 import com.cleanroommc.kirino.engine.render.task.adt.Meshlet;
-import com.cleanroommc.kirino.engine.render.task.adt.Vector3b;
+import com.cleanroommc.kirino.engine.render.task.adt.KDTreeBlock;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.util.EnumFacing;
 import org.junit.Before;
@@ -46,6 +46,22 @@ public class MeshletGenerationTest {
         //System.out.println(kdTree);
     }
 
+    @Before
+    public void setupFlat() {
+        List<KDTreeBlock> meshletsToAdd = new ObjectArrayList<>();
+
+        BitSet blocks = new BitSet(4096);
+
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                meshletsToAdd.add(new KDTreeBlock(x, 0, z, 0b111111));
+            }
+        }
+
+        kdTreeFlat = new KDTree(2137);
+        kdTreeFlat.add(meshletsToAdd);
+    }
+
     @Test
     public void nearestNeighbourChainTest() {
         List<Meshlet> generatedMeshlets = new ObjectArrayList<>();
@@ -66,5 +82,29 @@ public class MeshletGenerationTest {
             }
         }
         System.out.println(generatedMeshlets);
+    }
+
+    @Test
+    public void nearestNeighbourChainTestFlat() {
+        List<Meshlet> generatedMeshlets = new ObjectArrayList<>();
+        int idx = -1;
+        while (kdTreeFlat.size() > 0) {
+            idx++;
+            Optional<KDTreeBlock> start = idx % 2 == 1 ? kdTreeFlat.getLeftExtremity() : kdTreeFlat.getRightExtremity();
+
+            if (start.isEmpty()) {
+                continue;
+            }
+
+            try {
+                generatedMeshlets.add(nearestNeighbourChain(kdTreeFlat, start.get(), 0, 0, 0, EnumFacing.DOWN, false));
+            } catch (Throwable t) {
+                t.printStackTrace();
+                fail(t.getMessage());
+            }
+        }
+        System.out.println(generatedMeshlets);
+        System.out.println(generatedMeshlets.size());
+        assertTrue("You fucking idiot!", generatedMeshlets.size() < 8);
     }
 }

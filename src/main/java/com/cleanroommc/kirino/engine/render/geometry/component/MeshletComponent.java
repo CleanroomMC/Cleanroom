@@ -2,9 +2,14 @@ package com.cleanroommc.kirino.engine.render.geometry.component;
 
 import com.cleanroommc.kirino.ecs.component.ICleanComponent;
 import com.cleanroommc.kirino.ecs.component.scan.CleanComponent;
+import com.cleanroommc.kirino.engine.render.camera.ICamera;
 import com.cleanroommc.kirino.engine.render.geometry.AABB;
 import com.cleanroommc.kirino.engine.render.geometry.Block;
+import com.google.common.base.Preconditions;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
+import org.jspecify.annotations.NonNull;
 
 @CleanComponent
 public class MeshletComponent implements ICleanComponent {
@@ -43,4 +48,53 @@ public class MeshletComponent implements ICleanComponent {
     public Block block30;
     public Block block31;
     public Block block32;
+
+    public static boolean cull(@NonNull MeshletComponent meshlet,
+                               @NonNull AABB aabb,
+                               @NonNull ICamera camera) {
+        Preconditions.checkNotNull(meshlet);
+        Preconditions.checkNotNull(aabb);
+        Preconditions.checkNotNull(camera);
+
+        if (meshlet.transparent) {
+            return false;
+        }
+
+        final Matrix4f transformation = camera.getViewRotationMatrix().mul(camera.getProjectionMatrix());
+
+        Vector3f direction = new Vector3f();
+        Vector4f tmp = new Vector4f();
+
+        // Bounding box points
+        Vector3f[] points = {
+                // Meshlet
+                new Vector3f(meshlet.aabb.xMin, meshlet.aabb.yMin, meshlet.aabb.zMin),
+                new Vector3f(meshlet.aabb.xMax, meshlet.aabb.yMin, meshlet.aabb.zMin),
+                new Vector3f(meshlet.aabb.xMin, meshlet.aabb.yMin, meshlet.aabb.zMax),
+                new Vector3f(meshlet.aabb.xMax, meshlet.aabb.yMin, meshlet.aabb.zMax),
+                new Vector3f(meshlet.aabb.xMin, meshlet.aabb.yMax, meshlet.aabb.zMin),
+                new Vector3f(meshlet.aabb.xMax, meshlet.aabb.yMax, meshlet.aabb.zMin),
+                new Vector3f(meshlet.aabb.xMin, meshlet.aabb.yMax, meshlet.aabb.zMax),
+                new Vector3f(meshlet.aabb.xMax, meshlet.aabb.yMax, meshlet.aabb.zMax),
+                // AABB
+                new Vector3f(aabb.xMin, aabb.yMin, aabb.zMin),
+                new Vector3f(aabb.xMax, aabb.yMin, aabb.zMin),
+                new Vector3f(aabb.xMin, aabb.yMin, aabb.zMax),
+                new Vector3f(aabb.xMax, aabb.yMin, aabb.zMax),
+                new Vector3f(aabb.xMin, aabb.yMax, aabb.zMin),
+                new Vector3f(aabb.xMax, aabb.yMax, aabb.zMin),
+                new Vector3f(aabb.xMin, aabb.yMax, aabb.zMax),
+                new Vector3f(aabb.xMax, aabb.yMax, aabb.zMax)
+        };
+
+        // Convert points to use camera origin as (0;0)
+        for (int i = 0; i < points.length; i++) {
+            points[i].sub(camera.getWorldOffset(), points[i]);
+        }
+
+        camera.getViewRotationMatrix().getColumn(2, tmp);
+        tmp.xyz(direction);
+
+        return true;
+    }
 }
