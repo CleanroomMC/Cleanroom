@@ -101,13 +101,7 @@
                 {
                     "action": "disallow",
                     "os": {
-                        "name": "linux-arm64"
-                    }
-                },
-                {
-                    "action": "disallow",
-                    "os": {
-                        "name": "linux-arm32"
+                        "name": "osx-arm64"
                     }
                 }
             ]
@@ -150,18 +144,6 @@
                     "action": "disallow",
                     "os": {
                         "name": "osx-arm64"
-                    }
-                },
-                {
-                    "action": "disallow",
-                    "os": {
-                        "name": "linux-arm64"
-                    }
-                },
-                {
-                    "action": "disallow",
-                    "os": {
-                        "name": "linux-arm32"
                     }
                 }
             ]
@@ -213,6 +195,24 @@
                     "action": "allow",
                     "os": {
                         "name": "osx"
+                    }
+                }
+            ]
+        },
+        {
+            "downloads": {
+                "artifact": {
+                    "sha1": "f378f889797edd7df8d32272c06ca80a1b6b0f58",
+                    "size": 13164,
+                    "url": "https://libraries.minecraft.net/com/mojang/text2speech/1.11.3/text2speech-1.11.3.jar"
+                }
+            },
+            "name": "com.mojang:text2speech:1.11.3",
+            "rules": [
+                {
+                    "action": "allow",
+                    "os": {
+                        "name": "osx-arm64"
                     }
                 }
             ]
