@@ -1,13 +1,6 @@
 --- before/net/minecraft/client/renderer/entity/layers/LayerBipedArmor.java
 +++ after/net/minecraft/client/renderer/entity/layers/LayerBipedArmor.java
-@@ -14,13 +14,13 @@
-         super(rendererIn);
-     }
- 
--    @Override
-     protected void initArmor()
-     {
-         this.modelLeggings = new ModelBiped(0.5F);
+@@ -21,6 +21,7 @@
          this.modelArmor = new ModelBiped(1.0F);
      }
  
@@ -15,7 +8,7 @@
      protected void setModelSlotVisible(ModelBiped p_188359_1_, EntityEquipmentSlot slotIn)
      {
          this.setModelVisible(p_188359_1_);
-@@ -50,5 +50,11 @@
+@@ -50,5 +51,11 @@
      protected void setModelVisible(ModelBiped model)
      {
          model.setVisible(false);

@@ -1,14 +1,6 @@
 --- before/net/minecraft/client/renderer/entity/RenderItemFrame.java
 +++ after/net/minecraft/client/renderer/entity/RenderItemFrame.java
-@@ -42,14 +42,14 @@
-         double d0 = (double)blockpos.getX() - entity.posX + x;
-         double d1 = (double)blockpos.getY() - entity.posY + y;
-         double d2 = (double)blockpos.getZ() - entity.posZ + z;
--        GlStateManager.translate(d0 + 0.5, d1 + 0.5, d2 + 0.5);
-+        GlStateManager.translate(d0 + 0.5D, d1 + 0.5D, d2 + 0.5D);
-         GlStateManager.rotate(180.0F - entity.rotationYaw, 0.0F, 1.0F, 0.0F);
-         this.renderManager.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-         BlockRendererDispatcher blockrendererdispatcher = this.mc.getBlockRendererDispatcher();
+@@ -49,7 +49,7 @@
          ModelManager modelmanager = blockrendererdispatcher.getBlockModelShapes().getModelManager();
          IBakedModel ibakedmodel;
  
@@ -17,21 +9,7 @@
          {
              ibakedmodel = modelmanager.getModel(this.mapModel);
          }
-@@ -79,12 +79,7 @@
-         GlStateManager.translate(0.0F, 0.0F, 0.4375F);
-         this.renderItem(entity);
-         GlStateManager.popMatrix();
--        this.renderName(
--            entity,
--            x + (double)((float)entity.facingDirection.getXOffset() * 0.3F),
--            y - 0.25,
--            z + (double)((float)entity.facingDirection.getZOffset() * 0.3F)
--        );
-+        this.renderName(entity, x + (double)((float)entity.facingDirection.getXOffset() * 0.3F), y - 0.25D, z + (double)((float)entity.facingDirection.getZOffset() * 0.3F));
-     }
- 
-     @Nullable
-@@ -101,10 +96,13 @@
+@@ -101,10 +101,13 @@
          {
              GlStateManager.pushMatrix();
              GlStateManager.disableLighting();
@@ -46,7 +24,7 @@
              if (flag)
              {
                  this.renderManager.renderEngine.bindTexture(MAP_BACKGROUND_TEXTURES);
-@@ -112,7 +110,7 @@
+@@ -112,7 +115,7 @@
                  float f = 0.0078125F;
                  GlStateManager.scale(0.0078125F, 0.0078125F, 0.0078125F);
                  GlStateManager.translate(-64.0F, -64.0F, 0.0F);
@@ -55,29 +33,11 @@
                  GlStateManager.translate(0.0F, 0.0F, -1.0F);
  
                  if (mapdata != null)
-@@ -129,6 +127,7 @@
+@@ -128,6 +131,7 @@
+                 this.itemRenderer.renderItem(itemstack, ItemCameraTransforms.TransformType.FIXED);
                  RenderHelper.disableStandardItemLighting();
                  GlStateManager.popAttrib();
-             }
 +            }
+             }
  
              GlStateManager.enableLighting();
-             GlStateManager.popMatrix();
-@@ -137,15 +136,12 @@
- 
-     protected void renderName(EntityItemFrame entity, double x, double y, double z)
-     {
--        if (Minecraft.isGuiEnabled()
--                && !entity.getDisplayedItem().isEmpty()
--                && entity.getDisplayedItem().hasDisplayName()
--                && this.renderManager.pointedEntity == entity)
-+        if (Minecraft.isGuiEnabled() && !entity.getDisplayedItem().isEmpty() && entity.getDisplayedItem().hasDisplayName() && this.renderManager.pointedEntity == entity)
-         {
-             double d0 = entity.getDistanceSq(this.renderManager.renderViewEntity);
-             float f = entity.isSneaking() ? 32.0F : 64.0F;
- 
--            if (!(d0 >= (double)(f * f)))
-+            if (d0 < (double)(f * f))
-             {
-                 String s = entity.getDisplayedItem().getDisplayName();
-                 this.renderLivingLabel(entity, s, x, y, z, 64);

@@ -9,103 +9,7 @@
  
      public GuiContainerCreative(EntityPlayer player)
      {
-@@ -67,7 +69,6 @@
-         this.xSize = 195;
-     }
- 
--    @Override
-     public void updateScreen()
-     {
-         if (!this.mc.playerController.isInCreativeMode())
-@@ -76,7 +77,6 @@
-         }
-     }
- 
--    @Override
-     protected void handleMouseClick(@Nullable Slot slotIn, int slotId, int mouseButton, ClickType type)
-     {
-         this.clearSearch = true;
-@@ -113,7 +113,7 @@
- 
-             if (slotIn == this.destroyItemSlot && flag)
-             {
--                for (int j = 0; j < this.mc.player.inventoryContainer.getInventory().size(); j++)
-+                for (int j = 0; j < this.mc.player.inventoryContainer.getInventory().size(); ++j)
-                 {
-                     this.mc.playerController.sendSlotPacket(ItemStack.EMPTY, j);
-                 }
-@@ -140,15 +140,7 @@
-                 }
-                 else
-                 {
--                    this.mc
--                    .player
--                    .inventoryContainer
--                    .slotClick(
--                        slotIn == null ? slotId : ((GuiContainerCreative.CreativeSlot)slotIn).slot.slotNumber,
--                        mouseButton,
--                        type,
--                        this.mc.player
--                    );
-+                    this.mc.player.inventoryContainer.slotClick(slotIn == null ? slotId : ((GuiContainerCreative.CreativeSlot)slotIn).slot.slotNumber, mouseButton, type, this.mc.player);
-                     this.mc.player.inventoryContainer.detectAndSendChanges();
-                 }
-             }
-@@ -196,10 +188,7 @@
-                     return;
-                 }
- 
--                if (!itemstack5.isEmpty()
--                        && !itemstack7.isEmpty()
--                        && itemstack5.isItemEqual(itemstack7)
--                        && ItemStack.areItemStackTagsEqual(itemstack5, itemstack7))
-+                if (!itemstack5.isEmpty() && !itemstack7.isEmpty() && itemstack5.isItemEqual(itemstack7) && ItemStack.areItemStackTagsEqual(itemstack5, itemstack7))
-                 {
-                     if (mouseButton == 0)
-                     {
-@@ -239,12 +228,11 @@
-             else if (this.inventorySlots != null)
-             {
-                 ItemStack itemstack3 = slotIn == null ? ItemStack.EMPTY : this.inventorySlots.getSlot(slotIn.slotNumber).getStack();
--                this.inventorySlots
--                .slotClick(slotIn == null ? slotId : slotIn.slotNumber, mouseButton, type, this.mc.player);
-+                this.inventorySlots.slotClick(slotIn == null ? slotId : slotIn.slotNumber, mouseButton, type, this.mc.player);
- 
-                 if (Container.getDragEvent(mouseButton) == 2)
-                 {
--                    for (int k = 0; k < 9; k++)
-+                    for (int k = 0; k < 9; ++k)
-                     {
-                         this.mc.playerController.sendSlotPacket(this.inventorySlots.getSlot(45 + k).getStack(), 36 + k);
-                     }
-@@ -273,7 +261,6 @@
-         }
-     }
- 
--    @Override
-     protected void updateActivePotionEffects()
-     {
-         int i = this.guiLeft;
-@@ -285,7 +272,6 @@
-         }
-     }
- 
--    @Override
-     public void initGui()
-     {
-         if (this.mc.playerController.isInCreativeMode())
-@@ -293,9 +279,7 @@
-             super.initGui();
-             this.buttonList.clear();
-             Keyboard.enableRepeatEvents(true);
--            this.searchField = new GuiTextField(
--                0, this.fontRenderer, this.guiLeft + 82, this.guiTop + 6, 80, this.fontRenderer.FONT_HEIGHT
--            );
-+            this.searchField = new GuiTextField(0, this.fontRenderer, this.guiLeft + 82, this.guiTop + 6, 80, this.fontRenderer.FONT_HEIGHT);
-             this.searchField.setMaxStringLength(50);
-             this.searchField.setEnableBackgroundDrawing(false);
-             this.searchField.setVisible(false);
-@@ -305,6 +289,13 @@
+@@ -305,6 +307,13 @@
              this.setCurrentCreativeTab(CreativeTabs.CREATIVE_TAB_ARRAY[i]);
              this.listener = new CreativeCrafting(this.mc);
              this.mc.player.inventoryContainer.addListener(this.listener);
@@ -119,19 +23,8 @@
          }
          else
          {
-@@ -312,7 +303,6 @@
-         }
-     }
- 
--    @Override
-     public void onGuiClosed()
-     {
-         super.onGuiClosed();
-@@ -325,10 +315,9 @@
-         Keyboard.enableRepeatEvents(false);
-     }
- 
--    @Override
+@@ -328,7 +337,7 @@
+     @Override
      protected void keyTyped(char typedChar, int keyCode) throws IOException
      {
 -        if (selectedTabIndex != CreativeTabs.SEARCH.getIndex())
@@ -139,7 +32,7 @@
          {
              if (GameSettings.isKeyDown(this.mc.gameSettings.keyBindChat))
              {
-@@ -366,6 +355,34 @@
+@@ -366,6 +375,34 @@
          GuiContainerCreative.ContainerCreative guicontainercreative$containercreative = (GuiContainerCreative.ContainerCreative)this.inventorySlots;
          guicontainercreative$containercreative.itemList.clear();
  
@@ -174,23 +67,7 @@
          if (this.searchField.getText().isEmpty())
          {
              for (Item item : Item.REGISTRY)
-@@ -375,29 +392,24 @@
-         }
-         else
-         {
--            guicontainercreative$containercreative.itemList
--            .addAll(
--                this.mc.getSearchTree(SearchTreeManager.ITEMS).search(this.searchField.getText().toLowerCase(Locale.ROOT))
--            );
-+            guicontainercreative$containercreative.itemList.addAll(this.mc.getSearchTree(SearchTreeManager.ITEMS).search(this.searchField.getText().toLowerCase(Locale.ROOT)));
-         }
- 
-         this.currentScroll = 0.0F;
-         guicontainercreative$containercreative.scrollTo(0.0F);
-     }
- 
--    @Override
-     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
+@@ -390,10 +427,10 @@
      {
          CreativeTabs creativetabs = CreativeTabs.CREATIVE_TAB_ARRAY[selectedTabIndex];
  
@@ -203,19 +80,7 @@
          }
      }
  
--    @Override
-     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-     {
-         if (mouseButton == 0)
-@@ -417,7 +429,6 @@
-         super.mouseClicked(mouseX, mouseY, mouseButton);
-     }
- 
--    @Override
-     protected void mouseReleased(int mouseX, int mouseY, int state)
-     {
-         if (state == 0)
-@@ -427,7 +438,7 @@
+@@ -427,7 +464,7 @@
  
              for (CreativeTabs creativetabs : CreativeTabs.CREATIVE_TAB_ARRAY)
              {
@@ -224,16 +89,15 @@
                  {
                      this.setCurrentCreativeTab(creativetabs);
                      return;
-@@ -440,13 +451,13 @@
+@@ -440,6 +477,7 @@
  
      private boolean needsScrollBars()
      {
--        return selectedTabIndex != CreativeTabs.INVENTORY.getIndex()
--               && CreativeTabs.CREATIVE_TAB_ARRAY[selectedTabIndex].hasScrollbar()
--               && ((GuiContainerCreative.ContainerCreative)this.inventorySlots).canScroll();
 +        if (CreativeTabs.CREATIVE_TAB_ARRAY[selectedTabIndex] == null) return false;
-+        return selectedTabIndex != CreativeTabs.INVENTORY.getIndex() && CreativeTabs.CREATIVE_TAB_ARRAY[selectedTabIndex].hasScrollbar() && ((GuiContainerCreative.ContainerCreative)this.inventorySlots).canScroll();
-     }
+         return selectedTabIndex != CreativeTabs.INVENTORY.getIndex()
+                && CreativeTabs.CREATIVE_TAB_ARRAY[selectedTabIndex].hasScrollbar()
+                && ((GuiContainerCreative.ContainerCreative)this.inventorySlots).canScroll();
+@@ -447,6 +485,7 @@
  
      private void setCurrentCreativeTab(CreativeTabs tab)
      {
@@ -241,44 +105,7 @@
          int i = selectedTabIndex;
          selectedTabIndex = tab.getIndex();
          GuiContainerCreative.ContainerCreative guicontainercreative$containercreative = (GuiContainerCreative.ContainerCreative)this.inventorySlots;
-@@ -455,13 +466,13 @@
- 
-         if (tab == CreativeTabs.HOTBAR)
-         {
--            for (int j = 0; j < 9; j++)
-+            for (int j = 0; j < 9; ++j)
-             {
-                 HotbarSnapshot hotbarsnapshot = this.mc.creativeSettings.getHotbarSnapshot(j);
- 
-                 if (hotbarsnapshot.isEmpty())
-                 {
--                    for (int k = 0; k < 9; k++)
-+                    for (int k = 0; k < 9; ++k)
-                     {
-                         if (k == j)
-                         {
-@@ -469,7 +480,7 @@
-                             itemstack.getOrCreateSubCompound("CustomCreativeLock");
-                             String s = GameSettings.getKeyDisplayString(this.mc.gameSettings.keyBindsHotbar[j].getKeyCode());
-                             String s1 = GameSettings.getKeyDisplayString(this.mc.gameSettings.keyBindSaveToolbar.getKeyCode());
--                            itemstack.setStackDisplayName(new TextComponentTranslation("inventory.hotbarInfo", s1, s).getUnformattedText());
-+                            itemstack.setStackDisplayName((new TextComponentTranslation("inventory.hotbarInfo", new Object[] {s1, s})).getUnformattedText());
-                             guicontainercreative$containercreative.itemList.add(itemstack);
-                         }
-                         else
-@@ -498,9 +509,9 @@
-                 this.originalSlots = guicontainercreative$containercreative.inventorySlots;
-             }
- 
--            guicontainercreative$containercreative.inventorySlots = Lists.newArrayList();
-+            guicontainercreative$containercreative.inventorySlots = Lists.<Slot>newArrayList();
- 
--            for (int l = 0; l < container.inventorySlots.size(); l++)
-+            for (int l = 0; l < container.inventorySlots.size(); ++l)
-             {
-                 Slot slot = new GuiContainerCreative.CreativeSlot(container.inventorySlots.get(l), l);
-                 guicontainercreative$containercreative.inventorySlots.add(slot);
-@@ -552,12 +563,14 @@
+@@ -552,7 +591,7 @@
  
          if (this.searchField != null)
          {
@@ -287,30 +114,7 @@
              {
                  this.searchField.setVisible(true);
                  this.searchField.setCanLoseFocus(false);
-                 this.searchField.setFocused(true);
-                 this.searchField.setText("");
-+                this.searchField.width = tab.getSearchbarWidth();
-+                this.searchField.x = this.guiLeft + (82 /*default left*/ + 89 /*default width*/) - this.searchField.width;
-                 this.updateCreativeSearch();
-             }
-             else
-@@ -572,7 +585,6 @@
-         guicontainercreative$containercreative.scrollTo(0.0F);
-     }
- 
--    @Override
-     public void handleMouseInput() throws IOException
-     {
-         super.handleMouseInput();
-@@ -598,7 +610,6 @@
-         }
-     }
- 
--    @Override
-     public void drawScreen(int mouseX, int mouseY, float partialTicks)
-     {
-         this.drawDefaultBackground();
-@@ -631,35 +642,53 @@
+@@ -631,21 +670,43 @@
  
          super.drawScreen(mouseX, mouseY, partialTicks);
  
@@ -358,37 +162,16 @@
          GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
          GlStateManager.disableLighting();
          this.renderHoveredToolTip(mouseX, mouseY);
-     }
- 
--    @Override
-     protected void renderToolTip(ItemStack stack, int x, int y)
-     {
-         if (selectedTabIndex == CreativeTabs.SEARCH.getIndex())
-         {
--            List<String> list = stack.getTooltip(
--                                    this.mc.player,
--                                    this.mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL
--                                );
-+            List<String> list = stack.getTooltip(this.mc.player, this.mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
-             CreativeTabs creativetabs = stack.getItem().getCreativeTab();
- 
-             if (creativetabs == null && stack.getItem() == Items.ENCHANTED_BOOK)
-@@ -686,19 +715,22 @@
-                 list.add(1, "" + TextFormatting.BOLD + TextFormatting.BLUE + I18n.format(creativetabs.getTranslationKey()));
-             }
- 
--            for (int i = 0; i < list.size(); i++)
-+            for (int i = 0; i < list.size(); ++i)
+@@ -690,7 +751,7 @@
              {
                  if (i == 0)
                  {
 -                    list.set(i, stack.getRarity().color + list.get(i));
-+                    list.set(i, stack.getItem().getForgeRarity(stack).getColor() + (String)list.get(i));
++                    list.set(i, stack.getItem().getForgeRarity(stack).getColor() + list.get(i));
                  }
                  else
                  {
--                    list.set(i, TextFormatting.GRAY + list.get(i));
-+                    list.set(i, TextFormatting.GRAY + (String)list.get(i));
+@@ -698,7 +759,10 @@
                  }
              }
  
@@ -400,14 +183,7 @@
          }
          else
          {
-@@ -706,24 +738,42 @@
-         }
-     }
- 
--    @Override
-     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
-     {
-         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+@@ -713,17 +777,36 @@
          RenderHelper.enableGUIStandardItemLighting();
          CreativeTabs creativetabs = CreativeTabs.CREATIVE_TAB_ARRAY[selectedTabIndex];
  
@@ -446,7 +222,7 @@
          this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
          this.searchField.drawTextBox();
          GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-@@ -737,23 +787,32 @@
+@@ -737,6 +820,14 @@
              this.drawTexturedModalRect(i, j + (int)((float)(k - j - 17) * this.currentScroll), 232 + (this.needsScrollBars() ? 0 : 12), 0, 12, 15);
          }
  
@@ -461,18 +237,7 @@
          this.drawTab(creativetabs);
  
          if (creativetabs == CreativeTabs.INVENTORY)
-         {
--            GuiInventory.drawEntityOnScreen(
--                this.guiLeft + 88,
--                this.guiTop + 45,
--                20,
--                (float)(this.guiLeft + 88 - mouseX),
--                (float)(this.guiTop + 45 - 30 - mouseY),
--                this.mc.player
--            );
-+            GuiInventory.drawEntityOnScreen(this.guiLeft + 88, this.guiTop + 45, 20, (float)(this.guiLeft + 88 - mouseX), (float)(this.guiTop + 45 - 30 - mouseY), this.mc.player);
-         }
-     }
+@@ -754,6 +845,14 @@
  
      protected boolean isMouseOverTab(CreativeTabs tab, int mouseX, int mouseY)
      {
@@ -487,46 +252,7 @@
          int i = tab.getColumn();
          int j = 28 * i;
          int k = 0;
-@@ -769,11 +828,11 @@
- 
-         if (tab.isOnTopRow())
-         {
--            k -= 32;
-+            k = k - 32;
-         }
-         else
-         {
--            k += this.ySize;
-+            k = k + this.ySize;
-         }
- 
-         return mouseX >= j && mouseX <= j + 28 && mouseY >= k && mouseY <= k + 32;
-@@ -796,11 +855,11 @@
- 
-         if (tab.isOnTopRow())
-         {
--            k -= 32;
-+            k = k - 32;
-         }
-         else
-         {
--            k += this.ySize;
-+            k = k + this.ySize;
-         }
- 
-         if (this.isPointInRegion(j + 3, k + 3, 23, 27, mouseX, mouseY))
-@@ -841,20 +900,22 @@
- 
-         if (flag1)
-         {
--            i1 -= 28;
-+            i1 = i1 - 28;
-         }
-         else
-         {
-             k += 64;
--            i1 += this.ySize - 4;
-+            i1 = i1 + (this.ySize - 4);
+@@ -850,6 +949,8 @@
          }
  
          GlStateManager.disableLighting();
@@ -535,21 +261,7 @@
          this.drawTexturedModalRect(l, i1, j, k, 28, 32);
          this.zLevel = 100.0F;
          this.itemRender.zLevel = 100.0F;
--        l += 6;
--        i1 += 8 + (flag1 ? 1 : -1);
-+        l = l + 6;
-+        i1 = i1 + 8 + (flag1 ? 1 : -1);
-         GlStateManager.enableLighting();
-         GlStateManager.enableRescaleNormal();
-         ItemStack itemstack = tab.getIcon();
-@@ -865,13 +926,21 @@
-         this.zLevel = 0.0F;
-     }
- 
--    @Override
-     protected void actionPerformed(GuiButton button) throws IOException
-     {
-         if (button.id == 1)
+@@ -872,6 +973,15 @@
          {
              this.mc.displayGuiScreen(new GuiStats(this, this.mc.player.getStatFileWriter()));
          }
@@ -565,191 +277,7 @@
      }
  
      public int getSelectedTabIndex()
-@@ -887,9 +956,9 @@
- 
-         if (load)
-         {
--            for (int i = 0; i < InventoryPlayer.getHotbarSize(); i++)
-+            for (int i = 0; i < InventoryPlayer.getHotbarSize(); ++i)
-             {
--                ItemStack itemstack = hotbarsnapshot.get(i).copy();
-+                ItemStack itemstack = ((ItemStack)hotbarsnapshot.get(i)).copy();
-                 entityplayersp.inventory.setInventorySlotContents(i, itemstack);
-                 client.playerController.sendSlotPacket(itemstack, 36 + i);
-             }
-@@ -898,14 +967,14 @@
-         }
-         else if (save)
-         {
--            for (int j = 0; j < InventoryPlayer.getHotbarSize(); j++)
-+            for (int j = 0; j < InventoryPlayer.getHotbarSize(); ++j)
-             {
-                 hotbarsnapshot.set(j, entityplayersp.inventory.getStackInSlot(j).copy());
-             }
- 
-             String s = GameSettings.getKeyDisplayString(client.gameSettings.keyBindsHotbar[index].getKeyCode());
-             String s1 = GameSettings.getKeyDisplayString(client.gameSettings.keyBindLoadToolbar.getKeyCode());
--            client.ingameGUI.setOverlayMessage(new TextComponentTranslation("inventory.hotbarSaved", s1, s), false);
-+            client.ingameGUI.setOverlayMessage(new TextComponentTranslation("inventory.hotbarSaved", new Object[] {s1, s}), false);
-             creativesettings.write();
-         }
-     }
-@@ -913,21 +982,21 @@
-     @SideOnly(Side.CLIENT)
-     public static class ContainerCreative extends Container
-         {
--            public NonNullList<ItemStack> itemList = NonNullList.create();
-+            public NonNullList<ItemStack> itemList = NonNullList.<ItemStack>create();
- 
-             public ContainerCreative(EntityPlayer player)
-             {
-                 InventoryPlayer inventoryplayer = player.inventory;
- 
--                for (int i = 0; i < 5; i++)
-+                for (int i = 0; i < 5; ++i)
-                 {
--                    for (int j = 0; j < 9; j++)
-+                    for (int j = 0; j < 9; ++j)
-                     {
-                         this.addSlotToContainer(new GuiContainerCreative.LockedSlot(GuiContainerCreative.basicInventory, i * 9 + j, 9 + j * 18, 18 + i * 18));
-                     }
-                 }
- 
--                for (int k = 0; k < 9; k++)
-+                for (int k = 0; k < 9; ++k)
-                 {
-                     this.addSlotToContainer(new Slot(inventoryplayer, k, 9 + k * 18, 112));
-                 }
-@@ -935,7 +1004,6 @@
-                 this.scrollTo(0.0F);
-             }
- 
--            @Override
-             public boolean canInteractWith(EntityPlayer playerIn)
-             {
-                 return true;
-@@ -944,16 +1012,16 @@
-             public void scrollTo(float pos)
-             {
-                 int i = (this.itemList.size() + 9 - 1) / 9 - 5;
--                int j = (int)((double)(pos * (float)i) + 0.5);
-+                int j = (int)((double)(pos * (float)i) + 0.5D);
- 
-                 if (j < 0)
-                 {
-                     j = 0;
-                 }
- 
--                for (int k = 0; k < 5; k++)
-+                for (int k = 0; k < 5; ++k)
-                 {
--                    for (int l = 0; l < 9; l++)
-+                    for (int l = 0; l < 9; ++l)
-                     {
-                         int i1 = l + (k + j) * 9;
- 
-@@ -974,7 +1042,6 @@
-                 return this.itemList.size() > 45;
-             }
- 
--            @Override
-             public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
-             {
-                 if (index >= this.inventorySlots.size() - 9 && index < this.inventorySlots.size())
-@@ -990,13 +1057,11 @@
-                 return ItemStack.EMPTY;
-             }
- 
--            @Override
-             public boolean canMergeSlot(ItemStack stack, Slot slotIn)
-             {
-                 return slotIn.yPos > 90;
-             }
- 
--            @Override
-             public boolean canDragIntoSlot(Slot slotIn)
-             {
-                 return slotIn.inventory instanceof InventoryPlayer || slotIn.yPos > 90 && slotIn.xPos <= 162;
-@@ -1014,85 +1079,105 @@
-             this.slot = p_i46313_2_;
-         }
- 
--        @Override
-         public ItemStack onTake(EntityPlayer thePlayer, ItemStack stack)
-         {
-             this.slot.onTake(thePlayer, stack);
-             return stack;
-         }
- 
--        @Override
-         public boolean isItemValid(ItemStack stack)
-         {
-             return this.slot.isItemValid(stack);
-         }
- 
--        @Override
-         public ItemStack getStack()
-         {
-             return this.slot.getStack();
-         }
- 
--        @Override
-         public boolean getHasStack()
-         {
-             return this.slot.getHasStack();
-         }
- 
--        @Override
-         public void putStack(ItemStack stack)
-         {
-             this.slot.putStack(stack);
-         }
- 
--        @Override
-         public void onSlotChanged()
-         {
-             this.slot.onSlotChanged();
-         }
- 
--        @Override
-         public int getSlotStackLimit()
-         {
-             return this.slot.getSlotStackLimit();
-         }
- 
--        @Override
-         public int getItemStackLimit(ItemStack stack)
-         {
-             return this.slot.getItemStackLimit(stack);
-         }
- 
-         @Nullable
--        @Override
-         public String getSlotTexture()
-         {
-             return this.slot.getSlotTexture();
-         }
- 
--        @Override
-         public ItemStack decrStackSize(int amount)
-         {
-             return this.slot.decrStackSize(amount);
-         }
- 
--        @Override
-         public boolean isHere(IInventory inv, int slotIn)
-         {
-             return this.slot.isHere(inv, slotIn);
-         }
- 
--        @Override
-         public boolean isEnabled()
-         {
-             return this.slot.isEnabled();
-         }
- 
--        @Override
-         public boolean canTakeStack(EntityPlayer playerIn)
+@@ -1093,6 +1203,39 @@
          {
              return this.slot.canTakeStack(playerIn);
          }
@@ -789,22 +317,3 @@
      }
  
      @SideOnly(Side.CLIENT)
-@@ -1103,10 +1188,16 @@
-                 super(p_i47453_1_, p_i47453_2_, p_i47453_3_, p_i47453_4_);
-             }
- 
--            @Override
-             public boolean canTakeStack(EntityPlayer playerIn)
-             {
--                return super.canTakeStack(playerIn) && this.getHasStack() ? this.getStack().getSubCompound("CustomCreativeLock") == null : !this.getHasStack();
-+                if (super.canTakeStack(playerIn) && this.getHasStack())
-+                {
-+                    return this.getStack().getSubCompound("CustomCreativeLock") == null;
-+                }
-+                else
-+                {
-+                    return !this.getHasStack();
-+                }
-             }
-         }
- }

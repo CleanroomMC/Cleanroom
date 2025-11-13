@@ -16,217 +16,25 @@
  import org.lwjgl.opengl.Display;
  
  @SideOnly(Side.CLIENT)
-@@ -59,15 +61,10 @@
-     {
-         List<String> list = this.call();
-         list.add("");
--        list.add(
--            "Debug: Pie [shift]: "
--            + (this.mc.gameSettings.showDebugProfilerChart ? "visible" : "hidden")
--            + " FPS [alt]: "
--            + (this.mc.gameSettings.showLagometer ? "visible" : "hidden")
--        );
-+        list.add("Debug: Pie [shift]: " + (this.mc.gameSettings.showDebugProfilerChart ? "visible" : "hidden") + " FPS [alt]: " + (this.mc.gameSettings.showLagometer ? "visible" : "hidden"));
-         list.add("For help: press F3 + Q");
- 
--        for (int i = 0; i < list.size(); i++)
-+        for (int i = 0; i < list.size(); ++i)
-         {
-             String s = list.get(i);
- 
-@@ -87,7 +84,7 @@
-     {
-         List<String> list = this.getDebugInfoRight();
- 
--        for (int i = 0; i < list.size(); i++)
-+        for (int i = 0; i < list.size(); ++i)
-         {
-             String s = list.get(i);
- 
-@@ -103,26 +100,14 @@
-         }
-     }
- 
-+    @SuppressWarnings("incomplete-switch")
-     protected List<String> call()
-     {
--        BlockPos blockpos = new BlockPos(
--            this.mc.getRenderViewEntity().posX,
--            this.mc.getRenderViewEntity().getEntityBoundingBox().minY,
--            this.mc.getRenderViewEntity().posZ
--        );
-+        BlockPos blockpos = new BlockPos(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().getEntityBoundingBox().minY, this.mc.getRenderViewEntity().posZ);
- 
-         if (this.mc.isReducedDebug())
-         {
--            return Lists.newArrayList(
--                       "Minecraft 1.12.2 (" + this.mc.getVersion() + "/" + ClientBrandRetriever.getClientModName() + ")",
--                       this.mc.debug,
--                       this.mc.renderGlobal.getDebugInfoRenders(),
--                       this.mc.renderGlobal.getDebugInfoEntities(),
--                       "P: " + this.mc.effectRenderer.getStatistics() + ". T: " + this.mc.world.getDebugLoadedEntities(),
--                       this.mc.world.getProviderName(),
--                       "",
--                       String.format("Chunk-relative: %d %d %d", blockpos.getX() & 15, blockpos.getY() & 15, blockpos.getZ() & 15)
--                   );
-+            return Lists.newArrayList("Minecraft 1.12.2 (" + this.mc.getVersion() + "/" + ClientBrandRetriever.getClientModName() + ")", this.mc.debug, this.mc.renderGlobal.getDebugInfoRenders(), this.mc.renderGlobal.getDebugInfoEntities(), "P: " + this.mc.effectRenderer.getStatistics() + ". T: " + this.mc.world.getDebugLoadedEntities(), this.mc.world.getProviderName(), "", String.format("Chunk-relative: %d %d %d", blockpos.getX() & 15, blockpos.getY() & 15, blockpos.getZ() & 15));
-         }
-         else
-         {
-@@ -145,87 +130,40 @@
-                     s = "Towards positive X";
-             }
- 
--            List<String> list = Lists.newArrayList(
--                                    "Minecraft 1.12.2 ("
--                                    + this.mc.getVersion()
--                                    + "/"
--                                    + ClientBrandRetriever.getClientModName()
--                                    + ("release".equalsIgnoreCase(this.mc.getVersionType()) ? "" : "/" + this.mc.getVersionType())
--                                    + ")",
--                                    this.mc.debug,
--                                    this.mc.renderGlobal.getDebugInfoRenders(),
--                                    this.mc.renderGlobal.getDebugInfoEntities(),
--                                    "P: " + this.mc.effectRenderer.getStatistics() + ". T: " + this.mc.world.getDebugLoadedEntities(),
--                                    this.mc.world.getProviderName(),
--                                    "",
--                                    String.format(
--                                        "XYZ: %.3f / %.5f / %.3f",
--                                        this.mc.getRenderViewEntity().posX,
--                                        this.mc.getRenderViewEntity().getEntityBoundingBox().minY,
--                                        this.mc.getRenderViewEntity().posZ
--                                    ),
--                                    String.format("Block: %d %d %d", blockpos.getX(), blockpos.getY(), blockpos.getZ()),
--                                    String.format(
--                                        "Chunk: %d %d %d in %d %d %d",
--                                        blockpos.getX() & 15,
--                                        blockpos.getY() & 15,
--                                        blockpos.getZ() & 15,
--                                        blockpos.getX() >> 4,
--                                        blockpos.getY() >> 4,
--                                        blockpos.getZ() >> 4
--                                    ),
--                                    String.format(
--                                        "Facing: %s (%s) (%.1f / %.1f)", enumfacing, s, MathHelper.wrapDegrees(entity.rotationYaw), MathHelper.wrapDegrees(entity.rotationPitch)
--                                    )
--                                );
-+            List<String> list = Lists.newArrayList("Minecraft 1.12.2 (" + this.mc.getVersion() + "/" + ClientBrandRetriever.getClientModName() + ("release".equalsIgnoreCase(this.mc.getVersionType()) ? "" : "/" + this.mc.getVersionType()) + ")", this.mc.debug, this.mc.renderGlobal.getDebugInfoRenders(), this.mc.renderGlobal.getDebugInfoEntities(), "P: " + this.mc.effectRenderer.getStatistics() + ". T: " + this.mc.world.getDebugLoadedEntities(), this.mc.world.getProviderName(), "", String.format("XYZ: %.3f / %.5f / %.3f", this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().getEntityBoundingBox().minY, this.mc.getRenderViewEntity().posZ), String.format("Block: %d %d %d", blockpos.getX(), blockpos.getY(), blockpos.getZ()), String.format("Chunk: %d %d %d in %d %d %d", blockpos.getX() & 15, blockpos.getY() & 15, blockpos.getZ() & 15, blockpos.getX() >> 4, blockpos.getY() >> 4, blockpos.getZ() >> 4), String.format("Facing: %s (%s) (%.1f / %.1f)", enumfacing, s, MathHelper.wrapDegrees(entity.rotationYaw), MathHelper.wrapDegrees(entity.rotationPitch)));
- 
-             if (this.mc.world != null)
-             {
-                 Chunk chunk = this.mc.world.getChunk(blockpos);
- 
--                if (!this.mc.world.isBlockLoaded(blockpos) || blockpos.getY() < 0 || blockpos.getY() >= 256)
--                {
--                    list.add("Outside of world...");
--                }
--                else if (!chunk.isEmpty())
--                {
--                    list.add("Biome: " + chunk.getBiome(blockpos, this.mc.world.getBiomeProvider()).getBiomeName());
--                    list.add(
--                        "Light: "
--                        + chunk.getLightSubtracted(blockpos, 0)
--                        + " ("
--                        + chunk.getLightFor(EnumSkyBlock.SKY, blockpos)
--                        + " sky, "
--                        + chunk.getLightFor(EnumSkyBlock.BLOCK, blockpos)
--                        + " block)"
--                    );
--                    DifficultyInstance difficultyinstance = this.mc.world.getDifficultyForLocation(blockpos);
--
--                    if (this.mc.isIntegratedServerRunning() && this.mc.getIntegratedServer() != null)
-+                if (this.mc.world.isBlockLoaded(blockpos) && blockpos.getY() >= 0 && blockpos.getY() < 256)
-+                {
-+                    if (!chunk.isEmpty())
-                     {
--                        EntityPlayerMP entityplayermp = this.mc
--                                                        .getIntegratedServer()
--                                                        .getPlayerList()
--                                                        .getPlayerByUUID(this.mc.player.getUniqueID());
-+                        list.add("Biome: " + chunk.getBiome(blockpos, this.mc.world.getBiomeProvider()).getBiomeName());
-+                        list.add("Light: " + chunk.getLightSubtracted(blockpos, 0) + " (" + chunk.getLightFor(EnumSkyBlock.SKY, blockpos) + " sky, " + chunk.getLightFor(EnumSkyBlock.BLOCK, blockpos) + " block)");
-+                        DifficultyInstance difficultyinstance = this.mc.world.getDifficultyForLocation(blockpos);
- 
--                        if (entityplayermp != null)
-+                        if (this.mc.isIntegratedServerRunning() && this.mc.getIntegratedServer() != null)
-                         {
--                            difficultyinstance = entityplayermp.world.getDifficultyForLocation(new BlockPos(entityplayermp));
-+                            EntityPlayerMP entityplayermp = this.mc.getIntegratedServer().getPlayerList().getPlayerByUUID(this.mc.player.getUniqueID());
-+
-+                            if (entityplayermp != null)
-+                            {
-+                                difficultyinstance = entityplayermp.world.getDifficultyForLocation(new BlockPos(entityplayermp));
-+                            }
-                         }
--                    }
- 
--                    list.add(
--                        String.format(
--                            "Local Difficulty: %.2f // %.2f (Day %d)",
--                            difficultyinstance.getAdditionalDifficulty(),
--                            difficultyinstance.getClampedAdditionalDifficulty(),
--                            this.mc.world.getWorldTime() / 24000L
--                        )
--                    );
-+                        list.add(String.format("Local Difficulty: %.2f // %.2f (Day %d)", difficultyinstance.getAdditionalDifficulty(), difficultyinstance.getClampedAdditionalDifficulty(), this.mc.world.getWorldTime() / 24000L));
-+                    }
-+                    else
-+                    {
-+                        list.add("Waiting for chunk...");
-+                    }
-                 }
-                 else
-                 {
--                    list.add("Waiting for chunk...");
-+                    list.add("Outside of world...");
-                 }
-             }
- 
-@@ -234,9 +172,7 @@
-                 list.add("Shader: " + this.mc.entityRenderer.getShaderGroup().getShaderGroupName());
-             }
- 
--            if (this.mc.objectMouseOver != null
--                    && this.mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK
--                    && this.mc.objectMouseOver.getBlockPos() != null)
-+            if (this.mc.objectMouseOver != null && this.mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK && this.mc.objectMouseOver.getBlockPos() != null)
-             {
-                 BlockPos blockpos1 = this.mc.objectMouseOver.getBlockPos();
-                 list.add(String.format("Looking at: %d %d %d", blockpos1.getX(), blockpos1.getY(), blockpos1.getZ()));
-@@ -252,17 +188,10 @@
-         long j = Runtime.getRuntime().totalMemory();
-         long k = Runtime.getRuntime().freeMemory();
+@@ -254,6 +256,7 @@
          long l = j - k;
--        List<String> list = Lists.newArrayList(
--                                String.format("Java: %s %dbit", System.getProperty("java.version"), this.mc.isJava64bit() ? 64 : 32),
--                                String.format("Mem: % 2d%% %03d/%03dMB", l * 100L / i, bytesToMb(l), bytesToMb(i)),
--                                String.format("Allocated: % 2d%% %03dMB", j * 100L / i, bytesToMb(j)),
--                                "",
--                                String.format("CPU: %s", OpenGlHelper.getCpu()),
--                                "",
--                                String.format("Display: %dx%d (%s)", Display.getWidth(), Display.getHeight(), GlStateManager.glGetString(7936)),
--                                GlStateManager.glGetString(7937),
--                                GlStateManager.glGetString(7938)
--                            );
-+        List<String> list = Lists.newArrayList(String.format("Java: %s %dbit", System.getProperty("java.version"), this.mc.isJava64bit() ? 64 : 32), "LWJGL: " + Sys.getVersion(), String.format("Mem: % 2d%% %03d/%03dMB", l * 100L / i, bytesToMb(l), bytesToMb(i)), String.format("Allocated: % 2d%% %03dMB", j * 100L / i, bytesToMb(j)), "", String.format("CPU: %s", OpenGlHelper.getCpu()), "", String.format("Display: %dx%d (%s)", Display.getWidth(), Display.getHeight(), GlStateManager.glGetString(7936)), GlStateManager.glGetString(7937), GlStateManager.glGetString(7938));
-+
+         List<String> list = Lists.newArrayList(
+                                 String.format("Java: %s %dbit", System.getProperty("java.version"), this.mc.isJava64bit() ? 64 : 32),
++                                "LWJGL: " + Sys.getVersion(),
+                                 String.format("Mem: % 2d%% %03d/%03dMB", l * 100L / i, bytesToMb(l), bytesToMb(i)),
+                                 String.format("Allocated: % 2d%% %03dMB", j * 100L / i, bytesToMb(j)),
+                                 "",
+@@ -264,6 +267,9 @@
+                                 GlStateManager.glGetString(7938)
+                             );
+ 
 +        list.add("");
 +        list.addAll(net.minecraftforge.fml.common.FMLCommonHandler.instance().getBrandings(false));
- 
++
          if (this.mc.isReducedDebug())
          {
-@@ -270,9 +199,7 @@
-         }
-         else
-         {
--            if (this.mc.objectMouseOver != null
--                    && this.mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK
--                    && this.mc.objectMouseOver.getBlockPos() != null)
-+            if (this.mc.objectMouseOver != null && this.mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK && this.mc.objectMouseOver.getBlockPos() != null)
-             {
-                 BlockPos blockpos = this.mc.objectMouseOver.getBlockPos();
-                 IBlockState iblockstate = this.mc.world.getBlockState(blockpos);
-@@ -284,12 +211,15 @@
+             return list;
+@@ -284,12 +290,15 @@
  
                  list.add("");
                  list.add(String.valueOf(Block.REGISTRY.getNameForObject(iblockstate.getBlock())));
@@ -245,7 +53,7 @@
  
                      if (Boolean.TRUE.equals(t))
                      {
-@@ -299,8 +229,6 @@
+@@ -299,8 +308,6 @@
                      {
                          s = TextFormatting.RED + s;
                      }
@@ -254,43 +62,3 @@
                  }
              }
  
-@@ -325,7 +253,7 @@
-             int i1 = frametimer.getLagometerValue(along[k], 30);
-             int j1 = this.getFrameColor(MathHelper.clamp(i1, 0, 60), 0, 30, 60);
-             this.drawVerticalLine(l, scaledresolution.getScaledHeight(), scaledresolution.getScaledHeight() - i1, j1);
--            l++;
-+            ++l;
-             k = frametimer.parseIndex(k + 1);
-         }
- 
-@@ -349,21 +277,19 @@
- 
-     private int getFrameColor(int p_181552_1_, int p_181552_2_, int p_181552_3_, int p_181552_4_)
-     {
--        return p_181552_1_ < p_181552_3_
--               ? this.blendColors(-16711936, -256, (float)p_181552_1_ / (float)p_181552_3_)
--               : this.blendColors(-256, -65536, (float)(p_181552_1_ - p_181552_3_) / (float)(p_181552_4_ - p_181552_3_));
-+        return p_181552_1_ < p_181552_3_ ? this.blendColors(-16711936, -256, (float)p_181552_1_ / (float)p_181552_3_) : this.blendColors(-256, -65536, (float)(p_181552_1_ - p_181552_3_) / (float)(p_181552_4_ - p_181552_3_));
-     }
- 
-     private int blendColors(int p_181553_1_, int p_181553_2_, float p_181553_3_)
-     {
--        int i = p_181553_1_ >> 24 & 0xFF;
--        int j = p_181553_1_ >> 16 & 0xFF;
--        int k = p_181553_1_ >> 8 & 0xFF;
--        int l = p_181553_1_ & 0xFF;
--        int i1 = p_181553_2_ >> 24 & 0xFF;
--        int j1 = p_181553_2_ >> 16 & 0xFF;
--        int k1 = p_181553_2_ >> 8 & 0xFF;
--        int l1 = p_181553_2_ & 0xFF;
-+        int i = p_181553_1_ >> 24 & 255;
-+        int j = p_181553_1_ >> 16 & 255;
-+        int k = p_181553_1_ >> 8 & 255;
-+        int l = p_181553_1_ & 255;
-+        int i1 = p_181553_2_ >> 24 & 255;
-+        int j1 = p_181553_2_ >> 16 & 255;
-+        int k1 = p_181553_2_ >> 8 & 255;
-+        int l1 = p_181553_2_ & 255;
-         int i2 = MathHelper.clamp((int)((float)i + (float)(i1 - i) * p_181553_3_), 0, 255);
-         int j2 = MathHelper.clamp((int)((float)j + (float)(j1 - j) * p_181553_3_), 0, 255);
-         int k2 = MathHelper.clamp((int)((float)k + (float)(k1 - k) * p_181553_3_), 0, 255);

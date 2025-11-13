@@ -1,36 +1,6 @@
 --- before/net/minecraft/client/gui/GuiMainMenu.java
 +++ after/net/minecraft/client/gui/GuiMainMenu.java
-@@ -3,6 +3,7 @@
- import com.google.common.collect.Lists;
- import com.google.common.util.concurrent.Runnables;
- import java.io.BufferedReader;
-+import java.io.Closeable;
- import java.io.IOException;
- import java.io.InputStreamReader;
- import java.net.URI;
-@@ -57,35 +58,30 @@
-     private int openGLWarningX2;
-     private int openGLWarningY2;
-     private String openGLWarning1;
--    private String openGLWarning2 = MORE_INFO_TEXT;
-+    private String openGLWarning2;
-     private String openGLWarningLink;
-     private static final ResourceLocation SPLASH_TEXTS = new ResourceLocation("texts/splashes.txt");
-     private static final ResourceLocation MINECRAFT_TITLE_TEXTURES = new ResourceLocation("textures/gui/title/minecraft.png");
-     private static final ResourceLocation field_194400_H = new ResourceLocation("textures/gui/title/edition.png");
--    private static final ResourceLocation[] TITLE_PANORAMA_PATHS = new ResourceLocation[]
--        {
--            new ResourceLocation("textures/gui/title/background/panorama_0.png"),
--            new ResourceLocation("textures/gui/title/background/panorama_1.png"),
--            new ResourceLocation("textures/gui/title/background/panorama_2.png"),
--            new ResourceLocation("textures/gui/title/background/panorama_3.png"),
--            new ResourceLocation("textures/gui/title/background/panorama_4.png"),
--            new ResourceLocation("textures/gui/title/background/panorama_5.png")
--        };
-+    private static final ResourceLocation[] TITLE_PANORAMA_PATHS = new ResourceLocation[] {new ResourceLocation("textures/gui/title/background/panorama_0.png"), new ResourceLocation("textures/gui/title/background/panorama_1.png"), new ResourceLocation("textures/gui/title/background/panorama_2.png"), new ResourceLocation("textures/gui/title/background/panorama_3.png"), new ResourceLocation("textures/gui/title/background/panorama_4.png"), new ResourceLocation("textures/gui/title/background/panorama_5.png")};
-     private ResourceLocation backgroundTexture;
-     private GuiButton realmsButton;
-     private boolean hasCheckedForRealmsNotification;
+@@ -77,6 +77,8 @@
      private GuiScreen realmsNotification;
      private int widthCopyright;
      private int widthCopyrightRest;
@@ -39,47 +9,7 @@
  
      public GuiMainMenu()
      {
-+        this.openGLWarning2 = MORE_INFO_TEXT;
-         this.splashText = "missingno";
-         IResource iresource = null;
- 
-         try
-         {
--            List<String> list = Lists.newArrayList();
-+            List<String> list = Lists.<String>newArrayList();
-             iresource = Minecraft.getMinecraft().getResourceManager().getResource(SPLASH_TEXTS);
-             BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(iresource.getInputStream(), StandardCharsets.UTF_8));
-             String s;
-@@ -102,19 +98,24 @@
- 
-             if (!list.isEmpty())
-             {
--                do
-+                while (true)
-                 {
-                     this.splashText = list.get(RANDOM.nextInt(list.size()));
-+
-+                    if (this.splashText.hashCode() != 125780783)
-+                    {
-+                        break;
-+                    }
-                 }
--                while (this.splashText.hashCode() == 125780783);
-             }
-         }
--        catch (IOException ioexception)
-+        catch (IOException var8)
-         {
-+            ;
-         }
-         finally
-         {
--            IOUtils.closeQuietly(iresource);
-+            IOUtils.closeQuietly((Closeable)iresource);
-         }
- 
-         this.minceraftRoll = RANDOM.nextFloat();
-@@ -130,30 +131,18 @@
+@@ -130,19 +132,9 @@
  
      private boolean areRealmsNotificationsEnabled()
      {
@@ -102,26 +32,7 @@
      public boolean doesGuiPauseGame()
      {
          return false;
-     }
- 
--    @Override
-     protected void keyTyped(char typedChar, int keyCode) throws IOException
-     {
-     }
- 
--    @Override
-     public void initGui()
-     {
-         this.viewportTexture = new DynamicTexture(256, 256);
-@@ -198,40 +187,27 @@
-             this.openGLWarning2Width = this.fontRenderer.getStringWidth(this.openGLWarning2);
-             int k = Math.max(this.openGLWarning1Width, this.openGLWarning2Width);
-             this.openGLWarningX1 = (this.width - k) / 2;
--            this.openGLWarningY1 = this.buttonList.get(0).y - 24;
-+            this.openGLWarningY1 = (this.buttonList.get(0)).y - 24;
-             this.openGLWarningX2 = this.openGLWarningX1 + k;
-             this.openGLWarningY2 = this.openGLWarningY1 + 24;
-         }
+@@ -205,25 +197,14 @@
  
          this.mc.setConnectedToRealms(false);
  
@@ -149,24 +60,7 @@
      }
  
      private void addDemoButtons(int p_73972_1_, int p_73972_2_)
-     {
-         this.buttonList.add(new GuiButton(11, this.width / 2 - 100, p_73972_1_, I18n.format("menu.playdemo")));
--        this.buttonResetDemo = this.addButton(
--                                 new GuiButton(12, this.width / 2 - 100, p_73972_1_ + p_73972_2_ * 1, I18n.format("menu.resetdemo"))
--                             );
-+        this.buttonResetDemo = this.addButton(new GuiButton(12, this.width / 2 - 100, p_73972_1_ + p_73972_2_ * 1, I18n.format("menu.resetdemo")));
-         ISaveFormat isaveformat = this.mc.getSaveLoader();
-         WorldInfo worldinfo = isaveformat.getWorldInfo("Demo_World");
- 
-@@ -241,7 +217,6 @@
-         }
-     }
- 
--    @Override
-     protected void actionPerformed(GuiButton button) throws IOException
-     {
-         if (button.id == 0)
-@@ -264,16 +239,16 @@
+@@ -264,16 +245,16 @@
              this.mc.displayGuiScreen(new GuiMultiplayer(this));
          }
  
@@ -188,25 +82,7 @@
          if (button.id == 11)
          {
              this.mc.launchIntegratedServer("Demo_World", "Demo_World", WorldServerDemo.DEMO_WORLD_SETTINGS);
-@@ -286,28 +261,15 @@
- 
-             if (worldinfo != null)
-             {
--                this.mc
--                .displayGuiScreen(
--                    new GuiYesNo(
--                        this,
--                        I18n.format("selectWorld.deleteQuestion"),
--                        "'" + worldinfo.getWorldName() + "' " + I18n.format("selectWorld.deleteWarning"),
--                        I18n.format("selectWorld.deleteButton"),
--                        I18n.format("gui.cancel"),
--                        12
--                    )
--                );
-+                this.mc.displayGuiScreen(new GuiYesNo(this, I18n.format("selectWorld.deleteQuestion"), "'" + worldinfo.getWorldName() + "' " + I18n.format("selectWorld.deleteWarning"), I18n.format("selectWorld.deleteButton"), I18n.format("gui.cancel"), 12));
-             }
-         }
-     }
+@@ -303,8 +284,6 @@
  
      private void switchToRealms()
      {
@@ -214,153 +90,8 @@
 -        realmsbridge.switchToRealms(this);
      }
  
--    @Override
-     public void confirmClicked(boolean result, int id)
-     {
-         if (result && id == 12)
-@@ -328,7 +290,7 @@
-                 try
-                 {
-                     Class<?> oclass = Class.forName("java.awt.Desktop");
--                    Object object = oclass.getMethod("getDesktop").invoke(null);
-+                    Object object = oclass.getMethod("getDesktop").invoke((Object)null);
-                     oclass.getMethod("browse", URI.class).invoke(object, new URI(this.openGLWarningLink));
-                 }
-                 catch (Throwable throwable)
-@@ -359,12 +321,10 @@
-         GlStateManager.disableAlpha();
-         GlStateManager.disableCull();
-         GlStateManager.depthMask(false);
--        GlStateManager.tryBlendFuncSeparate(
--            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
--        );
-+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-         int i = 8;
- 
--        for (int j = 0; j < 64; j++)
-+        for (int j = 0; j < 64; ++j)
-         {
-             GlStateManager.pushMatrix();
-             float f = ((float)(j % 8) / 8.0F - 0.5F) / 64.0F;
-@@ -374,7 +334,7 @@
-             GlStateManager.rotate(MathHelper.sin(this.panoramaTimer / 400.0F) * 25.0F + 20.0F, 1.0F, 0.0F, 0.0F);
-             GlStateManager.rotate(-this.panoramaTimer * 0.1F, 0.0F, 1.0F, 0.0F);
- 
--            for (int k = 0; k < 6; k++)
-+            for (int k = 0; k < 6; ++k)
-             {
-                 GlStateManager.pushMatrix();
- 
-@@ -407,10 +367,10 @@
-                 bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-                 int l = 255 / (j + 1);
-                 float f3 = 0.0F;
--                bufferbuilder.pos(-1.0, -1.0, 1.0).tex(0.0, 0.0).color(255, 255, 255, l).endVertex();
--                bufferbuilder.pos(1.0, -1.0, 1.0).tex(1.0, 0.0).color(255, 255, 255, l).endVertex();
--                bufferbuilder.pos(1.0, 1.0, 1.0).tex(1.0, 1.0).color(255, 255, 255, l).endVertex();
--                bufferbuilder.pos(-1.0, 1.0, 1.0).tex(0.0, 1.0).color(255, 255, 255, l).endVertex();
-+                bufferbuilder.pos(-1.0D, -1.0D, 1.0D).tex(0.0D, 0.0D).color(255, 255, 255, l).endVertex();
-+                bufferbuilder.pos(1.0D, -1.0D, 1.0D).tex(1.0D, 0.0D).color(255, 255, 255, l).endVertex();
-+                bufferbuilder.pos(1.0D, 1.0D, 1.0D).tex(1.0D, 1.0D).color(255, 255, 255, l).endVertex();
-+                bufferbuilder.pos(-1.0D, 1.0D, 1.0D).tex(0.0D, 1.0D).color(255, 255, 255, l).endVertex();
-                 tessellator.draw();
-                 GlStateManager.popMatrix();
-             }
-@@ -419,7 +379,7 @@
-             GlStateManager.colorMask(true, true, true, false);
-         }
- 
--        bufferbuilder.setTranslation(0.0, 0.0, 0.0);
-+        bufferbuilder.setTranslation(0.0D, 0.0D, 0.0D);
-         GlStateManager.colorMask(true, true, true, true);
-         GlStateManager.matrixMode(5889);
-         GlStateManager.popMatrix();
-@@ -437,9 +397,7 @@
-         GlStateManager.glTexParameteri(3553, 10240, 9729);
-         GlStateManager.glCopyTexSubImage2D(3553, 0, 0, 0, 0, 0, 256, 256);
-         GlStateManager.enableBlend();
--        GlStateManager.tryBlendFuncSeparate(
--            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
--        );
-+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-         GlStateManager.colorMask(true, true, true, false);
-         Tessellator tessellator = Tessellator.getInstance();
-         BufferBuilder bufferbuilder = tessellator.getBuffer();
-@@ -447,28 +405,16 @@
-         GlStateManager.disableAlpha();
-         int i = 3;
- 
--        for (int j = 0; j < 3; j++)
-+        for (int j = 0; j < 3; ++j)
-         {
-             float f = 1.0F / (float)(j + 1);
-             int k = this.width;
-             int l = this.height;
-             float f1 = (float)(j - 1) / 256.0F;
--            bufferbuilder.pos((double)k, (double)l, (double)this.zLevel)
--            .tex((double)(0.0F + f1), 1.0)
--            .color(1.0F, 1.0F, 1.0F, f)
--            .endVertex();
--            bufferbuilder.pos((double)k, 0.0, (double)this.zLevel)
--            .tex((double)(1.0F + f1), 1.0)
--            .color(1.0F, 1.0F, 1.0F, f)
--            .endVertex();
--            bufferbuilder.pos(0.0, 0.0, (double)this.zLevel)
--            .tex((double)(1.0F + f1), 0.0)
--            .color(1.0F, 1.0F, 1.0F, f)
--            .endVertex();
--            bufferbuilder.pos(0.0, (double)l, (double)this.zLevel)
--            .tex((double)(0.0F + f1), 0.0)
--            .color(1.0F, 1.0F, 1.0F, f)
--            .endVertex();
-+            bufferbuilder.pos((double)k, (double)l, (double)this.zLevel).tex((double)(0.0F + f1), 1.0D).color(1.0F, 1.0F, 1.0F, f).endVertex();
-+            bufferbuilder.pos((double)k, 0.0D, (double)this.zLevel).tex((double)(1.0F + f1), 1.0D).color(1.0F, 1.0F, 1.0F, f).endVertex();
-+            bufferbuilder.pos(0.0D, 0.0D, (double)this.zLevel).tex((double)(1.0F + f1), 0.0D).color(1.0F, 1.0F, 1.0F, f).endVertex();
-+            bufferbuilder.pos(0.0D, (double)l, (double)this.zLevel).tex((double)(0.0F + f1), 0.0D).color(1.0F, 1.0F, 1.0F, f).endVertex();
-         }
- 
-         tessellator.draw();
-@@ -498,26 +444,13 @@
-         Tessellator tessellator = Tessellator.getInstance();
-         BufferBuilder bufferbuilder = tessellator.getBuffer();
-         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
--        bufferbuilder.pos(0.0, (double)j, (double)this.zLevel)
--        .tex((double)(0.5F - f1), (double)(0.5F + f2))
--        .color(1.0F, 1.0F, 1.0F, 1.0F)
--        .endVertex();
--        bufferbuilder.pos((double)i, (double)j, (double)this.zLevel)
--        .tex((double)(0.5F - f1), (double)(0.5F - f2))
--        .color(1.0F, 1.0F, 1.0F, 1.0F)
--        .endVertex();
--        bufferbuilder.pos((double)i, 0.0, (double)this.zLevel)
--        .tex((double)(0.5F + f1), (double)(0.5F - f2))
--        .color(1.0F, 1.0F, 1.0F, 1.0F)
--        .endVertex();
--        bufferbuilder.pos(0.0, 0.0, (double)this.zLevel)
--        .tex((double)(0.5F + f1), (double)(0.5F + f2))
--        .color(1.0F, 1.0F, 1.0F, 1.0F)
--        .endVertex();
-+        bufferbuilder.pos(0.0D, (double)j, (double)this.zLevel).tex((double)(0.5F - f1), (double)(0.5F + f2)).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
-+        bufferbuilder.pos((double)i, (double)j, (double)this.zLevel).tex((double)(0.5F - f1), (double)(0.5F - f2)).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
-+        bufferbuilder.pos((double)i, 0.0D, (double)this.zLevel).tex((double)(0.5F + f1), (double)(0.5F - f2)).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
-+        bufferbuilder.pos(0.0D, 0.0D, (double)this.zLevel).tex((double)(0.5F + f1), (double)(0.5F + f2)).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
-         tessellator.draw();
-     }
- 
--    @Override
-     public void drawScreen(int mouseX, int mouseY, float partialTicks)
-     {
-         this.panoramaTimer += partialTicks;
-@@ -532,7 +465,7 @@
-         this.mc.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURES);
-         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
- 
--        if ((double)this.minceraftRoll < 1.0E-4)
-+        if ((double)this.minceraftRoll < 1.0E-4D)
-         {
-             this.drawTexturedModalRect(j + 0, 30, 0, 0, 99, 44);
-             this.drawTexturedModalRect(j + 99, 30, 129, 0, 27, 44);
-@@ -548,10 +481,13 @@
+     @Override
+@@ -548,6 +527,9 @@
  
          this.mc.getTextureManager().bindTexture(field_194400_H);
          drawModalRectWithCustomSizedTexture(j + 88, 67, 0.0F, 0.0F, 98, 14, 128.0F, 16.0F);
@@ -370,12 +101,7 @@
          GlStateManager.pushMatrix();
          GlStateManager.translate((float)(this.width / 2 + 90), 70.0F, 0.0F);
          GlStateManager.rotate(-20.0F, 0.0F, 0.0F, 1.0F);
--        float f = 1.8F - MathHelper.abs(MathHelper.sin((float)(Minecraft.getSystemTime() % 1000L) / 1000.0F * (float)(Math.PI * 2)) * 0.1F);
-+        float f = 1.8F - MathHelper.abs(MathHelper.sin((float)(Minecraft.getSystemTime() % 1000L) / 1000.0F * ((float)Math.PI * 2F)) * 0.1F);
-         f = f * 100.0F / (float)(this.fontRenderer.getStringWidth(this.splashText) + 32);
-         GlStateManager.scale(f, f, f);
-         this.drawCenteredString(this.fontRenderer, this.splashText, 0, -8, -256);
-@@ -567,14 +503,19 @@
+@@ -567,7 +549,16 @@
              s = s + ("release".equalsIgnoreCase(this.mc.getVersionType()) ? "" : "/" + this.mc.getVersionType());
          }
  
@@ -392,24 +118,8 @@
 +
          this.drawString(this.fontRenderer, "Copyright Mojang AB. Do not distribute!", this.widthCopyrightRest, this.height - 10, -1);
  
--        if (mouseX > this.widthCopyrightRest
--                && mouseX < this.widthCopyrightRest + this.widthCopyright
--                && mouseY > this.height - 10
--                && mouseY < this.height
--                && Mouse.isInsideWindow())
-+        if (mouseX > this.widthCopyrightRest && mouseX < this.widthCopyrightRest + this.widthCopyright && mouseY > this.height - 10 && mouseY < this.height && Mouse.isInsideWindow())
-         {
-             drawRect(this.widthCopyrightRest, this.height - 1, this.widthCopyrightRest + this.widthCopyright, this.height, -1);
-         }
-@@ -583,32 +524,21 @@
-         {
-             drawRect(this.openGLWarningX1 - 2, this.openGLWarningY1 - 2, this.openGLWarningX2 + 2, this.openGLWarningY2 - 1, 1428160512);
-             this.drawString(this.fontRenderer, this.openGLWarning1, this.openGLWarningX1, this.openGLWarningY1, -1);
--            this.drawString(
--                this.fontRenderer, this.openGLWarning2, (this.width - this.openGLWarning2Width) / 2, this.buttonList.get(0).y - 12, -1
--            );
-+            this.drawString(this.fontRenderer, this.openGLWarning2, (this.width - this.openGLWarning2Width) / 2, (this.buttonList.get(0)).y - 12, -1);
-         }
+         if (mouseX > this.widthCopyrightRest
+@@ -590,10 +581,7 @@
  
          super.drawScreen(mouseX, mouseY, partialTicks);
  
@@ -420,24 +130,8 @@
 +        modUpdateNotification.drawScreen(mouseX, mouseY, partialTicks);
      }
  
--    @Override
-     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-     {
-         super.mouseClicked(mouseX, mouseY, mouseButton);
- 
-         synchronized (this.threadLock)
-         {
--            if (!this.openGLWarning1.isEmpty()
--                    && !StringUtils.isNullOrEmpty(this.openGLWarningLink)
--                    && mouseX >= this.openGLWarningX1
--                    && mouseX <= this.openGLWarningX2
--                    && mouseY >= this.openGLWarningY1
--                    && mouseY <= this.openGLWarningY2)
-+            if (!this.openGLWarning1.isEmpty() && !StringUtils.isNullOrEmpty(this.openGLWarningLink) && mouseX >= this.openGLWarningX1 && mouseX <= this.openGLWarningX2 && mouseY >= this.openGLWarningY1 && mouseY <= this.openGLWarningY2)
-             {
-                 GuiConfirmOpenLink guiconfirmopenlink = new GuiConfirmOpenLink(this, this.openGLWarningLink, 13, true);
-                 guiconfirmopenlink.disableSecurityWarning();
-@@ -616,26 +546,10 @@
+     @Override
+@@ -616,11 +604,6 @@
              }
          }
  
@@ -446,13 +140,10 @@
 -            this.realmsNotification.mouseClicked(mouseX, mouseY, mouseButton);
 -        }
 -
--        if (mouseX > this.widthCopyrightRest
--                && mouseX < this.widthCopyrightRest + this.widthCopyright
--                && mouseY > this.height - 10
--                && mouseY < this.height)
-+        if (mouseX > this.widthCopyrightRest && mouseX < this.widthCopyrightRest + this.widthCopyright && mouseY > this.height - 10 && mouseY < this.height)
-         {
-             this.mc.displayGuiScreen(new GuiWinGame(false, Runnables.doNothing()));
+         if (mouseX > this.widthCopyrightRest
+                 && mouseX < this.widthCopyrightRest + this.widthCopyright
+                 && mouseY > this.height - 10
+@@ -630,12 +613,4 @@
          }
      }
  

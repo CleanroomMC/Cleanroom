@@ -1,44 +1,6 @@
 --- before/net/minecraft/client/audio/SoundHandler.java
 +++ after/net/minecraft/client/audio/SoundHandler.java
-@@ -2,6 +2,7 @@
- 
- import com.google.gson.Gson;
- import com.google.gson.GsonBuilder;
-+import java.io.Closeable;
- import java.io.FileNotFoundException;
- import java.io.IOException;
- import java.io.InputStream;
-@@ -36,23 +37,17 @@
- {
-     public static final Sound MISSING_SOUND = new Sound("meta:missing_sound", 1.0F, 1.0F, 1, Sound.Type.FILE, false);
-     private static final Logger LOGGER = LogManager.getLogger();
--    private static final Gson GSON = new GsonBuilder()
--        .registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer())
--        .registerTypeAdapter(SoundList.class, new SoundListSerializer())
--        .create();
-+    private static final Gson GSON = (new GsonBuilder()).registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer()).registerTypeAdapter(SoundList.class, new SoundListSerializer()).create();
-     private static final ParameterizedType TYPE = new ParameterizedType()
-     {
--        @Override
-         public Type[] getActualTypeArguments()
-         {
-             return new Type[] {String.class, SoundList.class};
-         }
--        @Override
-         public Type getRawType()
-         {
-             return Map.class;
-         }
--        @Override
-         public Type getOwnerType()
-         {
-             return null;
-@@ -68,11 +63,11 @@
-         this.sndManager = new SoundManager(this, gameSettingsIn);
-     }
- 
--    @Override
-     public void onResourceManagerReload(IResourceManager resourceManager)
+@@ -73,6 +73,7 @@
      {
          this.soundRegistry.clearMap();
  
@@ -46,7 +8,7 @@
          for (String s : resourceManager.getResourceDomains())
          {
              try
-@@ -85,7 +80,7 @@
+@@ -85,7 +86,7 @@
  
                          for (Entry<String, SoundList> entry : map.entrySet())
                          {
@@ -55,14 +17,7 @@
                          }
                      }
                      catch (RuntimeException runtimeexception)
-@@ -94,14 +89,29 @@
-                     }
-                 }
-             }
--            catch (IOException ioexception)
-+            catch (IOException var11)
-             {
-+                ;
+@@ -99,6 +100,20 @@
              }
          }
  
@@ -82,130 +37,16 @@
 +        net.minecraftforge.fml.common.ProgressManager.pop(resourcesBar);
          for (ResourceLocation resourcelocation : this.soundRegistry.getKeys())
          {
--            SoundEventAccessor soundeventaccessor = this.soundRegistry.getObject(resourcelocation);
-+            SoundEventAccessor soundeventaccessor = (SoundEventAccessor)this.soundRegistry.getObject(resourcelocation);
- 
-             if (soundeventaccessor.getSubtitle() instanceof TextComponentTranslation)
-             {
-@@ -118,7 +128,7 @@
-         {
-             if (SoundEvent.REGISTRY.getObject(resourcelocation1) == null)
-             {
--                LOGGER.debug("Not having sound event for: {}", resourcelocation1);
-+                LOGGER.debug("Not having sound event for: {}", (Object)resourcelocation1);
-             }
-         }
- 
-@@ -132,7 +142,7 @@
- 
-         try
-         {
--            map = JsonUtils.fromJson(GSON, new InputStreamReader(stream, StandardCharsets.UTF_8), TYPE);
-+            map = (Map)JsonUtils.fromJson(GSON, new InputStreamReader(stream, StandardCharsets.UTF_8), TYPE);
-         }
-         finally
-         {
-@@ -144,14 +154,14 @@
- 
-     private void loadSoundResource(ResourceLocation location, SoundList sounds)
+             SoundEventAccessor soundeventaccessor = this.soundRegistry.getObject(resourcelocation);
+@@ -263,6 +278,11 @@
+     public void setListener(EntityPlayer player, float p_147691_2_)
      {
--        SoundEventAccessor soundeventaccessor = this.soundRegistry.getObject(location);
-+        SoundEventAccessor soundeventaccessor = (SoundEventAccessor)this.soundRegistry.getObject(location);
-         boolean flag = soundeventaccessor == null;
- 
-         if (flag || sounds.canReplaceExisting())
-         {
-             if (!flag)
-             {
--                LOGGER.debug("Replaced sound event location {}", location);
-+                LOGGER.debug("Replaced sound event location {}", (Object)location);
-             }
- 
-             soundeventaccessor = new SoundEventAccessor(location, sounds.getSubtitle());
-@@ -177,15 +187,14 @@
-                 case SOUND_EVENT:
-                     isoundeventaccessor = new ISoundEventAccessor<Sound>()
-                     {
--                        @Override
-                         public int getWeight()
-                         {
--                            SoundEventAccessor soundeventaccessor1 = SoundHandler.this.soundRegistry.getObject(resourcelocation);
-+                            SoundEventAccessor soundeventaccessor1 = (SoundEventAccessor)SoundHandler.this.soundRegistry.getObject(resourcelocation);
-                             return soundeventaccessor1 == null ? 0 : soundeventaccessor1.getWeight();
-                         }
-                         public Sound cloneEntry()
-                         {
--                            SoundEventAccessor soundeventaccessor1 = SoundHandler.this.soundRegistry.getObject(resourcelocation);
-+                            SoundEventAccessor soundeventaccessor1 = (SoundEventAccessor)SoundHandler.this.soundRegistry.getObject(resourcelocation);
- 
-                             if (soundeventaccessor1 == null)
-                             {
-@@ -194,14 +203,7 @@
-                             else
-                             {
-                                 Sound sound1 = soundeventaccessor1.cloneEntry();
--                                return new Sound(
--                                           sound1.getSoundLocation().toString(),
--                                           sound1.getVolume() * sound.getVolume(),
--                                           sound1.getPitch() * sound.getPitch(),
--                                           sound.getWeight(),
--                                           Sound.Type.FILE,
--                                           sound1.isStreaming() || sound.isStreaming()
--                                       );
-+                                return new Sound(sound1.getSoundLocation().toString(), sound1.getVolume() * sound.getVolume(), sound1.getPitch() * sound.getPitch(), sound.getWeight(), Sound.Type.FILE, sound1.isStreaming() || sound.isStreaming());
-                             }
-                         }
-                     };
-@@ -226,19 +228,20 @@
-             iresource.getInputStream();
-             return true;
-         }
--        catch (FileNotFoundException filenotfoundexception)
-+        catch (FileNotFoundException var11)
-         {
-             LOGGER.warn("File {} does not exist, cannot add it to event {}", resourcelocation, p_184401_2_);
--            return false;
-+            flag = false;
-         }
-         catch (IOException ioexception)
-         {
-             LOGGER.warn("Could not load sound file {}, cannot add it to event {}", resourcelocation, p_184401_2_, ioexception);
-             flag = false;
-+            return flag;
-         }
-         finally
-         {
--            IOUtils.closeQuietly(iresource);
-+            IOUtils.closeQuietly((Closeable)iresource);
-         }
- 
-         return flag;
-@@ -247,7 +250,7 @@
-     @Nullable
-     public SoundEventAccessor getAccessor(ResourceLocation location)
-     {
--        return this.soundRegistry.getObject(location);
-+        return (SoundEventAccessor)this.soundRegistry.getObject(location);
-     }
- 
-     public void playSound(ISound sound)
-@@ -265,6 +268,11 @@
          this.sndManager.setListener(player, p_147691_2_);
-     }
- 
++    }
++
 +    public void setListener(net.minecraft.entity.Entity entity, float partialTicks)
 +    {
 +        this.sndManager.setListener(entity, partialTicks);
-+    }
-+
-     public void pauseSounds()
-     {
-         this.sndManager.pauseAllSounds();
-@@ -280,7 +288,6 @@
-         this.sndManager.unloadSoundSystem();
      }
  
--    @Override
-     public void update()
-     {
-         this.sndManager.updateAllSounds();
+     public void pauseSounds()

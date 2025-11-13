@@ -9,13 +9,7 @@
  {
      private final ResourceLocation modelLocation;
      private final ModelRotation rotation;
-@@ -32,11 +32,17 @@
-         return this.modelLocation;
-     }
- 
-+    @Deprecated
-     public ModelRotation getRotation()
-     {
+@@ -37,6 +37,11 @@
          return this.rotation;
      }
  
@@ -27,64 +21,7 @@
      public boolean isUvLock()
      {
          return this.uvLock;
-@@ -47,21 +53,11 @@
-         return this.weight;
-     }
- 
--    @Override
-     public String toString()
-     {
--        return "Variant{modelLocation="
--               + this.modelLocation
--               + ", rotation="
--               + this.rotation
--               + ", uvLock="
--               + this.uvLock
--               + ", weight="
--               + this.weight
--               + '}';
-+        return "Variant{modelLocation=" + this.modelLocation + ", rotation=" + this.rotation + ", uvLock=" + this.uvLock + ", weight=" + this.weight + '}';
-     }
- 
--    @Override
-     public boolean equals(Object p_equals_1_)
-     {
-         if (this == p_equals_1_)
-@@ -75,20 +71,17 @@
-         else
-         {
-             Variant variant = (Variant)p_equals_1_;
--            return this.modelLocation.equals(variant.modelLocation)
--                   && this.rotation == variant.rotation
--                   && this.uvLock == variant.uvLock
--                   && this.weight == variant.weight;
-+            return this.modelLocation.equals(variant.modelLocation) && this.rotation == variant.rotation && this.uvLock == variant.uvLock && this.weight == variant.weight;
-         }
-     }
- 
--    @Override
-     public int hashCode()
-     {
-         int i = this.modelLocation.hashCode();
-         i = 31 * i + this.rotation.hashCode();
-         i = 31 * i + Boolean.valueOf(this.uvLock).hashCode();
--        return 31 * i + this.weight;
-+        i = 31 * i + this.weight;
-+        return i;
-     }
- 
-     @SideOnly(Side.CLIENT)
-@@ -107,7 +100,8 @@
-             private ResourceLocation getResourceLocationBlock(String p_188041_1_)
-             {
-                 ResourceLocation resourcelocation = new ResourceLocation(p_188041_1_);
--                return new ResourceLocation(resourcelocation.getNamespace(), "block/" + resourcelocation.getPath());
-+                resourcelocation = new ResourceLocation(resourcelocation.getNamespace(), "block/" + resourcelocation.getPath());
-+                return resourcelocation;
-             }
- 
-             private boolean parseUvLock(JsonObject json)
-@@ -150,4 +144,9 @@
+@@ -150,4 +155,9 @@
                  }
              }
          }

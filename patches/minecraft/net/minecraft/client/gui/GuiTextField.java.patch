@@ -7,57 +7,6 @@
  import com.google.common.base.Predicate;
  import com.google.common.base.Predicates;
  import net.minecraft.client.Minecraft;
-@@ -54,7 +55,7 @@
- 
-     public void updateCursorCounter()
-     {
--        this.cursorCounter++;
-+        ++this.cursorCounter;
-     }
- 
-     public void setText(String textIn)
-@@ -214,7 +215,7 @@
-         boolean flag = n < 0;
-         int j = Math.abs(n);
- 
--        for (int k = 0; k < j; k++)
-+        for (int k = 0; k < j; ++k)
-         {
-             if (!flag)
-             {
-@@ -229,7 +230,7 @@
-                 {
-                     while (skipWs && i < l && this.text.charAt(i) == ' ')
-                     {
--                        i++;
-+                        ++i;
-                     }
-                 }
-             }
-@@ -237,12 +238,12 @@
-             {
-                 while (skipWs && i > 0 && this.text.charAt(i - 1) == ' ')
-                 {
--                    i--;
-+                    --i;
-                 }
- 
-                 while (i > 0 && this.text.charAt(i - 1) != ' ')
-                 {
--                    i--;
-+                    --i;
-                 }
-             }
-         }
-@@ -513,7 +514,7 @@
-             else if (flag2)
-             {
-                 k1 = j1 - 1;
--                j1--;
-+                --j1;
-             }
- 
-             if (!s.isEmpty() && flag && j < s.length())
 @@ -631,6 +632,7 @@
          }
  
@@ -66,21 +15,3 @@
  
          if (Minecraft.getMinecraft().currentScreen != null)
          {
-@@ -687,7 +689,7 @@
- 
-             if (position == this.lineScrollOffset)
-             {
--                this.lineScrollOffset = this.lineScrollOffset - this.fontRenderer.trimStringToWidth(this.text, j, true).length();
-+                this.lineScrollOffset -= this.fontRenderer.trimStringToWidth(this.text, j, true).length();
-             }
- 
-             if (position > k)
-@@ -696,7 +698,7 @@
-             }
-             else if (position <= this.lineScrollOffset)
-             {
--                this.lineScrollOffset = this.lineScrollOffset - (this.lineScrollOffset - position);
-+                this.lineScrollOffset -= this.lineScrollOffset - position;
-             }
- 
-             this.lineScrollOffset = MathHelper.clamp(this.lineScrollOffset, 0, i);

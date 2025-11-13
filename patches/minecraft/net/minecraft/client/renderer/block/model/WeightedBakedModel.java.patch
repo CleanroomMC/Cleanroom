@@ -1,28 +1,6 @@
 --- before/net/minecraft/client/renderer/block/model/WeightedBakedModel.java
 +++ after/net/minecraft/client/renderer/block/model/WeightedBakedModel.java
-@@ -23,51 +23,46 @@
-     {
-         this.models = modelsIn;
-         this.totalWeight = WeightedRandom.getTotalWeight(modelsIn);
--        this.baseModel = modelsIn.get(0).model;
-+        this.baseModel = (modelsIn.get(0)).model;
-     }
- 
-     private IBakedModel getRandomModel(long p_188627_1_)
-     {
--        return WeightedRandom.getRandomItem(this.models, Math.abs((int)p_188627_1_ >> 16) % this.totalWeight).model;
-+        return ((WeightedBakedModel.WeightedModel)WeightedRandom.getRandomItem(this.models, Math.abs((int)p_188627_1_ >> 16) % this.totalWeight)).model;
-     }
- 
--    @Override
-     public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand)
-     {
-         return this.getRandomModel(rand).getQuads(state, side, rand);
-     }
- 
--    @Override
-     public boolean isAmbientOcclusion()
-     {
+@@ -43,7 +43,8 @@
          return this.baseModel.isAmbientOcclusion();
      }
  
@@ -32,53 +10,3 @@
      public boolean isGui3d()
      {
          return this.baseModel.isGui3d();
-     }
- 
--    @Override
-     public boolean isBuiltInRenderer()
-     {
-         return this.baseModel.isBuiltInRenderer();
-     }
- 
--    @Override
-     public TextureAtlasSprite getParticleTexture()
-     {
-         return this.baseModel.getParticleTexture();
-     }
- 
--    @Override
-     public ItemCameraTransforms getItemCameraTransforms()
-     {
-         return this.baseModel.getItemCameraTransforms();
-     }
- 
--    @Override
-     public ItemOverrideList getOverrides()
-     {
-         return this.baseModel.getOverrides();
-@@ -76,7 +71,7 @@
-     @SideOnly(Side.CLIENT)
-     public static class Builder
-         {
--            private final List<WeightedBakedModel.WeightedModel> listItems = Lists.newArrayList();
-+            private final List<WeightedBakedModel.WeightedModel> listItems = Lists.<WeightedBakedModel.WeightedModel>newArrayList();
- 
-             public WeightedBakedModel.Builder add(IBakedModel model, int weight)
-             {
-@@ -92,7 +87,7 @@
- 
-             public IBakedModel first()
-             {
--                return this.listItems.get(0).model;
-+                return (this.listItems.get(0)).model;
-             }
-         }
- 
-@@ -112,7 +107,6 @@
-                 return ComparisonChain.start().compare(p_compareTo_1_.itemWeight, this.itemWeight).result();
-             }
- 
--            @Override
-             public String toString()
-             {
-                 return "MyWeighedRandomItem{weight=" + this.itemWeight + ", model=" + this.model + '}';

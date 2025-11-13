@@ -1,84 +1,6 @@
 --- before/net/minecraft/client/gui/GuiEnchantment.java
 +++ after/net/minecraft/client/gui/GuiEnchantment.java
-@@ -10,6 +10,7 @@
- import net.minecraft.client.renderer.RenderHelper;
- import net.minecraft.client.resources.I18n;
- import net.minecraft.enchantment.Enchantment;
-+import net.minecraft.entity.Entity;
- import net.minecraft.entity.player.InventoryPlayer;
- import net.minecraft.inventory.ContainerEnchantment;
- import net.minecraft.item.ItemStack;
-@@ -50,28 +51,25 @@
-         this.nameable = nameable;
-     }
- 
--    @Override
-     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
-     {
-         this.fontRenderer.drawString(this.nameable.getDisplayName().getUnformattedText(), 12, 5, 4210752);
-         this.fontRenderer.drawString(this.playerInventory.getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
-     }
- 
--    @Override
-     public void updateScreen()
-     {
-         super.updateScreen();
-         this.tickBook();
-     }
- 
--    @Override
-     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-     {
-         super.mouseClicked(mouseX, mouseY, mouseButton);
-         int i = (this.width - this.xSize) / 2;
-         int j = (this.height - this.ySize) / 2;
- 
--        for (int k = 0; k < 3; k++)
-+        for (int k = 0; k < 3; ++k)
-         {
-             int l = mouseX - (i + 60);
-             int i1 = mouseY - (j + 14 + 19 * k);
-@@ -83,7 +81,6 @@
-         }
-     }
- 
--    @Override
-     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
-     {
-         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-@@ -96,12 +93,7 @@
-         GlStateManager.pushMatrix();
-         GlStateManager.loadIdentity();
-         ScaledResolution scaledresolution = new ScaledResolution(this.mc);
--        GlStateManager.viewport(
--            (scaledresolution.getScaledWidth() - 320) / 2 * scaledresolution.getScaleFactor(),
--            (scaledresolution.getScaledHeight() - 240) / 2 * scaledresolution.getScaleFactor(),
--            320 * scaledresolution.getScaleFactor(),
--            240 * scaledresolution.getScaleFactor()
--        );
-+        GlStateManager.viewport((scaledresolution.getScaledWidth() - 320) / 2 * scaledresolution.getScaleFactor(), (scaledresolution.getScaledHeight() - 240) / 2 * scaledresolution.getScaleFactor(), 320 * scaledresolution.getScaleFactor(), 240 * scaledresolution.getScaleFactor());
-         GlStateManager.translate(-0.34F, 0.23F, 0.0F);
-         Project.gluPerspective(90.0F, 1.3333334F, 9.0F, 80.0F);
-         float f = 1.0F;
-@@ -145,7 +137,7 @@
-         }
- 
-         GlStateManager.enableRescaleNormal();
--        MODEL_BOOK.render(null, 0.0F, f3, f4, f2, 0.0F, 0.0625F);
-+        MODEL_BOOK.render((Entity)null, 0.0F, f3, f4, f2, 0.0F, 0.0625F);
-         GlStateManager.disableRescaleNormal();
-         RenderHelper.disableStandardItemLighting();
-         GlStateManager.matrixMode(5889);
-@@ -158,7 +150,7 @@
-         EnchantmentNameParts.getInstance().reseedRandomGenerator((long)this.container.xpSeed);
-         int k = this.container.getLapisAmount();
- 
--        for (int l = 0; l < 3; l++)
-+        for (int l = 0; l < 3; ++l)
-         {
-             int i1 = i + 60;
-             int j1 = i1 + 20;
-@@ -179,7 +171,7 @@
+@@ -179,7 +179,7 @@
                  FontRenderer fontrenderer = this.mc.standardGalacticFontRenderer;
                  int i2 = 6839882;
  
@@ -87,74 +9,18 @@
                  {
                      this.drawTexturedModalRect(i1, j + 14 + 19 * l, 0, 185, 108, 19);
                      this.drawTexturedModalRect(i1 + 1, j + 15 + 19 * l, 16 * l, 239, 16, 16);
-@@ -212,7 +204,6 @@
-         }
-     }
- 
--    @Override
-     public void drawScreen(int mouseX, int mouseY, float partialTicks)
-     {
-         partialTicks = this.mc.getTickLength();
-@@ -222,18 +213,19 @@
-         boolean flag = this.mc.player.capabilities.isCreativeMode;
-         int i = this.container.getLapisAmount();
- 
--        for (int j = 0; j < 3; j++)
-+        for (int j = 0; j < 3; ++j)
-         {
-             int k = this.container.enchantLevels[j];
-             Enchantment enchantment = Enchantment.getEnchantmentByID(this.container.enchantClue[j]);
+@@ -229,11 +229,12 @@
              int l = this.container.worldClue[j];
              int i1 = j + 1;
  
 -            if (this.isPointInRegion(60, 14 + 19 * j, 108, 17, mouseX, mouseY) && k > 0 && l >= 0 && enchantment != null)
 +            if (this.isPointInRegion(60, 14 + 19 * j, 108, 17, mouseX, mouseY) && k > 0)
              {
--                List<String> list = Lists.newArrayList();
+                 List<String> list = Lists.newArrayList();
 -                list.add("" + TextFormatting.WHITE + TextFormatting.ITALIC + I18n.format("container.enchant.clue", enchantment.getTranslatedName(l)));
-+                List<String> list = Lists.<String>newArrayList();
 +                list.add("" + TextFormatting.WHITE + TextFormatting.ITALIC + I18n.format("container.enchant.clue", enchantment == null ? "" : enchantment.getTranslatedName(l)));
  
 +                if(enchantment == null) java.util.Collections.addAll(list, "", TextFormatting.RED + I18n.format("forge.container.enchant.limitedEnchantability")); else
                  if (!flag)
                  {
                      list.add("");
-@@ -285,19 +277,23 @@
-         {
-             this.last = itemstack;
- 
--            do
-+            while (true)
-             {
--                this.flipT = this.flipT + (float)(this.random.nextInt(4) - this.random.nextInt(4));
-+                this.flipT += (float)(this.random.nextInt(4) - this.random.nextInt(4));
-+
-+                if (this.flip > this.flipT + 1.0F || this.flip < this.flipT - 1.0F)
-+                {
-+                    break;
-+                }
-             }
--            while (this.flip <= this.flipT + 1.0F && this.flip >= this.flipT - 1.0F);
-         }
- 
--        this.ticks++;
-+        ++this.ticks;
-         this.oFlip = this.flip;
-         this.oOpen = this.open;
-         boolean flag = false;
- 
--        for (int i = 0; i < 3; i++)
-+        for (int i = 0; i < 3; ++i)
-         {
-             if (this.container.enchantLevels[i] != 0)
-             {
-@@ -318,7 +314,7 @@
-         float f1 = (this.flipT - this.flip) * 0.4F;
-         float f = 0.2F;
-         f1 = MathHelper.clamp(f1, -0.2F, 0.2F);
--        this.flipA = this.flipA + (f1 - this.flipA) * 0.9F;
--        this.flip = this.flip + this.flipA;
-+        this.flipA += (f1 - this.flipA) * 0.9F;
-+        this.flip += this.flipA;
-     }
- }

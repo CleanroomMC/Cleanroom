@@ -1,63 +1,6 @@
 --- before/net/minecraft/client/LoadingScreenRenderer.java
 +++ after/net/minecraft/client/LoadingScreenRenderer.java
-@@ -32,14 +32,12 @@
-         this.framebuffer.setFramebufferFilter(9728);
-     }
- 
--    @Override
-     public void resetProgressAndMessage(String message)
-     {
-         this.loadingSuccess = false;
-         this.displayString(message);
-     }
- 
--    @Override
-     public void displaySavingString(String message)
-     {
-         this.loadingSuccess = true;
-@@ -66,14 +64,12 @@
-             if (OpenGlHelper.isFramebufferEnabled())
-             {
-                 int i = this.scaledResolution.getScaleFactor();
--                GlStateManager.ortho(
--                    0.0, (double)(this.scaledResolution.getScaledWidth() * i), (double)(this.scaledResolution.getScaledHeight() * i), 0.0, 100.0, 300.0
--                );
-+                GlStateManager.ortho(0.0D, (double)(this.scaledResolution.getScaledWidth() * i), (double)(this.scaledResolution.getScaledHeight() * i), 0.0D, 100.0D, 300.0D);
-             }
-             else
-             {
-                 ScaledResolution scaledresolution = new ScaledResolution(this.mc);
--                GlStateManager.ortho(0.0, scaledresolution.getScaledWidth_double(), scaledresolution.getScaledHeight_double(), 0.0, 100.0, 300.0);
-+                GlStateManager.ortho(0.0D, scaledresolution.getScaledWidth_double(), scaledresolution.getScaledHeight_double(), 0.0D, 100.0D, 300.0D);
-             }
- 
-             GlStateManager.matrixMode(5888);
-@@ -82,7 +78,6 @@
-         }
-     }
- 
--    @Override
-     public void displayLoadingString(String message)
-     {
-         if (!this.mc.running)
-@@ -101,7 +96,6 @@
-         }
-     }
- 
--    @Override
-     public void setLoadingProgress(int progress)
-     {
-         if (!this.mc.running)
-@@ -135,7 +129,7 @@
-                 this.framebuffer.bindFramebuffer(false);
-                 GlStateManager.matrixMode(5889);
-                 GlStateManager.loadIdentity();
--                GlStateManager.ortho(0.0, scaledresolution.getScaledWidth_double(), scaledresolution.getScaledHeight_double(), 0.0, 100.0, 300.0);
-+                GlStateManager.ortho(0.0D, scaledresolution.getScaledWidth_double(), scaledresolution.getScaledHeight_double(), 0.0D, 100.0D, 300.0D);
-                 GlStateManager.matrixMode(5888);
-                 GlStateManager.loadIdentity();
-                 GlStateManager.translate(0.0F, 0.0F, -200.0F);
-@@ -145,18 +139,19 @@
+@@ -145,6 +145,10 @@
                      GlStateManager.clear(16640);
                  }
  
@@ -68,66 +11,10 @@
                  Tessellator tessellator = Tessellator.getInstance();
                  BufferBuilder bufferbuilder = tessellator.getBuffer();
                  this.mc.getTextureManager().bindTexture(Gui.OPTIONS_BACKGROUND);
-                 float f = 32.0F;
-                 bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
--                bufferbuilder.pos(0.0, (double)l, 0.0).tex(0.0, (double)((float)l / 32.0F)).color(64, 64, 64, 255).endVertex();
--                bufferbuilder.pos((double)k, (double)l, 0.0)
--                .tex((double)((float)k / 32.0F), (double)((float)l / 32.0F))
--                .color(64, 64, 64, 255)
--                .endVertex();
--                bufferbuilder.pos((double)k, 0.0, 0.0).tex((double)((float)k / 32.0F), 0.0).color(64, 64, 64, 255).endVertex();
--                bufferbuilder.pos(0.0, 0.0, 0.0).tex(0.0, 0.0).color(64, 64, 64, 255).endVertex();
-+                bufferbuilder.pos(0.0D, (double)l, 0.0D).tex(0.0D, (double)((float)l / 32.0F)).color(64, 64, 64, 255).endVertex();
-+                bufferbuilder.pos((double)k, (double)l, 0.0D).tex((double)((float)k / 32.0F), (double)((float)l / 32.0F)).color(64, 64, 64, 255).endVertex();
-+                bufferbuilder.pos((double)k, 0.0D, 0.0D).tex((double)((float)k / 32.0F), 0.0D).color(64, 64, 64, 255).endVertex();
-+                bufferbuilder.pos(0.0D, 0.0D, 0.0D).tex(0.0D, 0.0D).color(64, 64, 64, 255).endVertex();
-                 tessellator.draw();
- 
-                 if (progress >= 0)
-@@ -167,35 +162,28 @@
-                     int l1 = l / 2 + 16;
-                     GlStateManager.disableTexture2D();
-                     bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
--                    bufferbuilder.pos((double)k1, (double)l1, 0.0).color(128, 128, 128, 255).endVertex();
--                    bufferbuilder.pos((double)k1, (double)(l1 + 2), 0.0).color(128, 128, 128, 255).endVertex();
--                    bufferbuilder.pos((double)(k1 + 100), (double)(l1 + 2), 0.0).color(128, 128, 128, 255).endVertex();
--                    bufferbuilder.pos((double)(k1 + 100), (double)l1, 0.0).color(128, 128, 128, 255).endVertex();
--                    bufferbuilder.pos((double)k1, (double)l1, 0.0).color(128, 255, 128, 255).endVertex();
--                    bufferbuilder.pos((double)k1, (double)(l1 + 2), 0.0).color(128, 255, 128, 255).endVertex();
--                    bufferbuilder.pos((double)(k1 + progress), (double)(l1 + 2), 0.0).color(128, 255, 128, 255).endVertex();
--                    bufferbuilder.pos((double)(k1 + progress), (double)l1, 0.0).color(128, 255, 128, 255).endVertex();
-+                    bufferbuilder.pos((double)k1, (double)l1, 0.0D).color(128, 128, 128, 255).endVertex();
-+                    bufferbuilder.pos((double)k1, (double)(l1 + 2), 0.0D).color(128, 128, 128, 255).endVertex();
-+                    bufferbuilder.pos((double)(k1 + 100), (double)(l1 + 2), 0.0D).color(128, 128, 128, 255).endVertex();
-+                    bufferbuilder.pos((double)(k1 + 100), (double)l1, 0.0D).color(128, 128, 128, 255).endVertex();
-+                    bufferbuilder.pos((double)k1, (double)l1, 0.0D).color(128, 255, 128, 255).endVertex();
-+                    bufferbuilder.pos((double)k1, (double)(l1 + 2), 0.0D).color(128, 255, 128, 255).endVertex();
-+                    bufferbuilder.pos((double)(k1 + progress), (double)(l1 + 2), 0.0D).color(128, 255, 128, 255).endVertex();
-+                    bufferbuilder.pos((double)(k1 + progress), (double)l1, 0.0D).color(128, 255, 128, 255).endVertex();
-                     tessellator.draw();
-                     GlStateManager.enableTexture2D();
-                 }
- 
-                 GlStateManager.enableBlend();
--                GlStateManager.tryBlendFuncSeparate(
--                    GlStateManager.SourceFactor.SRC_ALPHA,
--                    GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
--                    GlStateManager.SourceFactor.ONE,
--                    GlStateManager.DestFactor.ZERO
--                );
--                this.mc
--                .fontRenderer
--                .drawStringWithShadow(
--                    this.currentlyDisplayedText, (float)((k - this.mc.fontRenderer.getStringWidth(this.currentlyDisplayedText)) / 2), (float)(l / 2 - 4 - 16), 16777215
--                );
--                this.mc
--                .fontRenderer
--                .drawStringWithShadow(
--                    this.message, (float)((k - this.mc.fontRenderer.getStringWidth(this.message)) / 2), (float)(l / 2 - 4 + 8), 16777215
--                );
-+                GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-+                this.mc.fontRenderer.drawStringWithShadow(this.currentlyDisplayedText, (float)((k - this.mc.fontRenderer.getStringWidth(this.currentlyDisplayedText)) / 2), (float)(l / 2 - 4 - 16), 16777215);
-+                this.mc.fontRenderer.drawStringWithShadow(this.message, (float)((k - this.mc.fontRenderer.getStringWidth(this.message)) / 2), (float)(l / 2 - 4 + 8), 16777215);
+@@ -196,6 +200,12 @@
+                 .drawStringWithShadow(
+                     this.message, (float)((k - this.mc.fontRenderer.getStringWidth(this.message)) / 2), (float)(l / 2 - 4 + 8), 16777215
+                 );
 +                }
 +                }
 +                catch (java.io.IOException e)
@@ -137,20 +24,3 @@
                  this.framebuffer.unbindFramebuffer();
  
                  if (OpenGlHelper.isFramebufferEnabled())
-@@ -209,14 +197,14 @@
-                 {
-                     Thread.yield();
-                 }
--                catch (Exception exception)
-+                catch (Exception var15)
-                 {
-+                    ;
-                 }
-             }
-         }
-     }
- 
--    @Override
-     public void setDoneWorking()
-     {
-     }
