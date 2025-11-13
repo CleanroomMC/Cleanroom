@@ -1,6 +1,5 @@
 package com.cleanroommc.kirino.ecs.entity;
 
-import com.cleanroommc.kirino.KirinoCore;
 import com.cleanroommc.kirino.ecs.component.ComponentRegistry;
 import com.cleanroommc.kirino.ecs.component.ICleanComponent;
 import com.cleanroommc.kirino.ecs.storage.ArchetypeDataPool;

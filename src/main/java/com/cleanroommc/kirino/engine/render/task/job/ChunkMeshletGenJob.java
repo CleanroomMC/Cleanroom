@@ -73,7 +73,7 @@ public class ChunkMeshletGenJob implements IParallelJob {
         for (Meshlet meshlet : meshlets) {
             setMeshletComponent(meshlet, meshletComponent);
             entityManager.createEntity(meshletComponent);
-            // todo: gizmosManager
+            gizmosManager.addMeshlet(meshlet);
         }
     }
 

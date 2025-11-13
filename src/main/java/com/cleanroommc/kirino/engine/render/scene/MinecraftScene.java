@@ -12,7 +12,6 @@ import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.util.math.ChunkPos;
 import org.apache.commons.lang3.time.StopWatch;
 
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -23,7 +22,6 @@ public class MinecraftScene extends CleanWorld {
     public MinecraftScene(EntityManager entityManager, JobScheduler jobScheduler, GizmosManager gizmosManager) {
         super(entityManager, jobScheduler);
         this.gizmosManager = gizmosManager;
-        gizmosManager.addBlockSurface(0, 100, 0, 0b111111, (new Color(0.8f, 0f, 0f, 0.5f)).getRGB());
     }
 
     private final Map<Long, CleanEntityHandle> chunkHandles = new HashMap<>();
@@ -35,16 +33,16 @@ public class MinecraftScene extends CleanWorld {
         if (this.chunkProvider != chunkProvider) {
             rebuildChunks = true;
             this.chunkProvider = chunkProvider;
-            this.chunkProvider.loadChunkCallback = (x, z) -> {
-                ChunkComponent chunkComponent = new ChunkComponent();
-                chunkComponent.chunkPosX = x;
-                chunkComponent.chunkPosZ = z;
-                chunkHandles.put(ChunkPos.asLong(x, z), entityManager.createEntity(chunkComponent));
-            };
-            this.chunkProvider.unloadChunkCallback = (x, z) -> {
-                chunkHandles.get(ChunkPos.asLong(x, z)).tryDestroy();
-                chunkHandles.remove(ChunkPos.asLong(x, z));
-            };
+//            this.chunkProvider.loadChunkCallback = (x, z) -> {
+//                ChunkComponent chunkComponent = new ChunkComponent();
+//                chunkComponent.chunkPosX = x;
+//                chunkComponent.chunkPosZ = z;
+//                chunkHandles.put(ChunkPos.asLong(x, z), entityManager.createEntity(chunkComponent));
+//            };
+//            this.chunkProvider.unloadChunkCallback = (x, z) -> {
+//                chunkHandles.get(ChunkPos.asLong(x, z)).tryDestroy();
+//                chunkHandles.remove(ChunkPos.asLong(x, z));
+//            };
             // no need to & must not flush immediately
         }
     }
@@ -53,16 +51,23 @@ public class MinecraftScene extends CleanWorld {
     public void update() {
         if (rebuildChunks) {
             rebuildChunks = false;
-            for (CleanEntityHandle handle : chunkHandles.values()) {
-                handle.tryDestroy();
-            }
-            chunkHandles.clear();
-            for (Long chunkKey : chunkProvider.getLoadedChunks().keySet()) {
-                ChunkComponent chunkComponent = new ChunkComponent();
-                chunkComponent.chunkPosX = ChunkPos.getX(chunkKey);
-                chunkComponent.chunkPosZ = ChunkPos.getZ(chunkKey);
-                chunkHandles.put(chunkKey, entityManager.createEntity(chunkComponent));
-            }
+
+            // test: input 0 0 chunk
+            ChunkComponent chunkComponent = new ChunkComponent();
+            chunkComponent.chunkPosX = 0;
+            chunkComponent.chunkPosZ = 0;
+            entityManager.createEntity(chunkComponent);
+
+//            for (CleanEntityHandle handle : chunkHandles.values()) {
+//                handle.tryDestroy();
+//            }
+//            chunkHandles.clear();
+//            for (Long chunkKey : chunkProvider.getLoadedChunks().keySet()) {
+//                ChunkComponent chunkComponent = new ChunkComponent();
+//                chunkComponent.chunkPosX = ChunkPos.getX(chunkKey);
+//                chunkComponent.chunkPosZ = ChunkPos.getZ(chunkKey);
+//                chunkHandles.put(chunkKey, entityManager.createEntity(chunkComponent));
+//            }
             // no need to & must not flush immediately
         }
 

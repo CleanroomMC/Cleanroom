@@ -1,9 +1,12 @@
 package com.cleanroommc.kirino.engine.render.gizmos;
 
+import com.cleanroommc.kirino.KirinoCore;
+import com.cleanroommc.kirino.engine.render.geometry.Block;
 import com.cleanroommc.kirino.engine.render.pipeline.draw.cmd.HighLevelDC;
 import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
 import com.cleanroommc.kirino.engine.render.resource.UploadStrategy;
 import com.cleanroommc.kirino.engine.render.resource.builder.MeshTicketBuilder;
+import com.cleanroommc.kirino.engine.render.task.adt.Meshlet;
 import com.cleanroommc.kirino.gl.vao.attribute.AttributeLayout;
 import com.cleanroommc.kirino.gl.vao.attribute.Slot;
 import com.cleanroommc.kirino.gl.vao.attribute.Stride;
@@ -14,10 +17,8 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class GizmosManager {
@@ -27,6 +28,16 @@ public class GizmosManager {
     }
 
     private final ConcurrentLinkedQueue<BlockSurface> blockSurfaces = new ConcurrentLinkedQueue<>();
+
+    public void addMeshlet(Meshlet meshlet) {
+        KirinoCore.LOGGER.info("Added a meshlet. current block size: " + blockSurfaces.size());
+
+        Random random = new Random();
+        Color color = new Color(random.nextFloat(), random.nextFloat(), random.nextFloat(), 0.5f);
+        for (Block block : meshlet.blockList()) {
+            addBlockSurface(block.position.x, block.position.y, block.position.z, block.faces, color.getRGB());
+        }
+    }
 
     public void addBlockSurface(float x, float y, float z, int faceMask, int color) {
         blockSurfaces.add(new BlockSurface(x, y, z, faceMask, color));
