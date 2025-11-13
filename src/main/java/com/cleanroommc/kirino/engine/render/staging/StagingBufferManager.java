@@ -92,7 +92,7 @@ public class StagingBufferManager {
     }
 
     public void genPersistentBuffers(String key, int vboSize, int eboSize) {
-        Preconditions.checkArgument(!persistentVbos.containsKey(key), "The key already exists.");
+        Preconditions.checkArgument(!persistentVbos.containsKey(key), "The \"key\" already exists.");
 
         VBOView vboView = new VBOView(new GLBuffer());
         EBOView eboView = new EBOView(new GLBuffer());
@@ -116,10 +116,10 @@ public class StagingBufferManager {
         Preconditions.checkState(active, "Must not access buffers from StagingBufferManager when the manager is inactive.");
 
         Triple<Integer, VBOView, ByteBuffer> entry = persistentVbos.get(key);
-        Preconditions.checkArgument(entry != null, "Argument key is invalid.");
-        Preconditions.checkArgument(offset >= 0, "Cannot have a negative buffer offset.");
-        Preconditions.checkArgument(size >= 0, "Cannot have a negative buffer size.");
-        Preconditions.checkArgument(offset + size <= entry.getLeft(), "Buffer slice size must be greater than or equal to offset + size.");
+        Preconditions.checkArgument(entry != null, "Argument \"key\" is invalid.");
+        Preconditions.checkArgument(offset >= 0, "Cannot have a negative \"offset\".");
+        Preconditions.checkArgument(size >= 0, "Cannot have a negative \"size\".");
+        Preconditions.checkArgument(offset + size <= entry.getLeft(), "Buffer size must be greater than or equal to \"offset + size\".");
 
         return new PersistentVBOHandle(this, offset, size, entry.getRight());
     }
@@ -128,10 +128,10 @@ public class StagingBufferManager {
         Preconditions.checkState(active, "Must not access buffers from StagingBufferManager when the manager is inactive.");
 
         Triple<Integer, EBOView, ByteBuffer> entry = persistentEbos.get(key);
-        Preconditions.checkArgument(entry != null, "Argument key is invalid.");
-        Preconditions.checkArgument(offset >= 0, "Cannot have a negative buffer offset.");
-        Preconditions.checkArgument(size >= 0, "Cannot have a negative buffer size.");
-        Preconditions.checkArgument(offset + size <= entry.getLeft(), "Buffer slice size must be greater than or equal to offset + size.");
+        Preconditions.checkArgument(entry != null, "Argument \"key\" is invalid.");
+        Preconditions.checkArgument(offset >= 0, "Cannot have a negative \"offset\".");
+        Preconditions.checkArgument(size >= 0, "Cannot have a negative \"size\".");
+        Preconditions.checkArgument(offset + size <= entry.getLeft(), "Buffer size must be greater than or equal to \"offset + size\".");
 
         return new PersistentEBOHandle(this, offset, size, entry.getRight());
     }
@@ -150,7 +150,7 @@ public class StagingBufferManager {
 
     protected TemporaryVBOHandle getTemporaryVBOHandle(int size) {
         Preconditions.checkState(active, "Must not access buffers from StagingBufferManager when the manager is inactive.");
-        Preconditions.checkArgument(size >= 0, "Cannot have a negative buffer size.");
+        Preconditions.checkArgument(size >= 0, "Cannot have a negative \"size\".");
 
         VBOView vboView = new VBOView(new GLBuffer());
         vboView.turnOffValidation();
@@ -163,7 +163,7 @@ public class StagingBufferManager {
 
     protected TemporaryEBOHandle getTemporaryEBOHandle(int size) {
         Preconditions.checkState(active, "Must not access buffers from StagingBufferManager when the manager is inactive.");
-        Preconditions.checkArgument(size >= 0, "Cannot have a negative buffer size.");
+        Preconditions.checkArgument(size >= 0, "Cannot have a negative \"size\".");
 
         EBOView eboView = new EBOView(new GLBuffer());
         eboView.turnOffValidation();

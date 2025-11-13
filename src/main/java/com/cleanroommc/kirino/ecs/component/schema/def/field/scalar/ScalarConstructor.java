@@ -1,6 +1,7 @@
 package com.cleanroommc.kirino.ecs.component.schema.def.field.scalar;
 
 import org.joml.*;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public final class ScalarConstructor {
@@ -8,7 +9,7 @@ public final class ScalarConstructor {
     }
 
     @Nullable
-    public static Object newScalar(ScalarType scalarType, Object... args) {
+    public static Object newScalar(@NonNull ScalarType scalarType, @NonNull Object @NonNull ... args) {
         switch (scalarType) {
             case INT -> {
                 if (args.length == 1) {

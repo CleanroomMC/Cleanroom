@@ -3,6 +3,7 @@ package com.cleanroommc.kirino.schemata.semantic.morph;
 import com.cleanroommc.kirino.schemata.semantic.entity.SpaceItem;
 import com.cleanroommc.kirino.schemata.semantic.entity.SpaceItemType;
 import com.cleanroommc.kirino.schemata.semantic.space.SpaceSet;
+import com.google.common.base.Preconditions;
 
 import java.util.function.Function;
 
@@ -51,9 +52,9 @@ public abstract class BijectiveMapFunction {
     }
 
     public final BijectiveMapFunction compose(BijectiveMapFunction other) {
-        if (to != other.from) {
-            throw new IllegalStateException("Can't compose " + from + " -> " + to + " and " + other.from + " -> " + other.to + ".");
-        }
+        Preconditions.checkState(to == other.from,
+                "Can't compose %s -> %s and %s -> %s.", from, to, other.from, other.to);
+
         BijectiveMapFunction this0 = this;
         return (new BijectiveMapFunction(from, other.to) {
             @Override

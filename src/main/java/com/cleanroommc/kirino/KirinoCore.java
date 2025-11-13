@@ -412,7 +412,7 @@ public class KirinoCore {
         }
         //</editor-fold>
 
-        KHRDebug.enable(List.of(
+        KHRDebug.enable(LOGGER, List.of(
                 new DebugMessageFilter(DebugMsgSource.ANY, DebugMsgType.ERROR, DebugMsgSeverity.ANY),
                 new DebugMessageFilter(DebugMsgSource.ANY, DebugMsgType.MARKER, DebugMsgSeverity.ANY)));
 

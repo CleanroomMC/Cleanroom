@@ -32,8 +32,13 @@ public final class ArchetypeKey {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ArchetypeKey that)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ArchetypeKey that)) {
+            return false;
+        }
+
         return id == that.id;
     }
 

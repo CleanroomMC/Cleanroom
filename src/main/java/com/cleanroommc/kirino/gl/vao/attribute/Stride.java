@@ -1,6 +1,6 @@
 package com.cleanroommc.kirino.gl.vao.attribute;
 
-import com.cleanroommc.kirino.gl.exception.RuntimeGLException;
+import com.google.common.base.Preconditions;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayDeque;
@@ -21,16 +21,15 @@ public class Stride {
     }
 
     public Stride(int size) {
-        if (size < 0) {
-            throw new RuntimeGLException("Stride size cannot be less than 0.");
-        }
+        Preconditions.checkArgument(size >= 0, "Stride size cannot be less than 0.");
+
         this.size = size;
     }
 
     public Stride push(Slot slot) {
-        if (cumulativeSize + slot.getSize() > size) {
-            throw new RuntimeGLException(String.format("The maximum stride size is %d and you (%d) are exceeding it.", size, cumulativeSize + slot.getSize()));
-        }
+        Preconditions.checkArgument(cumulativeSize + slot.getSize() <= size,
+                "The maximum stride size is %d and you (%d) are exceeding it.", size, cumulativeSize + slot.getSize());
+
         cumulativeSize += slot.getSize();
         slotStack.push(slot);
         return this;

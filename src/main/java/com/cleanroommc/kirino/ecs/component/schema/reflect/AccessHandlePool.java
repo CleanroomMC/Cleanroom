@@ -2,6 +2,7 @@ package com.cleanroommc.kirino.ecs.component.schema.reflect;
 
 import com.cleanroommc.kirino.ecs.component.schema.meta.MemberLayout;
 import com.cleanroommc.kirino.utils.ReflectionUtils;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.lang.invoke.MethodHandle;
@@ -19,7 +20,7 @@ public class AccessHandlePool {
     private final Map<Class<?>, Map<String, MethodHandle>> setterHandleMap = new HashMap<>();
     private final Map<Class<?>, Map<String, MethodHandle>> getterHandleMap = new HashMap<>();
 
-    public void register(Class<?> clazz, MemberLayout memberLayout) {
+    public void register(@NonNull Class<?> clazz, @NonNull MemberLayout memberLayout) {
         try {
             Constructor<?> ctor = clazz.getDeclaredConstructor();
             ctor.setAccessible(true);
@@ -42,15 +43,16 @@ public class AccessHandlePool {
         memberLayoutMap.put(clazz, memberLayout);
     }
 
-    public boolean classRegistered(Class<?> clazz) {
+    public boolean classRegistered(@NonNull Class<?> clazz) {
         return memberLayoutMap.containsKey(clazz);
     }
 
     @Nullable
-    public Object newClass(Class<?> clazz) {
+    public Object newClass(@NonNull Class<?> clazz) {
         if (!classRegistered(clazz)) {
             return null;
         }
+
         MethodHandle ctor = constructorHandleMap.get(clazz);
         try {
             return ctor.invoke();
@@ -59,14 +61,16 @@ public class AccessHandlePool {
         }
     }
 
-    public void setFieldValue(Class<?> clazz, Object target, String fieldName, Object value) {
+    public void setFieldValue(@NonNull Class<?> clazz, @NonNull Object target, @NonNull String fieldName, @Nullable Object value) {
         if (!classRegistered(clazz)) {
             return;
         }
+
         MethodHandle setter = setterHandleMap.get(clazz).get(fieldName);
         if (setter == null) {
             return;
         }
+
         try {
             setter.invoke(target, value);
         } catch (Throwable ignore) {
@@ -74,14 +78,16 @@ public class AccessHandlePool {
     }
 
     @Nullable
-    public Object getFieldValue(Class<?> clazz, Object target, String fieldName) {
+    public Object getFieldValue(@NonNull Class<?> clazz, @NonNull Object target, @NonNull String fieldName) {
         if (!classRegistered(clazz)) {
             return null;
         }
+
         MethodHandle getter = getterHandleMap.get(clazz).get(fieldName);
         if (getter == null) {
             return null;
         }
+
         try {
             return getter.invoke(target);
         } catch (Throwable e) {

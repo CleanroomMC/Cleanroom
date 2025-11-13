@@ -4,6 +4,9 @@ import com.google.common.base.Preconditions;
 
 import java.nio.ByteBuffer;
 
+/**
+ * This is a handle for a buffer slice.
+ */
 public abstract class StagingBufferHandle<T extends StagingBufferHandle<T>> {
     protected final StagingBufferManager stagingBufferManager;
     protected final int offset;
@@ -15,6 +18,7 @@ public abstract class StagingBufferHandle<T extends StagingBufferHandle<T>> {
         this.maxLength = maxLength;
     }
 
+    @SuppressWarnings("unchecked")
     public final T write(int offset, ByteBuffer byteBuffer) {
         Preconditions.checkState(stagingBufferManager.active, "Must not access buffers from StagingBufferManager when the manager is inactive.");
 

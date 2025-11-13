@@ -384,6 +384,7 @@ public class FrameFinalizer {
                 Framebuffer.bind(MINECRAFT.getFramebuffer().framebufferObject);
                 GL11.glViewport(0, 0, MINECRAFT.getFramebuffer().framebufferWidth, MINECRAFT.getFramebuffer().framebufferHeight);
                 GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+                GL42.glMemoryBarrier(GL42.GL_TEXTURE_FETCH_BARRIER_BIT | GL42.GL_FRAMEBUFFER_BARRIER_BIT);
                 toneMappingPass.render(null, null, new Object[]{mainFramebuffer.framebuffer});
             } else if (mainFramebuffer.getRatio() < 1f) {
                 // todo: upscale impl
@@ -395,6 +396,7 @@ public class FrameFinalizer {
                         0, 0, mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height(),
                         0, 0, intermediateFramebuffer.width(), intermediateFramebuffer.height(),
                         GL11.GL_COLOR_BUFFER_BIT, GL11.GL_NEAREST);
+                GL42.glMemoryBarrier(GL42.GL_TEXTURE_FETCH_BARRIER_BIT | GL42.GL_FRAMEBUFFER_BARRIER_BIT);
 
                 Framebuffer.bind(MINECRAFT.getFramebuffer().framebufferObject);
                 GL11.glViewport(0, 0, MINECRAFT.getFramebuffer().framebufferWidth, MINECRAFT.getFramebuffer().framebufferHeight);
@@ -410,6 +412,7 @@ public class FrameFinalizer {
                         0, 0, mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height(),
                         0, 0, intermediateFramebuffer.width(), intermediateFramebuffer.height(),
                         GL11.GL_COLOR_BUFFER_BIT, GL11.GL_NEAREST);
+                GL42.glMemoryBarrier(GL42.GL_TEXTURE_FETCH_BARRIER_BIT | GL42.GL_FRAMEBUFFER_BARRIER_BIT);
 
                 Framebuffer.bind(MINECRAFT.getFramebuffer().framebufferObject);
                 GL11.glViewport(0, 0, MINECRAFT.getFramebuffer().framebufferWidth, MINECRAFT.getFramebuffer().framebufferHeight);
@@ -467,6 +470,7 @@ public class FrameFinalizer {
                             0, 0, mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height(),
                             0, 0, intermediateFramebuffer.width(), intermediateFramebuffer.height(),
                             GL11.GL_COLOR_BUFFER_BIT, GL11.GL_NEAREST);
+                    GL42.glMemoryBarrier(GL42.GL_TEXTURE_FETCH_BARRIER_BIT | GL42.GL_FRAMEBUFFER_BARRIER_BIT);
 
                     postProcessingPass.postProcess(true);
                 } else if (postProcessingPass.getSubpassCount() >= 2) {
@@ -479,6 +483,7 @@ public class FrameFinalizer {
                             0, 0, mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height(),
                             0, 0, pingPongFramebuffer.width(), pingPongFramebuffer.height(),
                             GL11.GL_COLOR_BUFFER_BIT, GL11.GL_NEAREST);
+                    GL42.glMemoryBarrier(GL42.GL_TEXTURE_FETCH_BARRIER_BIT | GL42.GL_FRAMEBUFFER_BARRIER_BIT);
 
                     postProcessingPass.postProcess();
                 }
@@ -493,6 +498,7 @@ public class FrameFinalizer {
                             0, 0, mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height(),
                             0, 0, intermediateFramebuffer.width(), intermediateFramebuffer.height(),
                             GL11.GL_COLOR_BUFFER_BIT, GL11.GL_NEAREST);
+                    GL42.glMemoryBarrier(GL42.GL_TEXTURE_FETCH_BARRIER_BIT | GL42.GL_FRAMEBUFFER_BARRIER_BIT);
 
                     postProcessingPass.postProcess(true);
                 } else if (postProcessingPass.getSubpassCount() >= 2) {
@@ -505,6 +511,7 @@ public class FrameFinalizer {
                             0, 0, mainFramebuffer.framebuffer.width(), mainFramebuffer.framebuffer.height(),
                             0, 0, pingPongFramebuffer.width(), pingPongFramebuffer.height(),
                             GL11.GL_COLOR_BUFFER_BIT, GL11.GL_NEAREST);
+                    GL42.glMemoryBarrier(GL42.GL_TEXTURE_FETCH_BARRIER_BIT | GL42.GL_FRAMEBUFFER_BARRIER_BIT);
 
                     postProcessingPass.postProcess();
                 }

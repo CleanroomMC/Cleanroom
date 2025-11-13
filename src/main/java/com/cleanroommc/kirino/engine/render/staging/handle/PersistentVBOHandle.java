@@ -17,7 +17,8 @@ public class PersistentVBOHandle extends StagingBufferHandle<PersistentVBOHandle
     @Override
     protected void writeInternal(int offset, ByteBuffer byteBuffer) {
         Preconditions.checkArgument(offset >= 0, "Cannot have a negative buffer offset.");
-        Preconditions.checkArgument(this.offset + offset + byteBuffer.remaining() <= maxLength, "Buffer slice size must be greater than or equal to this.offset + offset + byteBuffer.remaining().");
+        Preconditions.checkArgument(offset + byteBuffer.remaining() <= maxLength,
+                "Buffer slice size must be greater than or equal to \"offset + byteBuffer.remaining()\".");
 
         int oldPos = this.byteBuffer.position();
         this.byteBuffer.position(this.offset + offset);

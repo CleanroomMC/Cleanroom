@@ -78,6 +78,7 @@ Thanks for your interest! We welcome **all kinds of contributions** – code, do
 - Line-comments begin with a lowercase letter.
 - Add space after line-comment (`//`).
 - All error messages end with a period (`.`).
+- Use `\" \"` to quote parameters in error messages.
 - Add a single space after each comma in a list of items, parameters, or arguments.
 - Avoid returning null and use `Optional<T>` instead.
 - Add a single space everywhere if possible.

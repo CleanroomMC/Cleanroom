@@ -1,6 +1,7 @@
 package com.cleanroommc.kirino.gl.debug;
 
-import com.cleanroommc.kirino.KirinoCore;
+import org.apache.logging.log4j.Logger;
+import org.jspecify.annotations.NonNull;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL43;
 import org.lwjgl.opengl.GL43C;
@@ -9,16 +10,20 @@ import org.lwjgl.opengl.GLDebugMessageCallback;
 import java.util.List;
 
 public final class KHRDebug {
+    private static Logger LOGGER;
+
     private static boolean enable = false;
 
     public static boolean isEnable() {
         return enable;
     }
 
-    public static void enable(List<DebugMessageFilter> messageFilters) {
+    public static void enable(@NonNull Logger logger, @NonNull List<@NonNull DebugMessageFilter> messageFilters) {
         if (enable) {
             return;
         }
+
+        LOGGER = logger;
 
         GL11.glEnable(GL43.GL_DEBUG_OUTPUT);
         GL11.glEnable(GL43.GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -83,7 +88,7 @@ public final class KHRDebug {
                     .append('\n');
         }
 
-        KirinoCore.LOGGER.warn(builder.toString());
+        LOGGER.warn(builder.toString());
     }
 
     public static void pushGroup(String name) {

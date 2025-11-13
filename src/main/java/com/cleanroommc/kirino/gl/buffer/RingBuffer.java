@@ -45,7 +45,7 @@ public class RingBuffer {
 
     public void write(int offset, ByteBuffer byteBuffer) {
         Preconditions.checkArgument(offset + byteBuffer.remaining() <= sliceSize,
-                "Slice size must be greater than or equal to offset + byteBuffer.remaining().");
+                "Slice size must be greater than or equal to \"offset + byteBuffer.remaining()\".");
 
         this.byteBuffer.position(offset + getWriteOffset());
         this.byteBuffer.limit(getWriteOffset() + sliceSize);

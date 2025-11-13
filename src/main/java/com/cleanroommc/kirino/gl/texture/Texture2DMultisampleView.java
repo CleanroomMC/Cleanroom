@@ -1,6 +1,5 @@
 package com.cleanroommc.kirino.gl.texture;
 
-import com.cleanroommc.kirino.gl.exception.RuntimeGLException;
 import com.cleanroommc.kirino.gl.texture.meta.FilterMode;
 import com.cleanroommc.kirino.gl.texture.meta.TextureFormat;
 import com.cleanroommc.kirino.gl.texture.meta.WrapMode;
@@ -28,22 +27,22 @@ public class Texture2DMultisampleView extends TextureView {
 
     @Override
     public void alloc(@Nullable ByteBuffer byteBuffer, TextureFormat format) {
-        throw new RuntimeGLException("Multisample textures cannot call this method.");
+        throw new RuntimeException("Multisample textures cannot call this method.");
     }
 
     @Override
     public void alloc(@Nullable ByteBuffer byteBuffer) {
-        throw new RuntimeGLException("Multisample textures cannot call this method.");
+        throw new RuntimeException("Multisample textures cannot call this method.");
     }
 
     @Override
     public void set(FilterMode filterModeMin, FilterMode filterModeMag, WrapMode wrapModeS, WrapMode wrapModeT) {
-        throw new RuntimeGLException("Multisample textures cannot call this method.");
+        throw new RuntimeException("Multisample textures cannot call this method.");
     }
 
     @Override
     public void genMipmap() {
-        throw new RuntimeGLException("Multisample textures cannot call this method.");
+        throw new RuntimeException("Multisample textures cannot call this method.");
     }
 
     public void alloc(TextureFormat format) {
@@ -75,12 +74,12 @@ public class Texture2DMultisampleView extends TextureView {
 
     @Override
     public void resizeAndAlloc(int width, int height, ByteBuffer byteBuffer) {
-        throw new RuntimeGLException("Multisample textures cannot call this method.");
+        throw new RuntimeException("Multisample textures cannot call this method.");
     }
 
     @Override
     public void resizeAndAlloc(int width, int height, ByteBuffer byteBuffer, TextureFormat format) {
-        throw new RuntimeGLException("Multisample textures cannot call this method.");
+        throw new RuntimeException("Multisample textures cannot call this method.");
     }
 
     public void resizeAndAllocNull(int width, int height, int samples) {

@@ -1,10 +1,14 @@
 package com.cleanroommc.kirino.ecs.component.schema.def.field.struct;
 
+import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarType;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.FieldDef;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 
+/**
+ * The opposite concept is a scalar ({@link ScalarType}).
+ */
 public final class StructDef {
     public final ImmutableList<FieldDef> fields;
 

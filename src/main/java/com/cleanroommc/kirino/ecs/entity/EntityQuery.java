@@ -1,20 +1,22 @@
 package com.cleanroommc.kirino.ecs.entity;
 
 import com.cleanroommc.kirino.ecs.component.ICleanComponent;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class EntityQuery {
-    protected final List<Class<? extends ICleanComponent>> mustHave;
-    protected final List<Class<? extends ICleanComponent>> mustNotHave;
+    final List<Class<? extends ICleanComponent>> mustHave;
+    final List<Class<? extends ICleanComponent>> mustNotHave;
 
     private EntityQuery() {
         mustHave = new ArrayList<>();
         mustNotHave = new ArrayList<>();
     }
 
-    protected static EntityQuery query() {
+    @NonNull
+    static EntityQuery query() {
         return new EntityQuery();
     }
 
@@ -27,7 +29,8 @@ public final class EntityQuery {
      * @param component The component class
      * @return The query object
      */
-    public EntityQuery with(Class<? extends ICleanComponent> component) {
+    @NonNull
+    public EntityQuery with(@NonNull Class<? extends ICleanComponent> component) {
         mustHave.add(component);
         return this;
     }
@@ -41,7 +44,8 @@ public final class EntityQuery {
      * @param component The component class
      * @return The query object
      */
-    public EntityQuery without(Class<? extends ICleanComponent> component) {
+    @NonNull
+    public EntityQuery without(@NonNull Class<? extends ICleanComponent> component) {
         mustNotHave.add(component);
         return this;
     }

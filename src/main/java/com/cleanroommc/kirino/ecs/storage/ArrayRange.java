@@ -7,7 +7,7 @@ public final class ArrayRange {
     public final int end;
     public final List<Integer> deprecatedIndexes;
 
-    protected ArrayRange(int start, int end, List<Integer> deprecatedIndexes) {
+    ArrayRange(int start, int end, List<Integer> deprecatedIndexes) {
         this.start = start;
         this.end = end;
         this.deprecatedIndexes = deprecatedIndexes;

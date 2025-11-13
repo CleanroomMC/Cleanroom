@@ -258,7 +258,7 @@ public final class HeapPool extends ArchetypeDataPool{
             index++;
         }
 
-        throw new IllegalStateException("Unable to find such array.");
+        throw new IllegalArgumentException("Unable to find such array.");
     }
 
     @Override

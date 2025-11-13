@@ -27,7 +27,8 @@ public class TemporaryEBOHandle extends StagingBufferHandle<TemporaryEBOHandle> 
     protected void writeInternal(int offset, ByteBuffer byteBuffer) {
         Preconditions.checkState(generation == stagingBufferManager.getTemporaryHandleGeneration(), "This temporary handle is expired.");
         Preconditions.checkArgument(offset >= 0, "Cannot have a negative buffer offset.");
-        Preconditions.checkArgument(offset + byteBuffer.remaining() <= maxLength, "Allocated buffer size must be greater than or equal to offset + byteBuffer.remaining().");
+        Preconditions.checkArgument(offset + byteBuffer.remaining() <= maxLength,
+                "Allocated buffer size must be greater than or equal to \"offset + byteBuffer.remaining()\".");
 
         eboView.bind();
         eboView.uploadBySubData(offset, byteBuffer);

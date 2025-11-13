@@ -8,6 +8,7 @@ import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarDecons
 import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarType;
 import com.cleanroommc.kirino.ecs.component.schema.meta.MemberLayout;
 import com.cleanroommc.kirino.ecs.component.schema.reflect.AccessHandlePool;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
@@ -70,13 +71,14 @@ public class StructRegistry {
 
     @SuppressWarnings("DataFlowIssue")
     public int flattenedUnitCount(String name) {
-        if (!structTypeExists(name)) {
-            throw new IllegalStateException("Struct type " + name + " doesn't exist.");
-        }
+        Preconditions.checkArgument(structTypeExists(name),
+                "Struct type %s doesn't exist.", name);
+
         Integer fetched = structUnitCountMap.get(name);
         if (fetched != null) {
             return fetched;
         }
+
         int unitCount = 0;
         for (FieldDef fieldDef : getStructDef(name).fields) {
             if (fieldDef.fieldKind == FieldKind.SCALAR) {
@@ -85,18 +87,17 @@ public class StructRegistry {
                 unitCount += flattenedUnitCount(fieldDef.structTypeName);
             }
         }
+
         structUnitCountMap.put(name, unitCount);
         return unitCount;
     }
 
     @SuppressWarnings("DataFlowIssue")
     public int getFieldOrdinal(String name, String... fieldAccessChain) {
-        if (!structTypeExists(name)) {
-            throw new IllegalStateException("Struct type " + name + " doesn't exist.");
-        }
-        if (fieldAccessChain.length == 0) {
-            throw new IllegalStateException("The given fieldAccessChain must not be empty.");
-        }
+        Preconditions.checkArgument(structTypeExists(name),
+                "Struct type %s doesn't exist.", name);
+        Preconditions.checkArgument(fieldAccessChain.length != 0,
+                "The given \"fieldAccessChain\" must not be empty.");
 
         MemberLayout memberLayout = getClassMemberLayout(name);
         int index = 0;
@@ -108,9 +109,9 @@ public class StructRegistry {
                 index++;
             }
         }
-        if (!match) {
-            throw new IllegalStateException("Can't find a field that matches the fieldAccessChain.");
-        }
+
+        Preconditions.checkArgument(match,
+                "Can't find a field that matches the \"fieldAccessChain\".");
 
         StructDef structDef = getStructDef(name);
 
@@ -131,12 +132,13 @@ public class StructRegistry {
                 if (fieldAccessChain.length == 1) {
                     return ordinal;
                 } else {
-                    throw new IllegalStateException("The given fieldAccessChain provides more redundant terms after the deepest field.");
+                    throw new IllegalArgumentException("The given \"fieldAccessChain\" provides redundant terms after the deepest field.");
                 }
             } else {
                 if (fieldAccessChain.length == 1) {
-                    throw new IllegalStateException("The given fieldAccessChain can't reach the deepest field.");
+                    throw new IllegalArgumentException("The given \"fieldAccessChain\" can't reach the deepest field.");
                 } else if (fieldAccessChain.length == 2) {
+                    // manual enumeration
                     switch (structDef.fields.get(index).scalarType) {
                         case VEC2 -> {
                             switch (fieldAccessChain[1]) {
@@ -261,15 +263,15 @@ public class StructRegistry {
                             }
                         }
                     }
-                    throw new IllegalStateException("Can't find a field that matches the fieldAccessChain.");
+                    throw new IllegalArgumentException("Can't find a field that matches the \"fieldAccessChain\".");
                 } else {
-                    throw new IllegalStateException("The given fieldAccessChain provides more redundant terms after the deepest field.");
+                    throw new IllegalArgumentException("The given \"fieldAccessChain\" provides redundant terms after the deepest field.");
                 }
             }
         // struct field
         } else {
             if (fieldAccessChain.length == 1) {
-                throw new IllegalStateException("The given fieldAccessChain can't reach the deepest field.");
+                throw new IllegalArgumentException("The given \"fieldAccessChain\" can't reach the deepest field.");
             }
             String[] newFieldAccessChain = new String[fieldAccessChain.length - 1];
             System.arraycopy(fieldAccessChain, 1, newFieldAccessChain, 0, newFieldAccessChain.length);
@@ -324,9 +326,9 @@ public class StructRegistry {
 
     @SuppressWarnings("DataFlowIssue")
     public Object[] flattenStruct(Object structInstance) {
-        if (!structTypeExists(structInstance.getClass())) {
-            throw new IllegalStateException("Struct class " + structInstance.getClass().getName() + " isn't registered.");
-        }
+        Preconditions.checkArgument(structTypeExists(structInstance.getClass()),
+                "Struct class %s isn't registered.", structInstance.getClass().getName());
+
         String name = getStructTypeName(structInstance.getClass());
 
         StructDef structDef = getStructDef(name);

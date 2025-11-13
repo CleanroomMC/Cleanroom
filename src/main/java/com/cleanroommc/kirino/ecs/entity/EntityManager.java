@@ -6,6 +6,8 @@ import com.cleanroommc.kirino.ecs.storage.ArchetypeDataPool;
 import com.cleanroommc.kirino.ecs.storage.ArchetypeKey;
 import com.cleanroommc.kirino.ecs.storage.HeapPool;
 import com.cleanroommc.kirino.ecs.world.CleanWorld;
+import com.google.common.base.Preconditions;
+import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,11 +31,14 @@ public class EntityManager {
 
     protected final List<EntityCommand> commandBuffer = new ArrayList<>();
 
+    @NonNull
     public EntityQuery newQuery() {
         return EntityQuery.query();
     }
 
-    public List<ArchetypeDataPool> startQuery(EntityQuery query) {
+    public @NonNull List<@NonNull ArchetypeDataPool> startQuery(@NonNull EntityQuery query) {
+        Preconditions.checkNotNull(query);
+
         List<ArchetypeDataPool> result = new ArrayList<>();
         for (Map.Entry<ArchetypeKey, ArchetypeDataPool> entry : archetypes.entrySet()) {
             boolean mustHave = true;
@@ -58,6 +63,7 @@ public class EntityManager {
             }
             result.add(entry.getValue());
         }
+
         return result;
     }
 
@@ -152,7 +158,8 @@ public class EntityManager {
      * @param components The component types this entity has
      * @return An entity handle
      */
-    public synchronized CleanEntityHandle createEntity(ICleanComponent... components) {
+    @NonNull
+    public synchronized CleanEntityHandle createEntity(@NonNull ICleanComponent... components) {
         int index;
         if (freeIndexes.isEmpty()) {
             index = indexCounter++;
@@ -203,9 +210,8 @@ public class EntityManager {
      * @param index The index of the entity
      */
     protected synchronized void destroyEntity(int index) {
-        if (index < 0 || index > entityGenerations.size() - 1) {
-            throw new IndexOutOfBoundsException("The index provided is invalid. Current array length is " + entityGenerations.size() + ". Current array index is " + index + ".");
-        }
+        Preconditions.checkPositionIndex(index, entityGenerations.size());
+
         // update generation
         entityGenerations.set(index, entityGenerations.get(index) + 1);
         freeIndexes.add(index);
@@ -217,16 +223,14 @@ public class EntityManager {
     }
 
     protected int getLatestGeneration(int index) {
-        if (index < 0 || index > entityGenerations.size() - 1) {
-            throw new IndexOutOfBoundsException("The index provided is invalid. Current array length is " + entityGenerations.size() + ". Current array index is " + index + ".");
-        }
+        Preconditions.checkPositionIndex(index, entityGenerations.size());
+
         return entityGenerations.get(index);
     }
 
     protected List<Class<? extends ICleanComponent>> getComponentTypes(int index) {
-        if (index < 0 || index > entityComponents.size() - 1) {
-            throw new IndexOutOfBoundsException("The index provided is invalid. Current array length is " + entityGenerations.size() + ". Current array index is " + index + ".");
-        }
+        Preconditions.checkPositionIndex(index, entityGenerations.size());
+
         return entityComponents.get(index);
     }
 }

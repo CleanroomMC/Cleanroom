@@ -3,14 +3,14 @@ package com.cleanroommc.kirino.gl.buffer.view;
 import com.cleanroommc.kirino.gl.buffer.GLBuffer;
 import com.cleanroommc.kirino.gl.buffer.meta.BufferUploadHint;
 import com.cleanroommc.kirino.gl.buffer.meta.MapBufferAccessBit;
-import com.cleanroommc.kirino.gl.exception.RuntimeGLException;
+import com.google.common.base.Preconditions;
 import org.lwjgl.opengl.*;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public abstract class BufferView {
-    private boolean validation = true;
+    private boolean validation = false;
 
     public final void turnOnValidation() {
         validation = true;
@@ -60,7 +60,7 @@ public abstract class BufferView {
         } else if (usage == BufferUploadHint.STREAM_DRAW.glValue) {
             return BufferUploadHint.STREAM_DRAW;
         }
-        throw new RuntimeGLException("Unknown GL_BUFFER_USAGE fetched.");
+        throw new RuntimeException("Unknown GL_BUFFER_USAGE fetched.");
     }
 
     public MapBufferAccessBit[] fetchMapBufferAccessBits() {
@@ -90,10 +90,9 @@ public abstract class BufferView {
      */
     public void alloc(int size, BufferUploadHint hint) {
         if (validation) {
-            if (size < 0) {
-                throw new RuntimeGLException("Cannot have a negative buffer size.");
-            }
+            Preconditions.checkArgument(size >= 0, "Cannot have a negative buffer size.");
         }
+
         GL15.glBufferData(target(), size, hint.glValue);
     }
 
@@ -115,13 +114,11 @@ public abstract class BufferView {
      */
     public void uploadBySubData(int offset, ByteBuffer byteBuffer) {
         if (validation) {
-            if (offset < 0) {
-                throw new RuntimeGLException("Cannot have a negative buffer offset.");
-            }
-            if (offset + byteBuffer.remaining() > fetchBufferSize()) {
-                throw new RuntimeGLException("Allocated buffer size must be greater than or equal to offset + byteBuffer.remaining().");
-            }
+            Preconditions.checkArgument(offset >= 0, "Cannot have a negative buffer offset.");
+            Preconditions.checkArgument(offset + byteBuffer.remaining() <= fetchBufferSize(),
+                    "Allocated buffer size must be greater than or equal to \"offset + byteBuffer.remaining()\".");
         }
+
         GL15.glBufferSubData(target(), offset, byteBuffer);
     }
 
@@ -136,18 +133,12 @@ public abstract class BufferView {
      */
     public void uploadByMapBuffer(int mappingOffset, int mappingSize, int offset, ByteBuffer byteBuffer, MapBufferAccessBit... accessBits) {
         if (validation) {
-            if (mappingSize < 0) {
-                throw new RuntimeGLException("Cannot have a negative buffer size.");
-            }
-            if (mappingOffset < 0 || offset < 0) {
-                throw new RuntimeGLException("Cannot have a negative offset.");
-            }
-            if (mappingOffset + mappingSize > fetchBufferSize()) {
-                throw new RuntimeGLException("Allocated buffer size must be greater than or equal to mappingOffset + mappingSize.");
-            }
-            if (offset + byteBuffer.remaining() > mappingSize) {
-                throw new RuntimeGLException("Parameter mappingSize must be greater than or equal to offset + byteBuffer.remaining().");
-            }
+            Preconditions.checkArgument(mappingSize >= 0, "Cannot have a negative buffer size.");
+            Preconditions.checkArgument(!(mappingOffset < 0 || offset < 0), "Cannot have a negative offset.");
+            Preconditions.checkArgument(mappingOffset + mappingSize <= fetchBufferSize(),
+                    "Allocated buffer size must be greater than or equal to \"mappingOffset + mappingSize\".");
+            Preconditions.checkArgument(offset + byteBuffer.remaining() <= mappingSize,
+                    "Argument \"mappingSize\" must be greater than or equal to \"offset + byteBuffer.remaining()\".");
         }
 
         int access = 0;
@@ -167,10 +158,10 @@ public abstract class BufferView {
             mappedBuffer.put(byteBuffer);
             boolean success = GL15.glUnmapBuffer(target());
             if (!success) {
-                throw new RuntimeGLException("Buffer unmap failed, data may be corrupted.");
+                throw new RuntimeException("Buffer unmap failed, data may be corrupted.");
             }
         } else {
-            throw new RuntimeGLException("Failed to map buffer.");
+            throw new RuntimeException("Failed to map buffer.");
         }
     }
 
@@ -182,9 +173,7 @@ public abstract class BufferView {
 
     public void allocPersistent(int size, MapBufferAccessBit... accessBits) {
         if (validation) {
-            if (size < 0) {
-                throw new RuntimeGLException("Cannot have a negative buffer size.");
-            }
+            Preconditions.checkArgument(size >= 0, "Cannot have a negative buffer size.");
         }
 
         int access = 0;
@@ -197,15 +186,10 @@ public abstract class BufferView {
 
     public void mapPersistent(int offset, int length, MapBufferAccessBit... accessBits) {
         if (validation) {
-            if (persistentMappedBuffer != null) {
-                throw new RuntimeGLException("Buffer already mapped persistently.");
-            }
-            if (offset < 0) {
-                throw new RuntimeGLException("Cannot have a negative offset.");
-            }
-            if (offset + length > fetchBufferSize()) {
-                throw new RuntimeGLException("Allocated buffer size must be greater than or equal to offset + length.");
-            }
+            Preconditions.checkState(persistentMappedBuffer == null, "Buffer already mapped persistently.");
+            Preconditions.checkArgument(offset >= 0, "Cannot have a negative offset.");
+            Preconditions.checkArgument(offset + length <= fetchBufferSize(),
+                    "Allocated buffer size must be greater than or equal to \"offset + length\".");
         }
 
         int access = 0;
@@ -216,20 +200,18 @@ public abstract class BufferView {
         persistentMappedBuffer = GL44C.glMapBufferRange(target(), offset, length, access, persistentMappedBuffer);
 
         if (persistentMappedBuffer == null) {
-            throw new RuntimeGLException("Failed to map persistent buffer.");
+            throw new RuntimeException("Failed to map persistent buffer.");
         }
     }
 
     public void unmapPersistent() {
         if (validation) {
-            if (persistentMappedBuffer == null) {
-                throw new RuntimeGLException("Buffer not persistently mapped.");
-            }
+            Preconditions.checkState(persistentMappedBuffer != null, "Buffer not persistently mapped.");
         }
 
         boolean success = GL15.glUnmapBuffer(target());
         if (!success) {
-            throw new RuntimeGLException("Persistent buffer unmap failed, data may be corrupted.");
+            throw new RuntimeException("Persistent buffer unmap failed, data may be corrupted.");
         }
 
         persistentMappedBuffer = null;
