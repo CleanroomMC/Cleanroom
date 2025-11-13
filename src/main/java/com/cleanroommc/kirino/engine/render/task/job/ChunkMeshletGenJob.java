@@ -12,7 +12,7 @@ import com.cleanroommc.kirino.engine.render.geometry.component.ChunkComponent;
 import com.cleanroommc.kirino.engine.render.geometry.component.MeshletComponent;
 import com.cleanroommc.kirino.engine.render.task.adt.KDTree;
 import com.cleanroommc.kirino.engine.render.task.adt.Meshlet;
-import com.cleanroommc.kirino.engine.render.task.adt.Vector3b;
+import com.cleanroommc.kirino.engine.render.task.adt.KDTreeBlock;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -21,10 +21,8 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.chunk.Chunk;
-import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -82,13 +80,13 @@ public class ChunkMeshletGenJob implements IParallelJob {
 
         //KirinoCore.LOGGER.info("opaque meshlets: {} {}", chunk.x, chunk.z);
         for (int idx = 0; tree.size() > 0; idx++) {
-            Optional<Vector3b> startPoint = idx % 2 == 1 ? tree.getLeftExtremity() : tree.getRightExtremity();
+            Optional<KDTreeBlock> startPoint = idx % 2 == 1 ? tree.getLeftExtremity() : tree.getRightExtremity();
             startPoint.ifPresent(vector3b -> meshlets.add(nearestNeighbourChain(tree, vector3b, chunkX, chunkY, chunkZ, side, false)));
         }
 
         //KirinoCore.LOGGER.info("transparent meshlets: {} {}", chunkX, chunkZ);
         for (int idx = 0; transparentTree.size() > 0; idx++) {
-            Optional<Vector3b> startPoint = idx % 2 == 1 ? transparentTree.getLeftExtremity() : transparentTree.getRightExtremity();
+            Optional<KDTreeBlock> startPoint = idx % 2 == 1 ? transparentTree.getLeftExtremity() : transparentTree.getRightExtremity();
             startPoint.ifPresent(vector3b -> meshlets.add(nearestNeighbourChain(transparentTree, vector3b, chunkX, chunkY, chunkZ, side, true)));
         }
 
@@ -101,8 +99,8 @@ public class ChunkMeshletGenJob implements IParallelJob {
         final long seed = Objects.hash(chunkX, chunkY, chunkZ);
 
         EnumFacing[] sides = EnumFacing.values();
-        List<Vector3b>[] toAdd = new ObjectArrayList[sides.length];
-        List<Vector3b>[] transparents = new ObjectArrayList[sides.length];
+        List<KDTreeBlock>[] toAdd = new ObjectArrayList[sides.length];
+        List<KDTreeBlock>[] transparents = new ObjectArrayList[sides.length];
 
         for (int i = 0; i < sides.length; i++) {
             toAdd[i] = new ObjectArrayList<>();
@@ -112,19 +110,25 @@ public class ChunkMeshletGenJob implements IParallelJob {
         for (int x = chunkX; x < chunkX + 16; x++) {
             for (int y = chunkY; y < chunkY + 16; y++) {
                 for (int z = chunkZ; z < chunkZ + 16; z++) {
-                    if (chunk.getBlockState(x,y,z).isFullCube() && chunk.getBlockState(x,y,z).getMaterial() != Material.AIR) {
+                    IBlockState state = chunk.getBlockState(x,y,z);
+                    if (state.isFullCube() && state.getMaterial() != Material.AIR) {
+                        int faces = 0;
                         for (EnumFacing side : EnumFacing.values()) {
-                            IBlockState state = chunk.getBlockState(x,y,z);
                             if (!isOpaqueBlockPresent(chunk,
                                     chunkX, chunkY, chunkZ,
-                                    x + side.getXOffset(), y + side.getYOffset(), z + side.getZOffset(), state)
-                                    && state.getMaterial() != Material.AIR) {
-                                // The tree building function KDTree::add uses a list for maximizing the balance.
-                                if (state.isOpaqueCube()) {
-                                    toAdd[side.getIndex()].add(new Vector3b(x, y, z));
-                                } else {
-                                    transparents[side.getIndex()].add(new Vector3b(x, y, z));
-                                }
+                                    x + side.getXOffset(), y + side.getYOffset(), z + side.getZOffset(), state)) {
+                                faces |= PERMUTATION[side.getIndex()];
+                            }
+                        }
+                        for (int i = 0; i < 6; i++) {
+                            // The tree building function KDTree::add uses a list for maximizing the balance.
+                            if ((faces & PERMUTATION[i]) != PERMUTATION[i]) {
+                                continue;
+                            }
+                            if (state.isOpaqueCube()) {
+                                toAdd[i].add(new KDTreeBlock(x, y, z, faces));
+                            } else {
+                                transparents[i].add(new KDTreeBlock(x, y, z, faces));
                             }
                         }
                     }
@@ -162,7 +166,7 @@ public class ChunkMeshletGenJob implements IParallelJob {
 
     // Ironically it's closer to BFS, but it has the main trait of NNC which is the clustering.
     public static @NonNull Meshlet nearestNeighbourChain(@NonNull KDTree tree,
-                                                          @NonNull Vector3b meshletStart,
+                                                          @NonNull KDTreeBlock meshletStart,
                                                           int chunkX,
                                                           int chunkY,
                                                           int chunkZ,
@@ -172,29 +176,30 @@ public class ChunkMeshletGenJob implements IParallelJob {
         Preconditions.checkNotNull(tree);
         Preconditions.checkNotNull(side);
 
-        Stack<Vector3b> stack = new ObjectArrayList<>();
+        Stack<KDTreeBlock> stack = new ObjectArrayList<>();
         stack.push(meshletStart);
         tree.delete(meshletStart);
         Meshlet meshlet = new Meshlet(side,
                 chunkX + meshletStart.x,
                 chunkY + meshletStart.y,
                 chunkZ + meshletStart.z,
+                meshletStart.faces,
                 transparent);
         while (!stack.isEmpty() && meshlet.size() < 32) {
             // Get 4 at once instead of just one like in normal NNS because it's faster
-            Optional<List<Vector3b>> nearest = tree.knn(stack.pop(), 1.f, 4, true);
-            if (nearest.isPresent()) {
-                for(Vector3b m : nearest.get()) {
-                    if (meshlet.size() >= 32) {
-                        break;
-                    }
-                    stack.push(m);
-                    meshlet.addBlock(new Vector3f(
+            Optional<List<KDTreeBlock>> nearest = tree.knn(stack.pop(), 1.f, 1, true);
+            if (nearest.isPresent() && !nearest.get().isEmpty()) {
+                KDTreeBlock m = nearest.get().getFirst();
+                if (meshlet.size() >= 32) {
+                    break;
+                }
+                stack.push(m);
+                meshlet.addBlock(new Block(
                             chunkX + m.x,
                             chunkY + m.y,
-                            chunkZ + m.z));
-                    tree.delete(m);
-                }
+                            chunkZ + m.z,
+                            m.faces));
+                tree.delete(m);
             }
         }
 
@@ -320,4 +325,8 @@ public class ChunkMeshletGenJob implements IParallelJob {
     public void query(EntityQuery entityQuery) {
         entityQuery.with(ChunkComponent.class);
     }
+
+    private static final int[] PERMUTATION = {
+        0b000100, 0b001000, 0b000001, 0b000010, 0b010000, 0b100000
+    };
 }

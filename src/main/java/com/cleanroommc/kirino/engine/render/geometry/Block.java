@@ -6,16 +6,16 @@ import org.joml.Vector3f;
 @CleanStruct
 public class Block {
     public Vector3f position;
-    // public int faces;
+    public int faces;
 
     public Block() {
         position = new Vector3f();
-        // faces = 0b111111;
+        faces = 0b111111;
     }
 
-    public Block(int x, int y, int z) {
+    public Block(int x, int y, int z, int faces) {
         position = new Vector3f(x, y, z);
-        // this.faces = faces;
+        this.faces = faces;
     }
 
     /**

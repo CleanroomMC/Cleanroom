@@ -21,7 +21,7 @@ public class KDTree {
         this.seed = seed;
     }
 
-    public void add(@NonNull List<Vector3b> points) {
+    public void add(@NonNull List<KDTreeBlock> points) {
         Preconditions.checkNotNull(points);
 
         final int PROBE_SIZE = 21;
@@ -32,7 +32,7 @@ public class KDTree {
 
         len += points.size();
 
-        record Recurrence(Node node, List<Vector3b> toInsert, int depth) {}
+        record Recurrence(Node node, List<KDTreeBlock> toInsert, int depth) {}
 
         RandomGenerator rng = new Random(seed);
 
@@ -47,22 +47,22 @@ public class KDTree {
                     recurrence.node.left = null;
                     recurrence.node.right = null;
                 } else if (recurrence.toInsert.size() > 1) {
-                    List<Vector3b> left = new ObjectArrayList<>();
-                    List<Vector3b> right = new ObjectArrayList<>();
+                    List<KDTreeBlock> left = new ObjectArrayList<>();
+                    List<KDTreeBlock> right = new ObjectArrayList<>();
                     if (recurrence.node.point == null) {
-                        Vector3b[] probe;
+                        KDTreeBlock[] probe;
                         if (recurrence.toInsert.size() > PROBE_SIZE) {
-                            probe = new Vector3b[PROBE_SIZE];
+                            probe = new KDTreeBlock[PROBE_SIZE];
                             for (int i = 0; i < PROBE_SIZE; i++) {
                                 probe[i] = recurrence.toInsert.get(rng.nextInt(recurrence.toInsert.size()));
                             }
                         } else {
-                            probe = recurrence.toInsert.toArray(new Vector3b[0]);
+                            probe = recurrence.toInsert.toArray(new KDTreeBlock[0]);
                         }
                         recurrence.node.point = QuantileUtils.median(probe, (a, b) -> compareMeshletDimension(a, b, dimension));
                         //recurrence.toInsert.remove(recurrence.node.meshlet);
                     }
-                    for(Vector3b point : recurrence.toInsert) {
+                    for(KDTreeBlock point : recurrence.toInsert) {
                         if (recurrence.node.point.equals(point)) {
                             continue;
                         }
@@ -85,14 +85,14 @@ public class KDTree {
         }
     }
 
-    public Optional<List<Vector3b>> knn(@NonNull Vector3b vector, float cutoff, int k, boolean removeEquals) {
+    public Optional<List<KDTreeBlock>> knn(@NonNull KDTreeBlock vector, float cutoff, int k, boolean removeEquals) {
         Preconditions.checkNotNull(vector);
 
         if (root == null) {
             return Optional.empty();
         }
 
-        PriorityQueue<Vector3b> neighbours = new ObjectArrayPriorityQueue<>((a,b) -> (a.distanceSquared(vector) - b.distanceSquared(vector)));
+        PriorityQueue<KDTreeBlock> neighbours = new ObjectArrayPriorityQueue<>((a, b) -> (a.distanceSquared(vector) - b.distanceSquared(vector)));
         float cutoffSquared = cutoff*cutoff;
 
         Stack<Node> stack = new ReferenceArrayList<>();
@@ -128,10 +128,10 @@ public class KDTree {
             return Optional.empty();
         }
 
-        List<Vector3b> meshlets = new ReferenceArrayList<>();
+        List<KDTreeBlock> meshlets = new ReferenceArrayList<>();
 
         while (meshlets.size() < k && !neighbours.isEmpty()) {
-            Vector3b found = neighbours.dequeue();
+            KDTreeBlock found = neighbours.dequeue();
             if (removeEquals && found.equals(vector)) {
                 continue;
             }
@@ -142,7 +142,7 @@ public class KDTree {
     }
 
     // TODO: Rewrite to iterative
-    private static Optional<Node> _delete(@Nullable Node from, Vector3b point, int depth) {
+    private static Optional<Node> _delete(@Nullable Node from, KDTreeBlock point, int depth) {
         if (from == null || from.point == null) {
             return Optional.empty();
         }
@@ -177,7 +177,7 @@ public class KDTree {
         return Optional.of(from);
     }
 
-    public void delete(@NonNull Vector3b meshlet) {
+    public void delete(@NonNull KDTreeBlock meshlet) {
         _delete(root, meshlet, 0);
         len--;
     }
@@ -216,7 +216,7 @@ public class KDTree {
      * Select the optimal point for building the meshlet
      * @return Meshlet of the lowest node on the left branch
      */
-    public Optional<Vector3b> getLeftExtremity() {
+    public Optional<KDTreeBlock> getLeftExtremity() {
         if (root == null) {
             return Optional.empty();
         }
@@ -239,7 +239,7 @@ public class KDTree {
      * Select the optimal point for building the meshlet
      * @return Meshlet of the lowest node on the right branch
      */
-    public Optional<Vector3b> getRightExtremity() {
+    public Optional<KDTreeBlock> getRightExtremity() {
         if (root == null) {
             return Optional.empty();
         }
@@ -258,7 +258,7 @@ public class KDTree {
         return Optional.ofNullable(curr.point);
     }
 
-    private static int compareMeshletDimension(Vector3b median, Vector3b meshlet, int dimension) {
+    private static int compareMeshletDimension(KDTreeBlock median, KDTreeBlock meshlet, int dimension) {
         return switch(dimension) {
             case 0 -> meshlet.x - median.x;
             case 1 -> meshlet.y - median.y;
@@ -276,7 +276,7 @@ public class KDTree {
     }
 
     private static class Node {
-        Vector3b point;
+        KDTreeBlock point;
         Node left, right;
 
         @Override

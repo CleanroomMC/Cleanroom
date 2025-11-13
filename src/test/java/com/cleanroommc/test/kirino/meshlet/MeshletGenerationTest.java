@@ -17,12 +17,12 @@ import java.util.Optional;
 import java.util.Random;
 
 public class MeshletGenerationTest {
-
-    List<Vector3b> meshletsToAdd = new ObjectArrayList<>();
-    KDTree kdTree;
+    KDTree kdTreeRandom;
+    KDTree kdTreeFlat;
 
     @Before
-    public void setup() {
+    public void setupRandom() {
+        List<KDTreeBlock> meshletsToAdd = new ObjectArrayList<>();
         Random rng = new Random();
         rng.setSeed(114514);
 
@@ -34,15 +34,15 @@ public class MeshletGenerationTest {
                     if (rng.nextBoolean()) {
                         blocks.set((z * 256) + (y * 16) + x);
                         if (y == 0 || !blocks.get((z * 256) + ((y-1) * 16) + x)) {
-                            meshletsToAdd.add(new Vector3b(x, y, z));
+                            meshletsToAdd.add(new KDTreeBlock(x, y, z, 0b111111));
                         }
                     }
                 }
             }
         }
 
-        kdTree = new KDTree(2137);
-        kdTree.add(meshletsToAdd);
+        kdTreeRandom = new KDTree(2137);
+        kdTreeRandom.add(meshletsToAdd);
         //System.out.println(kdTree);
     }
 
@@ -50,16 +50,16 @@ public class MeshletGenerationTest {
     public void nearestNeighbourChainTest() {
         List<Meshlet> generatedMeshlets = new ObjectArrayList<>();
         int idx = -1;
-        while (kdTree.size() > 0) {
+        while (kdTreeRandom.size() > 0) {
             idx++;
-            Optional<Vector3b> start = idx % 2 == 1 ? kdTree.getLeftExtremity() : kdTree.getRightExtremity();
+            Optional<KDTreeBlock> start = idx % 2 == 1 ? kdTreeRandom.getLeftExtremity() : kdTreeRandom.getRightExtremity();
 
             if (start.isEmpty()) {
                 continue;
             }
 
             try {
-                generatedMeshlets.add(nearestNeighbourChain(kdTree, start.get(), 0, 0, 0, EnumFacing.DOWN, false));
+                generatedMeshlets.add(nearestNeighbourChain(kdTreeRandom, start.get(), 0, 0, 0, EnumFacing.DOWN, false));
             } catch (Throwable t) {
                 t.printStackTrace();
                 fail(t.getMessage());

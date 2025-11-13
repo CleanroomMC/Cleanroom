@@ -51,7 +51,7 @@ public class QuantileUtilsTest {
             for (int y = 0; y < 16; y++) {
                 for (int z = 0; z < 16; z++) {
                     if (rng.nextBoolean()) {
-                        list.add(new Meshlet(EnumFacing.DOWN, x, y, z, false));
+                        list.add(new Meshlet(EnumFacing.DOWN, x, y, z, 0b111111,false));
                     }
                 }
             }

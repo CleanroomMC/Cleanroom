@@ -4,7 +4,6 @@ import com.cleanroommc.kirino.engine.render.geometry.AABB;
 import com.cleanroommc.kirino.engine.render.geometry.Block;
 import com.cleanroommc.kirino.utils.QuantileUtils;
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.util.EnumFacing;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
@@ -15,24 +14,24 @@ import java.util.List;
 
 public class Meshlet implements Comparable<Meshlet> {
     EnumFacing normal;
-    List<Vector3f> encodedBlocks = new LinkedList<>();
-    Vector3f median;
+    List<Block> blocks = new LinkedList<>();
+    Block median;
     boolean isDirty;
-    int blocks = 0;
+    int len = 0;
     AABB boundingBox;
     boolean transparent;
 
-    public Meshlet(EnumFacing normal, int x, int y, int z, boolean transparent) {
+    public Meshlet(EnumFacing normal, int x, int y, int z, int faces, boolean transparent) {
         this.normal = normal;
         this.boundingBox = new AABB(x, y, z, x+1, y+1, z+1);
         this.transparent = transparent;
-        addBlock(new Vector3f(x, y, z));
-        median = encodedBlocks.getFirst();
+        addBlock(new Block(x, y, z, faces));
+        median = blocks.getFirst();
         isDirty = false;
     }
 
     public int size() {
-        return blocks;
+        return len;
     }
 
     public AABB aabb() {
@@ -45,12 +44,6 @@ public class Meshlet implements Comparable<Meshlet> {
 
     // Empties the blocks onto the set
     public List<Block> blockList() {
-        List<Block> blocks = new ObjectArrayList<>();
-
-        for (Vector3f block : encodedBlocks) {
-            blocks.add(new Block((int) block.x, (int) block.y, (int) block.z));
-        }
-
         return blocks;
     }
 
@@ -58,28 +51,28 @@ public class Meshlet implements Comparable<Meshlet> {
         return new Vector3f(normal.getXOffset(), normal.getYOffset(), normal.getZOffset());
     }
 
-    public void addBlock(Vector3f block) {
+    public void addBlock(Block block) {
         isDirty = true;
-        encodedBlocks.add(block);
-        blocks++;
+        blocks.add(block);
+        len++;
 
-        if (block.x < boundingBox.xMin) {
-            boundingBox.xMin = block.x;
+        if (block.position.x < boundingBox.xMin) {
+            boundingBox.xMin = block.position.x;
         }
-        if (block.x + 1 > boundingBox.xMax) {
-            boundingBox.xMax = block.x + 1;
+        if (block.position.x + 1 > boundingBox.xMax) {
+            boundingBox.xMax = block.position.x + 1;
         }
-        if (block.y < boundingBox.yMin) {
-            boundingBox.yMin = block.y;
+        if (block.position.y < boundingBox.yMin) {
+            boundingBox.yMin = block.position.y;
         }
-        if (block.y + 1 > boundingBox.yMax) {
-            boundingBox.yMax = block.y + 1;
+        if (block.position.y + 1 > boundingBox.yMax) {
+            boundingBox.yMax = block.position.y + 1;
         }
-        if (block.z < boundingBox.zMin) {
-            boundingBox.zMin = block.z;
+        if (block.position.z < boundingBox.zMin) {
+            boundingBox.zMin = block.position.z;
         }
-        if (block.z + 1 > boundingBox.zMax) {
-            boundingBox.zMax = block.z + 1;
+        if (block.position.z + 1 > boundingBox.zMax) {
+            boundingBox.zMax = block.position.z + 1;
         }
     }
 
@@ -87,14 +80,14 @@ public class Meshlet implements Comparable<Meshlet> {
         Preconditions.checkNotNull(m);
         Preconditions.checkState(!this.equals(m), "Recurrent addition");
 
-        for (int i = 0; i < m.encodedBlocks.size(); i++) {
-            addBlock(m.encodedBlocks.get(i));
+        for (int i = 0; i < m.blocks.size(); i++) {
+            addBlock(m.blocks.get(i));
         }
     }
 
-    public Vector3f median() {
+    public Block median() {
         if (isDirty) {
-            median = QuantileUtils.median(encodedBlocks.toArray(new Vector3f[0]), (a, b) -> (int) (a.lengthSquared() - b.lengthSquared()));
+            median = QuantileUtils.median(blocks.toArray(new Block[0]), (a, b) -> (int) (a.position.lengthSquared() - b.position.lengthSquared()));
             isDirty = false;
         }
         return median;
@@ -102,7 +95,7 @@ public class Meshlet implements Comparable<Meshlet> {
 
     @Override
     public int compareTo(@NotNull Meshlet o) {
-        return (int) (median().lengthSquared()-o.median().lengthSquared());
+        return (int) (median().position.lengthSquared()-o.median().position.lengthSquared());
     }
 
     @Override
@@ -110,8 +103,8 @@ public class Meshlet implements Comparable<Meshlet> {
         return "Meshlet [" +
                 "normal=" + normal +
                 ", median=" + median +
-                ", encodedBlocks=" + encodedBlocks +
-                ", size=" + blocks +
+                ", encodedBlocks=" + blocks +
+                ", size=" + len +
                 ", transparent=" + transparent +
                 "]";
     }
