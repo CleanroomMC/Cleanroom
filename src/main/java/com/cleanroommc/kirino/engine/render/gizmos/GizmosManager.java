@@ -20,6 +20,7 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GizmosManager {
     private final GraphicResourceManager graphicResourceManager;
@@ -29,12 +30,25 @@ public class GizmosManager {
 
     private final ConcurrentLinkedQueue<BlockSurface> blockSurfaces = new ConcurrentLinkedQueue<>();
 
+    // test
+    private final AtomicInteger counter = new AtomicInteger(0);
+
+    // test
     public void addMeshlet(Meshlet meshlet) {
-        KirinoCore.LOGGER.info("Added a meshlet. current block size: " + blockSurfaces.size());
+        KirinoCore.LOGGER.info("Added a meshlet (" + meshlet.blockList().size() + " blocks). current meshlet count: " + counter.addAndGet(1) + ", current block count: " + blockSurfaces.size());
 
         Random random = new Random();
         Color color = new Color(random.nextFloat(), random.nextFloat(), random.nextFloat(), 0.5f);
         for (Block block : meshlet.blockList()) {
+            StringBuilder face = new StringBuilder();
+            face.append((block.faces & FACE_X_POS) != 0 ? "1" : "0")
+                    .append((block.faces & FACE_X_NEG) != 0 ? "1" : "0")
+                    .append((block.faces & FACE_Y_POS) != 0 ? "1" : "0")
+                    .append((block.faces & FACE_Y_NEG) != 0 ? "1" : "0")
+                    .append((block.faces & FACE_Z_POS) != 0 ? "1" : "0")
+                    .append((block.faces & FACE_Z_NEG) != 0 ? "1" : "0");
+
+            KirinoCore.LOGGER.info("    block pos: " + block.position.x + ", " + block.position.y + ", " + block.position.z + ", " + face);
             addBlockSurface(block.position.x, block.position.y, block.position.z, block.faces, color.getRGB());
         }
     }
