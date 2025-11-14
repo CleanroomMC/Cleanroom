@@ -24,6 +24,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.chunk.Chunk;
 import org.jspecify.annotations.NonNull;
 
+import java.util.BitSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -112,16 +113,18 @@ public class ChunkMeshletGenJob implements IParallelJob {
             transparents[i] = new ObjectArrayList<>();
         }
 
+        int size = 16;
+        BlockStateInfo stateInfo = gatherBlockStates(chunk, chunkX, chunkY, chunkZ, size);
+
         for (int x = chunkX; x < chunkX + 16; x++) {
             for (int y = chunkY; y < chunkY + 16; y++) {
                 for (int z = chunkZ; z < chunkZ + 16; z++) {
-                    IBlockState state = chunk.getBlockState(x,y,z);
-                    if (state.isFullCube() && state.getMaterial() != Material.AIR) {
+                    if (stateInfo.isValid(x - chunkX, y - chunkY, z - chunkZ, size)) {
                         int faces = 0;
                         for (EnumFacing side : EnumFacing.values()) {
-                            if (!isOpaqueBlockPresent(chunk,
+                            if (!isOpaqueBlockPresent(stateInfo,
                                     chunkX, chunkY, chunkZ,
-                                    x + side.getXOffset(), y + side.getYOffset(), z + side.getZOffset(), state)) {
+                                    x + side.getXOffset(), y + side.getYOffset(), z + side.getZOffset())) {
                                 faces |= PERMUTATION[side.getIndex()];
                             }
                         }
@@ -130,7 +133,7 @@ public class ChunkMeshletGenJob implements IParallelJob {
                             if ((faces & PERMUTATION[i]) != PERMUTATION[i]) {
                                 continue;
                             }
-                            if (state.isOpaqueCube()) {
+                            if (stateInfo.isOpaque(x - chunkX, y - chunkY, z - chunkZ, size)) {
                                 toAdd[i].add(new KDTreeBlock(x, y, z, faces));
                             } else {
                                 transparents[i].add(new KDTreeBlock(x, y, z, faces));
@@ -149,14 +152,33 @@ public class ChunkMeshletGenJob implements IParallelJob {
         }
     }
 
-    private static boolean isOpaqueBlockPresent(@NonNull Chunk chunk,
+    @NonNull
+    private static BlockStateInfo gatherBlockStates(@NonNull Chunk chunk, int chunkX, int chunkY, int chunkZ, int size) {
+        BitSet validBlocks = new BitSet(size * size * size);
+        BitSet opaqueBlocks = new BitSet(size * size * size);
+        for (int x = chunkX; x < chunkX + size; x++) {
+            for (int y = chunkY; y < chunkY + size; y++) {
+                for (int z = chunkZ; z < chunkZ + size; z++) {
+                    IBlockState state = chunk.getBlockState(x, y, z);
+                    if (state.isFullCube() && state.getMaterial() != Material.AIR) {
+                        validBlocks.set(BlockStateInfo.getOpacityIndex(x, y, z, size));
+                    }
+                    if (state.isOpaqueCube()) {
+                        opaqueBlocks.set(BlockStateInfo.getOpacityIndex(x, y, z, size));
+                    }
+                }
+            }
+        }
+        return new BlockStateInfo(validBlocks, opaqueBlocks);
+    }
+
+    private static boolean isOpaqueBlockPresent(BlockStateInfo stateInfo,
                                                 int cpX,
                                                 int cpY,
                                                 int cpZ,
                                                 int x,
                                                 int y,
-                                                int z,
-                                                IBlockState blockState) {
+                                                int z) {
         if (y < cpY || y >= cpY+16) {
             return false;
         }
@@ -166,7 +188,7 @@ public class ChunkMeshletGenJob implements IParallelJob {
         if (z < cpZ || z >= cpZ+16) {
             return false;
         }
-        return blockState.isOpaqueCube();
+        return stateInfo.isOpaque(x - cpX, y - cpY, z - cpZ, 16);
     }
 
     // Ironically it's closer to BFS, but it has the main trait of NNC which is the clustering.
@@ -334,4 +356,18 @@ public class ChunkMeshletGenJob implements IParallelJob {
     private static final int[] PERMUTATION = {
         0b000100, 0b001000, 0b000001, 0b000010, 0b010000, 0b100000
     };
+
+    private record BlockStateInfo(BitSet validBlocks, BitSet opaqueBlocks) {
+        public boolean isValid(int x, int y, int z, int size) {
+            return validBlocks.get(getOpacityIndex(x, y, z, size));
+        }
+
+        public boolean isOpaque(int x, int y, int z, int size) {
+            return opaqueBlocks.get(getOpacityIndex(x, y, z, size));
+        }
+
+        public static int getOpacityIndex(int x, int y, int z, int size) {
+            return x + y * size + z * size * size;
+        }
+    }
 }
