@@ -32,6 +32,8 @@ public class GizmosManager {
 
     // test
     private final AtomicInteger counter = new AtomicInteger(0);
+    private record BlockRecord(float x, float y, float z, int faceMask) { }
+    private final ConcurrentLinkedQueue<BlockRecord> blocks = new ConcurrentLinkedQueue<>();
 
     // test
     public void addMeshlet(Meshlet meshlet) {
@@ -49,7 +51,13 @@ public class GizmosManager {
                     .append((block.faces & FACE_Z_NEG) != 0 ? "1" : "0");
 
             KirinoCore.LOGGER.info("    block pos: " + block.position.x + ", " + block.position.y + ", " + block.position.z + ", " + face);
-            addBlockSurface(block.position.x, block.position.y, block.position.z, block.faces, color.getRGB());
+
+            if (blocks.contains(new BlockRecord(block.position.x, block.position.y, block.position.z, block.faces))) {
+                addBlockSurface(block.position.x, block.position.y, block.position.z, block.faces, Color.RED.getRGB());
+            } else {
+                blocks.add(new BlockRecord(block.position.x, block.position.y, block.position.z, block.faces));
+                addBlockSurface(block.position.x, block.position.y, block.position.z, block.faces, color.getRGB());
+            }
         }
     }
 
