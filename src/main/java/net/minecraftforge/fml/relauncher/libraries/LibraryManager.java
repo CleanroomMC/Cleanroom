@@ -111,6 +111,8 @@ public class LibraryManager
                 }
             }
         }
+        
+        
     }
 
     private static File findLibraryFolder(File minecraftHome)
@@ -192,24 +194,16 @@ public class LibraryManager
             FMLLog.log.debug("File already proccessed {}, Skipping", file.getAbsolutePath());
             return null;
         }
-        JarFile jar = null;
-        try
-        {
-            jar = new JarFile(file);
-            FMLLog.log.debug("Examining file: {}", file.getName());
-            processed.add(file);
-            return extractPacked(jar, modlist, modDirs);
-        }
-        catch (IOException ioe)
-        {
-            FMLLog.log.error("Unable to read the jar file {} - ignoring", file.getName(), ioe);
-        }
-        finally
-        {
+        try (JarFile jar = new JarFile(file)) {
             try {
-                if (jar != null)
-                    jar.close();
-            } catch (IOException e) {}
+                FMLLog.log.debug("Examining file: {}", file.getName());
+                processed.add(file);
+                return extractPacked(jar, modlist, modDirs);
+            } catch (IOException ioe) {
+                FMLLog.log.error("Unable to read the jar file {} - ignoring", file.getName(), ioe);
+            }
+        } catch (IOException e) {
+            FMLLog.log.error("Unable to read the file {} as jar file - ignoring", file.getName(), e);
         }
         return null;
     }
