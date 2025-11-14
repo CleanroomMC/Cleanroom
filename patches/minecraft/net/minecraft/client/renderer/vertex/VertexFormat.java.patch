@@ -1,44 +1,14 @@
 --- before/net/minecraft/client/renderer/vertex/VertexFormat.java
 +++ after/net/minecraft/client/renderer/vertex/VertexFormat.java
-@@ -11,18 +11,19 @@
- public class VertexFormat
- {
-     private static final Logger LOGGER = LogManager.getLogger();
--    private final List<VertexFormatElement> elements = Lists.newArrayList();
--    private final List<Integer> offsets = Lists.newArrayList();
-+    private final List<VertexFormatElement> elements;
-+    private final List<Integer> offsets;
-     private int vertexSize;
--    private int colorElementOffset = -1;
--    private final List<Integer> uvOffsetsById = Lists.newArrayList();
--    private int normalElementOffset = -1;
-+    private int colorElementOffset;
-+    private final List<Integer> uvOffsetsById;
-+    private int normalElementOffset;
+@@ -17,6 +17,7 @@
+     private int colorElementOffset = -1;
+     private final List<Integer> uvOffsetsById = Lists.newArrayList();
+     private int normalElementOffset = -1;
 +    private int hashCode;
  
      public VertexFormat(VertexFormat vertexFormatIn)
      {
-         this();
- 
--        for (int i = 0; i < vertexFormatIn.getElementCount(); i++)
-+        for (int i = 0; i < vertexFormatIn.getElementCount(); ++i)
-         {
-             this.addElement(vertexFormatIn.getElement(i));
-         }
-@@ -32,6 +33,11 @@
- 
-     public VertexFormat()
-     {
-+        this.elements = Lists.<VertexFormatElement>newArrayList();
-+        this.offsets = Lists.<Integer>newArrayList();
-+        this.colorElementOffset = -1;
-+        this.uvOffsetsById = Lists.<Integer>newArrayList();
-+        this.normalElementOffset = -1;
-     }
- 
-     public void clear()
-@@ -42,6 +48,7 @@
+@@ -42,6 +43,7 @@
          this.uvOffsetsById.clear();
          this.normalElementOffset = -1;
          this.vertexSize = 0;
@@ -46,91 +16,16 @@
      }
  
      @SuppressWarnings("incomplete-switch")
-@@ -55,7 +62,7 @@
-         else
-         {
-             this.elements.add(element);
--            this.offsets.add(this.vertexSize);
-+            this.offsets.add(Integer.valueOf(this.vertexSize));
- 
-             switch (element.getUsage())
-             {
-@@ -66,10 +73,11 @@
-                     this.colorElementOffset = this.vertexSize;
-                     break;
-                 case UV:
--                    this.uvOffsetsById.add(element.getIndex(), this.vertexSize);
-+                    this.uvOffsetsById.add(element.getIndex(), Integer.valueOf(this.vertexSize));
+@@ -70,6 +72,7 @@
              }
  
--            this.vertexSize = this.vertexSize + element.getSize();
-+            this.vertexSize += element.getSize();
+             this.vertexSize = this.vertexSize + element.getSize();
 +            this.hashCode = 0;
              return this;
          }
      }
-@@ -101,17 +109,16 @@
- 
-     public int getUvOffsetById(int id)
-     {
--        return this.uvOffsetsById.get(id);
-+        return ((Integer)this.uvOffsetsById.get(id)).intValue();
-     }
- 
--    @Override
-     public String toString()
-     {
-         String s = "format: " + this.elements.size() + " elements: ";
- 
--        for (int i = 0; i < this.elements.size(); i++)
-+        for (int i = 0; i < this.elements.size(); ++i)
-         {
--            s = s + this.elements.get(i).toString();
-+            s = s + ((VertexFormatElement)this.elements.get(i)).toString();
- 
-             if (i != this.elements.size() - 1)
-             {
-@@ -126,7 +133,7 @@
-     {
-         int i = 0;
- 
--        for (int j = this.elements.size(); i < j; i++)
-+        for (int j = this.elements.size(); i < j; ++i)
-         {
-             VertexFormatElement vertexformatelement = this.elements.get(i);
- 
-@@ -166,10 +173,9 @@
- 
-     public int getOffset(int index)
-     {
--        return this.offsets.get(index);
-+        return ((Integer)this.offsets.get(index)).intValue();
-     }
- 
--    @Override
-     public boolean equals(Object p_equals_1_)
-     {
-         if (this == p_equals_1_)
-@@ -184,9 +190,13 @@
-             {
-                 return false;
-             }
-+            else if (!this.elements.equals(vertexformat.elements))
-+            {
-+                return false;
-+            }
-             else
-             {
--                return !this.elements.equals(vertexformat.elements) ? false : this.offsets.equals(vertexformat.offsets);
-+                return this.offsets.equals(vertexformat.offsets);
-             }
-         }
-         else
-@@ -195,11 +205,13 @@
-         }
-     }
- 
--    @Override
+@@ -198,8 +201,11 @@
+     @Override
      public int hashCode()
      {
 +        if (this.hashCode != 0) return this.hashCode;

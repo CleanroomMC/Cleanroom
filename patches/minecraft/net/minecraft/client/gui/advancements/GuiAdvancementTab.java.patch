@@ -1,45 +1,14 @@
 --- before/net/minecraft/client/gui/advancements/GuiAdvancementTab.java
 +++ after/net/minecraft/client/gui/advancements/GuiAdvancementTab.java
-@@ -28,7 +28,7 @@
-     private final ItemStack icon;
-     private final String title;
-     private final GuiAdvancement root;
--    private final Map<Advancement, GuiAdvancement> guis = Maps.newLinkedHashMap();
-+    private final Map<Advancement, GuiAdvancement> guis = Maps.<Advancement, GuiAdvancement>newLinkedHashMap();
-     private int scrollX;
-     private int scrollY;
-     private int minX = Integer.MAX_VALUE;
-@@ -37,15 +37,9 @@
+@@ -37,6 +37,7 @@
      private int maxY = Integer.MIN_VALUE;
      private float fade;
      private boolean centered;
 +    private int page;
  
--    public GuiAdvancementTab(
--        Minecraft p_i47589_1_,
--        GuiScreenAdvancements p_i47589_2_,
--        AdvancementTabType p_i47589_3_,
--        int p_i47589_4_,
--        Advancement p_i47589_5_,
--        DisplayInfo p_i47589_6_
--    )
-+    public GuiAdvancementTab(Minecraft p_i47589_1_, GuiScreenAdvancements p_i47589_2_, AdvancementTabType p_i47589_3_, int p_i47589_4_, Advancement p_i47589_5_, DisplayInfo p_i47589_6_)
-     {
-         this.minecraft = p_i47589_1_;
-         this.screen = p_i47589_2_;
-@@ -106,9 +100,9 @@
-         int i = this.scrollX % 16;
-         int j = this.scrollY % 16;
- 
--        for (int k = -1; k <= 15; k++)
-+        for (int k = -1; k <= 15; ++k)
-         {
--            for (int l = -1; l <= 8; l++)
-+            for (int l = -1; l <= 8; ++l)
-             {
-                 drawModalRectWithCustomSizedTexture(i + 16 * k, j + 16 * l, 0.0F, 0.0F, 16, 16, 16.0F, 16.0F);
-             }
-@@ -167,9 +161,9 @@
+     public GuiAdvancementTab(
+         Minecraft p_i47589_1_,
+@@ -167,9 +168,9 @@
          {
              for (AdvancementTabType advancementtabtype : AdvancementTabType.values())
              {
@@ -51,7 +20,7 @@
                  }
  
                  p_193936_2_ -= advancementtabtype.getMax();
-@@ -229,4 +223,17 @@
+@@ -229,4 +230,17 @@
      {
          return this.screen;
      }

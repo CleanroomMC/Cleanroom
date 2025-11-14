@@ -13,29 +13,7 @@
      }
  
      public String getLanguageCode()
-@@ -29,13 +35,11 @@
-         return this.bidirectional;
-     }
- 
--    @Override
-     public String toString()
-     {
-         return String.format("%s (%s)", this.name, this.region);
-     }
- 
--    @Override
-     public boolean equals(Object p_equals_1_)
-     {
-         if (this == p_equals_1_)
-@@ -48,7 +52,6 @@
-         }
-     }
- 
--    @Override
-     public int hashCode()
-     {
-         return this.languageCode.hashCode();
-@@ -58,4 +61,8 @@
+@@ -58,4 +64,8 @@
      {
          return this.languageCode.compareTo(p_compareTo_1_.languageCode);
      }

@@ -1,147 +1,15 @@
 --- before/net/minecraft/client/renderer/ItemRenderer.java
 +++ after/net/minecraft/client/renderer/ItemRenderer.java
-@@ -95,16 +95,7 @@
-     private void setLightmap()
-     {
-         AbstractClientPlayer abstractclientplayer = this.mc.player;
--        int i = this.mc
--                .world
--                .getCombinedLight(
--                    new BlockPos(
--                        abstractclientplayer.posX,
--                        abstractclientplayer.posY + (double)abstractclientplayer.getEyeHeight(),
--                        abstractclientplayer.posZ
--                    ),
--                    0
--                );
-+        int i = this.mc.world.getCombinedLight(new BlockPos(abstractclientplayer.posX, abstractclientplayer.posY + (double)abstractclientplayer.getEyeHeight(), abstractclientplayer.posZ), 0);
-         float f = (float)(i & 65535);
-         float f1 = (float)(i >> 16);
-         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, f, f1);
-@@ -123,7 +114,8 @@
-     {
-         float f = 1.0F - pitch / 45.0F + 0.1F;
-         f = MathHelper.clamp(f, 0.0F, 1.0F);
--        return -MathHelper.cos(f * (float) Math.PI) * 0.5F + 0.5F;
-+        f = -MathHelper.cos(f * (float)Math.PI) * 0.5F + 0.5F;
-+        return f;
-     }
- 
-     private void renderArms()
-@@ -143,7 +135,7 @@
-     private void renderArm(EnumHandSide p_187455_1_)
-     {
-         this.mc.getTextureManager().bindTexture(this.mc.player.getLocationSkin());
--        Render<AbstractClientPlayer> render = this.renderManager.getEntityRenderObject(this.mc.player);
-+        Render<AbstractClientPlayer> render = this.renderManager.<AbstractClientPlayer>getEntityRenderObject(this.mc.player);
-         RenderPlayer renderplayer = (RenderPlayer)render;
-         GlStateManager.pushMatrix();
-         float f = p_187455_1_ == EnumHandSide.RIGHT ? 1.0F : -1.0F;
-@@ -180,10 +172,10 @@
-         GlStateManager.pushMatrix();
-         GlStateManager.translate(f * 0.51F, -0.08F + p_187465_1_ * -1.2F, -0.75F);
-         float f1 = MathHelper.sqrt(p_187465_3_);
--        float f2 = MathHelper.sin(f1 * (float) Math.PI);
-+        float f2 = MathHelper.sin(f1 * (float)Math.PI);
-         float f3 = -0.5F * f2;
--        float f4 = 0.4F * MathHelper.sin(f1 * (float)(Math.PI * 2));
--        float f5 = -0.3F * MathHelper.sin(p_187465_3_ * (float) Math.PI);
-+        float f4 = 0.4F * MathHelper.sin(f1 * ((float)Math.PI * 2F));
-+        float f5 = -0.3F * MathHelper.sin(p_187465_3_ * (float)Math.PI);
-         GlStateManager.translate(f * f3, f4 - 0.3F * f2, f5);
-         GlStateManager.rotate(f2 * -45.0F, 1.0F, 0.0F, 0.0F);
-         GlStateManager.rotate(f * f2 * -30.0F, 0.0F, 1.0F, 0.0F);
-@@ -194,14 +186,14 @@
-     private void renderMapFirstPerson(float p_187463_1_, float p_187463_2_, float p_187463_3_)
-     {
-         float f = MathHelper.sqrt(p_187463_3_);
--        float f1 = -0.2F * MathHelper.sin(p_187463_3_ * (float) Math.PI);
--        float f2 = -0.4F * MathHelper.sin(f * (float) Math.PI);
-+        float f1 = -0.2F * MathHelper.sin(p_187463_3_ * (float)Math.PI);
-+        float f2 = -0.4F * MathHelper.sin(f * (float)Math.PI);
-         GlStateManager.translate(0.0F, -f1 / 2.0F, f2);
-         float f3 = this.getMapAngleFromPitch(p_187463_1_);
-         GlStateManager.translate(0.0F, 0.04F + p_187463_2_ * -1.2F + f3 * -0.5F, -0.72F);
-         GlStateManager.rotate(f3 * -85.0F, 1.0F, 0.0F, 0.0F);
-         this.renderArms();
--        float f4 = MathHelper.sin(f * (float) Math.PI);
-+        float f4 = MathHelper.sin(f * (float)Math.PI);
-         GlStateManager.rotate(f4 * 20.0F, 1.0F, 0.0F, 0.0F);
-         GlStateManager.scale(2.0F, 2.0F, 2.0F);
-         this.renderMapFirstPerson(this.itemStackMainHand);
-@@ -219,12 +211,12 @@
-         GlStateManager.translate(-0.5F, -0.5F, 0.0F);
-         GlStateManager.scale(0.0078125F, 0.0078125F, 0.0078125F);
-         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
--        bufferbuilder.pos(-7.0, 135.0, 0.0).tex(0.0, 1.0).endVertex();
--        bufferbuilder.pos(135.0, 135.0, 0.0).tex(1.0, 1.0).endVertex();
--        bufferbuilder.pos(135.0, -7.0, 0.0).tex(1.0, 0.0).endVertex();
--        bufferbuilder.pos(-7.0, -7.0, 0.0).tex(0.0, 0.0).endVertex();
-+        bufferbuilder.pos(-7.0D, 135.0D, 0.0D).tex(0.0D, 1.0D).endVertex();
-+        bufferbuilder.pos(135.0D, 135.0D, 0.0D).tex(1.0D, 1.0D).endVertex();
-+        bufferbuilder.pos(135.0D, -7.0D, 0.0D).tex(1.0D, 0.0D).endVertex();
-+        bufferbuilder.pos(-7.0D, -7.0D, 0.0D).tex(0.0D, 0.0D).endVertex();
+@@ -224,7 +224,7 @@
+         bufferbuilder.pos(135.0, -7.0, 0.0).tex(1.0, 0.0).endVertex();
+         bufferbuilder.pos(-7.0, -7.0, 0.0).tex(0.0, 0.0).endVertex();
          tessellator.draw();
 -        MapData mapdata = Items.FILLED_MAP.getMapData(stack, this.mc.world);
 +        MapData mapdata = ((net.minecraft.item.ItemMap) stack.getItem()).getMapData(stack, this.mc.world);
  
          if (mapdata != null)
          {
-@@ -239,13 +231,13 @@
-         boolean flag = p_187456_3_ != EnumHandSide.LEFT;
-         float f = flag ? 1.0F : -1.0F;
-         float f1 = MathHelper.sqrt(p_187456_2_);
--        float f2 = -0.3F * MathHelper.sin(f1 * (float) Math.PI);
--        float f3 = 0.4F * MathHelper.sin(f1 * (float)(Math.PI * 2));
--        float f4 = -0.4F * MathHelper.sin(p_187456_2_ * (float) Math.PI);
-+        float f2 = -0.3F * MathHelper.sin(f1 * (float)Math.PI);
-+        float f3 = 0.4F * MathHelper.sin(f1 * ((float)Math.PI * 2F));
-+        float f4 = -0.4F * MathHelper.sin(p_187456_2_ * (float)Math.PI);
-         GlStateManager.translate(f * (f2 + 0.64000005F), f3 + -0.6F + p_187456_1_ * -0.6F, f4 + -0.71999997F);
-         GlStateManager.rotate(f * 45.0F, 0.0F, 1.0F, 0.0F);
--        float f5 = MathHelper.sin(p_187456_2_ * p_187456_2_ * (float) Math.PI);
--        float f6 = MathHelper.sin(f1 * (float) Math.PI);
-+        float f5 = MathHelper.sin(p_187456_2_ * p_187456_2_ * (float)Math.PI);
-+        float f6 = MathHelper.sin(f1 * (float)Math.PI);
-         GlStateManager.rotate(f * f6 * 70.0F, 0.0F, 1.0F, 0.0F);
-         GlStateManager.rotate(f * f5 * -20.0F, 0.0F, 0.0F, 1.0F);
-         AbstractClientPlayer abstractclientplayer = this.mc.player;
-@@ -277,11 +269,11 @@
- 
-         if (f1 < 0.8F)
-         {
--            float f2 = MathHelper.abs(MathHelper.cos(f / 4.0F * (float) Math.PI) * 0.1F);
-+            float f2 = MathHelper.abs(MathHelper.cos(f / 4.0F * (float)Math.PI) * 0.1F);
-             GlStateManager.translate(0.0F, f2, 0.0F);
-         }
- 
--        float f3 = 1.0F - (float)Math.pow((double)f1, 27.0);
-+        float f3 = 1.0F - (float)Math.pow((double)f1, 27.0D);
-         int i = hand == EnumHandSide.RIGHT ? 1 : -1;
-         GlStateManager.translate(f3 * 0.6F * (float)i, f3 * -0.5F, f3 * 0.0F);
-         GlStateManager.rotate((float)i * f3 * 90.0F, 0.0F, 1.0F, 0.0F);
-@@ -292,9 +284,9 @@
-     private void transformFirstPerson(EnumHandSide hand, float p_187453_2_)
-     {
-         int i = hand == EnumHandSide.RIGHT ? 1 : -1;
--        float f = MathHelper.sin(p_187453_2_ * p_187453_2_ * (float) Math.PI);
-+        float f = MathHelper.sin(p_187453_2_ * p_187453_2_ * (float)Math.PI);
-         GlStateManager.rotate((float)i * (45.0F + f * -20.0F), 0.0F, 1.0F, 0.0F);
--        float f1 = MathHelper.sin(MathHelper.sqrt(p_187453_2_) * (float) Math.PI);
-+        float f1 = MathHelper.sin(MathHelper.sqrt(p_187453_2_) * (float)Math.PI);
-         GlStateManager.rotate((float)i * f1 * -20.0F, 0.0F, 0.0F, 1.0F);
-         GlStateManager.rotate(f1 * -80.0F, 1.0F, 0.0F, 0.0F);
-         GlStateManager.rotate((float)i * -45.0F, 0.0F, 1.0F, 0.0F);
-@@ -310,7 +302,7 @@
-     {
-         AbstractClientPlayer abstractclientplayer = this.mc.player;
-         float f = abstractclientplayer.getSwingProgress(partialTicks);
--        EnumHand enumhand = MoreObjects.firstNonNull(abstractclientplayer.swingingHand, EnumHand.MAIN_HAND);
-+        EnumHand enumhand = (EnumHand)MoreObjects.firstNonNull(abstractclientplayer.swingingHand, EnumHand.MAIN_HAND);
-         float f1 = abstractclientplayer.prevRotationPitch + (abstractclientplayer.rotationPitch - abstractclientplayer.prevRotationPitch) * partialTicks;
-         float f2 = abstractclientplayer.prevRotationYaw + (abstractclientplayer.rotationYaw - abstractclientplayer.prevRotationYaw) * partialTicks;
-         boolean flag = true;
-@@ -320,7 +312,7 @@
+@@ -320,7 +320,7 @@
          {
              ItemStack itemstack = abstractclientplayer.getActiveItemStack();
  
@@ -150,7 +18,7 @@
              {
                  EnumHand enumhand1 = abstractclientplayer.getActiveHand();
                  flag = enumhand1 == EnumHand.MAIN_HAND;
-@@ -337,6 +329,7 @@
+@@ -337,6 +337,7 @@
          {
              float f3 = enumhand == EnumHand.MAIN_HAND ? f : 0.0F;
              float f5 = 1.0F - (this.prevEquippedProgressMainHand + (this.equippedProgressMainHand - this.prevEquippedProgressMainHand) * partialTicks);
@@ -158,7 +26,7 @@
              this.renderItemInFirstPerson(abstractclientplayer, partialTicks, f1, EnumHand.MAIN_HAND, f3, this.itemStackMainHand, f5);
          }
  
-@@ -344,6 +337,7 @@
+@@ -344,6 +345,7 @@
          {
              float f4 = enumhand == EnumHand.OFF_HAND ? f : 0.0F;
              float f6 = 1.0F - (this.prevEquippedProgressOffHand + (this.equippedProgressOffHand - this.prevEquippedProgressOffHand) * partialTicks);
@@ -166,18 +34,7 @@
              this.renderItemInFirstPerson(abstractclientplayer, partialTicks, f1, EnumHand.OFF_HAND, f4, this.itemStackOffHand, f6);
          }
  
-@@ -351,9 +345,7 @@
-         RenderHelper.disableStandardItemLighting();
-     }
- 
--    public void renderItemInFirstPerson(
--        AbstractClientPlayer player, float p_187457_2_, float p_187457_3_, EnumHand hand, float p_187457_5_, ItemStack stack, float p_187457_7_
--    )
-+    public void renderItemInFirstPerson(AbstractClientPlayer player, float p_187457_2_, float p_187457_3_, EnumHand hand, float p_187457_5_, ItemStack stack, float p_187457_7_)
-     {
-         boolean flag = hand == EnumHand.MAIN_HAND;
-         EnumHandSide enumhandside = flag ? player.getPrimaryHand() : player.getPrimaryHand().opposite();
-@@ -366,7 +358,7 @@
+@@ -366,7 +368,7 @@
                  this.renderArmFirstPerson(p_187457_7_, p_187457_5_, enumhandside);
              }
          }
@@ -186,45 +43,15 @@
          {
              if (flag && this.itemStackOffHand.isEmpty())
              {
-@@ -428,21 +420,16 @@
-             }
-             else
-             {
--                float f = -0.4F * MathHelper.sin(MathHelper.sqrt(p_187457_5_) * (float) Math.PI);
--                float f1 = 0.2F * MathHelper.sin(MathHelper.sqrt(p_187457_5_) * (float)(Math.PI * 2));
--                float f2 = -0.2F * MathHelper.sin(p_187457_5_ * (float) Math.PI);
-+                float f = -0.4F * MathHelper.sin(MathHelper.sqrt(p_187457_5_) * (float)Math.PI);
-+                float f1 = 0.2F * MathHelper.sin(MathHelper.sqrt(p_187457_5_) * ((float)Math.PI * 2F));
-+                float f2 = -0.2F * MathHelper.sin(p_187457_5_ * (float)Math.PI);
-                 int i = flag1 ? 1 : -1;
-                 GlStateManager.translate((float)i * f, f1, f2);
-                 this.transformSideFirstPerson(enumhandside, p_187457_7_);
-                 this.transformFirstPerson(enumhandside, p_187457_5_);
-             }
- 
--            this.renderItemSide(
--                player,
--                stack,
--                flag1 ? ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND : ItemCameraTransforms.TransformType.FIRST_PERSON_LEFT_HAND,
--                !flag1
--            );
-+            this.renderItemSide(player, stack, flag1 ? ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND : ItemCameraTransforms.TransformType.FIRST_PERSON_LEFT_HAND, !flag1);
-         }
- 
-         GlStateManager.popMatrix();
-@@ -455,9 +442,10 @@
+@@ -455,6 +457,7 @@
          if (this.mc.player.isEntityInsideOpaqueBlock())
          {
              IBlockState iblockstate = this.mc.world.getBlockState(new BlockPos(this.mc.player));
 +            BlockPos overlayPos = new BlockPos(this.mc.player);
              EntityPlayer entityplayer = this.mc.player;
  
--            for (int i = 0; i < 8; i++)
-+            for (int i = 0; i < 8; ++i)
-             {
-                 double d0 = entityplayer.posX + (double)(((float)((i >> 0) % 2) - 0.5F) * entityplayer.width * 0.8F);
-                 double d1 = entityplayer.posY + (double)(((float)((i >> 1) % 2) - 0.5F) * 0.1F);
-@@ -468,11 +456,13 @@
+             for (int i = 0; i < 8; i++)
+@@ -468,11 +471,13 @@
                  if (iblockstate1.causesSuffocation())
                  {
                      iblockstate = iblockstate1;
@@ -238,7 +65,7 @@
                  this.renderSuffocationOverlay(this.mc.getBlockRendererDispatcher().getBlockModelShapes().getTexture(iblockstate));
              }
          }
-@@ -481,11 +471,13 @@
+@@ -481,11 +486,13 @@
          {
              if (this.mc.player.isInsideOfMaterial(Material.WATER))
              {
@@ -252,78 +79,7 @@
                  this.renderFireInFirstPerson();
              }
          }
-@@ -511,10 +503,10 @@
-         float f8 = sprite.getMinV();
-         float f9 = sprite.getMaxV();
-         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
--        bufferbuilder.pos(-1.0, -1.0, -0.5).tex((double)f7, (double)f9).endVertex();
--        bufferbuilder.pos(1.0, -1.0, -0.5).tex((double)f6, (double)f9).endVertex();
--        bufferbuilder.pos(1.0, 1.0, -0.5).tex((double)f6, (double)f8).endVertex();
--        bufferbuilder.pos(-1.0, 1.0, -0.5).tex((double)f7, (double)f8).endVertex();
-+        bufferbuilder.pos(-1.0D, -1.0D, -0.5D).tex((double)f7, (double)f9).endVertex();
-+        bufferbuilder.pos(1.0D, -1.0D, -0.5D).tex((double)f6, (double)f9).endVertex();
-+        bufferbuilder.pos(1.0D, 1.0D, -0.5D).tex((double)f6, (double)f8).endVertex();
-+        bufferbuilder.pos(-1.0D, 1.0D, -0.5D).tex((double)f7, (double)f8).endVertex();
-         tessellator.draw();
-         GlStateManager.popMatrix();
-         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-@@ -528,9 +520,7 @@
-         float f = this.mc.player.getBrightness();
-         GlStateManager.color(f, f, f, 0.5F);
-         GlStateManager.enableBlend();
--        GlStateManager.tryBlendFuncSeparate(
--            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
--        );
-+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-         GlStateManager.pushMatrix();
-         float f1 = 4.0F;
-         float f2 = -1.0F;
-@@ -541,10 +531,10 @@
-         float f7 = -this.mc.player.rotationYaw / 64.0F;
-         float f8 = this.mc.player.rotationPitch / 64.0F;
-         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
--        bufferbuilder.pos(-1.0, -1.0, -0.5).tex((double)(4.0F + f7), (double)(4.0F + f8)).endVertex();
--        bufferbuilder.pos(1.0, -1.0, -0.5).tex((double)(0.0F + f7), (double)(4.0F + f8)).endVertex();
--        bufferbuilder.pos(1.0, 1.0, -0.5).tex((double)(0.0F + f7), (double)(0.0F + f8)).endVertex();
--        bufferbuilder.pos(-1.0, 1.0, -0.5).tex((double)(4.0F + f7), (double)(0.0F + f8)).endVertex();
-+        bufferbuilder.pos(-1.0D, -1.0D, -0.5D).tex((double)(4.0F + f7), (double)(4.0F + f8)).endVertex();
-+        bufferbuilder.pos(1.0D, -1.0D, -0.5D).tex((double)(0.0F + f7), (double)(4.0F + f8)).endVertex();
-+        bufferbuilder.pos(1.0D, 1.0D, -0.5D).tex((double)(0.0F + f7), (double)(0.0F + f8)).endVertex();
-+        bufferbuilder.pos(-1.0D, 1.0D, -0.5D).tex((double)(4.0F + f7), (double)(0.0F + f8)).endVertex();
-         tessellator.draw();
-         GlStateManager.popMatrix();
-         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-@@ -559,12 +549,10 @@
-         GlStateManager.depthFunc(519);
-         GlStateManager.depthMask(false);
-         GlStateManager.enableBlend();
--        GlStateManager.tryBlendFuncSeparate(
--            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
--        );
-+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-         float f = 1.0F;
- 
--        for (int i = 0; i < 2; i++)
-+        for (int i = 0; i < 2; ++i)
-         {
-             GlStateManager.pushMatrix();
-             TextureAtlasSprite textureatlassprite = this.mc.getTextureMapBlocks().getAtlasSprite("minecraft:blocks/fire_layer_1");
-@@ -581,10 +569,10 @@
-             GlStateManager.translate((float)(-(i * 2 - 1)) * 0.24F, -0.3F, 0.0F);
-             GlStateManager.rotate((float)(i * 2 - 1) * 10.0F, 0.0F, 1.0F, 0.0F);
-             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
--            bufferbuilder.pos(-0.5, -0.5, -0.5).tex((double)f2, (double)f4).endVertex();
--            bufferbuilder.pos(0.5, -0.5, -0.5).tex((double)f1, (double)f4).endVertex();
--            bufferbuilder.pos(0.5, 0.5, -0.5).tex((double)f1, (double)f3).endVertex();
--            bufferbuilder.pos(-0.5, 0.5, -0.5).tex((double)f2, (double)f3).endVertex();
-+            bufferbuilder.pos(-0.5D, -0.5D, -0.5D).tex((double)f2, (double)f4).endVertex();
-+            bufferbuilder.pos(0.5D, -0.5D, -0.5D).tex((double)f1, (double)f4).endVertex();
-+            bufferbuilder.pos(0.5D, 0.5D, -0.5D).tex((double)f1, (double)f3).endVertex();
-+            bufferbuilder.pos(-0.5D, 0.5D, -0.5D).tex((double)f2, (double)f3).endVertex();
-             tessellator.draw();
-             GlStateManager.popMatrix();
-         }
-@@ -611,10 +599,17 @@
+@@ -611,10 +618,17 @@
          else
          {
              float f = entityplayersp.getCooledAttackStrength(1.0F);

@@ -1,77 +1,6 @@
 --- before/net/minecraft/client/gui/GuiControls.java
 +++ after/net/minecraft/client/gui/GuiControls.java
-@@ -11,10 +11,7 @@
- @SideOnly(Side.CLIENT)
- public class GuiControls extends GuiScreen
- {
--    private static final GameSettings.Options[] OPTIONS_ARR = new GameSettings.Options[]
--        {
--            GameSettings.Options.INVERT_MOUSE, GameSettings.Options.SENSITIVITY, GameSettings.Options.TOUCHSCREEN, GameSettings.Options.AUTO_JUMP
--        };
-+    private static final GameSettings.Options[] OPTIONS_ARR = new GameSettings.Options[] {GameSettings.Options.INVERT_MOUSE, GameSettings.Options.SENSITIVITY, GameSettings.Options.TOUCHSCREEN, GameSettings.Options.AUTO_JUMP};
-     private final GuiScreen parentScreen;
-     protected String screenTitle = "Controls";
-     private final GameSettings options;
-@@ -29,14 +26,11 @@
-         this.options = settings;
-     }
- 
--    @Override
-     public void initGui()
-     {
-         this.keyBindingList = new GuiKeyBindingList(this, this.mc);
-         this.buttonList.add(new GuiButton(200, this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.format("gui.done")));
--        this.buttonReset = this.addButton(
--                                  new GuiButton(201, this.width / 2 - 155, this.height - 29, 150, 20, I18n.format("controls.resetAll"))
--                              );
-+        this.buttonReset = this.addButton(new GuiButton(201, this.width / 2 - 155, this.height - 29, 150, 20, I18n.format("controls.resetAll")));
-         this.screenTitle = I18n.format("controls.title");
-         int i = 0;
- 
-@@ -44,39 +38,23 @@
-         {
-             if (gamesettings$options.isFloat())
-             {
--                this.buttonList
--                .add(
--                    new GuiOptionSlider(
--                        gamesettings$options.getOrdinal(), this.width / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), gamesettings$options
--                    )
--                );
-+                this.buttonList.add(new GuiOptionSlider(gamesettings$options.getOrdinal(), this.width / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), gamesettings$options));
-             }
-             else
-             {
--                this.buttonList
--                .add(
--                    new GuiOptionButton(
--                        gamesettings$options.getOrdinal(),
--                        this.width / 2 - 155 + i % 2 * 160,
--                        18 + 24 * (i >> 1),
--                        gamesettings$options,
--                        this.options.getKeyBinding(gamesettings$options)
--                    )
--                );
-+                this.buttonList.add(new GuiOptionButton(gamesettings$options.getOrdinal(), this.width / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), gamesettings$options, this.options.getKeyBinding(gamesettings$options)));
-             }
- 
--            i++;
-+            ++i;
-         }
-     }
- 
--    @Override
-     public void handleMouseInput() throws IOException
-     {
-         super.handleMouseInput();
-         this.keyBindingList.handleMouseInput();
-     }
- 
--    @Override
-     protected void actionPerformed(GuiButton button) throws IOException
-     {
-         if (button.id == 200)
-@@ -87,7 +65,7 @@
+@@ -87,7 +87,7 @@
          {
              for (KeyBinding keybinding : this.mc.gameSettings.keyBindings)
              {
@@ -80,12 +9,7 @@
              }
  
              KeyBinding.resetKeyBindingArrayAndHash();
-@@ -99,11 +77,11 @@
-         }
-     }
- 
--    @Override
-     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+@@ -104,6 +104,7 @@
      {
          if (this.buttonId != null)
          {
@@ -93,22 +17,7 @@
              this.options.setOptionKeyBinding(this.buttonId, -100 + mouseButton);
              this.buttonId = null;
              KeyBinding.resetKeyBindingArrayAndHash();
-@@ -114,7 +92,6 @@
-         }
-     }
- 
--    @Override
-     protected void mouseReleased(int mouseX, int mouseY, int state)
-     {
-         if (state != 0 || !this.keyBindingList.mouseReleased(mouseX, mouseY, state))
-@@ -123,24 +100,27 @@
-         }
-     }
- 
--    @Override
-     protected void keyTyped(char typedChar, int keyCode) throws IOException
-     {
-         if (this.buttonId != null)
+@@ -130,17 +131,21 @@
          {
              if (keyCode == 1)
              {
@@ -130,15 +39,7 @@
              this.buttonId = null;
              this.time = Minecraft.getSystemTime();
              KeyBinding.resetKeyBindingArrayAndHash();
-@@ -151,7 +131,6 @@
-         }
-     }
- 
--    @Override
-     public void drawScreen(int mouseX, int mouseY, float partialTicks)
-     {
-         this.drawDefaultBackground();
-@@ -161,7 +140,7 @@
+@@ -161,7 +166,7 @@
  
          for (KeyBinding keybinding : this.options.keyBindings)
          {

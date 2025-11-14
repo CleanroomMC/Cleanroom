@@ -1,10 +1,7 @@
 --- before/net/minecraft/client/renderer/block/model/ModelManager.java
 +++ after/net/minecraft/client/renderer/block/model/ModelManager.java
-@@ -22,12 +22,12 @@
-         this.modelProvider = new BlockModelShapes(this);
-     }
- 
--    @Override
+@@ -25,9 +25,10 @@
+     @Override
      public void onResourceManagerReload(IResourceManager resourceManager)
      {
 -        ModelBakery modelbakery = new ModelBakery(resourceManager, this.texMap, this.modelProvider);

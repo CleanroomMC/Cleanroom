@@ -1,42 +1,30 @@
 --- before/net/minecraft/client/gui/FontRenderer.java
 +++ after/net/minecraft/client/gui/FontRenderer.java
-@@ -1,11 +1,12 @@
+@@ -1,5 +1,6 @@
  package net.minecraft.client.gui;
  
 +import com.cleanroommc.client.BreakIteratorHolder;
  import com.ibm.icu.text.ArabicShaping;
  import com.ibm.icu.text.ArabicShapingException;
  import com.ibm.icu.text.Bidi;
-+
- import java.awt.image.BufferedImage;
- import java.io.IOException;
--import java.util.Arrays;
- import java.util.List;
- import java.util.Locale;
- import java.util.Random;
-@@ -24,6 +25,9 @@
+@@ -24,6 +25,7 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  import org.apache.commons.io.IOUtils;
-+import org.apache.commons.lang3.tuple.Pair;
-+
 +import java.util.*;
  
  @SideOnly(Side.CLIENT)
  public class FontRenderer implements IResourceManagerReloadListener
-@@ -56,9 +60,9 @@
+@@ -56,7 +58,7 @@
          this.locationFontTexture = location;
          this.renderEngine = textureManagerIn;
          this.unicodeFlag = unicode;
 -        textureManagerIn.bindTexture(this.locationFontTexture);
 +        bindTexture(this.locationFontTexture);
  
--        for (int i = 0; i < 32; i++)
-+        for (int i = 0; i < 32; ++i)
+         for (int i = 0; i < 32; i++)
          {
-             int j = (i >> 3 & 1) * 85;
-             int k = (i >> 2 & 1) * 170 + j;
-@@ -107,7 +111,7 @@
+@@ -107,7 +109,7 @@
  
          try
          {
@@ -45,31 +33,7 @@
              bufferedimage = TextureUtil.readBufferedImage(iresource.getInputStream());
          }
          catch (IOException ioexception)
-@@ -128,7 +132,7 @@
-         boolean lvt_8_1_ = true;
-         float lvt_9_1_ = 8.0F / (float)lvt_7_1_;
- 
--        for (int lvt_10_1_ = 0; lvt_10_1_ < 256; lvt_10_1_++)
-+        for (int lvt_10_1_ = 0; lvt_10_1_ < 256; ++lvt_10_1_)
-         {
-             int j1 = lvt_10_1_ % 16;
-             int k1 = lvt_10_1_ / 16;
-@@ -140,12 +144,12 @@
- 
-             int l1;
- 
--            for (l1 = lvt_7_1_ - 1; l1 >= 0; l1--)
-+            for (l1 = lvt_7_1_ - 1; l1 >= 0; --l1)
-             {
-                 int i2 = j1 * lvt_7_1_ + l1;
-                 boolean flag1 = true;
- 
--                for (int j2 = 0; j2 < lvt_6_1_ && flag1; j2++)
-+                for (int j2 = 0; j2 < lvt_6_1_ && flag1; ++j2)
-                 {
-                     int k2 = (k1 * lvt_7_1_ + j2) * lvt_3_2_;
- 
-@@ -171,7 +175,7 @@
+@@ -171,7 +173,7 @@
  
          try
          {
@@ -78,7 +42,7 @@
              iresource.getInputStream().read(this.glyphWidth);
          }
          catch (IOException ioexception)
-@@ -186,6 +190,7 @@
+@@ -186,6 +188,7 @@
  
      private float renderChar(char ch, boolean italic)
      {
@@ -86,7 +50,7 @@
          if (ch == ' ')
          {
              return 4.0F;
-@@ -203,7 +208,7 @@
+@@ -203,7 +206,7 @@
          int i = ch % 16 * 8;
          int j = ch / 16 * 8;
          int k = italic ? 1 : 0;
@@ -95,7 +59,7 @@
          int l = this.charWidth[ch];
          float f = (float)l - 0.01F;
          GlStateManager.glBegin(5);
-@@ -231,7 +236,7 @@
+@@ -231,7 +234,7 @@
  
      private void loadGlyphTexture(int page)
      {
@@ -104,7 +68,7 @@
      }
  
      protected float renderUnicodeChar(char ch, boolean italic)
-@@ -280,7 +285,7 @@
+@@ -280,7 +283,7 @@
  
      public int drawString(String text, float x, float y, int color, boolean dropShadow)
      {
@@ -113,12 +77,7 @@
          this.resetStyles();
          int i;
  
-@@ -322,11 +327,11 @@
- 
-     private void renderStringAtPos(String text, boolean shadow)
-     {
--        for (int i = 0; i < text.length(); i++)
-+        for (int i = 0; i < text.length(); ++i)
+@@ -326,7 +329,7 @@
          {
              char c0 = text.charAt(i);
  
@@ -127,7 +86,7 @@
              {
                  int i1 = "0123456789abcdefklmnor".indexOf(String.valueOf(text.charAt(i + 1)).toLowerCase(Locale.ROOT).charAt(0));
  
-@@ -338,11 +343,6 @@
+@@ -338,11 +341,6 @@
                      this.underlineStyle = false;
                      this.italicStyle = false;
  
@@ -139,7 +98,7 @@
                      if (shadow)
                      {
                          i1 += 16;
-@@ -350,7 +350,7 @@
+@@ -350,7 +348,7 @@
  
                      int j1 = this.colorCode[i1];
                      this.textColor = j1;
@@ -148,7 +107,7 @@
                  }
                  else if (i1 == 16)
                  {
-@@ -379,10 +379,10 @@
+@@ -379,7 +377,7 @@
                      this.strikethroughStyle = false;
                      this.underlineStyle = false;
                      this.italicStyle = false;
@@ -156,12 +115,8 @@
 +                    setColor(this.red, this.blue, this.green, this.alpha);
                  }
  
--                i++;
-+                ++i;
-             }
-             else
-             {
-@@ -409,7 +409,7 @@
+                 i++;
+@@ -409,7 +407,7 @@
                      c0 = c1;
                  }
  
@@ -170,12 +125,9 @@
                  boolean flag = (c0 == 0 || j == -1 || this.unicodeFlag) && shadow;
  
                  if (flag)
-@@ -445,8 +445,17 @@
-                         this.posY += f1;
-                     }
+@@ -447,6 +445,15 @@
  
--                    f++;
-+                    ++f;
+                     f++;
                  }
 +                doDraw(f);
 +            }
@@ -189,7 +141,7 @@
  
                  if (this.strikethroughStyle)
                  {
-@@ -526,7 +535,7 @@
+@@ -526,7 +533,7 @@
              this.blue = (float)(color >> 8 & 0xFF) / 255.0F;
              this.green = (float)(color & 0xFF) / 255.0F;
              this.alpha = (float)(color >> 24 & 0xFF) / 255.0F;
@@ -198,25 +150,7 @@
              this.posX = x;
              this.posY = y;
              this.renderStringAtPos(text, dropShadow);
-@@ -545,7 +554,7 @@
-             int i = 0;
-             boolean flag = false;
- 
--            for (int j = 0; j < text.length(); j++)
-+            for (int j = 0; j < text.length(); ++j)
-             {
-                 char c0 = text.charAt(j);
-                 int k = this.getCharWidth(c0);
-@@ -570,7 +579,7 @@
- 
-                 if (flag && k > 0)
-                 {
--                    i++;
-+                    ++i;
-                 }
-             }
- 
-@@ -580,6 +589,7 @@
+@@ -580,6 +587,7 @@
  
      public int getCharWidth(char character)
      {
@@ -224,48 +158,7 @@
          if (character == 167)
          {
              return -1;
-@@ -602,7 +612,7 @@
-                 int j = this.glyphWidth[character] & 255;
-                 int k = j >>> 4;
-                 int l = j & 15;
--                l++;
-+                ++l;
-                 return (l - k) / 2 + 1;
-             }
-             else
-@@ -635,14 +645,17 @@
-             {
-                 flag = false;
- 
--                if (c0 == 'l' || c0 == 'L')
-+                if (c0 != 'l' && c0 != 'L')
-+                {
-+                    if (c0 == 'r' || c0 == 'R')
-+                    {
-+                        flag1 = false;
-+                    }
-+                }
-+                else
-                 {
-                     flag1 = true;
-                 }
--                else if (c0 == 'r' || c0 == 'R')
--                {
--                    flag1 = false;
--                }
-             }
-             else if (i1 < 0)
-             {
-@@ -654,7 +667,7 @@
- 
-                 if (flag1)
-                 {
--                    i++;
-+                    ++i;
-                 }
-             }
- 
-@@ -678,7 +691,7 @@
+@@ -678,7 +686,7 @@
  
      private String trimStringNewline(String text)
      {
@@ -274,7 +167,7 @@
          {
              text = text.substring(0, text.length() - 1);
          }
-@@ -725,9 +738,96 @@
+@@ -725,9 +733,96 @@
  
      public List<String> listFormattedStringToWidth(String str, int wrapWidth)
      {
@@ -372,7 +265,7 @@
      String wrapFormattedStringToWidth(String str, int wrapWidth)
      {
          int i = this.sizeStringToWidth(str, wrapWidth);
-@@ -746,6 +846,7 @@
+@@ -746,6 +841,7 @@
          }
      }
  
@@ -380,33 +273,7 @@
      private int sizeStringToWidth(String str, int wrapWidth)
      {
          int i = str.length();
-@@ -753,14 +854,14 @@
-         int k = 0;
-         int l = -1;
- 
--        for (boolean flag = false; k < i; k++)
-+        for (boolean flag = false; k < i; ++k)
-         {
-             char c0 = str.charAt(k);
- 
-             switch (c0)
-             {
-                 case '\n':
--                    k--;
-+                    --k;
-                     break;
-                 case ' ':
-                     l = k;
-@@ -769,7 +870,7 @@
- 
-                     if (flag)
-                     {
--                        j++;
-+                        ++j;
-                     }
- 
-                     break;
-@@ -844,6 +945,26 @@
+@@ -844,6 +940,26 @@
      public boolean getBidiFlag()
      {
          return this.bidiFlag;

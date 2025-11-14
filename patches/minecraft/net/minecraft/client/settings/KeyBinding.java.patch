@@ -1,20 +1,14 @@
 --- before/net/minecraft/client/settings/KeyBinding.java
 +++ after/net/minecraft/client/settings/KeyBinding.java
-@@ -14,10 +14,10 @@
- @SideOnly(Side.CLIENT)
+@@ -15,7 +15,7 @@
  public class KeyBinding implements Comparable<KeyBinding>
  {
--    private static final Map<String, KeyBinding> KEYBIND_ARRAY = Maps.newHashMap();
+     private static final Map<String, KeyBinding> KEYBIND_ARRAY = Maps.newHashMap();
 -    private static final IntHashMap<KeyBinding> HASH = new IntHashMap<>();
--    private static final Set<String> KEYBIND_SET = Sets.newHashSet();
--    private static final Map<String, Integer> CATEGORY_ORDER = Maps.newHashMap();
-+    private static final Map<String, KeyBinding> KEYBIND_ARRAY = Maps.<String, KeyBinding>newHashMap();
 +    private static final net.minecraftforge.client.settings.KeyBindingMap HASH = new net.minecraftforge.client.settings.KeyBindingMap();
-+    private static final Set<String> KEYBIND_SET = Sets.<String>newHashSet();
-+    private static final Map<String, Integer> CATEGORY_ORDER = Maps.<String, Integer>newHashMap();
+     private static final Set<String> KEYBIND_SET = Sets.newHashSet();
+     private static final Map<String, Integer> CATEGORY_ORDER = Maps.newHashMap();
      private final String keyDescription;
-     private final int keyCodeDefault;
-     private final String keyCategory;
 @@ -29,12 +29,7 @@
      {
          if (keyCode != 0)
@@ -38,18 +32,7 @@
  
              if (keybinding != null)
              {
-@@ -59,8 +54,9 @@
-             {
-                 setKeyBindState(keybinding.keyCode, keybinding.keyCode < 256 && Keyboard.isKeyDown(keybinding.keyCode));
-             }
--            catch (IndexOutOfBoundsException indexoutofboundsexception)
-+            catch (IndexOutOfBoundsException var3)
-             {
-+                ;
-             }
-         }
-     }
-@@ -101,7 +97,7 @@
+@@ -101,7 +96,7 @@
  
      public boolean isKeyDown()
      {
@@ -58,16 +41,7 @@
      }
  
      public String getKeyCategory()
-@@ -117,7 +113,7 @@
-         }
-         else
-         {
--            this.pressTime--;
-+            --this.pressTime;
-             return true;
-         }
-     }
-@@ -150,25 +146,166 @@
+@@ -150,15 +145,156 @@
  
      public int compareTo(KeyBinding p_compareTo_1_)
      {
@@ -229,20 +203,3 @@
      }
  
      static
-     {
--        CATEGORY_ORDER.put("key.categories.movement", 1);
--        CATEGORY_ORDER.put("key.categories.gameplay", 2);
--        CATEGORY_ORDER.put("key.categories.inventory", 3);
--        CATEGORY_ORDER.put("key.categories.creative", 4);
--        CATEGORY_ORDER.put("key.categories.multiplayer", 5);
--        CATEGORY_ORDER.put("key.categories.ui", 6);
--        CATEGORY_ORDER.put("key.categories.misc", 7);
-+        CATEGORY_ORDER.put("key.categories.movement", Integer.valueOf(1));
-+        CATEGORY_ORDER.put("key.categories.gameplay", Integer.valueOf(2));
-+        CATEGORY_ORDER.put("key.categories.inventory", Integer.valueOf(3));
-+        CATEGORY_ORDER.put("key.categories.creative", Integer.valueOf(4));
-+        CATEGORY_ORDER.put("key.categories.multiplayer", Integer.valueOf(5));
-+        CATEGORY_ORDER.put("key.categories.ui", Integer.valueOf(6));
-+        CATEGORY_ORDER.put("key.categories.misc", Integer.valueOf(7));
-     }
- }

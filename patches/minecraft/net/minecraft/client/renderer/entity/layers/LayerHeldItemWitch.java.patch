@@ -1,24 +1,6 @@
 --- before/net/minecraft/client/renderer/entity/layers/LayerHeldItemWitch.java
 +++ after/net/minecraft/client/renderer/entity/layers/LayerHeldItemWitch.java
-@@ -23,16 +23,7 @@
-         this.witchRenderer = witchRendererIn;
-     }
- 
--    public void doRenderLayer(
--        EntityWitch entitylivingbaseIn,
--        float limbSwing,
--        float limbSwingAmount,
--        float partialTicks,
--        float ageInTicks,
--        float netHeadYaw,
--        float headPitch,
--        float scale
--    )
-+    public void doRenderLayer(EntityWitch entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-     {
-         ItemStack itemstack = entitylivingbaseIn.getHeldItemMainhand();
- 
-@@ -62,7 +53,7 @@
+@@ -62,7 +62,7 @@
                  float f1 = 0.375F;
                  GlStateManager.scale(0.375F, -0.375F, 0.375F);
              }
@@ -27,11 +9,3 @@
              {
                  GlStateManager.translate(0.0F, 0.125F, -0.125F);
                  GlStateManager.rotate(-45.0F, 0.0F, 1.0F, 0.0F);
-@@ -103,7 +94,6 @@
-         }
-     }
- 
--    @Override
-     public boolean shouldCombineTextures()
-     {
-         return false;

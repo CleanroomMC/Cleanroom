@@ -1,17 +1,6 @@
 --- before/net/minecraft/client/util/RecipeItemHelper.java
 +++ after/net/minecraft/client/util/RecipeItemHelper.java
-@@ -8,8 +8,10 @@
- import it.unimi.dsi.fastutil.ints.IntCollection;
- import it.unimi.dsi.fastutil.ints.IntIterator;
- import it.unimi.dsi.fastutil.ints.IntList;
-+import it.unimi.dsi.fastutil.ints.IntListIterator;
- import java.util.BitSet;
- import java.util.List;
-+import java.util.function.Predicate;
- import javax.annotation.Nullable;
- import net.minecraft.item.Item;
- import net.minecraft.item.ItemStack;
-@@ -22,10 +24,15 @@
+@@ -22,10 +22,15 @@
  
      public void accountStack(ItemStack stack)
      {
@@ -28,101 +17,7 @@
              this.increment(i, j);
          }
      }
-@@ -69,7 +76,7 @@
- 
-     public boolean canCraft(IRecipe recipe, @Nullable IntList packedItemList, int maxAmount)
-     {
--        return new RecipeItemHelper.RecipePicker(recipe).tryPick(maxAmount, packedItemList);
-+        return (new RecipeItemHelper.RecipePicker(recipe)).tryPick(maxAmount, packedItemList);
-     }
- 
-     public int getBiggestCraftableStack(IRecipe recipe, @Nullable IntList packedItemList)
-@@ -79,7 +86,7 @@
- 
-     public int getBiggestCraftableStack(IRecipe recipe, int maxAmount, @Nullable IntList packedItemList)
-     {
--        return new RecipeItemHelper.RecipePicker(recipe).tryPickAll(maxAmount, packedItemList);
-+        return (new RecipeItemHelper.RecipePicker(recipe)).tryPickAll(maxAmount, packedItemList);
-     }
- 
-     public static ItemStack unpack(int packedItem)
-@@ -106,17 +113,20 @@
-         {
-             this.recipe = recipeIn;
-             this.ingredients.addAll(recipeIn.getIngredients());
--            this.ingredients.removeIf(p_194103_0_ -> p_194103_0_ == Ingredient.EMPTY);
-+            this.ingredients.removeIf((p_194103_0_) ->
-+            {
-+                return p_194103_0_ == Ingredient.EMPTY;
-+            });
-             this.ingredientCount = this.ingredients.size();
-             this.possessedIngredientStacks = this.getUniqueAvailIngredientItems();
-             this.possessedIngredientStackCount = this.possessedIngredientStacks.length;
-             this.data = new BitSet(this.ingredientCount + this.possessedIngredientStackCount + this.ingredientCount + this.ingredientCount * this.possessedIngredientStackCount);
- 
--            for (int i = 0; i < this.ingredients.size(); i++)
-+            for (int i = 0; i < this.ingredients.size(); ++i)
-             {
-                 IntList intlist = this.ingredients.get(i).getValidItemStacksPacked();
- 
--                for (int j = 0; j < this.possessedIngredientStackCount; j++)
-+                for (int j = 0; j < this.possessedIngredientStackCount; ++j)
-                 {
-                     if (intlist.contains(this.possessedIngredientStacks[j]))
-                     {
-@@ -136,13 +146,13 @@
-             {
-                 int i;
- 
--                for (i = 0; this.dfs(maxAmount); i++)
-+                for (i = 0; this.dfs(maxAmount); ++i)
-                 {
-                     RecipeItemHelper.this.tryTake(this.possessedIngredientStacks[this.path.getInt(0)], maxAmount);
-                     int j = this.path.size() - 1;
-                     this.setSatisfied(this.path.getInt(j));
- 
--                    for (int k = 0; k < j; k++)
-+                    for (int k = 0; k < j; ++k)
-                     {
-                         this.toggleResidual((k & 1) == 0, this.path.get(k), this.path.get(k + 1));
-                     }
-@@ -163,7 +173,7 @@
-                 int l = 0;
-                 List<Ingredient> list = this.recipe.getIngredients();
- 
--                for (int i1 = 0; i1 < list.size(); i1++)
-+                for (int i1 = 0; i1 < list.size(); ++i1)
-                 {
-                     if (flag1 && list.get(i1) == Ingredient.EMPTY)
-                     {
-@@ -171,7 +181,7 @@
-                     }
-                     else
-                     {
--                        for (int j1 = 0; j1 < this.possessedIngredientStackCount; j1++)
-+                        for (int j1 = 0; j1 < this.possessedIngredientStackCount; ++j1)
-                         {
-                             if (this.hasResidual(false, l, j1))
-                             {
-@@ -185,7 +195,7 @@
-                             }
-                         }
- 
--                        l++;
-+                        ++l;
-                     }
-                 }
- 
-@@ -219,7 +229,7 @@
-         {
-             int i = this.possessedIngredientStackCount;
- 
--            for (int j = 0; j < i; j++)
-+            for (int j = 0; j < i; ++j)
-             {
-                 if (RecipeItemHelper.this.itemToCount.get(this.possessedIngredientStacks[j]) >= amount)
-                 {
-@@ -237,29 +247,21 @@
+@@ -237,29 +242,21 @@
                          }
  
                          int i1 = flag ? this.ingredientCount : i;
@@ -163,12 +58,3 @@
                          }
                      }
  
-@@ -334,7 +336,7 @@
-             {
-                 int k = (i + j) / 2;
- 
--                if (this.tryPick(k, null))
-+                if (this.tryPick(k, (IntList)null))
-                 {
-                     if (j - i <= 1)
-                     {

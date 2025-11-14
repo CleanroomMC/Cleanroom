@@ -1,73 +1,10 @@
 --- before/net/minecraft/client/renderer/tileentity/TileEntityItemStackRenderer.java
 +++ after/net/minecraft/client/renderer/tileentity/TileEntityItemStackRenderer.java
-@@ -1,6 +1,7 @@
- package net.minecraft.client.renderer.tileentity;
- 
- import com.mojang.authlib.GameProfile;
-+import java.util.UUID;
- import net.minecraft.block.Block;
- import net.minecraft.block.BlockChest;
- import net.minecraft.block.BlockShulkerBox;
-@@ -51,24 +52,19 @@
-         if (item == Items.BANNER)
-         {
-             this.banner.setItemValues(itemStackIn, false);
--            TileEntityRendererDispatcher.instance.render(this.banner, 0.0, 0.0, 0.0, 0.0F, partialTicks);
-+            TileEntityRendererDispatcher.instance.render(this.banner, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks);
-         }
-         else if (item == Items.BED)
-         {
-             this.bed.setItemValues(itemStackIn);
--            TileEntityRendererDispatcher.instance.render(this.bed, 0.0, 0.0, 0.0, 0.0F);
-+            TileEntityRendererDispatcher.instance.render(this.bed, 0.0D, 0.0D, 0.0D, 0.0F);
-         }
-         else if (item == Items.SHIELD)
-         {
-             if (itemStackIn.getSubCompound("BlockEntityTag") != null)
-             {
-                 this.banner.setItemValues(itemStackIn, true);
--                Minecraft.getMinecraft()
--                .getTextureManager()
--                .bindTexture(
--                    BannerTextures.SHIELD_DESIGNS
--                    .getResourceLocation(this.banner.getPatternResourceLocation(), this.banner.getPatternList(), this.banner.getColorList())
--                );
-+                Minecraft.getMinecraft().getTextureManager().bindTexture(BannerTextures.SHIELD_DESIGNS.getResourceLocation(this.banner.getPatternResourceLocation(), this.banner.getPatternList(), this.banner.getColorList()));
-             }
-             else
-             {
-@@ -94,7 +90,7 @@
-                 }
-                 else if (nbttagcompound.hasKey("SkullOwner", 8) && !StringUtils.isBlank(nbttagcompound.getString("SkullOwner")))
-                 {
--                    GameProfile gameprofile1 = new GameProfile(null, nbttagcompound.getString("SkullOwner"));
-+                    GameProfile gameprofile1 = new GameProfile((UUID)null, nbttagcompound.getString("SkullOwner"));
-                     gameprofile = TileEntitySkull.updateGameProfile(gameprofile1);
-                     nbttagcompound.removeTag("SkullOwner");
-                     nbttagcompound.setTag("SkullOwner", NBTUtil.writeGameProfile(new NBTTagCompound(), gameprofile));
-@@ -112,20 +108,20 @@
-         }
-         else if (item == Item.getItemFromBlock(Blocks.ENDER_CHEST))
-         {
--            TileEntityRendererDispatcher.instance.render(this.enderChest, 0.0, 0.0, 0.0, 0.0F, partialTicks);
-+            TileEntityRendererDispatcher.instance.render(this.enderChest, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks);
-         }
-         else if (item == Item.getItemFromBlock(Blocks.TRAPPED_CHEST))
-         {
--            TileEntityRendererDispatcher.instance.render(this.chestTrap, 0.0, 0.0, 0.0, 0.0F, partialTicks);
-+            TileEntityRendererDispatcher.instance.render(this.chestTrap, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks);
-         }
-         else if (Block.getBlockFromItem(item) instanceof BlockShulkerBox)
-         {
--            TileEntityRendererDispatcher.instance
--            .render(SHULKER_BOXES[BlockShulkerBox.getColorFromItem(item).getMetadata()], 0.0, 0.0, 0.0, 0.0F, partialTicks);
-+            TileEntityRendererDispatcher.instance.render(SHULKER_BOXES[BlockShulkerBox.getColorFromItem(item).getMetadata()], 0.0D, 0.0D, 0.0D, 0.0F, partialTicks);
+@@ -123,6 +123,7 @@
+             TileEntityRendererDispatcher.instance
+             .render(SHULKER_BOXES[BlockShulkerBox.getColorFromItem(item).getMetadata()], 0.0, 0.0, 0.0, 0.0F, partialTicks);
          }
 +        else if (Block.getBlockFromItem(item) != Blocks.CHEST) net.minecraftforge.client.ForgeHooksClient.renderTileItem(itemStackIn.getItem(), itemStackIn.getMetadata());
          else
          {
--            TileEntityRendererDispatcher.instance.render(this.chestBasic, 0.0, 0.0, 0.0, 0.0F, partialTicks);
-+            TileEntityRendererDispatcher.instance.render(this.chestBasic, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks);
-         }
-     }
- 
+             TileEntityRendererDispatcher.instance.render(this.chestBasic, 0.0, 0.0, 0.0, 0.0F, partialTicks);

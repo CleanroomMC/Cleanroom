@@ -1,37 +1,6 @@
 --- before/net/minecraft/client/renderer/tileentity/TileEntitySpecialRenderer.java
 +++ after/net/minecraft/client/renderer/tileentity/TileEntitySpecialRenderer.java
-@@ -16,28 +16,14 @@
- @SideOnly(Side.CLIENT)
- public abstract class TileEntitySpecialRenderer<T extends TileEntity>
- {
--    protected static final ResourceLocation[] DESTROY_STAGES = new ResourceLocation[]
--        {
--            new ResourceLocation("textures/blocks/destroy_stage_0.png"),
--            new ResourceLocation("textures/blocks/destroy_stage_1.png"),
--            new ResourceLocation("textures/blocks/destroy_stage_2.png"),
--            new ResourceLocation("textures/blocks/destroy_stage_3.png"),
--            new ResourceLocation("textures/blocks/destroy_stage_4.png"),
--            new ResourceLocation("textures/blocks/destroy_stage_5.png"),
--            new ResourceLocation("textures/blocks/destroy_stage_6.png"),
--            new ResourceLocation("textures/blocks/destroy_stage_7.png"),
--            new ResourceLocation("textures/blocks/destroy_stage_8.png"),
--            new ResourceLocation("textures/blocks/destroy_stage_9.png")
--        };
-+    protected static final ResourceLocation[] DESTROY_STAGES = new ResourceLocation[] {new ResourceLocation("textures/blocks/destroy_stage_0.png"), new ResourceLocation("textures/blocks/destroy_stage_1.png"), new ResourceLocation("textures/blocks/destroy_stage_2.png"), new ResourceLocation("textures/blocks/destroy_stage_3.png"), new ResourceLocation("textures/blocks/destroy_stage_4.png"), new ResourceLocation("textures/blocks/destroy_stage_5.png"), new ResourceLocation("textures/blocks/destroy_stage_6.png"), new ResourceLocation("textures/blocks/destroy_stage_7.png"), new ResourceLocation("textures/blocks/destroy_stage_8.png"), new ResourceLocation("textures/blocks/destroy_stage_9.png")};
-     protected TileEntityRendererDispatcher rendererDispatcher;
- 
-     public void render(T te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
-     {
-         ITextComponent itextcomponent = te.getDisplayName();
- 
--        if (itextcomponent != null
--                && this.rendererDispatcher.cameraHitResult != null
--                && te.getPos().equals(this.rendererDispatcher.cameraHitResult.getBlockPos()))
-+        if (itextcomponent != null && this.rendererDispatcher.cameraHitResult != null && te.getPos().equals(this.rendererDispatcher.cameraHitResult.getBlockPos()))
-         {
-             this.setLightmapDisabled(true);
-             this.drawNameplate(te, itextcomponent.getFormattedText(), x, y, z, 12);
-@@ -91,19 +77,19 @@
+@@ -91,6 +91,8 @@
          return false;
      }
  
@@ -40,18 +9,3 @@
      protected void drawNameplate(T te, String str, double x, double y, double z, int maxDistance)
      {
          Entity entity = this.rendererDispatcher.entity;
-         double d0 = te.getDistanceSq(entity.posX, entity.posY, entity.posZ);
- 
--        if (!(d0 > (double)(maxDistance * maxDistance)))
-+        if (d0 <= (double)(maxDistance * maxDistance))
-         {
-             float f = this.rendererDispatcher.entityYaw;
-             float f1 = this.rendererDispatcher.entityPitch;
-             boolean flag = false;
--            EntityRenderer.drawNameplate(
--                this.getFontRenderer(), str, (float)x + 0.5F, (float)y + 1.5F, (float)z + 0.5F, 0, f, f1, false, false
--            );
-+            EntityRenderer.drawNameplate(this.getFontRenderer(), str, (float)x + 0.5F, (float)y + 1.5F, (float)z + 0.5F, 0, f, f1, false, false);
-         }
-     }
- }
