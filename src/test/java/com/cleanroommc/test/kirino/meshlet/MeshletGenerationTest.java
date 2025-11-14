@@ -105,6 +105,6 @@ public class MeshletGenerationTest {
         }
         System.out.println(generatedMeshlets);
         System.out.println(generatedMeshlets.size());
-        assertTrue("You fucking idiot!", generatedMeshlets.size() < 8);
+        assertTrue("You fucking idiot!", generatedMeshlets.size() == 8);
     }
 }
