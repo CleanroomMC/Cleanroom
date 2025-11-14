@@ -22,15 +22,38 @@ public class KDTreeTest {
     }
 
     @Test
-    public void testDeletion() {
+    public void testSimpleDeletion() {
         KDTreeBlock near = new KDTreeBlock(0, 0, 0, 0b111111);
         KDTreeBlock far = new KDTreeBlock(15, 15, 15, 0b111111);
+
         KDTree kdTree = new KDTree(114514);
         kdTree.add(List.of(near, far));
+
         kdTree.delete(far);
         var neighbours = kdTree.knn(new KDTreeBlock(14,14,14, 0b111111), 32, 1, false);
+
         assertTrue(neighbours.isPresent());
         assertTrue(neighbours.get().contains(near));
+        assertFalse(neighbours.get().contains(far));
+    }
+
+    @Test
+    public void testDeletion() {
+        KDTreeBlock near = new KDTreeBlock(0, 0, 0, 0b111111);
+        KDTreeBlock inner1 = new KDTreeBlock(7, 15, 15, 0b111111);
+        KDTreeBlock inner2 = new KDTreeBlock(7, 10, 15, 0b111111);
+        KDTreeBlock inner3 = new KDTreeBlock(7, 7, 15, 0b111111);
+        KDTreeBlock inner4 = new KDTreeBlock(7, 10, 10, 0b111111);
+        KDTreeBlock far = new KDTreeBlock(15, 15, 15, 0b111111);
+
+        KDTree kdTree = new KDTree(114514);
+        kdTree.add(List.of(near, far, inner1, inner2, inner3, inner4));
+
+        kdTree.delete(far);
+        var neighbours = kdTree.knn(new KDTreeBlock(14,14,14, 0b111111), 32, 1, false);
+
+        assertTrue(neighbours.isPresent());
+        assertTrue(neighbours.get().contains(inner1));
         assertFalse(neighbours.get().contains(far));
     }
 

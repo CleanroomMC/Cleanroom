@@ -2,7 +2,6 @@ package com.cleanroommc.kirino.engine.render.task.adt;
 
 import com.cleanroommc.kirino.utils.QuantileUtils;
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.objects.*;
 import org.jspecify.annotations.NonNull;
@@ -41,6 +40,7 @@ public class KDTree {
         while (!recurrenceStack.isEmpty()) {
             Recurrence recurrence = recurrenceStack.pop();
             final int dimension = recurrence.depth % 3;
+            recurrence.node.axis = dimension;
             if (recurrence.toInsert != null) {
                 if (recurrence.toInsert.size() == 1) {
                     recurrence.node.point = recurrence.toInsert.getFirst();
@@ -74,12 +74,12 @@ public class KDTree {
                     }
                     if (!left.isEmpty()) {
                         recurrence.node.left = new Node();
+                        recurrenceStack.push(new Recurrence(recurrence.node.left, left, recurrence.depth + 1));
                     }
                     if (!right.isEmpty()) {
                         recurrence.node.right = new Node();
+                        recurrenceStack.push(new Recurrence(recurrence.node.right, right, recurrence.depth + 1));
                     }
-                    recurrenceStack.push(new Recurrence(recurrence.node.left, left, recurrence.depth + 1));
-                    recurrenceStack.push(new Recurrence(recurrence.node.right, right, recurrence.depth + 1));
                 }
             }
         }
@@ -92,8 +92,10 @@ public class KDTree {
             return Optional.empty();
         }
 
-        PriorityQueue<KDTreeBlock> neighbours = new ObjectArrayPriorityQueue<>((a, b) -> (a.distanceSquared(vector) - b.distanceSquared(vector)));
-        float cutoffSquared = cutoff*cutoff;
+        // Max-heap to discard furthest neighbors
+        BoundedPriorityQueue<KDTreeBlock> neighbors = new BoundedPriorityQueue<>(ObjectArrayPriorityQueue::new,
+                k, Comparator.<KDTreeBlock>comparingInt(a -> a.distanceSquared(vector)).reversed());
+        float cutoffSquared = cutoff * cutoff;
 
         Stack<Node> stack = new ReferenceArrayList<>();
         stack.push(root);
@@ -102,42 +104,43 @@ public class KDTree {
             if (node.point == null) {
                 continue;
             }
-            if (node.point.distanceSquared(vector) <= cutoffSquared) {
-                neighbours.enqueue(node.point);
+            neighbors.enqueue(node.point);
+
+            int axis = node.axis;
+            Node near, far;
+            float diff = compareMeshletDimension(node.point, vector, axis);
+            if (diff < 0) {
+                near = node.left;
+                far = node.right;
+            }
+            else {
+                near = node.right;
+                far = node.left;
             }
 
-            float distanceLeft = Float.MAX_VALUE;
-            float distanceRight = Float.MAX_VALUE;
-
-            if (node.left != null && node.left.point != null) {
-                distanceLeft = node.left.point.distanceSquared(vector);
-            }
-            if (node.right != null && node.right.point != null) {
-                distanceRight = node.right.point.distanceSquared(vector);
+            // The subtree that contains the target is always checked
+            if (near != null) {
+                stack.push(near);
             }
 
-            if (distanceLeft < distanceRight || distanceLeft <= cutoff) {
-                stack.push(node.left);
+            float furthestDist = cutoffSquared;
+            if (neighbors.remainingCapacity() > 0) {
+                furthestDist = Math.min(neighbors.first().distanceSquared(vector), furthestDist);
             }
-            if (distanceRight < distanceLeft || distanceRight <= cutoff) {
-                stack.push(node.right);
+            // Other subtree is only checked if its splitting plane intersects the candidate sphere (around the target)
+            if (diff * diff <= furthestDist && far != null) {
+                stack.push(far);
             }
         }
 
-        if (neighbours.isEmpty()) {
-            return Optional.empty();
-        }
-
-        List<KDTreeBlock> meshlets = new ReferenceArrayList<>();
-
-        while (meshlets.size() < k && !neighbours.isEmpty()) {
-            KDTreeBlock found = neighbours.dequeue();
-            if (removeEquals && found.equals(vector)) {
+        List<KDTreeBlock> meshlets = new ReferenceArrayList<>(neighbors.size());
+        while (!neighbors.isEmpty()) {
+            KDTreeBlock neighbor = neighbors.dequeue();
+            if (removeEquals && neighbor.equals(vector)) {
                 continue;
             }
-            meshlets.add(found);
+            meshlets.add(neighbor);
         }
-
         return !meshlets.isEmpty() ? Optional.of(meshlets) : Optional.empty();
     }
 
@@ -147,34 +150,34 @@ public class KDTree {
             return Optional.empty();
         }
 
-        int dimension = depth % 3;
+        int nextDepth = (depth + 1) % 3;
 
         if (from.point.distanceSquared(point) == 0) {
             if (from.right != null) {
-                Optional<Node> min = findMin(from.right, dimension, depth);
+                Optional<Node> min = findMin(from.right, depth, nextDepth);
                 if (min.isPresent()) {
                     from.point = min.get().point;
-                    from.right = _delete(from.right, min.get().point, depth + 1).orElse(null);
+                    from.right = _delete(from.right, min.get().point, nextDepth).orElse(null);
                 }
             } else if (from.left != null) {
-                Optional<Node> min = findMin(from.left, dimension, depth);
+                Optional<Node> min = findMin(from.left, depth, nextDepth);
                 if (min.isPresent()) {
                     from.point = min.get().point;
-                    from.left = _delete(from.left, min.get().point, depth + 1).orElse(null);
+                    // Swap the subtrees
+                    from.right = _delete(from.left, min.get().point, nextDepth).orElse(null);
+                    from.left = null;
                 }
             } else {
                 from = null;
             }
-            return Optional.ofNullable(from);
         }
-
-        if (compareMeshletDimension(from.point, point, dimension) < 0) {
-            from.left = _delete(from.left, point, depth + 1).orElse(null);
+        else if (compareMeshletDimension(from.point, point, depth) < 0) {
+            from.left = _delete(from.left, point, nextDepth).orElse(null);
         } else {
-            from.right = _delete(from.right, point, depth + 1).orElse(null);
+            from.right = _delete(from.right, point, nextDepth).orElse(null);
         }
 
-        return Optional.of(from);
+        return Optional.ofNullable(from);
     }
 
     public void delete(@NonNull KDTreeBlock meshlet) {
@@ -188,24 +191,24 @@ public class KDTree {
             return Optional.empty();
         }
 
-        int cd = depth % 3;
+        int nextDepth = (depth + 1) % 3;
 
-        if (cd == dimension) {
+        if (depth == dimension) {
             if (from.left == null) {
                 return Optional.of(from);
             }
-            return findMin(from.left, dimension, depth + 1);
+            return findMin(from.left, dimension, nextDepth);
         }
 
-        Optional<Node> left = findMin(from.left, dimension, depth + 1);
-        Optional<Node> right = findMin(from.right, dimension, depth + 1);
+        Optional<Node> left = findMin(from.left, dimension, nextDepth);
+        Optional<Node> right = findMin(from.right, dimension, nextDepth);
 
         Optional<Node> min = Optional.of(from);
 
-        if (left.isPresent() && compareMeshletDimension(from.point, left.get().point, dimension) < 0) {
+        if (left.isPresent() && compareMeshletDimension(min.get().point, left.get().point, dimension) < 0) {
             min = left;
         }
-        if (right.isPresent() && compareMeshletDimension(from.point, right.get().point, dimension) < 0) {
+        if (right.isPresent() && compareMeshletDimension(min.get().point, right.get().point, dimension) < 0) {
             min = right;
         }
 
@@ -278,6 +281,7 @@ public class KDTree {
     private static class Node {
         KDTreeBlock point;
         Node left, right;
+        int axis;
 
         @Override
         public String toString() {
@@ -287,6 +291,7 @@ public class KDTree {
                     left +
                     ", right=" +
                     right +
+                    ", axis=" +
                     "]";
         }
     }
