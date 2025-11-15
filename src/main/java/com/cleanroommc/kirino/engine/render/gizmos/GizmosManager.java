@@ -6,7 +6,7 @@ import com.cleanroommc.kirino.engine.render.pipeline.draw.cmd.HighLevelDC;
 import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
 import com.cleanroommc.kirino.engine.render.resource.UploadStrategy;
 import com.cleanroommc.kirino.engine.render.resource.builder.MeshTicketBuilder;
-import com.cleanroommc.kirino.engine.render.task.adt.Meshlet;
+import com.cleanroommc.kirino.engine.render.task.meshing.Meshlet;
 import com.cleanroommc.kirino.gl.vao.attribute.AttributeLayout;
 import com.cleanroommc.kirino.gl.vao.attribute.Slot;
 import com.cleanroommc.kirino.gl.vao.attribute.Stride;
