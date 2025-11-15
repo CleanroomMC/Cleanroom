@@ -2,11 +2,11 @@ package com.cleanroommc.kirino.engine.render.gizmos;
 
 import com.cleanroommc.kirino.KirinoCore;
 import com.cleanroommc.kirino.engine.render.geometry.Block;
+import com.cleanroommc.kirino.engine.render.geometry.Meshlet;
 import com.cleanroommc.kirino.engine.render.pipeline.draw.cmd.HighLevelDC;
 import com.cleanroommc.kirino.engine.render.resource.GraphicResourceManager;
 import com.cleanroommc.kirino.engine.render.resource.UploadStrategy;
 import com.cleanroommc.kirino.engine.render.resource.builder.MeshTicketBuilder;
-import com.cleanroommc.kirino.engine.render.task.adt.Meshlet;
 import com.cleanroommc.kirino.gl.vao.attribute.AttributeLayout;
 import com.cleanroommc.kirino.gl.vao.attribute.Slot;
 import com.cleanroommc.kirino.gl.vao.attribute.Stride;
@@ -37,11 +37,11 @@ public class GizmosManager {
 
     // test
     public void addMeshlet(Meshlet meshlet) {
-        KirinoCore.LOGGER.info("Added a meshlet (" + meshlet.blockList().size() + " blocks). current meshlet count: " + counter.addAndGet(1) + ", current block count: " + blockSurfaces.size());
+        KirinoCore.LOGGER.info("Added a meshlet (" + meshlet.blocks.size() + " blocks). current meshlet count: " + counter.addAndGet(1) + ", current block count: " + blockSurfaces.size());
 
         Random random = new Random();
         Color color = new Color(random.nextFloat(), random.nextFloat(), random.nextFloat(), 0.5f);
-        for (Block block : meshlet.blockList()) {
+        for (Block block : meshlet.blocks) {
             StringBuilder face = new StringBuilder();
             face.append((block.faces & FACE_X_POS) != 0 ? "1" : "0")
                     .append((block.faces & FACE_X_NEG) != 0 ? "1" : "0")

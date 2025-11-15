@@ -25,12 +25,8 @@ public class ChunkMeshletGenSystem extends CleanSystem {
     @Override
     public void update(@NonNull EntityManager entityManager, @NonNull JobScheduler jobScheduler) {
         Map<String, Object> externalData = Collections.synchronizedMap(new HashMap<>());
-        // TODO: Replace 256 with a variable in case we ever want to give people an option to increase the world height
-        for (int y = 0; y < 256; y += 16) {
-            externalData.put("startY", y);
-            externalData.put("chunkProvider", chunkClient);
-            externalData.put("gizmosManager", gizmosManager);
-            jobScheduler.executeParallel(entityManager, ChunkMeshletGenJob.class, externalData, ForkJoinPool.commonPool());
-        }
+        externalData.put("chunkProvider", chunkClient);
+        externalData.put("gizmosManager", gizmosManager);
+        jobScheduler.executeParallel(entityManager, ChunkMeshletGenJob.class, externalData, ForkJoinPool.commonPool());
     }
 }

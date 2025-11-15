@@ -55,6 +55,7 @@ public class MinecraftScene extends CleanWorld {
             // test: input 0 0 chunk
             ChunkComponent chunkComponent = new ChunkComponent();
             chunkComponent.chunkPosX = 0;
+            chunkComponent.chunkPosY = 0;
             chunkComponent.chunkPosZ = 0;
             entityManager.createEntity(chunkComponent);
 
