@@ -13,7 +13,7 @@ import com.cleanroommc.kirino.engine.render.geometry.component.MeshletComponent;
 import com.cleanroommc.kirino.engine.render.gizmos.GizmosManager;
 import com.cleanroommc.kirino.engine.render.task.adt.KDTree;
 import com.cleanroommc.kirino.engine.render.task.adt.KDTreeBlock;
-import com.cleanroommc.kirino.engine.render.task.adt.Meshlet;
+import com.cleanroommc.kirino.engine.render.task.meshing.Meshlet;
 import com.cleanroommc.kirino.engine.render.task.meshing.BoundedChunk;
 import com.cleanroommc.kirino.engine.render.task.meshing.Visibility;
 import com.google.common.base.Preconditions;
@@ -201,19 +201,20 @@ public class ChunkMeshletGenJob implements IParallelJob {
                 transparent);
         while (!stack.isEmpty() && meshlet.size() < 32) {
             // Get 4 at once instead of just one like in normal NNS because it's faster
-            Optional<List<KDTreeBlock>> nearest = tree.knn(stack.pop(), 1.f, 1, true);
+            Optional<List<KDTreeBlock>> nearest = tree.knn(stack.pop(), 1.f, 4, true);
             if (nearest.isPresent() && !nearest.get().isEmpty()) {
-                KDTreeBlock m = nearest.get().getFirst();
-                if (meshlet.size() >= 32) {
-                    break;
-                }
-                stack.push(m);
-                meshlet.addBlock(new Block(
+                for (KDTreeBlock m : nearest.get()) {
+                    if (meshlet.size() >= 32) {
+                        break;
+                    }
+                    stack.push(m);
+                    meshlet.addBlock(new Block(
                             chunkX + m.x,
                             chunkY + m.y,
                             chunkZ + m.z,
                             m.faces));
-                tree.delete(m);
+                    tree.delete(m);
+                }
             }
         }
 
