@@ -12,12 +12,13 @@ import com.cleanroommc.kirino.engine.render.geometry.component.ChunkComponent;
 import com.cleanroommc.kirino.engine.render.geometry.component.MeshletComponent;
 import com.cleanroommc.kirino.engine.render.gizmos.GizmosManager;
 import com.cleanroommc.kirino.engine.render.task.adt.KDTree;
-import com.cleanroommc.kirino.engine.render.task.adt.Meshlet;
 import com.cleanroommc.kirino.engine.render.task.adt.KDTreeBlock;
+import com.cleanroommc.kirino.engine.render.task.adt.Meshlet;
+import com.cleanroommc.kirino.engine.render.task.meshing.BoundedChunk;
+import com.cleanroommc.kirino.engine.render.task.meshing.Visibility;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.util.EnumFacing;
@@ -27,6 +28,8 @@ import org.jspecify.annotations.NonNull;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import static com.cleanroommc.kirino.engine.render.task.meshing.Visibility.*;
 
 public class ChunkMeshletGenJob implements IParallelJob {
     @JobExternalDataQuery
@@ -55,25 +58,102 @@ public class ChunkMeshletGenJob implements IParallelJob {
 
         int x = chunkPosXArray.getInt(index);
         int z = chunkPosZArray.getInt(index);
-        Chunk chunk = chunkProvider.provideChunk(x, z);
-        if (chunk.isEmptyBetween(startY, startY+16)) {
+
+        BoundedChunk chunk = new BoundedChunk(chunkProvider, x, z);
+        if (chunk.getCenter().isEmptyBetween(startY, startY + 16)) {
             return;
         }
         KirinoCore.LOGGER.info("debug chunk xz: {}, {}", x, z);
         List<Meshlet> meshlets = new ObjectArrayList<>();
         MeshletComponent meshletComponent = new MeshletComponent();
-        int chunkX = chunk.x << 4;
-        int chunkZ = chunk.z << 4;
+
+        int chunkX = chunk.centerX << 4;
+        int chunkZ = chunk.centerZ << 4;
+        QuadGroups quadGroups = buildQuadGroups(chunk, chunkX, startY, chunkZ);
+
         KDTree[] forest = new KDTree[6];
         KDTree[] transparentForest = new KDTree[6];
-        buildKDTree(chunk, chunkX, startY, chunkZ, forest, transparentForest);
+        buildKDTree(quadGroups, chunkX, startY, chunkZ, forest, transparentForest);
         for (EnumFacing side : EnumFacing.values()) {
-            meshlets.addAll(generateMeshlets(chunk, startY, side, forest[side.getIndex()], transparentForest[side.getIndex()]));
+            meshlets.addAll(generateMeshlets(chunk.getCenter(), startY, side, forest[side.getIndex()], transparentForest[side.getIndex()]));
         }
         for (Meshlet meshlet : meshlets) {
             setMeshletComponent(meshlet, meshletComponent);
             entityManager.createEntity(meshletComponent);
             gizmosManager.addMeshlet(meshlet);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private QuadGroups buildQuadGroups(@NonNull BoundedChunk chunk, int chunkX, int chunkY, int chunkZ) {
+        Preconditions.checkNotNull(chunk);
+
+        EnumFacing[] sides = EnumFacing.values();
+        List<KDTreeBlock>[] opaqueGroups = new ObjectArrayList[sides.length];
+        List<KDTreeBlock>[] transparentGroups = new ObjectArrayList[sides.length];
+
+        for (int i = 0; i < sides.length; i++) {
+            opaqueGroups[i] = new ObjectArrayList<>();
+            transparentGroups[i] = new ObjectArrayList<>();
+        }
+
+        // TODO: Cache calls to getBlockState
+        for (int x = 0; x < 16; x++) {
+            for (int y = 0; y < 16; y++) {
+                for (int z = 0; z < 16; z++) {
+                    switch (chunk.getVisibility(x, y, z, null)) {
+                        case EMPTY -> {
+                        }
+                        case Visibility vis -> {
+                            int faces = 0;
+                            // Gather the faces to render
+                            for (EnumFacing side : sides) {
+                                Visibility neighborVis = chunk.getVisibility(x, y, z, side);
+                                boolean generate;
+                                if ((vis == OPAQUE && (neighborVis == EMPTY || neighborVis == TRANSPARENT))
+                                        || (vis == TRANSPARENT && neighborVis == EMPTY)) {
+                                    generate = true;
+                                } else if (vis == TRANSPARENT && neighborVis == TRANSPARENT) {
+                                    IBlockState state = chunk.getBlockState(x, y, z, null);
+                                    IBlockState neighborState = chunk.getBlockState(x, y, z, side);
+                                    generate = state != neighborState;
+                                } else {
+                                    generate = false;
+                                }
+
+                                if (generate) {
+                                    faces |= PERMUTATION[side.getIndex()];
+                                }
+                            }
+                            // Add the faces to their groups
+                            for (int i = 0; i < sides.length; i++) {
+                                if ((faces & PERMUTATION[i]) != PERMUTATION[i]) {
+                                    continue;
+                                }
+                                if (chunk.getVisibility(x, y, z, null) == OPAQUE) {
+                                    opaqueGroups[i].add(new KDTreeBlock(x + chunkX, y + chunkY, z + chunkZ, faces));
+                                } else {
+                                    transparentGroups[i].add(new KDTreeBlock(x + chunkX, y + chunkY, z + chunkZ, faces));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return new QuadGroups(opaqueGroups, transparentGroups);
+    }
+
+    private void buildKDTree(@NonNull QuadGroups quadGroups, int chunkX, int chunkY, int chunkZ, KDTree[] forest, KDTree[] transparentForest) {
+        final long seed = Objects.hash(chunkX, chunkY, chunkZ);
+
+        EnumFacing[] sides = EnumFacing.values();
+
+        for (int i = 0; i < sides.length; i++) {
+            forest[i] = new KDTree(seed);
+            forest[i].add(quadGroups.opaque()[i]);
+            transparentForest[i] = new KDTree(seed);
+            transparentForest[i].add(quadGroups.transparent()[i]);
         }
     }
 
@@ -96,77 +176,6 @@ public class ChunkMeshletGenJob implements IParallelJob {
         }
 
         return meshlets;
-    }
-
-    public void buildKDTree(@NonNull Chunk chunk, int chunkX, int chunkY, int chunkZ, KDTree[] forest, KDTree[] transparentForest) {
-        Preconditions.checkNotNull(chunk);
-
-        final long seed = Objects.hash(chunkX, chunkY, chunkZ);
-
-        EnumFacing[] sides = EnumFacing.values();
-        List<KDTreeBlock>[] toAdd = new ObjectArrayList[sides.length];
-        List<KDTreeBlock>[] transparents = new ObjectArrayList[sides.length];
-
-        for (int i = 0; i < sides.length; i++) {
-            toAdd[i] = new ObjectArrayList<>();
-            transparents[i] = new ObjectArrayList<>();
-        }
-
-        for (int x = chunkX; x < chunkX + 16; x++) {
-            for (int y = chunkY; y < chunkY + 16; y++) {
-                for (int z = chunkZ; z < chunkZ + 16; z++) {
-                    IBlockState state = chunk.getBlockState(x,y,z);
-                    if (state.isFullCube() && state.getMaterial() != Material.AIR) {
-                        int faces = 0;
-                        for (EnumFacing side : EnumFacing.values()) {
-                            if (!isOpaqueBlockPresent(chunk,
-                                    chunkX, chunkY, chunkZ,
-                                    x + side.getXOffset(), y + side.getYOffset(), z + side.getZOffset(), state)) {
-                                faces |= PERMUTATION[side.getIndex()];
-                            }
-                        }
-                        for (int i = 0; i < 6; i++) {
-                            // The tree building function KDTree::add uses a list for maximizing the balance.
-                            if ((faces & PERMUTATION[i]) != PERMUTATION[i]) {
-                                continue;
-                            }
-                            if (state.isOpaqueCube()) {
-                                toAdd[i].add(new KDTreeBlock(x, y, z, faces));
-                            } else {
-                                transparents[i].add(new KDTreeBlock(x, y, z, faces));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        for (int i = 0; i < sides.length; i++) {
-            forest[i] = new KDTree(seed);
-            forest[i].add(toAdd[i]);
-            transparentForest[i] = new KDTree(seed);
-            transparentForest[i].add(transparents[i]);
-        }
-    }
-
-    private static boolean isOpaqueBlockPresent(@NonNull Chunk chunk,
-                                                int cpX,
-                                                int cpY,
-                                                int cpZ,
-                                                int x,
-                                                int y,
-                                                int z,
-                                                IBlockState blockState) {
-        if (y < cpY || y >= cpY+16) {
-            return false;
-        }
-        if (x < cpX || x >= cpX+16) {
-            return false;
-        }
-        if (z < cpZ || z >= cpZ+16) {
-            return false;
-        }
-        return blockState.isOpaqueCube();
     }
 
     // Ironically it's closer to BFS, but it has the main trait of NNC which is the clustering.
@@ -334,4 +343,6 @@ public class ChunkMeshletGenJob implements IParallelJob {
     private static final int[] PERMUTATION = {
         0b000100, 0b001000, 0b000001, 0b000010, 0b010000, 0b100000
     };
+
+    private record QuadGroups(List<KDTreeBlock>[] opaque, List<KDTreeBlock>[] transparent) {}
 }
