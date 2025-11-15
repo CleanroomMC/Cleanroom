@@ -225,9 +225,9 @@ public class KDTree {
         }
 
         Node curr = root;
-        while ((curr.left != null && curr.left.point != null)
-                || ((curr.right != null && curr.right.point != null)
-                && (curr.right.left != null && curr.right.left.point != null))) {
+        while (curr.left != null
+                || curr.right != null
+                && curr.right.left != null) {
             if (curr.left == null) {
                 curr = curr.right.left;
             } else {
@@ -248,9 +248,9 @@ public class KDTree {
         }
 
         Node curr = root;
-        while ((curr.right != null && curr.right.point != null)
-                || ((curr.left != null && curr.left.point != null)
-                && (curr.left.right != null && curr.left.right.point != null))) {
+        while (curr.right != null
+                || curr.left != null
+                && curr.left.right != null) {
             if (curr.right == null) {
                 curr = curr.left.right;
             } else {
