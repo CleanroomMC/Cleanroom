@@ -1,7 +1,7 @@
 package com.cleanroommc.test.kirino.meshlet;
 
 import com.cleanroommc.kirino.engine.render.task.adt.KDTree;
-import com.cleanroommc.kirino.engine.render.task.adt.Meshlet;
+import com.cleanroommc.kirino.engine.render.task.meshing.Meshlet;
 import com.cleanroommc.kirino.engine.render.task.adt.KDTreeBlock;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.util.EnumFacing;
@@ -105,6 +105,6 @@ public class MeshletGenerationTest {
         }
         System.out.println(generatedMeshlets);
         System.out.println(generatedMeshlets.size());
-        assertTrue("You fucking idiot!", generatedMeshlets.size() == 8);
+        assertTrue("Suboptimal meshlet generation", generatedMeshlets.size() == 8);
     }
 }

@@ -1,6 +1,6 @@
 package com.cleanroommc.test.kirino;
 
-import com.cleanroommc.kirino.engine.render.task.adt.Meshlet;
+import com.cleanroommc.kirino.engine.render.task.meshing.Meshlet;
 import com.cleanroommc.kirino.utils.QuantileUtils;
 import net.minecraft.util.EnumFacing;
 import org.junit.Test;
