@@ -136,7 +136,7 @@ public class KDTree {
         List<KDTreeBlock> meshlets = new ReferenceArrayList<>(neighbors.size());
         while (!neighbors.isEmpty()) {
             KDTreeBlock neighbor = neighbors.dequeue();
-            if (removeEquals && neighbor.equals(vector)) {
+            if (removeEquals && neighbor.equals(vector) || vector.distanceSquared(neighbor) > cutoffSquared) {
                 continue;
             }
             meshlets.add(neighbor);
