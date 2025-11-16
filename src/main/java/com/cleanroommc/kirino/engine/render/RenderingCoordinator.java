@@ -98,9 +98,6 @@ public class RenderingCoordinator {
 
         stateBackup = new GLStateBackup();
 
-        scene = new MinecraftScene(ecsRuntime.entityManager, ecsRuntime.jobScheduler);
-        camera = new MinecraftCamera();
-
         cullingPatch = new MinecraftCulling();
         entityRenderingPatch = new MinecraftEntityRendering(cullingPatch);
         tesrRenderingPatch = new MinecraftTESRRendering(cullingPatch);
@@ -125,6 +122,9 @@ public class RenderingCoordinator {
         graphicResourceManager = new GraphicResourceManager(stagingBufferManager);
 
         gizmosManager = new GizmosManager(graphicResourceManager);
+
+        scene = new MinecraftScene(ecsRuntime.entityManager, ecsRuntime.jobScheduler, gizmosManager);
+        camera = new MinecraftCamera();
 
 //        stagingBufferManager.genPersistentBuffers("default", 256, 256);
 

@@ -6,6 +6,7 @@ import com.cleanroommc.kirino.ecs.entity.EntityQuery;
 import com.cleanroommc.kirino.ecs.storage.ArchetypeDataPool;
 import com.cleanroommc.kirino.ecs.storage.ArrayRange;
 import com.cleanroommc.kirino.ecs.storage.IPrimitiveArray;
+import com.google.common.base.Preconditions;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -27,6 +28,16 @@ public class JobScheduler {
         IJobInstantiator instantiator = jobRegistry.getParallelJobInstantiator(clazz);
         if (parallelJobDataQueries == null || parallelJobExternalDataQueries == null || instantiator == null) {
             throw new IllegalStateException("Parallel job class " + clazz.getName() + " isn't registered.");
+        }
+
+        if (!parallelJobExternalDataQueries.isEmpty()) {
+            Preconditions.checkArgument(externalData != null,
+                    "Argument \"externalData\" must not be null since there are %d external data queries.", parallelJobExternalDataQueries.size());
+
+            for (String key : parallelJobExternalDataQueries.keySet()) {
+                Preconditions.checkArgument(externalData.containsKey(key),
+                        "Missing the entry \"%s\" from \"externalData\".", key);
+            }
         }
 
         EntityQuery query = entityManager.newQuery();

@@ -1,12 +1,15 @@
 package com.cleanroommc.kirino.ecs.component.schema.def.field;
 
+import com.cleanroommc.kirino.KirinoCore;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarConstructor;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.scalar.ScalarDeconstructor;
 import com.cleanroommc.kirino.ecs.component.schema.def.field.struct.StructRegistry;
+import com.cleanroommc.kirino.engine.render.geometry.AABB;
 import com.cleanroommc.kirino.utils.TypeUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
@@ -109,10 +112,15 @@ public class FieldRegistry {
     // -----Field Deconstruction-----
 
     @SuppressWarnings("DataFlowIssue")
-    public Object[] flattenField(Object fieldInstance) {
-        // force primitive types cuz we use primitive types by default
-        // see CleanECSRuntime's constructor
-        Class<?> fieldClass = TypeUtils.toPrimitive(fieldInstance.getClass());
+    public @NonNull Object[] flattenField(@NonNull Object fieldInstance) {
+        Preconditions.checkNotNull(fieldInstance);
+
+        Class<?> fieldClass = fieldInstance.getClass();
+        if (TypeUtils.isWrappedPrimitive(fieldClass)) {
+            // force primitive types cuz we use primitive types by default
+            // see CleanECSRuntime's constructor
+            fieldClass = TypeUtils.toPrimitive(fieldInstance.getClass());
+        }
 
         Preconditions.checkArgument(fieldTypeExists(fieldClass),
                 "Field class %s isn't registered.", fieldInstance.getClass().getName());

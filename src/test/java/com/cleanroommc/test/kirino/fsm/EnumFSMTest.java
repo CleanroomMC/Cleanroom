@@ -1,4 +1,4 @@
-package com.cleanroommc.test.kirino;
+package com.cleanroommc.test.kirino.fsm;
 
 import com.cleanroommc.kirino.schemata.fsm.FiniteStateMachine;
 import org.junit.jupiter.api.Test;

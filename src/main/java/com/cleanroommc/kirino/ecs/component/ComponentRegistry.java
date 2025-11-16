@@ -10,6 +10,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
@@ -317,7 +318,8 @@ public class ComponentRegistry {
     // -----Component Deconstruction-----
 
     @SuppressWarnings("DataFlowIssue")
-    public Object[] flattenComponent(ICleanComponent component) {
+    public @NonNull Object[] flattenComponent(@NonNull ICleanComponent component) {
+        Preconditions.checkNotNull(component);
         Preconditions.checkArgument(componentExists(component.getClass()),
                 "Component class %s isn't registered.", component.getClass().getName());
 

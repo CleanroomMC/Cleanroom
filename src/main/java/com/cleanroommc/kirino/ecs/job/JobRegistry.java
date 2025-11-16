@@ -69,8 +69,8 @@ public class JobRegistry {
         for (Field field : clazz.getDeclaredFields()) {
             // scan JobDataQuery
             if (field.isAnnotationPresent(JobDataQuery.class) && !Modifier.isStatic(field.getModifiers())) {
-                if (!IPrimitiveArray.class.isAssignableFrom(field.getType())) {
-                    throw new RuntimeException(exceptionText, new IllegalStateException("INativeArray must be assignable from the JobDataQuery-annotated field " + field.getName() + "."));
+                if (IPrimitiveArray.class != field.getType()) {
+                    throw new RuntimeException(exceptionText, new IllegalStateException("IPrimitiveArray must be the type of the JobDataQuery-annotated field " + field.getName() + "."));
                 }
 
                 JobDataQuery jobDataQuery = field.getAnnotation(JobDataQuery.class);

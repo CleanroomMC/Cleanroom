@@ -172,7 +172,7 @@ public class KirinoCore {
         //</editor-fold>
 
         KIRINO_ENGINE.renderingCoordinator.update();
-//        KIRINO_ENGINE.renderingCoordinator.updateWorld(MINECRAFT.world);
+        KIRINO_ENGINE.renderingCoordinator.updateWorld(MINECRAFT.world);
 //        KIRINO_ENGINE.renderingCoordinator.runChunkPass();
 
         //<editor-fold desc="vanilla logic">

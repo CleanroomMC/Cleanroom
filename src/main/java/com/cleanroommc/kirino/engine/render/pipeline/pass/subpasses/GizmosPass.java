@@ -4,6 +4,7 @@ import com.cleanroommc.kirino.engine.render.camera.ICamera;
 import com.cleanroommc.kirino.engine.render.gizmos.GizmosManager;
 import com.cleanroommc.kirino.engine.render.pipeline.Renderer;
 import com.cleanroommc.kirino.engine.render.pipeline.draw.DrawQueue;
+import com.cleanroommc.kirino.engine.render.pipeline.draw.cmd.HighLevelDC;
 import com.cleanroommc.kirino.engine.render.pipeline.draw.cmd.LowLevelDC;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.PassHint;
 import com.cleanroommc.kirino.engine.render.pipeline.pass.Subpass;
@@ -66,9 +67,8 @@ public class GizmosPass extends Subpass {
 
     @Override
     public void collectCommands(DrawQueue drawQueue) {
-        // todo: fetch from gizmosManager
-
-        drawQueue.enqueue(gizmosManager.getDrawCommand(0, 0));
-        drawQueue.enqueue(gizmosManager.getDrawCommand(1, 1));
+        for (HighLevelDC command : gizmosManager.getDrawCommands()) {
+            drawQueue.enqueue(command);
+        }
     }
 }

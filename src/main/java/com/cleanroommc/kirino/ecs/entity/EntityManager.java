@@ -67,6 +67,13 @@ public class EntityManager {
         return result;
     }
 
+    // test only for now
+    public synchronized void abort() {
+        synchronized (commandBuffer) {
+            commandBuffer.clear();
+        }
+    }
+
     /**
      * Consume all buffered commands.
      * </br></br>
