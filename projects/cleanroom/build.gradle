@@ -300,9 +300,6 @@ dependencies {
     installer 'net.sf.jopt-simple:jopt-simple:5.0.4'
     installer 'org.apache.commons:commons-lang3:3.19.0'
     installer 'org.apache.commons:commons-compress:1.28.0'
-    installer 'org.apache.httpcomponents.core5:httpcore5:5.3.6'
-    installer 'org.apache.httpcomponents.core5:httpcore5-h2:5.3.6'
-    installer 'org.apache.httpcomponents.client5:httpclient5:5.5.1'
     installer 'com.github.oshi:oshi-core:6.9.0'
     installer 'net.java.dev.jna:jna:5.18.1'
     installer 'net.java.dev.jna:jna-platform:5.18.1'
@@ -315,6 +312,13 @@ dependencies {
     installer 'com.google.code.gson:gson:2.13.2'
     installer 'com.google.code.findbugs:jsr305:3.0.2'
     installer 'org.jspecify:jspecify:1.0.0'
+
+    installer 'org.apache.httpcomponents.core5:httpcore5:5.3.6'
+    installer 'org.apache.httpcomponents.core5:httpcore5-h2:5.3.6'
+    installer 'org.apache.httpcomponents.client5:httpclient5:5.5.1'
+
+    installer 'org.apache.httpcomponents:httpclient:4.5.14'
+    installer 'org.apache.httpcomponents:httpcore:4.4.16'
 
     // Netty
     installer "io.netty:netty-codec-base:$props.netty_version"
