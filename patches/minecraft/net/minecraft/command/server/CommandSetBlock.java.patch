@@ -1,46 +1,6 @@
 --- before/net/minecraft/command/server/CommandSetBlock.java
 +++ after/net/minecraft/command/server/CommandSetBlock.java
-@@ -22,30 +22,26 @@
- 
- public class CommandSetBlock extends CommandBase
- {
--    @Override
-     public String getName()
-     {
-         return "setblock";
-     }
- 
--    @Override
-     public int getRequiredPermissionLevel()
-     {
-         return 2;
-     }
- 
--    @Override
-     public String getUsage(ICommandSender sender)
-     {
-         return "commands.setblock.usage";
-     }
- 
--    @Override
-     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
-     {
-         if (args.length < 4)
-         {
--            throw new WrongUsageException("commands.setblock.usage");
-+            throw new WrongUsageException("commands.setblock.usage", new Object[0]);
-         }
-         else
-         {
-@@ -67,14 +63,14 @@
- 
-             if (!world.isBlockLoaded(blockpos))
-             {
--                throw new CommandException("commands.setblock.outOfWorld");
-+                throw new CommandException("commands.setblock.outOfWorld", new Object[0]);
-             }
-             else
-             {
+@@ -74,7 +74,7 @@
                  NBTTagCompound nbttagcompound = new NBTTagCompound();
                  boolean flag = false;
  
@@ -49,38 +9,3 @@
                  {
                      String s = buildString(args, 6);
  
-@@ -85,7 +81,7 @@
-                     }
-                     catch (NBTException nbtexception)
-                     {
--                        throw new CommandException("commands.setblock.tagError", nbtexception.getMessage());
-+                        throw new CommandException("commands.setblock.tagError", new Object[] {nbtexception.getMessage()});
-                     }
-                 }
- 
-@@ -103,7 +99,7 @@
-                     }
-                     else if ("keep".equals(args[5]) && !world.isAirBlock(blockpos))
-                     {
--                        throw new CommandException("commands.setblock.noChange");
-+                        throw new CommandException("commands.setblock.noChange", new Object[0]);
-                     }
-                 }
- 
-@@ -116,7 +112,7 @@
- 
-                 if (!world.setBlockState(blockpos, iblockstate, 2))
-                 {
--                    throw new CommandException("commands.setblock.noChange");
-+                    throw new CommandException("commands.setblock.noChange", new Object[0]);
-                 }
-                 else
-                 {
-@@ -141,7 +137,6 @@
-         }
-     }
- 
--    @Override
-     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
-     {
-         if (args.length > 0 && args.length <= 3)

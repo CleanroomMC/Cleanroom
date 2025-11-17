@@ -1,70 +1,10 @@
 --- before/net/minecraft/command/CommandGameRule.java
 +++ after/net/minecraft/command/CommandGameRule.java
-@@ -12,25 +12,21 @@
- 
- public class CommandGameRule extends CommandBase
- {
--    @Override
-     public String getName()
-     {
-         return "gamerule";
-     }
- 
--    @Override
-     public int getRequiredPermissionLevel()
-     {
-         return 2;
-     }
- 
--    @Override
-     public String getUsage(ICommandSender sender)
-     {
-         return "commands.gamerule.usage";
-     }
- 
--    @Override
-     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
-     {
-         GameRules gamerules = this.getOverWorldGameRules(server);
-@@ -46,18 +42,18 @@
- 
-                 if (!gamerules.hasRule(s))
-                 {
--                    throw new CommandException("commands.gamerule.norule", s);
-+                    throw new CommandException("commands.gamerule.norule", new Object[] {s});
-                 }
- 
-                 String s2 = gamerules.getString(s);
--                sender.sendMessage(new TextComponentString(s).appendText(" = ").appendText(s2));
-+                sender.sendMessage((new TextComponentString(s)).appendText(" = ").appendText(s2));
-                 sender.setCommandStat(CommandResultStats.Type.QUERY_RESULT, gamerules.getInt(s));
-                 break;
-             default:
- 
-                 if (gamerules.areSameType(s, GameRules.ValueType.BOOLEAN_VALUE) && !"true".equals(s1) && !"false".equals(s1))
-                 {
--                    throw new CommandException("commands.generic.boolean.invalid", s1);
-+                    throw new CommandException("commands.generic.boolean.invalid", new Object[] {s1});
-                 }
- 
-                 gamerules.setOrCreateGameRule(s, s1);
-@@ -77,9 +73,9 @@
+@@ -77,6 +77,7 @@
                  entityplayermp.connection.sendPacket(new SPacketEntityStatus(entityplayermp, b0));
              }
          }
 +        net.minecraftforge.event.ForgeEventFactory.onGameRuleChange(rules, p_184898_1_, server);
      }
  
--    @Override
-     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
-     {
-         if (args.length == 1)
-@@ -103,7 +99,7 @@
-                 }
-             }
- 
--            return Collections.emptyList();
-+            return Collections.<String>emptyList();
-         }
-     }
- 
+     @Override
