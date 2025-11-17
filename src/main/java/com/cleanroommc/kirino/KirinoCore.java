@@ -13,6 +13,7 @@ import com.cleanroommc.kirino.gl.debug.*;
 import com.cleanroommc.kirino.utils.ReflectionUtils;
 import com.google.common.base.Preconditions;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.ClippingHelperImpl;
@@ -55,6 +56,40 @@ public final class KirinoCore {
         return KIRINO_CONFIG.enableRenderDelegate && !UNSUPPORTED;
     }
 
+    /**
+     * Block update hook.
+     *
+     * <hr>
+     * <p><b><code>RenderGlobal</code> Patch</b>:</p>
+     * <code>
+     * public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags)<br>
+     * {<br>
+     * &emsp;...<br>
+     * &emsp;com.cleanroommc.kirino.KirinoCore.RenderGlobal$notifyBlockUpdate(k1, l1, i2, oldState, newState);<br>
+     * }<br>
+     * </code>
+     */
+    public static void RenderGlobal$notifyBlockUpdate(int x, int y, int z, IBlockState oldState, IBlockState newState) {
+//        LOGGER.info("block update: " + x + ", " + y + ", " + z + "; " + oldState.getBlock() + ", " + newState.getBlock());
+    }
+
+    /**
+     * Light update hook.
+     *
+     * <hr>
+     * <p><b><code>RenderGlobal</code> Patch</b>:</p>
+     * <code>
+     * public void notifyLightSet(BlockPos pos)<br>
+     * {<br>
+     * &emsp;...<br>
+     * &emsp;com.cleanroommc.kirino.KirinoCore.RenderGlobal$notifyLightUpdate(pos.getX(), pos.getY(), pos.getZ());<br>
+     * }<br>
+     * </code>
+     */
+    public static void RenderGlobal$notifyLightUpdate(int x, int y, int z) {
+//        LOGGER.info("light update: " + x + ", " + y + ", " + z);
+    }
+
     private static MethodHandle setupCameraTransform;
     private static MethodHandle updateFogColor;
     private static MethodHandle setupFog;
@@ -71,8 +106,27 @@ public final class KirinoCore {
     /**
      * This method is a direct replacement of {@link net.minecraft.client.renderer.EntityRenderer#renderWorld(float, long)}.
      * Specifically, <code>anaglyph</code> logic is removed and all other functions remain the same.
+     * <code>anaglyph</code> can be easily added back via post-processing by the way.
+     *
+     * <hr>
+     * <p><b><code>EntityRenderer</code> Patch</b>:</p>
+     * <code>
+     * public void updateCameraAndRender(float partialTicks, long nanoTime)<br>
+     * {<br>
+     * &emsp;...<br>
+     * &emsp;if (com.cleanroommc.kirino.KirinoCore.isEnableRenderDelegate())<br>
+     * &emsp;{<br>
+     * &emsp;&emsp;com.cleanroommc.kirino.KirinoCore.EntityRenderer$renderWorld(System.nanoTime() + l);<br>
+     * &emsp;}<br>
+     * &emsp;else<br>
+     * &emsp;{<br>
+     * &emsp;&emsp;this.renderWorld(partialTicks, System.nanoTime() + l);<br>
+     * &emsp;}<br>
+     * &emsp;...<br>
+     * }<br>
+     * </code>
      */
-    public static void updateAndRender(long finishTimeNano) {
+    public static void EntityRenderer$renderWorld(long finishTimeNano) {
         KIRINO_ENGINE.renderingCoordinator.preUpdate();
 
         //<editor-fold desc="vanilla logic">

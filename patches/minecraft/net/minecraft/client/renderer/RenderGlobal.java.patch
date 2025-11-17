@@ -1,14 +1,6 @@
 --- before/net/minecraft/client/renderer/RenderGlobal.java
 +++ after/net/minecraft/client/renderer/RenderGlobal.java
-@@ -13,6 +13,7 @@
- import java.util.Queue;
- import java.util.Random;
- import java.util.Set;
-+import java.util.function.Supplier;
- import javax.annotation.Nullable;
- import net.minecraft.block.Block;
- import net.minecraft.block.BlockChest;
-@@ -103,9 +104,9 @@
+@@ -103,9 +103,9 @@
      private final TextureManager field_72770_i;
      private final RenderManager field_175010_j;
      private WorldClient field_72769_h;
@@ -21,7 +13,7 @@
      private ViewFrustum field_175008_n;
      private int field_72772_v = -1;
      private int field_72771_w = -1;
-@@ -115,8 +116,8 @@
+@@ -115,8 +115,8 @@
      private VertexBuffer field_175012_t;
      private VertexBuffer field_175011_u;
      private int field_72773_u;
@@ -32,7 +24,7 @@
      private final TextureAtlasSprite[] field_94141_F = new TextureAtlasSprite[10];
      private Framebuffer field_175015_z;
      private ShaderGroup field_174991_A;
-@@ -149,7 +150,7 @@
+@@ -149,7 +149,7 @@
      private double field_147602_h;
      private boolean field_147595_R = true;
      private boolean field_184386_ad;
@@ -41,7 +33,7 @@
  
      public RenderGlobal(Minecraft p_i1249_1_)
      {
-@@ -181,7 +182,6 @@
+@@ -181,7 +181,6 @@
          this.func_174964_o();
      }
  
@@ -49,7 +41,7 @@
      public void func_110549_a(IResourceManager p_110549_1_)
      {
          this.func_174971_n();
-@@ -191,7 +191,7 @@
+@@ -191,7 +190,7 @@
      {
          TextureMap texturemap = this.field_72777_q.func_147117_R();
  
@@ -58,7 +50,7 @@
          {
              this.field_94141_F[i] = texturemap.func_110572_b("minecraft:blocks/destroy_stage_" + i);
          }
-@@ -210,9 +210,7 @@
+@@ -210,9 +209,7 @@
  
              try
              {
@@ -69,7 +61,7 @@
                  this.field_174991_A.func_148026_a(this.field_72777_q.field_71443_c, this.field_72777_q.field_71440_d);
                  this.field_175015_z = this.field_174991_A.func_177066_a("final");
              }
-@@ -241,12 +239,7 @@
+@@ -241,12 +238,7 @@
          if (this.func_174985_d())
          {
              GlStateManager.func_179147_l();
@@ -83,7 +75,7 @@
              this.field_175015_z.func_178038_a(this.field_72777_q.field_71443_c, this.field_72777_q.field_71440_d, false);
              GlStateManager.func_179084_k();
          }
-@@ -393,7 +386,7 @@
+@@ -393,7 +385,7 @@
          Random random = new Random(10842L);
          p_180444_1_.func_181668_a(7, DefaultVertexFormats.field_181705_e);
  
@@ -92,7 +84,7 @@
          {
              double d0 = (double)(random.nextFloat() * 2.0F - 1.0F);
              double d1 = (double)(random.nextFloat() * 2.0F - 1.0F);
-@@ -401,35 +394,35 @@
+@@ -401,35 +393,35 @@
              double d3 = (double)(0.15F + random.nextFloat() * 0.1F);
              double d4 = d0 * d0 + d1 * d1 + d2 * d2;
  
@@ -142,7 +134,7 @@
                      double d25 = d24 * d9 - d22 * d10;
                      double d26 = d22 * d9 + d24 * d10;
                      p_180444_1_.func_181662_b(d5 + d25, d6 + d23, d7 + d26).func_181675_d();
-@@ -560,9 +553,11 @@
+@@ -560,9 +552,11 @@
  
      public void func_180446_a(Entity p_180446_1_, ICamera p_180446_2_, float p_180446_3_)
      {
@@ -155,7 +147,7 @@
          }
          else
          {
-@@ -570,27 +565,14 @@
+@@ -570,27 +564,14 @@
              double d1 = p_180446_1_.field_70167_r + (p_180446_1_.field_70163_u - p_180446_1_.field_70167_r) * (double)p_180446_3_;
              double d2 = p_180446_1_.field_70166_s + (p_180446_1_.field_70161_v - p_180446_1_.field_70166_s) * (double)p_180446_3_;
              this.field_72769_h.field_72984_F.func_76320_a("prepare");
@@ -188,7 +180,7 @@
              Entity entity = this.field_72777_q.func_175606_aa();
              double d3 = entity.field_70142_S + (entity.field_70165_t - entity.field_70142_S) * (double)p_180446_3_;
              double d4 = entity.field_70137_T + (entity.field_70163_u - entity.field_70137_T) * (double)p_180446_3_;
-@@ -602,12 +584,16 @@
+@@ -602,12 +583,16 @@
              this.field_72777_q.field_71460_t.func_180436_i();
              this.field_72769_h.field_72984_F.func_76318_c("global");
              List<Entity> list = this.field_72769_h.func_72910_y();
@@ -207,7 +199,7 @@
  
                  if (entity1.func_145770_h(d0, d1, d2))
                  {
-@@ -616,38 +602,29 @@
+@@ -616,38 +601,29 @@
              }
  
              this.field_72769_h.field_72984_F.func_76318_c("entities");
@@ -253,7 +245,7 @@
                                  this.field_175010_j.func_188388_a(entity2, p_180446_3_, false);
  
                                  if (this.func_184383_a(entity2, entity, p_180446_2_))
-@@ -675,6 +652,7 @@
+@@ -675,6 +651,7 @@
                  }
              }
  
@@ -261,7 +253,7 @@
              if (this.func_174985_d() && (!list1.isEmpty() || this.field_184386_ad))
              {
                  this.field_72769_h.field_72984_F.func_76318_c("entityOutlines");
-@@ -689,7 +667,7 @@
+@@ -689,7 +666,7 @@
                      RenderHelper.func_74518_a();
                      this.field_175010_j.func_178632_c(true);
  
@@ -270,7 +262,7 @@
                      {
                          this.field_175010_j.func_188388_a(list1.get(j), p_180446_3_, false);
                      }
-@@ -714,6 +692,7 @@
+@@ -714,6 +691,7 @@
              this.field_72769_h.field_72984_F.func_76318_c("blockentities");
              RenderHelper.func_74519_b();
  
@@ -278,7 +270,7 @@
              for (RenderGlobal.ContainerLocalRenderInformation renderglobal$containerlocalrenderinformation1 : this.field_72755_R)
              {
                  List<TileEntity> list3 = renderglobal$containerlocalrenderinformation1.field_178036_a.func_178571_g().func_178485_b();
-@@ -722,6 +701,7 @@
+@@ -722,6 +700,7 @@
                  {
                      for (TileEntity tileentity2 : list3)
                      {
@@ -286,7 +278,7 @@
                          TileEntityRendererDispatcher.field_147556_a.func_180546_a(tileentity2, p_180446_3_, -1);
                      }
                  }
-@@ -731,9 +711,11 @@
+@@ -731,9 +710,11 @@
              {
                  for (TileEntity tileentity : this.field_181024_n)
                  {
@@ -298,7 +290,7 @@
  
              this.func_180443_s();
  
-@@ -788,15 +770,13 @@
+@@ -788,15 +769,13 @@
          {
              return true;
          }
@@ -319,7 +311,7 @@
          }
      }
  
-@@ -804,15 +784,7 @@
+@@ -804,15 +783,7 @@
      {
          int i = this.field_175008_n.field_178164_f.length;
          int j = this.func_184382_g();
@@ -336,7 +328,7 @@
      }
  
      protected int func_184382_g()
-@@ -825,7 +797,7 @@
+@@ -825,7 +796,7 @@
  
              if (compiledchunk != CompiledChunk.field_178502_a && !compiledchunk.func_178489_a())
              {
@@ -345,7 +337,7 @@
              }
          }
  
-@@ -849,10 +821,7 @@
+@@ -849,10 +820,7 @@
          double d1 = p_174970_1_.field_70163_u - this.field_174993_C;
          double d2 = p_174970_1_.field_70161_v - this.field_174987_D;
  
@@ -357,7 +349,7 @@
          {
              this.field_174992_B = p_174970_1_.field_70165_t;
              this.field_174993_C = p_174970_1_.field_70163_u;
-@@ -880,16 +849,8 @@
+@@ -880,16 +848,8 @@
          this.field_72777_q.field_71424_I.func_76318_c("culling");
          BlockPos blockpos1 = new BlockPos(d3, d4 + (double)p_174970_1_.func_70047_e(), d5);
          RenderChunk renderchunk = this.field_175008_n.func_178161_a(blockpos1);
@@ -376,7 +368,7 @@
          this.field_174997_H = p_174970_1_.field_70165_t;
          this.field_174998_I = p_174970_1_.field_70163_u;
          this.field_174999_J = p_174970_1_.field_70161_v;
-@@ -901,17 +862,15 @@
+@@ -901,17 +861,15 @@
          if (!flag && this.field_147595_R)
          {
              this.field_147595_R = false;
@@ -398,7 +390,7 @@
                  Set<EnumFacing> set1 = this.func_174978_c(blockpos1);
  
                  if (set1.size() == 1)
-@@ -945,16 +904,16 @@
+@@ -945,16 +903,16 @@
              {
                  int i = blockpos1.func_177956_o() > 0 ? 248 : 8;
  
@@ -419,7 +411,7 @@
                          }
                      }
                  }
-@@ -973,15 +932,9 @@
+@@ -973,15 +931,9 @@
                  {
                      RenderChunk renderchunk2 = this.func_181562_a(blockpos, renderchunk3, enumfacing1);
  
@@ -437,7 +429,7 @@
                          renderglobal$containerlocalrenderinformation.func_189561_a(renderglobal$containerlocalrenderinformation1.field_178035_c, enumfacing1);
                          queue.add(renderglobal$containerlocalrenderinformation);
                      }
-@@ -1001,7 +954,7 @@
+@@ -1001,7 +953,7 @@
  
          this.field_72777_q.field_71424_I.func_76318_c("rebuildNear");
          Set<RenderChunk> set = this.field_175009_l;
@@ -446,7 +438,7 @@
  
          for (RenderGlobal.ContainerLocalRenderInformation renderglobal$containerlocalrenderinformation2 : this.field_72755_R)
          {
-@@ -1011,9 +964,9 @@
+@@ -1011,9 +963,9 @@
              {
                  this.field_147595_R = true;
                  BlockPos blockpos2 = renderchunk4.func_178568_j().func_177982_a(8, 8, 8);
@@ -458,7 +450,7 @@
                  {
                      this.field_175009_l.add(renderchunk4);
                  }
-@@ -1057,15 +1010,13 @@
+@@ -1057,15 +1009,13 @@
          {
              return null;
          }
@@ -477,7 +469,7 @@
          }
      }
  
-@@ -1092,12 +1043,12 @@
+@@ -1092,12 +1042,12 @@
          this.field_175004_V[6] = new Vector4f(1.0F, 1.0F, 1.0F, 1.0F);
          this.field_175004_V[7] = new Vector4f(-1.0F, 1.0F, 1.0F, 1.0F);
  
@@ -494,7 +486,7 @@
              this.field_175004_V[i].w = 1.0F;
          }
      }
-@@ -1112,10 +1063,10 @@
+@@ -1112,10 +1062,10 @@
              f += 180.0F;
          }
  
@@ -509,7 +501,7 @@
          return new Vector3f(f3 * f4, f5, f2 * f4);
      }
  
-@@ -1130,7 +1081,7 @@
+@@ -1130,7 +1080,7 @@
              double d1 = p_174977_5_.field_70163_u - this.field_147597_g;
              double d2 = p_174977_5_.field_70161_v - this.field_147602_h;
  
@@ -518,7 +510,7 @@
              {
                  this.field_147596_f = p_174977_5_.field_70165_t;
                  this.field_147597_g = p_174977_5_.field_70163_u;
-@@ -1158,16 +1109,19 @@
+@@ -1158,16 +1108,19 @@
  
          for (int j = i1; j != i; j += j1)
          {
@@ -541,7 +533,7 @@
          this.func_174982_a(p_174977_1_);
          this.field_72777_q.field_71424_I.func_76319_b();
          return l;
-@@ -1196,7 +1150,7 @@
+@@ -1196,7 +1149,7 @@
              for (VertexFormatElement vertexformatelement : DefaultVertexFormats.field_176600_a.func_177343_g())
              {
                  VertexFormatElement.EnumUsage vertexformatelement$enumusage = vertexformatelement.func_177375_c();
@@ -550,7 +542,7 @@
  
                  switch (vertexformatelement$enumusage)
                  {
-@@ -1204,7 +1158,7 @@
+@@ -1204,7 +1157,7 @@
                          GlStateManager.func_187429_p(32884);
                          break;
                      case UV:
@@ -559,7 +551,7 @@
                          GlStateManager.func_187429_p(32888);
                          OpenGlHelper.func_77472_b(OpenGlHelper.field_77478_a);
                          break;
-@@ -1223,9 +1177,9 @@
+@@ -1223,9 +1176,9 @@
          while (p_174965_1_.hasNext())
          {
              DestroyBlockProgress destroyblockprogress = p_174965_1_.next();
@@ -571,7 +563,7 @@
              {
                  p_174965_1_.remove();
              }
-@@ -1234,7 +1188,7 @@
+@@ -1234,7 +1187,7 @@
  
      public void func_72734_e()
      {
@@ -580,7 +572,7 @@
  
          if (this.field_72773_u % 20 == 0)
          {
-@@ -1249,10 +1203,10 @@
+@@ -1249,10 +1202,10 @@
              {
                  BlockPos blockpos = iterator.next();
                  iterator.remove();
@@ -595,7 +587,7 @@
              }
          }
      }
-@@ -1262,49 +1216,47 @@
+@@ -1262,49 +1215,47 @@
          GlStateManager.func_179106_n();
          GlStateManager.func_179118_c();
          GlStateManager.func_179147_l();
@@ -656,7 +648,7 @@
              tessellator.func_78381_a();
              GlStateManager.func_179121_F();
          }
-@@ -1316,6 +1268,13 @@
+@@ -1316,6 +1267,13 @@
  
      public void func_174976_a(float p_174976_1_, int p_174976_2_)
      {
@@ -670,7 +662,7 @@
          if (this.field_72777_q.field_71441_e.field_73011_w.func_186058_p().func_186068_a() == 1)
          {
              this.func_180448_r();
-@@ -1362,12 +1321,7 @@
+@@ -1362,12 +1320,7 @@
              GlStateManager.func_179106_n();
              GlStateManager.func_179118_c();
              GlStateManager.func_179147_l();
@@ -684,7 +676,7 @@
              RenderHelper.func_74518_a();
              float[] afloat = this.field_72769_h.field_73011_w.func_76560_a(this.field_72769_h.func_72826_c(p_174976_1_), p_174976_1_);
  
-@@ -1394,17 +1348,15 @@
+@@ -1394,17 +1347,15 @@
                  }
  
                  bufferbuilder.func_181668_a(6, DefaultVertexFormats.field_181706_f);
@@ -707,7 +699,7 @@
                  }
  
                  tessellator.func_78381_a();
-@@ -1413,9 +1365,7 @@
+@@ -1413,9 +1364,7 @@
              }
  
              GlStateManager.func_179098_w();
@@ -718,7 +710,7 @@
              GlStateManager.func_179094_E();
              float f16 = 1.0F - this.field_72769_h.func_72867_j(p_174976_1_);
              GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, f16);
-@@ -1424,25 +1374,25 @@
+@@ -1424,25 +1373,25 @@
              float f17 = 30.0F;
              this.field_72770_i.func_110577_a(field_110928_i);
              bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181707_g);
@@ -759,7 +751,7 @@
              tessellator.func_78381_a();
              GlStateManager.func_179090_x();
              float f15 = this.field_72769_h.func_72880_h(p_174976_1_) * f16;
-@@ -1473,9 +1423,9 @@
+@@ -1473,9 +1422,9 @@
              GlStateManager.func_179121_F();
              GlStateManager.func_179090_x();
              GlStateManager.func_179124_c(0.0F, 0.0F, 0.0F);
@@ -771,7 +763,7 @@
              {
                  GlStateManager.func_179094_E();
                  GlStateManager.func_179109_b(0.0F, 12.0F, 0.0F);
-@@ -1496,29 +1446,29 @@
+@@ -1496,29 +1445,29 @@
  
                  GlStateManager.func_179121_F();
                  float f18 = 1.0F;
@@ -822,7 +814,7 @@
                  tessellator.func_78381_a();
              }
  
-@@ -1532,7 +1482,7 @@
+@@ -1532,7 +1481,7 @@
              }
  
              GlStateManager.func_179094_E();
@@ -831,7 +823,7 @@
              GlStateManager.func_179148_o(this.field_72781_x);
              GlStateManager.func_179121_F();
              GlStateManager.func_179098_w();
-@@ -1542,6 +1492,7 @@
+@@ -1542,6 +1491,7 @@
  
      public void func_180447_b(float p_180447_1_, int p_180447_2_, double p_180447_3_, double p_180447_5_, double p_180447_7_)
      {
@@ -839,7 +831,7 @@
          if (this.field_72777_q.field_71441_e.field_73011_w.func_76569_d())
          {
              if (this.field_72777_q.field_71474_y.func_181147_e() == 2)
-@@ -1551,18 +1502,13 @@
+@@ -1551,18 +1501,13 @@
              else
              {
                  GlStateManager.func_179129_p();
@@ -861,7 +853,7 @@
                  Vec3d vec3d = this.field_72769_h.func_72824_f(p_180447_1_);
                  float f = (float)vec3d.field_72450_a;
                  float f1 = (float)vec3d.field_72448_b;
-@@ -1579,37 +1525,25 @@
+@@ -1579,37 +1524,25 @@
                  }
  
                  float f9 = 4.8828125E-4F;
@@ -913,7 +905,7 @@
                      }
                  }
  
-@@ -1633,19 +1567,17 @@
+@@ -1633,19 +1566,17 @@
          BufferBuilder bufferbuilder = tessellator.func_178180_c();
          float f = 12.0F;
          float f1 = 4.0F;
@@ -941,7 +933,7 @@
          Vec3d vec3d = this.field_72769_h.func_72824_f(p_180445_1_);
          float f3 = (float)vec3d.field_72450_a;
          float f4 = (float)vec3d.field_72448_b;
-@@ -1671,18 +1603,18 @@
+@@ -1671,18 +1602,18 @@
          float f13 = f4 * 0.8F;
          float f14 = f5 * 0.8F;
          float f15 = 0.00390625F;
@@ -968,7 +960,7 @@
              {
                  GlStateManager.func_179135_a(false, false, false, false);
              }
-@@ -1701,169 +1633,73 @@
+@@ -1701,169 +1632,73 @@
                  }
              }
  
@@ -1193,7 +1185,7 @@
                          }
                      }
  
-@@ -1879,7 +1715,7 @@
+@@ -1879,7 +1714,7 @@
  
      public void func_174967_a(long p_174967_1_)
      {
@@ -1202,7 +1194,7 @@
  
          if (!this.field_175009_l.isEmpty())
          {
-@@ -1887,28 +1723,28 @@
+@@ -1887,28 +1722,28 @@
  
              while (iterator.hasNext())
              {
@@ -1240,7 +1232,7 @@
                  {
                      break;
                  }
-@@ -1921,30 +1757,25 @@
+@@ -1921,30 +1756,25 @@
          Tessellator tessellator = Tessellator.func_178181_a();
          BufferBuilder bufferbuilder = tessellator.func_178180_c();
          WorldBorder worldborder = this.field_72769_h.func_175723_af();
@@ -1284,7 +1276,7 @@
              GlStateManager.func_179136_a(-3.0F, -3.0F);
              GlStateManager.func_179088_q();
              GlStateManager.func_179092_a(516, 0.1F);
-@@ -1955,95 +1786,79 @@
+@@ -1955,95 +1785,79 @@
              float f5 = 0.0F;
              float f6 = 128.0F;
              bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181707_g);
@@ -1422,7 +1414,7 @@
              GlStateManager.func_179089_o();
              GlStateManager.func_179118_c();
              GlStateManager.func_179136_a(0.0F, 0.0F);
-@@ -2057,12 +1872,11 @@
+@@ -2057,12 +1871,11 @@
  
      private void func_180443_s()
      {
@@ -1438,7 +1430,7 @@
          GlStateManager.func_179088_q();
          GlStateManager.func_179092_a(516, 0.1F);
          GlStateManager.func_179141_d();
-@@ -2081,16 +1895,16 @@
+@@ -2081,16 +1894,16 @@
  
      public void func_174981_a(Tessellator p_174981_1_, BufferBuilder p_174981_2_, Entity p_174981_3_, float p_174981_4_)
      {
@@ -1459,7 +1451,7 @@
              p_174981_2_.func_78914_f();
              Iterator<DestroyBlockProgress> iterator = this.field_72738_E.values().iterator();
  
-@@ -2098,14 +1912,17 @@
+@@ -2098,14 +1911,17 @@
              {
                  DestroyBlockProgress destroyblockprogress = iterator.next();
                  BlockPos blockpos = destroyblockprogress.func_180246_b();
@@ -1482,7 +1474,7 @@
                      {
                          iterator.remove();
                      }
-@@ -2115,8 +1932,8 @@
+@@ -2115,8 +1931,8 @@
  
                          if (iblockstate.func_185904_a() != Material.field_151579_a)
                          {
@@ -1493,7 +1485,7 @@
                              BlockRendererDispatcher blockrendererdispatcher = this.field_72777_q.func_175602_ab();
                              blockrendererdispatcher.func_175020_a(iblockstate, blockpos, textureatlassprite, this.field_72769_h);
                          }
-@@ -2125,7 +1942,7 @@
+@@ -2125,7 +1941,7 @@
              }
  
              p_174981_1_.func_78381_a();
@@ -1502,7 +1494,7 @@
              this.func_174969_t();
          }
      }
-@@ -2135,12 +1952,7 @@
+@@ -2135,12 +1951,7 @@
          if (p_72731_3_ == 0 && p_72731_2_.field_72313_a == RayTraceResult.Type.BLOCK)
          {
              GlStateManager.func_179147_l();
@@ -1516,7 +1508,7 @@
              GlStateManager.func_187441_d(2.0F);
              GlStateManager.func_179090_x();
              GlStateManager.func_179132_a(false);
-@@ -2149,10 +1961,10 @@
+@@ -2149,10 +1960,10 @@
  
              if (iblockstate.func_185904_a() != Material.field_151579_a && this.field_72769_h.func_175723_af().func_177746_a(blockpos))
              {
@@ -1531,7 +1523,7 @@
              }
  
              GlStateManager.func_179132_a(true);
-@@ -2163,55 +1975,19 @@
+@@ -2163,55 +1974,19 @@
  
      public static void func_189697_a(AxisAlignedBB p_189697_0_, float p_189697_1_, float p_189697_2_, float p_189697_3_, float p_189697_4_)
      {
@@ -1591,7 +1583,7 @@
      {
          p_189698_0_.func_181662_b(p_189698_1_, p_189698_3_, p_189698_5_).func_181666_a(p_189698_13_, p_189698_14_, p_189698_15_, 0.0F).func_181675_d();
          p_189698_0_.func_181662_b(p_189698_1_, p_189698_3_, p_189698_5_).func_181666_a(p_189698_13_, p_189698_14_, p_189698_15_, p_189698_16_).func_181675_d();
-@@ -2235,55 +2011,19 @@
+@@ -2235,55 +2010,19 @@
  
      public static void func_189696_b(AxisAlignedBB p_189696_0_, float p_189696_1_, float p_189696_2_, float p_189696_3_, float p_189696_4_)
      {
@@ -1651,7 +1643,7 @@
      {
          p_189693_0_.func_181662_b(p_189693_1_, p_189693_3_, p_189693_5_).func_181666_a(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).func_181675_d();
          p_189693_0_.func_181662_b(p_189693_1_, p_189693_3_, p_189693_5_).func_181666_a(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).func_181675_d();
-@@ -2322,28 +2062,24 @@
+@@ -2322,28 +2061,26 @@
          this.field_175008_n.func_187474_a(p_184385_1_, p_184385_2_, p_184385_3_, p_184385_4_, p_184385_5_, p_184385_6_, p_184385_7_);
      }
  
@@ -1666,12 +1658,14 @@
 +        int l1 = p_184376_2_.func_177956_o();
 +        int i2 = p_184376_2_.func_177952_p();
 +        this.func_184385_a(k1 - 1, l1 - 1, i2 - 1, k1 + 1, l1 + 1, i2 + 1, (p_184376_5_ & 8) != 0);
++        com.cleanroommc.kirino.KirinoCore.RenderGlobal$notifyBlockUpdate(k1, l1, i2, p_184376_3_, p_184376_4_);
      }
  
 -    @Override
      public void func_174959_b(BlockPos p_174959_1_)
      {
          this.field_184387_ae.add(p_174959_1_.func_185334_h());
++        com.cleanroommc.kirino.KirinoCore.RenderGlobal$notifyLightUpdate(p_174959_1_.func_177958_n(), p_174959_1_.func_177956_o(), p_174959_1_.func_177952_p());
      }
  
 -    @Override
@@ -1684,7 +1678,7 @@
      public void func_184377_a(@Nullable SoundEvent p_184377_1_, BlockPos p_184377_2_)
      {
          ISound isound = this.field_147593_P.get(p_184377_2_);
-@@ -2363,9 +2099,7 @@
+@@ -2363,9 +2100,7 @@
                  this.field_72777_q.field_71456_v.func_73833_a(itemrecord.func_150927_i());
              }
  
@@ -1695,7 +1689,7 @@
              this.field_147593_P.put(p_184377_2_, positionedsoundrecord);
              this.field_72777_q.func_147118_V().func_147682_a(positionedsoundrecord);
          }
-@@ -2375,67 +2109,32 @@
+@@ -2375,67 +2110,32 @@
  
      private void func_193054_a(World p_193054_1_, BlockPos p_193054_2_, boolean p_193054_3_)
      {
@@ -1769,7 +1763,7 @@
  
              if (p_190570_16_ != null)
              {
-@@ -2453,78 +2152,40 @@
+@@ -2453,78 +2153,40 @@
          }
      }
  
@@ -1859,7 +1853,7 @@
              }
          }
          else
-@@ -2535,27 +2196,25 @@
+@@ -2535,27 +2197,25 @@
  
      private int func_190572_a(boolean p_190572_1_)
      {
@@ -1900,7 +1894,7 @@
      public void func_72709_b(Entity p_72709_1_)
      {
      }
-@@ -2564,7 +2223,6 @@
+@@ -2564,7 +2224,6 @@
      {
      }
  
@@ -1908,7 +1902,7 @@
      public void func_180440_a(int p_180440_1_, BlockPos p_180440_2_, int p_180440_3_)
      {
          switch (p_180440_1_)
-@@ -2576,38 +2234,39 @@
+@@ -2576,38 +2235,39 @@
  
                  if (entity != null)
                  {
@@ -1963,7 +1957,7 @@
      public void func_180439_a(EntityPlayer p_180439_1_, int p_180439_2_, BlockPos p_180439_3_, int p_180439_4_)
      {
          Random random = this.field_72769_h.field_73012_v;
-@@ -2630,34 +2289,19 @@
+@@ -2630,34 +2290,19 @@
                  this.field_72769_h.func_184156_a(p_180439_3_, SoundEvents.field_187634_bp, SoundCategory.NEUTRAL, 1.0F, 1.2F, false);
                  break;
              case 1005:
@@ -2003,7 +1997,7 @@
                  break;
              case 1010:
  
-@@ -2667,128 +2311,69 @@
+@@ -2667,128 +2312,69 @@
                  }
                  else
                  {
@@ -2153,7 +2147,7 @@
                  break;
              case 1033:
                  this.field_72769_h.func_184156_a(p_180439_3_, SoundEvents.field_187542_ac, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
-@@ -2800,169 +2385,119 @@
+@@ -2800,169 +2386,119 @@
                  this.field_72769_h.func_184156_a(p_180439_3_, SoundEvents.field_187621_J, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
                  break;
              case 1036:
@@ -2389,7 +2383,7 @@
  
                      if (particle != null)
                      {
-@@ -2970,56 +2505,27 @@
+@@ -2970,56 +2506,27 @@
                      }
                  }
  
@@ -2453,7 +2447,7 @@
              }
  
              destroyblockprogress.func_73107_a(p_180441_3_);
-@@ -3027,7 +2533,7 @@
+@@ -3027,7 +2534,7 @@
          }
          else
          {
