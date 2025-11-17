@@ -42,18 +42,17 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-public class KirinoCore {
+public final class KirinoCore {
     private static final Minecraft MINECRAFT = Minecraft.getMinecraft();
     public static final Logger LOGGER = LogManager.getLogger("Kirino Core");
     public static final EventBus KIRINO_EVENT_BUS = new EventBus();
+    public static final KirinoConfig KIRINO_CONFIG = new KirinoConfig();
     private static CleanECSRuntime ECS_RUNTIME;
     private static KirinoEngine KIRINO_ENGINE;
-
-    private static boolean unsupported = false;
-    private final static boolean ENABLE_RENDER_DELEGATE = true;
+    private static boolean UNSUPPORTED = false;
 
     public static boolean isEnableRenderDelegate() {
-        return ENABLE_RENDER_DELEGATE && !unsupported;
+        return KIRINO_CONFIG.enableRenderDelegate && !UNSUPPORTED;
     }
 
     private static MethodHandle setupCameraTransform;
@@ -399,14 +398,16 @@ public class KirinoCore {
             rawGLVersion = "";
         }
 
+        LOGGER.info("OpenGL version: " + rawGLVersion);
+
         if (rawGLVersion.isEmpty() || majorGLVersion == -1 || minorGLVersion == -1) {
-            unsupported = true;
-            LOGGER.warn("OpenGL 4.6 not supported. Aborting Kirino initialization.");
+            UNSUPPORTED = true;
+            LOGGER.warn("Failed to parse OpenGL version. Aborting Kirino initialization.");
             return;
         }
 
         if (!(majorGLVersion == 4 && minorGLVersion == 6)) {
-            unsupported = true;
+            UNSUPPORTED = true;
             LOGGER.warn("OpenGL 4.6 not supported. Aborting Kirino initialization.");
             return;
         }
@@ -471,9 +472,14 @@ public class KirinoCore {
         stopWatch = StopWatch.createStarted();
 
         try {
-            Constructor<KirinoEngine> ctor = KirinoEngine.class.getDeclaredConstructor(EventBus.class, Logger.class, CleanECSRuntime.class);
+            Constructor<KirinoEngine> ctor = KirinoEngine.class.getDeclaredConstructor(
+                    EventBus.class,
+                    Logger.class,
+                    CleanECSRuntime.class,
+                    boolean.class,
+                    boolean.class);
             ctor.setAccessible(true);
-            KIRINO_ENGINE = ctor.newInstance(KIRINO_EVENT_BUS, LOGGER, ECS_RUNTIME);
+            KIRINO_ENGINE = ctor.newInstance(KIRINO_EVENT_BUS, LOGGER, ECS_RUNTIME, KIRINO_CONFIG.enableHDR, KIRINO_CONFIG.enablePostProcessing);
         } catch (Throwable throwable) {
             throw new RuntimeException("Kirino Engine failed to initialize.", throwable);
         }

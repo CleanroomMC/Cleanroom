@@ -8,7 +8,8 @@ import org.apache.logging.log4j.Logger;
 public class KirinoEngine {
     public final RenderingCoordinator renderingCoordinator;
 
-    private KirinoEngine(EventBus eventBus, Logger logger, CleanECSRuntime ecsRuntime) {
-        renderingCoordinator = new RenderingCoordinator(eventBus, logger, ecsRuntime, true, true);
+    private KirinoEngine(EventBus eventBus, Logger logger, CleanECSRuntime ecsRuntime,
+                         boolean enableHDR, boolean enablePostProcessing) {
+        renderingCoordinator = new RenderingCoordinator(eventBus, logger, ecsRuntime, enableHDR, enablePostProcessing);
     }
 }
