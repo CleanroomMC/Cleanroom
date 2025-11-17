@@ -1,51 +1,5 @@
 --- before/net/minecraft/enchantment/EnchantmentHelper.java
 +++ after/net/minecraft/enchantment/EnchantmentHelper.java
-@@ -40,7 +40,7 @@
-         {
-             NBTTagList nbttaglist = stack.getEnchantmentTagList();
- 
--            for (int i = 0; i < nbttaglist.tagCount(); i++)
-+            for (int i = 0; i < nbttaglist.tagCount(); ++i)
-             {
-                 NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
-                 Enchantment enchantment = Enchantment.getEnchantmentByID(nbttagcompound.getShort("id"));
-@@ -58,15 +58,15 @@
- 
-     public static Map<Enchantment, Integer> getEnchantments(ItemStack stack)
-     {
--        Map<Enchantment, Integer> map = Maps.newLinkedHashMap();
-+        Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newLinkedHashMap();
-         NBTTagList nbttaglist = stack.getItem() == Items.ENCHANTED_BOOK ? ItemEnchantedBook.getEnchantments(stack) : stack.getEnchantmentTagList();
- 
--        for (int i = 0; i < nbttaglist.tagCount(); i++)
-+        for (int i = 0; i < nbttaglist.tagCount(); ++i)
-         {
-             NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
-             Enchantment enchantment = Enchantment.getEnchantmentByID(nbttagcompound.getShort("id"));
-             int j = nbttagcompound.getShort("lvl");
--            map.put(enchantment, j);
-+            map.put(enchantment, Integer.valueOf(j));
-         }
- 
-         return map;
-@@ -82,7 +82,7 @@
- 
-             if (enchantment != null)
-             {
--                int i = entry.getValue();
-+                int i = ((Integer)entry.getValue()).intValue();
-                 NBTTagCompound nbttagcompound = new NBTTagCompound();
-                 nbttagcompound.setShort("id", (short)Enchantment.getEnchantmentID(enchantment));
-                 nbttagcompound.setShort("lvl", (short)i);
-@@ -114,7 +114,7 @@
-         {
-             NBTTagList nbttaglist = stack.getEnchantmentTagList();
- 
--            for (int i = 0; i < nbttaglist.tagCount(); i++)
-+            for (int i = 0; i < nbttaglist.tagCount(); ++i)
-             {
-                 int j = nbttaglist.getCompoundTagAt(i).getShort("id");
-                 int k = nbttaglist.getCompoundTagAt(i).getShort("lvl");
 @@ -140,6 +140,7 @@
          ENCHANTMENT_MODIFIER_DAMAGE.damageModifier = 0;
          ENCHANTMENT_MODIFIER_DAMAGE.source = source;
@@ -74,24 +28,7 @@
      }
  
      public static int getMaxEnchantmentLevel(Enchantment p_185284_0_, EntityLivingBase p_185284_1_)
-@@ -285,7 +292,7 @@
-         }
-         else
-         {
--            List<ItemStack> list1 = Lists.newArrayList();
-+            List<ItemStack> list1 = Lists.<ItemStack>newArrayList();
- 
-             for (ItemStack itemstack : list)
-             {
-@@ -295,14 +302,14 @@
-                 }
-             }
- 
--            return list1.isEmpty() ? ItemStack.EMPTY : list1.get(p_92099_1_.getRNG().nextInt(list1.size()));
-+            return list1.isEmpty() ? ItemStack.EMPTY : (ItemStack)list1.get(p_92099_1_.getRNG().nextInt(list1.size()));
-         }
-     }
- 
+@@ -302,7 +309,7 @@
      public static int calcItemStackEnchantability(Random rand, int enchantNum, int power, ItemStack stack)
      {
          Item item = stack.getItem();
@@ -100,45 +37,15 @@
  
          if (i <= 0)
          {
-@@ -355,9 +362,9 @@
- 
-     public static List<EnchantmentData> buildEnchantmentList(Random randomIn, ItemStack itemStackIn, int level, boolean allowTreasure)
+@@ -357,7 +364,7 @@
      {
--        List<EnchantmentData> list = Lists.newArrayList();
-+        List<EnchantmentData> list = Lists.<EnchantmentData>newArrayList();
+         List<EnchantmentData> list = Lists.newArrayList();
          Item item = itemStackIn.getItem();
 -        int i = item.getItemEnchantability();
 +        int i = item.getItemEnchantability(itemStackIn);
  
          if (i <= 0)
          {
-@@ -365,7 +372,7 @@
-         }
-         else
-         {
--            level += 1 + randomIn.nextInt(i / 4 + 1) + randomIn.nextInt(i / 4 + 1);
-+            level = level + 1 + randomIn.nextInt(i / 4 + 1) + randomIn.nextInt(i / 4 + 1);
-             float f = (randomIn.nextFloat() + randomIn.nextFloat() - 1.0F) * 0.15F;
-             level = MathHelper.clamp(Math.round((float)level + (float)level * f), 1, Integer.MAX_VALUE);
-             List<EnchantmentData> list1 = getEnchantmentDatas(level, itemStackIn, allowTreasure);
-@@ -376,7 +383,7 @@
- 
-                 while (randomIn.nextInt(50) <= level)
-                 {
--                    removeIncompatible(list1, Util.getLastElement(list));
-+                    removeIncompatible(list1, (EnchantmentData)Util.getLastElement(list));
- 
-                     if (list1.isEmpty())
-                     {
-@@ -398,7 +405,7 @@
- 
-         while (iterator.hasNext())
-         {
--            if (!p_185282_1_.enchantment.isCompatibleWith(iterator.next().enchantment))
-+            if (!p_185282_1_.enchantment.isCompatibleWith((iterator.next()).enchantment))
-             {
-                 iterator.remove();
-             }
 @@ -407,15 +414,15 @@
  
      public static List<EnchantmentData> getEnchantmentDatas(int p_185291_0_, ItemStack p_185291_1_, boolean allowTreasure)
@@ -158,43 +65,3 @@
                  {
                      if (p_185291_0_ >= enchantment.getMinEnchantability(i) && p_185291_0_ <= enchantment.getMaxEnchantability(i))
                      {
-@@ -438,7 +445,6 @@
-             {
-             }
- 
--            @Override
-             public void calculateModifier(Enchantment enchantmentIn, int enchantmentLevel)
-             {
-                 enchantmentIn.onEntityDamaged(this.user, this.target, enchantmentLevel);
-@@ -454,7 +460,6 @@
-             {
-             }
- 
--            @Override
-             public void calculateModifier(Enchantment enchantmentIn, int enchantmentLevel)
-             {
-                 enchantmentIn.onUserHurt(this.user, this.attacker, enchantmentLevel);
-@@ -475,10 +480,9 @@
-             {
-             }
- 
--            @Override
-             public void calculateModifier(Enchantment enchantmentIn, int enchantmentLevel)
-             {
--                this.damageModifier = this.damageModifier + enchantmentIn.calcModifierDamage(enchantmentLevel, this.source);
-+                this.damageModifier += enchantmentIn.calcModifierDamage(enchantmentLevel, this.source);
-             }
-         }
- 
-@@ -491,10 +495,9 @@
-             {
-             }
- 
--            @Override
-             public void calculateModifier(Enchantment enchantmentIn, int enchantmentLevel)
-             {
--                this.livingModifier = this.livingModifier + enchantmentIn.calcDamageByCreature(enchantmentLevel, this.entityLiving);
-+                this.livingModifier += enchantmentIn.calcDamageByCreature(enchantmentLevel, this.entityLiving);
-             }
-         }
- }

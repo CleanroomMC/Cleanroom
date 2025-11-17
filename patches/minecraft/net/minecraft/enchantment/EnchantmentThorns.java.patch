@@ -1,38 +1,6 @@
 --- before/net/minecraft/enchantment/EnchantmentThorns.java
 +++ after/net/minecraft/enchantment/EnchantmentThorns.java
-@@ -17,31 +17,26 @@
-         this.setName("thorns");
-     }
- 
--    @Override
-     public int getMinEnchantability(int enchantmentLevel)
-     {
-         return 10 + 20 * (enchantmentLevel - 1);
-     }
- 
--    @Override
-     public int getMaxEnchantability(int enchantmentLevel)
-     {
-         return super.getMinEnchantability(enchantmentLevel) + 50;
-     }
- 
--    @Override
-     public int getMaxLevel()
-     {
-         return 3;
-     }
- 
--    @Override
-     public boolean canApply(ItemStack stack)
-     {
-         return stack.getItem() instanceof ItemArmor ? true : super.canApply(stack);
-     }
- 
--    @Override
-     public void onUserHurt(EntityLivingBase user, Entity attacker, int level)
-     {
-         Random random = user.getRNG();
-@@ -56,22 +51,50 @@
+@@ -56,12 +56,12 @@
  
              if (!itemstack.isEmpty())
              {
@@ -47,19 +15,7 @@
          }
      }
  
-     public static boolean shouldHit(int level, Random rnd)
-     {
--        return level <= 0 ? false : rnd.nextFloat() < 0.15F * (float)level;
-+        if (level <= 0)
-+        {
-+            return false;
-+        }
-+        else
-+        {
-+            return rnd.nextFloat() < 0.15F * (float)level;
-+        }
-     }
- 
+@@ -73,5 +73,26 @@
      public static int getDamage(int level, Random rnd)
      {
          return level > 10 ? level - 10 : 1 + rnd.nextInt(4);

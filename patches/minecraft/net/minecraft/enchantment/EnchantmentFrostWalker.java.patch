@@ -1,78 +1,10 @@
 --- before/net/minecraft/enchantment/EnchantmentFrostWalker.java
 +++ after/net/minecraft/enchantment/EnchantmentFrostWalker.java
-@@ -3,6 +3,7 @@
- import net.minecraft.block.BlockLiquid;
- import net.minecraft.block.material.Material;
- import net.minecraft.block.state.IBlockState;
-+import net.minecraft.entity.Entity;
- import net.minecraft.entity.EntityLivingBase;
- import net.minecraft.init.Blocks;
- import net.minecraft.init.Enchantments;
-@@ -20,25 +21,21 @@
-         this.setName("frostWalker");
-     }
- 
--    @Override
-     public int getMinEnchantability(int enchantmentLevel)
-     {
-         return enchantmentLevel * 10;
-     }
- 
--    @Override
-     public int getMaxEnchantability(int enchantmentLevel)
-     {
-         return this.getMinEnchantability(enchantmentLevel) + 15;
-     }
- 
--    @Override
-     public boolean isTreasureEnchantment()
-     {
-         return true;
-     }
- 
--    @Override
-     public int getMaxLevel()
-     {
-         return 2;
-@@ -51,29 +48,21 @@
-             float f = (float)Math.min(16, 2 + level);
-             BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(0, 0, 0);
- 
--            for (BlockPos.MutableBlockPos blockpos$mutableblockpos1 : BlockPos.getAllInBoxMutable(
--                        pos.add((double)(-f), -1.0, (double)(-f)), pos.add((double)f, -1.0, (double)f)
--                    ))
-+            for (BlockPos.MutableBlockPos blockpos$mutableblockpos1 : BlockPos.getAllInBoxMutable(pos.add((double)(-f), -1.0D, (double)(-f)), pos.add((double)f, -1.0D, (double)f)))
-             {
-                 if (blockpos$mutableblockpos1.distanceSqToCenter(living.posX, living.posY, living.posZ) <= (double)(f * f))
-                 {
--                    blockpos$mutableblockpos.setPos(
--                        blockpos$mutableblockpos1.getX(), blockpos$mutableblockpos1.getY() + 1, blockpos$mutableblockpos1.getZ()
--                    );
-+                    blockpos$mutableblockpos.setPos(blockpos$mutableblockpos1.getX(), blockpos$mutableblockpos1.getY() + 1, blockpos$mutableblockpos1.getZ());
-                     IBlockState iblockstate = worldIn.getBlockState(blockpos$mutableblockpos);
- 
-                     if (iblockstate.getMaterial() == Material.AIR)
-                     {
+@@ -67,6 +67,7 @@
                          IBlockState iblockstate1 = worldIn.getBlockState(blockpos$mutableblockpos1);
  
--                        if (iblockstate1.getMaterial() == Material.WATER
--                                && iblockstate1.getValue(BlockLiquid.LEVEL) == 0
--                                && worldIn.mayPlace(Blocks.FROSTED_ICE, blockpos$mutableblockpos1, false, EnumFacing.DOWN, null))
-+                        if (iblockstate1.getMaterial() == Material.WATER && (iblockstate1.getBlock() == net.minecraft.init.Blocks.WATER || iblockstate1.getBlock() == net.minecraft.init.Blocks.FLOWING_WATER) && ((Integer)iblockstate1.getValue(BlockLiquid.LEVEL)).intValue() == 0 && worldIn.mayPlace(Blocks.FROSTED_ICE, blockpos$mutableblockpos1, false, EnumFacing.DOWN, (Entity)null))
+                         if (iblockstate1.getMaterial() == Material.WATER
++                                && (iblockstate1.getBlock() == net.minecraft.init.Blocks.WATER || iblockstate1.getBlock() == net.minecraft.init.Blocks.FLOWING_WATER)
+                                 && iblockstate1.getValue(BlockLiquid.LEVEL) == 0
+                                 && worldIn.mayPlace(Blocks.FROSTED_ICE, blockpos$mutableblockpos1, false, EnumFacing.DOWN, null))
                          {
-                             worldIn.setBlockState(blockpos$mutableblockpos1, Blocks.FROSTED_ICE.getDefaultState());
--                            worldIn.scheduleUpdate(
--                                blockpos$mutableblockpos1.toImmutable(), Blocks.FROSTED_ICE, MathHelper.getInt(living.getRNG(), 60, 120)
--                            );
-+                            worldIn.scheduleUpdate(blockpos$mutableblockpos1.toImmutable(), Blocks.FROSTED_ICE, MathHelper.getInt(living.getRNG(), 60, 120));
-                         }
-                     }
-                 }
-@@ -81,7 +70,6 @@
-         }
-     }
- 
--    @Override
-     public boolean canApplyTogether(Enchantment ench)
-     {
-         return super.canApplyTogether(ench) && ench != Enchantments.DEPTH_STRIDER;

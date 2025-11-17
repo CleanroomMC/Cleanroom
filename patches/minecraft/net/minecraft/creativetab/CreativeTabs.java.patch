@@ -1,136 +1,6 @@
 --- before/net/minecraft/creativetab/CreativeTabs.java
 +++ after/net/minecraft/creativetab/CreativeTabs.java
-@@ -19,7 +19,6 @@
-     public static final CreativeTabs BUILDING_BLOCKS = new CreativeTabs(0, "buildingBlocks")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack createIcon()
-         {
-             return new ItemStack(Item.getItemFromBlock(Blocks.BRICK_BLOCK));
-@@ -28,7 +27,6 @@
-     public static final CreativeTabs DECORATIONS = new CreativeTabs(1, "decorations")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack createIcon()
-         {
-             return new ItemStack(Item.getItemFromBlock(Blocks.DOUBLE_PLANT), 1, BlockDoublePlant.EnumPlantType.PAEONIA.getMeta());
-@@ -37,7 +35,6 @@
-     public static final CreativeTabs REDSTONE = new CreativeTabs(2, "redstone")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack createIcon()
-         {
-             return new ItemStack(Items.REDSTONE);
-@@ -46,7 +43,6 @@
-     public static final CreativeTabs TRANSPORTATION = new CreativeTabs(3, "transportation")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack createIcon()
-         {
-             return new ItemStack(Item.getItemFromBlock(Blocks.GOLDEN_RAIL));
-@@ -55,7 +51,6 @@
-     public static final CreativeTabs MISC = new CreativeTabs(6, "misc")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack createIcon()
-         {
-             return new ItemStack(Items.LAVA_BUCKET);
-@@ -64,7 +59,6 @@
-     public static final CreativeTabs SEARCH = (new CreativeTabs(5, "search")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack createIcon()
-         {
-             return new ItemStack(Items.COMPASS);
-@@ -73,7 +67,6 @@
-     public static final CreativeTabs FOOD = new CreativeTabs(7, "food")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack createIcon()
-         {
-             return new ItemStack(Items.APPLE);
-@@ -82,43 +75,22 @@
-     public static final CreativeTabs TOOLS = (new CreativeTabs(8, "tools")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack createIcon()
-         {
-             return new ItemStack(Items.IRON_AXE);
-         }
--    })
--            .setRelevantEnchantmentTypes(
--                new EnumEnchantmentType[] {EnumEnchantmentType.ALL, EnumEnchantmentType.DIGGER, EnumEnchantmentType.FISHING_ROD, EnumEnchantmentType.BREAKABLE}
--            );
-+    }).setRelevantEnchantmentTypes(new EnumEnchantmentType[] {EnumEnchantmentType.ALL, EnumEnchantmentType.DIGGER, EnumEnchantmentType.FISHING_ROD, EnumEnchantmentType.BREAKABLE});
-     public static final CreativeTabs COMBAT = (new CreativeTabs(9, "combat")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack createIcon()
-         {
-             return new ItemStack(Items.GOLDEN_SWORD);
-         }
--    })
--            .setRelevantEnchantmentTypes(
--                new EnumEnchantmentType[]
--                {
--                    EnumEnchantmentType.ALL,
--                    EnumEnchantmentType.ARMOR,
--                    EnumEnchantmentType.ARMOR_FEET,
--                    EnumEnchantmentType.ARMOR_HEAD,
--                    EnumEnchantmentType.ARMOR_LEGS,
--                    EnumEnchantmentType.ARMOR_CHEST,
--                    EnumEnchantmentType.BOW,
--                    EnumEnchantmentType.WEAPON,
--                    EnumEnchantmentType.WEARABLE,
--                    EnumEnchantmentType.BREAKABLE
--                }
--            );
-+    }).setRelevantEnchantmentTypes(new EnumEnchantmentType[] {EnumEnchantmentType.ALL, EnumEnchantmentType.ARMOR, EnumEnchantmentType.ARMOR_FEET, EnumEnchantmentType.ARMOR_HEAD, EnumEnchantmentType.ARMOR_LEGS, EnumEnchantmentType.ARMOR_CHEST, EnumEnchantmentType.BOW, EnumEnchantmentType.WEAPON, EnumEnchantmentType.WEARABLE, EnumEnchantmentType.BREAKABLE});
-     public static final CreativeTabs BREWING = new CreativeTabs(10, "brewing")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack createIcon()
-         {
-             return PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionTypes.WATER);
-@@ -128,19 +100,16 @@
-     public static final CreativeTabs HOTBAR = new CreativeTabs(4, "hotbar")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack createIcon()
-         {
-             return new ItemStack(Blocks.BOOKSHELF);
-         }
-         @SideOnly(Side.CLIENT)
--        @Override
-         public void displayAllRelevantItems(NonNullList<ItemStack> p_78018_1_)
-         {
-             throw new RuntimeException("Implement exception client-side.");
-         }
-         @SideOnly(Side.CLIENT)
--        @Override
-         public boolean isAlignedRight()
-         {
-             return true;
-@@ -149,7 +118,6 @@
-     public static final CreativeTabs INVENTORY = (new CreativeTabs(11, "inventory")
-     {
-         @SideOnly(Side.CLIENT)
--        @Override
-         public ItemStack createIcon()
-         {
-             return new ItemStack(Item.getItemFromBlock(Blocks.CHEST));
-@@ -163,8 +131,22 @@
+@@ -163,8 +163,22 @@
      private EnumEnchantmentType[] enchantmentTypes = new EnumEnchantmentType[0];
      private ItemStack icon;
  
@@ -153,33 +23,7 @@
          this.index = index;
          this.tabLabel = label;
          this.icon = ItemStack.EMPTY;
-@@ -177,6 +159,12 @@
-         return this.index;
-     }
- 
-+    public CreativeTabs setBackgroundImageName(String texture)
-+    {
-+        this.backgroundTexture = texture;
-+        return this;
-+    }
-+
-     @SideOnly(Side.CLIENT)
-     public String getTabLabel()
-     {
-@@ -209,12 +197,6 @@
-         return this.backgroundTexture;
-     }
- 
--    public CreativeTabs setBackgroundImageName(String texture)
--    {
--        this.backgroundTexture = texture;
--        return this;
--    }
--
-     @SideOnly(Side.CLIENT)
-     public boolean drawInForegroundOfTab()
-     {
-@@ -242,12 +224,20 @@
+@@ -242,12 +256,20 @@
      @SideOnly(Side.CLIENT)
      public int getColumn()
      {
@@ -200,7 +44,7 @@
          return this.index < 6;
      }
  
-@@ -291,5 +281,51 @@
+@@ -291,5 +313,51 @@
          {
              item.getSubItems(this, p_78018_1_);
          }
