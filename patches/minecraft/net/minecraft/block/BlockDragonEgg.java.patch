@@ -1,40 +1,6 @@
 --- before/net/minecraft/block/BlockDragonEgg.java
 +++ after/net/minecraft/block/BlockDragonEgg.java
-@@ -19,32 +19,28 @@
- 
- public class BlockDragonEgg extends Block
- {
--    protected static final AxisAlignedBB DRAGON_EGG_AABB = new AxisAlignedBB(0.0625, 0.0, 0.0625, 0.9375, 1.0, 0.9375);
-+    protected static final AxisAlignedBB DRAGON_EGG_AABB = new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 1.0D, 0.9375D);
- 
-     public BlockDragonEgg()
-     {
-         super(Material.DRAGON_EGG, MapColor.BLACK);
-     }
- 
--    @Override
-     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-     {
-         return DRAGON_EGG_AABB;
-     }
- 
--    @Override
-     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
-     {
-         worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
-     }
- 
--    @Override
-     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
-     {
-         worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
-     }
- 
--    @Override
-     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
-     {
-         this.checkFall(worldIn, pos);
-@@ -52,30 +48,22 @@
+@@ -52,7 +52,7 @@
  
      private void checkFall(World worldIn, BlockPos pos)
      {
@@ -43,133 +9,21 @@
          {
              int i = 32;
  
-             if (!BlockFalling.fallInstantly && worldIn.isAreaLoaded(pos.add(-32, -32, -32), pos.add(32, 32, 32)))
-             {
--                worldIn.spawnEntity(
--                    new EntityFallingBlock(
--                        worldIn,
--                        (double)((float)pos.getX() + 0.5F),
--                        (double)pos.getY(),
--                        (double)((float)pos.getZ() + 0.5F),
--                        this.getDefaultState()
--                    )
--                );
-+                worldIn.spawnEntity(new EntityFallingBlock(worldIn, (double)((float)pos.getX() + 0.5F), (double)pos.getY(), (double)((float)pos.getZ() + 0.5F), this.getDefaultState()));
-             }
-             else
-             {
+@@ -73,7 +73,7 @@
                  worldIn.setBlockToAir(pos);
--                BlockPos blockpos = pos;
-+                BlockPos blockpos;
+                 BlockPos blockpos = pos;
  
 -                while (BlockFalling.canFallThrough(worldIn.getBlockState(blockpos)) && blockpos.getY() > 0)
-+                for (blockpos = pos; worldIn.isAirBlock(blockpos) && BlockFalling.canFallThrough(worldIn.getBlockState(blockpos)) && blockpos.getY() > 0; blockpos = blockpos.down())
++                while (worldIn.isAirBlock(blockpos) && BlockFalling.canFallThrough(worldIn.getBlockState(blockpos)) && blockpos.getY() > 0)
                  {
--                    blockpos = blockpos.down();
-+                    ;
+                     blockpos = blockpos.down();
                  }
- 
-                 if (blockpos.getY() > 0)
-@@ -86,24 +74,12 @@
-         }
-     }
- 
--    @Override
--    public boolean onBlockActivated(
--        World worldIn,
--        BlockPos pos,
--        IBlockState state,
--        EntityPlayer playerIn,
--        EnumHand hand,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ
--    )
-+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-     {
-         this.teleport(worldIn, pos);
-         return true;
-     }
- 
--    @Override
-     public void onBlockClicked(World worldIn, BlockPos pos, EntityPlayer playerIn)
-     {
-         this.teleport(worldIn, pos);
-@@ -115,36 +91,23 @@
- 
-         if (iblockstate.getBlock() == this)
-         {
--            for (int i = 0; i < 1000; i++)
-+            for (int i = 0; i < 1000; ++i)
-             {
--                BlockPos blockpos = pos.add(
--                                        worldIn.rand.nextInt(16) - worldIn.rand.nextInt(16),
--                                        worldIn.rand.nextInt(8) - worldIn.rand.nextInt(8),
--                                        worldIn.rand.nextInt(16) - worldIn.rand.nextInt(16)
--                                    );
-+                BlockPos blockpos = pos.add(worldIn.rand.nextInt(16) - worldIn.rand.nextInt(16), worldIn.rand.nextInt(8) - worldIn.rand.nextInt(8), worldIn.rand.nextInt(16) - worldIn.rand.nextInt(16));
+@@ -123,7 +123,7 @@
+                                         worldIn.rand.nextInt(16) - worldIn.rand.nextInt(16)
+                                     );
  
 -                if (worldIn.getBlockState(blockpos).getBlock().material == Material.AIR)
 +                if (worldIn.isAirBlock(blockpos))
                  {
                      if (worldIn.isRemote)
                      {
--                        for (int j = 0; j < 128; j++)
-+                        for (int j = 0; j < 128; ++j)
-                         {
-                             double d0 = worldIn.rand.nextDouble();
-                             float f = (worldIn.rand.nextFloat() - 0.5F) * 0.2F;
-                             float f1 = (worldIn.rand.nextFloat() - 0.5F) * 0.2F;
-                             float f2 = (worldIn.rand.nextFloat() - 0.5F) * 0.2F;
--                            double d1 = (double)blockpos.getX()
--                                        + (double)(pos.getX() - blockpos.getX()) * d0
--                                        + (worldIn.rand.nextDouble() - 0.5)
--                                        + 0.5;
--                            double d2 = (double)blockpos.getY()
--                                        + (double)(pos.getY() - blockpos.getY()) * d0
--                                        + worldIn.rand.nextDouble()
--                                        - 0.5;
--                            double d3 = (double)blockpos.getZ()
--                                        + (double)(pos.getZ() - blockpos.getZ()) * d0
--                                        + (worldIn.rand.nextDouble() - 0.5)
--                                        + 0.5;
-+                            double d1 = (double)blockpos.getX() + (double)(pos.getX() - blockpos.getX()) * d0 + (worldIn.rand.nextDouble() - 0.5D) + 0.5D;
-+                            double d2 = (double)blockpos.getY() + (double)(pos.getY() - blockpos.getY()) * d0 + worldIn.rand.nextDouble() - 0.5D;
-+                            double d3 = (double)blockpos.getZ() + (double)(pos.getZ() - blockpos.getZ()) * d0 + (worldIn.rand.nextDouble() - 0.5D) + 0.5D;
-                             worldIn.spawnParticle(EnumParticleTypes.PORTAL, d1, d2, d3, (double)f, (double)f1, (double)f2);
-                         }
-                     }
-@@ -160,32 +123,27 @@
-         }
-     }
- 
--    @Override
-     public int tickRate(World worldIn)
-     {
-         return 5;
-     }
- 
--    @Override
-     public boolean isOpaqueCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
-     public boolean isFullCube(IBlockState state)
-     {
-         return false;
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
-     {
-         return true;
-     }
- 
--    @Override
-     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-     {
-         return BlockFaceShape.UNDEFINED;

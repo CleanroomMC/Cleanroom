@@ -1,77 +1,9 @@
 --- before/net/minecraft/block/BlockSlab.java
 +++ after/net/minecraft/block/BlockSlab.java
-@@ -21,9 +21,9 @@
- 
- public abstract class BlockSlab extends Block
- {
--    public static final PropertyEnum<BlockSlab.EnumBlockHalf> HALF = PropertyEnum.create("half", BlockSlab.EnumBlockHalf.class);
--    protected static final AxisAlignedBB AABB_BOTTOM_HALF = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.5, 1.0);
--    protected static final AxisAlignedBB AABB_TOP_HALF = new AxisAlignedBB(0.0, 0.5, 0.0, 1.0, 1.0, 1.0);
-+    public static final PropertyEnum<BlockSlab.EnumBlockHalf> HALF = PropertyEnum.<BlockSlab.EnumBlockHalf>create("half", BlockSlab.EnumBlockHalf.class);
-+    protected static final AxisAlignedBB AABB_BOTTOM_HALF = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D);
-+    protected static final AxisAlignedBB AABB_TOP_HALF = new AxisAlignedBB(0.0D, 0.5D, 0.0D, 1.0D, 1.0D, 1.0D);
- 
-     public BlockSlab(Material materialIn)
-     {
-@@ -37,13 +37,11 @@
-         this.setLightOpacity(255);
-     }
- 
--    @Override
-     protected boolean canSilkHarvest()
-     {
-         return false;
-     }
- 
--    @Override
-     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-     {
-         if (this.isDouble())
-@@ -56,13 +54,11 @@
-         }
-     }
- 
--    @Override
-     public boolean isTopSolid(IBlockState state)
-     {
-         return ((BlockSlab)state.getBlock()).isDouble() || state.getValue(HALF) == BlockSlab.EnumBlockHalf.TOP;
-     }
- 
--    @Override
-     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-     {
-         if (((BlockSlab)state.getBlock()).isDouble())
-@@ -75,32 +71,31 @@
-         }
-         else
-         {
--            return face == EnumFacing.DOWN && state.getValue(HALF) == BlockSlab.EnumBlockHalf.BOTTOM
--                   ? BlockFaceShape.SOLID
--                   : BlockFaceShape.UNDEFINED;
-+            return face == EnumFacing.DOWN && state.getValue(HALF) == BlockSlab.EnumBlockHalf.BOTTOM ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
-         }
-     }
- 
--    @Override
-     public boolean isOpaqueCube(IBlockState state)
-     {
-         return this.isDouble();
+@@ -88,6 +88,19 @@
      }
  
      @Override
--    public IBlockState getStateForPlacement(
--        World worldIn,
--        BlockPos pos,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ,
--        int meta,
--        EntityLivingBase placer
--    )
--    {
--        IBlockState iblockstate = super.getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer)
--                                  .withProperty(HALF, BlockSlab.EnumBlockHalf.BOTTOM);
 +    public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face)
 +    {
 +        if (net.minecraftforge.common.ForgeModContainer.disableStairSlabCulling)
@@ -84,41 +16,11 @@
 +        return (side == EnumBlockHalf.TOP && face == EnumFacing.UP) || (side == EnumBlockHalf.BOTTOM && face == EnumFacing.DOWN);
 +    }
 +
-+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-+    {
-+        IBlockState iblockstate = super.getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer).withProperty(HALF, BlockSlab.EnumBlockHalf.BOTTOM);
- 
-         if (this.isDouble())
-         {
-@@ -108,26 +103,21 @@
-         }
-         else
-         {
--            return facing != EnumFacing.DOWN && (facing == EnumFacing.UP || !((double)hitY > 0.5))
--                   ? iblockstate
--                   : iblockstate.withProperty(HALF, BlockSlab.EnumBlockHalf.TOP);
-+            return facing != EnumFacing.DOWN && (facing == EnumFacing.UP || (double)hitY <= 0.5D) ? iblockstate : iblockstate.withProperty(HALF, BlockSlab.EnumBlockHalf.TOP);
-         }
-     }
- 
--    @Override
-     public int quantityDropped(Random random)
-     {
-         return this.isDouble() ? 2 : 1;
-     }
- 
--    @Override
-     public boolean isFullCube(IBlockState state)
-     {
-         return this.isDouble();
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
-     {
-         if (this.isDouble())
-@@ -138,7 +128,7 @@
++    @Override
+     public IBlockState getStateForPlacement(
+         World worldIn,
+         BlockPos pos,
+@@ -138,7 +151,7 @@
          {
              return false;
          }
@@ -127,53 +29,11 @@
          {
              IBlockState iblockstate = blockAccess.getBlockState(pos.offset(side));
              boolean flag = isHalfSlab(iblockstate) && iblockstate.getValue(HALF) == BlockSlab.EnumBlockHalf.TOP;
-@@ -150,24 +140,29 @@
-                 {
-                     return true;
-                 }
-+                else if (side == EnumFacing.UP && super.shouldSideBeRendered(blockState, blockAccess, pos, side))
-+                {
-+                    return true;
-+                }
-                 else
-                 {
--                    return side == EnumFacing.UP && super.shouldSideBeRendered(blockState, blockAccess, pos, side)
--                           ? true
--                           : !isHalfSlab(iblockstate) || !flag;
-+                    return !isHalfSlab(iblockstate) || !flag;
-                 }
-             }
-             else if (side == EnumFacing.UP)
-             {
-                 return true;
-             }
-+            else if (side == EnumFacing.DOWN && super.shouldSideBeRendered(blockState, blockAccess, pos, side))
-+            {
-+                return true;
-+            }
-             else
-             {
--                return side == EnumFacing.DOWN && super.shouldSideBeRendered(blockState, blockAccess, pos, side)
--                       ? true
--                       : !isHalfSlab(iblockstate) || flag;
-+                return !isHalfSlab(iblockstate) || flag;
+@@ -168,6 +181,7 @@
+                        : !isHalfSlab(iblockstate) || flag;
              }
          }
 +        return super.shouldSideBeRendered(blockState, blockAccess, pos, side);
      }
  
      @SideOnly(Side.CLIENT)
-@@ -197,13 +192,11 @@
-             this.name = name;
-         }
- 
--        @Override
-         public String toString()
-         {
-             return this.name;
-         }
- 
--        @Override
-         public String getName()
-         {
-             return this.name;

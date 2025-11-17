@@ -1,79 +1,6 @@
 --- before/net/minecraft/block/BlockCrops.java
 +++ after/net/minecraft/block/BlockCrops.java
-@@ -1,9 +1,11 @@
- package net.minecraft.block;
- 
- import java.util.Random;
-+import net.minecraft.block.properties.IProperty;
- import net.minecraft.block.properties.PropertyInteger;
- import net.minecraft.block.state.BlockStateContainer;
- import net.minecraft.block.state.IBlockState;
-+import net.minecraft.creativetab.CreativeTabs;
- import net.minecraft.init.Blocks;
- import net.minecraft.init.Items;
- import net.minecraft.item.Item;
-@@ -17,35 +19,23 @@
- public class BlockCrops extends BlockBush implements IGrowable
- {
-     public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 7);
--    private static final AxisAlignedBB[] CROPS_AABB = new AxisAlignedBB[]
--        {
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.125, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.25, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.375, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.5, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.625, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.75, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.875, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
--        };
-+    private static final AxisAlignedBB[] CROPS_AABB = new AxisAlignedBB[] {new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.125D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.25D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.375D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.75D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.875D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D)};
- 
-     protected BlockCrops()
-     {
--        this.setDefaultState(this.blockState.getBaseState().withProperty(this.getAgeProperty(), 0));
-+        this.setDefaultState(this.blockState.getBaseState().withProperty(this.getAgeProperty(), Integer.valueOf(0)));
-         this.setTickRandomly(true);
--        this.setCreativeTab(null);
-+        this.setCreativeTab((CreativeTabs)null);
-         this.setHardness(0.0F);
-         this.setSoundType(SoundType.PLANT);
-         this.disableStats();
-     }
- 
--    @Override
-     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-     {
--        return CROPS_AABB[state.getValue(this.getAgeProperty())];
-+        return CROPS_AABB[((Integer)state.getValue(this.getAgeProperty())).intValue()];
-     }
- 
--    @Override
-     protected boolean canSustainBush(IBlockState state)
-     {
-         return state.getBlock() == Blocks.FARMLAND;
-@@ -63,24 +53,24 @@
- 
-     protected int getAge(IBlockState state)
-     {
--        return state.getValue(this.getAgeProperty());
-+        return ((Integer)state.getValue(this.getAgeProperty())).intValue();
-     }
- 
-     public IBlockState withAge(int age)
-     {
--        return this.getDefaultState().withProperty(this.getAgeProperty(), age);
-+        return this.getDefaultState().withProperty(this.getAgeProperty(), Integer.valueOf(age));
-     }
- 
-     public boolean isMaxAge(IBlockState state)
-     {
--        return state.getValue(this.getAgeProperty()) >= this.getMaxAge();
-+        return ((Integer)state.getValue(this.getAgeProperty())).intValue() >= this.getMaxAge();
-     }
- 
--    @Override
-     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
+@@ -81,6 +81,7 @@
      {
          super.updateTick(worldIn, pos, state, rand);
  
@@ -81,7 +8,7 @@
          if (worldIn.getLightFromNeighbors(pos.up()) >= 9)
          {
              int i = this.getAge(state);
-@@ -89,9 +79,10 @@
+@@ -89,9 +90,10 @@
              {
                  float f = getGrowthChance(this, worldIn, pos);
  
@@ -93,16 +20,7 @@
                  }
              }
          }
-@@ -120,18 +111,18 @@
-         float f = 1.0F;
-         BlockPos blockpos = pos.down();
- 
--        for (int i = -1; i <= 1; i++)
-+        for (int i = -1; i <= 1; ++i)
-         {
--            for (int j = -1; j <= 1; j++)
-+            for (int j = -1; j <= 1; ++j)
-             {
+@@ -127,11 +129,11 @@
                  float f1 = 0.0F;
                  IBlockState iblockstate = worldIn.getBlockState(blockpos.add(i, 0, j));
  
@@ -116,33 +34,8 @@
                      {
                          f1 = 3.0F;
                      }
-@@ -151,8 +142,7 @@
-         BlockPos blockpos3 = pos.west();
-         BlockPos blockpos4 = pos.east();
-         boolean flag = blockIn == worldIn.getBlockState(blockpos3).getBlock() || blockIn == worldIn.getBlockState(blockpos4).getBlock();
--        boolean flag1 = blockIn == worldIn.getBlockState(blockpos1).getBlock()
--                        || blockIn == worldIn.getBlockState(blockpos2).getBlock();
-+        boolean flag1 = blockIn == worldIn.getBlockState(blockpos1).getBlock() || blockIn == worldIn.getBlockState(blockpos2).getBlock();
- 
-         if (flag && flag1)
-         {
-@@ -160,10 +150,7 @@
-         }
-         else
-         {
--            boolean flag2 = blockIn == worldIn.getBlockState(blockpos3.north()).getBlock()
--                            || blockIn == worldIn.getBlockState(blockpos4.north()).getBlock()
--                            || blockIn == worldIn.getBlockState(blockpos4.south()).getBlock()
--                            || blockIn == worldIn.getBlockState(blockpos3.south()).getBlock();
-+            boolean flag2 = blockIn == worldIn.getBlockState(blockpos3.north()).getBlock() || blockIn == worldIn.getBlockState(blockpos4.north()).getBlock() || blockIn == worldIn.getBlockState(blockpos4.south()).getBlock() || blockIn == worldIn.getBlockState(blockpos3.south()).getBlock();
- 
-             if (flag2)
-             {
-@@ -174,11 +161,10 @@
-         return f;
-     }
- 
--    @Override
+@@ -177,8 +179,8 @@
+     @Override
      public boolean canBlockStay(World worldIn, BlockPos pos, IBlockState state)
      {
 -        return (worldIn.getLight(pos) >= 8 || worldIn.canSeeSky(pos))
@@ -152,7 +45,7 @@
      }
  
      protected Item getSeed()
-@@ -192,11 +178,31 @@
+@@ -192,11 +194,31 @@
      }
  
      @Override
@@ -186,65 +79,3 @@
          {
              int i = this.getAge(state);
  
-@@ -204,7 +210,7 @@
-             {
-                 int j = 3 + fortune;
- 
--                for (int k = 0; k < j; k++)
-+                for (int k = 0; k < j; ++k)
-                 {
-                     if (worldIn.rand.nextInt(2 * this.getMaxAge()) <= i)
-                     {
-@@ -215,51 +221,43 @@
-         }
-     }
- 
--    @Override
-     public Item getItemDropped(IBlockState state, Random rand, int fortune)
-     {
-         return this.isMaxAge(state) ? this.getCrop() : this.getSeed();
-     }
- 
--    @Override
-     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
-     {
-         return new ItemStack(this.getSeed());
-     }
- 
--    @Override
-     public boolean canGrow(World worldIn, BlockPos pos, IBlockState state, boolean isClient)
-     {
-         return !this.isMaxAge(state);
-     }
- 
--    @Override
-     public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, IBlockState state)
-     {
-         return true;
-     }
- 
--    @Override
-     public void grow(World worldIn, Random rand, BlockPos pos, IBlockState state)
-     {
-         this.grow(worldIn, pos, state);
-     }
- 
--    @Override
-     public IBlockState getStateFromMeta(int meta)
-     {
-         return this.withAge(meta);
-     }
- 
--    @Override
-     public int getMetaFromState(IBlockState state)
-     {
-         return this.getAge(state);
-     }
- 
--    @Override
-     protected BlockStateContainer createBlockState()
-     {
--        return new BlockStateContainer(this, AGE);
-+        return new BlockStateContainer(this, new IProperty[] {AGE});
-     }
- }

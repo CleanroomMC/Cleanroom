@@ -1,161 +1,24 @@
 --- before/net/minecraft/block/BlockCocoa.java
 +++ after/net/minecraft/block/BlockCocoa.java
-@@ -2,6 +2,7 @@
- 
- import java.util.Random;
- import net.minecraft.block.material.Material;
-+import net.minecraft.block.properties.IProperty;
- import net.minecraft.block.properties.PropertyInteger;
- import net.minecraft.block.state.BlockFaceShape;
- import net.minecraft.block.state.BlockStateContainer;
-@@ -25,79 +26,56 @@
- public class BlockCocoa extends BlockHorizontal implements IGrowable
- {
-     public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 2);
--    protected static final AxisAlignedBB[] COCOA_EAST_AABB = new AxisAlignedBB[]
--        {
--            new AxisAlignedBB(0.6875, 0.4375, 0.375, 0.9375, 0.75, 0.625),
--            new AxisAlignedBB(0.5625, 0.3125, 0.3125, 0.9375, 0.75, 0.6875),
--            new AxisAlignedBB(0.4375, 0.1875, 0.25, 0.9375, 0.75, 0.75)
--        };
--    protected static final AxisAlignedBB[] COCOA_WEST_AABB = new AxisAlignedBB[]
--        {
--            new AxisAlignedBB(0.0625, 0.4375, 0.375, 0.3125, 0.75, 0.625),
--            new AxisAlignedBB(0.0625, 0.3125, 0.3125, 0.4375, 0.75, 0.6875),
--            new AxisAlignedBB(0.0625, 0.1875, 0.25, 0.5625, 0.75, 0.75)
--        };
--    protected static final AxisAlignedBB[] COCOA_NORTH_AABB = new AxisAlignedBB[]
--        {
--            new AxisAlignedBB(0.375, 0.4375, 0.0625, 0.625, 0.75, 0.3125),
--            new AxisAlignedBB(0.3125, 0.3125, 0.0625, 0.6875, 0.75, 0.4375),
--            new AxisAlignedBB(0.25, 0.1875, 0.0625, 0.75, 0.75, 0.5625)
--        };
--    protected static final AxisAlignedBB[] COCOA_SOUTH_AABB = new AxisAlignedBB[]
--        {
--            new AxisAlignedBB(0.375, 0.4375, 0.6875, 0.625, 0.75, 0.9375),
--            new AxisAlignedBB(0.3125, 0.3125, 0.5625, 0.6875, 0.75, 0.9375),
--            new AxisAlignedBB(0.25, 0.1875, 0.4375, 0.75, 0.75, 0.9375)
--        };
-+    protected static final AxisAlignedBB[] COCOA_EAST_AABB = new AxisAlignedBB[] {new AxisAlignedBB(0.6875D, 0.4375D, 0.375D, 0.9375D, 0.75D, 0.625D), new AxisAlignedBB(0.5625D, 0.3125D, 0.3125D, 0.9375D, 0.75D, 0.6875D), new AxisAlignedBB(0.4375D, 0.1875D, 0.25D, 0.9375D, 0.75D, 0.75D)};
-+    protected static final AxisAlignedBB[] COCOA_WEST_AABB = new AxisAlignedBB[] {new AxisAlignedBB(0.0625D, 0.4375D, 0.375D, 0.3125D, 0.75D, 0.625D), new AxisAlignedBB(0.0625D, 0.3125D, 0.3125D, 0.4375D, 0.75D, 0.6875D), new AxisAlignedBB(0.0625D, 0.1875D, 0.25D, 0.5625D, 0.75D, 0.75D)};
-+    protected static final AxisAlignedBB[] COCOA_NORTH_AABB = new AxisAlignedBB[] {new AxisAlignedBB(0.375D, 0.4375D, 0.0625D, 0.625D, 0.75D, 0.3125D), new AxisAlignedBB(0.3125D, 0.3125D, 0.0625D, 0.6875D, 0.75D, 0.4375D), new AxisAlignedBB(0.25D, 0.1875D, 0.0625D, 0.75D, 0.75D, 0.5625D)};
-+    protected static final AxisAlignedBB[] COCOA_SOUTH_AABB = new AxisAlignedBB[] {new AxisAlignedBB(0.375D, 0.4375D, 0.6875D, 0.625D, 0.75D, 0.9375D), new AxisAlignedBB(0.3125D, 0.3125D, 0.5625D, 0.6875D, 0.75D, 0.9375D), new AxisAlignedBB(0.25D, 0.1875D, 0.4375D, 0.75D, 0.75D, 0.9375D)};
- 
-     public BlockCocoa()
-     {
-         super(Material.PLANTS);
--        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(AGE, 0));
-+        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(AGE, Integer.valueOf(0)));
-         this.setTickRandomly(true);
-     }
- 
--    @Override
-     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
-     {
-         if (!this.canBlockStay(worldIn, pos, state))
+@@ -64,13 +64,14 @@
          {
              this.dropBlock(worldIn, pos, state);
          }
 -        else if (worldIn.rand.nextInt(5) == 0)
 +        else
          {
--            int i = state.getValue(AGE);
-+            int i = ((Integer)state.getValue(AGE)).intValue();
+             int i = state.getValue(AGE);
  
 -            if (i < 2)
 +            if (i < 2 && net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, pos, state, rand.nextInt(5) == 0))
              {
--                worldIn.setBlockState(pos, state.withProperty(AGE, i + 1), 2);
-+                worldIn.setBlockState(pos, state.withProperty(AGE, Integer.valueOf(i + 1)), 2);
+                 worldIn.setBlockState(pos, state.withProperty(AGE, i + 1), 2);
 +                net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
              }
          }
      }
- 
-     public boolean canBlockStay(World worldIn, BlockPos pos, IBlockState state)
-     {
--        pos = pos.offset(state.getValue(FACING));
-+        pos = pos.offset((EnumFacing)state.getValue(FACING));
-         IBlockState iblockstate = worldIn.getBlockState(pos);
-         return iblockstate.getBlock() == Blocks.LOG && iblockstate.getValue(BlockOldLog.VARIANT) == BlockPlanks.EnumType.JUNGLE;
-     }
- 
--    @Override
-     public boolean isFullCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
-     public boolean isOpaqueCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
-     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-     {
--        int i = state.getValue(AGE);
-+        int i = ((Integer)state.getValue(AGE)).intValue();
- 
-         switch ((EnumFacing)state.getValue(FACING))
-         {
-@@ -113,46 +91,32 @@
-         }
-     }
- 
--    @Override
-     public IBlockState withRotation(IBlockState state, Rotation rot)
-     {
--        return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
-+        return state.withProperty(FACING, rot.rotate((EnumFacing)state.getValue(FACING)));
-     }
- 
--    @Override
-     public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
-     {
--        return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
-+        return state.withRotation(mirrorIn.toRotation((EnumFacing)state.getValue(FACING)));
-     }
- 
--    @Override
-     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
-     {
-         EnumFacing enumfacing = EnumFacing.fromAngle((double)placer.rotationYaw);
-         worldIn.setBlockState(pos, state.withProperty(FACING, enumfacing), 2);
-     }
- 
--    @Override
--    public IBlockState getStateForPlacement(
--        World worldIn,
--        BlockPos pos,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ,
--        int meta,
--        EntityLivingBase placer
--    )
-+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-     {
-         if (!facing.getAxis().isHorizontal())
-         {
-             facing = EnumFacing.NORTH;
-         }
- 
--        return this.getDefaultState().withProperty(FACING, facing.getOpposite()).withProperty(AGE, 0);
-+        return this.getDefaultState().withProperty(FACING, facing.getOpposite()).withProperty(AGE, Integer.valueOf(0));
-     }
- 
--    @Override
-     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
-     {
-         if (!this.canBlockStay(worldIn, pos, state))
-@@ -167,10 +131,16 @@
-         this.dropBlockAsItem(worldIn, pos, state, 0);
-     }
- 
--    @Override
+@@ -170,7 +171,14 @@
+     @Override
      public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
      {
 -        int i = state.getValue(AGE);
@@ -170,77 +33,12 @@
          int j = 1;
  
          if (i >= 2)
-@@ -178,64 +148,56 @@
-             j = 3;
-         }
+@@ -180,7 +188,7 @@
  
--        for (int k = 0; k < j; k++)
-+        for (int k = 0; k < j; ++k)
+         for (int k = 0; k < j; k++)
          {
 -            spawnAsEntity(worldIn, pos, new ItemStack(Items.DYE, 1, EnumDyeColor.BROWN.getDyeDamage()));
 +            drops.add(new ItemStack(Items.DYE, 1, EnumDyeColor.BROWN.getDyeDamage()));
          }
      }
  
--    @Override
-     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
-     {
-         return new ItemStack(Items.DYE, 1, EnumDyeColor.BROWN.getDyeDamage());
-     }
- 
--    @Override
-     public boolean canGrow(World worldIn, BlockPos pos, IBlockState state, boolean isClient)
-     {
--        return state.getValue(AGE) < 2;
-+        return ((Integer)state.getValue(AGE)).intValue() < 2;
-     }
- 
--    @Override
-     public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, IBlockState state)
-     {
-         return true;
-     }
- 
--    @Override
-     public void grow(World worldIn, Random rand, BlockPos pos, IBlockState state)
-     {
--        worldIn.setBlockState(pos, state.withProperty(AGE, state.getValue(AGE) + 1), 2);
-+        worldIn.setBlockState(pos, state.withProperty(AGE, Integer.valueOf(((Integer)state.getValue(AGE)).intValue() + 1)), 2);
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public BlockRenderLayer getRenderLayer()
-     {
-         return BlockRenderLayer.CUTOUT;
-     }
- 
--    @Override
-     public IBlockState getStateFromMeta(int meta)
-     {
--        return this.getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(meta)).withProperty(AGE, (meta & 15) >> 2);
-+        return this.getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(meta)).withProperty(AGE, Integer.valueOf((meta & 15) >> 2));
-     }
- 
--    @Override
-     public int getMetaFromState(IBlockState state)
-     {
-         int i = 0;
--        i |= state.getValue(FACING).getHorizontalIndex();
--        return i | state.getValue(AGE) << 2;
-+        i = i | ((EnumFacing)state.getValue(FACING)).getHorizontalIndex();
-+        i = i | ((Integer)state.getValue(AGE)).intValue() << 2;
-+        return i;
-     }
- 
--    @Override
-     protected BlockStateContainer createBlockState()
-     {
--        return new BlockStateContainer(this, FACING, AGE);
-+        return new BlockStateContainer(this, new IProperty[] {FACING, AGE});
-     }
- 
--    @Override
-     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-     {
-         return BlockFaceShape.UNDEFINED;

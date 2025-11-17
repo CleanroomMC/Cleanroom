@@ -1,74 +1,7 @@
 --- before/net/minecraft/block/BlockFarmland.java
 +++ after/net/minecraft/block/BlockFarmland.java
-@@ -2,6 +2,7 @@
- 
- import java.util.Random;
- import net.minecraft.block.material.Material;
-+import net.minecraft.block.properties.IProperty;
- import net.minecraft.block.properties.PropertyInteger;
- import net.minecraft.block.state.BlockFaceShape;
- import net.minecraft.block.state.BlockStateContainer;
-@@ -22,45 +23,41 @@
- public class BlockFarmland extends Block
- {
-     public static final PropertyInteger MOISTURE = PropertyInteger.create("moisture", 0, 7);
--    protected static final AxisAlignedBB FARMLAND_AABB = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.9375, 1.0);
--    protected static final AxisAlignedBB field_194405_c = new AxisAlignedBB(0.0, 0.9375, 0.0, 1.0, 1.0, 1.0);
-+    protected static final AxisAlignedBB FARMLAND_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.9375D, 1.0D);
-+    protected static final AxisAlignedBB field_194405_c = new AxisAlignedBB(0.0D, 0.9375D, 0.0D, 1.0D, 1.0D, 1.0D);
- 
-     protected BlockFarmland()
-     {
-         super(Material.GROUND);
--        this.setDefaultState(this.blockState.getBaseState().withProperty(MOISTURE, 0));
-+        this.setDefaultState(this.blockState.getBaseState().withProperty(MOISTURE, Integer.valueOf(0)));
-         this.setTickRandomly(true);
-         this.setLightOpacity(255);
-     }
- 
--    @Override
-     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-     {
-         return FARMLAND_AABB;
-     }
- 
--    @Override
-     public boolean isOpaqueCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
-     public boolean isFullCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
-     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
-     {
--        int i = state.getValue(MOISTURE);
-+        int i = ((Integer)state.getValue(MOISTURE)).intValue();
- 
-         if (!this.hasWater(worldIn, pos) && !worldIn.isRainingAt(pos.up()))
-         {
-             if (i > 0)
-             {
--                worldIn.setBlockState(pos, state.withProperty(MOISTURE, i - 1), 2);
-+                worldIn.setBlockState(pos, state.withProperty(MOISTURE, Integer.valueOf(i - 1)), 2);
-             }
-             else if (!this.hasCrops(worldIn, pos))
-             {
-@@ -69,18 +66,13 @@
-         }
-         else if (i < 7)
-         {
--            worldIn.setBlockState(pos, state.withProperty(MOISTURE, 7), 2);
-+            worldIn.setBlockState(pos, state.withProperty(MOISTURE, Integer.valueOf(7)), 2);
-         }
-     }
- 
--    @Override
+@@ -76,11 +76,7 @@
+     @Override
      public void onFallenUpon(World worldIn, BlockPos pos, Entity entityIn, float fallDistance)
      {
 -        if (!worldIn.isRemote
@@ -80,19 +13,7 @@
          {
              turnToDirt(worldIn, pos);
          }
-@@ -93,17 +85,17 @@
-         p_190970_0_.setBlockState(worldIn, Blocks.DIRT.getDefaultState());
-         AxisAlignedBB axisalignedbb = field_194405_c.offset(worldIn);
- 
--        for (Entity entity : p_190970_0_.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb))
-+        for (Entity entity : p_190970_0_.getEntitiesWithinAABBExcludingEntity((Entity)null, axisalignedbb))
-         {
-             double d0 = Math.min(axisalignedbb.maxY - axisalignedbb.minY, axisalignedbb.maxY - entity.getEntityBoundingBox().minY);
--            entity.setPositionAndUpdate(entity.posX, entity.posY + d0 + 0.001, entity.posZ);
-+            entity.setPositionAndUpdate(entity.posX, entity.posY + d0 + 0.001D, entity.posZ);
-         }
-     }
- 
+@@ -103,7 +99,7 @@
      private boolean hasCrops(World worldIn, BlockPos pos)
      {
          Block block = worldIn.getBlockState(pos.up()).getBlock();
@@ -101,7 +22,7 @@
      }
  
      private boolean hasWater(World worldIn, BlockPos pos)
-@@ -116,10 +108,9 @@
+@@ -116,7 +112,7 @@
              }
          }
  
@@ -109,60 +30,4 @@
 +        return net.minecraftforge.common.FarmlandWaterManager.hasBlockWaterTicket(worldIn, pos);
      }
  
--    @Override
-     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
-     {
-         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
-@@ -130,7 +121,6 @@
-         }
-     }
- 
--    @Override
-     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
-     {
-         super.onBlockAdded(worldIn, pos, state);
-@@ -142,7 +132,6 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
-     {
-         switch (side)
-@@ -161,32 +150,26 @@
-         }
-     }
- 
--    @Override
-     public Item getItemDropped(IBlockState state, Random rand, int fortune)
-     {
--        return Blocks.DIRT
--               .getItemDropped(Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.DIRT), rand, fortune);
-+        return Blocks.DIRT.getItemDropped(Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.DIRT), rand, fortune);
-     }
- 
--    @Override
-     public IBlockState getStateFromMeta(int meta)
-     {
--        return this.getDefaultState().withProperty(MOISTURE, meta & 7);
-+        return this.getDefaultState().withProperty(MOISTURE, Integer.valueOf(meta & 7));
-     }
- 
--    @Override
-     public int getMetaFromState(IBlockState state)
-     {
--        return state.getValue(MOISTURE);
-+        return ((Integer)state.getValue(MOISTURE)).intValue();
-     }
- 
--    @Override
-     protected BlockStateContainer createBlockState()
-     {
--        return new BlockStateContainer(this, MOISTURE);
-+        return new BlockStateContainer(this, new IProperty[] {MOISTURE});
-     }
- 
--    @Override
-     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-     {
-         return face == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
+     @Override

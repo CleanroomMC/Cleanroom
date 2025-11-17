@@ -1,36 +1,6 @@
 --- before/net/minecraft/block/BlockOre.java
 +++ after/net/minecraft/block/BlockOre.java
-@@ -27,7 +27,6 @@
-         this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
-     }
- 
--    @Override
-     public Item getItemDropped(IBlockState state, Random rand, int fortune)
-     {
-         if (this == Blocks.COAL_ORE)
-@@ -52,16 +51,14 @@
-         }
-     }
- 
--    @Override
-     public int quantityDropped(Random random)
-     {
-         return this == Blocks.LAPIS_ORE ? 4 + random.nextInt(5) : 1;
-     }
- 
--    @Override
-     public int quantityDroppedWithBonus(int fortune, Random random)
-     {
--        if (fortune > 0 && Item.getItemFromBlock(this) != this.getItemDropped(this.getBlockState().getValidStates().iterator().next(), random, fortune))
-+        if (fortune > 0 && Item.getItemFromBlock(this) != this.getItemDropped((IBlockState)this.getBlockState().getValidStates().iterator().next(), random, fortune))
-         {
-             int i = random.nextInt(fortune + 2) - 1;
- 
-@@ -78,47 +75,49 @@
-         }
-     }
- 
--    @Override
+@@ -82,34 +82,39 @@
      public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
      {
          super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);
@@ -77,13 +47,4 @@
 +        return 0;
      }
  
--    @Override
-     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
-     {
-         return new ItemStack(this);
-     }
- 
--    @Override
-     public int damageDropped(IBlockState state)
-     {
-         return this == Blocks.LAPIS_ORE ? EnumDyeColor.BLUE.getDyeDamage() : 0;
+     @Override

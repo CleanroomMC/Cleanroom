@@ -8,100 +8,10 @@
  import net.minecraft.block.properties.PropertyEnum;
  import net.minecraft.block.state.BlockStateContainer;
  import net.minecraft.block.state.IBlockState;
-@@ -19,7 +20,7 @@
- 
- public class BlockHugeMushroom extends Block
- {
--    public static final PropertyEnum<BlockHugeMushroom.EnumType> VARIANT = PropertyEnum.create("variant", BlockHugeMushroom.EnumType.class);
-+    public static final PropertyEnum<BlockHugeMushroom.EnumType> VARIANT = PropertyEnum.<BlockHugeMushroom.EnumType>create("variant", BlockHugeMushroom.EnumType.class);
-     private final Block smallBlock;
- 
-     public BlockHugeMushroom(Material materialIn, MapColor color, Block smallBlockIn)
-@@ -29,13 +30,11 @@
-         this.smallBlock = smallBlockIn;
-     }
- 
--    @Override
-     public int quantityDropped(Random random)
-     {
-         return Math.max(0, random.nextInt(10) - 7);
-     }
- 
--    @Override
-     public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos)
-     {
-         switch ((BlockHugeMushroom.EnumType)state.getValue(VARIANT))
-@@ -51,46 +50,31 @@
-         }
-     }
- 
--    @Override
-     public Item getItemDropped(IBlockState state, Random rand, int fortune)
-     {
-         return Item.getItemFromBlock(this.smallBlock);
-     }
- 
--    @Override
-     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
-     {
-         return new ItemStack(this.smallBlock);
-     }
- 
--    @Override
--    public IBlockState getStateForPlacement(
--        World worldIn,
--        BlockPos pos,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ,
--        int meta,
--        EntityLivingBase placer
--    )
-+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-     {
-         return this.getDefaultState();
-     }
- 
--    @Override
-     public IBlockState getStateFromMeta(int meta)
-     {
-         return this.getDefaultState().withProperty(VARIANT, BlockHugeMushroom.EnumType.byMetadata(meta));
-     }
- 
--    @Override
-     public int getMetaFromState(IBlockState state)
-     {
--        return state.getValue(VARIANT).getMetadata();
-+        return ((BlockHugeMushroom.EnumType)state.getValue(VARIANT)).getMetadata();
-     }
- 
--    @Override
-     public IBlockState withRotation(IBlockState state, Rotation rot)
-     {
-         switch (rot)
-@@ -178,10 +162,10 @@
-         }
-     }
- 
--    @Override
-+    @SuppressWarnings("incomplete-switch")
-     public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
-     {
--        BlockHugeMushroom.EnumType blockhugemushroom$enumtype = state.getValue(VARIANT);
-+        BlockHugeMushroom.EnumType blockhugemushroom$enumtype = (BlockHugeMushroom.EnumType)state.getValue(VARIANT);
- 
-         switch (mirrorIn)
-         {
-@@ -233,10 +217,23 @@
-         return super.withMirror(state, mirrorIn);
-     }
- 
--    @Override
+@@ -237,6 +238,20 @@
      protected BlockStateContainer createBlockState()
      {
--        return new BlockStateContainer(this, VARIANT);
-+        return new BlockStateContainer(this, new IProperty[] {VARIANT});
+         return new BlockStateContainer(this, VARIANT);
 +    }
 +
 +    public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis)
@@ -119,19 +29,3 @@
      }
  
      public static enum EnumType implements IStringSerializable
-@@ -270,7 +267,6 @@
-             return this.meta;
-         }
- 
--        @Override
-         public String toString()
-         {
-             return this.name;
-@@ -287,7 +283,6 @@
-             return blockhugemushroom$enumtype == null ? META_LOOKUP[0] : blockhugemushroom$enumtype;
-         }
- 
--        @Override
-         public String getName()
-         {
-             return this.name;

@@ -1,105 +1,7 @@
 --- before/net/minecraft/block/BlockFlowerPot.java
 +++ after/net/minecraft/block/BlockFlowerPot.java
-@@ -3,6 +3,7 @@
- import java.util.Random;
- import javax.annotation.Nullable;
- import net.minecraft.block.material.Material;
-+import net.minecraft.block.properties.IProperty;
- import net.minecraft.block.properties.PropertyEnum;
- import net.minecraft.block.properties.PropertyInteger;
- import net.minecraft.block.state.BlockFaceShape;
-@@ -35,59 +36,41 @@
- public class BlockFlowerPot extends BlockContainer
- {
-     public static final PropertyInteger LEGACY_DATA = PropertyInteger.create("legacy_data", 0, 15);
--    public static final PropertyEnum<BlockFlowerPot.EnumFlowerType> CONTENTS = PropertyEnum.create("contents", BlockFlowerPot.EnumFlowerType.class);
--    protected static final AxisAlignedBB FLOWER_POT_AABB = new AxisAlignedBB(0.3125, 0.0, 0.3125, 0.6875, 0.375, 0.6875);
-+    public static final PropertyEnum<BlockFlowerPot.EnumFlowerType> CONTENTS = PropertyEnum.<BlockFlowerPot.EnumFlowerType>create("contents", BlockFlowerPot.EnumFlowerType.class);
-+    protected static final AxisAlignedBB FLOWER_POT_AABB = new AxisAlignedBB(0.3125D, 0.0D, 0.3125D, 0.6875D, 0.375D, 0.6875D);
- 
-     public BlockFlowerPot()
-     {
-         super(Material.CIRCUITS);
--        this.setDefaultState(
--            this.blockState.getBaseState().withProperty(CONTENTS, BlockFlowerPot.EnumFlowerType.EMPTY).withProperty(LEGACY_DATA, 0)
--        );
-+        this.setDefaultState(this.blockState.getBaseState().withProperty(CONTENTS, BlockFlowerPot.EnumFlowerType.EMPTY).withProperty(LEGACY_DATA, Integer.valueOf(0)));
-     }
- 
--    @Override
-     public String getLocalizedName()
-     {
-         return I18n.translateToLocal("item.flowerPot.name");
-     }
- 
--    @Override
-     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-     {
-         return FLOWER_POT_AABB;
-     }
- 
--    @Override
-     public boolean isOpaqueCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
-     public EnumBlockRenderType getRenderType(IBlockState state)
-     {
-         return EnumBlockRenderType.MODEL;
-     }
- 
--    @Override
-     public boolean isFullCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
--    public boolean onBlockActivated(
--        World worldIn,
--        BlockPos pos,
--        IBlockState state,
--        EntityPlayer playerIn,
--        EnumHand hand,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ
--    )
-+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-     {
-         ItemStack itemstack = playerIn.getHeldItem(hand);
-         TileEntityFlowerPot tileentityflowerpot = this.getTileEntity(worldIn, pos);
-@@ -139,13 +122,7 @@
-     {
-         Block block = Block.getBlockFromItem(stack.getItem());
- 
--        if (block != Blocks.YELLOW_FLOWER
--                && block != Blocks.RED_FLOWER
--                && block != Blocks.CACTUS
--                && block != Blocks.BROWN_MUSHROOM
--                && block != Blocks.RED_MUSHROOM
--                && block != Blocks.SAPLING
--                && block != Blocks.DEADBUSH)
-+        if (block != Blocks.YELLOW_FLOWER && block != Blocks.RED_FLOWER && block != Blocks.CACTUS && block != Blocks.BROWN_MUSHROOM && block != Blocks.RED_MUSHROOM && block != Blocks.SAPLING && block != Blocks.DEADBUSH)
-         {
-             int i = stack.getMetadata();
-             return block == Blocks.TALLGRASS && i == BlockTallGrass.EnumType.FERN.getMeta();
-@@ -156,7 +133,6 @@
-         }
-     }
- 
--    @Override
-     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
-     {
-         TileEntityFlowerPot tileentityflowerpot = this.getTileEntity(worldIn, pos);
-@@ -174,36 +150,27 @@
-         return new ItemStack(Items.FLOWER_POT);
-     }
- 
--    @Override
+@@ -177,13 +177,15 @@
+     @Override
      public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
      {
 -        return super.canPlaceBlockAt(worldIn, pos) && worldIn.getBlockState(pos.down()).isTopSolid();
@@ -107,7 +9,7 @@
 +        return super.canPlaceBlockAt(worldIn, pos) && (downState.isTopSolid() || downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID);
      }
  
--    @Override
+     @Override
      public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
      {
 -        if (!worldIn.getBlockState(pos.down()).isTopSolid())
@@ -116,10 +18,8 @@
          {
              this.dropBlockAsItem(worldIn, pos, state, 0);
              worldIn.setBlockToAir(pos);
-         }
-     }
- 
--    @Override
+@@ -193,13 +195,6 @@
+     @Override
      public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
      {
 -        TileEntityFlowerPot tileentityflowerpot = this.getTileEntity(worldIn, pos);
@@ -132,71 +32,11 @@
          super.breakBlock(worldIn, pos, state);
      }
  
--    @Override
-     public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player)
-     {
-         super.onBlockHarvested(worldIn, pos, state, player);
-@@ -219,7 +186,6 @@
-         }
-     }
- 
--    @Override
-     public Item getItemDropped(IBlockState state, Random rand, int fortune)
-     {
-         return Items.FLOWER_POT;
-@@ -232,7 +198,6 @@
-         return tileentity instanceof TileEntityFlowerPot ? (TileEntityFlowerPot)tileentity : null;
-     }
- 
--    @Override
-     public TileEntity createNewTileEntity(World worldIn, int meta)
-     {
-         Block block = null;
-@@ -291,25 +256,20 @@
-         return new TileEntityFlowerPot(Item.getItemFromBlock(block), i);
-     }
- 
--    @Override
-     protected BlockStateContainer createBlockState()
-     {
--        return new BlockStateContainer(this, CONTENTS, LEGACY_DATA);
-+        return new BlockStateContainer(this, new IProperty[] {CONTENTS, LEGACY_DATA});
-     }
- 
--    @Override
-     public int getMetaFromState(IBlockState state)
-     {
--        return state.getValue(LEGACY_DATA);
-+        return ((Integer)state.getValue(LEGACY_DATA)).intValue();
-     }
- 
--    @Override
-     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
-     {
-         BlockFlowerPot.EnumFlowerType blockflowerpot$enumflowertype = BlockFlowerPot.EnumFlowerType.EMPTY;
--        TileEntity tileentity = worldIn instanceof ChunkCache
--                                ? ((ChunkCache)worldIn).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK)
--                                : worldIn.getTileEntity(pos);
-+        TileEntity tileentity = worldIn instanceof ChunkCache ? ((ChunkCache)worldIn).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) : worldIn.getTileEntity(pos);
- 
-         if (tileentity instanceof TileEntityFlowerPot)
-         {
-@@ -423,18 +383,40 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public BlockRenderLayer getRenderLayer()
-     {
-         return BlockRenderLayer.CUTOUT;
-     }
- 
--    @Override
-     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
+@@ -434,6 +429,32 @@
      {
          return BlockFaceShape.UNDEFINED;
      }
- 
++
 +
 +    /*============================FORGE START=====================================*/
 +    @Override
@@ -207,12 +47,14 @@
 +        if (te != null && te.getFlowerPotItem() != null)
 +            drops.add(new ItemStack(te.getFlowerPotItem(), 1, te.getFlowerPotData()));
 +    }
++    
 +    @Override
 +    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
 +    {
 +        if (willHarvest) return true; //If it will harvest, delay deletion of the block until after getDrops
 +        return super.removedByPlayer(state, world, pos, player, willHarvest);
 +    }
++    
 +    @Override
 +    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack tool)
 +    {
@@ -220,21 +62,6 @@
 +        world.setBlockToAir(pos);
 +    }
 +    /*===========================FORGE END==========================================*/
-+
+ 
      public static enum EnumFlowerType implements IStringSerializable
      {
-         EMPTY("empty"),
-@@ -467,13 +449,11 @@
-             this.name = name;
-         }
- 
--        @Override
-         public String toString()
-         {
-             return this.name;
-         }
- 
--        @Override
-         public String getName()
-         {
-             return this.name;

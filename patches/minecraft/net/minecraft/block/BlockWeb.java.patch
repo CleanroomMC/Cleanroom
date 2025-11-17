@@ -9,72 +9,21 @@
  {
      public BlockWeb()
      {
-@@ -30,54 +30,44 @@
-         this.setCreativeTab(CreativeTabs.DECORATIONS);
-     }
- 
--    @Override
-     public void onEntityCollision(World worldIn, BlockPos pos, IBlockState state, Entity entityIn)
-     {
-         entityIn.setInWeb();
-     }
- 
--    @Override
-     public boolean isOpaqueCube(IBlockState state)
-     {
-         return false;
-     }
- 
-     @Nullable
--    @Override
-     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
-     {
-         return NULL_AABB;
-     }
- 
--    @Override
-     public boolean isFullCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
-     public Item getItemDropped(IBlockState state, Random rand, int fortune)
-     {
-         return Items.STRING;
-     }
- 
--    @Override
-     protected boolean canSilkHarvest()
-     {
-         return true;
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public BlockRenderLayer getRenderLayer()
-     {
-         return BlockRenderLayer.CUTOUT;
-     }
- 
--    @Override
--    public void harvestBlock(
--        World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack
--    )
-+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack)
-     {
-         if (!worldIn.isRemote && stack.getItem() == Items.SHEARS)
+@@ -88,6 +88,17 @@
          {
-@@ -90,7 +80,12 @@
+             super.harvestBlock(worldIn, player, pos, state, te, stack);
          }
-     }
- 
-+    @Override public boolean isShearable(ItemStack item, IBlockAccess world, BlockPos pos) { return true; }
-     @Override
-+    public java.util.List<ItemStack> onSheared(ItemStack item, IBlockAccess world, BlockPos pos, int fortune) {
-+        return com.google.common.collect.Lists.newArrayList(new ItemStack(Item.getItemFromBlock(this)));
 +    }
 +
-     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-     {
-         return BlockFaceShape.UNDEFINED;
++    @Override
++    public boolean isShearable(ItemStack item, IBlockAccess world, BlockPos pos)
++    {
++        return true;
++    }
++
++    @Override
++    public java.util.List<ItemStack> onSheared(ItemStack item, IBlockAccess world, BlockPos pos, int fortune) {
++        return com.google.common.collect.Lists.newArrayList(new ItemStack(Item.getItemFromBlock(this)));
+     }
+ 
+     @Override

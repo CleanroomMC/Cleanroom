@@ -1,122 +1,15 @@
 --- before/net/minecraft/block/BlockSnow.java
 +++ after/net/minecraft/block/BlockSnow.java
-@@ -3,6 +3,7 @@
- import java.util.Random;
- import javax.annotation.Nullable;
- import net.minecraft.block.material.Material;
-+import net.minecraft.block.properties.IProperty;
- import net.minecraft.block.properties.PropertyInteger;
- import net.minecraft.block.state.BlockFaceShape;
- import net.minecraft.block.state.BlockStateContainer;
-@@ -27,81 +28,55 @@
- public class BlockSnow extends Block
- {
-     public static final PropertyInteger LAYERS = PropertyInteger.create("layers", 1, 8);
--    protected static final AxisAlignedBB[] SNOW_AABB = new AxisAlignedBB[]
--        {
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.0, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.125, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.25, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.375, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.5, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.625, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.75, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.875, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
--        };
-+    protected static final AxisAlignedBB[] SNOW_AABB = new AxisAlignedBB[] {new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.0D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.125D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.25D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.375D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.75D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.875D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D)};
- 
-     protected BlockSnow()
-     {
-         super(Material.SNOW);
--        this.setDefaultState(this.blockState.getBaseState().withProperty(LAYERS, 1));
-+        this.setDefaultState(this.blockState.getBaseState().withProperty(LAYERS, Integer.valueOf(1)));
-         this.setTickRandomly(true);
-         this.setCreativeTab(CreativeTabs.DECORATIONS);
-     }
- 
--    @Override
-     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-     {
--        return SNOW_AABB[state.getValue(LAYERS)];
-+        return SNOW_AABB[((Integer)state.getValue(LAYERS)).intValue()];
-     }
- 
--    @Override
-     public boolean isPassable(IBlockAccess worldIn, BlockPos pos)
-     {
--        return worldIn.getBlockState(pos).getValue(LAYERS) < 5;
-+        return ((Integer)worldIn.getBlockState(pos).getValue(LAYERS)).intValue() < 5;
-     }
- 
--    @Override
-     public boolean isTopSolid(IBlockState state)
-     {
--        return state.getValue(LAYERS) == 8;
-+        return ((Integer)state.getValue(LAYERS)).intValue() == 8;
-     }
- 
--    @Override
-     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-     {
-         return face == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
-     }
- 
-     @Nullable
--    @Override
-     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
-     {
--        int i = blockState.getValue(LAYERS) - 1;
-+        int i = ((Integer)blockState.getValue(LAYERS)).intValue() - 1;
-         float f = 0.125F;
-         AxisAlignedBB axisalignedbb = blockState.getBoundingBox(worldIn, pos);
--        return new AxisAlignedBB(
--                   axisalignedbb.minX,
--                   axisalignedbb.minY,
--                   axisalignedbb.minZ,
--                   axisalignedbb.maxX,
--                   (double)((float)i * 0.125F),
--                   axisalignedbb.maxZ
--               );
-+        return new AxisAlignedBB(axisalignedbb.minX, axisalignedbb.minY, axisalignedbb.minZ, axisalignedbb.maxX, (double)((float)i * 0.125F), axisalignedbb.maxZ);
-     }
- 
--    @Override
-     public boolean isOpaqueCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
-     public boolean isFullCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
-     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
-     {
-         IBlockState iblockstate = worldIn.getBlockState(pos.down());
-@@ -110,9 +85,7 @@
-         if (block != Blocks.ICE && block != Blocks.PACKED_ICE && block != Blocks.BARRIER)
+@@ -111,7 +111,7 @@
          {
              BlockFaceShape blockfaceshape = iblockstate.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP);
--            return blockfaceshape == BlockFaceShape.SOLID
+             return blockfaceshape == BlockFaceShape.SOLID
 -                   || iblockstate.getMaterial() == Material.LEAVES
--                   || block == this && iblockstate.getValue(LAYERS) == 8;
-+            return blockfaceshape == BlockFaceShape.SOLID || iblockstate.getBlock().isLeaves(iblockstate, worldIn, pos.down()) || block == this && ((Integer)iblockstate.getValue(LAYERS)).intValue() == 8;
++                   || iblockstate.getBlock().isLeaves(iblockstate, worldIn, pos.down())
+                    || block == this && iblockstate.getValue(LAYERS) == 8;
          }
          else
-         {
-@@ -120,7 +93,6 @@
-         }
-     }
- 
--    @Override
-     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
-     {
-         this.checkAndDropBlock(worldIn, pos, state);
-@@ -130,7 +102,6 @@
+@@ -130,7 +130,6 @@
      {
          if (!this.canPlaceBlockAt(worldIn, pos))
          {
@@ -124,15 +17,9 @@
              worldIn.setBlockToAir(pos);
              return false;
          }
-@@ -140,40 +111,31 @@
-         }
-     }
- 
--    @Override
--    public void harvestBlock(
--        World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack
--    )
-+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack)
+@@ -145,9 +144,8 @@
+         World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack
+     )
      {
 -        spawnAsEntity(worldIn, pos, new ItemStack(Items.SNOWBALL, state.getValue(LAYERS) + 1, 0));
 +        super.harvestBlock(worldIn, player, pos, state, te, stack);
@@ -140,21 +27,17 @@
 -        player.addStat(StatList.getBlockStats(this));
      }
  
--    @Override
-     public Item getItemDropped(IBlockState state, Random rand, int fortune)
-     {
-         return Items.SNOWBALL;
-     }
- 
--    @Override
+     @Override
+@@ -159,7 +157,7 @@
+     @Override
      public int quantityDropped(Random random)
      {
 -        return 0;
 +        return 1;
      }
  
--    @Override
-     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
+     @Override
+@@ -167,7 +165,6 @@
      {
          if (worldIn.getLightFor(EnumSkyBlock.BLOCK, pos) > 11)
          {
@@ -162,50 +45,16 @@
              worldIn.setBlockToAir(pos);
          }
      }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
-     {
-         if (side == EnumFacing.UP)
-@@ -183,33 +145,29 @@
-         else
-         {
-             IBlockState iblockstate = blockAccess.getBlockState(pos.offset(side));
--            return iblockstate.getBlock() == this && iblockstate.getValue(LAYERS) >= blockState.getValue(LAYERS)
--                   ? false
--                   : super.shouldSideBeRendered(blockState, blockAccess, pos, side);
-+            return iblockstate.getBlock() == this && ((Integer)iblockstate.getValue(LAYERS)).intValue() >= ((Integer)blockState.getValue(LAYERS)).intValue() ? false : super.shouldSideBeRendered(blockState, blockAccess, pos, side);
-         }
-     }
- 
--    @Override
-     public IBlockState getStateFromMeta(int meta)
-     {
--        return this.getDefaultState().withProperty(LAYERS, (meta & 7) + 1);
-+        return this.getDefaultState().withProperty(LAYERS, Integer.valueOf((meta & 7) + 1));
-     }
- 
--    @Override
-     public boolean isReplaceable(IBlockAccess worldIn, BlockPos pos)
-     {
--        return worldIn.getBlockState(pos).getValue(LAYERS) == 1;
-+        return ((Integer)worldIn.getBlockState(pos).getValue(LAYERS)).intValue() == 1;
-     }
- 
--    @Override
+@@ -205,6 +202,12 @@
      public int getMetaFromState(IBlockState state)
      {
--        return state.getValue(LAYERS) - 1;
-+        return ((Integer)state.getValue(LAYERS)).intValue() - 1;
+         return state.getValue(LAYERS) - 1;
++    }
++
++    @Override
++    public int quantityDropped(IBlockState state, int fortune, Random random)
++    {
++        return state.getValue(LAYERS) + 1;
      }
  
--    @Override
-+    @Override public int quantityDropped(IBlockState state, int fortune, Random random){ return ((Integer)state.getValue(LAYERS)) + 1; }
-+
-     protected BlockStateContainer createBlockState()
-     {
--        return new BlockStateContainer(this, LAYERS);
-+        return new BlockStateContainer(this, new IProperty[] {LAYERS});
-     }
- }
+     @Override

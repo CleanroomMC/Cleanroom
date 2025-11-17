@@ -1,23 +1,6 @@
 --- before/net/minecraft/block/BlockLog.java
 +++ after/net/minecraft/block/BlockLog.java
-@@ -13,7 +13,7 @@
- 
- public abstract class BlockLog extends BlockRotatedPillar
- {
--    public static final PropertyEnum<BlockLog.EnumAxis> LOG_AXIS = PropertyEnum.create("axis", BlockLog.EnumAxis.class);
-+    public static final PropertyEnum<BlockLog.EnumAxis> LOG_AXIS = PropertyEnum.<BlockLog.EnumAxis>create("axis", BlockLog.EnumAxis.class);
- 
-     public BlockLog()
-     {
-@@ -23,7 +23,6 @@
-         this.setSoundType(SoundType.WOOD);
-     }
- 
--    @Override
-     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
-     {
-         int i = 4;
-@@ -35,30 +34,19 @@
+@@ -35,9 +35,9 @@
              {
                  IBlockState iblockstate = worldIn.getBlockState(blockpos);
  
@@ -29,51 +12,22 @@
                  }
              }
          }
-     }
- 
--    @Override
--    public IBlockState getStateForPlacement(
--        World worldIn,
--        BlockPos pos,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ,
--        int meta,
--        EntityLivingBase placer
--    )
-+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-     {
-         return this.getStateFromMeta(meta).withProperty(LOG_AXIS, BlockLog.EnumAxis.fromFacingAxis(facing.getAxis()));
-     }
- 
--    @Override
-     public IBlockState withRotation(IBlockState state, Rotation rot)
-     {
-         switch (rot)
-@@ -81,6 +69,9 @@
+@@ -79,6 +79,18 @@
+             default:
+                 return state;
          }
-     }
- 
-+    @Override public boolean canSustainLeaves(IBlockState state, net.minecraft.world.IBlockAccess world, BlockPos pos){ return true; }
-+    @Override public boolean isWood(net.minecraft.world.IBlockAccess world, BlockPos pos){ return true; }
++    }
 +
++    @Override
++    public boolean canSustainLeaves(IBlockState state, net.minecraft.world.IBlockAccess world, BlockPos pos)
++    {
++        return true;
++    }
++    
++    @Override
++    public boolean isWood(net.minecraft.world.IBlockAccess world, BlockPos pos)
++    {
++        return true;
+     }
+ 
      public static enum EnumAxis implements IStringSerializable
-     {
-         X("x"),
-@@ -95,7 +86,6 @@
-             this.name = name;
-         }
- 
--        @Override
-         public String toString()
-         {
-             return this.name;
-@@ -116,7 +106,6 @@
-             }
-         }
- 
--        @Override
-         public String getName()
-         {
-             return this.name;

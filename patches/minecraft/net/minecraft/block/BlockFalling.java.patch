@@ -1,26 +1,6 @@
 --- before/net/minecraft/block/BlockFalling.java
 +++ after/net/minecraft/block/BlockFalling.java
-@@ -27,19 +27,16 @@
-         super(materialIn);
-     }
- 
--    @Override
-     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
-     {
-         worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
-     }
- 
--    @Override
-     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
-     {
-         worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
-     }
- 
--    @Override
-     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
-     {
-         if (!worldIn.isRemote)
-@@ -50,36 +47,34 @@
+@@ -50,23 +50,24 @@
  
      private void checkFallable(World worldIn, BlockPos pos)
      {
@@ -29,29 +9,16 @@
          {
              int i = 32;
  
--            if (fallInstantly || !worldIn.isAreaLoaded(pos.add(-32, -32, -32), pos.add(32, 32, 32)))
--            {
-+            if (!fallInstantly && worldIn.isAreaLoaded(pos.add(-32, -32, -32), pos.add(32, 32, 32)))
-+            {
-+                if (!worldIn.isRemote)
-+                {
-+                    EntityFallingBlock entityfallingblock = new EntityFallingBlock(worldIn, (double)pos.getX() + 0.5D, (double)pos.getY(), (double)pos.getZ() + 0.5D, worldIn.getBlockState(pos));
-+                    this.onStartFalling(entityfallingblock);
-+                    worldIn.spawnEntity(entityfallingblock);
-+                }
-+            }
-+            else
-+            {
+             if (fallInstantly || !worldIn.isAreaLoaded(pos.add(-32, -32, -32), pos.add(32, 32, 32)))
+             {
 +                IBlockState state = worldIn.getBlockState(pos);
                  worldIn.setBlockToAir(pos);
--                BlockPos blockpos = pos.down();
-+                BlockPos blockpos;
+                 BlockPos blockpos = pos.down();
  
 -                while (canFallThrough(worldIn.getBlockState(blockpos)) && blockpos.getY() > 0)
-+                for (blockpos = pos.down(); (worldIn.isAirBlock(blockpos) || canFallThrough(worldIn.getBlockState(blockpos))) && blockpos.getY() > 0; blockpos = blockpos.down())
++                while ((worldIn.isAirBlock(blockpos) || canFallThrough(worldIn.getBlockState(blockpos))) && blockpos.getY() > 0)
                  {
--                    blockpos = blockpos.down();
-+                    ;
+                     blockpos = blockpos.down();
                  }
  
                  if (blockpos.getY() > 0)
@@ -59,58 +26,5 @@
 -                    worldIn.setBlockState(blockpos.up(), this.getDefaultState());
 +                    worldIn.setBlockState(blockpos.up(), state); //Forge: Fix loss of state information during world gen.
                  }
--            }
--            else if (!worldIn.isRemote)
--            {
--                EntityFallingBlock entityfallingblock = new EntityFallingBlock(
--                    worldIn,
--                    (double)pos.getX() + 0.5,
--                    (double)pos.getY(),
--                    (double)pos.getZ() + 0.5,
--                    worldIn.getBlockState(pos)
--                );
--                this.onStartFalling(entityfallingblock);
--                worldIn.spawnEntity(entityfallingblock);
              }
-         }
-     }
-@@ -88,7 +83,6 @@
-     {
-     }
- 
--    @Override
-     public int tickRate(World worldIn)
-     {
-         return 2;
-@@ -98,10 +92,7 @@
-     {
-         Block block = state.getBlock();
-         Material material = state.getMaterial();
--        return block == Blocks.FIRE
--               || material == Material.AIR
--               || material == Material.WATER
--               || material == Material.LAVA;
-+        return block == Blocks.FIRE || material == Material.AIR || material == Material.WATER || material == Material.LAVA;
-     }
- 
-     public void onEndFalling(World worldIn, BlockPos pos, IBlockState fallingState, IBlockState hitState)
-@@ -113,7 +104,6 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
-     {
-         if (rand.nextInt(16) == 0)
-@@ -123,9 +113,9 @@
-             if (canFallThrough(worldIn.getBlockState(blockpos)))
-             {
-                 double d0 = (double)((float)pos.getX() + rand.nextFloat());
--                double d1 = (double)pos.getY() - 0.05;
-+                double d1 = (double)pos.getY() - 0.05D;
-                 double d2 = (double)((float)pos.getZ() + rand.nextFloat());
--                worldIn.spawnParticle(EnumParticleTypes.FALLING_DUST, d0, d1, d2, 0.0, 0.0, 0.0, Block.getStateId(stateIn));
-+                worldIn.spawnParticle(EnumParticleTypes.FALLING_DUST, d0, d1, d2, 0.0D, 0.0D, 0.0D, Block.getStateId(stateIn));
-             }
-         }
-     }
+             else if (!worldIn.isRemote)

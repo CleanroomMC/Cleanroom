@@ -8,108 +8,13 @@
  import net.minecraft.block.properties.PropertyEnum;
  import net.minecraft.block.state.BlockStateContainer;
  import net.minecraft.block.state.IBlockState;
-@@ -19,7 +20,7 @@
- 
- public class BlockQuartz extends Block
- {
--    public static final PropertyEnum<BlockQuartz.EnumType> VARIANT = PropertyEnum.create("variant", BlockQuartz.EnumType.class);
-+    public static final PropertyEnum<BlockQuartz.EnumType> VARIANT = PropertyEnum.<BlockQuartz.EnumType>create("variant", BlockQuartz.EnumType.class);
- 
-     public BlockQuartz()
-     {
-@@ -28,17 +29,7 @@
-         this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
-     }
- 
--    @Override
--    public IBlockState getStateForPlacement(
--        World worldIn,
--        BlockPos pos,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ,
--        int meta,
--        EntityLivingBase placer
--    )
-+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-     {
-         if (meta == BlockQuartz.EnumType.LINES_Y.getMetadata())
-         {
-@@ -53,30 +44,21 @@
-             }
-         }
- 
--        return meta == BlockQuartz.EnumType.CHISELED.getMetadata()
--               ? this.getDefaultState().withProperty(VARIANT, BlockQuartz.EnumType.CHISELED)
--               : this.getDefaultState().withProperty(VARIANT, BlockQuartz.EnumType.DEFAULT);
-+        return meta == BlockQuartz.EnumType.CHISELED.getMetadata() ? this.getDefaultState().withProperty(VARIANT, BlockQuartz.EnumType.CHISELED) : this.getDefaultState().withProperty(VARIANT, BlockQuartz.EnumType.DEFAULT);
-     }
- 
--    @Override
-     public int damageDropped(IBlockState state)
-     {
--        BlockQuartz.EnumType blockquartz$enumtype = state.getValue(VARIANT);
--        return blockquartz$enumtype != BlockQuartz.EnumType.LINES_X && blockquartz$enumtype != BlockQuartz.EnumType.LINES_Z
--               ? blockquartz$enumtype.getMetadata()
--               : BlockQuartz.EnumType.LINES_Y.getMetadata();
-+        BlockQuartz.EnumType blockquartz$enumtype = (BlockQuartz.EnumType)state.getValue(VARIANT);
-+        return blockquartz$enumtype != BlockQuartz.EnumType.LINES_X && blockquartz$enumtype != BlockQuartz.EnumType.LINES_Z ? blockquartz$enumtype.getMetadata() : BlockQuartz.EnumType.LINES_Y.getMetadata();
-     }
- 
--    @Override
-     protected ItemStack getSilkTouchDrop(IBlockState state)
-     {
--        BlockQuartz.EnumType blockquartz$enumtype = state.getValue(VARIANT);
--        return blockquartz$enumtype != BlockQuartz.EnumType.LINES_X && blockquartz$enumtype != BlockQuartz.EnumType.LINES_Z
--               ? super.getSilkTouchDrop(state)
--               : new ItemStack(Item.getItemFromBlock(this), 1, BlockQuartz.EnumType.LINES_Y.getMetadata());
-+        BlockQuartz.EnumType blockquartz$enumtype = (BlockQuartz.EnumType)state.getValue(VARIANT);
-+        return blockquartz$enumtype != BlockQuartz.EnumType.LINES_X && blockquartz$enumtype != BlockQuartz.EnumType.LINES_Z ? super.getSilkTouchDrop(state) : new ItemStack(Item.getItemFromBlock(this), 1, BlockQuartz.EnumType.LINES_Y.getMetadata());
-     }
- 
--    @Override
-     public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items)
-     {
-         items.add(new ItemStack(this, 1, BlockQuartz.EnumType.DEFAULT.getMetadata()));
-@@ -84,25 +66,21 @@
-         items.add(new ItemStack(this, 1, BlockQuartz.EnumType.LINES_Y.getMetadata()));
-     }
- 
--    @Override
-     public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos)
-     {
-         return MapColor.QUARTZ;
-     }
- 
--    @Override
-     public IBlockState getStateFromMeta(int meta)
-     {
-         return this.getDefaultState().withProperty(VARIANT, BlockQuartz.EnumType.byMetadata(meta));
-     }
- 
--    @Override
-     public int getMetaFromState(IBlockState state)
-     {
--        return state.getValue(VARIANT).getMetadata();
-+        return ((BlockQuartz.EnumType)state.getValue(VARIANT)).getMetadata();
-     }
- 
--    @Override
-     public IBlockState withRotation(IBlockState state, Rotation rot)
-     {
-         switch (rot)
-@@ -125,10 +103,29 @@
-         }
-     }
- 
--    @Override
+@@ -129,6 +130,27 @@
      protected BlockStateContainer createBlockState()
      {
--        return new BlockStateContainer(this, VARIANT);
-+        return new BlockStateContainer(this, new IProperty[] {VARIANT});
+         return new BlockStateContainer(this, VARIANT);
 +    }
 +
++    @Override
 +    public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis)
 +    {
 +        IBlockState state = world.getBlockState(pos);
@@ -119,8 +24,8 @@
 +            {
 +                EnumType current = (EnumType)state.getValue(prop);
 +                EnumType next = current == EnumType.LINES_X ? EnumType.LINES_Y :
-+                                current == EnumType.LINES_Y ? EnumType.LINES_Z :
-+                                current == EnumType.LINES_Z ? EnumType.LINES_X : current;
++                    current == EnumType.LINES_Y ? EnumType.LINES_Z :
++                        current == EnumType.LINES_Z ? EnumType.LINES_X : current;
 +                if (next == current)
 +                    return false;
 +                world.setBlockState(pos, state.withProperty(prop, next));
@@ -131,19 +36,3 @@
      }
  
      public static enum EnumType implements IStringSerializable
-@@ -156,7 +153,6 @@
-             return this.meta;
-         }
- 
--        @Override
-         public String toString()
-         {
-             return this.translationKey;
-@@ -172,7 +168,6 @@
-             return META_LOOKUP[meta];
-         }
- 
--        @Override
-         public String getName()
-         {
-             return this.serializedName;

@@ -1,268 +1,31 @@
 --- before/net/minecraft/block/BlockFenceGate.java
 +++ after/net/minecraft/block/BlockFenceGate.java
-@@ -2,6 +2,7 @@
+@@ -64,13 +64,13 @@
  
- import javax.annotation.Nullable;
- import net.minecraft.block.material.Material;
-+import net.minecraft.block.properties.IProperty;
- import net.minecraft.block.properties.PropertyBool;
- import net.minecraft.block.state.BlockFaceShape;
- import net.minecraft.block.state.BlockStateContainer;
-@@ -26,145 +27,100 @@
-     public static final PropertyBool OPEN = PropertyBool.create("open");
-     public static final PropertyBool POWERED = PropertyBool.create("powered");
-     public static final PropertyBool IN_WALL = PropertyBool.create("in_wall");
--    protected static final AxisAlignedBB AABB_HITBOX_ZAXIS = new AxisAlignedBB(0.0, 0.0, 0.375, 1.0, 1.0, 0.625);
--    protected static final AxisAlignedBB AABB_HITBOX_XAXIS = new AxisAlignedBB(0.375, 0.0, 0.0, 0.625, 1.0, 1.0);
--    protected static final AxisAlignedBB AABB_HITBOX_ZAXIS_INWALL = new AxisAlignedBB(0.0, 0.0, 0.375, 1.0, 0.8125, 0.625);
--    protected static final AxisAlignedBB AABB_HITBOX_XAXIS_INWALL = new AxisAlignedBB(0.375, 0.0, 0.0, 0.625, 0.8125, 1.0);
--    protected static final AxisAlignedBB AABB_COLLISION_BOX_ZAXIS = new AxisAlignedBB(0.0, 0.0, 0.375, 1.0, 1.5, 0.625);
--    protected static final AxisAlignedBB AABB_COLLISION_BOX_XAXIS = new AxisAlignedBB(0.375, 0.0, 0.0, 0.625, 1.5, 1.0);
-+    protected static final AxisAlignedBB AABB_HITBOX_ZAXIS = new AxisAlignedBB(0.0D, 0.0D, 0.375D, 1.0D, 1.0D, 0.625D);
-+    protected static final AxisAlignedBB AABB_HITBOX_XAXIS = new AxisAlignedBB(0.375D, 0.0D, 0.0D, 0.625D, 1.0D, 1.0D);
-+    protected static final AxisAlignedBB AABB_HITBOX_ZAXIS_INWALL = new AxisAlignedBB(0.0D, 0.0D, 0.375D, 1.0D, 0.8125D, 0.625D);
-+    protected static final AxisAlignedBB AABB_HITBOX_XAXIS_INWALL = new AxisAlignedBB(0.375D, 0.0D, 0.0D, 0.625D, 0.8125D, 1.0D);
-+    protected static final AxisAlignedBB AABB_COLLISION_BOX_ZAXIS = new AxisAlignedBB(0.0D, 0.0D, 0.375D, 1.0D, 1.5D, 0.625D);
-+    protected static final AxisAlignedBB AABB_COLLISION_BOX_XAXIS = new AxisAlignedBB(0.375D, 0.0D, 0.0D, 0.625D, 1.5D, 1.0D);
- 
-     public BlockFenceGate(BlockPlanks.EnumType p_i46394_1_)
-     {
-         super(Material.WOOD, p_i46394_1_.getMapColor());
--        this.setDefaultState(
--            this.blockState.getBaseState().withProperty(OPEN, false).withProperty(POWERED, false).withProperty(IN_WALL, false)
--        );
-+        this.setDefaultState(this.blockState.getBaseState().withProperty(OPEN, Boolean.valueOf(false)).withProperty(POWERED, Boolean.valueOf(false)).withProperty(IN_WALL, Boolean.valueOf(false)));
-         this.setCreativeTab(CreativeTabs.REDSTONE);
-     }
- 
--    @Override
-     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-     {
-         state = this.getActualState(state, source, pos);
- 
--        if (state.getValue(IN_WALL))
-+        if (((Boolean)state.getValue(IN_WALL)).booleanValue())
-         {
--            return state.getValue(FACING).getAxis() == EnumFacing.Axis.X ? AABB_HITBOX_XAXIS_INWALL : AABB_HITBOX_ZAXIS_INWALL;
-+            return ((EnumFacing)state.getValue(FACING)).getAxis() == EnumFacing.Axis.X ? AABB_HITBOX_XAXIS_INWALL : AABB_HITBOX_ZAXIS_INWALL;
-         }
-         else
-         {
--            return state.getValue(FACING).getAxis() == EnumFacing.Axis.X ? AABB_HITBOX_XAXIS : AABB_HITBOX_ZAXIS;
-+            return ((EnumFacing)state.getValue(FACING)).getAxis() == EnumFacing.Axis.X ? AABB_HITBOX_XAXIS : AABB_HITBOX_ZAXIS;
-         }
-     }
- 
--    @Override
-     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
-     {
--        EnumFacing.Axis enumfacing$axis = state.getValue(FACING).getAxis();
-+        EnumFacing.Axis enumfacing$axis = ((EnumFacing)state.getValue(FACING)).getAxis();
- 
--        if (enumfacing$axis == EnumFacing.Axis.Z
--                && (
+         if (enumfacing$axis == EnumFacing.Axis.Z
+                 && (
 -                    worldIn.getBlockState(pos.west()).getBlock() == Blocks.COBBLESTONE_WALL
 -                    || worldIn.getBlockState(pos.east()).getBlock() == Blocks.COBBLESTONE_WALL
--                )
--                || enumfacing$axis == EnumFacing.Axis.X
--                && (
++                    worldIn.getBlockState(pos.west()).getBlock() instanceof BlockWall
++                    || worldIn.getBlockState(pos.east()).getBlock() instanceof BlockWall
+                 )
+                 || enumfacing$axis == EnumFacing.Axis.X
+                 && (
 -                    worldIn.getBlockState(pos.north()).getBlock() == Blocks.COBBLESTONE_WALL
 -                    || worldIn.getBlockState(pos.south()).getBlock() == Blocks.COBBLESTONE_WALL
--                ))
-+        if (enumfacing$axis == EnumFacing.Axis.Z && (worldIn.getBlockState(pos.west()).getBlock() instanceof BlockWall || worldIn.getBlockState(pos.east()).getBlock() instanceof BlockWall) || enumfacing$axis == EnumFacing.Axis.X && (worldIn.getBlockState(pos.north()).getBlock() instanceof BlockWall || worldIn.getBlockState(pos.south()).getBlock() instanceof BlockWall))
++                    worldIn.getBlockState(pos.north()).getBlock() instanceof BlockWall
++                    || worldIn.getBlockState(pos.south()).getBlock() instanceof BlockWall
+                 ))
          {
--            state = state.withProperty(IN_WALL, true);
-+            state = state.withProperty(IN_WALL, Boolean.valueOf(true));
-         }
- 
-         return state;
-     }
- 
--    @Override
-     public IBlockState withRotation(IBlockState state, Rotation rot)
+             state = state.withProperty(IN_WALL, true);
+@@ -243,6 +243,23 @@
      {
--        return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
-+        return state.withProperty(FACING, rot.rotate((EnumFacing)state.getValue(FACING)));
-     }
- 
--    @Override
-     public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
-     {
--        return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
-+        return state.withRotation(mirrorIn.toRotation((EnumFacing)state.getValue(FACING)));
-     }
- 
--    @Override
-     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
-     {
-         return worldIn.getBlockState(pos.down()).getMaterial().isSolid() ? super.canPlaceBlockAt(worldIn, pos) : false;
-     }
- 
-     @Nullable
--    @Override
-     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
-     {
--        if (blockState.getValue(OPEN))
-+        if (((Boolean)blockState.getValue(OPEN)).booleanValue())
-         {
-             return NULL_AABB;
-         }
-         else
-         {
--            return blockState.getValue(FACING).getAxis() == EnumFacing.Axis.Z ? AABB_COLLISION_BOX_ZAXIS : AABB_COLLISION_BOX_XAXIS;
-+            return ((EnumFacing)blockState.getValue(FACING)).getAxis() == EnumFacing.Axis.Z ? AABB_COLLISION_BOX_ZAXIS : AABB_COLLISION_BOX_XAXIS;
-         }
-     }
- 
--    @Override
-     public boolean isOpaqueCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
-     public boolean isFullCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
-     public boolean isPassable(IBlockAccess worldIn, BlockPos pos)
-     {
--        return worldIn.getBlockState(pos).getValue(OPEN);
-+        return ((Boolean)worldIn.getBlockState(pos).getValue(OPEN)).booleanValue();
-     }
- 
--    @Override
--    public IBlockState getStateForPlacement(
--        World worldIn,
--        BlockPos pos,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ,
--        int meta,
--        EntityLivingBase placer
--    )
-+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-     {
-         boolean flag = worldIn.isBlockPowered(pos);
--        return this.getDefaultState()
--               .withProperty(FACING, placer.getHorizontalFacing())
--               .withProperty(OPEN, flag)
--               .withProperty(POWERED, flag)
--               .withProperty(IN_WALL, false);
-+        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing()).withProperty(OPEN, Boolean.valueOf(flag)).withProperty(POWERED, Boolean.valueOf(flag)).withProperty(IN_WALL, Boolean.valueOf(false));
-     }
- 
--    @Override
--    public boolean onBlockActivated(
--        World worldIn,
--        BlockPos pos,
--        IBlockState state,
--        EntityPlayer playerIn,
--        EnumHand hand,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ
--    )
-+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-     {
--        if (state.getValue(OPEN))
-+        if (((Boolean)state.getValue(OPEN)).booleanValue())
-         {
--            state = state.withProperty(OPEN, false);
-+            state = state.withProperty(OPEN, Boolean.valueOf(false));
-             worldIn.setBlockState(pos, state, 10);
-         }
-         else
-@@ -176,61 +132,54 @@
-                 state = state.withProperty(FACING, enumfacing);
-             }
- 
--            state = state.withProperty(OPEN, true);
-+            state = state.withProperty(OPEN, Boolean.valueOf(true));
-             worldIn.setBlockState(pos, state, 10);
-         }
- 
--        worldIn.playEvent(playerIn, state.getValue(OPEN) ? 1008 : 1014, pos, 0);
-+        worldIn.playEvent(playerIn, ((Boolean)state.getValue(OPEN)).booleanValue() ? 1008 : 1014, pos, 0);
-         return true;
-     }
- 
--    @Override
-     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
-     {
-         if (!worldIn.isRemote)
-         {
-             boolean flag = worldIn.isBlockPowered(pos);
- 
--            if (state.getValue(POWERED) != flag)
-+            if (((Boolean)state.getValue(POWERED)).booleanValue() != flag)
-             {
--                worldIn.setBlockState(pos, state.withProperty(POWERED, flag).withProperty(OPEN, flag), 2);
-+                worldIn.setBlockState(pos, state.withProperty(POWERED, Boolean.valueOf(flag)).withProperty(OPEN, Boolean.valueOf(flag)), 2);
- 
--                if (state.getValue(OPEN) != flag)
-+                if (((Boolean)state.getValue(OPEN)).booleanValue() != flag)
-                 {
--                    worldIn.playEvent(null, flag ? 1008 : 1014, pos, 0);
-+                    worldIn.playEvent((EntityPlayer)null, flag ? 1008 : 1014, pos, 0);
-                 }
-             }
-         }
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
-     {
-         return true;
-     }
- 
--    @Override
-     public IBlockState getStateFromMeta(int meta)
-     {
--        return this.getDefaultState()
--               .withProperty(FACING, EnumFacing.byHorizontalIndex(meta))
--               .withProperty(OPEN, (meta & 4) != 0)
--               .withProperty(POWERED, (meta & 8) != 0);
-+        return this.getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(meta)).withProperty(OPEN, Boolean.valueOf((meta & 4) != 0)).withProperty(POWERED, Boolean.valueOf((meta & 8) != 0));
-     }
- 
--    @Override
-     public int getMetaFromState(IBlockState state)
-     {
-         int i = 0;
--        i |= state.getValue(FACING).getHorizontalIndex();
-+        i = i | ((EnumFacing)state.getValue(FACING)).getHorizontalIndex();
- 
--        if (state.getValue(POWERED))
-+        if (((Boolean)state.getValue(POWERED)).booleanValue())
-         {
-             i |= 8;
-         }
- 
--        if (state.getValue(OPEN))
-+        if (((Boolean)state.getValue(OPEN)).booleanValue())
-         {
-             i |= 4;
-         }
-@@ -238,20 +187,33 @@
-         return i;
-     }
- 
--    @Override
-     protected BlockStateContainer createBlockState()
-     {
--        return new BlockStateContainer(this, FACING, OPEN, POWERED, IN_WALL);
-+        return new BlockStateContainer(this, new IProperty[] {FACING, OPEN, POWERED, IN_WALL});
+         return new BlockStateContainer(this, FACING, OPEN, POWERED, IN_WALL);
      }
 +
 +    /* ======================================== FORGE START ======================================== */
- 
-     @Override
++
++    @Override
 +    public boolean canBeConnectedTo(IBlockAccess world, BlockPos pos, EnumFacing facing)
 +    {
 +        IBlockState state = world.getBlockState(pos);
@@ -276,15 +39,6 @@
 +    }
 +
 +    /* ======================================== FORGE END ======================================== */
-+
+ 
+     @Override
      public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-     {
-         if (face != EnumFacing.UP && face != EnumFacing.DOWN)
-         {
--            return state.getValue(FACING).getAxis() == face.rotateY().getAxis()
--                   ? BlockFaceShape.MIDDLE_POLE
--                   : BlockFaceShape.UNDEFINED;
-+            return ((EnumFacing)state.getValue(FACING)).getAxis() == face.rotateY().getAxis() ? BlockFaceShape.MIDDLE_POLE : BlockFaceShape.UNDEFINED;
-         }
-         else
-         {

@@ -1,203 +1,7 @@
 --- before/net/minecraft/block/BlockFence.java
 +++ after/net/minecraft/block/BlockFence.java
-@@ -4,6 +4,7 @@
- import javax.annotation.Nullable;
- import net.minecraft.block.material.MapColor;
- import net.minecraft.block.material.Material;
-+import net.minecraft.block.properties.IProperty;
- import net.minecraft.block.properties.PropertyBool;
- import net.minecraft.block.state.BlockFaceShape;
- import net.minecraft.block.state.BlockStateContainer;
-@@ -32,55 +33,21 @@
-     public static final PropertyBool EAST = PropertyBool.create("east");
-     public static final PropertyBool SOUTH = PropertyBool.create("south");
-     public static final PropertyBool WEST = PropertyBool.create("west");
--    protected static final AxisAlignedBB[] BOUNDING_BOXES = new AxisAlignedBB[]
--        {
--            new AxisAlignedBB(0.375, 0.0, 0.375, 0.625, 1.0, 0.625),
--            new AxisAlignedBB(0.375, 0.0, 0.375, 0.625, 1.0, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.375, 0.625, 1.0, 0.625),
--            new AxisAlignedBB(0.0, 0.0, 0.375, 0.625, 1.0, 1.0),
--            new AxisAlignedBB(0.375, 0.0, 0.0, 0.625, 1.0, 0.625),
--            new AxisAlignedBB(0.375, 0.0, 0.0, 0.625, 1.0, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 0.625, 1.0, 0.625),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 0.625, 1.0, 1.0),
--            new AxisAlignedBB(0.375, 0.0, 0.375, 1.0, 1.0, 0.625),
--            new AxisAlignedBB(0.375, 0.0, 0.375, 1.0, 1.0, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.375, 1.0, 1.0, 0.625),
--            new AxisAlignedBB(0.0, 0.0, 0.375, 1.0, 1.0, 1.0),
--            new AxisAlignedBB(0.375, 0.0, 0.0, 1.0, 1.0, 0.625),
--            new AxisAlignedBB(0.375, 0.0, 0.0, 1.0, 1.0, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 0.625),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
--        };
--    public static final AxisAlignedBB PILLAR_AABB = new AxisAlignedBB(0.375, 0.0, 0.375, 0.625, 1.5, 0.625);
--    public static final AxisAlignedBB SOUTH_AABB = new AxisAlignedBB(0.375, 0.0, 0.625, 0.625, 1.5, 1.0);
--    public static final AxisAlignedBB WEST_AABB = new AxisAlignedBB(0.0, 0.0, 0.375, 0.375, 1.5, 0.625);
--    public static final AxisAlignedBB NORTH_AABB = new AxisAlignedBB(0.375, 0.0, 0.0, 0.625, 1.5, 0.375);
--    public static final AxisAlignedBB EAST_AABB = new AxisAlignedBB(0.625, 0.0, 0.375, 1.0, 1.5, 0.625);
-+    protected static final AxisAlignedBB[] BOUNDING_BOXES = new AxisAlignedBB[] {new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 1.0D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 1.0D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.375D, 0.625D, 1.0D, 0.625D), new AxisAlignedBB(0.0D, 0.0D, 0.375D, 0.625D, 1.0D, 1.0D), new AxisAlignedBB(0.375D, 0.0D, 0.0D, 0.625D, 1.0D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.0D, 0.625D, 1.0D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.625D, 1.0D, 0.625D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.625D, 1.0D, 1.0D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 1.0D, 1.0D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 1.0D, 1.0D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.375D, 1.0D, 1.0D, 0.625D), new AxisAlignedBB(0.0D, 0.0D, 0.375D, 1.0D, 1.0D, 1.0D), new AxisAlignedBB(0.375D, 0.0D, 0.0D, 1.0D, 1.0D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 0.625D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D)};
-+    public static final AxisAlignedBB PILLAR_AABB = new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 1.5D, 0.625D);
-+    public static final AxisAlignedBB SOUTH_AABB = new AxisAlignedBB(0.375D, 0.0D, 0.625D, 0.625D, 1.5D, 1.0D);
-+    public static final AxisAlignedBB WEST_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.375D, 0.375D, 1.5D, 0.625D);
-+    public static final AxisAlignedBB NORTH_AABB = new AxisAlignedBB(0.375D, 0.0D, 0.0D, 0.625D, 1.5D, 0.375D);
-+    public static final AxisAlignedBB EAST_AABB = new AxisAlignedBB(0.625D, 0.0D, 0.375D, 1.0D, 1.5D, 0.625D);
- 
-     public BlockFence(Material materialIn, MapColor mapColorIn)
-     {
-         super(materialIn, mapColorIn);
--        this.setDefaultState(
--            this.blockState
--            .getBaseState()
--            .withProperty(NORTH, false)
--            .withProperty(EAST, false)
--            .withProperty(SOUTH, false)
--            .withProperty(WEST, false)
--        );
-+        this.setDefaultState(this.blockState.getBaseState().withProperty(NORTH, Boolean.valueOf(false)).withProperty(EAST, Boolean.valueOf(false)).withProperty(SOUTH, Boolean.valueOf(false)).withProperty(WEST, Boolean.valueOf(false)));
-         this.setCreativeTab(CreativeTabs.DECORATIONS);
-     }
- 
--    @Override
--    public void addCollisionBoxToList(
--        IBlockState state,
--        World worldIn,
--        BlockPos pos,
--        AxisAlignedBB entityBox,
--        List<AxisAlignedBB> collidingBoxes,
--        @Nullable Entity entityIn,
--        boolean isActualState
--    )
-+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState)
-     {
-         if (!isActualState)
-         {
-@@ -89,28 +56,27 @@
- 
-         addCollisionBoxToList(pos, entityBox, collidingBoxes, PILLAR_AABB);
- 
--        if (state.getValue(NORTH))
-+        if (((Boolean)state.getValue(NORTH)).booleanValue())
-         {
-             addCollisionBoxToList(pos, entityBox, collidingBoxes, NORTH_AABB);
-         }
- 
--        if (state.getValue(EAST))
-+        if (((Boolean)state.getValue(EAST)).booleanValue())
-         {
-             addCollisionBoxToList(pos, entityBox, collidingBoxes, EAST_AABB);
-         }
- 
--        if (state.getValue(SOUTH))
-+        if (((Boolean)state.getValue(SOUTH)).booleanValue())
-         {
-             addCollisionBoxToList(pos, entityBox, collidingBoxes, SOUTH_AABB);
-         }
- 
--        if (state.getValue(WEST))
-+        if (((Boolean)state.getValue(WEST)).booleanValue())
-         {
-             addCollisionBoxToList(pos, entityBox, collidingBoxes, WEST_AABB);
-         }
-     }
- 
--    @Override
-     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-     {
-         state = this.getActualState(state, source, pos);
-@@ -121,22 +87,22 @@
-     {
-         int i = 0;
- 
--        if (state.getValue(NORTH))
-+        if (((Boolean)state.getValue(NORTH)).booleanValue())
-         {
-             i |= 1 << EnumFacing.NORTH.getHorizontalIndex();
-         }
- 
--        if (state.getValue(EAST))
-+        if (((Boolean)state.getValue(EAST)).booleanValue())
-         {
-             i |= 1 << EnumFacing.EAST.getHorizontalIndex();
-         }
- 
--        if (state.getValue(SOUTH))
-+        if (((Boolean)state.getValue(SOUTH)).booleanValue())
-         {
-             i |= 1 << EnumFacing.SOUTH.getHorizontalIndex();
-         }
- 
--        if (state.getValue(WEST))
-+        if (((Boolean)state.getValue(WEST)).booleanValue())
-         {
-             i |= 1 << EnumFacing.WEST.getHorizontalIndex();
-         }
-@@ -144,19 +110,16 @@
-         return i;
-     }
- 
--    @Override
-     public boolean isOpaqueCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
-     public boolean isFullCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
-     public boolean isPassable(IBlockAccess worldIn, BlockPos pos)
-     {
-         return false;
-@@ -173,32 +136,16 @@
- 
-     protected static boolean isExcepBlockForAttachWithPiston(Block p_194142_0_)
-     {
--        return Block.isExceptBlockForAttachWithPiston(p_194142_0_)
--               || p_194142_0_ == Blocks.BARRIER
--               || p_194142_0_ == Blocks.MELON_BLOCK
--               || p_194142_0_ == Blocks.PUMPKIN
--               || p_194142_0_ == Blocks.LIT_PUMPKIN;
-+        return Block.isExceptBlockForAttachWithPiston(p_194142_0_) || p_194142_0_ == Blocks.BARRIER || p_194142_0_ == Blocks.MELON_BLOCK || p_194142_0_ == Blocks.PUMPKIN || p_194142_0_ == Blocks.LIT_PUMPKIN;
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
-     {
-         return true;
-     }
- 
--    @Override
--    public boolean onBlockActivated(
--        World worldIn,
--        BlockPos pos,
--        IBlockState state,
--        EntityPlayer playerIn,
--        EnumHand hand,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ
--    )
-+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-     {
-         if (!worldIn.isRemote)
-         {
-@@ -211,69 +158,69 @@
-         }
-     }
- 
--    @Override
-     public int getMetaFromState(IBlockState state)
-     {
-         return 0;
-     }
- 
--    @Override
+@@ -220,10 +220,10 @@
+     @Override
      public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
      {
 -        return state.withProperty(NORTH, this.canConnectTo(worldIn, pos.north(), EnumFacing.SOUTH))
@@ -205,67 +9,20 @@
 -               .withProperty(SOUTH, this.canConnectTo(worldIn, pos.south(), EnumFacing.NORTH))
 -               .withProperty(WEST, this.canConnectTo(worldIn, pos.west(), EnumFacing.EAST));
 +        return state.withProperty(NORTH, canFenceConnectTo(worldIn, pos, EnumFacing.NORTH))
-+                    .withProperty(EAST,  canFenceConnectTo(worldIn, pos, EnumFacing.EAST))
-+                    .withProperty(SOUTH, canFenceConnectTo(worldIn, pos, EnumFacing.SOUTH))
-+                    .withProperty(WEST,  canFenceConnectTo(worldIn, pos, EnumFacing.WEST));
++               .withProperty(EAST,  canFenceConnectTo(worldIn, pos, EnumFacing.EAST))
++               .withProperty(SOUTH, canFenceConnectTo(worldIn, pos, EnumFacing.SOUTH))
++               .withProperty(WEST,  canFenceConnectTo(worldIn, pos, EnumFacing.WEST));
      }
  
--    @Override
-     public IBlockState withRotation(IBlockState state, Rotation rot)
+     @Override
+@@ -272,6 +272,23 @@
      {
-         switch (rot)
-         {
-             case CLOCKWISE_180:
--                return state.withProperty(NORTH, state.getValue(SOUTH))
--                       .withProperty(EAST, state.getValue(WEST))
--                       .withProperty(SOUTH, state.getValue(NORTH))
--                       .withProperty(WEST, state.getValue(EAST));
-+                return state.withProperty(NORTH, state.getValue(SOUTH)).withProperty(EAST, state.getValue(WEST)).withProperty(SOUTH, state.getValue(NORTH)).withProperty(WEST, state.getValue(EAST));
-             case COUNTERCLOCKWISE_90:
--                return state.withProperty(NORTH, state.getValue(EAST))
--                       .withProperty(EAST, state.getValue(SOUTH))
--                       .withProperty(SOUTH, state.getValue(WEST))
--                       .withProperty(WEST, state.getValue(NORTH));
-+                return state.withProperty(NORTH, state.getValue(EAST)).withProperty(EAST, state.getValue(SOUTH)).withProperty(SOUTH, state.getValue(WEST)).withProperty(WEST, state.getValue(NORTH));
-             case CLOCKWISE_90:
--                return state.withProperty(NORTH, state.getValue(WEST))
--                       .withProperty(EAST, state.getValue(NORTH))
--                       .withProperty(SOUTH, state.getValue(EAST))
--                       .withProperty(WEST, state.getValue(SOUTH));
-+                return state.withProperty(NORTH, state.getValue(WEST)).withProperty(EAST, state.getValue(NORTH)).withProperty(SOUTH, state.getValue(EAST)).withProperty(WEST, state.getValue(SOUTH));
-             default:
-                 return state;
-         }
-     }
- 
--    @Override
-     public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
-     {
-         switch (mirrorIn)
-         {
-             case LEFT_RIGHT:
--                return state.withProperty(NORTH, state.getValue(SOUTH))
--                       .withProperty(SOUTH, state.getValue(NORTH));
-+                return state.withProperty(NORTH, state.getValue(SOUTH)).withProperty(SOUTH, state.getValue(NORTH));
-             case FRONT_BACK:
--                return state.withProperty(EAST, state.getValue(WEST))
--                       .withProperty(WEST, state.getValue(EAST));
-+                return state.withProperty(EAST, state.getValue(WEST)).withProperty(WEST, state.getValue(EAST));
-             default:
-                 return super.withMirror(state, mirrorIn);
-         }
-     }
- 
--    @Override
-     protected BlockStateContainer createBlockState()
-     {
--        return new BlockStateContainer(this, NORTH, EAST, WEST, SOUTH);
-+        return new BlockStateContainer(this, new IProperty[] {NORTH, EAST, WEST, SOUTH});
+         return new BlockStateContainer(this, NORTH, EAST, WEST, SOUTH);
      }
 +
 +    /* ======================================== FORGE START ======================================== */
- 
-     @Override
++
++    @Override
 +    public boolean canBeConnectedTo(IBlockAccess world, BlockPos pos, EnumFacing facing)
 +    {
 +        return canConnectTo(world, pos.offset(facing), facing.getOpposite());
@@ -279,7 +36,6 @@
 +    }
 +
 +    /* ======================================== FORGE END ======================================== */
-+
+ 
+     @Override
      public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-     {
-         return face != EnumFacing.UP && face != EnumFacing.DOWN ? BlockFaceShape.MIDDLE_POLE : BlockFaceShape.CENTER;

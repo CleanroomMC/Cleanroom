@@ -1,33 +1,6 @@
 --- before/net/minecraft/block/BlockGrass.java
 +++ after/net/minecraft/block/BlockGrass.java
-@@ -2,6 +2,7 @@
- 
- import java.util.Random;
- import net.minecraft.block.material.Material;
-+import net.minecraft.block.properties.IProperty;
- import net.minecraft.block.properties.PropertyBool;
- import net.minecraft.block.state.BlockStateContainer;
- import net.minecraft.block.state.IBlockState;
-@@ -22,24 +23,23 @@
-     protected BlockGrass()
-     {
-         super(Material.GRASS);
--        this.setDefaultState(this.blockState.getBaseState().withProperty(SNOWY, false));
-+        this.setDefaultState(this.blockState.getBaseState().withProperty(SNOWY, Boolean.valueOf(false)));
-         this.setTickRandomly(true);
-         this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
-     }
- 
--    @Override
-     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
-     {
-         Block block = worldIn.getBlockState(pos.up()).getBlock();
--        return state.withProperty(SNOWY, block == Blocks.SNOW || block == Blocks.SNOW_LAYER);
-+        return state.withProperty(SNOWY, Boolean.valueOf(block == Blocks.SNOW || block == Blocks.SNOW_LAYER));
-     }
- 
--    @Override
-     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
+@@ -39,7 +39,8 @@
      {
          if (!worldIn.isRemote)
          {
@@ -37,79 +10,24 @@
              {
                  worldIn.setBlockState(pos, Blocks.DIRT.getDefaultState());
              }
-@@ -47,7 +47,7 @@
-             {
-                 if (worldIn.getLightFromNeighbors(pos.up()) >= 9)
-                 {
--                    for (int i = 0; i < 4; i++)
-+                    for (int i = 0; i < 4; ++i)
-                     {
-                         BlockPos blockpos = pos.add(rand.nextInt(3) - 1, rand.nextInt(5) - 3, rand.nextInt(3) - 1);
- 
-@@ -59,10 +59,7 @@
-                         IBlockState iblockstate = worldIn.getBlockState(blockpos.up());
-                         IBlockState iblockstate1 = worldIn.getBlockState(blockpos);
- 
--                        if (iblockstate1.getBlock() == Blocks.DIRT
--                                && iblockstate1.getValue(BlockDirt.VARIANT) == BlockDirt.DirtType.DIRT
--                                && worldIn.getLightFromNeighbors(blockpos.up()) >= 4
+@@ -62,7 +63,7 @@
+                         if (iblockstate1.getBlock() == Blocks.DIRT
+                                 && iblockstate1.getValue(BlockDirt.VARIANT) == BlockDirt.DirtType.DIRT
+                                 && worldIn.getLightFromNeighbors(blockpos.up()) >= 4
 -                                && iblockstate.getLightOpacity() <= 2)
-+                        if (iblockstate1.getBlock() == Blocks.DIRT && iblockstate1.getValue(BlockDirt.VARIANT) == BlockDirt.DirtType.DIRT && worldIn.getLightFromNeighbors(blockpos.up()) >= 4 && iblockstate.getLightOpacity(worldIn, pos.up()) <= 2)
++                                && iblockstate.getLightOpacity(worldIn, pos.up()) <= 2)
                          {
                              worldIn.setBlockState(blockpos, Blocks.GRASS.getDefaultState());
                          }
-@@ -72,90 +69,79 @@
-         }
-     }
+@@ -114,18 +115,11 @@
+                 }
+             }
  
--    @Override
-     public Item getItemDropped(IBlockState state, Random rand, int fortune)
-     {
--        return Blocks.DIRT
--               .getItemDropped(Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.DIRT), rand, fortune);
-+        return Blocks.DIRT.getItemDropped(Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.DIRT), rand, fortune);
-     }
- 
--    @Override
-     public boolean canGrow(World worldIn, BlockPos pos, IBlockState state, boolean isClient)
-     {
-         return true;
-     }
- 
--    @Override
-     public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, IBlockState state)
-     {
-         return true;
-     }
- 
--    @Override
-     public void grow(World worldIn, Random rand, BlockPos pos, IBlockState state)
-     {
-         BlockPos blockpos = pos.up();
--        label38:
- 
--        for (int i = 0; i < 128; i++)
-+        for (int i = 0; i < 128; ++i)
-         {
-             BlockPos blockpos1 = blockpos;
--
--            for (int j = 0; j < i / 16; j++)
--            {
--                blockpos1 = blockpos1.add(
--                                rand.nextInt(3) - 1, (rand.nextInt(3) - 1) * rand.nextInt(3) / 2, rand.nextInt(3) - 1
--                            );
--
--                if (worldIn.getBlockState(blockpos1.down()).getBlock() != Blocks.GRASS
--                        || worldIn.getBlockState(blockpos1).isNormalCube())
--                {
--                    continue label38;
--                }
--            }
--
 -            if (worldIn.getBlockState(blockpos1).getBlock().material == Material.AIR)
--            {
--                if (rand.nextInt(8) == 0)
--                {
++            if (worldIn.isAirBlock(blockpos1))
+             {
+                 if (rand.nextInt(8) == 0)
+                 {
 -                    BlockFlower.EnumFlowerType blockflower$enumflowertype = worldIn.getBiome(blockpos1).pickRandomFlower(rand, blockpos1);
 -                    BlockFlower blockflower = blockflower$enumflowertype.getBlockType().getBlock();
 -                    IBlockState iblockstate = blockflower.getDefaultState().withProperty(blockflower.getTypeProperty(), blockflower$enumflowertype);
@@ -118,71 +36,7 @@
 -                    {
 -                        worldIn.setBlockState(blockpos1, iblockstate, 3);
 -                    }
--                }
--                else
--                {
--                    IBlockState iblockstate1 = Blocks.TALLGRASS.getDefaultState().withProperty(BlockTallGrass.TYPE, BlockTallGrass.EnumType.GRASS);
--
--                    if (Blocks.TALLGRASS.canBlockStay(worldIn, blockpos1, iblockstate1))
--                    {
--                        worldIn.setBlockState(blockpos1, iblockstate1, 3);
--                    }
--                }
-+            int j = 0;
-+
-+            while (true)
-+            {
-+                if (j >= i / 16)
-+                {
-+                    if (worldIn.isAirBlock(blockpos1))
-+                    {
-+                        if (rand.nextInt(8) == 0)
-+                        {
-+                            worldIn.getBiome(blockpos1).plantFlower(worldIn, rand, blockpos1);
-+                        }
-+                        else
-+                        {
-+                            IBlockState iblockstate1 = Blocks.TALLGRASS.getDefaultState().withProperty(BlockTallGrass.TYPE, BlockTallGrass.EnumType.GRASS);
-+
-+                            if (Blocks.TALLGRASS.canBlockStay(worldIn, blockpos1, iblockstate1))
-+                            {
-+                                worldIn.setBlockState(blockpos1, iblockstate1, 3);
-+                            }
-+                        }
-+                    }
-+
-+                    break;
-+                }
-+
-+                blockpos1 = blockpos1.add(rand.nextInt(3) - 1, (rand.nextInt(3) - 1) * rand.nextInt(3) / 2, rand.nextInt(3) - 1);
-+
-+                if (worldIn.getBlockState(blockpos1.down()).getBlock() != Blocks.GRASS || worldIn.getBlockState(blockpos1).isNormalCube())
-+                {
-+                    break;
-+                }
-+
-+                ++j;
-             }
-         }
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public BlockRenderLayer getRenderLayer()
-     {
-         return BlockRenderLayer.CUTOUT_MIPPED;
-     }
- 
--    @Override
-     public int getMetaFromState(IBlockState state)
-     {
-         return 0;
-     }
- 
--    @Override
-     protected BlockStateContainer createBlockState()
-     {
--        return new BlockStateContainer(this, SNOWY);
-+        return new BlockStateContainer(this, new IProperty[] {SNOWY});
-     }
- }
++                    worldIn.getBiome(blockpos1).plantFlower(worldIn, rand, blockpos1);
+                 }
+                 else
+                 {

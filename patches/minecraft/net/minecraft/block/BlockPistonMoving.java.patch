@@ -1,109 +1,7 @@
 --- before/net/minecraft/block/BlockPistonMoving.java
 +++ after/net/minecraft/block/BlockPistonMoving.java
-@@ -4,6 +4,7 @@
- import java.util.Random;
- import javax.annotation.Nullable;
- import net.minecraft.block.material.Material;
-+import net.minecraft.block.properties.IProperty;
- import net.minecraft.block.properties.PropertyDirection;
- import net.minecraft.block.properties.PropertyEnum;
- import net.minecraft.block.state.BlockFaceShape;
-@@ -35,17 +36,11 @@
-     public BlockPistonMoving()
-     {
-         super(Material.PISTON);
--        this.setDefaultState(
--            this.blockState
--            .getBaseState()
--            .withProperty(FACING, EnumFacing.NORTH)
--            .withProperty(TYPE, BlockPistonExtension.EnumPistonType.DEFAULT)
--        );
-+        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(TYPE, BlockPistonExtension.EnumPistonType.DEFAULT));
-         this.setHardness(-1.0F);
-     }
- 
-     @Nullable
--    @Override
-     public TileEntity createNewTileEntity(World worldIn, int meta)
-     {
-         return null;
-@@ -56,7 +51,6 @@
-         return new TileEntityPiston(blockStateIn, facingIn, extendingIn, shouldHeadBeRenderedIn);
-     }
- 
--    @Override
-     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
-     {
-         TileEntity tileentity = worldIn.getTileEntity(pos);
-@@ -71,54 +65,38 @@
-         }
-     }
- 
--    @Override
-     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
-     {
-         return false;
-     }
- 
--    @Override
-     public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side)
-     {
-         return false;
-     }
- 
--    @Override
-     public void onPlayerDestroy(World worldIn, BlockPos pos, IBlockState state)
-     {
--        BlockPos blockpos = pos.offset(state.getValue(FACING).getOpposite());
-+        BlockPos blockpos = pos.offset(((EnumFacing)state.getValue(FACING)).getOpposite());
-         IBlockState iblockstate = worldIn.getBlockState(blockpos);
- 
--        if (iblockstate.getBlock() instanceof BlockPistonBase && iblockstate.getValue(BlockPistonBase.EXTENDED))
-+        if (iblockstate.getBlock() instanceof BlockPistonBase && ((Boolean)iblockstate.getValue(BlockPistonBase.EXTENDED)).booleanValue())
-         {
-             worldIn.setBlockToAir(blockpos);
-         }
-     }
- 
--    @Override
-     public boolean isOpaqueCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
-     public boolean isFullCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
--    public boolean onBlockActivated(
--        World worldIn,
--        BlockPos pos,
--        IBlockState state,
--        EntityPlayer playerIn,
--        EnumHand hand,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ
--    )
-+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-     {
-         if (!worldIn.isRemote && worldIn.getTileEntity(pos) == null)
-         {
-@@ -131,16 +109,14 @@
-         }
-     }
- 
--    @Override
-     public Item getItemDropped(IBlockState state, Random rand, int fortune)
-     {
-         return Items.AIR;
-     }
- 
--    @Override
+@@ -140,7 +140,7 @@
+     @Override
      public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
      {
 -        if (!worldIn.isRemote)
@@ -111,7 +9,7 @@
          {
              TileEntityPiston tileentitypiston = this.getTilePistonAt(worldIn, pos);
  
-@@ -150,16 +126,15 @@
+@@ -150,6 +150,7 @@
                  iblockstate.getBlock().dropBlockAsItem(worldIn, pos, iblockstate, 0);
              }
          }
@@ -119,103 +17,13 @@
      }
  
      @Nullable
--    @Override
-     public RayTraceResult collisionRayTrace(IBlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end)
-     {
-         return null;
-     }
- 
--    @Override
-     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
-     {
-         if (!worldIn.isRemote)
-@@ -169,23 +144,13 @@
-     }
- 
-     @Nullable
--    @Override
-     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
-     {
-         TileEntityPiston tileentitypiston = this.getTilePistonAt(worldIn, pos);
-         return tileentitypiston == null ? null : tileentitypiston.getAABB(worldIn, pos);
-     }
- 
--    @Override
--    public void addCollisionBoxToList(
--        IBlockState state,
--        World worldIn,
--        BlockPos pos,
--        AxisAlignedBB entityBox,
--        List<AxisAlignedBB> collidingBoxes,
--        @Nullable Entity entityIn,
--        boolean isActualState
--    )
-+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState)
-     {
-         TileEntityPiston tileentitypiston = this.getTilePistonAt(worldIn, pos);
- 
-@@ -195,7 +160,6 @@
-         }
-     }
- 
--    @Override
-     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-     {
-         TileEntityPiston tileentitypiston = this.getTilePistonAt(source, pos);
-@@ -209,37 +173,30 @@
-         return tileentity instanceof TileEntityPiston ? (TileEntityPiston)tileentity : null;
-     }
- 
--    @Override
-     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
-     {
-         return ItemStack.EMPTY;
-     }
- 
--    @Override
-     public IBlockState getStateFromMeta(int meta)
-     {
--        return this.getDefaultState()
--               .withProperty(FACING, BlockPistonExtension.getFacing(meta))
--               .withProperty(TYPE, (meta & 8) > 0 ? BlockPistonExtension.EnumPistonType.STICKY : BlockPistonExtension.EnumPistonType.DEFAULT);
-+        return this.getDefaultState().withProperty(FACING, BlockPistonExtension.getFacing(meta)).withProperty(TYPE, (meta & 8) > 0 ? BlockPistonExtension.EnumPistonType.STICKY : BlockPistonExtension.EnumPistonType.DEFAULT);
-     }
- 
--    @Override
-     public IBlockState withRotation(IBlockState state, Rotation rot)
-     {
--        return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
-+        return state.withProperty(FACING, rot.rotate((EnumFacing)state.getValue(FACING)));
-     }
- 
--    @Override
-     public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
-     {
--        return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
-+        return state.withRotation(mirrorIn.toRotation((EnumFacing)state.getValue(FACING)));
-     }
- 
--    @Override
-     public int getMetaFromState(IBlockState state)
-     {
-         int i = 0;
--        i |= state.getValue(FACING).getIndex();
-+        i = i | ((EnumFacing)state.getValue(FACING)).getIndex();
- 
-         if (state.getValue(TYPE) == BlockPistonExtension.EnumPistonType.STICKY)
-         {
-@@ -249,13 +206,22 @@
-         return i;
-     }
- 
--    @Override
+@@ -253,6 +254,17 @@
      protected BlockStateContainer createBlockState()
      {
--        return new BlockStateContainer(this, FACING, TYPE);
-+        return new BlockStateContainer(this, new IProperty[] {FACING, TYPE});
-     }
- 
-     @Override
+         return new BlockStateContainer(this, FACING, TYPE);
++    }
++
++    @Override
 +    public void getDrops(net.minecraft.util.NonNullList<net.minecraft.item.ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
 +    {
 +        TileEntityPiston tileentitypiston = this.getTilePistonAt(world, pos);
@@ -224,8 +32,6 @@
 +            IBlockState pushed = tileentitypiston.getPistonState();
 +            drops.addAll(pushed.getBlock().getDrops(world, pos, pushed, fortune)); // use the old method until it gets removed, for backward compatibility
 +        }
-+    }
-+
-     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-     {
-         return BlockFaceShape.UNDEFINED;
+     }
+ 
+     @Override

@@ -1,6 +1,6 @@
 --- before/net/minecraft/block/state/BlockStateContainer.java
 +++ after/net/minecraft/block/state/BlockStateContainer.java
-@@ -57,8 +57,18 @@
+@@ -57,6 +57,16 @@
  
      public BlockStateContainer(Block blockIn, IProperty<?>... properties)
      {
@@ -15,11 +15,8 @@
 +    protected BlockStateContainer(Block blockIn, IProperty<?>[] properties, ImmutableMap<net.minecraftforge.common.property.IUnlistedProperty<?>, java.util.Optional<?>> unlistedProperties)
 +    {
          this.block = blockIn;
--        Map < String, IProperty<? >> map = Maps.newHashMap();
-+        Map < String, IProperty<? >> map = Maps. < String, IProperty<? >> newHashMap();
+         Map < String, IProperty<? >> map = Maps.newHashMap();
  
-         for (IProperty<?> iproperty : properties)
-         {
 @@ -73,9 +83,7 @@
          for (List < Comparable<? >> list : Cartesian.cartesianProduct(this.getAllowedValues()))
          {

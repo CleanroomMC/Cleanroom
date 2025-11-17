@@ -1,22 +1,16 @@
 --- before/net/minecraft/block/BlockBush.java
 +++ after/net/minecraft/block/BlockBush.java
-@@ -17,9 +17,9 @@
+@@ -17,7 +17,7 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  
 -public class BlockBush extends Block
 +public class BlockBush extends Block implements net.minecraftforge.common.IPlantable
  {
--    protected static final AxisAlignedBB BUSH_AABB = new AxisAlignedBB(0.3F, 0.0, 0.3F, 0.7F, 0.6F, 0.7F);
-+    protected static final AxisAlignedBB BUSH_AABB = new AxisAlignedBB(0.30000001192092896D, 0.0D, 0.30000001192092896D, 0.699999988079071D, 0.6000000238418579D, 0.699999988079071D);
+     protected static final AxisAlignedBB BUSH_AABB = new AxisAlignedBB(0.3F, 0.0, 0.3F, 0.7F, 0.6F, 0.7F);
  
-     protected BlockBush()
-     {
-@@ -38,27 +38,23 @@
-         this.setCreativeTab(CreativeTabs.DECORATIONS);
-     }
- 
--    @Override
+@@ -41,7 +41,8 @@
+     @Override
      public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
      {
 -        return super.canPlaceBlockAt(worldIn, pos) && this.canSustainBush(worldIn.getBlockState(pos.down()));
@@ -25,25 +19,7 @@
      }
  
      protected boolean canSustainBush(IBlockState state)
-     {
--        return state.getBlock() == Blocks.GRASS
--               || state.getBlock() == Blocks.DIRT
--               || state.getBlock() == Blocks.FARMLAND;
-+        return state.getBlock() == Blocks.GRASS || state.getBlock() == Blocks.DIRT || state.getBlock() == Blocks.FARMLAND;
-     }
- 
--    @Override
-     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
-     {
-         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
-         this.checkAndDropBlock(worldIn, pos, state);
-     }
- 
--    @Override
-     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
-     {
-         this.checkAndDropBlock(worldIn, pos, state);
-@@ -75,42 +71,71 @@
+@@ -75,6 +76,11 @@
  
      public boolean canBlockStay(World worldIn, BlockPos pos, IBlockState state)
      {
@@ -55,31 +31,12 @@
          return this.canSustainBush(worldIn.getBlockState(pos.down()));
      }
  
--    @Override
-     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-     {
-         return BUSH_AABB;
-     }
- 
-     @Nullable
--    @Override
-     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
-     {
-         return NULL_AABB;
-     }
- 
--    @Override
-     public boolean isOpaqueCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
+@@ -101,6 +107,36 @@
      public boolean isFullCube(IBlockState state)
      {
          return false;
-     }
- 
++    }
++
 +    @Override
 +    public net.minecraftforge.common.EnumPlantType getPlantType(net.minecraft.world.IBlockAccess world, BlockPos pos)
 +    {
@@ -108,16 +65,6 @@
 +        IBlockState state = world.getBlockState(pos);
 +        if (state.getBlock() != this) return getDefaultState();
 +        return state;
-+    }
-+
-     @SideOnly(Side.CLIENT)
--    @Override
-     public BlockRenderLayer getRenderLayer()
-     {
-         return BlockRenderLayer.CUTOUT;
      }
  
--    @Override
-     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-     {
-         return BlockFaceShape.UNDEFINED;
+     @SideOnly(Side.CLIENT)

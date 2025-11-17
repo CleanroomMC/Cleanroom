@@ -1,16 +1,5 @@
 --- before/net/minecraft/block/BlockRailBase.java
 +++ after/net/minecraft/block/BlockRailBase.java
-@@ -22,8 +22,8 @@
- 
- public abstract class BlockRailBase extends Block
- {
--    protected static final AxisAlignedBB FLAT_AABB = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.125, 1.0);
--    protected static final AxisAlignedBB ASCENDING_AABB = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.5, 1.0);
-+    protected static final AxisAlignedBB FLAT_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.125D, 1.0D);
-+    protected static final AxisAlignedBB ASCENDING_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D);
-     protected final boolean isPowered;
- 
-     public static boolean isRailBlock(World worldIn, BlockPos pos)
 @@ -34,7 +34,7 @@
      public static boolean isRailBlock(IBlockState state)
      {
@@ -20,61 +9,25 @@
      }
  
      protected BlockRailBase(boolean isPowered)
-@@ -45,46 +45,37 @@
-     }
- 
-     @Nullable
--    @Override
-     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
-     {
-         return NULL_AABB;
-     }
- 
--    @Override
-     public boolean isOpaqueCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
+@@ -61,7 +61,7 @@
      public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
      {
--        BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = state.getBlock() == this
+         BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = state.getBlock() == this
 -                ? state.getValue(this.getShapeProperty())
--                : null;
-+        BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = state.getBlock() == this ? getRailDirection(source, pos, state, null) : null;
++                ? getRailDirection(source, pos, state, null)
+                 : null;
          return blockrailbase$enumraildirection != null && blockrailbase$enumraildirection.isAscending() ? ASCENDING_AABB : FLAT_AABB;
      }
- 
--    @Override
-     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-     {
-         return BlockFaceShape.UNDEFINED;
-     }
- 
--    @Override
-     public boolean isFullCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
+@@ -81,7 +81,7 @@
+     @Override
      public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
      {
 -        return worldIn.getBlockState(pos.down()).isTopSolid();
 +        return worldIn.getBlockState(pos.down()).isSideSolid(worldIn, pos.down(), EnumFacing.UP);
      }
  
--    @Override
-     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
-     {
-         if (!worldIn.isRemote)
-@@ -98,41 +89,37 @@
-         }
-     }
- 
--    @Override
-     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
+     @Override
+@@ -103,36 +103,33 @@
      {
          if (!worldIn.isRemote)
          {
@@ -136,31 +89,7 @@
              {
                  this.dropBlockAsItem(worldIn, pos, state, 0);
                  worldIn.setBlockToAir(pos);
-@@ -150,30 +137,25 @@
- 
-     protected IBlockState updateDir(World worldIn, BlockPos pos, IBlockState state, boolean initialPlacement)
-     {
--        return worldIn.isRemote
--               ? state
--               : new BlockRailBase.Rail(worldIn, pos, state).place(worldIn.isBlockPowered(pos), initialPlacement).getBlockState();
-+        return worldIn.isRemote ? state : (new BlockRailBase.Rail(worldIn, pos, state)).place(worldIn.isBlockPowered(pos), initialPlacement).getBlockState();
-     }
- 
--    @Override
-     public EnumPushReaction getPushReaction(IBlockState state)
-     {
-         return EnumPushReaction.NORMAL;
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public BlockRenderLayer getRenderLayer()
-     {
-         return BlockRenderLayer.CUTOUT;
-     }
- 
--    @Override
-     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
+@@ -173,7 +170,7 @@
      {
          super.breakBlock(worldIn, pos, state);
  
@@ -169,7 +98,7 @@
          {
              worldIn.notifyNeighborsOfStateChange(pos.up(), this, false);
          }
-@@ -185,8 +167,101 @@
+@@ -185,8 +182,102 @@
          }
      }
  
@@ -252,6 +181,7 @@
 +     * @param axis The axis to rotate around
 +     * @return True if the rotation was successful, False if the rotation failed, or is not possible
 +     */
++    @Override
 +    public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis)
 +    {
 +        IBlockState state = world.getBlockState(pos);
@@ -271,33 +201,15 @@
      public static enum EnumRailDirection implements IStringSerializable
      {
          NORTH_SOUTH(0, "north_south"),
-@@ -215,7 +290,6 @@
-             return this.meta;
-         }
- 
--        @Override
-         public String toString()
-         {
-             return this.name;
-@@ -236,7 +310,6 @@
-             return META_LOOKUP[meta];
-         }
- 
--        @Override
-         public String getName()
-         {
-             return this.name;
-@@ -258,7 +331,8 @@
-         private final BlockRailBase block;
+@@ -259,6 +350,7 @@
          private IBlockState state;
          private final boolean isPowered;
--        private final List<BlockPos> connectedRails = Lists.newArrayList();
-+        private final List<BlockPos> connectedRails = Lists.<BlockPos>newArrayList();
+         private final List<BlockPos> connectedRails = Lists.newArrayList();
 +        private final boolean canMakeSlopes;
  
          public Rail(World worldIn, BlockPos pos, IBlockState state)
          {
-@@ -266,8 +340,9 @@
+@@ -266,8 +358,9 @@
              this.pos = pos;
              this.state = state;
              this.block = (BlockRailBase)state.getBlock();
@@ -309,45 +221,7 @@
              this.updateConnectedRails(blockrailbase$enumraildirection);
          }
  
-@@ -326,7 +401,7 @@
- 
-         private void removeSoftConnections()
-         {
--            for (int i = 0; i < this.connectedRails.size(); i++)
-+            for (int i = 0; i < this.connectedRails.size(); ++i)
-             {
-                 BlockRailBase.Rail blockrailbase$rail = this.findRailAt(this.connectedRails.get(i));
- 
-@@ -343,9 +418,7 @@
- 
-         private boolean hasRailAt(BlockPos pos)
-         {
--            return BlockRailBase.isRailBlock(this.world, pos)
--                   || BlockRailBase.isRailBlock(this.world, pos.up())
--                   || BlockRailBase.isRailBlock(this.world, pos.down());
-+            return BlockRailBase.isRailBlock(this.world, pos) || BlockRailBase.isRailBlock(this.world, pos.up()) || BlockRailBase.isRailBlock(this.world, pos.down());
-         }
- 
-         @Nullable
-@@ -382,7 +455,7 @@
- 
-         private boolean isConnectedTo(BlockPos posIn)
-         {
--            for (int i = 0; i < this.connectedRails.size(); i++)
-+            for (int i = 0; i < this.connectedRails.size(); ++i)
-             {
-                 BlockPos blockpos = this.connectedRails.get(i);
- 
-@@ -403,7 +476,7 @@
-             {
-                 if (this.hasRailAt(this.pos.offset(enumfacing)))
-                 {
--                    i++;
-+                    ++i;
-                 }
-             }
- 
-@@ -461,7 +534,7 @@
+@@ -461,7 +554,7 @@
                  }
              }
  
@@ -356,7 +230,7 @@
              {
                  if (BlockRailBase.isRailBlock(this.world, blockpos.up()))
                  {
-@@ -474,7 +547,7 @@
+@@ -474,7 +567,7 @@
                  }
              }
  
@@ -365,7 +239,7 @@
              {
                  if (BlockRailBase.isRailBlock(this.world, blockpos3.up()))
                  {
-@@ -617,7 +690,7 @@
+@@ -617,7 +710,7 @@
                  }
              }
  
@@ -374,7 +248,7 @@
              {
                  if (BlockRailBase.isRailBlock(this.world, blockpos.up()))
                  {
-@@ -630,7 +703,7 @@
+@@ -630,7 +723,7 @@
                  }
              }
  
@@ -383,12 +257,3 @@
              {
                  if (BlockRailBase.isRailBlock(this.world, blockpos3.up()))
                  {
-@@ -655,7 +728,7 @@
-             {
-                 this.world.setBlockState(this.pos, this.state, 3);
- 
--                for (int i = 0; i < this.connectedRails.size(); i++)
-+                for (int i = 0; i < this.connectedRails.size(); ++i)
-                 {
-                     BlockRailBase.Rail blockrailbase$rail = this.findRailAt(this.connectedRails.get(i));
- 

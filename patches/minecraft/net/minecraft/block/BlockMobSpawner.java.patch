@@ -1,60 +1,17 @@
 --- before/net/minecraft/block/BlockMobSpawner.java
 +++ after/net/minecraft/block/BlockMobSpawner.java
-@@ -22,52 +22,48 @@
-         super(Material.ROCK);
-     }
- 
--    @Override
-     public TileEntity createNewTileEntity(World worldIn, int meta)
-     {
-         return new TileEntityMobSpawner();
-     }
- 
--    @Override
-     public Item getItemDropped(IBlockState state, Random rand, int fortune)
-     {
-         return Items.AIR;
-     }
- 
--    @Override
-     public int quantityDropped(Random random)
-     {
-         return 0;
-     }
- 
--    @Override
+@@ -44,8 +44,12 @@
      public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
      {
          super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);
 -        int i = 15 + worldIn.rand.nextInt(15) + worldIn.rand.nextInt(15);
 -        this.dropXpOnBlockBreak(worldIn, pos, i);
-     }
- 
-     @Override
++    }
++
++    @Override
 +    public int getExpDrop(IBlockState state, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune)
 +    {
 +        return 15 + RANDOM.nextInt(15) + RANDOM.nextInt(15);
-+    }
-+
-     public boolean isOpaqueCube(IBlockState state)
-     {
-         return false;
      }
  
--    @Override
-     public EnumBlockRenderType getRenderType(IBlockState state)
-     {
-         return EnumBlockRenderType.MODEL;
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public BlockRenderLayer getRenderLayer()
-     {
-         return BlockRenderLayer.CUTOUT;
-     }
- 
--    @Override
-     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
-     {
-         return ItemStack.EMPTY;
+     @Override

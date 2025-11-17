@@ -1,21 +1,6 @@
 --- before/net/minecraft/block/BlockIce.java
 +++ after/net/minecraft/block/BlockIce.java
-@@ -31,23 +31,24 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public BlockRenderLayer getRenderLayer()
-     {
-         return BlockRenderLayer.TRANSLUCENT;
-     }
- 
--    @Override
--    public void harvestBlock(
--        World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack
--    )
-+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack)
-     {
+@@ -45,9 +45,14 @@
          player.addStat(StatList.getBlockStats(this));
          player.addExhaustion(0.005F);
  
@@ -32,7 +17,7 @@
          }
          else
          {
-@@ -58,7 +59,9 @@
+@@ -58,7 +63,9 @@
              }
  
              int i = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack);
@@ -42,25 +27,3 @@
              Material material = worldIn.getBlockState(pos.down()).getMaterial();
  
              if (material.blocksMovement() || material.isLiquid())
-@@ -68,13 +71,11 @@
-         }
-     }
- 
--    @Override
-     public int quantityDropped(Random random)
-     {
-         return 0;
-     }
- 
--    @Override
-     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
-     {
-         if (worldIn.getLightFor(EnumSkyBlock.BLOCK, pos) > 11 - this.getDefaultState().getLightOpacity())
-@@ -97,7 +98,6 @@
-         }
-     }
- 
--    @Override
-     public EnumPushReaction getPushReaction(IBlockState state)
-     {
-         return EnumPushReaction.NORMAL;

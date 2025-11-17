@@ -1,109 +1,9 @@
 --- before/net/minecraft/block/BlockSkull.java
 +++ after/net/minecraft/block/BlockSkull.java
-@@ -5,6 +5,7 @@
- import javax.annotation.Nullable;
- import net.minecraft.advancements.CriteriaTriggers;
- import net.minecraft.block.material.Material;
-+import net.minecraft.block.properties.IProperty;
- import net.minecraft.block.properties.PropertyBool;
- import net.minecraft.block.properties.PropertyDirection;
- import net.minecraft.block.state.BlockFaceShape;
-@@ -48,52 +49,44 @@
-     {
-         public boolean apply(@Nullable BlockWorldState p_apply_1_)
-         {
--            return p_apply_1_.getBlockState() != null
--                   && p_apply_1_.getBlockState().getBlock() == Blocks.SKULL
--                   && p_apply_1_.getTileEntity() instanceof TileEntitySkull
--                   && ((TileEntitySkull)p_apply_1_.getTileEntity()).getSkullType() == 1;
-+            return p_apply_1_.getBlockState() != null && p_apply_1_.getBlockState().getBlock() == Blocks.SKULL && p_apply_1_.getTileEntity() instanceof TileEntitySkull && ((TileEntitySkull)p_apply_1_.getTileEntity()).getSkullType() == 1;
-         }
-     };
--    protected static final AxisAlignedBB DEFAULT_AABB = new AxisAlignedBB(0.25, 0.0, 0.25, 0.75, 0.5, 0.75);
--    protected static final AxisAlignedBB NORTH_AABB = new AxisAlignedBB(0.25, 0.25, 0.5, 0.75, 0.75, 1.0);
--    protected static final AxisAlignedBB SOUTH_AABB = new AxisAlignedBB(0.25, 0.25, 0.0, 0.75, 0.75, 0.5);
--    protected static final AxisAlignedBB WEST_AABB = new AxisAlignedBB(0.5, 0.25, 0.25, 1.0, 0.75, 0.75);
--    protected static final AxisAlignedBB EAST_AABB = new AxisAlignedBB(0.0, 0.25, 0.25, 0.5, 0.75, 0.75);
-+    protected static final AxisAlignedBB DEFAULT_AABB = new AxisAlignedBB(0.25D, 0.0D, 0.25D, 0.75D, 0.5D, 0.75D);
-+    protected static final AxisAlignedBB NORTH_AABB = new AxisAlignedBB(0.25D, 0.25D, 0.5D, 0.75D, 0.75D, 1.0D);
-+    protected static final AxisAlignedBB SOUTH_AABB = new AxisAlignedBB(0.25D, 0.25D, 0.0D, 0.75D, 0.75D, 0.5D);
-+    protected static final AxisAlignedBB WEST_AABB = new AxisAlignedBB(0.5D, 0.25D, 0.25D, 1.0D, 0.75D, 0.75D);
-+    protected static final AxisAlignedBB EAST_AABB = new AxisAlignedBB(0.0D, 0.25D, 0.25D, 0.5D, 0.75D, 0.75D);
-     private BlockPattern witherBasePattern;
-     private BlockPattern witherPattern;
- 
-     protected BlockSkull()
-     {
-         super(Material.CIRCUITS);
--        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(NODROP, false));
-+        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(NODROP, Boolean.valueOf(false)));
+@@ -148,11 +148,6 @@
      }
  
--    @Override
-     public String getLocalizedName()
-     {
-         return I18n.translateToLocal("tile.skull.skeleton.name");
-     }
- 
--    @Override
-     public boolean isOpaqueCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
-     public boolean isFullCube(IBlockState state)
-     {
-         return false;
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public boolean hasCustomBreakingProgress(IBlockState state)
-     {
-         return true;
-     }
- 
--    @Override
-     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-     {
-         switch ((EnumFacing)state.getValue(FACING))
-@@ -112,28 +105,16 @@
-         }
-     }
- 
--    @Override
--    public IBlockState getStateForPlacement(
--        World worldIn,
--        BlockPos pos,
--        EnumFacing facing,
--        float hitX,
--        float hitY,
--        float hitZ,
--        int meta,
--        EntityLivingBase placer
--    )
-+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-     {
--        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing()).withProperty(NODROP, false);
-+        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing()).withProperty(NODROP, Boolean.valueOf(false));
-     }
- 
--    @Override
-     public TileEntity createNewTileEntity(World worldIn, int meta)
-     {
-         return new TileEntitySkull();
-     }
- 
--    @Override
-     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
-     {
-         int i = 0;
-@@ -147,36 +128,33 @@
-         return new ItemStack(Items.SKULL, 1, i);
-     }
- 
--    @Override
+     @Override
 -    public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
 -    {
 -    }
@@ -112,30 +12,29 @@
      public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player)
      {
          if (player.capabilities.isCreativeMode)
-         {
--            state = state.withProperty(NODROP, true);
-+            state = state.withProperty(NODROP, Boolean.valueOf(true));
+@@ -160,6 +155,7 @@
+             state = state.withProperty(NODROP, true);
              worldIn.setBlockState(pos, state, 4);
          }
 +        this.dropBlockAsItem(worldIn, pos, state, 0);
  
          super.onBlockHarvested(worldIn, pos, state, player);
      }
- 
--    @Override
+@@ -167,7 +163,12 @@
+     @Override
      public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
      {
 -        if (!worldIn.isRemote)
 +        super.breakBlock(worldIn, pos, state);
 +    }
++    
++    @Override
 +    public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess worldIn, BlockPos pos, IBlockState state, int fortune)
 +    {
          {
--            if (!state.getValue(NODROP))
-+            if (!((Boolean)state.getValue(NODROP)).booleanValue())
+             if (!state.getValue(NODROP))
              {
-                 TileEntity tileentity = worldIn.getTileEntity(pos);
- 
+@@ -176,7 +177,7 @@
                  if (tileentity instanceof TileEntitySkull)
                  {
                      TileEntitySkull tileentityskull = (TileEntitySkull)tileentity;
@@ -144,7 +43,7 @@
  
                      if (tileentityskull.getSkullType() == 3 && tileentityskull.getPlayerProfile() != null)
                      {
-@@ -186,15 +164,12 @@
+@@ -186,11 +187,9 @@
                          itemstack.getTagCompound().setTag("SkullOwner", nbttagcompound);
                      }
  
@@ -157,183 +56,3 @@
          }
      }
  
--    @Override
-     public Item getItemDropped(IBlockState state, Random rand, int fortune)
-     {
-         return Items.SKULL;
-@@ -202,35 +177,34 @@
- 
-     public boolean canDispenserPlace(World worldIn, BlockPos pos, ItemStack stack)
-     {
--        return stack.getMetadata() == 1
--               && pos.getY() >= 2
--               && worldIn.getDifficulty() != EnumDifficulty.PEACEFUL
--               && !worldIn.isRemote
--               ? this.getWitherBasePattern().match(worldIn, pos) != null
--               : false;
-+        if (stack.getMetadata() == 1 && pos.getY() >= 2 && worldIn.getDifficulty() != EnumDifficulty.PEACEFUL && !worldIn.isRemote)
-+        {
-+            return this.getWitherBasePattern().match(worldIn, pos) != null;
-+        }
-+        else
-+        {
-+            return false;
-+        }
-     }
- 
-     public void checkWitherSpawn(World worldIn, BlockPos pos, TileEntitySkull te)
-     {
--        if (te.getSkullType() == 1
--                && pos.getY() >= 2
--                && worldIn.getDifficulty() != EnumDifficulty.PEACEFUL
--                && !worldIn.isRemote)
-+        if (te.getSkullType() == 1 && pos.getY() >= 2 && worldIn.getDifficulty() != EnumDifficulty.PEACEFUL && !worldIn.isRemote)
-         {
-             BlockPattern blockpattern = this.getWitherPattern();
-             BlockPattern.PatternHelper blockpattern$patternhelper = blockpattern.match(worldIn, pos);
- 
-             if (blockpattern$patternhelper != null)
-             {
--                for (int i = 0; i < 3; i++)
-+                for (int i = 0; i < 3; ++i)
-                 {
-                     BlockWorldState blockworldstate = blockpattern$patternhelper.translateOffset(i, 0, 0);
--                    worldIn.setBlockState(blockworldstate.getPos(), blockworldstate.getBlockState().withProperty(NODROP, true), 2);
-+                    worldIn.setBlockState(blockworldstate.getPos(), blockworldstate.getBlockState().withProperty(NODROP, Boolean.valueOf(true)), 2);
-                 }
- 
--                for (int j = 0; j < blockpattern.getPalmLength(); j++)
-+                for (int j = 0; j < blockpattern.getPalmLength(); ++j)
-                 {
--                    for (int k = 0; k < blockpattern.getThumbLength(); k++)
-+                    for (int k = 0; k < blockpattern.getThumbLength(); ++k)
-                     {
-                         BlockWorldState blockworldstate1 = blockpattern$patternhelper.translateOffset(j, k, 0);
-                         worldIn.setBlockState(blockworldstate1.getPos(), Blocks.AIR.getDefaultState(), 2);
-@@ -240,39 +214,25 @@
-                 BlockPos blockpos = blockpattern$patternhelper.translateOffset(1, 0, 0).getPos();
-                 EntityWither entitywither = new EntityWither(worldIn);
-                 BlockPos blockpos1 = blockpattern$patternhelper.translateOffset(1, 2, 0).getPos();
--                entitywither.setLocationAndAngles(
--                    (double)blockpos1.getX() + 0.5,
--                    (double)blockpos1.getY() + 0.55,
--                    (double)blockpos1.getZ() + 0.5,
--                    blockpattern$patternhelper.getForwards().getAxis() == EnumFacing.Axis.X ? 0.0F : 90.0F,
--                    0.0F
--                );
-+                entitywither.setLocationAndAngles((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.55D, (double)blockpos1.getZ() + 0.5D, blockpattern$patternhelper.getForwards().getAxis() == EnumFacing.Axis.X ? 0.0F : 90.0F, 0.0F);
-                 entitywither.renderYawOffset = blockpattern$patternhelper.getForwards().getAxis() == EnumFacing.Axis.X ? 0.0F : 90.0F;
-                 entitywither.ignite();
- 
--                for (EntityPlayerMP entityplayermp : worldIn.getEntitiesWithinAABB(EntityPlayerMP.class, entitywither.getEntityBoundingBox().grow(50.0)))
-+                for (EntityPlayerMP entityplayermp : worldIn.getEntitiesWithinAABB(EntityPlayerMP.class, entitywither.getEntityBoundingBox().grow(50.0D)))
-                 {
-                     CriteriaTriggers.SUMMONED_ENTITY.trigger(entityplayermp, entitywither);
-                 }
- 
-                 worldIn.spawnEntity(entitywither);
- 
--                for (int l = 0; l < 120; l++)
-+                for (int l = 0; l < 120; ++l)
-                 {
--                    worldIn.spawnParticle(
--                        EnumParticleTypes.SNOWBALL,
--                        (double)blockpos.getX() + worldIn.rand.nextDouble(),
--                        (double)(blockpos.getY() - 2) + worldIn.rand.nextDouble() * 3.9,
--                        (double)blockpos.getZ() + worldIn.rand.nextDouble(),
--                        0.0,
--                        0.0,
--                        0.0
--                    );
-+                    worldIn.spawnParticle(EnumParticleTypes.SNOWBALL, (double)blockpos.getX() + worldIn.rand.nextDouble(), (double)(blockpos.getY() - 2) + worldIn.rand.nextDouble() * 3.9D, (double)blockpos.getZ() + worldIn.rand.nextDouble(), 0.0D, 0.0D, 0.0D);
-                 }
- 
--                for (int i1 = 0; i1 < blockpattern.getPalmLength(); i1++)
-+                for (int i1 = 0; i1 < blockpattern.getPalmLength(); ++i1)
-                 {
--                    for (int j1 = 0; j1 < blockpattern.getThumbLength(); j1++)
-+                    for (int j1 = 0; j1 < blockpattern.getThumbLength(); ++j1)
-                     {
-                         BlockWorldState blockworldstate2 = blockpattern$patternhelper.translateOffset(i1, j1, 0);
-                         worldIn.notifyNeighborsRespectDebug(blockworldstate2.getPos(), Blocks.AIR, false);
-@@ -282,19 +242,17 @@
-         }
-     }
- 
--    @Override
-     public IBlockState getStateFromMeta(int meta)
-     {
--        return this.getDefaultState().withProperty(FACING, EnumFacing.byIndex(meta & 7)).withProperty(NODROP, (meta & 8) > 0);
-+        return this.getDefaultState().withProperty(FACING, EnumFacing.byIndex(meta & 7)).withProperty(NODROP, Boolean.valueOf((meta & 8) > 0));
-     }
- 
--    @Override
-     public int getMetaFromState(IBlockState state)
-     {
-         int i = 0;
--        i |= state.getValue(FACING).getIndex();
-+        i = i | ((EnumFacing)state.getValue(FACING)).getIndex();
- 
--        if (state.getValue(NODROP))
-+        if (((Boolean)state.getValue(NODROP)).booleanValue())
-         {
-             i |= 8;
-         }
-@@ -302,33 +260,26 @@
-         return i;
-     }
- 
--    @Override
-     public IBlockState withRotation(IBlockState state, Rotation rot)
-     {
--        return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
-+        return state.withProperty(FACING, rot.rotate((EnumFacing)state.getValue(FACING)));
-     }
- 
--    @Override
-     public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
-     {
--        return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
-+        return state.withRotation(mirrorIn.toRotation((EnumFacing)state.getValue(FACING)));
-     }
- 
--    @Override
-     protected BlockStateContainer createBlockState()
-     {
--        return new BlockStateContainer(this, FACING, NODROP);
-+        return new BlockStateContainer(this, new IProperty[] {FACING, NODROP});
-     }
- 
-     protected BlockPattern getWitherBasePattern()
-     {
-         if (this.witherBasePattern == null)
-         {
--            this.witherBasePattern = FactoryBlockPattern.start()
--                                  .aisle("   ", "###", "~#~")
--                                  .where('#', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.SOUL_SAND)))
--                                  .where('~', BlockWorldState.hasState(BlockMaterialMatcher.forMaterial(Material.AIR)))
--                                  .build();
-+            this.witherBasePattern = FactoryBlockPattern.start().aisle("   ", "###", "~#~").where('#', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.SOUL_SAND))).where('~', BlockWorldState.hasState(BlockMaterialMatcher.forMaterial(Material.AIR))).build();
-         }
- 
-         return this.witherBasePattern;
-@@ -338,18 +289,12 @@
-     {
-         if (this.witherPattern == null)
-         {
--            this.witherPattern = FactoryBlockPattern.start()
--                                  .aisle("^^^", "###", "~#~")
--                                  .where('#', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.SOUL_SAND)))
--                                  .where('^', IS_WITHER_SKELETON)
--                                  .where('~', BlockWorldState.hasState(BlockMaterialMatcher.forMaterial(Material.AIR)))
--                                  .build();
-+            this.witherPattern = FactoryBlockPattern.start().aisle("^^^", "###", "~#~").where('#', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.SOUL_SAND))).where('^', IS_WITHER_SKELETON).where('~', BlockWorldState.hasState(BlockMaterialMatcher.forMaterial(Material.AIR))).build();
-         }
- 
-         return this.witherPattern;
-     }
- 
--    @Override
-     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-     {
-         return BlockFaceShape.UNDEFINED;

@@ -1,72 +1,6 @@
 --- before/net/minecraft/block/BlockStem.java
 +++ after/net/minecraft/block/BlockStem.java
-@@ -3,10 +3,12 @@
- import java.util.Random;
- import javax.annotation.Nullable;
- import net.minecraft.block.material.Material;
-+import net.minecraft.block.properties.IProperty;
- import net.minecraft.block.properties.PropertyDirection;
- import net.minecraft.block.properties.PropertyInteger;
- import net.minecraft.block.state.BlockStateContainer;
- import net.minecraft.block.state.IBlockState;
-+import net.minecraft.creativetab.CreativeTabs;
- import net.minecraft.init.Blocks;
- import net.minecraft.init.Items;
- import net.minecraft.item.Item;
-@@ -23,36 +25,24 @@
-     public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 7);
-     public static final PropertyDirection FACING = BlockTorch.FACING;
-     private final Block crop;
--    protected static final AxisAlignedBB[] STEM_AABB = new AxisAlignedBB[]
--        {
--            new AxisAlignedBB(0.375, 0.0, 0.375, 0.625, 0.125, 0.625),
--            new AxisAlignedBB(0.375, 0.0, 0.375, 0.625, 0.25, 0.625),
--            new AxisAlignedBB(0.375, 0.0, 0.375, 0.625, 0.375, 0.625),
--            new AxisAlignedBB(0.375, 0.0, 0.375, 0.625, 0.5, 0.625),
--            new AxisAlignedBB(0.375, 0.0, 0.375, 0.625, 0.625, 0.625),
--            new AxisAlignedBB(0.375, 0.0, 0.375, 0.625, 0.75, 0.625),
--            new AxisAlignedBB(0.375, 0.0, 0.375, 0.625, 0.875, 0.625),
--            new AxisAlignedBB(0.375, 0.0, 0.375, 0.625, 1.0, 0.625)
--        };
-+    protected static final AxisAlignedBB[] STEM_AABB = new AxisAlignedBB[] {new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.125D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.25D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.375D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.5D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.625D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.75D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.875D, 0.625D), new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 1.0D, 0.625D)};
- 
-     protected BlockStem(Block crop)
-     {
--        this.setDefaultState(this.blockState.getBaseState().withProperty(AGE, 0).withProperty(FACING, EnumFacing.UP));
-+        this.setDefaultState(this.blockState.getBaseState().withProperty(AGE, Integer.valueOf(0)).withProperty(FACING, EnumFacing.UP));
-         this.crop = crop;
-         this.setTickRandomly(true);
--        this.setCreativeTab(null);
-+        this.setCreativeTab((CreativeTabs)null);
-     }
- 
--    @Override
-     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-     {
--        return STEM_AABB[state.getValue(AGE)];
-+        return STEM_AABB[((Integer)state.getValue(AGE)).intValue()];
-     }
- 
--    @Override
-     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
-     {
--        int i = state.getValue(AGE);
-+        int i = ((Integer)state.getValue(AGE)).intValue();
-         state = state.withProperty(FACING, EnumFacing.UP);
- 
-         for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
-@@ -67,29 +57,28 @@
-         return state;
-     }
- 
--    @Override
-     protected boolean canSustainBush(IBlockState state)
-     {
-         return state.getBlock() == Blocks.FARMLAND;
-     }
- 
--    @Override
-     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
+@@ -78,18 +78,19 @@
      {
          super.updateTick(worldIn, pos, state, rand);
  
@@ -78,19 +12,18 @@
 -            if (rand.nextInt((int)(25.0F / f) + 1) == 0)
 +            if(net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, pos, state, rand.nextInt((int)(25.0F / f) + 1) == 0))
              {
--                int i = state.getValue(AGE);
-+                int i = ((Integer)state.getValue(AGE)).intValue();
+                 int i = state.getValue(AGE);
  
                  if (i < 7)
                  {
 -                    state = state.withProperty(AGE, i + 1);
 -                    worldIn.setBlockState(pos, state, 2);
-+                    IBlockState newState = state.withProperty(AGE, Integer.valueOf(i + 1));
++                    IBlockState newState = state.withProperty(AGE, i + 1);
 +                    worldIn.setBlockState(pos, newState, 2);
                  }
                  else
                  {
-@@ -102,42 +91,45 @@
+@@ -102,14 +103,18 @@
                      }
  
                      pos = pos.offset(EnumFacing.Plane.HORIZONTAL.random(rand));
@@ -100,7 +33,10 @@
  
 -                    if (worldIn.getBlockState(pos).getBlock().material == Material.AIR
 -                            && (block == Blocks.FARMLAND || block == Blocks.DIRT || block == Blocks.GRASS))
-+                    if (worldIn.isAirBlock(pos) && (block.canSustainPlant(soil, worldIn, pos.down(), EnumFacing.UP, this) || block == Blocks.DIRT || block == Blocks.GRASS))
++                    if (worldIn.isAirBlock(pos)
++                            && (block.canSustainPlant(soil, worldIn, pos.down(), EnumFacing.UP, this)
++                            || block == Blocks.DIRT
++                            || block == Blocks.GRASS))
                      {
                          worldIn.setBlockState(pos, this.crop.getDefaultState());
                      }
@@ -109,16 +45,7 @@
              }
          }
      }
- 
-     public void growStem(World worldIn, BlockPos pos, IBlockState state)
-     {
--        int i = state.getValue(AGE) + MathHelper.getInt(worldIn.rand, 2, 5);
--        worldIn.setBlockState(pos, state.withProperty(AGE, Math.min(7, i)), 2);
-+        int i = ((Integer)state.getValue(AGE)).intValue() + MathHelper.getInt(worldIn.rand, 2, 5);
-+        worldIn.setBlockState(pos, state.withProperty(AGE, Integer.valueOf(Math.min(7, i))), 2);
-     }
- 
--    @Override
+@@ -124,8 +129,11 @@
      public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
      {
          super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);
@@ -131,13 +58,9 @@
          {
              Item item = this.getSeedItem();
  
-             if (item != null)
-             {
--                int i = state.getValue(AGE);
-+                int i = ((Integer)state.getValue(AGE)).intValue();
+@@ -135,9 +143,9 @@
  
--                for (int j = 0; j < 3; j++)
-+                for (int j = 0; j < 3; ++j)
+                 for (int j = 0; j < 3; j++)
                  {
 -                    if (worldIn.rand.nextInt(15) <= i)
 +                    if (RANDOM.nextInt(15) <= i)
@@ -147,60 +70,3 @@
                      }
                  }
              }
-@@ -157,52 +149,44 @@
-         }
-     }
- 
--    @Override
-     public Item getItemDropped(IBlockState state, Random rand, int fortune)
-     {
-         return Items.AIR;
-     }
- 
--    @Override
-     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
-     {
-         Item item = this.getSeedItem();
-         return item == null ? ItemStack.EMPTY : new ItemStack(item);
-     }
- 
--    @Override
-     public boolean canGrow(World worldIn, BlockPos pos, IBlockState state, boolean isClient)
-     {
--        return state.getValue(AGE) != 7;
-+        return ((Integer)state.getValue(AGE)).intValue() != 7;
-     }
- 
--    @Override
-     public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, IBlockState state)
-     {
-         return true;
-     }
- 
--    @Override
-     public void grow(World worldIn, Random rand, BlockPos pos, IBlockState state)
-     {
-         this.growStem(worldIn, pos, state);
-     }
- 
--    @Override
-     public IBlockState getStateFromMeta(int meta)
-     {
--        return this.getDefaultState().withProperty(AGE, meta);
-+        return this.getDefaultState().withProperty(AGE, Integer.valueOf(meta));
-     }
- 
--    @Override
-     public int getMetaFromState(IBlockState state)
-     {
--        return state.getValue(AGE);
-+        return ((Integer)state.getValue(AGE)).intValue();
-     }
- 
--    @Override
-     protected BlockStateContainer createBlockState()
-     {
--        return new BlockStateContainer(this, AGE, FACING);
-+        return new BlockStateContainer(this, new IProperty[] {AGE, FACING});
-     }
- }

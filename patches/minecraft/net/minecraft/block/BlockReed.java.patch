@@ -1,14 +1,6 @@
 --- before/net/minecraft/block/BlockReed.java
 +++ after/net/minecraft/block/BlockReed.java
-@@ -3,6 +3,7 @@
- import java.util.Random;
- import javax.annotation.Nullable;
- import net.minecraft.block.material.Material;
-+import net.minecraft.block.properties.IProperty;
- import net.minecraft.block.properties.PropertyInteger;
- import net.minecraft.block.state.BlockFaceShape;
- import net.minecraft.block.state.BlockStateContainer;
-@@ -20,10 +21,10 @@
+@@ -20,7 +20,7 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  
@@ -16,66 +8,27 @@
 +public class BlockReed extends Block implements net.minecraftforge.common.IPlantable
  {
      public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 15);
--    protected static final AxisAlignedBB REED_AABB = new AxisAlignedBB(0.125, 0.0, 0.125, 0.875, 1.0, 0.875);
-+    protected static final AxisAlignedBB REED_AABB = new AxisAlignedBB(0.125D, 0.0D, 0.125D, 0.875D, 1.0D, 0.875D);
- 
-     protected BlockReed()
-     {
-@@ -32,49 +33,51 @@
-         this.setTickRandomly(true);
-     }
- 
--    @Override
-     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-     {
-         return REED_AABB;
-     }
- 
--    @Override
-     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
-     {
--        if (worldIn.getBlockState(pos.down()).getBlock() == Blocks.REEDS
--                || this.checkForDrop(worldIn, pos, state))
-+        if (worldIn.getBlockState(pos.down()).getBlock() == Blocks.REEDS || this.checkForDrop(worldIn, pos, state))
-         {
-             if (worldIn.isAirBlock(pos.up()))
-             {
--                int i = 1;
-+                int i;
- 
--                while (worldIn.getBlockState(pos.down(i)).getBlock() == this)
-+                for (i = 1; worldIn.getBlockState(pos.down(i)).getBlock() == this; ++i)
+     protected static final AxisAlignedBB REED_AABB = new AxisAlignedBB(0.125, 0.0, 0.125, 0.875, 1.0, 0.875);
+@@ -57,6 +57,8 @@
                  {
--                    i++;
-+                    ;
-                 }
- 
-                 if (i < 3)
-                 {
--                    int j = state.getValue(AGE);
-+                    int j = ((Integer)state.getValue(AGE)).intValue();
+                     int j = state.getValue(AGE);
  
 +                    if(net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, pos, state, true))
 +                    {
                      if (j == 15)
                      {
                          worldIn.setBlockState(pos.up(), this.getDefaultState());
--                        worldIn.setBlockState(pos, state.withProperty(AGE, 0), 4);
-+                        worldIn.setBlockState(pos, state.withProperty(AGE, Integer.valueOf(0)), 4);
-                     }
-                     else
+@@ -66,6 +68,8 @@
                      {
--                        worldIn.setBlockState(pos, state.withProperty(AGE, j + 1), 4);
-+                        worldIn.setBlockState(pos, state.withProperty(AGE, Integer.valueOf(j + 1)), 4);
-+                    }
-+                    net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
+                         worldIn.setBlockState(pos, state.withProperty(AGE, j + 1), 4);
                      }
++                    net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
++                    }
                  }
              }
          }
-     }
- 
--    @Override
+@@ -74,7 +78,9 @@
+     @Override
      public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
      {
 -        Block block = worldIn.getBlockState(pos.down()).getBlock();
@@ -85,68 +38,13 @@
  
          if (block == this)
          {
-@@ -102,7 +105,6 @@
-         }
-     }
- 
--    @Override
-     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
-     {
-         this.checkForDrop(worldIn, pos, state);
-@@ -128,62 +130,60 @@
-     }
- 
-     @Nullable
--    @Override
-     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
-     {
-         return NULL_AABB;
-     }
- 
--    @Override
-     public Item getItemDropped(IBlockState state, Random rand, int fortune)
-     {
-         return Items.REEDS;
-     }
- 
--    @Override
-     public boolean isOpaqueCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
-     public boolean isFullCube(IBlockState state)
-     {
-         return false;
-     }
- 
--    @Override
-     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
-     {
-         return new ItemStack(Items.REEDS);
-     }
--
-     @SideOnly(Side.CLIENT)
--    @Override
-     public BlockRenderLayer getRenderLayer()
-     {
-         return BlockRenderLayer.CUTOUT;
-     }
--
--    @Override
-     public IBlockState getStateFromMeta(int meta)
-     {
-         return this.getDefaultState().withProperty(AGE, meta);
-     }
--
--    @Override
+@@ -175,6 +181,17 @@
      public int getMetaFromState(IBlockState state)
      {
          return state.getValue(AGE);
-     }
- 
-     @Override
++    }
++
++    @Override
 +    public net.minecraftforge.common.EnumPlantType getPlantType(IBlockAccess world, BlockPos pos)
 +    {
 +        return net.minecraftforge.common.EnumPlantType.Beach;
@@ -155,15 +53,6 @@
 +    public IBlockState getPlant(IBlockAccess world, BlockPos pos)
 +    {
 +        return this.getDefaultState();
-+    }
-+
-     protected BlockStateContainer createBlockState()
-     {
--        return new BlockStateContainer(this, AGE);
-+        return new BlockStateContainer(this, new IProperty[] {AGE});
      }
  
--    @Override
-     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-     {
-         return BlockFaceShape.UNDEFINED;
+     @Override
