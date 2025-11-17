@@ -11,6 +11,8 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Arrays;
+
 @CleanComponent
 public class MeshletComponent implements ICleanComponent {
     public AABB aabb;
@@ -65,6 +67,8 @@ public class MeshletComponent implements ICleanComponent {
         Vector3f direction = new Vector3f();
         Vector4f tmp = new Vector4f();
 
+        boolean isFront = false, isOutsideView = true;
+
         // Bounding box points
         Vector3f[] points = {
                 // Meshlet
@@ -87,14 +91,41 @@ public class MeshletComponent implements ICleanComponent {
                 new Vector3f(aabb.xMax, aabb.yMax, aabb.zMax)
         };
 
+        Integer[] indices = new Integer[16];
+
+        for (int i = 0; i < indices.length; i++) {
+            indices[i] = i;
+        }
+
         // Convert points to use camera origin as (0;0)
         for (int i = 0; i < points.length; i++) {
             points[i].sub(camera.getWorldOffset(), points[i]);
         }
 
+        Arrays.sort(indices, (a, b) -> (int) (points[a].lengthSquared()-points[b].lengthSquared()));
+
+        for (int i = 0; i < 8; i++) {
+            if (indices[i] >= 8) {
+                isFront = true;
+                break;
+            }
+        }
+
+        if (!isFront) {
+            return true;
+        }
+
         camera.getViewRotationMatrix().getColumn(2, tmp);
         tmp.xyz(direction);
 
-        return true;
+        direction.normalize(); // not sure if I need to do that
+        for (int i = 8; i < points.length; i++) {
+            float simm = direction.dot(points[i])/(direction.length()*points[i].length());
+            if (simm < 0.f) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
