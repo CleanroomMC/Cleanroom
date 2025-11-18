@@ -1,10 +1,7 @@
 --- before/net/minecraft/entity/item/EntityMinecartEmpty.java
 +++ after/net/minecraft/entity/item/EntityMinecartEmpty.java
-@@ -22,9 +22,10 @@
-         EntityMinecart.registerFixesMinecart(fixer, EntityMinecartEmpty.class);
-     }
- 
--    @Override
+@@ -25,6 +25,8 @@
+     @Override
      public boolean processInitialInteract(EntityPlayer player, EnumHand hand)
      {
 +        if (super.processInitialInteract(player, hand)) return true;
@@ -12,19 +9,3 @@
          if (player.isSneaking())
          {
              return false;
-@@ -44,7 +45,6 @@
-         }
-     }
- 
--    @Override
-     public void onActivatorRailPass(int x, int y, int z, boolean receivingPower)
-     {
-         if (receivingPower)
-@@ -64,7 +64,6 @@
-         }
-     }
- 
--    @Override
-     public EntityMinecart.Type getType()
-     {
-         return EntityMinecart.Type.RIDEABLE;

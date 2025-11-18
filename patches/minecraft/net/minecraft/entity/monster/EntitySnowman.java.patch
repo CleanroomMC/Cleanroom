@@ -1,72 +1,15 @@
 --- before/net/minecraft/entity/monster/EntitySnowman.java
 +++ after/net/minecraft/entity/monster/EntitySnowman.java
-@@ -31,9 +31,9 @@
+@@ -31,7 +31,7 @@
  import net.minecraft.world.World;
  import net.minecraft.world.storage.loot.LootTableList;
  
 -public class EntitySnowman extends EntityGolem implements IRangedAttackMob
 +public class EntitySnowman extends EntityGolem implements IRangedAttackMob, net.minecraftforge.common.IShearable
  {
--    private static final DataParameter<Byte> PUMPKIN_EQUIPPED = EntityDataManager.createKey(EntitySnowman.class, DataSerializers.BYTE);
-+    private static final DataParameter<Byte> PUMPKIN_EQUIPPED = EntityDataManager.<Byte>createKey(EntitySnowman.class, DataSerializers.BYTE);
+     private static final DataParameter<Byte> PUMPKIN_EQUIPPED = EntityDataManager.createKey(EntitySnowman.class, DataSerializers.BYTE);
  
-     public EntitySnowman(World worldIn)
-     {
-@@ -46,39 +46,34 @@
-         EntityLiving.registerFixesMob(fixer, EntitySnowman.class);
-     }
- 
--    @Override
-     protected void initEntityAI()
-     {
--        this.tasks.addTask(1, new EntityAIAttackRanged(this, 1.25, 20, 10.0F));
--        this.tasks.addTask(2, new EntityAIWanderAvoidWater(this, 1.0, 1.0000001E-5F));
-+        this.tasks.addTask(1, new EntityAIAttackRanged(this, 1.25D, 20, 10.0F));
-+        this.tasks.addTask(2, new EntityAIWanderAvoidWater(this, 1.0D, 1.0000001E-5F));
-         this.tasks.addTask(3, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
-         this.tasks.addTask(4, new EntityAILookIdle(this));
--        this.targetTasks.addTask(1, new EntityAINearestAttackableTarget<>(this, EntityLiving.class, 10, true, false, IMob.MOB_SELECTOR));
-+        this.targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityLiving.class, 10, true, false, IMob.MOB_SELECTOR));
-     }
- 
--    @Override
-     protected void applyEntityAttributes()
-     {
-         super.applyEntityAttributes();
--        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(4.0);
--        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.2F);
-+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(4.0D);
-+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.20000000298023224D);
-     }
- 
--    @Override
-     protected void entityInit()
-     {
-         super.entityInit();
--        this.dataManager.register(PUMPKIN_EQUIPPED, (byte)16);
-+        this.dataManager.register(PUMPKIN_EQUIPPED, Byte.valueOf((byte)16));
-     }
- 
--    @Override
-     public void writeEntityToNBT(NBTTagCompound compound)
-     {
-         super.writeEntityToNBT(compound);
-         compound.setBoolean("Pumpkin", this.isPumpkinEquipped());
-     }
- 
--    @Override
-     public void readEntityFromNBT(NBTTagCompound compound)
-     {
-         super.readEntityFromNBT(compound);
-@@ -89,7 +84,6 @@
-         }
-     }
- 
--    @Override
-     public void onLivingUpdate()
-     {
-         super.onLivingUpdate();
-@@ -110,21 +104,19 @@
+@@ -110,7 +110,7 @@
                  this.attackEntityFrom(DamageSource.ON_FIRE, 1.0F);
              }
  
@@ -75,53 +18,7 @@
              {
                  return;
              }
- 
--            for (int l = 0; l < 4; l++)
-+            for (int l = 0; l < 4; ++l)
-             {
-                 i = MathHelper.floor(this.posX + (double)((float)(l % 2 * 2 - 1) * 0.25F));
-                 j = MathHelper.floor(this.posY);
-                 k = MathHelper.floor(this.posZ + (double)((float)(l / 2 % 2 * 2 - 1) * 0.25F));
-                 BlockPos blockpos = new BlockPos(i, j, k);
- 
--                if (this.world.getBlockState(blockpos).getMaterial() == Material.AIR
--                        && this.world.getBiome(blockpos).getTemperature(blockpos) < 0.8F
--                        && Blocks.SNOW_LAYER.canPlaceBlockAt(this.world, blockpos))
-+                if (this.world.getBlockState(blockpos).getMaterial() == Material.AIR && this.world.getBiome(blockpos).getTemperature(blockpos) < 0.8F && Blocks.SNOW_LAYER.canPlaceBlockAt(this.world, blockpos))
-                 {
-                     this.world.setBlockState(blockpos, Blocks.SNOW_LAYER.getDefaultState());
-                 }
-@@ -133,17 +125,15 @@
-     }
- 
-     @Nullable
--    @Override
-     protected ResourceLocation getLootTable()
-     {
-         return LootTableList.ENTITIES_SNOWMAN;
-     }
- 
--    @Override
-     public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor)
-     {
-         EntitySnowball entitysnowball = new EntitySnowball(this.world, this);
--        double d0 = target.posY + (double)target.getEyeHeight() - 1.1F;
-+        double d0 = target.posY + (double)target.getEyeHeight() - 1.100000023841858D;
-         double d1 = target.posX - this.posX;
-         double d2 = d0 - entitysnowball.posY;
-         double d3 = target.posZ - this.posZ;
-@@ -153,18 +143,16 @@
-         this.world.spawnEntity(entitysnowball);
-     }
- 
--    @Override
-     public float getEyeHeight()
-     {
-         return 1.7F;
-     }
- 
--    @Override
-     protected boolean processInteract(EntityPlayer player, EnumHand hand)
+@@ -164,7 +164,7 @@
      {
          ItemStack itemstack = player.getHeldItem(hand);
  
@@ -130,60 +27,23 @@
          {
              this.setPumpkinEquipped(false);
              itemstack.damageItem(1, player);
-@@ -175,45 +163,49 @@
- 
-     public boolean isPumpkinEquipped()
-     {
--        return (this.dataManager.get(PUMPKIN_EQUIPPED) & 16) != 0;
-+        return (((Byte)this.dataManager.get(PUMPKIN_EQUIPPED)).byteValue() & 16) != 0;
-     }
- 
-     public void setPumpkinEquipped(boolean pumpkinEquipped)
-     {
--        byte b0 = this.dataManager.get(PUMPKIN_EQUIPPED);
-+        byte b0 = ((Byte)this.dataManager.get(PUMPKIN_EQUIPPED)).byteValue();
- 
-         if (pumpkinEquipped)
-         {
--            this.dataManager.set(PUMPKIN_EQUIPPED, (byte)(b0 | 16));
-+            this.dataManager.set(PUMPKIN_EQUIPPED, Byte.valueOf((byte)(b0 | 16)));
-         }
-         else
-         {
--            this.dataManager.set(PUMPKIN_EQUIPPED, (byte)(b0 & -17));
-+            this.dataManager.set(PUMPKIN_EQUIPPED, Byte.valueOf((byte)(b0 & -17)));
-         }
-     }
- 
-     @Nullable
--    @Override
-     protected SoundEvent getAmbientSound()
-     {
-         return SoundEvents.ENTITY_SNOWMAN_AMBIENT;
-     }
- 
-     @Nullable
--    @Override
-     protected SoundEvent getHurtSound(DamageSource damageSourceIn)
-     {
-         return SoundEvents.ENTITY_SNOWMAN_HURT;
-     }
- 
-     @Nullable
--    @Override
+@@ -211,6 +211,19 @@
      protected SoundEvent getDeathSound()
      {
          return SoundEvents.ENTITY_SNOWMAN_DEATH;
-     }
- 
-+    @Override public boolean isShearable(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos) { return this.isPumpkinEquipped(); }
-     @Override
++    }
++
++    @Override
++    public boolean isShearable(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos)
++    {
++        return this.isPumpkinEquipped();
++    }
++    
++    @Override
 +    public java.util.List<ItemStack> onSheared(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune)
 +    {
 +        this.setPumpkinEquipped(false);
 +        return com.google.common.collect.Lists.newArrayList();
-+    }
-+
-     public void setSwingingArms(boolean swingingArms)
-     {
      }
+ 
+     @Override

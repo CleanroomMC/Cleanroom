@@ -1,99 +1,13 @@
 --- before/net/minecraft/entity/monster/EntityMob.java
 +++ after/net/minecraft/entity/monster/EntityMob.java
-@@ -27,13 +27,11 @@
-         this.experienceValue = 5;
-     }
+@@ -138,14 +138,14 @@
  
--    @Override
-     public SoundCategory getSoundCategory()
-     {
-         return SoundCategory.HOSTILE;
-     }
- 
--    @Override
-     public void onLivingUpdate()
-     {
-         this.updateArmSwingProgress();
-@@ -47,7 +45,6 @@
-         super.onLivingUpdate();
-     }
- 
--    @Override
-     public void onUpdate()
-     {
-         super.onUpdate();
-@@ -58,43 +55,36 @@
-         }
-     }
- 
--    @Override
-     protected SoundEvent getSwimSound()
-     {
-         return SoundEvents.ENTITY_HOSTILE_SWIM;
-     }
- 
--    @Override
-     protected SoundEvent getSplashSound()
-     {
-         return SoundEvents.ENTITY_HOSTILE_SPLASH;
-     }
- 
--    @Override
-     public boolean attackEntityFrom(DamageSource source, float amount)
-     {
-         return this.isEntityInvulnerable(source) ? false : super.attackEntityFrom(source, amount);
-     }
- 
--    @Override
-     protected SoundEvent getHurtSound(DamageSource damageSourceIn)
-     {
-         return SoundEvents.ENTITY_HOSTILE_HURT;
-     }
- 
--    @Override
-     protected SoundEvent getDeathSound()
-     {
-         return SoundEvents.ENTITY_HOSTILE_DEATH;
-     }
- 
--    @Override
-     protected SoundEvent getFallSound(int heightIn)
-     {
-         return heightIn > 4 ? SoundEvents.ENTITY_HOSTILE_BIG_FALL : SoundEvents.ENTITY_HOSTILE_SMALL_FALL;
-     }
- 
--    @Override
-     public boolean attackEntityAsMob(Entity entityIn)
-     {
-         float f = (float)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
-@@ -112,15 +102,9 @@
-         {
-             if (i > 0 && entityIn instanceof EntityLivingBase)
-             {
--                ((EntityLivingBase)entityIn)
--                .knockBack(
--                    this,
--                    (float)i * 0.5F,
--                    (double)MathHelper.sin(this.rotationYaw * (float)(Math.PI / 180.0)),
--                    (double)(-MathHelper.cos(this.rotationYaw * (float)(Math.PI / 180.0)))
--                );
--                this.motionX *= 0.6;
--                this.motionZ *= 0.6;
-+                ((EntityLivingBase)entityIn).knockBack(this, (float)i * 0.5F, (double)MathHelper.sin(this.rotationYaw * 0.017453292F), (double)(-MathHelper.cos(this.rotationYaw * 0.017453292F)));
-+                this.motionX *= 0.6D;
-+                this.motionZ *= 0.6D;
-             }
- 
-             int j = EnchantmentHelper.getFireAspectModifier(this);
-@@ -136,16 +120,13 @@
-                 ItemStack itemstack = this.getHeldItemMainhand();
-                 ItemStack itemstack1 = entityplayer.isHandActive() ? entityplayer.getActiveItemStack() : ItemStack.EMPTY;
- 
--                if (!itemstack.isEmpty()
--                        && !itemstack1.isEmpty()
+                 if (!itemstack.isEmpty()
+                         && !itemstack1.isEmpty()
 -                        && itemstack.getItem() instanceof ItemAxe
 -                        && itemstack1.getItem() == Items.SHIELD)
-+                if (!itemstack.isEmpty() && !itemstack1.isEmpty() && itemstack.getItem().canDisableShield(itemstack, itemstack1, entityplayer, this) && itemstack1.getItem().isShield(itemstack1, entityplayer))
++                        && itemstack.getItem().canDisableShield(itemstack, itemstack1, entityplayer, this)
++                        && itemstack1.getItem().isShield(itemstack1, entityplayer))
                  {
                      float f1 = 0.25F + (float)EnchantmentHelper.getEfficiencyModifier(this) * 0.05F;
  
@@ -104,32 +18,3 @@
                          this.world.setEntityState(entityplayer, (byte)30);
                      }
                  }
-@@ -157,7 +138,6 @@
-         return flag;
-     }
- 
--    @Override
-     public float getBlockPathWeight(BlockPos pos)
-     {
-         return 0.5F - this.world.getLightBrightness(pos);
-@@ -187,20 +167,17 @@
-         }
-     }
- 
--    @Override
-     public boolean getCanSpawnHere()
-     {
-         return this.world.getDifficulty() != EnumDifficulty.PEACEFUL && this.isValidLightLevel() && super.getCanSpawnHere();
-     }
- 
--    @Override
-     protected void applyEntityAttributes()
-     {
-         super.applyEntityAttributes();
-         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
-     }
- 
--    @Override
-     protected boolean canDropLoot()
-     {
-         return true;

@@ -1,14 +1,5 @@
 --- before/net/minecraft/entity/player/EntityPlayerMP.java
 +++ after/net/minecraft/entity/player/EntityPlayerMP.java
-@@ -123,7 +123,7 @@
-     public final PlayerInteractionManager interactionManager;
-     public double managedPosX;
-     public double managedPosZ;
--    private final List<Integer> entityRemoveQueue = Lists.newLinkedList();
-+    private final List<Integer> entityRemoveQueue = Lists.<Integer>newLinkedList();
-     private final PlayerAdvancements advancements;
-     private final StatisticsManagerServer statsFile;
-     private float lastHealthScore = Float.MIN_VALUE;
 @@ -158,9 +158,9 @@
          super(worldIn, profile);
          interactionManagerIn.player = this;
@@ -21,95 +12,7 @@
          {
              int i = Math.max(0, server.getSpawnRadius(worldIn));
              int j = MathHelper.floor(worldIn.getWorldBorder().getClosestDistance((double)blockpos.getX(), (double)blockpos.getZ()));
-@@ -184,13 +184,12 @@
-         this.stepHeight = 1.0F;
-         this.moveToBlockPosAndAngles(blockpos, 0.0F, 0.0F);
- 
--        while (!worldIn.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty() && this.posY < 255.0)
-+        while (!worldIn.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty() && this.posY < 255.0D)
-         {
--            this.setPosition(this.posX, this.posY + 1.0, this.posZ);
-+            this.setPosition(this.posX, this.posY + 1.0D, this.posZ);
-         }
-     }
- 
--    @Override
-     public void readEntityFromNBT(NBTTagCompound compound)
-     {
-         super.readEntityFromNBT(compound);
-@@ -225,7 +224,6 @@
-     {
-         p_191522_0_.registerWalker(FixTypes.PLAYER, new IDataWalker()
-         {
--            @Override
-             public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
-             {
-                 if (compound.hasKey("RootVehicle", 10))
-@@ -243,7 +241,6 @@
-         });
-     }
- 
--    @Override
-     public void writeEntityToNBT(NBTTagCompound compound)
-     {
-         super.writeEntityToNBT(compound);
-@@ -275,14 +272,12 @@
-         compound.setTag("recipeBook", this.recipeBook.write());
-     }
- 
--    @Override
-     public void addExperienceLevel(int levels)
-     {
-         super.addExperienceLevel(levels);
-         this.lastExperience = -1;
-     }
- 
--    @Override
-     public void onEnchant(ItemStack enchantedItem, int cost)
-     {
-         super.onEnchant(enchantedItem, cost);
-@@ -294,46 +289,41 @@
-         this.openContainer.addListener(this);
-     }
- 
--    @Override
-     public void sendEnterCombat()
-     {
-         super.sendEnterCombat();
-         this.connection.sendPacket(new SPacketCombatEvent(this.getCombatTracker(), SPacketCombatEvent.Event.ENTER_COMBAT));
-     }
- 
--    @Override
-     public void sendEndCombat()
-     {
-         super.sendEndCombat();
-         this.connection.sendPacket(new SPacketCombatEvent(this.getCombatTracker(), SPacketCombatEvent.Event.END_COMBAT));
-     }
- 
--    @Override
-     protected void onInsideBlock(IBlockState p_191955_1_)
-     {
-         CriteriaTriggers.ENTER_BLOCK.trigger(this, p_191955_1_);
-     }
- 
--    @Override
-     protected CooldownTracker createCooldownTracker()
-     {
-         return new CooldownTrackerServer(this);
-     }
- 
--    @Override
-     public void onUpdate()
-     {
-         this.interactionManager.updateBlockRemoving();
--        this.respawnInvulnerabilityTicks--;
-+        --this.respawnInvulnerabilityTicks;
- 
-         if (this.hurtResistantTime > 0)
-         {
--            this.hurtResistantTime--;
-+            --this.hurtResistantTime;
-         }
+@@ -333,7 +333,7 @@
  
          this.openContainer.detectAndSendChanges();
  
@@ -118,81 +21,15 @@
          {
              this.closeScreen();
              this.openContainer = this.inventoryContainer;
-@@ -348,7 +338,7 @@
- 
-             while (iterator.hasNext() && j < i)
-             {
--                aint[j++] = iterator.next();
-+                aint[j++] = ((Integer)iterator.next()).intValue();
-                 iterator.remove();
-             }
- 
-@@ -391,7 +381,7 @@
-         {
-             super.onUpdate();
- 
--            for (int i = 0; i < this.inventory.getSizeInventory(); i++)
-+            for (int i = 0; i < this.inventory.getSizeInventory(); ++i)
-             {
-                 ItemStack itemstack = this.inventory.getStackInSlot(i);
- 
-@@ -406,12 +396,9 @@
-                 }
-             }
- 
--            if (this.getHealth() != this.lastHealth
--                    || this.lastFoodLevel != this.foodStats.getFoodLevel()
--                    || this.foodStats.getSaturationLevel() == 0.0F != this.wasHungry)
-+            if (this.getHealth() != this.lastHealth || this.lastFoodLevel != this.foodStats.getFoodLevel() || this.foodStats.getSaturationLevel() == 0.0F != this.wasHungry)
-             {
--                this.connection
--                .sendPacket(new SPacketUpdateHealth(this.getHealth(), this.foodStats.getFoodLevel(), this.foodStats.getSaturationLevel()));
-+                this.connection.sendPacket(new SPacketUpdateHealth(this.getHealth(), this.foodStats.getFoodLevel(), this.foodStats.getSaturationLevel()));
-                 this.lastHealth = this.getHealth();
-                 this.lastFoodLevel = this.foodStats.getFoodLevel();
-                 this.wasHungry = this.foodStats.getSaturationLevel() == 0.0F;
-@@ -482,9 +469,9 @@
-         }
-     }
- 
--    @Override
+@@ -485,6 +485,7 @@
+     @Override
      public void onDeath(DamageSource cause)
      {
 +        if (net.minecraftforge.common.ForgeHooks.onLivingDeath(this, cause)) return;
          boolean flag = this.world.getGameRules().getBoolean("showDeathMessages");
          this.connection.sendPacket(new SPacketCombatEvent(this.getCombatTracker(), SPacketCombatEvent.Event.ENTITY_DIED, flag));
  
-@@ -492,26 +479,41 @@
-         {
-             Team team = this.getTeam();
- 
--            if (team == null || team.getDeathMessageVisibility() == Team.EnumVisible.ALWAYS)
-+            if (team != null && team.getDeathMessageVisibility() != Team.EnumVisible.ALWAYS)
-+            {
-+                if (team.getDeathMessageVisibility() == Team.EnumVisible.HIDE_FOR_OTHER_TEAMS)
-+                {
-+                    this.server.getPlayerList().sendMessageToAllTeamMembers(this, this.getCombatTracker().getDeathMessage());
-+                }
-+                else if (team.getDeathMessageVisibility() == Team.EnumVisible.HIDE_FOR_OWN_TEAM)
-+                {
-+                    this.server.getPlayerList().sendMessageToTeamOrAllPlayers(this, this.getCombatTracker().getDeathMessage());
-+                }
-+            }
-+            else
-             {
-                 this.server.getPlayerList().sendMessage(this.getCombatTracker().getDeathMessage());
-             }
--            else if (team.getDeathMessageVisibility() == Team.EnumVisible.HIDE_FOR_OTHER_TEAMS)
--            {
--                this.server.getPlayerList().sendMessageToAllTeamMembers(this, this.getCombatTracker().getDeathMessage());
--            }
--            else if (team.getDeathMessageVisibility() == Team.EnumVisible.HIDE_FOR_OWN_TEAM)
--            {
--                this.server.getPlayerList().sendMessageToTeamOrAllPlayers(this, this.getCombatTracker().getDeathMessage());
--            }
-         }
- 
-         this.spawnShoulderEntities();
+@@ -510,8 +511,20 @@
  
          if (!this.world.getGameRules().getBoolean("keepInventory") && !this.isSpectator())
          {
@@ -213,39 +50,10 @@
          }
  
          for (ScoreObjective scoreobjective : this.world.getScoreboard().getObjectivesFromCriteria(IScoreCriteria.DEATH_COUNT))
-@@ -541,7 +543,6 @@
-         this.getCombatTracker().reset();
-     }
- 
--    @Override
-     public void awardKillScore(Entity p_191956_1_, int p_191956_2_, DamageSource p_191956_3_)
-     {
-         if (p_191956_1_ != this)
-@@ -602,10 +603,9 @@
-             }
-         }
- 
--        return Lists.newArrayList();
-+        return Lists.<ScoreObjective>newArrayList();
-     }
- 
--    @Override
-     public boolean attackEntityFrom(DamageSource source, float amount)
-     {
-         if (this.isEntityInvulnerable(source))
-@@ -647,7 +647,6 @@
-         }
-     }
- 
--    @Override
-     public boolean canAttackPlayer(EntityPlayer other)
-     {
-         return !this.canPlayersAttack() ? false : super.canAttackPlayer(other);
-@@ -659,9 +658,9 @@
-     }
+@@ -660,8 +673,9 @@
  
      @Nullable
--    @Override
+     @Override
 -    public Entity changeDimension(int dimensionIn)
 +    public Entity changeDimension(int dimensionIn, net.minecraftforge.common.util.ITeleporter teleporter)
      {
@@ -253,7 +61,7 @@
          this.invulnerableDimensionChange = true;
  
          if (this.dimension == 0 && dimensionIn == -1)
-@@ -673,7 +672,7 @@
+@@ -673,7 +687,7 @@
              this.enteredNetherPosition = null;
          }
  
@@ -262,7 +70,7 @@
          {
              this.world.removeEntity(this);
  
-@@ -693,7 +692,7 @@
+@@ -693,7 +707,7 @@
                  dimensionIn = 1;
              }
  
@@ -271,79 +79,7 @@
              this.connection.sendPacket(new SPacketEffect(1032, BlockPos.ORIGIN, 0, false));
              this.lastExperience = -1;
              this.lastHealth = -1.0F;
-@@ -702,7 +701,6 @@
-         }
-     }
- 
--    @Override
-     public boolean isSpectatedByPlayer(EntityPlayerMP player)
-     {
-         if (player.isSpectator())
-@@ -728,14 +726,12 @@
-         }
-     }
- 
--    @Override
-     public void onItemPickup(Entity entityIn, int quantity)
-     {
-         super.onItemPickup(entityIn, quantity);
-         this.openContainer.detectAndSendChanges();
-     }
- 
--    @Override
-     public EntityPlayer.SleepResult trySleep(BlockPos bedLocation)
-     {
-         EntityPlayer.SleepResult entityplayer$sleepresult = super.trySleep(bedLocation);
-@@ -753,7 +749,6 @@
-         return entityplayer$sleepresult;
-     }
- 
--    @Override
-     public void wakeUpPlayer(boolean immediately, boolean updateWorldFlag, boolean setSpawn)
-     {
-         if (this.isPlayerSleeping())
-@@ -769,7 +764,6 @@
-         }
-     }
- 
--    @Override
-     public boolean startRiding(Entity entityIn, boolean force)
-     {
-         Entity entity = this.getRidingEntity();
-@@ -791,7 +785,6 @@
-         }
-     }
- 
--    @Override
-     public void dismountRidingEntity()
-     {
-         Entity entity = this.getRidingEntity();
-@@ -804,18 +797,15 @@
-         }
-     }
- 
--    @Override
-     public boolean isEntityInvulnerable(DamageSource source)
-     {
-         return super.isEntityInvulnerable(source) || this.isInvulnerableDimensionChange();
-     }
- 
--    @Override
-     protected void updateFallState(double y, boolean onGroundIn, IBlockState state, BlockPos pos)
-     {
-     }
- 
--    @Override
-     protected void frostWalk(BlockPos pos)
-     {
-         if (!this.isSpectator())
-@@ -827,12 +817,12 @@
-     public void handleFalling(double y, boolean onGroundIn)
-     {
-         int i = MathHelper.floor(this.posX);
--        int j = MathHelper.floor(this.posY - 0.2F);
-+        int j = MathHelper.floor(this.posY - 0.20000000298023224D);
-         int k = MathHelper.floor(this.posZ);
+@@ -832,7 +846,7 @@
          BlockPos blockpos = new BlockPos(i, j, k);
          IBlockState iblockstate = this.world.getBlockState(blockpos);
  
@@ -352,29 +88,7 @@
          {
              BlockPos blockpos1 = blockpos.down();
              IBlockState iblockstate1 = this.world.getBlockState(blockpos1);
-@@ -848,7 +838,6 @@
-         super.updateFallState(y, onGroundIn, iblockstate, blockpos);
-     }
- 
--    @Override
-     public void openEditSign(TileEntitySign signTile)
-     {
-         signTile.setPlayer(this);
-@@ -860,12 +849,11 @@
-         this.currentWindowId = this.currentWindowId % 100 + 1;
-     }
- 
--    @Override
-     public void displayGui(IInteractionObject guiOwner)
-     {
-         if (guiOwner instanceof ILootContainer && ((ILootContainer)guiOwner).getLootTable() != null && this.isSpectator())
-         {
--            this.sendStatusMessage(new TextComponentTranslation("container.spectatorCantOpen").setStyle(new Style().setColor(TextFormatting.RED)), true);
-+            this.sendStatusMessage((new TextComponentTranslation("container.spectatorCantOpen", new Object[0])).setStyle((new Style()).setColor(TextFormatting.RED)), true);
-         }
-         else
-         {
-@@ -874,15 +862,15 @@
+@@ -874,6 +888,7 @@
              this.openContainer = guiOwner.createContainer(this.inventory, this);
              this.openContainer.windowId = this.currentWindowId;
              this.openContainer.addListener(this);
@@ -382,53 +96,7 @@
          }
      }
  
--    @Override
-     public void displayGUIChest(IInventory chestInventory)
-     {
-         if (chestInventory instanceof ILootContainer && ((ILootContainer)chestInventory).getLootTable() != null && this.isSpectator())
-         {
--            this.sendStatusMessage(new TextComponentTranslation("container.spectatorCantOpen").setStyle(new Style().setColor(TextFormatting.RED)), true);
-+            this.sendStatusMessage((new TextComponentTranslation("container.spectatorCantOpen", new Object[0])).setStyle((new Style()).setColor(TextFormatting.RED)), true);
-         }
-         else
-         {
-@@ -897,14 +885,8 @@
- 
-                 if (ilockablecontainer.isLocked() && !this.canOpen(ilockablecontainer.getLockCode()) && !this.isSpectator())
-                 {
--                    this.connection
--                    .sendPacket(new SPacketChat(new TextComponentTranslation("container.isLocked", chestInventory.getDisplayName()), ChatType.GAME_INFO));
--                    this.connection
--                    .sendPacket(
--                        new SPacketSoundEffect(
--                            SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, this.posX, this.posY, this.posZ, 1.0F, 1.0F
--                        )
--                    );
-+                    this.connection.sendPacket(new SPacketChat(new TextComponentTranslation("container.isLocked", new Object[] {chestInventory.getDisplayName()}), ChatType.GAME_INFO));
-+                    this.connection.sendPacket(new SPacketSoundEffect(SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, this.posX, this.posY, this.posZ, 1.0F, 1.0F));
-                     return;
-                 }
-             }
-@@ -913,33 +895,28 @@
- 
-             if (chestInventory instanceof IInteractionObject)
-             {
--                this.connection
--                .sendPacket(
--                    new SPacketOpenWindow(
--                        this.currentWindowId, ((IInteractionObject)chestInventory).getGuiID(), chestInventory.getDisplayName(), chestInventory.getSizeInventory()
--                    )
--                );
-+                this.connection.sendPacket(new SPacketOpenWindow(this.currentWindowId, ((IInteractionObject)chestInventory).getGuiID(), chestInventory.getDisplayName(), chestInventory.getSizeInventory()));
-                 this.openContainer = ((IInteractionObject)chestInventory).createContainer(this.inventory, this);
-             }
-             else
-             {
--                this.connection
--                .sendPacket(new SPacketOpenWindow(this.currentWindowId, "minecraft:container", chestInventory.getDisplayName(), chestInventory.getSizeInventory()));
-+                this.connection.sendPacket(new SPacketOpenWindow(this.currentWindowId, "minecraft:container", chestInventory.getDisplayName(), chestInventory.getSizeInventory()));
-                 this.openContainer = new ContainerChest(this.inventory, chestInventory, this);
-             }
+@@ -930,6 +945,7 @@
  
              this.openContainer.windowId = this.currentWindowId;
              this.openContainer.addListener(this);
@@ -436,10 +104,7 @@
          }
      }
  
--    @Override
-     public void displayVillagerTradeGui(IMerchant villager)
-     {
-         this.getNextWindowId();
+@@ -940,6 +956,7 @@
          this.openContainer = new ContainerMerchant(this.inventory, villager, this.world);
          this.openContainer.windowId = this.currentWindowId;
          this.openContainer.addListener(this);
@@ -447,79 +112,7 @@
          IInventory iinventory = ((ContainerMerchant)this.openContainer).getMerchantInventory();
          ITextComponent itextcomponent = villager.getDisplayName();
          this.connection.sendPacket(new SPacketOpenWindow(this.currentWindowId, "minecraft:villager", itextcomponent, iinventory.getSizeInventory()));
-@@ -954,7 +931,6 @@
-         }
-     }
- 
--    @Override
-     public void openGuiHorseInventory(AbstractHorse horse, IInventory inventoryIn)
-     {
-         if (this.openContainer != this.inventoryContainer)
-@@ -963,16 +939,12 @@
-         }
- 
-         this.getNextWindowId();
--        this.connection
--        .sendPacket(
--            new SPacketOpenWindow(this.currentWindowId, "EntityHorse", inventoryIn.getDisplayName(), inventoryIn.getSizeInventory(), horse.getEntityId())
--        );
-+        this.connection.sendPacket(new SPacketOpenWindow(this.currentWindowId, "EntityHorse", inventoryIn.getDisplayName(), inventoryIn.getSizeInventory(), horse.getEntityId()));
-         this.openContainer = new ContainerHorseInventory(this.inventory, inventoryIn, horse, this);
-         this.openContainer.windowId = this.currentWindowId;
-         this.openContainer.addListener(this);
-     }
- 
--    @Override
-     public void openBook(ItemStack stack, EnumHand hand)
-     {
-         Item item = stack.getItem();
-@@ -985,14 +957,12 @@
-         }
-     }
- 
--    @Override
-     public void displayGuiCommandBlock(TileEntityCommandBlock commandBlock)
-     {
-         commandBlock.setSendToClient(true);
-         this.sendTileEntityUpdate(commandBlock);
-     }
- 
--    @Override
-     public void sendSlotContents(Container containerToSend, int slotInd, ItemStack stack)
-     {
-         if (!(containerToSend.getSlot(slotInd) instanceof SlotCrafting))
-@@ -1014,29 +984,25 @@
-         this.sendAllContents(containerIn, containerIn.getInventory());
-     }
- 
--    @Override
-     public void sendAllContents(Container containerToSend, NonNullList<ItemStack> itemsList)
-     {
-         this.connection.sendPacket(new SPacketWindowItems(containerToSend.windowId, itemsList));
-         this.connection.sendPacket(new SPacketSetSlot(-1, -1, this.inventory.getItemStack()));
-     }
- 
--    @Override
-     public void sendWindowProperty(Container containerIn, int varToUpdate, int newValue)
-     {
-         this.connection.sendPacket(new SPacketWindowProperty(containerIn.windowId, varToUpdate, newValue));
-     }
- 
--    @Override
-     public void sendAllWindowProperties(Container containerIn, IInventory inventory)
-     {
--        for (int i = 0; i < inventory.getFieldCount(); i++)
-+        for (int i = 0; i < inventory.getFieldCount(); ++i)
-         {
-             this.connection.sendPacket(new SPacketWindowProperty(containerIn.windowId, i, inventory.getField(i)));
-         }
-     }
- 
--    @Override
-     public void closeScreen()
-     {
-         this.connection.sendPacket(new SPacketCloseWindow(this.openContainer.windowId));
-@@ -1054,6 +1020,7 @@
+@@ -1054,6 +1071,7 @@
      public void closeContainer()
      {
          this.openContainer.onContainerClosed(this);
@@ -527,63 +120,7 @@
          this.openContainer = this.inventoryContainer;
      }
  
-@@ -1076,7 +1043,6 @@
-         }
-     }
- 
--    @Override
-     public void addStat(StatBase stat, int amount)
-     {
-         if (stat != null)
-@@ -1090,7 +1056,6 @@
-         }
-     }
- 
--    @Override
-     public void takeStat(StatBase stat)
-     {
-         if (stat != null)
-@@ -1104,16 +1069,14 @@
-         }
-     }
- 
--    @Override
-     public void unlockRecipes(List<IRecipe> p_192021_1_)
-     {
-         this.recipeBook.add(p_192021_1_, this);
-     }
- 
--    @Override
-     public void unlockRecipes(ResourceLocation[] p_193102_1_)
-     {
--        List<IRecipe> list = Lists.newArrayList();
-+        List<IRecipe> list = Lists.<IRecipe>newArrayList();
- 
-         for (ResourceLocation resourcelocation : p_193102_1_)
-         {
-@@ -1123,7 +1086,6 @@
-         this.unlockRecipes(list);
-     }
- 
--    @Override
-     public void resetRecipes(List<IRecipe> p_192022_1_)
-     {
-         this.recipeBook.remove(p_192022_1_, this);
-@@ -1150,13 +1112,11 @@
-         this.lastHealth = -1.0E8F;
-     }
- 
--    @Override
-     public void sendStatusMessage(ITextComponent chatComponent, boolean actionBar)
-     {
-         this.connection.sendPacket(new SPacketChat(chatComponent, actionBar ? ChatType.GAME_INFO : ChatType.CHAT));
-     }
- 
--    @Override
-     protected void onItemUseFinish()
-     {
-         if (!this.activeItemStack.isEmpty() && this.isHandActive())
-@@ -1202,9 +1162,25 @@
+@@ -1202,6 +1220,23 @@
          this.enteredNetherPosition = that.enteredNetherPosition;
          this.setLeftShoulderEntity(that.getLeftShoulderEntity());
          this.setRightShoulderEntity(that.getRightShoulderEntity());
@@ -606,183 +143,4 @@
 +        net.minecraftforge.event.ForgeEventFactory.onPlayerClone(this, that, !keepEverything);
      }
  
--    @Override
-     protected void onNewPotionEffect(PotionEffect id)
-     {
-         super.onNewPotionEffect(id);
-@@ -1219,7 +1195,6 @@
-         CriteriaTriggers.EFFECTS_CHANGED.trigger(this);
-     }
- 
--    @Override
-     protected void onChangedPotionEffect(PotionEffect id, boolean p_70695_2_)
-     {
-         super.onChangedPotionEffect(id, p_70695_2_);
-@@ -1227,7 +1202,6 @@
-         CriteriaTriggers.EFFECTS_CHANGED.trigger(this);
-     }
- 
--    @Override
-     protected void onFinishedPotionEffect(PotionEffect effect)
-     {
-         super.onFinishedPotionEffect(effect);
-@@ -1241,25 +1215,21 @@
-         CriteriaTriggers.EFFECTS_CHANGED.trigger(this);
-     }
- 
--    @Override
-     public void setPositionAndUpdate(double x, double y, double z)
-     {
-         this.connection.setPlayerLocation(x, y, z, this.rotationYaw, this.rotationPitch);
-     }
- 
--    @Override
-     public void onCriticalHit(Entity entityHit)
-     {
-         this.getServerWorld().getEntityTracker().sendToTrackingAndSelf(this, new SPacketAnimation(entityHit, 4));
-     }
- 
--    @Override
-     public void onEnchantmentCritical(Entity entityHit)
-     {
-         this.getServerWorld().getEntityTracker().sendToTrackingAndSelf(this, new SPacketAnimation(entityHit, 5));
-     }
- 
--    @Override
-     public void sendPlayerAbilities()
-     {
-         if (this.connection != null)
-@@ -1274,7 +1244,6 @@
-         return (WorldServer)this.world;
-     }
- 
--    @Override
-     public void setGameType(GameType gameType)
-     {
-         this.interactionManager.setGameType(gameType);
-@@ -1294,25 +1263,21 @@
-         this.markPotionsDirty();
-     }
- 
--    @Override
-     public boolean isSpectator()
-     {
-         return this.interactionManager.getGameType() == GameType.SPECTATOR;
-     }
- 
--    @Override
-     public boolean isCreative()
-     {
-         return this.interactionManager.getGameType() == GameType.CREATIVE;
-     }
- 
--    @Override
-     public void sendMessage(ITextComponent component)
-     {
-         this.connection.sendPacket(new SPacketChat(component));
-     }
- 
--    @Override
-     public boolean canUseCommand(int permLevel, String commandName)
-     {
-         if ("seed".equals(commandName) && !this.server.isDedicatedServer())
-@@ -1323,8 +1288,16 @@
-         {
-             if (this.server.getPlayerList().canSendCommands(this.getGameProfile()))
-             {
--                UserListOpsEntry userlistopsentry = this.server.getPlayerList().getOppedPlayers().getEntry(this.getGameProfile());
--                return userlistopsentry != null ? userlistopsentry.getPermissionLevel() >= permLevel : this.server.getOpPermissionLevel() >= permLevel;
-+                UserListOpsEntry userlistopsentry = (UserListOpsEntry)this.server.getPlayerList().getOppedPlayers().getEntry(this.getGameProfile());
-+
-+                if (userlistopsentry != null)
-+                {
-+                    return userlistopsentry.getPermissionLevel() >= permLevel;
-+                }
-+                else
-+                {
-+                    return this.server.getOpPermissionLevel() >= permLevel;
-+                }
-             }
-             else
-             {
-@@ -1341,7 +1314,8 @@
-     {
-         String s = this.connection.netManager.getRemoteAddress().toString();
-         s = s.substring(s.indexOf("/") + 1);
--        return s.substring(0, s.indexOf(":"));
-+        s = s.substring(0, s.indexOf(":"));
-+        return s;
-     }
- 
-     public void handleClientSettings(CPacketClientSettings packetIn)
-@@ -1349,8 +1323,8 @@
-         this.language = packetIn.getLang();
-         this.chatVisibility = packetIn.getChatVisibility();
-         this.chatColours = packetIn.isColorsEnabled();
--        this.getDataManager().set(PLAYER_MODEL_FLAG, (byte)packetIn.getModelPartFlags());
--        this.getDataManager().set(MAIN_HAND, (byte)(packetIn.getMainHand() == EnumHandSide.LEFT ? 0 : 1));
-+        this.getDataManager().set(PLAYER_MODEL_FLAG, Byte.valueOf((byte)packetIn.getModelPartFlags()));
-+        this.getDataManager().set(MAIN_HAND, Byte.valueOf((byte)(packetIn.getMainHand() == EnumHandSide.LEFT ? 0 : 1)));
-     }
- 
-     public EntityPlayer.EnumChatVisibility getChatVisibility()
-@@ -1363,10 +1337,9 @@
-         this.connection.sendPacket(new SPacketResourcePackSend(url, hash));
-     }
- 
--    @Override
-     public BlockPos getPosition()
-     {
--        return new BlockPos(this.posX, this.posY + 0.5, this.posZ);
-+        return new BlockPos(this.posX, this.posY + 0.5D, this.posZ);
-     }
- 
-     public void markPlayerActive()
-@@ -1388,11 +1361,11 @@
-     {
-         if (entityIn instanceof EntityPlayer)
-         {
--            this.connection.sendPacket(new SPacketDestroyEntities(entityIn.getEntityId()));
-+            this.connection.sendPacket(new SPacketDestroyEntities(new int[] {entityIn.getEntityId()}));
-         }
-         else
-         {
--            this.entityRemoveQueue.add(entityIn.getEntityId());
-+            this.entityRemoveQueue.add(Integer.valueOf(entityIn.getEntityId()));
-         }
-     }
- 
-@@ -1401,7 +1374,6 @@
-         this.entityRemoveQueue.remove(Integer.valueOf(entityIn.getEntityId()));
-     }
- 
--    @Override
-     protected void updatePotionMetadata()
-     {
-         if (this.isSpectator())
-@@ -1434,16 +1406,14 @@
-         }
-     }
- 
--    @Override
-     protected void decrementTimeUntilPortal()
-     {
-         if (this.timeUntilPortal > 0 && !this.invulnerableDimensionChange)
-         {
--            this.timeUntilPortal--;
-+            --this.timeUntilPortal;
-         }
-     }
- 
--    @Override
-     public void attackTargetEntityWithCurrentItem(Entity targetEntity)
-     {
-         if (this.interactionManager.getGameType() == GameType.SPECTATOR)
-@@ -1467,7 +1437,6 @@
-         return null;
-     }
- 
--    @Override
-     public void swingArm(EnumHand hand)
-     {
-         super.swingArm(hand);
+     @Override

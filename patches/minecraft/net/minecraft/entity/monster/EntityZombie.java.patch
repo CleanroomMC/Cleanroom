@@ -1,138 +1,41 @@
 --- before/net/minecraft/entity/monster/EntityZombie.java
 +++ after/net/minecraft/entity/monster/EntityZombie.java
-@@ -54,10 +54,9 @@
- 
- public class EntityZombie extends EntityMob
- {
--    protected static final IAttribute SPAWN_REINFORCEMENTS_CHANCE = new RangedAttribute(null, "zombie.spawnReinforcements", 0.0, 0.0, 1.0)
--        .setDescription("Spawn Reinforcements Chance");
-+    protected static final IAttribute SPAWN_REINFORCEMENTS_CHANCE = (new RangedAttribute((IAttribute)null, "zombie.spawnReinforcements", 0.0D, 0.0D, 1.0D)).setDescription("Spawn Reinforcements Chance");
-     private static final UUID BABY_SPEED_BOOST_ID = UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
--    private static final AttributeModifier BABY_SPEED_BOOST = new AttributeModifier(BABY_SPEED_BOOST_ID, "Baby speed boost", 0.5, 1);
-+    private static final AttributeModifier BABY_SPEED_BOOST = new AttributeModifier(BABY_SPEED_BOOST_ID, "Baby speed boost", 0.5D, 1);
-     private static final DataParameter<Boolean> IS_CHILD = EntityDataManager.createKey(EntityZombie.class, DataSerializers.BOOLEAN);
-     private static final DataParameter<Integer> VILLAGER_TYPE = EntityDataManager.createKey(EntityZombie.class, DataSerializers.VARINT);
-     private static final DataParameter<Boolean> ARMS_RAISED = EntityDataManager.createKey(EntityZombie.class, DataSerializers.BOOLEAN);
-@@ -72,13 +71,12 @@
-         this.setSize(0.6F, 1.95F);
-     }
- 
--    @Override
-     protected void initEntityAI()
-     {
-         this.tasks.addTask(0, new EntityAISwimming(this));
--        this.tasks.addTask(2, new EntityAIZombieAttack(this, 1.0, false));
--        this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0));
--        this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0));
-+        this.tasks.addTask(2, new EntityAIZombieAttack(this, 1.0D, false));
-+        this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
-+        this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D));
-         this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-         this.tasks.addTask(8, new EntityAILookIdle(this));
-         this.applyEntityAI();
-@@ -86,25 +84,23 @@
- 
-     protected void applyEntityAI()
-     {
--        this.tasks.addTask(6, new EntityAIMoveThroughVillage(this, 1.0, false));
-+        this.tasks.addTask(6, new EntityAIMoveThroughVillage(this, 1.0D, false));
-         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, EntityPigZombie.class));
-         this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
-         this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, EntityVillager.class, false));
-         this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, EntityIronGolem.class, true));
-     }
- 
--    @Override
-     protected void applyEntityAttributes()
-     {
-         super.applyEntityAttributes();
--        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(35.0);
--        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.23F);
--        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0);
--        this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0);
+@@ -101,7 +101,7 @@
+         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.23F);
+         this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0);
+         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0);
 -        this.getAttributeMap().registerAttribute(SPAWN_REINFORCEMENTS_CHANCE).setBaseValue(this.rand.nextDouble() * 0.1F);
-+        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(35.0D);
-+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue((double)0.23F);
-+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D);
-+        this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0D);
-+        this.getAttributeMap().registerAttribute(SPAWN_REINFORCEMENTS_CHANCE).setBaseValue(this.rand.nextDouble() * (double)0.1F);
++        this.getAttributeMap().registerAttribute(SPAWN_REINFORCEMENTS_CHANCE).setBaseValue(this.rand.nextDouble() * net.minecraftforge.common.ForgeModContainer.zombieSummonBaseChance);
      }
  
--    @Override
-     protected void entityInit()
-     {
-         super.entityInit();
-@@ -147,13 +143,11 @@
-         }
-     }
- 
--    @Override
-     public boolean isChild()
-     {
-         return this.getDataManager().get(IS_CHILD);
-     }
- 
--    @Override
-     protected int getExperiencePoints(EntityPlayer player)
-     {
-         if (this.isChild())
-@@ -182,7 +176,6 @@
-         this.setChildSize(childZombie);
-     }
- 
--    @Override
-     public void notifyDataManagerChange(DataParameter<?> key)
-     {
-         if (IS_CHILD.equals(key))
-@@ -193,16 +186,13 @@
-         super.notifyDataManagerChange(key);
-     }
- 
--    @Override
-     public void onLivingUpdate()
-     {
-         if (this.world.isDaytime() && !this.world.isRemote && !this.isChild() && this.shouldBurnInDay())
-         {
-             float f = this.getBrightness();
- 
--            if (f > 0.5F
--                    && this.rand.nextFloat() * 30.0F < (f - 0.4F) * 2.0F
--                    && this.world.canSeeSky(new BlockPos(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ)))
-+            if (f > 0.5F && this.rand.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && this.world.canSeeSky(new BlockPos(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ)))
-             {
-                 boolean flag = true;
-                 ItemStack itemstack = this.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-@@ -238,7 +228,6 @@
-         return true;
-     }
- 
--    @Override
-     public boolean attackEntityFrom(DamageSource source, float amount)
-     {
-         if (super.attackEntityFrom(source, amount))
-@@ -250,37 +239,42 @@
+     @Override
+@@ -250,15 +250,31 @@
                  entitylivingbase = (EntityLivingBase)source.getTrueSource();
              }
  
 -            if (entitylivingbase != null
--                    && this.world.getDifficulty() == EnumDifficulty.HARD
--                    && (double)this.rand.nextFloat() < this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).getAttributeValue()
--                    && this.world.getGameRules().getBoolean("doMobSpawning"))
 +            int i = MathHelper.floor(this.posX);
 +            int j = MathHelper.floor(this.posY);
 +            int k = MathHelper.floor(this.posZ);
-+            net.minecraftforge.event.entity.living.ZombieEvent.SummonAidEvent summonAid = net.minecraftforge.event.ForgeEventFactory.fireZombieSummonAid(this, world, i, j, k, entitylivingbase, this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).getAttributeValue());
++            net.minecraftforge.event.entity.living.ZombieEvent.SummonAidEvent summonAid
++                = net.minecraftforge.event.ForgeEventFactory.fireZombieSummonAid(
++                    this, world, i, j, k, entitylivingbase, this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).getAttributeValue()
++            );
 +            if (summonAid.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) return true;
 +
-+            if (summonAid.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW  ||
-+                entitylivingbase != null && this.world.getDifficulty() == EnumDifficulty.HARD && (double)this.rand.nextFloat() < this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).getAttributeValue() && this.world.getGameRules().getBoolean("doMobSpawning"))
++            if (summonAid.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW
++                    || entitylivingbase != null
+                     && this.world.getDifficulty() == EnumDifficulty.HARD
+                     && (double)this.rand.nextFloat() < this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).getAttributeValue()
+                     && this.world.getGameRules().getBoolean("doMobSpawning"))
              {
 -                int i = MathHelper.floor(this.posX);
 -                int j = MathHelper.floor(this.posY);
 -                int k = MathHelper.floor(this.posZ);
 -                EntityZombie entityzombie = new EntityZombie(this.world);
 +                EntityZombie entityzombie;
-+                if (summonAid.getCustomSummonedAid() != null && summonAid.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW)
++                if (summonAid.getCustomSummonedAid() != null
++                        && summonAid.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW)
 +                {
 +                    entityzombie = summonAid.getCustomSummonedAid();
 +                }
@@ -141,158 +44,27 @@
 +                    entityzombie = new EntityZombie(this.world);
 +                }
  
--                for (int l = 0; l < 50; l++)
-+                for (int l = 0; l < 50; ++l)
+                 for (int l = 0; l < 50; l++)
                  {
-                     int i1 = i + MathHelper.getInt(this.rand, 7, 40) * MathHelper.getInt(this.rand, -1, 1);
+@@ -266,7 +282,7 @@
                      int j1 = j + MathHelper.getInt(this.rand, 7, 40) * MathHelper.getInt(this.rand, -1, 1);
                      int k1 = k + MathHelper.getInt(this.rand, 7, 40) * MathHelper.getInt(this.rand, -1, 1);
  
 -                    if (this.world.getBlockState(new BlockPos(i1, j1 - 1, k1)).isTopSolid()
--                            && this.world.getLightFromNeighbors(new BlockPos(i1, j1, k1)) < 10)
-+                    if (this.world.getBlockState(new BlockPos(i1, j1 - 1, k1)).isSideSolid(this.world, new BlockPos(i1, j1 - 1, k1), net.minecraft.util.EnumFacing.UP) && this.world.getLightFromNeighbors(new BlockPos(i1, j1, k1)) < 10)
++                    if (this.world.getBlockState(new BlockPos(i1, j1 - 1, k1)).isSideSolid(this.world, new BlockPos(i1, j1 - 1, k1), net.minecraft.util.EnumFacing.UP)
+                             && this.world.getLightFromNeighbors(new BlockPos(i1, j1, k1)) < 10)
                      {
                          entityzombie.setPosition((double)i1, (double)j1, (double)k1);
- 
--                        if (!this.world.isAnyPlayerWithinRangeAt((double)i1, (double)j1, (double)k1, 7.0)
--                                && this.world.checkNoEntityCollision(entityzombie.getEntityBoundingBox(), entityzombie)
--                                && this.world.getCollisionBoxes(entityzombie, entityzombie.getEntityBoundingBox()).isEmpty()
--                                && !this.world.containsAnyLiquid(entityzombie.getEntityBoundingBox()))
-+                        if (!this.world.isAnyPlayerWithinRangeAt((double)i1, (double)j1, (double)k1, 7.0D) && this.world.checkNoEntityCollision(entityzombie.getEntityBoundingBox(), entityzombie) && this.world.getCollisionBoxes(entityzombie, entityzombie.getEntityBoundingBox()).isEmpty() && !this.world.containsAnyLiquid(entityzombie.getEntityBoundingBox()))
+@@ -277,7 +293,7 @@
+                                 && !this.world.containsAnyLiquid(entityzombie.getEntityBoundingBox()))
                          {
                              this.world.spawnEntity(entityzombie);
 -                            entityzombie.setAttackTarget(entitylivingbase);
--                            entityzombie.onInitialSpawn(this.world.getDifficultyForLocation(new BlockPos(entityzombie)), null);
--                            this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).applyModifier(new AttributeModifier("Zombie reinforcement caller charge", -0.05F, 0));
--                            entityzombie.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).applyModifier(new AttributeModifier("Zombie reinforcement callee charge", -0.05F, 0));
 +                            if (entitylivingbase != null) entityzombie.setAttackTarget(entitylivingbase);
-+                            entityzombie.onInitialSpawn(this.world.getDifficultyForLocation(new BlockPos(entityzombie)), (IEntityLivingData)null);
-+                            this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).applyModifier(new AttributeModifier("Zombie reinforcement caller charge", -0.05000000074505806D, 0));
-+                            entityzombie.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).applyModifier(new AttributeModifier("Zombie reinforcement callee charge", -0.05000000074505806D, 0));
-                             break;
-                         }
-                     }
-@@ -295,7 +289,6 @@
-         }
-     }
- 
--    @Override
-     public boolean attackEntityAsMob(Entity entityIn)
-     {
-         boolean flag = super.attackEntityAsMob(entityIn);
-@@ -313,19 +306,16 @@
-         return flag;
-     }
- 
--    @Override
-     protected SoundEvent getAmbientSound()
-     {
-         return SoundEvents.ENTITY_ZOMBIE_AMBIENT;
-     }
- 
--    @Override
-     protected SoundEvent getHurtSound(DamageSource damageSourceIn)
-     {
-         return SoundEvents.ENTITY_ZOMBIE_HURT;
-     }
- 
--    @Override
-     protected SoundEvent getDeathSound()
-     {
-         return SoundEvents.ENTITY_ZOMBIE_DEATH;
-@@ -336,26 +326,22 @@
-         return SoundEvents.ENTITY_ZOMBIE_STEP;
-     }
- 
--    @Override
-     protected void playStepSound(BlockPos pos, Block blockIn)
-     {
-         this.playSound(this.getStepSound(), 0.15F, 1.0F);
-     }
- 
--    @Override
-     public EnumCreatureAttribute getCreatureAttribute()
-     {
-         return EnumCreatureAttribute.UNDEAD;
-     }
- 
-     @Nullable
--    @Override
-     protected ResourceLocation getLootTable()
-     {
-         return LootTableList.ENTITIES_ZOMBIE;
-     }
- 
--    @Override
-     protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty)
-     {
-         super.setEquipmentBasedOnDifficulty(difficulty);
-@@ -380,7 +366,6 @@
-         EntityLiving.registerFixesMob(fixer, EntityZombie.class);
-     }
- 
--    @Override
-     public void writeEntityToNBT(NBTTagCompound compound)
-     {
-         super.writeEntityToNBT(compound);
-@@ -393,7 +378,6 @@
-         compound.setBoolean("CanBreakDoors", this.isBreakDoorsTaskSet());
-     }
- 
--    @Override
-     public void readEntityFromNBT(NBTTagCompound compound)
-     {
-         super.readEntityFromNBT(compound);
-@@ -406,13 +390,11 @@
-         this.setBreakDoorsAItask(compound.getBoolean("CanBreakDoors"));
-     }
- 
--    @Override
-     public void onKillEntity(EntityLivingBase entityLivingIn)
-     {
-         super.onKillEntity(entityLivingIn);
- 
--        if ((this.world.getDifficulty() == EnumDifficulty.NORMAL || this.world.getDifficulty() == EnumDifficulty.HARD)
--                && entityLivingIn instanceof EntityVillager)
-+        if ((this.world.getDifficulty() == EnumDifficulty.NORMAL || this.world.getDifficulty() == EnumDifficulty.HARD) && entityLivingIn instanceof EntityVillager)
-         {
-             if (this.world.getDifficulty() != EnumDifficulty.HARD && this.rand.nextBoolean())
-             {
-@@ -435,31 +417,28 @@
-             }
- 
-             this.world.spawnEntity(entityzombievillager);
--            this.world.playEvent(null, 1026, new BlockPos(this), 0);
-+            this.world.playEvent((EntityPlayer)null, 1026, new BlockPos(this), 0);
-         }
-     }
- 
--    @Override
-     public float getEyeHeight()
-     {
-         float f = 1.74F;
- 
-         if (this.isChild())
-         {
--            f = (float)((double)f - 0.81);
-+            f = (float)((double)f - 0.81D);
-         }
- 
-         return f;
-     }
- 
--    @Override
-     protected boolean canEquipItem(ItemStack stack)
-     {
-         return stack.getItem() == Items.EGG && this.isChild() && this.isRiding() ? false : super.canEquipItem(stack);
-     }
- 
-     @Nullable
--    @Override
-     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
-     {
-         livingdata = super.onInitialSpawn(difficulty, livingdata);
-@@ -468,7 +447,7 @@
+                             entityzombie.onInitialSpawn(this.world.getDifficultyForLocation(new BlockPos(entityzombie)), null);
+                             this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).applyModifier(new AttributeModifier("Zombie reinforcement caller charge", -0.05F, 0));
+                             entityzombie.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).applyModifier(new AttributeModifier("Zombie reinforcement callee charge", -0.05F, 0));
+@@ -468,7 +484,7 @@
  
          if (livingdata == null)
          {
@@ -301,79 +73,3 @@
          }
  
          if (livingdata instanceof EntityZombie.GroupData)
-@@ -479,10 +458,9 @@
-             {
-                 this.setChild(true);
- 
--                if ((double)this.world.rand.nextFloat() < 0.05)
-+                if ((double)this.world.rand.nextFloat() < 0.05D)
-                 {
--                    List<EntityChicken> list = this.world
--                                               .getEntitiesWithinAABB(EntityChicken.class, this.getEntityBoundingBox().grow(5.0, 3.0, 5.0), EntitySelectors.IS_STANDALONE);
-+                    List<EntityChicken> list = this.world.getEntitiesWithinAABB(EntityChicken.class, this.getEntityBoundingBox().grow(5.0D, 3.0D, 5.0D), EntitySelectors.IS_STANDALONE);
- 
-                     if (!list.isEmpty())
-                     {
-@@ -491,11 +469,11 @@
-                         this.startRiding(entitychicken);
-                     }
-                 }
--                else if ((double)this.world.rand.nextFloat() < 0.05)
-+                else if ((double)this.world.rand.nextFloat() < 0.05D)
-                 {
-                     EntityChicken entitychicken1 = new EntityChicken(this.world);
-                     entitychicken1.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0F);
--                    entitychicken1.onInitialSpawn(difficulty, null);
-+                    entitychicken1.onInitialSpawn(difficulty, (IEntityLivingData)null);
-                     entitychicken1.setChickenJockey(true);
-                     this.world.spawnEntity(entitychicken1);
-                     this.startRiding(entitychicken1);
-@@ -518,20 +496,18 @@
-             }
-         }
- 
--        this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE)
--        .applyModifier(new AttributeModifier("Random spawn bonus", this.rand.nextDouble() * 0.05F, 0));
--        double d0 = this.rand.nextDouble() * 1.5 * (double)f;
-+        this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).applyModifier(new AttributeModifier("Random spawn bonus", this.rand.nextDouble() * (double)0.05F, 0));
-+        double d0 = this.rand.nextDouble() * 1.5D * (double)f;
- 
--        if (d0 > 1.0)
-+        if (d0 > 1.0D)
-         {
-             this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).applyModifier(new AttributeModifier("Random zombie-spawn bonus", d0, 2));
-         }
- 
-         if (this.rand.nextFloat() < f * 0.05F)
-         {
--            this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).applyModifier(new AttributeModifier("Leader zombie bonus", this.rand.nextDouble() * 0.25 + 0.5, 0));
--            this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH)
--            .applyModifier(new AttributeModifier("Leader zombie bonus", this.rand.nextDouble() * 3.0 + 1.0, 2));
-+            this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).applyModifier(new AttributeModifier("Leader zombie bonus", this.rand.nextDouble() * 0.25D + 0.5D, 0));
-+            this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).applyModifier(new AttributeModifier("Leader zombie bonus", this.rand.nextDouble() * 3.0D + 1.0D, 2));
-             this.setBreakDoorsAItask(true);
-         }
- 
-@@ -543,7 +519,6 @@
-         this.multiplySize(isChild ? 0.5F : 1.0F);
-     }
- 
--    @Override
-     protected final void setSize(float width, float height)
-     {
-         boolean flag = this.zombieWidth > 0.0F && this.zombieHeight > 0.0F;
-@@ -561,13 +536,11 @@
-         super.setSize(this.zombieWidth * size, this.zombieHeight * size);
-     }
- 
--    @Override
-     public double getYOffset()
-     {
--        return this.isChild() ? 0.0 : -0.45;
-+        return this.isChild() ? 0.0D : -0.45D;
-     }
- 
--    @Override
-     public void onDeath(DamageSource cause)
-     {
-         super.onDeath(cause);

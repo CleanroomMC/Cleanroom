@@ -1,40 +1,6 @@
 --- before/net/minecraft/entity/ai/EntityAIRunAroundLikeCrazy.java
 +++ after/net/minecraft/entity/ai/EntityAIRunAroundLikeCrazy.java
-@@ -20,7 +20,6 @@
-         this.setMutexBits(1);
-     }
- 
--    @Override
-     public boolean shouldExecute()
-     {
-         if (!this.horseHost.isTame() && this.horseHost.isBeingRidden())
-@@ -45,24 +44,21 @@
-         }
-     }
- 
--    @Override
-     public void startExecuting()
-     {
-         this.horseHost.getNavigator().tryMoveToXYZ(this.targetX, this.targetY, this.targetZ, this.speed);
-     }
- 
--    @Override
-     public boolean shouldContinueExecuting()
-     {
-         return !this.horseHost.isTame() && !this.horseHost.getNavigator().noPath() && this.horseHost.isBeingRidden();
-     }
- 
--    @Override
-     public void updateTask()
-     {
-         if (!this.horseHost.isTame() && this.horseHost.getRNG().nextInt(50) == 0)
-         {
--            Entity entity = this.horseHost.getPassengers().get(0);
-+            Entity entity = (Entity)this.horseHost.getPassengers().get(0);
- 
-             if (entity == null)
-             {
-@@ -74,7 +70,7 @@
+@@ -74,7 +74,7 @@
                  int i = this.horseHost.getTemper();
                  int j = this.horseHost.getMaxTemper();
  

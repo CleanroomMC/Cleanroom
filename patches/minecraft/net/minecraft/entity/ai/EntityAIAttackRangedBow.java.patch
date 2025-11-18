@@ -1,14 +1,6 @@
 --- before/net/minecraft/entity/ai/EntityAIAttackRangedBow.java
 +++ after/net/minecraft/entity/ai/EntityAIAttackRangedBow.java
-@@ -33,7 +33,6 @@
-         this.attackCooldown = p_189428_1_;
-     }
- 
--    @Override
-     public boolean shouldExecute()
-     {
-         return this.entity.getAttackTarget() == null ? false : this.isBowInMainhand();
-@@ -41,41 +40,36 @@
+@@ -41,7 +41,7 @@
  
      protected boolean isBowInMainhand()
      {
@@ -16,87 +8,4 @@
 +        return !this.entity.getHeldItemMainhand().isEmpty() && this.entity.getHeldItemMainhand().getItem() instanceof ItemBow;
      }
  
--    @Override
-     public boolean shouldContinueExecuting()
-     {
-         return (this.shouldExecute() || !this.entity.getNavigator().noPath()) && this.isBowInMainhand();
-     }
- 
--    @Override
-     public void startExecuting()
-     {
-         super.startExecuting();
--        this.entity.setSwingingArms(true);
-+        ((IRangedAttackMob)this.entity).setSwingingArms(true);
-     }
- 
--    @Override
-     public void resetTask()
-     {
-         super.resetTask();
--        this.entity.setSwingingArms(false);
-+        ((IRangedAttackMob)this.entity).setSwingingArms(false);
-         this.seeTime = 0;
-         this.attackTime = -1;
-         this.entity.resetActiveHand();
-     }
- 
--    @Override
-     public void updateTask()
-     {
-         EntityLivingBase entitylivingbase = this.entity.getAttackTarget();
- 
-         if (entitylivingbase != null)
-         {
--            double d0 = this.entity
--                        .getDistanceSq(entitylivingbase.posX, entitylivingbase.getEntityBoundingBox().minY, entitylivingbase.posZ);
-+            double d0 = this.entity.getDistanceSq(entitylivingbase.posX, entitylivingbase.getEntityBoundingBox().minY, entitylivingbase.posZ);
-             boolean flag = this.entity.getEntitySenses().canSee(entitylivingbase);
-             boolean flag1 = this.seeTime > 0;
- 
-@@ -86,17 +80,17 @@
- 
-             if (flag)
-             {
--                this.seeTime++;
-+                ++this.seeTime;
-             }
-             else
-             {
--                this.seeTime--;
-+                --this.seeTime;
-             }
- 
--            if (!(d0 > (double)this.maxAttackDistance) && this.seeTime >= 20)
-+            if (d0 <= (double)this.maxAttackDistance && this.seeTime >= 20)
-             {
-                 this.entity.getNavigator().clearPath();
--                this.strafingTime++;
-+                ++this.strafingTime;
-             }
-             else
-             {
-@@ -106,12 +100,12 @@
- 
-             if (this.strafingTime >= 20)
-             {
--                if ((double)this.entity.getRNG().nextFloat() < 0.3)
-+                if ((double)this.entity.getRNG().nextFloat() < 0.3D)
-                 {
-                     this.strafingClockwise = !this.strafingClockwise;
-                 }
- 
--                if ((double)this.entity.getRNG().nextFloat() < 0.3)
-+                if ((double)this.entity.getRNG().nextFloat() < 0.3D)
-                 {
-                     this.strafingBackwards = !this.strafingBackwards;
-                 }
-@@ -151,7 +145,7 @@
-                     if (i >= 20)
-                     {
-                         this.entity.resetActiveHand();
--                        this.entity.attackEntityWithRangedAttack(entitylivingbase, ItemBow.getArrowVelocity(i));
-+                        ((IRangedAttackMob)this.entity).attackEntityWithRangedAttack(entitylivingbase, ItemBow.getArrowVelocity(i));
-                         this.attackTime = this.attackCooldown;
-                     }
-                 }
+     @Override

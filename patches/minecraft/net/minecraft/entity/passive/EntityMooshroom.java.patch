@@ -9,15 +9,7 @@
  {
      public EntityMooshroom(World worldIn)
      {
-@@ -30,7 +30,6 @@
-         EntityLiving.registerFixesMob(fixer, EntityMooshroom.class);
-     }
- 
--    @Override
-     public boolean processInteract(EntityPlayer player, EnumHand hand)
-     {
-         ItemStack itemstack = player.getHeldItem(hand);
-@@ -50,19 +49,10 @@
+@@ -50,7 +50,7 @@
  
              return true;
          }
@@ -25,42 +17,8 @@
 +        else if (false && itemstack.getItem() == Items.SHEARS && this.getGrowingAge() >= 0) //Forge Disable, Moved to onSheared
          {
              this.setDead();
--            this.world
--            .spawnParticle(
--                EnumParticleTypes.EXPLOSION_LARGE,
--                this.posX,
--                this.posY + (double)(this.height / 2.0F),
--                this.posZ,
--                0.0,
--                0.0,
--                0.0
--            );
-+            this.world.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, this.posX, this.posY + (double)(this.height / 2.0F), this.posZ, 0.0D, 0.0D, 0.0D);
- 
-             if (!this.world.isRemote)
-             {
-@@ -78,18 +68,9 @@
- 
-                 this.world.spawnEntity(entitycow);
- 
--                for (int i = 0; i < 5; i++)
-+                for (int i = 0; i < 5; ++i)
-                 {
--                    this.world
--                    .spawnEntity(
--                        new EntityItem(
--                            this.world,
--                            this.posX,
--                            this.posY + (double)this.height,
--                            this.posZ,
--                            new ItemStack(Blocks.RED_MUSHROOM)
--                        )
--                    );
-+                    this.world.spawnEntity(new EntityItem(this.world, this.posX, this.posY + (double)this.height, this.posZ, new ItemStack(Blocks.RED_MUSHROOM)));
-                 }
- 
-                 itemstack.damageItem(1, player);
-@@ -109,8 +90,36 @@
+             this.world
+@@ -109,8 +109,36 @@
          return new EntityMooshroom(this.world);
      }
  

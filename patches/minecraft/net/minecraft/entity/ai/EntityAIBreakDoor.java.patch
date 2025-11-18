@@ -1,76 +1,25 @@
 --- before/net/minecraft/entity/ai/EntityAIBreakDoor.java
 +++ after/net/minecraft/entity/ai/EntityAIBreakDoor.java
-@@ -15,43 +15,55 @@
-         super(entityIn);
-     }
- 
--    @Override
-     public boolean shouldExecute()
-     {
-         if (!super.shouldExecute())
-         {
-             return false;
+@@ -24,7 +24,21 @@
          }
-+        else if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.entity.world, this.entity) || !this.entity.world.getBlockState(this.doorPosition).getBlock().canEntityDestroy(this.entity.world.getBlockState(this.doorPosition), this.entity.world, this.doorPosition, this.entity) || !net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(this.entity, this.doorPosition, this.entity.world.getBlockState(this.doorPosition)))
-+        {
-+            return false;
-+        }
          else
          {
 -            return !this.entity.world.getGameRules().getBoolean("mobGriefing")
--                   ? false
--                   : !BlockDoor.isOpen(this.entity.world, this.doorPosition);
-+            BlockDoor blockdoor = this.doorBlock;
-+            return !BlockDoor.isOpen(this.entity.world, this.doorPosition);
++            return !net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.entity.world, this.entity)
++                   || !this.entity.world
++                       .getBlockState(this.doorPosition)
++                       .getBlock()
++                       .canEntityDestroy(
++                           this.entity.world.getBlockState(this.doorPosition),
++                           this.entity.world,
++                           this.doorPosition,
++                           this.entity
++                       )
++                   || !net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(
++                       this.entity,
++                       this.doorPosition,
++                       this.entity.world.getBlockState(this.doorPosition)
++                   )
+                    ? false
+                    : !BlockDoor.isOpen(this.entity.world, this.doorPosition);
          }
-     }
- 
--    @Override
-     public void startExecuting()
-     {
-         super.startExecuting();
-         this.breakingTime = 0;
-     }
- 
--    @Override
-     public boolean shouldContinueExecuting()
-     {
-         double d0 = this.entity.getDistanceSq(this.doorPosition);
--        return this.breakingTime <= 240 && !BlockDoor.isOpen(this.entity.world, this.doorPosition) && d0 < 4.0;
-+        boolean flag;
-+
-+        if (this.breakingTime <= 240)
-+        {
-+            BlockDoor blockdoor = this.doorBlock;
-+
-+            if (!BlockDoor.isOpen(this.entity.world, this.doorPosition) && d0 < 4.0D)
-+            {
-+                flag = true;
-+                return flag;
-+            }
-+        }
-+
-+        flag = false;
-+        return flag;
-     }
- 
--    @Override
-     public void resetTask()
-     {
-         super.resetTask();
-         this.entity.world.sendBlockBreakProgress(this.entity.getEntityId(), this.doorPosition, -1);
-     }
- 
--    @Override
-     public void updateTask()
-     {
-         super.updateTask();
-@@ -61,7 +73,7 @@
-             this.entity.world.playEvent(1019, this.doorPosition, 0);
-         }
- 
--        this.breakingTime++;
-+        ++this.breakingTime;
-         int i = (int)((float)this.breakingTime / 240.0F * 10.0F);
- 
-         if (i != this.previousBreakProgress)

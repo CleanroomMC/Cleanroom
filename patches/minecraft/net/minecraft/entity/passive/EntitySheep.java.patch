@@ -1,127 +1,15 @@
 --- before/net/minecraft/entity/passive/EntitySheep.java
 +++ after/net/minecraft/entity/passive/EntitySheep.java
-@@ -46,12 +46,11 @@
+@@ -46,7 +46,7 @@
  import net.minecraftforge.fml.relauncher.Side;
  import net.minecraftforge.fml.relauncher.SideOnly;
  
 -public class EntitySheep extends EntityAnimal
 +public class EntitySheep extends EntityAnimal implements net.minecraftforge.common.IShearable
  {
--    private static final DataParameter<Byte> DYE_COLOR = EntityDataManager.createKey(EntitySheep.class, DataSerializers.BYTE);
-+    private static final DataParameter<Byte> DYE_COLOR = EntityDataManager.<Byte>createKey(EntitySheep.class, DataSerializers.BYTE);
+     private static final DataParameter<Byte> DYE_COLOR = EntityDataManager.createKey(EntitySheep.class, DataSerializers.BYTE);
      private final InventoryCrafting inventoryCrafting = new InventoryCrafting(new Container()
-     {
--        @Override
-         public boolean canInteractWith(EntityPlayer playerIn)
-         {
-             return false;
-@@ -82,29 +81,26 @@
-         this.inventoryCrafting.setInventorySlotContents(1, new ItemStack(Items.DYE));
-     }
- 
--    @Override
-     protected void initEntityAI()
-     {
-         this.entityAIEatGrass = new EntityAIEatGrass(this);
-         this.tasks.addTask(0, new EntityAISwimming(this));
--        this.tasks.addTask(1, new EntityAIPanic(this, 1.25));
--        this.tasks.addTask(2, new EntityAIMate(this, 1.0));
--        this.tasks.addTask(3, new EntityAITempt(this, 1.1, Items.WHEAT, false));
--        this.tasks.addTask(4, new EntityAIFollowParent(this, 1.1));
-+        this.tasks.addTask(1, new EntityAIPanic(this, 1.25D));
-+        this.tasks.addTask(2, new EntityAIMate(this, 1.0D));
-+        this.tasks.addTask(3, new EntityAITempt(this, 1.1D, Items.WHEAT, false));
-+        this.tasks.addTask(4, new EntityAIFollowParent(this, 1.1D));
-         this.tasks.addTask(5, this.entityAIEatGrass);
--        this.tasks.addTask(6, new EntityAIWanderAvoidWater(this, 1.0));
-+        this.tasks.addTask(6, new EntityAIWanderAvoidWater(this, 1.0D));
-         this.tasks.addTask(7, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
-         this.tasks.addTask(8, new EntityAILookIdle(this));
-     }
- 
--    @Override
-     protected void updateAITasks()
-     {
-         this.sheepTimer = this.entityAIEatGrass.getEatingGrassTimer();
-         super.updateAITasks();
-     }
- 
--    @Override
-     public void onLivingUpdate()
-     {
-         if (this.world.isRemote)
-@@ -115,23 +111,20 @@
-         super.onLivingUpdate();
-     }
- 
--    @Override
-     protected void applyEntityAttributes()
-     {
-         super.applyEntityAttributes();
--        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(8.0);
--        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.23F);
-+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(8.0D);
-+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.23000000417232513D);
-     }
- 
--    @Override
-     protected void entityInit()
-     {
-         super.entityInit();
--        this.dataManager.register(DYE_COLOR, (byte)0);
-+        this.dataManager.register(DYE_COLOR, Byte.valueOf((byte)0));
-     }
- 
-     @Nullable
--    @Override
-     protected ResourceLocation getLootTable()
-     {
-         if (this.getSheared())
-@@ -180,7 +173,6 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public void handleStatusUpdate(byte id)
-     {
-         if (id == 10)
-@@ -193,57 +185,23 @@
-         }
-     }
- 
--    @SideOnly(Side.CLIENT)
--    public float getHeadRotationPointY(float p_70894_1_)
--    {
--        if (this.sheepTimer <= 0)
--        {
--            return 0.0F;
--        }
--        else if (this.sheepTimer >= 4 && this.sheepTimer <= 36)
--        {
--            return 1.0F;
--        }
--        else
--        {
--            return this.sheepTimer < 4 ? ((float)this.sheepTimer - p_70894_1_) / 4.0F : -((float)(this.sheepTimer - 40) - p_70894_1_) / 4.0F;
--        }
--    }
--
--    @SideOnly(Side.CLIENT)
--    public float getHeadRotationAngleX(float p_70890_1_)
--    {
--        if (this.sheepTimer > 4 && this.sheepTimer <= 36)
--        {
--            float f = ((float)(this.sheepTimer - 4) - p_70890_1_) / 32.0F;
--            return (float)(Math.PI / 5) + ((float)Math.PI * 7F / 100F) * MathHelper.sin(f * 28.7F);
--        }
--        else
--        {
--            return this.sheepTimer > 0 ? (float)(Math.PI / 5) : this.rotationPitch * (float)(Math.PI / 180.0);
--        }
--    }
--
--    @Override
-     public boolean processInteract(EntityPlayer player, EnumHand hand)
+@@ -229,7 +229,7 @@
      {
          ItemStack itemstack = player.getHeldItem(hand);
  
@@ -130,158 +18,18 @@
          {
              if (!this.world.isRemote)
              {
-                 this.setSheared(true);
-                 int i = 1 + this.rand.nextInt(3);
- 
--                for (int j = 0; j < i; j++)
-+                for (int j = 0; j < i; ++j)
-                 {
--                    EntityItem entityitem = this.entityDropItem(
--                                                new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, this.getFleeceColor().getMetadata()), 1.0F
--                                            );
--                    entityitem.motionY = entityitem.motionY + (double)(this.rand.nextFloat() * 0.05F);
--                    entityitem.motionX = entityitem.motionX + (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
--                    entityitem.motionZ = entityitem.motionZ + (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
-+                    EntityItem entityitem = this.entityDropItem(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, this.getFleeceColor().getMetadata()), 1.0F);
-+                    entityitem.motionY += (double)(this.rand.nextFloat() * 0.05F);
-+                    entityitem.motionX += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
-+                    entityitem.motionZ += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
-                 }
-             }
- 
-@@ -259,7 +217,37 @@
-         EntityLiving.registerFixesMob(fixer, EntitySheep.class);
-     }
- 
--    @Override
-+    @SideOnly(Side.CLIENT)
-+    public float getHeadRotationPointY(float p_70894_1_)
-+    {
-+        if (this.sheepTimer <= 0)
-+        {
-+            return 0.0F;
-+        }
-+        else if (this.sheepTimer >= 4 && this.sheepTimer <= 36)
-+        {
-+            return 1.0F;
-+        }
-+        else
-+        {
-+            return this.sheepTimer < 4 ? ((float)this.sheepTimer - p_70894_1_) / 4.0F : -((float)(this.sheepTimer - 40) - p_70894_1_) / 4.0F;
-+        }
-+    }
-+
-+    @SideOnly(Side.CLIENT)
-+    public float getHeadRotationAngleX(float p_70890_1_)
-+    {
-+        if (this.sheepTimer > 4 && this.sheepTimer <= 36)
-+        {
-+            float f = ((float)(this.sheepTimer - 4) - p_70890_1_) / 32.0F;
-+            return ((float)Math.PI / 5F) + ((float)Math.PI * 7F / 100F) * MathHelper.sin(f * 28.7F);
-+        }
-+        else
-+        {
-+            return this.sheepTimer > 0 ? ((float)Math.PI / 5F) : this.rotationPitch * 0.017453292F;
-+        }
-+    }
-+
-     public void writeEntityToNBT(NBTTagCompound compound)
-     {
-         super.writeEntityToNBT(compound);
-@@ -267,7 +255,6 @@
-         compound.setByte("Color", (byte)this.getFleeceColor().getMetadata());
-     }
- 
--    @Override
-     public void readEntityFromNBT(NBTTagCompound compound)
-     {
-         super.readEntityFromNBT(compound);
-@@ -275,25 +262,21 @@
-         this.setFleeceColor(EnumDyeColor.byMetadata(compound.getByte("Color")));
-     }
- 
--    @Override
-     protected SoundEvent getAmbientSound()
-     {
-         return SoundEvents.ENTITY_SHEEP_AMBIENT;
-     }
- 
--    @Override
-     protected SoundEvent getHurtSound(DamageSource damageSourceIn)
-     {
-         return SoundEvents.ENTITY_SHEEP_HURT;
-     }
- 
--    @Override
-     protected SoundEvent getDeathSound()
-     {
-         return SoundEvents.ENTITY_SHEEP_DEATH;
-     }
- 
--    @Override
-     protected void playStepSound(BlockPos pos, Block blockIn)
-     {
-         this.playSound(SoundEvents.ENTITY_SHEEP_STEP, 0.15F, 1.0F);
-@@ -301,31 +284,31 @@
- 
-     public EnumDyeColor getFleeceColor()
-     {
--        return EnumDyeColor.byMetadata(this.dataManager.get(DYE_COLOR) & 15);
-+        return EnumDyeColor.byMetadata(((Byte)this.dataManager.get(DYE_COLOR)).byteValue() & 15);
-     }
- 
-     public void setFleeceColor(EnumDyeColor color)
-     {
--        byte b0 = this.dataManager.get(DYE_COLOR);
--        this.dataManager.set(DYE_COLOR, (byte)(b0 & 240 | color.getMetadata() & 15));
-+        byte b0 = ((Byte)this.dataManager.get(DYE_COLOR)).byteValue();
-+        this.dataManager.set(DYE_COLOR, Byte.valueOf((byte)(b0 & 240 | color.getMetadata() & 15)));
-     }
- 
-     public boolean getSheared()
-     {
--        return (this.dataManager.get(DYE_COLOR) & 16) != 0;
-+        return (((Byte)this.dataManager.get(DYE_COLOR)).byteValue() & 16) != 0;
-     }
- 
-     public void setSheared(boolean sheared)
-     {
--        byte b0 = this.dataManager.get(DYE_COLOR);
-+        byte b0 = ((Byte)this.dataManager.get(DYE_COLOR)).byteValue();
- 
-         if (sheared)
-         {
--            this.dataManager.set(DYE_COLOR, (byte)(b0 | 16));
-+            this.dataManager.set(DYE_COLOR, Byte.valueOf((byte)(b0 | 16)));
-         }
-         else
-         {
--            this.dataManager.set(DYE_COLOR, (byte)(b0 & -17));
-+            this.dataManager.set(DYE_COLOR, Byte.valueOf((byte)(b0 & -17)));
-         }
-     }
- 
-@@ -363,7 +346,6 @@
-         return entitysheep1;
-     }
- 
--    @Override
-     public void eatGrassBonus()
-     {
-         this.setSheared(false);
-@@ -375,7 +357,6 @@
-     }
- 
-     @Nullable
--    @Override
-     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
-     {
+@@ -381,6 +381,26 @@
          livingdata = super.onInitialSpawn(difficulty, livingdata);
-@@ -383,6 +364,21 @@
+         this.setFleeceColor(getRandomSheepColor(this.world.rand));
          return livingdata;
-     }
- 
-+    @Override public boolean isShearable(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos){ return !this.getSheared() && !this.isChild(); }
++    }
++
++    @Override
++    public boolean isShearable(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos)
++    {
++        return !this.getSheared() && !this.isChild();
++    }
++    
 +    @Override
 +    public java.util.List<ItemStack> onSheared(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune)
 +    {
@@ -294,16 +42,6 @@
 +
 +        this.playSound(SoundEvents.ENTITY_SHEEP_SHEAR, 1.0F, 1.0F);
 +        return ret;
-+    }
-+
-     private EnumDyeColor getDyeColorMixFromParents(EntityAnimal father, EntityAnimal mother)
-     {
-         int i = ((EntitySheep)father).getFleeceColor().getDyeDamage();
-@@ -404,7 +400,6 @@
-         return EnumDyeColor.byDyeDamage(k);
      }
  
--    @Override
-     public float getEyeHeight()
-     {
-         return 0.95F * this.height;
+     private EnumDyeColor getDyeColorMixFromParents(EntityAnimal father, EntityAnimal mother)

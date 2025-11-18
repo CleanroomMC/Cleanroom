@@ -1,76 +1,13 @@
 --- before/net/minecraft/entity/item/EntityMinecartMobSpawner.java
 +++ after/net/minecraft/entity/item/EntityMinecartMobSpawner.java
-@@ -21,21 +21,21 @@
- {
-     private final MobSpawnerBaseLogic mobSpawnerLogic = new MobSpawnerBaseLogic()
-     {
--        @Override
-         public void broadcastEvent(int id)
-         {
-             EntityMinecartMobSpawner.this.world.setEntityState(EntityMinecartMobSpawner.this, (byte)id);
-         }
--        @Override
-         public World getSpawnerWorld()
-         {
-             return EntityMinecartMobSpawner.this.world;
-         }
--        @Override
-         public BlockPos getSpawnerPosition()
+@@ -36,6 +36,10 @@
          {
              return new BlockPos(EntityMinecartMobSpawner.this);
          }
++        @Override  
 +        public net.minecraft.entity.Entity getSpawnerEntity() {
 +            return EntityMinecartMobSpawner.this;
 +        }
      };
  
      public EntityMinecartMobSpawner(World worldIn)
-@@ -53,7 +53,6 @@
-         registerFixesMinecart(fixer, EntityMinecartMobSpawner.class);
-         fixer.registerWalker(FixTypes.ENTITY, new IDataWalker()
-         {
--            @Override
-             public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
-             {
-                 String s = compound.getString("id");
-@@ -70,26 +69,22 @@
-         });
-     }
- 
--    @Override
-     public EntityMinecart.Type getType()
-     {
-         return EntityMinecart.Type.SPAWNER;
-     }
- 
--    @Override
-     public IBlockState getDefaultDisplayTile()
-     {
-         return Blocks.MOB_SPAWNER.getDefaultState();
-     }
- 
--    @Override
-     protected void readEntityFromNBT(NBTTagCompound compound)
-     {
-         super.readEntityFromNBT(compound);
-         this.mobSpawnerLogic.readFromNBT(compound);
-     }
- 
--    @Override
-     protected void writeEntityToNBT(NBTTagCompound compound)
-     {
-         super.writeEntityToNBT(compound);
-@@ -97,13 +92,11 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public void handleStatusUpdate(byte id)
-     {
-         this.mobSpawnerLogic.setDelayToMin(id);
-     }
- 
--    @Override
-     public void onUpdate()
-     {
-         super.onUpdate();

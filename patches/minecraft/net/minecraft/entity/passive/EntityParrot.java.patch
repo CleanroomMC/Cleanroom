@@ -8,19 +8,12 @@
  import com.google.common.collect.Sets;
  import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
  import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-@@ -84,18 +85,17 @@
- 
- public class EntityParrot extends EntityShoulderRiding implements EntityFlying
- {
--    private static final DataParameter<Integer> VARIANT = EntityDataManager.createKey(EntityParrot.class, DataSerializers.VARINT);
-+    private static final DataParameter<Integer> VARIANT = EntityDataManager.<Integer>createKey(EntityParrot.class, DataSerializers.VARINT);
-     private static final Predicate<EntityLiving> CAN_MIMIC = new Predicate<EntityLiving>()
-     {
+@@ -90,12 +91,12 @@
          public boolean apply(@Nullable EntityLiving p_apply_1_)
          {
--            return p_apply_1_ != null
+             return p_apply_1_ != null
 -                   && EntityParrot.IMITATION_SOUND_EVENTS.containsKey(EntityList.REGISTRY.getIDForObject((Class <? extends Entity >)p_apply_1_.getClass()));
-+            return p_apply_1_ != null && EntityParrot.MIMIC_SOUNDS.containsKey(p_apply_1_.getClass());
++                   && EntityParrot.MIMIC_SOUNDS.containsKey(p_apply_1_.getClass());
          }
      };
      private static final Item DEADLY_ITEM = Items.COOKIE;
@@ -30,163 +23,16 @@
      public float flap;
      public float flapSpeed;
      public float oFlapSpeed;
-@@ -112,38 +112,34 @@
-     }
- 
-     @Nullable
--    @Override
-     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
-     {
-         this.setVariant(this.rand.nextInt(5));
-         return super.onInitialSpawn(difficulty, livingdata);
-     }
- 
--    @Override
-     protected void initEntityAI()
-     {
-         this.aiSit = new EntityAISit(this);
--        this.tasks.addTask(0, new EntityAIPanic(this, 1.25));
-+        this.tasks.addTask(0, new EntityAIPanic(this, 1.25D));
-         this.tasks.addTask(0, new EntityAISwimming(this));
-         this.tasks.addTask(1, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-         this.tasks.addTask(2, this.aiSit);
--        this.tasks.addTask(2, new EntityAIFollowOwnerFlying(this, 1.0, 5.0F, 1.0F));
--        this.tasks.addTask(2, new EntityAIWanderAvoidWaterFlying(this, 1.0));
-+        this.tasks.addTask(2, new EntityAIFollowOwnerFlying(this, 1.0D, 5.0F, 1.0F));
-+        this.tasks.addTask(2, new EntityAIWanderAvoidWaterFlying(this, 1.0D));
-         this.tasks.addTask(3, new EntityAILandOnOwnersShoulder(this));
--        this.tasks.addTask(3, new EntityAIFollow(this, 1.0, 3.0F, 7.0F));
-+        this.tasks.addTask(3, new EntityAIFollow(this, 1.0D, 3.0F, 7.0F));
-     }
- 
--    @Override
-     protected void applyEntityAttributes()
-     {
-         super.applyEntityAttributes();
-         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FLYING_SPEED);
--        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(6.0);
--        this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(0.4F);
--        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.2F);
-+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(6.0D);
-+        this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(0.4000000059604645D);
-+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.20000000298023224D);
-     }
- 
--    @Override
-     protected PathNavigate createNavigator(World worldIn)
-     {
-         PathNavigateFlying pathnavigateflying = new PathNavigateFlying(this, worldIn);
-@@ -153,20 +149,16 @@
-         return pathnavigateflying;
-     }
- 
--    @Override
-     public float getEyeHeight()
-     {
-         return this.height * 0.6F;
-     }
- 
--    @Override
-     public void onLivingUpdate()
-     {
-         playMimicSound(this.world, this);
- 
--        if (this.jukeboxPosition == null
--                || this.jukeboxPosition.distanceSq(this.posX, this.posY, this.posZ) > 12.0
--                || this.world.getBlockState(this.jukeboxPosition).getBlock() != Blocks.JUKEBOX)
-+        if (this.jukeboxPosition == null || this.jukeboxPosition.distanceSq(this.posX, this.posY, this.posZ) > 12.0D || this.world.getBlockState(this.jukeboxPosition).getBlock() != Blocks.JUKEBOX)
-         {
-             this.partyParrot = false;
-             this.jukeboxPosition = null;
-@@ -177,7 +169,6 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public void setPartying(BlockPos pos, boolean isPartying)
-     {
-         this.jukeboxPosition = pos;
-@@ -194,7 +185,7 @@
-     {
-         this.oFlap = this.flap;
-         this.oFlapSpeed = this.flapSpeed;
--        this.flapSpeed = (float)((double)this.flapSpeed + (double)(this.onGround ? -1 : 4) * 0.3);
-+        this.flapSpeed = (float)((double)this.flapSpeed + (double)(this.onGround ? -1 : 4) * 0.3D);
-         this.flapSpeed = MathHelper.clamp(this.flapSpeed, 0.0F, 1.0F);
- 
-         if (!this.onGround && this.flapping < 1.0F)
-@@ -202,21 +193,21 @@
-             this.flapping = 1.0F;
-         }
- 
--        this.flapping = (float)((double)this.flapping * 0.9);
-+        this.flapping = (float)((double)this.flapping * 0.9D);
- 
--        if (!this.onGround && this.motionY < 0.0)
-+        if (!this.onGround && this.motionY < 0.0D)
-         {
--            this.motionY *= 0.6;
-+            this.motionY *= 0.6D;
-         }
- 
--        this.flap = this.flap + this.flapping * 2.0F;
-+        this.flap += this.flapping * 2.0F;
-     }
- 
-     private static boolean playMimicSound(World worldIn, Entity parrotIn)
-     {
-         if (!parrotIn.isSilent() && worldIn.rand.nextInt(50) == 0)
-         {
--            List<EntityLiving> list = worldIn.getEntitiesWithinAABB(EntityLiving.class, parrotIn.getEntityBoundingBox().grow(20.0), CAN_MIMIC);
-+            List<EntityLiving> list = worldIn.<EntityLiving>getEntitiesWithinAABB(EntityLiving.class, parrotIn.getEntityBoundingBox().grow(20.0D), CAN_MIMIC);
- 
-             if (!list.isEmpty())
-             {
-@@ -224,17 +215,8 @@
+@@ -224,7 +225,7 @@
  
                  if (!entityliving.isSilent())
                  {
 -                    SoundEvent soundevent = getImitatedSound(EntityList.REGISTRY.getIDForObject((Class <? extends Entity >)entityliving.getClass()));
--                    worldIn.playSound(
--                        null,
--                        parrotIn.posX,
--                        parrotIn.posY,
--                        parrotIn.posZ,
--                        soundevent,
--                        parrotIn.getSoundCategory(),
--                        0.7F,
--                        getPitch(worldIn.rand)
--                    );
 +                    SoundEvent soundevent = MIMIC_SOUNDS.get(entityliving.getClass());
-+                    worldIn.playSound((EntityPlayer)null, parrotIn.posX, parrotIn.posY, parrotIn.posZ, soundevent, parrotIn.getSoundCategory(), 0.7F, getPitch(worldIn.rand));
-                     return true;
-                 }
-             }
-@@ -247,7 +229,6 @@
-         }
-     }
- 
--    @Override
-     public boolean processInteract(EntityPlayer player, EnumHand hand)
-     {
-         ItemStack itemstack = player.getHeldItem(hand);
-@@ -261,22 +242,12 @@
- 
-             if (!this.isSilent())
-             {
--                this.world
--                .playSound(
--                    null,
--                    this.posX,
--                    this.posY,
--                    this.posZ,
--                    SoundEvents.ENTITY_PARROT_EAT,
--                    this.getSoundCategory(),
--                    1.0F,
--                    1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F
--                );
-+                this.world.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_PARROT_EAT, this.getSoundCategory(), 1.0F, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
-             }
+                     worldIn.playSound(
+                         null,
+                         parrotIn.posX,
+@@ -276,7 +277,7 @@
  
              if (!this.world.isRemote)
              {
@@ -195,82 +41,7 @@
                  {
                      this.setTamedBy(player);
                      this.playTameEffect(true);
-@@ -318,13 +289,11 @@
-         }
-     }
- 
--    @Override
-     public boolean isBreedingItem(ItemStack stack)
-     {
-         return false;
-     }
- 
--    @Override
-     public boolean getCanSpawnHere()
-     {
-         int i = MathHelper.floor(this.posX);
-@@ -332,30 +301,23 @@
-         int k = MathHelper.floor(this.posZ);
-         BlockPos blockpos = new BlockPos(i, j, k);
-         Block block = this.world.getBlockState(blockpos.down()).getBlock();
--        return block instanceof BlockLeaves
--               || block == Blocks.GRASS
--               || block instanceof BlockLog
--               || block == Blocks.AIR && this.world.getLight(blockpos) > 8 && super.getCanSpawnHere();
-+        return block instanceof BlockLeaves || block == Blocks.GRASS || block instanceof BlockLog || block == Blocks.AIR && this.world.getLight(blockpos) > 8 && super.getCanSpawnHere();
-     }
- 
--    @Override
-     public void fall(float distance, float damageMultiplier)
-     {
-     }
- 
--    @Override
-     protected void updateFallState(double y, boolean onGroundIn, IBlockState state, BlockPos pos)
-     {
-     }
- 
--    @Override
-     public boolean canMateWith(EntityAnimal otherAnimal)
-     {
-         return false;
-     }
- 
-     @Nullable
--    @Override
-     public EntityAgeable createChild(EntityAgeable ageable)
-     {
-         return null;
-@@ -365,27 +327,16 @@
-     {
-         if (!parrotIn.isSilent() && !playMimicSound(worldIn, parrotIn) && worldIn.rand.nextInt(200) == 0)
-         {
--            worldIn.playSound(
--                null,
--                parrotIn.posX,
--                parrotIn.posY,
--                parrotIn.posZ,
--                getAmbientSound(worldIn.rand),
--                parrotIn.getSoundCategory(),
--                1.0F,
--                getPitch(worldIn.rand)
--            );
-+            worldIn.playSound((EntityPlayer)null, parrotIn.posX, parrotIn.posY, parrotIn.posZ, getAmbientSound(worldIn.rand), parrotIn.getSoundCategory(), 1.0F, getPitch(worldIn.rand));
-         }
-     }
- 
--    @Override
-     public boolean attackEntityAsMob(Entity entityIn)
-     {
-         return entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), 3.0F);
-     }
- 
-     @Nullable
--    @Override
-     public SoundEvent getAmbientSound()
-     {
-         return getAmbientSound(this.rand);
-@@ -395,8 +346,9 @@
+@@ -395,8 +396,9 @@
      {
          if (random.nextInt(1000) == 0)
          {
@@ -282,7 +53,7 @@
          }
          else
          {
-@@ -404,43 +356,32 @@
+@@ -404,11 +406,6 @@
          }
      }
  
@@ -291,111 +62,10 @@
 -        return IMITATION_SOUND_EVENTS.containsKey(p_191999_0_) ? IMITATION_SOUND_EVENTS.get(p_191999_0_) : SoundEvents.ENTITY_PARROT_AMBIENT;
 -    }
 -
--    @Override
+     @Override
      protected SoundEvent getHurtSound(DamageSource damageSourceIn)
      {
-         return SoundEvents.ENTITY_PARROT_HURT;
-     }
- 
--    @Override
-     protected SoundEvent getDeathSound()
-     {
-         return SoundEvents.ENTITY_PARROT_DEATH;
-     }
- 
--    @Override
-     protected void playStepSound(BlockPos pos, Block blockIn)
-     {
-         this.playSound(SoundEvents.ENTITY_PARROT_STEP, 0.15F, 1.0F);
-     }
- 
--    @Override
-     protected float playFlySound(float p_191954_1_)
-     {
-         this.playSound(SoundEvents.ENTITY_PARROT_FLY, 0.15F, 1.0F);
-         return p_191954_1_ + this.flapSpeed / 2.0F;
-     }
- 
--    @Override
-     protected boolean makeFlySound()
-     {
-         return true;
-     }
- 
--    @Override
-     protected float getSoundPitch()
-     {
-         return getPitch(this.rand);
-@@ -451,19 +392,16 @@
-         return (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F;
-     }
- 
--    @Override
-     public SoundCategory getSoundCategory()
-     {
-         return SoundCategory.NEUTRAL;
-     }
- 
--    @Override
-     public boolean canBePushed()
-     {
-         return true;
-     }
- 
--    @Override
-     protected void collideWithEntity(Entity entityIn)
-     {
-         if (!(entityIn instanceof EntityPlayer))
-@@ -472,7 +410,6 @@
-         }
-     }
- 
--    @Override
-     public boolean attackEntityFrom(DamageSource source, float amount)
-     {
-         if (this.isEntityInvulnerable(source))
-@@ -492,29 +429,26 @@
- 
-     public int getVariant()
-     {
--        return MathHelper.clamp(this.dataManager.get(VARIANT), 0, 4);
-+        return MathHelper.clamp(((Integer)this.dataManager.get(VARIANT)).intValue(), 0, 4);
-     }
- 
-     public void setVariant(int variantIn)
-     {
--        this.dataManager.set(VARIANT, variantIn);
-+        this.dataManager.set(VARIANT, Integer.valueOf(variantIn));
-     }
- 
--    @Override
-     protected void entityInit()
-     {
-         super.entityInit();
--        this.dataManager.register(VARIANT, 0);
-+        this.dataManager.register(VARIANT, Integer.valueOf(0));
-     }
- 
--    @Override
-     public void writeEntityToNBT(NBTTagCompound compound)
-     {
-         super.writeEntityToNBT(compound);
-         compound.setInteger("Variant", this.getVariant());
-     }
- 
--    @Override
-     public void readEntityFromNBT(NBTTagCompound compound)
-     {
-         super.readEntityFromNBT(compound);
-@@ -522,7 +456,6 @@
-     }
- 
-     @Nullable
--    @Override
-     protected ResourceLocation getLootTable()
-     {
-         return LootTableList.ENTITIES_PARROT;
-@@ -535,33 +468,38 @@
+@@ -535,33 +532,38 @@
  
      static
      {

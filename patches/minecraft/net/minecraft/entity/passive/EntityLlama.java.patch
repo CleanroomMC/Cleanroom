@@ -1,14 +1,5 @@
 --- before/net/minecraft/entity/passive/EntityLlama.java
 +++ after/net/minecraft/entity/passive/EntityLlama.java
-@@ -449,7 +449,7 @@
- 
-         if (this.rand.nextFloat() < 0.03F)
-         {
--            i++;
-+            ++i;
-         }
- 
-         entityllama.setStrength(i);
 @@ -488,6 +488,9 @@
      @Override
      public void fall(float distance, float damageMultiplier)

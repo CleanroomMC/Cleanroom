@@ -1,123 +1,6 @@
 --- before/net/minecraft/entity/item/EntityXPOrb.java
 +++ after/net/minecraft/entity/item/EntityXPOrb.java
-@@ -31,14 +31,13 @@
-         super(worldIn);
-         this.setSize(0.5F, 0.5F);
-         this.setPosition(x, y, z);
--        this.rotationYaw = (float)(Math.random() * 360.0);
--        this.motionX = (double)((float)(Math.random() * 0.2F - 0.1F) * 2.0F);
--        this.motionY = (double)((float)(Math.random() * 0.2) * 2.0F);
--        this.motionZ = (double)((float)(Math.random() * 0.2F - 0.1F) * 2.0F);
-+        this.rotationYaw = (float)(Math.random() * 360.0D);
-+        this.motionX = (double)((float)(Math.random() * (double)0.2F - (double)0.1F) * 2.0F);
-+        this.motionY = (double)((float)(Math.random() * 0.2D) * 2.0F);
-+        this.motionZ = (double)((float)(Math.random() * (double)0.2F - (double)0.1F) * 2.0F);
-         this.xpValue = expValue;
-     }
- 
--    @Override
-     protected boolean canTriggerWalking()
-     {
-         return false;
-@@ -50,20 +49,18 @@
-         this.setSize(0.25F, 0.25F);
-     }
- 
--    @Override
-     protected void entityInit()
-     {
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public int getBrightnessForRender()
-     {
-         float f = 0.5F;
-         f = MathHelper.clamp(f, 0.0F, 1.0F);
-         int i = super.getBrightnessForRender();
--        int j = i & 0xFF;
--        int k = i >> 16 & 0xFF;
-+        int j = i & 255;
-+        int k = i >> 16 & 255;
-         j += (int)(f * 15.0F * 16.0F);
- 
-         if (j > 240)
-@@ -74,14 +71,13 @@
-         return j | k << 16;
-     }
- 
--    @Override
-     public void onUpdate()
-     {
-         super.onUpdate();
- 
-         if (this.delayBeforeCanPickup > 0)
-         {
--            this.delayBeforeCanPickup--;
-+            --this.delayBeforeCanPickup;
-         }
- 
-         this.prevPosX = this.posX;
-@@ -90,25 +86,25 @@
- 
-         if (!this.hasNoGravity())
-         {
--            this.motionY -= 0.03F;
-+            this.motionY -= (double)0.03F;
-         }
- 
-         if (this.world.getBlockState(new BlockPos(this)).getMaterial() == Material.LAVA)
-         {
--            this.motionY = 0.2F;
-+            this.motionY = (double)0.2F;
-             this.motionX = (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
-             this.motionZ = (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
-             this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.rand.nextFloat() * 0.4F);
-         }
- 
--        this.pushOutOfBlocks(this.posX, (this.getEntityBoundingBox().minY + this.getEntityBoundingBox().maxY) / 2.0, this.posZ);
--        double d0 = 8.0;
-+        this.pushOutOfBlocks(this.posX, (this.getEntityBoundingBox().minY + this.getEntityBoundingBox().maxY) / 2.0D, this.posZ);
-+        double d0 = 8.0D;
- 
-         if (this.xpTargetColor < this.xpColor - 20 + this.getEntityId() % 100)
-         {
--            if (this.closestPlayer == null || this.closestPlayer.getDistanceSq(this) > 64.0)
-+            if (this.closestPlayer == null || this.closestPlayer.getDistanceSq(this) > 64.0D)
-             {
--                this.closestPlayer = this.world.getClosestPlayerToEntity(this, 8.0);
-+                this.closestPlayer = this.world.getClosestPlayerToEntity(this, 8.0D);
-             }
- 
-             this.xpTargetColor = this.xpColor;
-@@ -121,18 +117,18 @@
- 
-         if (this.closestPlayer != null)
-         {
--            double d1 = (this.closestPlayer.posX - this.posX) / 8.0;
--            double d2 = (this.closestPlayer.posY + (double)this.closestPlayer.getEyeHeight() / 2.0 - this.posY) / 8.0;
--            double d3 = (this.closestPlayer.posZ - this.posZ) / 8.0;
-+            double d1 = (this.closestPlayer.posX - this.posX) / 8.0D;
-+            double d2 = (this.closestPlayer.posY + (double)this.closestPlayer.getEyeHeight() / 2.0D - this.posY) / 8.0D;
-+            double d3 = (this.closestPlayer.posZ - this.posZ) / 8.0D;
-             double d4 = Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
--            double d5 = 1.0 - d4;
-+            double d5 = 1.0D - d4;
- 
--            if (d5 > 0.0)
-+            if (d5 > 0.0D)
-             {
-                 d5 *= d5;
--                this.motionX += d1 / d4 * d5 * 0.1;
--                this.motionY += d2 / d4 * d5 * 0.1;
--                this.motionZ += d3 / d4 * d5 * 0.1;
-+                this.motionX += d1 / d4 * d5 * 0.1D;
-+                this.motionY += d2 / d4 * d5 * 0.1D;
-+                this.motionZ += d3 / d4 * d5 * 0.1D;
-             }
-         }
- 
-@@ -141,30 +137,22 @@
+@@ -141,17 +141,9 @@
  
          if (this.onGround)
          {
@@ -138,70 +21,15 @@
          }
  
          this.motionX *= (double)f;
--        this.motionY *= 0.98F;
-+        this.motionY *= (double)0.98F;
-         this.motionZ *= (double)f;
- 
-         if (this.onGround)
-         {
--            this.motionY *= -0.9F;
-+            this.motionY *= (double) - 0.9F;
-         }
- 
--        this.xpColor++;
--        this.xpOrbAge++;
-+        ++this.xpColor;
-+        ++this.xpOrbAge;
- 
-         if (this.xpOrbAge >= 6000)
-         {
-@@ -172,21 +160,19 @@
-         }
-     }
- 
--    @Override
-     public boolean handleWaterMovement()
-     {
-         return this.world.handleMaterialAcceleration(this.getEntityBoundingBox(), Material.WATER, this);
-     }
- 
--    @Override
-     protected void dealFireDamage(int amount)
-     {
-         this.attackEntityFrom(DamageSource.IN_FIRE, (float)amount);
-     }
- 
--    @Override
+@@ -187,6 +179,7 @@
+     @Override
      public boolean attackEntityFrom(DamageSource source, float amount)
      {
 +        if (this.world.isRemote || this.isDead) return false; //Forge: Fixes MC-53850
          if (this.isEntityInvulnerable(source))
          {
              return false;
-@@ -205,7 +191,6 @@
-         }
-     }
- 
--    @Override
-     public void writeEntityToNBT(NBTTagCompound compound)
-     {
-         compound.setShort("Health", (short)this.xpOrbHealth);
-@@ -213,7 +198,6 @@
-         compound.setShort("Value", (short)this.xpValue);
-     }
- 
--    @Override
-     public void readEntityFromNBT(NBTTagCompound compound)
-     {
-         this.xpOrbHealth = compound.getShort("Health");
-@@ -221,21 +205,22 @@
-         this.xpValue = compound.getShort("Value");
-     }
- 
--    @Override
-     public void onCollideWithPlayer(EntityPlayer entityIn)
-     {
-         if (!this.world.isRemote)
+@@ -228,13 +221,15 @@
          {
              if (this.delayBeforeCanPickup == 0 && entityIn.xpCooldown == 0)
              {
@@ -213,18 +41,12 @@
                  if (!itemstack.isEmpty() && itemstack.isItemDamaged())
                  {
 -                    int i = Math.min(this.xpToDurability(this.xpValue), itemstack.getItemDamage());
--                    this.xpValue = this.xpValue - this.durabilityToXp(i);
 +                    float ratio = itemstack.getItem().getXpRepairRatio(itemstack);
 +                    int i = Math.min(roundAverage(this.xpValue * ratio), itemstack.getItemDamage());
-+                    this.xpValue -= roundAverage(i / ratio);
+                     this.xpValue = this.xpValue - this.durabilityToXp(i);
                      itemstack.setItemDamage(itemstack.getItemDamage() - i);
                  }
- 
-@@ -353,9 +338,14 @@
-         }
-     }
- 
--    @Override
+@@ -357,5 +352,11 @@
      public boolean canBeAttackedWithItem()
      {
          return false;

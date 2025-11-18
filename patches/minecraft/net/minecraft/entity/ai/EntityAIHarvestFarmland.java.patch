@@ -1,11 +1,6 @@
 --- before/net/minecraft/entity/ai/EntityAIHarvestFarmland.java
 +++ after/net/minecraft/entity/ai/EntityAIHarvestFarmland.java
-@@ -25,12 +25,11 @@
-         this.villager = villagerIn;
-     }
- 
--    @Override
-     public boolean shouldExecute()
+@@ -30,7 +30,7 @@
      {
          if (this.runDelay <= 0)
          {
@@ -14,72 +9,16 @@
              {
                  return false;
              }
-@@ -43,25 +42,15 @@
-         return super.shouldExecute();
-     }
- 
--    @Override
-     public boolean shouldContinueExecuting()
-     {
-         return this.currentTask >= 0 && super.shouldContinueExecuting();
-     }
- 
--    @Override
-     public void updateTask()
-     {
-         super.updateTask();
--        this.villager
--        .getLookHelper()
--        .setLookPosition(
--            (double)this.destinationBlock.getX() + 0.5,
--            (double)(this.destinationBlock.getY() + 1),
--            (double)this.destinationBlock.getZ() + 0.5,
--            10.0F,
--            (float)this.villager.getVerticalFaceSpeed()
--        );
-+        this.villager.getLookHelper().setLookPosition((double)this.destinationBlock.getX() + 0.5D, (double)(this.destinationBlock.getY() + 1), (double)this.destinationBlock.getZ() + 0.5D, 10.0F, (float)this.villager.getVerticalFaceSpeed());
- 
-         if (this.getIsAboveDestination())
-         {
-@@ -78,7 +67,7 @@
-             {
-                 InventoryBasic inventorybasic = this.villager.getVillagerInventory();
- 
--                for (int i = 0; i < inventorybasic.getSizeInventory(); i++)
-+                for (int i = 0; i < inventorybasic.getSizeInventory(); ++i)
-                 {
-                     ItemStack itemstack = inventorybasic.getStackInSlot(i);
-                     boolean flag = false;
-@@ -105,6 +94,12 @@
+@@ -104,6 +104,12 @@
+                         {
                              world.setBlockState(blockpos, Blocks.BEETROOTS.getDefaultState(), 3);
                              flag = true;
-                         }
++                        }
 +                        else if (itemstack.getItem() instanceof net.minecraftforge.common.IPlantable) {
 +                            if(((net.minecraftforge.common.IPlantable)itemstack.getItem()).getPlantType(world,blockpos) == net.minecraftforge.common.EnumPlantType.Crop) {
 +                                world.setBlockState(blockpos, ((net.minecraftforge.common.IPlantable)itemstack.getItem()).getPlant(world,blockpos),3);
 +                                flag = true;
 +                            }
-+                        }
+                         }
                      }
  
-                     if (flag)
-@@ -126,7 +121,6 @@
-         }
-     }
- 
--    @Override
-     protected boolean shouldMoveTo(World worldIn, BlockPos pos)
-     {
-         Block block = worldIn.getBlockState(pos).getBlock();
-@@ -137,10 +131,7 @@
-             IBlockState iblockstate = worldIn.getBlockState(pos);
-             block = iblockstate.getBlock();
- 
--            if (block instanceof BlockCrops
--                    && ((BlockCrops)block).isMaxAge(iblockstate)
--                    && this.wantsToReapStuff
--                    && (this.currentTask == 0 || this.currentTask < 0))
-+            if (block instanceof BlockCrops && ((BlockCrops)block).isMaxAge(iblockstate) && this.wantsToReapStuff && (this.currentTask == 0 || this.currentTask < 0))
-             {
-                 this.currentTask = 0;
-                 return true;

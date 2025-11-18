@@ -1,15 +1,6 @@
 --- before/net/minecraft/entity/passive/EntityVillager.java
 +++ after/net/minecraft/entity/passive/EntityVillager.java
-@@ -96,7 +96,7 @@
- public class EntityVillager extends EntityAgeable implements INpc, IMerchant
- {
-     private static final Logger LOGGER = LogManager.getLogger();
--    private static final DataParameter<Integer> PROFESSION = EntityDataManager.createKey(EntityVillager.class, DataSerializers.VARINT);
-+    private static final DataParameter<Integer> PROFESSION = EntityDataManager.<Integer>createKey(EntityVillager.class, DataSerializers.VARINT);
-     private int randomTickDivider;
-     private boolean isMating;
-     private boolean isPlaying;
-@@ -109,238 +109,13 @@
+@@ -109,7 +109,7 @@
      private boolean needsInitilization;
      private boolean isWillingToMate;
      private int wealth;
@@ -18,397 +9,17 @@
      private int careerId;
      private int careerLevel;
      private boolean isLookingForHome;
-     private boolean areAdditionalTasksSet;
--    private final InventoryBasic villagerInventory = new InventoryBasic("Items", false, 8);
--    private static final EntityVillager.ITradeList[][][][] DEFAULT_TRADE_LIST_MAP = new EntityVillager.ITradeList[][][][]
--    {
--        {
--            {
--                {
--                    new EntityVillager.EmeraldForItems(Items.WHEAT, new EntityVillager.PriceInfo(18, 22)),
--                    new EntityVillager.EmeraldForItems(Items.POTATO, new EntityVillager.PriceInfo(15, 19)),
--                    new EntityVillager.EmeraldForItems(Items.CARROT, new EntityVillager.PriceInfo(15, 19)),
--                    new EntityVillager.ListItemForEmeralds(Items.BREAD, new EntityVillager.PriceInfo(-4, -2))
--                },
--                {
--                    new EntityVillager.EmeraldForItems(Item.getItemFromBlock(Blocks.PUMPKIN), new EntityVillager.PriceInfo(8, 13)),
--                    new EntityVillager.ListItemForEmeralds(Items.PUMPKIN_PIE, new EntityVillager.PriceInfo(-3, -2))
--                },
--                {
--                    new EntityVillager.EmeraldForItems(Item.getItemFromBlock(Blocks.MELON_BLOCK), new EntityVillager.PriceInfo(7, 12)),
--                    new EntityVillager.ListItemForEmeralds(Items.APPLE, new EntityVillager.PriceInfo(-7, -5))
--                },
--                {
--                    new EntityVillager.ListItemForEmeralds(Items.COOKIE, new EntityVillager.PriceInfo(-10, -6)),
--                    new EntityVillager.ListItemForEmeralds(Items.CAKE, new EntityVillager.PriceInfo(1, 1))
--                }
--            },
--            {
--                {
--                    new EntityVillager.EmeraldForItems(Items.STRING, new EntityVillager.PriceInfo(15, 20)),
--                    new EntityVillager.EmeraldForItems(Items.COAL, new EntityVillager.PriceInfo(16, 24)),
--                    new EntityVillager.ItemAndEmeraldToItem(
--                        Items.FISH, new EntityVillager.PriceInfo(6, 6), Items.COOKED_FISH, new EntityVillager.PriceInfo(6, 6)
--                    )
--                },
--                {new EntityVillager.ListEnchantedItemForEmeralds(Items.FISHING_ROD, new EntityVillager.PriceInfo(7, 8))}
--            },
--            {
--                {
--                    new EntityVillager.EmeraldForItems(Item.getItemFromBlock(Blocks.WOOL), new EntityVillager.PriceInfo(16, 22)),
--                    new EntityVillager.ListItemForEmeralds(Items.SHEARS, new EntityVillager.PriceInfo(3, 4))
--                },
--                {
--                    new EntityVillager.ListItemForEmeralds(new ItemStack(Item.getItemFromBlock(Blocks.WOOL)), new EntityVillager.PriceInfo(1, 2)),
--                    new EntityVillager.ListItemForEmeralds(
--                        new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 1), new EntityVillager.PriceInfo(1, 2)
--                    ),
--                    new EntityVillager.ListItemForEmeralds(
--                        new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 2), new EntityVillager.PriceInfo(1, 2)
--                    ),
--                    new EntityVillager.ListItemForEmeralds(
--                        new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 3), new EntityVillager.PriceInfo(1, 2)
--                    ),
--                    new EntityVillager.ListItemForEmeralds(
--                        new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 4), new EntityVillager.PriceInfo(1, 2)
--                    ),
--                    new EntityVillager.ListItemForEmeralds(
--                        new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 5), new EntityVillager.PriceInfo(1, 2)
--                    ),
--                    new EntityVillager.ListItemForEmeralds(
--                        new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 6), new EntityVillager.PriceInfo(1, 2)
--                    ),
--                    new EntityVillager.ListItemForEmeralds(
--                        new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 7), new EntityVillager.PriceInfo(1, 2)
--                    ),
--                    new EntityVillager.ListItemForEmeralds(
--                        new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 8), new EntityVillager.PriceInfo(1, 2)
--                    ),
--                    new EntityVillager.ListItemForEmeralds(
--                        new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 9), new EntityVillager.PriceInfo(1, 2)
--                    ),
--                    new EntityVillager.ListItemForEmeralds(
--                        new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 10), new EntityVillager.PriceInfo(1, 2)
--                    ),
--                    new EntityVillager.ListItemForEmeralds(
--                        new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 11), new EntityVillager.PriceInfo(1, 2)
--                    ),
--                    new EntityVillager.ListItemForEmeralds(
--                        new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 12), new EntityVillager.PriceInfo(1, 2)
--                    ),
--                    new EntityVillager.ListItemForEmeralds(
--                        new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 13), new EntityVillager.PriceInfo(1, 2)
--                    ),
--                    new EntityVillager.ListItemForEmeralds(
--                        new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 14), new EntityVillager.PriceInfo(1, 2)
--                    ),
--                    new EntityVillager.ListItemForEmeralds(
--                        new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 15), new EntityVillager.PriceInfo(1, 2)
--                    )
--                }
--            },
--            {
--                {
--                    new EntityVillager.EmeraldForItems(Items.STRING, new EntityVillager.PriceInfo(15, 20)),
--                    new EntityVillager.ListItemForEmeralds(Items.ARROW, new EntityVillager.PriceInfo(-12, -8))
--                },
--                {
--                    new EntityVillager.ListItemForEmeralds(Items.BOW, new EntityVillager.PriceInfo(2, 3)),
--                    new EntityVillager.ItemAndEmeraldToItem(
--                        Item.getItemFromBlock(Blocks.GRAVEL),
--                        new EntityVillager.PriceInfo(10, 10),
--                        Items.FLINT,
--                        new EntityVillager.PriceInfo(6, 10)
--                    )
--                }
--            }
--        },
--        {
--            {
--                {
--                    new EntityVillager.EmeraldForItems(Items.PAPER, new EntityVillager.PriceInfo(24, 36)),
--                    new EntityVillager.ListEnchantedBookForEmeralds()
--                },
--                {
--                    new EntityVillager.EmeraldForItems(Items.BOOK, new EntityVillager.PriceInfo(8, 10)),
--                    new EntityVillager.ListItemForEmeralds(Items.COMPASS, new EntityVillager.PriceInfo(10, 12)),
--                    new EntityVillager.ListItemForEmeralds(Item.getItemFromBlock(Blocks.BOOKSHELF), new EntityVillager.PriceInfo(3, 4))
--                },
--                {
--                    new EntityVillager.EmeraldForItems(Items.WRITTEN_BOOK, new EntityVillager.PriceInfo(2, 2)),
--                    new EntityVillager.ListItemForEmeralds(Items.CLOCK, new EntityVillager.PriceInfo(10, 12)),
--                    new EntityVillager.ListItemForEmeralds(Item.getItemFromBlock(Blocks.GLASS), new EntityVillager.PriceInfo(-5, -3))
--                },
--                {new EntityVillager.ListEnchantedBookForEmeralds()},
--                {new EntityVillager.ListEnchantedBookForEmeralds()},
--                {new EntityVillager.ListItemForEmeralds(Items.NAME_TAG, new EntityVillager.PriceInfo(20, 22))}
--            },
--            {
--                {new EntityVillager.EmeraldForItems(Items.PAPER, new EntityVillager.PriceInfo(24, 36))},
--                {new EntityVillager.EmeraldForItems(Items.COMPASS, new EntityVillager.PriceInfo(1, 1))},
--                {new EntityVillager.ListItemForEmeralds(Items.MAP, new EntityVillager.PriceInfo(7, 11))},
--                {
--                    new EntityVillager.TreasureMapForEmeralds(new EntityVillager.PriceInfo(12, 20), "Monument", MapDecoration.Type.MONUMENT),
--                    new EntityVillager.TreasureMapForEmeralds(new EntityVillager.PriceInfo(16, 28), "Mansion", MapDecoration.Type.MANSION)
--                }
--            }
--        },
--        {
--            {
--                {
--                    new EntityVillager.EmeraldForItems(Items.ROTTEN_FLESH, new EntityVillager.PriceInfo(36, 40)),
--                    new EntityVillager.EmeraldForItems(Items.GOLD_INGOT, new EntityVillager.PriceInfo(8, 10))
--                },
--                {
--                    new EntityVillager.ListItemForEmeralds(Items.REDSTONE, new EntityVillager.PriceInfo(-4, -1)),
--                    new EntityVillager.ListItemForEmeralds(
--                        new ItemStack(Items.DYE, 1, EnumDyeColor.BLUE.getDyeDamage()), new EntityVillager.PriceInfo(-2, -1)
--                    )
--                },
--                {
--                    new EntityVillager.ListItemForEmeralds(Items.ENDER_PEARL, new EntityVillager.PriceInfo(4, 7)),
--                    new EntityVillager.ListItemForEmeralds(Item.getItemFromBlock(Blocks.GLOWSTONE), new EntityVillager.PriceInfo(-3, -1))
--                },
--                {new EntityVillager.ListItemForEmeralds(Items.EXPERIENCE_BOTTLE, new EntityVillager.PriceInfo(3, 11))}
--            }
--        },
--        {
--            {
--                {
--                    new EntityVillager.EmeraldForItems(Items.COAL, new EntityVillager.PriceInfo(16, 24)),
--                    new EntityVillager.ListItemForEmeralds(Items.IRON_HELMET, new EntityVillager.PriceInfo(4, 6))
--                },
--                {
--                    new EntityVillager.EmeraldForItems(Items.IRON_INGOT, new EntityVillager.PriceInfo(7, 9)),
--                    new EntityVillager.ListItemForEmeralds(Items.IRON_CHESTPLATE, new EntityVillager.PriceInfo(10, 14))
--                },
--                {
--                    new EntityVillager.EmeraldForItems(Items.DIAMOND, new EntityVillager.PriceInfo(3, 4)),
--                    new EntityVillager.ListEnchantedItemForEmeralds(Items.DIAMOND_CHESTPLATE, new EntityVillager.PriceInfo(16, 19))
--                },
--                {
--                    new EntityVillager.ListItemForEmeralds(Items.CHAINMAIL_BOOTS, new EntityVillager.PriceInfo(5, 7)),
--                    new EntityVillager.ListItemForEmeralds(Items.CHAINMAIL_LEGGINGS, new EntityVillager.PriceInfo(9, 11)),
--                    new EntityVillager.ListItemForEmeralds(Items.CHAINMAIL_HELMET, new EntityVillager.PriceInfo(5, 7)),
--                    new EntityVillager.ListItemForEmeralds(Items.CHAINMAIL_CHESTPLATE, new EntityVillager.PriceInfo(11, 15))
--                }
--            },
--            {
--                {
--                    new EntityVillager.EmeraldForItems(Items.COAL, new EntityVillager.PriceInfo(16, 24)),
--                    new EntityVillager.ListItemForEmeralds(Items.IRON_AXE, new EntityVillager.PriceInfo(6, 8))
--                },
--                {
--                    new EntityVillager.EmeraldForItems(Items.IRON_INGOT, new EntityVillager.PriceInfo(7, 9)),
--                    new EntityVillager.ListEnchantedItemForEmeralds(Items.IRON_SWORD, new EntityVillager.PriceInfo(9, 10))
--                },
--                {
--                    new EntityVillager.EmeraldForItems(Items.DIAMOND, new EntityVillager.PriceInfo(3, 4)),
--                    new EntityVillager.ListEnchantedItemForEmeralds(Items.DIAMOND_SWORD, new EntityVillager.PriceInfo(12, 15)),
--                    new EntityVillager.ListEnchantedItemForEmeralds(Items.DIAMOND_AXE, new EntityVillager.PriceInfo(9, 12))
--                }
--            },
--            {
--                {
--                    new EntityVillager.EmeraldForItems(Items.COAL, new EntityVillager.PriceInfo(16, 24)),
--                    new EntityVillager.ListEnchantedItemForEmeralds(Items.IRON_SHOVEL, new EntityVillager.PriceInfo(5, 7))
--                },
--                {
--                    new EntityVillager.EmeraldForItems(Items.IRON_INGOT, new EntityVillager.PriceInfo(7, 9)),
--                    new EntityVillager.ListEnchantedItemForEmeralds(Items.IRON_PICKAXE, new EntityVillager.PriceInfo(9, 11))
--                },
--                {
--                    new EntityVillager.EmeraldForItems(Items.DIAMOND, new EntityVillager.PriceInfo(3, 4)),
--                    new EntityVillager.ListEnchantedItemForEmeralds(Items.DIAMOND_PICKAXE, new EntityVillager.PriceInfo(12, 15))
--                }
--            }
--        },
--        {
--            {
--                {
--                    new EntityVillager.EmeraldForItems(Items.PORKCHOP, new EntityVillager.PriceInfo(14, 18)),
--                    new EntityVillager.EmeraldForItems(Items.CHICKEN, new EntityVillager.PriceInfo(14, 18))
--                },
--                {
--                    new EntityVillager.EmeraldForItems(Items.COAL, new EntityVillager.PriceInfo(16, 24)),
--                    new EntityVillager.ListItemForEmeralds(Items.COOKED_PORKCHOP, new EntityVillager.PriceInfo(-7, -5)),
--                    new EntityVillager.ListItemForEmeralds(Items.COOKED_CHICKEN, new EntityVillager.PriceInfo(-8, -6))
--                }
--            },
--            {
--                {
--                    new EntityVillager.EmeraldForItems(Items.LEATHER, new EntityVillager.PriceInfo(9, 12)),
--                    new EntityVillager.ListItemForEmeralds(Items.LEATHER_LEGGINGS, new EntityVillager.PriceInfo(2, 4))
--                },
--                {new EntityVillager.ListEnchantedItemForEmeralds(Items.LEATHER_CHESTPLATE, new EntityVillager.PriceInfo(7, 12))},
--                {new EntityVillager.ListItemForEmeralds(Items.SADDLE, new EntityVillager.PriceInfo(8, 10))}
--            }
--        },
--        {new EntityVillager.ITradeList[0][]}
--    };
-+    private final InventoryBasic villagerInventory;
-+    private static final EntityVillager.ITradeList[][][][] DEFAULT_TRADE_LIST_MAP = new EntityVillager.ITradeList[][][][] {{{{new EntityVillager.EmeraldForItems(Items.WHEAT, new EntityVillager.PriceInfo(18, 22)), new EntityVillager.EmeraldForItems(Items.POTATO, new EntityVillager.PriceInfo(15, 19)), new EntityVillager.EmeraldForItems(Items.CARROT, new EntityVillager.PriceInfo(15, 19)), new EntityVillager.ListItemForEmeralds(Items.BREAD, new EntityVillager.PriceInfo(-4, -2))}, {new EntityVillager.EmeraldForItems(Item.getItemFromBlock(Blocks.PUMPKIN), new EntityVillager.PriceInfo(8, 13)), new EntityVillager.ListItemForEmeralds(Items.PUMPKIN_PIE, new EntityVillager.PriceInfo(-3, -2))}, {new EntityVillager.EmeraldForItems(Item.getItemFromBlock(Blocks.MELON_BLOCK), new EntityVillager.PriceInfo(7, 12)), new EntityVillager.ListItemForEmeralds(Items.APPLE, new EntityVillager.PriceInfo(-7, -5))}, {new EntityVillager.ListItemForEmeralds(Items.COOKIE, new EntityVillager.PriceInfo(-10, -6)), new EntityVillager.ListItemForEmeralds(Items.CAKE, new EntityVillager.PriceInfo(1, 1))}}, {{new EntityVillager.EmeraldForItems(Items.STRING, new EntityVillager.PriceInfo(15, 20)), new EntityVillager.EmeraldForItems(Items.COAL, new EntityVillager.PriceInfo(16, 24)), new EntityVillager.ItemAndEmeraldToItem(Items.FISH, new EntityVillager.PriceInfo(6, 6), Items.COOKED_FISH, new EntityVillager.PriceInfo(6, 6))}, {new EntityVillager.ListEnchantedItemForEmeralds(Items.FISHING_ROD, new EntityVillager.PriceInfo(7, 8))}}, {{new EntityVillager.EmeraldForItems(Item.getItemFromBlock(Blocks.WOOL), new EntityVillager.PriceInfo(16, 22)), new EntityVillager.ListItemForEmeralds(Items.SHEARS, new EntityVillager.PriceInfo(3, 4))}, {new EntityVillager.ListItemForEmeralds(new ItemStack(Item.getItemFromBlock(Blocks.WOOL)), new EntityVillager.PriceInfo(1, 2)), new EntityVillager.ListItemForEmeralds(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 1), new EntityVillager.PriceInfo(1, 2)), new EntityVillager.ListItemForEmeralds(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 2), new EntityVillager.PriceInfo(1, 2)), new EntityVillager.ListItemForEmeralds(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 3), new EntityVillager.PriceInfo(1, 2)), new EntityVillager.ListItemForEmeralds(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 4), new EntityVillager.PriceInfo(1, 2)), new EntityVillager.ListItemForEmeralds(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 5), new EntityVillager.PriceInfo(1, 2)), new EntityVillager.ListItemForEmeralds(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 6), new EntityVillager.PriceInfo(1, 2)), new EntityVillager.ListItemForEmeralds(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 7), new EntityVillager.PriceInfo(1, 2)), new EntityVillager.ListItemForEmeralds(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 8), new EntityVillager.PriceInfo(1, 2)), new EntityVillager.ListItemForEmeralds(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 9), new EntityVillager.PriceInfo(1, 2)), new EntityVillager.ListItemForEmeralds(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 10), new EntityVillager.PriceInfo(1, 2)), new EntityVillager.ListItemForEmeralds(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 11), new EntityVillager.PriceInfo(1, 2)), new EntityVillager.ListItemForEmeralds(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 12), new EntityVillager.PriceInfo(1, 2)), new EntityVillager.ListItemForEmeralds(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 13), new EntityVillager.PriceInfo(1, 2)), new EntityVillager.ListItemForEmeralds(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 14), new EntityVillager.PriceInfo(1, 2)), new EntityVillager.ListItemForEmeralds(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 15), new EntityVillager.PriceInfo(1, 2))}}, {{new EntityVillager.EmeraldForItems(Items.STRING, new EntityVillager.PriceInfo(15, 20)), new EntityVillager.ListItemForEmeralds(Items.ARROW, new EntityVillager.PriceInfo(-12, -8))}, {new EntityVillager.ListItemForEmeralds(Items.BOW, new EntityVillager.PriceInfo(2, 3)), new EntityVillager.ItemAndEmeraldToItem(Item.getItemFromBlock(Blocks.GRAVEL), new EntityVillager.PriceInfo(10, 10), Items.FLINT, new EntityVillager.PriceInfo(6, 10))}}}, {{{new EntityVillager.EmeraldForItems(Items.PAPER, new EntityVillager.PriceInfo(24, 36)), new EntityVillager.ListEnchantedBookForEmeralds()}, {new EntityVillager.EmeraldForItems(Items.BOOK, new EntityVillager.PriceInfo(8, 10)), new EntityVillager.ListItemForEmeralds(Items.COMPASS, new EntityVillager.PriceInfo(10, 12)), new EntityVillager.ListItemForEmeralds(Item.getItemFromBlock(Blocks.BOOKSHELF), new EntityVillager.PriceInfo(3, 4))}, {new EntityVillager.EmeraldForItems(Items.WRITTEN_BOOK, new EntityVillager.PriceInfo(2, 2)), new EntityVillager.ListItemForEmeralds(Items.CLOCK, new EntityVillager.PriceInfo(10, 12)), new EntityVillager.ListItemForEmeralds(Item.getItemFromBlock(Blocks.GLASS), new EntityVillager.PriceInfo(-5, -3))}, {new EntityVillager.ListEnchantedBookForEmeralds()}, {new EntityVillager.ListEnchantedBookForEmeralds()}, {new EntityVillager.ListItemForEmeralds(Items.NAME_TAG, new EntityVillager.PriceInfo(20, 22))}}, {{new EntityVillager.EmeraldForItems(Items.PAPER, new EntityVillager.PriceInfo(24, 36))}, {new EntityVillager.EmeraldForItems(Items.COMPASS, new EntityVillager.PriceInfo(1, 1))}, {new EntityVillager.ListItemForEmeralds(Items.MAP, new EntityVillager.PriceInfo(7, 11))}, {new EntityVillager.TreasureMapForEmeralds(new EntityVillager.PriceInfo(12, 20), "Monument", MapDecoration.Type.MONUMENT), new EntityVillager.TreasureMapForEmeralds(new EntityVillager.PriceInfo(16, 28), "Mansion", MapDecoration.Type.MANSION)}}}, {{{new EntityVillager.EmeraldForItems(Items.ROTTEN_FLESH, new EntityVillager.PriceInfo(36, 40)), new EntityVillager.EmeraldForItems(Items.GOLD_INGOT, new EntityVillager.PriceInfo(8, 10))}, {new EntityVillager.ListItemForEmeralds(Items.REDSTONE, new EntityVillager.PriceInfo(-4, -1)), new EntityVillager.ListItemForEmeralds(new ItemStack(Items.DYE, 1, EnumDyeColor.BLUE.getDyeDamage()), new EntityVillager.PriceInfo(-2, -1))}, {new EntityVillager.ListItemForEmeralds(Items.ENDER_PEARL, new EntityVillager.PriceInfo(4, 7)), new EntityVillager.ListItemForEmeralds(Item.getItemFromBlock(Blocks.GLOWSTONE), new EntityVillager.PriceInfo(-3, -1))}, {new EntityVillager.ListItemForEmeralds(Items.EXPERIENCE_BOTTLE, new EntityVillager.PriceInfo(3, 11))}}}, {{{new EntityVillager.EmeraldForItems(Items.COAL, new EntityVillager.PriceInfo(16, 24)), new EntityVillager.ListItemForEmeralds(Items.IRON_HELMET, new EntityVillager.PriceInfo(4, 6))}, {new EntityVillager.EmeraldForItems(Items.IRON_INGOT, new EntityVillager.PriceInfo(7, 9)), new EntityVillager.ListItemForEmeralds(Items.IRON_CHESTPLATE, new EntityVillager.PriceInfo(10, 14))}, {new EntityVillager.EmeraldForItems(Items.DIAMOND, new EntityVillager.PriceInfo(3, 4)), new EntityVillager.ListEnchantedItemForEmeralds(Items.DIAMOND_CHESTPLATE, new EntityVillager.PriceInfo(16, 19))}, {new EntityVillager.ListItemForEmeralds(Items.CHAINMAIL_BOOTS, new EntityVillager.PriceInfo(5, 7)), new EntityVillager.ListItemForEmeralds(Items.CHAINMAIL_LEGGINGS, new EntityVillager.PriceInfo(9, 11)), new EntityVillager.ListItemForEmeralds(Items.CHAINMAIL_HELMET, new EntityVillager.PriceInfo(5, 7)), new EntityVillager.ListItemForEmeralds(Items.CHAINMAIL_CHESTPLATE, new EntityVillager.PriceInfo(11, 15))}}, {{new EntityVillager.EmeraldForItems(Items.COAL, new EntityVillager.PriceInfo(16, 24)), new EntityVillager.ListItemForEmeralds(Items.IRON_AXE, new EntityVillager.PriceInfo(6, 8))}, {new EntityVillager.EmeraldForItems(Items.IRON_INGOT, new EntityVillager.PriceInfo(7, 9)), new EntityVillager.ListEnchantedItemForEmeralds(Items.IRON_SWORD, new EntityVillager.PriceInfo(9, 10))}, {new EntityVillager.EmeraldForItems(Items.DIAMOND, new EntityVillager.PriceInfo(3, 4)), new EntityVillager.ListEnchantedItemForEmeralds(Items.DIAMOND_SWORD, new EntityVillager.PriceInfo(12, 15)), new EntityVillager.ListEnchantedItemForEmeralds(Items.DIAMOND_AXE, new EntityVillager.PriceInfo(9, 12))}}, {{new EntityVillager.EmeraldForItems(Items.COAL, new EntityVillager.PriceInfo(16, 24)), new EntityVillager.ListEnchantedItemForEmeralds(Items.IRON_SHOVEL, new EntityVillager.PriceInfo(5, 7))}, {new EntityVillager.EmeraldForItems(Items.IRON_INGOT, new EntityVillager.PriceInfo(7, 9)), new EntityVillager.ListEnchantedItemForEmeralds(Items.IRON_PICKAXE, new EntityVillager.PriceInfo(9, 11))}, {new EntityVillager.EmeraldForItems(Items.DIAMOND, new EntityVillager.PriceInfo(3, 4)), new EntityVillager.ListEnchantedItemForEmeralds(Items.DIAMOND_PICKAXE, new EntityVillager.PriceInfo(12, 15))}}}, {{{new EntityVillager.EmeraldForItems(Items.PORKCHOP, new EntityVillager.PriceInfo(14, 18)), new EntityVillager.EmeraldForItems(Items.CHICKEN, new EntityVillager.PriceInfo(14, 18))}, {new EntityVillager.EmeraldForItems(Items.COAL, new EntityVillager.PriceInfo(16, 24)), new EntityVillager.ListItemForEmeralds(Items.COOKED_PORKCHOP, new EntityVillager.PriceInfo(-7, -5)), new EntityVillager.ListItemForEmeralds(Items.COOKED_CHICKEN, new EntityVillager.PriceInfo(-8, -6))}}, {{new EntityVillager.EmeraldForItems(Items.LEATHER, new EntityVillager.PriceInfo(9, 12)), new EntityVillager.ListItemForEmeralds(Items.LEATHER_LEGGINGS, new EntityVillager.PriceInfo(2, 4))}, {new EntityVillager.ListEnchantedItemForEmeralds(Items.LEATHER_CHESTPLATE, new EntityVillager.PriceInfo(7, 12))}, {new EntityVillager.ListItemForEmeralds(Items.SADDLE, new EntityVillager.PriceInfo(8, 10))}}}, {new EntityVillager.ITradeList[0][]}};
- 
-     public EntityVillager(World worldIn)
-     {
-@@ -350,31 +125,31 @@
-     public EntityVillager(World worldIn, int professionId)
-     {
-         super(worldIn);
-+        this.villagerInventory = new InventoryBasic("Items", false, 8);
-         this.setProfession(professionId);
-         this.setSize(0.6F, 1.95F);
-         ((PathNavigateGround)this.getNavigator()).setBreakDoors(true);
-         this.setCanPickUpLoot(true);
-     }
- 
--    @Override
-     protected void initEntityAI()
-     {
-         this.tasks.addTask(0, new EntityAISwimming(this));
--        this.tasks.addTask(1, new EntityAIAvoidEntity<>(this, EntityZombie.class, 8.0F, 0.6, 0.6));
--        this.tasks.addTask(1, new EntityAIAvoidEntity<>(this, EntityEvoker.class, 12.0F, 0.8, 0.8));
--        this.tasks.addTask(1, new EntityAIAvoidEntity<>(this, EntityVindicator.class, 8.0F, 0.8, 0.8));
--        this.tasks.addTask(1, new EntityAIAvoidEntity<>(this, EntityVex.class, 8.0F, 0.6, 0.6));
-+        this.tasks.addTask(1, new EntityAIAvoidEntity(this, EntityZombie.class, 8.0F, 0.6D, 0.6D));
-+        this.tasks.addTask(1, new EntityAIAvoidEntity(this, EntityEvoker.class, 12.0F, 0.8D, 0.8D));
-+        this.tasks.addTask(1, new EntityAIAvoidEntity(this, EntityVindicator.class, 8.0F, 0.8D, 0.8D));
-+        this.tasks.addTask(1, new EntityAIAvoidEntity(this, EntityVex.class, 8.0F, 0.6D, 0.6D));
-         this.tasks.addTask(1, new EntityAITradePlayer(this));
-         this.tasks.addTask(1, new EntityAILookAtTradePlayer(this));
-         this.tasks.addTask(2, new EntityAIMoveIndoors(this));
-         this.tasks.addTask(3, new EntityAIRestrictOpenDoor(this));
-         this.tasks.addTask(4, new EntityAIOpenDoor(this, true));
--        this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 0.6));
-+        this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 0.6D));
-         this.tasks.addTask(6, new EntityAIVillagerMate(this));
-         this.tasks.addTask(7, new EntityAIFollowGolem(this));
-         this.tasks.addTask(9, new EntityAIWatchClosest2(this, EntityPlayer.class, 3.0F, 1.0F));
-         this.tasks.addTask(9, new EntityAIVillagerInteract(this));
--        this.tasks.addTask(9, new EntityAIWanderAvoidWater(this, 0.6));
-+        this.tasks.addTask(9, new EntityAIWanderAvoidWater(this, 0.6D));
-         this.tasks.addTask(10, new EntityAIWatchClosest(this, EntityLiving.class, 8.0F));
-     }
- 
-@@ -386,34 +161,31 @@
- 
-             if (this.isChild())
-             {
--                this.tasks.addTask(8, new EntityAIPlay(this, 0.32));
-+                this.tasks.addTask(8, new EntityAIPlay(this, 0.32D));
-             }
-             else if (this.getProfession() == 0)
-             {
--                this.tasks.addTask(6, new EntityAIHarvestFarmland(this, 0.6));
-+                this.tasks.addTask(6, new EntityAIHarvestFarmland(this, 0.6D));
-             }
-         }
-     }
- 
--    @Override
-     protected void onGrowingAdult()
-     {
-         if (this.getProfession() == 0)
-         {
--            this.tasks.addTask(8, new EntityAIHarvestFarmland(this, 0.6));
-+            this.tasks.addTask(8, new EntityAIHarvestFarmland(this, 0.6D));
-         }
- 
-         super.onGrowingAdult();
-     }
- 
--    @Override
-     protected void applyEntityAttributes()
-     {
-         super.applyEntityAttributes();
--        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5);
-+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
-     }
- 
--    @Override
-     protected void updateAITasks()
-     {
-         if (--this.randomTickDivider <= 0)
-@@ -442,7 +214,7 @@
- 
-         if (!this.isTrading() && this.timeUntilReset > 0)
-         {
--            this.timeUntilReset--;
-+            --this.timeUntilReset;
- 
-             if (this.timeUntilReset <= 0)
-             {
-@@ -473,7 +245,6 @@
-         super.updateAITasks();
-     }
- 
--    @Override
-     public boolean processInteract(EntityPlayer player, EnumHand hand)
-     {
-         ItemStack itemstack = player.getHeldItem(hand);
-@@ -484,10 +255,7 @@
-             itemstack.interactWithEntity(player, this, hand);
-             return true;
-         }
--        else if (!this.holdingSpawnEggOfClass(itemstack, (Class <? extends Entity >)this.getClass())
--                 && this.isEntityAlive()
--                 && !this.isTrading()
+@@ -487,7 +487,8 @@
+         else if (!this.holdingSpawnEggOfClass(itemstack, (Class <? extends Entity >)this.getClass())
+                  && this.isEntityAlive()
+                  && !this.isTrading()
 -                 && !this.isChild())
-+        else if (!this.holdingSpawnEggOfClass(itemstack, this.getClass()) && this.isEntityAlive() && !this.isTrading() && !this.isChild() && !player.isSneaking())
++                 && !this.isChild()
++                 && !player.isSneaking())
          {
              if (this.buyingList == null)
              {
-@@ -517,26 +285,21 @@
-         }
-     }
- 
--    @Override
-     protected void entityInit()
-     {
-         super.entityInit();
--        this.dataManager.register(PROFESSION, 0);
-+        this.dataManager.register(PROFESSION, Integer.valueOf(0));
-     }
- 
-     public static void registerFixesVillager(DataFixer fixer)
-     {
-         EntityLiving.registerFixesMob(fixer, EntityVillager.class);
--        fixer.registerWalker(FixTypes.ENTITY, new ItemStackDataLists(EntityVillager.class, "Inventory"));
--        fixer.registerWalker(
--            FixTypes.ENTITY,
--            new IDataWalker()
-+        fixer.registerWalker(FixTypes.ENTITY, new ItemStackDataLists(EntityVillager.class, new String[] {"Inventory"}));
-+        fixer.registerWalker(FixTypes.ENTITY, new IDataWalker()
-         {
--            @Override
-             public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
-             {
--                if (EntityList.getKey(EntityVillager.class).equals(new ResourceLocation(compound.getString("id")))
--                        && compound.hasKey("Offers", 10))
-+                if (EntityList.getKey(EntityVillager.class).equals(new ResourceLocation(compound.getString("id"))) && compound.hasKey("Offers", 10))
-                 {
-                     NBTTagCompound nbttagcompound = compound.getCompoundTag("Offers");
- 
-@@ -544,7 +307,7 @@
-                     {
-                         NBTTagList nbttaglist = nbttagcompound.getTagList("Recipes", 10);
- 
--                        for (int i = 0; i < nbttaglist.tagCount(); i++)
-+                        for (int i = 0; i < nbttaglist.tagCount(); ++i)
-                         {
-                             NBTTagCompound nbttagcompound1 = nbttaglist.getCompoundTagAt(i);
-                             DataFixesManager.processItemStack(fixer, nbttagcompound1, versionIn, "buy");
-@@ -557,15 +320,14 @@
- 
-                 return compound;
-             }
--        }
--        );
-+        });
-     }
- 
--    @Override
-     public void writeEntityToNBT(NBTTagCompound compound)
+@@ -566,6 +567,7 @@
      {
          super.writeEntityToNBT(compound);
          compound.setInteger("Profession", this.getProfession());
@@ -416,21 +27,7 @@
          compound.setInteger("Riches", this.wealth);
          compound.setInteger("Career", this.careerId);
          compound.setInteger("CareerLevel", this.careerLevel);
-@@ -578,7 +340,7 @@
- 
-         NBTTagList nbttaglist = new NBTTagList();
- 
--        for (int i = 0; i < this.villagerInventory.getSizeInventory(); i++)
-+        for (int i = 0; i < this.villagerInventory.getSizeInventory(); ++i)
-         {
-             ItemStack itemstack = this.villagerInventory.getStackInSlot(i);
- 
-@@ -591,11 +353,18 @@
-         compound.setTag("Inventory", nbttaglist);
-     }
- 
--    @Override
-     public void readEntityFromNBT(NBTTagCompound compound)
+@@ -596,6 +598,14 @@
      {
          super.readEntityFromNBT(compound);
          this.setProfession(compound.getInteger("Profession"));
@@ -445,49 +42,7 @@
          this.wealth = compound.getInteger("Riches");
          this.careerId = compound.getInteger("Career");
          this.careerLevel = compound.getInteger("CareerLevel");
-@@ -609,7 +378,7 @@
- 
-         NBTTagList nbttaglist = compound.getTagList("Inventory", 10);
- 
--        for (int i = 0; i < nbttaglist.tagCount(); i++)
-+        for (int i = 0; i < nbttaglist.tagCount(); ++i)
-         {
-             ItemStack itemstack = new ItemStack(nbttaglist.getCompoundTagAt(i));
- 
-@@ -623,32 +392,27 @@
-         this.setAdditionalAItasks();
-     }
- 
--    @Override
-     protected boolean canDespawn()
-     {
-         return false;
-     }
- 
--    @Override
-     protected SoundEvent getAmbientSound()
-     {
-         return this.isTrading() ? SoundEvents.ENTITY_VILLAGER_TRADING : SoundEvents.ENTITY_VILLAGER_AMBIENT;
-     }
- 
--    @Override
-     protected SoundEvent getHurtSound(DamageSource damageSourceIn)
-     {
-         return SoundEvents.ENTITY_VILLAGER_HURT;
-     }
- 
--    @Override
-     protected SoundEvent getDeathSound()
-     {
-         return SoundEvents.ENTITY_VILLAGER_DEATH;
-     }
- 
-     @Nullable
--    @Override
-     protected ResourceLocation getLootTable()
-     {
-         return LootTableList.ENTITIES_VILLAGER;
-@@ -656,12 +420,42 @@
+@@ -656,12 +666,42 @@
  
      public void setProfession(int professionId)
      {
@@ -532,15 +87,7 @@
      }
  
      public boolean isMating()
-@@ -684,7 +478,6 @@
-         return this.isPlaying;
-     }
- 
--    @Override
-     public void setRevengeTarget(@Nullable EntityLivingBase livingBase)
-     {
-         super.setRevengeTarget(livingBase);
-@@ -702,7 +495,7 @@
+@@ -702,7 +742,7 @@
                      i = -3;
                  }
  
@@ -549,15 +96,7 @@
  
                  if (this.isEntityAlive())
                  {
-@@ -712,7 +505,6 @@
-         }
-     }
- 
--    @Override
-     public void onDeath(DamageSource cause)
-     {
-         if (this.village != null)
-@@ -723,7 +515,7 @@
+@@ -723,7 +763,7 @@
              {
                  if (entity instanceof EntityPlayer)
                  {
@@ -566,58 +105,7 @@
                  }
                  else if (entity instanceof IMob)
                  {
-@@ -732,7 +524,7 @@
-             }
-             else
-             {
--                EntityPlayer entityplayer = this.world.getClosestPlayerToEntity(this, 16.0);
-+                EntityPlayer entityplayer = this.world.getClosestPlayerToEntity(this, 16.0D);
- 
-                 if (entityplayer != null)
-                 {
-@@ -744,14 +536,12 @@
-         super.onDeath(cause);
-     }
- 
--    @Override
-     public void setCustomer(@Nullable EntityPlayer player)
-     {
-         this.buyingPlayer = player;
-     }
- 
-     @Nullable
--    @Override
-     public EntityPlayer getCustomer()
-     {
-         return this.buyingPlayer;
-@@ -768,7 +558,7 @@
-         {
-             boolean flag = false;
- 
--            for (int i = 0; i < this.villagerInventory.getSizeInventory(); i++)
-+            for (int i = 0; i < this.villagerInventory.getSizeInventory(); ++i)
-             {
-                 ItemStack itemstack = this.villagerInventory.getStackInSlot(i);
- 
-@@ -779,8 +569,7 @@
-                         flag = true;
-                         this.villagerInventory.decrStackSize(i, 3);
-                     }
--                    else if ((itemstack.getItem() == Items.POTATO || itemstack.getItem() == Items.CARROT)
--                             && itemstack.getCount() >= 12)
-+                    else if ((itemstack.getItem() == Items.POTATO || itemstack.getItem() == Items.CARROT) && itemstack.getCount() >= 12)
-                     {
-                         flag = true;
-                         this.villagerInventory.decrStackSize(i, 12);
-@@ -804,7 +593,6 @@
-         this.isWillingToMate = isWillingToMate;
-     }
- 
--    @Override
-     public void useRecipe(MerchantRecipe recipe)
-     {
-         recipe.incrementToolUses();
-@@ -820,7 +608,7 @@
+@@ -820,7 +860,7 @@
  
              if (this.buyingPlayer != null)
              {
@@ -626,38 +114,7 @@
              }
              else
              {
-@@ -832,12 +620,12 @@
- 
-         if (recipe.getItemToBuy().getItem() == Items.EMERALD)
-         {
--            this.wealth = this.wealth + recipe.getItemToBuy().getCount();
-+            this.wealth += recipe.getItemToBuy().getCount();
-         }
- 
-         if (recipe.getRewardsExp())
-         {
--            this.world.spawnEntity(new EntityXPOrb(this.world, this.posX, this.posY + 0.5, this.posZ, i));
-+            this.world.spawnEntity(new EntityXPOrb(this.world, this.posX, this.posY + 0.5D, this.posZ, i));
-         }
- 
-         if (this.buyingPlayer instanceof EntityPlayerMP)
-@@ -846,7 +634,6 @@
-         }
-     }
- 
--    @Override
-     public void verifySellingItem(ItemStack stack)
-     {
-         if (!this.world.isRemote && this.livingSoundTime > -this.getTalkInterval() + 20)
-@@ -857,7 +644,6 @@
-     }
- 
-     @Nullable
--    @Override
-     public MerchantRecipeList getRecipes(EntityPlayer player)
-     {
-         if (this.buyingList == null)
-@@ -865,20 +651,18 @@
+@@ -865,20 +905,18 @@
              this.populateBuyingList();
          }
  
@@ -671,8 +128,7 @@
 -
          if (this.careerId != 0 && this.careerLevel != 0)
          {
--            this.careerLevel++;
-+            ++this.careerLevel;
+             this.careerLevel++;
          }
          else
          {
@@ -681,7 +137,7 @@
              this.careerLevel = 1;
          }
  
-@@ -889,42 +673,32 @@
+@@ -889,19 +927,13 @@
  
          int i = this.careerId - 1;
          int j = this.careerLevel - 1;
@@ -705,42 +161,16 @@
              }
          }
      }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public void setRecipes(@Nullable MerchantRecipeList recipeList)
-     {
-     }
- 
--    @Override
-     public World getWorld()
-     {
-         return this.world;
-     }
- 
--    @Override
-     public BlockPos getPos()
-     {
-         return new BlockPos(this);
-     }
- 
--    @Override
-     public ITextComponent getDisplayName()
-     {
-         Team team = this.getTeam();
-@@ -1015,9 +789,9 @@
+@@ -1015,7 +1047,7 @@
                      s1 = "nitwit";
              }
  
 -            if (s1 != null)
 +            s1 = this.getProfessionForge().getCareer(this.careerId-1).getName();
              {
--                ITextComponent itextcomponent = new TextComponentTranslation("entity.Villager." + s1);
-+                ITextComponent itextcomponent = new TextComponentTranslation("entity.Villager." + s1, new Object[0]);
+                 ITextComponent itextcomponent = new TextComponentTranslation("entity.Villager." + s1);
                  itextcomponent.getStyle().setHoverEvent(this.getHoverEvent());
-                 itextcomponent.getStyle().setInsertion(this.getCachedUniqueIdString());
- 
-@@ -1028,21 +802,15 @@
+@@ -1028,10 +1060,6 @@
  
                  return itextcomponent;
              }
@@ -751,50 +181,7 @@
          }
      }
  
--    @Override
-     public float getEyeHeight()
-     {
-         return this.isChild() ? 0.81F : 1.62F;
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public void handleStatusUpdate(byte id)
-     {
-         if (id == 12)
-@@ -1066,26 +834,16 @@
-     @SideOnly(Side.CLIENT)
-     private void spawnParticles(EnumParticleTypes particleType)
-     {
--        for (int i = 0; i < 5; i++)
-+        for (int i = 0; i < 5; ++i)
-         {
--            double d0 = this.rand.nextGaussian() * 0.02;
--            double d1 = this.rand.nextGaussian() * 0.02;
--            double d2 = this.rand.nextGaussian() * 0.02;
--            this.world
--            .spawnParticle(
--                particleType,
--                this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width,
--                this.posY + 1.0 + (double)(this.rand.nextFloat() * this.height),
--                this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width,
--                d0,
--                d1,
--                d2
--            );
-+            double d0 = this.rand.nextGaussian() * 0.02D;
-+            double d1 = this.rand.nextGaussian() * 0.02D;
-+            double d2 = this.rand.nextGaussian() * 0.02D;
-+            this.world.spawnParticle(particleType, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + 1.0D + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, d0, d1, d2);
-         }
-     }
- 
-     @Nullable
--    @Override
-     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
-     {
-         return this.finalizeMobSpawn(difficulty, livingdata, true);
-@@ -1097,7 +855,7 @@
+@@ -1097,7 +1125,7 @@
  
          if (p_190672_3_)
          {
@@ -803,57 +190,7 @@
          }
  
          this.setAdditionalAItasks();
-@@ -1113,24 +871,22 @@
-     public EntityVillager createChild(EntityAgeable ageable)
-     {
-         EntityVillager entityvillager = new EntityVillager(this.world);
--        entityvillager.onInitialSpawn(this.world.getDifficultyForLocation(new BlockPos(entityvillager)), null);
-+        entityvillager.onInitialSpawn(this.world.getDifficultyForLocation(new BlockPos(entityvillager)), (IEntityLivingData)null);
-         return entityvillager;
-     }
- 
--    @Override
-     public boolean canBeLeashedTo(EntityPlayer player)
-     {
-         return false;
-     }
- 
--    @Override
-     public void onStruckByLightning(EntityLightningBolt lightningBolt)
-     {
-         if (!this.world.isRemote && !this.isDead)
-         {
-             EntityWitch entitywitch = new EntityWitch(this.world);
-             entitywitch.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
--            entitywitch.onInitialSpawn(this.world.getDifficultyForLocation(new BlockPos(entitywitch)), null);
-+            entitywitch.onInitialSpawn(this.world.getDifficultyForLocation(new BlockPos(entitywitch)), (IEntityLivingData)null);
-             entitywitch.setNoAI(this.isAIDisabled());
- 
-             if (this.hasCustomName())
-@@ -1149,7 +905,6 @@
-         return this.villagerInventory;
-     }
- 
--    @Override
-     protected void updateEquipmentIfNeeded(EntityItem itemEntity)
-     {
-         ItemStack itemstack = itemEntity.getItem();
-@@ -1172,13 +927,7 @@
- 
-     private boolean canVillagerPickupItem(Item itemIn)
-     {
--        return itemIn == Items.BREAD
--               || itemIn == Items.POTATO
--               || itemIn == Items.CARROT
--               || itemIn == Items.WHEAT
--               || itemIn == Items.WHEAT_SEEDS
--               || itemIn == Items.BEETROOT
--               || itemIn == Items.BEETROOT_SEEDS;
-+        return itemIn == Items.BREAD || itemIn == Items.POTATO || itemIn == Items.CARROT || itemIn == Items.WHEAT || itemIn == Items.WHEAT_SEEDS || itemIn == Items.BEETROOT || itemIn == Items.BEETROOT_SEEDS;
-     }
- 
-     public boolean hasEnoughFoodToBreed()
-@@ -1194,23 +943,28 @@
+@@ -1194,7 +1222,15 @@
      public boolean wantsMoreFood()
      {
          boolean flag = this.getProfession() == 0;
@@ -870,106 +207,7 @@
      }
  
      private boolean hasEnoughItems(int multiplier)
-     {
-         boolean flag = this.getProfession() == 0;
- 
--        for (int i = 0; i < this.villagerInventory.getSizeInventory(); i++)
-+        for (int i = 0; i < this.villagerInventory.getSizeInventory(); ++i)
-         {
-             ItemStack itemstack = this.villagerInventory.getStackInSlot(i);
- 
-             if (!itemstack.isEmpty())
-             {
--                if (itemstack.getItem() == Items.BREAD && itemstack.getCount() >= 3 * multiplier
--                        || itemstack.getItem() == Items.POTATO && itemstack.getCount() >= 12 * multiplier
--                        || itemstack.getItem() == Items.CARROT && itemstack.getCount() >= 12 * multiplier
--                        || itemstack.getItem() == Items.BEETROOT && itemstack.getCount() >= 12 * multiplier)
-+                if (itemstack.getItem() == Items.BREAD && itemstack.getCount() >= 3 * multiplier || itemstack.getItem() == Items.POTATO && itemstack.getCount() >= 12 * multiplier || itemstack.getItem() == Items.CARROT && itemstack.getCount() >= 12 * multiplier || itemstack.getItem() == Items.BEETROOT && itemstack.getCount() >= 12 * multiplier)
-                 {
-                     return true;
-                 }
-@@ -1227,17 +981,11 @@
- 
-     public boolean isFarmItemInInventory()
-     {
--        for (int i = 0; i < this.villagerInventory.getSizeInventory(); i++)
-+        for (int i = 0; i < this.villagerInventory.getSizeInventory(); ++i)
-         {
-             ItemStack itemstack = this.villagerInventory.getStackInSlot(i);
- 
--            if (!itemstack.isEmpty()
--                    && (
--                        itemstack.getItem() == Items.WHEAT_SEEDS
--                        || itemstack.getItem() == Items.POTATO
--                        || itemstack.getItem() == Items.CARROT
--                        || itemstack.getItem() == Items.BEETROOT_SEEDS
--                    ))
-+            if (!itemstack.isEmpty() && (itemstack.getItem() == Items.WHEAT_SEEDS || itemstack.getItem() == Items.POTATO || itemstack.getItem() == Items.CARROT || itemstack.getItem() == Items.BEETROOT_SEEDS))
-             {
-                 return true;
-             }
-@@ -1246,7 +994,6 @@
-         return false;
-     }
- 
--    @Override
-     public boolean replaceItemInInventory(int inventorySlot, ItemStack itemStackIn)
-     {
-         if (super.replaceItemInInventory(inventorySlot, itemStackIn))
-@@ -1280,7 +1027,6 @@
-                 this.price = priceIn;
-             }
- 
--            @Override
-             public void addMerchantRecipe(IMerchant merchant, MerchantRecipeList recipeList, Random random)
-             {
-                 int i = 1;
-@@ -1314,27 +1060,19 @@
-                 this.sellingPriceInfo = p_i45813_4_;
-             }
- 
--            @Override
-             public void addMerchantRecipe(IMerchant merchant, MerchantRecipeList recipeList, Random random)
-             {
-                 int i = this.buyingPriceInfo.getPrice(random);
-                 int j = this.sellingPriceInfo.getPrice(random);
--                recipeList.add(
--                    new MerchantRecipe(
--                        new ItemStack(this.buyingItemStack.getItem(), i, this.buyingItemStack.getMetadata()),
--                        new ItemStack(Items.EMERALD),
--                        new ItemStack(this.sellingItemstack.getItem(), j, this.sellingItemstack.getMetadata())
--                    )
--                );
-+                recipeList.add(new MerchantRecipe(new ItemStack(this.buyingItemStack.getItem(), i, this.buyingItemStack.getMetadata()), new ItemStack(Items.EMERALD), new ItemStack(this.sellingItemstack.getItem(), j, this.sellingItemstack.getMetadata())));
-             }
-         }
- 
-     public static class ListEnchantedBookForEmeralds implements EntityVillager.ITradeList
-         {
--            @Override
-             public void addMerchantRecipe(IMerchant merchant, MerchantRecipeList recipeList, Random random)
-             {
--                Enchantment enchantment = Enchantment.REGISTRY.getRandomObject(random);
-+                Enchantment enchantment = (Enchantment)Enchantment.REGISTRY.getRandomObject(random);
-                 int i = MathHelper.getInt(random, enchantment.getMinLevel(), enchantment.getMaxLevel());
-                 ItemStack itemstack = ItemEnchantedBook.getEnchantedItemStack(new EnchantmentData(enchantment, i));
-                 int j = 2 + random.nextInt(5 + i * 10) + 3 * i;
-@@ -1364,7 +1102,6 @@
-                 this.priceInfo = p_i45814_2_;
-             }
- 
--            @Override
-             public void addMerchantRecipe(IMerchant merchant, MerchantRecipeList recipeList, Random random)
-             {
-                 int i = 1;
-@@ -1375,12 +1112,13 @@
-                 }
- 
-                 ItemStack itemstack = new ItemStack(Items.EMERALD, i, 0);
--                ItemStack itemstack1 = EnchantmentHelper.addRandomEnchantment(
--                                           random, new ItemStack(this.enchantedItemStack.getItem(), 1, this.enchantedItemStack.getMetadata()), 5 + random.nextInt(15), false
--                                       );
-+                ItemStack itemstack1 = EnchantmentHelper.addRandomEnchantment(random, new ItemStack(this.enchantedItemStack.getItem(), 1, this.enchantedItemStack.getMetadata()), 5 + random.nextInt(15), false);
+@@ -1381,6 +1417,9 @@
                  recipeList.add(new MerchantRecipe(itemstack, itemstack1));
              }
          }
@@ -979,42 +217,3 @@
  
      public static class ListItemForEmeralds implements EntityVillager.ITradeList
          {
-@@ -1399,7 +1137,6 @@
-                 this.priceInfo = priceInfo;
-             }
- 
--            @Override
-             public void addMerchantRecipe(IMerchant merchant, MerchantRecipeList recipeList, Random random)
-             {
-                 int i = 1;
-@@ -1431,19 +1168,17 @@
-         {
-             public PriceInfo(int p_i45810_1_, int p_i45810_2_)
-             {
--                super(p_i45810_1_, p_i45810_2_);
-+                super(Integer.valueOf(p_i45810_1_), Integer.valueOf(p_i45810_2_));
- 
-                 if (p_i45810_2_ < p_i45810_1_)
-                 {
--                    EntityVillager.LOGGER.warn("PriceRange({}, {}) invalid, {} smaller than {}", p_i45810_1_, p_i45810_2_, p_i45810_2_, p_i45810_1_);
-+                    EntityVillager.LOGGER.warn("PriceRange({}, {}) invalid, {} smaller than {}", Integer.valueOf(p_i45810_1_), Integer.valueOf(p_i45810_2_), Integer.valueOf(p_i45810_2_), Integer.valueOf(p_i45810_1_));
-                 }
-             }
- 
-             public int getPrice(Random rand)
-             {
--                return this.getFirst() >= this.getSecond()
--                       ? this.getFirst()
--                       : this.getFirst() + rand.nextInt(this.getSecond() - this.getFirst() + 1);
-+                return ((Integer)this.getFirst()).intValue() >= ((Integer)this.getSecond()).intValue() ? ((Integer)this.getFirst()).intValue() : ((Integer)this.getFirst()).intValue() + rand.nextInt(((Integer)this.getSecond()).intValue() - ((Integer)this.getFirst()).intValue() + 1);
-             }
-         }
- 
-@@ -1460,7 +1195,6 @@
-                 this.destinationType = p_i47340_3_;
-             }
- 
--            @Override
-             public void addMerchantRecipe(IMerchant merchant, MerchantRecipeList recipeList, Random random)
-             {
-                 int i = this.value.getPrice(random);

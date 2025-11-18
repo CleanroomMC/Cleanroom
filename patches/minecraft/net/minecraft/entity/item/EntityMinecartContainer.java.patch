@@ -1,117 +1,9 @@
 --- before/net/minecraft/entity/item/EntityMinecartContainer.java
 +++ after/net/minecraft/entity/item/EntityMinecartContainer.java
-@@ -26,7 +26,7 @@
- 
- public abstract class EntityMinecartContainer extends EntityMinecart implements ILockableContainer, ILootContainer
- {
--    private NonNullList<ItemStack> minecartContainerItems = NonNullList.withSize(36, ItemStack.EMPTY);
-+    private NonNullList<ItemStack> minecartContainerItems = NonNullList.<ItemStack>withSize(36, ItemStack.EMPTY);
-     public boolean dropContentsWhenDead = true;
-     private ResourceLocation lootTable;
-     private long lootTableSeed;
-@@ -41,7 +41,6 @@
-         super(worldIn, x, y, z);
-     }
- 
--    @Override
-     public void killMinecart(DamageSource source)
-     {
-         super.killMinecart(source);
-@@ -52,7 +51,6 @@
-         }
-     }
- 
--    @Override
-     public boolean isEmpty()
-     {
-         for (ItemStack itemstack : this.minecartContainerItems)
-@@ -66,24 +64,21 @@
-         return true;
-     }
- 
--    @Override
-     public ItemStack getStackInSlot(int index)
-     {
--        this.addLoot(null);
-+        this.addLoot((EntityPlayer)null);
-         return this.minecartContainerItems.get(index);
-     }
- 
--    @Override
-     public ItemStack decrStackSize(int index, int count)
-     {
--        this.addLoot(null);
-+        this.addLoot((EntityPlayer)null);
-         return ItemStackHelper.getAndSplit(this.minecartContainerItems, index, count);
-     }
- 
--    @Override
-     public ItemStack removeStackFromSlot(int index)
-     {
--        this.addLoot(null);
-+        this.addLoot((EntityPlayer)null);
-         ItemStack itemstack = this.minecartContainerItems.get(index);
- 
-         if (itemstack.isEmpty())
-@@ -97,10 +92,9 @@
-         }
-     }
- 
--    @Override
-     public void setInventorySlotContents(int index, ItemStack stack)
-     {
--        this.addLoot(null);
-+        this.addLoot((EntityPlayer)null);
-         this.minecartContainerItems.set(index, stack);
- 
-         if (!stack.isEmpty() && stack.getCount() > this.getInventoryStackLimit())
-@@ -109,48 +103,47 @@
-         }
-     }
- 
--    @Override
-     public void markDirty()
-     {
-     }
- 
--    @Override
-     public boolean isUsableByPlayer(EntityPlayer player)
-     {
--        return this.isDead ? false : !(player.getDistanceSq(this) > 64.0);
-+        if (this.isDead)
-+        {
-+            return false;
-+        }
-+        else
-+        {
-+            return player.getDistanceSq(this) <= 64.0D;
-+        }
-     }
- 
--    @Override
-     public void openInventory(EntityPlayer player)
-     {
-     }
- 
--    @Override
-     public void closeInventory(EntityPlayer player)
-     {
-     }
- 
--    @Override
-     public boolean isItemValidForSlot(int index, ItemStack stack)
-     {
-         return true;
-     }
- 
--    @Override
-     public int getInventoryStackLimit()
-     {
-         return 64;
-     }
+@@ -144,10 +144,10 @@
  
      @Nullable
--    @Override
+     @Override
 -    public Entity changeDimension(int dimensionIn)
 +    public Entity changeDimension(int dimensionIn, net.minecraftforge.common.util.ITeleporter teleporter)
      {
@@ -120,104 +12,16 @@
 +        return super.changeDimension(dimensionIn, teleporter);
      }
  
--    @Override
-     public void setDead()
-     {
-         if (this.dropContentsWhenDead)
-@@ -161,7 +154,6 @@
-         super.setDead();
-     }
- 
--    @Override
-     public void setDropItemsWhenDead(boolean dropWhenDead)
-     {
-         this.dropContentsWhenDead = dropWhenDead;
-@@ -170,10 +162,9 @@
-     public static void addDataFixers(DataFixer p_190574_0_, Class<?> p_190574_1_)
-     {
-         EntityMinecart.registerFixesMinecart(p_190574_0_, p_190574_1_);
--        p_190574_0_.registerWalker(FixTypes.ENTITY, new ItemStackDataLists(p_190574_1_, "Items"));
-+        p_190574_0_.registerWalker(FixTypes.ENTITY, new ItemStackDataLists(p_190574_1_, new String[] {"Items"}));
-     }
- 
--    @Override
-     protected void writeEntityToNBT(NBTTagCompound compound)
-     {
-         super.writeEntityToNBT(compound);
-@@ -193,11 +184,10 @@
-         }
-     }
- 
--    @Override
-     protected void readEntityFromNBT(NBTTagCompound compound)
-     {
-         super.readEntityFromNBT(compound);
--        this.minecartContainerItems = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
-+        this.minecartContainerItems = NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
- 
-         if (compound.hasKey("LootTable", 8))
-         {
-@@ -210,9 +200,9 @@
-         }
-     }
- 
--    @Override
+     @Override
+@@ -213,6 +213,7 @@
+     @Override
      public boolean processInitialInteract(EntityPlayer player, EnumHand hand)
      {
 +        if (super.processInitialInteract(player, hand)) return true;
          if (!this.world.isRemote)
          {
              player.displayGUIChest(this);
-@@ -221,7 +211,6 @@
-         return true;
-     }
- 
--    @Override
-     protected void applyDrag()
-     {
-         float f = 0.98F;
-@@ -233,39 +222,33 @@
-         }
- 
-         this.motionX *= (double)f;
--        this.motionY *= 0.0;
-+        this.motionY *= 0.0D;
-         this.motionZ *= (double)f;
-     }
- 
--    @Override
-     public int getField(int id)
-     {
-         return 0;
-     }
- 
--    @Override
-     public void setField(int id, int value)
-     {
-     }
- 
--    @Override
-     public int getFieldCount()
-     {
-         return 0;
-     }
- 
--    @Override
-     public boolean isLocked()
-     {
-         return false;
-     }
- 
--    @Override
-     public void setLockCode(LockCode code)
-     {
-     }
- 
--    @Override
-     public LockCode getLockCode()
-     {
-         return LockCode.EMPTY_CODE;
-@@ -288,21 +271,40 @@
+@@ -288,15 +289,35 @@
                  random = new Random(this.lootTableSeed);
              }
  
@@ -232,9 +36,8 @@
  
              loottable.fillInventory(this, random, lootcontext$builder.build());
          }
-     }
- 
--    @Override
++    }
++
 +    public net.minecraftforge.items.IItemHandler itemHandler = new net.minecraftforge.items.wrapper.InvWrapper(this);
 +
 +    @SuppressWarnings("unchecked")
@@ -253,20 +56,6 @@
 +    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @Nullable net.minecraft.util.EnumFacing facing)
 +    {
 +        return capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
-+    }
-+
-     public void clear()
-     {
--        this.addLoot(null);
-+        this.addLoot((EntityPlayer)null);
-         this.minecartContainerItems.clear();
      }
  
-@@ -312,7 +314,6 @@
-         this.lootTableSeed = lootTableSeedIn;
-     }
- 
--    @Override
-     public ResourceLocation getLootTable()
-     {
-         return this.lootTable;
+     @Override
