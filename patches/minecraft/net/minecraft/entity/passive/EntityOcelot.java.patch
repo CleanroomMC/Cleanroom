@@ -11,243 +11,243 @@
  
  public class EntityOcelot extends EntityTameable
  {
--    private static final DataParameter<Integer> field_184757_bz = EntityDataManager.func_187226_a(EntityOcelot.class, DataSerializers.field_187192_b);
-+    private static final DataParameter<Integer> field_184757_bz = EntityDataManager.<Integer>func_187226_a(EntityOcelot.class, DataSerializers.field_187192_b);
-     private EntityAIAvoidEntity<EntityPlayer> field_175545_bm;
-     private EntityAITempt field_70914_e;
+-    private static final DataParameter<Integer> OCELOT_VARIANT = EntityDataManager.createKey(EntityOcelot.class, DataSerializers.VARINT);
++    private static final DataParameter<Integer> OCELOT_VARIANT = EntityDataManager.<Integer>createKey(EntityOcelot.class, DataSerializers.VARINT);
+     private EntityAIAvoidEntity<EntityPlayer> avoidEntity;
+     private EntityAITempt aiTempt;
  
 @@ -53,44 +54,41 @@
-         this.func_70105_a(0.6F, 0.7F);
+         this.setSize(0.6F, 0.7F);
      }
  
 -    @Override
-     protected void func_184651_r()
+     protected void initEntityAI()
      {
-         this.field_70911_d = new EntityAISit(this);
--        this.field_70914_e = new EntityAITempt(this, 0.6, Items.field_151115_aP, true);
-+        this.field_70914_e = new EntityAITempt(this, 0.6D, Items.field_151115_aP, true);
-         this.field_70714_bg.func_75776_a(1, new EntityAISwimming(this));
-         this.field_70714_bg.func_75776_a(2, this.field_70911_d);
-         this.field_70714_bg.func_75776_a(3, this.field_70914_e);
--        this.field_70714_bg.func_75776_a(5, new EntityAIFollowOwner(this, 1.0, 10.0F, 5.0F));
--        this.field_70714_bg.func_75776_a(6, new EntityAIOcelotSit(this, 0.8));
-+        this.field_70714_bg.func_75776_a(5, new EntityAIFollowOwner(this, 1.0D, 10.0F, 5.0F));
-+        this.field_70714_bg.func_75776_a(6, new EntityAIOcelotSit(this, 0.8D));
-         this.field_70714_bg.func_75776_a(7, new EntityAILeapAtTarget(this, 0.3F));
-         this.field_70714_bg.func_75776_a(8, new EntityAIOcelotAttack(this));
--        this.field_70714_bg.func_75776_a(9, new EntityAIMate(this, 0.8));
--        this.field_70714_bg.func_75776_a(10, new EntityAIWanderAvoidWater(this, 0.8, 1.0000001E-5F));
-+        this.field_70714_bg.func_75776_a(9, new EntityAIMate(this, 0.8D));
-+        this.field_70714_bg.func_75776_a(10, new EntityAIWanderAvoidWater(this, 0.8D, 1.0000001E-5F));
-         this.field_70714_bg.func_75776_a(11, new EntityAIWatchClosest(this, EntityPlayer.class, 10.0F));
--        this.field_70715_bh.func_75776_a(1, new EntityAITargetNonTamed<>(this, EntityChicken.class, false, null));
-+        this.field_70715_bh.func_75776_a(1, new EntityAITargetNonTamed(this, EntityChicken.class, false, (Predicate)null));
+         this.aiSit = new EntityAISit(this);
+-        this.aiTempt = new EntityAITempt(this, 0.6, Items.FISH, true);
++        this.aiTempt = new EntityAITempt(this, 0.6D, Items.FISH, true);
+         this.tasks.addTask(1, new EntityAISwimming(this));
+         this.tasks.addTask(2, this.aiSit);
+         this.tasks.addTask(3, this.aiTempt);
+-        this.tasks.addTask(5, new EntityAIFollowOwner(this, 1.0, 10.0F, 5.0F));
+-        this.tasks.addTask(6, new EntityAIOcelotSit(this, 0.8));
++        this.tasks.addTask(5, new EntityAIFollowOwner(this, 1.0D, 10.0F, 5.0F));
++        this.tasks.addTask(6, new EntityAIOcelotSit(this, 0.8D));
+         this.tasks.addTask(7, new EntityAILeapAtTarget(this, 0.3F));
+         this.tasks.addTask(8, new EntityAIOcelotAttack(this));
+-        this.tasks.addTask(9, new EntityAIMate(this, 0.8));
+-        this.tasks.addTask(10, new EntityAIWanderAvoidWater(this, 0.8, 1.0000001E-5F));
++        this.tasks.addTask(9, new EntityAIMate(this, 0.8D));
++        this.tasks.addTask(10, new EntityAIWanderAvoidWater(this, 0.8D, 1.0000001E-5F));
+         this.tasks.addTask(11, new EntityAIWatchClosest(this, EntityPlayer.class, 10.0F));
+-        this.targetTasks.addTask(1, new EntityAITargetNonTamed<>(this, EntityChicken.class, false, null));
++        this.targetTasks.addTask(1, new EntityAITargetNonTamed(this, EntityChicken.class, false, (Predicate)null));
      }
  
 -    @Override
-     protected void func_70088_a()
+     protected void entityInit()
      {
-         super.func_70088_a();
--        this.field_70180_af.func_187214_a(field_184757_bz, 0);
-+        this.field_70180_af.func_187214_a(field_184757_bz, Integer.valueOf(0));
+         super.entityInit();
+-        this.dataManager.register(OCELOT_VARIANT, 0);
++        this.dataManager.register(OCELOT_VARIANT, Integer.valueOf(0));
      }
  
 -    @Override
-     public void func_70619_bc()
+     public void updateAITasks()
      {
-         if (this.func_70605_aq().func_75640_a())
+         if (this.getMoveHelper().isUpdating())
          {
-             double d0 = this.func_70605_aq().func_75638_b();
+             double d0 = this.getMoveHelper().getSpeed();
  
 -            if (d0 == 0.6)
 +            if (d0 == 0.6D)
              {
-                 this.func_70095_a(true);
-                 this.func_70031_b(false);
+                 this.setSneaking(true);
+                 this.setSprinting(false);
              }
 -            else if (d0 == 1.33)
 +            else if (d0 == 1.33D)
              {
-                 this.func_70095_a(false);
-                 this.func_70031_b(true);
+                 this.setSneaking(false);
+                 this.setSprinting(true);
 @@ -108,21 +106,18 @@
          }
      }
  
 -    @Override
-     protected boolean func_70692_ba()
+     protected boolean canDespawn()
      {
-         return !this.func_70909_n() && this.field_70173_aa > 2400;
+         return !this.isTamed() && this.ticksExisted > 2400;
      }
  
 -    @Override
-     protected void func_110147_ax()
+     protected void applyEntityAttributes()
      {
-         super.func_110147_ax();
--        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(10.0);
--        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.3F);
-+        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(10.0D);
-+        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.30000001192092896D);
+         super.applyEntityAttributes();
+-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10.0);
+-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.3F);
++        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10.0D);
++        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.30000001192092896D);
      }
  
 -    @Override
-     public void func_180430_e(float p_180430_1_, float p_180430_2_)
+     public void fall(float distance, float damageMultiplier)
      {
      }
 @@ -132,14 +127,12 @@
-         EntityLiving.func_189752_a(p_189787_0_, EntityOcelot.class);
+         EntityLiving.registerFixesMob(fixer, EntityOcelot.class);
      }
  
 -    @Override
-     public void func_70014_b(NBTTagCompound p_70014_1_)
+     public void writeEntityToNBT(NBTTagCompound compound)
      {
-         super.func_70014_b(p_70014_1_);
-         p_70014_1_.func_74768_a("CatType", this.func_70913_u());
+         super.writeEntityToNBT(compound);
+         compound.setInteger("CatType", this.getTameSkin());
      }
  
 -    @Override
-     public void func_70037_a(NBTTagCompound p_70037_1_)
+     public void readEntityFromNBT(NBTTagCompound compound)
      {
-         super.func_70037_a(p_70037_1_);
+         super.readEntityFromNBT(compound);
 @@ -147,7 +140,6 @@
      }
  
      @Nullable
 -    @Override
-     protected SoundEvent func_184639_G()
+     protected SoundEvent getAmbientSound()
      {
-         if (this.func_70909_n())
+         if (this.isTamed())
 @@ -167,31 +159,26 @@
          }
      }
  
 -    @Override
-     protected SoundEvent func_184601_bQ(DamageSource p_184601_1_)
+     protected SoundEvent getHurtSound(DamageSource damageSourceIn)
      {
-         return SoundEvents.field_187642_Q;
+         return SoundEvents.ENTITY_CAT_HURT;
      }
  
 -    @Override
-     protected SoundEvent func_184615_bR()
+     protected SoundEvent getDeathSound()
      {
-         return SoundEvents.field_187639_P;
+         return SoundEvents.ENTITY_CAT_DEATH;
      }
  
 -    @Override
-     protected float func_70599_aP()
+     protected float getSoundVolume()
      {
          return 0.4F;
      }
  
 -    @Override
-     public boolean func_70652_k(Entity p_70652_1_)
+     public boolean attackEntityAsMob(Entity entityIn)
      {
-         return p_70652_1_.func_70097_a(DamageSource.func_76358_a(this), 3.0F);
+         return entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), 3.0F);
      }
  
 -    @Override
-     public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
+     public boolean attackEntityFrom(DamageSource source, float amount)
      {
-         if (this.func_180431_b(p_70097_1_))
+         if (this.isEntityInvulnerable(source))
 @@ -210,13 +197,11 @@
      }
  
      @Nullable
 -    @Override
-     protected ResourceLocation func_184647_J()
+     protected ResourceLocation getLootTable()
      {
-         return LootTableList.field_186402_J;
+         return LootTableList.ENTITIES_OCELOT;
      }
  
 -    @Override
-     public boolean func_184645_a(EntityPlayer p_184645_1_, EnumHand p_184645_2_)
+     public boolean processInteract(EntityPlayer player, EnumHand hand)
      {
-         ItemStack itemstack = p_184645_1_.func_184586_b(p_184645_2_);
+         ItemStack itemstack = player.getHeldItem(hand);
 @@ -228,9 +213,7 @@
-                 this.field_70911_d.func_75270_a(!this.func_70906_o());
+                 this.aiSit.setSitting(!this.isSitting());
              }
          }
--        else if ((this.field_70914_e == null || this.field_70914_e.func_75277_f())
--                 && itemstack.func_77973_b() == Items.field_151115_aP
--                 && p_184645_1_.func_70068_e(this) < 9.0)
-+        else if ((this.field_70914_e == null || this.field_70914_e.func_75277_f()) && itemstack.func_77973_b() == Items.field_151115_aP && p_184645_1_.func_70068_e(this) < 9.0D)
+-        else if ((this.aiTempt == null || this.aiTempt.isRunning())
+-                 && itemstack.getItem() == Items.FISH
+-                 && player.getDistanceSq(this) < 9.0)
++        else if ((this.aiTempt == null || this.aiTempt.isRunning()) && itemstack.getItem() == Items.FISH && player.getDistanceSq(this) < 9.0D)
          {
-             if (!p_184645_1_.field_71075_bZ.field_75098_d)
+             if (!player.capabilities.isCreativeMode)
              {
 @@ -239,7 +222,7 @@
  
-             if (!this.field_70170_p.field_72995_K)
+             if (!this.world.isRemote)
              {
--                if (this.field_70146_Z.nextInt(3) == 0)
-+                if (this.field_70146_Z.nextInt(3) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, p_184645_1_))
+-                if (this.rand.nextInt(3) == 0)
++                if (this.rand.nextInt(3) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, player))
                  {
-                     this.func_193101_c(p_184645_1_);
-                     this.func_70912_b(1 + this.field_70170_p.field_73012_v.nextInt(3));
+                     this.setTamedBy(player);
+                     this.setTameSkin(1 + this.world.rand.nextInt(3));
 @@ -274,13 +257,11 @@
          return entityocelot;
      }
  
 -    @Override
-     public boolean func_70877_b(ItemStack p_70877_1_)
+     public boolean isBreedingItem(ItemStack stack)
      {
-         return p_70877_1_.func_77973_b() == Items.field_151115_aP;
+         return stack.getItem() == Items.FISH;
      }
  
 -    @Override
-     public boolean func_70878_b(EntityAnimal p_70878_1_)
+     public boolean canMateWith(EntityAnimal otherAnimal)
      {
-         if (p_70878_1_ == this)
+         if (otherAnimal == this)
 @@ -298,32 +279,36 @@
          else
          {
-             EntityOcelot entityocelot = (EntityOcelot)p_70878_1_;
--            return !entityocelot.func_70909_n() ? false : this.func_70880_s() && entityocelot.func_70880_s();
+             EntityOcelot entityocelot = (EntityOcelot)otherAnimal;
+-            return !entityocelot.isTamed() ? false : this.isInLove() && entityocelot.isInLove();
 +
-+            if (!entityocelot.func_70909_n())
++            if (!entityocelot.isTamed())
 +            {
 +                return false;
 +            }
 +            else
 +            {
-+                return this.func_70880_s() && entityocelot.func_70880_s();
++                return this.isInLove() && entityocelot.isInLove();
 +            }
          }
      }
  
-     public int func_70913_u()
+     public int getTameSkin()
      {
--        return this.field_70180_af.func_187225_a(field_184757_bz);
-+        return ((Integer)this.field_70180_af.func_187225_a(field_184757_bz)).intValue();
+-        return this.dataManager.get(OCELOT_VARIANT);
++        return ((Integer)this.dataManager.get(OCELOT_VARIANT)).intValue();
      }
  
-     public void func_70912_b(int p_70912_1_)
+     public void setTameSkin(int skinId)
      {
--        this.field_70180_af.func_187227_b(field_184757_bz, p_70912_1_);
-+        this.field_70180_af.func_187227_b(field_184757_bz, Integer.valueOf(p_70912_1_));
-     }
- 
--    @Override
-     public boolean func_70601_bi()
-     {
-         return this.field_70170_p.field_73012_v.nextInt(3) != 0;
+-        this.dataManager.set(OCELOT_VARIANT, skinId);
++        this.dataManager.set(OCELOT_VARIANT, Integer.valueOf(skinId));
      }
  
 -    @Override
-     public boolean func_70058_J()
+     public boolean getCanSpawnHere()
      {
--        if (this.field_70170_p.func_72917_a(this.func_174813_aQ(), this)
--                && this.field_70170_p.func_184144_a(this, this.func_174813_aQ()).isEmpty()
--                && !this.field_70170_p.func_72953_d(this.func_174813_aQ()))
-+        if (this.field_70170_p.func_72917_a(this.func_174813_aQ(), this) && this.field_70170_p.func_184144_a(this, this.func_174813_aQ()).isEmpty() && !this.field_70170_p.func_72953_d(this.func_174813_aQ()))
+         return this.world.rand.nextInt(3) != 0;
+     }
+ 
+-    @Override
+     public boolean isNotColliding()
+     {
+-        if (this.world.checkNoEntityCollision(this.getEntityBoundingBox(), this)
+-                && this.world.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty()
+-                && !this.world.containsAnyLiquid(this.getEntityBoundingBox()))
++        if (this.world.checkNoEntityCollision(this.getEntityBoundingBox(), this) && this.world.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty() && !this.world.containsAnyLiquid(this.getEntityBoundingBox()))
          {
-             BlockPos blockpos = new BlockPos(this.field_70165_t, this.func_174813_aQ().field_72338_b, this.field_70161_v);
+             BlockPos blockpos = new BlockPos(this.posX, this.getEntityBoundingBox().minY, this.posZ);
  
 @@ -335,7 +320,7 @@
-             IBlockState iblockstate = this.field_70170_p.func_180495_p(blockpos.func_177977_b());
-             Block block = iblockstate.func_177230_c();
+             IBlockState iblockstate = this.world.getBlockState(blockpos.down());
+             Block block = iblockstate.getBlock();
  
--            if (block == Blocks.field_150349_c || iblockstate.func_185904_a() == Material.field_151584_j)
-+            if (block == Blocks.field_150349_c || block.isLeaves(iblockstate, this.field_70170_p, blockpos.func_177977_b()))
+-            if (block == Blocks.GRASS || iblockstate.getMaterial() == Material.LEAVES)
++            if (block == Blocks.GRASS || block.isLeaves(iblockstate, this.world, blockpos.down()))
              {
                  return true;
              }
@@ -256,36 +256,36 @@
      }
  
 -    @Override
-     public String func_70005_c_()
+     public String getName()
      {
-         if (this.func_145818_k_())
+         if (this.hasCustomName())
 @@ -357,12 +341,11 @@
          }
      }
  
 -    @Override
-     protected void func_175544_ck()
+     protected void setupTamedAI()
      {
-         if (this.field_175545_bm == null)
+         if (this.avoidEntity == null)
          {
--            this.field_175545_bm = new EntityAIAvoidEntity<>(this, EntityPlayer.class, 16.0F, 0.8, 1.33);
-+            this.field_175545_bm = new EntityAIAvoidEntity<EntityPlayer>(this, EntityPlayer.class, 16.0F, 0.8D, 1.33D);
+-            this.avoidEntity = new EntityAIAvoidEntity<>(this, EntityPlayer.class, 16.0F, 0.8, 1.33);
++            this.avoidEntity = new EntityAIAvoidEntity<EntityPlayer>(this, EntityPlayer.class, 16.0F, 0.8D, 1.33D);
          }
  
-         this.field_70714_bg.func_85156_a(this.field_175545_bm);
+         this.tasks.removeTask(this.avoidEntity);
 @@ -374,14 +357,13 @@
      }
  
      @Nullable
 -    @Override
-     public IEntityLivingData func_180482_a(DifficultyInstance p_180482_1_, @Nullable IEntityLivingData p_180482_2_)
+     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
      {
-         p_180482_2_ = super.func_180482_a(p_180482_1_, p_180482_2_);
+         livingdata = super.onInitialSpawn(difficulty, livingdata);
  
-         if (this.func_70913_u() == 0 && this.field_70170_p.field_73012_v.nextInt(7) == 0)
+         if (this.getTameSkin() == 0 && this.world.rand.nextInt(7) == 0)
          {
 -            for (int i = 0; i < 2; i++)
 +            for (int i = 0; i < 2; ++i)
              {
-                 EntityOcelot entityocelot = new EntityOcelot(this.field_70170_p);
-                 entityocelot.func_70012_b(this.field_70165_t, this.field_70163_u, this.field_70161_v, this.field_70177_z, 0.0F);
+                 EntityOcelot entityocelot = new EntityOcelot(this.world);
+                 entityocelot.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0F);

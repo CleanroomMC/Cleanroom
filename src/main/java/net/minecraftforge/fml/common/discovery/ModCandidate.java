@@ -31,23 +31,36 @@ import com.google.common.collect.Sets;
 
 public class ModCandidate
 {
-    private File classPathRoot;
-    private File modContainer;
-    private ContainerType sourceType;
-    private boolean classpath;
-    private boolean isMinecraft;
-    private Set<String> foundClasses = Sets.newHashSet();
+    private final File classPathRoot;
+    private final File resourcePathRoot;
+    private final File modContainer;
+    private final ContainerType sourceType;
+    private final boolean classpath;
+    private final boolean isMinecraft;
+    private final Set<String> foundClasses = Sets.newHashSet();
     private List<ModContainer> mods;
-    private List<String> packages = Lists.newArrayList();
+    private final List<String> packages = Lists.newArrayList();
     private ASMDataTable table;
 
     public ModCandidate(File classPathRoot, File modContainer, ContainerType sourceType)
     {
         this(classPathRoot, modContainer, sourceType, false, false);
     }
+
+    protected ModCandidate(File classPathRoot, File resourcePathRoot)
+    {
+        this.classPathRoot = classPathRoot;
+        this.resourcePathRoot = resourcePathRoot;
+        this.modContainer = classPathRoot;
+        this.sourceType = ContainerType.DIR;
+        this.isMinecraft = false;
+        this.classpath = true;
+    }
+    
     public ModCandidate(File classPathRoot, File modContainer, ContainerType sourceType, boolean isMinecraft, boolean classpath)
     {
         this.classPathRoot = classPathRoot;
+        this.resourcePathRoot = classPathRoot;
         this.modContainer = modContainer;
         this.sourceType = sourceType;
         this.isMinecraft = isMinecraft;
@@ -57,6 +70,11 @@ public class ModCandidate
     public File getClassPathRoot()
     {
         return classPathRoot;
+    }
+    
+    public File getResourcePathRoot()
+    {
+        return resourcePathRoot;
     }
 
     public File getModContainer()
@@ -68,6 +86,7 @@ public class ModCandidate
     {
         return sourceType;
     }
+    
     public List<ModContainer> explore(ASMDataTable table)
     {
         this.table = table;
@@ -93,18 +112,22 @@ public class ModCandidate
     {
         return classpath;
     }
+    
     public boolean isMinecraftJar()
     {
         return isMinecraft;
     }
+    
     public Set<String> getClassList()
     {
         return foundClasses;
     }
+    
     public List<ModContainer> getContainedMods()
     {
         return mods;
     }
+    
     public List<String> getContainedPackages()
     {
         return packages;

@@ -1,188 +1,58 @@
 --- before/net/minecraft/client/gui/GuiKeyBindingList.java
 +++ after/net/minecraft/client/gui/GuiKeyBindingList.java
-@@ -23,7 +23,7 @@
-         super(p_i45031_2_, p_i45031_1_.field_146294_l + 45, p_i45031_1_.field_146295_m, 63, p_i45031_1_.field_146295_m - 32, 20);
-         this.field_148191_k = p_i45031_1_;
-         this.field_148189_l = p_i45031_2_;
--        KeyBinding[] akeybinding = ArrayUtils.clone(p_i45031_2_.field_71474_y.field_74324_K);
-+        KeyBinding[] akeybinding = (KeyBinding[])ArrayUtils.clone(p_i45031_2_.field_71474_y.field_74324_K);
-         this.field_148190_m = new GuiListExtended.IGuiListEntry[akeybinding.length + KeyBinding.func_151467_c().size()];
-         Arrays.sort((Object[])akeybinding);
-         int i = 0;
-@@ -50,25 +50,21 @@
-         }
-     }
- 
--    @Override
-     protected int func_148127_b()
-     {
-         return this.field_148190_m.length;
-     }
- 
--    @Override
-     public GuiListExtended.IGuiListEntry func_148180_b(int p_148180_1_)
-     {
-         return this.field_148190_m[p_148180_1_];
-     }
- 
--    @Override
-     protected int func_148137_d()
-     {
--        return super.func_148137_d() + 15;
-+        return super.func_148137_d() + 35;
-     }
- 
--    @Override
-     public int func_148139_c()
-     {
-         return super.func_148139_c() + 32;
-@@ -86,41 +82,20 @@
-             this.field_148286_c = GuiKeyBindingList.this.field_148189_l.field_71466_p.func_78256_a(this.field_148285_b);
-         }
- 
--        @Override
--        public void func_192634_a(
--            int p_192634_1_,
--            int p_192634_2_,
--            int p_192634_3_,
--            int p_192634_4_,
--            int p_192634_5_,
--            int p_192634_6_,
--            int p_192634_7_,
--            boolean p_192634_8_,
--            float p_192634_9_
--        )
-+        public void func_192634_a(int p_192634_1_, int p_192634_2_, int p_192634_3_, int p_192634_4_, int p_192634_5_, int p_192634_6_, int p_192634_7_, boolean p_192634_8_, float p_192634_9_)
+@@ -138,7 +138,7 @@
          {
--            GuiKeyBindingList.this.field_148189_l
--            .field_71466_p
--            .func_78276_b(
--                this.field_148285_b,
--                GuiKeyBindingList.this.field_148189_l.field_71462_r.field_146294_l / 2 - this.field_148286_c / 2,
--                p_192634_3_ + p_192634_5_ - GuiKeyBindingList.this.field_148189_l.field_71466_p.field_78288_b - 1,
--                16777215
--            );
-+            GuiKeyBindingList.this.field_148189_l.field_71466_p.func_78276_b(this.field_148285_b, GuiKeyBindingList.this.field_148189_l.field_71462_r.field_146294_l / 2 - this.field_148286_c / 2, p_192634_3_ + p_192634_5_ - GuiKeyBindingList.this.field_148189_l.field_71466_p.field_78288_b - 1, 16777215);
+             this.keybinding = name;
+             this.keyDesc = I18n.format(name.getKeyDescription());
+-            this.btnChangeKeyBinding = new GuiButton(0, 0, 0, 75, 20, I18n.format(name.getKeyDescription()));
++            this.btnChangeKeyBinding = new GuiButton(0, 0, 0, 95, 20, I18n.format(name.getKeyDescription()));
+             this.btnReset = new GuiButton(0, 0, 0, 50, 20, I18n.format("controls.reset"));
          }
  
--        @Override
-         public boolean func_148278_a(int p_148278_1_, int p_148278_2_, int p_148278_3_, int p_148278_4_, int p_148278_5_, int p_148278_6_)
-         {
-             return false;
-         }
- 
--        @Override
-         public void func_148277_b(int p_148277_1_, int p_148277_2_, int p_148277_3_, int p_148277_4_, int p_148277_5_, int p_148277_6_)
-         {
-         }
- 
--        @Override
-         public void func_192633_a(int p_192633_1_, int p_192633_2_, int p_192633_3_, float p_192633_4_)
-         {
-         }
-@@ -138,71 +113,48 @@
-         {
-             this.field_148282_b = p_i45029_2_;
-             this.field_148283_c = I18n.func_135052_a(p_i45029_2_.func_151464_g());
--            this.field_148280_d = new GuiButton(0, 0, 0, 75, 20, I18n.func_135052_a(p_i45029_2_.func_151464_g()));
-+            this.field_148280_d = new GuiButton(0, 0, 0, 95, 20, I18n.func_135052_a(p_i45029_2_.func_151464_g()));
-             this.field_148281_e = new GuiButton(0, 0, 0, 50, 20, I18n.func_135052_a("controls.reset"));
-         }
- 
--        @Override
--        public void func_192634_a(
--            int p_192634_1_,
--            int p_192634_2_,
--            int p_192634_3_,
--            int p_192634_4_,
--            int p_192634_5_,
--            int p_192634_6_,
--            int p_192634_7_,
--            boolean p_192634_8_,
--            float p_192634_9_
--        )
-+        public void func_192634_a(int p_192634_1_, int p_192634_2_, int p_192634_3_, int p_192634_4_, int p_192634_5_, int p_192634_6_, int p_192634_7_, boolean p_192634_8_, float p_192634_9_)
-         {
-             boolean flag = GuiKeyBindingList.this.field_148191_k.field_146491_f == this.field_148282_b;
--            GuiKeyBindingList.this.field_148189_l
--            .field_71466_p
--            .func_78276_b(
--                this.field_148283_c,
--                p_192634_2_ + 90 - GuiKeyBindingList.this.field_148188_n,
--                p_192634_3_ + p_192634_5_ / 2 - GuiKeyBindingList.this.field_148189_l.field_71466_p.field_78288_b / 2,
--                16777215
--            );
--            this.field_148281_e.field_146128_h = p_192634_2_ + 190;
-+            GuiKeyBindingList.this.field_148189_l.field_71466_p.func_78276_b(this.field_148283_c, p_192634_2_ + 90 - GuiKeyBindingList.this.field_148188_n, p_192634_3_ + p_192634_5_ / 2 - GuiKeyBindingList.this.field_148189_l.field_71466_p.field_78288_b / 2, 16777215);
-+            this.field_148281_e.field_146128_h = p_192634_2_ + 210;
-             this.field_148281_e.field_146129_i = p_192634_3_;
--            this.field_148281_e.field_146124_l = this.field_148282_b.func_151463_i() != this.field_148282_b.func_151469_h();
-+            this.field_148281_e.field_146124_l = !this.field_148282_b.isSetToDefaultValue();
-             this.field_148281_e.func_191745_a(GuiKeyBindingList.this.field_148189_l, p_192634_6_, p_192634_7_, p_192634_9_);
-             this.field_148280_d.field_146128_h = p_192634_2_ + 105;
-             this.field_148280_d.field_146129_i = p_192634_3_;
--            this.field_148280_d.field_146126_j = GameSettings.func_74298_c(this.field_148282_b.func_151463_i());
-+            this.field_148280_d.field_146126_j = this.field_148282_b.getDisplayName();
+@@ -164,23 +164,24 @@
+                 y + slotHeight / 2 - GuiKeyBindingList.this.mc.fontRenderer.FONT_HEIGHT / 2,
+                 16777215
+             );
+-            this.btnReset.x = x + 190;
++            this.btnReset.x = x + 210;
+             this.btnReset.y = y;
+-            this.btnReset.enabled = this.keybinding.getKeyCode() != this.keybinding.getKeyCodeDefault();
++            this.btnReset.enabled = !this.keybinding.isSetToDefaultValue();
+             this.btnReset.drawButton(GuiKeyBindingList.this.mc, mouseX, mouseY, partialTicks);
+             this.btnChangeKeyBinding.x = x + 105;
+             this.btnChangeKeyBinding.y = y;
+-            this.btnChangeKeyBinding.displayString = GameSettings.getKeyDisplayString(this.keybinding.getKeyCode());
++            this.btnChangeKeyBinding.displayString = this.keybinding.getDisplayName();
              boolean flag1 = false;
 +            boolean keyCodeModifierConflict = true; // less severe form of conflict, like SHIFT conflicting with SHIFT+G
  
-             if (this.field_148282_b.func_151463_i() != 0)
+             if (this.keybinding.getKeyCode() != 0)
              {
-                 for (KeyBinding keybinding : GuiKeyBindingList.this.field_148189_l.field_71474_y.field_74324_K)
+                 for (KeyBinding keybinding : GuiKeyBindingList.this.mc.gameSettings.keyBindings)
                  {
--                    if (keybinding != this.field_148282_b && keybinding.func_151463_i() == this.field_148282_b.func_151463_i())
-+                    if (keybinding != this.field_148282_b && keybinding.conflicts(this.field_148282_b))
+-                    if (keybinding != this.keybinding && keybinding.getKeyCode() == this.keybinding.getKeyCode())
++                    if (keybinding != this.keybinding && keybinding.conflicts(this.keybinding))
                      {
                          flag1 = true;
 -                        break;
-+                        keyCodeModifierConflict &= keybinding.hasKeyCodeModifierConflict(this.field_148282_b);
++                        keyCodeModifierConflict &= keybinding.hasKeyCodeModifierConflict(this.keybinding);
                      }
                  }
              }
- 
-             if (flag)
-             {
--                this.field_148280_d.field_146126_j = TextFormatting.WHITE
--                                                     + "> "
--                                                     + TextFormatting.YELLOW
--                                                     + this.field_148280_d.field_146126_j
--                                                     + TextFormatting.WHITE
--                                                     + " <";
-+                this.field_148280_d.field_146126_j = TextFormatting.WHITE + "> " + TextFormatting.YELLOW + this.field_148280_d.field_146126_j + TextFormatting.WHITE + " <";
+@@ -196,7 +197,7 @@
              }
              else if (flag1)
              {
--                this.field_148280_d.field_146126_j = TextFormatting.RED + this.field_148280_d.field_146126_j;
-+                this.field_148280_d.field_146126_j = (keyCodeModifierConflict ? TextFormatting.GOLD : TextFormatting.RED) + this.field_148280_d.field_146126_j;
+-                this.btnChangeKeyBinding.displayString = TextFormatting.RED + this.btnChangeKeyBinding.displayString;
++                this.btnChangeKeyBinding.displayString = (keyCodeModifierConflict ? TextFormatting.GOLD : TextFormatting.RED) + this.btnChangeKeyBinding.displayString;
              }
  
-             this.field_148280_d.func_191745_a(GuiKeyBindingList.this.field_148189_l, p_192634_6_, p_192634_7_, p_192634_9_);
-         }
- 
--        @Override
-         public boolean func_148278_a(int p_148278_1_, int p_148278_2_, int p_148278_3_, int p_148278_4_, int p_148278_5_, int p_148278_6_)
-         {
-             if (this.field_148280_d.func_146116_c(GuiKeyBindingList.this.field_148189_l, p_148278_2_, p_148278_3_))
-@@ -212,6 +164,7 @@
+             this.btnChangeKeyBinding.drawButton(GuiKeyBindingList.this.mc, mouseX, mouseY, partialTicks);
+@@ -212,6 +213,7 @@
              }
-             else if (this.field_148281_e.func_146116_c(GuiKeyBindingList.this.field_148189_l, p_148278_2_, p_148278_3_))
+             else if (this.btnReset.mousePressed(GuiKeyBindingList.this.mc, mouseX, mouseY))
              {
-+                this.field_148282_b.setToDefault();
-                 GuiKeyBindingList.this.field_148189_l.field_71474_y.func_151440_a(this.field_148282_b, this.field_148282_b.func_151469_h());
-                 KeyBinding.func_74508_b();
++                this.keybinding.setToDefault();
+                 GuiKeyBindingList.this.mc.gameSettings.setOptionKeyBinding(this.keybinding, this.keybinding.getKeyCodeDefault());
+                 KeyBinding.resetKeyBindingArrayAndHash();
                  return true;
-@@ -222,14 +175,12 @@
-             }
-         }
- 
--        @Override
-         public void func_148277_b(int p_148277_1_, int p_148277_2_, int p_148277_3_, int p_148277_4_, int p_148277_5_, int p_148277_6_)
-         {
-             this.field_148280_d.func_146118_a(p_148277_2_, p_148277_3_);
-             this.field_148281_e.func_146118_a(p_148277_2_, p_148277_3_);
-         }
- 
--        @Override
-         public void func_192633_a(int p_192633_1_, int p_192633_2_, int p_192633_3_, float p_192633_4_)
-         {
-         }

@@ -1,46 +1,46 @@
 --- before/net/minecraft/world/gen/feature/WorldGenMinable.java
 +++ after/net/minecraft/world/gen/feature/WorldGenMinable.java
 @@ -27,10 +27,9 @@
-         this.field_175919_c = p_i45631_3_;
+         this.predicate = p_i45631_3_;
      }
  
 -    @Override
-     public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
+     public boolean generate(World worldIn, Random rand, BlockPos position)
      {
--        float f = p_180709_2_.nextFloat() * (float) Math.PI;
-+        float f = p_180709_2_.nextFloat() * (float)Math.PI;
-         double d0 = (double)((float)(p_180709_3_.func_177958_n() + 8) + MathHelper.func_76126_a(f) * (float)this.field_76541_b / 8.0F);
-         double d1 = (double)((float)(p_180709_3_.func_177958_n() + 8) - MathHelper.func_76126_a(f) * (float)this.field_76541_b / 8.0F);
-         double d2 = (double)((float)(p_180709_3_.func_177952_p() + 8) + MathHelper.func_76134_b(f) * (float)this.field_76541_b / 8.0F);
+-        float f = rand.nextFloat() * (float) Math.PI;
++        float f = rand.nextFloat() * (float)Math.PI;
+         double d0 = (double)((float)(position.getX() + 8) + MathHelper.sin(f) * (float)this.numberOfBlocks / 8.0F);
+         double d1 = (double)((float)(position.getX() + 8) - MathHelper.sin(f) * (float)this.numberOfBlocks / 8.0F);
+         double d2 = (double)((float)(position.getZ() + 8) + MathHelper.cos(f) * (float)this.numberOfBlocks / 8.0F);
 @@ -38,43 +37,44 @@
-         double d4 = (double)(p_180709_3_.func_177956_o() + p_180709_2_.nextInt(3) - 2);
-         double d5 = (double)(p_180709_3_.func_177956_o() + p_180709_2_.nextInt(3) - 2);
+         double d4 = (double)(position.getY() + rand.nextInt(3) - 2);
+         double d5 = (double)(position.getY() + rand.nextInt(3) - 2);
  
--        for (int i = 0; i < this.field_76541_b; i++)
-+        for (int i = 0; i < this.field_76541_b; ++i)
+-        for (int i = 0; i < this.numberOfBlocks; i++)
++        for (int i = 0; i < this.numberOfBlocks; ++i)
          {
-             float f1 = (float)i / (float)this.field_76541_b;
+             float f1 = (float)i / (float)this.numberOfBlocks;
              double d6 = d0 + (d1 - d0) * (double)f1;
              double d7 = d4 + (d5 - d4) * (double)f1;
              double d8 = d2 + (d3 - d2) * (double)f1;
--            double d9 = p_180709_2_.nextDouble() * (double)this.field_76541_b / 16.0;
--            double d10 = (double)(MathHelper.func_76126_a((float) Math.PI * f1) + 1.0F) * d9 + 1.0;
--            double d11 = (double)(MathHelper.func_76126_a((float) Math.PI * f1) + 1.0F) * d9 + 1.0;
--            int j = MathHelper.func_76128_c(d6 - d10 / 2.0);
--            int k = MathHelper.func_76128_c(d7 - d11 / 2.0);
--            int l = MathHelper.func_76128_c(d8 - d10 / 2.0);
--            int i1 = MathHelper.func_76128_c(d6 + d10 / 2.0);
--            int j1 = MathHelper.func_76128_c(d7 + d11 / 2.0);
--            int k1 = MathHelper.func_76128_c(d8 + d10 / 2.0);
-+            double d9 = p_180709_2_.nextDouble() * (double)this.field_76541_b / 16.0D;
-+            double d10 = (double)(MathHelper.func_76126_a((float)Math.PI * f1) + 1.0F) * d9 + 1.0D;
-+            double d11 = (double)(MathHelper.func_76126_a((float)Math.PI * f1) + 1.0F) * d9 + 1.0D;
-+            int j = MathHelper.func_76128_c(d6 - d10 / 2.0D);
-+            int k = MathHelper.func_76128_c(d7 - d11 / 2.0D);
-+            int l = MathHelper.func_76128_c(d8 - d10 / 2.0D);
-+            int i1 = MathHelper.func_76128_c(d6 + d10 / 2.0D);
-+            int j1 = MathHelper.func_76128_c(d7 + d11 / 2.0D);
-+            int k1 = MathHelper.func_76128_c(d8 + d10 / 2.0D);
+-            double d9 = rand.nextDouble() * (double)this.numberOfBlocks / 16.0;
+-            double d10 = (double)(MathHelper.sin((float) Math.PI * f1) + 1.0F) * d9 + 1.0;
+-            double d11 = (double)(MathHelper.sin((float) Math.PI * f1) + 1.0F) * d9 + 1.0;
+-            int j = MathHelper.floor(d6 - d10 / 2.0);
+-            int k = MathHelper.floor(d7 - d11 / 2.0);
+-            int l = MathHelper.floor(d8 - d10 / 2.0);
+-            int i1 = MathHelper.floor(d6 + d10 / 2.0);
+-            int j1 = MathHelper.floor(d7 + d11 / 2.0);
+-            int k1 = MathHelper.floor(d8 + d10 / 2.0);
++            double d9 = rand.nextDouble() * (double)this.numberOfBlocks / 16.0D;
++            double d10 = (double)(MathHelper.sin((float)Math.PI * f1) + 1.0F) * d9 + 1.0D;
++            double d11 = (double)(MathHelper.sin((float)Math.PI * f1) + 1.0F) * d9 + 1.0D;
++            int j = MathHelper.floor(d6 - d10 / 2.0D);
++            int k = MathHelper.floor(d7 - d11 / 2.0D);
++            int l = MathHelper.floor(d8 - d10 / 2.0D);
++            int i1 = MathHelper.floor(d6 + d10 / 2.0D);
++            int j1 = MathHelper.floor(d7 + d11 / 2.0D);
++            int k1 = MathHelper.floor(d8 + d10 / 2.0D);
  
 -            for (int l1 = j; l1 <= i1; l1++)
 +            for (int l1 = j; l1 <= i1; ++l1)
@@ -71,18 +71,18 @@
                                  {
                                      BlockPos blockpos = new BlockPos(l1, i2, j2);
  
--                                    if (this.field_175919_c.apply(p_180709_1_.func_180495_p(blockpos)))
-+                                    IBlockState state = p_180709_1_.func_180495_p(blockpos);
-+                                    if (state.func_177230_c().isReplaceableOreGen(state, p_180709_1_, blockpos, this.field_175919_c))
+-                                    if (this.predicate.apply(worldIn.getBlockState(blockpos)))
++                                    IBlockState state = worldIn.getBlockState(blockpos);
++                                    if (state.getBlock().isReplaceableOreGen(state, worldIn, blockpos, this.predicate))
                                      {
-                                         p_180709_1_.func_180501_a(blockpos, this.field_175920_a, 2);
+                                         worldIn.setBlockState(blockpos, this.oreBlock, 2);
                                      }
 @@ -99,7 +99,7 @@
              {
-                 if (p_apply_1_ != null && p_apply_1_.func_177230_c() == Blocks.field_150348_b)
+                 if (p_apply_1_ != null && p_apply_1_.getBlock() == Blocks.STONE)
                  {
--                    BlockStone.EnumType blockstone$enumtype = p_apply_1_.func_177229_b(BlockStone.field_176247_a);
-+                    BlockStone.EnumType blockstone$enumtype = (BlockStone.EnumType)p_apply_1_.func_177229_b(BlockStone.field_176247_a);
-                     return blockstone$enumtype.func_190912_e();
+-                    BlockStone.EnumType blockstone$enumtype = p_apply_1_.getValue(BlockStone.VARIANT);
++                    BlockStone.EnumType blockstone$enumtype = (BlockStone.EnumType)p_apply_1_.getValue(BlockStone.VARIANT);
+                     return blockstone$enumtype.isNatural();
                  }
                  else

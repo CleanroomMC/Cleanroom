@@ -1,84 +1,12 @@
 --- before/net/minecraft/client/renderer/block/model/WeightedBakedModel.java
 +++ after/net/minecraft/client/renderer/block/model/WeightedBakedModel.java
-@@ -23,51 +23,46 @@
-     {
-         this.field_177565_b = p_i46073_1_;
-         this.field_177567_a = WeightedRandom.func_76272_a(p_i46073_1_);
--        this.field_177566_c = p_i46073_1_.get(0).field_185281_b;
-+        this.field_177566_c = (p_i46073_1_.get(0)).field_185281_b;
-     }
- 
-     private IBakedModel func_188627_a(long p_188627_1_)
-     {
--        return WeightedRandom.func_180166_a(this.field_177565_b, Math.abs((int)p_188627_1_ >> 16) % this.field_177567_a).field_185281_b;
-+        return ((WeightedBakedModel.WeightedModel)WeightedRandom.func_180166_a(this.field_177565_b, Math.abs((int)p_188627_1_ >> 16) % this.field_177567_a)).field_185281_b;
+@@ -43,7 +43,8 @@
+         return this.baseModel.isAmbientOcclusion();
      }
  
 -    @Override
-     public List<BakedQuad> func_188616_a(@Nullable IBlockState p_188616_1_, @Nullable EnumFacing p_188616_2_, long p_188616_3_)
-     {
-         return this.func_188627_a(p_188616_3_).func_188616_a(p_188616_1_, p_188616_2_, p_188616_3_);
-     }
- 
--    @Override
-     public boolean func_177555_b()
-     {
-         return this.field_177566_c.func_177555_b();
-     }
- 
--    @Override
-+    public boolean isAmbientOcclusion(IBlockState state) { return this.field_177566_c.isAmbientOcclusion(state); }
++    public boolean isAmbientOcclusion(IBlockState state) { return this.baseModel.isAmbientOcclusion(state); }
 +
-     public boolean func_177556_c()
+     public boolean isGui3d()
      {
-         return this.field_177566_c.func_177556_c();
-     }
- 
--    @Override
-     public boolean func_188618_c()
-     {
-         return this.field_177566_c.func_188618_c();
-     }
- 
--    @Override
-     public TextureAtlasSprite func_177554_e()
-     {
-         return this.field_177566_c.func_177554_e();
-     }
- 
--    @Override
-     public ItemCameraTransforms func_177552_f()
-     {
-         return this.field_177566_c.func_177552_f();
-     }
- 
--    @Override
-     public ItemOverrideList func_188617_f()
-     {
-         return this.field_177566_c.func_188617_f();
-@@ -76,7 +71,7 @@
-     @SideOnly(Side.CLIENT)
-     public static class Builder
-         {
--            private final List<WeightedBakedModel.WeightedModel> field_177678_a = Lists.newArrayList();
-+            private final List<WeightedBakedModel.WeightedModel> field_177678_a = Lists.<WeightedBakedModel.WeightedModel>newArrayList();
- 
-             public WeightedBakedModel.Builder func_177677_a(IBakedModel p_177677_1_, int p_177677_2_)
-             {
-@@ -92,7 +87,7 @@
- 
-             public IBakedModel func_177675_b()
-             {
--                return this.field_177678_a.get(0).field_185281_b;
-+                return (this.field_177678_a.get(0)).field_185281_b;
-             }
-         }
- 
-@@ -112,7 +107,6 @@
-                 return ComparisonChain.start().compare(p_compareTo_1_.field_76292_a, this.field_76292_a).result();
-             }
- 
--            @Override
-             public String toString()
-             {
-                 return "MyWeighedRandomItem{weight=" + this.field_76292_a + ", model=" + this.field_185281_b + '}';
+         return this.baseModel.isGui3d();

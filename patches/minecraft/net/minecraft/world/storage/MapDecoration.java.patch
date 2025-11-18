@@ -1,7 +1,7 @@
 --- before/net/minecraft/world/storage/MapDecoration.java
 +++ after/net/minecraft/world/storage/MapDecoration.java
 @@ -50,7 +50,6 @@
-         return this.field_191181_a.func_191160_b();
+         return this.type.isRenderedOnFrame();
      }
  
 -    @Override
@@ -12,14 +12,14 @@
              {
                  return false;
              }
-+            else if (this.field_176115_b != mapdecoration.field_176115_b)
++            else if (this.x != mapdecoration.x)
 +            {
 +                return false;
 +            }
              else
              {
--                return this.field_176115_b != mapdecoration.field_176115_b ? false : this.field_176116_c == mapdecoration.field_176116_c;
-+                return this.field_176116_c == mapdecoration.field_176116_c;
+-                return this.x != mapdecoration.x ? false : this.y == mapdecoration.y;
++                return this.y == mapdecoration.y;
              }
          }
      }
@@ -27,11 +27,11 @@
 -    @Override
      public int hashCode()
      {
-         int i = this.field_191181_a.func_191163_a();
-         i = 31 * i + this.field_176115_b;
-         i = 31 * i + this.field_176116_c;
--        return 31 * i + this.field_176114_d;
-+        i = 31 * i + this.field_176114_d;
+         int i = this.type.getIcon();
+         i = 31 * i + this.x;
+         i = 31 * i + this.y;
+-        return 31 * i + this.rotation;
++        i = 31 * i + this.rotation;
 +        return i;
 +    }
 +
@@ -51,16 +51,16 @@
          MANSION(true, 5393476),
          MONUMENT(true, 3830373);
  
--        private final byte field_191175_k = (byte)this.ordinal();
-+        private final byte field_191175_k;
-         private final boolean field_191176_l;
-         private final int field_191177_m;
+-        private final byte icon = (byte)this.ordinal();
++        private final byte icon;
+         private final boolean renderedOnFrame;
+         private final int mapColor;
  
 @@ -113,6 +127,7 @@
  
          private Type(boolean p_i47344_3_, int p_i47344_4_)
          {
-+            this.field_191175_k = (byte)this.ordinal();
-             this.field_191176_l = p_i47344_3_;
-             this.field_191177_m = p_i47344_4_;
++            this.icon = (byte)this.ordinal();
+             this.renderedOnFrame = p_i47344_3_;
+             this.mapColor = p_i47344_4_;
          }

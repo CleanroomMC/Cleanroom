@@ -1,183 +1,21 @@
 --- before/net/minecraft/advancements/PlayerAdvancements.java
 +++ after/net/minecraft/advancements/PlayerAdvancements.java
-@@ -16,6 +16,7 @@
- import java.util.Map;
- import java.util.Set;
- import java.util.Map.Entry;
-+import java.util.function.Function;
- import java.util.stream.Collectors;
- import java.util.stream.Stream;
- import javax.annotation.Nullable;
-@@ -32,20 +33,16 @@
- public class PlayerAdvancements
- {
-     private static final Logger field_192753_a = LogManager.getLogger();
--    private static final Gson field_192754_b = new GsonBuilder()
--        .registerTypeAdapter(AdvancementProgress.class, new AdvancementProgress.Serializer())
--        .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
--        .setPrettyPrinting()
--        .create();
-+    private static final Gson field_192754_b = (new GsonBuilder()).registerTypeAdapter(AdvancementProgress.class, new AdvancementProgress.Serializer()).registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer()).setPrettyPrinting().create();
-     private static final TypeToken<Map<ResourceLocation, AdvancementProgress>> field_192755_c = new TypeToken<Map<ResourceLocation, AdvancementProgress>>()
-     {
-     };
-     private final MinecraftServer field_192756_d;
-     private final File field_192757_e;
--    private final Map<Advancement, AdvancementProgress> field_192758_f = Maps.newLinkedHashMap();
--    private final Set<Advancement> field_192759_g = Sets.newLinkedHashSet();
--    private final Set<Advancement> field_192760_h = Sets.newLinkedHashSet();
--    private final Set<Advancement> field_192761_i = Sets.newLinkedHashSet();
-+    private final Map<Advancement, AdvancementProgress> field_192758_f = Maps.<Advancement, AdvancementProgress>newLinkedHashMap();
-+    private final Set<Advancement> field_192759_g = Sets.<Advancement>newLinkedHashSet();
-+    private final Set<Advancement> field_192760_h = Sets.<Advancement>newLinkedHashSet();
-+    private final Set<Advancement> field_192761_i = Sets.<Advancement>newLinkedHashSet();
-     private EntityPlayerMP field_192762_j;
-     @Nullable
-     private Advancement field_194221_k;
-@@ -94,11 +91,11 @@
+@@ -199,6 +199,9 @@
  
-     private void func_192752_d()
-     {
--        List<Advancement> list = Lists.newArrayList();
-+        List<Advancement> list = Lists.<Advancement>newArrayList();
- 
-         for (Entry<Advancement, AdvancementProgress> entry : this.field_192758_f.entrySet())
-         {
--            if (entry.getValue().func_192105_a())
-+            if (((AdvancementProgress)entry.getValue()).func_192105_a())
-             {
-                 list.add(entry.getKey());
-                 this.field_192761_i.add(entry.getKey());
-@@ -130,7 +127,7 @@
-             try
-             {
-                 String s = Files.toString(this.field_192757_e, StandardCharsets.UTF_8);
--                Map<ResourceLocation, AdvancementProgress> map = JsonUtils.func_193840_a(field_192754_b, s, field_192755_c.getType());
-+                Map<ResourceLocation, AdvancementProgress> map = (Map)JsonUtils.func_193840_a(field_192754_b, s, field_192755_c.getType());
- 
-                 if (map == null)
-                 {
-@@ -170,7 +167,7 @@
- 
-     public void func_192749_b()
-     {
--        Map<ResourceLocation, AdvancementProgress> map = Maps.newHashMap();
-+        Map<ResourceLocation, AdvancementProgress> map = Maps.<ResourceLocation, AdvancementProgress>newHashMap();
- 
-         for (Entry<Advancement, AdvancementProgress> entry : this.field_192758_f.entrySet())
-         {
-@@ -178,7 +175,7 @@
- 
-             if (advancementprogress.func_192108_b())
-             {
--                map.put(entry.getKey().func_192067_g(), advancementprogress);
-+                map.put(((Advancement)entry.getKey()).func_192067_g(), advancementprogress);
-             }
-         }
- 
-@@ -199,6 +196,9 @@
- 
-     public boolean func_192750_a(Advancement p_192750_1_, String p_192750_2_)
+     public boolean grantCriterion(Advancement p_192750_1_, String p_192750_2_)
      {
 +        // Forge: don't grant advancements for fake players
-+        if (this.field_192762_j instanceof net.minecraftforge.common.util.FakePlayer) return false;
++        if (this.player instanceof net.minecraftforge.common.util.FakePlayer) return false;
 +
          boolean flag = false;
-         AdvancementProgress advancementprogress = this.func_192747_a(p_192750_1_);
-         boolean flag1 = advancementprogress.func_192105_a();
-@@ -213,20 +213,12 @@
-             {
-                 p_192750_1_.func_192072_d().func_192113_a(this.field_192762_j);
- 
--                if (p_192750_1_.func_192068_c() != null
--                        && p_192750_1_.func_192068_c().func_193220_i()
--                        && this.field_192762_j.field_70170_p.func_82736_K().func_82766_b("announceAdvancements"))
-+                if (p_192750_1_.func_192068_c() != null && p_192750_1_.func_192068_c().func_193220_i() && this.field_192762_j.field_70170_p.func_82736_K().func_82766_b("announceAdvancements"))
-                 {
--                    this.field_192756_d
--                    .func_184103_al()
--                    .func_148539_a(
--                        new TextComponentTranslation(
--                            "chat.type.advancement." + p_192750_1_.func_192068_c().func_192291_d().func_192307_a(),
--                            this.field_192762_j.func_145748_c_(),
--                            p_192750_1_.func_193123_j()
--                        )
--                    );
-+                    this.field_192756_d.func_184103_al().func_148539_a(new TextComponentTranslation("chat.type.advancement." + p_192750_1_.func_192068_c().func_192291_d().func_192307_a(), new Object[] {this.field_192762_j.func_145748_c_(), p_192750_1_.func_193123_j()}));
+         AdvancementProgress advancementprogress = this.getProgress(p_192750_1_);
+         boolean flag1 = advancementprogress.isDone();
+@@ -227,6 +230,8 @@
+                         )
+                     );
                  }
 +
-+                net.minecraftforge.common.ForgeHooks.onAdvancement(this.field_192762_j, p_192750_1_);
++                net.minecraftforge.common.ForgeHooks.onAdvancement(this.player, p_192750_1_);
              }
          }
  
-@@ -270,15 +262,15 @@
- 
-                 if (criterionprogress != null && !criterionprogress.func_192151_a())
-                 {
--                    ICriterionInstance icriterioninstance = entry.getValue().func_192143_a();
-+                    ICriterionInstance icriterioninstance = ((Criterion)entry.getValue()).func_192143_a();
- 
-                     if (icriterioninstance != null)
-                     {
--                        ICriterionTrigger<ICriterionInstance> icriteriontrigger = CriteriaTriggers.func_192119_a(icriterioninstance.func_192244_a());
-+                        ICriterionTrigger<ICriterionInstance> icriteriontrigger = CriteriaTriggers.<ICriterionInstance>func_192119_a(icriterioninstance.func_192244_a());
- 
-                         if (icriteriontrigger != null)
-                         {
--                            icriteriontrigger.func_192165_a(this, new ICriterionTrigger.Listener<>(icriterioninstance, p_193764_1_, entry.getKey()));
-+                            icriteriontrigger.func_192165_a(this, new ICriterionTrigger.Listener(icriterioninstance, p_193764_1_, entry.getKey()));
-                         }
-                     }
-                 }
-@@ -296,15 +288,15 @@
- 
-             if (criterionprogress != null && (criterionprogress.func_192151_a() || advancementprogress.func_192105_a()))
-             {
--                ICriterionInstance icriterioninstance = entry.getValue().func_192143_a();
-+                ICriterionInstance icriterioninstance = ((Criterion)entry.getValue()).func_192143_a();
- 
-                 if (icriterioninstance != null)
-                 {
--                    ICriterionTrigger<ICriterionInstance> icriteriontrigger = CriteriaTriggers.func_192119_a(icriterioninstance.func_192244_a());
-+                    ICriterionTrigger<ICriterionInstance> icriteriontrigger = CriteriaTriggers.<ICriterionInstance>func_192119_a(icriterioninstance.func_192244_a());
- 
-                     if (icriteriontrigger != null)
-                     {
--                        icriteriontrigger.func_192164_b(this, new ICriterionTrigger.Listener<>(icriterioninstance, p_193765_1_, entry.getKey()));
-+                        icriteriontrigger.func_192164_b(this, new ICriterionTrigger.Listener(icriterioninstance, p_193765_1_, entry.getKey()));
-                     }
-                 }
-             }
-@@ -315,9 +307,9 @@
-     {
-         if (!this.field_192760_h.isEmpty() || !this.field_192761_i.isEmpty())
-         {
--            Map<ResourceLocation, AdvancementProgress> map = Maps.newHashMap();
--            Set<Advancement> set = Sets.newLinkedHashSet();
--            Set<ResourceLocation> set1 = Sets.newLinkedHashSet();
-+            Map<ResourceLocation, AdvancementProgress> map = Maps.<ResourceLocation, AdvancementProgress>newHashMap();
-+            Set<Advancement> set = Sets.<Advancement>newLinkedHashSet();
-+            Set<ResourceLocation> set1 = Sets.<ResourceLocation>newLinkedHashSet();
- 
-             for (Advancement advancement : this.field_192761_i)
-             {
-@@ -365,9 +357,7 @@
- 
-         if (advancement != this.field_194221_k)
-         {
--            this.field_192762_j
--            .field_71135_a
--            .func_147359_a(new SPacketSelectAdvancementsTab(this.field_194221_k == null ? null : this.field_194221_k.func_192067_g()));
-+            this.field_192762_j.field_71135_a.func_147359_a(new SPacketSelectAdvancementsTab(this.field_194221_k == null ? null : this.field_194221_k.func_192067_g()));
-         }
-     }
- 
-@@ -424,7 +414,7 @@
- 
-     private boolean func_192738_c(Advancement p_192738_1_)
-     {
--        for (int i = 0; p_192738_1_ != null && i <= 2; i++)
-+        for (int i = 0; p_192738_1_ != null && i <= 2; ++i)
-         {
-             if (i == 0 && this.func_192746_d(p_192738_1_))
-             {

@@ -2,46 +2,46 @@
 +++ after/net/minecraft/tileentity/TileEntityLockable.java
 @@ -11,14 +11,12 @@
  {
-     private LockCode field_174901_a = LockCode.field_180162_a;
+     private LockCode code = LockCode.EMPTY_CODE;
  
 -    @Override
-     public void func_145839_a(NBTTagCompound p_145839_1_)
+     public void readFromNBT(NBTTagCompound compound)
      {
-         super.func_145839_a(p_145839_1_);
-         this.field_174901_a = LockCode.func_180158_b(p_145839_1_);
+         super.readFromNBT(compound);
+         this.code = LockCode.fromNBT(compound);
      }
  
 -    @Override
-     public NBTTagCompound func_189515_b(NBTTagCompound p_189515_1_)
+     public NBTTagCompound writeToNBT(NBTTagCompound compound)
      {
-         super.func_189515_b(p_189515_1_);
+         super.writeToNBT(compound);
 @@ -31,27 +29,46 @@
-         return p_189515_1_;
+         return compound;
      }
  
 -    @Override
-     public boolean func_174893_q_()
+     public boolean isLocked()
      {
-         return this.field_174901_a != null && !this.field_174901_a.func_180160_a();
+         return this.code != null && !this.code.isEmpty();
      }
  
 -    @Override
-     public LockCode func_174891_i()
+     public LockCode getLockCode()
      {
-         return this.field_174901_a;
+         return this.code;
      }
  
 -    @Override
-     public void func_174892_a(LockCode p_174892_1_)
+     public void setLockCode(LockCode code)
      {
-         this.field_174901_a = p_174892_1_;
+         this.code = code;
      }
  
 -    @Override
-     public ITextComponent func_145748_c_()
+     public ITextComponent getDisplayName()
      {
--        return (ITextComponent)(this.func_145818_k_() ? new TextComponentString(this.func_70005_c_()) : new TextComponentTranslation(this.func_70005_c_()));
-+        return (ITextComponent)(this.func_145818_k_() ? new TextComponentString(this.func_70005_c_()) : new TextComponentTranslation(this.func_70005_c_(), new Object[0]));
+-        return (ITextComponent)(this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName()));
++        return (ITextComponent)(this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName(), new Object[0]));
 +    }
 +
 +    private net.minecraftforge.items.IItemHandler itemHandler;

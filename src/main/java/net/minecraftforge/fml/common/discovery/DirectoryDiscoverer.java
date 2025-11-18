@@ -42,7 +42,7 @@ import javax.annotation.Nullable;
 
 public class DirectoryDiscoverer implements ITypeDiscoverer
 {
-    private class ClassFilter implements FileFilter
+    private static class ClassFilter implements FileFilter
     {
         @Override
         public boolean accept(File file)
@@ -69,9 +69,9 @@ public class DirectoryDiscoverer implements ITypeDiscoverer
 
     public void exploreFileSystem(String path, File modDir, List<ModContainer> harvestedMods, ModCandidate candidate, @Nullable MetadataCollection mc)
     {
-        if (path.length() == 0)
+        if (path.isEmpty())
         {
-            File metadata = new File(modDir, "mcmod.info");
+            File metadata = new File(candidate.getResourcePathRoot(), "mcmod.info");
             try
             {
                 FileInputStream fis = new FileInputStream(metadata);
@@ -108,7 +108,7 @@ public class DirectoryDiscoverer implements ITypeDiscoverer
 
             if (match.matches())
             {
-                ASMModParser modParser = null;
+                ASMModParser modParser;
                 FileInputStream fis = null;
                 try
                 {

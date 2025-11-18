@@ -4,17 +4,17 @@
  
  public class ContainerPlayer extends Container
  {
--    private static final EntityEquipmentSlot[] field_185003_h = new EntityEquipmentSlot[]
+-    private static final EntityEquipmentSlot[] VALID_EQUIPMENT_SLOTS = new EntityEquipmentSlot[]
 -        {
 -            EntityEquipmentSlot.HEAD, EntityEquipmentSlot.CHEST, EntityEquipmentSlot.LEGS, EntityEquipmentSlot.FEET
 -        };
-+    private static final EntityEquipmentSlot[] field_185003_h = new EntityEquipmentSlot[] {EntityEquipmentSlot.HEAD, EntityEquipmentSlot.CHEST, EntityEquipmentSlot.LEGS, EntityEquipmentSlot.FEET};
-     public InventoryCrafting field_75181_e = new InventoryCrafting(this, 2, 2);
-     public InventoryCraftResult field_75179_f = new InventoryCraftResult();
-     public boolean field_75180_g;
++    private static final EntityEquipmentSlot[] VALID_EQUIPMENT_SLOTS = new EntityEquipmentSlot[] {EntityEquipmentSlot.HEAD, EntityEquipmentSlot.CHEST, EntityEquipmentSlot.LEGS, EntityEquipmentSlot.FEET};
+     public InventoryCrafting craftMatrix = new InventoryCrafting(this, 2, 2);
+     public InventoryCraftResult craftResult = new InventoryCraftResult();
+     public boolean isLocalWorld;
 @@ -27,58 +24,50 @@
-         this.field_82862_h = p_i1819_3_;
-         this.func_75146_a(new SlotCrafting(p_i1819_1_.field_70458_d, this.field_75181_e, this.field_75179_f, 0, 154, 28));
+         this.player = playerIn;
+         this.addSlotToContainer(new SlotCrafting(playerInventory.player, this.craftMatrix, this.craftResult, 0, 154, 28));
  
 -        for (int i = 0; i < 2; i++)
 +        for (int i = 0; i < 2; ++i)
@@ -22,44 +22,44 @@
 -            for (int j = 0; j < 2; j++)
 +            for (int j = 0; j < 2; ++j)
              {
-                 this.func_75146_a(new Slot(this.field_75181_e, j + i * 2, 98 + j * 18, 18 + i * 18));
+                 this.addSlotToContainer(new Slot(this.craftMatrix, j + i * 2, 98 + j * 18, 18 + i * 18));
              }
          }
  
 -        for (int k = 0; k < 4; k++)
 +        for (int k = 0; k < 4; ++k)
          {
-             final EntityEquipmentSlot entityequipmentslot = field_185003_h[k];
--            this.func_75146_a(
--                new Slot(p_i1819_1_, 36 + (3 - k), 8, 8 + k * 18)
-+            this.func_75146_a(new Slot(p_i1819_1_, 36 + (3 - k), 8, 8 + k * 18)
+             final EntityEquipmentSlot entityequipmentslot = VALID_EQUIPMENT_SLOTS[k];
+-            this.addSlotToContainer(
+-                new Slot(playerInventory, 36 + (3 - k), 8, 8 + k * 18)
++            this.addSlotToContainer(new Slot(playerInventory, 36 + (3 - k), 8, 8 + k * 18)
              {
 -                @Override
-                 public int func_75219_a()
+                 public int getSlotStackLimit()
                  {
                      return 1;
                  }
 -                @Override
-                 public boolean func_75214_a(ItemStack p_75214_1_)
+                 public boolean isItemValid(ItemStack stack)
                  {
--                    return entityequipmentslot == EntityLiving.func_184640_d(p_75214_1_);
-+                    return p_75214_1_.func_77973_b().isValidArmor(p_75214_1_, entityequipmentslot, field_82862_h);
+-                    return entityequipmentslot == EntityLiving.getSlotForItemStack(stack);
++                    return stack.getItem().isValidArmor(stack, entityequipmentslot, player);
                  }
 -                @Override
-                 public boolean func_82869_a(EntityPlayer p_82869_1_)
+                 public boolean canTakeStack(EntityPlayer playerIn)
                  {
-                     ItemStack itemstack = this.func_75211_c();
--                    return !itemstack.func_190926_b() && !p_82869_1_.func_184812_l_() && EnchantmentHelper.func_190938_b(itemstack)
+                     ItemStack itemstack = this.getStack();
+-                    return !itemstack.isEmpty() && !playerIn.isCreative() && EnchantmentHelper.hasBindingCurse(itemstack)
 -                           ? false
--                           : super.func_82869_a(p_82869_1_);
-+                    return !itemstack.func_190926_b() && !p_82869_1_.func_184812_l_() && EnchantmentHelper.func_190938_b(itemstack) ? false : super.func_82869_a(p_82869_1_);
+-                           : super.canTakeStack(playerIn);
++                    return !itemstack.isEmpty() && !playerIn.isCreative() && EnchantmentHelper.hasBindingCurse(itemstack) ? false : super.canTakeStack(playerIn);
                  }
                  @Nullable
                  @SideOnly(Side.CLIENT)
 -                @Override
-                 public String func_178171_c()
+                 public String getSlotTexture()
                  {
-                     return ItemArmor.field_94603_a[entityequipmentslot.func_188454_b()];
+                     return ItemArmor.EMPTY_SLOT_NAMES[entityequipmentslot.getIndex()];
                  }
 -            }
 -            );
@@ -72,21 +72,21 @@
 -            for (int j1 = 0; j1 < 9; j1++)
 +            for (int j1 = 0; j1 < 9; ++j1)
              {
-                 this.func_75146_a(new Slot(p_i1819_1_, j1 + (l + 1) * 9, 8 + j1 * 18, 84 + l * 18));
+                 this.addSlotToContainer(new Slot(playerInventory, j1 + (l + 1) * 9, 8 + j1 * 18, 84 + l * 18));
              }
          }
  
 -        for (int i1 = 0; i1 < 9; i1++)
 +        for (int i1 = 0; i1 < 9; ++i1)
          {
-             this.func_75146_a(new Slot(p_i1819_1_, i1, 8 + i1 * 18, 142));
+             this.addSlotToContainer(new Slot(playerInventory, i1, 8 + i1 * 18, 142));
          }
 @@ -87,7 +76,6 @@
          {
              @Nullable
              @SideOnly(Side.CLIENT)
 -            @Override
-             public String func_178171_c()
+             public String getSlotTexture()
              {
                  return "minecraft:items/empty_armor_slot_shield";
 @@ -95,13 +83,11 @@
@@ -94,53 +94,53 @@
      }
  
 -    @Override
-     public void func_75130_a(IInventory p_75130_1_)
+     public void onCraftMatrixChanged(IInventory inventoryIn)
      {
-         this.func_192389_a(this.field_82862_h.field_70170_p, this.field_82862_h, this.field_75181_e, this.field_75179_f);
+         this.slotChangedCraftingGrid(this.player.world, this.player, this.craftMatrix, this.craftResult);
      }
  
 -    @Override
-     public void func_75134_a(EntityPlayer p_75134_1_)
+     public void onContainerClosed(EntityPlayer playerIn)
      {
-         super.func_75134_a(p_75134_1_);
+         super.onContainerClosed(playerIn);
 @@ -113,13 +99,11 @@
          }
      }
  
 -    @Override
-     public boolean func_75145_c(EntityPlayer p_75145_1_)
+     public boolean canInteractWith(EntityPlayer playerIn)
      {
          return true;
      }
  
 -    @Override
-     public ItemStack func_82846_b(EntityPlayer p_82846_1_, int p_82846_2_)
+     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
      {
-         ItemStack itemstack = ItemStack.field_190927_a;
+         ItemStack itemstack = ItemStack.EMPTY;
 @@ -154,8 +138,7 @@
-                     return ItemStack.field_190927_a;
+                     return ItemStack.EMPTY;
                  }
              }
--            else if (entityequipmentslot.func_188453_a() == EntityEquipmentSlot.Type.ARMOR
--                     && !this.field_75151_b.get(8 - entityequipmentslot.func_188454_b()).func_75216_d())
-+            else if (entityequipmentslot.func_188453_a() == EntityEquipmentSlot.Type.ARMOR && !((Slot)this.field_75151_b.get(8 - entityequipmentslot.func_188454_b())).func_75216_d())
+-            else if (entityequipmentslot.getSlotType() == EntityEquipmentSlot.Type.ARMOR
+-                     && !this.inventorySlots.get(8 - entityequipmentslot.getIndex()).getHasStack())
++            else if (entityequipmentslot.getSlotType() == EntityEquipmentSlot.Type.ARMOR && !((Slot)this.inventorySlots.get(8 - entityequipmentslot.getIndex())).getHasStack())
              {
-                 int i = 8 - entityequipmentslot.func_188454_b();
+                 int i = 8 - entityequipmentslot.getIndex();
  
 @@ -164,7 +147,7 @@
-                     return ItemStack.field_190927_a;
+                     return ItemStack.EMPTY;
                  }
              }
--            else if (entityequipmentslot == EntityEquipmentSlot.OFFHAND && !this.field_75151_b.get(45).func_75216_d())
-+            else if (entityequipmentslot == EntityEquipmentSlot.OFFHAND && !((Slot)this.field_75151_b.get(45)).func_75216_d())
+-            else if (entityequipmentslot == EntityEquipmentSlot.OFFHAND && !this.inventorySlots.get(45).getHasStack())
++            else if (entityequipmentslot == EntityEquipmentSlot.OFFHAND && !((Slot)this.inventorySlots.get(45)).getHasStack())
              {
-                 if (!this.func_75135_a(itemstack1, 45, 46, false))
+                 if (!this.mergeItemStack(itemstack1, 45, 46, false))
                  {
 @@ -215,7 +198,6 @@
          return itemstack;
      }
  
 -    @Override
-     public boolean func_94530_a(ItemStack p_94530_1_, Slot p_94530_2_)
+     public boolean canMergeSlot(ItemStack stack, Slot slotIn)
      {
-         return p_94530_2_.field_75224_c != this.field_75179_f && super.func_94530_a(p_94530_1_, p_94530_2_);
+         return slotIn.inventory != this.craftResult && super.canMergeSlot(stack, slotIn);

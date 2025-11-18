@@ -5,15 +5,15 @@
  public class WorldProviderSurface extends WorldProvider
  {
 -    @Override
-     public DimensionType func_186058_p()
+     public DimensionType getDimensionType()
      {
          return DimensionType.OVERWORLD;
      }
  
 -    @Override
-     public boolean func_186056_c(int p_186056_1_, int p_186056_2_)
+     public boolean canDropChunk(int x, int z)
      {
--        return !this.field_76579_a.func_72916_c(p_186056_1_, p_186056_2_);
-+        return !this.field_76579_a.func_72916_c(p_186056_1_, p_186056_2_) || !this.field_76579_a.field_73011_w.func_186058_p().shouldLoadSpawn();
+-        return !this.world.isSpawnChunk(x, z);
++        return !this.world.isSpawnChunk(x, z) || !this.world.provider.getDimensionType().shouldLoadSpawn();
      }
  }

@@ -1,28 +1,28 @@
 --- before/net/minecraft/world/gen/feature/WorldGenTallGrass.java
 +++ after/net/minecraft/world/gen/feature/WorldGenTallGrass.java
 @@ -17,22 +17,16 @@
-         this.field_175907_a = Blocks.field_150329_H.func_176223_P().func_177226_a(BlockTallGrass.field_176497_a, p_i45629_1_);
+         this.tallGrassState = Blocks.TALLGRASS.getDefaultState().withProperty(BlockTallGrass.TYPE, p_i45629_1_);
      }
  
 -    @Override
-     public boolean func_180709_b(World p_180709_1_, Random p_180709_2_, BlockPos p_180709_3_)
+     public boolean generate(World worldIn, Random rand, BlockPos position)
      {
--        for (IBlockState iblockstate = p_180709_1_.func_180495_p(p_180709_3_);
--                (iblockstate.func_185904_a() == Material.field_151579_a || iblockstate.func_185904_a() == Material.field_151584_j) && p_180709_3_.func_177956_o() > 0;
--                iblockstate = p_180709_1_.func_180495_p(p_180709_3_)
+-        for (IBlockState iblockstate = worldIn.getBlockState(position);
+-                (iblockstate.getMaterial() == Material.AIR || iblockstate.getMaterial() == Material.LEAVES) && position.getY() > 0;
+-                iblockstate = worldIn.getBlockState(position)
 -            )
-+        for (IBlockState iblockstate = p_180709_1_.func_180495_p(p_180709_3_); (iblockstate.func_177230_c().isAir(iblockstate, p_180709_1_, p_180709_3_) || iblockstate.func_177230_c().isLeaves(iblockstate, p_180709_1_, p_180709_3_)) && p_180709_3_.func_177956_o() > 0; iblockstate = p_180709_1_.func_180495_p(p_180709_3_))
++        for (IBlockState iblockstate = worldIn.getBlockState(position); (iblockstate.getBlock().isAir(iblockstate, worldIn, position) || iblockstate.getBlock().isLeaves(iblockstate, worldIn, position)) && position.getY() > 0; iblockstate = worldIn.getBlockState(position))
          {
-             p_180709_3_ = p_180709_3_.func_177977_b();
+             position = position.down();
          }
  
 -        for (int i = 0; i < 128; i++)
 +        for (int i = 0; i < 128; ++i)
          {
--            BlockPos blockpos = p_180709_3_.func_177982_a(
--                                    p_180709_2_.nextInt(8) - p_180709_2_.nextInt(8), p_180709_2_.nextInt(4) - p_180709_2_.nextInt(4), p_180709_2_.nextInt(8) - p_180709_2_.nextInt(8)
+-            BlockPos blockpos = position.add(
+-                                    rand.nextInt(8) - rand.nextInt(8), rand.nextInt(4) - rand.nextInt(4), rand.nextInt(8) - rand.nextInt(8)
 -                                );
-+            BlockPos blockpos = p_180709_3_.func_177982_a(p_180709_2_.nextInt(8) - p_180709_2_.nextInt(8), p_180709_2_.nextInt(4) - p_180709_2_.nextInt(4), p_180709_2_.nextInt(8) - p_180709_2_.nextInt(8));
++            BlockPos blockpos = position.add(rand.nextInt(8) - rand.nextInt(8), rand.nextInt(4) - rand.nextInt(4), rand.nextInt(8) - rand.nextInt(8));
  
-             if (p_180709_1_.func_175623_d(blockpos) && Blocks.field_150329_H.func_180671_f(p_180709_1_, blockpos, this.field_175907_a))
+             if (worldIn.isAirBlock(blockpos) && Blocks.TALLGRASS.canBlockStay(worldIn, blockpos, this.tallGrassState))
              {

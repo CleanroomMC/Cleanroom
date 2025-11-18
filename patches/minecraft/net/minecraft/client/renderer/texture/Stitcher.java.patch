@@ -1,95 +1,35 @@
 --- before/net/minecraft/client/renderer/texture/Stitcher.java
 +++ after/net/minecraft/client/renderer/texture/Stitcher.java
-@@ -14,8 +14,8 @@
- public class Stitcher
- {
-     private final int field_147971_a;
--    private final Set<Stitcher.Holder> field_94319_a = Sets.newHashSetWithExpectedSize(256);
--    private final List<Stitcher.Slot> field_94317_b = Lists.newArrayListWithCapacity(256);
-+    private final Set<Stitcher.Holder> field_94319_a = Sets.<Stitcher.Holder>newHashSetWithExpectedSize(256);
-+    private final List<Stitcher.Slot> field_94317_b = Lists.<Stitcher.Slot>newArrayListWithCapacity(256);
-     private int field_94318_c;
-     private int field_94315_d;
-     private final int field_94316_e;
-@@ -54,45 +54,44 @@
- 
-     public void func_94305_f()
+@@ -56,9 +56,11 @@
      {
--        Stitcher.Holder[] astitcher$holder = this.field_94319_a.toArray(new Stitcher.Holder[this.field_94319_a.size()]);
-+        Stitcher.Holder[] astitcher$holder = (Stitcher.Holder[])this.field_94319_a.toArray(new Stitcher.Holder[this.field_94319_a.size()]);
+         Stitcher.Holder[] astitcher$holder = this.setStitchHolders.toArray(new Stitcher.Holder[this.setStitchHolders.size()]);
          Arrays.sort((Object[])astitcher$holder);
 +        net.minecraftforge.fml.common.ProgressManager.ProgressBar bar = net.minecraftforge.fml.common.ProgressManager.push("Texture stitching", astitcher$holder.length);
  
          for (Stitcher.Holder stitcher$holder : astitcher$holder)
          {
-+            bar.step(stitcher$holder.func_98150_a().func_94215_i());
-             if (!this.func_94310_b(stitcher$holder))
++            bar.step(stitcher$holder.getAtlasSprite().getIconName());
+             if (!this.allocateSlot(stitcher$holder))
              {
--                String s = String.format(
--                               "Unable to fit: %s - size: %dx%d - Maybe try a lowerresolution resourcepack?",
--                               stitcher$holder.func_98150_a().func_94215_i(),
--                               stitcher$holder.func_98150_a().func_94211_a(),
--                               stitcher$holder.func_98150_a().func_94216_b()
--                           );
-+                String s = String.format("Unable to fit: %s - size: %dx%d - Maybe try a lowerresolution resourcepack?", stitcher$holder.func_98150_a().func_94215_i(), stitcher$holder.func_98150_a().func_94211_a(), stitcher$holder.func_98150_a().func_94216_b());
-+                net.minecraftforge.fml.common.FMLLog.log.info(s);
+                 String s = String.format(
+@@ -67,12 +69,16 @@
+                                stitcher$holder.getAtlasSprite().getIconWidth(),
+                                stitcher$holder.getAtlasSprite().getIconHeight()
+                            );
++               net.minecraftforge.fml.common.FMLLog.log.info(s);
 +                for (Stitcher.Holder h : astitcher$holder)
 +                    net.minecraftforge.fml.common.FMLLog.log.info("  {}", h);
                  throw new StitcherException(stitcher$holder, s);
              }
          }
  
-         this.field_94318_c = MathHelper.func_151236_b(this.field_94318_c);
-         this.field_94315_d = MathHelper.func_151236_b(this.field_94315_d);
+         this.currentWidth = MathHelper.smallestEncompassingPowerOfTwo(this.currentWidth);
+         this.currentHeight = MathHelper.smallestEncompassingPowerOfTwo(this.currentHeight);
 +        net.minecraftforge.fml.common.ProgressManager.pop(bar);
      }
  
-     public List<TextureAtlasSprite> func_94309_g()
-     {
--        List<Stitcher.Slot> list = Lists.newArrayList();
-+        List<Stitcher.Slot> list = Lists.<Stitcher.Slot>newArrayList();
- 
-         for (Stitcher.Slot stitcher$slot : this.field_94317_b)
-         {
-             stitcher$slot.func_94184_a(list);
-         }
- 
--        List<TextureAtlasSprite> list1 = Lists.newArrayList();
-+        List<TextureAtlasSprite> list1 = Lists.<TextureAtlasSprite>newArrayList();
- 
-         for (Stitcher.Slot stitcher$slot1 : list)
-         {
-             Stitcher.Holder stitcher$holder = stitcher$slot1.func_94183_a();
-             TextureAtlasSprite textureatlassprite = stitcher$holder.func_98150_a();
--            textureatlassprite.func_110971_a(
--                this.field_94318_c, this.field_94315_d, stitcher$slot1.func_94186_b(), stitcher$slot1.func_94185_c(), stitcher$holder.func_94195_e()
--            );
-+            textureatlassprite.func_110971_a(this.field_94318_c, this.field_94315_d, stitcher$slot1.func_94186_b(), stitcher$slot1.func_94185_c(), stitcher$holder.func_94195_e());
-             list1.add(textureatlassprite);
-         }
- 
-@@ -109,9 +108,9 @@
-         TextureAtlasSprite textureatlassprite = p_94310_1_.func_98150_a();
-         boolean flag = textureatlassprite.func_94211_a() != textureatlassprite.func_94216_b();
- 
--        for (int i = 0; i < this.field_94317_b.size(); i++)
-+        for (int i = 0; i < this.field_94317_b.size(); ++i)
-         {
--            if (this.field_94317_b.get(i).func_94182_a(p_94310_1_))
-+            if (((Stitcher.Slot)this.field_94317_b.get(i)).func_94182_a(p_94310_1_))
-             {
-                 return true;
-             }
-@@ -120,7 +119,7 @@
-             {
-                 p_94310_1_.func_94194_d();
- 
--                if (this.field_94317_b.get(i).func_94182_a(p_94310_1_))
-+                if (((Stitcher.Slot)this.field_94317_b.get(i)).func_94182_a(p_94310_1_))
-                 {
-                     return true;
-                 }
-@@ -155,7 +154,7 @@
+     public List<TextureAtlasSprite> getStichSlots()
+@@ -155,7 +161,7 @@
  
              if (flag3 ^ flag4)
              {
@@ -98,63 +38,3 @@
              }
              else
              {
-@@ -177,12 +176,12 @@
-                 }
- 
-                 stitcher$slot = new Stitcher.Slot(this.field_94318_c, 0, p_94311_1_.func_94197_a(), this.field_94315_d);
--                this.field_94318_c = this.field_94318_c + p_94311_1_.func_94197_a();
-+                this.field_94318_c += p_94311_1_.func_94197_a();
-             }
-             else
-             {
-                 stitcher$slot = new Stitcher.Slot(0, this.field_94315_d, this.field_94318_c, p_94311_1_.func_94199_b());
--                this.field_94315_d = this.field_94315_d + p_94311_1_.func_94199_b();
-+                this.field_94315_d += p_94311_1_.func_94199_b();
-             }
- 
-             stitcher$slot.func_94182_a(p_94311_1_);
-@@ -245,10 +244,9 @@
-                 }
-             }
- 
--            @Override
-             public String toString()
-             {
--                return "Holder{width=" + this.field_94204_c + ", height=" + this.field_94201_d + '}';
-+                return "Holder{width=" + this.field_94204_c + ", height=" + this.field_94201_d + ", name=" + this.field_98151_a.func_94215_i() + '}';
-             }
- 
-             public int compareTo(Stitcher.Holder p_compareTo_1_)
-@@ -333,7 +331,7 @@
-                         {
-                             if (this.field_94189_e == null)
-                             {
--                                this.field_94189_e = Lists.newArrayListWithCapacity(1);
-+                                this.field_94189_e = Lists.<Stitcher.Slot>newArrayListWithCapacity(1);
-                                 this.field_94189_e.add(new Stitcher.Slot(this.field_94192_a, this.field_94190_b, i, j));
-                                 int k = this.field_94191_c - i;
-                                 int l = this.field_94188_d - j;
-@@ -397,22 +395,9 @@
-                 }
-             }
- 
--            @Override
-             public String toString()
-             {
--                return "Slot{originX="
--                       + this.field_94192_a
--                       + ", originY="
--                       + this.field_94190_b
--                       + ", width="
--                       + this.field_94191_c
--                       + ", height="
--                       + this.field_94188_d
--                       + ", texture="
--                       + this.field_94187_f
--                       + ", subSlots="
--                       + this.field_94189_e
--                       + '}';
-+                return "Slot{originX=" + this.field_94192_a + ", originY=" + this.field_94190_b + ", width=" + this.field_94191_c + ", height=" + this.field_94188_d + ", texture=" + this.field_94187_f + ", subSlots=" + this.field_94189_e + '}';
-             }
-         }
- }

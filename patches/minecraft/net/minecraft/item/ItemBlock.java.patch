@@ -9,125 +9,125 @@
  import net.minecraft.entity.player.EntityPlayerMP;
  import net.minecraft.init.Blocks;
 @@ -33,17 +34,7 @@
-         this.field_150939_a = p_i45328_1_;
+         this.block = block;
      }
  
 -    @Override
--    public EnumActionResult func_180614_a(
--        EntityPlayer p_180614_1_,
--        World p_180614_2_,
--        BlockPos p_180614_3_,
--        EnumHand p_180614_4_,
--        EnumFacing p_180614_5_,
--        float p_180614_6_,
--        float p_180614_7_,
--        float p_180614_8_
+-    public EnumActionResult onItemUse(
+-        EntityPlayer player,
+-        World worldIn,
+-        BlockPos pos,
+-        EnumHand hand,
+-        EnumFacing facing,
+-        float hitX,
+-        float hitY,
+-        float hitZ
 -    )
-+    public EnumActionResult func_180614_a(EntityPlayer p_180614_1_, World p_180614_2_, BlockPos p_180614_3_, EnumHand p_180614_4_, EnumFacing p_180614_5_, float p_180614_6_, float p_180614_7_, float p_180614_8_)
++    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
      {
-         IBlockState iblockstate = p_180614_2_.func_180495_p(p_180614_3_);
-         Block block = iblockstate.func_177230_c();
+         IBlockState iblockstate = worldIn.getBlockState(pos);
+         Block block = iblockstate.getBlock();
 @@ -55,38 +46,16 @@
  
-         ItemStack itemstack = p_180614_1_.func_184586_b(p_180614_4_);
+         ItemStack itemstack = player.getHeldItem(hand);
  
--        if (!itemstack.func_190926_b()
--                && p_180614_1_.func_175151_a(p_180614_3_, p_180614_5_, itemstack)
--                && p_180614_2_.func_190527_a(this.field_150939_a, p_180614_3_, false, p_180614_5_, null))
-+        if (!itemstack.func_190926_b() && p_180614_1_.func_175151_a(p_180614_3_, p_180614_5_, itemstack) && p_180614_2_.func_190527_a(this.field_150939_a, p_180614_3_, false, p_180614_5_, p_180614_1_))
+-        if (!itemstack.isEmpty()
+-                && player.canPlayerEdit(pos, facing, itemstack)
+-                && worldIn.mayPlace(this.block, pos, false, facing, null))
++        if (!itemstack.isEmpty() && player.canPlayerEdit(pos, facing, itemstack) && worldIn.mayPlace(this.block, pos, false, facing, player))
          {
-             int i = this.func_77647_b(itemstack.func_77960_j());
--            IBlockState iblockstate1 = this.field_150939_a
--                                       .func_180642_a(p_180614_2_, p_180614_3_, p_180614_5_, p_180614_6_, p_180614_7_, p_180614_8_, i, p_180614_1_);
-+            IBlockState iblockstate1 = this.field_150939_a.getStateForPlacement(p_180614_2_, p_180614_3_, p_180614_5_, p_180614_6_, p_180614_7_, p_180614_8_, i, p_180614_1_, p_180614_4_);
+             int i = this.getMetadata(itemstack.getMetadata());
+-            IBlockState iblockstate1 = this.block
+-                                       .getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, i, player);
++            IBlockState iblockstate1 = this.block.getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, i, player, hand);
  
--            if (p_180614_2_.func_180501_a(p_180614_3_, iblockstate1, 11))
-+            if (placeBlockAt(itemstack, p_180614_1_, p_180614_2_, p_180614_3_, p_180614_5_, p_180614_6_, p_180614_7_, p_180614_8_, iblockstate1))
+-            if (worldIn.setBlockState(pos, iblockstate1, 11))
++            if (placeBlockAt(itemstack, player, worldIn, pos, facing, hitX, hitY, hitZ, iblockstate1))
              {
-                 iblockstate1 = p_180614_2_.func_180495_p(p_180614_3_);
+                 iblockstate1 = worldIn.getBlockState(pos);
 -
--                if (iblockstate1.func_177230_c() == this.field_150939_a)
+-                if (iblockstate1.getBlock() == this.block)
 -                {
--                    func_179224_a(p_180614_2_, p_180614_1_, p_180614_3_, itemstack);
--                    this.field_150939_a.func_180633_a(p_180614_2_, p_180614_3_, iblockstate1, p_180614_1_, itemstack);
+-                    setTileEntityNBT(worldIn, player, pos, itemstack);
+-                    this.block.onBlockPlacedBy(worldIn, pos, iblockstate1, player, itemstack);
 -
--                    if (p_180614_1_ instanceof EntityPlayerMP)
+-                    if (player instanceof EntityPlayerMP)
 -                    {
--                        CriteriaTriggers.field_193137_x.func_193173_a((EntityPlayerMP)p_180614_1_, p_180614_3_, itemstack);
+-                        CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP)player, pos, itemstack);
 -                    }
 -                }
 -
--                SoundType soundtype = this.field_150939_a.func_185467_w();
--                p_180614_2_.func_184133_a(
--                    p_180614_1_,
--                    p_180614_3_,
--                    soundtype.func_185841_e(),
+-                SoundType soundtype = this.block.getSoundType();
+-                worldIn.playSound(
+-                    player,
+-                    pos,
+-                    soundtype.getPlaceSound(),
 -                    SoundCategory.BLOCKS,
--                    (soundtype.func_185843_a() + 1.0F) / 2.0F,
--                    soundtype.func_185847_b() * 0.8F
+-                    (soundtype.getVolume() + 1.0F) / 2.0F,
+-                    soundtype.getPitch() * 0.8F
 -                );
-+                SoundType soundtype = iblockstate1.func_177230_c().getSoundType(iblockstate1, p_180614_2_, p_180614_3_, p_180614_1_);
-+                p_180614_2_.func_184133_a(p_180614_1_, p_180614_3_, soundtype.func_185841_e(), SoundCategory.BLOCKS, (soundtype.func_185843_a() + 1.0F) / 2.0F, soundtype.func_185847_b() * 0.8F);
-                 itemstack.func_190918_g(1);
++                SoundType soundtype = iblockstate1.getBlock().getSoundType(iblockstate1, worldIn, pos, player);
++                worldIn.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
+                 itemstack.shrink(1);
              }
  
 @@ -146,7 +115,7 @@
      {
-         Block block = p_179222_1_.func_180495_p(p_179222_2_).func_177230_c();
+         Block block = worldIn.getBlockState(pos).getBlock();
  
--        if (block == Blocks.field_150431_aC)
-+        if (block == Blocks.field_150431_aC && block.func_176200_f(p_179222_1_, p_179222_2_))
+-        if (block == Blocks.SNOW_LAYER)
++        if (block == Blocks.SNOW_LAYER && block.isReplaceable(worldIn, pos))
          {
-             p_179222_3_ = EnumFacing.UP;
+             side = EnumFacing.UP;
          }
 @@ -155,28 +124,24 @@
-             p_179222_2_ = p_179222_2_.func_177972_a(p_179222_3_);
+             pos = pos.offset(side);
          }
  
--        return p_179222_1_.func_190527_a(this.field_150939_a, p_179222_2_, false, p_179222_3_, null);
-+        return p_179222_1_.func_190527_a(this.field_150939_a, p_179222_2_, false, p_179222_3_, p_179222_4_);
+-        return worldIn.mayPlace(this.block, pos, false, side, null);
++        return worldIn.mayPlace(this.block, pos, false, side, player);
      }
  
 -    @Override
-     public String func_77667_c(ItemStack p_77667_1_)
+     public String getTranslationKey(ItemStack stack)
      {
-         return this.field_150939_a.func_149739_a();
+         return this.block.getTranslationKey();
      }
  
 -    @Override
-     public String func_77658_a()
+     public String getTranslationKey()
      {
-         return this.field_150939_a.func_149739_a();
+         return this.block.getTranslationKey();
      }
  
 -    @Override
-     public CreativeTabs func_77640_w()
+     public CreativeTabs getCreativeTab()
      {
-         return this.field_150939_a.func_149708_J();
+         return this.block.getCreativeTab();
      }
  
 -    @Override
-     public void func_150895_a(CreativeTabs p_150895_1_, NonNullList<ItemStack> p_150895_2_)
+     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
      {
-         if (this.func_194125_a(p_150895_1_))
+         if (this.isInCreativeTab(tab))
 @@ -186,7 +151,6 @@
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public void func_77624_a(ItemStack p_77624_1_, @Nullable World p_77624_2_, List<String> p_77624_3_, ITooltipFlag p_77624_4_)
+     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
      {
-         super.func_77624_a(p_77624_1_, p_77624_2_, p_77624_3_, p_77624_4_);
+         super.addInformation(stack, worldIn, tooltip, flagIn);
 @@ -195,6 +159,36 @@
  
-     public Block func_179223_d()
+     public Block getBlock()
      {
 +        return this.getBlockRaw() == null ? null : this.getBlockRaw().delegate.get();
 +    }
 +
 +    private Block getBlockRaw()
 +    {
-         return this.field_150939_a;
+         return this.block;
 +    }
 +
 +    /**
@@ -140,16 +140,16 @@
 +     */
 +    public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, IBlockState newState)
 +    {
-+        if (!world.func_180501_a(pos, newState, 11)) return false;
++        if (!world.setBlockState(pos, newState, 11)) return false;
 +
-+        IBlockState state = world.func_180495_p(pos);
-+        if (state.func_177230_c() == this.field_150939_a)
++        IBlockState state = world.getBlockState(pos);
++        if (state.getBlock() == this.block)
 +        {
-+            func_179224_a(world, player, pos, stack);
-+            this.field_150939_a.func_180633_a(world, pos, state, player, stack);
++            setTileEntityNBT(world, player, pos, stack);
++            this.block.onBlockPlacedBy(world, pos, state, player, stack);
 +
 +            if (player instanceof EntityPlayerMP)
-+                CriteriaTriggers.field_193137_x.func_193173_a((EntityPlayerMP)player, pos, stack);
++                CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP)player, pos, stack);
 +        }
 +
 +        return true;

@@ -1,99 +1,99 @@
 --- before/net/minecraft/entity/EntityFlying.java
 +++ after/net/minecraft/entity/EntityFlying.java
 @@ -12,34 +12,31 @@
-         super(p_i1587_1_);
+         super(worldIn);
      }
  
 -    @Override
-     public void func_180430_e(float p_180430_1_, float p_180430_2_)
+     public void fall(float distance, float damageMultiplier)
      {
      }
  
 -    @Override
-     protected void func_184231_a(double p_184231_1_, boolean p_184231_3_, IBlockState p_184231_4_, BlockPos p_184231_5_)
+     protected void updateFallState(double y, boolean onGroundIn, IBlockState state, BlockPos pos)
      {
      }
  
 -    @Override
-     public void func_191986_a(float p_191986_1_, float p_191986_2_, float p_191986_3_)
+     public void travel(float strafe, float vertical, float forward)
      {
-         if (this.func_70090_H())
+         if (this.isInWater())
          {
-             this.func_191958_b(p_191986_1_, p_191986_2_, p_191986_3_, 0.02F);
-             this.func_70091_d(MoverType.SELF, this.field_70159_w, this.field_70181_x, this.field_70179_y);
--            this.field_70159_w *= 0.8F;
--            this.field_70181_x *= 0.8F;
--            this.field_70179_y *= 0.8F;
-+            this.field_70159_w *= 0.800000011920929D;
-+            this.field_70181_x *= 0.800000011920929D;
-+            this.field_70179_y *= 0.800000011920929D;
+             this.moveRelative(strafe, vertical, forward, 0.02F);
+             this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
+-            this.motionX *= 0.8F;
+-            this.motionY *= 0.8F;
+-            this.motionZ *= 0.8F;
++            this.motionX *= 0.800000011920929D;
++            this.motionY *= 0.800000011920929D;
++            this.motionZ *= 0.800000011920929D;
          }
-         else if (this.func_180799_ab())
+         else if (this.isInLava())
          {
-             this.func_191958_b(p_191986_1_, p_191986_2_, p_191986_3_, 0.02F);
-             this.func_70091_d(MoverType.SELF, this.field_70159_w, this.field_70181_x, this.field_70179_y);
--            this.field_70159_w *= 0.5;
--            this.field_70181_x *= 0.5;
--            this.field_70179_y *= 0.5;
-+            this.field_70159_w *= 0.5D;
-+            this.field_70181_x *= 0.5D;
-+            this.field_70179_y *= 0.5D;
+             this.moveRelative(strafe, vertical, forward, 0.02F);
+             this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
+-            this.motionX *= 0.5;
+-            this.motionY *= 0.5;
+-            this.motionZ *= 0.5;
++            this.motionX *= 0.5D;
++            this.motionY *= 0.5D;
++            this.motionZ *= 0.5D;
          }
          else
          {
 @@ -47,17 +44,9 @@
  
-             if (this.field_70122_E)
+             if (this.onGround)
              {
--                f = this.field_70170_p
--                    .func_180495_p(
+-                f = this.world
+-                    .getBlockState(
 -                        new BlockPos(
--                            MathHelper.func_76128_c(this.field_70165_t),
--                            MathHelper.func_76128_c(this.func_174813_aQ().field_72338_b) - 1,
--                            MathHelper.func_76128_c(this.field_70161_v)
+-                            MathHelper.floor(this.posX),
+-                            MathHelper.floor(this.getEntityBoundingBox().minY) - 1,
+-                            MathHelper.floor(this.posZ)
 -                        )
 -                    )
--                    .func_177230_c()
--                    .field_149765_K
+-                    .getBlock()
+-                    .slipperiness
 -                    * 0.91F;
-+                BlockPos underPos = new BlockPos(MathHelper.func_76128_c(this.field_70165_t), MathHelper.func_76128_c(this.func_174813_aQ().field_72338_b) - 1, MathHelper.func_76128_c(this.field_70161_v));
-+                IBlockState underState = this.field_70170_p.func_180495_p(underPos);
-+                f = underState.func_177230_c().getSlipperiness(underState, this.field_70170_p, underPos, this) * 0.91F;
++                BlockPos underPos = new BlockPos(MathHelper.floor(this.posX), MathHelper.floor(this.getEntityBoundingBox().minY) - 1, MathHelper.floor(this.posZ));
++                IBlockState underState = this.world.getBlockState(underPos);
++                f = underState.getBlock().getSlipperiness(underState, this.world, underPos, this) * 0.91F;
              }
  
              float f1 = 0.16277136F / (f * f * f);
 @@ -66,17 +55,9 @@
  
-             if (this.field_70122_E)
+             if (this.onGround)
              {
--                f = this.field_70170_p
--                    .func_180495_p(
+-                f = this.world
+-                    .getBlockState(
 -                        new BlockPos(
--                            MathHelper.func_76128_c(this.field_70165_t),
--                            MathHelper.func_76128_c(this.func_174813_aQ().field_72338_b) - 1,
--                            MathHelper.func_76128_c(this.field_70161_v)
+-                            MathHelper.floor(this.posX),
+-                            MathHelper.floor(this.getEntityBoundingBox().minY) - 1,
+-                            MathHelper.floor(this.posZ)
 -                        )
 -                    )
--                    .func_177230_c()
--                    .field_149765_K
+-                    .getBlock()
+-                    .slipperiness
 -                    * 0.91F;
-+                BlockPos underPos = new BlockPos(MathHelper.func_76128_c(this.field_70165_t), MathHelper.func_76128_c(this.func_174813_aQ().field_72338_b) - 1, MathHelper.func_76128_c(this.field_70161_v));
-+                IBlockState underState = this.field_70170_p.func_180495_p(underPos);
-+                f = underState.func_177230_c().getSlipperiness(underState, this.field_70170_p, underPos, this) * 0.91F;
++                BlockPos underPos = new BlockPos(MathHelper.floor(this.posX), MathHelper.floor(this.getEntityBoundingBox().minY) - 1, MathHelper.floor(this.posZ));
++                IBlockState underState = this.world.getBlockState(underPos);
++                f = underState.getBlock().getSlipperiness(underState, this.world, underPos, this) * 0.91F;
              }
  
-             this.func_70091_d(MoverType.SELF, this.field_70159_w, this.field_70181_x, this.field_70179_y);
+             this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
 @@ -95,11 +76,10 @@
              f2 = 1.0F;
          }
  
--        this.field_70721_aZ = this.field_70721_aZ + (f2 - this.field_70721_aZ) * 0.4F;
--        this.field_184619_aG = this.field_184619_aG + this.field_70721_aZ;
-+        this.field_70721_aZ += (f2 - this.field_70721_aZ) * 0.4F;
-+        this.field_184619_aG += this.field_70721_aZ;
+-        this.limbSwingAmount = this.limbSwingAmount + (f2 - this.limbSwingAmount) * 0.4F;
+-        this.limbSwing = this.limbSwing + this.limbSwingAmount;
++        this.limbSwingAmount += (f2 - this.limbSwingAmount) * 0.4F;
++        this.limbSwing += this.limbSwingAmount;
      }
  
 -    @Override
-     public boolean func_70617_f_()
+     public boolean isOnLadder()
      {
          return false;

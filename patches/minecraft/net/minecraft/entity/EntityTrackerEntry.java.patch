@@ -1,32 +1,32 @@
 --- before/net/minecraft/entity/EntityTrackerEntry.java
 +++ after/net/minecraft/entity/EntityTrackerEntry.java
 @@ -90,11 +90,11 @@
-     private boolean field_73144_s;
-     private final boolean field_73143_t;
-     private int field_73142_u;
--    private List<Entity> field_187263_w = Collections.emptyList();
-+    private List<Entity> field_187263_w = Collections.<Entity>emptyList();
-     private boolean field_73141_v;
-     private boolean field_180234_y;
-     public boolean field_73133_n;
--    public final Set<EntityPlayerMP> field_73134_o = Sets.newHashSet();
-+    public final Set<EntityPlayerMP> field_73134_o = Sets.<EntityPlayerMP>newHashSet();
+     private boolean updatedPlayerVisibility;
+     private final boolean sendVelocityUpdates;
+     private int ticksSinceLastForcedTeleport;
+-    private List<Entity> passengers = Collections.emptyList();
++    private List<Entity> passengers = Collections.<Entity>emptyList();
+     private boolean ridingEntity;
+     private boolean onGround;
+     public boolean playerEntitiesUpdated;
+-    public final Set<EntityPlayerMP> trackingPlayers = Sets.newHashSet();
++    public final Set<EntityPlayerMP> trackingPlayers = Sets.<EntityPlayerMP>newHashSet();
  
-     public EntityTrackerEntry(Entity p_i46837_1_, int p_i46837_2_, int p_i46837_3_, int p_i46837_4_, boolean p_i46837_5_)
+     public EntityTrackerEntry(Entity entityIn, int rangeIn, int maxRangeIn, int updateFrequencyIn, boolean sendVelocityUpdatesIn)
      {
 @@ -112,15 +112,18 @@
-         this.field_180234_y = p_i46837_1_.field_70122_E;
+         this.onGround = entityIn.onGround;
      }
  
 -    @Override
      public boolean equals(Object p_equals_1_)
      {
 -        return p_equals_1_ instanceof EntityTrackerEntry
--               ? ((EntityTrackerEntry)p_equals_1_).field_73132_a.func_145782_y() == this.field_73132_a.func_145782_y()
+-               ? ((EntityTrackerEntry)p_equals_1_).trackedEntity.getEntityId() == this.trackedEntity.getEntityId()
 -               : false;
 +        if (p_equals_1_ instanceof EntityTrackerEntry)
 +        {
-+            return ((EntityTrackerEntry)p_equals_1_).field_73132_a.func_145782_y() == this.field_73132_a.func_145782_y();
++            return ((EntityTrackerEntry)p_equals_1_).trackedEntity.getEntityId() == this.trackedEntity.getEntityId();
 +        }
 +        else
 +        {
@@ -37,29 +37,29 @@
 -    @Override
      public int hashCode()
      {
-         return this.field_73132_a.func_145782_y();
+         return this.trackedEntity.getEntityId();
 @@ -130,7 +133,7 @@
      {
-         this.field_73133_n = false;
+         this.playerEntitiesUpdated = false;
  
--        if (!this.field_73144_s || this.field_73132_a.func_70092_e(this.field_73147_p, this.field_73146_q, this.field_73145_r) > 16.0)
-+        if (!this.field_73144_s || this.field_73132_a.func_70092_e(this.field_73147_p, this.field_73146_q, this.field_73145_r) > 16.0D)
+-        if (!this.updatedPlayerVisibility || this.trackedEntity.getDistanceSq(this.lastTrackedEntityPosX, this.lastTrackedEntityPosY, this.lastTrackedEntityPosZ) > 16.0)
++        if (!this.updatedPlayerVisibility || this.trackedEntity.getDistanceSq(this.lastTrackedEntityPosX, this.lastTrackedEntityPosY, this.lastTrackedEntityPosZ) > 16.0D)
          {
-             this.field_73147_p = this.field_73132_a.field_70165_t;
-             this.field_73146_q = this.field_73132_a.field_70163_u;
+             this.lastTrackedEntityPosX = this.trackedEntity.posX;
+             this.lastTrackedEntityPosY = this.trackedEntity.posY;
 @@ -155,13 +158,13 @@
  
-             if (itemstack.func_77973_b() instanceof ItemMap)
+             if (itemstack.getItem() instanceof ItemMap)
              {
--                MapData mapdata = Items.field_151098_aY.func_77873_a(itemstack, this.field_73132_a.field_70170_p);
-+                MapData mapdata = ((ItemMap) itemstack.func_77973_b()).func_77873_a(itemstack, this.field_73132_a.field_70170_p);
+-                MapData mapdata = Items.FILLED_MAP.getMapData(itemstack, this.trackedEntity.world);
++                MapData mapdata = ((ItemMap) itemstack.getItem()).getMapData(itemstack, this.trackedEntity.world);
  
-                 for (EntityPlayer entityplayer : p_73122_1_)
+                 for (EntityPlayer entityplayer : players)
                  {
                      EntityPlayerMP entityplayermp = (EntityPlayerMP)entityplayer;
-                     mapdata.func_76191_a(entityplayermp, itemstack);
--                    Packet<?> packet = Items.field_151098_aY.func_150911_c(itemstack, this.field_73132_a.field_70170_p, entityplayermp);
-+                    Packet<?> packet = ((ItemMap) itemstack.func_77973_b()).func_150911_c(itemstack, this.field_73132_a.field_70170_p, entityplayermp);
+                     mapdata.updateVisiblePlayers(entityplayermp, itemstack);
+-                    Packet<?> packet = Items.FILLED_MAP.createMapDataPacket(itemstack, this.trackedEntity.world, entityplayermp);
++                    Packet<?> packet = ((ItemMap) itemstack.getItem()).createMapDataPacket(itemstack, this.trackedEntity.world, entityplayermp);
  
                      if (packet != null)
                      {
@@ -67,25 +67,25 @@
  
                  if (flag3)
                  {
--                    this.func_151259_a(
--                        new SPacketEntity.S16PacketEntityLook(this.field_73132_a.func_145782_y(), (byte)j1, (byte)l1, this.field_73132_a.field_70122_E)
+-                    this.sendPacketToTrackedPlayers(
+-                        new SPacketEntity.S16PacketEntityLook(this.trackedEntity.getEntityId(), (byte)j1, (byte)l1, this.trackedEntity.onGround)
 -                    );
-+                    this.func_151259_a(new SPacketEntity.S16PacketEntityLook(this.field_73132_a.func_145782_y(), (byte)j1, (byte)l1, this.field_73132_a.field_70122_E));
-                     this.field_73127_g = j1;
-                     this.field_73139_h = l1;
++                    this.sendPacketToTrackedPlayers(new SPacketEntity.S16PacketEntityLook(this.trackedEntity.getEntityId(), (byte)j1, (byte)l1, this.trackedEntity.onGround));
+                     this.encodedRotationYaw = j1;
+                     this.encodedRotationPitch = l1;
                  }
 @@ -198,7 +199,7 @@
              }
              else
              {
--                this.field_73142_u++;
-+                ++this.field_73142_u;
-                 long i1 = EntityTracker.func_187253_a(this.field_73132_a.field_70165_t);
-                 long i2 = EntityTracker.func_187253_a(this.field_73132_a.field_70163_u);
-                 long j2 = EntityTracker.func_187253_a(this.field_73132_a.field_70161_v);
+-                this.ticksSinceLastForcedTeleport++;
++                ++this.ticksSinceLastForcedTeleport;
+                 long i1 = EntityTracker.getPositionLong(this.trackedEntity.posX);
+                 long i2 = EntityTracker.getPositionLong(this.trackedEntity.posY);
+                 long j2 = EntityTracker.getPositionLong(this.trackedEntity.posZ);
 @@ -213,15 +214,7 @@
  
-                 if (this.field_73136_m > 0 || this.field_73132_a instanceof EntityArrow)
+                 if (this.updateCounter > 0 || this.trackedEntity instanceof EntityArrow)
                  {
 -                    if (j >= -32768L
 -                            && j < 32768L
@@ -93,140 +93,140 @@
 -                            && k < 32768L
 -                            && l >= -32768L
 -                            && l < 32768L
--                            && this.field_73142_u <= 400
--                            && !this.field_73141_v
--                            && this.field_180234_y == this.field_73132_a.field_70122_E)
-+                    if (j >= -32768L && j < 32768L && k >= -32768L && k < 32768L && l >= -32768L && l < 32768L && this.field_73142_u <= 400 && !this.field_73141_v && this.field_180234_y == this.field_73132_a.field_70122_E)
+-                            && this.ticksSinceLastForcedTeleport <= 400
+-                            && !this.ridingEntity
+-                            && this.onGround == this.trackedEntity.onGround)
++                    if (j >= -32768L && j < 32768L && k >= -32768L && k < 32768L && l >= -32768L && l < 32768L && this.ticksSinceLastForcedTeleport <= 400 && !this.ridingEntity && this.onGround == this.trackedEntity.onGround)
                      {
-                         if ((!flag || !flag1) && !(this.field_73132_a instanceof EntityArrow))
+                         if ((!flag || !flag1) && !(this.trackedEntity instanceof EntityArrow))
                          {
 @@ -236,9 +229,7 @@
                          }
                          else
                          {
 -                            packet1 = new SPacketEntity.S17PacketEntityLookMove(
--                                this.field_73132_a.func_145782_y(), j, k, l, (byte)k2, (byte)i, this.field_73132_a.field_70122_E
+-                                this.trackedEntity.getEntityId(), j, k, l, (byte)k2, (byte)i, this.trackedEntity.onGround
 -                            );
-+                            packet1 = new SPacketEntity.S17PacketEntityLookMove(this.field_73132_a.func_145782_y(), j, k, l, (byte)k2, (byte)i, this.field_73132_a.field_70122_E);
++                            packet1 = new SPacketEntity.S17PacketEntityLookMove(this.trackedEntity.getEntityId(), j, k, l, (byte)k2, (byte)i, this.trackedEntity.onGround);
                          }
                      }
                      else
 @@ -262,11 +253,10 @@
-                     double d0 = this.field_73132_a.field_70159_w - this.field_73137_j;
-                     double d1 = this.field_73132_a.field_70181_x - this.field_73138_k;
-                     double d2 = this.field_73132_a.field_70179_y - this.field_73135_l;
+                     double d0 = this.trackedEntity.motionX - this.lastTrackedEntityMotionX;
+                     double d1 = this.trackedEntity.motionY - this.lastTrackedEntityMotionY;
+                     double d2 = this.trackedEntity.motionZ - this.motionZ;
 -                    double d3 = 0.02;
 +                    double d3 = 0.02D;
                      double d4 = d0 * d0 + d1 * d1 + d2 * d2;
  
 -                    if (d4 > 4.0E-4
--                            || d4 > 0.0 && this.field_73132_a.field_70159_w == 0.0 && this.field_73132_a.field_70181_x == 0.0 && this.field_73132_a.field_70179_y == 0.0)
-+                    if (d4 > 4.0E-4D || d4 > 0.0D && this.field_73132_a.field_70159_w == 0.0D && this.field_73132_a.field_70181_x == 0.0D && this.field_73132_a.field_70179_y == 0.0D)
+-                            || d4 > 0.0 && this.trackedEntity.motionX == 0.0 && this.trackedEntity.motionY == 0.0 && this.trackedEntity.motionZ == 0.0)
++                    if (d4 > 4.0E-4D || d4 > 0.0D && this.trackedEntity.motionX == 0.0D && this.trackedEntity.motionY == 0.0D && this.trackedEntity.motionZ == 0.0D)
                      {
-                         this.field_73137_j = this.field_73132_a.field_70159_w;
-                         this.field_73138_k = this.field_73132_a.field_70181_x;
+                         this.lastTrackedEntityMotionX = this.trackedEntity.motionX;
+                         this.lastTrackedEntityMotionY = this.trackedEntity.motionY;
 @@ -309,7 +299,7 @@
-             this.field_73132_a.field_70160_al = false;
+             this.trackedEntity.isAirBorne = false;
          }
  
--        this.field_73136_m++;
-+        ++this.field_73136_m;
+-        this.updateCounter++;
++        ++this.updateCounter;
  
-         if (this.field_73132_a.field_70133_I)
+         if (this.trackedEntity.velocityChanged)
          {
 @@ -392,8 +382,7 @@
  
-                     if (!this.field_73132_a.func_184212_Q().func_187228_d())
+                     if (!this.trackedEntity.getDataManager().isEmpty())
                      {
--                        p_73117_1_.field_71135_a
--                        .func_147359_a(new SPacketEntityMetadata(this.field_73132_a.func_145782_y(), this.field_73132_a.func_184212_Q(), true));
-+                        p_73117_1_.field_71135_a.func_147359_a(new SPacketEntityMetadata(this.field_73132_a.func_145782_y(), this.field_73132_a.func_184212_Q(), true));
+-                        playerMP.connection
+-                        .sendPacket(new SPacketEntityMetadata(this.trackedEntity.getEntityId(), this.trackedEntity.getDataManager(), true));
++                        playerMP.connection.sendPacket(new SPacketEntityMetadata(this.trackedEntity.getEntityId(), this.trackedEntity.getDataManager(), true));
                      }
  
-                     boolean flag = this.field_73143_t;
+                     boolean flag = this.sendVelocityUpdates;
 @@ -420,15 +409,7 @@
  
                      if (flag && !(packet instanceof SPacketSpawnMob))
                      {
--                        p_73117_1_.field_71135_a
--                        .func_147359_a(
+-                        playerMP.connection
+-                        .sendPacket(
 -                            new SPacketEntityVelocity(
--                                this.field_73132_a.func_145782_y(),
--                                this.field_73132_a.field_70159_w,
--                                this.field_73132_a.field_70181_x,
--                                this.field_73132_a.field_70179_y
+-                                this.trackedEntity.getEntityId(),
+-                                this.trackedEntity.motionX,
+-                                this.trackedEntity.motionY,
+-                                this.trackedEntity.motionZ
 -                            )
 -                        );
-+                        p_73117_1_.field_71135_a.func_147359_a(new SPacketEntityVelocity(this.field_73132_a.func_145782_y(), this.field_73132_a.field_70159_w, this.field_73132_a.field_70181_x, this.field_73132_a.field_70179_y));
++                        playerMP.connection.sendPacket(new SPacketEntityVelocity(this.trackedEntity.getEntityId(), this.trackedEntity.motionX, this.trackedEntity.motionY, this.trackedEntity.motionZ));
                      }
  
-                     if (this.field_73132_a instanceof EntityLivingBase)
+                     if (this.trackedEntity instanceof EntityLivingBase)
 @@ -476,6 +457,7 @@
  
-                     this.field_73132_a.func_184178_b(p_73117_1_);
-                     p_73117_1_.func_184848_d(this.field_73132_a);
-+                    net.minecraftforge.event.ForgeEventFactory.onStartEntityTracking(field_73132_a, p_73117_1_);
+                     this.trackedEntity.addTrackingPlayer(playerMP);
+                     playerMP.addEntity(this.trackedEntity);
++                    net.minecraftforge.event.ForgeEventFactory.onStartEntityTracking(trackedEntity, playerMP);
                  }
              }
-             else if (this.field_73134_o.contains(p_73117_1_))
+             else if (this.trackingPlayers.contains(playerMP))
 @@ -483,14 +465,15 @@
-                 this.field_73134_o.remove(p_73117_1_);
-                 this.field_73132_a.func_184203_c(p_73117_1_);
-                 p_73117_1_.func_152339_d(this.field_73132_a);
-+                net.minecraftforge.event.ForgeEventFactory.onStopEntityTracking(field_73132_a, p_73117_1_);
+                 this.trackingPlayers.remove(playerMP);
+                 this.trackedEntity.removeTrackingPlayer(playerMP);
+                 playerMP.removeEntity(this.trackedEntity);
++                net.minecraftforge.event.ForgeEventFactory.onStopEntityTracking(trackedEntity, playerMP);
              }
          }
      }
  
-     public boolean func_180233_c(EntityPlayerMP p_180233_1_)
+     public boolean isVisibleTo(EntityPlayerMP playerMP)
      {
--        double d0 = p_180233_1_.field_70165_t - (double)this.field_73128_d / 4096.0;
--        double d1 = p_180233_1_.field_70161_v - (double)this.field_73126_f / 4096.0;
-+        double d0 = p_180233_1_.field_70165_t - (double)this.field_73128_d / 4096.0D;
-+        double d1 = p_180233_1_.field_70161_v - (double)this.field_73126_f / 4096.0D;
-         int i = Math.min(this.field_73130_b, this.field_187262_f);
-         return d0 >= (double)(-i) && d0 <= (double)i && d1 >= (double)(-i) && d1 <= (double)i && this.field_73132_a.func_174827_a(p_180233_1_);
+-        double d0 = playerMP.posX - (double)this.encodedPosX / 4096.0;
+-        double d1 = playerMP.posZ - (double)this.encodedPosZ / 4096.0;
++        double d0 = playerMP.posX - (double)this.encodedPosX / 4096.0D;
++        double d1 = playerMP.posZ - (double)this.encodedPosZ / 4096.0D;
+         int i = Math.min(this.range, this.maxRange);
+         return d0 >= (double)(-i) && d0 <= (double)i && d1 >= (double)(-i) && d1 <= (double)i && this.trackedEntity.isSpectatedByPlayer(playerMP);
      }
 @@ -502,7 +485,7 @@
  
-     public void func_73125_b(List<EntityPlayer> p_73125_1_)
+     public void updatePlayerEntities(List<EntityPlayer> players)
      {
--        for (int i = 0; i < p_73125_1_.size(); i++)
-+        for (int i = 0; i < p_73125_1_.size(); ++i)
+-        for (int i = 0; i < players.size(); i++)
++        for (int i = 0; i < players.size(); ++i)
          {
-             this.func_73117_b((EntityPlayerMP)p_73125_1_.get(i));
+             this.updatePlayerEntity((EntityPlayerMP)players.get(i));
          }
 @@ -515,6 +498,9 @@
-             field_151262_p.warn("Fetching addPacket for removed entity");
+             LOGGER.warn("Fetching addPacket for removed entity");
          }
  
-+        Packet pkt = net.minecraftforge.fml.common.network.internal.FMLNetworkHandler.getEntitySpawningPacket(this.field_73132_a);
++        Packet pkt = net.minecraftforge.fml.common.network.internal.FMLNetworkHandler.getEntitySpawningPacket(this.trackedEntity);
 +        if (pkt != null) return pkt;
 +
-         if (this.field_73132_a instanceof EntityPlayerMP)
+         if (this.trackedEntity instanceof EntityPlayerMP)
          {
-             return new SPacketSpawnPlayer((EntityPlayer)this.field_73132_a);
+             return new SPacketSpawnPlayer((EntityPlayer)this.trackedEntity);
 @@ -616,17 +602,17 @@
-                 spacketspawnobject = new SPacketSpawnObject(this.field_73132_a, i, 0);
+                 spacketspawnobject = new SPacketSpawnObject(this.trackedEntity, i, 0);
              }
  
--            spacketspawnobject.func_149003_d((int)(entityfireball.field_70232_b * 8000.0));
--            spacketspawnobject.func_149000_e((int)(entityfireball.field_70233_c * 8000.0));
--            spacketspawnobject.func_149007_f((int)(entityfireball.field_70230_d * 8000.0));
-+            spacketspawnobject.func_149003_d((int)(entityfireball.field_70232_b * 8000.0D));
-+            spacketspawnobject.func_149000_e((int)(entityfireball.field_70233_c * 8000.0D));
-+            spacketspawnobject.func_149007_f((int)(entityfireball.field_70230_d * 8000.0D));
+-            spacketspawnobject.setSpeedX((int)(entityfireball.accelerationX * 8000.0));
+-            spacketspawnobject.setSpeedY((int)(entityfireball.accelerationY * 8000.0));
+-            spacketspawnobject.setSpeedZ((int)(entityfireball.accelerationZ * 8000.0));
++            spacketspawnobject.setSpeedX((int)(entityfireball.accelerationX * 8000.0D));
++            spacketspawnobject.setSpeedY((int)(entityfireball.accelerationY * 8000.0D));
++            spacketspawnobject.setSpeedZ((int)(entityfireball.accelerationZ * 8000.0D));
              return spacketspawnobject;
          }
-         else if (this.field_73132_a instanceof EntityShulkerBullet)
+         else if (this.trackedEntity instanceof EntityShulkerBullet)
          {
-             SPacketSpawnObject spacketspawnobject1 = new SPacketSpawnObject(this.field_73132_a, 67, 0);
--            spacketspawnobject1.func_149003_d((int)(this.field_73132_a.field_70159_w * 8000.0));
--            spacketspawnobject1.func_149000_e((int)(this.field_73132_a.field_70181_x * 8000.0));
--            spacketspawnobject1.func_149007_f((int)(this.field_73132_a.field_70179_y * 8000.0));
-+            spacketspawnobject1.func_149003_d((int)(this.field_73132_a.field_70159_w * 8000.0D));
-+            spacketspawnobject1.func_149000_e((int)(this.field_73132_a.field_70181_x * 8000.0D));
-+            spacketspawnobject1.func_149007_f((int)(this.field_73132_a.field_70179_y * 8000.0D));
+             SPacketSpawnObject spacketspawnobject1 = new SPacketSpawnObject(this.trackedEntity, 67, 0);
+-            spacketspawnobject1.setSpeedX((int)(this.trackedEntity.motionX * 8000.0));
+-            spacketspawnobject1.setSpeedY((int)(this.trackedEntity.motionY * 8000.0));
+-            spacketspawnobject1.setSpeedZ((int)(this.trackedEntity.motionZ * 8000.0));
++            spacketspawnobject1.setSpeedX((int)(this.trackedEntity.motionX * 8000.0D));
++            spacketspawnobject1.setSpeedY((int)(this.trackedEntity.motionY * 8000.0D));
++            spacketspawnobject1.setSpeedZ((int)(this.trackedEntity.motionZ * 8000.0D));
              return spacketspawnobject1;
          }
-         else if (this.field_73132_a instanceof EntityEgg)
+         else if (this.trackedEntity instanceof EntityEgg)

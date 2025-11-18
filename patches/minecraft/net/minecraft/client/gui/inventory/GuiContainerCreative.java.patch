@@ -1,163 +1,56 @@
 --- before/net/minecraft/client/gui/inventory/GuiContainerCreative.java
 +++ after/net/minecraft/client/gui/inventory/GuiContainerCreative.java
 @@ -57,6 +57,8 @@
-     private Slot field_147064_C;
-     private boolean field_147057_D;
-     private CreativeCrafting field_147059_E;
+     private Slot destroyItemSlot;
+     private boolean clearSearch;
+     private CreativeCrafting listener;
 +    private static int tabPage = 0;
 +    private int maxPages = 0;
  
-     public GuiContainerCreative(EntityPlayer p_i1088_1_)
+     public GuiContainerCreative(EntityPlayer player)
      {
-@@ -67,7 +69,6 @@
-         this.field_146999_f = 195;
-     }
- 
--    @Override
-     public void func_73876_c()
-     {
-         if (!this.field_146297_k.field_71442_b.func_78758_h())
-@@ -76,7 +77,6 @@
-         }
-     }
- 
--    @Override
-     protected void func_184098_a(@Nullable Slot p_184098_1_, int p_184098_2_, int p_184098_3_, ClickType p_184098_4_)
-     {
-         this.field_147057_D = true;
-@@ -113,7 +113,7 @@
- 
-             if (p_184098_1_ == this.field_147064_C && flag)
-             {
--                for (int j = 0; j < this.field_146297_k.field_71439_g.field_71069_bz.func_75138_a().size(); j++)
-+                for (int j = 0; j < this.field_146297_k.field_71439_g.field_71069_bz.func_75138_a().size(); ++j)
-                 {
-                     this.field_146297_k.field_71442_b.func_78761_a(ItemStack.field_190927_a, j);
-                 }
-@@ -140,15 +140,7 @@
-                 }
-                 else
-                 {
--                    this.field_146297_k
--                    .field_71439_g
--                    .field_71069_bz
--                    .func_184996_a(
--                        p_184098_1_ == null ? p_184098_2_ : ((GuiContainerCreative.CreativeSlot)p_184098_1_).field_148332_b.field_75222_d,
--                        p_184098_3_,
--                        p_184098_4_,
--                        this.field_146297_k.field_71439_g
--                    );
-+                    this.field_146297_k.field_71439_g.field_71069_bz.func_184996_a(p_184098_1_ == null ? p_184098_2_ : ((GuiContainerCreative.CreativeSlot)p_184098_1_).field_148332_b.field_75222_d, p_184098_3_, p_184098_4_, this.field_146297_k.field_71439_g);
-                     this.field_146297_k.field_71439_g.field_71069_bz.func_75142_b();
-                 }
-             }
-@@ -196,10 +188,7 @@
-                     return;
-                 }
- 
--                if (!itemstack5.func_190926_b()
--                        && !itemstack7.func_190926_b()
--                        && itemstack5.func_77969_a(itemstack7)
--                        && ItemStack.func_77970_a(itemstack5, itemstack7))
-+                if (!itemstack5.func_190926_b() && !itemstack7.func_190926_b() && itemstack5.func_77969_a(itemstack7) && ItemStack.func_77970_a(itemstack5, itemstack7))
-                 {
-                     if (p_184098_3_ == 0)
-                     {
-@@ -239,12 +228,11 @@
-             else if (this.field_147002_h != null)
-             {
-                 ItemStack itemstack3 = p_184098_1_ == null ? ItemStack.field_190927_a : this.field_147002_h.func_75139_a(p_184098_1_.field_75222_d).func_75211_c();
--                this.field_147002_h
--                .func_184996_a(p_184098_1_ == null ? p_184098_2_ : p_184098_1_.field_75222_d, p_184098_3_, p_184098_4_, this.field_146297_k.field_71439_g);
-+                this.field_147002_h.func_184996_a(p_184098_1_ == null ? p_184098_2_ : p_184098_1_.field_75222_d, p_184098_3_, p_184098_4_, this.field_146297_k.field_71439_g);
- 
-                 if (Container.func_94532_c(p_184098_3_) == 2)
-                 {
--                    for (int k = 0; k < 9; k++)
-+                    for (int k = 0; k < 9; ++k)
-                     {
-                         this.field_146297_k.field_71442_b.func_78761_a(this.field_147002_h.func_75139_a(45 + k).func_75211_c(), 36 + k);
-                     }
-@@ -273,7 +261,6 @@
-         }
-     }
- 
--    @Override
-     protected void func_175378_g()
-     {
-         int i = this.field_147003_i;
-@@ -285,7 +272,6 @@
-         }
-     }
- 
--    @Override
-     public void func_73866_w_()
-     {
-         if (this.field_146297_k.field_71442_b.func_78758_h())
-@@ -293,9 +279,7 @@
-             super.func_73866_w_();
-             this.field_146292_n.clear();
-             Keyboard.enableRepeatEvents(true);
--            this.field_147062_A = new GuiTextField(
--                0, this.field_146289_q, this.field_147003_i + 82, this.field_147009_r + 6, 80, this.field_146289_q.field_78288_b
--            );
-+            this.field_147062_A = new GuiTextField(0, this.field_146289_q, this.field_147003_i + 82, this.field_147009_r + 6, 80, this.field_146289_q.field_78288_b);
-             this.field_147062_A.func_146203_f(50);
-             this.field_147062_A.func_146185_a(false);
-             this.field_147062_A.func_146189_e(false);
-@@ -305,6 +289,13 @@
-             this.func_147050_b(CreativeTabs.field_78032_a[i]);
-             this.field_147059_E = new CreativeCrafting(this.field_146297_k);
-             this.field_146297_k.field_71439_g.field_71069_bz.func_75132_a(this.field_147059_E);
-+            int tabCount = CreativeTabs.field_78032_a.length;
+@@ -305,6 +307,13 @@
+             this.setCurrentCreativeTab(CreativeTabs.CREATIVE_TAB_ARRAY[i]);
+             this.listener = new CreativeCrafting(this.mc);
+             this.mc.player.inventoryContainer.addListener(this.listener);
++            int tabCount = CreativeTabs.CREATIVE_TAB_ARRAY.length;
 +            if (tabCount > 12)
 +            {
-+                field_146292_n.add(new GuiButton(101, field_147003_i,              field_147009_r - 50, 20, 20, "<"));
-+                field_146292_n.add(new GuiButton(102, field_147003_i + field_146999_f - 20, field_147009_r - 50, 20, 20, ">"));
++                buttonList.add(new GuiButton(101, guiLeft,              guiTop - 50, 20, 20, "<"));
++                buttonList.add(new GuiButton(102, guiLeft + xSize - 20, guiTop - 50, 20, 20, ">"));
 +                maxPages = (int) Math.ceil((tabCount - 12) / 10D);
 +            }
          }
          else
          {
-@@ -312,7 +303,6 @@
-         }
-     }
- 
--    @Override
-     public void func_146281_b()
+@@ -328,7 +337,7 @@
+     @Override
+     protected void keyTyped(char typedChar, int keyCode) throws IOException
      {
-         super.func_146281_b();
-@@ -325,10 +315,9 @@
-         Keyboard.enableRepeatEvents(false);
-     }
- 
--    @Override
-     protected void func_73869_a(char p_73869_1_, int p_73869_2_) throws IOException
-     {
--        if (field_147058_w != CreativeTabs.field_78027_g.func_78021_a())
-+        if (!CreativeTabs.field_78032_a[field_147058_w].hasSearchBar())
+-        if (selectedTabIndex != CreativeTabs.SEARCH.getIndex())
++        if (!CreativeTabs.CREATIVE_TAB_ARRAY[selectedTabIndex].hasSearchBar())
          {
-             if (GameSettings.func_100015_a(this.field_146297_k.field_71474_y.field_74310_D))
+             if (GameSettings.isKeyDown(this.mc.gameSettings.keyBindChat))
              {
-@@ -366,6 +355,34 @@
-         GuiContainerCreative.ContainerCreative guicontainercreative$containercreative = (GuiContainerCreative.ContainerCreative)this.field_147002_h;
-         guicontainercreative$containercreative.field_148330_a.clear();
+@@ -366,6 +375,34 @@
+         GuiContainerCreative.ContainerCreative guicontainercreative$containercreative = (GuiContainerCreative.ContainerCreative)this.inventorySlots;
+         guicontainercreative$containercreative.itemList.clear();
  
-+        CreativeTabs tab = CreativeTabs.field_78032_a[field_147058_w];
-+        if (tab.hasSearchBar() && tab != CreativeTabs.field_78027_g)
++        CreativeTabs tab = CreativeTabs.CREATIVE_TAB_ARRAY[selectedTabIndex];
++        if (tab.hasSearchBar() && tab != CreativeTabs.SEARCH)
 +        {
-+            tab.func_78018_a(guicontainercreative$containercreative.field_148330_a);
-+            if (!this.field_147062_A.func_146179_b().isEmpty())
++            tab.displayAllRelevantItems(guicontainercreative$containercreative.itemList);
++            if (!this.searchField.getText().isEmpty())
 +            {
 +                //TODO: Make this a SearchTree not a manual search
-+                String search = this.field_147062_A.func_146179_b().toLowerCase(Locale.ROOT);
-+                java.util.Iterator<ItemStack> itr = guicontainercreative$containercreative.field_148330_a.iterator();
++                String search = this.searchField.getText().toLowerCase(Locale.ROOT);
++                java.util.Iterator<ItemStack> itr = guicontainercreative$containercreative.itemList.iterator();
 +                while (itr.hasNext()) {
 +                    ItemStack stack = itr.next();
 +                    boolean matches = false;
-+                    for (String line : stack.func_82840_a(this.field_146297_k.field_71439_g, this.field_146297_k.field_71474_y.field_82882_x ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL))
++                    for (String line : stack.getTooltip(this.mc.player, this.mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL))
 +                    {
-+                        if (TextFormatting.func_110646_a(line).toLowerCase(Locale.ROOT).contains(search)) {
++                        if (TextFormatting.getTextWithoutFormattingCodes(line).toLowerCase(Locale.ROOT).contains(search)) {
 +                            matches = true;
 +                            break;
 +                        }
@@ -166,645 +59,261 @@
 +                        itr.remove();
 +                }
 +            }
-+            this.field_147067_x = 0.0F;
-+            guicontainercreative$containercreative.func_148329_a(0.0F);
++            this.currentScroll = 0.0F;
++            guicontainercreative$containercreative.scrollTo(0.0F);
 +            return;
 +        }
 +
-         if (this.field_147062_A.func_146179_b().isEmpty())
+         if (this.searchField.getText().isEmpty())
          {
-             for (Item item : Item.field_150901_e)
-@@ -375,29 +392,24 @@
-         }
-         else
-         {
--            guicontainercreative$containercreative.field_148330_a
--            .addAll(
--                this.field_146297_k.func_193987_a(SearchTreeManager.field_194011_a).func_194038_a(this.field_147062_A.func_146179_b().toLowerCase(Locale.ROOT))
--            );
-+            guicontainercreative$containercreative.field_148330_a.addAll(this.field_146297_k.func_193987_a(SearchTreeManager.field_194011_a).func_194038_a(this.field_147062_A.func_146179_b().toLowerCase(Locale.ROOT)));
-         }
- 
-         this.field_147067_x = 0.0F;
-         guicontainercreative$containercreative.func_148329_a(0.0F);
-     }
- 
--    @Override
-     protected void func_146979_b(int p_146979_1_, int p_146979_2_)
+             for (Item item : Item.REGISTRY)
+@@ -390,10 +427,10 @@
      {
-         CreativeTabs creativetabs = CreativeTabs.field_78032_a[field_147058_w];
+         CreativeTabs creativetabs = CreativeTabs.CREATIVE_TAB_ARRAY[selectedTabIndex];
  
--        if (creativetabs.func_78019_g())
-+        if (creativetabs != null && creativetabs.func_78019_g())
+-        if (creativetabs.drawInForegroundOfTab())
++        if (creativetabs != null && creativetabs.drawInForegroundOfTab())
          {
-             GlStateManager.func_179084_k();
--            this.field_146289_q.func_78276_b(I18n.func_135052_a(creativetabs.func_78024_c()), 8, 6, 4210752);
-+            this.field_146289_q.func_78276_b(I18n.func_135052_a(creativetabs.func_78024_c()), 8, 6, creativetabs.getLabelColor());
+             GlStateManager.disableBlend();
+-            this.fontRenderer.drawString(I18n.format(creativetabs.getTranslationKey()), 8, 6, 4210752);
++            this.fontRenderer.drawString(I18n.format(creativetabs.getTranslationKey()), 8, 6, creativetabs.getLabelColor());
          }
      }
  
--    @Override
-     protected void func_73864_a(int p_73864_1_, int p_73864_2_, int p_73864_3_) throws IOException
-     {
-         if (p_73864_3_ == 0)
-@@ -417,7 +429,6 @@
-         super.func_73864_a(p_73864_1_, p_73864_2_, p_73864_3_);
-     }
+@@ -427,7 +464,7 @@
  
--    @Override
-     protected void func_146286_b(int p_146286_1_, int p_146286_2_, int p_146286_3_)
-     {
-         if (p_146286_3_ == 0)
-@@ -427,7 +438,7 @@
- 
-             for (CreativeTabs creativetabs : CreativeTabs.field_78032_a)
+             for (CreativeTabs creativetabs : CreativeTabs.CREATIVE_TAB_ARRAY)
              {
--                if (this.func_147049_a(creativetabs, i, j))
-+                if (creativetabs != null && this.func_147049_a(creativetabs, i, j))
+-                if (this.isMouseOverTab(creativetabs, i, j))
++                if (creativetabs != null && this.isMouseOverTab(creativetabs, i, j))
                  {
-                     this.func_147050_b(creativetabs);
+                     this.setCurrentCreativeTab(creativetabs);
                      return;
-@@ -440,13 +451,13 @@
+@@ -440,6 +477,7 @@
  
-     private boolean func_147055_p()
+     private boolean needsScrollBars()
      {
--        return field_147058_w != CreativeTabs.field_78036_m.func_78021_a()
--               && CreativeTabs.field_78032_a[field_147058_w].func_78017_i()
--               && ((GuiContainerCreative.ContainerCreative)this.field_147002_h).func_148328_e();
-+        if (CreativeTabs.field_78032_a[field_147058_w] == null) return false;
-+        return field_147058_w != CreativeTabs.field_78036_m.func_78021_a() && CreativeTabs.field_78032_a[field_147058_w].func_78017_i() && ((GuiContainerCreative.ContainerCreative)this.field_147002_h).func_148328_e();
-     }
++        if (CreativeTabs.CREATIVE_TAB_ARRAY[selectedTabIndex] == null) return false;
+         return selectedTabIndex != CreativeTabs.INVENTORY.getIndex()
+                && CreativeTabs.CREATIVE_TAB_ARRAY[selectedTabIndex].hasScrollbar()
+                && ((GuiContainerCreative.ContainerCreative)this.inventorySlots).canScroll();
+@@ -447,6 +485,7 @@
  
-     private void func_147050_b(CreativeTabs p_147050_1_)
+     private void setCurrentCreativeTab(CreativeTabs tab)
      {
-+        if (p_147050_1_ == null) return;
-         int i = field_147058_w;
-         field_147058_w = p_147050_1_.func_78021_a();
-         GuiContainerCreative.ContainerCreative guicontainercreative$containercreative = (GuiContainerCreative.ContainerCreative)this.field_147002_h;
-@@ -455,13 +466,13 @@
++        if (tab == null) return;
+         int i = selectedTabIndex;
+         selectedTabIndex = tab.getIndex();
+         GuiContainerCreative.ContainerCreative guicontainercreative$containercreative = (GuiContainerCreative.ContainerCreative)this.inventorySlots;
+@@ -552,7 +591,7 @@
  
-         if (p_147050_1_ == CreativeTabs.field_192395_m)
+         if (this.searchField != null)
          {
--            for (int j = 0; j < 9; j++)
-+            for (int j = 0; j < 9; ++j)
+-            if (tab == CreativeTabs.SEARCH)
++            if (tab.hasSearchBar())
              {
-                 HotbarSnapshot hotbarsnapshot = this.field_146297_k.field_191950_u.func_192563_a(j);
+                 this.searchField.setVisible(true);
+                 this.searchField.setCanLoseFocus(false);
+@@ -631,21 +670,43 @@
  
-                 if (hotbarsnapshot.isEmpty())
-                 {
--                    for (int k = 0; k < 9; k++)
-+                    for (int k = 0; k < 9; ++k)
-                     {
-                         if (k == j)
-                         {
-@@ -469,7 +480,7 @@
-                             itemstack.func_190925_c("CustomCreativeLock");
-                             String s = GameSettings.func_74298_c(this.field_146297_k.field_71474_y.field_151456_ac[j].func_151463_i());
-                             String s1 = GameSettings.func_74298_c(this.field_146297_k.field_71474_y.field_193629_ap.func_151463_i());
--                            itemstack.func_151001_c(new TextComponentTranslation("inventory.hotbarInfo", s1, s).func_150260_c());
-+                            itemstack.func_151001_c((new TextComponentTranslation("inventory.hotbarInfo", new Object[] {s1, s})).func_150260_c());
-                             guicontainercreative$containercreative.field_148330_a.add(itemstack);
-                         }
-                         else
-@@ -498,9 +509,9 @@
-                 this.field_147063_B = guicontainercreative$containercreative.field_75151_b;
-             }
+         super.drawScreen(mouseX, mouseY, partialTicks);
  
--            guicontainercreative$containercreative.field_75151_b = Lists.newArrayList();
-+            guicontainercreative$containercreative.field_75151_b = Lists.<Slot>newArrayList();
- 
--            for (int l = 0; l < container.field_75151_b.size(); l++)
-+            for (int l = 0; l < container.field_75151_b.size(); ++l)
-             {
-                 Slot slot = new GuiContainerCreative.CreativeSlot(container.field_75151_b.get(l), l);
-                 guicontainercreative$containercreative.field_75151_b.add(slot);
-@@ -552,12 +563,14 @@
- 
-         if (this.field_147062_A != null)
-         {
--            if (p_147050_1_ == CreativeTabs.field_78027_g)
-+            if (p_147050_1_.hasSearchBar())
-             {
-                 this.field_147062_A.func_146189_e(true);
-                 this.field_147062_A.func_146205_d(false);
-                 this.field_147062_A.func_146195_b(true);
-                 this.field_147062_A.func_146180_a("");
-+                this.field_147062_A.field_146218_h = p_147050_1_.getSearchbarWidth();
-+                this.field_147062_A.field_146209_f = this.field_147003_i + (82 /*default left*/ + 89 /*default width*/) - this.field_147062_A.field_146218_h;
-                 this.func_147053_i();
-             }
-             else
-@@ -572,7 +585,6 @@
-         guicontainercreative$containercreative.func_148329_a(0.0F);
-     }
- 
--    @Override
-     public void func_146274_d() throws IOException
-     {
-         super.func_146274_d();
-@@ -598,7 +610,6 @@
-         }
-     }
- 
--    @Override
-     public void func_73863_a(int p_73863_1_, int p_73863_2_, float p_73863_3_)
-     {
-         this.func_146276_q_();
-@@ -631,35 +642,53 @@
- 
-         super.func_73863_a(p_73863_1_, p_73863_2_, p_73863_3_);
- 
--        for (CreativeTabs creativetabs : CreativeTabs.field_78032_a)
+-        for (CreativeTabs creativetabs : CreativeTabs.CREATIVE_TAB_ARRAY)
 +        int start = tabPage * 10;
-+        int end = Math.min(CreativeTabs.field_78032_a.length, ((tabPage + 1) * 10) + 2);
++        int end = Math.min(CreativeTabs.CREATIVE_TAB_ARRAY.length, ((tabPage + 1) * 10) + 2);
 +        if (tabPage != 0) start += 2;
 +        boolean rendered = false;
 +
-+        for (CreativeTabs creativetabs : java.util.Arrays.copyOfRange(CreativeTabs.field_78032_a,start,end))
++        for (CreativeTabs creativetabs : java.util.Arrays.copyOfRange(CreativeTabs.CREATIVE_TAB_ARRAY,start,end))
          {
 +            if (creativetabs == null) continue;
-             if (this.func_147052_b(creativetabs, p_73863_1_, p_73863_2_))
+             if (this.renderCreativeInventoryHoveringText(creativetabs, mouseX, mouseY))
              {
 +                rendered = true;
                  break;
              }
          }
  
--        if (this.field_147064_C != null
--                && field_147058_w == CreativeTabs.field_78036_m.func_78021_a()
--                && this.func_146978_c(this.field_147064_C.field_75223_e, this.field_147064_C.field_75221_f, 16, 16, p_73863_1_, p_73863_2_))
-+        if (!rendered && !func_147052_b(CreativeTabs.field_78027_g, p_73863_1_, p_73863_2_))
+-        if (this.destroyItemSlot != null
+-                && selectedTabIndex == CreativeTabs.INVENTORY.getIndex()
+-                && this.isPointInRegion(this.destroyItemSlot.xPos, this.destroyItemSlot.yPos, 16, 16, mouseX, mouseY))
++        if (!rendered && !renderCreativeInventoryHoveringText(CreativeTabs.SEARCH, mouseX, mouseY))
 +        {
-+            func_147052_b(CreativeTabs.field_78036_m, p_73863_1_, p_73863_2_);
++            renderCreativeInventoryHoveringText(CreativeTabs.INVENTORY, mouseX, mouseY);
 +        }
 +
-+        if (this.field_147064_C != null && field_147058_w == CreativeTabs.field_78036_m.func_78021_a() && this.func_146978_c(this.field_147064_C.field_75223_e, this.field_147064_C.field_75221_f, 16, 16, p_73863_1_, p_73863_2_))
++        if (this.destroyItemSlot != null && selectedTabIndex == CreativeTabs.INVENTORY.getIndex() && this.isPointInRegion(this.destroyItemSlot.xPos, this.destroyItemSlot.yPos, 16, 16, mouseX, mouseY))
          {
-             this.func_146279_a(I18n.func_135052_a("inventory.binSlot"), p_73863_1_, p_73863_2_);
+             this.drawHoveringText(I18n.format("inventory.binSlot"), mouseX, mouseY);
          }
  
 +        if (maxPages != 0)
 +        {
 +            String page = String.format("%d / %d", tabPage + 1, maxPages + 1);
-+            int width = field_146289_q.func_78256_a(page);
-+            GlStateManager.func_179140_f();
-+            this.field_73735_i = 300.0F;
-+            field_146296_j.field_77023_b = 300.0F;
-+            field_146289_q.func_78276_b(page, field_147003_i + (field_146999_f / 2) - (width / 2), field_147009_r - 44, -1);
-+            this.field_73735_i = 0.0F;
-+            field_146296_j.field_77023_b = 0.0F;
++            int width = fontRenderer.getStringWidth(page);
++            GlStateManager.disableLighting();
++            this.zLevel = 300.0F;
++            itemRender.zLevel = 300.0F;
++            fontRenderer.drawString(page, guiLeft + (xSize / 2) - (width / 2), guiTop - 44, -1);
++            this.zLevel = 0.0F;
++            itemRender.zLevel = 0.0F;
 +        }
 +
-         GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
-         GlStateManager.func_179140_f();
-         this.func_191948_b(p_73863_1_, p_73863_2_);
-     }
- 
--    @Override
-     protected void func_146285_a(ItemStack p_146285_1_, int p_146285_2_, int p_146285_3_)
-     {
-         if (field_147058_w == CreativeTabs.field_78027_g.func_78021_a())
-         {
--            List<String> list = p_146285_1_.func_82840_a(
--                                    this.field_146297_k.field_71439_g,
--                                    this.field_146297_k.field_71474_y.field_82882_x ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL
--                                );
-+            List<String> list = p_146285_1_.func_82840_a(this.field_146297_k.field_71439_g, this.field_146297_k.field_71474_y.field_82882_x ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
-             CreativeTabs creativetabs = p_146285_1_.func_77973_b().func_77640_w();
- 
-             if (creativetabs == null && p_146285_1_.func_77973_b() == Items.field_151134_bR)
-@@ -686,19 +715,22 @@
-                 list.add(1, "" + TextFormatting.BOLD + TextFormatting.BLUE + I18n.func_135052_a(creativetabs.func_78024_c()));
-             }
- 
--            for (int i = 0; i < list.size(); i++)
-+            for (int i = 0; i < list.size(); ++i)
+         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+         GlStateManager.disableLighting();
+         this.renderHoveredToolTip(mouseX, mouseY);
+@@ -690,7 +751,7 @@
              {
                  if (i == 0)
                  {
--                    list.set(i, p_146285_1_.func_77953_t().field_77937_e + list.get(i));
-+                    list.set(i, p_146285_1_.func_77973_b().getForgeRarity(p_146285_1_).getColor() + (String)list.get(i));
+-                    list.set(i, stack.getRarity().color + list.get(i));
++                    list.set(i, stack.getItem().getForgeRarity(stack).getColor() + list.get(i));
                  }
                  else
                  {
--                    list.set(i, TextFormatting.GRAY + list.get(i));
-+                    list.set(i, TextFormatting.GRAY + (String)list.get(i));
+@@ -698,7 +759,10 @@
                  }
              }
  
--            this.func_146283_a(list, p_146285_2_, p_146285_3_);
-+            net.minecraft.client.gui.FontRenderer font = p_146285_1_.func_77973_b().getFontRenderer(p_146285_1_);
-+            net.minecraftforge.fml.client.config.GuiUtils.preItemToolTip(p_146285_1_);
-+            this.drawHoveringText(list, p_146285_2_, p_146285_3_, (font == null ? field_146289_q : font));
+-            this.drawHoveringText(list, x, y);
++            net.minecraft.client.gui.FontRenderer font = stack.getItem().getFontRenderer(stack);
++            net.minecraftforge.fml.client.config.GuiUtils.preItemToolTip(stack);
++            this.drawHoveringText(list, x, y, (font == null ? fontRenderer : font));
 +            net.minecraftforge.fml.client.config.GuiUtils.postItemToolTip();
          }
          else
          {
-@@ -706,24 +738,42 @@
-         }
-     }
+@@ -713,17 +777,36 @@
+         RenderHelper.enableGUIStandardItemLighting();
+         CreativeTabs creativetabs = CreativeTabs.CREATIVE_TAB_ARRAY[selectedTabIndex];
  
--    @Override
-     protected void func_146976_a(float p_146976_1_, int p_146976_2_, int p_146976_3_)
-     {
-         GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
-         RenderHelper.func_74520_c();
-         CreativeTabs creativetabs = CreativeTabs.field_78032_a[field_147058_w];
- 
--        for (CreativeTabs creativetabs1 : CreativeTabs.field_78032_a)
+-        for (CreativeTabs creativetabs1 : CreativeTabs.CREATIVE_TAB_ARRAY)
 +        int start = tabPage * 10;
-+        int end = Math.min(CreativeTabs.field_78032_a.length, ((tabPage + 1) * 10 + 2));
++        int end = Math.min(CreativeTabs.CREATIVE_TAB_ARRAY.length, ((tabPage + 1) * 10 + 2));
 +        if (tabPage != 0) start += 2;
 +
-+        for (CreativeTabs creativetabs1 : java.util.Arrays.copyOfRange(CreativeTabs.field_78032_a,start,end))
++        for (CreativeTabs creativetabs1 : java.util.Arrays.copyOfRange(CreativeTabs.CREATIVE_TAB_ARRAY,start,end))
          {
-             this.field_146297_k.func_110434_K().func_110577_a(field_147061_u);
+             this.mc.getTextureManager().bindTexture(CREATIVE_INVENTORY_TABS);
  
 +            if (creativetabs1 == null) continue;
-             if (creativetabs1.func_78021_a() != field_147058_w)
+             if (creativetabs1.getIndex() != selectedTabIndex)
              {
-                 this.func_147051_a(creativetabs1);
+                 this.drawTab(creativetabs1);
              }
          }
  
--        this.field_146297_k.func_110434_K().func_110577_a(new ResourceLocation("textures/gui/container/creative_inventory/tab_" + creativetabs.func_78015_f()));
+-        this.mc.getTextureManager().bindTexture(new ResourceLocation("textures/gui/container/creative_inventory/tab_" + creativetabs.getBackgroundImageName()));
 +        if (tabPage != 0)
 +        {
-+            if (creativetabs != CreativeTabs.field_78027_g)
++            if (creativetabs != CreativeTabs.SEARCH)
 +            {
-+                this.field_146297_k.func_110434_K().func_110577_a(field_147061_u);
-+                func_147051_a(CreativeTabs.field_78027_g);
++                this.mc.getTextureManager().bindTexture(CREATIVE_INVENTORY_TABS);
++                drawTab(CreativeTabs.SEARCH);
 +            }
-+            if (creativetabs != CreativeTabs.field_78036_m)
++            if (creativetabs != CreativeTabs.INVENTORY)
 +            {
-+                this.field_146297_k.func_110434_K().func_110577_a(field_147061_u);
-+                func_147051_a(CreativeTabs.field_78036_m);
++                this.mc.getTextureManager().bindTexture(CREATIVE_INVENTORY_TABS);
++                drawTab(CreativeTabs.INVENTORY);
 +            }
 +        }
 +
-+        this.field_146297_k.func_110434_K().func_110577_a(creativetabs.getBackgroundImage());
-         this.func_73729_b(this.field_147003_i, this.field_147009_r, 0, 0, this.field_146999_f, this.field_147000_g);
-         this.field_147062_A.func_146194_f();
-         GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
-@@ -737,23 +787,32 @@
-             this.func_73729_b(i, j + (int)((float)(k - j - 17) * this.field_147067_x), 232 + (this.func_147055_p() ? 0 : 12), 0, 12, 15);
++        this.mc.getTextureManager().bindTexture(creativetabs.getBackgroundImage());
+         this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
+         this.searchField.drawTextBox();
+         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+@@ -737,6 +820,14 @@
+             this.drawTexturedModalRect(i, j + (int)((float)(k - j - 17) * this.currentScroll), 232 + (this.needsScrollBars() ? 0 : 12), 0, 12, 15);
          }
  
 +        if (creativetabs == null || creativetabs.getTabPage() != tabPage)
 +        {
-+            if (creativetabs != CreativeTabs.field_78027_g && creativetabs != CreativeTabs.field_78036_m)
++            if (creativetabs != CreativeTabs.SEARCH && creativetabs != CreativeTabs.INVENTORY)
 +            {
 +                return;
 +            }
 +        }
 +
-         this.func_147051_a(creativetabs);
+         this.drawTab(creativetabs);
  
-         if (creativetabs == CreativeTabs.field_78036_m)
-         {
--            GuiInventory.func_147046_a(
--                this.field_147003_i + 88,
--                this.field_147009_r + 45,
--                20,
--                (float)(this.field_147003_i + 88 - p_146976_2_),
--                (float)(this.field_147009_r + 45 - 30 - p_146976_3_),
--                this.field_146297_k.field_71439_g
--            );
-+            GuiInventory.func_147046_a(this.field_147003_i + 88, this.field_147009_r + 45, 20, (float)(this.field_147003_i + 88 - p_146976_2_), (float)(this.field_147009_r + 45 - 30 - p_146976_3_), this.field_146297_k.field_71439_g);
-         }
-     }
+         if (creativetabs == CreativeTabs.INVENTORY)
+@@ -754,6 +845,14 @@
  
-     protected boolean func_147049_a(CreativeTabs p_147049_1_, int p_147049_2_, int p_147049_3_)
+     protected boolean isMouseOverTab(CreativeTabs tab, int mouseX, int mouseY)
      {
-+        if (p_147049_1_.getTabPage() != tabPage)
++        if (tab.getTabPage() != tabPage)
 +        {
-+            if (p_147049_1_ != CreativeTabs.field_78027_g && p_147049_1_ != CreativeTabs.field_78036_m)
++            if (tab != CreativeTabs.SEARCH && tab != CreativeTabs.INVENTORY)
 +            {
 +                return false;
 +            }
 +        }
 +
-         int i = p_147049_1_.func_78020_k();
+         int i = tab.getColumn();
          int j = 28 * i;
          int k = 0;
-@@ -769,11 +828,11 @@
- 
-         if (p_147049_1_.func_78023_l())
-         {
--            k -= 32;
-+            k = k - 32;
-         }
-         else
-         {
--            k += this.field_147000_g;
-+            k = k + this.field_147000_g;
+@@ -850,6 +949,8 @@
          }
  
-         return p_147049_2_ >= j && p_147049_2_ <= j + 28 && p_147049_3_ >= k && p_147049_3_ <= k + 32;
-@@ -796,11 +855,11 @@
- 
-         if (p_147052_1_.func_78023_l())
+         GlStateManager.disableLighting();
++        GlStateManager.color(1F, 1F, 1F); //Forge: Reset color in case Items change it.
++        GlStateManager.enableBlend(); //Forge: Make sure blend is enabled else tabs show a white border.
+         this.drawTexturedModalRect(l, i1, j, k, 28, 32);
+         this.zLevel = 100.0F;
+         this.itemRender.zLevel = 100.0F;
+@@ -872,6 +973,15 @@
          {
--            k -= 32;
-+            k = k - 32;
-         }
-         else
-         {
--            k += this.field_147000_g;
-+            k = k + this.field_147000_g;
-         }
- 
-         if (this.func_146978_c(j + 3, k + 3, 23, 27, p_147052_2_, p_147052_3_))
-@@ -841,20 +900,22 @@
- 
-         if (flag1)
-         {
--            i1 -= 28;
-+            i1 = i1 - 28;
-         }
-         else
-         {
-             k += 64;
--            i1 += this.field_147000_g - 4;
-+            i1 = i1 + (this.field_147000_g - 4);
-         }
- 
-         GlStateManager.func_179140_f();
-+        GlStateManager.func_179124_c(1F, 1F, 1F); //Forge: Reset color in case Items change it.
-+        GlStateManager.func_179147_l(); //Forge: Make sure blend is enabled else tabs show a white border.
-         this.func_73729_b(l, i1, j, k, 28, 32);
-         this.field_73735_i = 100.0F;
-         this.field_146296_j.field_77023_b = 100.0F;
--        l += 6;
--        i1 += 8 + (flag1 ? 1 : -1);
-+        l = l + 6;
-+        i1 = i1 + 8 + (flag1 ? 1 : -1);
-         GlStateManager.func_179145_e();
-         GlStateManager.func_179091_B();
-         ItemStack itemstack = p_147051_1_.func_151244_d();
-@@ -865,13 +926,21 @@
-         this.field_73735_i = 0.0F;
-     }
- 
--    @Override
-     protected void func_146284_a(GuiButton p_146284_1_) throws IOException
-     {
-         if (p_146284_1_.field_146127_k == 1)
-         {
-             this.field_146297_k.func_147108_a(new GuiStats(this, this.field_146297_k.field_71439_g.func_146107_m()));
+             this.mc.displayGuiScreen(new GuiStats(this, this.mc.player.getStatFileWriter()));
          }
 +
-+        if (p_146284_1_.field_146127_k == 101)
++        if (button.id == 101)
 +        {
 +            tabPage = Math.max(tabPage - 1, 0);
 +        }
-+        else if (p_146284_1_.field_146127_k == 102)
++        else if (button.id == 102)
 +        {
 +            tabPage = Math.min(tabPage + 1, maxPages);
 +        }
      }
  
-     public int func_147056_g()
-@@ -887,9 +956,9 @@
- 
-         if (p_192044_2_)
+     public int getSelectedTabIndex()
+@@ -1093,6 +1203,39 @@
          {
--            for (int i = 0; i < InventoryPlayer.func_70451_h(); i++)
-+            for (int i = 0; i < InventoryPlayer.func_70451_h(); ++i)
-             {
--                ItemStack itemstack = hotbarsnapshot.get(i).func_77946_l();
-+                ItemStack itemstack = ((ItemStack)hotbarsnapshot.get(i)).func_77946_l();
-                 entityplayersp.field_71071_by.func_70299_a(i, itemstack);
-                 p_192044_0_.field_71442_b.func_78761_a(itemstack, 36 + i);
-             }
-@@ -898,14 +967,14 @@
-         }
-         else if (p_192044_3_)
-         {
--            for (int j = 0; j < InventoryPlayer.func_70451_h(); j++)
-+            for (int j = 0; j < InventoryPlayer.func_70451_h(); ++j)
-             {
-                 hotbarsnapshot.set(j, entityplayersp.field_71071_by.func_70301_a(j).func_77946_l());
-             }
- 
-             String s = GameSettings.func_74298_c(p_192044_0_.field_71474_y.field_151456_ac[p_192044_1_].func_151463_i());
-             String s1 = GameSettings.func_74298_c(p_192044_0_.field_71474_y.field_193630_aq.func_151463_i());
--            p_192044_0_.field_71456_v.func_175188_a(new TextComponentTranslation("inventory.hotbarSaved", s1, s), false);
-+            p_192044_0_.field_71456_v.func_175188_a(new TextComponentTranslation("inventory.hotbarSaved", new Object[] {s1, s}), false);
-             creativesettings.func_192564_b();
-         }
-     }
-@@ -913,21 +982,21 @@
-     @SideOnly(Side.CLIENT)
-     public static class ContainerCreative extends Container
-         {
--            public NonNullList<ItemStack> field_148330_a = NonNullList.func_191196_a();
-+            public NonNullList<ItemStack> field_148330_a = NonNullList.<ItemStack>func_191196_a();
- 
-             public ContainerCreative(EntityPlayer p_i1086_1_)
-             {
-                 InventoryPlayer inventoryplayer = p_i1086_1_.field_71071_by;
- 
--                for (int i = 0; i < 5; i++)
-+                for (int i = 0; i < 5; ++i)
-                 {
--                    for (int j = 0; j < 9; j++)
-+                    for (int j = 0; j < 9; ++j)
-                     {
-                         this.func_75146_a(new GuiContainerCreative.LockedSlot(GuiContainerCreative.field_147060_v, i * 9 + j, 9 + j * 18, 18 + i * 18));
-                     }
-                 }
- 
--                for (int k = 0; k < 9; k++)
-+                for (int k = 0; k < 9; ++k)
-                 {
-                     this.func_75146_a(new Slot(inventoryplayer, k, 9 + k * 18, 112));
-                 }
-@@ -935,7 +1004,6 @@
-                 this.func_148329_a(0.0F);
-             }
- 
--            @Override
-             public boolean func_75145_c(EntityPlayer p_75145_1_)
-             {
-                 return true;
-@@ -944,16 +1012,16 @@
-             public void func_148329_a(float p_148329_1_)
-             {
-                 int i = (this.field_148330_a.size() + 9 - 1) / 9 - 5;
--                int j = (int)((double)(p_148329_1_ * (float)i) + 0.5);
-+                int j = (int)((double)(p_148329_1_ * (float)i) + 0.5D);
- 
-                 if (j < 0)
-                 {
-                     j = 0;
-                 }
- 
--                for (int k = 0; k < 5; k++)
-+                for (int k = 0; k < 5; ++k)
-                 {
--                    for (int l = 0; l < 9; l++)
-+                    for (int l = 0; l < 9; ++l)
-                     {
-                         int i1 = l + (k + j) * 9;
- 
-@@ -974,7 +1042,6 @@
-                 return this.field_148330_a.size() > 45;
-             }
- 
--            @Override
-             public ItemStack func_82846_b(EntityPlayer p_82846_1_, int p_82846_2_)
-             {
-                 if (p_82846_2_ >= this.field_75151_b.size() - 9 && p_82846_2_ < this.field_75151_b.size())
-@@ -990,13 +1057,11 @@
-                 return ItemStack.field_190927_a;
-             }
- 
--            @Override
-             public boolean func_94530_a(ItemStack p_94530_1_, Slot p_94530_2_)
-             {
-                 return p_94530_2_.field_75221_f > 90;
-             }
- 
--            @Override
-             public boolean func_94531_b(Slot p_94531_1_)
-             {
-                 return p_94531_1_.field_75224_c instanceof InventoryPlayer || p_94531_1_.field_75221_f > 90 && p_94531_1_.field_75223_e <= 162;
-@@ -1014,85 +1079,105 @@
-             this.field_148332_b = p_i46313_2_;
-         }
- 
--        @Override
-         public ItemStack func_190901_a(EntityPlayer p_190901_1_, ItemStack p_190901_2_)
-         {
-             this.field_148332_b.func_190901_a(p_190901_1_, p_190901_2_);
-             return p_190901_2_;
-         }
- 
--        @Override
-         public boolean func_75214_a(ItemStack p_75214_1_)
-         {
-             return this.field_148332_b.func_75214_a(p_75214_1_);
-         }
- 
--        @Override
-         public ItemStack func_75211_c()
-         {
-             return this.field_148332_b.func_75211_c();
-         }
- 
--        @Override
-         public boolean func_75216_d()
-         {
-             return this.field_148332_b.func_75216_d();
-         }
- 
--        @Override
-         public void func_75215_d(ItemStack p_75215_1_)
-         {
-             this.field_148332_b.func_75215_d(p_75215_1_);
-         }
- 
--        @Override
-         public void func_75218_e()
-         {
-             this.field_148332_b.func_75218_e();
-         }
- 
--        @Override
-         public int func_75219_a()
-         {
-             return this.field_148332_b.func_75219_a();
-         }
- 
--        @Override
-         public int func_178170_b(ItemStack p_178170_1_)
-         {
-             return this.field_148332_b.func_178170_b(p_178170_1_);
-         }
- 
-         @Nullable
--        @Override
-         public String func_178171_c()
-         {
-             return this.field_148332_b.func_178171_c();
-         }
- 
--        @Override
-         public ItemStack func_75209_a(int p_75209_1_)
-         {
-             return this.field_148332_b.func_75209_a(p_75209_1_);
-         }
- 
--        @Override
-         public boolean func_75217_a(IInventory p_75217_1_, int p_75217_2_)
-         {
-             return this.field_148332_b.func_75217_a(p_75217_1_, p_75217_2_);
-         }
- 
--        @Override
-         public boolean func_111238_b()
-         {
-             return this.field_148332_b.func_111238_b();
-         }
- 
--        @Override
-         public boolean func_82869_a(EntityPlayer p_82869_1_)
-         {
-             return this.field_148332_b.func_82869_a(p_82869_1_);
+             return this.slot.canTakeStack(playerIn);
          }
 +
 +        /*========================================= FORGE START =====================================*/
 +        public net.minecraft.util.ResourceLocation getBackgroundLocation()
 +        {
-+            return this.field_148332_b.getBackgroundLocation();
++            return this.slot.getBackgroundLocation();
 +        }
 +
 +        public void setBackgroundLocation(net.minecraft.util.ResourceLocation texture)
 +        {
-+            this.field_148332_b.setBackgroundLocation(texture);
++            this.slot.setBackgroundLocation(texture);
 +        }
 +
 +        public void setBackgroundName(@Nullable String name)
 +        {
-+            this.field_148332_b.setBackgroundName(name);
++            this.slot.setBackgroundName(name);
 +        }
 +
 +        @Nullable
 +        public net.minecraft.client.renderer.texture.TextureAtlasSprite getBackgroundSprite()
 +        {
-+            return this.field_148332_b.getBackgroundSprite();
++            return this.slot.getBackgroundSprite();
 +        }
 +
 +        public int getSlotIndex()
 +        {
-+            return this.field_148332_b.getSlotIndex();
++            return this.slot.getSlotIndex();
 +        }
 +
 +        public boolean isSameInventory(Slot other)
 +        {
-+            return this.field_148332_b.isSameInventory(other);
++            return this.slot.isSameInventory(other);
 +        }
 +        /*========================================= FORGE END =====================================*/
      }
  
      @SideOnly(Side.CLIENT)
-@@ -1103,10 +1188,16 @@
-                 super(p_i47453_1_, p_i47453_2_, p_i47453_3_, p_i47453_4_);
-             }
- 
--            @Override
-             public boolean func_82869_a(EntityPlayer p_82869_1_)
-             {
--                return super.func_82869_a(p_82869_1_) && this.func_75216_d() ? this.func_75211_c().func_179543_a("CustomCreativeLock") == null : !this.func_75216_d();
-+                if (super.func_82869_a(p_82869_1_) && this.func_75216_d())
-+                {
-+                    return this.func_75211_c().func_179543_a("CustomCreativeLock") == null;
-+                }
-+                else
-+                {
-+                    return !this.func_75216_d();
-+                }
-             }
-         }
- }

@@ -1,89 +1,50 @@
 --- before/net/minecraft/block/BlockOre.java
 +++ after/net/minecraft/block/BlockOre.java
-@@ -27,7 +27,6 @@
-         this.func_149647_a(CreativeTabs.field_78030_b);
-     }
- 
--    @Override
-     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
+@@ -82,34 +82,39 @@
+     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
      {
-         if (this == Blocks.field_150365_q)
-@@ -52,16 +51,14 @@
-         }
-     }
- 
--    @Override
-     public int func_149745_a(Random p_149745_1_)
-     {
-         return this == Blocks.field_150369_x ? 4 + p_149745_1_.nextInt(5) : 1;
-     }
- 
--    @Override
-     public int func_149679_a(int p_149679_1_, Random p_149679_2_)
-     {
--        if (p_149679_1_ > 0 && Item.func_150898_a(this) != this.func_180660_a(this.func_176194_O().func_177619_a().iterator().next(), p_149679_2_, p_149679_1_))
-+        if (p_149679_1_ > 0 && Item.func_150898_a(this) != this.func_180660_a((IBlockState)this.func_176194_O().func_177619_a().iterator().next(), p_149679_2_, p_149679_1_))
-         {
-             int i = p_149679_2_.nextInt(p_149679_1_ + 2) - 1;
- 
-@@ -78,47 +75,49 @@
-         }
-     }
- 
--    @Override
-     public void func_180653_a(World p_180653_1_, BlockPos p_180653_2_, IBlockState p_180653_3_, float p_180653_4_, int p_180653_5_)
-     {
-         super.func_180653_a(p_180653_1_, p_180653_2_, p_180653_3_, p_180653_4_, p_180653_5_);
+         super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);
 -
--        if (this.func_180660_a(p_180653_3_, p_180653_1_.field_73012_v, p_180653_5_) != Item.func_150898_a(this))
+-        if (this.getItemDropped(state, worldIn.rand, fortune) != Item.getItemFromBlock(this))
 +    }
 +    @Override
 +    public int getExpDrop(IBlockState state, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune)
 +    {
-+        Random rand = world instanceof World ? ((World)world).field_73012_v : new Random();
-+        if (this.func_180660_a(state, rand, fortune) != Item.func_150898_a(this))
++        Random rand = world instanceof World ? ((World)world).rand : new Random();
++        if (this.getItemDropped(state, rand, fortune) != Item.getItemFromBlock(this))
          {
              int i = 0;
  
-             if (this == Blocks.field_150365_q)
+             if (this == Blocks.COAL_ORE)
              {
--                i = MathHelper.func_76136_a(p_180653_1_.field_73012_v, 0, 2);
-+                i = MathHelper.func_76136_a(rand, 0, 2);
+-                i = MathHelper.getInt(worldIn.rand, 0, 2);
++                i = MathHelper.getInt(rand, 0, 2);
              }
-             else if (this == Blocks.field_150482_ag)
+             else if (this == Blocks.DIAMOND_ORE)
              {
--                i = MathHelper.func_76136_a(p_180653_1_.field_73012_v, 3, 7);
-+                i = MathHelper.func_76136_a(rand, 3, 7);
+-                i = MathHelper.getInt(worldIn.rand, 3, 7);
++                i = MathHelper.getInt(rand, 3, 7);
              }
-             else if (this == Blocks.field_150412_bA)
+             else if (this == Blocks.EMERALD_ORE)
              {
--                i = MathHelper.func_76136_a(p_180653_1_.field_73012_v, 3, 7);
-+                i = MathHelper.func_76136_a(rand, 3, 7);
+-                i = MathHelper.getInt(worldIn.rand, 3, 7);
++                i = MathHelper.getInt(rand, 3, 7);
              }
-             else if (this == Blocks.field_150369_x)
+             else if (this == Blocks.LAPIS_ORE)
              {
--                i = MathHelper.func_76136_a(p_180653_1_.field_73012_v, 2, 5);
-+                i = MathHelper.func_76136_a(rand, 2, 5);
+-                i = MathHelper.getInt(worldIn.rand, 2, 5);
++                i = MathHelper.getInt(rand, 2, 5);
              }
-             else if (this == Blocks.field_150449_bY)
+             else if (this == Blocks.QUARTZ_ORE)
              {
--                i = MathHelper.func_76136_a(p_180653_1_.field_73012_v, 2, 5);
-+                i = MathHelper.func_76136_a(rand, 2, 5);
+-                i = MathHelper.getInt(worldIn.rand, 2, 5);
++                i = MathHelper.getInt(rand, 2, 5);
              }
  
--            this.func_180637_b(p_180653_1_, p_180653_2_, i);
+-            this.dropXpOnBlockBreak(worldIn, pos, i);
 +            return i;
          }
 +        return 0;
      }
  
--    @Override
-     public ItemStack func_185473_a(World p_185473_1_, BlockPos p_185473_2_, IBlockState p_185473_3_)
-     {
-         return new ItemStack(this);
-     }
- 
--    @Override
-     public int func_180651_a(IBlockState p_180651_1_)
-     {
-         return this == Blocks.field_150369_x ? EnumDyeColor.BLUE.func_176767_b() : 0;
+     @Override

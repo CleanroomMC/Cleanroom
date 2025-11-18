@@ -7,56 +7,56 @@
 -public class NBTTagList extends NBTBase
 +public class NBTTagList extends NBTBase implements java.lang.Iterable<NBTBase>
  {
-     private static final Logger field_179239_b = LogManager.getLogger();
--    private List<NBTBase> field_74747_a = Lists.newArrayList();
-+    private List<NBTBase> field_74747_a = Lists.<NBTBase>newArrayList();
-     private byte field_74746_b = 0;
+     private static final Logger LOGGER = LogManager.getLogger();
+-    private List<NBTBase> tagList = Lists.newArrayList();
++    private List<NBTBase> tagList = Lists.<NBTBase>newArrayList();
+     private byte tagType = 0;
  
 -    @Override
-     void func_74734_a(DataOutput p_74734_1_) throws IOException
+     void write(DataOutput output) throws IOException
      {
-         if (this.field_74747_a.isEmpty())
+         if (this.tagList.isEmpty())
 @@ -24,19 +23,18 @@
          }
          else
          {
--            this.field_74746_b = this.field_74747_a.get(0).func_74732_a();
-+            this.field_74746_b = ((NBTBase)this.field_74747_a.get(0)).func_74732_a();
+-            this.tagType = this.tagList.get(0).getId();
++            this.tagType = ((NBTBase)this.tagList.get(0)).getId();
          }
  
-         p_74734_1_.writeByte(this.field_74746_b);
-         p_74734_1_.writeInt(this.field_74747_a.size());
+         output.writeByte(this.tagType);
+         output.writeInt(this.tagList.size());
  
--        for (int i = 0; i < this.field_74747_a.size(); i++)
-+        for (int i = 0; i < this.field_74747_a.size(); ++i)
+-        for (int i = 0; i < this.tagList.size(); i++)
++        for (int i = 0; i < this.tagList.size(); ++i)
          {
--            this.field_74747_a.get(i).func_74734_a(p_74734_1_);
-+            ((NBTBase)this.field_74747_a.get(i)).func_74734_a(p_74734_1_);
+-            this.tagList.get(i).write(output);
++            ((NBTBase)this.tagList.get(i)).write(output);
          }
      }
  
 -    @Override
-     void func_152446_a(DataInput p_152446_1_, int p_152446_2_, NBTSizeTracker p_152446_3_) throws IOException
+     void read(DataInput input, int depth, NBTSizeTracker sizeTracker) throws IOException
      {
-         p_152446_3_.func_152450_a(296L);
+         sizeTracker.read(296L);
 @@ -57,9 +55,9 @@
              else
              {
-                 p_152446_3_.func_152450_a(32L * (long)i);
--                this.field_74747_a = Lists.newArrayListWithCapacity(i);
-+                this.field_74747_a = Lists.<NBTBase>newArrayListWithCapacity(i);
+                 sizeTracker.read(32L * (long)i);
+-                this.tagList = Lists.newArrayListWithCapacity(i);
++                this.tagList = Lists.<NBTBase>newArrayListWithCapacity(i);
  
 -                for (int j = 0; j < i; j++)
 +                for (int j = 0; j < i; ++j)
                  {
-                     NBTBase nbtbase = NBTBase.func_150284_a(this.field_74746_b);
-                     nbtbase.func_152446_a(p_152446_1_, p_152446_2_ + 1, p_152446_3_);
+                     NBTBase nbtbase = NBTBase.create(this.tagType);
+                     nbtbase.read(input, depth + 1, sizeTracker);
 @@ -69,18 +67,16 @@
          }
      }
  
 -    @Override
-     public byte func_74732_a()
+     public byte getId()
      {
          return 9;
      }
@@ -66,19 +66,19 @@
      {
          StringBuilder stringbuilder = new StringBuilder("[");
  
--        for (int i = 0; i < this.field_74747_a.size(); i++)
-+        for (int i = 0; i < this.field_74747_a.size(); ++i)
+-        for (int i = 0; i < this.tagList.size(); i++)
++        for (int i = 0; i < this.tagList.size(); ++i)
          {
              if (i != 0)
              {
 @@ -146,7 +142,6 @@
-         return this.field_74747_a.remove(p_74744_1_);
+         return this.tagList.remove(i);
      }
  
 -    @Override
-     public boolean func_82582_d()
+     public boolean isEmpty()
      {
-         return this.field_74747_a.isEmpty();
+         return this.tagList.isEmpty();
 @@ -209,7 +204,7 @@
              }
          }
@@ -87,16 +87,16 @@
 +        return 0.0D;
      }
  
-     public float func_150308_e(int p_150308_1_)
+     public float getFloatAt(int i)
 @@ -242,7 +237,7 @@
  
-     public NBTBase func_179238_g(int p_179238_1_)
+     public NBTBase get(int idx)
      {
--        return (NBTBase)(p_179238_1_ >= 0 && p_179238_1_ < this.field_74747_a.size() ? this.field_74747_a.get(p_179238_1_) : new NBTTagEnd());
-+        return (NBTBase)(p_179238_1_ >= 0 && p_179238_1_ < this.field_74747_a.size() ? (NBTBase)this.field_74747_a.get(p_179238_1_) : new NBTTagEnd());
+-        return (NBTBase)(idx >= 0 && idx < this.tagList.size() ? this.tagList.get(idx) : new NBTTagEnd());
++        return (NBTBase)(idx >= 0 && idx < this.tagList.size() ? (NBTBase)this.tagList.get(idx) : new NBTTagEnd());
      }
  
-     public int func_74745_c()
+     public int tagCount()
 @@ -264,7 +259,6 @@
          return nbttaglist;
      }
@@ -112,10 +112,10 @@
 -    @Override
      public int hashCode()
      {
-         return super.hashCode() ^ this.field_74747_a.hashCode();
+         return super.hashCode() ^ this.tagList.hashCode();
 @@ -288,4 +281,5 @@
      {
-         return this.field_74746_b;
+         return this.tagType;
      }
-+    @Override public java.util.Iterator<NBTBase> iterator() {return field_74747_a.iterator();}
++    @Override public java.util.Iterator<NBTBase> iterator() {return tagList.iterator();}
  }

@@ -1,140 +1,140 @@
 --- before/net/minecraft/entity/monster/EntityMagmaCube.java
 +++ after/net/minecraft/entity/monster/EntityMagmaCube.java
 @@ -28,28 +28,22 @@
-         EntityLiving.func_189752_a(p_189759_0_, EntityMagmaCube.class);
+         EntityLiving.registerFixesMob(fixer, EntityMagmaCube.class);
      }
  
 -    @Override
-     protected void func_110147_ax()
+     protected void applyEntityAttributes()
      {
-         super.func_110147_ax();
--        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.2F);
-+        this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.20000000298023224D);
+         super.applyEntityAttributes();
+-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.2F);
++        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.20000000298023224D);
      }
  
 -    @Override
-     public boolean func_70601_bi()
+     public boolean getCanSpawnHere()
      {
-         return this.field_70170_p.func_175659_aa() != EnumDifficulty.PEACEFUL;
+         return this.world.getDifficulty() != EnumDifficulty.PEACEFUL;
      }
  
 -    @Override
-     public boolean func_70058_J()
+     public boolean isNotColliding()
      {
--        return this.field_70170_p.func_72917_a(this.func_174813_aQ(), this)
--               && this.field_70170_p.func_184144_a(this, this.func_174813_aQ()).isEmpty()
--               && !this.field_70170_p.func_72953_d(this.func_174813_aQ());
-+        return this.field_70170_p.func_72917_a(this.func_174813_aQ(), this) && this.field_70170_p.func_184144_a(this, this.func_174813_aQ()).isEmpty() && !this.field_70170_p.func_72953_d(this.func_174813_aQ());
+-        return this.world.checkNoEntityCollision(this.getEntityBoundingBox(), this)
+-               && this.world.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty()
+-               && !this.world.containsAnyLiquid(this.getEntityBoundingBox());
++        return this.world.checkNoEntityCollision(this.getEntityBoundingBox(), this) && this.world.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty() && !this.world.containsAnyLiquid(this.getEntityBoundingBox());
      }
  
 -    @Override
-     protected void func_70799_a(int p_70799_1_, boolean p_70799_2_)
+     protected void setSlimeSize(int size, boolean resetHealth)
      {
-         super.func_70799_a(p_70799_1_, p_70799_2_);
+         super.setSlimeSize(size, resetHealth);
 @@ -57,105 +51,89 @@
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public int func_70070_b()
+     public int getBrightnessForRender()
      {
          return 15728880;
      }
  
 -    @Override
-     public float func_70013_c()
+     public float getBrightness()
      {
          return 1.0F;
      }
  
 -    @Override
-     protected EnumParticleTypes func_180487_n()
+     protected EnumParticleTypes getParticleType()
      {
          return EnumParticleTypes.FLAME;
      }
  
 -    @Override
-     protected EntitySlime func_70802_j()
+     protected EntitySlime createInstance()
      {
-         return new EntityMagmaCube(this.field_70170_p);
+         return new EntityMagmaCube(this.world);
      }
  
      @Nullable
 -    @Override
-     protected ResourceLocation func_184647_J()
+     protected ResourceLocation getLootTable()
      {
-         return this.func_189101_db() ? LootTableList.field_186419_a : LootTableList.field_186379_ad;
+         return this.isSmallSlime() ? LootTableList.EMPTY : LootTableList.ENTITIES_MAGMA_CUBE;
      }
  
 -    @Override
-     public boolean func_70027_ad()
+     public boolean isBurning()
      {
          return false;
      }
  
 -    @Override
-     protected int func_70806_k()
+     protected int getJumpDelay()
      {
-         return super.func_70806_k() * 4;
+         return super.getJumpDelay() * 4;
      }
  
 -    @Override
-     protected void func_70808_l()
+     protected void alterSquishAmount()
      {
-         this.field_70813_a *= 0.9F;
+         this.squishAmount *= 0.9F;
      }
  
 -    @Override
-     protected void func_70664_aZ()
+     protected void jump()
      {
-         this.field_70181_x = (double)(0.42F + (float)this.func_70809_q() * 0.1F);
-         this.field_70160_al = true;
+         this.motionY = (double)(0.42F + (float)this.getSlimeSize() * 0.1F);
+         this.isAirBorne = true;
 +        net.minecraftforge.common.ForgeHooks.onLivingJump(this);
      }
  
 -    @Override
-     protected void func_180466_bG()
+     protected void handleJumpLava()
      {
-         this.field_70181_x = (double)(0.22F + (float)this.func_70809_q() * 0.05F);
-         this.field_70160_al = true;
+         this.motionY = (double)(0.22F + (float)this.getSlimeSize() * 0.05F);
+         this.isAirBorne = true;
      }
  
 -    @Override
-     public void func_180430_e(float p_180430_1_, float p_180430_2_)
+     public void fall(float distance, float damageMultiplier)
      {
      }
  
 -    @Override
-     protected boolean func_70800_m()
+     protected boolean canDamagePlayer()
      {
          return true;
      }
  
 -    @Override
-     protected int func_70805_n()
+     protected int getAttackStrength()
      {
-         return super.func_70805_n() + 2;
+         return super.getAttackStrength() + 2;
      }
  
 -    @Override
-     protected SoundEvent func_184601_bQ(DamageSource p_184601_1_)
+     protected SoundEvent getHurtSound(DamageSource damageSourceIn)
      {
-         return this.func_189101_db() ? SoundEvents.field_187892_fv : SoundEvents.field_187760_dh;
+         return this.isSmallSlime() ? SoundEvents.ENTITY_SMALL_MAGMACUBE_HURT : SoundEvents.ENTITY_MAGMACUBE_HURT;
      }
  
 -    @Override
-     protected SoundEvent func_184615_bR()
+     protected SoundEvent getDeathSound()
      {
-         return this.func_189101_db() ? SoundEvents.field_187890_fu : SoundEvents.field_187758_dg;
+         return this.isSmallSlime() ? SoundEvents.ENTITY_SMALL_MAGMACUBE_DEATH : SoundEvents.ENTITY_MAGMACUBE_DEATH;
      }
  
 -    @Override
-     protected SoundEvent func_184709_cY()
+     protected SoundEvent getSquishSound()
      {
-         return this.func_189101_db() ? SoundEvents.field_187894_fw : SoundEvents.field_187764_dj;
+         return this.isSmallSlime() ? SoundEvents.ENTITY_SMALL_MAGMACUBE_SQUISH : SoundEvents.ENTITY_MAGMACUBE_SQUISH;
      }
  
 -    @Override
-     protected SoundEvent func_184710_cZ()
+     protected SoundEvent getJumpSound()
      {
-         return SoundEvents.field_187762_di;
+         return SoundEvents.ENTITY_MAGMACUBE_JUMP;

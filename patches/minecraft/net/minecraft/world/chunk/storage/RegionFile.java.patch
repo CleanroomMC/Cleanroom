@@ -7,73 +7,73 @@
 +    // Minecraft is limited to 256 sections per chunk. So 1MB. This can easily be override.
 +    // So we extend this to use the REAL size when the count is maxed by seeking to that section and reading the length.
 +    private static final boolean FORGE_ENABLE_EXTENDED_SAVE = Boolean.parseBoolean(System.getProperty("forge.enableExtendedSave", "true"));
-     private static final byte[] field_76720_a = new byte[4096];
-     private final File field_76718_b;
-     private RandomAccessFile field_76719_c;
+     private static final byte[] EMPTY_SECTOR = new byte[4096];
+     private final File fileName;
+     private RandomAccessFile dataFile;
 @@ -51,39 +54,51 @@
  
-             if ((this.field_76719_c.length() & 4095L) != 0L)
+             if ((this.dataFile.length() & 4095L) != 0L)
              {
--                for (int i = 0; (long)i < (this.field_76719_c.length() & 4095L); i++)
-+                for (int i = 0; (long)i < (this.field_76719_c.length() & 4095L); ++i)
+-                for (int i = 0; (long)i < (this.dataFile.length() & 4095L); i++)
++                for (int i = 0; (long)i < (this.dataFile.length() & 4095L); ++i)
                  {
-                     this.field_76719_c.write(0);
+                     this.dataFile.write(0);
                  }
              }
  
-             int i1 = (int)this.field_76719_c.length() / 4096;
--            this.field_76714_f = Lists.newArrayListWithCapacity(i1);
-+            this.field_76714_f = Lists.<Boolean>newArrayListWithCapacity(i1);
+             int i1 = (int)this.dataFile.length() / 4096;
+-            this.sectorFree = Lists.newArrayListWithCapacity(i1);
++            this.sectorFree = Lists.<Boolean>newArrayListWithCapacity(i1);
  
 -            for (int j = 0; j < i1; j++)
 +            for (int j = 0; j < i1; ++j)
              {
--                this.field_76714_f.add(true);
-+                this.field_76714_f.add(Boolean.valueOf(true));
+-                this.sectorFree.add(true);
++                this.sectorFree.add(Boolean.valueOf(true));
              }
  
--            this.field_76714_f.set(0, false);
--            this.field_76714_f.set(1, false);
-+            this.field_76714_f.set(0, Boolean.valueOf(false));
-+            this.field_76714_f.set(1, Boolean.valueOf(false));
-             this.field_76719_c.seek(0L);
+-            this.sectorFree.set(0, false);
+-            this.sectorFree.set(1, false);
++            this.sectorFree.set(0, Boolean.valueOf(false));
++            this.sectorFree.set(1, Boolean.valueOf(false));
+             this.dataFile.seek(0L);
  
 -            for (int j1 = 0; j1 < 1024; j1++)
 +            for (int j1 = 0; j1 < 1024; ++j1)
              {
-                 int k = this.field_76719_c.readInt();
-                 this.field_76716_d[j1] = k;
+                 int k = this.dataFile.readInt();
+                 this.offsets[j1] = k;
  
--                if (k != 0 && (k >> 8) + (k & 0xFF) <= this.field_76714_f.size())
+-                if (k != 0 && (k >> 8) + (k & 0xFF) <= this.sectorFree.size())
 -                {
 -                    for (int l = 0; l < (k & 0xFF); l++)
 +                int length = k & 255;
 +                if (length == 255)
 +                {
-+                    if ((k >> 8) <= this.field_76714_f.size())
++                    if ((k >> 8) <= this.sectorFree.size())
 +                    { // We're maxed out, so we need to read the proper length from the section
-+                        this.field_76719_c.seek((k >> 8) * 4096);
-+                        length = (this.field_76719_c.readInt() + 4)/ 4096 + 1;
-+                        this.field_76719_c.seek(j1 * 4 + 4); //Go back to where we were
++                        this.dataFile.seek((k >> 8) * 4096);
++                        length = (this.dataFile.readInt() + 4)/ 4096 + 1;
++                        this.dataFile.seek(j1 * 4 + 4); //Go back to where we were
 +                    }
 +                }
-+                if (k != 0 && (k >> 8) + length <= this.field_76714_f.size())
++                if (k != 0 && (k >> 8) + length <= this.sectorFree.size())
 +                {
 +                    for (int l = 0; l < length; ++l)
                      {
--                        this.field_76714_f.set((k >> 8) + l, false);
-+                        this.field_76714_f.set((k >> 8) + l, Boolean.valueOf(false));
+-                        this.sectorFree.set((k >> 8) + l, false);
++                        this.sectorFree.set((k >> 8) + l, Boolean.valueOf(false));
                      }
                  }
 +                else if (length > 0)
-+                    net.minecraftforge.fml.common.FMLLog.log.warn("Invalid chunk: ({}, {}) Offset: {} Length: {} runs off end file. {}", j1 % 32, (int)(j1 / 32), k >> 8, length, p_i2001_1_);
++                    net.minecraftforge.fml.common.FMLLog.log.warn("Invalid chunk: ({}, {}) Offset: {} Length: {} runs off end file. {}", j1 % 32, (int)(j1 / 32), k >> 8, length, fileNameIn);
              }
  
 -            for (int k1 = 0; k1 < 1024; k1++)
 +            for (int k1 = 0; k1 < 1024; ++k1)
              {
-                 int l1 = this.field_76719_c.readInt();
-                 this.field_76717_e[k1] = l1;
+                 int l1 = this.dataFile.readInt();
+                 this.chunkTimestamps[k1] = l1;
 @@ -95,6 +110,12 @@
          }
      }
@@ -81,12 +81,12 @@
 +    @Deprecated // TODO: remove (1.13)
 +    public synchronized boolean chunkExists(int x, int z)
 +    {
-+        return func_76709_c(x, z);
++        return isChunkSaved(x, z);
 +    }
 +
      @Nullable
  
-     public synchronized DataInputStream func_76704_a(int p_76704_1_, int p_76704_2_)
+     public synchronized DataInputStream getChunkDataInputStream(int x, int z)
 @@ -116,7 +137,12 @@
                  else
                  {
@@ -95,22 +95,22 @@
 +                    int k = i & 255;
 +                    if (k == 255)
 +                    {
-+                        this.field_76719_c.seek(j * 4096);
-+                        k = (this.field_76719_c.readInt() + 4) / 4096 + 1;
++                        this.dataFile.seek(j * 4096);
++                        k = (this.dataFile.readInt() + 4) / 4096 + 1;
 +                    }
  
-                     if (j + k > this.field_76714_f.size())
+                     if (j + k > this.sectorFree.size())
                      {
 @@ -129,10 +155,12 @@
  
                          if (l > 4096 * k)
                          {
-+                            net.minecraftforge.fml.common.FMLLog.log.warn("Invalid chunk: ({}, {}) Offset: {} Invalid Size: {}>{} {}", p_76704_1_, p_76704_2_, j, l, k * 4096, field_76718_b);
++                            net.minecraftforge.fml.common.FMLLog.log.warn("Invalid chunk: ({}, {}) Offset: {} Invalid Size: {}>{} {}", x, z, j, l, k * 4096, fileName);
                              return null;
                          }
                          else if (l <= 0)
                          {
-+                            net.minecraftforge.fml.common.FMLLog.log.warn("Invalid chunk: ({}, {}) Offset: {} Invalid Size: {} {}", p_76704_1_, p_76704_2_, j, l, field_76718_b);
++                            net.minecraftforge.fml.common.FMLLog.log.warn("Invalid chunk: ({}, {}) Offset: {} Invalid Size: {} {}", x, z, j, l, fileName);
                              return null;
                          }
                          else
@@ -125,33 +125,33 @@
              }
 @@ -169,9 +197,7 @@
      @Nullable
-     public DataOutputStream func_76710_b(int p_76710_1_, int p_76710_2_)
+     public DataOutputStream getChunkDataOutputStream(int x, int z)
      {
--        return this.func_76705_d(p_76710_1_, p_76710_2_)
+-        return this.outOfBounds(x, z)
 -               ? null
--               : new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(new RegionFile.ChunkBuffer(p_76710_1_, p_76710_2_))));
-+        return this.func_76705_d(p_76710_1_, p_76710_2_) ? null : new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(new RegionFile.ChunkBuffer(p_76710_1_, p_76710_2_))));
+-               : new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(new RegionFile.ChunkBuffer(x, z))));
++        return this.outOfBounds(x, z) ? null : new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(new RegionFile.ChunkBuffer(x, z))));
      }
  
-     protected synchronized void func_76706_a(int p_76706_1_, int p_76706_2_, byte[] p_76706_3_, int p_76706_4_)
+     protected synchronized void write(int x, int z, byte[] data, int length)
 @@ -180,12 +206,18 @@
          {
-             int i = this.func_76707_e(p_76706_1_, p_76706_2_);
+             int i = this.getOffset(x, z);
              int j = i >> 8;
 -            int k = i & 0xFF;
 +            int k = i & 255;
 +            if (k == 255)
 +            {
-+                this.field_76719_c.seek(j * 4096);
-+                k = (this.field_76719_c.readInt() + 4) / 4096 + 1;
++                this.dataFile.seek(j * 4096);
++                k = (this.dataFile.readInt() + 4) / 4096 + 1;
 +            }
-             int l = (p_76706_4_ + 5) / 4096 + 1;
+             int l = (length + 5) / 4096 + 1;
  
              if (l >= 256)
              {
 -                return;
 +                if (!FORGE_ENABLE_EXTENDED_SAVE) return;
-+                net.minecraftforge.fml.common.FMLLog.log.warn("Large Chunk Detected: ({}, {}) Size: {} {}", p_76706_1_, p_76706_2_, l, field_76718_b);
++                net.minecraftforge.fml.common.FMLLog.log.warn("Large Chunk Detected: ({}, {}) Size: {} {}", x, z, l, fileName);
              }
  
              if (j != 0 && k == l)
@@ -162,23 +162,23 @@
 -                for (int i1 = 0; i1 < k; i1++)
 +                for (int i1 = 0; i1 < k; ++i1)
                  {
--                    this.field_76714_f.set(j + i1, true);
-+                    this.field_76714_f.set(j + i1, Boolean.valueOf(true));
+-                    this.sectorFree.set(j + i1, true);
++                    this.sectorFree.set(j + i1, Boolean.valueOf(true));
                  }
  
--                int l1 = this.field_76714_f.indexOf(true);
-+                int l1 = this.field_76714_f.indexOf(Boolean.valueOf(true));
+-                int l1 = this.sectorFree.indexOf(true);
++                int l1 = this.sectorFree.indexOf(Boolean.valueOf(true));
                  int j1 = 0;
  
                  if (l1 != -1)
                  {
--                    for (int k1 = l1; k1 < this.field_76714_f.size(); k1++)
-+                    for (int k1 = l1; k1 < this.field_76714_f.size(); ++k1)
+-                    for (int k1 = l1; k1 < this.sectorFree.size(); k1++)
++                    for (int k1 = l1; k1 < this.sectorFree.size(); ++k1)
                      {
                          if (j1 != 0)
                          {
--                            if (this.field_76714_f.get(k1))
-+                            if (((Boolean)this.field_76714_f.get(k1)).booleanValue())
+-                            if (this.sectorFree.get(k1))
++                            if (((Boolean)this.sectorFree.get(k1)).booleanValue())
                              {
 -                                j1++;
 +                                ++j1;
@@ -188,8 +188,8 @@
                                  j1 = 0;
                              }
                          }
--                        else if (this.field_76714_f.get(k1))
-+                        else if (((Boolean)this.field_76714_f.get(k1)).booleanValue())
+-                        else if (this.sectorFree.get(k1))
++                        else if (((Boolean)this.sectorFree.get(k1)).booleanValue())
                          {
                              l1 = k1;
                              j1 = 1;
@@ -197,41 +197,41 @@
                  if (j1 >= l)
                  {
                      j = l1;
--                    this.func_76711_a(p_76706_1_, p_76706_2_, l1 << 8 | l);
-+                    this.func_76711_a(p_76706_1_, p_76706_2_, l1 << 8 | (l > 255 ? 255 : l));
+-                    this.setOffset(x, z, l1 << 8 | l);
++                    this.setOffset(x, z, l1 << 8 | (l > 255 ? 255 : l));
  
 -                    for (int j2 = 0; j2 < l; j2++)
 +                    for (int j2 = 0; j2 < l; ++j2)
                      {
--                        this.field_76714_f.set(j + j2, false);
-+                        this.field_76714_f.set(j + j2, Boolean.valueOf(false));
+-                        this.sectorFree.set(j + j2, false);
++                        this.sectorFree.set(j + j2, Boolean.valueOf(false));
                      }
  
-                     this.func_76712_a(j, p_76706_3_, p_76706_4_);
+                     this.write(j, data, length);
 @@ -247,15 +279,15 @@
-                     this.field_76719_c.seek(this.field_76719_c.length());
-                     j = this.field_76714_f.size();
+                     this.dataFile.seek(this.dataFile.length());
+                     j = this.sectorFree.size();
  
 -                    for (int i2 = 0; i2 < l; i2++)
 +                    for (int i2 = 0; i2 < l; ++i2)
                      {
-                         this.field_76719_c.write(field_76720_a);
--                        this.field_76714_f.add(false);
-+                        this.field_76714_f.add(Boolean.valueOf(false));
+                         this.dataFile.write(EMPTY_SECTOR);
+-                        this.sectorFree.add(false);
++                        this.sectorFree.add(Boolean.valueOf(false));
                      }
  
-                     this.field_76715_g += 4096 * l;
-                     this.func_76712_a(j, p_76706_3_, p_76706_4_);
--                    this.func_76711_a(p_76706_1_, p_76706_2_, j << 8 | l);
-+                    this.func_76711_a(p_76706_1_, p_76706_2_, j << 8 | (l > 255 ? 255 : l));
+                     this.sizeDelta += 4096 * l;
+                     this.write(j, data, length);
+-                    this.setOffset(x, z, j << 8 | l);
++                    this.setOffset(x, z, j << 8 | (l > 255 ? 255 : l));
                  }
              }
  
 @@ -324,7 +356,6 @@
-             this.field_76723_c = p_i2000_3_;
+             this.chunkZ = z;
          }
  
 -        @Override
          public void close() throws IOException
          {
-             RegionFile.this.func_76706_a(this.field_76722_b, this.field_76723_c, this.buf, this.count);
+             RegionFile.this.write(this.chunkX, this.chunkZ, this.buf, this.count);

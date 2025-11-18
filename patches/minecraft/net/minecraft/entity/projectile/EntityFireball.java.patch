@@ -1,20 +1,20 @@
 --- before/net/minecraft/entity/projectile/EntityFireball.java
 +++ after/net/minecraft/entity/projectile/EntityFireball.java
 @@ -30,23 +30,21 @@
-         this.func_70105_a(1.0F, 1.0F);
+         this.setSize(1.0F, 1.0F);
      }
  
 -    @Override
-     protected void func_70088_a()
+     protected void entityInit()
      {
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public boolean func_70112_a(double p_70112_1_)
+     public boolean isInRangeToRenderDist(double distance)
      {
--        double d0 = this.func_174813_aQ().func_72320_b() * 4.0;
-+        double d0 = this.func_174813_aQ().func_72320_b() * 4.0D;
+-        double d0 = this.getEntityBoundingBox().getAverageEdgeLength() * 4.0;
++        double d0 = this.getEntityBoundingBox().getAverageEdgeLength() * 4.0D;
  
          if (Double.isNaN(d0))
          {
@@ -24,113 +24,113 @@
  
 -        d0 *= 64.0;
 +        d0 = d0 * 64.0D;
-         return p_70112_1_ < d0 * d0;
+         return distance < d0 * d0;
      }
  
 @@ -57,9 +55,9 @@
-         this.func_70012_b(p_i1760_2_, p_i1760_4_, p_i1760_6_, this.field_70177_z, this.field_70125_A);
-         this.func_70107_b(p_i1760_2_, p_i1760_4_, p_i1760_6_);
-         double d0 = (double)MathHelper.func_76133_a(p_i1760_8_ * p_i1760_8_ + p_i1760_10_ * p_i1760_10_ + p_i1760_12_ * p_i1760_12_);
--        this.field_70232_b = p_i1760_8_ / d0 * 0.1;
--        this.field_70233_c = p_i1760_10_ / d0 * 0.1;
--        this.field_70230_d = p_i1760_12_ / d0 * 0.1;
-+        this.field_70232_b = p_i1760_8_ / d0 * 0.1D;
-+        this.field_70233_c = p_i1760_10_ / d0 * 0.1D;
-+        this.field_70230_d = p_i1760_12_ / d0 * 0.1D;
+         this.setLocationAndAngles(x, y, z, this.rotationYaw, this.rotationPitch);
+         this.setPosition(x, y, z);
+         double d0 = (double)MathHelper.sqrt(accelX * accelX + accelY * accelY + accelZ * accelZ);
+-        this.accelerationX = accelX / d0 * 0.1;
+-        this.accelerationY = accelY / d0 * 0.1;
+-        this.accelerationZ = accelZ / d0 * 0.1;
++        this.accelerationX = accelX / d0 * 0.1D;
++        this.accelerationY = accelY / d0 * 0.1D;
++        this.accelerationZ = accelZ / d0 * 0.1D;
      }
  
-     public EntityFireball(World p_i1761_1_, EntityLivingBase p_i1761_2_, double p_i1761_3_, double p_i1761_5_, double p_i1761_7_)
+     public EntityFireball(World worldIn, EntityLivingBase shooter, double accelX, double accelY, double accelZ)
 @@ -69,23 +67,21 @@
-         this.func_70105_a(1.0F, 1.0F);
-         this.func_70012_b(p_i1761_2_.field_70165_t, p_i1761_2_.field_70163_u, p_i1761_2_.field_70161_v, p_i1761_2_.field_70177_z, p_i1761_2_.field_70125_A);
-         this.func_70107_b(this.field_70165_t, this.field_70163_u, this.field_70161_v);
--        this.field_70159_w = 0.0;
--        this.field_70181_x = 0.0;
--        this.field_70179_y = 0.0;
--        p_i1761_3_ += this.field_70146_Z.nextGaussian() * 0.4;
--        p_i1761_5_ += this.field_70146_Z.nextGaussian() * 0.4;
--        p_i1761_7_ += this.field_70146_Z.nextGaussian() * 0.4;
-+        this.field_70159_w = 0.0D;
-+        this.field_70181_x = 0.0D;
-+        this.field_70179_y = 0.0D;
-+        p_i1761_3_ = p_i1761_3_ + this.field_70146_Z.nextGaussian() * 0.4D;
-+        p_i1761_5_ = p_i1761_5_ + this.field_70146_Z.nextGaussian() * 0.4D;
-+        p_i1761_7_ = p_i1761_7_ + this.field_70146_Z.nextGaussian() * 0.4D;
-         double d0 = (double)MathHelper.func_76133_a(p_i1761_3_ * p_i1761_3_ + p_i1761_5_ * p_i1761_5_ + p_i1761_7_ * p_i1761_7_);
--        this.field_70232_b = p_i1761_3_ / d0 * 0.1;
--        this.field_70233_c = p_i1761_5_ / d0 * 0.1;
--        this.field_70230_d = p_i1761_7_ / d0 * 0.1;
-+        this.field_70232_b = p_i1761_3_ / d0 * 0.1D;
-+        this.field_70233_c = p_i1761_5_ / d0 * 0.1D;
-+        this.field_70230_d = p_i1761_7_ / d0 * 0.1D;
+         this.setSize(1.0F, 1.0F);
+         this.setLocationAndAngles(shooter.posX, shooter.posY, shooter.posZ, shooter.rotationYaw, shooter.rotationPitch);
+         this.setPosition(this.posX, this.posY, this.posZ);
+-        this.motionX = 0.0;
+-        this.motionY = 0.0;
+-        this.motionZ = 0.0;
+-        accelX += this.rand.nextGaussian() * 0.4;
+-        accelY += this.rand.nextGaussian() * 0.4;
+-        accelZ += this.rand.nextGaussian() * 0.4;
++        this.motionX = 0.0D;
++        this.motionY = 0.0D;
++        this.motionZ = 0.0D;
++        accelX = accelX + this.rand.nextGaussian() * 0.4D;
++        accelY = accelY + this.rand.nextGaussian() * 0.4D;
++        accelZ = accelZ + this.rand.nextGaussian() * 0.4D;
+         double d0 = (double)MathHelper.sqrt(accelX * accelX + accelY * accelY + accelZ * accelZ);
+-        this.accelerationX = accelX / d0 * 0.1;
+-        this.accelerationY = accelY / d0 * 0.1;
+-        this.accelerationZ = accelZ / d0 * 0.1;
++        this.accelerationX = accelX / d0 * 0.1D;
++        this.accelerationY = accelY / d0 * 0.1D;
++        this.accelerationZ = accelZ / d0 * 0.1D;
      }
  
 -    @Override
-     public void func_70071_h_()
+     public void onUpdate()
      {
--        if (this.field_70170_p.field_72995_K
--                || (this.field_70235_a == null || !this.field_70235_a.field_70128_L) && this.field_70170_p.func_175667_e(new BlockPos(this)))
-+        if (this.field_70170_p.field_72995_K || (this.field_70235_a == null || !this.field_70235_a.field_70128_L) && this.field_70170_p.func_175667_e(new BlockPos(this)))
+-        if (this.world.isRemote
+-                || (this.shootingEntity == null || !this.shootingEntity.isDead) && this.world.isBlockLoaded(new BlockPos(this)))
++        if (this.world.isRemote || (this.shootingEntity == null || !this.shootingEntity.isDead) && this.world.isBlockLoaded(new BlockPos(this)))
          {
-             super.func_70071_h_();
+             super.onUpdate();
  
 @@ -94,47 +90,38 @@
-                 this.func_70015_d(1);
+                 this.setFire(1);
              }
  
--            this.field_70234_an++;
-+            ++this.field_70234_an;
-             RayTraceResult raytraceresult = ProjectileHelper.func_188802_a(this, true, this.field_70234_an >= 25, this.field_70235_a);
+-            this.ticksInAir++;
++            ++this.ticksInAir;
+             RayTraceResult raytraceresult = ProjectileHelper.forwardsRaycast(this, true, this.ticksInAir >= 25, this.shootingEntity);
  
 -            if (raytraceresult != null)
 +            if (raytraceresult != null && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult))
              {
-                 this.func_70227_a(raytraceresult);
+                 this.onImpact(raytraceresult);
              }
  
--            this.field_70165_t = this.field_70165_t + this.field_70159_w;
--            this.field_70163_u = this.field_70163_u + this.field_70181_x;
--            this.field_70161_v = this.field_70161_v + this.field_70179_y;
-+            this.field_70165_t += this.field_70159_w;
-+            this.field_70163_u += this.field_70181_x;
-+            this.field_70161_v += this.field_70179_y;
-             ProjectileHelper.func_188803_a(this, 0.2F);
-             float f = this.func_82341_c();
+-            this.posX = this.posX + this.motionX;
+-            this.posY = this.posY + this.motionY;
+-            this.posZ = this.posZ + this.motionZ;
++            this.posX += this.motionX;
++            this.posY += this.motionY;
++            this.posZ += this.motionZ;
+             ProjectileHelper.rotateTowardsMovement(this, 0.2F);
+             float f = this.getMotionFactor();
  
-             if (this.func_70090_H())
+             if (this.isInWater())
              {
 -                for (int i = 0; i < 4; i++)
 +                for (int i = 0; i < 4; ++i)
                  {
                      float f1 = 0.25F;
--                    this.field_70170_p
--                    .func_175688_a(
+-                    this.world
+-                    .spawnParticle(
 -                        EnumParticleTypes.WATER_BUBBLE,
--                        this.field_70165_t - this.field_70159_w * 0.25,
--                        this.field_70163_u - this.field_70181_x * 0.25,
--                        this.field_70161_v - this.field_70179_y * 0.25,
--                        this.field_70159_w,
--                        this.field_70181_x,
--                        this.field_70179_y
+-                        this.posX - this.motionX * 0.25,
+-                        this.posY - this.motionY * 0.25,
+-                        this.posZ - this.motionZ * 0.25,
+-                        this.motionX,
+-                        this.motionY,
+-                        this.motionZ
 -                    );
-+                    this.field_70170_p.func_175688_a(EnumParticleTypes.WATER_BUBBLE, this.field_70165_t - this.field_70159_w * 0.25D, this.field_70163_u - this.field_70181_x * 0.25D, this.field_70161_v - this.field_70179_y * 0.25D, this.field_70159_w, this.field_70181_x, this.field_70179_y);
++                    this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX - this.motionX * 0.25D, this.posY - this.motionY * 0.25D, this.posZ - this.motionZ * 0.25D, this.motionX, this.motionY, this.motionZ);
                  }
  
                  f = 0.8F;
              }
  
--            this.field_70159_w = this.field_70159_w + this.field_70232_b;
--            this.field_70181_x = this.field_70181_x + this.field_70233_c;
--            this.field_70179_y = this.field_70179_y + this.field_70230_d;
-+            this.field_70159_w += this.field_70232_b;
-+            this.field_70181_x += this.field_70233_c;
-+            this.field_70179_y += this.field_70230_d;
-             this.field_70159_w *= (double)f;
-             this.field_70181_x *= (double)f;
-             this.field_70179_y *= (double)f;
--            this.field_70170_p.func_175688_a(this.func_184563_j(), this.field_70165_t, this.field_70163_u + 0.5, this.field_70161_v, 0.0, 0.0, 0.0);
-+            this.field_70170_p.func_175688_a(this.func_184563_j(), this.field_70165_t, this.field_70163_u + 0.5D, this.field_70161_v, 0.0D, 0.0D, 0.0D);
-             this.func_70107_b(this.field_70165_t, this.field_70163_u, this.field_70161_v);
+-            this.motionX = this.motionX + this.accelerationX;
+-            this.motionY = this.motionY + this.accelerationY;
+-            this.motionZ = this.motionZ + this.accelerationZ;
++            this.motionX += this.accelerationX;
++            this.motionY += this.accelerationY;
++            this.motionZ += this.accelerationZ;
+             this.motionX *= (double)f;
+             this.motionY *= (double)f;
+             this.motionZ *= (double)f;
+-            this.world.spawnParticle(this.getParticleType(), this.posX, this.posY + 0.5, this.posZ, 0.0, 0.0, 0.0);
++            this.world.spawnParticle(this.getParticleType(), this.posX, this.posY + 0.5D, this.posZ, 0.0D, 0.0D, 0.0D);
+             this.setPosition(this.posX, this.posY, this.posZ);
          }
          else
 @@ -164,7 +151,6 @@
@@ -138,62 +138,62 @@
      }
  
 -    @Override
-     public void func_70014_b(NBTTagCompound p_70014_1_)
+     public void writeEntityToNBT(NBTTagCompound compound)
      {
-         p_70014_1_.func_74782_a("direction", this.func_70087_a(new double[] {this.field_70159_w, this.field_70181_x, this.field_70179_y}));
+         compound.setTag("direction", this.newDoubleNBTList(new double[] {this.motionX, this.motionY, this.motionZ}));
 @@ -172,7 +158,6 @@
-         p_70014_1_.func_74768_a("life", this.field_70236_j);
+         compound.setInteger("life", this.ticksAlive);
      }
  
 -    @Override
-     public void func_70037_a(NBTTagCompound p_70037_1_)
+     public void readEntityFromNBT(NBTTagCompound compound)
      {
-         if (p_70037_1_.func_150297_b("power", 9))
+         if (compound.hasKey("power", 9))
 @@ -202,19 +187,16 @@
          }
      }
  
 -    @Override
-     public boolean func_70067_L()
+     public boolean canBeCollidedWith()
      {
          return true;
      }
  
 -    @Override
-     public float func_70111_Y()
+     public float getCollisionBorderSize()
      {
          return 1.0F;
      }
  
 -    @Override
-     public boolean func_70097_a(DamageSource p_70097_1_, float p_70097_2_)
+     public boolean attackEntityFrom(DamageSource source, float amount)
      {
-         if (this.func_180431_b(p_70097_1_))
+         if (this.isEntityInvulnerable(source))
 @@ -234,9 +216,9 @@
-                     this.field_70159_w = vec3d.field_72450_a;
-                     this.field_70181_x = vec3d.field_72448_b;
-                     this.field_70179_y = vec3d.field_72449_c;
--                    this.field_70232_b = this.field_70159_w * 0.1;
--                    this.field_70233_c = this.field_70181_x * 0.1;
--                    this.field_70230_d = this.field_70179_y * 0.1;
-+                    this.field_70232_b = this.field_70159_w * 0.1D;
-+                    this.field_70233_c = this.field_70181_x * 0.1D;
-+                    this.field_70230_d = this.field_70179_y * 0.1D;
+                     this.motionX = vec3d.x;
+                     this.motionY = vec3d.y;
+                     this.motionZ = vec3d.z;
+-                    this.accelerationX = this.motionX * 0.1;
+-                    this.accelerationY = this.motionY * 0.1;
+-                    this.accelerationZ = this.motionZ * 0.1;
++                    this.accelerationX = this.motionX * 0.1D;
++                    this.accelerationY = this.motionY * 0.1D;
++                    this.accelerationZ = this.motionZ * 0.1D;
                  }
  
-                 if (p_70097_1_.func_76346_g() instanceof EntityLivingBase)
+                 if (source.getTrueSource() instanceof EntityLivingBase)
 @@ -253,14 +235,12 @@
          }
      }
  
 -    @Override
-     public float func_70013_c()
+     public float getBrightness()
      {
          return 1.0F;
      }
  
      @SideOnly(Side.CLIENT)
 -    @Override
-     public int func_70070_b()
+     public int getBrightnessForRender()
      {
          return 15728880;

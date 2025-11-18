@@ -1,29 +1,19 @@
 --- before/net/minecraft/client/network/ServerPinger.java
 +++ after/net/minecraft/client/network/ServerPinger.java
-@@ -167,11 +167,12 @@
+@@ -166,6 +166,7 @@
+                         server.setBase64EncodedIconData(null);
                      }
  
-+                    net.minecraftforge.fml.client.FMLClientHandler.instance().bindServerListData(p_147224_1_, serverstatusresponse);
-                     this.field_175092_e = Minecraft.func_71386_F();
-                     networkmanager.func_179290_a(new CPacketPing(this.field_175092_e));
-                     this.field_147403_d = true;
-                 }
-             }
-             @Override
-             public void func_147398_a(SPacketPong p_147398_1_)
-             {
-                 long i = this.field_175092_e;
-@@ -190,12 +191,12 @@
-                     ServerPinger.this.func_147225_b(p_147224_1_);
-                 }
-             }
-         }
-         );
++                    net.minecraftforge.fml.client.FMLClientHandler.instance().bindServerListData(server, serverstatusresponse);
+                     this.pingSentAt = Minecraft.getSystemTime();
+                     networkmanager.sendPacket(new CPacketPing(this.pingSentAt));
+                     this.successful = true;
+@@ -195,7 +196,7 @@
  
          try
          {
--            networkmanager.func_179290_a(new C00Handshake(serveraddress.func_78861_a(), serveraddress.func_78864_b(), EnumConnectionState.STATUS));
-+            networkmanager.func_179290_a(new C00Handshake(serveraddress.func_78861_a(), serveraddress.func_78864_b(), EnumConnectionState.STATUS, true));
-             networkmanager.func_179290_a(new CPacketServerQuery());
+-            networkmanager.sendPacket(new C00Handshake(serveraddress.getIP(), serveraddress.getPort(), EnumConnectionState.STATUS));
++            networkmanager.sendPacket(new C00Handshake(serveraddress.getIP(), serveraddress.getPort(), EnumConnectionState.STATUS, true));
+             networkmanager.sendPacket(new CPacketServerQuery());
          }
          catch (Throwable throwable)

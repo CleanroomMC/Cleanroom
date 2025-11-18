@@ -1,116 +1,30 @@
 --- before/net/minecraft/block/BlockFalling.java
 +++ after/net/minecraft/block/BlockFalling.java
-@@ -27,19 +27,16 @@
-         super(p_i45405_1_);
-     }
+@@ -50,23 +50,24 @@
  
--    @Override
-     public void func_176213_c(World p_176213_1_, BlockPos p_176213_2_, IBlockState p_176213_3_)
+     private void checkFallable(World worldIn, BlockPos pos)
      {
-         p_176213_1_.func_175684_a(p_176213_2_, this, this.func_149738_a(p_176213_1_));
-     }
- 
--    @Override
-     public void func_189540_a(IBlockState p_189540_1_, World p_189540_2_, BlockPos p_189540_3_, Block p_189540_4_, BlockPos p_189540_5_)
-     {
-         p_189540_2_.func_175684_a(p_189540_3_, this, this.func_149738_a(p_189540_2_));
-     }
- 
--    @Override
-     public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
-     {
-         if (!p_180650_1_.field_72995_K)
-@@ -50,36 +47,34 @@
- 
-     private void func_176503_e(World p_176503_1_, BlockPos p_176503_2_)
-     {
--        if (func_185759_i(p_176503_1_.func_180495_p(p_176503_2_.func_177977_b())) && p_176503_2_.func_177956_o() >= 0)
-+        if ((p_176503_1_.func_175623_d(p_176503_2_.func_177977_b()) || func_185759_i(p_176503_1_.func_180495_p(p_176503_2_.func_177977_b()))) && p_176503_2_.func_177956_o() >= 0)
+-        if (canFallThrough(worldIn.getBlockState(pos.down())) && pos.getY() >= 0)
++        if ((worldIn.isAirBlock(pos.down()) || canFallThrough(worldIn.getBlockState(pos.down()))) && pos.getY() >= 0)
          {
              int i = 32;
  
--            if (field_149832_M || !p_176503_1_.func_175707_a(p_176503_2_.func_177982_a(-32, -32, -32), p_176503_2_.func_177982_a(32, 32, 32)))
--            {
-+            if (!field_149832_M && p_176503_1_.func_175707_a(p_176503_2_.func_177982_a(-32, -32, -32), p_176503_2_.func_177982_a(32, 32, 32)))
-+            {
-+                if (!p_176503_1_.field_72995_K)
-+                {
-+                    EntityFallingBlock entityfallingblock = new EntityFallingBlock(p_176503_1_, (double)p_176503_2_.func_177958_n() + 0.5D, (double)p_176503_2_.func_177956_o(), (double)p_176503_2_.func_177952_p() + 0.5D, p_176503_1_.func_180495_p(p_176503_2_));
-+                    this.func_149829_a(entityfallingblock);
-+                    p_176503_1_.func_72838_d(entityfallingblock);
-+                }
-+            }
-+            else
-+            {
-+                IBlockState state = p_176503_1_.func_180495_p(p_176503_2_);
-                 p_176503_1_.func_175698_g(p_176503_2_);
--                BlockPos blockpos = p_176503_2_.func_177977_b();
-+                BlockPos blockpos;
- 
--                while (func_185759_i(p_176503_1_.func_180495_p(blockpos)) && blockpos.func_177956_o() > 0)
-+                for (blockpos = p_176503_2_.func_177977_b(); (p_176503_1_.func_175623_d(blockpos) || func_185759_i(p_176503_1_.func_180495_p(blockpos))) && blockpos.func_177956_o() > 0; blockpos = blockpos.func_177977_b())
-                 {
--                    blockpos = blockpos.func_177977_b();
-+                    ;
-                 }
- 
-                 if (blockpos.func_177956_o() > 0)
-                 {
--                    p_176503_1_.func_175656_a(blockpos.func_177984_a(), this.func_176223_P());
-+                    p_176503_1_.func_175656_a(blockpos.func_177984_a(), state); //Forge: Fix loss of state information during world gen.
-                 }
--            }
--            else if (!p_176503_1_.field_72995_K)
--            {
--                EntityFallingBlock entityfallingblock = new EntityFallingBlock(
--                    p_176503_1_,
--                    (double)p_176503_2_.func_177958_n() + 0.5,
--                    (double)p_176503_2_.func_177956_o(),
--                    (double)p_176503_2_.func_177952_p() + 0.5,
--                    p_176503_1_.func_180495_p(p_176503_2_)
--                );
--                this.func_149829_a(entityfallingblock);
--                p_176503_1_.func_72838_d(entityfallingblock);
-             }
-         }
-     }
-@@ -88,7 +83,6 @@
-     {
-     }
- 
--    @Override
-     public int func_149738_a(World p_149738_1_)
-     {
-         return 2;
-@@ -98,10 +92,7 @@
-     {
-         Block block = p_185759_0_.func_177230_c();
-         Material material = p_185759_0_.func_185904_a();
--        return block == Blocks.field_150480_ab
--               || material == Material.field_151579_a
--               || material == Material.field_151586_h
--               || material == Material.field_151587_i;
-+        return block == Blocks.field_150480_ab || material == Material.field_151579_a || material == Material.field_151586_h || material == Material.field_151587_i;
-     }
- 
-     public void func_176502_a_(World p_176502_1_, BlockPos p_176502_2_, IBlockState p_176502_3_, IBlockState p_176502_4_)
-@@ -113,7 +104,6 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public void func_180655_c(IBlockState p_180655_1_, World p_180655_2_, BlockPos p_180655_3_, Random p_180655_4_)
-     {
-         if (p_180655_4_.nextInt(16) == 0)
-@@ -123,9 +113,9 @@
-             if (func_185759_i(p_180655_2_.func_180495_p(blockpos)))
+             if (fallInstantly || !worldIn.isAreaLoaded(pos.add(-32, -32, -32), pos.add(32, 32, 32)))
              {
-                 double d0 = (double)((float)p_180655_3_.func_177958_n() + p_180655_4_.nextFloat());
--                double d1 = (double)p_180655_3_.func_177956_o() - 0.05;
-+                double d1 = (double)p_180655_3_.func_177956_o() - 0.05D;
-                 double d2 = (double)((float)p_180655_3_.func_177952_p() + p_180655_4_.nextFloat());
--                p_180655_2_.func_175688_a(EnumParticleTypes.FALLING_DUST, d0, d1, d2, 0.0, 0.0, 0.0, Block.func_176210_f(p_180655_1_));
-+                p_180655_2_.func_175688_a(EnumParticleTypes.FALLING_DUST, d0, d1, d2, 0.0D, 0.0D, 0.0D, Block.func_176210_f(p_180655_1_));
++                IBlockState state = worldIn.getBlockState(pos);
+                 worldIn.setBlockToAir(pos);
+                 BlockPos blockpos = pos.down();
+ 
+-                while (canFallThrough(worldIn.getBlockState(blockpos)) && blockpos.getY() > 0)
++                while ((worldIn.isAirBlock(blockpos) || canFallThrough(worldIn.getBlockState(blockpos))) && blockpos.getY() > 0)
+                 {
+                     blockpos = blockpos.down();
+                 }
+ 
+                 if (blockpos.getY() > 0)
+                 {
+-                    worldIn.setBlockState(blockpos.up(), this.getDefaultState());
++                    worldIn.setBlockState(blockpos.up(), state); //Forge: Fix loss of state information during world gen.
+                 }
              }
-         }
-     }
+             else if (!worldIn.isRemote)

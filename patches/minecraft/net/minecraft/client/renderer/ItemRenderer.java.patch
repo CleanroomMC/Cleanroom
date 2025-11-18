@@ -1,347 +1,103 @@
 --- before/net/minecraft/client/renderer/ItemRenderer.java
 +++ after/net/minecraft/client/renderer/ItemRenderer.java
-@@ -95,16 +95,7 @@
-     private void func_187464_b()
-     {
-         AbstractClientPlayer abstractclientplayer = this.field_78455_a.field_71439_g;
--        int i = this.field_78455_a
--                .field_71441_e
--                .func_175626_b(
--                    new BlockPos(
--                        abstractclientplayer.field_70165_t,
--                        abstractclientplayer.field_70163_u + (double)abstractclientplayer.func_70047_e(),
--                        abstractclientplayer.field_70161_v
--                    ),
--                    0
--                );
-+        int i = this.field_78455_a.field_71441_e.func_175626_b(new BlockPos(abstractclientplayer.field_70165_t, abstractclientplayer.field_70163_u + (double)abstractclientplayer.func_70047_e(), abstractclientplayer.field_70161_v), 0);
-         float f = (float)(i & 65535);
-         float f1 = (float)(i >> 16);
-         OpenGlHelper.func_77475_a(OpenGlHelper.field_77476_b, f, f1);
-@@ -123,7 +114,8 @@
-     {
-         float f = 1.0F - p_178100_1_ / 45.0F + 0.1F;
-         f = MathHelper.func_76131_a(f, 0.0F, 1.0F);
--        return -MathHelper.func_76134_b(f * (float) Math.PI) * 0.5F + 0.5F;
-+        f = -MathHelper.func_76134_b(f * (float)Math.PI) * 0.5F + 0.5F;
-+        return f;
-     }
- 
-     private void func_187466_c()
-@@ -143,7 +135,7 @@
-     private void func_187455_a(EnumHandSide p_187455_1_)
-     {
-         this.field_78455_a.func_110434_K().func_110577_a(this.field_78455_a.field_71439_g.func_110306_p());
--        Render<AbstractClientPlayer> render = this.field_178111_g.func_78713_a(this.field_78455_a.field_71439_g);
-+        Render<AbstractClientPlayer> render = this.field_178111_g.<AbstractClientPlayer>func_78713_a(this.field_78455_a.field_71439_g);
-         RenderPlayer renderplayer = (RenderPlayer)render;
-         GlStateManager.func_179094_E();
-         float f = p_187455_1_ == EnumHandSide.RIGHT ? 1.0F : -1.0F;
-@@ -180,10 +172,10 @@
-         GlStateManager.func_179094_E();
-         GlStateManager.func_179109_b(f * 0.51F, -0.08F + p_187465_1_ * -1.2F, -0.75F);
-         float f1 = MathHelper.func_76129_c(p_187465_3_);
--        float f2 = MathHelper.func_76126_a(f1 * (float) Math.PI);
-+        float f2 = MathHelper.func_76126_a(f1 * (float)Math.PI);
-         float f3 = -0.5F * f2;
--        float f4 = 0.4F * MathHelper.func_76126_a(f1 * (float)(Math.PI * 2));
--        float f5 = -0.3F * MathHelper.func_76126_a(p_187465_3_ * (float) Math.PI);
-+        float f4 = 0.4F * MathHelper.func_76126_a(f1 * ((float)Math.PI * 2F));
-+        float f5 = -0.3F * MathHelper.func_76126_a(p_187465_3_ * (float)Math.PI);
-         GlStateManager.func_179109_b(f * f3, f4 - 0.3F * f2, f5);
-         GlStateManager.func_179114_b(f2 * -45.0F, 1.0F, 0.0F, 0.0F);
-         GlStateManager.func_179114_b(f * f2 * -30.0F, 0.0F, 1.0F, 0.0F);
-@@ -194,14 +186,14 @@
-     private void func_187463_a(float p_187463_1_, float p_187463_2_, float p_187463_3_)
-     {
-         float f = MathHelper.func_76129_c(p_187463_3_);
--        float f1 = -0.2F * MathHelper.func_76126_a(p_187463_3_ * (float) Math.PI);
--        float f2 = -0.4F * MathHelper.func_76126_a(f * (float) Math.PI);
-+        float f1 = -0.2F * MathHelper.func_76126_a(p_187463_3_ * (float)Math.PI);
-+        float f2 = -0.4F * MathHelper.func_76126_a(f * (float)Math.PI);
-         GlStateManager.func_179109_b(0.0F, -f1 / 2.0F, f2);
-         float f3 = this.func_178100_c(p_187463_1_);
-         GlStateManager.func_179109_b(0.0F, 0.04F + p_187463_2_ * -1.2F + f3 * -0.5F, -0.72F);
-         GlStateManager.func_179114_b(f3 * -85.0F, 1.0F, 0.0F, 0.0F);
-         this.func_187466_c();
--        float f4 = MathHelper.func_76126_a(f * (float) Math.PI);
-+        float f4 = MathHelper.func_76126_a(f * (float)Math.PI);
-         GlStateManager.func_179114_b(f4 * 20.0F, 1.0F, 0.0F, 0.0F);
-         GlStateManager.func_179152_a(2.0F, 2.0F, 2.0F);
-         this.func_187461_a(this.field_187467_d);
-@@ -219,12 +211,12 @@
-         GlStateManager.func_179109_b(-0.5F, -0.5F, 0.0F);
-         GlStateManager.func_179152_a(0.0078125F, 0.0078125F, 0.0078125F);
-         bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181707_g);
--        bufferbuilder.func_181662_b(-7.0, 135.0, 0.0).func_187315_a(0.0, 1.0).func_181675_d();
--        bufferbuilder.func_181662_b(135.0, 135.0, 0.0).func_187315_a(1.0, 1.0).func_181675_d();
--        bufferbuilder.func_181662_b(135.0, -7.0, 0.0).func_187315_a(1.0, 0.0).func_181675_d();
--        bufferbuilder.func_181662_b(-7.0, -7.0, 0.0).func_187315_a(0.0, 0.0).func_181675_d();
-+        bufferbuilder.func_181662_b(-7.0D, 135.0D, 0.0D).func_187315_a(0.0D, 1.0D).func_181675_d();
-+        bufferbuilder.func_181662_b(135.0D, 135.0D, 0.0D).func_187315_a(1.0D, 1.0D).func_181675_d();
-+        bufferbuilder.func_181662_b(135.0D, -7.0D, 0.0D).func_187315_a(1.0D, 0.0D).func_181675_d();
-+        bufferbuilder.func_181662_b(-7.0D, -7.0D, 0.0D).func_187315_a(0.0D, 0.0D).func_181675_d();
-         tessellator.func_78381_a();
--        MapData mapdata = Items.field_151098_aY.func_77873_a(p_187461_1_, this.field_78455_a.field_71441_e);
-+        MapData mapdata = ((net.minecraft.item.ItemMap) p_187461_1_.func_77973_b()).func_77873_a(p_187461_1_, this.field_78455_a.field_71441_e);
+@@ -224,7 +224,7 @@
+         bufferbuilder.pos(135.0, -7.0, 0.0).tex(1.0, 0.0).endVertex();
+         bufferbuilder.pos(-7.0, -7.0, 0.0).tex(0.0, 0.0).endVertex();
+         tessellator.draw();
+-        MapData mapdata = Items.FILLED_MAP.getMapData(stack, this.mc.world);
++        MapData mapdata = ((net.minecraft.item.ItemMap) stack.getItem()).getMapData(stack, this.mc.world);
  
          if (mapdata != null)
          {
-@@ -239,13 +231,13 @@
-         boolean flag = p_187456_3_ != EnumHandSide.LEFT;
-         float f = flag ? 1.0F : -1.0F;
-         float f1 = MathHelper.func_76129_c(p_187456_2_);
--        float f2 = -0.3F * MathHelper.func_76126_a(f1 * (float) Math.PI);
--        float f3 = 0.4F * MathHelper.func_76126_a(f1 * (float)(Math.PI * 2));
--        float f4 = -0.4F * MathHelper.func_76126_a(p_187456_2_ * (float) Math.PI);
-+        float f2 = -0.3F * MathHelper.func_76126_a(f1 * (float)Math.PI);
-+        float f3 = 0.4F * MathHelper.func_76126_a(f1 * ((float)Math.PI * 2F));
-+        float f4 = -0.4F * MathHelper.func_76126_a(p_187456_2_ * (float)Math.PI);
-         GlStateManager.func_179109_b(f * (f2 + 0.64000005F), f3 + -0.6F + p_187456_1_ * -0.6F, f4 + -0.71999997F);
-         GlStateManager.func_179114_b(f * 45.0F, 0.0F, 1.0F, 0.0F);
--        float f5 = MathHelper.func_76126_a(p_187456_2_ * p_187456_2_ * (float) Math.PI);
--        float f6 = MathHelper.func_76126_a(f1 * (float) Math.PI);
-+        float f5 = MathHelper.func_76126_a(p_187456_2_ * p_187456_2_ * (float)Math.PI);
-+        float f6 = MathHelper.func_76126_a(f1 * (float)Math.PI);
-         GlStateManager.func_179114_b(f * f6 * 70.0F, 0.0F, 1.0F, 0.0F);
-         GlStateManager.func_179114_b(f * f5 * -20.0F, 0.0F, 0.0F, 1.0F);
-         AbstractClientPlayer abstractclientplayer = this.field_78455_a.field_71439_g;
-@@ -277,11 +269,11 @@
- 
-         if (f1 < 0.8F)
+@@ -320,7 +320,7 @@
          {
--            float f2 = MathHelper.func_76135_e(MathHelper.func_76134_b(f / 4.0F * (float) Math.PI) * 0.1F);
-+            float f2 = MathHelper.func_76135_e(MathHelper.func_76134_b(f / 4.0F * (float)Math.PI) * 0.1F);
-             GlStateManager.func_179109_b(0.0F, f2, 0.0F);
-         }
+             ItemStack itemstack = abstractclientplayer.getActiveItemStack();
  
--        float f3 = 1.0F - (float)Math.pow((double)f1, 27.0);
-+        float f3 = 1.0F - (float)Math.pow((double)f1, 27.0D);
-         int i = p_187454_2_ == EnumHandSide.RIGHT ? 1 : -1;
-         GlStateManager.func_179109_b(f3 * 0.6F * (float)i, f3 * -0.5F, f3 * 0.0F);
-         GlStateManager.func_179114_b((float)i * f3 * 90.0F, 0.0F, 1.0F, 0.0F);
-@@ -292,9 +284,9 @@
-     private void func_187453_a(EnumHandSide p_187453_1_, float p_187453_2_)
-     {
-         int i = p_187453_1_ == EnumHandSide.RIGHT ? 1 : -1;
--        float f = MathHelper.func_76126_a(p_187453_2_ * p_187453_2_ * (float) Math.PI);
-+        float f = MathHelper.func_76126_a(p_187453_2_ * p_187453_2_ * (float)Math.PI);
-         GlStateManager.func_179114_b((float)i * (45.0F + f * -20.0F), 0.0F, 1.0F, 0.0F);
--        float f1 = MathHelper.func_76126_a(MathHelper.func_76129_c(p_187453_2_) * (float) Math.PI);
-+        float f1 = MathHelper.func_76126_a(MathHelper.func_76129_c(p_187453_2_) * (float)Math.PI);
-         GlStateManager.func_179114_b((float)i * f1 * -20.0F, 0.0F, 0.0F, 1.0F);
-         GlStateManager.func_179114_b(f1 * -80.0F, 1.0F, 0.0F, 0.0F);
-         GlStateManager.func_179114_b((float)i * -45.0F, 0.0F, 1.0F, 0.0F);
-@@ -310,7 +302,7 @@
-     {
-         AbstractClientPlayer abstractclientplayer = this.field_78455_a.field_71439_g;
-         float f = abstractclientplayer.func_70678_g(p_78440_1_);
--        EnumHand enumhand = MoreObjects.firstNonNull(abstractclientplayer.field_184622_au, EnumHand.MAIN_HAND);
-+        EnumHand enumhand = (EnumHand)MoreObjects.firstNonNull(abstractclientplayer.field_184622_au, EnumHand.MAIN_HAND);
-         float f1 = abstractclientplayer.field_70127_C + (abstractclientplayer.field_70125_A - abstractclientplayer.field_70127_C) * p_78440_1_;
-         float f2 = abstractclientplayer.field_70126_B + (abstractclientplayer.field_70177_z - abstractclientplayer.field_70126_B) * p_78440_1_;
-         boolean flag = true;
-@@ -320,7 +312,7 @@
-         {
-             ItemStack itemstack = abstractclientplayer.func_184607_cu();
- 
--            if (itemstack.func_77973_b() == Items.field_151031_f)
-+            if (itemstack.func_77973_b() instanceof net.minecraft.item.ItemBow)
+-            if (itemstack.getItem() == Items.BOW)
++            if (itemstack.getItem() instanceof net.minecraft.item.ItemBow)
              {
-                 EnumHand enumhand1 = abstractclientplayer.func_184600_cs();
+                 EnumHand enumhand1 = abstractclientplayer.getActiveHand();
                  flag = enumhand1 == EnumHand.MAIN_HAND;
-@@ -337,6 +329,7 @@
+@@ -337,6 +337,7 @@
          {
              float f3 = enumhand == EnumHand.MAIN_HAND ? f : 0.0F;
-             float f5 = 1.0F - (this.field_187470_g + (this.field_187469_f - this.field_187470_g) * p_78440_1_);
-+            if(!net.minecraftforge.client.ForgeHooksClient.renderSpecificFirstPersonHand(EnumHand.MAIN_HAND, p_78440_1_, f1, f3, f5, this.field_187467_d))
-             this.func_187457_a(abstractclientplayer, p_78440_1_, f1, EnumHand.MAIN_HAND, f3, this.field_187467_d, f5);
+             float f5 = 1.0F - (this.prevEquippedProgressMainHand + (this.equippedProgressMainHand - this.prevEquippedProgressMainHand) * partialTicks);
++            if(!net.minecraftforge.client.ForgeHooksClient.renderSpecificFirstPersonHand(EnumHand.MAIN_HAND, partialTicks, f1, f3, f5, this.itemStackMainHand))
+             this.renderItemInFirstPerson(abstractclientplayer, partialTicks, f1, EnumHand.MAIN_HAND, f3, this.itemStackMainHand, f5);
          }
  
-@@ -344,6 +337,7 @@
+@@ -344,6 +345,7 @@
          {
              float f4 = enumhand == EnumHand.OFF_HAND ? f : 0.0F;
-             float f6 = 1.0F - (this.field_187472_i + (this.field_187471_h - this.field_187472_i) * p_78440_1_);
-+            if(!net.minecraftforge.client.ForgeHooksClient.renderSpecificFirstPersonHand(EnumHand.OFF_HAND, p_78440_1_, f1, f4, f6, this.field_187468_e))
-             this.func_187457_a(abstractclientplayer, p_78440_1_, f1, EnumHand.OFF_HAND, f4, this.field_187468_e, f6);
+             float f6 = 1.0F - (this.prevEquippedProgressOffHand + (this.equippedProgressOffHand - this.prevEquippedProgressOffHand) * partialTicks);
++            if(!net.minecraftforge.client.ForgeHooksClient.renderSpecificFirstPersonHand(EnumHand.OFF_HAND, partialTicks, f1, f4, f6, this.itemStackOffHand))
+             this.renderItemInFirstPerson(abstractclientplayer, partialTicks, f1, EnumHand.OFF_HAND, f4, this.itemStackOffHand, f6);
          }
  
-@@ -351,9 +345,7 @@
-         RenderHelper.func_74518_a();
-     }
- 
--    public void func_187457_a(
--        AbstractClientPlayer p_187457_1_, float p_187457_2_, float p_187457_3_, EnumHand p_187457_4_, float p_187457_5_, ItemStack p_187457_6_, float p_187457_7_
--    )
-+    public void func_187457_a(AbstractClientPlayer p_187457_1_, float p_187457_2_, float p_187457_3_, EnumHand p_187457_4_, float p_187457_5_, ItemStack p_187457_6_, float p_187457_7_)
-     {
-         boolean flag = p_187457_4_ == EnumHand.MAIN_HAND;
-         EnumHandSide enumhandside = flag ? p_187457_1_.func_184591_cq() : p_187457_1_.func_184591_cq().func_188468_a();
-@@ -366,7 +358,7 @@
-                 this.func_187456_a(p_187457_7_, p_187457_5_, enumhandside);
+@@ -366,7 +368,7 @@
+                 this.renderArmFirstPerson(p_187457_7_, p_187457_5_, enumhandside);
              }
          }
--        else if (p_187457_6_.func_77973_b() == Items.field_151098_aY)
-+        else if (p_187457_6_.func_77973_b() instanceof net.minecraft.item.ItemMap)
+-        else if (stack.getItem() == Items.FILLED_MAP)
++        else if (stack.getItem() instanceof net.minecraft.item.ItemMap)
          {
-             if (flag && this.field_187468_e.func_190926_b())
+             if (flag && this.itemStackOffHand.isEmpty())
              {
-@@ -428,21 +420,16 @@
-             }
-             else
-             {
--                float f = -0.4F * MathHelper.func_76126_a(MathHelper.func_76129_c(p_187457_5_) * (float) Math.PI);
--                float f1 = 0.2F * MathHelper.func_76126_a(MathHelper.func_76129_c(p_187457_5_) * (float)(Math.PI * 2));
--                float f2 = -0.2F * MathHelper.func_76126_a(p_187457_5_ * (float) Math.PI);
-+                float f = -0.4F * MathHelper.func_76126_a(MathHelper.func_76129_c(p_187457_5_) * (float)Math.PI);
-+                float f1 = 0.2F * MathHelper.func_76126_a(MathHelper.func_76129_c(p_187457_5_) * ((float)Math.PI * 2F));
-+                float f2 = -0.2F * MathHelper.func_76126_a(p_187457_5_ * (float)Math.PI);
-                 int i = flag1 ? 1 : -1;
-                 GlStateManager.func_179109_b((float)i * f, f1, f2);
-                 this.func_187459_b(enumhandside, p_187457_7_);
-                 this.func_187453_a(enumhandside, p_187457_5_);
-             }
- 
--            this.func_187462_a(
--                p_187457_1_,
--                p_187457_6_,
--                flag1 ? ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND : ItemCameraTransforms.TransformType.FIRST_PERSON_LEFT_HAND,
--                !flag1
--            );
-+            this.func_187462_a(p_187457_1_, p_187457_6_, flag1 ? ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND : ItemCameraTransforms.TransformType.FIRST_PERSON_LEFT_HAND, !flag1);
-         }
- 
-         GlStateManager.func_179121_F();
-@@ -455,9 +442,10 @@
-         if (this.field_78455_a.field_71439_g.func_70094_T())
+@@ -455,6 +457,7 @@
+         if (this.mc.player.isEntityInsideOpaqueBlock())
          {
-             IBlockState iblockstate = this.field_78455_a.field_71441_e.func_180495_p(new BlockPos(this.field_78455_a.field_71439_g));
-+            BlockPos overlayPos = new BlockPos(this.field_78455_a.field_71439_g);
-             EntityPlayer entityplayer = this.field_78455_a.field_71439_g;
+             IBlockState iblockstate = this.mc.world.getBlockState(new BlockPos(this.mc.player));
++            BlockPos overlayPos = new BlockPos(this.mc.player);
+             EntityPlayer entityplayer = this.mc.player;
  
--            for (int i = 0; i < 8; i++)
-+            for (int i = 0; i < 8; ++i)
-             {
-                 double d0 = entityplayer.field_70165_t + (double)(((float)((i >> 0) % 2) - 0.5F) * entityplayer.field_70130_N * 0.8F);
-                 double d1 = entityplayer.field_70163_u + (double)(((float)((i >> 1) % 2) - 0.5F) * 0.1F);
-@@ -468,11 +456,13 @@
-                 if (iblockstate1.func_191058_s())
+             for (int i = 0; i < 8; i++)
+@@ -468,11 +471,13 @@
+                 if (iblockstate1.causesSuffocation())
                  {
                      iblockstate = iblockstate1;
 +                    overlayPos = blockpos;
                  }
              }
  
-             if (iblockstate.func_185901_i() != EnumBlockRenderType.INVISIBLE)
+             if (iblockstate.getRenderType() != EnumBlockRenderType.INVISIBLE)
              {
-+                if (!net.minecraftforge.event.ForgeEventFactory.renderBlockOverlay(field_78455_a.field_71439_g, p_78447_1_, net.minecraftforge.client.event.RenderBlockOverlayEvent.OverlayType.BLOCK, iblockstate, overlayPos))
-                 this.func_178108_a(this.field_78455_a.func_175602_ab().func_175023_a().func_178122_a(iblockstate));
++                if (!net.minecraftforge.event.ForgeEventFactory.renderBlockOverlay(mc.player, partialTicks, net.minecraftforge.client.event.RenderBlockOverlayEvent.OverlayType.BLOCK, iblockstate, overlayPos))
+                 this.renderSuffocationOverlay(this.mc.getBlockRendererDispatcher().getBlockModelShapes().getTexture(iblockstate));
              }
          }
-@@ -481,11 +471,13 @@
+@@ -481,11 +486,13 @@
          {
-             if (this.field_78455_a.field_71439_g.func_70055_a(Material.field_151586_h))
+             if (this.mc.player.isInsideOfMaterial(Material.WATER))
              {
-+                if (!net.minecraftforge.event.ForgeEventFactory.renderWaterOverlay(field_78455_a.field_71439_g, p_78447_1_))
-                 this.func_78448_c(p_78447_1_);
++                if (!net.minecraftforge.event.ForgeEventFactory.renderWaterOverlay(mc.player, partialTicks))
+                 this.renderWaterOverlayTexture(partialTicks);
              }
  
-             if (this.field_78455_a.field_71439_g.func_70027_ad())
+             if (this.mc.player.isBurning())
              {
-+                if (!net.minecraftforge.event.ForgeEventFactory.renderFireOverlay(field_78455_a.field_71439_g, p_78447_1_))
-                 this.func_78442_d();
++                if (!net.minecraftforge.event.ForgeEventFactory.renderFireOverlay(mc.player, partialTicks))
+                 this.renderFireInFirstPerson();
              }
          }
-@@ -511,10 +503,10 @@
-         float f8 = p_178108_1_.func_94206_g();
-         float f9 = p_178108_1_.func_94210_h();
-         bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181707_g);
--        bufferbuilder.func_181662_b(-1.0, -1.0, -0.5).func_187315_a((double)f7, (double)f9).func_181675_d();
--        bufferbuilder.func_181662_b(1.0, -1.0, -0.5).func_187315_a((double)f6, (double)f9).func_181675_d();
--        bufferbuilder.func_181662_b(1.0, 1.0, -0.5).func_187315_a((double)f6, (double)f8).func_181675_d();
--        bufferbuilder.func_181662_b(-1.0, 1.0, -0.5).func_187315_a((double)f7, (double)f8).func_181675_d();
-+        bufferbuilder.func_181662_b(-1.0D, -1.0D, -0.5D).func_187315_a((double)f7, (double)f9).func_181675_d();
-+        bufferbuilder.func_181662_b(1.0D, -1.0D, -0.5D).func_187315_a((double)f6, (double)f9).func_181675_d();
-+        bufferbuilder.func_181662_b(1.0D, 1.0D, -0.5D).func_187315_a((double)f6, (double)f8).func_181675_d();
-+        bufferbuilder.func_181662_b(-1.0D, 1.0D, -0.5D).func_187315_a((double)f7, (double)f8).func_181675_d();
-         tessellator.func_78381_a();
-         GlStateManager.func_179121_F();
-         GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
-@@ -528,9 +520,7 @@
-         float f = this.field_78455_a.field_71439_g.func_70013_c();
-         GlStateManager.func_179131_c(f, f, f, 0.5F);
-         GlStateManager.func_179147_l();
--        GlStateManager.func_187428_a(
--            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
--        );
-+        GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-         GlStateManager.func_179094_E();
-         float f1 = 4.0F;
-         float f2 = -1.0F;
-@@ -541,10 +531,10 @@
-         float f7 = -this.field_78455_a.field_71439_g.field_70177_z / 64.0F;
-         float f8 = this.field_78455_a.field_71439_g.field_70125_A / 64.0F;
-         bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181707_g);
--        bufferbuilder.func_181662_b(-1.0, -1.0, -0.5).func_187315_a((double)(4.0F + f7), (double)(4.0F + f8)).func_181675_d();
--        bufferbuilder.func_181662_b(1.0, -1.0, -0.5).func_187315_a((double)(0.0F + f7), (double)(4.0F + f8)).func_181675_d();
--        bufferbuilder.func_181662_b(1.0, 1.0, -0.5).func_187315_a((double)(0.0F + f7), (double)(0.0F + f8)).func_181675_d();
--        bufferbuilder.func_181662_b(-1.0, 1.0, -0.5).func_187315_a((double)(4.0F + f7), (double)(0.0F + f8)).func_181675_d();
-+        bufferbuilder.func_181662_b(-1.0D, -1.0D, -0.5D).func_187315_a((double)(4.0F + f7), (double)(4.0F + f8)).func_181675_d();
-+        bufferbuilder.func_181662_b(1.0D, -1.0D, -0.5D).func_187315_a((double)(0.0F + f7), (double)(4.0F + f8)).func_181675_d();
-+        bufferbuilder.func_181662_b(1.0D, 1.0D, -0.5D).func_187315_a((double)(0.0F + f7), (double)(0.0F + f8)).func_181675_d();
-+        bufferbuilder.func_181662_b(-1.0D, 1.0D, -0.5D).func_187315_a((double)(4.0F + f7), (double)(0.0F + f8)).func_181675_d();
-         tessellator.func_78381_a();
-         GlStateManager.func_179121_F();
-         GlStateManager.func_179131_c(1.0F, 1.0F, 1.0F, 1.0F);
-@@ -559,12 +549,10 @@
-         GlStateManager.func_179143_c(519);
-         GlStateManager.func_179132_a(false);
-         GlStateManager.func_179147_l();
--        GlStateManager.func_187428_a(
--            GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
--        );
-+        GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-         float f = 1.0F;
- 
--        for (int i = 0; i < 2; i++)
-+        for (int i = 0; i < 2; ++i)
-         {
-             GlStateManager.func_179094_E();
-             TextureAtlasSprite textureatlassprite = this.field_78455_a.func_147117_R().func_110572_b("minecraft:blocks/fire_layer_1");
-@@ -581,10 +569,10 @@
-             GlStateManager.func_179109_b((float)(-(i * 2 - 1)) * 0.24F, -0.3F, 0.0F);
-             GlStateManager.func_179114_b((float)(i * 2 - 1) * 10.0F, 0.0F, 1.0F, 0.0F);
-             bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181707_g);
--            bufferbuilder.func_181662_b(-0.5, -0.5, -0.5).func_187315_a((double)f2, (double)f4).func_181675_d();
--            bufferbuilder.func_181662_b(0.5, -0.5, -0.5).func_187315_a((double)f1, (double)f4).func_181675_d();
--            bufferbuilder.func_181662_b(0.5, 0.5, -0.5).func_187315_a((double)f1, (double)f3).func_181675_d();
--            bufferbuilder.func_181662_b(-0.5, 0.5, -0.5).func_187315_a((double)f2, (double)f3).func_181675_d();
-+            bufferbuilder.func_181662_b(-0.5D, -0.5D, -0.5D).func_187315_a((double)f2, (double)f4).func_181675_d();
-+            bufferbuilder.func_181662_b(0.5D, -0.5D, -0.5D).func_187315_a((double)f1, (double)f4).func_181675_d();
-+            bufferbuilder.func_181662_b(0.5D, 0.5D, -0.5D).func_187315_a((double)f1, (double)f3).func_181675_d();
-+            bufferbuilder.func_181662_b(-0.5D, 0.5D, -0.5D).func_187315_a((double)f2, (double)f3).func_181675_d();
-             tessellator.func_78381_a();
-             GlStateManager.func_179121_F();
-         }
-@@ -611,10 +599,17 @@
+@@ -611,10 +618,17 @@
          else
          {
-             float f = entityplayersp.func_184825_o(1.0F);
--            this.field_187469_f = this.field_187469_f
--                                  + MathHelper.func_76131_a((Objects.equals(this.field_187467_d, itemstack) ? f * f * f : 0.0F) - this.field_187469_f, -0.4F, 0.4F);
--            this.field_187471_h = this.field_187471_h
--                                  + MathHelper.func_76131_a((float)(Objects.equals(this.field_187468_e, itemstack1) ? 1 : 0) - this.field_187471_h, -0.4F, 0.4F);
+             float f = entityplayersp.getCooledAttackStrength(1.0F);
+-            this.equippedProgressMainHand = this.equippedProgressMainHand
+-                                  + MathHelper.clamp((Objects.equals(this.itemStackMainHand, itemstack) ? f * f * f : 0.0F) - this.equippedProgressMainHand, -0.4F, 0.4F);
+-            this.equippedProgressOffHand = this.equippedProgressOffHand
+-                                  + MathHelper.clamp((float)(Objects.equals(this.itemStackOffHand, itemstack1) ? 1 : 0) - this.equippedProgressOffHand, -0.4F, 0.4F);
 +
-+            boolean requipM = net.minecraftforge.client.ForgeHooksClient.shouldCauseReequipAnimation(this.field_187467_d, itemstack, entityplayersp.field_71071_by.field_70461_c);
-+            boolean requipO = net.minecraftforge.client.ForgeHooksClient.shouldCauseReequipAnimation(this.field_187468_e, itemstack1, -1);
++            boolean requipM = net.minecraftforge.client.ForgeHooksClient.shouldCauseReequipAnimation(this.itemStackMainHand, itemstack, entityplayersp.inventory.currentItem);
++            boolean requipO = net.minecraftforge.client.ForgeHooksClient.shouldCauseReequipAnimation(this.itemStackOffHand, itemstack1, -1);
 +
-+            if (!requipM && !Objects.equals(this.field_187467_d, itemstack))
-+                this.field_187467_d = itemstack;
-+            if (!requipM && !Objects.equals(this.field_187468_e, itemstack1))
-+                this.field_187468_e = itemstack1;
++            if (!requipM && !Objects.equals(this.itemStackMainHand, itemstack))
++                this.itemStackMainHand = itemstack;
++            if (!requipM && !Objects.equals(this.itemStackOffHand, itemstack1))
++                this.itemStackOffHand = itemstack1;
 +
-+            this.field_187469_f += MathHelper.func_76131_a((!requipM ? f * f * f : 0.0F) - this.field_187469_f, -0.4F, 0.4F);
-+            this.field_187471_h += MathHelper.func_76131_a((float)(!requipO ? 1 : 0) - this.field_187471_h, -0.4F, 0.4F);
++            this.equippedProgressMainHand += MathHelper.clamp((!requipM ? f * f * f : 0.0F) - this.equippedProgressMainHand, -0.4F, 0.4F);
++            this.equippedProgressOffHand += MathHelper.clamp((float)(!requipO ? 1 : 0) - this.equippedProgressOffHand, -0.4F, 0.4F);
          }
  
-         if (this.field_187469_f < 0.1F)
+         if (this.equippedProgressMainHand < 0.1F)

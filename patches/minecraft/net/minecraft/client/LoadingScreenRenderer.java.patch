@@ -1,156 +1,26 @@
 --- before/net/minecraft/client/LoadingScreenRenderer.java
 +++ after/net/minecraft/client/LoadingScreenRenderer.java
-@@ -32,14 +32,12 @@
-         this.field_146588_g.func_147607_a(9728);
-     }
- 
--    @Override
-     public void func_73721_b(String p_73721_1_)
-     {
-         this.field_73724_e = false;
-         this.func_73722_d(p_73721_1_);
-     }
- 
--    @Override
-     public void func_73720_a(String p_73720_1_)
-     {
-         this.field_73724_e = true;
-@@ -66,14 +64,12 @@
-             if (OpenGlHelper.func_148822_b())
-             {
-                 int i = this.field_146587_f.func_78325_e();
--                GlStateManager.func_179130_a(
--                    0.0, (double)(this.field_146587_f.func_78326_a() * i), (double)(this.field_146587_f.func_78328_b() * i), 0.0, 100.0, 300.0
--                );
-+                GlStateManager.func_179130_a(0.0D, (double)(this.field_146587_f.func_78326_a() * i), (double)(this.field_146587_f.func_78328_b() * i), 0.0D, 100.0D, 300.0D);
-             }
-             else
-             {
-                 ScaledResolution scaledresolution = new ScaledResolution(this.field_73725_b);
--                GlStateManager.func_179130_a(0.0, scaledresolution.func_78327_c(), scaledresolution.func_78324_d(), 0.0, 100.0, 300.0);
-+                GlStateManager.func_179130_a(0.0D, scaledresolution.func_78327_c(), scaledresolution.func_78324_d(), 0.0D, 100.0D, 300.0D);
-             }
- 
-             GlStateManager.func_179128_n(5888);
-@@ -82,7 +78,6 @@
-         }
-     }
- 
--    @Override
-     public void func_73719_c(String p_73719_1_)
-     {
-         if (!this.field_73725_b.field_71425_J)
-@@ -101,7 +96,6 @@
-         }
-     }
- 
--    @Override
-     public void func_73718_a(int p_73718_1_)
-     {
-         if (!this.field_73725_b.field_71425_J)
-@@ -135,7 +129,7 @@
-                 this.field_146588_g.func_147610_a(false);
-                 GlStateManager.func_179128_n(5889);
-                 GlStateManager.func_179096_D();
--                GlStateManager.func_179130_a(0.0, scaledresolution.func_78327_c(), scaledresolution.func_78324_d(), 0.0, 100.0, 300.0);
-+                GlStateManager.func_179130_a(0.0D, scaledresolution.func_78327_c(), scaledresolution.func_78324_d(), 0.0D, 100.0D, 300.0D);
-                 GlStateManager.func_179128_n(5888);
-                 GlStateManager.func_179096_D();
-                 GlStateManager.func_179109_b(0.0F, 0.0F, -200.0F);
-@@ -145,18 +139,19 @@
-                     GlStateManager.func_179086_m(16640);
+@@ -145,6 +145,10 @@
+                     GlStateManager.clear(16640);
                  }
  
 +                try
 +                {
 +                if (!net.minecraftforge.fml.client.FMLClientHandler.instance().handleLoadingScreen(scaledresolution)) //FML Don't render while FML's pre-screen is rendering
 +                {
-                 Tessellator tessellator = Tessellator.func_178181_a();
-                 BufferBuilder bufferbuilder = tessellator.func_178180_c();
-                 this.field_73725_b.func_110434_K().func_110577_a(Gui.field_110325_k);
-                 float f = 32.0F;
-                 bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181709_i);
--                bufferbuilder.func_181662_b(0.0, (double)l, 0.0).func_187315_a(0.0, (double)((float)l / 32.0F)).func_181669_b(64, 64, 64, 255).func_181675_d();
--                bufferbuilder.func_181662_b((double)k, (double)l, 0.0)
--                .func_187315_a((double)((float)k / 32.0F), (double)((float)l / 32.0F))
--                .func_181669_b(64, 64, 64, 255)
--                .func_181675_d();
--                bufferbuilder.func_181662_b((double)k, 0.0, 0.0).func_187315_a((double)((float)k / 32.0F), 0.0).func_181669_b(64, 64, 64, 255).func_181675_d();
--                bufferbuilder.func_181662_b(0.0, 0.0, 0.0).func_187315_a(0.0, 0.0).func_181669_b(64, 64, 64, 255).func_181675_d();
-+                bufferbuilder.func_181662_b(0.0D, (double)l, 0.0D).func_187315_a(0.0D, (double)((float)l / 32.0F)).func_181669_b(64, 64, 64, 255).func_181675_d();
-+                bufferbuilder.func_181662_b((double)k, (double)l, 0.0D).func_187315_a((double)((float)k / 32.0F), (double)((float)l / 32.0F)).func_181669_b(64, 64, 64, 255).func_181675_d();
-+                bufferbuilder.func_181662_b((double)k, 0.0D, 0.0D).func_187315_a((double)((float)k / 32.0F), 0.0D).func_181669_b(64, 64, 64, 255).func_181675_d();
-+                bufferbuilder.func_181662_b(0.0D, 0.0D, 0.0D).func_187315_a(0.0D, 0.0D).func_181669_b(64, 64, 64, 255).func_181675_d();
-                 tessellator.func_78381_a();
- 
-                 if (p_73718_1_ >= 0)
-@@ -167,35 +162,28 @@
-                     int l1 = l / 2 + 16;
-                     GlStateManager.func_179090_x();
-                     bufferbuilder.func_181668_a(7, DefaultVertexFormats.field_181706_f);
--                    bufferbuilder.func_181662_b((double)k1, (double)l1, 0.0).func_181669_b(128, 128, 128, 255).func_181675_d();
--                    bufferbuilder.func_181662_b((double)k1, (double)(l1 + 2), 0.0).func_181669_b(128, 128, 128, 255).func_181675_d();
--                    bufferbuilder.func_181662_b((double)(k1 + 100), (double)(l1 + 2), 0.0).func_181669_b(128, 128, 128, 255).func_181675_d();
--                    bufferbuilder.func_181662_b((double)(k1 + 100), (double)l1, 0.0).func_181669_b(128, 128, 128, 255).func_181675_d();
--                    bufferbuilder.func_181662_b((double)k1, (double)l1, 0.0).func_181669_b(128, 255, 128, 255).func_181675_d();
--                    bufferbuilder.func_181662_b((double)k1, (double)(l1 + 2), 0.0).func_181669_b(128, 255, 128, 255).func_181675_d();
--                    bufferbuilder.func_181662_b((double)(k1 + p_73718_1_), (double)(l1 + 2), 0.0).func_181669_b(128, 255, 128, 255).func_181675_d();
--                    bufferbuilder.func_181662_b((double)(k1 + p_73718_1_), (double)l1, 0.0).func_181669_b(128, 255, 128, 255).func_181675_d();
-+                    bufferbuilder.func_181662_b((double)k1, (double)l1, 0.0D).func_181669_b(128, 128, 128, 255).func_181675_d();
-+                    bufferbuilder.func_181662_b((double)k1, (double)(l1 + 2), 0.0D).func_181669_b(128, 128, 128, 255).func_181675_d();
-+                    bufferbuilder.func_181662_b((double)(k1 + 100), (double)(l1 + 2), 0.0D).func_181669_b(128, 128, 128, 255).func_181675_d();
-+                    bufferbuilder.func_181662_b((double)(k1 + 100), (double)l1, 0.0D).func_181669_b(128, 128, 128, 255).func_181675_d();
-+                    bufferbuilder.func_181662_b((double)k1, (double)l1, 0.0D).func_181669_b(128, 255, 128, 255).func_181675_d();
-+                    bufferbuilder.func_181662_b((double)k1, (double)(l1 + 2), 0.0D).func_181669_b(128, 255, 128, 255).func_181675_d();
-+                    bufferbuilder.func_181662_b((double)(k1 + p_73718_1_), (double)(l1 + 2), 0.0D).func_181669_b(128, 255, 128, 255).func_181675_d();
-+                    bufferbuilder.func_181662_b((double)(k1 + p_73718_1_), (double)l1, 0.0D).func_181669_b(128, 255, 128, 255).func_181675_d();
-                     tessellator.func_78381_a();
-                     GlStateManager.func_179098_w();
-                 }
- 
-                 GlStateManager.func_179147_l();
--                GlStateManager.func_187428_a(
--                    GlStateManager.SourceFactor.SRC_ALPHA,
--                    GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
--                    GlStateManager.SourceFactor.ONE,
--                    GlStateManager.DestFactor.ZERO
--                );
--                this.field_73725_b
--                .field_71466_p
--                .func_175063_a(
--                    this.field_73726_c, (float)((k - this.field_73725_b.field_71466_p.func_78256_a(this.field_73726_c)) / 2), (float)(l / 2 - 4 - 16), 16777215
--                );
--                this.field_73725_b
--                .field_71466_p
--                .func_175063_a(
--                    this.field_73727_a, (float)((k - this.field_73725_b.field_71466_p.func_78256_a(this.field_73727_a)) / 2), (float)(l / 2 - 4 + 8), 16777215
--                );
-+                GlStateManager.func_187428_a(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-+                this.field_73725_b.field_71466_p.func_175063_a(this.field_73726_c, (float)((k - this.field_73725_b.field_71466_p.func_78256_a(this.field_73726_c)) / 2), (float)(l / 2 - 4 - 16), 16777215);
-+                this.field_73725_b.field_71466_p.func_175063_a(this.field_73727_a, (float)((k - this.field_73725_b.field_71466_p.func_78256_a(this.field_73727_a)) / 2), (float)(l / 2 - 4 + 8), 16777215);
+                 Tessellator tessellator = Tessellator.getInstance();
+                 BufferBuilder bufferbuilder = tessellator.getBuffer();
+                 this.mc.getTextureManager().bindTexture(Gui.OPTIONS_BACKGROUND);
+@@ -196,6 +200,12 @@
+                 .drawStringWithShadow(
+                     this.message, (float)((k - this.mc.fontRenderer.getStringWidth(this.message)) / 2), (float)(l / 2 - 4 + 8), 16777215
+                 );
 +                }
 +                }
 +                catch (java.io.IOException e)
 +                {
 +                    throw new RuntimeException(e);
 +                } //FML End
-                 this.field_146588_g.func_147609_e();
+                 this.framebuffer.unbindFramebuffer();
  
-                 if (OpenGlHelper.func_148822_b())
-@@ -209,14 +197,14 @@
-                 {
-                     Thread.yield();
-                 }
--                catch (Exception exception)
-+                catch (Exception var15)
-                 {
-+                    ;
-                 }
-             }
-         }
-     }
- 
--    @Override
-     public void func_146586_a()
-     {
-     }
+                 if (OpenGlHelper.isFramebufferEnabled())

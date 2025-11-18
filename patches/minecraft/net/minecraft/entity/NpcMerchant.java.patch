@@ -5,55 +5,55 @@
  
      @Nullable
 -    @Override
-     public EntityPlayer func_70931_l_()
+     public EntityPlayer getCustomer()
      {
-         return this.field_70935_b;
+         return this.customer;
      }
  
 -    @Override
-     public void func_70932_a_(@Nullable EntityPlayer p_70932_1_)
+     public void setCustomer(@Nullable EntityPlayer player)
      {
      }
  
      @Nullable
 -    @Override
-     public MerchantRecipeList func_70934_b(EntityPlayer p_70934_1_)
+     public MerchantRecipeList getRecipes(EntityPlayer player)
      {
--        return this.field_70936_c;
-+        return net.minecraftforge.event.ForgeEventFactory.listTradeOffers(this, p_70934_1_, this.field_70936_c);
+-        return this.recipeList;
++        return net.minecraftforge.event.ForgeEventFactory.listTradeOffers(this, player, this.recipeList);
      }
  
 -    @Override
-     public void func_70930_a(@Nullable MerchantRecipeList p_70930_1_)
+     public void setRecipes(@Nullable MerchantRecipeList recipeList)
      {
-         this.field_70936_c = p_70930_1_;
+         this.recipeList = recipeList;
      }
  
 -    @Override
-     public void func_70933_a(MerchantRecipe p_70933_1_)
+     public void useRecipe(MerchantRecipe recipe)
      {
-         p_70933_1_.func_77399_f();
+         recipe.incrementToolUses();
      }
  
 -    @Override
-     public void func_110297_a_(ItemStack p_110297_1_)
+     public void verifySellingItem(ItemStack stack)
      {
      }
  
 -    @Override
-     public ITextComponent func_145748_c_()
+     public ITextComponent getDisplayName()
      {
--        return (ITextComponent)(this.field_175548_d != null ? this.field_175548_d : new TextComponentTranslation("entity.Villager.name"));
-+        return (ITextComponent)(this.field_175548_d != null ? this.field_175548_d : new TextComponentTranslation("entity.Villager.name", new Object[0]));
+-        return (ITextComponent)(this.name != null ? this.name : new TextComponentTranslation("entity.Villager.name"));
++        return (ITextComponent)(this.name != null ? this.name : new TextComponentTranslation("entity.Villager.name", new Object[0]));
      }
  
 -    @Override
-     public World func_190670_t_()
+     public World getWorld()
      {
-         return this.field_70935_b.field_70170_p;
+         return this.customer.world;
      }
  
 -    @Override
-     public BlockPos func_190671_u_()
+     public BlockPos getPos()
      {
-         return new BlockPos(this.field_70935_b);
+         return new BlockPos(this.customer);

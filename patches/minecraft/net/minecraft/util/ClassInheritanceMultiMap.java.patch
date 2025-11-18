@@ -4,18 +4,18 @@
  
  public class ClassInheritanceMultiMap<T> extends AbstractSet<T>
  {
--    private static final Set < Class<? >> field_181158_a = Sets.newHashSet();
--    private final Map < Class<?>, List<T >> field_180218_a = Maps.newHashMap();
--    private final Set < Class<? >> field_180216_b = Sets.newIdentityHashSet();
+-    private static final Set < Class<? >> ALL_KNOWN = Sets.newHashSet();
+-    private final Map < Class<?>, List<T >> map = Maps.newHashMap();
+-    private final Set < Class<? >> knownKeys = Sets.newIdentityHashSet();
 +    // Forge: Use concurrent collection to allow creating chunks from multiple threads safely
-+    private static final Set < Class<? >> field_181158_a = java.util.Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<Class<?>, Boolean>());
-+    private final Map < Class<?>, List<T >> field_180218_a = Maps. < Class<?>, List<T >> newHashMap();
-+    private final Set < Class<? >> field_180216_b = Sets. < Class<? >> newIdentityHashSet();
-     private final Class<T> field_180217_c;
--    private final List<T> field_181745_e = Lists.newArrayList();
-+    private final List<T> field_181745_e = Lists.<T>newArrayList();
++    private static final Set < Class<? >> ALL_KNOWN = java.util.Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<Class<?>, Boolean>());
++    private final Map < Class<?>, List<T >> map = Maps. < Class<?>, List<T >> newHashMap();
++    private final Set < Class<? >> knownKeys = Sets. < Class<? >> newIdentityHashSet();
+     private final Class<T> baseClass;
+-    private final List<T> values = Lists.newArrayList();
++    private final List<T> values = Lists.<T>newArrayList();
  
-     public ClassInheritanceMultiMap(Class<T> p_i45909_1_)
+     public ClassInheritanceMultiMap(Class<T> baseClassIn)
      {
 @@ -63,7 +64,6 @@
          }
@@ -24,13 +24,13 @@
 -    @Override
      public boolean add(T p_add_1_)
      {
-         for (Class<?> oclass : this.field_180216_b)
+         for (Class<?> oclass : this.knownKeys)
 @@ -79,7 +79,7 @@
  
-     private void func_181743_a(T p_181743_1_, Class<?> p_181743_2_)
+     private void addForClass(T value, Class<?> parentClass)
      {
--        List<T> list = this.field_180218_a.get(p_181743_2_);
-+        List<T> list = (List)this.field_180218_a.get(p_181743_2_);
+-        List<T> list = this.map.get(parentClass);
++        List<T> list = (List)this.map.get(parentClass);
  
          if (list == null)
          {
@@ -46,8 +46,8 @@
          {
              if (oclass.isAssignableFrom(t.getClass()))
              {
--                List<T> list = this.field_180218_a.get(oclass);
-+                List<T> list = (List)this.field_180218_a.get(oclass);
+-                List<T> list = this.map.get(oclass);
++                List<T> list = (List)this.map.get(oclass);
  
                  if (list != null && list.remove(t))
                  {
@@ -58,7 +58,7 @@
 -    @Override
      public boolean contains(Object p_contains_1_)
      {
-         return Iterators.contains(this.func_180215_b(p_contains_1_.getClass()).iterator(), p_contains_1_);
+         return Iterators.contains(this.getByClass(p_contains_1_.getClass()).iterator(), p_contains_1_);
 @@ -123,14 +121,13 @@
      {
          return new Iterable<S>()
@@ -66,8 +66,8 @@
 -            @Override
              public Iterator<S> iterator()
              {
--                List<T> list = ClassInheritanceMultiMap.this.field_180218_a.get(ClassInheritanceMultiMap.this.func_181157_b(p_180215_1_));
-+                List<T> list = (List)ClassInheritanceMultiMap.this.field_180218_a.get(ClassInheritanceMultiMap.this.func_181157_b(p_180215_1_));
+-                List<T> list = ClassInheritanceMultiMap.this.map.get(ClassInheritanceMultiMap.this.initializeClassLookup(clazz));
++                List<T> list = (List)ClassInheritanceMultiMap.this.map.get(ClassInheritanceMultiMap.this.initializeClassLookup(clazz));
  
                  if (list == null)
                  {
@@ -83,10 +83,10 @@
 -    @Override
      public Iterator<T> iterator()
      {
-         return (Iterator<T>)(this.field_181745_e.isEmpty() ? Collections.emptyIterator() : Iterators.unmodifiableIterator(this.field_181745_e.iterator()));
+         return (Iterator<T>)(this.values.isEmpty() ? Collections.emptyIterator() : Iterators.unmodifiableIterator(this.values.iterator()));
      }
  
 -    @Override
      public int size()
      {
-         return this.field_181745_e.size();
+         return this.values.size();

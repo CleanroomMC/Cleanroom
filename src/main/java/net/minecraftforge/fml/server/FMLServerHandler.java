@@ -80,7 +80,7 @@ public class FMLServerHandler implements IFMLSidedHandler
      * A reference to the server itself
      */
     private MinecraftServer server;
-    private List<String> injectedModContainers;
+    private final List<String> injectedModContainers;
     private FMLServerHandler()
     {
         injectedModContainers = FMLCommonHandler.instance().beginLoading(this);

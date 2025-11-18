@@ -3,31 +3,31 @@
 @@ -14,18 +14,15 @@
  public class BlockEntityTag implements IDataWalker
  {
-     private static final Logger field_188268_a = LogManager.getLogger();
--    private static final Map<String, String> field_190892_b = Maps.newHashMap();
--    private static final Map<String, String> field_188269_b = Maps.newHashMap();
-+    private static final Map<String, String> field_190892_b = Maps.<String, String>newHashMap();
-+    private static final Map<String, String> field_188269_b = Maps.<String, String>newHashMap();
+     private static final Logger LOGGER = LogManager.getLogger();
+-    private static final Map<String, String> NEW_TO_OLD_ID_MAP = Maps.newHashMap();
+-    private static final Map<String, String> ITEM_ID_TO_BLOCK_ENTITY_ID = Maps.newHashMap();
++    private static final Map<String, String> NEW_TO_OLD_ID_MAP = Maps.<String, String>newHashMap();
++    private static final Map<String, String> ITEM_ID_TO_BLOCK_ENTITY_ID = Maps.<String, String>newHashMap();
  
      @Nullable
-     private static String func_188267_a(int p_188267_0_, String p_188267_1_)
+     private static String getBlockEntityID(int blockID, String p_188267_1_)
      {
--        return p_188267_0_ < 515
--               ? field_190892_b.get(new ResourceLocation(p_188267_1_).toString())
--               : field_188269_b.get(new ResourceLocation(p_188267_1_).toString());
-+        return p_188267_0_ < 515 ? (String)field_190892_b.get((new ResourceLocation(p_188267_1_)).toString()) : (String)field_188269_b.get((new ResourceLocation(p_188267_1_)).toString());
+-        return blockID < 515
+-               ? NEW_TO_OLD_ID_MAP.get(new ResourceLocation(p_188267_1_).toString())
+-               : ITEM_ID_TO_BLOCK_ENTITY_ID.get(new ResourceLocation(p_188267_1_).toString());
++        return blockID < 515 ? (String)NEW_TO_OLD_ID_MAP.get((new ResourceLocation(p_188267_1_)).toString()) : (String)ITEM_ID_TO_BLOCK_ENTITY_ID.get((new ResourceLocation(p_188267_1_)).toString());
      }
  
 -    @Override
-     public NBTTagCompound func_188266_a(IDataFixer p_188266_1_, NBTTagCompound p_188266_2_, int p_188266_3_)
+     public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
      {
-         if (!p_188266_2_.func_150297_b("tag", 10))
+         if (!compound.hasKey("tag", 10))
 @@ -45,7 +42,7 @@
  
                  if (s1 == null)
                  {
--                    field_188268_a.warn("Unable to resolve BlockEntity for ItemInstance: {}", s);
-+                    field_188268_a.warn("Unable to resolve BlockEntity for ItemInstance: {}", (Object)s);
+-                    LOGGER.warn("Unable to resolve BlockEntity for ItemInstance: {}", s);
++                    LOGGER.warn("Unable to resolve BlockEntity for ItemInstance: {}", (Object)s);
                      flag = false;
                  }
                  else

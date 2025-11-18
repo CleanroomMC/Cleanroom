@@ -1,173 +1,53 @@
 --- before/net/minecraft/client/renderer/entity/layers/LayerArmorBase.java
 +++ after/net/minecraft/client/renderer/entity/layers/LayerArmorBase.java
-@@ -26,7 +26,7 @@
-     private float field_177185_g = 1.0F;
-     private float field_177192_h = 1.0F;
-     private boolean field_177193_i;
--    private static final Map<String, ResourceLocation> field_177191_j = Maps.newHashMap();
-+    private static final Map<String, ResourceLocation> field_177191_j = Maps.<String, ResourceLocation>newHashMap();
- 
-     public LayerArmorBase(RenderLivingBase<?> p_i46125_1_)
-     {
-@@ -34,17 +34,7 @@
-         this.func_177177_a();
-     }
- 
--    @Override
--    public void func_177141_a(
--        EntityLivingBase p_177141_1_,
--        float p_177141_2_,
--        float p_177141_3_,
--        float p_177141_4_,
--        float p_177141_5_,
--        float p_177141_6_,
--        float p_177141_7_,
--        float p_177141_8_
--    )
-+    public void func_177141_a(EntityLivingBase p_177141_1_, float p_177141_2_, float p_177141_3_, float p_177141_4_, float p_177141_5_, float p_177141_6_, float p_177141_7_, float p_177141_8_)
-     {
-         this.func_188361_a(p_177141_1_, p_177141_2_, p_177141_3_, p_177141_4_, p_177141_5_, p_177141_6_, p_177141_7_, p_177141_8_, EntityEquipmentSlot.CHEST);
-         this.func_188361_a(p_177141_1_, p_177141_2_, p_177141_3_, p_177141_4_, p_177141_5_, p_177141_6_, p_177141_7_, p_177141_8_, EntityEquipmentSlot.LEGS);
-@@ -52,23 +42,12 @@
-         this.func_188361_a(p_177141_1_, p_177141_2_, p_177141_3_, p_177141_4_, p_177141_5_, p_177141_6_, p_177141_7_, p_177141_8_, EntityEquipmentSlot.HEAD);
-     }
- 
--    @Override
-     public boolean func_177142_b()
-     {
-         return false;
-     }
- 
--    private void func_188361_a(
--        EntityLivingBase p_188361_1_,
--        float p_188361_2_,
--        float p_188361_3_,
--        float p_188361_4_,
--        float p_188361_5_,
--        float p_188361_6_,
--        float p_188361_7_,
--        float p_188361_8_,
--        EntityEquipmentSlot p_188361_9_
--    )
-+    private void func_188361_a(EntityLivingBase p_188361_1_, float p_188361_2_, float p_188361_3_, float p_188361_4_, float p_188361_5_, float p_188361_6_, float p_188361_7_, float p_188361_8_, EntityEquipmentSlot p_188361_9_)
-     {
-         ItemStack itemstack = p_188361_1_.func_184582_a(p_188361_9_);
- 
-@@ -79,35 +58,31 @@
-             if (itemarmor.func_185083_B_() == p_188361_9_)
+@@ -79,31 +79,29 @@
+             if (itemarmor.getEquipmentSlot() == slotIn)
              {
-                 T t = this.func_188360_a(p_188361_9_);
-+                t = getArmorModelHook(p_188361_1_, itemstack, p_188361_9_, t);
-                 t.func_178686_a(this.field_177190_a.func_177087_b());
-                 t.func_78086_a(p_188361_1_, p_188361_2_, p_188361_3_, p_188361_4_);
-                 this.func_188359_a(t, p_188361_9_);
-                 boolean flag = this.func_188363_b(p_188361_9_);
--                this.field_177190_a.func_110776_a(this.func_177181_a(itemarmor, flag));
-+                this.field_177190_a.func_110776_a(this.getArmorResource(p_188361_1_, itemstack, p_188361_9_, null));
+                 T t = this.getModelFromSlot(slotIn);
++                t = getArmorModelHook(entityLivingBaseIn, itemstack, slotIn, t);
+                 t.setModelAttributes(this.renderer.getMainModel());
+                 t.setLivingAnimations(entityLivingBaseIn, limbSwing, limbSwingAmount, partialTicks);
+                 this.setModelSlotVisible(t, slotIn);
+                 boolean flag = this.isLegSlot(slotIn);
+-                this.renderer.bindTexture(this.getArmorResource(itemarmor, flag));
++                this.renderer.bindTexture(this.getArmorResource(entityLivingBaseIn, itemstack, slotIn, null));
  
--                switch (itemarmor.func_82812_d())
+-                switch (itemarmor.getArmorMaterial())
                  {
 -                    case LEATHER:
 +                    if (itemarmor.hasOverlay(itemstack)) // Allow this for anything, not only cloth
 +                    {
-                         int i = itemarmor.func_82814_b(itemstack);
+                         int i = itemarmor.getColor(itemstack);
 -                        float f = (float)(i >> 16 & 0xFF) / 255.0F;
 -                        float f1 = (float)(i >> 8 & 0xFF) / 255.0F;
 -                        float f2 = (float)(i & 0xFF) / 255.0F;
 +                        float f = (float)(i >> 16 & 255) / 255.0F;
 +                        float f1 = (float)(i >> 8 & 255) / 255.0F;
 +                        float f2 = (float)(i & 255) / 255.0F;
-                         GlStateManager.func_179131_c(this.field_177184_f * f, this.field_177185_g * f1, this.field_177192_h * f2, this.field_177187_e);
-                         t.func_78088_a(p_188361_1_, p_188361_2_, p_188361_3_, p_188361_5_, p_188361_6_, p_188361_7_, p_188361_8_);
--                        this.field_177190_a.func_110776_a(this.func_177178_a(itemarmor, flag, "overlay"));
+                         GlStateManager.color(this.colorR * f, this.colorG * f1, this.colorB * f2, this.alpha);
+                         t.render(entityLivingBaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+-                        this.renderer.bindTexture(this.getArmorResource(itemarmor, flag, "overlay"));
 -                    case CHAIN:
 -                    case IRON:
 -                    case GOLD:
 -                    case DIAMOND:
-+                        this.field_177190_a.func_110776_a(this.getArmorResource(p_188361_1_, itemstack, p_188361_9_, "overlay"));
++                        this.renderer.bindTexture(this.getArmorResource(entityLivingBaseIn, itemstack, slotIn, "overlay"));
 +                    }
 +                    { // Non-colored
-                         GlStateManager.func_179131_c(this.field_177184_f, this.field_177185_g, this.field_177192_h, this.field_177187_e);
-                         t.func_78088_a(p_188361_1_, p_188361_2_, p_188361_3_, p_188361_5_, p_188361_6_, p_188361_7_, p_188361_8_);
+                         GlStateManager.color(this.colorR, this.colorG, this.colorB, this.alpha);
+                         t.render(entityLivingBaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
 -                    default:
 -
--                        if (!this.field_177193_i && itemstack.func_77948_v())
+-                        if (!this.skipRenderGlint && itemstack.isItemEnchanted())
 +                    } // Default
-+                        if (!this.field_177193_i && itemstack.func_77962_s())
++                        if (!this.skipRenderGlint && itemstack.hasEffect())
                          {
--                            func_188364_a(
--                                this.field_177190_a, p_188361_1_, t, p_188361_2_, p_188361_3_, p_188361_4_, p_188361_5_, p_188361_6_, p_188361_7_, p_188361_8_
--                            );
-+                            func_188364_a(this.field_177190_a, p_188361_1_, t, p_188361_2_, p_188361_3_, p_188361_4_, p_188361_5_, p_188361_6_, p_188361_7_, p_188361_8_);
-                         }
-                 }
-             }
-@@ -116,7 +91,7 @@
+                             renderEnchantedGlint(
+                                 this.renderer, entityLivingBaseIn, t, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale
+@@ -200,4 +198,49 @@
+     protected abstract void initArmor();
  
-     public T func_188360_a(EntityEquipmentSlot p_188360_1_)
-     {
--        return this.func_188363_b(p_188360_1_) ? this.field_177189_c : this.field_177186_d;
-+        return (T)(this.func_188363_b(p_188360_1_) ? this.field_177189_c : this.field_177186_d);
-     }
- 
-     private boolean func_188363_b(EntityEquipmentSlot p_188363_1_)
-@@ -124,18 +99,7 @@
-         return p_188363_1_ == EntityEquipmentSlot.LEGS;
-     }
- 
--    public static void func_188364_a(
--            RenderLivingBase<?> p_188364_0_,
--            EntityLivingBase p_188364_1_,
--            ModelBase p_188364_2_,
--            float p_188364_3_,
--            float p_188364_4_,
--            float p_188364_5_,
--            float p_188364_6_,
--            float p_188364_7_,
--            float p_188364_8_,
--            float p_188364_9_
--        )
-+    public static void func_188364_a(RenderLivingBase<?> p_188364_0_, EntityLivingBase p_188364_1_, ModelBase p_188364_2_, float p_188364_3_, float p_188364_4_, float p_188364_5_, float p_188364_6_, float p_188364_7_, float p_188364_8_, float p_188364_9_)
-     {
-         float f = (float)p_188364_1_.field_70173_aa + p_188364_5_;
-         p_188364_0_.func_110776_a(field_177188_b);
-@@ -146,7 +110,7 @@
-         float f1 = 0.5F;
-         GlStateManager.func_179131_c(0.5F, 0.5F, 0.5F, 1.0F);
- 
--        for (int i = 0; i < 2; i++)
-+        for (int i = 0; i < 2; ++i)
-         {
-             GlStateManager.func_179140_f();
-             GlStateManager.func_187401_a(GlStateManager.SourceFactor.SRC_COLOR, GlStateManager.DestFactor.ONE);
-@@ -173,19 +137,16 @@
-         Minecraft.func_71410_x().field_71460_t.func_191514_d(false);
-     }
- 
-+    @Deprecated //Use the more sensitive version getArmorResource below
-     private ResourceLocation func_177181_a(ItemArmor p_177181_1_, boolean p_177181_2_)
-     {
--        return this.func_177178_a(p_177181_1_, p_177181_2_, null);
-+        return this.func_177178_a(p_177181_1_, p_177181_2_, (String)null);
-     }
- 
-+    @Deprecated //Use the more sensitive version getArmorResource below
-     private ResourceLocation func_177178_a(ItemArmor p_177178_1_, boolean p_177178_2_, String p_177178_3_)
-     {
--        String s = String.format(
--                       "textures/models/armor/%s_layer_%d%s.png",
--                       p_177178_1_.func_82812_d().func_179242_c(),
--                       p_177178_2_ ? 2 : 1,
--                       p_177178_3_ == null ? "" : String.format("_%s", p_177178_3_)
--                   );
-+        String s = String.format("textures/models/armor/%s_layer_%d%s.png", p_177178_1_.func_82812_d().func_179242_c(), p_177178_2_ ? 2 : 1, p_177178_3_ == null ? "" : String.format("_%s", p_177178_3_));
-         ResourceLocation resourcelocation = field_177191_j.get(s);
- 
-         if (resourcelocation == null)
-@@ -200,4 +161,49 @@
-     protected abstract void func_177177_a();
- 
-     protected abstract void func_188359_a(T p_188359_1_, EntityEquipmentSlot p_188359_2_);
+     protected abstract void setModelSlotVisible(T p_188359_1_, EntityEquipmentSlot slotIn);
 +
 +    /*=================================== FORGE START =========================================*/
 +
@@ -190,8 +70,8 @@
 +     */
 +    public ResourceLocation getArmorResource(net.minecraft.entity.Entity entity, ItemStack stack, EntityEquipmentSlot slot, String type)
 +    {
-+        ItemArmor item = (ItemArmor)stack.func_77973_b();
-+        String texture = item.func_82812_d().func_179242_c();
++        ItemArmor item = (ItemArmor)stack.getItem();
++        String texture = item.getArmorMaterial().getName();
 +        String domain = "minecraft";
 +        int idx = texture.indexOf(':');
 +        if (idx != -1)
@@ -199,15 +79,15 @@
 +            domain = texture.substring(0, idx);
 +            texture = texture.substring(idx + 1);
 +        }
-+        String s1 = String.format("%s:textures/models/armor/%s_layer_%d%s.png", domain, texture, (func_188363_b(slot) ? 2 : 1), type == null ? "" : String.format("_%s", type));
++        String s1 = String.format("%s:textures/models/armor/%s_layer_%d%s.png", domain, texture, (isLegSlot(slot) ? 2 : 1), type == null ? "" : String.format("_%s", type));
 +
 +        s1 = net.minecraftforge.client.ForgeHooksClient.getArmorTexture(entity, stack, s1, slot, type);
-+        ResourceLocation resourcelocation = (ResourceLocation)field_177191_j.get(s1);
++        ResourceLocation resourcelocation = (ResourceLocation)ARMOR_TEXTURE_RES_MAP.get(s1);
 +
 +        if (resourcelocation == null)
 +        {
 +            resourcelocation = new ResourceLocation(s1);
-+            field_177191_j.put(s1, resourcelocation);
++            ARMOR_TEXTURE_RES_MAP.put(s1, resourcelocation);
 +        }
 +
 +        return resourcelocation;

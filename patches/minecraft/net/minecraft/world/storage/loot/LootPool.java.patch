@@ -4,48 +4,45 @@
  
  public class LootPool
  {
--    private final LootEntry[] field_186453_a;
--    private final LootCondition[] field_186454_b;
-+    private final List<LootEntry> field_186453_a;
-+    private final List<LootCondition> field_186454_b;
-     private RandomValueRange field_186455_c;
-     private RandomValueRange field_186456_d;
+-    private final LootEntry[] lootEntries;
+-    private final LootCondition[] poolConditions;
++    private final List<LootEntry> lootEntries;
++    private final List<LootCondition> poolConditions;
+     private RandomValueRange rolls;
+     private RandomValueRange bonusRolls;
 +    private final String name;
  
--    public LootPool(LootEntry[] p_i46643_1_, LootCondition[] p_i46643_2_, RandomValueRange p_i46643_3_, RandomValueRange p_i46643_4_)
-+    public LootPool(LootEntry[] p_i46643_1_, LootCondition[] p_i46643_2_, RandomValueRange p_i46643_3_, RandomValueRange p_i46643_4_, String name)
+-    public LootPool(LootEntry[] lootEntriesIn, LootCondition[] poolConditionsIn, RandomValueRange rollsIn, RandomValueRange bonusRollsIn)
++    public LootPool(LootEntry[] lootEntriesIn, LootCondition[] poolConditionsIn, RandomValueRange rollsIn, RandomValueRange bonusRollsIn, String name)
      {
--        this.field_186453_a = p_i46643_1_;
--        this.field_186454_b = p_i46643_2_;
-+        this.field_186453_a = Lists.newArrayList(p_i46643_1_);
-+        this.field_186454_b = Lists.newArrayList(p_i46643_2_);
-         this.field_186455_c = p_i46643_3_;
-         this.field_186456_d = p_i46643_4_;
+-        this.lootEntries = lootEntriesIn;
+-        this.poolConditions = poolConditionsIn;
++        this.lootEntries = Lists.newArrayList(lootEntriesIn);
++        this.poolConditions = Lists.newArrayList(poolConditionsIn);
+         this.rolls = rollsIn;
+         this.bonusRolls = bonusRollsIn;
 +        this.name = name;
      }
  
-     protected void func_186452_a(Collection<ItemStack> p_186452_1_, Random p_186452_2_, LootContext p_186452_3_)
+     protected void createLootRoll(Collection<ItemStack> stacks, Random rand, LootContext context)
      {
 -        List<LootEntry> list = Lists.newArrayList();
 +        List<LootEntry> list = Lists.<LootEntry>newArrayList();
          int i = 0;
  
-         for (LootEntry lootentry : this.field_186453_a)
-@@ -72,35 +74,85 @@
- 
-     public void func_186449_b(Collection<ItemStack> p_186449_1_, Random p_186449_2_, LootContext p_186449_3_)
+         for (LootEntry lootentry : this.lootEntries)
+@@ -74,33 +76,83 @@
      {
--        if (LootConditionManager.func_186638_a(this.field_186454_b, p_186449_2_, p_186449_3_))
-+        if (LootConditionManager.testAllConditions(this.field_186454_b, p_186449_2_, p_186449_3_))
+         if (LootConditionManager.testAllConditions(this.poolConditions, rand, context))
          {
--            int i = this.field_186455_c.func_186511_a(p_186449_2_)
--                    + MathHelper.func_76141_d(this.field_186456_d.func_186507_b(p_186449_2_) * p_186449_3_.func_186491_f());
-+            int i = this.field_186455_c.func_186511_a(p_186449_2_) + MathHelper.func_76141_d(this.field_186456_d.func_186507_b(p_186449_2_) * p_186449_3_.func_186491_f());
+-            int i = this.rolls.generateInt(rand)
+-                    + MathHelper.floor(this.bonusRolls.generateFloat(rand) * context.getLuck());
++            int i = this.rolls.generateInt(rand) + MathHelper.floor(this.bonusRolls.generateFloat(rand) * context.getLuck());
  
 -            for (int j = 0; j < i; j++)
 +            for (int j = 0; j < i; ++j)
              {
-                 this.func_186452_a(p_186449_1_, p_186449_2_, p_186449_3_);
+                 this.createLootRoll(stacks, rand, context);
              }
          }
      }
@@ -64,14 +61,14 @@
 +    }
 +
 +    public String getName(){ return this.name; }
-+    public RandomValueRange getRolls()      { return this.field_186455_c; }
-+    public RandomValueRange getBonusRolls() { return this.field_186456_d; }
-+    public void setRolls     (RandomValueRange v){ checkFrozen(); this.field_186455_c = v; }
-+    public void setBonusRolls(RandomValueRange v){ checkFrozen(); this.field_186456_d = v; }
++    public RandomValueRange getRolls()      { return this.rolls; }
++    public RandomValueRange getBonusRolls() { return this.bonusRolls; }
++    public void setRolls     (RandomValueRange v){ checkFrozen(); this.rolls = v; }
++    public void setBonusRolls(RandomValueRange v){ checkFrozen(); this.bonusRolls = v; }
 +
 +    public LootEntry getEntry(String name)
 +    {
-+        for (LootEntry entry : this.field_186453_a)
++        for (LootEntry entry : this.lootEntries)
 +            if (name.equals(entry.getEntryName()))
 +                return entry;
 +        return null;
@@ -79,11 +76,11 @@
 +    public LootEntry removeEntry(String name)
 +    {
 +        checkFrozen();
-+        for (LootEntry entry : this.field_186453_a)
++        for (LootEntry entry : this.lootEntries)
 +        {
 +            if (name.equals(entry.getEntryName()))
 +            {
-+                this.field_186453_a.remove(entry);
++                this.lootEntries.remove(entry);
 +                return entry;
 +            }
 +        }
@@ -92,10 +89,10 @@
 +    public void addEntry(LootEntry entry)
 +    {
 +        checkFrozen();
-+        for (LootEntry e : this.field_186453_a)
++        for (LootEntry e : this.lootEntries)
 +            if (e == entry || e.getEntryName().equals(entry.getEntryName()))
 +                throw new RuntimeException("Attempted to add a duplicate entry to pool: " + e.getEntryName());
-+        this.field_186453_a.add(entry);
++        this.lootEntries.add(entry);
 +    }
 +    //TODO: Allow modifications of conditions? If so need a way to uniquely identify them.
 +    //======================== FORGE END ===============================================
@@ -104,19 +101,19 @@
          {
              public LootPool deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_) throws JsonParseException
              {
-                 JsonObject jsonobject = JsonUtils.func_151210_l(p_deserialize_1_, "loot pool");
--                LootEntry[] alootentry = JsonUtils.func_188174_a(jsonobject, "entries", p_deserialize_3_, LootEntry[].class);
--                LootCondition[] alootcondition = JsonUtils.func_188177_a(jsonobject, "conditions", new LootCondition[0], p_deserialize_3_, LootCondition[].class);
--                RandomValueRange randomvaluerange = JsonUtils.func_188174_a(jsonobject, "rolls", p_deserialize_3_, RandomValueRange.class);
--                RandomValueRange randomvaluerange1 = JsonUtils.func_188177_a(
+                 JsonObject jsonobject = JsonUtils.getJsonObject(p_deserialize_1_, "loot pool");
+-                LootEntry[] alootentry = JsonUtils.deserializeClass(jsonobject, "entries", p_deserialize_3_, LootEntry[].class);
+-                LootCondition[] alootcondition = JsonUtils.deserializeClass(jsonobject, "conditions", new LootCondition[0], p_deserialize_3_, LootCondition[].class);
+-                RandomValueRange randomvaluerange = JsonUtils.deserializeClass(jsonobject, "rolls", p_deserialize_3_, RandomValueRange.class);
+-                RandomValueRange randomvaluerange1 = JsonUtils.deserializeClass(
 -                                                         jsonobject, "bonus_rolls", new RandomValueRange(0.0F, 0.0F), p_deserialize_3_, RandomValueRange.class
 -                                                     );
 -                return new LootPool(alootentry, alootcondition, randomvaluerange, randomvaluerange1);
 +                String name = net.minecraftforge.common.ForgeHooks.readPoolName(jsonobject);
-+                LootEntry[] alootentry = (LootEntry[])JsonUtils.func_188174_a(jsonobject, "entries", p_deserialize_3_, LootEntry[].class);
-+                LootCondition[] alootcondition = (LootCondition[])JsonUtils.func_188177_a(jsonobject, "conditions", new LootCondition[0], p_deserialize_3_, LootCondition[].class);
-+                RandomValueRange randomvaluerange = (RandomValueRange)JsonUtils.func_188174_a(jsonobject, "rolls", p_deserialize_3_, RandomValueRange.class);
-+                RandomValueRange randomvaluerange1 = (RandomValueRange)JsonUtils.func_188177_a(jsonobject, "bonus_rolls", new RandomValueRange(0.0F, 0.0F), p_deserialize_3_, RandomValueRange.class);
++                LootEntry[] alootentry = (LootEntry[])JsonUtils.deserializeClass(jsonobject, "entries", p_deserialize_3_, LootEntry[].class);
++                LootCondition[] alootcondition = (LootCondition[])JsonUtils.deserializeClass(jsonobject, "conditions", new LootCondition[0], p_deserialize_3_, LootCondition[].class);
++                RandomValueRange randomvaluerange = (RandomValueRange)JsonUtils.deserializeClass(jsonobject, "rolls", p_deserialize_3_, RandomValueRange.class);
++                RandomValueRange randomvaluerange1 = (RandomValueRange)JsonUtils.deserializeClass(jsonobject, "bonus_rolls", new RandomValueRange(0.0F, 0.0F), p_deserialize_3_, RandomValueRange.class);
 +                return new LootPool(alootentry, alootcondition, randomvaluerange, randomvaluerange1, name);
              }
  
@@ -125,15 +122,15 @@
                  JsonObject jsonobject = new JsonObject();
 +                if (p_serialize_1_.name != null && !p_serialize_1_.name.startsWith("custom#"))
 +                    jsonobject.add("name", p_serialize_3_.serialize(p_serialize_1_.name));
-                 jsonobject.add("entries", p_serialize_3_.serialize(p_serialize_1_.field_186453_a));
-                 jsonobject.add("rolls", p_serialize_3_.serialize(p_serialize_1_.field_186455_c));
+                 jsonobject.add("entries", p_serialize_3_.serialize(p_serialize_1_.lootEntries));
+                 jsonobject.add("rolls", p_serialize_3_.serialize(p_serialize_1_.rolls));
  
 @@ -109,7 +161,7 @@
-                     jsonobject.add("bonus_rolls", p_serialize_3_.serialize(p_serialize_1_.field_186456_d));
+                     jsonobject.add("bonus_rolls", p_serialize_3_.serialize(p_serialize_1_.bonusRolls));
                  }
  
--                if (!ArrayUtils.isEmpty((Object[])p_serialize_1_.field_186454_b))
-+                if (!p_serialize_1_.field_186454_b.isEmpty())
+-                if (!ArrayUtils.isEmpty((Object[])p_serialize_1_.poolConditions))
++                if (!p_serialize_1_.poolConditions.isEmpty())
                  {
-                     jsonobject.add("conditions", p_serialize_3_.serialize(p_serialize_1_.field_186454_b));
+                     jsonobject.add("conditions", p_serialize_3_.serialize(p_serialize_1_.poolConditions));
                  }

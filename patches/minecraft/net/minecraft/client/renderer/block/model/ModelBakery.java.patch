@@ -1,94 +1,6 @@
 --- before/net/minecraft/client/renderer/block/model/ModelBakery.java
 +++ after/net/minecraft/client/renderer/block/model/ModelBakery.java
-@@ -7,6 +7,7 @@
- import com.google.common.collect.Maps;
- import com.google.common.collect.Queues;
- import com.google.common.collect.Sets;
-+import java.io.Closeable;
- import java.io.FileNotFoundException;
- import java.io.IOException;
- import java.io.InputStream;
-@@ -50,67 +51,28 @@
- @SideOnly(Side.CLIENT)
- public class ModelBakery
- {
--    protected static final Set<ResourceLocation> field_177602_b = Sets.newHashSet(
--                    new ResourceLocation("blocks/water_flow"),
--                    new ResourceLocation("blocks/water_still"),
--                    new ResourceLocation("blocks/lava_flow"),
--                    new ResourceLocation("blocks/lava_still"),
--                    new ResourceLocation("blocks/water_overlay"),
--                    new ResourceLocation("blocks/destroy_stage_0"),
--                    new ResourceLocation("blocks/destroy_stage_1"),
--                    new ResourceLocation("blocks/destroy_stage_2"),
--                    new ResourceLocation("blocks/destroy_stage_3"),
--                    new ResourceLocation("blocks/destroy_stage_4"),
--                    new ResourceLocation("blocks/destroy_stage_5"),
--                    new ResourceLocation("blocks/destroy_stage_6"),
--                    new ResourceLocation("blocks/destroy_stage_7"),
--                    new ResourceLocation("blocks/destroy_stage_8"),
--                    new ResourceLocation("blocks/destroy_stage_9"),
--                    new ResourceLocation("items/empty_armor_slot_helmet"),
--                    new ResourceLocation("items/empty_armor_slot_chestplate"),
--                    new ResourceLocation("items/empty_armor_slot_leggings"),
--                    new ResourceLocation("items/empty_armor_slot_boots"),
--                    new ResourceLocation("items/empty_armor_slot_shield"),
--                    new ResourceLocation("blocks/shulker_top_white"),
--                    new ResourceLocation("blocks/shulker_top_orange"),
--                    new ResourceLocation("blocks/shulker_top_magenta"),
--                    new ResourceLocation("blocks/shulker_top_light_blue"),
--                    new ResourceLocation("blocks/shulker_top_yellow"),
--                    new ResourceLocation("blocks/shulker_top_lime"),
--                    new ResourceLocation("blocks/shulker_top_pink"),
--                    new ResourceLocation("blocks/shulker_top_gray"),
--                    new ResourceLocation("blocks/shulker_top_silver"),
--                    new ResourceLocation("blocks/shulker_top_cyan"),
--                    new ResourceLocation("blocks/shulker_top_purple"),
--                    new ResourceLocation("blocks/shulker_top_blue"),
--                    new ResourceLocation("blocks/shulker_top_brown"),
--                    new ResourceLocation("blocks/shulker_top_green"),
--                    new ResourceLocation("blocks/shulker_top_red"),
--                    new ResourceLocation("blocks/shulker_top_black")
--                );
-+    protected static final Set<ResourceLocation> field_177602_b = Sets.newHashSet(new ResourceLocation("blocks/water_flow"), new ResourceLocation("blocks/water_still"), new ResourceLocation("blocks/lava_flow"), new ResourceLocation("blocks/lava_still"), new ResourceLocation("blocks/water_overlay"), new ResourceLocation("blocks/destroy_stage_0"), new ResourceLocation("blocks/destroy_stage_1"), new ResourceLocation("blocks/destroy_stage_2"), new ResourceLocation("blocks/destroy_stage_3"), new ResourceLocation("blocks/destroy_stage_4"), new ResourceLocation("blocks/destroy_stage_5"), new ResourceLocation("blocks/destroy_stage_6"), new ResourceLocation("blocks/destroy_stage_7"), new ResourceLocation("blocks/destroy_stage_8"), new ResourceLocation("blocks/destroy_stage_9"), new ResourceLocation("items/empty_armor_slot_helmet"), new ResourceLocation("items/empty_armor_slot_chestplate"), new ResourceLocation("items/empty_armor_slot_leggings"), new ResourceLocation("items/empty_armor_slot_boots"), new ResourceLocation("items/empty_armor_slot_shield"), new ResourceLocation("blocks/shulker_top_white"), new ResourceLocation("blocks/shulker_top_orange"), new ResourceLocation("blocks/shulker_top_magenta"), new ResourceLocation("blocks/shulker_top_light_blue"), new ResourceLocation("blocks/shulker_top_yellow"), new ResourceLocation("blocks/shulker_top_lime"), new ResourceLocation("blocks/shulker_top_pink"), new ResourceLocation("blocks/shulker_top_gray"), new ResourceLocation("blocks/shulker_top_silver"), new ResourceLocation("blocks/shulker_top_cyan"), new ResourceLocation("blocks/shulker_top_purple"), new ResourceLocation("blocks/shulker_top_blue"), new ResourceLocation("blocks/shulker_top_brown"), new ResourceLocation("blocks/shulker_top_green"), new ResourceLocation("blocks/shulker_top_red"), new ResourceLocation("blocks/shulker_top_black"));
-     private static final Logger field_177603_c = LogManager.getLogger();
-     public static final ModelResourceLocation field_177604_a = new ModelResourceLocation("builtin/missing", "missing");
--    private static final String field_188641_d = "{    'textures': {       'particle': 'missingno',       'missingno': 'missingno'    },    'elements': [         {  'from': [ 0, 0, 0 ],            'to': [ 16, 16, 16 ],            'faces': {                'down':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'down',  'texture': '#missingno' },                'up':    { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'up',    'texture': '#missingno' },                'north': { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'north', 'texture': '#missingno' },                'south': { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'south', 'texture': '#missingno' },                'west':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'west',  'texture': '#missingno' },                'east':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'east',  'texture': '#missingno' }            }        }    ]}"
--                .replaceAll("'", "\"");
--    private static final Map<String, String> field_177600_d = Maps.newHashMap();
-+    private static final String field_188641_d = "{    'textures': {       'particle': 'missingno',       'missingno': 'missingno'    },    'elements': [         {  'from': [ 0, 0, 0 ],            'to': [ 16, 16, 16 ],            'faces': {                'down':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'down',  'texture': '#missingno' },                'up':    { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'up',    'texture': '#missingno' },                'north': { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'north', 'texture': '#missingno' },                'south': { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'south', 'texture': '#missingno' },                'west':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'west',  'texture': '#missingno' },                'east':  { 'uv': [ 0, 0, 16, 16 ], 'cullface': 'east',  'texture': '#missingno' }            }        }    ]}".replaceAll("'", "\"");
-+    private static final Map<String, String> field_177600_d = Maps.<String, String>newHashMap();
-     private static final Joiner field_177601_e = Joiner.on(" -> ");
-     protected final IResourceManager field_177598_f;
--    protected final Map<ResourceLocation, TextureAtlasSprite> field_177599_g = Maps.newHashMap();
--    private final Map<ResourceLocation, ModelBlock> field_177611_h = Maps.newLinkedHashMap();
--    private final Map<ModelResourceLocation, VariantList> field_177612_i = Maps.newLinkedHashMap();
--    private final Map<ModelBlockDefinition, Collection<ModelResourceLocation>> field_188642_k = Maps.newLinkedHashMap();
-+    protected final Map<ResourceLocation, TextureAtlasSprite> field_177599_g = Maps.<ResourceLocation, TextureAtlasSprite>newHashMap();
-+    private final Map<ResourceLocation, ModelBlock> field_177611_h = Maps.<ResourceLocation, ModelBlock>newLinkedHashMap();
-+    private final Map<ModelResourceLocation, VariantList> field_177612_i = Maps.<ModelResourceLocation, VariantList>newLinkedHashMap();
-+    private final Map<ModelBlockDefinition, Collection<ModelResourceLocation>> field_188642_k = Maps.<ModelBlockDefinition, Collection<ModelResourceLocation>>newLinkedHashMap();
-     protected final TextureMap field_177609_j;
-     protected final BlockModelShapes field_177610_k;
-     private final FaceBakery field_177607_l = new FaceBakery();
-     private final ItemModelGenerator field_177608_m = new ItemModelGenerator();
--    protected final RegistrySimple<ModelResourceLocation, IBakedModel> field_177605_n = new RegistrySimple<>();
--    private static final String field_188643_q = "{    'elements': [        {   'from': [0, 0, 0],            'to': [16, 16, 16],            'faces': {                'down': {'uv': [0, 0, 16, 16], 'texture': '' }            }        }    ]}"
--                .replaceAll("'", "\"");
-+    protected final RegistrySimple<ModelResourceLocation, IBakedModel> field_177605_n = new RegistrySimple<ModelResourceLocation, IBakedModel>();
-+    private static final String field_188643_q = "{    'elements': [        {   'from': [0, 0, 0],            'to': [16, 16, 16],            'faces': {                'down': {'uv': [0, 0, 16, 16], 'texture': '' }            }        }    ]}".replaceAll("'", "\"");
-     protected static final ModelBlock field_177606_o = ModelBlock.func_178294_a(field_188643_q);
-     protected static final ModelBlock field_177616_r = ModelBlock.func_178294_a(field_188643_q);
--    private final Map<String, ResourceLocation> field_177615_s = Maps.newLinkedHashMap();
--    private final Map<ResourceLocation, ModelBlockDefinition> field_177614_t = Maps.newHashMap();
--    private final Map<Item, List<String>> field_177613_u = Maps.newIdentityHashMap();
-+    private final Map<String, ResourceLocation> field_177615_s = Maps.<String, ResourceLocation>newLinkedHashMap();
-+    private final Map<ResourceLocation, ModelBlockDefinition> field_177614_t = Maps.<ResourceLocation, ModelBlockDefinition>newHashMap();
-+    private final Map<Item, List<String>> field_177613_u = Maps.<Item, List<String>>newIdentityHashMap();
- 
-     public ModelBakery(IResourceManager p_i46085_1_, TextureMap p_i46085_2_, BlockModelShapes p_i46085_3_)
-     {
-@@ -141,6 +103,21 @@
+@@ -141,6 +141,21 @@
              {
                  try
                  {
@@ -96,7 +8,7 @@
 +                }
 +                catch (Exception exception)
 +                {
-+                    field_177603_c.warn((String)("Unable to load definition " + resourcelocation), (Throwable)exception);
++                    LOGGER.warn((String)("Unable to load definition " + resourcelocation), (Throwable)exception);
 +                }
 +            }
 +        }
@@ -107,25 +19,18 @@
 +        {
 +            {
 +                {
-                     ModelBlockDefinition modelblockdefinition = this.func_177586_a(resourcelocation);
-                     Map<IBlockState, ModelResourceLocation> map = blockstatemapper.func_188181_b(block);
+                     ModelBlockDefinition modelblockdefinition = this.getModelBlockDefinition(resourcelocation);
+                     Map<IBlockState, ModelResourceLocation> map = blockstatemapper.getVariants(block);
  
-@@ -148,12 +125,11 @@
-                     {
-                         Collection<ModelResourceLocation> collection = Sets.newHashSet(map.values());
-                         modelblockdefinition.func_188001_c().func_188138_a(block.func_176194_O());
--                        Collection<ModelResourceLocation> collection1 = this.field_188642_k.get(modelblockdefinition);
-+                        Collection<ModelResourceLocation> collection1 = (Collection)this.field_188642_k.get(modelblockdefinition);
- 
+@@ -153,7 +168,6 @@
                          if (collection1 == null)
                          {
--                            collection1 = Lists.newArrayList();
--                            this.field_188642_k.put(modelblockdefinition, collection1);
-+                            collection1 = Lists.<ModelResourceLocation>newArrayList();
+                             collection1 = Lists.newArrayList();
+-                            this.multipartVariantMap.put(modelblockdefinition, collection1);
                          }
  
                          collection1.addAll(Lists.newArrayList(Iterables.filter(collection, new Predicate<ModelResourceLocation>()
-@@ -163,6 +139,7 @@
+@@ -163,6 +177,7 @@
                                  return resourcelocation.equals(p_apply_1_);
                              }
                          })));
@@ -133,738 +38,127 @@
                      }
  
                      for (Entry<IBlockState, ModelResourceLocation> entry : map.entrySet())
-@@ -173,33 +150,25 @@
+@@ -173,7 +188,7 @@
                          {
                              try
                              {
--                                this.field_177612_i.put(modelresourcelocation, modelblockdefinition.func_188004_c(modelresourcelocation.func_177518_c()));
-+                                func_177569_a(modelblockdefinition, modelresourcelocation);
+-                                this.variants.put(modelresourcelocation, modelblockdefinition.getVariant(modelresourcelocation.getVariant()));
++                                registerVariant(modelblockdefinition, modelresourcelocation);
                              }
--                            catch (RuntimeException runtimeexception)
-+                            catch (RuntimeException var12)
+                             catch (RuntimeException runtimeexception)
                              {
-                                 if (!modelblockdefinition.func_188002_b())
-                                 {
--                                    field_177603_c.warn("Unable to load variant: {} from {}", modelresourcelocation.func_177518_c(), modelresourcelocation);
-+                                    field_177603_c.warn("Unable to load variant: " + modelresourcelocation.func_177518_c() + " from " + modelresourcelocation, var12);
-                                 }
-                             }
+@@ -185,10 +200,6 @@
                          }
                      }
                  }
 -                catch (Exception exception)
 -                {
--                    field_177603_c.warn("Unable to load definition {}", resourcelocation, exception);
+-                    LOGGER.warn("Unable to load definition {}", resourcelocation, exception);
 -                }
              }
          }
      }
- 
-     protected void func_177577_b()
-     {
--        this.field_177612_i
--        .put(
--            field_177604_a,
--            new VariantList(Lists.newArrayList(new Variant(new ResourceLocation(field_177604_a.func_110623_a()), ModelRotation.X0_Y0, false, 1)))
--        );
-+        this.field_177612_i.put(field_177604_a, new VariantList(Lists.newArrayList(new Variant(new ResourceLocation(field_177604_a.func_110623_a()), ModelRotation.X0_Y0, false, 1))));
-         this.func_191401_d();
-         this.func_177595_c();
-         this.func_188637_e();
-@@ -220,7 +189,7 @@
-         {
-             this.field_177612_i.put(p_177569_2_, p_177569_1_.func_188004_c(p_177569_2_.func_177518_c()));
-         }
--        catch (RuntimeException runtimeexception)
-+        catch (RuntimeException var4)
-         {
-             if (!p_177569_1_.func_188002_b())
-             {
-@@ -245,7 +214,7 @@
- 
-     private ModelBlockDefinition func_188632_a(ResourceLocation p_188632_1_, ResourceLocation p_188632_2_)
-     {
--        List<ModelBlockDefinition> list = Lists.newArrayList();
-+        List<ModelBlockDefinition> list = Lists.<ModelBlockDefinition>newArrayList();
- 
+@@ -270,7 +281,7 @@
          try
          {
-@@ -270,20 +239,11 @@
-         try
-         {
-             inputstream = p_188636_2_.func_110527_b();
--            lvt_4_1_ = ModelBlockDefinition.func_178331_a(new InputStreamReader(inputstream, StandardCharsets.UTF_8));
-+            lvt_4_1_ = ModelBlockDefinition.parseFromReader(new InputStreamReader(inputstream, StandardCharsets.UTF_8), p_188636_1_);
+             inputstream = resource.getInputStream();
+-            lvt_4_1_ = ModelBlockDefinition.parseFromReader(new InputStreamReader(inputstream, StandardCharsets.UTF_8));
++            lvt_4_1_ = ModelBlockDefinition.parseFromReader(new InputStreamReader(inputstream, StandardCharsets.UTF_8), location);
          }
          catch (Exception exception)
          {
--            throw new RuntimeException(
--                "Encountered an exception when loading model definition of '"
--                + p_188636_1_
--                + "' from: '"
--                + p_188636_2_.func_177241_a()
--                + "' in resourcepack: '"
--                + p_188636_2_.func_177240_d()
--                + "'",
--                exception
--            );
-+            throw new RuntimeException("Encountered an exception when loading model definition of '" + p_188636_1_ + "' from: '" + p_188636_2_.func_177241_a() + "' in resourcepack: '" + p_188636_2_.func_177240_d() + "'", exception);
-         }
-         finally
-         {
-@@ -310,9 +270,9 @@
+@@ -443,6 +454,7 @@
+ 
+     protected void registerVariantNames()
      {
-         for (Entry<ModelBlockDefinition, Collection<ModelResourceLocation>> entry : this.field_188642_k.entrySet())
-         {
--            ModelResourceLocation modelresourcelocation = entry.getValue().iterator().next();
-+            ModelResourceLocation modelresourcelocation = (ModelResourceLocation)(entry.getValue()).iterator().next();
- 
--            for (VariantList variantlist : entry.getKey().func_188003_a())
-+            for (VariantList variantlist : (entry.getKey()).func_188003_a())
-             {
-                 this.func_188638_a(modelresourcelocation, variantlist);
-             }
-@@ -343,19 +303,20 @@
-     {
-         Reader reader = null;
-         IResource iresource = null;
--        ModelBlock modelblock;
-+        ModelBlock lvt_5_2_;
- 
-         try
-         {
-             String s = p_177594_1_.func_110623_a();
- 
--            if ("builtin/generated".equals(s))
-+            if (!"builtin/generated".equals(s))
-             {
--                return field_177606_o;
--            }
-+                if ("builtin/entity".equals(s))
-+                {
-+                    lvt_5_2_ = field_177616_r;
-+                    return lvt_5_2_;
-+                }
- 
--            if (!"builtin/entity".equals(s))
--            {
-                 if (s.startsWith("builtin/"))
-                 {
-                     String s2 = s.substring("builtin/".length());
-@@ -374,20 +335,21 @@
-                     reader = new InputStreamReader(iresource.func_110527_b(), StandardCharsets.UTF_8);
-                 }
- 
--                modelblock = ModelBlock.func_178307_a(reader);
--                modelblock.field_178317_b = p_177594_1_.toString();
--                return modelblock;
-+                lvt_5_2_ = ModelBlock.func_178307_a(reader);
-+                lvt_5_2_.field_178317_b = p_177594_1_.toString();
-+                ModelBlock modelblock1 = lvt_5_2_;
-+                return modelblock1;
-             }
- 
--            modelblock = field_177616_r;
-+            lvt_5_2_ = field_177606_o;
-         }
-         finally
-         {
-             IOUtils.closeQuietly(reader);
--            IOUtils.closeQuietly(iresource);
-+            IOUtils.closeQuietly((Closeable)iresource);
-         }
- 
--        return modelblock;
-+        return lvt_5_2_;
-     }
- 
-     protected ResourceLocation func_177580_d(ResourceLocation p_177580_1_)
-@@ -443,269 +405,67 @@
- 
-     protected void func_177592_e()
-     {
--        this.field_177613_u
--        .put(
--            Item.func_150898_a(Blocks.field_150348_b),
--            Lists.newArrayList("stone", "granite", "granite_smooth", "diorite", "diorite_smooth", "andesite", "andesite_smooth")
--        );
-+        this.field_177613_u.clear(); // FML clear this to prevent double ups.
-+        this.field_177613_u.put(Item.func_150898_a(Blocks.field_150348_b), Lists.newArrayList("stone", "granite", "granite_smooth", "diorite", "diorite_smooth", "andesite", "andesite_smooth"));
-         this.field_177613_u.put(Item.func_150898_a(Blocks.field_150346_d), Lists.newArrayList("dirt", "coarse_dirt", "podzol"));
--        this.field_177613_u
--        .put(
--            Item.func_150898_a(Blocks.field_150344_f),
--            Lists.newArrayList("oak_planks", "spruce_planks", "birch_planks", "jungle_planks", "acacia_planks", "dark_oak_planks")
--        );
--        this.field_177613_u
--        .put(
--            Item.func_150898_a(Blocks.field_150345_g),
--            Lists.newArrayList("oak_sapling", "spruce_sapling", "birch_sapling", "jungle_sapling", "acacia_sapling", "dark_oak_sapling")
--        );
-+        this.field_177613_u.put(Item.func_150898_a(Blocks.field_150344_f), Lists.newArrayList("oak_planks", "spruce_planks", "birch_planks", "jungle_planks", "acacia_planks", "dark_oak_planks"));
-+        this.field_177613_u.put(Item.func_150898_a(Blocks.field_150345_g), Lists.newArrayList("oak_sapling", "spruce_sapling", "birch_sapling", "jungle_sapling", "acacia_sapling", "dark_oak_sapling"));
-         this.field_177613_u.put(Item.func_150898_a(Blocks.field_150354_m), Lists.newArrayList("sand", "red_sand"));
-         this.field_177613_u.put(Item.func_150898_a(Blocks.field_150364_r), Lists.newArrayList("oak_log", "spruce_log", "birch_log", "jungle_log"));
-         this.field_177613_u.put(Item.func_150898_a(Blocks.field_150362_t), Lists.newArrayList("oak_leaves", "spruce_leaves", "birch_leaves", "jungle_leaves"));
-         this.field_177613_u.put(Item.func_150898_a(Blocks.field_150360_v), Lists.newArrayList("sponge", "sponge_wet"));
-         this.field_177613_u.put(Item.func_150898_a(Blocks.field_150322_A), Lists.newArrayList("sandstone", "chiseled_sandstone", "smooth_sandstone"));
--        this.field_177613_u
--        .put(Item.func_150898_a(Blocks.field_180395_cM), Lists.newArrayList("red_sandstone", "chiseled_red_sandstone", "smooth_red_sandstone"));
-+        this.field_177613_u.put(Item.func_150898_a(Blocks.field_180395_cM), Lists.newArrayList("red_sandstone", "chiseled_red_sandstone", "smooth_red_sandstone"));
-         this.field_177613_u.put(Item.func_150898_a(Blocks.field_150329_H), Lists.newArrayList("dead_bush", "tall_grass", "fern"));
-         this.field_177613_u.put(Item.func_150898_a(Blocks.field_150330_I), Lists.newArrayList("dead_bush"));
--        this.field_177613_u
--        .put(
--            Item.func_150898_a(Blocks.field_150325_L),
--            Lists.newArrayList(
--                "black_wool",
--                "red_wool",
--                "green_wool",
--                "brown_wool",
--                "blue_wool",
--                "purple_wool",
--                "cyan_wool",
--                "silver_wool",
--                "gray_wool",
--                "pink_wool",
--                "lime_wool",
--                "yellow_wool",
--                "light_blue_wool",
--                "magenta_wool",
--                "orange_wool",
--                "white_wool"
--            )
--        );
-+        this.field_177613_u.put(Item.func_150898_a(Blocks.field_150325_L), Lists.newArrayList("black_wool", "red_wool", "green_wool", "brown_wool", "blue_wool", "purple_wool", "cyan_wool", "silver_wool", "gray_wool", "pink_wool", "lime_wool", "yellow_wool", "light_blue_wool", "magenta_wool", "orange_wool", "white_wool"));
-         this.field_177613_u.put(Item.func_150898_a(Blocks.field_150327_N), Lists.newArrayList("dandelion"));
--        this.field_177613_u
--        .put(
--            Item.func_150898_a(Blocks.field_150328_O),
--            Lists.newArrayList("poppy", "blue_orchid", "allium", "houstonia", "red_tulip", "orange_tulip", "white_tulip", "pink_tulip", "oxeye_daisy")
--        );
--        this.field_177613_u
--        .put(
--            Item.func_150898_a(Blocks.field_150333_U),
--            Lists.newArrayList("stone_slab", "sandstone_slab", "cobblestone_slab", "brick_slab", "stone_brick_slab", "nether_brick_slab", "quartz_slab")
--        );
-+        this.field_177613_u.put(Item.func_150898_a(Blocks.field_150328_O), Lists.newArrayList("poppy", "blue_orchid", "allium", "houstonia", "red_tulip", "orange_tulip", "white_tulip", "pink_tulip", "oxeye_daisy"));
-+        this.field_177613_u.put(Item.func_150898_a(Blocks.field_150333_U), Lists.newArrayList("stone_slab", "sandstone_slab", "cobblestone_slab", "brick_slab", "stone_brick_slab", "nether_brick_slab", "quartz_slab"));
-         this.field_177613_u.put(Item.func_150898_a(Blocks.field_180389_cP), Lists.newArrayList("red_sandstone_slab"));
--        this.field_177613_u
--        .put(
--            Item.func_150898_a(Blocks.field_150399_cn),
--            Lists.newArrayList(
--                "black_stained_glass",
--                "red_stained_glass",
--                "green_stained_glass",
--                "brown_stained_glass",
--                "blue_stained_glass",
--                "purple_stained_glass",
--                "cyan_stained_glass",
--                "silver_stained_glass",
--                "gray_stained_glass",
--                "pink_stained_glass",
--                "lime_stained_glass",
--                "yellow_stained_glass",
--                "light_blue_stained_glass",
--                "magenta_stained_glass",
--                "orange_stained_glass",
--                "white_stained_glass"
--            )
--        );
--        this.field_177613_u
--        .put(
--            Item.func_150898_a(Blocks.field_150418_aU),
--            Lists.newArrayList(
--                "stone_monster_egg",
--                "cobblestone_monster_egg",
--                "stone_brick_monster_egg",
--                "mossy_brick_monster_egg",
--                "cracked_brick_monster_egg",
--                "chiseled_brick_monster_egg"
--            )
--        );
--        this.field_177613_u
--        .put(Item.func_150898_a(Blocks.field_150417_aV), Lists.newArrayList("stonebrick", "mossy_stonebrick", "cracked_stonebrick", "chiseled_stonebrick"));
--        this.field_177613_u
--        .put(
--            Item.func_150898_a(Blocks.field_150376_bx),
--            Lists.newArrayList("oak_slab", "spruce_slab", "birch_slab", "jungle_slab", "acacia_slab", "dark_oak_slab")
--        );
-+        this.field_177613_u.put(Item.func_150898_a(Blocks.field_150399_cn), Lists.newArrayList("black_stained_glass", "red_stained_glass", "green_stained_glass", "brown_stained_glass", "blue_stained_glass", "purple_stained_glass", "cyan_stained_glass", "silver_stained_glass", "gray_stained_glass", "pink_stained_glass", "lime_stained_glass", "yellow_stained_glass", "light_blue_stained_glass", "magenta_stained_glass", "orange_stained_glass", "white_stained_glass"));
-+        this.field_177613_u.put(Item.func_150898_a(Blocks.field_150418_aU), Lists.newArrayList("stone_monster_egg", "cobblestone_monster_egg", "stone_brick_monster_egg", "mossy_brick_monster_egg", "cracked_brick_monster_egg", "chiseled_brick_monster_egg"));
-+        this.field_177613_u.put(Item.func_150898_a(Blocks.field_150417_aV), Lists.newArrayList("stonebrick", "mossy_stonebrick", "cracked_stonebrick", "chiseled_stonebrick"));
-+        this.field_177613_u.put(Item.func_150898_a(Blocks.field_150376_bx), Lists.newArrayList("oak_slab", "spruce_slab", "birch_slab", "jungle_slab", "acacia_slab", "dark_oak_slab"));
-         this.field_177613_u.put(Item.func_150898_a(Blocks.field_150463_bK), Lists.newArrayList("cobblestone_wall", "mossy_cobblestone_wall"));
-         this.field_177613_u.put(Item.func_150898_a(Blocks.field_150467_bQ), Lists.newArrayList("anvil_intact", "anvil_slightly_damaged", "anvil_very_damaged"));
-         this.field_177613_u.put(Item.func_150898_a(Blocks.field_150371_ca), Lists.newArrayList("quartz_block", "chiseled_quartz_block", "quartz_column"));
--        this.field_177613_u
--        .put(
--            Item.func_150898_a(Blocks.field_150406_ce),
--            Lists.newArrayList(
--                "black_stained_hardened_clay",
--                "red_stained_hardened_clay",
--                "green_stained_hardened_clay",
--                "brown_stained_hardened_clay",
--                "blue_stained_hardened_clay",
--                "purple_stained_hardened_clay",
--                "cyan_stained_hardened_clay",
--                "silver_stained_hardened_clay",
--                "gray_stained_hardened_clay",
--                "pink_stained_hardened_clay",
--                "lime_stained_hardened_clay",
--                "yellow_stained_hardened_clay",
--                "light_blue_stained_hardened_clay",
--                "magenta_stained_hardened_clay",
--                "orange_stained_hardened_clay",
--                "white_stained_hardened_clay"
--            )
--        );
--        this.field_177613_u
--        .put(
--            Item.func_150898_a(Blocks.field_150397_co),
--            Lists.newArrayList(
--                "black_stained_glass_pane",
--                "red_stained_glass_pane",
--                "green_stained_glass_pane",
--                "brown_stained_glass_pane",
--                "blue_stained_glass_pane",
--                "purple_stained_glass_pane",
--                "cyan_stained_glass_pane",
--                "silver_stained_glass_pane",
--                "gray_stained_glass_pane",
--                "pink_stained_glass_pane",
--                "lime_stained_glass_pane",
--                "yellow_stained_glass_pane",
--                "light_blue_stained_glass_pane",
--                "magenta_stained_glass_pane",
--                "orange_stained_glass_pane",
--                "white_stained_glass_pane"
--            )
--        );
-+        this.field_177613_u.put(Item.func_150898_a(Blocks.field_150406_ce), Lists.newArrayList("black_stained_hardened_clay", "red_stained_hardened_clay", "green_stained_hardened_clay", "brown_stained_hardened_clay", "blue_stained_hardened_clay", "purple_stained_hardened_clay", "cyan_stained_hardened_clay", "silver_stained_hardened_clay", "gray_stained_hardened_clay", "pink_stained_hardened_clay", "lime_stained_hardened_clay", "yellow_stained_hardened_clay", "light_blue_stained_hardened_clay", "magenta_stained_hardened_clay", "orange_stained_hardened_clay", "white_stained_hardened_clay"));
-+        this.field_177613_u.put(Item.func_150898_a(Blocks.field_150397_co), Lists.newArrayList("black_stained_glass_pane", "red_stained_glass_pane", "green_stained_glass_pane", "brown_stained_glass_pane", "blue_stained_glass_pane", "purple_stained_glass_pane", "cyan_stained_glass_pane", "silver_stained_glass_pane", "gray_stained_glass_pane", "pink_stained_glass_pane", "lime_stained_glass_pane", "yellow_stained_glass_pane", "light_blue_stained_glass_pane", "magenta_stained_glass_pane", "orange_stained_glass_pane", "white_stained_glass_pane"));
-         this.field_177613_u.put(Item.func_150898_a(Blocks.field_150361_u), Lists.newArrayList("acacia_leaves", "dark_oak_leaves"));
-         this.field_177613_u.put(Item.func_150898_a(Blocks.field_150363_s), Lists.newArrayList("acacia_log", "dark_oak_log"));
-         this.field_177613_u.put(Item.func_150898_a(Blocks.field_180397_cI), Lists.newArrayList("prismarine", "prismarine_bricks", "dark_prismarine"));
--        this.field_177613_u
--        .put(
--            Item.func_150898_a(Blocks.field_150404_cg),
--            Lists.newArrayList(
--                "black_carpet",
--                "red_carpet",
--                "green_carpet",
--                "brown_carpet",
--                "blue_carpet",
--                "purple_carpet",
--                "cyan_carpet",
--                "silver_carpet",
--                "gray_carpet",
--                "pink_carpet",
--                "lime_carpet",
--                "yellow_carpet",
--                "light_blue_carpet",
--                "magenta_carpet",
--                "orange_carpet",
--                "white_carpet"
--            )
--        );
--        this.field_177613_u
--        .put(Item.func_150898_a(Blocks.field_150398_cm), Lists.newArrayList("sunflower", "syringa", "double_grass", "double_fern", "double_rose", "paeonia"));
-+        this.field_177613_u.put(Item.func_150898_a(Blocks.field_150404_cg), Lists.newArrayList("black_carpet", "red_carpet", "green_carpet", "brown_carpet", "blue_carpet", "purple_carpet", "cyan_carpet", "silver_carpet", "gray_carpet", "pink_carpet", "lime_carpet", "yellow_carpet", "light_blue_carpet", "magenta_carpet", "orange_carpet", "white_carpet"));
-+        this.field_177613_u.put(Item.func_150898_a(Blocks.field_150398_cm), Lists.newArrayList("sunflower", "syringa", "double_grass", "double_fern", "double_rose", "paeonia"));
-         this.field_177613_u.put(Items.field_151044_h, Lists.newArrayList("coal", "charcoal"));
-         this.field_177613_u.put(Items.field_151115_aP, Lists.newArrayList("cod", "salmon", "clownfish", "pufferfish"));
-         this.field_177613_u.put(Items.field_179566_aV, Lists.newArrayList("cooked_cod", "cooked_salmon"));
--        this.field_177613_u
--        .put(
--            Items.field_151100_aR,
--            Lists.newArrayList(
--                "dye_black",
--                "dye_red",
--                "dye_green",
--                "dye_brown",
--                "dye_blue",
--                "dye_purple",
--                "dye_cyan",
--                "dye_silver",
--                "dye_gray",
--                "dye_pink",
--                "dye_lime",
--                "dye_yellow",
--                "dye_light_blue",
--                "dye_magenta",
--                "dye_orange",
--                "dye_white"
--            )
--        );
-+        this.field_177613_u.put(Items.field_151100_aR, Lists.newArrayList("dye_black", "dye_red", "dye_green", "dye_brown", "dye_blue", "dye_purple", "dye_cyan", "dye_silver", "dye_gray", "dye_pink", "dye_lime", "dye_yellow", "dye_light_blue", "dye_magenta", "dye_orange", "dye_white"));
-         this.field_177613_u.put(Items.field_151068_bn, Lists.newArrayList("bottle_drinkable"));
--        this.field_177613_u
--        .put(Items.field_151144_bL, Lists.newArrayList("skull_skeleton", "skull_wither", "skull_zombie", "skull_char", "skull_creeper", "skull_dragon"));
-+        this.field_177613_u.put(Items.field_151144_bL, Lists.newArrayList("skull_skeleton", "skull_wither", "skull_zombie", "skull_char", "skull_creeper", "skull_dragon"));
-         this.field_177613_u.put(Items.field_185155_bH, Lists.newArrayList("bottle_splash"));
-         this.field_177613_u.put(Items.field_185156_bI, Lists.newArrayList("bottle_lingering"));
--        this.field_177613_u
--        .put(
--            Item.func_150898_a(Blocks.field_192443_dR),
--            Lists.newArrayList(
--                "black_concrete",
--                "red_concrete",
--                "green_concrete",
--                "brown_concrete",
--                "blue_concrete",
--                "purple_concrete",
--                "cyan_concrete",
--                "silver_concrete",
--                "gray_concrete",
--                "pink_concrete",
--                "lime_concrete",
--                "yellow_concrete",
--                "light_blue_concrete",
--                "magenta_concrete",
--                "orange_concrete",
--                "white_concrete"
--            )
--        );
--        this.field_177613_u
--        .put(
--            Item.func_150898_a(Blocks.field_192444_dS),
--            Lists.newArrayList(
--                "black_concrete_powder",
--                "red_concrete_powder",
--                "green_concrete_powder",
--                "brown_concrete_powder",
--                "blue_concrete_powder",
--                "purple_concrete_powder",
--                "cyan_concrete_powder",
--                "silver_concrete_powder",
--                "gray_concrete_powder",
--                "pink_concrete_powder",
--                "lime_concrete_powder",
--                "yellow_concrete_powder",
--                "light_blue_concrete_powder",
--                "magenta_concrete_powder",
--                "orange_concrete_powder",
--                "white_concrete_powder"
--            )
--        );
-+        this.field_177613_u.put(Item.func_150898_a(Blocks.field_192443_dR), Lists.newArrayList("black_concrete", "red_concrete", "green_concrete", "brown_concrete", "blue_concrete", "purple_concrete", "cyan_concrete", "silver_concrete", "gray_concrete", "pink_concrete", "lime_concrete", "yellow_concrete", "light_blue_concrete", "magenta_concrete", "orange_concrete", "white_concrete"));
-+        this.field_177613_u.put(Item.func_150898_a(Blocks.field_192444_dS), Lists.newArrayList("black_concrete_powder", "red_concrete_powder", "green_concrete_powder", "brown_concrete_powder", "blue_concrete_powder", "purple_concrete_powder", "cyan_concrete_powder", "silver_concrete_powder", "gray_concrete_powder", "pink_concrete_powder", "lime_concrete_powder", "yellow_concrete_powder", "light_blue_concrete_powder", "magenta_concrete_powder", "orange_concrete_powder", "white_concrete_powder"));
-         this.field_177613_u.put(Item.func_150898_a(Blocks.field_150350_a), Collections.emptyList());
-         this.field_177613_u.put(Item.func_150898_a(Blocks.field_180390_bo), Lists.newArrayList("oak_fence_gate"));
-         this.field_177613_u.put(Item.func_150898_a(Blocks.field_180407_aO), Lists.newArrayList("oak_fence"));
-         this.field_177613_u.put(Items.field_179570_aq, Lists.newArrayList("oak_door"));
-         this.field_177613_u.put(Items.field_151124_az, Lists.newArrayList("oak_boat"));
-         this.field_177613_u.put(Items.field_190929_cY, Lists.newArrayList("totem"));
++        this.variantNames.clear(); // FML clear this to prevent double ups.
+         this.variantNames
+         .put(
+             Item.getItemFromBlock(Blocks.STONE),
+@@ -697,6 +709,10 @@
+         this.variantNames.put(Items.OAK_DOOR, Lists.newArrayList("oak_door"));
+         this.variantNames.put(Items.BOAT, Lists.newArrayList("oak_boat"));
+         this.variantNames.put(Items.TOTEM_OF_UNDYING, Lists.newArrayList("totem"));
 +        for (Entry<net.minecraftforge.registries.IRegistryDelegate<Item>, Set<String>> e : customVariantNames.entrySet())
 +        {
-+            this.field_177613_u.put(e.getKey().get(), Lists.newArrayList(e.getValue().iterator()));
++            this.variantNames.put(e.getKey().get(), Lists.newArrayList(e.getValue().iterator()));
 +        }
      }
  
-     protected List<String> func_177596_a(Item p_177596_1_)
-     {
--        List<String> list = this.field_177613_u.get(p_177596_1_);
-+        List<String> list = (List)this.field_177613_u.get(p_177596_1_);
- 
-         if (list == null)
-         {
--            list = Collections.singletonList(Item.field_150901_e.func_177774_c(p_177596_1_).toString());
-+            list = Collections.<String>singletonList(((ResourceLocation)Item.field_150901_e.func_177774_c(p_177596_1_)).toString());
-         }
- 
-         return list;
-@@ -713,7 +473,7 @@
- 
-     protected ResourceLocation func_177583_a(String p_177583_1_)
-     {
--        ResourceLocation resourcelocation = new ResourceLocation(p_177583_1_);
-+        ResourceLocation resourcelocation = new ResourceLocation(p_177583_1_.replaceAll("#.*", ""));
-         return new ResourceLocation(resourcelocation.func_110624_b(), "item/" + resourcelocation.func_110623_a());
-     }
- 
-@@ -733,7 +493,7 @@
-         {
-             ModelBlockDefinition modelblockdefinition = entry.getKey();
-             Multipart multipart = modelblockdefinition.func_188001_c();
--            String s = Block.field_149771_c.func_177774_c(multipart.func_188135_c().func_177622_c()).toString();
-+            String s = ((ResourceLocation)Block.field_149771_c.func_177774_c(multipart.func_188135_c().func_177622_c())).toString();
-             MultipartBakedModel.Builder multipartbakedmodel$builder = new MultipartBakedModel.Builder();
- 
-             for (Selector selector : multipart.func_188136_a())
-@@ -774,23 +534,26 @@
-             {
-                 ModelBlock modelblock = this.field_177611_h.get(variant.func_188046_a());
- 
--                if (modelblock == null || !modelblock.func_178303_d())
--                {
--                    field_177603_c.warn("Missing model for: {}", p_188639_2_);
--                }
--                else if (modelblock.func_178298_a().isEmpty())
--                {
--                    field_177603_c.warn("Missing elements for: {}", p_188639_2_);
--                }
--                else
--                {
--                    IBakedModel ibakedmodel = this.func_177578_a(modelblock, variant.func_188048_b(), variant.func_188049_c());
-+                if (modelblock != null && modelblock.func_178303_d())
-+                {
-+                    if (modelblock.func_178298_a().isEmpty())
-+                    {
-+                        field_177603_c.warn("Missing elements for: {}", (Object)p_188639_2_);
-+                    }
-+                    else
-+                    {
-+                        IBakedModel ibakedmodel = this.func_177578_a(modelblock, variant.func_188048_b(), variant.func_188049_c());
- 
--                    if (ibakedmodel != null)
--                    {
--                        i++;
--                        weightedbakedmodel$builder.func_177677_a(ibakedmodel, variant.func_188047_d());
-+                        if (ibakedmodel != null)
-+                        {
-+                            ++i;
-+                            weightedbakedmodel$builder.func_177677_a(ibakedmodel, variant.func_188047_d());
-+                        }
-                     }
-+                }
-+                else
-+                {
-+                    field_177603_c.warn("Missing model for: {}", (Object)p_188639_2_);
-                 }
-             }
- 
-@@ -798,7 +561,7 @@
- 
-             if (i == 0)
-             {
--                field_177603_c.warn("No weighted models for: {}", p_188639_2_);
-+                field_177603_c.warn("No weighted models for: {}", (Object)p_188639_2_);
-             }
-             else if (i == 1)
-             {
-@@ -818,36 +581,39 @@
-         for (Entry<String, ResourceLocation> entry : this.field_177615_s.entrySet())
+     protected List<String> getVariantNames(Item stack)
+@@ -818,7 +834,7 @@
+         for (Entry<String, ResourceLocation> entry : this.itemLocations.entrySet())
          {
              ResourceLocation resourcelocation = entry.getValue();
 -            ModelResourceLocation modelresourcelocation = new ModelResourceLocation(entry.getKey(), "inventory");
 +            ModelResourceLocation modelresourcelocation = net.minecraftforge.client.model.ModelLoader.getInventoryVariant(entry.getKey());
-             ModelBlock modelblock = this.field_177611_h.get(resourcelocation);
+             ModelBlock modelblock = this.models.get(resourcelocation);
  
--            if (modelblock == null || !modelblock.func_178303_d())
--            {
--                field_177603_c.warn("Missing model for: {}", resourcelocation);
--            }
--            else if (modelblock.func_178298_a().isEmpty())
--            {
--                field_177603_c.warn("Missing elements for: {}", resourcelocation);
--            }
--            else if (this.func_177587_c(modelblock))
--            {
--                this.field_177605_n.func_82595_a(modelresourcelocation, new BuiltInModel(modelblock.func_181682_g(), modelblock.func_187967_g()));
-+            if (modelblock != null && modelblock.func_178303_d())
-+            {
-+                if (modelblock.func_178298_a().isEmpty())
-+                {
-+                    field_177603_c.warn("Missing elements for: {}", (Object)resourcelocation);
-+                }
-+                else if (this.func_177587_c(modelblock))
-+                {
-+                    this.field_177605_n.func_82595_a(modelresourcelocation, new BuiltInModel(modelblock.func_181682_g(), modelblock.func_187967_g()));
-+                }
-+                else
-+                {
-+                    IBakedModel ibakedmodel = this.func_177578_a(modelblock, ModelRotation.X0_Y0, false);
-+
-+                    if (ibakedmodel != null)
-+                    {
-+                        this.field_177605_n.func_82595_a(modelresourcelocation, ibakedmodel);
-+                    }
-+                }
-             }
-             else
-             {
--                IBakedModel ibakedmodel = this.func_177578_a(modelblock, ModelRotation.X0_Y0, false);
--
--                if (ibakedmodel != null)
--                {
--                    this.field_177605_n.func_82595_a(modelresourcelocation, ibakedmodel);
--                }
-+                field_177603_c.warn("Missing model for: {}", (Object)resourcelocation);
-             }
-         }
-     }
- 
-     private Set<ResourceLocation> func_177575_g()
-     {
--        Set<ResourceLocation> set = Sets.newHashSet();
-+        Set<ResourceLocation> set = Sets.<ResourceLocation>newHashSet();
-         List<ModelResourceLocation> list = Lists.newArrayList(this.field_177612_i.keySet());
-         Collections.sort(list, new Comparator<ModelResourceLocation>()
-         {
-@@ -867,7 +633,7 @@
- 
-                 if (modelblock == null)
-                 {
--                    field_177603_c.warn("Missing model for: {}", modelresourcelocation);
-+                    field_177603_c.warn("Missing model for: {}", (Object)modelresourcelocation);
-                 }
-                 else
-                 {
-@@ -886,9 +652,7 @@
- 
-                     if (modelblock1 == null)
-                     {
--                        field_177603_c.warn(
--                            "Missing model for: {}", Block.field_149771_c.func_177774_c(modelblockdefinition.func_188001_c().func_188135_c().func_177622_c())
--                        );
-+                        field_177603_c.warn("Missing model for: {}", Block.field_149771_c.func_177774_c(modelblockdefinition.func_188001_c().func_188135_c().func_177622_c()));
-                     }
-                     else
-                     {
-@@ -905,9 +669,13 @@
+             if (modelblock == null || !modelblock.isResolved())
+@@ -905,6 +921,11 @@
      @Nullable
-     private IBakedModel func_177578_a(ModelBlock p_177578_1_, ModelRotation p_177578_2_, boolean p_177578_3_)
+     private IBakedModel bakeModel(ModelBlock modelBlockIn, ModelRotation modelRotationIn, boolean uvLocked)
      {
-+        return bakeModel(p_177578_1_, (net.minecraftforge.common.model.ITransformation)p_177578_2_, p_177578_3_);
++        return bakeModel(modelBlockIn, (net.minecraftforge.common.model.ITransformation)modelRotationIn, uvLocked);
 +    }
 +
-+    protected IBakedModel bakeModel(ModelBlock p_177578_1_, net.minecraftforge.common.model.ITransformation p_177578_2_, boolean p_177578_3_)
++    protected IBakedModel bakeModel(ModelBlock modelBlockIn, net.minecraftforge.common.model.ITransformation modelRotationIn, boolean uvLocked)
 +    {
-         TextureAtlasSprite textureatlassprite = this.field_177599_g.get(new ResourceLocation(p_177578_1_.func_178308_c("particle")));
--        SimpleBakedModel.Builder simplebakedmodel$builder = new SimpleBakedModel.Builder(p_177578_1_, p_177578_1_.func_187967_g())
--        .func_177646_a(textureatlassprite);
-+        SimpleBakedModel.Builder simplebakedmodel$builder = (new SimpleBakedModel.Builder(p_177578_1_, p_177578_1_.func_187967_g())).func_177646_a(textureatlassprite);
+         TextureAtlasSprite textureatlassprite = this.sprites.get(new ResourceLocation(modelBlockIn.resolveTextureName("particle")));
+         SimpleBakedModel.Builder simplebakedmodel$builder = new SimpleBakedModel.Builder(modelBlockIn, modelBlockIn.createOverrides())
+         .setTexture(textureatlassprite);
+@@ -922,7 +943,7 @@
+                     BlockPartFace blockpartface = blockpart.mapFaces.get(enumfacing);
+                     TextureAtlasSprite textureatlassprite1 = this.sprites.get(new ResourceLocation(modelBlockIn.resolveTextureName(blockpartface.texture)));
  
-         if (p_177578_1_.func_178298_a().isEmpty())
-         {
-@@ -922,18 +690,13 @@
-                     BlockPartFace blockpartface = blockpart.field_178240_c.get(enumfacing);
-                     TextureAtlasSprite textureatlassprite1 = this.field_177599_g.get(new ResourceLocation(p_177578_1_.func_178308_c(blockpartface.field_178242_d)));
- 
--                    if (blockpartface.field_178244_b == null)
-+                    if (blockpartface.field_178244_b == null || !net.minecraftforge.common.model.TRSRTransformation.isInteger(p_177578_2_.getMatrix()))
+-                    if (blockpartface.cullFace == null)
++                    if (blockpartface.cullFace == null || !net.minecraftforge.common.model.TRSRTransformation.isInteger(modelRotationIn.getMatrix()))
                      {
--                        simplebakedmodel$builder.func_177648_a(
--                            this.func_177589_a(blockpart, blockpartface, textureatlassprite1, enumfacing, p_177578_2_, p_177578_3_)
--                        );
-+                        simplebakedmodel$builder.func_177648_a(this.makeBakedQuad(blockpart, blockpartface, textureatlassprite1, enumfacing, p_177578_2_, p_177578_3_));
-                     }
+                         simplebakedmodel$builder.addGeneralQuad(
+                             this.makeBakedQuad(blockpart, blockpartface, textureatlassprite1, enumfacing, modelRotationIn, uvLocked)
+@@ -931,7 +952,7 @@
                      else
                      {
--                        simplebakedmodel$builder.func_177650_a(
--                            p_177578_2_.func_177523_a(blockpartface.field_178244_b),
--                            this.func_177589_a(blockpart, blockpartface, textureatlassprite1, enumfacing, p_177578_2_, p_177578_3_)
--                        );
-+                        simplebakedmodel$builder.func_177650_a(p_177578_2_.rotate(blockpartface.field_178244_b), this.makeBakedQuad(blockpart, blockpartface, textureatlassprite1, enumfacing, p_177578_2_, p_177578_3_));
+                         simplebakedmodel$builder.addFaceQuad(
+-                            modelRotationIn.rotateFace(blockpartface.cullFace),
++                            modelRotationIn.rotate(blockpartface.cullFace),
+                             this.makeBakedQuad(blockpart, blockpartface, textureatlassprite1, enumfacing, modelRotationIn, uvLocked)
+                         );
                      }
-                 }
-             }
-@@ -942,22 +705,14 @@
-         }
-     }
- 
--    private BakedQuad func_177589_a(
--        BlockPart p_177589_1_, BlockPartFace p_177589_2_, TextureAtlasSprite p_177589_3_, EnumFacing p_177589_4_, ModelRotation p_177589_5_, boolean p_177589_6_
--    )
--    {
--        return this.field_177607_l
--               .func_178414_a(
--                   p_177589_1_.field_178241_a,
--                   p_177589_1_.field_178239_b,
--                   p_177589_2_,
--                   p_177589_3_,
--                   p_177589_4_,
--                   p_177589_5_,
--                   p_177589_1_.field_178237_d,
--                   p_177589_6_,
--                   p_177589_1_.field_178238_e
+@@ -946,18 +967,12 @@
+         BlockPart blockPartt, BlockPartFace blockPartFaceIn, TextureAtlasSprite sprite, EnumFacing face, ModelRotation transform, boolean uvLocked
+     )
+     {
+-        return this.faceBakery
+-               .makeBakedQuad(
+-                   blockPartt.positionFrom,
+-                   blockPartt.positionTo,
+-                   blockPartFaceIn,
+-                   sprite,
+-                   face,
+-                   transform,
+-                   blockPartt.partRotation,
+-                   uvLocked,
+-                   blockPartt.shade
 -               );
-+    private BakedQuad func_177589_a(BlockPart p_177589_1_, BlockPartFace p_177589_2_, TextureAtlasSprite p_177589_3_, EnumFacing p_177589_4_, ModelRotation p_177589_5_, boolean p_177589_6_)
-+    {
-+        return makeBakedQuad(p_177589_1_, p_177589_2_, p_177589_3_, p_177589_4_, (net.minecraftforge.common.model.ITransformation)p_177589_5_, p_177589_6_);
++        return makeBakedQuad(blockPartt, blockPartFaceIn, sprite, face, (net.minecraftforge.common.model.ITransformation)transform, uvLocked);
 +    }
 +
-+    protected BakedQuad makeBakedQuad(BlockPart p_177589_1_, BlockPartFace p_177589_2_, TextureAtlasSprite p_177589_3_, EnumFacing p_177589_4_, net.minecraftforge.common.model.ITransformation p_177589_5_, boolean p_177589_6_)
++    protected BakedQuad makeBakedQuad(BlockPart blockPartt, BlockPartFace blockPartFaceIn, TextureAtlasSprite sprite, EnumFacing face, net.minecraftforge.common.model.ITransformation transform, boolean uvLocked)
 +    {
-+        return this.field_177607_l.makeBakedQuad(p_177589_1_.field_178241_a, p_177589_1_.field_178239_b, p_177589_2_, p_177589_3_, p_177589_4_, p_177589_5_, p_177589_1_.field_178237_d, p_177589_6_, p_177589_1_.field_178238_e);
++        return this.faceBakery.makeBakedQuad(blockPartt.positionFrom, blockPartt.positionTo, blockPartFaceIn, sprite, face, transform, blockPartt.partRotation, uvLocked, blockPartt.shade);
      }
  
-     private void func_177597_h()
-@@ -974,8 +729,8 @@
- 
-     private void func_177574_i()
-     {
--        Deque<ResourceLocation> deque = Queues.newArrayDeque();
--        Set<ResourceLocation> set = Sets.newHashSet();
-+        Deque<ResourceLocation> deque = Queues.<ResourceLocation>newArrayDeque();
-+        Set<ResourceLocation> set = Sets.<ResourceLocation>newHashSet();
- 
-         for (ResourceLocation resourcelocation : this.field_177611_h.keySet())
-         {
-@@ -1000,9 +755,7 @@
-             }
-             catch (Exception exception)
-             {
--                field_177603_c.warn(
--                    "In parent chain: {}; unable to load model: '{}'", field_177601_e.join(this.func_177573_e(resourcelocation1)), resourcelocation1, exception
--                );
-+                field_177603_c.warn("In parent chain: {}; unable to load model: '{}'", field_177601_e.join(this.func_177573_e(resourcelocation1)), resourcelocation1, exception);
-             }
- 
-             set.add(resourcelocation1);
-@@ -1050,7 +803,7 @@
- 
-     protected Set<ResourceLocation> func_177585_a(ModelBlock p_177585_1_)
-     {
--        Set<ResourceLocation> set = Sets.newHashSet();
-+        Set<ResourceLocation> set = Sets.<ResourceLocation>newHashSet();
- 
-         for (BlockPart blockpart : p_177585_1_.func_178298_a())
-         {
-@@ -1072,7 +825,6 @@
-         set.remove(TextureMap.field_174945_f);
-         ITextureMapPopulator itexturemappopulator = new ITextureMapPopulator()
-         {
--            @Override
-             public void func_177059_a(TextureMap p_177059_1_)
-             {
-                 for (ResourceLocation resourcelocation : set)
-@@ -1088,7 +840,7 @@
- 
-     private Set<ResourceLocation> func_177571_k()
-     {
--        Set<ResourceLocation> set = Sets.newHashSet();
-+        Set<ResourceLocation> set = Sets.<ResourceLocation>newHashSet();
- 
-         for (ResourceLocation resourcelocation : this.field_177615_s.values())
-         {
-@@ -1124,7 +876,14 @@
- 
-     protected boolean func_177581_b(@Nullable ModelBlock p_177581_1_)
-     {
--        return p_177581_1_ == null ? false : p_177581_1_.func_178310_f() == field_177606_o;
-+        if (p_177581_1_ == null)
-+        {
-+            return false;
-+        }
-+        else
-+        {
-+            return p_177581_1_.func_178310_f() == field_177606_o;
-+        }
-     }
- 
-     protected boolean func_177587_c(@Nullable ModelBlock p_177587_1_)
-@@ -1182,5 +941,24 @@
-         field_177600_d.put("missing", field_188641_d);
-         field_177606_o.field_178317_b = "generation marker";
-         field_177616_r.field_178317_b = "block entity marker";
+     private void loadModelsCheck()
+@@ -1182,5 +1197,24 @@
+         BUILT_IN_MODELS.put("missing", MISSING_MODEL_MESH);
+         MODEL_GENERATED.name = "generation marker";
+         MODEL_ENTITY.name = "block entity marker";
 +    }
 +
 +    protected void registerMultipartVariant(ModelBlockDefinition definition, Collection<ModelResourceLocation> locations)
 +    {
-+        this.field_188642_k.put(definition, locations);
++        this.multipartVariantMap.put(definition, locations);
 +    }
 +
 +    private static Map<net.minecraftforge.registries.IRegistryDelegate<Item>, Set<String>> customVariantNames = Maps.newHashMap();

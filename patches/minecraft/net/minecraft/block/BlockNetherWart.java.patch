@@ -1,158 +1,62 @@
 --- before/net/minecraft/block/BlockNetherWart.java
 +++ after/net/minecraft/block/BlockNetherWart.java
-@@ -3,9 +3,11 @@
- import java.util.Random;
- import net.minecraft.block.material.MapColor;
- import net.minecraft.block.material.Material;
-+import net.minecraft.block.properties.IProperty;
- import net.minecraft.block.properties.PropertyInteger;
- import net.minecraft.block.state.BlockStateContainer;
- import net.minecraft.block.state.IBlockState;
-+import net.minecraft.creativetab.CreativeTabs;
- import net.minecraft.init.Blocks;
- import net.minecraft.init.Items;
- import net.minecraft.item.Item;
-@@ -18,62 +20,54 @@
- public class BlockNetherWart extends BlockBush
- {
-     public static final PropertyInteger field_176486_a = PropertyInteger.func_177719_a("age", 0, 3);
--    private static final AxisAlignedBB[] field_185519_c = new AxisAlignedBB[]
--        {
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.3125, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.5, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.6875, 1.0),
--            new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.875, 1.0)
--        };
-+    private static final AxisAlignedBB[] field_185519_c = new AxisAlignedBB[] {new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.3125D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.6875D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.875D, 1.0D)};
- 
-     protected BlockNetherWart()
+@@ -49,7 +49,7 @@
+     @Override
+     public boolean canBlockStay(World worldIn, BlockPos pos, IBlockState state)
      {
-         super(Material.field_151585_k, MapColor.field_151645_D);
--        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176486_a, 0));
-+        this.func_180632_j(this.field_176227_L.func_177621_b().func_177226_a(field_176486_a, Integer.valueOf(0)));
-         this.func_149675_a(true);
--        this.func_149647_a(null);
-+        this.func_149647_a((CreativeTabs)null);
-     }
- 
--    @Override
-     public AxisAlignedBB func_185496_a(IBlockState p_185496_1_, IBlockAccess p_185496_2_, BlockPos p_185496_3_)
-     {
--        return field_185519_c[p_185496_1_.func_177229_b(field_176486_a)];
-+        return field_185519_c[((Integer)p_185496_1_.func_177229_b(field_176486_a)).intValue()];
-     }
- 
--    @Override
-     protected boolean func_185514_i(IBlockState p_185514_1_)
-     {
-         return p_185514_1_.func_177230_c() == Blocks.field_150425_aM;
-     }
- 
--    @Override
-     public boolean func_180671_f(World p_180671_1_, BlockPos p_180671_2_, IBlockState p_180671_3_)
-     {
--        return this.func_185514_i(p_180671_1_.func_180495_p(p_180671_2_.func_177977_b()));
-+        return super.func_180671_f(p_180671_1_, p_180671_2_, p_180671_3_);
-     }
- 
--    @Override
-     public void func_180650_b(World p_180650_1_, BlockPos p_180650_2_, IBlockState p_180650_3_, Random p_180650_4_)
-     {
--        int i = p_180650_3_.func_177229_b(field_176486_a);
-+        int i = ((Integer)p_180650_3_.func_177229_b(field_176486_a)).intValue();
- 
--        if (i < 3 && p_180650_4_.nextInt(10) == 0)
-+        if (i < 3 && net.minecraftforge.common.ForgeHooks.onCropsGrowPre(p_180650_1_, p_180650_2_, p_180650_3_, p_180650_4_.nextInt(10) == 0))
-         {
--            p_180650_3_ = p_180650_3_.func_177226_a(field_176486_a, i + 1);
--            p_180650_1_.func_180501_a(p_180650_2_, p_180650_3_, 2);
-+            IBlockState newState = p_180650_3_.func_177226_a(field_176486_a, Integer.valueOf(i + 1));
-+            p_180650_1_.func_180501_a(p_180650_2_, newState, 2);
-+            net.minecraftforge.common.ForgeHooks.onCropsGrowPost(p_180650_1_, p_180650_2_, p_180650_3_, newState);
-         }
- 
-         super.func_180650_b(p_180650_1_, p_180650_2_, p_180650_3_, p_180650_4_);
-     }
- 
--    @Override
-+    @SuppressWarnings("unused")
-     public void func_180653_a(World p_180653_1_, BlockPos p_180653_2_, IBlockState p_180653_3_, float p_180653_4_, int p_180653_5_)
-     {
--        if (!p_180653_1_.field_72995_K)
-+        super.func_180653_a(p_180653_1_, p_180653_2_, p_180653_3_, p_180653_4_, p_180653_5_);
-+        if (false && !p_180653_1_.field_72995_K)
-         {
-             int i = 1;
- 
--            if (p_180653_3_.func_177229_b(field_176486_a) >= 3)
-+            if (((Integer)p_180653_3_.func_177229_b(field_176486_a)).intValue() >= 3)
-             {
-                 i = 2 + p_180653_1_.field_73012_v.nextInt(3);
- 
-@@ -83,46 +77,57 @@
-                 }
-             }
- 
--            for (int j = 0; j < i; j++)
-+            for (int j = 0; j < i; ++j)
-             {
-                 func_180635_a(p_180653_1_, p_180653_2_, new ItemStack(Items.field_151075_bm));
-             }
-         }
-     }
- 
--    @Override
-     public Item func_180660_a(IBlockState p_180660_1_, Random p_180660_2_, int p_180660_3_)
-     {
-         return Items.field_190931_a;
-     }
- 
--    @Override
-     public int func_149745_a(Random p_149745_1_)
-     {
-         return 0;
-     }
- 
--    @Override
-     public ItemStack func_185473_a(World p_185473_1_, BlockPos p_185473_2_, IBlockState p_185473_3_)
-     {
-         return new ItemStack(Items.field_151075_bm);
-     }
- 
--    @Override
-     public IBlockState func_176203_a(int p_176203_1_)
-     {
--        return this.func_176223_P().func_177226_a(field_176486_a, p_176203_1_);
-+        return this.func_176223_P().func_177226_a(field_176486_a, Integer.valueOf(p_176203_1_));
-     }
- 
--    @Override
-     public int func_176201_c(IBlockState p_176201_1_)
-     {
--        return p_176201_1_.func_177229_b(field_176486_a);
-+        return ((Integer)p_176201_1_.func_177229_b(field_176486_a)).intValue();
+-        return this.canSustainBush(worldIn.getBlockState(pos.down()));
++        return super.canBlockStay(worldIn, pos, state);
      }
  
      @Override
+@@ -57,19 +57,22 @@
+     {
+         int i = state.getValue(AGE);
+ 
+-        if (i < 3 && rand.nextInt(10) == 0)
++        if (i < 3 && net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, pos, state, rand.nextInt(10) == 0))
+         {
+-            state = state.withProperty(AGE, i + 1);
+-            worldIn.setBlockState(pos, state, 2);
++            IBlockState newState = state.withProperty(AGE, i + 1);
++            worldIn.setBlockState(pos, newState, 2);
++            net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, newState);
+         }
+ 
+         super.updateTick(worldIn, pos, state, rand);
+     }
+ 
++    @SuppressWarnings("unused")
+     @Override
+     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
+     {
+-        if (!worldIn.isRemote)
++        super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);
++        if (false && !worldIn.isRemote)
+         {
+             int i = 1;
+ 
+@@ -118,6 +121,23 @@
+     public int getMetaFromState(IBlockState state)
+     {
+         return state.getValue(AGE);
++    }
++
++    @Override
 +    public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, net.minecraft.world.IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
 +    {
-+        Random rand = world instanceof World ? ((World)world).field_73012_v : new Random();
++        Random rand = world instanceof World ? ((World)world).rand : new Random();
 +        int count = 1;
 +
-+        if (((Integer)state.func_177229_b(field_176486_a)) >= 3)
++        if (state.getValue(AGE) >= 3)
 +        {
 +            count = 2 + rand.nextInt(3) + (fortune > 0 ? rand.nextInt(fortune + 1) : 0);
 +        }
 +
 +        for (int i = 0; i < count; i++)
 +        {
-+            drops.add(new ItemStack(Items.field_151075_bm));
++            drops.add(new ItemStack(Items.NETHER_WART));
 +        }
-+    }
-+
-     protected BlockStateContainer func_180661_e()
-     {
--        return new BlockStateContainer(this, field_176486_a);
-+        return new BlockStateContainer(this, new IProperty[] {field_176486_a});
      }
- }
+ 
+     @Override

@@ -1,120 +1,120 @@
 --- before/net/minecraft/world/storage/WorldInfo.java
 +++ after/net/minecraft/world/storage/WorldInfo.java
 @@ -56,15 +56,16 @@
-     private boolean field_176150_A;
-     private double field_176151_B;
-     private double field_176152_C;
--    private double field_176146_D = 6.0E7;
-+    private double field_176146_D = 6.0E7D;
-     private long field_176147_E;
-     private double field_176148_F;
--    private double field_176149_G = 5.0;
--    private double field_176153_H = 0.2;
-+    private double field_176149_G = 5.0D;
-+    private double field_176153_H = 0.2D;
-     private int field_176154_I = 5;
-     private int field_176155_J = 15;
--    private final Map<DimensionType, NBTTagCompound> field_186348_N = Maps.newEnumMap(DimensionType.class);
-+    private final Map<Integer, NBTTagCompound> field_186348_N = Maps.newHashMap();
-     private GameRules field_82577_x = new GameRules();
+     private boolean difficultyLocked;
+     private double borderCenterX;
+     private double borderCenterZ;
+-    private double borderSize = 6.0E7;
++    private double borderSize = 6.0E7D;
+     private long borderSizeLerpTime;
+     private double borderSizeLerpTarget;
+-    private double borderSafeZone = 5.0;
+-    private double borderDamagePerBlock = 0.2;
++    private double borderSafeZone = 5.0D;
++    private double borderDamagePerBlock = 0.2D;
+     private int borderWarningDistance = 5;
+     private int borderWarningTime = 15;
+-    private final Map<DimensionType, NBTTagCompound> dimensionData = Maps.newEnumMap(DimensionType.class);
++    private final Map<Integer, NBTTagCompound> dimensionData = Maps.newHashMap();
+     private GameRules gameRules = new GameRules();
 +    private java.util.Map<String, net.minecraft.nbt.NBTBase> additionalProperties;
  
      protected WorldInfo()
      {
 @@ -74,7 +75,6 @@
      {
-         p_189967_0_.func_188258_a(FixTypes.LEVEL, new IDataWalker()
+         fixer.registerWalker(FixTypes.LEVEL, new IDataWalker()
          {
 -            @Override
-             public NBTTagCompound func_188266_a(IDataFixer p_188266_1_, NBTTagCompound p_188266_2_, int p_188266_3_)
+             public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
              {
-                 if (p_188266_2_.func_150297_b("Player", 10))
+                 if (compound.hasKey("Player", 10))
 @@ -252,7 +252,7 @@
  
-             for (String s : nbttagcompound1.func_150296_c())
+             for (String s : nbttagcompound1.getKeySet())
              {
--                this.field_186348_N.put(DimensionType.func_186069_a(Integer.parseInt(s)), nbttagcompound1.func_74775_l(s));
-+                this.field_186348_N.put(Integer.parseInt(s), nbttagcompound1.func_74775_l(s));
+-                this.dimensionData.put(DimensionType.getById(Integer.parseInt(s)), nbttagcompound1.getCompoundTag(s));
++                this.dimensionData.put(Integer.parseInt(s), nbttagcompound1.getCompoundTag(s));
              }
          }
      }
 @@ -367,6 +367,7 @@
-         p_76064_1_.func_74780_a("BorderSizeLerpTarget", this.field_176148_F);
-         p_76064_1_.func_74780_a("BorderWarningBlocks", (double)this.field_176154_I);
-         p_76064_1_.func_74780_a("BorderWarningTime", (double)this.field_176155_J);
-+        net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(p_76064_1_);
+         nbt.setDouble("BorderSizeLerpTarget", this.borderSizeLerpTarget);
+         nbt.setDouble("BorderWarningBlocks", (double)this.borderWarningDistance);
+         nbt.setDouble("BorderWarningTime", (double)this.borderWarningTime);
++        net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(nbt);
  
-         if (this.field_176158_z != null)
+         if (this.difficulty != null)
          {
 @@ -377,9 +378,10 @@
-         p_76064_1_.func_74782_a("GameRules", this.field_82577_x.func_82770_a());
+         nbt.setTag("GameRules", this.gameRules.writeToNBT());
          NBTTagCompound nbttagcompound1 = new NBTTagCompound();
  
--        for (Entry<DimensionType, NBTTagCompound> entry : this.field_186348_N.entrySet())
-+        for (Entry<Integer, NBTTagCompound> entry : this.field_186348_N.entrySet())
+-        for (Entry<DimensionType, NBTTagCompound> entry : this.dimensionData.entrySet())
++        for (Entry<Integer, NBTTagCompound> entry : this.dimensionData.entrySet())
          {
--            nbttagcompound1.func_74782_a(String.valueOf(entry.getKey().func_186068_a()), entry.getValue());
-+            if (entry.getValue() == null || entry.getValue().func_82582_d()) continue;
-+            nbttagcompound1.func_74782_a(String.valueOf(entry.getKey()), entry.getValue());
+-            nbttagcompound1.setTag(String.valueOf(entry.getKey().getId()), entry.getValue());
++            if (entry.getValue() == null || entry.getValue().isEmpty()) continue;
++            nbttagcompound1.setTag(String.valueOf(entry.getKey()), entry.getValue());
          }
  
-         p_76064_1_.func_74782_a("DimensionData", nbttagcompound1);
+         nbt.setTag("DimensionData", nbttagcompound1);
 @@ -443,17 +445,17 @@
-         this.field_76096_d = p_76056_1_;
+         this.spawnY = y;
      }
  
 -    @SideOnly(Side.CLIENT)
--    public void func_76087_c(int p_76087_1_)
+-    public void setSpawnZ(int z)
 -    {
--        this.field_76097_e = p_76087_1_;
+-        this.spawnZ = z;
 -    }
 -
-     public void func_82572_b(long p_82572_1_)
+     public void setWorldTotalTime(long time)
      {
-         this.field_82575_g = p_82572_1_;
+         this.totalTime = time;
      }
  
 +    @SideOnly(Side.CLIENT)
-+    public void func_76087_c(int p_76087_1_)
++    public void setSpawnZ(int z)
 +    {
-+        this.field_76097_e = p_76087_1_;
++        this.spawnZ = z;
 +    }
 +
-     public void func_76068_b(long p_76068_1_)
+     public void setWorldTime(long time)
      {
-         this.field_76094_f = p_76068_1_;
+         this.worldTime = time;
 @@ -709,6 +711,7 @@
  
-     public void func_176144_a(EnumDifficulty p_176144_1_)
+     public void setDifficulty(EnumDifficulty newDifficulty)
      {
-+        net.minecraftforge.common.ForgeHooks.onDifficultyChange(p_176144_1_, this.field_176158_z);
-         this.field_176158_z = p_176144_1_;
++        net.minecraftforge.common.ForgeHooks.onDifficultyChange(newDifficulty, this.difficulty);
+         this.difficulty = newDifficulty;
      }
  
 @@ -731,22 +734,13 @@
-                 return String.valueOf(WorldInfo.this.func_76063_b());
+                 return String.valueOf(WorldInfo.this.getSeed());
              }
          });
--        p_85118_1_.func_189529_a(
+-        category.addDetail(
 -            "Level generator",
 -            new ICrashReportDetail<String>()
-+        p_85118_1_.func_189529_a("Level generator", new ICrashReportDetail<String>()
++        category.addDetail("Level generator", new ICrashReportDetail<String>()
          {
              public String call() throws Exception
              {
 -                return String.format(
 -                           "ID %02d - %s, ver %d. Features enabled: %b",
--                           WorldInfo.this.field_76098_b.func_82747_f(),
--                           WorldInfo.this.field_76098_b.func_77127_a(),
--                           WorldInfo.this.field_76098_b.func_77131_c(),
--                           WorldInfo.this.field_76112_r
+-                           WorldInfo.this.terrainType.getId(),
+-                           WorldInfo.this.terrainType.getName(),
+-                           WorldInfo.this.terrainType.getVersion(),
+-                           WorldInfo.this.mapFeaturesEnabled
 -                       );
-+                return String.format("ID %02d - %s, ver %d. Features enabled: %b", WorldInfo.this.field_76098_b.func_82747_f(), WorldInfo.this.field_76098_b.func_77127_a(), WorldInfo.this.field_76098_b.func_77131_c(), WorldInfo.this.field_76112_r);
++                return String.format("ID %02d - %s, ver %d. Features enabled: %b", WorldInfo.this.terrainType.getId(), WorldInfo.this.terrainType.getName(), WorldInfo.this.terrainType.getVersion(), WorldInfo.this.mapFeaturesEnabled);
              }
 -        }
 -        );
 +        });
-         p_85118_1_.func_189529_a("Level generator options", new ICrashReportDetail<String>()
+         category.addDetail("Level generator options", new ICrashReportDetail<String>()
          {
              public String call() throws Exception
 @@ -792,56 +786,70 @@
@@ -127,10 +127,10 @@
 +                    ;
                  }
  
-                 return String.format("0x%05X - %s", WorldInfo.this.field_76103_l, s);
+                 return String.format("0x%05X - %s", WorldInfo.this.saveVersion, s);
              }
          });
--        p_85118_1_.func_189529_a(
+-        category.addDetail(
 -            "Level weather",
 -            new ICrashReportDetail<String>()
 -        {
@@ -138,15 +138,15 @@
 -            {
 -                return String.format(
 -                           "Rain time: %d (now: %b), thunder time: %d (now: %b)",
--                           WorldInfo.this.field_76101_n,
--                           WorldInfo.this.field_76104_m,
--                           WorldInfo.this.field_76114_p,
--                           WorldInfo.this.field_76102_o
+-                           WorldInfo.this.rainTime,
+-                           WorldInfo.this.raining,
+-                           WorldInfo.this.thunderTime,
+-                           WorldInfo.this.thundering
 -                       );
 -            }
 -        }
 -        );
--        p_85118_1_.func_189529_a(
+-        category.addDetail(
 -            "Level game mode",
 -            new ICrashReportDetail<String>()
 -        {
@@ -154,28 +154,28 @@
 -            {
 -                return String.format(
 -                           "Game mode: %s (ID %d). Hardcore: %b. Cheats: %b",
--                           WorldInfo.this.field_76113_q.func_77149_b(),
--                           WorldInfo.this.field_76113_q.func_77148_a(),
--                           WorldInfo.this.field_76111_s,
--                           WorldInfo.this.field_76110_t
+-                           WorldInfo.this.gameType.getName(),
+-                           WorldInfo.this.gameType.getID(),
+-                           WorldInfo.this.hardcore,
+-                           WorldInfo.this.allowCommands
 -                       );
 -            }
 -        }
 -        );
 -    }
 -
-+        p_85118_1_.func_189529_a("Level weather", new ICrashReportDetail<String>()
++        category.addDetail("Level weather", new ICrashReportDetail<String>()
 +        {
 +            public String call() throws Exception
 +            {
-+                return String.format("Rain time: %d (now: %b), thunder time: %d (now: %b)", WorldInfo.this.field_76101_n, WorldInfo.this.field_76104_m, WorldInfo.this.field_76114_p, WorldInfo.this.field_76102_o);
++                return String.format("Rain time: %d (now: %b), thunder time: %d (now: %b)", WorldInfo.this.rainTime, WorldInfo.this.raining, WorldInfo.this.thunderTime, WorldInfo.this.thundering);
 +            }
 +        });
-+        p_85118_1_.func_189529_a("Level game mode", new ICrashReportDetail<String>()
++        category.addDetail("Level game mode", new ICrashReportDetail<String>()
 +        {
 +            public String call() throws Exception
 +            {
-+                return String.format("Game mode: %s (ID %d). Hardcore: %b. Cheats: %b", WorldInfo.this.field_76113_q.func_77149_b(), WorldInfo.this.field_76113_q.func_77148_a(), WorldInfo.this.field_76111_s, WorldInfo.this.field_76110_t);
++                return String.format("Game mode: %s (ID %d). Hardcore: %b. Cheats: %b", WorldInfo.this.gameType.getName(), WorldInfo.this.gameType.getID(), WorldInfo.this.hardcore, WorldInfo.this.allowCommands);
 +            }
 +        });
 +    }
@@ -200,28 +200,27 @@
 +    }
 +
 +    @Deprecated //Use the int version below, and pass in dimension id NOT TYPE id
-     public NBTTagCompound func_186347_a(DimensionType p_186347_1_)
+     public NBTTagCompound getDimensionData(DimensionType dimensionIn)
      {
--        NBTTagCompound nbttagcompound = this.field_186348_N.get(p_186347_1_);
-+        return getDimensionData(p_186347_1_.func_186068_a());
++        return getDimensionData(dimensionIn.getId());
 +    }
 +    public NBTTagCompound getDimensionData(int dimensionIn)
 +    {
-+        NBTTagCompound nbttagcompound = this.field_186348_N.get(dimensionIn);
+         NBTTagCompound nbttagcompound = this.dimensionData.get(dimensionIn);
          return nbttagcompound == null ? new NBTTagCompound() : nbttagcompound;
      }
  
 +    @Deprecated //Use the int version below, and pass in dimension id NOT TYPE id
-     public void func_186345_a(DimensionType p_186345_1_, NBTTagCompound p_186345_2_)
+     public void setDimensionData(DimensionType dimensionIn, NBTTagCompound compound)
      {
--        this.field_186348_N.put(p_186345_1_, p_186345_2_);
-+        this.setDimensionData(p_186345_1_.func_186068_a(), p_186345_2_);
+-        this.dimensionData.put(dimensionIn, compound);
++        this.setDimensionData(dimensionIn.getId(), compound);
 +    }
 +
 +    //Dimension numerical ID version of setter, as two dimensions could in theory have the same DimensionType. ID should be grabbed from the world NOT the Type
 +    public void setDimensionData(int dimensionID, NBTTagCompound compound)
 +    {
-+        this.field_186348_N.put(dimensionID, compound);
++        this.dimensionData.put(dimensionID, compound);
      }
  
      @SideOnly(Side.CLIENT)

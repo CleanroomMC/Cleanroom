@@ -28,13 +28,13 @@ public enum ContainerType
     JAR(JarDiscoverer.class),
     DIR(DirectoryDiscoverer.class);
 
-    private ITypeDiscoverer discoverer;
+    private final ITypeDiscoverer discoverer;
 
-    private ContainerType(Class<? extends ITypeDiscoverer> discovererClass)
+    ContainerType(Class<? extends ITypeDiscoverer> discovererClass)
     {
         try
         {
-            this.discoverer = discovererClass.newInstance();
+            this.discoverer = discovererClass.getConstructor().newInstance();
         }
         catch (ReflectiveOperationException e)
         {

@@ -2,82 +2,82 @@
 +++ after/net/minecraft/entity/ai/EntityAIMate.java
 @@ -22,7 +22,7 @@
  
-     public EntityAIMate(EntityAnimal p_i1619_1_, double p_i1619_2_)
+     public EntityAIMate(EntityAnimal animal, double speedIn)
      {
--        this(p_i1619_1_, p_i1619_2_, (Class <? extends EntityAnimal >)p_i1619_1_.getClass());
-+        this(p_i1619_1_, p_i1619_2_, p_i1619_1_.getClass());
+-        this(animal, speedIn, (Class <? extends EntityAnimal >)animal.getClass());
++        this(animal, speedIn, animal.getClass());
      }
  
      public EntityAIMate(EntityAnimal p_i47306_1_, double p_i47306_2_, Class <? extends EntityAnimal > p_i47306_4_)
 @@ -34,7 +34,6 @@
-         this.func_75248_a(3);
+         this.setMutexBits(3);
      }
  
 -    @Override
-     public boolean func_75250_a()
+     public boolean shouldExecute()
      {
-         if (!this.field_75390_d.func_70880_s())
+         if (!this.animal.isInLove())
 @@ -48,27 +47,24 @@
          }
      }
  
 -    @Override
-     public boolean func_75253_b()
+     public boolean shouldContinueExecuting()
      {
-         return this.field_75391_e.func_70089_S() && this.field_75391_e.func_70880_s() && this.field_75392_b < 60;
+         return this.targetMate.isEntityAlive() && this.targetMate.isInLove() && this.spawnBabyDelay < 60;
      }
  
 -    @Override
-     public void func_75251_c()
+     public void resetTask()
      {
-         this.field_75391_e = null;
-         this.field_75392_b = 0;
+         this.targetMate = null;
+         this.spawnBabyDelay = 0;
      }
  
 -    @Override
-     public void func_75246_d()
+     public void updateTask()
      {
-         this.field_75390_d.func_70671_ap().func_75651_a(this.field_75391_e, 10.0F, (float)this.field_75390_d.func_70646_bf());
-         this.field_75390_d.func_70661_as().func_75497_a(this.field_75391_e, this.field_75393_c);
--        this.field_75392_b++;
-+        ++this.field_75392_b;
+         this.animal.getLookHelper().setLookPositionWithEntity(this.targetMate, 10.0F, (float)this.animal.getVerticalFaceSpeed());
+         this.animal.getNavigator().tryMoveToEntityLiving(this.targetMate, this.moveSpeed);
+-        this.spawnBabyDelay++;
++        ++this.spawnBabyDelay;
  
--        if (this.field_75392_b >= 60 && this.field_75390_d.func_70068_e(this.field_75391_e) < 9.0)
-+        if (this.field_75392_b >= 60 && this.field_75390_d.func_70068_e(this.field_75391_e) < 9.0D)
+-        if (this.spawnBabyDelay >= 60 && this.animal.getDistanceSq(this.targetMate) < 9.0)
++        if (this.spawnBabyDelay >= 60 && this.animal.getDistanceSq(this.targetMate) < 9.0D)
          {
-             this.func_75388_i();
+             this.spawnBaby();
          }
 @@ -76,7 +72,7 @@
  
-     private EntityAnimal func_75389_f()
+     private EntityAnimal getNearbyMate()
      {
--        List<EntityAnimal> list = this.field_75394_a.func_72872_a(this.field_190857_e, this.field_75390_d.func_174813_aQ().func_186662_g(8.0));
-+        List<EntityAnimal> list = this.field_75394_a.<EntityAnimal>func_72872_a(this.field_190857_e, this.field_75390_d.func_174813_aQ().func_186662_g(8.0D));
+-        List<EntityAnimal> list = this.world.getEntitiesWithinAABB(this.mateClass, this.animal.getEntityBoundingBox().grow(8.0));
++        List<EntityAnimal> list = this.world.<EntityAnimal>getEntitiesWithinAABB(this.mateClass, this.animal.getEntityBoundingBox().grow(8.0D));
          double d0 = Double.MAX_VALUE;
          EntityAnimal entityanimal = null;
  
 @@ -96,6 +92,18 @@
      {
-         EntityAgeable entityageable = this.field_75390_d.func_90011_a(this.field_75391_e);
+         EntityAgeable entityageable = this.animal.createChild(this.targetMate);
  
-+        final net.minecraftforge.event.entity.living.BabyEntitySpawnEvent event = new net.minecraftforge.event.entity.living.BabyEntitySpawnEvent(field_75390_d, field_75391_e, entityageable);
++        final net.minecraftforge.event.entity.living.BabyEntitySpawnEvent event = new net.minecraftforge.event.entity.living.BabyEntitySpawnEvent(animal, targetMate, entityageable);
 +        final boolean cancelled = net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
 +        entityageable = event.getChild();
 +        if (cancelled) {
 +            //Reset the "inLove" state for the animals
-+            this.field_75390_d.func_70873_a(6000);
-+            this.field_75391_e.func_70873_a(6000);
-+            this.field_75390_d.func_70875_t();
-+            this.field_75391_e.func_70875_t();
++            this.animal.setGrowingAge(6000);
++            this.targetMate.setGrowingAge(6000);
++            this.animal.resetInLove();
++            this.targetMate.resetInLove();
 +            return;
 +        }
 +
          if (entityageable != null)
          {
-             EntityPlayerMP entityplayermp = this.field_75390_d.func_191993_do();
+             EntityPlayerMP entityplayermp = this.animal.getLoveCause();
 @@ -120,38 +128,20 @@
-             this.field_75394_a.func_72838_d(entityageable);
-             Random random = this.field_75390_d.func_70681_au();
+             this.world.spawnEntity(entityageable);
+             Random random = this.animal.getRNG();
  
 -            for (int i = 0; i < 7; i++)
 +            for (int i = 0; i < 7; ++i)
@@ -85,15 +85,15 @@
 -                double d0 = random.nextGaussian() * 0.02;
 -                double d1 = random.nextGaussian() * 0.02;
 -                double d2 = random.nextGaussian() * 0.02;
--                double d3 = random.nextDouble() * (double)this.field_75390_d.field_70130_N * 2.0 - (double)this.field_75390_d.field_70130_N;
--                double d4 = 0.5 + random.nextDouble() * (double)this.field_75390_d.field_70131_O;
--                double d5 = random.nextDouble() * (double)this.field_75390_d.field_70130_N * 2.0 - (double)this.field_75390_d.field_70130_N;
--                this.field_75394_a
--                .func_175688_a(
+-                double d3 = random.nextDouble() * (double)this.animal.width * 2.0 - (double)this.animal.width;
+-                double d4 = 0.5 + random.nextDouble() * (double)this.animal.height;
+-                double d5 = random.nextDouble() * (double)this.animal.width * 2.0 - (double)this.animal.width;
+-                this.world
+-                .spawnParticle(
 -                    EnumParticleTypes.HEART,
--                    this.field_75390_d.field_70165_t + d3,
--                    this.field_75390_d.field_70163_u + d4,
--                    this.field_75390_d.field_70161_v + d5,
+-                    this.animal.posX + d3,
+-                    this.animal.posY + d4,
+-                    this.animal.posZ + d5,
 -                    d0,
 -                    d1,
 -                    d2
@@ -101,25 +101,25 @@
 +                double d0 = random.nextGaussian() * 0.02D;
 +                double d1 = random.nextGaussian() * 0.02D;
 +                double d2 = random.nextGaussian() * 0.02D;
-+                double d3 = random.nextDouble() * (double)this.field_75390_d.field_70130_N * 2.0D - (double)this.field_75390_d.field_70130_N;
-+                double d4 = 0.5D + random.nextDouble() * (double)this.field_75390_d.field_70131_O;
-+                double d5 = random.nextDouble() * (double)this.field_75390_d.field_70130_N * 2.0D - (double)this.field_75390_d.field_70130_N;
-+                this.field_75394_a.func_175688_a(EnumParticleTypes.HEART, this.field_75390_d.field_70165_t + d3, this.field_75390_d.field_70163_u + d4, this.field_75390_d.field_70161_v + d5, d0, d1, d2);
++                double d3 = random.nextDouble() * (double)this.animal.width * 2.0D - (double)this.animal.width;
++                double d4 = 0.5D + random.nextDouble() * (double)this.animal.height;
++                double d5 = random.nextDouble() * (double)this.animal.width * 2.0D - (double)this.animal.width;
++                this.world.spawnParticle(EnumParticleTypes.HEART, this.animal.posX + d3, this.animal.posY + d4, this.animal.posZ + d5, d0, d1, d2);
              }
  
-             if (this.field_75394_a.func_82736_K().func_82766_b("doMobLoot"))
+             if (this.world.getGameRules().getBoolean("doMobLoot"))
              {
--                this.field_75394_a
--                .func_72838_d(
+-                this.world
+-                .spawnEntity(
 -                    new EntityXPOrb(
--                        this.field_75394_a,
--                        this.field_75390_d.field_70165_t,
--                        this.field_75390_d.field_70163_u,
--                        this.field_75390_d.field_70161_v,
+-                        this.world,
+-                        this.animal.posX,
+-                        this.animal.posY,
+-                        this.animal.posZ,
 -                        random.nextInt(7) + 1
 -                    )
 -                );
-+                this.field_75394_a.func_72838_d(new EntityXPOrb(this.field_75394_a, this.field_75390_d.field_70165_t, this.field_75390_d.field_70163_u, this.field_75390_d.field_70161_v, random.nextInt(7) + 1));
++                this.world.spawnEntity(new EntityXPOrb(this.world, this.animal.posX, this.animal.posY, this.animal.posZ, random.nextInt(7) + 1));
              }
          }
      }
