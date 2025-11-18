@@ -1,0 +1,3 @@
+[submodule "kirino"]
+	path = kirino
+	url = https://github.com/CleanroomMC/Kirino-Engine.git
