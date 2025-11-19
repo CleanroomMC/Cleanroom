@@ -1,71 +1,11 @@
 --- before/net/minecraft/entity/SharedMonsterAttributes.java
 +++ after/net/minecraft/entity/SharedMonsterAttributes.java
-@@ -16,23 +16,16 @@
+@@ -16,7 +16,7 @@
  public class SharedMonsterAttributes
  {
      private static final Logger LOGGER = LogManager.getLogger();
 -    public static final IAttribute MAX_HEALTH = new RangedAttribute(null, "generic.maxHealth", 20.0, 0.0, 1024.0)
--        .setDescription("Max Health")
--        .setShouldWatch(true);
--    public static final IAttribute FOLLOW_RANGE = new RangedAttribute(null, "generic.followRange", 32.0, 0.0, 2048.0).setDescription("Follow Range");
--    public static final IAttribute KNOCKBACK_RESISTANCE = new RangedAttribute(null, "generic.knockbackResistance", 0.0, 0.0, 1.0)
--        .setDescription("Knockback Resistance");
--    public static final IAttribute MOVEMENT_SPEED = new RangedAttribute(null, "generic.movementSpeed", 0.7F, 0.0, 1024.0)
--        .setDescription("Movement Speed")
--        .setShouldWatch(true);
--    public static final IAttribute FLYING_SPEED = new RangedAttribute(null, "generic.flyingSpeed", 0.4F, 0.0, 1024.0)
--        .setDescription("Flying Speed")
--        .setShouldWatch(true);
--    public static final IAttribute ATTACK_DAMAGE = new RangedAttribute(null, "generic.attackDamage", 2.0, 0.0, 2048.0);
--    public static final IAttribute ATTACK_SPEED = new RangedAttribute(null, "generic.attackSpeed", 4.0, 0.0, 1024.0).setShouldWatch(true);
--    public static final IAttribute ARMOR = new RangedAttribute(null, "generic.armor", 0.0, 0.0, 30.0).setShouldWatch(true);
--    public static final IAttribute ARMOR_TOUGHNESS = new RangedAttribute(null, "generic.armorToughness", 0.0, 0.0, 20.0).setShouldWatch(true);
--    public static final IAttribute LUCK = new RangedAttribute(null, "generic.luck", 0.0, -1024.0, 1024.0).setShouldWatch(true);
-+    public static final IAttribute MAX_HEALTH = (new RangedAttribute((IAttribute)null, "generic.maxHealth", 20.0D, Float.MIN_VALUE, 1024.0D)).setDescription("Max Health").setShouldWatch(true); // Forge: set smallest max-health value to fix MC-119183. This gets rounded to float so we use the smallest positive float value.
-+    public static final IAttribute FOLLOW_RANGE = (new RangedAttribute((IAttribute)null, "generic.followRange", 32.0D, 0.0D, 2048.0D)).setDescription("Follow Range");
-+    public static final IAttribute KNOCKBACK_RESISTANCE = (new RangedAttribute((IAttribute)null, "generic.knockbackResistance", 0.0D, 0.0D, 1.0D)).setDescription("Knockback Resistance");
-+    public static final IAttribute MOVEMENT_SPEED = (new RangedAttribute((IAttribute)null, "generic.movementSpeed", 0.699999988079071D, 0.0D, 1024.0D)).setDescription("Movement Speed").setShouldWatch(true);
-+    public static final IAttribute FLYING_SPEED = (new RangedAttribute((IAttribute)null, "generic.flyingSpeed", 0.4000000059604645D, 0.0D, 1024.0D)).setDescription("Flying Speed").setShouldWatch(true);
-+    public static final IAttribute ATTACK_DAMAGE = new RangedAttribute((IAttribute)null, "generic.attackDamage", 2.0D, 0.0D, 2048.0D);
-+    public static final IAttribute ATTACK_SPEED = (new RangedAttribute((IAttribute)null, "generic.attackSpeed", 4.0D, 0.0D, 1024.0D)).setShouldWatch(true);
-+    public static final IAttribute ARMOR = (new RangedAttribute((IAttribute)null, "generic.armor", 0.0D, 0.0D, 30.0D)).setShouldWatch(true);
-+    public static final IAttribute ARMOR_TOUGHNESS = (new RangedAttribute((IAttribute)null, "generic.armorToughness", 0.0D, 0.0D, 20.0D)).setShouldWatch(true);
-+    public static final IAttribute LUCK = (new RangedAttribute((IAttribute)null, "generic.luck", 0.0D, -1024.0D, 1024.0D)).setShouldWatch(true);
- 
-     public static NBTTagList writeBaseAttributeMapToNBT(AbstractAttributeMap map)
-     {
-@@ -84,14 +77,14 @@
- 
-     public static void setAttributeModifiers(AbstractAttributeMap map, NBTTagList list)
-     {
--        for (int i = 0; i < list.tagCount(); i++)
-+        for (int i = 0; i < list.tagCount(); ++i)
-         {
-             NBTTagCompound nbttagcompound = list.getCompoundTagAt(i);
-             IAttributeInstance iattributeinstance = map.getAttributeInstanceByName(nbttagcompound.getString("Name"));
- 
-             if (iattributeinstance == null)
-             {
--                LOGGER.warn("Ignoring unknown attribute '{}'", nbttagcompound.getString("Name"));
-+                LOGGER.warn("Ignoring unknown attribute '{}'", (Object)nbttagcompound.getString("Name"));
-             }
-             else
-             {
-@@ -108,7 +101,7 @@
-         {
-             NBTTagList nbttaglist = compound.getTagList("Modifiers", 10);
- 
--            for (int i = 0; i < nbttaglist.tagCount(); i++)
-+            for (int i = 0; i < nbttaglist.tagCount(); ++i)
-             {
-                 AttributeModifier attributemodifier = readAttributeModifierFromNBT(nbttaglist.getCompoundTagAt(i));
- 
-@@ -138,7 +131,7 @@
-         }
-         catch (Exception exception)
-         {
--            LOGGER.warn("Unable to create attribute: {}", exception.getMessage());
-+            LOGGER.warn("Unable to create attribute: {}", (Object)exception.getMessage());
-             return null;
-         }
-     }
++    public static final IAttribute MAX_HEALTH = (new RangedAttribute(null, "generic.maxHealth", 20.0, Float.MIN_VALUE, 1024.0)) // Forge: set smallest max-health value to fix MC-119183. This gets rounded to float so we use the smallest positive float value.
+         .setDescription("Max Health")
+         .setShouldWatch(true);
+     public static final IAttribute FOLLOW_RANGE = new RangedAttribute(null, "generic.followRange", 32.0, 0.0, 2048.0).setDescription("Follow Range");

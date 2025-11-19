@@ -1,206 +1,6 @@
 --- before/net/minecraft/entity/projectile/EntityFishHook.java
 +++ after/net/minecraft/entity/projectile/EntityFishHook.java
-@@ -35,7 +35,7 @@
- 
- public class EntityFishHook extends Entity
- {
--    private static final DataParameter<Integer> DATA_HOOKED_ENTITY = EntityDataManager.createKey(EntityFishHook.class, DataSerializers.VARINT);
-+    private static final DataParameter<Integer> DATA_HOOKED_ENTITY = EntityDataManager.<Integer>createKey(EntityFishHook.class, DataSerializers.VARINT);
-     private boolean inGround;
-     private int ticksInGround;
-     private EntityPlayer angler;
-@@ -89,44 +89,38 @@
-     {
-         float f = this.angler.prevRotationPitch + (this.angler.rotationPitch - this.angler.prevRotationPitch);
-         float f1 = this.angler.prevRotationYaw + (this.angler.rotationYaw - this.angler.prevRotationYaw);
--        float f2 = MathHelper.cos(-f1 * (float)(Math.PI / 180.0) - (float) Math.PI);
--        float f3 = MathHelper.sin(-f1 * (float)(Math.PI / 180.0) - (float) Math.PI);
--        float f4 = -MathHelper.cos(-f * (float)(Math.PI / 180.0));
--        float f5 = MathHelper.sin(-f * (float)(Math.PI / 180.0));
--        double d0 = this.angler.prevPosX + (this.angler.posX - this.angler.prevPosX) - (double)f3 * 0.3;
--        double d1 = this.angler.prevPosY
--                    + (this.angler.posY - this.angler.prevPosY)
--                    + (double)this.angler.getEyeHeight();
--        double d2 = this.angler.prevPosZ + (this.angler.posZ - this.angler.prevPosZ) - (double)f2 * 0.3;
-+        float f2 = MathHelper.cos(-f1 * 0.017453292F - (float)Math.PI);
-+        float f3 = MathHelper.sin(-f1 * 0.017453292F - (float)Math.PI);
-+        float f4 = -MathHelper.cos(-f * 0.017453292F);
-+        float f5 = MathHelper.sin(-f * 0.017453292F);
-+        double d0 = this.angler.prevPosX + (this.angler.posX - this.angler.prevPosX) - (double)f3 * 0.3D;
-+        double d1 = this.angler.prevPosY + (this.angler.posY - this.angler.prevPosY) + (double)this.angler.getEyeHeight();
-+        double d2 = this.angler.prevPosZ + (this.angler.posZ - this.angler.prevPosZ) - (double)f2 * 0.3D;
-         this.setLocationAndAngles(d0, d1, d2, f1, f);
-         this.motionX = (double)(-f3);
-         this.motionY = (double)MathHelper.clamp(-(f5 / f4), -5.0F, 5.0F);
-         this.motionZ = (double)(-f2);
--        float f6 = MathHelper.sqrt(
--                       this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ
--                   );
--        this.motionX = this.motionX * (0.6 / (double)f6 + 0.5 + this.rand.nextGaussian() * 0.0045);
--        this.motionY = this.motionY * (0.6 / (double)f6 + 0.5 + this.rand.nextGaussian() * 0.0045);
--        this.motionZ = this.motionZ * (0.6 / (double)f6 + 0.5 + this.rand.nextGaussian() * 0.0045);
-+        float f6 = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
-+        this.motionX *= 0.6D / (double)f6 + 0.5D + this.rand.nextGaussian() * 0.0045D;
-+        this.motionY *= 0.6D / (double)f6 + 0.5D + this.rand.nextGaussian() * 0.0045D;
-+        this.motionZ *= 0.6D / (double)f6 + 0.5D + this.rand.nextGaussian() * 0.0045D;
-         float f7 = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
--        this.rotationYaw = (float)(MathHelper.atan2(this.motionX, this.motionZ) * 180.0F / (float)Math.PI);
--        this.rotationPitch = (float)(MathHelper.atan2(this.motionY, (double)f7) * 180.0F / (float)Math.PI);
-+        this.rotationYaw = (float)(MathHelper.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
-+        this.rotationPitch = (float)(MathHelper.atan2(this.motionY, (double)f7) * (180D / Math.PI));
-         this.prevRotationYaw = this.rotationYaw;
-         this.prevRotationPitch = this.rotationPitch;
-     }
- 
--    @Override
-     protected void entityInit()
-     {
--        this.getDataManager().register(DATA_HOOKED_ENTITY, 0);
-+        this.getDataManager().register(DATA_HOOKED_ENTITY, Integer.valueOf(0));
-     }
- 
--    @Override
-     public void notifyDataManagerChange(DataParameter<?> key)
-     {
-         if (DATA_HOOKED_ENTITY.equals(key))
-         {
--            int i = this.getDataManager().get(DATA_HOOKED_ENTITY);
-+            int i = ((Integer)this.getDataManager().get(DATA_HOOKED_ENTITY)).intValue();
-             this.caughtEntity = i > 0 ? this.world.getEntityByID(i - 1) : null;
-         }
- 
-@@ -134,22 +128,17 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public boolean isInRangeToRenderDist(double distance)
-     {
--        double d0 = 64.0;
--        return distance < 4096.0;
-+        double d0 = 64.0D;
-+        return distance < 4096.0D;
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
--    public void setPositionAndRotationDirect(
--        double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport
--    )
-+    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport)
-     {
-     }
- 
--    @Override
-     public void onUpdate()
-     {
-         super.onUpdate();
-@@ -162,7 +151,7 @@
-         {
-             if (this.inGround)
-             {
--                this.ticksInGround++;
-+                ++this.ticksInGround;
- 
-                 if (this.ticksInGround >= 1200)
-                 {
-@@ -184,18 +173,18 @@
-             {
-                 if (this.caughtEntity != null)
-                 {
--                    this.motionX = 0.0;
--                    this.motionY = 0.0;
--                    this.motionZ = 0.0;
-+                    this.motionX = 0.0D;
-+                    this.motionY = 0.0D;
-+                    this.motionZ = 0.0D;
-                     this.currentState = EntityFishHook.State.HOOKED_IN_ENTITY;
-                     return;
-                 }
- 
-                 if (f > 0.0F)
-                 {
--                    this.motionX *= 0.3;
--                    this.motionY *= 0.2;
--                    this.motionZ *= 0.3;
-+                    this.motionX *= 0.3D;
-+                    this.motionY *= 0.2D;
-+                    this.motionZ *= 0.3D;
-                     this.currentState = EntityFishHook.State.BOBBING;
-                     return;
-                 }
-@@ -207,14 +196,14 @@
- 
-                 if (!this.inGround && !this.onGround && !this.collidedHorizontally)
-                 {
--                    this.ticksInAir++;
-+                    ++this.ticksInAir;
-                 }
-                 else
-                 {
-                     this.ticksInAir = 0;
--                    this.motionX = 0.0;
--                    this.motionY = 0.0;
--                    this.motionZ = 0.0;
-+                    this.motionX = 0.0D;
-+                    this.motionY = 0.0D;
-+                    this.motionZ = 0.0D;
-                 }
-             }
-             else
-@@ -232,7 +221,7 @@
-                         {
-                             this.posX = this.caughtEntity.posX;
-                             double d2 = (double)this.caughtEntity.height;
--                            this.posY = this.caughtEntity.getEntityBoundingBox().minY + d2 * 0.8;
-+                            this.posY = this.caughtEntity.getEntityBoundingBox().minY + d2 * 0.8D;
-                             this.posZ = this.caughtEntity.posZ;
-                             this.setPosition(this.posX, this.posY, this.posZ);
-                         }
-@@ -243,16 +232,16 @@
- 
-                 if (this.currentState == EntityFishHook.State.BOBBING)
-                 {
--                    this.motionX *= 0.9;
--                    this.motionZ *= 0.9;
-+                    this.motionX *= 0.9D;
-+                    this.motionZ *= 0.9D;
-                     double d0 = this.posY + this.motionY - (double)blockpos.getY() - (double)f;
- 
--                    if (Math.abs(d0) < 0.01)
-+                    if (Math.abs(d0) < 0.01D)
-                     {
--                        d0 += Math.signum(d0) * 0.1;
-+                        d0 += Math.signum(d0) * 0.1D;
-                     }
- 
--                    this.motionY = this.motionY - d0 * (double)this.rand.nextFloat() * 0.2;
-+                    this.motionY -= d0 * (double)this.rand.nextFloat() * 0.2D;
- 
-                     if (!this.world.isRemote && f > 0.0F)
-                     {
-@@ -263,15 +252,15 @@
- 
-             if (iblockstate.getMaterial() != Material.WATER)
-             {
--                this.motionY -= 0.03;
-+                this.motionY -= 0.03D;
-             }
- 
-             this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
-             this.updateRotation();
--            double d1 = 0.92;
--            this.motionX *= 0.92;
--            this.motionY *= 0.92;
--            this.motionZ *= 0.92;
-+            double d1 = 0.92D;
-+            this.motionX *= 0.92D;
-+            this.motionY *= 0.92D;
-+            this.motionZ *= 0.92D;
-             this.setPosition(this.posX, this.posY, this.posZ);
-         }
-     }
-@@ -280,10 +269,10 @@
+@@ -280,8 +280,8 @@
      {
          ItemStack itemstack = this.angler.getHeldItemMainhand();
          ItemStack itemstack1 = this.angler.getHeldItemOffhand();
@@ -209,182 +9,21 @@
 +        boolean flag = itemstack.getItem() instanceof net.minecraft.item.ItemFishingRod;
 +        boolean flag1 = itemstack1.getItem() instanceof net.minecraft.item.ItemFishingRod;
  
--        if (!this.angler.isDead && this.angler.isEntityAlive() && (flag || flag1) && !(this.getDistanceSq(this.angler) > 1024.0))
-+        if (!this.angler.isDead && this.angler.isEntityAlive() && (flag || flag1) && this.getDistanceSq(this.angler) <= 1024.0D)
+         if (!this.angler.isDead && this.angler.isEntityAlive() && (flag || flag1) && !(this.getDistanceSq(this.angler) > 1024.0))
          {
-             return false;
-         }
-@@ -297,12 +286,11 @@
-     private void updateRotation()
-     {
-         float f = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
--        this.rotationYaw = (float)(MathHelper.atan2(this.motionX, this.motionZ) * 180.0F / (float)Math.PI);
--        this.rotationPitch = (float)(MathHelper.atan2(this.motionY, (double)f) * 180.0F / (float)Math.PI);
-+        this.rotationYaw = (float)(MathHelper.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
- 
--        while (this.rotationPitch - this.prevRotationPitch < -180.0F)
-+        for (this.rotationPitch = (float)(MathHelper.atan2(this.motionY, (double)f) * (180D / Math.PI)); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F)
-         {
--            this.prevRotationPitch -= 360.0F;
-+            ;
-         }
- 
-         while (this.rotationPitch - this.prevRotationPitch >= 180.0F)
-@@ -338,22 +326,21 @@
-         }
- 
-         Entity entity = null;
--        List<Entity> list = this.world
--                            .getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().expand(this.motionX, this.motionY, this.motionZ).grow(1.0));
--        double d0 = 0.0;
-+        List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().expand(this.motionX, this.motionY, this.motionZ).grow(1.0D));
-+        double d0 = 0.0D;
- 
-         for (Entity entity1 : list)
-         {
-             if (this.canBeHooked(entity1) && (entity1 != this.angler || this.ticksInAir >= 5))
-             {
--                AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().grow(0.3F);
-+                AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().grow(0.30000001192092896D);
-                 RayTraceResult raytraceresult1 = axisalignedbb.calculateIntercept(vec3d, vec3d1);
- 
-                 if (raytraceresult1 != null)
-                 {
-                     double d1 = vec3d.squareDistanceTo(raytraceresult1.hitVec);
- 
--                    if (d1 < d0 || d0 == 0.0)
-+                    if (d1 < d0 || d0 == 0.0D)
-                     {
-                         entity = entity1;
-                         d0 = d1;
-@@ -383,7 +370,7 @@
- 
-     private void setHookedEntity()
-     {
--        this.getDataManager().set(DATA_HOOKED_ENTITY, this.caughtEntity.getEntityId() + 1);
-+        this.getDataManager().set(DATA_HOOKED_ENTITY, Integer.valueOf(this.caughtEntity.getEntityId() + 1));
-     }
- 
-     private void catchingFish(BlockPos p_190621_1_)
-@@ -394,17 +381,17 @@
- 
-         if (this.rand.nextFloat() < 0.25F && this.world.isRainingAt(blockpos))
-         {
--            i++;
-+            ++i;
-         }
- 
-         if (this.rand.nextFloat() < 0.5F && !this.world.canSeeSky(blockpos))
-         {
--            i--;
-+            --i;
-         }
- 
-         if (this.ticksCatchable > 0)
-         {
--            this.ticksCatchable--;
-+            --this.ticksCatchable;
- 
-             if (this.ticksCatchable <= 0)
-             {
-@@ -413,7 +400,7 @@
-             }
-             else
-             {
--                this.motionY = this.motionY - 0.2 * (double)this.rand.nextFloat() * (double)this.rand.nextFloat();
-+                this.motionY -= 0.2D * (double)this.rand.nextFloat() * (double)this.rand.nextFloat();
-             }
-         }
-         else if (this.ticksCatchableDelay > 0)
-@@ -422,55 +409,35 @@
- 
-             if (this.ticksCatchableDelay > 0)
-             {
--                this.fishApproachAngle = (float)((double)this.fishApproachAngle + this.rand.nextGaussian() * 4.0);
--                float f = this.fishApproachAngle * (float)(Math.PI / 180.0);
-+                this.fishApproachAngle = (float)((double)this.fishApproachAngle + this.rand.nextGaussian() * 4.0D);
-+                float f = this.fishApproachAngle * 0.017453292F;
-                 float f1 = MathHelper.sin(f);
-                 float f2 = MathHelper.cos(f);
+@@ -429,9 +429,9 @@
                  double d0 = this.posX + (double)(f1 * (float)this.ticksCatchableDelay * 0.1F);
                  double d1 = (double)((float)MathHelper.floor(this.getEntityBoundingBox().minY) + 1.0F);
                  double d2 = this.posZ + (double)(f2 * (float)this.ticksCatchableDelay * 0.1F);
 -                Block block = worldserver.getBlockState(new BlockPos(d0, d1 - 1.0, d2)).getBlock();
-+                IBlockState state = worldserver.getBlockState(new BlockPos(d0, d1 - 1.0D, d2));
++                IBlockState state = worldserver.getBlockState(new BlockPos(d0, d1 - 1.0, d2));
  
 -                if (block == Blocks.WATER || block == Blocks.FLOWING_WATER)
 +                if (state.getMaterial() == Material.WATER)
                  {
                      if (this.rand.nextFloat() < 0.15F)
                      {
--                        worldserver.spawnParticle(EnumParticleTypes.WATER_BUBBLE, d0, d1 - 0.1F, d2, 1, (double)f1, 0.1, (double)f2, 0.0);
-+                        worldserver.spawnParticle(EnumParticleTypes.WATER_BUBBLE, d0, d1 - 0.10000000149011612D, d2, 1, (double)f1, 0.1D, (double)f2, 0.0D);
-                     }
- 
-                     float f3 = f1 * 0.04F;
-                     float f4 = f2 * 0.04F;
--                    worldserver.spawnParticle(EnumParticleTypes.WATER_WAKE, d0, d1, d2, 0, (double)f4, 0.01, (double)(-f3), 1.0);
--                    worldserver.spawnParticle(EnumParticleTypes.WATER_WAKE, d0, d1, d2, 0, (double)(-f4), 0.01, (double)f3, 1.0);
-+                    worldserver.spawnParticle(EnumParticleTypes.WATER_WAKE, d0, d1, d2, 0, (double)f4, 0.01D, (double)(-f3), 1.0D);
-+                    worldserver.spawnParticle(EnumParticleTypes.WATER_WAKE, d0, d1, d2, 0, (double)(-f4), 0.01D, (double)f3, 1.0D);
-                 }
-             }
-             else
-             {
-                 this.motionY = (double)(-0.4F * MathHelper.nextFloat(this.rand, 0.6F, 1.0F));
-                 this.playSound(SoundEvents.ENTITY_BOBBER_SPLASH, 0.25F, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.4F);
--                double d3 = this.getEntityBoundingBox().minY + 0.5;
--                worldserver.spawnParticle(
--                    EnumParticleTypes.WATER_BUBBLE,
--                    this.posX,
--                    d3,
--                    this.posZ,
--                    (int)(1.0F + this.width * 20.0F),
--                    (double)this.width,
--                    0.0,
--                    (double)this.width,
--                    0.2F
--                );
--                worldserver.spawnParticle(
--                    EnumParticleTypes.WATER_WAKE,
--                    this.posX,
--                    d3,
--                    this.posZ,
--                    (int)(1.0F + this.width * 20.0F),
--                    (double)this.width,
--                    0.0,
--                    (double)this.width,
--                    0.2F
--                );
-+                double d3 = this.getEntityBoundingBox().minY + 0.5D;
-+                worldserver.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX, d3, this.posZ, (int)(1.0F + this.width * 20.0F), (double)this.width, 0.0D, (double)this.width, 0.20000000298023224D);
-+                worldserver.spawnParticle(EnumParticleTypes.WATER_WAKE, this.posX, d3, this.posZ, (int)(1.0F + this.width * 20.0F), (double)this.width, 0.0D, (double)this.width, 0.20000000298023224D);
-                 this.ticksCatchable = MathHelper.getInt(this.rand, 20, 40);
-             }
-         }
-@@ -481,29 +448,29 @@
- 
-             if (this.ticksCaughtDelay < 20)
-             {
--                f5 = (float)((double)f5 + (double)(20 - this.ticksCaughtDelay) * 0.05);
-+                f5 = (float)((double)f5 + (double)(20 - this.ticksCaughtDelay) * 0.05D);
-             }
-             else if (this.ticksCaughtDelay < 40)
-             {
--                f5 = (float)((double)f5 + (double)(40 - this.ticksCaughtDelay) * 0.02);
-+                f5 = (float)((double)f5 + (double)(40 - this.ticksCaughtDelay) * 0.02D);
-             }
-             else if (this.ticksCaughtDelay < 60)
-             {
--                f5 = (float)((double)f5 + (double)(60 - this.ticksCaughtDelay) * 0.01);
-+                f5 = (float)((double)f5 + (double)(60 - this.ticksCaughtDelay) * 0.01D);
-             }
- 
-             if (this.rand.nextFloat() < f5)
-             {
--                float f6 = MathHelper.nextFloat(this.rand, 0.0F, 360.0F) * (float)(Math.PI / 180.0);
-+                float f6 = MathHelper.nextFloat(this.rand, 0.0F, 360.0F) * 0.017453292F;
-                 float f7 = MathHelper.nextFloat(this.rand, 25.0F, 60.0F);
+@@ -499,9 +499,9 @@
                  double d4 = this.posX + (double)(MathHelper.sin(f6) * f7 * 0.1F);
                  double d5 = (double)((float)MathHelper.floor(this.getEntityBoundingBox().minY) + 1.0F);
                  double d6 = this.posZ + (double)(MathHelper.cos(f6) * f7 * 0.1F);
@@ -394,34 +33,9 @@
 -                if (block1 == Blocks.WATER || block1 == Blocks.FLOWING_WATER)
 +                if (state.getMaterial() == Material.WATER)
                  {
--                    worldserver.spawnParticle(EnumParticleTypes.WATER_SPLASH, d4, d5, d6, 2 + this.rand.nextInt(2), 0.1F, 0.0, 0.1F, 0.0);
-+                    worldserver.spawnParticle(EnumParticleTypes.WATER_SPLASH, d4, d5, d6, 2 + this.rand.nextInt(2), 0.10000000149011612D, 0.0D, 0.10000000149011612D, 0.0D);
+                     worldserver.spawnParticle(EnumParticleTypes.WATER_SPLASH, d4, d5, d6, 2 + this.rand.nextInt(2), 0.1F, 0.0, 0.1F, 0.0);
                  }
-             }
- 
-@@ -516,7 +483,7 @@
-         else
-         {
-             this.ticksCaughtDelay = MathHelper.getInt(this.rand, 100, 600);
--            this.ticksCaughtDelay = this.ticksCaughtDelay - this.lureSpeed * 20 * 5;
-+            this.ticksCaughtDelay -= this.lureSpeed * 20 * 5;
-         }
-     }
- 
-@@ -525,12 +492,10 @@
-         return p_189739_1_.canBeCollidedWith() || p_189739_1_ instanceof EntityItem;
-     }
- 
--    @Override
-     public void writeEntityToNBT(NBTTagCompound compound)
-     {
-     }
- 
--    @Override
-     public void readEntityFromNBT(NBTTagCompound compound)
-     {
-     }
-@@ -541,6 +506,7 @@
+@@ -541,6 +541,7 @@
          {
              int i = 0;
  
@@ -429,7 +43,7 @@
              if (this.caughtEntity != null)
              {
                  this.bringInHookedEntity();
-@@ -550,34 +516,29 @@
+@@ -550,12 +551,17 @@
              else if (this.ticksCatchable > 0)
              {
                  LootContext.Builder lootcontext$builder = new LootContext.Builder((WorldServer)this.world);
@@ -452,34 +66,7 @@
                  {
                      EntityItem entityitem = new EntityItem(this.world, this.posX, this.posY, this.posZ, itemstack);
                      double d0 = this.angler.posX - this.posX;
-                     double d1 = this.angler.posY - this.posY;
-                     double d2 = this.angler.posZ - this.posZ;
-                     double d3 = (double)MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
--                    double d4 = 0.1;
--                    entityitem.motionX = d0 * 0.1;
--                    entityitem.motionY = d1 * 0.1 + (double)MathHelper.sqrt(d3) * 0.08;
--                    entityitem.motionZ = d2 * 0.1;
-+                    double d4 = 0.1D;
-+                    entityitem.motionX = d0 * 0.1D;
-+                    entityitem.motionY = d1 * 0.1D + (double)MathHelper.sqrt(d3) * 0.08D;
-+                    entityitem.motionZ = d2 * 0.1D;
-                     this.world.spawnEntity(entityitem);
--                    this.angler
--                    .world
--                    .spawnEntity(
--                        new EntityXPOrb(
--                            this.angler.world,
--                            this.angler.posX,
--                            this.angler.posY + 0.5,
--                            this.angler.posZ + 0.5,
--                            this.rand.nextInt(6) + 1
--                        )
--                    );
-+                    this.angler.world.spawnEntity(new EntityXPOrb(this.angler.world, this.angler.posX, this.angler.posY + 0.5D, this.angler.posZ + 0.5D, this.rand.nextInt(6) + 1));
-                     Item item = itemstack.getItem();
- 
-                     if (item == Items.FISH || item == Items.COOKED_FISH)
-@@ -595,7 +556,7 @@
+@@ -595,7 +601,7 @@
              }
  
              this.setDead();
@@ -488,43 +75,3 @@
          }
          else
          {
-@@ -604,13 +565,9 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    @Override
-     public void handleStatusUpdate(byte id)
-     {
--        if (id == 31
--                && this.world.isRemote
--                && this.caughtEntity instanceof EntityPlayer
--                && ((EntityPlayer)this.caughtEntity).isUser())
-+        if (id == 31 && this.world.isRemote && this.caughtEntity instanceof EntityPlayer && ((EntityPlayer)this.caughtEntity).isUser())
-         {
-             this.bringInHookedEntity();
-         }
-@@ -625,20 +582,18 @@
-             double d0 = this.angler.posX - this.posX;
-             double d1 = this.angler.posY - this.posY;
-             double d2 = this.angler.posZ - this.posZ;
--            double d3 = 0.1;
--            this.caughtEntity.motionX += d0 * 0.1;
--            this.caughtEntity.motionY += d1 * 0.1;
--            this.caughtEntity.motionZ += d2 * 0.1;
-+            double d3 = 0.1D;
-+            this.caughtEntity.motionX += d0 * 0.1D;
-+            this.caughtEntity.motionY += d1 * 0.1D;
-+            this.caughtEntity.motionZ += d2 * 0.1D;
-         }
-     }
- 
--    @Override
-     protected boolean canTriggerWalking()
-     {
-         return false;
-     }
- 
--    @Override
-     public void setDead()
-     {
-         super.setDead();

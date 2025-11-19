@@ -1,54 +1,11 @@
 --- before/net/minecraft/entity/projectile/EntityLargeFireball.java
 +++ after/net/minecraft/entity/projectile/EntityLargeFireball.java
-@@ -1,5 +1,6 @@
- package net.minecraft.entity.projectile;
- 
-+import net.minecraft.entity.Entity;
- import net.minecraft.entity.EntityLivingBase;
- import net.minecraft.nbt.NBTTagCompound;
- import net.minecraft.util.DamageSource;
-@@ -19,9 +20,7 @@
-     }
- 
-     @SideOnly(Side.CLIENT)
--    public EntityLargeFireball(
--        World worldIn, double x, double y, double z, double accelX, double accelY, double accelZ
--    )
-+    public EntityLargeFireball(World worldIn, double x, double y, double z, double accelX, double accelY, double accelZ)
-     {
-         super(worldIn, x, y, z, accelX, accelY, accelZ);
-     }
-@@ -31,7 +30,6 @@
-         super(worldIn, shooter, accelX, accelY, accelZ);
-     }
- 
--    @Override
-     protected void onImpact(RayTraceResult result)
-     {
-         if (!this.world.isRemote)
-@@ -42,8 +40,8 @@
+@@ -42,7 +42,7 @@
                  this.applyEnchantments(this.shootingEntity, result.entityHit);
              }
  
 -            boolean flag = this.world.getGameRules().getBoolean("mobGriefing");
--            this.world.newExplosion(null, this.posX, this.posY, this.posZ, (float)this.explosionPower, flag, flag);
 +            boolean flag = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity);
-+            this.world.newExplosion((Entity)null, this.posX, this.posY, this.posZ, (float)this.explosionPower, flag, flag);
+             this.world.newExplosion(null, this.posX, this.posY, this.posZ, (float)this.explosionPower, flag, flag);
              this.setDead();
          }
-     }
-@@ -53,14 +51,12 @@
-         EntityFireball.registerFixesFireball(fixer, "Fireball");
-     }
- 
--    @Override
-     public void writeEntityToNBT(NBTTagCompound compound)
-     {
-         super.writeEntityToNBT(compound);
-         compound.setInteger("ExplosionPower", this.explosionPower);
-     }
- 
--    @Override
-     public void readEntityFromNBT(NBTTagCompound compound)
-     {
-         super.readEntityFromNBT(compound);

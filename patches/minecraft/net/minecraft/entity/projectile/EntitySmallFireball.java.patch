@@ -1,25 +1,6 @@
 --- before/net/minecraft/entity/projectile/EntitySmallFireball.java
 +++ after/net/minecraft/entity/projectile/EntitySmallFireball.java
-@@ -23,9 +23,7 @@
-         this.setSize(0.3125F, 0.3125F);
-     }
- 
--    public EntitySmallFireball(
--        World worldIn, double x, double y, double z, double accelX, double accelY, double accelZ
--    )
-+    public EntitySmallFireball(World worldIn, double x, double y, double z, double accelX, double accelY, double accelZ)
-     {
-         super(worldIn, x, y, z, accelX, accelY, accelZ);
-         this.setSize(0.3125F, 0.3125F);
-@@ -36,7 +34,6 @@
-         EntityFireball.registerFixesFireball(fixer, "SmallFireball");
-     }
- 
--    @Override
-     protected void onImpact(RayTraceResult result)
-     {
-         if (!this.world.isRemote)
-@@ -60,7 +57,7 @@
+@@ -60,7 +60,7 @@
  
                  if (this.shootingEntity != null && this.shootingEntity instanceof EntityLiving)
                  {
@@ -28,17 +9,3 @@
                  }
  
                  if (flag1)
-@@ -78,13 +75,11 @@
-         }
-     }
- 
--    @Override
-     public boolean canBeCollidedWith()
-     {
-         return false;
-     }
- 
--    @Override
-     public boolean attackEntityFrom(DamageSource source, float amount)
-     {
-         return false;
