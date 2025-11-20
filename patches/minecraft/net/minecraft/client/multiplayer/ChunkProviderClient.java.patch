@@ -1,14 +1,6 @@
 --- before/net/minecraft/client/multiplayer/ChunkProviderClient.java
 +++ after/net/minecraft/client/multiplayer/ChunkProviderClient.java
-@@ -3,6 +3,7 @@
- import com.google.common.base.MoreObjects;
- import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
- import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-+import it.unimi.dsi.fastutil.objects.ObjectIterator;
- import javax.annotation.Nullable;
- import net.minecraft.util.math.ChunkPos;
- import net.minecraft.world.World;
-@@ -61,6 +62,7 @@
+@@ -61,6 +61,7 @@
      {
          Chunk chunk = new Chunk(this.world, chunkX, chunkZ);
          this.loadedChunks.put(ChunkPos.asLong(chunkX, chunkZ), chunk);
@@ -16,16 +8,3 @@
          chunk.markLoaded(true);
          return chunk;
      }
-@@ -75,9 +77,11 @@
-     public boolean tick()
-     {
-         long i = System.currentTimeMillis();
-+        ObjectIterator objectiterator = this.loadedChunks.values().iterator();
- 
--        for (Chunk chunk : this.loadedChunks.values())
-+        while (objectiterator.hasNext())
-         {
-+            Chunk chunk = (Chunk)objectiterator.next();
-             chunk.onTick(System.currentTimeMillis() - i > 5L);
-         }
- 

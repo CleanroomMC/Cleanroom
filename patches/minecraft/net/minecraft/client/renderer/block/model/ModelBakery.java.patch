@@ -38,7 +38,7 @@
                      }
  
                      for (Entry<IBlockState, ModelResourceLocation> entry : map.entrySet())
-@@ -173,7 +188,7 @@
+@@ -173,22 +188,18 @@
                          {
                              try
                              {
@@ -47,7 +47,12 @@
                              }
                              catch (RuntimeException runtimeexception)
                              {
-@@ -185,10 +200,6 @@
+                                 if (!modelblockdefinition.hasMultipartData())
+                                 {
+-                                    LOGGER.warn("Unable to load variant: {} from {}", modelresourcelocation.getVariant(), modelresourcelocation);
++                                    LOGGER.warn("Unable to load variant: " + modelresourcelocation.getVariant() + " from " + modelresourcelocation, runtimeexception);
+                                 }
+                             }
                          }
                      }
                  }
@@ -86,6 +91,15 @@
      }
  
      protected List<String> getVariantNames(Item stack)
+@@ -714,7 +730,7 @@
+     protected ResourceLocation getItemLocation(String location)
+     {
+         ResourceLocation resourcelocation = new ResourceLocation(location);
+-        return new ResourceLocation(resourcelocation.getNamespace(), "item/" + resourcelocation.getPath());
++        return new ResourceLocation(resourcelocation.getNamespace(), "item/" + resourcelocation.getPath().replaceAll("#.*", ""));
+     }
+ 
+     private void bakeBlockModels()
 @@ -818,7 +834,7 @@
          for (Entry<String, ResourceLocation> entry : this.itemLocations.entrySet())
          {

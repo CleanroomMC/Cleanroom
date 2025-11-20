@@ -1,14 +1,5 @@
 --- before/net/minecraft/client/renderer/chunk/ChunkRenderWorker.java
 +++ after/net/minecraft/client/renderer/chunk/ChunkRenderWorker.java
-@@ -152,7 +152,7 @@
-             }
- 
-             final CompiledChunk compiledchunk = generator.getCompiledChunk();
--            ArrayList arraylist = Lists.newArrayList();
-+            ArrayList<ListenableFuture<Object>> arraylist = Lists.newArrayList();
- 
-             if (chunkcompiletaskgenerator$type == ChunkCompileTaskGenerator.Type.REBUILD_CHUNK)
-             {
 @@ -239,7 +239,7 @@
                          Minecraft.getMinecraft().crashed(CrashReport.makeCrashReport(p_onFailure_1_, "Rendering chunk"));
                      }

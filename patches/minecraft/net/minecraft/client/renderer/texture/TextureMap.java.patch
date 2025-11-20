@@ -190,34 +190,24 @@
      }
  
      private boolean generateMipmaps(IResourceManager resourceManager, final TextureAtlasSprite texture)
-@@ -205,8 +282,8 @@
-         IResource iresource = null;
+@@ -206,7 +283,7 @@
          label45:
          {
--            boolean lvt_6_1_;
+             boolean lvt_6_1_;
 -
-+            boolean flag;
 +            if (texture.hasCustomLoader(resourceManager, resourcelocation)) break label45;
              try
              {
                  iresource = resourceManager.getResource(resourcelocation);
-@@ -221,14 +298,14 @@
-             catch (IOException ioexception)
-             {
-                 LOGGER.error("Using missing texture, unable to load {}", resourcelocation, ioexception);
--                lvt_6_1_ = false;
-+                flag = false;
-             }
-             finally
-             {
-                 IOUtils.closeQuietly(iresource);
-             }
- 
--            return lvt_6_1_;
-+            return flag;
+@@ -302,7 +379,7 @@
          }
+         else
+         {
+-            TextureAtlasSprite textureatlassprite = this.mapRegisteredSprites.get(location);
++            TextureAtlasSprite textureatlassprite = this.mapRegisteredSprites.get(location.toString());
  
-         try
+             if (textureatlassprite == null)
+             {
 @@ -328,5 +405,53 @@
      public TextureAtlasSprite getMissingSprite()
      {

@@ -1,5 +1,14 @@
 --- before/net/minecraft/client/gui/GuiKeyBindingList.java
 +++ after/net/minecraft/client/gui/GuiKeyBindingList.java
+@@ -65,7 +65,7 @@
+     @Override
+     protected int getScrollBarX()
+     {
+-        return super.getScrollBarX() + 15;
++        return super.getScrollBarX() + 35;
+     }
+ 
+     @Override
 @@ -138,7 +138,7 @@
          {
              this.keybinding = name;

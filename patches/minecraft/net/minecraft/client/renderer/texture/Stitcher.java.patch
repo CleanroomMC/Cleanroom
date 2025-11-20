@@ -38,3 +38,12 @@
              }
              else
              {
+@@ -248,7 +254,7 @@
+             @Override
+             public String toString()
+             {
+-                return "Holder{width=" + this.width + ", height=" + this.height + '}';
++                return "Holder{width=" + this.width + ", height=" + this.height + ", name=" + this.sprite.getIconName() + '}';
+             }
+ 
+             public int compareTo(Stitcher.Holder p_compareTo_1_)

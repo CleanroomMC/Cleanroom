@@ -8,6 +8,24 @@
          }
      }
  
+@@ -315,7 +316,7 @@
+             this.mc.setRenderViewEntity(this.mc.player);
+         }
+ 
+-        float f3 = this.mc.world.getLightBrightness(new BlockPos(this.mc.getRenderViewEntity()));
++        float f3 = this.mc.world.getLightBrightness(new BlockPos(this.mc.getRenderViewEntity().getPositionEyes(1.0F)));
+         float f4 = (float)this.mc.gameSettings.renderDistanceChunks / 32.0F;
+         float f2 = f3 * (1.0F - f4) + f4;
+         this.fogColor1 = this.fogColor1 + (f2 - this.fogColor1) * 0.1F;
+@@ -445,7 +446,7 @@
+ 
+                         if (d3 < d2 || d2 == 0.0)
+                         {
+-                            if (entity1.getLowestRidingEntity() == entity.getLowestRidingEntity())
++                            if (entity1.getLowestRidingEntity() == entity.getLowestRidingEntity() && entity1.canRiderInteract())
+                             {
+                                 if (d2 == 0.0)
+                                 {
 @@ -538,7 +539,7 @@
                  f = f * 60.0F / 70.0F;
              }
@@ -116,6 +134,15 @@
                      }
                      else
                      {
+@@ -1333,7 +1343,7 @@
+         GlStateManager.clear(16640);
+         this.mc.profiler.endStartSection("camera");
+         this.setupCameraTransform(partialTicks, pass);
+-        ActiveRenderInfo.updateRenderInfo(this.mc.player, this.mc.gameSettings.thirdPersonView == 2);
++        ActiveRenderInfo.updateRenderInfo(this.mc.getRenderViewEntity(), this.mc.gameSettings.thirdPersonView == 2); //Forge: MC-46445 Spectator mode particles and sounds computed from where you have been before
+         this.mc.profiler.endStartSection("frustum");
+         ClippingHelperImpl.getInstance();
+         this.mc.profiler.endStartSection("culling");
 @@ -1396,7 +1406,9 @@
          GlStateManager.disableAlpha();
          renderglobal.renderBlockLayer(BlockRenderLayer.SOLID, (double)partialTicks, pass, entity);

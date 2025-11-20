@@ -1,10 +1,18 @@
 --- before/net/minecraft/client/renderer/BlockModelRenderer.java
 +++ after/net/minecraft/client/renderer/BlockModelRenderer.java
-@@ -165,7 +165,14 @@
-             aoFace.updateVertexBrightness(blockAccessIn, stateIn, posIn, bakedquad.getFace(), quadBounds, bitSet);
+@@ -50,7 +50,7 @@
+         long rand
+     )
+     {
+-        boolean flag = Minecraft.isAmbientOcclusionEnabled() && stateIn.getLightValue() == 0 && modelIn.isAmbientOcclusion();
++        boolean flag = Minecraft.isAmbientOcclusionEnabled() && stateIn.getLightValue(worldIn, posIn) == 0 && modelIn.isAmbientOcclusion(stateIn);
+ 
+         try
+         {
+@@ -166,6 +166,14 @@
              buffer.addVertexData(bakedquad.getVertexData());
              buffer.putBrightness4(aoFace.vertexBrightness[0], aoFace.vertexBrightness[1], aoFace.vertexBrightness[2], aoFace.vertexBrightness[3]);
--
+ 
 +            if(bakedquad.shouldApplyDiffuseLighting())
 +            {
 +                float diffuse = net.minecraftforge.client.model.pipeline.LightUtil.diffuseLight(bakedquad.getFace());
@@ -16,7 +24,7 @@
              if (bakedquad.hasTintIndex())
              {
                  int k = this.blockColors.colorMultiplier(stateIn, blockAccessIn, posIn, bakedquad.getTintIndex());
-@@ -308,10 +315,25 @@
+@@ -308,10 +316,25 @@
                  float f = (float)(k >> 16 & 0xFF) / 255.0F;
                  float f1 = (float)(k >> 8 & 0xFF) / 255.0F;
                  float f2 = (float)(k & 0xFF) / 255.0F;

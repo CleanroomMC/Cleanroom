@@ -78,7 +78,7 @@
                      )
                  );
              }
-@@ -1533,7 +1544,7 @@
+@@ -1533,14 +1544,14 @@
                  this.client
                  .ingameGUI
                  .getChatGUI()
@@ -87,6 +87,14 @@
              }
              else if (f == 103.0F)
              {
+                 this.client
+                 .ingameGUI
+                 .getChatGUI()
+-                .printChatMessage(new TextComponentTranslation("demo.help.inventory", GameSettings.getKeyDisplayString(gamesettings.keyBindInventory.getKeyCode())));
++                .printChatMessage(new TextComponentTranslation("demo.help.inventory", gamesettings.keyBindInventory.getDisplayName()));
+             }
+         }
+         else if (i == 6)
 @@ -1721,7 +1732,7 @@
  
          if (entity instanceof EntityLivingBase)

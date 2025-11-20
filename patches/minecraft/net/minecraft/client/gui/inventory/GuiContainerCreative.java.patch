@@ -105,7 +105,7 @@
          int i = selectedTabIndex;
          selectedTabIndex = tab.getIndex();
          GuiContainerCreative.ContainerCreative guicontainercreative$containercreative = (GuiContainerCreative.ContainerCreative)this.inventorySlots;
-@@ -552,7 +591,7 @@
+@@ -552,12 +591,14 @@
  
          if (this.searchField != null)
          {
@@ -114,7 +114,14 @@
              {
                  this.searchField.setVisible(true);
                  this.searchField.setCanLoseFocus(false);
-@@ -631,21 +670,43 @@
+                 this.searchField.setFocused(true);
+                 this.searchField.setText("");
++                this.searchField.width = tab.getSearchbarWidth();
++                this.searchField.x = this.guiLeft + (82 /*default left*/ + 89 /*default width*/) - this.searchField.width;
+                 this.updateCreativeSearch();
+             }
+             else
+@@ -631,14 +672,26 @@
  
          super.drawScreen(mouseX, mouseY, partialTicks);
  
@@ -134,16 +141,15 @@
              }
          }
  
--        if (this.destroyItemSlot != null
--                && selectedTabIndex == CreativeTabs.INVENTORY.getIndex()
--                && this.isPointInRegion(this.destroyItemSlot.xPos, this.destroyItemSlot.yPos, 16, 16, mouseX, mouseY))
 +        if (!rendered && !renderCreativeInventoryHoveringText(CreativeTabs.SEARCH, mouseX, mouseY))
 +        {
 +            renderCreativeInventoryHoveringText(CreativeTabs.INVENTORY, mouseX, mouseY);
 +        }
 +
-+        if (this.destroyItemSlot != null && selectedTabIndex == CreativeTabs.INVENTORY.getIndex() && this.isPointInRegion(this.destroyItemSlot.xPos, this.destroyItemSlot.yPos, 16, 16, mouseX, mouseY))
-         {
+         if (this.destroyItemSlot != null
+                 && selectedTabIndex == CreativeTabs.INVENTORY.getIndex()
+                 && this.isPointInRegion(this.destroyItemSlot.xPos, this.destroyItemSlot.yPos, 16, 16, mouseX, mouseY))
+@@ -646,6 +699,18 @@
              this.drawHoveringText(I18n.format("inventory.binSlot"), mouseX, mouseY);
          }
  
@@ -162,7 +168,7 @@
          GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
          GlStateManager.disableLighting();
          this.renderHoveredToolTip(mouseX, mouseY);
-@@ -690,7 +751,7 @@
+@@ -690,7 +755,7 @@
              {
                  if (i == 0)
                  {
@@ -171,7 +177,7 @@
                  }
                  else
                  {
-@@ -698,7 +759,10 @@
+@@ -698,7 +763,10 @@
                  }
              }
  
@@ -183,7 +189,7 @@
          }
          else
          {
-@@ -713,17 +777,36 @@
+@@ -713,17 +781,36 @@
          RenderHelper.enableGUIStandardItemLighting();
          CreativeTabs creativetabs = CreativeTabs.CREATIVE_TAB_ARRAY[selectedTabIndex];
  
@@ -222,7 +228,7 @@
          this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
          this.searchField.drawTextBox();
          GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-@@ -737,6 +820,14 @@
+@@ -737,6 +824,14 @@
              this.drawTexturedModalRect(i, j + (int)((float)(k - j - 17) * this.currentScroll), 232 + (this.needsScrollBars() ? 0 : 12), 0, 12, 15);
          }
  
@@ -237,7 +243,7 @@
          this.drawTab(creativetabs);
  
          if (creativetabs == CreativeTabs.INVENTORY)
-@@ -754,6 +845,14 @@
+@@ -754,6 +849,14 @@
  
      protected boolean isMouseOverTab(CreativeTabs tab, int mouseX, int mouseY)
      {
@@ -252,7 +258,7 @@
          int i = tab.getColumn();
          int j = 28 * i;
          int k = 0;
-@@ -850,6 +949,8 @@
+@@ -850,6 +953,8 @@
          }
  
          GlStateManager.disableLighting();
@@ -261,7 +267,7 @@
          this.drawTexturedModalRect(l, i1, j, k, 28, 32);
          this.zLevel = 100.0F;
          this.itemRender.zLevel = 100.0F;
-@@ -872,6 +973,15 @@
+@@ -872,6 +977,15 @@
          {
              this.mc.displayGuiScreen(new GuiStats(this, this.mc.player.getStatFileWriter()));
          }
@@ -277,7 +283,7 @@
      }
  
      public int getSelectedTabIndex()
-@@ -1093,6 +1203,39 @@
+@@ -1093,6 +1207,39 @@
          {
              return this.slot.canTakeStack(playerIn);
          }

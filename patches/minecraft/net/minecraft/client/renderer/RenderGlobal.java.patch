@@ -84,28 +84,7 @@
  
              this.preRenderDamagedBlocks();
  
-@@ -788,15 +803,13 @@
-         {
-             return true;
-         }
-+        else if (this.mc.player.isSpectator() && this.mc.gameSettings.keyBindSpectatorOutlines.isKeyDown() && entityIn instanceof EntityPlayer)
-+        {
-+            return entityIn.ignoreFrustumCheck || camera.isBoundingBoxInFrustum(entityIn.getEntityBoundingBox()) || entityIn.isRidingOrBeingRiddenBy(this.mc.player);
-+        }
-         else
-         {
--            return this.mc.player.isSpectator()
--                   && this.mc.gameSettings.keyBindSpectatorOutlines.isKeyDown()
--                   && entityIn instanceof EntityPlayer
--                   ? entityIn.ignoreFrustumCheck
--                   || camera.isBoundingBoxInFrustum(entityIn.getEntityBoundingBox())
--                   || entityIn.isRidingOrBeingRiddenBy(this.mc.player)
--                   : false;
-+            return false;
-         }
-     }
- 
-@@ -951,7 +964,7 @@
+@@ -951,7 +966,7 @@
                      {
                          RenderChunk renderchunk1 = this.viewFrustum.getRenderChunk(new BlockPos((j << 4) + 8, i, (k << 4) + 8));
  
@@ -114,7 +93,7 @@
                          {
                              renderchunk1.setFrameIndex(frameCount);
                              queue.add(new RenderGlobal.ContainerLocalRenderInformation(renderchunk1, null, 0));
-@@ -1013,7 +1026,7 @@
+@@ -1013,7 +1028,7 @@
                  BlockPos blockpos2 = renderchunk4.getPosition().add(8, 8, 8);
                  boolean flag3 = blockpos2.distanceSq(blockpos1) < 768.0;
  
@@ -123,7 +102,7 @@
                  {
                      this.chunksToUpdate.add(renderchunk4);
                  }
-@@ -1316,6 +1329,13 @@
+@@ -1316,6 +1331,13 @@
  
      public void renderSky(float partialTicks, int pass)
      {
@@ -137,7 +116,7 @@
          if (this.mc.world.provider.getDimensionType().getId() == 1)
          {
              this.renderSkyEnd();
-@@ -1542,6 +1562,7 @@
+@@ -1542,6 +1564,7 @@
  
      public void renderClouds(float partialTicks, int pass, double x, double y, double z)
      {
@@ -145,3 +124,37 @@
          if (this.mc.world.provider.isSurfaceWorld())
          {
              if (this.mc.gameSettings.shouldRenderClouds() == 2)
+@@ -1945,7 +1968,8 @@
+             float f1 = (float)(i >> 8 & 0xFF) / 255.0F;
+             float f2 = (float)(i & 0xFF) / 255.0F;
+             GlStateManager.color(f, f1, f2, (float)d1);
+-            GlStateManager.doPolygonOffset(-3.0F, -3.0F);
++            // FORGE: Fix MC-234
++            GlStateManager.doPolygonOffset(-3.0F, -10.0F);
+             GlStateManager.enablePolygonOffset();
+             GlStateManager.alphaFunc(516, 0.1F);
+             GlStateManager.enableAlpha();
+@@ -2102,8 +2126,13 @@
+                 double d4 = (double)blockpos.getY() - d1;
+                 double d5 = (double)blockpos.getZ() - d2;
+                 Block block = this.world.getBlockState(blockpos).getBlock();
++                TileEntity te = this.world.getTileEntity(blockpos);
++                boolean hasBreak = block instanceof BlockChest || block instanceof BlockEnderChest || block instanceof BlockSign || block instanceof BlockSkull;
++                if (!hasBreak) {
++                    hasBreak = te != null && te.canRenderBreaking();
++                }
+ 
+-                if (!(block instanceof BlockChest) && !(block instanceof BlockEnderChest) && !(block instanceof BlockSign) && !(block instanceof BlockSkull))
++                if (!hasBreak)
+                 {
+                     if (d3 * d3 + d4 * d4 + d5 * d5 > 1024.0)
+                     {
+@@ -2836,7 +2865,7 @@
+ 
+                 if (block.getDefaultState().getMaterial() != Material.AIR)
+                 {
+-                    SoundType soundtype = block.getSoundType();
++                    SoundType soundtype = block.getSoundType(Block.getStateById(data), this.world, blockPosIn, null);
+                     this.world
+                     .playSound(
+                         blockPosIn,

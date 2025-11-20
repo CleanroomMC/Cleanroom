@@ -1,6 +1,23 @@
 --- before/net/minecraft/client/renderer/texture/TextureAtlasSprite.java
 +++ after/net/minecraft/client/renderer/texture/TextureAtlasSprite.java
-@@ -421,4 +421,39 @@
+@@ -49,12 +49,10 @@
+         this.originX = originInX;
+         this.originY = originInY;
+         this.rotated = rotatedIn;
+-        float f = (float)(0.01F / (double)inX);
+-        float f1 = (float)(0.01F / (double)inY);
+-        this.minU = (float)originInX / (float)((double)inX) + f;
+-        this.maxU = (float)(originInX + this.width) / (float)((double)inX) - f;
+-        this.minV = (float)originInY / (float)inY + f1;
+-        this.maxV = (float)(originInY + this.height) / (float)inY - f1;
++        this.minU = (float)originInX / (float)(inX);
++        this.maxU = (float)(originInX + this.width) / (float)(inX);
++        this.minV = (float)originInY / (float)inY;
++        this.maxV = (float)(originInY + this.height) / (float)inY;
+     }
+ 
+     public void copyFrom(TextureAtlasSprite atlasSpirit)
+@@ -421,4 +419,39 @@
                 + this.maxV
                 + '}';
      }
