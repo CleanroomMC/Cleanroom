@@ -38,6 +38,8 @@ catalogue.gui.website=Website
 catalogue.gui.submit_bug=Submit Bug
 catalogue.gui.mod_id=Mod ID: %s
 
+catalogue.config.enable_mod=Enable Mod
+catalogue.config.enable_mod.tooltip=Whether enable Catalogue mod. \nSetting it false will stop Catalogue redirecting Forge's mod list calls.
 catalogue.config.library_list=Library List
 catalogue.config.library_list.tooltip=The list of library mods' mod ids.\nThey will have grey names in the mod list.
 catalogue.config.ignored_dependencies_list=Ignored Dependencies List

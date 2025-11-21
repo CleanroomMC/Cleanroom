@@ -8,6 +8,14 @@ import org.jetbrains.annotations.NotNull;
 
 @Config(modid = CatalogueConstants.MOD_ID)
 public class CatalogueConfig {
+
+    @Config.Comment({
+            "Whether enable Catalogue mod.",
+            "Setting it false will stop Catalogue redirecting Forge's mod list calls."
+    })
+    @Config.LangKey("catalogue.config.enable_mod")
+    public static boolean enableMod = true;
+
     @Config.RequiresMcRestart
     @Config.Comment({
             "The list of library mods' mod ids.",
