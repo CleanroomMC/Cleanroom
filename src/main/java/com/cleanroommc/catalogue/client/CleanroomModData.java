@@ -195,13 +195,13 @@ public class CleanroomModData implements IModData {
             case AHEAD:
                 return TextFormatting.LIGHT_PURPLE + I18n.format("catalogue.gui.ahead", update.latestFound());
             case BETA_OUTDATED:
-                if (update.homepage() != null) {
+                if (update.homepage() != null && !update.homepage().isBlank()) {
                     return TextFormatting.GOLD + I18n.format("catalogue.gui.beta_update_available", update.latestFound(), update.homepage());
                 } else {
                     return TextFormatting.GOLD + I18n.format("catalogue.gui.beta_update_available_no_page", update.latestFound());
                 }
             case OUTDATED:
-                if (update.homepage() != null) {
+                if (update.homepage() != null && !update.homepage().isBlank()) {
                     return TextFormatting.GREEN + I18n.format("catalogue.gui.update_available", update.latestFound(), update.homepage());
                 } else {
                     return TextFormatting.GREEN + I18n.format("catalogue.gui.update_available_no_page", update.latestFound());

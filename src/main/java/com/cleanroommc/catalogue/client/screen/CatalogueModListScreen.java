@@ -353,12 +353,13 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
         // Version check button
         if (this.selectedModData != null) {
             int contentLeft = this.modList.right + 12 + 10;
-            String version = this.selectedModData.getVersion();
+            String version = I18n.format("catalogue.gui.version", this.selectedModData.getVersion());
             int versionWidth = this.fontRenderer.getStringWidth(version);
             if (ClientHelper.isMouseWithin(contentLeft + versionWidth + 5, 92, 8, 8, mouseX, mouseY)) {
                 IModData.Update update = this.selectedModData.getUpdate();
                 if (update != null && update.homepage() != null && !update.homepage().isBlank() && update.updatable()) {
                     this.openLink(update.homepage());
+                    return;
                 }
             }
         }
