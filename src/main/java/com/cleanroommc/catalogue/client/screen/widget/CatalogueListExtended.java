@@ -1,5 +1,6 @@
 package com.cleanroommc.catalogue.client.screen.widget;
 
+import com.cleanroommc.catalogue.client.ClientHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiListExtended;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -32,6 +33,8 @@ public abstract class CatalogueListExtended extends GuiListExtended {
         int maxScroll = this.getMaxScroll();
         this.scrollBarVisible = maxScroll > 0 && this.getContentHeight() != 0;
 
+        ClientHelper.scissor(this.left, this.top, this.width, this.bottom - this.top);
+
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
         Tessellator tessellator = Tessellator.getInstance();
@@ -47,11 +50,6 @@ public abstract class CatalogueListExtended extends GuiListExtended {
         this.drawSelectionBox(mouseX, mouseY, partialTicks);
 
         GlStateManager.disableDepth();
-
-        // Draw overlay dirt to hide scrolled entries
-        this.overlayBackground(0, this.top, 255, 255);
-        this.overlayBackground(this.bottom, this.height, 255, 255);
-
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
         GlStateManager.disableAlpha();
@@ -70,6 +68,7 @@ public abstract class CatalogueListExtended extends GuiListExtended {
         GlStateManager.shadeModel(GL11.GL_FLAT);
         GlStateManager.enableAlpha();
         GlStateManager.disableBlend();
+        GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
 
     protected void drawScrollBar(int maxScroll) {
