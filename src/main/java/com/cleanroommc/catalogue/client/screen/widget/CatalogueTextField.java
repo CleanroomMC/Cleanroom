@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiTextField;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -112,16 +113,18 @@ public class CatalogueTextField extends GuiTextField {
     // Patch vanilla missing methods
     @Override
     public void setText(@NotNull String textIn) {
+        String previousText = this.getText();
         super.setText(textIn);
-        if (this.validator.apply(textIn)) {
+        if (!Objects.equals(this.getText(), previousText)) {
             this.setResponderEntryValue(this.getId(), this.getText());
         }
     }
 
     @Override
     public void setMaxStringLength(int length) {
+        String previousText = this.getText();
         super.setMaxStringLength(length);
-        if (this.getText().length() > length) {
+        if (!Objects.equals(this.getText(), previousText)) {
             this.setResponderEntryValue(this.getId(), this.getText());
         }
     }
