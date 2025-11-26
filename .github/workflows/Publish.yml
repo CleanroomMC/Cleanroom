@@ -41,3 +41,9 @@ jobs:
 
       - name: Publish to maven for mod development
         run: ./gradlew publish -PcleanroomUsername=${{ secrets.CLEANROOM_MAVEN_USERNAME }} -PcleanroomPassword="${{ secrets.CLEANROOM_MAVEN_PASSWORD }}" -Prun_number=${{ github.run_number }}
+
+      - name: Trigger download server update
+        run: |
+          curl -X POST "http://download.cleanroommc.com/api/webhook" \
+            -H "Content-Type: application/json" \
+            -d "{\"secret\":\"${{ secrets.DOWNLOAD_UPDATE_TOKEN }}\",\"count\":10}"
