@@ -69,3 +69,9 @@ jobs:
         with:
           artifacts: "projects/cleanroom/build/libs/*"
           generateReleaseNotes: true
+
+      - name: Trigger download server update
+        run: |
+          curl -X POST "http://download.cleanroommc.com/api/webhook" \
+            -H "Content-Type: application/json" \
+            -d "{\"secret\":\"${{ secrets.DOWNLOAD_UPDATE_TOKEN }}\",\"count\":10}"
