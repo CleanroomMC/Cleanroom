@@ -39,6 +39,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -207,7 +208,9 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
                 break;
             case 2:
                 try {
-                    Desktop.getDesktop().open(ClientServices.PLATFORM.getModDirectory());
+                    Class<?> oclass = Class.forName("java.awt.Desktop");
+                    Object object = oclass.getMethod("getDesktop", new Class[0]).invoke(null);
+                    oclass.getMethod("open", File.class).invoke(object, ClientServices.PLATFORM.getModDirectory());
                 } catch (Exception e) {
                     CatalogueConstants.LOG.error("Problem opening mods folder", e);
                 }
