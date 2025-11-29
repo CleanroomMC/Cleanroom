@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Author: MrCrayfish
@@ -35,7 +36,7 @@ public class CatalogueIconButton extends CatalogueTextButton {
     }
 
     @Override
-    public void drawButton(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
+    public void drawButton(@NotNull Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
         // Draw bg
         super.drawButton(minecraft, mouseX, mouseY, partialTicks);
         // Draw icon and text

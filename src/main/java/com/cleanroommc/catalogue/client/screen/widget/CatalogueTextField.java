@@ -131,7 +131,7 @@ public class CatalogueTextField extends GuiTextField {
 
     // Call consumer responder
     @Override
-    public void setResponderEntryValue(int idIn, String textIn) {
+    public void setResponderEntryValue(int idIn, @NotNull String textIn) {
         if (this.responder != null) {
             this.responder.accept(textIn);
         }
@@ -143,10 +143,12 @@ public class CatalogueTextField extends GuiTextField {
         this.suggestion = suggestion;
     }
 
+    @NotNull
     public String getSuggestion() {
         return this.suggestion;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isTextTruncated() {
         return this.isTextTruncated;
     }

@@ -31,7 +31,7 @@ public record Branding(String prefix, int imageWidth, int imageHeight,
         if (resource == null || resource.isBlank()) return Optional.empty();
 
         String modId = data.getModId();
-        BufferedImage image = null;
+        BufferedImage image;
         try {
             IResourcePack resourcePack = data.getResourcePack();
             if (this.equals(Branding.BANNER) && resourcePack != null && !resource.startsWith("/")) {
