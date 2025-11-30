@@ -152,6 +152,7 @@ public class EventBus implements IEventExceptionHandler
         }
     }
 
+    /// Some mods will intentionally call this method with illegal `method` object (whose param type is `Object` instead of subclass of `Event`), and we have to allow this stupid move
     private void register(Class<?> eventType, Object target, Method method, final ModContainer owner)
     {
         try
