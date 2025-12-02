@@ -28,9 +28,6 @@ jobs:
 
       - name: Fix Gradle permission
         run: chmod +x ./gradlew
-        
-      - name: Dry run
-        run: ./gradlew -Prun_number=${{ github.run_number }}
 
       - name: Setup Forge env
         run: ./gradlew setup -Prun_number=${{ github.run_number }} -Prelease=true
