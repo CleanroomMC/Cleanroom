@@ -594,7 +594,7 @@ tasks.register('checkSAS') {
 tasks.register('launcherJson') {
     dependsOn universalJar
     inputs.file {
-        universalJar.archiveFile
+        universalJar.archivePath
     }
     ext {
         output = file('build/version.json')
@@ -641,8 +641,8 @@ tasks.register('launcherJson') {
                             path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
                             // Do not include the URL so that the installer/launcher won't grab it. This is also why we don't have the universal classifier
                             url : '',
-                            sha1: Util.sha1(universalJar.archiveFile.get().asFile),
-                            size: universalJar.archiveFile.get().asFile.length()
+                            sha1: Util.sha1(universalJar.archivePath),
+                            size: universalJar.archivePath.length()
                         ]
                     ]
                 ]
@@ -666,7 +666,7 @@ tasks.register('installerJson') {
         output = file('build/install_profile.json')
         installer_tools = "net.minecraftforge:installertools:$props.installer_tools_version"
     }
-    inputs.file universalJar.archiveFile
+    inputs.file universalJar.archivePath
     inputs.file genClientBinPatches.toolJar
     inputs.file launcherJson.output
     outputs.file output
@@ -679,8 +679,8 @@ tasks.register('installerJson') {
                         path: "${project.group.replace('.', '/')}/${project.name}/${project.version}/${project.name}-${project.version}.jar",
                         // Do not include the URL so that the installer/launcher won't grab it. This is also why we don't have the universal classifier
                         url : '',
-                        sha1: Util.sha1(universalJar.archiveFile.get().asFile),
-                        size: universalJar.archiveFile.get().asFile.length()
+                        sha1: Util.sha1(universalJar.archivePath),
+                        size: universalJar.archivePath.length()
                     ]
                 ]
             ]

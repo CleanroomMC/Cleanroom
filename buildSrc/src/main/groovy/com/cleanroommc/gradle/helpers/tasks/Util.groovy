@@ -2,7 +2,6 @@ package com.cleanroommc.gradle.helpers.tasks
 
 import groovy.json.JsonSlurper
 import org.gradle.api.GradleException
-import org.apache.commons.codec.digest.DigestUtils
 
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
@@ -198,9 +197,9 @@ class Util {
 		new Date().iso8601()
 	}
 
-	static def sha1(File file) {
+	static def sha1(file) {
 		MessageDigest md = MessageDigest.getInstance('SHA-1')
-		file.eachByte 4096, {byte[] bytes, int size ->
+		file.eachByte 4096, { bytes, size ->
 			md.update(bytes, 0, size)
 		}
 		return md.digest().collect {String.format "%02x", it}.join()

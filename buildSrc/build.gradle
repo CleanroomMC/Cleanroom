@@ -3,7 +3,6 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.ow2.asm:asm:9.9'
-    implementation 'org.ow2.asm:asm-tree:9.9'
-    implementation 'commons-codec:commons-codec:1.20.0'
+    implementation 'org.ow2.asm:asm:9.8'
+    implementation 'org.ow2.asm:asm-tree:9.8'
 }
