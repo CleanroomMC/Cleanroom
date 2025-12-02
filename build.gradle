@@ -6,10 +6,6 @@ buildscript {
             url "https://maven.outlands.top/releases/"
         }
         mavenCentral()
-        maven {
-            name "MinecraftForge"
-            url "https://maven.minecraftforge.net/"
-        }
     }
     dependencies {
         classpath "net.minecraftforge.gradle:ForgeGradle:6.5.2"

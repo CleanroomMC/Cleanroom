@@ -7,15 +7,11 @@ apply plugin: 'net.minecraftforge.gradle.patcher'
 
 repositories {
     mavenLocal()
-    mavenCentral()
     maven {
         name "outlandsReleases"
         url "https://maven.outlands.top/releases"
     }
-    maven {
-        name 'MinecraftForge'
-        url 'https://maven.minecraftforge.net/'
-    }
+    mavenCentral()
 }
 
 dependencies {
