@@ -39,6 +39,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
+import org.jspecify.annotations.NonNull;
 
 public class EventBus implements IEventExceptionHandler
 {
@@ -165,17 +166,7 @@ public class EventBus implements IEventExceptionHandler
             IEventListener listener = asm;
             if (IContextSetter.class.isAssignableFrom(eventType))
             {
-                listener = e -> {
-                    var loader = Loader.instance();
-                    var old = loader.activeModContainer();
-
-                    loader.setActiveModContainer(owner);
-                    ((IContextSetter) e).setModContainer(owner);
-
-                    asm.invoke(e);
-
-                    loader.setActiveModContainer(old);
-                };
+                listener = new ContextSetterEventListener(owner, asm);
             }
 
             event.getListenerList().register(busID, asm.getPriority(), listener);
@@ -236,6 +227,31 @@ public class EventBus implements IEventExceptionHandler
         for (int x = 0; x < listeners.length; x++)
         {
             FMLLog.log.error("{}: {}", x, listeners[x]);
+        }
+    }
+
+    private record ContextSetterEventListener(
+        ModContainer owner,
+        ASMEventHandler asm
+    ) implements IEventListener {
+
+        @Override
+        public void invoke(Event e) {
+            var loader = Loader.instance();
+            var old = loader.activeModContainer();
+
+            loader.setActiveModContainer(owner);
+            ((IContextSetter) e).setModContainer(owner);
+
+            asm.invoke(e);
+
+            loader.setActiveModContainer(old);
+        }
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "ContextSetter[mod=" + owner.getModId() + ", listener=" + asm + "]";
         }
     }
 }
