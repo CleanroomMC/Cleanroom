@@ -1,14 +1,14 @@
 buildscript {
     repositories {
         mavenLocal()
+        maven {
+            name "Outlands"
+            url "https://maven.outlands.top/releases/"
+        }
         mavenCentral()
         maven {
             name "MinecraftForge"
             url "https://maven.minecraftforge.net/"
-        }
-        maven {
-            name "Outlands"
-            url "https://maven.outlands.top/releases/"
         }
     }
     dependencies {
