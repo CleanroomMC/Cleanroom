@@ -3,12 +3,13 @@ buildscript {
         mavenLocal()
         maven {
             name "Outlands"
-            url "https://maven.outlands.top/releases/"
+            url 'https://maven.outlands.top/releases/'
         }
         mavenCentral()
     }
     dependencies {
-        classpath "net.minecraftforge.gradle:ForgeGradle:6.5.2"
+        classpath 'net.minecraftforge.gradle:ForgeGradle:6.5.2'
+        classpath 'net.minecraftforge:artifactural:3.0.20'
     }
 }
 
