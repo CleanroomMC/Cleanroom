@@ -1,7 +1,5 @@
 
 def props = project.properties
-def details = versionDetails()
-def spec_version = details.lastTag
 
 apply plugin: 'net.minecraftforge.gradle.mcp'
 
