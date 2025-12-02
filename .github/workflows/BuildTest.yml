@@ -61,7 +61,7 @@ jobs:
         run: chmod +x ./gradlew
         
       - name: Dry run
-        run: ./gradlew -Prun_number=${{ github.run_number }}
+        run: ./gradlew -Prun_number=${{ github.run_number }} --stacktrace --info
 
       - name: Setup Forge env
         run: ./gradlew setup -Prun_number=${{ github.run_number }}
