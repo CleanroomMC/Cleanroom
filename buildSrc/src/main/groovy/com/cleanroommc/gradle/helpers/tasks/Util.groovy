@@ -2,7 +2,6 @@ package com.cleanroommc.gradle.helpers.tasks
 
 import groovy.json.JsonSlurper
 import org.gradle.api.GradleException
-import org.apache.commons.codec.digest.DigestUtils
 
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
