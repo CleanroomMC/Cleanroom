@@ -3,7 +3,7 @@ import com.cleanroommc.gradle.helpers.ProjectConstants
 def props = project.properties
 
 evaluationDependsOn(':mcp')
-apply plugin: 'net.minecraftforge.gradle.patcher'
+apply plugin: 'top.outlands.gradle.patcher'
 
 repositories {
     mavenLocal()

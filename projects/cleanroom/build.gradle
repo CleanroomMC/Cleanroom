@@ -26,7 +26,7 @@ def spec_version = details.lastTag
 evaluationDependsOn(':minecraft')
 apply plugin: 'java-library'
 apply plugin: 'maven-publish'
-apply plugin: 'net.minecraftforge.gradle.patcher'
+apply plugin: 'top.outlands.gradle.patcher'
 
 //  = 'net.minecraftforge'
 group = 'com.cleanroommc'
