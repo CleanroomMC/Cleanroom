@@ -197,9 +197,9 @@ class Util {
 		new Date().iso8601()
 	}
 
-	static def sha1(file) {
+	static def sha1(File file) {
 		MessageDigest md = MessageDigest.getInstance('SHA-1')
-		file.eachByte 4096, { bytes, size ->
+		file.eachByte 4096, {byte[] bytes, int size ->
 			md.update(bytes, 0, size)
 		}
 		return md.digest().collect {String.format "%02x", it}.join()

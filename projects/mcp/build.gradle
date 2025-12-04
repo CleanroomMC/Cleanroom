@@ -1,18 +1,12 @@
 
 def props = project.properties
-def details = versionDetails()
-def spec_version = details.lastTag
 
-apply plugin: 'net.minecraftforge.gradle.mcp'
+apply plugin: 'top.outlands.gradle.mcp'
 
 repositories {
     maven {
         name "outlandsReleases"
         url "https://maven.outlands.top/releases"
-    }
-    maven {
-        name 'MinecraftForge'
-        url 'https://maven.minecraftforge.net/'
     }
 }
 
