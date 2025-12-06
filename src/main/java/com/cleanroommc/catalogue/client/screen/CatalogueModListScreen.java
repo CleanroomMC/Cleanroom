@@ -545,9 +545,7 @@ public class CatalogueModListScreen extends GuiScreen implements DropdownMenuHan
 
         @Override
         public boolean mouseReleased(int mouseX, int mouseY, int button) {
-            if (this.hideFavourites) {
-                this.hideFavourites = false;
-            }
+            this.hideFavourites = false;
             return super.mouseReleased(mouseX, mouseY, button);
         }
 
