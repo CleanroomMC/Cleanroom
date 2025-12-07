@@ -446,6 +446,22 @@ public class FMLClientHandler implements IFMLSidedHandler
     }
 
     /**
+     * Get the resource pack list, unmodifiable
+     * @return resource pack list
+     */
+    public List<IResourcePack> getResourcePackList() {
+        return Collections.unmodifiableList(resourcePackList);
+    }
+
+    /**
+     * Get the whole resource pack map, unmodifiable
+     * @return resource pack map
+     */
+    public Map<String, IResourcePack> getResourcePackMap() {
+        return Collections.unmodifiableMap(resourcePackMap);
+    }
+
+    /**
      * @return the instance
      */
     public static FMLClientHandler instance()

@@ -1,0 +1,11 @@
+--- before/net/minecraft/client/resources/AbstractResourcePack.java
++++ after/net/minecraft/client/resources/AbstractResourcePack.java
+@@ -102,4 +102,8 @@
+     {
+         return this.resourcePackFile.getName();
+     }
++    
++    public File getResourcePackFile() {
++        return resourcePackFile;
++    }
+ }
