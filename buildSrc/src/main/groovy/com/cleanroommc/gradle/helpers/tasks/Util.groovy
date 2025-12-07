@@ -10,13 +10,13 @@ class Util {
 	static void init() {
 		File.metaClass.sha1 = { ->
 			MessageDigest md = MessageDigest.getInstance('SHA-1')
-			delegate.eachByte 4096, { bytes, size ->
+			delegate.eachByte 4096, {byte[] bytes, int size ->
 				md.update(bytes, 0, size)
 			}
 			return md.digest().collect {String.format "%02x", it}.join()
 		}
 	
-		File.metaClass.json = { -> new JsonSlurper().parseText(delegate.text) }
+		File.metaClass.json = { -> new JsonSlurper().parseText(delegate.text as String) }
 		
 		Date.metaClass.iso8601 = { ->
 			def format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -81,7 +81,7 @@ class Util {
 					artifact: [
 						path: path,
 						url: url,
-						sha1: sha1(art.file),
+						sha1: sha1(art.file as File),
 						size: art.file.length()
 					]
 				]
@@ -125,7 +125,7 @@ class Util {
 								artifact: [
 										path: path,
 										url : url,
-										sha1: sha1(file),
+										sha1: sha1(file as File),
 										size: file.length()
 								]
 						],
@@ -154,13 +154,13 @@ class Util {
 		]
 		try {
 			return urlList.stream().map(original -> original + path)
-					.filter(it -> this::checkExists(it)).findFirst().get()
+					.filter((String it) -> this::checkExists(it)).findFirst().get()
 		} catch (NoSuchElementException ignored) {
 			throw new GradleException("Can't find " + filename + " from defined repositories.\n"
 					+ "Please check and make sure all repositories are setup properly.\n"
 					+ "At: com.cleanroommc.gradle.helpers.tasks.Util#getNativeURL(String, String)\n"
 					+ "Current defined repositories: (Sort by order)\n"
-					+ String.join("\n" , urlList))
+					+ String.join("\n" , urlList) as String)
 		}
 	}
 
@@ -215,9 +215,9 @@ class Util {
 		return getArtifacts(project, cfg, true)
 	}
 	
-	private static boolean checkExists(url) {
+	private static boolean checkExists(String url) {
 		try {
-			def code = new URL(url).openConnection().with {
+			def code = new URI(url).toURL().openConnection().with {
 				requestMethod = 'HEAD'
 				connect()
 				responseCode
