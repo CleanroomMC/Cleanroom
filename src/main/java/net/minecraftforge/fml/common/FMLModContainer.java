@@ -179,6 +179,10 @@ public class FMLModContainer implements ModContainer
         return languageAdapter;
     }
 
+    public boolean isFingerprintNotPresent() {
+        return fingerprintNotPresent;
+    }
+
     @Override
     public String getModId()
     {
