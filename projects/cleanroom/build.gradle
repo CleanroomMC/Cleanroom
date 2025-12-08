@@ -1,4 +1,5 @@
 import com.cleanroommc.gradle.helpers.ProjectConstants
+import com.cleanroommc.gradle.helpers.tasks.GenVersionTask
 import com.cleanroommc.gradle.helpers.tasks.Util
 import groovy.json.JsonBuilder
 import net.minecraftforge.gradle.common.tasks.ApplyBinPatches
@@ -20,8 +21,7 @@ import java.nio.file.Files
 import java.util.zip.ZipFile
 
 def props = project.properties
-def details = versionDetails()
-def spec_version = details.lastTag
+def spec_version = versionDetails().lastTag
 
 evaluationDependsOn(':minecraft')
 apply plugin: 'java-library'
@@ -32,19 +32,10 @@ apply plugin: 'top.outlands.gradle.patcher'
 group = 'com.cleanroommc'
 version = rootProject.version
 
-compileJava {
-    doFirst {
-        def target = new File("${rootProject.projectDir}/src/main/java/com/cleanroommc/common/CleanroomVersion.java")
-        def template = new File("${rootProject.projectDir}/templates/CleanroomVersion.java")
+tasks.register("genVersion", GenVersionTask.class)
 
-        target.withWriter { def writer ->
-            template.eachLine { def line ->
-                def newLine = line.replace("%VERSION%", versionDetails().lastTag)
-                    .replace("%BUILD_VERSION%", rootProject.version.toString())
-                writer.write(newLine + "\n")
-            }
-        }
-    }
+compileJava {
+    dependsOn tasks.genVersion
 }
 
 sourceSets {

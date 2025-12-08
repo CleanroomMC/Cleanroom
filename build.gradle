@@ -17,8 +17,9 @@ buildscript {
 
 plugins {
     id "org.jetbrains.gradle.plugin.idea-ext" version "1.3"
-    id "com.palantir.git-version" version "4.2.0"
+    //id "com.palantir.git-version" version "4.2.0"
 }
+apply plugin: 'com.palantir.git-version' // Declared in buildSrc/build.gradle
 
 import com.cleanroommc.gradle.helpers.ProjectConstants
 import com.cleanroommc.gradle.helpers.tasks.Util
