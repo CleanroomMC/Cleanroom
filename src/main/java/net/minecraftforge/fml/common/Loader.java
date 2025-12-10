@@ -410,6 +410,10 @@ public class Loader
             {
                 FMLLog.log.trace("Skipping already parsed coremod or tweaker {}", mod.getName());
             }
+            else if(mod.isDirectory())
+            {
+                FMLLog.log.trace("Skipping directory {}", mod.getName());
+            } 
             else
             {
                 FMLLog.log.debug("Found a candidate zip or jar file {}", mod.getName());
